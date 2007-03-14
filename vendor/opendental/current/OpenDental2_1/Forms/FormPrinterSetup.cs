@@ -55,6 +55,7 @@ namespace OpenDental{
 			// 
 			// butDefault
 			// 
+			this.butDefault.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butDefault.Location = new System.Drawing.Point(24, 58);
 			this.butDefault.Name = "butDefault";
 			this.butDefault.Size = new System.Drawing.Size(88, 23);
@@ -72,6 +73,7 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(406, 280);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 2;
@@ -81,10 +83,12 @@ namespace OpenDental{
 			// butCancel
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(406, 314);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 3;
 			this.butCancel.Text = "Cancel";
+			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// FormPrinterSetup
 			// 
@@ -95,9 +99,12 @@ namespace OpenDental{
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.butDefault);
 			this.Controls.Add(this.listPrinters);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormPrinterSetup";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = Lan.g(this,"Printer Setup");
+			this.Text = "Printer Setup";
 			this.Load += new System.EventHandler(this.FormPrinterSetup_Load);
 			this.ResumeLayout(false);
 
@@ -130,6 +137,10 @@ namespace OpenDental{
 			//MessageBox.Show(Computers.Cur.PrinterName);
 			Computers.UpdateCur();
 			DialogResult=DialogResult.OK;
+		}
+
+		private void butCancel_Click(object sender, System.EventArgs e) {
+		
 		}
 
 	}

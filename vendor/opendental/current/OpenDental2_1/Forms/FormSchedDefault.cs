@@ -7,7 +7,6 @@ using System.Windows.Forms;
 namespace OpenDental{
 
 	public class FormSchedDefault : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butAdd;
 		private System.Windows.Forms.Button butClose;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;
@@ -18,6 +17,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label7;
 		private OpenDental.ContrSchedGrid contrGrid;
 		private System.ComponentModel.Container components = null;
+		private OpenDental.XPButton butAdd;
 		private Point mousePos;
 
 		public FormSchedDefault(){
@@ -50,7 +50,6 @@ namespace OpenDental{
 
 		private void InitializeComponent(){
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormSchedDefault));
-			this.butAdd = new System.Windows.Forms.Button();
 			this.butClose = new System.Windows.Forms.Button();
 			this.contrGrid = new OpenDental.ContrSchedGrid();
 			this.label1 = new System.Windows.Forms.Label();
@@ -60,22 +59,13 @@ namespace OpenDental{
 			this.label5 = new System.Windows.Forms.Label();
 			this.label6 = new System.Windows.Forms.Label();
 			this.label7 = new System.Windows.Forms.Label();
+			this.butAdd = new OpenDental.XPButton();
 			this.SuspendLayout();
-			// 
-			// butAdd
-			// 
-			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
-			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAdd.Location = new System.Drawing.Point(516, 652);
-			this.butAdd.Name = "butAdd";
-			this.butAdd.Size = new System.Drawing.Size(92, 26);
-			this.butAdd.TabIndex = 0;
-			this.butAdd.Text = "        Add Block";
-			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
 			// butClose
 			// 
-			this.butClose.Location = new System.Drawing.Point(752, 652);
+			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butClose.Location = new System.Drawing.Point(752, 653);
 			this.butClose.Name = "butClose";
 			this.butClose.Size = new System.Drawing.Size(75, 26);
 			this.butClose.TabIndex = 1;
@@ -156,10 +146,25 @@ namespace OpenDental{
 			this.label7.Text = "Sunday";
 			this.label7.TextAlign = System.Drawing.ContentAlignment.TopCenter;
 			// 
+			// butAdd
+			// 
+			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAdd.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butAdd.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
+			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butAdd.Location = new System.Drawing.Point(485, 653);
+			this.butAdd.Name = "butAdd";
+			this.butAdd.Size = new System.Drawing.Size(95, 26);
+			this.butAdd.TabIndex = 15;
+			this.butAdd.Text = "Add Block";
+			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
+			// 
 			// FormSchedDefault
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(846, 690);
+			this.Controls.Add(this.butAdd);
 			this.Controls.Add(this.contrGrid);
 			this.Controls.Add(this.label7);
 			this.Controls.Add(this.label6);
@@ -169,10 +174,13 @@ namespace OpenDental{
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.butClose);
-			this.Controls.Add(this.butAdd);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormSchedDefault";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Default Schedule";
+			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormSchedDefault_Closing);
 			this.Load += new System.EventHandler(this.FormSchedDefault_Load);
 			this.ResumeLayout(false);
 
@@ -233,8 +241,14 @@ namespace OpenDental{
 		}
 
 		private void butClose_Click(object sender, System.EventArgs e) {
+			Close();
+		}
+
+		private void FormSchedDefault_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+			DataValid.IType=InvalidType.LocalData;
+			DataValid DataValid2=new DataValid();
+			DataValid2.SetInvalid();
 			SecurityLogs.MakeLogEntry("Practice Default Schedule","Altered Schedule Defaults");	
-			DialogResult=DialogResult.Cancel;
 		}
 
 	}

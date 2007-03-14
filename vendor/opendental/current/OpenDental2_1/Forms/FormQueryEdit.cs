@@ -107,6 +107,7 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(724, 588);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 3;
@@ -116,10 +117,12 @@ namespace OpenDental{
 			// butCancel
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(724, 626);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 4;
 			this.butCancel.Text = "Cancel";
+			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// FormQueryEdit
 			// 
@@ -133,7 +136,10 @@ namespace OpenDental{
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.textTitle);
 			this.Controls.Add(this.label1);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormQueryEdit";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Edit Favorite";
 			this.Load += new System.EventHandler(this.FormQueryEdit_Load);
@@ -163,6 +169,10 @@ namespace OpenDental{
 				UserQueries.UpdateCur();
 			}
 			DialogResult=DialogResult.OK;
+		}
+
+		private void butCancel_Click(object sender, System.EventArgs e) {
+		
 		}
 
 

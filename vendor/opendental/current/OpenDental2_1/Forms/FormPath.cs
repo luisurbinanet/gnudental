@@ -59,7 +59,8 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
-			this.butOK.Location = new System.Drawing.Point(556, 331);
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.Location = new System.Drawing.Point(593, 269);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 2;
 			this.butOK.Text = "OK";
@@ -67,7 +68,8 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
-			this.butCancel.Location = new System.Drawing.Point(556, 365);
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butCancel.Location = new System.Drawing.Point(593, 303);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 3;
 			this.butCancel.Text = "Cancel";
@@ -86,16 +88,16 @@ namespace OpenDental{
 			// 
 			this.textBox1.BackColor = System.Drawing.SystemColors.Control;
 			this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.textBox1.Location = new System.Drawing.Point(13, 152);
+			this.textBox1.Location = new System.Drawing.Point(12, 135);
 			this.textBox1.Multiline = true;
 			this.textBox1.Name = "textBox1";
 			this.textBox1.Size = new System.Drawing.Size(510, 72);
 			this.textBox1.TabIndex = 5;
-			this.textBox1.Text = @"Export Path: for exporting tables.  If you use a network path (like \\server\FreeDentalExport\ ), the data will be exported to one central computer.   But it is usually easier to use a local path (like C:\FreeDentalExport\ ), and the data will be stored on the local hard drive of the computer you export on.  The folder will be created later if it does not exist.";
+			this.textBox1.Text = @"Export Path: for exporting tables.  If you use a network path (like \\server\OpenDentalExport\ ), the data will be exported to one central computer.   But it is usually easier to use a local path (like C:\OpenDentalExport\ ), and the data will be stored on the local hard drive of the computer you export on.  The folder will be created later if it does not exist.";
 			// 
 			// textExportPath
 			// 
-			this.textExportPath.Location = new System.Drawing.Point(11, 224);
+			this.textExportPath.Location = new System.Drawing.Point(10, 207);
 			this.textExportPath.Name = "textExportPath";
 			this.textExportPath.Size = new System.Drawing.Size(515, 20);
 			this.textExportPath.TabIndex = 1;
@@ -111,11 +113,12 @@ namespace OpenDental{
 			this.textBox3.Name = "textBox3";
 			this.textBox3.Size = new System.Drawing.Size(516, 70);
 			this.textBox3.TabIndex = 7;
-			this.textBox3.Text = @"Document Path: for storing images of documents.  This path is the same for every computer, and there can be only be one folder.  If you have only one computer, then the folder can be local (like C:\FreeDentalData\ ), otherwise it should be a folder shared on the network (like \\server\FreeDentalData\ ).  It must contain the A - Z folders.  ";
+			this.textBox3.Text = @"Document Path: for storing images of documents.  This path is the same for every computer, and there can be only be one folder.  If you have only one computer, then the folder can be local (like C:\OpenDentalData\ ), otherwise it should be a folder shared on the network (like \\server\OpenDentalData\ ).  It must contain the A - Z folders.  ";
 			// 
 			// butBrowseExport
 			// 
-			this.butBrowseExport.Location = new System.Drawing.Point(531, 224);
+			this.butBrowseExport.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butBrowseExport.Location = new System.Drawing.Point(530, 207);
 			this.butBrowseExport.Name = "butBrowseExport";
 			this.butBrowseExport.Size = new System.Drawing.Size(100, 23);
 			this.butBrowseExport.TabIndex = 91;
@@ -124,6 +127,7 @@ namespace OpenDental{
 			// 
 			// buBrowseDoc
 			// 
+			this.buBrowseDoc.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.buBrowseDoc.Location = new System.Drawing.Point(531, 84);
 			this.buBrowseDoc.Name = "buBrowseDoc";
 			this.buBrowseDoc.Size = new System.Drawing.Size(100, 23);
@@ -142,8 +146,7 @@ namespace OpenDental{
 			// FormPath
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(652, 413);
-			this.ControlBox = false;
+			this.ClientSize = new System.Drawing.Size(694, 356);
 			this.Controls.Add(this.butBrowseExport);
 			this.Controls.Add(this.buBrowseDoc);
 			this.Controls.Add(this.textDocPath);
@@ -152,9 +155,12 @@ namespace OpenDental{
 			this.Controls.Add(this.textBox1);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormPath";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Edit Paths";
+			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormPath_Closing);
 			this.Load += new System.EventHandler(this.FormPath_Load);
 			this.ResumeLayout(false);
 
@@ -180,33 +186,38 @@ namespace OpenDental{
 		}
 
 		private void textDocPath_Leave(object sender, System.EventArgs e) {
-			if(!textDocPath.Text.EndsWith(@"\")){
-				textDocPath.Text+=@"\";
-			}
+			//if(textDocPath.Text.EndsWith(@"\")){
+			//	textDocPath.Text=textDocPath.Text.Substring(0,textDocPath.Text.Length-1);
+			//}
 		}
 
 		private void textExportPath_Leave(object sender, System.EventArgs e) {
-			if(!textExportPath.Text.EndsWith(@"\")){
-				textExportPath.Text+=@"\";
-			}
+			//if(textExportPath.Text.EndsWith(@"\")){
+			//	textExportPath.Text=textExportPath.Text.Substring(0,textExportPath.Text.Length-1);
+			//}
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e){
-			//if(
+			if(!textDocPath.Text.EndsWith(@"\")
+				&& !textDocPath.Text.EndsWith(@"/"))
+			{
+				MessageBox.Show(Lan.g(this,"Document Path is not valid."));
+				return;
+			}
 			if(!Directory.Exists(textDocPath.Text)){
 				MessageBox.Show(Lan.g(this,"Document Path is not valid."));
 				return;
     	}
-			if(!Directory.Exists(textDocPath.Text+"A\\")){
+			if(!Directory.Exists(textDocPath.Text+"A")){
 				MessageBox.Show(Lan.g(this,"Document Path is not correct.  Must contain folders A-Z"));
 				return;
 			}
-      CheckIfDocBackup();//checks if new folder is pointing at a backup
-      if(IsBackup){
-				if(MessageBox.Show(Lan.g(this,"You are setting you Image Folder to a Backup Folder.  Do you wish to continue?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
-					return;   
-				} 
-      }
+      //CheckIfDocBackup();//checks if new folder is pointing at a backup
+      //if(IsBackup){
+			//	if(MessageBox.Show(Lan.g(this,"You are setting your Image Folder to a Backup Folder.  Do you wish to continue?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
+			//		return;   
+			//	} 
+      //}
 			Prefs.Cur=(Pref)Prefs.HList["DocPath"];
 			Prefs.Cur.ValueString=textDocPath.Text;
 			Prefs.UpdateCur();      
@@ -220,7 +231,7 @@ namespace OpenDental{
 			DialogResult=DialogResult.OK;
 		}
 
-    private void CheckIfDocBackup(){
+    /*private void CheckIfDocBackup(){
       IsBackup=false;
  			DirectoryInfo dirInfo=new DirectoryInfo(textDocPath.Text);
 			FileInfo[] fi=dirInfo.GetFiles();
@@ -229,15 +240,9 @@ namespace OpenDental{
           IsBackup=true;   
         }
 			}	       
-    }
+    }*/
 
-		private void butCancel_Click(object sender, System.EventArgs e){
-			if(!Directory.Exists(((Pref)Prefs.HList["DocPath"]).ValueString) || !Directory.Exists(((Pref)Prefs.HList["DocPath"]).ValueString+"A\\")){
-				MessageBox.Show(Lan.g(this,"Invalid Document path.  Closing Free Dental."));
-				Application.Exit();
-			}
-			DialogResult=DialogResult.Cancel;
-		}
+		
 
 		private void buBrowseDoc_Click(object sender, System.EventArgs e){
 		  fbDocPath.ShowDialog();
@@ -248,6 +253,21 @@ namespace OpenDental{
 		  fbExportPath.ShowDialog();
       textDocPath.Text=fbExportPath.SelectedPath+@"\";		
 		}
+
+		private void butCancel_Click(object sender, System.EventArgs e){
+			DialogResult=DialogResult.Cancel;
+		}
+
+		private void FormPath_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+			if(DialogResult==DialogResult.OK)
+				return;
+			if(!Directory.Exists(((Pref)Prefs.HList["DocPath"]).ValueString) || !Directory.Exists(((Pref)Prefs.HList["DocPath"]).ValueString+"A\\")){
+				MessageBox.Show(Lan.g(this,"Invalid Document path.  Closing Free Dental."));
+				Application.Exit();
+			}
+		}
+
+
 
 	}
 }

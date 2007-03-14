@@ -20,9 +20,9 @@ namespace OpenDental{
 			HeadingIsPresent=true;
 			InstantClassesPar();
 			SetRowHeight(0,9,14);
-			Heading=Lan.g("tbProcFee","Fees");
-			Fields[0]=Lan.g("tbProcFee","Sched");
-			Fields[1]=Lan.g("tbProcFee","Amount");
+			Heading=Lan.g("TableProcFee","Fees");
+			Fields[0]=Lan.g("TableProcFee","Sched");
+			Fields[1]=Lan.g("TableProcFee","Amount");
 			ColAlign[1]=HorizontalAlignment.Right;
 			ColWidth[0]=90;
 			ColWidth[1]=60;

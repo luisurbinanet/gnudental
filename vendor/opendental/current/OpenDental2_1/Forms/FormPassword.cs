@@ -16,7 +16,6 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butOK;
 		private System.Windows.Forms.TextBox textUser;
 		private System.Windows.Forms.TextBox textPassword;
-		private System.Windows.Forms.Button butReset;
 		private System.ComponentModel.Container components = null;
 
 		public FormPassword(){
@@ -50,7 +49,6 @@ namespace OpenDental{
 			this.label8 = new System.Windows.Forms.Label();
 			this.butCancel = new System.Windows.Forms.Button();
 			this.butOK = new System.Windows.Forms.Button();
-			this.butReset = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// textUser
@@ -93,43 +91,40 @@ namespace OpenDental{
 			// butCancel
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.Location = new System.Drawing.Point(296, 102);
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butCancel.Location = new System.Drawing.Point(296, 106);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 39;
 			this.butCancel.Text = "Cancel";
+			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(296, 74);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 38;
 			this.butOK.Text = "OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
-			// 
-			// butReset
-			// 
-			this.butReset.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.butReset.ForeColor = System.Drawing.SystemColors.Control;
-			this.butReset.Location = new System.Drawing.Point(-2, 122);
-			this.butReset.Name = "butReset";
-			this.butReset.Size = new System.Drawing.Size(24, 23);
-			this.butReset.TabIndex = 40;
-			this.butReset.Click += new System.EventHandler(this.butReset_Click);
 			// 
 			// FormPassword
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(386, 142);
-			this.ControlBox = false;
-			this.Controls.Add(this.butReset);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.textUser);
 			this.Controls.Add(this.textPassword);
 			this.Controls.Add(this.label10);
 			this.Controls.Add(this.label8);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormPassword";
+			this.ShowInTaskbar = false;
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Verify Password";
@@ -153,12 +148,6 @@ namespace OpenDental{
 			SecurityLogs.MakeLogEntry("Failed Login","User: "+textUser.Text);
 		}
 
-		private void butReset_Click(object sender, System.EventArgs e) {
-			FormPasswordReset FormPR=new FormPasswordReset();
-			FormPR.ShowDialog();
-			DialogResult=DialogResult.OK;
-		}
-
 		private void butOK_Click(object sender, System.EventArgs e) {
 			//MessageBox.Show(Users.List.Length.ToString());
 			//DialogResult=DialogResult.OK;
@@ -180,6 +169,10 @@ namespace OpenDental{
 				ShowInvalid();
 				return;				
 			}
+		}
+
+		private void butCancel_Click(object sender, System.EventArgs e) {
+		
 		}
 
 

@@ -171,6 +171,7 @@ namespace OpenDental{
 			// 
 			// checkIsHidden
 			// 
+			this.checkIsHidden.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkIsHidden.Location = new System.Drawing.Point(76, 32);
 			this.checkIsHidden.Name = "checkIsHidden";
 			this.checkIsHidden.Size = new System.Drawing.Size(70, 18);
@@ -179,6 +180,7 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(720, 550);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 35;
@@ -187,6 +189,7 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(720, 522);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 34;
@@ -206,6 +209,7 @@ namespace OpenDental{
 			// 
 			// butNone
 			// 
+			this.butNone.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butNone.Location = new System.Drawing.Point(102, 440);
 			this.butNone.Name = "butNone";
 			this.butNone.TabIndex = 38;
@@ -214,6 +218,7 @@ namespace OpenDental{
 			// 
 			// butAll
 			// 
+			this.butAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butAll.Location = new System.Drawing.Point(14, 440);
 			this.butAll.Name = "butAll";
 			this.butAll.TabIndex = 37;
@@ -229,6 +234,7 @@ namespace OpenDental{
 			this.groupSecurity.Controls.Add(this.label9);
 			this.groupSecurity.Controls.Add(this.butAll);
 			this.groupSecurity.Controls.Add(this.butNone);
+			this.groupSecurity.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupSecurity.Location = new System.Drawing.Point(406, 32);
 			this.groupSecurity.Name = "groupSecurity";
 			this.groupSecurity.Size = new System.Drawing.Size(390, 470);
@@ -240,7 +246,6 @@ namespace OpenDental{
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(814, 592);
-			this.ControlBox = false;
 			this.Controls.Add(this.groupSecurity);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
@@ -251,10 +256,14 @@ namespace OpenDental{
 			this.Controls.Add(this.label10);
 			this.Controls.Add(this.label8);
 			this.Controls.Add(this.label7);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormEmployeeEdit";
+			this.ShowInTaskbar = false;
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Employee Edit";
+			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormEmployeeEdit_Closing);
 			this.Load += new System.EventHandler(this.FormEmployeeEdit_Load);
 			this.groupSecurity.ResumeLayout(false);
 			this.ResumeLayout(false);
@@ -411,11 +420,16 @@ namespace OpenDental{
 		}
 
 		private void butCancel_Click(object sender, System.EventArgs e) {
+			DialogResult=DialogResult.Cancel;
+		}
+
+		private void FormEmployeeEdit_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+			if(DialogResult==DialogResult.OK)
+				return;
 			if(IsNew){
 				UserPermissions.DeleteAllForEmp(Employees.Cur.EmployeeNum);
 				Employees.DeleteCur();
 			}
-			DialogResult=DialogResult.Cancel;
 		}
 
 		

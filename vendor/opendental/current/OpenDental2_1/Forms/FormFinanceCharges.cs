@@ -95,6 +95,7 @@ namespace OpenDental{
 			this.groupBox1.Controls.Add(this.radio30);
 			this.groupBox1.Controls.Add(this.radio90);
 			this.groupBox1.Controls.Add(this.radio60);
+			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupBox1.Location = new System.Drawing.Point(24, 90);
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.Size = new System.Drawing.Size(144, 98);
@@ -104,6 +105,7 @@ namespace OpenDental{
 			// 
 			// radio30
 			// 
+			this.radio30.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radio30.Location = new System.Drawing.Point(12, 24);
 			this.radio30.Name = "radio30";
 			this.radio30.Size = new System.Drawing.Size(104, 16);
@@ -113,6 +115,7 @@ namespace OpenDental{
 			// radio90
 			// 
 			this.radio90.Checked = true;
+			this.radio90.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radio90.Location = new System.Drawing.Point(12, 70);
 			this.radio90.Name = "radio90";
 			this.radio90.Size = new System.Drawing.Size(104, 18);
@@ -122,6 +125,7 @@ namespace OpenDental{
 			// 
 			// radio60
 			// 
+			this.radio60.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radio60.Location = new System.Drawing.Point(12, 46);
 			this.radio60.Name = "radio60";
 			this.radio60.Size = new System.Drawing.Size(104, 18);
@@ -130,14 +134,16 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
-			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(510, 258);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 19;
 			this.butCancel.Text = "Cancel";
+			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(510, 224);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 18;
@@ -211,7 +217,10 @@ namespace OpenDental{
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormFinanceCharges";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Finance Charges";
 			this.Load += new System.EventHandler(this.FormFinanceCharges_Load);
@@ -297,7 +306,7 @@ namespace OpenDental{
 						[(int)ALPosIndices[listAdjType.SelectedIndex]].DefNum;
 					Adjustments.Cur.AdjNote="Finance Charge";
 					Adjustments.Cur.AdjAmt=Math.Round(((PIn.PDouble(textAPR.Text) * .01 / 12) * OverallBalance),2);
-
+					Adjustments.Cur.ProvNum=Patients.AgingList[i].PriProv;
 					Adjustments.InsertCur();
 				}
 			}
@@ -316,6 +325,10 @@ namespace OpenDental{
 			DataValid2.SetInvalid();
 			MessageBox.Show(Lan.g(this,"Finance Charges Added."));
 			DialogResult=DialogResult.OK;
+		}
+
+		private void butCancel_Click(object sender, System.EventArgs e) {
+			DialogResult=DialogResult.Cancel;
 		}
 
 	}

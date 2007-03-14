@@ -31,8 +31,8 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label7;
 		private System.Windows.Forms.PrintDialog printDialog2;
 		private System.Drawing.Printing.PrintDocument pd2;
-		private System.Windows.Forms.Button butPrint;
 		public bool IsNew;
+		private OpenDental.XPButton butPrint;
     public FormRpPrintPreview pView = new FormRpPrintPreview();
 
 		public FormRxEdit(){
@@ -87,21 +87,25 @@ namespace OpenDental{
 			this.label7 = new System.Windows.Forms.Label();
 			this.printDialog2 = new System.Windows.Forms.PrintDialog();
 			this.pd2 = new System.Drawing.Printing.PrintDocument();
-			this.butPrint = new System.Windows.Forms.Button();
+			this.butPrint = new OpenDental.XPButton();
 			this.SuspendLayout();
 			// 
 			// butCancel
 			// 
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(618, 424);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 9;
 			this.butCancel.Text = "Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(618, 384);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 8;
 			this.butOK.Text = "OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
@@ -230,12 +234,17 @@ namespace OpenDental{
 			// 
 			// butPrint
 			// 
+			this.butPrint.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butPrint.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butPrint.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butPrint.BtnStyle = OpenDental.enumType.XPStyle.Silver;
 			this.butPrint.Image = ((System.Drawing.Image)(resources.GetObject("butPrint.Image")));
 			this.butPrint.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butPrint.Location = new System.Drawing.Point(496, 424);
+			this.butPrint.Location = new System.Drawing.Point(491, 424);
 			this.butPrint.Name = "butPrint";
-			this.butPrint.TabIndex = 7;
-			this.butPrint.Text = "    Print";
+			this.butPrint.Size = new System.Drawing.Size(79, 26);
+			this.butPrint.TabIndex = 29;
+			this.butPrint.Text = "Print";
 			this.butPrint.Click += new System.EventHandler(this.butPrint_Click);
 			// 
 			// FormRxEdit
@@ -259,7 +268,10 @@ namespace OpenDental{
 			this.Controls.Add(this.label4);
 			this.Controls.Add(this.label3);
 			this.Controls.Add(this.label1);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormRxEdit";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Edit Rx";
 			this.Load += new System.EventHandler(this.FormRxEdit_Load);

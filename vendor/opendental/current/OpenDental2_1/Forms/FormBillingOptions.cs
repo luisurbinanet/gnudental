@@ -11,7 +11,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butCancel;
 		private System.Windows.Forms.Button butOK;
 		private System.Windows.Forms.GroupBox groupBox1;
-		private FormQuery FormQuery2;
+		//private FormQuery FormQuery2;
 		private System.Windows.Forms.ListBox listBillType;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.RadioButton radio30;
@@ -75,6 +75,7 @@ namespace OpenDental{
 			// butCancel
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(472, 413);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(102, 23);
@@ -83,6 +84,7 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(472, 379);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(102, 23);
@@ -105,6 +107,7 @@ namespace OpenDental{
 			// 
 			// radio30
 			// 
+			this.radio30.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radio30.Location = new System.Drawing.Point(12, 44);
 			this.radio30.Name = "radio30";
 			this.radio30.Size = new System.Drawing.Size(104, 16);
@@ -113,6 +116,7 @@ namespace OpenDental{
 			// 
 			// radio90
 			// 
+			this.radio90.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radio90.Location = new System.Drawing.Point(12, 90);
 			this.radio90.Name = "radio90";
 			this.radio90.Size = new System.Drawing.Size(104, 18);
@@ -121,6 +125,7 @@ namespace OpenDental{
 			// 
 			// radio60
 			// 
+			this.radio60.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radio60.Location = new System.Drawing.Point(12, 66);
 			this.radio60.Name = "radio60";
 			this.radio60.Size = new System.Drawing.Size(104, 18);
@@ -130,6 +135,7 @@ namespace OpenDental{
 			// radioAny
 			// 
 			this.radioAny.Checked = true;
+			this.radioAny.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioAny.Location = new System.Drawing.Point(12, 20);
 			this.radioAny.Name = "radioAny";
 			this.radioAny.Size = new System.Drawing.Size(104, 18);
@@ -155,6 +161,7 @@ namespace OpenDental{
 			// 
 			// butAll
 			// 
+			this.butAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butAll.Location = new System.Drawing.Point(417, 236);
 			this.butAll.Name = "butAll";
 			this.butAll.TabIndex = 15;
@@ -163,6 +170,7 @@ namespace OpenDental{
 			// 
 			// checkBadAddress
 			// 
+			this.checkBadAddress.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkBadAddress.Location = new System.Drawing.Point(51, 207);
 			this.checkBadAddress.Name = "checkBadAddress";
 			this.checkBadAddress.Size = new System.Drawing.Size(251, 22);
@@ -171,6 +179,7 @@ namespace OpenDental{
 			// 
 			// checkExcludeNegative
 			// 
+			this.checkExcludeNegative.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkExcludeNegative.Location = new System.Drawing.Point(51, 250);
 			this.checkExcludeNegative.Name = "checkExcludeNegative";
 			this.checkExcludeNegative.Size = new System.Drawing.Size(251, 18);
@@ -188,6 +197,7 @@ namespace OpenDental{
 			// 
 			// butSaveDefault
 			// 
+			this.butSaveDefault.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butSaveDefault.Location = new System.Drawing.Point(50, 406);
 			this.butSaveDefault.Name = "butSaveDefault";
 			this.butSaveDefault.Size = new System.Drawing.Size(119, 23);
@@ -218,7 +228,10 @@ namespace OpenDental{
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormBillingOptions";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Billing Options";
 			this.Load += new System.EventHandler(this.FormBillingOptions_Load);

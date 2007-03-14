@@ -68,6 +68,7 @@ namespace OpenDental{
 			// butCancel
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(523, 328);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 4;
@@ -75,6 +76,7 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(523, 296);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 3;
@@ -92,6 +94,7 @@ namespace OpenDental{
 			// 
 			// radioRange
 			// 
+			this.radioRange.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioRange.Location = new System.Drawing.Point(8, 32);
 			this.radioRange.Name = "radioRange";
 			this.radioRange.Size = new System.Drawing.Size(88, 24);
@@ -101,6 +104,7 @@ namespace OpenDental{
 			// radioSingle
 			// 
 			this.radioSingle.Checked = true;
+			this.radioSingle.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioSingle.Location = new System.Drawing.Point(8, 8);
 			this.radioSingle.Name = "radioSingle";
 			this.radioSingle.Size = new System.Drawing.Size(88, 24);
@@ -141,7 +145,10 @@ namespace OpenDental{
 			this.Controls.Add(this.date2);
 			this.Controls.Add(this.date1);
 			this.Controls.Add(this.labelTO);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormRpClaimNotSent";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Claims Not Sent Report";
 			this.Load += new System.EventHandler(this.FormClaimNotSent_Load);
@@ -158,7 +165,7 @@ namespace OpenDental{
 		private void butOK_Click(object sender, System.EventArgs e) {
 			Queries.CurReport=new Report();
 
-			Queries.CurReport.Query="SELECT claim.dateservice,claim.claimnum,claim.priclaimnum,claim.claimstatus,"
+			Queries.CurReport.Query="SELECT claim.dateservice,claim.claimnum,claim.claimtype,claim.claimstatus,"
 				+"CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI),insplan.carrier,claim.claimfee "
 				+"FROM patient,claim,insplan "
 				+"WHERE patient.patnum=claim.patnum && insplan.plannum=claim.plannum "
@@ -182,12 +189,15 @@ namespace OpenDental{
 			Queries.CurReport.ColTotal=new double[Queries.TableQ.Columns.Count];
 			for(int i=0;i<Queries.TableTemp.Rows.Count;i++){//loop through data rows
 				DataRow row=Queries.TableQ.NewRow();//create new row called 'row' based on structure of TableQ
-				row[0]=(PIn.PDate(Queries.TableTemp.Rows[i][0].ToString())).ToString("d");  //claim dateservice
-        if(PIn.PInt(Queries.TableTemp.Rows[i][1].ToString()) 
-					== PIn.PInt(Queries.TableTemp.Rows[i][2].ToString()))
+				row[0]=(PIn.PDate(Queries.TableTemp.Rows[i][0].ToString())).ToShortDateString();//claim dateservice
+        if(PIn.PString(Queries.TableTemp.Rows[i][2].ToString())=="P")
           row[1]="Primary";
-				else
-					row[1]="Secondary";
+				if(PIn.PString(Queries.TableTemp.Rows[i][2].ToString())=="S")
+          row[1]="Secondary";
+				if(PIn.PString(Queries.TableTemp.Rows[i][2].ToString())=="PreAuth")
+          row[1]="PreAuth";
+				if(PIn.PString(Queries.TableTemp.Rows[i][2].ToString())=="Other")
+          row[1]="Other";
 				if (Queries.TableTemp.Rows[i][3].ToString().Equals("H"))
 				  row[2]="Holding";//Claim Status
 				else
@@ -222,7 +232,7 @@ namespace OpenDental{
 	    Queries.CurReport.ColPos[5]=645;
 			Queries.CurReport.ColPos[6]=770;
 			Queries.CurReport.ColCaption[0]="Date";
-			Queries.CurReport.ColCaption[1]="Pri/Sec";
+			Queries.CurReport.ColCaption[1]="Type";
 			Queries.CurReport.ColCaption[2]="Claim Status";
 			Queries.CurReport.ColCaption[3]="Patient Name";
 			Queries.CurReport.ColCaption[4]="Insurance Carrier";

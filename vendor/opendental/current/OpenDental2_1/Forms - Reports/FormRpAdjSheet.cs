@@ -61,13 +61,16 @@ namespace OpenDental{
 			// butCancel
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(523, 328);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 4;
 			this.butCancel.Text = "Cancel";
+			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(523, 296);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 3;
@@ -85,6 +88,7 @@ namespace OpenDental{
 			// 
 			// radioRange
 			// 
+			this.radioRange.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioRange.Location = new System.Drawing.Point(8, 32);
 			this.radioRange.Name = "radioRange";
 			this.radioRange.Size = new System.Drawing.Size(88, 24);
@@ -94,6 +98,7 @@ namespace OpenDental{
 			// radioSingle
 			// 
 			this.radioSingle.Checked = true;
+			this.radioSingle.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioSingle.Location = new System.Drawing.Point(8, 8);
 			this.radioSingle.Name = "radioSingle";
 			this.radioSingle.Size = new System.Drawing.Size(88, 24);
@@ -134,7 +139,10 @@ namespace OpenDental{
 			this.Controls.Add(this.date2);
 			this.Controls.Add(this.date1);
 			this.Controls.Add(this.labelTO);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormRpAdjSheet";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Daily Adjustment Report";
 			this.Load += new System.EventHandler(this.FormDailyAdjustment_Load);
@@ -211,6 +219,10 @@ namespace OpenDental{
 				date2.Visible=true;
 				labelTO.Visible=true;
 			}			
+		}
+
+		private void butCancel_Click(object sender, System.EventArgs e) {
+		
 		}
 	}
 }

@@ -8,17 +8,17 @@ namespace OpenDental{
 
 	public class FormApptsOther : System.Windows.Forms.Form{
 		private System.Windows.Forms.CheckBox checkDone;
-		private System.Windows.Forms.Button butPin;
-		private System.Windows.Forms.Button butNew;
 		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.Button butCancel;
 		private System.Windows.Forms.TextBox textRecallDue;
 		private System.ComponentModel.Container components = null;
 		private OpenDental.TableApptsOther tbApts;
-		private System.Windows.Forms.Button butGoTo;
 		public OtherResult oResult;
 		private System.Windows.Forms.TextBox textApptModNote;
 		private System.Windows.Forms.Label label1;
+		private OpenDental.XPButton butGoTo;
+		private OpenDental.XPButton butPin;
+		private OpenDental.XPButton butNew;
 		public bool InitialClick;
 
 		public FormApptsOther(){
@@ -51,19 +51,20 @@ namespace OpenDental{
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormApptsOther));
 			this.checkDone = new System.Windows.Forms.CheckBox();
 			this.tbApts = new OpenDental.TableApptsOther();
-			this.butPin = new System.Windows.Forms.Button();
 			this.butCancel = new System.Windows.Forms.Button();
-			this.butNew = new System.Windows.Forms.Button();
 			this.textRecallDue = new System.Windows.Forms.TextBox();
 			this.label4 = new System.Windows.Forms.Label();
-			this.butGoTo = new System.Windows.Forms.Button();
 			this.textApptModNote = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
+			this.butGoTo = new OpenDental.XPButton();
+			this.butPin = new OpenDental.XPButton();
+			this.butNew = new OpenDental.XPButton();
 			this.SuspendLayout();
 			// 
 			// checkDone
 			// 
 			this.checkDone.AutoCheck = false;
+			this.checkDone.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkDone.ImeMode = System.Windows.Forms.ImeMode.NoControl;
 			this.checkDone.Location = new System.Drawing.Point(30, 54);
 			this.checkDone.Name = "checkDone";
@@ -77,45 +78,23 @@ namespace OpenDental{
 			this.tbApts.BackColor = System.Drawing.SystemColors.Window;
 			this.tbApts.Location = new System.Drawing.Point(28, 80);
 			this.tbApts.Name = "tbApts";
-			this.tbApts.SelectionMode = SelectionMode.One;//OpenDental.SelectRowsMode.OneToggle;
+			this.tbApts.SelectedIndices = new int[0];
+			this.tbApts.SelectionMode = System.Windows.Forms.SelectionMode.One;
 			this.tbApts.Size = new System.Drawing.Size(869, 492);
 			this.tbApts.TabIndex = 2;
 			this.tbApts.TabStop = false;
 			// 
-			// butPin
-			// 
-			this.butPin.Image = ((System.Drawing.Image)(resources.GetObject("butPin.Image")));
-			this.butPin.ImageAlign = System.Drawing.ContentAlignment.BottomLeft;
-			this.butPin.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-			this.butPin.Location = new System.Drawing.Point(496, 618);
-			this.butPin.Name = "butPin";
-			this.butPin.Size = new System.Drawing.Size(133, 28);
-			this.butPin.TabIndex = 1;
-			this.butPin.Text = "          Copy to Pinboard";
-			this.butPin.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butPin.Click += new System.EventHandler(this.butPin_Click);
-			// 
 			// butCancel
 			// 
+			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.ImeMode = System.Windows.Forms.ImeMode.NoControl;
 			this.butCancel.Location = new System.Drawing.Point(834, 618);
 			this.butCancel.Name = "butCancel";
-			this.butCancel.Size = new System.Drawing.Size(75, 28);
+			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 3;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
-			// 
-			// butNew
-			// 
-			this.butNew.Image = ((System.Drawing.Image)(resources.GetObject("butNew.Image")));
-			this.butNew.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butNew.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-			this.butNew.Location = new System.Drawing.Point(648, 618);
-			this.butNew.Name = "butNew";
-			this.butNew.Size = new System.Drawing.Size(100, 28);
-			this.butNew.TabIndex = 2;
-			this.butNew.Text = "        Create New";
-			this.butNew.Click += new System.EventHandler(this.butNew_Click);
 			// 
 			// textRecallDue
 			// 
@@ -137,19 +116,6 @@ namespace OpenDental{
 			this.label4.Text = "Recall Due Date";
 			this.label4.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			this.label4.Visible = false;
-			// 
-			// butGoTo
-			// 
-			this.butGoTo.Image = ((System.Drawing.Image)(resources.GetObject("butGoTo.Image")));
-			this.butGoTo.ImageAlign = System.Drawing.ContentAlignment.BottomLeft;
-			this.butGoTo.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-			this.butGoTo.Location = new System.Drawing.Point(382, 618);
-			this.butGoTo.Name = "butGoTo";
-			this.butGoTo.Size = new System.Drawing.Size(98, 28);
-			this.butGoTo.TabIndex = 0;
-			this.butGoTo.Text = "         Go To Appt";
-			this.butGoTo.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butGoTo.Click += new System.EventHandler(this.butGoTo_Click);
 			// 
 			// textApptModNote
 			// 
@@ -175,24 +141,71 @@ namespace OpenDental{
 			this.label1.Text = "Appointment Module Note";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
+			// butGoTo
+			// 
+			this.butGoTo.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butGoTo.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butGoTo.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butGoTo.Image = ((System.Drawing.Image)(resources.GetObject("butGoTo.Image")));
+			this.butGoTo.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butGoTo.Location = new System.Drawing.Point(411, 618);
+			this.butGoTo.Name = "butGoTo";
+			this.butGoTo.Size = new System.Drawing.Size(106, 26);
+			this.butGoTo.TabIndex = 46;
+			this.butGoTo.Text = "Go To Appt";
+			this.butGoTo.Click += new System.EventHandler(this.butGoTo_Click);
+			// 
+			// butPin
+			// 
+			this.butPin.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butPin.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butPin.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butPin.Image = ((System.Drawing.Image)(resources.GetObject("butPin.Image")));
+			this.butPin.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butPin.Location = new System.Drawing.Point(532, 618);
+			this.butPin.Name = "butPin";
+			this.butPin.Size = new System.Drawing.Size(134, 26);
+			this.butPin.TabIndex = 47;
+			this.butPin.Text = "Copy To Pinboard";
+			this.butPin.Click += new System.EventHandler(this.butPin_Click);
+			// 
+			// butNew
+			// 
+			this.butNew.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butNew.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butNew.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butNew.Image = ((System.Drawing.Image)(resources.GetObject("butNew.Image")));
+			this.butNew.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butNew.Location = new System.Drawing.Point(681, 618);
+			this.butNew.Name = "butNew";
+			this.butNew.Size = new System.Drawing.Size(106, 26);
+			this.butNew.TabIndex = 48;
+			this.butNew.Text = "Create New";
+			this.butNew.Click += new System.EventHandler(this.butNew_Click);
+			// 
 			// FormApptsOther
 			// 
+			this.AcceptButton = this.butCancel;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(924, 658);
-			this.ControlBox = false;
+			this.Controls.Add(this.butNew);
+			this.Controls.Add(this.butPin);
+			this.Controls.Add(this.butGoTo);
 			this.Controls.Add(this.textApptModNote);
 			this.Controls.Add(this.textRecallDue);
 			this.Controls.Add(this.label1);
-			this.Controls.Add(this.butGoTo);
 			this.Controls.Add(this.label4);
-			this.Controls.Add(this.butNew);
-			this.Controls.Add(this.butPin);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.tbApts);
 			this.Controls.Add(this.checkDone);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormApptsOther";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = Lan.g(this,"Other Appointments");
+			this.Text = "Other Appointments";
+			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormApptsOther_Closing);
 			this.Load += new System.EventHandler(this.FormApptsOther_Load);
 			this.ResumeLayout(false);
 
@@ -253,7 +266,7 @@ namespace OpenDental{
 				}
 				tbApts.Cell[1,i]=Appointments.ListOth[i].AptStatus.ToString();
 					//Defs.GetName(DefCat.RecallUnschedStatus,Appointments.List[i].UnschedStatus);
-				if(Appointments.ListOth[i].AptDateTime.CompareTo(DateTime.Parse("1/1/1880")) > 0){
+				if(Appointments.ListOth[i].AptDateTime.Year > 1880){
 					tbApts.Cell[2,i]=Appointments.ListOth[i].AptDateTime.ToString("d");
         }
 				else{
@@ -302,7 +315,7 @@ namespace OpenDental{
 				oResult=OtherResult.NewToPinBoard;
 //fix: will have to include a way to delete appt if user clears pinboard
 			}
-			Close();
+			DialogResult=DialogResult.OK;
 		}
 
 		private void butPin_Click(object sender, System.EventArgs e) {
@@ -346,7 +359,8 @@ namespace OpenDental{
 			}
 			CreateCurInfo(false);
 			oResult=OtherResult.CopyToPinBoard;
-			Close();
+			Appointments.ListOth=null;
+			DialogResult=DialogResult.OK;
 		}
 
 		private void CreateCurInfo(bool isNew){
@@ -382,12 +396,19 @@ namespace OpenDental{
 				return;
 			}
 			oResult=OtherResult.GoTo;
-			Close();
+			Appointments.ListOth=null;
+			DialogResult=DialogResult.OK;
 		}
 
 		private void butCancel_Click(object sender, System.EventArgs e) {
+			DialogResult=DialogResult.Cancel;
+		}
+
+		private void FormApptsOther_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+			if(DialogResult==DialogResult.OK)
+				return;
 			oResult=OtherResult.Cancel;
-			Close();
+			Appointments.ListOth=null;
 		}
 
 	}

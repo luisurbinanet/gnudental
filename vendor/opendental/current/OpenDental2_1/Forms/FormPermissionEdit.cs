@@ -62,6 +62,7 @@ namespace OpenDental{
 			// butCancel
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(464, 218);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 37;
@@ -70,6 +71,7 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(464, 190);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 36;
@@ -97,6 +99,7 @@ namespace OpenDental{
 			// 
 			// checkRequire
 			// 
+			this.checkRequire.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkRequire.Location = new System.Drawing.Point(0, 46);
 			this.checkRequire.Name = "checkRequire";
 			this.checkRequire.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
@@ -148,7 +151,6 @@ namespace OpenDental{
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(554, 254);
-			this.ControlBox = false;
 			this.Controls.Add(this.label3);
 			this.Controls.Add(this.textDays);
 			this.Controls.Add(this.textDate);
@@ -159,7 +161,10 @@ namespace OpenDental{
 			this.Controls.Add(this.label10);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormPermissionEdit";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Edit Permission";
 			this.Load += new System.EventHandler(this.FormPermissionEdit_Load);

@@ -71,6 +71,7 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(594, 301);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 4;
@@ -79,6 +80,7 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(594, 259);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 3;
@@ -202,7 +204,10 @@ namespace OpenDental{
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.butCancel);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormRecallSetup";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Setup Recall";
 			this.Load += new System.EventHandler(this.FormRecallSetup_Load);

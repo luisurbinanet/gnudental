@@ -89,6 +89,7 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(498, 345);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 2;
@@ -97,6 +98,7 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(498, 383);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 3;
@@ -263,7 +265,10 @@ namespace OpenDental{
 			this.Controls.Add(this.trackQ);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormScannerSetup";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Scanner Setup";
 			this.Load += new System.EventHandler(this.FormScannerSetup_Load);

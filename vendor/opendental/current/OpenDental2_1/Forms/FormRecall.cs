@@ -1,5 +1,5 @@
 /*=============================================================================================================
-FreeDental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
+Open Dental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
 See header in FormOpenDental.cs for complete text.  Redistributions must retain this text.
 ===============================================================================================================*/
 using System;
@@ -29,6 +29,7 @@ namespace OpenDental{
 		public static RecallItem Cur;
 		public bool PinClicked=false;
 		private System.Windows.Forms.Button butReport;
+		private System.Windows.Forms.TextBox textBox1;
 		private Appointments Appointments=new Appointments();
 
 		public FormRecall(){
@@ -75,15 +76,17 @@ namespace OpenDental{
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
 			this.listProcs = new System.Windows.Forms.ListBox();
 			this.butReport = new System.Windows.Forms.Button();
+			this.textBox1 = new System.Windows.Forms.TextBox();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// butClose
 			// 
+			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butClose.Location = new System.Drawing.Point(626, 668);
 			this.butClose.Name = "butClose";
-			this.butClose.Size = new System.Drawing.Size(75, 27);
+			this.butClose.Size = new System.Drawing.Size(75, 26);
 			this.butClose.TabIndex = 2;
 			this.butClose.Text = "Close";
 			this.butClose.Click += new System.EventHandler(this.butClose_Click);
@@ -95,11 +98,12 @@ namespace OpenDental{
 			this.tbMain.Name = "tbMain";
 			this.tbMain.SelectedIndices = new int[0];
 			this.tbMain.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-			this.tbMain.Size = new System.Drawing.Size(429, 638);
+			this.tbMain.Size = new System.Drawing.Size(444, 638);
 			this.tbMain.TabIndex = 0;
 			// 
 			// butRefresh
 			// 
+			this.butRefresh.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butRefresh.Location = new System.Drawing.Point(13, 111);
 			this.butRefresh.Name = "butRefresh";
 			this.butRefresh.TabIndex = 2;
@@ -115,6 +119,7 @@ namespace OpenDental{
 			this.groupBox1.Controls.Add(this.label2);
 			this.groupBox1.Controls.Add(this.label1);
 			this.groupBox1.Controls.Add(this.butRefresh);
+			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupBox1.Location = new System.Drawing.Point(501, 30);
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.Size = new System.Drawing.Size(200, 145);
@@ -148,6 +153,7 @@ namespace OpenDental{
 			// 
 			// butSave
 			// 
+			this.butSave.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butSave.Location = new System.Drawing.Point(96, 111);
 			this.butSave.Name = "butSave";
 			this.butSave.Size = new System.Drawing.Size(94, 23);
@@ -176,29 +182,42 @@ namespace OpenDental{
 			// groupBox2
 			// 
 			this.groupBox2.Controls.Add(this.listProcs);
+			this.groupBox2.Controls.Add(this.textBox1);
+			this.groupBox2.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupBox2.Location = new System.Drawing.Point(501, 325);
 			this.groupBox2.Name = "groupBox2";
-			this.groupBox2.Size = new System.Drawing.Size(158, 289);
+			this.groupBox2.Size = new System.Drawing.Size(158, 306);
 			this.groupBox2.TabIndex = 12;
 			this.groupBox2.TabStop = false;
-			this.groupBox2.Text = "Procedures that Trigger Recall - You can change these in procedure code setup";
 			// 
 			// listProcs
 			// 
 			this.listProcs.BackColor = System.Drawing.SystemColors.Control;
-			this.listProcs.Location = new System.Drawing.Point(16, 69);
+			this.listProcs.Location = new System.Drawing.Point(14, 91);
 			this.listProcs.Name = "listProcs";
 			this.listProcs.SelectionMode = System.Windows.Forms.SelectionMode.None;
-			this.listProcs.Size = new System.Drawing.Size(124, 199);
+			this.listProcs.Size = new System.Drawing.Size(130, 199);
 			this.listProcs.TabIndex = 0;
 			// 
 			// butReport
 			// 
+			this.butReport.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butReport.Location = new System.Drawing.Point(501, 235);
 			this.butReport.Name = "butReport";
 			this.butReport.TabIndex = 13;
 			this.butReport.Text = "Run Report";
 			this.butReport.Click += new System.EventHandler(this.butReport_Click);
+			// 
+			// textBox1
+			// 
+			this.textBox1.BackColor = System.Drawing.SystemColors.Control;
+			this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.textBox1.Location = new System.Drawing.Point(14, 12);
+			this.textBox1.Multiline = true;
+			this.textBox1.Name = "textBox1";
+			this.textBox1.Size = new System.Drawing.Size(139, 69);
+			this.textBox1.TabIndex = 14;
+			this.textBox1.Text = "Procedures that Trigger Recall - You can change these in procedure code setup";
 			// 
 			// FormRecall
 			// 
@@ -209,7 +228,10 @@ namespace OpenDental{
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.tbMain);
 			this.Controls.Add(this.butClose);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormRecall";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Recall List";
 			this.Load += new System.EventHandler(this.FormRecall_Load);
@@ -397,7 +419,7 @@ namespace OpenDental{
 		}
 
 		private void butClose_Click(object sender, System.EventArgs e) {
-			DialogResult=DialogResult.OK;
+			Close();
 		}
 
 		private void butReport_Click(object sender, System.EventArgs e) {

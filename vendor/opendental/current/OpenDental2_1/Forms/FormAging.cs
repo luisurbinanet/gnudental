@@ -65,17 +65,19 @@ namespace OpenDental{
 			// butCancel
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(474, 238);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 15;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(474, 204);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 14;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// textBox1
@@ -96,6 +98,7 @@ Depending on the size of your database, it could take a few minutes.   The resul
 			// FormAging
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(566, 274);
 			this.Controls.Add(this.textBox1);
 			this.Controls.Add(this.textDate);
@@ -125,7 +128,7 @@ Depending on the size of your database, it could take a few minutes.   The resul
 			for(int i=0;i<Ledgers.AllGuarantors.Length;i++){
 				Ledgers.ComputeAging(Ledgers.AllGuarantors[i],Ledgers.GetClosestFirst(DateTime.Today));
 				Patients.UpdateAging(Ledgers.AllGuarantors[i],Ledgers.Bal[0],Ledgers.Bal[1],Ledgers.Bal[2]
-					,Ledgers.Bal[3],Ledgers.InsEst);
+					,Ledgers.Bal[3],Ledgers.InsEst,Ledgers.BalTotal);
 			}
 			Prefs.Cur=(Pref)Prefs.HList["DateLastAging"];
 			Prefs.Cur.ValueString=POut.PDate(Ledgers.GetClosestFirst(DateTime.Today));

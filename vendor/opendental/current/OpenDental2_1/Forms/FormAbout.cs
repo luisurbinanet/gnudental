@@ -11,6 +11,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butClose;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.Button butReset;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Label label4;
 		private System.ComponentModel.Container components = null;
@@ -19,7 +20,7 @@ namespace OpenDental{
 			InitializeComponent();
 			Lan.C(this, new System.Windows.Forms.Control[] {
 				this.labelVersion,
-				//butReset,
+				butReset,
 			});
 			Lan.C("All", new System.Windows.Forms.Control[] {
 				butClose,
@@ -42,6 +43,7 @@ namespace OpenDental{
 			this.butClose = new System.Windows.Forms.Button();
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
+			this.butReset = new System.Windows.Forms.Button();
 			this.label3 = new System.Windows.Forms.Label();
 			this.label4 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
@@ -61,7 +63,8 @@ namespace OpenDental{
 			this.butClose.Location = new System.Drawing.Point(305, 383);
 			this.butClose.Name = "butClose";
 			this.butClose.TabIndex = 2;
-			this.butClose.Text = "Close";
+			this.butClose.Text = "&Close";
+			this.butClose.Click += new System.EventHandler(this.butClose_Click);
 			// 
 			// label1
 			// 
@@ -70,7 +73,7 @@ namespace OpenDental{
 			this.label1.Size = new System.Drawing.Size(665, 23);
 			this.label1.TabIndex = 3;
 			this.label1.Text = "Open Dental (AKA Free Dental)  Copyright 2003, Jordan S. Sparks, D.M.D., www.open" +
-				"-dent.com";
+				"-dent.com  1-877-686-1248";
 			// 
 			// label2
 			// 
@@ -79,6 +82,16 @@ namespace OpenDental{
 			this.label2.Size = new System.Drawing.Size(652, 20);
 			this.label2.TabIndex = 4;
 			this.label2.Text = "ByteFX, the data driver - Copyright 2003, www.bytefx.com";
+			// 
+			// butReset
+			// 
+			this.butReset.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.butReset.ForeColor = System.Drawing.SystemColors.Control;
+			this.butReset.Location = new System.Drawing.Point(1, 398);
+			this.butReset.Name = "butReset";
+			this.butReset.Size = new System.Drawing.Size(21, 17);
+			this.butReset.TabIndex = 5;
+			this.butReset.Click += new System.EventHandler(this.butReset_Click);
 			// 
 			// label3
 			// 
@@ -100,10 +113,12 @@ namespace OpenDental{
 			// FormAbout
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butClose;
 			this.ClientSize = new System.Drawing.Size(695, 415);
 			this.ControlBox = false;
 			this.Controls.Add(this.label4);
 			this.Controls.Add(this.label3);
+			this.Controls.Add(this.butReset);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.butClose);
@@ -119,9 +134,18 @@ namespace OpenDental{
 		#endregion
 
 		private void FormAbout_Load(object sender, System.EventArgs e) {
-			labelVersion.Text=Lan.g(this,"Using Version "+Application.ProductVersion);
+			labelVersion.Text=Lan.g(this,"Using Version:")+" "+Application.ProductVersion;
 		}
 
+		private void butReset_Click(object sender, System.EventArgs e) {
+			FormPasswordReset FormPR=new FormPasswordReset();
+			FormPR.ShowDialog();
+			DialogResult=DialogResult.OK;
+		}
+
+		private void butClose_Click(object sender, System.EventArgs e) {
+			DialogResult=DialogResult.Cancel;
+		}
 
 	}
 }

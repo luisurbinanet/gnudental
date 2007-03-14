@@ -80,6 +80,7 @@ namespace OpenDental{
 			// 
 			// radioRange
 			// 
+			this.radioRange.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioRange.Location = new System.Drawing.Point(8, 30);
 			this.radioRange.Name = "radioRange";
 			this.radioRange.TabIndex = 1;
@@ -88,6 +89,7 @@ namespace OpenDental{
 			// radioSingle
 			// 
 			this.radioSingle.Checked = true;
+			this.radioSingle.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioSingle.Location = new System.Drawing.Point(8, 8);
 			this.radioSingle.Name = "radioSingle";
 			this.radioSingle.TabIndex = 0;
@@ -120,6 +122,7 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(604, 312);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 6;
@@ -129,6 +132,7 @@ namespace OpenDental{
 			// butCancel
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(604, 346);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 7;
@@ -149,6 +153,7 @@ namespace OpenDental{
 			// 
 			// checkBoxIns
 			// 
+			this.checkBoxIns.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkBoxIns.Location = new System.Drawing.Point(532, 6);
 			this.checkBoxIns.Name = "checkBoxIns";
 			this.checkBoxIns.Size = new System.Drawing.Size(154, 24);
@@ -157,6 +162,7 @@ namespace OpenDental{
 			// 
 			// butNone
 			// 
+			this.butNone.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butNone.Location = new System.Drawing.Point(536, 234);
 			this.butNone.Name = "butNone";
 			this.butNone.Size = new System.Drawing.Size(54, 20);
@@ -178,7 +184,10 @@ namespace OpenDental{
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.labelTO);
 			this.Controls.Add(this.panel1);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormRpDepositSlip";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Deposit Slip";
 			this.Load += new System.EventHandler(this.FormDepositSlip_Load);
@@ -205,8 +214,8 @@ WHERE payment.PatNum=patient.PatNum
 GROUP BY PayDate
 UNION
 SELECT CheckDate,insplan.Carrier,CheckNum,BankBranch,CheckAmt
-FROM claim,claimpayment,insplan
-WHERE claim.ClaimPaymentNum=claimpayment.ClaimPaymentNum && claim.PlanNum=insplan.PlanNum 
+FROM claimproc,claimpayment,insplan
+WHERE claimproc.ClaimPaymentNum=claimpayment.ClaimPaymentNum && claimproc.PlanNum=insplan.PlanNum 
 GROUP BY CheckDate
 ORDER BY PayDate
 */
@@ -227,9 +236,10 @@ ORDER BY PayDate
 						Queries.CurReport.Query+="WHERE 1=0 UNION ";
 					}
 					Queries.CurReport.Query+="SELECT CheckDate,insplan.Carrier,"
-						+"CheckNum,BankBranch,CheckAmt FROM claimpayment,claim,insplan WHERE claim.ClaimPaymentNum = "
-						+"claimpayment.ClaimPaymentNum && claim.PlanNum = insplan.PlanNum "
-						+"&& claimstatus != 'A' "
+						+"CheckNum,BankBranch,CheckAmt FROM claimpayment,claimproc,insplan "
+						+"WHERE claimproc.ClaimPaymentNum = "
+						+"claimpayment.ClaimPaymentNum && claimproc.PlanNum = insplan.PlanNum "
+						+"&& (claimproc.status = '1' || claimproc.status = '4') "
 						+"&& CheckDate >= '"+date1.SelectionStart.ToString("yyyy-MM-dd")+"' "
 						+"&& CheckDate <= '"+date2.SelectionStart.ToString("yyyy-MM-dd")+"' ";
 					Queries.CurReport.Query+="GROUP BY claimpayment.claimpaymentnum ORDER BY PayDate";
@@ -245,9 +255,10 @@ ORDER BY PayDate
 						Queries.CurReport.Query+="WHERE 1=0 UNION ";
 					}
 					Queries.CurReport.Query+="SELECT CheckDate,insplan.Carrier,"
-						+"CheckNum,BankBranch,CheckAmt FROM claim,claimpayment,insplan WHERE claim.ClaimPaymentNum="
-						+"claimpayment.ClaimPaymentNum && claim.PlanNum = insplan.PlanNum "
-						+"&& claimstatus != 'A' "
+						+"CheckNum,BankBranch,CheckAmt FROM claimpayment,claimproc,insplan "
+						+"WHERE claimproc.ClaimPaymentNum = "
+						+"claimpayment.ClaimPaymentNum && claimproc.PlanNum = insplan.PlanNum "
+						+"&& (claimproc.status = '1' || claimproc.status = '4') "
 						+"&& CheckDate = '"+date1.SelectionStart.ToString("yyyy-MM-dd")+"' ";
 					Queries.CurReport.Query+="GROUP BY claimpayment.claimpaymentnum ORDER BY PayDate ";
 				}
@@ -265,7 +276,7 @@ ORDER BY PayDate
 						//MessageBox.Show(Queries.CurReport.Query);
           }
 					else{
-						MessageBox.Show("Must Select either a Payment Type and/or Include insurance Checks.");
+						MessageBox.Show("Must either select a payment type and/or include insurance checks.");
 						return;
 					}
 				}

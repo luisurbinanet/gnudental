@@ -8,9 +8,9 @@ namespace OpenDental{
 
 	public class FormAutoCode : System.Windows.Forms.Form{
 		private System.Windows.Forms.ListBox listAutoCodes;
-		private System.Windows.Forms.Button butAdd;
 		private System.Windows.Forms.Button butClose;
-		private System.Windows.Forms.Button butDelete;
+		private OpenDental.XPButton butAdd;
+		private OpenDental.XPButton butDelete;
 		private System.ComponentModel.Container components = null;
 
 		public FormAutoCode(){
@@ -36,9 +36,9 @@ namespace OpenDental{
 		private void InitializeComponent(){
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormAutoCode));
 			this.listAutoCodes = new System.Windows.Forms.ListBox();
-			this.butAdd = new System.Windows.Forms.Button();
 			this.butClose = new System.Windows.Forms.Button();
-			this.butDelete = new System.Windows.Forms.Button();
+			this.butAdd = new OpenDental.XPButton();
+			this.butDelete = new OpenDental.XPButton();
 			this.SuspendLayout();
 			// 
 			// listAutoCodes
@@ -49,49 +49,62 @@ namespace OpenDental{
 			this.listAutoCodes.TabIndex = 0;
 			this.listAutoCodes.DoubleClick += new System.EventHandler(this.listAutoCodes_DoubleClick);
 			// 
-			// butAdd
-			// 
-			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
-			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAdd.Location = new System.Drawing.Point(32, 352);
-			this.butAdd.Name = "butAdd";
-			this.butAdd.TabIndex = 2;
-			this.butAdd.Text = "          Add";
-			this.butAdd.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
-			// 
 			// butClose
 			// 
+			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butClose.Location = new System.Drawing.Point(216, 390);
 			this.butClose.Name = "butClose";
+			this.butClose.Size = new System.Drawing.Size(75, 26);
 			this.butClose.TabIndex = 3;
-			this.butClose.Text = "Close";
+			this.butClose.Text = "&Close";
 			this.butClose.Click += new System.EventHandler(this.butClose_Click);
+			// 
+			// butAdd
+			// 
+			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAdd.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butAdd.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
+			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butAdd.Location = new System.Drawing.Point(32, 354);
+			this.butAdd.Name = "butAdd";
+			this.butAdd.Size = new System.Drawing.Size(75, 26);
+			this.butAdd.TabIndex = 5;
+			this.butAdd.Text = "Add";
+			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
 			// butDelete
 			// 
+			this.butDelete.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butDelete.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butDelete.BtnStyle = OpenDental.enumType.XPStyle.Silver;
 			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDelete.Location = new System.Drawing.Point(116, 352);
+			this.butDelete.Location = new System.Drawing.Point(116, 354);
 			this.butDelete.Name = "butDelete";
-			this.butDelete.TabIndex = 4;
-			this.butDelete.Text = "          Delete";
-			this.butDelete.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butDelete.Size = new System.Drawing.Size(75, 26);
+			this.butDelete.TabIndex = 6;
+			this.butDelete.Text = "Delete";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
 			// 
 			// FormAutoCode
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butClose;
 			this.ClientSize = new System.Drawing.Size(306, 430);
-			this.ControlBox = false;
 			this.Controls.Add(this.butDelete);
-			this.Controls.Add(this.butClose);
 			this.Controls.Add(this.butAdd);
+			this.Controls.Add(this.butClose);
 			this.Controls.Add(this.listAutoCodes);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormAutoCode";
+			this.ShowInTaskbar = false;
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Auto Codes";
+			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormAutoCode_Closing);
 			this.Load += new System.EventHandler(this.FormAutoCode_Load);
 			this.ResumeLayout(false);
 
@@ -130,10 +143,7 @@ namespace OpenDental{
 		}
 
 		private void butClose_Click(object sender, System.EventArgs e) {
-			DataValid.IType=InvalidType.LocalData;
-			DataValid DataValid2=new DataValid();
-			DataValid2.SetInvalid();
-      DialogResult=DialogResult.OK;
+			DialogResult=DialogResult.OK;
 		}
 
 		private void butDelete_Click(object sender, System.EventArgs e) {
@@ -145,5 +155,20 @@ namespace OpenDental{
       AutoCodes.DeleteCur();
       FillList(); 		
 		}
+
+		private void FormAutoCode_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+			DataValid.IType=InvalidType.LocalData;
+			DataValid DataValid2=new DataValid();
+			DataValid2.SetInvalid();
+      DialogResult=DialogResult.OK;
+		}
 	}
 }
+
+
+
+
+
+
+
+

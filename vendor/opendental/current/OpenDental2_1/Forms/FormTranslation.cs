@@ -63,10 +63,12 @@ namespace OpenDental{
 			// butClose
 			// 
 			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butClose.Location = new System.Drawing.Point(864, 658);
 			this.butClose.Name = "butClose";
 			this.butClose.TabIndex = 3;
 			this.butClose.Text = "Close";
+			this.butClose.Click += new System.EventHandler(this.butClose_Click);
 			// 
 			// label1
 			// 
@@ -78,6 +80,7 @@ namespace OpenDental{
 			// 
 			// butObsolete
 			// 
+			this.butObsolete.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butObsolete.Location = new System.Drawing.Point(386, 650);
 			this.butObsolete.Name = "butObsolete";
 			this.butObsolete.Size = new System.Drawing.Size(94, 23);
@@ -88,6 +91,7 @@ namespace OpenDental{
 			// 
 			// butNot
 			// 
+			this.butNot.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butNot.Location = new System.Drawing.Point(510, 650);
 			this.butNot.Name = "butNot";
 			this.butNot.Size = new System.Drawing.Size(64, 23);
@@ -109,14 +113,16 @@ namespace OpenDental{
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(958, 708);
-			this.ControlBox = false;
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.butNot);
 			this.Controls.Add(this.butObsolete);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.butClose);
 			this.Controls.Add(this.tbLan);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormTranslation";
+			this.ShowInTaskbar = false;
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Translation";
@@ -184,6 +190,10 @@ namespace OpenDental{
 			Lan.SetObsolete(lanList,false);
 			Lan.Refresh();
 			FillTable();
+		}
+
+		private void butClose_Click(object sender, System.EventArgs e) {
+		
 		}
 
 	}

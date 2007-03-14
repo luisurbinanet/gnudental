@@ -1,5 +1,5 @@
 /*=============================================================================================================
-FreeDental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
+Open Dental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
 See header in FormOpenDental.cs for complete text.  Redistributions must retain this text.
 ===============================================================================================================*/
 //using MySQLDriverCS;
@@ -10,10 +10,137 @@ using System.Data;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace OpenDental{
 	
+	/*=========================================================================================
+		=================================== class Medications ==========================================*/
+
+	public class Medications:DataClass{
+		//not refreshed with local data.  Only refreshed as needed.
+		public static Medication Cur;
+		public static Medication[] List;
+		public static Hashtable HList;
+
+		public static void Refresh(){
+			cmd.CommandText =
+				"SELECT * from medication ORDER BY medname";
+			FillList();
+		}
+
+		public static void RefreshGeneric(){
+			cmd.CommandText =
+				"SELECT * from medication WHERE medicationnum = genericnum ORDER BY medname";
+			FillList();
+		}
+
+		private static void FillList(){
+			FillTable();
+			HList=new Hashtable();
+			List=new Medication[table.Rows.Count];
+			for(int i=0;i<table.Rows.Count;i++){
+				List[i].MedicationNum=PIn.PInt   (table.Rows[i][0].ToString());
+				List[i].MedName      =PIn.PString(table.Rows[i][1].ToString());
+				List[i].GenericNum   =PIn.PInt   (table.Rows[i][2].ToString());
+				List[i].Notes        =PIn.PString(table.Rows[i][3].ToString());
+				HList.Add(List[i].MedicationNum,List[i]);
+			}
+		}
+
+		public static void UpdateCur(){
+			cmd.CommandText = "UPDATE medication SET " 
+				+ "medname = '"      +POut.PString(Cur.MedName)+"'"
+				+ ",genericnum = '"  +POut.PInt   (Cur.GenericNum)+"'"
+				+ ",notes = '"       +POut.PString(Cur.Notes)+"'"
+				+" WHERE medicationnum = '" +POut.PInt   (Cur.MedicationNum)+"'";
+			//MessageBox.Show(cmd.CommandText);
+			NonQ(false);
+		}
+
+		public static void InsertCur(){
+			cmd.CommandText = "INSERT INTO medication (medname,genericnum,notes"
+				+") VALUES("
+				+"'"+POut.PString(Cur.MedName)+"', "
+				+"'"+POut.PInt   (Cur.GenericNum)+"', "
+				+"'"+POut.PString(Cur.Notes)+"')";
+			NonQ(true);
+			Cur.MedicationNum=InsertID;
+			//MessageBox.Show(Cur.PayNum.ToString());
+		}
+
+		public static void DeleteCur(){
+			cmd.CommandText = "DELETE from medication WHERE medicationNum = '"+Cur.MedicationNum.ToString()+"'";
+			NonQ(false);
+		}
+		
+	}
+
+	public struct Medication{
+		public int MedicationNum;//primary key
+		public string MedName;
+		public int GenericNum;//(optional)foreign key to Medication.MedicationNum
+		public string Notes;
+	}
+
+/*=========================================================================================
+		=================================== class MedicationPats ==========================================*/
+
+	public class MedicationPats:DataClass{
+		public static MedicationPat Cur;
+		public static MedicationPat[] List;//for current pat
+
+		public static void Refresh(){
+			cmd.CommandText =
+				"SELECT * from medicationpat WHERE patnum = '"+Patients.Cur.PatNum+"'";
+			FillTable();
+			List=new MedicationPat[table.Rows.Count];
+			for(int i=0;i<table.Rows.Count;i++){
+				List[i].MedicationPatNum=PIn.PInt   (table.Rows[i][0].ToString());
+				List[i].PatNum          =PIn.PInt   (table.Rows[i][1].ToString());
+				List[i].MedicationNum   =PIn.PInt   (table.Rows[i][2].ToString());
+				List[i].PatNote         =PIn.PString(table.Rows[i][3].ToString());
+				//HList.Add(List[i].MedicationNum,List[i]);
+			}
+		}
+
+		public static void UpdateCur(){
+			cmd.CommandText = "UPDATE medicationpat SET " 
+				+ "patnum = '"        +POut.PInt   (Cur.PatNum)+"'"
+				+ ",medicationnum = '"+POut.PInt   (Cur.MedicationNum)+"'"
+				+ ",patnote = '"      +POut.PString(Cur.PatNote)+"'"
+				+" WHERE medicationpatnum = '" +POut.PInt   (Cur.MedicationPatNum)+"'";
+			//MessageBox.Show(cmd.CommandText);
+			NonQ(false);
+		}
+
+		public static void InsertCur(){
+			cmd.CommandText = "INSERT INTO medicationpat (patnum,medicationnum,patnote"
+				+") VALUES("
+				+"'"+POut.PInt   (Cur.PatNum)+"', "
+				+"'"+POut.PInt   (Cur.MedicationNum)+"', "
+				+"'"+POut.PString(Cur.PatNote)+"')";
+			NonQ(true);
+			Cur.MedicationPatNum=InsertID;
+			//MessageBox.Show(Cur.PayNum.ToString());
+		}
+
+		public static void DeleteCur(){
+			cmd.CommandText = "DELETE from medicationpat WHERE medicationpatNum = '"
+				+Cur.MedicationPatNum.ToString()+"'";
+			NonQ(false);
+		}
+		
+	}
+
+	public struct MedicationPat{//table medicationpat.  links meds to pats.
+		public int MedicationPatNum;//primary key
+		public int PatNum;//foreign key to patient.PatNum
+		public int MedicationNum;//foreign key to medication.MedicationNum
+		public string PatNote;//medication notes specific to this patient
+	}
+
 
 	/*=========================================================================================
 	=================================== class PIn ===========================================*/
@@ -68,8 +195,26 @@ namespace OpenDental{
 				return 0;
 			}
 			else{
+				//try{
 				return System.Convert.ToInt32(myString);
+				//}
+				//catch{
+				//	MessageBox.Show(myString);
+				//	return 0;
+				//}
 			}
+		}
+
+		public static float PFloat(string myString){
+			if(myString==""){
+				return 0;
+			}
+			//try{
+				return System.Convert.ToSingle(myString);
+			//}
+			//catch{
+			//	return 0;
+			//}
 		}
 
 		public static string PString (string myString){
@@ -126,6 +271,10 @@ namespace OpenDental{
 			return myInt.ToString();
 		}
 
+		public static string PFloat(float myFloat){
+			return myFloat.ToString();
+		}
+
 		public static string PString (string myString){
 			string newString="";
 			if(myString==null){
@@ -133,8 +282,11 @@ namespace OpenDental{
 			}
 			for (int i=0; i<myString.Length; i++){
 				switch (myString.Substring(i,1)){
-					case "'": newString+="\\'"; break;
-					case "\\": newString+="\\\\"; break;//single \ replaced by \\
+					case "'": newString+=@"\'"; break;
+					case @"\": newString+=@"\\"; break;//single \ replaced by \\
+					case "\r": newString+=@"\r"; break;//carriage return(usually followed by new line)
+					case "\n": newString+=@"\n"; break;//new line
+					case "\t": newString+=@"\t"; break;//tab
 						//case "%": newString+="\\%"; break;//causes errors because only ambiguous in LIKE clause
 						//case "_": newString+="\\_"; break;//see above
 					default : newString+=myString.Substring(i,1); break;
@@ -181,7 +333,7 @@ namespace OpenDental{
 				"SELECT * "
 				+"FROM patient "
 				+"WHERE guarantor = '"+table.Rows[0][0].ToString()+"'"
-				+" ORDER BY birthdate";
+				+" ORDER BY (patnum!=guarantor), birthdate";
 			//MessageBox.Show(cmd.CommandText);
 			FillTable();
 			FamilyList = new Patient[table.Rows.Count];
@@ -237,7 +389,7 @@ namespace OpenDental{
 				FamilyList[i].BalOver90    = PIn.PDouble(table.Rows[i][46].ToString());
 				FamilyList[i].InsEst       = PIn.PDouble(table.Rows[i][47].ToString());
 				FamilyList[i].PrimaryTeeth = PIn.PString(table.Rows[i][48].ToString());
-
+				FamilyList[i].BalTotal     = PIn.PDouble(table.Rows[i][49].ToString());
 				if(FamilyList[i].PatNum==patNum)
 					Cur=FamilyList[i];
 				if (FamilyList[i].Guarantor==FamilyList[i].PatNum)
@@ -254,7 +406,7 @@ namespace OpenDental{
 				+"secrelationship,estbalance,nextaptnum,priprov,secprov,feesched,billingtype,recallinterval,"
 				+"recallstatus,imagefolder,addrnote,famfinurgnote,medurgnote,apptmodnote,"
 				+"studentstatus,schoolname,chartnumber,medicaidid"
-				+",Bal_0_30,Bal_31_60,Bal_61_90,BalOver90,insest,primaryteeth) VALUES("
+				+",Bal_0_30,Bal_31_60,Bal_61_90,BalOver90,insest,primaryteeth,BalTotal) VALUES("
 				+"'"+POut.PString(Cur.LName)+"', "
 				+"'"+POut.PString(Cur.FName)+"', "
 				+"'"+POut.PString(Cur.MiddleI)+"', "
@@ -302,7 +454,8 @@ namespace OpenDental{
 				+"'"+POut.PDouble(Cur.Bal_61_90)+"', "
 				+"'"+POut.PDouble(Cur.BalOver90)+"', "
 				+"'"+POut.PDouble(Cur.InsEst)+"', "
-				+"'"+POut.PString(Cur.PrimaryTeeth)+"')";
+				+"'"+POut.PString(Cur.PrimaryTeeth)+"', "
+				+"'"+POut.PDouble(Cur.BalTotal)+"')";
 			//MessageBox.Show(cmd.CommandText);
 			NonQ(true);
 			Cur.PatNum=InsertID;
@@ -360,23 +513,28 @@ namespace OpenDental{
 				+",BalOver90 = '"      +POut.PDouble(Cur.BalOver90)+"'"
 				+",insest    = '"      +POut.PDouble(Cur.InsEst)+"'"
 				+",primaryteeth = '"   +POut.PString(Cur.PrimaryTeeth)+"'"
+				+",BalTotal = '"       +POut.PDouble(Cur.BalTotal)+"'"
 				+" WHERE PatNum = '"   +POut.PInt   (Cur.PatNum)+"'";
 			NonQ(false);
 			//MessageBox.Show(cmd.CommandText);
 		}//end UpdatePatient
 
-		public static bool GetPtList(string lname,string fname,string hmphone,string address){
+		public static bool GetPtList(string lname,string fname,string hmphone,string address,bool hideInactive){
 			//string psearchStr = POut.PString(searchStr)+"%";
+			//Only used for the Select Patient dialog
 			bool retval=false;
 			cmd.CommandText = 
-				"SELECT patnum,lname,fname,middlei,preferred,birthdate,ssn,hmphone,address,patstatus "
+				"SELECT patnum,lname,fname,middlei,preferred,birthdate,ssn,hmphone,address,patstatus,billingtype "
 				+"FROM patient "
 				+"WHERE patstatus != '4' "//not status 'deleted'
 				+"AND lname LIKE '"+POut.PString(lname)+"%' "
 				+"AND fname LIKE '"+POut.PString(fname)+"%' "
 				+"AND hmphone LIKE '"+POut.PString(hmphone)+"%' "
-				+"AND address LIKE '"+POut.PString(address)+"%' "
-				+"ORDER BY lname,fname LIMIT 43";//only need 42, but the extra will help indicate more rows
+				+"AND address LIKE '"+POut.PString(address)+"%' ";
+			if(hideInactive){
+				cmd.CommandText+="AND patstatus = '0' ";
+			}
+				cmd.CommandText+="ORDER BY lname,fname LIMIT 43";//only need 42, but the extra will help indicate more rows
 			//MessageBox.Show(cmd.CommandText);
 			FillTable();
 			if(table.Rows.Count==43){
@@ -386,16 +544,17 @@ namespace OpenDental{
 			else
 				PtList=new Patient[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count && i<42;i++){
-				PtList[i].PatNum   = PIn.PInt   (table.Rows[i][0].ToString());
-				PtList[i].LName    = PIn.PString(table.Rows[i][1].ToString());
-				PtList[i].FName    = PIn.PString(table.Rows[i][2].ToString());
-				PtList[i].MiddleI  = PIn.PString(table.Rows[i][3].ToString());
-				PtList[i].Preferred= PIn.PString(table.Rows[i][4].ToString());
-				PtList[i].Age      = Shared.DateToAge(PIn.PDate  (table.Rows[i][5].ToString()));
-				PtList[i].SSN      = PIn.PString(table.Rows[i][6].ToString());
-				PtList[i].HmPhone  = PIn.PString(table.Rows[i][7].ToString());
-				PtList[i].Address  = PIn.PString(table.Rows[i][8].ToString());
-				PtList[i].PatStatus= (PatientStatus)PIn.PInt(table.Rows[i][9].ToString());	
+				PtList[i].PatNum     = PIn.PInt   (table.Rows[i][0].ToString());
+				PtList[i].LName      = PIn.PString(table.Rows[i][1].ToString());
+				PtList[i].FName      = PIn.PString(table.Rows[i][2].ToString());
+				PtList[i].MiddleI    = PIn.PString(table.Rows[i][3].ToString());
+				PtList[i].Preferred  = PIn.PString(table.Rows[i][4].ToString());
+				PtList[i].Age        = Shared.DateToAge(PIn.PDate  (table.Rows[i][5].ToString()));
+				PtList[i].SSN        = PIn.PString(table.Rows[i][6].ToString());
+				PtList[i].HmPhone    = PIn.PString(table.Rows[i][7].ToString());
+				PtList[i].Address    = PIn.PString(table.Rows[i][8].ToString());
+				PtList[i].PatStatus  = (PatientStatus)PIn.PInt(table.Rows[i][9].ToString());
+				PtList[i].BillingType= PIn.PInt(table.Rows[i][10].ToString());
 			}
 			return retval;//if true, there are more rows.
 		}
@@ -514,7 +673,8 @@ ORDER BY DueDate
 				return;
 			}
 			cmd.CommandText = 
-				"SELECT PatNum,lname,fname,middlei,preferred,credittype,guarantor,priplannum from patient "
+				"SELECT PatNum,lname,fname,middlei,preferred,credittype,guarantor,priplannum,SSN " 
+				+"FROM patient "
 				+"WHERE PatNum = '"+patNum.ToString()+"'";
 			FillTable();
 			if(table.Rows.Count==0){
@@ -530,6 +690,7 @@ ORDER BY DueDate
 			Lim.CreditType = PIn.PString(table.Rows[0][5].ToString());
 			Lim.Guarantor  = PIn.PInt   (table.Rows[0][6].ToString());
 			Lim.PriPlanNum = PIn.PInt   (table.Rows[0][7].ToString());
+			Lim.SSN        = PIn.PString(table.Rows[0][8].ToString());
 			if (Lim.Preferred=="")
 				LimName=Lim.LName+", "+Lim.FName+" "+Lim.MiddleI;
 			else LimName=Lim.LName+", '"+Lim.Preferred+"' "+Lim.FName+" "+Lim.MiddleI;
@@ -698,8 +859,14 @@ ORDER BY DueDate
 				+",secprov = '"    +POut.PInt   (Cur.SecProv)+"'"
 				+",feesched = '"   +POut.PInt   (Cur.FeeSched)+"'"
 				+",billingtype = '"+POut.PInt   (Cur.BillingType)+"'"
-				+",addrnote = '"   +POut.PString(Cur.AddrNote)+"'"
-				//+",famfinurgnote = '"  +POut.PString(Cur.FamFinUrgNote)+"'"
+				+" WHERE guarantor = '"+POut.PDouble(Cur.Guarantor)+"'";
+			NonQ(false);
+			//MessageBox.Show(cmd.CommandText);
+		}
+
+		public static void UpdateNotesForFam(){
+			cmd.CommandText = "UPDATE patient SET " 
+				+"addrnote = '"   +POut.PString(Cur.AddrNote)+"'"
 				+" WHERE guarantor = '"+POut.PDouble(Cur.Guarantor)+"'";
 			NonQ(false);
 			//MessageBox.Show(cmd.CommandText);
@@ -707,18 +874,20 @@ ORDER BY DueDate
 
 		public static void GetAgingList(string age,int[] billingIndices,bool excludeAddr
 			,bool excludeNeg,double excludeLessThan){
+			//This is only used in the Billing dialog
 			cmd.CommandText =
-				"SELECT patnum,Bal_0_30,Bal_31_60,Bal_61_90,BalOver90,InsEst,LName,FName,MiddleI "
+				"SELECT patnum,Bal_0_30,Bal_31_60,Bal_61_90,BalOver90,BalTotal,InsEst,LName,FName,MiddleI "
 				+"FROM patient "//actually only gets guarantors since others are 0.
-				+" WHERE (Bal_0_30 + Bal_31_60 + Bal_61_90 + BalOver90 - InsEst > '"
+				+" WHERE (BalTotal - InsEst > '"
 				+excludeLessThan.ToString()+"'";
 			if(!excludeNeg){
-				cmd.CommandText+=" || Bal_0_30 + Bal_31_60 + Bal_61_90 + BalOver90 - InsEst < '0')";
+				cmd.CommandText+=" || BalTotal - InsEst < '0')";
 			}
 			else{
 				cmd.CommandText+=")";
 			}
 			switch(age){
+				//where is age 0. Is it missing because no restriction
 				case "30":
 					cmd.CommandText+=" && (Bal_31_60 > '0' || Bal_61_90 > '0' || BalOver90 > '0')";
 					break;
@@ -752,21 +921,23 @@ ORDER BY DueDate
 				AgingList[i].Bal_31_60= PIn.PDouble(table.Rows[i][2].ToString());
 				AgingList[i].Bal_61_90= PIn.PDouble(table.Rows[i][3].ToString());
 				AgingList[i].BalOver90= PIn.PDouble(table.Rows[i][4].ToString());
-				AgingList[i].InsEst   = PIn.PDouble(table.Rows[i][5].ToString());
-				AgingList[i].PatName=PIn.PString(table.Rows[i][6].ToString())
-					+", "+PIn.PString(table.Rows[i][7].ToString())
-					+" "+PIn.PString(table.Rows[i][8].ToString());;
-				AgingList[i].Balance=AgingList[i].Bal_0_30+AgingList[i].Bal_31_60
-					+AgingList[i].Bal_61_90+AgingList[i].BalOver90;
-				AgingList[i].AmountDue=AgingList[i].Balance-AgingList[i].InsEst;
+				AgingList[i].BalTotal = PIn.PDouble(table.Rows[i][5].ToString());
+				AgingList[i].InsEst   = PIn.PDouble(table.Rows[i][6].ToString());
+				AgingList[i].PatName=PIn.PString(table.Rows[i][7].ToString())
+					+", "+PIn.PString(table.Rows[i][8].ToString())
+					+" "+PIn.PString(table.Rows[i][9].ToString());;
+				//AgingList[i].Balance=AgingList[i].Bal_0_30+AgingList[i].Bal_31_60
+				//	+AgingList[i].Bal_61_90+AgingList[i].BalOver90;
+				AgingList[i].AmountDue=AgingList[i].BalTotal-AgingList[i].InsEst;
 			}
 		}
 
 		public static void GetAgingList(){
+			//used only to run finance charges, so it ignores negative balances
 			cmd.CommandText =
-				"SELECT patnum,Bal_0_30,Bal_31_60,Bal_61_90,BalOver90,InsEst,LName,FName,MiddleI "
+				"SELECT patnum,Bal_0_30,Bal_31_60,Bal_61_90,BalOver90,BalTotal,InsEst,LName,FName,MiddleI,priprov "
 				+"FROM patient "//actually only gets guarantors since others are 0.
-				+" WHERE Bal_0_30 + Bal_31_60 + Bal_61_90 + BalOver90 - InsEst > '0'"
+				+" WHERE Bal_0_30 + Bal_31_60 + Bal_61_90 + BalOver90 - InsEst > '0.005'"//more that 1/2 cent
 				+" ORDER BY LName,FName";
 			FillTable();
 			AgingList=new PatAging[table.Rows.Count];
@@ -776,24 +947,27 @@ ORDER BY DueDate
 				AgingList[i].Bal_31_60= PIn.PDouble(table.Rows[i][2].ToString());
 				AgingList[i].Bal_61_90= PIn.PDouble(table.Rows[i][3].ToString());
 				AgingList[i].BalOver90= PIn.PDouble(table.Rows[i][4].ToString());
-				AgingList[i].InsEst   = PIn.PDouble(table.Rows[i][5].ToString());
-				AgingList[i].PatName=PIn.PString(table.Rows[i][6].ToString())
-					+", "+PIn.PString(table.Rows[i][7].ToString())
-					+" "+PIn.PString(table.Rows[i][8].ToString());;
-				AgingList[i].Balance=AgingList[i].Bal_0_30+AgingList[i].Bal_31_60
-					+AgingList[i].Bal_61_90+AgingList[i].BalOver90;
-				AgingList[i].AmountDue=AgingList[i].Balance-AgingList[i].InsEst;
+				AgingList[i].BalTotal = PIn.PDouble(table.Rows[i][5].ToString());
+				AgingList[i].InsEst   = PIn.PDouble(table.Rows[i][6].ToString());
+				AgingList[i].PatName=PIn.PString(table.Rows[i][7].ToString())
+					+", "+PIn.PString(table.Rows[i][8].ToString())
+					+" "+PIn.PString(table.Rows[i][9].ToString());;
+				//AgingList[i].Balance=AgingList[i].Bal_0_30+AgingList[i].Bal_31_60
+				//	+AgingList[i].Bal_61_90+AgingList[i].BalOver90;
+				AgingList[i].AmountDue=AgingList[i].BalTotal-AgingList[i].InsEst;
+				AgingList[i].PriProv=PIn.PInt(table.Rows[i][10].ToString());
 			}
 		}
 
-		public static void ResetAging(){
+		public static void ResetAging(){//for entire database
 			//need to zero everything out first because the update aging only inserts non-zero values
 			cmd.CommandText="Update patient SET "
 				+"Bal_0_30   = '0'"
 				+",Bal_31_60 = '0'"
 				+",Bal_61_90 = '0'"
 				+",BalOver90 = '0'"
-				+",InsEst    = '0'";			  
+				+",InsEst    = '0'"
+				+",BalTotal  = '0'";
 			NonQ(false);		
 		}
 
@@ -804,18 +978,20 @@ ORDER BY DueDate
 				+",Bal_61_90 = '0'"
 				+",BalOver90 = '0'"
 				+",InsEst    = '0'"
+				+",BalTotal  = '0'"
 			  +" WHERE guarantor = '"+POut.PInt(guarantor)+"'";
 			NonQ(false);
 		}
 
 		public static void UpdateAging(int patnum,double Bal0,double Bal31
-			,double Bal61,double Bal91,double InsEst){
+			,double Bal61,double Bal91,double InsEst,double BalTotal){
 			cmd.CommandText="Update patient SET "
 				+"Bal_0_30        = '" +POut.PDouble(Bal0)+"'"
 				+",Bal_31_60      = '" +POut.PDouble(Bal31)+"'"
 				+",Bal_61_90      = '" +POut.PDouble(Bal61)+"'"
 				+",BalOver90      = '" +POut.PDouble(Bal91)+"'"
 				+",InsEst         = '" +POut.PDouble(InsEst)+"'"
+				+",BalTotal       = '" +POut.PDouble(BalTotal)+"'"
 				+" WHERE patnum   = '" +POut.PInt   (patnum)+"'";
 			NonQ(false);
 		}
@@ -828,6 +1004,22 @@ ORDER BY DueDate
 				return Providers.List[0].ProvNum;
 			}
 			return PIn.PInt(((Pref)Prefs.HList["PracticeDefaultProv"]).ValueString);
+		}
+
+		public static string GetNextChartNum(){
+			//could later add a where clause based on preferred format
+			cmd.CommandText="SELECT chartnumber from patient WHERE chartnumber != ''"
+				+" ORDER BY chartnumber DESC LIMIT 1";
+			FillTable();
+			if(table.Rows.Count==0){//no existing chart numbers
+				return "1";
+			}
+			string lastChartNum=PIn.PString(table.Rows[0][0].ToString());
+			//or could add more match conditions
+			if(Regex.IsMatch(lastChartNum,@"^\d+$")){//if is an integer
+				return(PIn.PInt(lastChartNum)+1).ToString();
+			}
+			return "1";//if there are no integer chartnumbers yet
 		}
 
 	}
@@ -862,7 +1054,7 @@ ORDER BY DueDate
 		//LifePartner=7,Dependent=8}
 		public int SecPlanNum;//foreign key to InsPlan.PlanNum.  Secondary insurance.
 		public Relat SecRelationship;//Relationship to subscriber for secondary insurance.
-		public double EstBalance;//Current patient balance.
+		public double EstBalance;//Current patient balance.(not family)
 		public int NextAptNum;//may be 0(none) or -1(done), otherwise it is the foreign key
 		//to Appointment.AptNum.  This is the appointment that will show in the Chart module.
 		//It will never show in the Appointments module.
@@ -880,13 +1072,14 @@ ORDER BY DueDate
 		public string StudentStatus;//single char for Nonstudent, Parttime, or Fulltime.  Blank=Nonstudent
 		public string SchoolName;
 		public string ChartNumber;//max 15 char.  Used for reference to previous programs.
-		public string MedicaidID;//optional.  Used for medicaid claims.
+		public string MedicaidID;
 		public double Bal_0_30;//aging numbers are for entire family.  Only stored with guarantor.
 		public double Bal_31_60;
 		public double Bal_61_90;
 		public double BalOver90;
 		public double InsEst;//Insurance Estimate for entire family.
 		public string PrimaryTeeth;//Teeth to display in chart as primary. eg: "1,2,3,4,5,12,13"
+		public double BalTotal;//for entire family. Stored with guarantor
 		
 	}//end struct Patient
 
@@ -898,8 +1091,9 @@ ORDER BY DueDate
 		public double BalOver90;
 		public double InsEst;
 		public string PatName;
-		public double Balance;
+		public double BalTotal;
 		public double AmountDue;
+		public int PriProv;//the patient priprov to assign the finance charge to.
 	}
 
 	/*=========================================================================================
@@ -1148,7 +1342,7 @@ ORDER BY DueDate
 		public static void Refresh(){
 			cmd.CommandText =
 				"SELECT * from paysplit"
-				+" WHERE patnum = '"+Patients.Cur.PatNum+"'";
+				+" WHERE patnum = '"+Patients.Cur.PatNum+"' ORDER BY procdate";
 			FillTable();
 			List=new PaySplit[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
@@ -1210,53 +1404,19 @@ ORDER BY DueDate
 
 		public static void DeleteCur(){//deletes Cur
 			//Cur=List[Selected];
-			PutBal(Cur.PatNum,Cur.ProcDate,-Cur.SplitAmt);
+			//PutBal(Cur.PatNum,Cur.ProcDate,-Cur.SplitAmt);
 			cmd.CommandText = "DELETE from paysplit WHERE splitNum = '"+Cur.SplitNum.ToString()+"'";
 			NonQ(false);
 		}
 
 		public static double ComputeBal(){//must make sure Refresh is done first
 			double retVal=0;
-			//for(int i=0;i<Ledgers.List.Length;i++){
-			//	retVal+=Ledgers.List[i].PaySplits;
-			//}
 			for(int i=0;i<List.Length;i++){
 				retVal+=List[i].SplitAmt;
 			}
 			return retVal;
 		}
 
-		public static void PutBal(int patNum, DateTime date, double amt){
-			/*
-			amt=(double)Math.Round(amt,2);
-			Ledgers Ledgers2=new Ledgers();
-			Ledgers2.Refresh(patNum);
-			DateTime monthYear;
-			monthYear=new DateTime(date.Year,date.Month,1);//eg 3/1/03
-			if(Ledgers.HList.ContainsKey(monthYear.Date)){
-				Ledgers.Cur=(Ledger)Ledgers.HList[monthYear.Date];
-				Ledgers.Cur.PaySplits+=amt;
-				Ledgers2.UpdateCur();
-			}
-			else{
-				Ledgers.Cur=new Ledger();
-				Ledgers.Cur.PatNum=patNum;
-				Ledgers.Cur.MonthYear=monthYear;
-				Ledgers.Cur.PaySplits=amt;
-				Ledgers2.SaveCur();
-			}*/
-		}
-
-		/*delete this
-		 * public double GetAmtInPaymentList(int patNum, bool isDiscount){
-			double retVal=0;
-			for(int i=0;i<PaymentList.Length;i++){
-				if(PaymentList[i].PatNum==patNum && PaymentList[i].IsDiscount==isDiscount){
-					retVal=PaymentList[i].SplitAmt;
-				}
-			}
-			return retVal;
-		}*/
 	}
 
 	public struct PaySplit{
@@ -1642,19 +1802,20 @@ ORDER BY DueDate
 			RecallAL=new ArrayList();
 			List=new ProcedureCode[tableStat.Rows.Count];
 			for (int i=0;i<tableStat.Rows.Count;i++){
-				tempCode.ADACode    =PIn.PString(tableStat.Rows[i][0].ToString());
-				tempCode.Descript   =PIn.PString(tableStat.Rows[i][1].ToString());
-				tempCode.AbbrDesc   =PIn.PString(tableStat.Rows[i][2].ToString());
-				tempCode.ProcTime   =PIn.PString(tableStat.Rows[i][3].ToString());
-				tempCode.ProcCat    =PIn.PInt   (tableStat.Rows[i][4].ToString());
-				tempCode.TreatArea  =(TreatmentArea)PIn.PInt   (tableStat.Rows[i][5].ToString());
-				tempCode.RemoveTooth=PIn.PBool  (tableStat.Rows[i][6].ToString());
-				tempCode.SetRecall  =PIn.PBool  (tableStat.Rows[i][7].ToString());
-				tempCode.NoBillIns  =PIn.PBool  (tableStat.Rows[i][8].ToString());
-				tempCode.IsProsth   =PIn.PBool  (tableStat.Rows[i][9].ToString());
-				tempCode.DefaultNote=PIn.PString(tableStat.Rows[i][10].ToString());
-				tempCode.IsHygiene  =PIn.PBool  (tableStat.Rows[i][11].ToString());
-				tempCode.GTypeNum   =PIn.PInt   (tableStat.Rows[i][12].ToString());
+				tempCode.ADACode       =PIn.PString(tableStat.Rows[i][0].ToString());
+				tempCode.Descript      =PIn.PString(tableStat.Rows[i][1].ToString());
+				tempCode.AbbrDesc      =PIn.PString(tableStat.Rows[i][2].ToString());
+				tempCode.ProcTime      =PIn.PString(tableStat.Rows[i][3].ToString());
+				tempCode.ProcCat       =PIn.PInt   (tableStat.Rows[i][4].ToString());
+				tempCode.TreatArea     =(TreatmentArea)PIn.PInt   (tableStat.Rows[i][5].ToString());
+				tempCode.RemoveTooth   =PIn.PBool  (tableStat.Rows[i][6].ToString());
+				tempCode.SetRecall     =PIn.PBool  (tableStat.Rows[i][7].ToString());
+				tempCode.NoBillIns     =PIn.PBool  (tableStat.Rows[i][8].ToString());
+				tempCode.IsProsth      =PIn.PBool  (tableStat.Rows[i][9].ToString());
+				tempCode.DefaultNote   =PIn.PString(tableStat.Rows[i][10].ToString());
+				tempCode.IsHygiene     =PIn.PBool  (tableStat.Rows[i][11].ToString());
+				tempCode.GTypeNum      =PIn.PInt   (tableStat.Rows[i][12].ToString());
+				tempCode.AlternateCode1=PIn.PString(tableStat.Rows[i][13].ToString());
 				HList.Add(tempCode.ADACode,tempCode);
 				List[i]=tempCode;
 				if(tempCode.SetRecall){
@@ -1667,7 +1828,7 @@ ORDER BY DueDate
 			//must have already checked ADACode for nonduplicate.
 			cmd.CommandText = "INSERT INTO procedurecode (adacode,descript,abbrdesc,"
 				+"proctime,proccat,treatarea,removetooth,setrecall,"
-				+"nobillins,isprosth,defaultnote,ishygiene,gtypenum) VALUES("
+				+"nobillins,isprosth,defaultnote,ishygiene,gtypenum,alternatecode1) VALUES("
 				+"'"+POut.PString(Cur.ADACode)+"', "
 				+"'"+POut.PString(Cur.Descript)+"', "
 				+"'"+POut.PString(Cur.AbbrDesc)+"', "
@@ -1680,7 +1841,8 @@ ORDER BY DueDate
 				+"'"+POut.PBool  (Cur.IsProsth)+"', "
 				+"'"+POut.PString(Cur.DefaultNote)+"', "
 				+"'"+POut.PBool  (Cur.IsHygiene)+"', "
-				+"'"+POut.PInt   (Cur.GTypeNum)+"')";
+				+"'"+POut.PInt   (Cur.GTypeNum)+"', "
+				+"'"+POut.PString(Cur.AlternateCode1)+"')";
 			NonQ(false);
 			Refresh();
 			//Cur already set
@@ -1690,18 +1852,19 @@ ORDER BY DueDate
 		public static void UpdateCur(){
 			//MessageBox.Show("Updating");
 			cmd.CommandText = "UPDATE procedurecode SET " 
-				+ "descript = '"     +POut.PString(Cur.Descript)+"'"
-				+ ",abbrdesc = '"    +POut.PString(Cur.AbbrDesc)+"'"
-				+ ",proctime = '"    +POut.PString(Cur.ProcTime)+"'"
-				+ ",proccat = '"     +POut.PInt   (Cur.ProcCat)+"'"
-				+ ",treatarea = '"   +POut.PInt   ((int)Cur.TreatArea)+"'"
-				+ ",removetooth = '" +POut.PBool  (Cur.RemoveTooth)+"'"
-				+ ",setrecall = '"   +POut.PBool  (Cur.SetRecall)+"'"
-				+ ",nobillins = '"   +POut.PBool  (Cur.NoBillIns)+"'"
-				+ ",isprosth = '"    +POut.PBool  (Cur.IsProsth)+"'"
-				+ ",defaultnote = '" +POut.PString(Cur.DefaultNote)+"'"
-				+ ",ishygiene = '"   +POut.PBool  (Cur.IsHygiene)+"'"
-				+ ",gtypenum = '"   +POut.PInt    (Cur.GTypeNum)+"'"
+				+ "descript = '"       +POut.PString(Cur.Descript)+"'"
+				+ ",abbrdesc = '"      +POut.PString(Cur.AbbrDesc)+"'"
+				+ ",proctime = '"      +POut.PString(Cur.ProcTime)+"'"
+				+ ",proccat = '"       +POut.PInt   (Cur.ProcCat)+"'"
+				+ ",treatarea = '"     +POut.PInt   ((int)Cur.TreatArea)+"'"
+				+ ",removetooth = '"   +POut.PBool  (Cur.RemoveTooth)+"'"
+				+ ",setrecall = '"     +POut.PBool  (Cur.SetRecall)+"'"
+				+ ",nobillins = '"     +POut.PBool  (Cur.NoBillIns)+"'"
+				+ ",isprosth = '"      +POut.PBool  (Cur.IsProsth)+"'"
+				+ ",defaultnote = '"   +POut.PString(Cur.DefaultNote)+"'"
+				+ ",ishygiene = '"     +POut.PBool  (Cur.IsHygiene)+"'"
+				+ ",gtypenum = '"      +POut.PInt   (Cur.GTypeNum)+"'"
+				+ ",alternatecode1 = '"+POut.PString(Cur.AlternateCode1)+"'"
 				+" WHERE adacode = '"+POut.PString(Cur.ADACode)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			NonQ(false);
@@ -1760,7 +1923,8 @@ ORDER BY DueDate
 		public bool IsProsth;//is a bridge, crown, or denture. Not currently in use anywhere.
 		public string DefaultNote;
 		public bool IsHygiene;//Identifies hygiene procedures so that the correct provider can be selected.
-		public int GTypeNum; //FK 
+		public int GTypeNum; //foreign key to GraphicType
+		public string AlternateCode1;//For Medicaid.  There may be more later.
 	}//end struct ProcedureCode
 	
 	/*=========================================================================================
@@ -1805,14 +1969,13 @@ ORDER BY DueDate
 				List[i].Priority				= PIn.PInt   (table.Rows[i][12].ToString());
 				List[i].ProcStatus			= (ProcStat)PIn.PInt   (table.Rows[i][13].ToString());
 				List[i].ProcNote				= PIn.PString(table.Rows[i][14].ToString());
-				//PriEstim [15] //leave as place holders
+				//PriEstim [15]
 				//SecEstim [16]
-				List[i].ClaimNum				= PIn.PInt   (table.Rows[i][17].ToString());
-				List[i].ProvNum					= PIn.PInt   (table.Rows[i][18].ToString());
-				List[i].Dx							= PIn.PInt   (table.Rows[i][19].ToString());
-				List[i].NextAptNum			= PIn.PInt   (table.Rows[i][20].ToString());
-				List[i].IsCovIns				= PIn.PBool  (table.Rows[i][21].ToString());
-				//List[i].NoShowGraphical = PIn.PBool  (table.Rows[i][22].ToString());
+				//List[i].ClaimNum				= PIn.PInt   (table.Rows[i][17].ToString());
+				List[i].ProvNum					= PIn.PInt   (table.Rows[i][15].ToString());
+				List[i].Dx							= PIn.PInt   (table.Rows[i][16].ToString());
+				List[i].NextAptNum			= PIn.PInt   (table.Rows[i][17].ToString());
+				List[i].IsCovIns				= PIn.PBool  (table.Rows[i][18].ToString());
 				HList.Add(List[i].ProcNum,List[i]);    
 				if(ProcCodes.GetProcCode(List[i].ADACode).RemoveTooth && (
 					List[i].ProcStatus==ProcStat.C
@@ -1853,7 +2016,7 @@ ORDER BY DueDate
 				+"ProcFee, "
 				+"OverridePri, OverrideSec, Surf, "
 				+"ToothNum, ToothRange, NoBillIns, Priority, "
-				+"ProcStatus, ProcNote, ClaimNum, ProvNum, "
+				+"ProcStatus, ProcNote, ProvNum, "
 				+"dx,nextaptnum,iscovins) "
 				+"VALUES ("
 				+"'"+POut.PInt   (Cur.PatNum)+"', "
@@ -1872,7 +2035,7 @@ ORDER BY DueDate
 				+"'"+POut.PString(Cur.ProcNote)+"', "
 				//+"'"+POut.PDouble(Cur.PriEstim)+"', "
 				//+"'"+POut.PDouble(Cur.SecEstim)+"', "
-				+"'"+POut.PInt   (Cur.ClaimNum)+"', "
+				//+"'"+POut.PInt   (Cur.ClaimNum)+"', "
 				+"'"+POut.PInt   (Cur.ProvNum)+"', "
 				+"'"+POut.PInt   (Cur.Dx)+"', "
 				+"'"+POut.PInt   (Cur.NextAptNum)+"', "
@@ -1899,7 +2062,7 @@ ORDER BY DueDate
 				+"Priority = '"				 +POut.PInt   (Cur.Priority)+"', "
 				+"ProcStatus = '"			 +POut.PInt   ((int)Cur.ProcStatus)+"', "
 				+"ProcNote = '"				 +POut.PString(Cur.ProcNote)+"', "
-				+"ClaimNum = '"				 +POut.PInt   (Cur.ClaimNum)+"', "
+				//+"ClaimNum = '"				 +POut.PInt   (Cur.ClaimNum)+"', "
 				+"ProvNum = '"				 +POut.PInt   (Cur.ProvNum)+"', "
 				+"Dx = '"							 +POut.PInt   (Cur.Dx)+"', "
 				+"nextaptnum = '"			 +POut.PInt   (Cur.NextAptNum)+"', "
@@ -2030,18 +2193,40 @@ ORDER BY DueDate
 		}
 
 		public static double GetEstForCur(PriSecTot pst){
-			//CovPats CovPats=new CovPats();
-			double retVal=0;
-			double priPercent=CovPats.GetPercent(Cur.ADACode,PriSecTot.Pri);
-			double secPercent=CovPats.GetPercent(Cur.ADACode,PriSecTot.Sec);
-			double priEst=Cur.ProcFee*priPercent;
-			double secEst=Cur.ProcFee*secPercent;
+			//does not take into consideration:
+			//annual max or deductible
 			if(Cur.NoBillIns){
 				return 0;
 			}
 			if(!Cur.IsCovIns){
 				return 0;
 			}
+			double priPercent=CovPats.GetPercent(Cur.ADACode,PriSecTot.Pri);
+			double secPercent=CovPats.GetPercent(Cur.ADACode,PriSecTot.Sec);
+			double priEst=Cur.ProcFee*priPercent;
+			double secEst=Cur.ProcFee*secPercent;
+			double priCopay=InsPlans.GetCopay(Cur.ADACode,Patients.Cur.PriPlanNum);//also gets InsPlan
+			if(priCopay!=-1){//if a primary copay fee schedule exsists
+				if(InsPlans.Cur.PlanType=="c"){//capitation
+					;//? 
+				}
+				else if(priCopay>0){
+					priEst=Cur.ProcFee-InsPlans.GetCopay(Cur.ADACode,Patients.Cur.PriPlanNum);
+				}
+			}
+			double secCopay=InsPlans.GetCopay(Cur.ADACode,Patients.Cur.SecPlanNum);//also gets InsPlan
+			if(secCopay!=-1){//if a secondary copay fee schedule exists.
+				if(InsPlans.Cur.PlanType=="c"){//capitation
+					;//? 
+				}
+				else if(secCopay>0){
+					secEst=Cur.ProcFee-InsPlans.GetCopay(Cur.ADACode,Patients.Cur.SecPlanNum);
+				}
+			}
+			//if(InsPlans.GetCopay(Cur.ADACode,Patients.Cur.PriPlanNum)>0)
+			//	priEst=InsPlans.GetCopay(Cur.ADACode,Patients.Cur.PriPlanNum);
+			//if(InsPlans.GetCopay(Cur.ADACode,Patients.Cur.SecPlanNum)>0)
+			//	secEst=InsPlans.GetCopay(Cur.ADACode,Patients.Cur.SecPlanNum);
 			if(Cur.OverridePri!=-1)
 				priEst=Cur.OverridePri;
 			if(Cur.OverrideSec!=-1)
@@ -2050,16 +2235,13 @@ ORDER BY DueDate
 				secEst=Procedures.Cur.ProcFee-priEst;
 			switch(pst){
 				case PriSecTot.Pri:
-					retVal=priEst;
-					break;
+					return priEst;
 				case PriSecTot.Sec:
-					retVal=secEst;
-					break;
+					return secEst;
 				case PriSecTot.Tot:
-					retVal=priEst+secEst;
-					break;
+					return priEst+secEst;
 			}
-			return retVal;
+			return 0;
 		}
 
 		public static void UnattachProcsInAppt(int myAptNum){
@@ -2134,12 +2316,9 @@ ORDER BY DueDate
 
 		public static double ComputeBal(){//must make sure Refresh is done first
 			double retVal=0;
-			/*
-			for(int i=0;i<Ledgers.List.Length;i++){
-				retVal+=Ledgers.List[i].ProcFees;
-			}*/
 			for(int i=0;i<List.Length;i++){
-				if(List[i].ProcStatus==ProcStat.C && List[i].ClaimNum==0){//complete and not attached to a claim
+				if(List[i].ProcStatus==ProcStat.C){//complete
+					//&& !ClaimProcs.ProcIsAttached(List[i].ProcNum)){// and not attached to a claim
 					Cur=List[i];
 					retVal+=Cur.ProcFee;//-GetEstForCur(PriSecTot.Tot);
 				}
@@ -2168,10 +2347,9 @@ ORDER BY DueDate
 		public ProcStat ProcStatus;//enum ProcStat{TP=1,C=2,EC=3,EO=4,R=5} 
 		//(TreatmentPlanned,Complete,ExistingCurrentProv,ExistingOtherProv,ReferredOut)
 		public string ProcNote;//Procedure Note
-		//public double PriEstim;//Deprecated-no longer used anywhere
-		//public double SecEstim;//Deprecated-no longer used anywhere
-		public int ClaimNum;//foreign key to Claim.ClaimNum.  Will be 0 if not attached to a claim.
-		//Always attached to a primary claim.  Secondary claim will have to refer to primary claim for procedures.
+		//public double PriEstim;//dropped
+		//public double SecEstim;//dropped
+		//public int ClaimNum;//dropped
 		public int ProvNum;//foreign key to Provider.ProvNum.
 		public int Dx;//foreign key to Definition.DefNum, which contains text of the Diagnosis.
 		public int NextAptNum;//foreign key to Appointment.AptNum.  
@@ -2379,23 +2557,22 @@ ORDER BY DueDate
 		}
 
 		public static int GetIndexLong(int provNum){
-			int retVal=-1;
 			for(int i=0;i<ListLong.Length;i++){
 				if(ListLong[i].ProvNum==provNum){
-					retVal=i;
+					return i;
 				}
 			}
-			return retVal;//should NEVER return a -1
+			return -1;//should NEVER return a -1
 		}
 
 		public static int GetIndex(int provNum){
-			int retVal=-1;
+			//Gets the index of the provider in short list (visible providers)
 			for(int i=0;i<List.Length;i++){
 				if(List[i].ProvNum==provNum){
-					retVal=i;
+					return i;
 				}
 			}
-			return retVal;
+			return -1;
 		}
 
 		public static void MoveUp(){

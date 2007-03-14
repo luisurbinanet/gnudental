@@ -1,5 +1,5 @@
 /*=============================================================================================================
-FreeDental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
+Open Dental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
 See header in FormOpenDental.cs for complete text.  Redistributions must retain this text.
 ===============================================================================================================*/
 using System;
@@ -71,15 +71,15 @@ namespace OpenDental{
 		private System.Windows.Forms.RadioButton radioStatusR;
 		private System.Windows.Forms.Panel panel1;
 		private System.Windows.Forms.GroupBox groupStatus;
-		private DateTime OriginalDate;
-		private double OriginalFee;
+		//private DateTime OriginalDate;
+		//private double OriginalFee;
 		private System.Windows.Forms.CheckBox checkIsCovIns;
 		private System.Windows.Forms.GroupBox groupIns;
 		private System.Windows.Forms.Label labelClaim;
 		private System.Windows.Forms.ListBox listBoxTeeth;
 		private System.Windows.Forms.ListBox listBoxTeeth2;
 		private System.Windows.Forms.Button butChange;
-		private ProcStat OriginalStatus;
+		//private ProcStat OriginalStatus;
 		private System.Windows.Forms.TextBox textTooth;
 		private System.Windows.Forms.ErrorProvider errorProvider2;
 		private System.Windows.Forms.Button butEditAnyway;
@@ -312,6 +312,7 @@ namespace OpenDental{
 			this.groupBox1.Controls.Add(this.label11);
 			this.groupBox1.Controls.Add(this.textOverrideSec);
 			this.groupBox1.Controls.Add(this.textOverridePri);
+			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupBox1.Location = new System.Drawing.Point(238, 24);
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.Size = new System.Drawing.Size(144, 96);
@@ -366,6 +367,7 @@ namespace OpenDental{
 			this.groupStatus.Controls.Add(this.radioStatusEC);
 			this.groupStatus.Controls.Add(this.radioStatusC);
 			this.groupStatus.Controls.Add(this.radioStatusTP);
+			this.groupStatus.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupStatus.Location = new System.Drawing.Point(642, 14);
 			this.groupStatus.Name = "groupStatus";
 			this.groupStatus.Size = new System.Drawing.Size(148, 154);
@@ -375,6 +377,7 @@ namespace OpenDental{
 			// 
 			// radioStatusR
 			// 
+			this.radioStatusR.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioStatusR.Location = new System.Drawing.Point(12, 114);
 			this.radioStatusR.Name = "radioStatusR";
 			this.radioStatusR.Size = new System.Drawing.Size(98, 24);
@@ -384,6 +387,7 @@ namespace OpenDental{
 			// 
 			// radioStatusEO
 			// 
+			this.radioStatusEO.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioStatusEO.Location = new System.Drawing.Point(12, 90);
 			this.radioStatusEO.Name = "radioStatusEO";
 			this.radioStatusEO.Size = new System.Drawing.Size(128, 24);
@@ -393,6 +397,7 @@ namespace OpenDental{
 			// 
 			// radioStatusEC
 			// 
+			this.radioStatusEC.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioStatusEC.Location = new System.Drawing.Point(12, 66);
 			this.radioStatusEC.Name = "radioStatusEC";
 			this.radioStatusEC.Size = new System.Drawing.Size(132, 24);
@@ -402,6 +407,7 @@ namespace OpenDental{
 			// 
 			// radioStatusC
 			// 
+			this.radioStatusC.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioStatusC.Location = new System.Drawing.Point(12, 42);
 			this.radioStatusC.Name = "radioStatusC";
 			this.radioStatusC.TabIndex = 1;
@@ -410,6 +416,7 @@ namespace OpenDental{
 			// 
 			// radioStatusTP
 			// 
+			this.radioStatusTP.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioStatusTP.Location = new System.Drawing.Point(12, 18);
 			this.radioStatusTP.Name = "radioStatusTP";
 			this.radioStatusTP.TabIndex = 0;
@@ -427,6 +434,7 @@ namespace OpenDental{
 			// 
 			// checkNoBillIns
 			// 
+			this.checkNoBillIns.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkNoBillIns.Location = new System.Drawing.Point(20, 128);
 			this.checkNoBillIns.Name = "checkNoBillIns";
 			this.checkNoBillIns.Size = new System.Drawing.Size(208, 24);
@@ -453,6 +461,7 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(716, 546);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 24);
@@ -462,6 +471,8 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(716, 580);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(76, 24);
@@ -471,6 +482,7 @@ namespace OpenDental{
 			// 
 			// butDelete
 			// 
+			this.butDelete.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butDelete.Location = new System.Drawing.Point(50, 584);
 			this.butDelete.Name = "butDelete";
 			this.butDelete.TabIndex = 8;
@@ -501,6 +513,7 @@ namespace OpenDental{
 			this.groupQuadrant.Controls.Add(this.radioLL);
 			this.groupQuadrant.Controls.Add(this.radioUL);
 			this.groupQuadrant.Controls.Add(this.radioUR);
+			this.groupQuadrant.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupQuadrant.Location = new System.Drawing.Point(82, 50);
 			this.groupQuadrant.Name = "groupQuadrant";
 			this.groupQuadrant.Size = new System.Drawing.Size(108, 56);
@@ -511,6 +524,7 @@ namespace OpenDental{
 			// 
 			// radioLR
 			// 
+			this.radioLR.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioLR.Location = new System.Drawing.Point(12, 36);
 			this.radioLR.Name = "radioLR";
 			this.radioLR.Size = new System.Drawing.Size(40, 16);
@@ -520,6 +534,7 @@ namespace OpenDental{
 			// 
 			// radioLL
 			// 
+			this.radioLL.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioLL.Location = new System.Drawing.Point(64, 36);
 			this.radioLL.Name = "radioLL";
 			this.radioLL.Size = new System.Drawing.Size(40, 16);
@@ -529,6 +544,7 @@ namespace OpenDental{
 			// 
 			// radioUL
 			// 
+			this.radioUL.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioUL.Location = new System.Drawing.Point(64, 16);
 			this.radioUL.Name = "radioUL";
 			this.radioUL.Size = new System.Drawing.Size(40, 16);
@@ -538,6 +554,7 @@ namespace OpenDental{
 			// 
 			// radioUR
 			// 
+			this.radioUR.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioUR.Location = new System.Drawing.Point(12, 16);
 			this.radioUR.Name = "radioUR";
 			this.radioUR.Size = new System.Drawing.Size(40, 16);
@@ -549,6 +566,7 @@ namespace OpenDental{
 			// 
 			this.groupArch.Controls.Add(this.radioL);
 			this.groupArch.Controls.Add(this.radioU);
+			this.groupArch.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupArch.Location = new System.Drawing.Point(82, 50);
 			this.groupArch.Name = "groupArch";
 			this.groupArch.Size = new System.Drawing.Size(60, 56);
@@ -559,6 +577,7 @@ namespace OpenDental{
 			// 
 			// radioL
 			// 
+			this.radioL.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioL.Location = new System.Drawing.Point(12, 36);
 			this.radioL.Name = "radioL";
 			this.radioL.Size = new System.Drawing.Size(28, 16);
@@ -568,6 +587,7 @@ namespace OpenDental{
 			// 
 			// radioU
 			// 
+			this.radioU.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioU.Location = new System.Drawing.Point(12, 16);
 			this.radioU.Name = "radioU";
 			this.radioU.Size = new System.Drawing.Size(32, 16);
@@ -584,6 +604,7 @@ namespace OpenDental{
 			this.groupBox4.Controls.Add(this.label4);
 			this.groupBox4.Controls.Add(this.textPriEst);
 			this.groupBox4.Controls.Add(this.label3);
+			this.groupBox4.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupBox4.Location = new System.Drawing.Point(20, 24);
 			this.groupBox4.Name = "groupBox4";
 			this.groupBox4.Size = new System.Drawing.Size(182, 96);
@@ -656,6 +677,7 @@ namespace OpenDental{
 			this.groupIns.Controls.Add(this.groupBox4);
 			this.groupIns.Controls.Add(this.groupBox1);
 			this.groupIns.Controls.Add(this.checkNoBillIns);
+			this.groupIns.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupIns.Location = new System.Drawing.Point(396, 240);
 			this.groupIns.Name = "groupIns";
 			this.groupIns.Size = new System.Drawing.Size(396, 160);
@@ -671,6 +693,7 @@ namespace OpenDental{
 			this.groupSextant.Controls.Add(this.radioS2);
 			this.groupSextant.Controls.Add(this.radioS3);
 			this.groupSextant.Controls.Add(this.radioS1);
+			this.groupSextant.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupSextant.Location = new System.Drawing.Point(82, 50);
 			this.groupSextant.Name = "groupSextant";
 			this.groupSextant.Size = new System.Drawing.Size(156, 56);
@@ -681,6 +704,7 @@ namespace OpenDental{
 			// 
 			// radioS6
 			// 
+			this.radioS6.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioS6.Location = new System.Drawing.Point(12, 36);
 			this.radioS6.Name = "radioS6";
 			this.radioS6.Size = new System.Drawing.Size(36, 16);
@@ -690,6 +714,7 @@ namespace OpenDental{
 			// 
 			// radioS5
 			// 
+			this.radioS5.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioS5.Location = new System.Drawing.Point(60, 36);
 			this.radioS5.Name = "radioS5";
 			this.radioS5.Size = new System.Drawing.Size(36, 16);
@@ -699,6 +724,7 @@ namespace OpenDental{
 			// 
 			// radioS4
 			// 
+			this.radioS4.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioS4.Location = new System.Drawing.Point(108, 36);
 			this.radioS4.Name = "radioS4";
 			this.radioS4.Size = new System.Drawing.Size(36, 16);
@@ -708,6 +734,7 @@ namespace OpenDental{
 			// 
 			// radioS2
 			// 
+			this.radioS2.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioS2.Location = new System.Drawing.Point(60, 16);
 			this.radioS2.Name = "radioS2";
 			this.radioS2.Size = new System.Drawing.Size(36, 16);
@@ -717,6 +744,7 @@ namespace OpenDental{
 			// 
 			// radioS3
 			// 
+			this.radioS3.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioS3.Location = new System.Drawing.Point(108, 16);
 			this.radioS3.Name = "radioS3";
 			this.radioS3.Size = new System.Drawing.Size(36, 16);
@@ -726,6 +754,7 @@ namespace OpenDental{
 			// 
 			// radioS1
 			// 
+			this.radioS1.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioS1.Location = new System.Drawing.Point(12, 16);
 			this.radioS1.Name = "radioS1";
 			this.radioS1.Size = new System.Drawing.Size(36, 16);
@@ -870,6 +899,7 @@ namespace OpenDental{
 			// 
 			// butChange
 			// 
+			this.butChange.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butChange.Location = new System.Drawing.Point(368, 36);
 			this.butChange.Name = "butChange";
 			this.butChange.Size = new System.Drawing.Size(74, 22);
@@ -882,7 +912,7 @@ namespace OpenDental{
 			this.labelClaim.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
 			this.labelClaim.Location = new System.Drawing.Point(144, 582);
 			this.labelClaim.Name = "labelClaim";
-			this.labelClaim.Size = new System.Drawing.Size(480, 32);
+			this.labelClaim.Size = new System.Drawing.Size(480, 60);
 			this.labelClaim.TabIndex = 50;
 			this.labelClaim.Text = "This procedure is attached to a claim, so certain fields should not be edited.  Y" +
 				"ou should reprint the claim if any significant changes are made.";
@@ -890,6 +920,7 @@ namespace OpenDental{
 			// 
 			// checkIsCovIns
 			// 
+			this.checkIsCovIns.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkIsCovIns.Location = new System.Drawing.Point(396, 210);
 			this.checkIsCovIns.Name = "checkIsCovIns";
 			this.checkIsCovIns.Size = new System.Drawing.Size(136, 18);
@@ -904,6 +935,7 @@ namespace OpenDental{
 			// 
 			// butEditAnyway
 			// 
+			this.butEditAnyway.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butEditAnyway.Location = new System.Drawing.Point(582, 546);
 			this.butEditAnyway.Name = "butEditAnyway";
 			this.butEditAnyway.Size = new System.Drawing.Size(104, 24);
@@ -915,7 +947,8 @@ namespace OpenDental{
 			// FormProcEdit
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(816, 628);
+			this.CancelButton = this.butCancel;
+			this.ClientSize = new System.Drawing.Size(814, 654);
 			this.Controls.Add(this.butEditAnyway);
 			this.Controls.Add(this.butChange);
 			this.Controls.Add(this.checkIsCovIns);
@@ -932,7 +965,10 @@ namespace OpenDental{
 			this.Controls.Add(this.label7);
 			this.Controls.Add(this.textNotes);
 			this.Controls.Add(this.groupStatus);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormProcEdit";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Procedure Info";
 			this.Load += new System.EventHandler(this.FormProcInfo_Load);
@@ -953,7 +989,8 @@ namespace OpenDental{
 			Claims.Refresh();
 			ProcedureCode2 = ProcCodes.GetProcCode(Procedures.Cur.ADACode);
 			if (IsNew){
-				
+				SetControls();
+				return;
 			}
 			else{
 				if(Procedures.Cur.ProcStatus==ProcStat.C){
@@ -965,21 +1002,25 @@ namespace OpenDental{
 						butEditAnyway.Enabled=false;
 					}					
 				}
-  			OriginalDate=Procedures.Cur.ProcDate;
-				OriginalFee=Procedures.Cur.ProcFee;
-				OriginalStatus=Procedures.Cur.ProcStatus;
+  			//OriginalDate=Procedures.Cur.ProcDate;
+				//OriginalFee=Procedures.Cur.ProcFee;
+				//OriginalStatus=Procedures.Cur.ProcStatus;
 			}
-			if(Procedures.Cur.ClaimNum!=0){//attached to claim
+			if(ClaimProcs.ProcIsAttached(Procedures.Cur.ProcNum)){//attached to claim
 				checkIsCovIns.Enabled=false;
-				if( ((Claim)Claims.HList[Procedures.Cur.ClaimNum]).ClaimStatus != "U"
-					&& ((Claim)Claims.HList[Procedures.Cur.ClaimNum]).ClaimStatus != "H" ){
+				if(ClaimProcs.ProcIsSent(Procedures.Cur.ProcNum)){//if also sent
 					panel1.Enabled=false;
 					groupStatus.Enabled=false;
 					checkNoBillIns.Enabled=false;
-					butDelete.Enabled=false;
 					butChange.Enabled=false;
+					butDelete.Enabled=false;
 					butEditAnyway.Visible=true;
 					labelClaim.Visible=true;
+					//if(ClaimProcs.ProcIsPaid(Procedures.Cur.ProcNum)){//if also paid on
+					//	butDelete.Enabled=false;
+					//	labelClaim.Text+="  "
+					//		+Lan.g(this,"You can not delete a procedure that is attached to a payment.");
+					//}
 				}
 			}
 			SetControls();
@@ -1103,8 +1144,9 @@ namespace OpenDental{
 		}//end SetControls
 
 		private void computeEstimates(){
+			double amt;
 			try{
-				double amt=Convert.ToDouble(textAmount.Text.ToString());
+				amt=Convert.ToDouble(textAmount.Text.ToString());
 				Procedures.Cur.ProcFee=PIn.PDouble(textAmount.Text.ToString());
 			}
 			catch{
@@ -1170,7 +1212,6 @@ namespace OpenDental{
         Procedures.Cur.ADACode=FormP.SelectedADA;
         ProcedureCode2 = ProcCodes.GetProcCode(FormP.SelectedADA);
         textDesc.Text=ProcedureCode2.Descript;
-        Fees Fees=new Fees();
         Procedures.Cur.ProcFee=Fees.GetAmount(FormP.SelectedADA,ContrChart.GetFeeSched());
         SetControls();
       }
@@ -1182,6 +1223,7 @@ namespace OpenDental{
 			checkNoBillIns.Enabled=true;
 			butDelete.Enabled=true;
 			butChange.Enabled=true;
+			checkIsCovIns.Enabled=true;
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e){
@@ -1307,7 +1349,8 @@ namespace OpenDental{
 					(Procedures.Cur.ADACode,Procedures.Cur.ToothNum,Procedures.Cur.Surf,false);
 			}
 			if(Procedures.Cur.ADACode!=verifyADA){
-				if(MessageBox.Show(verifyADA+" "+Lan.g(this,"is the recommended procedure code for this procedure.  Change procedure code and fee?"
+				string desc=ProcCodes.GetProcCode(verifyADA).Descript;
+				if(MessageBox.Show(verifyADA+" ("+desc+") "+Lan.g(this,"is the recommended procedure code for this procedure.  Change procedure code and fee?"
 					),"",MessageBoxButtons.YesNo)==DialogResult.Yes){
 					Procedures.Cur.ADACode=verifyADA;
 					Procedures.Cur.ProcFee=Fees.GetAmount(Procedures.Cur.ADACode,ContrChart.GetFeeSched());
@@ -1395,11 +1438,24 @@ namespace OpenDental{
 			}
 			if(IsNew){
 				DialogResult=DialogResult.Cancel;
+				return;
 			}
-			else{
-				Procedures.DeleteCur();
-				DialogResult=DialogResult.OK;
-			}	
+			else if(ClaimProcs.ProcIsAttached(Procedures.Cur.ProcNum)){//attached to claim
+				ClaimProcs.Refresh();
+				if(ClaimProcs.ProcIsPaid(Procedures.Cur.ProcNum)){//if also paid on
+					MessageBox.Show
+						(Lan.g(this,"Not allowed to delete a procedure that is attached to a payment."));
+					return;
+				}
+				for(int i=0;i<ClaimProcs.List.Length;i++){
+					if(ClaimProcs.List[i].ProcNum==Procedures.Cur.ProcNum){
+						ClaimProcs.Cur=ClaimProcs.List[i];
+						ClaimProcs.DeleteCur();
+					}
+				}
+			}
+			Procedures.DeleteCur();
+			DialogResult=DialogResult.OK;
 		}
 
 		private void butCancel_Click(object sender, System.EventArgs e) {

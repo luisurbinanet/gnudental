@@ -1,5 +1,5 @@
 /*=============================================================================================================
-FreeDental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
+Open Dental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
 See header in FormOpenDental.cs for complete text.  Redistributions must retain this text.
 ===============================================================================================================*/
 using System;
@@ -33,18 +33,18 @@ namespace OpenDental{
 		private System.Windows.Forms.ListBox listPayType;
 		private double tot=0;
 		private System.Windows.Forms.GroupBox groupBox1;
-		private System.Windows.Forms.Button butDiscount;
-		private System.Windows.Forms.Button butAdd;
 		private System.Windows.Forms.TextBox textBox1;
 		private System.Windows.Forms.Label label9;
 		private System.Windows.Forms.Button butDeleteAll;
-		private System.Windows.Forms.Button butDeleteSplit;
 		private OpenDental.TablePaySplits tbSplits;
 		private double[] startBal;
 		private double[] newBal;
 		private int patI;
 		private System.Windows.Forms.Label label10;
-		private int paymentCount;//(not including discounts)
+		private int paymentCount;
+		private OpenDental.XPButton butDeleteSplit;
+		private OpenDental.XPButton butAdd;
+		private OpenDental.XPButton butDiscount;//(not including discounts)
 		private bool NoPermission=false;
 
 		public FormPayment(){
@@ -107,13 +107,13 @@ namespace OpenDental{
 			this.textDate = new OpenDental.ValidDate();
 			this.textAmount = new OpenDental.ValidDouble();
 			this.label8 = new System.Windows.Forms.Label();
-			this.butDiscount = new System.Windows.Forms.Button();
 			this.listPayType = new System.Windows.Forms.ListBox();
 			this.tbSplits = new OpenDental.TablePaySplits();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.butDiscount = new OpenDental.XPButton();
 			this.textBox1 = new System.Windows.Forms.TextBox();
-			this.butAdd = new System.Windows.Forms.Button();
-			this.butDeleteSplit = new System.Windows.Forms.Button();
+			this.butAdd = new OpenDental.XPButton();
+			this.butDeleteSplit = new OpenDental.XPButton();
 			this.label9 = new System.Windows.Forms.Label();
 			this.label10 = new System.Windows.Forms.Label();
 			this.groupBox1.SuspendLayout();
@@ -121,24 +121,31 @@ namespace OpenDental{
 			// 
 			// butDeleteAll
 			// 
+			this.butDeleteAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butDeleteAll.Location = new System.Drawing.Point(42, 636);
 			this.butDeleteAll.Name = "butDeleteAll";
+			this.butDeleteAll.Size = new System.Drawing.Size(75, 26);
 			this.butDeleteAll.TabIndex = 7;
 			this.butDeleteAll.Text = "Delete";
 			this.butDeleteAll.Click += new System.EventHandler(this.butDeleteAll_Click);
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(688, 546);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 8;
 			this.butOK.Text = "OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// butCancel
 			// 
+			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(688, 582);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 9;
 			this.butCancel.Text = "Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
@@ -262,18 +269,6 @@ namespace OpenDental{
 			this.label8.Text = "Total Splits:";
 			this.label8.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
-			// butDiscount
-			// 
-			this.butDiscount.Image = ((System.Drawing.Image)(resources.GetObject("butDiscount.Image")));
-			this.butDiscount.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDiscount.Location = new System.Drawing.Point(266, 22);
-			this.butDiscount.Name = "butDiscount";
-			this.butDiscount.Size = new System.Drawing.Size(90, 26);
-			this.butDiscount.TabIndex = 2;
-			this.butDiscount.Text = "         Discount";
-			this.butDiscount.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDiscount.Click += new System.EventHandler(this.butDiscount_Click);
-			// 
 			// listPayType
 			// 
 			this.listPayType.Location = new System.Drawing.Point(346, 14);
@@ -293,16 +288,32 @@ namespace OpenDental{
 			// 
 			// groupBox1
 			// 
+			this.groupBox1.Controls.Add(this.butDiscount);
 			this.groupBox1.Controls.Add(this.textBox1);
 			this.groupBox1.Controls.Add(this.butAdd);
 			this.groupBox1.Controls.Add(this.butDeleteSplit);
-			this.groupBox1.Controls.Add(this.butDiscount);
+			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupBox1.Location = new System.Drawing.Point(46, 516);
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.Size = new System.Drawing.Size(568, 100);
 			this.groupBox1.TabIndex = 6;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Edit Splits";
+			// 
+			// butDiscount
+			// 
+			this.butDiscount.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butDiscount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butDiscount.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butDiscount.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butDiscount.Image = ((System.Drawing.Image)(resources.GetObject("butDiscount.Image")));
+			this.butDiscount.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butDiscount.Location = new System.Drawing.Point(246, 24);
+			this.butDiscount.Name = "butDiscount";
+			this.butDiscount.Size = new System.Drawing.Size(92, 26);
+			this.butDiscount.TabIndex = 32;
+			this.butDiscount.Text = "Discount";
+			this.butDiscount.Click += new System.EventHandler(this.butDiscount_Click);
 			// 
 			// textBox1
 			// 
@@ -318,26 +329,32 @@ namespace OpenDental{
 			// 
 			// butAdd
 			// 
+			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butAdd.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butAdd.BtnStyle = OpenDental.enumType.XPStyle.Silver;
 			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
 			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAdd.Location = new System.Drawing.Point(156, 22);
+			this.butAdd.Location = new System.Drawing.Point(134, 24);
 			this.butAdd.Name = "butAdd";
-			this.butAdd.Size = new System.Drawing.Size(74, 26);
-			this.butAdd.TabIndex = 1;
-			this.butAdd.Text = "           Add";
-			this.butAdd.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butAdd.Size = new System.Drawing.Size(75, 26);
+			this.butAdd.TabIndex = 30;
+			this.butAdd.Text = "Add";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
 			// butDeleteSplit
 			// 
+			this.butDeleteSplit.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butDeleteSplit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butDeleteSplit.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butDeleteSplit.BtnStyle = OpenDental.enumType.XPStyle.Silver;
 			this.butDeleteSplit.Image = ((System.Drawing.Image)(resources.GetObject("butDeleteSplit.Image")));
 			this.butDeleteSplit.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDeleteSplit.Location = new System.Drawing.Point(36, 22);
+			this.butDeleteSplit.Location = new System.Drawing.Point(24, 24);
 			this.butDeleteSplit.Name = "butDeleteSplit";
-			this.butDeleteSplit.Size = new System.Drawing.Size(80, 26);
-			this.butDeleteSplit.TabIndex = 0;
-			this.butDeleteSplit.Text = "         Delete";
-			this.butDeleteSplit.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butDeleteSplit.Size = new System.Drawing.Size(75, 26);
+			this.butDeleteSplit.TabIndex = 31;
+			this.butDeleteSplit.Text = "Delete";
 			this.butDeleteSplit.Click += new System.EventHandler(this.butDeleteSplit_Click);
 			// 
 			// label9
@@ -360,8 +377,8 @@ namespace OpenDental{
 			// FormPayment
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(800, 682);
-			this.ControlBox = false;
 			this.Controls.Add(this.label10);
 			this.Controls.Add(this.label9);
 			this.Controls.Add(this.groupBox1);
@@ -384,9 +401,13 @@ namespace OpenDental{
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.butDeleteAll);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormPayment";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Payment";
+			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormPayment_Closing);
 			this.Load += new System.EventHandler(this.FormPayment_Load);
 			this.groupBox1.ResumeLayout(false);
 			this.ResumeLayout(false);
@@ -529,7 +550,7 @@ namespace OpenDental{
 			double discAmt=PaySplits.Cur.SplitAmt;
 			PaySplits.Cur=Edit2.DiscountBasis;
 			PaySplits.Cur.SplitAmt-=discAmt;
-			PaySplits.PutBal(PaySplits.Cur.PatNum,PaySplits.Cur.ProcDate,-discAmt);
+			//PaySplits.PutBal(PaySplits.Cur.PatNum,PaySplits.Cur.ProcDate,-discAmt);
 			PaySplits.UpdateCur();
 			FillTable(true);
 			
@@ -601,10 +622,15 @@ namespace OpenDental{
 			//delete Cur and all linked paysplits
 			DeleteAll();
 			DialogResult=DialogResult.OK;
-			Close();
 		}
 
-		private void butCancel_Click(object sender, System.EventArgs e) {
+		private void butCancel_Click(object sender, System.EventArgs e) {			
+			DialogResult=DialogResult.Cancel;
+		}
+
+		private void FormPayment_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+			if(DialogResult==DialogResult.OK)
+				return;
 			if(IsNew){ //delete Cur. and all linked paysplits
 				if(MessageBox.Show(Lan.g(this,"Delete all splits and cancel this payment?"),"",MessageBoxButtons.OKCancel)==DialogResult.OK){
 					DeleteAll();
@@ -616,9 +642,7 @@ namespace OpenDental{
 			else if(Payments.Cur.PayAmt!=tot){
 				MessageBox.Show(Lan.g(this,"Splits have been altered.  Payment must match splits."));
 				return;
-			}																																																																	
-			DialogResult=DialogResult.Cancel;
-			Close();
+			}	
 		}
 		
 	}

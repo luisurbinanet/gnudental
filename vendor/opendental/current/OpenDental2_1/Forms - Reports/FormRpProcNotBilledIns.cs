@@ -97,6 +97,7 @@ namespace OpenDental{
 			// 
 			// radioRange
 			// 
+			this.radioRange.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioRange.Location = new System.Drawing.Point(8, 32);
 			this.radioRange.Name = "radioRange";
 			this.radioRange.Size = new System.Drawing.Size(88, 24);
@@ -106,6 +107,7 @@ namespace OpenDental{
 			// radioSingle
 			// 
 			this.radioSingle.Checked = true;
+			this.radioSingle.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioSingle.Location = new System.Drawing.Point(8, 8);
 			this.radioSingle.Name = "radioSingle";
 			this.radioSingle.Size = new System.Drawing.Size(88, 24);
@@ -117,6 +119,7 @@ namespace OpenDental{
 			// butCancel
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(520, 328);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 4;
@@ -124,6 +127,7 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(520, 296);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 3;
@@ -140,7 +144,10 @@ namespace OpenDental{
 			this.Controls.Add(this.date2);
 			this.Controls.Add(this.date1);
 			this.Controls.Add(this.labelTO);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormRpProcNotBilledIns";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Procedures Not Billed to Insurance";
 			this.Load += new System.EventHandler(this.FormProcNotAttach_Load);
@@ -155,11 +162,13 @@ namespace OpenDental{
 		}
 		private void butOK_Click(object sender, System.EventArgs e) {
 			Queries.CurReport=new Report();
-			if(radioRange.Checked==true){
+			if(radioRange.Checked){
 				Queries.CurReport.Query="SELECT CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI),"
 					+"procedurelog.ProcDate,procedurecode.Descript,procedurelog.ProcFee FROM patient,procedurecode,"
-					+"procedurelog WHERE patient.patnum=procedurelog.patnum && procedurelog.adacode=procedurecode.adacode "
-					+"&& procedurelog.claimnum = 0 && patient.priplannum > 0 "
+					+"procedurelog LEFT JOIN claimproc ON claimproc.procnum = procedurelog.procnum "
+					+"WHERE claimproc.procnum IS NULL "
+					+"&& patient.patnum = procedurelog.patnum && procedurelog.adacode = procedurecode.adacode "
+					+"&& patient.priplannum > 0 "
 					+"&& procedurelog.nobillins = 0 && procedurelog.procstatus = 2 "
 					+"&& procedurelog.ProcDate >= '" + date1.SelectionStart.ToString("yyyy-MM-dd")+"' "
 					+"&& procedurelog.ProcDate <= '" + date2.SelectionStart.ToString("yyyy-MM-dd")+"'";
@@ -167,8 +176,10 @@ namespace OpenDental{
 			else{
 				Queries.CurReport.Query="SELECT CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI),"
 					+"procedurelog.ProcDate,procedurecode.Descript,procedurelog.ProcFee FROM patient,procedurecode,"
-					+"procedurelog WHERE patient.patnum=procedurelog.patnum && procedurelog.adacode=procedurecode.adacode "
-					+"&& procedurelog.claimnum = 0 && patient.priplannum > 0 "
+					+"procedurelog LEFT JOIN claimproc ON claimproc.procnum = procedurelog.procnum "
+					+"WHERE claimproc.procnum IS NULL "
+					+"&& patient.patnum=procedurelog.patnum && procedurelog.adacode=procedurecode.adacode "
+					+"&& patient.priplannum > 0 "
 					+"&& procedurelog.nobillins = 0 && procedurelog.procstatus = 2 "
 					+"&& procedurelog.ProcDate = '" + date1.SelectionStart.ToString("yyyy-MM-dd")+"'";
 			}

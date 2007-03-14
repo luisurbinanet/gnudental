@@ -1,5 +1,5 @@
 /*=============================================================================================================
-FreeDental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
+Open Dental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
 See header in FormOpenDental.cs for complete text.  Redistributions must retain this text.
 ===============================================================================================================*/
 using System;
@@ -107,6 +107,7 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(331, 314);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 3;
@@ -115,6 +116,7 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(429, 314);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 4;
@@ -169,9 +171,12 @@ namespace OpenDental{
 			this.Controls.Add(this.label4);
 			this.Controls.Add(this.textFileName);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormDocInfo";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = Lan.g(this,"Document Info");
+			this.Text = "Document Info";
 			this.Load += new System.EventHandler(this.FormDocInfo_Load);
 			this.ResumeLayout(false);
 

@@ -8,13 +8,13 @@ namespace OpenDental{
 
 	public class FormBilling : System.Windows.Forms.Form{
 		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butOK;
 		private OpenDental.ContrAccount contrAccount1;
 		private System.Windows.Forms.Button butAll;
 		private System.Windows.Forms.Button butNone;
 		private OpenDental.TableBilling tbBill;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.Button butPrint;
 		private System.ComponentModel.Container components = null;
 
 		public FormBilling(){
@@ -25,7 +25,7 @@ namespace OpenDental{
 				butNone
 			});
 			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
+				butPrint,
 				butCancel,
 			});
 		}
@@ -43,7 +43,7 @@ namespace OpenDental{
 
 		private void InitializeComponent(){
 			this.butCancel = new System.Windows.Forms.Button();
-			this.butOK = new System.Windows.Forms.Button();
+			this.butPrint = new System.Windows.Forms.Button();
 			this.contrAccount1 = new OpenDental.ContrAccount();
 			this.butNone = new System.Windows.Forms.Button();
 			this.butAll = new System.Windows.Forms.Button();
@@ -55,19 +55,21 @@ namespace OpenDental{
 			// butCancel
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(576, 662);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 1;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			// 
-			// butOK
+			// butPrint
 			// 
-			this.butOK.BackColor = System.Drawing.SystemColors.Control;
-			this.butOK.Location = new System.Drawing.Point(576, 628);
-			this.butOK.Name = "butOK";
-			this.butOK.TabIndex = 0;
-			this.butOK.Text = "Print";
-			this.butOK.Click += new System.EventHandler(this.butOK_Click);
+			this.butPrint.BackColor = System.Drawing.SystemColors.Control;
+			this.butPrint.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butPrint.Location = new System.Drawing.Point(576, 628);
+			this.butPrint.Name = "butPrint";
+			this.butPrint.TabIndex = 0;
+			this.butPrint.Text = "&Print";
+			this.butPrint.Click += new System.EventHandler(this.butPrint_Click);
 			// 
 			// contrAccount1
 			// 
@@ -79,6 +81,7 @@ namespace OpenDental{
 			// 
 			// butNone
 			// 
+			this.butNone.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butNone.Location = new System.Drawing.Point(134, 662);
 			this.butNone.Name = "butNone";
 			this.butNone.TabIndex = 23;
@@ -87,6 +90,7 @@ namespace OpenDental{
 			// 
 			// butAll
 			// 
+			this.butAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butAll.Location = new System.Drawing.Point(42, 662);
 			this.butAll.Name = "butAll";
 			this.butAll.TabIndex = 22;
@@ -122,6 +126,7 @@ namespace OpenDental{
 			// FormBilling
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(672, 692);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.label2);
@@ -130,7 +135,9 @@ namespace OpenDental{
 			this.Controls.Add(this.butAll);
 			this.Controls.Add(this.contrAccount1);
 			this.Controls.Add(this.butCancel);
-			this.Controls.Add(this.butOK);
+			this.Controls.Add(this.butPrint);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormBilling";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Billing";
@@ -154,7 +161,7 @@ namespace OpenDental{
 			tbBill.SetBackGColor(Color.White);  
 			for(int i=0;i<Patients.AgingList.Length;i++){
 				tbBill.Cell[0,i]=Patients.AgingList[i].PatName;
-				tbBill.Cell[1,i]=Patients.AgingList[i].Balance.ToString("F");
+				tbBill.Cell[1,i]=Patients.AgingList[i].BalTotal.ToString("F");
 				tbBill.Cell[2,i]=Patients.AgingList[i].InsEst.ToString("F");
 				tbBill.Cell[3,i]=Patients.AgingList[i].AmountDue.ToString("F");
 			}
@@ -169,7 +176,7 @@ namespace OpenDental{
 			tbBill.SetSelected(false);
 		}
 
-		private void butOK_Click(object sender, System.EventArgs e) {
+		private void butPrint_Click(object sender, System.EventArgs e) {
 			if(tbBill.SelectedIndices.Length==0){
 				MessageBox.Show(Lan.g(this,"Please select items first."));
 				return;

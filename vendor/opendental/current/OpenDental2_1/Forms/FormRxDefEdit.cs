@@ -152,6 +152,7 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(438, 318);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 5;
@@ -160,6 +161,7 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(438, 358);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 6;
@@ -182,7 +184,10 @@ namespace OpenDental{
 			this.Controls.Add(this.label4);
 			this.Controls.Add(this.label3);
 			this.Controls.Add(this.label1);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormRxDefEdit";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Edit Rx Template";
 			this.Load += new System.EventHandler(this.FormRxDefEdit_Load);

@@ -15,9 +15,9 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textStop;
 		private System.Windows.Forms.Button butOK;
 		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butDelete;
 		private System.ComponentModel.Container components = null;
 		public bool IsNew;
+		private OpenDental.XPButton butDelete;
 		private SchedDefaults SchedDefaults=new SchedDefaults();
 
 		public FormBlockEdit(){
@@ -56,7 +56,7 @@ namespace OpenDental{
 			this.textStop = new System.Windows.Forms.TextBox();
 			this.butOK = new System.Windows.Forms.Button();
 			this.butCancel = new System.Windows.Forms.Button();
-			this.butDelete = new System.Windows.Forms.Button();
+			this.butDelete = new OpenDental.XPButton();
 			this.SuspendLayout();
 			// 
 			// label1
@@ -89,13 +89,13 @@ namespace OpenDental{
 			// listDay
 			// 
 			this.listDay.Items.AddRange(new object[] {
-																								 Lan.g(this,"Sunday"),
-																								 Lan.g(this,"Monday"),
-																								 Lan.g(this,"Tuesday"),
-																								 Lan.g(this,"Wednesday"),
-																								 Lan.g(this,"Thursday"),
-																								 Lan.g(this,"Friday"),
-																								 Lan.g(this,"Saturday")});
+																								 "Sunday",
+																								 "Monday",
+																								 "Tuesday",
+																								 "Wednesday",
+																								 "Thursday",
+																								 "Friday",
+																								 "Saturday"});
 			this.listDay.Location = new System.Drawing.Point(68, 68);
 			this.listDay.Name = "listDay";
 			this.listDay.Size = new System.Drawing.Size(102, 95);
@@ -117,6 +117,7 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(96, 178);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
@@ -127,6 +128,7 @@ namespace OpenDental{
 			// butCancel
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(96, 212);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
@@ -135,13 +137,16 @@ namespace OpenDental{
 			// 
 			// butDelete
 			// 
+			this.butDelete.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butDelete.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butDelete.BtnStyle = OpenDental.enumType.XPStyle.Silver;
 			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butDelete.Location = new System.Drawing.Point(10, 212);
 			this.butDelete.Name = "butDelete";
 			this.butDelete.Size = new System.Drawing.Size(75, 26);
-			this.butDelete.TabIndex = 4;
-			this.butDelete.Text = "       Delete";
+			this.butDelete.TabIndex = 7;
+			this.butDelete.Text = "Delete";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
 			// 
 			// FormBlockEdit
@@ -157,9 +162,12 @@ namespace OpenDental{
 			this.Controls.Add(this.label3);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label1);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormBlockEdit";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = Lan.g(this,"Edit Block");
+			this.Text = "Edit Block";
 			this.Load += new System.EventHandler(this.FormBlockEdit_Load);
 			this.ResumeLayout(false);
 

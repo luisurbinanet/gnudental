@@ -45,6 +45,7 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(194, 58);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 0;
@@ -54,10 +55,12 @@ namespace OpenDental{
 			// butCancel
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(194, 94);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 1;
 			this.butCancel.Text = "Cancel";
+			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// text2
 			// 
@@ -80,14 +83,16 @@ namespace OpenDental{
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(292, 140);
-			this.Controls.AddRange(new System.Windows.Forms.Control[] {
-																																	this.label1,
-																																	this.text2,
-																																	this.butCancel,
-																																	this.butOK});
+			this.Controls.Add(this.label1);
+			this.Controls.Add(this.text2);
+			this.Controls.Add(this.butCancel);
+			this.Controls.Add(this.butOK);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormPercentEdit";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = Lan.g(this,"Edit Percent");
+			this.Text = "Edit Percent";
 			this.Load += new System.EventHandler(this.FormPercentEdit_Load);
 			this.ResumeLayout(false);
 
@@ -126,6 +131,10 @@ namespace OpenDental{
 				return;
 			}
 			DialogResult=DialogResult.OK;
+		}
+
+		private void butCancel_Click(object sender, System.EventArgs e) {
+		
 		}
 
 	}

@@ -61,6 +61,7 @@ namespace OpenDental
 			// 
 			// butClose
 			// 
+			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butClose.Location = new System.Drawing.Point(509, 266);
 			this.butClose.Name = "butClose";
 			this.butClose.TabIndex = 0;
@@ -69,6 +70,7 @@ namespace OpenDental
 			// 
 			// butReformat
 			// 
+			this.butReformat.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butReformat.Location = new System.Drawing.Point(17, 31);
 			this.butReformat.Name = "butReformat";
 			this.butReformat.Size = new System.Drawing.Size(108, 23);
@@ -82,8 +84,9 @@ namespace OpenDental
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(478, 57);
 			this.label1.TabIndex = 2;
-			this.label1.Text = "Reformat all phone numbers in the database to (###)###-####.  Only specific match" +
-				"es will be reformatted.  No trailing comments will be affected.";
+			this.label1.Text = "Reformat all phone numbers in the database to (###)###-####.  Only certain matche" +
+				"s will be reformatted.  No numbers will be lost, and no trailing comments will b" +
+				"e affected.";
 			// 
 			// FormTelephone
 			// 
@@ -92,7 +95,10 @@ namespace OpenDental
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.butReformat);
 			this.Controls.Add(this.butClose);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormTelephone";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Telephone Tools";
 			this.Load += new System.EventHandler(this.FormTelephone_Load);
@@ -106,7 +112,7 @@ namespace OpenDental
 		}
 		
 		private void butClose_Click(object sender, System.EventArgs e) {
-			DialogResult=DialogResult.OK;
+			Close();
 		}
 
 		private void butReformat_Click(object sender, System.EventArgs e) {

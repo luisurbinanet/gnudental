@@ -17,10 +17,10 @@ namespace OpenDental{
 			HeadingIsPresent=false;
 			InstantClassesPar();
 			SetRowHeight(0,19,14);
-			Fields[0]=Lan.g("tbQueue","Patient Name");
-			Fields[1]=Lan.g("tbQueue","Type");
-			Fields[2]=Lan.g("tbQueue","Carrier Name");
-			Fields[3]=Lan.g("tbQueue","Status");
+			Fields[0]=Lan.g("TableQueue","Patient Name");
+			Fields[1]=Lan.g("TableQueue","NoE");
+			Fields[2]=Lan.g("TableQueue","Carrier Name");
+			Fields[3]=Lan.g("TableQueue","Status");
 
 			ColWidth[0]=100;
 			ColWidth[1]=50;

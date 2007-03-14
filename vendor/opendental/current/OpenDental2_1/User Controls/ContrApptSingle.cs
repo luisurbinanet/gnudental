@@ -1,5 +1,5 @@
 /*=============================================================================================================
-FreeDental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
+Open Dental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
 See header in FormOpenDental.cs for complete text.  Redistributions must retain this text.
 ===============================================================================================================*/
 using System;
@@ -71,6 +71,7 @@ namespace OpenDental{
 			if(Shadow!=null){
 				Shadow=null;
 			}
+			//MessageBox.Show(Width.ToString());
 			Shadow=new Bitmap(Width,Height);
 			Graphics grfx = Graphics.FromImage(Shadow);//pea.Graphics;
 			Pen penB = new Pen(Color.Black);
@@ -106,15 +107,15 @@ namespace OpenDental{
 					//grfx.FillRectangle(new SolidBrush(Color.LightBlue),9,i*ContrApptSheet.Lh,Width-10,(i+1)*ContrApptSheet.Lh);
 				}
 				if (i==0)
-					grfx.DrawString(Lan.g(this,Info.Lines[i]),fontSF,new SolidBrush(Color.Black),13,i*ContrApptSheet.Lh);
+					grfx.DrawString(Info.Lines[i],fontSF,new SolidBrush(Color.Black),13,i*ContrApptSheet.Lh);
 				else
-					grfx.DrawString(Lan.g(this,Info.Lines[i]),fontSF,new SolidBrush(Color.Black),9,i*ContrApptSheet.Lh);
+					grfx.DrawString(Info.Lines[i],fontSF,new SolidBrush(Color.Black),9,i*ContrApptSheet.Lh);
 
 			}
 			grfx.DrawRectangle(new Pen(Color.Black),0,0,Width-1,Height-1);
 			grfx.FillRectangle(new SolidBrush(Color.White),1,1,12,ContrApptSheet.Lh-2);
 			grfx.DrawRectangle(new Pen(Color.Black),0,0,13,ContrApptSheet.Lh-1);//started out as 11
-			grfx.DrawString(Lan.g(this,Info.CreditAndIns),fontSF,new SolidBrush(Color.Black),0,-1);
+			grfx.DrawString(Info.CreditAndIns,fontSF,new SolidBrush(Color.Black),0,-1);
 			//if (apptIsSelected)
 				//if (selectedIndex==myIndex){
 			if(PinBoardIsSelected & ThisIsPinBoard
@@ -148,7 +149,7 @@ namespace OpenDental{
 
 		private int ConvertToX (){
 			return ContrApptSheet.TimeWidth+ContrApptSheet.ProvWidth*ContrApptSheet.ProvCount
-				+ContrApptSheet.ColWidth*(Defs.GetOrder(DefCat.Operatories,Info.MyApt.Op))+1;
+				+ContrApptSheet.ColWidth*(ApptViewItems.GetIndexOp(Info.MyApt.Op))+1;
 		}
 
 		public int ConvertToY (){

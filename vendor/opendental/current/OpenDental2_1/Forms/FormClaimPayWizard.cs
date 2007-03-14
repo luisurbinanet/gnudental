@@ -27,6 +27,7 @@ namespace OpenDental
 		private System.Windows.Forms.Label label10;
 		private System.Windows.Forms.Button button1;
 		private System.Windows.Forms.Label label12;
+		private System.Windows.Forms.Label label1;
 		private System.ComponentModel.Container components = null;
 
 		public FormClaimPayWizard(){
@@ -82,6 +83,7 @@ namespace OpenDental
 			this.label10 = new System.Windows.Forms.Label();
 			this.button1 = new System.Windows.Forms.Button();
 			this.label12 = new System.Windows.Forms.Label();
+			this.label1 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// butOK
@@ -222,10 +224,21 @@ namespace OpenDental
 			this.label12.TabIndex = 89;
 			this.label12.Text = "Instructions if Needed:";
 			// 
+			// label1
+			// 
+			this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.label1.ForeColor = System.Drawing.Color.Red;
+			this.label1.Location = new System.Drawing.Point(260, 18);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(204, 66);
+			this.label1.TabIndex = 90;
+			this.label1.Text = "THIS FORM IS OBSOLETE";
+			// 
 			// FormClaimPayWizard
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(516, 384);
+			this.Controls.Add(this.label1);
 			this.Controls.Add(this.label12);
 			this.Controls.Add(this.button1);
 			this.Controls.Add(this.label10);
@@ -244,7 +257,7 @@ namespace OpenDental
 			this.Controls.Add(this.butOK);
 			this.Name = "FormClaimPayWizard";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = Lan.g(this,"Claim Payment Entry Wizard");
+			this.Text = "Claim Payment Entry Wizard";
 			this.Load += new System.EventHandler(this.FormClaimPayWizard_Load);
 			this.ResumeLayout(false);
 

@@ -18,11 +18,10 @@ namespace OpenDental{
 			HeadingIsPresent=false;
 			InstantClassesPar();
 			SetRowHeight(0,19,14);
-			Fields[0]=Lan.g("tbZips","ZipCode");
-			Fields[1]=Lan.g("tbZips","City");
-			Fields[2]=Lan.g("tbZips","State");
-			Fields[3]=Lan.g("tbZips","Frequent");
-
+			Fields[0]=Lan.g("TableZips","ZipCode");
+			Fields[1]=Lan.g("TableZips","City");
+			Fields[2]=Lan.g("TableZips","State");
+			Fields[3]=Lan.g("TableZips","Frequent");
 			ColWidth[0]=100;
 			ColWidth[1]=200;
 			ColWidth[2]=100;

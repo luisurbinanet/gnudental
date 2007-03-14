@@ -1,5 +1,5 @@
 /*=============================================================================================================
-FreeDental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
+Open Dental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
 See header in FormOpenDental.cs for complete text.  Redistributions must retain this text.
 ===============================================================================================================*/
 using System;
@@ -132,6 +132,7 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(144, 134);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 4;
@@ -140,7 +141,7 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
-			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(238, 134);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 5;
@@ -149,6 +150,7 @@ namespace OpenDental{
 			// 
 			// checkHidden
 			// 
+			this.checkHidden.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkHidden.Location = new System.Drawing.Point(432, 38);
 			this.checkHidden.Name = "checkHidden";
 			this.checkHidden.Size = new System.Drawing.Size(70, 24);
@@ -159,7 +161,6 @@ namespace OpenDental{
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(558, 176);
-			this.ControlBox = false;
 			this.Controls.Add(this.checkHidden);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
@@ -169,10 +170,12 @@ namespace OpenDental{
 			this.Controls.Add(this.textName);
 			this.Controls.Add(this.labelValue);
 			this.Controls.Add(this.labelName);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormDefEdit";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = Lan.g(this,"Edit Definition");
+			this.Text = "Edit Definition";
 			this.Load += new System.EventHandler(this.FormDefEdit_Load);
 			this.ResumeLayout(false);
 
@@ -214,7 +217,7 @@ namespace OpenDental{
 		}
 
 		private void butCancel_Click(object sender, System.EventArgs e) {
-		
+			DialogResult=DialogResult.Cancel;
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
@@ -235,12 +238,12 @@ namespace OpenDental{
 					}
 					//test for not require tooth number if time
 					break;
-				case DefCat.ClaimFormats:
-					if(textValue.Text!="ADA2002" && textValue.Text!="eclaim"){
-						MessageBox.Show(Lan.g(this,"Value must equal ADA2002 or eclaim"));
-						return;
-					}
-					break;
+				//case DefCat.ClaimFormats:
+				//	if(textValue.Text!="ADA2002" && textValue.Text!="eclaim"){
+				//		MessageBox.Show(Lan.g(this,"Value must equal ADA2002 or eclaim"));
+				//		return;
+				//	}
+				//	break;
 				case DefCat.RecallUnschedStatus:
 					if(textValue.Text.Length > 7){
 						MessageBox.Show(Lan.g(this,"Maximum length is 7."));

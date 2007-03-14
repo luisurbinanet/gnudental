@@ -49,11 +49,12 @@ namespace OpenDental{
 			this.tbPerm.Name = "tbPerm";
 			this.tbPerm.SelectedIndices = new int[0];
 			this.tbPerm.SelectionMode = System.Windows.Forms.SelectionMode.One;
-			this.tbPerm.Size = new System.Drawing.Size(519, 356);
+			this.tbPerm.Size = new System.Drawing.Size(529, 356);
 			this.tbPerm.TabIndex = 0;
 			// 
 			// butClose
 			// 
+			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butClose.Location = new System.Drawing.Point(570, 418);
 			this.butClose.Name = "butClose";
 			this.butClose.TabIndex = 4;
@@ -62,6 +63,7 @@ namespace OpenDental{
 			// 
 			// butAll
 			// 
+			this.butAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butAll.Location = new System.Drawing.Point(22, 412);
 			this.butAll.Name = "butAll";
 			this.butAll.TabIndex = 5;
@@ -70,6 +72,7 @@ namespace OpenDental{
 			// 
 			// butNone
 			// 
+			this.butNone.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butNone.Location = new System.Drawing.Point(114, 412);
 			this.butNone.Name = "butNone";
 			this.butNone.TabIndex = 6;
@@ -80,15 +83,18 @@ namespace OpenDental{
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(662, 462);
-			this.ControlBox = false;
 			this.Controls.Add(this.butNone);
 			this.Controls.Add(this.butAll);
 			this.Controls.Add(this.butClose);
 			this.Controls.Add(this.tbPerm);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormPermissionsManage";
+			this.ShowInTaskbar = false;
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Manage Permissions";
+			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormPermissionsManage_Closing);
 			this.Load += new System.EventHandler(this.FormManagePermissions_Load);
 			this.ResumeLayout(false);
 
@@ -193,8 +199,11 @@ namespace OpenDental{
 		}
 
 		private void butClose_Click(object sender, System.EventArgs e) {
+			Close();
+		}
+
+		private void FormPermissionsManage_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
 			SecurityLogs.MakeLogEntry("Security Administration","Altered Permissions");
-			DialogResult=DialogResult.OK;
 		}
 
 		

@@ -24,12 +24,8 @@ namespace OpenDental{
 		private System.Drawing.Printing.PrintDocument pd2;
 		private System.Windows.Forms.PrintDialog printDialog2;
 		private System.Windows.Forms.PrintPreviewControl printPreviewControl2;
-		private System.Windows.Forms.Button butPrint;
 		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butExport;
 		private System.Windows.Forms.SaveFileDialog saveFileDialog2;
-		private System.Windows.Forms.Button butZoomIn;
-		private System.Windows.Forms.Button butZoomOut;
 
 		private IDataObject clipboard;
 		private Bitmap imageTemp;
@@ -54,6 +50,10 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textMouseY;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label label3;
+		private OpenDental.XPButton butPrint;
+		private OpenDental.XPButton butZoomIn;
+		private OpenDental.XPButton butZoomOut;
+		private OpenDental.XPButton butExport;
 
 		private System.ComponentModel.Container components = null;
 
@@ -93,16 +93,16 @@ namespace OpenDental{
 			this.printPreviewControl2 = new System.Windows.Forms.PrintPreviewControl();
 			this.pd2 = new System.Drawing.Printing.PrintDocument();
 			this.printDialog2 = new System.Windows.Forms.PrintDialog();
-			this.butPrint = new System.Windows.Forms.Button();
 			this.butCancel = new System.Windows.Forms.Button();
-			this.butExport = new System.Windows.Forms.Button();
 			this.saveFileDialog2 = new System.Windows.Forms.SaveFileDialog();
-			this.butZoomIn = new System.Windows.Forms.Button();
-			this.butZoomOut = new System.Windows.Forms.Button();
 			this.textMouseX = new System.Windows.Forms.TextBox();
 			this.textMouseY = new System.Windows.Forms.TextBox();
 			this.label2 = new System.Windows.Forms.Label();
 			this.label3 = new System.Windows.Forms.Label();
+			this.butPrint = new OpenDental.XPButton();
+			this.butZoomIn = new OpenDental.XPButton();
+			this.butZoomOut = new OpenDental.XPButton();
+			this.butExport = new OpenDental.XPButton();
 			this.SuspendLayout();
 			// 
 			// label1
@@ -129,62 +129,16 @@ namespace OpenDental{
 			// 
 			this.pd2.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.pd2_PrintPage);
 			// 
-			// butPrint
-			// 
-			this.butPrint.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butPrint.Image = ((System.Drawing.Image)(resources.GetObject("butPrint.Image")));
-			this.butPrint.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butPrint.Location = new System.Drawing.Point(682, 760);
-			this.butPrint.Name = "butPrint";
-			this.butPrint.TabIndex = 2;
-			this.butPrint.Text = "          Print";
-			this.butPrint.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butPrint.Click += new System.EventHandler(this.butPrint_Click);
-			// 
 			// butCancel
 			// 
 			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(884, 760);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 4;
 			this.butCancel.Text = "Close";
-			// 
-			// butExport
-			// 
-			this.butExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butExport.Image = ((System.Drawing.Image)(resources.GetObject("butExport.Image")));
-			this.butExport.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butExport.Location = new System.Drawing.Point(770, 760);
-			this.butExport.Name = "butExport";
-			this.butExport.TabIndex = 3;
-			this.butExport.Text = "Export";
-			this.butExport.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.butExport.Click += new System.EventHandler(this.butExport_Click);
-			// 
-			// butZoomIn
-			// 
-			this.butZoomIn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butZoomIn.Image = ((System.Drawing.Image)(resources.GetObject("butZoomIn.Image")));
-			this.butZoomIn.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butZoomIn.Location = new System.Drawing.Point(504, 760);
-			this.butZoomIn.Name = "butZoomIn";
-			this.butZoomIn.TabIndex = 0;
-			this.butZoomIn.Text = "Zoom +";
-			this.butZoomIn.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.butZoomIn.Click += new System.EventHandler(this.butZoomIn_Click);
-			// 
-			// butZoomOut
-			// 
-			this.butZoomOut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butZoomOut.Image = ((System.Drawing.Image)(resources.GetObject("butZoomOut.Image")));
-			this.butZoomOut.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butZoomOut.Location = new System.Drawing.Point(592, 760);
-			this.butZoomOut.Name = "butZoomOut";
-			this.butZoomOut.TabIndex = 1;
-			this.butZoomOut.Text = "Zoom -";
-			this.butZoomOut.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.butZoomOut.Click += new System.EventHandler(this.butZoomOut_Click);
+			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// textMouseX
 			// 
@@ -226,23 +180,84 @@ namespace OpenDental{
 			this.label3.Text = "MouseY";
 			this.label3.Visible = false;
 			// 
+			// butPrint
+			// 
+			this.butPrint.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butPrint.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butPrint.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butPrint.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butPrint.Image = ((System.Drawing.Image)(resources.GetObject("butPrint.Image")));
+			this.butPrint.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butPrint.Location = new System.Drawing.Point(678, 759);
+			this.butPrint.Name = "butPrint";
+			this.butPrint.Size = new System.Drawing.Size(75, 26);
+			this.butPrint.TabIndex = 13;
+			this.butPrint.Text = "Print";
+			this.butPrint.Click += new System.EventHandler(this.butPrint_Click);
+			// 
+			// butZoomIn
+			// 
+			this.butZoomIn.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butZoomIn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butZoomIn.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butZoomIn.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butZoomIn.Image = ((System.Drawing.Image)(resources.GetObject("butZoomIn.Image")));
+			this.butZoomIn.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butZoomIn.Location = new System.Drawing.Point(504, 759);
+			this.butZoomIn.Name = "butZoomIn";
+			this.butZoomIn.Size = new System.Drawing.Size(75, 26);
+			this.butZoomIn.TabIndex = 14;
+			this.butZoomIn.Text = "Zoom +";
+			this.butZoomIn.Click += new System.EventHandler(this.butZoomIn_Click);
+			// 
+			// butZoomOut
+			// 
+			this.butZoomOut.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butZoomOut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butZoomOut.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butZoomOut.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butZoomOut.Image = ((System.Drawing.Image)(resources.GetObject("butZoomOut.Image")));
+			this.butZoomOut.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butZoomOut.Location = new System.Drawing.Point(591, 759);
+			this.butZoomOut.Name = "butZoomOut";
+			this.butZoomOut.Size = new System.Drawing.Size(75, 26);
+			this.butZoomOut.TabIndex = 15;
+			this.butZoomOut.Text = "Zoom -";
+			this.butZoomOut.Click += new System.EventHandler(this.butZoomOut_Click);
+			// 
+			// butExport
+			// 
+			this.butExport.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butExport.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butExport.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butExport.Image = ((System.Drawing.Image)(resources.GetObject("butExport.Image")));
+			this.butExport.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butExport.Location = new System.Drawing.Point(765, 759);
+			this.butExport.Name = "butExport";
+			this.butExport.Size = new System.Drawing.Size(75, 26);
+			this.butExport.TabIndex = 16;
+			this.butExport.Text = "Export";
+			this.butExport.Click += new System.EventHandler(this.butExport_Click);
+			// 
 			// FormPrntScrn
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(976, 792);
+			this.Controls.Add(this.butExport);
+			this.Controls.Add(this.butZoomOut);
+			this.Controls.Add(this.butZoomIn);
+			this.Controls.Add(this.butPrint);
 			this.Controls.Add(this.label3);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.textMouseY);
 			this.Controls.Add(this.textMouseX);
-			this.Controls.Add(this.butZoomOut);
-			this.Controls.Add(this.butZoomIn);
-			this.Controls.Add(this.butExport);
 			this.Controls.Add(this.butCancel);
-			this.Controls.Add(this.butPrint);
 			this.Controls.Add(this.printPreviewControl2);
 			this.Controls.Add(this.label1);
 			this.Cursor = System.Windows.Forms.Cursors.Default;
 			this.Name = "FormPrntScrn";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Prnt Scrn Tool";
 			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
@@ -261,7 +276,7 @@ namespace OpenDental{
         PrintReport(true);  //sets image as preview document
 			}
 			catch{
-  	    MessageBox.Show(Lan.g(this,"No bitmap is present on clipboard"));	
+  	    MessageBox.Show(Lan.g(this,"Before using this tool, you must first save a screen shot by holding the Alt key down and pressing the PrntScrn button which is just above and to the right of the Backspace key.  You will not notice anything happen, but now you will have a screenshot in memory.  Then, open this tool again to view or print your screenshot."));	
 				butPrint.Enabled=false;
 				butExport.Enabled=false;
 				DialogResult=DialogResult.Cancel;	
@@ -460,6 +475,10 @@ namespace OpenDental{
 			  g.DrawRectangle(Pens.Blue,recCrop);
 			}//end of if(MouseIsDown && e.X > leftBound && e.X < rightBound && e.Y > topBound && e.Y < bottomBound)
 */		
+		}
+
+		private void butCancel_Click(object sender, System.EventArgs e) {
+		
 		}
 	}
 }

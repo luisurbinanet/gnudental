@@ -18,10 +18,10 @@ namespace OpenDental{
 			HeadingIsPresent=false;
 			InstantClassesPar();
 			SetRowHeight(0,19,14);
-			Fields[0]=Lan.g("tbPermissions","Name");
-			Fields[1]=Lan.g("tbPermissions","Require Password");
-			Fields[2]=Lan.g("tbPermissions","Before Date");
-			Fields[3]=Lan.g("tbPermissions","Before Days");
+			Fields[0]=Lan.g("TablePermissions","Name");
+			Fields[1]=Lan.g("TablePermissions","Require Password");
+			Fields[2]=Lan.g("TablePermissions","Before Date");
+			Fields[3]=Lan.g("TablePermissions","Before Days");
 			ColWidth[0]=200;
 			ColWidth[1]=110;
 			ColWidth[2]=100;

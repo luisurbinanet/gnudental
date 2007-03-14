@@ -1,5 +1,5 @@
 /*=============================================================================================================
-FreeDental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
+Open Dental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
 See header in FormOpenDental.cs for complete text.  Redistributions must retain this text.
 ===============================================================================================================*/
 using System;
@@ -19,13 +19,8 @@ using System.Drawing.Printing;
 namespace OpenDental{
 
 	public class ContrAppt : System.Windows.Forms.UserControl{
-		private System.Windows.Forms.Button butBack;
-		private System.Windows.Forms.Button butFwd;
-		private System.Windows.Forms.Button butFwdWk;
-		private System.Windows.Forms.Button butBackWk;
-		private System.Windows.Forms.ToolBar toolBar1;
 		private OpenDental.ContrApptSheet ContrApptSheet2;
-		private ContrApptSingle[] ContrApptSingle3;
+		private ContrApptSingle[] ContrApptSingle3;//the '3' has no significance
 		private System.Windows.Forms.MonthCalendar Calendar2;
 		private System.Windows.Forms.Label labelDate;
 		private System.Windows.Forms.Label labelDate2;
@@ -41,7 +36,6 @@ namespace OpenDental{
 		private System.Windows.Forms.ToolBarButton toolBarButRecall;
 		private bool boolAptMoved=false;
 		private FormUnsched FormUnsched2;
-		private System.Windows.Forms.Button butClearPin;
 		private System.Windows.Forms.Button butToday;
 		private System.Windows.Forms.Button butTodayWk;
 		private System.Windows.Forms.Panel panelPinBoard;
@@ -74,14 +68,28 @@ namespace OpenDental{
 		public static InfoApt CurInfo;
 		private System.Windows.Forms.ToolBarButton toolBarButPat;
 		private System.Windows.Forms.ToolBarButton toolBarButPrint;
-		private System.Windows.Forms.Panel panelAptInfo;
 		private System.Windows.Forms.Panel panelNotes;
 		private System.Windows.Forms.TextBox textApptModNote;
 		private System.Windows.Forms.Button butAptModNoteEdit;
 		private System.Drawing.Printing.PrintDocument pd2;
 		private System.Windows.Forms.PrintDialog printDialog2;
 		public static Size PinboardSize=new Size(106,92);
-		private System.Windows.Forms.Label labelPhone;	
+		private OpenDental.XPButton butBack;
+		private OpenDental.XPButton butClearPin;
+		private OpenDental.XPButton butBackWk;
+		private OpenDental.XPButton butFwdWk;
+		private OpenDental.XPButton butFwd;
+		private System.Windows.Forms.ToolBar toolBar2;
+		private System.Windows.Forms.Panel panelMainTools;
+		private System.Windows.Forms.Button butPat;
+		private System.Windows.Forms.Button butUnschedList;
+		private System.Windows.Forms.Button butRecall;
+		private System.Windows.Forms.Button butPrint;
+		private System.Windows.Forms.Panel panelAptInfo;
+		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.Label labelPhoneType;
+		private System.Windows.Forms.TextBox textPhone;
+		public System.Windows.Forms.ComboBox comboView;	
 	  public FormRpPrintPreview pView = new FormRpPrintPreview();
 
 
@@ -107,11 +115,7 @@ namespace OpenDental{
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(ContrAppt));
 			this.panelPinBoard = new System.Windows.Forms.Panel();
 			this.pictureBox1 = new System.Windows.Forms.PictureBox();
-			this.butBack = new System.Windows.Forms.Button();
-			this.butFwd = new System.Windows.Forms.Button();
-			this.butFwdWk = new System.Windows.Forms.Button();
-			this.butBackWk = new System.Windows.Forms.Button();
-			this.toolBar1 = new System.Windows.Forms.ToolBar();
+			this.toolBar2 = new System.Windows.Forms.ToolBar();
 			this.toolBarButPat = new System.Windows.Forms.ToolBarButton();
 			this.toolBarButUnsched = new System.Windows.Forms.ToolBarButton();
 			this.toolBarButRecall = new System.Windows.Forms.ToolBarButton();
@@ -121,14 +125,16 @@ namespace OpenDental{
 			this.Calendar2 = new System.Windows.Forms.MonthCalendar();
 			this.labelDate = new System.Windows.Forms.Label();
 			this.labelDate2 = new System.Windows.Forms.Label();
-			this.butClearPin = new System.Windows.Forms.Button();
 			this.butToday = new System.Windows.Forms.Button();
 			this.butTodayWk = new System.Windows.Forms.Button();
 			this.panelArrows = new System.Windows.Forms.Panel();
+			this.butBack = new OpenDental.XPButton();
+			this.butFwd = new OpenDental.XPButton();
+			this.butBackWk = new OpenDental.XPButton();
+			this.butFwdWk = new OpenDental.XPButton();
 			this.textApptModNote = new System.Windows.Forms.TextBox();
 			this.textMedicalNote = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
-			this.labelPhone = new System.Windows.Forms.Label();
 			this.textAddressNote = new System.Windows.Forms.TextBox();
 			this.textFinancialNote = new System.Windows.Forms.TextBox();
 			this.label4 = new System.Windows.Forms.Label();
@@ -145,19 +151,30 @@ namespace OpenDental{
 			this.butBreak = new System.Windows.Forms.Button();
 			this.butOther = new System.Windows.Forms.Button();
 			this.panelCalendar = new System.Windows.Forms.Panel();
+			this.comboView = new System.Windows.Forms.ComboBox();
+			this.label2 = new System.Windows.Forms.Label();
+			this.butClearPin = new OpenDental.XPButton();
 			this.panelOps = new System.Windows.Forms.Panel();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this.panelNarrow = new System.Windows.Forms.Panel();
 			this.panelNotes = new System.Windows.Forms.Panel();
+			this.textPhone = new System.Windows.Forms.TextBox();
+			this.labelPhoneType = new System.Windows.Forms.Label();
 			this.butAptModNoteEdit = new System.Windows.Forms.Button();
 			this.pd2 = new System.Drawing.Printing.PrintDocument();
 			this.printDialog2 = new System.Windows.Forms.PrintDialog();
+			this.butPat = new System.Windows.Forms.Button();
+			this.panelMainTools = new System.Windows.Forms.Panel();
+			this.butPrint = new System.Windows.Forms.Button();
+			this.butRecall = new System.Windows.Forms.Button();
+			this.butUnschedList = new System.Windows.Forms.Button();
 			this.panelPinBoard.SuspendLayout();
 			this.panelArrows.SuspendLayout();
 			this.panelSheet.SuspendLayout();
 			this.panelAptInfo.SuspendLayout();
 			this.panelCalendar.SuspendLayout();
 			this.panelNotes.SuspendLayout();
+			this.panelMainTools.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// panelPinBoard
@@ -179,60 +196,27 @@ namespace OpenDental{
 			this.pictureBox1.TabIndex = 0;
 			this.pictureBox1.TabStop = false;
 			// 
-			// butBack
+			// toolBar2
 			// 
-			this.butBack.Image = ((System.Drawing.Image)(resources.GetObject("butBack.Image")));
-			this.butBack.Location = new System.Drawing.Point(0, 0);
-			this.butBack.Name = "butBack";
-			this.butBack.Size = new System.Drawing.Size(18, 22);
-			this.butBack.TabIndex = 8;
-			this.butBack.Click += new System.EventHandler(this.butBack_Click);
-			// 
-			// butFwd
-			// 
-			this.butFwd.Image = ((System.Drawing.Image)(resources.GetObject("butFwd.Image")));
-			this.butFwd.Location = new System.Drawing.Point(82, 0);
-			this.butFwd.Name = "butFwd";
-			this.butFwd.Size = new System.Drawing.Size(18, 22);
-			this.butFwd.TabIndex = 9;
-			this.butFwd.Click += new System.EventHandler(this.butFwd_Click);
-			// 
-			// butFwdWk
-			// 
-			this.butFwdWk.Image = ((System.Drawing.Image)(resources.GetObject("butFwdWk.Image")));
-			this.butFwdWk.Location = new System.Drawing.Point(82, 24);
-			this.butFwdWk.Name = "butFwdWk";
-			this.butFwdWk.Size = new System.Drawing.Size(18, 22);
-			this.butFwdWk.TabIndex = 12;
-			this.butFwdWk.Click += new System.EventHandler(this.butFwdWk_Click);
-			// 
-			// butBackWk
-			// 
-			this.butBackWk.Image = ((System.Drawing.Image)(resources.GetObject("butBackWk.Image")));
-			this.butBackWk.Location = new System.Drawing.Point(0, 24);
-			this.butBackWk.Name = "butBackWk";
-			this.butBackWk.Size = new System.Drawing.Size(18, 22);
-			this.butBackWk.TabIndex = 11;
-			this.butBackWk.Click += new System.EventHandler(this.butBackWk_Click);
-			// 
-			// toolBar1
-			// 
-			this.toolBar1.AutoSize = false;
-			this.toolBar1.Buttons.AddRange(new System.Windows.Forms.ToolBarButton[] {
+			this.toolBar2.Appearance = System.Windows.Forms.ToolBarAppearance.Flat;
+			this.toolBar2.Buttons.AddRange(new System.Windows.Forms.ToolBarButton[] {
 																																								this.toolBarButPat,
 																																								this.toolBarButUnsched,
 																																								this.toolBarButRecall,
 																																								this.toolBarButPrint});
-			this.toolBar1.ButtonSize = new System.Drawing.Size(29, 28);
-			this.toolBar1.Dock = System.Windows.Forms.DockStyle.None;
-			this.toolBar1.DropDownArrows = true;
-			this.toolBar1.ImageList = this.imageListMain;
-			this.toolBar1.Location = new System.Drawing.Point(680, 0);
-			this.toolBar1.Name = "toolBar1";
-			this.toolBar1.ShowToolTips = true;
-			this.toolBar1.Size = new System.Drawing.Size(202, 36);
-			this.toolBar1.TabIndex = 0;
-			this.toolBar1.ButtonClick += new System.Windows.Forms.ToolBarButtonClickEventHandler(this.toolBar1_ButtonClick);
+			this.toolBar2.ButtonSize = new System.Drawing.Size(29, 28);
+			this.toolBar2.Dock = System.Windows.Forms.DockStyle.None;
+			this.toolBar2.DropDownArrows = true;
+			this.toolBar2.ImageList = this.imageListMain;
+			this.toolBar2.Location = new System.Drawing.Point(532, 692);
+			this.toolBar2.Name = "toolBar2";
+			this.toolBar2.ShowToolTips = true;
+			this.toolBar2.Size = new System.Drawing.Size(303, 34);
+			this.toolBar2.TabIndex = 0;
+			this.toolBar2.TextAlign = System.Windows.Forms.ToolBarTextAlign.Right;
+			this.toolBar2.Visible = false;
+			this.toolBar2.Wrappable = false;
+			this.toolBar2.ButtonClick += new System.Windows.Forms.ToolBarButtonClickEventHandler(this.toolBar1_ButtonClick);
 			// 
 			// toolBarButPat
 			// 
@@ -244,6 +228,7 @@ namespace OpenDental{
 			// 
 			this.toolBarButUnsched.ImageIndex = 1;
 			this.toolBarButUnsched.Tag = "Unsched";
+			this.toolBarButUnsched.Text = "Unsched";
 			this.toolBarButUnsched.ToolTipText = "Unscheduled List";
 			// 
 			// toolBarButRecall
@@ -301,25 +286,13 @@ namespace OpenDental{
 			this.labelDate2.TabIndex = 25;
 			this.labelDate2.Text = "-  Oct 20";
 			// 
-			// butClearPin
-			// 
-			this.butClearPin.Image = ((System.Drawing.Image)(resources.GetObject("butClearPin.Image")));
-			this.butClearPin.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butClearPin.Location = new System.Drawing.Point(26, 230);
-			this.butClearPin.Name = "butClearPin";
-			this.butClearPin.Size = new System.Drawing.Size(68, 26);
-			this.butClearPin.TabIndex = 26;
-			this.butClearPin.Text = "         Clear";
-			this.butClearPin.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butClearPin.Click += new System.EventHandler(this.butClearPin_Click);
-			// 
 			// butToday
 			// 
 			this.butToday.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butToday.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.butToday.Location = new System.Drawing.Point(18, 0);
+			this.butToday.Location = new System.Drawing.Point(17, 0);
 			this.butToday.Name = "butToday";
-			this.butToday.Size = new System.Drawing.Size(64, 22);
+			this.butToday.Size = new System.Drawing.Size(65, 22);
 			this.butToday.TabIndex = 29;
 			this.butToday.Text = "Today";
 			this.butToday.Click += new System.EventHandler(this.butToday_Click);
@@ -328,31 +301,79 @@ namespace OpenDental{
 			// 
 			this.butTodayWk.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butTodayWk.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.butTodayWk.Location = new System.Drawing.Point(18, 24);
+			this.butTodayWk.Location = new System.Drawing.Point(17, 24);
 			this.butTodayWk.Name = "butTodayWk";
-			this.butTodayWk.Size = new System.Drawing.Size(64, 22);
+			this.butTodayWk.Size = new System.Drawing.Size(65, 22);
 			this.butTodayWk.TabIndex = 31;
 			this.butTodayWk.Text = "Week";
 			this.butTodayWk.Click += new System.EventHandler(this.butTodayWk_Click);
 			// 
 			// panelArrows
 			// 
-			this.panelArrows.Controls.Add(this.butFwd);
-			this.panelArrows.Controls.Add(this.butBackWk);
 			this.panelArrows.Controls.Add(this.butTodayWk);
 			this.panelArrows.Controls.Add(this.butToday);
 			this.panelArrows.Controls.Add(this.butBack);
+			this.panelArrows.Controls.Add(this.butFwd);
+			this.panelArrows.Controls.Add(this.butBackWk);
 			this.panelArrows.Controls.Add(this.butFwdWk);
 			this.panelArrows.Location = new System.Drawing.Point(2, 182);
 			this.panelArrows.Name = "panelArrows";
 			this.panelArrows.Size = new System.Drawing.Size(100, 48);
 			this.panelArrows.TabIndex = 32;
 			// 
+			// butBack
+			// 
+			this.butBack.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butBack.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butBack.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butBack.Image = ((System.Drawing.Image)(resources.GetObject("butBack.Image")));
+			this.butBack.Location = new System.Drawing.Point(-1, 0);
+			this.butBack.Name = "butBack";
+			this.butBack.Size = new System.Drawing.Size(19, 22);
+			this.butBack.TabIndex = 51;
+			this.butBack.Click += new System.EventHandler(this.butBack_Click);
+			// 
+			// butFwd
+			// 
+			this.butFwd.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butFwd.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butFwd.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butFwd.Image = ((System.Drawing.Image)(resources.GetObject("butFwd.Image")));
+			this.butFwd.Location = new System.Drawing.Point(81, 0);
+			this.butFwd.Name = "butFwd";
+			this.butFwd.Size = new System.Drawing.Size(19, 22);
+			this.butFwd.TabIndex = 53;
+			this.butFwd.Click += new System.EventHandler(this.butFwd_Click);
+			// 
+			// butBackWk
+			// 
+			this.butBackWk.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butBackWk.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butBackWk.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butBackWk.Image = ((System.Drawing.Image)(resources.GetObject("butBackWk.Image")));
+			this.butBackWk.Location = new System.Drawing.Point(-1, 24);
+			this.butBackWk.Name = "butBackWk";
+			this.butBackWk.Size = new System.Drawing.Size(19, 22);
+			this.butBackWk.TabIndex = 51;
+			this.butBackWk.Click += new System.EventHandler(this.butBackWk_Click);
+			// 
+			// butFwdWk
+			// 
+			this.butFwdWk.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butFwdWk.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butFwdWk.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butFwdWk.Image = ((System.Drawing.Image)(resources.GetObject("butFwdWk.Image")));
+			this.butFwdWk.Location = new System.Drawing.Point(81, 24);
+			this.butFwdWk.Name = "butFwdWk";
+			this.butFwdWk.Size = new System.Drawing.Size(19, 22);
+			this.butFwdWk.TabIndex = 52;
+			this.butFwdWk.Click += new System.EventHandler(this.butFwdWk_Click);
+			// 
 			// textApptModNote
 			// 
 			this.textApptModNote.BackColor = System.Drawing.Color.White;
 			this.textApptModNote.ForeColor = System.Drawing.Color.Red;
-			this.textApptModNote.Location = new System.Drawing.Point(0, 162);
+			this.textApptModNote.Location = new System.Drawing.Point(0, 182);
 			this.textApptModNote.Multiline = true;
 			this.textApptModNote.Name = "textApptModNote";
 			this.textApptModNote.ReadOnly = true;
@@ -366,7 +387,7 @@ namespace OpenDental{
 			this.textMedicalNote.BackColor = System.Drawing.Color.White;
 			this.textMedicalNote.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
 			this.textMedicalNote.ForeColor = System.Drawing.Color.Red;
-			this.textMedicalNote.Location = new System.Drawing.Point(0, 122);
+			this.textMedicalNote.Location = new System.Drawing.Point(0, 142);
 			this.textMedicalNote.Multiline = true;
 			this.textMedicalNote.Name = "textMedicalNote";
 			this.textMedicalNote.ReadOnly = true;
@@ -378,25 +399,17 @@ namespace OpenDental{
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(0, 148);
+			this.label1.Location = new System.Drawing.Point(0, 168);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(160, 18);
 			this.label1.TabIndex = 36;
 			this.label1.Text = "Appointment module notes:";
 			// 
-			// labelPhone
-			// 
-			this.labelPhone.Location = new System.Drawing.Point(98, 56);
-			this.labelPhone.Name = "labelPhone";
-			this.labelPhone.Size = new System.Drawing.Size(103, 14);
-			this.labelPhone.TabIndex = 37;
-			this.labelPhone.TextAlign = System.Drawing.ContentAlignment.TopRight;
-			// 
 			// textAddressNote
 			// 
 			this.textAddressNote.BackColor = System.Drawing.Color.White;
 			this.textAddressNote.ForeColor = System.Drawing.Color.Red;
-			this.textAddressNote.Location = new System.Drawing.Point(0, 70);
+			this.textAddressNote.Location = new System.Drawing.Point(0, 90);
 			this.textAddressNote.Multiline = true;
 			this.textAddressNote.Name = "textAddressNote";
 			this.textAddressNote.ReadOnly = true;
@@ -430,7 +443,7 @@ namespace OpenDental{
 			// 
 			// label5
 			// 
-			this.label5.Location = new System.Drawing.Point(0, 108);
+			this.label5.Location = new System.Drawing.Point(0, 128);
 			this.label5.Name = "label5";
 			this.label5.Size = new System.Drawing.Size(134, 14);
 			this.label5.TabIndex = 42;
@@ -438,7 +451,7 @@ namespace OpenDental{
 			// 
 			// label6
 			// 
-			this.label6.Location = new System.Drawing.Point(0, 56);
+			this.label6.Location = new System.Drawing.Point(0, 76);
 			this.label6.Name = "label6";
 			this.label6.Size = new System.Drawing.Size(100, 14);
 			this.label6.TabIndex = 43;
@@ -471,8 +484,7 @@ namespace OpenDental{
 			this.panelAptInfo.Controls.Add(this.butUnsched);
 			this.panelAptInfo.Controls.Add(this.butDelete);
 			this.panelAptInfo.Controls.Add(this.butBreak);
-			this.panelAptInfo.Controls.Add(this.butOther);
-			this.panelAptInfo.Location = new System.Drawing.Point(680, 316);
+			this.panelAptInfo.Location = new System.Drawing.Point(680, 330);
 			this.panelAptInfo.Name = "panelAptInfo";
 			this.panelAptInfo.Size = new System.Drawing.Size(204, 142);
 			this.panelAptInfo.TabIndex = 45;
@@ -481,7 +493,7 @@ namespace OpenDental{
 			// 
 			this.listConfirmed.Location = new System.Drawing.Point(38, 2);
 			this.listConfirmed.Name = "listConfirmed";
-			this.listConfirmed.Size = new System.Drawing.Size(66, 134);
+			this.listConfirmed.Size = new System.Drawing.Size(73, 134);
 			this.listConfirmed.TabIndex = 75;
 			this.listConfirmed.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listConfirmed_MouseDown);
 			this.listConfirmed.SelectedIndexChanged += new System.EventHandler(this.listConfirmed_SelectedIndexChanged);
@@ -547,7 +559,7 @@ namespace OpenDental{
 			this.butOther.BackColor = System.Drawing.SystemColors.Control;
 			this.butOther.Image = ((System.Drawing.Image)(resources.GetObject("butOther.Image")));
 			this.butOther.ImageAlign = System.Drawing.ContentAlignment.BottomRight;
-			this.butOther.Location = new System.Drawing.Point(2, 113);
+			this.butOther.Location = new System.Drawing.Point(682, 443);
 			this.butOther.Name = "butOther";
 			this.butOther.Size = new System.Drawing.Size(28, 28);
 			this.butOther.TabIndex = 72;
@@ -555,16 +567,50 @@ namespace OpenDental{
 			// 
 			// panelCalendar
 			// 
+			this.panelCalendar.Controls.Add(this.comboView);
+			this.panelCalendar.Controls.Add(this.label2);
+			this.panelCalendar.Controls.Add(this.butClearPin);
 			this.panelCalendar.Controls.Add(this.Calendar2);
 			this.panelCalendar.Controls.Add(this.labelDate);
 			this.panelCalendar.Controls.Add(this.labelDate2);
 			this.panelCalendar.Controls.Add(this.panelPinBoard);
-			this.panelCalendar.Controls.Add(this.butClearPin);
 			this.panelCalendar.Controls.Add(this.panelArrows);
-			this.panelCalendar.Location = new System.Drawing.Point(680, 38);
+			this.panelCalendar.Location = new System.Drawing.Point(680, 28);
 			this.panelCalendar.Name = "panelCalendar";
-			this.panelCalendar.Size = new System.Drawing.Size(204, 276);
+			this.panelCalendar.Size = new System.Drawing.Size(204, 301);
 			this.panelCalendar.TabIndex = 46;
+			// 
+			// comboView
+			// 
+			this.comboView.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboView.Location = new System.Drawing.Point(0, 277);
+			this.comboView.Name = "comboView";
+			this.comboView.Size = new System.Drawing.Size(203, 21);
+			this.comboView.TabIndex = 35;
+			this.comboView.SelectedIndexChanged += new System.EventHandler(this.comboView_SelectedIndexChanged);
+			// 
+			// label2
+			// 
+			this.label2.Location = new System.Drawing.Point(0, 255);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(90, 19);
+			this.label2.TabIndex = 34;
+			this.label2.Text = "View:";
+			this.label2.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// butClearPin
+			// 
+			this.butClearPin.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butClearPin.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butClearPin.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butClearPin.Image = ((System.Drawing.Image)(resources.GetObject("butClearPin.Image")));
+			this.butClearPin.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butClearPin.Location = new System.Drawing.Point(27, 228);
+			this.butClearPin.Name = "butClearPin";
+			this.butClearPin.Size = new System.Drawing.Size(75, 26);
+			this.butClearPin.TabIndex = 33;
+			this.butClearPin.Text = "Clear";
+			this.butClearPin.Click += new System.EventHandler(this.butClearPin_Click);
 			// 
 			// panelOps
 			// 
@@ -581,7 +627,7 @@ namespace OpenDental{
 			// 
 			// panelNarrow
 			// 
-			this.panelNarrow.Location = new System.Drawing.Point(898, 2);
+			this.panelNarrow.Location = new System.Drawing.Point(877, 18);
 			this.panelNarrow.Name = "panelNarrow";
 			this.panelNarrow.Size = new System.Drawing.Size(34, 716);
 			this.panelNarrow.TabIndex = 49;
@@ -589,24 +635,43 @@ namespace OpenDental{
 			// 
 			// panelNotes
 			// 
+			this.panelNotes.Controls.Add(this.textFinancialNote);
+			this.panelNotes.Controls.Add(this.textPhone);
+			this.panelNotes.Controls.Add(this.labelPhoneType);
 			this.panelNotes.Controls.Add(this.butAptModNoteEdit);
 			this.panelNotes.Controls.Add(this.textApptModNote);
 			this.panelNotes.Controls.Add(this.textMedicalNote);
 			this.panelNotes.Controls.Add(this.label1);
 			this.panelNotes.Controls.Add(this.textAddressNote);
-			this.panelNotes.Controls.Add(this.textFinancialNote);
 			this.panelNotes.Controls.Add(this.label5);
 			this.panelNotes.Controls.Add(this.label6);
-			this.panelNotes.Controls.Add(this.labelPhone);
 			this.panelNotes.Controls.Add(this.label4);
-			this.panelNotes.Location = new System.Drawing.Point(680, 463);
+			this.panelNotes.Location = new System.Drawing.Point(680, 473);
 			this.panelNotes.Name = "panelNotes";
-			this.panelNotes.Size = new System.Drawing.Size(204, 207);
+			this.panelNotes.Size = new System.Drawing.Size(204, 223);
 			this.panelNotes.TabIndex = 50;
+			// 
+			// textPhone
+			// 
+			this.textPhone.Location = new System.Drawing.Point(102, 56);
+			this.textPhone.Name = "textPhone";
+			this.textPhone.ReadOnly = true;
+			this.textPhone.TabIndex = 53;
+			this.textPhone.Text = "";
+			// 
+			// labelPhoneType
+			// 
+			this.labelPhoneType.Location = new System.Drawing.Point(4, 58);
+			this.labelPhoneType.Name = "labelPhoneType";
+			this.labelPhoneType.Size = new System.Drawing.Size(100, 14);
+			this.labelPhoneType.TabIndex = 52;
+			this.labelPhoneType.Text = "Home Phone:";
+			this.labelPhoneType.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// butAptModNoteEdit
 			// 
-			this.butAptModNoteEdit.Location = new System.Drawing.Point(150, 146);
+			this.butAptModNoteEdit.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butAptModNoteEdit.Location = new System.Drawing.Point(150, 166);
 			this.butAptModNoteEdit.Name = "butAptModNoteEdit";
 			this.butAptModNoteEdit.Size = new System.Drawing.Size(52, 17);
 			this.butAptModNoteEdit.TabIndex = 51;
@@ -617,17 +682,74 @@ namespace OpenDental{
 			// 
 			this.pd2.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.pd2_PrintPage);
 			// 
+			// butPat
+			// 
+			this.butPat.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.butPat.ImageIndex = 0;
+			this.butPat.ImageList = this.imageListMain;
+			this.butPat.Location = new System.Drawing.Point(0, 0);
+			this.butPat.Name = "butPat";
+			this.butPat.Size = new System.Drawing.Size(28, 28);
+			this.butPat.TabIndex = 51;
+			this.butPat.Click += new System.EventHandler(this.butPat_Click);
+			// 
+			// panelMainTools
+			// 
+			this.panelMainTools.Controls.Add(this.butPrint);
+			this.panelMainTools.Controls.Add(this.butRecall);
+			this.panelMainTools.Controls.Add(this.butUnschedList);
+			this.panelMainTools.Controls.Add(this.butPat);
+			this.panelMainTools.Location = new System.Drawing.Point(679, 0);
+			this.panelMainTools.Name = "panelMainTools";
+			this.panelMainTools.Size = new System.Drawing.Size(206, 28);
+			this.panelMainTools.TabIndex = 52;
+			// 
+			// butPrint
+			// 
+			this.butPrint.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.butPrint.ImageIndex = 3;
+			this.butPrint.ImageList = this.imageListMain;
+			this.butPrint.Location = new System.Drawing.Point(84, 0);
+			this.butPrint.Name = "butPrint";
+			this.butPrint.Size = new System.Drawing.Size(28, 28);
+			this.butPrint.TabIndex = 54;
+			this.butPrint.Click += new System.EventHandler(this.butPrint_Click);
+			// 
+			// butRecall
+			// 
+			this.butRecall.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.butRecall.ImageIndex = 2;
+			this.butRecall.ImageList = this.imageListMain;
+			this.butRecall.Location = new System.Drawing.Point(56, 0);
+			this.butRecall.Name = "butRecall";
+			this.butRecall.Size = new System.Drawing.Size(28, 28);
+			this.butRecall.TabIndex = 53;
+			this.butRecall.Click += new System.EventHandler(this.butRecall_Click);
+			// 
+			// butUnschedList
+			// 
+			this.butUnschedList.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.butUnschedList.ImageIndex = 1;
+			this.butUnschedList.ImageList = this.imageListMain;
+			this.butUnschedList.Location = new System.Drawing.Point(28, 0);
+			this.butUnschedList.Name = "butUnschedList";
+			this.butUnschedList.Size = new System.Drawing.Size(28, 28);
+			this.butUnschedList.TabIndex = 52;
+			this.butUnschedList.Click += new System.EventHandler(this.butUnschedList_Click);
+			// 
 			// ContrAppt
 			// 
+			this.Controls.Add(this.toolBar2);
+			this.Controls.Add(this.butOther);
 			this.Controls.Add(this.panelNotes);
 			this.Controls.Add(this.panelOps);
 			this.Controls.Add(this.panelCalendar);
 			this.Controls.Add(this.panelAptInfo);
 			this.Controls.Add(this.panelSheet);
-			this.Controls.Add(this.toolBar1);
 			this.Controls.Add(this.panelNarrow);
+			this.Controls.Add(this.panelMainTools);
 			this.Name = "ContrAppt";
-			this.Size = new System.Drawing.Size(1026, 872);
+			this.Size = new System.Drawing.Size(939, 872);
 			this.Resize += new System.EventHandler(this.ContrAppt_Resize);
 			this.Load += new System.EventHandler(this.ContrAppt_Load);
 			this.Layout += new System.Windows.Forms.LayoutEventHandler(this.ContrAppt_Layout);
@@ -637,13 +759,14 @@ namespace OpenDental{
 			this.panelAptInfo.ResumeLayout(false);
 			this.panelCalendar.ResumeLayout(false);
 			this.panelNotes.ResumeLayout(false);
+			this.panelMainTools.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
 		#endregion
 
 		private void button1_Click(object sender, System.EventArgs e) {
-					
+			//if(Environment.
 		}
 
 		private void ContrApptSheet2_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e){
@@ -692,7 +815,7 @@ namespace OpenDental{
 			}
 			for(int i=0;i<ContrApptSheet.ColCount;i++){
 				System.Windows.Forms.Button opName=new System.Windows.Forms.Button();
-				opName.Text=Defs.Short[(int)DefCat.Operatories][i].ItemName;
+				opName.Text=Defs.Short[(int)DefCat.Operatories][ApptViewItems.VisOps[i]].ItemName;
 				opName.Location=new Point(2+ContrApptSheet.TimeWidth+ContrApptSheet.ProvWidth*ContrApptSheet.ProvCount+i*ContrApptSheet.ColWidth,0);
 				opName.Width=ContrApptSheet.ColWidth;
 				opName.Height=18;
@@ -709,7 +832,25 @@ namespace OpenDental{
 			RefreshModuleScreen();
 		}
 
-		private void RefreshModuleData(){//actually just for selected patient
+		public void ModuleUnselected(){
+			Patients.FamilyList=null;
+			InsPlans.List=null;
+			CovPats.List=null;
+			//from RefreshDay:
+			Appointments.ListDay=null;
+			Schedules.ListDay=null;
+			ContrApptSheet2.Shadow=null;
+			if(ContrApptSingle3!=null){//too complex?
+				for(int i=0;i<ContrApptSingle3.Length;i++){
+					ContrApptSingle3[i].Dispose();
+					ContrApptSingle3[i]=null;
+				}
+				ContrApptSingle3=null;
+			}
+		}
+
+		///<summary>Gets the data for the current patient, just like in the other modules.  Does not refresh any appointment data.</summary>
+		private void RefreshModuleData(){
 			if(Patients.PatIsLoaded){
 				Patients.GetFamily(Patients.Cur.PatNum);
 				InsPlans.Refresh();
@@ -717,6 +858,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary>Refreshes the main window title and then calls RefreshDay.</summary>
 		public void RefreshModuleScreen(){
 			//MessageBox.Show("Refreshed");
 			if(Patients.PatIsLoaded){
@@ -728,30 +870,40 @@ namespace OpenDental{
 			RefreshDay(Appointments.DateSelected);
 		}
 
+		///<summary>Triggered every time a control(including appt) is added or removed.</summary>
 		private void ContrAppt_Layout(object sender, System.Windows.Forms.LayoutEventArgs e) {
-			//assumes widths of the first 4 panels were set the same in the designer,
-			toolBar1.Location=new Point(ClientSize.Width-panelAptInfo.Width-2,0);
-			panelCalendar.Location=new Point(ClientSize.Width-panelAptInfo.Width-2,toolBar1.Height);
-			panelAptInfo.Location=new Point(ClientSize.Width-panelAptInfo.Width-2,toolBar1.Height+panelCalendar.Height);
-			panelNotes.Location=new Point(ClientSize.Width-panelAptInfo.Width-2,toolBar1.Height+panelCalendar.Height+panelAptInfo.Height);
+			//This event actually happens quite frequently: once for every appointment placed on the screen.
+			//Would like to rework it somehow to only be called when needed.
+			//Assumes widths of the first 4 panels were set the same in the designer,
+			panelMainTools.Location=new Point(ClientSize.Width-panelAptInfo.Width-2,0);
+			panelCalendar.Location=new Point(ClientSize.Width-panelAptInfo.Width-2,panelMainTools.Height);
+			panelAptInfo.Location=new Point(ClientSize.Width-panelAptInfo.Width-2
+				,panelMainTools.Height+panelCalendar.Height);
+			butOther.Location=new Point(panelAptInfo.Location.X+2,panelAptInfo.Location.Y+113);
+			panelNotes.Location=new Point(ClientSize.Width-panelAptInfo.Width-2
+				,panelMainTools.Height+panelCalendar.Height+panelAptInfo.Height);
 			panelSheet.Width=ClientSize.Width-panelAptInfo.Width-2;
 			panelSheet.Height=ClientSize.Height-panelSheet.Location.Y;
-			ContrApptSheet2.ComputeColWidth(panelSheet.Width-vScrollBar1.Width);
+			if(Defs.Short!=null){
+				ApptViews.SetCur(comboView.SelectedIndex);
+				ApptViewItems.GetForCurView();
+				ContrApptSheet2.ComputeColWidth(panelSheet.Width-vScrollBar1.Width);
+			}
 			//ContrApptSheet2.Height=panelSheet.Height;
 			panelOps.Width=panelSheet.Width;
 		}
 
+		///<summary>Not used right now</summary>
 		private void ContrAppt_Resize(object sender, System.EventArgs e) {
 			//This didn't work so well.  Very slow and caused program to not be able to unminimize
-			//try{//so it doesn't crash if not connected to DB
+			try{//so it doesn't crash if not connected to DB
 				//ModuleSelected();
-			//}
-			//catch{}
+			}
+			catch{}
 		}
 
+		///<summary>Called from FormOpenDental upon startup.</summary>
 		public void InstantClasses(){
-			FormUnsched2= new FormUnsched();//?
-			FormRecall2= new FormRecall();//?
 			PinApptSingle = new ContrApptSingle();
 			PinApptSingle.Visible=false;
 			PinApptSingle.ThisIsPinBoard=true;
@@ -767,18 +919,14 @@ namespace OpenDental{
 				this.butTodayWk,
 				this.butClearPin,
 				this.butAptModNoteEdit,
-				this.butBack,
-			  this.butBackWk,
 				this.butBreak,
 				this.butComplete,
 				this.butDelete,
-				this.butFwd,
-				this.butFwdWk,
 				this.butOther,
 				this.label4,
 				this.labelDate,
 				this.labelDate2,	
-				this.labelPhone,
+				this.labelPhoneType,
 				label6,
 				label5,
 				label1,
@@ -803,11 +951,79 @@ namespace OpenDental{
 			toolTip1.SetToolTip(butOther, Lan.g(this,"Other Appointments"));
 		}
 
+		///<summary>Not in use.  See InstantClasses instead.</summary>
 		private void ContrAppt_Load(object sender, System.EventArgs e){
 			//ContrApptInfo2.DataChanged += new EventHandler(ReactionDataChanged);
 		}
 
+		/// <summary>
+		/// Can be triggered by user or in FunctionKeyPress, SetView, or  FillViews
+		/// </summary>
+		private void comboView_SelectedIndexChanged(object sender, System.EventArgs e) {
+			//first two lines might be redundant:
+			ApptViews.SetCur(comboView.SelectedIndex);
+			ApptViewItems.GetForCurView();
+			ContrApptSheet2.ComputeColWidth(panelSheet.Width-vScrollBar1.Width);
+			ModuleSelected();
+		}
+
+		/// <summary>
+		/// The key press from the main form is passed down to this module.
+		/// </summary>
+		/// <param name="keys"></param>
+		public void FunctionKeyPress(Keys keys){
+			//MessageBox.Show("keydown");
+			switch(keys){
+				case Keys.F1: SetView(0); break;
+				case Keys.F2: SetView(1); break;
+				case Keys.F3: SetView(2); break;
+				case Keys.F4: SetView(3); break;
+				case Keys.F5: SetView(4); break;
+				case Keys.F6: SetView(5); break;
+				case Keys.F7: SetView(6); break;
+				case Keys.F8: SetView(7); break;
+				case Keys.F9: SetView(8); break;
+				case Keys.F10: SetView(9); break;
+				case Keys.F11: SetView(10); break;
+				case Keys.F12: SetView(11); break;
+			}
+		}
+
+		/// <summary>
+		/// Sets the view to the specified index, checking for validity in the process.
+		/// </summary>
+		/// <param name="viewIndex"></param>
+		private void SetView(int viewIndex){
+			if(viewIndex >= ApptViews.List.Length){
+				return;
+			}
+			comboView.SelectedIndex=viewIndex;//this also triggers SelectedIndexChanged
+		}
+
+		///<summary>Fills the comboView with the current list of views and then tries to reselect the previous selection.  Also called from FormOpenDental.RefreshLocalData().</summary>
+		public void FillViews(){
+			int selected=comboView.SelectedIndex;
+			comboView.Items.Clear();
+			string f="";
+			for(int i=0;i<ApptViews.List.Length;i++){
+				if(i<=12)
+					f="F"+(i+1).ToString()+"-";
+				else
+					f="";
+				comboView.Items.Add(f+ApptViews.List[i].Description);
+			}
+			if(selected<comboView.Items.Count){
+				comboView.SelectedIndex=selected;//this also triggers SelectedIndexChanged
+			}
+		}
+
 		private void FillPanelPatient(){
+			if(Patients.PatIsLoaded){
+				butOther.Enabled=true;//this button is handled entirely separately from the others
+			}
+			else{
+				butOther.Enabled=false;
+			}
 			if(ContrApptSingle.PinBoardIsSelected
 				|| ContrApptSingle.SelectedAptNum!=-1){
 				panelNotes.Enabled=true;
@@ -834,30 +1050,50 @@ namespace OpenDental{
 				textAddressNote.Text=Patients.FamilyList[Patients.GuarIndex].AddrNote;
 				textMedicalNote.Text=Patients.Cur.MedUrgNote;
 				textApptModNote.Text=Patients.Cur.ApptModNote;
-				labelPhone.Text=Patients.Cur.HmPhone;
+				if(Patients.Cur.HmPhone!=""){
+					labelPhoneType.Text=Lan.g(this,"Home Phone:");
+					textPhone.Text=Patients.Cur.HmPhone;
+				}
+				else if(Patients.Cur.WirelessPhone!=""){
+					labelPhoneType.Text=Lan.g(this,"Wireless Phone:");
+					textPhone.Text=Patients.Cur.WirelessPhone;
+				}
+				else if(Patients.Cur.WkPhone!=""){
+					labelPhoneType.Text=Lan.g(this,"Work Phone:");
+					textPhone.Text=Patients.Cur.WkPhone;
+				}
+				else{
+					labelPhoneType.Text=Lan.g(this,"(no phone listed)");
+					textPhone.Text="";
+				}
 			}
 			else{
 				textFinancialNote.Text="";
 				textAddressNote.Text="";
 				textMedicalNote.Text="";
 				textApptModNote.Text="";
-				labelPhone.Text="";
+				labelPhoneType.Text="";
+				textPhone.Text="";
 			}
 		}
 
-		private void SetInvalid(){//only handles other computers.  Must refresh locally too.
+		///<summary>Sets local data invalid on all other computers, causing them to refresh.
+		///Must refresh locally too.</summary>
+		private void SetInvalid(){
 			DataValid DataValid2=new DataValid();
 			DataValid.IType=InvalidType.Date;
 			DataValid.DateViewing=Appointments.DateSelected;
 			DataValid2.SetInvalid();
 		}
 
+		///<summary>Gets all new day info from db and redraws screen</summary>
 		private void RefreshDay(DateTime myDate){
-			ContrApptSingle.ProvBar = new int[Providers.List.Length][];
-			for(int i=0;i<Providers.List.Length;i++){
+			ApptViews.SetCur(comboView.SelectedIndex);
+			ApptViewItems.GetForCurView();
+			ContrApptSingle.ProvBar = new int[ApptViewItems.VisProvs.Length][];
+			for(int i=0;i<ApptViewItems.VisProvs.Length;i++){//Providers.List.Length;i++){
 				ContrApptSingle.ProvBar[i] = new int[144];
 			}
-			//ContrApptSheet2.Controls.
 			if(ContrApptSingle3!=null){
 				for(int i=0;i<ContrApptSingle3.Length;i++){
 					ContrApptSingle3[i].Dispose();
@@ -890,15 +1126,18 @@ namespace OpenDental{
 				ContrApptSingle3[i].Visible=false;
 				ContrApptSingle3[i].Info=CurInfo;
 				//copy time pattern to provBar[]:
-				if(Providers.GetIndex(ContrApptSingle3[i].Info.MyApt.ProvNum)!=-1
+				if(ApptViewItems.GetIndexProv(ContrApptSingle3[i].Info.MyApt.ProvNum)!=-1
+				//if(Providers.GetIndex(ContrApptSingle3[i].Info.MyApt.ProvNum)!=-1
 					&& ContrApptSingle3[i].Info.MyApt.AptStatus!=ApptStatus.Broken){
 					for(int k=0;k<ContrApptSingle3[i].Info.MyApt.Pattern.Length; k++){
 						if(ContrApptSingle3[i].Info.MyApt.Pattern.Substring(k,1)=="X"){
 							int timeBarInc = ContrApptSingle3[i].ConvertToY()/ContrApptSheet.Lh+k;
-							ContrApptSingle.ProvBar[Providers.GetIndex(ContrApptSingle3[i].Info.MyApt.ProvNum)][timeBarInc]+=1;
+							ContrApptSingle.ProvBar
+								[ApptViewItems.GetIndexProv(ContrApptSingle3[i].Info.MyApt.ProvNum)][timeBarInc]+=1;
 						}
 					}
 				}
+
 				ContrApptSingle3[i].SetLocation();
 				ContrApptSheet2.Controls.Add(ContrApptSingle3[i]);
 			}//end for
@@ -908,46 +1147,16 @@ namespace OpenDental{
 			CreateAptShadows();
 			ContrApptSheet2.DrawShadow();
 			FillPanelPatient();
-			//CreateHundredShadows();//will revisit this later
-		}
-		
-		/*private void CreateHundredShadows(){
-			try{
-				ContrApptSheet2.HundShadow=ContrApptSheet2.Shadow.Clone(new Rectangle(0,-ContrApptSheet2.Location.Y
-					,ContrApptSheet2.Width,panelSheet.Height),PixelFormat.DontCare);
-					//new Bitmap(ContrApptSheet2.Width,panelSheet.Height);
-				//Graphics grfx=Graphics.FromImage(ContrApptSheet2.HundShadow);
-				ContrApptSheet2.HundredShadows=new Bitmap[10,10];
-				int width;
-				int height;
-				Point loc;
-				for(int x=0;x<10;x++){
-					for(int y=0;y<10;y++){
-						loc=new Point(x*ContrApptSheet2.HundShadow.Width/10,y*ContrApptSheet2.HundShadow.Height/10);
-						width=(ContrApptSheet2.HundShadow.Width/10)+1;
-						if(loc.X+width>ContrApptSheet2.HundShadow.Width)
-							width=ContrApptSheet2.HundShadow.Width-loc.X;
-						height=(ContrApptSheet2.HundShadow.Height/10)+1;
-						if(loc.Y+height>ContrApptSheet2.HundShadow.Height)
-							height=ContrApptSheet2.HundShadow.Height-loc.Y;
-						ContrApptSheet2.HundredShadows[x,y]=
-							ContrApptSheet2.HundShadow.Clone
-							(new Rectangle(loc.X,loc.Y,width,height)
-							,PixelFormat.DontCare);
-					}
-				}
-			}
-			catch{
-				//prevents application from crashing if user repeatedly clicks up and down on scroll bar(more than usual).
-				//if someone can still make it crash, I will have to add a timed delay to the scrollbar logic.
-			}
-		}*/
 
+		}
+
+		///<summary>Creates one bitmap image for each appointment if visible.</summary>
 		private void CreateAptShadows(){
 			//if(==null)
 			//	return;
 			Graphics grfx=Graphics.FromImage(ContrApptSheet2.Shadow);
 			for(int i=0;i<Appointments.ListDay.Length;i++){
+				//MessageBox.Show("i:"+i.ToString()+",width:"+ContrApptSheet2.Width.ToString());
 				ContrApptSingle3[i].CreateShadow();
 				if(ContrApptSingle3[i].Location.X>=0){
 					grfx.DrawImage(ContrApptSingle3[i].Shadow
@@ -958,6 +1167,8 @@ namespace OpenDental{
 			grfx.Dispose();
 		}
 
+		///<summary>Assembles the lines of text to be displayed on a single appointment.
+		///This is just a quick temporary fix.</summary>
 		private void AssembleInfo(){
 			//must do the following before running method:
 				//CurInfo=new InfoApt();
@@ -1021,6 +1232,7 @@ namespace OpenDental{
 			}
 		}//end assembleinfo
 
+		///<summary>Gets the index within the array of appointment controls, based on the supplied primary key.</summary>
 		private int GetIndex(int myAptNum){
 			int retVal=-1;
 			for(int i=0;i<ContrApptSingle3.Length;i++){
@@ -1031,6 +1243,7 @@ namespace OpenDental{
 			return retVal;
 		}
 
+		///<summary>Copies all info for for current appointment into the control that displays the pinboard appointment. Sets pinboard appointment as selected.</summary>
 		private void CurToPinBoard(){
 			PinApptSingle.Visible=false;
 			PinApptSingle.Info=CurInfo;
@@ -1049,6 +1262,7 @@ namespace OpenDental{
 			PinApptSingle.Refresh();
 		}
 
+		///<summary>Mouse down event for the pinboard appointment.  Sets selected and prepares for drag.</summary>
 		private void PinApptSingle_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e){
 			mouseIsDown = true;
 			ContrApptSingle.PinBoardIsSelected=true;
@@ -1073,6 +1287,7 @@ namespace OpenDental{
 			contOrigin=PinApptSingle.Location;
 		}//end PinApptSingle_MouseDown
 
+		///<summary>Mouse move event for pinboard appt. Moves pinboard appt if mouse is down.</summary>
 		private void PinApptSingle_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e){
 			if (mouseIsDown==false) return;
 			if ((Math.Abs(e.X+PinApptSingle.Location.X-mouseOrigin.X)<1)
@@ -1093,6 +1308,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary>Mouse up event for pinboard appt. Usually happens after pinboard appt has been dragged onto main appt sheet.</summary>
 		private void PinApptSingle_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e){
 			if(!boolAptMoved){
 				mouseIsDown=false;
@@ -1119,12 +1335,16 @@ namespace OpenDental{
 				DateTime fromDate=Appointments.Cur.AptDateTime.Date;
 				Appointments.Cur.AptDateTime=new DateTime(tDate.Year,tDate.Month,tDate.Day,tHr,tMin,0);
 				Appointments.Cur.Op=Defs.Short[(int)DefCat.Operatories]
-					[ContrApptSheet2.ConvertToOp(TempApptSingle.Location.X-ContrApptSheet2.Location.X)].DefNum;
+					[ApptViewItems.VisOps
+					[ContrApptSheet2.ConvertToOp(TempApptSingle.Location.X-ContrApptSheet2.Location.X)]]
+					.DefNum;
 				if(DoesOverlap()){
-					int startingOp=Defs.GetOrder(DefCat.Operatories,Appointments.Cur.Op);
+					int startingOp=ApptViewItems.GetIndexOp(Appointments.Cur.Op);
+						//Defs.GetOrder(DefCat.Operatories,Appointments.Cur.Op);
 					bool stillOverlaps=true;
-					for(int i=startingOp;i<Defs.Short[(int)DefCat.Operatories].Length;i++){
-						Appointments.Cur.Op=Defs.Short[(int)DefCat.Operatories][i].DefNum;
+					for(int i=startingOp;i<ApptViewItems.VisOps.Length;i++){
+						//Defs.Short[(int)DefCat.Operatories].Length
+						Appointments.Cur.Op=Defs.Short[(int)DefCat.Operatories][ApptViewItems.VisOps[i]].DefNum;
 						if(!DoesOverlap()){
 							stillOverlaps=false;
 							break;
@@ -1132,12 +1352,12 @@ namespace OpenDental{
 					}
 					if(stillOverlaps){
 						for(int i=startingOp;i>=0;i--){
-						Appointments.Cur.Op=Defs.Short[(int)DefCat.Operatories][i].DefNum;
-						if(!DoesOverlap()){
-							stillOverlaps=false;
-							break;
+							Appointments.Cur.Op=Defs.Short[(int)DefCat.Operatories][ApptViewItems.VisOps[i]].DefNum;
+							if(!DoesOverlap()){
+								stillOverlaps=false;
+								break;
+							}
 						}
-					}
 					}
 					if(stillOverlaps){
 						MessageBox.Show(Lan.g(this,"Appointment overlaps existing appointment."));
@@ -1191,6 +1411,8 @@ namespace OpenDental{
 			}
 		}//end PinApptSingle_mouseup
 
+
+		///<summary>Called when releasing an appointment to make sure it does not overlap any other appointment.  Tests all appts for the day, even if not visible.</summary>
 		private bool DoesOverlap(){
 			bool retVal=false;
 			for(int i=0;i<Appointments.ListDay.Length;i++){
@@ -1231,24 +1453,28 @@ namespace OpenDental{
 			return retVal;
 		}
 
+		///<summary>Clicked today.</summary>
 		private void butToday_Click(object sender, System.EventArgs e) {
 			//ContrApptSingle.ApptIsSelected=false;
 			Appointments.DateSelected=DateTime.Now;
 			RefreshModuleScreen();
 		}
 
+		///<summary>Clicked back one day.</summary>
 		private void butBack_Click(object sender, System.EventArgs e) {
 			//ContrApptSingle.ApptIsSelected=false;
 			Appointments.DateSelected=Appointments.DateSelected.AddDays(-1);
 			RefreshModuleScreen();
 		}
 
+		///<summary>Clicked forward one day.</summary>
 		private void butFwd_Click(object sender, System.EventArgs e) {
 			//ContrApptSingle.ApptIsSelected=false;
 			Appointments.DateSelected=Appointments.DateSelected.AddDays(1);
 			RefreshModuleScreen();
 		}
 
+		///<summary>Clicked week button, setting the date to the current week, but not necessarily to today.</summary>
 		private void butTodayWk_Click(object sender, System.EventArgs e) {
 			//ContrApptSingle.ApptIsSelected=false;
 			int dayChange = Appointments.DateSelected.DayOfWeek-DateTime.Now.DayOfWeek;
@@ -1256,37 +1482,42 @@ namespace OpenDental{
 			RefreshModuleScreen();
 		}
 
+		///<summary>Clicked back one week.</summary>
 		private void butBackWk_Click(object sender, System.EventArgs e) {
 			//ContrApptSingle.ApptIsSelected=false;
 			Appointments.DateSelected=Appointments.DateSelected.AddDays(-7);
 			RefreshModuleScreen();
 		}
 
+		///<summary>Clicked forward one week.</summary>
 		private void butFwdWk_Click(object sender, System.EventArgs e) {
 			//ContrApptSingle.ApptIsSelected=false;
 			Appointments.DateSelected=Appointments.DateSelected.AddDays(7);
 			RefreshModuleScreen();
 		}
 
+		///<summary>Clicked a date on the calendar.</summary>
 		private void Calendar2_DateSelected(object sender, System.Windows.Forms.DateRangeEventArgs e) {
 			//ContrApptSingle.ApptIsSelected=false;
 			Appointments.DateSelected=Calendar2.SelectionStart;
 			RefreshModuleScreen();
 		}
 
-		
-
+		///<summary>Mouse down event anywhere on the sheet.  Could be a blank space or on an actual appointment.</summary>
 		private void ContrApptSheet2_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
-			SheetClickedonOp=Defs.Short[(int)DefCat.Operatories][ContrApptSheet2.DoubleClickToOp(e.X)].DefNum;
+			SheetClickedonOp=Defs.Short[(int)DefCat.Operatories]
+				[ApptViewItems.VisOps[ContrApptSheet2.DoubleClickToOp(e.X)]].DefNum;
 			SheetClickedonHour=ContrApptSheet2.DoubleClickToHour(e.Y);
 			SheetClickedonMin=ContrApptSheet2.DoubleClickToMin(e.Y);
-			DateTime SheetClickedonTime=DateTime.Parse(SheetClickedonHour+":"+SheetClickedonMin);
+			//date is irrelevant. This is just for the time:
+			DateTime SheetClickedonTime=new DateTime(2000,1,1,SheetClickedonHour,SheetClickedonMin,0);
 			ContrApptSingle.ClickedAptNum=0;
 			for(int i=0;i<Appointments.ListDay.Length;i++){
 				if(SheetClickedonOp==Appointments.ListDay[i].Op
 					&& Appointments.ListDay[i].AptDateTime.TimeOfDay <= SheetClickedonTime.TimeOfDay
 					&& SheetClickedonTime.TimeOfDay < Appointments.ListDay[i].AptDateTime.TimeOfDay
-						+TimeSpan.FromMinutes(Appointments.ListDay[i].Pattern.Length*10)){
+					+TimeSpan.FromMinutes(Appointments.ListDay[i].Pattern.Length*10))
+				{
 					ContrApptSingle.ClickedAptNum=Appointments.ListDay[i].AptNum;
 				}
 			}
@@ -1348,6 +1579,7 @@ namespace OpenDental{
 			//CreateHundredShadows();
 		}
 
+		///<summary>Dragging an appointment.</summary>
 		private void ContrApptSheet2_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e) {
 			if(!mouseIsDown) return;
 			int thisIndex=GetIndex(ContrApptSingle.SelectedAptNum);
@@ -1367,6 +1599,7 @@ namespace OpenDental{
 			TempApptSingle.Visible=true;
 		}
 
+		///<summary>Usually dropping an appointment to a new location.</summary>
 		private void ContrApptSheet2_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e) {
 			if(!mouseIsDown) return;
 			int thisIndex=GetIndex(ContrApptSingle.SelectedAptNum);
@@ -1392,7 +1625,9 @@ namespace OpenDental{
 				FillPanelPatient();
 				TempApptSingle.Dispose();
 			}
-			else if(MessageBox.Show(Lan.g(this,"Move Appointment?"),"",MessageBoxButtons.OKCancel)==DialogResult.OK){
+			else if(MessageBox.Show(Lan.g(this,"Move Appointment?"),"",MessageBoxButtons.OKCancel)
+				==DialogResult.OK)
+			{
 				//convert loc to new time
 				//Appointments.Cur = Appointments.List[ContrApptSingle.SelectedIndex];
 				int tHr=ContrApptSheet2.ConvertToHour
@@ -1403,12 +1638,14 @@ namespace OpenDental{
 				Appointments.Cur=TempApptSingle.Info.MyApt;
 				Appointments.Cur.AptDateTime=new DateTime(tDate.Year,tDate.Month,tDate.Day,tHr,tMin,0);
 				Appointments.Cur.Op=Defs.Short[(int)DefCat.Operatories]
-					[ContrApptSheet2.ConvertToOp(TempApptSingle.Location.X-ContrApptSheet2.Location.X)].DefNum;
+					[ApptViewItems.VisOps
+					[ContrApptSheet2.ConvertToOp(TempApptSingle.Location.X-ContrApptSheet2.Location.X)]].DefNum;
 				if(DoesOverlap()){
-					int startingOp=Defs.GetOrder(DefCat.Operatories,Appointments.Cur.Op);
+					int startingOp=ApptViewItems.GetIndexOp(Appointments.Cur.Op);
 					bool stillOverlaps=true;
-					for(int i=startingOp;i<Defs.Short[(int)DefCat.Operatories].Length;i++){
-						Appointments.Cur.Op=Defs.Short[(int)DefCat.Operatories][i].DefNum;
+					for(int i=startingOp;i<ApptViewItems.VisOps.Length;i++){
+						//Defs.Short[(int)DefCat.Operatories]
+						Appointments.Cur.Op=Defs.Short[(int)DefCat.Operatories][ApptViewItems.VisOps[i]].DefNum;
 						if(!DoesOverlap()){
 							stillOverlaps=false;
 							break;
@@ -1416,7 +1653,7 @@ namespace OpenDental{
 					}
 					if(stillOverlaps){
 						for(int i=startingOp;i>=0;i--){
-							Appointments.Cur.Op=Defs.Short[(int)DefCat.Operatories][i].DefNum;
+							Appointments.Cur.Op=Defs.Short[(int)DefCat.Operatories][ApptViewItems.VisOps[i]].DefNum;
 							if(!DoesOverlap()){
 								stillOverlaps=false;
 								break;
@@ -1448,8 +1685,11 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary>Double click on appt sheet or on a single appointment.</summary>
 		private void ContrApptSheet2_DoubleClick(object sender, System.EventArgs e) {
 			mouseIsDown=false;
+			//this logic is a little different than mouse down for now because on the first click of a 
+			//double click, an appointment control is created under the mouse.
 			if(ContrApptSingle.ClickedAptNum!=0){//on appt	
 				TempApptSingle.Dispose();
 				FormApptEdit FormApptEdit2 = new FormApptEdit();
@@ -1481,6 +1721,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary>Displays the Other Appointments for the current patient.</summary>
 		private void DisplayOtherDlg(bool initialClick){
 			if(!Patients.PatIsLoaded)
 				return;
@@ -1515,44 +1756,52 @@ namespace OpenDental{
 		}
 
 		private void toolBar1_ButtonClick(object sender, System.Windows.Forms.ToolBarButtonClickEventArgs e) {
-			switch (toolBar1.Buttons[toolBar1.Buttons.IndexOf(e.Button)].Tag.ToString()){
+			//using buttons for now
+			/*switch (toolBar1.Buttons[toolBar1.Buttons.IndexOf(e.Button)].Tag.ToString()){
 				case "Pat":
-					FormPatientSelect formSelectPatient2 = new FormPatientSelect();
-					formSelectPatient2.ShowDialog();
-					if(formSelectPatient2.DialogResult != DialogResult.OK){
-						return;
-					}
-					RefreshModuleData();//refreshes to current pt
-					DisplayOtherDlg(false);
+					
 				break;
-				case "Unsched":
-					FormUnsched2=new FormUnsched();
-					FormUnsched2.ShowDialog();
-					if(FormUnsched2.PinClicked){
-						AssembleInfo();
-						CurToPinBoard();
-						RefreshModuleScreen();
-					}
-				break;
-				case "Recall":
-					FormRecall2=new FormRecall();
-					FormRecall2.ShowDialog();
-					if(FormRecall2.PinClicked){
-						AssembleInfo();
-						CurToPinBoard();
-						RefreshModuleScreen();
-					}
-				break;
-				case "Print":
-					if(PrinterSettings.InstalledPrinters.Count==0){
-						MessageBox.Show(Lan.g(this,"Printer not installed"));
-					}
-					else{
-						PrintReport(false);
-					}
-			  break;
+				case "Unsched":*/
+		}
+
+		private void butPat_Click(object sender, System.EventArgs e) {
+			FormPatientSelect formSelectPatient2 = new FormPatientSelect();
+			formSelectPatient2.ShowDialog();
+			if(formSelectPatient2.DialogResult != DialogResult.OK){
+				return;
 			}
-		}//end toolBar1_ButtonClick
+			RefreshModuleData();//refreshes to current pt
+			DisplayOtherDlg(false);
+		}
+
+		private void butUnschedList_Click(object sender, System.EventArgs e) {
+			FormUnsched2=new FormUnsched();
+			FormUnsched2.ShowDialog();
+			if(FormUnsched2.PinClicked){
+				AssembleInfo();
+				CurToPinBoard();
+				RefreshModuleScreen();
+			}
+		}
+
+		private void butRecall_Click(object sender, System.EventArgs e) {
+			FormRecall2=new FormRecall();
+			FormRecall2.ShowDialog();
+			if(FormRecall2.PinClicked){
+				AssembleInfo();
+				CurToPinBoard();
+				RefreshModuleScreen();
+			}
+		}
+
+		private void butPrint_Click(object sender, System.EventArgs e) {
+			if(PrinterSettings.InstalledPrinters.Count==0){
+				MessageBox.Show(Lan.g(this,"Printer not installed"));
+			}
+			else{
+				PrintReport(false);
+			}
+		}
 
 		public void PrintReport(bool justPreview){
 			pd2=new PrintDocument();
@@ -1624,10 +1873,10 @@ namespace OpenDental{
       //Schedules.CurDate=Appointments.DateSelected;
 			Schedules.RefreshDay(Appointments.DateSelected);
       //Schedules.GetDayList();
-      if(Schedules.DayList.Length > 0){
-        for(int i=0;i<Schedules.DayList.Length;i++){
-          AListStart.Add(Schedules.DayList[i].StartTime);
-          AListStop.Add(Schedules.DayList[i].StopTime); 
+      if(Schedules.ListDay.Length > 0){
+        for(int i=0;i<Schedules.ListDay.Length;i++){
+          AListStart.Add(Schedules.ListDay[i].StartTime);
+          AListStop.Add(Schedules.ListDay[i].StopTime); 
         } 
         IsDefault=false;
       }
@@ -1723,6 +1972,7 @@ namespace OpenDental{
       e.Graphics.DrawImage(imageTemp,xPos,yPos); 
 		}
 
+		///<summary>Clears the pinboard.</summary>
 		private void butClearPin_Click(object sender, System.EventArgs e) {
 			if(!PinApptSingle.Visible){
 				return;
@@ -1736,7 +1986,7 @@ namespace OpenDental{
 			if(Appointments.Cur.AptStatus==ApptStatus.UnschedList){//on unscheduled list
 				//do nothing to database
 			}
-			else if(Appointments.Cur.AptDateTime.CompareTo(DateTime.Parse("1/1/1880"))<0){//not already scheduled
+			else if(Appointments.Cur.AptDateTime.Year<1880){//not already scheduled
 				if(Appointments.Cur.AptNum==Patients.Cur.NextAptNum){//if next apt
 					//do nothing except remove it from pinboard
 				}
@@ -1749,6 +1999,7 @@ namespace OpenDental{
 			RefreshModuleScreen();
 		}
 
+		///<summary>The scrollbar has been moved by the user.</summary>
 		private void vScrollBar1_Scroll(object sender, System.Windows.Forms.ScrollEventArgs e) {
 			if(e.Type==ScrollEventType.ThumbTrack){//moving
 				ContrApptSheet2.IsScrolling=true;
@@ -1762,10 +2013,12 @@ namespace OpenDental{
 			}			
 		}
 
+		///<summary>Occurs whenever the panel holding the appt sheet is resized.</summary>
 		private void panelSheet_Resize(object sender, System.EventArgs e) {
 			vScrollBar1.Maximum=ContrApptSheet2.Height-panelSheet.Height+vScrollBar1.LargeChange;
 		}
 
+		///<summary>Sends current appointment to unscheduled list.</summary>
 		private void butUnsched_Click(object sender, System.EventArgs e) {
 			if(MessageBox.Show(Lan.g(this,"Send Appointment to Unscheduled List?")
 				,"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
@@ -1850,17 +2103,23 @@ namespace OpenDental{
 		//}
 
 		public void TickRefresh(){
-			//try{
+			try{
 				ContrApptSheet2.CreateShadow();
 				CreateAptShadows();
 				ContrApptSheet2.DrawShadow();
-				//GC.Collect();
-			//}
-			//catch{
-				//don't think this will fix a random lockup problem
-			//}
-			
+			}
+			catch{
+				//prevents rare malfunctions. For instance, during editing of views, it tickrefresh happens.
+			}
+			//GC.Collect();	
 		}
+
+		
+
+	
+
+
+		
 
 	}//end class
 

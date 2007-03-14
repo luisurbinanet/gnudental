@@ -61,6 +61,7 @@ namespace OpenDental{
 			// butCancel
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(506, 204);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(76, 24);
@@ -69,6 +70,7 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(506, 172);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(76, 24);
@@ -87,6 +89,7 @@ namespace OpenDental{
 			// 
 			// radioDrug
 			// 
+			this.radioDrug.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioDrug.Location = new System.Drawing.Point(8, 32);
 			this.radioDrug.Name = "radioDrug";
 			this.radioDrug.Size = new System.Drawing.Size(88, 24);
@@ -96,6 +99,7 @@ namespace OpenDental{
 			// radioPatient
 			// 
 			this.radioPatient.Checked = true;
+			this.radioPatient.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioPatient.Location = new System.Drawing.Point(8, 8);
 			this.radioPatient.Name = "radioPatient";
 			this.radioPatient.Size = new System.Drawing.Size(88, 24);
@@ -129,7 +133,10 @@ namespace OpenDental{
 			this.Controls.Add(this.panel1);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormRpPrescriptions";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Prescriptions Report";
 			this.panel1.ResumeLayout(false);

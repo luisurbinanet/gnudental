@@ -9,9 +9,9 @@ namespace OpenDental{
 	public class FormProviderSelect : System.Windows.Forms.Form{
 		private System.Windows.Forms.ListBox listProviders;
 		private System.Windows.Forms.Button butClose;
-		private System.Windows.Forms.Button butDown;
-		private System.Windows.Forms.Button butAdd;
-		private System.Windows.Forms.Button butUp;
+		private OpenDental.XPButton butDown;
+		private OpenDental.XPButton butUp;
+		private OpenDental.XPButton butAdd;
 		private System.ComponentModel.Container components = null;
 		
 		public FormProviderSelect(){
@@ -40,9 +40,9 @@ namespace OpenDental{
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormProviderSelect));
 			this.listProviders = new System.Windows.Forms.ListBox();
 			this.butClose = new System.Windows.Forms.Button();
-			this.butDown = new System.Windows.Forms.Button();
-			this.butAdd = new System.Windows.Forms.Button();
-			this.butUp = new System.Windows.Forms.Button();
+			this.butDown = new OpenDental.XPButton();
+			this.butUp = new OpenDental.XPButton();
+			this.butAdd = new OpenDental.XPButton();
 			this.SuspendLayout();
 			// 
 			// listProviders
@@ -56,6 +56,7 @@ namespace OpenDental{
 			// 
 			// butClose
 			// 
+			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butClose.Location = new System.Drawing.Point(274, 413);
 			this.butClose.Name = "butClose";
 			this.butClose.TabIndex = 3;
@@ -64,53 +65,62 @@ namespace OpenDental{
 			// 
 			// butDown
 			// 
+			this.butDown.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butDown.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butDown.BtnStyle = OpenDental.enumType.XPStyle.Silver;
 			this.butDown.Image = ((System.Drawing.Image)(resources.GetObject("butDown.Image")));
 			this.butDown.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDown.Location = new System.Drawing.Point(106, 412);
+			this.butDown.Location = new System.Drawing.Point(105, 392);
 			this.butDown.Name = "butDown";
-			this.butDown.Size = new System.Drawing.Size(73, 26);
-			this.butDown.TabIndex = 2;
-			this.butDown.Text = "        Down";
-			this.butDown.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butDown.Size = new System.Drawing.Size(79, 26);
+			this.butDown.TabIndex = 12;
+			this.butDown.Text = "Down";
 			this.butDown.Click += new System.EventHandler(this.butDown_Click);
-			// 
-			// butAdd
-			// 
-			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
-			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAdd.Location = new System.Drawing.Point(18, 368);
-			this.butAdd.Name = "butAdd";
-			this.butAdd.Size = new System.Drawing.Size(74, 26);
-			this.butAdd.TabIndex = 0;
-			this.butAdd.Text = "           Add";
-			this.butAdd.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
 			// butUp
 			// 
+			this.butUp.AdjustImageLocation = new System.Drawing.Point(0, 1);
+			this.butUp.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butUp.BtnStyle = OpenDental.enumType.XPStyle.Silver;
 			this.butUp.Image = ((System.Drawing.Image)(resources.GetObject("butUp.Image")));
 			this.butUp.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butUp.Location = new System.Drawing.Point(18, 412);
+			this.butUp.Location = new System.Drawing.Point(16, 392);
 			this.butUp.Name = "butUp";
-			this.butUp.Size = new System.Drawing.Size(74, 26);
-			this.butUp.TabIndex = 1;
-			this.butUp.Text = "         Up";
-			this.butUp.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butUp.Size = new System.Drawing.Size(79, 26);
+			this.butUp.TabIndex = 11;
+			this.butUp.Text = "Up";
 			this.butUp.Click += new System.EventHandler(this.butUp_Click);
+			// 
+			// butAdd
+			// 
+			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAdd.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butAdd.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
+			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butAdd.Location = new System.Drawing.Point(16, 351);
+			this.butAdd.Name = "butAdd";
+			this.butAdd.Size = new System.Drawing.Size(79, 26);
+			this.butAdd.TabIndex = 10;
+			this.butAdd.Text = "Add";
+			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
 			// FormProviderSelect
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(372, 472);
-			this.ControlBox = false;
+			this.Controls.Add(this.butDown);
+			this.Controls.Add(this.butUp);
+			this.Controls.Add(this.butAdd);
 			this.Controls.Add(this.butClose);
 			this.Controls.Add(this.listProviders);
-			this.Controls.Add(this.butDown);
-			this.Controls.Add(this.butAdd);
-			this.Controls.Add(this.butUp);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormProviderSelect";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Providers";
+			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormProviderSelect_Closing);
 			this.Load += new System.EventHandler(this.FormProviderSelect_Load);
 			this.ResumeLayout(false);
 
@@ -220,8 +230,14 @@ namespace OpenDental{
 		}
 
 		private void butClose_Click(object sender, System.EventArgs e) {
+			Close();
+		}
+
+		private void FormProviderSelect_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+			DataValid.IType=InvalidType.LocalData;
+			DataValid DataValid2=new DataValid();
+			DataValid2.SetInvalid();
 			SecurityLogs.MakeLogEntry("Providers","Altered Providers");
-			DialogResult=DialogResult.OK;
 		}
 
 	}

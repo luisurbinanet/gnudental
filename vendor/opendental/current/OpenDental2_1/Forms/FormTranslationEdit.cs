@@ -58,6 +58,7 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(786, 594);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 0;
@@ -67,10 +68,12 @@ namespace OpenDental{
 			// butCancel
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(786, 628);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 1;
 			this.butCancel.Text = "Cancel";
+			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// label1
 			// 
@@ -154,7 +157,6 @@ namespace OpenDental{
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(880, 668);
-			this.ControlBox = false;
 			this.Controls.Add(this.textEnglishComments);
 			this.Controls.Add(this.label3);
 			this.Controls.Add(this.textComments);
@@ -165,7 +167,10 @@ namespace OpenDental{
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormTranslationEdit";
+			this.ShowInTaskbar = false;
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Translation Edit";
@@ -198,7 +203,20 @@ namespace OpenDental{
 			}
 		}
 
-		private void butOK_Click(object sender, System.EventArgs e) {
+		private void butOK_Click(object sender, System.EventArgs e){
+			if(textTranslation.Text=="" && textComments.Text==""){
+				//if only the translation is "",
+				//then the Lan.g routine will simply ignore it and use English.
+				if(!IsNew){
+					if(MessageBox.Show("This translation is blank and will be deleted.  Continue?",""
+						,MessageBoxButtons.OKCancel)!=DialogResult.OK){
+						return;
+					}
+					LanguageForeigns.DeleteCur();
+				}
+				DialogResult=DialogResult.OK;
+				return;
+			}
 			LanguageForeigns.Cur.Translation=textTranslation.Text;
 			LanguageForeigns.Cur.Comments=textComments.Text;
 			#if(DEBUG)
@@ -208,16 +226,6 @@ namespace OpenDental{
 					Lan.Refresh();
 				}
 			#endif
-			if(textTranslation.Text==""){
-				if(IsNew){
-					
-				}
-				else{
-					LanguageForeigns.DeleteCur();
-				}
-				DialogResult=DialogResult.OK;
-				return;
-			}
 			if(IsNew){
 				LanguageForeigns.InsertCur();
 			}
@@ -225,6 +233,10 @@ namespace OpenDental{
 				LanguageForeigns.UpdateCur();
 			}
 			DialogResult=DialogResult.OK;
+		}
+
+		private void butCancel_Click(object sender, System.EventArgs e) {
+		
 		}
 
 	}

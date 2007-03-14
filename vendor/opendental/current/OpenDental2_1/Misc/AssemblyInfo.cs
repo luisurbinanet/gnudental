@@ -11,7 +11,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Open Dental Software")]
 [assembly: AssemblyProduct("Open Dental")]
-[assembly: AssemblyCopyright("Jordan Sparks, 2003")]
+[assembly: AssemblyCopyright("Jordan Sparks, 2003-2004")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]		
 
@@ -26,8 +26,10 @@ using System.Runtime.CompilerServices;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 
-[assembly: AssemblyVersion("2.0.8")]
+[assembly: AssemblyVersion("2.1.7")]
 
+//In Free Dental, a change in Build number signifies a change in database structure.
+//A change in Revision is for minor changes where database is not affected, usually to fix bugs.
 
 //
 // In order to sign your assembly you must specify a key to use. Refer to the 

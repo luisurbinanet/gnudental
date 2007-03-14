@@ -27,6 +27,12 @@ namespace OpenDental{
 		private System.Windows.Forms.ToolBarButton toolButSubmit;
 		private System.Windows.Forms.ToolBarButton toolButStatus;
 		private System.Windows.Forms.ContextMenu contextMenuStatus;
+		private System.Windows.Forms.Button butPreview;
+		private System.Windows.Forms.Button butBlank;
+		private System.Windows.Forms.Button butPrint;
+		private System.Windows.Forms.Button butSubmit;
+		private System.Windows.Forms.Button butStatus;
+		private System.Windows.Forms.Button butStatusDown;
 		public static ArrayList eClaimList;//final list of eclaims(as Claim.ClaimNum) to send
 
 		public FormClaimsSend(){
@@ -66,8 +72,14 @@ namespace OpenDental{
 			this.toolButSubmit = new System.Windows.Forms.ToolBarButton();
 			this.toolButDiv2 = new System.Windows.Forms.ToolBarButton();
 			this.toolButStatus = new System.Windows.Forms.ToolBarButton();
-			this.imageList1 = new System.Windows.Forms.ImageList(this.components);
 			this.contextMenuStatus = new System.Windows.Forms.ContextMenu();
+			this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+			this.butPreview = new System.Windows.Forms.Button();
+			this.butBlank = new System.Windows.Forms.Button();
+			this.butPrint = new System.Windows.Forms.Button();
+			this.butSubmit = new System.Windows.Forms.Button();
+			this.butStatus = new System.Windows.Forms.Button();
+			this.butStatusDown = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// tbQueue
@@ -85,18 +97,18 @@ namespace OpenDental{
 			this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
 			this.label6.Location = new System.Drawing.Point(107, -44);
 			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(112, 29);
+			this.label6.Size = new System.Drawing.Size(112, 32);
 			this.label6.TabIndex = 21;
 			this.label6.Text = "Insurance Claims";
 			this.label6.TextAlign = System.Drawing.ContentAlignment.TopCenter;
 			// 
 			// butClose
 			// 
-			this.butClose.DialogResult = System.Windows.Forms.DialogResult.OK;
 			this.butClose.Location = new System.Drawing.Point(406, 550);
 			this.butClose.Name = "butClose";
 			this.butClose.TabIndex = 22;
 			this.butClose.Text = "Close";
+			this.butClose.Click += new System.EventHandler(this.butClose_Click);
 			// 
 			// toolBar2
 			// 
@@ -111,14 +123,16 @@ namespace OpenDental{
 																																								this.toolButDiv2,
 																																								this.toolButStatus});
 			this.toolBar2.Cursor = System.Windows.Forms.Cursors.Default;
+			this.toolBar2.Dock = System.Windows.Forms.DockStyle.None;
 			this.toolBar2.DropDownArrows = true;
 			this.toolBar2.ImageList = this.imageList1;
-			this.toolBar2.Location = new System.Drawing.Point(0, 0);
+			this.toolBar2.Location = new System.Drawing.Point(6, 348);
 			this.toolBar2.Name = "toolBar2";
 			this.toolBar2.ShowToolTips = true;
-			this.toolBar2.Size = new System.Drawing.Size(506, 36);
+			this.toolBar2.Size = new System.Drawing.Size(38, 232);
 			this.toolBar2.TabIndex = 23;
 			this.toolBar2.TextAlign = System.Windows.Forms.ToolBarTextAlign.Right;
+			this.toolBar2.Visible = false;
 			this.toolBar2.ButtonClick += new System.Windows.Forms.ToolBarButtonClickEventHandler(this.toolBar2_ButtonClick);
 			// 
 			// toolButPreview
@@ -171,15 +185,91 @@ namespace OpenDental{
 			this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
 			this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
 			// 
+			// butPreview
+			// 
+			this.butPreview.Image = ((System.Drawing.Image)(resources.GetObject("butPreview.Image")));
+			this.butPreview.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butPreview.Location = new System.Drawing.Point(2, 2);
+			this.butPreview.Name = "butPreview";
+			this.butPreview.Size = new System.Drawing.Size(86, 26);
+			this.butPreview.TabIndex = 24;
+			this.butPreview.Text = "Preview";
+			this.butPreview.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.butPreview.Click += new System.EventHandler(this.butPreview_Click);
+			// 
+			// butBlank
+			// 
+			this.butBlank.Image = ((System.Drawing.Image)(resources.GetObject("butBlank.Image")));
+			this.butBlank.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butBlank.Location = new System.Drawing.Point(88, 2);
+			this.butBlank.Name = "butBlank";
+			this.butBlank.Size = new System.Drawing.Size(86, 26);
+			this.butBlank.TabIndex = 25;
+			this.butBlank.Text = "Blank";
+			this.butBlank.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.butBlank.Click += new System.EventHandler(this.butBlank_Click);
+			// 
+			// butPrint
+			// 
+			this.butPrint.Image = ((System.Drawing.Image)(resources.GetObject("butPrint.Image")));
+			this.butPrint.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butPrint.Location = new System.Drawing.Point(174, 2);
+			this.butPrint.Name = "butPrint";
+			this.butPrint.Size = new System.Drawing.Size(86, 26);
+			this.butPrint.TabIndex = 26;
+			this.butPrint.Text = "Print";
+			this.butPrint.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.butPrint.Click += new System.EventHandler(this.butPrint_Click);
+			// 
+			// butSubmit
+			// 
+			this.butSubmit.Image = ((System.Drawing.Image)(resources.GetObject("butSubmit.Image")));
+			this.butSubmit.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butSubmit.Location = new System.Drawing.Point(260, 2);
+			this.butSubmit.Name = "butSubmit";
+			this.butSubmit.Size = new System.Drawing.Size(86, 26);
+			this.butSubmit.TabIndex = 27;
+			this.butSubmit.Text = "Submit";
+			this.butSubmit.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.butSubmit.Click += new System.EventHandler(this.butSubmit_Click);
+			// 
+			// butStatus
+			// 
+			this.butStatus.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butStatus.Location = new System.Drawing.Point(346, 2);
+			this.butStatus.Name = "butStatus";
+			this.butStatus.Size = new System.Drawing.Size(86, 26);
+			this.butStatus.TabIndex = 28;
+			this.butStatus.Text = "Status Sent";
+			this.butStatus.Click += new System.EventHandler(this.butStatus_Click);
+			// 
+			// butStatusDown
+			// 
+			this.butStatusDown.Image = ((System.Drawing.Image)(resources.GetObject("butStatusDown.Image")));
+			this.butStatusDown.Location = new System.Drawing.Point(432, 2);
+			this.butStatusDown.Name = "butStatusDown";
+			this.butStatusDown.Size = new System.Drawing.Size(12, 26);
+			this.butStatusDown.TabIndex = 29;
+			this.butStatusDown.Click += new System.EventHandler(this.butStatusDown_Click);
+			// 
 			// FormClaimsSend
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(506, 594);
+			this.Controls.Add(this.butStatusDown);
+			this.Controls.Add(this.butStatus);
+			this.Controls.Add(this.butSubmit);
+			this.Controls.Add(this.butPrint);
+			this.Controls.Add(this.butBlank);
+			this.Controls.Add(this.butPreview);
 			this.Controls.Add(this.toolBar2);
 			this.Controls.Add(this.butClose);
 			this.Controls.Add(this.tbQueue);
 			this.Controls.Add(this.label6);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormClaimsSend";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Send Claims";
 			this.Load += new System.EventHandler(this.FormPendingClaims_Load);
@@ -194,7 +284,8 @@ namespace OpenDental{
 			contextMenuStatus.MenuItems.Add("Waiting in Send List",new EventHandler(StatusWaiting_Clicked));
 			contextMenuStatus.MenuItems.Add("Probably sent",new EventHandler(StatusProbably_Clicked));
 			contextMenuStatus.MenuItems.Add("Sent - Verified",new EventHandler(StatusSent_Clicked));
-			contextMenuStatus.MenuItems.Add("Received",new EventHandler(StatusReceived_Clicked));
+			//do not show received because that would mess up the balances
+			//contextMenuStatus.MenuItems.Add("Received",new EventHandler(StatusReceived_Clicked));
 			FillTable();
 		}
 
@@ -229,9 +320,9 @@ namespace OpenDental{
 			ChangeSelectedTo("S");
 		}
 
-		private void StatusReceived_Clicked(object sender, System.EventArgs e){
-			ChangeSelectedTo("R");
-		}
+		//private void StatusReceived_Clicked(object sender, System.EventArgs e){
+		//	ChangeSelectedTo("R");
+		//}
 
 		private void FillTable(){
 			Claims.GetQueueList();
@@ -240,7 +331,8 @@ namespace OpenDental{
 			tbQueue.SetBackGColor(Color.White);   
 			for(int i=0;i<Claims.ListQueue.Length;i++){
 				tbQueue.Cell[0,i]=Claims.ListQueue[i].PatName;
-				tbQueue.Cell[1,i]=Defs.GetName(DefCat.ClaimFormats,Claims.ListQueue[i].ClaimFormat);
+				if(Claims.ListQueue[i].NoSendElect)
+					tbQueue.Cell[1,i]="X";
 				tbQueue.Cell[2,i]=Claims.ListQueue[i].Carrier;
 				string status="";
 				switch(Claims.ListQueue[i].ClaimStatus){
@@ -288,7 +380,7 @@ namespace OpenDental{
 			FillTable();*/
 		}
 
-		private void toolBar2_ButtonClick(object sender, System.Windows.Forms.ToolBarButtonClickEventArgs e) {
+		private void toolBar2_ButtonClick(object sender, System.Windows.Forms.ToolBarButtonClickEventArgs e) {	
 			//this is how hardcoded toolbars will be tested:
 			//dynamic toolbars will be a little different.  First would test whether a hard-coded
 			//or dynamic button, then which one.  Then run function.
@@ -311,6 +403,30 @@ namespace OpenDental{
 					toolButStatus_Click();
 					break;
 			}
+		}
+
+		private void butPreview_Click(object sender, System.EventArgs e) {
+			toolButPreview_Click();
+		}
+
+		private void butBlank_Click(object sender, System.EventArgs e) {
+			toolButBlank_Click();
+		}
+
+		private void butPrint_Click(object sender, System.EventArgs e) {
+			toolButPrint_Click();
+		}
+
+		private void butSubmit_Click(object sender, System.EventArgs e) {
+			toolButSubmit_Click();
+		}
+
+		private void butStatus_Click(object sender, System.EventArgs e) {
+			toolButStatus_Click();
+		}
+
+		private void butStatusDown_Click(object sender, System.EventArgs e) {
+			contextMenuStatus.Show(butStatus,new Point(0,26));
 		}
 
 		private void toolButPreview_Click(){
@@ -356,7 +472,8 @@ namespace OpenDental{
 				else return;
 				for(int i=0;i<Claims.ListQueue.Length;i++){
 					if(Claims.ListQueue[i].ClaimStatus=="W"
-						&& Defs.GetValue(DefCat.ClaimFormats,Claims.ListQueue[i].ClaimFormat)!="eclaim"){
+						&& Claims.ListQueue[i].NoSendElect){
+						//&& Defs.GetValue(DefCat.ClaimFormats,Claims.ListQueue[i].ClaimFormat)!="eclaim"){
 						FormCP.ThisPatNum=Claims.ListQueue[i].PatNum;
 						FormCP.ThisClaimNum=Claims.ListQueue[i].ClaimNum;
 						if(!FormCP.PrintImmediate()){
@@ -401,6 +518,7 @@ namespace OpenDental{
 					Process myProcess = Process.Start(keyVal+"WebClaim.exe");
 					//This is where the eclaims should be sent.  It is assumed that the status will be changed
 					//to "P" or "S" within the eclaims module.
+					myProcess.WaitForExit();
 				}
 			}
 			//Then, the next line refreshes this screen.
@@ -431,6 +549,14 @@ namespace OpenDental{
 			}
 			FillTable();	
 		}
+
+		private void butClose_Click(object sender, System.EventArgs e) {
+			DialogResult=DialogResult.Cancel;
+		}
+
+		
+
+		
 
 					
 				

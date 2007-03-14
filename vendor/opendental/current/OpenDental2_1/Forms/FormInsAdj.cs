@@ -16,6 +16,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butOK;
 		private System.Windows.Forms.Button butCancel;
 		private System.ComponentModel.Container components = null;
+		private System.Windows.Forms.Label label4;
 		public bool IsNew;
 
 		public FormInsAdj(){
@@ -55,11 +56,12 @@ namespace OpenDental{
 			this.textDedUsed = new OpenDental.ValidDouble();
 			this.butOK = new System.Windows.Forms.Button();
 			this.butCancel = new System.Windows.Forms.Button();
+			this.label4 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(26, 18);
+			this.label1.Location = new System.Drawing.Point(29, 74);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(100, 14);
 			this.label1.TabIndex = 0;
@@ -68,7 +70,7 @@ namespace OpenDental{
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(12, 74);
+			this.label2.Location = new System.Drawing.Point(15, 130);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(114, 14);
 			this.label2.TabIndex = 1;
@@ -77,7 +79,7 @@ namespace OpenDental{
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(26, 46);
+			this.label3.Location = new System.Drawing.Point(29, 102);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(100, 14);
 			this.label3.TabIndex = 2;
@@ -86,7 +88,7 @@ namespace OpenDental{
 			// 
 			// textDate
 			// 
-			this.textDate.Location = new System.Drawing.Point(128, 15);
+			this.textDate.Location = new System.Drawing.Point(131, 71);
 			this.textDate.Name = "textDate";
 			this.textDate.Size = new System.Drawing.Size(75, 20);
 			this.textDate.TabIndex = 0;
@@ -94,7 +96,7 @@ namespace OpenDental{
 			// 
 			// textInsUsed
 			// 
-			this.textInsUsed.Location = new System.Drawing.Point(128, 43);
+			this.textInsUsed.Location = new System.Drawing.Point(131, 99);
 			this.textInsUsed.Name = "textInsUsed";
 			this.textInsUsed.Size = new System.Drawing.Size(69, 20);
 			this.textInsUsed.TabIndex = 1;
@@ -102,7 +104,7 @@ namespace OpenDental{
 			// 
 			// textDedUsed
 			// 
-			this.textDedUsed.Location = new System.Drawing.Point(128, 71);
+			this.textDedUsed.Location = new System.Drawing.Point(131, 127);
 			this.textDedUsed.Name = "textDedUsed";
 			this.textDedUsed.Size = new System.Drawing.Size(69, 20);
 			this.textDedUsed.TabIndex = 2;
@@ -110,6 +112,7 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(259, 126);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 3;
@@ -118,17 +121,26 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(259, 162);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 4;
 			this.butCancel.Text = "Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
+			// label4
+			// 
+			this.label4.Location = new System.Drawing.Point(32, 12);
+			this.label4.Name = "label4";
+			this.label4.Size = new System.Drawing.Size(259, 41);
+			this.label4.TabIndex = 5;
+			this.label4.Text = "Make sure the date you use falls within the correct benefit year.";
+			// 
 			// FormInsAdj
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(354, 208);
-			this.ControlBox = false;
+			this.Controls.Add(this.label4);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.textDedUsed);
@@ -137,9 +149,11 @@ namespace OpenDental{
 			this.Controls.Add(this.label3);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label1);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormInsAdj";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = Lan.g(this,"Edit Insurance Adjustments");
+			this.Text = "Edit Insurance Adjustments";
 			this.Load += new System.EventHandler(this.FormInsAdj_Load);
 			this.ResumeLayout(false);
 
@@ -147,9 +161,10 @@ namespace OpenDental{
 		#endregion
 
 		private void FormInsAdj_Load(object sender, System.EventArgs e) {
-			textDate.Text=Claims.Cur.DateService.ToShortDateString();
-			textInsUsed.Text=Claims.Cur.InsPayAmt.ToString("F");
-			textDedUsed.Text=Claims.Cur.DedApplied.ToString("F");
+			textDate.Text=ClaimProcs.Cur.DateCP.ToShortDateString();
+			textInsUsed.Text=ClaimProcs.Cur.InsPayAmt.ToString("F");
+			textDedUsed.Text=ClaimProcs.Cur.DedApplied.ToString("F");
+//MessageBox.Show(ClaimProcs.Cur.PlanNum.ToString());
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
@@ -160,14 +175,14 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g("All","Please fix data entry errors first."));
 				return;
 			}
-			Claims.Cur.DateService=PIn.PDate(textDate.Text);
-			Claims.Cur.InsPayAmt=PIn.PDouble(textInsUsed.Text);
-			Claims.Cur.DedApplied=PIn.PDouble(textDedUsed.Text);
+			ClaimProcs.Cur.DateCP=PIn.PDate(textDate.Text);
+			ClaimProcs.Cur.InsPayAmt=PIn.PDouble(textInsUsed.Text);
+			ClaimProcs.Cur.DedApplied=PIn.PDouble(textDedUsed.Text);
 			if(IsNew){
-				Claims.InsertCur();
+				ClaimProcs.InsertCur();
 			}
 			else{
-				Claims.UpdateCur();
+				ClaimProcs.UpdateCur();
 			}
 			DialogResult=DialogResult.OK;
 		}

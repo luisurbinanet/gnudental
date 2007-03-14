@@ -60,6 +60,7 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(303, 156);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 4;
@@ -69,6 +70,7 @@ namespace OpenDental{
 			// butCancel
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(303, 187);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 5;
@@ -131,6 +133,7 @@ namespace OpenDental{
 			// 
 			// checkIsFrequent
 			// 
+			this.checkIsFrequent.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkIsFrequent.Location = new System.Drawing.Point(110, 109);
 			this.checkIsFrequent.Name = "checkIsFrequent";
 			this.checkIsFrequent.Size = new System.Drawing.Size(138, 22);

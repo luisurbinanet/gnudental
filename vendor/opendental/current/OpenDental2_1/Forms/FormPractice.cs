@@ -44,7 +44,6 @@ namespace OpenDental{
 		private System.Windows.Forms.CheckBox checkAutoRefresh;
 		private System.Windows.Forms.TextBox textMainWindowTitle;
 		private System.Windows.Forms.Label label14;
-		private System.Windows.Forms.CheckBox checkDisableTimeBar;
 		private System.Windows.Forms.Label label1;// Required designer variable.
 
 		public FormPractice(){
@@ -123,7 +122,6 @@ namespace OpenDental{
 			this.checkAutoRefresh = new System.Windows.Forms.CheckBox();
 			this.textMainWindowTitle = new System.Windows.Forms.TextBox();
 			this.label14 = new System.Windows.Forms.Label();
-			this.checkDisableTimeBar = new System.Windows.Forms.CheckBox();
 			this.groupBox3.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.SuspendLayout();
@@ -132,6 +130,7 @@ namespace OpenDental{
 			// 
 			this.groupBox3.Controls.Add(this.butTreatProv);
 			this.groupBox3.Controls.Add(this.listBillProv);
+			this.groupBox3.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupBox3.Location = new System.Drawing.Point(477, 214);
 			this.groupBox3.Name = "groupBox3";
 			this.groupBox3.Size = new System.Drawing.Size(188, 242);
@@ -142,6 +141,7 @@ namespace OpenDental{
 			// 
 			// butTreatProv
 			// 
+			this.butTreatProv.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butTreatProv.Location = new System.Drawing.Point(24, 202);
 			this.butTreatProv.Name = "butTreatProv";
 			this.butTreatProv.Size = new System.Drawing.Size(110, 23);
@@ -226,6 +226,7 @@ namespace OpenDental{
 			this.groupBox2.Controls.Add(this.label7);
 			this.groupBox2.Controls.Add(this.label8);
 			this.groupBox2.Controls.Add(this.label9);
+			this.groupBox2.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupBox2.Location = new System.Drawing.Point(84, 73);
 			this.groupBox2.Name = "groupBox2";
 			this.groupBox2.Size = new System.Drawing.Size(324, 170);
@@ -393,6 +394,7 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(771, 533);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 7;
@@ -401,6 +403,7 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(771, 569);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 8;
@@ -426,6 +429,7 @@ namespace OpenDental{
 			// 
 			// checkShowCC
 			// 
+			this.checkShowCC.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkShowCC.Location = new System.Drawing.Point(59, 446);
 			this.checkShowCC.Name = "checkShowCC";
 			this.checkShowCC.Size = new System.Drawing.Size(334, 24);
@@ -434,6 +438,7 @@ namespace OpenDental{
 			// 
 			// checkAutoRefresh
 			// 
+			this.checkAutoRefresh.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkAutoRefresh.Location = new System.Drawing.Point(59, 476);
 			this.checkAutoRefresh.Name = "checkAutoRefresh";
 			this.checkAutoRefresh.Size = new System.Drawing.Size(603, 16);
@@ -458,20 +463,10 @@ namespace OpenDental{
 			this.label14.Text = "Main Window Title";
 			this.label14.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
-			// checkDisableTimeBar
-			// 
-			this.checkDisableTimeBar.Location = new System.Drawing.Point(59, 529);
-			this.checkDisableTimeBar.Name = "checkDisableTimeBar";
-			this.checkDisableTimeBar.Size = new System.Drawing.Size(446, 16);
-			this.checkDisableTimeBar.TabIndex = 40;
-			this.checkDisableTimeBar.Text = "Disable Red Time Bar (for testing purposes. Only lasts for this session)";
-			this.checkDisableTimeBar.Visible = false;
-			// 
 			// FormPractice
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(866, 615);
-			this.Controls.Add(this.checkDisableTimeBar);
 			this.Controls.Add(this.label14);
 			this.Controls.Add(this.textMainWindowTitle);
 			this.Controls.Add(this.checkAutoRefresh);
@@ -490,7 +485,10 @@ namespace OpenDental{
 			this.Controls.Add(this.groupBox2);
 			this.Controls.Add(this.label3);
 			this.Controls.Add(this.groupBox3);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormPractice";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Edit Practice Info";
 			this.Load += new System.EventHandler(this.FormPractice_Load);
@@ -535,7 +533,6 @@ namespace OpenDental{
 			else checkShowCC.Checked=false;
 			checkAutoRefresh.Checked=((Pref)Prefs.HList["AutoRefreshIsDisabled"]).ValueString=="1";
 			textMainWindowTitle.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString;
-			checkDisableTimeBar.Checked=FormOpenDental.TimeBarIsDisabled;
 			//listBillProv.Items.Clear(); //might use later
 			//for(int i=0;i<Providers.List.Length;i++){
 			//	listBillProv.Items.Add(Providers.List[i].Abbr);
@@ -621,8 +618,6 @@ namespace OpenDental{
 			Prefs.Cur.PrefName="MainWindowTitle";
 			Prefs.Cur.ValueString=textMainWindowTitle.Text;
 			Prefs.UpdateCur();
-
-			FormOpenDental.TimeBarIsDisabled=checkDisableTimeBar.Checked;
 
 			//Prefs.Cur.PrefName="PracticeBillProv"; //might use later
 			//if(listBillProv.SelectedIndex==-1){

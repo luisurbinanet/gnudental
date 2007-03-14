@@ -20,7 +20,7 @@ namespace OpenDental{
 			HeadingIsPresent=false;
 			InstantClassesPar();
 			SetRowHeight(0,5,14);
-			Heading=Lan.g("tbPercent","Coverage Spans");
+			Heading=Lan.g("TablePercent","Coverage Spans");
 			ColWidth[0]=120;
 			ColWidth[1]=132;
 			LayoutTables();

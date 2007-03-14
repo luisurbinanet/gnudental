@@ -55,6 +55,7 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(320, 210);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 1;
@@ -73,9 +74,12 @@ namespace OpenDental{
 			this.ClientSize = new System.Drawing.Size(438, 276);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.Text2);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormMessageText";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = Lan.g(this,"Message");
+			this.Text = "Message";
 			this.Load += new System.EventHandler(this.FormMessageText_Load);
 			this.ResumeLayout(false);
 

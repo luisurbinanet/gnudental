@@ -47,6 +47,7 @@ namespace OpenDental{
 			// butCancel
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(528, 328);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 2;
@@ -54,6 +55,7 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(528, 296);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 1;
@@ -85,7 +87,10 @@ namespace OpenDental{
 			this.Controls.Add(this.textBoxCarrier);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormRpInsCo";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Insurance Company Report";
 			this.ResumeLayout(false);
@@ -104,9 +109,11 @@ insplan.groupname FROM insplan,patient WHERE insplan.subscriber=patient.patnum
 Order By patient.lname,patient.fname
 
 */
-			Queries.CurReport.Query= "SELECT insplan.carrier,insplan.subscriber,insplan.phone,"
-				+"insplan.groupname FROM insplan WHERE  insplan.carrier LIKE '"+carrier+"%' "
-				+"ORDER BY insplan.carrier";
+			Queries.CurReport.Query= "SELECT carrier,CONCAT(LName,', ',FName,' ',MiddleI),phone,"
+				+"groupname FROM insplan,patient "
+				+"WHERE insplan.subscriber=patient.patnum "
+				+"&& carrier LIKE '"+carrier+"%' "
+				+"ORDER BY carrier";
 
 			FormQuery2=new FormQuery();
 			FormQuery2.IsReport=true;
@@ -127,9 +134,28 @@ Order By patient.lname,patient.fname
 			Queries.CurReport.ColCaption[1]="Subscriber Name";
 			Queries.CurReport.ColCaption[2]="Carrier Phone#";
 			Queries.CurReport.ColCaption[3]="Group Name";
-			Queries.CurReport.Summary=new string[0];
+			Queries.CurReport.Summary=new string[1];
+			Queries.CurReport.Summary[0]=Lan.g(this,"Total: ")+Queries.TableQ.Rows.Count.ToString();
 			FormQuery2.ShowDialog();
 			DialogResult=DialogResult.OK;		
 		}
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -46,6 +46,7 @@ namespace OpenDental{
 			// 
 			// button1
 			// 
+			this.button1.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.button1.Location = new System.Drawing.Point(323, 709);
 			this.button1.Name = "button1";
 			this.button1.TabIndex = 8;
@@ -59,7 +60,10 @@ namespace OpenDental{
 			this.ClientSize = new System.Drawing.Size(842, 746);
 			this.Controls.Add(this.button1);
 			this.Controls.Add(this.printPreviewControl2);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormRpPrintPreview";
+			this.ShowInTaskbar = false;
 			this.Text = "FormRxPrintPreview";
 			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
 			this.Load += new System.EventHandler(this.FormRpPrintPreview_Load);

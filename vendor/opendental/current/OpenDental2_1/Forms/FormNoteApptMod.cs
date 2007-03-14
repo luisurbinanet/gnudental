@@ -45,26 +45,29 @@ namespace OpenDental{
 			this.textApptModNote.Multiline = true;
 			this.textApptModNote.Name = "textApptModNote";
 			this.textApptModNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textApptModNote.Size = new System.Drawing.Size(202, 20);
+			this.textApptModNote.Size = new System.Drawing.Size(202, 38);
 			this.textApptModNote.TabIndex = 0;
 			this.textApptModNote.Text = "";
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(236, 92);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 1;
 			this.butOK.Text = "OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// butCancel
 			// 
-			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.Location = new System.Drawing.Point(236, 130);
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butCancel.Location = new System.Drawing.Point(236, 127);
 			this.butCancel.Name = "butCancel";
-			this.butCancel.Size = new System.Drawing.Size(75, 20);
+			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 2;
 			this.butCancel.Text = "Cancel";
+			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// FormNoteApptMod
 			// 
@@ -73,9 +76,12 @@ namespace OpenDental{
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.textApptModNote);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormNoteApptMod";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = Lan.g(this,"Edit Appointment Module Note");
+			this.Text = "Edit Appointment Module Note";
 			this.Load += new System.EventHandler(this.FormNoteApptMod_Load);
 			this.ResumeLayout(false);
 
@@ -90,6 +96,10 @@ namespace OpenDental{
 			Patients.Cur.ApptModNote=textApptModNote.Text;
 			Patients.UpdateCur();
 			DialogResult=DialogResult.OK;
+		}
+
+		private void butCancel_Click(object sender, System.EventArgs e) {
+			DialogResult=DialogResult.Cancel;
 		}
 		
 	}

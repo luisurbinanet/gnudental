@@ -64,6 +64,7 @@ namespace OpenDental{
 			// butCancel
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(523, 328);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 4;
@@ -71,6 +72,7 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(523, 296);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 3;
@@ -88,6 +90,7 @@ namespace OpenDental{
 			// 
 			// radioRange
 			// 
+			this.radioRange.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioRange.Location = new System.Drawing.Point(8, 32);
 			this.radioRange.Name = "radioRange";
 			this.radioRange.Size = new System.Drawing.Size(88, 24);
@@ -97,6 +100,7 @@ namespace OpenDental{
 			// radioSingle
 			// 
 			this.radioSingle.Checked = true;
+			this.radioSingle.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioSingle.Location = new System.Drawing.Point(8, 8);
 			this.radioSingle.Name = "radioSingle";
 			this.radioSingle.Size = new System.Drawing.Size(88, 24);
@@ -137,7 +141,10 @@ namespace OpenDental{
 			this.Controls.Add(this.date2);
 			this.Controls.Add(this.date1);
 			this.Controls.Add(this.labelTO);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormRpPaySheet";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Daily Payments Report";
 			this.Load += new System.EventHandler(this.FormPaymentSheet_Load);
@@ -162,10 +169,13 @@ namespace OpenDental{
 					+"payment.PatNum = patient.PatNum && "
 					+"paydate >= '" + date1.SelectionStart.ToString("yyyy-MM-dd")+"' "
 					+"&& paydate <= '" + date2.SelectionStart.ToString("yyyy-MM-dd")+"' UNION "
-					+"SELECT CheckDate,insplan.Carrier,'Ins Check',"
-					+"CheckNum,CheckAmt FROM claimpayment,claim,insplan WHERE claim.ClaimPaymentNum = "
-					+"claimpayment.ClaimPaymentNum && claim.PlanNum = insplan.PlanNum "
-					+"&& claimstatus != 'A' "
+					+"SELECT CheckDate,"
+					+"CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI),'Ins',"
+					+"CheckNum,CheckAmt FROM claimpayment,claimproc,insplan,patient "
+					+"WHERE claimproc.ClaimPaymentNum = claimpayment.ClaimPaymentNum "
+					+"&& claimproc.PlanNum = insplan.PlanNum "
+					+"&& claimproc.patnum = patient.patnum "
+					+"&& (claimproc.status = '1' || claimproc.status = '4') "
 					+"&& CheckDate >= '"+date1.SelectionStart.ToString("yyyy-MM-dd")+"' "
 					+"&& CheckDate <= '"+date2.SelectionStart.ToString("yyyy-MM-dd")+"' "
 					+"GROUP BY claimpayment.claimpaymentnum ORDER BY PayDate";
@@ -174,12 +184,15 @@ namespace OpenDental{
 				Queries.CurReport.Query+="WHERE "
 					+"payment.PatNum = patient.PatNum && "
 					+"paydate = '" + date1.SelectionStart.ToString("yyyy-MM-dd")+"' UNION "
-					+"SELECT CheckDate,insplan.Carrier,'Ins Check',"
-					+"CheckNum,CheckAmt FROM claimpayment,claim,insplan WHERE claim.ClaimPaymentNum = "
-					+"claimpayment.ClaimPaymentNum && claim.PlanNum = insplan.PlanNum "
-					+"&& claimstatus != 'A' "
+					+"SELECT CheckDate,"
+					+"CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI),'Ins',"
+					+"CheckNum,CheckAmt FROM claimpayment,claimproc,insplan,patient "
+					+"WHERE claimproc.ClaimPaymentNum = claimpayment.ClaimPaymentNum "
+					+"&& claimproc.PlanNum = insplan.PlanNum "
+					+"&& claimproc.patnum = patient.patnum "
+					+"&& (claimproc.status = '1' || claimproc.status = '4') "
 					+"&& CheckDate = '"+date1.SelectionStart.ToString("yyyy-MM-dd")+"' "
-					+"GROUP BY claimpayment.claimpaymentnum ORDER BY PayDate";
+					+"GROUP BY patient.patnum ORDER BY PayDate";
 			}
 			FormQuery2=new FormQuery();
 			FormQuery2.IsReport=true;

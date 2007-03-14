@@ -47,6 +47,7 @@ namespace OpenDental{
 			// butCancel
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(336, 176);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 19;
@@ -54,6 +55,7 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(336, 142);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 18;
@@ -86,7 +88,10 @@ namespace OpenDental{
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.textDate);
 			this.Controls.Add(this.label1);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormRpFinanceCharge";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Finance Charge Report";
 			this.Load += new System.EventHandler(this.FormRpFinanceCharge_Load);

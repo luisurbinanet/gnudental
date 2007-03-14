@@ -54,6 +54,7 @@ namespace OpenDental{
 			// butAdd
 			// 
 			this.butAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butAdd.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butAdd.Location = new System.Drawing.Point(615, 374);
 			this.butAdd.Name = "butAdd";
@@ -65,6 +66,7 @@ namespace OpenDental{
 			// butClose
 			// 
 			this.butClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butClose.Location = new System.Drawing.Point(615, 513);
 			this.butClose.Name = "butClose";
 			this.butClose.Size = new System.Drawing.Size(76, 26);
@@ -75,6 +77,7 @@ namespace OpenDental{
 			// butDelete
 			// 
 			this.butDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butDelete.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butDelete.Location = new System.Drawing.Point(615, 410);
 			this.butDelete.Name = "butDelete";
 			this.butDelete.Size = new System.Drawing.Size(76, 26);
@@ -90,9 +93,13 @@ namespace OpenDental{
 			this.Controls.Add(this.butAdd);
 			this.Controls.Add(this.butClose);
 			this.Controls.Add(this.tbZips);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormZipCodes";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Zip Codes";
+			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormZipCodes_Closing);
 			this.Load += new System.EventHandler(this.FormZipCodes_Load);
 			this.ResumeLayout(false);
 
@@ -152,10 +159,13 @@ namespace OpenDental{
 		}
 
 		private void butClose_Click(object sender, System.EventArgs e) {
+			Close();
+		}
+
+		private void FormZipCodes_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
 			DataValid.IType=InvalidType.LocalData;
 			DataValid DataValid2=new DataValid();
 			DataValid2.SetInvalid();
-			Close();
 		}
 	
 

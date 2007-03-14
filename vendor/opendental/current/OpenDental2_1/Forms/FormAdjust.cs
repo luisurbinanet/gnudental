@@ -1,5 +1,5 @@
 /*=============================================================================================================
-FreeDental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
+Open Dental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
 See header in FormOpenDental.cs for complete text.  Redistributions must retain this text.
 ===============================================================================================================*/
 using System;
@@ -139,15 +139,17 @@ namespace OpenDental{
 			this.butOK.Location = new System.Drawing.Point(617, 437);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 6;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// butCancel
 			// 
+			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(617, 475);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 7;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// textDate
@@ -168,6 +170,7 @@ namespace OpenDental{
 			// 
 			// butDelete
 			// 
+			this.butDelete.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butDelete.Location = new System.Drawing.Point(41, 476);
 			this.butDelete.Name = "butDelete";
 			this.butDelete.TabIndex = 17;
@@ -208,6 +211,7 @@ namespace OpenDental{
 			// FormAdjust
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(731, 528);
 			this.Controls.Add(this.listTypeNeg);
 			this.Controls.Add(this.listTypePos);

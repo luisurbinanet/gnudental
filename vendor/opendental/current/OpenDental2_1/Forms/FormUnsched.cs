@@ -47,12 +47,14 @@ namespace OpenDental{
 			this.tbApts.BackColor = System.Drawing.SystemColors.Window;
 			this.tbApts.Location = new System.Drawing.Point(10, 10);
 			this.tbApts.Name = "tbApts";
-			this.tbApts.SelectionMode = SelectionMode.One;//OpenDental.SelectionMode.One;
+			this.tbApts.SelectedIndices = new int[0];
+			this.tbApts.SelectionMode = System.Windows.Forms.SelectionMode.One;
 			this.tbApts.Size = new System.Drawing.Size(829, 600);
 			this.tbApts.TabIndex = 0;
 			// 
 			// butClose
 			// 
+			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butClose.Location = new System.Drawing.Point(761, 628);
 			this.butClose.Name = "butClose";
 			this.butClose.Size = new System.Drawing.Size(75, 27);
@@ -64,12 +66,15 @@ namespace OpenDental{
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(858, 672);
-			this.Controls.AddRange(new System.Windows.Forms.Control[] {
-																																	this.tbApts,
-																																	this.butClose});
+			this.Controls.Add(this.tbApts);
+			this.Controls.Add(this.butClose);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormUnsched";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Unscheduled List";
+			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormUnsched_Closing);
 			this.Load += new System.EventHandler(this.FormUnsched_Load);
 			this.ResumeLayout(false);
 
@@ -94,10 +99,10 @@ namespace OpenDental{
 			for (int i=0;i<Appointments.ListUn.Length;i++){
 				Patients.GetLim(Appointments.ListUn[i].PatNum);
 				tbApts.Cell[0,i]=Patients.LimName;
-				if(Appointments.ListUn[i].AptDateTime.CompareTo(DateTime.Parse("1/1/1880"))<0)
+				if(Appointments.ListUn[i].AptDateTime.Year < 1880)
 					tbApts.Cell[1,i]="";
 				else 
-					tbApts.Cell[1,i]=Appointments.ListUn[i].AptDateTime.ToString("d");
+					tbApts.Cell[1,i]=Appointments.ListUn[i].AptDateTime.ToShortDateString();
 				tbApts.Cell[2,i]=Defs.GetName(DefCat.RecallUnschedStatus,Appointments.ListUn[i].UnschedStatus);
 				tbApts.Cell[3,i]=Providers.GetAbbr(Appointments.ListUn[i].ProvNum);
 				Procedures.GetProcsOneApt(Appointments.ListUn[i].AptNum);
@@ -142,6 +147,7 @@ namespace OpenDental{
 				PinClicked=true;
 				Patients.GetFamily(Appointments.Cur.PatNum);
 				CreateCurInfo();
+				Appointments.ListUn=null;
 				DialogResult=DialogResult.OK;
 			}
 			else
@@ -171,7 +177,11 @@ namespace OpenDental{
 		}*/
 
 		private void butClose_Click(object sender, System.EventArgs e) {
-			DialogResult=DialogResult.Cancel;
+			Close();
+		}
+
+		private void FormUnsched_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+			Appointments.ListUn=null;
 		}
 
 	}

@@ -11,14 +11,14 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label14;
 		private System.Windows.Forms.TextBox textGuide;
 		private System.Windows.Forms.GroupBox groupEdit;
-		private System.Windows.Forms.Button butHide;
-		private System.Windows.Forms.Button butDown;
-		private System.Windows.Forms.Button butAdd;
-		private System.Windows.Forms.Button butUp;
 		private OpenDental.TableDefs tbDefs;
 		private System.Windows.Forms.ListBox listCategory;
 		private System.Windows.Forms.Label label13;
 		private System.ComponentModel.Container components = null;
+		private OpenDental.XPButton butAdd;
+		private OpenDental.XPButton butUp;
+		private OpenDental.XPButton butDown;
+		private System.Windows.Forms.Button butHide;
 		private int SelectedCat;
 
 		public FormDefinitions(){
@@ -61,20 +61,22 @@ namespace OpenDental{
 			this.label14 = new System.Windows.Forms.Label();
 			this.textGuide = new System.Windows.Forms.TextBox();
 			this.groupEdit = new System.Windows.Forms.GroupBox();
-			this.butHide = new System.Windows.Forms.Button();
-			this.butDown = new System.Windows.Forms.Button();
-			this.butAdd = new System.Windows.Forms.Button();
-			this.butUp = new System.Windows.Forms.Button();
 			this.tbDefs = new OpenDental.TableDefs();
 			this.listCategory = new System.Windows.Forms.ListBox();
 			this.label13 = new System.Windows.Forms.Label();
+			this.butAdd = new OpenDental.XPButton();
+			this.butUp = new OpenDental.XPButton();
+			this.butDown = new OpenDental.XPButton();
+			this.butHide = new System.Windows.Forms.Button();
 			this.groupEdit.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// butClose
 			// 
-			this.butClose.Location = new System.Drawing.Point(556, 564);
+			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butClose.Location = new System.Drawing.Point(545, 564);
 			this.butClose.Name = "butClose";
+			this.butClose.Size = new System.Drawing.Size(75, 26);
 			this.butClose.TabIndex = 3;
 			this.butClose.Text = "Close";
 			this.butClose.Click += new System.EventHandler(this.butClose_Click);
@@ -93,7 +95,7 @@ namespace OpenDental{
 			this.textGuide.Location = new System.Drawing.Point(158, 470);
 			this.textGuide.Multiline = true;
 			this.textGuide.Name = "textGuide";
-			this.textGuide.Size = new System.Drawing.Size(468, 80);
+			this.textGuide.Size = new System.Drawing.Size(460, 80);
 			this.textGuide.TabIndex = 2;
 			this.textGuide.Text = "";
 			// 
@@ -101,62 +103,15 @@ namespace OpenDental{
 			// 
 			this.groupEdit.Controls.Add(this.butHide);
 			this.groupEdit.Controls.Add(this.butDown);
-			this.groupEdit.Controls.Add(this.butAdd);
 			this.groupEdit.Controls.Add(this.butUp);
+			this.groupEdit.Controls.Add(this.butAdd);
+			this.groupEdit.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupEdit.Location = new System.Drawing.Point(158, 402);
 			this.groupEdit.Name = "groupEdit";
-			this.groupEdit.Size = new System.Drawing.Size(470, 54);
+			this.groupEdit.Size = new System.Drawing.Size(460, 54);
 			this.groupEdit.TabIndex = 1;
 			this.groupEdit.TabStop = false;
 			this.groupEdit.Text = "Edit Items";
-			// 
-			// butHide
-			// 
-			this.butHide.Image = ((System.Drawing.Image)(resources.GetObject("butHide.Image")));
-			this.butHide.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butHide.Location = new System.Drawing.Point(142, 18);
-			this.butHide.Name = "butHide";
-			this.butHide.Size = new System.Drawing.Size(80, 26);
-			this.butHide.TabIndex = 1;
-			this.butHide.Text = "          Hide";
-			this.butHide.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butHide.Click += new System.EventHandler(this.butHide_Click);
-			// 
-			// butDown
-			// 
-			this.butDown.Image = ((System.Drawing.Image)(resources.GetObject("butDown.Image")));
-			this.butDown.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDown.Location = new System.Drawing.Point(330, 18);
-			this.butDown.Name = "butDown";
-			this.butDown.Size = new System.Drawing.Size(77, 26);
-			this.butDown.TabIndex = 3;
-			this.butDown.Text = "        Down";
-			this.butDown.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDown.Click += new System.EventHandler(this.butDown_Click);
-			// 
-			// butAdd
-			// 
-			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
-			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAdd.Location = new System.Drawing.Point(54, 18);
-			this.butAdd.Name = "butAdd";
-			this.butAdd.Size = new System.Drawing.Size(75, 26);
-			this.butAdd.TabIndex = 0;
-			this.butAdd.Text = "           Add";
-			this.butAdd.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
-			// 
-			// butUp
-			// 
-			this.butUp.Image = ((System.Drawing.Image)(resources.GetObject("butUp.Image")));
-			this.butUp.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butUp.Location = new System.Drawing.Point(240, 18);
-			this.butUp.Name = "butUp";
-			this.butUp.Size = new System.Drawing.Size(74, 26);
-			this.butUp.TabIndex = 2;
-			this.butUp.Text = "         Up";
-			this.butUp.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butUp.Click += new System.EventHandler(this.butUp_Click);
 			// 
 			// tbDefs
 			// 
@@ -180,6 +135,7 @@ namespace OpenDental{
 																											"Billing Types",
 																											"Chart Graphic Colors",
 																											"Claim Formats",
+																											"Contact Categories",
 																											"Diagnosis",
 																											"Discount Types",
 																											"Document Categories",
@@ -196,7 +152,7 @@ namespace OpenDental{
 																											"Treat\' Plan Priorities"});
 			this.listCategory.Location = new System.Drawing.Point(22, 36);
 			this.listCategory.Name = "listCategory";
-			this.listCategory.Size = new System.Drawing.Size(124, 303);
+			this.listCategory.Size = new System.Drawing.Size(124, 316);
 			this.listCategory.TabIndex = 0;
 			this.listCategory.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listCategory_MouseDown);
 			// 
@@ -206,6 +162,58 @@ namespace OpenDental{
 			this.label13.Name = "label13";
 			this.label13.TabIndex = 17;
 			this.label13.Text = "Select Category:";
+			// 
+			// butAdd
+			// 
+			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAdd.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butAdd.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
+			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butAdd.Location = new System.Drawing.Point(34, 19);
+			this.butAdd.Name = "butAdd";
+			this.butAdd.Size = new System.Drawing.Size(79, 26);
+			this.butAdd.TabIndex = 6;
+			this.butAdd.Text = "Add";
+			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
+			// 
+			// butUp
+			// 
+			this.butUp.AdjustImageLocation = new System.Drawing.Point(0, 1);
+			this.butUp.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butUp.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butUp.Image = ((System.Drawing.Image)(resources.GetObject("butUp.Image")));
+			this.butUp.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butUp.Location = new System.Drawing.Point(242, 19);
+			this.butUp.Name = "butUp";
+			this.butUp.Size = new System.Drawing.Size(79, 26);
+			this.butUp.TabIndex = 8;
+			this.butUp.Text = "Up";
+			this.butUp.Click += new System.EventHandler(this.butUp_Click);
+			// 
+			// butDown
+			// 
+			this.butDown.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butDown.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butDown.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butDown.Image = ((System.Drawing.Image)(resources.GetObject("butDown.Image")));
+			this.butDown.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butDown.Location = new System.Drawing.Point(348, 19);
+			this.butDown.Name = "butDown";
+			this.butDown.Size = new System.Drawing.Size(79, 26);
+			this.butDown.TabIndex = 9;
+			this.butDown.Text = "Down";
+			this.butDown.Click += new System.EventHandler(this.butDown_Click);
+			// 
+			// butHide
+			// 
+			this.butHide.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butHide.Location = new System.Drawing.Point(140, 19);
+			this.butHide.Name = "butHide";
+			this.butHide.Size = new System.Drawing.Size(75, 26);
+			this.butHide.TabIndex = 10;
+			this.butHide.Text = "Hide";
+			this.butHide.Click += new System.EventHandler(this.butHide_Click);
 			// 
 			// FormDefinitions
 			// 
@@ -222,6 +230,7 @@ namespace OpenDental{
 			this.Name = "FormDefinitions";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Definitions";
+			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormDefinitions_Closing);
 			this.Load += new System.EventHandler(this.FormDefinitions_Load);
 			this.groupEdit.ResumeLayout(false);
 			this.ResumeLayout(false);
@@ -324,18 +333,16 @@ namespace OpenDental{
 					break;
 				case "Claim Formats":
 					SelectedCat=5;
-					FormDefEdit.EnableValue=true;
-					FormDefEdit.ValueText="Template File";
-					FormDefEdit.HelpText="Template File name must be either 'ADA2002' or 'eclaim' "
-						+"(without the quotes).  The Name in the first column is what you will see "
-						+"in all insurance plans.  Changes affect all patients.";
+					FormDefEdit.EnableValue=false;
+					FormDefEdit.ValueText="";
+					FormDefEdit.HelpText=Lan.g(this,"This category is obsolete.");
 					break;
 				case "Dunning Messages":
 					SelectedCat=6;
 					FormDefEdit.CanEditName=false;
 					FormDefEdit.EnableValue=false;//true;
 					FormDefEdit.ValueText="Message";
-					FormDefEdit.HelpText="Not functional in version 1.0";
+					FormDefEdit.HelpText="This category is not currently being used.";
 						//"Messages will automatically show up on statements with "
 						//+"the specified aging.  Family is considered to have insurance if any family "
 						//+"member has insurance.";
@@ -442,7 +449,13 @@ namespace OpenDental{
 					SelectedCat=22;
 					FormDefEdit.EnableColor=true;
 					//FormDefEdit.CanEditName=false;
-					FormDefEdit.HelpText="These colors will be used on the graphical tooth chart to draw restorations.";
+					FormDefEdit.HelpText="These colors will be used on the graphical tooth chart "
+						+"to draw restorations.";
+					break;
+				case "Contact Categories":
+					SelectedCat=(int)DefCat.ContactCategories;
+					FormDefEdit.HelpText="You can add as many categories as you want.  Changes affect all current "
+						+"contact records.";
 					break;
 			}
 			FillDefs();
@@ -524,12 +537,15 @@ namespace OpenDental{
 		}
 
 		private void butClose_Click(object sender, System.EventArgs e) {
+			DialogResult=DialogResult.Cancel;
+		}
+
+		private void FormDefinitions_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
 			DataValid.IType=InvalidType.LocalData;
 			DataValid DataValid2=new DataValid();
 			DataValid2.SetInvalid();
 			Defs.IsSelected=false;
 			SecurityLogs.MakeLogEntry("Definitions","Altered Definitions");
-			this.Close();
 		}
 
 

@@ -1,5 +1,5 @@
 /*=============================================================================================================
-FreeDental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
+Open Dental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
 See header in FormOpenDental.cs for complete text.  Redistributions must retain this text.
 ===============================================================================================================*/
 using System;
@@ -33,6 +33,7 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textExtra1;
 		private System.Windows.Forms.TextBox textExtra2;
 		private System.Windows.Forms.Label label4;
+		private System.Windows.Forms.Label label5;
 		public int SelectedTab;
 
 		public FormPreferences(){
@@ -73,6 +74,7 @@ namespace OpenDental{
 			this.textExtra1 = new System.Windows.Forms.TextBox();
 			this.textExtra2 = new System.Windows.Forms.TextBox();
 			this.label4 = new System.Windows.Forms.Label();
+			this.label5 = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
@@ -96,10 +98,9 @@ namespace OpenDental{
 			// 
 			// groupBox1
 			// 
-			this.groupBox1.Controls.AddRange(new System.Windows.Forms.Control[] {
-																																						this.label1,
-																																						this.trackBar1,
-																																						this.label2});
+			this.groupBox1.Controls.Add(this.label1);
+			this.groupBox1.Controls.Add(this.trackBar1);
+			this.groupBox1.Controls.Add(this.label2);
 			this.groupBox1.Location = new System.Drawing.Point(10, 598);
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.Size = new System.Drawing.Size(192, 76);
@@ -159,25 +160,35 @@ namespace OpenDental{
 			this.label4.Text = "Family module Extra2 caption";
 			this.label4.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
+			// label5
+			// 
+			this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.label5.ForeColor = System.Drawing.Color.Red;
+			this.label5.Location = new System.Drawing.Point(227, 199);
+			this.label5.Name = "label5";
+			this.label5.Size = new System.Drawing.Size(372, 116);
+			this.label5.TabIndex = 9;
+			this.label5.Text = "This Form Is Obsolete";
+			// 
 			// FormPreferences
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(930, 704);
 			this.ControlBox = false;
-			this.Controls.AddRange(new System.Windows.Forms.Control[] {
-																																	this.textExtra2,
-																																	this.label4,
-																																	this.textExtra1,
-																																	this.label3,
-																																	this.buttonClose,
-																																	this.groupBox1});
+			this.Controls.Add(this.label5);
+			this.Controls.Add(this.textExtra2);
+			this.Controls.Add(this.label4);
+			this.Controls.Add(this.textExtra1);
+			this.Controls.Add(this.label3);
+			this.Controls.Add(this.buttonClose);
+			this.Controls.Add(this.groupBox1);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "FormPreferences";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = Lan.g(this,"Misc Preferences");
+			this.Text = "Misc Preferences";
 			this.Load += new System.EventHandler(this.FormPreferences_Load);
 			((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
 			this.groupBox1.ResumeLayout(false);

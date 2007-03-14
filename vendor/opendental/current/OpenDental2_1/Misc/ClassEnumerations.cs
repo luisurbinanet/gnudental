@@ -10,10 +10,10 @@ namespace OpenDental{
 	public enum PriSecTot{Pri,Sec,Tot}
 	public enum ProcStat{TP=1,C,EC,EO,R}//(TreatPlan,Complete,ExistingCurrentProv,ExistingOtherProv,ReferredOut)(?new?)
 	public enum DefCat{AccountColors,AdjTypes,ApptConfirmed,ApptProcsQuickAdd,BillingTypes,
-		ClaimFormats,DunningMessages,FeeSchedNames,MedicalNotes,Operatories,
+		ClaimFormatss,DunningMessages,FeeSchedNames,MedicalNotes,Operatories,
 		PaymentTypes,ProcCodeCats,ProgNoteColors,RecallUnschedStatus,ServiceNotes,
 		DiscountTypes,Diagnosis,AppointmentColors,DocumentCats,ApptPhoneNotes,
-		TxPriorities,MiscColors,ChartGraphicColors}
+		TxPriorities,MiscColors,ChartGraphicColors,ContactCategories}
 	//public enum StudentStat{None,Full,Part};
 	public enum FormProcMode{Edit,View,Select}
 	public enum TreatmentArea{Surf=1,Tooth,Mouth,Quad,Sextant,Arch,ToothRange}
@@ -23,9 +23,9 @@ namespace OpenDental{
 		Perio,Prosth,Ortho,Denturist,Surgery,Assistant,
 		LabTech,Pathology,PublicHealth,Radiology}
 	public enum ApptStatus{None,Scheduled,Complete,UnschedList,ASAP,Broken}
-	public enum PatientStatus{Patient,NonPatient,Inactive,Archived,Deleted}
+	public enum PatientStatus{Patient,NonPatient,Inactive,Archived,Deleted,Deceased}
 	public enum PatientGender{Male,Female,Unknown}
-	public enum PatientPosition{Single,Married,Child}
+	public enum PatientPosition{Single,Married,Child,Widowed}
 	public enum ScheduleType{Practice,Provider,Blockout}
 	public enum LabCase{None,Sent,Received};
 	public enum PlaceOfService{Office,PatientsHome,InpatHospital,OutpatHospital,SkilledNursFac,
@@ -41,6 +41,8 @@ namespace OpenDental{
   public enum BackupType{CopyFiles,CopyToServer,DataDump}
   public enum AutoCondition{Anterior,Posterior,Premolar,Molar,One_Surf,Two_Surf,Three_Surf,Four_Surf,Five_Surf,First,EachAdditional,Maxillary,Mandibular,Primary,Permanent,Pontic,Retainer}
 	//public enum AgingType{A0_30,A31_60,A61_90,A90plus}
+	public enum ClaimProcStatus{NotReceived,Received,Preauth,Adjustment,Supplemental}
+		//supplemental means a second payment on an existing procedure.  Always received of course.
 		
 	public class ClassEnumerations{
 		public ClassEnumerations(){

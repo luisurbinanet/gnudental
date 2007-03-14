@@ -1,5 +1,5 @@
 /*=============================================================================================================
-FreeDental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
+Open Dental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
 See header in FormOpenDental.cs for complete text.  Redistributions must retain this text.
 ===============================================================================================================*/
 using System;
@@ -65,6 +65,7 @@ namespace OpenDental{
 			// butClose
 			// 
 			this.butClose.Anchor = System.Windows.Forms.AnchorStyles.None;
+			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butClose.Location = new System.Drawing.Point(848, 608);
 			this.butClose.Name = "butClose";
 			this.butClose.Size = new System.Drawing.Size(92, 23);
@@ -76,6 +77,7 @@ namespace OpenDental{
 			// butOK
 			// 
 			this.butOK.Anchor = System.Windows.Forms.AnchorStyles.None;
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(866, 648);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 2;
@@ -86,6 +88,8 @@ namespace OpenDental{
 			// butCancel
 			// 
 			this.butCancel.Anchor = System.Windows.Forms.AnchorStyles.None;
+			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(866, 688);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 3;
@@ -121,6 +125,7 @@ namespace OpenDental{
 			// 
 			// butNew
 			// 
+			this.butNew.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butNew.Location = new System.Drawing.Point(866, 568);
 			this.butNew.Name = "butNew";
 			this.butNew.TabIndex = 0;
@@ -142,7 +147,6 @@ namespace OpenDental{
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(956, 730);
-			this.ControlBox = false;
 			this.Controls.Add(this.dataGrid1);
 			this.Controls.Add(this.butNew);
 			this.Controls.Add(this.labelFeeSched);
@@ -151,11 +155,11 @@ namespace OpenDental{
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.butClose);
-			this.MinimizeBox = false;
 			this.Name = "FormProcedures";
 			this.ShowInTaskbar = false;
-			this.Text = Lan.g(this,"Procedures");
+			this.Text = "Procedures";
 			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormProcedures_Closing);
 			this.Load += new System.EventHandler(this.FormProcedures_Load);
 			this.Activated += new System.EventHandler(this.FormProcedures_Activated);
 			((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).EndInit();
@@ -312,42 +316,19 @@ namespace OpenDental{
 			//nothing	
 		}
 
-		private void butOK_Click(object sender, System.EventArgs e){
-			DialogResult=DialogResult.OK;
-			Close();
-		}
-
-		private void butClose_Click(object sender, System.EventArgs e){
-			if(Mode==FormProcMode.Edit){
-				DataValid.IType=InvalidType.LocalData;
-				DataValid DataValid2=new DataValid();
-				DataValid2.SetInvalid();
-			}
-			DialogResult=DialogResult.OK;
-			Close();
-		}
-
-		private void butCancel_Click(object sender, System.EventArgs e){
-			DialogResult=DialogResult.Cancel;
-			Close();
-		}
-
 		private void butNew_Click(object sender, System.EventArgs e) {
-			FormInputBox FormInputBox2=new FormInputBox();
-			FormInputBox2.label1.Text="Please enter new ADA Code:";
-			FormInputBox2.textBox1.MaxLength=15;
-			FormInputBox2.textBox1.Select();
-			FormInputBox2.ShowDialog();
-			if(FormInputBox2.DialogResult!=DialogResult.OK){
+			FormProcCodeNew FormPCN=new FormProcCodeNew();
+			FormPCN.ShowDialog();
+			if(FormPCN.DialogResult!=DialogResult.OK){
 				return;
 			}
-			if(ProcCodes.HList.ContainsKey(FormInputBox2.textBox1.Text)){
+			if(ProcCodes.HList.ContainsKey(FormPCN.textNewCode.Text)){
 				MessageBox.Show(Lan.g(this,"That code already exists."));
 				return;
 			}
 			FormProcCodeEdit FormProcCodeEdit2=new FormProcCodeEdit();
 			//ProcCodes.Cur=ProcCodes.GetProcCode(SelectedADA);
-			FormProcCodeEdit2.NewADA=FormInputBox2.textBox1.Text;
+			FormProcCodeEdit2.NewADA=FormPCN.textNewCode.Text;
 			FormProcCodeEdit2.IsNew=true;
 			FormProcCodeEdit2.ShowDialog();
 			//textADACode.Text=FormInputBox2.textBox1.Text;
@@ -357,6 +338,28 @@ namespace OpenDental{
 			}
 			
 		}
+
+		private void butOK_Click(object sender, System.EventArgs e){
+			DialogResult=DialogResult.OK;
+		}
+
+		private void butClose_Click(object sender, System.EventArgs e){
+			Close();
+		}
+
+		private void butCancel_Click(object sender, System.EventArgs e){
+			DialogResult=DialogResult.Cancel;
+		}
+
+		private void FormProcedures_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+			if(Mode==FormProcMode.Edit){
+				DataValid.IType=InvalidType.LocalData;
+				DataValid DataValid2=new DataValid();
+				DataValid2.SetInvalid();
+			}
+		}
+
+		
 
 		
 

@@ -9,11 +9,11 @@ namespace OpenDental{
 	public class FormZipSelect : System.Windows.Forms.Form{
 		private System.Windows.Forms.Button butOK;
 		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Button butAdd;
 		private System.Windows.Forms.ListBox listMatches;
 		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.Button butEdit;
-		private System.Windows.Forms.Button butDelete;
+		private OpenDental.XPButton butEdit;
+		private OpenDental.XPButton butDelete;
+		private OpenDental.XPButton butAdd;
 		private System.ComponentModel.Container components=null;
 
 		public FormZipSelect(){
@@ -41,17 +41,19 @@ namespace OpenDental{
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormZipSelect));
 			this.butOK = new System.Windows.Forms.Button();
 			this.butCancel = new System.Windows.Forms.Button();
-			this.butAdd = new System.Windows.Forms.Button();
 			this.listMatches = new System.Windows.Forms.ListBox();
 			this.label1 = new System.Windows.Forms.Label();
-			this.butEdit = new System.Windows.Forms.Button();
-			this.butDelete = new System.Windows.Forms.Button();
+			this.butEdit = new OpenDental.XPButton();
+			this.butDelete = new OpenDental.XPButton();
+			this.butAdd = new OpenDental.XPButton();
 			this.SuspendLayout();
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(336, 153);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 0;
 			this.butOK.Text = "OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
@@ -59,22 +61,13 @@ namespace OpenDental{
 			// butCancel
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(336, 186);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 1;
 			this.butCancel.Text = "Cancel";
-			// 
-			// butAdd
-			// 
-			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
-			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAdd.Location = new System.Drawing.Point(26, 182);
-			this.butAdd.Name = "butAdd";
-			this.butAdd.Size = new System.Drawing.Size(76, 27);
-			this.butAdd.TabIndex = 2;
-			this.butAdd.Text = "Add";
-			this.butAdd.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
+			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// listMatches
 			// 
@@ -94,37 +87,58 @@ namespace OpenDental{
 			// 
 			// butEdit
 			// 
+			this.butEdit.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butEdit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butEdit.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butEdit.BtnStyle = OpenDental.enumType.XPStyle.Silver;
 			this.butEdit.Image = ((System.Drawing.Image)(resources.GetObject("butEdit.Image")));
-			this.butEdit.ImageAlign = System.Drawing.ContentAlignment.BottomLeft;
-			this.butEdit.Location = new System.Drawing.Point(106, 182);
+			this.butEdit.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butEdit.Location = new System.Drawing.Point(199, 186);
 			this.butEdit.Name = "butEdit";
-			this.butEdit.Size = new System.Drawing.Size(82, 27);
-			this.butEdit.TabIndex = 5;
+			this.butEdit.Size = new System.Drawing.Size(75, 26);
+			this.butEdit.TabIndex = 12;
 			this.butEdit.Text = "Edit";
-			this.butEdit.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.butEdit.Click += new System.EventHandler(this.butEdit_Click);
 			// 
 			// butDelete
 			// 
+			this.butDelete.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butDelete.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butDelete.BtnStyle = OpenDental.enumType.XPStyle.Silver;
 			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDelete.Location = new System.Drawing.Point(192, 182);
+			this.butDelete.Location = new System.Drawing.Point(114, 186);
 			this.butDelete.Name = "butDelete";
-			this.butDelete.Size = new System.Drawing.Size(82, 27);
-			this.butDelete.TabIndex = 6;
+			this.butDelete.Size = new System.Drawing.Size(75, 26);
+			this.butDelete.TabIndex = 11;
 			this.butDelete.Text = "Delete";
-			this.butDelete.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
+			// 
+			// butAdd
+			// 
+			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butAdd.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butAdd.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
+			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butAdd.Location = new System.Drawing.Point(30, 186);
+			this.butAdd.Name = "butAdd";
+			this.butAdd.Size = new System.Drawing.Size(75, 26);
+			this.butAdd.TabIndex = 10;
+			this.butAdd.Text = "Add";
+			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
 			// FormZipSelect
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(430, 235);
-			this.Controls.Add(this.butDelete);
 			this.Controls.Add(this.butEdit);
+			this.Controls.Add(this.butDelete);
+			this.Controls.Add(this.butAdd);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.listMatches);
-			this.Controls.Add(this.butAdd);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
 			this.MaximizeBox = false;
@@ -217,6 +231,10 @@ namespace OpenDental{
 			}
 			ZipCodes.Cur=(ZipCode)ZipCodes.ALMatches[listMatches.SelectedIndex];
 			DialogResult=DialogResult.OK;
+		}
+
+		private void butCancel_Click(object sender, System.EventArgs e) {
+		
 		}
 
 		

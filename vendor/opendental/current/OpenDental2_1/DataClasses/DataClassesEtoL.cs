@@ -1,5 +1,5 @@
 /*=============================================================================================================
-FreeDental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
+Open Dental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
 See header in FormOpenDental.cs for complete text.  Redistributions must retain this text.
 ===============================================================================================================*/
 //using MySQLDriverCS;
@@ -121,6 +121,7 @@ namespace OpenDental{
 				temp.UseDefaultCov=PIn.PBool  (table.Rows[i][5].ToString());
 				if(Defs.GetOrder(DefCat.FeeSchedNames,temp.FeeSched)!=-1){
 					if(HList[Defs.GetOrder(DefCat.FeeSchedNames,temp.FeeSched)].ContainsKey(temp.ADACode)){
+						MessageBox.Show("Error. Duplicate fee found.  Duplicate will be deleted.");
 						cmd.CommandText="DELETE FROM fee WHERE feenum = '"+temp.FeeNum+"'";
 						NonQ(false);
 					}
@@ -145,7 +146,7 @@ namespace OpenDental{
 			}
 		}
 
-		public static void UpdateCur(){//updates Cur
+		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE fee SET " 
 				+ "amount = '"        +POut.PDouble(Cur.Amount)+"'"
 				+ ",adacode = '"      +POut.PString(Cur.ADACode)+"'"
@@ -157,7 +158,7 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
-		public static void InsertCur(){//saves Cur
+		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO fee (amount,adacode,"
 				+"feesched,usedefaultfee,usedefaultcov) VALUES("
 				+"'"+POut.PDouble(Cur.Amount)+"', "
@@ -181,17 +182,17 @@ namespace OpenDental{
 		}
 
 		public static double GetAmount(string adacode, int feeSched){
-			double retVal=0;
 			if(adacode==null)
+				return 0;
+			if(feeSched==0)
 				return 0;
 			int i=Defs.GetOrder(DefCat.FeeSchedNames,feeSched);
 			if(i==-1){
 				return 0;//you can not obtain fees for hidden fee schedules
 			}
-			if(HList[i].Contains(adacode)){
+			if(HList[i].Contains(adacode))
 				return ((Fee)HList[i][adacode]).Amount;
-			}
-			return retVal;
+			return 0;//code not found
 		}
 
 
@@ -269,7 +270,7 @@ namespace OpenDental{
 
 		public static string GetSelectText(){
 			//cmd.CommandText =
-			return "SELECT * from graphicassembly";
+			return "SELECT * from graphicassembly;";
 		}
 
 		public static void Refresh(){
@@ -346,7 +347,7 @@ namespace OpenDental{
 
 		public static string GetSelectText(){
 			return "SELECT * from graphicelement"
-				+" ORDER BY zorder";
+				+" ORDER BY zorder;";
 		}
 		
 		public static void Refresh(){//MUST come immediately after GType.Refresh and GAssemb.Refresh
@@ -632,7 +633,7 @@ namespace OpenDental{
 
 		public static string GetSelectText(){
 			return "SELECT * from graphicshape"
-				+" order by shapetype";
+				+" order by shapetype;";
 		}
 		
 		public static void Refresh(){
@@ -713,7 +714,7 @@ namespace OpenDental{
 
 		public static string GetSelectText(){
 			return "SELECT * from graphictype"
-				+" ORDER BY itemorder";
+				+" ORDER BY itemorder;";
 		}
 		
 		public static void Refresh(){
@@ -811,66 +812,109 @@ namespace OpenDental{
 		=================================== Class InsPlans ===========================================*/
 	public class InsPlans:DataClass{
 		public static InsPlan[] List;
-		public static Hashtable HList;
+		private static Hashtable HList;//this will have to be private because we can never guarantee
+					//that a given insplan will already be loaded and available
 		public static Hashtable HListAll;
-		public static int Selected;
 		public static InsPlan Cur;
 
+		public static void Refresh(int planNum){
+			//leaves the List intact, and only loads one plan from db into Cur
+			Cur=new InsPlan();//just in case no rows are returned
+			if(planNum==0) return;
+			cmd.CommandText="SELECT * FROM insplan WHERE plannum = '"+planNum+"'";
+			RefreshFill(true);
+		}
+
 		public static void Refresh(){
+			//gets new List for the current family.  Family must have been loaded properly first.
+			//subscribers in family
 			string s="subscriber='"+Patients.FamilyList[0].PatNum+"'";
 			for(int i=1;i<Patients.FamilyList.Length;i++){
 				s+=" || subscriber='"+Patients.FamilyList[i].PatNum+"'";
 			}
+			//plans in family(usually lots of duplicates of subscribers, but this also allows mixing families
+			//the only plans it misses are for claims with no current coverage.  These are handled as needed.
+			string plans="";//="subscriber='"+Patients.FamilyList[0].PatNum+"'";
+			for(int i=0;i<Patients.FamilyList.Length;i++){
+				//if(i>0) plans+=" ||";
+				if(Patients.FamilyList[i].PriPlanNum > 0)
+					plans+=" || plannum = '"+Patients.FamilyList[i].PriPlanNum+"'";
+				if(Patients.FamilyList[i].SecPlanNum > 0)
+					plans+=" || plannum = '"+Patients.FamilyList[i].SecPlanNum+"'";
+			}
+			//MessageBox.Show(plans);
 			cmd.CommandText =
 				"SELECT * from insplan "
-				+"WHERE "+s
+				+"WHERE "+s+plans
 				+" ORDER BY dateeffective";
+			RefreshFill(false);
+		}
+
+		private static void RefreshFill(bool isOnePlan){
 			//MessageBox.Show(cmd.CommandText);
 			FillTable();
-			HList=new Hashtable();
-			List = new InsPlan[table.Rows.Count];
+			if(!isOnePlan){
+				HList=new Hashtable();
+				List = new InsPlan[table.Rows.Count];
+			}
+			InsPlan tempPlan=new InsPlan();
 			for (int i=0;i<table.Rows.Count;i++){
-				List[i].PlanNum      = PIn.PInt   (table.Rows[i][0].ToString());
-				List[i].Subscriber   = PIn.PInt   (table.Rows[i][1].ToString());
-				List[i].Carrier      = PIn.PString(table.Rows[i][2].ToString());
-				List[i].DateEffective= PIn.PDate  (table.Rows[i][3].ToString());
-				List[i].DateTerm     = PIn.PDate  (table.Rows[i][4].ToString());
-				List[i].Phone        = PIn.PString(table.Rows[i][5].ToString());
-				List[i].GroupName    = PIn.PString(table.Rows[i][6].ToString());
-				List[i].GroupNum     = PIn.PString(table.Rows[i][7].ToString());
-				List[i].Address      = PIn.PString(table.Rows[i][8].ToString());
-				List[i].Address2     = PIn.PString(table.Rows[i][9].ToString());
-				List[i].City         = PIn.PString(table.Rows[i][10].ToString());
-				List[i].State        = PIn.PString(table.Rows[i][11].ToString());
-				List[i].Zip          = PIn.PString(table.Rows[i][12].ToString());
-				List[i].ClaimFormat  = PIn.PInt   (table.Rows[i][13].ToString());
-				List[i].ElectID      = PIn.PString(table.Rows[i][14].ToString());
-				List[i].Employer     = PIn.PString(table.Rows[i][15].ToString());
-				List[i].AnnualMax    = PIn.PInt   (table.Rows[i][16].ToString());
-				List[i].RenewMonth   = PIn.PInt   (table.Rows[i][17].ToString());
-				List[i].Deductible   = PIn.PInt   (table.Rows[i][18].ToString());
-				List[i].DeductWaivPrev=(YN)PIn.PInt(table.Rows[i][19].ToString());
-				List[i].OrthoMax     = PIn.PInt    (table.Rows[i][20].ToString());
-				List[i].FloToAge     = PIn.PInt    (table.Rows[i][21].ToString());
-				List[i].PlanNote     = PIn.PString (table.Rows[i][22].ToString());
-				List[i].MissToothExcl= (YN)PIn.PInt(table.Rows[i][23].ToString());
-				List[i].MajorWait    = (YN)PIn.PInt(table.Rows[i][24].ToString());
-				List[i].FeeSched     = PIn.PInt    (table.Rows[i][25].ToString());
-				List[i].ReleaseInfo  = PIn.PBool   (table.Rows[i][26].ToString());
-				List[i].AssignBen    = PIn.PBool   (table.Rows[i][27].ToString());
-				HList.Add(List[i].PlanNum,List[i]);
-			}//end for
-		}//end Refresh
+				tempPlan=new InsPlan();
+				tempPlan.PlanNum      = PIn.PInt   (table.Rows[i][0].ToString());
+				tempPlan.Subscriber   = PIn.PInt   (table.Rows[i][1].ToString());
+				tempPlan.Carrier      = PIn.PString(table.Rows[i][2].ToString());
+				tempPlan.DateEffective= PIn.PDate  (table.Rows[i][3].ToString());
+				tempPlan.DateTerm     = PIn.PDate  (table.Rows[i][4].ToString());
+				tempPlan.Phone        = PIn.PString(table.Rows[i][5].ToString());
+				tempPlan.GroupName    = PIn.PString(table.Rows[i][6].ToString());
+				tempPlan.GroupNum     = PIn.PString(table.Rows[i][7].ToString());
+				tempPlan.Address      = PIn.PString(table.Rows[i][8].ToString());
+				tempPlan.Address2     = PIn.PString(table.Rows[i][9].ToString());
+				tempPlan.City         = PIn.PString(table.Rows[i][10].ToString());
+				tempPlan.State        = PIn.PString(table.Rows[i][11].ToString());
+				tempPlan.Zip          = PIn.PString(table.Rows[i][12].ToString());
+				tempPlan.NoSendElect  = PIn.PBool  (table.Rows[i][13].ToString());
+				tempPlan.ElectID      = PIn.PString(table.Rows[i][14].ToString());
+				tempPlan.Employer     = PIn.PString(table.Rows[i][15].ToString());
+				tempPlan.AnnualMax    = PIn.PInt   (table.Rows[i][16].ToString());
+				tempPlan.RenewMonth   = PIn.PInt   (table.Rows[i][17].ToString());
+				tempPlan.Deductible   = PIn.PInt   (table.Rows[i][18].ToString());
+				tempPlan.DeductWaivPrev=(YN)PIn.PInt(table.Rows[i][19].ToString());
+				tempPlan.OrthoMax     = PIn.PInt    (table.Rows[i][20].ToString());
+				tempPlan.FloToAge     = PIn.PInt    (table.Rows[i][21].ToString());
+				tempPlan.PlanNote     = PIn.PString (table.Rows[i][22].ToString());
+				tempPlan.MissToothExcl= (YN)PIn.PInt(table.Rows[i][23].ToString());
+				tempPlan.MajorWait    = (YN)PIn.PInt(table.Rows[i][24].ToString());
+				tempPlan.FeeSched     = PIn.PInt    (table.Rows[i][25].ToString());
+				tempPlan.ReleaseInfo  = PIn.PBool   (table.Rows[i][26].ToString());
+				tempPlan.AssignBen    = PIn.PBool   (table.Rows[i][27].ToString());
+				tempPlan.PlanType     = PIn.PString (table.Rows[i][28].ToString());
+				tempPlan.ClaimFormNum = PIn.PInt    (table.Rows[i][29].ToString());
+				tempPlan.UseAltCode   = PIn.PBool   (table.Rows[i][30].ToString());
+				tempPlan.ClaimsUseUCR = PIn.PBool   (table.Rows[i][31].ToString());
+				tempPlan.IsWrittenOff = PIn.PBool   (table.Rows[i][32].ToString());
+				tempPlan.CopayFeeSched= PIn.PInt    (table.Rows[i][33].ToString());
+				tempPlan.SubscriberID = PIn.PString (table.Rows[i][34].ToString());
+				if(isOnePlan){
+					Cur=tempPlan;
+				}
+				else{
+					List[i]=tempPlan;
+					HList.Add(List[i].PlanNum,List[i]);
+				}
+			}//for
+		}//RefreshFill
 
-		//To decide whether to use SavePlan or UpdatePlan, you have to test first
+		//To decide whether to use InsertCur or UpdateCur, you have to test first
 		//for value of PlanNum
 		public static void InsertCur(){//only for new plans
 			cmd.CommandText = "INSERT INTO insplan (subscriber, carrier, "
 				+"dateeffective,dateterm,phone,groupname,groupnum,address,address2,city,state,zip,"
-				+"claimformat,electid,employer,annualmax,renewmonth,deductible,"
+				+"nosendelect,electid,employer,annualmax,renewmonth,deductible,"
 				+"deductwaivprev,orthomax,"
 				+"flotoage,plannote,misstoothexcl,majorwait,feesched,"
-				+"releaseinfo,assignben) VALUES("
+				+"releaseinfo,assignben,plantype,claimformnum,usealtcode,"
+				+"claimsuseucr,iswrittenoff,copayfeesched,subscriberid) VALUES("
 				//+"'"+POut.PInt   (Cur.PlanOrder)+"', "
 				+"'"+POut.PInt   (Cur.Subscriber)+"', "
 				+"'"+POut.PString(Cur.Carrier)+"', "
@@ -884,7 +928,7 @@ namespace OpenDental{
 				+"'"+POut.PString(Cur.City)+"', "
 				+"'"+POut.PString(Cur.State)+"', "
 				+"'"+POut.PString(Cur.Zip)+"', "
-				+"'"+POut.PInt   (Cur.ClaimFormat)+"', "
+				+"'"+POut.PBool  (Cur.NoSendElect)+"', "
 				+"'"+POut.PString(Cur.ElectID)+"', "
 				+"'"+POut.PString(Cur.Employer)+"', "
 				+"'"+POut.PInt   (Cur.AnnualMax)+"', "
@@ -898,7 +942,14 @@ namespace OpenDental{
 				+"'"+POut.PInt   ((int)Cur.MajorWait)+"', "
 				+"'"+POut.PInt   (Cur.FeeSched)+"', "
 				+"'"+POut.PBool  (Cur.ReleaseInfo)+"', "
-				+"'"+POut.PBool  (Cur.AssignBen)+"')";
+				+"'"+POut.PBool  (Cur.AssignBen)+"', "
+				+"'"+POut.PString(Cur.PlanType)+"', "
+				+"'"+POut.PInt   (Cur.ClaimFormNum)+"', "
+				+"'"+POut.PBool  (Cur.UseAltCode)+"', "
+				+"'"+POut.PBool  (Cur.ClaimsUseUCR)+"', "
+				+"'"+POut.PBool  (Cur.IsWrittenOff)+"', "
+				+"'"+POut.PInt   (Cur.CopayFeeSched)+"', "
+				+"'"+POut.PString(Cur.SubscriberID)+"')";
 			NonQ(true);
 			Cur.PlanNum=InsertID;
 		}
@@ -918,7 +969,7 @@ namespace OpenDental{
 				+ ",City = '"         +POut.PString(Cur.City)+"'"
 				+ ",State = '"        +POut.PString(Cur.State)+"'"
 				+ ",Zip = '"          +POut.PString(Cur.Zip)+"'"
-				+ ",ClaimFormat = '"  +POut.PInt   (Cur.ClaimFormat)+"'"
+				+ ",NoSendElect = '"  +POut.PBool  (Cur.NoSendElect)+"'"
 				+ ",ElectID = '"      +POut.PString(Cur.ElectID)+"'"
 				+ ",Employer = '"     +POut.PString(Cur.Employer)+"'"
 				+ ",AnnualMax = '"    +POut.PInt   (Cur.AnnualMax)+"'"
@@ -933,105 +984,156 @@ namespace OpenDental{
 				+ ",feesched = '"     +POut.PInt   (Cur.FeeSched)+"'"
 				+ ",releaseinfo = '"  +POut.PBool  (Cur.ReleaseInfo)+"'"
 				+ ",assignben = '"    +POut.PBool  (Cur.AssignBen)+"'"
+				+ ",plantype = '"     +POut.PString(Cur.PlanType)+"'"
+				+ ",claimformnum = '" +POut.PInt   (Cur.ClaimFormNum)+"'"
+				+ ",usealtcode = '"   +POut.PBool  (Cur.UseAltCode)+"'"
+				+ ",claimsuseucr = '" +POut.PBool  (Cur.ClaimsUseUCR)+"'"
+				+ ",iswrittenoff = '" +POut.PBool  (Cur.IsWrittenOff)+"'"
+				+ ",copayfeesched = '"+POut.PInt   (Cur.CopayFeeSched)+"'"
+				+ ",subscriberid = '" +POut.PString(Cur.SubscriberID)+"'"
 				+" WHERE PlanNum = '" +POut.PInt(Cur.PlanNum)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			NonQ(false);
 		}
 
-		public static void DeleteSelected(){
-			Cur=List[Selected]; 
-			cmd.CommandText="SELECT patnum FROM patient "
-				+"WHERE priplannum = '"+InsPlans.Cur.PlanNum.ToString()+"' "
-				+"|| secplannum = '"+InsPlans.Cur.PlanNum.ToString()+"'";
-			FillTable();
-			if(table.Rows.Count!=0){
-				MessageBox.Show(Lan.g("ContrFamily","Not allowed to delete a plan that is in use by patients."));
-				return;
-			}
+		/// <summary>Only used from FormInsPlan</summary>
+		/// <returns>True if successful.</returns>
+		public static bool DeleteCur(){
+			//first, check claims
 			cmd.CommandText="SELECT patnum FROM claim "
-				+"WHERE plannum = '"+InsPlans.Cur.PlanNum.ToString()+"'";
+				+"WHERE plannum = '"+Cur.PlanNum.ToString()+"' LIMIT 1";
 			FillTable();
 			if(table.Rows.Count!=0){
-				MessageBox.Show(Lan.g("ContrFamily","Not allowed to delete a plan with existing claims."));
-				return;
+				MessageBox.Show(Lan.g("FormInsPlan","Not allowed to delete a plan with existing claims."));
+				return false;
 			}
+			//then, find any primary coverage for this ins.
+			cmd.CommandText="SELECT patnum,secplannum,secrelationship FROM patient "
+				+"WHERE priplannum = '"+Cur.PlanNum.ToString()+"'";
+			FillTable();
+			//and move the existing secondary into primary. This also works if secondary is 0.
+			for(int i=0;i<table.Rows.Count;i++){
+				//if both primary and secondary are set to this plan:
+				if(Cur.PlanNum.ToString()==table.Rows[i][1].ToString()){
+					cmd.CommandText="UPDATE patient SET "
+						+"priplannum = '0'"
+						+",prirelationship = '0'"
+						+",secplannum = '0'"
+						+",secrelationship = '0' "
+						+"WHERE patnum = '"+table.Rows[i][0].ToString()+"'";
+				}
+				else{//only the primary
+					cmd.CommandText="UPDATE patient SET "
+						+"priplannum = '"+table.Rows[i][1].ToString()+"' "
+						+",prirelationship = '"+table.Rows[i][2].ToString()+"' "
+						+",secplannum = '0' "
+						+",secrelationship = '0' "
+						+"WHERE patnum = '"+table.Rows[i][0].ToString()+"'";
+				}
+				NonQ(false);
+			}
+			//then secondary only
+			cmd.CommandText = "UPDATE patient SET "
+				+"secplannum = '0'"
+				+",secrelationship = '0' "
+				+"WHERE secplannum = '"+Cur.PlanNum.ToString()+"'";
+			NonQ(false);
 			cmd.CommandText = "DELETE FROM covpat WHERE plannum = '"+Cur.PlanNum.ToString()+"'";
 			NonQ(false);
 			cmd.CommandText = "DELETE FROM insplan "
 				+"WHERE planNum = '"+Cur.PlanNum.ToString()+"'";
 			NonQ(false);
+			return true;
+			//one unfinished detail is that if the secondary gets moved to primary,
+			//it still does not move the percentages over.
 		}
 
-		public static void DeleteCur(){//used in new plan if cancel
-			cmd.CommandText = "DELETE from insplan WHERE planNum = '"+Cur.PlanNum.ToString()+"'";
-			NonQ(false);
-		}
-
-		public static string GetDescInFam(int planNum){//only works if plan list already loaded for family
-			string retStr="";
-			Patients Patients=new Patients();
-			if(!HList.Contains(planNum))
-				return "";
-			try{
-				for(int i=0;i<List.Length;i++){
-					if(List[i].PlanNum==planNum){
-						retStr=(i+1).ToString()+": "+List[i].Carrier
-							+" ("+Patients.GetNameInFamFL(List[i].Subscriber)+")";
-					}
-				}
-				//retStr+=
-				//	((InsPlan)HList[planNum]).Carrier;
+		public static void GetCur(int planNum){
+			//it's fastest if the HList has been refreshed first with all necessary plans.
+			//but also works just fine if it can't initally locate the plan in hlist. 
+			if(HList.Contains(planNum)){
+				Cur=(InsPlan)HList[planNum];
 			}
-			catch{ ; }
-			
-			return retStr;
+			else{
+				Refresh(planNum);
+			}
 		}
 
-		public static string GetCarrierInFam(int planNum){//only works if plan list already loaded for family
+		public static string GetDescript(int planNum){
+			if(planNum==0)
+				return "";
+			GetCur(planNum);
+			string subscriber=Patients.GetNameInFamFL(Cur.Subscriber);
+			if(subscriber==""){//subscriber from another family
+				Patients.GetLim(Cur.Subscriber);
+				subscriber=Patients.LimName;
+			}
 			string retStr="";
-			if(HList.Contains(planNum))
-				retStr=((InsPlan)HList[planNum]).Carrier;
-			return retStr;
-		}
-
-		public static void SetCurInFam(int planNum){
-			Cur=new InsPlan();
+			//loop just to get the index of the plan in the family list
 			for(int i=0;i<List.Length;i++){
 				if(List[i].PlanNum==planNum){
-					Cur=List[i];
+					retStr += (i+1).ToString()+": ";
 				}
 			}
+			if(retStr=="")
+				retStr="(other fam):";
+			return retStr+Cur.Carrier+" ("+subscriber+")";
 		}
 
-		public static string GetDesc(int planNum){
-			//string retStr="";
-			if(planNum==0){
-				return "";
-			}
-			cmd.CommandText = 
-				"SELECT carrier from insplan "
-				+"WHERE planNum = '"+planNum.ToString()+"'";
-			FillTable();
-			return PIn.PString(table.Rows[0][0].ToString());
+		public static string GetCarrier(int planNum){
+			GetCur(planNum);
+			return Cur.Carrier;
 		}
 
-		public static double GetInsRem(DateTime date,int planNum,int excludeClaim){//Claims,InsPlans must be refreshed
-			//must return actual remaining estimate, taking into account inspayed, and ins pending.
-			if(((InsPlan)HList[planNum]).AnnualMax<=0){
+		/// <summary>Get insurance benefits remaining for one benefit year.
+		/// ClaimProcs and InsPlans must be refreshed first.  Returns acutal remaining insurance based on ClaimProc data, taking into account inspayed and ins pending.</summary>
+		/// <param name="date">Used to determine which benefit year to calc.  Usually today's date.</param>
+		/// <param name="planNum">The insplan.PlanNum to get value for.</param>
+		/// <param name="excludeClaim">ClaimNum to exclude.</param>
+		public static double GetInsRem(DateTime date,int planNum,int excludeClaim){
+			if(((InsPlan)HList[planNum]).AnnualMax==0){
 				return 0;
 			}
+			if(((InsPlan)HList[planNum]).PlanType==""){//percentage category
+				if(((InsPlan)HList[planNum]).AnnualMax<0){
+					return 0;
+				}
+			}
+			else{//flat copay or capitation
+				if(((InsPlan)HList[planNum]).AnnualMax<0){
+					return 999999;
+				}
+			}
 			double retVal=((InsPlan)HList[planNum]).AnnualMax;
-			for(int i=0;i<Claims.List.Length;i++){
-				if(Claims.List[i].ClaimType=="PreAuth")
-					continue;//preauths do not affect any insurance benefits.
-				if(Claims.List[i].PlanNum==planNum
-					&& Claims.List[i].DateService.Year==date.Year
-					&& Claims.List[i].ClaimNum != excludeClaim){
-					if(Claims.List[i].ClaimStatus=="R" || Claims.List[i].ClaimStatus=="A"){
-						retVal-=Claims.List[i].InsPayAmt;
+			DateTime startDate;//for benefit year
+			DateTime stopDate;
+			if(date < new DateTime(date.Year,((InsPlan)HList[planNum]).RenewMonth,1)){
+				startDate=new DateTime(date.Year-1,((InsPlan)HList[planNum]).RenewMonth,1);
+				stopDate=new DateTime(date.Year,((InsPlan)HList[planNum]).RenewMonth,1);
+			}
+			else{
+				startDate=new DateTime(date.Year,((InsPlan)HList[planNum]).RenewMonth,1);
+				stopDate=new DateTime(date.Year+1,((InsPlan)HList[planNum]).RenewMonth,1);
+			}
+			//MessageBox.Show(startDate.ToShortDateString()+","+stopDate.ToShortDateString());
+			for(int i=0;i<ClaimProcs.List.Length;i++){
+				//MessageBox.Show(ClaimProcs.List[i].ClaimNum.ToString()+","+excludeClaim.ToString());
+				if(ClaimProcs.List[i].PlanNum==planNum
+					&& ClaimProcs.List[i].ClaimNum != excludeClaim
+					&& ClaimProcs.List[i].DateCP < stopDate
+					&& ClaimProcs.List[i].DateCP >= startDate
+					//enum ClaimProcStatus{NotReceived,Received,Preauth,Adjustment,Supplemental}
+					&& ClaimProcs.List[i].Status!=ClaimProcStatus.Preauth)
+				{
+					if(ClaimProcs.List[i].Status==ClaimProcStatus.Received 
+						|| ClaimProcs.List[i].Status==ClaimProcStatus.Adjustment
+						|| ClaimProcs.List[i].Status==ClaimProcStatus.Supplemental)
+					{
+						retVal-=ClaimProcs.List[i].InsPayAmt;
 					}
-					else{//just estimate
-						retVal-=Claims.List[i].InsPayEst;
+					else
+					{//NotReceived
+						retVal-=ClaimProcs.List[i].InsPayEst;
 					}
 				}
 			}
@@ -1039,25 +1141,42 @@ namespace OpenDental{
 			return retVal;
 		}
 
-		public static double GetPending(DateTime date,int planNum){//Claims,InsPlans must be refreshed
+		/// <summary>Get pending insurance for a given plan for one benefit year.
+		/// ClaimProcs,InsPlans must be refreshed first.</summary>
+		/// <param name="date">Used to determine which benefit year to calc.  Usually today's date.</param>
+		/// <param name="planNum">The insplan.PlanNum to retreive insurance info for.</param>
+		/// <returns>Returns the amount of insurance pending based on ClaimProc data.</returns>
+		public static double GetPending(DateTime date,int planNum){//
 			if(((InsPlan)HList[planNum]).AnnualMax<=0){
 				return 0;
 			}
 			double retVal=0;
-			for(int i=0;i<Claims.List.Length;i++){
-				if(Claims.List[i].PlanNum==planNum
-					&& Claims.List[i].DateService.Year==date.Year
-					&& Claims.List[i].ClaimStatus!="R"
-					&& Claims.List[i].ClaimType!="PreAuth"
-					//ClaimStatus "A" has no insPayEst, so can ignore it here.
+			DateTime startDate;//for benefit year
+			DateTime stopDate;
+			if(date < new DateTime(date.Year,((InsPlan)HList[planNum]).RenewMonth,1)){
+				startDate=new DateTime(date.Year-1,((InsPlan)HList[planNum]).RenewMonth,1);
+				stopDate=new DateTime(date.Year,((InsPlan)HList[planNum]).RenewMonth,1);
+			}
+			else{
+				startDate=new DateTime(date.Year,((InsPlan)HList[planNum]).RenewMonth,1);
+				stopDate=new DateTime(date.Year+1,((InsPlan)HList[planNum]).RenewMonth,1);
+			}
+			for(int i=0;i<ClaimProcs.List.Length;i++){
+				if(ClaimProcs.List[i].PlanNum==planNum
+					&& ClaimProcs.List[i].DateCP < stopDate
+					&& ClaimProcs.List[i].DateCP >= startDate
+					//enum ClaimProcStatus{NotReceived,Received,Preauth,Adjustment,Supplemental}
+					&& ClaimProcs.List[i].Status==ClaimProcStatus.NotReceived
+					//Status Adjustment has no insPayEst, so can ignore it here.
 					){
-					retVal+=Claims.List[i].InsPayEst;
+					retVal+=ClaimProcs.List[i].InsPayEst;
 				}
 			}
 			return retVal;
 		}
 
-		public static double GetDedRem(DateTime date,int planNum){//Claims,InsPlans must be refreshed
+		public static double GetDedRem(DateTime date,int planNum,int excludeClaim){
+			//ClaimProcs,InsPlans must be refreshed
 			if(((InsPlan)HList[planNum]).AnnualMax<=0){
 				return 0;
 			}
@@ -1065,17 +1184,40 @@ namespace OpenDental{
 			if(((InsPlan)HList[planNum]).Deductible!=-1){
 				retVal=((InsPlan)HList[planNum]).Deductible;
 			}
-			for(int i=0;i<Claims.List.Length;i++){
-				if(Claims.List[i].PlanNum==planNum
-					&& Claims.List[i].DateService.Year==date.Year
-					//ClaimStatus "A" does get included in this calculation
-					&& Claims.List[i].ClaimType!="PreAuth"//preauths do not affect deductibles
+			DateTime startDate;//for benefit year
+			DateTime stopDate;
+			if(date < new DateTime(date.Year,((InsPlan)HList[planNum]).RenewMonth,1)){
+				startDate=new DateTime(date.Year-1,((InsPlan)HList[planNum]).RenewMonth,1);
+				stopDate=new DateTime(date.Year,((InsPlan)HList[planNum]).RenewMonth,1);
+			}
+			else{
+				startDate=new DateTime(date.Year,((InsPlan)HList[planNum]).RenewMonth,1);
+				stopDate=new DateTime(date.Year+1,((InsPlan)HList[planNum]).RenewMonth,1);
+			}
+			for(int i=0;i<ClaimProcs.List.Length;i++){
+				if(ClaimProcs.List[i].PlanNum==planNum
+					&& ClaimProcs.List[i].ClaimNum!=excludeClaim
+					&& ClaimProcs.List[i].DateCP < stopDate
+					&& ClaimProcs.List[i].DateCP >= startDate
+					//enum ClaimProcStatus{NotReceived,Received,Preauth,Adjustment,Supplemental}
+					//preauth does not affect deductibles,
+					//but received, not received, and adjustments to affect it.
+					&& ClaimProcs.List[i].Status!=ClaimProcStatus.Preauth
 					){
-					retVal-=Claims.List[i].DedApplied;
+					retVal-=ClaimProcs.List[i].DedApplied;
 				}
 			}
 			if(retVal<0) return 0;
 			return retVal;
+		}
+
+		public static double GetCopay(string adaCode,int planNum){
+			if(planNum==0)
+				return -1;
+			GetCur(planNum);
+			if(Cur.CopayFeeSched==0)
+				return -1;
+			return Fees.GetAmount(adaCode,Cur.CopayFeeSched);
 		}
 
 		public static bool CheckDependencies(int patNum){
@@ -1111,6 +1253,7 @@ namespace OpenDental{
 		}
 
 		public static void GetHListAll(){
+			//need to review why this is used and to clear it when done to conserve memory
 			cmd.CommandText="SELECT plannum,carrier "
 				+"FROM insplan";
 			FillTable();
@@ -1123,6 +1266,9 @@ namespace OpenDental{
 				HListAll.Add(plannum,carrier);
 			}
 		}
+
+		
+
 
 	}//end Class InsPlans
 
@@ -1140,8 +1286,8 @@ namespace OpenDental{
 		public string City;
 		public string State;//2 char
 		public string Zip;
-		public int ClaimFormat;//foreign key to Definition.DefNum.  
-		//For now, Definition.ItemValue will = "eclaim" or "ADA2002"
+		//public int ClaimFormat;(eliminated)//foreign key to Definition.DefNum.  
+		public bool NoSendElect;//replaces the ClaimFormat field which was here.
 		public string ElectID;//5 char for eclaims
 		public string Employer;
 		public int AnnualMax;
@@ -1157,6 +1303,13 @@ namespace OpenDental{
 		//Name of feeschedule is stored in Definition.ItemValue.
 		public bool ReleaseInfo;
 		public bool AssignBen;
+		public string PlanType;//""=percentage(the default),"f"=flatCopay,"c"=capitation
+		public int ClaimFormNum;//foreign key to ClaimForm.ClaimFormNum. eg. "0" for ADA2002
+		public bool UseAltCode;//0=no,1=yes.  could later be extended if more alternates required
+		public bool ClaimsUseUCR;//fee on claim should be the fee for the patient's provider.
+		public bool IsWrittenOff;//automates writeoff on unpaid claims
+		public int CopayFeeSched;//foreign key to Definition.DefNum. This fee schedule holds only co-pays.
+		public string SubscriberID;//usually SSN, but can also be changed by user.  No dashes.
 	}
 
 	/*=========================================================================================
@@ -1174,23 +1327,32 @@ namespace OpenDental{
 			FillTable();
 			List = new InsTemplate[table.Rows.Count];
 			for (int i=0;i<List.Length;i++){
-				List[i].TemplateNum= PIn.PInt   (table.Rows[i][0].ToString());
-				List[i].Carrier    = PIn.PString(table.Rows[i][1].ToString());
-				List[i].Address    = PIn.PString(table.Rows[i][2].ToString());
-				List[i].Address2   = PIn.PString(table.Rows[i][3].ToString());
-				List[i].City       = PIn.PString(table.Rows[i][4].ToString());
-				List[i].State      = PIn.PString(table.Rows[i][5].ToString());
-				List[i].Zip        = PIn.PString(table.Rows[i][6].ToString());
-				List[i].Phone      = PIn.PString(table.Rows[i][7].ToString());
-				List[i].ClaimFormat= PIn.PInt   (table.Rows[i][8].ToString());
-				List[i].ElectID    = PIn.PString(table.Rows[i][9].ToString());
-				List[i].Note       = PIn.PString(table.Rows[i][10].ToString());
+				List[i].TemplateNum  = PIn.PInt   (table.Rows[i][0].ToString());
+				List[i].Carrier      = PIn.PString(table.Rows[i][1].ToString());
+				List[i].Address      = PIn.PString(table.Rows[i][2].ToString());
+				List[i].Address2     = PIn.PString(table.Rows[i][3].ToString());
+				List[i].City         = PIn.PString(table.Rows[i][4].ToString());
+				List[i].State        = PIn.PString(table.Rows[i][5].ToString());
+				List[i].Zip          = PIn.PString(table.Rows[i][6].ToString());
+				List[i].Phone        = PIn.PString(table.Rows[i][7].ToString());
+				List[i].NoSendElect  = PIn.PBool  (table.Rows[i][8].ToString());
+				List[i].ElectID      = PIn.PString(table.Rows[i][9].ToString());
+				List[i].Note         = PIn.PString(table.Rows[i][10].ToString());
+				List[i].PlanType     = PIn.PString(table.Rows[i][11].ToString());
+				List[i].ClaimFormNum = PIn.PInt   (table.Rows[i][12].ToString());
+				List[i].UseAltCode   = PIn.PBool  (table.Rows[i][13].ToString());
+				List[i].ClaimsUseUCR = PIn.PBool  (table.Rows[i][14].ToString());
+				List[i].FeeSched     = PIn.PInt   (table.Rows[i][15].ToString());
+				List[i].IsWrittenOff = PIn.PBool  (table.Rows[i][16].ToString());
+				List[i].CopayFeeSched= PIn.PInt   (table.Rows[i][17].ToString());
 			}
 		}
 
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO instemplate (carrier,address,address2,city,state,zip,"
-				+"phone,claimformat,electid,note) VALUES("
+				+"phone,nosendelect,electid,note,plantype,claimformnum"
+				+",usealtcode,claimsuseucr,feesched"
+				+",iswrittenoff,copayfeesched) VALUES("
 				+"'"+POut.PString(Cur.Carrier)+"', "
 				+"'"+POut.PString(Cur.Address)+"', "
 				+"'"+POut.PString(Cur.Address2)+"', "
@@ -1198,25 +1360,39 @@ namespace OpenDental{
 				+"'"+POut.PString(Cur.State)+"', "
 				+"'"+POut.PString(Cur.Zip)+"', "
 				+"'"+POut.PString(Cur.Phone)+"', "
-				+"'"+POut.PInt   (Cur.ClaimFormat)+"', "
+				+"'"+POut.PBool  (Cur.NoSendElect)+"', "
 				+"'"+POut.PString(Cur.ElectID)+"', "
-				+"'"+POut.PString(Cur.Note)+"')";
+				+"'"+POut.PString(Cur.Note)+"', "
+				+"'"+POut.PString(Cur.PlanType)+"', "
+				+"'"+POut.PInt   (Cur.ClaimFormNum)+"', "
+				+"'"+POut.PBool  (Cur.UseAltCode)+"', "
+				+"'"+POut.PBool  (Cur.ClaimsUseUCR)+"', "
+				+"'"+POut.PInt   (Cur.FeeSched)+"', "
+				+"'"+POut.PBool  (Cur.IsWrittenOff)+"', "
+				+"'"+POut.PInt   (Cur.CopayFeeSched)+"')";
 			//MessageBox.Show(cmd.CommandText);
 			NonQ(false);
 		}
 
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE InsTemplate SET " 
-				+ "Carrier = '"   +POut.PString   (Cur.Carrier)+"'"
-				+ ",Address = '"  +POut.PString(Cur.Address)+"'"
-				+ ",Address2 = '" +POut.PString(Cur.Address2)+"'"
-				+ ",City = '"     +POut.PString(Cur.City)+"'"
-				+ ",State = '"    +POut.PString(Cur.State)+"'"
-				+ ",Zip = '"      +POut.PString(Cur.Zip)+"'"
-				+ ",Phone = '"    +POut.PString(Cur.Phone)+"'"
-				+ ",ClaimFormat='"+POut.PInt   (Cur.ClaimFormat)+"'"
-				+ ",ElectID = '"  +POut.PString(Cur.ElectID)+"'"
-				+ ",Note = '"     +POut.PString(Cur.Note)+"'"
+				+ "Carrier = '"       +POut.PString(Cur.Carrier)+"'"
+				+ ",Address = '"      +POut.PString(Cur.Address)+"'"
+				+ ",Address2 = '"     +POut.PString(Cur.Address2)+"'"
+				+ ",City = '"         +POut.PString(Cur.City)+"'"
+				+ ",State = '"        +POut.PString(Cur.State)+"'"
+				+ ",Zip = '"          +POut.PString(Cur.Zip)+"'"
+				+ ",Phone = '"        +POut.PString(Cur.Phone)+"'"
+				+ ",NoSendElect='"    +POut.PBool  (Cur.NoSendElect)+"'"
+				+ ",ElectID = '"      +POut.PString(Cur.ElectID)+"'"
+				+ ",Note = '"         +POut.PString(Cur.Note)+"'"
+				+ ",PlanType = '"     +POut.PString(Cur.PlanType)+"'"
+				+ ",claimformnum = '" +POut.PInt   (Cur.ClaimFormNum)+"'"
+				+ ",usealtcode = '"   +POut.PBool  (Cur.UseAltCode)+"'"
+				+ ",claimsuseucr = '" +POut.PBool  (Cur.ClaimsUseUCR)+"'"
+				+ ",feesched = '"     +POut.PInt   (Cur.FeeSched)+"'"
+				+ ",iswrittenoff = '" +POut.PBool  (Cur.IsWrittenOff)+"'"
+				+ ",copayfeesched = '"+POut.PInt   (Cur.CopayFeeSched)+"'"
 				+" WHERE TemplateNum = '" +POut.PInt(Cur.TemplateNum)+"'";
 			NonQ(false);
 		}
@@ -1237,9 +1413,17 @@ namespace OpenDental{
 		public string State;
 		public string Zip;
 		public string Phone;
-		public int ClaimFormat;
+		//public int ClaimFormat; replaced by:
+		public bool NoSendElect;
 		public string ElectID;
 		public string Note;
+		public string PlanType;//""=insurance,"f"=medicaid,"c"=capitation
+		public int ClaimFormNum;//foreign key to ClaimForm.ClaimFormNum
+		public bool UseAltCode;//0=no,1=yes.  could later be extended if more alternates required
+		public bool ClaimsUseUCR;//fee on claim should be the fee for the patient's provider.
+		public int FeeSched;//foreign key to Definition.DefNum.
+		public bool IsWrittenOff;//automates writeoff on unpaid claims
+		public int CopayFeeSched;//foreign key to Definition.DefNum
 	}
 
 	/*=========================================================================================
@@ -1253,7 +1437,8 @@ namespace OpenDental{
 		public static Language[] ListForCat;
 
 		public static void Refresh(){
-			//MessageBox.Show("refreshing");
+			//Refreshed automatically to always be kept current with all phrases, regardless of whether
+			//there are any entries in LanguageForeign table.
 			HList=new Hashtable();
 			if(CultureInfo.CurrentCulture.TwoLetterISOLanguageName=="en"){
 				return;
@@ -1352,7 +1537,12 @@ namespace OpenDental{
 			//catch{
 			//	MessageBox.Show(classType+text);
 			//}
+			
 			if(LanguageForeigns.HList.Contains(classType+text)){
+				if(((LanguageForeign)LanguageForeigns.HList[classType+text]).Translation==""){
+					//if translation is empty
+					return text;//return the English version
+				}
 				return ((LanguageForeign)LanguageForeigns.HList[classType+text]).Translation;	
 			}
 			else{
@@ -1405,6 +1595,8 @@ namespace OpenDental{
 		public static LanguageForeign[] List;
 
 		public static void Refresh(){
+			//called once when the program first starts up.  Then only if user downloads new translations
+			//or adds their own.
 			HList=new Hashtable();
 			if(CultureInfo.CurrentCulture.TwoLetterISOLanguageName=="en"){
 				return;
@@ -1446,14 +1638,14 @@ namespace OpenDental{
 
 		public static void DeleteCur(){
 			cmd.CommandText = "DELETE from languageforeign WHERE ClassType='"+Cur.ClassType+"' && "
-				+"English = '"+Cur.English+"' && Culture = '"
-				+CultureInfo.CurrentCulture.TwoLetterISOLanguageName+"'";
+				+"English='"+Cur.English+"' && Culture='"+CultureInfo.CurrentCulture.TwoLetterISOLanguageName+"'";
 			NonQ(false);
 		}
 
 	}
 
 	public struct LanguageForeign{
+		//will usually only contain translations for a single foreign language, although more are allowed.
 		public string ClassType;
 		public string English;
 		public string Culture;
@@ -1466,8 +1658,9 @@ namespace OpenDental{
 	//this used to be a temporary database table, but the table was deleted with version 2.0
 	
 	public class Ledgers:DataClass{
-		public static double[] Bal;
-		public static double InsEst;
+		public static double[] Bal;//30-60-90 for one guarantor
+		public static double InsEst;//for one guarantor
+		public static double BalTotal;//for one guarantor
 		private static DateTime AsOfDate;
 		public static int[] AllGuarantors;
 		public struct DateValuePair{
@@ -1515,7 +1708,7 @@ namespace OpenDental{
 			}
 			ComputeAging(guarantor,asOfDate);
 			Patients.ResetAging(guarantor);
-			Patients.UpdateAging(guarantor,Bal[0],Bal[1],Bal[2],Bal[3],InsEst);
+			Patients.UpdateAging(guarantor,Bal[0],Bal[1],Bal[2],Bal[3],InsEst,BalTotal);
 		}
 
 		public static void ComputeAging(int guarantor,DateTime asOfDate){
@@ -1525,10 +1718,12 @@ namespace OpenDental{
 			Bal[1]=0;//31_60
 			Bal[2]=0;//61_90
 			Bal[3]=0;//90plus
+			BalTotal=0;
 			InsEst=0;
 			DateValuePair[] pairs;
 			string wherePats="";
 			cmd.CommandText="SELECT patnum FROM patient WHERE guarantor = '"+POut.PInt(guarantor)+"'";
+			//MessageBox.Show(cmd.CommandText);
 			FillTable();
 			for(int i=0;i<table.Rows.Count;i++){
 				if(i>0) wherePats+=" ||";
@@ -1545,7 +1740,6 @@ namespace OpenDental{
 				pairs[i].Value= PIn.PDouble(table.Rows[i][1].ToString());
 			}
 			for(int i=0;i<pairs.Length;i++){
-				//MessageBox.Show(pairs[i].Date.ToShortDateString()+","+pairs[i].Value.ToString("F"));
 				Bal[GetAgingType(pairs[i].Date)]+=pairs[i].Value;
 			}
 			//POSITIVE ADJUSTMENTS:
@@ -1572,22 +1766,23 @@ namespace OpenDental{
 				pairs[i].Date=  PIn.PDate  (table.Rows[i][0].ToString());
 				pairs[i].Value= -PIn.PDouble(table.Rows[i][1].ToString());
 			}
-			//MessageBox.Show(Bal[3].ToString()+","+pairs[0].Value.ToString());
 			ComputePayments(pairs);
-			//MessageBox.Show(Bal[3].ToString());
 			//CLAIM PAYMENTS:
 			//there are different ways to calculate the date of a claim payment
 			//for now, we are trying to keep it consistent with the layout in the account module.
-			//Using date of service.  Later will include alternative for date received.
-			cmd.CommandText="SELECT dateservice,inspayamt FROM claim"
-				+" WHERE ClaimStatus = 'R'"//this also effectively eliminates 'A' adjustments
+			//Using date of service.  Later will eliminate datecp?
+			cmd.CommandText="SELECT datecp,inspayamt,writeoff FROM claimproc"
+				+" WHERE (status = '1' || status = '4')"//recieved or supplemental
+				//pending insurance is handled further down
+				//ins adjustments do not affect patient balance, but only insurance benefits
 				+" && ("+wherePats+")"
-				+" ORDER BY dateservice";
+				+" ORDER BY datecp";
 			FillTable();
 			pairs=new DateValuePair[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
 				pairs[i].Date=  PIn.PDate  (table.Rows[i][0].ToString());
-				pairs[i].Value= PIn.PDouble(table.Rows[i][1].ToString());
+				pairs[i].Value= PIn.PDouble(table.Rows[i][1].ToString())
+					+PIn.PDouble(table.Rows[i][2].ToString());
 			}
 			ComputePayments(pairs);
 			//PAYSPLITS:
@@ -1603,20 +1798,38 @@ namespace OpenDental{
 			}
 			ComputePayments(pairs);
 			//CLAIM ESTIMATES
-			cmd.CommandText="SELECT inspayest FROM claim"
-				+" WHERE claimstatus != 'R' && claimstatus != 'A'"
-				+" && claimtype != 'PreAuth'"
+			cmd.CommandText="SELECT inspayest FROM claimproc"
+				+" WHERE status = '0'"//not received
 				+" && ("+wherePats+")";
-				//+" ORDER BY procdate";
 			FillTable();
-			//pairs=new DateValuePair[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
 				InsEst+=PIn.PDouble(table.Rows[i][0].ToString());
+			}
+			//balance is sum of 4 aging periods
+			BalTotal=Bal[0]+Bal[1]+Bal[2]+Bal[3];
+			//after this, balance will NOT necessarily be the same as the sum of the 4.
+			//clean up negative numbers:
+			if(Bal[3] < 0){
+				Bal[2]+=Bal[3];
+				Bal[3]=0;
+			}
+			if(Bal[2] < 0){
+				Bal[1]+=Bal[2];
+				Bal[2]=0;
+			}
+			if(Bal[1] < 0){
+				Bal[0]+=Bal[1];
+				Bal[1]=0;
+			}
+			if(Bal[0] < 0){
+				Bal[0]=0;
 			}
 			//must complete by updating patient table. Done from wherever this was called.
 		}
 
 		private static void ComputePayments(DateValuePair[] pairs){
+			//called 3 times from the above function.  Not needed for charges, but only for payments,
+			//which are much more complex to place in the correct aging slot.
 			for(int i=0;i<pairs.Length;i++){
 				switch(GetAgingType(pairs[i].Date)){
 					case 3://over 90
@@ -1691,10 +1904,9 @@ namespace OpenDental{
 						}
 						Bal[0]-=pairs[i].Value;//apply whatever is left over to 0 30
 						break;
-				}
-				
-
-			}
+				}//switch
+				//MessageBox.Show(pairs[i].Date.ToShortDateString()+","+pairs[i].Value.ToString()+","+Bal[3].ToString());
+			}//for
 		}
 
 		private static int GetAgingType(DateTime date){

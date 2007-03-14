@@ -85,13 +85,16 @@ namespace OpenDental{
 			// butCancel
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(504, 218);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 6;
 			this.butCancel.Text = "Cancel";
+			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(504, 178);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 5;
@@ -136,6 +139,7 @@ namespace OpenDental{
 			// 
 			// radioTo
 			// 
+			this.radioTo.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioTo.Location = new System.Drawing.Point(86, 5);
 			this.radioTo.Name = "radioTo";
 			this.radioTo.RightToLeft = System.Windows.Forms.RightToLeft.No;
@@ -146,6 +150,7 @@ namespace OpenDental{
 			// 
 			// radioFrom
 			// 
+			this.radioFrom.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioFrom.Location = new System.Drawing.Point(2, 4);
 			this.radioFrom.Name = "radioFrom";
 			this.radioFrom.RightToLeft = System.Windows.Forms.RightToLeft.No;
@@ -182,6 +187,7 @@ namespace OpenDental{
 			// 
 			// butEdit
 			// 
+			this.butEdit.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butEdit.Location = new System.Drawing.Point(374, 18);
 			this.butEdit.Name = "butEdit";
 			this.butEdit.Size = new System.Drawing.Size(114, 23);
@@ -201,6 +207,7 @@ namespace OpenDental{
 			this.checkPatient.AutoCheck = false;
 			this.checkPatient.BackColor = System.Drawing.SystemColors.Control;
 			this.checkPatient.Enabled = false;
+			this.checkPatient.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkPatient.Location = new System.Drawing.Point(106, 46);
 			this.checkPatient.Name = "checkPatient";
 			this.checkPatient.Size = new System.Drawing.Size(22, 20);
@@ -245,7 +252,6 @@ namespace OpenDental{
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(600, 264);
-			this.ControlBox = false;
 			this.Controls.Add(this.label5);
 			this.Controls.Add(this.label4);
 			this.Controls.Add(this.textNotes);
@@ -265,6 +271,7 @@ namespace OpenDental{
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "FormRefAttachEdit";
+			this.ShowInTaskbar = false;
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "FormRefAttachEdit";
@@ -353,6 +360,10 @@ namespace OpenDental{
 				RefAttaches.UpdateCur();
 			}
 			DialogResult=DialogResult.OK;
+		}
+
+		private void butCancel_Click(object sender, System.EventArgs e) {
+		
 		}
 
 

@@ -1,5 +1,5 @@
 /*=============================================================================================================
-FreeDental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
+Open Dental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
 See header in FormOpenDental.cs for complete text.  Redistributions must retain this text.
 ===============================================================================================================*/
 using System;
@@ -354,6 +354,7 @@ namespace OpenDental{
 			// 
 			// button1
 			// 
+			this.button1.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.button1.Location = new System.Drawing.Point(26, 266);
 			this.button1.Name = "button1";
 			this.button1.Size = new System.Drawing.Size(68, 20);
@@ -576,7 +577,7 @@ namespace OpenDental{
 			// listPreAuth
 			// 
 			this.listPreAuth.Enabled = false;
-			this.listPreAuth.Location = new System.Drawing.Point(696, 584);
+			this.listPreAuth.Location = new System.Drawing.Point(692, 584);
 			this.listPreAuth.Name = "listPreAuth";
 			this.listPreAuth.Size = new System.Drawing.Size(246, 108);
 			this.listPreAuth.TabIndex = 48;
@@ -585,7 +586,7 @@ namespace OpenDental{
 			// 
 			// label17
 			// 
-			this.label17.Location = new System.Drawing.Point(695, 567);
+			this.label17.Location = new System.Drawing.Point(691, 567);
 			this.label17.Name = "label17";
 			this.label17.Size = new System.Drawing.Size(187, 13);
 			this.label17.TabIndex = 49;
@@ -720,7 +721,7 @@ namespace OpenDental{
 			this.Controls.Add(this.butPat);
 			this.Controls.Add(this.butUpdateFees);
 			this.Name = "ContrTreat";
-			this.Size = new System.Drawing.Size(948, 708);
+			this.Size = new System.Drawing.Size(939, 708);
 			this.panelSide.ResumeLayout(false);
 			this.ResumeLayout(false);
 
@@ -777,6 +778,19 @@ namespace OpenDental{
 		public void ModuleSelected(){
 			RefreshModuleData();
 			RefreshModuleScreen();
+		}
+
+		public void ModuleUnselected(){
+			Patients.FamilyList=null;
+			InsPlans.List=null;
+			CovPats.List=null;
+			Claims.List=null;
+			Claims.HList=null;
+			ClaimProcs.List=null;
+			//from FillMain:
+			Procedures.List=null;
+			Procedures.HList=null;
+			Procedures.MissingTeeth=null;
 		}
 
 		private void RefreshModuleData(){
@@ -976,14 +990,15 @@ namespace OpenDental{
 			double used;
 			if(Patients.Cur.PriPlanNum!=0){
 				max=0;
-				if(((InsPlan)InsPlans.HList[Patients.Cur.PriPlanNum]).AnnualMax!=-1){
-					max=((InsPlan)InsPlans.HList[Patients.Cur.PriPlanNum]).AnnualMax;
+				InsPlans.GetCur(Patients.Cur.PriPlanNum);
+				if(InsPlans.Cur.AnnualMax!=-1){
+					max=InsPlans.Cur.AnnualMax;
 					textPriMax.Text=max.ToString("F");
 				}
-				if(((InsPlan)InsPlans.HList[Patients.Cur.PriPlanNum]).Deductible!=-1)
-					textPriDed.Text=((InsPlan)InsPlans.HList[Patients.Cur.PriPlanNum]).Deductible.ToString("F");
-				textPriDedRem.Text=InsPlans.GetDedRem(DateTime.Today,Patients.Cur.PriPlanNum).ToString("F");
-				remain=InsPlans.GetInsRem(DateTime.Today,Patients.Cur.PriPlanNum,0);
+				if(InsPlans.Cur.Deductible!=-1)
+					textPriDed.Text=InsPlans.Cur.Deductible.ToString("F");
+				textPriDedRem.Text=InsPlans.GetDedRem(DateTime.Today,Patients.Cur.PriPlanNum,-1).ToString("F");
+				remain=InsPlans.GetInsRem(DateTime.Today,Patients.Cur.PriPlanNum,-1);
 				pend=InsPlans.GetPending(DateTime.Today,Patients.Cur.PriPlanNum);
 				used=max-remain-pend;//math done in reverse to take advantage of GetInsRem
 				textPriPend.Text=pend.ToString("F");
@@ -992,14 +1007,15 @@ namespace OpenDental{
 			}
 			if(Patients.Cur.SecPlanNum!=0){
 				max=0;
-				if(((InsPlan)InsPlans.HList[Patients.Cur.SecPlanNum]).AnnualMax!=-1){
-					max=((InsPlan)InsPlans.HList[Patients.Cur.SecPlanNum]).AnnualMax;
+				InsPlans.GetCur(Patients.Cur.SecPlanNum);
+				if(InsPlans.Cur.AnnualMax!=-1){
+					max=InsPlans.Cur.AnnualMax;
 					textSecMax.Text=max.ToString("F");
 				}
-				if(((InsPlan)InsPlans.HList[Patients.Cur.SecPlanNum]).Deductible!=-1)
-					textSecDed.Text=((InsPlan)InsPlans.HList[Patients.Cur.SecPlanNum]).Deductible.ToString("F");
-				textSecDedRem.Text=InsPlans.GetDedRem(DateTime.Today,Patients.Cur.SecPlanNum).ToString("F");
-				remain=InsPlans.GetInsRem(DateTime.Today,Patients.Cur.SecPlanNum,0);
+				if(InsPlans.Cur.Deductible!=-1)
+					textSecDed.Text=InsPlans.Cur.Deductible.ToString("F");
+				textSecDedRem.Text=InsPlans.GetDedRem(DateTime.Today,Patients.Cur.SecPlanNum,-1).ToString("F");
+				remain=InsPlans.GetInsRem(DateTime.Today,Patients.Cur.SecPlanNum,-1);
 				pend=InsPlans.GetPending(DateTime.Today,Patients.Cur.SecPlanNum);
 				used=max-remain-pend;
 				textSecPend.Text=pend.ToString("F");
@@ -1022,7 +1038,7 @@ namespace OpenDental{
       listPreAuth.Items.Clear();
 			//selectedPreAuth=-1;
       for(int i=0;i<ALPreAuth.Count;i++){
-        InsPlans.Cur=(InsPlan)InsPlans.HList[((Claim)ALPreAuth[i]).PlanNum];
+				InsPlans.GetCur(((Claim)ALPreAuth[i]).PlanNum);
         string itemText;
 				if(((Claim)ALPreAuth[i]).DateSent.CompareTo(new DateTime(1860,1,1))<0)
 					itemText=InsPlans.Cur.Carrier+"("+((Claim)ALPreAuth[i]).ClaimStatus.ToString()+")";
@@ -1340,7 +1356,15 @@ namespace OpenDental{
       }
       for(int i=0;i<arrayLProc.Count;i++){
 				Procedures.Cur=(Procedure)arrayLProc[i]; 
+				//first the fees
 				Procedures.Cur.ProcFee = Fees.GetAmount(Procedures.Cur.ADACode,ContrChart.GetFeeSched());
+				//then the 'Patient has insurance' checkbox
+				if(Patients.Cur.PriPlanNum==0){//no ins
+					Procedures.Cur.IsCovIns=false;
+				}
+				else{//has ins
+					Procedures.Cur.IsCovIns=true;
+				}
 				Procedures.UpdateCur();
       }
       ModuleSelected();
@@ -1351,12 +1375,7 @@ namespace OpenDental{
         MessageBox.Show(Lan.g(this,"Please select procedures first."));
         return;
       }
-			//if(Patients.Cur.PriPlanNum==0){
-			//	MessageBox.Show(Lan.g(this,"Patient does not have insurance."));
-			//	return;
-			//}
-			//DateTime procDate=DateTime.Today;
-      FormInsPlansSelect FormIPS=new FormInsPlansSelect(); 
+      FormInsPlanSelect FormIPS=new FormInsPlanSelect(); 
       FormIPS.ShowDialog();
       if(FormIPS.DialogResult!=DialogResult.OK){
         return;
@@ -1364,7 +1383,8 @@ namespace OpenDental{
 			Claims.Cur=new Claim();
 			Claims.Cur.PatNum=Patients.Cur.PatNum;
 			//Claims.Cur.DateService=procDate;//there is no date of service for preauth
-			Claims.Cur.ClaimStatus="U";
+			Claims.Cur.ClaimStatus="W";
+			Claims.Cur.DateSent=DateTime.Today;
 			Claims.Cur.PlanNum=InsPlans.Cur.PlanNum;
 			Claims.Cur.ProvTreat=((Procedure)arrayLProc[tbMain.SelectedIndices[0]]).ProvNum;
 			for(int i=0;i<tbMain.SelectedIndices.Length;i++){
@@ -1377,15 +1397,12 @@ namespace OpenDental{
 				//OK if 0, because auto select first in list when open claim
 			}
 			Claims.Cur.DedApplied=0;//calcs in ClaimEdit.
-			Claims.Cur.OverMax=0;//calcs in ClaimEdit
 			//change later: set ProvBill according to practice defaults
 			Claims.Cur.ProvBill=Claims.Cur.ProvTreat;//OK if zero, because it will get fixed in claim
 			Claims.Cur.EmployRelated=YN.No;
       Claims.Cur.ClaimType="PreAuth";
-			Claims.Cur.PatRelat=FormIPS.PatRelat;
+			Claims.Cur.PatRelat=FormIPS.PatRelat;//?
 			Claims.InsertCur();
-      //Claims.Cur.PriClaimNum=Claims.Cur.ClaimNum;
-      //Claims.UpdateCur();
 			for(int i=0;i<tbMain.SelectedIndices.Length;i++){
 				Procedures.Cur=((Procedure)arrayLProc[tbMain.SelectedIndices[i]]);
 				if(!Procedures.Cur.IsCovIns){
@@ -1395,6 +1412,16 @@ namespace OpenDental{
         ClaimProcs.Cur.ClaimNum=Claims.Cur.ClaimNum;
         ClaimProcs.Cur.PatNum=Patients.Cur.PatNum;
         ClaimProcs.Cur.ProcNum=Procedures.Cur.ProcNum;
+				if(InsPlans.Cur.UseAltCode)
+					ClaimProcs.Cur.CodeSent=((ProcedureCode)ProcCodes.HList[Procedures.Cur.ADACode]).AlternateCode1;
+				else{
+					ClaimProcs.Cur.CodeSent=Procedures.Cur.ADACode;
+					if(ClaimProcs.Cur.CodeSent.Length>5 && ClaimProcs.Cur.CodeSent.Substring(0,1)=="D"){
+						ClaimProcs.Cur.CodeSent=ClaimProcs.Cur.CodeSent.Substring(0,5);
+					}
+				}
+				ClaimProcs.Cur.FeeBilled=Procedures.Cur.ProcFee;
+				ClaimProcs.Cur.Status=ClaimProcStatus.Preauth;
         ClaimProcs.InsertCur();
 				Procedures.UpdateCur();
 			}
@@ -1430,8 +1457,8 @@ namespace OpenDental{
       Claims.Cur=(Claim)ALPreAuth[listPreAuth.SelectedIndex];
       ClaimProcs.GetForClaim();
       for(int i=0;i<arrayLProc.Count;i++){
-        for(int j=0;j<ClaimProcs.ForClaim.Count;j++){
-          if(((Procedure)arrayLProc[i]).ProcNum==((ClaimProc)ClaimProcs.ForClaim[j]).ProcNum){
+        for(int j=0;j<ClaimProcs.ForClaim.Length;j++){
+          if(((Procedure)arrayLProc[i]).ProcNum==ClaimProcs.ForClaim[j].ProcNum){
 						tbMain.SetSelected(i,true);
           }
         }

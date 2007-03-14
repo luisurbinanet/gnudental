@@ -8,7 +8,6 @@ namespace OpenDental{
 
 	public class FormScheduleDayEdit : System.Windows.Forms.Form	{
 		private System.ComponentModel.Container components = null;
-		private System.Windows.Forms.Button butDelete;
 		private System.Windows.Forms.Button butCancel;
 		private System.Windows.Forms.Button butOK;
 		private System.Windows.Forms.TextBox textStop;
@@ -19,6 +18,7 @@ namespace OpenDental{
 		private System.Windows.Forms.ListBox listStatus;
 		private System.Windows.Forms.TextBox textNote;
 		private System.Windows.Forms.Label label4;
+		private OpenDental.XPButton butDelete;
     public bool IsNew;
 
 		public FormScheduleDayEdit(){
@@ -53,7 +53,6 @@ namespace OpenDental{
 		private void InitializeComponent()
 		{
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormScheduleDayEdit));
-			this.butDelete = new System.Windows.Forms.Button();
 			this.butCancel = new System.Windows.Forms.Button();
 			this.butOK = new System.Windows.Forms.Button();
 			this.textStop = new System.Windows.Forms.TextBox();
@@ -64,30 +63,23 @@ namespace OpenDental{
 			this.listStatus = new System.Windows.Forms.ListBox();
 			this.textNote = new System.Windows.Forms.TextBox();
 			this.label4 = new System.Windows.Forms.Label();
+			this.butDelete = new OpenDental.XPButton();
 			this.SuspendLayout();
-			// 
-			// butDelete
-			// 
-			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
-			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDelete.Location = new System.Drawing.Point(30, 214);
-			this.butDelete.Name = "butDelete";
-			this.butDelete.Size = new System.Drawing.Size(75, 26);
-			this.butDelete.TabIndex = 13;
-			this.butDelete.Text = "       Delete";
-			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
 			// 
 			// butCancel
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(212, 216);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 14;
 			this.butCancel.Text = "Cancel";
+			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(212, 182);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
@@ -163,13 +155,27 @@ namespace OpenDental{
 			this.label4.Text = "Note";
 			this.label4.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
+			// butDelete
+			// 
+			this.butDelete.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butDelete.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butDelete.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
+			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butDelete.Location = new System.Drawing.Point(26, 216);
+			this.butDelete.Name = "butDelete";
+			this.butDelete.Size = new System.Drawing.Size(84, 26);
+			this.butDelete.TabIndex = 17;
+			this.butDelete.Text = "Delete";
+			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
+			// 
 			// FormScheduleDayEdit
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(302, 248);
+			this.Controls.Add(this.butDelete);
 			this.Controls.Add(this.textNote);
 			this.Controls.Add(this.label4);
-			this.Controls.Add(this.butDelete);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.textStop);
@@ -181,6 +187,7 @@ namespace OpenDental{
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "FormScheduleDayEdit";
+			this.ShowInTaskbar = false;
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Edit Time Block";
@@ -256,24 +263,24 @@ namespace OpenDental{
 					MessageBox.Show(Lan.g(this,"Stop time must be later than start time."));
 					return;
 				}
-				for(int i=0;i<Schedules.DayList.Length;i++){
-				  if(Schedules.Cur.ScheduleNum!=Schedules.DayList[i].ScheduleNum
-						&& Schedules.Cur.StartTime.TimeOfDay.CompareTo(Schedules.DayList[i].StartTime.TimeOfDay) >= 0
-						&& Schedules.Cur.StartTime.TimeOfDay.CompareTo(Schedules.DayList[i].StopTime.TimeOfDay) < 0
+				for(int i=0;i<Schedules.ListDay.Length;i++){
+				  if(Schedules.Cur.ScheduleNum!=Schedules.ListDay[i].ScheduleNum
+						&& Schedules.Cur.StartTime.TimeOfDay.CompareTo(Schedules.ListDay[i].StartTime.TimeOfDay) >= 0
+						&& Schedules.Cur.StartTime.TimeOfDay.CompareTo(Schedules.ListDay[i].StopTime.TimeOfDay) < 0
 						){
 						MessageBox.Show(Lan.g(this,"Can not overlap another time block."));
 						return;
 					}
-					if(Schedules.Cur.ScheduleNum!=Schedules.DayList[i].ScheduleNum
-						&& Schedules.Cur.StopTime.TimeOfDay.CompareTo(Schedules.DayList[i].StartTime.TimeOfDay) > 0
-						&& Schedules.Cur.StopTime.TimeOfDay.CompareTo(Schedules.DayList[i].StopTime.TimeOfDay) <= 0
+					if(Schedules.Cur.ScheduleNum!=Schedules.ListDay[i].ScheduleNum
+						&& Schedules.Cur.StopTime.TimeOfDay.CompareTo(Schedules.ListDay[i].StartTime.TimeOfDay) > 0
+						&& Schedules.Cur.StopTime.TimeOfDay.CompareTo(Schedules.ListDay[i].StopTime.TimeOfDay) <= 0
 						){
 						MessageBox.Show(Lan.g(this,"Can not overlap another time block."));
 						return;
 					}
-					if(Schedules.Cur.ScheduleNum!=Schedules.DayList[i].ScheduleNum
-						&& Schedules.Cur.StartTime.TimeOfDay.CompareTo(Schedules.DayList[i].StartTime.TimeOfDay) <= 0
-						&& Schedules.Cur.StopTime.TimeOfDay.CompareTo(Schedules.DayList[i].StopTime.TimeOfDay) >= 0
+					if(Schedules.Cur.ScheduleNum!=Schedules.ListDay[i].ScheduleNum
+						&& Schedules.Cur.StartTime.TimeOfDay.CompareTo(Schedules.ListDay[i].StartTime.TimeOfDay) <= 0
+						&& Schedules.Cur.StopTime.TimeOfDay.CompareTo(Schedules.ListDay[i].StopTime.TimeOfDay) >= 0
 						){
 						MessageBox.Show(Lan.g(this,"Can not overlap another time block."));
 					  return;
@@ -287,7 +294,11 @@ namespace OpenDental{
 				 Schedules.UpdateCur();
 			}
 			DialogResult=DialogResult.OK;		  
-    }   
+    }
+
+		private void butCancel_Click(object sender, System.EventArgs e) {
+		
+		}   
 
 	}
 }

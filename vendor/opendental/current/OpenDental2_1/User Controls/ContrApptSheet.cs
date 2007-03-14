@@ -1,5 +1,5 @@
 /*=============================================================================================================
-FreeDental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
+Open Dental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
 See header in FormOpenDental.cs for complete text.  Redistributions must retain this text.
 ===============================================================================================================*/
 using System;
@@ -23,9 +23,8 @@ namespace OpenDental{
 		public static int ColCount;
 		public static int ProvCount;
 		public Bitmap Shadow;
-		//public Bitmap HundShadow;//basis for HundredShadows
-		//public Bitmap[,] HundredShadows;
 		public bool IsScrolling=false;
+		//public int selectedCat;//selected ApptCategory.
 
 		public ContrApptSheet(){
 			InitializeComponent();// This call is required by the Windows.Forms Form Designer.
@@ -40,6 +39,7 @@ namespace OpenDental{
 			TimeWidth=30;
 			ProvWidth=8;
 			Lh=12;
+			//selectedCat=-1;
 		}
 
 		protected override void Dispose( bool disposing ){
@@ -98,27 +98,31 @@ namespace OpenDental{
 			return retVal;
 		}
 
-		public int DoubleClickToHour (int newY){
+		public int DoubleClickToHour(int newY){
 			//retVal=
 			return System.Convert.ToInt32((newY)/6/Lh);
 		}
 
-		public int DoubleClickToMin (int newY){
+		public int DoubleClickToMin(int newY){
 			int tempReturn = System.Convert.ToInt32(Decimal.Remainder(newY-Lh/2,6*Lh)/Lh)*10;
 			if (tempReturn == 60)return 0;
 			else return tempReturn;
 		}
 
-		public int ConvertToOp (int newX){
+		///<summary>converts x-coordinate to operatory index of ApptCatItems.VisOps</summary>
+		public int ConvertToOp(int newX){
 			int retVal=0;
 			retVal=(int)Math.Round((double)(newX-TimeWidth-ProvWidth*ProvCount)/ColWidth);
-			if(retVal > Defs.Short[(int)DefCat.Operatories].Length-1)
-				retVal=Defs.Short[(int)DefCat.Operatories].Length-1;
+			//make sure it's not outside bounds of array:
+			if(retVal > ApptViewItems.VisOps.Length-1)
+				//Defs.Short[(int)DefCat.Operatories].Length-1)
+				retVal=ApptViewItems.VisOps.Length-1;
+					//Defs.Short[(int)DefCat.Operatories].Length-1;
 			if(retVal<0) retVal=0;
 			return retVal;
 		}
 
-		public int ConvertToHour (int newY){
+		public int ConvertToHour(int newY){
 			//if (newY<13*6*Lh-Lh/2){//Before 12:55
 			return System.Convert.ToInt32((newY+Lh/2)/6/Lh);
 			//}
@@ -127,7 +131,7 @@ namespace OpenDental{
 			//}
 		}
 
-		public int ConvertToMin (int newY){
+		public int ConvertToMin(int newY){
 			int tempReturn = System.Convert.ToInt32(Decimal.Remainder(newY,6*Lh)/Lh)*10;
 			if (tempReturn == 60)return 0;
 			else return tempReturn;
@@ -135,7 +139,7 @@ namespace OpenDental{
 
 		protected override void OnPaint(PaintEventArgs pea){
 			DrawShadow();
-			//revisit this later, using a separate thread:
+			//revisit this later:
 			/*
 			if(HundShadow==null)return;
 			if(IsScrolling){
@@ -190,19 +194,19 @@ namespace OpenDental{
         holidayBrush=new SolidBrush(Color.FromArgb(255,128,128));
 			}
 			grfx.FillRectangle(closedBrush,TimeWidth,0,ColWidth*ColCount+ProvWidth*ProvCount,totalHeight);//main background
-      if(Schedules.DayList!=null && Schedules.DayList.Length > 0){
-				for(int i=0;i<Schedules.DayList.Length;i++){	
-					if(Schedules.DayList[i].Status==SchedStatus.Holiday){
+      if(Schedules.ListDay!=null && Schedules.ListDay.Length > 0){
+				for(int i=0;i<Schedules.ListDay.Length;i++){	
+					if(Schedules.ListDay[i].Status==SchedStatus.Holiday){
  						grfx.FillRectangle(holidayBrush,TimeWidth,0,ColWidth*ColCount+ProvWidth*ProvCount,totalHeight);
 					} 
           else{        
  						grfx.FillRectangle(openBrush
 							,TimeWidth
-							,Schedules.DayList[i].StartTime.Hour*Lh*6
-							+(int)Schedules.DayList[i].StartTime.Minute*Lh/10
+							,Schedules.ListDay[i].StartTime.Hour*Lh*6
+							+(int)Schedules.ListDay[i].StartTime.Minute*Lh/10
 							,ColWidth*ColCount+ProvWidth*ProvCount
-							,(Schedules.DayList[i].StopTime-Schedules.DayList[i].StartTime).Hours*Lh*6
-							+(Schedules.DayList[i].StopTime-Schedules.DayList[i].StartTime).Minutes*Lh/10);
+							,(Schedules.ListDay[i].StopTime-Schedules.ListDay[i].StartTime).Hours*Lh*6
+							+(Schedules.ListDay[i].StopTime-Schedules.ListDay[i].StartTime).Minutes*Lh/10);
           }
 				}         
       }
@@ -258,7 +262,7 @@ namespace OpenDental{
 							break;
 						case 1:
 							try{
-								grfx.FillRectangle(new SolidBrush(Providers.List[j].ProvColor)
+								grfx.FillRectangle(new SolidBrush(Providers.List[ApptViewItems.VisProvs[j]].ProvColor)
 									,TimeWidth+ProvWidth*j+1,(i*Lh)+1,ProvWidth-1,Lh-1);
 							}
 							catch{//design-time
@@ -268,7 +272,7 @@ namespace OpenDental{
 							break;
 						case 2:
 							grfx.FillRectangle(new HatchBrush(HatchStyle.DarkUpwardDiagonal
-								,Color.Black,Providers.List[j].ProvColor)
+								,Color.Black,Providers.List[ApptViewItems.VisProvs[j]].ProvColor)
 								,TimeWidth+ProvWidth*j+1,(i*Lh)+1,ProvWidth-1,Lh-1);
 							break;
 						default://more than 2
@@ -334,17 +338,22 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary>Called on appt Module layout and when comboCategory is changed.</summary>
 		public void ComputeColWidth(int totalWidth){
+			if(ApptViewItems.VisOps==null || ApptViewItems.VisProvs==null){
+				return;
+			}
 			try{
-				ColCount=Defs.Short[(int)DefCat.Operatories].Length;
-				ProvCount=Providers.List.Length;
+				ColCount=ApptViewItems.VisOps.Length;
+					//Defs.Short[(int)DefCat.Operatories].Length;
+				ProvCount=ApptViewItems.VisProvs.Length;
+					//Providers.List.Length;
 				ColWidth=Convert.ToInt32((totalWidth-TimeWidth*2-ProvWidth*ProvCount)/ColCount);
 				Height=Lh*24*6;
 				Width=TimeWidth*2+ProvWidth*ProvCount+ColWidth*ColCount;
-				//MessageBox.Show("width computed");
 			}
 			catch{
-				//MessageBox.Show("error computing width");
+				MessageBox.Show("error computing width");
 			}
 		}
 		

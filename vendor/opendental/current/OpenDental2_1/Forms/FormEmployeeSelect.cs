@@ -10,8 +10,8 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butOK;
 		private System.Windows.Forms.CheckBox checkHidden;
 		private System.Windows.Forms.ListBox listEmployees;
-		private System.Windows.Forms.Button butAdd;
 		private System.ComponentModel.Container components = null;
+		private OpenDental.XPButton butAdd;
 		private ArrayList ALemployees;
 
 		public FormEmployee(){
@@ -42,19 +42,22 @@ namespace OpenDental{
 			this.butOK = new System.Windows.Forms.Button();
 			this.checkHidden = new System.Windows.Forms.CheckBox();
 			this.listEmployees = new System.Windows.Forms.ListBox();
-			this.butAdd = new System.Windows.Forms.Button();
+			this.butAdd = new OpenDental.XPButton();
 			this.SuspendLayout();
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(278, 400);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 16;
 			this.butOK.Text = "Close";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// checkHidden
 			// 
+			this.checkHidden.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkHidden.Location = new System.Drawing.Point(250, 28);
 			this.checkHidden.Name = "checkHidden";
 			this.checkHidden.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
@@ -72,29 +75,34 @@ namespace OpenDental{
 			// 
 			// butAdd
 			// 
+			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAdd.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butAdd.BtnStyle = OpenDental.enumType.XPStyle.Silver;
 			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
 			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAdd.Location = new System.Drawing.Point(16, 358);
+			this.butAdd.Location = new System.Drawing.Point(16, 354);
 			this.butAdd.Name = "butAdd";
-			this.butAdd.Size = new System.Drawing.Size(74, 26);
-			this.butAdd.TabIndex = 19;
-			this.butAdd.Text = "           Add";
-			this.butAdd.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butAdd.Size = new System.Drawing.Size(78, 26);
+			this.butAdd.TabIndex = 21;
+			this.butAdd.Text = "Add";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
 			// FormEmployee
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(376, 440);
-			this.ControlBox = false;
-			this.Controls.Add(this.listEmployees);
 			this.Controls.Add(this.butAdd);
+			this.Controls.Add(this.listEmployees);
 			this.Controls.Add(this.checkHidden);
 			this.Controls.Add(this.butOK);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormEmployee";
+			this.ShowInTaskbar = false;
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Employees";
+			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormEmployee_Closing);
 			this.Load += new System.EventHandler(this.FormEmployee_Load);
 			this.ResumeLayout(false);
 
@@ -186,8 +194,11 @@ namespace OpenDental{
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			SecurityLogs.MakeLogEntry("Employees","Altered Employees");
 			DialogResult=DialogResult.OK;
+		}
+
+		private void FormEmployee_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+			SecurityLogs.MakeLogEntry("Employees","Altered Employees");
 		}
 
 	}

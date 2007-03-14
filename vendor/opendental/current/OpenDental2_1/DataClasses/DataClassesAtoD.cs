@@ -1,5 +1,5 @@
 /*=============================================================================================================
-FreeDental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
+Open Dental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
 See header in FormOpenDental.cs for complete text.  Redistributions must retain this text.
 ===============================================================================================================*/
 using ByteFX.Data.MySqlClient;
@@ -42,11 +42,11 @@ namespace OpenDental{
 				da=new MySqlDataAdapter(cmd);
 				da.Fill(table=new DataTable(null));
 			}
-			catch(MySqlException e){
-				MessageBox.Show(Lan.g("DataClass","Error: ")+e.Message);
-			}
+			//catch(MySqlException e){
+			//	MessageBox.Show(Lan.g("DataClass","Error: ")+e.Message);
+			//}
 			catch{
-				MessageBox.Show(Lan.g("DataClass","Error: ")+cmd.CommandText);
+				MessageBox.Show("Error: "+cmd.CommandText);
 			}
 			finally{
 				con.Close();
@@ -60,10 +60,10 @@ namespace OpenDental{
 				da.Fill(ds);
 			}
 			catch(MySqlException e){
-				MessageBox.Show(Lan.g("DataClass","Error: ")+e.Message);
+				MessageBox.Show("Error: "+e.Message);
 			}
 			catch{
-				MessageBox.Show(Lan.g("DataClass","Error: ")+cmd.CommandText);
+				MessageBox.Show("Error: "+cmd.CommandText);
 			}
 			finally{
 				con.Close();
@@ -71,8 +71,8 @@ namespace OpenDental{
 		}
 
 		protected static void NonQ(bool getInsertID){
-			con.Open();
 			try{
+				con.Open();
 				cmd.ExecuteNonQuery();
 				if(getInsertID){
 					cmd.CommandText = "SELECT LAST_INSERT_ID()";
@@ -82,11 +82,11 @@ namespace OpenDental{
 				}
 			}
 			catch(MySqlException e){
-				MessageBox.Show(Lan.g("DataClass","Error: ")+e.Message);
+				MessageBox.Show("Error: "+e.Message+","+cmd.CommandText);
 			}
-			catch{
-				MessageBox.Show(Lan.g("DataClass","Error: ")+cmd.CommandText);
-			}
+			//catch{
+			//	MessageBox.Show("Error: "+);
+			//}
 			finally{
 				con.Close();
 				dr=null;
@@ -98,43 +98,53 @@ namespace OpenDental{
 	/*=========================================================================================
 	=================================== class Batch ========================================*/
 	public class Batch:DataClass{//used to send batch SQL Select statements
-		//this code can be significantly improved with a true batch SQL statement
-		//as soon as the driver supports it.
-		//The simplification would be to first use a switch to assemble the command,
-		//then FillDataSet,
-		//then the second switch would remain unchanged to Refresh each class.
-		//This would only involve ONE round trip.
+		//this is a first attempt at batch commands.
+		//The huge advantage is that it only involves ONE round trip.
 
 		public static void Select(string tableList){
+			AssembleCommand(tableList);
+			FillDataSet();
+			AssignTableNames(tableList);
+			RefreshClasses(tableList);
+		}
+
+		private static void AssembleCommand(string tableList){
+			//I could avoid a switch statement if I knew how to use reflection to pass table names
+			//instead of using strings.
 			string[] tableArray=tableList.Split(',');
-			ds=new DataSet();
-			con.Open();
+			cmd.CommandText="";
 			for(int i=0;i<tableArray.Length;i++){
 				switch(tableArray[i]){
 					case "graphicassembly":
-						cmd.CommandText=GraphicAssemblies.GetSelectText();
-						FillTable();
-						table.TableName="graphicassembly";
+						cmd.CommandText+=GraphicAssemblies.GetSelectText();
 						break;
 					case "graphicelement":
-						cmd.CommandText=GraphicElements.GetSelectText();
-						FillTable();
-						table.TableName="graphicelement";
+						cmd.CommandText+=GraphicElements.GetSelectText();
 						break;
 					case "graphicshape":
-						cmd.CommandText=GraphicShapes.GetSelectText();
-						FillTable();
-						table.TableName="graphicshape";
+						cmd.CommandText+=GraphicShapes.GetSelectText();
 						break;
 					case "graphictype":
-						cmd.CommandText=GraphicTypes.GetSelectText();
-						FillTable();
-						table.TableName="graphictype";
+						cmd.CommandText+=GraphicTypes.GetSelectText();
 						break;
 				}
-				ds.Tables.Add(table);
 			}
-			con.Close();
+		}
+
+		private static void AssignTableNames(string tableList){
+			string[] tableArray=tableList.Split(',');
+			for(int i=0;i<tableArray.Length;i++){
+				switch(tableArray[i]){
+					default:
+						ds.Tables[i].TableName=tableArray[i];
+						break;
+					//only reason to not use default is if you use parameters(no examples of that yet)
+				}
+			}
+		}
+
+		private static void RefreshClasses(string tableList){
+			string[] tableArray=tableList.Split(',');
 			for(int i=0;i<tableArray.Length;i++){
 				switch(tableArray[i]){
 					case "graphicassembly":
@@ -150,8 +160,10 @@ namespace OpenDental{
 						GraphicTypes.Refresh();
 						break;
 				}
-			}//for	
-		}//select
+			}//for
+		}
+
+
 
 	}
 
@@ -167,7 +179,7 @@ namespace OpenDental{
 				"SELECT adjnum,adjdate,adjamt,patnum, "
 				+"adjtype,provnum,adjnote"
 				+" from adjustment"
-				+" WHERE patnum = '"+Patients.Cur.PatNum+"'";
+				+" WHERE patnum = '"+Patients.Cur.PatNum+"' ORDER BY adjdate";
 			FillTable();
 			List=new Adjustment[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
@@ -212,43 +224,14 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
-		public static void PutBal(DateTime date, double amt){
-			/*
-			amt=(double)Math.Round(amt,2);
-			Ledgers Ledgers2=new Ledgers();
-			Ledgers2.Refresh(Patients.Cur.PatNum);
-			DateTime monthYear;
-			monthYear=new DateTime(date.Year,date.Month,1);//eg 3/1/03
-			if(Ledgers.HList.ContainsKey(monthYear.Date)){
-				Ledgers.Cur=(Ledger)Ledgers.HList[monthYear.Date];
-				Ledgers.Cur.Adjustments+=amt;
-				Ledgers2.UpdateCur();
-			}
-			else{
-				Ledgers.Cur=new Ledger();
-				Ledgers.Cur.PatNum=Patients.Cur.PatNum;
-				Ledgers.Cur.MonthYear=monthYear;
-				Ledgers.Cur.Adjustments=amt;
-				Ledgers2.SaveCur();
-			}*/
-		}
-
 		public static double ComputeBal(){//must make sure Refresh is done first
 			double retVal=0;
-			//for(int i=0;i<Ledgers.List.Length;i++){
-			//	retVal+=Ledgers.List[i].Adjustments;
-			//}
 			for(int i=0;i<List.Length;i++){
-				//if(Defs.GetValue(DefCat.AdjTypes,List[i].AdjType)=="+"){
-				retVal=retVal+List[i].AdjAmt;//amount might be pos or neg
-				//}
-				//else{
-				//	retVal=retVal-List[i].AdjAmt;
-				//}
+				retVal+=List[i].AdjAmt;//amount might be pos or neg
 			}
 			return retVal;
 		}
-	}//end class Adjustments
+	}
 
 	public struct Adjustment{
 		public int AdjNum;//primary key
@@ -258,7 +241,7 @@ namespace OpenDental{
 		public int AdjType;//foreign key to Definition.DefNum
 		public int ProvNum;//foreign key to Provider.ProvNum
 		public string AdjNote;
-	}//end struct Adjustment
+	}
 
 
 	/*=========================================================================================
@@ -281,8 +264,6 @@ namespace OpenDental{
 			FillList();
 			ListDay=List;
 			List=null;
-			//ListDay=new Appointment[List.Length];
-			//List.CopyTo(ListDay,0);
 		}
 
 		public static void RefreshUnsched(){
@@ -437,6 +418,231 @@ namespace OpenDental{
 		public int UnschedStatus;//foreign key to Definition.DefNum. Only used if this is an Unsched appt.
 		public LabCase Lab;//enum LabCase{None=0,Sent,Received};
 	}//end struct Appointment
+
+	/*=========================================================================================
+	=================================== class ApptViews ===========================================*/
+
+	public class ApptViews:DataClass{
+		public static ApptView Cur;
+		public static ApptView[] List;
+
+		public static void Refresh(){
+			cmd.CommandText =
+				"SELECT * from apptview ORDER BY itemorder";
+			FillTable();
+			List=new ApptView[table.Rows.Count];
+			for(int i=0;i<List.Length;i++){
+				List[i].ApptViewNum = PIn.PInt   (table.Rows[i][0].ToString());
+				List[i].Description = PIn.PString(table.Rows[i][1].ToString());
+				List[i].ItemOrder   = PIn.PInt   (table.Rows[i][2].ToString());	
+			}
+		}
+
+		public static void InsertCur(){
+			cmd.CommandText = "INSERT INTO apptview (description,itemorder) "
+				+"VALUES ("
+				+"'"+POut.PString(Cur.Description)+"', "
+				+"'"+POut.PInt   (Cur.ItemOrder)+"')";
+			//MessageBox.Show(cmd.CommandText);
+			NonQ(true);
+			Cur.ApptViewNum=InsertID;
+		}
+
+		public static void UpdateCur(){
+			cmd.CommandText = "UPDATE apptview SET "
+				+"description='" +POut.PString(Cur.Description)+"'"
+				+",itemorder = '"+POut.PInt   (Cur.ItemOrder)+"'"
+				+" WHERE apptviewnum = '"+POut.PInt(Cur.ApptViewNum)+"'";
+			NonQ(false);
+		}
+
+		public static void DeleteCur(){
+			cmd.CommandText="DELETE from apptview WHERE apptviewnum = '"
+				+POut.PInt(Cur.ApptViewNum)+"'";
+			NonQ(false);
+		}
+
+		/// <summary>Used in appt module.  Can be -1 if no category selected </summary>
+		public static void SetCur(int index){
+			if(index==-1){
+				Cur=new ApptView();
+			}
+			else{
+				Cur=List[index];
+			}
+		}
+
+
+	}
+
+	///<summary>table apptcategory. Enables viewing a variety of operatories.</summary>
+	public struct ApptView{
+		///<summary>primary key</summary>
+		public int ApptViewNum;
+		///<summary>Description of this view.  Gets displayed in Appt module.</summary>
+		public string Description;
+		///<summary>Order to display in lists. Every view must have a unique itemorder, but it is acceptable to have some missing itemorders in the sequence.</summary>
+		public int ItemOrder;
+	}
+
+	/*=========================================================================================
+	=================================== class ApptViewItems ===========================================*/
+
+	public class ApptViewItems:DataClass{
+		public static ApptViewItem Cur;
+		public static ApptViewItem[] List;
+		public static ApptViewItem[] ForCurView;
+		//these two are subsets of provs and ops. You can't include hidden prov or op in this list.
+		///<summary>Visible providers in appt module.  List of indices to providers.List(short).</summary>
+		public static int[] VisProvs;
+		///<summary>Visible ops in appt module.  List of indices to Defs.Short[ops].</summary>
+		public static int[] VisOps;
+
+		public static void Refresh(){
+			cmd.CommandText =
+				"SELECT * from apptviewitem";
+			FillTable();
+			List=new ApptViewItem[table.Rows.Count];
+			for(int i=0;i<List.Length;i++){
+				List[i].ApptViewItemNum = PIn.PInt   (table.Rows[i][0].ToString());
+				List[i].ApptViewNum     = PIn.PInt   (table.Rows[i][1].ToString());
+				List[i].OpNum           = PIn.PInt   (table.Rows[i][2].ToString());
+				List[i].ProvNum         = PIn.PInt   (table.Rows[i][3].ToString());
+			}
+		}
+
+		public static void InsertCur(){
+			cmd.CommandText = "INSERT INTO apptviewitem (apptviewnum,opnum,provnum) "
+				+"VALUES ("
+				+"'"+POut.PInt   (Cur.ApptViewNum)+"', "
+				+"'"+POut.PInt   (Cur.OpNum)+"', "
+				+"'"+POut.PInt   (Cur.ProvNum)+"')";
+			//MessageBox.Show(cmd.CommandText);
+			NonQ(false);
+			//Cur.ApptViewNum=InsertID;
+		}
+
+		public static void UpdateCur(){
+			cmd.CommandText = "UPDATE apptviewitem SET "
+				+"apptviewnum='" +POut.PInt   (Cur.ApptViewNum)+"'"
+				+",opnum = '"    +POut.PInt   (Cur.OpNum)+"'"
+				+",provnum = '"  +POut.PInt   (Cur.ProvNum)+"'"
+				+" WHERE apptviewitemnum = '"+POut.PInt(Cur.ApptViewItemNum)+"'";
+			NonQ(false);
+		}
+
+		public static void DeleteCur(){
+			cmd.CommandText="DELETE from apptviewitem WHERE apptviewitemnum = '"
+				+POut.PInt(Cur.ApptViewItemNum)+"'";
+			NonQ(false);
+		}
+
+		public static void DeleteAllForView(){
+			cmd.CommandText="DELETE from apptviewitem WHERE apptviewnum = '"
+				+POut.PInt(ApptViews.Cur.ApptViewNum)+"'";
+			NonQ(false);
+		}
+
+		/// <summary>Gets (list)ForCurView, VisOps, and VisProvs.  Works even if no apptview is selected.
+		/// </summary>
+		public static void GetForCurView(){
+			ArrayList tempAL=new ArrayList();
+			ArrayList ALprov=new ArrayList();
+			ArrayList ALops=new ArrayList();
+			if(ApptViews.Cur.ApptViewNum==0){
+				//MessageBox.Show("apptcategorynum:"+ApptCategories.Cur.ApptCategoryNum.ToString());
+				//make visible ops exactly the same as the short def list (all except hidden)
+				for(int i=0;i<Defs.Short[(int)DefCat.Operatories].Length;i++){
+					ALops.Add(i);
+				}
+				//make visible provs exactly the same as the prov list (all except hidden)
+				for(int i=0;i<Providers.List.Length;i++){
+					ALprov.Add(i);
+				}
+
+			}
+			else{
+				int index;
+				for(int i=0;i<List.Length;i++){
+					if(List[i].ApptViewNum==ApptViews.Cur.ApptViewNum){
+						tempAL.Add(List[i]);
+						if(List[i].OpNum>0){//op
+							index=Defs.GetOrder(DefCat.Operatories,List[i].OpNum);
+							if(index!=-1){
+								ALops.Add(index);
+							}
+						}
+						else{//prov
+							index=Providers.GetIndex(List[i].ProvNum);
+							if(index!=-1){
+								ALprov.Add(index);
+							}
+						}
+					}
+				}
+			}
+			ForCurView=new ApptViewItem[tempAL.Count];
+			for(int i=0;i<tempAL.Count;i++){
+				ForCurView[i]=(ApptViewItem)tempAL[i];
+			}
+			VisOps=new int[ALops.Count];
+			for(int i=0;i<ALops.Count;i++){
+				VisOps[i]=(int)ALops[i];
+			}
+			Array.Sort(VisOps);
+			VisProvs=new int[ALprov.Count];
+			for(int i=0;i<ALprov.Count;i++){
+				VisProvs[i]=(int)ALprov[i];
+			}
+			Array.Sort(VisProvs);
+		}
+
+		///<summary>Returns the index of the provNum within VisProvs.</summary>
+		public static int GetIndexProv(int provNum){
+			for(int i=0;i<VisProvs.Length;i++){
+				if(Providers.List[VisProvs[i]].ProvNum==provNum)
+					return i;
+			}		
+			return -1;
+		}
+
+		///<summary>Returns the index of the opNum(defNum) within VisOps.</summary>
+		public static int GetIndexOp(int opNum){
+			for(int i=0;i<VisOps.Length;i++){
+				if(Defs.Short[(int)DefCat.Operatories][VisOps[i]].DefNum==opNum)
+					return i;
+			}		
+			return -1;
+		}
+
+		///<summary>Only used in ApptViewItem setup. Must have run GetForCurView first.</summary>
+		public static bool OpIsInView(int opNum){
+			for(int i=0;i<ForCurView.Length;i++){
+				if(ForCurView[i].OpNum==opNum)
+					return true;
+			}
+			return false;
+		}
+
+		///<summary>Only used in ApptViewItem setup. Must have run GetForCurView first.</summary>
+		public static bool ProvIsInView(int provNum){
+			for(int i=0;i<ForCurView.Length;i++){
+				if(ForCurView[i].ProvNum==provNum)
+					return true;
+			}
+			return false;
+		}
+
+
+	}
+
+	public struct ApptViewItem{//table apptviewitem
+		public int ApptViewItemNum;//primary key
+		public int ApptViewNum;//foreign key to apptview
+		public int OpNum;
+		public int ProvNum;
+	}
+
 
 	/*=========================================================================================
 	=================================== class AutoCodes ===========================================*/
@@ -753,42 +959,48 @@ namespace OpenDental{
 		public static Claim[] List;
 		public static Hashtable HList;
 		public static Claim Cur;
-		public static ArrayList ProcsInClaim;
 		public static QueueItem[] ListQueue;
 		public static QueueItem CurQueue;
-		
+
+		public static void RefreshByCheck(int claimPaymentNum, bool showUnattached){
+			cmd.CommandText =
+				"SELECT claim.dateservice,claim.provtreat,CONCAT(patient.lname,', ',patient.fname)"
+				+",insplan.carrier,SUM(claimproc.feebilled),SUM(claimproc.inspayamt),claim.claimnum"
+				+",claimproc.claimpaymentnum"
+				+" FROM claim,patient,insplan,claimproc"
+				+" WHERE claimproc.claimnum = claim.claimnum"
+				+" && patient.patnum = claim.patnum"
+				+" && insplan.plannum = claim.plannum"
+				+" && claimproc.status = '1'"//received
+				+" && (claimproc.claimpaymentnum = '"+claimPaymentNum+"'";
+			if(showUnattached){
+				cmd.CommandText+=" || (claimproc.inspayamt > 0 && claimproc.claimpaymentnum = '0'))"
+					+" GROUP BY claimproc.claimnum";
+			}
+			else{//shows only items attached to this payment
+				cmd.CommandText+=")"
+					+" GROUP BY claimproc.claimnum";
+			}
+			//MessageBox.Show(
+			FillTable();
+			ListQueue=new QueueItem[table.Rows.Count];
+			for(int i=0;i<table.Rows.Count;i++){
+				ListQueue[i].DateClaim      =PIn.PDate  (table.Rows[i][0].ToString());
+				ListQueue[i].ProvAbbr       =Providers.GetAbbr(PIn.PInt(table.Rows[i][1].ToString()));
+				ListQueue[i].PatName        =PIn.PString(table.Rows[i][2].ToString());
+				ListQueue[i].Carrier        =PIn.PString(table.Rows[i][3].ToString());
+				ListQueue[i].FeeBilled      =PIn.PDouble(table.Rows[i][4].ToString());
+				ListQueue[i].InsPayAmt      =PIn.PDouble(table.Rows[i][5].ToString());
+				ListQueue[i].ClaimNum       =PIn.PInt   (table.Rows[i][6].ToString());
+				ListQueue[i].ClaimPaymentNum=PIn.PInt   (table.Rows[i][7].ToString());
+			}
+		}
+
 		public static void Refresh(){
 			cmd.CommandText =
 				"SELECT * FROM claim"
 				+" WHERE patnum = '"+Patients.Cur.PatNum+"'"
 				+" ORDER BY dateservice";
-			RefreshAndFill();
-		}
-
-		public static void RefreshByCheck(int claimPaymentNum, bool showUnattached){
-			cmd.CommandText =
-				"SELECT * FROM claim WHERE claimstatus != 'A'";
-			if(claimPaymentNum==0){//new claim
-				if(showUnattached){
-					cmd.CommandText+=" && inspayamt > 0 && claimpaymentnum = '0'";
-				}
-				else{
-					List=new Claim[0];
-					return;
-				}
-			}
-			else{//existing claim
-				cmd.CommandText+=" && (claimpaymentnum = '"+claimPaymentNum+"'";
-				if(showUnattached){
-					cmd.CommandText+=" || (inspayamt > 0 && claimpaymentnum = '0'))";
-				}
-				else
-					cmd.CommandText+=")";
-			}
-			RefreshAndFill();
-		}
-
-		private static void RefreshAndFill(){
 			FillTable();
 			List=new Claim[table.Rows.Count];
 			HList=new Hashtable();
@@ -804,40 +1016,40 @@ namespace OpenDental{
 				List[i].ClaimFee     =		PIn.PDouble(table.Rows[i][8].ToString());
 				List[i].InsPayEst    =		PIn.PDouble(table.Rows[i][9].ToString());
 				List[i].InsPayAmt    =		PIn.PDouble(table.Rows[i][10].ToString());
-				List[i].ClaimPaymentNum=  PIn.PInt   (table.Rows[i][11].ToString());
-				List[i].DedApplied   =		PIn.PDouble(table.Rows[i][12].ToString());
-				List[i].OverMax      =		PIn.PDouble(table.Rows[i][13].ToString());
-				List[i].PreAuthString=		PIn.PString(table.Rows[i][14].ToString());
-				List[i].IsProsthesis =		PIn.PString(table.Rows[i][15].ToString());
-				List[i].PriorDate    =		PIn.PDate  (table.Rows[i][16].ToString());
-				List[i].ReasonUnderPaid=	PIn.PString(table.Rows[i][17].ToString());
-				List[i].ClaimNote    =		PIn.PString(table.Rows[i][18].ToString());
-				List[i].PriClaimNum  =		PIn.PInt   (table.Rows[i][19].ToString());
-				List[i].SecClaimNum  =		PIn.PInt   (table.Rows[i][20].ToString());
-				List[i].ClaimType    =    PIn.PString(table.Rows[i][21].ToString());
-				List[i].ProvBill     =		PIn.PInt   (table.Rows[i][22].ToString());
-				List[i].ReferringProv=		PIn.PInt   (table.Rows[i][23].ToString());
-				List[i].RefNumString =		PIn.PString(table.Rows[i][24].ToString());
-				List[i].PlaceService = (PlaceOfService)PIn.PInt(table.Rows[i][25].ToString());
-				List[i].AccidentRelated=	PIn.PString(table.Rows[i][26].ToString());
-				List[i].AccidentDate  =		PIn.PDate  (table.Rows[i][27].ToString());
-				List[i].AccidentST    =		PIn.PString(table.Rows[i][28].ToString());
-				List[i].EmployRelated=(YN)PIn.PInt(table.Rows[i][29].ToString());
-				List[i].IsOrtho       =		PIn.PBool  (table.Rows[i][30].ToString());
-				List[i].OrthoRemainM  =		PIn.PInt   (table.Rows[i][31].ToString());
-				List[i].OrthoDate     =		PIn.PDate  (table.Rows[i][32].ToString());
-				List[i].PatRelat      =(Relat)PIn.PInt(table.Rows[i][33].ToString());
+				List[i].DedApplied   =		PIn.PDouble(table.Rows[i][11].ToString());
+				List[i].PreAuthString=		PIn.PString(table.Rows[i][12].ToString());
+				List[i].IsProsthesis =		PIn.PString(table.Rows[i][13].ToString());
+				List[i].PriorDate    =		PIn.PDate  (table.Rows[i][14].ToString());
+				List[i].ReasonUnderPaid=	PIn.PString(table.Rows[i][15].ToString());
+				List[i].ClaimNote    =		PIn.PString(table.Rows[i][16].ToString());
+				List[i].ClaimType    =    PIn.PString(table.Rows[i][17].ToString());
+				List[i].ProvBill     =		PIn.PInt   (table.Rows[i][18].ToString());
+				List[i].ReferringProv=		PIn.PInt   (table.Rows[i][19].ToString());
+				List[i].RefNumString =		PIn.PString(table.Rows[i][20].ToString());
+				List[i].PlaceService = (PlaceOfService)PIn.PInt(table.Rows[i][21].ToString());
+				List[i].AccidentRelated=	PIn.PString(table.Rows[i][22].ToString());
+				List[i].AccidentDate  =		PIn.PDate  (table.Rows[i][23].ToString());
+				List[i].AccidentST    =		PIn.PString(table.Rows[i][24].ToString());
+				List[i].EmployRelated=(YN)PIn.PInt   (table.Rows[i][25].ToString());
+				List[i].IsOrtho       =		PIn.PBool  (table.Rows[i][26].ToString());
+				List[i].OrthoRemainM  =		PIn.PInt   (table.Rows[i][27].ToString());
+				List[i].OrthoDate     =		PIn.PDate  (table.Rows[i][28].ToString());
+				List[i].PatRelat      =(Relat)PIn.PInt(table.Rows[i][29].ToString());
+				List[i].PlanNum2      =   PIn.PInt   (table.Rows[i][30].ToString());
+				List[i].PatRelat2     =(Relat)PIn.PInt(table.Rows[i][31].ToString());
+				List[i].WriteOff      =   PIn.PDouble(table.Rows[i][32].ToString());
 				HList.Add(List[i].ClaimNum,List[i]);
 			}//end for
 		}
 
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO claim (patnum,dateservice,datesent,claimstatus,datereceived"
-				+",plannum,provtreat,claimfee,inspayest,inspayamt,ClaimPaymentnum,dedapplied,overmax"
+				+",plannum,provtreat,claimfee,inspayest,inspayamt,dedapplied"
 				+",preauthstring,isprosthesis,priordate,reasonunderpaid,claimnote"
-				+",priclaimnum,secclaimnum,claimtype,provbill,referringprov"
+				+",claimtype,provbill,referringprov"
 				+",refnumstring,placeservice,accidentrelated,accidentdate,accidentst"
-				+",employrelated,isortho,orthoremainm,orthodate,patrelat) VALUES("
+				+",employrelated,isortho,orthoremainm,orthodate,patrelat,plannum2"
+				+",patrelat2,writeoff) VALUES("
 				+"'"+POut.PInt   (Cur.PatNum)+"', "
 				+"'"+POut.PDate  (Cur.DateService)+"', "
 				+"'"+POut.PDate  (Cur.DateSent)+"', "
@@ -848,16 +1060,12 @@ namespace OpenDental{
 				+"'"+POut.PDouble(Cur.ClaimFee)+"', "
 				+"'"+POut.PDouble(Cur.InsPayEst)+"', "
 				+"'"+POut.PDouble(Cur.InsPayAmt)+"', "
-				+"'"+POut.PInt   (Cur.ClaimPaymentNum)+"', "
 				+"'"+POut.PDouble(Cur.DedApplied)+"', "
-				+"'"+POut.PDouble(Cur.OverMax)+"', "
 				+"'"+POut.PString(Cur.PreAuthString)+"', "
 				+"'"+POut.PString(Cur.IsProsthesis)+"', "
 				+"'"+POut.PDate  (Cur.PriorDate)+"', "
 				+"'"+POut.PString(Cur.ReasonUnderPaid)+"', "
 				+"'"+POut.PString(Cur.ClaimNote)+"', "
-				+"'"+POut.PInt   (Cur.PriClaimNum)+"', "
-				+"'"+POut.PInt   (Cur.SecClaimNum)+"', "
 				+"'"+POut.PString(Cur.ClaimType)+"', "
 				+"'"+POut.PInt   (Cur.ProvBill)+"', "
 				+"'"+POut.PInt   (Cur.ReferringProv)+"', "
@@ -870,7 +1078,10 @@ namespace OpenDental{
 				+"'"+POut.PBool  (Cur.IsOrtho)+"', "
 				+"'"+POut.PInt   (Cur.OrthoRemainM)+"', "
 				+"'"+POut.PDate  (Cur.OrthoDate)+"', "
-				+"'"+POut.PInt   ((int)Cur.PatRelat)+"')";
+				+"'"+POut.PInt   ((int)Cur.PatRelat)+"', "
+				+"'"+POut.PInt   (Cur.PlanNum2)+"', "
+				+"'"+POut.PInt   ((int)Cur.PatRelat2)+"', "
+				+"'"+POut.PDouble(Cur.WriteOff)+"')";
 			NonQ(true);
 			Cur.ClaimNum=InsertID;
 		}
@@ -887,16 +1098,12 @@ namespace OpenDental{
 				+",claimfee = '"       +POut.PDouble(Cur.ClaimFee)+"' "
 				+",inspayest = '"      +POut.PDouble(Cur.InsPayEst)+"' "
 				+",inspayamt = '"      +POut.PDouble(Cur.InsPayAmt)+"' "
-				+",ClaimPaymentnum = '"+POut.PInt (Cur.ClaimPaymentNum)+"' "
 				+",dedapplied = '"   +  POut.PDouble(Cur.DedApplied)+"' "
-				+",overmax = '"      +  POut.PDouble(Cur.OverMax)+"' "
 				+",preauthstring = '"+	POut.PString(Cur.PreAuthString)+"' "
 				+",isprosthesis = '" +	POut.PString(Cur.IsProsthesis)+"' "
 				+",priordate = '"    +	POut.PDate  (Cur.PriorDate)+"' "
 				+",reasonunderpaid = '"+POut.PString(Cur.ReasonUnderPaid)+"' "
 				+",claimnote = '"    +	POut.PString(Cur.ClaimNote)+"' "
-				+",priclaimnum = '"  +	POut.PInt   (Cur.PriClaimNum)+"' "
-				+",secclaimnum = '"  +	POut.PInt   (Cur.SecClaimNum)+"' "
 				+",claimtype='"      +	POut.PString(Cur.ClaimType)+"' "
 				+",provbill = '"     +	POut.PInt   (Cur.ProvBill)+"' "
 				+",referringprov = '"+	POut.PInt   (Cur.ReferringProv)+"' "
@@ -910,6 +1117,9 @@ namespace OpenDental{
 				+",orthoremainm = '" +	POut.PInt   (Cur.OrthoRemainM)+"' "
 				+",orthodate = '"    +	POut.PDate  (Cur.OrthoDate)+"' "
 				+",patrelat = '"     +	POut.PInt   ((int)Cur.PatRelat)+"' "
+				+",plannum2 = '"     +	POut.PInt   (Cur.PlanNum2)+"' "
+				+",patrelat2 = '"    +	POut.PInt   ((int)Cur.PatRelat2)+"' "
+				+",writeoff = '"     +	POut.PDouble(Cur.WriteOff)+"' "
 				+"WHERE claimnum = '"+	POut.PInt   (Cur.ClaimNum)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			NonQ(false);
@@ -922,14 +1132,8 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
-		public static void GetProcsInClaim(int myClaimNum){
-			ProcsInClaim=new ArrayList();
-			for(int i=0;i<Procedures.List.Length;i++){
-				if(Procedures.List[i].ClaimNum==myClaimNum){
-					ProcsInClaim.Add(Procedures.List[i]);
-				}
-			}
-		}
+		//public static void GetProcsInClaim(int myClaimNum){
+			//moved to claimprocs
 
 		public static void DetachProcsFromClaim(){
 			cmd.CommandText = "UPDATE procedurelog SET "
@@ -939,13 +1143,13 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
-		public static void DetachAllFromCheck(int myClaimPaymentNum){
+		/*public static void DetachAllFromCheck(int myClaimPaymentNum){
 			cmd.CommandText = "UPDATE claim SET "
 				+"ClaimPaymentNum = '0' "
 				+"WHERE claimpaymentNum = '"+myClaimPaymentNum+"'";
 			//MessageBox.Show(cmd.CommandText);
 			NonQ(false);
-		}
+		}*/
 
 		/*public double GetFee(int myClaimNum){
 			//not in use anymore.  Only here for example for later
@@ -971,53 +1175,8 @@ namespace OpenDental{
 			return 0;
 		}*/
 
-		public static void PutBalIns(DateTime date, double est, double pay){
-			/*
-			est=(double)Math.Round(est,2);
-			pay=(double)Math.Round(pay,2);
-			Ledgers Ledgers2=new Ledgers();
-			Ledgers2.Refresh(Patients.Cur.PatNum);
-			DateTime monthYear;
-			monthYear=new DateTime(date.Year,date.Month,1);//eg 3/1/03
-			if(Ledgers.HList.ContainsKey(monthYear.Date)){
-				Ledgers.Cur=(Ledger)Ledgers.HList[monthYear.Date];
-				Ledgers.Cur.InsEst+=est;
-				Ledgers.Cur.ClaimPays+=pay;
-				Ledgers2.UpdateCur();
-			}
-			else{
-				Ledgers.Cur=new Ledger();
-				Ledgers.Cur.PatNum=Patients.Cur.PatNum;
-				Ledgers.Cur.MonthYear=monthYear;
-				Ledgers.Cur.InsEst=est;
-				Ledgers.Cur.ClaimPays=pay;
-				Ledgers2.SaveCur();
-			}*/
-			//?
-		}
-
-		/*public void PutBalEst(DateTime date, double amt){
-			amt=(double)Math.Round(amt,2);
-			//MessageBox.Show(amt.ToString());
-			Ledgers Ledgers2=new Ledgers();
-			DateTime monthYear;
-			monthYear=new DateTime(date.Year,date.Month,1);//eg 3/1/03
-			if(Ledgers.HList.ContainsKey(monthYear.Date)){
-				Ledgers.Cur=(Ledger)Ledgers.HList[monthYear.Date];
-				Ledgers.Cur.InsEst+=amt;
-				Ledgers2.UpdateCur();
-			}
-			else{
-				Ledgers.Cur=new Ledger();
-				Ledgers.Cur.PatNum=Patients.Cur.PatNum;
-				Ledgers.Cur.MonthYear=monthYear;
-				Ledgers.Cur.InsEst=amt;
-				Ledgers2.SaveCur();
-			}
-			Ledgers2.Refresh();//?
-		}*/
-
-		public static double ComputeBal(){//must make sure Refresh is done first
+		/*public static double ComputeBal(){//must make sure Refresh is done first
+			this has all been moved to claimprocs
 			double retVal=0;
 			double pat;
 			//for(int i=0;i<Ledgers.List.Length;i++){
@@ -1044,27 +1203,27 @@ namespace OpenDental{
 				else{
 					pat=List[i].ClaimFee-List[i].InsPayEst;
 				}
-				if(List[i].ClaimNum==List[i].PriClaimNum){//is pri claim
-					if(List[i].SecClaimNum==0){//no sec claim exists
-						retVal+=pat;
-					}
-				}
-				else{//sec claim
-					if(((Claim)HList[List[i].PriClaimNum]).ClaimStatus=="R"){
-						pat-=((Claim)HList[List[i].PriClaimNum]).InsPayAmt;
-					}
-					else{
-						pat-=((Claim)HList[List[i].PriClaimNum]).InsPayEst;
-					}
-					retVal+=pat;
-				}
+				//if(List[i].ClaimNum==List[i].PriClaimNum){//is pri claim
+				//	if(List[i].SecClaimNum==0){//no sec claim exists
+				//		retVal+=pat;
+				//	}
+				//}
+				//else{//sec claim
+				//	if(((Claim)HList[List[i].PriClaimNum]).ClaimStatus=="R"){
+				//		pat-=((Claim)HList[List[i].PriClaimNum]).InsPayAmt;
+				//	}
+				//	else{
+				//		pat-=((Claim)HList[List[i].PriClaimNum]).InsPayEst;
+				//	}
+				//	retVal+=pat;
+				//}
 			}
 			return retVal;
-		}
+		}*/
 
 		public static void GetQueueList(){
 			cmd.CommandText =
-				"SELECT T1.claimnum,T2.claimformat,concat(T3.lname,', ',T3.fname,' ',T3.middlei)"
+				"SELECT T1.claimnum,T2.nosendelect,concat(T3.lname,', ',T3.fname,' ',T3.middlei)"
 				+",T1.claimstatus,T2.Carrier,T3.patnum "
 				+"FROM claim as T1 "
 				+"Left join insplan as T2 on T1.plannum = T2.plannum "
@@ -1075,7 +1234,7 @@ namespace OpenDental{
 			ListQueue=new QueueItem[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
 				ListQueue[i].ClaimNum   = PIn.PInt   (table.Rows[i][0].ToString());
-				ListQueue[i].ClaimFormat= PIn.PInt   (table.Rows[i][1].ToString());
+				ListQueue[i].NoSendElect= PIn.PBool  (table.Rows[i][1].ToString());
 				ListQueue[i].PatName    = PIn.PString(table.Rows[i][2].ToString());
 				ListQueue[i].ClaimStatus= PIn.PString(table.Rows[i][3].ToString());
 				ListQueue[i].Carrier    = PIn.PString(table.Rows[i][4].ToString());
@@ -1095,27 +1254,29 @@ namespace OpenDental{
 	public struct Claim{
 		public int ClaimNum;//primary key
 		public int PatNum;//foreign key to Patient.PatNum
-		public DateTime DateService;//Only one date of service allowed
+		public DateTime DateService;//procedures might have different dates
 		public DateTime DateSent;
-		public string ClaimStatus;//single char: U,H,W,P,S,R, or A.
-		//Unsent,Hold until pri received,Waiting in queue,Probably sent,Sent,Received,Ajustment 
+		public string ClaimStatus;//single char: U,H,W,P,S,or R. A(adj) is no longer used
+		//Unsent,Hold until pri received,Waiting in queue,Probably sent,Sent,Received 
 		public DateTime DateReceived;
 		public int PlanNum;//foreign key to InsPlan.PlanNum
 		public int ProvTreat;//foreign key to Provider.ProvNum.  Treating provider.
 		public double ClaimFee;//total fee of claim
 		public double InsPayEst;//amount insurance is estimated to pay on this claim
 		public double InsPayAmt;//amount insurance actually paid.
-		public int ClaimPaymentNum;//foreign key to ClaimPayment.ClaimPaymentNum
+		//public int ClaimPaymentNum;//Dropped in version 2.1
 		public double DedApplied;//deductible applied to this claim
-		public double OverMax;//amount over annual max
+		//public double OverMax;//Dropped in version 2.1
 		public string PreAuthString;//The preauth number received from ins.
 		public string IsProsthesis;//single char for No, Initial, or Replacement
 		public DateTime PriorDate;//date prior prosthesis was placed
-		public string ReasonUnderPaid;//note for why insurance didn't pay as expected
+		public string ReasonUnderPaid;//note for patient for why insurance didn't pay as expected.
 		public string ClaimNote;//note to be sent to insurance
-		public int PriClaimNum;//ClaimNum of primary claim. If ClaimNum=PriClaimNum, then this is a primary claim
-		public int SecClaimNum;//ClaimNum of secondary claim. If ClaimNum=SecClaimNum, then this is a sec claim
-		public string ClaimType;//"PreAuth" if preauthorization.  Other types later. Probably "P","S","Other"
+		//public int PriClaimNum;//Dropped in version 2.1.
+		//public int SecClaimNum;//Dropped in version 2.1.
+		public string ClaimType;//"PreAuth"=preauth, "P"=primary, "S"=secondary, or "Other"=other
+			//ClaimType is the new way of determining claimtype. Not allowed to be blank. The update 
+			//for version 2.1 added P or S to all existing claims.
 		public int ProvBill;//foreign key to Provider.ProvNum .  Billing provider
 		public int ReferringProv;//foreign key to Referral.ReferralNum;
 		public string RefNumString;//referral number
@@ -1128,44 +1289,241 @@ namespace OpenDental{
 		public bool IsOrtho;
 		public int OrthoRemainM;//Remaining months 1-36.
 		public DateTime OrthoDate;//Date ortho appliance placed
-		public Relat PatRelat;//Relationship to subscriber. ONLY for preauth claims for now.
-			//enum Relat{Self=0,Spouse=1,Child=2,Employee=3,HandicapDep=4,SignifOther=5,InjuredPlaintiff=6
-			//,LifePartner=7,Dependent=8}
+		public Relat PatRelat;//Relationship to subscriber. You no longer have to look in patient.
+			//enum Relat{Self=0,Spouse=1,Child=2,Employee=3,HandicapDep=4,SignifOther=5
+			//,InjuredPlaintiff=6,LifePartner=7,Dependent=8}
+		//the next 2 fields now provide the user with total control over what other cov shows:
+		//This obviously limits the coverage to two insurance companies
+		public int PlanNum2;//foreign key to InsPlan.PlanNum for other coverage.  0 if none.
+		public Relat PatRelat2;//enum Relat.  for other coverage
+		public double WriteOff;//Sum of ClaimProc.Writeoff for this claim
 	}//end struct Claim
 
 	public struct QueueItem{//not a database table
+		//used in claims waiting tool, and in the Claim Check Edit window.
 		public int ClaimNum;
-		public int ClaimFormat;
+		public bool NoSendElect;
 		public string PatName;
 		public string ClaimStatus;
 		public string Carrier;
 		public int PatNum;
+		public DateTime DateClaim;
+		public string ProvAbbr;
+		public double FeeBilled;
+		public double InsPayAmt;
+		public int ClaimPaymentNum;
 	}//end struct QueueItem
+
+/*=========================================================================================
+		=================================== class ClaimForms ==========================================*/
+
+	public class ClaimForms:DataClass{
+		///<summary>List of all claim forms.</summary>
+		public static ClaimForm[] ListLong;
+		///<summary>List of all claim forms except those marked as hidden.</summary>
+		public static ClaimForm[] ListShort;
+		public static ClaimForm Cur;
+
+		public static void Refresh(){
+			cmd.CommandText =
+				"SELECT * FROM claimform";
+			FillTable();
+			ListLong=new ClaimForm[table.Rows.Count];
+			ArrayList tempAL=new ArrayList();
+			for(int i=0;i<table.Rows.Count;i++){
+				ListLong[i].ClaimFormNum= PIn.PInt   (table.Rows[i][0].ToString());
+				ListLong[i].Description = PIn.PString(table.Rows[i][1].ToString());
+				ListLong[i].IsHidden    = PIn.PBool  (table.Rows[i][2].ToString());
+				ListLong[i].FontName    = PIn.PString(table.Rows[i][3].ToString());
+				ListLong[i].FontSize    = PIn.PFloat (table.Rows[i][4].ToString());
+				ListLong[i].UniqueID    = PIn.PInt   (table.Rows[i][5].ToString());
+				if(!ListLong[i].IsHidden)
+					tempAL.Add(ListLong[i]);
+			}
+			ListShort=new ClaimForm[tempAL.Count];
+			for(int i=0;i<ListShort.Length;i++){
+				ListShort[i]=(ClaimForm)tempAL[i];
+			}
+		}
+
+		public static void InsertCur(){
+			cmd.CommandText = "INSERT INTO claimform (description,ishidden,fontname,fontsize"
+				+",uniqueid) VALUES("
+				+"'"+POut.PString(Cur.Description)+"', "
+				+"'"+POut.PBool  (Cur.IsHidden)+"', "
+				+"'"+POut.PString(Cur.FontName)+"', "
+				+"'"+POut.PFloat (Cur.FontSize)+"', "
+				+"'"+POut.PInt   (Cur.UniqueID)+"')";
+			//MessageBox.Show(cmd.CommandText);
+			NonQ(true);
+			Cur.ClaimFormNum=InsertID;
+		}
+
+		public static void UpdateCur(){
+			cmd.CommandText = "UPDATE claimform SET "
+				+"description = '" +POut.PString(Cur.Description)+"' "
+				+",ishidden = '"    +POut.PBool  (Cur.IsHidden)+"' "
+				+",fontname = '"    +POut.PString(Cur.FontName)+"' "
+				+",fontsize = '"    +POut.PFloat (Cur.FontSize)+"' "
+				+",uniqueid = '"    +POut.PInt   (Cur.UniqueID)+"' "
+				+"WHERE ClaimFormNum = '"+POut.PInt   (Cur.ClaimFormNum)+"'";
+			//MessageBox.Show(cmd.CommandText);
+			NonQ(false);
+		}
+
+		public static void SetCur(int claimFormNum){
+			for(int i=0;i<ListLong.Length;i++){
+				if(ListLong[i].ClaimFormNum==claimFormNum){
+					Cur=ListLong[i];
+					return;
+				}
+			}
+			MessageBox.Show("Error. Could not locate Claim Form.");
+		}
+
+
+	}
+
+	///<summary>Table claimform. Stores the information for printing a claim form.</summary>
+	public struct ClaimForm{
+		///<summary>Primary key.</summary>
+		public int ClaimFormNum;
+		///<summary>eg. ADA2002 or CA Medicaid</summary>
+		public string Description;
+		///<summary>If true, then it will not be displayed in various claim form lists as a choice.</summary>
+		public bool IsHidden;
+		///<summary>Valid font name for all text on the form.</summary>
+		public string FontName;
+		///<summary>Font size for all text on the form.</summary>
+		public float FontSize;
+		///<summary>Assigned by us for maintenance purposes. Do not change.
+		///Will be 0 for claim forms added by user, protecting them from being changed by us.</summary>
+		public int UniqueID;
+	}
+
+	/*=========================================================================================
+		=================================== class ClaimFormItems ==========================================*/
+
+	public class ClaimFormItems:DataClass{
+		public static ClaimFormItem[] List;
+		public static ClaimFormItem Cur;
+		public static ClaimFormItem[] ListForForm;
+
+		public static void Refresh(){
+			cmd.CommandText =
+				"SELECT * FROM claimformitem";
+			FillTable();
+			List=new ClaimFormItem[table.Rows.Count];
+			for(int i=0;i<table.Rows.Count;i++){
+				List[i].ClaimFormItemNum= PIn.PInt   (table.Rows[i][0].ToString());
+				List[i].ClaimFormNum    = PIn.PInt   (table.Rows[i][1].ToString());
+				List[i].ImageFileName   = PIn.PString(table.Rows[i][2].ToString());
+				List[i].FieldName       = PIn.PString(table.Rows[i][3].ToString());
+				List[i].FormatString    = PIn.PString(table.Rows[i][4].ToString());
+				List[i].XPos            = PIn.PFloat (table.Rows[i][5].ToString());
+				List[i].YPos            = PIn.PFloat (table.Rows[i][6].ToString());
+				List[i].Width           = PIn.PFloat (table.Rows[i][7].ToString());
+				List[i].Height          = PIn.PFloat (table.Rows[i][8].ToString());
+			}
+		}
+
+		public static void InsertCur(){
+			cmd.CommandText = "INSERT INTO claimformitem (claimformnum,imagefilename,fieldname,formatstring"
+				+",xpos,ypos,width,height) VALUES("
+				+"'"+POut.PInt   (Cur.ClaimFormNum)+"', "
+				+"'"+POut.PString(Cur.ImageFileName)+"', "
+				+"'"+POut.PString(Cur.FieldName)+"', "
+				+"'"+POut.PString(Cur.FormatString)+"', "
+				+"'"+POut.PFloat (Cur.XPos)+"', "
+				+"'"+POut.PFloat (Cur.YPos)+"', "
+				+"'"+POut.PFloat (Cur.Width)+"', "
+				+"'"+POut.PFloat (Cur.Height)+"')";
+			//MessageBox.Show(cmd.CommandText);
+			NonQ(true);
+			Cur.ClaimFormItemNum=InsertID;
+		}
+
+		public static void UpdateCur(){
+			cmd.CommandText = "UPDATE claimformitem SET "
+				+"claimformnum = '" +POut.PInt   (Cur.ClaimFormNum)+"' "
+				+",imagefilename = '"+POut.PString(Cur.ImageFileName)+"' "
+				+",fieldname = '"    +POut.PString(Cur.FieldName)+"' "
+				+",formatstring = '" +POut.PString(Cur.FormatString)+"' "
+				+",xpos = '"         +POut.PFloat (Cur.XPos)+"' "
+				+",ypos = '"         +POut.PFloat (Cur.YPos)+"' "
+				+",width = '"        +POut.PFloat (Cur.Width)+"' "
+				+",height = '"       +POut.PFloat (Cur.Height)+"' "
+				+"WHERE ClaimFormItemNum = '"+POut.PInt   (Cur.ClaimFormItemNum)+"'";
+			//MessageBox.Show(cmd.CommandText);
+			NonQ(false);
+		}
+
+		public static void DeleteCur(){
+			cmd.CommandText = "DELETE FROM claimformitem "
+				+"WHERE ClaimFormItemNum = '"+POut.PInt(Cur.ClaimFormItemNum)+"'";
+			//MessageBox.Show(cmd.CommandText);
+			NonQ(false);
+		}
+
+		public static void GetListForForm(){
+			ArrayList tempAL=new ArrayList();
+			for(int i=0;i<List.Length;i++){
+				if(List[i].ClaimFormNum==ClaimForms.Cur.ClaimFormNum){
+					tempAL.Add(List[i]);
+				}
+			}
+			ListForForm=new ClaimFormItem[tempAL.Count];
+			tempAL.CopyTo(ListForForm);
+		}
+
+
+	}
+
+	public struct ClaimFormItem{//table claimformitem.
+		public int ClaimFormItemNum;
+		public int ClaimFormNum;//foreign key to ClaimForm.
+		public string ImageFileName;//eg ADA2002.emf
+		public string FieldName;//one of the available fieldnames for claims
+		public string FormatString;//usage not finalized yet
+		public float XPos;//the x position of the item on the claim form
+		public float YPos;//the y position
+		public float Width;//limits the printable area of the item
+		public float Height;
+	}
 
 	/*=========================================================================================
 		=================================== class ClaimPayments ==========================================*/
 	public class ClaimPayments:DataClass{
 		public static ClaimPayment[] List;
 		public static ClaimPayment Cur;
-		
-		public static void GetCheck(int claimPaymentNum){
+
+		public static void GetForClaim(){	
+		//public static void GetCheck(int claimPaymentNum){
 			cmd.CommandText =
-				"SELECT * FROM claimpayment"
-				+" WHERE ClaimPaymentnum = '"+claimPaymentNum+"'";
+				"SELECT claimpayment.claimpaymentnum,claimpayment.checkdate,SUM(claimproc.inspayamt)"
+				//claimpayment.checkamt"
+				+",claimpayment.checknum,claimpayment.bankbranch,claimpayment.note"
+				+" FROM claimpayment,claimproc"
+				+" WHERE claimpayment.claimpaymentnum = claimproc.claimpaymentnum"
+				+" && claimproc.claimnum = '"+Claims.Cur.ClaimNum.ToString()+"'"
+				+" GROUP BY claimpayment.claimpaymentnum,claimproc.claimnum";
+				//+" WHERE ClaimPaymentnum = '"+claimPaymentNum+"'";
 			FillTable();
 			List=new ClaimPayment[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
 				List[i].ClaimPaymentNum= PIn.PInt   (table.Rows[i][0].ToString());
 				List[i].CheckDate    = PIn.PDate  (table.Rows[i][1].ToString());
+				//warning.  This is not the actual amount of the check, but only of a portion of it
 				List[i].CheckAmt     = PIn.PDouble(table.Rows[i][2].ToString());
 				List[i].CheckNum     = PIn.PString(table.Rows[i][3].ToString());
 				List[i].BankBranch   = PIn.PString(table.Rows[i][4].ToString());
 				List[i].Note         = PIn.PString(table.Rows[i][5].ToString());
 			}
-			if(List.Length==1)
-				Cur=List[0];
-			else
-				Cur=new ClaimPayment();
+			//MessageBox.Show(List.Length.ToString()+cmd.CommandText);
+			//if(List.Length==1)
+			//	Cur=List[0];
+			//else
+			//	Cur=new ClaimPayment();
 		}
 
 		public static void InsertCur(){
@@ -1211,12 +1569,13 @@ namespace OpenDental{
 	}//end struct ClaimPayment
 
 	/*=========================================================================================
-	=================================== class ClaimProc ===========================================*/
+	=================================== class ClaimProcs ===========================================*/
 
 	public class ClaimProcs:DataClass{
 		public static ClaimProc Cur;
 		public static ClaimProc[] List;//all for Patients.Cur
-		public static ArrayList ForClaim;//ClaimProcs for Claims.Cur.ClaimNum
+		public static ClaimProc[] ForClaim;//ClaimProcs for Claims.Cur.ClaimNum
+		//public static ArrayList ProcsInClaim;//AL of Procedures
 
 		public static void Refresh(){
 			cmd.CommandText =
@@ -1225,38 +1584,66 @@ namespace OpenDental{
 			FillTable();
 			List=new ClaimProc[table.Rows.Count];
 			for(int i = 0;i<List.Length;i++){
-				List[i].ClaimProcNum = PIn.PInt   (table.Rows[i][0].ToString());
-				List[i].ProcNum      = PIn.PInt   (table.Rows[i][1].ToString());
-				List[i].ClaimNum     = PIn.PInt   (table.Rows[i][2].ToString());	
-				List[i].PatNum       = PIn.PInt   (table.Rows[i][3].ToString());			
-			}
-		}
-   
-		public static void GetForClaim(){
-			ForClaim=new ArrayList();
-			for(int i=0;i<List.Length;i++){
-				if(List[i].ClaimNum==Claims.Cur.ClaimNum){
-					ForClaim.Add(List[i]);  
-				}
+				List[i].ClaimProcNum   = PIn.PInt   (table.Rows[i][0].ToString());
+				List[i].ProcNum        = PIn.PInt   (table.Rows[i][1].ToString());
+				List[i].ClaimNum       = PIn.PInt   (table.Rows[i][2].ToString());	
+				List[i].PatNum         = PIn.PInt   (table.Rows[i][3].ToString());
+				List[i].ProvNum        = PIn.PInt   (table.Rows[i][4].ToString());
+				List[i].FeeBilled      = PIn.PDouble(table.Rows[i][5].ToString());
+				List[i].InsPayEst      = PIn.PDouble(table.Rows[i][6].ToString());
+				List[i].DedApplied     = PIn.PDouble(table.Rows[i][7].ToString());
+				List[i].Status         = (ClaimProcStatus)PIn.PInt(table.Rows[i][8].ToString());
+				List[i].InsPayAmt      = PIn.PDouble(table.Rows[i][9].ToString());
+				List[i].Remarks        = PIn.PString(table.Rows[i][10].ToString());
+				List[i].ClaimPaymentNum= PIn.PInt   (table.Rows[i][11].ToString());
+				List[i].PlanNum        = PIn.PInt   (table.Rows[i][12].ToString());
+				List[i].DateCP         = PIn.PDate  (table.Rows[i][13].ToString());
+				List[i].WriteOff       = PIn.PDouble(table.Rows[i][14].ToString());
+				List[i].CodeSent       = PIn.PString(table.Rows[i][15].ToString());
 			}
 		}
 
 		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO claimproc (procnum,claimnum,patnum) "
-				+"VALUES ("
+			cmd.CommandText = "INSERT INTO claimproc (procnum,claimnum,patnum,provnum"
+				+",feebilled,inspayest,dedapplied,status,inspayamt,remarks,claimpaymentnum"
+				+",plannum,datecp,writeoff,codesent) VALUES ("
 				+"'"+POut.PInt   (Cur.ProcNum)+"', "
 				+"'"+POut.PInt   (Cur.ClaimNum)+"', "
-				+"'"+POut.PInt   (Cur.PatNum)+"')";
+				+"'"+POut.PInt   (Cur.PatNum)+"', "
+				+"'"+POut.PInt   (Cur.ProvNum)+"', "
+				+"'"+POut.PDouble(Cur.FeeBilled)+"', "
+				+"'"+POut.PDouble(Cur.InsPayEst)+"', "
+				+"'"+POut.PDouble(Cur.DedApplied)+"', "
+				+"'"+POut.PInt   ((int)Cur.Status)+"', "
+				+"'"+POut.PDouble(Cur.InsPayAmt)+"', "
+				+"'"+POut.PString(Cur.Remarks)+"', "
+				+"'"+POut.PInt   (Cur.ClaimPaymentNum)+"', "
+				+"'"+POut.PInt   (Cur.PlanNum)+"', "
+				+"'"+POut.PDate  (Cur.DateCP)+"', "
+				+"'"+POut.PDouble(Cur.WriteOff)+"', "
+				+"'"+POut.PString(Cur.CodeSent)+"')";
 			//MessageBox.Show(cmd.CommandText);
 			NonQ(true);
 			Cur.ClaimProcNum=InsertID;
 		}
 
 		public static void UpdateCur(){
-			cmd.CommandText = "UPDATE procedurelog SET "
-				+"procnum = '" +POut.PInt(Cur.ProcNum)+"'"
-				+",claimnum = '"+POut.PInt(Cur.ClaimNum)+"' "
-				+",patnum = '"  +POut.PInt(Cur.PatNum)+"'"
+			cmd.CommandText = "UPDATE claimproc SET "
+				+"procnum = '"        +POut.PInt   (Cur.ProcNum)+"'"
+				+",claimnum = '"      +POut.PInt   (Cur.ClaimNum)+"' "
+				+",patnum = '"        +POut.PInt   (Cur.PatNum)+"'"
+				+",provnum = '"       +POut.PInt   (Cur.ProvNum)+"'"
+				+",feebilled = '"     +POut.PDouble(Cur.FeeBilled)+"'"
+				+",inspayest = '"     +POut.PDouble(Cur.InsPayEst)+"'"
+				+",dedapplied = '"    +POut.PDouble(Cur.DedApplied)+"'"
+				+",status = '"        +POut.PInt   ((int)Cur.Status)+"'"
+				+",inspayamt = '"     +POut.PDouble(Cur.InsPayAmt)+"'"
+				+",remarks = '"       +POut.PString(Cur.Remarks)+"'"
+				+",claimpaymentnum= '"+POut.PInt   (Cur.ClaimPaymentNum)+"'"
+				+",plannum= '"        +POut.PInt   (Cur.PlanNum)+"'"
+				+",datecp= '"         +POut.PDate  (Cur.DateCP)+"'"
+				+",writeoff= '"       +POut.PDouble(Cur.WriteOff)+"'"
+				+",codesent= '"       +POut.PString(Cur.CodeSent)+"'"
 				+" WHERE claimprocnum = '"+POut.PInt (Cur.ClaimProcNum)+"'";
 			NonQ(false);
 		}
@@ -1266,14 +1653,130 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
-	}//end class ClaimProcs
+		public static void GetForClaim(){
+			//MessageBox.Show(List.Length.ToString());
+			ArrayList ALForClaim=new ArrayList();
+			for(int i=0;i<List.Length;i++){
+				if(List[i].ClaimNum==Claims.Cur.ClaimNum){
+					ALForClaim.Add(List[i]);  
+				}
+			}
+			ForClaim=new ClaimProc[ALForClaim.Count];
+			for(int i=0;i<ALForClaim.Count;i++){
+				ForClaim[i]=(ClaimProc)ALForClaim[i];
+			}
+		}
 
-	public struct ClaimProc{//table claimproc.  Links supplemental claims to procedures.
+		public static bool ProcIsAttached(int procNum){
+			//used in ProcEdit, and ContrAcct
+			for(int i=0;i<List.Length;i++){
+				if(List[i].ProcNum==procNum && List[i].Status!=ClaimProcStatus.Preauth){
+					return true;
+				}
+			}
+			return false;
+		}
+
+		public static bool ProcIsSent(int procNum){
+			//Warning: In the future, the claim.hlist might not be already loaded and available.
+			for(int i=0;i<List.Length;i++){
+				if(List[i].ProcNum==procNum){
+					if(((Claim)Claims.HList[List[i].ClaimNum]).ClaimStatus != "U"//not unsent
+						&& ((Claim)Claims.HList[List[i].ClaimNum]).ClaimStatus != "H"){//not hold
+						//must be sent
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
+		public static bool ProcIsPaid(int procNum){
+			for(int i=0;i<List.Length;i++){
+				if(List[i].ProcNum==procNum
+					&& List[i].InsPayAmt > 0//ins paid
+					&& List[i].Status!=ClaimProcStatus.Preauth){
+					return true;
+				}
+			}
+			return false;
+		}
+
+		public static void DetachAllFromCheck(int claimPaymentNum){
+			cmd.CommandText = "UPDATE claimproc SET "
+				+"ClaimPaymentNum = '0' "
+				+"WHERE claimpaymentNum = '"+claimPaymentNum+"'";
+			//MessageBox.Show(cmd.CommandText);
+			NonQ(false);
+		}
+
+		public static void SetForClaim(int claimNum,int claimPaymentNum,bool setAttached){
+			cmd.CommandText = "UPDATE claimproc SET ClaimPaymentNum = ";
+			if(setAttached){
+				cmd.CommandText+="'"+claimPaymentNum+"' ";
+			}
+			else{
+				cmd.CommandText+="'0' ";
+			}
+			cmd.CommandText+="WHERE claimnum = '"+claimNum+"' && "
+				+"inspayamt > 0 && ("
+				+"claimpaymentNum = '"+claimPaymentNum+"' || claimpaymentNum = '0')";
+			//MessageBox.Show(cmd.CommandText);
+			NonQ(false);
+		}
+
+		public static double ComputeBal(){//must make sure Refresh is done first
+			double retVal=0;
+			//double pat;
+			for(int i=0;i<List.Length;i++){
+				if(List[i].Status==ClaimProcStatus.Adjustment){
+					continue;//claim adjustments do not affect patient balance
+				}
+				if(List[i].Status==ClaimProcStatus.Preauth){
+					continue;//preauthorizations do not affect patient balance
+				}
+				if(List[i].Status==ClaimProcStatus.Received
+					|| List[i].Status==ClaimProcStatus.Supplemental){//because supplemental are always received
+					retVal-=List[i].InsPayAmt;
+				}
+				else{
+					retVal-=List[i].InsPayEst;
+				}
+				retVal-=List[i].WriteOff;
+			}
+			return retVal;
+		}
+
+
+	}
+
+	public struct ClaimProc{//table claimproc.  
+		//Links procedures to claims.
+		//Also links ins payments to procedures or claims
+		//Warning-One proc might be linked twice to a given claim if insurance made two payments.
+		//Many of the important fields are actually optional.  For instance, ProcNum is only 
+		//required if itemizing ins payment, and ClaimNum is blank if Status=A.
 		public int ClaimProcNum;//primary key
 		public int ProcNum;//foreign key to procedurelog.ProcNum
 		public int ClaimNum;//foreign key to Claim.ClaimNum.  
 		public int PatNum;//foreign key to Patient.PatNum
-	}//end struct procedure
+		//new fields:
+		public int ProvNum;//foreign key to Provider.ProvNum
+		public double FeeBilled;//might not be the same as the actual fee
+		public double InsPayEst;//amount this carrier is expected to pay.
+		public double DedApplied;//deductible applied to this procedure only.
+		public ClaimProcStatus Status;//enum ClaimProcStatus
+					//{NotReceived=0,Received,Preauth,Adjustment,Supplemental=4}
+		public double InsPayAmt;//amount insurance actually paid
+		public string Remarks;//The remarks that insurance sends about procedures.
+		public int ClaimPaymentNum;//foreign key to ClaimPayment.ClaimPaymentNum(the insurance check)
+		public int PlanNum;//foreign key to insplan.PlanNum
+		public DateTime DateCP;//especially useful for adjustments and balance.
+			//For payments, MUST be date of treatment, not payment, to properly track annual benefits.
+		public Double WriteOff;//amount not covered by ins which is written off
+		public string CodeSent;//valid ADA code already trimmed to 5 char or alternate code.
+			//Blank not allowed if is procedure.
+	}
 
 	/*=========================================================================================
 	=================================== class Commlogs ==========================================*/
@@ -1419,11 +1922,79 @@ namespace OpenDental{
 	}
 
 	/*=========================================================================================
+		=================================== class Contacts ==========================================*/
+
+	public class Contacts:DataClass{
+		public static Contact Cur;
+		public static Contact[] List;//for one category only. Not refreshed with local data
+		//public static Contact[] ListForCat;
+
+		public static void Refresh(int category){
+			cmd.CommandText =
+				"SELECT * from contact WHERE category = '"+category+"'"
+				+" ORDER BY LName";
+			FillTable();
+			List = new Contact[table.Rows.Count];
+			for(int i=0;i<List.Length;i++){
+				List[i].ContactNum = PIn.PInt   (table.Rows[i][0].ToString());
+				List[i].LName      = PIn.PString(table.Rows[i][1].ToString());
+				List[i].FName      = PIn.PString(table.Rows[i][2].ToString());
+				List[i].WkPhone    = PIn.PString(table.Rows[i][3].ToString());
+				List[i].Fax        = PIn.PString(table.Rows[i][4].ToString());
+				List[i].Category   = PIn.PInt   (table.Rows[i][5].ToString());
+				List[i].Notes      = PIn.PString(table.Rows[i][6].ToString());
+			}
+		}
+
+		public static void InsertCur(){
+			cmd.CommandText = "INSERT INTO contact (lname,fname,wkphone,fax,category,"
+				+"notes) VALUES("
+				+"'"+POut.PString(Cur.LName)+"', "
+				+"'"+POut.PString(Cur.FName)+"', "
+				+"'"+POut.PString(Cur.WkPhone)+"', "
+				+"'"+POut.PString(Cur.Fax)+"', "
+				+"'"+POut.PInt   (Cur.Category)+"', "
+				+"'"+POut.PString(Cur.Notes)+"')";
+			NonQ(false);
+		}
+
+		public static void UpdateCur(){
+			cmd.CommandText = "UPDATE contact SET "
+				+"lname = '"    +POut.PString(Cur.LName)+"' "
+				+",fname = '"   +POut.PString(Cur.FName)+"' "
+				+",wkphone = '" +POut.PString(Cur.WkPhone)+"' "
+				+",fax = '"     +POut.PString(Cur.Fax)+"' "
+				+",category = '"+POut.PInt   (Cur.Category)+"' "
+				+",notes = '"   +POut.PString(Cur.Notes)+"' "
+				+"WHERE contactnum = '"+POut.PInt  (Cur.ContactNum)+"'";
+			//MessageBox.Show(cmd.CommandText);
+			NonQ(false);
+		}
+
+		public static void DeleteCur(){
+			cmd.CommandText = "DELETE FROM contact WHERE contactnum = '"+Cur.ContactNum.ToString()+"'";
+			NonQ(false);
+		}
+
+	}
+
+	public struct Contact{//table contact
+		public int ContactNum;//primary key
+		public string LName;
+		public string FName;//optional
+		public string WkPhone;
+		public string Fax;
+		public int Category;//foreign key to Definitions.DefNum
+		public string Notes;
+	}
+
+	/*=========================================================================================
 		=================================== class CovPats ==========================================*/
 
 	public class CovPats:DataClass{
-		public static int[] PriList;
-		public static int[] SecList;
+		//the first two are the usual lists of interest
+		public static int[] PriList;//filled during refresh
+		public static int[] SecList;//filled during refresh
 		public static CovPat[] List;
 		public static CovPat Cur;
 		public static CovPat[] ListForPlan;
@@ -1472,6 +2043,19 @@ namespace OpenDental{
 					}
 				}
 			}
+			//flat copay ins plans are always 100% coverage regardless of any percentages present.
+			InsPlans.GetCur(Patients.Cur.PriPlanNum);
+			if(InsPlans.Cur.PlanType=="f"){//flat copay
+				for(int i=0;i<PriList.Length;i++){
+					PriList[i]=100;//sets all 6 or so categories for this patient to 100%
+				}
+			}
+			InsPlans.GetCur(Patients.Cur.SecPlanNum);
+			if(InsPlans.Cur.PlanType=="f"){//flat copay
+				for(int i=0;i<SecList.Length;i++){
+					SecList[i]=100;//sets all 6 or so categories for this patient to 100%
+				}
+			}
 		}//end method refresh 
 		
 		public static void RefreshForPlan(){
@@ -1518,10 +2102,10 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
-		public static void DeleteAllInCurPlan(){
-			cmd.CommandText = "DELETE FROM covpat WHERE plannum = '"+InsPlans.Cur.PlanNum.ToString()+"'";
-			NonQ(false);
-		}
+		//public static void DeleteAllInCurPlan(){//obsolete
+		//	cmd.CommandText = "DELETE FROM covpat WHERE plannum = '"+InsPlans.Cur.PlanNum.ToString()+"'";
+		//	NonQ(false);
+		//}
 
 		public static double GetPercent(string myADACode, PriSecTot pst){//does not return a tot?
 			double retVal=0;
@@ -1567,13 +2151,14 @@ namespace OpenDental{
 
 	}
 
-	public struct CovPat{
-		public int CovPatNum;
-		public int CovCatNum;
-		public int PlanNum;
-		public int PriPatNum;
-		public int SecPatNum;
-		public int Percent;
+	public struct CovPat{//table covpat.  
+		//as shown below, a covpat can only be ONE of the three options below
+		public int CovPatNum;//primary key
+		public int CovCatNum;//foreign key to covcat.covcatnum
+		public int PlanNum;//OPT 1: foreign key to insplan.plannum
+		public int PriPatNum;//OPT 2: fk to patient.patnum for primary coverage
+		public int SecPatNum;//OPT 2: fk to patient.patnum for primary coverage
+		public int Percent;//valid -1 to 100???
 	}
 
 	/*=========================================================================================
@@ -1752,14 +2337,16 @@ namespace OpenDental{
 
 	public class Conversions:DataClass{
 		public static string[] ArrayQueryText;
+		public static string SelectText;
+		public static DataTable TableQ;
 
 		public static bool SubmitQuery(){//return true if successful
 			try{
-				int rowsUpdated;
+				//int rowsUpdated;
 				con.Open();
 				for(int i=0;i<ArrayQueryText.Length;i++){
 					cmd.CommandText=ArrayQueryText[i];
-					rowsUpdated = cmd.ExecuteNonQuery();
+					cmd.ExecuteNonQuery();
 				}
 			}
 			catch(MySqlException e){
@@ -1772,6 +2359,23 @@ namespace OpenDental{
 			}
 			finally{
 				con.Close();
+			}
+			return true;
+		}
+
+		public static bool SubmitSelect(){//return true if successful
+			try{
+				cmd.CommandText=SelectText;
+				FillTable();
+				TableQ=table.Copy();
+			}
+			catch(MySqlException e){
+				MessageBox.Show("e:"+e.Message);
+				return false;
+			}
+			catch{
+				MessageBox.Show("Command:"+cmd.CommandText);
+				return false;
 			}
 			return true;
 		}	
@@ -1789,7 +2393,7 @@ namespace OpenDental{
 				return true;
 			}
 			catch{
-				MessageBox.Show(cmd.CommandText);//never makes it here
+				MessageBox.Show(cmd.CommandText);
 				return false;
 			}
 			finally{
@@ -1869,7 +2473,7 @@ namespace OpenDental{
 	=================================== class Defs ==========================================*/
 
 	public class Defs:DataClass{
-		public static Def[] List;//for only one category. used in Defs dialog
+		public static Def[] List;//for only one category. used in Defs dialog only.
 		public static Def Cur;
 		public static bool IsSelected;
 		public static int Selected;
@@ -1929,15 +2533,13 @@ namespace OpenDental{
 		}
 
 		public static int GetOrder(DefCat myCat, int myDefNum){
-			int retInt=-1;
+			//gets the index in the list of unhidden (the Short list).
 			for(int i=0;i<Short[(int)myCat].GetLength(0);i++){
 				if(Short[(int)myCat][i].DefNum==myDefNum){
-					//if(Short[(int)myCat][i].IsHidden)  retInt=-1;
-					//else retInt=Short[(int)myCat][i].ItemOrder;
-					retInt=i;
+					return i;
 				}
 			}
-			return retInt;
+			return -1;
 		}
 
 		public static string GetValue(DefCat myCat, int myDefNum){

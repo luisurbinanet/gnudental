@@ -15,7 +15,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Label label2;
 		private OpenDental.TableClaimProc tbProc;
-		private bool IsPrimary=true;
+		//private bool IsPrimary=true;
 		private System.Windows.Forms.GroupBox groupBox3;
 		private System.Windows.Forms.RadioButton radioStatusH;
 		private System.Windows.Forms.RadioButton radioStatusP;
@@ -25,6 +25,7 @@ namespace OpenDental{
 		private System.Windows.Forms.RadioButton radioStatusS;
 		private System.Windows.Forms.Button butOK;
 		private System.Windows.Forms.Button butCancel;
+		private System.Windows.Forms.Label label1;
 		private string oldStatus="";
 
 		public FormClaimView(){
@@ -75,6 +76,7 @@ namespace OpenDental{
 			this.radioStatusR = new System.Windows.Forms.RadioButton();
 			this.radioStatusS = new System.Windows.Forms.RadioButton();
 			this.butOK = new System.Windows.Forms.Button();
+			this.label1 = new System.Windows.Forms.Label();
 			this.groupBox3.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -85,7 +87,7 @@ namespace OpenDental{
 			this.tbProc.Name = "tbProc";
 			this.tbProc.SelectedIndices = new int[0];
 			this.tbProc.SelectionMode = System.Windows.Forms.SelectionMode.None;
-			this.tbProc.Size = new System.Drawing.Size(437, 356);
+			this.tbProc.Size = new System.Drawing.Size(939, 356);
 			this.tbProc.TabIndex = 0;
 			// 
 			// textCarrier
@@ -230,11 +232,22 @@ namespace OpenDental{
 			this.butOK.TabIndex = 31;
 			this.butOK.Text = "OK";
 			// 
+			// label1
+			// 
+			this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.label1.ForeColor = System.Drawing.Color.Red;
+			this.label1.Location = new System.Drawing.Point(218, 94);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(320, 104);
+			this.label1.TabIndex = 32;
+			this.label1.Text = "This form is obsolete";
+			// 
 			// FormClaimView
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(642, 696);
 			this.ControlBox = false;
+			this.Controls.Add(this.label1);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.groupBox3);
 			this.Controls.Add(this.butCancel);
@@ -256,10 +269,12 @@ namespace OpenDental{
 		}
 		#endregion
 
+		//THIS FORM IS OBSOLETE
+
 		private void FormClaimsQueued_Load(object sender, System.EventArgs e) {
 			FillTable();
 			textName.Text=Claims.CurQueue.PatName;
-			textType.Text=Defs.GetName(DefCat.ClaimFormats,Claims.CurQueue.ClaimFormat);
+			//textType.Text=Defs.GetName(DefCat.ClaimFormats,Claims.CurQueue.ClaimFormat);
 			textCarrier.Text=Claims.CurQueue.Carrier;
 			oldStatus=Claims.CurQueue.ClaimStatus;
 			switch(Claims.CurQueue.ClaimStatus){
@@ -285,20 +300,20 @@ namespace OpenDental{
 		}
 
 		private void FillTable(){
-			double ClaimFee=0;
-			double priInsEst;
-			double secInsEst;
-			double PriInsPayEstSubtotal=0;
-			double SecInsPayEstSubtotal=0;
+			//double ClaimFee=0;
+			//double priInsEst;
+			//double secInsEst;
+			//double PriInsPayEstSubtotal=0;
+			//double SecInsPayEstSubtotal=0;
 
-			tbProc.ResetRows(Claims.ProcsInClaim.Count);
+			/*tbProc.ResetRows(Claims.ProcsInClaim.Count);
 			tbProc.SetGridColor(Color.Gray);
 			tbProc.SetBackGColor(Color.White);  
 			for(int i=0;i<Claims.ProcsInClaim.Count;i++){
-				tbProc.Cell[0,i]=((Procedure)Claims.ProcsInClaim[i]).ADACode;
-				tbProc.Cell[1,i]=((Procedure)Claims.ProcsInClaim[i]).ToothNum;
-				tbProc.Cell[2,i]=ProcCodes.GetProcCode(((Procedure)Claims.ProcsInClaim[i]).ADACode).Descript;
-				double fee=((Procedure)Claims.ProcsInClaim[i]).ProcFee;
+				//tbProc.Cell[0,i]=((Procedure)Claims.ProcsInClaim[i]).ADACode;
+				//tbProc.Cell[1,i]=((Procedure)Claims.ProcsInClaim[i]).ToothNum;
+				//tbProc.Cell[2,i]=ProcCodes.GetProcCode(((Procedure)Claims.ProcsInClaim[i]).ADACode).Descript;
+				//double fee=((Procedure)Claims.ProcsInClaim[i]).ProcFee;
 				Procedures.Cur=(Procedure)Claims.ProcsInClaim[i];
 				priInsEst=Procedures.GetEstForCur(PriSecTot.Pri);
 				secInsEst=Procedures.GetEstForCur(PriSecTot.Sec);
@@ -315,7 +330,7 @@ namespace OpenDental{
 				tbProc.Cell[5,i]=(fee-priInsEst-secInsEst).ToString("F");
 			}//end for
 			tbProc.LayoutTables();
-	    tbProc.SelectedRow=-1;		
+	    tbProc.SelectedRow=-1;		*/
 		}
 
 		private void radioStatusU_Click(object sender, System.EventArgs e) {

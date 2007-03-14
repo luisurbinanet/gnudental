@@ -57,6 +57,7 @@ namespace OpenDental{
 			// butCancel
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(262, 254);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 3;
@@ -64,6 +65,7 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(262, 222);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 2;
@@ -89,6 +91,7 @@ namespace OpenDental{
 			// 
 			// radioCategories
 			// 
+			this.radioCategories.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioCategories.Location = new System.Drawing.Point(8, 32);
 			this.radioCategories.Name = "radioCategories";
 			this.radioCategories.Size = new System.Drawing.Size(88, 24);
@@ -98,6 +101,7 @@ namespace OpenDental{
 			// radioADA
 			// 
 			this.radioADA.Checked = true;
+			this.radioADA.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioADA.Location = new System.Drawing.Point(8, 8);
 			this.radioADA.Name = "radioADA";
 			this.radioADA.Size = new System.Drawing.Size(88, 24);
@@ -113,7 +117,10 @@ namespace OpenDental{
 			this.Controls.Add(this.listFeeSched);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormRpProcCodes";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Procedure Codes Report";
 			this.Load += new System.EventHandler(this.FormRpProcCodes_Load);

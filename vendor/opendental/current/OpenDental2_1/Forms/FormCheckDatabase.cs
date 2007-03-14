@@ -73,6 +73,7 @@ namespace OpenDental
 			// 
 			// butClose
 			// 
+			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butClose.Location = new System.Drawing.Point(667, 320);
 			this.butClose.Name = "butClose";
 			this.butClose.TabIndex = 0;
@@ -94,6 +95,7 @@ namespace OpenDental
 			// 
 			this.checkDefaultProv.Checked = true;
 			this.checkDefaultProv.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.checkDefaultProv.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkDefaultProv.Location = new System.Drawing.Point(30, 62);
 			this.checkDefaultProv.Name = "checkDefaultProv";
 			this.checkDefaultProv.Size = new System.Drawing.Size(679, 22);
@@ -105,6 +107,7 @@ namespace OpenDental
 			// 
 			this.checkInvalidTooth.Checked = true;
 			this.checkInvalidTooth.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.checkInvalidTooth.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkInvalidTooth.Location = new System.Drawing.Point(30, 92);
 			this.checkInvalidTooth.Name = "checkInvalidTooth";
 			this.checkInvalidTooth.Size = new System.Drawing.Size(724, 31);
@@ -115,6 +118,7 @@ namespace OpenDental
 			// 
 			// buttonCheck
 			// 
+			this.buttonCheck.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.buttonCheck.Location = new System.Drawing.Point(667, 281);
 			this.buttonCheck.Name = "buttonCheck";
 			this.buttonCheck.TabIndex = 5;
@@ -125,6 +129,7 @@ namespace OpenDental
 			// 
 			this.checkCorrupt.Checked = true;
 			this.checkCorrupt.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.checkCorrupt.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkCorrupt.Location = new System.Drawing.Point(30, 134);
 			this.checkCorrupt.Name = "checkCorrupt";
 			this.checkCorrupt.Size = new System.Drawing.Size(709, 24);
@@ -141,7 +146,10 @@ namespace OpenDental
 			this.Controls.Add(this.checkDefaultProv);
 			this.Controls.Add(this.textBox1);
 			this.Controls.Add(this.butClose);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormCheckDatabase";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Check Database Integrity";
 			this.Load += new System.EventHandler(this.FormCheckDatabase_Load);

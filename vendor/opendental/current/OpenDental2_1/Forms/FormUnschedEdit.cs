@@ -30,8 +30,8 @@ namespace OpenDental{
 		private System.Windows.Forms.Label labelLab;
 		private System.Windows.Forms.GroupBox groupAppt;
 		private System.Windows.Forms.Label labelPatient;
-		private System.Windows.Forms.Button butDelete;
-		private System.Windows.Forms.Button butPin;
+		private OpenDental.XPButton butDelete;
+		private OpenDental.XPButton butPin;
 		public bool PinClicked=false;
 
 		public FormUnschedEdit(){
@@ -94,8 +94,8 @@ namespace OpenDental{
 			this.labelPatient = new System.Windows.Forms.Label();
 			this.labelLab = new System.Windows.Forms.Label();
 			this.labelNote = new System.Windows.Forms.Label();
-			this.butDelete = new System.Windows.Forms.Button();
-			this.butPin = new System.Windows.Forms.Button();
+			this.butDelete = new OpenDental.XPButton();
+			this.butPin = new OpenDental.XPButton();
 			this.groupAppt.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -203,6 +203,7 @@ namespace OpenDental{
 			// 
 			// butDateLine
 			// 
+			this.butDateLine.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butDateLine.Location = new System.Drawing.Point(120, 327);
 			this.butDateLine.Name = "butDateLine";
 			this.butDateLine.Size = new System.Drawing.Size(90, 26);
@@ -230,7 +231,8 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
-			this.butOK.Location = new System.Drawing.Point(698, 584);
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.Location = new System.Drawing.Point(709, 584);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 6;
@@ -239,7 +241,8 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
-			this.butCancel.Location = new System.Drawing.Point(698, 621);
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butCancel.Location = new System.Drawing.Point(709, 621);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 7;
@@ -260,6 +263,7 @@ namespace OpenDental{
 			this.groupAppt.Controls.Add(this.labelLab);
 			this.groupAppt.Controls.Add(this.labelNote);
 			this.groupAppt.Controls.Add(this.labelProcs);
+			this.groupAppt.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupAppt.Location = new System.Drawing.Point(198, 6);
 			this.groupAppt.Name = "groupAppt";
 			this.groupAppt.Size = new System.Drawing.Size(212, 148);
@@ -293,26 +297,30 @@ namespace OpenDental{
 			// 
 			// butDelete
 			// 
+			this.butDelete.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butDelete.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butDelete.BtnStyle = OpenDental.enumType.XPStyle.Silver;
 			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDelete.Location = new System.Drawing.Point(698, 480);
+			this.butDelete.Location = new System.Drawing.Point(701, 470);
 			this.butDelete.Name = "butDelete";
-			this.butDelete.Size = new System.Drawing.Size(85, 27);
-			this.butDelete.TabIndex = 4;
-			this.butDelete.Text = "         Delete";
-			this.butDelete.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butDelete.Size = new System.Drawing.Size(90, 26);
+			this.butDelete.TabIndex = 50;
+			this.butDelete.Text = "Delete";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
 			// 
 			// butPin
 			// 
+			this.butPin.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butPin.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butPin.BtnStyle = OpenDental.enumType.XPStyle.Silver;
 			this.butPin.Image = ((System.Drawing.Image)(resources.GetObject("butPin.Image")));
-			this.butPin.ImageAlign = System.Drawing.ContentAlignment.BottomLeft;
-			this.butPin.Location = new System.Drawing.Point(698, 518);
+			this.butPin.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butPin.Location = new System.Drawing.Point(696, 521);
 			this.butPin.Name = "butPin";
-			this.butPin.Size = new System.Drawing.Size(85, 27);
-			this.butPin.TabIndex = 5;
-			this.butPin.Text = "         Pinboard";
-			this.butPin.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butPin.Size = new System.Drawing.Size(100, 26);
+			this.butPin.TabIndex = 49;
+			this.butPin.Text = "Pinboard";
 			this.butPin.Click += new System.EventHandler(this.butPin_Click);
 			// 
 			// FormUnschedEdit
@@ -339,9 +347,13 @@ namespace OpenDental{
 			this.Controls.Add(this.textHomePhone);
 			this.Controls.Add(this.label5);
 			this.Controls.Add(this.label4);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormUnschedEdit";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Edit Unscheduled Status";
+			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormUnschedEdit_Closing);
 			this.Load += new System.EventHandler(this.FormUnschedEdit_Load);
 			this.groupAppt.ResumeLayout(false);
 			this.ResumeLayout(false);
@@ -439,8 +451,13 @@ namespace OpenDental{
 		}
 
 		private void butCancel_Click(object sender, System.EventArgs e) {
-			Patients.PatIsLoaded=false;
 			DialogResult=DialogResult.Cancel;
+		}
+
+		private void FormUnschedEdit_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+			if(DialogResult==DialogResult.OK)
+				return;
+			Patients.PatIsLoaded=false;
 		}
 
 	}

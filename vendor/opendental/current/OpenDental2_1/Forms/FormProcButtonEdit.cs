@@ -16,9 +16,9 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label2;
     public bool IsNew;
 		private System.Windows.Forms.Label label3;
-		private System.Windows.Forms.Button butAdd;
 		private System.Windows.Forms.ListBox listADA;
-		private System.Windows.Forms.Button butDelete;
+		private OpenDental.XPButton butAdd;
+		private OpenDental.XPButton butDelete;
 		private System.Windows.Forms.Label label4;
 
 		public FormProcButtonEdit(){
@@ -54,12 +54,12 @@ namespace OpenDental{
 			this.textDescript = new System.Windows.Forms.TextBox();
 			this.butCancel = new System.Windows.Forms.Button();
 			this.butOK = new System.Windows.Forms.Button();
-			this.butAdd = new System.Windows.Forms.Button();
 			this.label2 = new System.Windows.Forms.Label();
 			this.label3 = new System.Windows.Forms.Label();
 			this.listADA = new System.Windows.Forms.ListBox();
-			this.butDelete = new System.Windows.Forms.Button();
 			this.label4 = new System.Windows.Forms.Label();
+			this.butAdd = new OpenDental.XPButton();
+			this.butDelete = new OpenDental.XPButton();
 			this.SuspendLayout();
 			// 
 			// listAutoCodes
@@ -89,31 +89,24 @@ namespace OpenDental{
 			// butCancel
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(538, 536);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.RightToLeft = System.Windows.Forms.RightToLeft.No;
+			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 27;
 			this.butCancel.Text = "Cancel";
+			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(538, 498);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 26;
 			this.butOK.Text = "OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
-			// 
-			// butAdd
-			// 
-			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
-			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAdd.Location = new System.Drawing.Point(36, 516);
-			this.butAdd.Name = "butAdd";
-			this.butAdd.Size = new System.Drawing.Size(75, 26);
-			this.butAdd.TabIndex = 30;
-			this.butAdd.Text = "          Add";
-			this.butAdd.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
 			// label2
 			// 
@@ -140,18 +133,6 @@ namespace OpenDental{
 			this.listADA.Size = new System.Drawing.Size(160, 381);
 			this.listADA.TabIndex = 32;
 			// 
-			// butDelete
-			// 
-			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
-			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDelete.Location = new System.Drawing.Point(120, 516);
-			this.butDelete.Name = "butDelete";
-			this.butDelete.Size = new System.Drawing.Size(75, 26);
-			this.butDelete.TabIndex = 34;
-			this.butDelete.Text = "          Delete";
-			this.butDelete.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
-			// 
 			// label4
 			// 
 			this.label4.Location = new System.Drawing.Point(36, 74);
@@ -160,23 +141,55 @@ namespace OpenDental{
 			this.label4.TabIndex = 35;
 			this.label4.Text = "Add any number of ADA codes and Auto Codes";
 			// 
+			// butAdd
+			// 
+			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butAdd.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butAdd.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
+			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butAdd.Location = new System.Drawing.Point(35, 518);
+			this.butAdd.Name = "butAdd";
+			this.butAdd.Size = new System.Drawing.Size(75, 26);
+			this.butAdd.TabIndex = 36;
+			this.butAdd.Text = "Add";
+			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
+			// 
+			// butDelete
+			// 
+			this.butDelete.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butDelete.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butDelete.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
+			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butDelete.Location = new System.Drawing.Point(122, 518);
+			this.butDelete.Name = "butDelete";
+			this.butDelete.Size = new System.Drawing.Size(75, 26);
+			this.butDelete.TabIndex = 37;
+			this.butDelete.Text = "Delete";
+			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
+			// 
 			// FormProcButtonEdit
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(638, 590);
-			this.ControlBox = false;
-			this.Controls.Add(this.label4);
+			this.Controls.Add(this.butAdd);
 			this.Controls.Add(this.butDelete);
+			this.Controls.Add(this.label4);
 			this.Controls.Add(this.listADA);
 			this.Controls.Add(this.label3);
-			this.Controls.Add(this.butAdd);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.textDescript);
 			this.Controls.Add(this.listAutoCodes);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormProcButtonEdit";
+			this.ShowInTaskbar = false;
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Edit Procedure Button";
@@ -276,6 +289,10 @@ namespace OpenDental{
         ProcButtonItems.InsertCur();
       }
       DialogResult=DialogResult.OK;    
+		}
+
+		private void butCancel_Click(object sender, System.EventArgs e) {
+		
 		} 
 
 		

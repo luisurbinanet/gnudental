@@ -20,12 +20,12 @@ namespace OpenDental{
 			HeadingIsPresent=true;
 			InstantClassesPar();
 			SetRowHeight(0,19,14);
-			Heading=Lan.g("tbRxSetup","Prescriptions");
-			Fields[0]=Lan.g("tbRxSetup","Drug");
-			Fields[1]=Lan.g("tbRxSetup","Sig");
-			Fields[2]=Lan.g("tbRxSetup","Disp");
-			Fields[3]=Lan.g("tbRxSetup","Refills");
-			Fields[4]=Lan.g("tbRxSetup","Notes");
+			Heading=Lan.g("TableRxSetup","Prescriptions");
+			Fields[0]=Lan.g("TableRxSetup","Drug");
+			Fields[1]=Lan.g("TableRxSetup","Sig");
+			Fields[2]=Lan.g("TableRxSetup","Disp");
+			Fields[3]=Lan.g("TableRxSetup","Refills");
+			Fields[4]=Lan.g("TableRxSetup","Notes");
 			ColWidth[0]=140;
 			ColWidth[1]=320;
 			ColWidth[2]=70;

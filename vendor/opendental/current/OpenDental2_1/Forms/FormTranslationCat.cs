@@ -3,6 +3,8 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Globalization;
+using System.Net;
+using System.IO;
 using System.Windows.Forms;
 
 namespace OpenDental{
@@ -11,6 +13,12 @@ namespace OpenDental{
 		private System.Windows.Forms.ListBox listCats;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Button butClose;
+		private System.Windows.Forms.Button butExport;
+		private System.Windows.Forms.Button butDownload;
+		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.TextBox textBox1;
+		private System.Windows.Forms.GroupBox groupBox1;
+		private System.Windows.Forms.SaveFileDialog saveFileDialog1;
 		private System.ComponentModel.Container components = null;
 
 		public FormTranslationCat(){
@@ -35,6 +43,13 @@ namespace OpenDental{
 			this.listCats = new System.Windows.Forms.ListBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.butClose = new System.Windows.Forms.Button();
+			this.butExport = new System.Windows.Forms.Button();
+			this.butDownload = new System.Windows.Forms.Button();
+			this.label2 = new System.Windows.Forms.Label();
+			this.textBox1 = new System.Windows.Forms.TextBox();
+			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// listCats
@@ -56,24 +71,85 @@ namespace OpenDental{
 			// butClose
 			// 
 			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butClose.Location = new System.Drawing.Point(320, 592);
+			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butClose.Location = new System.Drawing.Point(416, 600);
 			this.butClose.Name = "butClose";
 			this.butClose.TabIndex = 2;
 			this.butClose.Text = "Close";
+			this.butClose.Click += new System.EventHandler(this.butClose_Click);
+			// 
+			// butExport
+			// 
+			this.butExport.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butExport.Location = new System.Drawing.Point(310, 194);
+			this.butExport.Name = "butExport";
+			this.butExport.Size = new System.Drawing.Size(96, 23);
+			this.butExport.TabIndex = 3;
+			this.butExport.Text = "Export All";
+			this.butExport.Click += new System.EventHandler(this.butExport_Click);
+			// 
+			// butDownload
+			// 
+			this.butDownload.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butDownload.Location = new System.Drawing.Point(14, 22);
+			this.butDownload.Name = "butDownload";
+			this.butDownload.Size = new System.Drawing.Size(102, 23);
+			this.butDownload.TabIndex = 4;
+			this.butDownload.Text = "Download";
+			this.butDownload.Click += new System.EventHandler(this.butDownload_Click);
+			// 
+			// label2
+			// 
+			this.label2.Location = new System.Drawing.Point(310, 226);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(182, 82);
+			this.label2.TabIndex = 5;
+			this.label2.Text = "Use this to create a file to send to us with all translations.  You can ONLY do t" +
+				"his if you are the manager for your language.";
+			// 
+			// textBox1
+			// 
+			this.textBox1.BackColor = System.Drawing.SystemColors.Control;
+			this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.textBox1.Location = new System.Drawing.Point(14, 58);
+			this.textBox1.Multiline = true;
+			this.textBox1.Name = "textBox1";
+			this.textBox1.Size = new System.Drawing.Size(178, 50);
+			this.textBox1.TabIndex = 6;
+			this.textBox1.Text = "Download and install the most current translations from our website.  This will o" +
+				"verwrite all current translations.";
+			// 
+			// groupBox1
+			// 
+			this.groupBox1.Controls.Add(this.butDownload);
+			this.groupBox1.Controls.Add(this.textBox1);
+			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.groupBox1.Location = new System.Drawing.Point(306, 30);
+			this.groupBox1.Name = "groupBox1";
+			this.groupBox1.Size = new System.Drawing.Size(200, 122);
+			this.groupBox1.TabIndex = 7;
+			this.groupBox1.TabStop = false;
+			this.groupBox1.Text = "NO ENGLISH ??";
 			// 
 			// FormTranslationCat
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(422, 648);
-			this.ControlBox = false;
+			this.ClientSize = new System.Drawing.Size(520, 648);
+			this.Controls.Add(this.groupBox1);
+			this.Controls.Add(this.label2);
+			this.Controls.Add(this.butExport);
 			this.Controls.Add(this.butClose);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.listCats);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormTranslationCat";
+			this.ShowInTaskbar = false;
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Select Category";
 			this.Load += new System.EventHandler(this.FormTranslation_Load);
+			this.groupBox1.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -102,6 +178,57 @@ namespace OpenDental{
 			Lan.CurCat=Lan.ListCat[listCats.SelectedIndex];
 			FormTranslation FormT=new FormTranslation(); 
 			FormT.ShowDialog();
+		}
+
+		private void butDownload_Click(object sender, System.EventArgs e) {
+			string remoteUri = "http://www.open-dent.com/languages/";
+			string fileName = CultureInfo.CurrentCulture.TwoLetterISOLanguageName+".sql";//eg. es.sql for spanish
+			//string fileName="bogus.sql";
+			string myStringWebResource = null;
+			WebClient myWebClient = new WebClient();
+			myStringWebResource = remoteUri + fileName;
+			try{
+				//myWebClient.Credentials=new NetworkCredential("username","password","www.open-dent.com");
+				myWebClient.DownloadFile(myStringWebResource,fileName);
+			}
+			catch{
+				MessageBox.Show("Either you do not have internet access, or no translations are available for "+CultureInfo.CurrentCulture.Parent.DisplayName);
+				return;
+			}
+			ClassConvertDatabase ConvertDB=new ClassConvertDatabase();
+			if(!ConvertDB.ExecuteFile(fileName)){
+				MessageBox.Show("Translations not installed properly.");
+				return;
+			}
+			LanguageForeigns.Refresh();
+			MessageBox.Show("Done");
+		}
+
+		private void butExport_Click(object sender, System.EventArgs e) {
+			saveFileDialog1.InitialDirectory=Application.StartupPath;
+			string fileName=CultureInfo.CurrentCulture.TwoLetterISOLanguageName+".sql";
+			saveFileDialog1.FileName=fileName;
+			if(saveFileDialog1.ShowDialog()!=DialogResult.OK){
+				return;
+			}
+			StreamWriter sw=new StreamWriter(fileName,false);
+			sw.WriteLine("TRUNCATE languageforeign;");
+			for(int i=0;i<LanguageForeigns.List.Length;i++){
+				if(LanguageForeigns.List[i].Culture==CultureInfo.CurrentCulture.TwoLetterISOLanguageName){
+					sw.WriteLine(
+						"INSERT INTO languageforeign VALUES ('"+POut.PString(LanguageForeigns.List[i].ClassType)
+						+"', '"+POut.PString(LanguageForeigns.List[i].English)
+						+"', '"+POut.PString(LanguageForeigns.List[i].Culture)
+						+"', '"+POut.PString(LanguageForeigns.List[i].Translation)
+						+"', '"+POut.PString(LanguageForeigns.List[i].Comments)+"');"
+					);
+				}
+			}//for
+			MessageBox.Show("Done");
+		}
+
+		private void butClose_Click(object sender, System.EventArgs e) {
+			//cancel
 		}
 
 

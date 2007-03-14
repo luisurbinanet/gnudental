@@ -22,10 +22,10 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label1;
 		private OpenDental.TableClaimPaySplits tb2;
 		private System.ComponentModel.Container components = null;
-		private bool ControlDown;
+		//private bool ControlDown;
 		public bool IsNew;
 		private System.Windows.Forms.CheckBox checkShowUn;
-		private System.Windows.Forms.Button butDelete;
+		private OpenDental.XPButton butDelete;
 		private double splitTot;
 
 		public FormClaimPayEdit(){
@@ -73,10 +73,10 @@ namespace OpenDental{
 			this.label2 = new System.Windows.Forms.Label();
 			this.butCancel = new System.Windows.Forms.Button();
 			this.butOK = new System.Windows.Forms.Button();
-			this.butDelete = new System.Windows.Forms.Button();
 			this.tb2 = new OpenDental.TableClaimPaySplits();
 			this.checkShowUn = new System.Windows.Forms.CheckBox();
 			this.label1 = new System.Windows.Forms.Label();
+			this.butDelete = new OpenDental.XPButton();
 			this.SuspendLayout();
 			// 
 			// textAmount
@@ -170,6 +170,8 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(803, 631);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
@@ -179,6 +181,7 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(803, 593);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
@@ -186,31 +189,19 @@ namespace OpenDental{
 			this.butOK.Text = "OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
-			// butDelete
-			// 
-			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
-			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.BottomLeft;
-			this.butDelete.Location = new System.Drawing.Point(564, 617);
-			this.butDelete.Name = "butDelete";
-			this.butDelete.Size = new System.Drawing.Size(75, 26);
-			this.butDelete.TabIndex = 5;
-			this.butDelete.Text = "         Delete";
-			this.butDelete.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
-			// 
 			// tb2
 			// 
 			this.tb2.BackColor = System.Drawing.SystemColors.Window;
 			this.tb2.Location = new System.Drawing.Point(8, 20);
 			this.tb2.Name = "tb2";
-			this.tb2.SelectionMode = SelectionMode.None;//OpenDental.SelectRowsMode.None;
+			this.tb2.SelectedIndices = new int[0];
+			this.tb2.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
 			this.tb2.Size = new System.Drawing.Size(539, 634);
 			this.tb2.TabIndex = 49;
-			this.tb2.KeyUp += new System.Windows.Forms.KeyEventHandler(this.tb2_KeyUp);
-			this.tb2.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tb2_KeyDown);
 			// 
 			// checkShowUn
 			// 
+			this.checkShowUn.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkShowUn.Location = new System.Drawing.Point(564, 373);
 			this.checkShowUn.Name = "checkShowUn";
 			this.checkShowUn.Size = new System.Drawing.Size(132, 24);
@@ -226,11 +217,26 @@ namespace OpenDental{
 			this.label1.TabIndex = 51;
 			this.label1.Text = "(Deletes this Check)";
 			// 
+			// butDelete
+			// 
+			this.butDelete.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butDelete.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butDelete.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
+			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butDelete.Location = new System.Drawing.Point(563, 616);
+			this.butDelete.Name = "butDelete";
+			this.butDelete.Size = new System.Drawing.Size(92, 26);
+			this.butDelete.TabIndex = 52;
+			this.butDelete.Text = "Delete";
+			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
+			// 
 			// FormClaimPayEdit
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(902, 676);
-			this.ControlBox = false;
+			this.Controls.Add(this.butDelete);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.checkShowUn);
 			this.Controls.Add(this.tb2);
@@ -246,10 +252,13 @@ namespace OpenDental{
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
-			this.Controls.Add(this.butDelete);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormClaimPayEdit";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = Lan.g(this,"Edit Insurance Claim Check");
+			this.Text = "Edit Insurance Claim Check";
+			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormClaimPayEdit_Closing);
 			this.Load += new System.EventHandler(this.FormClaimPayEdit_Load);
 			this.ResumeLayout(false);
 
@@ -259,81 +268,60 @@ namespace OpenDental{
 		private void FormClaimPayEdit_Load(object sender, System.EventArgs e) {
 			if(IsNew){
 				ClaimPayments.Cur=new ClaimPayment();
+				ClaimPayments.InsertCur();//assigns a ClaimPaymentNum for use below
 				checkShowUn.Checked=true;
 			}
-			if(DateTime.Compare(ClaimPayments.Cur.CheckDate,DateTime.Parse("1/1/1880"))<0){
-				textDate.Text=DateTime.Now.ToString("d");
+			if(ClaimPayments.Cur.CheckDate.Year < 1880){
+				textDate.Text=DateTime.Today.ToShortDateString();
 			}
 			else
-				textDate.Text=ClaimPayments.Cur.CheckDate.ToString("d");
-			//textAmount.Text=ClaimPayments.Cur.CheckAmt.ToString("F");
+				textDate.Text=ClaimPayments.Cur.CheckDate.ToShortDateString();
+			//textAmount is handled in FillTable
 			textCheckNum.Text=ClaimPayments.Cur.CheckNum;
 			textBankBranch.Text=ClaimPayments.Cur.BankBranch;
 			textNote.Text=ClaimPayments.Cur.Note;
 			FillTable();
+			if(IsNew){
+				tb2.SetSelected(true);
+				splitTot=0;
+				for(int i=0;i<tb2.SelectedIndices.Length;i++){
+					splitTot+=Claims.ListQueue[tb2.SelectedIndices[i]].InsPayAmt;
+				}
+				textAmount.Text=splitTot.ToString("F");
+			}
 		}
 
 		private void FillTable(){
-			int claimNum=Claims.Cur.ClaimNum;
 			Claims.RefreshByCheck(ClaimPayments.Cur.ClaimPaymentNum,checkShowUn.Checked);
-			tb2.ResetRows(Claims.List.Length);
-			tb2.SelectedRowsAL=new ArrayList();
+			tb2.ResetRows(Claims.ListQueue.Length);
 			tb2.SetGridColor(Color.LightGray);
 			splitTot=0;
-			for (int i=0;i<Claims.List.Length;i++){
-				tb2.Cell[0,i]=Claims.List[i].DateService.ToString("d");
-				tb2.Cell[1,i]=Providers.GetAbbr(Claims.List[i].ProvTreat);
-				Patients.GetLim(Claims.List[i].PatNum);
-				tb2.Cell[2,i]=Patients.LimName;
-				tb2.Cell[3,i]=InsPlans.GetDesc(Claims.List[i].PlanNum);
-				tb2.Cell[4,i]=Claims.List[i].ClaimFee.ToString("F");
-				tb2.Cell[5,i]=Claims.List[i].InsPayAmt.ToString("F");
-				if(Claims.List[i].ClaimPaymentNum==ClaimPayments.Cur.ClaimPaymentNum){
-					tb2.SelectedRowsAL.Add(i);
-					splitTot+=Claims.List[i].InsPayAmt;
-					tb2.ColorRow(i,Color.Silver);
+			for (int i=0;i<Claims.ListQueue.Length;i++){
+				tb2.Cell[0,i]=Claims.ListQueue[i].DateClaim.ToShortDateString();
+				tb2.Cell[1,i]=Claims.ListQueue[i].ProvAbbr;
+				tb2.Cell[2,i]=Claims.ListQueue[i].PatName;
+				tb2.Cell[3,i]=Claims.ListQueue[i].Carrier;
+				tb2.Cell[4,i]=Claims.ListQueue[i].FeeBilled.ToString("F");
+				tb2.Cell[5,i]=Claims.ListQueue[i].InsPayAmt.ToString("F");
+				if(Claims.ListQueue[i].ClaimPaymentNum==ClaimPayments.Cur.ClaimPaymentNum){
+					tb2.SetSelected(i,true);
+					splitTot+=Claims.ListQueue[i].InsPayAmt;
 				}
-				if(Claims.List[i].ClaimNum==claimNum){
-					for(int j=0;j<tb2.FontBold.GetLength(0);j++){
+				if(Claims.ListQueue[i].ClaimNum==Claims.Cur.ClaimNum){
+					for(int j=0;j<tb2.MaxCols;j++){
 						tb2.FontBold[j,i]=true;
 					}
 				}
 			}
 			tb2.LayoutTables();
-			//textTotal.Text=splitTot.ToString("F");
 			textAmount.Text=splitTot.ToString("F");
 		}
 
 		private void tb2_CellClicked(object sender, CellEventArgs e){
-			if (!ControlDown){
-				if(tb2.SelectedRowsAL.Count==1 && (int)tb2.SelectedRowsAL[0]==e.Row){
-					tb2.SelectedRowsAL.Clear();
-					tb2.ColorRow(e.Row,Color.White);
-				}
-				else{
-					for(int i=0;i<tb2.SelectedRowsAL.Count;i++){
-						tb2.ColorRow((int)tb2.SelectedRowsAL[i],Color.White);
-					}
-					tb2.SelectedRowsAL.Clear();
-					tb2.SelectedRowsAL.Add(e.Row);
-					tb2.ColorRow(e.Row,Color.Silver);
-				}
-			}
-			else{
-				if(tb2.SelectedRowsAL.Contains(e.Row)){
-					tb2.SelectedRowsAL.Remove(e.Row);
-					tb2.ColorRow(e.Row,Color.White);
-				}
-				else{
-					tb2.SelectedRowsAL.Add(e.Row);
-					tb2.ColorRow(e.Row,Color.Silver);
-				}
-			}
 			splitTot=0;
-			for (int i=0;i<tb2.SelectedRowsAL.Count;i++){
-				splitTot+=Claims.List[(int)tb2.SelectedRowsAL[i]].InsPayAmt;
+			for (int i=0;i<tb2.SelectedIndices.Length;i++){
+				splitTot+=Claims.ListQueue[tb2.SelectedIndices[i]].InsPayAmt;
 			}
-			//textTotal.Text=splitTot.ToString("F");
 			textAmount.Text=splitTot.ToString("F");
 		}
 
@@ -341,34 +329,23 @@ namespace OpenDental{
 
 		}
 
-		private void tb2_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e) {
-			if (e.KeyCode==Keys.ControlKey){
-				ControlDown=true;
-			}
-		}
-
-		private void tb2_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e) {
-			if (e.KeyCode==Keys.ControlKey){
-				ControlDown=false;
-			}
-		}
-
 		private void checkShowUn_Click(object sender, System.EventArgs e) {
 			FillTable();
 		}
 
 		private void butDelete_Click(object sender, System.EventArgs e) {
-			if(MessageBox.Show(Lan.g(this,"Delete this insurance check?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
+			if(MessageBox.Show(Lan.g(this,"Delete this insurance check?"),"",MessageBoxButtons.OKCancel)
+				!=DialogResult.OK){
 				return;
 			}
 			if(IsNew){
-				;
+				ClaimPayments.DeleteCur();
+				DialogResult=DialogResult.Cancel;
 			}
 			else{
-				Claims.DetachAllFromCheck(ClaimPayments.Cur.ClaimPaymentNum);
-				ClaimPayments.DeleteCur();
+				ClaimProcs.DetachAllFromCheck(ClaimPayments.Cur.ClaimPaymentNum);
+				DialogResult=DialogResult.OK;
 			}
-			DialogResult=DialogResult.OK;
 		}
 
 		private void butCancel_Click(object sender, System.EventArgs e) {
@@ -376,53 +353,62 @@ namespace OpenDental{
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			if(  textDate.errorProvider1.GetError(textDate)!=""
-				//|| textAmount.errorProvider1.GetError(textAmount)!=""
+			if(textDate.errorProvider1.GetError(textDate)!=""
 				){
 				MessageBox.Show(Lan.g(this,"Please fix data entry errors first."));
 				return;
 			}
-			//if(PIn.PDouble(textAmount.Text)!=splitTot){
-			//	MessageBox.Show("Split totals must equal payment amount.");
-			//	return;
-			//}
-			if(tb2.SelectedRowsAL.Count==0){
+			if(tb2.SelectedIndices.Length==0){
 				MessageBox.Show(Lan.g(this,"At least one item must be selected, or use the delete button."));	
 				return;
 			}
-			//if(textAmount.Text==""){
-			//	MessageBox.Show("Please enter an amount.");	
-			//	return;
-			//}
-			//else
-				ClaimPayments.Cur.CheckAmt=PIn.PDouble(textAmount.Text);
+			ClaimPayments.Cur.CheckAmt=PIn.PDouble(textAmount.Text);
 			ClaimPayments.Cur.CheckDate=PIn.PDate(textDate.Text);
 			ClaimPayments.Cur.CheckNum=textCheckNum.Text;
 			ClaimPayments.Cur.BankBranch=textBankBranch.Text;
 			ClaimPayments.Cur.Note=textNote.Text;
-			if(IsNew){
-				ClaimPayments.InsertCur();
-			}
-			else{
-				ClaimPayments.UpdateCur();
-			}
+			ClaimPayments.UpdateCur();
 			//this could be optimized to only save changes.
 			//Would require a starting AL to compare to.
-			for(int i=0;i<Claims.List.Length;i++){
-				Claims.Cur=Claims.List[i];
-				if(tb2.SelectedRowsAL.Contains(i)){
-					Claims.Cur.ClaimPaymentNum=ClaimPayments.Cur.ClaimPaymentNum;
+			ArrayList ALselected=new ArrayList();
+			for(int i=0;i<tb2.SelectedIndices.Length;i++){
+				ALselected.Add(tb2.SelectedIndices[i]);
+			}
+			for(int i=0;i<Claims.ListQueue.Length;i++){
+				Claims.CurQueue=Claims.ListQueue[i];
+				if(ALselected.Contains(i)){//row is selected
+					ClaimProcs.SetForClaim(Claims.CurQueue.ClaimNum,ClaimPayments.Cur.ClaimPaymentNum,true);
 				}
-				else{
-					Claims.Cur.ClaimPaymentNum=0;
-				}
-				Claims.UpdateCur();
-				if(Claims.Cur.ClaimStatus=="S"){
-					SecurityLogs.MakeLogEntry("Claims Sent Edit",Claims.cmd.CommandText);
+				else{//row not selected
+					ClaimProcs.SetForClaim(Claims.CurQueue.ClaimNum,ClaimPayments.Cur.ClaimPaymentNum,false);
 				}
 			}
 			DialogResult=DialogResult.OK;
 		}
 
+		private void FormClaimPayEdit_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+			if(DialogResult==DialogResult.OK)
+				return;
+			if(IsNew){
+				//ClaimProcs never saved in the first place
+				ClaimPayments.DeleteCur();
+			}
+		}
+
+
+
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

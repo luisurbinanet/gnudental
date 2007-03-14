@@ -83,13 +83,16 @@ namespace OpenDental
 			// ButCancel
 			// 
 			this.ButCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.ButCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.ButCancel.Location = new System.Drawing.Point(514, 332);
 			this.ButCancel.Name = "ButCancel";
 			this.ButCancel.TabIndex = 6;
 			this.ButCancel.Text = "Cancel";
+			this.ButCancel.Click += new System.EventHandler(this.ButCancel_Click);
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(514, 302);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 5;
@@ -98,6 +101,7 @@ namespace OpenDental
 			// 
 			// butRemainder
 			// 
+			this.butRemainder.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butRemainder.Location = new System.Drawing.Point(232, 280);
 			this.butRemainder.Name = "butRemainder";
 			this.butRemainder.TabIndex = 7;
@@ -208,8 +212,8 @@ namespace OpenDental
 			// FormPaySplitEdit
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.ButCancel;
 			this.ClientSize = new System.Drawing.Size(638, 390);
-			this.ControlBox = false;
 			this.Controls.Add(this.labelAuto);
 			this.Controls.Add(this.labelAmount);
 			this.Controls.Add(this.textAmount);
@@ -226,9 +230,12 @@ namespace OpenDental
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.ButCancel);
 			this.Location = new System.Drawing.Point(0, 400);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormPaySplitEdit";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = Lan.g(this,"Edit Split");
+			this.Text = "Edit Split";
 			this.Load += new System.EventHandler(this.FormPaySplitEdit_Load);
 			this.ResumeLayout(false);
 
@@ -310,7 +317,7 @@ namespace OpenDental
 			if(listPatient.SelectedIndex!=-1)
 				PaySplits.Cur.PatNum=Patients.FamilyList[listPatient.SelectedIndex].PatNum;
 			if(IsNew){
-				PaySplits.PutBal(PaySplits.Cur.PatNum,PaySplits.Cur.ProcDate,PaySplits.Cur.SplitAmt);
+				//PaySplits.PutBal(PaySplits.Cur.PatNum,PaySplits.Cur.ProcDate,PaySplits.Cur.SplitAmt);
 				if(IsNewDisc){//save new discount
 					PaySplits.InsertCur();
 				}
@@ -319,13 +326,13 @@ namespace OpenDental
 				}
 			}
 			else{//update discount or payment
-				if(PaySplits.Cur.ProcDate.Year!=OriginalDate.Year || PaySplits.Cur.ProcDate.Month!=OriginalDate.Month){
-					PaySplits.PutBal(PaySplits.Cur.PatNum,OriginalDate,-OriginalAmt);
-					PaySplits.PutBal(PaySplits.Cur.PatNum,PaySplits.Cur.ProcDate,PaySplits.Cur.SplitAmt);
-				}
-				else{//date not changed
-					PaySplits.PutBal(PaySplits.Cur.PatNum,PaySplits.Cur.ProcDate,PaySplits.Cur.SplitAmt-OriginalAmt);
-				}
+				//if(PaySplits.Cur.ProcDate.Year!=OriginalDate.Year || PaySplits.Cur.ProcDate.Month!=OriginalDate.Month){
+				//	PaySplits.PutBal(PaySplits.Cur.PatNum,OriginalDate,-OriginalAmt);
+				//	PaySplits.PutBal(PaySplits.Cur.PatNum,PaySplits.Cur.ProcDate,PaySplits.Cur.SplitAmt);
+				//}
+				//else{//date not changed
+				//PaySplits.PutBal(PaySplits.Cur.PatNum,PaySplits.Cur.ProcDate,PaySplits.Cur.SplitAmt-OriginalAmt);
+				//}
 				PaySplits.UpdateCur();
 			}
 			DialogResult=DialogResult.OK;
@@ -346,6 +353,10 @@ namespace OpenDental
 				*PIn.PDouble(Defs.Short[(int)DefCat.DiscountTypes][listType.SelectedIndex].ItemValue)
 				/100;
 			textAmount.Text=PaySplits.Cur.SplitAmt.ToString("F");
+		}
+
+		private void ButCancel_Click(object sender, System.EventArgs e) {
+		
 		}	
 
 

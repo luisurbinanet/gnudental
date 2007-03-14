@@ -7,7 +7,6 @@ using System.Windows.Forms;
 namespace OpenDental{
 
 	public class FormScheduleDay : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butOK;
 		private System.Windows.Forms.Button butDefault;
 		private System.Windows.Forms.ListBox listTimeBlocks;
 		private System.Windows.Forms.Button butAddTime;
@@ -15,7 +14,8 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butHoliday;
 		private System.Windows.Forms.Label label1;
     private ArrayList ALdefaults;
-		private System.Windows.Forms.Label labelDefault;  
+		private System.Windows.Forms.Label labelDefault;
+		private System.Windows.Forms.Button butClose;  
 
 		private System.ComponentModel.Container components = null;
 
@@ -30,7 +30,7 @@ namespace OpenDental{
 				butDefault,
 			});
 			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
+				butClose,
 			});
 		}
 
@@ -51,7 +51,7 @@ namespace OpenDental{
 		private void InitializeComponent()
 		{
 			this.listTimeBlocks = new System.Windows.Forms.ListBox();
-			this.butOK = new System.Windows.Forms.Button();
+			this.butClose = new System.Windows.Forms.Button();
 			this.butDefault = new System.Windows.Forms.Button();
 			this.butAddTime = new System.Windows.Forms.Button();
 			this.butCloseOffice = new System.Windows.Forms.Button();
@@ -68,16 +68,18 @@ namespace OpenDental{
 			this.listTimeBlocks.TabIndex = 0;
 			this.listTimeBlocks.DoubleClick += new System.EventHandler(this.listTimeBlocks_DoubleClick);
 			// 
-			// butOK
+			// butClose
 			// 
-			this.butOK.Location = new System.Drawing.Point(260, 214);
-			this.butOK.Name = "butOK";
-			this.butOK.TabIndex = 2;
-			this.butOK.Text = "OK";
-			this.butOK.Click += new System.EventHandler(this.butOK_Click);
+			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butClose.Location = new System.Drawing.Point(260, 214);
+			this.butClose.Name = "butClose";
+			this.butClose.TabIndex = 2;
+			this.butClose.Text = "Close";
+			this.butClose.Click += new System.EventHandler(this.butClose_Click);
 			// 
 			// butDefault
 			// 
+			this.butDefault.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butDefault.Location = new System.Drawing.Point(248, 48);
 			this.butDefault.Name = "butDefault";
 			this.butDefault.Size = new System.Drawing.Size(92, 23);
@@ -87,6 +89,7 @@ namespace OpenDental{
 			// 
 			// butAddTime
 			// 
+			this.butAddTime.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butAddTime.Location = new System.Drawing.Point(248, 80);
 			this.butAddTime.Name = "butAddTime";
 			this.butAddTime.Size = new System.Drawing.Size(92, 23);
@@ -96,6 +99,7 @@ namespace OpenDental{
 			// 
 			// butCloseOffice
 			// 
+			this.butCloseOffice.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCloseOffice.Location = new System.Drawing.Point(248, 112);
 			this.butCloseOffice.Name = "butCloseOffice";
 			this.butCloseOffice.Size = new System.Drawing.Size(92, 23);
@@ -105,6 +109,7 @@ namespace OpenDental{
 			// 
 			// butHoliday
 			// 
+			this.butHoliday.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butHoliday.Location = new System.Drawing.Point(248, 144);
 			this.butHoliday.Name = "butHoliday";
 			this.butHoliday.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
@@ -134,18 +139,18 @@ namespace OpenDental{
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(352, 252);
-			this.ControlBox = false;
 			this.Controls.Add(this.labelDefault);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.butHoliday);
 			this.Controls.Add(this.butCloseOffice);
 			this.Controls.Add(this.butAddTime);
 			this.Controls.Add(this.butDefault);
-			this.Controls.Add(this.butOK);
+			this.Controls.Add(this.butClose);
 			this.Controls.Add(this.listTimeBlocks);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "FormScheduleDay";
+			this.ShowInTaskbar = false;
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Edit Day";
@@ -165,7 +170,7 @@ namespace OpenDental{
       listTimeBlocks.Items.Clear(); 
       ALdefaults=new ArrayList();
       labelDefault.Visible=false; 
-      if(Schedules.DayList.Length==0){
+      if(Schedules.ListDay.Length==0){
         for(int i=0;i<SchedDefaults.List.Length;i++){
           if((int)Schedules.CurDate.DayOfWeek==SchedDefaults.List[i].DayOfWeek){
             ALdefaults.Add(SchedDefaults.List[i]); 
@@ -176,16 +181,16 @@ namespace OpenDental{
         labelDefault.Visible=true;     
       }
       else{  
-        if(Schedules.DayList.Length==1 && Schedules.DayList[0].Status==SchedStatus.Closed){
-          listTimeBlocks.Items.Add("Office Closed "+Schedules.DayList[0].Note);
+        if(Schedules.ListDay.Length==1 && Schedules.ListDay[0].Status==SchedStatus.Closed){
+          listTimeBlocks.Items.Add("Office Closed "+Schedules.ListDay[0].Note);
         }
-        else if(Schedules.DayList.Length==1 && Schedules.DayList[0].Status==SchedStatus.Holiday){
-          listTimeBlocks.Items.Add("Holiday: "+Schedules.DayList[0].Note);
+        else if(Schedules.ListDay.Length==1 && Schedules.ListDay[0].Status==SchedStatus.Holiday){
+          listTimeBlocks.Items.Add("Holiday: "+Schedules.ListDay[0].Note);
         } 
         else{  
-					for(int i=0;i<Schedules.DayList.Length;i++){
-						listTimeBlocks.Items.Add(Schedules.DayList[i].StartTime.ToShortTimeString()+" - "
-							+Schedules.DayList[i].StopTime.ToShortTimeString());
+					for(int i=0;i<Schedules.ListDay.Length;i++){
+						listTimeBlocks.Items.Add(Schedules.ListDay[i].StartTime.ToShortTimeString()+" - "
+							+Schedules.ListDay[i].StopTime.ToShortTimeString());
 					}
         } 
       } 
@@ -196,8 +201,8 @@ namespace OpenDental{
 		}
 
 		private void SetAllDefault(){
-			for(int i=0;i<Schedules.DayList.Length;i++){
-				Schedules.Cur=Schedules.DayList[i];
+			for(int i=0;i<Schedules.ListDay.Length;i++){
+				Schedules.Cur=Schedules.ListDay[i];
 				Schedules.DeleteCur();
 			}
 			FillList();
@@ -221,14 +226,14 @@ namespace OpenDental{
 		}
 
 		private void butCloseOffice_Click(object sender, System.EventArgs e) {
-      if(Schedules.DayList.Length==1 
-				&& Schedules.DayList[0].Status==SchedStatus.Closed){
+      if(Schedules.ListDay.Length==1 
+				&& Schedules.ListDay[0].Status==SchedStatus.Closed){
         MessageBox.Show(Lan.g(this,"Day is already Closed."));         
         return;
       }
-      if(Schedules.DayList.Length > 0){
-				for(int i=0;i<Schedules.DayList.Length;i++){
-					Schedules.Cur=Schedules.DayList[i];
+      if(Schedules.ListDay.Length > 0){
+				for(int i=0;i<Schedules.ListDay.Length;i++){
+					Schedules.Cur=Schedules.ListDay[i];
 					Schedules.DeleteCur();
 				}
       } 
@@ -242,8 +247,8 @@ namespace OpenDental{
 		}
 
 		private void butHoliday_Click(object sender, System.EventArgs e) {
-			if(Schedules.DayList.Length==1 
-				&& Schedules.DayList[0].Status==SchedStatus.Holiday){
+			if(Schedules.ListDay.Length==1 
+				&& Schedules.ListDay[0].Status==SchedStatus.Holiday){
         MessageBox.Show(Lan.g(this,"Day is already a Holiday."));         
         return;
       }
@@ -271,14 +276,14 @@ namespace OpenDental{
 
 		private void listTimeBlocks_DoubleClick(object sender, System.EventArgs e) {
       ConvertFromDefault();
-      Schedules.Cur=Schedules.DayList[listTimeBlocks.SelectedIndex];
+      Schedules.Cur=Schedules.ListDay[listTimeBlocks.SelectedIndex];
 			FormScheduleDayEdit FormSDE2=new FormScheduleDayEdit();
       FormSDE2.ShowDialog();
       FillList();
     }
 
-		private void butOK_Click(object sender, System.EventArgs e) {
-      DialogResult=DialogResult.OK;
+		private void butClose_Click(object sender, System.EventArgs e) {
+			Close();
 		}
 
 	}

@@ -54,9 +54,10 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(384, 96);
 			this.butOK.Name = "butOK";
-			this.butOK.Size = new System.Drawing.Size(76, 22);
+			this.butOK.Size = new System.Drawing.Size(76, 23);
 			this.butOK.TabIndex = 37;
 			this.butOK.Text = "OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
@@ -72,6 +73,7 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(384, 132);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(76, 23);
@@ -87,7 +89,10 @@ namespace OpenDental{
 			this.Controls.Add(this.textMasterPass);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.butOK);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormPasswordReset";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Reset Password";
 			this.Load += new System.EventHandler(this.FormRP_Load);

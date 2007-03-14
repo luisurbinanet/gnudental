@@ -18,9 +18,9 @@ namespace OpenDental{
 			HeadingIsPresent=false;
 			InstantClassesPar();
 			SetRowHeight(0,19,14);
-			Fields[0]=Lan.g("tbAutoItem","ADA Code");
-			Fields[1]=Lan.g("tbAutoItem","ADA Description");
-			Fields[2]=Lan.g("tbAutoItem","Conditions");
+			Fields[0]=Lan.g("TableAutoItem","ADA Code");
+			Fields[1]=Lan.g("TableAutoItem","ADA Description");
+			Fields[2]=Lan.g("TableAutoItem","Conditions");
 			ColWidth[0]=100;
 			ColWidth[1]=200;
 			ColWidth[2]=400;

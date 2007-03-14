@@ -154,6 +154,7 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(524, 392);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 5;
@@ -162,6 +163,7 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(524, 428);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 6;
@@ -181,7 +183,6 @@ namespace OpenDental{
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(616, 472);
-			this.ControlBox = false;
 			this.Controls.Add(this.label6);
 			this.Controls.Add(this.textDatabase);
 			this.Controls.Add(this.textUser);
@@ -193,9 +194,13 @@ namespace OpenDental{
 			this.Controls.Add(this.label3);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label1);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormConfig";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "MySQL Client Configuration";
+			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormConfig_Closing);
 			this.Load += new System.EventHandler(this.FormConfig_Load);
 			this.ResumeLayout(false);
 
@@ -271,7 +276,6 @@ namespace OpenDental{
 				reader.Close();
 			}
 			catch{
-				
 				textComputerName.Text="localhost";
 				textDatabase.Text="opendental";
 				textUser.Text="root";
@@ -329,8 +333,13 @@ namespace OpenDental{
     }
 
 		private void butCancel_Click(object sender, System.EventArgs e) {
-			ResetToOriginal();
 			DialogResult=DialogResult.Cancel;
+		}
+
+		private void FormConfig_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+			if(DialogResult==DialogResult.Cancel){
+				ResetToOriginal();
+			}
 		}
 		
   }

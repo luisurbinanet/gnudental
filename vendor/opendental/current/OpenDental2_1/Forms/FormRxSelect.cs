@@ -56,12 +56,14 @@ namespace OpenDental{
 			this.tbMain.BackColor = System.Drawing.SystemColors.Window;
 			this.tbMain.Location = new System.Drawing.Point(4, 34);
 			this.tbMain.Name = "tbMain";
-			this.tbMain.SelectionMode = SelectionMode.None;//OpenDental.SelectRowsMode.None;
+			this.tbMain.SelectedIndices = new int[0];
+			this.tbMain.SelectionMode = System.Windows.Forms.SelectionMode.None;
 			this.tbMain.Size = new System.Drawing.Size(919, 582);
 			this.tbMain.TabIndex = 1;
 			// 
 			// butCancel
 			// 
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(848, 636);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 3;
@@ -70,6 +72,7 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(756, 636);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 2;
@@ -87,6 +90,7 @@ namespace OpenDental{
 			// 
 			// butBlank
 			// 
+			this.butBlank.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butBlank.Location = new System.Drawing.Point(472, 6);
 			this.butBlank.Name = "butBlank";
 			this.butBlank.TabIndex = 0;
@@ -102,7 +106,10 @@ namespace OpenDental{
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.tbMain);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormRxSelect";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Select Prescription";
 			this.Load += new System.EventHandler(this.FormRxSelect_Load);

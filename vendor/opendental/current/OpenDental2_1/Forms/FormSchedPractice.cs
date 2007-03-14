@@ -45,7 +45,7 @@ namespace OpenDental{
 			this.Calendar2.BackColor = System.Drawing.SystemColors.Control;
 			this.Calendar2.Location = new System.Drawing.Point(21, 14);
 			this.Calendar2.Name = "Calendar2";
-			this.Calendar2.SelectedDate = new System.DateTime(2003, 12, 1, 0, 0, 0, 0);
+			this.Calendar2.SelectedDate = new System.DateTime(2004, 1, 17, 0, 0, 0, 0);
 			this.Calendar2.Size = new System.Drawing.Size(793, 664);
 			this.Calendar2.TabIndex = 0;
 			this.Calendar2.Click += new System.EventHandler(this.Calendar2_Click);
@@ -54,6 +54,7 @@ namespace OpenDental{
 			// butClose
 			// 
 			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butClose.Location = new System.Drawing.Point(842, 654);
 			this.butClose.Name = "butClose";
 			this.butClose.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
@@ -72,9 +73,11 @@ namespace OpenDental{
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "FormSchedPractice";
+			this.ShowInTaskbar = false;
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Practice Schedule";
+			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormSchedPractice_Closing);
 			this.Load += new System.EventHandler(this.FormSchedPractice_Load);
 			this.ResumeLayout(false);
 
@@ -109,30 +112,30 @@ namespace OpenDental{
         HasSchedDefault=false;
         HasScheduleData=false;
 
-        for(int j=0;j<Schedules.List.Length;j++){
-          if(Calendar2.List[i].Date.ToShortDateString() == Schedules.List[j].SchedDate.ToShortDateString()){
-            if(Schedules.List[j].Status == SchedStatus.Open){ 
-              Calendar2.AddText(i,Schedules.List[j].StartTime.ToShortTimeString()+" - "+Schedules.List[j].StopTime.ToShortTimeString());
+        for(int j=0;j<Schedules.ListMonth.Length;j++){
+          if(Calendar2.List[i].Date.ToShortDateString() == Schedules.ListMonth[j].SchedDate.ToShortDateString()){
+            if(Schedules.ListMonth[j].Status == SchedStatus.Open){ 
+              Calendar2.AddText(i,Schedules.ListMonth[j].StartTime.ToShortTimeString()+" - "+Schedules.ListMonth[j].StopTime.ToShortTimeString());
               Calendar2.List[i].color=OpenColor; 
-              if(Schedules.List[j].Note==""){
+              if(Schedules.ListMonth[j].Note==""){
               }
               else{
-                Calendar2.AddText(i,Schedules.List[j].Note);
+                Calendar2.AddText(i,Schedules.ListMonth[j].Note);
               }              
             }
-            else if(Schedules.List[j].Status == SchedStatus.Holiday){
-              if(Schedules.List[j].Note==""){                
+            else if(Schedules.ListMonth[j].Status == SchedStatus.Holiday){
+              if(Schedules.ListMonth[j].Note==""){                
               }
               else{  
-                Calendar2.AddText(i,Schedules.List[j].Note);
+                Calendar2.AddText(i,Schedules.ListMonth[j].Note);
               }
               Calendar2.ChangeColor(i,HolidayColor);
             }
             else{
-              if(Schedules.List[j].Note==""){            
+              if(Schedules.ListMonth[j].Note==""){            
               }
               else{ 
-                Calendar2.AddText(i,Schedules.List[j].Note);                
+                Calendar2.AddText(i,Schedules.ListMonth[j].Note);                
               }
               Calendar2.ChangeColor(i,ClosedColor);              
             }
@@ -167,11 +170,12 @@ namespace OpenDental{
 		}
 
 		private void butClose_Click(object sender, System.EventArgs e) {
-			DataValid.IType=InvalidType.LocalData;
-			DataValid DataValid2=new DataValid();
-			DataValid2.SetInvalid();
+			Close();
+		}
+
+		private void FormSchedPractice_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+			//The daily schedules is refreshed everytime the Appointment screen is refreshed. Not with LocalData
 			SecurityLogs.MakeLogEntry("Practice Schedule","Altered Practice Schedule");
-			DialogResult=DialogResult.OK;
 		}
 
 	}

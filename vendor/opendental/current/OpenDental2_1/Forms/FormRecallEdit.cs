@@ -40,10 +40,10 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textPriIns;
 		private System.Windows.Forms.TextBox textDueDate;
 		private PatientNotes PatientNotes=new PatientNotes();
-		private System.Windows.Forms.Button butPin;
 		public bool PinClicked=false;
 		public DateTime DueDate;
 		private System.Windows.Forms.TextBox textBillingType;
+		private OpenDental.XPButton butPin;
 		private System.Windows.Forms.Label label14;
 
 		public FormRecallEdit(){
@@ -127,12 +127,13 @@ namespace OpenDental{
 			this.label6 = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
 			this.label13 = new System.Windows.Forms.Label();
-			this.butPin = new System.Windows.Forms.Button();
+			this.butPin = new OpenDental.XPButton();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// butCancel
 			// 
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(827, 264);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
@@ -142,6 +143,7 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(827, 226);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
@@ -200,6 +202,7 @@ namespace OpenDental{
 			// 
 			// butDateLine
 			// 
+			this.butDateLine.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butDateLine.Location = new System.Drawing.Point(516, 145);
 			this.butDateLine.Name = "butDateLine";
 			this.butDateLine.Size = new System.Drawing.Size(83, 22);
@@ -296,7 +299,7 @@ namespace OpenDental{
 			// 
 			this.panel1.Location = new System.Drawing.Point(4, 280);
 			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(712, 32);
+			this.panel1.Size = new System.Drawing.Size(909, 32);
 			this.panel1.TabIndex = 54;
 			// 
 			// groupBox1
@@ -321,6 +324,7 @@ namespace OpenDental{
 			this.groupBox1.Controls.Add(this.textHomePhone);
 			this.groupBox1.Controls.Add(this.textWorkPhone);
 			this.groupBox1.Controls.Add(this.label7);
+			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupBox1.Location = new System.Drawing.Point(216, 3);
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.Size = new System.Drawing.Size(676, 143);
@@ -446,7 +450,7 @@ namespace OpenDental{
 			// label13
 			// 
 			this.label13.BackColor = System.Drawing.Color.White;
-			this.label13.Location = new System.Drawing.Point(426, 317);
+			this.label13.Location = new System.Drawing.Point(426, 349);
 			this.label13.Name = "label13";
 			this.label13.Size = new System.Drawing.Size(203, 15);
 			this.label13.TabIndex = 56;
@@ -454,14 +458,16 @@ namespace OpenDental{
 			// 
 			// butPin
 			// 
+			this.butPin.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butPin.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butPin.BtnStyle = OpenDental.enumType.XPStyle.Silver;
 			this.butPin.Image = ((System.Drawing.Image)(resources.GetObject("butPin.Image")));
-			this.butPin.ImageAlign = System.Drawing.ContentAlignment.BottomLeft;
-			this.butPin.Location = new System.Drawing.Point(812, 187);
+			this.butPin.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butPin.Location = new System.Drawing.Point(804, 186);
 			this.butPin.Name = "butPin";
-			this.butPin.Size = new System.Drawing.Size(90, 27);
-			this.butPin.TabIndex = 4;
-			this.butPin.Text = "          Pinboard";
-			this.butPin.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butPin.Size = new System.Drawing.Size(98, 26);
+			this.butPin.TabIndex = 57;
+			this.butPin.Text = "Pinboard";
 			this.butPin.Click += new System.EventHandler(this.butPin_Click);
 			// 
 			// FormRecallEdit
@@ -482,7 +488,10 @@ namespace OpenDental{
 			this.Controls.Add(this.label10);
 			this.Controls.Add(this.label9);
 			this.Controls.Add(this.butDateLine);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormRecallEdit";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Edit Recall Status";
 			this.Load += new System.EventHandler(this.FormRecallEdit_Load);
@@ -515,7 +524,7 @@ namespace OpenDental{
 			textAge.Text=Shared.DateToAge(Patients.Cur.Birthdate);
 			textRecallInterval.Text=Patients.Cur.RecallInterval.ToString();
 			textDueDate.Text=DueDate.ToString("d");
-			textPriIns.Text=InsPlans.GetDescInFam(Patients.Cur.PriPlanNum);
+			textPriIns.Text=InsPlans.GetDescript(Patients.Cur.PriPlanNum);
       textHomePhone.Text=Patients.Cur.HmPhone;
 			textWorkPhone.Text=Patients.Cur.WkPhone;
 			textWireless.Text=Patients.Cur.WirelessPhone;
@@ -562,7 +571,6 @@ namespace OpenDental{
 		}
 
 		private void butCancel_Click(object sender, System.EventArgs e){
-			//Patients.PatIsLoaded=false;
 			DialogResult=DialogResult.Cancel;
 		}
 

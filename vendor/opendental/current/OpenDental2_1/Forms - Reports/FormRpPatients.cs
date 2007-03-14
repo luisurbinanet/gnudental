@@ -124,6 +124,7 @@ namespace OpenDental{
 			this.butOK = new System.Windows.Forms.Button();
 			this.tabPatients = new System.Windows.Forms.TabControl();
 			this.tabData = new System.Windows.Forms.TabPage();
+			this.textBox1 = new System.Windows.Forms.TextBox();
 			this.labelReferredFrom = new System.Windows.Forms.Label();
 			this.ListReferredFromSelect = new System.Windows.Forms.ListBox();
 			this.labelReferredTo = new System.Windows.Forms.Label();
@@ -142,7 +143,6 @@ namespace OpenDental{
 			this.TextBox = new System.Windows.Forms.TextBox();
 			this.DropListFilter = new System.Windows.Forms.ComboBox();
 			this.TextSQL = new System.Windows.Forms.TextBox();
-			this.textBox1 = new System.Windows.Forms.TextBox();
 			this.tabPatients.SuspendLayout();
 			this.tabData.SuspendLayout();
 			this.tabFilters.SuspendLayout();
@@ -151,6 +151,7 @@ namespace OpenDental{
 			// butCancel
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(876, 664);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 3;
@@ -160,6 +161,7 @@ namespace OpenDental{
 			// butOK
 			// 
 			this.butOK.Enabled = false;
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(876, 636);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 2;
@@ -190,6 +192,19 @@ namespace OpenDental{
 			this.tabData.Size = new System.Drawing.Size(832, 518);
 			this.tabData.TabIndex = 1;
 			this.tabData.Text = "SELECT";
+			// 
+			// textBox1
+			// 
+			this.textBox1.BackColor = System.Drawing.SystemColors.Control;
+			this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.textBox1.Location = new System.Drawing.Point(220, 20);
+			this.textBox1.Multiline = true;
+			this.textBox1.Name = "textBox1";
+			this.textBox1.Size = new System.Drawing.Size(556, 38);
+			this.textBox1.TabIndex = 13;
+			this.textBox1.Text = "Hint: Use the Ctrl key when clicking.  Also you can simply drag the pointer acros" +
+				"s muliple rows to select quickly.\r\nFor Referrals: If you select referral items, " +
+				"it will exclude all patients without referrals.";
 			// 
 			// labelReferredFrom
 			// 
@@ -373,19 +388,6 @@ namespace OpenDental{
 			this.TextSQL.TabIndex = 38;
 			this.TextSQL.Text = "";
 			// 
-			// textBox1
-			// 
-			this.textBox1.BackColor = System.Drawing.SystemColors.Control;
-			this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.textBox1.Location = new System.Drawing.Point(220, 20);
-			this.textBox1.Multiline = true;
-			this.textBox1.Name = "textBox1";
-			this.textBox1.Size = new System.Drawing.Size(556, 38);
-			this.textBox1.TabIndex = 13;
-			this.textBox1.Text = "Hint: Use the Ctrl key when clicking.  Also you can simply drag the pointer acros" +
-				"s muliple rows to select quickly.\r\nFor Referrals: If you select referral items, " +
-				"it will exclude all patients without referrals.";
-			// 
 			// FormRpPatients
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
@@ -394,7 +396,10 @@ namespace OpenDental{
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.TextSQL);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormRpPatients";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Patients Report";
 			this.tabPatients.ResumeLayout(false);

@@ -1,5 +1,5 @@
 /*=============================================================================================================
-FreeDental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
+Open Dental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
 See header in FormOpenDental.cs for complete text.  Redistributions must retain this text.
 ===============================================================================================================*/
 using System;
@@ -21,7 +21,6 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butI;
 		private System.Windows.Forms.Button butF;
 		private System.Windows.Forms.TextBox textSurf;
-		private System.Windows.Forms.Button butDel;
 		private System.Windows.Forms.GroupBox groupBox2;
 		private System.Windows.Forms.RadioButton radioEntryTP;
 		private System.Windows.Forms.RadioButton radioEntryEO;
@@ -47,8 +46,6 @@ namespace OpenDental{
 		private System.Windows.Forms.GroupBox groupNext;
 		private ContrApptSingle ApptNext;
 		private System.Windows.Forms.CheckBox checkDone;
-		private System.Windows.Forms.Button butClear;
-		private System.Windows.Forms.Button butNew;
 		private System.Windows.Forms.Label labelMinutes;
 		private System.Windows.Forms.Button butEnterTx;
 		private System.Windows.Forms.ImageList imageListUpDown;
@@ -120,20 +117,20 @@ namespace OpenDental{
 		private System.Windows.Forms.CheckBox checkShowTP;
 		private System.Windows.Forms.CheckBox checkRx;
 		private System.Windows.Forms.GroupBox groupShow;
-		private System.Windows.Forms.ToolBar toolBarMain;
 		private System.Windows.Forms.ImageList imageListMain;
-		private System.Windows.Forms.ToolBarButton toolButPatient;
 		private System.Windows.Forms.ContextMenu menuPrimary;
-		private System.Windows.Forms.ToolBarButton toolButSep1;
-		private System.Windows.Forms.ToolBarButton toolButRx;
-		private System.Windows.Forms.ToolBarButton toolButPrimary;
 		private System.Windows.Forms.MenuItem menuPrimaryToggle;
 		private System.Windows.Forms.MenuItem menuPrimaryAll;
-		private System.Windows.Forms.ToolBarButton toolButSep2;
 		private System.Windows.Forms.MenuItem menuPrimaryNone;
 		private System.Windows.Forms.TextBox textADACode;
 		private System.Windows.Forms.Label label14;
 		private System.Windows.Forms.Button butOK;
+		private System.Windows.Forms.Button butPat;
+		private System.Windows.Forms.Button butRx;
+		private System.Windows.Forms.Button butPrimary;
+		private OpenDental.XPButton butNew;
+		private OpenDental.XPButton butClear;
+		private OpenDental.XPButton butDel;
 		private System.Windows.Forms.ListBox listProcButtons;
 //fix: use AL for tbProg.SelectedRowsAL
 		//public	VisiQuick VQLink;  // TJE
@@ -175,7 +172,6 @@ namespace OpenDental{
 			this.butI = new System.Windows.Forms.Button();
 			this.butF = new System.Windows.Forms.Button();
 			this.textSurf = new System.Windows.Forms.TextBox();
-			this.butDel = new System.Windows.Forms.Button();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
 			this.radioEntryR = new System.Windows.Forms.RadioButton();
 			this.radioEntryC = new System.Windows.Forms.RadioButton();
@@ -195,9 +191,9 @@ namespace OpenDental{
 			this.label4 = new System.Windows.Forms.Label();
 			this.tbProg = new OpenDental.TableProg();
 			this.groupNext = new System.Windows.Forms.GroupBox();
+			this.butClear = new OpenDental.XPButton();
+			this.butNew = new OpenDental.XPButton();
 			this.labelMinutes = new System.Windows.Forms.Label();
-			this.butNew = new System.Windows.Forms.Button();
-			this.butClear = new System.Windows.Forms.Button();
 			this.checkDone = new System.Windows.Forms.CheckBox();
 			this.panelEnterTx = new System.Windows.Forms.Panel();
 			this.butOK = new System.Windows.Forms.Button();
@@ -260,24 +256,22 @@ namespace OpenDental{
 			this.cTeeth = new OpenDental.ContrTeeth();
 			this.groupShow = new System.Windows.Forms.GroupBox();
 			this.checkNotes = new System.Windows.Forms.CheckBox();
+			this.checkRx = new System.Windows.Forms.CheckBox();
 			this.checkShowR = new System.Windows.Forms.CheckBox();
 			this.butShowNone = new System.Windows.Forms.Button();
 			this.butShowAll = new System.Windows.Forms.Button();
 			this.checkShowE = new System.Windows.Forms.CheckBox();
 			this.checkShowC = new System.Windows.Forms.CheckBox();
 			this.checkShowTP = new System.Windows.Forms.CheckBox();
-			this.checkRx = new System.Windows.Forms.CheckBox();
 			this.menuPrimary = new System.Windows.Forms.ContextMenu();
 			this.menuPrimaryToggle = new System.Windows.Forms.MenuItem();
 			this.menuPrimaryAll = new System.Windows.Forms.MenuItem();
 			this.menuPrimaryNone = new System.Windows.Forms.MenuItem();
-			this.toolBarMain = new System.Windows.Forms.ToolBar();
-			this.toolButPatient = new System.Windows.Forms.ToolBarButton();
-			this.toolButSep1 = new System.Windows.Forms.ToolBarButton();
-			this.toolButRx = new System.Windows.Forms.ToolBarButton();
-			this.toolButSep2 = new System.Windows.Forms.ToolBarButton();
-			this.toolButPrimary = new System.Windows.Forms.ToolBarButton();
 			this.imageListMain = new System.Windows.Forms.ImageList(this.components);
+			this.butPat = new System.Windows.Forms.Button();
+			this.butRx = new System.Windows.Forms.Button();
+			this.butPrimary = new System.Windows.Forms.Button();
+			this.butDel = new OpenDental.XPButton();
 			this.groupBox2.SuspendLayout();
 			this.panelMedical.SuspendLayout();
 			this.groupNext.SuspendLayout();
@@ -297,6 +291,7 @@ namespace OpenDental{
 			// butAddProc
 			// 
 			this.butAddProc.BackColor = System.Drawing.SystemColors.Control;
+			this.butAddProc.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butAddProc.Location = new System.Drawing.Point(193, 2);
 			this.butAddProc.Name = "butAddProc";
 			this.butAddProc.Size = new System.Drawing.Size(105, 20);
@@ -308,6 +303,7 @@ namespace OpenDental{
 			// butM
 			// 
 			this.butM.BackColor = System.Drawing.SystemColors.Control;
+			this.butM.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butM.Location = new System.Drawing.Point(4, 50);
 			this.butM.Name = "butM";
 			this.butM.Size = new System.Drawing.Size(24, 20);
@@ -318,6 +314,7 @@ namespace OpenDental{
 			// butO
 			// 
 			this.butO.BackColor = System.Drawing.SystemColors.Control;
+			this.butO.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butO.Location = new System.Drawing.Point(28, 50);
 			this.butO.Name = "butO";
 			this.butO.Size = new System.Drawing.Size(16, 20);
@@ -328,6 +325,7 @@ namespace OpenDental{
 			// butD
 			// 
 			this.butD.BackColor = System.Drawing.SystemColors.Control;
+			this.butD.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butD.Location = new System.Drawing.Point(60, 50);
 			this.butD.Name = "butD";
 			this.butD.Size = new System.Drawing.Size(24, 20);
@@ -338,6 +336,7 @@ namespace OpenDental{
 			// butB
 			// 
 			this.butB.BackColor = System.Drawing.SystemColors.Control;
+			this.butB.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butB.Location = new System.Drawing.Point(28, 30);
 			this.butB.Name = "butB";
 			this.butB.Size = new System.Drawing.Size(16, 20);
@@ -348,6 +347,7 @@ namespace OpenDental{
 			// butL
 			// 
 			this.butL.BackColor = System.Drawing.SystemColors.Control;
+			this.butL.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butL.Location = new System.Drawing.Point(32, 70);
 			this.butL.Name = "butL";
 			this.butL.Size = new System.Drawing.Size(24, 20);
@@ -358,6 +358,7 @@ namespace OpenDental{
 			// butI
 			// 
 			this.butI.BackColor = System.Drawing.SystemColors.Control;
+			this.butI.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butI.Location = new System.Drawing.Point(44, 50);
 			this.butI.Name = "butI";
 			this.butI.Size = new System.Drawing.Size(16, 20);
@@ -368,6 +369,7 @@ namespace OpenDental{
 			// butF
 			// 
 			this.butF.BackColor = System.Drawing.SystemColors.Control;
+			this.butF.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butF.Location = new System.Drawing.Point(44, 30);
 			this.butF.Name = "butF";
 			this.butF.Size = new System.Drawing.Size(16, 20);
@@ -384,16 +386,6 @@ namespace OpenDental{
 			this.textSurf.TabIndex = 25;
 			this.textSurf.Text = "";
 			// 
-			// butDel
-			// 
-			this.butDel.Image = ((System.Drawing.Image)(resources.GetObject("butDel.Image")));
-			this.butDel.ImageAlign = System.Drawing.ContentAlignment.BottomLeft;
-			this.butDel.Location = new System.Drawing.Point(499, 40);
-			this.butDel.Name = "butDel";
-			this.butDel.Size = new System.Drawing.Size(29, 27);
-			this.butDel.TabIndex = 34;
-			this.butDel.Click += new System.EventHandler(this.butDel_Click);
-			// 
 			// groupBox2
 			// 
 			this.groupBox2.Controls.Add(this.radioEntryR);
@@ -401,6 +393,7 @@ namespace OpenDental{
 			this.groupBox2.Controls.Add(this.radioEntryEO);
 			this.groupBox2.Controls.Add(this.radioEntryEC);
 			this.groupBox2.Controls.Add(this.radioEntryTP);
+			this.groupBox2.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupBox2.Location = new System.Drawing.Point(2, 95);
 			this.groupBox2.Name = "groupBox2";
 			this.groupBox2.Size = new System.Drawing.Size(88, 100);
@@ -410,24 +403,27 @@ namespace OpenDental{
 			// 
 			// radioEntryR
 			// 
+			this.radioEntryR.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioEntryR.Location = new System.Drawing.Point(8, 79);
 			this.radioEntryR.Name = "radioEntryR";
-			this.radioEntryR.Size = new System.Drawing.Size(72, 16);
+			this.radioEntryR.Size = new System.Drawing.Size(75, 16);
 			this.radioEntryR.TabIndex = 4;
 			this.radioEntryR.Text = "Referred";
 			this.radioEntryR.CheckedChanged += new System.EventHandler(this.radioEntryR_CheckedChanged);
 			// 
 			// radioEntryC
 			// 
+			this.radioEntryC.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioEntryC.Location = new System.Drawing.Point(8, 31);
 			this.radioEntryC.Name = "radioEntryC";
-			this.radioEntryC.Size = new System.Drawing.Size(48, 16);
+			this.radioEntryC.Size = new System.Drawing.Size(74, 16);
 			this.radioEntryC.TabIndex = 3;
 			this.radioEntryC.Text = "C";
 			this.radioEntryC.CheckedChanged += new System.EventHandler(this.radioEntryC_CheckedChanged);
 			// 
 			// radioEntryEO
 			// 
+			this.radioEntryEO.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioEntryEO.Location = new System.Drawing.Point(8, 63);
 			this.radioEntryEO.Name = "radioEntryEO";
 			this.radioEntryEO.Size = new System.Drawing.Size(72, 16);
@@ -437,9 +433,10 @@ namespace OpenDental{
 			// 
 			// radioEntryEC
 			// 
+			this.radioEntryEC.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioEntryEC.Location = new System.Drawing.Point(8, 47);
 			this.radioEntryEC.Name = "radioEntryEC";
-			this.radioEntryEC.Size = new System.Drawing.Size(64, 16);
+			this.radioEntryEC.Size = new System.Drawing.Size(77, 16);
 			this.radioEntryEC.TabIndex = 1;
 			this.radioEntryEC.Text = "Ex Cur";
 			this.radioEntryEC.CheckedChanged += new System.EventHandler(this.radioEntryEC_CheckedChanged);
@@ -447,9 +444,10 @@ namespace OpenDental{
 			// radioEntryTP
 			// 
 			this.radioEntryTP.Checked = true;
+			this.radioEntryTP.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioEntryTP.Location = new System.Drawing.Point(8, 15);
 			this.radioEntryTP.Name = "radioEntryTP";
-			this.radioEntryTP.Size = new System.Drawing.Size(48, 16);
+			this.radioEntryTP.Size = new System.Drawing.Size(77, 16);
 			this.radioEntryTP.TabIndex = 0;
 			this.radioEntryTP.TabStop = true;
 			this.radioEntryTP.Text = "TP";
@@ -473,20 +471,20 @@ namespace OpenDental{
 			this.panelMedical.Controls.Add(this.textMedUrgNote);
 			this.panelMedical.Controls.Add(this.label1);
 			this.panelMedical.Controls.Add(this.textMedical);
-			this.panelMedical.Location = new System.Drawing.Point(2, 520);
+			this.panelMedical.Location = new System.Drawing.Point(2, 556);
 			this.panelMedical.Name = "panelMedical";
-			this.panelMedical.Size = new System.Drawing.Size(413, 158);
+			this.panelMedical.Size = new System.Drawing.Size(413, 122);
 			this.panelMedical.TabIndex = 39;
 			// 
 			// textService
 			// 
 			this.textService.BackColor = System.Drawing.Color.White;
-			this.textService.Location = new System.Drawing.Point(206, 65);
+			this.textService.Location = new System.Drawing.Point(206, 62);
 			this.textService.Multiline = true;
 			this.textService.Name = "textService";
 			this.textService.ReadOnly = true;
 			this.textService.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textService.Size = new System.Drawing.Size(202, 85);
+			this.textService.Size = new System.Drawing.Size(202, 57);
 			this.textService.TabIndex = 45;
 			this.textService.Text = "";
 			// 
@@ -500,7 +498,8 @@ namespace OpenDental{
 			// 
 			// butMedicalService
 			// 
-			this.butMedicalService.Location = new System.Drawing.Point(269, 7);
+			this.butMedicalService.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butMedicalService.Location = new System.Drawing.Point(284, 20);
 			this.butMedicalService.Name = "butMedicalService";
 			this.butMedicalService.Size = new System.Drawing.Size(128, 23);
 			this.butMedicalService.TabIndex = 43;
@@ -509,7 +508,7 @@ namespace OpenDental{
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(4, 5);
+			this.label2.Location = new System.Drawing.Point(4, 6);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(116, 14);
 			this.label2.TabIndex = 42;
@@ -520,7 +519,7 @@ namespace OpenDental{
 			this.textMedUrgNote.BackColor = System.Drawing.Color.White;
 			this.textMedUrgNote.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
 			this.textMedUrgNote.ForeColor = System.Drawing.Color.Red;
-			this.textMedUrgNote.Location = new System.Drawing.Point(3, 23);
+			this.textMedUrgNote.Location = new System.Drawing.Point(3, 22);
 			this.textMedUrgNote.Multiline = true;
 			this.textMedUrgNote.Name = "textMedUrgNote";
 			this.textMedUrgNote.ReadOnly = true;
@@ -531,7 +530,7 @@ namespace OpenDental{
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(4, 49);
+			this.label1.Location = new System.Drawing.Point(4, 47);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(182, 12);
 			this.label1.TabIndex = 40;
@@ -540,12 +539,12 @@ namespace OpenDental{
 			// textMedical
 			// 
 			this.textMedical.BackColor = System.Drawing.Color.White;
-			this.textMedical.Location = new System.Drawing.Point(3, 65);
+			this.textMedical.Location = new System.Drawing.Point(3, 62);
 			this.textMedical.Multiline = true;
 			this.textMedical.Name = "textMedical";
 			this.textMedical.ReadOnly = true;
 			this.textMedical.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textMedical.Size = new System.Drawing.Size(202, 86);
+			this.textMedical.Size = new System.Drawing.Size(202, 57);
 			this.textMedical.TabIndex = 39;
 			this.textMedical.Text = "";
 			// 
@@ -568,25 +567,55 @@ namespace OpenDental{
 			// tbProg
 			// 
 			this.tbProg.BackColor = System.Drawing.SystemColors.Window;
-			this.tbProg.Location = new System.Drawing.Point(415, 265);
+			this.tbProg.Location = new System.Drawing.Point(415, 264);
 			this.tbProg.Name = "tbProg";
 			this.tbProg.SelectedIndices = new int[0];
 			this.tbProg.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
 			this.tbProg.Size = new System.Drawing.Size(498, 400);
 			this.tbProg.TabIndex = 40;
+			this.tbProg.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tbProg_KeyDown);
 			// 
 			// groupNext
 			// 
-			this.groupNext.Controls.Add(this.labelMinutes);
-			this.groupNext.Controls.Add(this.butNew);
 			this.groupNext.Controls.Add(this.butClear);
+			this.groupNext.Controls.Add(this.butNew);
+			this.groupNext.Controls.Add(this.labelMinutes);
 			this.groupNext.Controls.Add(this.checkDone);
+			this.groupNext.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupNext.Location = new System.Drawing.Point(0, 36);
 			this.groupNext.Name = "groupNext";
 			this.groupNext.Size = new System.Drawing.Size(198, 114);
 			this.groupNext.TabIndex = 43;
 			this.groupNext.TabStop = false;
 			this.groupNext.Text = "Next Appointment";
+			// 
+			// butClear
+			// 
+			this.butClear.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butClear.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butClear.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butClear.Image = ((System.Drawing.Image)(resources.GetObject("butClear.Image")));
+			this.butClear.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butClear.Location = new System.Drawing.Point(117, 58);
+			this.butClear.Name = "butClear";
+			this.butClear.Size = new System.Drawing.Size(75, 26);
+			this.butClear.TabIndex = 5;
+			this.butClear.Text = "Clear";
+			this.butClear.Click += new System.EventHandler(this.butClear_Click);
+			// 
+			// butNew
+			// 
+			this.butNew.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butNew.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butNew.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butNew.Image = ((System.Drawing.Image)(resources.GetObject("butNew.Image")));
+			this.butNew.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butNew.Location = new System.Drawing.Point(117, 30);
+			this.butNew.Name = "butNew";
+			this.butNew.Size = new System.Drawing.Size(75, 26);
+			this.butNew.TabIndex = 4;
+			this.butNew.Text = "New";
+			this.butNew.Click += new System.EventHandler(this.butNew_Click);
 			// 
 			// labelMinutes
 			// 
@@ -595,32 +624,9 @@ namespace OpenDental{
 			this.labelMinutes.Size = new System.Drawing.Size(66, 14);
 			this.labelMinutes.TabIndex = 3;
 			// 
-			// butNew
-			// 
-			this.butNew.Image = ((System.Drawing.Image)(resources.GetObject("butNew.Image")));
-			this.butNew.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butNew.Location = new System.Drawing.Point(118, 32);
-			this.butNew.Name = "butNew";
-			this.butNew.Size = new System.Drawing.Size(72, 27);
-			this.butNew.TabIndex = 2;
-			this.butNew.Text = "           New";
-			this.butNew.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butNew.Click += new System.EventHandler(this.butNew_Click);
-			// 
-			// butClear
-			// 
-			this.butClear.Image = ((System.Drawing.Image)(resources.GetObject("butClear.Image")));
-			this.butClear.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butClear.Location = new System.Drawing.Point(118, 62);
-			this.butClear.Name = "butClear";
-			this.butClear.Size = new System.Drawing.Size(72, 26);
-			this.butClear.TabIndex = 1;
-			this.butClear.Text = "          Clear";
-			this.butClear.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butClear.Click += new System.EventHandler(this.butClear_Click);
-			// 
 			// checkDone
 			// 
+			this.checkDone.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkDone.Location = new System.Drawing.Point(124, 12);
 			this.checkDone.Name = "checkDone";
 			this.checkDone.Size = new System.Drawing.Size(56, 16);
@@ -649,7 +655,7 @@ namespace OpenDental{
 			this.panelEnterTx.Controls.Add(this.textSurf);
 			this.panelEnterTx.Controls.Add(this.butD);
 			this.panelEnterTx.Controls.Add(this.groupBox2);
-			this.panelEnterTx.Location = new System.Drawing.Point(416, 67);
+			this.panelEnterTx.Location = new System.Drawing.Point(416, 66);
 			this.panelEnterTx.Name = "panelEnterTx";
 			this.panelEnterTx.Size = new System.Drawing.Size(496, 198);
 			this.panelEnterTx.TabIndex = 44;
@@ -657,20 +663,23 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(449, 2);
 			this.butOK.Name = "butOK";
-			this.butOK.Size = new System.Drawing.Size(44, 22);
+			this.butOK.Size = new System.Drawing.Size(44, 20);
 			this.butOK.TabIndex = 52;
 			this.butOK.Text = "OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// textADACode
 			// 
-			this.textADACode.Location = new System.Drawing.Point(339, 2);
+			this.textADACode.Location = new System.Drawing.Point(339, 3);
 			this.textADACode.Name = "textADACode";
 			this.textADACode.Size = new System.Drawing.Size(108, 20);
 			this.textADACode.TabIndex = 50;
-			this.textADACode.Text = "type ADA code";
+			this.textADACode.Text = "Type ADA Code";
+			this.textADACode.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textADACode_KeyDown);
+			this.textADACode.TextChanged += new System.EventHandler(this.textADACode_TextChanged);
 			this.textADACode.Enter += new System.EventHandler(this.textADACode_Enter);
 			// 
 			// label14
@@ -700,12 +709,13 @@ namespace OpenDental{
 			// 
 			// butEnterTx
 			// 
+			this.butEnterTx.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.butEnterTx.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.butEnterTx.ImageIndex = 0;
+			this.butEnterTx.ImageIndex = 1;
 			this.butEnterTx.ImageList = this.imageListUpDown;
 			this.butEnterTx.Location = new System.Drawing.Point(416, 40);
 			this.butEnterTx.Name = "butEnterTx";
-			this.butEnterTx.Size = new System.Drawing.Size(79, 27);
+			this.butEnterTx.Size = new System.Drawing.Size(79, 26);
 			this.butEnterTx.TabIndex = 40;
 			this.butEnterTx.Text = "Enter Tx";
 			this.butEnterTx.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -713,7 +723,7 @@ namespace OpenDental{
 			// 
 			// imageListUpDown
 			// 
-			this.imageListUpDown.ImageSize = new System.Drawing.Size(15, 15);
+			this.imageListUpDown.ImageSize = new System.Drawing.Size(10, 10);
 			this.imageListUpDown.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListUpDown.ImageStream")));
 			this.imageListUpDown.TransparentColor = System.Drawing.Color.Transparent;
 			// 
@@ -1182,13 +1192,14 @@ namespace OpenDental{
 			// groupShow
 			// 
 			this.groupShow.Controls.Add(this.checkNotes);
+			this.groupShow.Controls.Add(this.checkRx);
 			this.groupShow.Controls.Add(this.checkShowR);
 			this.groupShow.Controls.Add(this.butShowNone);
 			this.groupShow.Controls.Add(this.butShowAll);
 			this.groupShow.Controls.Add(this.checkShowE);
 			this.groupShow.Controls.Add(this.checkShowC);
 			this.groupShow.Controls.Add(this.checkShowTP);
-			this.groupShow.Controls.Add(this.checkRx);
+			this.groupShow.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupShow.Location = new System.Drawing.Point(200, 36);
 			this.groupShow.Name = "groupShow";
 			this.groupShow.Size = new System.Drawing.Size(211, 114);
@@ -1201,26 +1212,41 @@ namespace OpenDental{
 			this.checkNotes.AllowDrop = true;
 			this.checkNotes.Checked = true;
 			this.checkNotes.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.checkNotes.Location = new System.Drawing.Point(89, 30);
+			this.checkNotes.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkNotes.Location = new System.Drawing.Point(104, 30);
 			this.checkNotes.Name = "checkNotes";
-			this.checkNotes.Size = new System.Drawing.Size(80, 16);
+			this.checkNotes.Size = new System.Drawing.Size(102, 16);
 			this.checkNotes.TabIndex = 11;
 			this.checkNotes.Text = "Proc Notes";
 			this.checkNotes.Click += new System.EventHandler(this.checkNotes_Click);
+			// 
+			// checkRx
+			// 
+			this.checkRx.Checked = true;
+			this.checkRx.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.checkRx.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkRx.Location = new System.Drawing.Point(104, 15);
+			this.checkRx.Name = "checkRx";
+			this.checkRx.Size = new System.Drawing.Size(95, 16);
+			this.checkRx.TabIndex = 8;
+			this.checkRx.Text = "Rx";
+			this.checkRx.Click += new System.EventHandler(this.checkRx_Click);
 			// 
 			// checkShowR
 			// 
 			this.checkShowR.Checked = true;
 			this.checkShowR.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.checkShowR.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkShowR.Location = new System.Drawing.Point(4, 60);
 			this.checkShowR.Name = "checkShowR";
-			this.checkShowR.Size = new System.Drawing.Size(76, 16);
+			this.checkShowR.Size = new System.Drawing.Size(104, 16);
 			this.checkShowR.TabIndex = 14;
 			this.checkShowR.Text = "Referred";
 			this.checkShowR.Click += new System.EventHandler(this.checkShowR_Click);
 			// 
 			// butShowNone
 			// 
+			this.butShowNone.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butShowNone.Location = new System.Drawing.Point(69, 84);
 			this.butShowNone.Name = "butShowNone";
 			this.butShowNone.Size = new System.Drawing.Size(58, 22);
@@ -1230,6 +1256,7 @@ namespace OpenDental{
 			// 
 			// butShowAll
 			// 
+			this.butShowAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butShowAll.Location = new System.Drawing.Point(5, 84);
 			this.butShowAll.Name = "butShowAll";
 			this.butShowAll.Size = new System.Drawing.Size(53, 22);
@@ -1241,9 +1268,10 @@ namespace OpenDental{
 			// 
 			this.checkShowE.Checked = true;
 			this.checkShowE.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.checkShowE.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkShowE.Location = new System.Drawing.Point(4, 45);
 			this.checkShowE.Name = "checkShowE";
-			this.checkShowE.Size = new System.Drawing.Size(76, 16);
+			this.checkShowE.Size = new System.Drawing.Size(100, 16);
 			this.checkShowE.TabIndex = 10;
 			this.checkShowE.Text = "Existing";
 			this.checkShowE.Click += new System.EventHandler(this.checkShowE_Click);
@@ -1252,9 +1280,10 @@ namespace OpenDental{
 			// 
 			this.checkShowC.Checked = true;
 			this.checkShowC.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.checkShowC.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkShowC.Location = new System.Drawing.Point(4, 30);
 			this.checkShowC.Name = "checkShowC";
-			this.checkShowC.Size = new System.Drawing.Size(80, 16);
+			this.checkShowC.Size = new System.Drawing.Size(100, 16);
 			this.checkShowC.TabIndex = 9;
 			this.checkShowC.Text = "Completed";
 			this.checkShowC.Click += new System.EventHandler(this.checkShowC_Click);
@@ -1263,23 +1292,13 @@ namespace OpenDental{
 			// 
 			this.checkShowTP.Checked = true;
 			this.checkShowTP.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.checkShowTP.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkShowTP.Location = new System.Drawing.Point(4, 15);
 			this.checkShowTP.Name = "checkShowTP";
-			this.checkShowTP.Size = new System.Drawing.Size(80, 16);
+			this.checkShowTP.Size = new System.Drawing.Size(101, 16);
 			this.checkShowTP.TabIndex = 8;
 			this.checkShowTP.Text = "Treat Plan";
 			this.checkShowTP.Click += new System.EventHandler(this.checkShowTP_Click);
-			// 
-			// checkRx
-			// 
-			this.checkRx.Checked = true;
-			this.checkRx.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.checkRx.Location = new System.Drawing.Point(89, 15);
-			this.checkRx.Name = "checkRx";
-			this.checkRx.Size = new System.Drawing.Size(39, 16);
-			this.checkRx.TabIndex = 8;
-			this.checkRx.Text = "Rx";
-			this.checkRx.Click += new System.EventHandler(this.checkRx_Click);
 			// 
 			// menuPrimary
 			// 
@@ -1306,59 +1325,65 @@ namespace OpenDental{
 			this.menuPrimaryNone.Text = "Set All Permanent";
 			this.menuPrimaryNone.Click += new System.EventHandler(this.menuPrimaryNone_Click);
 			// 
-			// toolBarMain
-			// 
-			this.toolBarMain.Appearance = System.Windows.Forms.ToolBarAppearance.Flat;
-			this.toolBarMain.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.toolBarMain.Buttons.AddRange(new System.Windows.Forms.ToolBarButton[] {
-																																									 this.toolButPatient,
-																																									 this.toolButSep1,
-																																									 this.toolButRx,
-																																									 this.toolButSep2,
-																																									 this.toolButPrimary});
-			this.toolBarMain.DropDownArrows = true;
-			this.toolBarMain.ImageList = this.imageListMain;
-			this.toolBarMain.Location = new System.Drawing.Point(0, 0);
-			this.toolBarMain.Name = "toolBarMain";
-			this.toolBarMain.ShowToolTips = true;
-			this.toolBarMain.Size = new System.Drawing.Size(948, 36);
-			this.toolBarMain.TabIndex = 173;
-			this.toolBarMain.TextAlign = System.Windows.Forms.ToolBarTextAlign.Right;
-			this.toolBarMain.ButtonClick += new System.Windows.Forms.ToolBarButtonClickEventHandler(this.toolBarMain_ButtonClick);
-			// 
-			// toolButPatient
-			// 
-			this.toolButPatient.ImageIndex = 0;
-			this.toolButPatient.Text = "Select Patient";
-			// 
-			// toolButSep1
-			// 
-			this.toolButSep1.Style = System.Windows.Forms.ToolBarButtonStyle.Separator;
-			// 
-			// toolButRx
-			// 
-			this.toolButRx.ImageIndex = 1;
-			this.toolButRx.Text = "New Rx";
-			// 
-			// toolButSep2
-			// 
-			this.toolButSep2.Style = System.Windows.Forms.ToolBarButtonStyle.Separator;
-			// 
-			// toolButPrimary
-			// 
-			this.toolButPrimary.DropDownMenu = this.menuPrimary;
-			this.toolButPrimary.Style = System.Windows.Forms.ToolBarButtonStyle.DropDownButton;
-			this.toolButPrimary.Text = "Primary";
-			// 
 			// imageListMain
 			// 
 			this.imageListMain.ImageSize = new System.Drawing.Size(22, 22);
 			this.imageListMain.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListMain.ImageStream")));
 			this.imageListMain.TransparentColor = System.Drawing.Color.Transparent;
 			// 
+			// butPat
+			// 
+			this.butPat.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butPat.ImageIndex = 0;
+			this.butPat.ImageList = this.imageListMain;
+			this.butPat.Location = new System.Drawing.Point(2, 2);
+			this.butPat.Name = "butPat";
+			this.butPat.Size = new System.Drawing.Size(124, 26);
+			this.butPat.TabIndex = 174;
+			this.butPat.Text = "Select Patient";
+			this.butPat.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.butPat.Click += new System.EventHandler(this.butPat_Click);
+			// 
+			// butRx
+			// 
+			this.butRx.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butRx.ImageIndex = 1;
+			this.butRx.ImageList = this.imageListMain;
+			this.butRx.Location = new System.Drawing.Point(132, 2);
+			this.butRx.Name = "butRx";
+			this.butRx.Size = new System.Drawing.Size(91, 26);
+			this.butRx.TabIndex = 175;
+			this.butRx.Text = "New Rx";
+			this.butRx.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.butRx.Click += new System.EventHandler(this.butRx_Click);
+			// 
+			// butPrimary
+			// 
+			this.butPrimary.Location = new System.Drawing.Point(228, 2);
+			this.butPrimary.Name = "butPrimary";
+			this.butPrimary.Size = new System.Drawing.Size(90, 26);
+			this.butPrimary.TabIndex = 176;
+			this.butPrimary.Text = "Primary";
+			this.butPrimary.Click += new System.EventHandler(this.butPrimary_Click_1);
+			// 
+			// butDel
+			// 
+			this.butDel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butDel.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butDel.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butDel.Image = ((System.Drawing.Image)(resources.GetObject("butDel.Image")));
+			this.butDel.Location = new System.Drawing.Point(500, 39);
+			this.butDel.Name = "butDel";
+			this.butDel.Size = new System.Drawing.Size(28, 27);
+			this.butDel.TabIndex = 177;
+			this.butDel.Click += new System.EventHandler(this.butDel_Click);
+			// 
 			// ContrChart
 			// 
-			this.Controls.Add(this.toolBarMain);
+			this.Controls.Add(this.butDel);
+			this.Controls.Add(this.butPrimary);
+			this.Controls.Add(this.butRx);
+			this.Controls.Add(this.butPat);
 			this.Controls.Add(this.cTeeth);
 			this.Controls.Add(this.panelVQ);
 			this.Controls.Add(this.panelEnterTx);
@@ -1366,11 +1391,10 @@ namespace OpenDental{
 			this.Controls.Add(this.panelMedical);
 			this.Controls.Add(this.groupNext);
 			this.Controls.Add(this.butEnterTx);
-			this.Controls.Add(this.butDel);
 			this.Controls.Add(this.groupShow);
 			this.Controls.Add(this.button1);
 			this.Name = "ContrChart";
-			this.Size = new System.Drawing.Size(948, 762);
+			this.Size = new System.Drawing.Size(939, 762);
 			this.Resize += new System.EventHandler(this.ContrChart_Resize);
 			this.Layout += new System.Windows.Forms.LayoutEventHandler(this.ContrChart_Layout);
 			this.groupBox2.ResumeLayout(false);
@@ -1466,7 +1490,11 @@ namespace OpenDental{
 				this.checkShowTP,
 				this.butOK,
 				this.label14,
-				this.label13
+				this.label13,
+				this.butRx,
+				this.butPat,
+				this.butPrimary,
+				this.textADACode
 				});
 		}
 
@@ -1475,13 +1503,25 @@ namespace OpenDental{
 			RefreshModuleScreen();
 		}
 
+		public void ModuleUnselected(){
+			Patients.FamilyList=null;
+			InsPlans.List=null;
+			CovPats.List=null;
+			ClaimProcs.List=null;
+			//from FillProgNotes:
+			Procedures.List=null;
+			Procedures.HList=null;
+			Procedures.MissingTeeth=null;
+			RxPats.List=null;
+		}
+
 		private void RefreshModuleData(){
 			if (Patients.PatIsLoaded){
 				Patients.GetFamily(Patients.Cur.PatNum);
 				InsPlans.Refresh();
 				CovPats.Refresh();
 				PatientNotes.Refresh();
-        
+        ClaimProcs.Refresh();
 			}
 			if(Programs.IsEnabled("VisiQuick")){
 				panelVQ.Visible=true;
@@ -1489,16 +1529,18 @@ namespace OpenDental{
 			else panelVQ.Visible=false;
 		}
 
+		
+
 		private void RefreshModuleScreen(){
-			if (Patients.PatIsLoaded){
+			if(Patients.PatIsLoaded){
 				ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString+" - "+Patients.GetCurNameLF();
 				groupShow.Enabled=true;
 				panelMedical.Enabled=true;
 				groupNext.Enabled=true;
 				cTeeth.Enabled=true;
 				tbProg.Enabled=true;
-				toolButRx.Enabled=true;
-				toolButPrimary.Enabled=true;
+				butRx.Enabled=true;
+				butPrimary.Enabled=true;
 				panelEnterTx.Enabled=true;//?
 				butDel.Enabled=true;
 			}
@@ -1509,8 +1551,8 @@ namespace OpenDental{
 				groupNext.Enabled=false;
 				cTeeth.Enabled=false;
 				tbProg.Enabled=false;
-				toolButRx.Enabled=false;
-				toolButPrimary.Enabled=false;
+				butRx.Enabled=false;
+				butPrimary.Enabled=false;
 				panelEnterTx.Enabled=false;//?
 				butDel.Enabled=false;
 			}
@@ -1522,8 +1564,21 @@ namespace OpenDental{
 			
 		}
 
-		private void toolBarMain_ButtonClick(object sender, System.Windows.Forms.ToolBarButtonClickEventArgs e) {
-			switch(toolBarMain.Buttons.IndexOf(e.Button)){
+		private void butPat_Click(object sender, System.EventArgs e) {
+			toolButPatient_Click();
+		}
+
+		private void butRx_Click(object sender, System.EventArgs e) {
+			toolButRx_Click();
+		}
+
+		private void butPrimary_Click_1(object sender, System.EventArgs e) {
+			menuPrimary.Show(butPrimary,new Point(0,26));
+		}
+
+
+		private void toolBarMain_ButtonClick(object sender, System.Windows.Forms.ToolBarButtonClickEventArgs e) {}
+			/*switch(toolBarMain.Buttons.IndexOf(e.Button)){
 				case 0:
 					toolButPatient_Click();
 					break;
@@ -1535,8 +1590,8 @@ namespace OpenDental{
 				case 4:
 					//nothing but menu
 					break;
-			}
-		}
+			}*/
+		
 
 		private void toolButPatient_Click(){
 			FormPatientSelect formSelectPatient2 = new FormPatientSelect();
@@ -2141,9 +2196,10 @@ namespace OpenDental{
 		}
 
 		public static int GetFeeSched(){
+			//there's not really a good place to put this function, so it's here.
 			int retVal=0;
 			if(Patients.Cur.PriPlanNum!=0){
-				InsPlans.SetCurInFam(Patients.Cur.PriPlanNum);
+				InsPlans.GetCur(Patients.Cur.PriPlanNum);
 				retVal=InsPlans.Cur.FeeSched;
 			}
 			if(retVal==0){
@@ -2325,7 +2381,17 @@ namespace OpenDental{
 			//newDx=Defs.Defns[(int)DefCat.Diagnosis][listDx.IndexFromPoint(e.X,e.Y)].DefNum;
 		}
 
+		private void tbProg_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e) {
+			if(e.KeyCode==Keys.Delete || e.KeyCode==Keys.Back){
+				DeleteRows();
+			}
+		}
+
 		private void butDel_Click(object sender, System.EventArgs e) {
+			DeleteRows();
+		}
+
+		private void DeleteRows(){
 			if (tbProg.SelectedIndices.Length==0){
 				MessageBox.Show(Lan.g(this,"Please select an item first."));
 				return;
@@ -2827,14 +2893,37 @@ namespace OpenDental{
 		}
 
 		private void textADACode_Enter(object sender, System.EventArgs e) {
-			textADACode.Text="";
+			if(textADACode.Text==Lan.g(this,"Type ADA Code")){
+				//MessageBox.Show("match");
+				textADACode.Text="";
+			}
+			//else{
+				//MessageBox.Show("no match");
+			//}
+		}
+
+		private void textADACode_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e) {
+			if(e.KeyCode==Keys.Return){
+				EnterTypedCode();
+			}
+		}
+
+		private void textADACode_TextChanged(object sender, System.EventArgs e) {
+			if(textADACode.Text=="d"){
+				textADACode.Text="D";
+				textADACode.SelectionStart=1;
+			}
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
+			EnterTypedCode();
+		}
+
+		private void EnterTypedCode(){
 			Procedures.Cur = new Procedure();
 			if(!ProcCodes.HList.ContainsKey(textADACode.Text)){
 				MessageBox.Show(Lan.g(this,"Invalid code."));
-				textADACode.Text="";
+				//textADACode.Text="";
 				textADACode.Select();
 				return;
 			}
@@ -2843,6 +2932,8 @@ namespace OpenDental{
 			//Procedures.Cur.ToothNum="";
 			AddProcedure();
 			ModuleSelected();
+			textADACode.Text="";
+			textADACode.Select();
 		}
 
 		private void cTeeth_Click(object sender, System.EventArgs e) {
@@ -2875,6 +2966,16 @@ namespace OpenDental{
 				butI.Enabled=false;
 			}
 		}
+
+		
+
+		
+
+		
+
+		
+
+		
 
 		
 

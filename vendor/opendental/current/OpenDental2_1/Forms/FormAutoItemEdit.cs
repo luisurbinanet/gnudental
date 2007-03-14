@@ -77,6 +77,7 @@ namespace OpenDental{
 			// 
 			// butChange
 			// 
+			this.butChange.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butChange.Location = new System.Drawing.Point(186, 54);
 			this.butChange.Name = "butChange";
 			this.butChange.Size = new System.Drawing.Size(94, 20);
@@ -87,18 +88,20 @@ namespace OpenDental{
 			// butCancel
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(490, 438);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.RightToLeft = System.Windows.Forms.RightToLeft.No;
 			this.butCancel.TabIndex = 23;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(490, 404);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 22;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// label2
@@ -112,8 +115,8 @@ namespace OpenDental{
 			// FormAutoItemEdit
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(592, 490);
-			this.ControlBox = false;
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.butChange);
 			this.Controls.Add(this.butCancel);
@@ -121,7 +124,10 @@ namespace OpenDental{
 			this.Controls.Add(this.listConditions);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.textADA);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormAutoItemEdit";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "FormAutoItemEdit";
 			this.Load += new System.EventHandler(this.FormAutoItemEdit_Load);
@@ -201,3 +207,13 @@ namespace OpenDental{
 
 	}
 }
+
+
+
+
+
+
+
+
+
+

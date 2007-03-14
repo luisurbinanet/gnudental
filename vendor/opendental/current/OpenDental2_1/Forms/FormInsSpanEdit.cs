@@ -72,6 +72,7 @@ namespace OpenDental{
 			// 
 			this.textTo.Location = new System.Drawing.Point(150, 70);
 			this.textTo.Name = "textTo";
+			this.textTo.Size = new System.Drawing.Size(101, 20);
 			this.textTo.TabIndex = 1;
 			this.textTo.Text = "";
 			// 
@@ -100,6 +101,7 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(332, 342);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 3;
@@ -108,11 +110,12 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
-			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(332, 378);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 4;
 			this.butCancel.Text = "Cancel";
+			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// FormInsSpanEdit
 			// 
@@ -126,9 +129,12 @@ namespace OpenDental{
 			this.Controls.Add(this.textTo);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.listCovCats);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormInsSpanEdit";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = Lan.g(this,"Edit Ins Coverage Span");
+			this.Text = "Edit Ins Coverage Span";
 			this.Load += new System.EventHandler(this.FormInsSpanEdit_Load);
 			this.ResumeLayout(false);
 
@@ -208,6 +214,10 @@ namespace OpenDental{
 				CovSpans.UpdateCur();
 			}
 			DialogResult=DialogResult.OK;
+		}
+
+		private void butCancel_Click(object sender, System.EventArgs e) {
+			DialogResult=DialogResult.Cancel;
 		}
 
 	}

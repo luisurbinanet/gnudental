@@ -1,5 +1,5 @@
 /*=============================================================================================================
-FreeDental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
+Open Dental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
 See header in FormOpenDental.cs for complete text.  Redistributions must retain this text.
 ===============================================================================================================*/
 using System;
@@ -95,8 +95,8 @@ namespace OpenDental{
 			// 
 			this.panelScroll.BackColor = System.Drawing.SystemColors.Control;
 			this.panelScroll.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.panelScroll.Controls.Add(this.panelTable);
 			this.panelScroll.Controls.Add(this.vScrollBar1);
+			this.panelScroll.Controls.Add(this.panelTable);
 			this.panelScroll.Location = new System.Drawing.Point(0, 100);
 			this.panelScroll.Name = "panelScroll";
 			this.panelScroll.Size = new System.Drawing.Size(464, 160);
@@ -621,15 +621,18 @@ namespace OpenDental{
 		}
 
 		private void ContrTable_Paint(object sender, System.Windows.Forms.PaintEventArgs e) {
+			//This draws the blue border around each table
 			Graphics grfx = e.Graphics;
-			Pen penB = new Pen(Color.Black);
-			Pen penG = new Pen(Color.White);
-			grfx.DrawLine(penG,0,0,0,Height-1);
-			//grfx.DrawLine(penB,0,Height-2,Width-1,Height-2);
-			grfx.DrawLine(penB,0,Height-1,Width-1,Height-1);
-			grfx.DrawLine(penG,0,0,Width,0);
-			grfx.DrawLine(penB,Width,0,Width,Height-1);
-			grfx.DrawLine(penB,Width-1,0,Width-1,Height-1);
+			//Pen penB = new Pen(Color.Black);//bottom, right
+			//Pen penW = new Pen(Color.White);//top, left
+			Pen penBlue=new Pen(Color.FromArgb(127,157,185));
+			//Pen penBlue = new Pen(Color.FromArgb(0,60,116));
+			//Pen penGray = new Pen(SystemColors.Control);
+			grfx.DrawLine(penBlue,0,0,0,Height-1);//left
+			grfx.DrawLine(penBlue,0,Height-1,Width-1,Height-1);//bottom
+			grfx.DrawLine(penBlue,0,0,Width,0);//top
+			//grfx.DrawLine(penGray,Width,0,Width,Height-1);//right, off the edge
+			grfx.DrawLine(penBlue,Width-1,0,Width-1,Height-1);//right
 			grfx=null;
 		}
 

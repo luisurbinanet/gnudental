@@ -150,6 +150,7 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(583, 585);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 17;
@@ -159,6 +160,7 @@ namespace OpenDental{
 			// butCancel
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(583, 623);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.RightToLeft = System.Windows.Forms.RightToLeft.No;
@@ -239,6 +241,7 @@ namespace OpenDental{
 			this.groupBox1.Controls.Add(this.radioTIN);
 			this.groupBox1.Controls.Add(this.radioSSN);
 			this.groupBox1.Controls.Add(this.textSSN);
+			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupBox1.Location = new System.Drawing.Point(110, 412);
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.Size = new System.Drawing.Size(156, 82);
@@ -248,16 +251,18 @@ namespace OpenDental{
 			// 
 			// radioTIN
 			// 
+			this.radioTIN.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioTIN.Location = new System.Drawing.Point(9, 34);
 			this.radioTIN.Name = "radioTIN";
 			this.radioTIN.Size = new System.Drawing.Size(135, 15);
 			this.radioTIN.TabIndex = 18;
-			this.radioTIN.Text = "TIN if incorporated";
+			this.radioTIN.Text = "TIN";
 			this.radioTIN.Click += new System.EventHandler(this.radioTIN_Click);
 			// 
 			// radioSSN
 			// 
 			this.radioSSN.Checked = true;
+			this.radioSSN.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioSSN.Location = new System.Drawing.Point(9, 17);
 			this.radioSSN.Name = "radioSSN";
 			this.radioSSN.Size = new System.Drawing.Size(104, 14);
@@ -514,6 +519,7 @@ namespace OpenDental{
 			// 
 			// checkHidden
 			// 
+			this.checkHidden.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkHidden.Location = new System.Drawing.Point(20, 45);
 			this.checkHidden.Name = "checkHidden";
 			this.checkHidden.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
@@ -534,6 +540,7 @@ namespace OpenDental{
 			// checkNotPerson
 			// 
 			this.checkNotPerson.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.checkNotPerson.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkNotPerson.Location = new System.Drawing.Point(11, 68);
 			this.checkNotPerson.Name = "checkNotPerson";
 			this.checkNotPerson.Size = new System.Drawing.Size(113, 21);
@@ -543,6 +550,7 @@ namespace OpenDental{
 			// 
 			// butNone
 			// 
+			this.butNone.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butNone.Location = new System.Drawing.Point(502, 270);
 			this.butNone.Name = "butNone";
 			this.butNone.Size = new System.Drawing.Size(72, 22);

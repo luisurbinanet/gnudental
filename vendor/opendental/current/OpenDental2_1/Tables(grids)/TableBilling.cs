@@ -18,10 +18,10 @@ namespace OpenDental{
 			HeadingIsPresent=false;
 			InstantClassesPar();
 			SetRowHeight(0,49,14);
-			Fields[0]=Lan.g("tbAutoBilling","Name");
-			Fields[1]=Lan.g("tbAutoBilling","Total");
-			Fields[2]=Lan.g("tbAutoBilling","-Insurance Est");
-			Fields[3]=Lan.g("tbAutoBilling","=Amount Due");
+			Fields[0]=Lan.g("TableBilling","Name");
+			Fields[1]=Lan.g("TableBilling","Total");
+			Fields[2]=Lan.g("TableBilling","-Insurance Est");
+			Fields[3]=Lan.g("TableBilling","=Amount Due");
 			ColWidth[0]=180;
 			ColWidth[1]=100;
 			ColWidth[2]=100;

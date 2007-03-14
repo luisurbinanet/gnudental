@@ -45,18 +45,20 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
-			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(446, 652);
 			this.butCancel.Name = "butCancel";
-			this.butCancel.Size = new System.Drawing.Size(75, 20);
+			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 41;
 			this.butCancel.Text = "Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(446, 614);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 40;
 			this.butOK.Text = "OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
@@ -74,8 +76,10 @@ namespace OpenDental{
 			// 
 			// butDate
 			// 
+			this.butDate.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butDate.Location = new System.Drawing.Point(416, 56);
 			this.butDate.Name = "butDate";
+			this.butDate.Size = new System.Drawing.Size(75, 26);
 			this.butDate.TabIndex = 43;
 			this.butDate.Text = "Insert Date";
 			this.butDate.Click += new System.EventHandler(this.butDate_Click);
@@ -84,14 +88,16 @@ namespace OpenDental{
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(556, 696);
-			this.Controls.AddRange(new System.Windows.Forms.Control[] {
-																																	this.butDate,
-																																	this.textFinNotes,
-																																	this.butCancel,
-																																	this.butOK});
+			this.Controls.Add(this.butDate);
+			this.Controls.Add(this.textFinNotes);
+			this.Controls.Add(this.butCancel);
+			this.Controls.Add(this.butOK);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormNoteFinancial";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = Lan.g(this,"Edit Family Financial Note");
+			this.Text = "Edit Family Financial Note";
 			this.Load += new System.EventHandler(this.FormNoteFinancial_Load);
 			this.ResumeLayout(false);
 

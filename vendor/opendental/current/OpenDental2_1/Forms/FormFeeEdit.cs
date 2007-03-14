@@ -76,6 +76,7 @@ namespace OpenDental{
 			// 
 			// checkDefFee
 			// 
+			this.checkDefFee.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkDefFee.Location = new System.Drawing.Point(34, 54);
 			this.checkDefFee.Name = "checkDefFee";
 			this.checkDefFee.Size = new System.Drawing.Size(172, 24);
@@ -85,6 +86,7 @@ namespace OpenDental{
 			// 
 			// checkDefCov
 			// 
+			this.checkDefCov.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkDefCov.Location = new System.Drawing.Point(34, 84);
 			this.checkDefCov.Name = "checkDefCov";
 			this.checkDefCov.Size = new System.Drawing.Size(208, 24);
@@ -112,6 +114,7 @@ Use Default Coverage will usually be unchecked even if 'Use Default Fee' is chec
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(282, 54);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 3;
@@ -121,15 +124,18 @@ Use Default Coverage will usually be unchecked even if 'Use Default Fee' is chec
 			// butCancel
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(282, 92);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 4;
 			this.butCancel.Text = "Cancel";
+			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// FormFeeEdit
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(374, 132);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
@@ -138,9 +144,12 @@ Use Default Coverage will usually be unchecked even if 'Use Default Fee' is chec
 			this.Controls.Add(this.checkDefFee);
 			this.Controls.Add(this.textFee);
 			this.Controls.Add(this.label1);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormFeeEdit";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = Lan.g(this,"Edit Fee");
+			this.Text = "Edit Fee";
 			this.Load += new System.EventHandler(this.FormFeeEdit_Load);
 			this.ResumeLayout(false);
 
@@ -163,10 +172,12 @@ Use Default Coverage will usually be unchecked even if 'Use Default Fee' is chec
 			else
 				Fees.Cur.Amount=PIn.PDouble(textFee.Text);
 			Fees.Cur.UseDefaultCov=checkDefCov.Checked;
-			Fees.Cur.UseDefaultFee=checkDefFee.Checked;
-			
+			Fees.Cur.UseDefaultFee=checkDefFee.Checked;			
 			DialogResult=DialogResult.OK;
-			Close();
+		}
+
+		private void butCancel_Click(object sender, System.EventArgs e) {
+			DialogResult=DialogResult.Cancel;
 		}
 
 	}

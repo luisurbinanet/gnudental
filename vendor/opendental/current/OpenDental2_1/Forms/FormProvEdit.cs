@@ -146,6 +146,7 @@ namespace OpenDental{
 			// 
 			// checkIsHidden
 			// 
+			this.checkIsHidden.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkIsHidden.Location = new System.Drawing.Point(136, 398);
 			this.checkIsHidden.Name = "checkIsHidden";
 			this.checkIsHidden.Size = new System.Drawing.Size(70, 24);
@@ -253,6 +254,7 @@ namespace OpenDental{
 			// 
 			// checkIsSecondary
 			// 
+			this.checkIsSecondary.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkIsSecondary.Location = new System.Drawing.Point(136, 352);
 			this.checkIsSecondary.Name = "checkIsSecondary";
 			this.checkIsSecondary.Size = new System.Drawing.Size(155, 17);
@@ -289,6 +291,7 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(732, 562);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 15;
@@ -297,6 +300,7 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(732, 595);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 16;
@@ -380,6 +384,7 @@ namespace OpenDental{
 			this.groupBox1.Controls.Add(this.radioTIN);
 			this.groupBox1.Controls.Add(this.radioSSN);
 			this.groupBox1.Controls.Add(this.textSSN);
+			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupBox1.Location = new System.Drawing.Point(128, 155);
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.Size = new System.Drawing.Size(156, 82);
@@ -389,16 +394,18 @@ namespace OpenDental{
 			// 
 			// radioTIN
 			// 
+			this.radioTIN.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioTIN.Location = new System.Drawing.Point(9, 34);
 			this.radioTIN.Name = "radioTIN";
 			this.radioTIN.Size = new System.Drawing.Size(135, 15);
 			this.radioTIN.TabIndex = 1;
-			this.radioTIN.Text = "TIN if incorporated";
+			this.radioTIN.Text = "TIN";
 			this.radioTIN.Click += new System.EventHandler(this.radioTIN_Click);
 			// 
 			// radioSSN
 			// 
 			this.radioSSN.Checked = true;
+			this.radioSSN.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioSSN.Location = new System.Drawing.Point(9, 17);
 			this.radioSSN.Name = "radioSSN";
 			this.radioSSN.Size = new System.Drawing.Size(104, 14);
@@ -426,6 +433,7 @@ namespace OpenDental{
 			// 
 			// checkSigOnFile
 			// 
+			this.checkSigOnFile.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkSigOnFile.Location = new System.Drawing.Point(136, 375);
 			this.checkSigOnFile.Name = "checkSigOnFile";
 			this.checkSigOnFile.Size = new System.Drawing.Size(121, 20);
@@ -441,6 +449,7 @@ namespace OpenDental{
 			this.groupSecurity.Controls.Add(this.label12);
 			this.groupSecurity.Controls.Add(this.butAll);
 			this.groupSecurity.Controls.Add(this.butNone);
+			this.groupSecurity.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupSecurity.Location = new System.Drawing.Point(417, 22);
 			this.groupSecurity.Name = "groupSecurity";
 			this.groupSecurity.Size = new System.Drawing.Size(396, 480);
@@ -498,6 +507,7 @@ namespace OpenDental{
 			// 
 			// butAll
 			// 
+			this.butAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butAll.Location = new System.Drawing.Point(14, 448);
 			this.butAll.Name = "butAll";
 			this.butAll.TabIndex = 37;
@@ -506,6 +516,7 @@ namespace OpenDental{
 			// 
 			// butNone
 			// 
+			this.butNone.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butNone.Location = new System.Drawing.Point(104, 448);
 			this.butNone.Name = "butNone";
 			this.butNone.TabIndex = 38;
@@ -533,7 +544,6 @@ namespace OpenDental{
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(837, 666);
-			this.ControlBox = false;
 			this.Controls.Add(this.textMedicaidID);
 			this.Controls.Add(this.label13);
 			this.Controls.Add(this.groupSecurity);
@@ -565,10 +575,14 @@ namespace OpenDental{
 			this.Controls.Add(this.checkIsHidden);
 			this.Controls.Add(this.labelColor);
 			this.Controls.Add(this.butColor);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormProvEdit";
+			this.ShowInTaskbar = false;
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Edit Provider";
+			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormProvEdit_Closing);
 			this.Load += new System.EventHandler(this.FormProvEdit_Load);
 			this.groupBox1.ResumeLayout(false);
 			this.groupSecurity.ResumeLayout(false);
@@ -804,11 +818,16 @@ namespace OpenDental{
 		}
 
 		private void butCancel_Click(object sender, System.EventArgs e) {
+			DialogResult=DialogResult.Cancel;
+		}
+
+		private void FormProvEdit_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+			if(DialogResult==DialogResult.OK)
+				return;
 			if(IsNew){
 				UserPermissions.DeleteAllForProv(Providers.Cur.ProvNum);
 				Providers.DeleteCur();
 			}
-			DialogResult=DialogResult.Cancel;
 		}
 
 

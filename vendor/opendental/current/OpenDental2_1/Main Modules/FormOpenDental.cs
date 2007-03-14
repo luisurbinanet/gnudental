@@ -1,5 +1,5 @@
 /*=============================================================================================================
-FreeDental is a dental practice management program.
+Open Dental is a dental practice management program.
 Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  http://www.docsparks.com
 
 This program is free software; you can redistribute it and/or modify it under the terms of the
@@ -12,9 +12,9 @@ for more details, available at http://www.opensource.org/licenses/gpl-license.ph
 Any changes to this program must follow the guidelines of the GPL license if a modified version is to be
 redistributed.
 ===============================================================================================================*/
-//For now, all screens are assumed to have available 990x734.  That would be a screen resolution of 1024x768 with a single width taskbar docked to any one of the four sides of the screen.  Later, the forms will be dynamic to adjust automatically down to about 12" screens.
+//For now, all screens are assumed to have available 990x734.  That would be a screen resolution of 1024x768 with a single width taskbar docked to any one of the four sides of the screen.  Later, the forms will be dynamic to adjust automatically down to 800x600 screens.
 
-//The 7 main controls are slightly narrower due to menu bar on left of 42.  Max size 948x708
+//The 7 main controls are slightly narrower due to menu bar on left of 42(new51). Max size 948(new939)x708
 
 using System;
 using System.Drawing;
@@ -37,38 +37,21 @@ using System.Windows.Forms;
 namespace OpenDental{
 	
 	public class FormOpenDental : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butAccount;
-		private System.Windows.Forms.Button butTreat;
-		private System.Windows.Forms.Button butChart;
 		private System.Windows.Forms.ImageList imageList1;
-		private System.Windows.Forms.Button butDoc;
 		private OpenDental.ContrAppt ContrAppt2;
 		private System.Windows.Forms.Button button1;
 		private System.ComponentModel.IContainer components;
 		private OpenDental.ContrStaff ContrStaff2;
-		private System.Windows.Forms.Button butAppt;
-		private System.Windows.Forms.Label labelAccount;
-		private System.Windows.Forms.Label labelFam;
-		private System.Windows.Forms.Label labelAppt;
-		private System.Windows.Forms.Label labelTreat;
 		private OpenDental.ContrFamily ContrFamily2;
-		private System.Windows.Forms.Button butFamily;
-		private System.Windows.Forms.Panel panelLeft;
 		private OpenDental.ContrTreat ContrTreat2;
 		private OpenDental.ContrChart ContrChart2;
 		private OpenDental.ContrAccount ContrAccount2;
-		private System.Windows.Forms.Label labelChart;
 		private Thread Thread2;
-		private System.Windows.Forms.Button butStaff;
-		private System.Windows.Forms.Button butMessage;
 		private OpenDental.ContrMessage ContrMessage2;
 		private TcpListener TcpListener2;
 		private System.Windows.Forms.PictureBox pictButtons;
 		private System.Windows.Forms.ImageList imageList2x6;
 		private bool[,] buttonDown=new bool[2,6];
-		private System.Windows.Forms.Label labelDocs;
-		private System.Windows.Forms.Label labelMsg;
-		private System.Windows.Forms.Label labelStaff;
 		private System.Windows.Forms.Timer timerTimeIndic;
 		private System.Windows.Forms.MainMenu mainMenu;
 		private System.Windows.Forms.MenuItem menuItemSettings;
@@ -145,8 +128,13 @@ namespace OpenDental{
 		private System.Windows.Forms.MenuItem menuItem12;
 		private System.Windows.Forms.MenuItem menuItemHelp;
 		private System.Windows.Forms.MenuItem menuItemHelpIndex;
+		private System.Windows.Forms.MenuItem menuItemClaimForms;
+		private System.Windows.Forms.MenuItem menuItemContacts;
+		private System.Windows.Forms.MenuItem menuItemMedications;
+		private OpenDental.OutlookBar myOutlookBar;
+		private System.Windows.Forms.ImageList imageList32;
+		private System.Windows.Forms.MenuItem menuItemApptViews;
 		private Image buttonsShadow;
-		public static bool TimeBarIsDisabled=false;
 
 		public FormOpenDental(){
 			InitializeComponent();
@@ -166,24 +154,7 @@ namespace OpenDental{
 		private void InitializeComponent(){
 			this.components = new System.ComponentModel.Container();
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormOpenDental));
-			this.panelLeft = new System.Windows.Forms.Panel();
-			this.labelStaff = new System.Windows.Forms.Label();
-			this.labelMsg = new System.Windows.Forms.Label();
-			this.labelDocs = new System.Windows.Forms.Label();
-			this.butMessage = new System.Windows.Forms.Button();
 			this.imageList1 = new System.Windows.Forms.ImageList(this.components);
-			this.labelChart = new System.Windows.Forms.Label();
-			this.labelAccount = new System.Windows.Forms.Label();
-			this.labelFam = new System.Windows.Forms.Label();
-			this.labelAppt = new System.Windows.Forms.Label();
-			this.butFamily = new System.Windows.Forms.Button();
-			this.butAccount = new System.Windows.Forms.Button();
-			this.butChart = new System.Windows.Forms.Button();
-			this.butDoc = new System.Windows.Forms.Button();
-			this.butStaff = new System.Windows.Forms.Button();
-			this.butAppt = new System.Windows.Forms.Button();
-			this.labelTreat = new System.Windows.Forms.Label();
-			this.butTreat = new System.Windows.Forms.Button();
 			this.pictButtons = new System.Windows.Forms.PictureBox();
 			this.ContrMessage2 = new OpenDental.ContrMessage();
 			this.ContrTreat2 = new OpenDental.ContrTreat();
@@ -205,11 +176,13 @@ namespace OpenDental{
 			this.menuItem7 = new System.Windows.Forms.MenuItem();
 			this.menuItemExit = new System.Windows.Forms.MenuItem();
 			this.menuItemSettings = new System.Windows.Forms.MenuItem();
+			this.menuItemApptViews = new System.Windows.Forms.MenuItem();
 			this.menuItemAutoCodes = new System.Windows.Forms.MenuItem();
-			this.menuItemProcedureButtons = new System.Windows.Forms.MenuItem();
+			this.menuItemClaimForms = new System.Windows.Forms.MenuItem();
 			this.menuItemDefinitions = new System.Windows.Forms.MenuItem();
 			this.menuItemInsCats = new System.Windows.Forms.MenuItem();
 			this.menuItemPermissions = new System.Windows.Forms.MenuItem();
+			this.menuItemProcedureButtons = new System.Windows.Forms.MenuItem();
 			this.menuItemLinks = new System.Windows.Forms.MenuItem();
 			this.menuItem10 = new System.Windows.Forms.MenuItem();
 			this.menuItemSched = new System.Windows.Forms.MenuItem();
@@ -221,8 +194,10 @@ namespace OpenDental{
 			this.menuItemPractice = new System.Windows.Forms.MenuItem();
 			this.menuItemRecall = new System.Windows.Forms.MenuItem();
 			this.menuItemLists = new System.Windows.Forms.MenuItem();
+			this.menuItemContacts = new System.Windows.Forms.MenuItem();
 			this.menuItemEmployees = new System.Windows.Forms.MenuItem();
 			this.menuItemInsTemplates = new System.Windows.Forms.MenuItem();
+			this.menuItemMedications = new System.Windows.Forms.MenuItem();
 			this.menuItemProviders = new System.Windows.Forms.MenuItem();
 			this.menuItemPrescriptions = new System.Windows.Forms.MenuItem();
 			this.menuItemReferrals = new System.Windows.Forms.MenuItem();
@@ -270,78 +245,9 @@ namespace OpenDental{
 			this.menuItemHelp = new System.Windows.Forms.MenuItem();
 			this.menuItemHelpIndex = new System.Windows.Forms.MenuItem();
 			this.menuItemAbout = new System.Windows.Forms.MenuItem();
-			this.panelLeft.SuspendLayout();
+			this.myOutlookBar = new OpenDental.OutlookBar();
+			this.imageList32 = new System.Windows.Forms.ImageList(this.components);
 			this.SuspendLayout();
-			// 
-			// panelLeft
-			// 
-			this.panelLeft.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.panelLeft.Controls.Add(this.labelStaff);
-			this.panelLeft.Controls.Add(this.labelMsg);
-			this.panelLeft.Controls.Add(this.labelDocs);
-			this.panelLeft.Controls.Add(this.butMessage);
-			this.panelLeft.Controls.Add(this.labelChart);
-			this.panelLeft.Controls.Add(this.labelAccount);
-			this.panelLeft.Controls.Add(this.labelFam);
-			this.panelLeft.Controls.Add(this.labelAppt);
-			this.panelLeft.Controls.Add(this.butFamily);
-			this.panelLeft.Controls.Add(this.butAccount);
-			this.panelLeft.Controls.Add(this.butChart);
-			this.panelLeft.Controls.Add(this.butDoc);
-			this.panelLeft.Controls.Add(this.butStaff);
-			this.panelLeft.Controls.Add(this.butAppt);
-			this.panelLeft.Controls.Add(this.labelTreat);
-			this.panelLeft.Controls.Add(this.butTreat);
-			this.panelLeft.Controls.Add(this.pictButtons);
-			this.panelLeft.Dock = System.Windows.Forms.DockStyle.Left;
-			this.panelLeft.Location = new System.Drawing.Point(0, 0);
-			this.panelLeft.Name = "panelLeft";
-			this.panelLeft.Size = new System.Drawing.Size(42, 690);
-			this.panelLeft.TabIndex = 1;
-			// 
-			// labelStaff
-			// 
-			this.labelStaff.Location = new System.Drawing.Point(1, 656);
-			this.labelStaff.Name = "labelStaff";
-			this.labelStaff.Size = new System.Drawing.Size(35, 24);
-			this.labelStaff.TabIndex = 26;
-			this.labelStaff.Text = "Staff";
-			this.labelStaff.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-			this.labelStaff.Visible = false;
-			this.labelStaff.Click += new System.EventHandler(this.butStaff_Click);
-			// 
-			// labelMsg
-			// 
-			this.labelMsg.Location = new System.Drawing.Point(1, 409);
-			this.labelMsg.Name = "labelMsg";
-			this.labelMsg.Size = new System.Drawing.Size(35, 24);
-			this.labelMsg.TabIndex = 25;
-			this.labelMsg.Text = "Msg";
-			this.labelMsg.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-			this.labelMsg.Click += new System.EventHandler(this.butMessage_Click);
-			// 
-			// labelDocs
-			// 
-			this.labelDocs.Location = new System.Drawing.Point(1, 335);
-			this.labelDocs.Name = "labelDocs";
-			this.labelDocs.Size = new System.Drawing.Size(35, 24);
-			this.labelDocs.TabIndex = 24;
-			this.labelDocs.Text = "Docs";
-			this.labelDocs.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-			this.labelDocs.Click += new System.EventHandler(this.butDoc_Click);
-			// 
-			// butMessage
-			// 
-			this.butMessage.BackColor = System.Drawing.SystemColors.Control;
-			this.butMessage.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
-			this.butMessage.ImageIndex = 8;
-			this.butMessage.ImageList = this.imageList1;
-			this.butMessage.Location = new System.Drawing.Point(0, 383);
-			this.butMessage.Name = "butMessage";
-			this.butMessage.Size = new System.Drawing.Size(38, 54);
-			this.butMessage.TabIndex = 7;
-			this.butMessage.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
-			this.butMessage.Click += new System.EventHandler(this.butMessage_Click);
 			// 
 			// imageList1
 			// 
@@ -349,150 +255,10 @@ namespace OpenDental{
 			this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
 			this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
 			// 
-			// labelChart
-			// 
-			this.labelChart.Location = new System.Drawing.Point(1, 281);
-			this.labelChart.Name = "labelChart";
-			this.labelChart.Size = new System.Drawing.Size(35, 24);
-			this.labelChart.TabIndex = 20;
-			this.labelChart.Text = "Chart";
-			this.labelChart.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-			this.labelChart.Click += new System.EventHandler(this.butChart_Click);
-			// 
-			// labelAccount
-			// 
-			this.labelAccount.Location = new System.Drawing.Point(1, 173);
-			this.labelAccount.Name = "labelAccount";
-			this.labelAccount.Size = new System.Drawing.Size(35, 24);
-			this.labelAccount.TabIndex = 19;
-			this.labelAccount.Text = "Acct";
-			this.labelAccount.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-			this.labelAccount.Click += new System.EventHandler(this.butAccount_Click);
-			// 
-			// labelFam
-			// 
-			this.labelFam.Location = new System.Drawing.Point(1, 119);
-			this.labelFam.Name = "labelFam";
-			this.labelFam.Size = new System.Drawing.Size(35, 24);
-			this.labelFam.TabIndex = 19;
-			this.labelFam.Text = "Fam";
-			this.labelFam.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-			this.labelFam.Click += new System.EventHandler(this.butFamily_Click);
-			// 
-			// labelAppt
-			// 
-			this.labelAppt.BackColor = System.Drawing.SystemColors.Control;
-			this.labelAppt.Location = new System.Drawing.Point(1, 48);
-			this.labelAppt.Name = "labelAppt";
-			this.labelAppt.Size = new System.Drawing.Size(35, 24);
-			this.labelAppt.TabIndex = 19;
-			this.labelAppt.Text = "Appts";
-			this.labelAppt.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-			this.labelAppt.Click += new System.EventHandler(this.butAppt_Click);
-			// 
-			// butFamily
-			// 
-			this.butFamily.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
-			this.butFamily.ImageIndex = 2;
-			this.butFamily.ImageList = this.imageList1;
-			this.butFamily.Location = new System.Drawing.Point(0, 92);
-			this.butFamily.Name = "butFamily";
-			this.butFamily.Size = new System.Drawing.Size(38, 54);
-			this.butFamily.TabIndex = 1;
-			this.butFamily.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
-			this.butFamily.Click += new System.EventHandler(this.butFamily_Click);
-			// 
-			// butAccount
-			// 
-			this.butAccount.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.butAccount.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
-			this.butAccount.ImageIndex = 4;
-			this.butAccount.ImageList = this.imageList1;
-			this.butAccount.Location = new System.Drawing.Point(0, 146);
-			this.butAccount.Name = "butAccount";
-			this.butAccount.Size = new System.Drawing.Size(38, 54);
-			this.butAccount.TabIndex = 2;
-			this.butAccount.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
-			this.butAccount.Click += new System.EventHandler(this.butAccount_Click);
-			// 
-			// butChart
-			// 
-			this.butChart.BackColor = System.Drawing.Color.FromArgb(((System.Byte)(224)), ((System.Byte)(224)), ((System.Byte)(224)));
-			this.butChart.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
-			this.butChart.ImageIndex = 1;
-			this.butChart.ImageList = this.imageList1;
-			this.butChart.Location = new System.Drawing.Point(0, 254);
-			this.butChart.Name = "butChart";
-			this.butChart.Size = new System.Drawing.Size(38, 54);
-			this.butChart.TabIndex = 4;
-			this.butChart.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
-			this.butChart.Click += new System.EventHandler(this.butChart_Click);
-			// 
-			// butDoc
-			// 
-			this.butDoc.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
-			this.butDoc.ImageIndex = 6;
-			this.butDoc.ImageList = this.imageList1;
-			this.butDoc.Location = new System.Drawing.Point(0, 308);
-			this.butDoc.Name = "butDoc";
-			this.butDoc.Size = new System.Drawing.Size(38, 54);
-			this.butDoc.TabIndex = 5;
-			this.butDoc.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
-			this.butDoc.Click += new System.EventHandler(this.butDoc_Click);
-			// 
-			// butStaff
-			// 
-			this.butStaff.BackColor = System.Drawing.SystemColors.Control;
-			this.butStaff.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
-			this.butStaff.ImageIndex = 7;
-			this.butStaff.ImageList = this.imageList1;
-			this.butStaff.Location = new System.Drawing.Point(0, 623);
-			this.butStaff.Name = "butStaff";
-			this.butStaff.Size = new System.Drawing.Size(38, 54);
-			this.butStaff.TabIndex = 15;
-			this.butStaff.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
-			this.butStaff.Visible = false;
-			this.butStaff.Click += new System.EventHandler(this.butStaff_Click);
-			// 
-			// butAppt
-			// 
-			this.butAppt.BackColor = System.Drawing.SystemColors.Control;
-			this.butAppt.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
-			this.butAppt.ImageIndex = 0;
-			this.butAppt.ImageList = this.imageList1;
-			this.butAppt.Location = new System.Drawing.Point(0, 20);
-			this.butAppt.Name = "butAppt";
-			this.butAppt.Size = new System.Drawing.Size(38, 54);
-			this.butAppt.TabIndex = 0;
-			this.butAppt.Click += new System.EventHandler(this.butAppt_Click);
-			// 
-			// labelTreat
-			// 
-			this.labelTreat.Location = new System.Drawing.Point(0, 228);
-			this.labelTreat.Name = "labelTreat";
-			this.labelTreat.Size = new System.Drawing.Size(36, 24);
-			this.labelTreat.TabIndex = 16;
-			this.labelTreat.Text = "Treat\' Plan";
-			this.labelTreat.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			this.labelTreat.Click += new System.EventHandler(this.butTreat_Click);
-			// 
-			// butTreat
-			// 
-			this.butTreat.BackColor = System.Drawing.Color.FromArgb(((System.Byte)(224)), ((System.Byte)(224)), ((System.Byte)(224)));
-			this.butTreat.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
-			this.butTreat.ImageIndex = 5;
-			this.butTreat.ImageList = this.imageList1;
-			this.butTreat.Location = new System.Drawing.Point(0, 200);
-			this.butTreat.Name = "butTreat";
-			this.butTreat.Size = new System.Drawing.Size(38, 54);
-			this.butTreat.TabIndex = 3;
-			this.butTreat.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
-			this.butTreat.Click += new System.EventHandler(this.butTreat_Click);
-			// 
 			// pictButtons
 			// 
 			this.pictButtons.Image = ((System.Drawing.Image)(resources.GetObject("pictButtons.Image")));
-			this.pictButtons.Location = new System.Drawing.Point(0, 437);
+			this.pictButtons.Location = new System.Drawing.Point(6, 476);
 			this.pictButtons.Name = "pictButtons";
 			this.pictButtons.Size = new System.Drawing.Size(37, 109);
 			this.pictButtons.TabIndex = 17;
@@ -501,14 +267,14 @@ namespace OpenDental{
 			// 
 			// ContrMessage2
 			// 
-			this.ContrMessage2.Location = new System.Drawing.Point(50, 0);
+			this.ContrMessage2.Location = new System.Drawing.Point(150, 1);
 			this.ContrMessage2.Name = "ContrMessage2";
 			this.ContrMessage2.Size = new System.Drawing.Size(803, 643);
 			this.ContrMessage2.TabIndex = 17;
 			// 
 			// ContrTreat2
 			// 
-			this.ContrTreat2.Location = new System.Drawing.Point(47, 0);
+			this.ContrTreat2.Location = new System.Drawing.Point(148, 4);
 			this.ContrTreat2.Name = "ContrTreat2";
 			this.ContrTreat2.Size = new System.Drawing.Size(880, 690);
 			this.ContrTreat2.TabIndex = 5;
@@ -516,7 +282,7 @@ namespace OpenDental{
 			// ContrChart2
 			// 
 			this.ContrChart2.DataValid = false;
-			this.ContrChart2.Location = new System.Drawing.Point(47, 0);
+			this.ContrChart2.Location = new System.Drawing.Point(149, 3);
 			this.ContrChart2.Name = "ContrChart2";
 			this.ContrChart2.Size = new System.Drawing.Size(880, 690);
 			this.ContrChart2.TabIndex = 6;
@@ -524,7 +290,7 @@ namespace OpenDental{
 			// 
 			// ContrDocs2
 			// 
-			this.ContrDocs2.Location = new System.Drawing.Point(47, 0);
+			this.ContrDocs2.Location = new System.Drawing.Point(146, 3);
 			this.ContrDocs2.Name = "ContrDocs2";
 			this.ContrDocs2.Size = new System.Drawing.Size(812, 678);
 			this.ContrDocs2.TabIndex = 8;
@@ -533,14 +299,14 @@ namespace OpenDental{
 			// ContrAppt2
 			// 
 			this.ContrAppt2.DockPadding.Left = 56;
-			this.ContrAppt2.Location = new System.Drawing.Point(0, 0);
+			this.ContrAppt2.Location = new System.Drawing.Point(147, 1);
 			this.ContrAppt2.Name = "ContrAppt2";
 			this.ContrAppt2.Size = new System.Drawing.Size(880, 690);
 			this.ContrAppt2.TabIndex = 9;
 			// 
 			// ContrAccount2
 			// 
-			this.ContrAccount2.Location = new System.Drawing.Point(47, 0);
+			this.ContrAccount2.Location = new System.Drawing.Point(145, 0);
 			this.ContrAccount2.Name = "ContrAccount2";
 			this.ContrAccount2.Size = new System.Drawing.Size(880, 690);
 			this.ContrAccount2.TabIndex = 11;
@@ -556,14 +322,14 @@ namespace OpenDental{
 			// 
 			// ContrStaff2
 			// 
-			this.ContrStaff2.Location = new System.Drawing.Point(0, 0);
+			this.ContrStaff2.Location = new System.Drawing.Point(149, 1);
 			this.ContrStaff2.Name = "ContrStaff2";
 			this.ContrStaff2.Size = new System.Drawing.Size(880, 690);
 			this.ContrStaff2.TabIndex = 15;
 			// 
 			// ContrFamily2
 			// 
-			this.ContrFamily2.Location = new System.Drawing.Point(47, 0);
+			this.ContrFamily2.Location = new System.Drawing.Point(150, 1);
 			this.ContrFamily2.Name = "ContrFamily2";
 			this.ContrFamily2.Size = new System.Drawing.Size(976, 740);
 			this.ContrFamily2.TabIndex = 16;
@@ -642,11 +408,13 @@ namespace OpenDental{
 			// 
 			this.menuItemSettings.Index = 1;
 			this.menuItemSettings.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+																																										 this.menuItemApptViews,
 																																										 this.menuItemAutoCodes,
-																																										 this.menuItemProcedureButtons,
+																																										 this.menuItemClaimForms,
 																																										 this.menuItemDefinitions,
 																																										 this.menuItemInsCats,
 																																										 this.menuItemPermissions,
+																																										 this.menuItemProcedureButtons,
 																																										 this.menuItemLinks,
 																																										 this.menuItem10,
 																																										 this.menuItemSched,
@@ -660,89 +428,101 @@ namespace OpenDental{
 			this.menuItemSettings.Shortcut = System.Windows.Forms.Shortcut.CtrlS;
 			this.menuItemSettings.Text = "&Setup";
 			// 
+			// menuItemApptViews
+			// 
+			this.menuItemApptViews.Index = 0;
+			this.menuItemApptViews.Text = "Appointment Views";
+			this.menuItemApptViews.Click += new System.EventHandler(this.menuItemApptViews_Click);
+			// 
 			// menuItemAutoCodes
 			// 
-			this.menuItemAutoCodes.Index = 0;
+			this.menuItemAutoCodes.Index = 1;
 			this.menuItemAutoCodes.Text = "Auto Codes";
 			this.menuItemAutoCodes.Click += new System.EventHandler(this.menuItemAutoCodes_Click);
 			// 
-			// menuItemProcedureButtons
+			// menuItemClaimForms
 			// 
-			this.menuItemProcedureButtons.Index = 1;
-			this.menuItemProcedureButtons.Text = "Procedure Buttons";
-			this.menuItemProcedureButtons.Click += new System.EventHandler(this.menuItemProcedureButtons_Click);
+			this.menuItemClaimForms.Index = 2;
+			this.menuItemClaimForms.Text = "Claim Forms";
+			this.menuItemClaimForms.Click += new System.EventHandler(this.menuItemClaimForms_Click);
 			// 
 			// menuItemDefinitions
 			// 
-			this.menuItemDefinitions.Index = 2;
+			this.menuItemDefinitions.Index = 3;
 			this.menuItemDefinitions.Text = "Definitions";
 			this.menuItemDefinitions.Click += new System.EventHandler(this.menuItemDefinitions_Click);
 			// 
 			// menuItemInsCats
 			// 
-			this.menuItemInsCats.Index = 3;
+			this.menuItemInsCats.Index = 4;
 			this.menuItemInsCats.Text = "Insurance Categories";
 			this.menuItemInsCats.Click += new System.EventHandler(this.menuItemInsCats_Click);
 			// 
 			// menuItemPermissions
 			// 
-			this.menuItemPermissions.Index = 4;
+			this.menuItemPermissions.Index = 5;
 			this.menuItemPermissions.Text = "Permissions";
 			this.menuItemPermissions.Click += new System.EventHandler(this.menuItemPermissions_Click);
 			// 
+			// menuItemProcedureButtons
+			// 
+			this.menuItemProcedureButtons.Index = 6;
+			this.menuItemProcedureButtons.Text = "Procedure Buttons";
+			this.menuItemProcedureButtons.Click += new System.EventHandler(this.menuItemProcedureButtons_Click);
+			// 
 			// menuItemLinks
 			// 
-			this.menuItemLinks.Index = 5;
+			this.menuItemLinks.Index = 7;
 			this.menuItemLinks.Text = "Program Links";
 			this.menuItemLinks.Click += new System.EventHandler(this.menuItemLinks_Click);
 			// 
 			// menuItem10
 			// 
-			this.menuItem10.Index = 6;
+			this.menuItem10.Index = 8;
 			this.menuItem10.Text = "-";
 			// 
 			// menuItemSched
 			// 
-			this.menuItemSched.Index = 7;
+			this.menuItemSched.Index = 9;
 			this.menuItemSched.Text = "SCHEDULES";
 			// 
 			// menuItemPracDef
 			// 
-			this.menuItemPracDef.Index = 8;
+			this.menuItemPracDef.Index = 10;
 			this.menuItemPracDef.Text = "   Practice Default";
 			this.menuItemPracDef.Click += new System.EventHandler(this.menuItemPracDef_Click);
 			// 
 			// menuItemPracSched
 			// 
-			this.menuItemPracSched.Index = 9;
+			this.menuItemPracSched.Index = 11;
 			this.menuItemPracSched.Text = "   Practice Schedule";
 			this.menuItemPracSched.Click += new System.EventHandler(this.menuItemPracSched_Click);
 			// 
 			// menuItem4
 			// 
-			this.menuItem4.Index = 10;
+			this.menuItem4.Index = 12;
 			this.menuItem4.Text = "-";
 			// 
 			// menuItemPrefs
 			// 
-			this.menuItemPrefs.Index = 11;
+			this.menuItemPrefs.Index = 13;
 			this.menuItemPrefs.Text = "PREFERENCES";
 			// 
 			// menuItemDataPath
 			// 
-			this.menuItemDataPath.Index = 12;
+			this.menuItemDataPath.Index = 14;
 			this.menuItemDataPath.Text = "   Data Paths";
 			this.menuItemDataPath.Click += new System.EventHandler(this.menuItemDataPath_Click);
 			// 
 			// menuItemPractice
 			// 
-			this.menuItemPractice.Index = 13;
+			this.menuItemPractice.Index = 15;
 			this.menuItemPractice.Text = "   Practice";
 			this.menuItemPractice.Click += new System.EventHandler(this.menuItemPractice_Click);
 			// 
 			// menuItemRecall
 			// 
-			this.menuItemRecall.Index = 14;
+			this.menuItemRecall.Index = 16;
 			this.menuItemRecall.Text = "   Recall";
 			this.menuItemRecall.Click += new System.EventHandler(this.menuItemRecall_Click);
 			// 
@@ -750,8 +530,10 @@ namespace OpenDental{
 			// 
 			this.menuItemLists.Index = 2;
 			this.menuItemLists.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+																																									this.menuItemContacts,
 																																									this.menuItemEmployees,
 																																									this.menuItemInsTemplates,
+																																									this.menuItemMedications,
 																																									this.menuItemProviders,
 																																									this.menuItemPrescriptions,
 																																									this.menuItemReferrals,
@@ -763,61 +545,74 @@ namespace OpenDental{
 			this.menuItemLists.Shortcut = System.Windows.Forms.Shortcut.CtrlI;
 			this.menuItemLists.Text = "&Lists";
 			// 
+			// menuItemContacts
+			// 
+			this.menuItemContacts.Index = 0;
+			this.menuItemContacts.Shortcut = System.Windows.Forms.Shortcut.CtrlShiftC;
+			this.menuItemContacts.Text = "Contacts";
+			this.menuItemContacts.Click += new System.EventHandler(this.menuItemContacts_Click);
+			// 
 			// menuItemEmployees
 			// 
-			this.menuItemEmployees.Index = 0;
+			this.menuItemEmployees.Index = 1;
 			this.menuItemEmployees.Text = "Employees";
 			this.menuItemEmployees.Click += new System.EventHandler(this.menuItemEmployees_Click);
 			// 
 			// menuItemInsTemplates
 			// 
-			this.menuItemInsTemplates.Index = 1;
+			this.menuItemInsTemplates.Index = 2;
 			this.menuItemInsTemplates.Text = "Insurance Templates";
 			this.menuItemInsTemplates.Click += new System.EventHandler(this.menuItemInsTemplates_Click);
 			// 
+			// menuItemMedications
+			// 
+			this.menuItemMedications.Index = 3;
+			this.menuItemMedications.Text = "Medications";
+			this.menuItemMedications.Click += new System.EventHandler(this.menuItemMedications_Click);
+			// 
 			// menuItemProviders
 			// 
-			this.menuItemProviders.Index = 2;
+			this.menuItemProviders.Index = 4;
 			this.menuItemProviders.Text = "Providers";
 			this.menuItemProviders.Click += new System.EventHandler(this.menuItemProviders_Click);
 			// 
 			// menuItemPrescriptions
 			// 
-			this.menuItemPrescriptions.Index = 3;
+			this.menuItemPrescriptions.Index = 5;
 			this.menuItemPrescriptions.Text = "Prescriptions";
 			this.menuItemPrescriptions.Click += new System.EventHandler(this.menuItemPrescriptions_Click);
 			// 
 			// menuItemReferrals
 			// 
-			this.menuItemReferrals.Index = 4;
+			this.menuItemReferrals.Index = 6;
 			this.menuItemReferrals.Text = "Referrals";
 			this.menuItemReferrals.Click += new System.EventHandler(this.menuItemReferrals_Click);
 			// 
 			// menuItemZipCodes
 			// 
-			this.menuItemZipCodes.Index = 5;
+			this.menuItemZipCodes.Index = 7;
 			this.menuItemZipCodes.Text = "Zip Codes";
 			this.menuItemZipCodes.Click += new System.EventHandler(this.menuItemZipCodes_Click);
 			// 
 			// menuItem5
 			// 
-			this.menuItem5.Index = 6;
+			this.menuItem5.Index = 8;
 			this.menuItem5.Text = "-";
 			// 
 			// menuItemProcCode
 			// 
-			this.menuItemProcCode.Index = 7;
+			this.menuItemProcCode.Index = 9;
 			this.menuItemProcCode.Text = "PROCEDURE CODES";
 			// 
 			// menuItemEditCode
 			// 
-			this.menuItemEditCode.Index = 8;
+			this.menuItemEditCode.Index = 10;
 			this.menuItemEditCode.Text = "   Edit Codes";
 			this.menuItemEditCode.Click += new System.EventHandler(this.menuItemEditCode_Click);
 			// 
 			// menuItemViewCode
 			// 
-			this.menuItemViewCode.Index = 9;
+			this.menuItemViewCode.Index = 11;
 			this.menuItemViewCode.Text = "   View Fees";
 			this.menuItemViewCode.Click += new System.EventHandler(this.menuItemViewCode_Click);
 			// 
@@ -1087,13 +882,31 @@ namespace OpenDental{
 			this.menuItemAbout.Text = "&About";
 			this.menuItemAbout.Click += new System.EventHandler(this.menuItemAbout_Click);
 			// 
+			// myOutlookBar
+			// 
+			this.myOutlookBar.Dock = System.Windows.Forms.DockStyle.Left;
+			this.myOutlookBar.ImageList = this.imageList32;
+			this.myOutlookBar.Location = new System.Drawing.Point(0, 0);
+			this.myOutlookBar.Name = "myOutlookBar";
+			this.myOutlookBar.Size = new System.Drawing.Size(51, 690);
+			this.myOutlookBar.TabIndex = 18;
+			this.myOutlookBar.Text = "outlookBar1";
+			this.myOutlookBar.ButtonClicked += new OpenDental.ButtonClickedEventHandler(this.myOutlookBar_ButtonClicked);
+			// 
+			// imageList32
+			// 
+			this.imageList32.ImageSize = new System.Drawing.Size(32, 32);
+			this.imageList32.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList32.ImageStream")));
+			this.imageList32.TransparentColor = System.Drawing.Color.Transparent;
+			// 
 			// FormOpenDental
 			// 
 			this.AutoScale = false;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(880, 690);
+			this.Controls.Add(this.pictButtons);
+			this.Controls.Add(this.myOutlookBar);
 			this.Controls.Add(this.button1);
-			this.Controls.Add(this.panelLeft);
 			this.Controls.Add(this.ContrAccount2);
 			this.Controls.Add(this.ContrFamily2);
 			this.Controls.Add(this.ContrStaff2);
@@ -1103,15 +916,16 @@ namespace OpenDental{
 			this.Controls.Add(this.ContrAppt2);
 			this.Controls.Add(this.ContrMessage2);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+			this.KeyPreview = true;
 			this.Menu = this.mainMenu;
 			this.Name = "FormOpenDental";
 			this.RightToLeft = System.Windows.Forms.RightToLeft.No;
 			this.Text = "Open Dental";
 			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+			this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FormOpenDental_KeyDown);
 			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormFreeDental_Closing);
 			this.Load += new System.EventHandler(this.FormOpenDental_Load);
 			this.Layout += new System.Windows.Forms.LayoutEventHandler(this.FormFreeDental_Layout);
-			this.panelLeft.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -1119,7 +933,8 @@ namespace OpenDental{
 	
 		[STAThread]
 		static void Main() {
-			//Application.EnableVisualStyles();
+			Application.EnableVisualStyles();//changes appearance to XP
+			Application.DoEvents();//workaround for a known MS bug in the line above
 			Application.Run(new FormOpenDental());
 		}
 
@@ -1139,15 +954,22 @@ namespace OpenDental{
 				}     
 			}
 			if(!RefreshLocalData()) return;
-			Lan.Refresh();
-			LanguageForeigns.Refresh();
+			Lan.Refresh();//automatically skips if current language is English
+			LanguageForeigns.Refresh();//automatically skips if current language is English
 			Batch.Select("graphictype,graphicassembly,graphicelement,graphicshape");
 			GraphicPoints.Refresh();
-			Directory.CreateDirectory("Sounds");
-			string[] myFiles=Directory.GetFiles(((Pref)Prefs.HList["DocPath"]).ValueString+"Sounds");
-			for(int i=0;i<myFiles.Length;i++){
-				string[] splitFile=myFiles[i].Split('\\');
-				File.Copy(myFiles[i],"Sounds\\"+splitFile[splitFile.Length-1],true);
+			try{
+				Directory.CreateDirectory("Sounds");
+				string[] myFiles=Directory.GetFiles(((Pref)Prefs.HList["DocPath"]).ValueString+"Sounds");
+				for(int i=0;i<myFiles.Length;i++){
+					string[] splitFile=myFiles[i].Split('\\');
+					File.Copy(myFiles[i],"Sounds\\"+splitFile[splitFile.Length-1],true);
+				}
+			}
+			catch{
+				MessageBox.Show("Error.  Your sound files are set to read only.  Please change them first.");
+				Application.Exit();
+				return;
 			}
 			buttonsShadow=imageList2x6.Images[0];  //(Image)pictButtons.Image.Clone();
 			DataValid.BecameInvalid += new System.EventHandler(DataValid_BecameInvalid);
@@ -1160,24 +982,31 @@ namespace OpenDental{
 			ContrStaff2.InstantClasses();
 			ContrTreat2.InstantClasses();
 			ContrAppt2.Visible=true;
-			butAppt.BackColor=Color.White;
-			labelAppt.BackColor=Color.White;
+			//butAppt.BackColor=Color.White;
+			//labelAppt.BackColor=Color.White;
 			this.ActiveControl=this.ContrAppt2;
 			ContrAppt2.ModuleSelected();
 			Thread2 = new Thread(new ThreadStart(Listen));
 			if(((Pref)Prefs.HList["AutoRefreshIsDisabled"]).ValueString!="1")
 				Thread2.Start();
 			timerTimeIndic.Enabled=true;
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				labelAccount,
-				labelAppt,
-				labelDocs,
-				labelFam,
-				labelMsg,
-        labelTreat,
-				labelChart,
-				labelStaff				
-			});
+			myOutlookBar.Buttons[0].Caption=Lan.g(this,"Appts");
+			myOutlookBar.Buttons[1].Caption=Lan.g(this,"Family");
+			myOutlookBar.Buttons[2].Caption=Lan.g(this,"Account");
+			myOutlookBar.Buttons[3].Caption=Lan.g(this,"Treat' Plan");
+			myOutlookBar.Buttons[4].Caption=Lan.g(this,"Chart");
+			myOutlookBar.Buttons[5].Caption=Lan.g(this,"Doc's");
+			myOutlookBar.Buttons[6].Caption=Lan.g(this,"Message");
+			//Lan.C(this, new System.Windows.Forms.Control[] {
+				//labelAccount,
+				//labelAppt,
+				//labelDocs,
+				//labelFam,
+				//labelMsg,
+        //labelTreat,
+				//labelChart,
+				//labelStaff				
+			//});
 			//CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern="MM/dd/yyyy";
 			//CultureInfo.CreateSpecificCulture(
 			if(CultureInfo.CurrentCulture.Name=="en-US"){
@@ -1198,6 +1027,10 @@ namespace OpenDental{
 			SecurityLogs.MakeLogEntry("Start Up","");
 		}
 
+		/// <summary>
+		/// Retrieves new data from database for about 20 tables that rarely change. Can be triggered by a message from another computer when any of this data is changed by the user.
+		/// </summary>
+		/// <returns></returns>
 		private bool RefreshLocalData(){
 			Prefs.Refresh();
 			if(!Prefs.ConvertDB()){
@@ -1206,6 +1039,8 @@ namespace OpenDental{
 			//if(!BackupJobs.IsBackup()){
 			//	MessageBox.Show(Lan.g(this,"Missing Pref 'IsDatabaseBackup', Must update database."));
 			//}
+			ApptViews.Refresh();
+			ApptViewItems.Refresh();
       AutoCodes.Refresh();
       AutoCodeItems.Refresh();
       AutoCodeConds.Refresh();
@@ -1222,16 +1057,17 @@ namespace OpenDental{
 			Programs.Refresh();
 			Providers.Refresh();
 			ProcCodes.Refresh();
-			Referrals.Refresh();
-			SchedDefaults.Refresh();
-			//Schedules.CurDate=DateTime.Today;
-      //Schedules.Refresh();
+			Referrals.Refresh();//Referrals are also refreshed dynamically.  May rework so they don't consume mem.
+			SchedDefaults.Refresh();//SchedDefaults are assumed to change rarely.
+      //Schedules.Refresh();//Schedules are refreshed as needed.  Not here.
 			UserPermissions.Refresh();
-		//	Users.Refresh();
-
-			ContrTreat2.InstantClasses();//refreshes priority lists
+			//Users.Refresh();
+			ClaimForms.Refresh();
+			ClaimFormItems.Refresh();
+			ContrTreat2.InstantClasses();//refreshes priority lists. May replace this line later.
+			ContrAppt2.FillViews();
 			if(!Directory.Exists(((Pref)Prefs.HList["DocPath"]).ValueString)
-				|| !Directory.Exists(((Pref)Prefs.HList["DocPath"]).ValueString+"A\\")){
+				|| !Directory.Exists(((Pref)Prefs.HList["DocPath"]).ValueString+"A")){
 				FormPath FormP=new FormPath();
 				FormP.ShowDialog();
 				if(FormP.DialogResult!=DialogResult.OK){
@@ -1246,28 +1082,28 @@ namespace OpenDental{
 
 		private void FormFreeDental_Layout(object sender, System.Windows.Forms.LayoutEventArgs e){
 			if(Width<200) Width=200;
-			ContrAccount2.Location=new Point(this.panelLeft.Width,0);
+			ContrAccount2.Location=new Point(myOutlookBar.Width,0);
 			ContrAccount2.Width=this.ClientSize.Width-ContrAccount2.Location.X;
 			ContrAccount2.Height=this.ClientSize.Height;
-			ContrAppt2.Location=new Point(this.panelLeft.Width,0);
+			ContrAppt2.Location=new Point(myOutlookBar.Width,0);
 			ContrAppt2.Width=this.ClientSize.Width-ContrAppt2.Location.X;
 			ContrAppt2.Height=this.ClientSize.Height;
-			ContrChart2.Location=new Point(this.panelLeft.Width,0);
+			ContrChart2.Location=new Point(myOutlookBar.Width,0);
 			ContrChart2.Width=this.ClientSize.Width-ContrChart2.Location.X;
 			ContrChart2.Height=this.ClientSize.Height;
-			ContrDocs2.Location=new Point(this.panelLeft.Width,0);
+			ContrDocs2.Location=new Point(myOutlookBar.Width,0);
 			ContrDocs2.Width=this.ClientSize.Width-ContrDocs2.Location.X;
 			ContrDocs2.Height=this.ClientSize.Height;
-			ContrFamily2.Location=new Point(this.panelLeft.Width,0);
+			ContrFamily2.Location=new Point(myOutlookBar.Width,0);
 			ContrFamily2.Width=this.ClientSize.Width-ContrFamily2.Location.X;
 			ContrFamily2.Height=this.ClientSize.Height;
-			ContrMessage2.Location=new Point(this.panelLeft.Width,0);
+			ContrMessage2.Location=new Point(myOutlookBar.Width,0);
 			ContrMessage2.Width=this.ClientSize.Width-ContrMessage2.Location.X;
 			ContrMessage2.Height=this.ClientSize.Height;
-			ContrStaff2.Location=new Point(this.panelLeft.Width,0);
+			ContrStaff2.Location=new Point(myOutlookBar.Width,0);
 			ContrStaff2.Width=this.ClientSize.Width-ContrStaff2.Location.X;
 			ContrStaff2.Height=this.ClientSize.Height;
-			ContrTreat2.Location=new Point(this.panelLeft.Width,0);
+			ContrTreat2.Location=new Point(myOutlookBar.Width,0);
 			ContrTreat2.Width=this.ClientSize.Width-ContrDocs2.Location.X;
 			ContrTreat2.Height=this.ClientSize.Height;
 		}
@@ -1419,6 +1255,53 @@ namespace OpenDental{
 
 		protected delegate void ProcessMessageDelegate(string text);
 
+		private void myOutlookBar_ButtonClicked(object sender, OpenDental.ButtonClicked_EventArgs e) {
+			UnselectActive();
+			allNeutral();
+			switch(myOutlookBar.SelectedIndex){
+				case 0:
+					ContrAppt2.Visible=true;
+					this.ActiveControl=this.ContrAppt2;
+					ContrAppt2.ModuleSelected();
+					break;
+				case 1:
+					ContrFamily2.Visible=true;
+					this.ActiveControl=this.ContrFamily2;
+					ContrFamily2.ModuleSelected();
+					break;
+				case 2:
+					ContrAccount2.Visible=true;
+					this.ActiveControl=this.ContrAccount2;
+					ContrAccount2.ModuleSelected();
+					break;
+				case 3:
+					ContrTreat2.Visible=true;
+					this.ActiveControl=this.ContrTreat2;
+					ContrTreat2.ModuleSelected();
+					break;
+				case 4:
+					ContrChart2.Visible=true;
+					this.ActiveControl=this.ContrChart2;
+					ContrChart2.ModuleSelected();
+					break;
+				case 5:
+					ContrDocs2.Visible=true;
+					this.ActiveControl=this.ContrDocs2;
+					ContrDocs2.ModuleSelected();
+					break;
+				case 6:
+					ContrMessage2.Visible=true;
+					this.ActiveControl=this.ContrMessage2;
+					ContrMessage2.ModuleSelected();
+					break;
+				case 7:
+					//ContrAppt2.Visible=true;
+					//this.ActiveControl=this.ContrAppt2;
+					//ContrAppt2.ModuleSelected();
+					break;
+			}
+		}
+
 		private void button1_Click(object sender, System.EventArgs e) {
 			
 		}
@@ -1432,7 +1315,7 @@ namespace OpenDental{
 			ContrMessage2.Visible=false;
 			ContrDocs2.Visible=false;
 			ContrStaff2.Visible=false;
-			butAccount.BackColor=Color.FromArgb(224,224,224);
+			/*butAccount.BackColor=Color.FromArgb(224,224,224);
 			labelAccount.BackColor=Color.FromArgb(224,224,224);
 			butAppt.BackColor=Color.FromArgb(224,224,224);
 			labelAppt.BackColor=Color.FromArgb(224,224,224);
@@ -1447,10 +1330,28 @@ namespace OpenDental{
 			butDoc.BackColor=Color.FromArgb(224,224,224);
 			labelDocs.BackColor=Color.FromArgb(224,224,224);
 			butStaff.BackColor=Color.FromArgb(224,224,224);
-			labelStaff.BackColor=Color.FromArgb(224,224,224);
+			labelStaff.BackColor=Color.FromArgb(224,224,224);*/
 		}
 
-		private void butAppt_Click(object sender, System.EventArgs e){
+		private void UnselectActive(){
+			if(ContrAppt2.Visible)
+				ContrAppt2.ModuleUnselected();
+			if(ContrFamily2.Visible)
+				ContrFamily2.ModuleUnselected();
+			if(ContrAccount2.Visible)
+				ContrAccount2.ModuleUnselected();
+			if(ContrTreat2.Visible)
+				ContrTreat2.ModuleUnselected();
+			if(ContrChart2.Visible)
+				ContrChart2.ModuleUnselected();
+			//ContrMessage2.Visible=false;
+			if(ContrDocs2.Visible)
+				ContrDocs2.ModuleUnselected();
+			//ContrStaff2.Visible=false;
+		}
+
+		/*private void butAppt_Click(object sender, System.EventArgs e){
+			UnselectActive();
 			allNeutral();
 			ContrAppt2.Visible=true;
 			butAppt.BackColor=Color.White;
@@ -1460,6 +1361,7 @@ namespace OpenDental{
 		}
 
 		private void butAccount_Click(object sender, System.EventArgs e){
+			UnselectActive();
 			allNeutral();
 			ContrAccount2.Visible=true;
 			butAccount.BackColor=Color.White;
@@ -1469,6 +1371,7 @@ namespace OpenDental{
 		}
 
 		private void butFamily_Click(object sender, System.EventArgs e) {
+			UnselectActive();
 			allNeutral();
 			ContrFamily2.Visible=true;
 			butFamily.BackColor=Color.White;
@@ -1478,6 +1381,7 @@ namespace OpenDental{
 		}
 
 		private void butTreat_Click(object sender, System.EventArgs e){
+			UnselectActive();
 			allNeutral();
 			ContrTreat2.Visible=true;
 			butTreat.BackColor=Color.White;
@@ -1487,6 +1391,7 @@ namespace OpenDental{
 		}
 
 		private void butChart_Click(object sender, System.EventArgs e){
+			UnselectActive();
 			allNeutral();
 			ContrChart2.Visible=true;
 			butChart.BackColor=Color.White;
@@ -1496,6 +1401,7 @@ namespace OpenDental{
 		}
 
 		private void butDoc_Click(object sender, System.EventArgs e){
+			UnselectActive();
 			allNeutral();
 			ContrDocs2.Visible=true;
 			butDoc.BackColor=Color.White;
@@ -1505,6 +1411,7 @@ namespace OpenDental{
 		}
 
 		private void butMessage_Click(object sender, System.EventArgs e) {
+			UnselectActive();
 			allNeutral();
 			ContrMessage2.Visible=true;
 			butMessage.BackColor=Color.White;
@@ -1514,13 +1421,14 @@ namespace OpenDental{
 		}
 
 		private void butStaff_Click(object sender, System.EventArgs e) {
+			UnselectActive();
 			allNeutral();
 			ContrStaff2.Visible=true;
 			butStaff.BackColor=Color.White;
 			labelStaff.BackColor=Color.White;
 			this.ActiveControl=this.ContrStaff2;
 			ContrStaff2.ModuleSelected();
-		}
+		}*/
 
 		private void RefreshCurrentModule(){
 			if(ContrAppt2.Visible)
@@ -1585,6 +1493,12 @@ namespace OpenDental{
 			}
 		}
 
+		/// <summary>sends function key presses to the appointment module</summary>
+		private void FormOpenDental_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e) {
+			if(ContrAppt2.Visible && e.KeyCode>=Keys.F1 && e.KeyCode<=Keys.F12)
+				ContrAppt2.FunctionKeyPress(e.KeyCode);
+		}
+
 		private void FormFreeDental_Closing(object sender, System.ComponentModel.CancelEventArgs e){
 			Thread2.Abort();
 			if(this.TcpListener2!=null){
@@ -1594,14 +1508,14 @@ namespace OpenDental{
 		}
 
 		private void timerTimeIndic_Tick(object sender, System.EventArgs e){
-			if(!TimeBarIsDisabled){
-				if(WindowState!=FormWindowState.Minimized
-					&& ContrAppt2.Visible){
-					ContrAppt2.TickRefresh();
-				}
-			}
+			if(WindowState!=FormWindowState.Minimized
+				&& ContrAppt2.Visible){
+				ContrAppt2.TickRefresh();
+      }
       //BackupJobs.CheckForBackupJobs();      			
 		}
+
+		
 
 		#region MenuEvents
 		//File
@@ -1632,14 +1546,25 @@ namespace OpenDental{
 		//FormBJS.ShowDialog();	
 
 		//Setup
+		private void menuItemApptViews_Click(object sender, System.EventArgs e) {
+			int curView=0;
+			if( ContrAppt2.Visible){
+				//curView=ContrAppt2.
+				//ContrAppt2.RefreshModuleScreen();
+			}
+			FormApptViews FormAV=new FormApptViews();
+			FormAV.ShowDialog();
+			//ContrAppt2.FillViews();
+		}
+
 		private void menuItemAutoCodes_Click(object sender, System.EventArgs e) {
 			FormAutoCode FormAC=new FormAutoCode();
 			FormAC.ShowDialog();		
 		}
 
-		private void menuItemProcedureButtons_Click(object sender, System.EventArgs e) {
-			FormProcButtons FormPB=new FormProcButtons();
-			FormPB.ShowDialog();	
+		private void menuItemClaimForms_Click(object sender, System.EventArgs e) {
+			FormClaimForms FormCF=new FormClaimForms();
+			FormCF.ShowDialog();
 		}
 
 		private void menuItemDefinitions_Click(object sender, System.EventArgs e) {
@@ -1655,6 +1580,11 @@ namespace OpenDental{
 		private void menuItemPermissions_Click(object sender, System.EventArgs e) {
 			FormPermissionsManage FormPM=new FormPermissionsManage(); 
 			FormPM.ShowDialog();
+		}
+
+		private void menuItemProcedureButtons_Click(object sender, System.EventArgs e) {
+			FormProcButtons FormPB=new FormProcButtons();
+			FormPB.ShowDialog();	
 		}
 
 		private void menuItemLinks_Click(object sender, System.EventArgs e) {
@@ -1690,6 +1620,11 @@ namespace OpenDental{
 		}
 
 		//Lists
+		private void menuItemContacts_Click(object sender, System.EventArgs e) {
+			FormContacts FormC=new FormContacts();
+			FormC.ShowDialog();
+		}
+
 		private void menuItemEmployees_Click(object sender, System.EventArgs e) {
 			FormEmployee FormEmp=new FormEmployee();
 			FormEmp.ShowDialog();		
@@ -1700,6 +1635,11 @@ namespace OpenDental{
 			FormInsTemplates.ViewOnly=true;
 			FormInsTemplates.ShowDialog();
 			//FillPlanData();
+		}
+
+		private void menuItemMedications_Click(object sender, System.EventArgs e) {
+			FormMedications FormM=new FormMedications();
+			FormM.ShowDialog();
 		}
 
 		private void menuItemProviders_Click(object sender, System.EventArgs e) {
@@ -1918,6 +1858,20 @@ namespace OpenDental{
 		}
 
 		#endregion
+
+		
+
+		
+
+		
+
+		
+
+		
+
+		
+
+		
 
 		
 

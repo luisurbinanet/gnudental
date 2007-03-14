@@ -7,11 +7,12 @@ using System.Windows.Forms;
 namespace OpenDental{
 
 	public class FormProgramLinks : System.Windows.Forms.Form{
-		private System.Windows.Forms.Button butOK;
 		private System.Windows.Forms.Label label10;
 		private System.Windows.Forms.ListBox listProgram;
 		private System.Windows.Forms.CheckBox checkEnabled;
-		private System.ComponentModel.Container components = null;// Required designer variable.
+		private System.ComponentModel.Container components = null;
+		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.Button butClose;// Required designer variable.
 		private Programs Programs=new Programs();
 
 		public FormProgramLinks(){
@@ -21,7 +22,7 @@ namespace OpenDental{
 				checkEnabled,
 			});
 			Lan.C("All", new System.Windows.Forms.Control[] {
-				butOK,
+				butClose,
 			});
 		}
 
@@ -38,9 +39,10 @@ namespace OpenDental{
 
 		private void InitializeComponent(){
 			this.listProgram = new System.Windows.Forms.ListBox();
-			this.butOK = new System.Windows.Forms.Button();
+			this.butClose = new System.Windows.Forms.Button();
 			this.label10 = new System.Windows.Forms.Label();
 			this.checkEnabled = new System.Windows.Forms.CheckBox();
+			this.label1 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// listProgram
@@ -49,17 +51,18 @@ namespace OpenDental{
 																										 ""});
 			this.listProgram.Location = new System.Drawing.Point(18, 32);
 			this.listProgram.Name = "listProgram";
-			this.listProgram.Size = new System.Drawing.Size(282, 446);
+			this.listProgram.Size = new System.Drawing.Size(282, 407);
 			this.listProgram.TabIndex = 34;
 			this.listProgram.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listProgram_MouseDown);
 			// 
-			// butOK
+			// butClose
 			// 
-			this.butOK.Location = new System.Drawing.Point(346, 460);
-			this.butOK.Name = "butOK";
-			this.butOK.TabIndex = 38;
-			this.butOK.Text = "Close";
-			this.butOK.Click += new System.EventHandler(this.butOK_Click);
+			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butClose.Location = new System.Drawing.Point(482, 471);
+			this.butClose.Name = "butClose";
+			this.butClose.TabIndex = 38;
+			this.butClose.Text = "Close";
+			this.butClose.Click += new System.EventHandler(this.butClose_Click);
 			// 
 			// label10
 			// 
@@ -71,25 +74,39 @@ namespace OpenDental{
 			// 
 			// checkEnabled
 			// 
+			this.checkEnabled.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkEnabled.Location = new System.Drawing.Point(342, 32);
 			this.checkEnabled.Name = "checkEnabled";
-			this.checkEnabled.Size = new System.Drawing.Size(66, 18);
+			this.checkEnabled.Size = new System.Drawing.Size(98, 18);
 			this.checkEnabled.TabIndex = 40;
 			this.checkEnabled.Text = "Enabled";
 			this.checkEnabled.Click += new System.EventHandler(this.checkEnabled_Click);
 			// 
+			// label1
+			// 
+			this.label1.Location = new System.Drawing.Point(24, 463);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(373, 46);
+			this.label1.TabIndex = 41;
+			this.label1.Text = "There is currently no functionality for adding your own links.  The ones that are" +
+				" shown are the only ones available.";
+			// 
 			// FormProgramLinks
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(438, 498);
-			this.Controls.AddRange(new System.Windows.Forms.Control[] {
-																																	this.checkEnabled,
-																																	this.listProgram,
-																																	this.butOK,
-																																	this.label10});
+			this.ClientSize = new System.Drawing.Size(585, 526);
+			this.Controls.Add(this.label1);
+			this.Controls.Add(this.checkEnabled);
+			this.Controls.Add(this.listProgram);
+			this.Controls.Add(this.butClose);
+			this.Controls.Add(this.label10);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormProgramLinks";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = Lan.g(this,"Program Links");
+			this.Text = "Program Links";
+			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormProgramLinks_Closing);
 			this.Load += new System.EventHandler(this.FormProgramLinks_Load);
 			this.ResumeLayout(false);
 
@@ -117,16 +134,15 @@ namespace OpenDental{
 			Programs.UpdateCur();
 		}
 
-		private void butOK_Click(object sender, System.EventArgs e) {
-			DataValid.IType=InvalidType.LocalData;
-			DataValid DataValid2=new DataValid();
-			DataValid2.SetInvalid();
+		private void butClose_Click(object sender, System.EventArgs e) {
 			Close();
 		}
 
-		//private void butCancel_Click(object sender, System.EventArgs e) {
-		//	DialogResult=DialogResult.Cancel;
-		//}
+		private void FormProgramLinks_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+			DataValid.IType=InvalidType.LocalData;
+			DataValid DataValid2=new DataValid();
+			DataValid2.SetInvalid();
+		}
 
 		
 

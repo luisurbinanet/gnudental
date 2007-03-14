@@ -1,5 +1,5 @@
 /*=============================================================================================================
-FreeDental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
+Open Dental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
 See header in FormOpenDental.cs for complete text.  Redistributions must retain this text.
 ===============================================================================================================*/
 //using MySQLDriverCS;
@@ -105,10 +105,9 @@ namespace OpenDental{
 		public static Referral[] List;//all referrals for all patients
 		//should later add a list for single patient, along with a faster refresh sequence.
 		public static Referral Cur;
-		private static Hashtable HList;//to control access and refresh
+		private static Hashtable HList;
 
 		public static void Refresh(){
-			//may change how this is done so that referrals don't take up so much memory
 			cmd.CommandText =
 				"SELECT * from referral "
 				+"ORDER BY lname";
@@ -437,49 +436,51 @@ namespace OpenDental{
 		=================================== class Schedule ==========================================*/
 
 	public class Schedules:DataClass{
-		public static Schedule[] List;//entire month
-		public static Schedule[] DayList;//one day
+		public static Schedule[] ListMonth;
+		public static Schedule[] ListDay;
 		public static Schedule Cur;
 		public static DateTime CurDate;
 		//private static ArrayList AL;
 	
 		public static void RefreshMonth(){
+			//used in the schedule setup window
 			cmd.CommandText =
 				"SELECT * FROM schedule WHERE MONTH(SchedDate)='"+CurDate.Month.ToString()
 				+"' && YEAR(SchedDate)='"+CurDate.Year.ToString()+"' "
 				+"ORDER BY starttime";
 			FillTable();
-			List=new Schedule[table.Rows.Count];
+			ListMonth=new Schedule[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
-				List[i].ScheduleNum    = PIn.PInt   (table.Rows[i][0].ToString());
-				List[i].SchedDate      = PIn.PDate  (table.Rows[i][1].ToString());
-				List[i].StartTime      = PIn.PDateT (table.Rows[i][2].ToString());
-				List[i].StopTime       = PIn.PDateT (table.Rows[i][3].ToString());
+				ListMonth[i].ScheduleNum    = PIn.PInt   (table.Rows[i][0].ToString());
+				ListMonth[i].SchedDate      = PIn.PDate  (table.Rows[i][1].ToString());
+				ListMonth[i].StartTime      = PIn.PDateT (table.Rows[i][2].ToString());
+				ListMonth[i].StopTime       = PIn.PDateT (table.Rows[i][3].ToString());
 				//schedtype
 				//provnum
 				//blockouttype
-				List[i].Note           = PIn.PString(table.Rows[i][7].ToString());
-				List[i].Status         = (SchedStatus)PIn.PInt(table.Rows[i][8].ToString());        
+				ListMonth[i].Note           = PIn.PString(table.Rows[i][7].ToString());
+				ListMonth[i].Status         = (SchedStatus)PIn.PInt(table.Rows[i][8].ToString());        
 			}
 		}
 
 		public static void RefreshDay(DateTime thisDay){
+			//Called every time the day is refreshed or changed in Appointments module
 			CurDate=thisDay;//may revise later
 			cmd.CommandText =
 				"SELECT * FROM schedule WHERE SchedDate='"+POut.PDate(CurDate)+"'"
 				+" ORDER BY starttime";
 			FillTable();
-			DayList=new Schedule[table.Rows.Count];
+			ListDay=new Schedule[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
-				DayList[i].ScheduleNum    = PIn.PInt   (table.Rows[i][0].ToString());
-				DayList[i].SchedDate      = PIn.PDate  (table.Rows[i][1].ToString());
-				DayList[i].StartTime      = PIn.PDateT (table.Rows[i][2].ToString());
-				DayList[i].StopTime       = PIn.PDateT (table.Rows[i][3].ToString());
+				ListDay[i].ScheduleNum    = PIn.PInt   (table.Rows[i][0].ToString());
+				ListDay[i].SchedDate      = PIn.PDate  (table.Rows[i][1].ToString());
+				ListDay[i].StartTime      = PIn.PDateT (table.Rows[i][2].ToString());
+				ListDay[i].StopTime       = PIn.PDateT (table.Rows[i][3].ToString());
 				//schedtype
 				//provnum
 				//blockouttype
-				DayList[i].Note           = PIn.PString(table.Rows[i][7].ToString());
-				DayList[i].Status         = (SchedStatus)PIn.PInt(table.Rows[i][8].ToString());        
+				ListDay[i].Note           = PIn.PString(table.Rows[i][7].ToString());
+				ListDay[i].Status         = (SchedStatus)PIn.PInt(table.Rows[i][8].ToString());        
 			}
 		}
 
@@ -1039,7 +1040,7 @@ namespace OpenDental{
 		public bool IsFrequent;
 	}
 
-}//end namespace
+}
 
 
 

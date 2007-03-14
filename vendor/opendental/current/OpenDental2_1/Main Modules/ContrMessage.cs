@@ -55,6 +55,7 @@ namespace OpenDental{
 			// 
 			// butSend
 			// 
+			this.butSend.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butSend.Location = new System.Drawing.Point(300, 134);
 			this.butSend.Name = "butSend";
 			this.butSend.TabIndex = 7;
@@ -63,6 +64,7 @@ namespace OpenDental{
 			// 
 			// butClear
 			// 
+			this.butClear.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butClear.Location = new System.Drawing.Point(200, 134);
 			this.butClear.Name = "butClear";
 			this.butClear.TabIndex = 8;
