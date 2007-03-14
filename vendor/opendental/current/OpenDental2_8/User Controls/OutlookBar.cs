@@ -35,7 +35,7 @@ namespace OpenDental{
 			Buttons[3]=new OutlookButton("Treat' Plan",3);
 			Buttons[4]=new OutlookButton("Chart",4);
 			Buttons[5]=new OutlookButton("Images",5);
-			Buttons[6]=new OutlookButton("Message",6);
+			Buttons[6]=new OutlookButton("Staff",6);
 			UpdateAll();
 			// TODO: Add any initialization after the InitComponent call
 		}
@@ -112,9 +112,14 @@ namespace OpenDental{
 			Color outlineColor=Color.FromArgb(28,81,128);//Color.Gray;
 			SolidBrush textBrush = new SolidBrush(Color.Black);
 			SolidBrush backgBrush=new SolidBrush(SystemColors.Control);
-			
 			StringFormat format = new StringFormat();
 			format.Alignment=StringAlignment.Center;
+			if(!myButton.Visible){
+				g.FillRectangle(backgBrush,myButton.Bounds.X,myButton.Bounds.Y
+					,myButton.Bounds.Width+1,myButton.Bounds.Height+1);
+				g.Dispose();
+				return;
+			}
 			if(isPressed){
 				g.FillRectangle(new SolidBrush(pressedColor),myButton.Bounds.X,myButton.Bounds.Y
 					,myButton.Bounds.Width+1,myButton.Bounds.Height+1);
@@ -322,6 +327,7 @@ namespace OpenDental{
 			Caption=caption;
 			ImageIndex=imageIndex;
 			Bounds=new Rectangle(0,0,0,0);
+			Visible=true;
 		}
 
 		///<summary></summary>
@@ -330,6 +336,8 @@ namespace OpenDental{
 		public int ImageIndex;
 		///<summary></summary>
 		public Rectangle Bounds;
+		///<summary></summary>
+		public bool Visible;
 
 	}
 

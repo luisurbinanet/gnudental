@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Data;
 using System.Windows.Forms;
+using OpenDental.UI;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -41,7 +42,6 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Button butMedicalService;
 		private System.Windows.Forms.ListBox listDx;
-		private System.Windows.Forms.Label label4;
 		private int[] hiLightedRows=new int[1];
 		private System.Windows.Forms.GroupBox groupNext;
 		private ContrApptSingle ApptNext;
@@ -53,56 +53,6 @@ namespace OpenDental{
 		private System.Windows.Forms.Panel panelEnterTx;
 		private ArrayList RxAL;
 		private System.Windows.Forms.RadioButton radioEntryR;
-		private System.Windows.Forms.Panel toothbwfloat;
-		private System.Windows.Forms.Label label12;
-		private System.Windows.Forms.Panel toothfiles;
-		private System.Windows.Forms.Label label11;
-		private System.Windows.Forms.Panel toothdocs;
-		private System.Windows.Forms.Label label10;
-		private System.Windows.Forms.Panel toothcephs;
-		private System.Windows.Forms.Label label9;
-		private System.Windows.Forms.Panel toothpanos;
-		private System.Windows.Forms.Label label8;
-		private System.Windows.Forms.Panel toothcolors;
-		private System.Windows.Forms.Label label7;
-		private System.Windows.Forms.Panel toothxrays;
-		private System.Windows.Forms.Label label6;
-		private System.Windows.Forms.Panel toothbw;
-		private System.Windows.Forms.Label label5;
-		private System.Windows.Forms.Panel tooth38;
-		private System.Windows.Forms.Panel tooth37;
-		private System.Windows.Forms.Panel tooth36;
-		private System.Windows.Forms.Panel tooth35;
-		private System.Windows.Forms.Panel tooth34;
-		private System.Windows.Forms.Panel tooth33;
-		private System.Windows.Forms.Panel tooth32;
-		private System.Windows.Forms.Panel tooth31;
-		private System.Windows.Forms.Panel tooth41;
-		private System.Windows.Forms.Panel tooth42;
-		private System.Windows.Forms.Panel tooth43;
-		private System.Windows.Forms.Panel tooth44;
-		private System.Windows.Forms.Panel tooth45;
-		private System.Windows.Forms.Panel tooth46;
-		private System.Windows.Forms.Panel tooth47;
-		private System.Windows.Forms.Panel tooth48;
-		private System.Windows.Forms.Panel tooth28;
-		private System.Windows.Forms.Panel tooth27;
-		private System.Windows.Forms.Panel tooth26;
-		private System.Windows.Forms.Panel tooth25;
-		private System.Windows.Forms.Panel tooth24;
-		private System.Windows.Forms.Panel tooth23;
-		private System.Windows.Forms.Panel tooth22;
-		private System.Windows.Forms.Panel tooth21;
-		private System.Windows.Forms.Panel tooth11;
-		private System.Windows.Forms.Panel tooth12;
-		private System.Windows.Forms.Panel tooth13;
-		private System.Windows.Forms.Panel tooth14;
-		private System.Windows.Forms.Panel tooth15;
-		private System.Windows.Forms.Panel tooth16;
-		private System.Windows.Forms.Panel tooth17;
-		private System.Windows.Forms.Panel tooth18;
-		private System.Windows.Forms.Button XrayLinkBtn;
-		private System.Windows.Forms.Panel panelVQ;
 		private System.Windows.Forms.TextBox textService;
 		private System.Windows.Forms.TextBox textMedUrgNote;
 		private System.Windows.Forms.TextBox textMedical;
@@ -125,12 +75,11 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textADACode;
 		private System.Windows.Forms.Label label14;
 		private System.Windows.Forms.Button butOK;
-		private System.Windows.Forms.Button butPat;
-		private System.Windows.Forms.Button butRx;
-		private System.Windows.Forms.Button butPrimary;
 		private OpenDental.XPButton butNew;
 		private OpenDental.XPButton butClear;
-		private OpenDental.XPButton butDel;
+		private OpenDental.UI.ODToolBar ToolBarMain;
+		private System.Windows.Forms.Label labelDx;
+		private System.Windows.Forms.Label labelNewProcHint;
 		private System.Windows.Forms.ListBox listProcButtons;
 //fix: use AL for tbProg.SelectedRowsAL
 		//public	VisiQuick VQLink;  // TJE
@@ -190,7 +139,7 @@ namespace OpenDental{
 			this.label1 = new System.Windows.Forms.Label();
 			this.textMedical = new System.Windows.Forms.TextBox();
 			this.listDx = new System.Windows.Forms.ListBox();
-			this.label4 = new System.Windows.Forms.Label();
+			this.labelDx = new System.Windows.Forms.Label();
 			this.tbProg = new OpenDental.TableProg();
 			this.groupNext = new System.Windows.Forms.GroupBox();
 			this.butClear = new OpenDental.XPButton();
@@ -205,56 +154,6 @@ namespace OpenDental{
 			this.label13 = new System.Windows.Forms.Label();
 			this.butEnterTx = new System.Windows.Forms.Button();
 			this.imageListUpDown = new System.Windows.Forms.ImageList(this.components);
-			this.toothbwfloat = new System.Windows.Forms.Panel();
-			this.label12 = new System.Windows.Forms.Label();
-			this.toothfiles = new System.Windows.Forms.Panel();
-			this.label11 = new System.Windows.Forms.Label();
-			this.toothdocs = new System.Windows.Forms.Panel();
-			this.label10 = new System.Windows.Forms.Label();
-			this.toothcephs = new System.Windows.Forms.Panel();
-			this.label9 = new System.Windows.Forms.Label();
-			this.toothpanos = new System.Windows.Forms.Panel();
-			this.label8 = new System.Windows.Forms.Label();
-			this.toothcolors = new System.Windows.Forms.Panel();
-			this.label7 = new System.Windows.Forms.Label();
-			this.toothxrays = new System.Windows.Forms.Panel();
-			this.label6 = new System.Windows.Forms.Label();
-			this.toothbw = new System.Windows.Forms.Panel();
-			this.label5 = new System.Windows.Forms.Label();
-			this.tooth38 = new System.Windows.Forms.Panel();
-			this.tooth37 = new System.Windows.Forms.Panel();
-			this.tooth36 = new System.Windows.Forms.Panel();
-			this.tooth35 = new System.Windows.Forms.Panel();
-			this.tooth34 = new System.Windows.Forms.Panel();
-			this.tooth33 = new System.Windows.Forms.Panel();
-			this.tooth32 = new System.Windows.Forms.Panel();
-			this.tooth31 = new System.Windows.Forms.Panel();
-			this.tooth41 = new System.Windows.Forms.Panel();
-			this.tooth42 = new System.Windows.Forms.Panel();
-			this.tooth43 = new System.Windows.Forms.Panel();
-			this.tooth44 = new System.Windows.Forms.Panel();
-			this.tooth45 = new System.Windows.Forms.Panel();
-			this.tooth46 = new System.Windows.Forms.Panel();
-			this.tooth47 = new System.Windows.Forms.Panel();
-			this.tooth48 = new System.Windows.Forms.Panel();
-			this.tooth28 = new System.Windows.Forms.Panel();
-			this.tooth27 = new System.Windows.Forms.Panel();
-			this.tooth26 = new System.Windows.Forms.Panel();
-			this.tooth25 = new System.Windows.Forms.Panel();
-			this.tooth24 = new System.Windows.Forms.Panel();
-			this.tooth23 = new System.Windows.Forms.Panel();
-			this.tooth22 = new System.Windows.Forms.Panel();
-			this.tooth21 = new System.Windows.Forms.Panel();
-			this.tooth11 = new System.Windows.Forms.Panel();
-			this.tooth12 = new System.Windows.Forms.Panel();
-			this.tooth13 = new System.Windows.Forms.Panel();
-			this.tooth14 = new System.Windows.Forms.Panel();
-			this.tooth15 = new System.Windows.Forms.Panel();
-			this.tooth16 = new System.Windows.Forms.Panel();
-			this.tooth17 = new System.Windows.Forms.Panel();
-			this.tooth18 = new System.Windows.Forms.Panel();
-			this.XrayLinkBtn = new System.Windows.Forms.Button();
-			this.panelVQ = new System.Windows.Forms.Panel();
 			this.cTeeth = new OpenDental.ContrTeeth();
 			this.groupShow = new System.Windows.Forms.GroupBox();
 			this.checkNotes = new System.Windows.Forms.CheckBox();
@@ -270,23 +169,12 @@ namespace OpenDental{
 			this.menuPrimaryAll = new System.Windows.Forms.MenuItem();
 			this.menuPrimaryNone = new System.Windows.Forms.MenuItem();
 			this.imageListMain = new System.Windows.Forms.ImageList(this.components);
-			this.butPat = new System.Windows.Forms.Button();
-			this.butRx = new System.Windows.Forms.Button();
-			this.butPrimary = new System.Windows.Forms.Button();
-			this.butDel = new OpenDental.XPButton();
+			this.ToolBarMain = new OpenDental.UI.ODToolBar();
+			this.labelNewProcHint = new System.Windows.Forms.Label();
 			this.groupBox2.SuspendLayout();
 			this.panelMedical.SuspendLayout();
 			this.groupNext.SuspendLayout();
 			this.panelEnterTx.SuspendLayout();
-			this.toothbwfloat.SuspendLayout();
-			this.toothfiles.SuspendLayout();
-			this.toothdocs.SuspendLayout();
-			this.toothcephs.SuspendLayout();
-			this.toothpanos.SuspendLayout();
-			this.toothcolors.SuspendLayout();
-			this.toothxrays.SuspendLayout();
-			this.toothbw.SuspendLayout();
-			this.panelVQ.SuspendLayout();
 			this.groupShow.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -558,22 +446,23 @@ namespace OpenDental{
 			this.listDx.TabIndex = 46;
 			this.listDx.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listDx_MouseDown);
 			// 
-			// label4
+			// labelDx
 			// 
-			this.label4.Location = new System.Drawing.Point(90, 3);
-			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(100, 18);
-			this.label4.TabIndex = 47;
-			this.label4.Text = "Diagnosis";
+			this.labelDx.Location = new System.Drawing.Point(90, 3);
+			this.labelDx.Name = "labelDx";
+			this.labelDx.Size = new System.Drawing.Size(100, 18);
+			this.labelDx.TabIndex = 47;
+			this.labelDx.Text = "Diagnosis";
 			// 
 			// tbProg
 			// 
 			this.tbProg.BackColor = System.Drawing.SystemColors.Window;
-			this.tbProg.Location = new System.Drawing.Point(415, 264);
+			this.tbProg.Location = new System.Drawing.Point(415, 251);
 			this.tbProg.Name = "tbProg";
+			this.tbProg.ScrollValue = 1;
 			this.tbProg.SelectedIndices = new int[0];
 			this.tbProg.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-			this.tbProg.Size = new System.Drawing.Size(498, 400);
+			this.tbProg.Size = new System.Drawing.Size(498, 427);
 			this.tbProg.TabIndex = 40;
 			this.tbProg.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tbProg_KeyDown);
 			// 
@@ -584,7 +473,7 @@ namespace OpenDental{
 			this.groupNext.Controls.Add(this.labelMinutes);
 			this.groupNext.Controls.Add(this.checkDone);
 			this.groupNext.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupNext.Location = new System.Drawing.Point(0, 36);
+			this.groupNext.Location = new System.Drawing.Point(0, 30);
 			this.groupNext.Name = "groupNext";
 			this.groupNext.Size = new System.Drawing.Size(198, 114);
 			this.groupNext.TabIndex = 43;
@@ -647,7 +536,7 @@ namespace OpenDental{
 			this.panelEnterTx.Controls.Add(this.listProcButtons);
 			this.panelEnterTx.Controls.Add(this.label13);
 			this.panelEnterTx.Controls.Add(this.listDx);
-			this.panelEnterTx.Controls.Add(this.label4);
+			this.panelEnterTx.Controls.Add(this.labelDx);
 			this.panelEnterTx.Controls.Add(this.butO);
 			this.panelEnterTx.Controls.Add(this.butF);
 			this.panelEnterTx.Controls.Add(this.butI);
@@ -657,7 +546,7 @@ namespace OpenDental{
 			this.panelEnterTx.Controls.Add(this.textSurf);
 			this.panelEnterTx.Controls.Add(this.butD);
 			this.panelEnterTx.Controls.Add(this.groupBox2);
-			this.panelEnterTx.Location = new System.Drawing.Point(416, 66);
+			this.panelEnterTx.Location = new System.Drawing.Point(416, 51);
 			this.panelEnterTx.Name = "panelEnterTx";
 			this.panelEnterTx.Size = new System.Drawing.Size(496, 198);
 			this.panelEnterTx.TabIndex = 44;
@@ -715,9 +604,9 @@ namespace OpenDental{
 			this.butEnterTx.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.butEnterTx.ImageIndex = 1;
 			this.butEnterTx.ImageList = this.imageListUpDown;
-			this.butEnterTx.Location = new System.Drawing.Point(416, 40);
+			this.butEnterTx.Location = new System.Drawing.Point(416, 32);
 			this.butEnterTx.Name = "butEnterTx";
-			this.butEnterTx.Size = new System.Drawing.Size(79, 26);
+			this.butEnterTx.Size = new System.Drawing.Size(79, 20);
 			this.butEnterTx.TabIndex = 40;
 			this.butEnterTx.Text = "Enter Tx";
 			this.butEnterTx.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -729,462 +618,10 @@ namespace OpenDental{
 			this.imageListUpDown.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListUpDown.ImageStream")));
 			this.imageListUpDown.TransparentColor = System.Drawing.Color.Transparent;
 			// 
-			// toothbwfloat
-			// 
-			this.toothbwfloat.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.toothbwfloat.Controls.Add(this.label12);
-			this.toothbwfloat.Location = new System.Drawing.Point(50, 42);
-			this.toothbwfloat.Name = "toothbwfloat";
-			this.toothbwfloat.Size = new System.Drawing.Size(28, 24);
-			this.toothbwfloat.TabIndex = 169;
-			// 
-			// label12
-			// 
-			this.label12.Location = new System.Drawing.Point(3, 6);
-			this.label12.Name = "label12";
-			this.label12.Size = new System.Drawing.Size(23, 23);
-			this.label12.TabIndex = 0;
-			this.label12.Text = "bw";
-			// 
-			// toothfiles
-			// 
-			this.toothfiles.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.toothfiles.Controls.Add(this.label11);
-			this.toothfiles.Location = new System.Drawing.Point(282, 42);
-			this.toothfiles.Name = "toothfiles";
-			this.toothfiles.Size = new System.Drawing.Size(28, 24);
-			this.toothfiles.TabIndex = 168;
-			// 
-			// label11
-			// 
-			this.label11.Location = new System.Drawing.Point(2, 5);
-			this.label11.Name = "label11";
-			this.label11.Size = new System.Drawing.Size(30, 23);
-			this.label11.TabIndex = 1;
-			this.label11.Text = "Files";
-			// 
-			// toothdocs
-			// 
-			this.toothdocs.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.toothdocs.Controls.Add(this.label10);
-			this.toothdocs.Location = new System.Drawing.Point(251, 42);
-			this.toothdocs.Name = "toothdocs";
-			this.toothdocs.Size = new System.Drawing.Size(28, 24);
-			this.toothdocs.TabIndex = 167;
-			// 
-			// label10
-			// 
-			this.label10.Location = new System.Drawing.Point(2, 5);
-			this.label10.Name = "label10";
-			this.label10.Size = new System.Drawing.Size(25, 23);
-			this.label10.TabIndex = 1;
-			this.label10.Text = "Doc";
-			// 
-			// toothcephs
-			// 
-			this.toothcephs.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.toothcephs.Controls.Add(this.label9);
-			this.toothcephs.Location = new System.Drawing.Point(216, 42);
-			this.toothcephs.Name = "toothcephs";
-			this.toothcephs.Size = new System.Drawing.Size(28, 24);
-			this.toothcephs.TabIndex = 166;
-			// 
-			// label9
-			// 
-			this.label9.Location = new System.Drawing.Point(1, 5);
-			this.label9.Name = "label9";
-			this.label9.Size = new System.Drawing.Size(34, 23);
-			this.label9.TabIndex = 1;
-			this.label9.Text = "Ceph";
-			// 
-			// toothpanos
-			// 
-			this.toothpanos.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.toothpanos.Controls.Add(this.label8);
-			this.toothpanos.Location = new System.Drawing.Point(183, 42);
-			this.toothpanos.Name = "toothpanos";
-			this.toothpanos.Size = new System.Drawing.Size(28, 24);
-			this.toothpanos.TabIndex = 165;
-			// 
-			// label8
-			// 
-			this.label8.Location = new System.Drawing.Point(0, 6);
-			this.label8.Name = "label8";
-			this.label8.Size = new System.Drawing.Size(25, 23);
-			this.label8.TabIndex = 1;
-			this.label8.Text = "Pan";
-			// 
-			// toothcolors
-			// 
-			this.toothcolors.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.toothcolors.Controls.Add(this.label7);
-			this.toothcolors.Location = new System.Drawing.Point(150, 42);
-			this.toothcolors.Name = "toothcolors";
-			this.toothcolors.Size = new System.Drawing.Size(28, 24);
-			this.toothcolors.TabIndex = 164;
-			// 
-			// label7
-			// 
-			this.label7.Location = new System.Drawing.Point(3, 6);
-			this.label7.Name = "label7";
-			this.label7.Size = new System.Drawing.Size(23, 23);
-			this.label7.TabIndex = 1;
-			this.label7.Text = "Col";
-			// 
-			// toothxrays
-			// 
-			this.toothxrays.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.toothxrays.Controls.Add(this.label6);
-			this.toothxrays.Location = new System.Drawing.Point(117, 42);
-			this.toothxrays.Name = "toothxrays";
-			this.toothxrays.Size = new System.Drawing.Size(28, 24);
-			this.toothxrays.TabIndex = 163;
-			// 
-			// label6
-			// 
-			this.label6.Location = new System.Drawing.Point(4, 6);
-			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(23, 23);
-			this.label6.TabIndex = 1;
-			this.label6.Text = "XR";
-			// 
-			// toothbw
-			// 
-			this.toothbw.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.toothbw.Controls.Add(this.label5);
-			this.toothbw.Location = new System.Drawing.Point(83, 42);
-			this.toothbw.Name = "toothbw";
-			this.toothbw.Size = new System.Drawing.Size(28, 24);
-			this.toothbw.TabIndex = 162;
-			// 
-			// label5
-			// 
-			this.label5.Location = new System.Drawing.Point(3, 6);
-			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(23, 23);
-			this.label5.TabIndex = 0;
-			this.label5.Text = "BW";
-			// 
-			// tooth38
-			// 
-			this.tooth38.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.tooth38.Location = new System.Drawing.Point(298, 20);
-			this.tooth38.Name = "tooth38";
-			this.tooth38.Size = new System.Drawing.Size(12, 12);
-			this.tooth38.TabIndex = 161;
-			// 
-			// tooth37
-			// 
-			this.tooth37.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.tooth37.Location = new System.Drawing.Point(284, 20);
-			this.tooth37.Name = "tooth37";
-			this.tooth37.Size = new System.Drawing.Size(12, 12);
-			this.tooth37.TabIndex = 160;
-			// 
-			// tooth36
-			// 
-			this.tooth36.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.tooth36.Location = new System.Drawing.Point(270, 20);
-			this.tooth36.Name = "tooth36";
-			this.tooth36.Size = new System.Drawing.Size(12, 12);
-			this.tooth36.TabIndex = 159;
-			// 
-			// tooth35
-			// 
-			this.tooth35.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.tooth35.Location = new System.Drawing.Point(256, 20);
-			this.tooth35.Name = "tooth35";
-			this.tooth35.Size = new System.Drawing.Size(12, 12);
-			this.tooth35.TabIndex = 158;
-			// 
-			// tooth34
-			// 
-			this.tooth34.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.tooth34.Location = new System.Drawing.Point(242, 20);
-			this.tooth34.Name = "tooth34";
-			this.tooth34.Size = new System.Drawing.Size(12, 12);
-			this.tooth34.TabIndex = 157;
-			// 
-			// tooth33
-			// 
-			this.tooth33.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.tooth33.Location = new System.Drawing.Point(228, 20);
-			this.tooth33.Name = "tooth33";
-			this.tooth33.Size = new System.Drawing.Size(12, 12);
-			this.tooth33.TabIndex = 156;
-			// 
-			// tooth32
-			// 
-			this.tooth32.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.tooth32.Location = new System.Drawing.Point(214, 20);
-			this.tooth32.Name = "tooth32";
-			this.tooth32.Size = new System.Drawing.Size(12, 12);
-			this.tooth32.TabIndex = 155;
-			// 
-			// tooth31
-			// 
-			this.tooth31.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.tooth31.Location = new System.Drawing.Point(200, 20);
-			this.tooth31.Name = "tooth31";
-			this.tooth31.Size = new System.Drawing.Size(12, 12);
-			this.tooth31.TabIndex = 154;
-			// 
-			// tooth41
-			// 
-			this.tooth41.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.tooth41.Location = new System.Drawing.Point(181, 20);
-			this.tooth41.Name = "tooth41";
-			this.tooth41.Size = new System.Drawing.Size(12, 12);
-			this.tooth41.TabIndex = 153;
-			// 
-			// tooth42
-			// 
-			this.tooth42.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.tooth42.Location = new System.Drawing.Point(167, 20);
-			this.tooth42.Name = "tooth42";
-			this.tooth42.Size = new System.Drawing.Size(12, 12);
-			this.tooth42.TabIndex = 152;
-			// 
-			// tooth43
-			// 
-			this.tooth43.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.tooth43.Location = new System.Drawing.Point(153, 20);
-			this.tooth43.Name = "tooth43";
-			this.tooth43.Size = new System.Drawing.Size(12, 12);
-			this.tooth43.TabIndex = 151;
-			// 
-			// tooth44
-			// 
-			this.tooth44.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.tooth44.Location = new System.Drawing.Point(139, 20);
-			this.tooth44.Name = "tooth44";
-			this.tooth44.Size = new System.Drawing.Size(12, 12);
-			this.tooth44.TabIndex = 150;
-			// 
-			// tooth45
-			// 
-			this.tooth45.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.tooth45.Location = new System.Drawing.Point(125, 20);
-			this.tooth45.Name = "tooth45";
-			this.tooth45.Size = new System.Drawing.Size(12, 12);
-			this.tooth45.TabIndex = 149;
-			// 
-			// tooth46
-			// 
-			this.tooth46.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.tooth46.Location = new System.Drawing.Point(111, 20);
-			this.tooth46.Name = "tooth46";
-			this.tooth46.Size = new System.Drawing.Size(12, 12);
-			this.tooth46.TabIndex = 148;
-			// 
-			// tooth47
-			// 
-			this.tooth47.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.tooth47.Location = new System.Drawing.Point(97, 20);
-			this.tooth47.Name = "tooth47";
-			this.tooth47.Size = new System.Drawing.Size(12, 12);
-			this.tooth47.TabIndex = 147;
-			// 
-			// tooth48
-			// 
-			this.tooth48.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.tooth48.Location = new System.Drawing.Point(83, 20);
-			this.tooth48.Name = "tooth48";
-			this.tooth48.Size = new System.Drawing.Size(12, 12);
-			this.tooth48.TabIndex = 146;
-			// 
-			// tooth28
-			// 
-			this.tooth28.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.tooth28.Location = new System.Drawing.Point(298, 3);
-			this.tooth28.Name = "tooth28";
-			this.tooth28.Size = new System.Drawing.Size(12, 12);
-			this.tooth28.TabIndex = 145;
-			// 
-			// tooth27
-			// 
-			this.tooth27.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.tooth27.Location = new System.Drawing.Point(284, 3);
-			this.tooth27.Name = "tooth27";
-			this.tooth27.Size = new System.Drawing.Size(12, 12);
-			this.tooth27.TabIndex = 144;
-			// 
-			// tooth26
-			// 
-			this.tooth26.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.tooth26.Location = new System.Drawing.Point(270, 3);
-			this.tooth26.Name = "tooth26";
-			this.tooth26.Size = new System.Drawing.Size(12, 12);
-			this.tooth26.TabIndex = 143;
-			// 
-			// tooth25
-			// 
-			this.tooth25.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.tooth25.Location = new System.Drawing.Point(256, 3);
-			this.tooth25.Name = "tooth25";
-			this.tooth25.Size = new System.Drawing.Size(12, 12);
-			this.tooth25.TabIndex = 142;
-			// 
-			// tooth24
-			// 
-			this.tooth24.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.tooth24.Location = new System.Drawing.Point(242, 3);
-			this.tooth24.Name = "tooth24";
-			this.tooth24.Size = new System.Drawing.Size(12, 12);
-			this.tooth24.TabIndex = 141;
-			// 
-			// tooth23
-			// 
-			this.tooth23.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.tooth23.Location = new System.Drawing.Point(228, 3);
-			this.tooth23.Name = "tooth23";
-			this.tooth23.Size = new System.Drawing.Size(12, 12);
-			this.tooth23.TabIndex = 140;
-			// 
-			// tooth22
-			// 
-			this.tooth22.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.tooth22.Location = new System.Drawing.Point(214, 3);
-			this.tooth22.Name = "tooth22";
-			this.tooth22.Size = new System.Drawing.Size(12, 12);
-			this.tooth22.TabIndex = 139;
-			// 
-			// tooth21
-			// 
-			this.tooth21.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.tooth21.Location = new System.Drawing.Point(200, 3);
-			this.tooth21.Name = "tooth21";
-			this.tooth21.Size = new System.Drawing.Size(12, 12);
-			this.tooth21.TabIndex = 138;
-			// 
-			// tooth11
-			// 
-			this.tooth11.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.tooth11.Location = new System.Drawing.Point(181, 3);
-			this.tooth11.Name = "tooth11";
-			this.tooth11.Size = new System.Drawing.Size(12, 12);
-			this.tooth11.TabIndex = 137;
-			// 
-			// tooth12
-			// 
-			this.tooth12.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.tooth12.Location = new System.Drawing.Point(167, 3);
-			this.tooth12.Name = "tooth12";
-			this.tooth12.Size = new System.Drawing.Size(12, 12);
-			this.tooth12.TabIndex = 136;
-			// 
-			// tooth13
-			// 
-			this.tooth13.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.tooth13.Location = new System.Drawing.Point(153, 3);
-			this.tooth13.Name = "tooth13";
-			this.tooth13.Size = new System.Drawing.Size(12, 12);
-			this.tooth13.TabIndex = 135;
-			// 
-			// tooth14
-			// 
-			this.tooth14.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.tooth14.Location = new System.Drawing.Point(139, 3);
-			this.tooth14.Name = "tooth14";
-			this.tooth14.Size = new System.Drawing.Size(12, 12);
-			this.tooth14.TabIndex = 134;
-			// 
-			// tooth15
-			// 
-			this.tooth15.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.tooth15.Location = new System.Drawing.Point(125, 3);
-			this.tooth15.Name = "tooth15";
-			this.tooth15.Size = new System.Drawing.Size(12, 12);
-			this.tooth15.TabIndex = 133;
-			// 
-			// tooth16
-			// 
-			this.tooth16.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.tooth16.Location = new System.Drawing.Point(111, 3);
-			this.tooth16.Name = "tooth16";
-			this.tooth16.Size = new System.Drawing.Size(12, 12);
-			this.tooth16.TabIndex = 132;
-			// 
-			// tooth17
-			// 
-			this.tooth17.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.tooth17.Location = new System.Drawing.Point(97, 3);
-			this.tooth17.Name = "tooth17";
-			this.tooth17.Size = new System.Drawing.Size(12, 12);
-			this.tooth17.TabIndex = 131;
-			// 
-			// tooth18
-			// 
-			this.tooth18.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.tooth18.Location = new System.Drawing.Point(83, 3);
-			this.tooth18.Name = "tooth18";
-			this.tooth18.Size = new System.Drawing.Size(12, 12);
-			this.tooth18.TabIndex = 130;
-			this.tooth18.Text = "New";
-			// 
-			// XrayLinkBtn
-			// 
-			this.XrayLinkBtn.Image = ((System.Drawing.Image)(resources.GetObject("XrayLinkBtn.Image")));
-			this.XrayLinkBtn.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.XrayLinkBtn.Location = new System.Drawing.Point(1, 1);
-			this.XrayLinkBtn.Name = "XrayLinkBtn";
-			this.XrayLinkBtn.Size = new System.Drawing.Size(74, 26);
-			this.XrayLinkBtn.TabIndex = 129;
-			this.XrayLinkBtn.Text = "Images";
-			this.XrayLinkBtn.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			// 
-			// panelVQ
-			// 
-			this.panelVQ.Controls.Add(this.tooth26);
-			this.panelVQ.Controls.Add(this.tooth45);
-			this.panelVQ.Controls.Add(this.tooth35);
-			this.panelVQ.Controls.Add(this.tooth48);
-			this.panelVQ.Controls.Add(this.tooth22);
-			this.panelVQ.Controls.Add(this.toothxrays);
-			this.panelVQ.Controls.Add(this.tooth44);
-			this.panelVQ.Controls.Add(this.tooth27);
-			this.panelVQ.Controls.Add(this.tooth36);
-			this.panelVQ.Controls.Add(this.tooth33);
-			this.panelVQ.Controls.Add(this.tooth34);
-			this.panelVQ.Controls.Add(this.tooth31);
-			this.panelVQ.Controls.Add(this.tooth32);
-			this.panelVQ.Controls.Add(this.tooth42);
-			this.panelVQ.Controls.Add(this.toothpanos);
-			this.panelVQ.Controls.Add(this.tooth41);
-			this.panelVQ.Controls.Add(this.tooth43);
-			this.panelVQ.Controls.Add(this.tooth21);
-			this.panelVQ.Controls.Add(this.toothbw);
-			this.panelVQ.Controls.Add(this.tooth47);
-			this.panelVQ.Controls.Add(this.tooth28);
-			this.panelVQ.Controls.Add(this.tooth25);
-			this.panelVQ.Controls.Add(this.tooth23);
-			this.panelVQ.Controls.Add(this.tooth17);
-			this.panelVQ.Controls.Add(this.tooth38);
-			this.panelVQ.Controls.Add(this.tooth11);
-			this.panelVQ.Controls.Add(this.tooth46);
-			this.panelVQ.Controls.Add(this.toothcephs);
-			this.panelVQ.Controls.Add(this.tooth15);
-			this.panelVQ.Controls.Add(this.tooth12);
-			this.panelVQ.Controls.Add(this.tooth13);
-			this.panelVQ.Controls.Add(this.toothfiles);
-			this.panelVQ.Controls.Add(this.tooth14);
-			this.panelVQ.Controls.Add(this.tooth16);
-			this.panelVQ.Controls.Add(this.toothdocs);
-			this.panelVQ.Controls.Add(this.tooth18);
-			this.panelVQ.Controls.Add(this.XrayLinkBtn);
-			this.panelVQ.Controls.Add(this.toothbwfloat);
-			this.panelVQ.Controls.Add(this.tooth37);
-			this.panelVQ.Controls.Add(this.tooth24);
-			this.panelVQ.Controls.Add(this.toothcolors);
-			this.panelVQ.Location = new System.Drawing.Point(34, 685);
-			this.panelVQ.Name = "panelVQ";
-			this.panelVQ.Size = new System.Drawing.Size(312, 67);
-			this.panelVQ.TabIndex = 170;
-			// 
 			// cTeeth
 			// 
 			this.cTeeth.BackColor = System.Drawing.Color.White;
-			this.cTeeth.Location = new System.Drawing.Point(0, 152);
+			this.cTeeth.Location = new System.Drawing.Point(0, 146);
 			this.cTeeth.Name = "cTeeth";
 			this.cTeeth.Size = new System.Drawing.Size(410, 259);
 			this.cTeeth.TabIndex = 171;
@@ -1202,7 +639,7 @@ namespace OpenDental{
 			this.groupShow.Controls.Add(this.checkShowC);
 			this.groupShow.Controls.Add(this.checkShowTP);
 			this.groupShow.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupShow.Location = new System.Drawing.Point(200, 36);
+			this.groupShow.Location = new System.Drawing.Point(200, 30);
 			this.groupShow.Name = "groupShow";
 			this.groupShow.Size = new System.Drawing.Size(211, 114);
 			this.groupShow.TabIndex = 38;
@@ -1333,61 +770,30 @@ namespace OpenDental{
 			this.imageListMain.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListMain.ImageStream")));
 			this.imageListMain.TransparentColor = System.Drawing.Color.Transparent;
 			// 
-			// butPat
+			// ToolBarMain
 			// 
-			this.butPat.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butPat.ImageIndex = 0;
-			this.butPat.ImageList = this.imageListMain;
-			this.butPat.Location = new System.Drawing.Point(2, 2);
-			this.butPat.Name = "butPat";
-			this.butPat.Size = new System.Drawing.Size(124, 26);
-			this.butPat.TabIndex = 174;
-			this.butPat.Text = "Select Patient";
-			this.butPat.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.butPat.Click += new System.EventHandler(this.butPat_Click);
+			this.ToolBarMain.Dock = System.Windows.Forms.DockStyle.Top;
+			this.ToolBarMain.ImageList = this.imageListMain;
+			this.ToolBarMain.Location = new System.Drawing.Point(0, 0);
+			this.ToolBarMain.Name = "ToolBarMain";
+			this.ToolBarMain.Size = new System.Drawing.Size(939, 29);
+			this.ToolBarMain.TabIndex = 177;
+			this.ToolBarMain.ButtonClick += new OpenDental.UI.ODToolBarButtonClickEventHandler(this.ToolBarMain_ButtonClick);
 			// 
-			// butRx
+			// labelNewProcHint
 			// 
-			this.butRx.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butRx.ImageIndex = 1;
-			this.butRx.ImageList = this.imageListMain;
-			this.butRx.Location = new System.Drawing.Point(132, 2);
-			this.butRx.Name = "butRx";
-			this.butRx.Size = new System.Drawing.Size(91, 26);
-			this.butRx.TabIndex = 175;
-			this.butRx.Text = "New Rx";
-			this.butRx.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.butRx.Click += new System.EventHandler(this.butRx_Click);
-			// 
-			// butPrimary
-			// 
-			this.butPrimary.Location = new System.Drawing.Point(228, 2);
-			this.butPrimary.Name = "butPrimary";
-			this.butPrimary.Size = new System.Drawing.Size(90, 26);
-			this.butPrimary.TabIndex = 176;
-			this.butPrimary.Text = "Primary";
-			this.butPrimary.Click += new System.EventHandler(this.butPrimary_Click_1);
-			// 
-			// butDel
-			// 
-			this.butDel.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butDel.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butDel.BtnStyle = OpenDental.enumType.XPStyle.Silver;
-			this.butDel.Image = ((System.Drawing.Image)(resources.GetObject("butDel.Image")));
-			this.butDel.Location = new System.Drawing.Point(500, 39);
-			this.butDel.Name = "butDel";
-			this.butDel.Size = new System.Drawing.Size(28, 27);
-			this.butDel.TabIndex = 177;
-			this.butDel.Click += new System.EventHandler(this.butDel_Click);
+			this.labelNewProcHint.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.labelNewProcHint.Location = new System.Drawing.Point(608, 32);
+			this.labelNewProcHint.Name = "labelNewProcHint";
+			this.labelNewProcHint.Size = new System.Drawing.Size(294, 16);
+			this.labelNewProcHint.TabIndex = 178;
+			this.labelNewProcHint.Text = "Enter New Procedures Here:";
 			// 
 			// ContrChart
 			// 
-			this.Controls.Add(this.butDel);
-			this.Controls.Add(this.butPrimary);
-			this.Controls.Add(this.butRx);
-			this.Controls.Add(this.butPat);
+			this.Controls.Add(this.labelNewProcHint);
+			this.Controls.Add(this.ToolBarMain);
 			this.Controls.Add(this.cTeeth);
-			this.Controls.Add(this.panelVQ);
 			this.Controls.Add(this.panelEnterTx);
 			this.Controls.Add(this.tbProg);
 			this.Controls.Add(this.panelMedical);
@@ -1403,15 +809,6 @@ namespace OpenDental{
 			this.panelMedical.ResumeLayout(false);
 			this.groupNext.ResumeLayout(false);
 			this.panelEnterTx.ResumeLayout(false);
-			this.toothbwfloat.ResumeLayout(false);
-			this.toothfiles.ResumeLayout(false);
-			this.toothdocs.ResumeLayout(false);
-			this.toothcephs.ResumeLayout(false);
-			this.toothpanos.ResumeLayout(false);
-			this.toothcolors.ResumeLayout(false);
-			this.toothxrays.ResumeLayout(false);
-			this.toothbw.ResumeLayout(false);
-			this.panelVQ.ResumeLayout(false);
 			this.groupShow.ResumeLayout(false);
 			this.ResumeLayout(false);
 
@@ -1457,7 +854,7 @@ namespace OpenDental{
 				this.butB,
 				this.butClear,
 				this.butD,
-				this.butDel,
+				//this.butDel,
 				this.butEnterTx,
 				this.butF,
 				this.butI,
@@ -1472,7 +869,7 @@ namespace OpenDental{
 				this.label13,
 				this.label2,
 				this.label3,
-				this.label4,
+				this.labelDx,
 				this.labelMinutes,
 				this.groupBox2,
 				this.groupShow,
@@ -1495,15 +892,34 @@ namespace OpenDental{
 				this.butOK,
 				this.label14,
 				this.label13,
-				this.butRx,
-				this.butPat,
-				this.butPrimary,
 				this.textADACode
 				});
+			LayoutToolBar();
+		}
+
+		///<summary>Causes the toolbar to be laid out again.</summary>
+		public void LayoutToolBar(){
+			ToolBarMain.Buttons.Clear();
+			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Select Patient"),0,"","Patient"));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(ToolBarButtonStyle.Separator));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"New Rx"),1,"","Rx"));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(ToolBarButtonStyle.Separator));
+			ODToolBarButton button=new ODToolBarButton(Lan.g(this,"Primary"),-1,"Change the Primary/Permanent status of teeth","Primary");
+			button.Style=ToolBarButtonStyle.DropDownButton;
+			button.DropDownMenu=menuPrimary;
+			ToolBarMain.Buttons.Add(button);
+			ArrayList toolButItems=ToolButItems.GetForToolBar(ToolBarsAvail.ChartModule);
+			for(int i=0;i<toolButItems.Count;i++){
+				ToolBarMain.Buttons.Add(new ODToolBarButton(ToolBarButtonStyle.Separator));
+				ToolBarMain.Buttons.Add(new ODToolBarButton(((ToolButItem)toolButItems[i]).ButtonText
+					,-1,"",((ToolButItem)toolButItems[i]).ProgramNum));
+			}
+			ToolBarMain.Invalidate();
 		}
 
 		///<summary></summary>
 		public void ModuleSelected(){
+			HideClinicalData();
 			RefreshModuleData();
 			RefreshModuleScreen();
 		}
@@ -1529,13 +945,7 @@ namespace OpenDental{
 				PatientNotes.Refresh();
         ClaimProcs.Refresh();
 			}
-			if(Programs.IsEnabled("VisiQuick")){
-				panelVQ.Visible=true;
-			}
-			else panelVQ.Visible=false;
 		}
-
-		
 
 		private void RefreshModuleScreen(){
 			if(Patients.PatIsLoaded){
@@ -1545,10 +955,10 @@ namespace OpenDental{
 				groupNext.Enabled=true;
 				cTeeth.Enabled=true;
 				tbProg.Enabled=true;
-				butRx.Enabled=true;
-				butPrimary.Enabled=true;
+				ToolBarMain.Buttons["Rx"].Enabled=true;
+				ToolBarMain.Buttons["Primary"].Enabled=true;
+				ToolBarMain.Invalidate();
 				panelEnterTx.Enabled=true;//?
-				butDel.Enabled=true;
 			}
 			else{
 				ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString;
@@ -1557,10 +967,10 @@ namespace OpenDental{
 				groupNext.Enabled=false;
 				cTeeth.Enabled=false;
 				tbProg.Enabled=false;
-				butRx.Enabled=false;
-				butPrimary.Enabled=false;
+				ToolBarMain.Buttons["Rx"].Enabled=false;
+				ToolBarMain.Buttons["Primary"].Enabled=false;
+				ToolBarMain.Invalidate();
 				panelEnterTx.Enabled=false;//?
-				butDel.Enabled=false;
 			}
 			ClearButtons();
 			FillProgNotes();
@@ -1570,6 +980,44 @@ namespace OpenDental{
 			
 		}
 
+		private void HideClinicalData(){
+			if(((Pref)Prefs.HList["EasyHideClinical"]).ValueString=="1"){
+				panelMedical.Visible=false;
+				checkShowE.Visible=false;
+				checkShowR.Visible=false;
+				checkRx.Visible=false;
+				checkNotes.Visible=false;
+				butShowNone.Visible=false;
+				butShowAll.Visible=false;
+				butEnterTx.Visible=false;
+				panelEnterTx.Visible=false;//next line changes it, though
+				OnClickEnterTx();
+				radioEntryEC.Visible=false;
+				radioEntryEO.Visible=false;
+				radioEntryR.Visible=false;
+				labelDx.Visible=false;
+				listDx.Visible=false;
+				labelNewProcHint.Visible=true;
+			}
+			else{
+				panelMedical.Visible=true;
+				checkShowE.Visible=true;
+				checkShowR.Visible=true;
+				checkRx.Visible=true;
+				checkNotes.Visible=true;
+				butShowNone.Visible=true;
+				butShowAll.Visible=true;
+				butEnterTx.Visible=true;
+				radioEntryEC.Visible=true;
+				radioEntryEO.Visible=true;
+				radioEntryR.Visible=true;
+				labelDx.Visible=true;
+				listDx.Visible=true;
+				labelNewProcHint.Visible=false;
+			}
+		}
+
+		/*
 		private void butPat_Click(object sender, System.EventArgs e) {
 			toolButPatient_Click();
 		}
@@ -1580,26 +1028,30 @@ namespace OpenDental{
 
 		private void butPrimary_Click_1(object sender, System.EventArgs e) {
 			menuPrimary.Show(butPrimary,new Point(0,26));
+		}*/
+
+		private void ToolBarMain_ButtonClick(object sender, OpenDental.UI.ODToolBarButtonClickEventArgs e) {
+			if(e.Button.Tag.GetType()==typeof(string)){
+				//standard predefined button
+				switch(e.Button.Tag.ToString()){
+					case "Patient":
+						OnPatient_Click();
+						break;
+					case "Rx":
+						OnRx_Click();
+						break;
+					case "Primary":
+						//only respond to dropdown
+						//OnPrimary_Click();
+						break;
+				}
+			}
+			else if(e.Button.Tag.GetType()==typeof(int)){
+				Programs.Execute((int)e.Button.Tag);
+			}
 		}
 
-
-		private void toolBarMain_ButtonClick(object sender, System.Windows.Forms.ToolBarButtonClickEventArgs e) {}
-			/*switch(toolBarMain.Buttons.IndexOf(e.Button)){
-				case 0:
-					toolButPatient_Click();
-					break;
-				//1 div
-				case 2:
-					toolButRx_Click();
-					break;
-				//3 div
-				case 4:
-					//nothing but menu
-					break;
-			}*/
-		
-
-		private void toolButPatient_Click(){
+		private void OnPatient_Click(){
 			FormPatientSelect formSelectPatient2 = new FormPatientSelect();
 			formSelectPatient2.ShowDialog();
 			if (formSelectPatient2.DialogResult == DialogResult.OK){
@@ -1607,7 +1059,7 @@ namespace OpenDental{
 			}
 		}
 
-		private void toolButRx_Click(){
+		private void OnRx_Click(){
 			if(!UserPermissions.CheckUserPassword("Prescription Create")){
 				MessageBox.Show(Lan.g(this,"You do not have Permission to Add Prescriptions"));
 				return;
@@ -1652,12 +1104,12 @@ namespace OpenDental{
 			string hasIns="";
 			if(Patients.Cur.PriPlanNum!=0) hasIns="i";
 			ApptNext.Info.CreditAndIns=Patients.Cur.CreditType+hasIns;
-			ApptNext.Info.Lines = new string[ApptNext.Info.MyApt.Pattern.Length];
+			ApptNext.Info.Lines=new string[ApptNext.Info.MyApt.Pattern.Length];
 			ApptNext.Info.Lines[0]=Patients.GetCurNameLF();
 			Procedures.GetProcsForSingle(ApptNext.Info.MyApt.AptNum,true);
 			int nextLine=1;
-			for (int j=0; j<Procedures.ProcsForSingle.Length; j++){
-				if (j+nextLine<ApptNext.Info.Lines.Length)
+			for(int j=0;j<Procedures.ProcsForSingle.Length;j++){
+				if(j+nextLine<ApptNext.Info.Lines.Length)
 					ApptNext.Info.Lines[j+nextLine]=Procedures.ProcsForSingle[j];
 			}
 			ArrayList AListNote=new ArrayList();
@@ -1717,124 +1169,49 @@ namespace OpenDental{
 			if(!Patients.PatIsLoaded){
 				tbProg.ResetRows(0);
 				tbProg.LayoutTables();
-				//for(int i=0;i<32;i++){
-				//	tbTeeth.Cell[2,i]="";
-				//	tbTeeth.Cell[3,i]="";
-				//	tbTeeth.Cell[4,i]="";
-				//	tbTeeth.Cell[5,i]="";
-				//}
-				//tbTeeth.Refresh();
 				cTeeth.DrawShadow();
 				return;
 			}
 			tbProg.SelectedRows=new int[0];
-			//bool complete=true;
-			//int intToothNum=0;
-			//int intPri=0;
 			Procedures.Refresh();
 			RxPats.Refresh();
-			ProcAL = new ArrayList();//Procedure[Procedures.List.Length];
+			ProcAL = new ArrayList();
 			RxAL = new ArrayList();
-			//TPChartLines2 = new TPChartLines[33];//(1 to 32, 0 is not used)
 			hiLightedRows=new int[0];
 			//step through all procedures for patient and move selected ones to
 			//ProcAL and RxAL arrays as intermediate, each ordered by date.
 			//Pull from both into ProgLineAL array for display,
-			//(obsolete: and to TPChartLines2 array for display.)
 			//and draw teeth graphics by sending Procedure array directly to cTeeth.
-			//Every ProgLineAL entry contains type and index to access original
-			//array.
+			//Every ProgLineAL entry contains type and index to access original array.
 			for(int i=0;i<Procedures.List.Length;i++){
 				switch(Procedures.List[i].ProcStatus){
 					case ProcStat.TP :
-						//complete=false;
 						if (checkShowTP.Checked){
 							ProcAL.Add(Procedures.List[i]);
-							//cTeeth.DrawElement(
 						}
 						break;
 					case ProcStat.C :
-						//complete=true;
 						if (checkShowC.Checked){
 							ProcAL.Add(Procedures.List[i]);
 						}
 						break;
 					case ProcStat.EC :
-						//complete=true;
 						if (checkShowE.Checked){
 							ProcAL.Add(Procedures.List[i]);
 						}
 						break;
 					case ProcStat.EO :
-						//complete=true;
 						if (checkShowE.Checked){
 							ProcAL.Add(Procedures.List[i]);
 						}
 						break;
 					case ProcStat.R :
-						//complete=false;
 						if (checkShowR.Checked){
 							ProcAL.Add(Procedures.List[i]);
 						}
 						break;
 				}
-				//intToothNum=Procedures.ConvertToInt(Procedures.List[i].ToothNum);
-				/*try{
-					intToothNum=System.Convert.ToInt32(Procedures.List[i].ToothNum);
-				}
-				catch{
-					//if (Procedures.List[i].ToothNum.CompareTo("A")>=0 & Procedures.List[i].ToothNum.CompareTo("J")<=0) toothIsAnt = true;
-					//else if (Procedures.List[i].ToothNum.CompareTo("K")>=0 & Procedures.List[i].ToothNum.CompareTo("T")<=0) toothIsAnt = true;
-					if (Procedures.List[i].ToothNum!=null & Procedures.List[i].ToothNum.Length>0){
-						intPri=Convert.ToByte(Convert.ToChar(Procedures.List[i].ToothNum));//F=70
-						if(intPri>=65 & intPri<=74){
-							intToothNum=intPri-61;
-						}
-						else if(intPri>=75 & intPri<=84){
-							intToothNum=intPri-55;
-						}
-					}//end if
-					else intToothNum=0;
-				}*/
-				/*if(!complete){
-					//if (Procedures.List[i].Priority==0)
-					//	TPChartLines2[intToothNum].Pr="";
-					//else
-					//	TPChartLines2[intToothNum].Pr=Procedures.List[i].Priority.ToString();
-					TPChartLines2[intToothNum].Surf=Procedures.List[i].Surf;
-					TPChartLines2[intToothNum].Dx
-						=Defs.GetValue(DefCat.Diagnosis,Procedures.List[i].Dx);
-					if (TPChartLines2[intToothNum].Tx!=null)
-						TPChartLines2[intToothNum].Tx=TPChartLines2[intToothNum].Tx+", ";
-					if (Procedures.List[i].ADACode=="Ztoth"){//tooth note
-						TPChartLines2[intToothNum].Tx
-							=TPChartLines2[intToothNum].Tx
-							+"("+Procedures.List[i].ProcNote+")";
-					}
-					else{
-						TPChartLines2[intToothNum].Tx
-							=TPChartLines2[intToothNum].Tx
-							+ProcCodes.GetProcCode(Procedures.List[i].ADACode).AbbrDesc;
-					}
-				}//end if complete==false
-				else{//else complete
-					if (TPChartLines2[intToothNum].Complete!=null)
-						TPChartLines2[intToothNum].Complete=TPChartLines2[intToothNum].Complete+", ";
-					if (Procedures.List[i].ADACode=="Ztoth"){
-						TPChartLines2[intToothNum].Complete
-							=TPChartLines2[intToothNum].Complete
-							+Procedures.List[i].ProcNote;
-					}
-					else{
-						TPChartLines2[intToothNum].Complete
-							=TPChartLines2[intToothNum].Complete
-							+ProcCodes.GetProcCode(Procedures.List[i].ADACode).AbbrDesc;
-					}
-					//if (ProcCodes.GetProcCode(Procedures.List[i].ADACode).RemoveTooth==true){
-					//	Procedures.MissingTeeth[intToothNum]=true;
-					//}//moved into Procedures.Refresh
-				}//end else*/
-			}//end for Procedures.Count
+			}//for i
 			cTeeth.DrawProcs(ProcAL);
 			cTeeth.DrawShadow();
 			for(int i=0;i<RxPats.List.Length;i++){
@@ -1842,7 +1219,6 @@ namespace OpenDental{
 					RxAL.Add(RxPats.List[i]);
 				}
 			}
-
 			//This is where to convert ProcAL, RxAL to ProgLineAL:
 			int tempCountProc=0;
 			int tempCountRx=0;
@@ -1854,8 +1230,10 @@ namespace OpenDental{
 			//MessageBox.Show(ProcAL.Count+","+RxAL.Count);
 			while(j<(ProcAL.Count+RxAL.Count)){
 				//set lineDate to the value of the first array that is not maxed out:
-				if(tempCountProc<ProcAL.Count) lineDate=((Procedure)ProcAL[tempCountProc]).ProcDate;
-				else if(tempCountRx<RxAL.Count) lineDate=((RxPat)RxAL[tempCountRx]).RxDate;
+				if(tempCountProc < ProcAL.Count)
+					lineDate=((Procedure)ProcAL[tempCountProc]).ProcDate;
+				else if(tempCountRx < RxAL.Count)
+					lineDate=((RxPat)RxAL[tempCountRx]).RxDate;
 				//find next date
 				if(tempCountProc<ProcAL.Count 
 					&& DateTime.Compare(((Procedure)ProcAL[tempCountProc]).ProcDate,lineDate)<=0)
@@ -1871,12 +1249,11 @@ namespace OpenDental{
 					tempProgLine.IsNote=false;
 					tempProgLine.Index=tempCountProc;
 					tempProgLine.Date=((Procedure)ProcAL[tempCountProc]).ProcDate.ToString("d");
-					tempProgLine.Th=((Procedure)ProcAL[tempCountProc]).ToothNum;
+					tempProgLine.Th=Tooth.ToInternat(((Procedure)ProcAL[tempCountProc]).ToothNum);
 					tempProgLine.Surf=((Procedure)ProcAL[tempCountProc]).Surf;
 					tempProgLine.Dx=Defs.GetValue(DefCat.Diagnosis,((Procedure)ProcAL[tempCountProc]).Dx);
 					tempProgLine.Description
 						=ProcedureCodes.GetProcCode(((Procedure)ProcAL[tempCountProc]).ADACode).Descript;
-					
 					switch (((Procedure)ProcAL[tempCountProc]).ProcStatus){
 						case ProcStat.TP :
 							tempProgLine.Stat=Lan.g("enumProcStat","TP");
@@ -1899,7 +1276,6 @@ namespace OpenDental{
 							tempProgLine.LineColor=Defs.Long[(int)DefCat.ProgNoteColors][4].ItemColor;
 							break;
 					}//end switch ProcStatus
-
 					tempProgLine.Prov=Providers.GetAbbr(((Procedure)ProcAL[tempCountProc]).ProvNum);
 					tempProgLine.Amount=((Procedure)ProcAL[tempCountProc]).ProcFee.ToString("F");
 					ProgLineAL.Add(tempProgLine);
@@ -1913,7 +1289,9 @@ namespace OpenDental{
 					if (checkNotes.Checked 
 						&& tempCountProc<ProcAL.Count && ((Procedure)ProcAL[tempCountProc]).ProcNote!=""){
 						string remainNote=((Procedure)ProcAL[tempCountProc]).ProcNote;
-						while(remainNote.Length>0){
+						int overrunstop=0;//this handles unanticipated characters from conversions
+						while(remainNote.Length>0 && overrunstop<20){
+							overrunstop++;
 							tempProgLine.IsNote=true;
 							tempProgLine.Type=ProgType.Proc;
 							tempProgLine.Index=tempCountProc;
@@ -2018,7 +1396,6 @@ namespace OpenDental{
 						tempCountRx++;
 						j++;
 					}
-					
 				}
 				//MessageBox.Show(j.ToString());
 				//else j++;
@@ -2048,15 +1425,6 @@ namespace OpenDental{
 					tbProg.SetTextColorRow(i,((ProgLine)ProgLineAL[i]).LineColor);
 				}//end for
 				tbProg.LayoutTables();
-			//Filling TPChart
-			//for (int i = 1; i<33; i+=1){
-				//tbTeeth.Cell[2,i-1]=TPChartLines2[i].Pr;
-				//tbTeeth.Cell[2,i-1]=TPChartLines2[i].Surf;
-				//tbTeeth.Cell[3,i-1]=TPChartLines2[i].Dx;
-				//tbTeeth.Cell[4,i-1]=TPChartLines2[i].Tx;
-				//tbTeeth.Cell[5,i-1]=TPChartLines2[i].Complete;
-			//}
-			//tbTeeth.Refresh();
 		}//end FillProgNotes
 
     private void FillDxAndProcLists(){
@@ -2179,6 +1547,7 @@ namespace OpenDental{
 		//}
 
 		private void ClearButtons(){
+			//unfortuantely, these colors no longer show since the XP button style was introduced.
 			butM.BackColor=Color.FromName("Control");;
 			butO.BackColor=Color.FromName("Control");
 			butI.BackColor=Color.FromName("Control");
@@ -2198,10 +1567,6 @@ namespace OpenDental{
 			listDx.SelectedIndex=-1;
 			listProcButtons.SelectedIndex=-1;
 			textADACode.Text=Lan.g(this,"Type ADA Code");
-	//cTeeth.SelectNone ?
-			//tbTeeth.SetBackGColor(Color.White);
-			//tbTeeth.Refresh();
-			//this.radioEntryTP.Checked=true;
 		}
 
 		///<summary>Gets the fee schedule from the priinsplan, the patient, or the provider in that order.  Either returns a fee schedule (fk to definition.DefNum) or 0.</summary>
@@ -2618,6 +1983,10 @@ namespace OpenDental{
 		}
 
 		private void butEnterTx_Click(object sender, System.EventArgs e) {
+			OnClickEnterTx();
+		}
+
+		private void OnClickEnterTx(){
 			if(panelEnterTx.Visible){
 				panelEnterTx.Visible=false;
 				tbProg.Location=panelEnterTx.Location;
@@ -2867,8 +2236,6 @@ namespace OpenDental{
 			ModuleSelected();
 		}
 
-		//private bool 
-
 		private void butPrimary_Click(object sender, System.EventArgs e) {
 			//contextMenu1.Show(butPrimary,new Point(0,30));
 		}
@@ -2946,17 +2313,94 @@ namespace OpenDental{
 		}
 
 		private void EnterTypedCode(){
-			Procedures.Cur = new Procedure();
 			if(!ProcedureCodes.HList.ContainsKey(textADACode.Text)){
 				MessageBox.Show(Lan.g(this,"Invalid code."));
-				textADACode.Text="";
-				textADACode.Select();
+				//textADACode.Text="";
+				textADACode.SelectionStart=textADACode.Text.Length;
 				return;
 			}
-			Procedures.Cur.ADACode = textADACode.Text;
-			Procedures.Cur.Surf="";
-			//Procedures.Cur.ToothNum="";
-			AddProcedure();
+			TreatmentArea tArea;
+			int quadCount=0;//automates quadrant codes.
+			for(int n=0;n==0 || n<cTeeth.SelectedTeeth.Length;n++){//always loops at least once.
+				Procedures.Cur=new Procedure();
+				Procedures.Cur.ADACode=textADACode.Text;
+				bool isValid=true;
+				tArea=ProcedureCodes.GetProcCode(Procedures.Cur.ADACode).TreatArea;
+				if((tArea==TreatmentArea.Arch
+					|| tArea==TreatmentArea.Mouth
+					|| tArea==TreatmentArea.Quad
+					|| tArea==TreatmentArea.Sextant
+					|| tArea==TreatmentArea.ToothRange)
+					&& n>0){//the only two left are tooth and surf
+					continue;//only entered if n=0, so they don't get entered more than once.
+				}
+				else if(tArea==TreatmentArea.Quad){
+					switch(quadCount){
+						case 0: Procedures.Cur.Surf="UR"; break;
+						case 1: Procedures.Cur.Surf="UL"; break;
+						case 2: Procedures.Cur.Surf="LL"; break;
+						case 3: Procedures.Cur.Surf="LR"; break;
+						default: Procedures.Cur.Surf="UR"; break;//this could happen.
+					}
+					quadCount++;
+					AddQuick();
+				}
+				else if(tArea==TreatmentArea.Surf){
+					if(textSurf.Text=="")
+						isValid=false;
+					else
+						Procedures.Cur.Surf=textSurf.Text;
+					if(cTeeth.SelectedTeeth.Length==0)
+						isValid=false;
+					else
+						Procedures.Cur.ToothNum=cTeeth.SelectedTeeth[n];
+					if(isValid)
+						AddQuick();
+					else
+						AddProcedure();
+				}
+				else if(tArea==TreatmentArea.Tooth){
+					if(cTeeth.SelectedTeeth.Length==0){
+						AddProcedure();
+					}
+					else{
+						Procedures.Cur.ToothNum=cTeeth.SelectedTeeth[n];
+						AddQuick();
+					}
+				}
+				else if(tArea==TreatmentArea.ToothRange){
+					if(cTeeth.SelectedTeeth.Length==0){
+						AddProcedure();
+					}
+					else{
+						Procedures.Cur.ToothRange="";
+						for(int b=0;b<cTeeth.SelectedTeeth.Length;b++){
+							if(b!=0) Procedures.Cur.ToothRange+=",";
+							Procedures.Cur.ToothRange+=cTeeth.SelectedTeeth[b];
+						}
+						AddQuick();
+					}
+				}
+				else if(tArea==TreatmentArea.Arch){
+					if(cTeeth.SelectedTeeth.Length==0){
+						AddProcedure();
+						continue;
+					}
+					if(Tooth.IsMaxillary(cTeeth.SelectedTeeth[0])){
+						Procedures.Cur.Surf="U";
+					}
+					else{
+						Procedures.Cur.Surf="L";
+					}
+					AddQuick();
+				}
+				else if(tArea==TreatmentArea.Sextant){
+					AddProcedure();
+				}
+				else{//mouth
+					AddQuick();
+				}
+			}//n selected teeth
 			ModuleSelected();
 			textADACode.Text="";
 			textADACode.Select();
@@ -2992,6 +2436,8 @@ namespace OpenDental{
 				butI.Enabled=false;
 			}
 		}
+
+		
 
 		
 

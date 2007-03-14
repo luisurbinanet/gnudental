@@ -14,7 +14,7 @@ namespace OpenDental{
 		/// </summary>
 		private System.ComponentModel.Container components = null;
 		/// <summary>A list of plans passed to this form which are to be displayed.</summary>
-		public ArrayList ValidPlans;
+		public PayPlan[] ValidPlans;
 		private System.Windows.Forms.ListBox listPayPlans;
 		/// <summary>The index of the plan selected.</summary>
 		public int IndexSelected;
@@ -111,9 +111,9 @@ namespace OpenDental{
 		#endregion
 
 		private void FormPayPlanSelect_Load(object sender, System.EventArgs e) {
-			foreach(PayPlan payPlan in ValidPlans){
-				listPayPlans.Items.Add(payPlan.PayPlanDate.ToShortDateString()
-					+"  "+payPlan.TotalAmount.ToString("F"));
+			for(int i=0;i<ValidPlans.Length;i++){
+				listPayPlans.Items.Add(ValidPlans[i].PayPlanDate.ToShortDateString()
+					+"  "+ValidPlans[i].TotalAmount.ToString("F"));
 			}
 		}
 

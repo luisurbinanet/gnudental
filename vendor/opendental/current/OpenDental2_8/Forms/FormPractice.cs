@@ -44,12 +44,16 @@ namespace OpenDental{
 		private System.Windows.Forms.CheckBox checkAutoRefresh;
 		private System.Windows.Forms.TextBox textMainWindowTitle;
 		private System.Windows.Forms.Label label14;
+		private System.Windows.Forms.Label label15;
+		private System.Windows.Forms.ComboBox comboPatientPictureCat;
+		private System.Windows.Forms.CheckBox checkITooth;
 		private System.Windows.Forms.Label label1;// Required designer variable.
 
 		///<summary></summary>
 		public FormPractice(){
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] {
+			Lan.C(this, new System.Windows.Forms.Control[]
+			{
 				groupBox3,
 				label12,
 				label10,
@@ -64,9 +68,13 @@ namespace OpenDental{
 				label2,
 				label11,
 				label13,
+				label14,
 				label16,
 				butTreatProv,
 				label1,
+				checkITooth,
+				checkAutoRefresh,
+				checkShowCC
 			});
 			Lan.C("All", new System.Windows.Forms.Control[] {
 				butOK,
@@ -124,6 +132,9 @@ namespace OpenDental{
 			this.checkAutoRefresh = new System.Windows.Forms.CheckBox();
 			this.textMainWindowTitle = new System.Windows.Forms.TextBox();
 			this.label14 = new System.Windows.Forms.Label();
+			this.label15 = new System.Windows.Forms.Label();
+			this.comboPatientPictureCat = new System.Windows.Forms.ComboBox();
+			this.checkITooth = new System.Windows.Forms.CheckBox();
 			this.groupBox3.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.SuspendLayout();
@@ -469,20 +480,51 @@ namespace OpenDental{
 			this.label14.Text = "Main Window Title";
 			this.label14.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
+			// label15
+			// 
+			this.label15.Location = new System.Drawing.Point(385, 461);
+			this.label15.Name = "label15";
+			this.label15.Size = new System.Drawing.Size(218, 17);
+			this.label15.TabIndex = 40;
+			this.label15.Text = "Image Category for Patient Picture";
+			this.label15.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			this.label15.Visible = false;
+			// 
+			// comboPatientPictureCat
+			// 
+			this.comboPatientPictureCat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboPatientPictureCat.Location = new System.Drawing.Point(604, 457);
+			this.comboPatientPictureCat.Name = "comboPatientPictureCat";
+			this.comboPatientPictureCat.Size = new System.Drawing.Size(261, 21);
+			this.comboPatientPictureCat.TabIndex = 41;
+			this.comboPatientPictureCat.Visible = false;
+			// 
+			// checkITooth
+			// 
+			this.checkITooth.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkITooth.Location = new System.Drawing.Point(59, 525);
+			this.checkITooth.Name = "checkITooth";
+			this.checkITooth.Size = new System.Drawing.Size(334, 24);
+			this.checkITooth.TabIndex = 42;
+			this.checkITooth.Text = "Use International Tooth Numbers (11-48)";
+			// 
 			// FormPractice
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(866, 615);
+			this.Controls.Add(this.checkITooth);
+			this.Controls.Add(this.comboPatientPictureCat);
+			this.Controls.Add(this.label15);
 			this.Controls.Add(this.label14);
 			this.Controls.Add(this.textMainWindowTitle);
-			this.Controls.Add(this.checkAutoRefresh);
-			this.Controls.Add(this.checkShowCC);
-			this.Controls.Add(this.label1);
 			this.Controls.Add(this.textTreatNote);
 			this.Controls.Add(this.textBankNumber);
 			this.Controls.Add(this.textPracticeTitle);
+			this.Controls.Add(this.checkAutoRefresh);
+			this.Controls.Add(this.checkShowCC);
+			this.Controls.Add(this.label1);
 			this.Controls.Add(this.listProvider);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
@@ -541,6 +583,7 @@ namespace OpenDental{
 			else checkShowCC.Checked=false;
 			checkAutoRefresh.Checked=((Pref)Prefs.HList["AutoRefreshIsDisabled"]).ValueString=="1";
 			textMainWindowTitle.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString;
+			checkITooth.Checked=((Pref)Prefs.HList["UseInternationalToothNumbers"]).ValueString=="1";
 			//listBillProv.Items.Clear(); //might use later
 			//for(int i=0;i<Providers.List.Length;i++){
 			//	listBillProv.Items.Add(Providers.List[i].Abbr);
@@ -625,6 +668,11 @@ namespace OpenDental{
 
 			Prefs.Cur.PrefName="MainWindowTitle";
 			Prefs.Cur.ValueString=textMainWindowTitle.Text;
+			Prefs.UpdateCur();
+
+			Prefs.Cur.PrefName="UseInternationalToothNumbers";
+			if(checkITooth.Checked) Prefs.Cur.ValueString="1";
+			else Prefs.Cur.ValueString="0";
 			Prefs.UpdateCur();
 
 			//Prefs.Cur.PrefName="PracticeBillProv"; //might use later

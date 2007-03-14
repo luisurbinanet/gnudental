@@ -24,8 +24,8 @@ namespace OpenDental{
 			Fields[0]=Lan.g("TableAccountPat","Patient");
 			Fields[1]=Lan.g("TableAccountPat","Est Bal");
 			ColAlign[1]=HorizontalAlignment.Right;
-			ColWidth[0]=120;
-			ColWidth[1]=60;
+			ColWidth[0]=95;
+			ColWidth[1]=49;
 			LayoutTables();
 		}
 

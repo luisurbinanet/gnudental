@@ -229,15 +229,3 @@ namespace OpenDental{
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-

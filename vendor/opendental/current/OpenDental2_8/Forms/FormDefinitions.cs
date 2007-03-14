@@ -254,7 +254,7 @@ namespace OpenDental{
 		}
 
 		private void FillDefs(){
-			Defs.IsSelected=false;
+			//Defs.IsSelected=false;
 			Defs.GetCatList(SelectedCat);
 			tbDefs.ResetRows(Defs.List.Length);
 			tbDefs.SetBackGColor(Color.White);
@@ -266,12 +266,12 @@ namespace OpenDental{
 				}
 				if(Defs.List[i].IsHidden)
 					tbDefs.Cell[3,i]="X";
-				else tbDefs.Cell[3,i]="";
+				//else tbDefs.Cell[3,i]="";
 			}
-			//if(Defs.IsSelected){
-			//	tbDefs.BackGColor[0,Defs.Selected]=Color.LightGray;
-			//	tbDefs.BackGColor[1,Defs.Selected]=Color.LightGray;
-			//}
+			if(Defs.IsSelected){
+				tbDefs.BackGColor[0,Defs.Selected]=Color.LightGray;
+				tbDefs.BackGColor[1,Defs.Selected]=Color.LightGray;
+			}
 			tbDefs.Fields[1]=FormDefEdit.ValueText;
 			if(FormDefEdit.EnableColor){
 				tbDefs.Fields[2]="Color";
@@ -455,7 +455,7 @@ namespace OpenDental{
 				case "Chart Graphic Colors":
 					SelectedCat=22;
 					FormDefEdit.EnableColor=true;
-					//FormDefEdit.CanEditName=false;
+					FormDefEdit.CanEditName=false;
 					FormDefEdit.HelpText="These colors will be used on the graphical tooth chart "
 						+"to draw restorations.";
 					break;
@@ -479,15 +479,15 @@ namespace OpenDental{
 				else{
 					tbDefs.BackGColor[0,Defs.Selected]=Color.White;
 					tbDefs.BackGColor[1,Defs.Selected]=Color.White;
-					tbDefs.BackGColor[0,e.Row]=SystemColors.Highlight;
-					tbDefs.BackGColor[1,e.Row]=SystemColors.Highlight;
+					tbDefs.BackGColor[0,e.Row]=Color.LightGray;
+					tbDefs.BackGColor[1,e.Row]=Color.LightGray;
 					Defs.Selected=e.Row;
 					Defs.IsSelected=true;
 				}
 			}
 			else{
-				tbDefs.BackGColor[0,e.Row]=SystemColors.Highlight;
-				tbDefs.BackGColor[1,e.Row]=SystemColors.Highlight;
+				tbDefs.BackGColor[0,e.Row]=Color.LightGray;
+				tbDefs.BackGColor[1,e.Row]=Color.LightGray;
 				Defs.Selected=e.Row;
 				Defs.IsSelected=true;
 			}
@@ -513,12 +513,15 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please select item first."));
 				return;
 			}
-			FormDefEdit FormDefEdit2 = new FormDefEdit();
-			Defs.Cur = new Def();
+			FormDefEdit FormDE=new FormDefEdit();
+			Defs.Cur=new Def();
 			Defs.Cur.ItemOrder=Defs.List.Length;
 			Defs.Cur.Category=(DefCat)SelectedCat;
-			FormDefEdit2.IsNew=true;
-			FormDefEdit2.ShowDialog();
+			FormDE.IsNew=true;
+			FormDE.ShowDialog();
+			if(FormDE.DialogResult!=DialogResult.OK){
+				return;
+			}
 			Defs.Selected=Defs.List.Length;//this is one more than allowed, but it's ok
 			Defs.IsSelected=true;
 			FillDefs();

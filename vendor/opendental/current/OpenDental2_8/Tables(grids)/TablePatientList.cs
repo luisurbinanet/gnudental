@@ -16,7 +16,7 @@ namespace OpenDental{
 			InitializeComponent();// This call is required by the Windows Form Designer.
 			MaxRows=20;
 			MaxCols=10;
-			ShowScroll=false;
+			ShowScroll=true;
 			FieldsArePresent=true;
 			HeadingIsPresent=true;
 			InstantClassesPar();
@@ -72,6 +72,7 @@ namespace OpenDental{
 		private void TablePatientList_Load(object sender, System.EventArgs e) {
 			LayoutTables();
 		}
+
 
 	}
 }

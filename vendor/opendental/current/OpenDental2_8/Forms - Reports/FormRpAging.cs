@@ -307,7 +307,7 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"At least one billing type must be selected."));
 				return;
 			}
-			Queries.CurReport=new Report();
+			Queries.CurReport=new ReportOld();
 			Queries.CurReport.Query="SELECT CONCAT(LName,', ',FName,' ',MiddleI)"
 				+",Bal_0_30,Bal_31_60,Bal_61_90,BalOver90"
 				+",BalTotal "

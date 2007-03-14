@@ -210,15 +210,15 @@ namespace OpenDental
 			Font numFont=new Font("Arial",8);
 			Graphics grfx=Graphics.FromImage(Shadow);
 			if(intTooth<=16){
-				grfx.DrawString(toothNum,numFont,Brushes.Black
+				grfx.DrawString(Tooth.ToInternat(toothNum),numFont,Brushes.Black
 					,GetXLoc(intTooth)+GetWidthTooth(intTooth)/2
-					-grfx.MeasureString(toothNum,numFont).Width/2
+					-grfx.MeasureString(Tooth.ToInternat(toothNum),numFont).Width/2
 					,Height/2-15);
 			}
 			else{
-				grfx.DrawString(toothNum,numFont,Brushes.Black
+				grfx.DrawString(Tooth.ToInternat(toothNum),numFont,Brushes.Black
 					,GetXLoc(intTooth)+GetWidthTooth(intTooth)/2
-					-grfx.MeasureString(toothNum,numFont).Width/2
+					-grfx.MeasureString(Tooth.ToInternat(toothNum),numFont).Width/2
 					,Height/2+4);
 			}
 			grfx.Dispose();

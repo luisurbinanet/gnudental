@@ -23,12 +23,11 @@ namespace OpenDental{
 			Fields[1]=Lan.g("TableQueue","NoE");
 			Fields[2]=Lan.g("TableQueue","Carrier Name");
 			Fields[3]=Lan.g("TableQueue","Status");
-
-			ColWidth[0]=100;
+			ColWidth[0]=130;
 			ColWidth[1]=50;
-			ColWidth[2]=150;
-			ColWidth[3]=100;
-
+			ColWidth[2]=170;
+			ColWidth[3]=120;
+			ColAlign[1]=HorizontalAlignment.Center;
 			DefaultGridColor=Color.LightGray;
 			LayoutTables();
 		}

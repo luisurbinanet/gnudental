@@ -222,6 +222,7 @@ namespace OpenDental
 			// 
 			// checkPayPlan
 			// 
+			this.checkPayPlan.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkPayPlan.Location = new System.Drawing.Point(306, 310);
 			this.checkPayPlan.Name = "checkPayPlan";
 			this.checkPayPlan.Size = new System.Drawing.Size(198, 18);
@@ -325,44 +326,18 @@ namespace OpenDental
 
 		private void checkPayPlan_Click(object sender, System.EventArgs e) {
 			if(checkPayPlan.Checked){
-				int curPatNum=Patients.Cur.PatNum;//remember the patnum so we can refresh it when we're done.
-				Patients.Cur.PatNum=Patients.FamilyList[listPatient.SelectedIndex].PatNum;
-				PayPlans.Refresh();
-				//need to determine how many of the available plans have the selected patient as the guarantor
-				ArrayList validPlans=new ArrayList();
-				for(int i=0;i<PayPlans.List.Length;i++){
-					if(PayPlans.List[i].Guarantor==Patients.Cur.PatNum){
-						validPlans.Add(PayPlans.List[i]);
+				if(!PayPlans.GetValidPlan(Patients.FamilyList[listPatient.SelectedIndex].PatNum)){//no valid plans
+					if(PayPlans.List.Length==0){
+						MessageBox.Show(Lan.g(this,
+							"The selected patient is not the guarantor for any payment plans."));
 					}
-				}
-				if(validPlans.Count==0){
-					MessageBox.Show(Lan.g(this,"The selected patient is not the guarantor for any payment plans."));
-					Patients.Cur.PatNum=curPatNum;//no need to refresh since we didn't change anything.
 					checkPayPlan.Checked=false;
 					return;
 				}
-				if(validPlans.Count==1){ //if there is only one valid payplan
-					PaySplits.Cur.PayPlanNum=((PayPlan)validPlans[0]).PayPlanNum;
-					Patients.Cur.PatNum=curPatNum;//no need to refresh since we didn't change anything.
-					return;
-				}
-				//more than one valid PayPlan
-				FormPayPlanSelect FormPPS=new FormPayPlanSelect();
-				FormPPS.ValidPlans=validPlans;
-				FormPPS.ShowDialog();
-				if(FormPPS.DialogResult==DialogResult.OK){
-					PaySplits.Cur.PayPlanNum=((PayPlan)validPlans[FormPPS.IndexSelected]).PayPlanNum;
-				}
-				else{
-					if(PaySplits.Cur.PayPlanNum==0)
-						checkPayPlan.Checked=false;
-				}
-				Patients.Cur.PatNum=curPatNum;//no need to refresh since we didn't change anything.
-				return;
+				PaySplits.Cur.PayPlanNum=PayPlans.Cur.PayPlanNum;
 			}
 			else{//payPlan unchecked
 				PaySplits.Cur.PayPlanNum=0;
-				return;
 			}
 		}
 		

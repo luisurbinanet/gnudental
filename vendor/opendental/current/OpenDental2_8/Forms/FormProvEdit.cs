@@ -779,6 +779,10 @@ namespace OpenDental{
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e){
+			if(textAbbr.Text==""){
+				MessageBox.Show(Lan.g(this,"Abbreviation not allowed to be blank."));
+				return;
+			}
 			Providers.Cur.Abbr=textAbbr.Text;
 			Providers.Cur.LName=textLName.Text;
 			Providers.Cur.FName=textFName.Text;

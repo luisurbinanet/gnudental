@@ -126,7 +126,7 @@ namespace OpenDental{
 			//	MessageBox.Show(Lan.g(this,"Please fix data entry errors first."));
 			//	return;
 			//}
-			Queries.CurReport=new Report();
+			Queries.CurReport=new ReportOld();
 			Queries.CurReport.Query=
 				"SELECT CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI),adjamt "
 				+"FROM patient,adjustment "

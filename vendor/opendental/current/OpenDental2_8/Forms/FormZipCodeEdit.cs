@@ -192,9 +192,18 @@ namespace OpenDental{
 		}
 
 		private void textState_TextChanged(object sender, System.EventArgs e){
-			if(CultureInfo.CurrentCulture.Name=="en-US"){
-				textState.Text=textState.Text.ToUpper();
-				textState.SelectionStart=2;	
+			if(CultureInfo.CurrentCulture.Name=="en-US" //if USA or Canada, capitalize first 2 letters
+				|| CultureInfo.CurrentCulture.Name.Substring(3)=="CA"){
+				if(textState.Text.Length==1 || textState.Text.Length==2){
+					textState.Text=textState.Text.ToUpper();
+					textState.SelectionStart=2;
+				}
+			}
+			else{
+				if(textState.Text.Length==1){
+					textState.Text=textState.Text.ToUpper();
+					textState.SelectionStart=1;
+				}
 			}
 		}
 

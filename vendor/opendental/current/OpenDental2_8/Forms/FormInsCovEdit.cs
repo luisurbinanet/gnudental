@@ -116,7 +116,6 @@ namespace OpenDental{
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
 			this.groupBox3 = new System.Windows.Forms.GroupBox();
 			this.label10 = new System.Windows.Forms.Label();
-			this.butAddPlan = new OpenDental.XPButton();
 			this.butExistPriPlan = new System.Windows.Forms.Button();
 			this.butEditPriPlan = new OpenDental.XPButton();
 			this.label9 = new System.Windows.Forms.Label();
@@ -135,6 +134,7 @@ namespace OpenDental{
 			this.radioPriChild = new System.Windows.Forms.RadioButton();
 			this.radioPriSpouse = new System.Windows.Forms.RadioButton();
 			this.radioPriSelf = new System.Windows.Forms.RadioButton();
+			this.butAddPlan = new OpenDental.XPButton();
 			this.butOK = new System.Windows.Forms.Button();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.groupBox4 = new System.Windows.Forms.GroupBox();
@@ -194,45 +194,30 @@ namespace OpenDental{
 			// groupBox3
 			// 
 			this.groupBox3.Controls.Add(this.label10);
-			this.groupBox3.Controls.Add(this.butAddPlan);
 			this.groupBox3.Controls.Add(this.butExistPriPlan);
+			this.groupBox3.Controls.Add(this.butAddPlan);
 			this.groupBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
 			this.groupBox3.Location = new System.Drawing.Point(16, 109);
 			this.groupBox3.Name = "groupBox3";
-			this.groupBox3.Size = new System.Drawing.Size(252, 93);
+			this.groupBox3.Size = new System.Drawing.Size(252, 96);
 			this.groupBox3.TabIndex = 96;
 			this.groupBox3.TabStop = false;
 			this.groupBox3.Text = "Add a plan to the list above";
 			// 
 			// label10
 			// 
-			this.label10.Location = new System.Drawing.Point(106, 59);
+			this.label10.Location = new System.Drawing.Point(106, 26);
 			this.label10.Name = "label10";
 			this.label10.Size = new System.Drawing.Size(139, 19);
 			this.label10.TabIndex = 96;
 			this.label10.Text = "From another family";
 			this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
-			// butAddPlan
-			// 
-			this.butAddPlan.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butAddPlan.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butAddPlan.BtnStyle = OpenDental.enumType.XPStyle.Silver;
-			this.butAddPlan.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.butAddPlan.Image = ((System.Drawing.Image)(resources.GetObject("butAddPlan.Image")));
-			this.butAddPlan.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAddPlan.Location = new System.Drawing.Point(13, 24);
-			this.butAddPlan.Name = "butAddPlan";
-			this.butAddPlan.Size = new System.Drawing.Size(92, 26);
-			this.butAddPlan.TabIndex = 91;
-			this.butAddPlan.Text = "&New";
-			this.butAddPlan.Click += new System.EventHandler(this.butAddPlan_Click);
-			// 
 			// butExistPriPlan
 			// 
 			this.butExistPriPlan.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butExistPriPlan.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.butExistPriPlan.Location = new System.Drawing.Point(13, 56);
+			this.butExistPriPlan.Location = new System.Drawing.Point(13, 23);
 			this.butExistPriPlan.Name = "butExistPriPlan";
 			this.butExistPriPlan.Size = new System.Drawing.Size(92, 26);
 			this.butExistPriPlan.TabIndex = 95;
@@ -247,11 +232,12 @@ namespace OpenDental{
 			this.butEditPriPlan.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
 			this.butEditPriPlan.Image = ((System.Drawing.Image)(resources.GetObject("butEditPriPlan.Image")));
 			this.butEditPriPlan.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butEditPriPlan.Location = new System.Drawing.Point(276, 133);
+			this.butEditPriPlan.Location = new System.Drawing.Point(274, 179);
 			this.butEditPriPlan.Name = "butEditPriPlan";
 			this.butEditPriPlan.Size = new System.Drawing.Size(95, 26);
 			this.butEditPriPlan.TabIndex = 93;
 			this.butEditPriPlan.Text = "&Edit Plan";
+			this.butEditPriPlan.Visible = false;
 			this.butEditPriPlan.Click += new System.EventHandler(this.butEditPriPlan_Click);
 			// 
 			// label9
@@ -424,6 +410,22 @@ namespace OpenDental{
 			this.radioPriSelf.Text = "Self";
 			this.radioPriSelf.Click += new System.EventHandler(this.radioPriSelf_Click);
 			// 
+			// butAddPlan
+			// 
+			this.butAddPlan.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAddPlan.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butAddPlan.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butAddPlan.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.butAddPlan.Image = ((System.Drawing.Image)(resources.GetObject("butAddPlan.Image")));
+			this.butAddPlan.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butAddPlan.Location = new System.Drawing.Point(13, 59);
+			this.butAddPlan.Name = "butAddPlan";
+			this.butAddPlan.Size = new System.Drawing.Size(92, 26);
+			this.butAddPlan.TabIndex = 91;
+			this.butAddPlan.Text = "&New";
+			this.butAddPlan.Visible = false;
+			this.butAddPlan.Click += new System.EventHandler(this.butAddPlan_Click);
+			// 
 			// butOK
 			// 
 			this.butOK.DialogResult = System.Windows.Forms.DialogResult.Cancel;
@@ -500,11 +502,12 @@ namespace OpenDental{
 			this.butEditSecPlan.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
 			this.butEditSecPlan.Image = ((System.Drawing.Image)(resources.GetObject("butEditSecPlan.Image")));
 			this.butEditSecPlan.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butEditSecPlan.Location = new System.Drawing.Point(276, 133);
+			this.butEditSecPlan.Location = new System.Drawing.Point(273, 207);
 			this.butEditSecPlan.Name = "butEditSecPlan";
 			this.butEditSecPlan.Size = new System.Drawing.Size(95, 26);
 			this.butEditSecPlan.TabIndex = 96;
 			this.butEditSecPlan.Text = "Edit Plan";
+			this.butEditSecPlan.Visible = false;
 			this.butEditSecPlan.Click += new System.EventHandler(this.butEditSecPlan_Click);
 			// 
 			// butSecDelete
@@ -705,6 +708,9 @@ namespace OpenDental{
 		#endregion
 
 		private void FormInsCovEdit_Load(object sender, System.EventArgs e) {
+			if(((Pref)Prefs.HList["CustomizedForPracticeWeb"]).ValueString=="1"){
+				butAddPlan.Visible=true;
+			}
 			FillPlans();
 			InitialFillRelats();
 			FillPercent();
@@ -952,9 +958,22 @@ namespace OpenDental{
 		}
 
 		private void butAddPlan_Click(object sender, System.EventArgs e) {
-			FormInsTemplates FormIT = new FormInsTemplates();
-			FormIT.ShowDialog();
-			if(FormIT.DialogResult!=DialogResult.OK){
+			InsPlans.Cur=new InsPlan();
+			InsPlans.Cur.Subscriber=Patients.Cur.PatNum;
+			InsPlans.Cur.SubscriberID=Patients.Cur.SSN;
+			InsPlans.Cur.EmployerNum=Patients.Cur.EmployerNum;
+			InsPlans.Cur.AnnualMax=-1;//blank
+			InsPlans.Cur.OrthoMax=-1;
+			InsPlans.Cur.RenewMonth=1;
+			InsPlans.Cur.Deductible=-1;
+			InsPlans.Cur.FloToAge=-1;
+			InsPlans.Cur.ReleaseInfo=true;
+			InsPlans.Cur.AssignBen=true;
+			InsPlans.InsertCur();
+			FormInsPlan FormIP=new FormInsPlan();
+			FormIP.IsNew=true;
+			FormIP.ShowDialog();
+			if(FormIP.DialogResult!=DialogResult.OK){
 				return;
 			}
 			Patients.Cur.PriPlanNum=InsPlans.Cur.PlanNum;
@@ -962,6 +981,8 @@ namespace OpenDental{
 			Patients.GetFamily(Patients.Cur.PatNum);
 			InsPlans.Refresh();
 			FillPlans();
+			FillPercent();
+			FillAdj();
 		}
 
 		private void butExistPriPlan_Click(object sender, System.EventArgs e) {
@@ -1118,7 +1139,7 @@ namespace OpenDental{
 
 		private void butEditPriPlan_Click(object sender, System.EventArgs e) {
 			if(Patients.Cur.PriPlanNum==0){
-				MessageBox.Show(Lan.g(this,"No plan to edit"));
+				MessageBox.Show(Lan.g(this,"Please select an item from the list first."));
 				return;
 			}
 			FormInsPlan FormIP = new FormInsPlan();
@@ -1133,7 +1154,7 @@ namespace OpenDental{
 
 		private void butEditSecPlan_Click(object sender, System.EventArgs e) {
 			if(Patients.Cur.SecPlanNum==0){
-				MessageBox.Show(Lan.g(this,"No plan to edit"));
+				MessageBox.Show(Lan.g(this,"Please select an item from the list first."));
 				return;
 			}
 			FormInsPlan FormIP = new FormInsPlan();

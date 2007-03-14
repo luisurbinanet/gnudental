@@ -153,7 +153,7 @@ namespace OpenDental{
 		#endregion
 
 		private void FormBilling_Load(object sender, System.EventArgs e) {
-			contrAccount1.checkShowAll.Checked=false;
+			//contrAccount1.checkShowAll.Checked=false;
 			//textDate.Text=Ledgers.GetClosestFirst(DateTime.Today).ToShortDateString();
 			//Patients.GetAgingList();
 			FillTable();

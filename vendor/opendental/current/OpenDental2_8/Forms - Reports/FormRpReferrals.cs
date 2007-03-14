@@ -556,7 +556,7 @@ namespace OpenDental{
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			Queries.CurReport=new Report();
+			Queries.CurReport=new ReportOld();
 			Queries.CurReport.Query=textSQL.Text;
 			FormQuery2=new FormQuery();
 			FormQuery2.IsReport=false;

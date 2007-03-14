@@ -127,20 +127,18 @@ namespace OpenDental{
 			}
 			int daysOld=PIn.PInt(textDaysOld.Text);
 			//FormQuery2.ResetGrid();//this is a method in FormQuery2;
-			Queries.CurReport=new Report();
+			Queries.CurReport=new ReportOld();
 			DateTime startQDate = DateTime.Today.AddDays(-daysOld);
-			Queries.CurReport.Query = "SELECT T2.Carrier,T1.ClaimNum,T1.ClaimType,T1.DateService,"
-				+"CONCAT(T3.LName,', ',T3.FName,' ',T3.MiddleI), T1.DateSent,T1.ClaimFee,T2.Phone "
-				+"FROM claim AS T1 LEFT JOIN insplan AS T2 ON T1.PlanNum = T2.PlanNum "
-				+"LEFT JOIN patient AS T3 ON T1.PatNum = T3.PatNum " 
-				+"WHERE T1.ClaimStatus='S' && T1.DateSent < '"+POut.PDate(startQDate)+"' "
-				+"ORDER BY T2.Phone,T2.PlanNum";
-      /*Queries.CurReport.Query = "SELECT T2.Carrier,T1.ClaimNum,T1.ClaimType,T1.DateService,"
-				+"CONCAT(T3.LName,', ',T3.FName,' ',T3.MiddleI), T1.DateSent,T1.ClaimFee "
-				+"FROM claim AS T1 LEFT JOIN insplan AS T2 ON T1.PlanNum = T2.PlanNum "
-				+"LEFT JOIN patient AS T3 ON T1.PatNum = T3.PatNum " 
-				+"WHERE T1.ClaimStatus='S' && T1.DateSent < '"+POut.PDate(startQDate)+"' "
-				+"ORDER BY T1.DateService";*/
+			Queries.CurReport.Query = "SELECT carrier.CarrierName,claim.ClaimNum"
+				+",claim.ClaimType,claim.DateService,"
+				+"CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI), claim.DateSent"
+				+",claim.ClaimFee,carrier.Phone "
+				+"FROM claim,insplan,patient,carrier "
+				+"WHERE claim.PlanNum = insplan.PlanNum "
+				+"&& claim.PatNum = patient.PatNum "
+				+"&& carrier.CarrierNum = insplan.CarrierNum "
+				+"&& claim.ClaimStatus='S' && claim.DateSent < '"+POut.PDate(startQDate)+"' "
+				+"ORDER BY carrier.Phone,insplan.PlanNum";
 			FormQuery2=new FormQuery();
 			FormQuery2.IsReport=true;
 

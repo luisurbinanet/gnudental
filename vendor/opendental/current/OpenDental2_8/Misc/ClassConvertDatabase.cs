@@ -8,6 +8,7 @@ using System.Drawing.Design;
 using System.Drawing.Text;
 using System.Drawing.Drawing2D;
 using System.Drawing.Printing;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Resources;
@@ -39,7 +40,7 @@ namespace OpenDental{
 					+" which was only for development purposes.");
 				return false;
 			}
-			if(FromVersion < new Version("2.5.7.0")){
+			if(FromVersion < new Version("2.8.14.0")){
 				if(MessageBox.Show("Your database will now be converted from version "
 					+FromVersion.ToString()+" to version "+ToVersion.ToString()
 					+". Please be certain you have a current backup.  "
@@ -64,7 +65,7 @@ namespace OpenDental{
 			}
 		}
 
-		///<summary>Backs up the database to the same directory as the original just in case the user did not have sense enought to do a backup first.</summary>
+		///<summary>Backs up the database to the same directory as the original just in case the user did not have sense enough to do a backup first.</summary>
 		private void MakeABackup(){
 			try{
 				string newDb="opendentalbackup"+DateTime.Today.ToString("MMddyyyy");
@@ -90,7 +91,10 @@ namespace OpenDental{
 				}
 			}
 			catch(Exception e){
-				MessageBox.Show("Automated backup unsuccessful because it was already run today. Conversion will now continue.");
+				if(e.Message!=""){
+					//MessageBox.Show(e.Message);
+				}
+				MessageBox.Show("You can disregard the previous error message.  It came up simply because the automated backup had already been run today.  The conversion will now begin.");
 			}
 			finally{
 				//MessageBox.Show("Backup done");
@@ -728,8 +732,14 @@ namespace OpenDental{
 			if(FromVersion < new Version("2.5.7.0")){
 				try{
 					//copy the new ADA2002.gif
-					File.Copy(@"ConversionFiles\ADA2002.gif"
-						,((Pref)Prefs.HList["DocPath"]).ValueString+@"\ADA2002.gif",true);
+					try{
+						File.Copy(@"ConversionFiles\ADA2002.gif"
+							,((Pref)Prefs.HList["DocPath"]).ValueString+@"\ADA2002.gif",true);
+					}
+					catch{
+						MessageBox.Show("ADA2002.gif could not be copied correctly.");
+						return false;
+					}
 					//delete the old ADA2002.emf, and the old ADA2002.jpg if there is one
 					if(File.Exists(((Pref)Prefs.HList["DocPath"]).ValueString+@"\ADA2002.emf")){
 						File.Delete(((Pref)Prefs.HList["DocPath"]).ValueString+@"\ADA2002.emf");
@@ -781,8 +791,462 @@ namespace OpenDental{
 					return false;
 				}
 			}
+			return To2_8_0();
+		}
+
+		private bool To2_8_0(){
+			if(FromVersion < new Version("2.8.0.0")){
+				//try{
+					//warn user about deleting templates
+					if(MessageBox.Show(@"In version 2.8, the concept of insurance templates is being phased out.  As part of the conversion process, your existing insurance template list will be replaced with an insurance plan list and a carrier list.  If you have any notes in your insurance templates, they will be deleted.  If you have important notes in any of your insurance templates, or if you have important templates that you don't want to lose, then you should use the print screen tool to print out the important information before proceeding.  Do you wish to proceed?","",MessageBoxButtons.OKCancel)!=DialogResult.OK){
+						return false;
+					}
+					//check to see if the conversion file is available
+					if(!File.Exists(@"ConversionFiles\convert_2_8_0.txt")){
+						MessageBox.Show(@"ConversionFiles\convert_2_8_0.txt"+" could not be found.");
+						return false;
+					}
+					if(!ExecuteFile(@"ConversionFiles\convert_2_8_0.txt")) return false;
+					//load all existing employer names into the new Employer table:
+					Conversions.SelectText="SELECT DISTINCT Employer FROM insplan WHERE Employer !=''";
+					Conversions.SubmitSelect();
+					for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
+						Conversions.NonQString="INSERT INTO employer(EmpName) VALUES('"
+							+POut.PString(PIn.PString(Conversions.TableQ.Rows[i][0].ToString()))+"')";
+						Conversions.SubmitNonQString();
+						//these next 3 lines were causing a bug in converting:
+						//Employers.Cur=new Employer();
+						//Employers.Cur.EmpName=PIn.PString(Conversions.TableQ.Rows[i][0].ToString());
+						//Employers.InsertCur();
+						
+					}
+					//now, get the employers into HEmpNames so we can retrieve the empnum from the name
+					Hashtable HEmpNames=new Hashtable();
+					Conversions.SelectText="SELECT EmpName,EmployerNum FROM employer";
+					Conversions.SubmitSelect();
+					for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
+						HEmpNames.Add(PIn.PString(Conversions.TableQ.Rows[i][0].ToString()),//name
+							PIn.PInt(Conversions.TableQ.Rows[i][1].ToString()));//num
+							//Employers.Cur.EmpName,Employers.Cur.EmployerNum);
+					}
+					//replace Employer with EmployerNum in insplan and add to patient
+					Conversions.SelectText="SELECT PlanNum,Subscriber,Employer FROM insplan WHERE Employer !=''";
+					Conversions.SubmitSelect();
+					for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
+						try{
+						Conversions.NonQString="UPDATE insplan SET EmployerNum = '"
+							+((int)HEmpNames[PIn.PString(Conversions.TableQ.Rows[i][2].ToString())]).ToString()
+							+"' WHERE PlanNum = '"+Conversions.TableQ.Rows[i][0].ToString()+"'";
+						Conversions.SubmitNonQString();
+						Conversions.NonQString="UPDATE patient SET EmployerNum = '"
+							+((int)HEmpNames[PIn.PString(Conversions.TableQ.Rows[i][2].ToString())]).ToString()
+							+"' WHERE PatNum = '"+Conversions.TableQ.Rows[i][1].ToString()+"'";
+						Conversions.SubmitNonQString();
+						}
+						catch{
+							//will sometimes fail due to capitalization, but it's not that important
+						}
+					}
+					//delete all existing insplan.Employer
+					Conversions.NonQString="UPDATE insplan SET Employer = ''";
+					Conversions.SubmitNonQString();
+					//reformat phone numbers in preparation for extracting carrier info
+					if(CultureInfo.CurrentCulture.Name=="en-US"){
+						FormTelephone.Reformat();
+						Carriers.Refresh();
+					}
+					//load all carrier info from insplans:
+					Conversions.SelectText="SELECT DISTINCT Carrier,Phone,Address,Address2,City,State,Zip"
+						+",NoSendElect,ElectID"
+						+" FROM insplan WHERE Carrier !=''";
+					Conversions.SubmitSelect();
+					for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
+						Carriers.Cur=new Carrier();
+						Carriers.Cur.CarrierName=PIn.PString(Conversions.TableQ.Rows[i][0].ToString());
+						Carriers.Cur.Phone      =PIn.PString(Conversions.TableQ.Rows[i][1].ToString());
+						Carriers.Cur.Address    =PIn.PString(Conversions.TableQ.Rows[i][2].ToString());
+						Carriers.Cur.Address2   =PIn.PString(Conversions.TableQ.Rows[i][3].ToString());
+						Carriers.Cur.City       =PIn.PString(Conversions.TableQ.Rows[i][4].ToString());
+						Carriers.Cur.State      =PIn.PString(Conversions.TableQ.Rows[i][5].ToString());
+						Carriers.Cur.Zip        =PIn.PString(Conversions.TableQ.Rows[i][6].ToString());
+						Carriers.Cur.NoSendElect=PIn.PBool  (Conversions.TableQ.Rows[i][7].ToString());
+						Carriers.Cur.ElectID    =PIn.PString(Conversions.TableQ.Rows[i][8].ToString());
+						Carriers.InsertCur();
+					}
+					Carriers.Refresh();
+					//loop through all Carriers and update CarrierNum in insplan
+					for(int i=0;i<Carriers.List.Length;i++){
+						Conversions.NonQString="UPDATE insplan SET "
+							+"CarrierNum = '"+POut.PInt(Carriers.List[i].CarrierNum)+"' "
+							+"WHERE "
+							+"Carrier = '"   +POut.PString(Carriers.List[i].CarrierName)+"' "
+							+"&& Phone = '"      +POut.PString(Carriers.List[i].Phone)+"' "
+							+"&& Address = '"    +POut.PString(Carriers.List[i].Address)+"' "
+							+"&& Address2 = '"   +POut.PString(Carriers.List[i].Address2)+"' "
+							+"&& City = '"       +POut.PString(Carriers.List[i].City)+"' "
+							+"&& State = '"      +POut.PString(Carriers.List[i].State)+"' "
+							+"&& Zip = '"        +POut.PString(Carriers.List[i].Zip)+"' "
+							+"&& NoSendElect = '"+POut.PBool  (Carriers.List[i].NoSendElect)+"' "
+							+"&& ElectID = '"    +POut.PString(Carriers.List[i].ElectID)+"'";
+						Conversions.SubmitNonQString();
+					}
+					//Clear out all carrier info except CarrierNum from insplan
+					Conversions.NonQString=
+						"UPDATE insplan SET "
+						+"Carrier='',Phone='',Address='',Address2='',City=''"
+						+",State='',Zip='',NoSendElect='',ElectID=''";
+					Conversions.SubmitNonQString();
+					//Delete all ins templates
+					Conversions.NonQString="DELETE FROM instemplate";
+					Conversions.SubmitNonQString();
+					//Create all new ins templates based on and linked to identical insplans
+					/*
+					Conversions.SelectText="SELECT DISTINCT PlanType,ClaimFormNum,UseAltCode,ClaimsUseUCR"
+						+",FeeSched,CopayFeeSched,EmployerNum,GroupName,GroupNum,CarrierNum"
+						+" FROM insplan WHERE CarrierNum !='0'";//this will skip insplans with blank carrier(?if any)
+					Conversions.SubmitSelect();
+					for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
+						InsTemplates.Cur=new InsTemplate();
+						InsTemplates.Cur.PlanType     =PIn.PString(Conversions.TableQ.Rows[i][0].ToString());
+						InsTemplates.Cur.ClaimFormNum =PIn.PInt   (Conversions.TableQ.Rows[i][1].ToString());
+						InsTemplates.Cur.UseAltCode   =PIn.PBool  (Conversions.TableQ.Rows[i][2].ToString());
+						InsTemplates.Cur.ClaimsUseUCR =PIn.PBool  (Conversions.TableQ.Rows[i][3].ToString());
+						InsTemplates.Cur.FeeSched     =PIn.PInt   (Conversions.TableQ.Rows[i][4].ToString());
+						InsTemplates.Cur.CopayFeeSched=PIn.PInt   (Conversions.TableQ.Rows[i][5].ToString());
+						InsTemplates.Cur.EmployerNum  =PIn.PInt   (Conversions.TableQ.Rows[i][6].ToString());
+						InsTemplates.Cur.GroupName    =PIn.PString(Conversions.TableQ.Rows[i][7].ToString());
+						InsTemplates.Cur.GroupNum     =PIn.PString(Conversions.TableQ.Rows[i][8].ToString());
+						InsTemplates.Cur.CarrierNum   =PIn.PInt   (Conversions.TableQ.Rows[i][9].ToString());
+						InsTemplates.InsertCur();
+						Conversions.NonQString="UPDATE insplan SET TemplateNum = '"
+							+POut.PInt(InsTemplates.Cur.TemplateNum)+"' WHERE "
+							+"PlanType = '"        +POut.PString(InsTemplates.Cur.PlanType)+"' "
+							+"&& ClaimFormNum = '" +POut.PInt   (InsTemplates.Cur.ClaimFormNum)+"' "
+							+"&& UseAltCode = '"   +POut.PBool  (InsTemplates.Cur.UseAltCode)+"' "
+							+"&& ClaimsUseUCR = '" +POut.PBool  (InsTemplates.Cur.ClaimsUseUCR)+"' "
+							+"&& FeeSched = '"     +POut.PInt   (InsTemplates.Cur.FeeSched)+"' "
+							+"&& CopayFeeSched = '"+POut.PInt   (InsTemplates.Cur.CopayFeeSched)+"' "
+							+"&& EmployerNum = '"  +POut.PInt   (InsTemplates.Cur.EmployerNum)+"' "
+							+"&& GroupName = '"    +POut.PString(InsTemplates.Cur.GroupName)+"' "
+							+"&& GroupNum = '"     +POut.PString(InsTemplates.Cur.GroupNum)+"' "
+							+"&& CarrierNum = '"   +POut.PInt   (InsTemplates.Cur.CarrierNum)+"'";
+						Conversions.SubmitNonQString();
+					}*/
+					//Add PracticeWeb Reporting program link
+					//UPDATE program SET Path = 'PWReports.exe' WHERE ProgName = 'PracticeWebReports';
+					Programs.Refresh();
+					if(Programs.HList.ContainsKey("PracticeWebReports")){
+						Programs.Cur=(Program)Programs.HList["PracticeWebReports"];
+						Programs.Cur.Path="PWReports.exe";
+						Programs.UpdateCur();
+					}
+					else{
+						Programs.Cur=new Program();
+						Programs.Cur.ProgName="PracticeWebReports";
+						Programs.Cur.ProgDesc="PracticeWeb Reports from practice-web.com";
+						Programs.Cur.Path="PWReports.exe";
+						Programs.InsertCur();
+					}
+					//Add WebClaims program link
+					Programs.Cur=new Program();
+					Programs.Cur.ProgName="WebClaim";
+					Programs.Cur.ProgDesc="WebClaim from webclaim.net";
+					Programs.Cur.Path="WebClaim.exe";
+					Programs.Cur.Note=@"This link will only work from the Send Claims toolbar.";
+					Programs.Cur.Enabled=true;
+					Programs.InsertCur();//we now have a ProgramNum to work with
+					ToolButItems.Cur=new ToolButItem();
+					ToolButItems.Cur.ProgramNum=Programs.Cur.ProgramNum;
+					ToolButItems.Cur.ButtonText="WebClaim";
+					ToolButItems.Cur.ToolBar=ToolBarsAvail.ClaimsSend;
+					ToolButItems.InsertCur();
+					//Add Renaissance program link
+					Programs.Cur=new Program();
+					Programs.Cur.ProgName="Renaissance";
+					Programs.Cur.ProgDesc="Renaissance Claims from www.rss-llc.com";
+					Programs.Cur.Path="";
+					Programs.Cur.Note="This link will only work from the Send Claims toolbar.  No path or command line arguments are needed.";
+					Programs.Cur.Enabled=true;
+					Programs.InsertCur();//we now have a ProgramNum to work with
+					ToolButItems.Cur=new ToolButItem();
+					ToolButItems.Cur.ProgramNum=Programs.Cur.ProgramNum;
+					ToolButItems.Cur.ButtonText="Renaissance";
+					ToolButItems.Cur.ToolBar=ToolBarsAvail.ClaimsSend;
+					ToolButItems.InsertCur();
+					//Add Tigerview program link
+					//id is any string format
+					Programs.Cur=new Program();
+					Programs.Cur.ProgName="TigerView";
+					Programs.Cur.ProgDesc="TigerView from www.televere.com";
+					Programs.Cur.Path=@"C:\Program Files\TigerView\tiger1.exe";
+					Programs.Cur.CommandLine="SLAVE";
+					Programs.Cur.Note="Command line should be SLAVE.  This will cause TigerView to look in the file specified in the Tiger1.ini path for information about the patient to open.";
+					Programs.InsertCur();//we now have a ProgramNum to work with
+					ProgramProperties.Cur=new ProgramProperty();
+					ProgramProperties.Cur.ProgramNum=Programs.Cur.ProgramNum;
+					ProgramProperties.Cur.PropertyDesc="Tiger1.ini path";
+					ProgramProperties.Cur.PropertyValue=@"C:\Windows\Tiger1.ini";
+					ProgramProperties.InsertCur();
+					ProgramProperties.Cur=new ProgramProperty();
+					ProgramProperties.Cur.ProgramNum=Programs.Cur.ProgramNum;
+					ProgramProperties.Cur.PropertyDesc="Enter 0 to use PatientNum, or 1 to use ChartNum";
+					ProgramProperties.Cur.PropertyValue="0";
+					ProgramProperties.InsertCur();
+					ToolButItems.Cur=new ToolButItem();
+					ToolButItems.Cur.ProgramNum=Programs.Cur.ProgramNum;
+					ToolButItems.Cur.ButtonText="TigerView";
+					ToolButItems.Cur.ToolBar=ToolBarsAvail.ChartModule;
+					ToolButItems.InsertCur();
+					//Add Apteryx program link
+					//id is any string format
+					Programs.Cur=new Program();
+					Programs.Cur.ProgName="Apteryx";
+					Programs.Cur.ProgDesc="Apteryx from www.apteryxware.com";
+					Programs.Cur.Path=@"C:\Program Files\Apteryx\XrayVision.exe";
+					Programs.Cur.CommandLine="/p";
+					Programs.Cur.Note="Command line option is typically /p for 'patient'. But you also have some other options before the /p, including /b for 'bar' which just brings up the patient's image bar, or /h to hide the splash screen. You can combine options. For example /h /p is valid.";
+					Programs.InsertCur();//we now have a ProgramNum to work with
+					ProgramProperties.Cur=new ProgramProperty();
+					ProgramProperties.Cur.ProgramNum=Programs.Cur.ProgramNum;
+					ProgramProperties.Cur.PropertyDesc="Enter 0 to use PatientNum, or 1 to use ChartNum";
+					ProgramProperties.Cur.PropertyValue="0";
+					ProgramProperties.InsertCur();
+					ToolButItems.Cur=new ToolButItem();
+					ToolButItems.Cur.ProgramNum=Programs.Cur.ProgramNum;
+					ToolButItems.Cur.ButtonText="Apteryx";
+					ToolButItems.Cur.ToolBar=ToolBarsAvail.ChartModule;
+					ToolButItems.InsertCur();
+					//Add Schick program link
+					//id is any string format
+					Programs.Cur=new Program();
+					Programs.Cur.ProgName="Schick";
+					Programs.Cur.ProgDesc="Schick from www.schicktech.com";
+					Programs.Cur.Path="";
+					Programs.Cur.Note="There is no path or command line for this link.  It will simply recognize the Schick CDR DICOM program if installed.";
+					Programs.InsertCur();//we now have a ProgramNum to work with
+					ProgramProperties.Cur=new ProgramProperty();
+					ProgramProperties.Cur.ProgramNum=Programs.Cur.ProgramNum;
+					ProgramProperties.Cur.PropertyDesc="Enter 0 to use PatientNum, or 1 to use ChartNum";
+					ProgramProperties.Cur.PropertyValue="0";
+					ProgramProperties.InsertCur();
+					ToolButItems.Cur=new ToolButItem();
+					ToolButItems.Cur.ProgramNum=Programs.Cur.ProgramNum;
+					ToolButItems.Cur.ButtonText="Schick";
+					ToolButItems.Cur.ToolBar=ToolBarsAvail.ChartModule;
+					ToolButItems.InsertCur();
+					//Add Dexis program link
+					//id is any string format max 8 char.
+					Programs.Cur=new Program();
+					Programs.Cur.ProgName="Dexis";
+					Programs.Cur.ProgDesc="Dexis from www.dexray.com";
+					Programs.Cur.Path=@"C:\DEXIS\DEXIS.EXE";
+					Programs.Cur.Note="There is no command line needed. The InfoFile path would usually be 'InfoFile.txt' which will be created the first time the link is used.";
+					Programs.InsertCur();//we now have a ProgramNum to work with
+					ProgramProperties.Cur=new ProgramProperty();
+					ProgramProperties.Cur.ProgramNum=Programs.Cur.ProgramNum;
+					ProgramProperties.Cur.PropertyDesc="Enter 0 to use PatientNum, or 1 to use ChartNum";
+					ProgramProperties.Cur.PropertyValue="0";
+					ProgramProperties.InsertCur();
+					ProgramProperties.Cur=new ProgramProperty();
+					ProgramProperties.Cur.ProgramNum=Programs.Cur.ProgramNum;
+					ProgramProperties.Cur.PropertyDesc="InfoFile path";
+					ProgramProperties.Cur.PropertyValue="InfoFile.txt";
+					ProgramProperties.InsertCur();
+					ToolButItems.Cur=new ToolButItem();
+					ToolButItems.Cur.ProgramNum=Programs.Cur.ProgramNum;
+					ToolButItems.Cur.ButtonText="Dexis";
+					ToolButItems.Cur.ToolBar=ToolBarsAvail.ChartModule;
+					ToolButItems.InsertCur();
+					//Add VixWin program link:
+					//id must be exactly 6 characters
+					Programs.Cur=new Program();
+					Programs.Cur.ProgName="VixWin";
+					Programs.Cur.ProgDesc="VixWin from www.gendexxray.com";
+					Programs.Cur.Path="";
+					Programs.Cur.Note=@"This link uses the VixWin QuikLink program to listen for new files in the quiklink directory. No other file path or command line arguments are needed.  The QuikLink directory would typically be C:\vx_qlink\ .  If you use ChartNum for link, it can not be more than 6 characters.";
+					Programs.InsertCur();//we now have a ProgramNum to work with
+					ProgramProperties.Cur=new ProgramProperty();
+					ProgramProperties.Cur.ProgramNum=Programs.Cur.ProgramNum;
+					ProgramProperties.Cur.PropertyDesc="Enter 0 to use PatientNum, or 1 to use ChartNum";
+					ProgramProperties.Cur.PropertyValue="0";
+					ProgramProperties.InsertCur();
+					ProgramProperties.Cur=new ProgramProperty();
+					ProgramProperties.Cur.ProgramNum=Programs.Cur.ProgramNum;
+					ProgramProperties.Cur.PropertyDesc="QuikLink directory.";
+					ProgramProperties.Cur.PropertyValue=@"C:\vx_qlink\";
+					ProgramProperties.InsertCur();
+					ToolButItems.Cur=new ToolButItem();
+					ToolButItems.Cur.ProgramNum=Programs.Cur.ProgramNum;
+					ToolButItems.Cur.ButtonText="VixWin";
+					ToolButItems.Cur.ToolBar=ToolBarsAvail.ChartModule;
+					ToolButItems.InsertCur();
+					//Add Trophy program link
+					//id is any string format
+					Programs.Cur=new Program();
+					Programs.Cur.ProgName="Trophy";
+					Programs.Cur.ProgDesc="Trophy from www.trophy-imaging.com";
+					Programs.Cur.Path="TW.exe";
+					Programs.Cur.Note=@"Applies to Trophy versions 4.2 and 5.0.  No command line arguments are needed. The storage path is where all images are stored.  For instance \\SERVER\TrophyImages.  The images for each patient will be stored in a folder named according to the patient id.  For instance, \\SERVER\TrophyImages\AB1234\.";
+					Programs.InsertCur();//we now have a ProgramNum to work with
+					ProgramProperties.Cur=new ProgramProperty();
+					ProgramProperties.Cur.ProgramNum=Programs.Cur.ProgramNum;
+					ProgramProperties.Cur.PropertyDesc="Enter 0 to use PatientNum, or 1 to use ChartNum";
+					ProgramProperties.Cur.PropertyValue="0";
+					ProgramProperties.InsertCur();
+					ProgramProperties.Cur=new ProgramProperty();
+					ProgramProperties.Cur.ProgramNum=Programs.Cur.ProgramNum;
+					ProgramProperties.Cur.PropertyDesc="Storage Path";
+					ProgramProperties.Cur.PropertyValue="";
+					ProgramProperties.InsertCur();
+					ToolButItems.Cur=new ToolButItem();
+					ToolButItems.Cur.ProgramNum=Programs.Cur.ProgramNum;
+					ToolButItems.Cur.ButtonText="Trophy";
+					ToolButItems.Cur.ToolBar=ToolBarsAvail.ChartModule;
+					ToolButItems.InsertCur();
+					//Add the attachments fields to the two claimforms that require them
+					//ADA2002
+					Conversions.SelectText="SELECT ClaimFormNum FROM claimform WHERE UniqueID = '1'";
+					Conversions.SubmitSelect();
+					ClaimFormItems.Cur=new ClaimFormItem();
+					ClaimFormItems.Cur.ClaimFormNum=PIn.PInt(Conversions.TableQ.Rows[0][0].ToString());
+					ClaimFormItems.Cur.FieldName="RadiographsNumAttached";
+					ClaimFormItems.Cur.XPos=684;
+					ClaimFormItems.Cur.YPos=738;
+					ClaimFormItems.Cur.Width=27;
+					ClaimFormItems.Cur.Height=14;
+					ClaimFormItems.InsertCur();
+					//Denti-Cal
+					Conversions.SelectText="SELECT ClaimFormNum FROM claimform WHERE UniqueID = '2'";
+					Conversions.SubmitSelect();
+					ClaimFormItems.Cur=new ClaimFormItem();
+					ClaimFormItems.Cur.ClaimFormNum=PIn.PInt(Conversions.TableQ.Rows[0][0].ToString());
+					ClaimFormItems.Cur.FieldName="RadiographsNumAttached";
+					ClaimFormItems.Cur.XPos=111;
+					ClaimFormItems.Cur.YPos=217;
+					ClaimFormItems.Cur.Width=30;
+					ClaimFormItems.Cur.Height=14;
+					ClaimFormItems.InsertCur();
+					ClaimFormItems.Cur=new ClaimFormItem();
+					ClaimFormItems.Cur.ClaimFormNum=PIn.PInt(Conversions.TableQ.Rows[0][0].ToString());
+					ClaimFormItems.Cur.FieldName="IsRadiographsAttached";
+					ClaimFormItems.Cur.XPos=186;
+					ClaimFormItems.Cur.YPos=187;
+					ClaimFormItems.InsertCur();
+					//final:
+					Conversions.NonQArray=new string[]{
+						"UPDATE preference SET ValueString = '2.8.0.0' WHERE PrefName = 'DataBaseVersion'"
+					};
+					if(!Conversions.SubmitNonQArray()) return false;
+				//}
+				//catch{
+				//	return false;
+				//}
+			}
+			return To2_8_2();
+		}
+
+		private bool To2_8_2(){
+			if(FromVersion < new Version("2.8.2.0")){
+				try{
+					Conversions.NonQArray=new string[]
+					{
+						"ALTER TABLE insplan DROP TemplateNum"
+						,"DROP TABLE instemplate"
+						,"UPDATE preference SET ValueString = '2.8.2.0' WHERE PrefName = 'DataBaseVersion'"
+					};
+					if(!Conversions.SubmitNonQArray()) return false;
+				}
+				catch{
+					return false;
+				}
+			}
+			return To2_8_3();
+		}
+
+		private bool To2_8_3(){
+			if(FromVersion < new Version("2.8.3.0")){
+				try{
+					Conversions.NonQArray=new string[]
+					{
+						"INSERT INTO preference VALUES ('RenaissanceLastBatchNumber','0')"
+						,"INSERT INTO preference VALUES ('PatientSelectUsesSearchButton','0')"
+						,"UPDATE preference SET ValueString = '2.8.3.0' WHERE PrefName = 'DataBaseVersion'"
+					};
+					if(!Conversions.SubmitNonQArray()) return false;
+				}
+				catch{
+					return false;
+				}
+			}
+			return To2_8_6();
+		}
+
+		private bool To2_8_6(){
+			if(FromVersion < new Version("2.8.6.0")){
+				try{
+					Conversions.NonQArray=new string[]
+					{
+						"ALTER TABLE patient CHANGE City City VARCHAR(100) NOT NULL"
+						,"ALTER TABLE patient CHANGE State State VARCHAR(100) NOT NULL"
+						,"ALTER TABLE patient CHANGE Zip Zip VARCHAR(100) NOT NULL"
+						,"ALTER TABLE patient CHANGE SSN SSN VARCHAR(100) NOT NULL"
+						,"UPDATE preference SET ValueString = '2.8.6.0' WHERE PrefName = 'DataBaseVersion'"
+					};
+					if(!Conversions.SubmitNonQArray()) return false;
+				}
+				catch{
+					return false;
+				}
+			}
+			return To2_8_10();
+		}
+
+		private bool To2_8_10(){
+			if(FromVersion < new Version("2.8.10.0")){
+				try{
+					Conversions.NonQArray=new string[]
+					{
+						"ALTER TABLE employer ADD Address varchar(255) NOT NULL"
+						,"ALTER TABLE employer ADD Address2 varchar(255) NOT NULL"
+						,"ALTER TABLE employer ADD City varchar(255) NOT NULL"
+						,"ALTER TABLE employer ADD State varchar(255) NOT NULL"
+						,"ALTER TABLE employer ADD Zip varchar(255) NOT NULL"
+						,"ALTER TABLE employer ADD Phone varchar(255) NOT NULL"
+						,"INSERT INTO preference VALUES ('CustomizedForPracticeWeb','0')"
+						,"UPDATE preference SET ValueString = '2.8.10.0' WHERE PrefName = 'DataBaseVersion'"
+					};
+					if(!Conversions.SubmitNonQArray()) return false;
+				}
+				catch{
+					return false;
+				}
+			}
+			return To2_8_14();
+		}
+
+		private bool To2_8_14(){
+			if(FromVersion < new Version("2.8.14.0")){
+				try{
+					Conversions.NonQArray=new string[]
+					{
+						"ALTER TABLE adjustment CHANGE AdjType AdjType smallint unsigned NOT NULL"
+						,"ALTER TABLE appointment CHANGE Confirmed Confirmed smallint unsigned NOT NULL"
+						,"ALTER TABLE payment CHANGE PayType PayType smallint unsigned NOT NULL"
+						,"ALTER TABLE procedurecode CHANGE ProcCat ProcCat smallint unsigned NOT NULL"
+						,"ALTER TABLE procedurelog CHANGE Priority Priority smallint unsigned NOT NULL"
+						,"ALTER TABLE procedurelog CHANGE Dx Dx smallint unsigned NOT NULL"
+						,"UPDATE preference SET ValueString = '2.8.14.0' WHERE PrefName = 'DataBaseVersion'"
+					};
+					if(!Conversions.SubmitNonQArray()) return false;
+				}
+				catch{
+					return false;
+				}
+			}
 			return true;
 		}
+
+
 
 	}
 }

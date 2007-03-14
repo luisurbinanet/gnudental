@@ -155,7 +155,7 @@ SELECT CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI),rxpat.rxdate
 rxpat.drug,rxpat.sig,rxpat.disp,provider.abbr FROM patient,rxpat,provider
 WHERE patient.patnum=rxpat.patnum && provider.provnum=rxpat.provnum		
 */
-			Queries.CurReport=new Report();
+			Queries.CurReport=new ReportOld();
 			Queries.CurReport.Query="SELECT CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI),rxpat.rxdate,"
 				+"rxpat.drug,rxpat.sig,rxpat.disp,provider.abbr FROM patient,rxpat,provider "
 				+"WHERE patient.patnum=rxpat.patnum && provider.provnum=rxpat.provnum";

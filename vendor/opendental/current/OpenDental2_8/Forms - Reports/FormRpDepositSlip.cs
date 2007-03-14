@@ -240,12 +240,13 @@ WHERE claimproc.ClaimPaymentNum=claimpayment.ClaimPaymentNum && claimproc.PlanNu
 GROUP BY CheckDate
 ORDER BY PayDate
 */
-			Queries.CurReport=new Report();
+			Queries.CurReport=new ReportOld();
 			Queries.CurReport.Query="";
 			if(checkBoxIns.Checked){
 				Queries.CurReport.Query="SELECT PayDate,CONCAT(patient.LName,', ',patient.FName,' ',"
-					+"patient.MiddleI),CheckNum,BankBranch,PayAmt FROM payment,patient ";
-				if(radioRange.Checked){
+					+"patient.MiddleI) AS plfname,PayNum,CheckNum,BankBranch,PayAmt "
+					+"FROM payment,patient ";
+				if(radioRange.Checked){//added plfname,paynum spk 4/14/04
 					if(listPayType.SelectedIndices.Count>0){
 						Queries.CurReport.Query+="WHERE "
 							+"payment.PatNum = patient.PatNum && (";
@@ -261,19 +262,21 @@ ORDER BY PayDate
 					else{ 
 						Queries.CurReport.Query+="WHERE 1=0 UNION ";
 					}
-					Queries.CurReport.Query+="SELECT CheckDate,insplan.Carrier,"
-						+"CheckNum,BankBranch,CheckAmt FROM claimpayment,claimproc,insplan "
-						+"WHERE claimproc.ClaimPaymentNum = "
-						+"claimpayment.ClaimPaymentNum && claimproc.PlanNum = insplan.PlanNum "
+					Queries.CurReport.Query+="SELECT CheckDate,CarrierName,"//insplan.Carrier,"
+						+"claimpayment.ClaimPaymentNum,CheckNum,BankBranch,CheckAmt "//spk added claimpaymentnum
+						+"FROM claimpayment,claimproc,insplan,carrier "
+						+"WHERE claimproc.ClaimPaymentNum = claimpayment.ClaimPaymentNum "
+						+"&& claimproc.PlanNum = insplan.PlanNum "
+						+"&& insplan.CarrierNum = carrier.CarrierNum "
 						+"&& (claimproc.status = '1' || claimproc.status = '4') "
 						+"&& CheckDate >= '"+date1.SelectionStart.ToString("yyyy-MM-dd")+"' "
-						+"&& CheckDate <= '"+date2.SelectionStart.ToString("yyyy-MM-dd")+"' ";
-					Queries.CurReport.Query+="GROUP BY claimpayment.claimpaymentnum ORDER BY PayDate";
+						+"&& CheckDate <= '"+date2.SelectionStart.ToString("yyyy-MM-dd")+"' ";//added plfname, spk 4/30/04
+					Queries.CurReport.Query+="GROUP BY claimpayment.claimpaymentnum ORDER BY PayDate, plfname";
 				}
 				else{//range not checked
           if(listPayType.SelectedIndices.Count>0){
 						Queries.CurReport.Query+="WHERE "
-							+"payment.PatNum = patient.PatNum && (";
+							+"payment.PatNum = patient.PatNum && payment.PayAmt > 0 && (";//added payamt > 0, spk
 						for(int i=0;i<listPayType.SelectedIndices.Count;i++){
 							if(i>0) Queries.CurReport.Query+=" || "; 
 							Queries.CurReport.Query+="PayType = '"
@@ -284,22 +287,25 @@ ORDER BY PayDate
 					}
 					else{ 
 						Queries.CurReport.Query+="WHERE 1=0 UNION ";
-					}
-					Queries.CurReport.Query+="SELECT CheckDate,insplan.Carrier,"
-						+"CheckNum,BankBranch,CheckAmt FROM claimpayment,claimproc,insplan "
-						+"WHERE claimproc.ClaimPaymentNum = "
-						+"claimpayment.ClaimPaymentNum && claimproc.PlanNum = insplan.PlanNum "
+					}//Use ClaimPaymentNum to make the record unique, added plfname, changed to Group BY claimproc.. spk 4/30/04
+					Queries.CurReport.Query+="SELECT CheckDate,CarrierName,"//insplan.Carrier,"
+						+"claimpayment.ClaimPaymentNum,CheckNum,BankBranch,CheckAmt "
+						+"FROM claimpayment,claimproc,insplan,carrier "
+						+"WHERE claimproc.ClaimPaymentNum = claimpayment.ClaimPaymentNum "
+						+"&& claimproc.PlanNum = insplan.PlanNum "
+						+"&& insplan.CarrierNum = carrier.CarrierNum "
 						+"&& (claimproc.status = '1' || claimproc.status = '4') "
 						+"&& CheckDate = '"+date1.SelectionStart.ToString("yyyy-MM-dd")+"' ";
-					Queries.CurReport.Query+="GROUP BY claimpayment.claimpaymentnum ORDER BY PayDate ";
+					Queries.CurReport.Query+="GROUP BY claimpayment.claimpaymentnum ORDER BY PayDate, plfname ";
 				}
 				//MessageBox.Show(Queries.CurReport.Query);
       }
       else{//no insurance checks
 				if(radioRange.Checked){
-          if(listPayType.SelectedIndices.Count>0){
+          if(listPayType.SelectedIndices.Count>0){//paynum to make record unique, spk
 						Queries.CurReport.Query="SELECT PayDate,CONCAT(patient.LName,', ',patient.FName,' ',"
-							+"patient.MiddleI),CheckNum,BankBranch,PayAmt FROM payment,patient WHERE "
+							+"patient.MiddleI),PayNum,CheckNum,BankBranch,PayAmt "
+							+"FROM payment,patient WHERE "
 							+"payment.PatNum = patient.PatNum && (";
 						for(int i=0;i<listPayType.SelectedIndices.Count;i++){
 							if(i>0) Queries.CurReport.Query+=" || "; 
@@ -316,10 +322,11 @@ ORDER BY PayDate
 					}
 				}
 				else{
-          if(listPayType.SelectedIndices.Count>0)  {
+          if(listPayType.SelectedIndices.Count>0){//added plfname, paynum, payamt > 0 spk 
 						Queries.CurReport.Query="SELECT PayDate,CONCAT(patient.LName,', ',patient.FName,' ',"
-							+"patient.MiddleI),CheckNum,BankBranch,PayAmt FROM payment,patient WHERE "
-							+"payment.PatNum = patient.PatNum && (";
+							+"patient.MiddleI) AS plfname,PayNum,CheckNum,BankBranch,PayAmt "
+							+"FROM payment,patient WHERE "
+							+"payment.PatNum = patient.PatNum && payment.PayAmt > 0 && (";
 						for(int i=0;i<listPayType.SelectedIndices.Count;i++){
 							if(i>0) Queries.CurReport.Query+=" || "; 
 							Queries.CurReport.Query+="PayType = '"
@@ -361,21 +368,25 @@ ORDER BY PayDate
 				 Queries.CurReport.SubTitle[2]="Payment Type: Insurance Claim Checks";
 			  }
 			}
-			Queries.CurReport.ColPos=new int[6];
-			Queries.CurReport.ColCaption=new string[5];
-			Queries.CurReport.ColAlign=new HorizontalAlignment[5];
+			Queries.CurReport.ColPos=new int[7];
+			Queries.CurReport.ColCaption=new string[6];
+			Queries.CurReport.ColAlign=new HorizontalAlignment[6];
 			Queries.CurReport.ColPos[0]=20;
 			Queries.CurReport.ColPos[1]=100;
 			Queries.CurReport.ColPos[2]=290;
-			Queries.CurReport.ColPos[3]=410;
-			Queries.CurReport.ColPos[4]=520;
-			Queries.CurReport.ColPos[5]=580;
+			Queries.CurReport.ColPos[3]=370;
+			Queries.CurReport.ColPos[4]=490;
+			Queries.CurReport.ColPos[5]=590;
+			Queries.CurReport.ColPos[6]=690;
 			Queries.CurReport.ColCaption[0]="DATE";
 			Queries.CurReport.ColCaption[1]="PAYER";
-			Queries.CurReport.ColCaption[2]="CHECK NUMBER";
-			Queries.CurReport.ColCaption[3]="BANK / BRANCH";
-			Queries.CurReport.ColCaption[4]="AMOUNT";
-			Queries.CurReport.ColAlign[4]=HorizontalAlignment.Right;
+			//this column can be eliminated when the new reporting framework is complete:
+			Queries.CurReport.ColCaption[2]="PAYMENT #";
+			Queries.CurReport.ColCaption[3]="CHECK NUMBER";
+			Queries.CurReport.ColCaption[4]="BANK / BRANCH";
+			Queries.CurReport.ColCaption[5]="AMOUNT";
+			//Queries.CurReport.ColAlign[4]=HorizontalAlignment.Right;
+			Queries.CurReport.ColAlign[5]=HorizontalAlignment.Right;
 			Queries.CurReport.Summary=new string[3];
 			Queries.CurReport.Summary[0]="For Deposit to Account of "+((Pref)Prefs.HList["PracticeTitle"]).ValueString;
 			Queries.CurReport.Summary[2]="Account number: "+((Pref)Prefs.HList["PracticeBankNumber"]).ValueString;

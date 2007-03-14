@@ -169,7 +169,7 @@ namespace OpenDental{
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			Queries.CurReport=new Report();
+			Queries.CurReport=new ReportOld();
 
 			Queries.CurReport.Query="SELECT claim.dateservice,claim.claimnum,claim.claimtype,claim.claimstatus,"
 				+"CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI),insplan.carrier,claim.claimfee "

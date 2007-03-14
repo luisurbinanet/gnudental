@@ -45,7 +45,8 @@ namespace OpenDental{
 		private int paymentCount;
 		private OpenDental.XPButton butDeleteSplit;
 		private OpenDental.XPButton butAdd;
-		private OpenDental.XPButton butDiscount;//(not including discounts)
+		private OpenDental.XPButton butDiscount;
+		private System.Windows.Forms.CheckBox checkPayPlan;//(not including discounts)
 		private bool NoPermission=false;
 
 		///<summary></summary>
@@ -119,6 +120,7 @@ namespace OpenDental{
 			this.butDeleteSplit = new OpenDental.XPButton();
 			this.label9 = new System.Windows.Forms.Label();
 			this.label10 = new System.Windows.Forms.Label();
+			this.checkPayPlan = new System.Windows.Forms.CheckBox();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -164,7 +166,7 @@ namespace OpenDental{
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(12, 118);
+			this.label2.Location = new System.Drawing.Point(12, 116);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(92, 16);
 			this.label2.TabIndex = 8;
@@ -210,7 +212,7 @@ namespace OpenDental{
 			// textNote
 			// 
 			this.textNote.AcceptsReturn = true;
-			this.textNote.Location = new System.Drawing.Point(106, 116);
+			this.textNote.Location = new System.Drawing.Point(106, 114);
 			this.textNote.Multiline = true;
 			this.textNote.Name = "textNote";
 			this.textNote.Size = new System.Drawing.Size(358, 70);
@@ -379,12 +381,23 @@ namespace OpenDental{
 			this.label10.Text = "Cancel does not undo changes to Splits";
 			this.label10.TextAlign = System.Drawing.ContentAlignment.TopCenter;
 			// 
+			// checkPayPlan
+			// 
+			this.checkPayPlan.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkPayPlan.Location = new System.Drawing.Point(362, 636);
+			this.checkPayPlan.Name = "checkPayPlan";
+			this.checkPayPlan.Size = new System.Drawing.Size(198, 18);
+			this.checkPayPlan.TabIndex = 30;
+			this.checkPayPlan.Text = "Attached to Payment Plan";
+			this.checkPayPlan.Click += new System.EventHandler(this.checkPayPlan_Click);
+			// 
 			// FormPayment
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(800, 682);
+			this.Controls.Add(this.checkPayPlan);
 			this.Controls.Add(this.label10);
 			this.Controls.Add(this.label9);
 			this.Controls.Add(this.groupBox1);
@@ -422,10 +435,15 @@ namespace OpenDental{
 		#endregion
 
 		private void FormPayment_Load(object sender, System.EventArgs e) {
-			if(IsNew){
+			if(IsNew){//the only way to get here is from Account window, so many lists will be refreshed
 				Payments.Cur=new Payment();
 				Payments.Cur.PayDate=DateTime.Now;
 				Payments.InsertCur();
+				if(PayPlans.GetValidPlan(Patients.Cur.PatNum)){//a valid payPlan was located
+					AddOneSplit();
+					PaySplits.Cur.PayPlanNum=PayPlans.Cur.PayPlanNum;
+					PaySplits.UpdateCur();
+				}
 			}
 			else{
 				if(!UserPermissions.CheckUserPassword("Payment Edit",Payments.Cur.PayDate)){
@@ -454,13 +472,12 @@ namespace OpenDental{
 			for(int i=0;i<Patients.FamilyList.Length;i++){
 				startBal[i]=Patients.FamilyList[i].EstBalance;
 			}
-			for (int i=0;i<PaySplits.PaymentList.Length;i++){
+			for(int i=0;i<PaySplits.PaymentList.Length;i++){
 				if(!IsNew){ 
 					patI=Patients.GetIndex(PaySplits.PaymentList[i].PatNum);
 					if(patI!=-1)startBal[patI]+=PaySplits.PaymentList[i].SplitAmt;
 				}
 			}
-
 			FillTable(false);
 		}
 
@@ -473,10 +490,10 @@ namespace OpenDental{
 			newBal=new double[Patients.FamilyList.Length];
 			tot=0;
 			paymentCount=0;
-			for (int i=0;i<Patients.FamilyList.Length;i++){
+			for(int i=0;i<Patients.FamilyList.Length;i++){
 				newBal[i]=startBal[i];
 			}
-			for (int i=0;i<PaySplits.PaymentList.Length;i++){
+			for(int i=0;i<PaySplits.PaymentList.Length;i++){
 				tbSplits.Cell[0,i]=PaySplits.PaymentList[i].ProcDate.ToString("d");
 				tbSplits.Cell[1,i]=Providers.GetAbbr(PaySplits.PaymentList[i].ProvNum);
 				tbSplits.Cell[2,i]=Patients.GetNameInFamLF(PaySplits.PaymentList[i].PatNum);
@@ -503,6 +520,19 @@ namespace OpenDental{
 			}
 			tbSplits.LayoutTables();
 			textTotal.Text=tot.ToString("F");
+			if(PaySplits.PaymentList.Length==1){
+				checkPayPlan.Enabled=true;
+				if(PaySplits.PaymentList[0].PayPlanNum>0){
+					checkPayPlan.Checked=true;
+				}
+				else{
+					checkPayPlan.Checked=false;
+				}
+			}
+			else{
+				checkPayPlan.Checked=false;
+				checkPayPlan.Enabled=false;
+			}
 		}
 
 		private void tbSplits_CellDoubleClicked(object sender, CellEventArgs e){
@@ -562,6 +592,45 @@ namespace OpenDental{
 			
 		}
 
+		private void checkPayPlan_Click(object sender, System.EventArgs e) {
+			//if there is more than one split, then this checkbox is not even available.
+			if(PaySplits.PaymentList.Length==0){
+				AddOneSplit();
+				FillTable(true);
+				checkPayPlan.Checked=true;
+				//now there is exactly one.  The amount will be updated as the form closes.
+			}
+			PaySplits.Cur=PaySplits.PaymentList[0];
+			if(checkPayPlan.Checked){
+				if(!PayPlans.GetValidPlan(PaySplits.Cur.PatNum)){//no valid plans
+					if(PayPlans.List.Length==0){
+						MessageBox.Show(Lan.g(this,
+							"The selected patient is not the guarantor for any payment plans."));
+					}
+					checkPayPlan.Checked=false;
+					return;
+				}
+				PaySplits.Cur.PayPlanNum=PayPlans.Cur.PayPlanNum;
+				PaySplits.UpdateCur();
+			}
+			else{//payPlan unchecked
+				PaySplits.Cur.PayPlanNum=0;
+				PaySplits.UpdateCur();
+			}
+			FillTable(true);
+		}
+
+		/// <summary>Adds one split to work with.  Called when butOK click, or checkPayPlan click, or upon load if auto attaching to payplan.</summary>
+		private void AddOneSplit(){
+			PaySplits.Cur=new PaySplit();
+			PaySplits.Cur.PatNum=Patients.Cur.PatNum;
+			PaySplits.Cur.PayNum=Payments.Cur.PayNum;
+			PaySplits.Cur.ProcDate=Payments.Cur.PayDate;
+			PaySplits.Cur.ProvNum=Patients.GetProvForCur();
+			PaySplits.Cur.SplitAmt=PIn.PDouble(textAmount.Text);
+			PaySplits.InsertCur();//also gets the insertID
+		}
+
 		private void butOK_Click(object sender, System.EventArgs e){
 			if(  textDate.errorProvider1.GetError(textDate)!=""
 				|| textAmount.errorProvider1.GetError(textAmount)!=""
@@ -574,13 +643,7 @@ namespace OpenDental{
 				return;
 			}
 			if(PaySplits.PaymentList.Length==0){
-				PaySplits.Cur=new PaySplit();
-				PaySplits.Cur.PatNum=Patients.Cur.PatNum;
-				PaySplits.Cur.PayNum=Payments.Cur.PayNum;
-				PaySplits.Cur.ProcDate=Payments.Cur.PayDate;
-				PaySplits.Cur.ProvNum=Patients.GetProvForCur();
-				PaySplits.Cur.SplitAmt=PIn.PDouble(textAmount.Text);
-				PaySplits.InsertCur();
+				AddOneSplit();
 				textTotal.Text=textAmount.Text;
 			}
 			if(PaySplits.PaymentList.Length==1
@@ -642,14 +705,18 @@ namespace OpenDental{
 					DeleteAll();
 				}
 				else{
+					e.Cancel=true;
 					return;
 				}
 			}
 			else if(Payments.Cur.PayAmt!=tot){
 				MessageBox.Show(Lan.g(this,"Splits have been altered.  Payment must match splits."));
+				e.Cancel=true;
 				return;
 			}	
 		}
+
+		
 		
 	}
 }

@@ -329,10 +329,15 @@ namespace OpenDental{
       }
 			XmlWriter xmlwriter=new XmlTextWriter("FreeDentalConfig.xml",System.Text.Encoding.Default);
 			xmlwriter.WriteStartElement("DatabaseConnection");
+			xmlwriter.WriteWhitespace("\r\n\t");
 			xmlwriter.WriteElementString("ComputerName", textComputerName.Text);
+			xmlwriter.WriteWhitespace("\r\n\t");
 			xmlwriter.WriteElementString("Database",textDatabase.Text);
+			xmlwriter.WriteWhitespace("\r\n\t");
 			xmlwriter.WriteElementString("User",textUser.Text);
+			xmlwriter.WriteWhitespace("\r\n\t");
 			xmlwriter.WriteElementString("Password", textPassword.Text);
+			xmlwriter.WriteWhitespace("\r\n");
 			//xmlwriter.WriteElementString("Port", textPort.Text);
 			xmlwriter.WriteEndElement();
 			xmlwriter.Close();

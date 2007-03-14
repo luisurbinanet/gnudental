@@ -35,6 +35,8 @@ namespace OpenDental{
 		private OpenDental.XPButton butFwd;
 		private int pagesPrinted;
 		private int totalPages;
+		///<summary>Set to true if using this class just to generate strings for the Renaissance link.</summary>
+		private bool IsRenaissance;
 
 		///<summary></summary>
 		public FormClaimPrint(){
@@ -191,20 +193,23 @@ namespace OpenDental{
 			pd2.OriginAtMargins=true;
 			pd2.DefaultPageSettings.Margins=new Margins(0,0,0,0);
 			pd2.PrintPage+=new PrintPageEventHandler(this.pd2_PrintPage);
-			try{
+			//try{
 				pd2.Print();
-			}
-			catch{
-				return false;
-			}
+			//}
+			//catch{
+			//	return false;
+			//}
 			return true;
 		}
 
 		private void pd2_PrintPage(object sender, PrintPageEventArgs ev){//raised for each page to be printed.
 			FillDisplayStrings();
 			int procLimit=ProcLimitForFormat();
-			//claimProcs is filled in FillDisplayStrings
-			totalPages=(int)Math.Ceiling((double)claimprocs.Count/(double)procLimit);
+			//claimprocs is filled in FillDisplayStrings
+			if(claimprocs.Count==0)
+				totalPages=1;
+			else
+				totalPages=(int)Math.Ceiling((double)claimprocs.Count/(double)procLimit);
 			FillProcStrings(pagesPrinted*procLimit,procLimit);
 			Graphics grfx=ev.Graphics;
 			float xPosText;
@@ -302,22 +307,45 @@ namespace OpenDental{
 			return true;
 		}
 
+		///<summary>Called from Bridges.Renaissance, this takes the supplied ClaimFormItems.ListForForm, and generates an array of strings that will get saved into a text file.  First dimension of array is the pages. Second dimension is the lines in the page.</summary>
+		public string[][] FillRenaissance(){
+			IsRenaissance=true;
+			int procLimit=8;
+			FillDisplayStrings();//claimprocs is filled in FillDisplayStrings
+														//, so this is just a little extra work
+			totalPages=(int)Math.Ceiling((double)claimprocs.Count/(double)procLimit);
+			string[][] retVal=new string[totalPages][];
+			for(int i=0;i<totalPages;i++){
+				pagesPrinted=i;
+				//not sure if I also need to do FillDisplayStrings here
+				FillProcStrings(pagesPrinted*procLimit,procLimit);
+				retVal[i]=displayStrings;
+			}
+			return retVal;
+		}
+
 		private void FillDisplayStrings(){
 			if(PrintBlank){
 				ClaimForms.SetCur(1);//hard coded to ADA claimform for now.
 				ClaimFormItems.GetListForForm();
 				displayStrings=new string[ClaimFormItems.ListForForm.Length];
+				claimprocs=new ArrayList();
 				return;
 			}
 			Patients.GetFamily(ThisPatNum);
 			Claims.Refresh();
 			Claims.Cur=(Claim)Claims.HList[ThisClaimNum];
 			InsPlans.Refresh();
-			//get other plan first to clear up Cur
-			InsPlan otherPlan;
+			//get other plan first to clear up Curs
 			InsPlans.GetCur(Claims.Cur.PlanNum2);
-			otherPlan=InsPlans.Cur;
+			InsPlan otherPlan=InsPlans.Cur;
+			Carriers.GetCur(otherPlan.CarrierNum);
+			Carrier otherCarrier=Carriers.Cur;
+			//Employer otherEmployer=Employers.GetEmployer(otherPlan.EmployerNum);//not actually used
+			//then get the main plan
 			InsPlans.GetCur(Claims.Cur.PlanNum);
+			Carriers.GetCur(InsPlans.Cur.CarrierNum);
+			//Employers.GetEmployer(InsPlans.Cur.EmployerNum);
 			Patient subsc;
 			if(Patients.GetIndex(InsPlans.Cur.Subscriber)==-1){//from another family
 				Patients.GetFamily(InsPlans.Cur.Subscriber);
@@ -364,7 +392,10 @@ namespace OpenDental{
 			else{//usually only for batch generic e-claims
 				ClaimForms.SetCur(ClaimFormNum);
 			}
-			ClaimFormItems.GetListForForm();
+			if(!IsRenaissance){
+				//for renaissance, this is skipped because the ListForForm will have already been filled.
+				ClaimFormItems.GetListForForm();
+			}
 			displayStrings=new string[ClaimFormItems.ListForForm.Length];
 			//a value is set for every item, but not every case will have a matching claimform item.
 			for(int i=0;i<ClaimFormItems.ListForForm.Length;i++){
@@ -388,22 +419,25 @@ namespace OpenDental{
 						displayStrings[i]=Claims.Cur.PreAuthString;
 						break;
 					case "PriInsCarrierName":
-						displayStrings[i]=InsPlans.Cur.Carrier;
+						displayStrings[i]=Carriers.Cur.CarrierName;
 						break;
 					case "PriInsAddress":
-						displayStrings[i]=InsPlans.Cur.Address;
+						displayStrings[i]=Carriers.Cur.Address;
 						break;
 					case "PriInsAddress2":
-						displayStrings[i]=InsPlans.Cur.Address2;
+						displayStrings[i]=Carriers.Cur.Address2;
+						break;
+					case "PriInsAddressComplete":
+						displayStrings[i]=Carriers.Cur.Address+" "+Carriers.Cur.Address2;
 						break;
 					case "PriInsCity":
-						displayStrings[i]=InsPlans.Cur.City;
+						displayStrings[i]=Carriers.Cur.City;
 						break;
 					case "PriInsST":
-						displayStrings[i]=InsPlans.Cur.State;
+						displayStrings[i]=Carriers.Cur.State;
 						break;
 					case "PriInsZip":
-						displayStrings[i]=InsPlans.Cur.Zip;
+						displayStrings[i]=Carriers.Cur.Zip;
 						break;
 					case "OtherInsExists":
 						if(otherPlan.PlanNum!=0)
@@ -472,23 +506,23 @@ namespace OpenDental{
 						break;
 					case "OtherInsCarrierName":
 						if(otherPlan.PlanNum!=0)
-							displayStrings[i]=otherPlan.Carrier;
+							displayStrings[i]=otherCarrier.CarrierName;
 						break;
 					case "OtherInsAddress":
 						if(otherPlan.PlanNum!=0)
-							displayStrings[i]=otherPlan.Address;
+							displayStrings[i]=otherCarrier.Address;
 						break;
 					case "OtherInsCity":
 						if(otherPlan.PlanNum!=0)
-							displayStrings[i]=otherPlan.City;
+							displayStrings[i]=otherCarrier.City;
 						break;
 					case "OtherInsST":
 						if(otherPlan.PlanNum!=0)
-							displayStrings[i]=otherPlan.State;
+							displayStrings[i]=otherCarrier.State;
 						break;
 					case "OtherInsZip":
 						if(otherPlan.PlanNum!=0)
-							displayStrings[i]=otherPlan.Zip;
+							displayStrings[i]=otherCarrier.Zip;
 						break;
 					case "SubscrLastFirst":
 						displayStrings[i]=subsc.LName+", "+subsc.FName+", "+subsc.MiddleI;
@@ -498,6 +532,9 @@ namespace OpenDental{
 						break;
 					case "SubscrAddress2":
 						displayStrings[i]=subsc.Address2;
+						break;
+					case "SubscrAddressComplete":
+						displayStrings[i]=subsc.Address+" "+subsc.Address2;
 						break;
 					case "SubscrCity":
 						displayStrings[i]=subsc.City;
@@ -550,7 +587,7 @@ namespace OpenDental{
 						displayStrings[i]=InsPlans.Cur.GroupNum;
 						break;
 					case "EmployerName":
-						displayStrings[i]=InsPlans.Cur.Employer;
+						displayStrings[i]=Employers.GetEmployer(InsPlans.Cur.EmployerNum).EmpName;
 						break;
 					case "RelatIsSelf":
 						if(Claims.Cur.PatRelat==Relat.Self)
@@ -590,6 +627,9 @@ namespace OpenDental{
 					case "PatientAddress2":
 						displayStrings[i]=Patients.Cur.Address2;
 						break;
+					case "PatientAddressComplete":
+						displayStrings[i]=Patients.Cur.Address+" "+Patients.Cur.Address2;
+						break;
 					case "PatientCity":
 						displayStrings[i]=Patients.Cur.City;
 						break;
@@ -609,18 +649,6 @@ namespace OpenDental{
 							displayStrings[i]=Patients.Cur.Birthdate.ToString
 								(ClaimFormItems.ListForForm[i].FormatString);
 						break;
-					/*case "PatientDOBMonth":
-						displayStrings[i]=Patients.Cur.Birthdate.ToString("MM");
-						break;
-					case "PatientDOBDay":
-						displayStrings[i]=Patients.Cur.Birthdate.ToString("dd");
-						break;
-					case "PatientDOByy":
-						displayStrings[i]=Patients.Cur.Birthdate.ToString("yy");
-						break;
-					case "PatientDOByyyy":
-						displayStrings[i]=Patients.Cur.Birthdate.ToString("yyyy");
-						break;*/
 					case "PatientIsMale":
 						if(Patients.Cur.Gender==PatientGender.Male)
 							displayStrings[i]="X";
@@ -878,7 +906,17 @@ namespace OpenDental{
 								break;
 						}
 						break;
-					//"RadiographsEnclosed":
+					case "IsRadiographsAttached":
+						if(Claims.Cur.Radiographs>0)
+							displayStrings[i]="X";
+						break;
+					case "RadiographsNumAttached":
+						displayStrings[i]=Claims.Cur.Radiographs.ToString();
+						break;
+					case "RadiographsNotAttached":
+						if(Claims.Cur.Radiographs==0)
+							displayStrings[i]="X";
+						break;
 					//"ImagesEnclosed":
 					//"ModelsEnclosed":
 					case "IsNotOrtho":
@@ -1019,6 +1057,13 @@ namespace OpenDental{
 							displayStrings[i]=((Pref)Prefs.HList["PracticePhone"]).ValueString.Substring(6);
 						}
 						break;
+					case "BillingDentistPhoneFormatted":
+						if(((Pref)Prefs.HList["PracticePhone"]).ValueString.Length==10){
+							displayStrings[i]="("+((Pref)Prefs.HList["PracticePhone"]).ValueString.Substring(0,3)
+								+")"+((Pref)Prefs.HList["PracticePhone"]).ValueString.Substring(3,3)
+								+"-"+((Pref)Prefs.HList["PracticePhone"]).ValueString.Substring(6);
+						}
+						break;
 					case "TreatingDentistSignature":
 						if(treatDent.SigOnFile){
 							displayStrings[i]=treatDent.FName+" "+treatDent.MI+" "+treatDent.LName+" "
@@ -1035,7 +1080,7 @@ namespace OpenDental{
 						}
 						break;
 					case "TreatingDentistMedicaidID":
-						displayStrings[i]=GetProcInfo("TreatingDentistMedicaidID",0);
+						displayStrings[i]=GetProcInfo("TreatDentMedicaidID",1);
 						break;
 					//case "TreatingDentistProvID":
 					case "TreatingDentistLicense":
@@ -1374,6 +1419,17 @@ namespace OpenDental{
 						}
 						displayStrings[i]=fee.ToString("F");
 						break;
+					case "DateOfService"://only for this page, Earliest proc date.
+						DateTime dateService=((ClaimProc)claimprocs[0]).DateCP;
+						for(int f=startProc;f<startProc+totProcs;f++){//eg f=0;f<10;f++
+							if(f < claimprocs.Count && ((ClaimProc)claimprocs[f]).DateCP < dateService)
+								dateService=((ClaimProc)claimprocs[f]).DateCP;
+						}
+						if(ClaimFormItems.ListForForm[i].FormatString=="")
+							displayStrings[i]=dateService.ToShortDateString();
+						else
+							displayStrings[i]=dateService.ToString(ClaimFormItems.ListForForm[i].FormatString);
+						break;
 				}//switch
 			}//for i
 		}
@@ -1382,7 +1438,7 @@ namespace OpenDental{
 		/// <returns></returns>
 		private int ProcLimitForFormat(){
 			int retVal=0;
-			//loop until a match is not found
+			//loop until a match is not found.  The max of 10 is built in because of course it will never match to 11 since there is no such fieldName.
 			for(int i=0;i<15;i++){
 				for(int ii=0;ii<ClaimFormItems.ListForForm.Length;ii++){
 					if(ClaimFormItems.ListForForm[ii].FieldName=="P"+i.ToString()+"Fee"){
@@ -1435,8 +1491,10 @@ namespace OpenDental{
 				if(((ClaimProc)claimprocs[procIndex]).ProvNum==0){
 					return "";
 				}
-				else return
-					Providers.ListLong[Providers.GetIndexLong(((ClaimProc)claimprocs[procIndex]).ProvNum)].MedicaidID;
+				else{
+					return Providers.ListLong[Providers.GetIndexLong
+						(((ClaimProc)claimprocs[procIndex]).ProvNum)].MedicaidID;
+				}
 			}
 			Procedures.Cur=(Procedure)Procedures.HList[ClaimProcs.ForClaim[procIndex].ProcNum];
 			string area="";

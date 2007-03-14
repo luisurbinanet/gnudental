@@ -22,7 +22,7 @@ namespace OpenDental{
 		/// Required designer variable.
 		/// </summary>
 		private System.ComponentModel.Container components = null;
-		private string[] FieldNames;
+		public string[] FieldNames;
 		private System.Windows.Forms.Button butDelete;
 		///<summary></summary>
 		public bool IsNew;
@@ -197,7 +197,14 @@ namespace OpenDental{
 		#endregion
 
 		private void FormClaimFormItemEdit_Load(object sender, System.EventArgs e) {
-			FieldNames=new string[]{
+			FillFieldNames();
+			FillForm();
+		}
+
+		///<summary>This is called externally from Renaissance to error check each of the supplied fieldNames</summary>
+		public void FillFieldNames(){
+			FieldNames=new string[]
+			{
 				"IsPreAuth",
         "IsStandardClaim",
 				"IsMedicaidClaim",
@@ -205,6 +212,7 @@ namespace OpenDental{
 				"PriInsCarrierName",
 				"PriInsAddress",
 				"PriInsAddress2",
+				"PriInsAddressComplete",
 				"PriInsCity",
 				"PriInsST",
 				"PriInsZip",
@@ -228,6 +236,7 @@ namespace OpenDental{
 				"SubscrLastFirst",
 				"SubscrAddress",
 				"SubscrAddress2",
+				"SubscrAddressComplete",
 				"SubscrCity",
 				"SubscrST",
 				"SubscrZip",
@@ -251,15 +260,12 @@ namespace OpenDental{
 				"PatientLastFirst",
 				"PatientAddress",
 				"PatientAddress2",
+				"PatientAddressComplete",
 				"PatientCity",
 				"PatientST",
 				"PatientZip",
 				"PatientPhone",
 				"PatientDOB",
-				//"PatientDOBMonth",
-				//"PatientDOBDay",
-				//"PatientDOByy",
-				//"PatientDOByyyy",
 				"PatientIsMale",
 				"PatientIsFemale",
 				"PatientIsMarried",
@@ -406,7 +412,9 @@ namespace OpenDental{
 				"PlaceIsPatientsHome",
 				"PlaceIsOtherLocation",
 				"PlaceNumericCode",
-				//"RadiographsEnclosed",
+				"IsRadiographsAttached",
+				"RadiographsNumAttached",
+				"RadiographsNotAttached",
 				//"ImagesEnclosed",
 				//"ModelsEnclosed",
 				"IsNotOrtho",
@@ -418,6 +426,7 @@ namespace OpenDental{
 				"IsNotReplacementProsth",
 				"IsReplacementProsth",
 				"DatePriorProsthPlaced",
+				//reason for replacement (ADA2000)
 				"IsOccupational",
 				"IsNotOccupational",
 				"IsAutoAccident",
@@ -442,8 +451,10 @@ namespace OpenDental{
 				"BillingDentistPh123",
 				"BillingDentistPh456",
 				"BillingDentistPh78910",
+				"BillingDentistPhoneFormatted",
 				"TreatingDentistSignature",
 				"TreatingDentistSigDate",
+				"DateService",
 				"TreatingDentistMedicaidID",
 				//"TreatingDentistProvID",
 				"TreatingDentistLicense",
@@ -456,9 +467,6 @@ namespace OpenDental{
 				"TreatingDentistPh78910",
 				"TreatingProviderSpecialty"
 			};
-			//	"IsOtherAccident"
-			//};
-			FillForm();
 		}
 
 		private void FillForm(){

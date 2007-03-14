@@ -94,26 +94,121 @@ namespace OpenDental{
 			return IsPreMolar(toothNum);
 		}
 
-		///<summary></summary>
-		public static bool IsValidEntry(string toothNum){
-			//used every time user enters toothNum in procedure box.
-			//this is the *ONLY* method that is designed to accept user input.
-			//will be expanded later to handle international toothnum
-			//Regex regex;
-			//switch(culture){
-				//case default:
-				return IsValidDB(toothNum);//default to use US toothnums for now.
-			//break;
-			//}
+		///<summary>Sometimes validated by IsValidDB before coming here, otherwise an invalid toothnum .  This should be run on all displayed tooth numbers. It will handle checking for whether user is using international tooth numbers.  All tooth numbers are passed in american values until the very last moment.  Just before display, the string is converted using this method.</summary>
+		public static string ToInternat(string toothNum){
+			//if not using international tooth numbers, no change.
+			if(((Pref)Prefs.HList["UseInternationalToothNumbers"]).ValueString=="0"){
+				return toothNum;
+			}
+			if(toothNum=="")
+				return "";
+			int intToothI=0;//the international tooth number we will find
+			int intTooth=0;
+			try{
+				intTooth=ToInt(toothNum);//this gives us the american 1-32. Primary are 4-13,20-29
+			}
+			catch{
+				return "";//for situations where no validation was performed
+			}
+			if(IsPrimary(toothNum)){
+				if(intTooth>=4 && intTooth<=8){//UR= 51-55
+					intToothI=59-intTooth;
+				}
+				else if(intTooth>=9 && intTooth<=13){//UL= 61-65
+					intToothI=52+intTooth;
+				}
+				else if(intTooth>=20 && intTooth<=24){//LL= 71-75
+					intToothI=95-intTooth;
+				}
+				else if(intTooth>=25 && intTooth<=29){//LR= 81-85
+					intToothI=56+intTooth;
+				}
+			}
+			else{//adult toothnum
+				if(intTooth>=1 && intTooth<=8){//UR= 11-18
+					intToothI=19-intTooth;
+				}
+				else if(intTooth>=9 && intTooth<=16){//UL= 21-28
+					intToothI=12+intTooth;
+				}
+				else if(intTooth>=17 && intTooth<=24){//LL= 31-38
+					intToothI=55-intTooth;
+				}
+				else if(intTooth>=25 && intTooth<=32){//LR= 41-48
+					intToothI=16+intTooth;
+				}
+			}
+			return intToothI.ToString();
 		}
 
-		///<summary></summary>
+		///<summary>MUST be validated by IsValidEntry before coming here.  All user entered toothnumbers are run through this method which automatically checks to see if using international toothnumbers.  So the procedure struct will always contain the american toothnum.</summary>
+		public static string FromInternat(string toothNum){
+			//if not using international tooth numbers, no change.
+			if(((Pref)Prefs.HList["UseInternationalToothNumbers"]).ValueString=="0"){
+				return toothNum;
+			}
+			int intTooth=0;
+			int intToothI=Convert.ToInt32(toothNum);
+			if(intToothI>=11 && intToothI<=18){//UR perm
+				intTooth=19-intToothI;
+				return intTooth.ToString();
+			}
+			if(intToothI>=21 && intToothI<=28){//UL perm
+				intTooth=intToothI-12;
+				return intTooth.ToString();
+			}
+			if(intToothI>=31 && intToothI<=38){//LL perm
+				intTooth=55-intToothI;
+				return intTooth.ToString();
+			}
+			if(intToothI>=41 && intToothI<=48){//LR perm
+				intTooth=intToothI-16;
+				return intTooth.ToString();
+			}
+			if(intToothI>=51 && intToothI<=55){//UR pri
+				intTooth=59-intToothI;
+				return PermToPri(intTooth.ToString());
+			}
+			if(intToothI>=61 && intToothI<=65){//UL pri
+				intTooth=intToothI-52;
+				return PermToPri(intTooth.ToString());
+			}
+			if(intToothI>=71 && intToothI<=75){//LL pri
+				intTooth=95-intToothI;
+				return PermToPri(intTooth.ToString());
+			}
+			if(intToothI>=81 && intToothI<=85){//LR pri
+				intTooth=intToothI-56;
+				return PermToPri(intTooth.ToString());
+			}
+			return "";//should never happen
+		}
+
+		///<summary>Used every time user enters toothNum in procedure box. Must be followed with FromInternat. These are the *ONLY* methods that are designed to accept user input.  Can also handle international toothnum</summary>
+		public static bool IsValidEntry(string toothNum){
+			//international
+			if(((Pref)Prefs.HList["UseInternationalToothNumbers"]).ValueString=="1"){
+				if(toothNum==null || toothNum=="")
+					return false;
+				Regex regex=new Regex("^[1-4][1-8]$");//perm teeth: matches firt digit 1-4 and second digit 1-8
+				if(regex.IsMatch(toothNum))
+					return true;
+				regex=new Regex("^[5-8][1-5]$");//pri teeth: matches firt digit 5-8 and second digit 1-5
+				if(regex.IsMatch(toothNum))
+					return true;
+				return false;
+			}	
+			else{//american
+				//tooth numbers validated the same as they are in db.
+				return IsValidDB(toothNum);
+			}
+		}
+
+		///<summary>Intended to validate toothNum coming in from database. Will not handle any international tooth nums since all database teeth are in US format.</summary>
 		public static bool IsValidDB(string toothNum){
-			//intended to validate toothNum coming in from database.
-			//will not handle any international tooth nums since all database teeth are in US format.
 			if(toothNum==null || toothNum=="")
 				return false;
-			Regex regex=new Regex("^[A-Z]$");
+			Regex regex=new Regex("^[A-T]$");
 			if(regex.IsMatch(toothNum))
 				return true;
 			regex=new Regex(@"^[1-9]\d?$");//matches 1 or 2 digits, leading 0 not allowed
@@ -136,13 +231,7 @@ namespace OpenDental{
 				return Convert.ToInt32(PriToPerm(toothNum));
 			}
 			else{
-				//try{
 				return Convert.ToInt32(toothNum);
-				//}
-				//catch{
-				//	MessageBox.Show(toothNum);
-				//	return -1;
-				//}
 			}
 		}
 
@@ -156,7 +245,7 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static bool IsPrimary(string toothNum){
-			Regex regex=new Regex("^[A-Z]$");
+			Regex regex=new Regex("^[A-T]$");
 			return regex.IsMatch(toothNum);
 		}
 
@@ -271,7 +360,11 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static string SurfTidy(string surf,string toothNum){
-			//yes... this would be a little more elegant with a regex
+			//yes... this might be a little more elegant with a regex
+			if(surf==null){
+				//MessageBox.Show("null");
+				surf="";
+			}
       string surfTidy="";
 			bool isPosterior=false;
 			if(toothNum=="" || !IsAnterior(toothNum))

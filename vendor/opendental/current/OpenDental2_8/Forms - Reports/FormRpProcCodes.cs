@@ -146,7 +146,7 @@ namespace OpenDental{
 			int feeSched=Defs.Short[(int)DefCat.FeeSchedNames][listFeeSched.SelectedIndex].DefNum;	
       string catName="";  //string to hold current category name
 			Fees fee=new Fees();
-			Queries.CurReport=new Report();
+			Queries.CurReport=new ReportOld();
 			
 			Queries.CurReport.Query= "SELECT procedurecode.adacode,procedurecode.descript,"
 			  +"procedurecode.abbrdesc,fee.amount FROM procedurecode,fee "

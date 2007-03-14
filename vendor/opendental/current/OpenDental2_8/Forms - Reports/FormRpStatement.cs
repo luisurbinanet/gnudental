@@ -237,7 +237,7 @@ namespace OpenDental{
 			}
 			//uses default printer if selected printer not valid
 			tempPD.Dispose();
-			try{
+			//try{
 				if(justPreview){
 					printPreviewControl2.Document=pd2;
 				}
@@ -251,10 +251,10 @@ namespace OpenDental{
 					DialogResult=DialogResult.OK;
 					//}
 				}
-			}
-			catch{
-				MessageBox.Show(Lan.g(this,"Printer not available"));
-			}
+			//}
+			//catch{
+			//	MessageBox.Show(Lan.g(this,"Printer not available"));
+			//}
 		}
 		private void pd2_PrintPage(object sender, PrintPageEventArgs ev){//raised for each page to be printed
 			//This printout logic is just a mess and needs to be entirely rewritten properly some day.
@@ -332,19 +332,22 @@ namespace OpenDental{
 				} 
 				ev.Graphics.DrawLine(new Pen(Color.Gray),xTotal,yTotal+hTotal+25,xTotal+wTotal,
 					yTotal+hTotal+25);
-				string tot1=ContrAccount.StatementA[4,ContrAccount.StatementA.GetLength(1)-1];
-				string tot2=ContrAccount.StatementA[5,ContrAccount.StatementA.GetLength(1)-1];
-				string tot3=ContrAccount.StatementA[6,ContrAccount.StatementA.GetLength(1)-1];
-				string tot4=ContrAccount.StatementA[7,ContrAccount.StatementA.GetLength(1)-1];
-				Font tTotalFont=new Font("Arial",8,FontStyle.Regular);
-				float xTotal1=(float)(xTotal+75/2-(ev.Graphics.MeasureString(tot1,bodyFont).Width/2));
-				float xTotal2=(float)(xTotal+3*75/2-(ev.Graphics.MeasureString(tot2,bodyFont).Width/2));
-				float xTotal3=(float)(xTotal+5*75/2-(ev.Graphics.MeasureString(tot3,bodyFont).Width/2));
-				float xTotal4=(float)(xTotal+7*75/2-(ev.Graphics.MeasureString(tot4,bodyFont).Width/2));
-				ev.Graphics.DrawString(tot1,bodyFont,Brushes.Black,xTotal1,yTotal+hTotal+5); 
-				ev.Graphics.DrawString(tot2,bodyFont,Brushes.Black,xTotal2,yTotal+hTotal+5); 			
-				ev.Graphics.DrawString(tot3,bodyFont,Brushes.Black,xTotal3,yTotal+hTotal+5); 
-				ev.Graphics.DrawString(tot4,bodyFont,Brushes.Black,xTotal4,yTotal+hTotal+5); 
+				//only prints totals if a GrandTotal line is present at the end of the array
+				if(ContrAccount.StatementA[11,ContrAccount.StatementA.GetLength(1)-1]=="GrandTotal"){
+					string tot1=ContrAccount.StatementA[4,ContrAccount.StatementA.GetLength(1)-1];
+					string tot2=ContrAccount.StatementA[5,ContrAccount.StatementA.GetLength(1)-1];
+					string tot3=ContrAccount.StatementA[6,ContrAccount.StatementA.GetLength(1)-1];
+					string tot4=ContrAccount.StatementA[7,ContrAccount.StatementA.GetLength(1)-1];
+					Font tTotalFont=new Font("Arial",8,FontStyle.Regular);
+					float xTotal1=(float)(xTotal+75/2-(ev.Graphics.MeasureString(tot1,bodyFont).Width/2));
+					float xTotal2=(float)(xTotal+3*75/2-(ev.Graphics.MeasureString(tot2,bodyFont).Width/2));
+					float xTotal3=(float)(xTotal+5*75/2-(ev.Graphics.MeasureString(tot3,bodyFont).Width/2));
+					float xTotal4=(float)(xTotal+7*75/2-(ev.Graphics.MeasureString(tot4,bodyFont).Width/2));
+					ev.Graphics.DrawString(tot1,bodyFont,Brushes.Black,xTotal1,yTotal+hTotal+5); 
+					ev.Graphics.DrawString(tot2,bodyFont,Brushes.Black,xTotal2,yTotal+hTotal+5); 			
+					ev.Graphics.DrawString(tot3,bodyFont,Brushes.Black,xTotal3,yTotal+hTotal+5); 
+					ev.Graphics.DrawString(tot4,bodyFont,Brushes.Black,xTotal4,yTotal+hTotal+5); 
+				}				
 				//Prints Credit Card Info
 				if(((Pref)Prefs.HList[Lan.g("Pref","StatementShowCreditCard")]).ValueString=="1"){
 					float xCredit=(float)450;
@@ -461,9 +464,9 @@ namespace OpenDental{
 				yPos=(float)18.75;
 			}
 //  Start of Patient Procedures etc Table
-			int[] colPos=new int[10];
-			HorizontalAlignment[] colAlign=new HorizontalAlignment[9];
-			string[] ColCaption=new string[9];
+			int[] colPos=new int[12];
+			HorizontalAlignment[] colAlign=new HorizontalAlignment[11];
+			string[] ColCaption=new string[11];
 			ColCaption[0]=Lan.g(this,"Date");
       ColCaption[1]=Lan.g(this,"Code");
       ColCaption[2]=Lan.g(this,"Tooth");
@@ -472,17 +475,21 @@ namespace OpenDental{
       ColCaption[5]=Lan.g(this,"Ins Est");
 			ColCaption[6]=Lan.g(this,"Ins Pay");
       ColCaption[7]=Lan.g(this,"Pat Pay");
-			ColCaption[8]=Lan.g(this,"Balance");
+			ColCaption[8]=Lan.g(this,"Adj");
+			ColCaption[9]=Lan.g(this,"Paid");
+			ColCaption[10]=Lan.g(this,"Balance");
 			colPos[0]=30;   colAlign[0]=HorizontalAlignment.Left;//date
-			colPos[1]=105;  colAlign[1]=HorizontalAlignment.Left;//code
-			colPos[2]=155;  colAlign[2]=HorizontalAlignment.Left;//tooth
-			colPos[3]=195;  colAlign[3]=HorizontalAlignment.Left;//description
-			colPos[4]=491;  colAlign[4]=HorizontalAlignment.Right;//fee
-			colPos[5]=546;  colAlign[5]=HorizontalAlignment.Right;//insest
-			colPos[6]=601;  colAlign[6]=HorizontalAlignment.Right;//inspay
-			colPos[7]=661;  colAlign[7]=HorizontalAlignment.Right;//patient
-			colPos[8]=721;  colAlign[8]=HorizontalAlignment.Right;//balance
-			colPos[9]=776;//+1  //col 9 is for formatting codes
+			colPos[1]=103;  colAlign[1]=HorizontalAlignment.Left;//code
+			colPos[2]=148;  colAlign[2]=HorizontalAlignment.Left;//tooth
+			colPos[3]=190;  colAlign[3]=HorizontalAlignment.Left;//description
+			colPos[4]=425;  colAlign[4]=HorizontalAlignment.Right;//fee
+			colPos[5]=475;  colAlign[5]=HorizontalAlignment.Right;//insest
+			colPos[6]=525;  colAlign[6]=HorizontalAlignment.Right;//inspay
+			colPos[7]=575;  colAlign[7]=HorizontalAlignment.Right;//patient
+			colPos[8]=625;  colAlign[8]=HorizontalAlignment.Right;//adj
+			colPos[9]=675;  colAlign[9]=HorizontalAlignment.Right;//paid
+			colPos[10]=725;  colAlign[10]=HorizontalAlignment.Right;//balance
+			colPos[11]=780;//+1  //col 11 is for formatting codes
 			while(yPos<ev.MarginBounds.Top+ev.MarginBounds.Height
 				&& linesPrinted<ContrAccount.StatementA.GetLength(1)
 				&& linesPrinted<300){//failsafe until I can rewrite this entire form
@@ -500,13 +507,13 @@ namespace OpenDental{
 					break;
         }
 				//Prints the Name of patient and column headers
-				if(ContrAccount.StatementA[9,linesPrinted]=="PatName"
+				if(ContrAccount.StatementA[11,linesPrinted]=="PatName"
 					|| middleOfPatientNewPage==true && tempCount==0){
 					if(!middleOfPatientNewPage)
 					  curPatName=ContrAccount.StatementA[3,linesPrinted];
           for(int i=linesPrinted;i<ContrAccount.StatementA.GetLength(1);i++){
 						patLines++;
-					  if(ContrAccount.StatementA[9,i]=="PatTotal"){
+					  if(ContrAccount.StatementA[11,i]=="PatTotal"){
 							break;
 						}
           }
@@ -543,11 +550,11 @@ namespace OpenDental{
 					yPos+=10;
           yTbPos=(float)(yPos-2.5);
 					xTbPos=colPos[0]-5;
-					wTbPos=colPos[9]-colPos[0]+5;
+					wTbPos=colPos[11]-colPos[0]+5;
 					hTbPos=(float)(TotalFont.GetHeight(ev.Graphics)+5);
 					ev.Graphics.FillRectangle(Brushes.LightGray,xTbPos,yTbPos,wTbPos,hTbPos);
 					ev.Graphics.DrawRectangle(new Pen(Color.Black),xTbPos,yTbPos,wTbPos,hTbPos);  
-          for(int i=1;i<9;i++) 
+          for(int i=1;i<11;i++) 
 					  ev.Graphics.DrawLine(new Pen(Color.Black),colPos[i],yTbPos,colPos[i],yTbPos+hTbPos);
 					//Prints the Column Titles
 					for(int i=0;i<ColCaption.Length;i++)  { 
@@ -563,7 +570,7 @@ namespace OpenDental{
 					middleOfPatientNewPage=false;
 				}//end Print name
 				//Prints out the patient info				
-				for(int iCol=0;iCol<9;iCol++){
+				for(int iCol=0;iCol<11;iCol++){
 					if(colAlign[iCol]==HorizontalAlignment.Right){
 						ev.Graphics.DrawString(Lan.g(this,ContrAccount.StatementA[iCol,linesPrinted])
 							,bodyFont,Brushes.Black,new RectangleF(
@@ -581,15 +588,16 @@ namespace OpenDental{
 				yPos+=bodyFont.GetHeight(ev.Graphics);
 				linesPrinted++;
 				//Prints out totals
-				if(ContrAccount.StatementA[9,linesPrinted]=="PatTotal"){
+				if(ContrAccount.StatementA[11,linesPrinted]=="PatTotal"){
 					//  Prints Column lines					
   				ev.Graphics.DrawLine(new Pen(Color.Gray),xTbPos,(float)(yTbPos+hTbPos+.5),xTbPos,yPos);
-					for(int i=1;i<9;i++) 
+					for(int i=1;i<11;i++) 
 	  			  ev.Graphics.DrawLine(new Pen(Color.Gray),colPos[i],(float)(yTbPos+hTbPos+.5),colPos[i],yPos);
-					ev.Graphics.DrawLine(new Pen(Color.Gray),xTbPos+wTbPos,(float)(yTbPos+hTbPos+.5),xTbPos+wTbPos,yPos);
+					ev.Graphics.DrawLine(new Pen(Color.Gray),xTbPos+wTbPos
+						,(float)(yTbPos+hTbPos+.5),xTbPos+wTbPos,yPos);
 				  ev.Graphics.DrawLine(new Pen(Color.Gray),xTbPos,yPos,xTbPos+wTbPos,yPos);
 					//Prints Patient Totals
-					for(int iCol=3;iCol<9;iCol++){
+					for(int iCol=3;iCol<11;iCol++){
 						ev.Graphics.DrawString(Lan.g(this,ContrAccount.StatementA[iCol,linesPrinted])
 							,TotalFont,Brushes.Black,new RectangleF(
 							colPos[iCol+1]
@@ -599,7 +607,9 @@ namespace OpenDental{
 					yPos+=TotalFont.GetHeight(ev.Graphics);
 					linesPrinted++;
 				}
-				if(ContrAccount.StatementA[9,linesPrinted]=="GrandTotal"){
+				if(linesPrinted==ContrAccount.StatementA.GetLength(1))//if we are at the end of the array
+					break;
+				if(ContrAccount.StatementA[11,linesPrinted]=="GrandTotal"){
  					linesPrinted++;
 				}			
         if(middleOfPatient)

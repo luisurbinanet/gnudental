@@ -262,7 +262,7 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please select a query first."));
 				return;
 			}
-			Queries.CurReport=new Report();
+			Queries.CurReport=new ReportOld();
 			Queries.CurReport.Query=UserQueries.Cur.QueryText;
 			DialogResult=DialogResult.OK;
 		}

@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Printing;
 using System.Collections;
 using System.ComponentModel;
+using System.Globalization;
 using System.Windows.Forms;
 using OpenDental.Reporting;
 
@@ -612,7 +613,6 @@ namespace OpenDental{
 			textMonthlyPayment.Text=PayPlans.Cur.MonthlyPayment.ToString("n");
 			textTerm.Text=PayPlans.Cur.Term.ToString();
 			textAmtPaid.Text=PayPlans.GetAmtPaid(PayPlans.Cur.PayPlanNum).ToString("n");
-			FillLastPayment();
 			FillCurrentDue();
 			textNote.Text=PayPlans.Cur.Note;
 		}
@@ -706,20 +706,13 @@ namespace OpenDental{
 				monthlyRate=APR/100/12;
 				monthlyPayment=principal*monthlyRate/(1-Math.Pow(1+monthlyRate,-term));
 			}
-			textMonthlyPayment.Text=monthlyPayment.ToString("F");
+			textMonthlyPayment.Text=monthlyPayment.ToString("n");
 			textLastPayment.Text="";
 			SetCurFromText();
 			FillCurrentDue();
 		}
 
 		private void textMonthlyPayment_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e) {
-			FillTerm();
-			FillLastPayment();
-			SetCurFromText();
-			FillCurrentDue();
-		}
-
-		private void FillTerm(){
 			if(!DataIsValid())
 				return;
 			double monthlyPayment=PIn.PDouble(textMonthlyPayment.Text);
@@ -742,43 +735,14 @@ namespace OpenDental{
 			if(lastPayment-monthlyPayment<.02 && lastPayment-monthlyPayment>-.02){
 				//negligible difference
 				term++;
-				//textLastPayment.Text="";
-			}
-			//else{
-				//textLastPayment.Text=lastPayment.ToString("F");
-			//}
-			textTerm.Text=(term-1).ToString();
-		}
-
-		private void FillLastPayment(){
-			//there is a lot of duplicate code here, but it works well, so there is no need to refine it.
-			if(!DataIsValid())
-				return;
-			double monthlyPayment=PIn.PDouble(textMonthlyPayment.Text);
-			double principal=PIn.PDouble(textAmount.Text)-PIn.PDouble(textDownPayment.Text);
-			double monthlyRate=PIn.PDouble(textAPR.Text)/100/12;
-			double term=0;//=-(Math.Log(1-(principal/monthlyPayment)*(monthlyRate)))/Math.Log(1+(monthlyRate));
-				//-(LN(1-(B/m)*(r/q)))/LN(1+(r/q))
-			double tempP=principal;//the principal which will be decreased to zero in the loop.
-			double currentI;//current month's interest.
-			double currentP;//current month's principal.
-			while(tempP>0 && term<100){//the 100 limit prevents infinite loop
-				currentI=tempP*monthlyRate;
-				currentP=monthlyPayment-currentI;
-				tempP-=currentP;
-				term++;
-			}
-			//tempP will be negative.
-			//term includes this last overpayment.
-			double lastPayment=monthlyPayment+tempP;
-			if(lastPayment-monthlyPayment<.02 && lastPayment-monthlyPayment>-.02){
-				//negligible difference
-				//term++;
 				textLastPayment.Text="";
 			}
 			else{
-				textLastPayment.Text=lastPayment.ToString("F");
+				textLastPayment.Text=lastPayment.ToString("n");
 			}
+			textTerm.Text=(term-1).ToString();
+			SetCurFromText();
+			FillCurrentDue();
 		}
 
 		private void butCopyTerms_Click(object sender, System.EventArgs e) {
@@ -798,13 +762,14 @@ namespace OpenDental{
 			if(!DataIsValid())
 				return;
 			SetCurFromText();
-			ODReport report=new ODReport();
+			Report report=new Report();
 			report.AddTitle("Truth in Lending Statement");
 			report.AddSubTitle(((Pref)Prefs.HList["PracticeTitle"]).ValueString);
 			report.AddSubTitle(DateTime.Today.ToString("d"));
-			Section section=report.Sections.GetOfKind(AreaSectionKind.ReportHeader);
+			string sectName="Report Header";
+			Section section=report.Sections["Report Header"];
 			section.Height=1100;
-			int sectIndex=report.Sections.GetIndexOfKind(AreaSectionKind.ReportHeader);
+			//int sectIndex=report.Sections.GetIndexOfKind(AreaSectionKind.ReportHeader);
 			Size size=new Size(300,20);//big enough for any text
 			Font font=new Font("Tahoma",9);
 			ContentAlignment alignL=ContentAlignment.MiddleLeft;
@@ -813,74 +778,74 @@ namespace OpenDental{
 			int space=40;
 			int x1=175;
 			int x2=275;
-			report.ReportObjects.Add(new TextObject
-				(sectIndex,new Point(x1,yPos),size,"Guarantor",font,alignL));
-			report.ReportObjects.Add(new TextObject
-				(sectIndex,new Point(x2,yPos),size,textGuarantor.Text,font,alignR));
+			report.ReportObjects.Add(new ReportObject
+				(sectName,new Point(x1,yPos),size,"Guarantor",font,alignL));
+			report.ReportObjects.Add(new ReportObject
+				(sectName,new Point(x2,yPos),size,textGuarantor.Text,font,alignR));
 			yPos+=space;
-			report.ReportObjects.Add(new TextObject
-				(sectIndex,new Point(x1,yPos),size,"Date of Agreement",font,alignL));
-			report.ReportObjects.Add(new TextObject
-				(sectIndex,new Point(x2,yPos),size,PayPlans.Cur.PayPlanDate.ToString("d"),font,alignR));
+			report.ReportObjects.Add(new ReportObject
+				(sectName,new Point(x1,yPos),size,"Date of Agreement",font,alignL));
+			report.ReportObjects.Add(new ReportObject
+				(sectName,new Point(x2,yPos),size,PayPlans.Cur.PayPlanDate.ToString("d"),font,alignR));
 			yPos+=space;
-			report.ReportObjects.Add(new TextObject
-				(sectIndex,new Point(x1,yPos),size,"Total Amount",font,alignL));
-			report.ReportObjects.Add(new TextObject
-				(sectIndex,new Point(x2,yPos),size,PayPlans.Cur.TotalAmount.ToString("c"),font,alignR));
+			report.ReportObjects.Add(new ReportObject
+				(sectName,new Point(x1,yPos),size,"Total Amount",font,alignL));
+			report.ReportObjects.Add(new ReportObject
+				(sectName,new Point(x2,yPos),size,PayPlans.Cur.TotalAmount.ToString("c"),font,alignR));
 			yPos+=space;
-			report.ReportObjects.Add(new TextObject
-				(sectIndex,new Point(x1,yPos),size,"First Payment",font,alignL));
-			report.ReportObjects.Add(new TextObject
-				(sectIndex,new Point(x2,yPos),size,PayPlans.Cur.DateFirstPay.ToString("d"),font,alignR));
+			report.ReportObjects.Add(new ReportObject
+				(sectName,new Point(x1,yPos),size,"First Payment",font,alignL));
+			report.ReportObjects.Add(new ReportObject
+				(sectName,new Point(x2,yPos),size,PayPlans.Cur.DateFirstPay.ToString("d"),font,alignR));
 			yPos+=space;
-			report.ReportObjects.Add(new TextObject
-				(sectIndex,new Point(x1,yPos),size,"Down Payment",font,alignL));
-			report.ReportObjects.Add(new TextObject
-				(sectIndex,new Point(x2,yPos),size,PayPlans.Cur.DownPayment.ToString("c"),font,alignR));
+			report.ReportObjects.Add(new ReportObject
+				(sectName,new Point(x1,yPos),size,"Down Payment",font,alignL));
+			report.ReportObjects.Add(new ReportObject
+				(sectName,new Point(x2,yPos),size,PayPlans.Cur.DownPayment.ToString("c"),font,alignR));
 			yPos+=space;
-			report.ReportObjects.Add(new TextObject
-				(sectIndex,new Point(x1,yPos),size,"Annual Percentage Rate",font,alignL));
-			report.ReportObjects.Add(new TextObject
-				(sectIndex,new Point(x2,yPos),size,PayPlans.Cur.APR.ToString("f1"),font,alignR));
+			report.ReportObjects.Add(new ReportObject
+				(sectName,new Point(x1,yPos),size,"Annual Percentage Rate",font,alignL));
+			report.ReportObjects.Add(new ReportObject
+				(sectName,new Point(x2,yPos),size,PayPlans.Cur.APR.ToString("f1"),font,alignR));
 			yPos+=space;
-			report.ReportObjects.Add(new TextObject
-				(sectIndex,new Point(x1,yPos),size,"Number of Regular Monthly Payments",font,alignL));
-			report.ReportObjects.Add(new TextObject
-				(sectIndex,new Point(x2,yPos),size,PayPlans.Cur.Term.ToString(),font,alignR));
+			report.ReportObjects.Add(new ReportObject
+				(sectName,new Point(x1,yPos),size,"Number of Regular Monthly Payments",font,alignL));
+			report.ReportObjects.Add(new ReportObject
+				(sectName,new Point(x2,yPos),size,PayPlans.Cur.Term.ToString(),font,alignR));
 			yPos+=space;
-			report.ReportObjects.Add(new TextObject
-				(sectIndex,new Point(x1,yPos),size,"Monthly Payment Amount",font,alignL));
-			report.ReportObjects.Add(new TextObject
-				(sectIndex,new Point(x2,yPos),size,PayPlans.Cur.MonthlyPayment.ToString("c"),font,alignR));
+			report.ReportObjects.Add(new ReportObject
+				(sectName,new Point(x1,yPos),size,"Monthly Payment Amount",font,alignL));
+			report.ReportObjects.Add(new ReportObject
+				(sectName,new Point(x2,yPos),size,PayPlans.Cur.MonthlyPayment.ToString("c"),font,alignR));
 			yPos+=space;
-			string lastPayment="$0";
+			string lastPayment=((double)0).ToString("c");
 			if(textLastPayment.Text!=""){
-				lastPayment="$"+textLastPayment.Text;
+				lastPayment=CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol+textLastPayment.Text;
 			}
-			report.ReportObjects.Add(new TextObject
-				(sectIndex,new Point(x1,yPos),size,"Plus Last Payment",font,alignL));
-			report.ReportObjects.Add(new TextObject
-				(sectIndex,new Point(x2,yPos),size,lastPayment,font,alignR));
+			report.ReportObjects.Add(new ReportObject
+				(sectName,new Point(x1,yPos),size,"Plus Last Payment",font,alignL));
+			report.ReportObjects.Add(new ReportObject
+				(sectName,new Point(x2,yPos),size,lastPayment,font,alignR));
 			yPos+=space;
 			double totalCost=0;
 			if(textTotalCost.Text!=""){
 				totalCost=PIn.PDouble(textTotalCost.Text);
 			}
-			report.ReportObjects.Add(new TextObject
-				(sectIndex,new Point(x1,yPos),size,"Total Finance Charges",font,alignL));
-			report.ReportObjects.Add(new TextObject
-				(sectIndex,new Point(x2,yPos),size,
+			report.ReportObjects.Add(new ReportObject
+				(sectName,new Point(x1,yPos),size,"Total Finance Charges",font,alignL));
+			report.ReportObjects.Add(new ReportObject
+				(sectName,new Point(x2,yPos),size,
 				(totalCost-PayPlans.Cur.TotalAmount).ToString("c"),font,alignR));
 			yPos+=space;
-			report.ReportObjects.Add(new TextObject
-				(sectIndex,new Point(x1,yPos),size,"Total Cost of Loan",font,alignL));
-			report.ReportObjects.Add(new TextObject
-				(sectIndex,new Point(x2,yPos),size,totalCost.ToString("c"),font,alignR));
+			report.ReportObjects.Add(new ReportObject
+				(sectName,new Point(x1,yPos),size,"Total Cost of Loan",font,alignL));
+			report.ReportObjects.Add(new ReportObject
+				(sectName,new Point(x2,yPos),size,totalCost.ToString("c"),font,alignR));
 			yPos+=60;
-			report.ReportObjects.Add(new TextObject
-				(sectIndex,new Point(x1,yPos),size,"Signature of Guarantor:",font,alignL));
+			report.ReportObjects.Add(new ReportObject
+				(sectName,new Point(x1,yPos),size,"Signature of Guarantor:",font,alignL));
 			FormReport FormR=new FormReport();
-			FormR.Report=report;
+			FormR.MyReport=report;
 			FormR.ShowDialog();
 			/*
 			pd2=new PrintDocument();
@@ -957,6 +922,10 @@ namespace OpenDental{
 			}
 			if(textAmtPaid.Text!=((double)0).ToString("n")){//technically, someone could still break this by having a payment of $0, but the chances are very remote.  Might simply not allow $0 paysplits.
 				MessageBox.Show(Lan.g(this,"Not allowed to delete a payment plan with payments attached."));
+				return;
+			}
+			if(MessageBox.Show(Lan.g(this,"Delete payment plan?"),""
+				,MessageBoxButtons.OKCancel)!=DialogResult.OK){
 				return;
 			}
 			PayPlans.DeleteCur();

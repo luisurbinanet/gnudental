@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Data;
 using System.Windows.Forms;
+using OpenDental.UI;
 
 namespace OpenDental{
 
@@ -17,13 +18,8 @@ namespace OpenDental{
 		private System.ComponentModel.IContainer components=null;// Required designer variable.
 		private Procedure[] arrayProc;
 		private ArrayList AcctLineAL;
-		private System.Windows.Forms.Button butPat;
 		private OpenDental.TableAccount tbAccount;
 		private OpenDental.TableAccountPat tbAcctPat;
-		private System.Windows.Forms.Button butPayment;
-		private System.Windows.Forms.Button butInsurance;
-		private System.Windows.Forms.Button butStatement;
-		private System.Windows.Forms.Button butAdjustment;
 		private PaySplit[] arrayPay;
 		private Adjustment[] arrayAdj;
 		private Claim[] arrayClaim;
@@ -38,8 +34,6 @@ namespace OpenDental{
 		private System.Windows.Forms.Panel panelTotal;
 		///<summary></summary>
 		public bool ViewOnly=false;
-		///<summary></summary>
-		public System.Windows.Forms.CheckBox checkShowAll;
 		private double FamTotBal;
 		private double FamInsEst;
 		private double FamTotDue;
@@ -61,15 +55,18 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textAgeBalance;
 		private FormPayment FormPayment2;
 		private System.Windows.Forms.ContextMenu contextMenuIns;
-		private System.Windows.Forms.Button butClaimMenu;
 		private System.Windows.Forms.MenuItem menuInsOther;
 		private System.Windows.Forms.MenuItem menuInsPri;
 		private System.Windows.Forms.MenuItem menuInsSec;
-		private System.Windows.Forms.Button butPayPlan;
 		private FormCommItem FormCommItem2;
 		private FormPayPlan FormPayPlan2;
 		private bool UrgFinNoteChanged;
+		private System.Windows.Forms.CheckBox checkShowAll;
 		private bool FinNoteChanged;
+		private OpenDental.UI.ODToolBar ToolBarMain;
+		private System.Windows.Forms.ImageList imageListMain;
+		///<summary>Used only in printing reports that show subtotal only.</summary>
+		private double SubTotal;
 	
 		///<summary></summary>
 		public ContrAccount(){
@@ -92,16 +89,12 @@ namespace OpenDental{
 		#region Component Designer generated code
 
 		private void InitializeComponent(){
+			this.components = new System.ComponentModel.Container();
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(ContrAccount));
 			this.textFinNotes = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.labelUrgFinNote = new System.Windows.Forms.Label();
 			this.textUrgFinNote = new System.Windows.Forms.TextBox();
-			this.butPat = new System.Windows.Forms.Button();
-			this.butPayment = new System.Windows.Forms.Button();
-			this.butInsurance = new System.Windows.Forms.Button();
-			this.butStatement = new System.Windows.Forms.Button();
-			this.butAdjustment = new System.Windows.Forms.Button();
 			this.tbAccount = new OpenDental.TableAccount();
 			this.tbAcctPat = new OpenDental.TableAccountPat();
 			this.panelTotal = new System.Windows.Forms.Panel();
@@ -125,19 +118,19 @@ namespace OpenDental{
 			this.menuInsPri = new System.Windows.Forms.MenuItem();
 			this.menuInsSec = new System.Windows.Forms.MenuItem();
 			this.menuInsOther = new System.Windows.Forms.MenuItem();
-			this.butClaimMenu = new System.Windows.Forms.Button();
-			this.butPayPlan = new System.Windows.Forms.Button();
+			this.ToolBarMain = new OpenDental.UI.ODToolBar();
+			this.imageListMain = new System.Windows.Forms.ImageList(this.components);
 			this.panelTotal.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// textFinNotes
 			// 
 			this.textFinNotes.BackColor = System.Drawing.Color.White;
-			this.textFinNotes.Location = new System.Drawing.Point(714, 253);
+			this.textFinNotes.Location = new System.Drawing.Point(767, 253);
 			this.textFinNotes.Multiline = true;
 			this.textFinNotes.Name = "textFinNotes";
 			this.textFinNotes.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textFinNotes.Size = new System.Drawing.Size(198, 473);
+			this.textFinNotes.Size = new System.Drawing.Size(163, 473);
 			this.textFinNotes.TabIndex = 7;
 			this.textFinNotes.Text = "";
 			this.textFinNotes.TextChanged += new System.EventHandler(this.textFinNotes_TextChanged);
@@ -146,96 +139,37 @@ namespace OpenDental{
 			// label1
 			// 
 			this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.label1.Location = new System.Drawing.Point(1, 2);
+			this.label1.Location = new System.Drawing.Point(-2, 2);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(158, 16);
+			this.label1.Size = new System.Drawing.Size(154, 16);
 			this.label1.TabIndex = 9;
-			this.label1.Text = "Fam Financial Notes";
+			this.label1.Text = "Family Financial Notes";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// labelUrgFinNote
 			// 
 			this.labelUrgFinNote.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.labelUrgFinNote.Location = new System.Drawing.Point(714, 33);
+			this.labelUrgFinNote.Location = new System.Drawing.Point(766, 31);
 			this.labelUrgFinNote.Name = "labelUrgFinNote";
-			this.labelUrgFinNote.Size = new System.Drawing.Size(142, 23);
+			this.labelUrgFinNote.Size = new System.Drawing.Size(165, 21);
 			this.labelUrgFinNote.TabIndex = 10;
 			this.labelUrgFinNote.Text = "Fam Urgent Fin Note";
+			this.labelUrgFinNote.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// textUrgFinNote
 			// 
 			this.textUrgFinNote.BackColor = System.Drawing.Color.White;
 			this.textUrgFinNote.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
 			this.textUrgFinNote.ForeColor = System.Drawing.Color.Red;
-			this.textUrgFinNote.Location = new System.Drawing.Point(714, 53);
+			this.textUrgFinNote.Location = new System.Drawing.Point(768, 53);
 			this.textUrgFinNote.Multiline = true;
 			this.textUrgFinNote.Name = "textUrgFinNote";
 			this.textUrgFinNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textUrgFinNote.Size = new System.Drawing.Size(198, 36);
+			this.textUrgFinNote.Size = new System.Drawing.Size(163, 36);
 			this.textUrgFinNote.TabIndex = 11;
 			this.textUrgFinNote.Text = "";
 			this.textUrgFinNote.TextChanged += new System.EventHandler(this.textUrgFinNote_TextChanged);
 			this.textUrgFinNote.Leave += new System.EventHandler(this.textUrgFinNote_Leave);
-			// 
-			// butPat
-			// 
-			this.butPat.Image = ((System.Drawing.Image)(resources.GetObject("butPat.Image")));
-			this.butPat.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butPat.Location = new System.Drawing.Point(2, 2);
-			this.butPat.Name = "butPat";
-			this.butPat.Size = new System.Drawing.Size(117, 26);
-			this.butPat.TabIndex = 15;
-			this.butPat.Text = "Select Patient";
-			this.butPat.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.butPat.Click += new System.EventHandler(this.butPat_Click);
-			// 
-			// butPayment
-			// 
-			this.butPayment.Image = ((System.Drawing.Image)(resources.GetObject("butPayment.Image")));
-			this.butPayment.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butPayment.Location = new System.Drawing.Point(171, 2);
-			this.butPayment.Name = "butPayment";
-			this.butPayment.Size = new System.Drawing.Size(90, 26);
-			this.butPayment.TabIndex = 16;
-			this.butPayment.Text = "Payment";
-			this.butPayment.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.butPayment.Click += new System.EventHandler(this.butPayment_Click);
-			// 
-			// butInsurance
-			// 
-			this.butInsurance.Image = ((System.Drawing.Image)(resources.GetObject("butInsurance.Image")));
-			this.butInsurance.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butInsurance.Location = new System.Drawing.Point(363, 2);
-			this.butInsurance.Name = "butInsurance";
-			this.butInsurance.Size = new System.Drawing.Size(102, 26);
-			this.butInsurance.TabIndex = 17;
-			this.butInsurance.Text = "New Claim";
-			this.butInsurance.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.butInsurance.Click += new System.EventHandler(this.butInsurance_Click);
-			// 
-			// butStatement
-			// 
-			this.butStatement.Image = ((System.Drawing.Image)(resources.GetObject("butStatement.Image")));
-			this.butStatement.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butStatement.Location = new System.Drawing.Point(632, 2);
-			this.butStatement.Name = "butStatement";
-			this.butStatement.Size = new System.Drawing.Size(96, 26);
-			this.butStatement.TabIndex = 18;
-			this.butStatement.Text = "Statement";
-			this.butStatement.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.butStatement.Click += new System.EventHandler(this.butStatement_Click);
-			// 
-			// butAdjustment
-			// 
-			this.butAdjustment.Image = ((System.Drawing.Image)(resources.GetObject("butAdjustment.Image")));
-			this.butAdjustment.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAdjustment.Location = new System.Drawing.Point(261, 2);
-			this.butAdjustment.Name = "butAdjustment";
-			this.butAdjustment.Size = new System.Drawing.Size(102, 26);
-			this.butAdjustment.TabIndex = 19;
-			this.butAdjustment.Text = "Adjustment";
-			this.butAdjustment.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.butAdjustment.Click += new System.EventHandler(this.butAdjustment_Click);
 			// 
 			// tbAccount
 			// 
@@ -245,26 +179,26 @@ namespace OpenDental{
 			this.tbAccount.ScrollValue = 1;
 			this.tbAccount.SelectedIndices = new int[0];
 			this.tbAccount.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-			this.tbAccount.Size = new System.Drawing.Size(712, 655);
+			this.tbAccount.Size = new System.Drawing.Size(730, 655);
 			this.tbAccount.TabIndex = 20;
 			// 
 			// tbAcctPat
 			// 
 			this.tbAcctPat.BackColor = System.Drawing.SystemColors.Window;
-			this.tbAcctPat.Location = new System.Drawing.Point(714, 90);
+			this.tbAcctPat.Location = new System.Drawing.Point(768, 90);
 			this.tbAcctPat.Name = "tbAcctPat";
-			this.tbAcctPat.ScrollValue = 140;
+			this.tbAcctPat.ScrollValue = 32;
 			this.tbAcctPat.SelectedIndices = new int[0];
 			this.tbAcctPat.SelectionMode = System.Windows.Forms.SelectionMode.None;
-			this.tbAcctPat.Size = new System.Drawing.Size(199, 143);
+			this.tbAcctPat.Size = new System.Drawing.Size(163, 143);
 			this.tbAcctPat.TabIndex = 21;
 			// 
 			// panelTotal
 			// 
 			this.panelTotal.Controls.Add(this.label1);
-			this.panelTotal.Location = new System.Drawing.Point(714, 234);
+			this.panelTotal.Location = new System.Drawing.Point(768, 234);
 			this.panelTotal.Name = "panelTotal";
-			this.panelTotal.Size = new System.Drawing.Size(198, 21);
+			this.panelTotal.Size = new System.Drawing.Size(163, 21);
 			this.panelTotal.TabIndex = 26;
 			// 
 			// checkShowAll
@@ -447,28 +381,25 @@ namespace OpenDental{
 			this.menuInsOther.Text = "Other";
 			this.menuInsOther.Click += new System.EventHandler(this.menuInsOther_Click);
 			// 
-			// butClaimMenu
+			// ToolBarMain
 			// 
-			this.butClaimMenu.Image = ((System.Drawing.Image)(resources.GetObject("butClaimMenu.Image")));
-			this.butClaimMenu.Location = new System.Drawing.Point(466, 2);
-			this.butClaimMenu.Name = "butClaimMenu";
-			this.butClaimMenu.Size = new System.Drawing.Size(13, 26);
-			this.butClaimMenu.TabIndex = 45;
-			this.butClaimMenu.Click += new System.EventHandler(this.butClaimMenu_Click);
+			this.ToolBarMain.Dock = System.Windows.Forms.DockStyle.Top;
+			this.ToolBarMain.ImageList = this.imageListMain;
+			this.ToolBarMain.Location = new System.Drawing.Point(0, 0);
+			this.ToolBarMain.Name = "ToolBarMain";
+			this.ToolBarMain.Size = new System.Drawing.Size(939, 29);
+			this.ToolBarMain.TabIndex = 47;
+			this.ToolBarMain.ButtonClick += new OpenDental.UI.ODToolBarButtonClickEventHandler(this.ToolBarMain_ButtonClick);
 			// 
-			// butPayPlan
+			// imageListMain
 			// 
-			this.butPayPlan.Location = new System.Drawing.Point(506, 2);
-			this.butPayPlan.Name = "butPayPlan";
-			this.butPayPlan.Size = new System.Drawing.Size(100, 26);
-			this.butPayPlan.TabIndex = 46;
-			this.butPayPlan.Text = "Payment Plan";
-			this.butPayPlan.Click += new System.EventHandler(this.butPayPlan_Click);
+			this.imageListMain.ImageSize = new System.Drawing.Size(22, 22);
+			this.imageListMain.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListMain.ImageStream")));
+			this.imageListMain.TransparentColor = System.Drawing.Color.Transparent;
 			// 
 			// ContrAccount
 			// 
-			this.Controls.Add(this.butPayPlan);
-			this.Controls.Add(this.butClaimMenu);
+			this.Controls.Add(this.ToolBarMain);
 			this.Controls.Add(this.label10);
 			this.Controls.Add(this.textAgeBalance);
 			this.Controls.Add(this.label9);
@@ -487,11 +418,6 @@ namespace OpenDental{
 			this.Controls.Add(this.panelTotal);
 			this.Controls.Add(this.tbAcctPat);
 			this.Controls.Add(this.tbAccount);
-			this.Controls.Add(this.butAdjustment);
-			this.Controls.Add(this.butStatement);
-			this.Controls.Add(this.butInsurance);
-			this.Controls.Add(this.butPayment);
-			this.Controls.Add(this.butPat);
 			this.Controls.Add(this.textUrgFinNote);
 			this.Controls.Add(this.labelUrgFinNote);
 			this.Controls.Add(this.textFinNotes);
@@ -508,16 +434,36 @@ namespace OpenDental{
 		///<summary></summary>
 		public void InstantClasses(){
 			Lan.C(this, new System.Windows.Forms.Control[] {
-				this.butAdjustment,
-				this.butInsurance,
-				this.butPat,
-				this.butPayment,
-				this.butStatement,
 				this.label1,
 				this.labelUrgFinNote,
 				this.panelTotal,
 				this.checkShowAll,
 			});
+			LayoutToolBar();
+		}
+
+		///<summary>Causes the toolbar to be laid out again.</summary>
+		public void LayoutToolBar(){
+			ToolBarMain.Buttons.Clear();
+			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Select Patient"),0,"","Patient"));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(ToolBarButtonStyle.Separator));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Payment"),1,"","Payment"));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Adjustment"),2,"","Adjustment"));
+			ODToolBarButton button=new ODToolBarButton(Lan.g(this,"New Claim"),3,"","Insurance");
+			button.Style=ToolBarButtonStyle.DropDownButton;
+			button.DropDownMenu=contextMenuIns;
+			ToolBarMain.Buttons.Add(button);
+			ToolBarMain.Buttons.Add(new ODToolBarButton(ToolBarButtonStyle.Separator));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Payment Plan"),-1,"","PayPlan"));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(ToolBarButtonStyle.Separator));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Statement"),-1,"","Statement"));
+			ArrayList toolButItems=ToolButItems.GetForToolBar(ToolBarsAvail.AccountModule);
+			for(int i=0;i<toolButItems.Count;i++){
+				ToolBarMain.Buttons.Add(new ODToolBarButton(ToolBarButtonStyle.Separator));
+				ToolBarMain.Buttons.Add(new ODToolBarButton(((ToolButItem)toolButItems[i]).ButtonText
+					,-1,"",((ToolButItem)toolButItems[i]).ProgramNum));
+			}
+			ToolBarMain.Invalidate();
 		}
 
 		private void ContrAccount_Layout(object sender, System.Windows.Forms.LayoutEventArgs e) {
@@ -529,9 +475,9 @@ namespace OpenDental{
 			else{
 				textUrgFinNote.Height=46;//3 lines
 			}
-			tbAcctPat.Location=new Point(714,textUrgFinNote.Location.Y+textUrgFinNote.Height);
-			panelTotal.Location=new Point(714,tbAcctPat.Location.Y+tbAcctPat.Height);
-			textFinNotes.Location=new Point(714,panelTotal.Location.Y+panelTotal.Height);
+			tbAcctPat.Location=new Point(768,textUrgFinNote.Location.Y+textUrgFinNote.Height);
+			panelTotal.Location=new Point(768,tbAcctPat.Location.Y+tbAcctPat.Height);
+			textFinNotes.Location=new Point(768,panelTotal.Location.Y+panelTotal.Height);
 			textFinNotes.Height=Height-textFinNotes.Location.Y-1;
 		}
 
@@ -587,10 +533,12 @@ namespace OpenDental{
 			if(Patients.PatIsLoaded){
 				ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString+" - "+Patients.GetCurNameLF();
 				tbAccount.Enabled=true;
-				butPayment.Enabled=true;
-				butAdjustment.Enabled=true;
-				butInsurance.Enabled=true;
-				butStatement.Enabled=true;
+				ToolBarMain.Buttons["Payment"].Enabled=true;
+				ToolBarMain.Buttons["Adjustment"].Enabled=true;
+				ToolBarMain.Buttons["Insurance"].Enabled=true;
+				ToolBarMain.Buttons["PayPlan"].Enabled=true;
+				ToolBarMain.Buttons["Statement"].Enabled=true;
+				ToolBarMain.Invalidate();
 				textUrgFinNote.Enabled=true;
 				textFinNotes.Enabled=true;
 				//butEditUrg.Enabled=true;
@@ -599,10 +547,12 @@ namespace OpenDental{
 			else{
 				ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString;
 				tbAccount.Enabled=false;
-				butPayment.Enabled=false;
-				butAdjustment.Enabled=false;
-				butInsurance.Enabled=false;
-				butStatement.Enabled=false;
+				ToolBarMain.Buttons["Payment"].Enabled=false;
+				ToolBarMain.Buttons["Adjustment"].Enabled=false;
+				ToolBarMain.Buttons["Insurance"].Enabled=false;
+				ToolBarMain.Buttons["PayPlan"].Enabled=false;
+				ToolBarMain.Buttons["Statement"].Enabled=false;
+				ToolBarMain.Invalidate();
 				textUrgFinNote.Enabled=false;
 				textFinNotes.Enabled=false;
 				//butEditUrg.Enabled=false;
@@ -661,26 +611,27 @@ namespace OpenDental{
 			}
 		}
 
-		private void butPat_Click(object sender, System.EventArgs e) {
-			FormPatientSelect FormPS = new FormPatientSelect();
-			FormPS.ShowDialog();
-			if (FormPS.DialogResult == DialogResult.OK){
-				ModuleSelected();
-			}
-		}
-
-		private void FillMain(){
+		private void FillMain(DateTime fromDate, DateTime toDate,bool includeClaims,bool subtotalsOnly){
 			//tbAccount.SelectedRowsAL=new ArrayList();
 			if(!Patients.PatIsLoaded){
 				tbAccount.ResetRows(0);
 				tbAccount.LayoutTables();
 				return;
 			}
-			FillAcctLineAL();
+			FillAcctLineAL(fromDate,toDate,includeClaims,subtotalsOnly);
 			FilltbAccount();
 		}
 
-		private void FillAcctLineAL(){
+		private void FillMain(){
+			if(checkShowAll.Checked){
+				FillMain(DateTime.MinValue,DateTime.Today,true,false);
+			}
+			else{
+				FillMain(DateTime.Today.AddDays(-45),DateTime.Today,true,false);
+			}
+		}
+
+		private void FillAcctLineAL(DateTime fromDate, DateTime toDate,bool includeClaims,bool subtotalsOnly){
 			//Patient tempPat = new Patient();
 			//tempPat.ChartNum=thisApt.ChartNum;
 			//Patients.Cur=tempPat;
@@ -714,7 +665,7 @@ namespace OpenDental{
 			int countPay=0;
 			int countComm=0;
 			int countPayPlan=0;
-			for (int i = 0; i<Procedures.List.Length; i++){
+			for(int i=0;i<Procedures.List.Length;i++){
 				if(Procedures.List[i].ProcStatus==ProcStat.C){//Only add if proc is Complete
 					arrayProc[countProc]=Procedures.List[i];
 					countProc++;
@@ -790,7 +741,7 @@ namespace OpenDental{
 					tempAcctLine.Date=arrayProc[tempCountProc].ProcDate.ToString("d");
 					tempAcctLine.Provider=Providers.GetAbbr(arrayProc[tempCountProc].ProvNum);
 					tempAcctLine.Code=arrayProc[tempCountProc].ADACode;
-					tempAcctLine.Tooth=arrayProc[tempCountProc].ToothNum;
+					tempAcctLine.Tooth=Tooth.ToInternat(arrayProc[tempCountProc].ToothNum);
 					tempAcctLine.Description=ProcedureCodes.GetProcCode(arrayProc[tempCountProc].ADACode).Descript;
 					double fee=arrayProc[tempCountProc].ProcFee;
 					Procedures.Cur=arrayProc[tempCountProc];
@@ -803,42 +754,48 @@ namespace OpenDental{
 						tempAcctLine.InsPay="";
 						pat=fee;
 						tempAcctLine.Patient=pat.ToString("F");
-						runBal+=pat;
 					}
 					else if(arrayProc[tempCountProc].CapCoPay!=-1){//covered by capitation
 						tempAcctLine.InsEst="";
 						tempAcctLine.InsPay="";
 						pat=arrayProc[tempCountProc].CapCoPay;
 						tempAcctLine.Patient=pat.ToString("F");
-						runBal+=pat;
 					}
 					else if(arrayProc[tempCountProc].NoBillIns){//should not bill to ins
 						tempAcctLine.InsEst="";
 						tempAcctLine.InsPay="No Bill";
 						pat=fee;
 						tempAcctLine.Patient=pat.ToString("F");
-						runBal+=pat;
 					}
 					else if(!ClaimProcs.ProcIsAttached(arrayProc[tempCountProc].ProcNum)){//not attached to claim
 						tempAcctLine.InsEst=insEst.ToString("F");
 						tempAcctLine.InsPay="Unsent";
 						pat=fee;
 						tempAcctLine.Patient=pat.ToString("F");
-						runBal+=pat;
 					}
 					else{//attached to claim
+						insEst=ClaimProcs.ProcInsEst(arrayProc[tempCountProc].ProcNum);
 						tempAcctLine.InsEst=insEst.ToString("F");
-						tempAcctLine.InsPay="";
-						pat=fee;
-						tempAcctLine.Patient="";//pat.ToString("F");
+						double insPay=ClaimProcs.ProcInsPay(arrayProc[tempCountProc].ProcNum);
+						if(ClaimProcs.ProcIsReceived(arrayProc[tempCountProc].ProcNum)){
+							tempAcctLine.InsPay=insPay.ToString("F");
+							pat=fee-insPay;
+						}
+						else{//not received, or only received on some claims and not others
+							tempAcctLine.InsPay=insPay.ToString("F");
+							pat=fee-insPay
+								-ClaimProcs.ProcEstNotReceived(arrayProc[tempCountProc].ProcNum);
+						}
+						tempAcctLine.Patient=pat.ToString("F");
+					}
+					if(arrayProc[tempCountProc].ProcDate >= fromDate 
+						&& arrayProc[tempCountProc].ProcDate <= toDate){//within date range
 						runBal+=pat;
-					}
-					tempAcctLine.Balance=runBal.ToString("F");
-					if(checkShowAll.Checked){
+						tempAcctLine.Balance=runBal.ToString("F");
 						AcctLineAL.Add(tempAcctLine);
 					}
-					else if(DateTime.Today.AddDays(-45).CompareTo(arrayProc[tempCountProc].ProcDate)<0){
-						AcctLineAL.Add(tempAcctLine);
+					else if(!subtotalsOnly){//out of date range, but show normal totals
+						runBal+=pat;//add to the running balance, but do not display it.
 					}
 					if(tempCountProc<countProc) tempCountProc++;
 				}//end Proc
@@ -857,26 +814,31 @@ namespace OpenDental{
 					else if(arrayClaim[tempCountClaim].ClaimType=="S"){
 						tempAcctLine.Description="Sec Claim: ";
 					}
-					tempAcctLine.Description+=InsPlans.GetCarrier(arrayClaim[tempCountClaim].PlanNum);
+					tempAcctLine.Description+=InsPlans.GetCarrierName(arrayClaim[tempCountClaim].PlanNum);
 					if(arrayClaim[tempCountClaim].DedApplied>0){
 						tempAcctLine.Description+=". Ded applied $"+arrayClaim[tempCountClaim].DedApplied.ToString("F");
 					}
 					double fee;
 					double insEst;
 					double insPay;
+					double subTotal=0;
 					Claims.Cur=arrayClaim[tempCountClaim];
-					//double pat=0;
 					fee=Claims.Cur.ClaimFee;
 					insEst=Claims.Cur.InsPayEst;
-					insPay=Claims.Cur.InsPayAmt;
+					//insPay=Claims.Cur.InsPayAmt;
 					tempAcctLine.Fee=fee.ToString("F");
 					tempAcctLine.InsEst=insEst.ToString("F");
-					if(arrayClaim[tempCountClaim].ClaimStatus=="R"){
-						tempAcctLine.InsPay=insPay.ToString("F");
-						//pat=-insPay;
-						runBal-=insPay;
+					//insPay is always subtracted from bal no matter what is displayed.
+					insPay=ClaimProcs.ClaimByTotalOnly(arrayClaim[tempCountClaim].ClaimNum);
+					subTotal-=insPay;
+					if(arrayClaim[tempCountClaim].ClaimStatus=="R"){//if claim is received
+						//tempAcctLine.InsPay=insPay.ToString("F");//show the insurance payment
+						//show the insurance payment. Just for display.
+						//The byTotal is the only number that affects the balance.
+						tempAcctLine.InsPay=Claims.Cur.InsPayAmt.ToString("F");
+						//runBal-=insPay;
 					}
-					else{
+					else{//claim not received, so it is an estimate
 						switch(arrayClaim[tempCountClaim].ClaimStatus){
 							case "U":
 								tempAcctLine.InsPay="Unsent";
@@ -894,45 +856,26 @@ namespace OpenDental{
 								tempAcctLine.InsPay="Sent";
 								break;
 						}
-						//pat=-insEst;
-						runBal-=insEst;
+						//subTotal-=insEst;
 						FamInsEst+=insEst;//for printing family
 					}
-					runBal-=arrayClaim[tempCountClaim].WriteOff;
-					//the following section has been changed in v2.1
-					tempAcctLine.Patient="";//pat.ToString("F");
-					tempAcctLine.Balance=runBal.ToString("F");
-					/*this is the way it used to be:
-					  if(arrayClaim[tempCountClaim].ClaimNum==arrayClaim[tempCountClaim].PriClaimNum){//is pri claim
-						if(arrayClaim[tempCountClaim].SecClaimNum!=0){//secclaim exists
-							tempAcctLine.Patient="";
-							tempAcctLine.Balance="";
-						}
-						else{//no sec claim
-							//as original:
-							tempAcctLine.Patient=pat.ToString("F");
-							runBal+=pat;
-							tempAcctLine.Balance=runBal.ToString("F");
-						}
+					//runBal-=arrayClaim[tempCountClaim].WriteOff;
+					if(arrayClaim[tempCountClaim].WriteOff>0){
+						tempAcctLine.Adj="-"+arrayClaim[tempCountClaim].WriteOff.ToString("F");
+						subTotal-=arrayClaim[tempCountClaim].WriteOff;
 					}
-					else{//sec claim
-						if(((Claim)Claims.HList[Claims.Cur.PriClaimNum]).ClaimStatus=="R")
-							pat-=((Claim)Claims.HList[Claims.Cur.PriClaimNum]).InsPayAmt;
-						else
-							pat-=((Claim)Claims.HList[Claims.Cur.PriClaimNum]).InsPayEst;
-						tempAcctLine.Patient=pat.ToString("F");
-						runBal+=pat;
+					tempAcctLine.Patient="";
+					if(arrayClaim[tempCountClaim].DateService >= fromDate
+						&& arrayClaim[tempCountClaim].DateService <= toDate){//within date range
+						runBal+=subTotal;
 						tempAcctLine.Balance=runBal.ToString("F");
-					}	*/
-					if(checkShowAll.Checked){
 						AcctLineAL.Add(tempAcctLine);
 					}
-					else if(DateTime.Today.AddDays(-45).CompareTo(arrayClaim[tempCountClaim].DateService)<0){
-						AcctLineAL.Add(tempAcctLine);
+					else if(!subtotalsOnly){//out of date range, but show normal totals
+						runBal+=subTotal;//add to the running balance, but do not display it.
 					}
 					//old claims that have been received only recently, or not at all:
-					else if(DateTime.Today.AddDays(-45).CompareTo(arrayClaim[tempCountClaim].DateReceived)<0
-						|| arrayClaim[tempCountClaim].ClaimStatus != "R"){
+					else if(includeClaims && arrayClaim[tempCountClaim].ClaimStatus != "R"){
 						tempAcctLine.Balance="";//don't show running balance
 						AcctLineAL.Add(tempAcctLine);
 					}
@@ -951,22 +894,16 @@ namespace OpenDental{
 					tempAcctLine.Fee="";
 					tempAcctLine.InsEst="";
 					tempAcctLine.InsPay="";
-					//if(Defs.GetValue(DefCat.AdjTypes,arrayAdj[tempCountAdj].AdjType)=="+"){
 					//can be a positive or negative number:
-						tempAcctLine.Patient=arrayAdj[tempCountAdj].AdjAmt.ToString("F");
+					tempAcctLine.Adj=arrayAdj[tempCountAdj].AdjAmt.ToString("F");
+					if(arrayAdj[tempCountAdj].AdjDate >= fromDate
+						&& arrayAdj[tempCountAdj].AdjDate <= toDate){
 						runBal+=arrayAdj[tempCountAdj].AdjAmt;
-					//}
-					//else if(Defs.GetValue(DefCat.AdjTypes,arrayAdj[tempCountAdj].AdjType)=="-"){
-					//	tempAcctLine.Patient="-"+arrayAdj[tempCountAdj].AdjAmt.ToString("F");
-					//	runBal-=arrayAdj[tempCountAdj].AdjAmt;
-					//}
-					//else default??
-					tempAcctLine.Balance=runBal.ToString("F");
-					if(checkShowAll.Checked){
+						tempAcctLine.Balance=runBal.ToString("F");
 						AcctLineAL.Add(tempAcctLine);
 					}
-					else if(DateTime.Today.AddDays(-45).CompareTo(arrayAdj[tempCountAdj].AdjDate)<0){
-						AcctLineAL.Add(tempAcctLine);
+					else if(!subtotalsOnly){//out of date range, but show normal totals
+						runBal+=arrayAdj[tempCountAdj].AdjAmt;//add to the running balance, but do not display it.
 					}
 					if(tempCountAdj<countAdj) tempCountAdj++;
 				}//end Adjustment
@@ -990,19 +927,28 @@ namespace OpenDental{
 					tempAcctLine.Fee="";
 					tempAcctLine.InsEst="";
 					tempAcctLine.InsPay="";
-					tempAcctLine.Patient="-"+arrayPay[tempCountPay].SplitAmt.ToString("F");
-					runBal-=arrayPay[tempCountPay].SplitAmt;
-					tempAcctLine.Balance=runBal.ToString("F");
-					if(checkShowAll.Checked){
+					tempAcctLine.Patient="";
+					if(arrayPay[tempCountPay].IsDiscount){
+						tempAcctLine.Adj="-"+arrayPay[tempCountPay].SplitAmt.ToString("F");
+						tempAcctLine.Paid="";
+					}
+					else{
+						tempAcctLine.Adj="";
+						tempAcctLine.Paid="-"+arrayPay[tempCountPay].SplitAmt.ToString("F");
+					}
+					if(arrayPay[tempCountPay].ProcDate >= fromDate
+						&& arrayPay[tempCountPay].ProcDate <= toDate){
+						runBal-=arrayPay[tempCountPay].SplitAmt;
+						tempAcctLine.Balance=runBal.ToString("F");
 						AcctLineAL.Add(tempAcctLine);
 					}
-					else if(DateTime.Today.AddDays(-45).CompareTo(arrayPay[tempCountPay].ProcDate)<0){
-						AcctLineAL.Add(tempAcctLine);
+					else if(!subtotalsOnly){//out of date range, but show normal totals
+						runBal-=arrayPay[tempCountPay].SplitAmt;//add to the running balance, but do not display it.
 					}
 					if(tempCountPay<countPay) tempCountPay++;
 				}//end Payment
 				//5. Comm:
-				else if(tempCountComm<countComm && DateTime.Compare(arrayComm[tempCountComm].CommDate,lineDate)==0){
+				else if(tempCountComm<countComm && arrayComm[tempCountComm].CommDate==lineDate){
 					tempAcctLine=new AcctLine();
 					tempAcctLine.Type=AcctType.Comm;
 					tempAcctLine.Code="Comm";
@@ -1015,11 +961,11 @@ namespace OpenDental{
 					tempAcctLine.InsEst="";
 					tempAcctLine.InsPay="";
 					tempAcctLine.Patient="";
+					//adj
+					//paid
 					tempAcctLine.Balance="";
-					if(checkShowAll.Checked){
-						AcctLineAL.Add(tempAcctLine);
-					}
-					else if(DateTime.Today.AddDays(-45).CompareTo(arrayComm[tempCountComm].CommDate)<0){
+					if(arrayComm[tempCountComm].CommDate >= fromDate
+						&& arrayComm[tempCountComm].CommDate <= toDate){
 						AcctLineAL.Add(tempAcctLine);
 					}
 					if(tempCountComm<countComm) tempCountComm++;
@@ -1039,29 +985,35 @@ namespace OpenDental{
 					tempAcctLine.Fee=arrayPayPlan[tempCountPayPlan].TotalAmount.ToString("F");
 					tempAcctLine.InsEst="";
 					tempAcctLine.InsPay="";
+					double subTotal=0;
 					//either or both of these conditions might be true (3 possible scenarios)
 					//1.If this is guarantor
 					if(arrayPayPlan[tempCountPayPlan].Guarantor==Patients.Cur.PatNum){
 						tempAcctLine.Patient=arrayPayPlan[tempCountPayPlan].CurrentDue.ToString("F");
-						runBal+=arrayPayPlan[tempCountPayPlan].CurrentDue;
+						//runBal+=arrayPayPlan[tempCountPayPlan].CurrentDue;
+						subTotal+=arrayPayPlan[tempCountPayPlan].CurrentDue;
 					}
 					//2.If this is the patient
 					if(arrayPayPlan[tempCountPayPlan].PatNum==Patients.Cur.PatNum){
-						runBal-=arrayPayPlan[tempCountPayPlan].TotalAmount;
+						//runBal-=arrayPayPlan[tempCountPayPlan].TotalAmount;
+						subTotal-=arrayPayPlan[tempCountPayPlan].TotalAmount;
 					}
-					tempAcctLine.Balance=runBal.ToString("F");
-					if(checkShowAll.Checked){
-						AcctLineAL.Add(tempAcctLine);
-					}
-					else if(DateTime.Today.AddDays(-45).CompareTo
-						(arrayPayPlan[tempCountPayPlan].PayPlanDate)<0 
+					
+					if((arrayPayPlan[tempCountPayPlan].PayPlanDate >= fromDate
+						&& arrayPayPlan[tempCountPayPlan].PayPlanDate <= toDate)
 						|| arrayPayPlan[tempCountPayPlan].CurrentDue>0)
 					{
+						runBal+=subTotal;
+						tempAcctLine.Balance=runBal.ToString("F");
 						AcctLineAL.Add(tempAcctLine);
+					}
+					else if(!subtotalsOnly){//out of date range, but show normal totals
+						runBal+=subTotal;//add to the running balance, but do not display it.
 					}
 					if(tempCountPayPlan<countPayPlan) tempCountPayPlan++;
 				}//end PayPlan
 			}//end for line
+			SubTotal=runBal;
 			//for (int i=0;i<countProc;i++){
 			//}//end for i countProc
 		}//end FillAcctLineAL
@@ -1091,7 +1043,9 @@ namespace OpenDental{
 						tbAccount.Cell[6,i]=((AcctLine)AcctLineAL[i]).InsEst;
 						tbAccount.Cell[7,i]=((AcctLine)AcctLineAL[i]).InsPay;
 						tbAccount.Cell[8,i]=((AcctLine)AcctLineAL[i]).Patient;
-						tbAccount.Cell[9,i]=((AcctLine)AcctLineAL[i]).Balance;
+						tbAccount.Cell[9,i]=((AcctLine)AcctLineAL[i]).Adj;
+						tbAccount.Cell[10,i]=((AcctLine)AcctLineAL[i]).Paid;
+						tbAccount.Cell[11,i]=((AcctLine)AcctLineAL[i]).Balance;
 					//}//end if
 					switch(((AcctLine)AcctLineAL[i]).Type){
 						default:
@@ -1266,7 +1220,44 @@ namespace OpenDental{
 			ModuleSelected();
 		}		
 
-		private void butPayment_Click(object sender, System.EventArgs e) {
+		private void ToolBarMain_ButtonClick(object sender, OpenDental.UI.ODToolBarButtonClickEventArgs e) {
+			if(e.Button.Tag.GetType()==typeof(string)){
+				//standard predefined button
+				switch(e.Button.Tag.ToString()){
+					case "Patient":
+						OnPat_Click();
+						break;
+					case "Payment":
+						OnPay_Click();
+						break;
+					case "Adjustment":
+						OnAdj_Click();
+						break;
+					case "Insurance":
+						OnIns_Click();
+						break;
+					case "PayPlan":
+						OnPayPlan_Click();
+						break;
+					case "Statement":
+						OnStatement_Click();
+						break;
+				}
+			}
+			else if(e.Button.Tag.GetType()==typeof(int)){
+				Programs.Execute((int)e.Button.Tag);
+			}
+		}
+
+		private void OnPat_Click() {
+			FormPatientSelect FormPS = new FormPatientSelect();
+			FormPS.ShowDialog();
+			if (FormPS.DialogResult == DialogResult.OK){
+				ModuleSelected();
+			}
+		}
+
+		private void OnPay_Click() {
 			FormPayment FormPayment2=new FormPayment();
 			FormPayment2.IsNew=true;
 			FormPayment2.ShowDialog();
@@ -1274,7 +1265,7 @@ namespace OpenDental{
 			ModuleSelected();
 		}
 
-		private void butAdjustment_Click(object sender, System.EventArgs e) {
+		private void OnAdj_Click() {
 			FormAdjust FormAdjust2=new FormAdjust();
 			FormAdjust2.IsNew=true;
 			FormAdjust2.ShowDialog();
@@ -1282,7 +1273,7 @@ namespace OpenDental{
 			ModuleSelected();
 		}
 
-		private void butInsurance_Click(object sender, System.EventArgs e) {
+		private void OnIns_Click() {
 			if(Patients.Cur.PriPlanNum==0){
 				MessageBox.Show(Lan.g(this,"Patient does not have insurance."));
 				return;
@@ -1340,9 +1331,11 @@ namespace OpenDental{
 				}
 			}
 			if(isAttached){
-				if(MessageBox.Show(Lan.g(this,"One or more items have already been sent to insurance. Create claim anyway?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
-					return;
-				}
+				MessageBox.Show(Lan.g(this,"One or more items have already been sent to insurance. Select existing claim to reprint."));				
+				return;	// removed choice (OKCancel) to disallow creating second claim. SPK 4/30/04				
+				//if(MessageBox.Show(Lan.g(this,"One or more items have already been sent to insurance. Create claim anyway?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
+				//	return;
+				//}
 			}
 			CreateClaim("P");
 			Procedures.Refresh();//because procs might have been changed very slightly in CreateClaim.
@@ -1352,7 +1345,9 @@ namespace OpenDental{
 			Claims.Cur.DateSent=DateTime.Today;
 			//still have not saved some changes to the claim at this point
 			FormClaimEdit FormCE=new FormClaimEdit();
-			FormCE.CalculateEstimates();//also updates claim to db.
+			//this next line is very important.  It fills the claimprocs with fees
+			//and updates the claim to the db.
+			FormCE.CalculateEstimates();
 			FormCE.IsNew=true;//this causes it to delete the claim if cancelling.
 			FormCE.ShowDialog();
 			if(FormCE.DialogResult!=DialogResult.OK){
@@ -1378,6 +1373,7 @@ namespace OpenDental{
 			//all validation on procedures selected has already been done.
 			//Creates and saves claim, attaching all selected procedures.
 			//Does not reload any data.
+			//Does not enter fee amounts.
 			Claims.Cur=new Claim();
 			Claims.Cur.PatNum=Patients.Cur.PatNum;
 			Claims.Cur.DateService
@@ -1438,8 +1434,9 @@ namespace OpenDental{
 			//Claims.Cur.DedApplied=0;//calcs in ClaimEdit.
 			//preauthstring, etc, etc
 			Claims.Cur.IsProsthesis="N";
-			//change later: set ProvBill according to practice defaults
-			Claims.Cur.ProvBill=Claims.Cur.ProvTreat;//OK if zero, because it will get fixed in claim
+	//change later: set ProvBill according to practice defaults
+			//Claims.Cur.ProvBill=Claims.Cur.ProvTreat;//OK if zero, because it will get fixed in claim
+			Claims.Cur.ProvBill=PIn.PInt(((Pref)Prefs.HList["PracticeDefaultProv"]).ValueString);
 			Claims.Cur.EmployRelated=YN.No;
 			//attach procedures
 			for(int i=0;i<tbAccount.SelectedIndices.Length;i++){
@@ -1466,8 +1463,12 @@ namespace OpenDental{
 				ClaimProcs.Cur.PlanNum=Claims.Cur.PlanNum;
 				ClaimProcs.Cur.DateCP=Procedures.Cur.ProcDate;
 				//writeoff
-				if(InsPlans.Cur.UseAltCode)
-					ClaimProcs.Cur.CodeSent=((ProcedureCode)ProcedureCodes.HList[Procedures.Cur.ADACode]).AlternateCode1;
+				if(InsPlans.Cur.UseAltCode 
+					&& ((ProcedureCode)ProcedureCodes.HList[Procedures.Cur.ADACode]).AlternateCode1!="")
+				{
+					ClaimProcs.Cur.CodeSent
+						=((ProcedureCode)ProcedureCodes.HList[Procedures.Cur.ADACode]).AlternateCode1;
+				}
 				else{
 					ClaimProcs.Cur.CodeSent=Procedures.Cur.ADACode;
 					if(ClaimProcs.Cur.CodeSent.Length>5 && ClaimProcs.Cur.CodeSent.Substring(0,1)=="D"){
@@ -1543,11 +1544,7 @@ namespace OpenDental{
 			ModuleSelected();
 		}
 
-		private void butClaimMenu_Click(object sender, System.EventArgs e) {
-			contextMenuIns.Show(butInsurance,new Point(0,26));
-		}
-
-		private void butPayPlan_Click(object sender, System.EventArgs e) {
+		private void OnPayPlan_Click() {
 			PayPlans.Cur=new PayPlan();
 			PayPlans.Cur.PatNum=Patients.Cur.PatNum;
 			PayPlans.Cur.Guarantor=Patients.Cur.Guarantor;
@@ -1559,6 +1556,24 @@ namespace OpenDental{
 			FormPP.ShowDialog();
 			if(FormPP.GotoPatNum!=0)
 				Patients.Cur.PatNum=FormPP.GotoPatNum;//switches to other patient.
+			ModuleSelected();
+		}
+
+		private void OnStatement_Click() {
+			FormStatementOptions FormSO=new FormStatementOptions();
+			if(checkShowAll.Checked){
+				FormSO.FromDate=DateTime.MinValue;
+			}
+			else{
+				FormSO.FromDate=DateTime.Today.AddDays(-45);
+			}
+			FormSO.ShowDialog();
+			if(FormSO.DialogResult!=DialogResult.OK){
+				return;
+			}
+			//FillMain(FormSO.FromDate,FormSO.ToDate,FormSO.IncludeClaims,FormSO.SubtotalsOnly);
+			PrintStatement(FormSO.PatNums,FormSO.FromDate,FormSO.ToDate,FormSO.IncludeClaims
+				,FormSO.SubtotalsOnly);
 			ModuleSelected();
 		}
 
@@ -1598,45 +1613,42 @@ namespace OpenDental{
 			RefreshModuleScreen();
 		}
 
-		private void butStatement_Click(object sender, System.EventArgs e) {
-			PrintStatement();
-			ModuleSelected();
-			//RefreshModuleData();
-			//FillAcctLineAL();
-		}
-
-		///<summary></summary>
+		///<summary>Used from FormBilling to print one statement for the entire family of the current patient.PatNum which was set ahead of time.</summary>
 		public void LoadAndPrint(){
-			//ModuleSelected();
 			Patients.GetFamily(Patients.Cur.PatNum);
-			InsPlans.Refresh();
-			CovPats.Refresh();
-			FillMain();
-			PrintStatement();
+			//InsPlans.Refresh();
+			//CovPats.Refresh();
+			//FillMain(DateTime.Today.AddDays(-45),DateTime.Today,true,false);
+			int[] patNums=new int[Patients.FamilyList.Length];
+			for(int i=0;i<patNums.Length;i++){
+				patNums[i]=Patients.FamilyList[i].PatNum;
+			}
+			PrintStatement(patNums,DateTime.Today.AddDays(-45),DateTime.Today,true,false);
 		}
 
-		private void PrintStatement(){
+		/// <summary></summary>
+		private void PrintStatement(int[] patNums,DateTime fromDate,DateTime toDate,bool includeClaims, bool subtotalsOnly){
 			int curPatNum=Patients.Cur.PatNum;
 			FamTotBal=0;
 			FamInsEst=0;
 			FamTotDue=0;
 			ArrayList StatementAL=new ArrayList();
-			
+			/*
 			int[] patNums=new int[Patients.FamilyList.Length];
 			for(int i=0;i<Patients.FamilyList.Length;i++){
 				patNums[i]=Patients.FamilyList[i].PatNum;
-			}
+			}*/
 			AcctLine tempLine;
 			for(int i=0;i<patNums.Length;i++){
 				Patients.Cur.PatNum=patNums[i];
 				RefreshModuleData();
-				FillAcctLineAL();
+				FillAcctLineAL(fromDate,toDate,includeClaims,subtotalsOnly);
 				FamTotDue+=Patients.Cur.EstBalance;
 				tempLine=new AcctLine();
 				tempLine.Description=Patients.GetCurNameLF();
 				tempLine.StateType="PatName";
-				StatementAL.Add(tempLine);
-				StatementAL.AddRange(AcctLineAL);
+				StatementAL.Add(tempLine);//this adds a group heading for one patient.
+				StatementAL.AddRange(AcctLineAL);//this adds the detail for one patient
 				tempLine=new AcctLine();
 				tempLine.Description="";
 				tempLine.StateType="PatTotal";
@@ -1644,7 +1656,13 @@ namespace OpenDental{
 				tempLine.InsEst="";
 				tempLine.InsPay="";
 				tempLine.Patient="";
-				tempLine.Balance=Patients.Cur.EstBalance.ToString("F");
+				if(subtotalsOnly){
+					tempLine.Balance=SubTotal.ToString("n");
+				}
+				else{
+					tempLine.Balance=Patients.Cur.EstBalance.ToString("F");
+				}
+				//group footer for one patient: If subtotalsOnly, then this will actually be a subtotal
 				StatementAL.Add(tempLine);
 			}
 			tempLine=new AcctLine();
@@ -1656,8 +1674,11 @@ namespace OpenDental{
 			tempLine.InsPay=FamInsEst.ToString("F");
 			tempLine.Patient=FamTotDue.ToString("F");
 			//tempLine.Balance="4";
-			StatementAL.Add(tempLine);
-			StatementA=new string[10,StatementAL.Count];
+			if(!subtotalsOnly){//does not print totals in page header.
+				StatementAL.Add(tempLine);//adds info for the page header
+			}
+			StatementA=new string[12,StatementAL.Count];
+			//now, move the collection of lines into a simple array to print.
 			for(int i=0;i<StatementA.GetLength(1);i++){
 				try{//error catch bad dates
 					StatementA[0,i]=((AcctLine)StatementAL[i]).Date; 
@@ -1675,8 +1696,10 @@ namespace OpenDental{
 				if(StatementA[6,i]=="In Queue")
 					StatementA[6,i]="Sent";//to keep it simple for the patient
 				StatementA[7,i]=((AcctLine)StatementAL[i]).Patient;
-				StatementA[8,i]=((AcctLine)StatementAL[i]).Balance;
-				StatementA[9,i]=((AcctLine)StatementAL[i]).StateType;
+				StatementA[8,i]=((AcctLine)StatementAL[i]).Adj;
+				StatementA[9,i]=((AcctLine)StatementAL[i]).Paid;
+				StatementA[10,i]=((AcctLine)StatementAL[i]).Balance;
+				StatementA[11,i]=((AcctLine)StatementAL[i]).StateType;
 			}//end for
 			FormRpStatement FormST=new FormRpStatement();
 			//FormST.ShowDialog();
@@ -1689,18 +1712,6 @@ namespace OpenDental{
 			//there is no dialog here because it is just a simple entry
 			Commlogs.InsertCur();
 		}
-
-		
-
-		
-
-		
-
-	
-
-		
-
-		
 
 		
 
@@ -1750,9 +1761,13 @@ namespace OpenDental{
 		///<summary></summary>
 		public string Patient;
 		///<summary></summary>
-		public string Balance;
+		public string Adj;
 		///<summary></summary>
-		public string StateType;//only used for statements
+		public string Paid;
+		///<summary></summary>
+		public string Balance;
+		///<summary>only used for statements</summary>
+		public string StateType;
 	}//end struct AcctLine
 
 }//end namespace

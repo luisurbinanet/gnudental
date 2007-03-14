@@ -313,7 +313,7 @@ namespace OpenDental{
 Select procdate, sum(procfee) From procedurelog
 Group By procdate Order by procdate desc  
 */
-			Queries.CurReport=new Report();
+			Queries.CurReport=new ReportOld();
 			string whereProv;//used as the provider portion of the where clauses.
 				//each whereProv needs to be set up separately for each query
 			whereProv="&& (";
@@ -330,7 +330,16 @@ Group By procdate Order by procdate desc
 				+"&& ProcStatus = '2' "
 				+"&& CapCoPay = '-1' "
 				+whereProv
-				+" GROUP BY ProcDate ORDER BY ProcDate"; 
+				+" GROUP BY ProcDate"
+				//capitation:
+				+" UNION SELECT ProcDate, SUM(CapCoPay) FROM procedurelog WHERE "
+				+"ProcDate >= '" + dateFrom.ToString("yyyy-MM-dd")+"' "
+				+"&& ProcDate <= '" + dateTo.ToString("yyyy-MM-dd")+"' "
+				+"&& ProcStatus = '2' "
+				+"&& CapCoPay != '-1' "//picks up all capitation fees
+				+whereProv
+				+" GROUP BY ProcDate "
+				+"ORDER BY ProcDate"; 
 			FormQuery2=new FormQuery();
 			FormQuery2.IsReport=true;
 			Queries.SubmitTemp(); //create TableTemp
@@ -345,7 +354,7 @@ Where Appointment.aptnum = Procedurelog.aptnum && Appointment.AptStatus = 1
 || Appointment.AptStatus=4 && FROM_DAYS(TO_DAYS(Appointment.AptDateTime)) <= '2003-05-12'    
 GROUP BY SchedDate
 */
-			Queries.CurReport=new Report();
+			Queries.CurReport=new ReportOld();
 			whereProv="&& (";
 			for(int i=0;i<listProv.SelectedIndices.Count;i++){
 				if(i>0){
@@ -356,10 +365,22 @@ GROUP BY SchedDate
 			}
 			whereProv+=")";
 			Queries.CurReport.Query= "SELECT FROM_DAYS(TO_DAYS(appointment.AptDateTime)) AS "//gets rid of time
-			  +"SchedDate,SUM(procedurelog.procfee) FROM appointment, procedurelog WHERE "
-        +"appointment.aptnum = procedurelog.aptnum && (appointment.AptStatus = 1 || "//stat=scheduled
+			  +"SchedDate,SUM(procedurelog.ProcFee) FROM appointment,procedurelog WHERE "
+        +"appointment.AptNum = procedurelog.AptNum && (appointment.AptStatus = 1 || "//stat=scheduled
         +"appointment.AptStatus = 4) "//or stat=ASAP
 				+"&& procedurelog.CapCoPay = '-1' "
+				+"&& FROM_DAYS(TO_DAYS(appointment.AptDateTime)) >= '"
+				+dateFrom.ToString("yyyy-MM-dd")+"' "
+				+"&& FROM_DAYS(TO_DAYS(appointment.AptDateTime)) <= '"
+				+dateTo.ToString("yyyy-MM-dd")+"' "
+				+whereProv
+				+" GROUP BY SchedDate"
+				//capitation:
+				+" UNION SELECT FROM_DAYS(TO_DAYS(appointment.AptDateTime)) AS "//gets rid of time
+			  +"SchedDate,SUM(procedurelog.CapCoPay) FROM appointment, procedurelog WHERE "
+        +"appointment.AptNum = procedurelog.AptNum && (appointment.AptStatus = 1 || "//stat=scheduled
+        +"appointment.AptStatus = 4) "//or stat=ASAP
+				+"&& procedurelog.CapCoPay != '-1' "
 				+"&& FROM_DAYS(TO_DAYS(appointment.AptDateTime)) >= '"
 				+dateFrom.ToString("yyyy-MM-dd")+"' "
 				+"&& FROM_DAYS(TO_DAYS(appointment.AptDateTime)) <= '"
@@ -382,7 +403,7 @@ claimproc.claimpaymentnum = claimpayment.claimpaymentnum
 && claimpayment.checkdate < '2003-08-12'
 group by claimpayment.checkdate order by procdate
 */
-			Queries.CurReport=new Report();
+			Queries.CurReport=new ReportOld();
 			whereProv="&& (";
 			for(int i=0;i<listProv.SelectedIndices.Count;i++){
 				if(i>0){
@@ -410,7 +431,7 @@ claimproc.claimpaymentnum = claimpayment.claimpaymentnum
 && claimpayment.checkdate < '2003-08-12'
 group by claimpayment.checkdate order by procdate
 */
-			Queries.CurReport=new Report();
+			Queries.CurReport=new ReportOld();
 			whereProv="&& (";
 			for(int i=0;i<listProv.SelectedIndices.Count;i++){
 				if(i>0){
@@ -441,7 +462,7 @@ FROM adjustment,patient,definition
 WHERE adjustment.adjtype=definition.defnum && patient.patnum=adjustment.patnum
 ORDER BY adjdate DESC
 */ 
-  		Queries.CurReport=new Report();
+  		Queries.CurReport=new ReportOld();
 			whereProv="&& (";
 			for(int i=0;i<listProv.SelectedIndices.Count;i++){
 				if(i>0){
@@ -466,8 +487,10 @@ ORDER BY adjdate DESC
 				Queries.TableQ.Columns.Add(new System.Data.DataColumn());//blank columns
 			}
 			Queries.CurReport.ColTotal=new double[Queries.TableQ.Columns.Count];
-			double ptincome;//just used below in the tablepay loop for patient payments
-			double insincome;//just used below in the tableIns loop for ins payments
+			double production;
+			double scheduled;
+			double ptincome;
+			double insincome;
 			double adjust;
 			DateTime[] dates=new DateTime[(dateTo-dateFrom).Days+1];
 			//MessageBox.Show(dates.Length.ToString());
@@ -479,65 +502,56 @@ ORDER BY adjdate DESC
 				DataRow row = Queries.TableQ.NewRow();
 				row[0]=dates[i].ToShortDateString();
 				row[1]=dates[i].DayOfWeek.ToString();
-				for(int j=0;j<TableCharge.Rows.Count;j++)  {
-				  if(dates[i]
-						//PIn.PDate(TableDate.Rows[i][0].ToString())
-						==(PIn.PDate(TableCharge.Rows[j][0].ToString()))){
-		 			  row[2]=PIn.PDouble(TableCharge.Rows[j][1].ToString()).ToString("F");
-						Queries.CurReport.ColTotal[2]+=PIn.PDouble(TableCharge.Rows[j][1].ToString());
-					}
-   			}
-        if (row[2].ToString().Equals(""))
-          row[2]="0.00";
-				for(int j=0; j<TableSched.Rows.Count; j++)  {
-				  if(dates[i]
-						//PIn.PDate(TableDate.Rows[i][0].ToString())
-						==(PIn.PDate(TableSched.Rows[j][0].ToString()))){
-			 	    row[3]=PIn.PDouble(TableSched.Rows[j][1].ToString()).ToString("F");
-						Queries.CurReport.ColTotal[3]+=PIn.PDouble(TableSched.Rows[j][1].ToString());
-					}
-   			}
-        if (row[3].ToString().Equals(""))
-          row[3]="0.00";
-				//INCOME AND ADJUSTMENTS:
-				ptincome=0;						// spk
+				production=0;
+				scheduled=0;
+				ptincome=0;//spk
 				insincome=0;
 				adjust=0;
+				for(int j=0;j<TableCharge.Rows.Count;j++)  {
+				  if(dates[i]==(PIn.PDate(TableCharge.Rows[j][0].ToString()))){
+		 			  production+=PIn.PDouble(TableCharge.Rows[j][1].ToString());
+					}
+   			}
+				for(int j=0; j<TableSched.Rows.Count; j++)  {
+				  if(dates[i]==(PIn.PDate(TableSched.Rows[j][0].ToString()))){
+			 	    scheduled+=PIn.PDouble(TableSched.Rows[j][1].ToString());
+					}
+   			}				
 				for(int j=0; j<TablePay.Rows.Count; j++){
-				  if(dates[i]
-						//PIn.PDate(TableDate.Rows[i][0].ToString())
-						==(PIn.PDate(TablePay.Rows[j][0].ToString()))){
+				  if(dates[i]==(PIn.PDate(TablePay.Rows[j][0].ToString()))){
 						ptincome+=PIn.PDouble(TablePay.Rows[j][1].ToString());
 					}																																						 
    			}
-				// new TableIns, SPK
-				for(int j=0; j<TableIns.Rows.Count; j++){
-					if(dates[i]
-						==(PIn.PDate(TableIns.Rows[j][0].ToString()))){
+				for(int j=0; j<TableIns.Rows.Count; j++){// new TableIns, SPK
+					if(dates[i]==(PIn.PDate(TableIns.Rows[j][0].ToString()))){
 						insincome+=PIn.PDouble(TableIns.Rows[j][1].ToString());
 					}																																						 
 				}
 				for(int j=0; j<TableAdj.Rows.Count; j++){
-				  if(dates[i]
-					//PIn.PDate(TableDate.Rows[i][0].ToString())
-						==(PIn.PDate(TableAdj.Rows[j][0].ToString()))){
+				  if(dates[i]==(PIn.PDate(TableAdj.Rows[j][0].ToString()))){
 						adjust+=PIn.PDouble(TableAdj.Rows[j][1].ToString());
-			 	    //row[5]=PIn.PDouble(TableAdj.Rows[j][1].ToString()).ToString("F");
-						//Queries.CurReport.ColTotal[5]+=PIn.PDouble(TableAdj.Rows[j][1].ToString());
 					}
    			}
+				row[2]=production.ToString("F");
+				row[3]=scheduled.ToString("F");
 				row[4]=ptincome.ToString("F");				// spk
 				row[5]=insincome.ToString("F");				// spk
 				row[6]=adjust.ToString("F");				// spk
+				Queries.CurReport.ColTotal[2]+=production;
+				Queries.CurReport.ColTotal[3]+=scheduled;
 				Queries.CurReport.ColTotal[4]+=ptincome;	// spk
 				Queries.CurReport.ColTotal[5]+=insincome;	// spk
 				Queries.CurReport.ColTotal[6]+=adjust;		// spk	
+				/*if (row[2].ToString().Equals(""))
+          row[2]="0.00";
+				if (row[3].ToString().Equals(""))
+          row[3]="0.00";
         if (row[4].ToString().Equals(""))
           row[4]="0.00";
 				if (row[5].ToString().Equals(""))
           row[5]="0.00";
 				if (row[6].ToString().Equals(""))
-          row[6]="0.00";
+          row[6]="0.00";*/
 				Queries.TableQ.Rows.Add(row);  //adds row to table Q
       }//end for row
 			//done filling now set up table

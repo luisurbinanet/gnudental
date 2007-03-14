@@ -9,6 +9,7 @@ using System.Drawing;
 using System.Drawing.Printing;
 using System.Reflection;
 using System.Windows.Forms;
+using OpenDental.UI;
 //using OpenDental.Reporting;
 
 namespace OpenDental.Reporting
@@ -16,15 +17,13 @@ namespace OpenDental.Reporting
 	///<summary></summary>
 	public class FormReport : System.Windows.Forms.Form{
 		private System.Windows.Forms.Panel panel1;
-		///<summary>Required designer variable.</summary>
-		private System.ComponentModel.Container components = null;
+		private System.ComponentModel.IContainer components;
 		private System.Windows.Forms.Button butClose;
 		private System.Windows.Forms.Button butPrint;
 		private System.Drawing.Printing.PrintDocument pd2;
-		private System.Windows.Forms.PrintPreviewControl printPreviewControl2;
 		private System.Windows.Forms.PrintDialog printDialog2;
 		///<summary>The report to display.</summary>
-		public ODReport Report;
+		public Report MyReport;
 		private System.Windows.Forms.Button butSetup;
 		private System.Windows.Forms.PageSetupDialog setupDialog2;
 		///<summary>The y position printed through so far in the current section.</summary>
@@ -36,6 +35,9 @@ namespace OpenDental.Reporting
 		private Section lastSectionPrinted;//this really only keeps track of whether the details section and the reportfooter have finished printing. This variable will be refined when groups are implemented.
 		private int rowsPrinted;
 		private int totalPages;
+		private OpenDental.UI.ODToolBar ToolBarMain;
+		private System.Windows.Forms.ImageList imageListMain;
+		private System.Windows.Forms.PrintPreviewControl printPreviewControl2;
 		private int pagesPrinted;
 
 		///<summary></summary>
@@ -64,19 +66,22 @@ namespace OpenDental.Reporting
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormReport));
 			this.butClose = new System.Windows.Forms.Button();
 			this.butPrint = new System.Windows.Forms.Button();
-			this.printPreviewControl2 = new System.Windows.Forms.PrintPreviewControl();
 			this.panel1 = new System.Windows.Forms.Panel();
+			this.button1 = new System.Windows.Forms.Button();
 			this.labelTotPages = new System.Windows.Forms.Label();
 			this.butBack = new OpenDental.XPButton();
 			this.butFwd = new OpenDental.XPButton();
-			this.button1 = new System.Windows.Forms.Button();
 			this.butSetup = new System.Windows.Forms.Button();
 			this.pd2 = new System.Drawing.Printing.PrintDocument();
 			this.printDialog2 = new System.Windows.Forms.PrintDialog();
 			this.setupDialog2 = new System.Windows.Forms.PageSetupDialog();
+			this.ToolBarMain = new OpenDental.UI.ODToolBar();
+			this.imageListMain = new System.Windows.Forms.ImageList(this.components);
+			this.printPreviewControl2 = new System.Windows.Forms.PrintPreviewControl();
 			this.panel1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -87,7 +92,6 @@ namespace OpenDental.Reporting
 			this.butClose.Name = "butClose";
 			this.butClose.TabIndex = 1;
 			this.butClose.Text = "&Close";
-			this.butClose.Click += new System.EventHandler(this.butClose_Click);
 			// 
 			// butPrint
 			// 
@@ -96,31 +100,30 @@ namespace OpenDental.Reporting
 			this.butPrint.Name = "butPrint";
 			this.butPrint.TabIndex = 2;
 			this.butPrint.Text = "&Print";
-			this.butPrint.Click += new System.EventHandler(this.butPrint_Click);
-			// 
-			// printPreviewControl2
-			// 
-			this.printPreviewControl2.AutoZoom = false;
-			this.printPreviewControl2.Location = new System.Drawing.Point(0, 0);
-			this.printPreviewControl2.Name = "printPreviewControl2";
-			this.printPreviewControl2.Size = new System.Drawing.Size(831, 570);
-			this.printPreviewControl2.TabIndex = 3;
-			this.printPreviewControl2.Zoom = 0.3;
 			// 
 			// panel1
 			// 
+			this.panel1.Controls.Add(this.button1);
 			this.panel1.Controls.Add(this.labelTotPages);
 			this.panel1.Controls.Add(this.butBack);
 			this.panel1.Controls.Add(this.butFwd);
-			this.panel1.Controls.Add(this.button1);
 			this.panel1.Controls.Add(this.butSetup);
 			this.panel1.Controls.Add(this.butPrint);
 			this.panel1.Controls.Add(this.butClose);
-			this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
-			this.panel1.Location = new System.Drawing.Point(0, 0);
+			this.panel1.Location = new System.Drawing.Point(-1, 178);
 			this.panel1.Name = "panel1";
 			this.panel1.Size = new System.Drawing.Size(831, 35);
 			this.panel1.TabIndex = 4;
+			this.panel1.Visible = false;
+			// 
+			// button1
+			// 
+			this.button1.Location = new System.Drawing.Point(501, 8);
+			this.button1.Name = "button1";
+			this.button1.TabIndex = 4;
+			this.button1.Text = "Test";
+			this.button1.Visible = false;
+			this.button1.Click += new System.EventHandler(this.button1_Click);
 			// 
 			// labelTotPages
 			// 
@@ -142,7 +145,6 @@ namespace OpenDental.Reporting
 			this.butBack.Name = "butBack";
 			this.butBack.Size = new System.Drawing.Size(18, 23);
 			this.butBack.TabIndex = 20;
-			this.butBack.Click += new System.EventHandler(this.butBack_Click);
 			// 
 			// butFwd
 			// 
@@ -154,16 +156,6 @@ namespace OpenDental.Reporting
 			this.butFwd.Name = "butFwd";
 			this.butFwd.Size = new System.Drawing.Size(18, 23);
 			this.butFwd.TabIndex = 21;
-			this.butFwd.Click += new System.EventHandler(this.butFwd_Click);
-			// 
-			// button1
-			// 
-			this.button1.Location = new System.Drawing.Point(506, 2);
-			this.button1.Name = "button1";
-			this.button1.TabIndex = 4;
-			this.button1.Text = "Test";
-			this.button1.Visible = false;
-			this.button1.Click += new System.EventHandler(this.button1_Click);
 			// 
 			// butSetup
 			// 
@@ -174,10 +166,37 @@ namespace OpenDental.Reporting
 			this.butSetup.Visible = false;
 			this.butSetup.Click += new System.EventHandler(this.butSetup_Click);
 			// 
+			// ToolBarMain
+			// 
+			this.ToolBarMain.Dock = System.Windows.Forms.DockStyle.Top;
+			this.ToolBarMain.ImageList = this.imageListMain;
+			this.ToolBarMain.Location = new System.Drawing.Point(0, 0);
+			this.ToolBarMain.Name = "ToolBarMain";
+			this.ToolBarMain.Size = new System.Drawing.Size(831, 29);
+			this.ToolBarMain.TabIndex = 5;
+			this.ToolBarMain.ButtonClick += new OpenDental.UI.ODToolBarButtonClickEventHandler(this.ToolBarMain_ButtonClick);
+			// 
+			// imageListMain
+			// 
+			this.imageListMain.ImageSize = new System.Drawing.Size(22, 22);
+			this.imageListMain.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListMain.ImageStream")));
+			this.imageListMain.TransparentColor = System.Drawing.Color.Transparent;
+			// 
+			// printPreviewControl2
+			// 
+			this.printPreviewControl2.AutoZoom = false;
+			this.printPreviewControl2.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.printPreviewControl2.Location = new System.Drawing.Point(0, 0);
+			this.printPreviewControl2.Name = "printPreviewControl2";
+			this.printPreviewControl2.Size = new System.Drawing.Size(831, 570);
+			this.printPreviewControl2.TabIndex = 6;
+			this.printPreviewControl2.Zoom = 0.3;
+			// 
 			// FormReport
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(831, 570);
+			this.Controls.Add(this.ToolBarMain);
 			this.Controls.Add(this.panel1);
 			this.Controls.Add(this.printPreviewControl2);
 			this.Name = "FormReport";
@@ -193,9 +212,10 @@ namespace OpenDental.Reporting
 		#endregion
 
 		private void FormReport_Load(object sender, System.EventArgs e) {
+			LayoutToolBar();
 			ResetPd2();
-			labelTotPages.Text=Lan.g(this,"/ "+totalPages.ToString());
-			if(Report.IsLandscape){
+			labelTotPages.Text="/ "+totalPages.ToString();
+			if(MyReport.IsLandscape){
 				printPreviewControl2.Zoom=((double)printPreviewControl2.ClientSize.Height
 					/(double)pd2.DefaultPageSettings.PaperSize.Width);
 			}
@@ -204,6 +224,21 @@ namespace OpenDental.Reporting
 					/(double)pd2.DefaultPageSettings.PaperSize.Height);
 			}
 			printPreviewControl2.Document=pd2;
+		}
+
+		///<summary>Causes the toolbar to be laid out again.</summary>
+		public void LayoutToolBar(){
+			ToolBarMain.Buttons.Clear();
+			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Print"),0,"","Print"));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(ToolBarButtonStyle.Separator));
+			ToolBarMain.Buttons.Add(new ODToolBarButton("",1,"Go Back One Page","Back"));
+			ODToolBarButton button=new ODToolBarButton("",-1,"","PageNum");
+			//button.Enabled=false;//this doesn't work because text is too light.
+			ToolBarMain.Buttons.Add(button);
+			ToolBarMain.Buttons.Add(new ODToolBarButton("",2,"Go Forward One Page","Fwd"));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(ToolBarButtonStyle.Separator));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Close"),-1,"Close This Window","Close"));
+			//ToolBarMain.Invalidate();
 		}
 
 		private void FormReport_Layout(object sender, System.Windows.Forms.LayoutEventArgs e) {
@@ -218,11 +253,30 @@ namespace OpenDental.Reporting
 			lastSectionPrinted=null;
 			rowsPrinted=0;
 			pagesPrinted=0;
-			if(Report.IsLandscape){
+			if(MyReport.IsLandscape){
 				pd2.DefaultPageSettings.Landscape=true;
 			}
 			pd2.DefaultPageSettings.Margins=new Margins(0,0,0,0);
 			pd2.OriginAtMargins=true;//the actual margins are taken into consideration in the printpage event, and if the user specifies 0,0 for margins, then the report will reliably print on a preprinted form. Origin is ALWAYS the corner of the paper.
+		}
+
+		private void ToolBarMain_ButtonClick(object sender, OpenDental.UI.ODToolBarButtonClickEventArgs e) {
+			//MessageBox.Show(e.Button.Tag.ToString());
+			switch(e.Button.Tag.ToString()){
+					
+				case "Print":
+					OnPrint_Click();
+					break;
+				case "Back":
+					OnBack_Click();
+					break;
+				case "Fwd":
+					OnFwd_Click();
+					break;
+				case "Close":
+					OnClose_Click();
+					break;
+				}
 		}
 
 		///<summary></summary>
@@ -252,18 +306,18 @@ namespace OpenDental.Reporting
 			//All reportObjects are then placed relative to this origin.
 			Margins currentMargins=null;
 			Size paperSize;
-			if(Report.IsLandscape)
+			if(MyReport.IsLandscape)
 				paperSize=new Size(1100,850);
 			else
 				paperSize=new Size(850,1100);
-			if(Report.ReportMargins==null){
-				if(Report.IsLandscape)
+			if(MyReport.ReportMargins==null){
+				if(MyReport.IsLandscape)
 					currentMargins=new Margins(50,0,30,30);
 				else
 					currentMargins=new Margins(30,0,50,50);
 			}
 			else{
-				currentMargins=Report.ReportMargins;
+				currentMargins=MyReport.ReportMargins;
 			}
 			int xPos=currentMargins.Left;
 			int yPos=currentMargins.Top;
@@ -275,62 +329,62 @@ namespace OpenDental.Reporting
 			while(true){//will break out if no more room on page
 				//if no sections have been printed yet, print a report header.
 				if(lastSectionPrinted==null){
-					section=Report.Sections.GetOfKind(AreaSectionKind.ReportHeader);
+					section=MyReport.Sections["Report Header"];
 					PrintSection(grfx,section,xPos,yPos);
 					lastSectionPrinted=section;
 					yPos+=section.Height;
 					if(section.Height>printableHeight){//this can happen if the reportHeader takes up the full page
 						//if there are no other sections to print
-						if(Report.ReportTable==null){
+						if(MyReport.ReportTable==null){
 							//this will keep the second page from printing:
-							lastSectionPrinted=Report.Sections.GetOfKind(AreaSectionKind.ReportFooter);
+							lastSectionPrinted=MyReport.Sections["Report Footer"];
 						}
 						break;
 					}
 				}
 				//If the size of pageheader+one detail+pagefooter is taller than page, then we might later display an error. But for now, they will all still be laid out, and whatever goes off the bottom edge will just not show.  This will not be an issue for normal reports:
-				if(Report.Sections.GetOfKind(AreaSectionKind.PageHeader).Height
-					+Report.Sections.GetOfKind(AreaSectionKind.Detail).Height
-					+Report.Sections.GetOfKind(AreaSectionKind.PageFooter).Height
+				if(MyReport.Sections["Page Header"].Height
+					+MyReport.Sections["Detail"].Height
+					+MyReport.Sections["Page Footer"].Height
 					>printableHeight){
 					//nothing for now.
 				}
 				//If this is first page and not enough room to print reportheader+pageheader+detail+pagefooter.
 				if(pagesPrinted==0
-					&& Report.Sections.GetOfKind(AreaSectionKind.ReportHeader).Height
-					+Report.Sections.GetOfKind(AreaSectionKind.PageHeader).Height
-					+Report.Sections.GetOfKind(AreaSectionKind.Detail).Height
-					+Report.Sections.GetOfKind(AreaSectionKind.PageFooter).Height
+					&& MyReport.Sections["Report Header"].Height
+					+MyReport.Sections["Page Header"].Height
+					+MyReport.Sections["Detail"].Height
+					+MyReport.Sections["Page Footer"].Height
 					>printableHeight)
 				{
 					break;
 				}
 				//always print a page header
-				section=Report.Sections.GetOfKind(AreaSectionKind.PageHeader);
+				section=MyReport.Sections["Page Header"];
 				PrintSection(grfx,section,xPos,yPos);
 				yPos+=section.Height;
 				//calculate if there is room for all elements including the reportfooter on this page.
 				int rowsRemaining=0;
-				if(Report.ReportTable!=null){
-					rowsRemaining=Report.ReportTable.Rows.Count-rowsPrinted;
+				if(MyReport.ReportTable!=null){
+					rowsRemaining=MyReport.ReportTable.Rows.Count-rowsPrinted;
 				}
-				int totalDetailsHeight=rowsRemaining*Report.Sections.GetOfKind(AreaSectionKind.Detail).Height;
+				int totalDetailsHeight=rowsRemaining*MyReport.Sections["Detail"].Height;
 				bool isRoomForReportFooter=true;
 				if(yLimit-yPos
-					-Report.Sections.GetOfKind(AreaSectionKind.ReportFooter).Height
-					-Report.Sections.GetOfKind(AreaSectionKind.PageFooter).Height
+					-MyReport.Sections["Report Footer"].Height
+					-MyReport.Sections["Page Footer"].Height
 					-totalDetailsHeight < 0){
 					isRoomForReportFooter=false;
 				}
 				//calculate how many rows of detail to print
 				int rowsToPrint=rowsRemaining;
-				section=Report.Sections.GetOfKind(AreaSectionKind.Detail);
+				section=MyReport.Sections["Detail"];
 				if(!isRoomForReportFooter){
 					int actualDetailsHeight=yLimit-yPos
-						-Report.Sections.GetOfKind(AreaSectionKind.ReportFooter).Height
-						-Report.Sections.GetOfKind(AreaSectionKind.PageFooter).Height;
+						-MyReport.Sections["Report Footer"].Height
+						-MyReport.Sections["Page Footer"].Height;
 					rowsToPrint=(int)(actualDetailsHeight
-						/Report.Sections.GetOfKind(AreaSectionKind.Detail).Height);
+						/MyReport.Sections["Detail"].Height);
 					if(rowsToPrint<1)
 						rowsToPrint=1;//Always print at least one row.
 				}
@@ -341,13 +395,13 @@ namespace OpenDental.Reporting
 				yPos+=section.Height*rowsToPrint;
 				//print the reportfooter section if there is room
 				if(isRoomForReportFooter){
-					section=Report.Sections.GetOfKind(AreaSectionKind.ReportFooter);
+					section=MyReport.Sections["Report Footer"];
 					PrintSection(grfx,section,xPos,yPos);
 					lastSectionPrinted=section;//mark the reportfooter as printed.  This will prevent another loop.
 					yPos+=section.Height;
 				}
 				//print the pagefooter
-				section=Report.Sections.GetOfKind(AreaSectionKind.PageFooter);
+				section=MyReport.Sections["Page Footer"];
 				if(isRoomForReportFooter){
 					//for the last page, this moves the pagefooter to the bottom of the page.
 					yPos=yLimit-section.Height;
@@ -358,10 +412,12 @@ namespace OpenDental.Reporting
 			}//while			
 			pagesPrinted++;
 			//if the reportfooter has been printed, then there are no more pages.
-			if(lastSectionPrinted==Report.Sections.GetOfKind(AreaSectionKind.ReportFooter)){
+			if(lastSectionPrinted==MyReport.Sections["Report Footer"]){
 				ev.HasMorePages=false;
 				totalPages=pagesPrinted;
-				labelTotPages.Text="1 / "+totalPages.ToString();
+				ToolBarMain.Buttons["PageNum"].Text="1 / "+totalPages.ToString();
+				ToolBarMain.Invalidate();
+				//labelTotPages.Text="1 / "+totalPages.ToString();
 			}
 			else{
 				ev.HasMorePages=true;
@@ -374,47 +430,45 @@ namespace OpenDental.Reporting
 		/// <param name="xPos">The xPos of this section.</param>
 		/// <param name="yPos">The yPos of this section.</param>
 		private void PrintSection(Graphics g,Section section,int xPos,int yPos){
-			TextObject textObject;
-			FieldObject fieldObject;
+			ReportObject textObject;
+			ReportObject fieldObject;
 			//LineObject lineObject;
 			//BoxObject boxObject;
 			StringFormat strFormat;//used each time text is drawn to handle alignment issues
 			//string rawText="";//the raw text for a given field as taken from the database
 			string displayText="";//The formatted text to print
-			foreach(ReportObject reportObject in Report.ReportObjects){
+			foreach(ReportObject reportObject in MyReport.ReportObjects){
 				//todo later: check for lines and boxes that span multiple sections.
-				if(reportObject.SectionIndex!=Report.Sections.IndexOf(section)){
+				if(reportObject.SectionName!=section.Name){
 					continue;
 				}
-				if(reportObject.GetType()==typeof(TextObject)){
-					textObject=(TextObject)reportObject;
+				if(reportObject.ObjectKind==ReportObjectKind.TextObject){
+					textObject=reportObject;
 					strFormat=ReportObject.GetStringFormat(textObject.TextAlign);
 					RectangleF layoutRect=new RectangleF(xPos+textObject.Location.X
 						,yPos+textObject.Location.Y
 						,textObject.Size.Width,textObject.Size.Height);
-					g.DrawString(textObject.Text,textObject.Font,Brushes.Black,layoutRect,strFormat);
+					g.DrawString(textObject.StaticText,textObject.Font,Brushes.Black,layoutRect,strFormat);
 				}
-				else if(reportObject.GetType()==typeof(FieldObject)){
-					fieldObject=(FieldObject)reportObject;
+				else if(reportObject.ObjectKind==ReportObjectKind.FieldObject){
+					fieldObject=reportObject;
 					strFormat=ReportObject.GetStringFormat(fieldObject.TextAlign);
 					RectangleF layoutRect=new RectangleF(xPos+fieldObject.Location.X
 						,yPos+fieldObject.Location.Y
 						,fieldObject.Size.Width,fieldObject.Size.Height);
 					displayText="";
-					if(fieldObject.DataSource.Kind==FieldKind.SummaryField){
-						displayText=((SummaryFieldDefinition)fieldObject.DataSource)
-							.GetValue(Report.ReportTable,Report.DataFields.IndexOf
-							(((SummaryFieldDefinition)fieldObject.DataSource).SummarizedField.Name))
+					if(fieldObject.FieldKind==FieldDefKind.SummaryField){
+						displayText=fieldObject.GetSummaryValue
+							(MyReport.ReportTable,MyReport.DataFields.IndexOf
+							(fieldObject.SummarizedField))
 							.ToString(fieldObject.FormatString);
 					}
-					else if(fieldObject.DataSource.Kind==FieldKind.SpecialVarField){
-						if(((SpecialVarFieldDefinition)fieldObject.DataSource).SpecialVarType
-							==SpecialVarType.PageNofM){//not functional yet
+					else if(fieldObject.FieldKind==FieldDefKind.SpecialField){
+						if(fieldObject.SpecialType==SpecialFieldType.PageNofM){//not functional yet
 							//displayText=Lan.g(this,"Page")+" "+(pagesPrinted+1).ToString()
 							//	+Lan.g(
 						}
-						else if(((SpecialVarFieldDefinition)fieldObject.DataSource).SpecialVarType
-							==SpecialVarType.PageNumber){
+						else if(fieldObject.SpecialType==SpecialFieldType.PageNumber){
 							displayText=Lan.g(this,"Page")+" "+(pagesPrinted+1).ToString();
 						}
 					}
@@ -435,8 +489,8 @@ namespace OpenDental.Reporting
 		/// <param name="yPos">The yPos of this section.</param>
 		/// <param name="rowsToPrint">The number of rows to print.</param>
 		private void PrintDetailsSection(Graphics g,Section section,int xPos,int yPos,int rowsToPrint){
-			TextObject textObject;
-			FieldObject fieldObject;
+			ReportObject textObject;
+			ReportObject fieldObject;
 			//LineObject lineObject;
 			//BoxObject boxObject;
 			StringFormat strFormat;//used each time text is drawn to handle alignment issues
@@ -444,61 +498,61 @@ namespace OpenDental.Reporting
 			string displayText="";//The formatted text to print
 			//loop through each row in the table
 			for(int i=rowsPrinted;i<rowsPrinted+rowsToPrint;i++){
-				foreach(ReportObject reportObject in Report.ReportObjects){
+				foreach(ReportObject reportObject in MyReport.ReportObjects){
 					//todo later: check for lines and boxes that span multiple sections.
-					if(reportObject.SectionIndex!=Report.Sections.IndexOf(section)){
+					if(reportObject.SectionName!=section.Name){
 						//skip any reportObjects that are not in this section
 						continue;
 					}
-					if(reportObject.GetType()==typeof(TextObject)){
+					if(reportObject.ObjectKind==ReportObjectKind.TextObject){
 						//not typical to print textobject in details section, but allowed
-						textObject=(TextObject)reportObject;
+						textObject=reportObject;
 						strFormat=ReportObject.GetStringFormat(textObject.TextAlign);
 						RectangleF layoutRect=new RectangleF(xPos+textObject.Location.X
 							,yPos+textObject.Location.Y
 							,textObject.Size.Width,textObject.Size.Height);
-						g.DrawString(textObject.Text,textObject.Font
-							,new SolidBrush(textObject.TextColor),layoutRect,strFormat);
+						g.DrawString(textObject.StaticText,textObject.Font
+							,new SolidBrush(textObject.ForeColor),layoutRect,strFormat);
 					}
-					else if(reportObject.GetType()==typeof(FieldObject)){
-						fieldObject=(FieldObject)reportObject;
+					else if(reportObject.ObjectKind==ReportObjectKind.FieldObject){
+						fieldObject=reportObject;
 						strFormat=ReportObject.GetStringFormat(fieldObject.TextAlign);
 						RectangleF layoutRect=new RectangleF(xPos+fieldObject.Location.X,yPos+fieldObject.Location.Y,fieldObject.Size.Width,fieldObject.Size.Height);
-						if(fieldObject.DataSource.Kind==FieldKind.DataTableField){
-							rawText=Report.ReportTable.Rows
-								[i][Report.DataFields.IndexOf(fieldObject.DataSource.Name)].ToString();
+						if(fieldObject.FieldKind==FieldDefKind.DataTableField){
+							rawText=MyReport.ReportTable.Rows
+								[i][MyReport.DataFields.IndexOf(fieldObject.DataField)].ToString();
 							displayText=rawText;
 							//suppress if duplicate:
-							if(i>0 && fieldObject.SuppressIfDuplicate && rawText==Report.ReportTable.Rows[i-1][Report.DataFields.IndexOf(fieldObject.DataSource.Name)].ToString()){
+							if(i>0 && fieldObject.SuppressIfDuplicate && rawText==MyReport.ReportTable.Rows[i-1][MyReport.DataFields.IndexOf(fieldObject.DataField)].ToString()){
 								displayText="";
 							}
-							else if(fieldObject.DataSource.ValueType==FieldValueType.BooleanField){
-								displayText=PIn.PBool(Report.ReportTable.Rows[i][Report.DataFields.IndexOf(fieldObject.DataSource.Name)].ToString()).ToString();//(fieldObject.FormatString);
+							else if(fieldObject.ValueType==FieldValueType.Boolean){
+								displayText=PIn.PBool(MyReport.ReportTable.Rows[i][MyReport.DataFields.IndexOf(fieldObject.DataField)].ToString()).ToString();//(fieldObject.FormatString);
 							}
-							else if(fieldObject.DataSource.ValueType==FieldValueType.DateTimeField){
-								displayText=PIn.PDateT(Report.ReportTable.Rows[i][Report.DataFields.IndexOf(fieldObject.DataSource.Name)].ToString()).ToString(fieldObject.FormatString);
+							else if(fieldObject.ValueType==FieldValueType.Date){
+								displayText=PIn.PDateT(MyReport.ReportTable.Rows[i][MyReport.DataFields.IndexOf(fieldObject.DataField)].ToString()).ToString(fieldObject.FormatString);
 							}
-							else if(fieldObject.DataSource.ValueType==FieldValueType.DoubleField){
-								displayText=PIn.PDouble(Report.ReportTable.Rows[i][Report.DataFields.IndexOf(fieldObject.DataSource.Name)].ToString()).ToString(fieldObject.FormatString);
+							else if(fieldObject.ValueType==FieldValueType.Number){
+								displayText=PIn.PDouble(MyReport.ReportTable.Rows[i][MyReport.DataFields.IndexOf(fieldObject.DataField)].ToString()).ToString(fieldObject.FormatString);
 							}
-							else if(fieldObject.DataSource.ValueType==FieldValueType.IntField){
-								displayText=PIn.PInt(Report.ReportTable.Rows[i][Report.DataFields.IndexOf(fieldObject.DataSource.Name)].ToString()).ToString(fieldObject.FormatString);
+							else if(fieldObject.ValueType==FieldValueType.Integer){
+								displayText=PIn.PInt(MyReport.ReportTable.Rows[i][MyReport.DataFields.IndexOf(fieldObject.DataField)].ToString()).ToString(fieldObject.FormatString);
 							}
-							else if(fieldObject.DataSource.ValueType==FieldValueType.StringField){
+							else if(fieldObject.ValueType==FieldValueType.String){
 								displayText=rawText;
 							}
 						}
-						else if(fieldObject.DataSource.Kind==FieldKind.FormulaField){
+						else if(fieldObject.FieldKind==FieldDefKind.FormulaField){
 							//can't do formulas yet
 						}
-						else if(fieldObject.DataSource.Kind==FieldKind.SpecialVarField){
+						else if(fieldObject.FieldKind==FieldDefKind.SpecialField){
 							
 						}
-						else if(fieldObject.DataSource.Kind==FieldKind.SummaryField){
+						else if(fieldObject.FieldKind==FieldDefKind.SummaryField){
 							
 						}
 						g.DrawString(displayText,fieldObject.Font
-							,new SolidBrush(fieldObject.TextColor),layoutRect,strFormat);
+							,new SolidBrush(fieldObject.ForeColor),layoutRect,strFormat);
 					}
 					//todo: else if lines
 					//todo: else if boxes.
@@ -517,12 +571,12 @@ namespace OpenDental.Reporting
 			setupDialog2.ShowDialog();
 		}
 
-		private void butPrint_Click(object sender, System.EventArgs e) {
+		private void OnPrint_Click() {
 			ResetPd2();
 			PrintReport();
 		}
 
-		private void butClose_Click(object sender, System.EventArgs e) {
+		private void OnClose_Click() {
 			this.Close();
 		}
 
@@ -568,19 +622,24 @@ namespace OpenDental.Reporting
 
 		}
 
-		private void butBack_Click(object sender, System.EventArgs e){
+		private void OnBack_Click(){
 			if(printPreviewControl2.StartPage==0) return;
 			printPreviewControl2.StartPage--;
-			labelTotPages.Text=(printPreviewControl2.StartPage+1).ToString()
+			ToolBarMain.Buttons["PageNum"].Text=(printPreviewControl2.StartPage+1).ToString()
 				+" / "+totalPages.ToString();
+			ToolBarMain.Invalidate();
+			//labelTotPages.Text=
 		}
 
-		private void butFwd_Click(object sender, System.EventArgs e){
+		private void OnFwd_Click(){
 			if(printPreviewControl2.StartPage==totalPages-1) return;
 			printPreviewControl2.StartPage++;
-			labelTotPages.Text=(printPreviewControl2.StartPage+1).ToString()
+			ToolBarMain.Buttons["PageNum"].Text=(printPreviewControl2.StartPage+1).ToString()
 				+" / "+totalPages.ToString();
+			ToolBarMain.Invalidate();
 		}
+
+		
 
 		
 

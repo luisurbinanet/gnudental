@@ -140,7 +140,7 @@ namespace OpenDental{
 			for(int i=0;i<InsPlans.List.Length;i++){
 				tbPlans.Cell[0,i]=(i+1).ToString();
 				tbPlans.Cell[1,i]=Patients.GetNameInFamLF(InsPlans.List[i].Subscriber);
-				tbPlans.Cell[2,i]=InsPlans.List[i].Carrier;
+				tbPlans.Cell[2,i]=Carriers.GetName(InsPlans.List[i].CarrierNum);
 				if(InsPlans.List[i].DateEffective.Year < 1870)
 					tbPlans.Cell[3,i]="";
 				else
@@ -158,6 +158,13 @@ namespace OpenDental{
 		}
 
     private void tbPlans_CellDoubleClicked(object sender, CellEventArgs e){
+			if(ViewRelat && listRelat.SelectedIndex==-1){
+				MessageBox.Show(Lan.g(this,"Please select a relationship first."));
+				return;
+			}
+			if(ViewRelat){
+				PatRelat=(Relat)listRelat.SelectedIndex;
+			}
 			InsPlans.Cur=InsPlans.List[e.Row];
       DialogResult=DialogResult.OK;
 		}
@@ -171,10 +178,10 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please select a relationship first."));
 				return;
 			}
-			InsPlans.Cur=InsPlans.List[tbPlans.SelectedRow];
 			if(ViewRelat){
 				PatRelat=(Relat)listRelat.SelectedIndex;
 			}
+			InsPlans.Cur=InsPlans.List[tbPlans.SelectedRow];
       DialogResult=DialogResult.OK;		
 		}
 

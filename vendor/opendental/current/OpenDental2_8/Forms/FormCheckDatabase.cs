@@ -25,6 +25,7 @@ namespace OpenDental
 		private System.ComponentModel.Container components = null;
 		private System.Windows.Forms.CheckBox checkCorrupt;
 		private System.Drawing.Printing.PrintDocument pd2;
+		private System.Windows.Forms.CheckBox checkCodes;
 		//private Queries Queries2;
 		private string logData;
 
@@ -70,6 +71,7 @@ namespace OpenDental
 			this.buttonCheck = new System.Windows.Forms.Button();
 			this.checkCorrupt = new System.Windows.Forms.CheckBox();
 			this.pd2 = new System.Drawing.Printing.PrintDocument();
+			this.checkCodes = new System.Windows.Forms.CheckBox();
 			this.SuspendLayout();
 			// 
 			// butClose
@@ -134,11 +136,22 @@ namespace OpenDental
 			this.checkCorrupt.Checked = true;
 			this.checkCorrupt.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.checkCorrupt.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkCorrupt.Location = new System.Drawing.Point(30, 134);
+			this.checkCorrupt.Location = new System.Drawing.Point(30, 174);
 			this.checkCorrupt.Name = "checkCorrupt";
 			this.checkCorrupt.Size = new System.Drawing.Size(709, 24);
 			this.checkCorrupt.TabIndex = 6;
 			this.checkCorrupt.Text = "Check all tables for file or index corruption.";
+			// 
+			// checkCodes
+			// 
+			this.checkCodes.Checked = true;
+			this.checkCodes.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.checkCodes.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkCodes.Location = new System.Drawing.Point(30, 136);
+			this.checkCodes.Name = "checkCodes";
+			this.checkCodes.Size = new System.Drawing.Size(709, 24);
+			this.checkCodes.TabIndex = 7;
+			this.checkCodes.Text = "Add any missing procedure codes.";
 			// 
 			// FormCheckDatabase
 			// 
@@ -146,6 +159,7 @@ namespace OpenDental
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butClose;
 			this.ClientSize = new System.Drawing.Size(763, 371);
+			this.Controls.Add(this.checkCodes);
 			this.Controls.Add(this.checkCorrupt);
 			this.Controls.Add(this.buttonCheck);
 			this.Controls.Add(this.checkInvalidTooth);
@@ -170,7 +184,7 @@ namespace OpenDental
 
 		private void FormCheckDatabase_Load(object sender, System.EventArgs e) {
 			//Queries2=new Queries();
-			Queries.CurReport=new Report();
+			Queries.CurReport=new ReportOld();
 		}
 
 		private void buttonCheck_Click(object sender, System.EventArgs e) {
@@ -179,6 +193,9 @@ namespace OpenDental
 			}
 			if(checkInvalidTooth.Checked){
 				VerifyToothNums();
+			}
+			if(checkCodes.Checked){
+				AddCodes();
 			}
 			if(checkCorrupt.Checked){
 				VerifyTables();
@@ -258,6 +275,30 @@ namespace OpenDental
 			Queries.CurReport.Query="UPDATE procedurelog SET toothnum = '"
 				+newToothNum+"' WHERE procnum = '"+procNum+"'";
 			Queries.SubmitNonQ();
+		}
+
+		private void AddCodes(){
+			Conversions.SelectText=@"SELECT DISTINCT procedurelog.ADACode
+				FROM procedurelog
+				LEFT JOIN procedurecode ON procedurelog.ADACode=procedurecode.ADACode
+				WHERE procedurecode.ADACode IS NULL";
+			Conversions.SubmitSelect();
+			string myADA;
+			for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
+				myADA=PIn.PString(Conversions.TableQ.Rows[i][0].ToString());
+				ProcedureCodes.Cur=new ProcedureCode();
+				ProcedureCodes.Cur.ADACode=myADA;
+				ProcedureCodes.Cur.Descript=myADA;
+				ProcedureCodes.Cur.AbbrDesc=myADA;
+				ProcedureCodes.Cur.ProcTime="/X/";
+				ProcedureCodes.Cur.ProcCat=Defs.Short[(int)DefCat.ProcCodeCats][0].DefNum;
+				ProcedureCodes.Cur.TreatArea=TreatmentArea.Mouth;
+				ProcedureCodes.InsertCur();
+			}
+			MessageBox.Show("Codes added: "+Conversions.TableQ.Rows.Count.ToString());
+			DataValid.IType=InvalidType.LocalData;
+			DataValid DataValid2=new DataValid();
+			DataValid2.SetInvalid();
 		}
 
 		private void VerifyTables(){

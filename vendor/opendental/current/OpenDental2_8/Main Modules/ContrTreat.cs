@@ -13,6 +13,8 @@ using System.Drawing.Design;
 using System.Drawing.Imaging;
 using System.Drawing.Text;
 using System.Drawing.Printing;
+using OpenDental.UI;
+
 namespace OpenDental{
 ///<summary></summary>
 	public class ContrTreat : System.Windows.Forms.UserControl{
@@ -20,9 +22,8 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label label4;
-		private System.Windows.Forms.Button butPat;
 		private OpenDental.TableTP tbMain;
-		private System.ComponentModel.Container components=null;// Required designer variable.
+		private System.ComponentModel.IContainer components;// Required designer variable.
 		private ArrayList arrayLProc;
 		private System.Windows.Forms.ListBox listSetPr;
 		///<summary></summary>
@@ -37,7 +38,6 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label7;
 		private System.Windows.Forms.Label label8;
 		private System.Windows.Forms.Label label9;
-		private System.Windows.Forms.Button butUpdateFees;
 		private System.Windows.Forms.Panel panelSide;
 		private System.Windows.Forms.ListBox listViewPr;
 		private System.Windows.Forms.Button butSelectAll;
@@ -45,7 +45,6 @@ namespace OpenDental{
 		private System.Windows.Forms.Button button1;
 		private bool[] selectedPrs;//had to use this because of deficiency in available Listbox events.
 		private bool showHidden;
-		private System.Windows.Forms.Button butPrint;
 		private System.Windows.Forms.Label label10;
 		private System.Windows.Forms.Label label11;
 		private System.Windows.Forms.Label label12;
@@ -92,7 +91,8 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textNote;
 		private System.Windows.Forms.Label label19;
 		private System.Windows.Forms.TextBox textToday;
-		private System.Windows.Forms.Button butPreAuth;
+		private System.Windows.Forms.ImageList imageListMain;
+		private OpenDental.UI.ODToolBar ToolBarMain;
     private ArrayList ALPreAuth;  
 
 		///<summary></summary>
@@ -118,13 +118,12 @@ namespace OpenDental{
 		#region Component Designer generated code
 
 		private void InitializeComponent(){
+			this.components = new System.ComponentModel.Container();
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(ContrTreat));
 			this.label1 = new System.Windows.Forms.Label();
 			this.listSetPr = new System.Windows.Forms.ListBox();
 			this.label2 = new System.Windows.Forms.Label();
-			this.butUpdateFees = new System.Windows.Forms.Button();
 			this.label4 = new System.Windows.Forms.Label();
-			this.butPat = new System.Windows.Forms.Button();
 			this.tbMain = new OpenDental.TableTP();
 			this.label5 = new System.Windows.Forms.Label();
 			this.textFee = new System.Windows.Forms.TextBox();
@@ -141,7 +140,6 @@ namespace OpenDental{
 			this.butSelectNone = new System.Windows.Forms.Button();
 			this.butSelectAll = new System.Windows.Forms.Button();
 			this.listViewPr = new System.Windows.Forms.ListBox();
-			this.butPrint = new System.Windows.Forms.Button();
 			this.label10 = new System.Windows.Forms.Label();
 			this.label11 = new System.Windows.Forms.Label();
 			this.label12 = new System.Windows.Forms.Label();
@@ -169,7 +167,8 @@ namespace OpenDental{
 			this.textNote = new System.Windows.Forms.TextBox();
 			this.label19 = new System.Windows.Forms.Label();
 			this.textToday = new System.Windows.Forms.TextBox();
-			this.butPreAuth = new System.Windows.Forms.Button();
+			this.ToolBarMain = new OpenDental.UI.ODToolBar();
+			this.imageListMain = new System.Windows.Forms.ImageList(this.components);
 			this.panelSide.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -200,18 +199,6 @@ namespace OpenDental{
 			this.label2.TabIndex = 6;
 			this.label2.Text = "View";
 			// 
-			// butUpdateFees
-			// 
-			this.butUpdateFees.Image = ((System.Drawing.Image)(resources.GetObject("butUpdateFees.Image")));
-			this.butUpdateFees.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butUpdateFees.Location = new System.Drawing.Point(332, 4);
-			this.butUpdateFees.Name = "butUpdateFees";
-			this.butUpdateFees.Size = new System.Drawing.Size(113, 26);
-			this.butUpdateFees.TabIndex = 8;
-			this.butUpdateFees.Text = "Update Fees";
-			this.butUpdateFees.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.butUpdateFees.Click += new System.EventHandler(this.butUpdateFees_Click);
-			// 
 			// label4
 			// 
 			this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
@@ -221,22 +208,12 @@ namespace OpenDental{
 			this.label4.TabIndex = 15;
 			this.label4.Text = "Priorities";
 			// 
-			// butPat
-			// 
-			this.butPat.Image = ((System.Drawing.Image)(resources.GetObject("butPat.Image")));
-			this.butPat.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butPat.Location = new System.Drawing.Point(2, 2);
-			this.butPat.Name = "butPat";
-			this.butPat.Size = new System.Drawing.Size(106, 26);
-			this.butPat.TabIndex = 17;
-			this.butPat.Text = "        Select Patient";
-			this.butPat.Click += new System.EventHandler(this.butPat_Click);
-			// 
 			// tbMain
 			// 
 			this.tbMain.BackColor = System.Drawing.SystemColors.Window;
 			this.tbMain.Location = new System.Drawing.Point(2, 32);
 			this.tbMain.Name = "tbMain";
+			this.tbMain.ScrollValue = 1;
 			this.tbMain.SelectedIndices = new int[0];
 			this.tbMain.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
 			this.tbMain.Size = new System.Drawing.Size(679, 548);
@@ -351,7 +328,7 @@ namespace OpenDental{
 			this.panelSide.Controls.Add(this.label1);
 			this.panelSide.Controls.Add(this.label4);
 			this.panelSide.Controls.Add(this.label2);
-			this.panelSide.Location = new System.Drawing.Point(704, 36);
+			this.panelSide.Location = new System.Drawing.Point(704, 75);
 			this.panelSide.Name = "panelSide";
 			this.panelSide.Size = new System.Drawing.Size(190, 317);
 			this.panelSide.TabIndex = 29;
@@ -394,20 +371,9 @@ namespace OpenDental{
 			this.listViewPr.TabIndex = 16;
 			this.listViewPr.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listViewPr_MouseDown);
 			// 
-			// butPrint
-			// 
-			this.butPrint.Image = ((System.Drawing.Image)(resources.GetObject("butPrint.Image")));
-			this.butPrint.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butPrint.Location = new System.Drawing.Point(450, 4);
-			this.butPrint.Name = "butPrint";
-			this.butPrint.Size = new System.Drawing.Size(90, 26);
-			this.butPrint.TabIndex = 30;
-			this.butPrint.Text = "        Print TP";
-			this.butPrint.Click += new System.EventHandler(this.butPrint_Click);
-			// 
 			// label10
 			// 
-			this.label10.Location = new System.Drawing.Point(785, 393);
+			this.label10.Location = new System.Drawing.Point(788, 414);
 			this.label10.Name = "label10";
 			this.label10.Size = new System.Drawing.Size(60, 15);
 			this.label10.TabIndex = 31;
@@ -416,7 +382,7 @@ namespace OpenDental{
 			// 
 			// label11
 			// 
-			this.label11.Location = new System.Drawing.Point(705, 414);
+			this.label11.Location = new System.Drawing.Point(708, 435);
 			this.label11.Name = "label11";
 			this.label11.Size = new System.Drawing.Size(78, 15);
 			this.label11.TabIndex = 32;
@@ -425,7 +391,7 @@ namespace OpenDental{
 			// 
 			// label12
 			// 
-			this.label12.Location = new System.Drawing.Point(705, 435);
+			this.label12.Location = new System.Drawing.Point(708, 456);
 			this.label12.Name = "label12";
 			this.label12.Size = new System.Drawing.Size(79, 15);
 			this.label12.TabIndex = 33;
@@ -434,7 +400,7 @@ namespace OpenDental{
 			// 
 			// label13
 			// 
-			this.label13.Location = new System.Drawing.Point(705, 477);
+			this.label13.Location = new System.Drawing.Point(708, 498);
 			this.label13.Name = "label13";
 			this.label13.Size = new System.Drawing.Size(79, 13);
 			this.label13.TabIndex = 34;
@@ -443,7 +409,7 @@ namespace OpenDental{
 			// 
 			// label14
 			// 
-			this.label14.Location = new System.Drawing.Point(705, 515);
+			this.label14.Location = new System.Drawing.Point(708, 536);
 			this.label14.Name = "label14";
 			this.label14.Size = new System.Drawing.Size(79, 14);
 			this.label14.TabIndex = 35;
@@ -452,7 +418,7 @@ namespace OpenDental{
 			// 
 			// label15
 			// 
-			this.label15.Location = new System.Drawing.Point(705, 495);
+			this.label15.Location = new System.Drawing.Point(708, 516);
 			this.label15.Name = "label15";
 			this.label15.Size = new System.Drawing.Size(81, 14);
 			this.label15.TabIndex = 36;
@@ -461,7 +427,7 @@ namespace OpenDental{
 			// 
 			// label16
 			// 
-			this.label16.Location = new System.Drawing.Point(853, 393);
+			this.label16.Location = new System.Drawing.Point(856, 414);
 			this.label16.Name = "label16";
 			this.label16.Size = new System.Drawing.Size(60, 14);
 			this.label16.TabIndex = 37;
@@ -471,7 +437,7 @@ namespace OpenDental{
 			// textPriMax
 			// 
 			this.textPriMax.BackColor = System.Drawing.Color.White;
-			this.textPriMax.Location = new System.Drawing.Point(785, 412);
+			this.textPriMax.Location = new System.Drawing.Point(788, 433);
 			this.textPriMax.Name = "textPriMax";
 			this.textPriMax.ReadOnly = true;
 			this.textPriMax.Size = new System.Drawing.Size(60, 20);
@@ -482,7 +448,7 @@ namespace OpenDental{
 			// textSecUsed
 			// 
 			this.textSecUsed.BackColor = System.Drawing.Color.White;
-			this.textSecUsed.Location = new System.Drawing.Point(853, 472);
+			this.textSecUsed.Location = new System.Drawing.Point(856, 493);
 			this.textSecUsed.Name = "textSecUsed";
 			this.textSecUsed.ReadOnly = true;
 			this.textSecUsed.Size = new System.Drawing.Size(60, 20);
@@ -493,7 +459,7 @@ namespace OpenDental{
 			// textSecDed
 			// 
 			this.textSecDed.BackColor = System.Drawing.Color.White;
-			this.textSecDed.Location = new System.Drawing.Point(853, 432);
+			this.textSecDed.Location = new System.Drawing.Point(856, 453);
 			this.textSecDed.Name = "textSecDed";
 			this.textSecDed.ReadOnly = true;
 			this.textSecDed.Size = new System.Drawing.Size(60, 20);
@@ -504,7 +470,7 @@ namespace OpenDental{
 			// textSecMax
 			// 
 			this.textSecMax.BackColor = System.Drawing.Color.White;
-			this.textSecMax.Location = new System.Drawing.Point(853, 412);
+			this.textSecMax.Location = new System.Drawing.Point(856, 433);
 			this.textSecMax.Name = "textSecMax";
 			this.textSecMax.ReadOnly = true;
 			this.textSecMax.Size = new System.Drawing.Size(60, 20);
@@ -515,7 +481,7 @@ namespace OpenDental{
 			// textPriRem
 			// 
 			this.textPriRem.BackColor = System.Drawing.Color.White;
-			this.textPriRem.Location = new System.Drawing.Point(785, 512);
+			this.textPriRem.Location = new System.Drawing.Point(788, 533);
 			this.textPriRem.Name = "textPriRem";
 			this.textPriRem.ReadOnly = true;
 			this.textPriRem.Size = new System.Drawing.Size(60, 20);
@@ -526,7 +492,7 @@ namespace OpenDental{
 			// textPriPend
 			// 
 			this.textPriPend.BackColor = System.Drawing.Color.White;
-			this.textPriPend.Location = new System.Drawing.Point(785, 492);
+			this.textPriPend.Location = new System.Drawing.Point(788, 513);
 			this.textPriPend.Name = "textPriPend";
 			this.textPriPend.ReadOnly = true;
 			this.textPriPend.Size = new System.Drawing.Size(60, 20);
@@ -537,7 +503,7 @@ namespace OpenDental{
 			// textPriUsed
 			// 
 			this.textPriUsed.BackColor = System.Drawing.Color.White;
-			this.textPriUsed.Location = new System.Drawing.Point(785, 472);
+			this.textPriUsed.Location = new System.Drawing.Point(788, 493);
 			this.textPriUsed.Name = "textPriUsed";
 			this.textPriUsed.ReadOnly = true;
 			this.textPriUsed.Size = new System.Drawing.Size(60, 20);
@@ -548,7 +514,7 @@ namespace OpenDental{
 			// textPriDed
 			// 
 			this.textPriDed.BackColor = System.Drawing.Color.White;
-			this.textPriDed.Location = new System.Drawing.Point(785, 432);
+			this.textPriDed.Location = new System.Drawing.Point(788, 453);
 			this.textPriDed.Name = "textPriDed";
 			this.textPriDed.ReadOnly = true;
 			this.textPriDed.Size = new System.Drawing.Size(60, 20);
@@ -559,7 +525,7 @@ namespace OpenDental{
 			// textSecRem
 			// 
 			this.textSecRem.BackColor = System.Drawing.Color.White;
-			this.textSecRem.Location = new System.Drawing.Point(853, 512);
+			this.textSecRem.Location = new System.Drawing.Point(856, 533);
 			this.textSecRem.Name = "textSecRem";
 			this.textSecRem.ReadOnly = true;
 			this.textSecRem.Size = new System.Drawing.Size(60, 20);
@@ -570,7 +536,7 @@ namespace OpenDental{
 			// textSecPend
 			// 
 			this.textSecPend.BackColor = System.Drawing.Color.White;
-			this.textSecPend.Location = new System.Drawing.Point(853, 492);
+			this.textSecPend.Location = new System.Drawing.Point(856, 513);
 			this.textSecPend.Name = "textSecPend";
 			this.textSecPend.ReadOnly = true;
 			this.textSecPend.Size = new System.Drawing.Size(60, 20);
@@ -603,7 +569,7 @@ namespace OpenDental{
 			// textPriDedRem
 			// 
 			this.textPriDedRem.BackColor = System.Drawing.Color.White;
-			this.textPriDedRem.Location = new System.Drawing.Point(785, 452);
+			this.textPriDedRem.Location = new System.Drawing.Point(788, 473);
 			this.textPriDedRem.Name = "textPriDedRem";
 			this.textPriDedRem.ReadOnly = true;
 			this.textPriDedRem.Size = new System.Drawing.Size(60, 20);
@@ -613,7 +579,7 @@ namespace OpenDental{
 			// 
 			// label18
 			// 
-			this.label18.Location = new System.Drawing.Point(689, 456);
+			this.label18.Location = new System.Drawing.Point(692, 477);
 			this.label18.Name = "label18";
 			this.label18.Size = new System.Drawing.Size(96, 15);
 			this.label18.TabIndex = 50;
@@ -623,7 +589,7 @@ namespace OpenDental{
 			// textSecDedRem
 			// 
 			this.textSecDedRem.BackColor = System.Drawing.Color.White;
-			this.textSecDedRem.Location = new System.Drawing.Point(853, 452);
+			this.textSecDedRem.Location = new System.Drawing.Point(856, 473);
 			this.textSecDedRem.Name = "textSecDedRem";
 			this.textSecDedRem.ReadOnly = true;
 			this.textSecDedRem.Size = new System.Drawing.Size(60, 20);
@@ -633,7 +599,7 @@ namespace OpenDental{
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(799, 378);
+			this.label3.Location = new System.Drawing.Point(802, 399);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(100, 12);
 			this.label3.TabIndex = 53;
@@ -653,7 +619,7 @@ namespace OpenDental{
 			// 
 			// label19
 			// 
-			this.label19.Location = new System.Drawing.Point(699, 10);
+			this.label19.Location = new System.Drawing.Point(701, 45);
 			this.label19.Name = "label19";
 			this.label19.Size = new System.Drawing.Size(69, 15);
 			this.label19.TabIndex = 55;
@@ -663,26 +629,32 @@ namespace OpenDental{
 			// textToday
 			// 
 			this.textToday.BackColor = System.Drawing.Color.White;
-			this.textToday.Location = new System.Drawing.Point(771, 8);
+			this.textToday.Location = new System.Drawing.Point(773, 43);
 			this.textToday.Name = "textToday";
 			this.textToday.ReadOnly = true;
 			this.textToday.Size = new System.Drawing.Size(71, 20);
 			this.textToday.TabIndex = 56;
 			this.textToday.Text = "";
 			// 
-			// butPreAuth
+			// ToolBarMain
 			// 
-			this.butPreAuth.Enabled = false;
-			this.butPreAuth.Location = new System.Drawing.Point(189, 4);
-			this.butPreAuth.Name = "butPreAuth";
-			this.butPreAuth.Size = new System.Drawing.Size(139, 26);
-			this.butPreAuth.TabIndex = 57;
-			this.butPreAuth.Text = "PreAuthorization";
-			this.butPreAuth.Click += new System.EventHandler(this.butPreAuth_Click);
+			this.ToolBarMain.Dock = System.Windows.Forms.DockStyle.Top;
+			this.ToolBarMain.ImageList = this.imageListMain;
+			this.ToolBarMain.Location = new System.Drawing.Point(0, 0);
+			this.ToolBarMain.Name = "ToolBarMain";
+			this.ToolBarMain.Size = new System.Drawing.Size(939, 29);
+			this.ToolBarMain.TabIndex = 58;
+			this.ToolBarMain.ButtonClick += new OpenDental.UI.ODToolBarButtonClickEventHandler(this.ToolBarMain_ButtonClick);
+			// 
+			// imageListMain
+			// 
+			this.imageListMain.ImageSize = new System.Drawing.Size(22, 22);
+			this.imageListMain.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListMain.ImageStream")));
+			this.imageListMain.TransparentColor = System.Drawing.Color.Transparent;
 			// 
 			// ContrTreat
 			// 
-			this.Controls.Add(this.butPreAuth);
+			this.Controls.Add(this.ToolBarMain);
 			this.Controls.Add(this.textToday);
 			this.Controls.Add(this.label19);
 			this.Controls.Add(this.textNote);
@@ -710,7 +682,6 @@ namespace OpenDental{
 			this.Controls.Add(this.label12);
 			this.Controls.Add(this.label11);
 			this.Controls.Add(this.label10);
-			this.Controls.Add(this.butPrint);
 			this.Controls.Add(this.panelSide);
 			this.Controls.Add(this.label9);
 			this.Controls.Add(this.label8);
@@ -722,8 +693,6 @@ namespace OpenDental{
 			this.Controls.Add(this.textPriIns);
 			this.Controls.Add(this.textFee);
 			this.Controls.Add(this.label5);
-			this.Controls.Add(this.butPat);
-			this.Controls.Add(this.butUpdateFees);
 			this.Name = "ContrTreat";
 			this.Size = new System.Drawing.Size(939, 708);
 			this.panelSide.ResumeLayout(false);
@@ -750,13 +719,9 @@ namespace OpenDental{
 			showHidden=true;//shows hidden priorities
 			textNote.Text=((Pref)Prefs.HList["TreatmentPlanNote"]).ValueString; 
 			Lan.C(this, new System.Windows.Forms.Control[] {
-				this.butPreAuth,
-				this.butPat,
-				this.butPrint,
 				this.butSelectAll,
 				this.butSelectNone,
 				this.button1,
-				this.butUpdateFees,
 				this.label1,
 				this.label10,
 				this.label11,
@@ -778,6 +743,24 @@ namespace OpenDental{
 				this.label9,
 				this.panelSide,
 			});
+			LayoutToolBar();
+		}
+
+		///<summary>Causes the toolbar to be laid out again.</summary>
+		public void LayoutToolBar(){
+			ToolBarMain.Buttons.Clear();
+			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Select Patient"),0,"","Patient"));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(ToolBarButtonStyle.Separator));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"PreAuthorization"),-1,"","PreAuth"));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Update Fees"),1,"","Update"));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Print TP"),2,"","Print"));
+			ArrayList toolButItems=ToolButItems.GetForToolBar(ToolBarsAvail.TreatmentPlanModule);
+			for(int i=0;i<toolButItems.Count;i++){
+				ToolBarMain.Buttons.Add(new ODToolBarButton(ToolBarButtonStyle.Separator));
+				ToolBarMain.Buttons.Add(new ODToolBarButton(((ToolButItem)toolButItems[i]).ButtonText
+					,-1,"",((ToolButItem)toolButItems[i]).ProgramNum));
+			}
+			ToolBarMain.Invalidate();
 		}
 
 		///<summary></summary>
@@ -816,18 +799,20 @@ namespace OpenDental{
 				ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString+" - "+Patients.GetCurNameLF();
 				tbMain.Enabled=true;
 				panelSide.Enabled=true;
-				butPrint.Enabled=true;
-        butUpdateFees.Enabled=true;
-        butPreAuth.Enabled=true;
+				ToolBarMain.Buttons["PreAuth"].Enabled=true;
+				ToolBarMain.Buttons["Update"].Enabled=true;
+				ToolBarMain.Buttons["Print"].Enabled=true;
+				ToolBarMain.Invalidate();
         listPreAuth.Enabled=true;
 			}
 			else{
 				ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString;
 				tbMain.Enabled=false;
 				panelSide.Enabled=false;
-				butPrint.Enabled=false;
-				butUpdateFees.Enabled=false;
-        butPreAuth.Enabled=false;
+				ToolBarMain.Buttons["PreAuth"].Enabled=false;
+				ToolBarMain.Buttons["Update"].Enabled=false;
+				ToolBarMain.Buttons["Print"].Enabled=false;
+				ToolBarMain.Invalidate();
         listPreAuth.Enabled=false;
 			}
 			FillMain();
@@ -836,7 +821,30 @@ namespace OpenDental{
 			//FillMisc();
 		}
 
-		private void butPat_Click(object sender, System.EventArgs e) {
+		private void ToolBarMain_ButtonClick(object sender, OpenDental.UI.ODToolBarButtonClickEventArgs e) {
+			if(e.Button.Tag.GetType()==typeof(string)){
+				//standard predefined button
+				switch(e.Button.Tag.ToString()){
+					case "Patient":
+						OnPat_Click();
+						break;
+					case "PreAuth":
+						OnPreAuth_Click();
+						break;
+					case "Update":
+						OnUpdate_Click();
+						break;
+					case "Print":
+						OnPrint_Click();
+						break;
+				}
+			}
+			else if(e.Button.Tag.GetType()==typeof(int)){
+				Programs.Execute((int)e.Button.Tag);
+			}
+		}
+
+		private void OnPat_Click() {
 			FormPatientSelect formSelectPatient2 = new FormPatientSelect();
 			formSelectPatient2.ShowDialog();
 			if (formSelectPatient2.DialogResult == DialogResult.OK){
@@ -925,7 +933,7 @@ namespace OpenDental{
 				//if(Defs.GetOrder(DefCat.TxPriorities,((Procedure)arrayLProc[i]).Priority)==-1)
 				//	tempTPLine.Priority="";
 				tempTPLine.Priority=Defs.GetName(DefCat.TxPriorities,((Procedure)arrayLProc[i]).Priority);
-				tempTPLine.Tooth=((Procedure)arrayLProc[i]).ToothNum;
+				tempTPLine.Tooth=Tooth.ToInternat(((Procedure)arrayLProc[i]).ToothNum);
 				tempTPLine.Surface=((Procedure)arrayLProc[i]).Surf;
 				tempTPLine.Description=ProcedureCodes.GetProcCode(((Procedure)arrayLProc[i]).ADACode).Descript;
 				tempTPLine.ADACode=((Procedure)arrayLProc[i]).ADACode;
@@ -992,43 +1000,56 @@ namespace OpenDental{
 			if(!Patients.PatIsLoaded){
 				return;
 			}
-			double max;
-			double remain;
-			double pend;
-			double used;
+			double max=0;
+			double remain=0;
+			double pend=0;
+			double used=0;
 			if(Patients.Cur.PriPlanNum!=0){
-				max=0;
 				InsPlans.GetCur(Patients.Cur.PriPlanNum);
-				if(InsPlans.Cur.AnnualMax!=-1){
-					max=InsPlans.Cur.AnnualMax;
-					textPriMax.Text=max.ToString("F");
+				//pending:
+				pend=InsPlans.GetPending(DateTime.Today,Patients.Cur.PriPlanNum);
+				textPriPend.Text=pend.ToString("F");
+				//max, used, and remaining:
+				if(InsPlans.Cur.AnnualMax==-1){//annual max is blank
+					//used can not display because there is no way to calculate it until all the math is reworked.
+					textPriMax.Text="";
+					textPriRem.Text="";
+					textPriUsed.Text="";
 				}
+				else{
+					max=InsPlans.Cur.AnnualMax;
+					remain=InsPlans.GetInsRem(DateTime.Today,Patients.Cur.PriPlanNum,-1);
+					used=max-remain-pend;//math done in reverse to take advantage of GetInsRem
+					//fix later to: remain=max-used-pend
+					textPriMax.Text=max.ToString("F");
+					textPriRem.Text=remain.ToString("F");
+					textPriUsed.Text=used.ToString("F");
+				}
+				//deductible:
 				if(InsPlans.Cur.Deductible!=-1)
 					textPriDed.Text=InsPlans.Cur.Deductible.ToString("F");
 				textPriDedRem.Text=InsPlans.GetDedRem(DateTime.Today,Patients.Cur.PriPlanNum,-1).ToString("F");
-				remain=InsPlans.GetInsRem(DateTime.Today,Patients.Cur.PriPlanNum,-1);
-				pend=InsPlans.GetPending(DateTime.Today,Patients.Cur.PriPlanNum);
-				used=max-remain-pend;//math done in reverse to take advantage of GetInsRem
-				textPriPend.Text=pend.ToString("F");
-				textPriRem.Text=remain.ToString("F");
-				textPriUsed.Text=used.ToString("F");
 			}
 			if(Patients.Cur.SecPlanNum!=0){
-				max=0;
 				InsPlans.GetCur(Patients.Cur.SecPlanNum);
-				if(InsPlans.Cur.AnnualMax!=-1){
+				pend=InsPlans.GetPending(DateTime.Today,Patients.Cur.SecPlanNum);
+				textSecPend.Text=pend.ToString("F");
+				if(InsPlans.Cur.AnnualMax==-1){//annual max is blank
+					textSecMax.Text="";
+					textSecRem.Text="";
+					textSecUsed.Text="";
+				}
+				else{
 					max=InsPlans.Cur.AnnualMax;
+					remain=InsPlans.GetInsRem(DateTime.Today,Patients.Cur.SecPlanNum,-1);
+					used=max-remain-pend;
 					textSecMax.Text=max.ToString("F");
+					textSecRem.Text=remain.ToString("F");
+					textSecUsed.Text=used.ToString("F");
 				}
 				if(InsPlans.Cur.Deductible!=-1)
 					textSecDed.Text=InsPlans.Cur.Deductible.ToString("F");
 				textSecDedRem.Text=InsPlans.GetDedRem(DateTime.Today,Patients.Cur.SecPlanNum,-1).ToString("F");
-				remain=InsPlans.GetInsRem(DateTime.Today,Patients.Cur.SecPlanNum,-1);
-				pend=InsPlans.GetPending(DateTime.Today,Patients.Cur.SecPlanNum);
-				used=max-remain-pend;
-				textSecPend.Text=pend.ToString("F");
-				textSecRem.Text=remain.ToString("F");
-				textSecUsed.Text=used.ToString("F");
 			}
 		}
 
@@ -1048,10 +1069,12 @@ namespace OpenDental{
       for(int i=0;i<ALPreAuth.Count;i++){
 				InsPlans.GetCur(((Claim)ALPreAuth[i]).PlanNum);
         string itemText;
-				if(((Claim)ALPreAuth[i]).DateSent.CompareTo(new DateTime(1860,1,1))<0)
-					itemText=InsPlans.Cur.Carrier+"("+((Claim)ALPreAuth[i]).ClaimStatus.ToString()+")";
+				if(((Claim)ALPreAuth[i]).DateSent.Year<1880)
+					itemText=Carriers.GetName(InsPlans.Cur.CarrierNum)
+						+"("+((Claim)ALPreAuth[i]).ClaimStatus.ToString()+")";
 				else
-					itemText=((Claim)ALPreAuth[i]).DateSent.ToShortDateString()+" "+InsPlans.Cur.Carrier
+					itemText=((Claim)ALPreAuth[i]).DateSent.ToShortDateString()+" "
+						+Carriers.GetName(InsPlans.Cur.CarrierNum)
 						+"("+((Claim)ALPreAuth[i]).ClaimStatus.ToString()+")"; 
         listPreAuth.Items.Add(itemText);
       } 
@@ -1138,7 +1161,7 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Printer not available"));
 			}
 		}
-		private void butPrint_Click(object sender, System.EventArgs e) {
+		private void OnPrint_Click() {
 			linesPrinted=0;
 			ColTotal = new double[10];
 			headingPrinted=false;
@@ -1359,7 +1382,7 @@ namespace OpenDental{
 			}
 		}
 
-		private void butUpdateFees_Click(object sender, System.EventArgs e) {
+		private void OnUpdate_Click() {
 		  if(MessageBox.Show(Lan.g(this,"Update all fees on this treatment plan to the current fees for this patient?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
         return;   
       }
@@ -1387,12 +1410,13 @@ namespace OpenDental{
       ModuleSelected();
 		}
 
-		private void butPreAuth_Click(object sender, System.EventArgs e) {
+		private void OnPreAuth_Click() {
 		  if(tbMain.SelectedIndices.Length==0){
         MessageBox.Show(Lan.g(this,"Please select procedures first."));
         return;
       }
       FormInsPlanSelect FormIPS=new FormInsPlanSelect(); 
+			FormIPS.ViewRelat=true;
       FormIPS.ShowDialog();
       if(FormIPS.DialogResult!=DialogResult.OK){
         return;
@@ -1413,13 +1437,16 @@ namespace OpenDental{
 				Claims.Cur.ProvTreat=Patients.Cur.PriProv;
 				//OK if 0, because auto select first in list when open claim
 			}
-			Claims.Cur.DedApplied=0;//calcs in ClaimEdit.
+			//Claims.Cur.DedApplied=0;//calcs in ClaimEdit.
 			//change later: set ProvBill according to practice defaults
 			Claims.Cur.ProvBill=Claims.Cur.ProvTreat;//OK if zero, because it will get fixed in claim
 			Claims.Cur.EmployRelated=YN.No;
       Claims.Cur.ClaimType="PreAuth";
-			Claims.Cur.PatRelat=FormIPS.PatRelat;//?
+			//this could be a little better if we automate figuring out the patrelat
+			//instead of making the user enter it:
+			Claims.Cur.PatRelat=FormIPS.PatRelat;
 			Claims.InsertCur();
+			//this loop adds the claimprocs but does not add any fees
 			for(int i=0;i<tbMain.SelectedIndices.Length;i++){
 				Procedures.Cur=((Procedure)arrayLProc[tbMain.SelectedIndices[i]]);
 				if(!Procedures.Cur.IsCovIns){
@@ -1430,7 +1457,7 @@ namespace OpenDental{
         ClaimProcs.Cur.PatNum=Patients.Cur.PatNum;
         ClaimProcs.Cur.ProcNum=Procedures.Cur.ProcNum;
 				ClaimProcs.Cur.Status=ClaimProcStatus.Preauth;
-				ClaimProcs.Cur.FeeBilled=Procedures.Cur.ProcFee;
+				//ClaimProcs.Cur.FeeBilled=Procedures.Cur.ProcFee;
 				if(InsPlans.Cur.UseAltCode)
 					ClaimProcs.Cur.CodeSent=((ProcedureCode)ProcedureCodes.HList[Procedures.Cur.ADACode]).AlternateCode1;
 				else{
@@ -1443,9 +1470,12 @@ namespace OpenDental{
 				Procedures.UpdateCur();
 			}
 			Procedures.Refresh();
-			FormClaimEdit FormClaimEdit2=new FormClaimEdit();
-			FormClaimEdit2.IsNew=true;
-			FormClaimEdit2.ShowDialog();
+			ClaimProcs.Refresh();
+			ClaimProcs.GetForClaim();
+			FormClaimEdit FormCE=new FormClaimEdit();
+			FormCE.CalculateEstimates();
+			FormCE.IsNew=true;//this causes it to delete the claim if cancelling.
+			FormCE.ShowDialog();
 			ModuleSelected();
 		}
 
@@ -1481,6 +1511,8 @@ namespace OpenDental{
         }
       }
 		}
+
+		
 	}
 
 	///<summary></summary>

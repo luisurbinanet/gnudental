@@ -21,6 +21,7 @@ using System.Runtime.InteropServices;
 using System.Text; 
 using System.Windows.Forms;
 using WIALib;
+using OpenDental.UI;
 
 namespace OpenDental{
 
@@ -29,9 +30,6 @@ namespace OpenDental{
 		private System.Windows.Forms.ImageList imageListTree;
 		private System.ComponentModel.IContainer components;
 		private System.Windows.Forms.ImageList imageListTools2;
-		private System.Windows.Forms.ToolBarButton toolBarButton9;
-		private System.Windows.Forms.ToolBarButton toolBarButton10;
-		private System.Windows.Forms.ToolBarButton toolBarSep4;
 		private Rectangle RecCrop;
 		private Rectangle RecZoom;
 		private System.Windows.Forms.PrintDialog PrintDialog1;
@@ -41,43 +39,20 @@ namespace OpenDental{
 		private bool MouseIsDown;
 		private System.Windows.Forms.PictureBox PictureBox1;
 		private System.Drawing.Bitmap ImageCurrent;
-		private System.Windows.Forms.ToolBarButton toolBarSep3;
 		private Rectangle RecTemp;
 		private System.Windows.Forms.MainMenu mainMenu1;
 		private System.Windows.Forms.MenuItem menuItem1;
 		private System.Windows.Forms.MenuItem menuExit;
 		private System.Windows.Forms.MenuItem menuPrefs;
 		private System.Windows.Forms.Button button1;
-		private System.Windows.Forms.ToolBarButton toolBarButZoomIn;
-		private System.Windows.Forms.ToolBarButton toolBarButZoomOut;
-		private System.Windows.Forms.ToolBarButton toolBarButPat;
-		private System.Windows.Forms.ToolBarButton toolBarButPrint;
-		private System.Windows.Forms.ToolBarButton toolBarButDel;
-		private System.Windows.Forms.ToolBarButton toolBarButInfo;
-		private System.Windows.Forms.ToolBarButton toolBarButScan;
-		private System.Windows.Forms.ToolBarButton toolBarButImp;
-		private System.Windows.Forms.ToolBarButton toolBarButPaste;
 		private System.Windows.Forms.OpenFileDialog openFileDialog2;
     private Stream myStream;
     private FormDocInfo formDocInfo2;
 		private string patFolder;
-		private System.Windows.Forms.Button butPat;
-		private System.Windows.Forms.Panel panelButtons;
-		private System.Windows.Forms.Button butPrint;
-		private System.Windows.Forms.Button butDel;
-		private System.Windows.Forms.Button butInfo;
-		private System.Windows.Forms.Button butScan;
-		private System.Windows.Forms.Button butImp;
-		private System.Windows.Forms.Button butPaste;
-		private System.Windows.Forms.Button butHand;
-		private System.Windows.Forms.Button butCrop;
-		private System.Windows.Forms.Button butZoomIn;
-		private System.Windows.Forms.Button butZoomOut;
-		private System.Windows.Forms.ToolBar ToolBar2;
-		private System.Windows.Forms.ToolBarButton toolBarButCrop2;
-		private System.Windows.Forms.ToolBarButton toolBarButHand2;
-		private System.Windows.Forms.ToolTip toolTip1;
+		private OpenDental.UI.ODToolBar ToolBarMain;
 		private string imageFileName;
+		///<summary>Starts out as false. It's only used when repainting the toolbar, not to test mode.</summary>
+		private bool IsCropMode;//
 
 		///<summary></summary>
 		public ContrDocs(){
@@ -103,22 +78,6 @@ namespace OpenDental{
 			this.imageListTree = new System.Windows.Forms.ImageList(this.components);
 			this.PrintDialog1 = new System.Windows.Forms.PrintDialog();
 			this.PrintDocument2 = new System.Drawing.Printing.PrintDocument();
-			this.ToolBar2 = new System.Windows.Forms.ToolBar();
-			this.toolBarButPat = new System.Windows.Forms.ToolBarButton();
-			this.toolBarButton9 = new System.Windows.Forms.ToolBarButton();
-			this.toolBarButPrint = new System.Windows.Forms.ToolBarButton();
-			this.toolBarButDel = new System.Windows.Forms.ToolBarButton();
-			this.toolBarButInfo = new System.Windows.Forms.ToolBarButton();
-			this.toolBarButton10 = new System.Windows.Forms.ToolBarButton();
-			this.toolBarButScan = new System.Windows.Forms.ToolBarButton();
-			this.toolBarButImp = new System.Windows.Forms.ToolBarButton();
-			this.toolBarButPaste = new System.Windows.Forms.ToolBarButton();
-			this.toolBarSep3 = new System.Windows.Forms.ToolBarButton();
-			this.toolBarButCrop2 = new System.Windows.Forms.ToolBarButton();
-			this.toolBarButHand2 = new System.Windows.Forms.ToolBarButton();
-			this.toolBarSep4 = new System.Windows.Forms.ToolBarButton();
-			this.toolBarButZoomIn = new System.Windows.Forms.ToolBarButton();
-			this.toolBarButZoomOut = new System.Windows.Forms.ToolBarButton();
 			this.imageListTools2 = new System.Windows.Forms.ImageList(this.components);
 			this.PictureBox1 = new System.Windows.Forms.PictureBox();
 			this.mainMenu1 = new System.Windows.Forms.MainMenu();
@@ -127,20 +86,7 @@ namespace OpenDental{
 			this.menuPrefs = new System.Windows.Forms.MenuItem();
 			this.button1 = new System.Windows.Forms.Button();
 			this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
-			this.butPat = new System.Windows.Forms.Button();
-			this.panelButtons = new System.Windows.Forms.Panel();
-			this.butZoomOut = new System.Windows.Forms.Button();
-			this.butZoomIn = new System.Windows.Forms.Button();
-			this.butCrop = new System.Windows.Forms.Button();
-			this.butHand = new System.Windows.Forms.Button();
-			this.butPaste = new System.Windows.Forms.Button();
-			this.butImp = new System.Windows.Forms.Button();
-			this.butScan = new System.Windows.Forms.Button();
-			this.butInfo = new System.Windows.Forms.Button();
-			this.butDel = new System.Windows.Forms.Button();
-			this.butPrint = new System.Windows.Forms.Button();
-			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-			this.panelButtons.SuspendLayout();
+			this.ToolBarMain = new OpenDental.UI.ODToolBar();
 			this.SuspendLayout();
 			// 
 			// TreeDocuments
@@ -156,6 +102,7 @@ namespace OpenDental{
 			this.TreeDocuments.SelectedImageIndex = 2;
 			this.TreeDocuments.Size = new System.Drawing.Size(228, 519);
 			this.TreeDocuments.TabIndex = 0;
+			this.TreeDocuments.DoubleClick += new System.EventHandler(this.TreeDocuments_DoubleClick);
 			this.TreeDocuments.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeDocuments_AfterSelect);
 			// 
 			// imageListTree
@@ -172,134 +119,6 @@ namespace OpenDental{
 			// PrintDocument2
 			// 
 			this.PrintDocument2.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.printDocument2_PrintPage);
-			// 
-			// ToolBar2
-			// 
-			this.ToolBar2.Buttons.AddRange(new System.Windows.Forms.ToolBarButton[] {
-																																								this.toolBarButPat,
-																																								this.toolBarButton9,
-																																								this.toolBarButPrint,
-																																								this.toolBarButDel,
-																																								this.toolBarButInfo,
-																																								this.toolBarButton10,
-																																								this.toolBarButScan,
-																																								this.toolBarButImp,
-																																								this.toolBarButPaste,
-																																								this.toolBarSep3,
-																																								this.toolBarButCrop2,
-																																								this.toolBarButHand2,
-																																								this.toolBarSep4,
-																																								this.toolBarButZoomIn,
-																																								this.toolBarButZoomOut});
-			this.ToolBar2.Dock = System.Windows.Forms.DockStyle.None;
-			this.ToolBar2.DropDownArrows = true;
-			this.ToolBar2.ImageList = this.imageListTools2;
-			this.ToolBar2.Location = new System.Drawing.Point(4, 564);
-			this.ToolBar2.Name = "ToolBar2";
-			this.ToolBar2.ShowToolTips = true;
-			this.ToolBar2.Size = new System.Drawing.Size(838, 34);
-			this.ToolBar2.TabIndex = 5;
-			this.ToolBar2.Visible = false;
-			this.ToolBar2.ButtonClick += new System.Windows.Forms.ToolBarButtonClickEventHandler(this.toolBar2_ButtonClick);
-			// 
-			// toolBarButPat
-			// 
-			this.toolBarButPat.ImageIndex = 0;
-			this.toolBarButPat.Tag = "Pat";
-			this.toolBarButPat.ToolTipText = "Select Patient";
-			// 
-			// toolBarButton9
-			// 
-			this.toolBarButton9.Enabled = false;
-			this.toolBarButton9.Style = System.Windows.Forms.ToolBarButtonStyle.Separator;
-			// 
-			// toolBarButPrint
-			// 
-			this.toolBarButPrint.Enabled = false;
-			this.toolBarButPrint.ImageIndex = 1;
-			this.toolBarButPrint.Tag = "Print";
-			this.toolBarButPrint.ToolTipText = "Print Document";
-			// 
-			// toolBarButDel
-			// 
-			this.toolBarButDel.Enabled = false;
-			this.toolBarButDel.ImageIndex = 2;
-			this.toolBarButDel.Tag = "Del";
-			this.toolBarButDel.ToolTipText = "Delete Document";
-			// 
-			// toolBarButInfo
-			// 
-			this.toolBarButInfo.Enabled = false;
-			this.toolBarButInfo.ImageIndex = 3;
-			this.toolBarButInfo.Tag = "Info";
-			this.toolBarButInfo.ToolTipText = "Document Info";
-			// 
-			// toolBarButton10
-			// 
-			this.toolBarButton10.Enabled = false;
-			this.toolBarButton10.Style = System.Windows.Forms.ToolBarButtonStyle.Separator;
-			// 
-			// toolBarButScan
-			// 
-			this.toolBarButScan.Enabled = false;
-			this.toolBarButScan.ImageIndex = 4;
-			this.toolBarButScan.Tag = "Scan";
-			this.toolBarButScan.ToolTipText = "Scan";
-			// 
-			// toolBarButImp
-			// 
-			this.toolBarButImp.Enabled = false;
-			this.toolBarButImp.ImageIndex = 5;
-			this.toolBarButImp.Tag = "Imp";
-			this.toolBarButImp.ToolTipText = "Import From File";
-			// 
-			// toolBarButPaste
-			// 
-			this.toolBarButPaste.Enabled = false;
-			this.toolBarButPaste.ImageIndex = 6;
-			this.toolBarButPaste.Tag = "Paste";
-			this.toolBarButPaste.ToolTipText = "Paste From Clipboard";
-			// 
-			// toolBarSep3
-			// 
-			this.toolBarSep3.Enabled = false;
-			this.toolBarSep3.Style = System.Windows.Forms.ToolBarButtonStyle.Separator;
-			// 
-			// toolBarButCrop2
-			// 
-			this.toolBarButCrop2.Enabled = false;
-			this.toolBarButCrop2.ImageIndex = 7;
-			this.toolBarButCrop2.Style = System.Windows.Forms.ToolBarButtonStyle.ToggleButton;
-			this.toolBarButCrop2.Tag = "Crop";
-			this.toolBarButCrop2.ToolTipText = "Crop Tool";
-			// 
-			// toolBarButHand2
-			// 
-			this.toolBarButHand2.Enabled = false;
-			this.toolBarButHand2.ImageIndex = 10;
-			this.toolBarButHand2.Pushed = true;
-			this.toolBarButHand2.Style = System.Windows.Forms.ToolBarButtonStyle.ToggleButton;
-			this.toolBarButHand2.Tag = "Hand";
-			this.toolBarButHand2.ToolTipText = "Toggle Hand Tool";
-			// 
-			// toolBarSep4
-			// 
-			this.toolBarSep4.Enabled = false;
-			this.toolBarSep4.Style = System.Windows.Forms.ToolBarButtonStyle.Separator;
-			// 
-			// toolBarButZoomIn
-			// 
-			this.toolBarButZoomIn.Enabled = false;
-			this.toolBarButZoomIn.ImageIndex = 8;
-			this.toolBarButZoomIn.Tag = "ZoomIn";
-			this.toolBarButZoomIn.ToolTipText = "Zoom In";
-			// 
-			// toolBarButZoomOut
-			// 
-			this.toolBarButZoomOut.Enabled = false;
-			this.toolBarButZoomOut.ImageIndex = 9;
-			this.toolBarButZoomOut.Tag = "ZoomOut";
-			this.toolBarButZoomOut.ToolTipText = "Zoom Out";
 			// 
 			// imageListTools2
 			// 
@@ -354,150 +173,19 @@ namespace OpenDental{
 			this.button1.Text = "adjust contrast";
 			this.button1.Visible = false;
 			// 
-			// butPat
+			// ToolBarMain
 			// 
-			this.butPat.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.butPat.ImageIndex = 0;
-			this.butPat.ImageList = this.imageListTools2;
-			this.butPat.Location = new System.Drawing.Point(1, 1);
-			this.butPat.Name = "butPat";
-			this.butPat.Size = new System.Drawing.Size(28, 28);
-			this.butPat.TabIndex = 8;
-			this.butPat.Click += new System.EventHandler(this.butPat_Click);
-			// 
-			// panelButtons
-			// 
-			this.panelButtons.Controls.Add(this.butZoomOut);
-			this.panelButtons.Controls.Add(this.butZoomIn);
-			this.panelButtons.Controls.Add(this.butCrop);
-			this.panelButtons.Controls.Add(this.butHand);
-			this.panelButtons.Controls.Add(this.butPaste);
-			this.panelButtons.Controls.Add(this.butImp);
-			this.panelButtons.Controls.Add(this.butScan);
-			this.panelButtons.Controls.Add(this.butInfo);
-			this.panelButtons.Controls.Add(this.butDel);
-			this.panelButtons.Controls.Add(this.butPrint);
-			this.panelButtons.Location = new System.Drawing.Point(29, 0);
-			this.panelButtons.Name = "panelButtons";
-			this.panelButtons.Size = new System.Drawing.Size(712, 29);
-			this.panelButtons.TabIndex = 9;
-			// 
-			// butZoomOut
-			// 
-			this.butZoomOut.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.butZoomOut.ImageIndex = 9;
-			this.butZoomOut.ImageList = this.imageListTools2;
-			this.butZoomOut.Location = new System.Drawing.Point(298, 1);
-			this.butZoomOut.Name = "butZoomOut";
-			this.butZoomOut.Size = new System.Drawing.Size(28, 28);
-			this.butZoomOut.TabIndex = 18;
-			this.butZoomOut.Click += new System.EventHandler(this.butZoomOut_Click);
-			// 
-			// butZoomIn
-			// 
-			this.butZoomIn.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.butZoomIn.ImageIndex = 8;
-			this.butZoomIn.ImageList = this.imageListTools2;
-			this.butZoomIn.Location = new System.Drawing.Point(270, 1);
-			this.butZoomIn.Name = "butZoomIn";
-			this.butZoomIn.Size = new System.Drawing.Size(28, 28);
-			this.butZoomIn.TabIndex = 17;
-			this.butZoomIn.Click += new System.EventHandler(this.butZoomIn_Click);
-			// 
-			// butCrop
-			// 
-			this.butCrop.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-			this.butCrop.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.butCrop.ImageIndex = 7;
-			this.butCrop.ImageList = this.imageListTools2;
-			this.butCrop.Location = new System.Drawing.Point(202, 1);
-			this.butCrop.Name = "butCrop";
-			this.butCrop.Size = new System.Drawing.Size(28, 28);
-			this.butCrop.TabIndex = 16;
-			this.butCrop.Click += new System.EventHandler(this.butCrop_Click);
-			// 
-			// butHand
-			// 
-			this.butHand.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.butHand.ImageIndex = 10;
-			this.butHand.ImageList = this.imageListTools2;
-			this.butHand.Location = new System.Drawing.Point(230, 1);
-			this.butHand.Name = "butHand";
-			this.butHand.Size = new System.Drawing.Size(28, 28);
-			this.butHand.TabIndex = 15;
-			this.butHand.Click += new System.EventHandler(this.butHand_Click);
-			// 
-			// butPaste
-			// 
-			this.butPaste.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.butPaste.ImageIndex = 6;
-			this.butPaste.ImageList = this.imageListTools2;
-			this.butPaste.Location = new System.Drawing.Point(163, 1);
-			this.butPaste.Name = "butPaste";
-			this.butPaste.Size = new System.Drawing.Size(28, 28);
-			this.butPaste.TabIndex = 14;
-			this.butPaste.Click += new System.EventHandler(this.butPaste_Click);
-			// 
-			// butImp
-			// 
-			this.butImp.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.butImp.ImageIndex = 5;
-			this.butImp.ImageList = this.imageListTools2;
-			this.butImp.Location = new System.Drawing.Point(135, 1);
-			this.butImp.Name = "butImp";
-			this.butImp.Size = new System.Drawing.Size(28, 28);
-			this.butImp.TabIndex = 13;
-			this.butImp.Click += new System.EventHandler(this.butImp_Click);
-			// 
-			// butScan
-			// 
-			this.butScan.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.butScan.ImageIndex = 4;
-			this.butScan.ImageList = this.imageListTools2;
-			this.butScan.Location = new System.Drawing.Point(107, 1);
-			this.butScan.Name = "butScan";
-			this.butScan.Size = new System.Drawing.Size(28, 28);
-			this.butScan.TabIndex = 12;
-			this.butScan.Click += new System.EventHandler(this.butScan_Click);
-			// 
-			// butInfo
-			// 
-			this.butInfo.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.butInfo.ImageIndex = 3;
-			this.butInfo.ImageList = this.imageListTools2;
-			this.butInfo.Location = new System.Drawing.Point(68, 1);
-			this.butInfo.Name = "butInfo";
-			this.butInfo.Size = new System.Drawing.Size(28, 28);
-			this.butInfo.TabIndex = 11;
-			this.butInfo.Click += new System.EventHandler(this.butInfo_Click);
-			// 
-			// butDel
-			// 
-			this.butDel.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.butDel.ImageIndex = 2;
-			this.butDel.ImageList = this.imageListTools2;
-			this.butDel.Location = new System.Drawing.Point(40, 1);
-			this.butDel.Name = "butDel";
-			this.butDel.Size = new System.Drawing.Size(28, 28);
-			this.butDel.TabIndex = 10;
-			this.butDel.Click += new System.EventHandler(this.butDel_Click);
-			// 
-			// butPrint
-			// 
-			this.butPrint.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.butPrint.ImageIndex = 1;
-			this.butPrint.ImageList = this.imageListTools2;
-			this.butPrint.Location = new System.Drawing.Point(12, 1);
-			this.butPrint.Name = "butPrint";
-			this.butPrint.Size = new System.Drawing.Size(28, 28);
-			this.butPrint.TabIndex = 9;
-			this.butPrint.Click += new System.EventHandler(this.butPrint_Click);
+			this.ToolBarMain.Dock = System.Windows.Forms.DockStyle.Top;
+			this.ToolBarMain.ImageList = this.imageListTools2;
+			this.ToolBarMain.Location = new System.Drawing.Point(0, 0);
+			this.ToolBarMain.Name = "ToolBarMain";
+			this.ToolBarMain.Size = new System.Drawing.Size(939, 29);
+			this.ToolBarMain.TabIndex = 10;
+			this.ToolBarMain.ButtonClick += new OpenDental.UI.ODToolBarButtonClickEventHandler(this.ToolBarMain_ButtonClick);
 			// 
 			// ContrDocs
 			// 
-			this.Controls.Add(this.ToolBar2);
-			this.Controls.Add(this.panelButtons);
-			this.Controls.Add(this.butPat);
+			this.Controls.Add(this.ToolBarMain);
 			this.Controls.Add(this.button1);
 			this.Controls.Add(this.PictureBox1);
 			this.Controls.Add(this.TreeDocuments);
@@ -505,7 +193,6 @@ namespace OpenDental{
 			this.Size = new System.Drawing.Size(939, 606);
 			this.Load += new System.EventHandler(this.ContrDocs_Load);
 			this.Layout += new System.Windows.Forms.LayoutEventHandler(this.ContrDocs_Layout);
-			this.panelButtons.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -523,17 +210,44 @@ namespace OpenDental{
 			Lan.C(this, new System.Windows.Forms.Control[] {
 				this.button1,
 			});
-			toolTip1.SetToolTip(butPat, Lan.g(this,"Select Patient"));
-			toolTip1.SetToolTip(butPrint, Lan.g(this,"Print Document"));
-			toolTip1.SetToolTip(butDel, Lan.g(this,"Delete Document"));
-			toolTip1.SetToolTip(butInfo, Lan.g(this,"Document Info"));
-			toolTip1.SetToolTip(butScan, Lan.g(this,"Scan"));
-			toolTip1.SetToolTip(butImp, Lan.g(this,"Import From File"));
-			toolTip1.SetToolTip(butPaste, Lan.g(this,"Paste From Clipboard"));
-			toolTip1.SetToolTip(butCrop, Lan.g(this,"Crop Tool"));
-			toolTip1.SetToolTip(butHand, Lan.g(this,"Hand Tool"));
-			toolTip1.SetToolTip(butZoomIn, Lan.g(this,"Zoom In"));
-			toolTip1.SetToolTip(butZoomOut, Lan.g(this,"Zoom Out"));
+			LayoutToolBar();
+		}
+
+		///<summary>Causes the toolbar to be laid out again.</summary>
+		public void LayoutToolBar(){
+			ToolBarMain.Buttons.Clear();
+			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Select Patient"),0,"","Patient"));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(ToolBarButtonStyle.Separator));
+			ToolBarMain.Buttons.Add(new ODToolBarButton("",1,Lan.g(this,"Print"),"Print"));
+			ToolBarMain.Buttons.Add(new ODToolBarButton("",2,Lan.g(this,"Delete"),"Delete"));
+			ToolBarMain.Buttons.Add(new ODToolBarButton("",3,Lan.g(this,"Item Info"),"Info"));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(ToolBarButtonStyle.Separator));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Scan"),4,"","Scan"));
+			ToolBarMain.Buttons.Add(new ODToolBarButton
+				(Lan.g(this,"Import"),5,Lan.g(this,"Import From File"),"Import"));
+			ToolBarMain.Buttons.Add(new ODToolBarButton
+				(Lan.g(this,"Paste"),6,Lan.g(this,"Paste From Clipboard"),"Paste"));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(ToolBarButtonStyle.Separator));
+			ODToolBarButton button=new ODToolBarButton("",7,Lan.g(this,"Crop Tool"),"Crop");
+			button.Style=ToolBarButtonStyle.ToggleButton;
+			if(IsCropMode)
+				button.Pushed=true;
+			ToolBarMain.Buttons.Add(button);
+			button=new ODToolBarButton("",10,Lan.g(this,"Hand Tool"),"Hand");
+			button.Style=ToolBarButtonStyle.ToggleButton;
+			if(!IsCropMode)
+				button.Pushed=true;
+			ToolBarMain.Buttons.Add(button);
+			ToolBarMain.Buttons.Add(new ODToolBarButton(ToolBarButtonStyle.Separator));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Zoom In"),8,"","ZoomIn"));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Zoom Out"),9,"","ZoomOut"));
+			ArrayList toolButItems=ToolButItems.GetForToolBar(ToolBarsAvail.ImagesModule);
+			for(int i=0;i<toolButItems.Count;i++){
+				ToolBarMain.Buttons.Add(new ODToolBarButton(ToolBarButtonStyle.Separator));
+				ToolBarMain.Buttons.Add(new ODToolBarButton(((ToolButItem)toolButItems[i]).ButtonText
+					,-1,"",((ToolButItem)toolButItems[i]).ProgramNum));
+			}
+			ToolBarMain.Invalidate();
 		}
 
 		///<summary></summary>
@@ -551,7 +265,7 @@ namespace OpenDental{
 		}
 
   	private void RefreshModuleData(){
-			if (!Patients.PatIsLoaded)
+			if(!Patients.PatIsLoaded)
 				return;
 			Patients.GetFamily(Patients.Cur.PatNum);
 			ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString+" - "+Patients.GetCurNameLF();
@@ -586,42 +300,63 @@ namespace OpenDental{
 				}
 				catch{
 					MessageBox.Show(Lan.g(this,"Error.  Could not create folder for patient. "));
+					return;
 				}
 			}
+			//now find all files in the patient folder that are not in the db and add them
+			DocAttaches.Refresh();
+			Documents.Refresh();
+			DirectoryInfo di=new DirectoryInfo(patFolder);
+			FileInfo[] fiList=di.GetFiles();
+			int countAdded=0;
+			for(int i=0;i<fiList.Length;i++){
+				if(!Documents.IsFileNameInList(fiList[i].Name)){
+					//MessageBox.Show(fiList[i].Name);
+					Documents.Cur=new Document();
+					Documents.Cur.DateCreated=DateTime.Today;
+					Documents.Cur.Description=fiList[i].Name;
+					Documents.Cur.DocCategory=Defs.Short[(int)DefCat.DocumentCats][0].DefNum;
+					Documents.Cur.FileName=fiList[i].Name;
+					Documents.Cur.WithPat=Patients.Cur.PatNum;
+					Documents.InsertCur();
+					countAdded++;
+				}
+			}
+			if(countAdded>0){
+				MessageBox.Show(countAdded.ToString()+" documents found and added to the first category.");
+			}
+			//it will refresh in FillDocList																					 
 		}
 
 		private void RefreshModuleScreen(){
 			if (Patients.PatIsLoaded){
 				ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString+" - "+Patients.GetCurNameLF();
-				panelButtons.Enabled=true;
-				/*toolBarButPrint.Enabled=true;
-	      toolBarButDel.Enabled=true;
-				toolBarButInfo.Enabled=true;
-				toolBarButImp.Enabled=true;
-				toolBarButScan.Enabled=true;
-				toolBarButCrop.Enabled=true;
-				toolBarButPaste.Enabled=true;
-				toolBarButHand.Enabled=true;
-				toolBarButZoomIn.Enabled=true;
-				toolBarButZoomOut.Enabled=true;*/
+				ToolBarMain.Buttons["Print"].Enabled=true;
+				ToolBarMain.Buttons["Delete"].Enabled=true;
+				ToolBarMain.Buttons["Info"].Enabled=true;
+				ToolBarMain.Buttons["Import"].Enabled=true;
+				ToolBarMain.Buttons["Scan"].Enabled=true;
+				ToolBarMain.Buttons["Paste"].Enabled=true;
+				ToolBarMain.Buttons["Crop"].Enabled=true;
+				ToolBarMain.Buttons["Hand"].Enabled=true;
+				ToolBarMain.Buttons["ZoomIn"].Enabled=true;
+				ToolBarMain.Buttons["ZoomOut"].Enabled=true;
 			}
 			else{
 				ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString;
 				Patients.Cur=new Patient();
-				panelButtons.Enabled=false;
-				/*toolBarButPrint.Enabled=false;
-				toolBarButDel.Enabled=false;
-				toolBarButPrint.Enabled=false;
-	      toolBarButDel.Enabled=false;
-				toolBarButInfo.Enabled=false;
-				toolBarButImp.Enabled=false;
-				toolBarButScan.Enabled=false;
-				toolBarButCrop.Enabled=false;
-				toolBarButPaste.Enabled=false;
-				toolBarButHand.Enabled=false;
-				toolBarButZoomIn.Enabled=false;
-				toolBarButZoomOut.Enabled=false;*/
+				ToolBarMain.Buttons["Print"].Enabled=false;
+				ToolBarMain.Buttons["Delete"].Enabled=false;
+				ToolBarMain.Buttons["Info"].Enabled=false;
+				ToolBarMain.Buttons["Import"].Enabled=false;
+				ToolBarMain.Buttons["Scan"].Enabled=false;
+				ToolBarMain.Buttons["Paste"].Enabled=false;
+				ToolBarMain.Buttons["Crop"].Enabled=false;
+				ToolBarMain.Buttons["Hand"].Enabled=false;
+				ToolBarMain.Buttons["ZoomIn"].Enabled=false;
+				ToolBarMain.Buttons["ZoomOut"].Enabled=false;
 			}
+			ToolBarMain.Invalidate();
 			FillDocList(false);
 		}
 
@@ -629,6 +364,8 @@ namespace OpenDental{
 			//if (SystemInformation.PrimaryMonitorSize.Height<=768){
 		}
 
+		/// <summary>Fills the treeview.</summary>
+		/// <param name="keepDoc">Set to true to keep the current doc displayed.</param>
 		private void FillDocList(bool keepDoc){
 			if(!Patients.PatIsLoaded){
 				TreeDocuments.Nodes.Clear();
@@ -679,24 +416,69 @@ namespace OpenDental{
 						if(n.Tag.ToString()==Documents.Cur.DocNum.ToString())
 							TreeDocuments.SelectedNode=n;
 					}				}				SrcFileName=patFolder+Documents.Cur.FileName;
-				try{					WebRequest request=WebRequest.Create(SrcFileName); 					WebResponse response=request.GetResponse();					ImageCurrent=(Bitmap)System.Drawing.Bitmap.FromStream (response.GetResponseStream());					response.Close();			  }			  catch(System.Exception exception){					MessageBox.Show(Lan.g(this,exception.Message)); 			  }
+				try{					WebRequest request=WebRequest.Create(SrcFileName); 					WebResponse response=request.GetResponse();					if(Path.GetExtension(Documents.Cur.FileName)==".jpg"){//can only display jpg for now						ImageCurrent=(Bitmap)System.Drawing.Bitmap.FromStream (response.GetResponseStream());					}					else{						ImageCurrent=null;//this may be unnecessary					}					response.Close();			  }			  catch(System.Exception exception){					MessageBox.Show(Lan.g(this,exception.Message)); 			  }
 				RecZoom.Width=0;
 			}
 			else TreeDocuments.SelectedNode=TreeDocuments.Nodes[0];
 			mygraphics.Dispose();
 		}//end RefreshDocList
 
-		private void butPat_Click(object sender, System.EventArgs e) {
-			FormPatientSelect formSelectPatient2=new FormPatientSelect();
-			formSelectPatient2.ShowDialog();
-			if(formSelectPatient2.DialogResult==DialogResult.OK){
-				ModuleSelected();
-				FillDocList(false);
+		private void ToolBarMain_ButtonClick(object sender, OpenDental.UI.ODToolBarButtonClickEventArgs e) {
+			if(e.Button.Tag.GetType()==typeof(string)){
+				//standard predefined button
+				switch(e.Button.Tag.ToString()){
+					case "Patient":
+						OnPat_Click();
+						break;
+					case "Print":
+						OnPrint_Click();
+						break;
+					case "Delete":
+						OnDelete_Click();
+						break;
+					case "Info":
+						OnInfo_Click();
+						break;
+					case "Scan":
+						OnScan_Click();
+						break;
+					case "Import":
+						OnImport_Click();
+						break;
+					case "Paste":
+						OnPaste_Click();
+						break;
+					case "Crop":
+						OnCrop_Click();
+						break;
+					case "Hand":
+						OnHand_Click();
+						break;
+					case "ZoomIn":
+						OnZoomIn_Click();
+						break;
+					case "ZoomOut":
+						OnZoomOut_Click();
+						break;
+				}
+			}
+			else if(e.Button.Tag.GetType()==typeof(int)){
+				Programs.Execute((int)e.Button.Tag);
 			}
 		}
 
-		private void butPrint_Click(object sender, System.EventArgs e) {
-			for(int i=0;i<TreeDocuments.Nodes.Count;i++){
+		private void OnPat_Click() {
+			FormPatientSelect formSelectPatient2=new FormPatientSelect();
+			formSelectPatient2.ShowDialog();
+			if(formSelectPatient2.DialogResult!=DialogResult.OK){
+				return;
+			}
+			ModuleSelected();
+			FillDocList(false);
+		}
+
+		private void OnPrint_Click() {
+			for(int i=0;i<TreeDocuments.Nodes.Count;i++){//does not print a main node
 				if(TreeDocuments.SelectedNode.Equals(TreeDocuments.Nodes[i]))//check to see if this is correct
 					return;
       }			
@@ -710,8 +492,8 @@ namespace OpenDental{
 			}
 		}
 
-		private void butDel_Click(object sender, System.EventArgs e) {
-			for(int i=0;i<TreeDocuments.Nodes.Count;i++){
+		private void OnDelete_Click() {
+			for(int i=0;i<TreeDocuments.Nodes.Count;i++){//can't delete a main node
 				if(TreeDocuments.SelectedNode.Equals(TreeDocuments.Nodes[i]))
 					return;
       }
@@ -728,8 +510,8 @@ namespace OpenDental{
 			FillDocList(false);
 		}
 
-		private void butInfo_Click(object sender, System.EventArgs e) {
-			for(int i=0;i<TreeDocuments.Nodes.Count;i++){
+		private void OnInfo_Click() {
+			for(int i=0;i<TreeDocuments.Nodes.Count;i++){//can't get info on a main node
 				if(TreeDocuments.SelectedNode.Equals(TreeDocuments.Nodes[i]))
 					return;
       }
@@ -740,10 +522,10 @@ namespace OpenDental{
 				return;
 			}
 			FillDocList(true);
-			DisplayImage(false);
+			DisplayImage(false);//because the category may have changed
 		}
 
-		private void butScan_Click(object sender, System.EventArgs e) {
+		private void OnScan_Click() {
 			#if(ISXP)
 				ScanImage();
 			#else
@@ -751,28 +533,33 @@ namespace OpenDental{
 			#endif
 		}
 
-		private void butImp_Click(object sender, System.EventArgs e) {
+		private void OnImport_Click() {
 			openFileDialog2=new OpenFileDialog();
   		//openFileDialog2.InitialDirectory=
-      openFileDialog2.Filter="jpg files(*.jpg)|*.jpg|gif files(*.gif)|*.gif|All files(*.*)|*.*";
-      openFileDialog2.FilterIndex=1;
+      //openFileDialog2.Filter="jpg files(*.jpg)|*.jpg|gif files(*.gif)|*.gif|All files(*.*)|*.*";
+      //openFileDialog2.FilterIndex=1;
 			if(openFileDialog2.ShowDialog()!=DialogResult.OK){
 				return;
 			}
 			if((myStream=openFileDialog2.OpenFile())==null){
 				return;
 			}
-			try{				WebRequest request = WebRequest.Create(openFileDialog2.FileName); 				WebResponse response = request.GetResponse();				ImageCurrent = (Bitmap)System.Drawing.Bitmap.FromStream(response.GetResponseStream());				response.Close();			}			catch(System.Exception exception){				MessageBox.Show(Lan.g(this,exception.Message + " Selected File Not Image."));				myStream.Close();				return;			}
+			//Documents.Cur.Description=Path.GetFileName(openFileDialog2.FileName);
+			try{				WebRequest request = WebRequest.Create(openFileDialog2.FileName); 				WebResponse response = request.GetResponse();				if(Path.GetExtension(openFileDialog2.FileName)==".jpg"					|| Path.GetExtension(openFileDialog2.FileName)==".gif"){					ImageCurrent = (Bitmap)System.Drawing.Bitmap.FromStream(response.GetResponseStream());				}				else{					ImageCurrent=null;//may not be necessary				}				response.Close();			}			catch(System.Exception exception){				MessageBox.Show(exception.Message);// + " Selected File Not Image."));				myStream.Close();				return;			}
 			RecZoom.Width=0;
 			DisplayImage(true);
 			Documents.Cur=new Document();
+			//Documents.InsertCur will use this extension when naming:
+			Documents.Cur.FileName=Path.GetExtension(openFileDialog2.FileName);
 			formDocInfo2=new FormDocInfo();
 			formDocInfo2.IsNew=true;
-			formDocInfo2.ShowDialog();
+			//formDocInfo2.Extension=;
+			formDocInfo2.ShowDialog();//this saves data to db
 		  if(formDocInfo2.DialogResult==DialogResult.OK){
 				try{
+					//MessageBox.Show(Path.GetDirectoryName(openFileDialog2.FileName)+"\\"+","+patFolder);
+					//if(Path.GetDirectoryName(openFileDialog2.FileName)==patFolder
 					File.Copy(openFileDialog2.FileName,patFolder+Documents.Cur.FileName);
-					//
 				}
 				catch{
 					MessageBox.Show(Lan.g(this,"Unable to copy file.  May be in use."));
@@ -794,7 +581,7 @@ namespace OpenDental{
 			DisplayImage(true);
 		}
 
-		private void butPaste_Click(object sender, System.EventArgs e) {
+		private void OnPaste_Click() {
 			IDataObject clipboard=Clipboard.GetDataObject();
 			if(!clipboard.GetDataPresent(DataFormats.Bitmap)){
 				MessageBox.Show(Lan.g(this,"No bitmap present on clipboard"));	
@@ -804,6 +591,7 @@ namespace OpenDental{
 			RecZoom.Width=0;
 			DisplayImage(true);
 			Documents.Cur=new Document();
+			Documents.Cur.FileName=".jpg";
 			formDocInfo2=new FormDocInfo();
 			formDocInfo2.IsNew=true;
 			formDocInfo2.ShowDialog();
@@ -823,7 +611,8 @@ namespace OpenDental{
 			DisplayImage(false);
 		}
 
-		private void butCrop_Click(object sender, System.EventArgs e) {
+		private void OnCrop_Click() {
+			/*
 			if(butCrop.FlatStyle==FlatStyle.Standard){//crop mode
 				//do nothing
 			}
@@ -832,18 +621,21 @@ namespace OpenDental{
 				butCrop.FlatStyle=FlatStyle.Standard;
 				butHand.FlatStyle=FlatStyle.Popup;
 				PictureBox1.Cursor = Cursors.Default;
+			}*/
+			//remember it's testing after the push has been completed
+			if(ToolBarMain.Buttons["Crop"].Pushed){ //Crop Mode
+				ToolBarMain.Buttons["Hand"].Pushed=false;
+				PictureBox1.Cursor = Cursors.Default;
+			}		
+			else{
+				ToolBarMain.Buttons["Crop"].Pushed=true;
 			}
-			//the old logic: remember it's different because it was testing after the push
-			//if(toolBarButCrop.Pushed){ //Crop Mode
-				//toolBarButHand.Pushed=false;
-				//PictureBox1.Cursor = Cursors.Default;
-			//}		
-			//else{
-			//	toolBarButCrop.Pushed=true;
-			//}
+			IsCropMode=true;
+			ToolBarMain.Invalidate();
 		}
 
-		private void butHand_Click(object sender, System.EventArgs e) {
+		private void OnHand_Click() {
+			/*
 			if(butHand.FlatStyle==FlatStyle.Standard){//if hand mode
 				//do nothing
 			}
@@ -854,20 +646,21 @@ namespace OpenDental{
 				PictureBox1.Cursor = Cursors.Hand;
 				RecCrop=new Rectangle();
 				DisplayImage(false);
+			}*/
+			if(ToolBarMain.Buttons["Hand"].Pushed){//Hand Mode
+				ToolBarMain.Buttons["Crop"].Pushed=false;
+				PictureBox1.Cursor=Cursors.Hand;
+				RecCrop=new Rectangle();
+				DisplayImage(false);
 			}
-			//save this logic if we go back to toolbars
-			//if(toolBarButHand.Pushed){//Hand Mode
-			//	toolBarButCrop.Pushed=false;
-			//	PictureBox1.Cursor=Cursors.Hand;
-			//	RecCrop=new Rectangle();
-			//	DisplayImage(false);
-			//}
-			//else{
-			//	toolBarButHand.Pushed=true;
-			//}		
+			else{
+				ToolBarMain.Buttons["Hand"].Pushed=true;
+			}
+			IsCropMode=false;
+			ToolBarMain.Invalidate();
 		}
 
-		private void butZoomIn_Click(object sender, System.EventArgs e) {
+		private void OnZoomIn_Click() {
 			if(ImageCurrent==null) return;
 			RecZoom.Height=RecZoom.Height/2;
 			RecZoom.Width=RecZoom.Width/2;
@@ -885,7 +678,7 @@ namespace OpenDental{
 			dc.Dispose();
 		}
 
-		private void butZoomOut_Click(object sender, System.EventArgs e) {
+		private void OnZoomOut_Click() {
 			if(ImageCurrent==null) return;
 			RecZoom.Height=RecZoom.Height*2;
 			RecZoom.Width=RecZoom.Width*2;
@@ -923,57 +716,6 @@ namespace OpenDental{
 				,RecZoom,GraphicsUnit.Pixel);
 			dc2.Dispose();
 		}
-
-
-		///<summary></summary>
-		public void toolBar2_ButtonClick(object sender, System.Windows.Forms.ToolBarButtonClickEventArgs e){
-			/*switch(e.Button){
-				case toolBarButPat:
-					MessageBox.Show("Pat");
-					break;
-				case toolBarButPrint:
-					MessageBox.Show("Print");
-					break;
-			}*/
-			/*switch (ToolBar2.Buttons[ToolBar2.Buttons.IndexOf(e.Button)].Tag.ToString()){
-				case "Pat":
-					
-					break;
-				case "Print":
-				  
-					break;
-				case "Del":
-					
-					break;
-				case "Info":
-					
-					break;
-				case "Scan":
-					
-  				break;
-				case "Imp": 
-					
-					break;
-				case "Paste":
-					
-					break;
-				case "Crop":
-					
-					break;
-				case "Hand":
-							
-					break;
-				case "ZoomIn":
-					
-					break;
-				case "ZoomOut":
-					
-					break;
-        case "ScanTemp":   
-					AutoCrop();
-					break;
-			} // end of switch*/
-		}//end toolBar2.button_click
 
 		private void AutoCrop(){
 			float edgeDarkness=.94f;  //threshold for brightness. 1 is white.
@@ -1156,7 +898,8 @@ namespace OpenDental{
 						ImageCurrent=(Bitmap)Bitmap.FromFile(imageFileName);	    // sets current image to temp file
 						RecZoom.Width=0;
 						DisplayImage(true);                             //shows image
-						Documents.Cur=new Document();  
+						Documents.Cur=new Document();
+						Documents.Cur.FileName=".jpg";
 						formDocInfo2=new FormDocInfo();
 						formDocInfo2.IsNew=true;     
 						formDocInfo2.ShowDialog();    //opens dialog to set info and precursor to save
@@ -1215,17 +958,39 @@ namespace OpenDental{
 		}
 
 		private void treeDocuments_AfterSelect(object sender, System.Windows.Forms.TreeViewEventArgs e){
-//later change the event to click instead of AfterSelect for more intuitive response.
+			//later change the event to click instead of AfterSelect for more intuitive response.
 			string SrcFileName="";
-			for(int i=0;i<TreeDocuments.Nodes.Count;i++){//new jws checks if node is in first level and leaves blank
+			for(int i=0;i<TreeDocuments.Nodes.Count;i++){
 			  if (TreeDocuments.SelectedNode.Equals(TreeDocuments.Nodes[i])){
 				  ShowBlank();
 				  return;
         }
 	    }
-		  Documents.GetCurrent(TreeDocuments.SelectedNode.Tag.ToString());//tag holds the document number of the node:			SrcFileName = patFolder+Documents.Cur.FileName;			try  {		    WebRequest request=WebRequest.Create(SrcFileName); 			  WebResponse response=request.GetResponse();			  ImageCurrent=(Bitmap)System.Drawing.Bitmap.FromStream(response.GetResponseStream());			  response.Close();	    }		  catch(System.Exception exception)  {		    MessageBox.Show(Lan.g(this,exception.Message)); 				ImageCurrent=null;	    }
+			//tag holds the document number of the node
+		  Documents.GetCurrent(TreeDocuments.SelectedNode.Tag.ToString());			SrcFileName = patFolder+Documents.Cur.FileName;			try{		    WebRequest request=WebRequest.Create(SrcFileName); 			  WebResponse response=request.GetResponse();				//MessageBox.Show(Path.GetExtension(SrcFileName));				if(Path.GetExtension(SrcFileName)==".jpg"					|| Path.GetExtension(SrcFileName)==".gif"){					ImageCurrent = (Bitmap)System.Drawing.Bitmap.FromStream(response.GetResponseStream());				}				else{					ImageCurrent=null;//may not be necessary				}			  response.Close();	    }		  catch(System.Exception exception){		    MessageBox.Show(Lan.g(this,exception.Message)); 				ImageCurrent=null;	    }
 		  RecZoom.Width=0;
 		  DisplayImage(true);
+		}
+
+		private void TreeDocuments_DoubleClick(object sender, System.EventArgs e) {
+			//AfterSelect will have just run, so the cur document will have been refreshed.
+			string SrcFileName="";
+			for(int i=0;i<TreeDocuments.Nodes.Count;i++){
+			  if (TreeDocuments.SelectedNode.Equals(TreeDocuments.Nodes[i])){
+				  ShowBlank();
+				  return;
+        }
+	    }
+			//tag holds the document number of the node
+		  //Documents.GetCurrent(TreeDocuments.SelectedNode.Tag.ToString());			SrcFileName = patFolder+Documents.Cur.FileName;
+			if(Path.GetExtension(SrcFileName)!=".jpg"){
+				try{
+					Process.Start(SrcFileName);
+				}
+				catch(Exception ex){
+					MessageBox.Show(ex.Message);
+				}
+			}
 		}
 
 		private void ShowBlank(){
@@ -1275,7 +1040,8 @@ namespace OpenDental{
 
 		private void PictureBox1_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e){
 			//if(toolBarButHand.Pushed){//Hand Mode
-			if(butHand.FlatStyle==FlatStyle.Standard){//hand mode
+			//if(butHand.FlatStyle==FlatStyle.Standard){//hand mode
+			if(ToolBarMain.Buttons["Hand"].Pushed){//hand mode
 				PtOrigin=new Point(e.X,e.Y);
 				MouseIsDown=true;
 				//RecZoom is already established and will not change until after MouseUp
@@ -1289,7 +1055,8 @@ namespace OpenDental{
 		private void PictureBox1_MouseMove(object sender,System.Windows.Forms.MouseEventArgs e){
 			if(ImageCurrent==null) return;
 			//if(toolBarButHand.Pushed){//Hand Mode
-			if(butHand.FlatStyle==FlatStyle.Standard){//hand mode
+			//if(butHand.FlatStyle==FlatStyle.Standard){//hand mode
+			if(ToolBarMain.Buttons["Hand"].Pushed){//hand mode
 				if(!MouseIsDown) return;
 				RecTemp=new Rectangle();
 				RecTemp.X=RecZoom.X-((e.X-PtOrigin.X)*2* RecZoom.Width/PictureBox1.ClientRectangle.Width);
@@ -1326,7 +1093,8 @@ namespace OpenDental{
 		private void PictureBox1_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e){
 			MouseIsDown=false;
 			//if(toolBarButHand.Pushed){//Hand Mode
-			if(butHand.FlatStyle==FlatStyle.Standard){
+			//if(butHand.FlatStyle==FlatStyle.Standard){
+			if(ToolBarMain.Buttons["Hand"].Pushed){//hand mode
 				RecZoom=RecTemp;
 			}
 			else{//Crop Mode
@@ -1355,6 +1123,10 @@ namespace OpenDental{
 				DisplayImage(true);
 			}
 		}
+
+		
+
+		
 
 		
 	}

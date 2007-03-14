@@ -106,7 +106,7 @@ namespace OpenDental{
 
 		private void butOK_Click(object sender, System.EventArgs e) {
 			carrier= PIn.PString(textBoxCarrier.Text);
-			Queries.CurReport=new Report();
+			Queries.CurReport=new ReportOld();
 
 /*
 SELECT insplan.subscriber,insplan.carrier,patient.hmphone,

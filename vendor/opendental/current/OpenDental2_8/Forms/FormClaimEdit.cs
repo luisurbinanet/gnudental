@@ -87,6 +87,8 @@ namespace OpenDental{
 		private System.Windows.Forms.PrintDialog printDialog2;
 		private OpenDental.XPButton butPrint;
 		private System.Windows.Forms.Button butOtherNone;
+		private System.Windows.Forms.Label label11;
+		private OpenDental.ValidNum textRadiographs;
 		private System.Windows.Forms.Button butOtherCovChange;
 		//private double DedAdjPerc;
 
@@ -226,6 +228,8 @@ namespace OpenDental{
 			this.butPrint = new OpenDental.XPButton();
 			this.butPreview = new OpenDental.XPButton();
 			this.printDialog2 = new System.Windows.Forms.PrintDialog();
+			this.textRadiographs = new OpenDental.ValidNum();
+			this.label11 = new System.Windows.Forms.Label();
 			this.groupBox1.SuspendLayout();
 			this.groupBox4.SuspendLayout();
 			this.groupEnterPayment.SuspendLayout();
@@ -543,9 +547,9 @@ namespace OpenDental{
 			this.groupBox4.Controls.Add(this.checkIsOrtho);
 			this.groupBox4.Controls.Add(this.label26);
 			this.groupBox4.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox4.Location = new System.Drawing.Point(677, 499);
+			this.groupBox4.Location = new System.Drawing.Point(734, 498);
 			this.groupBox4.Name = "groupBox4";
-			this.groupBox4.Size = new System.Drawing.Size(177, 88);
+			this.groupBox4.Size = new System.Drawing.Size(192, 88);
 			this.groupBox4.TabIndex = 11;
 			this.groupBox4.TabStop = false;
 			this.groupBox4.Text = "Ortho";
@@ -570,6 +574,7 @@ namespace OpenDental{
 			// textOrthoRemainM
 			// 
 			this.textOrthoRemainM.Location = new System.Drawing.Point(107, 59);
+			this.textOrthoRemainM.MinVal = 0;
 			this.textOrthoRemainM.Name = "textOrthoRemainM";
 			this.textOrthoRemainM.Size = new System.Drawing.Size(39, 20);
 			this.textOrthoRemainM.TabIndex = 2;
@@ -879,6 +884,24 @@ namespace OpenDental{
 			this.butPreview.Text = "P&review";
 			this.butPreview.Click += new System.EventHandler(this.butPreview_Click);
 			// 
+			// textRadiographs
+			// 
+			this.textRadiographs.Location = new System.Drawing.Point(580, 606);
+			this.textRadiographs.MinVal = 0;
+			this.textRadiographs.Name = "textRadiographs";
+			this.textRadiographs.Size = new System.Drawing.Size(39, 20);
+			this.textRadiographs.TabIndex = 116;
+			this.textRadiographs.Text = "";
+			// 
+			// label11
+			// 
+			this.label11.Location = new System.Drawing.Point(426, 608);
+			this.label11.Name = "label11";
+			this.label11.Size = new System.Drawing.Size(152, 18);
+			this.label11.TabIndex = 117;
+			this.label11.Text = "Radiographs Attached";
+			this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
 			// FormClaimEdit
 			// 
 			this.AcceptButton = this.butOK;
@@ -886,6 +909,8 @@ namespace OpenDental{
 			this.AutoScroll = true;
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(947, 669);
+			this.Controls.Add(this.textRadiographs);
+			this.Controls.Add(this.label11);
 			this.Controls.Add(this.butPreview);
 			this.Controls.Add(this.butPrint);
 			this.Controls.Add(this.textWriteOff);
@@ -1097,6 +1122,7 @@ namespace OpenDental{
 				textOrthoDate.Text="";
 			else
 				textOrthoDate.Text=Claims.Cur.OrthoDate.ToShortDateString();
+			textRadiographs.Text=Claims.Cur.Radiographs.ToString();
 			FillGrids();
 		}
 
@@ -1130,11 +1156,8 @@ namespace OpenDental{
 			FillGrids();
 		}
 
-		///<summary></summary>
+		///<summary>Updates all claimproc estimates and also updates claim totals to db.  Must have already run ClaimProcs.GetForClaim(), either in FillTable() or manually.  Will also need to refresh afterwards to see the results</summary>
 		public void CalculateEstimates(){
-			//Updates all claimproc estimates and also updates claim totals to db.
-			//Must have already run ClaimProcs.GetForClaim(), either in FillTable() or manually.
-			//Will also need to refresh afterwards to see the results.
 			double claimFee=0;
 			double dedApplied=0;
 			double insPayEst=0;
@@ -1156,9 +1179,11 @@ namespace OpenDental{
 				insPayAmt+=ClaimProcs.Cur.InsPayAmt;
 			}
 			//loop again only for procs not received.
+			//And for preauth.
 			for(int i=0;i<ClaimProcs.ForClaim.Length;i++){
 				ClaimProcs.Cur=ClaimProcs.ForClaim[i];
-				if(ClaimProcs.Cur.Status!=ClaimProcStatus.NotReceived){
+				if(ClaimProcs.Cur.Status!=ClaimProcStatus.NotReceived
+					&& ClaimProcs.Cur.Status!=ClaimProcStatus.Preauth){
 					continue;
 				}
 				if(!Procedures.HList.ContainsKey(ClaimProcs.Cur.ProcNum)){
@@ -1454,7 +1479,7 @@ namespace OpenDental{
 			else{
 				for(int i=0;i<ClaimProcs.ForClaim.Length;i++){
 					if(ClaimProcs.ForClaim[i].Status!=ClaimProcStatus.NotReceived){
-						return;
+						continue;
 					}
 					ClaimProcs.Cur=ClaimProcs.ForClaim[i];
 					ClaimProcs.Cur.Status=ClaimProcStatus.Received;
@@ -1750,6 +1775,7 @@ namespace OpenDental{
 				|| textDedApplied.errorProvider1.GetError(textDedApplied)!=""
 				|| textInsPayAmt.errorProvider1.GetError(textInsPayAmt)!=""
 				|| textOrthoDate.errorProvider1.GetError(textOrthoDate)!=""
+				|| textRadiographs.errorProvider1.GetError(textRadiographs)!=""
 				){
 				MessageBox.Show(Lan.g(this,"Please fix data entry errors first."));
 				return false;
@@ -1801,6 +1827,7 @@ namespace OpenDental{
 			Claims.Cur.IsOrtho=checkIsOrtho.Checked;
 			Claims.Cur.OrthoRemainM=PIn.PInt(textOrthoRemainM.Text);
 			Claims.Cur.OrthoDate=PIn.PDate(textOrthoDate.Text);
+			Claims.Cur.Radiographs=PIn.PInt(textRadiographs.Text);
 			Claims.UpdateCur();
 			if(Claims.Cur.ClaimStatus=="S"){
 				SecurityLogs.MakeLogEntry("Claims Sent Edit",Claims.cmd.CommandText);

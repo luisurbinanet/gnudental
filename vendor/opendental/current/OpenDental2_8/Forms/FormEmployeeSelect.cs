@@ -166,16 +166,16 @@ namespace OpenDental{
 			Employees.Refresh();
 			listEmployees.Items.Clear();
 			ALemployees=new ArrayList();
-			for(int i=0;i<Employees.List.Length;i++){
-				if(Employees.List[i].IsHidden){
+			for(int i=0;i<Employees.ListLong.Length;i++){
+				if(Employees.ListLong[i].IsHidden){
 					if(checkHidden.Checked){
-						ALemployees.Add(Employees.List[i]);
-						listEmployees.Items.Add(Employees.GetName(Employees.List[i])+"(hidden)");
+						ALemployees.Add(Employees.ListLong[i]);
+						listEmployees.Items.Add(Employees.GetName(Employees.ListLong[i])+"(hidden)");
 					}
 				}
 				else{
-					ALemployees.Add(Employees.List[i]);
-					listEmployees.Items.Add(Employees.GetName(Employees.List[i]));
+					ALemployees.Add(Employees.ListLong[i]);
+					listEmployees.Items.Add(Employees.GetName(Employees.ListLong[i]));
 				}
 			}
 		}

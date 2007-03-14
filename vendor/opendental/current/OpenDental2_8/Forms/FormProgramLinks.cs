@@ -10,15 +10,14 @@ namespace OpenDental{
 		private System.Windows.Forms.ListBox listProgram;
 		private System.ComponentModel.Container components = null;
 		private System.Windows.Forms.Button butClose;
-		private OpenDental.XPButton butAdd;
-		private System.Windows.Forms.Label label1;// Required designer variable.
+		private OpenDental.XPButton butAdd;// Required designer variable.
 		private Programs Programs=new Programs();
 
 		///<summary></summary>
 		public FormProgramLinks(){
 			InitializeComponent();// Required for Windows Form Designer support
 			Lan.C(this, new System.Windows.Forms.Control[] {
-				label1,
+				this,
 			});
 			Lan.C("All", new System.Windows.Forms.Control[] {
 				butClose,
@@ -43,7 +42,6 @@ namespace OpenDental{
 			this.listProgram = new System.Windows.Forms.ListBox();
 			this.butClose = new System.Windows.Forms.Button();
 			this.butAdd = new OpenDental.XPButton();
-			this.label1 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// listProgram
@@ -81,22 +79,10 @@ namespace OpenDental{
 			this.butAdd.Text = "&Add";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
-			// label1
-			// 
-			this.label1.Location = new System.Drawing.Point(19, 6);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(409, 38);
-			this.label1.TabIndex = 43;
-			this.label1.Text = "You can only link to certain predefined programs.  We might have to help you with" +
-				" the specific name of the link.";
-			// 
 			// FormProgramLinks
 			// 
-			this.AcceptButton = this.butClose;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.CancelButton = this.butClose;
 			this.ClientSize = new System.Drawing.Size(447, 412);
-			this.Controls.Add(this.label1);
 			this.Controls.Add(this.butAdd);
 			this.Controls.Add(this.listProgram);
 			this.Controls.Add(this.butClose);

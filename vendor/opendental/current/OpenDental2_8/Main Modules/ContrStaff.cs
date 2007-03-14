@@ -1,7 +1,3 @@
-/*=============================================================================================================
-Open Dental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
-See header in FormOpenDental.cs for complete text.  Redistributions must retain this text.
-===============================================================================================================*/
 using System;
 using System.Collections;
 using System.ComponentModel;
@@ -9,39 +5,32 @@ using System.Drawing;
 using System.Data;
 using System.Windows.Forms;
 
-namespace OpenDental
-{
-	/// <summary>
-	/// Summary description for ContrStaff.
-	/// </summary>
-	public class ContrStaff : System.Windows.Forms.UserControl
-	{
-		private System.Windows.Forms.Button butViewAmbr;
-		private System.Windows.Forms.GroupBox groupJordan;
-		private System.Windows.Forms.CheckBox checkAmbr;
-		private System.Windows.Forms.CheckBox checkBonn;
-		private System.Windows.Forms.CheckBox checkBrit;
-		private System.Windows.Forms.CheckBox checkDust;
-		private System.Windows.Forms.CheckBox checkLori;
-		private System.Windows.Forms.CheckBox checkKimm;
-		private System.Windows.Forms.Button butViewJordan;
+namespace OpenDental{
+
+	///<summary></summary>
+	public class ContrStaff : System.Windows.Forms.UserControl{
+		private System.Windows.Forms.Button butTimeCard;
+		private System.Windows.Forms.ListBox listStatus;
+		private OpenDental.TableEmpClock tbEmp;
+		private System.Windows.Forms.Label textTime;
 		private System.Windows.Forms.Timer timer1;
-		private System.ComponentModel.IContainer components;
-		private System.Windows.Forms.Button butViewBonn;
-		private System.Windows.Forms.Button butViewBrit;
-		private System.Windows.Forms.Button butViewDust;
-		private System.Windows.Forms.Button butViewKimm;
-		private System.Windows.Forms.Button butViewLori;
-		private System.Windows.Forms.CheckBox checkAft;
-		private System.Windows.Forms.CheckBox checkMorn;
-		private System.Windows.Forms.TextBox textAft;
-		private System.Windows.Forms.TextBox textMorn;
+		private System.Windows.Forms.Button butClockIn;
+		private System.Windows.Forms.Button butClockOut;
+		private System.Windows.Forms.GroupBox groupBox1;
+		private System.Windows.Forms.GroupBox groupBox2;
+		private System.Windows.Forms.Button butClear;
+		private System.Windows.Forms.Button butSend;
+		private System.Windows.Forms.TextBox textMessage;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;
+		private System.ComponentModel.IContainer components;
+		///<summary>Server time minus local computer time, usually +/- 1 or 2 minutes</summary>
+		private TimeSpan TimeDelta;
 
 		///<summary></summary>
 		public ContrStaff(){
 			InitializeComponent();
+			this.listStatus.Click += new System.EventHandler(this.listStatus_Click);
 		}
 
 		///<summary></summary>
@@ -55,413 +44,334 @@ namespace OpenDental
 		}
 
 		#region Component Designer generated code
-		/// <summary> 
-		/// Required method for Designer support - do not modify 
-		/// the contents of this method with the code editor.
-		/// </summary>
-		private void InitializeComponent()
-		{
+
+		private void InitializeComponent(){
 			this.components = new System.ComponentModel.Container();
-			this.checkAft = new System.Windows.Forms.CheckBox();
-			this.checkMorn = new System.Windows.Forms.CheckBox();
-			this.textAft = new System.Windows.Forms.TextBox();
-			this.textMorn = new System.Windows.Forms.TextBox();
-			this.butViewAmbr = new System.Windows.Forms.Button();
-			this.groupJordan = new System.Windows.Forms.GroupBox();
-			this.butViewJordan = new System.Windows.Forms.Button();
-			this.checkKimm = new System.Windows.Forms.CheckBox();
-			this.checkLori = new System.Windows.Forms.CheckBox();
-			this.checkDust = new System.Windows.Forms.CheckBox();
-			this.checkBrit = new System.Windows.Forms.CheckBox();
-			this.checkBonn = new System.Windows.Forms.CheckBox();
-			this.checkAmbr = new System.Windows.Forms.CheckBox();
+			this.butClockIn = new System.Windows.Forms.Button();
+			this.listStatus = new System.Windows.Forms.ListBox();
+			this.butClockOut = new System.Windows.Forms.Button();
+			this.tbEmp = new OpenDental.TableEmpClock();
+			this.butTimeCard = new System.Windows.Forms.Button();
+			this.textTime = new System.Windows.Forms.Label();
 			this.timer1 = new System.Windows.Forms.Timer(this.components);
-			this.butViewBonn = new System.Windows.Forms.Button();
-			this.butViewBrit = new System.Windows.Forms.Button();
-			this.butViewDust = new System.Windows.Forms.Button();
-			this.butViewKimm = new System.Windows.Forms.Button();
-			this.butViewLori = new System.Windows.Forms.Button();
+			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.groupBox2 = new System.Windows.Forms.GroupBox();
+			this.butClear = new System.Windows.Forms.Button();
+			this.butSend = new System.Windows.Forms.Button();
+			this.textMessage = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
-			this.groupJordan.SuspendLayout();
+			this.groupBox1.SuspendLayout();
+			this.groupBox2.SuspendLayout();
 			this.SuspendLayout();
 			// 
-			// checkAft
+			// butClockIn
 			// 
-			this.checkAft.Location = new System.Drawing.Point(204, 176);
-			this.checkAft.Name = "checkAft";
-			this.checkAft.Size = new System.Drawing.Size(72, 24);
-			this.checkAft.TabIndex = 4;
-			this.checkAft.Text = "Afternoon";
-			this.checkAft.Click += new System.EventHandler(this.checkAft_Click);
+			this.butClockIn.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butClockIn.Location = new System.Drawing.Point(371, 127);
+			this.butClockIn.Name = "butClockIn";
+			this.butClockIn.Size = new System.Drawing.Size(120, 23);
+			this.butClockIn.TabIndex = 11;
+			this.butClockIn.Text = "Clock In";
+			this.butClockIn.Click += new System.EventHandler(this.butClockIn_Click);
 			// 
-			// checkMorn
+			// listStatus
 			// 
-			this.checkMorn.Location = new System.Drawing.Point(204, 144);
-			this.checkMorn.Name = "checkMorn";
-			this.checkMorn.Size = new System.Drawing.Size(64, 24);
-			this.checkMorn.TabIndex = 3;
-			this.checkMorn.Text = "Morning";
-			this.checkMorn.Click += new System.EventHandler(this.checkMorn_Click);
+			this.listStatus.Location = new System.Drawing.Point(373, 175);
+			this.listStatus.Name = "listStatus";
+			this.listStatus.Size = new System.Drawing.Size(120, 43);
+			this.listStatus.TabIndex = 12;
 			// 
-			// textAft
+			// butClockOut
 			// 
-			this.textAft.Location = new System.Drawing.Point(128, 176);
-			this.textAft.Name = "textAft";
-			this.textAft.ReadOnly = true;
-			this.textAft.Size = new System.Drawing.Size(60, 20);
-			this.textAft.TabIndex = 2;
-			this.textAft.Text = "";
-			this.textAft.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.butClockOut.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butClockOut.Location = new System.Drawing.Point(371, 150);
+			this.butClockOut.Name = "butClockOut";
+			this.butClockOut.Size = new System.Drawing.Size(120, 23);
+			this.butClockOut.TabIndex = 14;
+			this.butClockOut.Text = "Clock Out For:";
+			this.butClockOut.Click += new System.EventHandler(this.butClockOut_Click);
 			// 
-			// textMorn
+			// tbEmp
 			// 
-			this.textMorn.Location = new System.Drawing.Point(128, 144);
-			this.textMorn.Name = "textMorn";
-			this.textMorn.ReadOnly = true;
-			this.textMorn.Size = new System.Drawing.Size(60, 20);
-			this.textMorn.TabIndex = 1;
-			this.textMorn.Text = "";
-			this.textMorn.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.tbEmp.BackColor = System.Drawing.SystemColors.Window;
+			this.tbEmp.Location = new System.Drawing.Point(58, 38);
+			this.tbEmp.Name = "tbEmp";
+			this.tbEmp.ScrollValue = 280;
+			this.tbEmp.SelectedIndices = new int[0];
+			this.tbEmp.SelectionMode = System.Windows.Forms.SelectionMode.One;
+			this.tbEmp.Size = new System.Drawing.Size(299, 229);
+			this.tbEmp.TabIndex = 15;
+			this.tbEmp.CellClicked += new OpenDental.ContrTable.CellEventHandler(this.tbEmp_CellClicked);
 			// 
-			// butViewAmbr
+			// butTimeCard
 			// 
-			this.butViewAmbr.Location = new System.Drawing.Point(84, 72);
-			this.butViewAmbr.Name = "butViewAmbr";
-			this.butViewAmbr.TabIndex = 0;
-			this.butViewAmbr.Text = "Amber";
-			this.butViewAmbr.Click += new System.EventHandler(this.butViewAmbr_Click);
+			this.butTimeCard.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butTimeCard.Location = new System.Drawing.Point(371, 38);
+			this.butTimeCard.Name = "butTimeCard";
+			this.butTimeCard.Size = new System.Drawing.Size(120, 23);
+			this.butTimeCard.TabIndex = 16;
+			this.butTimeCard.Text = "View Timecard";
+			this.butTimeCard.Click += new System.EventHandler(this.butTimeCard_Click);
 			// 
-			// groupJordan
+			// textTime
 			// 
-			this.groupJordan.Controls.AddRange(new System.Windows.Forms.Control[] {
-																																							this.butViewJordan,
-																																							this.checkKimm,
-																																							this.checkLori,
-																																							this.checkDust,
-																																							this.checkBrit,
-																																							this.checkBonn,
-																																							this.checkAmbr,
-																																							this.label1});
-			this.groupJordan.Location = new System.Drawing.Point(404, 48);
-			this.groupJordan.Name = "groupJordan";
-			this.groupJordan.Size = new System.Drawing.Size(224, 268);
-			this.groupJordan.TabIndex = 10;
-			this.groupJordan.TabStop = false;
-			this.groupJordan.Text = "All";
-			// 
-			// butViewJordan
-			// 
-			this.butViewJordan.Location = new System.Drawing.Point(76, 232);
-			this.butViewJordan.Name = "butViewJordan";
-			this.butViewJordan.TabIndex = 6;
-			this.butViewJordan.Text = "View";
-			this.butViewJordan.Click += new System.EventHandler(this.butViewJordan_Click);
-			// 
-			// checkKimm
-			// 
-			this.checkKimm.Location = new System.Drawing.Point(76, 168);
-			this.checkKimm.Name = "checkKimm";
-			this.checkKimm.Size = new System.Drawing.Size(52, 24);
-			this.checkKimm.TabIndex = 5;
-			this.checkKimm.Text = "Kim";
-			// 
-			// checkLori
-			// 
-			this.checkLori.Location = new System.Drawing.Point(76, 192);
-			this.checkLori.Name = "checkLori";
-			this.checkLori.Size = new System.Drawing.Size(52, 24);
-			this.checkLori.TabIndex = 4;
-			this.checkLori.Text = "Lori";
-			// 
-			// checkDust
-			// 
-			this.checkDust.Location = new System.Drawing.Point(76, 144);
-			this.checkDust.Name = "checkDust";
-			this.checkDust.Size = new System.Drawing.Size(56, 24);
-			this.checkDust.TabIndex = 3;
-			this.checkDust.Text = "Dusty";
-			// 
-			// checkBrit
-			// 
-			this.checkBrit.Location = new System.Drawing.Point(76, 120);
-			this.checkBrit.Name = "checkBrit";
-			this.checkBrit.Size = new System.Drawing.Size(64, 24);
-			this.checkBrit.TabIndex = 2;
-			this.checkBrit.Text = "Brittany";
-			// 
-			// checkBonn
-			// 
-			this.checkBonn.Location = new System.Drawing.Point(76, 96);
-			this.checkBonn.Name = "checkBonn";
-			this.checkBonn.Size = new System.Drawing.Size(72, 24);
-			this.checkBonn.TabIndex = 1;
-			this.checkBonn.Text = "Bonnie";
-			// 
-			// checkAmbr
-			// 
-			this.checkAmbr.Location = new System.Drawing.Point(76, 72);
-			this.checkAmbr.Name = "checkAmbr";
-			this.checkAmbr.Size = new System.Drawing.Size(64, 24);
-			this.checkAmbr.TabIndex = 0;
-			this.checkAmbr.Text = "Amber";
+			this.textTime.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.textTime.Location = new System.Drawing.Point(370, 96);
+			this.textTime.Name = "textTime";
+			this.textTime.Size = new System.Drawing.Size(121, 28);
+			this.textTime.TabIndex = 17;
+			this.textTime.Text = "12:00:00 PM";
+			this.textTime.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
 			// 
 			// timer1
 			// 
-			this.timer1.Interval = 2000;
+			this.timer1.Enabled = true;
+			this.timer1.Interval = 1000;
 			this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
 			// 
-			// butViewBonn
+			// groupBox1
 			// 
-			this.butViewBonn.Location = new System.Drawing.Point(168, 72);
-			this.butViewBonn.Name = "butViewBonn";
-			this.butViewBonn.TabIndex = 11;
-			this.butViewBonn.Text = "Bonnie";
-			this.butViewBonn.Click += new System.EventHandler(this.butViewBonn_Click);
+			this.groupBox1.Controls.Add(this.label2);
+			this.groupBox1.Controls.Add(this.listStatus);
+			this.groupBox1.Controls.Add(this.butClockOut);
+			this.groupBox1.Controls.Add(this.tbEmp);
+			this.groupBox1.Controls.Add(this.butTimeCard);
+			this.groupBox1.Controls.Add(this.textTime);
+			this.groupBox1.Controls.Add(this.butClockIn);
+			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.groupBox1.Location = new System.Drawing.Point(171, 397);
+			this.groupBox1.Name = "groupBox1";
+			this.groupBox1.Size = new System.Drawing.Size(530, 310);
+			this.groupBox1.TabIndex = 18;
+			this.groupBox1.TabStop = false;
+			this.groupBox1.Text = "Time Clock";
 			// 
-			// butViewBrit
+			// groupBox2
 			// 
-			this.butViewBrit.Location = new System.Drawing.Point(252, 72);
-			this.butViewBrit.Name = "butViewBrit";
-			this.butViewBrit.TabIndex = 12;
-			this.butViewBrit.Text = "Brittany";
-			this.butViewBrit.Click += new System.EventHandler(this.butViewBrit_Click);
+			this.groupBox2.Controls.Add(this.butClear);
+			this.groupBox2.Controls.Add(this.butSend);
+			this.groupBox2.Controls.Add(this.textMessage);
+			this.groupBox2.Controls.Add(this.label1);
+			this.groupBox2.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.groupBox2.Location = new System.Drawing.Point(171, 90);
+			this.groupBox2.Name = "groupBox2";
+			this.groupBox2.Size = new System.Drawing.Size(530, 229);
+			this.groupBox2.TabIndex = 19;
+			this.groupBox2.TabStop = false;
+			this.groupBox2.Text = "Messaging";
 			// 
-			// butViewDust
+			// butClear
 			// 
-			this.butViewDust.Location = new System.Drawing.Point(84, 104);
-			this.butViewDust.Name = "butViewDust";
-			this.butViewDust.TabIndex = 13;
-			this.butViewDust.Text = "Dusty";
-			this.butViewDust.Click += new System.EventHandler(this.butViewDust_Click);
+			this.butClear.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butClear.Location = new System.Drawing.Point(167, 175);
+			this.butClear.Name = "butClear";
+			this.butClear.TabIndex = 3;
+			this.butClear.Text = "Clear";
+			this.butClear.Click += new System.EventHandler(this.butClear_Click);
 			// 
-			// butViewKimm
+			// butSend
 			// 
-			this.butViewKimm.Location = new System.Drawing.Point(168, 104);
-			this.butViewKimm.Name = "butViewKimm";
-			this.butViewKimm.TabIndex = 14;
-			this.butViewKimm.Text = "Kim";
-			this.butViewKimm.Click += new System.EventHandler(this.butViewKimm_Click);
+			this.butSend.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butSend.Location = new System.Drawing.Point(30, 175);
+			this.butSend.Name = "butSend";
+			this.butSend.TabIndex = 2;
+			this.butSend.Text = "Send";
+			this.butSend.Click += new System.EventHandler(this.butSend_Click);
 			// 
-			// butViewLori
+			// textMessage
 			// 
-			this.butViewLori.Location = new System.Drawing.Point(252, 104);
-			this.butViewLori.Name = "butViewLori";
-			this.butViewLori.TabIndex = 15;
-			this.butViewLori.Text = "Lori";
-			this.butViewLori.Click += new System.EventHandler(this.butViewLori_Click);
+			this.textMessage.Location = new System.Drawing.Point(28, 64);
+			this.textMessage.Multiline = true;
+			this.textMessage.Name = "textMessage";
+			this.textMessage.Size = new System.Drawing.Size(419, 89);
+			this.textMessage.TabIndex = 1;
+			this.textMessage.Text = "";
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(12, 24);
+			this.label1.Location = new System.Drawing.Point(28, 34);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(204, 40);
-			this.label1.TabIndex = 16;
-			this.label1.Text = "This is for everyone\'s use.  You can use the View button to see who is unavailabl" +
-				"e because they are on break.";
+			this.label1.TabIndex = 0;
+			this.label1.Text = "General Message";
+			this.label1.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(84, 32);
+			this.label2.Location = new System.Drawing.Point(381, 84);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(208, 28);
-			this.label2.TabIndex = 17;
-			this.label2.Text = "These buttons are private.  You should not view times other than your own";
+			this.label2.Size = new System.Drawing.Size(100, 19);
+			this.label2.TabIndex = 20;
+			this.label2.Text = "Server Time";
+			this.label2.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
 			// 
 			// ContrStaff
 			// 
-			this.Controls.AddRange(new System.Windows.Forms.Control[] {
-																																	this.label2,
-																																	this.butViewLori,
-																																	this.butViewKimm,
-																																	this.butViewDust,
-																																	this.butViewBrit,
-																																	this.butViewBonn,
-																																	this.groupJordan,
-																																	this.butViewAmbr,
-																																	this.textAft,
-																																	this.textMorn,
-																																	this.checkAft,
-																																	this.checkMorn});
+			this.Controls.Add(this.groupBox2);
+			this.Controls.Add(this.groupBox1);
 			this.Name = "ContrStaff";
-			this.Size = new System.Drawing.Size(668, 536);
-			this.groupJordan.ResumeLayout(false);
+			this.Size = new System.Drawing.Size(908, 702);
+			this.Load += new System.EventHandler(this.ContrStaff_Load);
+			this.groupBox1.ResumeLayout(false);
+			this.groupBox2.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
 		#endregion
 
+		private void ContrStaff_Load(object sender, System.EventArgs e) {
+		
+		}
+
 		///<summary></summary>
 		public void InstantClasses(){
-			//Breaks2 = new Breaks();
-			//Break2 = new Break();
+			Lan.C(this, new System.Windows.Forms.Control[] {
+				this.butClear,
+				this.butSend,
+				this.label1,
+			});
 		}
 
 		///<summary></summary>
 		public void ModuleSelected(){
-
+			RefreshModuleData();
+			RefreshModuleScreen();
 		}
 
-		private void checkMorn_Click(object sender, System.EventArgs e) {
-			/*
-			timer1.Stop();
-			timer1.Start();
-			Break2 = Breaks2.Cur;
-			TimeSpan delta;
-			if (checkMorn.Checked==true){
-				Break2.MornStart = DateTime.Now.ToString("HH:mm:ss");
-				Break2.MornBool = true;
+		///<summary></summary>
+		public void ModuleUnselected(){
+//todo: this is not getting triggered yet.
+		}
+
+		private void RefreshModuleData(){
+			TimeDelta=ClockEvents.GetServerTime()-DateTime.Now;
+			Employees.Refresh();
+		}
+
+		private void RefreshModuleScreen(){
+			textTime.Text=(DateTime.Now+TimeDelta).ToLongTimeString();
+			FillEmps();
+		}
+
+		private void butSend_Click(object sender, System.EventArgs e) {
+			Messages Messages=new Messages();//move this later
+			Messages.ButtonsToSend=new MessageButtons();
+			Messages.MessageToSend=new MessageInvalid();//because this value is tested when processing
+			Messages.ButtonsToSend.Type="Text";
+			Messages.ButtonsToSend.Text=textMessage.Text;
+			Messages.ButtonsToSend.Row=0;
+			Messages.ButtonsToSend.Col=0;
+			Messages.ButtonsToSend.Pushed=false;
+			Messages.SendButtons();
+		}
+
+		///<summary></summary>
+		public void LogMsg(string text){
+			textMessage.Text=text;
+		}
+
+		private void butClear_Click(object sender, System.EventArgs e) {
+			textMessage.Clear();
+			textMessage.Select();
+		}
+
+		private void FillEmps(){
+			tbEmp.ResetRows(Employees.ListShort.Length);
+			tbEmp.SetGridColor(Color.Gray);
+			tbEmp.SetBackGColor(Color.White);
+			for(int i=0;i<Employees.ListShort.Length;i++){
+				tbEmp.Cell[0,i]=Employees.GetName(Employees.ListShort[i]);
+				tbEmp.Cell[1,i]=Employees.ListShort[i].ClockStatus;
+			}
+			tbEmp.LayoutTables();
+			listStatus.Items.Clear();
+			for(int i=0;i<Enum.GetNames(typeof(TimeClockStatus)).Length;i++){
+				listStatus.Items.Add(Enum.GetNames(typeof(TimeClockStatus))[i]);
+			}
+			butClockIn.Enabled=false;
+			butClockOut.Enabled=false;
+			butTimeCard.Enabled=false;
+			listStatus.Enabled=false;
+		}
+
+		private void tbEmp_CellClicked(object sender, OpenDental.CellEventArgs e) {
+			Employees.Cur=Employees.ListShort[e.Row];
+			//MessageBox.Show("1");
+			ClockEvents.Refresh();
+			//MessageBox.Show("2");
+			if(ClockEvents.IsClockedIn()){
+				butClockIn.Enabled=false;
+				butClockOut.Enabled=true;
+				butTimeCard.Enabled=true;
+				listStatus.Enabled=true;
 			}
 			else{
-				delta = TimeSpan.Parse(Breaks2.Cur.MornRem)
-					-(DateTime.Now-DateTime.Parse(Breaks2.Cur.MornStart));
-				Break2.MornRem=Breaks2.SpanToS(true,delta);
-				Break2.MornBool = false;
+				butClockIn.Enabled=true;
+				butClockOut.Enabled=false;
+				butTimeCard.Enabled=true;
+				//MessageBox.Show("3");
+				listStatus.SelectedIndex=(int)ClockEvents.GetLastStatus();
+				//MessageBox.Show("4");
+				listStatus.Enabled=false;
 			}
-			Breaks2.Cur = Break2;
-			Breaks2.Update();*/
 		}
 
-		private void checkAft_Click(object sender, System.EventArgs e) {
-			/*
-			timer1.Stop();
-			timer1.Start();
-			Break2 = Breaks2.Cur;
-			TimeSpan delta;
-			if (checkAft.Checked==true){//Going on break
-				Break2.AftStart = DateTime.Now.ToString("HH:mm:ss");
-				Break2.AftBool = true;
+		private void listStatus_Click(object sender, System.EventArgs e) {
+			//
+		}
+
+		private void butClockIn_Click(object sender, System.EventArgs e) {
+			ClockEvents.Cur=new ClockEvent();
+			ClockEvents.Cur.EmployeeNum=Employees.Cur.EmployeeNum;
+			ClockEvents.Cur.TimeEntered=DateTime.Now+TimeDelta;
+			ClockEvents.Cur.TimeDisplayed=DateTime.Now+TimeDelta;
+			ClockEvents.Cur.ClockIn=true;
+			ClockEvents.Cur.ClockStatus=(TimeClockStatus)listStatus.SelectedIndex;
+			ClockEvents.InsertCur();
+			Employees.Cur.ClockStatus="Working";
+			Employees.UpdateCur();
+			ModuleSelected();
+		}
+
+		private void butClockOut_Click(object sender, System.EventArgs e) {
+			if(listStatus.SelectedIndex==-1){
+				MessageBox.Show(Lan.g(this,"Please select a status first."));
+				return;
 			}
-			else{//Coming off of break
-				delta = TimeSpan.Parse(Breaks2.Cur.AftRem)
-					-(DateTime.Now-DateTime.Parse(Breaks2.Cur.AftStart));
-				Break2.AftRem=Breaks2.SpanToS(true,delta);
-				Break2.AftBool = false;
-			}
-			Breaks2.Cur = Break2;
-			Breaks2.Update()*/
-		}
-
-		private void ViewData(string myEmp){/*
-			timer1.Stop();
-			timer1.Start();
-			Breaks2.Refresh(myEmp);
-			if (DateTime.Compare(Breaks2.Cur.EntryDate,DateTime.Now.Date)!=0){
-				//if time is negative, send a report
-				bool BoolNeg=false;
-				if (TimeSpan.Parse(Breaks2.Cur.MornRem).CompareTo(TimeSpan.FromMinutes(-1))==-1) BoolNeg = true;
-				if (TimeSpan.Parse(Breaks2.Cur.AftRem).CompareTo(TimeSpan.FromMinutes(-1))==-1) BoolNeg = true;
-				if (BoolNeg==true){
-					Generic Generic2 = new Generic();
-					Gen Gen2 = new Gen();
-					Gen2.CatNum = 3;
-					Gen2.Item = Breaks2.Cur.EntryDate.ToString("d");
-					Gen2.Value = myEmp+","+Breaks2.Cur.MornRem+","+Breaks2.Cur.AftRem;
-					Generic2.Cur = Gen2;
-					Generic2.AddItem();
-				}
-				//reset
-				Break2 = Breaks2.Cur;
-				Break2.EntryDate=DateTime.Now;
-				Break2.AftBool=false;
-				Break2.MornBool=false;
-				Break2.MornRem="00:20:00";
-				Break2.AftRem="00:10:00";
-				Breaks2.Cur = Break2;
-				Breaks2.Update();
-			}
-			//morn
-			TimeSpan delta;
-			if (Breaks2.Cur.MornBool==true){//if on break
-				delta = TimeSpan.Parse(Breaks2.Cur.MornRem)
-					-(DateTime.Now-DateTime.Parse(Breaks2.Cur.MornStart));
-				textMorn.Text = Breaks2.SpanToS(false,delta);				
-			}
-			else{//not on break
-				textMorn.Text=Breaks2.SpanToS(false,TimeSpan.Parse(Breaks2.Cur.MornRem));
-			}
-			//aft
-			if (Breaks2.Cur.AftBool==true){//if on break
-				delta = TimeSpan.Parse(Breaks2.Cur.AftRem)
-					-(DateTime.Now-DateTime.Parse(Breaks2.Cur.AftStart));
-				textAft.Text = Breaks2.SpanToS(false,delta);				
-			}
-			else{//not on break
-				textAft.Text=Breaks2.SpanToS(false,TimeSpan.Parse(Breaks2.Cur.AftRem));
-			}
-			//checkboxes
-			if (Breaks2.Cur.MornBool==true) checkMorn.Checked=true;
-			else checkMorn.Checked=false;
-			if (Breaks2.Cur.AftBool==true) checkAft.Checked=true;
-			else checkAft.Checked=false;
-			checkMorn.Enabled=true;
-			checkAft.Enabled=true;*/
-		}
-
-		private void butViewAmbr_Click(object sender, System.EventArgs e) {
-			ViewData("Amber");
-		}
-
-		private void butViewBonn_Click(object sender, System.EventArgs e) {
-			ViewData("Bonnie");
-		}
-
-		private void butViewBrit_Click(object sender, System.EventArgs e) {
-			ViewData("Brittany");
-		}
-
-		private void butViewDust_Click(object sender, System.EventArgs e) {
-			ViewData("Dusty");
-		}
-
-		private void butViewKimm_Click(object sender, System.EventArgs e) {
-			ViewData("Kim");
-		}
-
-		private void butViewLori_Click(object sender, System.EventArgs e) {
-			ViewData("Lori");
-		}
-
-		private void butViewJordan_Click(object sender, System.EventArgs e) {/*
-			Breaks2.Refresh("Amber");
-			if (Breaks2.Cur.MornBool==true) checkAmbr.Checked=true;
-			else if (Breaks2.Cur.AftBool==true) checkAmbr.Checked=true;
-			else checkAmbr.Checked=false;
-			Breaks2.Refresh("Bonnie");
-			if (Breaks2.Cur.MornBool==true) checkBonn.Checked=true;
-			else if (Breaks2.Cur.AftBool==true) checkBonn.Checked=true;
-			else checkBonn.Checked=false;
-			Breaks2.Refresh("Brittany");
-			if (Breaks2.Cur.MornBool==true) checkBrit.Checked=true;
-			else if (Breaks2.Cur.AftBool==true) checkBrit.Checked=true;
-			else checkBrit.Checked=false;
-			Breaks2.Refresh("Dusty");
-			if (Breaks2.Cur.MornBool==true) checkDust.Checked=true;
-			else if (Breaks2.Cur.AftBool==true) checkDust.Checked=true;
-			else checkDust.Checked=false;
-			Breaks2.Refresh("Kim");
-			if (Breaks2.Cur.MornBool==true) checkKimm.Checked=true;
-			else if (Breaks2.Cur.AftBool==true) checkKimm.Checked=true;
-			else checkKimm.Checked=false;
-			Breaks2.Refresh("Lori");
-			if (Breaks2.Cur.MornBool==true) checkLori.Checked=true;
-			else if (Breaks2.Cur.AftBool==true) checkLori.Checked=true;
-			else checkLori.Checked=false;*/
+			ClockEvents.Cur=new ClockEvent();
+			ClockEvents.Cur.EmployeeNum=Employees.Cur.EmployeeNum;
+			ClockEvents.Cur.TimeEntered=DateTime.Now+TimeDelta;
+			ClockEvents.Cur.TimeDisplayed=DateTime.Now+TimeDelta;
+			ClockEvents.Cur.ClockIn=false;
+			ClockEvents.Cur.ClockStatus=(TimeClockStatus)listStatus.SelectedIndex;
+			ClockEvents.InsertCur();
+			Employees.Cur.ClockStatus=ClockEvents.Cur.ClockStatus.ToString();
+			Employees.UpdateCur();
+			ModuleSelected();
 		}
 
 		private void timer1_Tick(object sender, System.EventArgs e) {
-			timer1.Stop();
-			textMorn.Text="";
-			textAft.Text="";
-			checkMorn.Checked=false;
-			checkMorn.Enabled=false;
-			checkAft.Checked=false;
-			checkAft.Enabled=false;
+			//this will happen once a second
+			if(this.Visible){
+				textTime.Text=(DateTime.Now+TimeDelta).ToLongTimeString();
+			}
+		}
+
+		private void butTimeCard_Click(object sender, System.EventArgs e) {
+			FormTimeCard FormTC=new FormTimeCard();
+			if(ClockEvents.GetLastStatus()==TimeClockStatus.Break){
+				FormTC.IsBreaks=true;
+			}
+			FormTC.ShowDialog();
+			ModuleSelected();
 		}
 
 		
 
 		
+
+		
+
 		
 
 
@@ -469,3 +379,15 @@ namespace OpenDental
 
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+

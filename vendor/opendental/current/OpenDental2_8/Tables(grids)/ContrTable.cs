@@ -200,7 +200,7 @@ namespace OpenDental{
 			}
 		}
 
-		///<summary>The position of the scrollbar.</summary>
+		///<summary>Gets or sets the position of the scrollbar.</summary>
 		public int ScrollValue{
 			get{ 
 				return vScrollBar1.Value; 
@@ -323,6 +323,17 @@ namespace OpenDental{
 			SelectedIAL=null;
 		}
 
+		///<summary>Sets the selected row and colors it. Resiliant enough to handle a bad value.</summary>
+		public void SetSelectedRow(int rowValue){
+			if(SelectedRow!=-1)
+				ColorRow(SelectedRow,Color.White);
+			SelectedRow=rowValue;
+			if(SelectedRow>MaxRows-1)
+				SelectedRow=-1;
+			if(SelectedRow!=-1)
+				ColorRow(SelectedRow,Color.Silver);
+		}
+
 		///<summary></summary>
 		public void InstantClassesPar(){
 			Cell = new string[MaxCols,MaxRows];
@@ -383,8 +394,10 @@ namespace OpenDental{
 			}
 		}
 
-		///<summary></summary>
-		public void LayoutTables(){
+		///<summary>Lays out the control and refreshes. Option to preserve the scroll position.</summary>
+		///<param name="preserveScroll">Set to true to preserve the scroll position, or omit to not.</param>
+		public void LayoutTables(bool preserveScroll){
+			int scroll=ScrollValue;//use this to preserveScroll
 			if(ShowScroll)
 				scrollWidth=17;
 			else 
@@ -435,14 +448,14 @@ namespace OpenDental{
 					else{
 						vScrollBar1.Enabled=true;
 						vScrollBar1.Minimum=1;
-						vScrollBar1.Maximum=panelTable.Height+2;//+panelScroll.Height;//?
+						vScrollBar1.Maximum=panelTable.Height+2;
 						vScrollBar1.LargeChange=panelScroll.Height;
 						vScrollBar1.SmallChange=3*14;//(3 rows)
 						if(panelTable.Height==0)//vScrollBar.Value can not=0
 							vScrollBar1.Value=1;
 						else
-							vScrollBar1.Value=panelTable.Height;
-						panelTable.Location=new Point(0,-(panelTable.Height-panelScroll.Height)-3);//3 is arbitrary
+							vScrollBar1.Value=panelTable.Height-panelScroll.Height+2;
+						panelTable.Location=new Point(0,-vScrollBar1.Value);
 					}
 				}
 				else{//Scroll not showing
@@ -450,8 +463,15 @@ namespace OpenDental{
 					panelTable.Location=new Point(0,-1);
 				}
 			}//end if ColWidth not 0
+			if(preserveScroll)
+				ScrollValue=scroll;
 			Refresh();
 		}//end Layout Tables
+
+		///<summary>Lays out the control without preserving the scroll position.</summary>
+		public void LayoutTables(){
+			LayoutTables(false);
+		}
 
 		///<summary></summary>
 		public void SetRowHeight(int rowStart, int rowStop, int rowHeight){

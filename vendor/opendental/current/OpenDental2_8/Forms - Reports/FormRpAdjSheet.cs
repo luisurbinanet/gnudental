@@ -164,7 +164,7 @@ namespace OpenDental{
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			Queries.CurReport=new Report();
+			Queries.CurReport=new ReportOld();
 			Queries.CurReport.Query="SELECT adjustment.adjdate,"
 				+"CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI),"
 				+"definition.itemname,adjustment.adjnote,adjustment.adjamt FROM "

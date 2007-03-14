@@ -1,6 +1,49 @@
 using System;
 
 namespace OpenDental{
+	///<summary>This is an enumeration of all the enumeration types that are used in the database.  This is used in the reporting classes to make the data human-readable.</summary>
+	public enum EnumType{
+		///<summary></summary>
+		YN,
+		///<summary></summary>
+		Relat,
+		///<summary></summary>
+		Month,
+		///<summary></summary>
+		ProcStat,
+		///<summary></summary>
+		DefCat,
+		///<summary></summary>
+		TreatmentArea,
+		///<summary></summary>
+		DentalSpecialty,
+		///<summary></summary>
+		ApptStatus,
+		///<summary></summary>
+		PatientStatus,
+		///<summary></summary>
+		PatientGender,
+		///<summary></summary>
+		PatientPosition,
+		///<summary></summary>
+		ScheduleType,
+		///<summary></summary>
+		LabCase,
+		///<summary></summary>
+		PlaceOfService,
+		///<summary></summary>
+		PaintType,
+		///<summary></summary>
+		SchedStatus,
+		///<summary></summary>
+		AutoCondition,
+		///<summary></summary>
+		ClaimProcStatus,
+		///<summary></summary>
+		CommItemType,
+		///<summary></summary>
+		ToolBarsAvail
+	}
 	///<summary>Yes,No or Unknown.</summary>
 	public enum YN{
 		///<summary>0</summary>
@@ -406,7 +449,36 @@ namespace OpenDental{
 		///<summary>1</summary>
 		StatementSent=1,
 		///<summary>2- This will be replacing some of the existing note sections.</summary>
-		AppointmentScheduling}
+		AppointmentScheduling
+	}
+
+	///<summary></summary>
+	public enum ToolBarsAvail{
+		///<summary>0</summary>
+		AccountModule,
+		///<summary>1</summary>
+		ApptModule,
+		///<summary>2</summary>
+		ChartModule,
+		///<summary>3</summary>
+		ImagesModule,
+		///<summary>4</summary>
+		FamilyModule,
+		///<summary>5</summary>
+		TreatmentPlanModule,
+		///<summary>6</summary>
+		ClaimsSend
+	}
+
+	///<summary></summary>
+	public enum TimeClockStatus{
+		///<summary>0</summary>
+		Home,
+		///<summary>1</summary>
+		Lunch,
+		///<summary>2</summary>
+		Break
+	}
 		
 	
 

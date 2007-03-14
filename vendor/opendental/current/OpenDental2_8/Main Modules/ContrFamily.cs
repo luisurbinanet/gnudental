@@ -8,9 +8,11 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Data;
+using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+using OpenDental.UI;
 
 namespace OpenDental{
 
@@ -25,14 +27,19 @@ namespace OpenDental{
 		private OpenDental.TableCoverage tbCoverage;
 		private System.Windows.Forms.TextBox textPriPlanNote;
 		private System.Windows.Forms.TextBox textSecPlanNote;
-		private System.Windows.Forms.Button butDeletePt;
-		private System.Windows.Forms.Button butAddPt;
 		private System.Windows.Forms.Panel panelFamily;
-		private System.Windows.Forms.Button butPat;
-		private System.Windows.Forms.Button butSetGuar;
-		private System.Windows.Forms.Button butMovePat;
 		private OpenDental.TablePercent tbPercent1;
-		private System.Windows.Forms.Button butOutlook;
+		private OpenDental.UI.ODToolBar ToolBarMain;
+		private System.Windows.Forms.PictureBox picturePatient;
+		private System.Windows.Forms.Button butPatEdit;
+		private System.Windows.Forms.Button butEditPriCov;
+		private System.Windows.Forms.Button butEditPriPlan;
+		private System.Windows.Forms.Button butEditSecCov;
+		private System.Windows.Forms.Button butEditSecPlan;
+		private OpenDental.XPButton butAddPt;
+		private OpenDental.XPButton butDeletePt;
+		private OpenDental.XPButton butSetGuar;
+		private OpenDental.XPButton butMovePat;
 		private OpenDental.TablePercent tbPercent2;
 
 		///<summary></summary>
@@ -70,15 +77,20 @@ namespace OpenDental{
 			this.tbCoverage = new OpenDental.TableCoverage();
 			this.textPriPlanNote = new System.Windows.Forms.TextBox();
 			this.textSecPlanNote = new System.Windows.Forms.TextBox();
-			this.butPat = new System.Windows.Forms.Button();
-			this.butDeletePt = new System.Windows.Forms.Button();
-			this.butAddPt = new System.Windows.Forms.Button();
 			this.panelFamily = new System.Windows.Forms.Panel();
-			this.butMovePat = new System.Windows.Forms.Button();
-			this.butSetGuar = new System.Windows.Forms.Button();
 			this.tbPercent1 = new OpenDental.TablePercent();
 			this.tbPercent2 = new OpenDental.TablePercent();
-			this.butOutlook = new System.Windows.Forms.Button();
+			this.ToolBarMain = new OpenDental.UI.ODToolBar();
+			this.picturePatient = new System.Windows.Forms.PictureBox();
+			this.butPatEdit = new System.Windows.Forms.Button();
+			this.butEditPriCov = new System.Windows.Forms.Button();
+			this.butEditPriPlan = new System.Windows.Forms.Button();
+			this.butEditSecCov = new System.Windows.Forms.Button();
+			this.butEditSecPlan = new System.Windows.Forms.Button();
+			this.butAddPt = new OpenDental.XPButton();
+			this.butDeletePt = new OpenDental.XPButton();
+			this.butSetGuar = new OpenDental.XPButton();
+			this.butMovePat = new OpenDental.XPButton();
 			this.panelFamily.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -93,6 +105,7 @@ namespace OpenDental{
 			this.tbPlans.BackColor = System.Drawing.SystemColors.Window;
 			this.tbPlans.Location = new System.Drawing.Point(1, 492);
 			this.tbPlans.Name = "tbPlans";
+			this.tbPlans.ScrollValue = 1;
 			this.tbPlans.SelectedIndices = new int[0];
 			this.tbPlans.SelectionMode = System.Windows.Forms.SelectionMode.One;
 			this.tbPlans.Size = new System.Drawing.Size(459, 100);
@@ -103,9 +116,10 @@ namespace OpenDental{
 			this.tbPatient.BackColor = System.Drawing.SystemColors.Window;
 			this.tbPatient.Location = new System.Drawing.Point(0, 32);
 			this.tbPatient.Name = "tbPatient";
+			this.tbPatient.ScrollValue = 150;
 			this.tbPatient.SelectedIndices = new int[0];
 			this.tbPatient.SelectionMode = System.Windows.Forms.SelectionMode.None;
-			this.tbPatient.Size = new System.Drawing.Size(252, 429);
+			this.tbPatient.Size = new System.Drawing.Size(252, 431);
 			this.tbPatient.TabIndex = 2;
 			// 
 			// textAddrNotes
@@ -113,7 +127,7 @@ namespace OpenDental{
 			this.textAddrNotes.BackColor = System.Drawing.Color.White;
 			this.textAddrNotes.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
 			this.textAddrNotes.ForeColor = System.Drawing.Color.Red;
-			this.textAddrNotes.Location = new System.Drawing.Point(2, 400);
+			this.textAddrNotes.Location = new System.Drawing.Point(2, 402);
 			this.textAddrNotes.Multiline = true;
 			this.textAddrNotes.Name = "textAddrNotes";
 			this.textAddrNotes.ReadOnly = true;
@@ -128,6 +142,7 @@ namespace OpenDental{
 			this.tbFamily.BackColor = System.Drawing.SystemColors.Window;
 			this.tbFamily.Location = new System.Drawing.Point(0, 26);
 			this.tbFamily.Name = "tbFamily";
+			this.tbFamily.ScrollValue = 1;
 			this.tbFamily.SelectedIndices = new int[0];
 			this.tbFamily.SelectionMode = System.Windows.Forms.SelectionMode.None;
 			this.tbFamily.Size = new System.Drawing.Size(409, 99);
@@ -138,9 +153,10 @@ namespace OpenDental{
 			this.tbCoverage.BackColor = System.Drawing.SystemColors.Window;
 			this.tbCoverage.Location = new System.Drawing.Point(254, 32);
 			this.tbCoverage.Name = "tbCoverage";
+			this.tbCoverage.ScrollValue = 150;
 			this.tbCoverage.SelectedIndices = new int[0];
 			this.tbCoverage.SelectionMode = System.Windows.Forms.SelectionMode.None;
-			this.tbCoverage.Size = new System.Drawing.Size(542, 406);
+			this.tbCoverage.Size = new System.Drawing.Size(542, 410);
 			this.tbCoverage.TabIndex = 8;
 			// 
 			// textPriPlanNote
@@ -148,7 +164,7 @@ namespace OpenDental{
 			this.textPriPlanNote.BackColor = System.Drawing.Color.White;
 			this.textPriPlanNote.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
 			this.textPriPlanNote.ForeColor = System.Drawing.Color.Red;
-			this.textPriPlanNote.Location = new System.Drawing.Point(256, 307);
+			this.textPriPlanNote.Location = new System.Drawing.Point(256, 311);
 			this.textPriPlanNote.Multiline = true;
 			this.textPriPlanNote.Name = "textPriPlanNote";
 			this.textPriPlanNote.ReadOnly = true;
@@ -162,7 +178,7 @@ namespace OpenDental{
 			this.textSecPlanNote.BackColor = System.Drawing.Color.White;
 			this.textSecPlanNote.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
 			this.textSecPlanNote.ForeColor = System.Drawing.Color.Red;
-			this.textSecPlanNote.Location = new System.Drawing.Point(526, 307);
+			this.textSecPlanNote.Location = new System.Drawing.Point(526, 311);
 			this.textSecPlanNote.Multiline = true;
 			this.textSecPlanNote.Name = "textSecPlanNote";
 			this.textSecPlanNote.ReadOnly = true;
@@ -170,42 +186,6 @@ namespace OpenDental{
 			this.textSecPlanNote.TabIndex = 10;
 			this.textSecPlanNote.Text = "";
 			this.textSecPlanNote.DoubleClick += new System.EventHandler(this.textSecPlanNote_DoubleClick);
-			// 
-			// butPat
-			// 
-			this.butPat.Image = ((System.Drawing.Image)(resources.GetObject("butPat.Image")));
-			this.butPat.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butPat.Location = new System.Drawing.Point(2, 3);
-			this.butPat.Name = "butPat";
-			this.butPat.Size = new System.Drawing.Size(134, 26);
-			this.butPat.TabIndex = 11;
-			this.butPat.Text = "Select Patient";
-			this.butPat.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.butPat.Click += new System.EventHandler(this.butPat_Click);
-			// 
-			// butDeletePt
-			// 
-			this.butDeletePt.Image = ((System.Drawing.Image)(resources.GetObject("butDeletePt.Image")));
-			this.butDeletePt.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDeletePt.Location = new System.Drawing.Point(104, 0);
-			this.butDeletePt.Name = "butDeletePt";
-			this.butDeletePt.Size = new System.Drawing.Size(100, 26);
-			this.butDeletePt.TabIndex = 13;
-			this.butDeletePt.Text = "Delete";
-			this.butDeletePt.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.butDeletePt.Click += new System.EventHandler(this.butDeletePt_Click);
-			// 
-			// butAddPt
-			// 
-			this.butAddPt.Image = ((System.Drawing.Image)(resources.GetObject("butAddPt.Image")));
-			this.butAddPt.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAddPt.Location = new System.Drawing.Point(0, 0);
-			this.butAddPt.Name = "butAddPt";
-			this.butAddPt.Size = new System.Drawing.Size(100, 26);
-			this.butAddPt.TabIndex = 12;
-			this.butAddPt.Text = "Add";
-			this.butAddPt.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.butAddPt.Click += new System.EventHandler(this.butAddPt_Click);
 			// 
 			// panelFamily
 			// 
@@ -219,35 +199,12 @@ namespace OpenDental{
 			this.panelFamily.Size = new System.Drawing.Size(413, 129);
 			this.panelFamily.TabIndex = 15;
 			// 
-			// butMovePat
-			// 
-			this.butMovePat.Image = ((System.Drawing.Image)(resources.GetObject("butMovePat.Image")));
-			this.butMovePat.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butMovePat.Location = new System.Drawing.Point(309, 0);
-			this.butMovePat.Name = "butMovePat";
-			this.butMovePat.Size = new System.Drawing.Size(100, 26);
-			this.butMovePat.TabIndex = 15;
-			this.butMovePat.Text = "Move";
-			this.butMovePat.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.butMovePat.Click += new System.EventHandler(this.butMovePat_Click);
-			// 
-			// butSetGuar
-			// 
-			this.butSetGuar.Image = ((System.Drawing.Image)(resources.GetObject("butSetGuar.Image")));
-			this.butSetGuar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butSetGuar.Location = new System.Drawing.Point(207, 0);
-			this.butSetGuar.Name = "butSetGuar";
-			this.butSetGuar.Size = new System.Drawing.Size(100, 26);
-			this.butSetGuar.TabIndex = 14;
-			this.butSetGuar.Text = "Guarantor";
-			this.butSetGuar.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.butSetGuar.Click += new System.EventHandler(this.butSetGuar_Click);
-			// 
 			// tbPercent1
 			// 
 			this.tbPercent1.BackColor = System.Drawing.SystemColors.Window;
-			this.tbPercent1.Location = new System.Drawing.Point(254, 167);
+			this.tbPercent1.Location = new System.Drawing.Point(254, 171);
 			this.tbPercent1.Name = "tbPercent1";
+			this.tbPercent1.ScrollValue = 1;
 			this.tbPercent1.SelectedIndices = new int[0];
 			this.tbPercent1.SelectionMode = System.Windows.Forms.SelectionMode.None;
 			this.tbPercent1.Size = new System.Drawing.Size(272, 86);
@@ -256,32 +213,152 @@ namespace OpenDental{
 			// tbPercent2
 			// 
 			this.tbPercent2.BackColor = System.Drawing.SystemColors.Window;
-			this.tbPercent2.Location = new System.Drawing.Point(525, 167);
+			this.tbPercent2.Location = new System.Drawing.Point(525, 171);
 			this.tbPercent2.Name = "tbPercent2";
+			this.tbPercent2.ScrollValue = 1;
 			this.tbPercent2.SelectedIndices = new int[0];
 			this.tbPercent2.SelectionMode = System.Windows.Forms.SelectionMode.None;
 			this.tbPercent2.Size = new System.Drawing.Size(269, 86);
 			this.tbPercent2.TabIndex = 17;
 			// 
-			// butOutlook
+			// ToolBarMain
 			// 
-			this.butOutlook.Image = ((System.Drawing.Image)(resources.GetObject("butOutlook.Image")));
-			this.butOutlook.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butOutlook.Location = new System.Drawing.Point(140, 3);
-			this.butOutlook.Name = "butOutlook";
-			this.butOutlook.Size = new System.Drawing.Size(84, 26);
-			this.butOutlook.TabIndex = 18;
-			this.butOutlook.Text = "Outlook";
-			this.butOutlook.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.butOutlook.Click += new System.EventHandler(this.butOutlook_Click);
+			this.ToolBarMain.Dock = System.Windows.Forms.DockStyle.Top;
+			this.ToolBarMain.ImageList = this.imageListToolBar;
+			this.ToolBarMain.Location = new System.Drawing.Point(0, 0);
+			this.ToolBarMain.Name = "ToolBarMain";
+			this.ToolBarMain.Size = new System.Drawing.Size(939, 29);
+			this.ToolBarMain.TabIndex = 19;
+			this.ToolBarMain.ButtonClick += new OpenDental.UI.ODToolBarButtonClickEventHandler(this.ToolBarMain_ButtonClick);
+			// 
+			// picturePatient
+			// 
+			this.picturePatient.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.picturePatient.Location = new System.Drawing.Point(797, 32);
+			this.picturePatient.Name = "picturePatient";
+			this.picturePatient.Size = new System.Drawing.Size(100, 100);
+			this.picturePatient.TabIndex = 20;
+			this.picturePatient.TabStop = false;
+			this.picturePatient.Visible = false;
+			// 
+			// butPatEdit
+			// 
+			this.butPatEdit.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butPatEdit.Location = new System.Drawing.Point(180, 31);
+			this.butPatEdit.Name = "butPatEdit";
+			this.butPatEdit.Size = new System.Drawing.Size(70, 23);
+			this.butPatEdit.TabIndex = 21;
+			this.butPatEdit.Text = "Edit";
+			this.butPatEdit.Click += new System.EventHandler(this.butPatEdit_Click);
+			// 
+			// butEditPriCov
+			// 
+			this.butEditPriCov.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butEditPriCov.Location = new System.Drawing.Point(456, 31);
+			this.butEditPriCov.Name = "butEditPriCov";
+			this.butEditPriCov.Size = new System.Drawing.Size(70, 23);
+			this.butEditPriCov.TabIndex = 22;
+			this.butEditPriCov.Text = "Edit";
+			this.butEditPriCov.Click += new System.EventHandler(this.butEditPriCov_Click);
+			// 
+			// butEditPriPlan
+			// 
+			this.butEditPriPlan.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butEditPriPlan.Location = new System.Drawing.Point(456, 79);
+			this.butEditPriPlan.Name = "butEditPriPlan";
+			this.butEditPriPlan.Size = new System.Drawing.Size(70, 23);
+			this.butEditPriPlan.TabIndex = 23;
+			this.butEditPriPlan.Text = "Edit";
+			this.butEditPriPlan.Click += new System.EventHandler(this.butEditPriPlan_Click);
+			// 
+			// butEditSecCov
+			// 
+			this.butEditSecCov.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butEditSecCov.Location = new System.Drawing.Point(724, 31);
+			this.butEditSecCov.Name = "butEditSecCov";
+			this.butEditSecCov.Size = new System.Drawing.Size(70, 23);
+			this.butEditSecCov.TabIndex = 24;
+			this.butEditSecCov.Text = "Edit";
+			this.butEditSecCov.Click += new System.EventHandler(this.butEditSecCov_Click);
+			// 
+			// butEditSecPlan
+			// 
+			this.butEditSecPlan.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butEditSecPlan.Location = new System.Drawing.Point(724, 79);
+			this.butEditSecPlan.Name = "butEditSecPlan";
+			this.butEditSecPlan.Size = new System.Drawing.Size(70, 23);
+			this.butEditSecPlan.TabIndex = 25;
+			this.butEditSecPlan.Text = "Edit";
+			this.butEditSecPlan.Click += new System.EventHandler(this.butEditSecPlan_Click);
+			// 
+			// butAddPt
+			// 
+			this.butAddPt.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAddPt.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butAddPt.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butAddPt.Image = ((System.Drawing.Image)(resources.GetObject("butAddPt.Image")));
+			this.butAddPt.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butAddPt.Location = new System.Drawing.Point(0, 0);
+			this.butAddPt.Name = "butAddPt";
+			this.butAddPt.Size = new System.Drawing.Size(100, 26);
+			this.butAddPt.TabIndex = 16;
+			this.butAddPt.Text = "Add";
+			this.butAddPt.Click += new System.EventHandler(this.butAddPt_Click);
+			// 
+			// butDeletePt
+			// 
+			this.butDeletePt.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butDeletePt.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butDeletePt.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butDeletePt.Image = ((System.Drawing.Image)(resources.GetObject("butDeletePt.Image")));
+			this.butDeletePt.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butDeletePt.Location = new System.Drawing.Point(103, 0);
+			this.butDeletePt.Name = "butDeletePt";
+			this.butDeletePt.Size = new System.Drawing.Size(100, 26);
+			this.butDeletePt.TabIndex = 17;
+			this.butDeletePt.Text = "Delete";
+			this.butDeletePt.Click += new System.EventHandler(this.butDeletePt_Click);
+			// 
+			// butSetGuar
+			// 
+			this.butSetGuar.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butSetGuar.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butSetGuar.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butSetGuar.Image = ((System.Drawing.Image)(resources.GetObject("butSetGuar.Image")));
+			this.butSetGuar.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butSetGuar.Location = new System.Drawing.Point(206, 0);
+			this.butSetGuar.Name = "butSetGuar";
+			this.butSetGuar.Size = new System.Drawing.Size(100, 26);
+			this.butSetGuar.TabIndex = 18;
+			this.butSetGuar.Text = "Guarantor";
+			this.butSetGuar.Click += new System.EventHandler(this.butSetGuar_Click);
+			// 
+			// butMovePat
+			// 
+			this.butMovePat.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butMovePat.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butMovePat.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butMovePat.Image = ((System.Drawing.Image)(resources.GetObject("butMovePat.Image")));
+			this.butMovePat.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butMovePat.Location = new System.Drawing.Point(309, 0);
+			this.butMovePat.Name = "butMovePat";
+			this.butMovePat.Size = new System.Drawing.Size(100, 26);
+			this.butMovePat.TabIndex = 19;
+			this.butMovePat.Text = "Move";
+			this.butMovePat.Click += new System.EventHandler(this.butMovePat_Click);
 			// 
 			// ContrFamily
 			// 
-			this.Controls.Add(this.butOutlook);
+			this.Controls.Add(this.butEditSecPlan);
+			this.Controls.Add(this.butEditSecCov);
+			this.Controls.Add(this.butEditPriPlan);
+			this.Controls.Add(this.butEditPriCov);
+			this.Controls.Add(this.butPatEdit);
+			this.Controls.Add(this.picturePatient);
+			this.Controls.Add(this.ToolBarMain);
 			this.Controls.Add(this.tbPercent1);
 			this.Controls.Add(this.tbPercent2);
 			this.Controls.Add(this.panelFamily);
-			this.Controls.Add(this.butPat);
 			this.Controls.Add(this.textSecPlanNote);
 			this.Controls.Add(this.textPriPlanNote);
 			this.Controls.Add(this.tbCoverage);
@@ -337,7 +414,7 @@ namespace OpenDental{
 				panelFamily.Enabled=false;
 				Patients.Cur=new Patient();
 			}
-			butOutlook.Visible=Programs.IsEnabled("Outlook");
+			//butOutlook.Visible=Programs.IsEnabled("Outlook");
 			FillPatientData();
 			FillFamilyData();
 			FillPlanData();
@@ -351,28 +428,38 @@ namespace OpenDental{
 			tbPlans.InstantClasses();
 			tbFamily.InstantClasses();
 			Lan.C(this, new System.Windows.Forms.Control[] {
-				this.butPat,
 				this.butAddPt,
 				this.butDeletePt,
 				this.butSetGuar,
 				this.butMovePat,
 				this.panelFamily,
 			});
+			LayoutToolBar();
+		}
+
+		///<summary>Causes the toolbar to be laid out again.</summary>
+		public void LayoutToolBar(){
+			ToolBarMain.Buttons.Clear();
+			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Select Patient"),0,"","Patient"));
+			//ToolBarMain.Buttons.Add(new ODToolBarButton(ToolBarButtonStyle.Separator));
+			//ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Add Family Member"),1,"",""));
+			//ToolBarMain.Buttons.Add(new ODToolBarButton("",2,"",Lan.g(this,"Delete Family Member")));
+			//ToolBarMain.Buttons.Add(new ODToolBarButton("",3,"",Lan.g(this,"Set as Guarantor")));
+			//ToolBarMain.Buttons.Add(new ODToolBarButton("",4,"",Lan.g(this,"Move to Another Family")));
+			ArrayList toolButItems=ToolButItems.GetForToolBar(ToolBarsAvail.FamilyModule);
+			for(int i=0;i<toolButItems.Count;i++){
+				ToolBarMain.Buttons.Add(new ODToolBarButton(ToolBarButtonStyle.Separator));
+				ToolBarMain.Buttons.Add(new ODToolBarButton(((ToolButItem)toolButItems[i]).ButtonText
+					,-1,"",((ToolButItem)toolButItems[i]).ProgramNum));
+			}
+			ToolBarMain.Invalidate();
 		}
 
 		private void ContrFamily_Layout(object sender, System.Windows.Forms.LayoutEventArgs e) {
 			tbPlans.LayoutTables();
 		}		
 
-		private void butPat_Click(object sender, System.EventArgs e) {
-			FormPatientSelect formSelectPatient2=new FormPatientSelect();
-			formSelectPatient2.ShowDialog();
-			if (formSelectPatient2.DialogResult==DialogResult.OK){
-				ModuleSelected();
-			}
-		}
-
-		private void butOutlook_Click(object sender, System.EventArgs e) {
+		//private void butOutlook_Click(object sender, System.EventArgs e) {
 			/*Process[] procsOutlook = Process.GetProcessesByName("outlook");
 			if(procsOutlook.Length==0){
 				try{
@@ -380,9 +467,38 @@ namespace OpenDental{
 				}
 				catch{}
 			}*/
+		//}
+
+		private void ToolBarMain_ButtonClick(object sender, OpenDental.UI.ODToolBarButtonClickEventArgs e) {
+			if(e.Button.Tag.GetType()==typeof(string)){
+				//standard predefined button
+				switch(e.Button.Tag.ToString()){
+					case "Patient":
+						OnPat_Click();
+						break;
+				}
+			}
+			else if(e.Button.Tag.GetType()==typeof(int)){
+				Programs.Execute((int)e.Button.Tag);
+			}
+		}
+
+		private void OnPat_Click() {
+			FormPatientSelect formSelectPatient2=new FormPatientSelect();
+			formSelectPatient2.ShowDialog();
+			if (formSelectPatient2.DialogResult==DialogResult.OK){
+				ModuleSelected();
+			}
 		}
 
 		#region tbPatient
+
+		private void butPatEdit_Click(object sender, System.EventArgs e) {
+			FormPatientEdit FormPatientEdit2=new FormPatientEdit();
+			FormPatientEdit2.IsNew=false;
+			FormPatientEdit2.ShowDialog();
+			ModuleSelected();
+		}
 
 		private void tbPatient_CellDoubleClicked(object sender, CellEventArgs e){
 			FormPatientEdit FormPatientEdit2=new FormPatientEdit();
@@ -407,28 +523,30 @@ namespace OpenDental{
 			tbPatient.Cell[1,6]=Lan.g("enum PatientStatus",Patients.Cur.PatStatus.ToString());
 			tbPatient.Cell[1,7]=Lan.g("enum PatientGender",Patients.Cur.Gender.ToString());
 			tbPatient.Cell[1,8]=Lan.g("enum PatientPosition",Patients.Cur.Position.ToString());
-			//switch (Patients.Cur.PatStatus){
-			//	case PatientStatus.Patient : tbPatient.Cell[1,6]=Lan.g("enum PatientStatus","Patient"); break;
-			//	case PatientStatus.NonPatient : tbPatient.Cell[1,6]=Lan.g("enum PatientStatus","Non-patient"); break;
-			//	case PatientStatus.Inactive : tbPatient.Cell[1,6]=Lan.g("enum PatientStatus","Inactive"); break;
-			//	case PatientStatus.Archived : tbPatient.Cell[1,6]=Lan.g("enum PatientStatus","Archived"); break;}
-			/*switch (Patients.Cur.Gender){
-				case PatientGender.Male : tbPatient.Cell[1,7]=Lan.g("enum PatientGender","Male"); break;
-				case PatientGender.Female : tbPatient.Cell[1,7]=Lan.g("enum PatientGender","Female"); break;
-				case PatientGender.Unknown: tbPatient.Cell[1,7]=Lan.g("enum PatientGender","Unknown"); break;}
-			switch (Patients.Cur.Position){
-				case PatientPosition.Single : tbPatient.Cell[1,8]=Lan.g("enum PatientPosition","Single"); break;
-				case PatientPosition.Married : tbPatient.Cell[1,8]=Lan.g("enum PatientPosition","Married"); break;
-				case PatientPosition.Child : tbPatient.Cell[1,8]=Lan.g("enum PatientPosition","Child"); break;}*/
 			if(Patients.Cur.Birthdate.Year < 1880)
 				tbPatient.Cell[1,9]="";
 			else
 				tbPatient.Cell[1,9]=Patients.Cur.Birthdate.ToString("d");
 			tbPatient.Cell[1,10]=Patients.Cur.Age;
-			if(Patients.Cur.SSN !=null && Patients.Cur.SSN.Length==9)
-				tbPatient.Cell[1,11]=Patients.Cur.SSN.Substring(0,3)+"-"
-					+Patients.Cur.SSN.Substring(3,2)+"-"+Patients.Cur.SSN.Substring(5,4);
-			else tbPatient.Cell[1,11]=Patients.Cur.SSN;
+			if(CultureInfo.CurrentCulture.Name.Substring(3)=="US"){
+				if(Patients.Cur.SSN !=null && Patients.Cur.SSN.Length==9)
+					tbPatient.Cell[1,11]=Patients.Cur.SSN.Substring(0,3)+"-"
+						+Patients.Cur.SSN.Substring(3,2)+"-"+Patients.Cur.SSN.Substring(5,4);
+				else tbPatient.Cell[1,11]=Patients.Cur.SSN;
+			}
+			else{
+				tbPatient.Cell[1,11]=Patients.Cur.SSN;
+			}
+			if(CultureInfo.CurrentCulture.Name.Substring(3)=="CA"){
+				tbPatient.Cell[0,11]="SIN";
+				tbPatient.Cell[0,16]="Postal Code";
+				tbPatient.Cell[0,15]="Province";
+			}
+			if(CultureInfo.CurrentCulture.Name.Substring(3)=="GB"){
+				tbPatient.Cell[0,11]="";
+				tbPatient.Cell[0,16]="Postcode";
+				tbPatient.Cell[0,15]="";
+			}
 			tbPatient.Cell[1,12]=Patients.Cur.Address;
 			tbPatient.Cell[1,13]=Patients.Cur.Address2;
 			tbPatient.Cell[1,14]=Patients.Cur.City;
@@ -444,6 +562,7 @@ namespace OpenDental{
 			tbPatient.Cell[1,24]=Defs.GetName(DefCat.BillingTypes,Patients.Cur.BillingType);
 			tbPatient.Cell[1,25]="";
 			if(Patients.PatIsLoaded){
+				butPatEdit.Enabled=true;
 				for(int i=0;i<RefAttaches.List.Length;i++){
 					if(RefAttaches.List[i].IsFrom){
 						Referrals.GetCur(RefAttaches.List[i].ReferralNum);
@@ -451,11 +570,10 @@ namespace OpenDental{
 						break;
 					}				
 				}
-			}			
-			if(Patients.PatIsLoaded){
 				textAddrNotes.Text=Patients.Cur.AddrNote;
 			}
 			else{
+				butPatEdit.Enabled=false;
 				textAddrNotes.Text="";
 				tbPatient.Cell[1,6]="";
 				tbPatient.Cell[1,7]="";
@@ -485,7 +603,7 @@ namespace OpenDental{
 					Patients.GetLim(InsPlans.List[i].Subscriber);
 					tbPlans.Cell[1,i]=Patients.LimName;
 				}
-				tbPlans.Cell[2,i]=InsPlans.List[i].Carrier;
+				tbPlans.Cell[2,i]=Carriers.GetName(InsPlans.List[i].CarrierNum);
 				if(InsPlans.List[i].DateEffective.Year<1880)
 					tbPlans.Cell[3,i]="";
 				else
@@ -740,6 +858,59 @@ namespace OpenDental{
 		
 		#region tbCoverage
 
+		private void butEditPriCov_Click(object sender, System.EventArgs e) {
+			OpenCovEdit();
+		}
+
+		private void butEditPriPlan_Click(object sender, System.EventArgs e) {
+			//this button has two different functions:
+			//New
+			if(Patients.Cur.PriPlanNum==0){
+				InsPlans.Cur = new InsPlan();
+				InsPlans.Cur.Subscriber=Patients.Cur.PatNum;
+				InsPlans.Cur.SubscriberID=Patients.Cur.SSN;
+				InsPlans.Cur.EmployerNum=Patients.Cur.EmployerNum;
+				InsPlans.Cur.AnnualMax=-1;//blank
+				InsPlans.Cur.OrthoMax=-1;
+				InsPlans.Cur.RenewMonth=1;
+				InsPlans.Cur.Deductible=-1;
+				InsPlans.Cur.FloToAge=-1;
+				InsPlans.Cur.ReleaseInfo=true;
+				InsPlans.Cur.AssignBen=true;
+				InsPlans.InsertCur();
+				FormInsPlan FormIP=new FormInsPlan();
+				FormIP.IsNew=true;
+				FormIP.ShowDialog();
+				if(FormIP.DialogResult!=DialogResult.OK){
+					return;
+				}
+				//FormInsPlans FormIP=new FormInsPlans();
+				//FormIP.IsSelectMode=true;
+				//FormIP.ShowDialog();
+				//if(FormIP.DialogResult!=DialogResult.OK){
+				//	return;
+				//}
+				Patients.Cur.PriPlanNum=InsPlans.Cur.PlanNum;
+				Patients.UpdateCur();
+				//Patients.GetFamily(Patients.Cur.PatNum);
+				//InsPlans.Refresh();
+				//FillPlans();
+				ModuleSelected();
+			}
+			//edit
+			else{
+				OpenPriPlanEdit();
+			}
+		}
+
+		private void butEditSecCov_Click(object sender, System.EventArgs e) {
+			OpenCovEdit();
+		}
+
+		private void butEditSecPlan_Click(object sender, System.EventArgs e) {
+			OpenSecPlanEdit();
+		}
+
 		private void tbCoverage_CellDoubleClicked(object sender, CellEventArgs e){
 			if(e.Row>=0 && e.Row<=2){
 				OpenCovEdit();
@@ -775,12 +946,13 @@ namespace OpenDental{
 			if(Patients.Cur.PriPlanNum==0){
 				return;
 			}
-			FormInsPlan FormP = new FormInsPlan();
+			FormInsPlan FormP=new FormInsPlan();
 			for(int i=0;i<InsPlans.List.Length;i++){
 				if(InsPlans.List[i].PlanNum==Patients.Cur.PriPlanNum){
 					InsPlans.Cur=InsPlans.List[i];
 				}
 			}
+			FormP.DropButVisible=true;
 			FormP.ShowDialog();
 			if(FormP.DialogResult!=DialogResult.OK){
 				return;
@@ -798,6 +970,7 @@ namespace OpenDental{
 					InsPlans.Cur=InsPlans.List[i];
 				}
 			}
+			FormP.DropButVisible=true;
 			FormP.ShowDialog();
 			if(FormP.DialogResult!=DialogResult.OK){
 				return;
@@ -818,6 +991,10 @@ namespace OpenDental{
 				tbCoverage.SetBackColorRow(i,covColor);
 			}
 			if(!Patients.PatIsLoaded){
+				butEditPriCov.Enabled=false;
+				butEditSecCov.Enabled=false;
+				butEditPriPlan.Enabled=false;
+				butEditSecPlan.Enabled=false;
 				for(int i=1;i<16;i++){
 					tbCoverage.Cell[1,i]="";
 					tbCoverage.Cell[3,i]="";
@@ -830,6 +1007,9 @@ namespace OpenDental{
 				tbPercent2.LayoutTables();
 				return;
 			}
+			butEditPriPlan.Enabled=true;
+			butEditPriCov.Enabled=true;
+			butEditSecCov.Enabled=true;
 			//CovPats CovPats=new CovPats();
 			tbPercent1.ResetRows(CovCats.ListShort.Length);
 			tbPercent1.SetGridColor(Color.LightGray);
@@ -851,14 +1031,15 @@ namespace OpenDental{
 					tbPercent2.Cell[1,i]=CovPats.SecList[i].ToString();
 			}
 			tbPercent2.LayoutTables();
-			
 			if(Patients.Cur.PriPlanNum==0){
+				butEditPriPlan.Text=Lan.g(this,"New");
 				for(int i=1;i<17;i++){
 					tbCoverage.Cell[1,i]="";
 				}
 				textPriPlanNote.Text="";
 			}
 			else{
+				butEditPriPlan.Text=Lan.g(this,"Edit");
 				for(int i=0;i<InsPlans.List.Length;i++){
 					if(InsPlans.List[i].PlanNum==Patients.Cur.PriPlanNum){
 						InsPlans.Cur=InsPlans.List[i];
@@ -901,12 +1082,14 @@ namespace OpenDental{
 				textPriPlanNote.Text=InsPlans.Cur.PlanNote;
 			}
 			if(Patients.Cur.SecPlanNum==0){
+				butEditSecPlan.Enabled=false;
 				for(int i=1;i<17;i++){
 					tbCoverage.Cell[3,i]="";
 				}
 				textSecPlanNote.Text="";
 			}
 			else{
+				butEditSecPlan.Enabled=true;
 				for(int i=0;i<InsPlans.List.Length;i++){
 					if(InsPlans.List[i].PlanNum==Patients.Cur.SecPlanNum){
 						InsPlans.Cur=InsPlans.List[i];
@@ -955,6 +1138,13 @@ namespace OpenDental{
 		
 
 		#endregion tbCoverage
+
+		
+
+		
+
+		
+		
 
 		
 

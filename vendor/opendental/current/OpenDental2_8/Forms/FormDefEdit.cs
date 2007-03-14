@@ -92,7 +92,7 @@ namespace OpenDental{
 			// 
 			this.labelValue.Location = new System.Drawing.Point(218, 22);
 			this.labelValue.Name = "labelValue";
-			this.labelValue.Size = new System.Drawing.Size(164, 16);
+			this.labelValue.Size = new System.Drawing.Size(164, 45);
 			this.labelValue.TabIndex = 1;
 			this.labelValue.Text = "Value";
 			this.labelValue.TextAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -203,7 +203,8 @@ namespace OpenDental{
 			labelValue.Text=ValueText;
 			if(Defs.Cur.Category==DefCat.AdjTypes
 				&& !IsNew){
-				EnableValue=false;//do not allow changing sign of AdjTypes after created
+				labelValue.Text="Not allowed to change sign after an adjustment is created.";
+				textValue.Visible=false;
 			}
 			if(!EnableValue){
 				labelValue.Visible=false;

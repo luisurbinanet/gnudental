@@ -204,8 +204,8 @@ namespace OpenDental{
 			textDate.Text=Documents.Cur.DateCreated.ToString("d");
 			textDescript.Text=Documents.Cur.Description;
 		  textFileName.Text=Documents.Cur.FileName;
-			if (IsNew)  
-        listCategory.SelectedIndex = 0;
+			if(IsNew)  
+        listCategory.SelectedIndex=0;
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e){

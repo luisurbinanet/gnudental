@@ -50,8 +50,8 @@ namespace OpenDental{
 			HeadingIsPresent=false;
 			InstantClassesPar();
 			SetRowHeight(1,17,14);
-			RowHeight[0]=18;
-			RowHeight[3]=18;
+			RowHeight[0]=20;
+			RowHeight[3]=20;
 			RowHeight[11]=29;
 			RowHeight[18]=130;
 			ColWidth[0]=120;

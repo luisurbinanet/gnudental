@@ -166,7 +166,7 @@ namespace OpenDental{
 			date2.SelectionStart=DateTime.Today;		
 		}
 		private void butOK_Click(object sender, System.EventArgs e) {
-			Queries.CurReport=new Report();
+			Queries.CurReport=new ReportOld();
 			//added plfname for ordering purposes, spk 3/13/04
 			Queries.CurReport.Query="SELECT procedurelog.procdate,CONCAT"
 				+"(patient.LName,', ',patient.FName,' ',patient.MiddleI) AS plfname, procedurecode.adacode,"

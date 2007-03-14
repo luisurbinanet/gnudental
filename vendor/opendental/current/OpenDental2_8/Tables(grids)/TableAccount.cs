@@ -15,7 +15,7 @@ namespace OpenDental{
 		public TableAccount(){
 			InitializeComponent();// This call is required by the Windows Form Designer.
 			MaxRows=20;
-			MaxCols=10;
+			MaxCols=12;
 			ShowScroll=true;
 			FieldsArePresent=true;
 			HeadingIsPresent=true;
@@ -29,24 +29,30 @@ namespace OpenDental{
 			Fields[4]=Lan.g("TableAccount","Description");
 			Fields[5]=Lan.g("TableAccount","Fee");
 			Fields[6]=Lan.g("TableAccount","Ins Est");
-			Fields[7]=Lan.g("TableAccount","Ins Pay");
+			Fields[7]=Lan.g("TableAccount","Ins Paid");
 			Fields[8]=Lan.g("TableAccount","Patient");
-			Fields[9]=Lan.g("TableAccount","Balance");
+			Fields[9]=Lan.g("TableAccount","Adj");
+			Fields[10]=Lan.g("TableAccount","Paid");
+			Fields[11]=Lan.g("TableAccount","Balance");
 			ColAlign[5]=HorizontalAlignment.Right;
 			ColAlign[6]=HorizontalAlignment.Right;
 			ColAlign[7]=HorizontalAlignment.Right;
 			ColAlign[8]=HorizontalAlignment.Right;
 			ColAlign[9]=HorizontalAlignment.Right;
+			ColAlign[10]=HorizontalAlignment.Right;
+			ColAlign[11]=HorizontalAlignment.Right;
 			ColWidth[0]=65;
 			ColWidth[1]=40;
 			ColWidth[2]=46;
 			ColWidth[3]=22;
-			ColWidth[4]=270;
-			ColWidth[5]=50;
-			ColWidth[6]=50;
-			ColWidth[7]=50;
-			ColWidth[8]=50;
-			ColWidth[9]=50;
+			ColWidth[4]=241;
+			ColWidth[5]=48;
+			ColWidth[6]=48;
+			ColWidth[7]=48;
+			ColWidth[8]=48;
+			ColWidth[9]=48;
+			ColWidth[10]=48;
+			ColWidth[11]=48;
 			DefaultGridColor=Color.LightGray;
 			LayoutTables();
 			//NoteWidth=(float)(45+22+240+28+65);

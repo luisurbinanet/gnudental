@@ -240,7 +240,7 @@ namespace OpenDental{
 			// textDescription
 			// 
 			this.textDescription.Location = new System.Drawing.Point(131, 75);
-			this.textDescription.MaxLength = 50;
+			this.textDescription.MaxLength = 255;
 			this.textDescription.Name = "textDescription";
 			this.textDescription.Size = new System.Drawing.Size(330, 20);
 			this.textDescription.TabIndex = 0;

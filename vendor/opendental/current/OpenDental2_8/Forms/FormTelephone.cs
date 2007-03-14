@@ -120,6 +120,15 @@ namespace OpenDental{
 					return;
 				}
 			}
+			Reformat();
+			//refresh carriers:
+			DataValid.IType=InvalidType.LocalData;
+			DataValid DataValid2=new DataValid();
+			DataValid2.SetInvalid();
+			MessageBox.Show(Lan.g(this,"Telephone numbers reformatted."));
+		}
+			
+		public static void Reformat(){
 			string oldTel;
 			string newTel;
 			string idNum;
@@ -153,6 +162,20 @@ namespace OpenDental{
 					Queries.SubmitNonQ();
 				}
 			}
+			Queries.CurReport.Query="select * from carrier";
+			Queries.SubmitCur();	
+			for(int i=0;i<Queries.TableQ.Rows.Count;i++){
+				idNum=PIn.PString(Queries.TableQ.Rows[i][0].ToString());
+				//ph
+				oldTel=PIn.PString(Queries.TableQ.Rows[i][7].ToString());
+				newTel=TelephoneNumbers.ReFormat(oldTel);
+				if(oldTel!=newTel){
+					Queries.CurReport.Query="UPDATE carrier SET Phone = '"
+						+newTel+"' WHERE CarrierNum = '"+idNum+"'";
+					Queries.SubmitNonQ();
+				}
+			}
+			//this last part will only be run once during conversion to 2.8. It can be dropped from a future version.
 			Queries.CurReport.Query="select * from insplan";
 			Queries.SubmitCur();	
 			for(int i=0;i<Queries.TableQ.Rows.Count;i++){
@@ -161,12 +184,11 @@ namespace OpenDental{
 				oldTel=PIn.PString(Queries.TableQ.Rows[i][5].ToString());
 				newTel=TelephoneNumbers.ReFormat(oldTel);
 				if(oldTel!=newTel){
-					Queries.CurReport.Query="UPDATE insplan SET phone = '"
-						+newTel+"' WHERE planNum = '"+idNum+"'";
+					Queries.CurReport.Query="UPDATE insplan SET Phone = '"
+						+newTel+"' WHERE PlanNum = '"+idNum+"'";
 					Queries.SubmitNonQ();
 				}
 			}
-			MessageBox.Show(Lan.g(this,"Telephone numbers reformatted."));
 		}//reformat
 
 		

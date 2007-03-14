@@ -80,7 +80,6 @@ namespace OpenDental{
 			// BasicTemplate
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(719, 564);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.butCancel);
