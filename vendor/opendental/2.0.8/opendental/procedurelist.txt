@@ -1,0 +1,550 @@
+"D0120"	"Periodic Oral Evaluation"	"PerEx"	"/X/"								0
+"D0140"	"Limited Oral Evaluation-Problem Focused"	"LimEx"	"/X/"								0
+"D0150"	"Comprehensive Oral Evaluation"	"CmpEx"	"/X/"								0
+"D0160"	"Detailed and Extensive oral Evaluation-Problem Focused, By Report"	"DetailedEval"	"/X/"								0
+"D0170"	"Re-evaluation - Limited, Problem Focused"	"ReEval"	"/X/"								0
+"D0180"	"Comprehensive Periodontal Examination (New or Established Client)"	"CompPerioEval"	"/X/"								0
+"D0210"	"Intraoral - Full Mouth X-rays (Including Bitewings)"	"FMX"	"/X/"								0
+"D0220"	"Intraoral - 1 Periapical X-ray, First Film"	"PA"	"/X/"								0
+"D0230"	"Intraoral - Additional Periapical X-ray"	"PA+"	"/X/"								0
+"D0240"	"Intraoral - Occlusal X-ray"	"OcclusalX"	"/X/"								0
+"D0250"	"Extraoral - First Film"	"ExtraOr1"	"/X/"								0
+"D0260"	"Extraoral - Each Additional Film"	"ExtraOrX+"	"/X/"								0
+"D0270"	"1 Bitewing X-ray"	"1BW"	"/X/"								0
+"D0272"	"2 Bitewing X-rays"	"2BW"	"/X/"								0
+"D0274"	"4 Bitewing X-rays"	"4BW"	"/X/"								0
+"D0277"	"Vertical Bitewings - 7 To 8 Films"	"VertBW7-8"	"/X/"								0
+"D0290"	"A-P or Lateral Skull & Facial X-ray"	"SurvXray"	"/X/"								0
+"D0310"	"Sialography"	"Sialo"	"/X/"								0
+"D0320"	"TMJ Joint Arthrogram, including injection"	"TMJArthrIninj"	"/X/"								0
+"D0321"	"Other TMJ Films, By Report"	"OtherTMJX"	"/X/"								0
+"D0330"	"Panoramic X-ray"	"Pano"	"/X/"								0
+"D0340"	"Cephalometric Film"	"Cephalo"	"/X/"								0
+"D0350"	"Oral/Facial Images (Included Intra and Extraoral Images)"	"OralFacimage"	"/X/"								0
+"D0415"	"Microscopic Examination"	"MicroEx"	"/X/"								0
+"D0425"	"Caries susceptibility tests"	"CariesTest"	"/X/"								0
+"D0460"	"Pulp Vitality Test"	"PulpVital"	"/X/"								0
+"D0470"	"Diagnostic Casts"	"DiagnCast"	"/X/"								0
+"D0472"	"Accession of Tissue, Gross Examination, Preparation and Transmission of Written Report"	"AccessTissGrEx"	"/X/"								0
+"D0473"	"Accession of Tissue, Gross and Microscopic Examination, Preparation and Transmission of Written Report"	"AccessTissGrMicrEx"	"/X/"								0
+"D0474"	"Accession of Tissue, Gross Examination, Including Assessment of Surgical Margins for Presence of Disease, Preparation and Transmission of Written Report"	"AccessTissGrExInSurg"	"/X/"								0
+"D0480"	"Processing and Interpretation of Cytologic Smears, Including Preparation and Transmission of Written Report"	"ProInterOytoSm"	"/X/"								0
+"D0502"	"Other Oral Pathology Procedures, By Report"	"OtherPath"	"/X/"								0
+"D0999"	"Unspecified Diagnostic Procedure, By Report"	"UnspecDiagn"	"/X/"								0
+"D1110"	"Cleaning-Adult (Transitional or Permanent Teeth)"	"Pro"	"/X/"								0
+"D1120"	"Cleaning-Child (Primary or Transitional Teeth)"	"ProChild"	"/X/"								0
+"D1201"	"Topical Fluoride Including Prophy-Child"	"ProFloChild"	"/X/"								0
+"D1203"	"Fluoride Topical Excluding Prophy-Child"	"FloChild"	"/X/"								0
+"D1204"	"Fluoride Topical Excluding Prophy-Adult"	"Flo"	"/X/"								0
+"D1205"	"Topical Fluoride Including Prophy-Adult"	"ProFlo"	"/X/"								0
+"D1310"	"Nutritional Counseling for Control of Dental Disease"	"NutriCnsl"	"/X/"								0
+"D1320"	"Tobacco Counseling"	"TobacoCnsl"	"/X/"								0
+"D1330"	"Oral Hygiene Instruction"	"OralHygIn"	"/X/"								0
+"D1351"	"Sealant (per tooth)"	"Seal"	"/X/"								0
+"D1510"	"Space Maintainer-Fixed-Unilateral"	"BandLoop"	"/X/"								0
+"D1515"	"Space Maintainer-Fixed-Bilateral"	"SpMFxBi"	"/X/"								0
+"D1520"	"Space Maintainer-Removable-Unilateral"	"SpMRemUni"	"/X/"								0
+"D1525"	"Space Maintainer-Removable-Bilateral"	"SpMRemBil"	"/X/"								0
+"D1550"	"Recementation of Space Maintainer"	"Recement"	"/X/"								0
+"D2140"	"Amalgam-One Surface, Primary or Permanent"	"A1"	"/X/"								0
+"D2150"	"Amalgam-Two Surfaces, Primary or Permanent"	"A2"	"/X/"								0
+"D2160"	"Amalgam-Three Surfaces, Primary or Permanent"	"A3"	"/X/"								0
+"D2161"	"Amalgam-Four or More Surfaces, Primary or Permanent"	"A4"	"/X/"								0
+"D2330"	"Composite 1 Surface-Anterior"	"C1"	"/X/"								0
+"D2331"	"Composite 2 Surfaces-Anterior"	"C2"	"/X/"								0
+"D2332"	"Composite 3 Surfaces-Anterior"	"C3"	"/X/"								0
+"D2335"	"Composite 4 Or More Surfaces-Anterior"	"C4"	"/X/"								0
+"D2390"	"Composite Resin Crown-Anterior"	"CresCn"	"/X/"								0
+"D2391"	"Composite 1 Surface-Posterior"	"C1(P)"	"/X/"								0
+"D2392"	"Composite 2 Surfaces-Posterior"	"C2(P)"	"/X/"								0
+"D2393"	"Composite 3 Surfaces-Posterior"	"C3(P)"	"/X/"								0
+"D2394"	"Composite 4 Or More Surfaces-Posterior"	"C4(P)"	"/X/"								0
+"D2410"	"Gold Foil 1 Surface"	"GoldFoil1"	"/X/"								0
+"D2420"	"Gold Foil 2 Surfaces"	"GoldFoil2"	"/X/"								0
+"D2430"	"Gold Foil 3 Surfaces"	"GoldFoil3"	"/X/"								0
+"D2510"	"Inlay-Metallic-1 Surface"	"InlayMet1"	"/X/"								0
+"D2520"	"Inlay-Metallic-2 Surfaces"	"InlayMet2"	"/X/"								0
+"D2530"	"Inlay-Metallic-3 Surfaces"	"InlayMet3"	"/X/"								0
+"D2542"	"Onlay-Metallic-2 Surfaces"	"OnlayMet2"	"/X/"								0
+"D2543"	"Onlay-Metallic-3 Surfaces"	"OnlayMet3"	"/X/"								0
+"D2544"	"Onlay-Metallic-4 or More Surfaces"	"OnlayMet4"	"/X/"								0
+"D2610"	"Inlay-Porcelain/Ceramic-1 Surface"	"CerInlay1"	"/X/"								0
+"D2620"	"Inlay-Porcelain/Ceramic-2 Surfaces"	"Cerinlay2"	"/X/"								0
+"D2630"	"Inlay-Porcelain/Ceramic-3 Surfaces"	"Cerinlay3"	"/X/"								0
+"D2642"	"Onlay-Porcelain/Ceramic-2 Surfaces"	"CerOnlay2"	"/X/"								0
+"D2643"	"Onlay-Porcelain/Ceramic-3 Surfaces"	"CerOnlay3"	"/X/"								0
+"D2644"	"Onlay-Porcelain/Ceramic-4 or More Surfaces"	"Ceronlay4"	"/X/"								0
+"D2650"	"Inlay-Composite/Resin-1 Surface"	"InCRs1Lb"	"/X/"								0
+"D2651"	"Inlay-Composite/Resin-2 Surfaces"	"InCRs2Lb"	"/X/"								0
+"D2652"	"Inlay-Composite/Resin-3 Surfaces"	"InCRs3Lb"	"/X/"								0
+"D2662"	"Onlay-Composite/Resin-2 Surfaces"	"OnCRs2S"	"/X/"								0
+"D2663"	"Onlay-Composite/Resin-3 Surfaces"	"OnCRs3S"	"/X/"								0
+"D2664"	"Onlay-Composite/Resin-4 or More Surfaces"	"OnCRs4+S"	"/X/"								0
+"D2710"	"Crown-Resin-Indirect (Fiber, Porcelain, or Ceramic Reinforced Polymer)"	"CrnRsLb"	"/X/"								0
+"D2720"	"Crown-Resin with High Noble Metal"	"CrnRsHN"	"/X/"								0
+"D2721"	"Crown-Resin with Predominantly Base Metal"	"CrnRsBm"	"/X/"								0
+"D2722"	"Crown-Resin with Noble Metal"	"CrnRsNm"	"/X/"								0
+"D2740"	"Crown-All Porcelain/Ceramic"	"AllCerCrn"	"/X/"								0
+"D2750"	"Crown-Porcelain Fused to High Noble Metal"	"PFM"	"/X/"								0
+"D2751"	"Crown-Porcelain Fused to Predominantly Base Metal"	"CrnPrFBm"	"/X/"								0
+"D2752"	"Crown-Porcelain Fused to Noble Metal"	"CrnPrFNm"	"/X/"								0
+"D2780"	"Crown-3/4 Cast High Noble Metal"	"3/4HiNobl"	"/X/"								0
+"D2781"	"Crown-3/4 Cast Predominantly Base Metal"	"3/4BaseM"	"/X/"								0
+"D2782"	"Crown-3/4 Cast Noble Metal"	"3/4Noble"	"/X/"								0
+"D2783"	"Crown-3/4 Porcelain/Ceramic"	"3/4Porc"	"/X/"								0
+"D2790"	"Crown-Full Cast High Noble Metal"	"FGCrn"	"/X/"								0
+"D2791"	"Crown-Full Cast Predominantly Base Metal"	"CrnFlcBm"	"/X/"								0
+"D2792"	"Crown-Full Cast Noble Metal"	"CrnFlcNm"	"/X/"								0
+"D2799"	"Provisional Crown (Interim Restoration Of At Least 6 Months)"	"ProvisCn"	"/X/"								0
+"D2910"	"Recement Inlay"	"RecemInly"	"/X/"								0
+"D2920"	"Recement Crown"	"RecemCn"	"/X/"								0
+"D2930"	"Prefabricated Stainless Steel Crown-Primary Tooth"	"SSCPri"	"/X/"								0
+"D2931"	"Prefabricated Stainless Steel Crown-Permanent Tooth"	"SSCPer"	"/X/"								0
+"D2932"	"Prefabricated Resin Crown"	"PrFbRsCrn"	"/X/"								0
+"D2933"	"Prefabricated Stainless Steel Crown with Resin Window"	"PrFbScRsW"	"/X/"								0
+"D2940"	"Sedative Filling"	"SedFill"	"/X/"								0
+"D2950"	"Crore Build Up, Including Any Pins "	"BU"	"/X/"								0
+"D2951"	"Pin Retention-Per Tooth, In Addition to Restoration"	"Pin"	"/X/"								0
+"D2952"	"Cast Post and Core in Addition to Crown"	"CastP&C"	"/X/"								0
+"D2953"	"Each Additional Cast Post - Same Tooth"	"AdditCastPost"	"/X/"								0
+"D2954"	"Prefabricated Post and Core in Addition to Crown"	"P&C"	"/X/"								0
+"D2955"	"Post Removal (not in conjunction with endodontic therapy)"	"PostRemov"	"/X/"								0
+"D2957"	"Each Additional Prefabricated Post - Same Tooth"	"AdditPost"	"/X/"								0
+"D2960"	"Labial Veneer (resin laminate)-Chairside"	"CmpVnr"	"/X/"								0
+"D2961"	"Labial Veneer (resin laminate)-Laboratory"	"CmpVnrLb"	"/X/"								0
+"D2962"	"Labial Veneer (porcelain laminate)-Laboratory"	"PorcVnr"	"/X/"								0
+"D2970"	"Temporary Crown (fractured tooth)"	"TempCrn"	"/X/"								0
+"D2980"	"Crown Repair, by Report"	"CrnRepair"	"/X/"								0
+"D2999"	"Unspecified Restorative Procedure, by Report"	"UnspecRestor"	"/X/"								0
+"D3110"	"Pulp Cap - Direct (excluding final restoration)"	"PulpCap"	"/X/"								0
+"D3120"	"Pulp Cap - Indirect (excluding final restoration)"	"PulpCapIn"	"/X/"								0
+"D3220"	"Therapeutic Pulpotomy (excluding final restoration)"	"Pulpotomy"	"/X/"								0
+"D3221"	"Pulpal Debridement-Primary and Permanent Teeth "	"PulpDebr"	"/X/"								0
+"D3230"	"Root Canal, (resorbable filling) - Anterior, Primary Tooth (excluding final restoration)"	"PulpThA/Pr"	"/X/"								0
+"D3240"	"Root Canal, (resorbable filling) - Posterior, Primary Tooth (excluding final restoration)"	"PulpThP/Pr"	"/X/"								0
+"D3310"	"Root Canal, Anterior"	"RCTAnt"	"/X/"								0
+"D3320"	"Root Canal, Bicuspid"	"RCTPre"	"/X/"								0
+"D3330"	"Root Canal, Molar"	"RCTMol"	"/X/"								0
+"D3331"	"Treatment of Root Canal Obstruction; Non-Surgical Access"	"RCObstr"	"/X/"								0
+"D3332"	"Incomplete Endodontic Therapy; Inoperable or Fractured Tooth"	"IncmpRCT"	"/X/"								0
+"D3233"	"Internal Root Repair of Perforation Defects (Not Iatrogenic by Provider Filing Claim)"	"InternRRepair"	"/X/"								0
+"D3346"	"Retreatment-Anterior"	"RCT-RAnt"	"/X/"								0
+"D3347"	"Retreatment-Bicuspid"	"RCT-RBi"	"/X/"								0
+"D3348"	"Retreatment-Molar"	"RCT-RMol"	"/X/"								0
+"D3351"	"Apexification/Recalcification-Initial Visit"	"Apexif"	"/X/"								0
+"D3352"	"Apexification/Recalcification-Interim Visit"	"ApxRclIn"	"/X/"								0
+"D3353"	"Apexification/Recalcification-Final Visit"	"ApxRcFin"	"/X/"								0
+"D3410"	"Apicoectomy/Periradicular Surgery-Anterior"	"ApctPrSrA"	"/X/"								0
+"D3421"	"Apicoectomy/Periradicular Surgery-Bicuspid (first root)"	"ApctPr+th"	"/X/"								0
+"D3425"	"Apicoectomy/Periradicular Surgery-Molar (first root)"	"ApctPrMol"	"/X/"								0
+"D3426"	"Apicoectomy/Periradicular Surgery (each additional root)"	"ApctPr+th"	"/X/"								0
+"D3430"	"Retrograde Filling-Per Root"	"RetroFill"	"/X/"								0
+"D3450"	"Root Amputation-Per Root"	"RtAmp"	"/X/"								0
+"D3460"	"Endodontic Endosseous Implant"	"EndoEdsIm"	"/X/"								0
+"D3470"	"Intentional Replantation (Including Necessary Splinting)"	"IntRplISp"	"/X/"								0
+"D3910"	"Surgical Procedure for Isolation of Tooth with Rubber Dam"	"SurgIs/RD"	"/X/"								0
+"D3920"	"Hemisection (including any root removal, not root canal)"	"Hemi"	"/X/"								0
+"D3950"	"Canal Preparation For Post"	"CanPrepPt"	"/X/"								0
+"D3999"	"Unspecified Endodontic Procedure, by Report"	"UnspecEndo"	"/X/"								0
+"D4210"	"Gingivectomy/plasty-Four or More Contiguous Teeth or Bounded Teeth Spaces"	"GingivQdr"	"/X/"								0
+"D4211"	"Gingivectomy/plasty-One to Three Teeth, per Quadrant"	"Gingiv"	"/X/"								0
+"D4240"	"Gingival Flap Procedure, Including Root Planing-Four or More Contiguous Teeth or Bounded Teeth Spaces"	"GnFlInRtp4+"	"/X/"								0
+"D4241"	"Gingival Flap Procedure, Including Root Planing-One to Three Teeth, per Quadrant"	"GnFlInRtp1-3"	"/X/"								0
+"D4245"	"Apically Positioned Flap"	"ApicFlap"	"/X/"								0
+"D4249"	"Crown Lengthening-Hard Tissue"	"CrnLength"	"/X/"								0
+"D4250"	"Mucogingival Surgery-per Quadrant"	"MucGinSrQ"	"/X/"								0
+"D4260"	"Osseous Surgery-Four or More Contiguous Teeth or Bounded Teeth Spaces"	"OssSurgQ"	"/X/"								0
+"D4261"	"Osseous Surgery-One to Three Teeth, per Quadrant"	"OssSurg1-2"	"/X/"								0
+"D4263"	"Bone Replacement Graft-First Site in Quadrant"	"BnRpGr1st"	"/X/"								0
+"D4264"	"Bone Replacement Graft-Each Additional Site in Quadrant"	"BnRpGrEa1+"	"/X/"								0
+"D4265"	"Biologic Materials to Aid in Soft and Osseous Tissue Regeneration"	"BioMatSftOTissReg"	"/X/"								0
+"D4266"	"Guided Tissue Regeneration-Resorbable Barrier, Per Site"	"TissRgPer"	"/X/"								0
+"D4267"	"Guided Tissue Regeneration-Non-resorbable Barrier, Per Site, Per Tooth"	"TissRgNr"	"/X/"								0
+"D4268"	"Surgical Revision Procedure, Per Tooth"	"SurgRevis"	"/X/"								0
+"D4270"	"Pedicle Soft Tissue Graft Procedure"	"PedSfTsGr"	"/X/"								0
+"D4271"	"Free Soft Tissue Graft Procedure"	"FrSfTsGr"	"/X/"								0
+"D4273"	"Subepithelial Connective Tissue Graft"	"SubTsGr"	"/X/"								0
+"D4274"	"Distal or Proximal Wedge Procedure"	"DistPxWg"	"/X/"								0
+"D4275"	"Soft Tissue Allograft"	"SfTsAll"	"/X/"								0
+"D4276"	"Combined Connective Tissue and Double Pedicle Graft"	"ComConTissDPGr"	"/X/"								0
+"D4320"	"Provisional Splint-Intracoronal"	"ProSplIn"	"/X/"								0
+"D4321"	"Provisional Splint-Extracoronal"	"ProSplEx"	"/X/"								0
+"D4341"	"Periodontal Scaling and Root Planing-Four or More Contiguous Teeth or Bounded Teeth Spaces"	"SRP"	"/X/"								0
+"D4342"	"Periodontal Scaling and Root Planing-One to Three Teeth, per Quadrant"	"SRP1-3"	"/X/"								0
+"D4355"	"Full Mouth Debridement to Enable Comprehensive Periodontal Evaluation and Diagnosis"	"FMDebride"	"/X/"								0
+"D4381"	"Localized Delivery of Chemotherapeutic Agents Via A Controlled Release Vehicle"	"Arestin"	"/X/"								0
+"D4910"	"Periodontal Maintenance, Following Active Therapy (Surgical or Non-Surgical)"	"PerioMaint"	"/X/"								0
+"D4920"	"Unscheduled Dressing Change (Other Than Treating Dentist)"	"UnscDrChg"	"/X/"								0
+"D4999"	"Unspecified Periodontal Procedure, by Report"	"UnspecPerio"	"/X/"								0
+"D5110"	"Complete Upper Denture"	"MaxDent"	"/X/"								0
+"D5120"	"Complete Lower Denture"	"MandDent"	"/X/"								0
+"D5130"	"Immediate-Complete Upper Denture"	"MaxImmDent"	"/X/"								0
+"D5140"	"Immediate-Complete Lower Denture"	"MandImmDent"	"/X/"								0
+"D5211"	"Upper Partial Denture - Resin"	"PermMaxFlip"	"/X/"								0
+"D5212"	"Lower Partial Denture - Resin"	"PermMandFlip"	"/X/"								0
+"D5213"	"Upper Partial Denture - Cast Metal With Resin Denture Base"	"MaxRPD"	"/X/"								0
+"D5214"	"Lower Partial Denture - Cast Metal With Resin Denture Base"	"MandRPD"	"/X/"								0
+"D5281"	"Removable Unilateral Partial Denture - One Piece Cast Metal"	"RmvUniPDn"	"/X/"								0
+"D5410"	"Adjust Complete Upper Denture"	"AdjCmDnMax"	"/X/"								0
+"D5411"	"Adjust Complete Lower Denture"	"AdjCmDnMand"	"/X/"								0
+"D5421"	"Adjust Partial Denture Upper"	"AdjPrDnMax"	"/X/"								0
+"D5422"	"Adjust Partial Denture Lower"	"AdjPrDnMand"	"/X/"								0
+"D5510"	"Repair Broken Complete Denture Base"	"RepairDent"	"/X/"								0
+"D5520"	"Replace Missing or Broken Teeth-Complete Denture (each tooth)"	"RplThCmDn"	"/X/"								0
+"D5610"	"Partial Denture Repair, Resin Base"	"ReprRPDRsBs"	"/X/"								0
+"D5620"	"Partial Denture Repair, Cast Framework"	"ReprFlip"	"/X/"								0
+"D5630"	"Partial Denture Repair or Replace Broken Clasp"	"ReprClasp"	"/X/"								0
+"D5640"	"Partial Denture Replace Broken Teeth, Per Tooth"	"ReplBrkTth"	"/X/"								0
+"D5650"	"Add Tooth To Existing Partial Denture"	"AddTooth"	"/X/"								0
+"D5660"	"Add Clasp To Existing Partial Denture"	"AddClasp"	"/X/"								0
+"D5670"	"Replace All Teeth and Acrylic on Cast Metal Framework (Maxillary)"	"ReTh&AcryMaxRPD"	"/X/"								0
+"D5671"	"Replace All Teeth and Acrylic on Cast Metal Framework (Mandibular)"	"ReTh&AcryMandRPD"	"/X/"								0
+"D5710"	"Rebase Complete Upper Denture"	"RebsComMaxDn"	"/X/"								0
+"D5711"	"Rebase Complete Lower Denture"	"RebsComMandDn"	"/X/"								0
+"D5720"	"Rebase Upper Partial Denture"	"RebsRPDMaxDn"	"/X/"								0
+"D5721"	"Rebase Lower Partial Denture"	"RebsRPDMandDn"	"/X/"								0
+"D5730"	"Reline Complete Upper Denture (chairside)"	"RelMaxDntChair"	"/X/"								0
+"D5731"	"Reline Complete Lower Denture (chairside)"	"RelMandDntChair"	"/X/"								0
+"D5740"	"Reline Upper Partial Denture (chairside)"	"RelMaxRPDChair"	"/X/"								0
+"D5741"	"Reline Lower Partial Denture (chairside)"	"RelMandRPDChair"	"/X/"								0
+"D5750"	"Reline Complete Upper Denture (lab)"	"RelMaxDnLab"	"/X/"								0
+"D5751"	"Reline Complete Lower Denture (lab)"	"RelMandDnLab"	"/X/"								0
+"D5760"	"Reline Upper Partial Denture (lab)"	"RelMaxRPDLab"	"/X/"								0
+"D5761"	"Reline Lower Partial Denture (lab)"	"RelMandRPDLab"	"/X/"								0
+"D5810"	"Interim Complete Denture Upper"	"TempCompMaxDn"	"/X/"								0
+"D5811"	"Interim Complete Denture Lower"	"TempCompMandDn"	"/X/"								0
+"D5820"	"Interim Partial Denture Upper"	"TempMaxFlip"	"/X/"								0
+"D5821"	"Interim Partial Denture Lower"	"TempMandFlip"	"/X/"								0
+"D5850"	"Tissue Conditioning, Upper"	"TisConMax"	"/X/"								0
+"D5851"	"Tissue Conditioning, Lower"	"TisConMand"	"/X/"								0
+"D5860"	"Overdenture-Complete, by Report"	"OverDent"	"/X/"								0
+"D5861"	"Overdenture-Partial, by Report"	"OverDentRPD"	"/X/"								0
+"D5862"	"Precision Attachment, by Report"	"DentAttach"	"/X/"								0
+"D5867"	"Replacement of Replaceable Part of Semi-Precision Attachment (Male or Female Component)"	"ReplDnAttach"	"/X/"								0
+"D5875"	"Modification of Removable Prosthesis Following Implant Surgery"	"ModRmvProAftImpSurg"	"/X/"								0
+"D5899"	"Unspecified Removable Prosthodontic Procedure, by Report"	"UnspecDent"	"/X/"								0
+"D5911"	"Facial Moulage (sectional)"	"SecFacMoul"	"/X/"								0
+"D5912"	"Facial Moulage (complete)"	"CompFacMoul"	"/X/"								0
+"D5913"	"Nasal Prosthesis"	"NasPros"	"/X/"								0
+"D5914"	"Auricular Prosthesis"	"AurPros"	"/X/"								0
+"D5915"	"Orbital Prosthesis"	"OrbPros"	"/X/"								0
+"D5916"	"Ocular Prosthesis"	"OcuPros"	"/X/"								0
+"D5919"	"Facial Prosthesis"	"FacPros"	"/X/"								0
+"D5922"	"Nasal Septal Prosthesis"	"NasSepPros"	"/X/"								0
+"D5923"	"Ocular Prosthesis, Interim"	"TempOcuPros"	"/X/"								0
+"D5924"	"Cranial Prosthesis"	"CranPros"	"/X/"								0
+"D5925"	"Facial Augmentation Implant Prosthesis"	"FacAugImp"	"/X/"								0
+"D5926"	"Nasal Prosthesis, Replacement"	"NasProsRep"	"/X/"								0
+"D5927"	"Auricular Prosthesis, Replacement"	"AurProsRep"	"/X/"								0
+"D5928"	"Orbital Prosthesis, Replacement"	"OrbProsRep"	"/X/"								0
+"D5929"	"Facial Prosthesis, Replacement"	"FacProsRep"	"/X/"								0
+"D5931"	"Obturator Prosthesis, Surgical"	"ObtProsSur"	"/X/"								0
+"D5932"	"Obturator Prosthesis, Definitive"	"ObtProsDef"	"/X/"								0
+"D5933"	"Obturator Prosthesis, Modification"	"ObtProsMod"	"/X/"								0
+"D5934"	"Mandibular Resection Prosthesis with Guide Flange"	"MandResFla"	"/X/"								0
+"D5935"	"Mandibular Resection Prosthesis without Guide Flange"	"MandRec"	"/X/"								0
+"D5936"	"Obturator Prosthesis, Interim"	"ObtProsInt"	"/X/"								0
+"D5937"	"Trismus Appliance (not for TMD treatment)"	"TrisAppli"	"/X/"								0
+"D5951"	"Feeding Aid"	"FeedAid"	"/X/"								0
+"D5952"	"Speech Aid Prosthesis, Pediatric"	"SpchAidPd"	"/X/"								0
+"D5953"	"Speech Aid Prosthesis, Adult"	"SpchAidAd"	"/X/"								0
+"D5954"	"Palatal Augmentation Prosthesis"	"PalAugPros"	"/X/"								0
+"D5955"	"Palatal Lift Prosthesis, Definitive"	"PiLftProsDf"	"/X/"								0
+"D5958"	"Palatal Lift Prosthesis, Interim"	"PiLftProsIn"	"/X/"								0
+"D5959"	"Palatal Lift Prosthesis, Modification"	"PiLftProsMod"	"/X/"								0
+"D5960"	"Speech Aid Prosthesis, Modification"	"SpchAdProsMod"	"/X/"								0
+"D5982"	"Surgical Stent"	"SurgStent"	"/X/"								0
+"D5983"	"Radiation Carrier"	"RadtnCarr"	"/X/"								0
+"D5984"	"Radiation Shield"	"RadtnShld"	"/X/"								0
+"D5985"	"Radiation Cone Locator"	"RadtnCnLc"	"/X/"								0
+"D5986"	"Fluoride Gel Carrier"	"FlrGelCarr"	"/X/"								0
+"D5987"	"Commissure Splint"	"CommSplnt"	"/X/"								0
+"D5988"	"Surgical Splint"	"SurgSplnt"	"/X/"								0
+"D5999"	"Unspecified Maxillofacial Prosthesis, by Report"	"UnspecMaxPros"	"/X/"								0
+"D6010"	"Surgical Placement of Implant Body:   Endosteal Implant"	"SurgImpEnd"	"/X/"								0
+"D6020"	"Abutment Placement or Substitution:   Endosteal Implant"	"PlaceAbut"	"/X/"								0
+"D6040"	"Surgical Placement Eposteal Implant"	"SurgEpoImp"	"/X/"								0
+"D6050"	"Surgical Placement Transosteal Implant"	"SurgTranImp"	"/X/"								0
+"D6053"	"Implant/Abutment Supported Removable Denture for Completely Edentulous Arch"	"ImpAvRmvDnCpEdA"	"/X/"								0
+"D6054"	"Implant/Abutment Supported Removable Denture for Partially Edentulous Arch"	"ImpAbRmvDnPartEdA"	"/X/"								0
+"D6055"	"Dental Implant Supported Connecting Bar"	"ImpConBr"	"/X/"								0
+"D6056"	"Prefabricated Abutment"	"PrefabAbut"	"/X/"								0
+"D6057"	"Custom Abutment (e.g. UCLA abutment)"	"CustAbut"	"/X/"								0
+"D6058"	"Abutment Supported Porcelain/Ceramic Crown"	"AbPorCerCn"	"/X/"								0
+"D6059"	"Abutment Supported Porcelain Fused to Metal Crown, High Noble Metal"	"AbPFMCnHNM"	"/X/"								0
+"D6060"	"Abutment Supported Porcelain Fused to Metal Crown, Predominantly Base Metal"	"AbPFMCnBasM"	"/X/"								0
+"D6061"	"Abutment Supported Porcelain Fused to Metal Crown, Noble Metal"	"AbPFMCnNM"	"/X/"								0
+"D6062"	"Abutment Supported Cast Metal Crown, High Noble Metal"	"AbCasMCnHNM"	"/X/"								0
+"D6063"	"Abutment Supported Cast Metal Crown, Predominantly Base Metal"	"AbCasMCnBasM"	"/X/"								0
+"D6064"	"Abutment Supported Cast Metal Crown, Noble Metal"	"AbCasMCnNM"	"/X/"								0
+"D6065"	"Implant Supported Porcelain/Ceramic Crown"	"ImpPorCerCn"	"/X/"								0
+"D6066"	"Implant Supported Porcelain Fused to Metal Crown (Titanium, Titanium Alloy, High Noble Metal)"	"ImpPFMCrn"	"/X/"								0
+"D6067"	"Implant Supported Metal Crown (Titanium, Titanium Alloy, High Noble Metal)"	"ImpMCn"	"/X/"								0
+"D6068"	"Abutment Supported Retainer for Porcelain/Ceramic Fixed Partial Denture"	"AbCasMCnBasM"	"/X/"								0
+"D6069"	"Abutment Supported Retainer for Porcelain Fused to Metal Fixed Partial Denture, High Noble Metal"	"AbRPFMFxRPDHNM"	"/X/"								0
+"D6070"	"Abutment Supported Retainer for Porcelain Fused to Metal Fixed Partial Denture, Predominantly Base Metal"	"AbRPFMFxRPDBasM"	"/X/"								0
+"D6071"	"Abutment Supported Retainer for Porcelain Fused to Metal Fixed Partial Denture, Noble Metal"	"AbRPFMFxRPDNM"	"/X/"								0
+"D6072"	"Abutment Supported Retainer for Cast Metal Fixed Partial Denture, High Noble Metal"	"AbRtCasMFxRPDHNM"	"/X/"								0
+"D6073"	"Abutment Supported Retainer for Cast Metal Fixed Partial Denture, Predominantly Base Metal"	"AbRCasMFxRPDBasM"	"/X/"								0
+"D6074"	"Abutment Supported Retainer for Cast Metal Fixed Partial Denture, Noble Metal"	"AbRCasMFxRPDNM"	"/X/"								0
+"D6075"	"Implant Supported Retainer for Ceramic Fixed Partial Denture"	"ImpRCerFxRPD"	"/X/"								0
+"D6076"	"Implant Supported Retainer for Porcelain Fused to Metal Fixed Partial Denture (Titanium, Titanium Alloy, or High Noble Metal)"	"ImpRPFMFxRPD"	"/X/"								0
+"D6077"	"Implant Supported Retainer for Cast Metal Fixed Partial Denture (Titanium, Titanium Alloy, or High Noble Metal)"	"ImpRCasMFxRPD"	"/X/"								0
+"D6078"	"Implant/Abutment Supported Fixed Denture for Completely Edentulous Arch"	"ImpAbFxDnCpEden"	"/X/"								0
+"D6079"	"Implant/Abutment Supported Fixed Denture for Partially Edentulous Arch"	"ImpAbFxDnPartEden"	"/X/"								0
+"D6080"	"Implant Maintenance Procedures"	"ImplMaint"	"/X/"								0
+"D6090"	"Repair Implant Supported Prosthesis, by Report"	"RepairProsth"	"/X/"								0
+"D6095"	"Repair Implant Abutment, By Report"	"RepairAbut"	"/X/"								0
+"D6100"	"Implant Removal, by Report"	"ImpRmv"	"/X/"								0
+"D6199"	"Unspecified Implant Procedure, by Report"	"Unspeclmpl"	"/X/"								0
+"D6210"	"Pontic-Cast High Noble Metal"	"PontCast"	"/X/"								0
+"D6211"	"Pontic-Cast Predominantly Base Metal"	"PontCastBasM"	"/X/"								0
+"D6212"	"Pontic-Cast Noble Metal"	"PontCastNM"	"/X/"								0
+"D6240"	"Pontic-Porcelain Fused to High Noble Metal"	"Bridge"	"/X/"								0
+"D6241"	"Pontic-Porcelain Fused to Predominantly Base Metal"	"BridgePontic"	"/X/"								0
+"D6242"	"Pontic-Porcelain Fused to Noble Metal"	"PontPFNM"	"/X/"								0
+"D6245"	"Pontic-Porcelain/Ceramic"	"PorcPontic"	"/X/"								0
+"D6250"	"Pontic-Resin with High Noble Metal"	"PntcRsHNM"	"/X/"								0
+"D6251"	"Pontic-Resin with Predominantly Base Metal"	"PntcRsRdB"	"/X/"								0
+"D6252"	"Pontic-Resin with Noble Metal"	"PntcRsNM"	"/X/"								0
+"D6253"	"Pontic-Provisional (6 months or more)"	"ProvisPontic"	"/X/"								0
+"D6545"	"Bridge retainer-Cast Metal for Resin Bonded Bridge"	"MaryBridge"	"/X/"								0
+"D6548"	"Bridge retainer-Porcelain/Ceramic for Resin Bonded Bridge"	"PorcRet"	"/X/"								0
+"D6600"	"Bridge retainer-Inlay-Porcelain/Ceramic-2 Surfaces"	"BrdgRetInPor2S"	"/X/"								0
+"D6601"	"Bridge retainer-Inlay-Porcelain/Ceramic-3 or More Surfaces"	"BrdgRetInPor3+S"	"/X/"								0
+"D6602"	"Bridge retainer-Inlay-Cast High Noble Metal-2 Surfaces"	"BrdgRetInCasHNM2S"	"/X/"								0
+"D6603"	"Bridge retainer-Inlay-Cast High Noble Metal-3 or More Surfaces"	"BrdgRetInCasHNM3+S"	"/X/"								0
+"D6604"	"Bridge retainer-Inlay-Cast Predominantly Base Metal-2 Surfaces"	"BrdgRetInCasHNM2S"	"/X/"								0
+"D6605"	"Bridge retainer-Inlay-Cast Predominantly Base Metal-3 or More Surfaces"	"BrdgRetInCasBsM3+S"	"/X/"								0
+"D6606"	"Bridge retainer-Inlay-Cast Noble Metal-2 Surfaces"	"BrdgRetInCasNM2S"	"/X/"								0
+"D6607"	"Bridge retainer-Inlay-Cast Noble Metal-3 or More Surfaces"	"BrdgRetInCasNM3+S"	"/X/"								0
+"D6608"	"Bridge retainer-Onlay-Porcelain/Ceramic-2 Surfaces"	"BrdgRetOnPor2S"	"/X/"								0
+"D6609"	"Bridge retainer-Onlay-Porcelain/Ceramic-3 or More Surfaces"	"BrdgRetOnPor3+S"	"/X/"								0
+"D6610"	"Bridge retainer-Onlay-Cast High Noble Metal-2 Surfaces"	"BrdgRetOnCasHNM2S"	"/X/"								0
+"D6611"	"Bridge retainer-Onlay-Cast High Noble Metal-3 or More Surfaces"	"BrdgRetOnCasHNM3+S"	"/X/"								0
+"D6612"	"Bridge retainer-Onlay-Cast Predominantly Base Metal-2 Surfaces"	"BrdgRetOnCasBsM2S"	"/X/"								0
+"D6613"	"Bridge retainer-Onlay-Cast Predominantly Base Metal-3 or More Surfaces"	"BrdgRetOnCasBsM3+S"	"/X/"								0
+"D6614"	"Bridge retainer-Onlay-Cast Noble Metal-2 Surfaces"	"BrdgRetOnCasNM2S"	"/X/"								0
+"D6615"	"Bridge retainer-Onlay-Cast Noble Metal-3 or More Surfaces"	"BrdgRetRsHNM"	"/X/"								0
+"D6720"	"Bridge retainer-Resin with High Noble Metal"	"RtCrnRsHN"	"/X/"								0
+"D6721"	"Bridge retainer-Resin with Predominantly Base Metal"	"RtCrnRsBM"	"/X/"								0
+"D6722"	"Bridge retainer-Resin with Noble Metal"	"RtCrnRsNM"	"/X/"								0
+"D6740"	"Bridge retainer-Porcelain/Ceramic"	"CrnPorBr"	"/X/"								0
+"D6750"	"Bridge retainer-Porcelain Fused to High Noble Metal"	"BrdgRetPorFHNM"	"/X/"								0
+"D6751"	"Bridge retainer-Porcelain Fused to Predominantly Base Metal"	"Bridge(end)"	"/X/"								0
+"D6752"	"Bridge retainer-Porcelain Fused to Noble Metal"	"RtCrnPrFN"	"/X/"								0
+"D6780"	"Bridge retainer-3/4 Cast High Noble Metal"	"RtCrn3/4"	"/X/"								0
+"D6781"	"Bridge retainer-3/4 Cast Predominantly Base Metal"	"3/4Base"	"/X/"								0
+"D6782"	"Bridge retainer-3/4 Cast Noble Metal"	"3/4CrnNob"	"/X/"								0
+"D6783"	"Bridge retainer-3/4 Porcelain/Ceramic"	"3/4Porc"	"/X/"								0
+"D6790"	"Bridge retainer-Full Cast High Noble Metal"	"RtCrnFCHN"	"/X/"								0
+"D6791"	"Bridge retainer-Full Cast Predominantly Base Metal"	"RtFCastBasM"	"/X/"								0
+"D6792"	"Bridge retainer-Full Cast Noble Metal"	"RtFCastNM"	"/X/"								0
+"D6793"	"Bridge retainer-Provisional (6 Months or More)"	"ProvisRt"	"/X/"								0
+"D6920"	"Connector Bar"	"Bar"	"/X/"								0
+"D6930"	"Recement Bridge"	"RecemBrdg"	"/X/"								0
+"D6940"	"Stress Breaker"	"StressBrk"	"/X/"								0
+"D6950"	"Precision Attachment"	"PrecAttach"	"/X/"								0
+"D6970"	"Cast Post and Core in Addition to Bridge retainer"	"CstPtCr+B"	"/X/"								0
+"D6971"	"Cast Post as Part of Bridge retainer"	"CstPtBrdgeRet"	"/X/"								0
+"D6972"	"Prefabricated Post and Core in Addition to Bridge retainer"	"PrfbPtCr+B"	"/X/"								0
+"D6973"	"Core Build-up for Bridge retainer, Including Any Pins"	"CrBURtIP"	"/X/"								0
+"D6975"	"Coping-Metal"	"Coping"	"/X/"								0
+"D6976"	"Each Additional Cast Post - Same Tooth"	"CastPtAdd"	"/X/"								0
+"D6977"	"Each Additional Prefabricated Post - Same Tooth"	"PreFbPtAdd"	"/X/"								0
+"D6980"	"Bridge Repair, by Report"	"BrdgRepair"	"/X/"								0
+"D6985"	"Pediatric Bridge (Primarily for Esthetic Reasons)"	"PedoBrdg"	"/X/"								0
+"D6999"	"Unspecified Fixed Prosthodontic Procedure, by Report"	"UnspFxProsth"	"/X/"								0
+"D7111"	"Extraction, Primary Tooth-Coronal Remnants"	"E-Prim"	"/X/"								0
+"D7140"	"Extraction, Erupted Tooth or Exposed Root"	"E"	"/X/"								0
+"D7210"	"Extraction, Surgical"	"E-Surg"	"/X/"								0
+"D7220"	"Extraction Impacted Tooth-Soft Tissue"	"E-SoftTiss"	"/X/"								0
+"D7230"	"Extraction Impacted Tooth-Partial Bony"	"E-PartBony"	"/X/"								0
+"D7240"	"Extraction Impacted Tooth-Complete Bony"	"E-CompBony"	"/X/"								0
+"D7241"	"Extraction Impacted Tooth-Complete Bony, Complications"	"E-BonywComplic"	"/X/"								0
+"D7250"	"Surgical Removal of Residual Roots"	"SurgRmvResidR"	"/X/"								0
+"D7260"	"Oral Antral Fistula Closure"	"OrAntFistClos"	"/X/"								0
+"D7261"	"Primary Closure of a Sinus Perforation"	"PrimClosSinusPerfor"	"/X/"								0
+"D7270"	"Tooth Reimplantation and/or Stabilization of Accidentally Evulsed or Displaced Tooth"	"ToothReimplant/Stabili"	"/X/"								0
+"D7272"	"Tooth Transplantation"	"ToothTransplant"	"/X/"								0
+"D7280"	"Surgical Access of Unerupted Tooth (may include, but not limited to placement of attachment for eruption)"	"SurgAccessUnerupt"	"/X/"								0
+"D7281"	"Surgical Exposure of Tooth to Aid Eruption"	"SurgExposAidErupt"	"/X/"								0
+"D7282"	"Mobilization of Erupted or Malpositioned Tooth to Aid Eruption"	"MobErup/MalposAidErup"	"/X/"								0
+"D7285"	"Biopsy of Oral Tissue-Hard (bone, tooth)"	"BiopsyOralTissH"	"/X/"								0
+"D7286"	"Biopsy of Oral Tissue-Soft (all others)"	"BiopsySoft"	"/X/"								0
+"D7287"	"Cytology Sample Collection"	"OytologySampCol"	"/X/"								0
+"D7290"	"Surgical Repositioning of Teeth"	"SurgReposition"	"/X/"								0
+"D7291"	"Transseptal Fiberotomy, By Report"	"TransFibero"	"/X/"								0
+"D7310"	"Alveoloplasty in Conjunction with Extractions-per Quadrant"	"Alveolo-w/E"	"/X/"								0
+"D7320"	"Alveoloplasty not in Conjunction with Extractions-per Quadrant"	"Alveolo-w/oE"	"/X/"								0
+"D7340"	"Vestibuloplasty-Ridge Extension (Secondary Epithelialization)"		"/X/"								0
+"D7350"	"Vestibuloplasty-Ridge Extension (Grafts, Muscles, Etc.)"		"/X/"								0
+"D7410"	"Excision of Benign Lesion Diameter Up To 1.25 cm"		"/X/"								0
+"D7411"	"Excision of Benign Lesion Diameter Greater Than 1.25 cm"		"/X/"								0
+"D7412"	"Excision of Benign Lesion, Complicated"		"/X/"								0
+"D7413"	"Excision of Malignant Lesion Diameter Up To 1.25 cm"		"/X/"								0
+"D7414"	"Excision of Malignant Lesion Diameter Greater Than 1.25 cm"		"/X/"								0
+"D7415"	"Excision of Malignant Lesion, Complicated"		"/X/"								0
+"D7465"	"Destruction of Lesion(s) by Physical or Chemical Methods, by Report"		"/X/"								0
+"D7440"	"Excision of Malignant Tumor-Lesion Diameter up to 1.25 cm"		"/X/"								0
+"D7441"	"Excision of Malignant Tumor-Lesion Diameter Greater than 1.25 cm"		"/X/"								0
+"D7450"	"Removal of Benign Odontogenic Cyst/Tumor-Lesion Diameter up to 1.25 cm"		"/X/"								0
+"D7451"	"Removal of Benign Odontogenic Cyst/Tumor-Lesion Diameter Greater than 1.25 cm"		"/X/"								0
+"D7460"	"Removal of Benign Nonodontogenic Cyst/Tumor-Lesion Diameter up to 1.25 cm"		"/X/"								0
+"D7461"	"Removal of Benign Nonodontogenic Cyst/Tumor-Lesion Diameter Greater than 1.25 cm"		"/X/"								0
+"D7471"	"Removal of Lateral Exostosis-Maxilla or Mandible"		"/X/"								0
+"D7472"	"Removal of Torus Palatinus"		"/X/"								0
+"D7473"	"Removal of Torus Mandibularis"		"/X/"								0
+"D7485"	"Surgical Reduction of Osseous Tuberosity"		"/X/"								0
+"D7490"	"Radical Resection of Mandible with Bone Graft"		"/X/"								0
+"D7510"	"Incision And Drainage Of Abscess-Intraoral Soft Tissue"	"Inc&Drain"	"/X/"								0
+"D7520"	"Incision And Drainage Of Abscess-Extraoral Soft Tissue"		"/X/"								0
+"D7530"	"Removal of Foreign Body, Skin, or Subcutaneous Alveolar Tissue"		"/X/"								0
+"D7540"	"Removal of Reaction-Producing Foreign Bodies-Musculoskeletal System"		"/X/"								0
+"D7550"	"Partial Ostectomy/Sequestrectomy for Removal of Non-Vital Bone"		"/X/"								0
+"D7560"	"Maxillary Sinusotomy for Removal of Tooth Fragment or Foreign Body"		"/X/"								0
+"D7610"	"Maxilla-Open Reduction (teeth immobilized if present)"		"/X/"								0
+"D7620"	"Maxilla-Closed Reduction (teeth immobilized if present)"		"/X/"								0
+"D7630"	"Mandible-Open Reduction (teeth immobilized if present)"		"/X/"								0
+"D7640"	"Mandible-Closed Reduction (teeth immobilized if present)"		"/X/"								0
+"D7650"	"Malar and/or Zygomatic Arch-Open Reduction"		"/X/"								0
+"D7660"	"Malar and/or Zygomatic Arch-Closed Reduction"		"/X/"								0
+"D7670"	"Alveolus-Closed Reduction, May Include Stabilization of Teeth"		"/X/"								0
+"D7671"	"Alveolus-Open Reduction, May Include Stabilization of Teeth"		"/X/"								0
+"D7680"	"Facial Bones-Complicated Reduction with Fixation, Multiple Surgical Approaches"		"/X/"								0
+"D7710"	"Maxilla-Open Reduction"	"MaxOpReduc"	"/X/"								0
+"D7720"	"Maxilla-Closed Reduction"	"MaxClosReduc"	"/X/"								0
+"D7730"	"Mandible-Open Reduction"	"MandOpReduc"	"/X/"								0
+"D7740"	"Mandible-Closed Reduction"	"MandClosReduc"	"/X/"								0
+"D7750"	"Malar and/or Zygomatic Arch-Open Reduction"		"/X/"								0
+"D7760"	"Malar and/or Zygomatic Arch-Closed Reduction"		"/X/"								0
+"D7770"	"Alveolus-Open Reduction Stabilization of Teeth"		"/X/"								0
+"D7771"	"Alveolus-Closed Reduction Stabilization of Teeth"		"/X/"								0
+"D7780"	"Facial Bones-Complicated Reduction with Fixation, Multiple Surgical Approaches"		"/X/"								0
+"D7810"	"Open Reduction of Dislocation"		"/X/"								0
+"D7820"	"Closed Reduction of Dislocation"		"/X/"								0
+"D7830"	"Manipulation Under Anesthesia"		"/X/"								0
+"D7840"	"Condylectomy"		"/X/"								0
+"D7850"	"Surgical Discectomy; With/Without Implant"		"/X/"								0
+"D7852"	"Disc Repair"		"/X/"								0
+"D7854"	"Synovectomy"		"/X/"								0
+"D7856"	"Myotomy"		"/X/"								0
+"D7858"	"Joint Reconstruction"		"/X/"								0
+"D7860"	"Arthrotomy"		"/X/"								0
+"D7865"	"Arthroplasty"		"/X/"								0
+"D7870"	"Arthrocentesis"		"/X/"								0
+"D7871"	"Non-Arthroscopic Lysis and Lavage"		"/X/"								0
+"D7872"	"Arthroscopy-Diagnosis, With or Without Biopsy"		"/X/"								0
+"D7873"	"Arthroscopy-Surgical: Lavage and Lysis of Adhesions"		"/X/"								0
+"D7874"	"Arthroscopy-Surgical: Disc Repositioning and Stabilization"		"/X/"								0
+"D7875"	"Arthroscopy-Surgical: Synovectomy"		"/X/"								0
+"D7876"	"Arthroscopy-Surgical: Discectomy"		"/X/"								0
+"D7877"	"Arthroscopy-Surgical: Debridement"		"/X/"								0
+"D7880"	"Occlusal Orthotic Device, by Report"		"/X/"								0
+"D7899"	"Unspecified TMD Therapy, by Report"		"/X/"								0
+"D7910"	"Suture of Recent Small Wounds Up To 5 cm"		"/X/"								0
+"D7911"	"Complicated Suture-Up To 5 cm"		"/X/"								0
+"D7912"	"Complicated Suture-Greater Than 5 cm"		"/X/"								0
+"D7920"	"Skin Graft (identify defect covered, location, and type of graft)"		"/X/"								0
+"D7940"	"Osteoplasty-for Orthognathic Deformities"		"/X/"								0
+"D7941"	"Osteotomy-Mandibular Rami"		"/X/"								0
+"D7943"	"Osteotomy-Mandibular Rami, With Bone Graft"		"/X/"								0
+"D7944"	"Osteotomy-Segmented or Subapical-per Sextant or Quadrant"		"/X/"								0
+"D7945"	"Osteotomy-Body of Mandible"		"/X/"								0
+"D7946"	"LeFort I (maxilla-total)"		"/X/"								0
+"D7947"	"LeFort I (maxilla-segmented)"		"/X/"								0
+"D7948"	"LeFort II or LeFort III-Without Bone Graft"		"/X/"								0
+"D7949"	"LeFort II or LeFort III-With Bone Graft"		"/X/"								0
+"D7950"	"Graft of the Mandible-Autogenous or Nonautogenous"	"GrMandAug/NonAug"	"/X/"								0
+"D7955"	"Repair of Maxillofacial Soft and Hard Tissue Defect"	"RepairMaxSft/HdTiss"	"/X/"								0
+"D7960"	"Frenulectomy (frenectomy or frenotomy)-Separate Procedure"	"Frenulectomy"	"/X/"								0
+"D7970"	"Excision of Hyperplastic Tissue-per Arch"	"ExcisTissue"	"/X/"								0
+"D7971"	"Excision of Pericoronal Gingiva"	"ExciPericoronalging"	"/X/"								0
+"D7972"	"Surgical Reduction of Fibrous Tuberosity"	"SurgRedFibTub"	"/X/"								0
+"D7980"	"Sialolithotomy"	"Sailolithotomy"	"/X/"								0
+"D7981"	"Excision of Salivary Gland, by Report"	"ExcisSalGl"	"/X/"								0
+"D7982"	"Sialodochoplasty"	"Sialodochoplasty"	"/X/"								0
+"D7983"	"Closure of Salivary Fistula"	"ClosSalFist"	"/X/"								0
+"D7990"	"Emergency Tracheotomy"	"EmerTrach"	"/X/"								0
+"D7991"	"Coronoidectomy"	"Coronoidectomy"	"/X/"								0
+"D7993"	"Implant-Facial Bones"	"ImplantFB"	"/X/"								0
+"D7994"	"Implant-Other Than Facial Bones"	"ImplantOth"	"/X/"								0
+"D7995"	"Synthetic Graft - Mandible or Facial Bones, by Report"	"SynthGr"	"/X/"								0
+"D7996"	"Implant - Mandible for Augmentation Purposes (Excluding Alveolar Ridge), by Report"	"ImplantMandAugmen"	"/X/"								0
+"D7997"	"Appliance Removal (Not By Dentist Who Placed Appliance)"	"ApplRemov"	"/X/"								0
+"D7999"	"Unspecified Oral Surgery Procedure, by Report"	"UnspOralSurg"	"/X/"								0
+"D8010"	"Limited Orthodontic Treatment of the Primary Dentition"	"LimOrthoPri"	"/X/"								0
+"D8020"	"Limited Orthodontic Treatment of the Transitional Dentition"	"LimOrthoTxPriDent"	"/X/"								0
+"D8030"	"Limited Orthodontic Treatment of the Adolescent Dentition"	"LimOrthoTxAdolDent"	"/X/"								0
+"D8040"	"Limited Orthodontic Treatment of the Adult Dentition"	"LimOrthoAdlt"	"/X/"								0
+"D8050"	"Interceptive Orthodontic Treatment of the Primary Dentition"	"InterOrthoTxPriDent"	"/X/"								0
+"D8060"	"Interceptive Orthodontic Treatment of the Transitional Dentition"	"IntercOrthoTxTransDent"	"/X/"								0
+"D8070"	"Comprehensive Orthodontic Treatment of the Transitional Dentition"	"CompOrthoTxTransDent"	"/X/"								0
+"D8080"	"Comprehensive Orthodontic Treatment of the Adolescent Dentition"	"ComOrthoTxAdolDent"	"/X/"								0
+"D8090"	"Comprehensive Orthodontic Treatment of the Adult Dentition"	"CompOrthoAdlt"	"/X/"								0
+"D8210"	"Removable Appliance Therapy"	"RemHabitAppl"	"/X/"								0
+"D8220"	"Fixed Appliance Therapy"	"FxApplTh"	"/X/"								0
+"D8660"	"Pre-Orthodontic Treatment Visit"	"PreOrthoTx"	"/X/"								0
+"D8670"	"Periodic Orthodontic Treatment Visit (As Part of Contract)"	"OrthoAdj"	"/X/"								0
+"D8680"	"Orthodontic Retention (Removal of Appliances, Construction and Placement of Retainer(s))"	"OrthoRetent"	"/X/"								0
+"D8690"	"Orthodontic Treatment (Alternative Billing to a Contract Fee)"	"OrthoTx"	"/X/"								0
+"D8691"	"Repair of Orthodontic Appliance"	"RepairOrthoAppl"	"/X/"								0
+"D8692"	"Replacement of Lost or Broken Retainer"	"RepBrkRet"	"/X/"								0
+"D8999"	"Unspecified Orthodontic Procedure, by Report"	"UnspecOrtho"	"/X/"								0
+"D9110"	"Palliative (Emergency) Treatment of Dental Pain - Minor Procedure"	"Palliative"	"/X/"								0
+"D9210"	"Local Anesthesia, Not in Conjunction With Operative or Surgical Procedures"	"LocAnesthW/oSurgPro"	"/X/"								0
+"D9211"	"Regional Block Anesthesia"	"RegBlkAnesth"	"/X/"								0
+"D9212"	"Trigeminal Division Block Anesthesia"	"TriDivBlkAnesth"	"/X/"								0
+"D9215"	"Local Anesthesia"	"LocalAnesth"	"/X/"								0
+"D9220"	"Deep Sedation/General Anesthesia-First 30 Minutes"	"GeneralAnes/1st30min"	"/X/"								0
+"D9221"	"Deep Sedation/General Anesthesia-Each Additional 15 Minutes"	"GeneralAnes/add15min"	"/X/"								0
+"D9230"	"Analgesia, Anxiolysis (Nitrous Oxide)"	"NitrousOxide"	"/X/"								0
+"D9241"	"Intravenous Conscious Sedation/Analgesia - First 30 Minutes"	"Analgesia/1st30min"	"/X/"								0
+"D9242"	"Intravenous Conscious Sedation/Analgesia - Each Additional 15 Minutes"	"Analgesia/add15min"	"/X/"								0
+"D9248"	"Non-Intravenous Conscious Sedation"	"NonIntraConsSed"	"/X/"								0
+"D9310"	"Consultation (Other Than Treating Dentist)"	"Consult"	"/X/"								0
+"D9410"	"House/Extended Care Facility Call"	"HouseCall"	"/X/"								0
+"D9420"	"Hospital Call"	"HospCall"	"/X/"								0
+"D9430"	"Office Visit, During Office Hours, Observation Only"	"Observation"	"/X/"								0
+"D9440"	"After Hours Office Visit"	"AfHrsOV"	"/X/"								0
+"D9450"	"Case Presentation (Not on Same Day as Evaluation)"	"CasePresent"	"/X/"								0
+"D9610"	"Therapeutic Drug Injection, by Report"	"TherDrugInj"	"/X/"								0
+"D9630"	"Other Drugs and/or Medicaments, by Report"	"Odrug/Med"	"/X/"								0
+"D9910"	"Application of Desensitizing Medicament"	"Desens"	"/X/"								0
+"D9911"	"Application of Desensitizing Resin for Cervical and/or Root Surface, Per Tooth"	"DesensRes"	"/X/"								0
+"D9920"	"Behavior Management, by Report"	"Behav"	"/X/"								0
+"D9930"	"Treatment of Complications (Post-Surgical)-Unusual Circumstances, by Report"	"TxCompl"	"/X/"								0
+"D9940"	"Bite Guard, by Report"	"BiteGuard"	"/X/"								0
+"D9941"	"Athletic Mouthguard"	"AthGuard"	"/X/"								0
+"D9950"	"Occlusal Analysis-Mounted Case"	"OcclAnalyMntCase"	"/X/"								0
+"D9951"	"Occlusal Adjustment-Limited"	"OcclAdjLim"	"/X/"								0
+"D9952"	"Occlusal Adjustment-Complete"	"OcclAdjCp"	"/X/"								0
+"D9970"	"Enamel Microabrasion (Removal of Discolored Surface Enamel Defects)"	"EnamMicroab"	"/X/"								0
+"D9971"	"Odontoplasty 1-2 Teeth"	"Shaping"	"/X/"								0
+"D9972"	"External Bleaching - Per Arch"	"WhiteU&L"	"/X/"								0
+"D9973"	"External Bleaching - Per Tooth"	"WhiteTooth"	"/X/"								0
+"D9974"	"Internal Bleaching - Per Tooth"	"InternalWhite"	"/X/"								0
+"D9972Z"	"InhouseWhitening"	"InHouWhit"	"/X/"								0
+"D9999"	"Unspecified Adjunctive Procedure, by Report"	"UnspecAdjunct"	"/X/"								0
+"N4101"	"Post Op-misc"	"PostOp"	"/X/"								0
+"N4102"	"Denture Adjust"	"DentAdj"	"/X/"								0
+"N4103"	"Bite Record"	"BiteRec"	"/X/"								0
+"N4104"	"Adjust Partial"	"AdjPart"	"/X/"								0
+"N4106"	"Cast P&C Seat"	"CstPCSeat"	"/X/"								0
+"N4108"	"Veneer Seat"	"VenSeat"	"/X/"								0
+"N4109"	"Alginates"	"Alg"	"/X/"								0
+"N4111"	"Inlay Seat"	"InlaSeat"	"/X/"								0
+"N4112"	"Onlay Seat"	"OnlaSeat"	"/X/"								0
+"N4113"	"Fit Bands"	"FitBands"	"/X/"								0
+"N4115"	"Soft reline"	"SoftLine"	"/X/"								0
+"N4116"	"NEXT APPOINTMENT"	"Next"	"/X/"								0
+"N4117"	"Note"	"Note"	"/X/"								0
+"N4118"	"PFM Seat"	"PFMSeat"	"/X/"								0
+"N4119"	"All Cer Crn Seat"	"CrCrnSeat"	"/X/"								0
+"N4120"	"Denture Deliver"	"DentDeliv"	"/X/"								0
+"N4121"	"RPD Deliver"	"RPDDeliv"	"/X/"								0
+"N4122"	"Repair Deliver"	"ReprDeliv"	"/X/"								0
+"N4123"	"Whitening Deliver"	"WhitDeliv"	"/X/"								0
+"N4124"	"Bitegaurd Deliver"	"BitguaDeli"	"/X/"								0
+"N4125"	"Flipper Deliver"	"FlipDeliv"	"/X/"								0
+"N4126"	"Retainer Deliver"	"RetaDeliv"	"/X/"								0

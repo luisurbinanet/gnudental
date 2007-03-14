@@ -1,0 +1,214 @@
+using System;
+using System.Drawing;
+using System.Collections;
+using System.ComponentModel;
+using System.Security;
+using System.Security.Cryptography;
+using System.Text;
+using System.Windows.Forms;
+
+namespace OpenDental{
+
+	public class FormPassword : System.Windows.Forms.Form{
+		private System.Windows.Forms.Label label10;
+		private System.Windows.Forms.Label label8;
+		private System.Windows.Forms.Button butCancel;
+		private System.Windows.Forms.Button butOK;
+		private System.Windows.Forms.TextBox textUser;
+		private System.Windows.Forms.TextBox textPassword;
+		private System.Windows.Forms.Button butReset;
+		private System.ComponentModel.Container components = null;
+
+		public FormPassword(){
+			InitializeComponent();
+			Lan.C(this, new System.Windows.Forms.Control[] {
+				this,
+				label10,
+				label8,
+			});
+			Lan.C("All", new System.Windows.Forms.Control[] {
+				butOK,
+				butCancel,
+			});
+		}
+
+		protected override void Dispose(bool disposing){
+			if(disposing){
+				if(components != null){
+					components.Dispose();
+				}
+			}
+			base.Dispose(disposing);
+		}
+
+		#region Windows Form Designer generated code
+
+		private void InitializeComponent(){
+			this.textUser = new System.Windows.Forms.TextBox();
+			this.textPassword = new System.Windows.Forms.TextBox();
+			this.label10 = new System.Windows.Forms.Label();
+			this.label8 = new System.Windows.Forms.Label();
+			this.butCancel = new System.Windows.Forms.Button();
+			this.butOK = new System.Windows.Forms.Button();
+			this.butReset = new System.Windows.Forms.Button();
+			this.SuspendLayout();
+			// 
+			// textUser
+			// 
+			this.textUser.Location = new System.Drawing.Point(84, 10);
+			this.textUser.MaxLength = 100;
+			this.textUser.Name = "textUser";
+			this.textUser.Size = new System.Drawing.Size(212, 20);
+			this.textUser.TabIndex = 32;
+			this.textUser.Text = "";
+			// 
+			// textPassword
+			// 
+			this.textPassword.Location = new System.Drawing.Point(84, 40);
+			this.textPassword.MaxLength = 100;
+			this.textPassword.Name = "textPassword";
+			this.textPassword.PasswordChar = '*';
+			this.textPassword.Size = new System.Drawing.Size(212, 20);
+			this.textPassword.TabIndex = 33;
+			this.textPassword.Text = "";
+			// 
+			// label10
+			// 
+			this.label10.Location = new System.Drawing.Point(0, 14);
+			this.label10.Name = "label10";
+			this.label10.Size = new System.Drawing.Size(80, 14);
+			this.label10.TabIndex = 37;
+			this.label10.Text = "User Name";
+			this.label10.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
+			// label8
+			// 
+			this.label8.Location = new System.Drawing.Point(0, 44);
+			this.label8.Name = "label8";
+			this.label8.Size = new System.Drawing.Size(82, 14);
+			this.label8.TabIndex = 36;
+			this.label8.Text = "Password";
+			this.label8.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
+			// butCancel
+			// 
+			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.Location = new System.Drawing.Point(296, 102);
+			this.butCancel.Name = "butCancel";
+			this.butCancel.TabIndex = 39;
+			this.butCancel.Text = "Cancel";
+			// 
+			// butOK
+			// 
+			this.butOK.Location = new System.Drawing.Point(296, 74);
+			this.butOK.Name = "butOK";
+			this.butOK.TabIndex = 38;
+			this.butOK.Text = "OK";
+			this.butOK.Click += new System.EventHandler(this.butOK_Click);
+			// 
+			// butReset
+			// 
+			this.butReset.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.butReset.ForeColor = System.Drawing.SystemColors.Control;
+			this.butReset.Location = new System.Drawing.Point(-2, 122);
+			this.butReset.Name = "butReset";
+			this.butReset.Size = new System.Drawing.Size(24, 23);
+			this.butReset.TabIndex = 40;
+			this.butReset.Click += new System.EventHandler(this.butReset_Click);
+			// 
+			// FormPassword
+			// 
+			this.AcceptButton = this.butOK;
+			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.ClientSize = new System.Drawing.Size(386, 142);
+			this.ControlBox = false;
+			this.Controls.Add(this.butReset);
+			this.Controls.Add(this.butCancel);
+			this.Controls.Add(this.butOK);
+			this.Controls.Add(this.textUser);
+			this.Controls.Add(this.textPassword);
+			this.Controls.Add(this.label10);
+			this.Controls.Add(this.label8);
+			this.Name = "FormPassword";
+			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+			this.Text = "Verify Password";
+			this.Load += new System.EventHandler(this.FormPassword_Load);
+			this.ResumeLayout(false);
+
+		}
+		#endregion
+
+		private void FormPassword_Load(object sender, System.EventArgs e) {
+			Text=Text+" - "+Permissions.Cur.Name;
+			Users.Refresh();
+			if(Users.List.Length==0){
+				MessageBox.Show(Lan.g(this,"You do not have any usernames or passwords set up yet."));
+				DialogResult=DialogResult.OK;
+			}
+		}
+
+		private void ShowInvalid(){
+			MessageBox.Show(Lan.g(this,"UserName or Password invalid."));
+			SecurityLogs.MakeLogEntry("Failed Login","User: "+textUser.Text);
+		}
+
+		private void butReset_Click(object sender, System.EventArgs e) {
+			FormPasswordReset FormPR=new FormPasswordReset();
+			FormPR.ShowDialog();
+			DialogResult=DialogResult.OK;
+		}
+
+		private void butOK_Click(object sender, System.EventArgs e) {
+			//MessageBox.Show(Users.List.Length.ToString());
+			//DialogResult=DialogResult.OK;
+			//return;
+			for(int i=0;i<Users.List.Length;i++){
+				if(textUser.Text==Users.List[i].UserName){
+					Users.Cur=Users.List[i];
+					break;
+				}
+				if(i==Users.List.Length-1){
+					ShowInvalid();
+					return;
+				}
+			}
+			if(Passwords.CheckPassword(textPassword.Text,Users.Cur.Password)){
+				DialogResult=DialogResult.OK;
+			}
+			else{
+				ShowInvalid();
+				return;				
+			}
+		}
+
+
+
+		
+
+	}
+
+
+	public class Passwords{
+
+		public static string EncryptPassword(string inputPass){
+			HashAlgorithm hash=HashAlgorithm.Create("MD5");
+			Encoding unicode = Encoding.Unicode;
+      byte[] unicodeBytes = unicode.GetBytes(inputPass);
+			byte[] hashbytes=hash.ComputeHash(unicodeBytes);
+			StringBuilder strB=new StringBuilder();
+			for(int i=0;i<hashbytes.Length;i++){
+				strB.Append(hashbytes[i].ToString());
+			}
+			return strB.ToString();
+		}
+		
+		public static bool CheckPassword(string inputPass,string hashedPass){
+			string hashedInput=EncryptPassword(inputPass);
+			//MessageBox.Show(hashedInput+","+hashedPass);
+			return hashedInput==hashedPass;
+		}
+	}
+
+
+}

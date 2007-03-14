@@ -1,0 +1,1229 @@
+using System;
+using System.Data;
+using System.Drawing;
+using System.Drawing.Printing;
+using System.Collections;
+using System.ComponentModel;
+using System.IO;
+using System.Windows.Forms;
+using System.Threading;
+
+namespace OpenDental{
+
+	public class FormQuery : System.Windows.Forms.Form{
+		private System.Windows.Forms.Button butClose;
+		private System.Windows.Forms.DataGrid grid2;
+		private System.Windows.Forms.Panel panelTop;
+		private System.Windows.Forms.GroupBox groupBox1;
+		private System.Windows.Forms.Button butPrint;
+		private System.Windows.Forms.Button butExport;
+		public  System.Windows.Forms.TextBox textQuery;
+		private System.Windows.Forms.Button butSubmit;
+		private System.Windows.Forms.RadioButton radioRaw;
+		public System.Windows.Forms.RadioButton radioHuman;
+		private System.Windows.Forms.Button butFormulate;
+		private System.ComponentModel.Container components = null;// Required designer variable.
+		private System.Windows.Forms.Button butAdd;
+		private DataGridTableStyle myGridTS;
+		private System.Windows.Forms.PrintPreviewDialog printPreviewDialog2;
+		private System.Drawing.Printing.PrintDocument pd2;
+		private bool totalsPrinted;
+		private int linesPrinted;
+		private int pagesPrinted;
+		public bool IsReport;
+		private bool headerPrinted;
+		private System.Windows.Forms.PrintPreviewControl printPreviewControl2;
+		private System.Windows.Forms.Button butPrintPreview;
+		private System.Windows.Forms.PrintDialog printDialog2;
+		private bool tablePrinted;
+		private Font titleFont = new Font("Arial",17,FontStyle.Bold);
+		private Font subtitleFont=new Font("Arial",10,FontStyle.Bold);
+		private Font colCaptFont=new Font("Arial",8,FontStyle.Bold);
+		private Font bodyFont = new Font("Arial", 9);
+		private System.Windows.Forms.Button butFullPage;
+		private System.Windows.Forms.Button butZoomIn;
+		private System.Windows.Forms.Panel panelZoom;
+		private System.Windows.Forms.Label labelTotPages;
+		private System.Windows.Forms.Button butFwd;
+		private System.Windows.Forms.Button butBack;
+		private System.Windows.Forms.Button butQView;
+		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.TextBox textTitle;
+		private System.Windows.Forms.Button butCopy;
+		private System.Windows.Forms.Button butPaste;
+		private System.Windows.Forms.SaveFileDialog saveFileDialog2;
+		private int totalPages=0;
+
+		public FormQuery(){
+			InitializeComponent();// Required for Windows Form Designer support
+			Lan.C(this, new System.Windows.Forms.Control[] {
+				label1,
+				this.labelTotPages,
+				this.radioHuman,
+				this.radioRaw,
+				this.groupBox1,
+				this.butBack,
+				this.butCopy,
+				this.butExport,
+				this.butFormulate,
+				this.butFullPage,
+				this.butFwd,
+				this.butPaste,
+				this.butPrintPreview,
+				this.butQView,
+				this.butSubmit,
+				this.butZoomIn,
+			});
+			Lan.C("All", new System.Windows.Forms.Control[] {
+				butPrint,
+				this.butClose,
+				this.butAdd,
+			});
+		}
+
+		protected override void Dispose( bool disposing ){
+			if( disposing ){
+				if(components != null)
+				{
+					components.Dispose();
+				}
+			}
+			base.Dispose( disposing );
+		}
+
+		#region Windows Form Designer generated code
+		/// <summary>
+		/// Required method for Designer support - do not modify
+		/// the contents of this method with the code editor.
+		/// </summary>
+		private void InitializeComponent()
+		{
+			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormQuery));
+			this.butClose = new System.Windows.Forms.Button();
+			this.grid2 = new System.Windows.Forms.DataGrid();
+			this.panelTop = new System.Windows.Forms.Panel();
+			this.butPaste = new System.Windows.Forms.Button();
+			this.butCopy = new System.Windows.Forms.Button();
+			this.textTitle = new System.Windows.Forms.TextBox();
+			this.label1 = new System.Windows.Forms.Label();
+			this.butAdd = new System.Windows.Forms.Button();
+			this.butFormulate = new System.Windows.Forms.Button();
+			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.radioHuman = new System.Windows.Forms.RadioButton();
+			this.radioRaw = new System.Windows.Forms.RadioButton();
+			this.butSubmit = new System.Windows.Forms.Button();
+			this.textQuery = new System.Windows.Forms.TextBox();
+			this.butPrint = new System.Windows.Forms.Button();
+			this.butExport = new System.Windows.Forms.Button();
+			this.pd2 = new System.Drawing.Printing.PrintDocument();
+			this.printPreviewDialog2 = new System.Windows.Forms.PrintPreviewDialog();
+			this.printPreviewControl2 = new System.Windows.Forms.PrintPreviewControl();
+			this.butPrintPreview = new System.Windows.Forms.Button();
+			this.printDialog2 = new System.Windows.Forms.PrintDialog();
+			this.butFullPage = new System.Windows.Forms.Button();
+			this.butZoomIn = new System.Windows.Forms.Button();
+			this.panelZoom = new System.Windows.Forms.Panel();
+			this.butFwd = new System.Windows.Forms.Button();
+			this.butBack = new System.Windows.Forms.Button();
+			this.labelTotPages = new System.Windows.Forms.Label();
+			this.butQView = new System.Windows.Forms.Button();
+			this.saveFileDialog2 = new System.Windows.Forms.SaveFileDialog();
+			((System.ComponentModel.ISupportInitialize)(this.grid2)).BeginInit();
+			this.panelTop.SuspendLayout();
+			this.groupBox1.SuspendLayout();
+			this.panelZoom.SuspendLayout();
+			this.SuspendLayout();
+			// 
+			// butClose
+			// 
+			this.butClose.Location = new System.Drawing.Point(878, 756);
+			this.butClose.Name = "butClose";
+			this.butClose.Size = new System.Drawing.Size(75, 27);
+			this.butClose.TabIndex = 5;
+			this.butClose.Text = "Close";
+			this.butClose.Click += new System.EventHandler(this.butClose_Click);
+			// 
+			// grid2
+			// 
+			this.grid2.DataMember = "";
+			this.grid2.HeaderForeColor = System.Drawing.SystemColors.ControlText;
+			this.grid2.Location = new System.Drawing.Point(0, 150);
+			this.grid2.Name = "grid2";
+			this.grid2.ReadOnly = true;
+			this.grid2.Size = new System.Drawing.Size(958, 590);
+			this.grid2.TabIndex = 1;
+			// 
+			// panelTop
+			// 
+			this.panelTop.Controls.Add(this.butPaste);
+			this.panelTop.Controls.Add(this.butCopy);
+			this.panelTop.Controls.Add(this.textTitle);
+			this.panelTop.Controls.Add(this.label1);
+			this.panelTop.Controls.Add(this.butAdd);
+			this.panelTop.Controls.Add(this.butFormulate);
+			this.panelTop.Controls.Add(this.groupBox1);
+			this.panelTop.Controls.Add(this.butSubmit);
+			this.panelTop.Controls.Add(this.textQuery);
+			this.panelTop.Location = new System.Drawing.Point(0, 0);
+			this.panelTop.Name = "panelTop";
+			this.panelTop.Size = new System.Drawing.Size(956, 104);
+			this.panelTop.TabIndex = 2;
+			// 
+			// butPaste
+			// 
+			this.butPaste.Image = ((System.Drawing.Image)(resources.GetObject("butPaste.Image")));
+			this.butPaste.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butPaste.Location = new System.Drawing.Point(620, 54);
+			this.butPaste.Name = "butPaste";
+			this.butPaste.Size = new System.Drawing.Size(65, 23);
+			this.butPaste.TabIndex = 5;
+			this.butPaste.Text = "        Paste";
+			this.butPaste.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butPaste.Click += new System.EventHandler(this.butPaste_Click);
+			// 
+			// butCopy
+			// 
+			this.butCopy.Image = ((System.Drawing.Image)(resources.GetObject("butCopy.Image")));
+			this.butCopy.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butCopy.Location = new System.Drawing.Point(556, 54);
+			this.butCopy.Name = "butCopy";
+			this.butCopy.Size = new System.Drawing.Size(63, 23);
+			this.butCopy.TabIndex = 4;
+			this.butCopy.Text = "       Copy";
+			this.butCopy.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butCopy.Click += new System.EventHandler(this.butCopy_Click);
+			// 
+			// textTitle
+			// 
+			this.textTitle.Location = new System.Drawing.Point(38, 82);
+			this.textTitle.Name = "textTitle";
+			this.textTitle.Size = new System.Drawing.Size(247, 20);
+			this.textTitle.TabIndex = 1;
+			this.textTitle.Text = "";
+			// 
+			// label1
+			// 
+			this.label1.Location = new System.Drawing.Point(7, 84);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(28, 13);
+			this.label1.TabIndex = 9;
+			this.label1.Text = "Title";
+			// 
+			// butAdd
+			// 
+			this.butAdd.Location = new System.Drawing.Point(556, 30);
+			this.butAdd.Name = "butAdd";
+			this.butAdd.Size = new System.Drawing.Size(129, 23);
+			this.butAdd.TabIndex = 3;
+			this.butAdd.Text = "Add To Favorites";
+			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
+			// 
+			// butFormulate
+			// 
+			this.butFormulate.Location = new System.Drawing.Point(556, 6);
+			this.butFormulate.Name = "butFormulate";
+			this.butFormulate.Size = new System.Drawing.Size(129, 23);
+			this.butFormulate.TabIndex = 2;
+			this.butFormulate.Text = "Favorites";
+			this.butFormulate.Click += new System.EventHandler(this.butFormulate_Click);
+			// 
+			// groupBox1
+			// 
+			this.groupBox1.Controls.Add(this.radioHuman);
+			this.groupBox1.Controls.Add(this.radioRaw);
+			this.groupBox1.Location = new System.Drawing.Point(715, 6);
+			this.groupBox1.Name = "groupBox1";
+			this.groupBox1.Size = new System.Drawing.Size(122, 58);
+			this.groupBox1.TabIndex = 7;
+			this.groupBox1.TabStop = false;
+			this.groupBox1.Text = "Format";
+			// 
+			// radioHuman
+			// 
+			this.radioHuman.Checked = true;
+			this.radioHuman.Location = new System.Drawing.Point(10, 16);
+			this.radioHuman.Name = "radioHuman";
+			this.radioHuman.Size = new System.Drawing.Size(108, 16);
+			this.radioHuman.TabIndex = 0;
+			this.radioHuman.TabStop = true;
+			this.radioHuman.Text = "Human-readable";
+			this.radioHuman.Click += new System.EventHandler(this.radioHuman_Click);
+			// 
+			// radioRaw
+			// 
+			this.radioRaw.Location = new System.Drawing.Point(10, 34);
+			this.radioRaw.Name = "radioRaw";
+			this.radioRaw.Size = new System.Drawing.Size(104, 16);
+			this.radioRaw.TabIndex = 1;
+			this.radioRaw.Text = "Raw";
+			this.radioRaw.Click += new System.EventHandler(this.radioRaw_Click);
+			// 
+			// butSubmit
+			// 
+			this.butSubmit.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.butSubmit.Location = new System.Drawing.Point(556, 78);
+			this.butSubmit.Name = "butSubmit";
+			this.butSubmit.Size = new System.Drawing.Size(102, 23);
+			this.butSubmit.TabIndex = 6;
+			this.butSubmit.Text = "Submit Query";
+			this.butSubmit.Click += new System.EventHandler(this.butSubmit_Click);
+			// 
+			// textQuery
+			// 
+			this.textQuery.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.textQuery.Location = new System.Drawing.Point(4, 2);
+			this.textQuery.Multiline = true;
+			this.textQuery.Name = "textQuery";
+			this.textQuery.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.textQuery.Size = new System.Drawing.Size(540, 78);
+			this.textQuery.TabIndex = 0;
+			this.textQuery.Text = "";
+			// 
+			// butPrint
+			// 
+			this.butPrint.Image = ((System.Drawing.Image)(resources.GetObject("butPrint.Image")));
+			this.butPrint.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butPrint.Location = new System.Drawing.Point(784, 756);
+			this.butPrint.Name = "butPrint";
+			this.butPrint.Size = new System.Drawing.Size(75, 27);
+			this.butPrint.TabIndex = 4;
+			this.butPrint.Text = "          Print";
+			this.butPrint.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butPrint.Click += new System.EventHandler(this.butPrint_Click);
+			// 
+			// butExport
+			// 
+			this.butExport.Image = ((System.Drawing.Image)(resources.GetObject("butExport.Image")));
+			this.butExport.ImageAlign = System.Drawing.ContentAlignment.BottomLeft;
+			this.butExport.Location = new System.Drawing.Point(689, 755);
+			this.butExport.Name = "butExport";
+			this.butExport.Size = new System.Drawing.Size(75, 27);
+			this.butExport.TabIndex = 3;
+			this.butExport.Text = "          Export";
+			this.butExport.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butExport.Click += new System.EventHandler(this.butExport_Click);
+			// 
+			// printPreviewDialog2
+			// 
+			this.printPreviewDialog2.AutoScrollMargin = new System.Drawing.Size(0, 0);
+			this.printPreviewDialog2.AutoScrollMinSize = new System.Drawing.Size(0, 0);
+			this.printPreviewDialog2.ClientSize = new System.Drawing.Size(400, 300);
+			this.printPreviewDialog2.Enabled = true;
+			this.printPreviewDialog2.Icon = ((System.Drawing.Icon)(resources.GetObject("printPreviewDialog2.Icon")));
+			this.printPreviewDialog2.Location = new System.Drawing.Point(111, 147);
+			this.printPreviewDialog2.MinimumSize = new System.Drawing.Size(375, 250);
+			this.printPreviewDialog2.Name = "printPreviewDialog2";
+			this.printPreviewDialog2.TransparencyKey = System.Drawing.Color.Empty;
+			this.printPreviewDialog2.Visible = false;
+			// 
+			// printPreviewControl2
+			// 
+			this.printPreviewControl2.AutoZoom = false;
+			this.printPreviewControl2.Location = new System.Drawing.Point(18, 136);
+			this.printPreviewControl2.Name = "printPreviewControl2";
+			this.printPreviewControl2.Size = new System.Drawing.Size(842, 538);
+			this.printPreviewControl2.TabIndex = 5;
+			this.printPreviewControl2.Zoom = 1;
+			// 
+			// butPrintPreview
+			// 
+			this.butPrintPreview.Image = ((System.Drawing.Image)(resources.GetObject("butPrintPreview.Image")));
+			this.butPrintPreview.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butPrintPreview.Location = new System.Drawing.Point(571, 755);
+			this.butPrintPreview.Name = "butPrintPreview";
+			this.butPrintPreview.Size = new System.Drawing.Size(100, 27);
+			this.butPrintPreview.TabIndex = 1;
+			this.butPrintPreview.Text = "       Print Preview";
+			this.butPrintPreview.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butPrintPreview.Click += new System.EventHandler(this.butPrintPreview_Click);
+			// 
+			// printDialog2
+			// 
+			this.printDialog2.AllowPrintToFile = false;
+			this.printDialog2.AllowSelection = true;
+			this.printDialog2.AllowSomePages = true;
+			// 
+			// butFullPage
+			// 
+			this.butFullPage.Location = new System.Drawing.Point(9, 5);
+			this.butFullPage.Name = "butFullPage";
+			this.butFullPage.Size = new System.Drawing.Size(75, 27);
+			this.butFullPage.TabIndex = 9;
+			this.butFullPage.Text = "Full Page";
+			this.butFullPage.Visible = false;
+			this.butFullPage.Click += new System.EventHandler(this.butFullPage_Click);
+			// 
+			// butZoomIn
+			// 
+			this.butZoomIn.Image = ((System.Drawing.Image)(resources.GetObject("butZoomIn.Image")));
+			this.butZoomIn.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butZoomIn.Location = new System.Drawing.Point(9, 5);
+			this.butZoomIn.Name = "butZoomIn";
+			this.butZoomIn.Size = new System.Drawing.Size(75, 27);
+			this.butZoomIn.TabIndex = 0;
+			this.butZoomIn.Text = "       Zoom In";
+			this.butZoomIn.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butZoomIn.Click += new System.EventHandler(this.butZoomIn_Click);
+			// 
+			// panelZoom
+			// 
+			this.panelZoom.Controls.Add(this.butFwd);
+			this.panelZoom.Controls.Add(this.butBack);
+			this.panelZoom.Controls.Add(this.labelTotPages);
+			this.panelZoom.Controls.Add(this.butZoomIn);
+			this.panelZoom.Controls.Add(this.butFullPage);
+			this.panelZoom.Location = new System.Drawing.Point(336, 746);
+			this.panelZoom.Name = "panelZoom";
+			this.panelZoom.Size = new System.Drawing.Size(229, 37);
+			this.panelZoom.TabIndex = 0;
+			this.panelZoom.Visible = false;
+			// 
+			// butFwd
+			// 
+			this.butFwd.Image = ((System.Drawing.Image)(resources.GetObject("butFwd.Image")));
+			this.butFwd.Location = new System.Drawing.Point(195, 7);
+			this.butFwd.Name = "butFwd";
+			this.butFwd.Size = new System.Drawing.Size(18, 22);
+			this.butFwd.TabIndex = 2;
+			this.butFwd.Click += new System.EventHandler(this.butFwd_Click);
+			// 
+			// butBack
+			// 
+			this.butBack.Image = ((System.Drawing.Image)(resources.GetObject("butBack.Image")));
+			this.butBack.Location = new System.Drawing.Point(123, 7);
+			this.butBack.Name = "butBack";
+			this.butBack.Size = new System.Drawing.Size(18, 22);
+			this.butBack.TabIndex = 1;
+			this.butBack.Click += new System.EventHandler(this.butBack_Click);
+			// 
+			// labelTotPages
+			// 
+			this.labelTotPages.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.labelTotPages.Location = new System.Drawing.Point(143, 10);
+			this.labelTotPages.Name = "labelTotPages";
+			this.labelTotPages.Size = new System.Drawing.Size(47, 18);
+			this.labelTotPages.TabIndex = 11;
+			this.labelTotPages.Text = "1 / 2";
+			this.labelTotPages.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			// 
+			// butQView
+			// 
+			this.butQView.Image = ((System.Drawing.Image)(resources.GetObject("butQView.Image")));
+			this.butQView.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butQView.Location = new System.Drawing.Point(580, 740);
+			this.butQView.Name = "butQView";
+			this.butQView.Size = new System.Drawing.Size(100, 27);
+			this.butQView.TabIndex = 2;
+			this.butQView.Text = "       Query View";
+			this.butQView.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butQView.Visible = false;
+			this.butQView.Click += new System.EventHandler(this.butQView_Click);
+			// 
+			// FormQuery
+			// 
+			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.ClientSize = new System.Drawing.Size(962, 788);
+			this.ControlBox = false;
+			this.Controls.Add(this.butQView);
+			this.Controls.Add(this.panelZoom);
+			this.Controls.Add(this.butPrintPreview);
+			this.Controls.Add(this.printPreviewControl2);
+			this.Controls.Add(this.grid2);
+			this.Controls.Add(this.butExport);
+			this.Controls.Add(this.butPrint);
+			this.Controls.Add(this.panelTop);
+			this.Controls.Add(this.butClose);
+			this.Name = "FormQuery";
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+			this.Text = "Query";
+			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+			this.Load += new System.EventHandler(this.FormQuery_Load);
+			this.Layout += new System.Windows.Forms.LayoutEventHandler(this.FormQuery_Layout);
+			((System.ComponentModel.ISupportInitialize)(this.grid2)).EndInit();
+			this.panelTop.ResumeLayout(false);
+			this.groupBox1.ResumeLayout(false);
+			this.panelZoom.ResumeLayout(false);
+			this.ResumeLayout(false);
+
+		}
+		#endregion
+
+		private void FormQuery_Layout(object sender, System.Windows.Forms.LayoutEventArgs e) {
+			printPreviewControl2.Location=new Point(0,0);
+			printPreviewControl2.Height=ClientSize.Height-39;
+			printPreviewControl2.Width=ClientSize.Width;	
+			panelTop.Width=ClientSize.Width;
+			grid2.Location=new Point(2,panelTop.Height);
+			grid2.Height=ClientSize.Height-grid2.Location.Y-39;
+			grid2.Width=ClientSize.Width-2;
+			butClose.Location=new Point(ClientSize.Width-90,ClientSize.Height-34);
+			butExport.Location=new Point(ClientSize.Width-180,ClientSize.Height-34);
+			butPrint.Location=new Point(ClientSize.Width-270,ClientSize.Height-34);
+			butPrintPreview.Location=new Point(ClientSize.Width-385,ClientSize.Height-34);
+			butQView.Location=new Point(ClientSize.Width-385,ClientSize.Height-34);
+			panelZoom.Location=new Point(ClientSize.Width-620,ClientSize.Height-38);
+		}
+
+		private void FormQuery_Load(object sender, System.EventArgs e) {
+			if(!UserPermissions.CheckUserPassword("User Query")){
+				MessageBox.Show(Lan.g(this,"You do not have permission for this feature."));
+				DialogResult=DialogResult.Cancel;
+				return;
+			}
+			//Queries.TableQ=null;//this will crash the program
+			grid2.Font=bodyFont;
+			if(IsReport){
+				printPreviewControl2.Visible=true;
+				Text="Report";
+				butPrintPreview.Visible=false;
+				panelZoom.Visible=true;
+				PrintReport(true);
+				labelTotPages.Text=Lan.g(this,"/ "+totalPages.ToString());
+				printPreviewControl2.Zoom=((double)printPreviewControl2.ClientSize.Height
+					/(double)pd2.DefaultPageSettings.PaperSize.Height);
+			}
+			else{
+				printPreviewControl2.Visible=false;
+				Text=Lan.g(this,"Query");
+			}
+		}
+
+		private void butSubmit_Click(object sender, System.EventArgs e) {	
+			Queries.CurReport=new Report();
+			Queries.CurReport.Query=textQuery.Text;
+			SubmitQuery();
+		}
+
+		public void SubmitQuery(){
+			Patients.GetHList();//names are handled manually in reports
+      InsPlans.GetHListAll();
+			
+			Queries.SubmitCur();
+			/* (for later if more complex queries with loops:)
+			//SubmitQueryThread();
+			//Thread Thread2 = new Thread(new ThreadStart(SubmitQueryThread));
+			//Thread2.Start();
+      //FormProcessWaiting fpw = new FormProcessWaiting();
+			//while(Thread2.ThreadState!=ThreadState.Stopped)				//{
+			//	;
+			//			if(!fpw.Created)  {
+			//		    fpw.ShowDialog();
+			//			}
+			//			if(fpw.DialogResult==DialogResult.Abort)  {
+			//				Thread2.Suspend();
+			//		  break;
+			//		}
+			//		}
+		  //  fpw.Close();
+			//Thread2.Abort();
+			//ThreadState.
+			//if(MessageBox.Show("Waiting for Server","",MessageBoxButtons.
+			//Wait for dialog result
+			//If abort, then skip the rest of this.*/
+			Queries.CurReport.ColWidth=new int[Queries.TableQ.Columns.Count];
+			Queries.CurReport.ColPos=new int[Queries.TableQ.Columns.Count+1];
+			Queries.CurReport.ColPos[0]=0;
+			Queries.CurReport.ColCaption=new string[Queries.TableQ.Columns.Count];
+			Queries.CurReport.ColAlign=new HorizontalAlignment[Queries.TableQ.Columns.Count];
+			Queries.CurReport.ColTotal=new double[Queries.TableQ.Columns.Count];
+			grid2.TableStyles.Clear();
+			grid2.SetDataBinding(Queries.TableQ,"");
+			myGridTS = new DataGridTableStyle();
+			grid2.TableStyles.Add(myGridTS);
+			if(radioHuman.Checked){
+				MakeReadable();
+				grid2.SetDataBinding(Queries.TableQ,"");
+			}
+			//if(!IsReport){
+				AutoSizeColumns();
+				/*for(int i=0;i<doubleCount;i++){
+					int colTotal=0;
+					for(int iRow=0;iRow<Queries.TableQ.Rows.Count;i++){
+						
+					}
+					Queries.CurReport.Summary[i]="TOTAL :"+;
+				}*/
+				Queries.CurReport.Title=textTitle.Text;
+				Queries.CurReport.SubTitle=new string[1];
+				Queries.CurReport.SubTitle[0]="Jordan S. Sparks, D.M.D.";
+				for(int iCol=0;iCol<Queries.TableQ.Columns.Count;iCol++){
+					Queries.CurReport.ColCaption[iCol]=Queries.TableQ.Columns[iCol].Caption;//myGridTS.GridColumnStyles[iCol].HeaderText;
+					myGridTS.GridColumnStyles[iCol].Alignment=Queries.CurReport.ColAlign[iCol];
+				}
+				Queries.CurReport.Summary=new string[Queries.CurReport.ColTotal.Length];
+			//}		
+		}
+
+		//private void SubmitQueryThread(){
+			//Queries.SubmitCur();
+		//}
+
+		public void SubmitReportQuery(){	
+			Queries.SubmitCur();
+			Queries.CurReport.ColWidth=new int[Queries.TableQ.Columns.Count];
+			Queries.CurReport.ColPos=new int[Queries.TableQ.Columns.Count+1];
+			Queries.CurReport.ColPos[0]=0;
+			Queries.CurReport.ColCaption=new string[Queries.TableQ.Columns.Count];
+			Queries.CurReport.ColAlign=new HorizontalAlignment[Queries.TableQ.Columns.Count];
+			Queries.CurReport.ColTotal=new double[Queries.TableQ.Columns.Count];
+			grid2.TableStyles.Clear();
+			grid2.SetDataBinding(Queries.TableQ,"");
+			myGridTS = new DataGridTableStyle();
+			grid2.TableStyles.Add(myGridTS);
+			MakeReadable();//?
+			grid2.SetDataBinding(Queries.TableQ,"");//because MakeReadable trashes the TableQ
+		}
+
+		public void ResetGrid(){
+			grid2.TableStyles.Clear();
+			grid2.SetDataBinding(Queries.TableQ,"");
+			myGridTS = new DataGridTableStyle();
+			grid2.TableStyles.Add(myGridTS);
+		}
+
+		private void AutoSizeColumns(){
+			Graphics grfx=this.CreateGraphics();
+			//int colWidth;
+			int tempWidth;
+			//for(int i=0;i<myGridTS.GridColumnStyles.Count;i++){
+			for(int i=0;i<Queries.CurReport.ColWidth.Length;i++){
+				Queries.CurReport.ColWidth[i]
+					=(int)grfx.MeasureString(Queries.TableQ.Columns[i].Caption,grid2.Font).Width;
+					//myGridTS.GridColumnStyles[i].HeaderText,grid2.Font).Width;
+				for(int j=0;j<Queries.TableQ.Rows.Count;j++){
+					tempWidth=(int)grfx.MeasureString(Queries.TableQ.Rows[j][i].ToString(),grid2.Font).Width;
+					if(tempWidth>Queries.CurReport.ColWidth[i])
+						Queries.CurReport.ColWidth[i]=tempWidth;
+				}
+				if(Queries.CurReport.ColWidth[i]>400) Queries.CurReport.ColWidth[i]=400;
+				myGridTS.GridColumnStyles[i].Width=Queries.CurReport.ColWidth[i]+7;
+				Queries.CurReport.ColWidth[i]+=4;//so the columns don't touch
+				Queries.CurReport.ColPos[i+1]=Queries.CurReport.ColPos[i]+Queries.CurReport.ColWidth[i];
+			}
+		}
+
+		private void MakeReadable(){
+			//this can probably be improved upon later for speed
+			DataTable TableQ;//this is not the same as Queries.TableQ
+			TableQ=Queries.TableQ.Copy();//copy data and structure to a temp table
+			Queries.TableQ=TableQ.Clone();
+			for(int j=0;j<Queries.TableQ.Columns.Count;j++){
+				Queries.TableQ.Columns[j].DataType=typeof(string);
+			}
+			DataRow thisRow;
+			//copy data from TableQ to Queries.TableQ while converting to strings
+			for(int i=0;i<TableQ.Rows.Count;i++){
+				thisRow=Queries.TableQ.NewRow();
+				for(int j=0;j<TableQ.Columns.Count;j++){
+					thisRow[j]=TableQ.Rows[i][j].ToString();
+				}
+				Queries.TableQ.Rows.Add(thisRow);
+			}
+			for(int j=0;j<Queries.TableQ.Columns.Count;j++){
+				for(int i=0;i<Queries.TableQ.Rows.Count;i++){
+					try{
+					if(Queries.TableQ.Columns[j].Caption.Substring(0,1)=="$"){
+						Queries.TableQ.Rows[i][j]=PIn.PDouble(Queries.TableQ.Rows[i][j].ToString()).ToString("F");
+						Queries.CurReport.ColAlign[j]=HorizontalAlignment.Right;
+						Queries.CurReport.ColTotal[j]+=PIn.PDouble(Queries.TableQ.Rows[i][j].ToString());
+					}
+					else switch(Queries.TableQ.Columns[j].Caption.ToLower()){
+						//bool
+						case "isprosthesis":
+						case "ispreventive":
+						case "ishidden":
+						case "isrecall":
+						case "usedefaultfee":
+						case "usedefaultcov":
+						case "isdiscount":
+						case "removetooth":
+						case "setrecall":
+						case "nobillins":
+						case "isprosth":
+						case "ishygiene":
+						case "issecondary":
+						case "orpribool":
+						case "orsecbool":
+						case "issplit":
+  					case "ispreauth":
+ 					  case "isortho":
+            case "releaseinfo":
+            case "assignben":
+            case "enabled":
+            case "issystem":
+            case "usingtin":
+            case "sigonfile": 
+            case "notperson":
+            case "isfrom":
+							Queries.TableQ.Rows[i][j]=PIn.PBool(Queries.TableQ.Rows[i][j].ToString()).ToString();
+							break;
+						//date
+						case "adjdate":
+						case "baldate":
+						case "dateservice":
+						case "datesent":
+						case "datereceived":
+						case "priordate":
+						case "date":
+						case "dateviewing":
+						case "datecreated":
+						case "dateeffective":
+						case "dateterm":
+						case "paydate":
+						case "procdate":
+						case "rxdate":
+						case "birthdate":
+						case "monthyear":
+            case "accidentdate":
+						case "orthodate":
+            case "checkdate":
+							Queries.TableQ.Rows[i][j]=PIn.PDate(Queries.TableQ.Rows[i][j].ToString()).ToString("d");
+							break;
+            //time 
+						case "aptdatetime":
+            case "starttime":
+            case "stoptime":
+							Queries.TableQ.Rows[i][j]=PIn.PDateT(Queries.TableQ.Rows[i][j].ToString()).ToString("t")+"   "
+								+PIn.PDateT(Queries.TableQ.Rows[i][j].ToString()).ToString("d");
+							break;
+  					//double
+						case "adjamt":
+						case "monthbalance":
+						case "claimfee":
+						case "inspayest":
+						case "inspayamt":
+						case "dedapplied":
+						case "amount":
+						case "payamt":
+						case "splitamt":
+						case "balance":
+						case "procfee":
+						case "overridepri":
+						case "overridesec":
+						case "priestim":
+						case "secestim":
+						case "procfees":
+						case "claimpays":
+						case "insest":
+						case "paysplits":
+						case "adjustments":
+						case "bal_0_30":
+						case "bal_31_60":
+						case "bal_61_90":
+						case "balover90":
+							Queries.TableQ.Rows[i][j]=PIn.PDouble(Queries.TableQ.Rows[i][j].ToString()).ToString("F");
+							Queries.CurReport.ColAlign[j]=HorizontalAlignment.Right;
+							//myGridTS.GridColumnStyles[j].Alignment=HorizontalAlignment.Right;
+							Queries.CurReport.ColTotal[j]+=PIn.PDouble(Queries.TableQ.Rows[i][j].ToString());
+							break;
+						//definitions:
+						case "adjtype":
+							Queries.TableQ.Rows[i][j]
+								=Defs.GetName(DefCat.AdjTypes,PIn.PInt(Queries.TableQ.Rows[i][j].ToString()));
+							break;
+						case "confirmed":
+							Queries.TableQ.Rows[i][j]
+								=Defs.GetValue(DefCat.ApptConfirmed,PIn.PInt(Queries.TableQ.Rows[i][j].ToString()));
+							break;
+						case "claimformat":
+							Queries.TableQ.Rows[i][j]
+								=Defs.GetName(DefCat.ClaimFormats,PIn.PInt(Queries.TableQ.Rows[i][j].ToString()));
+							break;
+						case "dx":
+							Queries.TableQ.Rows[i][j]
+								=Defs.GetName(DefCat.Diagnosis,PIn.PInt(Queries.TableQ.Rows[i][j].ToString()));
+							break;
+						case "discounttype":
+							Queries.TableQ.Rows[i][j]
+								=Defs.GetName(DefCat.DiscountTypes,PIn.PInt(Queries.TableQ.Rows[i][j].ToString()));
+							break;
+						case "doccategory":
+							Queries.TableQ.Rows[i][j]
+								=Defs.GetName(DefCat.DocumentCats,PIn.PInt(Queries.TableQ.Rows[i][j].ToString()));
+							break;
+						case "feesched":
+							Queries.TableQ.Rows[i][j]
+								=Defs.GetName(DefCat.FeeSchedNames,PIn.PInt(Queries.TableQ.Rows[i][j].ToString()));
+							break;
+						case "op":
+							Queries.TableQ.Rows[i][j]
+								=Defs.GetValue(DefCat.Operatories,PIn.PInt(Queries.TableQ.Rows[i][j].ToString()));
+							break;
+						case "paytype":
+							Queries.TableQ.Rows[i][j]
+								=Defs.GetName(DefCat.PaymentTypes,PIn.PInt(Queries.TableQ.Rows[i][j].ToString()));
+							break;
+						case "proccat":
+							Queries.TableQ.Rows[i][j]
+								=Defs.GetName(DefCat.ProcCodeCats,PIn.PInt(Queries.TableQ.Rows[i][j].ToString()));
+							break;
+						case "unschedstatus":
+						case "recallstatus":
+							Queries.TableQ.Rows[i][j]
+								=Defs.GetName(DefCat.RecallUnschedStatus,PIn.PInt(Queries.TableQ.Rows[i][j].ToString()));
+							break;
+						case "billingtype":
+							Queries.TableQ.Rows[i][j]
+								=Defs.GetName(DefCat.BillingTypes,PIn.PInt(Queries.TableQ.Rows[i][j].ToString()));
+							break;
+						//patnums:
+						case "patnum":
+						case "guarantor":
+						case "pripatnum":
+						case "secpatnum":
+						case "subscriber":
+            case "withpat":
+							if(Patients.HList.ContainsKey(PIn.PInt(Queries.TableQ.Rows[i][j].ToString())))
+								Queries.TableQ.Rows[i][j]=Patients.HList[PIn.PInt(Queries.TableQ.Rows[i][j].ToString())];
+							else
+								Queries.TableQ.Rows[i][j]="";
+							break;
+            //plannums:        
+            case "plannum":
+            case "priplannum":
+            case "secplannum": 
+							if(InsPlans.HListAll.ContainsKey(PIn.PInt(Queries.TableQ.Rows[i][j].ToString())))
+								Queries.TableQ.Rows[i][j]=InsPlans.HListAll[PIn.PInt(Queries.TableQ.Rows[i][j].ToString())];
+							else
+								Queries.TableQ.Rows[i][j]="";
+							break;
+            //referralnum             
+            case "referralnum":
+							if(PIn.PInt(Queries.TableQ.Rows[i][j].ToString())!=0){
+							//if(Referrals.HList.ContainsKey(){
+								Referrals.GetCur(PIn.PInt(Queries.TableQ.Rows[i][j].ToString()));
+								Queries.TableQ.Rows[i][j]
+									=Referrals.Cur.LName+", "+Referrals.Cur.FName+" "+Referrals.Cur.MName;
+							}
+							else
+								Queries.TableQ.Rows[i][j]="";
+							break; 
+						//enumerations:
+						case "aptstatus":
+							Queries.TableQ.Rows[i][j]
+								=((ApptStatus)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							break;
+						case "category":
+							Queries.TableQ.Rows[i][j]=((DefCat)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							break;
+						case "renewmonth":
+							Queries.TableQ.Rows[i][j]=((Month)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							break;
+						case "patstatus":
+							Queries.TableQ.Rows[i][j]
+								=((PatientStatus)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							break;
+						case "gender":
+							Queries.TableQ.Rows[i][j]
+								=((PatientGender)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							break;
+						case "lab":
+							Queries.TableQ.Rows[i][j]
+								=((LabCase)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+						  break;
+						case "position":
+							Queries.TableQ.Rows[i][j]
+								=((PatientPosition)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							break;
+						case "deductwaivprev":
+						case "flocovered":
+						case "misstoothexcl":
+						case "procstatus":
+							Queries.TableQ.Rows[i][j]=((ProcStat)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							break;
+						case "majorwait":
+							Queries.TableQ.Rows[i][j]=((YN)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							break;
+						case "prirelationship":
+						case "secrelationship":
+							Queries.TableQ.Rows[i][j]=((Relat)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							break;
+						case "treatarea":
+							Queries.TableQ.Rows[i][j]
+								=((TreatmentArea)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							break;
+						case "specialty":
+							Queries.TableQ.Rows[i][j]
+								=((DentalSpecialty)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							break;
+						case "placeservice":
+							Queries.TableQ.Rows[i][j]
+								=((PlaceOfService)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							break;
+            case "employrelated": 
+							Queries.TableQ.Rows[i][j]
+								=((YN)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							break;
+            case "schedtype": 
+							Queries.TableQ.Rows[i][j]
+								=((ScheduleType)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							break;
+            case "dayofweek": 
+							Queries.TableQ.Rows[i][j]
+								=((DayOfWeek)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							break;
+						//miscellaneous:
+						case "provnum":
+						case "provhyg":
+						case "priprov":
+						case "secprov":
+            case "provtreat":
+            case "provbill":   
+							Queries.TableQ.Rows[i][j]=Providers.GetAbbr(PIn.PInt(Queries.TableQ.Rows[i][j].ToString()));
+							break;
+
+						case "covcatnum":
+							Queries.TableQ.Rows[i][j]=CovCats.GetDesc(PIn.PInt(Queries.TableQ.Rows[i][j].ToString()));
+							break;
+            case "referringprov": 
+	//					  Queries.TableQ.Rows[i][j]=CovCats.GetDesc(PIn.PInt(Queries.TableQ.Rows[i][j].ToString()));
+							break;			
+            case "addtime":
+							if(Queries.TableQ.Rows[i][j].ToString()!="0")
+								Queries.TableQ.Rows[i][j]+="0";
+							break;
+					}//end switch column caption
+					}//end try
+					catch{}
+				}//end for i rows
+			}//end for j cols
+		}
+
+		private void butFormulate_Click(object sender, System.EventArgs e) {//is now the 'Favorites' button
+			FormQueryFormulate FormQF=new FormQueryFormulate();
+			FormQF.ShowDialog();
+			if(FormQF.DialogResult==DialogResult.OK){
+				textQuery.Text=UserQueries.Cur.QueryText;
+				//grid2.CaptionText=UserQueries.Cur.Description;
+				textTitle.Text=UserQueries.Cur.Description;
+				SubmitQuery();
+				//this.butSaveChanges.Enabled=true;
+			}
+			else{
+				//butSaveChanges.Enabled=false;
+			}
+		}
+
+		private void butAdd_Click(object sender, System.EventArgs e) {
+			UserQueries.Cur=new UserQuery();
+			UserQueries.Cur.QueryText=textQuery.Text;
+			FormQueryEdit FormQE=new FormQueryEdit();
+			FormQE.IsNew=true;
+			FormQE.ShowDialog();
+			if(FormQE.DialogResult==DialogResult.OK){
+				textQuery.Text=UserQueries.Cur.QueryText;
+				grid2.CaptionText=UserQueries.Cur.Description;
+			}
+		}
+
+		private void radioRaw_Click(object sender, System.EventArgs e) {
+			SubmitQuery();
+		}
+
+		private void radioHuman_Click(object sender, System.EventArgs e) {
+			SubmitQuery();
+		}
+
+		private void butPrint_Click(object sender, System.EventArgs e) {
+			if(Queries.TableQ==null){
+				MessageBox.Show(Lan.g(this,"Please run query first"));
+				return;
+			}
+			PrintReport(false);
+			if(IsReport){
+				DialogResult=DialogResult.Cancel;
+			}
+		}
+
+		private void butPrintPreview_Click(object sender, System.EventArgs e) {
+			if(Queries.TableQ==null){
+				MessageBox.Show(Lan.g(this,"Please run query first"));
+				return;
+			}
+			butFullPage.Visible=false;
+			butZoomIn.Visible=true;
+			printPreviewControl2.Visible=true;
+			butPrintPreview.Visible=false;
+			butQView.Visible=true;
+			panelZoom.Visible=true;
+			totalPages=0;
+			printPreviewControl2.Zoom=((double)printPreviewControl2.ClientSize.Height
+				/(double)pd2.DefaultPageSettings.PaperSize.Height);
+			PrintReport(true);
+			labelTotPages.Text="/ "+totalPages.ToString();
+		}
+
+		private void butQView_Click(object sender, System.EventArgs e) {
+			printPreviewControl2.Visible=false;
+			panelZoom.Visible=false;
+			butPrintPreview.Visible=true;
+			butQView.Visible=false;
+		}
+
+		public void PrintReport(bool justPreview){
+			pd2 = new PrintDocument();
+			pd2.PrintPage += new PrintPageEventHandler(this.pd2_PrintPage);
+			pd2.DefaultPageSettings.Margins=new Margins(10,50,50,60);
+			pagesPrinted=0;
+			linesPrinted=0;
+			PrintDocument tempPD = new PrintDocument();
+			tempPD.PrinterSettings.PrinterName=Computers.Cur.PrinterName;
+			if(tempPD.PrinterSettings.IsValid){
+				pd2.PrinterSettings.PrinterName=Computers.Cur.PrinterName;
+			}
+			//uses default printer if selected printer not valid
+			tempPD.Dispose();
+			try{
+				if(justPreview){
+					printPreviewControl2.Document=pd2;
+					
+				}
+				else{
+					printDialog2=new PrintDialog();
+					printDialog2.Document=pd2;
+					if(printDialog2.ShowDialog()==DialogResult.OK){
+						pd2.Print();
+					}
+				}
+			}
+			catch{
+				MessageBox.Show(Lan.g(this,"Printer not available"));
+			}
+			
+		}
+		
+		private void pd2_PrintPage(object sender, PrintPageEventArgs ev){//raised for each page to be printed.
+			float yPos = ev.MarginBounds.Top;
+			if(!headerPrinted){
+				ev.Graphics.DrawString(Lan.g(this,Queries.CurReport.Title)
+					,titleFont,Brushes.Black
+					,ev.MarginBounds.Width/2
+					-ev.Graphics.MeasureString(Queries.CurReport.Title,titleFont).Width/2,yPos);
+				yPos+=titleFont.GetHeight(ev.Graphics);
+				for(int i=0;i<Queries.CurReport.SubTitle.Length;i++){
+					ev.Graphics.DrawString(Lan.g(this,Queries.CurReport.SubTitle[i])
+						,subtitleFont,Brushes.Black
+						,ev.MarginBounds.Width/2
+						-ev.Graphics.MeasureString(Queries.CurReport.SubTitle[i],subtitleFont).Width/2,yPos);
+					yPos+=subtitleFont.GetHeight(ev.Graphics)+2;
+				}
+			}
+			yPos+=10;
+			ev.Graphics.DrawString(Lan.g(this,"Date: "+DateTime.Today.ToString("d"))
+				,bodyFont,Brushes.Black,ev.MarginBounds.Left,yPos);
+			//if(totalPages==0){
+				ev.Graphics.DrawString(Lan.g(this,"Page: "+(pagesPrinted+1).ToString())
+					,bodyFont,Brushes.Black
+					,ev.MarginBounds.Right
+					-ev.Graphics.MeasureString("Page: "+(pagesPrinted+1).ToString(),bodyFont).Width,yPos);
+			/*}
+			else{//maybe work on this later.  Need totalPages on first pass
+				ev.Graphics.DrawString("Page: "+(pagesPrinted+1).ToString()+" / "+totalPages.ToString()
+					,bodyFont,Brushes.Black
+					,ev.MarginBounds.Right
+					-ev.Graphics.MeasureString("Page: "+(pagesPrinted+1).ToString()+" / "
+					+totalPages.ToString(),bodyFont).Width
+					,yPos);
+			}*/
+			yPos+=bodyFont.GetHeight(ev.Graphics)+10;
+			ev.Graphics.DrawLine(new Pen(Color.Black),ev.MarginBounds.Left,yPos-5,ev.MarginBounds.Right,yPos-5);
+			//column captions:
+			for(int i=0;i<Queries.CurReport.ColCaption.Length;i++){
+				if(Queries.CurReport.ColAlign[i]==HorizontalAlignment.Right){
+					ev.Graphics.DrawString(Lan.g(this,Queries.CurReport.ColCaption[i])
+						,colCaptFont,Brushes.Black,new RectangleF(
+						ev.MarginBounds.Left+Queries.CurReport.ColPos[i+1]
+						-ev.Graphics.MeasureString(Queries.CurReport.ColCaption[i],colCaptFont).Width,yPos
+						,Queries.CurReport.ColWidth[i],colCaptFont.GetHeight(ev.Graphics)));
+				}
+				else{
+					ev.Graphics.DrawString(Lan.g(this,Queries.CurReport.ColCaption[i])
+						,colCaptFont,Brushes.Black,ev.MarginBounds.Left+Queries.CurReport.ColPos[i],yPos);
+				}
+			}
+			yPos+=bodyFont.GetHeight(ev.Graphics)+5;
+			//table:
+			while(yPos<ev.MarginBounds.Top+ev.MarginBounds.Height && linesPrinted < Queries.TableQ.Rows.Count){
+				for(int iCol=0;iCol<Queries.TableQ.Columns.Count;iCol++){
+					if(Queries.CurReport.ColAlign[iCol]==HorizontalAlignment.Right){
+						ev.Graphics.DrawString(Lan.g(this,grid2[linesPrinted,iCol].ToString())
+							,bodyFont,Brushes.Black,new RectangleF(
+							ev.MarginBounds.Left+Queries.CurReport.ColPos[iCol+1]
+							-ev.Graphics.MeasureString(grid2[linesPrinted,iCol].ToString(),bodyFont).Width-1,yPos
+							,Queries.CurReport.ColWidth[iCol],bodyFont.GetHeight(ev.Graphics)));
+					}
+					else{
+						ev.Graphics.DrawString(Lan.g(this,grid2[linesPrinted,iCol].ToString())
+							,bodyFont,Brushes.Black,new RectangleF(
+							ev.MarginBounds.Left+Queries.CurReport.ColPos[iCol],yPos
+							,Queries.CurReport.ColPos[iCol+1]-Queries.CurReport.ColPos[iCol]+6
+							,bodyFont.GetHeight(ev.Graphics)));
+					}
+				}
+				yPos+=bodyFont.GetHeight(ev.Graphics);
+				linesPrinted++;
+				if(linesPrinted==Queries.TableQ.Rows.Count){
+					tablePrinted=true;
+
+				}
+			}
+			//totals:
+			if(tablePrinted){
+				if(yPos<ev.MarginBounds.Top+ev.MarginBounds.Height){
+					ev.Graphics.DrawLine(new Pen(Color.Black),ev.MarginBounds.Left,yPos+3,ev.MarginBounds.Right,yPos+3);
+					yPos+=4;
+					for(int iCol=0;iCol<Queries.TableQ.Columns.Count;iCol++){
+						if(Queries.CurReport.ColAlign[iCol]==HorizontalAlignment.Right){
+							float textWidth=(float)(ev.Graphics.MeasureString
+								(Queries.CurReport.ColTotal[iCol].ToString("F"),subtitleFont).Width);
+							ev.Graphics.DrawString(Lan.g(this,Queries.CurReport.ColTotal[iCol].ToString("F"))
+								,subtitleFont,Brushes.Black,new RectangleF(
+								ev.MarginBounds.Left+Queries.CurReport.ColPos[iCol+1]-textWidth+3,yPos//the 3 is arbitrary
+								,textWidth,subtitleFont.GetHeight(ev.Graphics)));
+						}
+						//else{
+						//	ev.Graphics.DrawString(grid2[linesPrinted,iCol].ToString()
+						//		,bodyFont,Brushes.Black,new RectangleF(
+						//		ev.MarginBounds.Left+Queries.CurReport.ColPos[iCol],yPos
+						//		,Queries.CurReport.ColPos[iCol+1]-Queries.CurReport.ColPos[iCol]
+						//,bodyFont.GetHeight(ev.Graphics)));
+						//}
+					}
+					totalsPrinted=true;
+					yPos+=subtitleFont.GetHeight(ev.Graphics);
+				}
+			}
+			//Summary
+			if(totalsPrinted){
+				if(yPos+Queries.CurReport.Summary.Length*subtitleFont.GetHeight(ev.Graphics)
+					< ev.MarginBounds.Top+ev.MarginBounds.Height){
+					ev.Graphics.DrawLine(new Pen(Color.Black),ev.MarginBounds.Left,yPos+2,ev.MarginBounds.Right,yPos+2);
+					yPos+=bodyFont.GetHeight(ev.Graphics);
+					for(int i=0;i<Queries.CurReport.Summary.Length;i++){
+					//while(yPos<ev.MarginBounds.Top+ev.MarginBounds.Height && linesPrinted<Queries.TableQ.Rows.Count){
+						//if(yPos>=ev.MarginBounds.Top+ev.MarginBounds.Height) break;
+						ev.Graphics.DrawString(Lan.g(this,Queries.CurReport.Summary[i])
+							,subtitleFont,Brushes.Black,ev.MarginBounds.Left,yPos);
+						yPos+=subtitleFont.GetHeight(ev.Graphics);
+					}
+				}
+			}
+			if(linesPrinted < Queries.TableQ.Rows.Count){
+				ev.HasMorePages = true;
+				pagesPrinted++;
+			}
+			else{
+				ev.HasMorePages = false;
+				//UpDownPage.Maximum=pagesPrinted+1;
+				totalPages=pagesPrinted+1;
+				labelTotPages.Text="1 / "+totalPages.ToString();
+				pagesPrinted=0;
+				linesPrinted=0;
+				headerPrinted=false;
+				tablePrinted=false;
+				totalsPrinted=false;
+			}
+		}
+
+		private void butZoomIn_Click(object sender, System.EventArgs e){
+			butFullPage.Visible=true;
+			butZoomIn.Visible=false;
+			printPreviewControl2.Zoom=1;
+		}
+
+		private void butFullPage_Click(object sender, System.EventArgs e){
+			butFullPage.Visible=false;
+			butZoomIn.Visible=true;
+			printPreviewControl2.Zoom=((double)printPreviewControl2.ClientSize.Height
+				/(double)pd2.DefaultPageSettings.PaperSize.Height);
+		}
+
+		private void butBack_Click(object sender, System.EventArgs e){
+			if(printPreviewControl2.StartPage==0) return;
+			printPreviewControl2.StartPage--;
+			labelTotPages.Text=(printPreviewControl2.StartPage+1).ToString()
+				+" / "+totalPages.ToString();
+		}
+
+		private void butFwd_Click(object sender, System.EventArgs e){
+			if(printPreviewControl2.StartPage==totalPages-1) return;
+			printPreviewControl2.StartPage++;
+			labelTotPages.Text=(printPreviewControl2.StartPage+1).ToString()
+				+" / "+totalPages.ToString();
+		}
+
+		private void butExport_Click(object sender, System.EventArgs e){
+			saveFileDialog2=new SaveFileDialog();
+      saveFileDialog2.AddExtension=true;
+			saveFileDialog2.Title=Lan.g(this,"Select Folder to Save File To");
+		  if(IsReport){
+				saveFileDialog2.FileName=Queries.CurReport.Title;
+			}
+      else{
+        saveFileDialog2.FileName=UserQueries.Cur.FileName;
+			}
+			if(!Directory.Exists( ((Pref)Prefs.HList["ExportPath"]).ValueString )){
+				try{
+					Directory.CreateDirectory( ((Pref)Prefs.HList["ExportPath"]).ValueString );
+					saveFileDialog2.InitialDirectory=((Pref)Prefs.HList["ExportPath"]).ValueString;
+				}
+				catch{
+					//initialDirectory will be blank
+				}
+			}
+			else saveFileDialog2.InitialDirectory=((Pref)Prefs.HList["ExportPath"]).ValueString;
+			saveFileDialog2.DefaultExt="txt";
+			saveFileDialog2.Filter="txt files(*.txt)|*.txt|All files(*.*)|*.*";
+      saveFileDialog2.FilterIndex=1;
+		  if(saveFileDialog2.ShowDialog()!=DialogResult.OK){
+	   	  return;
+			}
+			try{
+			  FileStream fs=new FileStream(@saveFileDialog2.FileName,FileMode.Create,FileAccess.Write,FileShare.Read);
+			  StreamWriter sw=new StreamWriter(fs);
+        String line="";  
+				for(int i=0;i<Queries.CurReport.ColCaption.Length;i++){
+					line+=Queries.CurReport.ColCaption[i]+"\t";
+				}
+        line+="\r\n";
+				sw.Write(line);
+				line="";      
+				for(int i=0;i<Queries.TableQ.Rows.Count;i++){
+					for(int j=0;j<Queries.TableQ.Columns.Count;j++){
+						line+=Queries.TableQ.Rows[i][j].ToString()+"\t";
+					}
+					line+="\r\n";
+					sw.Write(line);
+					line="";
+				}
+				sw.Close();
+      }
+      catch{
+        MessageBox.Show(Lan.g(this,"File in use by another program.  Close and try again."));
+				return;
+			}
+			MessageBox.Show(Lan.g(this,"File created successfully"));
+		}
+
+		private void butCopy_Click(object sender, System.EventArgs e){
+			Clipboard.SetDataObject(textQuery.Text);
+		}
+
+		private void butPaste_Click(object sender, System.EventArgs e){
+			IDataObject iData=Clipboard.GetDataObject();
+			if(iData.GetDataPresent(DataFormats.Text)){
+				textQuery.Text=(String)iData.GetData(DataFormats.Text); 
+			}
+			else{
+				MessageBox.Show(Lan.g(this,"Could not retrieve data off the clipboard."));
+			}
+
+		}
+
+		private void butClose_Click(object sender, System.EventArgs e) {
+  		SecurityLogs.MakeLogEntry("User Query","");
+			DialogResult=DialogResult.Cancel;
+		}	
+
+	}
+}

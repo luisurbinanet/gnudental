@@ -1,0 +1,30 @@
+		public static void FlushAndLock(){
+			try{
+				con.Open();
+				cmd.CommandText="FLUSH TABLES WITH READ LOCK";
+				int rowsUpdated = cmd.ExecuteNonQuery();
+			}
+			catch{
+				//MessageBox.Show(con.ConnectionString);
+				MessageBox.Show("Error in FlushAndLock");
+			}
+		}
+
+		public static void Unlock(){
+			con.Close();
+		}
+
+
+
+
+
+
+			if(Directory.Exists(@"C:\mysql\data\"+textNewDB.Text)){
+				Directory.Delete(@"C:\mysql\data\"+textNewDB.Text,true);
+			}
+			Directory.CreateDirectory(@"C:\mysql\data\"+textNewDB.Text);
+			DirectoryInfo dirInfo=new DirectoryInfo(@"C:\mysql\data\blank");
+			FileInfo[] fi=dirInfo.GetFiles();
+			for(int i=0;i<fi.Length;i++){
+				File.Copy(@"C:\mysql\data\blank\"+fi[i].Name,@"C:\mysql\data\"+textNewDB.Text+"\\"+fi[i].Name);
+			}
