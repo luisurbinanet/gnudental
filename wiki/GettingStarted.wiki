@@ -79,7 +79,7 @@ If you encounter any problem, that's most likely because of a missing dependency
 == Removing the pre-build version of Mono ==
 You can now remove the pre-build version of Mono. On Ubuntu:
 {{{
-sudo apt-get remove subversion
+sudo apt-get remove mono mono-gmcs mono-gac mono-utils
 }}}
 
 == Installing Mono ==
@@ -136,6 +136,5 @@ mysql -h localhost -u root < opendental.sql
 
 = Running GNUdental for the first time =
 The first time you run GNUdental, you'll be asked to upgrade your database. Accept to do so. For the data directories, enter the directories you created above. Remember to include a trailing "/" after the directory name. If not, GNUdental will complain.
-
 
 
