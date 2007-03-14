@@ -18,11 +18,11 @@ You are now ready to go!
 
 NAnt is used to build GNUdental. NAnt probably already ships with your distribtuion. If not, visit [http://nant.sourceforge.net] to download NAnt.
 
-= Building = 
+= Building =
 
 Just run `make`. It'll start the build.
 
-= Creating the gnudental directories = 
+= Creating the gnudental directories =
 
 It is recommended you create a directory structure like this:
   * /home/user/gnudental/data
@@ -32,7 +32,7 @@ It is recommended you create a directory structure like this:
   * /home/user/gnudental/export
   * /home/user/gnudental/letter
 
-= Installing the mySQL database = 
+= Installing the mySQL database =
 
 Get mySQL from your distribution. GNUdental uses the same database structure as Open Dental. You can get the database creation script from [http://www.open-dent.com/opendental.sql].
 
