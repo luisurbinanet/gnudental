@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Corresponds to the letter table in the database.</summary>
+	///<summary>These are templates that are used to send simple letters to patients.</summary>
 	public struct Letter{
 		///<summary>Primary key.</summary>
 		public int LetterNum;

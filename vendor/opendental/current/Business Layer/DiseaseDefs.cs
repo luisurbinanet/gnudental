@@ -6,15 +6,15 @@ using System.Windows.Forms;
 
 namespace OpenDental {
 
-	/// <summary>Corresponds to the DiseaseDef table in the database.</summary>
+	/// <summary>A list of diseases that can be assigned to patients.  Cannot be deleted if in use by any patients.</summary>
 	public class DiseaseDef:IComparable{
 		///<summary>Primary key.</summary>
 		public int DiseaseDefNum;
-		///<summary></summary>
+		///<summary>.</summary>
 		public string DiseaseName;
 		///<summary>The order that the diseases will show in various lists.</summary>
 		public int ItemOrder;
-		///<summary></summary>
+		///<summary>If hidden, the disease will still show on any patient that it was previously attached to, but it will not be available for future patients.</summary>
 		public bool IsHidden;
 
 		///<summary>IComparable.CompareTo implementation.  This is used to order disease lists.</summary>

@@ -6,11 +6,11 @@ using System.Windows.Forms;
 
 namespace OpenDental {
 
-	/// <summary>Corresponds to the Question table in the database.  Each row is one Question for one patient.  If a patient has never filled out a questionnaire, then they will have no rows in this table.</summary>
+	/// <summary>Each row is one Question for one patient.  If a patient has never filled out a questionnaire, then they will have no rows in this table.</summary>
 	public class Question{
 		///<summary>Primary key.</summary>
 		public int QuestionNum;
-		///<summary>fk to patient.PatNum</summary>
+		///<summary>FK to patient.PatNum</summary>
 		public int PatNum;
 		///<summary>The order that this question shows in the list.</summary>
 		public int ItemOrder;

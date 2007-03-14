@@ -5,13 +5,13 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Corresponds to the instructor table in the database.</summary>
+	///<summary>Used by dental schools.</summary>
 	public class Instructor{
 		///<summary>Primary key.</summary>
 		public int InstructorNum;
-		///<summary></summary>
+		///<summary>.</summary>
 		public string LName;
-		///<summary></summary>
+		///<summary>.</summary>
 		public string FName;
 		///<summary>eg DMD, DDS, RDH.</summary>
 		public string Suffix;

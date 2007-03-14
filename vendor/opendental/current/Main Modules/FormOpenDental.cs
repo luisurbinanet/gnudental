@@ -24,6 +24,7 @@ using System.Diagnostics;
 using System.Collections;
 using System.ComponentModel;
 using System.Globalization;
+using System.Media;
 using System.Net;
 using System.Net.Sockets;
 using System.IO;
@@ -44,9 +45,7 @@ namespace OpenDental{
 		private OpenDental.ContrTreat ContrTreat2;
 		private OpenDental.ContrChart ContrChart2;
 		private OpenDental.ContrAccount ContrAccount2;
-		private System.Windows.Forms.PictureBox pictButtons;
-		private System.Windows.Forms.ImageList imageList2x6;
-		private bool[,] buttonDown=new bool[2,6];
+		//private bool[,] buttonDown=new bool[2,6];
 		private System.Windows.Forms.Timer timerTimeIndic;
 		private System.Windows.Forms.MainMenu mainMenu;
 		private System.Windows.Forms.MenuItem menuItemSettings;
@@ -177,8 +176,14 @@ namespace OpenDental{
 		private MenuItem menuItemTerminalManager;
 		private MenuItem menuItemQuestions;
 		private MenuItem menuItemCustomReports;
+		private MenuItem menuItemMessaging;
+		private OpenDental.UI.LightSignalGrid lightSignalGrid1;
+		private MenuItem menuItemMessagingButs;
 		///<summary>This is not the actual date/time last refreshed.  It is really the date/time of the last item in the database retrieved on previous refreshes.  That way, the local workstation time is irrelevant.</summary>
 		private DateTime signalLastRefreshed;
+		private Bitmap bitmapIcon;
+		///<summary>A list of button definitions for this computer.</summary>
+		private SigButDef[] SigButDefList;
 
 		///<summary></summary>
 		public FormOpenDental(){
@@ -208,8 +213,6 @@ namespace OpenDental{
 		private void InitializeComponent(){
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormOpenDental));
-			this.pictButtons = new System.Windows.Forms.PictureBox();
-			this.imageList2x6 = new System.Windows.Forms.ImageList(this.components);
 			this.timerTimeIndic = new System.Windows.Forms.Timer(this.components);
 			this.mainMenu = new System.Windows.Forms.MainMenu(this.components);
 			this.menuItemLogOff = new System.Windows.Forms.MenuItem();
@@ -233,6 +236,8 @@ namespace OpenDental{
 			this.menuItemEasy = new System.Windows.Forms.MenuItem();
 			this.menuItemEmail = new System.Windows.Forms.MenuItem();
 			this.menuItemInsCats = new System.Windows.Forms.MenuItem();
+			this.menuItemMessaging = new System.Windows.Forms.MenuItem();
+			this.menuItemMessagingButs = new System.Windows.Forms.MenuItem();
 			this.menuItemMisc = new System.Windows.Forms.MenuItem();
 			this.menuItemOperatories = new System.Windows.Forms.MenuItem();
 			this.menuItemPatFieldDefs = new System.Windows.Forms.MenuItem();
@@ -305,14 +310,15 @@ namespace OpenDental{
 			this.menuItemPHRawPop = new System.Windows.Forms.MenuItem();
 			this.menuItemPHScreen = new System.Windows.Forms.MenuItem();
 			this.menuItemCourseGrades = new System.Windows.Forms.MenuItem();
+			this.menuItemCustomReports = new System.Windows.Forms.MenuItem();
 			this.menuItemTools = new System.Windows.Forms.MenuItem();
 			this.menuItemPrintScreen = new System.Windows.Forms.MenuItem();
 			this.menuItem1 = new System.Windows.Forms.MenuItem();
-			this.menuItemDatabaseMaintenance = new System.Windows.Forms.MenuItem();
 			this.menuTelephone = new System.Windows.Forms.MenuItem();
 			this.menuItemPatientImport = new System.Windows.Forms.MenuItem();
 			this.menuItem9 = new System.Windows.Forms.MenuItem();
 			this.menuItemAuditTrail = new System.Windows.Forms.MenuItem();
+			this.menuItemDatabaseMaintenance = new System.Windows.Forms.MenuItem();
 			this.menuItemImportXML = new System.Windows.Forms.MenuItem();
 			this.menuItemAging = new System.Windows.Forms.MenuItem();
 			this.menuItemFinanceCharge = new System.Windows.Forms.MenuItem();
@@ -329,6 +335,7 @@ namespace OpenDental{
 			this.menuItemUpdate = new System.Windows.Forms.MenuItem();
 			this.imageList32 = new System.Windows.Forms.ImageList(this.components);
 			this.timerSignals = new System.Windows.Forms.Timer(this.components);
+			this.lightSignalGrid1 = new OpenDental.UI.LightSignalGrid();
 			this.myOutlookBar = new OpenDental.OutlookBar();
 			this.ContrAppt2 = new OpenDental.ContrAppt();
 			this.ContrManage2 = new OpenDental.ContrStaff();
@@ -337,25 +344,7 @@ namespace OpenDental{
 			this.ContrDocs2 = new OpenDental.ContrDocs();
 			this.ContrChart2 = new OpenDental.ContrChart();
 			this.ContrTreat2 = new OpenDental.ContrTreat();
-			this.menuItemCustomReports = new System.Windows.Forms.MenuItem();
-			((System.ComponentModel.ISupportInitialize)(this.pictButtons)).BeginInit();
 			this.SuspendLayout();
-			// 
-			// pictButtons
-			// 
-			this.pictButtons.Image = ((System.Drawing.Image)(resources.GetObject("pictButtons.Image")));
-			this.pictButtons.Location = new System.Drawing.Point(6,476);
-			this.pictButtons.Name = "pictButtons";
-			this.pictButtons.Size = new System.Drawing.Size(37,109);
-			this.pictButtons.TabIndex = 17;
-			this.pictButtons.TabStop = false;
-			this.pictButtons.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictButtons_MouseDown);
-			// 
-			// imageList2x6
-			// 
-			this.imageList2x6.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList2x6.ImageStream")));
-			this.imageList2x6.TransparentColor = System.Drawing.Color.Transparent;
-			this.imageList2x6.Images.SetKeyName(0,"");
 			// 
 			// timerTimeIndic
 			// 
@@ -444,6 +433,8 @@ namespace OpenDental{
             this.menuItemEasy,
             this.menuItemEmail,
             this.menuItemInsCats,
+            this.menuItemMessaging,
+            this.menuItemMessagingButs,
             this.menuItemMisc,
             this.menuItemOperatories,
             this.menuItemPatFieldDefs,
@@ -536,103 +527,115 @@ namespace OpenDental{
 			this.menuItemInsCats.Text = "Insurance Categories";
 			this.menuItemInsCats.Click += new System.EventHandler(this.menuItemInsCats_Click);
 			// 
+			// menuItemMessaging
+			// 
+			this.menuItemMessaging.Index = 12;
+			this.menuItemMessaging.Text = "Messaging";
+			this.menuItemMessaging.Click += new System.EventHandler(this.menuItemMessaging_Click);
+			// 
+			// menuItemMessagingButs
+			// 
+			this.menuItemMessagingButs.Index = 13;
+			this.menuItemMessagingButs.Text = "Messaging Buttons";
+			this.menuItemMessagingButs.Click += new System.EventHandler(this.menuItemMessagingButs_Click);
+			// 
 			// menuItemMisc
 			// 
-			this.menuItemMisc.Index = 12;
+			this.menuItemMisc.Index = 14;
 			this.menuItemMisc.Text = "Miscellaneous";
 			this.menuItemMisc.Click += new System.EventHandler(this.menuItemMisc_Click);
 			// 
 			// menuItemOperatories
 			// 
-			this.menuItemOperatories.Index = 13;
+			this.menuItemOperatories.Index = 15;
 			this.menuItemOperatories.Text = "Operatories";
 			this.menuItemOperatories.Click += new System.EventHandler(this.menuItemOperatories_Click);
 			// 
 			// menuItemPatFieldDefs
 			// 
-			this.menuItemPatFieldDefs.Index = 14;
+			this.menuItemPatFieldDefs.Index = 16;
 			this.menuItemPatFieldDefs.Text = "Patient Field Defs";
 			this.menuItemPatFieldDefs.Click += new System.EventHandler(this.menuItemPatFieldDefs_Click);
 			// 
 			// menuItemPayPeriods
 			// 
-			this.menuItemPayPeriods.Index = 15;
+			this.menuItemPayPeriods.Index = 17;
 			this.menuItemPayPeriods.Text = "Pay Periods";
 			this.menuItemPayPeriods.Click += new System.EventHandler(this.menuItemPayPeriods_Click);
 			// 
 			// menuItemPractice
 			// 
-			this.menuItemPractice.Index = 16;
+			this.menuItemPractice.Index = 18;
 			this.menuItemPractice.Text = "Practice";
 			this.menuItemPractice.Click += new System.EventHandler(this.menuItemPractice_Click);
 			// 
 			// menuItemProcedureButtons
 			// 
-			this.menuItemProcedureButtons.Index = 17;
+			this.menuItemProcedureButtons.Index = 19;
 			this.menuItemProcedureButtons.Text = "Procedure Buttons";
 			this.menuItemProcedureButtons.Click += new System.EventHandler(this.menuItemProcedureButtons_Click);
 			// 
 			// menuItemLinks
 			// 
-			this.menuItemLinks.Index = 18;
+			this.menuItemLinks.Index = 20;
 			this.menuItemLinks.Text = "Program Links";
 			this.menuItemLinks.Click += new System.EventHandler(this.menuItemLinks_Click);
 			// 
 			// menuItemQuestions
 			// 
-			this.menuItemQuestions.Index = 19;
+			this.menuItemQuestions.Index = 21;
 			this.menuItemQuestions.Text = "Questionnaire";
 			this.menuItemQuestions.Click += new System.EventHandler(this.menuItemQuestions_Click);
 			// 
 			// menuItemRecall
 			// 
-			this.menuItemRecall.Index = 20;
+			this.menuItemRecall.Index = 22;
 			this.menuItemRecall.Text = "Recall";
 			this.menuItemRecall.Click += new System.EventHandler(this.menuItemRecall_Click);
 			// 
 			// menuItemSecurity
 			// 
-			this.menuItemSecurity.Index = 21;
+			this.menuItemSecurity.Index = 23;
 			this.menuItemSecurity.Text = "Security";
 			this.menuItemSecurity.Click += new System.EventHandler(this.menuItemSecurity_Click);
 			// 
 			// menuItem10
 			// 
-			this.menuItem10.Index = 22;
+			this.menuItem10.Index = 24;
 			this.menuItem10.Text = "-";
 			// 
 			// menuItemSched
 			// 
-			this.menuItemSched.Index = 23;
+			this.menuItemSched.Index = 25;
 			this.menuItemSched.Text = "SCHEDULES";
 			// 
 			// menuItemPracDef
 			// 
-			this.menuItemPracDef.Index = 24;
+			this.menuItemPracDef.Index = 26;
 			this.menuItemPracDef.Text = "   Practice Default";
 			this.menuItemPracDef.Click += new System.EventHandler(this.menuItemPracDef_Click);
 			// 
 			// menuItemPracSched
 			// 
-			this.menuItemPracSched.Index = 25;
+			this.menuItemPracSched.Index = 27;
 			this.menuItemPracSched.Text = "   Practice";
 			this.menuItemPracSched.Click += new System.EventHandler(this.menuItemPracSched_Click);
 			// 
 			// menuItemProvDefault
 			// 
-			this.menuItemProvDefault.Index = 26;
+			this.menuItemProvDefault.Index = 28;
 			this.menuItemProvDefault.Text = "   Provider Default";
 			this.menuItemProvDefault.Click += new System.EventHandler(this.menuItemProvDefault_Click);
 			// 
 			// menuItemProvSched
 			// 
-			this.menuItemProvSched.Index = 27;
+			this.menuItemProvSched.Index = 29;
 			this.menuItemProvSched.Text = "   Provider";
 			this.menuItemProvSched.Click += new System.EventHandler(this.menuItemProvSched_Click);
 			// 
 			// menuItemBlockoutDefault
 			// 
-			this.menuItemBlockoutDefault.Index = 28;
+			this.menuItemBlockoutDefault.Index = 30;
 			this.menuItemBlockoutDefault.Text = "   Blockout Default";
 			this.menuItemBlockoutDefault.Click += new System.EventHandler(this.menuItemBlockoutDefault_Click);
 			// 
@@ -1017,6 +1020,11 @@ namespace OpenDental{
 			this.menuItemCourseGrades.Text = "Dental School Course Grades";
 			this.menuItemCourseGrades.Click += new System.EventHandler(this.menuItemCourseGrades_Click);
 			// 
+			// menuItemCustomReports
+			// 
+			this.menuItemCustomReports.Index = 5;
+			this.menuItemCustomReports.Text = "Custom Reports";
+			// 
 			// menuItemTools
 			// 
 			this.menuItemTools.Index = 6;
@@ -1025,6 +1033,7 @@ namespace OpenDental{
             this.menuItem1,
             this.menuItem9,
             this.menuItemAuditTrail,
+            this.menuItemDatabaseMaintenance,
             this.menuItemImportXML,
             this.menuItemAging,
             this.menuItemFinanceCharge,
@@ -1046,26 +1055,19 @@ namespace OpenDental{
 			// 
 			this.menuItem1.Index = 1;
 			this.menuItem1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.menuItemDatabaseMaintenance,
             this.menuTelephone,
             this.menuItemPatientImport});
 			this.menuItem1.Text = "Misc Tools";
 			// 
-			// menuItemDatabaseMaintenance
-			// 
-			this.menuItemDatabaseMaintenance.Index = 0;
-			this.menuItemDatabaseMaintenance.Text = "Database Maintenance";
-			this.menuItemDatabaseMaintenance.Click += new System.EventHandler(this.menuItemDatabaseMaintenance_Click);
-			// 
 			// menuTelephone
 			// 
-			this.menuTelephone.Index = 1;
+			this.menuTelephone.Index = 0;
 			this.menuTelephone.Text = "Telephone Numbers";
 			this.menuTelephone.Click += new System.EventHandler(this.menuTelephone_Click);
 			// 
 			// menuItemPatientImport
 			// 
-			this.menuItemPatientImport.Index = 2;
+			this.menuItemPatientImport.Index = 1;
 			this.menuItemPatientImport.Text = "Import Patient From Text File";
 			this.menuItemPatientImport.Click += new System.EventHandler(this.menuItemPatientImport_Click);
 			// 
@@ -1080,51 +1082,57 @@ namespace OpenDental{
 			this.menuItemAuditTrail.Text = "Audit Trail";
 			this.menuItemAuditTrail.Click += new System.EventHandler(this.menuItemAuditTrail_Click);
 			// 
+			// menuItemDatabaseMaintenance
+			// 
+			this.menuItemDatabaseMaintenance.Index = 4;
+			this.menuItemDatabaseMaintenance.Text = "Database Maintenance";
+			this.menuItemDatabaseMaintenance.Click += new System.EventHandler(this.menuItemDatabaseMaintenance_Click);
+			// 
 			// menuItemImportXML
 			// 
-			this.menuItemImportXML.Index = 4;
+			this.menuItemImportXML.Index = 5;
 			this.menuItemImportXML.Text = "Import Patient XML";
 			this.menuItemImportXML.Click += new System.EventHandler(this.menuItemImportXML_Click);
 			// 
 			// menuItemAging
 			// 
-			this.menuItemAging.Index = 5;
+			this.menuItemAging.Index = 6;
 			this.menuItemAging.Text = "Calculate &Aging";
 			this.menuItemAging.Click += new System.EventHandler(this.menuItemAging_Click);
 			// 
 			// menuItemFinanceCharge
 			// 
-			this.menuItemFinanceCharge.Index = 6;
+			this.menuItemFinanceCharge.Index = 7;
 			this.menuItemFinanceCharge.Text = "Run &Finance Charges";
 			this.menuItemFinanceCharge.Click += new System.EventHandler(this.menuItemFinanceCharge_Click);
 			// 
 			// menuItemRepeatingCharges
 			// 
-			this.menuItemRepeatingCharges.Index = 7;
+			this.menuItemRepeatingCharges.Index = 8;
 			this.menuItemRepeatingCharges.Text = "Update Repeating Charges";
 			this.menuItemRepeatingCharges.Click += new System.EventHandler(this.menuItemRepeatingCharges_Click);
 			// 
 			// menuItemTranslation
 			// 
-			this.menuItemTranslation.Index = 8;
+			this.menuItemTranslation.Index = 9;
 			this.menuItemTranslation.Text = "Language Translation";
 			this.menuItemTranslation.Click += new System.EventHandler(this.menuItemTranslation_Click);
 			// 
 			// menuItemScreening
 			// 
-			this.menuItemScreening.Index = 9;
+			this.menuItemScreening.Index = 10;
 			this.menuItemScreening.Text = "Public Health Screening";
 			this.menuItemScreening.Click += new System.EventHandler(this.menuItemScreening_Click);
 			// 
 			// menuItemTerminal
 			// 
-			this.menuItemTerminal.Index = 10;
+			this.menuItemTerminal.Index = 11;
 			this.menuItemTerminal.Text = "Terminal";
 			this.menuItemTerminal.Click += new System.EventHandler(this.menuItemTerminal_Click);
 			// 
 			// menuItemTerminalManager
 			// 
-			this.menuItemTerminalManager.Index = 11;
+			this.menuItemTerminalManager.Index = 12;
 			this.menuItemTerminalManager.Text = "Terminal Manager";
 			this.menuItemTerminalManager.Click += new System.EventHandler(this.menuItemTerminalManager_Click);
 			// 
@@ -1161,7 +1169,7 @@ namespace OpenDental{
 			// menuItemRemote
 			// 
 			this.menuItemRemote.Index = 3;
-			this.menuItemRemote.Text = "Remote Support";
+			this.menuItemRemote.Text = "Remote Support Now";
 			this.menuItemRemote.Click += new System.EventHandler(this.menuItemRemote_Click);
 			// 
 			// menuItemUpdate
@@ -1174,17 +1182,26 @@ namespace OpenDental{
 			// 
 			this.imageList32.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList32.ImageStream")));
 			this.imageList32.TransparentColor = System.Drawing.Color.Transparent;
-			this.imageList32.Images.SetKeyName(0,"");
-			this.imageList32.Images.SetKeyName(1,"");
-			this.imageList32.Images.SetKeyName(2,"");
-			this.imageList32.Images.SetKeyName(3,"");
-			this.imageList32.Images.SetKeyName(4,"");
-			this.imageList32.Images.SetKeyName(5,"");
-			this.imageList32.Images.SetKeyName(6,"");
+			this.imageList32.Images.SetKeyName(0,"Appt32.gif");
+			this.imageList32.Images.SetKeyName(1,"Family32b.gif");
+			this.imageList32.Images.SetKeyName(2,"Account32b.gif");
+			this.imageList32.Images.SetKeyName(3,"TreatPlan3D.gif");
+			this.imageList32.Images.SetKeyName(4,"chart32.gif");
+			this.imageList32.Images.SetKeyName(5,"Images32.gif");
+			this.imageList32.Images.SetKeyName(6,"Manage32.gif");
 			// 
 			// timerSignals
 			// 
 			this.timerSignals.Tick += new System.EventHandler(this.timerSignals_Tick);
+			// 
+			// lightSignalGrid1
+			// 
+			this.lightSignalGrid1.Location = new System.Drawing.Point(0,463);
+			this.lightSignalGrid1.Name = "lightSignalGrid1";
+			this.lightSignalGrid1.Size = new System.Drawing.Size(50,206);
+			this.lightSignalGrid1.TabIndex = 20;
+			this.lightSignalGrid1.Text = "lightSignalGrid1";
+			this.lightSignalGrid1.ButtonClick += new OpenDental.UI.ODLightSignalGridClickEventHandler(this.lightSignalGrid1_ButtonClick);
 			// 
 			// myOutlookBar
 			// 
@@ -1192,7 +1209,7 @@ namespace OpenDental{
 			this.myOutlookBar.ImageList = this.imageList32;
 			this.myOutlookBar.Location = new System.Drawing.Point(0,0);
 			this.myOutlookBar.Name = "myOutlookBar";
-			this.myOutlookBar.Size = new System.Drawing.Size(51,596);
+			this.myOutlookBar.Size = new System.Drawing.Size(51,684);
 			this.myOutlookBar.TabIndex = 18;
 			this.myOutlookBar.Text = "outlookBar1";
 			this.myOutlookBar.ButtonClicked += new OpenDental.ButtonClickedEventHandler(this.myOutlookBar_ButtonClicked);
@@ -1208,7 +1225,7 @@ namespace OpenDental{
 			// 
 			// ContrManage2
 			// 
-			this.ContrManage2.Location = new System.Drawing.Point(177,0);
+			this.ContrManage2.Location = new System.Drawing.Point(67,4);
 			this.ContrManage2.Name = "ContrManage2";
 			this.ContrManage2.Size = new System.Drawing.Size(732,548);
 			this.ContrManage2.TabIndex = 19;
@@ -1252,15 +1269,10 @@ namespace OpenDental{
 			this.ContrTreat2.Size = new System.Drawing.Size(880,690);
 			this.ContrTreat2.TabIndex = 5;
 			// 
-			// menuItemCustomReports
-			// 
-			this.menuItemCustomReports.Index = 5;
-			this.menuItemCustomReports.Text = "Custom Reports";
-			// 
 			// FormOpenDental
 			// 
-			this.ClientSize = new System.Drawing.Size(1010,596);
-			this.Controls.Add(this.pictButtons);
+			this.ClientSize = new System.Drawing.Size(982,684);
+			this.Controls.Add(this.lightSignalGrid1);
 			this.Controls.Add(this.myOutlookBar);
 			this.Controls.Add(this.ContrAppt2);
 			this.Controls.Add(this.ContrManage2);
@@ -1280,7 +1292,6 @@ namespace OpenDental{
 			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormOpenDental_Closing);
 			this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FormOpenDental_KeyDown);
 			this.Load += new System.EventHandler(this.FormOpenDental_Load);
-			((System.ComponentModel.ISupportInitialize)(this.pictButtons)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -1324,7 +1335,7 @@ namespace OpenDental{
 			GraphicElements.Refresh();
 			GraphicShapes.Refresh();
 			GraphicPoints.Refresh();*/
-			buttonsShadow=imageList2x6.Images[0];  //(Image)pictButtons.Image.Clone();
+			//buttonsShadow=imageList2x6.Images[0];  //(Image)pictButtons.Image.Clone();
 			DataValid.BecameInvalid += new OpenDental.ValidEventHandler(DataValid_BecameInvalid);
 			signalLastRefreshed=MiscData.GetNowDateTime();
 			timerSignals.Interval=Prefs.GetInt("ProcessSigsIntervalInSecs")*1000;
@@ -1344,6 +1355,7 @@ namespace OpenDental{
 			//myOutlookBar.Buttons[4].Caption=Lan.g(this,"Chart");//??done in RefreshLocalData
 			myOutlookBar.Buttons[5].Caption=Lan.g(this,"Images");
 			myOutlookBar.Buttons[6].Caption=Lan.g(this,"Manage");
+
 			foreach(MenuItem menuItem in mainMenu.MenuItems){
 				TranslateMenuItem(menuItem);
 			}
@@ -1451,13 +1463,13 @@ namespace OpenDental{
 					myOutlookBar.Buttons[3].Visible=false;
 					myOutlookBar.Buttons[5].Visible=false;
 					myOutlookBar.Buttons[6].Visible=false;
-					pictButtons.Visible=false;
+					//pictButtons.Visible=false;
 				}
 				else{
 					myOutlookBar.Buttons[3].Visible=true;
 					myOutlookBar.Buttons[5].Visible=true;
 					myOutlookBar.Buttons[6].Visible=true;
-					pictButtons.Visible=true;
+					//pictButtons.Visible=true;
 				}
 				myOutlookBar.Invalidate();
 				if(Prefs.GetBool("EasyHideDentalSchools")){
@@ -1513,6 +1525,11 @@ namespace OpenDental{
 			
 			if((itypes & InvalidTypes.ClearHouses)==InvalidTypes.ClearHouses){
 				Clearinghouses.Refresh();
+				SigElementDefs.Refresh();
+				SigButDefs.Refresh();
+				//SigButDefElements.Refresh();//now part of SigButDefs.Refresh()
+				//SigButDefList=SigButDefs.GetByComputer(SystemInformation.ComputerName);
+				FillSignalButtons(null);
 			}
 			if((itypes & InvalidTypes.Computers)==InvalidTypes.Computers){
 				Computers.Refresh();
@@ -1652,7 +1669,6 @@ namespace OpenDental{
 				RefreshLocalData(e.ITypes,false);//does local computer
 			}
 			Signal sig=new Signal();
-			sig.FromUser=Security.CurUser.UserNum;
 			sig.ITypes=e.ITypes;
 			sig.DateViewing=Appointments.DateSelected;//ignored if ITypes not InvalidTypes.Date
 			sig.SigType=SignalType.Invalid;
@@ -1693,14 +1709,154 @@ namespace OpenDental{
 			}
 			myOutlookBar.Invalidate();
 		}
+
+		///<summary>If this is initial call when opening program, then set sigListButs=null.  This will cause a call to be made to database to get current status of buttons.  Otherwise, it adds the signals passed in to the current state, then paints.</summary>
+		private void FillSignalButtons(Signal[] sigListButs){
+			if(sigListButs==null){
+				SigButDefList=SigButDefs.GetByComputer(SystemInformation.ComputerName);
+				lightSignalGrid1.SetButtons(SigButDefList);
+				sigListButs=Signals.RefreshCurrentButState();
+			}
+			SigElementDef element;
+			SigButDef butDef;
+			int row;
+			Color color;
+			for(int i=0;i<sigListButs.Length;i++){
+				if(sigListButs[i].AckTime.Year>1880){//process ack
+					int rowAck=lightSignalGrid1.ProcessAck(sigListButs[i].SignalNum);
+					if(rowAck!=-1){
+						butDef=SigButDefs.GetByIndex(rowAck,SigButDefList);
+						if(butDef!=null){
+							PaintOnIcon(butDef.SynchIcon,Color.White);
+						}
+					}
+				}
+				else{//process normal message
+					row=0;
+					color=Color.White;
+					for(int e=0;e<sigListButs[i].ElementList.Length;e++){
+						element=SigElementDefs.GetElement(sigListButs[i].ElementList[e].SigElementDefNum);
+						if(element.LightRow!=0){
+							row=element.LightRow;
+						}
+						if(element.LightColor.ToArgb()!=Color.White.ToArgb()){
+							color=element.LightColor;
+						}
+					}
+					if(row!=0 && color!=Color.White) {
+						lightSignalGrid1.SetButtonActive(row-1,color,sigListButs[i]);
+						butDef=SigButDefs.GetByIndex(row-1,SigButDefList);
+						if(butDef!=null){
+							PaintOnIcon(butDef.SynchIcon,color);
+						}
+					}
+				}
+			}
+		}
+
+		///<summary>Pass in the cellNum as 1-based.</summary>
+		private void PaintOnIcon(int cellNum,Color color){
+			Graphics g;
+			if(bitmapIcon==null){
+				bitmapIcon=new Bitmap(16,16);
+				g=Graphics.FromImage(bitmapIcon);
+				g.FillRectangle(new SolidBrush(Color.White),0,0,15,15);
+				//horizontal
+				g.DrawLine(Pens.Black,0,0,15,0);
+				g.DrawLine(Pens.Black,0,5,15,5);
+				g.DrawLine(Pens.Black,0,10,15,10);
+				g.DrawLine(Pens.Black,0,15,15,15);
+				//vertical
+				g.DrawLine(Pens.Black,0,0,0,15);
+				g.DrawLine(Pens.Black,5,0,5,15);
+				g.DrawLine(Pens.Black,10,0,10,15);
+				g.DrawLine(Pens.Black,15,0,15,15);
+				g.Dispose();
+			}
+			if(cellNum==0){
+				return;
+			}
+			g=Graphics.FromImage(bitmapIcon);
+			int x=0;
+			int y=0;
+			switch(cellNum){
+				case 1: x=1; y=1; break;
+				case 2: x=6; y=1; break;
+				case 3: x=11; y=1; break;
+				case 4: x=1; y=6; break;
+				case 5: x=6; y=6; break;
+				case 6: x=11; y=6; break;
+				case 7: x=1; y=11; break;
+				case 8: x=6; y=11; break;
+				case 9: x=11; y=11; break;
+			}
+			g.FillRectangle(new SolidBrush(color),x,y,4,4);
+			Icon=Icon.FromHandle(bitmapIcon.GetHicon());
+			g.Dispose();
+		}
+
+		private void lightSignalGrid1_ButtonClick(object sender,OpenDental.UI.ODLightSignalGridClickEventArgs e) {
+			if(e.ActiveSignal!=null){//user trying to ack an existing light signal
+				Signals.AckButton(e.ButtonIndex+1,signalLastRefreshed);
+				//then, manually ack the light on this computer.  The second ack in a few seconds will be ignored.
+				lightSignalGrid1.SetButtonActive(e.ButtonIndex,Color.White,null);
+				SigButDef butDef=SigButDefs.GetByIndex(e.ButtonIndex,SigButDefList);
+				if(butDef!=null) {
+					PaintOnIcon(butDef.SynchIcon,Color.White);
+				}
+				return;
+			}
+			if(e.ButtonDef==null || e.ButtonDef.ElementList.Length==0){//there is no signal to send
+				return;
+			}
+			//user trying to send a signal
+			Signal sig=new Signal();
+			sig.SigType=SignalType.Button;
+			//sig.ToUser=sigElementDefUser[listTo.SelectedIndex].SigText;
+			//sig.FromUser=sigElementDefUser[listFrom.SelectedIndex].SigText;
+			//need to do this all as a transaction?
+			sig.Insert();
+			int row=0;
+			Color color=Color.White;
+			SigElementDef def;
+			SigElement element;
+			SigButDefElement[] butElements=SigButDefElements.GetForButton(e.ButtonDef.SigButDefNum);
+			for(int i=0;i<butElements.Length;i++){
+				element=new SigElement();
+				element.SigElementDefNum=butElements[i].SigElementDefNum;
+				element.SignalNum=sig.SignalNum;
+				element.Insert();
+				if(SigElementDefs.GetElement(element.SigElementDefNum).SigElementType==SignalElementType.User){
+					sig.ToUser=SigElementDefs.GetElement(element.SigElementDefNum).SigText;
+					sig.Update();
+				}
+				def=SigElementDefs.GetElement(element.SigElementDefNum);
+				if(def.LightRow!=0) {
+					row=def.LightRow;
+				}
+				if(def.LightColor.ToArgb()!=Color.White.ToArgb()) {
+					color=def.LightColor;
+				}
+			}
+			sig.ElementList=new SigElement[0];//we don't really care about these
+			if(row!=0 && color!=Color.White) {
+				lightSignalGrid1.SetButtonActive(row-1,color,sig);//this just makes it seem more responsive.
+				//we can skip painting on the icon
+			}
+		}
 	
 		///<summary>Called every time timerSignals_Tick fires.  Usually about every 5-10 seconds.</summary>
 		public void ProcessSignals(){
-			Signal[] sigList=Signals.Refresh(signalLastRefreshed);
+			Signal[] sigList=Signals.RefreshTimed(signalLastRefreshed);//this also attaches all elements to their sigs
 			if(sigList.Length==0){
 				return;
 			}
-			signalLastRefreshed=sigList[sigList.Length-1].SigDateTime;
+			if(sigList[sigList.Length-1].AckTime.Year>1880){
+				signalLastRefreshed=sigList[sigList.Length-1].AckTime;
+			}
+			else{
+				signalLastRefreshed=sigList[sigList.Length-1].SigDateTime;
+			}
 			if(ContrAppt2.Visible && Signals.ApptNeedsRefresh(sigList,Appointments.DateSelected.Date)){
 				ContrAppt2.RefreshModuleScreen();
 			}
@@ -1709,62 +1865,40 @@ namespace OpenDental{
 				RefreshLocalData(invalidTypes,false);
 			}
 			Signal[] sigListButs=Signals.GetButtonSigs(sigList);
-			for(int i=0;i<sigListButs.Length;i++){
-				Graphics grfx=Graphics.FromImage(buttonsShadow);
-				int row=sigListButs[i].GridRow;
-				int col=sigListButs[i].GridCol;
-				if(col==0 && sigListButs[i].PushedState==true){//button in first col pushed
-					buttonDown[0,row]=true;
-					grfx.FillRectangle(new SolidBrush(Color.Red),col*18+1,row*18+1,17,17);
-					pictButtons.Image=buttonsShadow;
-					pictButtons.Refresh();
-					PlaySoundFunct(col,row,false);
-				}
-				else if(col==1 && sigListButs[i].PushedState==true){//button in second col pushed
-					grfx.FillRectangle(new SolidBrush(Color.Red),col*18+1,row*18+1,17,17);
-					pictButtons.Image=buttonsShadow;
-					pictButtons.Refresh();
-					PlaySoundFunct(col,row,false);
-					grfx.FillRectangle(new SolidBrush(Color.White),col*18+1,row*18+1,17,17);
-					pictButtons.Image=buttonsShadow;
-					pictButtons.Refresh();
-				}
-				else{//button was already down
-					buttonDown[col,row]=false;
-					grfx.FillRectangle(new SolidBrush(Color.White),col*18+1,row*18+1,17,17);
-					pictButtons.Image=buttonsShadow;
-					pictButtons.Refresh();
-				}
-				grfx.Dispose();
-			}
-			Signal sigText=Signals.GetTextSig(sigList);
-			if(sigText!=null){
-				PlaySoundFunct(0,0,true);
-				FormMessageText FormMT=new FormMessageText();
-				FormMT.Text2.Text=sigText.SigText;
-				FormMT.ShowDialog();
-				ContrManage2.LogMsg(sigText.SigText);
-			}
+			ContrManage2.LogMsgs(sigListButs);
+			FillSignalButtons(sigListButs);
+	//Need to add a test to this: do not play messages that are over 2 minutes old.
+			Thread newThread=new Thread(new ParameterizedThreadStart(PlaySounds));
+			newThread.Start(sigListButs);
 		}
 
-		[DllImport("winmm.dll")]
-    private static extern int PlaySound(string name, IntPtr hmod, int flags);
-
-		private void PlaySoundFunct(int col, int row, bool isChime){
-			if(isChime){
-				PlaySound(Prefs.GetString("DocPath")+@"Sounds\Chime.wav", IntPtr.Zero, (int)0x00020000 );//last is flag for file-based wav
-			}
-			else{
-				string fileName;
-				if(col==0) fileName="DrTo";
-				else fileName="AsstTo";
-				fileName+=(row+1).ToString()+".wav";
-				PlaySound(Prefs.GetString("DocPath")+@"Sounds\"+fileName, IntPtr.Zero, (int)0x00020000 );
+		private void PlaySounds(Object objSignalList){
+			Signal[] signalList=(Signal[])objSignalList;
+			string strSound;
+			byte[] rawData;
+			MemoryStream stream;
+			SoundPlayer simpleSound;
+			//loop through each signal
+			for(int s=0;s<signalList.Length;s++){
+				if(signalList[s].AckTime.Year>1880){
+					continue;//don't play any sounds for acks.
+				}
+				if(s>0){
+					Thread.Sleep(1000);//pause 1 second between signals.
+				}
+				//play all the sounds.
+				for(int e=0;e<signalList[s].ElementList.Length;e++){
+					strSound=SigElementDefs.GetElement(signalList[s].ElementList[e].SigElementDefNum).Sound;
+					if(strSound==""){
+						continue;
+					}
+					rawData=Convert.FromBase64String(strSound);
+					stream=new MemoryStream(rawData);
+					simpleSound = new SoundPlayer(stream);
+					simpleSound.PlaySync();//sound will finish playing before thread continues
+				}
 			}
 		}
-
-		//<summary></summary>
-		//protected delegate void ProcessMessageDelegate(string text);
 
 		private void myOutlookBar_ButtonClicked(object sender, OpenDental.ButtonClicked_EventArgs e){
 			switch(myOutlookBar.SelectedIndex){
@@ -1903,7 +2037,7 @@ namespace OpenDental{
 				ContrDocs2.ModuleSelected(CurPatNum);
 		}
 
-		private void pictButtons_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
+		/*private void pictButtons_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
 			int row=e.Y/18;
 			int col=e.X/18;
 			if(row>5) row=5;
@@ -1947,7 +2081,7 @@ namespace OpenDental{
 			sig.GridRow=row;
 			sig.PushedState=pushed;
 			sig.Insert();
-		}
+		}*/
 
 		/// <summary>sends function key presses to the appointment module</summary>
 		private void FormOpenDental_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e) {
@@ -1956,6 +2090,7 @@ namespace OpenDental{
 		}
 
 		private void FormOpenDental_Closing(object sender, System.ComponentModel.CancelEventArgs e){
+			//NotifyIcon1.Visible=false;
 			//Thread2.Abort();
 			//if(this.TcpListener2!=null){
 			//	this.TcpListener2.Stop();  
@@ -2165,6 +2300,24 @@ namespace OpenDental{
 			FormInsCatsSetup FormE=new FormInsCatsSetup();
 			FormE.ShowDialog();
 			SecurityLogs.MakeLogEntry(Permissions.Setup,0,"Insurance Categories");
+		}
+
+		private void menuItemMessaging_Click(object sender,EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)) {
+				return;
+			}
+			FormMessagingSetup FormM=new FormMessagingSetup();
+			FormM.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,0,"Messaging");
+		}
+
+		private void menuItemMessagingButs_Click(object sender,EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)) {
+				return;
+			}
+			FormMessagingButSetup FormM=new FormMessagingButSetup();
+			FormM.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,0,"Messaging");
 		}
 
 		private void menuItemMisc_Click(object sender, System.EventArgs e) {
@@ -2870,13 +3023,17 @@ namespace OpenDental{
 		}*/
 
 		private void menuItemUpdate_Click(object sender, System.EventArgs e) {
-			if(!Security.IsAuthorized(Permissions.Setup)){
-				return;
-			}
+			
 			FormUpdate FormU = new FormUpdate();
 			FormU.ShowDialog();
 			SecurityLogs.MakeLogEntry(Permissions.Setup,0,"Update Version");
 		}
+
+		
+
+		
+
+		
 
 		
 

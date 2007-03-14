@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Corresponds to the schedule table in the database.</summary>
+	///<summary>One block of time that overrides the default sched.  Either for practice, provider, or blockout.</summary>
 	public class Schedule{
 		///<summary>Primary key.</summary>
 		public int ScheduleNum;
@@ -15,17 +15,17 @@ namespace OpenDental{
 		public DateTime StartTime;
 		///<summary>Stop time for this timeblock.</summary>
 		public DateTime StopTime;
-		///<summary>See the ScheduleType enumeration. Practice,Provider,Blockout.</summary>
+		///<summary>Enum:ScheduleType Practice,Provider,Blockout.</summary>
 		public ScheduleType SchedType;
-		///<summary>If a provider schedule, Foreign key to provider.ProvNum.</summary>
+		///<summary>FK to provider.ProvNum if a provider type.</summary>
 		public int ProvNum;
-		///<summary>foreign key to definition.DefNum.  eg. HighProduction, RCT Only, Emerg.</summary>
+		///<summary>FK to definition.DefNum if blockout.  eg. HighProduction, RCT Only, Emerg.</summary>
 		public int BlockoutType;
 		///<summary>This contains various types of text entered by the user.</summary>
 		public string Note;
-		///<summary>See the SchedStatus enumeration. Open,Closed,Holiday.  All blockouts have a status of Open, but user doesn't see the status.  There is one hidden blockout with a status of closed for when user deletes the last default blockout on a day.</summary>
+		///<summary>Enum:SchedStatus enumeration Open, Closed, Holiday.  All blocks have a status of Open, but user doesn't see the status.  There is one hidden blockout with a status of closed for when user deletes the last default block on a day.</summary>
 		public SchedStatus Status;
-		///<summary>Foreign key to definition.DefNum.  Only used right now for Blockouts.  Will later add practice type.  If 0, then it applies to all ops.</summary>
+		///<summary>FK to definition.DefNum.  Only used right now for Blockouts.  Will later add practice type.  If 0, then it applies to all ops.</summary>
 		public int Op;
 
 		///<summary></summary>
@@ -46,12 +46,22 @@ namespace OpenDental{
  			dcon.NonQ(command);
 		}
 
-		///<summary></summary>
-		private void Insert(){
-			string command= "INSERT INTO schedule (scheddate,starttime,stoptime,"
-				+"SchedType,ProvNum,BlockoutType,Note,Status,Op"
-				+") VALUES("
-				+"'"+POut.PDate  (SchedDate)+"', "
+		///<summary>This should not be used from outside this class because it doesn't validate.  Use InsertOrUpdate instead.</summary>
+		public void Insert(){
+			if(Prefs.RandomKeys){
+				ScheduleNum=MiscData.GetKey("schedule","ScheduleNum");
+			}
+			string command= "INSERT INTO schedule (";
+			if(Prefs.RandomKeys){
+				command+="ScheduleNum,";
+			}
+			command+="scheddate,starttime,stoptime,"
+				+"SchedType,ProvNum,BlockoutType,Note,Status,Op) VALUES(";
+			if(Prefs.RandomKeys){
+				command+="'"+POut.PInt(ScheduleNum)+"', ";
+			}
+			command+=
+				 "'"+POut.PDate  (SchedDate)+"', "
 				+"'"+POut.PDateT (StartTime)+"', "
 				+"'"+POut.PDateT (StopTime)+"', "
 				+"'"+POut.PInt   ((int)SchedType)+"', "
@@ -61,8 +71,13 @@ namespace OpenDental{
 				+"'"+POut.PInt   ((int)Status)+"', "
 				+"'"+POut.PInt   (Op)+"')";
 			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command,true);
-			ScheduleNum=dcon.InsertID;
+			if(Prefs.RandomKeys) {
+				dcon.NonQ(command);
+			}
+			else {
+				dcon.NonQ(command,true);
+				ScheduleNum=dcon.InsertID;
+			}
 		}
 
 		///<summary></summary>
@@ -121,25 +136,17 @@ namespace OpenDental{
 			return false;
 		}
 
-		///<summary></summary>
+		///<summary>Also automatically handles situation where the last blockout for the day gets deleted.  In that case, it adds a "closed" blockout to signify an override of default blockouts.</summary>
 		public void Delete(){
 			string command= "DELETE from schedule WHERE schedulenum = '"+POut.PInt(ScheduleNum)+"'";
 			DataConnection dcon=new DataConnection();
  			dcon.NonQ(command);
 			//if this was the last blockout for a day, then create a blockout for 'closed'
 			if(SchedType==ScheduleType.Blockout){
-				command="SELECT COUNT(*) FROM schedule WHERE SchedType='"+POut.PInt((int)ScheduleType.Blockout)+"' "
-					+"AND SchedDate='"+POut.PDate(SchedDate)+"'";
-				DataTable table=dcon.GetTable(command);
-				if(table.Rows[0][0].ToString()=="0"){
-					Schedule sched=new Schedule();
-					sched.SchedDate=SchedDate;
-					sched.SchedType=ScheduleType.Blockout;
-					sched.Status=SchedStatus.Closed;
-					sched.Insert();
-				}
+				Schedules.CheckIfDeletedLastBlockout(SchedDate);
 			}
 		}
+
 
 	}
 
@@ -243,6 +250,27 @@ namespace OpenDental{
 				+"AND ProvNum='"  +POut.PInt(provNum)+"'";
 			DataConnection dcon=new DataConnection();
  			dcon.NonQ(command);
+		}
+
+		///<summary>Clears all blockouts for day.  But then defaults would show.  So adds a "closed" blockout.</summary>
+		public static void ClearBlockoutsForDay(DateTime date){
+			SetAllDefault(date,ScheduleType.Blockout,0);
+			CheckIfDeletedLastBlockout(date);
+		}
+
+		///<summary></summary>
+		public static void CheckIfDeletedLastBlockout(DateTime schedDate){
+			string command="SELECT COUNT(*) FROM schedule WHERE SchedType='"+POut.PInt((int)ScheduleType.Blockout)+"' "
+					+"AND SchedDate='"+POut.PDate(schedDate)+"'";
+			DataConnection dcon=new DataConnection();
+			DataTable table=dcon.GetTable(command);
+			if(table.Rows[0][0].ToString()=="0") {
+				Schedule sched=new Schedule();
+				sched.SchedDate=schedDate;
+				sched.SchedType=ScheduleType.Blockout;
+				sched.Status=SchedStatus.Closed;
+				sched.Insert();
+			}
 		}
 
 		

@@ -5,13 +5,13 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	/// <summary>Corresponds to the repeatcharge table in the database.  Each row represents one signed agreement to make payments. </summary>
+	/// <summary>Each row represents one charge that will be added monthly.</summary>
 	public class RepeatCharge{
 		/// <summary>Primary key</summary>
 		public int RepeatChargeNum;
-		/// <summary>Foreign key to  patient.PatNum.</summary>
+		/// <summary>FK to patient.PatNum.</summary>
 		public int PatNum;
-		///<summary>Foreign key to procedurecode.ADACode.  The code that will be added to the account as a completed procedure.</summary>
+		///<summary>FK to procedurecode.ADACode.  The code that will be added to the account as a completed procedure.</summary>
 		public string ADACode;
 		///<summary>The amount that will be charged.  The amount from the procedurecode will not be used.  This way, a repeating charge cannot be accidentally altered.</summary>
 		public double ChargeAmt;

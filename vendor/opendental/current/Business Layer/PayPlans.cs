@@ -5,13 +5,13 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	/// <summary>Corresponds to the payplan table in the database.  Each row represents one signed agreement to make payments. </summary>
+	/// <summary>Each row represents one signed agreement to make payments. </summary>
 	public class PayPlan{
 		/// <summary>Primary key</summary>
 		public int PayPlanNum;
-		/// <summary>Foreign key to  patient.PatNum.  The patient who had the treatment done.</summary>
+		/// <summary>FK to patient.PatNum.  The patient who had the treatment done.</summary>
 		public int PatNum;
-		/// <summary>Foreign key to  patient.PatNum.  The person responsible for the payments.  Does not need to be in the same family as the patient.  Will be 0 if planNum has a value.</summary>
+		/// <summary>FK to patient.PatNum.  The person responsible for the payments.  Does not need to be in the same family as the patient.  Will be 0 if planNum has a value.</summary>
 		public int Guarantor;
 		/// <summary>Date that the payment plan will display in the account.</summary>
 		public DateTime PayPlanDate;

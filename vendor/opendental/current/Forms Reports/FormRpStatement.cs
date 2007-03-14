@@ -287,11 +287,11 @@ namespace OpenDental{
 				}
 				notes[i]+=generalNote;
 			}
-			PrintStatements(patNums,DateTime.Today.AddDays(-45),DateTime.Today,true,false,false,false,notes);
+			PrintStatements(patNums,DateTime.Today.AddDays(-45),DateTime.Today,true,false,false,false,notes,true);
 		}
 
-		///<summary>This is called from ContrAccount about 3 times and also from FormRpStatement as part of the billing process.  This is what you call to print statements, either one or many.  For the patNum parameter, the first dim is for the family. Second dim is family members. The note array must have one element for every statement, so same number as dim one of patNums</summary>
-		public void PrintStatements(int[][] patNums,DateTime fromDate,DateTime toDate,bool includeClaims, bool subtotalsOnly,bool hidePayment,bool nextAppt,string[] notes){
+		///<summary>This is called from ContrAccount about 3 times and also from FormRpStatement as part of the billing process.  This is what you call to print statements, either one or many.  For the patNum parameter, the first dim is for the family. Second dim is family members. The note array must have one element for every statement, so same number as dim one of patNums.  IsBill distinguishes bills sent by mail from statements handed to the patient.</summary>
+		public void PrintStatements(int[][] patNums,DateTime fromDate,DateTime toDate,bool includeClaims, bool subtotalsOnly,bool hidePayment,bool nextAppt,string[] notes,bool isBill){
 			//these 4 variables are needed by the printing logic. The rest are not.
 			PatNums=(int[][])patNums.Clone();
 			Notes=(string[])notes.Clone();
@@ -303,6 +303,9 @@ namespace OpenDental{
 			}
 			pd.PrintPage+=new PrintPageEventHandler(this.pd2_PrintPage);
 			pd.DefaultPageSettings.Margins=new Margins(10,40,40,60);//?
+			if(pd.DefaultPageSettings.PaperSize.Height==0) {
+				pd.DefaultPageSettings.PaperSize=new PaperSize("default",850,1100);
+			}
 			ContrAccount contrAccount=new ContrAccount();
 			StatementA=new string[patNums.GetLength(0)][,];
 			Commlog commlog;
@@ -311,6 +314,13 @@ namespace OpenDental{
 				commlog=new Commlog();
 				commlog.CommDateTime=DateTime.Now;
 				commlog.CommType=CommItemType.StatementSent;
+				commlog.SentOrReceived=CommSentOrReceived.Sent;
+				if(isBill){
+					commlog.Mode=CommItemMode.Mail;
+				}
+				else{
+					commlog.Mode=CommItemMode.InPerson;
+				}
 				commlog.PatNum=patNums[i][0];//uaually the guarantor
 				//there is no dialog here because it is just a simple entry
 				commlog.Insert();

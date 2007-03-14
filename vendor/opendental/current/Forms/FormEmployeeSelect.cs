@@ -144,6 +144,9 @@ namespace OpenDental{
 		}
 
 		private void listEmployees_DoubleClick(object sender, System.EventArgs e) {
+			if(listEmployees.SelectedIndex==-1) {
+				return;
+			}
 			Employees.Cur=(Employee)ALemployees[listEmployees.SelectedIndex];
 			FormEmployeeEdit FormEE=new FormEmployeeEdit();
 			FormEE.ShowDialog();

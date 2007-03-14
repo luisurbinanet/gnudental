@@ -105,6 +105,7 @@ namespace OpenDental{
 				retVal[i].TrophyFolder = PIn.PString(table.Rows[i][54].ToString());
 				retVal[i].PlannedIsDone= PIn.PBool  (table.Rows[i][55].ToString());
 				retVal[i].Premed       = PIn.PBool  (table.Rows[i][56].ToString());
+				retVal[i].Ward         = PIn.PString(table.Rows[i][57].ToString());
 			}
 			return retVal;
 		}
@@ -282,6 +283,7 @@ namespace OpenDental{
 				multPats[i].TrophyFolder = PIn.PString(table.Rows[i][54].ToString());
 				multPats[i].PlannedIsDone= PIn.PBool  (table.Rows[i][55].ToString());
 				multPats[i].Premed       = PIn.PBool  (table.Rows[i][56].ToString());
+				multPats[i].Ward         = PIn.PString(table.Rows[i][57].ToString());
 			}
 			return multPats;
 		}
@@ -326,40 +328,31 @@ namespace OpenDental{
 		///<summary></summary>
 		public static void ChangeGuarantorToCur(Family Fam,Patient Pat){
 			//Move famfinurgnote to current patient:
-			string command= 
-				"UPDATE patient SET "
-				//+"famaddrnote = '"  +FamilyList[GuarIndex].FamAddrNote+"', "
-				+"famfinurgnote = '"+Fam.List[0].FamFinUrgNote+"' "
-				+"WHERE patnum = '"+Pat.PatNum.ToString()+"'";
+			string command="UPDATE patient SET "
+				+"FamFinUrgNote = '"+POut.PString(Fam.List[0].FamFinUrgNote)+"' "
+				+"WHERE PatNum = "+POut.PInt(Pat.PatNum);
 			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command);
-			command= 
-				"UPDATE patient SET "
-				//+"famaddrnote = '', "
-				+"famfinurgnote = '' "
-				+"WHERE patnum = '"+Pat.Guarantor.ToString()+"'";
+			dcon.NonQ(command);
+			command="UPDATE patient SET FamFinUrgNote = '' "
+				+"WHERE PatNum = '"+Pat.Guarantor.ToString()+"'";
 			dcon.NonQ(command);
 			//Move family financial note to current patient:
 			command="SELECT FamFinancial FROM patientnote "
-				+"WHERE patnum = '"+Pat.Guarantor.ToString()+"'";
+				+"WHERE PatNum = "+POut.PInt(Pat.Guarantor);
 			DataTable table=dcon.GetTable(command);
-			if(table.Rows.Count==1){
-				command= 
-					"UPDATE patientnote SET "
-					+"famfinancial = '"+table.Rows[0][0].ToString()+"' "
-					+"WHERE patnum = '"+Pat.PatNum.ToString()+"'";
+			if(table.Rows.Count==1) {
+				command="UPDATE patientnote SET "
+					+"FamFinancial = '"+POut.PString(table.Rows[0][0].ToString())+"' "
+					+"WHERE PatNum = "+POut.PInt(Pat.PatNum);
 				dcon.NonQ(command);
 			}
-			command= 
-				"UPDATE patientnote SET "
-				+"famfinancial = ''"
-				+"WHERE patnum = '"+Pat.Guarantor.ToString()+"'";
+			command="UPDATE patientnote SET FamFinancial = '' "
+				+"WHERE PatNum = "+POut.PInt(Pat.Guarantor);
 			dcon.NonQ(command);
 			//change guarantor of all family members:
-			command= 
-				"UPDATE patient SET "
-				+"guarantor = '"+Pat.PatNum.ToString()+"' "
-				+"WHERE guarantor = '"+Pat.Guarantor.ToString()+"'";
+			command="UPDATE patient SET "
+				+"Guarantor = "+POut.PInt(Pat.PatNum)
+				+" WHERE Guarantor = "+POut.PInt(Pat.Guarantor);
 			dcon.NonQ(command);
 		}
 		

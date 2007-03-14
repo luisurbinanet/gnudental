@@ -1056,12 +1056,13 @@ namespace OpenDental{
 			Procedure[] procsForSingle;
 			if(pinAppt.AptNum==PatCur.NextAptNum) {//if is Next apt
 				procsForSingle=Procedures.GetProcsForSingle(pinAppt.AptNum,true);
+				CurInfo.Production=Procedures.GetProductionOneApt(pinAppt.AptNum,procsForSingle,true);
 			}
 			else {//normal apt
 				procsForSingle=Procedures.GetProcsForSingle(pinAppt.AptNum,false);
+				CurInfo.Production=Procedures.GetProductionOneApt(pinAppt.AptNum,procsForSingle,false);
 			}
 			CurInfo.Procs=procsForSingle;
-			CurInfo.Production=Procedures.GetProductionOneApt(pinAppt.AptNum,procsForSingle);
 			CurInfo.MyPatient=PatCur.Copy();
 			CurToPinBoard();
 			RefreshModuleScreen();
@@ -1267,14 +1268,11 @@ namespace OpenDental{
 			menuApt.MenuItems.Add(Lan.g(this,"Routing Slip"),new EventHandler(menuApt_Click));
 			menuBlockout.MenuItems.Clear();
 			//menuBlockout.MenuItems.Add(Lan.g(this,"BLOCKOUTS"));
-			menuBlockout.MenuItems.Add(Lan.g(this,"Edit Blockout")
-				,new EventHandler(menuBlockout_Click));
-			menuBlockout.MenuItems.Add(Lan.g(this,"Add Blockout")
-				,new EventHandler(menuBlockout_Click));
-			menuBlockout.MenuItems.Add(Lan.g(this,"Set Blockouts for Day to Default")
-				,new EventHandler(menuBlockout_Click));
-			menuBlockout.MenuItems.Add(Lan.g(this,"Edit Blockout Types")
-				,new EventHandler(menuBlockout_Click));
+			menuBlockout.MenuItems.Add(Lan.g(this,"Edit Blockout"),new EventHandler(menuBlockout_Click));
+			menuBlockout.MenuItems.Add(Lan.g(this,"Add Blockout"),new EventHandler(menuBlockout_Click));
+			menuBlockout.MenuItems.Add(Lan.g(this,"Set Blockouts for Day to Default"),new EventHandler(menuBlockout_Click));
+			menuBlockout.MenuItems.Add(Lan.g(this,"Clear All Blockouts for Day"),new EventHandler(menuBlockout_Click));
+			menuBlockout.MenuItems.Add(Lan.g(this,"Edit Blockout Types"),new EventHandler(menuBlockout_Click));
 			Lan.C(this,new Control[]
 				{
 				butToday,
@@ -1528,7 +1526,7 @@ namespace OpenDental{
 				}
 				procsOneApt=Procedures.GetProcsOneApt(ListDay[i].AptNum,procsMultApts);
 				ContrApptSingle3[i].Info.Procs=procsOneApt;
-				ContrApptSingle3[i].Info.Production=Procedures.GetProductionOneApt(ListDay[i].AptNum,procsMultApts);
+				ContrApptSingle3[i].Info.Production=Procedures.GetProductionOneApt(ListDay[i].AptNum,procsMultApts,false);
 				ContrApptSingle3[i].Info.MyPatient=Patients.GetOnePat(multPats,ListDay[i].PatNum);
 				//copy time pattern to provBar[]:
 				if(ApptViewItems.GetIndexProv(ListDay[i].ProvNum)!=-1
@@ -1594,7 +1592,7 @@ namespace OpenDental{
 			if(showProduction){
 				double production=0;
 				for(int i=0;i<ListDay.Length;i++){
-					production+=Procedures.GetProductionOneApt(ListDay[i].AptNum,procsMultApts);
+					production+=Procedures.GetProductionOneApt(ListDay[i].AptNum,procsMultApts,false);
 				}
 				textProduction.Text=production.ToString("c0");
 			}
@@ -1837,7 +1835,7 @@ namespace OpenDental{
 				}
 				Procedure[] procs=Procedures.GetProcsForSingle(aptCur.AptNum,true);
 				CurInfo.Procs=procs;
-				CurInfo.Production=Procedures.GetProductionOneApt(aptCur.AptNum,procs);
+				CurInfo.Production=Procedures.GetProductionOneApt(aptCur.AptNum,procs,true);
 				//CurInfo.MyApt...
 				//CurInfo.MyPatient...
 				//might be missing some CurInfo.
@@ -2765,6 +2763,9 @@ namespace OpenDental{
 					OnBlockDefault_Click();
 					break;
 				case 3:
+					OnClearBlockouts_Click();
+					break;
+				case 4:
 					OnBlockTypes_Click();
 					break;
 			}
@@ -2858,6 +2859,8 @@ namespace OpenDental{
 			Appointment aptOld=AptCur.Copy();
 			AptCur.AptStatus=ApptStatus.Complete;
 			//Procedures.SetDateFirstVisit(Appointments.Cur.AptDateTime.Date);//done when making appt instead
+			PlanList=InsPlans.Refresh(FamCur);
+			PatPlanList=PatPlans.Refresh(PatCur.PatNum);
 			Procedures.SetCompleteInAppt(AptCur,PlanList,PatPlanList);//loops through each proc
 			try{
 				AptCur.InsertOrUpdate(aptOld,false);
@@ -2954,6 +2957,14 @@ namespace OpenDental{
 			MsgBox.Show(this,"All blockouts for this date have been set to default values.");
 		}
 
+		private void OnClearBlockouts_Click(){
+			if(!Security.IsAuthorized(Permissions.Blockouts)){
+				return;
+			}
+			Schedules.ClearBlockoutsForDay(Appointments.DateSelected);
+			RefreshModuleScreen();
+		}
+
 		private void OnBlockTypes_Click(){
 			if(!Security.IsAuthorized(Permissions.Setup)){
 				return;
@@ -2973,7 +2984,7 @@ namespace OpenDental{
 			Procedure[] procsForSingle;
 			procsForSingle=Procedures.GetProcsForSingle(AptCur.AptNum,false);
 			CurInfo.Procs=procsForSingle;
-			CurInfo.Production=Procedures.GetProductionOneApt(AptCur.AptNum,procsForSingle);
+			CurInfo.Production=Procedures.GetProductionOneApt(AptCur.AptNum,procsForSingle,false);
 			CurInfo.MyPatient=PatCur.Copy();
 			CurToPinBoard();//sets selectedAptNum=-1. do before refresh prev
 			if(prevSel!=-1) {

@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the provider table in the database.</summary>
+	///<summary>A provider is usually a dentist or a hygienist.  But a provider might also be a denturist, a dental student, or a dental hygiene student.  A provider might also be a 'dummy', used only for billing purposes or for notes in the Appointments module.  There is no limit to the number of providers that can be added.</summary>
 	public class Provider{
 		///<summary>Primary key.</summary>
 		public int ProvNum;
@@ -22,15 +22,15 @@ namespace OpenDental{
 		public string MI;
 		///<summary>eg. DMD or DDS. Was 'title' in previous versions.</summary>
 		public string Suffix;
-		///<summary>Foreign key to Definition.DefNum.</summary>
+		///<summary>FK to Definition.DefNum.</summary>
 		public int FeeSched;
-		///<summary>See the DentalSpecialty enumeration.</summary>
+		///<summary>Enum:DentalSpecialty</summary>
 		public DentalSpecialty Specialty;
 		///<summary>or TIN.  No punctuation</summary>
 		public string SSN;
 		///<summary>can include punctuation</summary>
 		public string StateLicense;
-		///<summary></summary>
+		///<summary>.</summary>
 		public string DEANum;
 		///<summary>True if hygienist.</summary>
 		public bool IsSecondary;//
@@ -42,15 +42,15 @@ namespace OpenDental{
 		public bool UsingTIN;
 		///<summary>No longer used since each state assigns a different ID.  Use the providerident instead which allows you to assign a different BCBS ID for each Payor ID.</summary>
 		public string BlueCrossIDOld;
-		///<summary>Signature on file</summary>
+		///<summary>Signature on file.</summary>
 		public bool SigOnFile;
-		///<summary></summary>
+		///<summary>.</summary>
 		public string MedicaidID;
 		///<summary>Color that shows in appointments as outline when highlighted.</summary>
 		public Color OutlineColor;
-		///<summary>Used in dental schools.  Foreign key to schoolclass.SchoolClassNum.  Each student is a provider.  This keeps track of which class they are in.</summary>
+		///<summary>FK to schoolclass.SchoolClassNum Used in dental schools.  Each student is a provider.  This keeps track of which class they are in.</summary>
 		public int SchoolClassNum;
-		///<summary>Used for Canadian claims right now, and will be required in US within a year or two.  Goes out on eclaims if avaialable.</summary>
+		///<summary>Used for Canadian claims right now, and will be required in US within a year or two.  Goes out on e-claims if avaialable.</summary>
 		public string NationalProvID;
 
 		///<summary>Returns a copy of this Provider.</summary>

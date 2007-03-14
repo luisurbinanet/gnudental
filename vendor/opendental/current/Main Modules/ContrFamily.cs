@@ -15,10 +15,10 @@ using System.Text;
 using System.Windows.Forms;
 using OpenDental.UI;
 
-namespace OpenDental{
+namespace OpenDental {
 
 	///<summary></summary>
-	public class ContrFamily : System.Windows.Forms.UserControl{
+	public class ContrFamily:System.Windows.Forms.UserControl {
 		private System.Windows.Forms.ImageList imageListToolBar;
 		private System.ComponentModel.IContainer components;
 		private OpenDental.TableFamily tbFamily;
@@ -42,24 +42,24 @@ namespace OpenDental{
 		private PatField[] PatFieldList;
 
 		///<summary></summary>
-		public ContrFamily(){
+		public ContrFamily() {
 			InitializeComponent();// This call is required by the Windows.Forms Form Designer.
 			tbFamily.CellClicked += new OpenDental.ContrTable.CellEventHandler(tbFamily_CellClicked);
 		}
 
 		///<summary></summary>
-		protected override void Dispose( bool disposing ){
-			if( disposing ){
-				if(components != null){
+		protected override void Dispose(bool disposing) {
+			if(disposing) {
+				if(components != null) {
 					components.Dispose();
 				}
 			}
-			base.Dispose( disposing );
+			base.Dispose(disposing);
 		}
 
 		#region Component Designer generated code
 
-		private void InitializeComponent(){
+		private void InitializeComponent() {
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ContrFamily));
 			this.imageListToolBar = new System.Windows.Forms.ImageList(this.components);
@@ -169,22 +169,22 @@ namespace OpenDental{
 		#endregion
 
 		///<summary></summary>
-		public void ModuleSelected(int patNum){
+		public void ModuleSelected(int patNum) {
 			RefreshModuleData(patNum);
 			RefreshModuleScreen();
 		}
 
 		///<summary></summary>
-		public void ModuleUnselected(){
+		public void ModuleUnselected() {
 			FamCur=null;
 			PlanList=null;
 		}
 
-		private void RefreshModuleData(int patNum){
-			if(patNum==0){
+		private void RefreshModuleData(int patNum) {
+			if(patNum==0) {
 				PatCur=null;
 				FamCur=null;
-				PatPlanList=new PatPlan[0]; 
+				PatPlanList=new PatPlan[0];
 				return;
 			}
 			FamCur=Patients.GetFamily(patNum);
@@ -198,35 +198,35 @@ namespace OpenDental{
 			PatFieldList=PatFields.Refresh(patNum);
 		}
 
-		private void RefreshModuleScreen(){
+		private void RefreshModuleScreen() {
 			ParentForm.Text=Patients.GetMainTitle(PatCur);
-			if(PatCur!=null){
+			if(PatCur!=null) {
 				ToolBarMain.Buttons["Recall"].Enabled=true;
 				ToolBarMain.Buttons["Add"].Enabled=true;
 				ToolBarMain.Buttons["Delete"].Enabled=true;
 				ToolBarMain.Buttons["Guarantor"].Enabled=true;
 				ToolBarMain.Buttons["Move"].Enabled=true;
-				if(!Prefs.GetBool("EasyHideInsurance")){
+				if(!Prefs.GetBool("EasyHideInsurance")) {
 					ToolBarMain.Buttons["Ins"].Enabled=true;
 				}
 				ToolBarMain.Invalidate();
 			}
-			else{
+			else {
 				ToolBarMain.Buttons["Recall"].Enabled=false;
 				ToolBarMain.Buttons["Add"].Enabled=false;
 				ToolBarMain.Buttons["Delete"].Enabled=false;
 				ToolBarMain.Buttons["Guarantor"].Enabled=false;
 				ToolBarMain.Buttons["Move"].Enabled=false;
-				if(!Prefs.GetBool("EasyHideInsurance")){
+				if(!Prefs.GetBool("EasyHideInsurance")) {
 					ToolBarMain.Buttons["Ins"].Enabled=false;
 				}
 				ToolBarMain.Invalidate();
 				//Patients.Cur=new Patient();
 			}
-			if(Prefs.GetBool("EasyHideInsurance")){
+			if(Prefs.GetBool("EasyHideInsurance")) {
 				gridIns.Visible=false;
 			}
-			else{
+			else {
 				gridIns.Visible=true;
 			}
 			FillPatientButton();
@@ -234,20 +234,20 @@ namespace OpenDental{
 			FillPatientData();
 			FillFamilyData();
 			FillInsData();
-		} 
+		}
 
-		private void FillPatientButton(){
+		private void FillPatientButton() {
 			Patients.AddPatsToMenu(menuPatient,new EventHandler(menuPatient_Click),PatCur,FamCur);
 		}
 
-		private void FillPatientPicture(){
+		private void FillPatientPicture() {
 			picturePat.TextNullImage=Lan.g(this,"Patient Picture Unavailable");
-			if(PatCur==null){
+			if(PatCur==null) {
 				picturePat.Image=null;
 				return;
 			}
 			string fileName=Documents.GetPatPict(PatCur.PatNum);
-			if(fileName==""){
+			if(fileName=="") {
 				picturePat.Image=null;
 				return;
 			}
@@ -255,14 +255,14 @@ namespace OpenDental{
 				+PatCur.ImageFolder.Substring(0,1)+@"\"
 				+PatCur.ImageFolder+@"\"
 				+fileName;
-			if(!File.Exists(fullName)){
+			if(!File.Exists(fullName)) {
 				picturePat.Image=null;
 				return;
 			}
-			try{
+			try {
 				picturePat.Image=Image.FromFile(fullName);
 			}
-			catch{
+			catch {
 				picturePat.Image=null;
 			}
 		}
@@ -274,7 +274,7 @@ namespace OpenDental{
 		}
 
 		///<summary></summary>
-		public void InstantClasses(){
+		public void InstantClasses() {
 			tbFamily.InstantClasses();
 			//cannot use Lan.F(this);
 			Lan.C(this,new Control[]
@@ -290,7 +290,7 @@ namespace OpenDental{
 		}
 
 		///<summary>Causes the toolbar to be laid out again.</summary>
-		public void LayoutToolBar(){
+		public void LayoutToolBar() {
 			ToolBarMain.Buttons.Clear();
 			ODToolBarButton button;
 			button=new ODToolBarButton(Lan.g(this,"Select Patient"),0,"","Patient");
@@ -307,7 +307,7 @@ namespace OpenDental{
 			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Delete"),3,Lan.g(this,"Delete Family Member"),"Delete"));
 			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Set Guarantor"),4,Lan.g(this,"Set as Guarantor"),"Guarantor"));
 			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Move"),5,Lan.g(this,"Move to Another Family"),"Move"));
-			if(!Prefs.GetBool("EasyHideInsurance")){
+			if(!Prefs.GetBool("EasyHideInsurance")) {
 				ToolBarMain.Buttons.Add(new ODToolBarButton(ODToolBarButtonStyle.Separator));
 				button=new ODToolBarButton(Lan.g(this,"Add Insurance"),6,"","Ins");
 				button.Style=ODToolBarButtonStyle.DropDownButton;
@@ -315,7 +315,7 @@ namespace OpenDental{
 				ToolBarMain.Buttons.Add(button);
 			}
 			ArrayList toolButItems=ToolButItems.GetForToolBar(ToolBarsAvail.FamilyModule);
-			for(int i=0;i<toolButItems.Count;i++){
+			for(int i=0;i<toolButItems.Count;i++) {
 				ToolBarMain.Buttons.Add(new ODToolBarButton(ODToolBarButtonStyle.Separator));
 				ToolBarMain.Buttons.Add(new ODToolBarButton(((ToolButItem)toolButItems[i]).ButtonText
 					,-1,"",((ToolButItem)toolButItems[i]).ProgramNum));
@@ -323,34 +323,34 @@ namespace OpenDental{
 			ToolBarMain.Invalidate();
 		}
 
-		private void ContrFamily_Layout(object sender, System.Windows.Forms.LayoutEventArgs e) {
-			
+		private void ContrFamily_Layout(object sender,System.Windows.Forms.LayoutEventArgs e) {
+
 		}
 
 		private void ContrFamily_Resize(object sender,EventArgs e) {
-			if(Height>gridPat.Top){
+			if(Height>gridPat.Top) {
 				gridPat.Height=Height-gridPat.Top-2;
 				gridIns.Height=Height-gridIns.Top-2;
 			}
-			if(Width>gridIns.Left){
+			if(Width>gridIns.Left) {
 				gridIns.Width=Width-gridIns.Left-2;
 			}
 		}
 
 		//private void butOutlook_Click(object sender, System.EventArgs e) {
-			/*Process[] procsOutlook = Process.GetProcessesByName("outlook");
-			if(procsOutlook.Length==0){
-				try{
-					Process.Start("Outlook");
-				}
-				catch{}
-			}*/
+		/*Process[] procsOutlook = Process.GetProcessesByName("outlook");
+		if(procsOutlook.Length==0){
+			try{
+				Process.Start("Outlook");
+			}
+			catch{}
+		}*/
 		//}
 
-		private void ToolBarMain_ButtonClick(object sender, OpenDental.UI.ODToolBarButtonClickEventArgs e) {
-			if(e.Button.Tag.GetType()==typeof(string)){
+		private void ToolBarMain_ButtonClick(object sender,OpenDental.UI.ODToolBarButtonClickEventArgs e) {
+			if(e.Button.Tag.GetType()==typeof(string)) {
 				//standard predefined button
-				switch(e.Button.Tag.ToString()){
+				switch(e.Button.Tag.ToString()) {
 					case "Patient":
 						OnPat_Click();
 						break;
@@ -374,7 +374,7 @@ namespace OpenDental{
 						break;
 				}
 			}
-			else if(e.Button.Tag.GetType()==typeof(int)){
+			else if(e.Button.Tag.GetType()==typeof(int)) {
 				Programs.Execute((int)e.Button.Tag,PatCur);
 			}
 		}
@@ -382,14 +382,14 @@ namespace OpenDental{
 		private void OnPat_Click() {
 			FormPatientSelect formPS=new FormPatientSelect();
 			formPS.ShowDialog();
-			if(formPS.DialogResult==DialogResult.OK){
+			if(formPS.DialogResult==DialogResult.OK) {
 				OnPatientSelected(formPS.SelectedPatNum);
 				ModuleSelected(formPS.SelectedPatNum);
 			}
 		}
 
 		///<summary></summary>
-		private void OnPatientSelected(int patNum){
+		private void OnPatientSelected(int patNum) {
 			PatientSelectedEventArgs eArgs=new OpenDental.PatientSelectedEventArgs(patNum);
 			if(PatientSelected!=null)
 				PatientSelected(this,eArgs);
@@ -398,16 +398,16 @@ namespace OpenDental{
 		private void OnRecall_Click() {
 			//patient may or may not have an existing recall.
 			Recall recallCur=null;
-			for(int i=0;i<RecallList.Length;i++){
-				if(RecallList[i].PatNum==PatCur.PatNum){
+			for(int i=0;i<RecallList.Length;i++) {
+				if(RecallList[i].PatNum==PatCur.PatNum) {
 					recallCur=RecallList[i];
 				}
 			}
 			//for testing purposes and because synchronization might have bugs, always synch here:
 			//This might add a recall.
-			Recalls.Synch(PatCur.PatNum,recallCur);			
+			Recalls.Synch(PatCur.PatNum,recallCur);
 			FormRecallEdit FormRE=new FormRecallEdit(PatCur);
-			if(recallCur==null){
+			if(recallCur==null) {
 				recallCur=new Recall();
 				recallCur.PatNum=PatCur.PatNum;
 				recallCur.RecallInterval=new Interval(0,0,6,0);
@@ -421,11 +421,11 @@ namespace OpenDental{
 		#region gridPatient
 
 		private void gridPat_CellDoubleClick(object sender,ODGridClickEventArgs e) {
-			if(TerminalActives.PatIsInUse(PatCur.PatNum)){
+			if(TerminalActives.PatIsInUse(PatCur.PatNum)) {
 				MsgBox.Show(this,"Patient is currently entering info at a reception terminal.  Please try again later.");
 				return;
 			}
-			if(gridPat.Rows[e.Row].Tag!=null){
+			if(gridPat.Rows[e.Row].Tag!=null) {
 				string tag=gridPat.Rows[e.Row].Tag.ToString();
 				tag=tag.Substring(8);//strips off all but the number: PatField1
 				int index=PIn.PInt(tag);
@@ -438,12 +438,12 @@ namespace OpenDental{
 					FormPF.IsNew=true;
 					FormPF.ShowDialog();
 				}
-				else{
+				else {
 					FormPatFieldEdit FormPF=new FormPatFieldEdit(field);
 					FormPF.ShowDialog();
 				}
 			}
-			else{
+			else {
 				FormPatientEdit FormP=new FormPatientEdit(PatCur,FamCur);
 				FormP.IsNew=false;
 				FormP.ShowDialog();
@@ -451,8 +451,8 @@ namespace OpenDental{
 			ModuleSelected(PatCur.PatNum);
 		}
 
-		private void FillPatientData(){
-			if(PatCur==null){
+		private void FillPatientData() {
+			if(PatCur==null) {
 				gridPat.BeginUpdate();
 				gridPat.Rows.Clear();
 				gridPat.Columns.Clear();
@@ -472,7 +472,7 @@ namespace OpenDental{
 			row.Cells.Add(Lan.g("TablePatient","Last"));
 			row.Cells.Add(PatCur.LName);
 			gridPat.Rows.Add(row);
-			
+
 			//First
 			row=new ODGridRow();
 			row.Cells.Add(Lan.g("TablePatient","First"));
@@ -513,7 +513,7 @@ namespace OpenDental{
 			row.Cells.Add(Lan.g("enum PatientPosition",PatCur.Position.ToString()));
 			//row.ColorLborder=Color.Black;
 			gridPat.Rows.Add(row);
-			
+
 			//Birthdate
 			row=new ODGridRow();
 			row.Cells.Add(Lan.g("TablePatient","Birthdate"));
@@ -535,10 +535,10 @@ namespace OpenDental{
 			else if(CultureInfo.CurrentCulture.Name.Substring(3)=="GB") {
 				row.Cells.Add("");
 			}
-			else{
+			else {
 				row.Cells.Add(Lan.g("TablePatient","SS#"));
 			}
-			if(CultureInfo.CurrentCulture.Name.Substring(3)=="US" && PatCur.SSN !=null && PatCur.SSN.Length==9){
+			if(CultureInfo.CurrentCulture.Name.Substring(3)=="US" && PatCur.SSN !=null && PatCur.SSN.Length==9) {
 				row.Cells.Add(PatCur.SSN.Substring(0,3)+"-"
 					+PatCur.SSN.Substring(3,2)+"-"+PatCur.SSN.Substring(5,4));
 			}
@@ -573,7 +573,7 @@ namespace OpenDental{
 			else if(CultureInfo.CurrentCulture.Name.Substring(3)=="GB") {
 				row.Cells.Add("");
 			}
-			else{
+			else {
 				row.Cells.Add(Lan.g("TablePatient","State"));
 			}
 			row.Cells.Add(PatCur.State);
@@ -586,7 +586,7 @@ namespace OpenDental{
 			else if(CultureInfo.CurrentCulture.Name.Substring(3)=="GB") {
 				row.Cells.Add("Postcode");
 			}
-			else{
+			else {
 				row.Cells.Add(Lan.g("TablePatient","Zip"));
 			}
 			row.Cells.Add(PatCur.Zip);
@@ -630,26 +630,33 @@ namespace OpenDental{
 			row.Cells.Add(Lan.g("TablePatient","Billing Type"));
 			row.Cells.Add(Defs.GetName(DefCat.BillingTypes,PatCur.BillingType));
 			gridPat.Rows.Add(row);
+			//Ward
+			if(!Prefs.GetBool("EasyHideHospitals")) {
+				row=new ODGridRow();
+				row.Cells.Add(Lan.g("TablePatient","Ward"));
+				row.Cells.Add(PatCur.Ward);
+				gridPat.Rows.Add(row);
+			}
 			//Referrals
 			RefAttach[] RefList=RefAttaches.Refresh(PatCur.PatNum);
 			for(int i=0;i<RefList.Length;i++) {
 				row=new ODGridRow();
-				if(RefList[i].IsFrom){
+				if(RefList[i].IsFrom) {
 					row.Cells.Add(Lan.g("TablePatient","Referred From"));
 				}
-				else{
+				else {
 					row.Cells.Add(Lan.g("TablePatient","Referred To"));
 				}
-				try{
+				try {
 					row.Cells.Add(Referrals.GetReferral(RefList[i].ReferralNum).GetName());
 				}
-				catch{
+				catch {
 					row.Cells.Add("");//if referral is null because using randome keys and had bug.
 				}
 				gridPat.Rows.Add(row);
 			}
 			//AddrNote
-			if(PatCur.AddrNote!=""){
+			if(PatCur.AddrNote!="") {
 				row=new ODGridRow();
 				row.Cells.Add(Lan.g("TablePatient","Addr/Ph Note"));
 				row.Cells.Add(PatCur.AddrNote);
@@ -659,14 +666,14 @@ namespace OpenDental{
 			}
 			//PatFields-------------------------------------------
 			PatField field;
-			for(int i=0;i<PatFieldDefs.List.Length;i++){
+			for(int i=0;i<PatFieldDefs.List.Length;i++) {
 				row=new ODGridRow();
 				row.Cells.Add(PatFieldDefs.List[i].FieldName);
 				field=PatFields.GetByName(PatFieldDefs.List[i].FieldName,PatFieldList);
-				if(field==null){
+				if(field==null) {
 					row.Cells.Add("");
 				}
-				else{
+				else {
 					row.Cells.Add(field.FieldValue);
 				}
 				row.Tag="PatField"+i.ToString();
@@ -675,12 +682,12 @@ namespace OpenDental{
 			gridPat.EndUpdate();
 		}
 
-		#endregion gridPatient 
+		#endregion gridPatient
 
 		#region tbFamily
 
-		private void FillFamilyData(){
-			if(PatCur==null){
+		private void FillFamilyData() {
+			if(PatCur==null) {
 				tbFamily.SelectedRow=-1;
 				tbFamily.ResetRows(0);
 				tbFamily.LayoutTables();
@@ -689,9 +696,9 @@ namespace OpenDental{
 			tbFamily.ResetRows(FamCur.List.Length);
 			tbFamily.SetGridColor(Color.Gray);
 			tbFamily.SetBackGColor(Color.White);
-			for(int i=0;i<FamCur.List.Length; i++){
-				if(FamCur.List[i].PatNum==FamCur.List[i].Guarantor){
-					for(int j=0;j<5;j++){
+			for(int i=0;i<FamCur.List.Length;i++) {
+				if(FamCur.List[i].PatNum==FamCur.List[i].Guarantor) {
+					for(int j=0;j<5;j++) {
 						tbFamily.FontBold[j,i]=true;
 					}
 					//tbFamily.Cell[0,i]=Lan.g(this,"Guar");
@@ -701,14 +708,14 @@ namespace OpenDental{
 				tbFamily.Cell[2,i]=Lan.g("enumPatientGender",FamCur.List[i].Gender.ToString());
 				tbFamily.Cell[3,i]=Lan.g("enumPatientStatus",FamCur.List[i].PatStatus.ToString());
 				tbFamily.Cell[4,i]=Shared.AgeToString(FamCur.List[i].Age);
-				for(int j=0;j<RecallList.Length;j++){
-					if(RecallList[j].PatNum==FamCur.List[i].PatNum){
-						if(RecallList[j].DateDue.Year>1880){
+				for(int j=0;j<RecallList.Length;j++) {
+					if(RecallList[j].PatNum==FamCur.List[i].PatNum) {
+						if(RecallList[j].DateDue.Year>1880) {
 							tbFamily.Cell[5,i]=RecallList[j].DateDue.ToShortDateString();
 						}
 					}
 				}
-				if(FamCur.List[i].PatNum==PatCur.PatNum){
+				if(FamCur.List[i].PatNum==PatCur.PatNum) {
 					tbFamily.SelectedRow=i;
 					tbFamily.ColorRow(i,Color.DarkSalmon);
 				}
@@ -716,8 +723,8 @@ namespace OpenDental{
 			tbFamily.LayoutTables();
 		}//end FillFamilyData
 
-		private void tbFamily_CellClicked(object sender, CellEventArgs e){
-			if (tbFamily.SelectedRow != -1){
+		private void tbFamily_CellClicked(object sender,CellEventArgs e) {
+			if(tbFamily.SelectedRow != -1) {
 				tbFamily.ColorRow(tbFamily.SelectedRow,Color.White);
 			}
 			tbFamily.SelectedRow=e.Row;
@@ -727,7 +734,7 @@ namespace OpenDental{
 		}
 
 		//private void butAddPt_Click(object sender, System.EventArgs e) {
-		private void OnAdd_Click(){
+		private void OnAdd_Click() {
 			Patient tempPat=new Patient();
 			tempPat.LName      =PatCur.LName;
 			tempPat.PatStatus  =PatientStatus.Patient;
@@ -748,17 +755,17 @@ namespace OpenDental{
 			FormPatientEdit FormPE=new FormPatientEdit(tempPat,FamCur);
 			FormPE.IsNew=true;
 			FormPE.ShowDialog();
-			if(FormPE.DialogResult==DialogResult.OK){
+			if(FormPE.DialogResult==DialogResult.OK) {
 				OnPatientSelected(tempPat.PatNum);
 				ModuleSelected(tempPat.PatNum);
 			}
-			else{
+			else {
 				ModuleSelected(PatCur.PatNum);
 			}
 		}
 
 		//private void butDeletePt_Click(object sender, System.EventArgs e) {
-		private void OnDelete_Click(){
+		private void OnDelete_Click() {
 			//this doesn't actually delete the patient, just changes their status
 			//and they will never show again in the patient selection list.
 			//check for plans, appointments, procedures, etc.
@@ -781,15 +788,14 @@ namespace OpenDental{
 			bool hasComm=commlogList.Length>0;
 			bool hasPayPlans=payPlanList.Length>0;
 			bool hasInsPlans=false;
-			for(int i=0;i<planList.Length;i++){
-				if(planList[i].Subscriber==PatCur.PatNum){
+			for(int i=0;i<planList.Length;i++) {
+				if(planList[i].Subscriber==PatCur.PatNum) {
 					hasInsPlans=true;
 				}
 			}
 			bool hasRef=RefAttachList.Length>0;
 			if(hasProcs || hasClaims || hasAdj || hasPay || hasClaimProcs || hasComm || hasPayPlans
-				|| hasInsPlans || hasRef)
-			{
+				|| hasInsPlans || hasRef) {
 				string message=Lan.g(this,
 					"You cannot delete this patient without first deleting the following data:")+"\r";
 				if(hasProcs)
@@ -814,15 +820,15 @@ namespace OpenDental{
 				return;
 			}
 			Patient PatOld=PatCur.Copy();
-			if(PatCur.PatNum==PatCur.Guarantor){//if selecting guarantor
-				if(FamCur.List.Length==1){
+			if(PatCur.PatNum==PatCur.Guarantor) {//if selecting guarantor
+				if(FamCur.List.Length==1) {
 					if(!MsgBox.Show(this,true,"Delete Patient?"))
 						return;
 					PatCur.PatStatus=PatientStatus.Deleted;
 					PatCur.ChartNumber="";
 					PatCur.Update(PatOld);
-					for(int i=0;i<RecallList.Length;i++){
-						if(RecallList[i].PatNum==PatCur.PatNum){
+					for(int i=0;i<RecallList.Length;i++) {
+						if(RecallList[i].PatNum==PatCur.PatNum) {
 							RecallList[i].IsDisabled=true;
 							RecallList[i].DateDue=DateTime.MinValue;
 							RecallList[i].Update();
@@ -831,19 +837,19 @@ namespace OpenDental{
 					ModuleSelected(0);
 					//does not delete notes or plans, etc.
 				}
-				else{
+				else {
 					MessageBox.Show(Lan.g(this,"You cannot delete the guarantor if there are other family members. You would have to make a different family member the guarantor first."));
 				}
 			}
-			else{//not selecting guarantor
+			else {//not selecting guarantor
 				if(!MsgBox.Show(this,true,"Delete Patient?"))
 					return;
 				PatCur.PatStatus=PatientStatus.Deleted;
 				PatCur.ChartNumber="";
 				PatCur.Guarantor=PatCur.PatNum;
 				PatCur.Update(PatOld);
-				for(int i=0;i<RecallList.Length;i++){
-					if(RecallList[i].PatNum==PatCur.PatNum){
+				for(int i=0;i<RecallList.Length;i++) {
+					if(RecallList[i].PatNum==PatCur.PatNum) {
 						RecallList[i].IsDisabled=true;
 						RecallList[i].DateDue=DateTime.MinValue;
 						RecallList[i].Update();
@@ -854,27 +860,27 @@ namespace OpenDental{
 		}
 
 		//private void butSetGuar_Click(object sender,System.EventArgs e){
-    private void OnGuarantor_Click(){
+		private void OnGuarantor_Click() {
 			//Patient tempPat=PatCur;
-			if(PatCur.PatNum==PatCur.Guarantor){
+			if(PatCur.PatNum==PatCur.Guarantor) {
 				MessageBox.Show(Lan.g(this
 					,"Patient is already the guarantor.  Please select a different family member."));
 			}
-			else{
+			else {
 				if(MessageBox.Show(Lan.g(this,"Make the selected patient the guarantor?")
 					,"",MessageBoxButtons.OKCancel)!=DialogResult.OK)
-						return;
+					return;
 				Patients.ChangeGuarantorToCur(FamCur,PatCur);
 			}
 			ModuleSelected(PatCur.PatNum);
 		}
 
 		//private void butMovePat_Click(object sender, System.EventArgs e) {
-		private void OnMove_Click(){
+		private void OnMove_Click() {
 			Patient PatOld=PatCur.Copy();
 			//Patient PatCur;
-			if(PatCur.PatNum==PatCur.Guarantor){//if guarantor selected
-				if(FamCur.List.Length==1){//and no other family members
+			if(PatCur.PatNum==PatCur.Guarantor) {//if guarantor selected
+				if(FamCur.List.Length==1) {//and no other family members
 					//no need to check insurance.  It will follow.
 					if(!MsgBox.Show(this,true,"Moving the guarantor will cause two families to be combined.  The financial notes for both families will be combined and may need to be edited.  The address notes will also be combined and may need to be edited. Do you wish to continue?"))
 						return;
@@ -883,7 +889,7 @@ namespace OpenDental{
 					FormPatientSelect FormPS=new FormPatientSelect();
 					FormPS.SelectionModeOnly=true;
 					FormPS.ShowDialog();
-					if(FormPS.DialogResult!=DialogResult.OK){
+					if(FormPS.DialogResult!=DialogResult.OK) {
 						return;
 					}
 					Patient Lim=Patients.GetLim(FormPS.SelectedPatNum);
@@ -892,16 +898,16 @@ namespace OpenDental{
 					FamCur=Patients.GetFamily(PatCur.PatNum);
 					Patients.CombineGuarantors(FamCur,PatCur);
 				}
-				else{//there are other family members
+				else {//there are other family members
 					MessageBox.Show(Lan.g(this,"You cannot move the guarantor.  If you wish to move the guarantor, you must make another family member the guarantor first."));
 				}
 			}
-			else{//guarantor not selected
-				if(!MsgBox.Show(this,true,"Preparing to move family member.  Financial notes and address notes will not be transferred.  Proceed to next step?")){
+			else {//guarantor not selected
+				if(!MsgBox.Show(this,true,"Preparing to move family member.  Financial notes and address notes will not be transferred.  Proceed to next step?")) {
 					return;
 				}
 				switch(MessageBox.Show(Lan.g(this,"Create new family instead of moving to an existing family?")
-					,"",MessageBoxButtons.YesNoCancel)){
+					,"",MessageBoxButtons.YesNoCancel)) {
 					case DialogResult.Cancel:
 						return;
 					case DialogResult.Yes://new family
@@ -909,13 +915,13 @@ namespace OpenDental{
 						PatCur.Update(PatOld);
 						break;
 					case DialogResult.No://move to an existing family
-						if(!MsgBox.Show(this,true,"Select the family to move this patient to from the list that will come up next.")){
+						if(!MsgBox.Show(this,true,"Select the family to move this patient to from the list that will come up next.")) {
 							return;
 						}
 						FormPatientSelect FormPS=new FormPatientSelect();
 						FormPS.SelectionModeOnly=true;
 						FormPS.ShowDialog();
-						if(FormPS.DialogResult!=DialogResult.OK){
+						if(FormPS.DialogResult!=DialogResult.OK) {
 							return;
 						}
 						Patient Lim=Patients.GetLim(FormPS.SelectedPatNum);
@@ -928,7 +934,7 @@ namespace OpenDental{
 		}
 
 		#endregion
-		
+
 		#region gridIns
 		private void menuPlansForFam_Click(object sender,EventArgs e) {
 			FormPlansForFamily FormP=new FormPlansForFamily();
@@ -937,21 +943,21 @@ namespace OpenDental{
 			ModuleSelected(PatCur.PatNum);
 		}
 
-		private void ToolButIns_Click(){
+		private void ToolButIns_Click() {
 			DialogResult result=MessageBox.Show(Lan.g(this,"Is this patient the subscriber?"),"",MessageBoxButtons.YesNoCancel);
-			if(result==DialogResult.Cancel){
+			if(result==DialogResult.Cancel) {
 				return;
 			}
 			//Pick a subscriber------------------------------------------------------------------------------------------------
 			Patient subscriber;
-			if(result==DialogResult.Yes){//current patient is subscriber
+			if(result==DialogResult.Yes) {//current patient is subscriber
 				subscriber=PatCur.Copy();
 			}
-			else{//patient is not subscriber
+			else {//patient is not subscriber
 				//show list of patients in this family
 				FormSubscriberSelect FormS=new FormSubscriberSelect(FamCur);
 				FormS.ShowDialog();
-				if(FormS.DialogResult==DialogResult.Cancel){
+				if(FormS.DialogResult==DialogResult.Cancel) {
 					return;
 				}
 				subscriber=Patients.GetPat(FormS.SelectedPatNum);
@@ -959,31 +965,31 @@ namespace OpenDental{
 			//Subscriber has been chosen. Now, pick a plan-------------------------------------------------------------------
 			InsPlan plan=null;
 			bool planIsNew=false;
-			if(InsPlans.GetListForSubscriber(subscriber.PatNum).Length==0){
+			if(InsPlans.GetListForSubscriber(subscriber.PatNum).Length==0) {
 				planIsNew=true;
 			}
-			else{
+			else {
 				FormInsSelectSubscr FormISS=new FormInsSelectSubscr(subscriber.PatNum);
 				FormISS.ShowDialog();
 				if(FormISS.DialogResult==DialogResult.Cancel) {
 					return;
 				}
-				if(FormISS.SelectedPlanNum==0){//'New' option selected.
+				if(FormISS.SelectedPlanNum==0) {//'New' option selected.
 					planIsNew=true;
 				}
-				else{
+				else {
 					plan=InsPlans.GetPlan(FormISS.SelectedPlanNum,PlanList);
 				}
 			}
 			//New plan was selected instead of an existing plan.  Create the plan--------------------------------------------
-			if(planIsNew){
+			if(planIsNew) {
 				plan=new InsPlan();
 				plan.EmployerNum=subscriber.EmployerNum;
 				plan.Subscriber=subscriber.PatNum;
-				if(subscriber.MedicaidID==""){
+				if(subscriber.MedicaidID=="") {
 					plan.SubscriberID=subscriber.SSN;
 				}
-				else{
+				else {
 					plan.SubscriberID=subscriber.MedicaidID;
 				}
 				plan.ReleaseInfo=true;
@@ -991,8 +997,8 @@ namespace OpenDental{
 				plan.PlanType="";
 				plan.Insert();
 				Benefit ben;
-				for(int i=0;i<CovCats.ListShort.Length;i++){
-					if(CovCats.ListShort[i].DefaultPercent==-1){
+				for(int i=0;i<CovCats.ListShort.Length;i++) {
+					if(CovCats.ListShort[i].DefaultPercent==-1) {
 						continue;
 					}
 					ben=new Benefit();
@@ -1022,8 +1028,8 @@ namespace OpenDental{
 			ModuleSelected(PatCur.PatNum);
 		}
 
-		private void FillInsData(){
-			if(PatPlanList.Length==0){
+		private void FillInsData() {
+			if(PatPlanList.Length==0) {
 				gridIns.BeginUpdate();
 				gridIns.Columns.Clear();
 				gridIns.Rows.Clear();
@@ -1031,7 +1037,7 @@ namespace OpenDental{
 				return;
 			}
 			InsPlan[] planArray=new InsPlan[PatPlanList.Length];//prevents repeated calls to db.
-			for(int i=0;i<PatPlanList.Length;i++){
+			for(int i=0;i<PatPlanList.Length;i++) {
 				planArray[i]=InsPlans.GetPlan(PatPlanList[i].PlanNum,PlanList);
 			}
 			gridIns.BeginUpdate();
@@ -1040,20 +1046,20 @@ namespace OpenDental{
 			OpenDental.UI.ODGridColumn col;
 			col=new ODGridColumn("",150);
 			gridIns.Columns.Add(col);
-			for(int i=0;i<PatPlanList.Length;i++){
-				if(planArray[i].IsMedical){
+			for(int i=0;i<PatPlanList.Length;i++) {
+				if(planArray[i].IsMedical) {
 					col=new ODGridColumn(Lan.g("TableCoverage","Medical"),170);
 					gridIns.Columns.Add(col);
 				}
-				else if(i==0){
+				else if(i==0) {
 					col=new ODGridColumn(Lan.g("TableCoverage","Primary"),170);
 					gridIns.Columns.Add(col);
 				}
-				else if(i==1){
+				else if(i==1) {
 					col=new ODGridColumn(Lan.g("TableCoverage","Secondary"),170);
 					gridIns.Columns.Add(col);
 				}
-				else{
+				else {
 					col=new ODGridColumn(Lan.g("TableCoverage","Other"),170);
 					gridIns.Columns.Add(col);
 				}
@@ -1061,22 +1067,23 @@ namespace OpenDental{
 			OpenDental.UI.ODGridRow row=new ODGridRow();
 			//subscriber
 			row.Cells.Add(Lan.g("TableCoverage","Subscriber"));
-			for(int i=0;i<PatPlanList.Length;i++){
+			for(int i=0;i<PatPlanList.Length;i++) {
 				row.Cells.Add(FamCur.GetNameInFamFL(planArray[i].Subscriber));
 			}
 			row.ColorBackG=Defs.Long[(int)DefCat.MiscColors][0].ItemColor;
 			gridIns.Rows.Add(row);
-			/*subscriber ID
+			//subscriber ID
+			row=new ODGridRow();
 			row.Cells.Add(Lan.g("TableCoverage","Subscriber ID"));
 			for(int i=0;i<PatPlanList.Length;i++) {
 				row.Cells.Add(planArray[i].SubscriberID);
 			}
 			row.ColorBackG=Defs.Long[(int)DefCat.MiscColors][0].ItemColor;
-			gridIns.Rows.Add(row);*/
+			gridIns.Rows.Add(row);
 			//relationship
 			row=new ODGridRow();
 			row.Cells.Add(Lan.g("TableCoverage","Rel'ship to Sub"));
-			for(int i=0;i<PatPlanList.Length;i++){
+			for(int i=0;i<PatPlanList.Length;i++) {
 				row.Cells.Add(Lan.g("enumRelat",PatPlanList[i].Relationship.ToString()));
 			}
 			row.ColorBackG=Defs.Long[(int)DefCat.MiscColors][0].ItemColor;
@@ -1084,7 +1091,7 @@ namespace OpenDental{
 			//patient ID
 			row=new ODGridRow();
 			row.Cells.Add(Lan.g("TableCoverage","Patient ID"));
-			for(int i=0;i<PatPlanList.Length;i++){
+			for(int i=0;i<PatPlanList.Length;i++) {
 				row.Cells.Add(PatPlanList[i].PatID);
 			}
 			row.ColorBackG=Defs.Long[(int)DefCat.MiscColors][0].ItemColor;
@@ -1092,11 +1099,11 @@ namespace OpenDental{
 			//pending
 			row=new ODGridRow();
 			row.Cells.Add(Lan.g("TableCoverage","Pending"));
-			for(int i=0;i<PatPlanList.Length;i++){
-				if(PatPlanList[i].IsPending){
+			for(int i=0;i<PatPlanList.Length;i++) {
+				if(PatPlanList[i].IsPending) {
 					row.Cells.Add("X");
 				}
-				else{
+				else {
 					row.Cells.Add("");
 				}
 			}
@@ -1122,19 +1129,19 @@ namespace OpenDental{
 			Benefit[,] benMatrix=Benefits.GetDisplayMatrix(bensForPat,PatPlanList);
 			string desc;
 			string val;
-			for(int y=0;y<benMatrix.GetLength(1);y++){//rows
+			for(int y=0;y<benMatrix.GetLength(1);y++) {//rows
 				row=new ODGridRow();
 				desc="";
 				//some of the columns might be null, but at least one will not be.  Find it.
-				for(int x=0;x<benMatrix.GetLength(1);x++){//columns
-					if(benMatrix[x,y]==null){
+				for(int x=0;x<benMatrix.GetLength(1);x++) {//columns
+					if(benMatrix[x,y]==null) {
 						continue;
 					}
 					//create a description for the benefit
 					if(benMatrix[x,y].PatPlanNum!=0) {
 						desc+=Lan.g(this,"(pat)")+" ";
 					}
-					if(benMatrix[x,y].BenefitType==InsBenefitType.Percentage){
+					if(benMatrix[x,y].BenefitType==InsBenefitType.Percentage) {
 						desc+=CovCats.GetDesc(benMatrix[x,y].CovCatNum)+" % ";
 					}
 					else if(benMatrix[x,y].BenefitType==InsBenefitType.Deductible) {
@@ -1143,11 +1150,11 @@ namespace OpenDental{
 					else if(benMatrix[x,y].BenefitType==InsBenefitType.Limitations
 						&& benMatrix[x,y].QuantityQualifier==BenefitQuantity.None
 						&& (benMatrix[x,y].TimePeriod==BenefitTimePeriod.ServiceYear
-						|| benMatrix[x,y].TimePeriod==BenefitTimePeriod.CalendarYear))
-					{//annual max
+						|| benMatrix[x,y].TimePeriod==BenefitTimePeriod.CalendarYear)) {//annual max
 						desc+=Lan.g(this,"Annual Max")+" ";
 					}
 					else if(benMatrix[x,y].BenefitType==InsBenefitType.Limitations
+						&& CovCats.GetForEbenCat(EbenefitCategory.Orthodontics)!=null
 						&& benMatrix[x,y].CovCatNum==CovCats.GetForEbenCat(EbenefitCategory.Orthodontics).CovCatNum
 						&& benMatrix[x,y].QuantityQualifier==BenefitQuantity.None
 						&& benMatrix[x,y].TimePeriod==BenefitTimePeriod.Lifetime)
@@ -1155,6 +1162,7 @@ namespace OpenDental{
 						desc+=Lan.g(this,"Ortho Max")+" ";
 					}
 					else if(benMatrix[x,y].BenefitType==InsBenefitType.Limitations
+						&& CovCats.GetForEbenCat(EbenefitCategory.RoutinePreventive)!=null
 						&& benMatrix[x,y].CovCatNum==CovCats.GetForEbenCat(EbenefitCategory.RoutinePreventive).CovCatNum
 						&& benMatrix[x,y].Quantity !=0)
 					{

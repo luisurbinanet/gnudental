@@ -513,7 +513,7 @@ namespace OpenDental{
 			}
 			whereProv+=")";
 			Queries.CurReport.Query+="SELECT "
-				+"claimpayment.CheckDate,"
+				+"claimproc.DateCP,"
 				+"CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI),"
 				+"carrier.CarrierName,"
 				+"provider.Abbr,"
@@ -523,17 +523,17 @@ namespace OpenDental{
 				+"'0',"
 				+"'0',"
 				+"claimproc.ClaimNum "
-				+"FROM claimproc,insplan,patient,carrier,provider,claimpayment "
+				+"FROM claimproc,insplan,patient,carrier,provider "//,claimpayment "
 				//claimpayment date is used because DateCP was not forced to be the same until version 3.0
-				+"WHERE claimproc.ClaimPaymentNum = claimpayment.ClaimPaymentNum "
-				+"AND provider.ProvNum=claimproc.ProvNum "
+				//+"WHERE claimproc.ClaimPaymentNum = claimpayment.ClaimPaymentNum "
+				+"WHERE provider.ProvNum = claimproc.ProvNum "
 				+"AND claimproc.PlanNum = insplan.PlanNum "
 				+"AND claimproc.PatNum = patient.PatNum "
 				+"AND carrier.CarrierNum = insplan.CarrierNum "
 				+"AND "+whereProv+" "
 				+"AND (claimproc.Status=1 OR claimproc.Status=4) "//received or supplemental
-				+"AND claimpayment.CheckDate >= '"+POut.PDate(dateFrom)+"' "
-				+"AND claimpayment.CheckDate <= '"+POut.PDate(dateTo)+"' "
+				+"AND claimproc.DateCP >= '"+POut.PDate(dateFrom)+"' "
+				+"AND claimproc.DateCP <= '"+POut.PDate(dateTo)+"' "
 				+"GROUP BY claimproc.ClaimNum"
 				+") UNION (";
 			//Patient Income------------------------------------------------------------------------------
@@ -613,17 +613,17 @@ namespace OpenDental{
 				+" - "+dateTo.ToString("d");	
 			Queries.CurReport.ColPos=new int[11];
 			Queries.CurReport.ColCaption=new string[10];
-			Queries.CurReport.ColAlign=new HorizontalAlignment[10];			
+			Queries.CurReport.ColAlign=new HorizontalAlignment[10];
 			Queries.CurReport.ColPos[0]=10;
 			Queries.CurReport.ColPos[1]=90;
 			Queries.CurReport.ColPos[2]=220;
-			Queries.CurReport.ColPos[3]=390;   
+			Queries.CurReport.ColPos[3]=390;
 			Queries.CurReport.ColPos[4]=444;
-			Queries.CurReport.ColPos[5]=502;
-			Queries.CurReport.ColPos[6]=580;
-			Queries.CurReport.ColPos[7]=660;
-			Queries.CurReport.ColPos[8]=726;
-			Queries.CurReport.ColPos[9]=796;  // added spk 5/19/05	
+			Queries.CurReport.ColPos[5]=500;
+			Queries.CurReport.ColPos[6]=570;
+			Queries.CurReport.ColPos[7]=620;
+			Queries.CurReport.ColPos[8]=690;
+			Queries.CurReport.ColPos[9]=760;  // added spk 5/19/05	
 			Queries.CurReport.ColPos[10]=1050;// way off the righthand side
 			Queries.CurReport.ColCaption[0]="Date";
 			Queries.CurReport.ColCaption[1]="Patient Name";			
@@ -747,7 +747,7 @@ GROUP BY DateCP Order by DateCP
 			Queries.CurReport.Query="SELECT DateCP, SUM(WriteOff) FROM claimproc WHERE "
 				+"DateCP >= '"+POut.PDate(dateFrom)+"' "
 				+"AND DateCP <= '"+POut.PDate(dateTo)+"' "
-				+"AND Status = '1' "//Recieved. If not received, then it is only an estimate.
+				+"AND (Status = '1' OR Status = 4) "//Recieved or supplemental. Otherwise, it's only an estimate.
 				+whereProv
 				+" GROUP BY DateCP "
 				+"ORDER BY DateCP"; 

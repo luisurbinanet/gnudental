@@ -573,8 +573,23 @@ namespace OpenDental{
 						if(n.Tag.ToString()==DocCur.DocNum.ToString()){
 							TreeDocuments.SelectedNode=n;
 						}
-					}				}				SrcFileName=patFolder+DocCur.FileName;
-				try{					WebRequest request=WebRequest.Create(SrcFileName); 					WebResponse response=request.GetResponse();					if(Path.GetExtension(DocCur.FileName)==".jpg"){//can only display jpg for now						ImageCurrent=(Bitmap)System.Drawing.Bitmap.FromStream (response.GetResponseStream());					}					else{						ImageCurrent=null;//this may be unnecessary					}					response.Close();			  }			  catch(System.Exception exception){					MessageBox.Show(Lan.g(this,exception.Message)); 			  }
+					}
+				}
+				SrcFileName=patFolder+DocCur.FileName;
+				try{
+					WebRequest request=WebRequest.Create(SrcFileName); 
+					WebResponse response=request.GetResponse();
+					if(Path.GetExtension(DocCur.FileName)==".jpg"){//can only display jpg for now
+						ImageCurrent=(Bitmap)System.Drawing.Bitmap.FromStream (response.GetResponseStream());
+					}
+					else{
+						ImageCurrent=null;//this may be unnecessary
+					}
+					response.Close();
+			  }
+			  catch(System.Exception exception){
+					MessageBox.Show(Lan.g(this,exception.Message)); 
+			  }
 				RecZoom.Width=0;
 			}
 			else TreeDocuments.SelectedNode=TreeDocuments.Nodes[0];
@@ -1172,10 +1187,17 @@ namespace OpenDental{
 			if(cropTop<0) cropTop=0;
 			if(cropRight>imageTemp.Width-1) cropRight=imageTemp.Width-1;
 			if(cropBottom>imageTemp.Height-1) cropBottom=imageTemp.Height-1;
-			RecCrop=new Rectangle();			RecCrop.X=cropLeft;			RecCrop.Y=cropTop;			RecCrop.Width=cropRight-cropLeft;			RecCrop.Height=cropBottom-cropTop;			Graphics grPictBox = PictureBox1.CreateGraphics();
+			RecCrop=new Rectangle();
+			RecCrop.X=cropLeft;
+			RecCrop.Y=cropTop;
+			RecCrop.Width=cropRight-cropLeft;
+			RecCrop.Height=cropBottom-cropTop;
+			Graphics grPictBox = PictureBox1.CreateGraphics();
 			//ImageCurrent will get the blue rectangle drawn in it, but then it will be replaced with a 
 			//clean image before crop and save.
-			Graphics grImg=Graphics.FromImage(ImageCurrent);			grImg.DrawRectangle(new Pen(Color.Blue),RecCrop);			grPictBox.DrawImage(ImageCurrent
+			Graphics grImg=Graphics.FromImage(ImageCurrent);
+			grImg.DrawRectangle(new Pen(Color.Blue),RecCrop);
+			grPictBox.DrawImage(ImageCurrent
 				,new Rectangle(0,0,PictureBox1.ClientRectangle.Width,PictureBox1.ClientRectangle.Height)
 				,RecZoom,GraphicsUnit.Pixel);
       if (MessageBox.Show(Lan.g(this,"Crop to Rectangle?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
@@ -1318,7 +1340,8 @@ namespace OpenDental{
         }
 	    }
 			//tag holds the document number of the node
-		  //Documents.GetCurrent(TreeDocuments.SelectedNode.Tag.ToString());			SrcFileName = patFolder+DocCur.FileName;
+		  //Documents.GetCurrent(TreeDocuments.SelectedNode.Tag.ToString());
+			SrcFileName = patFolder+DocCur.FileName;
 			if(Path.GetExtension(SrcFileName).ToLower()!=".jpg"
 				&& Path.GetExtension(SrcFileName).ToLower()!=".gif"
 				&& Path.GetExtension(SrcFileName).ToLower()!=".jpeg"){
@@ -1768,7 +1791,25 @@ namespace OpenDental{
 						,RecTempZoom,GraphicsUnit.Pixel);
 				}
 			}
-			else{//Crop Mode				float ratio=1;				if(DocCur.DegreesRotated==0 || DocCur.DegreesRotated==180){					ratio=(float)PictureBox1.ClientRectangle.Width/Math.Abs(RecZoom.Width);				}				else{					ratio=(float)PictureBox1.ClientRectangle.Width/Math.Abs(RecZoom.Height);				}				int rBound=0;//in picturebox coordinates				int bBound=0;				if(DocCur.DegreesRotated==0 || DocCur.DegreesRotated==180){					rBound=(int)(ImageCurrent.Width*ratio);					bBound=(int)(ImageCurrent.Height*ratio);				}				else{					rBound=(int)(ImageCurrent.Height*ratio);					bBound=(int)(ImageCurrent.Width*ratio);				}				if(DocCur.DegreesRotated==0 || DocCur.DegreesRotated==180){
+			else{//Crop Mode
+				float ratio=1;
+				if(DocCur.DegreesRotated==0 || DocCur.DegreesRotated==180){
+					ratio=(float)PictureBox1.ClientRectangle.Width/Math.Abs(RecZoom.Width);
+				}
+				else{
+					ratio=(float)PictureBox1.ClientRectangle.Width/Math.Abs(RecZoom.Height);
+				}
+				int rBound=0;//in picturebox coordinates
+				int bBound=0;
+				if(DocCur.DegreesRotated==0 || DocCur.DegreesRotated==180){
+					rBound=(int)(ImageCurrent.Width*ratio);
+					bBound=(int)(ImageCurrent.Height*ratio);
+				}
+				else{
+					rBound=(int)(ImageCurrent.Height*ratio);
+					bBound=(int)(ImageCurrent.Width*ratio);
+				}
+				if(DocCur.DegreesRotated==0 || DocCur.DegreesRotated==180){
 					g.DrawImage(ImageCurrent
 						,new Rectangle(0,0,PictureBox1.ClientRectangle.Width,PictureBox1.ClientRectangle.Height)
 						,RecZoom,GraphicsUnit.Pixel);
@@ -1777,7 +1818,40 @@ namespace OpenDental{
 					g.DrawImage(ImageCurrent
 						,new Rectangle(0,0,PictureBox1.ClientRectangle.Height,PictureBox1.ClientRectangle.Width)
 						,RecZoom,GraphicsUnit.Pixel);
-				}				if(MouseIsDown){					RecCrop=new Rectangle();					RecCrop.X=MouseDownOrigin.X;					RecCrop.Y=MouseDownOrigin.Y;					RecCrop.Width=e.X-MouseDownOrigin.X;					RecCrop.Height=e.Y-MouseDownOrigin.Y;					if(e.X > rBound){						RecCrop.Width=(int)rBound-RecCrop.X;					}					if(e.Y > bBound){						RecCrop.Height=(int)bBound-RecCrop.Y;					}					/*if(RecZoom.X*ratio+e.X > rBound){						RecCrop.Width=(int)(rBound-RecZoom.X*ratio)-RecCrop.X;					}					if(RecZoom.Y*ratio+e.Y > bBound){						RecCrop.Height=(int)(bBound-RecZoom.Y*ratio)-RecCrop.Y;					}*/					//need to unmangle rectangle?? not too important...					g.ResetTransform();					g.DrawRectangle(new Pen(Color.Blue),RecCrop);				}				else{//mouse is up 					g.ResetTransform();					if(e.X<rBound){						g.DrawLine(new Pen(Color.Blue),new Point(e.X,0),new Point(e.X,bBound));					}					if(e.Y<bBound){						g.DrawLine(new Pen(Color.Blue),new Point(0,e.Y),new Point(rBound,e.Y));					}					g.DrawRectangle(new Pen(Color.Blue),RecCrop);				}			}
+				}
+				if(MouseIsDown){
+					RecCrop=new Rectangle();
+					RecCrop.X=MouseDownOrigin.X;
+					RecCrop.Y=MouseDownOrigin.Y;
+					RecCrop.Width=e.X-MouseDownOrigin.X;
+					RecCrop.Height=e.Y-MouseDownOrigin.Y;
+					if(e.X > rBound){
+						RecCrop.Width=(int)rBound-RecCrop.X;
+					}
+					if(e.Y > bBound){
+						RecCrop.Height=(int)bBound-RecCrop.Y;
+					}
+					/*if(RecZoom.X*ratio+e.X > rBound){
+						RecCrop.Width=(int)(rBound-RecZoom.X*ratio)-RecCrop.X;
+					}
+					if(RecZoom.Y*ratio+e.Y > bBound){
+						RecCrop.Height=(int)(bBound-RecZoom.Y*ratio)-RecCrop.Y;
+					}*/
+					//need to unmangle rectangle?? not too important...
+					g.ResetTransform();
+					g.DrawRectangle(new Pen(Color.Blue),RecCrop);
+				}
+				else{//mouse is up 
+					g.ResetTransform();
+					if(e.X<rBound){
+						g.DrawLine(new Pen(Color.Blue),new Point(e.X,0),new Point(e.X,bBound));
+					}
+					if(e.Y<bBound){
+						g.DrawLine(new Pen(Color.Blue),new Point(0,e.Y),new Point(rBound,e.Y));
+					}
+					g.DrawRectangle(new Pen(Color.Blue),RecCrop);
+				}
+			}
 			g.Dispose();
 		}//end mousemove
 
@@ -1797,7 +1871,12 @@ namespace OpenDental{
 				RectangleF sourceRect=new RectangleF();//in image coordinates.
 				//sourceRect has positive width
 				float ratio=1;
-				if(DocCur.DegreesRotated==0 || DocCur.DegreesRotated==180){					ratio=Math.Abs(RecZoom.Width)/(float)PictureBox1.ClientRectangle.Width;				}				else{					ratio=RecZoom.Height/(float)PictureBox1.ClientRectangle.Width;				}
+				if(DocCur.DegreesRotated==0 || DocCur.DegreesRotated==180){
+					ratio=Math.Abs(RecZoom.Width)/(float)PictureBox1.ClientRectangle.Width;
+				}
+				else{
+					ratio=RecZoom.Height/(float)PictureBox1.ClientRectangle.Width;
+				}
 				
 				if(DocCur.DegreesRotated==0){
 					if(DocCur.IsFlipped){
@@ -1903,7 +1982,28 @@ namespace OpenDental{
 			//then, display image:
 			string SrcFileName="";
 			//tag holds the document number of the node
-		  DocCur=Documents.GetDocument(TreeDocuments.SelectedNode.Tag.ToString(),DocumentList);			SrcFileName=patFolder+DocCur.FileName;			try{				//I just used webrequest for kicks. It is faster to use Image.FromFile().		    WebRequest request=WebRequest.Create(SrcFileName); 			  WebResponse response=request.GetResponse();				//MessageBox.Show(Path.GetExtension(SrcFileName));				if(Path.GetExtension(SrcFileName).ToLower()==".jpg"					|| Path.GetExtension(SrcFileName).ToLower()==".gif"					|| Path.GetExtension(SrcFileName).ToLower()==".jpeg")				{					ImageCurrent=(Bitmap)System.Drawing.Bitmap.FromStream(response.GetResponseStream());				}				else{					ImageCurrent=null;//may not be necessary				}			  response.Close();	    }		  catch(System.Exception exception){		    MessageBox.Show(Lan.g(this,exception.Message)); 				ImageCurrent=null;	    }
+		  DocCur=Documents.GetDocument(TreeDocuments.SelectedNode.Tag.ToString(),DocumentList);
+			SrcFileName=patFolder+DocCur.FileName;
+			try{
+				//I just used webrequest for kicks. It is faster to use Image.FromFile().
+		    WebRequest request=WebRequest.Create(SrcFileName); 
+			  WebResponse response=request.GetResponse();
+				//MessageBox.Show(Path.GetExtension(SrcFileName));
+				if(Path.GetExtension(SrcFileName).ToLower()==".jpg"
+					|| Path.GetExtension(SrcFileName).ToLower()==".gif"
+					|| Path.GetExtension(SrcFileName).ToLower()==".jpeg")
+				{
+					ImageCurrent=(Bitmap)System.Drawing.Bitmap.FromStream(response.GetResponseStream());
+				}
+				else{
+					ImageCurrent=null;//may not be necessary
+				}
+			  response.Close();
+	    }
+		  catch(System.Exception exception){
+		    MessageBox.Show(Lan.g(this,exception.Message)); 
+				ImageCurrent=null;
+	    }
 		  RecZoom.Width=0;
 		  DisplayImage(true,true);//clears image, then displays current
 		}

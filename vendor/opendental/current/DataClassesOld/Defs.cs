@@ -5,12 +5,11 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the definition table in the database.</summary>
-	///<remarks>Almost every table in the database links to definition.  Almost all links to this table will be to a DefNum.  Using the DefNum, you can find any of the other fields of interest, usually the ItemName.  Make sure to look at the Defs class to see how the definitions are loaded into memory ahead of time.</remarks>
+	///<summary>The info in the definition table is used by other tables extensively.  Almost every table in the database links to definition.  Almost all links to this table will be to a DefNum.  Using the DefNum, you can find any of the other fields of interest, usually the ItemName.  Make sure to look at the Defs class to see how the definitions are used.  Loaded into memory ahead of time for speed.  Some types of info such as operatories started out life in this table, but then got moved to their own table when more complexity was needed.</summary>
 	public struct Def{
 		///<summary>Primary key.</summary>
 		public int DefNum;
-		///<summary>See the DefCat enumeration.</summary>
+		///<summary>Enum:DefCat</summary>
 		public DefCat Category;
 		///<summary>Order that each item shows on various lists.</summary>
 		public int ItemOrder;

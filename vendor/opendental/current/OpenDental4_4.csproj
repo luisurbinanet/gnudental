@@ -132,7 +132,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Required dlls\Tao.Platform.Windows.dll</HintPath>
     </Reference>
-    <Reference Include="VBbridges, Version=4.3.4.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="VBbridges, Version=4.4.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Required dlls\VBbridges.dll</HintPath>
     </Reference>
@@ -141,6 +141,8 @@
     <Compile Include="Bridges\Apteryx.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Bridges\PerioPal.cs" />
+    <Compile Include="Bridges\MediaDent.cs" />
     <Compile Include="Bridges\FloridaProbe.cs" />
     <Compile Include="Bridges\DrCeph.cs" />
     <Compile Include="Bridges\DentalEye.cs" />
@@ -211,6 +213,10 @@
     <Compile Include="Business Layer\AppointmentRules.cs" />
     <Compile Include="Business Layer\Accounts.cs" />
     <Compile Include="Business Layer\AccountingAutoPays.cs" />
+    <Compile Include="Business Layer\SigButDefElements.cs" />
+    <Compile Include="Business Layer\SigButDefs.cs" />
+    <Compile Include="Business Layer\SigElements.cs" />
+    <Compile Include="Business Layer\SigElementDefs.cs" />
     <Compile Include="Business Layer\RxAlerts.cs" />
     <Compile Include="Business Layer\Questions.cs" />
     <Compile Include="Business Layer\QuestionDefs.cs" />
@@ -493,9 +499,6 @@
     <Compile Include="DataClassesOld\PerioMeasures.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DataClassesOld\PerioSequences.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="DataClassesOld\PIn.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -686,6 +689,21 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\BasicTemplate.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormRxSetupPrinting.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormSigButDefEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormMessagingButSetup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormSigElementDefEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormMessagingSetup.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\FormInsPlansMerge.cs">
@@ -1567,6 +1585,12 @@
     <Compile Include="UI\ContrYN.Designer.cs">
       <DependentUpon>ContrYN.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\LightSignalGrid.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\LightSignalGrid.Designer.cs">
+      <DependentUpon>LightSignalGrid.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\GridColumnTypeConverter.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -1747,6 +1771,26 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\BasicTemplate.resx">
       <DependentUpon>BasicTemplate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormRxSetupPrinting.resx">
+      <DependentUpon>FormRxSetupPrinting.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormSigButDefEdit.resx">
+      <DependentUpon>FormSigButDefEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormMessagingButSetup.resx">
+      <DependentUpon>FormMessagingButSetup.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormSigElementDefEdit.resx">
+      <DependentUpon>FormSigElementDefEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormMessagingSetup.resx">
+      <DependentUpon>FormMessagingSetup.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormInsPlansMerge.resx">
       <DependentUpon>FormInsPlansMerge.cs</DependentUpon>

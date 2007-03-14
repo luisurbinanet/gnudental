@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Corresponds to the userquery table in the database.</summary>
+	///<summary>A list of query favorites that users can run.</summary>
 	public struct UserQuery{
 		///<summary>Primary key.</summary>
 		public int QueryNum;

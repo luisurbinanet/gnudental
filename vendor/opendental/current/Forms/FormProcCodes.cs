@@ -592,6 +592,7 @@ namespace OpenDental{
 			procCode.ADACode=FormPCN.textNewCode.Text;
 			procCode.ProcTime="/X/";
 			procCode.ProcCat=Defs.Short[(int)DefCat.ProcCodeCats][0].DefNum;
+			procCode.GraphicColor=Color.FromArgb(0);
 			procCode.Insert();
 			FormProcCodeEdit FormP=new FormProcCodeEdit(procCode);
 			FormP.IsNew=true;

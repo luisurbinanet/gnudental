@@ -4,52 +4,51 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Corresponds to the screen table in the database. Used in public health.</summary>
-	///<remarks>This screening table is meant to be general purpose.  It is compliant with the popular Basic Screening Survey.  It is also designed with minimal foreign keys and can be easily adapted to a palm or pocketPC.  This table can be used with only the screengroup table, but is more efficient if provider, school, and county tables are also available.</remarks>
+	///<summary>Used in public health.  This screening table is meant to be general purpose.  It is compliant with the popular Basic Screening Survey.  It is also designed with minimal foreign keys and can be easily adapted to a palm or pocketPC.  This table can be used with only the screengroup table, but is more efficient if provider, school, and county tables are also available.</summary>
 	public struct Screen{
 		///<summary>Primary key</summary>
 		public int ScreenNum;
 		///<summary>The date of the screening.</summary>
 		public DateTime ScreenDate;
-		///<summary>Foreign key to school.SchoolName, although it will not crash if key absent.</summary>
+		///<summary>FK to school.SchoolName, although it will not crash if key absent.</summary>
 		public string GradeSchool;
-		///<summary>Foreign key to county.CountyName, although it will not crash if key absent.</summary>
+		///<summary>FK to county.CountyName, although it will not crash if key absent.</summary>
 		public string County;
-		///<summary>See the PlaceOfService enum.</summary>
+		///<summary>Enum:PlaceOfService</summary>
 		public PlaceOfService PlaceService;
-		///<summary>Foreign key to provider.ProvNum.  ProvNAME is always entered, but ProvNum supplements it by letting user select from list.  When entering a provNum, the name will be filled in automatically. Can be 0 if the provider is not in the list, but provName is required.</summary>
+		///<summary>FK to provider.ProvNum.  ProvNAME is always entered, but ProvNum supplements it by letting user select from list.  When entering a provNum, the name will be filled in automatically. Can be 0 if the provider is not in the list, but provName is required.</summary>
 		public int ProvNum;
 		///<summary>Required.</summary>
 		public string ProvName;
-		///<summary>See the PatientGender enumeration.</summary>
+		///<summary>Enum:PatientGender</summary>
 		public PatientGender Gender;
-		///<summary>Race and ethnicity. See the PatientRace enum.</summary>
+		///<summary>Enum:PatientRace and ethnicity.</summary>
 		public PatientRace Race;
-		///<summary>See the PatientGrade enumeration.</summary>
+		///<summary>Enum:PatientGrade</summary>
 		public PatientGrade GradeLevel;
 		///<summary>Age of patient at the time the screening was done. Faster than recording birthdates.</summary>
 		public int Age;
-		///<summary>See the TreatmentUrgency enumeration.</summary>
+		///<summary>Enum:TreatmentUrgency</summary>
 		public TreatmentUrgency Urgency;
-		///<summary>Set to true if patient has cavities.</summary>
+		///<summary>Enum:YN Set to true if patient has cavities.</summary>
 		public YN HasCaries;
-		///<summary>Set to true if patient needs sealants.</summary>
+		///<summary>Enum:YN Set to true if patient needs sealants.</summary>
 		public YN NeedsSealants;
-		///<summary></summary>
+		///<summary>Enum:YN</summary>
 		public YN CariesExperience;
-		///<summary></summary>
+		///<summary>Enum:YN</summary>
 		public YN EarlyChildCaries;
-		///<summary></summary>
+		///<summary>Enum:YN</summary>
 		public YN ExistingSealants;
-		///<summary></summary>
+		///<summary>Enum:YN</summary>
 		public YN MissingAllTeeth;
 		///<summary>Optional</summary>
 		public DateTime Birthdate;
-		///<summary>Foreign Key to screengroup.ScreenGroupNum.</summary>
+		///<summary>FK to screengroup.ScreenGroupNum.</summary>
 		public int ScreenGroupNum;
 		///<summary>The order of this item within its group.</summary>
 		public int ScreenGroupOrder;
-		///<summary></summary>
+		///<summary>.</summary>
 		public string Comments;
 	}
 

@@ -6,26 +6,24 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-		///<summary>Corresponds to the claim table in the database.</summary>
-	///<remarks>The claim table holds information about individual claims.  Each row represents one claim.</remarks>
+		///<summary>The claim table holds information about individual claims.  Each row represents one claim.</summary>
 	public struct Claim{
 		///<summary>Primary key</summary>
 		public int ClaimNum;
-		///<summary>Foreign key to <see cref="Patient.PatNum">patient.PatNum</see></summary>
+		///<summary>FK to patient.PatNum</summary>
 		public int PatNum;//
 		///<summary>Usually the same date as the procedures, but it can be changed if you wish.</summary>
 		public DateTime DateService;//
 		///<summary>Usually the date it was created.  It might be sent a few days later if you don't send your e-claims every day.</summary>
 		public DateTime DateSent;
-		///<summary>Single char: U,H,W,P,S,or R.</summary>
-		///<remarks>U=Unsent, H=Hold until pri received, W=Waiting in queue, P=Probably sent, S=Sent, R=Received.  A(adj) is no longer used.</remarks>
-		public string ClaimStatus;//
+		///<summary>Single char: U,H,W,P,S,or R.  U=Unsent, H=Hold until pri received, W=Waiting in queue, P=Probably sent, S=Sent, R=Received.  A(adj) is no longer used.</summary>
+		public string ClaimStatus;
 		///<summary>Date the claim was received.</summary>
 		public DateTime DateReceived;
-		///<summary>Foreign key to InsPlan.PlanNum</summary>
+		///<summary>FK to insplan.PlanNum.  Every claim is attached to one plan.</summary>
 		public int PlanNum;
-		///<summary>Treating provider. Foreign key to Provider.ProvNum.</summary>
-		public int ProvTreat;//
+		///<summary>FK to provider.ProvNum.  Treating provider.</summary>
+		public int ProvTreat;
 		///<summary>Total fee of claim.</summary>
 		public double ClaimFee;
 		///<summary>Amount insurance is estimated to pay on this claim.</summary>
@@ -36,23 +34,23 @@ namespace OpenDental{
 		public double DedApplied;
 		///<summary>The preauth number received from ins.</summary>
 		public string PreAuthString;
-		///<summary>single char for No, Initial, or Replacement.</summary>
+		///<summary>Single char for No, Initial, or Replacement.</summary>
 		public string IsProsthesis;
-		///<summary>Date prior prosthesis was placed.</summary>
+		///<summary>Date prior prosthesis was placed.  Note that this is only for paper claims.  E-claims have a date field on each individual procedure.</summary>
 		public DateTime PriorDate;
 		///<summary>Note for patient for why insurance didn't pay as expected.</summary>
-		public string ReasonUnderPaid;//
-		///<summary>Note to be sent to insurance. Max 255 char.</summary>
-		public string ClaimNote;//
+		public string ReasonUnderPaid;
+		///<summary>Note to be sent to insurance. Max 255 char.  E-claims also have notes on each procedure.</summary>
+		public string ClaimNote;
 		///<summary>"P"=primary, "S"=secondary, "PreAuth"=preauth, "Other"=other, "Cap"=capitation.  Not allowed to be blank. Might need to add "Med"=medical claim.</summary>
 		public string ClaimType;
-		///<summary>Billing provider.  Foreign key to Provider.ProvNum.</summary>
+		///<summary>FK to provider.ProvNum.  Billing provider.  Assignment can be automated from the setup section.</summary>
 		public int ProvBill;
-		///<summary>Foreign key to Referral.ReferralNum.</summary>
+		///<summary>FK to referral.ReferralNum.</summary>
 		public int ReferringProv;
 		///<summary>Referral number for this claim.</summary>
 		public string RefNumString;
-		///<summary>See the PlaceOfService enum.</summary>
+		///<summary>Enum:PlaceOfService .</summary>
 		public PlaceOfService PlaceService;
 		///<summary>blank or A=Auto, E=Employment, O=Other.</summary>
 		public string AccidentRelated;
@@ -60,7 +58,7 @@ namespace OpenDental{
 		public DateTime AccidentDate;
 		///<summary>Accident state.</summary>
 		public string AccidentST;
-		///<summary>See the YN enum.</summary>
+		///<summary>Enum:YN .</summary>
 		public YN EmployRelated;
 		///<summary>True if is ortho.</summary>
 		public bool IsOrtho;
@@ -68,19 +66,17 @@ namespace OpenDental{
 		public int OrthoRemainM;
 		///<summary>Date ortho appliance placed.</summary>
 		public DateTime OrthoDate;
-		///<summary>Relationship to subscriber.  See the Relat enumeration.</summary>
-		///<remarks>You no longer have to look in patient to find the relationship, since it is copied over when the claim is created.</remarks>
+		///<summary>Enum:Relat  Relationship to subscriber.  The relationship is copied from InsPlan when the claim is created.  It might need to be changed in both places.</summary>
 		public Relat PatRelat;
-		///<summary>Other coverage plan number.  Foreign key to InsPlan.PlanNum for other coverage.  0 if none.</summary>
-		///<remarks>This provides the user with total control over what other coverage shows. This obviously limits the coverage on a single claim to two insurance companies.</remarks>
+		///<summary>FK to insplan.PlanNum.  Other coverage plan number.  0 if none.  This provides the user with total control over what other coverage shows. This obviously limits the coverage on a single claim to two insurance companies.</summary>
 		public int PlanNum2;
-		///<summary>The relationsip to the subscriber for other coverage on this claim.</summary>
+		///<summary>Enum:Relat  The relationship to the subscriber for other coverage on this claim.</summary>
 		public Relat PatRelat2;
 		///<summary>Sum of ClaimProc.Writeoff for this claim.</summary>
 		public double WriteOff;
 		///<summary>The number of x-rays enclosed.</summary>
 		public int Radiographs;
-		///<summary>Foreign key to clinic.ClinicNum.  0 if no clinic.</summary>
+		///<summary>FK to clinic.ClinicNum.  0 if no clinic.</summary>
 		public int ClinicNum;
 	}
 	
@@ -418,7 +414,16 @@ namespace OpenDental{
 			//InsPlans.Cur=(InsPlan)InsPlans.HList[ClaimCur.PlanNum];
 			int provNum;
 			double dedRem;
-			double insRem;//takes annual max into consideration
+			int patPlanNum=PatPlans.GetPatPlanNum(patPlans,ClaimCur.PlanNum);
+			//this next line has to be done outside the loop.  Takes annual max into consideration 
+			double insRem;//no changes get made to insRem in the loop.
+			if(patPlanNum==0){//patient does not have current coverage
+				insRem=0;
+			}
+			else{
+				insRem=InsPlans.GetInsRem(ClaimProcList,ClaimProcsForClaim[0].ProcDate,ClaimCur.PlanNum,
+						patPlanNum,ClaimCur.ClaimNum,PlanList,benefitList);
+			}
 			//first loop handles totals for received items.
 			for(int i=0;i<ClaimProcsForClaim.Length;i++){
 				if(ClaimProcsForClaim[i].Status!=ClaimProcStatus.Received){
@@ -432,7 +437,6 @@ namespace OpenDental{
 			//loop again only for procs not received.
 			//And for preauth.
 			Procedure ProcCur;
-			int patPlanNum;
 			for(int i=0;i<ClaimProcsForClaim.Length;i++){
 				if(ClaimProcsForClaim[i].Status!=ClaimProcStatus.NotReceived
 					&& ClaimProcsForClaim[i].Status!=ClaimProcStatus.Preauth){
@@ -462,7 +466,6 @@ namespace OpenDental{
 					continue;
 				}
 				//deduct:
-				patPlanNum=PatPlans.GetPatPlanNum(patPlans,ClaimCur.PlanNum);
 				if(patPlanNum==0){//patient does not have current coverage
 					dedRem=0;
 				}
@@ -483,17 +486,18 @@ namespace OpenDental{
 				//??obsolete: if dedApplied is too big, it might be adjusted in the next few lines.??
 				//insest:
 				//Unlike deductible, we do not need to take into account any of the received claimprocs when calculating insest.  So insRem takes care of annual max rather than received+est.
-				if(patPlanNum==0){//patient does not have current coverage
-					insRem=0;
-				}
-				else{
-					insRem=InsPlans.GetInsRem(ClaimProcList,ClaimProcsForClaim[i].ProcDate,ClaimCur.PlanNum,
-						patPlanNum,ClaimCur.ClaimNum,PlanList,benefitList)
-						-insPayEst;//subtracts insest amounts already applied on this claim
-					if(insRem<0) {
-						insRem=0;
-					}
-				}
+				//if(patPlanNum==0){//patient does not have current coverage
+				//	insRem=0;
+				//}
+				//else{
+					//insRem-=insPayEst;//subtracts insest amounts already applied on this claim
+					//insRem=InsPlans.GetInsRem(ClaimProcList,ClaimProcsForClaim[i].ProcDate,ClaimCur.PlanNum,
+					//	patPlanNum,ClaimCur.ClaimNum,PlanList,benefitList)
+					//	-insPayEst;//subtracts insest amounts already applied on this claim
+				//	if(insRem<0) {
+				//		insRem=0;
+				//	}
+				//}
 				if(ClaimCur.ClaimType=="P"){//primary
 					ClaimProcsForClaim[i].ComputeBaseEst(ProcCur,PriSecTot.Pri,PlanList,patPlans,benefitList);//handles dedBeforePerc
 					ClaimProcsForClaim[i].InsPayEst=ProcCur.GetEst(ClaimProcList,PriSecTot.Pri,patPlans,true);
@@ -517,8 +521,11 @@ namespace OpenDental{
 					ClaimProcsForClaim[i].InsPayEst=0;
 					//so only 19 of deductible gets applied, and inspayest is 0
 				}
-				if(ClaimProcsForClaim[i].InsPayEst>insRem){
-					ClaimProcsForClaim[i].InsPayEst=insRem;
+				if(insRem-insPayEst<0) {//total remaining ins-Estimated so far on this claim
+					ClaimProcsForClaim[i].InsPayEst=0;
+				}
+				else if(ClaimProcsForClaim[i].InsPayEst>insRem-insPayEst){
+					ClaimProcsForClaim[i].InsPayEst=insRem-insPayEst;
 				}
 				dedApplied+=ClaimProcsForClaim[i].DedApplied;
 				insPayEst+=ClaimProcsForClaim[i].InsPayEst;

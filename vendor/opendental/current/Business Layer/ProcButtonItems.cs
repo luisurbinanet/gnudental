@@ -4,15 +4,15 @@ using System.Data;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the procbuttonitem table in the database.</summary>
+	///<summary>Attached to procbuttons.  These tell the program what to do when a user clicks on a button.  There are two types: adacodes or autocodes.</summary>
 	public class ProcButtonItem{
 		///<summary>Primary key.</summary>
 		public int ProcButtonItemNum;
-		///<summary>Foreign key to procbutton.ProcButtonNum.</summary>
+		///<summary>FK to procbutton.ProcButtonNum.</summary>
 		public int ProcButtonNum;
-		///<summary>Foreign key to procedurecode.ADACode.</summary>
+		///<summary>FK to procedurecode.ADACode.  0 if this is an autocode.</summary>
 		public string ADACode;
-		///<summary>Foreign key to autocode.AutoCodeNum.</summary>
+		///<summary>FK to autocode.AutoCodeNum.  0 if this is a procedure code.</summary>
 		public int AutoCodeNum;
 
 		///<summary></summary>

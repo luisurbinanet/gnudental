@@ -220,14 +220,15 @@ namespace OpenDental {
 		/// <summary>Only used once in Claims.cs.  Gets insurance benefits remaining for one benefit year.  Returns actual remaining insurance based on ClaimProc data, taking into account inspayed and ins pending. Must supply all claimprocs for the patient.  Date used to determine which benefit year to calc.  Usually today's date.  The insplan.PlanNum is the plan to get value for.  ExcludeClaim is the ClaimNum to exclude, or enter -1 to include all.  This does not yet handle calculations where ortho max is different from regular max.  Just takes the most general annual max, and subtracts all benefits used from all categories.</summary>
 		public static double GetInsRem(ClaimProc[] ClaimProcList,DateTime date,int planNum,int patPlanNum,int excludeClaim,InsPlan[] PlanList,Benefit[] benList) {
 			double insUsed=GetInsUsed(ClaimProcList,date,planNum,patPlanNum,excludeClaim,PlanList,benList);
+			double insPending=GetPending(ClaimProcList,date,planNum,patPlanNum,excludeClaim,PlanList,benList);
 			double annualMax=Benefits.GetAnnualMax(benList,planNum,patPlanNum);
 			if(annualMax<0) {
 				return 999999;
 			}
-			if(annualMax-insUsed<0) {
+			if(annualMax-insUsed-insPending<0) {
 				return 0;
 			}
-			return annualMax-insUsed;
+			return annualMax-insUsed-insPending;
 		}
 
 		/// <summary>Get insurance benefits used for one benefit year.  Returns actual insurance used based on ClaimProc data. Must supply all claimprocs for the patient.  Must supply all benefits for patient so that we know if it's a service year or a calendar year.  Date used to determine which benefit year to calc.  Usually today's date.  The insplan.PlanNum is the plan to get value for.  ExcludeClaim is the ClaimNum to exclude, or enter -1 to include all.</summary>
@@ -309,7 +310,7 @@ namespace OpenDental {
 		}
 
 		///<summary>Get pending insurance for a given plan for one benefit year. Include a ClaimProcList which is all claimProcs for the patient.  Must supply all benefits for patient so that we know if it's a service year or a calendar year.  Date used to determine which benefit year to calc.  Usually today's date.  The insplan.PlanNum is the plan to get value for.</summary>
-		public static double GetPending(ClaimProc[] ClaimProcList,DateTime date,int planNum,int patPlanNum,InsPlan[] PlanList,Benefit[] benList) {
+		public static double GetPending(ClaimProc[] ClaimProcList,DateTime date,int planNum,int patPlanNum,int excludeClaim,InsPlan[] PlanList,Benefit[] benList) {
 			InsPlan curPlan=GetPlan(planNum,PlanList);
 			if(curPlan==null) {
 				return 0;
@@ -336,7 +337,7 @@ namespace OpenDental {
 			double retVal=0;
 			for(int i=0;i<ClaimProcList.Length;i++) {
 				if(ClaimProcList[i].PlanNum==planNum
-					//&& ClaimProcList[i].ClaimNum != excludeClaim
+					&& ClaimProcList[i].ClaimNum != excludeClaim
 					&& ClaimProcList[i].ProcDate < stopDate
 					&& ClaimProcList[i].ProcDate >= startDate
 					//enum ClaimProcStatus{NotReceived,Received,Preauth,Adjustment,Supplemental}

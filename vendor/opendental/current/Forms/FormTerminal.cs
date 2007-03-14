@@ -1236,7 +1236,8 @@ namespace OpenDental{
 			if(textBirthdate.Text==""){
 				throw new ApplicationException(Lan.g(this,"Birthdate must be entered."));
 			}
-			if(textReferral.Text=="") {
+			if(TerminalStatus!=TerminalStatusEnum.UpdateOnly && textReferral.Text=="") {
+			//if(textReferral.Text=="") {
 				textReferral.BackColor=Color.Yellow;
 				throw new ApplicationException(Lan.g(this,"Referral must be entered (on the right)."));
 			}

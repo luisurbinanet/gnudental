@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the electid table in the database. Never editable by users.  We keep this table updated with new numbers as part of upgrades, so NEVER edit this table as it will mess up our primary keys.  Helps with entering elecronic/payor id's as well as keeping track of the specific carrier requirements. Only used by the X12 format.</summary>
+	///<summary>Corresponds to the electid table in the database. Never editable by users.  We keep this table updated with new numbers as part of upgrades, so never edit this table as it will mess up our primary keys.  Helps with entering elecronic/payor id's as well as keeping track of the specific carrier requirements. Only used by the X12 format.</summary>
 	public class ElectID{
 		///<summary>Primary key.</summary>
 		public int ElectIDNum;

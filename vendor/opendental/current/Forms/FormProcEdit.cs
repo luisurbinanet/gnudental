@@ -1895,6 +1895,10 @@ namespace OpenDental{
 			if(!Security.IsAuthorized(Permissions.ProcComplCreate)){
 				return;
 			}
+			if(ProcCur.ProcStatus==ProcStat.C) {
+				MsgBox.Show(this,"The procedure is already complete.");
+				return;
+			}
 			Procedures.SetDateFirstVisit(DateTime.Today,2,PatCur);
 			if(ProcCur.AptNum!=0){//if attached to an appointment
 				textDate.Text=Appointments.GetOneApt(ProcCur.AptNum).AptDateTime.ToShortDateString();

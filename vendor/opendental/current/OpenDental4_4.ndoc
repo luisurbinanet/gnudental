@@ -1,0 +1,38 @@
+<project SchemaVersion="1.3">
+    <assemblies>
+        <assembly location="C:\Documents and Settings\jordan\My Documents\Open Dental Project\OpenDental4_4\bin\Release\OpenDental.exe" documentation="C:\Documents and Settings\jordan\My Documents\Open Dental Project\OpenDental4_4\bin\Release\OpenDental.XML" />
+    </assemblies>
+    <namespaces>
+        <namespace name="OpenDental">If you are new to this program and need an overview, the recommended starting point is the DataClass page.</namespace>
+    </namespaces>
+    <documenters>
+        <documenter name="JavaDoc">
+            <property name="OutputDirectory" value=".\doc\" />
+        </documenter>
+        <documenter name="LaTeX">
+            <property name="OutputDirectory" value=".\doc\" />
+            <property name="TextFileFullName" value="Documentation.tex" />
+            <property name="TexFileBaseName" value="Documentation" />
+            <property name="LatexCompiler" value="latex" />
+            <property name="TexFileFullPath" value=".\doc\Documentation.tex" />
+        </documenter>
+        <documenter name="MSDN">
+            <property name="OutputDirectory" value="C:\Documents and Settings\jordan\My Documents\Open Dental Project\OpenDental4_4\doc\" />
+            <property name="HtmlHelpName" value="Documentation" />
+            <property name="Title" value="An NDoc Documented Class Library" />
+            <property name="OutputTarget" value="HtmlHelp" />
+        </documenter>
+        <documenter name="VS.NET 2003">
+            <property name="OutputDirectory" value=".\doc\" />
+            <property name="HtmlHelpName" value="Documentation" />
+            <property name="Title" value="An NDoc documented library" />
+        </documenter>
+        <documenter name="XML">
+            <property name="OutputFile" value=".\doc\doc.xml" />
+        </documenter>
+        <documenter name="MSDN 2003">
+            <property name="OutputDirectory" value=".\doc\" />
+            <property name="Title" value="An NDoc Documented Class Library" />
+        </documenter>
+    </documenters>
+</project>

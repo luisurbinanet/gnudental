@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace OpenDental {
 
-	///<summary>Corresponds to the covcat table in the database.</summary>
+	///<summary>Insurance coverage categories.  They need to look like in the manual for the American calculations to work properly.</summary>
 	public class CovCat {
 		///<summary>Primary key.</summary>
 		public int CovCatNum;
@@ -17,7 +17,7 @@ namespace OpenDental {
 		public int CovOrder;
 		///<summary>If true, this category will be hidden.</summary>
 		public bool IsHidden;
-		///<summary>The X12 benefit categories.  Each CovCat can link to one X12 category.  Default is 0 (unlinked).</summary>
+		///<summary>Enum:EbenefitCategory  The X12 benefit categories.  Each CovCat can link to one X12 category.  Default is 0 (unlinked).</summary>
 		public EbenefitCategory EbenefitCat;
 
 		///<summary></summary>

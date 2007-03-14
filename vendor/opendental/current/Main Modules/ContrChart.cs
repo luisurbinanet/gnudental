@@ -181,8 +181,11 @@ namespace OpenDental{
 		private ODGrid gridPtInfo;
 		private CheckBox checkComm;
 		private ToothInitial[] ToothInitialList;
+		private MenuItem menuItemPrintDay;
 		///<summary>a list of the hidden teeth as strings. Includes "1"-"32", and "A"-"Z"</summary>
 		private ArrayList HiddenTeeth;
+		///<summary>This date will usually have minVal except while the hospital print function is running.</summary>
+		private DateTime hospitalDate;
 			
 		///<summary></summary>
 		public ContrChart(){
@@ -331,6 +334,7 @@ namespace OpenDental{
 			this.button1 = new OpenDental.UI.Button();
 			this.textTreatmentNotes = new OpenDental.ODtextBox();
 			this.gridPtInfo = new OpenDental.UI.ODGrid();
+			this.menuItemPrintDay = new System.Windows.Forms.MenuItem();
 			this.groupBox2.SuspendLayout();
 			this.groupPlanned.SuspendLayout();
 			this.groupShow.SuspendLayout();
@@ -771,6 +775,7 @@ namespace OpenDental{
 			// 
 			this.menuProgRight.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuItemPrintProg,
+            this.menuItemPrintDay,
             this.menuItemSetComplete,
             this.menuItemEditSelected});
 			// 
@@ -782,13 +787,13 @@ namespace OpenDental{
 			// 
 			// menuItemSetComplete
 			// 
-			this.menuItemSetComplete.Index = 1;
+			this.menuItemSetComplete.Index = 2;
 			this.menuItemSetComplete.Text = "Set Complete";
 			this.menuItemSetComplete.Click += new System.EventHandler(this.menuItemSetComplete_Click);
 			// 
 			// menuItemEditSelected
 			// 
-			this.menuItemEditSelected.Index = 2;
+			this.menuItemEditSelected.Index = 3;
 			this.menuItemEditSelected.Text = "Edit Selected";
 			this.menuItemEditSelected.Visible = false;
 			this.menuItemEditSelected.Click += new System.EventHandler(this.menuItemEditSelected_Click);
@@ -1696,6 +1701,12 @@ namespace OpenDental{
 			this.gridPtInfo.TranslationName = "TableChartPtInfo";
 			this.gridPtInfo.CellDoubleClick += new OpenDental.UI.ODGridClickEventHandler(this.gridPtInfo_CellDoubleClick);
 			// 
+			// menuItemPrintDay
+			// 
+			this.menuItemPrintDay.Index = 1;
+			this.menuItemPrintDay.Text = "Print Day for Hospital";
+			this.menuItemPrintDay.Click += new System.EventHandler(this.menuItemPrintDay_Click);
+			// 
 			// ContrChart
 			// 
 			this.Controls.Add(this.gridProg);
@@ -2138,7 +2149,7 @@ namespace OpenDental{
 			ApptPlanned.Info.MyApt=apt.Copy();
 			Procedure[] procs=Procedures.GetProcsForSingle(ApptPlanned.Info.MyApt.AptNum,true);
 			ApptPlanned.Info.Procs=procs;
-			ApptPlanned.Info.Production=Procedures.GetProductionOneApt(ApptPlanned.Info.MyApt.AptNum,procs);
+			ApptPlanned.Info.Production=Procedures.GetProductionOneApt(ApptPlanned.Info.MyApt.AptNum,procs,true);
 			ApptPlanned.Info.MyPatient=PatCur.Copy();
 			ApptPlanned.SetSize();
 			ApptPlanned.Width=114;
@@ -2364,6 +2375,15 @@ namespace OpenDental{
 					ProcAL.Add(ProcList[i]);
 					continue;
 				}*/
+				//if print
+				if(hospitalDate.Year>1880){
+					if(hospitalDate!=ProcList[i].ProcDate){
+						continue;
+					}
+					if(ProcList[i].ProcStatus!=ProcStat.C){
+						continue;
+					}
+				}
 				//if showing only selected teeth, then skip all other teeth
 				if(checkShowTeeth.Checked) {
 					showProc=false;
@@ -4467,6 +4487,12 @@ namespace OpenDental{
 
 		private void gridProg_MouseUp(object sender,MouseEventArgs e) {
 			if(e.Button==MouseButtons.Right) {
+				if(Prefs.GetBool("EasyHideHospitals")){
+					menuItemPrintDay.Visible=false;
+				}
+				else{
+					menuItemPrintDay.Visible=true;
+				}
 				menuProgRight.Show(gridProg,new Point(e.X,e.Y));
 			}
 		}
@@ -4479,6 +4505,44 @@ namespace OpenDental{
 			#else
 				PrintReport(false);	
 			#endif
+		}
+
+		private void menuItemPrintDay_Click(object sender,EventArgs e) {
+			if(gridProg.SelectedIndices.Length==0){
+				MsgBox.Show(this,"Please select at least one item first.");
+				return;
+			}
+			Type type=gridProg.Rows[gridProg.SelectedIndices[0]].Tag.GetType();
+			if(type==typeof(Procedure)){
+				hospitalDate=((Procedure)gridProg.Rows[gridProg.SelectedIndices[0]].Tag).ProcDate.Date;
+			}
+			else if(type==typeof(RxPat)) {
+				hospitalDate=((RxPat)gridProg.Rows[gridProg.SelectedIndices[0]].Tag).RxDate.Date;
+			}
+			else if(type==typeof(Commlog)) {
+				hospitalDate=((Commlog)gridProg.Rows[gridProg.SelectedIndices[0]].Tag).CommDateTime.Date;
+			}
+			bool showRx=this.checkRx.Checked;
+			bool showComm=this.checkComm.Checked;
+			checkRx.Checked=false;
+			checkComm.Checked=false;
+			FillProgNotes();
+			try{
+				pagesPrinted=0;
+				headingPrinted=false;
+				#if DEBUG
+					PrintDay(true);
+				#else
+					PrintDay(false);	
+				#endif
+			}
+			catch{
+
+			}
+			hospitalDate=DateTime.MinValue;
+			checkRx.Checked=showRx;
+			checkComm.Checked=showComm;
+			FillProgNotes();
 		}
 
 		private void menuItemSetComplete_Click(object sender,EventArgs e) {
@@ -4503,6 +4567,9 @@ namespace OpenDental{
 				}
 				apt=null;
 				procCur=((Procedure)gridProg.Rows[gridProg.SelectedIndices[i]].Tag).Copy();
+				if(procCur.ProcStatus==ProcStat.C) {//don't allow setting a procedure complete again.
+					continue;
+				}
 				procOld=procCur.Copy();
 				procCode=ProcedureCodes.GetProcCode(procCur.ADACode);
 				if(procCur.DateLocked.Year>1880){//if note is locked, don't change it.
@@ -4552,6 +4619,9 @@ namespace OpenDental{
 			pd2=new PrintDocument();
 			pd2.PrintPage += new PrintPageEventHandler(this.pd2_PrintPage);
 			//pd2.DefaultPageSettings.Margins=new Margins(50,50,40,25);
+			if(pd2.DefaultPageSettings.PaperSize.Height==0) {
+				pd2.DefaultPageSettings.PaperSize=new PaperSize("default",850,1100);
+			}
 			try{
 				if(justPreview){
 					FormRpPrintPreview pView = new FormRpPrintPreview();
@@ -4727,6 +4797,124 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary>Preview is only used for debugging.</summary>
+		public void PrintDay(bool justPreview) {
+			pd2=new PrintDocument();
+			pd2.PrintPage += new PrintPageEventHandler(this.pd2_PrintPageDay);
+			pd2.DefaultPageSettings.Margins=new Margins(0,0,0,0);
+			if(pd2.DefaultPageSettings.PaperSize.Height==0) {
+				pd2.DefaultPageSettings.PaperSize=new PaperSize("default",850,1100);
+			}
+			pd2.OriginAtMargins=true;
+			try {
+				if(justPreview) {
+					FormRpPrintPreview pView = new FormRpPrintPreview();
+					pView.printPreviewControl2.Document=pd2;
+					pView.ShowDialog();
+				}
+				else {
+					if(Printers.SetPrinter(pd2,PrintSituation.Default)) {
+						pd2.Print();
+					}
+				}
+			}
+			catch {
+				MessageBox.Show(Lan.g(this,"Printer not available"));
+			}
+		}
+
+		private void pd2_PrintPageDay(object sender,System.Drawing.Printing.PrintPageEventArgs e) {
+			Rectangle bounds=new Rectangle(50,40,800,1020);//Some printers can handle up to 1042
+			Graphics g=e.Graphics;
+			string text;
+			Font headingFont=new Font("Arial",13,FontStyle.Bold);
+			Font subHeadingFont=new Font("Arial",10,FontStyle.Bold);
+			int yPos=bounds.Top;
+			int center=bounds.X+bounds.Width/2;
+			#region printHeading
+			if(!headingPrinted) {
+				text="Chart Progress Notes";
+				g.DrawString(text,headingFont,Brushes.Black,center-g.MeasureString(text,headingFont).Width/2,yPos);
+				yPos+=(int)g.MeasureString(text,headingFont).Height;
+				text=PatCur.GetNameFL();
+				g.DrawString(text,subHeadingFont,Brushes.Black,center-g.MeasureString(text,subHeadingFont).Width/2,yPos);
+				yPos+=(int)g.MeasureString(text,subHeadingFont).Height;
+				text="Birthdate: "+PatCur.Birthdate.ToShortDateString();
+				g.DrawString(text,subHeadingFont,Brushes.Black,center-g.MeasureString(text,subHeadingFont).Width/2,yPos);
+				yPos+=(int)g.MeasureString(text,subHeadingFont).Height;
+				text="Printed: "+DateTime.Today.ToShortDateString();
+				g.DrawString(text,subHeadingFont,Brushes.Black,center-g.MeasureString(text,subHeadingFont).Width/2,yPos);
+				yPos+=(int)g.MeasureString(text,subHeadingFont).Height;
+				text="Ward: "+PatCur.Ward;
+				g.DrawString(text,subHeadingFont,Brushes.Black,center-g.MeasureString(text,subHeadingFont).Width/2,yPos);
+				yPos+=20;
+				string fileName=Documents.GetPatPict(PatCur.PatNum);
+				if(fileName!="") {
+					Image picturePat=null;
+					string fullName=Prefs.GetString("DocPath")
+						+PatCur.ImageFolder.Substring(0,1)+@"\"
+						+PatCur.ImageFolder+@"\"
+						+fileName;
+					if(File.Exists(fullName)) {
+						try {
+							picturePat=Image.FromFile(fullName);
+						}
+						catch {
+							;
+						}
+					}
+					if(picturePat!=null){
+						//Image.GetThumbnailImageAbort myCallback=new Image.GetThumbnailImageAbort(ThumbnailCallback);
+						//Image myThumbnail=picturePat.GetThumbnailImage(80,80,myCallback,IntPtr.Zero);
+						g.DrawImage(GetThumbnail(picturePat,80),center-40,yPos);
+					}
+					yPos+=80;
+				}
+				yPos+=30;
+				headingPrinted=true;
+				headingPrintH=yPos;
+			}
+			#endregion
+			int totalPages=gridProg.GetNumberOfPages(bounds,headingPrintH);
+			yPos=gridProg.PrintPage(g,pagesPrinted,bounds,headingPrintH);
+			
+			pagesPrinted++;
+			if(pagesPrinted < totalPages) {
+				e.HasMorePages=true;
+			}
+			else {
+				g.DrawString("Signature_________________________________________________________",
+								subHeadingFont,Brushes.Black,160,yPos+20);
+				e.HasMorePages=false;
+			}
+		}
+
+		///<summary>specify the size of the square to return</summary>
+		private Bitmap GetThumbnail(Image original,int size){
+			Bitmap retVal=new Bitmap(size,size);
+			//float originalHW=(float)original.Height/(float)original.Width;
+			//float newHW=(float)width/(float)height;
+			Graphics g=Graphics.FromImage(retVal);
+			float ratio;
+			if(original.Height>original.Width){//original is too tall
+				ratio=(float)size/(float)original.Height;
+				float w=(float)original.Width*ratio;
+				g.DrawImage(original,w/2f,0,w,(float)size);
+			}
+			else{//original is too wide
+				ratio=(float)size/(float)original.Width;
+				float h=(float)original.Height*ratio;
+				g.DrawImage(original,0,h/2f,(float)size,h);
+			}
+			g.Dispose();
+			return retVal;
+		}
+
+		//<summary>required by the getThumbnail routine in printing.</summary>
+		//private bool ThumbnailCallback() {
+		//	return false;
+		//}
+
 		///<summary>Draws one button for the tabControlImages.</summary>
 		private void OnDrawItem(object sender, DrawItemEventArgs e){
       Graphics g=e.Graphics;
@@ -4872,6 +5060,8 @@ namespace OpenDental{
 			FormToothChartingBig FormT=new FormToothChartingBig(checkShowTeeth.Checked,ToothInitialList,ProcAL);
 			FormT.Show();
 		}
+
+		
 
 		
 

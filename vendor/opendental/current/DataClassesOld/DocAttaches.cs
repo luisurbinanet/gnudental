@@ -5,14 +5,13 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the docattach table in the database.</summary>
-	///<remarks>Links documents (images) to patients.  This will allow one document to be shared between multiple patients in a future version.</remarks>
+	///<summary>Links documents (images) to patients.  This will allow one document to be shared between multiple patients in a future version.</summary>
 	public struct DocAttach{
 		///<summary>Primary key.</summary>
 		public int DocAttachNum;
-		///<summary>Foreign key to patient.PatNum.</summary>
+		///<summary>FK to patient.PatNum.</summary>
 		public int PatNum;
-		///<summary>Foreign key document.DocNum.</summary>
+		///<summary>FK to document.DocNum.</summary>
 		public int DocNum;
 		
 	}

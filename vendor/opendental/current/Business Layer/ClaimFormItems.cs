@@ -6,25 +6,23 @@ using System.Xml.Serialization;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the claimformitem table in the database.</summary>
-	///<remarks>One item is needed for each field on a claimform.</remarks>
+	///<summary>One item is needed for each field on a claimform.</summary>
 	public class ClaimFormItem{
 		///<summary>Primary key.</summary>
 		[XmlIgnore]
 		public int ClaimFormItemNum;
-		///<summary>Foreign key to ClaimForm.</summary>
+		///<summary>FK to claimform.ClaimFormNum</summary>
 		[XmlIgnore]
 		public int ClaimFormNum;
-		///<summary>If this item is an image.  Usually only one per claim.  eg ADA2002.emf</summary>
+		///<summary>If this item is an image.  Usually only one per claimform.  eg ADA2002.emf.  Otherwise it MUST be left blank, or it will trigger an error that the image cannot be found.</summary>
 		public string ImageFileName;
 		///<summary>Must be one of the hardcoded available fieldnames for claims.</summary>
-		public string FieldName;//
+		public string FieldName;
 		///<summary>For dates, the format string. ie MM/dd/yyyy or M d y among many other possibilities.</summary>
 		public string FormatString;
-		///<summary>The x position of the item on the claim form</summary>
-		///<remarks>In pixels. 100 pixels per inch.</remarks>
+		///<summary>The x position of the item on the claim form.  In pixels. 100 pixels per inch.</summary>
 		public float XPos;
-		///<summary>The y position.</summary>
+		///<summary>The y position of the item.</summary>
 		public float YPos;
 		///<summary>Limits the printable area of the item. Set to zero to not limit.</summary>
 		public float Width;

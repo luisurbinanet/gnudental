@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the patient table in the database.</summary>
+	///<summary>One row for each patient.  Includes deleted patients.</summary>
 	public class Patient{
 		///<summary>Primary key.</summary>
 		public int    PatNum;
@@ -17,59 +17,59 @@ namespace OpenDental{
 		public string FName;
 		///<summary>Middle initial or name.</summary>
 		public string MiddleI;
-		///<summary>Preferred name.</summary>
+		///<summary>Preferred name, aka nickname.</summary>
 		public string Preferred;
-		///<summary>See the PatientStatus enumeration.</summary>
+		///<summary>Enum:PatientStatus</summary>
 		public PatientStatus PatStatus;
-		///<summary>See the PatientGender enumeration.</summary>
+		///<summary>Enum:PatientGender</summary>
 		public PatientGender Gender;
-		///<summary>See the PatientPosition enumeration.</summary>
+		///<summary>Enum:PatientPosition Marital status would probably be a better name for this column.</summary>
 		public PatientPosition Position;
-		///<summary></summary>
+		///<summary>Age is not stored in the database.  Age is always calculated as needed from birthdate.</summary>
 		public DateTime Birthdate;
 		///<summary>In the US, this is 9 digits, no dashes. For all other countries, any punctuation or format is allowed.</summary>
 		public string SSN;
-		///<summary></summary>
+		///<summary>.</summary>
 		public string Address;
-		///<summary></summary>
+		///<summary>.</summary>
 		public string Address2;
-		///<summary></summary>
+		///<summary>.</summary>
 		public string City;
 		///<summary>2 Char in USA</summary>
 		public string State;
-		///<summary></summary>
+		///<summary>Postal code.</summary>
 		public string Zip;
-		///<summary>Includes any punctuation</summary>
+		///<summary>Home phone. Includes any punctuation</summary>
 		public string HmPhone;
-		///<summary></summary>
+		///<summary>.</summary>
 		public string WkPhone;
-		///<summary></summary>
+		///<summary>.</summary>
 		public string WirelessPhone;
-		///<summary>Foreign key to patient.PatNum.  Head of household.</summary>
+		///<summary>FK to patient.PatNum.  Head of household.</summary>
 		public int    Guarantor;
 		///<summary>Derived from Birthdate.  Not in the database table.</summary>
 		public int    Age;
 		///<summary>Single char. Shows at upper left corner of appointments.  Suggested use is A,B,or C to designate creditworthiness, but it can actually be used for any purpose.</summary>
 		public string CreditType;
-		///<summary></summary>
+		///<summary>.</summary>
 		public string Email;
-		///<summary></summary>
+		///<summary>For example: Dear Mr. Smith.  Not used by the program in any way.</summary>
 		public string Salutation;
 		///<summary>Current patient balance.(not family). If user has checked BalancesDontSubtractIns in setup, then this will not take into account insurance.  Otherwise, the insurance estimate pending will have already been subtracted.</summary>
 		public double EstBalance;
-		///<summary>May be 0. (done has been moved to the PlannedIsDone field instead of -1 here.) Otherwise it is the foreign key to appointment.AptNum.  This is the appointment that will show in the Chart module and in the Next appointment tracker.  It will never show in the Appointments module. In other words, it is the suggested next appoinment rather than an appointment that has already been scheduled.</summary>
+		///<summary>May be 0. Also see the PlannedIsDone field. Otherwise it is the foreign key to appointment.AptNum.  This is the appointment that will show in the Chart module and in the Planned appointment tracker.  It will never show in the Appointments module. In other words, it is the suggested next appoinment rather than an appointment that has already been scheduled.</summary>
 		public int NextAptNum;
-		///<summary>Foreign key to provider.ProvNum.  The patient's primary provider.</summary>
+		///<summary>FK to provider.ProvNum.  The patient's primary provider.  Required, although the program is robust enough to handle a missing provNum, and will use the practice default instead.</summary>
 		public int PriProv;
-		///<summary>Foreign key to provider.ProvNum.  Secondary provider (hygienist)</summary>
+		///<summary>FK to provider.ProvNum.  Secondary provider (hygienist). Optional.</summary>
 		public int SecProv;//
-		///<summary>Foreign key to definition.DefNum.  Fee schedule for this patient.</summary>
+		///<summary>FK to definition.DefNum.  Fee schedule for this patient.  Usually not used.  If missing, the practice default fee schedule is used. If patient has insurance, then the fee schedule for the insplan is used.</summary>
 		public int FeeSched;
-		///<summary>Foreign key to definition.DefNum.  Must have a value, or the patient will not show on some reports.</summary>
+		///<summary>FK to definition.DefNum.  Must have a value, or the patient will not show on some reports.</summary>
 		public int BillingType;
 		///<summary>Name of folder where images will be stored. Not editable for now.</summary>
 		public string ImageFolder;
-		///<summary>Address or phone note.</summary>
+		///<summary>Address or phone note.  Unlimited length in order to handle data from other programs during a conversion.</summary>
 		public string AddrNote;
 		///<summary>Family financial urgent note.  Only stored with guarantor, and shared for family.</summary>
 		public string FamFinUrgNote;
@@ -79,7 +79,7 @@ namespace OpenDental{
 		public string ApptModNote;
 		///<summary>Single char for Nonstudent, Parttime, or Fulltime.  Blank=Nonstudent</summary>
 		public string StudentStatus;
-		///<summary></summary>
+		///<summary>College name.</summary>
 		public string SchoolName;
 		///<summary>Max 15 char.  Used for reference to previous programs.</summary>
 		public string ChartNumber;
@@ -95,27 +95,27 @@ namespace OpenDental{
 		public double BalOver90;
 		///<summary>Insurance Estimate for entire family.</summary>
 		public double InsEst;
-		///<summary>No longer used.  See toothinital table instead.  Teeth to display in chart as primary. eg: "1,2,3,4,5,12,13"</summary>
+		///<summary>No longer used.  See toothinital table instead.</summary>
 		public string PrimaryTeethOld;
 		///<summary>Total balance for entire family before insurance estimate.  Not the same as the sum of the 4 aging balances because this can be negative.  Only stored with guarantor.</summary>
 		public double BalTotal;
-		///<summary>Foreign key to employer.EmployerNum.</summary>
+		///<summary>FK to employer.EmployerNum.</summary>
 		public int EmployerNum;
-		///<summary>AKA occupation. This field was only present in version 2.8, but did not seem useful, so it has been hidden. It will very likely be deprecated.</summary>
+		///<summary>Not used since version 2.8.</summary>
 		public string EmploymentNote;
-		///<summary>Race and ethnicity. See the PatientRace enum.</summary>
+		///<summary>Enum:PatientRace Race and ethnicity.</summary>
 		public PatientRace Race;
-		///<summary>Foreign key to county.CountyName, although it will not crash if key absent.</summary>
+		///<summary>FK to county.CountyName, although it will not crash if key absent.</summary>
 		public string County;
-		///<summary>Name of gradeschool or highschool. Foreign key to school.SchoolName, although it will not crash if key absent.</summary>
+		///<summary>FK to school.SchoolName, although it will not crash if key absent.  Name of gradeschool or highschool.</summary>
 		public string GradeSchool;
-		///<summary>See the PatientGrade enumeration.</summary>
+		///<summary>Enum:PatientGrade Gradelevel.</summary>
 		public PatientGrade GradeLevel;
-		///<summary>See the TreatmentUrgency enumeration.</summary>
+		///<summary>Enum:TreatmentUrgency Used in public health screenings.</summary>
 		public TreatmentUrgency Urgency;
-		///<summary>The date that the patient first visited the office.</summary>
+		///<summary>The date that the patient first visited the office.  Automated.</summary>
 		public DateTime DateFirstVisit;
-		///<summary>Foreign key to clinic.ClinicNum. Can be zero if not attached to a clinic or no clinics set up.</summary>
+		///<summary>FK to clinic.ClinicNum. Can be zero if not attached to a clinic or no clinics set up.</summary>
 		public int ClinicNum;
 		///<summary>For now, an 'I' indicates that the patient has insurance.  This is only used when displaying appointments.  It will later be expanded.  User can't edit.</summary>
 		public string HasIns;
@@ -125,6 +125,8 @@ namespace OpenDental{
 		public bool PlannedIsDone;
 		///<summary>Set to true if patient needs to be premedicated for appointments, includes PAC, halcion, etc.</summary>
 		public bool Premed;
+		///<summary>Only used in hospitals.</summary>
+		public string Ward;
 		//<summary>Decided not to add since this data is already available and synchronizing would take too much time.  Will add later.  Not editable. If the patient happens to have a future appointment, this will contain the date of that appointment.  Once appointment is set complete, this date is deleted.  If there is more than one appointment scheduled, this will only contain the earliest one.  Used mostly to exclude patients from recall lists.  If you want all future appointments, use Appointments.GetForPat() instead. You can loop through that list and exclude appointments with dates earlier than today.</summary>
 		//public DateTime DateScheduled;
 
@@ -189,6 +191,7 @@ namespace OpenDental{
 			p.TrophyFolder=TrophyFolder;
 			p.PlannedIsDone=PlannedIsDone;
 			p.Premed=Premed;
+			p.Ward=Ward;
 			return p;
 		}
 	
@@ -209,7 +212,7 @@ namespace OpenDental{
 				+"studentstatus,schoolname,chartnumber,medicaidid"
 				+",Bal_0_30,Bal_31_60,Bal_61_90,BalOver90,insest,BalTotal"
 				+",EmployerNum,EmploymentNote,Race,County,GradeSchool,GradeLevel,Urgency,DateFirstVisit"
-				+",ClinicNum,HasIns,TrophyFolder,PlannedIsDone,Premed) VALUES(";
+				+",ClinicNum,HasIns,TrophyFolder,PlannedIsDone,Premed,Ward) VALUES(";
 			if(includePatNum || Prefs.RandomKeys){
 				command+="'"+POut.PInt(PatNum)+"', ";
 			}
@@ -268,7 +271,8 @@ namespace OpenDental{
 				+"'"+POut.PString(HasIns)+"', "
 				+"'"+POut.PString(TrophyFolder)+"', "
 				+"'"+POut.PBool  (PlannedIsDone)+"', "
-				+"'"+POut.PBool  (Premed)+"')";
+				+"'"+POut.PBool  (Premed)+"', "
+				+"'"+POut.PString(Ward)+"')";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
 			if(Prefs.RandomKeys){
@@ -561,6 +565,11 @@ namespace OpenDental{
 			if(Premed!=CurOld.Premed) {
 				if(comma) c+=",";
 				c+="Premed = '"     +POut.PBool(Premed)+"'";
+				comma=true;
+			}
+			if(Ward!=CurOld.Ward) {
+				if(comma) c+=",";
+				c+="Ward = '"     +POut.PString(Ward)+"'";
 				comma=true;
 			}
 			if(!comma)

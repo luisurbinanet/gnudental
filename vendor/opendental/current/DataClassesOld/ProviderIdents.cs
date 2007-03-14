@@ -6,15 +6,15 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the providerident table in the database.</summary>
+	///<summary>Some insurance companies require special provider ID #s, and this table holds them.</summary>
 	public class ProviderIdent{
 		///<summary>Primary key.</summary>
 		public int ProviderIdentNum;
-		///<summary>Foreign Key to provider.ProvNum.  An ID only applies to one provider.</summary>
+		///<summary>FK to provider.ProvNum.  An ID only applies to one provider.</summary>
 		public int ProvNum;
-		///<summary>aka Electronic ID. An ID only applies to one insurance carrier.</summary>
+		///<summary>FK to carrier.ElectID  aka Electronic ID. An ID only applies to one insurance carrier.</summary>
 		public string PayorID;
-		///<summary>See the ProviderSupplementalID enumeration.</summary>
+		///<summary>Enum:ProviderSupplementalID</summary>
 		public ProviderSupplementalID SuppIDType;
 		///<summary>The number assigned by the ins carrier.</summary>
 		public string IDNumber;

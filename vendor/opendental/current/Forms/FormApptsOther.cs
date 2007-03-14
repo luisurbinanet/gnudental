@@ -582,12 +582,13 @@ namespace OpenDental{
 			Procedure[] procsForSingle;
 			if(AptCur.AptNum==PatCur.NextAptNum){//if is Next apt
 				procsForSingle=Procedures.GetProcsForSingle(AptCur.AptNum,true);
+				ContrAppt.CurInfo.Production=Procedures.GetProductionOneApt(AptCur.AptNum,procsForSingle,true);
 			}
 			else{//normal apt
 				procsForSingle=Procedures.GetProcsForSingle(AptCur.AptNum,false);
+				ContrAppt.CurInfo.Production=Procedures.GetProductionOneApt(AptCur.AptNum,procsForSingle,false);
 			}
 			ContrAppt.CurInfo.Procs=procsForSingle;
-			ContrAppt.CurInfo.Production=Procedures.GetProductionOneApt(AptCur.AptNum,procsForSingle);
 			ContrAppt.CurInfo.MyPatient=PatCur.Copy();
 		}
 

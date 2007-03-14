@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the preference table in the database.  Stores small bits of data for a wide variety of purposes.</summary>
+	///<summary>Stores small bits of data for a wide variety of purposes.  Any data that's too small to warrant its own table will usually end up here.</summary>
 	public struct Pref{
 		///<summary>Primary key.</summary>
 		public string PrefName;//
@@ -193,6 +193,15 @@ namespace OpenDental{
 			return PIn.PInt(((Pref)HList[prefName]).ValueString);
 		}
 
+		///<summary>Gets a pref of type double.</summary>
+		public static double GetDouble(string prefName) {
+			if(!HList.ContainsKey(prefName)) {
+				MessageBox.Show(prefName+" is an invalid pref name.");
+				return 0;
+			}
+			return PIn.PDouble(((Pref)HList[prefName]).ValueString);
+		}
+
 		///<summary>Gets a pref of type bool.</summary>
 		public static bool GetBool(string prefName){
 			if(!HList.ContainsKey(prefName)){
@@ -209,6 +218,15 @@ namespace OpenDental{
 				return "";
 			}
 			return ((Pref)HList[prefName]).ValueString;
+		}
+
+		///<summary>Gets a pref of type date.</summary>
+		public static DateTime GetDate(string prefName) {
+			if(!HList.ContainsKey(prefName)) {
+				MessageBox.Show(prefName+" is an invalid pref name.");
+				return DateTime.MinValue;
+			}
+			return PIn.PDate(((Pref)HList[prefName]).ValueString);
 		}
 
 		///<summary>Attempts to write a simple value to the database.  If it fails, then we know we don't have a good connection with write permissions.</summary>
@@ -260,6 +278,22 @@ namespace OpenDental{
 			}
 			cmd.CommandText = "UPDATE preference SET "
 				+"ValueString = '"+POut.PInt(newValue)+"' "
+				+"WHERE PrefName = '"+POut.PString(prefName)+"'";
+			NonQ();
+			return true;
+		}
+
+		///<summary>Updates a pref of type double.  Returns true if a change was required, or false if no change needed.</summary>
+		public static bool UpdateDouble(string prefName,double newValue) {
+			if(!HList.ContainsKey(prefName)) {
+				MessageBox.Show(prefName+" is an invalid pref name.");
+				return false;
+			}
+			if(GetDouble(prefName)==newValue) {
+				return false;//no change needed
+			}
+			cmd.CommandText = "UPDATE preference SET "
+				+"ValueString = '"+POut.PDouble(newValue)+"' "
 				+"WHERE PrefName = '"+POut.PString(prefName)+"'";
 			NonQ();
 			return true;

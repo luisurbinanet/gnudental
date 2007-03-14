@@ -5,11 +5,11 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Corresponds to the usergroup table in database.</summary>
+	///<summary>A group of users.  Security permissions are determined by the usergroup of a user.</summary>
 	public class UserGroup{
 		///<summary>Primary key.</summary>
 		public int UserGroupNum;
-		///<summary></summary>
+		///<summary>.</summary>
 		public string Description;
 
 		///<summary></summary>

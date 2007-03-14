@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Corresponds to the PayPeriod table in the database.  Used to view employee timecards.</summary>
+	///<summary>Used to view employee timecards.  Timecard entries are not linked to a pay period.  Instead, payperiods are setup, and the user can only view specific pay periods.  So it feels like they are linked, but it's date based.</summary>
 	public class PayPeriod{
 		///<summary>Primary key.</summary>
 		public int PayPeriodNum;

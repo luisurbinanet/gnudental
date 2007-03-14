@@ -1549,7 +1549,10 @@ namespace OpenDental {
 					tempAcctLine=new AcctLine();
 					tempAcctLine.Type=AcctModType.Comm;
 					tempAcctLine.Code="Comm";
-					tempAcctLine.Description="Sent Statement";
+					tempAcctLine.Description=Lan.g(this,"Sent Statement");
+					if(arrayComm[tempCountComm].Mode!=CommItemMode.None){
+						tempAcctLine.Description+="-"+Lan.g("enumCommItemMode",arrayComm[tempCountComm].Mode.ToString());
+					}
 					tempAcctLine.Index=tempCountComm;
 					tempAcctLine.Date=arrayComm[tempCountComm].CommDateTime.ToShortDateString();
 					tempAcctLine.Provider="";
@@ -2066,15 +2069,18 @@ namespace OpenDental {
 			}
 			//Claim priClaim=Claims.Cur;//for use a few lines down to display dialog
 			if(PatPlans.GetPlanNum(PatPlanList,2)>0){
-				ClaimCur=CreateClaim("S");
-				if(ClaimCur.ClaimNum==0){
-					ModuleSelected(PatCur.PatNum);
-					return;
+				InsPlan plan=InsPlans.GetPlan(PatPlans.GetPlanNum(PatPlanList,2),PlanList);
+				if(!plan.IsMedical){
+					ClaimCur=CreateClaim("S");
+					if(ClaimCur.ClaimNum==0){
+						ModuleSelected(PatCur.PatNum);
+						return;
+					}
+					ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
+					ClaimCur.ClaimStatus="H";
+					Claims.CalculateAndUpdate(ClaimProcList,ProcList,PlanList,ClaimCur,PatPlanList,BenefitList);
+					//Claims.Cur=ClaimCur;
 				}
-				ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
-				ClaimCur.ClaimStatus="H";
-				Claims.CalculateAndUpdate(ClaimProcList,ProcList,PlanList,ClaimCur,PatPlanList,BenefitList);
-				//Claims.Cur=ClaimCur;
 			}
 			ModuleSelected(PatCur.PatNum);
 		}
@@ -2600,7 +2606,8 @@ namespace OpenDental {
 			for(int i=0;i<famPatNums.Length;i++){
 				patNums[0][i]=famPatNums[i];
 			}
-			FormST.PrintStatements(patNums,fromDate,toDate,includeClaims,subtotalsOnly,hidePayment,nextAppt,new string[] {note});
+			FormST.PrintStatements(patNums,fromDate,toDate,includeClaims,subtotalsOnly,hidePayment,nextAppt,
+				new string[] {note},false);
 			#if DEBUG
 				FormST.ShowDialog();
 			#endif

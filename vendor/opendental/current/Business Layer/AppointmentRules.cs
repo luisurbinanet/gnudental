@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the appointmentrule table in the database.  For now, the rule is simple. It simply blocks all double booking of the specified code range.  The double booking would have to be for the same provider.  This can later be extended to provide more complex rules, such as partial double booking, time limitations, etc.</summary>
+	///<summary>For now, the rule is simple. It simply blocks all double booking of the specified code range.  The double booking would have to be for the same provider.  This can later be extended to provide more complex rules, such as partial double booking, time limitations, etc.</summary>
 	public class AppointmentRule{
 		///<summary>Primary key.</summary>
 		public int AppointmentRuleNum;

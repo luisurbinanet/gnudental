@@ -21,12 +21,9 @@ namespace OpenDental{
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;
-		private OpenDental.UI.Button butSave;
 		private System.ComponentModel.Container components = null;
 		private System.Windows.Forms.Label label3;
-		private ArrayList MainAL;
-		private OpenDental.ValidNumber textDaysPast;
-		private OpenDental.ValidNumber textDaysFuture;
+		//private ArrayList MainAL;
 		///<summary>Will be set to true when form closes if user click Send to Pinboard.</summary>
 		public bool PinClicked=false;
 		private OpenDental.UI.Button butReport;
@@ -45,14 +42,17 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label4;
 		private PrintDocument pd;
 		private OpenDental.UI.ODGrid gridMain;
+		private ValidDate textDateEnd;
+		private ValidDate textDateStart;
+		private CheckBox checkGroupFamilies;
+		private Label labelFamilyMessage;
+		private TextBox textFamilyMessage;
 		///<summary>When this form closes, this will be the patNum of the last patient viewed.  The calling form should then make use of this to refresh to that patient.  If 0, then calling form should not refresh.</summary>
 		public int SelectedPatNum;
 
 		///<summary></summary>
 		public FormRecallList(){
 			InitializeComponent();// Required for Windows Form Designer support
-			//tbMain.CellClicked += new OpenDental.ContrTable.CellEventHandler(tbMain_CellClicked);
-			//tbMain.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbMain_CellDoubleClicked);
 			Lan.F(this);
 			//Lan.C(this,new Control[]
 			//	{
@@ -78,10 +78,10 @@ namespace OpenDental{
 			this.butClose = new OpenDental.UI.Button();
 			this.butRefresh = new OpenDental.UI.Button();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
-			this.textDaysFuture = new OpenDental.ValidNumber();
-			this.textDaysPast = new OpenDental.ValidNumber();
+			this.checkGroupFamilies = new System.Windows.Forms.CheckBox();
+			this.textDateEnd = new OpenDental.ValidDate();
+			this.textDateStart = new OpenDental.ValidDate();
 			this.label3 = new System.Windows.Forms.Label();
-			this.butSave = new OpenDental.UI.Button();
 			this.label2 = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
 			this.butReport = new OpenDental.UI.Button();
@@ -92,6 +92,8 @@ namespace OpenDental{
 			this.butSetStatus = new OpenDental.UI.Button();
 			this.butPostcards = new OpenDental.UI.Button();
 			this.groupBox4 = new System.Windows.Forms.GroupBox();
+			this.labelFamilyMessage = new System.Windows.Forms.Label();
+			this.textFamilyMessage = new System.Windows.Forms.TextBox();
 			this.label4 = new System.Windows.Forms.Label();
 			this.textPostcardMessage = new System.Windows.Forms.TextBox();
 			this.gridMain = new OpenDental.UI.ODGrid();
@@ -132,78 +134,72 @@ namespace OpenDental{
 			// groupBox1
 			// 
 			this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.groupBox1.Controls.Add(this.textDaysFuture);
-			this.groupBox1.Controls.Add(this.textDaysPast);
+			this.groupBox1.Controls.Add(this.checkGroupFamilies);
+			this.groupBox1.Controls.Add(this.textDateEnd);
+			this.groupBox1.Controls.Add(this.textDateStart);
 			this.groupBox1.Controls.Add(this.label3);
-			this.groupBox1.Controls.Add(this.butSave);
 			this.groupBox1.Controls.Add(this.label2);
 			this.groupBox1.Controls.Add(this.label1);
 			this.groupBox1.Controls.Add(this.butRefresh);
 			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupBox1.Location = new System.Drawing.Point(771,14);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(188,180);
+			this.groupBox1.Size = new System.Drawing.Size(188,144);
 			this.groupBox1.TabIndex = 1;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "View";
 			// 
-			// textDaysFuture
+			// checkGroupFamilies
 			// 
-			this.textDaysFuture.Location = new System.Drawing.Point(124,58);
-			this.textDaysFuture.MaxVal = 255;
-			this.textDaysFuture.MinVal = 0;
-			this.textDaysFuture.Name = "textDaysFuture";
-			this.textDaysFuture.Size = new System.Drawing.Size(51,20);
-			this.textDaysFuture.TabIndex = 1;
+			this.checkGroupFamilies.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.checkGroupFamilies.Location = new System.Drawing.Point(6,16);
+			this.checkGroupFamilies.Name = "checkGroupFamilies";
+			this.checkGroupFamilies.Size = new System.Drawing.Size(108,18);
+			this.checkGroupFamilies.TabIndex = 19;
+			this.checkGroupFamilies.Text = "Group Families";
+			this.checkGroupFamilies.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.checkGroupFamilies.UseVisualStyleBackColor = true;
+			this.checkGroupFamilies.Click += new System.EventHandler(this.checkGroupFamilies_Click);
 			// 
-			// textDaysPast
+			// textDateEnd
 			// 
-			this.textDaysPast.Location = new System.Drawing.Point(124,31);
-			this.textDaysPast.MaxVal = 255;
-			this.textDaysPast.MinVal = 0;
-			this.textDaysPast.Name = "textDaysPast";
-			this.textDaysPast.Size = new System.Drawing.Size(51,20);
-			this.textDaysPast.TabIndex = 0;
+			this.textDateEnd.Location = new System.Drawing.Point(100,59);
+			this.textDateEnd.Name = "textDateEnd";
+			this.textDateEnd.Size = new System.Drawing.Size(77,20);
+			this.textDateEnd.TabIndex = 18;
+			// 
+			// textDateStart
+			// 
+			this.textDateStart.Location = new System.Drawing.Point(100,36);
+			this.textDateStart.Name = "textDateStart";
+			this.textDateStart.Size = new System.Drawing.Size(77,20);
+			this.textDateStart.TabIndex = 17;
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(13,88);
+			this.label3.Location = new System.Drawing.Point(13,87);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(162,17);
 			this.label3.TabIndex = 16;
-			this.label3.Text = "(leave days blank to view all)";
+			this.label3.Text = "(leave dates blank to view all)";
 			this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			// 
-			// butSave
-			// 
-			this.butSave.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.butSave.Autosize = true;
-			this.butSave.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butSave.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butSave.Location = new System.Drawing.Point(79,141);
-			this.butSave.Name = "butSave";
-			this.butSave.Size = new System.Drawing.Size(98,26);
-			this.butSave.TabIndex = 3;
-			this.butSave.Text = "&Save As Default";
-			this.butSave.Click += new System.EventHandler(this.butSave_Click);
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(31,61);
+			this.label2.Location = new System.Drawing.Point(7,62);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(91,14);
 			this.label2.TabIndex = 12;
-			this.label2.Text = "Days Future";
+			this.label2.Text = "End Date";
 			this.label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(37,34);
+			this.label1.Location = new System.Drawing.Point(13,39);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(84,14);
 			this.label1.TabIndex = 11;
-			this.label1.Text = "Days Past";
+			this.label1.Text = "Start Date";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// butReport
@@ -213,7 +209,7 @@ namespace OpenDental{
 			this.butReport.Autosize = true;
 			this.butReport.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butReport.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butReport.Location = new System.Drawing.Point(861,571);
+			this.butReport.Location = new System.Drawing.Point(861,588);
 			this.butReport.Name = "butReport";
 			this.butReport.Size = new System.Drawing.Size(87,26);
 			this.butReport.TabIndex = 13;
@@ -229,7 +225,7 @@ namespace OpenDental{
 			this.butLabels.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butLabels.Image = ((System.Drawing.Image)(resources.GetObject("butLabels.Image")));
 			this.butLabels.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butLabels.Location = new System.Drawing.Point(861,535);
+			this.butLabels.Location = new System.Drawing.Point(861,552);
 			this.butLabels.Name = "butLabels";
 			this.butLabels.Size = new System.Drawing.Size(87,26);
 			this.butLabels.TabIndex = 14;
@@ -245,9 +241,9 @@ namespace OpenDental{
 			this.groupBox3.Controls.Add(this.comboStatus);
 			this.groupBox3.Controls.Add(this.butSetStatus);
 			this.groupBox3.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox3.Location = new System.Drawing.Point(771,203);
+			this.groupBox3.Location = new System.Drawing.Point(771,168);
 			this.groupBox3.Name = "groupBox3";
-			this.groupBox3.Size = new System.Drawing.Size(188,96);
+			this.groupBox3.Size = new System.Drawing.Size(188,89);
 			this.groupBox3.TabIndex = 15;
 			this.groupBox3.TabStop = false;
 			this.groupBox3.Text = "Set Status";
@@ -284,7 +280,7 @@ namespace OpenDental{
 			this.butPostcards.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butPostcards.Image = ((System.Drawing.Image)(resources.GetObject("butPostcards.Image")));
 			this.butPostcards.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butPostcards.Location = new System.Drawing.Point(90,162);
+			this.butPostcards.Location = new System.Drawing.Point(90,241);
 			this.butPostcards.Name = "butPostcards";
 			this.butPostcards.Size = new System.Drawing.Size(87,26);
 			this.butPostcards.TabIndex = 16;
@@ -293,16 +289,36 @@ namespace OpenDental{
 			// 
 			// groupBox4
 			// 
+			this.groupBox4.Controls.Add(this.labelFamilyMessage);
+			this.groupBox4.Controls.Add(this.textFamilyMessage);
 			this.groupBox4.Controls.Add(this.label4);
 			this.groupBox4.Controls.Add(this.textPostcardMessage);
 			this.groupBox4.Controls.Add(this.butPostcards);
 			this.groupBox4.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox4.Location = new System.Drawing.Point(771,310);
+			this.groupBox4.Location = new System.Drawing.Point(771,263);
 			this.groupBox4.Name = "groupBox4";
-			this.groupBox4.Size = new System.Drawing.Size(188,200);
+			this.groupBox4.Size = new System.Drawing.Size(188,272);
 			this.groupBox4.TabIndex = 17;
 			this.groupBox4.TabStop = false;
 			this.groupBox4.Text = "Postcards";
+			// 
+			// labelFamilyMessage
+			// 
+			this.labelFamilyMessage.Location = new System.Drawing.Point(8,124);
+			this.labelFamilyMessage.Name = "labelFamilyMessage";
+			this.labelFamilyMessage.Size = new System.Drawing.Size(158,19);
+			this.labelFamilyMessage.TabIndex = 20;
+			this.labelFamilyMessage.Text = "Family Message";
+			this.labelFamilyMessage.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// textFamilyMessage
+			// 
+			this.textFamilyMessage.AcceptsReturn = true;
+			this.textFamilyMessage.Location = new System.Drawing.Point(9,145);
+			this.textFamilyMessage.Multiline = true;
+			this.textFamilyMessage.Name = "textFamilyMessage";
+			this.textFamilyMessage.Size = new System.Drawing.Size(168,90);
+			this.textFamilyMessage.TabIndex = 19;
 			// 
 			// label4
 			// 
@@ -319,7 +335,7 @@ namespace OpenDental{
 			this.textPostcardMessage.Location = new System.Drawing.Point(8,32);
 			this.textPostcardMessage.Multiline = true;
 			this.textPostcardMessage.Name = "textPostcardMessage";
-			this.textPostcardMessage.Size = new System.Drawing.Size(168,119);
+			this.textPostcardMessage.Size = new System.Drawing.Size(168,90);
 			this.textPostcardMessage.TabIndex = 17;
 			// 
 			// gridMain
@@ -366,15 +382,23 @@ namespace OpenDental{
 		#endregion
 
 		private void FormRecallList_Load(object sender, System.EventArgs e) {
-			textDaysPast.Text=((Pref)Prefs.HList["RecallDaysPast"]).ValueString;
-			textDaysFuture.Text=((Pref)Prefs.HList["RecallDaysFuture"]).ValueString;
-			if(textDaysPast.Text=="-1")
-				textDaysPast.Text="";
-			if(textDaysFuture.Text=="-1")
-				textDaysFuture.Text="";
-			textDaysPast.MaxVal=100000;
-			textDaysFuture.MaxVal=100000;
+			checkGroupFamilies.Checked=Prefs.GetBool("RecallGroupByFamily");
+			int daysPast=Prefs.GetInt("RecallDaysPast");
+			int daysFuture=Prefs.GetInt("RecallDaysFuture");
+			if(daysPast==-1){
+				textDateStart.Text="";
+			}
+			else{
+				textDateStart.Text=DateTime.Today.AddDays(-daysPast).ToShortDateString();
+			}
+			if(daysFuture==-1) {
+				textDateEnd.Text="";
+			}
+			else {
+				textDateEnd.Text=DateTime.Today.AddDays(daysFuture).ToShortDateString();
+			}
 			textPostcardMessage.Text=Prefs.GetString("RecallPostcardMessage");
+			textFamilyMessage.Text=Prefs.GetString("RecallPostcardFamMsg");
 			comboStatus.Items.Clear();
 			for(int i=0;i<Defs.Short[(int)DefCat.RecallUnschedStatus].Length;i++){
 				comboStatus.Items.Add(Defs.Short[(int)DefCat.RecallUnschedStatus][i].ItemName);
@@ -383,42 +407,35 @@ namespace OpenDental{
 		}
 
 		private void FillMain(){
-			MainAL=new ArrayList();
-			int daysFuture;
-			int daysPast;
-			try{
-				if(textDaysFuture.Text=="") daysFuture=-1;
-				else daysFuture=Convert.ToInt32(textDaysFuture.Text);
-				if(textDaysPast.Text=="") daysPast=-1;
-				else daysPast=Convert.ToInt32(textDaysPast.Text);
+			if(textDateStart.errorProvider1.GetError(textDateStart)!=""
+				|| textDateEnd.errorProvider1.GetError(textDateEnd)!="")
+			{
+				//MessageBox.Show(Lan.g(this,"Please fix data entry errors first."));
+				return;
 			}
-			catch{
-				return;	//this might happen if invalid number
+			if(checkGroupFamilies.Checked){
+				textFamilyMessage.Visible=true;
+				labelFamilyMessage.Visible=true;
+			}
+			else{
+				textFamilyMessage.Visible=false;
+				labelFamilyMessage.Visible=false;
 			}
 			DateTime fromDate;
 			DateTime toDate;
-			if(daysPast==-1){
+			if(textDateStart.Text==""){
 				fromDate=DateTime.MinValue.AddDays(1);//because we don't want to include 010101
 			}
 			else{
-				fromDate=DateTime.Today.AddDays(-daysPast);
+				fromDate=PIn.PDate(textDateStart.Text);
 			}
-			if(daysFuture==-1){
+			if(textDateEnd.Text=="") {
 				toDate=DateTime.MaxValue;
 			}
-			else{
-				toDate=DateTime.Today.AddDays(daysFuture);
+			else {
+				toDate=PIn.PDate(textDateEnd.Text);
 			}
-			RecallItem[] RecallList=Recalls.GetRecallList(fromDate,toDate);
-			//initial list also includes patients who already have appointments
-			//MessageBox.Show(Patients.RecallList.Length.ToString());
-			for(int i=0;i<RecallList.Length;i++){
-				//test for existing appointment
-				if(!Appointments.PatientHasFutureRecall(RecallList[i].PatNum)){
-					MainAL.Add(RecallList[i]);
-				}
-			}
-			//Fill list:
+			RecallItem[] RecallList=Recalls.GetRecallList(fromDate,toDate,checkGroupFamilies.Checked);
 			gridMain.BeginUpdate();
 			gridMain.Columns.Clear();
 			ODGridColumn col=new ODGridColumn(Lan.g("TableRecallList","Due Date"),75);
@@ -435,14 +452,15 @@ namespace OpenDental{
 			gridMain.Columns.Add(col);
 			gridMain.Rows.Clear();
 			ODGridRow row;
-			for(int i=0;i<MainAL.Count;i++){
+			for(int i=0;i<RecallList.Length;i++){
 				row=new ODGridRow();
-				row.Cells.Add(((RecallItem)MainAL[i]).DueDate.ToString("d"));
-				row.Cells.Add(((RecallItem)MainAL[i]).PatientName);
-				row.Cells.Add(Shared.AgeToString(((RecallItem)MainAL[i]).Age));
-				row.Cells.Add(((RecallItem)MainAL[i]).RecallInterval.ToString());
-				row.Cells.Add(Defs.GetName(DefCat.RecallUnschedStatus,((RecallItem)MainAL[i]).RecallStatus));
-				row.Cells.Add(((RecallItem)MainAL[i]).Note);
+				row.Cells.Add(RecallList[i].DueDate.ToString("d"));
+				row.Cells.Add(RecallList[i].PatientName);
+				row.Cells.Add(RecallList[i].Age);
+				row.Cells.Add(RecallList[i].RecallInterval.ToString());
+				row.Cells.Add(Defs.GetName(DefCat.RecallUnschedStatus,RecallList[i].RecallStatus));
+				row.Cells.Add(RecallList[i].Note);
+				row.Tag=RecallList[i];
 				gridMain.Rows.Add(row);
 			}
 			gridMain.EndUpdate();
@@ -462,10 +480,10 @@ namespace OpenDental{
 				gridMain.Invalidate();
 				return;
 			}
-			int guar=((RecallItem)MainAL[gridMain.SelectedIndices[0]]).Guarantor;
+			int guar=((RecallItem)gridMain.Rows[gridMain.SelectedIndices[0]].Tag).Guarantor;
 			int famCount=0;
-			for(int i=0;i<MainAL.Count;i++) {
-				if(((RecallItem)MainAL[i]).Guarantor==guar) {
+			for(int i=0;i<gridMain.Rows.Count;i++) {
+				if(((RecallItem)gridMain.Rows[i].Tag).Guarantor==guar) {
 					famCount++;
 					gridMain.Rows[i].ColorText=Color.Red;
 				}
@@ -480,8 +498,8 @@ namespace OpenDental{
 		}
 
 		private void gridMain_CellDoubleClick(object sender,ODGridClickEventArgs e) {
-			SelectedPatNum=((RecallItem)MainAL[e.Row]).PatNum;
-			Recall[] recalls=Recalls.GetList(new int[] {((RecallItem)MainAL[e.Row]).PatNum});
+			SelectedPatNum=((RecallItem)gridMain.Rows[e.Row].Tag).PatNum;
+			Recall[] recalls=Recalls.GetList(new int[] {((RecallItem)gridMain.Rows[e.Row].Tag).PatNum});
 			FormRecallListEdit FormRE=new FormRecallListEdit(recalls[0]);
 			//FormRE.RecallCur=recalls[0];
 			FormRE.ShowDialog();
@@ -492,30 +510,34 @@ namespace OpenDental{
 			else{
 				FillMain();
 			}
-			for(int i=0;i<MainAL.Count;i++) {
-				if(((RecallItem)MainAL[i]).PatNum==SelectedPatNum) {
+			for(int i=0;i<gridMain.Rows.Count;i++) {
+				if(((RecallItem)gridMain.Rows[i].Tag).PatNum==SelectedPatNum) {
 					gridMain.SetSelected(i,true);
 				}
 			}
 			SetFamilyColors();
 		}
 
+		private void checkGroupFamilies_Click(object sender,EventArgs e) {
+			FillMain();
+		}
+
 		private void butReport_Click(object sender, System.EventArgs e) {
-		  if(MainAL.Count < 1){
+		  if(gridMain.Rows.Count < 1){
         MessageBox.Show(Lan.g(this,"There are no Patients in the Recall table.  Must have at least one to run report."));    
         return;
       }
       int[] PatNums;
       if(gridMain.SelectedIndices.Length < 1){
-        PatNums=new int[MainAL.Count];
+        PatNums=new int[gridMain.Rows.Count];
         for(int i=0;i<PatNums.Length;i++){
-          PatNums[i]=((RecallItem)MainAL[i]).PatNum;
+          PatNums[i]=((RecallItem)gridMain.Rows[i].Tag).PatNum;
         }
       }
       else{
         PatNums=new int[gridMain.SelectedIndices.Length];
         for(int i=0;i<PatNums.Length;i++){
-          PatNums[i]=((RecallItem)MainAL[gridMain.SelectedIndices[i]]).PatNum;
+          PatNums[i]=((RecallItem)gridMain.Rows[gridMain.SelectedIndices[i]].Tag).PatNum;
         }
       }
       FormRpRecall FormRPR=new FormRpRecall(PatNums);
@@ -523,7 +545,7 @@ namespace OpenDental{
 		}
 
 		private void butLabels_Click(object sender, System.EventArgs e) {
-			if(MainAL.Count < 1){
+			if(gridMain.Rows.Count < 1){
         MessageBox.Show(Lan.g(this,"There are no Patients in the Recall table.  Must have at least one to print."));    
         return;
       }
@@ -533,9 +555,9 @@ namespace OpenDental{
       int[] PatNums;
       PatNums=new int[gridMain.SelectedIndices.Length];
       for(int i=0;i<PatNums.Length;i++){
-        PatNums[i]=((RecallItem)MainAL[gridMain.SelectedIndices[i]]).PatNum;
+        PatNums[i]=((RecallItem)gridMain.Rows[gridMain.SelectedIndices[i]].Tag).PatNum;
       }
-			AddrTable=Recalls.GetAddrTable(PatNums);
+			AddrTable=Recalls.GetAddrTable(PatNums,false);//can never group by family because there's no room to display the list.
 			pagesPrinted=0;
 			patientsPrinted=0;
 			pd=new PrintDocument();
@@ -550,7 +572,7 @@ namespace OpenDental{
 		}
 
 		private void butPostcards_Click(object sender, System.EventArgs e) {
-			if(MainAL.Count < 1){
+			if(gridMain.Rows.Count < 1){
         MessageBox.Show(Lan.g(this,"There are no Patients in the Recall table.  Must have at least one to print."));    
         return;
       }
@@ -559,10 +581,16 @@ namespace OpenDental{
 			}
       int[] PatNums;
       PatNums=new int[gridMain.SelectedIndices.Length];
-      for(int i=0;i<PatNums.Length;i++){
-        PatNums[i]=((RecallItem)MainAL[gridMain.SelectedIndices[i]]).PatNum;
-      }
-			AddrTable=Recalls.GetAddrTable(PatNums);
+			for(int i=0;i<PatNums.Length;i++) {
+				PatNums[i]=((RecallItem)gridMain.Rows[gridMain.SelectedIndices[i]].Tag).PatNum;
+			}
+			if(MsgBox.Show(this,true,"Make a commlog entry of 'postcard sent' for all of the selected patients?")){
+				for(int i=0;i<PatNums.Length;i++){
+					//make commlog entries for each patient
+					Commlogs.InsertForRecallPostcard(PatNums[i]);
+				}
+			}
+			AddrTable=Recalls.GetAddrTable(PatNums,checkGroupFamilies.Checked);
 			pagesPrinted=0;
 			patientsPrinted=0;
 			pd=new PrintDocument();
@@ -580,8 +608,8 @@ namespace OpenDental{
 				pd.DefaultPageSettings.PaperSize=new PaperSize("Postcard",850,1100);
 				pd.DefaultPageSettings.Landscape=true;
 			}
-			printPreview=new OpenDental.UI.PrintPreview(PrintSituation.Postcard,pd,
-				(int)Math.Ceiling((double)AddrTable.Rows.Count/(double)Prefs.GetInt("RecallPostcardsPerSheet")));
+			int totalPages=(int)Math.Ceiling((double)AddrTable.Rows.Count/(double)Prefs.GetInt("RecallPostcardsPerSheet"));
+			printPreview=new OpenDental.UI.PrintPreview(PrintSituation.Postcard,pd,totalPages);
 			printPreview.ShowDialog();
 		}
 
@@ -627,8 +655,10 @@ namespace OpenDental{
 		private void pdCards_PrintPage(object sender, PrintPageEventArgs ev){
 			int totalPages=(int)Math.Ceiling((double)AddrTable.Rows.Count/(double)Prefs.GetInt("RecallPostcardsPerSheet"));
 			Graphics g=ev.Graphics;
-			float yPos=0;//these refer to the upper left origin of each postcard
-			float xPos=0;
+			int yAdj=(int)(Prefs.GetDouble("RecallAdjustDown")*100);
+			int xAdj=(int)(Prefs.GetDouble("RecallAdjustRight")*100);
+			float yPos=0+yAdj;//these refer to the upper left origin of each postcard
+			float xPos=0+xAdj;
 			string str;
 			while(yPos<ev.PageBounds.Height-100 && patientsPrinted<AddrTable.Rows.Count){
 				//Return Address--------------------------------------------------------------------------
@@ -650,14 +680,29 @@ namespace OpenDental{
 					g.DrawString(str,new Font(FontFamily.GenericSansSerif,8),Brushes.Black,xPos+45,yPos+75);
 				}
 				//Body text-------------------------------------------------------------------------------
-				str=textPostcardMessage.Text.Replace("?DueDate"
-					,PIn.PDate(AddrTable.Rows[patientsPrinted]["DateDue"].ToString()).ToShortDateString());
+				if(checkGroupFamilies.Checked
+					&& AddrTable.Rows[patientsPrinted]["FamList"].ToString()!="")//print family card
+				{
+					str=textFamilyMessage.Text.Replace("?FamilyList"
+						,AddrTable.Rows[patientsPrinted]["FamList"].ToString());
+				}
+				else{//print single card
+					str=textPostcardMessage.Text.Replace("?DueDate"
+						,PIn.PDate(AddrTable.Rows[patientsPrinted]["DateDue"].ToString()).ToShortDateString());
+				}
 				g.DrawString(str,new Font(FontFamily.GenericSansSerif,10),Brushes.Black,new RectangleF(xPos+45,yPos+180,250,190));
 				//Patient's Address-----------------------------------------------------------------------
-				str=AddrTable.Rows[patientsPrinted]["FName"].ToString()+" "
+				if(checkGroupFamilies.Checked
+					&& AddrTable.Rows[patientsPrinted]["FamList"].ToString()!="")//print family card
+				{
+					str=AddrTable.Rows[patientsPrinted]["LName"].ToString()+" "+Lan.g(this,"Household")+"\r\n";
+				}
+				else{//print single card
+					str=AddrTable.Rows[patientsPrinted]["FName"].ToString()+" "
 						+AddrTable.Rows[patientsPrinted]["MiddleI"].ToString()+" "
-						+AddrTable.Rows[patientsPrinted]["LName"].ToString()+"\r\n"
-						+AddrTable.Rows[patientsPrinted]["Address"].ToString()+"\r\n";
+						+AddrTable.Rows[patientsPrinted]["LName"].ToString()+"\r\n";
+				}
+				str+=AddrTable.Rows[patientsPrinted]["Address"].ToString()+"\r\n";
 					if(AddrTable.Rows[patientsPrinted]["Address2"].ToString()!=""){
 						str+=AddrTable.Rows[patientsPrinted]["Address2"].ToString()+"\r\n";
 					}
@@ -674,7 +719,7 @@ namespace OpenDental{
 				else{//4
 					xPos+=550;
 					if(xPos>1000){
-						xPos=0;
+						xPos=0+xAdj;
 						yPos+=425;
 					}
 				}
@@ -701,41 +746,44 @@ namespace OpenDental{
 			}
 			int[] originalRecalls=new int[gridMain.SelectedIndices.Length];
 			for(int i=0;i<gridMain.SelectedIndices.Length;i++){
-				originalRecalls[i]=((RecallItem)MainAL[gridMain.SelectedIndices[i]]).RecallNum;
+				originalRecalls[i]=((RecallItem)gridMain.Rows[gridMain.SelectedIndices[i]].Tag).RecallNum;
 				Recalls.UpdateStatus(
-					((RecallItem)MainAL[gridMain.SelectedIndices[i]]).RecallNum,
+					((RecallItem)gridMain.Rows[gridMain.SelectedIndices[i]].Tag).RecallNum,
 					Defs.Short[(int)DefCat.RecallUnschedStatus][comboStatus.SelectedIndex].DefNum);
 				//((RecallItem)MainAL[tbMain.SelectedIndices[i]]).up
 			}
 			FillMain();
-			for(int i=0;i<MainAL.Count;i++){
+			for(int i=0;i<gridMain.Rows.Count;i++){
 				for(int j=0;j<originalRecalls.Length;j++){
-					if(originalRecalls[j]==((RecallItem)MainAL[i]).RecallNum){
+					if(originalRecalls[j]==((RecallItem)gridMain.Rows[i].Tag).RecallNum){
 						gridMain.SetSelected(i,true);
 					}
 				}
 			}
 		}
 
-		private void butSave_Click(object sender, System.EventArgs e) {
-			if(  textDaysPast.errorProvider1.GetError(textDaysPast)!=""
-				|| textDaysFuture.errorProvider1.GetError(textDaysFuture)!="")
+		/*private void butSave_Click(object sender, System.EventArgs e) {
+			if(  textDateStart.errorProvider1.GetError(textDateStart)!=""
+				|| textDateEnd.errorProvider1.GetError(textDateEnd)!="")
 			{
 				MessageBox.Show(Lan.g(this,"Please fix data entry errors first."));
 				return;
 			}
-			Prefs.Cur.PrefName="RecallDaysPast";
-			Prefs.Cur.ValueString=textDaysPast.Text;
-			Prefs.UpdateCur();
-			Prefs.Cur.PrefName="RecallDaysFuture";
-			Prefs.Cur.ValueString=textDaysFuture.Text;
-			Prefs.UpdateCur();
-			DataValid.SetInvalid(InvalidTypes.Prefs);
-		}
+			int daysPast=((TimeSpan)(DateTime.Today-PIn.PDate(textDateStart.Text))).Days;//can be neg
+			int daysFuture=((TimeSpan)(PIn.PDate(textDateEnd.Text)-DateTime.Today)).Days;//can be neg
+			if(Prefs.UpdateBool("RecallGroupByFamily",checkGroupFamilies.Checked)
+				| Prefs.UpdateInt("RecallDaysPast",daysPast)
+				| Prefs.UpdateInt("RecallDaysFuture",daysFuture))
+			{
+				DataValid.SetInvalid(InvalidTypes.Prefs);
+			}
+		}*/
 
 		private void butClose_Click(object sender, System.EventArgs e) {
 			Close();
 		}
+
+	
 
 		
 
@@ -748,21 +796,21 @@ namespace OpenDental{
 
 
 	///<summary>Mostly used just to display the recall list.</summary>
-	public struct RecallItem{
+	public class RecallItem{
 		///<summary></summary>
 		public DateTime DueDate;
 		///<summary></summary>
 		public string PatientName;
-		///<summary></summary>
-		public DateTime BirthDate;
+		//<summary></summary>
+		//public DateTime BirthDate;
 		///<summary></summary>
 		public Interval RecallInterval;
 		///<summary></summary>
 		public int RecallStatus;
 		///<summary></summary>
 		public int PatNum;
-		///<summary></summary>
-		public int Age;
+		///<summary>Stored as a string because it might be blank.</summary>
+		public string Age;
 		///<summary></summary>
 		public string Note;
 		///<summary></summary>

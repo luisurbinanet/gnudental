@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the autocode table in the database.</summary>
+	///<summary>An autocode automates entering procedures.  The user only has to pick composite, for instance, and the autocode figures out the code based on the number of surfaces, and posterior vs. anterior.  Autocodes also enforce and suggest changes to a procedure code if the number of surfaces or other properties change.</summary>
 	public struct AutoCode{
 		///<summary>Primary key.</summary>
 		public int AutoCodeNum;

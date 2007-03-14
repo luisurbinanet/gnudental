@@ -217,7 +217,7 @@ namespace OpenDental{
 			if(saveFileDialog1.ShowDialog()!=DialogResult.OK){
 				return;
 			}
-			StreamWriter sw=new StreamWriter(fileName,false);
+			StreamWriter sw=new StreamWriter(fileName,false,System.Text.Encoding.UTF8);
 			sw.WriteLine("DELETE FROM languageforeign WHERE Culture='"+CultureInfo.CurrentCulture.Name+"';");
 			LanguageForeign[] LFList=LanguageForeigns.GetListForCulture(CultureInfo.CurrentCulture);
 			for(int i=0;i<LFList.Length;i++){

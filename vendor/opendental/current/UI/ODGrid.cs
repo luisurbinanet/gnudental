@@ -186,6 +186,7 @@ namespace OpenDental.UI{
 			get{
 				int[] retVal=new int[selectedIndices.Count];
 				selectedIndices.CopyTo(retVal);
+				Array.Sort(retVal);//they must be in numerical order
 				return retVal; 
 			}
 		}

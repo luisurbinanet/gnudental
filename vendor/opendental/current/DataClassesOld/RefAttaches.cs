@@ -5,13 +5,13 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Corresponds to the refattach table in the database.  Attaches a reference to a patient.</summary>
+	///<summary>Attaches a referral to a patient.</summary>
 	public class RefAttach{  
 		///<summary>Primary key.</summary>
 		public int RefAttachNum;
-		///<summary>Foreign key to referral.ReferralNum.</summary>
+		///<summary>FK to referral.ReferralNum.</summary>
 		public int ReferralNum;
-		///<summary>Foreign key to patient.PatNum.</summary>
+		///<summary>FK to patient.PatNum.</summary>
 		public int PatNum;
 		///<summary>Order to display in patient info. Will be automated more in future.</summary>
 		public int ItemOrder;
@@ -138,6 +138,25 @@ namespace OpenDental{
 				retStr[i]=PIn.PString(table.Rows[i][0].ToString());
 			}
 			return retStr;
+		}
+
+		///<summary>Pass in all the refattaches for the patient.  This funtion finds the first referral from a Dr and returns that Dr's name.  Used in specialty practices.  Function is only used right now in the Dr. Ceph bridge.</summary>
+		public static string GetReferringDr(RefAttach[] attachList){
+			if(attachList.Length==0){
+				return "";
+			}
+			if(!attachList[0].IsFrom){
+				return "";
+			}
+			Referral referral=Referrals.GetReferral(attachList[0].ReferralNum);
+			if(referral.PatNum!=0){
+				return "";
+			}
+			string retVal=referral.FName+" "+referral.MName+" "+referral.LName;
+			if(referral.Title!=""){
+				retVal+=", "+referral.Title;
+			}
+			return retVal;
 		}
 	
 		

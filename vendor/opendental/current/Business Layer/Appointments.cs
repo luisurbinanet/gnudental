@@ -7,53 +7,51 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the appointment table in the database.</summary>
+	///<summary>Appointments can show in the Appointments module, or they can be on the unscheduled list.  An appointment object is also used to store the Planned appointment.  The planned appointment never gets scheduled, but instead gets copied.</summary>
 	public class Appointment{
 		///<summary>Primary key.</summary>
 		public int AptNum;
-		///<summary>Foreign key to <see cref="Patient.PatNum">patient.PatNum</see>.</summary>
+		///<summary>FK to patient.PatNum.  The patient that the appointment is for.</summary>
 		public int PatNum;
-		///<summary>See the <see cref="ApptStatus"/> enumeration.</summary>
+		///<summary>Enum:ApptStatus .</summary>
 		public ApptStatus AptStatus;
-		///<summary>Time pattern, X for Dr time, / for assist time. Was previously in 10 minute increments, but is now in 5 minute increments.</summary>
+		///<summary>Time pattern, X for Dr time, / for assist time. Stored in 5 minute increments.  Converted as needed to 10 or 15 minute representations for display.</summary>
 		public string Pattern;
-		///<summary>Foreign key to <see cref="Def.DefNum">definition.DefNum</see>.</summary>
-		///<remarks>The <see cref="Def.Category">definition.Category</see> in the definition table is <see cref="DefCat.ApptConfirmed">DefCat.ApptConfirmed</see>.</remarks>
+		///<summary>FK to definition.DefNum.  This field can also be used to show patient arrived, in chair, etc.  The Category column in the definition table is DefCat.ApptConfirmed.</summary>
 		public int Confirmed;
 		///<summary>Amount of time to add to appointment.  Example: 2 would represent add 20 minutes.</summary>
 		public int AddTime;
-		///<summary>Operatory.  Foreign key to operatory.OperatoryNum.</summary>
+		///<summary>FK to operatory.OperatoryNum.</summary>
 		public int Op;
 		///<summary>Note.</summary>
 		public string Note;
-		///<summary>Foreign key to <see cref="Provider.ProvNum">provider.ProvNum</see>.</summary>
+		///<summary>FK to provider.ProvNum.</summary>
 		public int ProvNum;
-		///<summary>Hygiene provider.  Foreign key to <see cref="Provider.ProvNum">provider.ProvNum</see>.</summary>
+		///<summary>FK to provider.ProvNum.  Optional.  Only used if a hygienist is assigned to this appt.</summary>
 		public int ProvHyg;
-		///<summary>Appointment Date and time.</summary>
+		///<summary>Appointment Date and time.  If you need just the date or time for an SQL query, you can use DATE(AptDateTime) and TIME(AptDateTime) in your query.</summary>
 		public DateTime AptDateTime;
-		///<summary>A better description would be PlannedAptNum.  Only used to show that this apt is derived from specified planned apt. Otherwise, 0. Foreign key to appointment.AptNum.</summary>
+		///<summary>FK to appointment.AptNum.  A better description of this field would be PlannedAptNum.  Only used to show that this apt is derived from specified planned apt. Otherwise, 0.</summary>
 		public int NextAptNum;
-		///<summary>Foreign key to <see cref="Def.DefNum">definition.DefNum</see>.</summary>
-		///<remarks>The <see cref="Def.Category">definition.Category</see> in the definition table is <see cref="DefCat.RecallUnschedStatus">DefCat.RecallUnschedStatus</see>.  Only used if this is an Unsched or Next appt.</remarks>
+		///<summary>FK to definition.DefNum.  The definition.Category in the definition table is DefCat.RecallUnschedStatus.  Only used if this is an Unsched or Planned appt.</summary>
 		public int UnschedStatus;
-		///<summary>A lab case is expected for this appointment.</summary>
+		///<summary>Enum:LabCase  A lab case is expected for this appointment.</summary>
 		public LabCase Lab;
-		///<summary>This is the first appoinment this patient has had at this office.</summary>
+		///<summary>This is the first appoinment this patient has had at this office.  Somewhat automated.</summary>
 		public bool IsNewPatient;
-		///<summary>A one line summary of all procedures.  Can be used in various reports, Unscheduled list, and Next appointment tracker.  Not user editable right now.</summary>
+		///<summary>A one line summary of all procedures.  Can be used in various reports, Unscheduled list, and Planned appointment tracker.  Not user editable right now, so it doesn't show on the screen.</summary>
 		public string ProcDescript;
-		///<summary>Foreign key to employee.EmployeeNum</summary>
+		///<summary>FK to employee.EmployeeNum.  You can assign an assistant to the appointment.</summary>
 		public int Assistant;
-		///<summary>Dental School field. Foreign key to instructor.InstructorNum</summary>
+		///<summary>FK to instructor.InstructorNum.  Only used in dental schools.</summary>
 		public int InstructorNum;
-		///<summary>Dental School field. Foreign key to schoolclass.SchoolClassNum.</summary>
+		///<summary>FK to schoolclass.SchoolClassNum.  Only used in dental schools.</summary>
 		public int SchoolClassNum;
-		///<summary>Dental School field. Foreign key to schoolcourse.SchoolCourseNum.</summary>
+		///<summary>FK to schoolcourse.SchoolCourseNum.  Only used in dental schools.</summary>
 		public int SchoolCourseNum;
 		///<summary>Dental School field. eg 3.5. Only a grade for this single appointment. The course grade shows on a report.</summary>
 		public float GradePoint;
-		///<summary>Foreign key to clinic.ClinicNum.  0 if no clinic.</summary>
+		///<summary>FK to clinic.ClinicNum.  0 if no clinic.</summary>
 		public int ClinicNum;
 		///<summary>Set true if this is a hygiene appt.  The hygiene provider's color will show.</summary>
 		public bool IsHygiene;
@@ -403,21 +401,6 @@ namespace OpenDental{
 			return list;
 		}
 
-		///<summary>Used when generating the recall list to test whether a patient already has a future appointment scheduled.  It was not possible to incorporate this into the main query because it would have been too complex.  A single query is planned at some point.</summary>
-		public static bool PatientHasFutureRecall(int patNum){
-			string command="SELECT COUNT(*) FROM appointment,procedurelog,procedurecode "
-				+"WHERE procedurelog.patnum = '"+patNum.ToString()+"' "
-				+"AND appointment.patnum = '"+patNum.ToString()+"' "
-				+"AND procedurelog.ADACode = procedurecode.ADACode "
-				+"AND procedurelog.aptnum = appointment.aptnum "
-				+"AND appointment.AptDateTime >= '"+DateTime.Today.ToString("yyyy-MM-dd")+"' "
-				+"AND procedurecode.SetRecall = '1'";
-			DataConnection dcon=new DataConnection();
-			if(dcon.GetCount(command)=="0"){
-				return false;
-			}
-			return true;
-		}
 
 		///<summary>Used in Chart module to test whether a procedure is attached to an appointment with today's date. The procedure might have a different date if still TP status.  ApptList should include all appointments for this patient. Does not make a call to db.</summary>
 		public static bool ProcIsToday(Appointment[] apptList,Procedure proc){
@@ -689,7 +672,6 @@ namespace OpenDental{
 				AptCur.IsHygiene=true;
 			}
 			AptCur.ClinicNum=patCur.ClinicNum;
-			AptCur.InsertOrUpdate(null,true);
 			string[] procs=Prefs.GetString("RecallProcedures").Split(',');
 			if(Prefs.GetString("RecallBW")!=""){//BWs
 				bool dueBW=true;
@@ -710,6 +692,14 @@ namespace OpenDental{
 					procs2.CopyTo(procs,0);
 				}
 			}
+			AptCur.ProcDescript="";
+			for(int i=0;i<procs.Length;i++) {
+				if(i>0) {
+					AptCur.ProcDescript+=", ";
+				}
+				AptCur.ProcDescript+=ProcedureCodes.GetProcCode(procs[i]).AbbrDesc;
+			}
+			AptCur.InsertOrUpdate(null,true);
 			Procedure ProcCur;
 			PatPlan[] patPlanList=PatPlans.Refresh(patCur.PatNum);
 			Benefit[] benefitList=Benefits.Refresh(patPlanList);

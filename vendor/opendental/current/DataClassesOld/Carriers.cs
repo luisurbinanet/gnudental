@@ -5,21 +5,21 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Corresponds to the carrier table in the database.</summary>
+	///<summary>Every InsPlan has a Carrier.  The carrier stores the name and address.</summary>
 	public struct Carrier{
 		///<summary>Primary key.</summary>
 		public int CarrierNum;
 		///<summary>Name of the carrier.</summary>
 		public string CarrierName;
-		///<summary></summary>
+		///<summary>.</summary>
 		public string Address;
 		///<summary>Second line of address.</summary>
 		public string Address2;
-		///<summary></summary>
+		///<summary>.</summary>
 		public string City;
 		///<summary>2 char in the US.</summary>
 		public string State;
-		///<summary></summary>
+		///<summary>Postal code.</summary>
 		public string Zip;
 		///<summary>Includes any punctuation.</summary>
 		public string Phone;
@@ -205,9 +205,9 @@ namespace OpenDental{
 		public static ArrayList GetSimilarNames(string carrierName){
 			ArrayList retVal=new ArrayList();
 			for(int i=0;i<List.Length;i++){
-				if(i>0 && List[i].CarrierName==List[i-1].CarrierName){
-					continue;//ignore all duplicate names
-				}
+				//if(i>0 && List[i].CarrierName==List[i-1].CarrierName){
+				//	continue;//ignore all duplicate names
+				//}
 				//if(Regex.IsMatch(List[i].CarrierName,"^"+carrierName,RegexOptions.IgnoreCase))
 				if(List[i].CarrierName.ToUpper().IndexOf(carrierName.ToUpper())==0)
 					retVal.Add(List[i]);

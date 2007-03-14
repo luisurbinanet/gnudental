@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Corresponds to the scheddefault table in the database.</summary>
+	///<summary>Default weekly schedule for either practice, provider, or blockout.</summary>
 	public class SchedDefault{
 		///<summary>Primary key.</summary>
 		public int SchedDefaultNum;
@@ -15,13 +15,13 @@ namespace OpenDental{
 		public DateTime StartTime;
 		///<summary>Stop time for this timeblock.</summary>
 		public DateTime StopTime;
-		///<summary>See the ScheduleType enumeration.  Practice, Provider, or Blockout</summary>
+		///<summary>Enum:ScheduleType  Practice, Provider, or Blockout</summary>
 		public ScheduleType SchedType;
-		///<summary>Foreign key to provider.ProvNum.</summary>
+		///<summary>FK to provider.ProvNum if provider type.</summary>
 		public int ProvNum;
-		///<summary>Foreign key to definition.DefNum.</summary>
+		///<summary>FK to definition.DefNum if blockout type.</summary>
 		public int BlockoutType;
-		///<summary>Foreign key to operatory.OperatoryNum.  Only used right now for Blockouts.  Will later add practice type.  If 0, then it applies to all ops.</summary>
+		///<summary>FK to operatory.OperatoryNum.  Only used right now for Blockouts.  Will later add practice type.  If 0, then it applies to all ops.</summary>
 		public int Op;
 
 		///<summary></summary>

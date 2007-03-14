@@ -142,8 +142,8 @@ namespace OpenDental{
 					//adj ignored
 					//capClaim has no insEst yet
 					&& (List[i].Status==ClaimProcStatus.NotReceived
-					|| List[i].Status!=ClaimProcStatus.Received
-					|| List[i].Status!=ClaimProcStatus.Supplemental)
+					|| List[i].Status==ClaimProcStatus.Received
+					|| List[i].Status==ClaimProcStatus.Supplemental)
 					){
 					retVal+=List[i].InsPayEst;
 				}

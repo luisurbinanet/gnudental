@@ -5,11 +5,11 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Corresponds to the clockevent table in the database.</summary>
+	///<summary>Each row is either a clock-in or a clock-out event.  This table will soon be significantly changed so that each row will contain both the clock-in and the clock-out.  As it is right now, it's nearly impossible to do queries that give you summary results.</summary>
 	public class ClockEvent{
 		///<summary>Primary key.</summary>
 		public int ClockEventNum;
-		///<summary>Foreign key to employee.EmployeeNum</summary>
+		///<summary>FK to employee.EmployeeNum</summary>
 		public int EmployeeNum;
 		///<summary>The actual time that this entry was entered.</summary>
 		public DateTime TimeEntered;
@@ -17,14 +17,14 @@ namespace OpenDental{
 		public DateTime TimeDisplayed;
 		///<summary>True for ClockIn, and false for ClockOut.</summary>
 		public bool ClockIn;
-		///<summary>Enum TimeClockStatus.  Home, Lunch, or Break.</summary>
+		///<summary>Enum:TimeClockStatus  Home, Lunch, or Break.</summary>
 		public TimeClockStatus ClockStatus;
-		///<summary></summary>
+		///<summary>.</summary>
 		public string Note;
-		///<summary></summary>
-		public DateTime TimeEnteredTwo;
-		///<summary></summary>
-		public DateTime TimeDisplayedTwo;
+		//<summary></summary>
+		//public DateTime TimeEnteredTwo;
+		//<summary></summary>
+		//public DateTime TimeDisplayedTwo;
 
 		///<summary></summary>
 		public ClockEvent Copy() {

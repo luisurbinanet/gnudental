@@ -1,10 +1,12 @@
-/*
+
 using System;
 using System.Collections;
 using System.Windows.Forms;
 
-namespace OpenDental{*/
-	
+namespace OpenDental{
+	///<summary>All 5 of the graphic tables are completely obsolete now that we have the 3D teeth.</summary>
+	public class GraphicAssembly{};	
+}
 	
 
 	/*=========================================================================================

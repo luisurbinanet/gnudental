@@ -6,13 +6,13 @@ using System.Windows.Forms;
 
 namespace OpenDental {
 
-	/// <summary>Corresponds to the RxAlert table in the database. Many-to-many relationship connecting Rx with DiseaseDef.</summary>
+	/// <summary>Many-to-many relationship connecting Rx with DiseaseDef.</summary>
 	public class RxAlert{
 		///<summary>Primary key.</summary>
 		public int RxAlertNum;
-		///<summary>fk to rxdef.RxDefNum.</summary>
+		///<summary>FK to rxdef.RxDefNum.</summary>
 		public int RxDefNum;
-		///<summary>fk to diseasedef.DiseaseDefNum</summary>
+		///<summary>FK to diseasedef.DiseaseDefNum</summary>
 		public int DiseaseDefNum;
 
 		///<summary></summary>

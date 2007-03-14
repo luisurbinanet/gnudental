@@ -4,8 +4,10 @@ using System.Drawing;
 using System.Drawing.Printing;
 using System.Collections;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Windows.Forms;
 
 namespace OpenDental
@@ -17,22 +19,23 @@ namespace OpenDental
 	{
 		private OpenDental.UI.Button butClose;
 		private System.Windows.Forms.TextBox textBox1;
-		private System.Windows.Forms.CheckBox checkDefaultProv;
-		private System.Windows.Forms.CheckBox checkInvalidTooth;
 		private OpenDental.UI.Button buttonCheck;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
 		private System.ComponentModel.Container components = null;
-		private System.Windows.Forms.CheckBox checkCorrupt;
 		private System.Drawing.Printing.PrintDocument pd2;
-		private System.Windows.Forms.CheckBox checkCodes;
-		private System.Windows.Forms.TextBox textBox2;
-		private System.Windows.Forms.CheckBox checkDates;
-		private System.Windows.Forms.CheckBox checkInsPlans;
-		private System.Windows.Forms.CheckBox checkSchedules;
+		private CheckBox checkInitial;
+		private TextBox textLog;
+		private Label label1;
 		//private Queries Queries2;
-		private string logData;
+		//private string logData;
+		DataConnection dcon;
+		DataTable table;
+		private CheckBox checkShow;
+		private CheckBox checkPrompt;
+		private OpenDental.UI.Button butPrint;
+		string command;
 
 		///<summary></summary>
 		public FormDatabaseMaintenance()
@@ -43,7 +46,7 @@ namespace OpenDental
 			InitializeComponent();
 			Lan.C(this, new System.Windows.Forms.Control[]{
 				this.textBox1,
-				this.textBox2
+				//this.textBox2
 			}); //*Ann
 			Lan.F(this);
 		}
@@ -73,16 +76,14 @@ namespace OpenDental
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormDatabaseMaintenance));
 			this.butClose = new OpenDental.UI.Button();
 			this.textBox1 = new System.Windows.Forms.TextBox();
-			this.checkDefaultProv = new System.Windows.Forms.CheckBox();
-			this.checkInvalidTooth = new System.Windows.Forms.CheckBox();
 			this.buttonCheck = new OpenDental.UI.Button();
-			this.checkCorrupt = new System.Windows.Forms.CheckBox();
 			this.pd2 = new System.Drawing.Printing.PrintDocument();
-			this.checkCodes = new System.Windows.Forms.CheckBox();
-			this.textBox2 = new System.Windows.Forms.TextBox();
-			this.checkDates = new System.Windows.Forms.CheckBox();
-			this.checkInsPlans = new System.Windows.Forms.CheckBox();
-			this.checkSchedules = new System.Windows.Forms.CheckBox();
+			this.checkInitial = new System.Windows.Forms.CheckBox();
+			this.textLog = new System.Windows.Forms.TextBox();
+			this.label1 = new System.Windows.Forms.Label();
+			this.checkShow = new System.Windows.Forms.CheckBox();
+			this.checkPrompt = new System.Windows.Forms.CheckBox();
+			this.butPrint = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
 			// butClose
@@ -93,7 +94,7 @@ namespace OpenDental
 			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butClose.Location = new System.Drawing.Point(655,389);
+			this.butClose.Location = new System.Drawing.Point(787,626);
 			this.butClose.Name = "butClose";
 			this.butClose.Size = new System.Drawing.Size(87,26);
 			this.butClose.TabIndex = 0;
@@ -104,33 +105,13 @@ namespace OpenDental
 			// 
 			this.textBox1.BackColor = System.Drawing.SystemColors.Control;
 			this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.textBox1.Location = new System.Drawing.Point(32,14);
+			this.textBox1.Location = new System.Drawing.Point(27,12);
 			this.textBox1.Multiline = true;
 			this.textBox1.Name = "textBox1";
-			this.textBox1.Size = new System.Drawing.Size(707,31);
+			this.textBox1.Size = new System.Drawing.Size(847,24);
 			this.textBox1.TabIndex = 1;
-			this.textBox1.Text = "This tool will check the entire database for any possible corruption or improper " +
-    "settings.  You will generally be prompted before any changes are made to the dat" +
-    "abase.";
-			// 
-			// checkDefaultProv
-			// 
-			this.checkDefaultProv.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkDefaultProv.Location = new System.Drawing.Point(30,85);
-			this.checkDefaultProv.Name = "checkDefaultProv";
-			this.checkDefaultProv.Size = new System.Drawing.Size(679,22);
-			this.checkDefaultProv.TabIndex = 2;
-			this.checkDefaultProv.Text = "Verify that a Default Provider and Billing Type have been selected in Practice se" +
-    "tup.";
-			// 
-			// checkInvalidTooth
-			// 
-			this.checkInvalidTooth.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkInvalidTooth.Location = new System.Drawing.Point(30,107);
-			this.checkInvalidTooth.Name = "checkInvalidTooth";
-			this.checkInvalidTooth.Size = new System.Drawing.Size(724,31);
-			this.checkInvalidTooth.TabIndex = 3;
-			this.checkInvalidTooth.Text = resources.GetString("checkInvalidTooth.Text");
+			this.textBox1.Text = "This tool will check the entire database for any improper settings, inconsistenci" +
+    "es, or corruption.  If any problems are found, they will be fixed.";
 			// 
 			// buttonCheck
 			// 
@@ -139,87 +120,90 @@ namespace OpenDental
 			this.buttonCheck.Autosize = true;
 			this.buttonCheck.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.buttonCheck.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.buttonCheck.Location = new System.Drawing.Point(655,350);
+			this.buttonCheck.Location = new System.Drawing.Point(668,626);
 			this.buttonCheck.Name = "buttonCheck";
 			this.buttonCheck.Size = new System.Drawing.Size(87,26);
 			this.buttonCheck.TabIndex = 5;
 			this.buttonCheck.Text = "C&heck Now";
 			this.buttonCheck.Click += new System.EventHandler(this.buttonCheck_Click);
 			// 
-			// checkCorrupt
+			// checkInitial
 			// 
-			this.checkCorrupt.Checked = true;
-			this.checkCorrupt.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.checkCorrupt.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkCorrupt.Location = new System.Drawing.Point(30,234);
-			this.checkCorrupt.Name = "checkCorrupt";
-			this.checkCorrupt.Size = new System.Drawing.Size(709,24);
-			this.checkCorrupt.TabIndex = 6;
-			this.checkCorrupt.Text = "Check all tables for file or index corruption.";
+			this.checkInitial.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkInitial.Location = new System.Drawing.Point(27,36);
+			this.checkInitial.Name = "checkInitial";
+			this.checkInitial.Size = new System.Drawing.Size(847,20);
+			this.checkInitial.TabIndex = 13;
+			this.checkInitial.Text = "Initial check.  Use this for new databases that were converted from other program" +
+    "s.  You will not need to include this for standard maintenance.";
 			// 
-			// checkCodes
+			// textLog
 			// 
-			this.checkCodes.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkCodes.Location = new System.Drawing.Point(30,162);
-			this.checkCodes.Name = "checkCodes";
-			this.checkCodes.Size = new System.Drawing.Size(709,24);
-			this.checkCodes.TabIndex = 8;
-			this.checkCodes.Text = "Add any missing procedure codes.";
+			this.textLog.Font = new System.Drawing.Font("Courier New",8.25F,System.Drawing.FontStyle.Regular,System.Drawing.GraphicsUnit.Point,((byte)(0)));
+			this.textLog.Location = new System.Drawing.Point(27,102);
+			this.textLog.Multiline = true;
+			this.textLog.Name = "textLog";
+			this.textLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.textLog.Size = new System.Drawing.Size(847,518);
+			this.textLog.TabIndex = 14;
 			// 
-			// textBox2
+			// label1
 			// 
-			this.textBox2.BackColor = System.Drawing.SystemColors.Control;
-			this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.textBox2.Location = new System.Drawing.Point(32,53);
-			this.textBox2.Multiline = true;
-			this.textBox2.Name = "textBox2";
-			this.textBox2.Size = new System.Drawing.Size(707,18);
-			this.textBox2.TabIndex = 9;
-			this.textBox2.Text = "Currently, the following tests are run.   Check any items that you want tested:";
+			this.label1.Location = new System.Drawing.Point(24,79);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(338,20);
+			this.label1.TabIndex = 15;
+			this.label1.Text = "Log (automatically saved in RepairLog.txt)";
+			this.label1.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
-			// checkDates
+			// checkShow
 			// 
-			this.checkDates.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkDates.Location = new System.Drawing.Point(30,138);
-			this.checkDates.Name = "checkDates";
-			this.checkDates.Size = new System.Drawing.Size(709,24);
-			this.checkDates.TabIndex = 10;
-			this.checkDates.Text = "Fix any invalid dates.  This will speed up the program after converting from anot" +
-    "her dental software.";
+			this.checkShow.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkShow.Location = new System.Drawing.Point(27,56);
+			this.checkShow.Name = "checkShow";
+			this.checkShow.Size = new System.Drawing.Size(847,20);
+			this.checkShow.TabIndex = 16;
+			this.checkShow.Text = "Show me everything in the log  (only for advanced users)";
 			// 
-			// checkInsPlans
+			// checkPrompt
 			// 
-			this.checkInsPlans.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkInsPlans.Location = new System.Drawing.Point(30,186);
-			this.checkInsPlans.Name = "checkInsPlans";
-			this.checkInsPlans.Size = new System.Drawing.Size(709,24);
-			this.checkInsPlans.TabIndex = 11;
-			this.checkInsPlans.Text = "Look for insurance plans that no longer exist.";
+			this.checkPrompt.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkPrompt.Location = new System.Drawing.Point(463,76);
+			this.checkPrompt.Name = "checkPrompt";
+			this.checkPrompt.Size = new System.Drawing.Size(411,20);
+			this.checkPrompt.TabIndex = 17;
+			this.checkPrompt.Text = "Prompt me before changing the database in any way. (only for advanced users)";
+			this.checkPrompt.Visible = false;
 			// 
-			// checkSchedules
+			// butPrint
 			// 
-			this.checkSchedules.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkSchedules.Location = new System.Drawing.Point(30,210);
-			this.checkSchedules.Name = "checkSchedules";
-			this.checkSchedules.Size = new System.Drawing.Size(709,24);
-			this.checkSchedules.TabIndex = 12;
-			this.checkSchedules.Text = "Fix default and regular schedules.";
+			this.butPrint.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butPrint.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butPrint.Autosize = true;
+			this.butPrint.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butPrint.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butPrint.Image = ((System.Drawing.Image)(resources.GetObject("butPrint.Image")));
+			this.butPrint.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butPrint.Location = new System.Drawing.Point(298,626);
+			this.butPrint.Name = "butPrint";
+			this.butPrint.Size = new System.Drawing.Size(87,26);
+			this.butPrint.TabIndex = 18;
+			this.butPrint.Text = "Print";
+			this.butPrint.Click += new System.EventHandler(this.butPrint_Click);
 			// 
 			// FormDatabaseMaintenance
 			// 
 			this.AcceptButton = this.buttonCheck;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
 			this.CancelButton = this.butClose;
-			this.ClientSize = new System.Drawing.Size(763,443);
-			this.Controls.Add(this.checkSchedules);
-			this.Controls.Add(this.checkInsPlans);
-			this.Controls.Add(this.checkDates);
-			this.Controls.Add(this.textBox2);
-			this.Controls.Add(this.checkCodes);
-			this.Controls.Add(this.checkCorrupt);
+			this.ClientSize = new System.Drawing.Size(895,667);
+			this.Controls.Add(this.butPrint);
+			this.Controls.Add(this.checkPrompt);
+			this.Controls.Add(this.checkShow);
+			this.Controls.Add(this.label1);
+			this.Controls.Add(this.textLog);
+			this.Controls.Add(this.checkInitial);
 			this.Controls.Add(this.buttonCheck);
-			this.Controls.Add(this.checkInvalidTooth);
-			this.Controls.Add(this.checkDefaultProv);
 			this.Controls.Add(this.textBox1);
 			this.Controls.Add(this.butClose);
 			this.MaximizeBox = false;
@@ -240,117 +224,287 @@ namespace OpenDental
 		}
 
 		private void FormDatabaseMaintenance_Load(object sender, System.EventArgs e) {
-			//Queries2=new Queries();
-			Queries.CurReport=new ReportOld();
+
 		}
 
 		private void buttonCheck_Click(object sender, System.EventArgs e) {
-			if(checkDefaultProv.Checked){
+			Cursor=Cursors.WaitCursor;
+			textLog.Text=DateTime.Now.ToString();
+			StringBuilder strB=new StringBuilder();
+			for(int i=0;i<90;i++){
+				strB.Append("-");
+			}
+			textLog.Text+=strB.ToString()+"\r\n";
+			Application.DoEvents();
+			dcon=new DataConnection();
+			if(!VerifyTables()) {
+				Cursor=Cursors.Default;
+				return;
+			}
+			Application.DoEvents();
+			if(checkInitial.Checked){
 				VerifyProv();
-			}
-			if(checkInvalidTooth.Checked){
-				VerifyToothNums();
-			}
-			if(checkDates.Checked){
+				Application.DoEvents();
+				VerifyBillingType();
+				Application.DoEvents();
+				if(!VerifyToothNums()){
+					Cursor=Cursors.Default;
+					return;
+				}
 				VerifyDates();
-			}
-			if(checkCodes.Checked){
+				Application.DoEvents();
 				AddCodes();
+				Application.DoEvents();
 			}
-			if(checkInsPlans.Checked){
-				VerifyInsPlans();
+			if(!ClaimProcsWithInvalidPlanNums()){
+				Cursor=Cursors.Default;
+				return;
 			}
-			if(checkSchedules.Checked){
-				VerifySchedules();
+			Application.DoEvents();
+			if(!ClaimsWithInvalidPlanNums()) {
+				Cursor=Cursors.Default;
+				return;
 			}
-			if(checkCorrupt.Checked){
-				VerifyTables();
+			Application.DoEvents();
+			VerifySchedDefaults();
+			Application.DoEvents();
+			VerifySchedules();
+			Application.DoEvents();
+			StartDateDepositSlip();
+			Application.DoEvents();
+			InsPlansNoCarrier();
+			Application.DoEvents();
+			ClaimPlanNum2NotValid();
+			Application.DoEvents();
+			HiddenProvidersWithClaimPayments();
+			Application.DoEvents();
+			ClaimPaymentWithNoSplits();
+			Application.DoEvents();
+			DeletedPatsWithBalance();
+			Application.DoEvents();
+			ProceduresAttachedToWrongAppts();
+			Application.DoEvents();
+			ClaimProcEstNoBillIns();
+			Application.DoEvents();
+			DuplicateRecalls();
+			Application.DoEvents();
+			ClaimProcsWithInvalidClaimNum();
+			Application.DoEvents();
+			PaySplitsWithInvalidPayNum();
+			Application.DoEvents();
+			ClaimProcsWithInvalidProcNum();
+			Application.DoEvents();
+			PatPlanOrdinalsTwoToOne();
+			Application.DoEvents();
+			MedicationPatsOrphaned();
+			Application.DoEvents();
+			PayPlanGuarantorZero();
+			Application.DoEvents();
+			PayPlanChargeGuarantorMatch();
+			Application.DoEvents();
+			ImagesWithNoCategory();
+			Application.DoEvents();
+			ClaimProcsWithInvalidClaimPaymentNum();
+			Application.DoEvents();
+			TimeCardEntriesInFuture();
+			Application.DoEvents();
+
+
+
+			textLog.Text+=Lan.g(this,"Done");
+			SaveLogToFile();
+			//textLog.ScrollToCaret
+			Cursor=Cursors.Default;
+		}
+
+		private bool VerifyTables() {
+			command="SHOW TABLES";
+			table=dcon.GetTable(command);
+			string[] tableNames=new string[table.Rows.Count];
+			int lastRow;
+			bool allOK=true;
+			DialogResult result;
+			//ArrayList corruptTables=new ArrayList();
+			for(int i=0;i<table.Rows.Count;i++) {
+				tableNames[i]=table.Rows[i][0].ToString();
 			}
-			MessageBox.Show(Lan.g(this,"Done"));
+			for(int i=0;i<tableNames.Length;i++) {
+				command="CHECK TABLE "+tableNames[i];
+				table=dcon.GetTable(command);
+				lastRow=table.Rows.Count-1;
+				if(table.Rows[lastRow][3].ToString()!="OK") {
+					//corruptTables.Add(tableNames[i]);
+					textLog.Text+=Lan.g(this,"Corrupt file found for table")+" "+tableNames[i]+"\r\n";
+					allOK=false;
+					result=DialogResult.Yes;
+					if(checkPrompt.Checked) {
+						result=MessageBox.Show(Lan.g(this,"Corrupt file found.  Attempt repair?")
+							,"",MessageBoxButtons.YesNoCancel);
+					}
+					switch(result) {
+						case DialogResult.Cancel:
+							return false;
+						case DialogResult.No:
+							continue;
+						case DialogResult.Yes:
+							command="REPAIR TABLE "+tableNames[i];
+							DataTable tableResults=dcon.GetTable(command);
+							//we always log the results of a repair table, regardless of whether user wants to show all.
+							textLog.Text+=Lan.g(this,"Repair log:")+"\r\n";
+							//int t=tableResults.Rows.Count-1;
+							for(int t=0;t<tableResults.Rows.Count;t++) {
+								for(int j=0;j<tableResults.Columns.Count;j++) {
+									//Debug.Write(tableResults.Rows[t][j].ToString()+",");
+									textLog.Text+=tableResults.Rows[t][j].ToString()+",";
+								}
+								//Debug.WriteLine("");
+								textLog.Text+="\r\n";
+							}
+							break;
+					}
+				}
+			}
+			if(allOK) {
+				if(checkShow.Checked) {
+					textLog.Text+=Lan.g(this,"No corrupted tables.")+"\r\n";
+				}
+			}
+			else{
+				textLog.Text+=Lan.g(this,"Corrupted files probably fixed.  Look closely at the log.  Also, run again to be sure they were really fixed.")+"\r\n";
+				return false;//no other checks should be done until we can successfully get past this.
+			}
+			return true;
 		}
 
 		private void VerifyProv(){
-			Queries.CurReport.Query="SELECT valuestring FROM preference WHERE "
-				+"prefname = 'PracticeDefaultProv'";
-			Queries.SubmitCur();
-			if(Queries.TableQ.Rows[0][0].ToString()==""){
-				if(MessageBox.Show("Default provider not set.  Click OK to set the default provider to the first provider in the list.","",MessageBoxButtons.OKCancel)==DialogResult.OK){
-					Queries.CurReport.Query="SELECT provnum FROM provider "
-						+"WHERE ishidden = 0 "
-						+"ORDER BY itemorder LIMIT 1";
-					Queries.SubmitCur();
-					Queries.CurReport.Query="UPDATE preference SET valuestring = '"
-						+Queries.TableQ.Rows[0][0].ToString()+"' "
-						+"WHERE prefname = 'PracticeDefaultProv'";
-					Queries.SubmitNonQ();
+			command="SELECT valuestring FROM preference WHERE prefname = 'PracticeDefaultProv'";
+			table=dcon.GetTable(command);
+			if(table.Rows[0][0].ToString()!="") {
+				if(checkShow.Checked) {
+					textLog.Text+=Lan.g(this,"Default practice provider verified.")+"\r\n";
+				}
+				return;
+			}
+			textLog.Text+=Lan.g(this,"No default provider set.");
+			if(checkPrompt.Checked) {
+				if(!MsgBox.Show(this,true,"Set default provider to the first provider in the list?")) {
+					textLog.Text+="\r\n";
+					return;
 				}
 			}
-			Queries.CurReport.Query="SELECT valuestring FROM preference WHERE "
-				+"prefname = 'PracticeDefaultBillType'";
-			Queries.SubmitCur();
-			if(Queries.TableQ.Rows[0][0].ToString()==""){
-				if(MessageBox.Show("Default Billing Type not set.  Click OK to set the billing type to the first item in the list.","",MessageBoxButtons.OKCancel)==DialogResult.OK){
-					Queries.CurReport.Query="SELECT defnum FROM definition "
-						+"WHERE category = 4 AND ishidden = 0 "
-						+"ORDER BY itemorder LIMIT 1";
-					Queries.SubmitCur();
-					Queries.CurReport.Query="UPDATE preference SET valuestring = '"
-						+Queries.TableQ.Rows[0][0].ToString()+"' "
-						+"WHERE prefname = 'PracticeDefaultBillType'";
-					Queries.SubmitNonQ();
-				}
-			}
-			MessageBox.Show("Default Provider and Billing Type verified");
+			command="SELECT provnum FROM provider WHERE IsHidden=0 ORDER BY itemorder LIMIT 1";
+			table=dcon.GetTable(command);
+			command="UPDATE preference SET valuestring = '"+table.Rows[0][0].ToString()+"' WHERE prefname = 'PracticeDefaultProv'";
+			dcon.NonQ(command);
+			textLog.Text+="  "+Lan.g(this,"Fixed.")+"\r\n";
 		}
 
-		private void VerifyToothNums(){
+		private void VerifyBillingType() {
+			command="SELECT valuestring FROM preference WHERE prefname = 'PracticeDefaultBillType'";
+			table=dcon.GetTable(command);
+			if(table.Rows[0][0].ToString()!="") {
+				if(checkShow.Checked) {
+					textLog.Text+=Lan.g(this,"Default practice billing type verified.")+"\r\n";
+				}
+				return;
+			}
+			textLog.Text+=Lan.g(this,"No default billing type set.");
+			if(checkPrompt.Checked) {
+				if(!MsgBox.Show(this,true,"Set default billing type to the first item in the list?")) {
+					textLog.Text+="\r\n";
+					return;
+				}
+			}
+			command="SELECT defnum FROM definition WHERE category = 4 AND ishidden = 0 ORDER BY itemorder LIMIT 1";
+			table=dcon.GetTable(command);
+			command="UPDATE preference SET valuestring='"+table.Rows[0][0].ToString()+"' WHERE prefname='PracticeDefaultBillType'";
+			dcon.NonQ(command);
+			textLog.Text+="  "+Lan.g(this,"Fixed.")+"\r\n";
+		}
+
+		private bool VerifyToothNums() {
 			Patient Lim;
-			Queries.CurReport.Query="SELECT procnum,toothnum,patnum FROM procedurelog";
-			Queries.SubmitCur();
 			string toothNum;
-			for(int i=0;i<Queries.TableQ.Rows.Count;i++){
-				toothNum=Queries.TableQ.Rows[i][1].ToString();
-				if(toothNum == "")
+			//bool fixAllNoPrompt=false;
+			int numberFixed=0;
+			DialogResult result;
+			command="SELECT procnum,toothnum,patnum FROM procedurelog";
+			table=dcon.GetTable(command);
+			for(int i=0;i<table.Rows.Count;i++){
+				toothNum=table.Rows[i][1].ToString();
+				if(toothNum=="")
 					continue;
-				if(!Tooth.IsValidDB(toothNum)){
-					if(string.CompareOrdinal(toothNum,"a")>=0
-						&& string.CompareOrdinal(toothNum,"t")<=0){
-						UpdateToothNum(Queries.TableQ.Rows[i][0].ToString(),toothNum.ToUpper());
+				if(Tooth.IsValidDB(toothNum)){
+					continue;
+				}
+				//if(checkPrompt.Checked && (numberFixed==0 || !fixAllNoPrompt)){
+				Lim=Patients.GetLim(Convert.ToInt32(table.Rows[i][2].ToString()));
+				//}
+				if(string.CompareOrdinal(toothNum,"a")>=0 && string.CompareOrdinal(toothNum,"t")<=0){
+					//if(numberFixed==0 && checkPrompt.Checked){
+					//	fixAllNoPrompt=MsgBox.Show(this,true,"Fix all toothnumbers without further prompting?");
+					//}
+					result=DialogResult.Yes;
+					if(checkPrompt.Checked){
+						result=MessageBox.Show("Invalid tooth number found for "+Lim.GetNameLF()+". Convert "
+							+"tooth number "+toothNum+" to tooth number "+toothNum.ToUpper()+"?","",MessageBoxButtons.YesNoCancel);
+					}
+					switch(result){
+						case DialogResult.Cancel:
+							return false;
+						case DialogResult.No:
+							continue;
+						case DialogResult.Yes:
+							command="UPDATE procedurelog SET ToothNum = '"+toothNum.ToUpper()
+								+"' WHERE ProcNum = "+table.Rows[i][0].ToString();
+							dcon.NonQ(command);
+							if(checkShow.Checked){
+								textLog.Text+=Lim.GetNameLF()+" "+toothNum+" - "+toothNum.ToUpper()+"\r\n";
+							}
+							numberFixed++;
+							break;
+					}
+					continue;
+				}
+				result=DialogResult.Yes;
+				if(checkPrompt.Checked){
+					result=MessageBox.Show("Invalid tooth number found for "+Lim.GetNameLF()+". Convert "
+						+"tooth number "+toothNum+" to tooth number 1?","",MessageBoxButtons.YesNoCancel);
+				}
+				switch(result){
+					case DialogResult.Cancel:
+            return false;
+					case DialogResult.No:
 						continue;
-					}//lower case to upper
-					else{
-						Lim=Patients.GetLim(Convert.ToInt32(Queries.TableQ.Rows[i][2].ToString()));
-						switch(MessageBox.Show("Invalid tooth number found for "
-							+Lim.GetNameLF()+". Convert "
-							+"tooth number "+toothNum+" to tooth number 1?","",MessageBoxButtons.YesNoCancel)){
-							case DialogResult.Cancel:
-                return;
-							case DialogResult.No:
-								continue;
-							case DialogResult.Yes:
-								UpdateToothNum(Queries.TableQ.Rows[i][0].ToString(),"1");
-								break;
-						}//switch convert?
-					}//not lowercase primary
-				}//not valid
+					case DialogResult.Yes:
+						command="UPDATE procedurelog SET ToothNum = '1"
+								+"' WHERE ProcNum = "+table.Rows[i][0].ToString();
+						dcon.NonQ(command);
+						if(checkShow.Checked) {
+							textLog.Text+=Lim.GetNameLF()+" "+toothNum+" - 1\r\n";
+						}
+						numberFixed++;
+						break;
+				}
 			}//for i
-			MessageBox.Show("Check for invalid tooth numbers complete.  Number of records checked: "
-				+Queries.TableQ.Rows.Count.ToString());
-		}
-
-		private void UpdateToothNum(string procNum,string newToothNum){
-			Queries.CurReport.Query="UPDATE procedurelog SET toothnum = '"
-				+newToothNum+"' WHERE procnum = '"+procNum+"'";
-			Queries.SubmitNonQ();
+			if(numberFixed!=0 || checkShow.Checked){
+				textLog.Text+=Lan.g(this,"Check for invalid tooth numbers complete.  Records checked: ")
+					+table.Rows.Count.ToString()+". "+Lan.g(this,"Records fixed: ")+numberFixed.ToString()+"\r\n";
+			}
+			return true;
 		}
 
 		private void VerifyDates(){
+			if(checkPrompt.Checked){
+				if(!MsgBox.Show(this,true,"Change all dates in 23 different fields that are 0000-00-00 to 0001-01-01?")){
+					return;
+				}
+			}
 			string[] commands=new string[]
 			{
 				"UPDATE adjustment SET AdjDate='0001-01-01' WHERE AdjDate='0000-00-00'"
 				,"UPDATE adjustment SET DateEntry='1980-01-01' WHERE DateEntry<'1980'"
-				,"UPDATE appointment SET AptDateTime='0001-01-01 00:00:00' "
-					+"WHERE AptDateTime LIKE '0000-00-00%'"
+				,"UPDATE appointment SET AptDateTime='0001-01-01 00:00:00' WHERE AptDateTime LIKE '0000-00-00%'"
 				,"UPDATE claim SET DateService='0001-01-01' WHERE DateService='0000-00-00'"
 				,"UPDATE claim SET DateSent='0001-01-01' WHERE DateSent='0000-00-00'"
 				,"UPDATE claim SET DateReceived='0001-01-01' WHERE DateReceived='0000-00-00'"
@@ -362,29 +516,45 @@ namespace OpenDental
 				,"UPDATE claimproc SET ProcDate='0001-01-01' WHERE ProcDate='0000-00-00'"
 				,"UPDATE insplan SET DateEffective='0001-01-01' WHERE DateEffective='0000-00-00'"
 				,"UPDATE insplan SET DateTerm='0001-01-01' WHERE DateTerm='0000-00-00'"
-				//,"UPDATE insplan SET RenewMonth='1' WHERE RenewMonth='0'"
 				,"UPDATE patient SET Birthdate='0001-01-01' WHERE Birthdate='0000-00-00'"
 				,"UPDATE patient SET DateFirstVisit='0001-01-01' WHERE DateFirstVisit='0000-00-00'"
 				,"UPDATE procedurelog SET ProcDate='0001-01-01' WHERE ProcDate='0000-00-00'"
-				,"UPDATE procedurelog SET DateOriginalProsth='0001-01-01' "
-					+"WHERE DateOriginalProsth='0000-00-00'"
+				,"UPDATE procedurelog SET DateOriginalProsth='0001-01-01' WHERE DateOriginalProsth='0000-00-00'"
 				,"UPDATE procedurelog SET DateLocked='0001-01-01' WHERE DateLocked='0000-00-00'"
 				,"UPDATE recall SET DateDueCalc='0001-01-01' WHERE DateDueCalc='0000-00-00'"
 				,"UPDATE recall SET DateDue='0001-01-01' WHERE DateDue='0000-00-00'"
 				,"UPDATE recall SET DatePrevious='0001-01-01' WHERE DatePrevious='0000-00-00'"
+				,"UPDATE schedule SET SchedDate='0001-01-01' WHERE SchedDate='0000-00-00'"
 			};
-			DataConnection dcon=new DataConnection();
 			int rowsChanged=dcon.NonQ(commands);
-			MessageBox.Show(Lan.g(this,"Dates fixed. Rows changed:")+" "+rowsChanged.ToString());
+			if(rowsChanged !=0 || checkShow.Checked){
+				textLog.Text+=Lan.g(this,"Dates fixed. Rows changed:")+" "+rowsChanged.ToString()+"\r\n";
+			}
 		}
 
 		private void AddCodes(){
-			string command=@"SELECT DISTINCT procedurelog.ADACode
+			command=@"SELECT DISTINCT procedurelog.ADACode
 				FROM procedurelog
 				LEFT JOIN procedurecode ON procedurelog.ADACode=procedurecode.ADACode
 				WHERE procedurecode.ADACode IS NULL";
-			DataConnection dcon=new DataConnection();
-			DataTable table=dcon.GetTable(command);
+			table=dcon.GetTable(command);
+			if(table.Rows.Count==0) {
+				if(checkShow.Checked) {
+					textLog.Text+=Lan.g(this,"No procedure codes need to be added.")+"\r\n";
+				}
+				return;
+			}
+			if(checkPrompt.Checked){
+				string missingCodes="";
+				for(int i=0;i<table.Rows.Count;i++) {
+					missingCodes+=PIn.PString(table.Rows[i][0].ToString())+"\r\n";
+				}
+				DialogResult result=MessageBox.Show("Add these missing procedure codes?\r\n"+missingCodes,"",
+					MessageBoxButtons.OKCancel);
+				if(result!=DialogResult.OK) {
+					return;
+				}
+			}
 			string myADA;
 			ProcedureCode procCode;
 			for(int i=0;i<table.Rows.Count;i++){
@@ -397,15 +567,15 @@ namespace OpenDental
 				procCode.ProcCat=Defs.Short[(int)DefCat.ProcCodeCats][0].DefNum;
 				procCode.TreatArea=TreatmentArea.Mouth;
 				procCode.Insert();
+				textLog.Text+=Lan.g(this,"Procedure code added: ")+myADA+"\r\n";
 			}
-			MessageBox.Show(Lan.g(this,"Codes added: ")+table.Rows.Count.ToString());
+			textLog.Text+=Lan.g(this,"Total procedure codes added: ")+table.Rows.Count.ToString()+"\r\n";
 			if(table.Rows.Count>0){
 				DataValid.SetInvalid(InvalidTypes.ProcCodes);
 			}
 		}
 
-		private void VerifyInsPlans(){
-			/*string command=@"SELECT PatPlanNum FROM patplan
+		/*string command=@"SELECT PatPlanNum FROM patplan
 				LEFT JOIN insplan on patplan.PlanNum=insplan.PlanNum
 				WHERE insplan.PlanNum IS NULL";
 			
@@ -415,123 +585,377 @@ namespace OpenDental
 					+"WHERE PatNum="+table.Rows[i][0].ToString();
 				dcon.NonQ(command);
 			}*/
-			DataConnection dcon=new DataConnection();
-			string command=@"SELECT ClaimProcNum FROM claimproc
+
+		private bool ClaimProcsWithInvalidPlanNums(){
+			command=@"SELECT ClaimProcNum,PatNum FROM claimproc
 				LEFT JOIN insplan ON claimproc.PlanNum=insplan.PlanNum
 				WHERE insplan.PlanNum IS NULL";
-			DataTable table=dcon.GetTable(command);
-			for(int i=0;i<table.Rows.Count;i++) {
-				command="DELETE FROM claimproc "
-					+"WHERE ClaimProcNum="+table.Rows[i][0].ToString();
-				dcon.NonQ(command);
+			table=dcon.GetTable(command);
+			if(table.Rows.Count==0) {
+				if(checkShow.Checked) {
+					textLog.Text+=Lan.g(this,"No ClaimProcs found with invalid PlanNum.")+"\r\n";
+				}
+				return true;
 			}
-			command=@"SELECT ClaimNum FROM claim
+			DialogResult result;
+			Patient Lim;
+			int numberFixed=0;
+			for(int i=0;i<table.Rows.Count;i++) {
+				result=DialogResult.Yes;
+				Lim=Patients.GetLim(PIn.PInt(table.Rows[i][1].ToString()));
+				if(checkPrompt.Checked) {
+					result=MessageBox.Show("ClaimProc found for "+Lim.GetNameFL()+" with invalid PlanNum.  Delete?"
+						,"",MessageBoxButtons.YesNoCancel);
+				}
+				switch(result) {
+					case DialogResult.Cancel:
+						return false;
+					case DialogResult.No:
+						continue;
+					case DialogResult.Yes:
+						command="DELETE FROM claimproc WHERE ClaimProcNum="+table.Rows[i][0].ToString();
+						dcon.NonQ(command);
+						if(checkShow.Checked) {
+							textLog.Text+=Lan.g(this,"Claimproc with invalid PlanNum deleted for ")+Lim.GetNameLF()+"\r\n";
+						}
+						numberFixed++;
+						break;
+				}
+			}
+			if(numberFixed!=0 && !checkShow.Checked){
+				textLog.Text+=Lan.g(this,"ClaimProcs deleted due to invalid PlanNum: ")+numberFixed.ToString()+"\r\n";
+			}
+			return true;
+		}
+
+		private bool ClaimsWithInvalidPlanNums() {
+			command=@"SELECT ClaimNum,PatNum FROM claim
 				LEFT JOIN insplan ON claim.PlanNum=insplan.PlanNum
 				WHERE insplan.PlanNum IS NULL";
 			table=dcon.GetTable(command);
-			for(int i=0;i<table.Rows.Count;i++) {
-				command="DELETE FROM claim "
-					+"WHERE ClaimNum="+table.Rows[i][0].ToString();
-				dcon.NonQ(command);
+			if(table.Rows.Count==0) {
+				if(checkShow.Checked) {
+					textLog.Text+=Lan.g(this,"No Claims found with invalid PlanNum.")+"\r\n";
+				}
+				return true;
 			}
-			MessageBox.Show("Missing plans fixed.");
-		}
-
-		private void VerifySchedules(){
-			//sched default first
-			int schedsFixed=0;
-			for(int i=0;i<SchedDefaults.List.Length;i++){
-				if(SchedDefaults.List[i].StopTime.TimeOfDay-SchedDefaults.List[i].StartTime.TimeOfDay<new TimeSpan(0,5,0)){
-					SchedDefaults.List[i].Delete();
-					schedsFixed++;
+			DialogResult result;
+			Patient Lim;
+			int numberFixed=0;
+			for(int i=0;i<table.Rows.Count;i++) {
+				result=DialogResult.Yes;
+				Lim=Patients.GetLim(PIn.PInt(table.Rows[i][1].ToString()));
+				if(checkPrompt.Checked) {
+					result=MessageBox.Show("Claim found for "+Lim.GetNameFL()+" with invalid PlanNum.  Delete?"
+						,"",MessageBoxButtons.YesNoCancel);
+				}
+				switch(result) {
+					case DialogResult.Cancel:
+						return false;
+					case DialogResult.No:
+						continue;
+					case DialogResult.Yes:
+						command="DELETE FROM claim "
+							+"WHERE ClaimNum="+table.Rows[i][0].ToString();
+						dcon.NonQ(command);
+						if(checkShow.Checked) {
+							textLog.Text+=Lan.g(this,"Claim with invalid PlanNum deleted for ")+Lim.GetNameLF()+"\r\n";
+						}
+						numberFixed++;
+						break;
 				}
 			}
-			if(schedsFixed>0){
-				MessageBox.Show(schedsFixed.ToString()+" default schedule blocks fixed.");
-				DataValid.SetInvalid(InvalidTypes.Sched);
+			if(numberFixed!=0 && !checkShow.Checked) {
+				textLog.Text+=Lan.g(this,"Claims deleted due to invalid PlanNum: ")+numberFixed.ToString()+"\r\n";
 			}
-			//Now, schedules
-			schedsFixed=0;
+			return true;
+		}
+
+		private void VerifySchedDefaults() {
+			int numberFixed=0;
+			for(int i=0;i<SchedDefaults.List.Length;i++) {
+				if(SchedDefaults.List[i].StopTime.TimeOfDay-SchedDefaults.List[i].StartTime.TimeOfDay<new TimeSpan(0,5,0)) {
+					SchedDefaults.List[i].Delete();
+					numberFixed++;
+				}
+			}
+			if(numberFixed>0 || checkShow.Checked) {
+				textLog.Text+=Lan.g(this,"Default schedule blocks fixed: ")+numberFixed.ToString()+"\r\n";
+			}
+			DataValid.SetInvalid(InvalidTypes.Sched);
+		}
+
+		private void VerifySchedules() {
+			int numberFixed=0;
 			Schedule[] schedList=Schedules.RefreshAll();
-			for(int i=0;i<schedList.Length;i++){
-				if(schedList[i].Status!=SchedStatus.Open){
+			for(int i=0;i<schedList.Length;i++) {
+				if(schedList[i].Status!=SchedStatus.Open) {
 					continue;//closed and holiday statuses do not use starttime and stoptime
 				}
-				if(schedList[i].StopTime.TimeOfDay-schedList[i].StartTime.TimeOfDay<new TimeSpan(0,5,0)){
-					//MessageBox.Show(schedList[i].StartTime.ToShortTimeString()+" - "+schedList[i].StopTime.ToShortTimeString());
+				if(schedList[i].StopTime.TimeOfDay-schedList[i].StartTime.TimeOfDay<new TimeSpan(0,5,0)) {
 					schedList[i].Delete();
-					schedsFixed++;
+					numberFixed++;
 				}
 			}
-			if(schedsFixed>0){
-				MessageBox.Show(schedsFixed.ToString()+" schedule blocks fixed.");
-				DataValid.SetInvalid(InvalidTypes.Sched);
+			if(numberFixed>0 || checkShow.Checked) {
+				textLog.Text+=Lan.g(this,"Schedule blocks fixed: ")+numberFixed.ToString()+"\r\n";
 			}
-			MessageBox.Show("Schedules fixed.");
+			DataValid.SetInvalid(InvalidTypes.Sched);
 		}
 
-		private void VerifyTables(){
-			Queries.CurReport.Query="SHOW TABLES";
-			Queries.SubmitCur();
-			string[] tableName=new string[Queries.TableQ.Rows.Count];
-			int lastRow;
-			ArrayList corruptTables=new ArrayList();
-			for(int i=0;i<Queries.TableQ.Rows.Count;i++){
-				tableName[i]=Queries.TableQ.Rows[i][0].ToString();
+		private void StartDateDepositSlip(){
+			//If the program locks up when trying to create a deposit slip, it's because someone removed the start date from the deposit edit window. Run this query to get back in.
+			DateTime date=Prefs.GetDate("DateDepositsStarted");
+			if(date<DateTime.Now.AddMonths(-1)){
+				command="UPDATE preference SET ValueString='"+POut.PDate(DateTime.Today.AddDays(-21))
+					+"' WHERE PrefName='DateDepositsStarted'";
+				dcon.NonQ(command);
+				DataValid.SetInvalid(InvalidTypes.Prefs);
+				textLog.Text+=Lan.g(this,"Deposit start date reset.")+"\r\n";
 			}
-			for(int i=0;i<tableName.Length;i++){
-				Queries.CurReport.Query="CHECK TABLE "+tableName[i];
-				Queries.SubmitCur();
-				lastRow=Queries.TableQ.Rows.Count-1;
-				if(Queries.TableQ.Rows[lastRow][3].ToString()!="OK"){
-					corruptTables.Add(tableName[i]);
+			else if(checkShow.Checked) {
+				textLog.Text+=Lan.g(this,"Deposit start date checked.")+"\r\n";
+			}
+		}
+
+		private void InsPlansNoCarrier(){
+			//Gets a list of insurance plans that do not have a carrier attached. The list should be blank. If not, then you need to go to the plan listed and add a carrier. Missing carriers will cause the send claims function to give an error.
+			command="SELECT Subscriber FROM insplan WHERE CarrierNum=0";
+			table=dcon.GetTable(command);
+			if(table.Rows.Count==0){
+				if(checkShow.Checked){
+					textLog.Text+=Lan.g(this,"Insurance plans checked for missing CarrierNums.")+"\r\n";
+					return;
 				}
 			}
-			if(corruptTables.Count==0){
-				MessageBox.Show(Lan.g(this,"You have no corrupted tables."));
+			Patient Lim;
+			for(int i=0;i<table.Rows.Count;i++){
+				Lim=Patients.GetLim(PIn.PInt(table.Rows[i][0].ToString()));
+				textLog.Text+=Lan.g(this,"Warning!")+" "+Lim.GetNameFL()+" "+Lan.g(this,"has an insurance plan that does not have a carrier assigned.  Please fix this.")+"\r\n";
+			}
+		}
+
+		private void ClaimPlanNum2NotValid(){
+			//This fixes a slight database inconsistency that might cause an error when trying to open the send claims window. 
+			command="UPDATE claim SET PlanNum2=0 WHERE PlanNum2 !=0 AND NOT EXISTS( SELECT * FROM insplan "
+				+"WHERE claim.PlanNum2=insplan.PlanNum)";
+			int numberFixed=dcon.NonQ(command);
+			if(numberFixed>0 || checkShow.Checked) {
+				textLog.Text+=Lan.g(this,"Claims with invalid PlanNum2 fixed: ")+numberFixed.ToString()+"\r\n";
+			}
+		}
+
+		private void HiddenProvidersWithClaimPayments(){
+			command=@"SELECT MAX(claimproc.ProcDate),provider.ProvNum
+				FROM claimproc,provider
+				WHERE claimproc.ProvNum=provider.ProvNum
+				AND provider.IsHidden=1
+				AND claimproc.InsPayAmt>0
+				GROUP BY provider.ProvNum";
+			table=dcon.GetTable(command);
+			if(table.Rows.Count==0) {
+				if(checkShow.Checked) {
+					textLog.Text+=Lan.g(this,"Hidden providers checked for claim payments.")+"\r\n";
+					return;
+				}
+			}
+			Provider prov;
+			for(int i=0;i<table.Rows.Count;i++) {
+				prov=Providers.GetProv(PIn.PInt(table.Rows[i][1].ToString()));
+				textLog.Text+=Lan.g(this,"Warning!  Hidden provider ")+" "+prov.Abbr+" "
+					+Lan.g(this,"has claim payments entered as recently as ")
+					+PIn.PDate(table.Rows[i][0].ToString()).ToShortDateString()
+					+Lan.g(this,".  This data will be missing on income reports.")+"\r\n";
+			}
+		}
+
+		private void ClaimPaymentWithNoSplits(){
+			command="DELETE FROM claimpayment WHERE NOT EXISTS("
+				+"SELECT * FROM claimproc WHERE claimpayment.ClaimPaymentNum=claimproc.ClaimPaymentNum)";
+			int numberFixed=dcon.NonQ(command);
+			if(numberFixed>0 || checkShow.Checked) {
+				textLog.Text+=Lan.g(this,"Claim payments with no splits removed: ")+numberFixed.ToString()+"\r\n";
+			}
+		}
+
+		private void DeletedPatsWithBalance(){
+			command="SELECT PatNum FROM patient	WHERE PatStatus=4 "
+				+"AND (Bal_0_30 !=0	OR Bal_31_60 !=0 OR Bal_61_90 !=0	OR BalOver90 !=0 OR InsEst !=0 OR BalTotal !=0)";
+			table=dcon.GetTable(command);
+			if(table.Rows.Count==0 && checkShow.Checked) {
+				textLog.Text+=Lan.g(this,"No balances found for deleted patients.")+"\r\n";
 				return;
 			}
-			string corruptS="";
-			for(int i=0;i<corruptTables.Count;i++){
-				corruptS+=corruptTables[i]+"\r";
+			Patient pat;
+			Patient old;
+			for(int i=0;i<table.Rows.Count;i++) {
+				pat=Patients.GetPat(PIn.PInt(table.Rows[i][0].ToString()));
+				old=pat.Copy();
+				pat.LName=pat.LName+Lan.g(this,"DELETED");
+				pat.PatStatus=PatientStatus.Archived;
+				pat.Update(old);
+				textLog.Text+=Lan.g(this,"Warning!  Patient:")+" "+old.GetNameFL()+" "
+					+Lan.g(this,"was previously marked as deleted, but was found to have a balance. Patient has been changed to Archive status.  The account will need to be cleared, and the patient deleted again.")+"\r\n";
 			}
-			if(MessageBox.Show(Lan.g(this,"You have the following corrupt tables:")+"\r"
-				+corruptS
-				+Lan.g(this,"It is strongly suggested that you select Cancel and make a backup before continuing.  Select OK to repair tables."),"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
-				return;	
-			}
-			for(int i=0;i<corruptTables.Count;i++){
-				Queries.CurReport.Query="REPAIR TABLE "+corruptTables[i];
-				Queries.SubmitCur();
-				SaveToLog((string)corruptTables[i]);
-			}
-			PrintLog();
-			MessageBox.Show(Lan.g(this,"The tables have probably been repaired, but the repairlog must be analyzed.  Please go to www.open-dent.com and do a search for 'corruption'.  Please follow those instructions.  Do not click OK until you write down this information."));
 		}
 
-		private void SaveToLog(string corruptTable){
+		private void ProceduresAttachedToWrongAppts(){
+			command="UPDATE appointment,procedurelog SET procedurelog.AptNum=0 "
+				+"WHERE procedurelog.AptNum=appointment.AptNum AND procedurelog.PatNum != appointment.PatNum";
+			int numberFixed=dcon.NonQ(command);
+			if(numberFixed>0 || checkShow.Checked) {
+				textLog.Text+=Lan.g(this,"Procedures detached from appointments: ")+numberFixed.ToString()+"\r\n";
+			}
+		}
+
+		private void ClaimProcEstNoBillIns(){
+			command="UPDATE claimproc SET InsPayEst=0 WHERE NoBillIns=1 AND InsPayEst !=0";
+			int numberFixed=dcon.NonQ(command);
+			if(numberFixed>0 || checkShow.Checked) {
+				textLog.Text+=Lan.g(this,"Claimproc estimates set to zero because marked NoBillIns: ")+numberFixed.ToString()+"\r\n";
+			}
+		}
+
+		private void DuplicateRecalls(){
+			command="SELECT COUNT(*) AS repetitions,PatNum FROM recall GROUP BY PatNum HAVING repetitions >1";
+			table=dcon.GetTable(command);
+			int numberFound=table.Rows.Count;
+			string pats="";
+			for(int i=0;i<table.Rows.Count;i++){
+				if(i==10){
+					break;//don't show more than 10 patNums.
+				}
+				if(i>0){
+					pats+=", ";
+				}
+				pats+=table.Rows[i][1].ToString();
+			}
+			if(numberFound>0 || checkShow.Checked) {
+				textLog.Text+=Lan.g(this,"Warning! Duplicate recall entries found for individual patients.  Number found: ")
+					+numberFound.ToString()+"  Some PatNums: "+pats+"\r\n";
+			}
+		}
+
+		private void ClaimProcsWithInvalidClaimNum(){
+			command="DELETE FROM claimproc WHERE claimproc.ClaimNum!=0 "
+				+"AND NOT EXISTS(SELECT * FROM claim WHERE claim.ClaimNum=claimproc.ClaimNum)";
+			int numberFixed=dcon.NonQ(command);
+			if(numberFixed>0 || checkShow.Checked) {
+				textLog.Text+=Lan.g(this,"Claimprocs deleted due to invalid ClaimNum: ")+numberFixed.ToString()+"\r\n";
+			}
+		}
+
+		private void PaySplitsWithInvalidPayNum(){
+			command="DELETE FROM paysplit WHERE NOT EXISTS(SELECT * FROM payment WHERE paysplit.PayNum=payment.PayNum)";
+			int numberFixed=dcon.NonQ(command);
+			if(numberFixed>0 || checkShow.Checked) {
+				textLog.Text+=Lan.g(this,"Paysplits deleted due to invalid PayNum: ")+numberFixed.ToString()+"\r\n";
+			}
+		}
+
+		private void ClaimProcsWithInvalidProcNum(){
+			//These seem to pop up quite regularly due to the program forgetting to delete them
+			command="DELETE FROM claimproc WHERE ProcNum>0 AND NOT EXISTS(SELECT * FROM procedurelog "
+				+"WHERE claimproc.ProcNum=procedurelog.ProcNum)";
+			int numberFixed=dcon.NonQ(command);
+			if(numberFixed>0 || checkShow.Checked) {
+				textLog.Text+=Lan.g(this,"Estimates deleted for procedures that no longer exist: ")+numberFixed.ToString()+"\r\n";
+			}
+		}
+
+		private void PatPlanOrdinalsTwoToOne(){
+			command="SELECT PatPlanNum FROM patplan AS patplan1 WHERE Ordinal=2 AND NOT EXISTS("
+				+"SELECT * FROM patplan AS patplan2 WHERE patplan1.PatNum=patplan2.PatNum AND patplan2.Ordinal=1)";
+			table=dcon.GetTable(command);
+			for(int i=0;i<table.Rows.Count;i++){
+				command="UPDATE patplan SET Ordinal=1 WHERE PatPlanNum="+table.Rows[i][0].ToString();
+				dcon.NonQ(command);
+			}
+			int numberFixed=table.Rows.Count;
+			if(numberFixed>0 || checkShow.Checked) {
+				textLog.Text+=Lan.g(this,"PatPlan ordinals changed from 2 to 1 if no primary ins: ")+numberFixed.ToString()+"\r\n";
+			}
+		}
+		
+		private void MedicationPatsOrphaned(){
+			command="DELETE FROM medicationpat WHERE NOT EXISTS(SELECT * FROM medication "
+				+"WHERE medication.MedicationNum=medicationpat.MedicationNum)";
+			int numberFixed=dcon.NonQ(command);
+			if(numberFixed>0 || checkShow.Checked) {
+				textLog.Text+=Lan.g(this,"Medications deleted because no defition exists for them: ")+numberFixed.ToString()+"\r\n";
+			}
+		}
+
+		private void PayPlanGuarantorZero(){
+			command="UPDATE payplan SET Guarantor=PatNum WHERE PlanNum>0";// and Guarantor>0";
+			int numberFixed=dcon.NonQ(command);
+			if(numberFixed>0 || checkShow.Checked) {
+				textLog.Text+=Lan.g(this,"PayPlan Guarantors set to PatNum if used for insurance tracking: ")+numberFixed.ToString()+"\r\n";
+			}
+		}
+
+		private void PayPlanChargeGuarantorMatch() {
+			command="UPDATE payplancharge,payplan SET payplancharge.Guarantor=payplan.Guarantor, "
+				+"payplancharge.PatNum=payplan.PatNum "
+				+"WHERE payplan.PayPlanNum=payplancharge.PayPlanNum";
+			int numberFixed=dcon.NonQ(command);
+			if(numberFixed>0 || checkShow.Checked) {
+				textLog.Text+=Lan.g(this,"PayPlanCharge guarantors and pats set to match payplan guarantors and pats: ")+numberFixed.ToString()+"\r\n";
+			}
+		}
+
+		private void ImagesWithNoCategory() {
+			command="SELECT DocNum FROM document WHERE DocCategory=0";
+			table=dcon.GetTable(command);
+			for(int i=0;i<table.Rows.Count;i++) {
+				command="UPDATE document SET DocCategory="+POut.PInt(Defs.Short[(int)DefCat.ImageCats][0].DefNum)
+					+" WHERE DocNum="+table.Rows[i][0].ToString();
+				dcon.NonQ(command);
+			}
+			int numberFixed=table.Rows.Count;
+			if(numberFixed>0||checkShow.Checked) {
+				textLog.Text+=Lan.g(this,"Images with no category fixed: ")+numberFixed.ToString()+"\r\n";
+			}
+		}
+
+		private void ClaimProcsWithInvalidClaimPaymentNum() {
+			command=@"UPDATE claimproc SET ClaimPaymentNum=0 WHERE claimpaymentnum !=0 AND NOT EXISTS(
+				SELECT * FROM claimpayment WHERE claimpayment.ClaimPaymentNum=claimproc.ClaimPaymentNum)";
+			int numberFixed=dcon.NonQ(command);
+			if(numberFixed>0||checkShow.Checked) {
+				textLog.Text+=Lan.g(this,"ClaimProcs with with invalid ClaimPaymentNumber fixed: ")+numberFixed.ToString()+"\r\n";
+			}
+		}
+
+		private void TimeCardEntriesInFuture() {
+			command=@"UPDATE clockevent SET TimeDisplayed=TimeEntered WHERE TimeDisplayed > NOW()";
+			int numberFixed=dcon.NonQ(command);
+			if(numberFixed>0 || checkShow.Checked) {
+				textLog.Text+=Lan.g(this,"Timecard entries fixed: ")+numberFixed.ToString()+"\r\n";
+			}
+		}
+
+
+
+
+
+		
+
+
+
+
+
+		private void SaveLogToFile() {
 			FileStream fs=new FileStream("RepairLog.txt",FileMode.Append,FileAccess.Write,FileShare.Read);
 			StreamWriter sw=new StreamWriter(fs);
-      String line=""; 
-			line=corruptTable+" "+DateTime.Now.ToString()+"\r\n";
-			sw.Write(line);
-			logData+=line;
-			for(int i=0;i<Queries.TableQ.Rows.Count;i++){
-				line="";
-				for(int j=0;j<Queries.TableQ.Columns.Count;j++){
-					line+=Queries.TableQ.Rows[i][j].ToString()+",";
-				}
-				line+="\r\n";
-				sw.Write(line);
-				logData+=line;
-			}
+			sw.WriteLine(textLog.Text);
 			sw.Close();
 			sw=null;
 			fs.Close();
 			fs=null;
 		}
 
-		private void PrintLog(){
+		private void butPrint_Click(object sender,EventArgs e) {
 			pd2 = new PrintDocument();
 			pd2.PrintPage += new PrintPageEventHandler(this.pd2_PrintPage);
 			pd2.DefaultPageSettings.Margins=new Margins(40,50,50,60);
@@ -548,7 +972,7 @@ namespace OpenDental
 		private void pd2_PrintPage(object sender, PrintPageEventArgs ev){//raised for each page to be printed.
 			int yPos = ev.MarginBounds.Top;
 			int xPos=ev.MarginBounds.Left;
-			ev.Graphics.DrawString(logData,new Font("Arial",11),Brushes.Black,xPos,yPos);
+			ev.Graphics.DrawString(textLog.Text,new Font("Courier New",10),Brushes.Black,xPos,yPos);
 			ev.HasMorePages = false;
 		}
 		

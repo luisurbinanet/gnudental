@@ -5,11 +5,11 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Corresponds to the rxpat table in the database.  One Rx for one patient. Copied from rxdef rather than linked to it.</summary>
+	///<summary>One Rx for one patient. Copied from rxdef rather than linked to it.</summary>
 	public class RxPat{
 		///<summary>Primary key.</summary>
 		public int RxNum;
-		///<summary>Foreign key to patient.PatNum.</summary>
+		///<summary>FK to patient.PatNum.</summary>
 		public int PatNum;
 		///<summary>Date of Rx.</summary>
 		public DateTime RxDate;
@@ -21,7 +21,7 @@ namespace OpenDental{
 		public string Disp;
 		///<summary>Number of refills.</summary>
 		public string Refills;
-		///<summary>Foreign key to provider.ProvNum.</summary>
+		///<summary>FK to provider.ProvNum.</summary>
 		public int ProvNum;
 		///<summary>Notes specific to this Rx.</summary>
 		public string Notes;

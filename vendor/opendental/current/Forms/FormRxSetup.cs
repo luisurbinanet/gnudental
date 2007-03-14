@@ -12,7 +12,8 @@ namespace OpenDental{
 		private OpenDental.UI.Button butAdd;
 		private OpenDental.UI.Button butAdd2;
 		private OpenDental.UI.Button butClose;
-		private ODGrid gridMain;// Required designer variable.
+		private ODGrid gridMain;
+		private OpenDental.UI.Button butPrinting;// Required designer variable.
 		private RxDef[] RxDefList;
 
 		///<summary></summary>
@@ -43,6 +44,7 @@ namespace OpenDental{
 			this.butAdd = new OpenDental.UI.Button();
 			this.butAdd2 = new OpenDental.UI.Button();
 			this.gridMain = new OpenDental.UI.ODGrid();
+			this.butPrinting = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
 			// butClose
@@ -52,7 +54,6 @@ namespace OpenDental{
 			this.butClose.Autosize = true;
 			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butClose.Location = new System.Drawing.Point(850,636);
 			this.butClose.Name = "butClose";
 			this.butClose.Size = new System.Drawing.Size(75,26);
@@ -93,20 +94,34 @@ namespace OpenDental{
 			// gridMain
 			// 
 			this.gridMain.HScrollVisible = false;
-			this.gridMain.Location = new System.Drawing.Point(12,12);
+			this.gridMain.Location = new System.Drawing.Point(12,40);
 			this.gridMain.Name = "gridMain";
 			this.gridMain.ScrollValue = 0;
-			this.gridMain.Size = new System.Drawing.Size(913,612);
+			this.gridMain.Size = new System.Drawing.Size(913,584);
 			this.gridMain.TabIndex = 17;
 			this.gridMain.Title = "Prescriptions";
 			this.gridMain.TranslationName = "TableRxSetup";
 			this.gridMain.CellDoubleClick += new OpenDental.UI.ODGridClickEventHandler(this.gridMain_CellDoubleClick);
+			// 
+			// butPrinting
+			// 
+			this.butPrinting.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butPrinting.Autosize = true;
+			this.butPrinting.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butPrinting.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butPrinting.Location = new System.Drawing.Point(12,8);
+			this.butPrinting.Name = "butPrinting";
+			this.butPrinting.Size = new System.Drawing.Size(87,26);
+			this.butPrinting.TabIndex = 18;
+			this.butPrinting.Text = "Printing Setup";
+			this.butPrinting.Click += new System.EventHandler(this.butPrinting_Click);
 			// 
 			// FormRxSetup
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
 			this.CancelButton = this.butClose;
 			this.ClientSize = new System.Drawing.Size(942,674);
+			this.Controls.Add(this.butPrinting);
 			this.Controls.Add(this.gridMain);
 			this.Controls.Add(this.butAdd2);
 			this.Controls.Add(this.butAdd);
@@ -162,6 +177,11 @@ namespace OpenDental{
 			FillGrid();
 		}
 
+		private void butPrinting_Click(object sender,EventArgs e) {
+			FormRxSetupPrinting FormR=new FormRxSetupPrinting();
+			FormR.ShowDialog();
+		}
+
 		private void butAdd_Click(object sender, System.EventArgs e) {
 			RxDef RxDefCur=new RxDef();
 			RxDefCur.Insert();//It gets deleted if user clicks cancel
@@ -191,6 +211,8 @@ namespace OpenDental{
 		private void FormRxSetup_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
 			//SecurityLogs.MakeLogEntry("Prescription Setup","Altered Prescription Setup",user);
 		}
+
+	
 
 		
 

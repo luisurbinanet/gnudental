@@ -949,7 +949,10 @@ namespace OpenDental{
 								if(dedRem<0) {
 									dedRem=0;
 								}
-								if(dedRem > fee) {//if deductible is more than cost of procedure
+								if(claimproc.NoBillIns) {
+									claimproc.DedApplied=0;
+								}
+								else if(dedRem > fee) {//if deductible is more than cost of procedure
 									claimproc.DedApplied=fee;
 								}
 								else {
@@ -1276,7 +1279,7 @@ namespace OpenDental{
 			if(PatPlanList.Length>0){
 				PlanCur=InsPlans.GetPlan(PatPlanList[0].PlanNum,InsPlanList);
 				pend=InsPlans.GetPending
-					(ClaimProcList,DateTime.Today,PatPlanList[0].PlanNum,PatPlanList[0].PatPlanNum,InsPlanList,BenefitList);
+					(ClaimProcList,DateTime.Today,PatPlanList[0].PlanNum,PatPlanList[0].PatPlanNum,-1,InsPlanList,BenefitList);
 				textPriPend.Text=pend.ToString("F");
 				used=InsPlans.GetInsUsed
 					(ClaimProcList,DateTime.Today,PlanCur.PlanNum,PatPlanList[0].PatPlanNum,-1,InsPlanList,BenefitList);
@@ -1306,7 +1309,7 @@ namespace OpenDental{
 			if(PatPlanList.Length>1){
 				PlanCur=InsPlans.GetPlan(PatPlanList[1].PlanNum,InsPlanList);
 				pend=InsPlans.GetPending
-					(ClaimProcList,DateTime.Today,PatPlanList[1].PlanNum,PatPlanList[1].PatPlanNum,InsPlanList,BenefitList);
+					(ClaimProcList,DateTime.Today,PatPlanList[1].PlanNum,PatPlanList[1].PatPlanNum,-1,InsPlanList,BenefitList);
 				textSecPend.Text=pend.ToString("F");
 				used=InsPlans.GetInsUsed
 									(ClaimProcList,DateTime.Today,PlanCur.PlanNum,PatPlanList[1].PatPlanNum,-1,InsPlanList,BenefitList);
@@ -1516,6 +1519,9 @@ namespace OpenDental{
 			pd2.PrintPage += new PrintPageEventHandler(this.pd2_PrintPage);
 			pd2.DefaultPageSettings.Margins=new Margins(0,0,0,0);
 			pd2.OriginAtMargins=true;
+			if(pd2.DefaultPageSettings.PaperSize.Height==0) {
+				pd2.DefaultPageSettings.PaperSize=new PaperSize("default",850,1100);
+			}
 			try{
 				if(justPreview){
 					pView = new FormRpPrintPreview();
@@ -1617,7 +1623,7 @@ namespace OpenDental{
 		}
 
 		private void pd2_PrintPage(object sender, System.Drawing.Printing.PrintPageEventArgs e) {
-			Rectangle bounds=new Rectangle(50,50,800,1020);//Some printers can handle up to 1042 if upper bound is 40
+			Rectangle bounds=new Rectangle(50,50,750,1020);//Some printers can handle up to 1042 if upper bound is 40
 			Graphics g=e.Graphics;
 			int yPos=bounds.Top;
 			int xPos=bounds.Left;
@@ -1632,7 +1638,13 @@ namespace OpenDental{
 				}
 				string practice=((Pref)Prefs.HList["PracticeTitle"]).ValueString;
 				string name=PatCur.FName+" "+PatCur.MiddleI+" "+PatCur.LName;
-				string date=DateTime.Today.ToShortDateString();
+				string date="";
+				if(gridPlans.SelectedIndices[0]==0) {//default TP
+					date=DateTime.Today.ToShortDateString();
+				}
+				else {
+					date=PlanList[gridPlans.SelectedIndices[0]-1].DateTP.ToShortDateString();
+				}
 				if(PatCur.Preferred!="")
 					name="'"+PatCur.Preferred+"' "+name;
 				g.DrawString(heading,headingFont,Brushes.Black,
@@ -1799,10 +1811,10 @@ namespace OpenDental{
 				else{
 					note=PlanList[gridPlans.SelectedIndices[0]-1].Note;
 				}
-				float noteH=g.MeasureString(note,bodyFont,bounds.Width-10).Height;
+				float noteH=g.MeasureString(note,bodyFont,bounds.Width-30).Height;
 				if(yPos < bounds.Bottom-noteH){//if there is room for the note
-					g.DrawRectangle(Pens.Gray,bounds.Left,yPos,bounds.Width,noteH+8);
-					g.DrawString(note,bodyFont,Brushes.Black,new RectangleF(bounds.Left+5,yPos+5,bounds.Width-10,noteH));
+					g.DrawRectangle(Pens.Gray,bounds.Left+10,yPos,bounds.Width-20,noteH+8);
+					g.DrawString(note,bodyFont,Brushes.Black,new RectangleF(bounds.Left+15,yPos+5,bounds.Width-30,noteH));
 					notePrinted=true;
 				}
 			}
@@ -2202,15 +2214,20 @@ namespace OpenDental{
 		}
 
 		private void gridPreAuth_CellClick(object sender, OpenDental.UI.ODGridClickEventArgs e) {
-			if(gridPlans.SelectedIndices[0]!=0){
+			if(gridPlans.SelectedIndices[0]!=0) {
 				return;
 			}
 			gridMain.SetSelected(false);
 			Claims.Cur=(Claim)ALPreAuth[e.Row];
 			ClaimProc[] ClaimProcsForClaim=ClaimProcs.GetForClaim(ClaimProcList,Claims.Cur.ClaimNum);
-			for(int i=0;i<ProcListTP.Length;i++){
-				for(int j=0;j<ClaimProcsForClaim.Length;j++){
-					if(ProcListTP[i].ProcNum==ClaimProcsForClaim[j].ProcNum){
+			Procedure proc;
+			for(int i=0;i<gridMain.Rows.Count;i++) {//ProcListTP.Length;i++){
+				if(gridMain.Rows[i].Tag==null) {
+					continue;//must be a subtotal row
+				}
+				proc=(Procedure)gridMain.Rows[i].Tag;
+				for(int j=0;j<ClaimProcsForClaim.Length;j++) {
+					if(proc.ProcNum==ClaimProcsForClaim[j].ProcNum) {
 						gridMain.SetSelected(i,true);
 					}
 				}

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Data;
 using System.Windows.Forms;
 using OpenDental.UI;
@@ -18,10 +19,7 @@ namespace OpenDental{
 		private OpenDental.UI.Button butClockOut;
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.GroupBox groupBox2;
-		private OpenDental.UI.Button butClear;
-		private OpenDental.UI.Button butSend;
 		private System.Windows.Forms.TextBox textMessage;
-		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;
 		private System.ComponentModel.IContainer components;
 		private OpenDental.UI.Button butSendClaims;
@@ -33,11 +31,36 @@ namespace OpenDental{
 		private OpenDental.UI.Button butBreaks;
 		private OpenDental.UI.Button butBilling;
 		private OpenDental.UI.Button butAccounting;
+		private Label label7;
+		private ListBox listMessages;
+		private Label label5;
+		private ListBox listExtras;
+		private Label label4;
+		private ListBox listFrom;
+		private Label label3;
+		private ListBox listTo;
+		private Label label1;
+		private ODGrid gridMessages;
+		private CheckBox checkIncludeAck;
 		///<summary>Server time minus local computer time, usually +/- 1 or 2 minutes</summary>
 		private TimeSpan TimeDelta;
+		private OpenDental.UI.Button butSend;
+		private Label label6;
+		private ComboBox comboViewUser;
+		private Label labelDays;
+		private TextBox textDays;
 		///<summary></summary>
 		[Category("Data"),Description("Occurs when user changes current patient, usually by clicking on the Select Patient button.")]
 		public event PatientSelectedEventHandler PatientSelected=null;
+		///<summary>Collection of Signals</summary>
+		private ArrayList SignalList;
+		private SigElementDef[] sigElementDefUser;
+		private SigElementDef[] sigElementDefExtras;
+		private Label labelSending;
+		private Timer timerSending;
+		private ErrorProvider errorProvider1;
+		private OpenDental.UI.Button butAck;
+		private SigElementDef[] sigElementDefMessages;
 
 		///<summary></summary>
 		public ContrStaff(){
@@ -64,10 +87,32 @@ namespace OpenDental{
 			this.textTime = new System.Windows.Forms.Label();
 			this.timer1 = new System.Windows.Forms.Timer(this.components);
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.butBreaks = new OpenDental.UI.Button();
+			this.gridEmp = new OpenDental.UI.ODGrid();
 			this.label2 = new System.Windows.Forms.Label();
+			this.butClockOut = new OpenDental.UI.Button();
+			this.butTimeCard = new OpenDental.UI.Button();
+			this.butClockIn = new OpenDental.UI.Button();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
-			this.textMessage = new System.Windows.Forms.TextBox();
+			this.butAck = new OpenDental.UI.Button();
+			this.labelSending = new System.Windows.Forms.Label();
+			this.textDays = new System.Windows.Forms.TextBox();
+			this.labelDays = new System.Windows.Forms.Label();
+			this.label6 = new System.Windows.Forms.Label();
+			this.comboViewUser = new System.Windows.Forms.ComboBox();
+			this.butSend = new OpenDental.UI.Button();
+			this.gridMessages = new OpenDental.UI.ODGrid();
+			this.checkIncludeAck = new System.Windows.Forms.CheckBox();
+			this.label7 = new System.Windows.Forms.Label();
+			this.listMessages = new System.Windows.Forms.ListBox();
+			this.label5 = new System.Windows.Forms.Label();
+			this.listExtras = new System.Windows.Forms.ListBox();
+			this.label4 = new System.Windows.Forms.Label();
+			this.listFrom = new System.Windows.Forms.ListBox();
+			this.label3 = new System.Windows.Forms.Label();
+			this.listTo = new System.Windows.Forms.ListBox();
 			this.label1 = new System.Windows.Forms.Label();
+			this.textMessage = new System.Windows.Forms.TextBox();
 			this.groupBox3 = new System.Windows.Forms.GroupBox();
 			this.butBilling = new OpenDental.UI.Button();
 			this.butAccounting = new OpenDental.UI.Button();
@@ -75,21 +120,17 @@ namespace OpenDental{
 			this.butSendClaims = new OpenDental.UI.Button();
 			this.butBackup = new OpenDental.UI.Button();
 			this.butTasks = new OpenDental.UI.Button();
-			this.butClear = new OpenDental.UI.Button();
-			this.butSend = new OpenDental.UI.Button();
-			this.butBreaks = new OpenDental.UI.Button();
-			this.gridEmp = new OpenDental.UI.ODGrid();
-			this.butClockOut = new OpenDental.UI.Button();
-			this.butTimeCard = new OpenDental.UI.Button();
-			this.butClockIn = new OpenDental.UI.Button();
+			this.timerSending = new System.Windows.Forms.Timer(this.components);
+			this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.groupBox3.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// listStatus
 			// 
-			this.listStatus.Location = new System.Drawing.Point(372,182);
+			this.listStatus.Location = new System.Drawing.Point(367,178);
 			this.listStatus.Name = "listStatus";
 			this.listStatus.Size = new System.Drawing.Size(107,43);
 			this.listStatus.TabIndex = 12;
@@ -97,7 +138,7 @@ namespace OpenDental{
 			// textTime
 			// 
 			this.textTime.Font = new System.Drawing.Font("Microsoft Sans Serif",13F,System.Drawing.FontStyle.Bold,System.Drawing.GraphicsUnit.Point,((byte)(0)));
-			this.textTime.Location = new System.Drawing.Point(370,103);
+			this.textTime.Location = new System.Drawing.Point(365,99);
 			this.textTime.Name = "textTime";
 			this.textTime.Size = new System.Drawing.Size(109,21);
 			this.textTime.TabIndex = 17;
@@ -121,52 +162,302 @@ namespace OpenDental{
 			this.groupBox1.Controls.Add(this.textTime);
 			this.groupBox1.Controls.Add(this.butClockIn);
 			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox1.Location = new System.Drawing.Point(103,352);
+			this.groupBox1.Location = new System.Drawing.Point(349,5);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(530,288);
+			this.groupBox1.Size = new System.Drawing.Size(510,230);
 			this.groupBox1.TabIndex = 18;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Time Clock";
 			// 
+			// butBreaks
+			// 
+			this.butBreaks.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butBreaks.Autosize = true;
+			this.butBreaks.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butBreaks.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butBreaks.Location = new System.Drawing.Point(366,51);
+			this.butBreaks.Name = "butBreaks";
+			this.butBreaks.Size = new System.Drawing.Size(108,25);
+			this.butBreaks.TabIndex = 22;
+			this.butBreaks.Text = "View Breaks";
+			this.butBreaks.Click += new System.EventHandler(this.butBreaks_Click);
+			// 
+			// gridEmp
+			// 
+			this.gridEmp.AllowSelection = false;
+			this.gridEmp.HScrollVisible = false;
+			this.gridEmp.Location = new System.Drawing.Point(22,22);
+			this.gridEmp.Name = "gridEmp";
+			this.gridEmp.ScrollValue = 0;
+			this.gridEmp.Size = new System.Drawing.Size(303,199);
+			this.gridEmp.TabIndex = 21;
+			this.gridEmp.Title = "Employee";
+			this.gridEmp.TranslationName = "TableEmpClock";
+			this.gridEmp.CellClick += new OpenDental.UI.ODGridClickEventHandler(this.gridEmp_CellClick);
+			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(381,84);
+			this.label2.Location = new System.Drawing.Point(376,80);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(88,19);
 			this.label2.TabIndex = 20;
 			this.label2.Text = "Server Time";
 			this.label2.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
 			// 
+			// butClockOut
+			// 
+			this.butClockOut.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butClockOut.Autosize = true;
+			this.butClockOut.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butClockOut.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butClockOut.Location = new System.Drawing.Point(366,150);
+			this.butClockOut.Name = "butClockOut";
+			this.butClockOut.Size = new System.Drawing.Size(108,25);
+			this.butClockOut.TabIndex = 14;
+			this.butClockOut.Text = "Clock Out For:";
+			this.butClockOut.Click += new System.EventHandler(this.butClockOut_Click);
+			// 
+			// butTimeCard
+			// 
+			this.butTimeCard.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butTimeCard.Autosize = true;
+			this.butTimeCard.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butTimeCard.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butTimeCard.Location = new System.Drawing.Point(366,24);
+			this.butTimeCard.Name = "butTimeCard";
+			this.butTimeCard.Size = new System.Drawing.Size(108,25);
+			this.butTimeCard.TabIndex = 16;
+			this.butTimeCard.Text = "View Timecard";
+			this.butTimeCard.Click += new System.EventHandler(this.butTimeCard_Click);
+			// 
+			// butClockIn
+			// 
+			this.butClockIn.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butClockIn.Autosize = true;
+			this.butClockIn.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butClockIn.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butClockIn.Location = new System.Drawing.Point(366,123);
+			this.butClockIn.Name = "butClockIn";
+			this.butClockIn.Size = new System.Drawing.Size(108,25);
+			this.butClockIn.TabIndex = 11;
+			this.butClockIn.Text = "Clock In";
+			this.butClockIn.Click += new System.EventHandler(this.butClockIn_Click);
+			// 
 			// groupBox2
 			// 
-			this.groupBox2.Controls.Add(this.butClear);
+			this.groupBox2.Controls.Add(this.listMessages);
 			this.groupBox2.Controls.Add(this.butSend);
-			this.groupBox2.Controls.Add(this.textMessage);
+			this.groupBox2.Controls.Add(this.butAck);
+			this.groupBox2.Controls.Add(this.labelSending);
+			this.groupBox2.Controls.Add(this.textDays);
+			this.groupBox2.Controls.Add(this.labelDays);
+			this.groupBox2.Controls.Add(this.label6);
+			this.groupBox2.Controls.Add(this.comboViewUser);
+			this.groupBox2.Controls.Add(this.gridMessages);
+			this.groupBox2.Controls.Add(this.checkIncludeAck);
+			this.groupBox2.Controls.Add(this.label7);
+			this.groupBox2.Controls.Add(this.label5);
+			this.groupBox2.Controls.Add(this.listExtras);
+			this.groupBox2.Controls.Add(this.label4);
+			this.groupBox2.Controls.Add(this.listFrom);
+			this.groupBox2.Controls.Add(this.label3);
+			this.groupBox2.Controls.Add(this.listTo);
 			this.groupBox2.Controls.Add(this.label1);
+			this.groupBox2.Controls.Add(this.textMessage);
 			this.groupBox2.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox2.Location = new System.Drawing.Point(103,164);
+			this.groupBox2.Location = new System.Drawing.Point(3,241);
 			this.groupBox2.Name = "groupBox2";
-			this.groupBox2.Size = new System.Drawing.Size(530,164);
+			this.groupBox2.Size = new System.Drawing.Size(902,458);
 			this.groupBox2.TabIndex = 19;
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "Messaging";
 			// 
-			// textMessage
+			// butAck
 			// 
-			this.textMessage.Location = new System.Drawing.Point(28,51);
-			this.textMessage.Multiline = true;
-			this.textMessage.Name = "textMessage";
-			this.textMessage.Size = new System.Drawing.Size(419,61);
-			this.textMessage.TabIndex = 1;
+			this.butAck.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butAck.Autosize = true;
+			this.butAck.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAck.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butAck.Location = new System.Drawing.Point(645,10);
+			this.butAck.Name = "butAck";
+			this.butAck.Size = new System.Drawing.Size(67,22);
+			this.butAck.TabIndex = 25;
+			this.butAck.Text = "Ack";
+			this.butAck.Click += new System.EventHandler(this.butAck_Click);
+			// 
+			// labelSending
+			// 
+			this.labelSending.Font = new System.Drawing.Font("Microsoft Sans Serif",9.5F,System.Drawing.FontStyle.Bold,System.Drawing.GraphicsUnit.Point,((byte)(0)));
+			this.labelSending.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))),((int)(((byte)(0)))),((int)(((byte)(0)))));
+			this.labelSending.Location = new System.Drawing.Point(251,404);
+			this.labelSending.Name = "labelSending";
+			this.labelSending.Size = new System.Drawing.Size(100,21);
+			this.labelSending.TabIndex = 24;
+			this.labelSending.Text = "Sending";
+			this.labelSending.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+			this.labelSending.Visible = false;
+			// 
+			// textDays
+			// 
+			this.textDays.Location = new System.Drawing.Point(594,12);
+			this.textDays.Name = "textDays";
+			this.textDays.Size = new System.Drawing.Size(45,20);
+			this.textDays.TabIndex = 19;
+			this.textDays.Visible = false;
+			this.textDays.TextChanged += new System.EventHandler(this.textDays_TextChanged);
+			// 
+			// labelDays
+			// 
+			this.labelDays.Location = new System.Drawing.Point(531,14);
+			this.labelDays.Name = "labelDays";
+			this.labelDays.Size = new System.Drawing.Size(61,16);
+			this.labelDays.TabIndex = 18;
+			this.labelDays.Text = "Days";
+			this.labelDays.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.labelDays.Visible = false;
+			// 
+			// label6
+			// 
+			this.label6.Location = new System.Drawing.Point(725,14);
+			this.label6.Name = "label6";
+			this.label6.Size = new System.Drawing.Size(57,16);
+			this.label6.TabIndex = 17;
+			this.label6.Text = "To User";
+			this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// comboViewUser
+			// 
+			this.comboViewUser.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboViewUser.FormattingEnabled = true;
+			this.comboViewUser.Location = new System.Drawing.Point(783,11);
+			this.comboViewUser.Name = "comboViewUser";
+			this.comboViewUser.Size = new System.Drawing.Size(114,21);
+			this.comboViewUser.TabIndex = 16;
+			this.comboViewUser.SelectionChangeCommitted += new System.EventHandler(this.comboViewUser_SelectionChangeCommitted);
+			// 
+			// butSend
+			// 
+			this.butSend.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butSend.Autosize = true;
+			this.butSend.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butSend.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butSend.Location = new System.Drawing.Point(252,428);
+			this.butSend.Name = "butSend";
+			this.butSend.Size = new System.Drawing.Size(98,25);
+			this.butSend.TabIndex = 15;
+			this.butSend.Text = "Send Text";
+			this.butSend.Click += new System.EventHandler(this.butSend_Click);
+			// 
+			// gridMessages
+			// 
+			this.gridMessages.HScrollVisible = false;
+			this.gridMessages.Location = new System.Drawing.Point(356,35);
+			this.gridMessages.Name = "gridMessages";
+			this.gridMessages.ScrollValue = 0;
+			this.gridMessages.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+			this.gridMessages.Size = new System.Drawing.Size(540,417);
+			this.gridMessages.TabIndex = 13;
+			this.gridMessages.Title = "Message History";
+			this.gridMessages.TranslationName = "TableTextMessages";
+			// 
+			// checkIncludeAck
+			// 
+			this.checkIncludeAck.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.checkIncludeAck.Location = new System.Drawing.Point(356,16);
+			this.checkIncludeAck.Name = "checkIncludeAck";
+			this.checkIncludeAck.Size = new System.Drawing.Size(173,18);
+			this.checkIncludeAck.TabIndex = 14;
+			this.checkIncludeAck.Text = "Include Acknowledged";
+			this.checkIncludeAck.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.checkIncludeAck.UseVisualStyleBackColor = true;
+			this.checkIncludeAck.Click += new System.EventHandler(this.checkIncludeAck_Click);
+			// 
+			// label7
+			// 
+			this.label7.Location = new System.Drawing.Point(6,413);
+			this.label7.Name = "label7";
+			this.label7.Size = new System.Drawing.Size(100,16);
+			this.label7.TabIndex = 12;
+			this.label7.Text = "Text Message";
+			this.label7.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// listMessages
+			// 
+			this.listMessages.FormattingEnabled = true;
+			this.listMessages.Location = new System.Drawing.Point(252,35);
+			this.listMessages.Name = "listMessages";
+			this.listMessages.Size = new System.Drawing.Size(98,368);
+			this.listMessages.TabIndex = 10;
+			this.listMessages.Click += new System.EventHandler(this.listMessages_Click);
+			// 
+			// label5
+			// 
+			this.label5.Location = new System.Drawing.Point(250,16);
+			this.label5.Name = "label5";
+			this.label5.Size = new System.Drawing.Size(100,16);
+			this.label5.TabIndex = 9;
+			this.label5.Text = "Message (&& Send)";
+			this.label5.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// listExtras
+			// 
+			this.listExtras.FormattingEnabled = true;
+			this.listExtras.Location = new System.Drawing.Point(171,35);
+			this.listExtras.Name = "listExtras";
+			this.listExtras.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+			this.listExtras.Size = new System.Drawing.Size(75,368);
+			this.listExtras.TabIndex = 8;
+			// 
+			// label4
+			// 
+			this.label4.Location = new System.Drawing.Point(169,16);
+			this.label4.Name = "label4";
+			this.label4.Size = new System.Drawing.Size(78,16);
+			this.label4.TabIndex = 7;
+			this.label4.Text = "Extras";
+			this.label4.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// listFrom
+			// 
+			this.listFrom.FormattingEnabled = true;
+			this.listFrom.Location = new System.Drawing.Point(90,35);
+			this.listFrom.Name = "listFrom";
+			this.listFrom.Size = new System.Drawing.Size(75,368);
+			this.listFrom.TabIndex = 6;
+			// 
+			// label3
+			// 
+			this.label3.Location = new System.Drawing.Point(88,16);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(78,16);
+			this.label3.TabIndex = 5;
+			this.label3.Text = "From";
+			this.label3.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// listTo
+			// 
+			this.listTo.FormattingEnabled = true;
+			this.listTo.Location = new System.Drawing.Point(9,35);
+			this.listTo.Name = "listTo";
+			this.listTo.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+			this.listTo.Size = new System.Drawing.Size(75,368);
+			this.listTo.TabIndex = 4;
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(28,21);
+			this.label1.Location = new System.Drawing.Point(7,16);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(464,23);
-			this.label1.TabIndex = 0;
-			this.label1.Text = "General Message  (don\'t overuse this since it can be annoying)";
+			this.label1.Size = new System.Drawing.Size(78,16);
+			this.label1.TabIndex = 3;
+			this.label1.Text = "To";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// textMessage
+			// 
+			this.textMessage.Location = new System.Drawing.Point(9,432);
+			this.textMessage.Name = "textMessage";
+			this.textMessage.Size = new System.Drawing.Size(237,20);
+			this.textMessage.TabIndex = 1;
 			// 
 			// groupBox3
 			// 
@@ -177,9 +468,9 @@ namespace OpenDental{
 			this.groupBox3.Controls.Add(this.butBackup);
 			this.groupBox3.Controls.Add(this.butTasks);
 			this.groupBox3.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox3.Location = new System.Drawing.Point(103,19);
+			this.groupBox3.Location = new System.Drawing.Point(34,5);
 			this.groupBox3.Name = "groupBox3";
-			this.groupBox3.Size = new System.Drawing.Size(272,112);
+			this.groupBox3.Size = new System.Drawing.Size(286,119);
 			this.groupBox3.TabIndex = 23;
 			this.groupBox3.TabStop = false;
 			this.groupBox3.Text = "Daily";
@@ -272,96 +563,15 @@ namespace OpenDental{
 			this.butTasks.Text = "Tasks";
 			this.butTasks.Click += new System.EventHandler(this.butTasks_Click);
 			// 
-			// butClear
+			// timerSending
 			// 
-			this.butClear.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butClear.Autosize = true;
-			this.butClear.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butClear.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butClear.Location = new System.Drawing.Point(120,124);
-			this.butClear.Name = "butClear";
-			this.butClear.Size = new System.Drawing.Size(75,25);
-			this.butClear.TabIndex = 3;
-			this.butClear.Text = "Clear";
-			this.butClear.Click += new System.EventHandler(this.butClear_Click);
+			this.timerSending.Interval = 1000;
+			this.timerSending.Tick += new System.EventHandler(this.timerSending_Tick);
 			// 
-			// butSend
+			// errorProvider1
 			// 
-			this.butSend.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butSend.Autosize = true;
-			this.butSend.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butSend.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butSend.Location = new System.Drawing.Point(27,124);
-			this.butSend.Name = "butSend";
-			this.butSend.Size = new System.Drawing.Size(75,25);
-			this.butSend.TabIndex = 2;
-			this.butSend.Text = "Send";
-			this.butSend.Click += new System.EventHandler(this.butSend_Click);
-			// 
-			// butBreaks
-			// 
-			this.butBreaks.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butBreaks.Autosize = true;
-			this.butBreaks.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butBreaks.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butBreaks.Location = new System.Drawing.Point(371,55);
-			this.butBreaks.Name = "butBreaks";
-			this.butBreaks.Size = new System.Drawing.Size(108,25);
-			this.butBreaks.TabIndex = 22;
-			this.butBreaks.Text = "View Breaks";
-			this.butBreaks.Click += new System.EventHandler(this.butBreaks_Click);
-			// 
-			// gridEmp
-			// 
-			this.gridEmp.AllowSelection = false;
-			this.gridEmp.HScrollVisible = false;
-			this.gridEmp.Location = new System.Drawing.Point(22,26);
-			this.gridEmp.Name = "gridEmp";
-			this.gridEmp.ScrollValue = 0;
-			this.gridEmp.Size = new System.Drawing.Size(303,238);
-			this.gridEmp.TabIndex = 21;
-			this.gridEmp.Title = "Employee";
-			this.gridEmp.TranslationName = "TableEmpClock";
-			this.gridEmp.CellClick += new OpenDental.UI.ODGridClickEventHandler(this.gridEmp_CellClick);
-			// 
-			// butClockOut
-			// 
-			this.butClockOut.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butClockOut.Autosize = true;
-			this.butClockOut.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butClockOut.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butClockOut.Location = new System.Drawing.Point(371,154);
-			this.butClockOut.Name = "butClockOut";
-			this.butClockOut.Size = new System.Drawing.Size(108,25);
-			this.butClockOut.TabIndex = 14;
-			this.butClockOut.Text = "Clock Out For:";
-			this.butClockOut.Click += new System.EventHandler(this.butClockOut_Click);
-			// 
-			// butTimeCard
-			// 
-			this.butTimeCard.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butTimeCard.Autosize = true;
-			this.butTimeCard.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butTimeCard.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butTimeCard.Location = new System.Drawing.Point(371,28);
-			this.butTimeCard.Name = "butTimeCard";
-			this.butTimeCard.Size = new System.Drawing.Size(108,25);
-			this.butTimeCard.TabIndex = 16;
-			this.butTimeCard.Text = "View Timecard";
-			this.butTimeCard.Click += new System.EventHandler(this.butTimeCard_Click);
-			// 
-			// butClockIn
-			// 
-			this.butClockIn.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butClockIn.Autosize = true;
-			this.butClockIn.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butClockIn.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butClockIn.Location = new System.Drawing.Point(371,127);
-			this.butClockIn.Name = "butClockIn";
-			this.butClockIn.Size = new System.Drawing.Size(108,25);
-			this.butClockIn.TabIndex = 11;
-			this.butClockIn.Text = "Clock In";
-			this.butClockIn.Click += new System.EventHandler(this.butClockIn_Click);
+			this.errorProvider1.BlinkStyle = System.Windows.Forms.ErrorBlinkStyle.NeverBlink;
+			this.errorProvider1.ContainerControl = this;
 			// 
 			// ContrStaff
 			// 
@@ -375,6 +585,7 @@ namespace OpenDental{
 			this.groupBox2.ResumeLayout(false);
 			this.groupBox2.PerformLayout();
 			this.groupBox3.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -384,7 +595,7 @@ namespace OpenDental{
 		
 		}
 
-		///<summary></summary>
+		///<summary>Only gets run on startup.</summary>
 		public void InstantClasses(){
 			//can't use Lan.F
 			Lan.C(this,new Control[]
@@ -392,13 +603,14 @@ namespace OpenDental{
 				groupBox2,
 				label1,
 				butSend,
-				butClear,
 				groupBox1,
 				butTimeCard,
 				label2,
 				butClockIn,
 				butClockOut
 				});
+			RefreshFullMessages();//after this, messages just get added to the list.
+			//But if checkIncludeAck is clicked,then it does RefreshMessages again.
 		}
 
 		///<summary></summary>
@@ -420,6 +632,7 @@ namespace OpenDental{
 		private void RefreshModuleScreen(){
 			textTime.Text=(DateTime.Now+TimeDelta).ToLongTimeString();
 			FillEmps();
+			FillMessageDefs();
 		}
 
 		///<summary></summary>
@@ -512,23 +725,12 @@ namespace OpenDental{
 			}
 		}
 
-		private void butSend_Click(object sender, System.EventArgs e){
-			Signal sig=new Signal();
-			sig.SigType=SignalType.Text;
-			sig.SigText=textMessage.Text;
-			sig.FromUser=Security.CurUser.UserNum;
-			sig.Insert();
-		}
+		
 
-		///<summary></summary>
-		public void LogMsg(string text){
-			textMessage.Text=text;
-		}
-
-		private void butClear_Click(object sender, System.EventArgs e) {
-			textMessage.Clear();
-			textMessage.Select();
-		}
+		//private void butClear_Click(object sender, System.EventArgs e) {
+			//textMessage.Clear();
+			//textMessage.Select();
+		//}
 
 		private void FillEmps(){
 			gridEmp.BeginUpdate();
@@ -663,7 +865,297 @@ namespace OpenDental{
 			ModuleSelected();
 		}
 
-		
+		#region Messaging
+		///<summary>Gets run with each module selected.  Should be very fast.</summary>
+		private void FillMessageDefs(){
+			sigElementDefUser=SigElementDefs.GetSubList(SignalElementType.User);
+			sigElementDefExtras=SigElementDefs.GetSubList(SignalElementType.Extra);
+			sigElementDefMessages=SigElementDefs.GetSubList(SignalElementType.Message);
+			listTo.Items.Clear();
+			for(int i=0;i<sigElementDefUser.Length;i++){
+				listTo.Items.Add(sigElementDefUser[i].SigText);
+			}
+			listFrom.Items.Clear();
+			for(int i=0;i<sigElementDefUser.Length;i++) {
+				listFrom.Items.Add(sigElementDefUser[i].SigText);
+			}
+			listExtras.Items.Clear();
+			for(int i=0;i<sigElementDefExtras.Length;i++) {
+				listExtras.Items.Add(sigElementDefExtras[i].SigText);
+			}
+			listMessages.Items.Clear();
+			for(int i=0;i<sigElementDefMessages.Length;i++) {
+				listMessages.Items.Add(sigElementDefMessages[i].SigText);
+			}
+			comboViewUser.Items.Clear();
+			comboViewUser.Items.Add(Lan.g(this,"all"));
+			for(int i=0;i<sigElementDefUser.Length;i++) {
+				comboViewUser.Items.Add(sigElementDefUser[i].SigText);
+			}
+			comboViewUser.SelectedIndex=0;
+		}
+
+		///<summary>Gets all new data from the database for the text messages.  Not sure yet if this will also reset the lights along the left.</summary>
+		private void RefreshFullMessages(){
+			SignalList=Signals.RefreshFullText(DateTime.Today);//since midnight this morning.
+			FillMessages();
+		}
+
+		///<summary>This does not refresh any data, just fills the grid.</summary>
+		private void FillMessages(){
+			if(textDays.Visible && errorProvider1.GetError(textDays) !=""){
+				return;
+			}
+			int[] selected=new int[gridMessages.SelectedIndices.Length];
+			for(int i=0;i<selected.Length;i++){
+				selected[i]=((Signal)SignalList[gridMessages.SelectedIndices[i]]).SignalNum;
+			}
+			gridMessages.BeginUpdate();
+			gridMessages.Columns.Clear();
+			ODGridColumn col=new ODGridColumn(Lan.g("TableTextMessages","To"),60);
+			gridMessages.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableTextMessages","From"),60);
+			gridMessages.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableTextMessages","Sent"),63);
+			gridMessages.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableTextMessages","Ack'd"),63);
+			col.TextAlign=HorizontalAlignment.Center;
+			gridMessages.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableTextMessages","Text"),274);
+			gridMessages.Columns.Add(col);
+			gridMessages.Rows.Clear();
+			ODGridRow row;
+			Signal sig;
+			string str;
+			for(int i=0;i<SignalList.Count;i++){
+				sig=(Signal)SignalList[i];
+				if(checkIncludeAck.Checked){
+					if(sig.AckTime.Year>1880//if this is acked
+						&& sig.AckTime < DateTime.Today.AddDays(1-PIn.PInt(textDays.Text)))
+					{
+						continue;
+					}
+				}
+				else{//user does not want to include acked
+					if(sig.AckTime.Year>1880){//if this is acked
+						continue;
+					}
+				}
+				if(sig.ToUser!=""//blank user always shows
+					&& comboViewUser.SelectedIndex!=0 //anything other than 'all'
+					&& sigElementDefUser!=null//for startup
+					&& sigElementDefUser[comboViewUser.SelectedIndex-1].SigText!=sig.ToUser)//and users don't match
+				{
+					continue;
+				}
+				row=new ODGridRow();
+				row.Cells.Add(sig.ToUser);
+				row.Cells.Add(sig.FromUser);
+				if(sig.SigDateTime.Date==DateTime.Today){
+					row.Cells.Add(sig.SigDateTime.ToShortTimeString());
+				}
+				else{
+					row.Cells.Add(sig.SigDateTime.ToShortDateString()+"\r\n"+sig.SigDateTime.ToShortTimeString());
+				}
+				if(sig.AckTime.Year>1880){//ok
+					if(sig.AckTime.Date==DateTime.Today) {
+						row.Cells.Add(sig.AckTime.ToShortTimeString());
+					}
+					else {
+						row.Cells.Add(sig.AckTime.ToShortDateString()+"\r\n"+sig.AckTime.ToShortTimeString());
+					}
+				}
+				else{
+					row.Cells.Add("");
+				}
+				str=sig.SigText;
+				for(int e=0;e<sig.ElementList.Length;e++){
+					if(SigElementDefs.GetElement(sig.ElementList[e].SigElementDefNum).SigElementType==SignalElementType.User){
+						continue;//we already have text copies of the users.
+					}
+					if(str!=""){
+						str+=".  ";
+					}
+					str+=SigElementDefs.GetElement(sig.ElementList[e].SigElementDefNum).SigText;
+				}
+				row.Cells.Add(str);
+				row.Tag=sig.Copy();
+				gridMessages.Rows.Add(row);
+				if(Array.IndexOf(selected,sig.SignalNum)!=-1){
+					gridMessages.SetSelected(gridMessages.Rows.Count-1,true);
+				}
+			}
+			gridMessages.EndUpdate();
+		}
+
+		private void butSend_Click(object sender, System.EventArgs e){
+			//if(listTo.SelectedIndex==-1){
+			//	MsgBox.Show(this,"Please select who to send the message to.");
+			//	return;
+			//}
+			if(textMessage.Text=="") {
+				MsgBox.Show(this,"Please type in a message first.");
+				return;
+			}
+			Signal sig=new Signal();
+			sig.SigType=SignalType.Button;
+			sig.SigText=textMessage.Text;
+			if(listTo.SelectedIndex!=-1) {
+				sig.ToUser=sigElementDefUser[listTo.SelectedIndex].SigText;
+			}
+			if(listFrom.SelectedIndex!=-1){
+				sig.FromUser=sigElementDefUser[listFrom.SelectedIndex].SigText;
+			}
+			sig.Insert();
+			SigElement element;
+			if(listTo.SelectedIndex!=-1) {
+				element=new SigElement();
+				element.SigElementDefNum=sigElementDefUser[listTo.SelectedIndex].SigElementDefNum;
+				element.SignalNum=sig.SignalNum;
+				element.Insert();
+			}
+			textMessage.Text="";
+			listFrom.SelectedIndex=-1;
+			listTo.SelectedIndex=-1;
+			listExtras.SelectedIndex=-1;
+			listMessages.SelectedIndex=-1;
+			labelSending.Visible=true;
+			timerSending.Enabled=true;
+		}
+
+		private void listMessages_Click(object sender,EventArgs e) {
+			if(listMessages.SelectedIndex==-1){
+				return;
+			}
+			Signal sig=new Signal();
+			sig.SigType=SignalType.Button;
+			sig.SigText=textMessage.Text;
+			if(listTo.SelectedIndex!=-1) {
+				sig.ToUser=sigElementDefUser[listTo.SelectedIndex].SigText;
+			}
+			if(listFrom.SelectedIndex!=-1) {
+				sig.FromUser=sigElementDefUser[listFrom.SelectedIndex].SigText;
+			}
+			//need to do this all as a transaction, so need to do a writelock on the signal table first.
+			//alternatively, we could just make sure not to retrieve any signals that were less the 300ms old.
+			sig.Insert();
+			SigElement element;
+			if(listTo.SelectedIndex!=-1) {
+				element=new SigElement();
+				element.SigElementDefNum=sigElementDefUser[listTo.SelectedIndex].SigElementDefNum;
+				element.SignalNum=sig.SignalNum;
+				element.Insert();
+			}
+			//We do not insert an element for From
+			if(listExtras.SelectedIndex!=-1) {
+				element=new SigElement();
+				element.SigElementDefNum=sigElementDefExtras[listExtras.SelectedIndex].SigElementDefNum;
+				element.SignalNum=sig.SignalNum;
+				element.Insert();
+			}
+			element=new SigElement();
+			element.SigElementDefNum=sigElementDefMessages[listMessages.SelectedIndex].SigElementDefNum;
+			element.SignalNum=sig.SignalNum;
+			element.Insert();
+			//reset the controls
+			textMessage.Text="";
+			listFrom.SelectedIndex=-1;
+			listTo.SelectedIndex=-1;
+			listExtras.SelectedIndex=-1;
+			listMessages.SelectedIndex=-1;
+			labelSending.Visible=true;
+			timerSending.Enabled=true;
+		}
+
+		///<summary>This processes timed messages coming in from the main form.  Buttons are handled in the main form, and then sent here for further display.  The list gets filtered before display.</summary>
+		public void LogMsgs(Signal[] signalList){
+			for(int i=0;i<signalList.Length;i++){
+				if(signalList[i].AckTime.Year>1880){//if ack
+					//then find the original
+					for(int s=0;s<SignalList.Count;s++){
+						if(((Signal)SignalList[s]).SignalNum==signalList[i].SignalNum){
+							//alter the original
+							((Signal)SignalList[s]).AckTime=signalList[i].AckTime;
+							break;//out of s loop.
+						}
+					}
+				}
+				else{
+					SignalList.Add(signalList[i].Copy());
+				}
+			}
+			SignalList.Sort();
+			FillMessages();
+		}
+
+		private void butAck_Click(object sender,EventArgs e) {
+			if(gridMessages.SelectedIndices.Length==0){
+				MsgBox.Show(this,"Please select at least one item first.");
+				return;
+			}
+			Signal sig;
+			for(int i=gridMessages.SelectedIndices.Length-1;i>=0;i--){//go backwards so that we can remove rows without problems.
+				sig=(Signal)gridMessages.Rows[gridMessages.SelectedIndices[i]].Tag;
+				if(sig.AckTime.Year>1880){
+					continue;//totally ignore if trying to ack a previously acked signal
+				}
+				sig.AckTime=DateTime.Now+TimeDelta;
+				sig.Update();
+				//change the grid temporarily until the next timer event.  This makes it feel more responsive.
+				if(checkIncludeAck.Checked){
+					gridMessages.Rows[gridMessages.SelectedIndices[i]].Cells[3].Text=sig.AckTime.ToShortTimeString();					
+				}
+				else{
+					try{
+						gridMessages.Rows.RemoveAt(gridMessages.SelectedIndices[i]);
+					}
+					catch{
+						;//do nothing
+					}
+				}
+			}
+			gridMessages.SetSelected(false);
+			//gridMessages.Invalidate();
+		}
+
+		private void checkIncludeAck_Click(object sender,EventArgs e) {
+			if(checkIncludeAck.Checked){
+				textDays.Text="1";
+				labelDays.Visible=true;
+				textDays.Visible=true;
+			}
+			else{
+				labelDays.Visible=false;
+				textDays.Visible=false;
+			}
+			FillMessages();
+		}
+
+		private void textDays_TextChanged(object sender,EventArgs e) {
+			if(!textDays.Visible){
+				errorProvider1.SetError(textDays,"");
+				return;
+			}
+			try{
+				int days=int.Parse(textDays.Text);
+				errorProvider1.SetError(textDays,"");
+				FillMessages();
+			}
+			catch{
+				errorProvider1.SetError(textDays,Lan.g(this,"Invalid number.  Usually 1 or 2."));
+			}
+		}
+
+		private void comboViewUser_SelectionChangeCommitted(object sender,EventArgs e) {
+			FillMessages();
+		}
+
+		private void timerSending_Tick(object sender,EventArgs e) {
+			labelSending.Visible=false;
+			timerSending.Enabled=false;
+		}
+
+		#endregion Messaging
 
 		
 
@@ -678,6 +1170,23 @@ namespace OpenDental{
 		
 
 		
+
+		
+
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

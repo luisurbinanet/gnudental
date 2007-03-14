@@ -237,7 +237,11 @@ namespace OpenDental{
 				if(i>0){
 					SQLselect+=",";
 				}
-				if(PatFieldsSelected[i]=="DateDue"
+				if(PatFieldsSelected[i]=="RecallInterval"){
+					SQLselect+="ROUND(recall.RecallInterval/65536) AS MonthInterval";
+					//returns the months.  It will malfunction if a year is present
+				}
+				else if(PatFieldsSelected[i]=="DateDue"
 					|| PatFieldsSelected[i]=="RecallStatus"){
 					SQLselect+="recall."+PatFieldsSelected[i];
 				}

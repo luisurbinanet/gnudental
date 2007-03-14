@@ -5,15 +5,15 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the quickpastecat table in the database.</summary>
+	///<summary>Quick paste categories are used by the quick paste notes feature.</summary>
 	public class QuickPasteCat{
 		///<summary>Primary key.</summary>
 		public int QuickPasteCatNum;
-		///<summary>Foreign key. Keeps track of which category this note is in.</summary>
+		///<summary>.</summary>
 		public string Description;
-		///<summary>The order of this note within its category. 0-based.</summary>
+		///<summary>The order of this category within the list. 0-based.</summary>
 		public int ItemOrder;
-		///<summary>Each Category can be set to be the default category for multiple types of notes. Stored as integers separated by commas.</summary>
+		///<summary>Enum:QuickPasteType  Each Category can be set to be the default category for multiple types of notes. Stored as integers separated by commas.</summary>
 		public string DefaultForTypes;
 
 		///<summary></summary>

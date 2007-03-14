@@ -4,11 +4,9 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Corresponds to the school table in the database. Used in public health.</summary>
+	///<summary>Used in public health.</summary>
 	public struct School{
-		//<summary>Primary key, but not referenced by any other table.</summary>
-		//public string SchoolNum;
-		///<summary>Primary key, but allowed to change.  Change is programmatically synchronized.</summary>
+		///<summary>Primary key, but allowed to change.  Change is programmatically synchronized so that keys stay intact.</summary>
 		public string SchoolName;
 		///<summary>Optional. Usage varies.</summary>
 		public string SchoolCode;

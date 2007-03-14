@@ -121,6 +121,20 @@ namespace OpenDental{
 			return Convert.ToBase64String(rawData);
 		}
 
+		///<summary>Converts the specified wav file into a string representation.  The timing of this is a little different than with the other "P" functions and is only used by the import button in FormSigElementDefEdit.  After that, the wav spends the rest of it's life as a string until "played" or exported.</summary>
+		public static string PSound(string filename) {
+			if(!File.Exists(filename)) {
+				throw new ApplicationException("File does not exist.");
+			}
+			if(!filename.EndsWith(".wav")){
+				throw new ApplicationException("Filename must end with .wav");
+			}
+			FileStream stream=new FileStream(filename,FileMode.Open,FileAccess.Read,FileShare.ReadWrite);
+			byte[] rawData=new byte[stream.Length];
+			stream.Read(rawData,0,(int)stream.Length);
+			return Convert.ToBase64String(rawData);
+		}
+
 	}
 
 	

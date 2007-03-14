@@ -5,15 +5,15 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the apptviewitem table in the database. Each item specifies ONE of: OpNum, ProvNum, or Element.  The other two will be 0 or "".</summary>
+	///<summary>Each item is attached to a row in the apptview table.  Each item specifies ONE of: OpNum, ProvNum, or Element.  The other two will be 0 or "".</summary>
 	public struct ApptViewItem{
 		///<summary>Primary key.</summary>
 		public int ApptViewItemNum;//
-		///<summary>Foreign key to apptview.</summary>
+		///<summary>FK to apptview.</summary>
 		public int ApptViewNum;
-		///<summary>Foreign key to operatory.OperatoryNum.</summary>
+		///<summary>FK to operatory.OperatoryNum.</summary>
 		public int OpNum;
-		///<summary>Foreign key to provider.ProvNum.</summary>
+		///<summary>FK to provider.ProvNum.</summary>
 		public int ProvNum;
 		///<summary>Must be one of the hard coded strings picked from the available list.</summary>
 		public string ElementDesc;

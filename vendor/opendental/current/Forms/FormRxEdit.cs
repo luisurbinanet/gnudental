@@ -355,16 +355,19 @@ namespace OpenDental{
 			return true;
 		}
 
-		///<summary>justPreview only used in debugging</summary>
-		public void PrintReport(bool justPreview){
+		///<summary></summary>
+		public void PrintReport(){
 			pd2=new PrintDocument();
 			pd2.PrintPage += new PrintPageEventHandler(this.pd2_PrintPage);
-			pd2.DefaultPageSettings.Margins=new Margins(10,40,40,60);
-			if(justPreview){
+			pd2.DefaultPageSettings.Margins=new Margins(0,0,0,0);
+			pd2.OriginAtMargins=true;
+			if(!Prefs.GetBool("RxOrientVert")){
+				pd2.DefaultPageSettings.Landscape=true;
+			}
+			#if DEBUG
 				pView.printPreviewControl2.Document=pd2;
 				pView.ShowDialog();
-			}
-			else{
+			#else
 				if(!Printers.SetPrinter(pd2,PrintSituation.Rx)){
 					return;
 				}
@@ -374,166 +377,167 @@ namespace OpenDental{
 				catch{
 					MessageBox.Show(Lan.g(this,"Printer not available"));
 				}
-			}			
+			#endif		
 		}
 
 		private void pd2_PrintPage(object sender, System.Drawing.Printing.PrintPageEventArgs e) {
-			//Draw borders to cut			
-      Pen penBorder=new Pen(Color.Black,(float)(.125));
-      penBorder.DashStyle=DashStyle.Dot;
-      e.Graphics.DrawLine(penBorder,512,0,512,400); 
-      e.Graphics.DrawLine(penBorder,0,400,512,400); 
-			//Print String "Please Cut Here"
-			Font cutFont=new Font("Arial",6,FontStyle.Bold);
-      string cut=Lan.g(this,"PLEASE CUT HERE");
-      StringFormat cutFormat=new StringFormat(StringFormatFlags.DirectionVertical);  
-			e.Graphics.DrawString(cut,cutFont,Brushes.Gray
-				,512,(400/2)-(e.Graphics.MeasureString(cut,cutFont).Width/2),cutFormat);
-  		e.Graphics.DrawString(cut,cutFont,Brushes.Gray
-				,(512/2)-(e.Graphics.MeasureString(cut,cutFont).Width/2),400);
-			//Heading Info  Margins are x=25,y=37.5 (note to self system adds 25 to x and 12.5 to y
+			Graphics g=e.Graphics;
+			Pen penDashBorder=new Pen(Color.Black,(float)(.125));
+			SolidBrush brush=new SolidBrush(Color.Black);
+			penDashBorder.DashStyle=DashStyle.Dot;
+			int x;
+			int y;
+			int xAdj=(int)(Prefs.GetDouble("RxAdjustRight")*100);
+			int yAdj=(int)(Prefs.GetDouble("RxAdjustDown")*100);
+			string text;
+			Font font=new Font(FontFamily.GenericSansSerif,8);
+			Font fontRX=new Font(FontFamily.GenericSerif,24);
+			Font fontBold=new Font(FontFamily.GenericSansSerif,8,FontStyle.Bold);
+			int fontH=(int)font.GetHeight(g)+3;
+			Provider prov=Providers.GetProv(RxPatCur.ProvNum);
+			if(Prefs.GetBool("RxOrientVert")){
+				g.DrawLine(penDashBorder,0+xAdj,0+yAdj,425+xAdj,0+yAdj);
+				g.DrawLine(penDashBorder,0+xAdj,0+yAdj,0+xAdj,550+yAdj); 
+				g.DrawLine(penDashBorder,425+xAdj,0+yAdj,425+xAdj,550+yAdj);
+				g.DrawLine(penDashBorder,0+xAdj,550+yAdj,425+xAdj,550+yAdj); 
+			}
+			else{//horizontal
+				g.DrawLine(penDashBorder,0+xAdj,0+yAdj,550+xAdj,0+yAdj);
+				g.DrawLine(penDashBorder,0+xAdj,0+yAdj,0+xAdj,425+yAdj); 
+				g.DrawLine(penDashBorder,550+xAdj,0+yAdj,550+xAdj,425+yAdj); 
+				g.DrawLine(penDashBorder,0+xAdj,425+yAdj,550+xAdj,425+yAdj); 
+			}
+			//Dr--------------------------------------------------------------------------------------------------
 			//Left Side
-			Font headingFont=new Font("Arial",8,FontStyle.Bold);
-			int xPos=25;
-			int yPos=37;
-			int fontH=(int)headingFont.GetHeight(e.Graphics);
-	    string pracTitle=((Pref)Prefs.HList["PracticeTitle"]).ValueString;
-			string pracAddress=((Pref)Prefs.HList["PracticeAddress"]).ValueString;
-      string pracAddress2=((Pref)Prefs.HList["PracticeAddress2"]).ValueString;
-			string pracCSZ=((Pref)Prefs.HList["PracticeCity"]).ValueString+", "
-				+((Pref)Prefs.HList["PracticeST"]).ValueString+" "
-				+((Pref)Prefs.HList["PracticeZip"]).ValueString;
-			e.Graphics.DrawString(pracTitle,headingFont,Brushes.Black,xPos,yPos);
-			yPos+=fontH;
-			e.Graphics.DrawString(pracAddress,headingFont,Brushes.Black,xPos,yPos);
-      yPos+=fontH;
-			if(pracAddress2==""){
-        e.Graphics.DrawString(pracCSZ,headingFont,Brushes.Black,xPos,yPos);
-  		}
+			x=50+xAdj;
+			y=37+yAdj;
+			text=prov.FName+" "+prov.MI+" "+prov.LName+", "+prov.Suffix;
+			g.DrawString(text,fontBold,brush,x,y);
+			y+=fontH;
+			text=Prefs.GetString("PracticeAddress");
+			g.DrawString(text,font,brush,x,y);
+			y+=fontH;
+			text=Prefs.GetString("PracticeAddress2");
+			if(text!=""){
+				g.DrawString(text,font,brush,x,y);
+				y+=fontH; 
+			}
+			text=Prefs.GetString("PracticeCity")+", "+Prefs.GetString("PracticeST")+" "+Prefs.GetString("PracticeZip");
+			g.DrawString(text,font,brush,x,y);
+			y=100+yAdj;
+			if(Prefs.GetBool("RxOrientVert")){
+				g.DrawLine(Pens.Black,25+xAdj,y,400+xAdj,y);
+			}
 			else{
- 			  e.Graphics.DrawString(pracAddress2,headingFont,Brushes.Black,xPos,yPos);
-			  yPos+=fontH;
-			  e.Graphics.DrawString(pracCSZ,headingFont,Brushes.Black,xPos,yPos);     
-  		}
-      yPos=100;
-      e.Graphics.DrawLine(new Pen(Color.Black),xPos,yPos,512-25,yPos); 
+				g.DrawLine(Pens.Black,25+xAdj,y,525+xAdj,y);
+			}
 			//Right Side
-      Provider curProv=new Provider();
-			for(int i=0;i<Providers.ListLong.Length;i++){
-        if(RxPatCur.ProvNum==Providers.ListLong[i].ProvNum)
-					curProv=Providers.ListLong[i];
-		  }
-			string presName="";
-			if(curProv.MI!="")
-  			presName=curProv.FName+" "+curProv.MI+ " "+curProv.LName;
-      else
-		    presName=curProv.FName+" "+curProv.LName;
-			string pracPhone=((Pref)Prefs.HList["PracticePhone"]).ValueString;
-			string presPhone="";
-			if(pracPhone.Length==10)
-				presPhone="("+pracPhone.Substring(0,3)+")"+pracPhone.Substring(3,3)+"-"
-					+pracPhone.Substring(6);
-      string presDEA=curProv.DEANum;
-			string nameTitle=Lan.g(this,"PRESCRIBER:")+"  "+presName;
-      string phoneTitle=Lan.g(this,"TELEPHONE:")+"  "+presPhone;
-      string deaTitle=Lan.g(this,"DEA NO:")+"  "+presDEA;
-			xPos=270;
-			yPos=38;
-		  e.Graphics.DrawString(nameTitle,headingFont,Brushes.Black,xPos,yPos);
-			yPos+=fontH;
-		  e.Graphics.DrawString(phoneTitle,headingFont,Brushes.Black,xPos,yPos);
-			yPos+=fontH;
-		  e.Graphics.DrawString(deaTitle,headingFont,Brushes.Black,xPos,yPos);
-			//Print Body Section
+			x=280+xAdj;
+			y=38+yAdj;
+			text=Prefs.GetString("PracticePhone");
+			if(text.Length==10) {
+				text="("+text.Substring(0,3)+")"+text.Substring(3,3)+"-"+text.Substring(6);
+			}
+			g.DrawString(text,font,brush,x,y);
+			y+=fontH;
+			text=RxPatCur.RxDate.ToShortDateString();
+			g.DrawString(text,font,brush,x,y);
+			y+=fontH;
+			text=Lan.g(this,"DEA#: ")+prov.DEANum;
+			g.DrawString(text,font,brush,x,y);
+			//Patient---------------------------------------------------------------------------------------------------
 			//Upper Left
-			Font bodyFont=new Font("Arial",9,FontStyle.Regular);			
-  		string patName;
-			if(PatCur.MiddleI!="")
-        patName=PatCur.FName+" "+PatCur.MiddleI+" "+PatCur.LName;
-      else  
-        patName=PatCur.FName+" "+PatCur.LName;
-			string patAddress=PatCur.Address;
-			string patAddress2=PatCur.Address2;
-	    string patCSZ=PatCur.City+", "+PatCur.State+" "+PatCur.Zip;
-			fontH=(int)bodyFont.GetHeight(e.Graphics);
-			xPos=25;
-			yPos=120;
-			e.Graphics.DrawString(Lan.g(this,"PATIENT:"),bodyFont,Brushes.Black,xPos,yPos);
-			yPos+=fontH;
-  		e.Graphics.DrawString(Lan.g(this,"ADDRESS:"),bodyFont,Brushes.Black,xPos,yPos);
-      yPos=120;
-			xPos=100;
-      e.Graphics.DrawString(patName,bodyFont,Brushes.Black,xPos,yPos);
-			yPos+=fontH;
-			e.Graphics.DrawString(patAddress,bodyFont,Brushes.Black,xPos,yPos);
-			yPos+=fontH;
-			if(patAddress2==""){
-        e.Graphics.DrawString(patCSZ,bodyFont,Brushes.Black,xPos,yPos);
-  		}
+			x=90+xAdj;
+			y=105+yAdj;
+			text=PatCur.GetNameFL();
+			g.DrawString(text,fontBold,brush,x,y);
+			y+=fontH;
+			text=Lan.g(this,"DOB: ")+PatCur.Birthdate.ToShortDateString();
+			g.DrawString(text,fontBold,brush,x,y);
+			y+=fontH;
+			text=PatCur.HmPhone;
+			g.DrawString(text,font,brush,x,y);
+			y+=fontH;
+			//x=280+xAdj;
+			//y=120+yAdj;
+			text=PatCur.Address;
+			g.DrawString(text,font,brush,x,y);
+			y+=fontH;
+			text=PatCur.Address2;
+			if(text!=""){
+				g.DrawString(text,font,brush,x,y);
+				y+=fontH; 
+			}
+			text=PatCur.City+", "+PatCur.State+" "+PatCur.Zip;
+			g.DrawString(text,font,brush,x,y);
+			y+=fontH;
+			//RX-----------------------------------------------------------------------------------------------------
+			y=190+yAdj;
+			x=40+xAdj;
+			g.DrawString(Lan.g(this,"Rx"),fontRX,brush,x,y);
+			y=205+yAdj;
+			x=90+xAdj;
+			g.DrawString(RxPatCur.Drug,fontBold,brush,x,y);
+			y+=(int)(fontH*1.5);
+			g.DrawString(Lan.g(this,"Disp:")+"  "+RxPatCur.Disp,font,brush,x,y);
+			y+=(int)(fontH*1.5);
+			g.DrawString(Lan.g(this,"Sig:")+"  "+RxPatCur.Sig,font,brush,new RectangleF(x,y,325,fontH*2));
+			y+=(int)(fontH*2.5);
+			g.DrawString(Lan.g(this,"Refills:")+"  "+RxPatCur.Refills,font,brush,x,y);
+			//Generic Subst----------------------------------------------------------------------------------------------
+			if(Prefs.GetInt("RxGeneric")==2){//two signature lines
+				text=Lan.g(this,"Generic Substitution Permitted");
+				if(Prefs.GetBool("RxOrientVert")) {
+					y=380+yAdj;
+					g.DrawLine(Pens.Black,90+xAdj,y,325+xAdj,y);
+					x=207+xAdj-(int)(g.MeasureString(text,font).Width/2);
+				}
+				else{
+					y=360+yAdj;
+					g.DrawLine(Pens.Black,50+xAdj,y,260+xAdj,y);
+					x=145+xAdj-(int)(g.MeasureString(text,font).Width/2);
+				}
+				y+=4;
+				g.DrawString(text,font,brush,x,y);
+			}
+			else{//check boxes
+				x=50+xAdj;
+				y=343+yAdj;
+				g.DrawRectangle(Pens.Black,x,y,12,12);
+				x+=17;
+				text=Lan.g(this,"Dispense as Written");
+				g.DrawString(text,font,brush,x,y);
+				x-=17;
+				y+=25;
+				g.DrawRectangle(Pens.Black,x,y,12,12);
+				if(Prefs.GetInt("RxGeneric")==0){//generic checked
+					g.DrawLine(Pens.Black,x,y,x+12,y+12);
+					g.DrawLine(Pens.Black,x+12,y,x,y+12);	
+				}
+				x+=17;
+				text=Lan.g(this,"Generic Substitution Permitted");
+				g.DrawString(text,font,brush,x,y);
+			}
+			//Signature Line--------------------------------------------------------------------------------------------
+			if(Prefs.GetInt("RxGeneric")==2){//two signature lines
+				text=Lan.g(this,"Dispense as Written");
+			}
 			else{
- 			  e.Graphics.DrawString(patAddress2,bodyFont,Brushes.Black,xPos,yPos);
-			  yPos+=fontH;
-			  e.Graphics.DrawString(patCSZ,bodyFont,Brushes.Black,xPos,yPos);     
-  		}
-			//Phone and date
-			string patPhone=PatCur.HmPhone;
-			string patDOB=PatCur.Birthdate.ToShortDateString();
-			string rxDate=RxPatCur.RxDate.ToShortDateString();
-			xPos=280;
-			yPos=120;
-      e.Graphics.DrawString(Lan.g(this,"TELEPHONE:"),bodyFont,Brushes.Black,xPos,yPos);
-      yPos+=fontH;
-      e.Graphics.DrawString(Lan.g(this,"DOB:"),bodyFont,Brushes.Black,xPos,yPos);
-      yPos+=fontH;
-			e.Graphics.DrawString(Lan.g(this,"DATE:"),bodyFont,Brushes.Black,xPos,yPos);
-      yPos-=fontH*2;
-			xPos=370;
-			yPos=120;
-      e.Graphics.DrawString(patPhone,bodyFont,Brushes.Black,xPos,yPos);
-      yPos+=fontH;
-      e.Graphics.DrawString(patDOB,bodyFont,Brushes.Black,xPos,yPos);
-      yPos+=fontH;
-			e.Graphics.DrawString(rxDate,bodyFont,Brushes.Black,xPos,yPos);
-			//Print string Rx
-      yPos=190;
-			xPos=25;
-			Font RxFont = new Font("Times New Roman",24,FontStyle.Regular);
-			e.Graphics.DrawString(Lan.g(this,"Rx"),RxFont,Brushes.Black,xPos,yPos);
-			yPos=205;
-			xPos=100;
-	    e.Graphics.DrawString(RxPatCur.Drug,bodyFont,Brushes.Black,xPos,yPos);
-      yPos+=(int)(fontH*1.5);
-	    e.Graphics.DrawString(Lan.g(this,"Disp:")+"  "+RxPatCur.Disp,bodyFont,Brushes.Black,xPos,yPos);
-      yPos+=(int)(fontH*1.5);
-		  e.Graphics.DrawString(Lan.g(this,"Sig:")+"  "+RxPatCur.Sig,bodyFont,Brushes.Black
-				,new RectangleF(xPos,yPos,512-xPos-5,fontH*2));
-      yPos+=(int)(fontH*2.5);
-	    e.Graphics.DrawString(Lan.g(this,"Refills:")+"  "+RxPatCur.Refills,bodyFont,Brushes.Black,xPos,yPos);
-			//Print Check Boxes
-      xPos=25;
-			yPos=400-62;
-			e.Graphics.DrawRectangle(new Pen(Color.Black),xPos,yPos,12,12);
-      yPos+=25;
-			e.Graphics.DrawRectangle(new Pen(Color.Black),xPos,yPos,12,12);		
-			//Print X in Generic Substitution Permitted
-			e.Graphics.DrawLine(new Pen(Color.Black),xPos,yPos,xPos+12,yPos+12);
-			e.Graphics.DrawLine(new Pen(Color.Black),xPos+12,yPos,xPos,yPos+12);	
-			//Print Strings for checkboxes
-			string check1="DISPENSE AS WRITTEN";
-			string check2="GENERIC SUBSTITUTION PERMITTED";
-			Font checkFont= new Font("Arial",6,FontStyle.Regular);
-			yPos-=24;
-			xPos=xPos+17;
-	    e.Graphics.DrawString(Lan.g(this,check1),checkFont,Brushes.Black,xPos,yPos);
-			yPos+=25;
-	    e.Graphics.DrawString(Lan.g(this,check2),checkFont,Brushes.Black,xPos,yPos);		
-			//Print Signature Line and Signature Text
-			yPos=360;
-			xPos=225;
-			e.Graphics.DrawLine(new Pen(Color.Black),xPos,yPos,512-25,yPos);
-			string sigLine=Lan.g(this,"SIGNATURE OF PRESCRIBER");
-			xPos=344-(int)(e.Graphics.MeasureString(sigLine,checkFont).Width/2);
-		  e.Graphics.DrawString(sigLine,checkFont,Brushes.Black,xPos,yPos+4);
+				text=Lan.g(this,"Signature of Prescriber");
+			}
+			if(Prefs.GetBool("RxOrientVert")) {
+				y=460+yAdj;
+				g.DrawLine(Pens.Black,90+xAdj,y,325+xAdj,y);
+				x=207+xAdj-(int)(g.MeasureString(text,font).Width/2);
+			}
+			else {
+				y=360+yAdj;
+				g.DrawLine(Pens.Black,300+xAdj,y,530+xAdj,y);
+				x=412+xAdj-(int)(g.MeasureString(text,font).Width/2);
+			}
+			y+=4;
+			g.DrawString(text,font,brush,x,y);
+			g.Dispose();
 		}
 
 		private void butDelete_Click(object sender, System.EventArgs e) {
@@ -551,7 +555,7 @@ namespace OpenDental{
 
 		private void butPrint_Click(object sender, System.EventArgs e) {
 			if(SaveRx()){
-				PrintReport(false);
+				PrintReport();
 				DialogResult=DialogResult.OK;
 			}
 		}

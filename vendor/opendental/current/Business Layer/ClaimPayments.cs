@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the claimpayment table in the database.  Each row represents a single check from the insurance company.  The amount may be split between patients using claimprocs.  The amount of the check must always exactly equal the sum of all the claimprocs attached to it.  There might be only one claimproc.</summary>
+	///<summary>Each row represents a single check from the insurance company.  The amount may be split between patients using claimprocs.  The amount of the check must always exactly equal the sum of all the claimprocs attached to it.  There might be only one claimproc.</summary>
 	public class ClaimPayment{
 		///<summary>Primary key.</summary>
 		public int ClaimPaymentNum;
@@ -19,11 +19,11 @@ namespace OpenDental{
 		public string BankBranch;
 		///<summary>Note for this check if needed.</summary>
 		public string Note;
-		///<summary>Foreign key to clinic.ClinicNum</summary>
+		///<summary>FK to clinic.ClinicNum.  0 if no clinic.</summary>
 		public int ClinicNum;
-		///<summary>Foreign key to deposit.DepositNum.  0 if not attached to any deposits.</summary>
+		///<summary>FK to deposit.DepositNum.  0 if not attached to any deposits.</summary>
 		public int DepositNum;
-		///<summary>Descriptive name just for reporting purposes.</summary>
+		///<summary>Descriptive name of the carrier just for reporting purposes.</summary>
 		public string CarrierName;
 
 		///<summary>Returns a copy of this ClaimPayment.</summary>

@@ -6,23 +6,23 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the insplan table in the database.</summary>
+	///<summary>There is a separate insplan in this table for each subscriber.  Subscribers never share insplans, although multiple patients can have the plan assigned to them (with the one subscriber).  But plans can have identical information in them as other plans.  In this case, they are considered similar or identical, and some synchronization can be done.  For some offices, this synchronization will be extensive, with hundreds of identical insplans.</summary>
 	public class InsPlan:IComparable{
 		///<summary>Primary key.</summary>
 		public int PlanNum;
-		///<summary>Foreign key to patient.PatNum.</summary>
+		///<summary>FK to patient.PatNum.</summary>
 		public int Subscriber;
-		///<summary>Date plan became effective</summary>
+		///<summary>Date plan became effective.</summary>
 		public DateTime DateEffective;
 		///<summary>Date plan was terminated</summary>
 		public DateTime DateTerm;
 		///<summary>Optional</summary>
 		public string GroupName;
-		///<summary></summary>
+		///<summary>Optional.</summary>
 		public string GroupNum;
 		///<summary>Note for all plans identical to this one.  Always stays in synch with other identical plans regardless of user actions.  If they change it on one, it gets changed on all.</summary>
 		public string PlanNote;
-		///<summary>Foreign key to definition.DefNum.  Name of fee schedule is stored in definition.ItemName.</summary>
+		///<summary>FK to definition.DefNum.  Name of fee schedule is stored in definition.ItemName.</summary>
 		public int FeeSched;
 		///<summary>Release of information signature is on file.</summary>
 		public bool ReleaseInfo;
@@ -30,24 +30,23 @@ namespace OpenDental{
 		public bool AssignBen;
 		///<summary>""=percentage(the default),"f"=flatCopay,"c"=capitation.</summary>
 		public string PlanType;
-		///<summary>Foreign key to claimform.ClaimFormNum. eg. "0" for ADA2002</summary>
+		///<summary>FK to claimform.ClaimFormNum. eg. "0" for ADA2002</summary>
 		public int ClaimFormNum;
 		///<summary>0=no,1=yes.  could later be extended if more alternates required</summary>
 		public bool UseAltCode;
 		///<summary>Fee billed on claim should be the UCR fee for the patient's provider.</summary>
 		public bool ClaimsUseUCR;
-		///<summary>This field is not used at all.</summary>
-		///<summary>Foreign key to Definition.DefNum. This fee schedule holds only co-pays(patient portions).</summary>
+		///<summary>FK to definition.DefNum. Not usually used. This fee schedule holds only co-pays(patient portions).  Only used for Capitation or for fixed copay plans.</summary>
 		public int CopayFeeSched;
 		///<summary>Usually SSN, but can also be changed by user.  No dashes. Not allowed to be blank.</summary>
 		public string SubscriberID;
-		///<summary>Foreign key to employer.EmployerNum.</summary>
+		///<summary>FK to employer.EmployerNum.</summary>
 		public int EmployerNum;
-		///<summary>Foreign key to carrier.CarrierNum.</summary>
+		///<summary>FK to carrier.CarrierNum.</summary>
 		public int CarrierNum;
-		///<summary>Foreign key to Definition.DefNum. This fee schedule holds amounts allowed by carriers.</summary>
+		///<summary>FK to Definition.DefNum. Not usually used.  This fee schedule holds amounts allowed by carriers.</summary>
 		public int AllowedFeeSched;
-		///<summary></summary>
+		///<summary>.</summary>
 		public string TrojanID;
 		///<summary>Only used in Canada. It's a suffix to the group number.</summary>
 		public string DivisionNo;
@@ -57,7 +56,7 @@ namespace OpenDental{
 		public bool IsMedical;
 		///<summary>Specific to an individual plan and not synchronized in any way.  Use to store any other info that affects coverage.</summary>
 		public string SubscNote;
-		///<summary>This is NOT a database column.  It is just used to display the number of plans with the same info.</summary>
+		///<summary>This is not a database column.  It is just used to display the number of plans with the same info.</summary>
 		public int NumberPlans;
 
 		///<summary>IComparable.CompareTo implementation.  This is used to determine if plans are identical.  The criteria is that they have 6 fields in common: Employer, Carrier, GroupName, GroupNum, DivisionNo, and IsMedical.  There is no less than or greater than; just not equal.</summary>

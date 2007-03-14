@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Corresponds to the contact table in the database.</summary>
+	///<summary>Like a rolodex for businesses that the office interacts with.  Used to store pharmacies, etc.</summary>
 	public struct Contact{
 		///<summary>Primary key.</summary>
 		public int ContactNum;
@@ -16,7 +16,7 @@ namespace OpenDental{
 		public string WkPhone;
 		///<summary>Fax number.</summary>
 		public string Fax;
-		///<summary>Foreign key to definition.DefNum</summary>
+		///<summary>FK to definition.DefNum</summary>
 		public int Category;
 		///<summary>Note for this contact.</summary>
 		public string Notes;

@@ -131,6 +131,8 @@ namespace OpenDental{
 		private System.Windows.Forms.Label labelClinic;
 		private TextBox textTrophyFolder;
 		private Label labelTrophyFolder;
+		private TextBox textWard;
+		private Label labelWard;
 		private Patient PatOld;
 
 		///<summary></summary>
@@ -301,6 +303,8 @@ namespace OpenDental{
 			this.comboClinic = new System.Windows.Forms.ComboBox();
 			this.textTrophyFolder = new System.Windows.Forms.TextBox();
 			this.labelTrophyFolder = new System.Windows.Forms.Label();
+			this.textWard = new System.Windows.Forms.TextBox();
+			this.labelWard = new System.Windows.Forms.Label();
 			this.groupBox2.SuspendLayout();
 			this.groupBox1.SuspendLayout();
 			this.groupNotes.SuspendLayout();
@@ -749,7 +753,7 @@ namespace OpenDental{
 			this.groupBox2.Controls.Add(this.radioStudentF);
 			this.groupBox2.Controls.Add(this.label30);
 			this.groupBox2.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox2.Location = new System.Drawing.Point(440,327);
+			this.groupBox2.Location = new System.Drawing.Point(440,336);
 			this.groupBox2.Name = "groupBox2";
 			this.groupBox2.Size = new System.Drawing.Size(362,65);
 			this.groupBox2.TabIndex = 24;
@@ -1114,7 +1118,7 @@ namespace OpenDental{
 			this.groupPH.Controls.Add(this.label13);
 			this.groupPH.Controls.Add(this.label10);
 			this.groupPH.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupPH.Location = new System.Drawing.Point(440,192);
+			this.groupPH.Location = new System.Drawing.Point(440,206);
 			this.groupPH.Name = "groupPH";
 			this.groupPH.Size = new System.Drawing.Size(378,123);
 			this.groupPH.TabIndex = 23;
@@ -1241,7 +1245,7 @@ namespace OpenDental{
 			// 
 			// labelClinic
 			// 
-			this.labelClinic.Location = new System.Drawing.Point(420,170);
+			this.labelClinic.Location = new System.Drawing.Point(420,165);
 			this.labelClinic.Name = "labelClinic";
 			this.labelClinic.Size = new System.Drawing.Size(86,14);
 			this.labelClinic.TabIndex = 89;
@@ -1251,7 +1255,7 @@ namespace OpenDental{
 			// comboClinic
 			// 
 			this.comboClinic.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboClinic.Location = new System.Drawing.Point(510,167);
+			this.comboClinic.Location = new System.Drawing.Point(510,162);
 			this.comboClinic.MaxDropDownItems = 30;
 			this.comboClinic.Name = "comboClinic";
 			this.comboClinic.Size = new System.Drawing.Size(198,21);
@@ -1274,11 +1278,30 @@ namespace OpenDental{
 			this.labelTrophyFolder.Text = "Trophy Folder";
 			this.labelTrophyFolder.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
+			// textWard
+			// 
+			this.textWard.Location = new System.Drawing.Point(510,184);
+			this.textWard.MaxLength = 100;
+			this.textWard.Name = "textWard";
+			this.textWard.Size = new System.Drawing.Size(89,20);
+			this.textWard.TabIndex = 93;
+			// 
+			// labelWard
+			// 
+			this.labelWard.Location = new System.Drawing.Point(423,189);
+			this.labelWard.Name = "labelWard";
+			this.labelWard.Size = new System.Drawing.Size(84,14);
+			this.labelWard.TabIndex = 92;
+			this.labelWard.Text = "Ward";
+			this.labelWard.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
 			// FormPatientEdit
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(968,676);
+			this.Controls.Add(this.textWard);
+			this.Controls.Add(this.labelWard);
 			this.Controls.Add(this.textTrophyFolder);
 			this.Controls.Add(this.labelTrophyFolder);
 			this.Controls.Add(this.comboClinic);
@@ -1551,6 +1574,11 @@ namespace OpenDental{
 				labelTrophyFolder.Visible=false;
 				textTrophyFolder.Visible=false;
 			}
+			if(Prefs.GetBool("EasyHideHospitals")){
+				textWard.Visible=false;
+				labelWard.Visible=false;
+			}
+			textWard.Text=PatCur.Ward;
 			textLName.Select();
 			FillTable();
 		}
@@ -2345,6 +2373,7 @@ namespace OpenDental{
 			if(Programs.IsEnabled("TrophyEnhanced")) {
 				PatCur.TrophyFolder=textTrophyFolder.Text;
 			}
+			PatCur.Ward=textWard.Text;
 			if(PatCur.Guarantor==0){
 				PatCur.Guarantor=PatCur.PatNum;
 			}

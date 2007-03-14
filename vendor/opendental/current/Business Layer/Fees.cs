@@ -6,15 +6,15 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the fee table in the database.</summary>
+	///<summary>There is one entry in this table for each fee for a single procedurecode.  So if there are 5 different fees stored for one procedurecode, then there will be five entries here.</summary>
 	public class Fee{
 		///<summary>Primary key.</summary>
 		public int FeeNum;
 		///<summary>The amount usually charged.  If an amount is unknown, then the entire Fee entry is deleted from the database.  The absence of a fee is sometimes shown in the user interface as a blank entry, and sometimes as 0.00.</summary>
 		public double Amount;
-		///<summary>Foreign key to procedurelog.ADACode.</summary>
+		///<summary>FK to procedurelog.ADACode.</summary>
 		public string ADACode;
-		///<summary>Foreign key to definition.DefNum.</summary>
+		///<summary>FK to definition.DefNum.</summary>
 		public int FeeSched;
 		///<summary>Not used.</summary>
 		public bool UseDefaultFee;

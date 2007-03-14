@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the lettermerge table in the database.</summary>
+	///<summary>Describes the templates for letter merges to Word.</summary>
 	public class LetterMerge{
 		///<summary>Primary key.</summary>
 		public int LetterMergeNum;
@@ -15,7 +15,7 @@ namespace OpenDental{
 		public string TemplateName;
 		///<summary>The name of the data file. eg MyTemplate.txt.</summary>
 		public string DataFileName;
-		///<summary>Foreign key to definition.DefNum.</summary>
+		///<summary>FK to definition.DefNum.</summary>
 		public int Category;
 		///<summary>Not a database column.  Filled using fk from the lettermergefields table.  The arrayList is a collection of strings representing field names.</summary>
 		public ArrayList Fields;

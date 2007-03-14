@@ -5,17 +5,17 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Corresponds to the payplancharge table in the database.</summary>
+	///<summary>One of the dated charges attached to a payment plan.  This has nothing to do with payments, but rather just causes the amount due to increase on the date of the charge.  The amount of the charge is the sum of the principal and the interest.</summary>
 	public class PayPlanCharge{
 		///<summary>Primary key.</summary>
 		public int PayPlanChargeNum;
-		///<summary>Foreign key to payplan.PayPlanNum.</summary>
+		///<summary>FK to payplan.PayPlanNum.</summary>
 		public int PayPlanNum;
-		///<summary>Foreign key to patient.PatNum.  The guarantor account that each charge will affect.</summary>
+		///<summary>FK to patient.PatNum.  The guarantor account that each charge will affect.</summary>
 		public int Guarantor;
-		///<summary>Foreign key to patient.PatNum.  The patient account that the principal gets removed from.</summary>
+		///<summary>FK to patient.PatNum.  The patient account that the principal gets removed from.</summary>
 		public int PatNum;
-		///<summary>The date that the charge will show on the patient account.  Any charge with a future date will not show on the account and will not affect the balance.</summary>
+		///<summary>The date that the charge will show on the patient account.  Any charge with a future date will not show on the account yet and will not affect the balance.</summary>
 		public DateTime ChargeDate;
 		///<summary>The principal portion of this payment.</summary>
 		public double Principal;

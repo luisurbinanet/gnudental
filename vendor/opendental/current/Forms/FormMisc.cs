@@ -494,6 +494,7 @@ namespace OpenDental{
 				+"Data can be entered on all servers and synchronized later.\r\n"
 				+"Disadvantages:\r\n"
 				+"Slightly slower.\r\n"
+				+"Difficult to set up.\r\n"
 				+"Primary keys much longer, so not as user friendly.","",MessageBoxButtons.OKCancel)==DialogResult.Cancel)
 			{
 				checkRandomPrimaryKeys.Checked=false;
@@ -508,19 +509,19 @@ namespace OpenDental{
 			}
 			bool changed=false;
 			if( Prefs.UpdateString("TreatmentPlanNote",textTreatNote.Text)
-				|| Prefs.UpdateBool("TreatPlanShowGraphics",checkTreatPlanShowGraphics.Checked)
-				|| Prefs.UpdateBool("TreatPlanShowCompleted",checkTreatPlanShowCompleted.Checked)
-				|| Prefs.UpdateBool("TreatPlanShowIns",checkTreatPlanShowIns.Checked)
-				|| Prefs.UpdateBool("StatementShowReturnAddress",checkStatementShowReturnAddress.Checked)
-				|| Prefs.UpdateBool("StatementShowCreditCard",checkShowCC.Checked)
-				|| Prefs.UpdateBool("StatementAccountsUseChartNumber",radioUseChartNumber.Checked)
-				|| Prefs.UpdateBool("BalancesDontSubtractIns",checkBalancesDontSubtractIns.Checked)
-				|| Prefs.UpdateBool("RandomPrimaryKeys",checkRandomPrimaryKeys.Checked)
-				|| Prefs.UpdateString("MainWindowTitle",textMainWindowTitle.Text)
-				|| Prefs.UpdateBool("EclaimsSeparateTreatProv",checkEclaimsSeparateTreatProv.Checked)
-				|| Prefs.UpdateBool("MedicalEclaimsEnabled",checkMedicalEclaimsEnabled.Checked)
-				|| Prefs.UpdateBool("UseInternationalToothNumbers",checkITooth.Checked)
-				|| Prefs.UpdateBool("InsurancePlansShared",checkInsurancePlansShared.Checked))
+				| Prefs.UpdateBool("TreatPlanShowGraphics",checkTreatPlanShowGraphics.Checked)
+				| Prefs.UpdateBool("TreatPlanShowCompleted",checkTreatPlanShowCompleted.Checked)
+				| Prefs.UpdateBool("TreatPlanShowIns",checkTreatPlanShowIns.Checked)
+				| Prefs.UpdateBool("StatementShowReturnAddress",checkStatementShowReturnAddress.Checked)
+				| Prefs.UpdateBool("StatementShowCreditCard",checkShowCC.Checked)
+				| Prefs.UpdateBool("StatementAccountsUseChartNumber",radioUseChartNumber.Checked)
+				| Prefs.UpdateBool("BalancesDontSubtractIns",checkBalancesDontSubtractIns.Checked)
+				| Prefs.UpdateBool("RandomPrimaryKeys",checkRandomPrimaryKeys.Checked)
+				| Prefs.UpdateString("MainWindowTitle",textMainWindowTitle.Text)
+				| Prefs.UpdateBool("EclaimsSeparateTreatProv",checkEclaimsSeparateTreatProv.Checked)
+				| Prefs.UpdateBool("MedicalEclaimsEnabled",checkMedicalEclaimsEnabled.Checked)
+				| Prefs.UpdateBool("UseInternationalToothNumbers",checkITooth.Checked)
+				| Prefs.UpdateBool("InsurancePlansShared",checkInsurancePlansShared.Checked))
 			{
 				changed=true;
 			}

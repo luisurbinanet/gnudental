@@ -5,19 +5,19 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Corresponds to the proctp table in the database.  These are copies of procedures that are attached to treatment plans.</summary>
+	///<summary>These are copies of procedures that are attached to treatment plans.</summary>
 	public class ProcTP{
 		///<summary>Primary key.</summary>
 		public int ProcTPNum;
-		///<summary>Foreign key to treatplan.TreatPlanNum.  The treatment plan to which this proc is attached.</summary>
+		///<summary>FK to treatplan.TreatPlanNum.  The treatment plan to which this proc is attached.</summary>
 		public int TreatPlanNum;
-		///<summary>Foreign key to patient.PatNum.</summary>
+		///<summary>FK to patient.PatNum.</summary>
 		public int PatNum;
-		///<summary>Foreign key to procedurelog.ProcNum.  It is very common for the referenced procedure to be missing.  This procNum is only here to compare and test the existence of the referenced procedure.  If present, it will check to see whether the procedure is still status TP.</summary>
+		///<summary>FK to procedurelog.ProcNum.  It is very common for the referenced procedure to be missing.  This procNum is only here to compare and test the existence of the referenced procedure.  If present, it will check to see whether the procedure is still status TP.</summary>
 		public int ProcNumOrig;
 		///<summary>The order of this proc within its tp.  This is set when the tp is first created and can't be changed.  Drastically simplifies loading the tp.</summary>
 		public int ItemOrder;
-		///<summary>Foreign key to definition.DefNum which contains the text of the priority.</summary>
+		///<summary>FK to definition.DefNum which contains the text of the priority.</summary>
 		public int Priority;
 		///<summary>A simple string displaying the tooth number.  If international tooth numbers are used, then this will be in international format already.</summary>
 		public string ToothNumTP;

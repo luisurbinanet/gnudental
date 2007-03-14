@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Corresponds to the deposit table in the database.</summary>
+	///<summary>A deposit slip.  Contains multiple insurance and patient checks.</summary>
 	public class Deposit{
 		///<summary>Primary key.</summary>
 		public int DepositNum;

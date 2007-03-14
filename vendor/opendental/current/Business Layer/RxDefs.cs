@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Corresponds to the rxdef table in the database.</summary>
+	///<summary>Rx definitions.  Can safely delete or alter, because they get copied to the rxPat table, not referenced.</summary>
 	public class RxDef{
 		///<summary>Primary key.</summary>
 		public int RxDefNum;

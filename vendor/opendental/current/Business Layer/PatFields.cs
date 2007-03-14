@@ -6,13 +6,13 @@ using System.Windows.Forms;
 
 namespace OpenDental {
 
-	/// <summary>Corresponds to the patfield table in the database.  These are custom fields added and managed by the user.</summary>
+	/// <summary>These are custom fields added and managed by the user.</summary>
 	public class PatField{
 		///<summary>Primary key.</summary>
 		public int PatFieldNum;
-		///<summary>fk to patient.PatNum</summary>
+		///<summary>FK to patient.PatNum</summary>
 		public int PatNum;
-		///<summary>fk to patfielddef.FieldName.  The full name is shown here for ease of use when running queries.  But the user is only allowed to change fieldNames in the patFieldDef setup window.</summary>
+		///<summary>FK to patfielddef.FieldName.  The full name is shown here for ease of use when running queries.  But the user is only allowed to change fieldNames in the patFieldDef setup window.</summary>
 		public string FieldName;
 		///<summary>Any text that the user types in.</summary>
 		public string FieldValue;

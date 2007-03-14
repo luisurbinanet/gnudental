@@ -5,37 +5,35 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the claimproc table in the database.</summary>
-	///<remarks>Links procedures to claims.  Also links ins payments to procedures or claims.  Also used for estimating procedures even if no claim yet.  Warning: One proc might be linked twice to a given claim if insurance made two payments.  Many of the important fields are actually optional.  For instance, ProcNum is only required if itemizing ins payment, and ClaimNum is blank if Status=adjustment,cap,or estimate.</remarks>
+	///<summary>Links procedures to claims.  Also links ins payments to procedures or claims.  Also used for estimating procedures even if no claim yet.  Warning: One proc might be linked twice to a given claim if insurance made two payments.  Many of the important fields are actually optional.  For instance, ProcNum is only required if itemizing ins payment, and ClaimNum is blank if Status=adjustment,cap,or estimate.</summary>
 	public class ClaimProc{
 		///<summary>Primary key.</summary>
 		public int ClaimProcNum;
-		///<summary>Foreign key to procedurelog.ProcNum.</summary>
+		///<summary>FK to procedurelog.ProcNum.</summary>
 		public int ProcNum;
-		///<summary>Foreign key to claim.ClaimNum.</summary>
+		///<summary>FK to claim.ClaimNum.</summary>
 		public int ClaimNum;
-		///<summary>Foreign key to patient.PatNum.</summary>
+		///<summary>FK to patient.PatNum.</summary>
 		public int PatNum;
-		///<summary>Foreign key to provider.ProvNum.</summary>
+		///<summary>FK to provider.ProvNum.</summary>
 		public int ProvNum;
-		///<summary>Fee billed to insurance. Might not be the same as the actual fee.</summary>
-		///<remarks>The fee billed can be different than the actual procedure.  For instance, if you have set the insurance plan to bill insurance using UCR fees, then this field will contain the UCR fee instead of the fee that the patient was charged.</remarks>
+		///<summary>Fee billed to insurance. Might not be the same as the actual fee.  The fee billed can be different than the actual procedure.  For instance, if you have set the insurance plan to bill insurance using UCR fees, then this field will contain the UCR fee instead of the fee that the patient was charged.</summary>
 		public double FeeBilled;
-		///<summary>Actual amount this carrier is expected to pay, after taking everything else into account. Considers annual max, override, percentAmt, copayAmt, deductible, etc. In previous versions, it was not computed until sent to insurance.  But in this version, it is computed automatically in TP module, and gets overwritten when sent to ins.</summary>
+		///<summary>Actual amount this carrier is expected to pay, after taking everything else into account. Considers annual max, override, percentAmt, copayAmt, deductible, etc. This estimate is computed automatically in TP module, and gets overwritten when sent to ins.</summary>
 		public double InsPayEst;
 		///<summary>Deductible applied to this procedure only. If not sent to ins yet, then this will be set to an estimated amount based on the order in the TP.  Will be overwritten when actually sent to ins.</summary>
 		public double DedApplied;
-		///<summary>See the ClaimProcStatus enumeration.</summary>
+		///<summary>Enum:ClaimProcStatus .</summary>
 		public ClaimProcStatus Status;
 		///<summary>Amount insurance actually paid.</summary>
 		public double InsPayAmt;
 		///<summary>The remarks that insurance sends in the EOB about procedures.</summary>
 		public string Remarks;
-		///<summary>Foreign key to ClaimPayment.ClaimPaymentNum(the insurance check).</summary>
+		///<summary>FK to claimpayment.ClaimPaymentNum(the insurance check).</summary>
 		public int ClaimPaymentNum;
-		///<summary>Foreign key to insplan.PlanNum</summary>
+		///<summary>FK to insplan.PlanNum</summary>
 		public int PlanNum;
-		///<summary>This is the date that is used for payment reports and tracks when the payment was actually made.  Always exactly matches the date of the ClaimPayment it's attached to.  See the note under Ledgers.ComputePayments.  This will eventually not be used for aging. The ProcDate will instead be used. See ProcDate.</summary>
+		///<summary>This is the date that is used for payment reports and tracks the payment date.  Always exactly matches the date of the ClaimPayment it's attached to.  See the note under Ledgers.ComputePayments.  This will eventually not be used for aging. The ProcDate will instead be used. See ProcDate.</summary>
 		public DateTime DateCP;
 		///<summary>Amount not covered by ins which is written off</summary>
 		public double WriteOff;

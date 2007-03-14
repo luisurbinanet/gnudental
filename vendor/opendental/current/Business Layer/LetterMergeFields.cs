@@ -5,11 +5,11 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the lettermergefield table in the database.</summary>
+	///<summary>When doing a lettermerge, a data file is created with certain fields.  This is a list of those fields for each lettermerge.</summary>
 	public class LetterMergeField{
 		///<summary>Primary key.</summary>
 		public int FieldNum;
-		///<summary>Foreign key to lettermerge.LetterMergeNum.</summary>
+		///<summary>FK to lettermerge.LetterMergeNum.</summary>
 		public int LetterMergeNum;
 		///<summary>One of the preset available field names.</summary>
 		public string FieldName;

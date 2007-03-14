@@ -5,15 +5,15 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	/// <summary>Corresponds to the toothinitial table in the database.  Used to track missing teeth, primary teeth, and </summary>
+	/// <summary>Used to track missing teeth, primary teeth, and movements</summary>
 	public class ToothInitial{
 		///<summary>Primary key.</summary>
 		public int ToothInitialNum;
-		///<summary>Foreign key to patient.PatNum</summary>
+		///<summary>FK to patient.PatNum</summary>
 		public int PatNum;
 		///<summary>1-32 or A-Z. Supernumeraries not supported here yet.</summary>
 		public string ToothNum;
-		///<summary>See ToothInitialType enum.  </summary>
+		///<summary>Enum:ToothInitialType</summary>
 		public ToothInitialType InitialType;
 		///<summary>Shift in mm, or rotation / tipping in degrees.</summary>
 		public float Movement;

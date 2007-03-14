@@ -5,17 +5,17 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the dunning table in the database.</summary>
+	///<summary>A message that will show on certain patient statements when printing bills.  Criteria must be met in order for the dunning message to show.</summary>
 	public class Dunning{
 		///<summary>Primary key.</summary>
 		public int DunningNum;
 		///<summary>The actual dunning message that will go on the patient bill.</summary>
 		public string DunMessage;
-		///<summary>Foreign key to definition.DefNum.</summary>
+		///<summary>FK to definition.DefNum.</summary>
 		public int BillingType;
 		///<summary>This is an int field, but program forces only 0,30,60,or 90.</summary>
 		public int AgeAccount;
-		///<summary>Set Y to only show if insurance is pending.</summary>
+		///<summary>Enum:YN Set Y to only show if insurance is pending.</summary>
 		public YN InsIsPending;
 
 		///<summary>Returns a copy of this Dunning.</summary>

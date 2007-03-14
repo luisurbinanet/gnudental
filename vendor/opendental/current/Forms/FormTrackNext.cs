@@ -149,7 +149,7 @@ namespace OpenDental{
 			//ContrAppt.CurInfo.PatientName=Patients.GetCurNameLF();
 			Procedure[] procs=Procedures.GetProcsForSingle(aptCur.AptNum,true);
 			ContrAppt.CurInfo.Procs=procs;
-			ContrAppt.CurInfo.Production=Procedures.GetProductionOneApt(aptCur.AptNum,procs);
+			ContrAppt.CurInfo.Production=Procedures.GetProductionOneApt(aptCur.AptNum,procs,true);
 			ContrAppt.CurInfo.MyPatient=Patients.GetPat(aptCur.PatNum);
 				//patCur.Copy();
 		}

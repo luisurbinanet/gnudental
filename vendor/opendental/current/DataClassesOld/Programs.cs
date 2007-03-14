@@ -6,11 +6,11 @@ using OpenDental.Bridges;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the program table in the database.</summary>
+	///<summary>Each row is a bridge to an outside program, frequently an imaging program.  Most of the bridges are hard coded, and simply need to be enabled.  But user can also add their own custom bridge.</summary>
 	public struct Program{
 		///<summary>Primary key.</summary>
 		public int ProgramNum;
-		///<summary>Unique name for built-in programs. Not user-editable.</summary>
+		///<summary>Unique name for built-in program bridges. Not user-editable.</summary>
 		public string ProgName;
 		///<summary>Description that shows.</summary>
 		public string ProgDesc;
@@ -213,6 +213,14 @@ namespace OpenDental{
 			}
 			else if(Cur.ProgName=="DrCeph") {
 				DrCeph.SendData(pat);
+				return;
+			}
+			else if(Cur.ProgName=="MediaDent") {
+				MediaDent.SendData(pat);
+				return;
+			}
+			else if(Cur.ProgName=="PerioPal") {
+				PerioPal.SendData(pat);
 				return;
 			}
 			else if(Cur.ProgName=="NewPatientForm.com") {

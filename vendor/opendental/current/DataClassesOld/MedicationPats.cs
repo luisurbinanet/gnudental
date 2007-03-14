@@ -4,13 +4,13 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the medicationpat table in the database. It links medications to patients.</summary>
+	///<summary>Links medications to patients.</summary>
 	public struct MedicationPat{
 		///<summary>Primary key.</summary>
 		public int MedicationPatNum;
-		///<summary>Foreign key to patient.PatNum.</summary>
+		///<summary>FK to patient.PatNum.</summary>
 		public int PatNum;
-		///<summary>Foreign key to medication.MedicationNum.</summary>
+		///<summary>FK to medication.MedicationNum.</summary>
 		public int MedicationNum;
 		///<summary>Medication notes specific to this patient.</summary>
 		public string PatNote;

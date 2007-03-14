@@ -48,46 +48,52 @@ namespace OpenDental{
 		}
 
 		///<summary>Only used in FormRecallList to get a list of patients with recall.  Supply a date range, using min(-1 day) and max values if user left blank.</summary>
-		public static RecallItem[] GetRecallList(DateTime fromDate,DateTime toDate){
+		public static RecallItem[] GetRecallList(DateTime fromDate,DateTime toDate,bool groupByFamilies){
 			string command=
-				"SELECT recall.RecallNum,recall.PatNum,recall.DateDueCalc,recall.DateDue,"
+				"SELECT recall.RecallNum,recall.PatNum,recall.DateDue,"
 				+"recall.RecallInterval,recall.RecallStatus,recall.Note,"
 				+"CONCAT(patient.LName,', ',patient.FName,' ',patient.Preferred,' ',"
 				+"patient.MiddleI) AS 'Patient Name', "
-				+"patient.Birthdate,patient.Guarantor "
+				+"IF(YEAR(patient.Birthdate)>1880,"
+				+"YEAR(CURDATE()) - YEAR(patient.Birthdate) - (RIGHT(CURDATE(),5)<RIGHT(patient.Birthdate,5)),'') AS Age, "
+				+"patient.Guarantor "
 				+"FROM recall,patient "
 				+"WHERE recall.PatNum=patient.PatNum "
+				+"AND NOT EXISTS("//test for future appt.
+				+"SELECT * FROM appointment,procedurelog,procedurecode "
+				+"WHERE procedurelog.PatNum = recall.PatNum "
+				+"AND appointment.PatNum = recall.PatNum "
+				+"AND procedurelog.ADACode = procedurecode.ADACode "
+				+"AND procedurelog.AptNum = appointment.AptNum "
+				+"AND appointment.AptDateTime >= CURDATE() "//'"+DateTime.Today.ToString("yyyy-MM-dd")+"' "
+				+"AND procedurecode.SetRecall = '1') "//end of NOT EXISTS
 				+"AND recall.DateDue >= '"+POut.PDate(fromDate)+"' "
 				+"AND recall.DateDue <= '"+POut.PDate(toDate)+"' "
-				+"AND patient.patstatus=0 ";
+				+"AND patient.patstatus=0 "
+				+"ORDER BY ";
+			if(groupByFamilies){
+				command+="patient.Guarantor, ";
+			}
+			command+="recall.DateDue";
 				//ordering will be done down below
 			DataConnection dcon=new DataConnection();
  			DataTable table=dcon.GetTable(command);
 			RecallItem[] RecallList = new RecallItem[table.Rows.Count];
-			DateTime[] orderDate=new DateTime[table.Rows.Count];
-			DateTime dateDue;
-			DateTime dateDueCalc;
+			//DateTime[] orderDate=new DateTime[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
-				dateDueCalc   =PIn.PDate  (table.Rows[i][2].ToString());
-				dateDue       =PIn.PDate  (table.Rows[i][3].ToString());
-				if(dateDue.Year>1880){
-					RecallList[i].DueDate=dateDue;
-				}
-				else{
-					RecallList[i].DueDate=dateDueCalc;
-				}
-				RecallList[i].PatientName   = PIn.PString(table.Rows[i][7].ToString());
-				RecallList[i].BirthDate     = PIn.PDate  (table.Rows[i][8].ToString());
-				RecallList[i].RecallInterval= new Interval(PIn.PInt(table.Rows[i][4].ToString()));
-				RecallList[i].RecallStatus  = PIn.PInt   (table.Rows[i][5].ToString());
+				RecallList[i]=new RecallItem();
+				RecallList[i].DueDate       = PIn.PDate  (table.Rows[i][2].ToString());
+				RecallList[i].PatientName   = PIn.PString(table.Rows[i][6].ToString());
+				RecallList[i].RecallInterval= new Interval(PIn.PInt(table.Rows[i][3].ToString()));
+				RecallList[i].RecallStatus  = PIn.PInt   (table.Rows[i][4].ToString());
 				RecallList[i].PatNum        = PIn.PInt   (table.Rows[i][1].ToString());
-				RecallList[i].Age           = Shared.DateToAge(RecallList[i].BirthDate);
-				RecallList[i].Note          = PIn.PString(table.Rows[i][6].ToString());
+				RecallList[i].Age           = PIn.PString(table.Rows[i][7].ToString());
+				RecallList[i].Note          = PIn.PString(table.Rows[i][5].ToString());
 				RecallList[i].RecallNum     = PIn.PInt   (table.Rows[i][0].ToString());
-				RecallList[i].Guarantor     = PIn.PInt   (table.Rows[i][9].ToString());
-				orderDate[i]=RecallList[i].DueDate;
+				RecallList[i].Guarantor     = PIn.PInt   (table.Rows[i][8].ToString());
+				//orderDate[i]=RecallList[i].DueDate;
 			}
-			Array.Sort(orderDate,RecallList);
+			//Array.Sort(orderDate,RecallList);
 			return RecallList;
 
 			 
@@ -226,9 +232,11 @@ namespace OpenDental{
 		}
 
 		/// <summary></summary>
-		public static DataTable GetAddrTable(int[] patNums){
-			string command="SELECT patient.LName,patient.FName,patient.MiddleI,patient.Preferred,"
-				+"patient.Address,patient.Address2,patient.City,patient.State,patient.Zip,recall.DateDue "
+		public static DataTable GetAddrTable(int[] patNums,bool groupByFamily){
+			string command="SELECT patient.LName,patient.FName,patient.MiddleI,patient.Preferred,"//0-3
+				+"patient.Address,patient.Address2,patient.City,patient.State,patient.Zip,recall.DateDue, "//4-9
+				+"patient.Guarantor,"//10
+				+"'' AS FamList "//placeholder column: 11 for patient names and dates. If empty, then only single patient will print
 				+"FROM patient,recall "
 				+"WHERE patient.PatNum=recall.PatNum "
 				+"AND (";
@@ -238,9 +246,71 @@ namespace OpenDental{
 				}
         command+="patient.PatNum="+patNums[i].ToString();
       }
-			command+=") ORDER BY patient.LName,patient.FName";
+			command+=") ";
+			if(groupByFamily){
+				command+="ORDER BY patient.Guarantor";
+			}
+			else{
+				command+="ORDER BY patient.LName,patient.FName";
+			}
 			DataConnection dcon=new DataConnection();
-			return dcon.GetTable(command);
+			DataTable table=dcon.GetTable(command);
+			if(!groupByFamily){
+				return table;
+			}
+			DataTable newTable=table.Clone();
+			string familyAptList="";
+			DataRow row;
+			for(int i=0;i<table.Rows.Count;i++){
+				if(familyAptList==""){//if this is the first patient in the family
+					if(i==table.Rows.Count-1//if this is the last row
+						|| table.Rows[i][10].ToString()!=table.Rows[i+1][10].ToString())//or if the guarantor on next line is different
+					{
+						//then this is a single patient, and there are no other family members in the list.
+						row=newTable.NewRow();
+						row[0]=table.Rows[i][0].ToString();//LName
+						row[1]=table.Rows[i][1].ToString();//FName
+						row[2]=table.Rows[i][2].ToString();//MiddleI
+						row[3]=table.Rows[i][3].ToString();//Preferred
+						row[4]=table.Rows[i][4].ToString();//Address
+						row[5]=table.Rows[i][5].ToString();//Address2
+						row[6]=table.Rows[i][6].ToString();//City
+						row[7]=table.Rows[i][7].ToString();//State
+						row[8]=table.Rows[i][8].ToString();//Zip
+						row[9]=table.Rows[i][9].ToString();//DateDue
+						//we don't care about the guarantor for printing
+						//row[]=table.Rows[i][].ToString();//
+						newTable.Rows.Add(row);
+						continue;
+					}
+					else{//this is the first patient of a family with multiple family members
+						familyAptList=table.Rows[i][1].ToString()+":  "//FName
+							+PIn.PDate(table.Rows[i][9].ToString()).ToShortDateString();//due date
+						continue;
+					}
+				}
+				else{//not the first patient
+					familyAptList+="\r\n"+table.Rows[i][1].ToString()+":  "//FName
+						+PIn.PDate(table.Rows[i][9].ToString()).ToShortDateString();//due date
+				}
+				if(i==table.Rows.Count-1//if this is the last row
+					|| table.Rows[i][10].ToString()!=table.Rows[i+1][10].ToString())//or if the guarantor on next line is different
+				{
+					row=newTable.NewRow();
+					row[0]=table.Rows[i][0].ToString();//LName
+					row[4]=table.Rows[i][4].ToString();//Address
+					row[5]=table.Rows[i][5].ToString();//Address2
+					row[6]=table.Rows[i][6].ToString();//City
+					row[7]=table.Rows[i][7].ToString();//State
+					row[8]=table.Rows[i][8].ToString();//Zip
+					row[11]=familyAptList;
+					//we don't really care about the other fields for printing
+					//row[]=table.Rows[i][].ToString();//
+					newTable.Rows.Add(row);
+					familyAptList="";
+				}	
+			}
+			return newTable;
 		}
 
 		/// <summary></summary>

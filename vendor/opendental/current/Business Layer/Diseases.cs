@@ -6,13 +6,13 @@ using System.Windows.Forms;
 
 namespace OpenDental {
 
-	/// <summary>Corresponds to the Disease table in the database.  Each row is one disease that one patient has.  A disease is a medical condition or allergy.</summary>
+	/// <summary>Each row is one disease that one patient has.  A disease is a medical condition or allergy.  Diseases are defined in the DiseaseDef table.</summary>
 	public class Disease:IComparable{
 		///<summary>Primary key.</summary>
 		public int DiseaseNum;
-		///<summary>fk to patient.PatNum</summary>
+		///<summary>FK to patient.PatNum</summary>
 		public int PatNum;
-		///<summary>fk to DiseaseDef.DiseaseDefNum.  The disease description is in that table.</summary>
+		///<summary>FK to diseasedef.DiseaseDefNum.  The disease description is in that table.</summary>
 		public int DiseaseDefNum;
 		///<summary>Any note about this disease that is specific to this patient.</summary>
 		public string PatNote;

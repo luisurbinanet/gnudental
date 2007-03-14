@@ -159,10 +159,13 @@ namespace OpenDental{
 		}
 
 		///<summary>Gets the production for one appointment by looping through the procsMultApts which was filled previously from GetProcsMultApts.</summary>
-		public static double GetProductionOneApt(int myAptNum,Procedure[] procsMultApts){
+		public static double GetProductionOneApt(int myAptNum,Procedure[] procsMultApts,bool isPlanned){
 			double retVal=0;
 			for(int i=0;i<procsMultApts.Length;i++){
-				if(procsMultApts[i].AptNum==myAptNum){
+				if(isPlanned && procsMultApts[i].NextAptNum==myAptNum){
+					retVal+=procsMultApts[i].ProcFee;
+				}
+				if(!isPlanned && procsMultApts[i].AptNum==myAptNum){
 					retVal+=procsMultApts[i].ProcFee;
 				}
 			}

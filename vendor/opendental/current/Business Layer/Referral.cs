@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Corresponds to the referral table in the database.</summary>
+	///<summary>All info about a referral is stored with that referral even if a patient.  That way, it's available for easy queries.</summary>
 	public class Referral{
 		///<summary>Primary key.</summary>
 		public int ReferralNum;
@@ -18,33 +18,33 @@ namespace OpenDental{
 		public string SSN;
 		///<summary>Specificies if SSN is real SSN.</summary>
 		public bool UsingTIN;
-		///<summary>See the DentalSpecialty enumeration.</summary>
+		///<summary>Enum:DentalSpecialty</summary>
 		public DentalSpecialty Specialty;
 		///<summary>State</summary>
 		public string ST;
 		///<summary>Primary phone, restrictive, must only be 10 digits and only numbers.</summary>
 		public string Telephone;
-		///<summary></summary>
+		///<summary>.</summary>
 		public string Address;
-		///<summary></summary>
+		///<summary>.</summary>
 		public string Address2;
-		///<summary></summary>
+		///<summary>.</summary>
 		public string City;
-		///<summary></summary>
+		///<summary>.</summary>
 		public string Zip;
 		///<summary>Holds important info about the referral.</summary>
-		public string Note;//
+		public string Note;
 		///<summary>Additional phone no restrictions</summary>
 		public string Phone2;
 		///<summary>Can't delete a referral, but can hide if not needed any more.</summary>
-		public bool IsHidden;//
+		public bool IsHidden;
 		///<summary>Set to true for referralls such as Yellow Pages.</summary>
 		public bool NotPerson;
 		///<summary>i.e. DMD or DDS</summary>
 		public string Title;
-		///<summary></summary>
+		///<summary>.</summary>
 		public string EMail;
-		///<summary>Foreign key to patient.PatNum for referrals that are patients.</summary>
+		///<summary>FK to patient.PatNum for referrals that are patients.</summary>
 		public int PatNum;
 
 		///<summary>Returns a copy of this Referral.</summary>

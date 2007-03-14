@@ -5,11 +5,11 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Corresponds to the treatplan table in the database.</summary>
+	///<summary>A treatment plan saved by a user.  Does not include the default tp, which is just a list of procedurelog entries with a status of tp.  A treatplan has many proctp's attached to it.</summary>
 	public class TreatPlan{
 		///<summary>Primary key.</summary>
 		public int TreatPlanNum;
-		///<summary>Foreign key to patient.PatNum.</summary>
+		///<summary>FK to patient.PatNum.</summary>
 		public int PatNum;
 		///<summary>The date of the treatment plan</summary>
 		public DateTime DateTP;

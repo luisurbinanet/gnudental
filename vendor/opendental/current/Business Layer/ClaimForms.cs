@@ -7,8 +7,7 @@ using System.Xml.Serialization;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the claimform table in the database.</summary>
-	///<remarks>Stores the information for printing different types of claim forms.</remarks>
+	///<summary>Stores the information for printing different types of claim forms.  Each claimform has many claimformitems attached to it, one for each field on the claimform.  This table has nothing to do with the actual claims.  It just describes how to print them.</summary>
 	public class ClaimForm{
 		///<summary>Primary key.</summary>
 		[XmlIgnore]
@@ -22,8 +21,7 @@ namespace OpenDental{
 		public string FontName="";
 		///<summary>Font size for all text on the form.</summary>
 		public float FontSize;
-		///<summary>For instance OD12 or JoeDeveloper9.  If you are a developer releasing claimforms, then this should be your name or company followed by a unique number.  This will later make it easier for you to maintain your claimforms for your customers.  All claimforms that we release will be of the form OD##.  Reports that the user creates will have this field blank, protecting them from being changed by us.</summary>
-		///<remarks>ADA2002=OD1,Denti-Cal=OD2,ADA2000=OD3,HCFA1500=OD4,HCFA1500preprinted=OD5,Canadian=OD6,Belgian=OD7</remarks>
+		///<summary>For instance OD12 or JoeDeveloper9.  If you are a developer releasing claimforms, then this should be your name or company followed by a unique number.  This will later make it easier for you to maintain your claimforms for your customers.  All claimforms that we release will be of the form OD##.  Reports that the user creates will have this field blank, protecting them from being changed by us.  So far, we have built the following claimforms: ADA2002=OD1, Denti-Cal=OD2, ADA2000=OD3, HCFA1500=OD4, HCFA1500preprinted=OD5, Canadian=OD6, Belgian=OD7</summary>
 		public string UniqueID="";
 		///<summary>Set to false to not print images.  This removes the background for printing on premade forms.</summary>
 		public bool PrintImages;

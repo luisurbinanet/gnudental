@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the procbutton table in the database.</summary>
+	///<summary>The 'buttons' to show in the Chart module.  They must have items attached in order to do anything.</summary>
 	public class ProcButton{
 		///<summary>Primary key</summary>
 		public int ProcButtonNum;
@@ -14,7 +14,7 @@ namespace OpenDental{
 		public string Description;
 		///<summary>Order that they will show in the Chart module.</summary>
 		public int ItemOrder;
-		///<summary>fk to Definition.DefNum.</summary>
+		///<summary>FK to definition.DefNum.</summary>
 		public int Category;
 		///<summary>If no image, then the blob will be an empty string.  In this case, the bitmap will be null when loaded from the database.</summary>
 		public Bitmap ButtonImage;

@@ -4,8 +4,7 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Corresponds to the screengroup table in the database. Used in public health.</summary>
-	///<remarks>There are many extra fields in common with the screen table, but they are only in this struct and not in the database itself, where that data is stored with the individual screen items. The data in this table is irrelevant in reports.  It is just used to help organize the user interface.</remarks>
+	///<summary>Used in public health.  Programming note: There are many extra fields in common with the screen table, but they are only in this struct and not in the database itself, where that data is stored with the individual screen items. The data in this table is irrelevant in reports.  It is just used to help organize the user interface.</summary>
 	public struct ScreenGroup{
 		///<summary>Primary key</summary>
 		public int ScreenGroupNum;

@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Corresponds to the employee table in the database.</summary>
+	///<summary>An employee at the dental office.</summary>
 	public struct Employee{
 		///<summary>Primary key.</summary>
 		public int EmployeeNum;

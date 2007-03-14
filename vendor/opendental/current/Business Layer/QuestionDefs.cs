@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace OpenDental {
 
-	/// <summary>Corresponds to the QuestionDef table in the database.  Each row represents one question on the medical history questionnaire.  Later, other questionnaires will be allowed, but for now, all questions are on one for the patient.</summary>
+	///<summary>Each row represents one question on the medical history questionnaire.  Later, other questionnaires will be allowed, but for now, all questions are on one questionnaire for the patient.  This table has no dependencies, since the question is copied when added to a patient record.  Any row can be freely deleted or altered without any problems.</summary>
 	public class QuestionDef{
 		///<summary>Primary key.</summary>
 		public int QuestionDefNum;
@@ -14,7 +14,7 @@ namespace OpenDental {
 		public string Description;
 		///<summary>The order that the Questions will show.</summary>
 		public int ItemOrder;
-		///<summary></summary>
+		///<summary>Enum:QuestionType</summary>
 		public QuestionType QuestType;
 
 		///<summary></summary>

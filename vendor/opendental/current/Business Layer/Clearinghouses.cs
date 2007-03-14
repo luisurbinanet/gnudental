@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the clearinghouse table in the database.</summary>
+	///<summary>Since we can send e-claims to multiple clearinghouses, this table keeps track of each clearinghouse.  Will eventually be used for individual carriers as well if they accept </summary>
 	public class Clearinghouse{
 		///<summary>Primary key.</summary>
 		public int ClearinghouseNum;
@@ -17,7 +17,7 @@ namespace OpenDental{
 		public bool IsDefault;
 		///<summary>A list of all payors which should have claims sent to this clearinghouse. Comma delimited with no spaces.  Not necessary if IsDefault.</summary>
 		public string Payors;
-		///<summary>The format of the file that gets sent electronically.</summary>
+		///<summary>Enum:ElectronicClaimFormat The format of the file that gets sent electronically.</summary>
 		public ElectronicClaimFormat Eformat;
 		///<summary>The ID of the clearinghouse. Provided by them. Usually goes on ISA08. Examples: BCBSGA or 0135WCH00(webMD)</summary>
 		public string ReceiverID;
@@ -27,7 +27,7 @@ namespace OpenDental{
 		public string Password;
 		///<summary>The path that all incoming response files will be saved to. Includes \.</summary>
 		public string ResponsePath;
-		///<summary>One of the included hard-coded communications briges.  Or none to just create the claim files without uploading.</summary>
+		///<summary>Enum:EclaimsCommBridge  One of the included hard-coded communications briges.  Or none to just create the claim files without uploading.</summary>
 		public EclaimsCommBridge CommBridge;
 		///<summary>If applicable, this is the name of the client program to launch.  It is even used by the hard-coded comm bridges, because the user may have changed the installation directory or exe name.</summary>
 		public string ClientProgram;

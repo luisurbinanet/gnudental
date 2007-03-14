@@ -4,14 +4,14 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the autocodecond table in the database.</summary>
+	///<summary>AutoCode condition.  Always attached to an AutoCodeItem, which is then, in turn, attached to an autocode.</summary>
 	///<remarks>There is usually only one or two conditions for a given AutoCodeItem.</remarks>
 	public struct AutoCodeCond{//
 		///<summary>Primary key.</summary>
 		public int AutoCodeCondNum;
-		///<summary>Foreign key to AutoCodeItem.AutoCodeItemNum.</summary>
+		///<summary>FK to autocodeitem.AutoCodeItemNum.</summary>
 		public int AutoCodeItemNum;
-		///<summary>See the AutoCondition enumeration.</summary>
+		///<summary>Enum:AutoCondition </summary>
 		public AutoCondition Cond;
 	}
 

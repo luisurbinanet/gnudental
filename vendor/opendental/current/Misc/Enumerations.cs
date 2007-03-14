@@ -222,7 +222,7 @@ namespace OpenDental{
 		ProcButtons=32,
 		///<summary>64</summary>
 		Carriers=64,
-		///<summary>128</summary>
+		///<summary>128- Also includes Signal/message defs.</summary>
 		ClearHouses=128,
 		///<summary>256</summary>
 		Computers=256,
@@ -925,11 +925,9 @@ namespace OpenDental{
 
 	///<summary>The type of signal being sent.</summary>
 	public enum SignalType{
-		///<summary>0</summary>
+		///<summary>0- Includes text messages.</summary>
 		Button,
 		///<summary>1</summary>
-		Text,
-		///<summary>2</summary>
 		Invalid
 	}
 
@@ -1077,7 +1075,7 @@ namespace OpenDental{
 		TipB
 	}
 	
-	///<summary>Indicates at what point the patient is in the sequence. 0=standby, 1=PatientInfo, 2=Diseases, 3=Questions, 4=UpdateOnly.</summary>
+	///<summary>Indicates at what point the patient is in the sequence. 0=standby, 1=PatientInfo, 2=Medical, 3=UpdateOnly.</summary>
 	public enum TerminalStatusEnum{
 		///<summary>0</summary>
 		Standby,
@@ -1095,6 +1093,16 @@ namespace OpenDental{
 		FreeformText,
 		///<summary>1</summary>
 		YesNoUnknown
+	}
+
+	///<summary>0=User,1=Extra,2=Message.</summary>
+	public enum SignalElementType{
+		///<summary>0-To and From lists.  Not tied in any way to the users that are part of security.</summary>
+		User,
+		///<summary>Typically used to insert "family" before "phone" signals.</summary>
+		Extra,
+		///<summary>Elements of this type show in the last column and trigger the message to be sent.</summary>
+		Message
 	}
 
 

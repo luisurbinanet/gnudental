@@ -5,15 +5,15 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Corresponds to the Transaction table in the database.  Used in the Transactioning section in chart of Transactions.</summary>
+	///<summary>Used in the accounting section of the program.  Each row is one transaction in the ledger, and must always have at least two splits.  All splits must always add up to zero.</summary>
 	public class Transaction{
 		///<summary>Primary key.</summary>
 		public int TransactionNum;
 		///<summary>Not user editable.  Server time.</summary>
 		public DateTime DateTimeEntry;
-		///<summary>Foreign key.</summary>
+		///<summary>FK to user.UserNum.</summary>
 		public int UserNum;
-		///<summary>Foreign key.  Will eventually be replaced by a source document table, and deposits will just be one of many types.</summary>
+		///<summary>FK to deposit.DepositNum.  Will eventually be replaced by a source document table, and deposits will just be one of many types.</summary>
 		public int DepositNum;
 		///<summary>FK to payment.PayNum.  Like DepositNum, it will eventually be replaced by a source document table, and payments will just be one of many types.</summary>
 		public int PayNum;

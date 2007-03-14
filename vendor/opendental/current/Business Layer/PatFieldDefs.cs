@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace OpenDental {
 
-	/// <summary>Corresponds to the PatFieldDef table in the database.  These are custom fields added and managed by the user.</summary>
+	/// <summary>These are the definitions for the custom patient fields added and managed by the user.</summary>
 	public class PatFieldDef{
 		///<summary>Primary key.</summary>
 		public int PatFieldDefNum;

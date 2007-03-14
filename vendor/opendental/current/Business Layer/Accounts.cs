@@ -7,19 +7,19 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Corresponds to the Account table in the database.  Used in the accounting section in chart of accounts.</summary>
+	///<summary>Used in the accounting section in chart of accounts.  Not related to patient accounts in any way.</summary>
 	public class Account{
 		///<summary>Primary key.</summary>
 		public int AccountNum;
-		///<summary></summary>
+		///<summary>.</summary>
 		public string Description;
-		///<summary>Asset,Liability,Equity,Revenue,Expense</summary>
+		///<summary>Enum:AccountType Asset, Liability, Equity,Revenue, Expense</summary>
 		public AccountType AcctType;
 		///<summary>For asset accounts, this would be the bank account number for deposit slips.</summary>
 		public string BankNumber;
 		///<summary>Set to true to not normally view this account in the list.</summary>
 		public bool Inactive;
-		///<summary></summary>
+		///<summary>.</summary>
 		public Color AccountColor;
 
 		///<summary></summary>

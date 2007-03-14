@@ -36,7 +36,7 @@ namespace OpenDental.Bridges{
 			}
 			info+="/first \""+Cleanup(pat.FName)+"\" "
 				+"/last \""+Cleanup(pat.LName)+"\"";
-			MessageBox.Show(info);
+			//MessageBox.Show(info);
 			//not used yet: /inputfile "path to file"
 			try{
 				Process.Start(Programs.Cur.Path,info);

@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the apptview table in the database. Enables viewing a variety of operatories or providers.</summary>
+	///<summary>Enables viewing a variety of operatories or providers.  This table holds the views that the user picks between.  The apptviewitem table holds the items attached to each view.</summary>
 	public struct ApptView{
 		///<summary>Primary key.</summary>
 		public int ApptViewNum;
@@ -12,7 +12,7 @@ namespace OpenDental{
 		public string Description;
 		///<summary>Order to display in lists. Every view must have a unique itemorder, but it is acceptable to have some missing itemorders in the sequence.</summary>
 		public int ItemOrder;
-		///<summary>Number of rows per time increment.  Value updated to ContrApptSheet.RowsPerIncr to track current state.</summary>
+		///<summary>Number of rows per time increment.  Usually 1 or 2.  Programming note: Value updated to ContrApptSheet.RowsPerIncr to track current state.</summary>
 		public int RowsPerIncr;
 	}
 	

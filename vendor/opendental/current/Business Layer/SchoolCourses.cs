@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Corresponds to the schoolcourse table in the database. eg OP 732 Operative Dentistry Clinic II.</summary>
+	///<summary>Used in dental schools.  eg OP 732 Operative Dentistry Clinic II.</summary>
 	public class SchoolCourse{
 		///<summary>Primary key.</summary>
 		public int SchoolCourseNum;

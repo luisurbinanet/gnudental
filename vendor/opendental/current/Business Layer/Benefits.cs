@@ -6,39 +6,39 @@ using System.Windows.Forms;
 
 namespace OpenDental {
 
-	/// <summary>Corresponds to the benefit table in the database which replaces the old covpat table.  A benefit is usually a percentage, deductible, limitation, max, or similar. Each row represents a single benefit.  A benefit can have a value in EITHER PlanNum OR PatPlanNum.  If it is for a PlanNum, the most common, then the benefit is attached to an insurance plan.  If it is for a PatPlanNum, then it overrides the plan benefit, usually a percentage, for a single patient.  Benefits we can't handle yet include posterior composites, COB duplication, amounts used, in/out of plan network, authorization required, missing tooth exclusion, and any date related limitations like waiting periods.  We also cannot yet handle family level benefits.  All benefits are at the individual patient level.</summary>
-	/// <remarks>Here are examples of typical usage which parallel X12 usage.
-	/// Example fields shown in this order:
-	/// CovCat,ADACode(- indicates blank),BenefitType,Percent,MonetaryAmt,TimePeriod,QuantityQualifier,Quantity,
-	/// Annual Max $1000: General,-,Limitations,0,1000,CalendarYear,None,0
-	/// Restorative 80%: Restorative,-,Percentage,80,0,CalendarYear,None,0
-	/// $50 deductible: General,-,Deductible,0,50,CalendarYear,None,0
-	/// Deductible waived on preventive: Preventive,-,Deductible,0,0,CalendarYear,None,0
-	/// 1 pano every 5 years: General(ignored),D0330,Limitations,0,0,Years,Years,5
-	/// 2 exams per year: Preventive(or Diagnostic),-,Limitations,0,0,BenefitYear,NumberOfServices,2
-	/// Fluoride limit 18yo: General(ignored),D1204,Limitations,0,0,CalendarYear(or None),AgeLimit,18 (might require a second identical entry for D1205)
-	/// 4BW every 6 months: General(ignored),D0274,Limitations,0,0,None,Months,6.
-	///</remarks>
+	/// <summary>Corresponds to the benefit table in the database which replaces the old covpat table.  A benefit is usually a percentage, deductible, limitation, max, or similar. Each row represents a single benefit.  A benefit can have a value in EITHER PlanNum OR PatPlanNum.  If it is for a PlanNum, the most common, then the benefit is attached to an insurance plan.  If it is for a PatPlanNum, then it overrides the plan benefit, usually a percentage, for a single patient.  Benefits we can't handle yet include posterior composites, COB duplication, amounts used, in/out of plan network, authorization required, missing tooth exclusion, and any date related limitations like waiting periods.  We also cannot yet handle family level benefits.  All benefits are at the individual patient level.<br/>
+	/// Here are examples of typical usage which parallel X12 usage.<br/>
+	/// Example fields shown in this order:<br/>
+	/// CovCat, ADACode(- indicates blank), BenefitType, Percent, MonetaryAmt, TimePeriod, QuantityQualifier, Quantity<br/>
+	/// Annual Max $1000: General,-,Limitations,0,1000,CalendarYear,None,0<br/>
+	/// Restorative 80%: Restorative,-,Percentage,80,0,CalendarYear,None,0<br/>
+	/// $50 deductible: General,-,Deductible,0,50,CalendarYear,None,0<br/>
+	/// Deductible waived on preventive: Preventive,-,Deductible,0,0,CalendarYear,None,0<br/>
+	/// 1 pano every 5 years: General(ignored),D0330,Limitations,0,0,Years,Years,5<br/>
+	/// 2 exams per year: Preventive(or Diagnostic),-,Limitations,0,0,BenefitYear,NumberOfServices,2<br/>
+	/// Fluoride limit 18yo: General(ignored), D1204, Limitations, 0, 0, CalendarYear(or None), AgeLimit, 18 (might require a second identical entry for D1205)<br/>
+	/// 4BW every 6 months: General(ignored), D0274, Limitations, 0, 0, None, Months, 6.
+	/// The text above might be difficult to read.  We are trying to improve the white spacing.</summary>
 	public class Benefit:IComparable {
 		///<summary>Primary key.</summary>
 		public int BenefitNum;
-		///<summary>Foreign key to insplan.PlanNum.  Most benefits should be attached using PlanNum.  The exception would be if each patient has a different percentage.  If this is used, then PatPlanNum should be 0.</summary>
+		///<summary>FK to insplan.PlanNum.  Most benefits should be attached using PlanNum.  The exception would be if each patient has a different percentage.  If PlanNum is used, then PatPlanNum should be 0.</summary>
 		public int PlanNum;
-		///<summary>Foreign key to patplan.PatPlanNum.  It is rare to attach benefits this way.  Usually only used to override percentages for patients.   In this case, PlanNum should be 0.</summary>
+		///<summary>FK to patplan.PatPlanNum.  It is rare to attach benefits this way.  Usually only used to override percentages for patients.   In this case, PlanNum should be 0.</summary>
 		public int PatPlanNum;
-		///<summary>Foreign key to covcat.CovCatNum.  Corresponds to X12 EB03- Service Type code.  Can never be blank.  There will be very specific categories covered by X12. Users should set their InsCovCats to the defaults we will provide.</summary>
+		///<summary>FK to covcat.CovCatNum.  Corresponds to X12 EB03- Service Type code.  Can never be blank.  There will be very specific categories covered by X12. Users should set their InsCovCats to the defaults we will provide.</summary>
 		public int CovCatNum;
-		///<summary>Foreign key to procedurecode.ADACode.  Typical uses include fluoride, sealants, etc.  If a specific code is used here, then the CovCat is completely ignored.</summary>
+		///<summary>FK to procedurecode.ADACode.  Typical uses include fluoride, sealants, etc.  If a specific code is used here, then the CovCat is completely ignored.</summary>
 		public string ADACode;
-		///<summary>Corresponds to X12 EB01. Examples: 1=Percentage,2=Deductible,3=CoPayment,4=Exclusions,5=Limitations. There's not really any difference between limitations and exclusions as far as the logic is concerned.</summary>
+		///<summary>Enum:InsBenefitType Corresponds to X12 EB01. Examples: 1=Percentage, 2=Deductible, 3=CoPayment, 4=Exclusions, 5=Limitations. There's not really any difference between limitations and exclusions as far as the logic is concerned.</summary>
 		public InsBenefitType BenefitType;
 		///<summary>Only used if BenefitType=Percentage.  Valid values are 0 to 100.</summary>
 		public int Percent;
-		///<summary>Used CoPayment, Limitations, and as deductible in PercentDeduct.</summary>
+		///<summary>Used for CoPayment, Limitations, and as deductible in PercentDeduct.</summary>
 		public double MonetaryAmt;
-		///<summary>Corresponds to X12 EB06, Time Period Qualifier.  Examples: 0=None,1=ServiceYear,2=CalendarYear,3=Lifetime,4=Years. Might add Visit and Remaining.</summary>
+		///<summary>Enum:BenefitTimePeriod Corresponds to X12 EB06, Time Period Qualifier.  Examples: 0=None,1=ServiceYear,2=CalendarYear,3=Lifetime,4=Years. Might add Visit and Remaining.</summary>
 		public BenefitTimePeriod TimePeriod;
-		///<summary>Corresponds to X12 EB09. Not used very much. Examples: 0=None,1=NumberOfServices,2=AgeLimit,3=Visits,4=Years,5=Months</summary>
+		///<summary>Enum:BenefitQuantity Corresponds to X12 EB09. Not used very much. Examples: 0=None,1=NumberOfServices,2=AgeLimit,3=Visits,4=Years,5=Months</summary>
 		public BenefitQuantity QuantityQualifier;
 		///<summary>Corresponds to X12 EB10. Qualify the quantity</summary>
 		public int Quantity;

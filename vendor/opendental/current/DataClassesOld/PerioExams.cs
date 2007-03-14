@@ -5,15 +5,15 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the perioexam table in the database.</summary>
+	///<summary>One perio exam for one patient on one date.  Has lots of periomeasures attached to it.</summary>
 	public struct PerioExam{
 		///<summary>Primary key.</summary>
 		public int PerioExamNum;
-		///<summary>Foreign key to patient.PatNum.</summary>
+		///<summary>FK to patient.PatNum.</summary>
 		public int PatNum;
-		///<summary></summary>
+		///<summary>.</summary>
 		public DateTime ExamDate;
-		///<summary>Foreign key to provider.ProvNum.</summary>
+		///<summary>FK to provider.ProvNum.</summary>
 		public int ProvNum;
 	}
 

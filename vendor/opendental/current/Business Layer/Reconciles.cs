@@ -7,11 +7,11 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Corresponds to the Reconcile table in the database.  Used in the Reconcileing section in chart of Reconciles.</summary>
+	///<summary>Used in the Accounting section.  Each row represents one reconcile.  Transactions will be attached to it.</summary>
 	public class Reconcile{
 		///<summary>Primary key.</summary>
 		public int ReconcileNum;
-		///<summary>fk to Account</summary>
+		///<summary>FK to account.AccountNum</summary>
 		public int AccountNum;
 		///<summary>User enters starting balance here.</summary>
 		public double StartingBal;

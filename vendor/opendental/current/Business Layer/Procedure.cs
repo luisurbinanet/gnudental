@@ -5,24 +5,24 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the procedurelog table in the database.</summary>
+	///<summary>A procedure for a patient.  Can be treatment planned or completed.  Once it's completed, it gets tracked more closely be the security portion of the program.</summary>
 	public class Procedure{
 		///<summary>Primary key.</summary>
-		public int ProcNum;//
-		///<summary>Foreign key to patient.PatNum</summary>
+		public int ProcNum;
+		///<summary>FK to patient.PatNum</summary>
 		public int PatNum;
-		///<summary>Foreign key to appointment.AptNum.  Only allowed to attach proc to one appt(not counting next apt)</summary>
+		///<summary>FK to appointment.AptNum.  Only allowed to attach proc to one appt(not counting planned appt)</summary>
 		public int AptNum;
-		///<summary>Foreign key to procedureCode.ADACode</summary>
+		///<summary>FK to procedurecode.ADACode</summary>
 		public string ADACode;
-		///<summary>Procedure date.</summary>
+		///<summary>Procedure date that will show in the account as the date performed.  If just treatment planned, the date can be the date it was tp'd, or the date can be min val if we don't care.</summary>
 		public DateTime ProcDate;
 		///<summary>Procedure fee.</summary>
 		public double ProcFee;
 		///<summary>Not used anymore.  In version 3.0, this was moved to the claimproc table.</summary>
-		public double OverridePriOLD;
+		public double OverridePri;
 		///<summary>Not used anymore.  In version 3.0, this was moved to the claimproc table.</summary>
-		public double OverrideSecOLD;
+		public double OverrideSec;
 		///<summary>Surfaces, or use "UL" etc for quadrant, "2" etc for sextant, "U","L" for arches.</summary>
 		public string Surf;
 		///<summary>May be blank, otherwise 1-32, 51-82, A-T, or AS-TS, 1 or 2 char.</summary>
@@ -30,24 +30,24 @@ namespace OpenDental{
 		///<summary>May be blank, otherwise is series of toothnumbers separated by commas.</summary>
 		public string ToothRange;
 		///<summary>Not used anymore.  In version 3.0, this was moved to the claimproc table.</summary>
-		public bool NoBillInsOLD;
-		///<summary>Foreign key to definition.DefNum, which contains the text of the priority.</summary>
+		public bool NoBillInsOld;
+		///<summary>FK to definition.DefNum, which contains the text of the priority.</summary>
 		public int Priority;
-		///<summary>TP=1,Complete=2,Existing Cur Prov=3,Existing Other Prov=4,Referred=5.</summary>
+		///<summary>Enum:ProcStat TP=1,Complete=2,Existing Cur Prov=3,Existing Other Prov=4,Referred=5.</summary>
 		public ProcStat ProcStatus;
 		///<summary>Procedure note.</summary>
 		public string ProcNote;
-		///<summary>Foreign key to provider.ProvNum.</summary>
+		///<summary>FK to provider.ProvNum.</summary>
 		public int ProvNum;
-		///<summary>Foreign key to definition.DefNum, which contains text of the Diagnosis.</summary>
+		///<summary>FK to definition.DefNum, which contains text of the Diagnosis.</summary>
 		public int Dx;
-		///<summary>Should be called PlannedAptNum.  Foreign key to appointment.AptNum.  Allows this procedure to be attached to a Planned appointment as well as a standard appointment.</summary>
+		///<summary>FK to appointment.AptNum.  Should be called PlannedAptNum.  Allows this procedure to be attached to a Planned appointment as well as a standard appointment.</summary>
 		public int NextAptNum;
 		///<summary>Not used anymore.  In version 3.0, this was moved to the claimproc table.</summary>
-		public bool IsCovInsOLD;
+		public bool IsCovIns;
 		///<summary>Not used anymore.  In version 3.0, this was moved to the claimproc table.</summary>
-		public double CapCoPayOLD;
-		///<summary>Only used in Public Health. See the PlaceOfService enum. Zero(Office) until procedure set complete. Then it's set to the value of the DefaultProcedurePlaceService preference.</summary>
+		public double CapCoPay;
+		///<summary>Enum:PlaceOfService  Only used in Public Health. Zero(Office) until procedure set complete. Then it's set to the value of the DefaultProcedurePlaceService preference.</summary>
 		public PlaceOfService PlaceService;
 		///<summary>Not used anymore because of the new 3D tooth chart.  Will be enhanced later to a 3 state option: Always show graphics, Never show graphics, or Show if tooth is present.</summary>
 		public bool HideGraphical;
@@ -61,7 +61,7 @@ namespace OpenDental{
 		public DateTime DateLocked;
 		///<summary>This is the date this procedure was entered or set complete.  If not status C, then the value is ignored, so it might be minValue 0001-01-01 or any other date.  It gets updated when set complete.  User never allowed to edit.  This will be enhanced later.</summary>
 		public DateTime DateEntryC;
-		///<summary>Foreign key to clinic.ClinicNum.  0 if no clinic.</summary>
+		///<summary>FK to clinic.ClinicNum.  0 if no clinic.</summary>
 		public int ClinicNum;
 		///<summary>Optional. Foreign key to procedureCode.ADACode.</summary>
 		public string MedicalCode;

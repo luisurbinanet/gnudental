@@ -4,18 +4,17 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Corresponds to the toolbutitem table in the database.</summary>
-	///<remarks>Each row represents one toolbar button to be placed on a toolbar and linked to a program.</remarks>
+	///<summary>Each row represents one toolbar button to be placed on a toolbar and linked to a program.</summary>
 	public struct ToolButItem{
 		///<summary>Primary key.</summary>
 		public int ToolButItemNum;
-		///<summary>Foreign key to program.ProgramNum.</summary>
+		///<summary>FK to program.ProgramNum.</summary>
 		public int ProgramNum;
-		///<summary>The toolbar to show the button on.</summary>
+		///<summary>Enum:ToolBarsAvail The toolbar to show the button on.</summary>
 		public ToolBarsAvail ToolBar;
 		///<summary>The text to show on the toolbar button.</summary>
 		public string ButtonText;
-		//later include ComputerNum.  If 0, then show on all computers.
+		//later include ComputerName.  If blank, then show on all computers.
 		//also later, include an image.
 	}
 

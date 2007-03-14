@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Corresponds to the emailtemplate table in the database.</summary>
+	///<summary>A template email which can be used as the basis for a new email.</summary>
 	public class EmailTemplate{
 		///<summary>Primary key.</summary>
 		public int EmailTemplateNum;

@@ -50,7 +50,7 @@ namespace OpenDental{
 				MsgBox.Show(this,"Cannot convert this database version which was only for development purposes.");
 				return false;
 			}
-			if(FromVersion < new Version("4.3.4.0")){
+			if(FromVersion < new Version("4.4.10.0")){
 				if(MessageBox.Show(Lan.g(this,"Your database will now be converted")+"\r"
 					+Lan.g(this,"from version")+" "+FromVersion.ToString()+"\r"
 					+Lan.g(this,"to version")+" "+ToVersion.ToString()+"\r"
@@ -3737,7 +3737,7 @@ namespace OpenDental{
 				string command="INSERT INTO preference VALUES ('ReportFolderName','Reports')";
 				dcon.NonQ(command);
 				if(!Directory.Exists(Prefs.GetString("DocPath")+"Reports")){
-					if(Directory.Exists(Prefs.GetString("DocPath"))) {
+					if(Directory.Exists(Prefs.GetString("DocPath"))){
 						Directory.CreateDirectory(Prefs.GetString("DocPath")+"Reports");
 					}
 				}
@@ -3766,8 +3766,104 @@ namespace OpenDental{
 				command="UPDATE preference SET ValueString = '4.3.4.0' WHERE PrefName = 'DataBaseVersion'";
 				dcon.NonQ(command);
 			}
-			//To4_3_?();
+			To4_4_0();
 		}
+
+		private void To4_4_0() {
+			if(FromVersion < new Version("4.4.0.0")) {
+				ExecuteFile(@"ConversionFiles\Version 4 4 0\convert_4_4_0.txt");//Might throw an exception which we handle.
+				DataConnection dcon=new DataConnection();
+				string command;
+				//add PerioPal bridge
+				command="INSERT INTO program (ProgName,ProgDesc,Enabled,Path,CommandLine,Note"
+					+") VALUES("
+					+"'PerioPal', "
+					+"'PerioPal from www.periopal.com', "
+					+"'0', "
+					+"'"+POut.PString(@"C:\Program Files\PerioPal\PerioPal.exe")+"', "
+					+"'', "
+					+"'')";
+				dcon.NonQ(command,true);
+				int programNum=dcon.InsertID;//we now have a ProgramNum to work with
+				command="INSERT INTO programproperty (ProgramNum,PropertyDesc,PropertyValue"
+					+") VALUES("
+					+"'"+programNum.ToString()+"', "
+					+"'Enter 0 to use PatientNum, or 1 to use ChartNum', "
+					+"'0')";
+				dcon.NonQ(command);
+				command="INSERT INTO toolbutitem (ProgramNum,ToolBar,ButtonText) "
+					+"VALUES ("
+					+"'"+programNum.ToString()+"', "
+					+"'"+((int)ToolBarsAvail.ChartModule).ToString()+"', "
+					+"'PerioPal')";
+				dcon.NonQ(command);
+				//add MediaDent bridge
+				command="INSERT INTO program (ProgName,ProgDesc,Enabled,Path,CommandLine,Note"
+					+") VALUES("
+					+"'MediaDent', "
+					+"'MediaDent from www.mediadentusa.com', "
+					+"'0', "
+					+"'mediadent.exe', "
+					+"'', "
+					+"'"+POut.PString(@"Example of image folder: C:\Mediadent\patients\")+"')";
+				dcon.NonQ(command,true);
+				programNum=dcon.InsertID;//we now have a ProgramNum to work with
+				command="INSERT INTO programproperty (ProgramNum,PropertyDesc,PropertyValue"
+					+") VALUES("
+					+"'"+programNum.ToString()+"', "
+					+"'Enter 0 to use PatientNum, or 1 to use ChartNum', "
+					+"'0')";
+				dcon.NonQ(command);
+				command="INSERT INTO programproperty (ProgramNum,PropertyDesc,PropertyValue"
+					+") VALUES("
+					+"'"+programNum.ToString()+"', "
+					+"'Image Folder', "
+					+"'"+POut.PString(@"C:\Mediadent\patients\")+"')";
+				dcon.NonQ(command);
+				command="INSERT INTO toolbutitem (ProgramNum,ToolBar,ButtonText) "
+					+"VALUES ("
+					+"'"+programNum.ToString()+"', "
+					+"'"+((int)ToolBarsAvail.ChartModule).ToString()+"', "
+					+"'MediaDent')";
+				dcon.NonQ(command);
+
+				command="UPDATE preference SET ValueString = '4.4.0.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To4_4_9();
+		}
+
+		private void To4_4_9() {
+			if(FromVersion < new Version("4.4.9.0")) {
+				DataConnection dcon=new DataConnection();
+				string command="INSERT INTO preference VALUES ('EasyHideHospitals','1')";
+				dcon.NonQ(command);
+				command="ALTER TABLE patient ADD Ward varchar(255) NOT NULL";
+				dcon.NonQ(command);
+				command="ALTER TABLE schedule CHANGE ScheduleNum ScheduleNum mediumint unsigned NOT NULL auto_increment";
+				dcon.NonQ(command);
+				command="UPDATE preference SET ValueString = '4.4.9.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To4_4_10();
+		}
+
+		private void To4_4_10() {
+			if(FromVersion < new Version("4.4.10.0")) {
+				DataConnection dcon=new DataConnection();
+				string command;
+				//EMS clearinghouse------------------------------------
+				command="INSERT INTO clearinghouse(Description,ExportPath,IsDefault,Payors,Eformat,ReceiverID,"
+					+"SenderID,Password,ResponsePath,CommBridge,ClientProgram) "
+					+@"VALUES('EMS','C:\\EMS\\Exports\\','0','','1','EMS','','',"
+					+@"'','0','')";
+				dcon.NonQ(command);
+				command="UPDATE preference SET ValueString = '4.4.10.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			//To4_5_0?();
+		}
+
 
 
 	}

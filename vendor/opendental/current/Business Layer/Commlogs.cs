@@ -5,25 +5,23 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	/// <summary>Corresponds to the commlog table in the database.</summary>
-	/// <remarks>Will eventually track all communications including emails, phonecalls, letters, etc.
-	/// There is no user field yet to track who made the entry because we need to add a user table first to get a unique id.</remarks>
+	/// <summary>Tracks all forms of communications with patients, including emails, phonecalls, postcards, etc.</summary>
 	public class Commlog{
 		///<summary>Primary key.</summary>
 		public int CommlogNum;
-		///<summary>Foreign key to patient.PatNum</summary>
+		///<summary>FK to patient.PatNum.</summary>
 		public int PatNum;
-		///<summary>Date of entry</summary>
+		///<summary>Date and time of entry</summary>
 		public DateTime CommDateTime;
-		///<summary>See the CommItemType enumeration.</summary>
+		///<summary>Enum:CommItemType .</summary>
 		public CommItemType CommType;
 		///<summary>Note for this commlog entry.</summary>
 		public string Note;
-		///<summary>eg email or phone.  See the CommItemMode enum.</summary>
+		///<summary>Enum:CommItemMode Phone, email, etc.</summary>
 		public CommItemMode Mode;
-		///<summary>Neither=0,Sent=1,Received=2.</summary>
+		///<summary>Enum:CommSentOrReceived Neither=0,Sent=1,Received=2.</summary>
 		public CommSentOrReceived SentOrReceived;
-		///<summary>Foreign key to emailmessage.EmailMessageNum, if there is an associated email. Otherwise 0.</summary>
+		///<summary>FK to emailmessage.EmailMessageNum, if there is an associated email. Otherwise 0.</summary>
 		public int EmailMessageNum;
 
 		///<summary></summary>
@@ -131,6 +129,24 @@ namespace OpenDental{
 			DataConnection dcon=new DataConnection();
 			int rowsAffected=dcon.NonQ(command);
 			return rowsAffected;
+		}
+
+		///<summary>Used when printing recall cards to make a commlog entry for everyone at once.</summary>
+		public static void InsertForRecallPostcard(int patNum){
+			string command="SELECT COUNT(*) FROM  commlog WHERE DATE(CommDateTime) = CURDATE() AND PatNum="+POut.PInt(patNum)
+				+" AND CommType=5 AND Mode=2 AND SentOrReceived=1";
+			DataConnection dcon=new DataConnection();
+			if(dcon.GetCount(command)!="0"){
+				return;
+			}
+			Commlog com=new Commlog();
+			com.PatNum=patNum;
+			com.CommDateTime=DateTime.Now;
+			com.CommType=CommItemType.Recall;
+			com.Mode=CommItemMode.Mail;
+			com.SentOrReceived=CommSentOrReceived.Sent;
+			com.Note=Lan.g("FormRecallList","Sent recall postcard");
+			com.Insert();
 		}
 
 	}

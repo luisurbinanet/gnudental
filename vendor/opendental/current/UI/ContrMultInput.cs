@@ -463,7 +463,6 @@ namespace OpenDental.UI
 			return true;
 		}
 
-		///<summary></summary>
 		public void ClearInputItems(){
 			multInputItems.Clear();
 		}

@@ -411,12 +411,12 @@ namespace OpenDental{
       listPatSelect.Items.Add("ImageFolder");
       listPatSelect.Items.Add("MedUrgNote"); 
       listPatSelect.Items.Add("NextAptNum"); 
-      listPatSelect.Items.Add("PriPlanNum");//Primary Carrier?
-      listPatSelect.Items.Add("PriRelationship");// ?
-			listPatSelect.Items.Add("SecPlanNum");//Secondary Carrier? 
-      listPatSelect.Items.Add("SecRelationship");// ?
+			//listPatSelect.Items.Add("PriPlanNum");//Primary Carrier?
+      //listPatSelect.Items.Add("PriRelationship");// ?
+			//listPatSelect.Items.Add("SecPlanNum");//Secondary Carrier? 
+      //listPatSelect.Items.Add("SecRelationship");// ?
 			//listPatSelect.Items.Add("RecallInterval")); 
-      listPatSelect.Items.Add("RecallStatus");  
+      //listPatSelect.Items.Add("RecallStatus");  
       listPatSelect.Items.Add("SchoolName"); 
       listPatSelect.Items.Add("StudentStatus");
 			listPatSelect.Items.Add("MedicaidID");
@@ -435,8 +435,8 @@ namespace OpenDental{
 			listPatSelect.Items.Add("GradeLevel");
 			listPatSelect.Items.Add("Urgency");
 			listPatSelect.Items.Add("DateFirstVisit");
-			listPatSelect.Items.Add("PriPending");
-			listPatSelect.Items.Add("SecPending");
+			//listPatSelect.Items.Add("PriPending");
+			//listPatSelect.Items.Add("SecPending");
 			for(int i=0;i<LetterMergeCur.Fields.Count;i++){
 				for(int j=0;j<listPatSelect.Items.Count;j++){
 					if(listPatSelect.Items[j].ToString()==(string)LetterMergeCur.Fields[i]){

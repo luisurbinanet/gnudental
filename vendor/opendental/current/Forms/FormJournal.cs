@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
+using System.Drawing.Printing;
 using System.Windows.Forms;
 using OpenDental.UI;
 
@@ -16,6 +17,11 @@ namespace OpenDental{
 		private Account AccountCur;
 		private ImageList imageListMain;
 		private JournalEntry[] JournalList;
+		private PrintDocument pd2;
+		private bool headingPrinted;
+		private int pagesPrinted;
+		private int headingPrintH;
+		private bool isPrinting;
 
 		///<summary></summary>
 		public FormJournal(Account accountCur)
@@ -62,6 +68,7 @@ namespace OpenDental{
 			this.imageListMain.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListMain.ImageStream")));
 			this.imageListMain.TransparentColor = System.Drawing.Color.Transparent;
 			this.imageListMain.Images.SetKeyName(0,"Add.gif");
+			this.imageListMain.Images.SetKeyName(1,"print.gif");
 			// 
 			// gridMain
 			// 
@@ -117,15 +124,15 @@ namespace OpenDental{
 			if(AccountCur.AcctType==AccountType.Asset){
 				ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Reconcile"),-1,"","Reconcile"));
 			}
-			//ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Compound"),0,"","Compound"));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Print"),1,"","Print"));
 			//ToolBarMain.Buttons.Add(new ODToolBarButton(ODToolBarButtonStyle.Separator));
 			//ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Edit"),-1,Lan.g(this,"Edit Selected Account"),"Edit"));
-			/*ODToolBarButton button=new ODToolBarButton("",-1,"","PageNum");
-			button.Style=ODToolBarButtonStyle.Label;
-			ToolBarMain.Buttons.Add(button);
-			ToolBarMain.Buttons.Add(new ODToolBarButton("",2,"Go Forward One Page","Fwd"));
+			//ODToolBarButton button=new ODToolBarButton("",-1,"","PageNum");
+			//button.Style=ODToolBarButtonStyle.Label;
+			//ToolBarMain.Buttons.Add(button);
+			//ToolBarMain.Buttons.Add(new ODToolBarButton("",2,"Go Forward One Page","Fwd"));
 			ToolBarMain.Buttons.Add(new ODToolBarButton(ODToolBarButtonStyle.Separator));
-			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Close"),-1,"Close This Window","Close"));*/
+			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Close"),-1,"Close This Window","Close"));
 		}
 
 		private void ToolBarMain_ButtonClick(object sender,OpenDental.UI.ODToolBarButtonClickEventArgs e) {
@@ -136,14 +143,13 @@ namespace OpenDental{
 				case "Reconcile":
 					Reconcile_Click();
 					break;
-			}
-			/*	case "Fwd":
-					OnFwd_Click();
+				case "Print":
+					Print_Click();
 					break;
 				case "Close":
-					OnClose_Click();
+					this.Close();
 					break;
-			}*/
+			}
 		}
 
 		private void FillGrid(){
@@ -156,9 +162,19 @@ namespace OpenDental{
 			gridMain.Columns.Add(col);
 			col=new ODGridColumn(Lan.g("TableJournal","Date"),80);
 			gridMain.Columns.Add(col);
-			col=new ODGridColumn(Lan.g("TableJournal","Memo"),220);
+			if(isPrinting){
+				col=new ODGridColumn(Lan.g("TableJournal","Memo"),200);
+			}
+			else{
+				col=new ODGridColumn(Lan.g("TableJournal","Memo"),220);
+			}
 			gridMain.Columns.Add(col);
-			col=new ODGridColumn(Lan.g("TableJournal","Splits"),220);
+			if(isPrinting){
+				col=new ODGridColumn(Lan.g("TableJournal","Splits"),200);
+			}
+			else{
+				col=new ODGridColumn(Lan.g("TableJournal","Splits"),220);
+			}
 			gridMain.Columns.Add(col);
 			str=Lan.g("TableJournal","Debit");
 			if(Accounts.DebitIsPos(AccountCur.AcctType)){
@@ -167,7 +183,7 @@ namespace OpenDental{
 			else{
 				str+=Lan.g("TableJournal","(-)");
 			}
-			col=new ODGridColumn(str,70,HorizontalAlignment.Right);
+			col=new ODGridColumn(str,65,HorizontalAlignment.Right);
 			gridMain.Columns.Add(col);
 			str=Lan.g("TableJournal","Credit");
 			if(Accounts.DebitIsPos(AccountCur.AcctType)) {
@@ -176,9 +192,9 @@ namespace OpenDental{
 			else {
 				str+=Lan.g("TableJournal","(+)");
 			}
-			col=new ODGridColumn(str,70,HorizontalAlignment.Right);
+			col=new ODGridColumn(str,65,HorizontalAlignment.Right);
 			gridMain.Columns.Add(col);
-			col=new ODGridColumn(Lan.g("TableJournal","Balance"),70,HorizontalAlignment.Right);
+			col=new ODGridColumn(Lan.g("TableJournal","Balance"),65,HorizontalAlignment.Right);
 			gridMain.Columns.Add(col);
 			col=new ODGridColumn(Lan.g("TableJournal","Clear"),55,HorizontalAlignment.Center);
 			gridMain.Columns.Add(col);
@@ -246,6 +262,77 @@ namespace OpenDental{
 			FormReconciles FormR=new FormReconciles(AccountCur.AccountNum);
 			FormR.ShowDialog();
 			FillGrid();
+		}
+
+		private void Print_Click(){
+			pagesPrinted=0;
+			headingPrinted=false;
+			#if DEBUG
+				PrintReport(true);
+			#else
+				PrintReport(false);	
+			#endif
+		}
+
+		///<summary>Preview is only used for debugging.</summary>
+		public void PrintReport(bool justPreview) {
+			pd2=new PrintDocument();
+			pd2.PrintPage += new PrintPageEventHandler(this.pd2_PrintPage);
+			pd2.DefaultPageSettings.Margins=new Margins(0,0,0,0);
+			pd2.OriginAtMargins=true;
+			if(pd2.DefaultPageSettings.PaperSize.Height==0) {
+				pd2.DefaultPageSettings.PaperSize=new PaperSize("default",850,1100);
+			}
+			isPrinting=true;
+			FillGrid();
+			try {
+				if(justPreview) {
+					FormRpPrintPreview pView = new FormRpPrintPreview();
+					pView.printPreviewControl2.Document=pd2;
+					pView.ShowDialog();
+				}
+				else {
+					if(Printers.SetPrinter(pd2,PrintSituation.Default)) {
+						pd2.Print();
+					}
+				}
+			}
+			catch {
+				MessageBox.Show(Lan.g(this,"Printer not available"));
+			}
+			isPrinting=false;
+			FillGrid();
+		}
+
+		private void pd2_PrintPage(object sender,System.Drawing.Printing.PrintPageEventArgs e) {
+			Rectangle bounds=new Rectangle(50,40,800,1035);//Some printers can handle up to 1042
+			Graphics g=e.Graphics;
+			string text;
+			Font headingFont=new Font("Arial",13,FontStyle.Bold);
+			Font subHeadingFont=new Font("Arial",10,FontStyle.Bold);
+			int yPos=bounds.Top;
+			int center=bounds.X+bounds.Width/2;
+			#region printHeading
+			if(!headingPrinted) {
+				text=AccountCur.Description+" ("+Lan.g("enumAccountType",AccountCur.AcctType.ToString())+")";
+				g.DrawString(text,headingFont,Brushes.Black,center-g.MeasureString(text,headingFont).Width/2,yPos);
+				yPos+=(int)g.MeasureString(text,headingFont).Height;
+				text=DateTime.Today.ToShortDateString();
+				g.DrawString(text,subHeadingFont,Brushes.Black,center-g.MeasureString(text,subHeadingFont).Width/2,yPos);
+				yPos+=20;
+				headingPrinted=true;
+				headingPrintH=yPos;
+			}
+			#endregion
+			int totalPages=gridMain.GetNumberOfPages(bounds,headingPrintH);
+			yPos=gridMain.PrintPage(g,pagesPrinted,bounds,headingPrintH);
+			pagesPrinted++;
+			if(pagesPrinted < totalPages) {
+				e.HasMorePages=true;
+			}
+			else {
+				e.HasMorePages=false;
+			}
 		}
 
 		private void gridMain_CellDoubleClick(object sender,ODGridClickEventArgs e) {

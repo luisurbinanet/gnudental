@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the document table in the database. It should be called image, but the name is for historical reasons.</summary>
+	///<summary>It should be called image, but the name is for historical reasons.  Represents a single document in the images module.  This table indicates in which patient's folder the image can be found, but the actual attaching of the image to the patient is done by the docattach table.</summary>
 	public class Document{
 		///<summary>Primary key.</summary>
 		public int DocNum;
@@ -14,13 +14,13 @@ namespace OpenDental{
 		public string Description;
 		///<summary>Date created.</summary>
 		public DateTime DateCreated;
-		///<summary>Foreign key to definition.DefNum. Cateories for documents.</summary>
+		///<summary>FK to definition.DefNum. Cateories for documents.</summary>
 		public int DocCategory;
-		///<summary>Foreign key to patient.PatNum.  Patient folder that document is in.(for sharing situations later)</summary>
+		///<summary>FK to patient.PatNum.  Patient folder that document is in.(for sharing situations later)</summary>
 		public int WithPat;
 		///<summary>The name of the file. Does not include any directory info.</summary>
 		public string FileName;
-		///<summary>eg. document, radiograph, photo, file</summary>
+		///<summary>Enum:ImageType eg. document, radiograph, photo, file</summary>
 		public ImageType ImgType;
 		///<summary>True if flipped horizontally. A vertical flip would be stored as a horizontal flip plus a 180 rotation.</summary>
 		public bool IsFlipped;

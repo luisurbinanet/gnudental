@@ -5,25 +5,25 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the adjustment table in the database.</summary>
+	///<summary>An adjustment in the patient account.  Usually, adjustments are very simple, just being assigned to one patient and provider.  But they can also be attached to a procedure to represent a discount on that procedure.  Attaching adjustments to procedures is not automated, so it is not very common.</summary>
 	public class Adjustment{
 		///<summary>Primary key.</summary>
 		public int AdjNum;
 		///<summary>The date that the adjustment shows in the patient account.</summary>
 		public DateTime AdjDate;
-		///<summary>Amount of adjustment.</summary>
+		///<summary>Amount of adjustment.  Can be pos or neg.</summary>
 		public double AdjAmt;
-		///<summary>Foreign key to <see cref="Patient.PatNum">patient.PatNum</see>.  Can be pos or neg.</summary>
+		///<summary>FK to patient.PatNum.</summary>
 		public int PatNum;
-		///<summary>Foreign key to <see cref="Def.DefNum">definition.DefNum</see>.</summary>
+		///<summary>FK to definition.DefNum.</summary>
 		public int AdjType;
-		///<summary>Foreign key to <see cref="Provider.ProvNum">provider.ProvNum</see>.</summary>
+		///<summary>FK to provider.ProvNum.</summary>
 		public int ProvNum;
 		///<summary>Note for this adjustment.</summary>
 		public string AdjNote;
 		///<summary>Procedure date.  Not when the adjustment was entered.  This is what the aging will be based on in a future version.</summary>
 		public DateTime ProcDate;
-		///<summary>If attached to a procedure,this is the foreign key to procedurelog.ProcNum.</summary>
+		///<summary>FK to procedurelog.ProcNum.  Only used if attached to a procedure.  Otherwise, 0.</summary>
 		public int ProcNum;
 		///<summary>Timestamp automatically generated and user not allowed to change.  The actual date of entry.</summary>
 		public DateTime DateEntry;

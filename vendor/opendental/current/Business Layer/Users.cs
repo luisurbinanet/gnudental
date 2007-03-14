@@ -5,17 +5,17 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Table 'user' in database.  Users are now a completely separate entity from Providers and Employees.  A usernumber can never be changed, ensuring a permanent way to record transactions.</summary>
+	///<summary>Users are a completely separate entity from Providers and Employees.  A usernumber can never be changed, ensuring a permanent way to record database entries and leave an audit trail.  A provider or employee can have multiple user entries for different situations.  You can also have users who are neither providers or employees.</summary>
 	public class User{
 		///<summary>Primary key.</summary>
 		public int UserNum;
-		///<summary></summary>
+		///<summary>.</summary>
 		public string UserName;
 		///<summary>The password hash, not the actual password.  If no password has been entered, then this will be blank.</summary>
 		public string Password;
-		///<summary>Foreign key to UserGroup.UserGroupNum.  Every user belongs to exactly one user group.</summary>
+		///<summary>FK to usergroup.UserGroupNum.  Every user belongs to exactly one user group.  Th usergroup determines the permissions.</summary>
 		public int UserGroupNum;
-		///<summary>Foreign key to employee.EmployeeNum.  Used for timecards to block access by other users.</summary>
+		///<summary>FK to employee.EmployeeNum.  Used for timecards to block access by other users.</summary>
 		public int EmployeeNum;
 
 		///<summary></summary>

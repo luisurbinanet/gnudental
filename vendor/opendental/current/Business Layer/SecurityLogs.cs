@@ -5,19 +5,19 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Corresponds to the securitylog table in the database.</summary>
+	///<summary>Stores an ongoing record of database activity for security purposes.  User not allowed to edit.</summary>
 	public class SecurityLog{
 		///<summary>Primary key.</summary>
 		public int SecurityLogNum;
-		///<summary>See the Permissions enum.</summary>
+		///<summary>Enum:Permissions</summary>
 		public Permissions PermType;
-		///<summary>Foreign key to user.UserNum</summary>
+		///<summary>FK to user.UserNum</summary>
 		public int UserNum;
-		///<summary>The date and time of the entry.  It's value is set when inserting and can never change.  Even if a user changes the date on thier ocmputer, this remains accurate because it uses server time.</summary>
+		///<summary>The date and time of the entry.  It's value is set when inserting and can never change.  Even if a user changes the date on their ocmputer, this remains accurate because it uses server time.</summary>
 		public DateTime LogDateTime;
 		///<summary>The description of exactly what was done. Varies by permission type.</summary>
 		public string LogText;
-		///<summary>Foreign key to patient.PatNum.  Can be 0 if not applicable.</summary>
+		///<summary>FK to patient.PatNum.  Can be 0 if not applicable.</summary>
 		public int PatNum;
 
 		///<summary></summary>

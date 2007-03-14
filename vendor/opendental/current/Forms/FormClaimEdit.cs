@@ -1812,6 +1812,7 @@ namespace OpenDental{
 					else if(Claims.Cur.ClaimType=="S" && PatPlanList.Length>1){
 						ClaimProcsForClaim[i].ComputeBaseEst(proc,PriSecTot.Sec,PlanList,PatPlanList,benList);
 					}
+					ClaimProcsForClaim[i].InsPayEst=0;
 					ClaimProcsForClaim[i].Update();
 				}
 			}
@@ -1949,6 +1950,7 @@ namespace OpenDental{
 					else if(ClaimProcsForClaim[i].Status==ClaimProcStatus.NotReceived){
 						ClaimProcsForClaim[i].Status=ClaimProcStatus.Estimate;
 						ClaimProcsForClaim[i].ClaimNum=0;
+						ClaimProcsForClaim[i].InsPayEst=0;
 						ClaimProcsForClaim[i].Update();
 					}
 				}

@@ -5,13 +5,13 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the accountingautopay table in the database.</summary>
+	///<summary>In the accounting section, this automates entries into the database when user enters a payment into a patient account.  This table presents the user with a picklist specific to that payment type.  For example, a cash payment would create a picklist of cashboxes for user to put the cash into.</summary>
 	public class AccountingAutoPay{
 		///<summary>Primary key.</summary>
 		public int AccountingAutoPayNum;
-		///<summary>FK to definitions.DefNum.</summary>
+		///<summary>FK to definition.DefNum.</summary>
 		public int PayType;
-		///<summary>AccountNums separated by commas.  No spaces.</summary>
+		///<summary>FK to account.AccountNum.  AccountNums separated by commas.  No spaces.</summary>
 		public string PickList;
 
 		///<summary>Returns a copy of this AccountingAutoPay.</summary>

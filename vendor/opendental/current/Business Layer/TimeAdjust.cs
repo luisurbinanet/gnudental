@@ -5,11 +5,11 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Corresponds to the timeadjust table in the database.  Used on employee timecards.</summary>
+	///<summary>Used on employee timecards to make adjustments.</summary>
 	public class TimeAdjust{
 		///<summary>Primary key.</summary>
 		public int TimeAdjustNum;
-		///<summary>Foreign key to employee.EmployeeNum</summary>
+		///<summary>FK to employee.EmployeeNum</summary>
 		public int EmployeeNum;
 		///<summary>The date and time that this entry will show on timecard.</summary>
 		public DateTime TimeEntry;
@@ -17,7 +17,7 @@ namespace OpenDental{
 		public TimeSpan RegHours;
 		///<summary>Overtime hours. Usually +.  Usually combined with a - adj to RegHours.</summary>
 		public TimeSpan OTimeHours;
-		///<summary></summary>
+		///<summary>.</summary>
 		public string Note;
 		
 		///<summary></summary>

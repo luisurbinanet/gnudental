@@ -5,13 +5,13 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Corresponds to the emailmessage table in the database.</summary>
+	///<summary>An outgoing email message is stored here.  Always attached to a commlog entry for now.</summary>
 	public struct EmailMessage{
 		///<summary>Primary key.</summary>
 		public int EmailMessageNum;
-		///<summary>Foreign key to patient.PatNum</summary>
+		///<summary>FK to patient.PatNum</summary>
 		public int PatNum;
-		///<summary>Single valid email address. Bcc field will be added later.</summary>
+		///<summary>Single valid email address. Bcc field will be added later.  We will never allow visible cc for privacy reasons.</summary>
 		public string ToAddress;
 		///<summary>Valid email address.</summary>
 		public string FromAddress;

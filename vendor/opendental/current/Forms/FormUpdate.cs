@@ -412,6 +412,10 @@ namespace OpenDental{
 			textRegistrationNumber.Text=Prefs.GetString("RegistrationNumber");
 			textWebsitePath.Text=Prefs.GetString("UpdateWebsitePath");//should include trailing /
 			butDownload.Enabled=false;
+			if(!Security.IsAuthorized(Permissions.Setup)) {
+				butCheck.Enabled=false;
+				butOK.Enabled=false;
+			}
 		}
 
 		private void butReset_Click(object sender, System.EventArgs e) {

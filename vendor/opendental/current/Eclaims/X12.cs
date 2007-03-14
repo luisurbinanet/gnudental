@@ -511,9 +511,15 @@ namespace OpenDental.Eclaims
 					//2010BB NM1: Name
 					seg++;
 					sw.Write("NM1*PR*"//NM101: PR=Payer
-						+"2*"//NM102: 2=Non person
-						+Sout(carrier.CarrierName,35)+"*"//NM103: Name. Length can be 60 in the new medical specs.
-						+"****"//NM104-07 not used
+						+"2*");//NM102: 2=Non person
+					if(clearhouse.ReceiverID=="EMS"){
+						//This is a special situation requested by EMS.  This tacks the employer onto the end of the carrier.
+						sw.Write(Sout(carrier.CarrierName,17)+"|"+Sout(Employers.GetName(insPlan.EmployerNum),17)+"*");
+					}
+					else{
+						sw.Write(Sout(carrier.CarrierName,35)+"*");//NM103: Name. Length can be 60 in the new medical specs.
+					}
+					sw.Write("****"//NM104-07 not used
 						+"PI*");//NM108: PI=PayorID
 					if(carrier.ElectID.Length<3){
 						sw.WriteLine("06126~");//NM109: PayorID
@@ -975,15 +981,27 @@ namespace OpenDental.Eclaims
 					//2330A REF: Other subscriber secondary ID. Not supported.
 					//2330B NM1: Other payer name
 					seg++;
-					sw.WriteLine("NM1*PR*"//NM101: PR=Payer
-						+"2*"//NM102: 2=non-person
-						+Sout(otherCarrier.CarrierName,35)+"*"//NM103: Name
-						+"*"//NM104:
+					sw.Write("NM1*PR*"//NM101: PR=Payer
+						+"2*");//NM102: 2=non-person
+					if(clearhouse.ReceiverID=="EMS") {
+						//This is a special situation requested by EMS.  This tacks the employer onto the end of the carrier.
+						sw.Write(Sout(otherCarrier.CarrierName,17)+"|"+Sout(Employers.GetName(otherPlan.EmployerNum),17)+"*");
+					}
+					else {
+						sw.Write(Sout(otherCarrier.CarrierName,35)+"*");//NM103: Name. Length can be 60 in the new medical specs.
+					}
+					sw.Write(
+						 "*"//NM104:
 						+"*"//NM105:
 						+"*"//NM106: not used
 						+"*"//NM107: not used
-						+"PI*"//NM108: PI=Payor ID. XV must be used after national plan ID mandated.
-						+Sout(otherCarrier.ElectID,80,2)+"~");//NM109: ID
+						+"PI*");//NM108: PI=Payor ID. XV must be used after national plan ID mandated.
+					if(otherCarrier.ElectID.Length<3) {
+						sw.WriteLine("06126~");//NM109: PayorID
+					}
+					else {
+						sw.WriteLine(Sout(otherCarrier.ElectID,80,2)+"~");//NM109: PayorID
+					}
 					//2230B N3,N4: (medical) Other payer address. We don't support.
 					//2330B PER: Other payer contact info. Not needed.
 					//2330B DTP: Claim Paid date
@@ -1748,7 +1766,7 @@ namespace OpenDental.Eclaims
 				retVal+="Carrier Zip";
 			}
 			ElectID electID=ElectIDs.GetID(carrier.ElectID);
-			if(electID!=null && electID.IsMedicaid && billProv.MedicaidID=="") {
+			if(electID!=null && electID.IsMedicaid && billProv.MedicaidID==""){
 				if(retVal!="")
 					retVal+=",";
 				retVal+="Medicaid ID";

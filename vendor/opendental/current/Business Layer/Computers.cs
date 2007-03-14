@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the computer table in the database.  Keeps track of the computers in an office.  The list will eventually become cluttered with the names of old computers that are no longer in service.  The old rows can be safely deleted; that will actually speed up the messaging system.</summary>
+	///<summary>Keeps track of the computers in an office.  The list will eventually become cluttered with the names of old computers that are no longer in service.  The old rows can be safely deleted.  Although the primary key is used in at least one table, this will probably be changed, and the computername will become the primary key.</summary>
 	public class Computer{//
 		///<summary>Primary key.</summary>
 		public int ComputerNum;
@@ -69,12 +69,8 @@ namespace OpenDental{
 
 	///<summary></summary>
 	public class Computers{
-		///<summary></summary>
+		///<summary>A list of all computers that have logged into the database in the past.  Might be some extra computer names in the list unless user has cleaned it up.</summary>
 		public static Computer[] List;
-		//<summary>Cur means current computer.  This is always the local computer where this instance of the program is running.</summary>
-		//public static Computer Cur;
-		//<summary></summary>
-		//public static Hashtable HList;
 
 		///<summary></summary>
 		public static void Refresh(){
@@ -95,8 +91,7 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static Computer[] GetList(){
-			string command=
-				"SELECT * from computer";
+			string command="SELECT * FROM computer ORDER BY CompName";
 			DataConnection dcon=new DataConnection();
 			DataTable table=dcon.GetTable(command);
 			Computer[] list=new Computer[table.Rows.Count];
