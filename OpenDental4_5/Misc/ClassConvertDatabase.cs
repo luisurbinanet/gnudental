@@ -1,3 +1,22 @@
+// GNUdental - Linux port of Open Dental
+//
+// Open Dental: Copyright (C) 2003  Jordan Sparks, DMD
+// Changes: Copyright (C) 2007 Frederik Carlier
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
 using System;
 using System.Collections;
 using System.ComponentModel;
@@ -180,29 +199,13 @@ namespace OpenDental{
 			string command="";
 			ArrayList AL=new ArrayList();
 			sr=new StreamReader(fileName);//throws a FileNotFoundException if not found. We handle that.
-			//sr.ReadToEnd();I would do this, except I'm worried about introducing a bug.
-			while(true) {
-				line=sr.ReadLine();
-				if(line==null) {
-					break;
-				}
-				command+=" "+line;
-				//if(line.Length==0 || line.Substring(0,1)=="#") {//could improve white space handling
-					//continue;
-				//}
-				//else {
-				//	cmd+=" "+line;
-				//	if(cmd.Substring(cmd.Length-1)==";") {//again, need to handle white space better
-						//AL.Add(cmd);
-						//commands+=
-					//	cmd="";
-				//	}
-				//}
-			}
-			//string[] nonQArray=new string[AL.Count];
-			//commands
-			//AL.CopyTo(nonQArray);
+            command = sr.ReadToEnd();
+            command = command.Trim();
+            Console.WriteLine("Executing the following command:");
+            Console.WriteLine(command);
+            Console.WriteLine("(End of command)");
 			General.NonQEx(command);
+            Console.WriteLine("Done.");
 			//NonQ(commands);
 			sr.Close();
 		}
@@ -339,7 +342,7 @@ namespace OpenDental{
 				//if(!File.Exists(@"ConversionFiles\convert_2_9_1.txt")){
 				//	throw new Exception(@"ConversionFiles\convert_2_9_1.txt"+" could not be found.");
 				//}
-				ExecuteFile(@"ConversionFiles\convert_2_9_1.txt");//might throw an exception which we handle.
+				ExecuteFile(GetConversionFile("convert_2_9_1.txt"));//might throw an exception which we handle.
 				string[] commands=new string[]
 				{
 					"UPDATE preference SET ValueString = '2.9.1.0' WHERE PrefName = 'DataBaseVersion'"
@@ -521,7 +524,7 @@ namespace OpenDental{
 				//if(!File.Exists(@"ConversionFiles\convert_3_0_1.txt")){
 				//	throw new Exception(@"ConversionFiles\convert_3_0_1.txt"+" could not be found.");
 				//}
-				ExecuteFile(@"ConversionFiles\convert_3_0_1.txt");//might throw an exception which we handle.
+				ExecuteFile(GetConversionFile("convert_3_0_1.txt"));//might throw an exception which we handle.
 				//convert appointment patterns from ten minute to five minute intervals---------------------
 				string command="SELECT AptNum,Pattern FROM appointment";
 				DataTable table=General.GetTableEx(command);
@@ -981,7 +984,7 @@ namespace OpenDental{
 				//if(!File.Exists(@"ConversionFiles\convert_3_1_0.txt")){
 				//	throw new Exception(@"ConversionFiles\convert_3_1_0.txt"+" could not be found.");
 				//}
-				ExecuteFile(@"ConversionFiles\convert_3_1_0.txt");//Might throw an exception which we handle
+				ExecuteFile(GetConversionFile("convert_3_1_0.txt"));//Might throw an exception which we handle
 				//add Sirona Sidexis:
 				string command="INSERT INTO program (ProgName,ProgDesc,Enabled,Path,CommandLine,Note"
 					+") VALUES("
@@ -1226,7 +1229,7 @@ namespace OpenDental{
 
 		private void To3_4_0() {
 			if(FromVersion < new Version("3.4.0.0")) {
-				ExecuteFile(@"ConversionFiles\convert_3_4_0.txt");//Might throw an exception which we handle.
+				ExecuteFile(GetConversionFile("convert_3_4_0.txt"));//Might throw an exception which we handle.
 				//----------------Copy payment dates into paysplits--------------------------------------
 				string command="SELECT paysplit.SplitNum,payment.PayDate FROM payment,paysplit "
 					+"WHERE payment.PayNum=paysplit.PayNum";
@@ -1463,7 +1466,7 @@ namespace OpenDental{
 
 		private void To3_5_0() {
 			if(FromVersion < new Version("3.5.0.0")) {
-				ExecuteFile(@"ConversionFiles\convert_3_5_0.txt");//Might throw an exception which we handle.
+				ExecuteFile(GetConversionFile("convert_3_5_0.txt"));//Might throw an exception which we handle.
 				//Add patient picture category to images
 				string command="SELECT MAX(ItemOrder) FROM definition WHERE Category=18";
 				DataTable table=General.GetTableEx(command);
@@ -1557,7 +1560,7 @@ namespace OpenDental{
 
 		private void To3_6_0() {
 			if(FromVersion < new Version("3.6.0.0")) {
-				ExecuteFile(@"ConversionFiles\convert_3_6_0.txt");//Might throw an exception which we handle.
+				ExecuteFile(GetConversionFile("convert_3_6_0.txt"));//Might throw an exception which we handle.
 				string command;
 				command=
 					"UPDATE preference SET ValueString = '3.6.0.0' WHERE PrefName = 'DataBaseVersion'";
@@ -1638,7 +1641,7 @@ namespace OpenDental{
 
 		private void To3_7_0() {
 			if(FromVersion < new Version("3.7.0.0")) {
-				ExecuteFile(@"ConversionFiles\convert_3_7_0.txt");//Might throw an exception which we handle.
+				ExecuteFile(GetConversionFile("convert_3_7_0.txt"));//Might throw an exception which we handle.
 				string command;
 				//Convert pay plans-----------------------------------------------------------------------------
 				command="SELECT PayPlanNum,PatNum,Guarantor,PayPlanDate,TotalAmount,APR,"//0-5
@@ -1888,8 +1891,11 @@ namespace OpenDental{
 		}
 
 		private void To3_8_0() {
+            Console.WriteLine("To3_8_0()");
+
 			if(FromVersion < new Version("3.8.0.0")) {
-				ExecuteFile(@"ConversionFiles\convert_3_8_0.txt");//Might throw an exception which we handle.
+				ExecuteFile(GetConversionFile("convert_3_8_0.txt"));//Might throw an exception which we handle.
+                Console.WriteLine("ExecuteFile() completed.");
 				//add deposit slip permission to each group
 				string command="SELECT UserGroupNum FROM usergroup";
 				DataTable table=General.GetTableEx(command);
@@ -1899,6 +1905,7 @@ namespace OpenDental{
 					command="INSERT INTO grouppermission (UserGroupNum,PermType) VALUES("+POut.PInt(groupNum)+",30)";
 					General.NonQEx(command);
 				}
+                Console.WriteLine("Slip Permissions granted.");
 				//Populate the new column: claimpayment.CarrierName
 				command="SELECT claimpayment.ClaimPaymentNum,carrier.CarrierName "
 					+"FROM claimpayment,claimproc,insplan,carrier "
@@ -1912,8 +1919,10 @@ namespace OpenDental{
 						+"WHERE ClaimPaymentNum="+table.Rows[i][0].ToString();
 					General.NonQEx(command);
 				}
+                Console.WriteLine("claimpayment.CarrierName populated.");
 				command="UPDATE preference SET ValueString = '3.8.0.0' WHERE PrefName = 'DataBaseVersion'";
 				General.NonQEx(command);
+                Console.WriteLine("Last statement ran.");
 			}
 			To3_8_5();
 		}
@@ -1938,7 +1947,7 @@ namespace OpenDental{
 
 		private void To3_9_0() {
 			if(FromVersion < new Version("3.9.0.0")) {
-				ExecuteFile(@"ConversionFiles\Version 3 9 0\convert_3_9_0.txt");//Might throw an exception which we handle.
+				ExecuteFile(GetConversionFile("Version 3 9 0", "convert_3_9_0.txt"));//Might throw an exception which we handle.
 				//convert two letter languages to 5 char specific culture names-------------------------------------------------
 				string command="";
 				DataTable table;
@@ -2319,7 +2328,7 @@ namespace OpenDental{
 
 		private void To4_0_0() {
 			if(FromVersion < new Version("4.0.0.0")) {
-				ExecuteFile(@"ConversionFiles\Version 4 0 0\convert_4_0_0.txt");//Might throw an exception which we handle.
+				ExecuteFile(GetConversionFile("Version 4 0 0", "convert_4_0_0.txt"));//Might throw an exception which we handle.
 				//first, get rid of a slight database inconsistency------------------------------------------------------------  
 				//In my database, I found 65 duplicate covpat entries for certain plans. Users would not notice.
 				//Running this loop adds a few minutes to the process, but is unavoidable.
@@ -2773,7 +2782,6 @@ namespace OpenDental{
 		private void To4_0_10() {
 			if(FromVersion < new Version("4.0.10.0")) {
 				string command="";
-				General.NonQEx(command);
 				//Add Trojan bridge----------------------------------------------------------------------------------------
 				command="INSERT INTO program (ProgName,ProgDesc,Enabled,Path,CommandLine,Note"
 					+") VALUES("
@@ -3160,7 +3168,7 @@ namespace OpenDental{
 
 		private void To4_3_0(){
 			if(FromVersion < new Version("4.3.0.0")) {
-				ExecuteFile(@"ConversionFiles\Version 4 3 0\convert_4_3_0.txt");//Might throw an exception which we handle.
+				ExecuteFile(GetConversionFile("Version 4 3 0", "convert_4_3_0.txt"));//Might throw an exception which we handle.
 				string command;
 				//Add NewPatientForm bridge-----------------------------------------------------------------------------------
 				command="INSERT INTO program (ProgName,ProgDesc,Enabled,Path,CommandLine,Note"
@@ -3222,7 +3230,7 @@ namespace OpenDental{
 
 		private void To4_4_0() {
 			if(FromVersion < new Version("4.4.0.0")) {
-				ExecuteFile(@"ConversionFiles\Version 4 4 0\convert_4_4_0.txt");//Might throw an exception which we handle.
+				ExecuteFile(GetConversionFile("Version 4 4 0", "convert_4_4_0.txt"));//Might throw an exception which we handle.
 				string command;
 				//add PerioPal bridge
 				command="INSERT INTO program (ProgName,ProgDesc,Enabled,Path,CommandLine,Note"
@@ -3465,9 +3473,14 @@ namespace OpenDental{
 			//To4_6_0();
 		}
 
+        private string GetConversionFile(string filename) {
+            Console.WriteLine(string.Format("Called GetConversionFile for file {0}.", filename));
+            return Path.Combine("ConversionFiles", filename);
+        }
 
-
-
+        private string GetConversionFile(string version, string filename) {
+            return GetConversionFile(Path.Combine(version, filename));
+        }
 	}
 
 }

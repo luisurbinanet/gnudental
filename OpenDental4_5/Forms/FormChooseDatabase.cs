@@ -1,3 +1,22 @@
+// GNUdental - Linux port of Open Dental
+//
+// Open Dental: Copyright (C) 2003  Jordan Sparks, DMD
+// Changes: Copyright (C) 2007 Frederik Carlier
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
 using System;
 using System.Data;
 using System.Drawing;
@@ -400,6 +419,7 @@ namespace OpenDental{
 
 		///<summary>Gets a list of all computer names on the network (this is not easy)</summary>
 		private string[] GetComputerNames(){
+#if !MONO
 			try{
 				ArrayList retList=new ArrayList();
 				//string myAdd=Dns.GetHostByName(Dns.GetHostName()).AddressList[0].ToString();//obsolete
@@ -449,6 +469,13 @@ namespace OpenDental{
 			catch{//it will always fail if not WinXP
 				return new string[0];
 			}
+#else
+// The code above will obviously fail on Linux. The .NET Framework may have an equivalent. However; it is unlikely
+// that something like this will ever fully work (firewalls etc).
+// Sympton on Linux is a time-out.
+#warning "Listing of computers on the network is currently not supported on Mono."
+            return new string[0];
+#endif
 		}
 
 		///<summary></summary>
@@ -619,13 +646,14 @@ namespace OpenDental{
 			else{
 				OpenDentBusiness.DataConnection dcon=new OpenDentBusiness.DataConnection();
 				//Try to connect to the database directly
+                Console.WriteLine(string.Format("Database: {0}. User: {1}. Password: {2}", comboDatabase.Text,textUser.Text,textPassword.Text));
 				try {
 					dcon.SetDb(comboComputerName.Text,comboDatabase.Text,textUser.Text,textPassword.Text,"","");
 					//a direct connection does not utilize lower privileges.
 				}
-				catch{//(Exception ex){
+				catch(Exception ex){
 					MessageBox.Show(Lan.g(this,"Could not establish connection to database."));
-						//ex.Message);
+                    Console.WriteLine(ex);
 					return;
 				}
 				RemotingClient.OpenDentBusinessIsLocal=true;
