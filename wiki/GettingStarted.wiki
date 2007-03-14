@@ -6,11 +6,89 @@ This page will help you get started with GNUdental on your Linux computer.
 
 = Getting Mono =
 
+== Bootstrapping ==
 You currently need to have the latest version of Mono installed on your computer. To build Mono from SVN, you first need to have the Mono runtime and C# compiler installed on your computer. 
 
-Then, check out Mono from SVN. You'll need the libgdiplus, mono and mcs modules. See [http://www.mono-project.com/SVN] for more information.
+If you are running ubuntu, you would typically do
+{{{
+sudo apt-get install mono mono-gmcs mono-gac mono-utils
+}}}
 
-Once you ran `make` in the mono subdirectory, you can remove the mono installation that you got from your distribution. Run `make install` to install the SVN version of Mono.
+*Note:*
+ Mono is currently in the universe repository. Make sure you enable this repository.
+
+== Get the latest version from SVN ==
+Then, check out Mono from SVN. First you'll need to install [http://subversion.tigris.org Subversion].
+If you are running ubuntu, you would typically do
+{{{
+sudo apt-get install subversion
+}}}
+
+You'll need the libgdiplus, mono and mcs modules. See [http://www.mono-project.com/SVN] for more information.
+
+If you are running ubuntu, you would typically do
+{{{
+svn co svn://svn.myrealbox.com/source/trunk/libgdiplus
+svn co svn://svn.myrealbox.com/source/trunk/mono
+svn co svn://svn.myrealbox.com/source/trunk/mcs
+}}}
+
+There is more! To build mono, you need to have quite some packages installed. Here's a partial list of Ubuntu packages.
+
+== List of required packages ==
+*Build tools:*
+ * `automake1.9`
+ * `autoconf`
+
+*For libgdiplus:*
+ * `libexif-dev`
+ * `libexpat1-dev`
+ * `libfontconfig1-dev`
+ * `libfreetype6-dev`
+ * `libjpeg62-dev`
+ * `libpng12-dev`
+ * `libtiff4-dev`
+ * `libtiffxx0c2`
+ * `libungif4-dev`
+ * `libxft-dev`
+ * `libxrender-dev`
+ * `x11proto-render-dev`
+
+*For mono:*
+ * `autotools-dev`
+ * `bison`
+ * `dpatch`
+ * `libtool`
+ * `libxml2-dev`
+ * `libxslt1-dev`
+ * `m4`
+
+== Building Mono ==
+To build mono, you would do this:
+{{{
+cd libgdiplus
+./autogen.sh
+make
+cd ../mono
+./autogen.sh
+make
+}}}
+
+If you encounter any problem, that's most likely because of a missing dependency. Don't proceed as long as you can't build Mono from source!
+
+== Removing the pre-build version of Mono ==
+You can now remove the pre-build version of Mono. On Ubuntu:
+{{{
+sudo apt-get remove subversion
+}}}
+
+== Installing Mono ==
+{{{
+cd ../libgdiplus
+sudo make install
+cd ../mono
+sudo make install
+}}}
 
 You are now ready to go!
 
@@ -20,7 +98,7 @@ NAnt is used to build GNUdental. NAnt probably already ships with your distribtu
 
 = Building =
 
-Just run `make`. It'll start the build.
+Just run `make`. It'll start the build and invoke NAnt.
 
 = Creating the gnudental directories =
 
@@ -58,4 +136,6 @@ mysql -h localhost -u root < opendental.sql
 
 = Running GNUdental for the first time =
 The first time you run GNUdental, you'll be asked to upgrade your database. Accept to do so. For the data directories, enter the directories you created above. Remember to include a trailing "/" after the directory name. If not, GNUdental will complain.
+
+
 
