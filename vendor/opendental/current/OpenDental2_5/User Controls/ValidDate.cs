@@ -7,15 +7,18 @@ using System.Globalization;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class ValidDate : System.Windows.Forms.TextBox{
+		///<summary></summary>
 		public System.Windows.Forms.ErrorProvider errorProvider1;
 		private System.ComponentModel.Container components = null;
 
+		///<summary></summary>
 		public ValidDate(){
 			InitializeComponent();
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){

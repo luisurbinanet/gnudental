@@ -19,12 +19,16 @@ namespace OpenDental{
 
 	/*================================================================================================
 		=================================== class RefAttaches ==========================================*/
-
+///<summary></summary>
 	public class RefAttaches:DataClass{
+		///<summary></summary>
 		public static RefAttach[] List;//for this patient only
+		///<summary></summary>
 		public static RefAttach Cur;
+		///<summary></summary>
 		public static Hashtable HList;//key:refAttachNum, value:RefAttach
 
+		///<summary></summary>
 		public static void Refresh(){
 			cmd.CommandText =
 				"SELECT * FROM refattach"
@@ -44,6 +48,7 @@ namespace OpenDental{
 			}
 		}
 	
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE refattach SET " 
 				+ "referralnum = '" +POut.PInt   (Cur.ReferralNum)+"'"
@@ -56,6 +61,7 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO refattach (referralnum,patnum,"
 				+"itemorder,refdate,IsFrom) VALUES("
@@ -68,12 +74,14 @@ namespace OpenDental{
 			Cur.RefAttachNum=InsertID;
 		}
 
+		///<summary></summary>
 		public static void DeleteCur(){
 			cmd.CommandText = "DELETE FROM refattach "
 				+"WHERE refattachnum = '"+Cur.RefAttachNum+"'";
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static bool IsReferralAttached(int referralNum){
 			cmd.CommandText =
 				"SELECT * FROM refattach"
@@ -89,24 +97,34 @@ namespace OpenDental{
 
 	}
 
+	///<summary>Corresponds to the refattach table in the database.  Attaches a reference to a patient.</summary>
 	public struct RefAttach{  
-		public int RefAttachNum;//Primary Key		
-		public int ReferralNum;//Foreign Key to referral.ReferralNum
-		public int PatNum;//Foreign Key to Patient.PatNum
-		public int ItemOrder;//Order to display in patient info. Will be automated more in future.
-		public DateTime RefDate;//date of referral
-		public bool IsFrom;//true=from, false=to
+		///<summary>Primary key.</summary>
+		public int RefAttachNum;
+		///<summary>Foreign key to referral.ReferralNum.</summary>
+		public int ReferralNum;
+		///<summary>Foreign key to patient.PatNum.</summary>
+		public int PatNum;
+		///<summary>Order to display in patient info. Will be automated more in future.</summary>
+		public int ItemOrder;
+		///<summary>Date of referral.</summary>
+		public DateTime RefDate;//
+		///<summary>true=from, false=to</summary>
+		public bool IsFrom;
 	}
 
 	/*==============================================================================================
 		=================================== class Referrals ==========================================*/
-
+///<summary></summary>
 	public class Referrals:DataClass{
+		///<summary></summary>
 		public static Referral[] List;//all referrals for all patients
 		//should later add a list for single patient, along with a faster refresh sequence.
+		///<summary></summary>
 		public static Referral Cur;
 		private static Hashtable HList;
 
+		///<summary></summary>
 		public static void Refresh(){
 			cmd.CommandText =
 				"SELECT * from referral "
@@ -139,6 +157,7 @@ namespace OpenDental{
 			}
 		}
 	
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE referral SET " 
 				+ "lname = '"      +POut.PString(Cur.LName)+"'"
@@ -166,6 +185,7 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO referral (lname,fname,mname,ssn,usingtin,specialty,st,"
 				+"telephone,address,address2,city,zip,note,phone2,ishidden,notperson,title,email,patnum) VALUES("
@@ -192,12 +212,14 @@ namespace OpenDental{
 			Cur.ReferralNum=InsertID;
 		}
 
+		///<summary></summary>
 		public static void DeleteCur(){
 			cmd.CommandText = "DELETE FROM referral "
 				+"WHERE referralnum = '"+Cur.ReferralNum+"'";
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void GetCur(int referralNum){
 			if(Referrals.HList.ContainsKey(referralNum)){
 				Referrals.Cur=(Referral)Referrals.HList[referralNum];
@@ -212,36 +234,60 @@ namespace OpenDental{
 
 	}
 
-	public struct Referral{//table referral
-		public int ReferralNum;//Primary Key
+	///<summary>Corresponds to the referral table in the database.</summary>
+	public struct Referral{
+		///<summary>Primary key.</summary>
+		public int ReferralNum;
+		///<summary>Last name.</summary>
 		public string LName;
+		///<summary>First name.</summary>
 		public string FName;
+		///<summary>Middle name or initial.</summary>
 		public string MName;
+		///<summary>SSN or TIN, no punctuation.</summary>
 		public string SSN;
-		public bool UsingTIN;//specificies if SSN is real SSN
-		public DentalSpecialty Specialty;//enumeration found in ClassEnumerations.cs
-		public string ST;//State
-		public string Telephone;//primary phone, restrictive, must only be 10 digits and only numbers
+		///<summary>Specificies if SSN is real SSN.</summary>
+		public bool UsingTIN;
+		///<summary>See the DentalSpecialty enumeration.</summary>
+		public DentalSpecialty Specialty;
+		///<summary>State</summary>
+		public string ST;
+		///<summary>Primary phone, restrictive, must only be 10 digits and only numbers.</summary>
+		public string Telephone;
+		///<summary></summary>
 		public string Address;
+		///<summary></summary>
 		public string Address2;
+		///<summary></summary>
 		public string City;
+		///<summary></summary>
 		public string Zip;
-		public string Note;//holds important info
-		public string Phone2;//additional phone no restrictions
-		public bool IsHidden;//Can't delete, but can hide if not needed
-		public bool NotPerson;//Set to true for referralls such as Yellow Pages.
-		public string Title;//i.e. DMD
+		///<summary>Holds important info about the referral.</summary>
+		public string Note;//
+		///<summary>Additional phone no restrictions</summary>
+		public string Phone2;
+		///<summary>Can't delete a referral, but can hide if not needed any more.</summary>
+		public bool IsHidden;//
+		///<summary>Set to true for referralls such as Yellow Pages.</summary>
+		public bool NotPerson;
+		///<summary>i.e. DMD or DDS</summary>
+		public string Title;
+		///<summary></summary>
 		public string EMail;
-		public int PatNum;//foreign key to Patient.PatNum for referrals that are patients
+		///<summary>Foreign key to patient.PatNum for referrals that are patients.</summary>
+		public int PatNum;
 	}
 
 	/*=========================================================================================
 		=================================== class RxDefs ==========================================*/
-
+///<summary></summary>
 	public class RxDefs:DataClass{
+		///<summary></summary>
 		public static RxDef[] List;
+		///<summary></summary>
 		public static RxDef Cur;
 	
+		///<summary></summary>
 		public static void Refresh(){
 			cmd.CommandText =
 				"SELECT * from rxdef"
@@ -258,6 +304,7 @@ namespace OpenDental{
 			}
 		}
 	
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE rxdef SET " 
 				+ "drug = '"       +POut.PString(Cur.Drug)+"'"
@@ -270,6 +317,7 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO rxdef (drug,sig,"
 				+"disp,refills,notes) VALUES("
@@ -283,6 +331,7 @@ namespace OpenDental{
 			Cur.RxDefNum=InsertID;
 		}
 
+		///<summary></summary>
 		public static void DeleteCur(){
 			cmd.CommandText = "DELETE FROM rxdef "
 				+"WHERE rxdefnum = '"+Cur.RxDefNum+"'";
@@ -290,23 +339,32 @@ namespace OpenDental{
 		}
 	}
 
+	///<summary>Corresponds to the rxdef table in the database.</summary>
 	public struct RxDef{
+		///<summary>Primary key.</summary>
 		public int RxDefNum;
+		///<summary>The name of the drug.</summary>
 		public string Drug;
+		///<summary>Directions.</summary>
 		public string Sig;
+		///<summary>Amount to dispense.</summary>
 		public string Disp;
+		///<summary>Number of refills.</summary>
 		public string Refills;
+		///<summary>Notes about this drug. Will not be copied to the rxpat.</summary>
 		public string Notes;
 	}
 
 	/*=========================================================================================
 	=================================== class RxPats ==========================================*/
-
+///<summary></summary>
 	public class RxPats:DataClass{
+		///<summary></summary>
 		public static RxPat[] List;
+		///<summary></summary>
 		public static RxPat Cur;
 
-	
+		///<summary></summary>
 		public static void Refresh(){
 			cmd.CommandText =
 				"SELECT * from rxpat"
@@ -328,6 +386,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE rxpat SET " 
 				+ "patnum = '"      +POut.PInt   (Cur.PatNum)+"'"
@@ -343,6 +402,7 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO rxpat (patnum,rxdate,drug,sig,"
 				+"disp,refills,provnum,notes) VALUES("
@@ -358,31 +418,46 @@ namespace OpenDental{
 			Cur.RxNum=InsertID;
 		}
 
+		///<summary></summary>
 		public static void DeleteCur(){
 			cmd.CommandText = "DELETE from rxpat WHERE rxnum = '"+POut.PInt(Cur.RxNum)+"'";
 			NonQ(false);
 		}
 	}
 
+	///<summary>Corresponds to the rxpat table in the database.  One Rx for one patient. Copied from rxdef rather than linked to it.</summary>
 	public struct RxPat{
+		///<summary>Primary key.</summary>
 		public int RxNum;
+		///<summary>Foreign key to patient.PatNum.</summary>
 		public int PatNum;
+		///<summary>Date of Rx.</summary>
 		public DateTime RxDate;
+		///<summary>Drug name.</summary>
 		public string Drug;
+		///<summary>Directions.</summary>
 		public string Sig;
+		///<summary>Amount to dispense.</summary>
 		public string Disp;
+		///<summary>Number of refills.</summary>
 		public string Refills;
+		///<summary>Foreign key to provider.ProvNum.</summary>
 		public int ProvNum;
+		///<summary>Notes specific to this Rx.</summary>
 		public string Notes;
 	}
 
 	/*=========================================================================================
 		=================================== class SchedDefaults ==========================================*/
 
+	///<summary></summary>
 	public class SchedDefaults:DataClass{
+		///<summary></summary>
 		public static SchedDefault[] List;
+		///<summary></summary>
 		public static SchedDefault Cur;
 	
+		///<summary></summary>
 		public static void Refresh(){
 			cmd.CommandText =
 				"SELECT * from scheddefault";
@@ -396,6 +471,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE scheddefault SET " 
 				+ "dayofweek = '"  +POut.PInt   (Cur.DayOfWeek)+"'"
@@ -406,6 +482,7 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO scheddefault (dayofweek,starttime,stoptime"
 				+") VALUES("
@@ -416,32 +493,46 @@ namespace OpenDental{
 			Cur.SchedDefaultNum=InsertID;
 		}
 
+		///<summary></summary>
 		public static void DeleteCur(){
 			cmd.CommandText = "DELETE from scheddefault WHERE scheddefaultnum = '"+POut.PInt(Cur.SchedDefaultNum)+"'";
 			NonQ(false);
 		}
 	}
 
-	public struct SchedDefault{//table scheddefault
-		public int SchedDefaultNum;//primary key
-		public int DayOfWeek;//Sun=0, etc.
+	///<summary>Corresponds to the scheddefault table in the database.</summary>
+	public struct SchedDefault{
+		///<summary>Primary key.</summary>
+		public int SchedDefaultNum;
+		///<summary>Sun=0, Mon=1, etc.</summary>
+		public int DayOfWeek;
+		///<summary>Start time for this timeblock.</summary>
 		public DateTime StartTime;
+		///<summary>Stop time for this timeblock.</summary>
 		public DateTime StopTime;
-		public ScheduleType SchedType;//enum ScheduleType{Practice=0,Provider,Blockout} (Provider and Blockout not in use yet)
-		public int ProvNum;//not used yet.
-		public int BlockoutType;//future def
+		///<summary>See the ScheduleType enumeration.</summary>
+		public ScheduleType SchedType;
+		///<summary>Foreign key to provider.ProvNum.</summary>
+		public int ProvNum;
+		///<summary>Not in use yet. Will be Foreign key to definition.DefNum.</summary>
+		public int BlockoutType;
 	}
 
 	/*=========================================================================================
 		=================================== class Schedule ==========================================*/
-
+///<summary></summary>
 	public class Schedules:DataClass{
+		///<summary></summary>
 		public static Schedule[] ListMonth;
+		///<summary></summary>
 		public static Schedule[] ListDay;
+		///<summary></summary>
 		public static Schedule Cur;
+		///<summary></summary>
 		public static DateTime CurDate;
 		//private static ArrayList AL;
 	
+		///<summary></summary>
 		public static void RefreshMonth(){
 			//used in the schedule setup window
 			cmd.CommandText =
@@ -463,6 +554,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public static void RefreshDay(DateTime thisDay){
 			//Called every time the day is refreshed or changed in Appointments module
 			CurDate=thisDay;//may revise later
@@ -495,6 +587,7 @@ namespace OpenDental{
 			AL.CopyTo(DayList);
 		}   */ 
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE schedule SET " 
 				+ "scheddate = '"  +POut.PDate  (Cur.SchedDate)+"'"
@@ -510,6 +603,7 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO schedule (scheddate,starttime,stoptime,note,status"
 				+") VALUES("
@@ -525,68 +619,97 @@ namespace OpenDental{
 			Cur.ScheduleNum=InsertID;
 		}
 
+		///<summary></summary>
 		public static void DeleteCur(){
 			cmd.CommandText = "DELETE from schedule WHERE schedulenum = '"+POut.PInt(Cur.ScheduleNum)+"'";
 			NonQ(false);
 		}
 	}
 
+	///<summary>Corresponds to the schedule table in the database.</summary>
 	public struct Schedule{
+		///<summary>Primary key.</summary>
 		public int ScheduleNum;
+		///<summary>Date for this timeblock.</summary>
 		public DateTime SchedDate;
+		///<summary>Start time for this timeblock.</summary>
 		public DateTime StartTime;
+		///<summary>Stop time for this timeblock.</summary>
 		public DateTime StopTime;
-		public ScheduleType SchedType;//enum ScheduleType{Practice=0,Provider,Blockout} (Provider and Blockout not in use yet)
-		public int ProvNum;//not in use yet. Used for provider schedules
-		public int BlockoutType;//(not in use yet)foreign key to Defs.  eg. HighProduction, RCT Only, Emerg.
+		///<summary>See the ScheduleType enumeration.</summary>
+		public ScheduleType SchedType;
+		///<summary>Not in use yet. Will be used for provider schedules.</summary>
+		public int ProvNum;
+		///<summary>(not in use yet)foreign key to definition.DefNum.  eg. HighProduction, RCT Only, Emerg.</summary>
+		public int BlockoutType;
+		///<summary>This contains various types of text entered by the user.</summary>
 		public string Note;
-		public SchedStatus Status;//enum SchedStatus{Open=0,Closed,Holiday}
+		///<summary>See the SchedStatus enumeration.</summary>
+		public SchedStatus Status;
 	}
 
 	/*=========================================================================================
 		=================================== class Queries ==========================================*/
-
+///<summary></summary>
 	public class Queries:DataClass{
 		//public static string queryString;
+		///<summary></summary>
 		public static DataTable TableQ;
+		///<summary></summary>
 		public static DataTable TableTemp;
+		///<summary></summary>
 		public static Report CurReport;
 
+		///<summary></summary>
 		public static void SubmitCur(){
 			cmd.CommandText = CurReport.Query;
 			FillTable();
 			TableQ=table.Copy();
 		}
 
+		///<summary></summary>
 		public static void SubmitTemp(){
 			cmd.CommandText = CurReport.Query;
 			FillTable();
 			TableTemp=table.Copy();
 		}
 
+		///<summary></summary>
 		public static void SubmitNonQ(){
 			cmd.CommandText = CurReport.Query;
 			NonQ(false);
 		}
 	}
 
+	///<summary>Not a database table.</summary>
 	public struct Report{
+		///<summary></summary>
 		public string Query;
+		///<summary></summary>
 		public string Title;
+		///<summary></summary>
 		public string[] SubTitle;
-		public int[] ColPos;//always 1 extra for right boundary of right col
+		///<summary>Always 1 extra for right boundary of right col</summary>
+		public int[] ColPos;
+		///<summary></summary>
 		public string[] ColCaption;
+		///<summary></summary>
 		public HorizontalAlignment[] ColAlign;
+		///<summary></summary>
 		public double[] ColTotal;
+		///<summary></summary>
 		public int[] ColWidth;
+		///<summary></summary>
 		public string[] Summary;
 	}
 
 	/*=========================================================================================
 	=================================== class SecurityLogs==========================================*/
-  
+  ///<summary></summary>
 	public class SecurityLogs:DataClass{
+		///<summary></summary>
 		public static SecurityLog Cur;
+		///<summary></summary>
 		public static SecurityLog[] List;
 
 		/*public static void Refresh(){//this may be used later for reporting
@@ -604,6 +727,7 @@ namespace OpenDental{
 			}
 		}*/
 
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO securitylog (permission,username,logdatetime,logtext) "
 				+"VALUES ("
@@ -618,6 +742,7 @@ namespace OpenDental{
 
 		//there are no methods for deleting or changing log entries because that will never be allowed.
 
+		///<summary></summary>
 		public static void MakeLogEntry(string permissionName,string logText){
 			bool IsLogged=false;
 			if(Permissions.GetCur(permissionName)){//if permissionName is a recognized permission
@@ -656,22 +781,32 @@ namespace OpenDental{
 
 	}
 
+	///<summary>Corresponds to the securitylog table in the database.</summary>
 	public struct SecurityLog{
-		public int SecurityLogNum;//Primary Key
-		public string Permission;//permission name in plain text
-		public string UserName;//user name in plain text
+		///<summary>Primary key.</summary>
+		public int SecurityLogNum;
+		///<summary>Permission name in plain text.</summary>
+		public string Permission;
+		///<summary>User name in plain text.</summary>
+		public string UserName;
+		///<summary>The date and time of the entry.</summary>
 		public DateTime LogDateTime;
-		public string LogText;//The description of exactly what was done. Varies by permission type
+		///<summary>The description of exactly what was done. Varies by permission type.</summary>
+		public string LogText;
 	}
 
 	/*=========================================================================================
 	=================================== class UserPermissions ==========================================*/
-  
+  ///<summary></summary>
 	public class UserPermissions:DataClass{
+		///<summary></summary>
 		public static UserPermission Cur;
+		///<summary></summary>
 		public static UserPermission[] List;//all user permissions for all users.
+		///<summary></summary>
 		public static UserPermission[] ListForUser;//user permissions for a single user
 
+		///<summary></summary>
 		public static void Refresh(){
 			//gets all userpermissions for all users
 			cmd.CommandText =
@@ -687,6 +822,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO userpermission (permissionnum,employeenum,provnum,islogged) "
 				+"VALUES ("
@@ -699,6 +835,7 @@ namespace OpenDental{
 			Cur.UserPermissionNum=InsertID;
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE userpermission SET "
 				+"permissionnum='" +POut.PInt (Cur.PermissionNum)+"'"
@@ -709,22 +846,26 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void DeleteCur(){
 			cmd.CommandText = "DELETE from userpermission WHERE userpermissionnum = '"
 				+POut.PInt(Cur.UserPermissionNum)+"'";
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void DeleteAllForEmp(int employeeNum){
 			cmd.CommandText = "DELETE from userpermission WHERE employeenum = '"+POut.PInt(employeeNum)+"'";
 			NonQ(false);
 		}
 		
+		///<summary></summary>
 		public static void DeleteAllForProv(int provNum){
 			cmd.CommandText = "DELETE from userpermission WHERE provnum = '"+POut.PInt(provNum)+"'";
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void GetListForEmp(int employeeNum){
 			//subset of List including only for one user
 			ArrayList ALtemp=new ArrayList();
@@ -742,6 +883,7 @@ namespace OpenDental{
 			}    
 		}
 
+		///<summary></summary>
 		public static void GetListForProv(int provNum){
 			//subset of List including only for one user
 			ArrayList ALtemp=new ArrayList();
@@ -759,6 +901,7 @@ namespace OpenDental{
 			}    
 		}
 
+		///<summary></summary>
 		public static int AdministratorCount(){//TestForAdminCount(){
 			//returns number of provs with security administration permission
 			cmd.CommandText=
@@ -776,6 +919,7 @@ namespace OpenDental{
 			NonQ(false);
 		}*/
 
+		///<summary></summary>
 		public static bool CheckUserPassword(string permissionName){
 			//used for most security checks in program.
 			//displays user/password dialog only if necessary.
@@ -803,6 +947,7 @@ namespace OpenDental{
 			return false;
 		}
 
+		///<summary></summary>
 		public static bool CheckUserPassword(string permissionName,DateTime myDate){
 			//only checks password if before a certain date or number of days
 			Permissions.GetCur(permissionName);
@@ -819,6 +964,7 @@ namespace OpenDental{
 			else return true;//allow access if newer
 		}
 
+		///<summary></summary>
 		public static bool CheckHasPermission(string permissionName,int num,bool IsEmployee){
 			//used when selecting all permissions in form prov or emp.
 			//also used whenever we have already displayed a dialog and just want to check permission for a user
@@ -848,23 +994,32 @@ namespace OpenDental{
 
 	}//end class UserPermissions
 
+	///<summary>Corresponds to the userpermission table in the database.</summary>
 	public struct UserPermission{
-		public int UserPermissionNum;//Primary Key
-		public int PermissionNum;//FK
-		public int EmployeeNum;//FK
-		public int ProvNum;//FK
+		///<summary>Primary key.</summary>
+		public int UserPermissionNum;
+		///<summary>Foreign key to permission.PermissionNum.</summary>
+		public int PermissionNum;
+		///<summary>Foreign key to employee.EmployeeNum.</summary>
+		public int EmployeeNum;
+		///<summary>Foreign key to provider.ProvNum.</summary>
+		public int ProvNum;
+		///<summary>If true, then activities of this permission type will be logged for this user.</summary>
 		public bool IsLogged;
-
-	}//end struct UserPermission
+	}
 
 	/*=========================================================================================
 		=================================== class UserQueries ==========================================*/
-
+///<summary></summary>
 	public class UserQueries:DataClass{
+		///<summary></summary>
 		public static UserQuery[] List;
+		///<summary></summary>
 		public static UserQuery Cur;
+		///<summary></summary>
 		public static bool IsSelected;
 
+		///<summary></summary>
 		public static void Refresh(){
 			cmd.CommandText =
 				"SELECT querynum,description,filename,querytext"
@@ -881,6 +1036,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText="INSERT INTO userquery (description,filename,querytext) VALUES("
 				+"'"+POut.PString(Cur.Description)+"', "
@@ -890,12 +1046,13 @@ namespace OpenDental{
 			NonQ(false);
 		}
 		
-
+		///<summary></summary>
 		public static void DeleteCur(){
 			cmd.CommandText = "DELETE from userquery WHERE querynum = '"+POut.PInt(Cur.QueryNum)+"'";
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE userquery SET "
 				+ "description = '" +POut.PString(Cur.Description)+"'"
@@ -906,19 +1063,28 @@ namespace OpenDental{
 		}
 	}
 
+	///<summary>Corresponds to the userquery table in the database.</summary>
 	public struct UserQuery{
+		///<summary>Primary key.</summary>
 		public int QueryNum;
+		///<summary>Description.</summary>
 		public string Description;
+		///<summary>The name of the file to export to.</summary>
 		public string FileName;
+		///<summary>The text of the query.</summary>
 		public string QueryText;
 	}
 
 	/*=========================================================================================
 	=================================== class Users==========================================*/
+	///<summary></summary>
 	public class Users{
+		///<summary></summary>
 		public static User Cur;
+		///<summary></summary>
 		public static User[] List;   
 
+		///<summary></summary>
 		public static void Refresh(){
 			ArrayList AL=new ArrayList();
 			for(int i=0;i<Providers.List.Length;i++){
@@ -946,6 +1112,7 @@ namespace OpenDental{
 			}  
 		}
 
+		///<summary></summary>
 		public static bool UserNameTaken(string userName){
 			for(int i=0;i<List.Length;i++){
 				if(List[i].UserName==userName)
@@ -956,23 +1123,38 @@ namespace OpenDental{
 
 	}
  
-	public struct User{//not a database table.  This is a combination of providers and employees
+	//<summary>Table user.  Every provider and employee is assigned a unique user number,
+	//whether or not they have been assigned a username and password. A usernumber can never
+	//be changed, ensuring a permanent way to record transactions.</summary>
+	/// <summary>Not a database table yet.</summary>
+	public struct User{
+		//<summary>Primary key.</summary>
+		//public int UserNum;
+		///<summary></summary>
 		public string UserName;
+		///<summary></summary>
 		public string Password;
+		///<summary></summary>
 		public int EmployeeNum;//Foreign key to employee.employeeNum
+		///<summary></summary>
 		public int ProvNum;//Foreign key to provider.ProvNum. Either Emp or Prov, not both.
 	}
 
 	/*=========================================================================================
 		=================================== class ZipCodes ===========================================*/
-  
+  ///<summary></summary>
 	public class ZipCodes:DataClass{
+		///<summary></summary>
 		public static ZipCode Cur;
+		///<summary></summary>
 		public static ZipCode[] List;
+		///<summary></summary>
 		public static ArrayList ALFrequent;
+		///<summary></summary>
 		public static ArrayList ALMatches;
 		//public static Hashtable HList; 
 
+		///<summary></summary>
 		public static void Refresh(){
 			cmd.CommandText =
 				"SELECT * from zipcode ORDER BY zipcodedigits";
@@ -993,6 +1175,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO zipcode (zipcodedigits,city,state,isfrequent) "
 				+"VALUES ("
@@ -1005,6 +1188,7 @@ namespace OpenDental{
 			//Cur.ZipCodeNum=InsertID;
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE zipcode SET "
 				+"zipcodedigits ='"+POut.PString(Cur.ZipCodeDigits)+"'"
@@ -1015,11 +1199,13 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void DeleteCur(){
 			cmd.CommandText = "DELETE from zipcode WHERE zipcodenum = '"+POut.PInt(Cur.ZipCodeNum)+"'";
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void GetALMatches(string zipCodeDigits){
 			ALMatches=new ArrayList();
 			for(int i=0;i<List.Length;i++){
@@ -1032,11 +1218,17 @@ namespace OpenDental{
 
 	}
 
-	public struct ZipCode{//table zipcode
-		public int ZipCodeNum;//primary key
-		public string ZipCodeDigits;//the actual zipcode
+	///<summary>Corresponds to the zipcode table in the database.</summary>
+	public struct ZipCode{
+		///<summary>Primary key.</summary>
+		public int ZipCodeNum;
+		///<summary>The actual zipcode.</summary>
+		public string ZipCodeDigits;
+		///<summary></summary>
 		public string City;
+		///<summary></summary>
 		public string State;
+		///<summary>If true, then it will show in the dropdown list in the patient edit window.</summary>
 		public bool IsFrequent;
 	}
 

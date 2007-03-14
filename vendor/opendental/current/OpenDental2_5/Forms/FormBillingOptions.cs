@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
+	///<summary></summary>
 	public class FormBillingOptions : System.Windows.Forms.Form{
 		private System.ComponentModel.Container components = null;
 		private System.Windows.Forms.Button butCancel;
@@ -23,8 +24,10 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butSaveDefault;
 		private System.Windows.Forms.CheckBox checkExcludeNegative;
 		private OpenDental.ValidDouble textExcludeLessThan;
+		private System.Windows.Forms.CheckBox checkExcludeInactive;
 		private System.Windows.Forms.RadioButton radioAny;
 
+		///<summary></summary>
 		public FormBillingOptions(){
 			InitializeComponent();
 			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -42,6 +45,7 @@ namespace OpenDental{
 			}); 
 		}
 
+		///<summary></summary>
 		protected override void Dispose(bool disposing){
 			if(disposing){
 				if(components != null){
@@ -69,6 +73,7 @@ namespace OpenDental{
 			this.label1 = new System.Windows.Forms.Label();
 			this.butSaveDefault = new System.Windows.Forms.Button();
 			this.textExcludeLessThan = new OpenDental.ValidDouble();
+			this.checkExcludeInactive = new System.Windows.Forms.CheckBox();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -80,7 +85,7 @@ namespace OpenDental{
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(102, 23);
 			this.butCancel.TabIndex = 4;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			// 
 			// butOK
 			// 
@@ -89,7 +94,7 @@ namespace OpenDental{
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(102, 23);
 			this.butOK.TabIndex = 3;
-			this.butOK.Text = "Create List";
+			this.butOK.Text = "Create &List";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// groupBox1
@@ -98,6 +103,7 @@ namespace OpenDental{
 			this.groupBox1.Controls.Add(this.radio90);
 			this.groupBox1.Controls.Add(this.radio60);
 			this.groupBox1.Controls.Add(this.radioAny);
+			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupBox1.Location = new System.Drawing.Point(53, 38);
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.Size = new System.Drawing.Size(144, 120);
@@ -165,13 +171,13 @@ namespace OpenDental{
 			this.butAll.Location = new System.Drawing.Point(417, 236);
 			this.butAll.Name = "butAll";
 			this.butAll.TabIndex = 15;
-			this.butAll.Text = "All";
+			this.butAll.Text = "&All";
 			this.butAll.Click += new System.EventHandler(this.butAll_Click);
 			// 
 			// checkBadAddress
 			// 
 			this.checkBadAddress.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkBadAddress.Location = new System.Drawing.Point(51, 207);
+			this.checkBadAddress.Location = new System.Drawing.Point(51, 190);
 			this.checkBadAddress.Name = "checkBadAddress";
 			this.checkBadAddress.Size = new System.Drawing.Size(251, 22);
 			this.checkBadAddress.TabIndex = 16;
@@ -180,9 +186,9 @@ namespace OpenDental{
 			// checkExcludeNegative
 			// 
 			this.checkExcludeNegative.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkExcludeNegative.Location = new System.Drawing.Point(51, 250);
+			this.checkExcludeNegative.Location = new System.Drawing.Point(51, 242);
 			this.checkExcludeNegative.Name = "checkExcludeNegative";
-			this.checkExcludeNegative.Size = new System.Drawing.Size(251, 18);
+			this.checkExcludeNegative.Size = new System.Drawing.Size(251, 22);
 			this.checkExcludeNegative.TabIndex = 17;
 			this.checkExcludeNegative.Text = "Exclude negative balances (credits)";
 			// 
@@ -202,7 +208,7 @@ namespace OpenDental{
 			this.butSaveDefault.Name = "butSaveDefault";
 			this.butSaveDefault.Size = new System.Drawing.Size(119, 23);
 			this.butSaveDefault.TabIndex = 20;
-			this.butSaveDefault.Text = "Save As Default";
+			this.butSaveDefault.Text = "&Save As Default";
 			this.butSaveDefault.Click += new System.EventHandler(this.butSaveDefault_Click);
 			// 
 			// textExcludeLessThan
@@ -213,10 +219,22 @@ namespace OpenDental{
 			this.textExcludeLessThan.TabIndex = 22;
 			this.textExcludeLessThan.Text = "";
 			// 
+			// checkExcludeInactive
+			// 
+			this.checkExcludeInactive.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkExcludeInactive.Location = new System.Drawing.Point(51, 216);
+			this.checkExcludeInactive.Name = "checkExcludeInactive";
+			this.checkExcludeInactive.Size = new System.Drawing.Size(158, 22);
+			this.checkExcludeInactive.TabIndex = 23;
+			this.checkExcludeInactive.Text = "Exclude inactive patients";
+			// 
 			// FormBillingOptions
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(609, 458);
+			this.Controls.Add(this.checkExcludeInactive);
 			this.Controls.Add(this.textExcludeLessThan);
 			this.Controls.Add(this.butSaveDefault);
 			this.Controls.Add(this.label1);
@@ -244,8 +262,8 @@ namespace OpenDental{
 		private void FormBillingOptions_Load(object sender, System.EventArgs e) {
 			if(PIn.PDate(((Pref)Prefs.HList["DateLastAging"]).ValueString) 
 				< Ledgers.GetClosestFirst(DateTime.Today)){
-				if(MessageBox.Show(Lan.g(this,"Update aging first?"),"",MessageBoxButtons.OKCancel)
-					==DialogResult.OK){
+				if(MessageBox.Show(Lan.g(this,"Update aging first?"),"",MessageBoxButtons.YesNo)
+					==DialogResult.Yes){
 					FormAging FormA=new FormAging();
 					FormA.ShowDialog();
 				}
@@ -281,6 +299,9 @@ namespace OpenDental{
 			if(((Pref)Prefs.HList["BillingExcludeBadAddresses"]).ValueString=="1"){
 				checkBadAddress.Checked=true;
 			}
+			if(((Pref)Prefs.HList["BillingExcludeInactive"]).ValueString=="1"){
+				checkExcludeInactive.Checked=true;
+			}
 			if(((Pref)Prefs.HList["BillingExcludeNegative"]).ValueString=="1"){
 				checkExcludeNegative.Checked=true;
 			}
@@ -288,6 +309,7 @@ namespace OpenDental{
 			//	textExcludeLessThan.Text="0";
 			textExcludeLessThan.Text=((Pref)Prefs.HList["BillingExcludeLessThan"]).ValueString;
 			//blank is allowed
+//fix: need to add option to save the excludeInactive option as part of default.
 		}
 
 		private void butAll_Click(object sender, System.EventArgs e) {
@@ -331,6 +353,11 @@ namespace OpenDental{
 			if(checkBadAddress.Checked) Prefs.Cur.ValueString="1";
 			else Prefs.Cur.ValueString="0";
 			Prefs.UpdateCur();
+
+			Prefs.Cur.PrefName="BillingExcludeInactive";
+			if(checkExcludeInactive.Checked) Prefs.Cur.ValueString="1";
+			else Prefs.Cur.ValueString="0";
+			Prefs.UpdateCur();
 	
 			Prefs.Cur.PrefName="BillingExcludeNegative";
 			if(checkExcludeNegative.Checked) Prefs.Cur.ValueString="1";
@@ -362,7 +389,8 @@ namespace OpenDental{
 				billingIndices[i]=listBillType.SelectedIndices[i];
 			}
 			Patients.GetAgingList(getAge,billingIndices,checkBadAddress.Checked
-				,checkExcludeNegative.Checked,PIn.PDouble(textExcludeLessThan.Text));
+				,checkExcludeNegative.Checked,PIn.PDouble(textExcludeLessThan.Text)
+				,checkExcludeInactive.Checked);
 			FormBilling FormB=new FormBilling();
 			FormB.ShowDialog();
 			DialogResult=DialogResult.OK;			

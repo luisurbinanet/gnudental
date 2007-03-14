@@ -6,7 +6,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormRpProcSheet : System.Windows.Forms.Form{
 		private System.ComponentModel.Container components = null;
 		private System.Windows.Forms.Button butCancel;
@@ -19,6 +19,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Label labelTO;
 	  private FormQuery FormQuery2;
 
+		///<summary></summary>
 		public FormRpProcSheet(){
 			InitializeComponent();
  			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -35,6 +36,7 @@ namespace OpenDental{
 			});  
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -68,16 +70,18 @@ namespace OpenDental{
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(523, 328);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 4;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			// 
 			// butOK
 			// 
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(523, 296);
+			this.butOK.Location = new System.Drawing.Point(523, 292);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 3;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// panel1
@@ -134,7 +138,9 @@ namespace OpenDental{
 			// 
 			// FormRpProcSheet
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(616, 366);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
@@ -161,9 +167,9 @@ namespace OpenDental{
 		}
 		private void butOK_Click(object sender, System.EventArgs e) {
 			Queries.CurReport=new Report();
-
+			//added plfname for ordering purposes, spk 3/13/04
 			Queries.CurReport.Query="SELECT procedurelog.procdate,CONCAT"
-				+"(patient.LName,', ',patient.FName,' ',patient.MiddleI), procedurecode.adacode,"
+				+"(patient.LName,', ',patient.FName,' ',patient.MiddleI) AS plfname, procedurecode.adacode,"
 				+"procedurelog.toothnum,procedurecode.descript,provider.abbr,procedurelog.procfee  "
 				+"FROM procedurelog,patient,procedurecode,provider WHERE procedurelog.procstatus = '2' "
 				+"&& patient.patnum=procedurelog.patnum "
@@ -177,7 +183,7 @@ namespace OpenDental{
 				Queries.CurReport.Query
 					+="procedurelog.procdate = '" + date1.SelectionStart.ToString("yyyy-MM-dd")+"'";
 			}
-			Queries.CurReport.Query += " ORDER BY procedurelog.procdate";
+			Queries.CurReport.Query += " ORDER BY procedurelog.procdate,plfname";
 
 			FormQuery2=new FormQuery();
 			FormQuery2.IsReport=true;
@@ -192,7 +198,7 @@ namespace OpenDental{
 			else{
 				Queries.CurReport.SubTitle[1]=date1.SelectionStart.ToString("d");
 			}			
-			
+			// col[5] from 590 to 640, 690, 760, spk 3/13/04
 			Queries.CurReport.ColPos=new int[8];
 			Queries.CurReport.ColCaption=new string[7];
 			Queries.CurReport.ColAlign=new HorizontalAlignment[7];			
@@ -201,9 +207,9 @@ namespace OpenDental{
 			Queries.CurReport.ColPos[2]=270;
 			Queries.CurReport.ColPos[3]=345;
 			Queries.CurReport.ColPos[4]=390;
-			Queries.CurReport.ColPos[5]=590;
-			Queries.CurReport.ColPos[6]=640;
-			Queries.CurReport.ColPos[7]=710;
+			Queries.CurReport.ColPos[5]=640;
+			Queries.CurReport.ColPos[6]=690;
+			Queries.CurReport.ColPos[7]=760;
 			Queries.CurReport.ColCaption[0]="Date";
 			Queries.CurReport.ColCaption[1]="Patient Name";			
 			Queries.CurReport.ColCaption[2]="ADA Code";

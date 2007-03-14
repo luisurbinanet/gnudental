@@ -19,13 +19,14 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.TextBox textNotes;
 		private System.Windows.Forms.Label label3;
-		/// <summary>
-		/// Required designer variable.
-		/// </summary>
+		///<summary>Required designer variable.</summary>
 		private System.ComponentModel.Container components = null;
+		///<summary></summary>
 		public bool IsNew;
+		///<summary></summary>
 		public bool GenericOnly;//does not allow changing to non generic.
 
+		///<summary></summary>
 		public FormMedicationEdit()
 		{
 			//
@@ -75,11 +76,12 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(558, 411);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 3;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// butOK
@@ -88,7 +90,7 @@ namespace OpenDental{
 			this.butOK.Location = new System.Drawing.Point(558, 373);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 2;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// label1
@@ -130,7 +132,7 @@ namespace OpenDental{
 			this.butChange.Name = "butChange";
 			this.butChange.Size = new System.Drawing.Size(80, 23);
 			this.butChange.TabIndex = 5;
-			this.butChange.Text = "Change";
+			this.butChange.Text = "C&hange";
 			this.butChange.Click += new System.EventHandler(this.butChange_Click);
 			// 
 			// textMedName
@@ -153,6 +155,7 @@ namespace OpenDental{
 			// 
 			// textNotes
 			// 
+			this.textNotes.AcceptsReturn = true;
 			this.textNotes.Location = new System.Drawing.Point(222, 162);
 			this.textNotes.Multiline = true;
 			this.textNotes.Name = "textNotes";
@@ -171,7 +174,9 @@ namespace OpenDental{
 			// 
 			// FormMedicationEdit
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(664, 455);
 			this.Controls.Add(this.textNotes);
 			this.Controls.Add(this.label3);

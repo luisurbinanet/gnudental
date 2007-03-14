@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormZipCodes : System.Windows.Forms.Form{
 		private OpenDental.TableZips tbZips;
 		private System.Windows.Forms.Button butAdd;
@@ -13,6 +13,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butClose;
 		private System.ComponentModel.Container components = null;
 
+		///<summary></summary>
 		public FormZipCodes(){
 			InitializeComponent();
       tbZips.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbZips_CellDoubleClicked);
@@ -23,6 +24,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -46,6 +48,7 @@ namespace OpenDental{
 			this.tbZips.BackColor = System.Drawing.SystemColors.Window;
 			this.tbZips.Location = new System.Drawing.Point(19, 14);
 			this.tbZips.Name = "tbZips";
+			this.tbZips.ScrollValue = 1;
 			this.tbZips.SelectedIndices = new int[0];
 			this.tbZips.SelectionMode = System.Windows.Forms.SelectionMode.One;
 			this.tbZips.Size = new System.Drawing.Size(519, 531);
@@ -60,18 +63,19 @@ namespace OpenDental{
 			this.butAdd.Name = "butAdd";
 			this.butAdd.Size = new System.Drawing.Size(76, 26);
 			this.butAdd.TabIndex = 28;
-			this.butAdd.Text = "Add";
+			this.butAdd.Text = "&Add";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
 			// butClose
 			// 
 			this.butClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butClose.Location = new System.Drawing.Point(615, 513);
 			this.butClose.Name = "butClose";
 			this.butClose.Size = new System.Drawing.Size(76, 26);
 			this.butClose.TabIndex = 26;
-			this.butClose.Text = "Close";
+			this.butClose.Text = "&Close";
 			this.butClose.Click += new System.EventHandler(this.butClose_Click);
 			// 
 			// butDelete
@@ -82,12 +86,13 @@ namespace OpenDental{
 			this.butDelete.Name = "butDelete";
 			this.butDelete.Size = new System.Drawing.Size(76, 26);
 			this.butDelete.TabIndex = 31;
-			this.butDelete.Text = "Delete";
+			this.butDelete.Text = "&Delete";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
 			// 
 			// FormZipCodes
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butClose;
 			this.ClientSize = new System.Drawing.Size(715, 563);
 			this.Controls.Add(this.butDelete);
 			this.Controls.Add(this.butAdd);

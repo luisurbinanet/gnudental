@@ -5,10 +5,11 @@ using System.Drawing;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class TableAutoItem : OpenDental.ContrTable{
 		private System.ComponentModel.IContainer components = null;
 
+		///<summary></summary>
 		public TableAutoItem(){
 			InitializeComponent();
 			MaxRows=20;
@@ -28,6 +29,7 @@ namespace OpenDental{
 			LayoutTables();
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if (components != null){

@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+	///<summary></summary>
 	public class FormAging : System.Windows.Forms.Form{
 		private OpenDental.ValidDate textDate;
 		private System.Windows.Forms.Label label1;
@@ -14,6 +14,7 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textBox1;
 		private System.ComponentModel.Container components = null;
 
+		///<summary></summary>
 		public FormAging(){
 			InitializeComponent();
 			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -25,6 +26,7 @@ namespace OpenDental{
 			}); 
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -105,7 +107,10 @@ Depending on the size of your database, it could take a few minutes.   The resul
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.label1);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormAging";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Calculate Aging";
 			this.Load += new System.EventHandler(this.FormAging_Load);

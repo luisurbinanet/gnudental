@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormRpRecall : System.Windows.Forms.Form{
 		private System.Windows.Forms.Label labelPatient;
 		private System.Windows.Forms.Button butCancel;
@@ -24,6 +24,7 @@ namespace OpenDental{
 		private System.Windows.Forms.ListBox listPatientSelect; 
     private int[] Apatnums;
 
+		///<summary></summary>
 		public FormRpRecall(){
 			InitializeComponent();
       ALpatSelect=new ArrayList();
@@ -40,6 +41,7 @@ namespace OpenDental{
 			});  
 		}
   
+		///<summary></summary>
 		public FormRpRecall(int[] array){
 			InitializeComponent();
       Apatnums=array;
@@ -51,6 +53,7 @@ namespace OpenDental{
       Fill();
 		} 
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -95,17 +98,19 @@ namespace OpenDental{
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(434, 362);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 8;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			// 
 			// butOK
 			// 
 			this.butOK.Enabled = false;
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(434, 334);
+			this.butOK.Location = new System.Drawing.Point(434, 326);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 7;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// label1
@@ -128,7 +133,9 @@ namespace OpenDental{
 			// 
 			// FormRpRecall
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(538, 408);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.listPatientSelect2);

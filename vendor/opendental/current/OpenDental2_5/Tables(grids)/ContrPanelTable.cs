@@ -11,13 +11,16 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
+	///<summary></summary>
 	public class ContrPanelTable : System.Windows.Forms.UserControl{
 		private System.ComponentModel.Container components = null;
 
+		///<summary></summary>
 		public ContrPanelTable(){
 			InitializeComponent();
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){

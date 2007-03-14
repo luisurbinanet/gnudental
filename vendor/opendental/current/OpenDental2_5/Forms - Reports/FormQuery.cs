@@ -1,3 +1,4 @@
+//using Excel;
 using System;
 using System.Data;
 using System.Drawing;
@@ -5,19 +6,23 @@ using System.Drawing.Printing;
 using System.Collections;
 using System.ComponentModel;
 using System.IO;
+using System.Reflection;
+using System.Web;
 using System.Windows.Forms;
 using System.Threading;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormQuery : System.Windows.Forms.Form{
 		private System.Windows.Forms.Button butClose;
 		private System.Windows.Forms.DataGrid grid2;
 		private System.Windows.Forms.Panel panelTop;
 		private System.Windows.Forms.GroupBox groupBox1;
+		///<summary></summary>
 		public  System.Windows.Forms.TextBox textQuery;
 		private System.Windows.Forms.Button butSubmit;
 		private System.Windows.Forms.RadioButton radioRaw;
+		///<summary></summary>
 		public System.Windows.Forms.RadioButton radioHuman;
 		private System.Windows.Forms.Button butFormulate;
 		private System.ComponentModel.Container components = null;// Required designer variable.
@@ -28,15 +33,16 @@ namespace OpenDental{
 		private bool totalsPrinted;
 		private int linesPrinted;
 		private int pagesPrinted;
+		///<summary></summary>
 		public bool IsReport;
 		private bool headerPrinted;
 		private System.Windows.Forms.PrintPreviewControl printPreviewControl2;
 		private System.Windows.Forms.PrintDialog printDialog2;
 		private bool tablePrinted;
-		private Font titleFont = new Font("Arial",17,FontStyle.Bold);
-		private Font subtitleFont=new Font("Arial",10,FontStyle.Bold);
-		private Font colCaptFont=new Font("Arial",8,FontStyle.Bold);
-		private Font bodyFont = new Font("Arial", 9);
+		private System.Drawing.Font titleFont = new System.Drawing.Font("Arial",17,FontStyle.Bold);
+		private System.Drawing.Font subtitleFont=new System.Drawing.Font("Arial",10,FontStyle.Bold);
+		private System.Drawing.Font colCaptFont=new System.Drawing.Font("Arial",8,FontStyle.Bold);
+		private System.Drawing.Font bodyFont = new System.Drawing.Font("Arial", 9);
 		private System.Windows.Forms.Button butFullPage;
 		private System.Windows.Forms.Panel panelZoom;
 		private System.Windows.Forms.Label labelTotPages;
@@ -52,8 +58,10 @@ namespace OpenDental{
 		private OpenDental.XPButton butPrintPreview;
 		private OpenDental.XPButton butBack;
 		private OpenDental.XPButton butFwd;
+		private OpenDental.XPButton butExportExcel;
 		private int totalPages=0;
 
+		///<summary></summary>
 		public FormQuery(){
 			InitializeComponent();// Required for Windows Form Designer support
 			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -81,6 +89,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null)
@@ -128,6 +137,7 @@ namespace OpenDental{
 			this.butExport = new OpenDental.XPButton();
 			this.butQView = new OpenDental.XPButton();
 			this.butPrintPreview = new OpenDental.XPButton();
+			this.butExportExcel = new OpenDental.XPButton();
 			((System.ComponentModel.ISupportInitialize)(this.grid2)).BeginInit();
 			this.panelTop.SuspendLayout();
 			this.groupBox1.SuspendLayout();
@@ -136,12 +146,13 @@ namespace OpenDental{
 			// 
 			// butClose
 			// 
+			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butClose.Location = new System.Drawing.Point(878, 755);
 			this.butClose.Name = "butClose";
 			this.butClose.Size = new System.Drawing.Size(75, 27);
 			this.butClose.TabIndex = 5;
-			this.butClose.Text = "Close";
+			this.butClose.Text = "&Close";
 			this.butClose.Click += new System.EventHandler(this.butClose_Click);
 			// 
 			// grid2
@@ -156,6 +167,7 @@ namespace OpenDental{
 			// 
 			// panelTop
 			// 
+			this.panelTop.Controls.Add(this.butExportExcel);
 			this.panelTop.Controls.Add(this.butPaste);
 			this.panelTop.Controls.Add(this.butCopy);
 			this.panelTop.Controls.Add(this.textTitle);
@@ -276,7 +288,7 @@ namespace OpenDental{
 			this.butSubmit.Name = "butSubmit";
 			this.butSubmit.Size = new System.Drawing.Size(102, 23);
 			this.butSubmit.TabIndex = 6;
-			this.butSubmit.Text = "Submit Query";
+			this.butSubmit.Text = "&Submit Query";
 			this.butSubmit.Click += new System.EventHandler(this.butSubmit_Click);
 			// 
 			// textQuery
@@ -325,7 +337,7 @@ namespace OpenDental{
 			this.butFullPage.Name = "butFullPage";
 			this.butFullPage.Size = new System.Drawing.Size(75, 27);
 			this.butFullPage.TabIndex = 9;
-			this.butFullPage.Text = "Full Page";
+			this.butFullPage.Text = "&Full Page";
 			this.butFullPage.Visible = false;
 			this.butFullPage.Click += new System.EventHandler(this.butFullPage_Click);
 			// 
@@ -401,7 +413,7 @@ namespace OpenDental{
 			this.butPrint.Name = "butPrint";
 			this.butPrint.Size = new System.Drawing.Size(79, 26);
 			this.butPrint.TabIndex = 13;
-			this.butPrint.Text = "Print";
+			this.butPrint.Text = "&Print";
 			this.butPrint.Click += new System.EventHandler(this.butPrint_Click);
 			// 
 			// butExport
@@ -415,7 +427,7 @@ namespace OpenDental{
 			this.butExport.Name = "butExport";
 			this.butExport.Size = new System.Drawing.Size(79, 26);
 			this.butExport.TabIndex = 14;
-			this.butExport.Text = "Export";
+			this.butExport.Text = "&Export";
 			this.butExport.Click += new System.EventHandler(this.butExport_Click);
 			// 
 			// butQView
@@ -429,7 +441,7 @@ namespace OpenDental{
 			this.butQView.Name = "butQView";
 			this.butQView.Size = new System.Drawing.Size(104, 26);
 			this.butQView.TabIndex = 15;
-			this.butQView.Text = "Query View";
+			this.butQView.Text = "&Query View";
 			this.butQView.Click += new System.EventHandler(this.butQView_Click);
 			// 
 			// butPrintPreview
@@ -443,12 +455,28 @@ namespace OpenDental{
 			this.butPrintPreview.Name = "butPrintPreview";
 			this.butPrintPreview.Size = new System.Drawing.Size(113, 26);
 			this.butPrintPreview.TabIndex = 16;
-			this.butPrintPreview.Text = "Print Preview";
+			this.butPrintPreview.Text = "P&rint Preview";
 			this.butPrintPreview.Click += new System.EventHandler(this.butPrintPreview_Click);
+			// 
+			// butExportExcel
+			// 
+			this.butExportExcel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butExportExcel.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butExportExcel.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butExportExcel.Image = ((System.Drawing.Image)(resources.GetObject("butExportExcel.Image")));
+			this.butExportExcel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butExportExcel.Location = new System.Drawing.Point(712, 69);
+			this.butExportExcel.Name = "butExportExcel";
+			this.butExportExcel.Size = new System.Drawing.Size(79, 26);
+			this.butExportExcel.TabIndex = 15;
+			this.butExportExcel.Text = "Excel";
+			this.butExportExcel.Visible = false;
+			this.butExportExcel.Click += new System.EventHandler(this.butExportExcel_Click);
 			// 
 			// FormQuery
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butClose;
 			this.ClientSize = new System.Drawing.Size(941, 780);
 			this.Controls.Add(this.butPrintPreview);
 			this.Controls.Add(this.butQView);
@@ -477,19 +505,19 @@ namespace OpenDental{
 		#endregion
 
 		private void FormQuery_Layout(object sender, System.Windows.Forms.LayoutEventArgs e) {
-			printPreviewControl2.Location=new Point(0,0);
+			printPreviewControl2.Location=new System.Drawing.Point(0,0);
 			printPreviewControl2.Height=ClientSize.Height-39;
 			printPreviewControl2.Width=ClientSize.Width;	
 			panelTop.Width=ClientSize.Width;
-			grid2.Location=new Point(2,panelTop.Height);
+			grid2.Location=new System.Drawing.Point(2,panelTop.Height);
 			grid2.Height=ClientSize.Height-grid2.Location.Y-39;
 			grid2.Width=ClientSize.Width-2;
-			butClose.Location=new Point(ClientSize.Width-90,ClientSize.Height-34);
-			butExport.Location=new Point(ClientSize.Width-180,ClientSize.Height-34);
-			butPrint.Location=new Point(ClientSize.Width-270,ClientSize.Height-34);
-			butPrintPreview.Location=new Point(ClientSize.Width-385,ClientSize.Height-34);
-			butQView.Location=new Point(ClientSize.Width-385,ClientSize.Height-34);
-			panelZoom.Location=new Point(ClientSize.Width-620,ClientSize.Height-38);
+			butClose.Location=new System.Drawing.Point(ClientSize.Width-90,ClientSize.Height-34);
+			butExport.Location=new System.Drawing.Point(ClientSize.Width-180,ClientSize.Height-34);
+			butPrint.Location=new System.Drawing.Point(ClientSize.Width-270,ClientSize.Height-34);
+			butPrintPreview.Location=new System.Drawing.Point(ClientSize.Width-385,ClientSize.Height-34);
+			butQView.Location=new System.Drawing.Point(ClientSize.Width-385,ClientSize.Height-34);
+			panelZoom.Location=new System.Drawing.Point(ClientSize.Width-620,ClientSize.Height-38);
 		}
 
 		private void FormQuery_Load(object sender, System.EventArgs e) {
@@ -522,6 +550,7 @@ namespace OpenDental{
 			SubmitQuery();
 		}
 
+		///<summary></summary>
 		public void SubmitQuery(){
 			Patients.GetHList();//names are handled manually in reports
       InsPlans.GetHListAll();
@@ -586,6 +615,7 @@ namespace OpenDental{
 			//Queries.SubmitCur();
 		//}
 
+		///<summary></summary>
 		public void SubmitReportQuery(){	
 			Queries.SubmitCur();
 			Queries.CurReport.ColWidth=new int[Queries.TableQ.Columns.Count];
@@ -602,6 +632,7 @@ namespace OpenDental{
 			grid2.SetDataBinding(Queries.TableQ,"");//because MakeReadable trashes the TableQ
 		}
 
+		///<summary></summary>
 		public void ResetGrid(){
 			grid2.TableStyles.Clear();
 			grid2.SetDataBinding(Queries.TableQ,"");
@@ -632,7 +663,7 @@ namespace OpenDental{
 
 		private void MakeReadable(){
 			//this can probably be improved upon later for speed
-			DataTable TableQ;//this is not the same as Queries.TableQ
+			System.Data.DataTable TableQ;//this is not the same as Queries.TableQ
 			TableQ=Queries.TableQ.Copy();//copy data and structure to a temp table
 			Queries.TableQ=TableQ.Clone();
 			for(int j=0;j<Queries.TableQ.Columns.Count;j++){
@@ -802,6 +833,7 @@ namespace OpenDental{
 						case "secpatnum":
 						case "subscriber":
             case "withpat":
+							 
 							if(Patients.HList.ContainsKey(PIn.PInt(Queries.TableQ.Rows[i][j].ToString()))){
 								//MessageBox.Show((string)Patients.HList[PIn.PInt(Queries.TableQ.Rows[i][j].ToString())]);
 								Queries.TableQ.Rows[i][j]=Patients.HList[PIn.PInt(Queries.TableQ.Rows[i][j].ToString())];
@@ -990,6 +1022,7 @@ namespace OpenDental{
 			butQView.Visible=false;
 		}
 
+		///<summary></summary>
 		public void PrintReport(bool justPreview){
 			pd2 = new PrintDocument();
 			pd2.PrintPage += new PrintPageEventHandler(this.pd2_PrintPage);
@@ -1182,6 +1215,48 @@ namespace OpenDental{
 				+" / "+totalPages.ToString();
 		}
 
+		private void butExportExcel_Click(object sender, System.EventArgs e) {
+			/*
+			saveFileDialog2=new SaveFileDialog();
+      saveFileDialog2.AddExtension=true;
+			saveFileDialog2.Title=Lan.g(this,"Select Folder to Save File To");
+		  if(IsReport){
+				saveFileDialog2.FileName=Queries.CurReport.Title;
+			}
+      else{
+        saveFileDialog2.FileName=UserQueries.Cur.FileName;
+			}
+			if(!Directory.Exists( ((Pref)Prefs.HList["ExportPath"]).ValueString )){
+				try{
+					Directory.CreateDirectory( ((Pref)Prefs.HList["ExportPath"]).ValueString );
+					saveFileDialog2.InitialDirectory=((Pref)Prefs.HList["ExportPath"]).ValueString;
+				}
+				catch{
+					//initialDirectory will be blank
+				}
+			}
+			else saveFileDialog2.InitialDirectory=((Pref)Prefs.HList["ExportPath"]).ValueString;
+			//saveFileDialog2.DefaultExt="xls";
+			//saveFileDialog2.Filter="txt files(*.txt)|*.txt|All files(*.*)|*.*";
+      //saveFileDialog2.FilterIndex=1;
+		  if(saveFileDialog2.ShowDialog()!=DialogResult.OK){
+	   	  return;
+			}
+			Excel.Application excel=new Excel.ApplicationClass();
+			excel.Workbooks.Add(Missing.Value);
+			Worksheet worksheet = (Worksheet) excel.ActiveSheet;
+			Range range=(Excel.Range)excel.Cells[1,1];
+			range.Value2="test";
+			range.Font.Bold=true;
+			range=(Excel.Range)excel.Cells[1,2];
+			range.ColumnWidth=30;
+			range.FormulaR1C1="12345";
+			excel.Save(saveFileDialog2.FileName);
+	//this test case worked, so now it is just a matter of finishing this off, and Excel export will be done.
+			MessageBox.Show(Lan.g(this,"File created successfully"));
+			*/
+		}
+
 		private void butExport_Click(object sender, System.EventArgs e){
 			saveFileDialog2=new SaveFileDialog();
       saveFileDialog2.AddExtension=true;
@@ -1256,7 +1331,11 @@ namespace OpenDental{
 
 		private void FormQuery_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
 			SecurityLogs.MakeLogEntry("User Query","");
-		}	
+		}
+
+		
+
+		
 
 	}
 }

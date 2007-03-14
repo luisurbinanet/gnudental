@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormRpPaySheet : System.Windows.Forms.Form{
 		private System.Windows.Forms.Button butCancel;
 		private System.Windows.Forms.Button butOK;
@@ -18,6 +18,7 @@ namespace OpenDental{
 		private System.ComponentModel.Container components = null;
 		private FormQuery FormQuery2;
 
+		///<summary></summary>
 		public FormRpPaySheet(){
 			InitializeComponent();
  			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -34,6 +35,7 @@ namespace OpenDental{
 			});  
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -67,16 +69,18 @@ namespace OpenDental{
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(523, 328);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 4;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			// 
 			// butOK
 			// 
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(523, 296);
+			this.butOK.Location = new System.Drawing.Point(523, 293);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 3;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// panel1
@@ -133,7 +137,9 @@ namespace OpenDental{
 			// 
 			// FormRpPaySheet
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(616, 366);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
@@ -161,43 +167,51 @@ namespace OpenDental{
 
 		private void butOK_Click(object sender, System.EventArgs e) {
 			Queries.CurReport=new Report();
-			Queries.CurReport.Query= "SELECT paydate,"
-				+"CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI),paytype,checknum,payamt "
+			Queries.CurReport.Query="SELECT payment.PayDate,"
+				+"CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI)"
+				+",'                                                 '"//this is long so union won't get trunc.
+				+",payment.PayType,payment.CheckNum,payment.PayAmt "
 				+"FROM payment,patient ";
-			if(radioRange.Checked==true){
+			if(radioRange.Checked){
 				Queries.CurReport.Query+="WHERE "
 					+"payment.PatNum = patient.PatNum && "
-					+"paydate >= '" + date1.SelectionStart.ToString("yyyy-MM-dd")+"' "
-					+"&& paydate <= '" + date2.SelectionStart.ToString("yyyy-MM-dd")+"' UNION "
-					+"SELECT CheckDate,"
-					+"CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI),'Ins',"
-					+"CheckNum,CheckAmt FROM claimpayment,claimproc,insplan,patient "
+					+"payment.PayDate >= '" + date1.SelectionStart.ToString("yyyy-MM-dd")+"' "
+					+"&& paydate <= '" + date2.SelectionStart.ToString("yyyy-MM-dd")+"' "
+					+"UNION "
+					+"SELECT claimpayment.CheckDate,CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI),"
+					+"insplan.Carrier,'',claimpayment.CheckNum,claimpayment.CheckAmt "
+					+"FROM claimpayment,claimproc,insplan,patient "
 					+"WHERE claimproc.ClaimPaymentNum = claimpayment.ClaimPaymentNum "
 					+"&& claimproc.PlanNum = insplan.PlanNum "
-					+"&& claimproc.patnum = patient.patnum "
-					+"&& (claimproc.status = '1' || claimproc.status = '4') "
-					+"&& CheckDate >= '"+date1.SelectionStart.ToString("yyyy-MM-dd")+"' "
-					+"&& CheckDate <= '"+date2.SelectionStart.ToString("yyyy-MM-dd")+"' "
-					+"GROUP BY claimpayment.claimpaymentnum ORDER BY PayDate";
+					+"&& claimproc.PatNum = patient.PatNum "
+					+"&& (claimproc.Status = '1' || claimproc.Status = '4') "//received or supplemental
+					+"&& claimpayment.CheckDate >= '"+date1.SelectionStart.ToString("yyyy-MM-dd")+"' "
+					+"&& claimpayment.CheckDate <= '"+date2.SelectionStart.ToString("yyyy-MM-dd")+"' "
+					+"GROUP BY claimpayment.ClaimPaymentNum "
+					+"ORDER BY payment.PayDate";//this last clause is run after the union
 			}
 			else{//single date
-				Queries.CurReport.Query+="WHERE "
+				Queries.CurReport.Query+="WHERE " // to display carrier with patient name
 					+"payment.PatNum = patient.PatNum && "
-					+"paydate = '" + date1.SelectionStart.ToString("yyyy-MM-dd")+"' UNION "
-					+"SELECT CheckDate,"
-					+"CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI),'Ins',"
-					+"CheckNum,CheckAmt FROM claimpayment,claimproc,insplan,patient "
+					+"payment.PayDate = '"+date1.SelectionStart.ToString("yyyy-MM-dd")+"' UNION "
+					+"SELECT claimpayment.CheckDate,"
+					+"CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI),"
+					+"insplan.Carrier,'',"
+					+"claimpayment.CheckNum,claimpayment.CheckAmt "
+					+"FROM claimpayment,claimproc,insplan,patient "
 					+"WHERE claimproc.ClaimPaymentNum = claimpayment.ClaimPaymentNum "
 					+"&& claimproc.PlanNum = insplan.PlanNum "
-					+"&& claimproc.patnum = patient.patnum "
-					+"&& (claimproc.status = '1' || claimproc.status = '4') "
-					+"&& CheckDate = '"+date1.SelectionStart.ToString("yyyy-MM-dd")+"' "
-					+"GROUP BY patient.patnum ORDER BY PayDate";
+					+"&& claimproc.PatNum = patient.PatNum "
+					+"&& (claimproc.Status = '1' || claimproc.Status = '4') "
+					+"&& claimpayment.CheckDate = '"+date1.SelectionStart.ToString("yyyy-MM-dd")+"' "
+					+"GROUP BY claimpayment.ClaimPaymentNum "
+					+"ORDER BY payment.PayDate";
+				//MessageBox.Show(Queries.CurReport.Query);
 			}
 			FormQuery2=new FormQuery();
 			FormQuery2.IsReport=true;
 			FormQuery2.SubmitReportQuery();			
-			Queries.CurReport.Title="Daily Payments";
+			Queries.CurReport.Title="DAILY PAYMENTS";
 			Queries.CurReport.SubTitle=new string[2];
 			Queries.CurReport.SubTitle[0]=((Pref)Prefs.HList["PracticeTitle"]).ValueString;
 			if(radioRange.Checked==true){
@@ -206,21 +220,23 @@ namespace OpenDental{
 			else{
 				Queries.CurReport.SubTitle[1]=date1.SelectionStart.ToString("d");
 			}			
-			Queries.CurReport.ColPos=new int[6];
-			Queries.CurReport.ColCaption=new string[5];
-			Queries.CurReport.ColAlign=new HorizontalAlignment[5];
+			Queries.CurReport.ColPos=new int[7];
+			Queries.CurReport.ColCaption=new string[6];
+			Queries.CurReport.ColAlign=new HorizontalAlignment[6];
 			Queries.CurReport.ColPos[0]=20;
-			Queries.CurReport.ColPos[1]=140;
-			Queries.CurReport.ColPos[2]=320;
-			Queries.CurReport.ColPos[3]=470;
+			Queries.CurReport.ColPos[1]=120;
+			Queries.CurReport.ColPos[2]=300;
+			Queries.CurReport.ColPos[3]=450;
 			Queries.CurReport.ColPos[4]=560;
 			Queries.CurReport.ColPos[5]=650;
-			Queries.CurReport.ColCaption[0]="Date";
-			Queries.CurReport.ColCaption[1]="Patient Name";
-			Queries.CurReport.ColCaption[2]="Payment Type";
-			Queries.CurReport.ColCaption[3]="Check #";
-			Queries.CurReport.ColCaption[4]="Amount";
-			Queries.CurReport.ColAlign[4]=HorizontalAlignment.Right;
+			Queries.CurReport.ColPos[6]=730;
+			Queries.CurReport.ColCaption[0]="DATE";
+			Queries.CurReport.ColCaption[1]="PATIENT NAME";
+			Queries.CurReport.ColCaption[2]="CARRIER";
+			Queries.CurReport.ColCaption[3]="PAYMENT TYPE";
+			Queries.CurReport.ColCaption[4]="CHECK #";
+			Queries.CurReport.ColCaption[5]="AMOUNT";
+			Queries.CurReport.ColAlign[5]=HorizontalAlignment.Right;
 			Queries.CurReport.Summary=new string[0];
 			FormQuery2.ShowDialog();
 			DialogResult=DialogResult.OK;		

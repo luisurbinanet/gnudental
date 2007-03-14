@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormScheduleDay : System.Windows.Forms.Form{
 		private System.Windows.Forms.Button butDefault;
 		private System.Windows.Forms.ListBox listTimeBlocks;
@@ -19,6 +19,7 @@ namespace OpenDental{
 
 		private System.ComponentModel.Container components = null;
 
+		///<summary></summary>
 		public FormScheduleDay(){
 			InitializeComponent();
 			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -34,6 +35,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose(bool disposing){
 			if(disposing){
 				if(components != null){
@@ -70,11 +72,13 @@ namespace OpenDental{
 			// 
 			// butClose
 			// 
+			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butClose.Location = new System.Drawing.Point(260, 214);
 			this.butClose.Name = "butClose";
+			this.butClose.Size = new System.Drawing.Size(75, 26);
 			this.butClose.TabIndex = 2;
-			this.butClose.Text = "Close";
+			this.butClose.Text = "&Close";
 			this.butClose.Click += new System.EventHandler(this.butClose_Click);
 			// 
 			// butDefault
@@ -82,9 +86,9 @@ namespace OpenDental{
 			this.butDefault.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butDefault.Location = new System.Drawing.Point(248, 48);
 			this.butDefault.Name = "butDefault";
-			this.butDefault.Size = new System.Drawing.Size(92, 23);
+			this.butDefault.Size = new System.Drawing.Size(92, 26);
 			this.butDefault.TabIndex = 3;
-			this.butDefault.Text = "Set To Default";
+			this.butDefault.Text = "Set To &Default";
 			this.butDefault.Click += new System.EventHandler(this.butDefault_Click);
 			// 
 			// butAddTime
@@ -92,9 +96,9 @@ namespace OpenDental{
 			this.butAddTime.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butAddTime.Location = new System.Drawing.Point(248, 80);
 			this.butAddTime.Name = "butAddTime";
-			this.butAddTime.Size = new System.Drawing.Size(92, 23);
+			this.butAddTime.Size = new System.Drawing.Size(92, 26);
 			this.butAddTime.TabIndex = 4;
-			this.butAddTime.Text = "Add Time Block";
+			this.butAddTime.Text = "&Add Time Block";
 			this.butAddTime.Click += new System.EventHandler(this.butAddTime_Click);
 			// 
 			// butCloseOffice
@@ -102,9 +106,9 @@ namespace OpenDental{
 			this.butCloseOffice.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCloseOffice.Location = new System.Drawing.Point(248, 112);
 			this.butCloseOffice.Name = "butCloseOffice";
-			this.butCloseOffice.Size = new System.Drawing.Size(92, 23);
+			this.butCloseOffice.Size = new System.Drawing.Size(92, 26);
 			this.butCloseOffice.TabIndex = 5;
-			this.butCloseOffice.Text = "Close Office";
+			this.butCloseOffice.Text = "C&lose Office";
 			this.butCloseOffice.Click += new System.EventHandler(this.butCloseOffice_Click);
 			// 
 			// butHoliday
@@ -113,9 +117,9 @@ namespace OpenDental{
 			this.butHoliday.Location = new System.Drawing.Point(248, 144);
 			this.butHoliday.Name = "butHoliday";
 			this.butHoliday.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-			this.butHoliday.Size = new System.Drawing.Size(92, 23);
+			this.butHoliday.Size = new System.Drawing.Size(92, 26);
 			this.butHoliday.TabIndex = 7;
-			this.butHoliday.Text = "Set as Holiday";
+			this.butHoliday.Text = "Set as &Holiday";
 			this.butHoliday.Click += new System.EventHandler(this.butHoliday_Click);
 			// 
 			// label1
@@ -137,7 +141,9 @@ namespace OpenDental{
 			// 
 			// FormScheduleDay
 			// 
+			this.AcceptButton = this.butClose;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butClose;
 			this.ClientSize = new System.Drawing.Size(352, 252);
 			this.Controls.Add(this.labelDefault);
 			this.Controls.Add(this.label1);

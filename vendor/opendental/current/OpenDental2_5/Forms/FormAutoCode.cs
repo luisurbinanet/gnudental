@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+	///<summary></summary>
 	public class FormAutoCode : System.Windows.Forms.Form{
 		private System.Windows.Forms.ListBox listAutoCodes;
 		private System.Windows.Forms.Button butClose;
@@ -13,6 +13,7 @@ namespace OpenDental{
 		private OpenDental.XPButton butDelete;
 		private System.ComponentModel.Container components = null;
 
+		///<summary></summary>
 		public FormAutoCode(){
 			InitializeComponent();
 			Lan.C("All", new System.Windows.Forms.Control[] {
@@ -22,6 +23,7 @@ namespace OpenDental{
 			}); 
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -71,7 +73,7 @@ namespace OpenDental{
 			this.butAdd.Name = "butAdd";
 			this.butAdd.Size = new System.Drawing.Size(75, 26);
 			this.butAdd.TabIndex = 5;
-			this.butAdd.Text = "Add";
+			this.butAdd.Text = "&Add";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
 			// butDelete
@@ -81,11 +83,11 @@ namespace OpenDental{
 			this.butDelete.BtnStyle = OpenDental.enumType.XPStyle.Silver;
 			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDelete.Location = new System.Drawing.Point(116, 354);
+			this.butDelete.Location = new System.Drawing.Point(118, 354);
 			this.butDelete.Name = "butDelete";
 			this.butDelete.Size = new System.Drawing.Size(75, 26);
 			this.butDelete.TabIndex = 6;
-			this.butDelete.Text = "Delete";
+			this.butDelete.Text = "&Delete";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
 			// 
 			// FormAutoCode

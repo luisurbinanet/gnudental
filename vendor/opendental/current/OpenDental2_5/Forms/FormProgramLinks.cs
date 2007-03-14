@@ -5,27 +5,28 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormProgramLinks : System.Windows.Forms.Form{
-		private System.Windows.Forms.Label label10;
 		private System.Windows.Forms.ListBox listProgram;
-		private System.Windows.Forms.CheckBox checkEnabled;
 		private System.ComponentModel.Container components = null;
-		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.Button butClose;// Required designer variable.
+		private System.Windows.Forms.Button butClose;
+		private OpenDental.XPButton butAdd;
+		private System.Windows.Forms.Label label1;// Required designer variable.
 		private Programs Programs=new Programs();
 
+		///<summary></summary>
 		public FormProgramLinks(){
 			InitializeComponent();// Required for Windows Form Designer support
 			Lan.C(this, new System.Windows.Forms.Control[] {
-				label10,
-				checkEnabled,
+				label1,
 			});
 			Lan.C("All", new System.Windows.Forms.Control[] {
 				butClose,
+				butAdd
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -38,10 +39,10 @@ namespace OpenDental{
 		#region Windows Form Designer generated code
 
 		private void InitializeComponent(){
+			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormProgramLinks));
 			this.listProgram = new System.Windows.Forms.ListBox();
 			this.butClose = new System.Windows.Forms.Button();
-			this.label10 = new System.Windows.Forms.Label();
-			this.checkEnabled = new System.Windows.Forms.CheckBox();
+			this.butAdd = new OpenDental.XPButton();
 			this.label1 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
@@ -49,57 +50,56 @@ namespace OpenDental{
 			// 
 			this.listProgram.Items.AddRange(new object[] {
 																										 ""});
-			this.listProgram.Location = new System.Drawing.Point(18, 32);
+			this.listProgram.Location = new System.Drawing.Point(17, 63);
 			this.listProgram.Name = "listProgram";
-			this.listProgram.Size = new System.Drawing.Size(282, 407);
+			this.listProgram.Size = new System.Drawing.Size(282, 277);
 			this.listProgram.TabIndex = 34;
-			this.listProgram.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listProgram_MouseDown);
+			this.listProgram.DoubleClick += new System.EventHandler(this.listProgram_DoubleClick);
 			// 
 			// butClose
 			// 
+			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butClose.Location = new System.Drawing.Point(482, 471);
+			this.butClose.Location = new System.Drawing.Point(345, 359);
 			this.butClose.Name = "butClose";
+			this.butClose.Size = new System.Drawing.Size(75, 26);
 			this.butClose.TabIndex = 38;
-			this.butClose.Text = "Close";
+			this.butClose.Text = "&Close";
 			this.butClose.Click += new System.EventHandler(this.butClose_Click);
 			// 
-			// label10
+			// butAdd
 			// 
-			this.label10.Location = new System.Drawing.Point(18, 14);
-			this.label10.Name = "label10";
-			this.label10.Size = new System.Drawing.Size(100, 16);
-			this.label10.TabIndex = 35;
-			this.label10.Text = "Programs";
-			// 
-			// checkEnabled
-			// 
-			this.checkEnabled.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkEnabled.Location = new System.Drawing.Point(342, 32);
-			this.checkEnabled.Name = "checkEnabled";
-			this.checkEnabled.Size = new System.Drawing.Size(98, 18);
-			this.checkEnabled.TabIndex = 40;
-			this.checkEnabled.Text = "Enabled";
-			this.checkEnabled.Click += new System.EventHandler(this.checkEnabled_Click);
+			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAdd.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butAdd.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
+			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butAdd.Location = new System.Drawing.Point(18, 357);
+			this.butAdd.Name = "butAdd";
+			this.butAdd.Size = new System.Drawing.Size(75, 26);
+			this.butAdd.TabIndex = 41;
+			this.butAdd.Text = "&Add";
+			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(24, 463);
+			this.label1.Location = new System.Drawing.Point(19, 6);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(373, 46);
-			this.label1.TabIndex = 41;
-			this.label1.Text = "There is currently no functionality for adding your own links.  The ones that are" +
-				" shown are the only ones available.";
+			this.label1.Size = new System.Drawing.Size(409, 38);
+			this.label1.TabIndex = 43;
+			this.label1.Text = "You can only link to certain predefined programs.  We might have to help you with" +
+				" the specific name of the link.";
 			// 
 			// FormProgramLinks
 			// 
+			this.AcceptButton = this.butClose;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(585, 526);
+			this.CancelButton = this.butClose;
+			this.ClientSize = new System.Drawing.Size(447, 412);
 			this.Controls.Add(this.label1);
-			this.Controls.Add(this.checkEnabled);
+			this.Controls.Add(this.butAdd);
 			this.Controls.Add(this.listProgram);
 			this.Controls.Add(this.butClose);
-			this.Controls.Add(this.label10);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "FormProgramLinks";
@@ -114,24 +114,50 @@ namespace OpenDental{
 		#endregion
 
 		private void FormProgramLinks_Load(object sender, System.EventArgs e) {
+			FillList();
+		}
+
+		private void FillList(){
+			Programs.Refresh();
 			listProgram.Items.Clear();
+			string itemName="";
 			for(int i=0;i<Programs.List.Length;i++){
-				listProgram.Items.Add(Programs.List[i].ProgDesc);
+				itemName=Programs.List[i].ProgDesc;
+				if(Programs.List[i].Enabled)
+					itemName+="(enabled)";
+				listProgram.Items.Add(itemName);
 			}
 		}
 
-		private void listProgram_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
+		/*private void listProgram_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
 			if(listProgram.SelectedIndex==-1){
 				return;
 			}
 			Programs.Cur=Programs.List[listProgram.SelectedIndex];
 			checkEnabled.Checked=Programs.Cur.Enabled;
-		}
+		}*/
 
-		private void checkEnabled_Click(object sender, System.EventArgs e) {
+		/*private void checkEnabled_Click(object sender, System.EventArgs e) {
 			if(listProgram.SelectedIndex==-1) return;
 			Programs.Cur.Enabled=checkEnabled.Checked;
 			Programs.UpdateCur();
+		}*/
+
+		private void butAdd_Click(object sender, System.EventArgs e) {
+			Programs.Cur=new Program();
+			FormProgramLinkEdit FormPE=new FormProgramLinkEdit();
+			FormPE.IsNew=true;
+			FormPE.ShowDialog();
+			FillList();
+		}
+
+		private void listProgram_DoubleClick(object sender, System.EventArgs e) {
+			if(listProgram.SelectedIndex==-1)
+				return;
+			Programs.Cur=Programs.List[listProgram.SelectedIndex];
+			FormProgramLinkEdit FormPE=new FormProgramLinkEdit();
+			FormPE.ShowDialog();
+			FillList();
 		}
 
 		private void butClose_Click(object sender, System.EventArgs e) {
@@ -143,6 +169,10 @@ namespace OpenDental{
 			DataValid DataValid2=new DataValid();
 			DataValid2.SetInvalid();
 		}
+
+	
+
+		
 
 		
 

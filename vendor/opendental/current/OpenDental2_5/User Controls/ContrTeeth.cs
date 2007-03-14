@@ -17,17 +17,24 @@ namespace OpenDental
 		/// Required designer variable.
 		/// </summary>
 		private System.ComponentModel.Container components = null;
+		///<summary></summary>
 		public float BigToothWidthP=200;
+		///<summary></summary>
 		public float BigToothWidthA=145;
+		///<summary></summary>
 		public float BigToothHeight=715;
+		///<summary></summary>
 		public int TWidthP;//adjusted for zoom
+		///<summary></summary>
 		public int TWidthA;
+		///<summary></summary>
 		public int THeight;
 		private float zoom;
 		//public bool[] SelectedTeeth;
 		private ArrayList PrimaryTeeth;//valid values are "1" to "32"
 		private ArrayList MissingTeeth;//valid values are "1" to "32", and "A" to "Z"
 		private Bitmap BackShadow;
+		///<summary></summary>
 		public string[] SelectedTeeth;//valid values are "1" to "32", and "A" to "Z"
 		private ArrayList ALSelectedTeeth;//valid values are 1 to 32 (int)
 		private Bitmap Shadow;
@@ -40,7 +47,7 @@ namespace OpenDental
 		private bool ControlIsDown;
 		//private ArrayList ALelements;
 	
-
+		///<summary></summary>
 		public ContrTeeth()
 		{
 			// This call is required by the Windows.Forms Form Designer.
@@ -88,6 +95,7 @@ namespace OpenDental
 		}
 		#endregion
 
+		///<summary></summary>
 		[Category("AAA Custom"),
 			Description("Zoom level. Level one is very large.")
 		]
@@ -101,7 +109,7 @@ namespace OpenDental
 		}
 
 		//public override 
-
+		///<summary></summary>
 		public void SetWidth(int width){
 			zoom=(float)(width-17-2)/(BigToothWidthP*6+BigToothWidthA*10);
 			ResetSize();
@@ -114,6 +122,7 @@ namespace OpenDental
 		//	ClearProcs();
 		//}
 
+		///<summary></summary>
 		public void CreateBackShadow(){//only to be called once upon startup.
 			BackShadow=new Bitmap(Width,Height);
 			Graphics grfx=Graphics.FromImage(BackShadow);
@@ -190,6 +199,7 @@ namespace OpenDental
 					//}
 				}//b
 			}
+			grfx.Dispose();
 		}
 
 		private void DrawToothNum(int intTooth){
@@ -211,6 +221,7 @@ namespace OpenDental
 					-grfx.MeasureString(toothNum,numFont).Width/2
 					,Height/2+4);
 			}
+			grfx.Dispose();
 		}
 
 		private void DrawSelected(int intTooth, bool isSelected){
@@ -255,6 +266,7 @@ namespace OpenDental
 			return GetWidthTooth(Tooth.FromInt(intTooth));
 		}
 
+		///<summary></summary>
 		public void ClearProcs(){//also clears selected. Does not DrawShadow
 			if(BackShadow==null)
 				return;
@@ -268,17 +280,21 @@ namespace OpenDental
 			for(int i=1;i<=32;i++){
 				DrawToothNum(i);
 			}
+			grfx.Dispose();
 			//next, usually draw series of Elements.
 			//(maybe?) DrawSelected (DrawSelected(Tooth.ToInt(SelectedTeeth[0]),true);)
 			//then, DrawShadow
 		}
 
+		///<summary></summary>
 		public void DrawShadow(){
 			if(Shadow==null) return;
 			Graphics grfx=this.CreateGraphics();
 			grfx.DrawImage(Shadow,0,0);
+			grfx.Dispose();
 		}
 
+		///<summary></summary>
 		public bool IsMirror(int intTooth){
 			if(intTooth >= 1 && intTooth <= 8)
 				return false;
@@ -290,10 +306,12 @@ namespace OpenDental
 				return false;
 		}
 
+		///<summary></summary>
 		public bool IsMirror(string toothNum){
 			return IsMirror(Tooth.ToInt(toothNum));
 		}
 
+		///<summary></summary>
 		public string GetMirror(string toothNum){
 			switch(toothNum){
 				case "9": return "8";
@@ -326,6 +344,7 @@ namespace OpenDental
 			}
 		}
 
+		///<summary></summary>
 		public string GetMirror(int intTooth){
 			return GetMirror(Tooth.FromInt(intTooth));
 		}
@@ -452,17 +471,18 @@ namespace OpenDental
 			ALelements.Add(te);
 		}*/
 
+		///<summary></summary>
 		public void DrawProcs(ArrayList ALprocs){
 			Procedure[] procList=new Procedure[ALprocs.Count];
 			int[] procOrder=new int[ALprocs.Count];
 			for(int i=0;i<ALprocs.Count;i++){
 				procList[i]=(Procedure)ALprocs[i];
-				procOrder[i]=ProcCodes.GetProcCode(((Procedure)ALprocs[i]).ADACode).GTypeNum;
+				procOrder[i]=ProcedureCodes.GetProcCode(((Procedure)ALprocs[i]).ADACode).GTypeNum;
 			}
 			Array.Sort(procOrder,procList);
 			//missing teeth
 			for(int i=0;i<procList.Length;i++){
-				if(ProcCodes.GetProcCode(procList[i].ADACode).RemoveTooth && (
+				if(ProcedureCodes.GetProcCode(procList[i].ADACode).RemoveTooth && (
 					procList[i].ProcStatus==ProcStat.C
 					|| procList[i].ProcStatus==ProcStat.EC
 					|| procList[i].ProcStatus==ProcStat.EO
@@ -502,19 +522,19 @@ namespace OpenDental
 						doDraw=false;
 						break;
 				}
-				if(ProcCodes.GetProcCode(procList[i].ADACode).RemoveTooth && (
+				if(ProcedureCodes.GetProcCode(procList[i].ADACode).RemoveTooth && (
 					procList[i].ProcStatus==ProcStat.C
 					|| procList[i].ProcStatus==ProcStat.EC
 					|| procList[i].ProcStatus==ProcStat.EO
 					)){
 					doDraw=false;
 				}
-				gTypeNum=ProcCodes.GetProcCode(procList[i].ADACode).GTypeNum;
+				gTypeNum=ProcedureCodes.GetProcCode(procList[i].ADACode).GTypeNum;
 				if(gTypeNum==0){
 					doDraw=false;
 				}
 				if(doDraw){
-					if(GraphicTypes.GetSpecialType(ProcCodes.GetProcCode(procList[i].ADACode).GTypeNum)
+					if(GraphicTypes.GetSpecialType(ProcedureCodes.GetProcCode(procList[i].ADACode).GTypeNum)
 						=="bridge"){
 						if(!Tooth.IsValidDB(procList[i].ToothNum))
 							intTooth=-1;
@@ -523,21 +543,21 @@ namespace OpenDental
 						for(int j=0;j<procList.Length;j++){
 							if(GetMesial(procList[i].ToothNum)==procList[j].ToothNum
 								&& GraphicTypes.GetSpecialType
-									(ProcCodes.GetProcCode(procList[j].ADACode).GTypeNum)=="bridge"){
+									(ProcedureCodes.GetProcCode(procList[j].ADACode).GTypeNum)=="bridge"){
 								DrawConnector(true,intTooth,elemColor);
 							}
 							if(GetDistal(procList[i].ToothNum)==procList[j].ToothNum
 								&& GraphicTypes.GetSpecialType
-									(ProcCodes.GetProcCode(procList[j].ADACode).GTypeNum)=="bridge"){
+									(ProcedureCodes.GetProcCode(procList[j].ADACode).GTypeNum)=="bridge"){
 								DrawConnector(false,intTooth,elemColor);
 							}
 						}
 						
 					}
-					if(GraphicTypes.GetSpecialType(ProcCodes.GetProcCode(procList[i].ADACode).GTypeNum)
+					if(GraphicTypes.GetSpecialType(ProcedureCodes.GetProcCode(procList[i].ADACode).GTypeNum)
 						=="denture"){
 						string[] toothNums;
-						if(ProcCodes.GetProcCode(procList[i].ADACode).TreatArea==TreatmentArea.Arch){
+						if(ProcedureCodes.GetProcCode(procList[i].ADACode).TreatArea==TreatmentArea.Arch){
 							if(procList[i].Surf=="U"){
 								toothNums=new string[] {"2","3","4","5","6","7","8","9","10","11","12","13","14","15"};
 							}
@@ -549,7 +569,7 @@ namespace OpenDental
 								toothNums=new string[0];
 							}
 						}
-						else if(ProcCodes.GetProcCode(procList[i].ADACode).TreatArea==TreatmentArea.ToothRange){
+						else if(ProcedureCodes.GetProcCode(procList[i].ADACode).TreatArea==TreatmentArea.ToothRange){
 							toothNums=procList[i].ToothRange.Split(',');
 						}
 						else{
@@ -881,6 +901,7 @@ namespace OpenDental
 			DrawShadow();
 		}
 
+		///<summary></summary>
 		public void SetMissing(string toothNum){//valid "1"-"32" and "A"-"Z"
 			MissingTeeth.Add(toothNum);
 			int intTooth=Tooth.ToInt(toothNum);
@@ -890,6 +911,7 @@ namespace OpenDental
 			grfx.Dispose();
 		}
 
+		///<summary></summary>
 		public void SetPrimary(string toothNum){//valid "1"-"32"
 			string priToothNum=Tooth.PermToPri(toothNum);
 			int intTooth=Tooth.ToInt(toothNum);
@@ -967,6 +989,7 @@ namespace OpenDental
 			grfx.Dispose();
 		}
 
+		///<summary></summary>
 		public void ContrTeeth_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e) {
 			//this.OnKeyDown(e);
 			if(e.KeyCode==Keys.ControlKey){
@@ -974,6 +997,7 @@ namespace OpenDental
 			}
 		}
 
+		///<summary></summary>
 		public void ContrTeeth_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e) {
 			//this.OnKeyUp(e);
 			if(e.KeyCode==Keys.ControlKey){

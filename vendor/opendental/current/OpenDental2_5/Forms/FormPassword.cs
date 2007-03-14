@@ -8,7 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormPassword : System.Windows.Forms.Form{
 		private System.Windows.Forms.Label label10;
 		private System.Windows.Forms.Label label8;
@@ -18,6 +18,7 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textPassword;
 		private System.ComponentModel.Container components = null;
 
+		///<summary></summary>
 		public FormPassword(){
 			InitializeComponent();
 			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -31,6 +32,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose(bool disposing){
 			if(disposing){
 				if(components != null){
@@ -96,7 +98,7 @@ namespace OpenDental{
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 39;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// butOK
@@ -106,7 +108,7 @@ namespace OpenDental{
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 38;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// FormPassword
@@ -181,9 +183,10 @@ namespace OpenDental{
 
 	}
 
-
+	///<summary></summary>
 	public class Passwords{
 
+		///<summary></summary>
 		public static string EncryptPassword(string inputPass){
 			HashAlgorithm hash=HashAlgorithm.Create("MD5");
 			Encoding unicode = Encoding.Unicode;
@@ -196,6 +199,7 @@ namespace OpenDental{
 			return strB.ToString();
 		}
 		
+		///<summary></summary>
 		public static bool CheckPassword(string inputPass,string hashedPass){
 			string hashedInput=EncryptPassword(inputPass);
 			//MessageBox.Show(hashedInput+","+hashedPass);

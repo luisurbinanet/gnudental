@@ -17,22 +17,27 @@ namespace OpenDental{
 	
 	/*=========================================================================================
 		=================================== class Medications ==========================================*/
-
+	///<summary></summary>
 	public class Medications:DataClass{
 		//not refreshed with local data.  Only refreshed as needed.
+		///<summary></summary>
 		public static Medication Cur;
+		///<summary></summary>
 		public static Medication[] List;
+		///<summary></summary>
 		public static Hashtable HList;
 
+		///<summary></summary>
 		public static void Refresh(){
 			cmd.CommandText =
-				"SELECT * from medication ORDER BY medname";
+				"SELECT * from medication ORDER BY MedName";
 			FillList();
 		}
 
+		///<summary></summary>
 		public static void RefreshGeneric(){
 			cmd.CommandText =
-				"SELECT * from medication WHERE medicationnum = genericnum ORDER BY medname";
+				"SELECT * from medication WHERE medicationnum = genericnum ORDER BY MedName";
 			FillList();
 		}
 
@@ -49,6 +54,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE medication SET " 
 				+ "medname = '"      +POut.PString(Cur.MedName)+"'"
@@ -59,6 +65,7 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO medication (medname,genericnum,notes"
 				+") VALUES("
@@ -70,6 +77,7 @@ namespace OpenDental{
 			//MessageBox.Show(Cur.PayNum.ToString());
 		}
 
+		///<summary></summary>
 		public static void DeleteCur(){
 			cmd.CommandText = "DELETE from medication WHERE medicationNum = '"+Cur.MedicationNum.ToString()+"'";
 			NonQ(false);
@@ -77,20 +85,29 @@ namespace OpenDental{
 		
 	}
 
+	///<summary>Corresponds to the medication table in the database.</summary>
 	public struct Medication{
-		public int MedicationNum;//primary key
+		///<summary>Primary key.</summary>
+		public int MedicationNum;
+		///<summary>Name of the medication.</summary>
 		public string MedName;
-		public int GenericNum;//(optional)foreign key to Medication.MedicationNum
+		///<summary>Foreign key to medication.MedicationNum.  If this is a generic drug, then the GenericNum will be the same as the MedicationNum.</summary>
+		public int GenericNum;
+		///<summary>Notes.</summary>
 		public string Notes;
 	}
 
 /*=========================================================================================
 		=================================== class MedicationPats ==========================================*/
 
+	///<summary></summary>
 	public class MedicationPats:DataClass{
+		///<summary></summary>
 		public static MedicationPat Cur;
+		///<summary></summary>
 		public static MedicationPat[] List;//for current pat
 
+		///<summary></summary>
 		public static void Refresh(){
 			cmd.CommandText =
 				"SELECT * from medicationpat WHERE patnum = '"+Patients.Cur.PatNum+"'";
@@ -105,6 +122,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE medicationpat SET " 
 				+ "patnum = '"        +POut.PInt   (Cur.PatNum)+"'"
@@ -115,6 +133,7 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO medicationpat (patnum,medicationnum,patnote"
 				+") VALUES("
@@ -126,6 +145,7 @@ namespace OpenDental{
 			//MessageBox.Show(Cur.PayNum.ToString());
 		}
 
+		///<summary></summary>
 		public static void DeleteCur(){
 			cmd.CommandText = "DELETE from medicationpat WHERE medicationpatNum = '"
 				+Cur.MedicationPatNum.ToString()+"'";
@@ -134,21 +154,46 @@ namespace OpenDental{
 		
 	}
 
-	public struct MedicationPat{//table medicationpat.  links meds to pats.
-		public int MedicationPatNum;//primary key
-		public int PatNum;//foreign key to patient.PatNum
-		public int MedicationNum;//foreign key to medication.MedicationNum
-		public string PatNote;//medication notes specific to this patient
+	///<summary>Corresponds to the medicationpat table in the database. It links medications to patients.</summary>
+	public struct MedicationPat{
+		///<summary>Primary key.</summary>
+		public int MedicationPatNum;
+		///<summary>Foreign key to patient.PatNum.</summary>
+		public int PatNum;
+		///<summary>Foreign key to medication.MedicationNum.</summary>
+		public int MedicationNum;
+		///<summary>Medication notes specific to this patient.</summary>
+		public string PatNote;
 	}
 
+/*=========================================================================================
+		=================================== class ODReportData ==========================================*/
+
+	///<summary>Used by ODReport to interface with database.</summary>
+	public class ODReportData:DataClass{
+
+		///<summary>Submits the Query to the database and returns the DataTable as a result.</summary>
+		///<param name="query"></param>
+		public static DataTable SubmitQuery(string query){
+			//MessageBox.Show(query);
+			cmd.CommandText=query;
+			FillTable();
+			//MessageBox.Show(table.Rows.Count.ToString());
+			return table;
+		}
+	}
 
 	/*=========================================================================================
 	=================================== class PIn ===========================================*/
+	///<summary>Converts strings coming in from the database into the appropriate type.</summary>
+	///<remarks>P was originally short for Parameter because it was replacing the data adapter parameters.  Using strings instead of parameters is much easier to debug.  This class will be replaced with an IConvertible interface as soon as we have time.</remarks>
 	public class PIn{
+		///<summary></summary>
 		public static bool PBool (string myString){
 			return myString=="1";
 		}
 
+		///<summary></summary>
 		public static byte PByte (string myString){
 			if(myString==""){
 				return 0;
@@ -158,6 +203,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public static DateTime PDate(string myString){
 			if(myString=="")
 				return DateTime.MinValue;
@@ -169,6 +215,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public static DateTime PDateT(string myString){
 			if(myString=="")
 				return DateTime.MinValue;
@@ -180,31 +227,34 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public static double PDouble (string myString){
 			if (myString==""){
 				return 0;
 			}
 			else{
-				return System.Convert.ToDouble(myString);
+				try{
+					return System.Convert.ToDouble(myString);
+				}
+				catch{
+					//MessageBox.Show(myString);
+					return 0;
+				}
 			}
 
 		}
 
+		///<summary></summary>
 		public static int PInt (string myString){
 			if (myString==""){
 				return 0;
 			}
 			else{
-				//try{
 				return System.Convert.ToInt32(myString);
-				//}
-				//catch{
-				//	MessageBox.Show(myString);
-				//	return 0;
-				//}
 			}
 		}
 
+		///<summary></summary>
 		public static float PFloat(string myString){
 			if(myString==""){
 				return 0;
@@ -217,10 +267,12 @@ namespace OpenDental{
 			//}
 		}
 
+		///<summary></summary>
 		public static string PString (string myString){
 			return myString;
 		}
 		
+		///<summary></summary>
 		public static string PTime (string myTime){
 			return DateTime.Parse(myTime).ToString("HH:mm:ss");
 		}
@@ -230,7 +282,9 @@ namespace OpenDental{
 	/*=========================================================================================
 	=================================== class POut ===========================================*/
 
+	///<summary>Converts various datatypes into strings formatted correctly for MySQL.</summary>
 	public class POut{
+		///<summary></summary>
 		public static string PBool (bool myBool){
 			if (myBool==true){
 				return "1";
@@ -240,22 +294,25 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public static string PByte (byte myByte){
 			return myByte.ToString();
 		}
 
+		///<summary></summary>
 		public static string PDateT(DateTime myDateT){
 			try{
-				return myDateT.ToString("yyyy-MM-dd HH:mm:ss");
+				return myDateT.ToString("yyyy-MM-dd HH:mm:ss",new DateTimeFormatInfo());
 			}
 			catch{
 				return "";//this actually saves zero's to the database
 			}
 		}
 
+		///<summary></summary>
 		public static string PDate(DateTime myDate){
 			try{
-				return myDate.ToString("yyyy-MM-dd");
+				return myDate.ToString("yyyy-MM-dd",new DateTimeFormatInfo());
 			}
 			catch{
 				//return "0000-00-00";
@@ -263,18 +320,22 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public static string PDouble (double myDouble){
 			return myDouble.ToString();
 		}
 
+		///<summary></summary>
 		public static string PInt (int myInt){
 			return myInt.ToString();
 		}
 
+		///<summary></summary>
 		public static string PFloat(float myFloat){
 			return myFloat.ToString();
 		}
 
+		///<summary></summary>
 		public static string PString (string myString){
 			string newString="";
 			if(myString==null){
@@ -295,6 +356,7 @@ namespace OpenDental{
 			return newString;
 		}
 
+		///<summary></summary>
 		public static string PTime (string myTime){
 			return DateTime.Parse(myTime).ToString("HH:mm:ss");
 		}
@@ -303,19 +365,30 @@ namespace OpenDental{
 
 	/*=========================================================================================
 	=================================== class Patients ===========================================*/
-
+	///<summary></summary>
 	public class Patients:DataClass{
+		///<summary>Always test this to see if a patient is loaded, not patient.Cur.PatNum.</summary>
 		public static bool PatIsLoaded=false;
+		///<summary>Current patient.</summary>
 		public static Patient Cur;
+		///<summary>Stores limited information about a patient. Filled first via GetLim.</summary>
 		public static Patient Lim;
+		///<summary>Stores formatted LName, FName, MI for the Lim patient.</summary>
 		public static string LimName;
+		///<summary>A list of patients in one family (sharing a GuarantorNum)</summary>
 		public static Patient[] FamilyList;
+		///<summary>Used in the Select Patient window.</summary>
 		public static Patient[] PtList;
+		///<summary>Used in the Aging window.</summary>
 		public static PatAging[] AgingList;
+		///<summary>The index within the FamilyList of the Guarantor. Might not be necessary anymore since the guarantor should always be index 0.</summary>
 		public static int GuarIndex;
+		///<summary></summary>
 		public static RecallItem[] RecallList;
+		///<summary>A list of all patient names. Key=patNum, value=formatted name.  Fill with GetHList.</summary>
 		public static Hashtable HList;
 
+		///<summary></summary>
 		public static void GetFamily(int patNum){
 			cmd.CommandText= 
 				"SELECT guarantor FROM patient "
@@ -399,6 +472,7 @@ namespace OpenDental{
 			//InfoChanged=false;//unused?
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){//ONLY for new patients
 			cmd.CommandText = "INSERT INTO patient (lname,fname,middlei,preferred,patstatus,gender,"
 				+"position,birthdate,ssn,address,address2,city,state,zip,hmphone,wkphone,wirelessphone,"
@@ -463,6 +537,7 @@ namespace OpenDental{
 			//PatientNotes.SaveCur();
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE patient SET " 
 				+ "LName = '"     +POut.PString(Cur.LName)+"'"
@@ -519,6 +594,7 @@ namespace OpenDental{
 			//MessageBox.Show(cmd.CommandText);
 		}//end UpdatePatient
 
+		///<summary></summary>
 		public static bool GetPtList(string lname,string fname,string hmphone,string address,bool hideInactive){
 			//string psearchStr = POut.PString(searchStr)+"%";
 			//Only used for the Select Patient dialog
@@ -559,6 +635,7 @@ namespace OpenDental{
 			return retval;//if true, there are more rows.
 		}
 
+		///<summary></summary>
 		public static void GetRecallList(){
 			cmd.CommandText = 
 				"SELECT MAX(procedurelog.procdate) AS 'LastDate', "
@@ -614,6 +691,7 @@ ORDER BY DueDate
 			Array.Sort(orderDate,RecallList);
 		}
 
+		///<summary></summary>
 		public static string GetNameInFamLF(int myPatNum){
 			string retStr="";
 			for(int i=0;i<FamilyList.Length;i++){
@@ -629,6 +707,7 @@ ORDER BY DueDate
 			return retStr;
 		}
 
+		///<summary></summary>
 		public static string GetNameInFamLFI(int myi){
 			string retStr="";
 			if(FamilyList[myi].Preferred==""){
@@ -640,6 +719,7 @@ ORDER BY DueDate
 			return retStr;
 		}
 
+		///<summary></summary>
 		public static string GetNameInFamFL(int myPatNum){
 			string retStr="";
 			for(int i=0;i<FamilyList.Length;i++){
@@ -655,6 +735,7 @@ ORDER BY DueDate
 			return retStr;
 		}
 
+		///<summary></summary>
 		public static string GetNameInFamFLI(int myi){
 			string retStr="";
 			if(FamilyList[myi].Preferred==""){
@@ -666,6 +747,9 @@ ORDER BY DueDate
 			return retStr;
 		}
 
+		/// <summary>Gets nine of the most useful fields from the db for the given patnums, saving the data
+		/// in Lim and LimName.</summary>
+		/// <param name="patNum">The PatNum to use in retrieving the data.</param>
 		public static void GetLim(int patNum){
 			if(patNum==0){
 				Lim=new Patient();
@@ -696,6 +780,7 @@ ORDER BY DueDate
 			else LimName=Lim.LName+", '"+Lim.Preferred+"' "+Lim.FName+" "+Lim.MiddleI;
 		}
 
+		///<summary></summary>
 		public static string GetCurNameLF(){
 			if(Cur.Preferred=="")
 				return Cur.LName+", "+Cur.FName+" "+Cur.MiddleI;
@@ -703,6 +788,7 @@ ORDER BY DueDate
 				return Cur.LName+", '"+Cur.Preferred+"' "+Cur.FName+" "+Cur.MiddleI;
 		}
 
+		///<summary></summary>
 		public static string GetLimCreditIns(){
 			string retStr="";
 			if(Lim.CreditType=="")
@@ -714,6 +800,7 @@ ORDER BY DueDate
 			return retStr;
 		}
 
+		///<summary></summary>
 		public static string GetCreditIns(){
 			string retStr="";
 			if(Cur.CreditType=="")
@@ -725,6 +812,7 @@ ORDER BY DueDate
 			return retStr;
 		}
 
+		///<summary></summary>
 		public static int GetIndex(int patNum){
 			int retVal=-1;//will return -1 if not found
 			for(int i=0;i<FamilyList.Length;i++){
@@ -743,6 +831,7 @@ ORDER BY DueDate
 		//MessageBox.Show("Patient Deleted");
 		//}
 
+		///<summary></summary>
 		public static void ChangeGuarantorToCur(){
 			//Move famfinurgnote to current patient:
 			cmd.CommandText = 
@@ -781,6 +870,7 @@ ORDER BY DueDate
 			NonQ(false);
 		}
 		
+		///<summary></summary>
 		public static void CombineGuarantors(){
 			//concat cur notes with guarantor notes
 			cmd.CommandText = 
@@ -824,6 +914,7 @@ ORDER BY DueDate
 			NonQ(false);
 		}
 
+		///<summary>Gets names for all patients.</summary>
 		public static void GetHList(){
 			cmd.CommandText="SELECT patnum,lname,fname,middlei,preferred "
 				+"FROM patient";
@@ -846,6 +937,7 @@ ORDER BY DueDate
 			}
 		}
 
+		///<summary></summary>
 		public static void UpdateAddressForFam(){
 			cmd.CommandText = "UPDATE patient SET " 
 				+"Address = '"    +POut.PString(Cur.Address)+"'"
@@ -864,6 +956,7 @@ ORDER BY DueDate
 			//MessageBox.Show(cmd.CommandText);
 		}
 
+		///<summary></summary>
 		public static void UpdateNotesForFam(){
 			cmd.CommandText = "UPDATE patient SET " 
 				+"addrnote = '"   +POut.PString(Cur.AddrNote)+"'"
@@ -872,14 +965,16 @@ ORDER BY DueDate
 			//MessageBox.Show(cmd.CommandText);
 		}
 
+		///<summary>This is only used in the Billing dialog</summary>
 		public static void GetAgingList(string age,int[] billingIndices,bool excludeAddr
-			,bool excludeNeg,double excludeLessThan){
-			//This is only used in the Billing dialog
-			cmd.CommandText =
+			,bool excludeNeg,double excludeLessThan,bool excludeInactive){
+			cmd.CommandText=
 				"SELECT patnum,Bal_0_30,Bal_31_60,Bal_61_90,BalOver90,BalTotal,InsEst,LName,FName,MiddleI "
-				+"FROM patient "//actually only gets guarantors since others are 0.
-				+" WHERE (BalTotal - InsEst > '"
-				+excludeLessThan.ToString()+"'";
+				+"FROM patient WHERE ";//actually only gets guarantors since others are 0.
+			if(excludeInactive){
+				cmd.CommandText+="(patstatus != '2') && ";
+			}
+			cmd.CommandText+="(BalTotal - InsEst > '"+excludeLessThan.ToString()+"'";
 			if(!excludeNeg){
 				cmd.CommandText+=" || BalTotal - InsEst < '0')";
 			}
@@ -932,6 +1027,7 @@ ORDER BY DueDate
 			}
 		}
 
+		///<summary></summary>
 		public static void GetAgingList(){
 			//used only to run finance charges, so it ignores negative balances
 			cmd.CommandText =
@@ -959,6 +1055,7 @@ ORDER BY DueDate
 			}
 		}
 
+		///<summary></summary>
 		public static void ResetAging(){//for entire database
 			//need to zero everything out first because the update aging only inserts non-zero values
 			cmd.CommandText="Update patient SET "
@@ -971,6 +1068,7 @@ ORDER BY DueDate
 			NonQ(false);		
 		}
 
+		///<summary></summary>
 		public static void ResetAging(int guarantor){
 			cmd.CommandText="Update patient SET "
 				+"Bal_0_30   = '0'"
@@ -983,6 +1081,7 @@ ORDER BY DueDate
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void UpdateAging(int patnum,double Bal0,double Bal31
 			,double Bal61,double Bal91,double InsEst,double BalTotal){
 			cmd.CommandText="Update patient SET "
@@ -993,9 +1092,11 @@ ORDER BY DueDate
 				+",InsEst         = '" +POut.PDouble(InsEst)+"'"
 				+",BalTotal       = '" +POut.PDouble(BalTotal)+"'"
 				+" WHERE patnum   = '" +POut.PInt   (patnum)+"'";
+			//MessageBox.Show(cmd.CommandText);
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static int GetProvForCur(){
 			if(Cur.PriProv!=0)
 				return Cur.PriProv;
@@ -1006,6 +1107,7 @@ ORDER BY DueDate
 			return PIn.PInt(((Pref)Prefs.HList["PracticeDefaultProv"]).ValueString);
 		}
 
+		///<summary></summary>
 		public static string GetNextChartNum(){
 			//could later add a where clause based on preferred format
 			cmd.CommandText="SELECT chartnumber from patient WHERE chartnumber != ''"
@@ -1024,83 +1126,144 @@ ORDER BY DueDate
 
 	}
 
+	///<summary>Corresponds to the patient table in the database.</summary>
 	public struct Patient{
-		public int    PatNum;//primary key
-		public string LName;//last name
-		public string FName;//first name
-		public string MiddleI;//middle initial
-		public string Preferred;//preferred name
-		public PatientStatus PatStatus;//enum PatientStatus{Patient=0,NonPatient=1,Inactive=2,Archived=3,Deleted=4}
-		public PatientGender Gender;//enum PatientGender{Male=0,Female=1,Unknown=2}
-		public PatientPosition Position;//enum PatientPosition{Single=0,Married=1,Child=2}
+		///<summary>Primary key.</summary>
+		public int    PatNum;
+		///<summary>Last name.</summary>
+		public string LName;
+		///<summary>First name.</summary>
+		public string FName;
+		///<summary>Middle initial or name.</summary>
+		public string MiddleI;
+		///<summary>Preferred name.</summary>
+		public string Preferred;
+		///<summary>See the PatientStatus enumeration.</summary>
+		public PatientStatus PatStatus;
+		///<summary>See the PatientGender enumeration.</summary>
+		public PatientGender Gender;
+		///<summary>See the PatientPosition enumeration.</summary>
+		public PatientPosition Position;
+		///<summary></summary>
 		public DateTime Birthdate;
-		public string SSN;//9 digits, no dashes
+		///<summary>9 digits, no dashes.</summary>
+		public string SSN;
+		///<summary></summary>
 		public string Address;
+		///<summary></summary>
 		public string Address2;
+		///<summary></summary>
 		public string City;
-		public string State;//2 Char
+		///<summary>2 Char in USA</summary>
+		public string State;
+		///<summary></summary>
 		public string Zip;
-		public string HmPhone;//includes any punctuation
+		///<summary>Includes any punctuation</summary>
+		public string HmPhone;
+		///<summary></summary>
 		public string WkPhone;
+		///<summary></summary>
 		public string WirelessPhone;
-		public int    Guarantor;//foreign key to Patient.PatNum.  Head of household.
-		public string Age;//derived from Birthdate.  Not in database table
-		public string CreditType;//single char. Shows in appointment book.
+		///<summary>Foreign key to patient.PatNum.  Head of household.</summary>
+		public int    Guarantor;
+		///<summary>Derived from Birthdate.  Not in the database table.</summary>
+		public string Age;
+		///<summary>Single char. Shows in appointment book.</summary>
+		public string CreditType;
+		///<summary></summary>
 		public string Email;
+		///<summary></summary>
 		public string Salutation;
-		public int PriPlanNum;//foreign key to InsPlan.PlanNum.  Primary insurance.
-		public Relat PriRelationship;//Relationship to subscriber for primary insurance.
-		//enum Relat{Self=0,Spouse=1,Child=2,Employee=3,HandicapDep=4,SignifOther=5,InjuredPlaintiff=6,
-		//LifePartner=7,Dependent=8}
-		public int SecPlanNum;//foreign key to InsPlan.PlanNum.  Secondary insurance.
-		public Relat SecRelationship;//Relationship to subscriber for secondary insurance.
-		public double EstBalance;//Current patient balance.(not family)
-		public int NextAptNum;//may be 0(none) or -1(done), otherwise it is the foreign key
-		//to Appointment.AptNum.  This is the appointment that will show in the Chart module.
-		//It will never show in the Appointments module.
-		public int PriProv;//foreign key to Provider.ProvNum.  The patient's primary provider.
-		public int SecProv;//foreign key to Provider.ProvNum.  Secondary provider.
-		public int FeeSched;//foreign key to Definition.DefNum.  Default fee schedule.
-		public int BillingType;//foreign key to Definition.DefNum.
-		public int RecallInterval;//months between recalls.
-		public int RecallStatus;//foreign key to Definition.DefNum, or 0 for none.
-		public string ImageFolder;//name of folder where images will be stored. Not editable for now.
+		///<summary>Foreign key to insplan.PlanNum.  Primary insurance.</summary>
+		public int PriPlanNum;//
+		///<summary>Relationship to subscriber for primary insurance.  See the Relat enumeration.</summary>
+		public Relat PriRelationship;
+		///<summary>Foreign key to insplan.PlanNum.  Secondary insurance.</summary>
+		public int SecPlanNum;//
+		///<summary>Relationship to subscriber for secondary insurance.</summary>
+		public Relat SecRelationship;
+		///<summary>Current patient balance.(not family)</summary>
+		public double EstBalance;
+		///<summary>May be 0(none) or -1(done), otherwise it is the foreign key to appointment.AptNum.  This is the appointment that will show in the Chart module and in the Next appointment tracker.  It will never show in the Appointments module.</summary>
+		public int NextAptNum;//
+		///<summary>Foreign key to provider.ProvNum.  The patient's primary provider.</summary>
+		public int PriProv;
+		///<summary>Foreign key to provider.ProvNum.  Secondary provider (hygienist)</summary>
+		public int SecProv;//
+		///<summary>Foreign key to definition.DefNum.  Fee schedule for this patient.</summary>
+		public int FeeSched;
+		///<summary>Foreign key to definition.DefNum.  Must have a value, or the patient will not show on some reports.</summary>
+		public int BillingType;
+		///<summary>Months between recalls.</summary>
+		public int RecallInterval;
+		///<summary>Foreign key to Definition.DefNum, or 0 for none.</summary>
+		public int RecallStatus;
+		///<summary>Name of folder where images will be stored. Not editable for now.</summary>
+		public string ImageFolder;
+		///<summary>Address or phone note.</summary>
 		public string AddrNote;
-		public string FamFinUrgNote;//Family financial urgent note.  Only stored with guarantor, and shared for family.
-		public string MedUrgNote;//Individual patient note for Urgent medical.
-		public string ApptModNote;//Individual patient note for Appointment module note.
-		public string StudentStatus;//single char for Nonstudent, Parttime, or Fulltime.  Blank=Nonstudent
+		///<summary>Family financial urgent note.  Only stored with guarantor, and shared for family.</summary>
+		public string FamFinUrgNote;
+		///<summary>Individual patient note for Urgent medical.</summary>
+		public string MedUrgNote;
+		///<summary>Individual patient note for Appointment module note.</summary>
+		public string ApptModNote;
+		///<summary>Single char for Nonstudent, Parttime, or Fulltime.  Blank=Nonstudent</summary>
+		public string StudentStatus;
+		///<summary></summary>
 		public string SchoolName;
-		public string ChartNumber;//max 15 char.  Used for reference to previous programs.
+		///<summary>Max 15 char.  Used for reference to previous programs.</summary>
+		public string ChartNumber;
+		///<summary></summary>
 		public string MedicaidID;
-		public double Bal_0_30;//aging numbers are for entire family.  Only stored with guarantor.
+		///<summary>Aging numbers are for entire family.  Only stored with guarantor.</summary>
+		public double Bal_0_30;
+		///<summary></summary>
 		public double Bal_31_60;
+		///<summary></summary>
 		public double Bal_61_90;
+		///<summary></summary>
 		public double BalOver90;
-		public double InsEst;//Insurance Estimate for entire family.
-		public string PrimaryTeeth;//Teeth to display in chart as primary. eg: "1,2,3,4,5,12,13"
-		public double BalTotal;//for entire family. Stored with guarantor
-		
+		///<summary>Insurance Estimate for entire family.</summary>
+		public double InsEst;
+		///<summary>Teeth to display in chart as primary. eg: "1,2,3,4,5,12,13"</summary>
+		public string PrimaryTeeth;
+		///<summary>For entire family. Stored with guarantor.</summary>
+		public double BalTotal;
 	}//end struct Patient
 
-	public struct PatAging{//not a database table.  Just used for running reports.
+	///<summary>Not a database table.  Just used for running reports.</summary>
+	public struct PatAging{
+		///<summary></summary>
 		public int PatNum;
+		///<summary></summary>
 		public double Bal_0_30;
+		///<summary></summary>
 		public double Bal_31_60;
+		///<summary></summary>
 		public double Bal_61_90;
+		///<summary></summary>
 		public double BalOver90;
+		///<summary></summary>
 		public double InsEst;
+		///<summary></summary>
 		public string PatName;
+		///<summary></summary>
 		public double BalTotal;
+		///<summary></summary>
 		public double AmountDue;
-		public int PriProv;//the patient priprov to assign the finance charge to.
+		///<summary>The patient priprov to assign the finance charge to.</summary>
+		public int PriProv;
 	}
 
 	/*=========================================================================================
 		=================================== class PatientNotes ===========================================*/
+	///<summary></summary>
 	public class PatientNotes:DataClass{
+		///<summary></summary>
 		public static PatientNote Cur;
 		
+		///<summary></summary>
 		public static void Refresh(){
 			cmd.CommandText = 
 				"SELECT * FROM patientnote WHERE patnum = '"+POut.PInt(Patients.Cur.PatNum)+"'";
@@ -1132,10 +1295,11 @@ ORDER BY DueDate
 			Cur.FamFinancial= PIn.PString(table.Rows[0][0].ToString());
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE patientnote SET "
-				+ "apptphone = '"   +POut.PString(Cur.ApptPhone)+"'"
-				+ ",medical = '"    +POut.PString(Cur.Medical)+"'"
+				//+ "apptphone = '"   +POut.PString(Cur.ApptPhone)+"'"
+				+ "medical = '"    +POut.PString(Cur.Medical)+"'"
 				+ ",service = '"    +POut.PString(Cur.Service)+"'"
 				+ ",medicalcomp = '"+POut.PString(Cur.MedicalComp)+"'"
 				+" WHERE patnum = '"+POut.PInt   (Cur.PatNum)+"'";
@@ -1148,6 +1312,7 @@ ORDER BY DueDate
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void InsertRow(int patNum){
 			cmd.CommandText = "INSERT INTO patientnote (patnum"
 				+") VALUES('"+patNum+"')";
@@ -1165,96 +1330,31 @@ ORDER BY DueDate
 
 	}//end class FamilyNote
 
+	///<summary>Corresponds to the patientnote table in the database.</summary>
 	public struct PatientNote{
+		///<summary></summary>
 		public int PatNum;
-		public string FamFinancial;//only one note per family stored with guarantor.
-		public string ApptPhone;//Notes for phone calls for Recall and Unscheduled list
-		public string Medical;//Medical Summary
-		public string Service;//Service notes
-		public string MedicalComp;//Complete Medical History
+		///<summary>Only one note per family stored with guarantor.</summary>
+		public string FamFinancial;
+		///<summary>No longer used.</summary>
+		public string ApptPhone;
+		///<summary>Medical Summary</summary>
+		public string Medical;
+		///<summary>Service notes</summary>
+		public string Service;
+		///<summary>Complete current Medical History</summary>
+		public string MedicalComp;
 	}
-
-	/*=========================================================================================
-		=================================== class PaymentPlans ==========================================*/
-/*not used yet
-	public class PaymentPlans:DataClass{
-		public static PaymentPlan Cur;
-		public static PaymentPlan[] List;
-
-		public static void Refresh(){
-			cmd.CommandText = "SELECT * FROM paymentplan "
-				+"WHERE patnum = '"+POut.PInt(Patients.Cur.PatNum)+"'";
-			FillTable();
-			List=new PaymentPlan[table.Rows.Count];
-			for(int i=0;i<table.Rows.Count;i++){
-				List[i].PaymentPlanNum	 = PIn.PInt   (table.Rows[i][0].ToString());
-				List[i].PatNum					 = PIn.PInt   (table.Rows[i][1].ToString());
-				List[i].PaymentPlanDate	 = PIn.PDate  (table.Rows[i][2].ToString());
-				List[i].Description			 = PIn.PString(table.Rows[i][3].ToString());
-				List[i].PaymentPlanAmount= PIn.PDouble(table.Rows[i][4].ToString());
-				List[i].APR							 = PIn.PDouble(table.Rows[i][5].ToString());
-				List[i].NumberOfPayments = PIn.PInt   (table.Rows[i][6].ToString());
-				List[i].MonthlyAmount		 = PIn.PDouble(table.Rows[i][7].ToString());
-				List[i].Note						 = PIn.PString(table.Rows[i][8].ToString());
-			}
-		}
-
-		public static void UpdateCur(){//updates Cur
-			cmd.CommandText = "UPDATE paymentplan SET " 
-				+ "PatNum							= '" +POut.PInt   (Cur.PatNum)+"'"
-				+ ",PaymentPlanDate		= '" +POut.PDate  (Cur.PaymentPlanDate)+"'"
-				+ ",Description       = '" +POut.PString(Cur.Description)+"'"
-				+ ",PaymentPlanAmount = '" +POut.PDouble(Cur.PaymentPlanAmount)+"'"
-				+ ",APR							  = '" +POut.PDouble(Cur.APR)+"'"
-				+ ",NumberOfPayments  = '" +POut.PInt   (Cur.NumberOfPayments)+"'"
-				+ ",MonthlyAmount		  = '" +POut.PDouble(Cur.MonthlyAmount)+"'"
-				+ ",Note						  = '" +POut.PString(Cur.Note)+"'"
-				+" WHERE PaymentPlanNum = '" +POut.PInt(Cur.PaymentPlanNum)+"'";
-			//MessageBox.Show(cmd.CommandText);
-			NonQ(false);
-		}
-
-		public static void InsertCur(){//saves Cur
-			cmd.CommandText = "INSERT INTO paymentplan (PatNum,PaymentPlanDate,Description,"
-				+"PaymentPlanAmount,APR,NumberOfPayments,MonthlyAmount,Note) VALUES("
-				+"'"+POut.PInt   (Cur.PatNum)+"', "
-				+"'"+POut.PDate  (Cur.PaymentPlanDate)+"', "
-				+"'"+POut.PString(Cur.Description)+"', "
-				+"'"+POut.PDouble(Cur.PaymentPlanAmount)+"', "
-				+"'"+POut.PDouble(Cur.APR)+"', "
-				+"'"+POut.PInt   (Cur.NumberOfPayments)+"', "
-				+"'"+POut.PDouble(Cur.MonthlyAmount)+"', "
-				+"'"+POut.PString(Cur.Note)+"')";
-			NonQ(true);
-			Cur.PaymentPlanNum=InsertID;
-			//MessageBox.Show(Cur.PayNum.ToString());
-		}
-
-		public static void DeleteCur(){//deletes Cur
-			cmd.CommandText = "DELETE from paymentplan WHERE PaymentPlanNum = '"+Cur.PaymentPlanNum.ToString()+"'";
-			NonQ(false);
-		}
-	}
-
-	public struct PaymentPlan{
-		public int PaymentPlanNum;
-		public int PatNum;//Selected automatically from the splits.  Just to make reports easier
-		public DateTime PaymentPlanDate;
-		public string Description;
-		public double PaymentPlanAmount;
-		public double APR;
-		public int NumberOfPayments;
-		public double MonthlyAmount;
-		public string Note;
-	}*/
-
 
 	/*=========================================================================================
 		=================================== class Payments ==========================================*/
 
+	///<summary></summary>
 	public class Payments:DataClass{
+		///<summary></summary>
 		public static Payment Cur;
 
+		///<summary></summary>
 		public static void SetCur(int myPayNum){
 			cmd.CommandText =
 				"SELECT * from payment"
@@ -1271,6 +1371,7 @@ ORDER BY DueDate
 			Cur.PatNum    =PIn.PInt   (table.Rows[0][8].ToString());
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){//updates Cur
 			cmd.CommandText = "UPDATE payment SET " 
 				+ "paytype = '"      +POut.PInt   (Cur.PayType)+"'"
@@ -1286,6 +1387,7 @@ ORDER BY DueDate
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){//saves Cur
 			cmd.CommandText = "INSERT INTO payment (paytype,paydate,payamt, "
 				+"checknum,bankbranch,paynote,issplit,patnum) VALUES("
@@ -1302,11 +1404,13 @@ ORDER BY DueDate
 			//MessageBox.Show(Cur.PayNum.ToString());
 		}
 
+		///<summary></summary>
 		public static void DeleteCur(){//deletes Cur
 			cmd.CommandText = "DELETE from payment WHERE payNum = '"+Cur.PayNum.ToString()+"'";
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static string GetInfo(int payNum){
 			string retStr;
 			SetCur(payNum);
@@ -1319,26 +1423,227 @@ ORDER BY DueDate
 		}
 	}
 
+	///<summary></summary>
 	public struct Payment{
+		///<summary></summary>
 		public int PayNum;
+		///<summary></summary>
 		public int PayType;
+		///<summary></summary>
 		public DateTime PayDate;
+		///<summary></summary>
 		public double PayAmt;
+		///<summary></summary>
 		public string CheckNum;
+		///<summary></summary>
 		public string BankBranch;
+		///<summary></summary>
 		public string PayNote;
+		///<summary></summary>
 		public bool IsSplit;//(between patients.  Not including discounts)
+		///<summary></summary>
 		public int PatNum;//Selected automatically from the splits.  Just to make reports easier
+	}
+
+	/*=========================================================================================
+	=================================== class PayPlans ==========================================*/
+
+	///<summary></summary>
+	public class PayPlans:DataClass{
+		///<summary>List of all payplans for a given patient, whether they are the guarantor or the patient.  This is also used in UpdateAll to store all payment plans in entire database.</summary>
+		public static PayPlan[] List;
+		///<summary></summary>
+		public static PayPlan Cur;
+
+		///<summary></summary>
+		public static void Refresh(){
+			cmd.CommandText =
+				"SELECT * from payplan"
+				+" WHERE patnum = '"+Patients.Cur.PatNum+"'"
+				+" || guarantor = '"+Patients.Cur.PatNum+"' ORDER BY payplandate";
+			FillTable();
+			List=new PayPlan[table.Rows.Count];
+			for(int i=0;i<table.Rows.Count;i++){
+				List[i].PayPlanNum    = PIn.PInt   (table.Rows[i][0].ToString());
+				List[i].PatNum        = PIn.PInt   (table.Rows[i][1].ToString());
+				List[i].Guarantor     = PIn.PInt   (table.Rows[i][2].ToString());
+				List[i].PayPlanDate   = PIn.PDate  (table.Rows[i][3].ToString());
+				List[i].TotalAmount   = PIn.PDouble(table.Rows[i][4].ToString());
+				List[i].APR           = PIn.PDouble(table.Rows[i][5].ToString());
+				List[i].MonthlyPayment= PIn.PDouble(table.Rows[i][6].ToString());
+				List[i].Term          = PIn.PInt   (table.Rows[i][7].ToString());
+				List[i].CurrentDue    = PIn.PDouble(table.Rows[i][8].ToString());
+				List[i].DateFirstPay  = PIn.PDate  (table.Rows[i][9].ToString());
+				List[i].DownPayment   = PIn.PDouble(table.Rows[i][10].ToString());
+				List[i].Note          = PIn.PString(table.Rows[i][11].ToString());
+			}//end for
+		}
+
+		///<summary></summary>
+		public static void UpdateCur(){
+			cmd.CommandText = "UPDATE payplan SET " 
+				+ "patnum = '"         +POut.PInt   (Cur.PatNum)+"'"
+				+ ",guarantor = '"     +POut.PInt   (Cur.Guarantor)+"'"
+				+ ",payplandate = '"   +POut.PDate  (Cur.PayPlanDate)+"'"
+				+ ",totalamount = '"   +POut.PDouble(Cur.TotalAmount)+"'"
+				+ ",apr = '"           +POut.PDouble(Cur.APR)+"'"
+				+ ",monthlypayment = '"+POut.PDouble(Cur.MonthlyPayment)+"'"
+				+ ",term = '"          +POut.PInt   (Cur.Term)+"'"
+				+ ",currentdue = '"    +POut.PDouble(Cur.CurrentDue)+"'"
+				+ ",datefirstpay = '"  +POut.PDate  (Cur.DateFirstPay)+"'"
+				+ ",downpayment = '"   +POut.PDouble(Cur.DownPayment)+"'"
+				+ ",note = '"          +POut.PString(Cur.Note)+"'"
+				+" WHERE payplanNum = '" +POut.PInt   (Cur.PayPlanNum)+"'";
+			//MessageBox.Show(cmd.CommandText);
+			NonQ(false);
+		}
+
+		///<summary></summary>
+		public static void InsertCur(){
+			cmd.CommandText = "INSERT INTO payplan (patnum,guarantor,payplandate,totalamount,"
+				+"apr,monthlypayment,term,currentdue,datefirstpay,downpayment,note) VALUES("
+				+"'"+POut.PInt   (Cur.PatNum)+"', "
+				+"'"+POut.PInt   (Cur.Guarantor)+"', "
+				+"'"+POut.PDate  (Cur.PayPlanDate)+"', "
+				+"'"+POut.PDouble(Cur.TotalAmount)+"', "
+				+"'"+POut.PDouble(Cur.APR)+"', "
+				+"'"+POut.PDouble(Cur.MonthlyPayment)+"', "
+				+"'"+POut.PInt   (Cur.Term)+"', "
+				+"'"+POut.PDouble(Cur.CurrentDue)+"', "
+				+"'"+POut.PDate  (Cur.DateFirstPay)+"', "
+				+"'"+POut.PDouble(Cur.DownPayment)+"', "
+				+"'"+POut.PString(Cur.Note)+"')";
+			NonQ(false);
+		}
+
+		///<summary>Must have already verified that there are no paysplits attached.  Called from FormPayPlan.</summary>
+		public static void DeleteCur(){
+			cmd.CommandText="DELETE FROM payplan WHERE payplannum = '"
+				+Cur.PayPlanNum.ToString()+"'";
+			NonQ(false);
+		}
+
+		/// <summary>Recalculates the CurrentDue for all payment plans based on the specified date.  Does not take into account any payments made.</summary>
+		public static void UpdateAll(DateTime date){
+			cmd.CommandText =
+				"SELECT * FROM payplan";
+			FillTable();
+			List=new PayPlan[table.Rows.Count];
+			for(int i=0;i<table.Rows.Count;i++){
+				List[i].PayPlanNum    = PIn.PInt   (table.Rows[i][0].ToString());
+				List[i].PatNum        = PIn.PInt   (table.Rows[i][1].ToString());
+				List[i].Guarantor     = PIn.PInt   (table.Rows[i][2].ToString());
+				List[i].PayPlanDate   = PIn.PDate  (table.Rows[i][3].ToString());
+				List[i].TotalAmount   = PIn.PDouble(table.Rows[i][4].ToString());
+				List[i].APR           = PIn.PDouble(table.Rows[i][5].ToString());
+				List[i].MonthlyPayment= PIn.PDouble(table.Rows[i][6].ToString());
+				List[i].Term          = PIn.PInt   (table.Rows[i][7].ToString());
+				List[i].CurrentDue    = PIn.PDouble(table.Rows[i][8].ToString());
+				List[i].DateFirstPay  = PIn.PDate  (table.Rows[i][9].ToString());
+				List[i].DownPayment   = PIn.PDouble(table.Rows[i][10].ToString());
+				//List[i].Note          = PIn.PString(table.Rows[i][11].ToString());
+			}//end for
+			for(int i=0;i<List.Length;i++){
+				Cur=List[i];
+				cmd.CommandText="UPDATE payplan SET CurrentDue = '"
+					+GetAmtDue().ToString()+"' WHERE PayPlanNum = '"+POut.PInt(Cur.PayPlanNum)+"'";
+				NonQ(false);
+			}
+		}
+
+		///<summary>Gets the amount due for the current payment plan based on today's date.  It is simply the number of months x monthly payment.  Includes interest, but does not include payments made so far.</summary>
+		public static double GetAmtDue(){
+			return Cur.DownPayment+Cur.MonthlyPayment*GetMonthsDue();
+			//return retVal;
+		}
+
+		/// <summary>For the Cur payment plan, gets the number of months, rounded up, between the first payment date and today's date.  This is the number of payments that are due.  Used from GetAmtDue() and from FormPayPlan.</summary>
+		public static int GetMonthsDue(){
+			for(int i=0;i<100;i++){
+				//MessageBox.Show(Cur.DateFirstPay.AddMonths(i).ToString()+","+DateTime.Today.ToString());
+				if(Cur.DateFirstPay.AddMonths(i)>DateTime.Today){
+					return i;
+				}
+			}
+			return 0;
+		}
+
+		/// <summary>Used from PayPlan window to get the amount paid so far on one payment plan.</summary>
+		/// <param name="payPlanNum"></param>
+		public static double GetAmtPaid(int payPlanNum){
+			if(payPlanNum==0){//for a new paymentPlan
+				return 0;
+			}
+			cmd.CommandText="SELECT SUM(paysplit.splitamt) FROM paysplit "
+				+"WHERE paysplit.payplannum = '"+payPlanNum.ToString()+"' "
+				+"GROUP BY paysplit.payplannum";
+			FillTable();
+			if(table.Rows.Count==0){
+				return 0;
+			}
+			return PIn.PDouble(table.Rows[0][0].ToString());
+		}
+
+		///<summary>Must make sure Refresh is done first.  Returns the sum of all payment plan entries for guarantor and/or patient.</summary>
+		public static double ComputeBal(){
+			double retVal=0;
+			for(int i=0;i<List.Length;i++){
+				//one or both of these conditions may be met:
+				if(List[i].Guarantor==Patients.Cur.PatNum){
+					retVal+=List[i].CurrentDue;
+				}
+				if(List[i].PatNum==Patients.Cur.PatNum){
+					retVal-=List[i].TotalAmount;
+				}
+			}
+			return retVal;
+		}
+
+
+	}
+
+	/// <summary>Corresponds to the payplan table in the database.  Each row represents one signed agreement to make payments.</summary>
+	public struct PayPlan{
+		/// <summary>Primary key</summary>
+		public int PayPlanNum;
+		/// <summary>Foreign key to  patient.PatNum.  The patient who had the treatment done.</summary>
+		public int PatNum;
+		/// <summary>Foreign key to  patient.PatNum.  The person responsible for the payments.  
+		/// Does not need to be in the same family as the patient.</summary>
+		public int Guarantor;
+		/// <summary>Date that the payment plan was started.</summary>
+		public DateTime PayPlanDate;
+		/// <summary>Total amount financed.</summary>
+		public double TotalAmount;
+		/// <summary>Annual percentage rate.  eg 18.  This does not take into consideration any late payments, but only the percentage used to determine the current amount due.</summary>
+		public double APR;
+		/// <summary>Amount of payment agreed to for each month</summary>
+		public double MonthlyPayment;
+		/// <summary>Number of months agreed for payment.</summary>
+		public int Term;
+		/// <summary>The current amount due not taking into account payments made.  Updated every time it's loaded.  Also updated using the update tool.</summary>
+		public double CurrentDue;
+		/// <summary>Date first payment is due.</summary>
+		public DateTime DateFirstPay;
+		/// <summary>The amount of downpayment not counting the first payment.</summary>
+		public double DownPayment;
+		///<summary>Generally used to archive the terms so they don't accidently get changed.</summary>
+		public string Note;
 	}
 
 	/*=========================================================================================
 	=================================== class PaySplits ==========================================*/
 
+	///<summary></summary>
 	public class PaySplits:DataClass{
+		///<summary></summary>
 		public static PaySplit[] List;
+		///<summary></summary>
 		public static PaySplit[] PaymentList;
+		///<summary></summary>
 		public static PaySplit Cur;
 
+		///<summary></summary>
 		public static void Refresh(){
 			cmd.CommandText =
 				"SELECT * from paysplit"
@@ -1354,9 +1659,11 @@ ORDER BY DueDate
 				List[i].IsDiscount  = PIn.PBool  (table.Rows[i][5].ToString());
 				List[i].DiscountType= PIn.PInt   (table.Rows[i][6].ToString());
 				List[i].ProvNum     = PIn.PInt   (table.Rows[i][7].ToString());
+				List[i].PayPlanNum  = PIn.PInt   (table.Rows[i][8].ToString());
 			}//end for
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){//updates Cur
 			cmd.CommandText = "UPDATE paysplit SET " 
 				+ "splitamt = '"     +POut.PDouble(Cur.SplitAmt)+"'"
@@ -1366,24 +1673,28 @@ ORDER BY DueDate
 				+ ",isdiscount = '"  +POut.PBool  (Cur.IsDiscount)+"'"
 				+ ",discounttype = '"+POut.PInt   (Cur.DiscountType)+"'"
 				+ ",provnum = '"     +POut.PInt   (Cur.ProvNum)+"'"
+				+ ",payplannum = '"  +POut.PInt   (Cur.PayPlanNum)+"'"
 				+" WHERE splitNum = '" +POut.PInt (Cur.SplitNum)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){//saves Cur
 			cmd.CommandText = "INSERT INTO paysplit (splitamt,patnum,procdate, "
-				+"paynum,isdiscount,discounttype,provnum) VALUES("
+				+"paynum,isdiscount,discounttype,provnum,payplannum) VALUES("
 				+"'"+POut.PDouble(Cur.SplitAmt)+"', "
 				+"'"+POut.PInt   (Cur.PatNum)+"', "
 				+"'"+POut.PDate  (Cur.ProcDate)+"', "
 				+"'"+POut.PInt   (Cur.PayNum)+"', "
 				+"'"+POut.PBool  (Cur.IsDiscount)+"', "
 				+"'"+POut.PInt   (Cur.DiscountType)+"', "
-				+"'"+POut.PInt   (Cur.ProvNum)+"')";
+				+"'"+POut.PInt   (Cur.ProvNum)+"', "
+				+"'"+POut.PInt   (Cur.PayPlanNum)+"')";
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void RefreshPaymentList(int payNum){
 			cmd.CommandText =
 				"SELECT * from paysplit"
@@ -1399,9 +1710,11 @@ ORDER BY DueDate
 				PaymentList[i].IsDiscount  = PIn.PBool  (table.Rows[i][5].ToString());
 				PaymentList[i].DiscountType= PIn.PInt   (table.Rows[i][6].ToString());
 				PaymentList[i].ProvNum     = PIn.PInt   (table.Rows[i][7].ToString());
+				PaymentList[i].PayPlanNum  = PIn.PInt   (table.Rows[i][8].ToString());
 			}//end for
 		}
 
+		///<summary></summary>
 		public static void DeleteCur(){//deletes Cur
 			//Cur=List[Selected];
 			//PutBal(Cur.PatNum,Cur.ProcDate,-Cur.SplitAmt);
@@ -1409,6 +1722,7 @@ ORDER BY DueDate
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static double ComputeBal(){//must make sure Refresh is done first
 			double retVal=0;
 			for(int i=0;i<List.Length;i++){
@@ -1419,24 +1733,39 @@ ORDER BY DueDate
 
 	}
 
+	///<summary>Corresponds to the paysplit table in the database.</summary>
 	public struct PaySplit{
-		public int SplitNum;//primary key
-		public double SplitAmt;//amount
-		public int PatNum;//foreign key to Patient.PatNum
-		public DateTime ProcDate;//procedure date.  Not necessarily when the payment was made.
-		public int PayNum;//foreign key to Payment.PayNum
-		public bool IsDiscount;//can be discount or payment
-		public int DiscountType;//foreign key to Definition.DefNum
-		public int ProvNum;//foreign key to Provider.ProvNum
+		///<summary>Primary key.</summary>
+		public int SplitNum;
+		///<summary>Amount of split.</summary>
+		public double SplitAmt;
+		///<summary>Foreign key to patient.PatNum.</summary>
+		public int PatNum;
+		///<summary>Procedure date.  Not necessarily when the payment was made.  This field will be eliminated when we add a ProcNum field because allowing splits to have different dates makes accurate aging almost impossible.</summary>
+		public DateTime ProcDate;//
+		///<summary>Foreign key to payment.PayNum.  Every paysplit must be linked to a payment.</summary>
+		public int PayNum;
+		///<summary>True if discount rather than a payment.</summary>
+		public bool IsDiscount;
+		///<summary>Foreign key to definition.DefNum if a discount.</summary>
+		public int DiscountType;
+		///<summary>Foreign key to provider.ProvNum.</summary>
+		public int ProvNum;
+		///<summary>Foreign key to payplan.PayPlanNum.  0 if not attached to a payplan.</summary>
+		public int PayPlanNum;
 	}
 
 	/*=========================================================================================
 	=================================== class Permissions ==========================================*/
   
+	///<summary></summary>
 	public class Permissions:DataClass{
+		///<summary></summary>
 		public static Permission Cur;
+		///<summary></summary>
 		public static Permission[] List;
 
+		///<summary></summary>
 		public static void Refresh(){
 			cmd.CommandText =
 				"SELECT * from permission ORDER BY Name";
@@ -1451,6 +1780,7 @@ ORDER BY DueDate
 			}
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO permission (Name,RequiresPassword,BeforeDate,BeforeDays) "
 				+"VALUES ("
@@ -1463,6 +1793,7 @@ ORDER BY DueDate
 			Cur.PermissionNum=InsertID;
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE permission SET "
 				+"name ='"              +POut.PString(Cur.Name)+"'"
@@ -1473,6 +1804,7 @@ ORDER BY DueDate
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static bool GetCur(string permissionName){
 			//used in Security log entry and UserPermissions.CheckUserPassword
 			for(int i=0;i<List.Length;i++){
@@ -1496,6 +1828,7 @@ ORDER BY DueDate
 			return false;
 		}*/
 
+		///<summary></summary>
 		public static void DisableSecurity(){
 			cmd.CommandText="UPDATE permission SET RequiresPassword = '0' "
 				+"WHERE Name = 'Security Administration'";
@@ -1503,6 +1836,7 @@ ORDER BY DueDate
 			Refresh();
 		}
 
+		///<summary></summary>
 		public static void SetAll(bool doRequirePass){
 			if(doRequirePass){
 				cmd.CommandText="UPDATE permission SET RequiresPassword = '1'";
@@ -1515,23 +1849,32 @@ ORDER BY DueDate
 
 	}
 
-	public struct Permission{//table permission
-		public int PermissionNum;//Primary Key
-		public string Name;//Description.  Not user editable.
-		public bool RequiresPassword;//if true, will display user/password dialog for that feature
-		public DateTime BeforeDate;//only displays user/password dialog if item date is before this date
-		public int BeforeDays;//can be -1 for "do not calculate days". 0 days=always require password.
-			//Only displays user/password dialog if item is before given number of days
+	///<summary>Corresponds to the permission table in the database.</summary>
+	public struct Permission{
+		///<summary>Primary key.</summary>
+		public int PermissionNum;
+		///<summary>Description.  Not user editable.</summary>
+		public string Name;
+		///<summary>If true, will display user/password dialog for that feature.</summary>
+		public bool RequiresPassword;
+		///<summary>Only displays user/password dialog if item date is before this date.</summary>
+		public DateTime BeforeDate;
+		///<summary>Can be -1 for "do not calculate days". 0 days=always require password. Only displays user/password dialog if item is before given number of days</summary>
+		public int BeforeDays;//
 	}
 
 	/*=========================================================================================
 	=================================== class Prefs ==========================================*/
 
+	///<summary></summary>
 	public class Prefs:DataClass{
+		///<summary></summary>
 		public static Hashtable HList;
+		///<summary></summary>
 		public static Pref Cur;
 		//private string DataBaseVersion=Application.ProductVersion;//was "1.0.0";
 
+		///<summary></summary>
 		public static bool ConvertDB(){
 			ExitApplicationNow ExitApplicationNow2=new ExitApplicationNow();
 			ClassConvertDatabase ClassConvertDatabase2=new ClassConvertDatabase();
@@ -1545,6 +1888,7 @@ ORDER BY DueDate
 			}
 		}
 
+		///<summary></summary>
 		public static void Refresh(){
 			HList=new Hashtable();
 			Pref tempPref = new Pref();
@@ -1558,6 +1902,7 @@ ORDER BY DueDate
 			}
 		}
 
+		///<summary></summary>
 		public static bool TryToConnect(){
 			try{
 				con.Open();
@@ -1572,6 +1917,7 @@ ORDER BY DueDate
 			return true;
 		}
 
+		///<summary></summary>
 		public static bool DBExists(){
 			try{
 				con.Open();
@@ -1586,6 +1932,7 @@ ORDER BY DueDate
 			return true;
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE preference SET "
 				+"valuestring = '"  +POut.PString(Cur.ValueString)+"'"
@@ -1593,6 +1940,7 @@ ORDER BY DueDate
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void FlushAndLock(){
 			try{
 				con.Open();
@@ -1605,13 +1953,17 @@ ORDER BY DueDate
 			}
 		}
 
+		///<summary></summary>
 		public static void Unlock(){
 			con.Close();
 		}		
 	}
 
-	public struct Pref{//stores preferences and practice info
-		public string PrefName;//the 'key'
+	///<summary>Corresponds to the preference table in the database.  Stores small bits of data for a wide variety of purposes.</summary>
+	public struct Pref{
+		///<summary>Primary key.</summary>
+		public string PrefName;//
+		///<summary>The stored value.</summary>
 		public string ValueString;
 	}
 
@@ -1619,11 +1971,16 @@ ORDER BY DueDate
 	/*=========================================================================================
 		=================================== class ProcButtons===========================================*/
 
+	///<summary></summary>
 	public class ProcButtons:DataClass{
+		///<summary></summary>
 		public static ProcButton Cur;
+		///<summary></summary>
 		public static Hashtable HList;
+		///<summary></summary>
 		public static ProcButton[] List;
 
+		///<summary></summary>
 		public static void Refresh(){
 			cmd.CommandText = 
 				"SELECT * from procbutton "
@@ -1640,6 +1997,7 @@ ORDER BY DueDate
 			}
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			//must have already checked ADACode for nonduplicate.
 			cmd.CommandText = "INSERT INTO procbutton (description,itemorder) VALUES("
@@ -1650,6 +2008,7 @@ ORDER BY DueDate
 			Cur.ProcButtonNum=InsertID;
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE procbutton SET " 
 				+ "description = '" +POut.PString(Cur.Description)+"'"
@@ -1660,6 +2019,7 @@ ORDER BY DueDate
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void DeleteCur(){
 			cmd.CommandText = "DELETE from procbuttonitem WHERE procbuttonnum = '"
 				+POut.PInt(Cur.ProcButtonNum)+"'";
@@ -1671,29 +2031,41 @@ ORDER BY DueDate
 
 	}
 
+	///<summary>Corresponds to the procbutton table in the database.</summary>
 	public struct ProcButton{
-		public int ProcButtonNum;//primary key
+		///<summary>Primary key</summary>
+		public int ProcButtonNum;
+		///<summary>The text to show on the button.</summary>
 		public string Description;
-		public int ItemOrder;//order that they will show
-		//public bool IsFourQuad;
+		///<summary>Order that they will show in the Chart module.</summary>
+		public int ItemOrder;
 	}
 
 	/*=========================================================================================
 		=================================== class ProcButtonItems===========================================*/
 
+	///<summary></summary>
 	public class ProcButtonItems:DataClass{
+		///<summary></summary>
 		public static ProcButtonItem Cur;
+		///<summary></summary>
 		public static Hashtable HList;
+		///<summary></summary>
 		public static ProcButtonItem[] List;
 		//public static ProcButtonItem[] ListForButton;
 		//these two used when editing buttons:
+		///<summary></summary>
 		public static ArrayList ALadaCodes;//string, because some buttonItems are adacodes
+		///<summary></summary>
 		public static ArrayList ALautoCodes;//int, and some are autocodes
 		//these two used when clicking buttons:
+		///<summary></summary>
 		public static string[] adaCodeList;
+		///<summary></summary>
 		public static int[] autoCodeList;
 		//private static ArrayList ALlist;
 
+		///<summary></summary>
 		public static void Refresh(){
 			cmd.CommandText = 
 				"SELECT * FROM procbuttonitem";
@@ -1709,6 +2081,7 @@ ORDER BY DueDate
 			}
 		}
 
+		///<summary></summary>
 		public static void GetListsForButton(int procButtonNum){
 			//ArrayList ALtemp=new ArrayList();
 			ALadaCodes=new ArrayList();
@@ -1739,6 +2112,7 @@ ORDER BY DueDate
 			}
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			//must have already checked ADACode for nonduplicate.
 			cmd.CommandText = "INSERT INTO procbuttonitem (procbuttonnum,adacode,autocodenum) VALUES("
@@ -1749,6 +2123,7 @@ ORDER BY DueDate
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			//MessageBox.Show("Updating");
 			cmd.CommandText = "UPDATE procbuttonitem SET " 
@@ -1760,11 +2135,13 @@ ORDER BY DueDate
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void DeleteCur(){
 			cmd.CommandText = "DELETE from procbuttonitem WHERE procbuttonitemnum = '"+POut.PInt(Cur.ProcButtonItemNum)+"'";
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void DeleteAllForCur(){
 			cmd.CommandText = "DELETE from procbuttonitem WHERE procbuttonnum = '"+POut.PInt(ProcButtons.Cur.ProcButtonNum)+"'";
 			NonQ(false);
@@ -1772,25 +2149,38 @@ ORDER BY DueDate
 
 	}//end class ProcButtonItems
 
+	///<summary>Corresponds to the procbuttonitem table in the database.</summary>
 	public struct ProcButtonItem{
-		public int ProcButtonItemNum;//pk
-		public int ProcButtonNum;//fk to procbutton table
-		public string ADACode;//fk to procedurecode table
-		public int AutoCodeNum;//fk to autocode table
-	}//end struct ProcButtonItem
+		///<summary>Primary key.</summary>
+		public int ProcButtonItemNum;
+		///<summary>Foreign key to procbutton.ProcButtonNum.</summary>
+		public int ProcButtonNum;
+		///<summary>Foreign key to procedurecode.ADACode.</summary>
+		public string ADACode;
+		///<summary>Foreign key to autocode.AutoCodeNum.</summary>
+		public int AutoCodeNum;
+	}
 
 
 	/*=========================================================================================
-	=================================== class ProcCodes ===========================================*/
+	=================================== class ProcedureCodes ===========================================*/
 
-	public class ProcCodes:DataClass{
+	///<summary></summary>
+	public class ProcedureCodes:DataClass{
+		///<summary></summary>
 		public static DataTable tableStat;
+		///<summary></summary>
 		public static ProcedureCode[] ProcList;//grouped by category
+		///<summary></summary>
 		public static ArrayList RecallAL;
+		///<summary></summary>
 		public static ProcedureCode Cur;
+		///<summary></summary>
 		public static Hashtable HList;//key:AdaCode, value:ProcedureCode 
+		///<summary></summary>
 		public static ProcedureCode[] List;
 
+		///<summary></summary>
 		public static void Refresh(){
 			HList=new Hashtable();
 			ProcedureCode tempCode = new ProcedureCode();
@@ -1824,6 +2214,7 @@ ORDER BY DueDate
 			}
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			//must have already checked ADACode for nonduplicate.
 			cmd.CommandText = "INSERT INTO procedurecode (adacode,descript,abbrdesc,"
@@ -1849,6 +2240,7 @@ ORDER BY DueDate
 			//MessageBox.Show(Cur.PayNum.ToString());
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			//MessageBox.Show("Updating");
 			cmd.CommandText = "UPDATE procedurecode SET " 
@@ -1870,6 +2262,7 @@ ORDER BY DueDate
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static ProcedureCode GetProcCode(string myADA){
 			if(myADA==null){
 				MessageBox.Show(Lan.g("ProcCodes","Error. Invalid procedure code."));
@@ -1884,6 +2277,7 @@ ORDER BY DueDate
 			}
 		}
 
+		///<summary></summary>
 		public static void GetProcList(){
 			ProcList = new ProcedureCode[tableStat.Rows.Count];
 			int i=0;
@@ -1910,40 +2304,64 @@ ORDER BY DueDate
 
 	}//end class ProcCodes
 
+	///<summary>Corresponds to the procedurecode table in the database.</summary>
 	public struct ProcedureCode{
-		public string ADACode;//primary key, 6 Char, last char is for user's use, and must be dropped when sending claim
+		///<summary>Primary key.  Does not have to be a valid ADACode. Can also include ADACodes with suffixes which get automatically trimmed when sending claims.</summary>
+		public string ADACode;
+		///<summary>The main description.</summary>
 		public string Descript;
+		///<summary>Abbreviated description.</summary>
 		public string AbbrDesc;
-		public string ProcTime;//X's and /'s describe Dr's time and assistant's time
-		public int ProcCat;//foreign key to Definition.DefNum
-		public TreatmentArea TreatArea;//enum TreatmentArea{Surf=1,Tooth=2,Mouth=3 or 0,Quad=4,Sextant=5,Arch=6,ToothRange=7}
-		public bool RemoveTooth;//true for extractions so teeth will show as missing
-		public bool SetRecall;//triggers recall in 6 months.
-		public bool NoBillIns;//if true, do not bill this procedure to insurance
-		public bool IsProsth;//is a bridge, crown, or denture. Not currently in use anywhere.
+		///<summary>X's and /'s describe Dr's time and assistant's time in 10 minute increments.</summary>
+		public string ProcTime;
+		///<summary>Foreign key to definition.DefNum.</summary>
+		public int ProcCat;
+		///<summary>See the TreatmentArea enumeration.</summary>
+		public TreatmentArea TreatArea;
+		///<summary>True for extractions so teeth will show as missing if complete or existing.</summary>
+		public bool RemoveTooth;
+		///<summary>Triggers recall in 6 months.</summary>
+		public bool SetRecall;
+		///<summary>If true, do not usually bill this procedure to insurance.</summary>
+		public bool NoBillIns;
+		///<summary>Not currently in use anywhere.  Might be used to designate a bridge, crown, or denture.</summary>
+		public bool IsProsth;
+		///<summary>The default procedure note to copy when marking complete.</summary>
 		public string DefaultNote;
-		public bool IsHygiene;//Identifies hygiene procedures so that the correct provider can be selected.
-		public int GTypeNum; //foreign key to GraphicType
-		public string AlternateCode1;//For Medicaid.  There may be more later.
-	}//end struct ProcedureCode
+		///<summary>Identifies hygiene procedures so that the correct provider can be selected.</summary>
+		public bool IsHygiene;
+		///<summary>Foreign key to GraphicType</summary>
+		public int GTypeNum;
+		///<summary>For Medicaid.  There may be more later.</summary>
+		public string AlternateCode1;
+	}
 	
 	/*=========================================================================================
 	=================================== class Procedures ===========================================*/
 
+	///<summary></summary>
 	public class Procedures:DataClass{
+		///<summary></summary>
 		public static Procedure Cur;
+		///<summary></summary>
 		public static Procedure[] List;//all procedures for current patient
+		///<summary></summary>
 		public static Hashtable HList;//Hashtable of all procedures for current patient
+		///<summary></summary>
 		public static ArrayList MissingTeeth;//valid "1"-"32", and "A"-"Z"
 		private static ProcDesc[] procsMultApts;
+		///<summary>Descriptions of procedures for one appointment or one next appointment. Fill by using GetProcsMultApts, then GetProcsOneApt to pull data from that list.</summary>
 		public static string[] ProcsOneApt;
-		public static string[] ProcsForSingle;//for one appointment or one next appointment
+		///<summary>Descriptions of procedures for one appointment or one next appointment. Fill using GetProcsForSingle to get data directly from the database.</summary>
+		public static string[] ProcsForSingle;//
 		//private static ProcCodes ProcCodes;
 
+		///<summary></summary>
 		public Procedures(){
 			//ProcCodes=new ProcCodes();
 		}
 
+		///<summary></summary>
 		public static void Refresh(){
 			cmd.CommandText =
 				"SELECT * from procedurelog "
@@ -1969,15 +2387,13 @@ ORDER BY DueDate
 				List[i].Priority				= PIn.PInt   (table.Rows[i][12].ToString());
 				List[i].ProcStatus			= (ProcStat)PIn.PInt   (table.Rows[i][13].ToString());
 				List[i].ProcNote				= PIn.PString(table.Rows[i][14].ToString());
-				//PriEstim [15]
-				//SecEstim [16]
-				//List[i].ClaimNum				= PIn.PInt   (table.Rows[i][17].ToString());
 				List[i].ProvNum					= PIn.PInt   (table.Rows[i][15].ToString());
 				List[i].Dx							= PIn.PInt   (table.Rows[i][16].ToString());
 				List[i].NextAptNum			= PIn.PInt   (table.Rows[i][17].ToString());
 				List[i].IsCovIns				= PIn.PBool  (table.Rows[i][18].ToString());
+				List[i].CapCoPay  			= PIn.PDouble(table.Rows[i][19].ToString());
 				HList.Add(List[i].ProcNum,List[i]);    
-				if(ProcCodes.GetProcCode(List[i].ADACode).RemoveTooth && (
+				if(ProcedureCodes.GetProcCode(List[i].ADACode).RemoveTooth && (
 					List[i].ProcStatus==ProcStat.C
 					|| List[i].ProcStatus==ProcStat.EC
 					|| List[i].ProcStatus==ProcStat.EO))
@@ -1987,29 +2403,7 @@ ORDER BY DueDate
 			}
 		}
 
-		/*public static int ConvertToInt(string toothNum){
-			int retVal=-1;//0?
-			int intPri;
-			try{
-				retVal=System.Convert.ToInt32(toothNum);
-			}
-			catch{
-				//if (Procedures.List[i].ToothNum.CompareTo("A")>=0 & Procedures.List[i].ToothNum.CompareTo("J")<=0) toothIsAnt = true;
-				//else if (Procedures.List[i].ToothNum.CompareTo("K")>=0 & Procedures.List[i].ToothNum.CompareTo("T")<=0) toothIsAnt = true;
-				if (toothNum!=null & toothNum.Length>0){
-					intPri=Convert.ToByte(Convert.ToChar(toothNum));//F=70
-					if(intPri>=65 & intPri<=74){
-						retVal=intPri-61;
-					}
-					else if(intPri>=75 & intPri<=84){
-						retVal=intPri-55;
-					}
-				}//end if
-				else retVal=0;
-			}
-			return retVal;
-		}*/
-
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO procedurelog " 
 				+"(PatNum, AptNum, ADACode, ProcDate, "
@@ -2017,7 +2411,7 @@ ORDER BY DueDate
 				+"OverridePri, OverrideSec, Surf, "
 				+"ToothNum, ToothRange, NoBillIns, Priority, "
 				+"ProcStatus, ProcNote, ProvNum, "
-				+"dx,nextaptnum,iscovins) "
+				+"dx,nextaptnum,iscovins,capcopay) "
 				+"VALUES ("
 				+"'"+POut.PInt   (Cur.PatNum)+"', "
 				+"'"+POut.PInt   (Cur.AptNum)+"', "
@@ -2033,19 +2427,18 @@ ORDER BY DueDate
 				+"'"+POut.PInt   (Cur.Priority)+"', "
 				+"'"+POut.PInt   ((int)Cur.ProcStatus)+"', "
 				+"'"+POut.PString(Cur.ProcNote)+"', "
-				//+"'"+POut.PDouble(Cur.PriEstim)+"', "
-				//+"'"+POut.PDouble(Cur.SecEstim)+"', "
-				//+"'"+POut.PInt   (Cur.ClaimNum)+"', "
 				+"'"+POut.PInt   (Cur.ProvNum)+"', "
 				+"'"+POut.PInt   (Cur.Dx)+"', "
 				+"'"+POut.PInt   (Cur.NextAptNum)+"', "
-				+"'"+POut.PBool  (Cur.IsCovIns)+"')";
+				+"'"+POut.PBool  (Cur.IsCovIns)+"', "
+				+"'"+POut.PDouble(Cur.CapCoPay)+"')";
 				//+"'"+POut.PBool  (Cur.NoShowGraphical)+"')";
 			//MessageBox.Show(cmd.CommandText);
 			NonQ(true);
 			Cur.ProcNum=InsertID;
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE procedurelog SET "
 				+"PatNum = '"					 +POut.PInt   (Cur.PatNum)+"', "
@@ -2062,11 +2455,11 @@ ORDER BY DueDate
 				+"Priority = '"				 +POut.PInt   (Cur.Priority)+"', "
 				+"ProcStatus = '"			 +POut.PInt   ((int)Cur.ProcStatus)+"', "
 				+"ProcNote = '"				 +POut.PString(Cur.ProcNote)+"', "
-				//+"ClaimNum = '"				 +POut.PInt   (Cur.ClaimNum)+"', "
 				+"ProvNum = '"				 +POut.PInt   (Cur.ProvNum)+"', "
 				+"Dx = '"							 +POut.PInt   (Cur.Dx)+"', "
 				+"nextaptnum = '"			 +POut.PInt   (Cur.NextAptNum)+"', "
-				+"iscovins = '"				 +POut.PBool  (Cur.IsCovIns)+"' "
+				+"iscovins = '"				 +POut.PBool  (Cur.IsCovIns)+"', "
+				+"capcopay = '"				 +POut.PDouble(Cur.CapCoPay)+"' "
 				//+"noshowgraphical = '" +POut.PBool  (Cur.NoShowGraphical)+"' "
 				+"WHERE ProcNum = '"+POut.PInt (Cur.ProcNum)+"'";
 			NonQ(false);
@@ -2086,12 +2479,14 @@ ORDER BY DueDate
 
 		
 
+		///<summary></summary>
 		public static void DeleteCur(){
 			cmd.CommandText = "DELETE from procedurelog WHERE procNum = '"+POut.PInt(Cur.ProcNum)+"'";
 			NonQ(false);
 		}
 
-		public static void GetProcsForSingle(int aptNum, bool isNext){//gets string[]
+		///<summary>Gets a string[] (ProcsForSingle) of the procedures for a single appointment or Next appointment from the database.</summary>
+		public static void GetProcsForSingle(int aptNum, bool isNext){
 			if(isNext){
 				cmd.CommandText = "SELECT * from procedurelog WHERE nextaptnum = '"+POut.PInt(aptNum)+"'";
 			}
@@ -2111,10 +2506,14 @@ ORDER BY DueDate
 			}
 		}
 
-		private static string ConvertProcToString(string aDACode,string surf, string toothNum){//used by GetProcsForSingle
-			//and     GetProcsMultApts
+		/// <summary>Used by GetProcsForSingle and GetProcsMultApts to generate a short string description of a procedure.</summary>
+		/// <param name="aDACode"></param>
+		/// <param name="surf"></param>
+		/// <param name="toothNum"></param>
+		/// <returns></returns>
+		private static string ConvertProcToString(string aDACode,string surf, string toothNum){
 			string strLine="";
-			switch (ProcCodes.GetProcCode(aDACode).TreatArea){
+			switch (ProcedureCodes.GetProcCode(aDACode).TreatArea){
 				case TreatmentArea.Surf :
 					strLine+="#"+toothNum+"-"+surf+"-";//""#12-MOD-"
 					break;
@@ -2136,33 +2535,60 @@ ORDER BY DueDate
 					//strLine+=table.Rows[j][13].ToString()+" ";//don't show range
 					break;
 			}//end switch
-			strLine+=ProcCodes.GetProcCode(aDACode).AbbrDesc;
+			strLine+=ProcedureCodes.GetProcCode(aDACode).AbbrDesc;
 			return strLine;
 		}
 
-		public static void GetProcsMultApts(int[] myAptNums){//fills procsMultApts (ProcDesc (aptNum and string[]))
+		///<summary>Gets a list (procsMultApts is a struct of type ProcDesc(aptNum and string[]) of all the procedures attached to the specified appointments.  Then, use GetProcsOneApt to pull procedures for one appointment from this list.  This process requires only one call to the database.</summary>
+		/// <param name="myAptNums">The list of appointments to get procedures for.</param>
+		public static void GetProcsMultApts(int[] myAptNums){
+			GetProcsMultApts(myAptNums,false);
+		}
+
+		///<summary>Gets a list (procsMultApts is a struct of type ProcDesc(aptNum and string[]) of all the procedures attached to the specified appointments.  Then, use GetProcsOneApt to pull procedures for one appointment from this list.  This process requires only one call to the database.</summary>
+		/// <param name="myAptNums">The list of appointments to get procedures for.</param>
+		/// <param name="isForNext">Gets procedures for a list of next appointments rather than regular appointments.</param>
+		public static void GetProcsMultApts(int[] myAptNums,bool isForNext){
 			//if (myAptNums.Length==0)
 			Procedure tempProcedure = new Procedure();
 			string strAptNums="";
 			if (myAptNums.Length>0){
-				strAptNums="AptNum='"+myAptNums[0].ToString()+"'";
-				for (int i=1;i<myAptNums.Length;i++){
-					strAptNums+=" || AptNum='"+myAptNums[i].ToString()+"'";
-				}//end for
+				if(isForNext){
+					strAptNums="NextAptNum='"+myAptNums[0].ToString()+"'";
+					for (int i=1;i<myAptNums.Length;i++){
+						strAptNums+=" || NextAptNum='"+myAptNums[i].ToString()+"'";
+					}
+				}
+				else{
+					strAptNums="AptNum='"+myAptNums[0].ToString()+"'";
+					for (int i=1;i<myAptNums.Length;i++){
+						strAptNums+=" || AptNum='"+myAptNums[i].ToString()+"'";
+					}
+				}
 				//MessageBox.Show(strAptNums);
 				cmd.CommandText = "SELECT * from procedurelog WHERE "+strAptNums;
 				FillTable();
 			}//end if >0
-			int count3 = table.Rows.Count;
+			else
+				table=new DataTable();
+			//int count3 = table.Rows.Count;
 			//already defined: ProcDesc[] procsEntireDay
 			//MessageBox.Show(count3.ToString());
 			procsMultApts=new ProcDesc[myAptNums.Length];
-			for (int i = 0; i < myAptNums.Length; i += 1){
+			int internalCount;
+			for(int i=0;i<myAptNums.Length;i++){
 				procsMultApts[i].AptNum=myAptNums[i];
-				int internalCount=0;
-				for (int j=0; j<count3; j+=1){
-					if (PIn.PInt(table.Rows[j][2].ToString())==myAptNums[i]){
-						internalCount+=1;
+				internalCount=0;
+				for(int j=0;j<table.Rows.Count;j++){
+					if(isForNext){
+						if(PIn.PInt(table.Rows[j][17].ToString())==myAptNums[i]){
+							internalCount+=1;
+						}
+					}
+					else{//regular appt
+						if(PIn.PInt(table.Rows[j][2].ToString())==myAptNums[i]){
+							internalCount+=1;
+						}
 					}
 				}
 				procsMultApts[i].ProcLines=new string[internalCount];
@@ -2170,20 +2596,29 @@ ORDER BY DueDate
 				string pADACode="";
 				string pSurf="";
 				string pToothNum="";
-				for (int j=0; j<count3; j+=1){
+				for(int j=0;j<table.Rows.Count;j++){
 					pADACode = PIn.PString(table.Rows[j][3].ToString());
 					pSurf    = PIn.PString(table.Rows[j][8].ToString());
 					pToothNum= PIn.PString(table.Rows[j][9].ToString());
-					if (PIn.PInt(table.Rows[j][2].ToString())==myAptNums[i]){
-						procsMultApts[i].ProcLines[internalCount]=ConvertProcToString(pADACode,pSurf,pToothNum);
-						internalCount+=1;
+					if(isForNext){
+						if (PIn.PInt(table.Rows[j][17].ToString())==myAptNums[i]){
+							procsMultApts[i].ProcLines[internalCount]=ConvertProcToString(pADACode,pSurf,pToothNum);
+							internalCount+=1;
+						}
+					}
+					else{//regular appt
+						if (PIn.PInt(table.Rows[j][2].ToString())==myAptNums[i]){
+							procsMultApts[i].ProcLines[internalCount]=ConvertProcToString(pADACode,pSurf,pToothNum);
+							internalCount+=1;
+						}
 					}
 				}
 			}//end for myAptNums
 			//MessageBox.Show(procsEntireDay[0].AptNum.ToString()+procsEntireDay[1].AptNum.ToString());
 		}
 
-		public static void GetProcsOneApt(int myAptNum){//gets one from procsMultApts
+		///<summary>Gets procedures for one appointment by looping through the procsMultApts which was filled previously from GetProcsMultApts.</summary>
+		public static void GetProcsOneApt(int myAptNum){
 			for (int i = 0; i < procsMultApts.Length; i += 1){
 				if (procsMultApts[i].AptNum==myAptNum){
 					//MessageBox.Show(myAptNum.ToString());
@@ -2192,6 +2627,7 @@ ORDER BY DueDate
 			}
 		}
 
+		///<summary></summary>
 		public static double GetEstForCur(PriSecTot pst){
 			//does not take into consideration:
 			//annual max or deductible
@@ -2208,25 +2644,21 @@ ORDER BY DueDate
 			double priCopay=InsPlans.GetCopay(Cur.ADACode,Patients.Cur.PriPlanNum);//also gets InsPlan
 			if(priCopay!=-1){//if a primary copay fee schedule exsists
 				if(InsPlans.Cur.PlanType=="c"){//capitation
-					;//? 
+					;//no need to handle here.  It's a field in the procedure. 
 				}
-				else if(priCopay>0){
+				else if(priCopay>0){//only use if not 0
 					priEst=Cur.ProcFee-InsPlans.GetCopay(Cur.ADACode,Patients.Cur.PriPlanNum);
 				}
 			}
 			double secCopay=InsPlans.GetCopay(Cur.ADACode,Patients.Cur.SecPlanNum);//also gets InsPlan
 			if(secCopay!=-1){//if a secondary copay fee schedule exists.
 				if(InsPlans.Cur.PlanType=="c"){//capitation
-					;//? 
+					;//no need to handle here.  It's a field in the procedure. 
 				}
-				else if(secCopay>0){
+				else if(secCopay>0){//only use if not 0
 					secEst=Cur.ProcFee-InsPlans.GetCopay(Cur.ADACode,Patients.Cur.SecPlanNum);
 				}
 			}
-			//if(InsPlans.GetCopay(Cur.ADACode,Patients.Cur.PriPlanNum)>0)
-			//	priEst=InsPlans.GetCopay(Cur.ADACode,Patients.Cur.PriPlanNum);
-			//if(InsPlans.GetCopay(Cur.ADACode,Patients.Cur.SecPlanNum)>0)
-			//	secEst=InsPlans.GetCopay(Cur.ADACode,Patients.Cur.SecPlanNum);
 			if(Cur.OverridePri!=-1)
 				priEst=Cur.OverridePri;
 			if(Cur.OverrideSec!=-1)
@@ -2244,6 +2676,7 @@ ORDER BY DueDate
 			return 0;
 		}
 
+		///<summary></summary>
 		public static void UnattachProcsInAppt(int myAptNum){
 			cmd.CommandText = "UPDATE procedurelog SET "
 				+"AptNum = '0' "
@@ -2251,6 +2684,7 @@ ORDER BY DueDate
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void UnattachProcsInNextAppt(int myAptNum){
 			cmd.CommandText = "UPDATE procedurelog SET "
 				+"NextAptNum = '0' "
@@ -2258,6 +2692,7 @@ ORDER BY DueDate
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void SetCompleteInAppt(){//assumes you have set Appointments.Cur
 			cmd.CommandText = "SELECT procnum,adacode,procnote FROM procedurelog "
 				+"WHERE AptNum = '"+POut.PInt(Appointments.Cur.AptNum)+"'";
@@ -2265,16 +2700,16 @@ ORDER BY DueDate
 			//int tempProcNum;
 			bool doResetRecallStatus=false;
 			for (int i=0;i<table.Rows.Count;i++){
-				if(((ProcedureCode)ProcCodes.HList[table.Rows[i][1].ToString()]).SetRecall){//is a recall proc
+				if(((ProcedureCode)ProcedureCodes.HList[table.Rows[i][1].ToString()]).SetRecall){//is a recall proc
 					doResetRecallStatus=true;
 				}
 				cmd.CommandText = "UPDATE procedurelog SET "
 					+"procstatus = '" +POut.PInt   ((int)ProcStat.C)+"', "
 					+"Procdate = '"   +POut.PDate  (Appointments.Cur.AptDateTime.Date)+"', "
 					+"procnote = '"		+POut.PString(table.Rows[i][2].ToString())//does not delete the existing note
-					+POut.PString(((ProcedureCode)ProcCodes.HList[table.Rows[i][1].ToString()]).DefaultNote)+"'";
+					+POut.PString(((ProcedureCode)ProcedureCodes.HList[table.Rows[i][1].ToString()]).DefaultNote)+"'";
 				if(Appointments.Cur.ProvHyg!=0){//if the appointment has a hygiene provider
-					if(((ProcedureCode)ProcCodes.HList[table.Rows[i][1].ToString()]).IsHygiene){//hyg proc
+					if(((ProcedureCode)ProcedureCodes.HList[table.Rows[i][1].ToString()]).IsHygiene){//hyg proc
 						cmd.CommandText+=", provnum = '"+POut.PInt   (Appointments.Cur.ProvHyg)+"'";
 					}
 					else{//regular proc
@@ -2293,6 +2728,7 @@ ORDER BY DueDate
 			}
 		}
 
+		///<summary></summary>
 		public static void PutBal(DateTime date, double amt){//not using anymore
 			/*
 			amt=(double)Math.Round(amt,2);
@@ -2314,13 +2750,17 @@ ORDER BY DueDate
 			}*/
 		}
 
+		///<summary></summary>
 		public static double ComputeBal(){//must make sure Refresh is done first
 			double retVal=0;
 			for(int i=0;i<List.Length;i++){
-				if(List[i].ProcStatus==ProcStat.C){//complete
-					//&& !ClaimProcs.ProcIsAttached(List[i].ProcNum)){// and not attached to a claim
+				if(List[i].ProcStatus==ProcStat.C//complete
+					){
 					Cur=List[i];
-					retVal+=Cur.ProcFee;//-GetEstForCur(PriSecTot.Tot);
+					if(Cur.CapCoPay==-1)//not capitation
+						retVal+=Cur.ProcFee;
+					else//capitation
+						retVal+=Cur.CapCoPay;
 				}
 			}
 			return retVal;
@@ -2330,47 +2770,72 @@ ORDER BY DueDate
 
 	}//end class Procedures
 
-	public struct Procedure{//table ProcedureLog
-		public int ProcNum;//primary key
-		public int PatNum;//foreign key to Patient.PatNum
-		public int AptNum;//foreign key to Appointment.AptNum.  Only allowed to attach proc to one appt(not counting next apt)
-		public string ADACode;//foreign key to ProcedureCode.ADACode
-		public DateTime ProcDate;//procedure date
-		public double ProcFee;//procedure fee
-		public double OverridePri;//override primary insurance estimate.  -1 for false.
-		public double OverrideSec;//override secondary insurance estimate. -1 for false.
-		public string Surf;//use "UL" etc for quadrant, "2" etc for sextant, "U","L" for arches,
-		public string ToothNum;//May be blank, otherwise 1-32 or A-T, 1 or 2 char.
-		public string ToothRange;//May be blank, otherwise can include commas and dashes.
-		public bool NoBillIns;//set true to indicate "do not bill procedure to insurance".
-		public int Priority;//foreign key to Definition.DefNum, which contains the text of the priority
-		public ProcStat ProcStatus;//enum ProcStat{TP=1,C=2,EC=3,EO=4,R=5} 
-		//(TreatmentPlanned,Complete,ExistingCurrentProv,ExistingOtherProv,ReferredOut)
-		public string ProcNote;//Procedure Note
-		//public double PriEstim;//dropped
-		//public double SecEstim;//dropped
-		//public int ClaimNum;//dropped
-		public int ProvNum;//foreign key to Provider.ProvNum.
-		public int Dx;//foreign key to Definition.DefNum, which contains text of the Diagnosis.
-		public int NextAptNum;//foreign key to Appointment.AptNum.  
-		//Allows this procedure to be attached to a next appointment as well as a standard appointment
-		public bool IsCovIns;//Is Covered by Insurance.  Set to false if patient does not have ins coverage.
-    //public bool NoShowGraphical;//Graphical Tooth Chart addition in case tooth had drawings on it and then was extracted
-	}//end struct procedure
-	
-	public struct ProcDesc{
+	///<summary>Corresponds to the procedurelog table in the database.</summary>
+	public struct Procedure{
+		///<summary>Primary key.</summary>
+		public int ProcNum;//
+		///<summary>Foreign key to patient.PatNum</summary>
+		public int PatNum;
+		///<summary>Foreign key to appointment.AptNum.  Only allowed to attach proc to one appt(not counting next apt)</summary>
 		public int AptNum;
+		///<summary>Foreign key to procedureCode.ADACode</summary>
+		public string ADACode;
+		///<summary>Procedure date.</summary>
+		public DateTime ProcDate;
+		///<summary>Procedure fee.</summary>
+		public double ProcFee;
+		///<summary>Override primary insurance estimate.  -1 for false.</summary>
+		public double OverridePri;
+		///<summary>Override secondary insurance estimate. -1 for false.</summary>
+		public double OverrideSec;
+		///<summary>Surfaces, or use "UL" etc for quadrant, "2" etc for sextant, "U","L" for arches.</summary>
+		public string Surf;
+		///<summary>May be blank, otherwise 1-32 or A-T, 1 or 2 char.</summary>
+		public string ToothNum;
+		///<summary>May be blank, otherwise is series of toothnumbers separated by commas.</summary>
+		public string ToothRange;
+		///<summary>Set true to indicate "do not bill procedure to insurance".</summary>
+		public bool NoBillIns;
+		///<summary>Foreign key to definition.DefNum, which contains the text of the priority.</summary>
+		public int Priority;
+		///<summary>See the ProcStat enumeration.</summary>
+		public ProcStat ProcStatus;
+		///<summary>Procedure note.</summary>
+		public string ProcNote;
+		///<summary>Foreign key to provider.ProvNum.</summary>
+		public int ProvNum;
+		///<summary>Foreign key to definition.DefNum, which contains text of the Diagnosis.</summary>
+		public int Dx;
+		///<summary>Foreign key to appointment.AptNum.  Allows this procedure to be attached to a Next appointment as well as a standard appointment.</summary>
+		public int NextAptNum;
+		///<summary>Is covered by insurance.  Set to false if patient does not have ins coverage for this procedure.</summary>
+		public bool IsCovIns;
+		///<summary>Capitation Co-pay amount.  Will always be -1 if patient does not have capitation coverage for this procedure.</summary>
+		public double CapCoPay;
+		//public bool NoShowGraphical;//Graphical Tooth Chart addition in case tooth had drawings on it and then was extracted
+	}
+	
+	///<summary>Not a database table.</summary>
+	public struct ProcDesc{
+		///<summary></summary>
+		public int AptNum;
+		///<summary></summary>
 		public string[] ProcLines;
 	}
 
 	/*=========================================================================================
 	=================================== class Programs ==========================================*/
 
+	///<summary></summary>
 	public class Programs:DataClass{
+		///<summary></summary>
 		public static Hashtable HList;
+		///<summary></summary>
 		public static Program Cur;
+		///<summary></summary>
 		public static Program[] List;
 
+		///<summary></summary>
 		public static void Refresh(){
 			//MessageBox.Show("refreshing");
 			HList=new Hashtable();
@@ -2390,6 +2855,7 @@ ORDER BY DueDate
 			//MessageBox.Show(HList.Count.ToString());
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE program SET "
 				+"progname = '"   +POut.PString(Cur.ProgName)+"'"
@@ -2399,36 +2865,82 @@ ORDER BY DueDate
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
-			//not used yet
+			cmd.CommandText = "INSERT INTO program (progname,progdesc,enabled"
+				+") VALUES("
+				+"'"+POut.PString(Cur.ProgName)+"', "
+				+"'"+POut.PString(Cur.ProgDesc)+"', "
+				+"'"+POut.PBool  (Cur.Enabled)+"')";
+			//MessageBox.Show(cmd.CommandText);
+			NonQ(false);
+			//Cur.ProgramNum=InsertID;
 		}
 
+		///<summary></summary>
+		public static void DeleteCur(){
+			cmd.CommandText = "DELETE from program WHERE programnum = '"+Cur.ProgramNum.ToString()+"'";
+			NonQ(false);
+		}
+
+		///<summary></summary>
 		public static bool IsEnabled(string progName){
-			if(HList.ContainsKey("VisiQuick") && ((Program)HList["VisiQuick"]).Enabled){
+			if(HList.ContainsKey(progName) && ((Program)HList[progName]).Enabled){
 				return true;
 			}
 			return false;
 		}
 
-
 	}
 
+	///<summary>Corresponds to the program table in the database.</summary>
 	public struct Program{
-		public int ProgramNum;//primary key
-		public string ProgName;//unique name can not change
-		public string ProgDesc;//description that shows
+		///<summary>Primary key.</summary>
+		public int ProgramNum;
+		///<summary>Unique name can not change.</summary>
+		public string ProgName;
+		///<summary>Description that shows.</summary>
+		public string ProgDesc;
+		///<summary>True if enabled.</summary>
 		public bool Enabled;
+		//IsSystem is still in the database, but no longer used.
+	}
+
+	/*=========================================================================================
+	=================================== class ProgramProperties ==========================================*/
+
+	///<summary>to be completed in the next version.</summary>
+	public class ProgramProperties:DataClass{
+		
+	}
+
+	///<summary>Corresponds to the programproperty table in the database(does not exist yet).  Stores settings for linking to other programs.</summary>
+	public struct ProgramProperty{
+		///<summary>Primary key.</summary>
+		public int ProgramPropertyNum;
+		///<summary></summary>
+		public int ProgramNum;
+		///<summary></summary>
+		public string PropertyDesc;
+		///<summary></summary>
+		public string PropertyValue;
 	}
 
 	/*=========================================================================================
 	=================================== class Providers ==========================================*/
 
+	///<summary></summary>
 	public class Providers:DataClass{
+		///<summary></summary>
 		public static Provider[] ListLong;
+		///<summary></summary>
 		public static Provider[] List;
+		///<summary></summary>
 		public static Provider Cur;
+		///<summary></summary>
 		public static int Selected;
 
+		///<summary></summary>
 		public static void Refresh(){
 			ArrayList AL=new ArrayList();
 			cmd.CommandText =
@@ -2465,6 +2977,7 @@ ORDER BY DueDate
 			AL.CopyTo(List);
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE provider SET "
 				+ "abbr = '"        +POut.PString(Cur.Abbr)+"'"
@@ -2491,6 +3004,7 @@ ORDER BY DueDate
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO provider (abbr,itemorder,lname,fname,mi,title,"
 				+"feesched,specialty,ssn,statelicense,deanum,issecondary,"
@@ -2521,11 +3035,13 @@ ORDER BY DueDate
 			Cur.ProvNum=InsertID;
 		}
 
+		///<summary></summary>
 		public static void DeleteCur(){
 			cmd.CommandText = "DELETE from provider WHERE provnum = '"+Cur.ProvNum.ToString()+"'";
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static string GetAbbr(int provNum){
 			string retStr="";
 			for(int i=0;i<ListLong.Length;i++){
@@ -2536,6 +3052,7 @@ ORDER BY DueDate
 			return retStr;
 		}
 
+		///<summary></summary>
 		public static Color GetColor(int provNum){
 			Color retCol=Color.White;
 			for(int i=0;i<ListLong.Length;i++){
@@ -2546,6 +3063,7 @@ ORDER BY DueDate
 			return retCol;
 		}
 
+		///<summary></summary>
 		public static bool GetIsSec(int provNum){
 			bool retVal=false;
 			for(int i=0;i<ListLong.Length;i++){
@@ -2556,6 +3074,7 @@ ORDER BY DueDate
 			return retVal;
 		}
 
+		///<summary></summary>
 		public static int GetIndexLong(int provNum){
 			for(int i=0;i<ListLong.Length;i++){
 				if(ListLong[i].ProvNum==provNum){
@@ -2565,6 +3084,7 @@ ORDER BY DueDate
 			return -1;//should NEVER return a -1
 		}
 
+		///<summary></summary>
 		public static int GetIndex(int provNum){
 			//Gets the index of the provider in short list (visible providers)
 			for(int i=0;i<List.Length;i++){
@@ -2575,6 +3095,7 @@ ORDER BY DueDate
 			return -1;
 		}
 
+		///<summary></summary>
 		public static void MoveUp(){
 			if(Selected<0){
 				MessageBox.Show(Lan.g("Providers","Please select a provider first."));
@@ -2588,6 +3109,7 @@ ORDER BY DueDate
 			Selected-=1;
 		}
 
+		///<summary></summary>
 		public static void MoveDown(){
 			if(Selected<0){
 				MessageBox.Show(Lan.g("Providers","Please select a provider first."));
@@ -2601,6 +3123,7 @@ ORDER BY DueDate
 			Selected+=1;
 		}
 
+		///<summary></summary>
 		public static void SetOrder(int mySelNum, int myItemOrder){
 			Provider temp=ListLong[mySelNum];
 			temp.ItemOrder=myItemOrder;
@@ -2609,29 +3132,49 @@ ORDER BY DueDate
 		}
 	}
 	
+	///<summary>Corresponds to the provider table in the database.</summary>
 	public struct Provider{
-		public int ProvNum;//primary key
-		public string Abbr;//abbreviation
-		public int ItemOrder;//order that provider will show in lists
+		///<summary>Primary key.</summary>
+		public int ProvNum;
+		///<summary>Abbreviation.</summary>
+		public string Abbr;
+		///<summary>Order that provider will show in lists.</summary>
+		public int ItemOrder;
+		///<summary>Last name.</summary>
 		public string LName;
+		///<summary>First name.</summary>
 		public string FName;
+		///<summary>Middle inital or name.</summary>
 		public string MI;
-		public string Title;//eg. DMD
-		public int FeeSched;//foreign key to Definition.DefNum
-		public DentalSpecialty Specialty;//enum DentalSpecialty{General=0,Hygienist,Endodontics,Pediatric,
-		//Perio,Prosth,Ortho,Denturist,Surgery,Assistant,
-		//LabTech,Pathology,PublicHealth,Radiology}
-		public string SSN;//or TIN.  No punctuation
-		public string StateLicense;//can include punctuation
+		///<summary>eg. DMD or DDS</summary>
+		public string Title;
+		///<summary>Foreign key to Definition.DefNum.</summary>
+		public int FeeSched;
+		///<summary>See the DentalSpecialty enumeration.</summary>
+		public DentalSpecialty Specialty;
+		///<summary>or TIN.  No punctuation</summary>
+		public string SSN;
+		///<summary>can include punctuation</summary>
+		public string StateLicense;
+		///<summary></summary>
 		public string DEANum;
-		public bool IsSecondary;//true if hygeinist
-		public Color ProvColor;//color that shows in appointments
-		public bool IsHidden;//if true, provider will not show on any lists
-		public bool UsingTIN;//true if the SSN field is actually a Tax ID Num
+		///<summary>True if hygeinist.</summary>
+		public bool IsSecondary;//
+		///<summary>Color that shows in appointments</summary>
+		public Color ProvColor;
+		///<summary>If true, provider will not show on any lists</summary>
+		public bool IsHidden;
+		///<summary>True if the SSN field is actually a Tax ID Num</summary>
+		public bool UsingTIN;
+		///<summary></summary>
 		public string BlueCrossID;
-		public bool SigOnFile;//signature on file
+		///<summary>Signature on file</summary>
+		public bool SigOnFile;//
+		///<summary></summary>
 		public string Password;
+		///<summary></summary>
 		public string UserName;
+		///<summary></summary>
 		public string MedicaidID;
 	}
 

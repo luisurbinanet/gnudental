@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormRxSetup : System.Windows.Forms.Form{
 		private System.ComponentModel.Container components = null;
 		private OpenDental.TableRxSetup tbMain;
@@ -14,6 +14,7 @@ namespace OpenDental{
 		private OpenDental.XPButton butAdd2;
 		private System.Windows.Forms.Button butClose;// Required designer variable.
 
+		///<summary></summary>
 		public FormRxSetup(){
 			InitializeComponent();// Required for Windows Form Designer support
 			tbMain.CellClicked += new OpenDental.ContrTable.CellEventHandler(tbMain_CellClicked);
@@ -28,6 +29,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -57,6 +59,7 @@ namespace OpenDental{
 			this.tbMain.BackColor = System.Drawing.SystemColors.Window;
 			this.tbMain.Location = new System.Drawing.Point(8, 12);
 			this.tbMain.Name = "tbMain";
+			this.tbMain.ScrollValue = 1;
 			this.tbMain.SelectedIndices = new int[0];
 			this.tbMain.SelectionMode = System.Windows.Forms.SelectionMode.None;
 			this.tbMain.Size = new System.Drawing.Size(919, 582);
@@ -64,12 +67,13 @@ namespace OpenDental{
 			// 
 			// butClose
 			// 
+			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butClose.Location = new System.Drawing.Point(850, 636);
 			this.butClose.Name = "butClose";
 			this.butClose.Size = new System.Drawing.Size(75, 26);
 			this.butClose.TabIndex = 4;
-			this.butClose.Text = "Close";
+			this.butClose.Text = "&Close";
 			this.butClose.Click += new System.EventHandler(this.butClose_Click);
 			// 
 			// butDelete
@@ -83,7 +87,7 @@ namespace OpenDental{
 			this.butDelete.Name = "butDelete";
 			this.butDelete.Size = new System.Drawing.Size(84, 26);
 			this.butDelete.TabIndex = 15;
-			this.butDelete.Text = "Delete";
+			this.butDelete.Text = "&Delete";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
 			// 
 			// butAdd
@@ -97,7 +101,7 @@ namespace OpenDental{
 			this.butAdd.Name = "butAdd";
 			this.butAdd.Size = new System.Drawing.Size(92, 26);
 			this.butAdd.TabIndex = 14;
-			this.butAdd.Text = "Add New";
+			this.butAdd.Text = "Add &New";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
 			// butAdd2
@@ -111,12 +115,13 @@ namespace OpenDental{
 			this.butAdd2.Name = "butAdd2";
 			this.butAdd2.Size = new System.Drawing.Size(221, 26);
 			this.butAdd2.TabIndex = 16;
-			this.butAdd2.Text = "Add Using Selected as Starting Pt.";
+			this.butAdd2.Text = "&Add Using Selected as Starting Pt.";
 			this.butAdd2.Click += new System.EventHandler(this.butAdd2_Click);
 			// 
 			// FormRxSetup
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butClose;
 			this.ClientSize = new System.Drawing.Size(942, 674);
 			this.Controls.Add(this.butAdd2);
 			this.Controls.Add(this.butDelete);

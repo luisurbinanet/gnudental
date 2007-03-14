@@ -28,8 +28,10 @@ namespace OpenDental{
 		/// Required designer variable.
 		/// </summary>
 		private System.ComponentModel.Container components = null;
+		///<summary></summary>
 		public bool IsNew;
 
+		///<summary></summary>
 		public FormMedPat()
 		{
 			//
@@ -76,20 +78,22 @@ namespace OpenDental{
 			this.textPatNote = new System.Windows.Forms.TextBox();
 			this.label4 = new System.Windows.Forms.Label();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
-			this.butRemove = new System.Windows.Forms.Button();
-			this.butEdit = new System.Windows.Forms.Button();
-			this.label5 = new System.Windows.Forms.Label();
 			this.label6 = new System.Windows.Forms.Label();
+			this.butEdit = new System.Windows.Forms.Button();
+			this.butRemove = new System.Windows.Forms.Button();
+			this.label5 = new System.Windows.Forms.Label();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// butCancel
 			// 
+			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(563, 474);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 0;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// butOK
@@ -97,8 +101,9 @@ namespace OpenDental{
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(461, 474);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 1;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// label1
@@ -158,6 +163,7 @@ namespace OpenDental{
 			// 
 			// textPatNote
 			// 
+			this.textPatNote.AcceptsReturn = true;
 			this.textPatNote.Location = new System.Drawing.Point(252, 319);
 			this.textPatNote.Multiline = true;
 			this.textPatNote.Name = "textPatNote";
@@ -192,23 +198,33 @@ namespace OpenDental{
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Medication";
 			// 
-			// butRemove
+			// label6
 			// 
-			this.butRemove.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butRemove.Location = new System.Drawing.Point(49, 474);
-			this.butRemove.Name = "butRemove";
-			this.butRemove.TabIndex = 8;
-			this.butRemove.Text = "Remove";
-			this.butRemove.Click += new System.EventHandler(this.butRemove_Click);
+			this.label6.Location = new System.Drawing.Point(266, 218);
+			this.label6.Name = "label6";
+			this.label6.Size = new System.Drawing.Size(128, 28);
+			this.label6.TabIndex = 11;
+			this.label6.Text = "(edit this medication for all patients)";
 			// 
 			// butEdit
 			// 
 			this.butEdit.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butEdit.Location = new System.Drawing.Point(183, 218);
 			this.butEdit.Name = "butEdit";
+			this.butEdit.Size = new System.Drawing.Size(75, 26);
 			this.butEdit.TabIndex = 9;
-			this.butEdit.Text = "Edit";
+			this.butEdit.Text = "&Edit";
 			this.butEdit.Click += new System.EventHandler(this.butEdit_Click);
+			// 
+			// butRemove
+			// 
+			this.butRemove.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butRemove.Location = new System.Drawing.Point(49, 474);
+			this.butRemove.Name = "butRemove";
+			this.butRemove.Size = new System.Drawing.Size(75, 26);
+			this.butRemove.TabIndex = 8;
+			this.butRemove.Text = "&Remove";
+			this.butRemove.Click += new System.EventHandler(this.butRemove_Click);
 			// 
 			// label5
 			// 
@@ -219,17 +235,11 @@ namespace OpenDental{
 			this.label5.Text = "(remove this medication from this patient)";
 			this.label5.TextAlign = System.Drawing.ContentAlignment.TopCenter;
 			// 
-			// label6
-			// 
-			this.label6.Location = new System.Drawing.Point(266, 218);
-			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(128, 28);
-			this.label6.TabIndex = 11;
-			this.label6.Text = "(edit this medication for all patients)";
-			// 
 			// FormMedPat
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(685, 540);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.textPatNote);
@@ -239,6 +249,8 @@ namespace OpenDental{
 			this.Controls.Add(this.butRemove);
 			this.Controls.Add(this.label5);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormMedPat";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

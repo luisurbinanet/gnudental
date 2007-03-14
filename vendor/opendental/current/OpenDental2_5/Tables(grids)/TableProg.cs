@@ -7,14 +7,18 @@ using System.Windows.Forms;
 
 
 namespace OpenDental{
+	///<summary></summary>
 	public class TableProg : OpenDental.ContrTable{
+		///<summary></summary>
 		public float NoteWidth;
 		private System.ComponentModel.IContainer components = null;
 
+		///<summary></summary>
 		public TableProg(){			
 			InitializeComponent();// This call is required by the Windows Form Designer.
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if (components != null){
@@ -39,6 +43,7 @@ namespace OpenDental{
 		}
 		#endregion
 
+		///<summary></summary>
 		public void InstantClasses(){
 			
 		}
@@ -74,6 +79,7 @@ namespace OpenDental{
 			//GridColor=Color.Gray;
 		}
 
+		///<summary></summary>
 		public void SetProcRow(int row){
 			for(int j=0;j<MaxCols;j++){
 				LeftBorder[j,row]=DefaultGridColor;
@@ -82,6 +88,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public void SetNoteRow(int row){
 			for(int j=0;j<2;j++){
 				LeftBorder[j,row]=DefaultGridColor;
@@ -98,6 +105,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public void SetFirstNoteRow(int row){
 			for(int j=0;j<2;j++){
 				LeftBorder[j,row]=DefaultGridColor;

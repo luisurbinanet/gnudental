@@ -5,11 +5,12 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormRefAttachEdit : System.Windows.Forms.Form{
 		private System.Windows.Forms.Button butCancel;
 		private System.Windows.Forms.Button butOK;
 		private System.Windows.Forms.Label label3;
+		///<summary></summary>
     public bool IsNew;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.TextBox textName;
@@ -29,6 +30,7 @@ namespace OpenDental{
 
 		private System.ComponentModel.Container components = null;
 
+		///<summary></summary>
 		public FormRefAttachEdit(){
 			InitializeComponent();
 			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -49,6 +51,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -88,8 +91,9 @@ namespace OpenDental{
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(504, 218);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 6;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// butOK
@@ -97,8 +101,9 @@ namespace OpenDental{
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(504, 178);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 5;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// label3
@@ -188,11 +193,11 @@ namespace OpenDental{
 			// butEdit
 			// 
 			this.butEdit.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butEdit.Location = new System.Drawing.Point(374, 18);
+			this.butEdit.Location = new System.Drawing.Point(374, 16);
 			this.butEdit.Name = "butEdit";
-			this.butEdit.Size = new System.Drawing.Size(114, 23);
+			this.butEdit.Size = new System.Drawing.Size(114, 26);
 			this.butEdit.TabIndex = 74;
-			this.butEdit.Text = "Edit Referral";
+			this.butEdit.Text = "&Edit Referral";
 			this.butEdit.Click += new System.EventHandler(this.butEdit_Click);
 			// 
 			// textRefDate
@@ -250,7 +255,9 @@ namespace OpenDental{
 			// 
 			// FormRefAttachEdit
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(600, 264);
 			this.Controls.Add(this.label5);
 			this.Controls.Add(this.label4);

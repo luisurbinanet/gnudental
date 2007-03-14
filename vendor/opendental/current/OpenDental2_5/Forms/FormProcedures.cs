@@ -9,14 +9,16 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormProcedures : System.Windows.Forms.Form{
 		private System.ComponentModel.Container components = null;
 		private System.Windows.Forms.Button butClose;
 		private System.Windows.Forms.Button butOK;
+		///<summary></summary>
 		public FormProcMode Mode;
 		private System.Windows.Forms.Button butCancel;
 		private System.Windows.Forms.Panel panel1;//"select" or "view"
+		///<summary></summary>
 		public string SelectedADA;	
 		private int tableCount;
 		private System.Windows.Forms.ListBox listFeeSched;
@@ -26,6 +28,7 @@ namespace OpenDental{
 		private OpenDental.TableCodeList[] tb;
 		private System.Windows.Forms.DataGrid dataGrid1;
 
+		///<summary></summary>
 		public FormProcedures(){
 			InitializeComponent();// Required for Windows Form Designer support
 			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -39,6 +42,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -68,7 +72,7 @@ namespace OpenDental{
 			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butClose.Location = new System.Drawing.Point(848, 608);
 			this.butClose.Name = "butClose";
-			this.butClose.Size = new System.Drawing.Size(92, 23);
+			this.butClose.Size = new System.Drawing.Size(92, 26);
 			this.butClose.TabIndex = 1;
 			this.butClose.Text = "Close Window";
 			this.butClose.Visible = false;
@@ -80,20 +84,21 @@ namespace OpenDental{
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(866, 648);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 2;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Visible = false;
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// butCancel
 			// 
 			this.butCancel.Anchor = System.Windows.Forms.AnchorStyles.None;
-			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(866, 688);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 3;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Visible = false;
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
@@ -128,8 +133,9 @@ namespace OpenDental{
 			this.butNew.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butNew.Location = new System.Drawing.Point(866, 568);
 			this.butNew.Name = "butNew";
+			this.butNew.Size = new System.Drawing.Size(75, 26);
 			this.butNew.TabIndex = 0;
-			this.butNew.Text = "New Code";
+			this.butNew.Text = "&New Code";
 			this.butNew.Visible = false;
 			this.butNew.Click += new System.EventHandler(this.butNew_Click);
 			// 
@@ -168,6 +174,7 @@ namespace OpenDental{
 		}
 		#endregion
 
+
 		private void FormProcedures_Load(object sender, System.EventArgs e) {
 			panel1.Height=this.ClientSize.Height;
 			panel1.Width=this.ClientSize.Width-150;
@@ -198,15 +205,15 @@ namespace OpenDental{
 		}
 
 		private void FillTables(){
-			ProcCodes.GetProcList();
+			ProcedureCodes.GetProcList();
 			panel1.Controls.Clear();
 			//math to find tableCount
 			tableLength=(int)Math.Floor((panel1.Height-18)/OpenDental.TableCodeList.rowHeight);
-			tableCount=(int)Math.Ceiling((ProcCodes.ProcList.Length+14)/tableLength)+2;//this line needs help
+			tableCount=(int)Math.Ceiling((ProcedureCodes.ProcList.Length+14)/tableLength)+2;//this line needs help
 			//tableCount=2;
 			//tableStart=new int[tableCount];
 			//tableEnd=new int[tableCount];
-			this.dataGrid1.SetDataBinding(ProcCodes.tableStat,"");
+			this.dataGrid1.SetDataBinding(ProcedureCodes.tableStat,"");
 			tb=new OpenDental.TableCodeList[tableCount];
 			for(int n=0;n<tableCount;n++){
 				tb[n]=new OpenDental.TableCodeList();
@@ -226,9 +233,9 @@ namespace OpenDental{
 			}
 			int iTable=0;
 			int iRow=0;
-			for(int i=0;i<ProcCodes.ProcList.Length;i++){
+			for(int i=0;i<ProcedureCodes.ProcList.Length;i++){
 				if(i==0){
-					tb[iTable].Cell[0,iRow]=Defs.GetName(DefCat.ProcCodeCats,ProcCodes.ProcList[i].ProcCat);
+					tb[iTable].Cell[0,iRow]=Defs.GetName(DefCat.ProcCodeCats,ProcedureCodes.ProcList[i].ProcCat);
 					tb[iTable].FontBold[0,iRow]=true;
 					iRow++;
 					if(iRow==tableLength){
@@ -236,11 +243,11 @@ namespace OpenDental{
 						iTable++;
 					}
 				}
-				else if(ProcCodes.ProcList[i].ProcCat!=ProcCodes.ProcList[i-1].ProcCat){
+				else if(ProcedureCodes.ProcList[i].ProcCat!=ProcedureCodes.ProcList[i-1].ProcCat){
 					//if(ProcCodes.ProcList[i].ProcCat==255)
 					//	tb[iTable].Cell[0,iRow]="";//read only codes
 					//else
-						tb[iTable].Cell[0,iRow]=Defs.GetName(DefCat.ProcCodeCats,ProcCodes.ProcList[i].ProcCat);
+						tb[iTable].Cell[0,iRow]=Defs.GetName(DefCat.ProcCodeCats,ProcedureCodes.ProcList[i].ProcCat);
 					tb[iTable].FontBold[0,iRow]=true;
 					iRow++;
 					if(iRow==tableLength){
@@ -249,10 +256,10 @@ namespace OpenDental{
 					}
 				}
 				//if(ProcCodes.ProcList[i].ProcCat!=255){//don't print read-only codes
-					tb[iTable].Cell[0,iRow]=ProcCodes.ProcList[i].AbbrDesc;
+					tb[iTable].Cell[0,iRow]=ProcedureCodes.ProcList[i].AbbrDesc;
 					tb[iTable].Cell[1,iRow]=Fees.GetFeeByOrder
-						(ProcCodes.ProcList[i].ADACode,listFeeSched.SelectedIndex).Amount.ToString("F");
-					tb[iTable].Cell[2,iRow]=ProcCodes.ProcList[i].ADACode;
+						(ProcedureCodes.ProcList[i].ADACode,listFeeSched.SelectedIndex).Amount.ToString("F");
+					tb[iTable].Cell[2,iRow]=ProcedureCodes.ProcList[i].ADACode;
 				//}
 				iRow++;
 				if(iRow==tableLength){
@@ -289,14 +296,14 @@ namespace OpenDental{
 			switch(Mode){
 				case FormProcMode.Edit:
 					FormProcCodeEdit FormProcCodeEdit2=new FormProcCodeEdit();
-					ProcCodes.Cur=ProcCodes.GetProcCode(SelectedADA);
+					ProcedureCodes.Cur=ProcedureCodes.GetProcCode(SelectedADA);
 					FormProcCodeEdit2.IsNew=false;
 					FormProcCodeEdit2.ShowDialog();
 					if(FormProcCodeEdit2.DialogResult==DialogResult.OK){
 						//DataValid.IType=InvalidType.LocalData;
 						//DataValid DataValid2=new DataValid();
 						//DataValid2.SetInvalid();
-						ProcCodes.Refresh();
+						ProcedureCodes.Refresh();
 						//Fees.Refresh();//fees were already refreshed within procCodeEdit
 						FillTables();
 						tb[OpenDental.TableCodeList.SelectedTable].SelectedRow=e.Row;
@@ -322,7 +329,7 @@ namespace OpenDental{
 			if(FormPCN.DialogResult!=DialogResult.OK){
 				return;
 			}
-			if(ProcCodes.HList.ContainsKey(FormPCN.textNewCode.Text)){
+			if(ProcedureCodes.HList.ContainsKey(FormPCN.textNewCode.Text)){
 				MessageBox.Show(Lan.g(this,"That code already exists."));
 				return;
 			}
@@ -333,7 +340,7 @@ namespace OpenDental{
 			FormProcCodeEdit2.ShowDialog();
 			//textADACode.Text=FormInputBox2.textBox1.Text;
 			if(FormProcCodeEdit2.DialogResult==DialogResult.OK){
-				ProcCodes.Refresh();
+				ProcedureCodes.Refresh();
 				FillTables();
 			}
 			
@@ -359,22 +366,15 @@ namespace OpenDental{
 			}
 		}
 
-		
-
-		
-
-		
-
-		
-		
-
-		
-
-
-
-
-
-
 
 	}//end class
+
+	///<summary></summary>
+		public enum FormProcMode{
+			///<summary></summary>
+			Edit,
+			///<summary></summary>
+			View,
+			///<summary></summary>
+			Select}
 }//end namespace

@@ -7,10 +7,11 @@ using System.Windows.Forms;
 
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class TableAccount : OpenDental.ContrTable{
 		private System.ComponentModel.IContainer components = null;
 
+		///<summary></summary>
 		public TableAccount(){
 			InitializeComponent();// This call is required by the Windows Form Designer.
 			MaxRows=20;
@@ -51,6 +52,7 @@ namespace OpenDental{
 			//NoteWidth=(float)(45+22+240+28+65);
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if (components != null){
@@ -82,6 +84,7 @@ namespace OpenDental{
 			LayoutTables();
 		}
 
+		///<summary></summary>
 		public void SetNormRow(int row){
 			for(int j=0;j<MaxCols;j++){
 				LeftBorder[j,row]=DefaultGridColor;
@@ -90,6 +93,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public void SetTopRow(int row){
 			for(int j=0;j<MaxCols;j++){
 				LeftBorder[j,row]=DefaultGridColor;

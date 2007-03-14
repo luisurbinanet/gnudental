@@ -6,7 +6,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormRpProcCodes : System.Windows.Forms.Form{
 		private System.Windows.Forms.Button butCancel;
 		private System.Windows.Forms.Button butOK;
@@ -17,6 +17,7 @@ namespace OpenDental{
 		private System.ComponentModel.Container components = null;
 		private FormQuery FormQuery2;
 
+		///<summary></summary>
 		public FormRpProcCodes(){
 			InitializeComponent();
  			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -30,6 +31,7 @@ namespace OpenDental{
 			});  
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -60,16 +62,18 @@ namespace OpenDental{
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(262, 254);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 3;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			// 
 			// butOK
 			// 
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(262, 222);
+			this.butOK.Location = new System.Drawing.Point(262, 219);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 2;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// listFeeSched
@@ -111,7 +115,9 @@ namespace OpenDental{
 			// 
 			// FormRpProcCodes
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(348, 292);
 			this.Controls.Add(this.panel1);
 			this.Controls.Add(this.listFeeSched);
@@ -175,34 +181,34 @@ namespace OpenDental{
       }
 			else {
 			  Queries.SubmitTemp();//create TableTemp which is not actually used
-	      ProcCodes.GetProcList();
+	      ProcedureCodes.GetProcList();
 				Queries.TableQ=new DataTable(null);
 			  for(int i=0;i<5;i++){//add columns
 				  Queries.TableQ.Columns.Add(new System.Data.DataColumn());//blank columns
 			  }
 				Queries.CurReport.ColTotal=new double[Queries.TableQ.Columns.Count];
         DataRow row=Queries.TableQ.NewRow();//add first row by hand to get value for temp
-				row[0]=Defs.GetName(DefCat.ProcCodeCats,ProcCodes.ProcList[0].ProcCat);
+				row[0]=Defs.GetName(DefCat.ProcCodeCats,ProcedureCodes.ProcList[0].ProcCat);
 				catName=row[0].ToString();
-				row[1]=ProcCodes.ProcList[0].ADACode;
-				row[2]=ProcCodes.ProcList[0].Descript;
-				row[3]=ProcCodes.ProcList[0].AbbrDesc;
-			  row[4]=((double)Fees.GetAmount(ProcCodes.ProcList[0].ADACode,feeSched)).ToString("F");
+				row[1]=ProcedureCodes.ProcList[0].ADACode;
+				row[2]=ProcedureCodes.ProcList[0].Descript;
+				row[3]=ProcedureCodes.ProcList[0].AbbrDesc;
+			  row[4]=((double)Fees.GetAmount(ProcedureCodes.ProcList[0].ADACode,feeSched)).ToString("F");
 				Queries.CurReport.ColTotal[4]+=PIn.PDouble(row[4].ToString());
 				Queries.TableQ.Rows.Add(row);
-				for(int i=1;i<ProcCodes.ProcList.Length;i++){//loop through data rows
+				for(int i=1;i<ProcedureCodes.ProcList.Length;i++){//loop through data rows
 					row=Queries.TableQ.NewRow();//create new row called 'row' based on structure of TableQ
-					row[0]=Defs.GetName(DefCat.ProcCodeCats,ProcCodes.ProcList[i].ProcCat);
+					row[0]=Defs.GetName(DefCat.ProcCodeCats,ProcedureCodes.ProcList[i].ProcCat);
 					if(catName==row[0].ToString()){
             row[0]=""; 
 					}
 					else  {
 						catName=row[0].ToString();
           }
-					row[1]=ProcCodes.ProcList[i].ADACode.ToString();
-					row[2]=ProcCodes.ProcList[i].Descript;
-					row[3]=ProcCodes.ProcList[i].AbbrDesc.ToString();
-					row[4]=((double)Fees.GetAmount(ProcCodes.ProcList[i].ADACode,feeSched)).ToString("F");
+					row[1]=ProcedureCodes.ProcList[i].ADACode.ToString();
+					row[2]=ProcedureCodes.ProcList[i].Descript;
+					row[3]=ProcedureCodes.ProcList[i].AbbrDesc.ToString();
+					row[4]=((double)Fees.GetAmount(ProcedureCodes.ProcList[i].ADACode,feeSched)).ToString("F");
   				//Queries.CurReport.ColTotal[4]+=PIn.PDouble(row[4].ToString());
 					Queries.TableQ.Rows.Add(row);
 				}

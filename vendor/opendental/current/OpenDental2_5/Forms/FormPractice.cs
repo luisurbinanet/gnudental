@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormPractice : System.Windows.Forms.Form{
 		private System.Windows.Forms.GroupBox groupBox3;
 		private System.Windows.Forms.Label label12;
@@ -46,6 +46,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label14;
 		private System.Windows.Forms.Label label1;// Required designer variable.
 
+		///<summary></summary>
 		public FormPractice(){
 			InitializeComponent();
 			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -73,6 +74,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -144,7 +146,7 @@ namespace OpenDental{
 			this.butTreatProv.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butTreatProv.Location = new System.Drawing.Point(24, 202);
 			this.butTreatProv.Name = "butTreatProv";
-			this.butTreatProv.Size = new System.Drawing.Size(110, 23);
+			this.butTreatProv.Size = new System.Drawing.Size(110, 26);
 			this.butTreatProv.TabIndex = 1;
 			this.butTreatProv.Text = "Treating Provider";
 			this.butTreatProv.Click += new System.EventHandler(this.butTreatProv_Click);
@@ -395,23 +397,27 @@ namespace OpenDental{
 			// butOK
 			// 
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(771, 533);
+			this.butOK.Location = new System.Drawing.Point(771, 531);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 7;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// butCancel
 			// 
+			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(771, 569);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 8;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// textTreatNote
 			// 
+			this.textTreatNote.AcceptsReturn = true;
 			this.textTreatNote.Location = new System.Drawing.Point(59, 316);
 			this.textTreatNote.Multiline = true;
 			this.textTreatNote.Name = "textTreatNote";
@@ -465,7 +471,9 @@ namespace OpenDental{
 			// 
 			// FormPractice
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(866, 615);
 			this.Controls.Add(this.label14);
 			this.Controls.Add(this.textMainWindowTitle);

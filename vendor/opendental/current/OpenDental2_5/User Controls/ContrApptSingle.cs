@@ -12,20 +12,30 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
+	///<summary></summary>
 	public class ContrApptSingle : System.Windows.Forms.UserControl{
 		private System.ComponentModel.Container components = null;// Required designer variable.
+		///<summary></summary>
 		public static int ClickedAptNum;//Set on mouse down or from Appt module
+		///<summary></summary>
 		public static int SelectedAptNum;//set manually
+		///<summary></summary>
 		public bool ThisIsPinBoard;
+		///<summary></summary>
 		public static bool PinBoardIsSelected;
+		///<summary></summary>
 		public static int[][] ProvBar;
+		///<summary></summary>
 		public InfoApt Info;
+		///<summary></summary>
 		public Bitmap Shadow;
 
+		///<summary></summary>
 		public ContrApptSingle(){
 			InitializeComponent();// This call is required by the Windows.Forms Form Designer.
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -49,12 +59,14 @@ namespace OpenDental{
 		}
 		#endregion
 		
+		///<summary></summary>
 		protected override void OnPaint(PaintEventArgs pea){
 			//Graphics grfx=pea.Graphics;
 			//grfx.DrawImage(shadow,0,0);
 		}
 
 		
+		///<summary></summary>
 		public void SetLocation(){
 			if(Info.IsNext){
 				Width=110;
@@ -67,6 +79,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public void CreateShadow(){
 			if(Shadow!=null){
 				Shadow=null;
@@ -152,6 +165,7 @@ namespace OpenDental{
 				+ContrApptSheet.ColWidth*(ApptViewItems.GetIndexOp(Info.MyApt.Op))+1;
 		}
 
+		///<summary></summary>
 		public int ConvertToY (){
 			return (Convert.ToInt32(Info.MyApt.AptDateTime.Hour)*6+Convert.ToInt32(Info.MyApt.AptDateTime.Minute/10))*ContrApptSheet.Lh;
 		}
@@ -170,6 +184,7 @@ namespace OpenDental{
 			*/
 		}
 
+		///<summary></summary>
 		public void SetSize(){
 			Height=Info.MyApt.Pattern.Length*ContrApptSheet.Lh;
 			if(ThisIsPinBoard){

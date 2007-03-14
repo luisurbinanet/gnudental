@@ -9,7 +9,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormDefEdit : System.Windows.Forms.Form{
 		private System.Windows.Forms.Label labelName;
 		private System.Windows.Forms.Label labelValue;
@@ -20,15 +20,22 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butOK;
 		private System.Windows.Forms.Button butCancel;
 		private System.ComponentModel.Container components = null;// Required designer variable.
+		///<summary></summary>
 		public bool IsNew;
 		private System.Windows.Forms.Label labelColor;
+		///<summary></summary>
 		public static bool CanEditName;
+		///<summary></summary>
 		public static bool EnableValue;
+		///<summary></summary>
 		public static bool EnableColor;
+		///<summary></summary>
 		public static string HelpText;
 		private System.Windows.Forms.CheckBox checkHidden;
+		///<summary></summary>
 		public static string ValueText;
 		
+		///<summary></summary>
 		public FormDefEdit(){
 			InitializeComponent();// Required for Windows Form Designer support
 			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -43,6 +50,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -133,19 +141,20 @@ namespace OpenDental{
 			// butOK
 			// 
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(144, 134);
+			this.butOK.Location = new System.Drawing.Point(298, 131);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 4;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// butCancel
 			// 
+			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butCancel.Location = new System.Drawing.Point(238, 134);
+			this.butCancel.Location = new System.Drawing.Point(392, 131);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 5;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// checkHidden
@@ -159,7 +168,9 @@ namespace OpenDental{
 			// 
 			// FormDefEdit
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(558, 176);
 			this.Controls.Add(this.checkHidden);
 			this.Controls.Add(this.butCancel);
@@ -190,7 +201,7 @@ namespace OpenDental{
 				textName.ReadOnly=true;
 			}
 			labelValue.Text=ValueText;
-			if(Defs.Cur.Category==(int)DefCat.AdjTypes
+			if(Defs.Cur.Category==DefCat.AdjTypes
 				&& !IsNew){
 				EnableValue=false;//do not allow changing sign of AdjTypes after created
 			}
@@ -231,7 +242,7 @@ namespace OpenDental{
 				case DefCat.ApptProcsQuickAdd:
 					string[] procs=textValue.Text.Split(',');
 					for(int i=0;i<procs.Length;i++){
-						if(ProcCodes.GetProcCode(procs[i]).ADACode==null){
+						if(ProcedureCodes.GetProcCode(procs[i]).ADACode==null){
 							MessageBox.Show(Lan.g(this,"Invalid procedure code or formatting. Valid format example: D1234,D2345,D3456"));
 							return;
 						}

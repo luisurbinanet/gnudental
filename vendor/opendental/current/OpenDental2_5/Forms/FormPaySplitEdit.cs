@@ -25,15 +25,21 @@ namespace OpenDental
 		private OpenDental.ValidDouble textAmount;
 		private System.ComponentModel.Container components = null;
 		private System.Windows.Forms.Label labelType;// Required designer variable.
+		///<summary></summary>
 		public bool IsNew;
+		///<summary></summary>
 		public bool IsNewDisc;
 		private System.Windows.Forms.Label labelAuto;
+		///<summary></summary>
 		public PaySplit DiscountBasis;
 		private System.Windows.Forms.Label labelRemainder;
+		///<summary></summary>
 		public double Remain;
 		private double OriginalAmt;
+		private System.Windows.Forms.CheckBox checkPayPlan;
 		private DateTime OriginalDate;
 
+		///<summary></summary>
 		public FormPaySplitEdit(){
 			InitializeComponent();
 			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -51,6 +57,7 @@ namespace OpenDental
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -78,39 +85,43 @@ namespace OpenDental
 			this.textAmount = new OpenDental.ValidDouble();
 			this.labelAmount = new System.Windows.Forms.Label();
 			this.labelAuto = new System.Windows.Forms.Label();
+			this.checkPayPlan = new System.Windows.Forms.CheckBox();
 			this.SuspendLayout();
 			// 
 			// ButCancel
 			// 
 			this.ButCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.ButCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.ButCancel.Location = new System.Drawing.Point(514, 332);
+			this.ButCancel.Location = new System.Drawing.Point(567, 318);
 			this.ButCancel.Name = "ButCancel";
+			this.ButCancel.Size = new System.Drawing.Size(75, 26);
 			this.ButCancel.TabIndex = 6;
-			this.ButCancel.Text = "Cancel";
+			this.ButCancel.Text = "&Cancel";
 			this.ButCancel.Click += new System.EventHandler(this.ButCancel_Click);
 			// 
 			// butOK
 			// 
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(514, 302);
+			this.butOK.Location = new System.Drawing.Point(567, 288);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 5;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// butRemainder
 			// 
 			this.butRemainder.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butRemainder.Location = new System.Drawing.Point(232, 280);
+			this.butRemainder.Location = new System.Drawing.Point(73, 266);
 			this.butRemainder.Name = "butRemainder";
+			this.butRemainder.Size = new System.Drawing.Size(92, 26);
 			this.butRemainder.TabIndex = 7;
-			this.butRemainder.Text = "Remainder";
+			this.butRemainder.Text = "&Remainder";
 			this.butRemainder.Click += new System.EventHandler(this.butRemainder_Click);
 			// 
 			// labelRemainder
 			// 
-			this.labelRemainder.Location = new System.Drawing.Point(232, 310);
+			this.labelRemainder.Location = new System.Drawing.Point(73, 298);
 			this.labelRemainder.Name = "labelRemainder";
 			this.labelRemainder.Size = new System.Drawing.Size(176, 48);
 			this.labelRemainder.TabIndex = 5;
@@ -135,12 +146,12 @@ namespace OpenDental
 			// 
 			// labelType
 			// 
-			this.labelType.Location = new System.Drawing.Point(436, 26);
+			this.labelType.Location = new System.Drawing.Point(444, 26);
 			this.labelType.Name = "labelType";
-			this.labelType.Size = new System.Drawing.Size(84, 16);
+			this.labelType.Size = new System.Drawing.Size(134, 16);
 			this.labelType.TabIndex = 8;
 			this.labelType.Text = "Discount Type";
-			this.labelType.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			this.labelType.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// label4
 			// 
@@ -209,14 +220,24 @@ namespace OpenDental
 			this.labelAuto.Text = "Clicking on a Discount Type above will automatically calculate the amount.";
 			this.labelAuto.Visible = false;
 			// 
+			// checkPayPlan
+			// 
+			this.checkPayPlan.Location = new System.Drawing.Point(306, 310);
+			this.checkPayPlan.Name = "checkPayPlan";
+			this.checkPayPlan.Size = new System.Drawing.Size(198, 18);
+			this.checkPayPlan.TabIndex = 20;
+			this.checkPayPlan.Text = "Attached to Payment Plan";
+			this.checkPayPlan.Click += new System.EventHandler(this.checkPayPlan_Click);
+			// 
 			// FormPaySplitEdit
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.CancelButton = this.ButCancel;
-			this.ClientSize = new System.Drawing.Size(638, 390);
+			this.ClientSize = new System.Drawing.Size(670, 372);
+			this.Controls.Add(this.checkPayPlan);
 			this.Controls.Add(this.labelAuto);
 			this.Controls.Add(this.labelAmount);
 			this.Controls.Add(this.textAmount);
+			this.Controls.Add(this.textDate);
 			this.Controls.Add(this.listType);
 			this.Controls.Add(this.listPatient);
 			this.Controls.Add(this.listProvider);
@@ -224,7 +245,6 @@ namespace OpenDental
 			this.Controls.Add(this.label4);
 			this.Controls.Add(this.labelType);
 			this.Controls.Add(this.label2);
-			this.Controls.Add(this.textDate);
 			this.Controls.Add(this.labelRemainder);
 			this.Controls.Add(this.butRemainder);
 			this.Controls.Add(this.butOK);
@@ -286,13 +306,63 @@ namespace OpenDental
 				if(Patients.FamilyList[i].PatNum==PaySplits.Cur.PatNum)
 					listPatient.SelectedIndex=i;
 			}
+			if(PaySplits.Cur.PayPlanNum==0){
+				checkPayPlan.Checked=false;
+			}
+			else{
+				checkPayPlan.Checked=true;
+			}
 			if(PaySplits.Cur.IsDiscount){//discount
 				butRemainder.Visible=false;
 				labelRemainder.Visible=false;
+				checkPayPlan.Visible=false;
 			}
 			else{//payment
 				labelType.Visible=false;
 				listType.Visible=false;
+			}
+		}
+
+		private void checkPayPlan_Click(object sender, System.EventArgs e) {
+			if(checkPayPlan.Checked){
+				int curPatNum=Patients.Cur.PatNum;//remember the patnum so we can refresh it when we're done.
+				Patients.Cur.PatNum=Patients.FamilyList[listPatient.SelectedIndex].PatNum;
+				PayPlans.Refresh();
+				//need to determine how many of the available plans have the selected patient as the guarantor
+				ArrayList validPlans=new ArrayList();
+				for(int i=0;i<PayPlans.List.Length;i++){
+					if(PayPlans.List[i].Guarantor==Patients.Cur.PatNum){
+						validPlans.Add(PayPlans.List[i]);
+					}
+				}
+				if(validPlans.Count==0){
+					MessageBox.Show(Lan.g(this,"The selected patient is not the guarantor for any payment plans."));
+					Patients.Cur.PatNum=curPatNum;//no need to refresh since we didn't change anything.
+					checkPayPlan.Checked=false;
+					return;
+				}
+				if(validPlans.Count==1){ //if there is only one valid payplan
+					PaySplits.Cur.PayPlanNum=((PayPlan)validPlans[0]).PayPlanNum;
+					Patients.Cur.PatNum=curPatNum;//no need to refresh since we didn't change anything.
+					return;
+				}
+				//more than one valid PayPlan
+				FormPayPlanSelect FormPPS=new FormPayPlanSelect();
+				FormPPS.ValidPlans=validPlans;
+				FormPPS.ShowDialog();
+				if(FormPPS.DialogResult==DialogResult.OK){
+					PaySplits.Cur.PayPlanNum=((PayPlan)validPlans[FormPPS.IndexSelected]).PayPlanNum;
+				}
+				else{
+					if(PaySplits.Cur.PayPlanNum==0)
+						checkPayPlan.Checked=false;
+				}
+				Patients.Cur.PatNum=curPatNum;//no need to refresh since we didn't change anything.
+				return;
+			}
+			else{//payPlan unchecked
+				PaySplits.Cur.PayPlanNum=0;
+				return;
 			}
 		}
 		
@@ -316,8 +386,8 @@ namespace OpenDental
 				PaySplits.Cur.DiscountType=Defs.Short[15][listType.SelectedIndex].DefNum;
 			if(listPatient.SelectedIndex!=-1)
 				PaySplits.Cur.PatNum=Patients.FamilyList[listPatient.SelectedIndex].PatNum;
+			//PayPlanNum already handled
 			if(IsNew){
-				//PaySplits.PutBal(PaySplits.Cur.PatNum,PaySplits.Cur.ProcDate,PaySplits.Cur.SplitAmt);
 				if(IsNewDisc){//save new discount
 					PaySplits.InsertCur();
 				}
@@ -326,13 +396,6 @@ namespace OpenDental
 				}
 			}
 			else{//update discount or payment
-				//if(PaySplits.Cur.ProcDate.Year!=OriginalDate.Year || PaySplits.Cur.ProcDate.Month!=OriginalDate.Month){
-				//	PaySplits.PutBal(PaySplits.Cur.PatNum,OriginalDate,-OriginalAmt);
-				//	PaySplits.PutBal(PaySplits.Cur.PatNum,PaySplits.Cur.ProcDate,PaySplits.Cur.SplitAmt);
-				//}
-				//else{//date not changed
-				//PaySplits.PutBal(PaySplits.Cur.PatNum,PaySplits.Cur.ProcDate,PaySplits.Cur.SplitAmt-OriginalAmt);
-				//}
 				PaySplits.UpdateCur();
 			}
 			DialogResult=DialogResult.OK;
@@ -357,7 +420,11 @@ namespace OpenDental
 
 		private void ButCancel_Click(object sender, System.EventArgs e) {
 		
-		}	
+		}
+
+		
+
+		
 
 
 	}

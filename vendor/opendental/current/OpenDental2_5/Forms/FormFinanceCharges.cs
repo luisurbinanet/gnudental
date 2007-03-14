@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormFinanceCharges : System.Windows.Forms.Form{
 		private OpenDental.ValidDate textDate;
 		private System.Windows.Forms.Label label1;
@@ -25,6 +25,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label6;
 		private int adjType;
 
+		///<summary></summary>
 		public FormFinanceCharges(){
 			InitializeComponent();
 			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -43,6 +44,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -134,11 +136,12 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(510, 258);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 19;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// butOK
@@ -147,7 +150,7 @@ namespace OpenDental{
 			this.butOK.Location = new System.Drawing.Point(510, 224);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 18;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// label2
@@ -204,7 +207,9 @@ namespace OpenDental{
 			// 
 			// FormFinanceCharges
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(614, 326);
 			this.Controls.Add(this.label6);
 			this.Controls.Add(this.listAdjType);

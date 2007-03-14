@@ -5,19 +5,21 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormReferralSelect : System.Windows.Forms.Form{
 		private System.Windows.Forms.Button butCancel;
 		private System.Windows.Forms.Button butOK;
 		private OpenDental.TableRefSelect tbRefSelect;
 		private System.Windows.Forms.CheckBox checkHidden;
 		private System.ComponentModel.Container components = null;
+		///<summary></summary>
 		public bool ViewOnly;
 		private OpenDental.XPButton butEdit;
 		private OpenDental.XPButton butDelete;
 		private OpenDental.XPButton butAdd;//disables double click to choose referral. Hides some buttons.
     private ArrayList AList;
 
+		///<summary></summary>
 		public FormReferralSelect(){
 			InitializeComponent();
 			tbRefSelect.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbRefSelect_CellDoubleClicked);
@@ -33,6 +35,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -65,22 +68,22 @@ namespace OpenDental{
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.ImageAlign = System.Drawing.ContentAlignment.TopRight;
-			this.butCancel.Location = new System.Drawing.Point(864, 646);
+			this.butCancel.Location = new System.Drawing.Point(858, 646);
 			this.butCancel.Name = "butCancel";
-			this.butCancel.Size = new System.Drawing.Size(76, 26);
+			this.butCancel.Size = new System.Drawing.Size(82, 26);
 			this.butCancel.TabIndex = 6;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// butOK
 			// 
 			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(864, 614);
+			this.butOK.Location = new System.Drawing.Point(858, 614);
 			this.butOK.Name = "butOK";
-			this.butOK.Size = new System.Drawing.Size(76, 26);
+			this.butOK.Size = new System.Drawing.Size(82, 26);
 			this.butOK.TabIndex = 5;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// tbRefSelect
@@ -88,6 +91,7 @@ namespace OpenDental{
 			this.tbRefSelect.BackColor = System.Drawing.SystemColors.Window;
 			this.tbRefSelect.Location = new System.Drawing.Point(8, 6);
 			this.tbRefSelect.Name = "tbRefSelect";
+			this.tbRefSelect.ScrollValue = 1;
 			this.tbRefSelect.SelectedIndices = new int[0];
 			this.tbRefSelect.SelectionMode = System.Windows.Forms.SelectionMode.One;
 			this.tbRefSelect.Size = new System.Drawing.Size(829, 602);
@@ -110,11 +114,11 @@ namespace OpenDental{
 			this.butEdit.BtnStyle = OpenDental.enumType.XPStyle.Silver;
 			this.butEdit.Image = ((System.Drawing.Image)(resources.GetObject("butEdit.Image")));
 			this.butEdit.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butEdit.Location = new System.Drawing.Point(864, 496);
+			this.butEdit.Location = new System.Drawing.Point(858, 496);
 			this.butEdit.Name = "butEdit";
-			this.butEdit.Size = new System.Drawing.Size(75, 26);
+			this.butEdit.Size = new System.Drawing.Size(80, 26);
 			this.butEdit.TabIndex = 14;
-			this.butEdit.Text = "Edit";
+			this.butEdit.Text = "&Edit";
 			this.butEdit.Click += new System.EventHandler(this.butEdit_Click);
 			// 
 			// butDelete
@@ -124,11 +128,11 @@ namespace OpenDental{
 			this.butDelete.BtnStyle = OpenDental.enumType.XPStyle.Silver;
 			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDelete.Location = new System.Drawing.Point(864, 464);
+			this.butDelete.Location = new System.Drawing.Point(858, 464);
 			this.butDelete.Name = "butDelete";
-			this.butDelete.Size = new System.Drawing.Size(75, 26);
+			this.butDelete.Size = new System.Drawing.Size(80, 26);
 			this.butDelete.TabIndex = 13;
-			this.butDelete.Text = "Delete";
+			this.butDelete.Text = "&Delete";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
 			// 
 			// butAdd
@@ -138,11 +142,11 @@ namespace OpenDental{
 			this.butAdd.BtnStyle = OpenDental.enumType.XPStyle.Silver;
 			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
 			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAdd.Location = new System.Drawing.Point(864, 430);
+			this.butAdd.Location = new System.Drawing.Point(858, 430);
 			this.butAdd.Name = "butAdd";
-			this.butAdd.Size = new System.Drawing.Size(75, 26);
+			this.butAdd.Size = new System.Drawing.Size(80, 26);
 			this.butAdd.TabIndex = 12;
-			this.butAdd.Text = "Add";
+			this.butAdd.Text = "&Add";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
 			// FormReferralSelect

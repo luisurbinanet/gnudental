@@ -24,6 +24,7 @@ using WIALib;
 
 namespace OpenDental{
 
+	///<summary></summary>
 	public class ContrDocs : System.Windows.Forms.UserControl	{
 		private System.Windows.Forms.ImageList imageListTree;
 		private System.ComponentModel.IContainer components;
@@ -78,10 +79,12 @@ namespace OpenDental{
 		private System.Windows.Forms.ToolTip toolTip1;
 		private string imageFileName;
 
+		///<summary></summary>
 		public ContrDocs(){
 			InitializeComponent();
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -514,6 +517,7 @@ namespace OpenDental{
 		  PictureBox1.Width=Width-PictureBox1.Location.X-2;
 		}
 
+		///<summary></summary>
 		public void InstantClasses(){
 			PtOrigin=new Point();
 			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -532,11 +536,13 @@ namespace OpenDental{
 			toolTip1.SetToolTip(butZoomOut, Lan.g(this,"Zoom Out"));
 		}
 
+		///<summary></summary>
 		public void ModuleSelected(){
 			RefreshModuleData();
 			RefreshModuleScreen();
 		}
 
+		///<summary></summary>
 		public void ModuleUnselected(){
 			Patients.FamilyList=null;
 			//from FillDocList:
@@ -677,6 +683,7 @@ namespace OpenDental{
 				RecZoom.Width=0;
 			}
 			else TreeDocuments.SelectedNode=TreeDocuments.Nodes[0];
+			mygraphics.Dispose();
 		}//end RefreshDocList
 
 		private void butPat_Click(object sender, System.EventArgs e) {
@@ -875,6 +882,7 @@ namespace OpenDental{
 			dc.DrawImage(ImageCurrent
 				,new Rectangle(0,0,PictureBox1.ClientRectangle.Width,PictureBox1.ClientRectangle.Height)
 				,RecZoom, GraphicsUnit.Pixel);
+			dc.Dispose();
 		}
 
 		private void butZoomOut_Click(object sender, System.EventArgs e) {
@@ -913,9 +921,11 @@ namespace OpenDental{
 			dc2.DrawImage(ImageCurrent
 				,new Rectangle(0,0,PictureBox1.ClientRectangle.Width,PictureBox1.ClientRectangle.Height)
 				,RecZoom,GraphicsUnit.Pixel);
+			dc2.Dispose();
 		}
 
 
+		///<summary></summary>
 		public void toolBar2_ButtonClick(object sender, System.Windows.Forms.ToolBarButtonClickEventArgs e){
 			/*switch(e.Button){
 				case toolBarButPat:
@@ -1082,6 +1092,9 @@ namespace OpenDental{
 			bitmapTemp=new Bitmap((int)(RecCrop.Width*ratio),(int)(RecCrop.Height*ratio));
 			Graphics grTemp2=Graphics.FromImage(bitmapTemp);//we're going to draw on bitmapTemp
 			grTemp2.DrawImage(ImageCurrent,0,0,RecCrop,GraphicsUnit.Pixel);
+			grImg.Dispose();
+			grPictBox.Dispose();
+			grTemp2.Dispose();
  			ImageCurrent=new Bitmap(bitmapTemp);
 			RecZoom.Width=0;//DisplayImage will then recreate RecZoom
 			DisplayImage(true);
@@ -1219,6 +1232,7 @@ namespace OpenDental{
 			Graphics mygraphics = PictureBox1.CreateGraphics();
 			mygraphics.FillRectangle(Brushes.White,0,0,PictureBox1.ClientRectangle.Width
 				,PictureBox1.ClientRectangle.Height);
+			mygraphics.Dispose();
 		}
 
 		private void PictureBox1_Paint(object sender, System.Windows.Forms.PaintEventArgs e){
@@ -1256,6 +1270,7 @@ namespace OpenDental{
 			dc.DrawImage(ImageCurrent
 				,new Rectangle(0,0,PictureBox1.ClientRectangle.Width,PictureBox1.ClientRectangle.Height)
 				,RecZoom,GraphicsUnit.Pixel);
+			dc.Dispose();
 		}
 
 		private void PictureBox1_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e){
@@ -1302,9 +1317,10 @@ namespace OpenDental{
 				dc.DrawImage(ImageCurrent
 					,new Rectangle(0,0,PictureBox1.ClientRectangle.Width,PictureBox1.ClientRectangle.Height)
 					,RecTemp,GraphicsUnit.Pixel);
+				dc.Dispose();
 			}
 			else{//Crop Mode				Graphics mygraphics=PictureBox1.CreateGraphics();
-				if(MouseIsDown){					mygraphics.DrawImage(ImageCurrent						,new Rectangle(0,0,PictureBox1.ClientRectangle.Width,PictureBox1.ClientRectangle.Height)						,RecZoom,GraphicsUnit.Pixel);					RecCrop=new Rectangle();					RecCrop.X=PtOrigin.X;					RecCrop.Y=PtOrigin.Y;					RecCrop.Width=e.X-PtOrigin.X;					RecCrop.Height=e.Y-PtOrigin.Y;					if(RecZoom.X+(e.X*RecZoom.Width/PictureBox1.ClientRectangle.Width) > ImageCurrent.Width)						RecCrop.Width=((ImageCurrent.Width-RecZoom.X)*PictureBox1.ClientRectangle.Width/RecZoom.Width)							-RecCrop.X;					if(RecZoom.Y+(e.Y*RecZoom.Height/PictureBox1.ClientRectangle.Height)>ImageCurrent.Height)						RecCrop.Height=((ImageCurrent.Height-RecZoom.Y)*PictureBox1.ClientRectangle.Height/RecZoom.Height)							-RecCrop.Y;					//need to unmangle rectangle?? not too important...					mygraphics.DrawRectangle(new Pen(Color.Blue),RecCrop);									}				else{//mouse is up 					mygraphics.DrawImage(ImageCurrent						,new Rectangle(0,0,PictureBox1.ClientRectangle.Width,PictureBox1.ClientRectangle.Height)						,RecZoom,GraphicsUnit.Pixel);					if(e.X<ImageCurrent.Width*PictureBox1.ClientRectangle.Width/RecZoom.Width)						mygraphics.DrawLine(new Pen(Color.Blue),new Point(e.X,0),new Point(e.X,ImageCurrent.Height*PictureBox1.ClientRectangle.Height/RecZoom.Height));					if(e.Y<ImageCurrent.Height*PictureBox1.ClientRectangle.Height/RecZoom.Height)						mygraphics.DrawLine(new Pen(Color.Blue),new Point(0,e.Y),new Point(ImageCurrent.Width*PictureBox1.ClientRectangle.Width/RecZoom.Width,e.Y));					mygraphics.DrawRectangle(new Pen(Color.Blue),RecCrop);				}			}
+				if(MouseIsDown){					mygraphics.DrawImage(ImageCurrent						,new Rectangle(0,0,PictureBox1.ClientRectangle.Width,PictureBox1.ClientRectangle.Height)						,RecZoom,GraphicsUnit.Pixel);					RecCrop=new Rectangle();					RecCrop.X=PtOrigin.X;					RecCrop.Y=PtOrigin.Y;					RecCrop.Width=e.X-PtOrigin.X;					RecCrop.Height=e.Y-PtOrigin.Y;					if(RecZoom.X+(e.X*RecZoom.Width/PictureBox1.ClientRectangle.Width) > ImageCurrent.Width)						RecCrop.Width=((ImageCurrent.Width-RecZoom.X)*PictureBox1.ClientRectangle.Width/RecZoom.Width)							-RecCrop.X;					if(RecZoom.Y+(e.Y*RecZoom.Height/PictureBox1.ClientRectangle.Height)>ImageCurrent.Height)						RecCrop.Height=((ImageCurrent.Height-RecZoom.Y)*PictureBox1.ClientRectangle.Height/RecZoom.Height)							-RecCrop.Y;					//need to unmangle rectangle?? not too important...					mygraphics.DrawRectangle(new Pen(Color.Blue),RecCrop);				}				else{//mouse is up 					mygraphics.DrawImage(ImageCurrent						,new Rectangle(0,0,PictureBox1.ClientRectangle.Width,PictureBox1.ClientRectangle.Height)						,RecZoom,GraphicsUnit.Pixel);					if(e.X<ImageCurrent.Width*PictureBox1.ClientRectangle.Width/RecZoom.Width)						mygraphics.DrawLine(new Pen(Color.Blue),new Point(e.X,0),new Point(e.X,ImageCurrent.Height*PictureBox1.ClientRectangle.Height/RecZoom.Height));					if(e.Y<ImageCurrent.Height*PictureBox1.ClientRectangle.Height/RecZoom.Height)						mygraphics.DrawLine(new Pen(Color.Blue),new Point(0,e.Y),new Point(ImageCurrent.Width*PictureBox1.ClientRectangle.Width/RecZoom.Width,e.Y));					mygraphics.DrawRectangle(new Pen(Color.Blue),RecCrop);				}				mygraphics.Dispose();			}
 		}//end mousemove
 
 		private void PictureBox1_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e){
@@ -1328,6 +1344,7 @@ namespace OpenDental{
 				bitmapTemp=new Bitmap((int)(RecZoom.Width*ratio),(int)(RecZoom.Height*ratio));
 				Graphics grTemp=Graphics.FromImage(bitmapTemp);//we're going to draw on bitmapTemp
 				grTemp.DrawImage(ImageCurrent,0,0,RecZoom,GraphicsUnit.Pixel);
+				grTemp.Dispose();
  				ImageCurrent=(Bitmap)bitmapTemp.Clone();
 				RecZoom.Width=0;//DisplayImage will then recreate RecZoom
 				DisplayImage(true);

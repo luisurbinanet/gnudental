@@ -10,7 +10,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormRpStatement : System.Windows.Forms.Form{
 		private System.Windows.Forms.PrintPreviewControl printPreviewControl2;
 		private System.Windows.Forms.Button butPrint;
@@ -39,6 +39,7 @@ namespace OpenDental{
 		float colHeight=0;
 		private int patLines=0;
 
+		///<summary></summary>
 		public FormRpStatement(){
 			InitializeComponent();
 			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -54,6 +55,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing )	{
 				if(components != null)
@@ -221,6 +223,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public void PrintReport(bool justPreview){
 			pd2=new PrintDocument();
 			pd2.PrintPage += new PrintPageEventHandler(this.pd2_PrintPage);

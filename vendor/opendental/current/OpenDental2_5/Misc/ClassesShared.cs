@@ -15,8 +15,10 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
+	///<summary></summary>
 	public class Shared{
 
+		///<summary></summary>
 		public Shared(){
 			
 		}//end constructor
@@ -44,20 +46,20 @@ namespace OpenDental{
 			return true;
 		}*/
 
+		///<summary></summary>
 		public static string DateToAge(DateTime aDate){
-			string retVal="";
-			if(aDate.Year<1890) retVal="";
-			else if (aDate.DayOfYear < DateTime.Now.DayOfYear)
-				retVal=(DateTime.Now.Year-(aDate.Year)).ToString();
-			else retVal=((DateTime.Now.Year-aDate.Year)-1).ToString();
-			return retVal;
+			if(aDate.Year<1890) return "";
+			if(aDate.DayOfYear < DateTime.Now.DayOfYear)
+				return (DateTime.Now.Year-aDate.Year).ToString();
+			return (DateTime.Now.Year-aDate.Year-1).ToString();
 		}
 
+		///<summary></summary>
 		public static void ComputeBalances(){//operates on Patients.Cur
 			//must have refreshed all 5 first
 			double curBal=Patients.Cur.EstBalance;
 			Patients.Cur.EstBalance=Procedures.ComputeBal()+ClaimProcs.ComputeBal()
-				+Adjustments.ComputeBal()-PaySplits.ComputeBal();
+				+Adjustments.ComputeBal()-PaySplits.ComputeBal()+PayPlans.ComputeBal();
 			if(curBal!=Patients.Cur.EstBalance){
 				Patients.UpdateCur();
 				Patients.GetFamily(Patients.Cur.PatNum);
@@ -106,13 +108,19 @@ namespace OpenDental{
 
 	}//end class ChartNumDent*/
 
+	///<summary></summary>
 	public class Messages{
+		///<summary></summary>
 		public static MessageInvalid RecdMessage;
+		///<summary></summary>
 		public static MessageButtons RecdMsgBut;
+		///<summary></summary>
 		public static MessageInvalid MessageToSend;
+		///<summary></summary>
 		public static MessageButtons ButtonsToSend;
 		private static Thread Thread2;
 		
+		///<summary></summary>
 		public static void SendMessage(){
 			//fix.  check to see if thread is done yet.
 			//if(Thread2==null)//for the first time
@@ -121,6 +129,7 @@ namespace OpenDental{
 			Thread2.Start();
 		}
 
+		///<summary></summary>
 		public static void SendMessageThread(){
 			string msgTo;
 			for(int i=0;i<Computers.List.Length;i++){
@@ -153,11 +162,13 @@ namespace OpenDental{
 			}
 		}//end SendMessages
 
+		///<summary></summary>
 		public static void SendButtons(){
 			Thread2 = new Thread(new ThreadStart(SendButtonsThread));
 			Thread2.Start();
 		}
 
+		///<summary></summary>
 		public static void SendButtonsThread(){
 			string msgTo;
 			for(int i=0;i<Computers.List.Length;i++){
@@ -194,6 +205,7 @@ namespace OpenDental{
 			}
 		}//end SendMessages
 				
+		///<summary></summary>
 		public static void RecMessage(string strMessage){
 			//MessageBox.Show(strMessage);
 			StringReader stringReader2 = new StringReader(strMessage);
@@ -258,28 +270,39 @@ namespace OpenDental{
 
 	}//end class Messages
 
+	///<summary></summary>
 	public struct MessageInvalid{
+		///<summary></summary>
 		public string From;
+		///<summary></summary>
 		public string Type;//"LocalData" or "Date"
+		///<summary></summary>
 		public DateTime DateViewing;
 		//public string PatNum;
 		//public string TableChanged;
 		//might include type of TableChange: insert, delete, update, etc. 
 	}
 
+	///<summary></summary>
 	public struct MessageButtons{
+		///<summary></summary>
 		public string From;
+		///<summary></summary>
 		public string Type;//"Button" or "Text"
+		///<summary></summary>
 		public string Text;
+		///<summary></summary>
 		public int Row;
+		///<summary></summary>
 		public int Col;
+		///<summary></summary>
 		public bool Pushed;
 	}
 
 /*=================================Class DataValid=========================================
 ===========================================================================================*/
 
-
+	///<summary></summary>
 	public class DataValid{
 		/*
 		public struct Module{
@@ -293,9 +316,11 @@ namespace OpenDental{
 			public static bool Treat;
 		}
 		*/
+		///<summary></summary>
 		public static DateTime DateViewing;
 		//public static int PatNum;
 		//public static string Table;
+		///<summary></summary>
 		public static InvalidType IType;
 
 		/*public void InvalidPat(){
@@ -311,15 +336,17 @@ namespace OpenDental{
 		public void InvalidDate(){
 			Module.ApptDate=false;
 		}*/
-
+		///<summary></summary>
 		public static event System.EventHandler BecameInvalid;
 
+		///<summary></summary>
 		public void SetInvalid(){
 			//this is the main method,but you first have to set:
 			//IType and possibly DateViewing
 			OnBecameInvalid(new System.EventArgs());
 		}
 
+		///<summary></summary>
 		protected virtual void OnBecameInvalid(System.EventArgs e){
 			if(BecameInvalid !=null){
 				BecameInvalid(this,e);
@@ -349,15 +376,17 @@ namespace OpenDental{
 	/*=================================Class ExitApplicationNow=========================================
 ===========================================================================================*/
 
-
+	///<summary></summary>
 	public class ExitApplicationNow{
-		
+		///<summary></summary>
 		public static event System.EventHandler WantsToExit;
 
+		///<summary></summary>
 		public void ExitNow(){
 			OnWantsToExit(new System.EventArgs());
 		}
 
+		///<summary></summary>
 		protected virtual void OnWantsToExit(System.EventArgs e){
 			if(WantsToExit !=null){
 				WantsToExit(this,e);
@@ -368,8 +397,10 @@ namespace OpenDental{
 
 	/*=================================Class TelephoneNumbers============================================*/
 
+	///<summary></summary>
 	public class TelephoneNumbers{
 
+		///<summary></summary>
 		public static string ReFormat(string phoneNum){
 			//only used in the tool that loops through the database fixing telephone numbers.
 			Regex regex;
@@ -392,6 +423,7 @@ namespace OpenDental{
 			return phoneNum;     
 		}
 
+		///<summary></summary>
 		public static string AutoFormat(string phoneNum){
 			//reformats initial entry with each keystroke
 			if(CultureInfo.CurrentCulture.Name!="en-US"){
@@ -418,6 +450,7 @@ namespace OpenDental{
 			return phoneNum;
 		}
 
+		///<summary></summary>
 		public static string FormatNumbersOnly(string phoneNum){
 			string newPhoneNum="";
 			for(int i=0;i<phoneNum.Length;i++){

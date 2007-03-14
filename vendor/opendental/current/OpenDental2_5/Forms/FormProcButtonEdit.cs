@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormProcButtonEdit : System.Windows.Forms.Form{
 		private System.ComponentModel.Container components = null;
 		private System.Windows.Forms.ListBox listAutoCodes;
@@ -14,6 +14,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butCancel;
 		private System.Windows.Forms.Button butOK;
 		private System.Windows.Forms.Label label2;
+		///<summary></summary>
     public bool IsNew;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.ListBox listADA;
@@ -21,6 +22,7 @@ namespace OpenDental{
 		private OpenDental.XPButton butDelete;
 		private System.Windows.Forms.Label label4;
 
+		///<summary></summary>
 		public FormProcButtonEdit(){
 			InitializeComponent();
 			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -36,6 +38,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -95,7 +98,7 @@ namespace OpenDental{
 			this.butCancel.RightToLeft = System.Windows.Forms.RightToLeft.No;
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 27;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// butOK
@@ -105,7 +108,7 @@ namespace OpenDental{
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 26;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// label2
@@ -153,7 +156,7 @@ namespace OpenDental{
 			this.butAdd.Name = "butAdd";
 			this.butAdd.Size = new System.Drawing.Size(75, 26);
 			this.butAdd.TabIndex = 36;
-			this.butAdd.Text = "Add";
+			this.butAdd.Text = "&Add";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
 			// butDelete
@@ -168,12 +171,14 @@ namespace OpenDental{
 			this.butDelete.Name = "butDelete";
 			this.butDelete.Size = new System.Drawing.Size(75, 26);
 			this.butDelete.TabIndex = 37;
-			this.butDelete.Text = "Delete";
+			this.butDelete.Text = "&Delete";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
 			// 
 			// FormProcButtonEdit
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(638, 590);
 			this.Controls.Add(this.butAdd);
 			this.Controls.Add(this.butDelete);

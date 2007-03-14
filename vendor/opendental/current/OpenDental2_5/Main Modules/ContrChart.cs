@@ -10,7 +10,7 @@ using System.Data;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class ContrChart : System.Windows.Forms.UserControl	{
 		private System.Windows.Forms.Button butAddProc;
 		private System.Windows.Forms.Button butM;
@@ -135,6 +135,7 @@ namespace OpenDental{
 //fix: use AL for tbProg.SelectedRowsAL
 		//public	VisiQuick VQLink;  // TJE
 			
+		///<summary></summary>
 		public ContrChart(){
 			InitializeComponent();// This call is required by the Windows.Forms Form Designer.
 			//tbProg.CellClicked += new OpenDental.ContrTable.CellEventHandler(tbProg_CellClicked);
@@ -144,6 +145,7 @@ namespace OpenDental{
 			//VQLink=new VisiQuick(Handle);		// TJE
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			//if (VQLink != null)					// TJE
 			//	VQLink.DoneVQ();				// TJE
@@ -1416,6 +1418,7 @@ namespace OpenDental{
 		}
 		#endregion
 
+		///<summary></summary>
 		public bool DataValid{
       get{
         return dataValid;
@@ -1433,6 +1436,7 @@ namespace OpenDental{
 			tbProg.LayoutTables();
 		}
 
+		///<summary></summary>
 		public void InstantClasses(){
 			newStatus=ProcStat.TP;
 			ApptNext = new ContrApptSingle();
@@ -1498,11 +1502,13 @@ namespace OpenDental{
 				});
 		}
 
+		///<summary></summary>
 		public void ModuleSelected(){
 			RefreshModuleData();
 			RefreshModuleScreen();
 		}
 
+		///<summary></summary>
 		public void ModuleUnselected(){
 			Patients.FamilyList=null;
 			InsPlans.List=null;
@@ -1676,6 +1682,7 @@ namespace OpenDental{
 				AListNote.Add(remainNote.Substring(0,iChars));
 				remainNote = remainNote.Substring(iChars);
 			}//end while
+			grfx.Dispose();
 			int noteLine=0;
 			for (int j=nextLine+Procedures.ProcsForSingle.Length;
 				j<nextLine+Procedures.ProcsForSingle.Length+AListNote.Count;j++){
@@ -1868,7 +1875,7 @@ namespace OpenDental{
 					tempProgLine.Surf=((Procedure)ProcAL[tempCountProc]).Surf;
 					tempProgLine.Dx=Defs.GetValue(DefCat.Diagnosis,((Procedure)ProcAL[tempCountProc]).Dx);
 					tempProgLine.Description
-						=ProcCodes.GetProcCode(((Procedure)ProcAL[tempCountProc]).ADACode).Descript;
+						=ProcedureCodes.GetProcCode(((Procedure)ProcAL[tempCountProc]).ADACode).Descript;
 					
 					switch (((Procedure)ProcAL[tempCountProc]).ProcStatus){
 						case ProcStat.TP :
@@ -1938,6 +1945,7 @@ namespace OpenDental{
 							ProgLineAL.Add(tempProgLine);
 						}//end while
 					}//end if checkNotes.checked
+					grfx.Dispose();
 					if(tempCountProc<ProcAL.Count){
 						tempCountProc++;
 						j++;
@@ -2005,6 +2013,7 @@ namespace OpenDental{
 							ProgLineAL.Add(tempProgLine);
 						}//end while
 					}//end if checkNotes.checked
+					grfx.Dispose();
 					if(tempCountRx<RxAL.Count){
 						tempCountRx++;
 						j++;
@@ -2195,6 +2204,7 @@ namespace OpenDental{
 			//this.radioEntryTP.Checked=true;
 		}
 
+		///<summary>Gets the fee schedule from the priinsplan, the patient, or the provider in that order.  Either returns a fee schedule (fk to definition.DefNum) or 0.</summary>
 		public static int GetFeeSched(){
 			//there's not really a good place to put this function, so it's here.
 			int retVal=0;
@@ -2219,6 +2229,7 @@ namespace OpenDental{
 			return retVal;
 		}
 
+		///<summary>Sets many fields for a new procedure, then displays it for editing before inserting it into the db.</summary>
 		private void AddProcedure(){
 			//procnum
 			Procedures.Cur.PatNum=Patients.Cur.PatNum;
@@ -2231,19 +2242,28 @@ namespace OpenDental{
 			//surf
 			//ToothNum
 			//Procedures.Cur.ToothRange
-			Procedures.Cur.NoBillIns=ProcCodes.GetProcCode(Procedures.Cur.ADACode).NoBillIns;
+			Procedures.Cur.NoBillIns=ProcedureCodes.GetProcCode(Procedures.Cur.ADACode).NoBillIns;
 			//priority
 			Procedures.Cur.ProcStatus=newStatus;
 			Procedures.Cur.ProcNote="";
-			//Procedures.Cur.PriEstim=
-			//Procedures.Cur.SecEstim=
-			//claimnum
-			Procedures.Cur.ProvNum=Patients.Cur.PriProv;
+			if(ProcedureCodes.GetProcCode(Procedures.Cur.ADACode).IsHygiene
+				&& Patients.Cur.SecProv != 0){
+				Procedures.Cur.ProvNum=Patients.Cur.SecProv;
+			}
+			else{
+				Procedures.Cur.ProvNum=Patients.Cur.PriProv;
+			}
 			if(listDx.SelectedIndex!=-1)
 				Procedures.Cur.Dx=Defs.Short[(int)DefCat.Diagnosis][listDx.SelectedIndex].DefNum;
 			//nextaptnum
+			Procedures.Cur.CapCoPay=-1;
 			if(Patients.Cur.PriPlanNum!=0){//if patient has insurance
 				Procedures.Cur.IsCovIns=true;
+				InsPlans.GetCur(Patients.Cur.PriPlanNum);
+				if(InsPlans.Cur.PlanType=="c"){
+					//also handles fine if copayfeesched=0:
+					Procedures.Cur.CapCoPay=Fees.GetAmount(Procedures.Cur.ADACode,InsPlans.Cur.CopayFeeSched);
+				}
 			}
 			FormProcEdit FormPE = new FormProcEdit();
 			FormPE.IsNew=true;
@@ -2263,19 +2283,28 @@ namespace OpenDental{
 			//surf
 			//toothnum
 			//ToothRange
-			Procedures.Cur.NoBillIns=ProcCodes.GetProcCode(Procedures.Cur.ADACode).NoBillIns;
+			Procedures.Cur.NoBillIns=ProcedureCodes.GetProcCode(Procedures.Cur.ADACode).NoBillIns;
 			//priority
 			Procedures.Cur.ProcStatus=newStatus;
 			Procedures.Cur.ProcNote="";
-			//Procedures.Cur.PriEstim=
-			//Procedures.Cur.SecEstim=
-			//claimnum
-			Procedures.Cur.ProvNum=Patients.Cur.PriProv;
+			if(ProcedureCodes.GetProcCode(Procedures.Cur.ADACode).IsHygiene
+				&& Patients.Cur.SecProv != 0){
+				Procedures.Cur.ProvNum=Patients.Cur.SecProv;
+			}
+			else{
+				Procedures.Cur.ProvNum=Patients.Cur.PriProv;
+			}
 			if(listDx.SelectedIndex!=-1)
 				Procedures.Cur.Dx=Defs.Short[(int)DefCat.Diagnosis][listDx.SelectedIndex].DefNum;
 			//nextaptnum
+			Procedures.Cur.CapCoPay=-1;
 			if(Patients.Cur.PriPlanNum!=0){//if patient has insurance
 				Procedures.Cur.IsCovIns=true;
+				InsPlans.GetCur(Patients.Cur.PriPlanNum);
+				if(InsPlans.Cur.PlanType=="c"){
+					//also handles fine if copayfeesched=0:
+					Procedures.Cur.CapCoPay=Fees.GetAmount(Procedures.Cur.ADACode,InsPlans.Cur.CopayFeeSched);
+				}
 			}
 			//MessageBox.Show(Procedures.NewProcedure.ProcFee.ToString());
 			//MessageBox.Show(Procedures.NewProcedure.ProcDate);
@@ -2297,7 +2326,7 @@ namespace OpenDental{
 				Procedures.Cur=new Procedure();
 				Procedures.Cur.ADACode = FormP.SelectedADA;
 				//Procedures.Cur.ADACode=ProcButtonItems.adaCodeList[i];
-				tArea=ProcCodes.GetProcCode(Procedures.Cur.ADACode).TreatArea;
+				tArea=ProcedureCodes.GetProcCode(Procedures.Cur.ADACode).TreatArea;
 				if((tArea==TreatmentArea.Arch
 					|| tArea==TreatmentArea.Mouth
 					|| tArea==TreatmentArea.Quad
@@ -2548,11 +2577,12 @@ namespace OpenDental{
 			Appointments.Cur=new Appointment();
 			Appointments.Cur.PatNum=Patients.Cur.PatNum;
 			Appointments.Cur.ProvNum=Patients.Cur.PriProv;
+			Appointments.Cur.AptStatus=ApptStatus.Next;
+			Appointments.Cur.AptDateTime=DateTime.Today;
 			Appointments.Cur.Pattern="/X/";
 			Appointments.InsertCur();
 			FormApptEdit FormApptEdit2=new FormApptEdit();
 			FormApptEdit2.IsNew=true;
-			FormApptEdit2.IsNext=true;
 			FormApptEdit2.ShowDialog();
 			if(FormApptEdit2.DialogResult!=DialogResult.OK){
 				//delete new appt and unattach procs already handled in dialog
@@ -2562,7 +2592,7 @@ namespace OpenDental{
 			}	
 			Patients.Cur.NextAptNum=Appointments.Cur.AptNum;
 			Patients.UpdateCur();
-			FillNext();
+			ModuleSelected();//if procs were added in appt, then this will display them
 		}
 
 		private void butClear_Click(object sender, System.EventArgs e) {
@@ -2583,12 +2613,8 @@ namespace OpenDental{
 		private void ApptNext_DoubleClick(object sender, System.EventArgs e){
 			Appointments.Cur=ApptNext.Info.MyApt;
 			FormApptEdit FormApptEdit2 = new FormApptEdit();
-			FormApptEdit2.IsNext=true;
 			FormApptEdit2.ShowDialog();
-			//if(FormApptEdit2.DialogResult!=DialogResult.OK){
-			//	return;
-			//}
-			FillNext();
+			ModuleSelected();//if procs were added in appt, then this will display them
 		}
 
 		private void butEnterTx_Click(object sender, System.EventArgs e) {
@@ -2668,7 +2694,7 @@ namespace OpenDental{
 					isValid=true;
 					Procedures.Cur=new Procedure();
 					Procedures.Cur.ADACode=ProcButtonItems.adaCodeList[i];
-					tArea=ProcCodes.GetProcCode(Procedures.Cur.ADACode).TreatArea;
+					tArea=ProcedureCodes.GetProcCode(Procedures.Cur.ADACode).TreatArea;
 					if((tArea==TreatmentArea.Arch
 						|| tArea==TreatmentArea.Mouth
 						|| tArea==TreatmentArea.Quad
@@ -2761,7 +2787,7 @@ namespace OpenDental{
 					Procedures.Cur.ADACode=AutoCodeItems.GetADA
 							(ProcButtonItems.autoCodeList[i],toothNum
 							,surf,isAdditional);
-					tArea=ProcCodes.GetProcCode(Procedures.Cur.ADACode).TreatArea;
+					tArea=ProcedureCodes.GetProcCode(Procedures.Cur.ADACode).TreatArea;
 					if((tArea==TreatmentArea.Arch
 						|| tArea==TreatmentArea.Mouth
 						|| tArea==TreatmentArea.Quad
@@ -2921,9 +2947,9 @@ namespace OpenDental{
 
 		private void EnterTypedCode(){
 			Procedures.Cur = new Procedure();
-			if(!ProcCodes.HList.ContainsKey(textADACode.Text)){
+			if(!ProcedureCodes.HList.ContainsKey(textADACode.Text)){
 				MessageBox.Show(Lan.g(this,"Invalid code."));
-				//textADACode.Text="";
+				textADACode.Text="";
 				textADACode.Select();
 				return;
 			}
@@ -3120,27 +3146,46 @@ namespace OpenDental{
 		#endregion
 	}//end class
 
+	///<summary></summary>
 	public struct TPChartLines{
 		//public string Pr;
+		///<summary></summary>
 		public string Surf;
+		///<summary></summary>
 		public string Dx;
+		///<summary></summary>
 		public string Tx;
+		///<summary></summary>
 		public string Complete;
 	}//end struct TPChartLines
 
+	///<summary></summary>
 	public struct ProgLine{
+		///<summary></summary>
 		public ProgType Type;
+		///<summary></summary>
 		public Color LineColor;
+		///<summary></summary>
 		public bool IsNote;
+		///<summary></summary>
 		public int Index;
+		///<summary></summary>
 		public string Date;
+		///<summary></summary>
 		public string Th;
+		///<summary></summary>
 		public string Surf;
+		///<summary></summary>
 		public string Dx;
+		///<summary></summary>
 		public string Description;
+		///<summary></summary>
 		public string Stat;
+		///<summary></summary>
 		public string Prov;
+		///<summary></summary>
 		public string Amount;
+		///<summary></summary>
 		public string Note;
 	}//end struct ProgLines
 

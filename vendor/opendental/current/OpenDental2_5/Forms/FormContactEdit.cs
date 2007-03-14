@@ -28,8 +28,10 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textNotes;
 		private System.Windows.Forms.ListBox listCategory;
 		private System.Windows.Forms.Label label6;
+		///<summary></summary>
 		public bool IsNew;
 
+		///<summary></summary>
 		public FormContactEdit()
 		{
 			//
@@ -92,11 +94,12 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(591, 450);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 0;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// butOK
@@ -105,7 +108,7 @@ namespace OpenDental{
 			this.butOK.Location = new System.Drawing.Point(591, 411);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 1;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// butDelete
@@ -114,7 +117,7 @@ namespace OpenDental{
 			this.butDelete.Location = new System.Drawing.Point(42, 450);
 			this.butDelete.Name = "butDelete";
 			this.butDelete.TabIndex = 2;
-			this.butDelete.Text = "Delete";
+			this.butDelete.Text = "&Delete";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
 			// 
 			// textLName
@@ -226,6 +229,7 @@ namespace OpenDental{
 			// FormContactEdit
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(717, 493);
 			this.Controls.Add(this.label6);
 			this.Controls.Add(this.listCategory);

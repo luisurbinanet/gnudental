@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormPermissionsManage : System.Windows.Forms.Form{
 		private System.Windows.Forms.Button butClose;
 		private OpenDental.TablePermissions tbPerm;
@@ -13,6 +13,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butNone;
 		private System.ComponentModel.Container components = null;
 
+		///<summary></summary>
 		public FormPermissionsManage(){
 			InitializeComponent();
 			tbPerm.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbPerm_CellDoubleClicked);
@@ -24,6 +25,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -47,6 +49,7 @@ namespace OpenDental{
 			this.tbPerm.BackColor = System.Drawing.SystemColors.Window;
 			this.tbPerm.Location = new System.Drawing.Point(22, 26);
 			this.tbPerm.Name = "tbPerm";
+			this.tbPerm.ScrollValue = 1;
 			this.tbPerm.SelectedIndices = new int[0];
 			this.tbPerm.SelectionMode = System.Windows.Forms.SelectionMode.One;
 			this.tbPerm.Size = new System.Drawing.Size(529, 356);
@@ -54,34 +57,40 @@ namespace OpenDental{
 			// 
 			// butClose
 			// 
+			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butClose.Location = new System.Drawing.Point(570, 418);
+			this.butClose.Location = new System.Drawing.Point(570, 416);
 			this.butClose.Name = "butClose";
+			this.butClose.Size = new System.Drawing.Size(75, 26);
 			this.butClose.TabIndex = 4;
-			this.butClose.Text = "Close";
+			this.butClose.Text = "&Close";
 			this.butClose.Click += new System.EventHandler(this.butClose_Click);
 			// 
 			// butAll
 			// 
 			this.butAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butAll.Location = new System.Drawing.Point(22, 412);
+			this.butAll.Location = new System.Drawing.Point(22, 416);
 			this.butAll.Name = "butAll";
+			this.butAll.Size = new System.Drawing.Size(75, 26);
 			this.butAll.TabIndex = 5;
-			this.butAll.Text = "All";
+			this.butAll.Text = "&All";
 			this.butAll.Click += new System.EventHandler(this.butAll_Click);
 			// 
 			// butNone
 			// 
 			this.butNone.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butNone.Location = new System.Drawing.Point(114, 412);
+			this.butNone.Location = new System.Drawing.Point(114, 416);
 			this.butNone.Name = "butNone";
+			this.butNone.Size = new System.Drawing.Size(75, 26);
 			this.butNone.TabIndex = 6;
-			this.butNone.Text = "None";
+			this.butNone.Text = "&None";
 			this.butNone.Click += new System.EventHandler(this.butNone_Click);
 			// 
 			// FormPermissionsManage
 			// 
+			this.AcceptButton = this.butClose;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butClose;
 			this.ClientSize = new System.Drawing.Size(662, 462);
 			this.Controls.Add(this.butNone);
 			this.Controls.Add(this.butAll);

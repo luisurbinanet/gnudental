@@ -6,17 +6,22 @@ using System.Data;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class ValidDouble : System.Windows.Forms.TextBox{
+		///<summary></summary>
 		public System.Windows.Forms.ErrorProvider errorProvider1;
 		private System.ComponentModel.Container components = null;// Required designer variable.
+		///<summary></summary>
 		public Double MaxVal=100000;
+		///<summary></summary>
 		public Double MinVal=-100000;
 
+		///<summary></summary>
 		public ValidDouble(){
 			InitializeComponent();
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){

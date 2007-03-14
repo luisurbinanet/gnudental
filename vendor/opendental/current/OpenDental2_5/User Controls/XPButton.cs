@@ -12,25 +12,24 @@ namespace OpenDental
 	/// <summary>
 	/// Summary description for UserControl1.
 	/// </summary>
-	public class XPButton : System.Windows.Forms.Button
-	{
-		public enum ControlState
-		{
-			/// <summary>The XP control is in the normal state.</summary>
+	public class XPButton : System.Windows.Forms.Button{
+		///<summary></summary>
+		public enum ControlState{
+			/// <summary>button is in the normal state.</summary>
 			Normal,
-			/// <summary>The XP control is in the hover state.</summary>
+			/// <summary>button is in the hover state.</summary>
 			Hover,
-			/// <summary>The XP control is in the pressed state.</summary>
+			/// <summary>button is in the pressed state.</summary>
 			Pressed,
-			/// <summary>The XP control object is in the default state.</summary>
+			/// <summary>button is in the default state.</summary>
 			Default,
-			/// <summary>The XP control object is in the disabled state.</summary>
+			/// <summary>button is in the disabled state.</summary>
 			Disabled		
-		}		/// <summary>
-		/// Required designer variable.
-		/// </summary>
+		}		
+		/// <summary>Required designer variable.</summary>
 		private System.ComponentModel.Container components = null;
 
+		///<summary></summary>
 		public XPButton()
 		{
 			// This call is required by the Windows.Forms Form Designer.
@@ -121,6 +120,7 @@ namespace OpenDental
 		private enumType.XPStyle m_btnStyle=enumType.XPStyle.Silver;
 		private enumType.BtnShape m_btnShape=enumType.BtnShape.Rectangle;
 
+		///<summary></summary>
 		public enumType.BtnShape BtnShape{
 			get{
 				return m_btnShape;
@@ -131,8 +131,8 @@ namespace OpenDental
 			}
 		}
 
-		[DefaultValue("Silver"),
-		System.ComponentModel.RefreshProperties(RefreshProperties.Repaint)]
+		///<summary></summary>
+		[DefaultValue("Silver"),System.ComponentModel.RefreshProperties(RefreshProperties.Repaint)]
 		public enumType.XPStyle BtnStyle{
 			get{
 				return m_btnStyle;
@@ -143,6 +143,7 @@ namespace OpenDental
 			}
 		}
 
+		///<summary></summary>
 		public Point AdjustImageLocation{
 			get{
 				return locPoint;
@@ -165,58 +166,47 @@ namespace OpenDental
 
 		#region Methods
 		// Overridden Event Handlers
-		protected override void OnClick(EventArgs ea)
-		{
+		///<summary></summary>
+		protected override void OnClick(EventArgs ea){
 			this.Capture = false;
 			bCanClick = false;
-
 			if (this.ClientRectangle.Contains(this.PointToClient(Control.MousePosition)))
 				enmState = ControlState.Hover;
 			else
 				enmState = ControlState.Normal;
-
 			this.Invalidate();
-
 			base.OnClick(ea);
 		}
 
-		protected override void OnMouseEnter(EventArgs ea)
-		{
+		///<summary></summary>
+		protected override void OnMouseEnter(EventArgs ea){
 			base.OnMouseEnter(ea);
-
 			enmState = ControlState.Hover;
 			this.Invalidate();
 		}
 
-		protected override void OnMouseDown(MouseEventArgs mea)
-		{
+		///<summary></summary>
+		protected override void OnMouseDown(MouseEventArgs mea){
 			base.OnMouseDown(mea);
-
-			if (mea.Button == MouseButtons.Left)
-			{
+			if (mea.Button == MouseButtons.Left){
 				bCanClick = true;
 				enmState = ControlState.Pressed;
 				this.Invalidate();
 			}
 		}
 
-		protected override void OnMouseMove(MouseEventArgs mea)
-		{
+		///<summary></summary>
+		protected override void OnMouseMove(MouseEventArgs mea){
 			base.OnMouseMove(mea);
-
-			if (ClientRectangle.Contains(mea.X, mea.Y)) 
-			{
-				if (enmState == ControlState.Hover && this.Capture && !bCanClick)
-				{
+			if (ClientRectangle.Contains(mea.X, mea.Y)) {
+				if (enmState == ControlState.Hover && this.Capture && !bCanClick){
 					bCanClick = true;
 					enmState = ControlState.Pressed;
 					this.Invalidate();
 				}
 			}
-			else
-			{
-				if (enmState == ControlState.Pressed)
-				{
+			else{
+				if (enmState == ControlState.Pressed){
 					bCanClick = false;
 					enmState = ControlState.Hover;
 					this.Invalidate();
@@ -224,27 +214,21 @@ namespace OpenDental
 			}
 		}
 
-		protected override void OnMouseLeave(EventArgs ea)
-		{
+		///<summary></summary>
+		protected override void OnMouseLeave(EventArgs ea){
 			base.OnMouseLeave(ea);
-
 			enmState = ControlState.Normal;
 			this.Invalidate();
 		}
 
-		protected override void OnPaint(PaintEventArgs pea)
-		{
-			this.OnPaintBackground(pea);
-        		
-			switch (enmState)
-			{
+		///<summary></summary>
+		protected override void OnPaint(PaintEventArgs pea){
+			this.OnPaintBackground(pea);     		
+			switch (enmState){
 				case ControlState.Normal:
-					if (this.Enabled) 
-					{
-						if (this.Focused || this.IsDefault)
-						{
-							switch(m_btnShape)
-							{
+					if (this.Enabled) {
+						if (this.Focused || this.IsDefault){
+							switch(m_btnShape){
 								case enumType.BtnShape.Rectangle:
 									OnDrawDefault(pea.Graphics);
 									break;
@@ -253,10 +237,8 @@ namespace OpenDental
 									break;
 							}
 						}
-						else
-						{
-							switch(m_btnShape)
-							{
+						else{
+							switch(m_btnShape){
 								case enumType.BtnShape.Rectangle:
 									OnDrawNormal(pea.Graphics);
 									break;
@@ -266,38 +248,31 @@ namespace OpenDental
 							}
 						}
 					}
-					else
-					{
+					else{
 						OnDrawDisabled(pea.Graphics);
 					}
-
 					break;
-
 				case ControlState.Hover:
-				switch(m_btnShape)
-				{
-					case enumType.BtnShape.Rectangle:
-						OnDrawHover(pea.Graphics);
-						break;
-					case enumType.BtnShape.Ellipse:
-						OnDrawHoverEllipse(pea.Graphics);
-						break;
-				}
+					switch(m_btnShape){
+						case enumType.BtnShape.Rectangle:
+							OnDrawHover(pea.Graphics);
+							break;
+						case enumType.BtnShape.Ellipse:
+							OnDrawHoverEllipse(pea.Graphics);
+							break;
+					}
 					break;
-
 				case ControlState.Pressed:
-				switch(m_btnShape)
-				{
-					case enumType.BtnShape.Rectangle:
-						OnDrawPressed(pea.Graphics);
-						break;
-					case enumType.BtnShape.Ellipse:
-						OnDrawPressedEllipse(pea.Graphics);
-						break;
-				}
+					switch(m_btnShape){
+						case enumType.BtnShape.Rectangle:
+							OnDrawPressed(pea.Graphics);
+							break;
+						case enumType.BtnShape.Ellipse:
+							OnDrawPressedEllipse(pea.Graphics);
+							break;
+					}
 					break;
 			}
-
 			// enmState will never be == ControlState.Default
 			// When (IsDefault == true), enmState will be == ControlState.Normal
 			// So when (IsDefault == true), pass ControlState.Default instead of enmState
@@ -313,8 +288,8 @@ namespace OpenDental
 			}*/
 		}
 
-		protected override void OnEnabledChanged(EventArgs ea)
-		{
+		///<summary></summary>
+		protected override void OnEnabledChanged(EventArgs ea){
 			base.OnEnabledChanged(ea);
 			enmState = ControlState.Normal;
 			this.Invalidate();
@@ -325,29 +300,26 @@ namespace OpenDental
 		/// Draws the normal state of the XpButton.
 		/// </summary>
 		/// <param name="g">The System.Drawing.Graphics object to be used to paint the XpButton.</param>
-		private void OnDrawNormal(Graphics g)
-		{
+		private void OnDrawNormal(Graphics g){
 			DrawNormalButton(g);
 			// no need to call base class implementation
 		}
-		private void OnDrawHoverEllipse(Graphics g)
-		{
+
+		private void OnDrawHoverEllipse(Graphics g){
 			DrawNormalEllipse(g);
 			DrawEllipseHoverBorder(g);
 			DrawEllipseBorder(g);
 		}
+
 		/// <summary>
 		/// Draws the hover state of the XpButton.
 		/// </summary>
 		/// <param name="g">The System.Drawing.Graphics object to be used to paint the XpButton.</param>
-		private void OnDrawHover(Graphics g)
-		{
+		private void OnDrawHover(Graphics g){
 			DrawNormalButton(g);
-
 			//
 			// Need to draw only the "thick border" for hover buttons
 			//
-		
 			Rectangle rcBorder = this.BorderRectangle;
 
 			// Top
@@ -645,7 +617,7 @@ namespace OpenDental
 						rc, 
 						sf);
 			}
-			else
+			else//image is null
 				g.DrawString(
 					this.Text, 
 					this.Font, 
@@ -899,9 +871,24 @@ namespace OpenDental
 		}
 		#endregion
 	}
+	///<summary></summary>
 	public class enumType{
-		public enum XPStyle	{Default, Blue, OliveGreen, Silver}
-		public enum BtnShape {Rectangle, Ellipse}
+		///<summary></summary>
+		public enum XPStyle	{
+			///<summary></summary>
+			Default,
+			///<summary></summary>
+			Blue,
+			///<summary></summary>
+			OliveGreen,
+			///<summary></summary>
+			Silver}
+		///<summary></summary>
+		public enum BtnShape {
+			///<summary></summary>
+			Rectangle, 
+			///<summary></summary>
+			Ellipse}
 	}
 
 	internal sealed class ControlPaint
@@ -944,72 +931,59 @@ namespace OpenDental
 
 
 
-		public static StringFormat GetStringFormat(ContentAlignment contentAlignment)
-		{
-			if (!Enum.IsDefined(typeof(ContentAlignment), (int) contentAlignment))
+		public static StringFormat GetStringFormat(ContentAlignment contentAlignment){
+			if(!Enum.IsDefined(typeof(ContentAlignment),(int)contentAlignment))
 				throw new System.ComponentModel.InvalidEnumArgumentException(
-					"contentAlignment", (int) contentAlignment, typeof(ContentAlignment));
-
+					"contentAlignment",(int)contentAlignment,typeof(ContentAlignment));
 			StringFormat stringFormat = new StringFormat();
-			
-			switch (contentAlignment)
-			{
+			switch (contentAlignment){
 				case ContentAlignment.MiddleCenter:
 					stringFormat.LineAlignment = StringAlignment.Center;
 					stringFormat.Alignment = StringAlignment.Center;
 					break;
-
 				case ContentAlignment.MiddleLeft:
 					stringFormat.LineAlignment = StringAlignment.Center;
 					stringFormat.Alignment = StringAlignment.Near;
 					break;
-
 				case ContentAlignment.MiddleRight:
 					stringFormat.LineAlignment = StringAlignment.Center;
 					stringFormat.Alignment = StringAlignment.Far;
 					break;
-
 				case ContentAlignment.TopCenter:
 					stringFormat.LineAlignment = StringAlignment.Near;
 					stringFormat.Alignment = StringAlignment.Center;
 					break;
-
 				case ContentAlignment.TopLeft:
 					stringFormat.LineAlignment = StringAlignment.Near;
 					stringFormat.Alignment = StringAlignment.Near;
 					break;
-
 				case ContentAlignment.TopRight:
 					stringFormat.LineAlignment = StringAlignment.Near;
 					stringFormat.Alignment = StringAlignment.Far;
 					break;
-
 				case ContentAlignment.BottomCenter:
 					stringFormat.LineAlignment = StringAlignment.Far;
 					stringFormat.Alignment = StringAlignment.Center;
 					break;
-
 				case ContentAlignment.BottomLeft:
 					stringFormat.LineAlignment = StringAlignment.Far;
 					stringFormat.Alignment = StringAlignment.Near;
 					break;
-
 				case ContentAlignment.BottomRight:
 					stringFormat.LineAlignment = StringAlignment.Far;
 					stringFormat.Alignment = StringAlignment.Far;
 					break;
 			}
-
 			return stringFormat;
 		}
 
 		/// <summary>
 		/// Draws a rectangle with rounded edges.
 		/// </summary>
-		/// <param name="g">The System.Drawing.Graphics object to be used to draw the rectangle.</param>
-		/// <param name="p">A System.Drawing.Pen object that determines the color, width, and style of the rectangle.</param>
-		/// <param name="rc">A System.Drawing.Rectangle structure that represents the rectangle to draw.</param>
-		/// <param name="roundness">Pixel indentation that determines the roundness of the corners.</param>
+		/// <param name="grfx">The System.Drawing.Graphics object to be used to draw the rectangle.</param>
+		/// <param name="pen">A System.Drawing.Pen object that determines the color, width, and style of the rectangle.</param>
+		/// <param name="rect">A System.Drawing.Rectangle structure that represents the rectangle to draw.</param>
+		/// <param name="round">Pixel indentation that determines the roundness of the corners.</param>
 		public static void DrawRoundedRectangle(Graphics grfx, Pen pen, Rectangle rect, int round){
 			//round usually = 1 pixel, but can also be set to 2 pixels
 			//old way of doing it:

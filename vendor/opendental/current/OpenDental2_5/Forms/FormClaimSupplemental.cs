@@ -6,6 +6,7 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
+	///<summary></summary>
 	public class FormClaimSupplemental : System.Windows.Forms.Form{
 		private System.Windows.Forms.Button butCancel;
 		private System.Windows.Forms.Button butOK;
@@ -29,6 +30,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label10;
 		//public string RefNumString;
 	
+		///<summary></summary>
 		public FormClaimSupplemental(){
 			InitializeComponent();
 			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -49,6 +51,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -89,12 +92,13 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(641, 382);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.RightToLeft = System.Windows.Forms.RightToLeft.No;
 			this.butCancel.TabIndex = 3;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// butOK
@@ -103,7 +107,7 @@ namespace OpenDental{
 			this.butOK.Location = new System.Drawing.Point(641, 342);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 2;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// listRef
@@ -155,7 +159,7 @@ namespace OpenDental{
 			this.butNone.Name = "butNone";
 			this.butNone.Size = new System.Drawing.Size(68, 23);
 			this.butNone.TabIndex = 9;
-			this.butNone.Text = "None";
+			this.butNone.Text = "&None";
 			this.butNone.Click += new System.EventHandler(this.butNone_Click);
 			// 
 			// butAdd
@@ -165,7 +169,7 @@ namespace OpenDental{
 			this.butAdd.Name = "butAdd";
 			this.butAdd.Size = new System.Drawing.Size(70, 23);
 			this.butAdd.TabIndex = 10;
-			this.butAdd.Text = "Add";
+			this.butAdd.Text = "&Add";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
 			// label25
@@ -258,7 +262,9 @@ namespace OpenDental{
 			// 
 			// FormClaimSupplemental
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(752, 443);
 			this.Controls.Add(this.listEmployRelated);
 			this.Controls.Add(this.listPlaceService);
@@ -303,7 +309,6 @@ namespace OpenDental{
 			listAccident.Items.Add(Lan.g(this,"Auto"));
 			listAccident.Items.Add(Lan.g(this,"Employment"));
 			listAccident.Items.Add(Lan.g(this,"Other"));
-			//MessageBox.Show(Claims.Cur.AccidentRelated);
 			switch(Claims.Cur.AccidentRelated){
 				case "":
 					listAccident.SelectedIndex=0;

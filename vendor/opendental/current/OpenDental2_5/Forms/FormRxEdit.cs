@@ -10,7 +10,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormRxEdit : System.Windows.Forms.Form{
 		private System.Windows.Forms.Button butCancel;
 		private System.Windows.Forms.Button butOK;
@@ -31,10 +31,13 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label7;
 		private System.Windows.Forms.PrintDialog printDialog2;
 		private System.Drawing.Printing.PrintDocument pd2;
+		///<summary></summary>
 		public bool IsNew;
 		private OpenDental.XPButton butPrint;
+		///<summary></summary>
     public FormRpPrintPreview pView = new FormRpPrintPreview();
 
+		///<summary></summary>
 		public FormRxEdit(){
 			InitializeComponent();
 			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -52,6 +55,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -92,12 +96,13 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(618, 424);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 9;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// butOK
@@ -107,11 +112,12 @@ namespace OpenDental{
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 8;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// textSig
 			// 
+			this.textSig.AcceptsReturn = true;
 			this.textSig.Location = new System.Drawing.Point(110, 104);
 			this.textSig.Multiline = true;
 			this.textSig.Name = "textSig";
@@ -137,6 +143,7 @@ namespace OpenDental{
 			// 
 			// textNotes
 			// 
+			this.textNotes.AcceptsReturn = true;
 			this.textNotes.Location = new System.Drawing.Point(110, 228);
 			this.textNotes.Multiline = true;
 			this.textNotes.Name = "textNotes";
@@ -240,16 +247,18 @@ namespace OpenDental{
 			this.butPrint.BtnStyle = OpenDental.enumType.XPStyle.Silver;
 			this.butPrint.Image = ((System.Drawing.Image)(resources.GetObject("butPrint.Image")));
 			this.butPrint.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butPrint.Location = new System.Drawing.Point(491, 424);
+			this.butPrint.Location = new System.Drawing.Point(482, 424);
 			this.butPrint.Name = "butPrint";
-			this.butPrint.Size = new System.Drawing.Size(79, 26);
+			this.butPrint.Size = new System.Drawing.Size(88, 26);
 			this.butPrint.TabIndex = 29;
-			this.butPrint.Text = "Print";
+			this.butPrint.Text = "&Print";
 			this.butPrint.Click += new System.EventHandler(this.butPrint_Click);
 			// 
 			// FormRxEdit
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(710, 472);
 			this.Controls.Add(this.butPrint);
 			this.Controls.Add(this.label7);
@@ -346,6 +355,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public void PrintReport(bool justPreview){
 		pd2=new PrintDocument();
 		pd2.PrintPage += new PrintPageEventHandler(this.pd2_PrintPage);

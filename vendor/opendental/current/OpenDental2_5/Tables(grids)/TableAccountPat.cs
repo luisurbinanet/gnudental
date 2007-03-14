@@ -5,11 +5,12 @@ using System.Drawing;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class TableAccountPat : OpenDental.ContrTable{
 		private System.ComponentModel.IContainer components = null;
 		//public int SelectedRow=0;
 
+		///<summary></summary>
 		public TableAccountPat(){
 			InitializeComponent();// This call is required by the Windows Form Designer.
 			MaxRows=10;
@@ -28,6 +29,7 @@ namespace OpenDental{
 			LayoutTables();
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if (components != null){

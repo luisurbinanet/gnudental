@@ -7,10 +7,11 @@ using System.Windows.Forms;
 
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class TablePercent : OpenDental.ContrTable{
 		private System.ComponentModel.IContainer components = null;
 
+		///<summary></summary>
 		public TablePercent(){
 			InitializeComponent();// This call is required by the Windows Form Designer.
 			MaxRows=6;
@@ -26,6 +27,7 @@ namespace OpenDental{
 			LayoutTables();
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if (components != null){

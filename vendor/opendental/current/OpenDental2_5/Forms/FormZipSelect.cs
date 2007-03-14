@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormZipSelect : System.Windows.Forms.Form{
 		private System.Windows.Forms.Button butOK;
 		private System.Windows.Forms.Button butCancel;
@@ -16,6 +16,7 @@ namespace OpenDental{
 		private OpenDental.XPButton butAdd;
 		private System.ComponentModel.Container components=null;
 
+		///<summary></summary>
 		public FormZipSelect(){
 			InitializeComponent();
 
@@ -26,6 +27,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -55,7 +57,7 @@ namespace OpenDental{
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 0;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// butCancel
@@ -66,7 +68,7 @@ namespace OpenDental{
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 1;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// listMatches
@@ -97,7 +99,7 @@ namespace OpenDental{
 			this.butEdit.Name = "butEdit";
 			this.butEdit.Size = new System.Drawing.Size(75, 26);
 			this.butEdit.TabIndex = 12;
-			this.butEdit.Text = "Edit";
+			this.butEdit.Text = "&Edit";
 			this.butEdit.Click += new System.EventHandler(this.butEdit_Click);
 			// 
 			// butDelete
@@ -112,7 +114,7 @@ namespace OpenDental{
 			this.butDelete.Name = "butDelete";
 			this.butDelete.Size = new System.Drawing.Size(75, 26);
 			this.butDelete.TabIndex = 11;
-			this.butDelete.Text = "Delete";
+			this.butDelete.Text = "&Delete";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
 			// 
 			// butAdd
@@ -127,12 +129,14 @@ namespace OpenDental{
 			this.butAdd.Name = "butAdd";
 			this.butAdd.Size = new System.Drawing.Size(75, 26);
 			this.butAdd.TabIndex = 10;
-			this.butAdd.Text = "Add";
+			this.butAdd.Text = "&Add";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
 			// FormZipSelect
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(430, 235);
 			this.Controls.Add(this.butEdit);
 			this.Controls.Add(this.butDelete);

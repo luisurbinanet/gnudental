@@ -6,7 +6,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormPrinterSetup : System.Windows.Forms.Form{
 		private System.Windows.Forms.ListBox listPrinters;
 		private System.Windows.Forms.Button butDefault;
@@ -15,6 +15,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butCancel;
 		private System.ComponentModel.Container components = null;
 
+		///<summary></summary>
 		public FormPrinterSetup(){
 			InitializeComponent();
 			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -27,6 +28,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -60,7 +62,7 @@ namespace OpenDental{
 			this.butDefault.Name = "butDefault";
 			this.butDefault.Size = new System.Drawing.Size(88, 23);
 			this.butDefault.TabIndex = 1;
-			this.butDefault.Text = "Use Default";
+			this.butDefault.Text = "&Use Default";
 			this.butDefault.Click += new System.EventHandler(this.butDefault_Click);
 			// 
 			// label1
@@ -76,8 +78,9 @@ namespace OpenDental{
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(406, 280);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 2;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// butCancel
@@ -86,13 +89,16 @@ namespace OpenDental{
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(406, 314);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 3;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// FormPrinterSetup
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(510, 356);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);

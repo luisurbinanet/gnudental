@@ -9,7 +9,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormInsTemplates : System.Windows.Forms.Form{
 		private OpenDental.ContrTable Table2;
 		private System.Windows.Forms.Label label1;
@@ -22,8 +22,10 @@ namespace OpenDental{
 		private OpenDental.XPButton butAdd;
 		private OpenDental.XPButton butEdit;
 		private System.Windows.Forms.Button butCancel;
-		public bool ViewOnly;//when not selecting a template for a new plan
+		///<summary>when not selecting a template for a new plan</summary>
+		public bool ViewOnly;
 
+		///<summary></summary>
 		public FormInsTemplates(){
 			InitializeComponent();// Required for Windows Form Designer support
 			Table2.CellClicked += new OpenDental.ContrTable.CellEventHandler(Table2_CellClicked);
@@ -42,6 +44,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -71,6 +74,7 @@ namespace OpenDental{
 			this.Table2.BackColor = System.Drawing.SystemColors.Window;
 			this.Table2.Location = new System.Drawing.Point(0, 24);
 			this.Table2.Name = "Table2";
+			this.Table2.ScrollValue = 150;
 			this.Table2.SelectedIndices = new int[0];
 			this.Table2.SelectionMode = System.Windows.Forms.SelectionMode.None;
 			this.Table2.Size = new System.Drawing.Size(440, 428);
@@ -107,22 +111,22 @@ namespace OpenDental{
 			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butCancel.Location = new System.Drawing.Point(768, 556);
+			this.butCancel.Location = new System.Drawing.Point(757, 556);
 			this.butCancel.Name = "butCancel";
-			this.butCancel.Size = new System.Drawing.Size(75, 26);
+			this.butCancel.Size = new System.Drawing.Size(86, 26);
 			this.butCancel.TabIndex = 4;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// butBlank
 			// 
 			this.butBlank.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.butBlank.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butBlank.Location = new System.Drawing.Point(625, 556);
+			this.butBlank.Location = new System.Drawing.Point(613, 556);
 			this.butBlank.Name = "butBlank";
-			this.butBlank.Size = new System.Drawing.Size(75, 26);
+			this.butBlank.Size = new System.Drawing.Size(87, 26);
 			this.butBlank.TabIndex = 3;
-			this.butBlank.Text = "Blank Plan";
+			this.butBlank.Text = "&Blank Plan";
 			this.butBlank.Click += new System.EventHandler(this.butBlank_Click);
 			// 
 			// butDelete
@@ -135,9 +139,9 @@ namespace OpenDental{
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butDelete.Location = new System.Drawing.Point(362, 556);
 			this.butDelete.Name = "butDelete";
-			this.butDelete.Size = new System.Drawing.Size(75, 26);
+			this.butDelete.Size = new System.Drawing.Size(85, 26);
 			this.butDelete.TabIndex = 8;
-			this.butDelete.Text = "Delete";
+			this.butDelete.Text = "&Delete";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
 			// 
 			// butAdd
@@ -150,9 +154,9 @@ namespace OpenDental{
 			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butAdd.Location = new System.Drawing.Point(278, 556);
 			this.butAdd.Name = "butAdd";
-			this.butAdd.Size = new System.Drawing.Size(75, 26);
+			this.butAdd.Size = new System.Drawing.Size(85, 26);
 			this.butAdd.TabIndex = 7;
-			this.butAdd.Text = "Add";
+			this.butAdd.Text = "&Add";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
 			// butEdit
@@ -165,9 +169,9 @@ namespace OpenDental{
 			this.butEdit.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butEdit.Location = new System.Drawing.Point(447, 556);
 			this.butEdit.Name = "butEdit";
-			this.butEdit.Size = new System.Drawing.Size(75, 26);
+			this.butEdit.Size = new System.Drawing.Size(85, 26);
 			this.butEdit.TabIndex = 9;
-			this.butEdit.Text = "Edit";
+			this.butEdit.Text = "&Edit";
 			this.butEdit.Click += new System.EventHandler(this.butEdit_Click);
 			// 
 			// FormInsTemplates

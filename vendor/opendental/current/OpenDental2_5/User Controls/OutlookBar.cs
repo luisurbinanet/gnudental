@@ -7,28 +7,25 @@ using System.Data;
 using System.Windows.Forms;
 
 namespace OpenDental{
+	///<summary></summary>
 	public delegate void ButtonClickedEventHandler(object sender,ButtonClicked_EventArgs e);
-	/// <summary>
-	/// Summary description for OutlookBar.
-	/// </summary>
-	public class OutlookBar : System.Windows.Forms.Control
-	{
-		/// <summary>
-		/// Required designer variable.
-		/// </summary>
+	/// <summary></summary>
+	public class OutlookBar : System.Windows.Forms.Control{
+		/// <summary>Required designer variable.</summary>
 		private System.ComponentModel.Container components = null;
+		///<summary></summary>
 		public OutlookButton[] Buttons;
 		private ImageList imageList;
+		///<summary></summary>
 		public int SelectedIndex=0;
 		private int currentHot=-1;
 		private Font textFont=new Font("Arial",8);
-		[Category("Action"),
-			Description("Occurs when a button is clicked.")
-		]
+		///<summary></summary>
+		[Category("Action"),Description("Occurs when a button is clicked.")]
 		public event ButtonClickedEventHandler ButtonClicked = null;
 
-		public OutlookBar()
-		{
+		///<summary></summary>
+		public OutlookBar(){
 			// This call is required by the Windows.Forms Form Designer.
 			InitializeComponent();
 			Buttons=new OutlookButton[7];
@@ -37,15 +34,13 @@ namespace OpenDental{
 			Buttons[2]=new OutlookButton("Account",2);
 			Buttons[3]=new OutlookButton("Treat' Plan",3);
 			Buttons[4]=new OutlookButton("Chart",4);
-			Buttons[5]=new OutlookButton("Doc's",5);
+			Buttons[5]=new OutlookButton("Images",5);
 			Buttons[6]=new OutlookButton("Message",6);
 			UpdateAll();
 			// TODO: Add any initialization after the InitComponent call
 		}
 
-		/// <summary>
-		/// Clean up any resources being used.
-		/// </summary>
+		/// <summary>Clean up any resources being used.</summary>
 		protected override void Dispose( bool disposing )
 		{
 			if( disposing )
@@ -67,6 +62,7 @@ namespace OpenDental{
 		}
 		#endregion
 
+		///<summary></summary>
 		[Category("Appearance"),
 			Description("The image list to get the image to display in the face of the control.")
 		]
@@ -123,11 +119,7 @@ namespace OpenDental{
 				g.FillRectangle(new SolidBrush(pressedColor),myButton.Bounds.X,myButton.Bounds.Y
 					,myButton.Bounds.Width+1,myButton.Bounds.Height+1);
 			}
-			//else if(isSelected){
-			//	g.FillRectangle(new SolidBrush(selectedColor),myButton.Bounds.X,myButton.Bounds.Y
-			//		,myButton.Bounds.Width+1,myButton.Bounds.Height+1);
-			//}
-			else if(isHot || isSelected){
+			else if(isSelected){
 				g.FillRectangle(new SolidBrush(Color.White),myButton.Bounds.X,myButton.Bounds.Y
 					,myButton.Bounds.Width+1,myButton.Bounds.Height+1);
 				Rectangle gradientRect=new Rectangle(myButton.Bounds.X
@@ -137,6 +129,10 @@ namespace OpenDental{
 						LinearGradientMode.Vertical);
 				g.FillRectangle(hotBrush,myButton.Bounds.X,myButton.Bounds.Y+myButton.Bounds.Height-10
 					,myButton.Bounds.Width+1,10);
+			}
+			else if(isHot){
+				g.FillRectangle(new SolidBrush(hotColor),myButton.Bounds.X,myButton.Bounds.Y
+					,myButton.Bounds.Width+1,myButton.Bounds.Height+1);
 			}
 			else{
 				g.FillRectangle(new SolidBrush(SystemColors.Control),myButton.Bounds.X,myButton.Bounds.Y
@@ -177,13 +173,14 @@ namespace OpenDental{
 			Rectangle textRect = new Rectangle(myButton.Bounds.X-1,imgRect.Bottom+3
 				,myButton.Bounds.Width+2,myButton.Bounds.Bottom-imgRect.Bottom+3);
 			g.DrawString(myButton.Caption,textFont,textBrush,textRect,format);
+			g.Dispose();
 		}
 
 		/// <summary>Draws a rectangle with rounded edges.</summary>
-		/// <param name="g">The System.Drawing.Graphics object to be used to draw the rectangle.</param>
-		/// <param name="p">A System.Drawing.Pen object that determines the color, width, and style of the rectangle.</param>
-		/// <param name="rc">A System.Drawing.Rectangle structure that represents the rectangle to draw.</param>
-		/// <param name="roundness">Determines the radius of the corners.</param>
+		/// <param name="grfx">The System.Drawing.Graphics object to be used to draw the rectangle.</param>
+		/// <param name="pen">A System.Drawing.Pen object that determines the color, width, and style of the rectangle.</param>
+		/// <param name="rect">A System.Drawing.Rectangle structure that represents the rectangle to draw.</param>
+		/// <param name="round">Determines the radius of the corners.</param>
 		public static void DrawRoundedRectangle(Graphics grfx, Pen pen, Rectangle rect, int round){
 			SmoothingMode oldSmoothingMode = grfx.SmoothingMode;
 			grfx.SmoothingMode = SmoothingMode.AntiAlias;
@@ -228,8 +225,10 @@ namespace OpenDental{
 					top+=39+textHeight+1;
 				}//for
 			}//using
+
 		}
 
+		///<summary></summary>
 		protected override void OnMouseMove(System.Windows.Forms.MouseEventArgs e){
 			base.OnMouseMove(e);
 			//Graphics g=this.CreateGraphics();
@@ -247,6 +246,7 @@ namespace OpenDental{
 			}			
 		}
 
+		///<summary></summary>
 		protected override void OnMouseLeave(System.EventArgs e){
 			base.OnMouseLeave(e);
 			//Graphics g=this.CreateGraphics();
@@ -257,6 +257,7 @@ namespace OpenDental{
 			currentHot=-1;		
 		}
 
+		///<summary></summary>
 		protected override void OnSizeChanged(System.EventArgs e){
 			base.OnSizeChanged(e);
 			this.UpdateAll();
@@ -272,6 +273,7 @@ namespace OpenDental{
 			return -1;
 		}
 
+		///<summary></summary>
 		protected override void OnMouseDown(System.Windows.Forms.MouseEventArgs e){
 			base.OnMouseDown(e);
 			//Graphics g=this.CreateGraphics();
@@ -281,6 +283,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		protected override void OnMouseUp(System.Windows.Forms.MouseEventArgs e){
 			base.OnMouseUp(e);
 			if(e.Button != MouseButtons.Left){
@@ -299,6 +302,7 @@ namespace OpenDental{
 			OnButtonClicked(Buttons[SelectedIndex]);
 		}
 
+		///<summary></summary>
 		protected void OnButtonClicked(OutlookButton myButton){
 			if(this.ButtonClicked != null){
 				ButtonClicked_EventArgs oArgs = new ButtonClicked_EventArgs(myButton);
@@ -309,21 +313,27 @@ namespace OpenDental{
 
 	}
 
+	///<summary></summary>
 	public struct OutlookButton{//this should be a class if I was going to ever reuse this control
 		//private string caption;
 		//private int imageIndex;
+		///<summary></summary>
 		public OutlookButton(string caption,int imageIndex){
 			Caption=caption;
 			ImageIndex=imageIndex;
 			Bounds=new Rectangle(0,0,0,0);
 		}
 
+		///<summary></summary>
 		public string Caption;
+		///<summary></summary>
 		public int ImageIndex;
+		///<summary></summary>
 		public Rectangle Bounds;
 
 	}
 
+	///<summary></summary>
 	public class ButtonClicked_EventArgs
 	{
 		//private OutlookButton outlookButton = null;//this is how to do it if a class instead of struct
@@ -336,6 +346,7 @@ namespace OpenDental{
 			outlookButton=myButton;
 		}
 
+		///<summary></summary>
 		public OutlookButton OutlookButton{
 			get{ return outlookButton; }
 		}

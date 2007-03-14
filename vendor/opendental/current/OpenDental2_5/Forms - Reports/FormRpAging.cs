@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
+	///<summary></summary>
 	public class FormRpAging : System.Windows.Forms.Form{
 		private System.ComponentModel.Container components = null;
 		private System.Windows.Forms.Button butCancel;
@@ -23,8 +24,10 @@ namespace OpenDental{
 		private System.Windows.Forms.CheckBox checkIncludeNeg;
 		private System.Windows.Forms.GroupBox groupBox2;
 		private System.Windows.Forms.CheckBox checkOnlyNeg;
+		private System.Windows.Forms.CheckBox checkExcludeInactive;
 		private System.Windows.Forms.RadioButton radioAny;
 
+		///<summary></summary>
 		public FormRpAging(){
 			InitializeComponent();
 			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -42,6 +45,7 @@ namespace OpenDental{
 			}); 
 		}
 
+		///<summary></summary>
 		protected override void Dispose(bool disposing){
 			if(disposing){
 				if(components != null){
@@ -69,6 +73,7 @@ namespace OpenDental{
 			this.checkIncludeNeg = new System.Windows.Forms.CheckBox();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
 			this.checkOnlyNeg = new System.Windows.Forms.CheckBox();
+			this.checkExcludeInactive = new System.Windows.Forms.CheckBox();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.SuspendLayout();
@@ -79,8 +84,9 @@ namespace OpenDental{
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(466, 375);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 4;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// butOK
@@ -88,8 +94,9 @@ namespace OpenDental{
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(466, 341);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 3;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// groupBox1
@@ -182,8 +189,9 @@ namespace OpenDental{
 			this.butAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butAll.Location = new System.Drawing.Point(380, 237);
 			this.butAll.Name = "butAll";
+			this.butAll.Size = new System.Drawing.Size(75, 26);
 			this.butAll.TabIndex = 16;
-			this.butAll.Text = "All";
+			this.butAll.Text = "&All";
 			this.butAll.Click += new System.EventHandler(this.butAll_Click);
 			// 
 			// checkIncludeNeg
@@ -201,7 +209,7 @@ namespace OpenDental{
 			this.groupBox2.Controls.Add(this.checkOnlyNeg);
 			this.groupBox2.Controls.Add(this.checkIncludeNeg);
 			this.groupBox2.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox2.Location = new System.Drawing.Point(57, 259);
+			this.groupBox2.Location = new System.Drawing.Point(57, 256);
 			this.groupBox2.Name = "groupBox2";
 			this.groupBox2.Size = new System.Drawing.Size(225, 84);
 			this.groupBox2.TabIndex = 18;
@@ -218,10 +226,22 @@ namespace OpenDental{
 			this.checkOnlyNeg.Text = "Only show negative balances";
 			this.checkOnlyNeg.Click += new System.EventHandler(this.checkOnlyNeg_Click);
 			// 
+			// checkExcludeInactive
+			// 
+			this.checkExcludeInactive.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkExcludeInactive.Location = new System.Drawing.Point(66, 363);
+			this.checkExcludeInactive.Name = "checkExcludeInactive";
+			this.checkExcludeInactive.Size = new System.Drawing.Size(248, 18);
+			this.checkExcludeInactive.TabIndex = 19;
+			this.checkExcludeInactive.Text = "Exclude inactive patients";
+			// 
 			// FormRpAging
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(573, 421);
+			this.Controls.Add(this.checkExcludeInactive);
 			this.Controls.Add(this.groupBox2);
 			this.Controls.Add(this.butAll);
 			this.Controls.Add(this.label2);
@@ -290,7 +310,6 @@ namespace OpenDental{
 			Queries.CurReport=new Report();
 			Queries.CurReport.Query="SELECT CONCAT(LName,', ',FName,' ',MiddleI)"
 				+",Bal_0_30,Bal_31_60,Bal_61_90,BalOver90"
-				//+",Bal_0_30+Bal_31_60+Bal_61_90+BalOver90 AS $total "
 				+",BalTotal "
 				+",InsEst"
 				+",BalTotal-InsEst AS $pat "
@@ -299,21 +318,25 @@ namespace OpenDental{
 				Queries.CurReport.Query+="WHERE BalTotal < '-.005'";
 			}
 			else{
+				Queries.CurReport.Query+="WHERE ";
+				if(checkExcludeInactive.Checked){
+					Queries.CurReport.Query+="(patstatus != 2) && ";
+				}
 				if(radioAny.Checked){
 					Queries.CurReport.Query+=
-						"WHERE (Bal_0_30 > '.005' || Bal_31_60 > '.005' || Bal_61_90 > '.005' || BalOver90 > '.005'";
+						"(Bal_0_30 > '.005' || Bal_31_60 > '.005' || Bal_61_90 > '.005' || BalOver90 > '.005'";
 				}
 				else if(radio30.Checked){
 					Queries.CurReport.Query+=
-						"WHERE (Bal_31_60 > '.005' || Bal_61_90 > '.005' || BalOver90 > '.005'";
+						"(Bal_31_60 > '.005' || Bal_61_90 > '.005' || BalOver90 > '.005'";
 				}
 				else if(radio60.Checked){
 					Queries.CurReport.Query+=
-						"WHERE (Bal_61_90 > '.005' || BalOver90 > '.005'";
+						"(Bal_61_90 > '.005' || BalOver90 > '.005'";
 				}
 				else if(radio90.Checked){
 					Queries.CurReport.Query+=
-						"WHERE (BalOver90 > '.005'";
+						"(BalOver90 > '.005'";
 				}
 				if(checkIncludeNeg.Checked){
 					Queries.CurReport.Query+=" || BalTotal < '-.005'";
@@ -411,9 +434,13 @@ namespace OpenDental{
 
 	}
 
+	///<summary></summary>
 	public struct Aging{
+		///<summary></summary>
 		public double Charges;
+		///<summary></summary>
 		public double Payments;
+		///<summary></summary>
 		public double Aged;
 	}
 

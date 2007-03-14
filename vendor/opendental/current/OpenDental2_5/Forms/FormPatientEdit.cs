@@ -9,7 +9,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormPatientEdit : System.Windows.Forms.Form{
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label label3;
@@ -95,8 +95,10 @@ namespace OpenDental{
 		private System.Windows.Forms.ListBox listStatus;
 		private System.Windows.Forms.ListBox listGender;
 		private System.Windows.Forms.ListBox listPosition;
+		///<summary></summary>
 		public bool IsNew;
 
+		///<summary></summary>
 		public FormPatientEdit(){
 			InitializeComponent();// Required for Windows Form Designer support
 			tbRefList.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbRefList_CellDoubleClicked);
@@ -147,6 +149,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -478,6 +481,7 @@ namespace OpenDental{
 			this.textCity.ReadOnly = true;
 			this.textCity.Size = new System.Drawing.Size(191, 20);
 			this.textCity.TabIndex = 0;
+			this.textCity.TabStop = false;
 			this.textCity.Text = "";
 			// 
 			// textState
@@ -488,6 +492,7 @@ namespace OpenDental{
 			this.textState.ReadOnly = true;
 			this.textState.Size = new System.Drawing.Size(26, 20);
 			this.textState.TabIndex = 13;
+			this.textState.TabStop = false;
 			this.textState.Text = "";
 			// 
 			// textHmPhone
@@ -522,6 +527,7 @@ namespace OpenDental{
 			// 
 			// textAddrNotes
 			// 
+			this.textAddrNotes.AcceptsReturn = true;
 			this.textAddrNotes.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
 			this.textAddrNotes.ForeColor = System.Drawing.Color.Red;
 			this.textAddrNotes.Location = new System.Drawing.Point(15, 42);
@@ -529,7 +535,7 @@ namespace OpenDental{
 			this.textAddrNotes.Name = "textAddrNotes";
 			this.textAddrNotes.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textAddrNotes.Size = new System.Drawing.Size(238, 58);
-			this.textAddrNotes.TabIndex = 0;
+			this.textAddrNotes.TabIndex = 5;
 			this.textAddrNotes.Text = "";
 			// 
 			// butOK
@@ -537,7 +543,8 @@ namespace OpenDental{
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(874, 597);
 			this.butOK.Name = "butOK";
-			this.butOK.TabIndex = 23;
+			this.butOK.Size = new System.Drawing.Size(75, 26);
+			this.butOK.TabIndex = 24;
 			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
@@ -547,7 +554,8 @@ namespace OpenDental{
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(874, 637);
 			this.butCancel.Name = "butCancel";
-			this.butCancel.TabIndex = 24;
+			this.butCancel.Size = new System.Drawing.Size(75, 26);
+			this.butCancel.TabIndex = 25;
 			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
@@ -645,7 +653,7 @@ namespace OpenDental{
 			this.listPriProv.Location = new System.Drawing.Point(624, 35);
 			this.listPriProv.Name = "listPriProv";
 			this.listPriProv.Size = new System.Drawing.Size(82, 186);
-			this.listPriProv.TabIndex = 18;
+			this.listPriProv.TabIndex = 19;
 			// 
 			// listFeeSched
 			// 
@@ -706,7 +714,7 @@ namespace OpenDental{
 			this.listBillType.Location = new System.Drawing.Point(440, 35);
 			this.listBillType.Name = "listBillType";
 			this.listBillType.Size = new System.Drawing.Size(158, 186);
-			this.listBillType.TabIndex = 17;
+			this.listBillType.TabIndex = 18;
 			// 
 			// label1
 			// 
@@ -730,6 +738,7 @@ namespace OpenDental{
 			// 
 			this.textRecall.Location = new System.Drawing.Point(135, 337);
 			this.textRecall.MaxLength = 2;
+			this.textRecall.MinVal = 0;
 			this.textRecall.Name = "textRecall";
 			this.textRecall.Size = new System.Drawing.Size(30, 20);
 			this.textRecall.TabIndex = 13;
@@ -859,8 +868,9 @@ namespace OpenDental{
 			this.butEditCity.Location = new System.Drawing.Point(185, 172);
 			this.butEditCity.Name = "butEditCity";
 			this.butEditCity.Size = new System.Drawing.Size(117, 23);
-			this.butEditCity.TabIndex = 5;
-			this.butEditCity.Text = "Edit City/ST";
+			this.butEditCity.TabIndex = 62;
+			this.butEditCity.TabStop = false;
+			this.butEditCity.Text = "&Edit City/ST";
 			this.butEditCity.Click += new System.EventHandler(this.butEditCity_Click);
 			// 
 			// textZip
@@ -880,6 +890,7 @@ namespace OpenDental{
 			this.comboZip.Name = "comboZip";
 			this.comboZip.Size = new System.Drawing.Size(198, 21);
 			this.comboZip.TabIndex = 60;
+			this.comboZip.TabStop = false;
 			this.comboZip.SelectionChangeCommitted += new System.EventHandler(this.comboZip_SelectionChangeCommitted);
 			// 
 			// textBox1
@@ -892,6 +903,7 @@ namespace OpenDental{
 			this.textBox1.ReadOnly = true;
 			this.textBox1.Size = new System.Drawing.Size(230, 33);
 			this.textBox1.TabIndex = 57;
+			this.textBox1.TabStop = false;
 			this.textBox1.Text = "Same for entire family.  (Including Billing Type, Providers, and Fee Schedule)";
 			// 
 			// checkSame
@@ -901,12 +913,14 @@ namespace OpenDental{
 			this.checkSame.Name = "checkSame";
 			this.checkSame.Size = new System.Drawing.Size(18, 21);
 			this.checkSame.TabIndex = 56;
+			this.checkSame.TabStop = false;
 			// 
 			// tbRefList
 			// 
 			this.tbRefList.BackColor = System.Drawing.SystemColors.Window;
 			this.tbRefList.Location = new System.Drawing.Point(440, 388);
 			this.tbRefList.Name = "tbRefList";
+			this.tbRefList.ScrollValue = 1;
 			this.tbRefList.SelectedIndices = new int[0];
 			this.tbRefList.SelectionMode = System.Windows.Forms.SelectionMode.One;
 			this.tbRefList.Size = new System.Drawing.Size(459, 96);
@@ -920,7 +934,7 @@ namespace OpenDental{
 			this.groupNotes.Location = new System.Drawing.Point(443, 538);
 			this.groupNotes.Name = "groupNotes";
 			this.groupNotes.Size = new System.Drawing.Size(265, 107);
-			this.groupNotes.TabIndex = 22;
+			this.groupNotes.TabIndex = 17;
 			this.groupNotes.TabStop = false;
 			this.groupNotes.Text = "Address and Phone Notes";
 			// 
@@ -944,7 +958,7 @@ namespace OpenDental{
 			this.butAdd.Name = "butAdd";
 			this.butAdd.Size = new System.Drawing.Size(75, 26);
 			this.butAdd.TabIndex = 69;
-			this.butAdd.Text = "Add";
+			this.butAdd.Text = "&Add";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
 			// butDelete
@@ -958,7 +972,7 @@ namespace OpenDental{
 			this.butDelete.Name = "butDelete";
 			this.butDelete.Size = new System.Drawing.Size(83, 26);
 			this.butDelete.TabIndex = 70;
-			this.butDelete.Text = "Remove";
+			this.butDelete.Text = "&Remove";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
 			// 
 			// textPatNum
@@ -1021,24 +1035,25 @@ namespace OpenDental{
 			this.listStatus.Location = new System.Drawing.Point(62, 156);
 			this.listStatus.Name = "listStatus";
 			this.listStatus.Size = new System.Drawing.Size(105, 69);
-			this.listStatus.TabIndex = 5;
+			this.listStatus.TabIndex = 77;
 			// 
 			// listGender
 			// 
 			this.listGender.Location = new System.Drawing.Point(180, 156);
 			this.listGender.Name = "listGender";
 			this.listGender.Size = new System.Drawing.Size(105, 43);
-			this.listGender.TabIndex = 6;
+			this.listGender.TabIndex = 78;
 			// 
 			// listPosition
 			// 
 			this.listPosition.Location = new System.Drawing.Point(298, 157);
 			this.listPosition.Name = "listPosition";
 			this.listPosition.Size = new System.Drawing.Size(105, 56);
-			this.listPosition.TabIndex = 7;
+			this.listPosition.TabIndex = 79;
 			// 
 			// FormPatientEdit
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(968, 676);
@@ -1379,7 +1394,15 @@ namespace OpenDental{
 		}
 
 		private void textBirthdate_Validated(object sender, System.EventArgs e) {
-			textAge.Text=Shared.DateToAge(PIn.PDate(textBirthdate.Text));
+			if(textBirthdate.errorProvider1.GetError(textBirthdate)!=""){
+				textAge.Text="";
+				return;
+			}
+			DateTime birthdate=PIn.PDate(textBirthdate.Text);
+			if(birthdate>DateTime.Today){
+				birthdate=birthdate.AddYears(-100);
+			}
+			textAge.Text=Shared.DateToAge(birthdate);
 		}
 
 		private void textZip_TextChanged(object sender, System.EventArgs e) {
@@ -1659,7 +1682,7 @@ namespace OpenDental{
 			if(listBillType.SelectedIndex!=-1)
 				Patients.Cur.BillingType=Defs.Short[(int)DefCat.BillingTypes][listBillType.SelectedIndex].DefNum;
 			if(IsNew){
-				Patients.InsertCur();
+				Patients.InsertCur();//also gets insertID
 				if(Patients.Cur.Guarantor==0){
 					Patients.Cur.Guarantor=Patients.Cur.PatNum;
 					Patients.UpdateCur();

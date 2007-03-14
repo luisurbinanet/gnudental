@@ -6,7 +6,7 @@ using System.Text;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormProcCodeEdit : System.Windows.Forms.Form{
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label4;
@@ -20,6 +20,7 @@ namespace OpenDental{
 		private System.Windows.Forms.ListBox listTreatArea;
 		private System.Windows.Forms.ListBox listCategory;
 		private System.ComponentModel.Container components = null;// Required designer variable.
+		///<summary></summary>
 		public bool IsNew;
 		private System.Windows.Forms.TextBox textADACode;
 		private System.Windows.Forms.TextBox textAbbrev;
@@ -34,6 +35,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butSlider;
 		private OpenDental.TableTimeBar tbTime;
 		private System.Windows.Forms.TextBox textTime2;
+		///<summary></summary>
 		public string NewADA;
 		private bool mouseIsDown;
 		private Point	mouseOrigin;
@@ -49,6 +51,7 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textAlternateCode1;
 		private bool FeeChanged;
 
+		///<summary></summary>
 		public FormProcCodeEdit(){
 			InitializeComponent();// Required for Windows Form Designer support
 			//tbTime.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbTime_CellDoubleClicked);
@@ -79,6 +82,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing )
 		{
 			if( disposing ){
@@ -188,6 +192,7 @@ namespace OpenDental{
 			// 
 			// textNote
 			// 
+			this.textNote.AcceptsReturn = true;
 			this.textNote.Location = new System.Drawing.Point(54, 364);
 			this.textNote.Multiline = true;
 			this.textNote.Name = "textNote";
@@ -200,17 +205,20 @@ namespace OpenDental{
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(830, 569);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 10;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// butCancel
 			// 
+			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(830, 613);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 11;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// textADACode
@@ -292,6 +300,7 @@ namespace OpenDental{
 			this.tbFees.BackColor = System.Drawing.SystemColors.Window;
 			this.tbFees.Location = new System.Drawing.Point(741, 29);
 			this.tbFees.Name = "tbFees";
+			this.tbFees.ScrollValue = 1;
 			this.tbFees.SelectedIndices = new int[0];
 			this.tbFees.SelectionMode = System.Windows.Forms.SelectionMode.None;
 			this.tbFees.Size = new System.Drawing.Size(169, 356);
@@ -320,6 +329,7 @@ namespace OpenDental{
 			this.tbTime.BackColor = System.Drawing.SystemColors.Window;
 			this.tbTime.Location = new System.Drawing.Point(14, 46);
 			this.tbTime.Name = "tbTime";
+			this.tbTime.ScrollValue = 150;
 			this.tbTime.SelectedIndices = new int[0];
 			this.tbTime.SelectionMode = System.Windows.Forms.SelectionMode.None;
 			this.tbTime.Size = new System.Drawing.Size(15, 561);
@@ -365,7 +375,7 @@ namespace OpenDental{
 			// 
 			this.listGraphicType.Location = new System.Drawing.Point(477, 31);
 			this.listGraphicType.Name = "listGraphicType";
-			this.listGraphicType.Size = new System.Drawing.Size(118, 277);
+			this.listGraphicType.Size = new System.Drawing.Size(118, 290);
 			this.listGraphicType.TabIndex = 34;
 			// 
 			// label2
@@ -379,10 +389,11 @@ namespace OpenDental{
 			// butNone
 			// 
 			this.butNone.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butNone.Location = new System.Drawing.Point(477, 311);
+			this.butNone.Location = new System.Drawing.Point(477, 326);
 			this.butNone.Name = "butNone";
+			this.butNone.Size = new System.Drawing.Size(75, 26);
 			this.butNone.TabIndex = 36;
-			this.butNone.Text = "None";
+			this.butNone.Text = "&None";
 			this.butNone.Click += new System.EventHandler(this.butNone_Click);
 			// 
 			// textAlternateCode1
@@ -412,7 +423,9 @@ namespace OpenDental{
 			// 
 			// FormProcCodeEdit
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(941, 707);
 			this.Controls.Add(this.label13);
 			this.Controls.Add(this.textAlternateCode1);
@@ -461,36 +474,36 @@ namespace OpenDental{
 
 		private void FormProcCodeEdit_Load(object sender, System.EventArgs e) {
 			if(IsNew){
-				ProcCodes.Cur=new ProcedureCode();
-				ProcCodes.Cur.ADACode=NewADA;
-				ProcCodes.Cur.ProcTime="/X/";
-				ProcCodes.Cur.ProcCat=Defs.Short[(int)DefCat.ProcCodeCats][0].DefNum;
-				ProcCodes.InsertCur();
+				ProcedureCodes.Cur=new ProcedureCode();
+				ProcedureCodes.Cur.ADACode=NewADA;
+				ProcedureCodes.Cur.ProcTime="/X/";
+				ProcedureCodes.Cur.ProcCat=Defs.Short[(int)DefCat.ProcCodeCats][0].DefNum;
+				ProcedureCodes.InsertCur();
 			}
 			else{
 				;
 			}
-			textADACode.Text=ProcCodes.Cur.ADACode;
-			textAlternateCode1.Text=ProcCodes.Cur.AlternateCode1;
-			textDescription.Text=ProcCodes.Cur.Descript;
-			textAbbrev.Text=ProcCodes.Cur.AbbrDesc;
-			strBTime=new StringBuilder(ProcCodes.Cur.ProcTime);
-			checkRemoveTth.Checked=ProcCodes.Cur.RemoveTooth;
-			checkSetRecall.Checked=ProcCodes.Cur.SetRecall;
-			checkNoBillIns.Checked=ProcCodes.Cur.NoBillIns;
+			textADACode.Text=ProcedureCodes.Cur.ADACode;
+			textAlternateCode1.Text=ProcedureCodes.Cur.AlternateCode1;
+			textDescription.Text=ProcedureCodes.Cur.Descript;
+			textAbbrev.Text=ProcedureCodes.Cur.AbbrDesc;
+			strBTime=new StringBuilder(ProcedureCodes.Cur.ProcTime);
+			checkRemoveTth.Checked=ProcedureCodes.Cur.RemoveTooth;
+			checkSetRecall.Checked=ProcedureCodes.Cur.SetRecall;
+			checkNoBillIns.Checked=ProcedureCodes.Cur.NoBillIns;
 			//checkIsProsth.Checked=ProcCodes.Cur.IsProsth;
-			checkIsHygiene.Checked=ProcCodes.Cur.IsHygiene;
-			textNote.Text=ProcCodes.Cur.DefaultNote;
-			listTreatArea.SelectedIndex=(int)ProcCodes.Cur.TreatArea-1;
+			checkIsHygiene.Checked=ProcedureCodes.Cur.IsHygiene;
+			textNote.Text=ProcedureCodes.Cur.DefaultNote;
+			listTreatArea.SelectedIndex=(int)ProcedureCodes.Cur.TreatArea-1;
 			if(listTreatArea.SelectedIndex==-1) listTreatArea.SelectedIndex=2;
 			for(int i=0;i<GraphicTypes.List.Length;i++){
 				listGraphicType.Items.Add(GraphicTypes.List[i].Description);
-				if(GraphicTypes.List[i].GTypeNum==ProcCodes.Cur.GTypeNum)
+				if(GraphicTypes.List[i].GTypeNum==ProcedureCodes.Cur.GTypeNum)
 					listGraphicType.SelectedIndex=i;
 			}
 			for(int i=0;i<Defs.Short[(int)DefCat.ProcCodeCats].Length;i++){
 				listCategory.Items.Add(Defs.Short[(int)DefCat.ProcCodeCats][i].ItemName);
-				if(Defs.Short[(int)DefCat.ProcCodeCats][i].DefNum==ProcCodes.Cur.ProcCat)
+				if(Defs.Short[(int)DefCat.ProcCodeCats][i].DefNum==ProcedureCodes.Cur.ProcCat)
 					listCategory.SelectedIndex=i;
 			}
 			if(listCategory.SelectedIndex==-1)
@@ -519,7 +532,7 @@ namespace OpenDental{
 			tbFees.ResetRows(Defs.Short[(int)DefCat.FeeSchedNames].Length);
 			tbFees.SetGridColor(Color.LightGray);
 			for(int i=0;i<tbFees.MaxRows;i++){
-				temp=Fees.GetFeeByOrder(ProcCodes.Cur.ADACode,i);
+				temp=Fees.GetFeeByOrder(ProcedureCodes.Cur.ADACode,i);
 				tbFees.Cell[0,i]=Defs.Short[(int)DefCat.FeeSchedNames][i].ItemName;
 				tbFees.Cell[1,i]=temp.Amount.ToString("F");
 				//if(temp.UseDefaultFee)tbFees.Cell[2,i]="X";
@@ -531,7 +544,7 @@ namespace OpenDental{
 		}
 
 		private void tbFees_CellClicked(object sender, CellEventArgs e){
-			Fees.Cur=Fees.GetFeeByOrder(ProcCodes.Cur.ADACode,e.Row);
+			Fees.Cur=Fees.GetFeeByOrder(ProcedureCodes.Cur.ADACode,e.Row);
 			tbFees.SelectedRow=e.Row;
 			tbFees.ColorRow(e.Row,Color.LightGray);
 			FormFeeEdit FormFeeEdit2=new FormFeeEdit();
@@ -543,7 +556,7 @@ namespace OpenDental{
 				return;
 			}
 			if(Fees.Cur.FeeNum==0){
-				Fees.Cur.ADACode=ProcCodes.Cur.ADACode;
+				Fees.Cur.ADACode=ProcedureCodes.Cur.ADACode;
 				Fees.Cur.FeeSched=Defs.Short[(int)DefCat.FeeSchedNames][e.Row].DefNum;
 				//MessageBox.Show("inserting new record");
 				Fees.InsertCur();
@@ -605,28 +618,28 @@ namespace OpenDental{
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			ProcCodes.Cur.AlternateCode1=textAlternateCode1.Text;
-			ProcCodes.Cur.Descript=textDescription.Text;
-			ProcCodes.Cur.AbbrDesc=textAbbrev.Text;
-			ProcCodes.Cur.ProcTime=strBTime.ToString();
-			ProcCodes.Cur.RemoveTooth=checkRemoveTth.Checked;
-			ProcCodes.Cur.SetRecall=checkSetRecall.Checked;
-			ProcCodes.Cur.NoBillIns=checkNoBillIns.Checked;
+			ProcedureCodes.Cur.AlternateCode1=textAlternateCode1.Text;
+			ProcedureCodes.Cur.Descript=textDescription.Text;
+			ProcedureCodes.Cur.AbbrDesc=textAbbrev.Text;
+			ProcedureCodes.Cur.ProcTime=strBTime.ToString();
+			ProcedureCodes.Cur.RemoveTooth=checkRemoveTth.Checked;
+			ProcedureCodes.Cur.SetRecall=checkSetRecall.Checked;
+			ProcedureCodes.Cur.NoBillIns=checkNoBillIns.Checked;
 			//ProcCodes.Cur.IsProsth=checkIsProsth.Checked;
-			ProcCodes.Cur.IsHygiene=checkIsHygiene.Checked;
-			ProcCodes.Cur.DefaultNote=textNote.Text;
+			ProcedureCodes.Cur.IsHygiene=checkIsHygiene.Checked;
+			ProcedureCodes.Cur.DefaultNote=textNote.Text;
 			if(listGraphicType.SelectedIndex==-1)
-				ProcCodes.Cur.GTypeNum=0;
+				ProcedureCodes.Cur.GTypeNum=0;
 			else
-				ProcCodes.Cur.GTypeNum=GraphicTypes.List[listGraphicType.SelectedIndex].GTypeNum;
-			ProcCodes.Cur.TreatArea=(TreatmentArea)listTreatArea.SelectedIndex+1;
+				ProcedureCodes.Cur.GTypeNum=GraphicTypes.List[listGraphicType.SelectedIndex].GTypeNum;
+			ProcedureCodes.Cur.TreatArea=(TreatmentArea)listTreatArea.SelectedIndex+1;
 			if(listCategory.SelectedIndex!=-1)
-				ProcCodes.Cur.ProcCat=Defs.Short[(int)DefCat.ProcCodeCats][listCategory.SelectedIndex].DefNum;
+				ProcedureCodes.Cur.ProcCat=Defs.Short[(int)DefCat.ProcCodeCats][listCategory.SelectedIndex].DefNum;
 			if(IsNew){
-				ProcCodes.UpdateCur();
+				ProcedureCodes.UpdateCur();
 			}
 			else{
-				ProcCodes.UpdateCur();
+				ProcedureCodes.UpdateCur();
 			}
 			DialogResult=DialogResult.OK;
 		}

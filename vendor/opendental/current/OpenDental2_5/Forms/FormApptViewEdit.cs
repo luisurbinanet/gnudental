@@ -22,8 +22,10 @@ namespace OpenDental{
 		private System.ComponentModel.Container components = null;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.TextBox textDescription;
+		///<summary></summary>
 		public bool IsNew;
 
+		///<summary></summary>
 		public FormApptViewEdit()
 		{
 			//
@@ -102,7 +104,7 @@ namespace OpenDental{
 			this.butDelete.Name = "butDelete";
 			this.butDelete.Size = new System.Drawing.Size(82, 26);
 			this.butDelete.TabIndex = 38;
-			this.butDelete.Text = "Delete";
+			this.butDelete.Text = "&Delete";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
 			// 
 			// label1
@@ -158,6 +160,7 @@ namespace OpenDental{
 			// 
 			// FormApptViewEdit
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(594, 464);

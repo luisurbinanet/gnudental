@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormClaimPayEdit : System.Windows.Forms.Form{
 		private OpenDental.ValidDouble textAmount;
 		private OpenDental.ValidDate textDate;
@@ -23,11 +23,13 @@ namespace OpenDental{
 		private OpenDental.TableClaimPaySplits tb2;
 		private System.ComponentModel.Container components = null;
 		//private bool ControlDown;
+		///<summary></summary>
 		public bool IsNew;
 		private System.Windows.Forms.CheckBox checkShowUn;
 		private OpenDental.XPButton butDelete;
 		private double splitTot;
 
+		///<summary></summary>
 		public FormClaimPayEdit(){
 			InitializeComponent();// Required for Windows Form Designer support
 			tb2.CellClicked += new OpenDental.ContrTable.CellEventHandler(tb2_CellClicked);
@@ -48,6 +50,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -176,7 +179,7 @@ namespace OpenDental{
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 7;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// butOK
@@ -186,7 +189,7 @@ namespace OpenDental{
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 6;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// tb2
@@ -194,6 +197,7 @@ namespace OpenDental{
 			this.tb2.BackColor = System.Drawing.SystemColors.Window;
 			this.tb2.Location = new System.Drawing.Point(8, 20);
 			this.tb2.Name = "tb2";
+			this.tb2.ScrollValue = 1;
 			this.tb2.SelectedIndices = new int[0];
 			this.tb2.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
 			this.tb2.Size = new System.Drawing.Size(539, 634);
@@ -228,11 +232,12 @@ namespace OpenDental{
 			this.butDelete.Name = "butDelete";
 			this.butDelete.Size = new System.Drawing.Size(92, 26);
 			this.butDelete.TabIndex = 52;
-			this.butDelete.Text = "Delete";
+			this.butDelete.Text = "&Delete";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
 			// 
 			// FormClaimPayEdit
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(902, 676);

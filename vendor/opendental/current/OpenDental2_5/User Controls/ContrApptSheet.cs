@@ -13,19 +13,28 @@ using System.Data;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class ContrApptSheet : System.Windows.Forms.UserControl{
 		private System.ComponentModel.Container components = null;// Required designer variable.
+		///<summary></summary>
 		public static int ColWidth;
+		///<summary></summary>
 		public static int TimeWidth;
+		///<summary></summary>
 		public static int ProvWidth;
+		///<summary></summary>
 		public static int Lh;
+		///<summary></summary>
 		public static int ColCount;
+		///<summary></summary>
 		public static int ProvCount;
+		///<summary></summary>
 		public Bitmap Shadow;
+		///<summary></summary>
 		public bool IsScrolling=false;
 		//public int selectedCat;//selected ApptCategory.
 
+		///<summary></summary>
 		public ContrApptSheet(){
 			InitializeComponent();// This call is required by the Windows.Forms Form Designer.
 			//fix: need to add following for design-time support??(would currently cause bugs):
@@ -42,6 +51,7 @@ namespace OpenDental{
 			//selectedCat=-1;
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -91,6 +101,7 @@ namespace OpenDental{
 			}
 		}*/
 
+		///<summary></summary>
 		public int DoubleClickToOp(int newX){
 			int retVal=(int)Math.Floor((double)(newX-TimeWidth-ProvWidth*ProvCount)/ColWidth);
 			if(retVal>ColCount-1) retVal=ColCount-1;
@@ -98,11 +109,13 @@ namespace OpenDental{
 			return retVal;
 		}
 
+		///<summary></summary>
 		public int DoubleClickToHour(int newY){
 			//retVal=
 			return System.Convert.ToInt32((newY)/6/Lh);
 		}
 
+		///<summary></summary>
 		public int DoubleClickToMin(int newY){
 			int tempReturn = System.Convert.ToInt32(Decimal.Remainder(newY-Lh/2,6*Lh)/Lh)*10;
 			if (tempReturn == 60)return 0;
@@ -122,6 +135,7 @@ namespace OpenDental{
 			return retVal;
 		}
 
+		///<summary></summary>
 		public int ConvertToHour(int newY){
 			//if (newY<13*6*Lh-Lh/2){//Before 12:55
 			return System.Convert.ToInt32((newY+Lh/2)/6/Lh);
@@ -131,12 +145,14 @@ namespace OpenDental{
 			//}
 		}
 
+		///<summary></summary>
 		public int ConvertToMin(int newY){
 			int tempReturn = System.Convert.ToInt32(Decimal.Remainder(newY,6*Lh)/Lh)*10;
 			if (tempReturn == 60)return 0;
 			else return tempReturn;
 		}
 
+		///<summary></summary>
 		protected override void OnPaint(PaintEventArgs pea){
 			DrawShadow();
 			//revisit this later:
@@ -169,6 +185,7 @@ namespace OpenDental{
 			}*/
 		}
 
+		///<summary></summary>
 		public void CreateShadow(){
 			if(Shadow!=null){
 				Shadow=null;
@@ -330,6 +347,7 @@ namespace OpenDental{
 			grfx.Dispose();
 		}
 
+		///<summary></summary>
 		public void DrawShadow(){
 			if(Shadow!=null){
 				Graphics grfx2=this.CreateGraphics();

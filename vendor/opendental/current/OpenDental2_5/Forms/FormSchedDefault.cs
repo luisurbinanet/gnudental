@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormSchedDefault : System.Windows.Forms.Form{
 		private System.Windows.Forms.Button butClose;
 		private System.Windows.Forms.Label label1;
@@ -20,6 +20,7 @@ namespace OpenDental{
 		private OpenDental.XPButton butAdd;
 		private Point mousePos;
 
+		///<summary></summary>
 		public FormSchedDefault(){
 			InitializeComponent();
 			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -37,6 +38,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -64,12 +66,13 @@ namespace OpenDental{
 			// 
 			// butClose
 			// 
+			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butClose.Location = new System.Drawing.Point(752, 653);
 			this.butClose.Name = "butClose";
 			this.butClose.Size = new System.Drawing.Size(75, 26);
 			this.butClose.TabIndex = 1;
-			this.butClose.Text = "Close";
+			this.butClose.Text = "&Close";
 			this.butClose.Click += new System.EventHandler(this.butClose_Click);
 			// 
 			// contrGrid
@@ -155,14 +158,16 @@ namespace OpenDental{
 			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butAdd.Location = new System.Drawing.Point(485, 653);
 			this.butAdd.Name = "butAdd";
-			this.butAdd.Size = new System.Drawing.Size(95, 26);
+			this.butAdd.Size = new System.Drawing.Size(106, 26);
 			this.butAdd.TabIndex = 15;
-			this.butAdd.Text = "Add Block";
+			this.butAdd.Text = "&Add Block";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
 			// FormSchedDefault
 			// 
+			this.AcceptButton = this.butClose;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butClose;
 			this.ClientSize = new System.Drawing.Size(846, 690);
 			this.Controls.Add(this.butAdd);
 			this.Controls.Add(this.contrGrid);

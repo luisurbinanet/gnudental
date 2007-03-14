@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormRxSelect : System.Windows.Forms.Form{
 		private OpenDental.TableRxSetup tbMain;
 		private System.Windows.Forms.Button butCancel;
@@ -14,6 +14,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butBlank;
 		private System.ComponentModel.Container components = null;// Required designer variable.
 
+		///<summary></summary>
 		public FormRxSelect(){
 			InitializeComponent();// Required for Windows Form Designer support
 			tbMain.CellClicked += new OpenDental.ContrTable.CellEventHandler(tbMain_CellClicked);
@@ -28,6 +29,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -56,6 +58,7 @@ namespace OpenDental{
 			this.tbMain.BackColor = System.Drawing.SystemColors.Window;
 			this.tbMain.Location = new System.Drawing.Point(4, 34);
 			this.tbMain.Name = "tbMain";
+			this.tbMain.ScrollValue = 1;
 			this.tbMain.SelectedIndices = new int[0];
 			this.tbMain.SelectionMode = System.Windows.Forms.SelectionMode.None;
 			this.tbMain.Size = new System.Drawing.Size(919, 582);
@@ -63,11 +66,13 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(848, 636);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 3;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// butOK
@@ -75,8 +80,9 @@ namespace OpenDental{
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(756, 636);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 2;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// label1
@@ -91,15 +97,17 @@ namespace OpenDental{
 			// butBlank
 			// 
 			this.butBlank.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butBlank.Location = new System.Drawing.Point(472, 6);
+			this.butBlank.Location = new System.Drawing.Point(472, 5);
 			this.butBlank.Name = "butBlank";
+			this.butBlank.Size = new System.Drawing.Size(75, 26);
 			this.butBlank.TabIndex = 0;
-			this.butBlank.Text = "Blank";
+			this.butBlank.Text = "&Blank";
 			this.butBlank.Click += new System.EventHandler(this.butBlank_Click);
 			// 
 			// FormRxSelect
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(942, 674);
 			this.Controls.Add(this.butBlank);
 			this.Controls.Add(this.label1);

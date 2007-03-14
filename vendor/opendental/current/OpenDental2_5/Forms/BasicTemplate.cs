@@ -4,7 +4,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace OpenDental.Forms{
+namespace OpenDental{
 	/// <summary>
 	/// Summary description for FormBasicTemplate.
 	/// </summary>
@@ -16,6 +16,7 @@ namespace OpenDental.Forms{
 		/// </summary>
 		private System.ComponentModel.Container components = null;
 
+		///<summary></summary>
 		public BasicTemplate()
 		{
 			//

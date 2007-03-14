@@ -14,7 +14,7 @@ using System.Drawing.Imaging;
 using System.Drawing.Text;
 using System.Drawing.Printing;
 namespace OpenDental{
-
+///<summary></summary>
 	public class ContrTreat : System.Windows.Forms.UserControl{
 		//private AxFPSpread.AxvaSpread axvaSpread2;
 		private System.Windows.Forms.Label label1;
@@ -25,6 +25,7 @@ namespace OpenDental{
 		private System.ComponentModel.Container components=null;// Required designer variable.
 		private ArrayList arrayLProc;
 		private System.Windows.Forms.ListBox listSetPr;
+		///<summary></summary>
 		public static ArrayList TPLines2;
 		private System.Windows.Forms.Label label5;
 		private System.Windows.Forms.TextBox textFee;
@@ -56,6 +57,7 @@ namespace OpenDental{
 		private System.Windows.Forms.ListBox listPreAuth;
 		private int linesPrinted=0;
 		//bool middleOfPlan=false;
+		///<summary></summary>
     public FormRpPrintPreview pView;
 //		private System.Windows.Forms.PrintDialog printDialog2;
 		private bool headingPrinted;
@@ -93,6 +95,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butPreAuth;
     private ArrayList ALPreAuth;  
 
+		///<summary></summary>
 		public ContrTreat(){
 			InitializeComponent();// This call is required by the Windows.Forms Form Designer.
 			tbMain.CellClicked += new OpenDental.ContrTable.CellEventHandler(tbMain_CellClicked);
@@ -100,6 +103,7 @@ namespace OpenDental{
 
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing )
 			{
@@ -728,6 +732,7 @@ namespace OpenDental{
 		}
 		#endregion
 
+		///<summary></summary>
 		public void InstantClasses(){
 			listSetPr.Items.Clear();
 			listViewPr.Items.Clear();
@@ -775,11 +780,13 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		public void ModuleSelected(){
 			RefreshModuleData();
 			RefreshModuleScreen();
 		}
 
+		///<summary></summary>
 		public void ModuleUnselected(){
 			Patients.FamilyList=null;
 			InsPlans.List=null;
@@ -853,8 +860,8 @@ namespace OpenDental{
 			//Pull into TPLines2 arrayList for display.  Every TPLines2 entry
 			//contains an index to access original arrayList.
 			//Procedures.List is never used again after initial passthrough
-			//Notes are handled like any
-			//other line, just no numbers. 
+			//Notes will handled like any
+			//other line, just no numbers(eventually)
 			Procedures.Refresh();
 			arrayLProc = new ArrayList();
 			bool doAdd;
@@ -920,17 +927,18 @@ namespace OpenDental{
 				tempTPLine.Priority=Defs.GetName(DefCat.TxPriorities,((Procedure)arrayLProc[i]).Priority);
 				tempTPLine.Tooth=((Procedure)arrayLProc[i]).ToothNum;
 				tempTPLine.Surface=((Procedure)arrayLProc[i]).Surf;
-				tempTPLine.Description=ProcCodes.GetProcCode(((Procedure)arrayLProc[i]).ADACode).Descript;
+				tempTPLine.Description=ProcedureCodes.GetProcCode(((Procedure)arrayLProc[i]).ADACode).Descript;
 				tempTPLine.ADACode=((Procedure)arrayLProc[i]).ADACode;
 				Procedures.Cur=(Procedure)arrayLProc[i];
 				double fee=Procedures.Cur.ProcFee;
 				double priIns=Procedures.GetEstForCur(PriSecTot.Pri);
 				double secIns=Procedures.GetEstForCur(PriSecTot.Sec);
-				//double secIns=fee*CovPats.GetPercent(((Procedure)arrayLProc[i]).ADACode,PriSecTot.Sec);
-				//if(secIns>fee-priIns){
-				//	secIns=fee-priIns;
-				//}
 				double pat=fee-priIns-secIns;
+				if(Procedures.Cur.CapCoPay!=-1){//covered by capitation
+					priIns=0;
+					secIns=0;
+					pat=Procedures.Cur.CapCoPay;
+				}
 				totFee+=fee;
 				totPriIns+=priIns;
 				totSecIns+=secIns;
@@ -1102,6 +1110,7 @@ namespace OpenDental{
 			ModuleSelected();
 		}
 
+		///<summary></summary>
 		public void PrintReport(bool justPreview){
 			pd2=new PrintDocument();
 			pd2.PrintPage += new PrintPageEventHandler(this.pd2_PrintPage);
@@ -1354,16 +1363,24 @@ namespace OpenDental{
 		  if(MessageBox.Show(Lan.g(this,"Update all fees on this treatment plan to the current fees for this patient?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
         return;   
       }
+			if(Patients.Cur.PriPlanNum!=0)
+				InsPlans.GetCur(Patients.Cur.PriPlanNum);//in preparation for the capcopay changes
       for(int i=0;i<arrayLProc.Count;i++){
 				Procedures.Cur=(Procedure)arrayLProc[i]; 
 				//first the fees
 				Procedures.Cur.ProcFee = Fees.GetAmount(Procedures.Cur.ADACode,ContrChart.GetFeeSched());
 				//then the 'Patient has insurance' checkbox
+				//and the CapCoPay
+				Procedures.Cur.CapCoPay=-1;
 				if(Patients.Cur.PriPlanNum==0){//no ins
 					Procedures.Cur.IsCovIns=false;
 				}
 				else{//has ins
 					Procedures.Cur.IsCovIns=true;
+					if(InsPlans.Cur.PlanType=="c"){
+						//also handles fine if copayfeesched=0:
+						Procedures.Cur.CapCoPay=Fees.GetAmount(Procedures.Cur.ADACode,InsPlans.Cur.CopayFeeSched);
+					}
 				}
 				Procedures.UpdateCur();
       }
@@ -1412,16 +1429,16 @@ namespace OpenDental{
         ClaimProcs.Cur.ClaimNum=Claims.Cur.ClaimNum;
         ClaimProcs.Cur.PatNum=Patients.Cur.PatNum;
         ClaimProcs.Cur.ProcNum=Procedures.Cur.ProcNum;
+				ClaimProcs.Cur.Status=ClaimProcStatus.Preauth;
+				ClaimProcs.Cur.FeeBilled=Procedures.Cur.ProcFee;
 				if(InsPlans.Cur.UseAltCode)
-					ClaimProcs.Cur.CodeSent=((ProcedureCode)ProcCodes.HList[Procedures.Cur.ADACode]).AlternateCode1;
+					ClaimProcs.Cur.CodeSent=((ProcedureCode)ProcedureCodes.HList[Procedures.Cur.ADACode]).AlternateCode1;
 				else{
 					ClaimProcs.Cur.CodeSent=Procedures.Cur.ADACode;
 					if(ClaimProcs.Cur.CodeSent.Length>5 && ClaimProcs.Cur.CodeSent.Substring(0,1)=="D"){
 						ClaimProcs.Cur.CodeSent=ClaimProcs.Cur.CodeSent.Substring(0,5);
 					}
 				}
-				ClaimProcs.Cur.FeeBilled=Procedures.Cur.ProcFee;
-				ClaimProcs.Cur.Status=ClaimProcStatus.Preauth;
         ClaimProcs.InsertCur();
 				Procedures.UpdateCur();
 			}
@@ -1466,20 +1483,34 @@ namespace OpenDental{
 		}
 	}
 
+	///<summary></summary>
 	public struct TPLine{
 		//public AcctType Type;
+		///<summary></summary>
 		public bool IsNote;
+		///<summary></summary>
 		public int Index;
+		///<summary></summary>
 		public string Priority;
+		///<summary></summary>
 		public string Tooth;
+		///<summary></summary>
 		public string Surface;
+		///<summary></summary>
 		public string Description;
+		///<summary></summary>
 		public string Fee;
+		///<summary></summary>
 		public string PriIns;
+		///<summary></summary>
 		public string SecIns;
+		///<summary></summary>
 		public string Pat;
+		///<summary></summary>
 		public string PreEst;
+		///<summary></summary>
 		public Color LineColor;
+		///<summary></summary>
 		public string ADACode;
 	}
 }

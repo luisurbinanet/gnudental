@@ -1,9 +1,10 @@
 using System;
-using System.Drawing;
-using System.Drawing.Printing;
 using System.Collections;
 using System.ComponentModel;
+using System.Drawing;
+using System.Drawing.Printing;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace OpenDental{
@@ -36,19 +37,26 @@ namespace OpenDental{
 		private System.Windows.Forms.FontDialog fontDialog1;
 		private System.Windows.Forms.Button butFont;
 		private System.Windows.Forms.Button butPrint;
+		///<summary></summary>
 		public bool IsNew;
-		private bool shiftIsDown;
+		//private bool shiftIsDown;
 		private bool controlIsDown;
 		private bool mouseIsDown;
 		private PointF mouseDownLoc;
 		private PointF[] oldItemLocs;
 		private System.Drawing.Printing.PrintDocument pd2;
 		private System.Windows.Forms.PrintDialog printDialog2;
-		private System.Windows.Forms.TextBox textUniqueID;
 		private System.Windows.Forms.Label labelUniqueID;
+		private System.Windows.Forms.TextBox textUniqueID;
 		private System.Windows.Forms.Label labelWarning;
+		private System.Windows.Forms.CheckBox checkPrintImages;
+		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.Label label8;
+		private OpenDental.ValidNum textOffsetX;
+		private OpenDental.ValidNum textOffsetY;
 		private string[] displayStrings;
 
+		///<summary></summary>
 		public FormClaimFormEdit()
 		{
 			//
@@ -87,6 +95,7 @@ namespace OpenDental{
 			this.butCancel = new System.Windows.Forms.Button();
 			this.butOK = new System.Windows.Forms.Button();
 			this.panel2 = new System.Windows.Forms.Panel();
+			this.labelWarning = new System.Windows.Forms.Label();
 			this.vScrollBar1 = new System.Windows.Forms.VScrollBar();
 			this.textDescription = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
@@ -109,18 +118,24 @@ namespace OpenDental{
 			this.pd2 = new System.Drawing.Printing.PrintDocument();
 			this.labelUniqueID = new System.Windows.Forms.Label();
 			this.textUniqueID = new System.Windows.Forms.TextBox();
-			this.labelWarning = new System.Windows.Forms.Label();
+			this.checkPrintImages = new System.Windows.Forms.CheckBox();
+			this.label3 = new System.Windows.Forms.Label();
+			this.label8 = new System.Windows.Forms.Label();
+			this.textOffsetX = new OpenDental.ValidNum();
+			this.textOffsetY = new OpenDental.ValidNum();
 			this.panel2.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// butCancel
 			// 
 			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(892, 667);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 0;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// butOK
@@ -129,8 +144,9 @@ namespace OpenDental{
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(892, 637);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 1;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// panel2
@@ -145,6 +161,17 @@ namespace OpenDental{
 			this.panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.panel2_Paint);
 			this.panel2.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panel2_MouseMove);
 			this.panel2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panel2_MouseDown);
+			// 
+			// labelWarning
+			// 
+			this.labelWarning.Location = new System.Drawing.Point(13, 3);
+			this.labelWarning.Name = "labelWarning";
+			this.labelWarning.Size = new System.Drawing.Size(782, 28);
+			this.labelWarning.TabIndex = 0;
+			this.labelWarning.Text = "Warning.  This is not a user-added claim form.  Any changes you make might be los" +
+				"t when you upgrade.  Add your own claim form if you want your changes to be pres" +
+				"erved.";
+			this.labelWarning.Visible = false;
 			// 
 			// vScrollBar1
 			// 
@@ -181,7 +208,7 @@ namespace OpenDental{
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(869, 109);
+			this.label2.Location = new System.Drawing.Point(870, 162);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(108, 15);
 			this.label2.TabIndex = 7;
@@ -189,11 +216,11 @@ namespace OpenDental{
 			// 
 			// listItems
 			// 
-			this.listItems.Location = new System.Drawing.Point(867, 124);
+			this.listItems.Location = new System.Drawing.Point(867, 178);
 			this.listItems.MultiColumn = true;
 			this.listItems.Name = "listItems";
 			this.listItems.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-			this.listItems.Size = new System.Drawing.Size(114, 381);
+			this.listItems.Size = new System.Drawing.Size(114, 316);
 			this.listItems.TabIndex = 8;
 			this.listItems.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listItems_MouseDown);
 			this.listItems.DoubleClick += new System.EventHandler(this.listItems_DoubleClick);
@@ -202,11 +229,11 @@ namespace OpenDental{
 			// butAdd
 			// 
 			this.butAdd.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butAdd.Location = new System.Drawing.Point(907, 104);
+			this.butAdd.Location = new System.Drawing.Point(908, 157);
 			this.butAdd.Name = "butAdd";
 			this.butAdd.Size = new System.Drawing.Size(75, 20);
 			this.butAdd.TabIndex = 9;
-			this.butAdd.Text = "Add";
+			this.butAdd.Text = "&Add";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
 			// label4
@@ -298,11 +325,11 @@ namespace OpenDental{
 			// butFont
 			// 
 			this.butFont.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butFont.Location = new System.Drawing.Point(870, 77);
+			this.butFont.Location = new System.Drawing.Point(870, 94);
 			this.butFont.Name = "butFont";
 			this.butFont.Size = new System.Drawing.Size(62, 21);
 			this.butFont.TabIndex = 20;
-			this.butFont.Text = "Font";
+			this.butFont.Text = "&Font";
 			this.butFont.Click += new System.EventHandler(this.butFont_Click);
 			// 
 			// butPrint
@@ -311,53 +338,94 @@ namespace OpenDental{
 			this.butPrint.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butPrint.Location = new System.Drawing.Point(892, 607);
 			this.butPrint.Name = "butPrint";
+			this.butPrint.Size = new System.Drawing.Size(75, 26);
 			this.butPrint.TabIndex = 22;
-			this.butPrint.Text = "Print";
+			this.butPrint.Text = "&Print";
 			this.butPrint.Click += new System.EventHandler(this.butPrint_Click);
 			// 
 			// labelUniqueID
 			// 
-			this.labelUniqueID.Location = new System.Drawing.Point(872, 59);
+			this.labelUniqueID.Location = new System.Drawing.Point(872, 58);
 			this.labelUniqueID.Name = "labelUniqueID";
-			this.labelUniqueID.Size = new System.Drawing.Size(54, 16);
+			this.labelUniqueID.Size = new System.Drawing.Size(58, 15);
 			this.labelUniqueID.TabIndex = 23;
 			this.labelUniqueID.Text = "UniqueID";
-			this.labelUniqueID.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			this.labelUniqueID.Visible = false;
 			// 
 			// textUniqueID
 			// 
-			this.textUniqueID.Location = new System.Drawing.Point(929, 55);
+			this.textUniqueID.Location = new System.Drawing.Point(928, 55);
 			this.textUniqueID.Name = "textUniqueID";
-			this.textUniqueID.Size = new System.Drawing.Size(51, 20);
+			this.textUniqueID.Size = new System.Drawing.Size(50, 20);
 			this.textUniqueID.TabIndex = 24;
 			this.textUniqueID.Text = "";
 			this.textUniqueID.Visible = false;
 			// 
-			// labelWarning
+			// checkPrintImages
 			// 
-			this.labelWarning.Location = new System.Drawing.Point(22, 2);
-			this.labelWarning.Name = "labelWarning";
-			this.labelWarning.Size = new System.Drawing.Size(782, 31);
-			this.labelWarning.TabIndex = 0;
-			this.labelWarning.Text = "Warning.  This is not a user-added claim form.  Any changes you make might be los" +
-				"t when you upgrade.  Add your own claim form if you want your changes to be pres" +
-				"erved.";
-			this.labelWarning.Visible = false;
+			this.checkPrintImages.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkPrintImages.Location = new System.Drawing.Point(869, 76);
+			this.checkPrintImages.Name = "checkPrintImages";
+			this.checkPrintImages.Size = new System.Drawing.Size(109, 16);
+			this.checkPrintImages.TabIndex = 25;
+			this.checkPrintImages.Text = "Print Images";
+			// 
+			// label3
+			// 
+			this.label3.Location = new System.Drawing.Point(872, 120);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(58, 15);
+			this.label3.TabIndex = 26;
+			this.label3.Text = "Offset X";
+			this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// label8
+			// 
+			this.label8.Location = new System.Drawing.Point(872, 139);
+			this.label8.Name = "label8";
+			this.label8.Size = new System.Drawing.Size(58, 15);
+			this.label8.TabIndex = 28;
+			this.label8.Text = "Offset Y";
+			this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// textOffsetX
+			// 
+			this.textOffsetX.Location = new System.Drawing.Point(929, 116);
+			this.textOffsetX.MinVal = -9999;
+			this.textOffsetX.Name = "textOffsetX";
+			this.textOffsetX.Size = new System.Drawing.Size(50, 20);
+			this.textOffsetX.TabIndex = 30;
+			this.textOffsetX.Text = "";
+			// 
+			// textOffsetY
+			// 
+			this.textOffsetY.Location = new System.Drawing.Point(929, 136);
+			this.textOffsetY.MinVal = -9999;
+			this.textOffsetY.Name = "textOffsetY";
+			this.textOffsetY.Size = new System.Drawing.Size(50, 20);
+			this.textOffsetY.TabIndex = 31;
+			this.textOffsetY.Text = "";
 			// 
 			// FormClaimFormEdit
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(982, 700);
+			this.CancelButton = this.butCancel;
+			this.ClientSize = new System.Drawing.Size(992, 700);
+			this.Controls.Add(this.textOffsetY);
+			this.Controls.Add(this.textOffsetX);
 			this.Controls.Add(this.textUniqueID);
-			this.Controls.Add(this.labelUniqueID);
-			this.Controls.Add(this.butPrint);
-			this.Controls.Add(this.butFont);
 			this.Controls.Add(this.textDescription);
 			this.Controls.Add(this.textHeight);
 			this.Controls.Add(this.textWidth);
 			this.Controls.Add(this.textYPos);
 			this.Controls.Add(this.textXPos);
+			this.Controls.Add(this.label8);
+			this.Controls.Add(this.label3);
+			this.Controls.Add(this.checkPrintImages);
+			this.Controls.Add(this.labelUniqueID);
+			this.Controls.Add(this.butPrint);
+			this.Controls.Add(this.butFont);
 			this.Controls.Add(this.label7);
 			this.Controls.Add(this.label6);
 			this.Controls.Add(this.label5);
@@ -378,6 +446,7 @@ namespace OpenDental{
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
 			this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FormClaimFormEdit_KeyDown);
+			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormClaimFormEdit_Closing);
 			this.Load += new System.EventHandler(this.FormClaimFormEdit_Load);
 			this.Layout += new System.Windows.Forms.LayoutEventHandler(this.FormClaimFormEdit_Layout);
 			this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.FormClaimFormEdit_KeyUp);
@@ -388,7 +457,8 @@ namespace OpenDental{
 		#endregion
 
 		private void FormClaimFormEdit_Load(object sender, System.EventArgs e) {
-			//must have already saved the claimform
+			//must have already saved the claimform, because clicking ok, only updates it.
+
 			FillForm();
 			panel2.Invalidate();
 		}
@@ -412,6 +482,9 @@ namespace OpenDental{
 			textDescription.Text=ClaimForms.Cur.Description;
 			checkIsHidden.Checked=ClaimForms.Cur.IsHidden;
 			textUniqueID.Text=ClaimForms.Cur.UniqueID.ToString();
+			checkPrintImages.Checked=ClaimForms.Cur.PrintImages;
+			textOffsetX.Text=ClaimForms.Cur.OffsetX.ToString();
+			textOffsetY.Text=ClaimForms.Cur.OffsetY.ToString();
 			if(ClaimForms.Cur.FontName=="" || ClaimForms.Cur.FontSize==0){
 				ClaimForms.Cur.FontName="Arial";
 				ClaimForms.Cur.FontSize=8;
@@ -522,13 +595,25 @@ namespace OpenDental{
 					}
 					Image thisImage=Image.FromFile(fileName);
 					if(fileName.Substring(fileName.Length-3)=="jpg"){
-						grfx.DrawImage(thisImage,ClaimFormItems.ListForForm[i].XPos,ClaimFormItems.ListForForm[i].YPos
+						grfx.DrawImage(thisImage
+							,ClaimFormItems.ListForForm[i].XPos
+							,ClaimFormItems.ListForForm[i].YPos
 							,(int)(thisImage.Width/thisImage.HorizontalResolution*100)
 							,(int)(thisImage.Height/thisImage.VerticalResolution*100));
 					}
+					else if(fileName.Substring(fileName.Length-3)=="gif"){
+						grfx.DrawImage(thisImage
+							,ClaimFormItems.ListForForm[i].XPos
+							,ClaimFormItems.ListForForm[i].YPos
+							,ClaimFormItems.ListForForm[i].Width
+							,ClaimFormItems.ListForForm[i].Height);
+					}
 					else if(fileName.Substring(fileName.Length-3)=="emf"){
-						grfx.DrawImage(thisImage,ClaimFormItems.ListForForm[i].XPos,ClaimFormItems.ListForForm[i].YPos
-							,thisImage.Width,thisImage.Height);
+						grfx.DrawImage(thisImage
+							,ClaimFormItems.ListForForm[i].XPos
+							,ClaimFormItems.ListForForm[i].YPos
+							,thisImage.Width
+							,thisImage.Height);
 					}
 				}
 			}
@@ -544,6 +629,7 @@ namespace OpenDental{
 					//bool
 					case "IsPreAuth":
 					case "IsStandardClaim":
+					case "IsMedicaidClaim":
 					case "OtherInsExists":
 					case "OtherInsNotExists":
 					case "OtherInsSubscrIsMale":
@@ -554,6 +640,10 @@ namespace OpenDental{
 					case "OtherInsRelatIsOther":
 					case "SubscrIsMale":
 					case "SubscrIsFemale":
+					case "SubscrIsMarried":
+					case "SubscrIsSingle":
+					case "SubscrIsFTStudent":
+					case "SubscrIsPTStudent":
 					case "RelatIsSelf":
 					case "RelatIsSpouse":
 					case "RelatIsChild":
@@ -562,6 +652,8 @@ namespace OpenDental{
 					case "IsPTStudent":
 					case "PatientIsMale":
 					case "PatientIsFemale":
+					case "PatientIsMarried":
+					case "PatientIsSingle":
 					case "Miss1":
 					case "Miss2":
 					case "Miss3":
@@ -606,11 +698,19 @@ namespace OpenDental{
 					case "PlaceIsOtherLocation":
 					case "IsNotOrtho":
 					case "IsOrtho":
+					case "IsNotProsth":
+					case "IsInitialProsth":
 					case "IsNotReplacementProsth":
 					case "IsReplacementProsth":
 					case "IsOccupational":
+					case "IsNotOccupational":
 					case "IsAutoAccident":
+					case "IsNotAutoAccident":
 					case "IsOtherAccident":
+					case "IsNotOtherAccident":
+					case "IsNotAccident"://of either kind
+					case "BillingDentistNumIsSSN":
+					case "BillingDentistNumIsTIN":
 						displayStrings[i]="X";
 						break;
 					//short strings custom
@@ -618,9 +718,30 @@ namespace OpenDental{
 					case "OtherInsST":
 						displayStrings[i]="ST";
 						break;
-					//date-later show format
+					//date
+					case "PatientDOB":
+					case "SubscrDOB":
 					case "OtherInsSubscrDOB":
-						displayStrings[i]="MM/DD/YYYY";
+					case "P1Date":
+					case "P2Date":
+					case "P3Date":
+					case "P4Date":
+					case "P5Date":
+					case "P6Date":
+					case "P7Date":
+					case "P8Date":
+					case "P9Date":
+					case "P10Date":
+					case "PatientReleaseDate":
+					case "PatientAssignmentDate":
+					case "DateOrthoPlaced":
+					case "DatePriorProsthPlaced":
+					case "AccidentDate":
+					case "TreatingDentistSigDate":
+						if(ClaimFormItems.ListForForm[i].FormatString=="")
+							displayStrings[i]="";//DateTime.Today.ToShortDateString();
+						else
+							displayStrings[i]=DateTime.Today.ToString(ClaimFormItems.ListForForm[i].FormatString);
 						break;
 					case "P1Fee":
 					case "P2Fee":
@@ -769,6 +890,7 @@ namespace OpenDental{
 					(displayStrings[ClaimFormItems.ListForForm.Length-1]
 					,new Font(ClaimForms.Cur.FontName,ClaimForms.Cur.FontSize)).Height;
 			}
+			grfx.Dispose();
 			ClaimFormItems.Cur.YPos=540;
 			//ClaimFormItems.Cur.XPos=400;
 			ClaimFormItems.UpdateCur();
@@ -806,9 +928,9 @@ namespace OpenDental{
 				&& e.KeyCode!=Keys.ControlKey){
 				return;
 			}
-			if(e.Shift){
-				shiftIsDown=true;
-			}
+			//if(e.Shift){
+			//	shiftIsDown=true;
+			//}
 			if(e.Control){
 				controlIsDown=true;
 			}
@@ -865,7 +987,7 @@ namespace OpenDental{
 		}
 
 		private void FormClaimFormEdit_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e) {
-			shiftIsDown=false;
+			//shiftIsDown=false;
 			controlIsDown=false;
 		}
 
@@ -914,6 +1036,7 @@ namespace OpenDental{
 					break;
 				}
 			}
+			grfx.Dispose();
 			FillItem();//also sets the oldItemLocs
 			oldItemLocs=new PointF[listItems.SelectedIndices.Count];
 			for(int i=0;i<listItems.SelectedIndices.Count;i++){//then a normal loop to set oldlocs for dragging
@@ -952,21 +1075,25 @@ namespace OpenDental{
 		}
 
 		private void butPrint_Click(object sender, System.EventArgs e) {
+			if(!UpdateCur())
+				return;
 			printDialog2=new PrintDialog();
 			printDialog2.PrinterSettings=new PrinterSettings();
 			printDialog2.PrinterSettings.PrinterName=Computers.Cur.PrinterName;
-			string PrinterName;
-			if(printDialog2.ShowDialog()==DialogResult.OK)
-				PrinterName=printDialog2.PrinterSettings.PrinterName;
-			else return;
-			pd2 = new PrintDocument();
-			pd2.PrintPage += new PrintPageEventHandler(this.pd2_PrintPage);
+			pd2=new PrintDocument();
+			pd2.OriginAtMargins=true;
+			pd2.DefaultPageSettings.Margins=new Margins(0,0,0,0);
+			if(printDialog2.ShowDialog()!=DialogResult.OK)
+				return;
+			pd2.PrinterSettings.PrinterName=printDialog2.PrinterSettings.PrinterName;
+			//MessageBox.Show(pd2.DefaultPageSettings.Bounds.Y.ToString());
+			//does not check validity of selected printer.  Assumes user has enough sense to select a funtional printer.
+			pd2.PrintPage+=new PrintPageEventHandler(this.pd2_PrintPage);
 			try{
-				pd2.PrinterSettings.PrinterName=PrinterName;
 				pd2.Print();
 			}
 			catch{
-				MessageBox.Show("error printing");
+				MessageBox.Show(Lan.g(this,"Error printing."));
 			}
 		}
 
@@ -977,11 +1104,8 @@ namespace OpenDental{
 			float xPosText;
 			for(int i=0;i<ClaimFormItems.ListForForm.Length;i++){
 				if(ClaimFormItems.ListForForm[i].ImageFileName==""){//field
-					//if(listItems.SelectedIndices.Contains(i))
-					//	myColor=Color.Red;
-					//else
-						myColor=Color.Blue;
-					xPosRect=ClaimFormItems.ListForForm[i].XPos;
+					myColor=Color.Blue;
+					xPosRect=ClaimFormItems.ListForForm[i].XPos+ClaimForms.Cur.OffsetX;
 					xPosText=xPosRect;
 					if(displayStrings[i]=="1234.00"){
 						xPosRect-=ClaimFormItems.ListForForm[i].Width;//this aligns it to the right
@@ -989,15 +1113,18 @@ namespace OpenDental{
 							,new Font(ClaimForms.Cur.FontName,ClaimForms.Cur.FontSize)).Width;
 					}
 					grfx.DrawRectangle(new Pen(myColor)
-						,xPosRect,ClaimFormItems.ListForForm[i].YPos
+						,xPosRect,ClaimFormItems.ListForForm[i].YPos+ClaimForms.Cur.OffsetY
 						,ClaimFormItems.ListForForm[i].Width,ClaimFormItems.ListForForm[i].Height);
 					grfx.DrawString(displayStrings[i]
 						,new Font(ClaimForms.Cur.FontName,ClaimForms.Cur.FontSize)
 						,new SolidBrush(myColor)
-						,new RectangleF(xPosText,ClaimFormItems.ListForForm[i].YPos
+						,new RectangleF(xPosText,ClaimFormItems.ListForForm[i].YPos+ClaimForms.Cur.OffsetY
 						,ClaimFormItems.ListForForm[i].Width,ClaimFormItems.ListForForm[i].Height));
 				}
 				else{//image
+					if(!ClaimForms.Cur.PrintImages){
+						continue;
+					}
 					string fileName=((Pref)Prefs.HList["DocPath"]).ValueString+@"\"
 						+ClaimFormItems.ListForForm[i].ImageFileName;
 					if(!File.Exists(fileName)){
@@ -1006,29 +1133,69 @@ namespace OpenDental{
 					}
 					Image thisImage=Image.FromFile(fileName);
 					if(fileName.Substring(fileName.Length-3)=="jpg"){
-						grfx.DrawImage(thisImage,ClaimFormItems.ListForForm[i].XPos,ClaimFormItems.ListForForm[i].YPos
+						grfx.DrawImage(thisImage
+							,ClaimFormItems.ListForForm[i].XPos+ClaimForms.Cur.OffsetX
+							,ClaimFormItems.ListForForm[i].YPos+ClaimForms.Cur.OffsetY
 							,(int)(thisImage.Width/thisImage.HorizontalResolution*100)
 							,(int)(thisImage.Height/thisImage.VerticalResolution*100));
 					}
+					else if(fileName.Substring(fileName.Length-3)=="gif"){
+						grfx.DrawImage(thisImage
+							,ClaimFormItems.ListForForm[i].XPos+ClaimForms.Cur.OffsetX
+							,ClaimFormItems.ListForForm[i].YPos+ClaimForms.Cur.OffsetY
+							,ClaimFormItems.ListForForm[i].Width
+							,ClaimFormItems.ListForForm[i].Height);
+					}
 					else if(fileName.Substring(fileName.Length-3)=="emf"){
-						grfx.DrawImage(thisImage,ClaimFormItems.ListForForm[i].XPos,ClaimFormItems.ListForForm[i].YPos
-							,thisImage.Width,thisImage.Height);
+						grfx.DrawImage(thisImage
+							,ClaimFormItems.ListForForm[i].XPos+ClaimForms.Cur.OffsetX
+							,ClaimFormItems.ListForForm[i].YPos+ClaimForms.Cur.OffsetY
+							,thisImage.Width
+							,thisImage.Height);
 					}
 				}
 			}
 			ev.HasMorePages=false;
 		}
 
-		private void butOK_Click(object sender, System.EventArgs e) {
+		private bool UpdateCur(){
+			if(  textOffsetX.errorProvider1.GetError(textOffsetX)!=""
+				|| textOffsetY.errorProvider1.GetError(textOffsetY)!=""
+				){
+				MessageBox.Show(Lan.g(this,"Please fix data entry errors first."));
+				return false;
+			}
 			ClaimForms.Cur.Description=textDescription.Text;
 			ClaimForms.Cur.IsHidden=checkIsHidden.Checked;
 			ClaimForms.Cur.UniqueID=PIn.PInt(textUniqueID.Text);
+			ClaimForms.Cur.PrintImages=checkPrintImages.Checked;
+			ClaimForms.Cur.OffsetX=PIn.PInt(textOffsetX.Text);
+			ClaimForms.Cur.OffsetY=PIn.PInt(textOffsetY.Text);
 			ClaimForms.UpdateCur();
+			return true;
+		}
+
+		private void butOK_Click(object sender, System.EventArgs e) {
+			//MessageBox.Show(ClaimForms.Cur.ClaimFormNum.ToString());
+			if(!UpdateCur())
+				return;
+			if(ClaimForms.Cur.Description==""){
+				MessageBox.Show(Lan.g(this,"You must enter a description first."));
+				return;
+			}
 			DialogResult=DialogResult.OK;
 		}
 
 		private void butCancel_Click(object sender, System.EventArgs e) {
 			DialogResult=DialogResult.Cancel;
+		}
+
+		private void FormClaimFormEdit_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+			if(DialogResult==DialogResult.OK)
+				return;
+			if(IsNew){
+				ClaimForms.DeleteCur();
+			}
 		}
 
 		

@@ -24,8 +24,10 @@ namespace OpenDental{
 		private System.ComponentModel.Container components = null;
 		private string[] FieldNames;
 		private System.Windows.Forms.Button butDelete;
+		///<summary></summary>
 		public bool IsNew;
 
+		///<summary></summary>
 		public FormClaimFormItemEdit()
 		{
 			//
@@ -76,11 +78,12 @@ namespace OpenDental{
 			// butCancel
 			// 
 			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(838, 605);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 0;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// butOK
@@ -90,12 +93,12 @@ namespace OpenDental{
 			this.butOK.Location = new System.Drawing.Point(838, 564);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 1;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// labelImageFileName
 			// 
-			this.labelImageFileName.Location = new System.Drawing.Point(25, 20);
+			this.labelImageFileName.Location = new System.Drawing.Point(25, 22);
 			this.labelImageFileName.Name = "labelImageFileName";
 			this.labelImageFileName.Size = new System.Drawing.Size(156, 16);
 			this.labelImageFileName.TabIndex = 2;
@@ -113,10 +116,10 @@ namespace OpenDental{
 			// 
 			this.label2.Location = new System.Drawing.Point(25, 67);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(209, 68);
+			this.label2.Size = new System.Drawing.Size(209, 57);
 			this.label2.TabIndex = 4;
-			this.label2.Text = "This file must be present in the OpenDentalData folder.  It should be a jpg or a " +
-				"emf.";
+			this.label2.Text = "This file must be present in the OpenDentalData folder.  It should be a jpg, gif," +
+				" or emf.";
 			// 
 			// labelFieldName
 			// 
@@ -137,7 +140,7 @@ namespace OpenDental{
 			// 
 			// textFormatString
 			// 
-			this.textFormatString.Location = new System.Drawing.Point(26, 215);
+			this.textFormatString.Location = new System.Drawing.Point(24, 208);
 			this.textFormatString.Name = "textFormatString";
 			this.textFormatString.Size = new System.Drawing.Size(211, 20);
 			this.textFormatString.TabIndex = 8;
@@ -145,11 +148,13 @@ namespace OpenDental{
 			// 
 			// labelFormatString
 			// 
-			this.labelFormatString.Location = new System.Drawing.Point(25, 196);
+			this.labelFormatString.Location = new System.Drawing.Point(24, 135);
 			this.labelFormatString.Name = "labelFormatString";
-			this.labelFormatString.Size = new System.Drawing.Size(210, 16);
+			this.labelFormatString.Size = new System.Drawing.Size(210, 68);
 			this.labelFormatString.TabIndex = 7;
-			this.labelFormatString.Text = "Format String (still under development)";
+			this.labelFormatString.Text = "Format String.  All dates must have a format.  Valid entries would include MM/dd/" +
+				"yyyy, MM-dd-yy, and M d y as examples.";
+			this.labelFormatString.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// butDelete
 			// 
@@ -158,21 +163,22 @@ namespace OpenDental{
 			this.butDelete.Name = "butDelete";
 			this.butDelete.Size = new System.Drawing.Size(80, 23);
 			this.butDelete.TabIndex = 9;
-			this.butDelete.Text = "Delete";
+			this.butDelete.Text = "&Delete";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
 			// 
 			// FormClaimFormItemEdit
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(939, 646);
 			this.Controls.Add(this.butDelete);
 			this.Controls.Add(this.textFormatString);
+			this.Controls.Add(this.textImageFileName);
 			this.Controls.Add(this.labelFormatString);
 			this.Controls.Add(this.listFieldName);
 			this.Controls.Add(this.labelFieldName);
 			this.Controls.Add(this.label2);
-			this.Controls.Add(this.textImageFileName);
 			this.Controls.Add(this.labelImageFileName);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.butCancel);
@@ -194,6 +200,7 @@ namespace OpenDental{
 			FieldNames=new string[]{
 				"IsPreAuth",
         "IsStandardClaim",
+				"IsMedicaidClaim",
 				"PreAuthString",
 				"PriInsCarrierName",
 				"PriInsAddress",
@@ -224,10 +231,15 @@ namespace OpenDental{
 				"SubscrCity",
 				"SubscrST",
 				"SubscrZip",
+				"SubscrPhone",
 				"SubscrDOB",
 				"SubscrIsMale",
 				"SubscrIsFemale",
+				"SubscrIsMarried",
+				"SubscrIsSingle",
 				"SubscrID",
+				"SubscrIsFTStudent",
+				"SubscrIsPTStudent",
 				"GroupNum",
 				"EmployerName",
 				"RelatIsSelf",
@@ -242,14 +254,19 @@ namespace OpenDental{
 				"PatientCity",
 				"PatientST",
 				"PatientZip",
+				"PatientPhone",
 				"PatientDOB",
-				"PatientDOBMonth",
-				"PatientDOBDay",
-				"PatientDOBYear",
+				//"PatientDOBMonth",
+				//"PatientDOBDay",
+				//"PatientDOByy",
+				//"PatientDOByyyy",
 				"PatientIsMale",
 				"PatientIsFemale",
+				"PatientIsMarried",
+				"PatientIsSingle",
 				"PatientSSN",
 				"PatientMedicaidID",
+				"PatientID-MedicaidOrSSN",
 				"P1Date",
 				"P1Area",
 				"P1System",
@@ -257,8 +274,8 @@ namespace OpenDental{
 				"P1Surface",
 				"P1Code",
 				"P1Description",
-				"P1Fee",
 				"P1TreatDentMedicaidID",
+				"P1Fee",
 				"P2Date",
 				"P2Area",
 				"P2System",
@@ -388,6 +405,7 @@ namespace OpenDental{
 				"PlaceIsSkilledNursFac",
 				"PlaceIsPatientsHome",
 				"PlaceIsOtherLocation",
+				"PlaceNumericCode",
 				//"RadiographsEnclosed",
 				//"ImagesEnclosed",
 				//"ModelsEnclosed",
@@ -395,12 +413,18 @@ namespace OpenDental{
 				"IsOrtho",
 				"DateOrthoPlaced",
 				"MonthsOrthoRemaining",
+				"IsNotProsth",
+				"IsInitialProsth",
 				"IsNotReplacementProsth",
 				"IsReplacementProsth",
 				"DatePriorProsthPlaced",
 				"IsOccupational",
+				"IsNotOccupational",
 				"IsAutoAccident",
+				"IsNotAutoAccident",
 				"IsOtherAccident",
+				"IsNotOtherAccident",
+				"IsNotAccident",
 				"AccidentDate",
 				"AccidentST",
 				"BillingDentist",
@@ -413,6 +437,8 @@ namespace OpenDental{
 				//"BillingDentistProvID",
 				"BillingDentistLicenseNum",
 				"BillingDentistSSNorTIN",
+				"BillingDentistNumIsSSN",
+				"BillingDentistNumIsTIN",
 				"BillingDentistPh123",
 				"BillingDentistPh456",
 				"BillingDentistPh78910",

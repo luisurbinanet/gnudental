@@ -5,21 +5,16 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Windows.Forms;
 
-namespace OpenDental
-{
-	/// <summary>
-	/// Summary description for FormTelephone.
-	/// </summary>
-	public class FormTelephone : System.Windows.Forms.Form
-	{
+namespace OpenDental{
+	/// <summary></summary>
+	public class FormTelephone : System.Windows.Forms.Form{
 		private System.Windows.Forms.Button butClose;
 		private System.Windows.Forms.Button butReformat;
 		private System.Windows.Forms.Label label1;
-		/// <summary>
-		/// Required designer variable.
-		/// </summary>
+		/// <summary>Required designer variable.</summary>
 		private System.ComponentModel.Container components = null;
 
+		///<summary></summary>
 		public FormTelephone()
 		{
 			//
@@ -61,11 +56,13 @@ namespace OpenDental
 			// 
 			// butClose
 			// 
+			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butClose.Location = new System.Drawing.Point(509, 266);
 			this.butClose.Name = "butClose";
+			this.butClose.Size = new System.Drawing.Size(75, 26);
 			this.butClose.TabIndex = 0;
-			this.butClose.Text = "Close";
+			this.butClose.Text = "&Close";
 			this.butClose.Click += new System.EventHandler(this.butClose_Click);
 			// 
 			// butReformat
@@ -73,9 +70,9 @@ namespace OpenDental
 			this.butReformat.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butReformat.Location = new System.Drawing.Point(17, 31);
 			this.butReformat.Name = "butReformat";
-			this.butReformat.Size = new System.Drawing.Size(108, 23);
+			this.butReformat.Size = new System.Drawing.Size(108, 26);
 			this.butReformat.TabIndex = 1;
-			this.butReformat.Text = "Reformat";
+			this.butReformat.Text = "&Reformat";
 			this.butReformat.Click += new System.EventHandler(this.butReformat_Click);
 			// 
 			// label1
@@ -90,7 +87,9 @@ namespace OpenDental
 			// 
 			// FormTelephone
 			// 
+			this.AcceptButton = this.butClose;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butClose;
 			this.ClientSize = new System.Drawing.Size(642, 313);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.butReformat);

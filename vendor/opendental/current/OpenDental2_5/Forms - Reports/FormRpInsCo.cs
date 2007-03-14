@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormRpInsCo : System.Windows.Forms.Form{
 		private System.Windows.Forms.Button butCancel;
 		private System.Windows.Forms.Button butOK;
@@ -15,6 +15,7 @@ namespace OpenDental{
 		private FormQuery FormQuery2;
 		private string carrier;
 
+		///<summary></summary>
 		public FormRpInsCo(){
 			InitializeComponent();
 			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -26,6 +27,7 @@ namespace OpenDental{
 			}); 
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -50,16 +52,18 @@ namespace OpenDental{
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(528, 328);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 2;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			// 
 			// butOK
 			// 
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(528, 296);
+			this.butOK.Location = new System.Drawing.Point(528, 293);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 1;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// labelPatName
@@ -81,7 +85,9 @@ namespace OpenDental{
 			// 
 			// FormRpInsCo
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(616, 366);
 			this.Controls.Add(this.labelPatName);
 			this.Controls.Add(this.textBoxCarrier);
@@ -109,11 +115,12 @@ insplan.groupname FROM insplan,patient WHERE insplan.subscriber=patient.patnum
 Order By patient.lname,patient.fname
 
 */
-			Queries.CurReport.Query= "SELECT carrier,CONCAT(LName,', ',FName,' ',MiddleI),phone,"
-				+"groupname FROM insplan,patient "
-				+"WHERE insplan.subscriber=patient.patnum "
-				+"&& carrier LIKE '"+carrier+"%' "
-				+"ORDER BY carrier";
+			Queries.CurReport.Query= "SELECT insplan.Carrier"
+				+",CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI),insplan.Phone,"
+				+"insplan.Groupname FROM insplan,patient "
+				+"WHERE insplan.Subscriber=patient.Patnum "
+				+"&& insplan.Carrier LIKE '"+carrier+"%' "
+				+"ORDER BY insplan.Carrier,patient.LName";
 
 			FormQuery2=new FormQuery();
 			FormQuery2.IsReport=true;
@@ -126,10 +133,10 @@ Order By patient.lname,patient.fname
 			Queries.CurReport.ColCaption=new string[4];
 			Queries.CurReport.ColAlign=new HorizontalAlignment[4];
 			Queries.CurReport.ColPos[0]=20;
-			Queries.CurReport.ColPos[1]=195;
-			Queries.CurReport.ColPos[2]=370;
-			Queries.CurReport.ColPos[3]=545;
-			Queries.CurReport.ColPos[4]=720;
+			Queries.CurReport.ColPos[1]=250;
+			Queries.CurReport.ColPos[2]=425;
+			Queries.CurReport.ColPos[3]=600;
+			Queries.CurReport.ColPos[4]=765;
 			Queries.CurReport.ColCaption[0]="Carrier Name";
 			Queries.CurReport.ColCaption[1]="Subscriber Name";
 			Queries.CurReport.ColCaption[2]="Carrier Phone#";

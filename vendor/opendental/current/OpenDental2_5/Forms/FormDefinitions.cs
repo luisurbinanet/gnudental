@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormDefinitions : System.Windows.Forms.Form{
 		private System.Windows.Forms.Button butClose;
 		private System.Windows.Forms.Label label14;
@@ -21,6 +21,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butHide;
 		private int SelectedCat;
 
+		///<summary></summary>
 		public FormDefinitions(){
 			InitializeComponent();// Required for Windows Form Designer support
 			tbDefs.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbDefs_CellDoubleClicked);
@@ -40,6 +41,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -61,24 +63,25 @@ namespace OpenDental{
 			this.label14 = new System.Windows.Forms.Label();
 			this.textGuide = new System.Windows.Forms.TextBox();
 			this.groupEdit = new System.Windows.Forms.GroupBox();
+			this.butHide = new System.Windows.Forms.Button();
+			this.butDown = new OpenDental.XPButton();
+			this.butUp = new OpenDental.XPButton();
+			this.butAdd = new OpenDental.XPButton();
 			this.tbDefs = new OpenDental.TableDefs();
 			this.listCategory = new System.Windows.Forms.ListBox();
 			this.label13 = new System.Windows.Forms.Label();
-			this.butAdd = new OpenDental.XPButton();
-			this.butUp = new OpenDental.XPButton();
-			this.butDown = new OpenDental.XPButton();
-			this.butHide = new System.Windows.Forms.Button();
 			this.groupEdit.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// butClose
 			// 
+			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butClose.Location = new System.Drawing.Point(545, 564);
 			this.butClose.Name = "butClose";
 			this.butClose.Size = new System.Drawing.Size(75, 26);
 			this.butClose.TabIndex = 3;
-			this.butClose.Text = "Close";
+			this.butClose.Text = "&Close";
 			this.butClose.Click += new System.EventHandler(this.butClose_Click);
 			// 
 			// label14
@@ -113,11 +116,64 @@ namespace OpenDental{
 			this.groupEdit.TabStop = false;
 			this.groupEdit.Text = "Edit Items";
 			// 
+			// butHide
+			// 
+			this.butHide.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butHide.Location = new System.Drawing.Point(140, 19);
+			this.butHide.Name = "butHide";
+			this.butHide.Size = new System.Drawing.Size(75, 26);
+			this.butHide.TabIndex = 10;
+			this.butHide.Text = "&Hide";
+			this.butHide.Click += new System.EventHandler(this.butHide_Click);
+			// 
+			// butDown
+			// 
+			this.butDown.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butDown.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butDown.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butDown.Image = ((System.Drawing.Image)(resources.GetObject("butDown.Image")));
+			this.butDown.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butDown.Location = new System.Drawing.Point(348, 19);
+			this.butDown.Name = "butDown";
+			this.butDown.Size = new System.Drawing.Size(79, 26);
+			this.butDown.TabIndex = 9;
+			this.butDown.Text = "&Down";
+			this.butDown.Click += new System.EventHandler(this.butDown_Click);
+			// 
+			// butUp
+			// 
+			this.butUp.AdjustImageLocation = new System.Drawing.Point(0, 1);
+			this.butUp.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butUp.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butUp.Image = ((System.Drawing.Image)(resources.GetObject("butUp.Image")));
+			this.butUp.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butUp.Location = new System.Drawing.Point(242, 19);
+			this.butUp.Name = "butUp";
+			this.butUp.Size = new System.Drawing.Size(79, 26);
+			this.butUp.TabIndex = 8;
+			this.butUp.Text = "&Up";
+			this.butUp.Click += new System.EventHandler(this.butUp_Click);
+			// 
+			// butAdd
+			// 
+			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAdd.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butAdd.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
+			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butAdd.Location = new System.Drawing.Point(34, 19);
+			this.butAdd.Name = "butAdd";
+			this.butAdd.Size = new System.Drawing.Size(79, 26);
+			this.butAdd.TabIndex = 6;
+			this.butAdd.Text = "&Add";
+			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
+			// 
 			// tbDefs
 			// 
 			this.tbDefs.BackColor = System.Drawing.SystemColors.Window;
 			this.tbDefs.Location = new System.Drawing.Point(158, 36);
 			this.tbDefs.Name = "tbDefs";
+			this.tbDefs.ScrollValue = 1;
 			this.tbDefs.SelectedIndices = new int[0];
 			this.tbDefs.SelectionMode = System.Windows.Forms.SelectionMode.None;
 			this.tbDefs.Size = new System.Drawing.Size(459, 356);
@@ -163,63 +219,11 @@ namespace OpenDental{
 			this.label13.TabIndex = 17;
 			this.label13.Text = "Select Category:";
 			// 
-			// butAdd
-			// 
-			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butAdd.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butAdd.BtnStyle = OpenDental.enumType.XPStyle.Silver;
-			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
-			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAdd.Location = new System.Drawing.Point(34, 19);
-			this.butAdd.Name = "butAdd";
-			this.butAdd.Size = new System.Drawing.Size(79, 26);
-			this.butAdd.TabIndex = 6;
-			this.butAdd.Text = "Add";
-			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
-			// 
-			// butUp
-			// 
-			this.butUp.AdjustImageLocation = new System.Drawing.Point(0, 1);
-			this.butUp.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butUp.BtnStyle = OpenDental.enumType.XPStyle.Silver;
-			this.butUp.Image = ((System.Drawing.Image)(resources.GetObject("butUp.Image")));
-			this.butUp.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butUp.Location = new System.Drawing.Point(242, 19);
-			this.butUp.Name = "butUp";
-			this.butUp.Size = new System.Drawing.Size(79, 26);
-			this.butUp.TabIndex = 8;
-			this.butUp.Text = "Up";
-			this.butUp.Click += new System.EventHandler(this.butUp_Click);
-			// 
-			// butDown
-			// 
-			this.butDown.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butDown.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butDown.BtnStyle = OpenDental.enumType.XPStyle.Silver;
-			this.butDown.Image = ((System.Drawing.Image)(resources.GetObject("butDown.Image")));
-			this.butDown.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDown.Location = new System.Drawing.Point(348, 19);
-			this.butDown.Name = "butDown";
-			this.butDown.Size = new System.Drawing.Size(79, 26);
-			this.butDown.TabIndex = 9;
-			this.butDown.Text = "Down";
-			this.butDown.Click += new System.EventHandler(this.butDown_Click);
-			// 
-			// butHide
-			// 
-			this.butHide.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butHide.Location = new System.Drawing.Point(140, 19);
-			this.butHide.Name = "butHide";
-			this.butHide.Size = new System.Drawing.Size(75, 26);
-			this.butHide.TabIndex = 10;
-			this.butHide.Text = "Hide";
-			this.butHide.Click += new System.EventHandler(this.butHide_Click);
-			// 
 			// FormDefinitions
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butClose;
 			this.ClientSize = new System.Drawing.Size(672, 618);
-			this.ControlBox = false;
 			this.Controls.Add(this.label14);
 			this.Controls.Add(this.textGuide);
 			this.Controls.Add(this.groupEdit);
@@ -227,7 +231,10 @@ namespace OpenDental{
 			this.Controls.Add(this.listCategory);
 			this.Controls.Add(this.label13);
 			this.Controls.Add(this.butClose);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormDefinitions";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Definitions";
 			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormDefinitions_Closing);
@@ -509,7 +516,7 @@ namespace OpenDental{
 			FormDefEdit FormDefEdit2 = new FormDefEdit();
 			Defs.Cur = new Def();
 			Defs.Cur.ItemOrder=Defs.List.Length;
-			Defs.Cur.Category=SelectedCat;
+			Defs.Cur.Category=(DefCat)SelectedCat;
 			FormDefEdit2.IsNew=true;
 			FormDefEdit2.ShowDialog();
 			Defs.Selected=Defs.List.Length;//this is one more than allowed, but it's ok

@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormEmployee : System.Windows.Forms.Form{
 		private System.Windows.Forms.Button butOK;
 		private System.Windows.Forms.CheckBox checkHidden;
@@ -14,6 +14,7 @@ namespace OpenDental{
 		private OpenDental.XPButton butAdd;
 		private ArrayList ALemployees;
 
+		///<summary></summary>
 		public FormEmployee(){
 			InitializeComponent();
 			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -26,6 +27,7 @@ namespace OpenDental{
 
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -47,12 +49,13 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(278, 400);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 16;
-			this.butOK.Text = "Close";
+			this.butOK.Text = "&Close";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// checkHidden
@@ -84,12 +87,14 @@ namespace OpenDental{
 			this.butAdd.Name = "butAdd";
 			this.butAdd.Size = new System.Drawing.Size(78, 26);
 			this.butAdd.TabIndex = 21;
-			this.butAdd.Text = "Add";
+			this.butAdd.Text = "&Add";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
 			// FormEmployee
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butOK;
 			this.ClientSize = new System.Drawing.Size(376, 440);
 			this.Controls.Add(this.butAdd);
 			this.Controls.Add(this.listEmployees);

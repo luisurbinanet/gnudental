@@ -14,6 +14,7 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
+	///<summary></summary>
 	public class ContrFamily : System.Windows.Forms.UserControl{
 		private System.Windows.Forms.ImageList imageListToolBar;
 		private System.ComponentModel.IContainer components;
@@ -34,6 +35,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butOutlook;
 		private OpenDental.TablePercent tbPercent2;
 
+		///<summary></summary>
 		public ContrFamily(){
 			InitializeComponent();// This call is required by the Windows.Forms Form Designer.
 			tbPlans.CellClicked += new OpenDental.ContrTable.CellEventHandler(tbPlans_CellClicked);
@@ -45,6 +47,7 @@ namespace OpenDental{
 			tbPercent2.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbPercent2_CellDoubleClicked);
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -294,11 +297,13 @@ namespace OpenDental{
 		}
 		#endregion
 
+		///<summary></summary>
 		public void ModuleSelected(){
 			RefreshModuleData();
 			RefreshModuleScreen();
 		}
 
+		///<summary></summary>
 		public void ModuleUnselected(){
 			Patients.FamilyList=null;
 			InsPlans.List=null;
@@ -332,12 +337,14 @@ namespace OpenDental{
 				panelFamily.Enabled=false;
 				Patients.Cur=new Patient();
 			}
+			butOutlook.Visible=Programs.IsEnabled("Outlook");
 			FillPatientData();
 			FillFamilyData();
 			FillPlanData();
 			FillCoverageData();
 		} 
 
+		///<summary></summary>
 		public void InstantClasses(){
 			tbPatient.InstantClasses();
 			tbCoverage.InstantClasses();
@@ -351,7 +358,6 @@ namespace OpenDental{
 				this.butMovePat,
 				this.panelFamily,
 			});
-			butOutlook.Visible=Programs.IsEnabled("Outlook");
 		}
 
 		private void ContrFamily_Layout(object sender, System.Windows.Forms.LayoutEventArgs e) {
@@ -693,10 +699,10 @@ namespace OpenDental{
 				}
 			}
 			else{//guarantor not selected
-				if(InsPlans.CheckDependencies(Patients.Cur.PatNum)){
-					return;
-				}
-				if(MessageBox.Show(Lan.g(this,"No insurance dependencies detected.  Preparing to move family member.  Financial notes and address notes will not be transferred.  Proceed to next step?")
+				//if(InsPlans.HasDependencies(Patients.Cur.PatNum)){
+				//	return;
+				//}
+				if(MessageBox.Show(Lan.g(this,"Preparing to move family member.  Financial notes and address notes will not be transferred.  Proceed to next step?")
 					,"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
 					return;
 				}

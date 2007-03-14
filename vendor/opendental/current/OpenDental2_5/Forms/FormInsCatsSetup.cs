@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormInsCatsSetup : System.Windows.Forms.Form{
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.ListBox listCovCats;
@@ -18,6 +18,7 @@ namespace OpenDental{
 		private OpenDental.XPButton butDown;
 		private OpenDental.TableCovSpans tbMain;
 
+		///<summary></summary>
 		public FormInsCatsSetup(){
 			InitializeComponent();
 			tbMain.CellClicked += new OpenDental.ContrTable.CellEventHandler(tbMain_CellClicked);
@@ -35,6 +36,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -77,12 +79,13 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(681, 578);
+			this.butOK.Location = new System.Drawing.Point(671, 578);
 			this.butOK.Name = "butOK";
-			this.butOK.Size = new System.Drawing.Size(75, 26);
+			this.butOK.Size = new System.Drawing.Size(85, 26);
 			this.butOK.TabIndex = 6;
-			this.butOK.Text = "Close";
+			this.butOK.Text = "&Close";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// tbMain
@@ -90,6 +93,7 @@ namespace OpenDental{
 			this.tbMain.BackColor = System.Drawing.SystemColors.Window;
 			this.tbMain.Location = new System.Drawing.Point(306, 14);
 			this.tbMain.Name = "tbMain";
+			this.tbMain.ScrollValue = 1;
 			this.tbMain.SelectedIndices = new int[0];
 			this.tbMain.SelectionMode = System.Windows.Forms.SelectionMode.None;
 			this.tbMain.Size = new System.Drawing.Size(329, 586);
@@ -102,11 +106,11 @@ namespace OpenDental{
 			this.butDelete.BtnStyle = OpenDental.enumType.XPStyle.Silver;
 			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDelete.Location = new System.Drawing.Point(681, 443);
+			this.butDelete.Location = new System.Drawing.Point(671, 443);
 			this.butDelete.Name = "butDelete";
-			this.butDelete.Size = new System.Drawing.Size(75, 26);
+			this.butDelete.Size = new System.Drawing.Size(85, 26);
 			this.butDelete.TabIndex = 10;
-			this.butDelete.Text = "Delete";
+			this.butDelete.Text = "&Delete";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
 			// 
 			// butAddSpan
@@ -116,11 +120,11 @@ namespace OpenDental{
 			this.butAddSpan.BtnStyle = OpenDental.enumType.XPStyle.Silver;
 			this.butAddSpan.Image = ((System.Drawing.Image)(resources.GetObject("butAddSpan.Image")));
 			this.butAddSpan.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAddSpan.Location = new System.Drawing.Point(681, 404);
+			this.butAddSpan.Location = new System.Drawing.Point(671, 404);
 			this.butAddSpan.Name = "butAddSpan";
-			this.butAddSpan.Size = new System.Drawing.Size(75, 26);
+			this.butAddSpan.Size = new System.Drawing.Size(85, 26);
 			this.butAddSpan.TabIndex = 9;
-			this.butAddSpan.Text = "Add";
+			this.butAddSpan.Text = "&Add";
 			this.butAddSpan.Click += new System.EventHandler(this.butAddSpan_Click);
 			// 
 			// butUp
@@ -146,7 +150,7 @@ namespace OpenDental{
 			this.butAddCat.Name = "butAddCat";
 			this.butAddCat.Size = new System.Drawing.Size(75, 26);
 			this.butAddCat.TabIndex = 11;
-			this.butAddCat.Text = "Add";
+			this.butAddCat.Text = "A&dd";
 			this.butAddCat.Click += new System.EventHandler(this.butAddCat_Click);
 			// 
 			// butDown
@@ -163,7 +167,9 @@ namespace OpenDental{
 			// 
 			// FormInsCatsSetup
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butOK;
 			this.ClientSize = new System.Drawing.Size(774, 620);
 			this.Controls.Add(this.butDown);
 			this.Controls.Add(this.butUp);

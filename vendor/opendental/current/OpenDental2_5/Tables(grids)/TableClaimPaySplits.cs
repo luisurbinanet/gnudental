@@ -7,10 +7,11 @@ using System.Windows.Forms;
 
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class TableClaimPaySplits : OpenDental.ContrTable{
 		private System.ComponentModel.IContainer components = null;
 
+		///<summary></summary>
 		public TableClaimPaySplits(){
 			InitializeComponent();// This call is required by the Windows Form Designer.
 			MaxRows=10;
@@ -38,6 +39,7 @@ namespace OpenDental{
 			LayoutTables();	// This call is required by the Windows Form Designer.
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if (components != null){

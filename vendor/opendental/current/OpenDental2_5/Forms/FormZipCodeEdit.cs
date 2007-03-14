@@ -6,9 +6,8 @@ using System.Globalization;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
-	public class FormZipCodeEdit : System.Windows.Forms.Form
-	{
+///<summary></summary>
+	public class FormZipCodeEdit : System.Windows.Forms.Form{
 		private System.Windows.Forms.Button butOK;
 		private System.Windows.Forms.Button butCancel;
 		private System.Windows.Forms.Label label1;
@@ -19,8 +18,10 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textCity;
 		private System.Windows.Forms.CheckBox checkIsFrequent;
 		private System.ComponentModel.Container components = null;
+		///<summary></summary>
 		public bool IsNew;
 
+		///<summary></summary>
 		public FormZipCodeEdit(){
 			InitializeComponent();
 			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -35,6 +36,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -61,10 +63,11 @@ namespace OpenDental{
 			// butOK
 			// 
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(303, 156);
+			this.butOK.Location = new System.Drawing.Point(303, 153);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 4;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// butCancel
@@ -73,8 +76,9 @@ namespace OpenDental{
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(303, 187);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 5;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// textZip
@@ -142,6 +146,7 @@ namespace OpenDental{
 			// 
 			// FormZipCodeEdit
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(398, 227);

@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormMedical : System.Windows.Forms.Form{
 		private System.Windows.Forms.Button butOK;
 		private System.Windows.Forms.Button butCancel;
@@ -29,6 +29,7 @@ namespace OpenDental{
 		private OpenDental.TableMedications tbMeds;
 		private System.ComponentModel.Container components = null;// Required designer variable.
 
+		///<summary></summary>
 		public FormMedical(){
 			InitializeComponent();// Required for Windows Form Designer support
 			tbMeds.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbMeds_CellDoubleClicked);
@@ -50,6 +51,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing )
 		{
 			if( disposing )
@@ -98,16 +100,17 @@ namespace OpenDental{
 			this.butOK.Location = new System.Drawing.Point(786, 650);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 3;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// butCancel
 			// 
+			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(879, 650);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 4;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// label1
@@ -148,6 +151,7 @@ namespace OpenDental{
 			// 
 			// textService
 			// 
+			this.textService.AcceptsReturn = true;
 			this.textService.Location = new System.Drawing.Point(212, 78);
 			this.textService.Multiline = true;
 			this.textService.Name = "textService";
@@ -174,6 +178,7 @@ namespace OpenDental{
 			// 
 			// textMedUrgNote
 			// 
+			this.textMedUrgNote.AcceptsReturn = true;
 			this.textMedUrgNote.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
 			this.textMedUrgNote.ForeColor = System.Drawing.Color.Red;
 			this.textMedUrgNote.Location = new System.Drawing.Point(9, 38);
@@ -194,6 +199,7 @@ namespace OpenDental{
 			// 
 			// textMedical
 			// 
+			this.textMedical.AcceptsReturn = true;
 			this.textMedical.Location = new System.Drawing.Point(9, 78);
 			this.textMedical.Multiline = true;
 			this.textMedical.Name = "textMedical";
@@ -220,6 +226,7 @@ namespace OpenDental{
 			// 
 			// textMedicalComp
 			// 
+			this.textMedicalComp.AcceptsReturn = true;
 			this.textMedicalComp.Location = new System.Drawing.Point(562, 231);
 			this.textMedicalComp.Multiline = true;
 			this.textMedicalComp.Name = "textMedicalComp";
@@ -260,7 +267,7 @@ namespace OpenDental{
 			this.butAdd.Location = new System.Drawing.Point(142, 0);
 			this.butAdd.Name = "butAdd";
 			this.butAdd.TabIndex = 51;
-			this.butAdd.Text = "Add";
+			this.butAdd.Text = "&Add";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
 			// label8
@@ -276,6 +283,7 @@ namespace OpenDental{
 			this.tbMeds.BackColor = System.Drawing.SystemColors.Window;
 			this.tbMeds.Location = new System.Drawing.Point(3, 24);
 			this.tbMeds.Name = "tbMeds";
+			this.tbMeds.ScrollValue = 700;
 			this.tbMeds.SelectedIndices = new int[0];
 			this.tbMeds.SelectionMode = System.Windows.Forms.SelectionMode.None;
 			this.tbMeds.Size = new System.Drawing.Size(959, 175);
@@ -283,7 +291,9 @@ namespace OpenDental{
 			// 
 			// FormMedical
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(964, 683);
 			this.Controls.Add(this.butAdd);
 			this.Controls.Add(this.tbMeds);

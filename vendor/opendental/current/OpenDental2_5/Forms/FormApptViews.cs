@@ -20,6 +20,7 @@ namespace OpenDental{
 		/// </summary>
 		private System.ComponentModel.Container components = null;
 
+		///<summary></summary>
 		public FormApptViews()
 		{
 			//
@@ -100,7 +101,7 @@ namespace OpenDental{
 			this.butDown.Name = "butDown";
 			this.butDown.Size = new System.Drawing.Size(82, 26);
 			this.butDown.TabIndex = 38;
-			this.butDown.Text = "Down";
+			this.butDown.Text = "&Down";
 			this.butDown.Click += new System.EventHandler(this.butDown_Click);
 			// 
 			// butUp
@@ -114,7 +115,7 @@ namespace OpenDental{
 			this.butUp.Name = "butUp";
 			this.butUp.Size = new System.Drawing.Size(82, 26);
 			this.butUp.TabIndex = 39;
-			this.butUp.Text = "Up";
+			this.butUp.Text = "&Up";
 			this.butUp.Click += new System.EventHandler(this.butUp_Click);
 			// 
 			// butAdd
@@ -128,7 +129,7 @@ namespace OpenDental{
 			this.butAdd.Name = "butAdd";
 			this.butAdd.Size = new System.Drawing.Size(82, 26);
 			this.butAdd.TabIndex = 36;
-			this.butAdd.Text = "Add";
+			this.butAdd.Text = "&Add";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
 			// FormApptViews

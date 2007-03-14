@@ -9,7 +9,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormRecall : System.Windows.Forms.Form{
 		private System.Windows.Forms.Button butClose;
 		private System.Windows.Forms.Button butRefresh;
@@ -26,12 +26,15 @@ namespace OpenDental{
 		private OpenDental.ValidNumber textDaysPast;
 		private OpenDental.ValidNumber textDaysFuture;
 		private Patients Patients=new Patients();
+		///<summary></summary>
 		public static RecallItem Cur;
+		///<summary></summary>
 		public bool PinClicked=false;
 		private System.Windows.Forms.Button butReport;
 		private System.Windows.Forms.TextBox textBox1;
 		private Appointments Appointments=new Appointments();
 
+		///<summary></summary>
 		public FormRecall(){
 			InitializeComponent();// Required for Windows Form Designer support
 			tbMain.CellClicked += new OpenDental.ContrTable.CellEventHandler(tbMain_CellClicked);
@@ -50,6 +53,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -75,20 +79,21 @@ namespace OpenDental{
 			this.label1 = new System.Windows.Forms.Label();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
 			this.listProcs = new System.Windows.Forms.ListBox();
-			this.butReport = new System.Windows.Forms.Button();
 			this.textBox1 = new System.Windows.Forms.TextBox();
+			this.butReport = new System.Windows.Forms.Button();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// butClose
 			// 
+			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butClose.Location = new System.Drawing.Point(626, 668);
 			this.butClose.Name = "butClose";
 			this.butClose.Size = new System.Drawing.Size(75, 26);
 			this.butClose.TabIndex = 2;
-			this.butClose.Text = "Close";
+			this.butClose.Text = "&Close";
 			this.butClose.Click += new System.EventHandler(this.butClose_Click);
 			// 
 			// tbMain
@@ -96,6 +101,7 @@ namespace OpenDental{
 			this.tbMain.BackColor = System.Drawing.SystemColors.Window;
 			this.tbMain.Location = new System.Drawing.Point(9, 22);
 			this.tbMain.Name = "tbMain";
+			this.tbMain.ScrollValue = 1;
 			this.tbMain.SelectedIndices = new int[0];
 			this.tbMain.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
 			this.tbMain.Size = new System.Drawing.Size(444, 638);
@@ -104,10 +110,11 @@ namespace OpenDental{
 			// butRefresh
 			// 
 			this.butRefresh.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butRefresh.Location = new System.Drawing.Point(13, 111);
+			this.butRefresh.Location = new System.Drawing.Point(10, 111);
 			this.butRefresh.Name = "butRefresh";
+			this.butRefresh.Size = new System.Drawing.Size(89, 26);
 			this.butRefresh.TabIndex = 2;
-			this.butRefresh.Text = "Refresh List";
+			this.butRefresh.Text = "&Refresh List";
 			this.butRefresh.Click += new System.EventHandler(this.butRefresh_Click);
 			// 
 			// groupBox1
@@ -120,9 +127,9 @@ namespace OpenDental{
 			this.groupBox1.Controls.Add(this.label1);
 			this.groupBox1.Controls.Add(this.butRefresh);
 			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox1.Location = new System.Drawing.Point(501, 30);
+			this.groupBox1.Location = new System.Drawing.Point(490, 30);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(200, 145);
+			this.groupBox1.Size = new System.Drawing.Size(216, 147);
 			this.groupBox1.TabIndex = 1;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "View";
@@ -154,11 +161,11 @@ namespace OpenDental{
 			// butSave
 			// 
 			this.butSave.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butSave.Location = new System.Drawing.Point(96, 111);
+			this.butSave.Location = new System.Drawing.Point(112, 111);
 			this.butSave.Name = "butSave";
-			this.butSave.Size = new System.Drawing.Size(94, 23);
+			this.butSave.Size = new System.Drawing.Size(94, 26);
 			this.butSave.TabIndex = 3;
-			this.butSave.Text = "Save As Default";
+			this.butSave.Text = "&Save As Default";
 			this.butSave.Click += new System.EventHandler(this.butSave_Click);
 			// 
 			// label2
@@ -199,15 +206,6 @@ namespace OpenDental{
 			this.listProcs.Size = new System.Drawing.Size(130, 199);
 			this.listProcs.TabIndex = 0;
 			// 
-			// butReport
-			// 
-			this.butReport.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butReport.Location = new System.Drawing.Point(501, 235);
-			this.butReport.Name = "butReport";
-			this.butReport.TabIndex = 13;
-			this.butReport.Text = "Run Report";
-			this.butReport.Click += new System.EventHandler(this.butReport_Click);
-			// 
 			// textBox1
 			// 
 			this.textBox1.BackColor = System.Drawing.SystemColors.Control;
@@ -219,9 +217,20 @@ namespace OpenDental{
 			this.textBox1.TabIndex = 14;
 			this.textBox1.Text = "Procedures that Trigger Recall - You can change these in procedure code setup";
 			// 
+			// butReport
+			// 
+			this.butReport.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butReport.Location = new System.Drawing.Point(501, 235);
+			this.butReport.Name = "butReport";
+			this.butReport.Size = new System.Drawing.Size(88, 26);
+			this.butReport.TabIndex = 13;
+			this.butReport.Text = "R&un Report";
+			this.butReport.Click += new System.EventHandler(this.butReport_Click);
+			// 
 			// FormRecall
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butClose;
 			this.ClientSize = new System.Drawing.Size(726, 719);
 			this.Controls.Add(this.butReport);
 			this.Controls.Add(this.groupBox2);
@@ -257,8 +266,8 @@ namespace OpenDental{
 
 		private void FillProcs(){
 			listProcs.Items.Clear();
-			for(int i=0;i<ProcCodes.RecallAL.Count;i++){
-				listProcs.Items.Add(((ProcedureCode)ProcCodes.RecallAL[i]).Descript);
+			for(int i=0;i<ProcedureCodes.RecallAL.Count;i++){
+				listProcs.Items.Add(((ProcedureCode)ProcedureCodes.RecallAL[i]).Descript);
 			}
 		}
 
@@ -445,15 +454,23 @@ namespace OpenDental{
 		}
 	}
 
+	///<summary></summary>
 	public struct RecallItem{
+		///<summary></summary>
 		public DateTime DueDate;
+		///<summary></summary>
 		public string PatientName;
+		///<summary></summary>
 		public DateTime BirthDate;
+		///<summary></summary>
 		public int RecallInterval;
+		///<summary></summary>
 		public int RecallStatus;
+		///<summary></summary>
 		public int PatNum;
 		//public int NextAptNum;
 		//public DateTime AptDateTime;
+		///<summary></summary>
 		public string Age;
 	}
 }

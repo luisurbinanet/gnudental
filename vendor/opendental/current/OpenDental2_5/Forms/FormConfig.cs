@@ -7,7 +7,7 @@ using System.Xml;
 using System.IO;
 
 namespace OpenDental{
-
+	///<summary></summary>
 	public class FormConfig : System.Windows.Forms.Form{
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.TextBox textComputerName;
@@ -18,9 +18,13 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textUser;
 		private System.Windows.Forms.Button butOK;
 		private System.Windows.Forms.Button butCancel;
+		///<summary></summary>
     public static string ComputerName;
+		///<summary></summary>
     public static string Database;
+		///<summary></summary>
     public static string User;
+		///<summary></summary>
     public static string Password;
 		//public static int Port;
 		private string originalComputerName;
@@ -28,12 +32,14 @@ namespace OpenDental{
     private string originalUser;
     private string originalPassword;
 		//private int originalPort;
-    private FormPreferences FormPreferences2 = new FormPreferences();
+    //private FormPreferences FormPreferences2 = new FormPreferences();
 		private System.Windows.Forms.TextBox textDatabase;
 		private System.Windows.Forms.Label label6;
+		///<summary></summary>
 		public bool IsInStartup;
 		private System.ComponentModel.Container components = null;
 
+		///<summary></summary>
 		public FormConfig(){
 			InitializeComponent();
 			//textPort.MaxVal=System.Int32.MaxValue;
@@ -50,6 +56,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -158,16 +165,17 @@ namespace OpenDental{
 			this.butOK.Location = new System.Drawing.Point(524, 392);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 5;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// butCancel
 			// 
+			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(524, 428);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 6;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// label6
@@ -181,7 +189,9 @@ namespace OpenDental{
 			// 
 			// FormConfig
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(616, 472);
 			this.Controls.Add(this.label6);
 			this.Controls.Add(this.textDatabase);
@@ -221,6 +231,7 @@ namespace OpenDental{
 			GetConfig();
 		}
 
+		///<summary></summary>
 		public void GetConfig(){
 			XmlDocument document=new XmlDocument();
 			if(!File.Exists("FreeDentalConfig.xml")){

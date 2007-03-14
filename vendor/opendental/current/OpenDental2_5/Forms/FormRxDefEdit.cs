@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-	
+	///<summary></summary>
 	public class FormRxDefEdit : System.Windows.Forms.Form{
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label3;
@@ -20,8 +20,10 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textDisp;
 		private System.Windows.Forms.TextBox textSig;
 		private System.ComponentModel.Container components = null;// Required designer variable.
+		///<summary></summary>
 		public bool IsNew;
 
+		///<summary></summary>
 		public FormRxDefEdit(){
 			InitializeComponent();// Required for Windows Form Designer support
 			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -37,6 +39,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -65,7 +68,7 @@ namespace OpenDental{
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(48, 38);
+			this.label1.Location = new System.Drawing.Point(54, 38);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(40, 14);
 			this.label1.TabIndex = 0;
@@ -74,7 +77,7 @@ namespace OpenDental{
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(46, 196);
+			this.label3.Location = new System.Drawing.Point(52, 196);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(42, 14);
 			this.label3.TabIndex = 2;
@@ -83,7 +86,7 @@ namespace OpenDental{
 			// 
 			// label4
 			// 
-			this.label4.Location = new System.Drawing.Point(42, 162);
+			this.label4.Location = new System.Drawing.Point(48, 162);
 			this.label4.Name = "label4";
 			this.label4.Size = new System.Drawing.Size(46, 14);
 			this.label4.TabIndex = 3;
@@ -92,7 +95,7 @@ namespace OpenDental{
 			// 
 			// label5
 			// 
-			this.label5.Location = new System.Drawing.Point(42, 128);
+			this.label5.Location = new System.Drawing.Point(48, 128);
 			this.label5.Name = "label5";
 			this.label5.Size = new System.Drawing.Size(46, 14);
 			this.label5.TabIndex = 4;
@@ -101,7 +104,7 @@ namespace OpenDental{
 			// 
 			// label6
 			// 
-			this.label6.Location = new System.Drawing.Point(52, 72);
+			this.label6.Location = new System.Drawing.Point(58, 72);
 			this.label6.Name = "label6";
 			this.label6.Size = new System.Drawing.Size(36, 14);
 			this.label6.TabIndex = 5;
@@ -118,6 +121,7 @@ namespace OpenDental{
 			// 
 			// textNotes
 			// 
+			this.textNotes.AcceptsReturn = true;
 			this.textNotes.Location = new System.Drawing.Point(96, 192);
 			this.textNotes.Multiline = true;
 			this.textNotes.Name = "textNotes";
@@ -143,6 +147,7 @@ namespace OpenDental{
 			// 
 			// textSig
 			// 
+			this.textSig.AcceptsReturn = true;
 			this.textSig.Location = new System.Drawing.Point(96, 68);
 			this.textSig.Multiline = true;
 			this.textSig.Name = "textSig";
@@ -155,22 +160,27 @@ namespace OpenDental{
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(438, 318);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 5;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// butCancel
 			// 
+			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(438, 358);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 6;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// FormRxDefEdit
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(530, 394);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);

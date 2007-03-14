@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormRpDepositSlip : System.Windows.Forms.Form{
 		private System.Windows.Forms.Panel panel1;
 		private System.Windows.Forms.Label label2;
@@ -20,8 +20,10 @@ namespace OpenDental{
 		private System.Windows.Forms.MonthCalendar date2;
 		private System.Windows.Forms.CheckBox checkBoxIns;
 		private System.Windows.Forms.Button butNone;
+		private System.Windows.Forms.Button butAll;
 		private FormQuery FormQuery2;
 
+		///<summary></summary>
 		public FormRpDepositSlip(){
 			InitializeComponent();
 			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -38,6 +40,7 @@ namespace OpenDental{
 			}); 
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -66,6 +69,7 @@ namespace OpenDental{
 			this.date2 = new System.Windows.Forms.MonthCalendar();
 			this.checkBoxIns = new System.Windows.Forms.CheckBox();
 			this.butNone = new System.Windows.Forms.Button();
+			this.butAll = new System.Windows.Forms.Button();
 			this.panel1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -110,7 +114,8 @@ namespace OpenDental{
 			// 
 			this.listPayType.Location = new System.Drawing.Point(534, 54);
 			this.listPayType.Name = "listPayType";
-			this.listPayType.Size = new System.Drawing.Size(120, 173);
+			this.listPayType.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+			this.listPayType.Size = new System.Drawing.Size(134, 173);
 			this.listPayType.TabIndex = 4;
 			// 
 			// label2
@@ -123,20 +128,22 @@ namespace OpenDental{
 			// butOK
 			// 
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(604, 312);
+			this.butOK.Location = new System.Drawing.Point(593, 345);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 6;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// butCancel
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butCancel.Location = new System.Drawing.Point(604, 346);
+			this.butCancel.Location = new System.Drawing.Point(593, 379);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 7;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			// 
 			// date1
 			// 
@@ -163,17 +170,30 @@ namespace OpenDental{
 			// butNone
 			// 
 			this.butNone.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butNone.Location = new System.Drawing.Point(536, 234);
+			this.butNone.Location = new System.Drawing.Point(602, 232);
 			this.butNone.Name = "butNone";
-			this.butNone.Size = new System.Drawing.Size(54, 20);
+			this.butNone.Size = new System.Drawing.Size(66, 26);
 			this.butNone.TabIndex = 5;
-			this.butNone.Text = "none";
+			this.butNone.Text = "&None";
 			this.butNone.Click += new System.EventHandler(this.butNone_Click);
+			// 
+			// butAll
+			// 
+			this.butAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butAll.Location = new System.Drawing.Point(534, 232);
+			this.butAll.Name = "butAll";
+			this.butAll.Size = new System.Drawing.Size(66, 26);
+			this.butAll.TabIndex = 8;
+			this.butAll.Text = "&All";
+			this.butAll.Click += new System.EventHandler(this.butAll_Click);
 			// 
 			// FormRpDepositSlip
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(696, 384);
+			this.CancelButton = this.butCancel;
+			this.ClientSize = new System.Drawing.Size(701, 422);
+			this.Controls.Add(this.butAll);
 			this.Controls.Add(this.butNone);
 			this.Controls.Add(this.checkBoxIns);
 			this.Controls.Add(this.date2);
@@ -202,8 +222,9 @@ namespace OpenDental{
 			date2.SelectionStart=DateTime.Today;
 			for(int i=0;i<Defs.Short[(int)DefCat.PaymentTypes].Length;i++){
 				this.listPayType.Items.Add(Defs.Short[(int)DefCat.PaymentTypes][i].ItemName);
+				listPayType.SetSelected(i,true);
 			}
-			listPayType.SelectedIndex=0;
+			checkBoxIns.Checked=true;
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
@@ -225,12 +246,17 @@ ORDER BY PayDate
 				Queries.CurReport.Query="SELECT PayDate,CONCAT(patient.LName,', ',patient.FName,' ',"
 					+"patient.MiddleI),CheckNum,BankBranch,PayAmt FROM payment,patient ";
 				if(radioRange.Checked){
-					if(listPayType.SelectedIndex>-1){
-					   Queries.CurReport.Query+="WHERE "
-							+"payment.PatNum = patient.PatNum && PayType = '"
-							+Defs.Short[(int)DefCat.PaymentTypes][listPayType.SelectedIndex].DefNum
-							+"' && PayDate >= '"+date1.SelectionStart.ToString("yyyy-MM-dd")+"' "
-						+"AND PayDate <= '"+date2.SelectionStart.ToString("yyyy-MM-dd")+"' UNION ";
+					if(listPayType.SelectedIndices.Count>0){
+						Queries.CurReport.Query+="WHERE "
+							+"payment.PatNum = patient.PatNum && (";
+						for(int i=0;i<listPayType.SelectedIndices.Count;i++){
+							if(i>0) Queries.CurReport.Query+=" || "; 
+							Queries.CurReport.Query+="PayType = '"
+								+Defs.Short[(int)DefCat.PaymentTypes][listPayType.SelectedIndices[i]].DefNum+"'";
+						}
+					  Queries.CurReport.Query+=
+							") && PayDate >= '"+date1.SelectionStart.ToString("yyyy-MM-dd")+"' "
+							+"AND PayDate <= '"+date2.SelectionStart.ToString("yyyy-MM-dd")+"' UNION ";
           }
 					else{ 
 						Queries.CurReport.Query+="WHERE 1=0 UNION ";
@@ -245,11 +271,16 @@ ORDER BY PayDate
 					Queries.CurReport.Query+="GROUP BY claimpayment.claimpaymentnum ORDER BY PayDate";
 				}
 				else{//range not checked
-          if(listPayType.SelectedIndex>-1){
-						 Queries.CurReport.Query+="WHERE "
-							+"payment.PatNum = patient.PatNum && PayType = '"
-							+Defs.Short[(int)DefCat.PaymentTypes][listPayType.SelectedIndex].DefNum+"' "
-							+"AND PayDate = '"+date1.SelectionStart.ToString("yyyy-MM-dd")+"' UNION ";
+          if(listPayType.SelectedIndices.Count>0){
+						Queries.CurReport.Query+="WHERE "
+							+"payment.PatNum = patient.PatNum && (";
+						for(int i=0;i<listPayType.SelectedIndices.Count;i++){
+							if(i>0) Queries.CurReport.Query+=" || "; 
+							Queries.CurReport.Query+="PayType = '"
+								+Defs.Short[(int)DefCat.PaymentTypes][listPayType.SelectedIndices[i]].DefNum+"'";
+						}
+					  Queries.CurReport.Query+=
+							") && PayDate = '"+date1.SelectionStart.ToString("yyyy-MM-dd")+"' UNION ";
 					}
 					else{ 
 						Queries.CurReport.Query+="WHERE 1=0 UNION ";
@@ -266,14 +297,18 @@ ORDER BY PayDate
       }
       else{//no insurance checks
 				if(radioRange.Checked){
-          if(listPayType.SelectedIndex>-1){
+          if(listPayType.SelectedIndices.Count>0){
 						Queries.CurReport.Query="SELECT PayDate,CONCAT(patient.LName,', ',patient.FName,' ',"
 							+"patient.MiddleI),CheckNum,BankBranch,PayAmt FROM payment,patient WHERE "
-							+"payment.PatNum = patient.PatNum && PayType = '"
-							+Defs.Short[(int)DefCat.PaymentTypes][listPayType.SelectedIndex].DefNum+"' "
-							+"AND PayDate >= '"+date1.SelectionStart.ToString("yyyy-MM-dd")+"' "
+							+"payment.PatNum = patient.PatNum && (";
+						for(int i=0;i<listPayType.SelectedIndices.Count;i++){
+							if(i>0) Queries.CurReport.Query+=" || "; 
+							Queries.CurReport.Query+="PayType = '"
+								+Defs.Short[(int)DefCat.PaymentTypes][listPayType.SelectedIndices[i]].DefNum+"'";
+						}
+					  Queries.CurReport.Query+=
+							") && PayDate >= '"+date1.SelectionStart.ToString("yyyy-MM-dd")+"' "
 							+"AND PayDate <= '"+date2.SelectionStart.ToString("yyyy-MM-dd")+"'";
-						//MessageBox.Show(Queries.CurReport.Query);
           }
 					else{
 						MessageBox.Show("Must either select a payment type and/or include insurance checks.");
@@ -281,12 +316,17 @@ ORDER BY PayDate
 					}
 				}
 				else{
-          if(listPayType.SelectedIndex>-1)  {
+          if(listPayType.SelectedIndices.Count>0)  {
 						Queries.CurReport.Query="SELECT PayDate,CONCAT(patient.LName,', ',patient.FName,' ',"
 							+"patient.MiddleI),CheckNum,BankBranch,PayAmt FROM payment,patient WHERE "
-							+"payment.PatNum=patient.PatNum && PayType='"
-							+Defs.Short[(int)DefCat.PaymentTypes][listPayType.SelectedIndex].DefNum+"' "
-							+"AND PayDate = '"+date1.SelectionStart.ToString("yyyy-MM-dd")+"'";
+							+"payment.PatNum = patient.PatNum && (";
+						for(int i=0;i<listPayType.SelectedIndices.Count;i++){
+							if(i>0) Queries.CurReport.Query+=" || "; 
+							Queries.CurReport.Query+="PayType = '"
+								+Defs.Short[(int)DefCat.PaymentTypes][listPayType.SelectedIndices[i]].DefNum+"'";
+						}
+					  Queries.CurReport.Query+=
+							") && PayDate = '"+date1.SelectionStart.ToString("yyyy-MM-dd")+"'";
           }
 					else{
 						MessageBox.Show("No check type selected.");
@@ -306,12 +346,15 @@ ORDER BY PayDate
 			else{
 				Queries.CurReport.SubTitle[1]=date1.SelectionStart.ToString("d");
 			}
-
-			if (listPayType.SelectedIndex>-1)  {
-			  Queries.CurReport.SubTitle[2]="Payment Type: "
-					+Defs.Short[(int)DefCat.PaymentTypes][listPayType.SelectedIndex].ItemName;
+			if(listPayType.SelectedIndices.Count>0)  {
+			  Queries.CurReport.SubTitle[2]="Payment Type(s): ";
+					for(int i=0;i<listPayType.SelectedIndices.Count;i++){
+						if(i>0) Queries.CurReport.SubTitle[2]+=", ";
+						Queries.CurReport.SubTitle[2]
+							+=Defs.Short[(int)DefCat.PaymentTypes][listPayType.SelectedIndices[i]].ItemName;
+					}
 				if(checkBoxIns.Checked)
-					Queries.CurReport.SubTitle[2]+="/Insurance Claim Checks";
+					Queries.CurReport.SubTitle[2]+=" Insurance Claim Checks";
 			}
 			else  {
 				if(checkBoxIns.Checked)  {
@@ -352,9 +395,19 @@ ORDER BY PayDate
 			}
 		}
 
-		private void butNone_Click(object sender, System.EventArgs e) {
-			listPayType.SelectedIndex=-1;
+		private void butAll_Click(object sender, System.EventArgs e) {
+			for(int i=0;i<listPayType.Items.Count;i++){
+				listPayType.SetSelected(i,true);
+			}
+			checkBoxIns.Checked=true;
 		}
+
+		private void butNone_Click(object sender, System.EventArgs e) {
+			listPayType.ClearSelected();
+			checkBoxIns.Checked=false;
+		}
+
+		
 
 
 

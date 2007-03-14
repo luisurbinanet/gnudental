@@ -7,6 +7,7 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
+	///<summary></summary>
 	public class ContrMessage : System.Windows.Forms.UserControl{
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Button butSend;
@@ -14,10 +15,12 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butClear;
 		private System.ComponentModel.Container components = null;
 
+		///<summary></summary>
 		public ContrMessage(){
 			InitializeComponent();
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -89,6 +92,7 @@ namespace OpenDental{
 		
 		}
 
+		///<summary></summary>
 		public void InstantClasses(){
 			Lan.C(this, new System.Windows.Forms.Control[] {
 				this.butClear,
@@ -97,6 +101,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		public void ModuleSelected(){
 			textMessage.Select();
 		}
@@ -113,6 +118,7 @@ namespace OpenDental{
 			Messages.SendButtons();
 		}
 
+		///<summary></summary>
 		public void LogMsg(string text){
 			textMessage.Text=text;
 		}

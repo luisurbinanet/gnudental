@@ -5,17 +5,12 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormRecallEdit : System.Windows.Forms.Form{
 		private System.Windows.Forms.Button butCancel;
 		private System.Windows.Forms.Button butOK;
-		private System.Windows.Forms.TextBox textCalls;
-		private System.Windows.Forms.Label label8;
 		private System.Windows.Forms.Label label10;
 		private System.Windows.Forms.ListBox listStatus;
-		private System.Windows.Forms.Label label9;
-		private System.Windows.Forms.ListBox listQuickAdd;
-		private System.Windows.Forms.Button butDateLine;
 		private System.Windows.Forms.TextBox textWorkPhone;
 		private System.Windows.Forms.TextBox textWireless;
 		private System.Windows.Forms.TextBox textAddrNotes;
@@ -40,19 +35,23 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textPriIns;
 		private System.Windows.Forms.TextBox textDueDate;
 		private PatientNotes PatientNotes=new PatientNotes();
+		///<summary></summary>
 		public bool PinClicked=false;
+		///<summary></summary>
 		public DateTime DueDate;
 		private System.Windows.Forms.TextBox textBillingType;
 		private OpenDental.XPButton butPin;
+		private OpenDental.TableCommLog tbCommlog;
+		private OpenDental.XPButton butAddComm;
 		private System.Windows.Forms.Label label14;
+		private ArrayList ALCommItems;
 
+		///<summary></summary>
 		public FormRecallEdit(){
 			InitializeComponent();
+			tbCommlog.CellDoubleClicked+=new OpenDental.ContrTable.CellEventHandler(tbCommlog_CellDoubleClicked);
 			Lan.C(this, new System.Windows.Forms.Control[] {
-				label8,
 				label10,
-				label9,
-				butDateLine,
 				label7,
 				label2,
 				label5,
@@ -74,6 +73,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing )
 		{
 			if( disposing )
@@ -96,13 +96,8 @@ namespace OpenDental{
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormRecallEdit));
 			this.butCancel = new System.Windows.Forms.Button();
 			this.butOK = new System.Windows.Forms.Button();
-			this.textCalls = new System.Windows.Forms.TextBox();
-			this.label8 = new System.Windows.Forms.Label();
 			this.label10 = new System.Windows.Forms.Label();
 			this.listStatus = new System.Windows.Forms.ListBox();
-			this.label9 = new System.Windows.Forms.Label();
-			this.listQuickAdd = new System.Windows.Forms.ListBox();
-			this.butDateLine = new System.Windows.Forms.Button();
 			this.textWorkPhone = new System.Windows.Forms.TextBox();
 			this.textWireless = new System.Windows.Forms.TextBox();
 			this.textAddrNotes = new System.Windows.Forms.TextBox();
@@ -128,50 +123,35 @@ namespace OpenDental{
 			this.label1 = new System.Windows.Forms.Label();
 			this.label13 = new System.Windows.Forms.Label();
 			this.butPin = new OpenDental.XPButton();
+			this.tbCommlog = new OpenDental.TableCommLog();
+			this.butAddComm = new OpenDental.XPButton();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// butCancel
 			// 
+			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butCancel.Location = new System.Drawing.Point(827, 264);
+			this.butCancel.Location = new System.Drawing.Point(838, 264);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 6;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// butOK
 			// 
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(827, 226);
+			this.butOK.Location = new System.Drawing.Point(838, 226);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 5;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
-			// 
-			// textCalls
-			// 
-			this.textCalls.Location = new System.Drawing.Point(246, 168);
-			this.textCalls.Multiline = true;
-			this.textCalls.Name = "textCalls";
-			this.textCalls.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textCalls.Size = new System.Drawing.Size(420, 138);
-			this.textCalls.TabIndex = 2;
-			this.textCalls.Text = "";
-			// 
-			// label8
-			// 
-			this.label8.Location = new System.Drawing.Point(248, 148);
-			this.label8.Name = "label8";
-			this.label8.Size = new System.Drawing.Size(244, 22);
-			this.label8.TabIndex = 47;
-			this.label8.Text = "Appointment Phone Call Notes (for patient)";
 			// 
 			// label10
 			// 
-			this.label10.Location = new System.Drawing.Point(12, 2);
+			this.label10.Location = new System.Drawing.Point(5, 2);
 			this.label10.Name = "label10";
 			this.label10.Size = new System.Drawing.Size(63, 18);
 			this.label10.TabIndex = 46;
@@ -179,36 +159,10 @@ namespace OpenDental{
 			// 
 			// listStatus
 			// 
-			this.listStatus.Location = new System.Drawing.Point(12, 18);
+			this.listStatus.Location = new System.Drawing.Point(5, 18);
 			this.listStatus.Name = "listStatus";
 			this.listStatus.Size = new System.Drawing.Size(166, 160);
 			this.listStatus.TabIndex = 0;
-			// 
-			// label9
-			// 
-			this.label9.Location = new System.Drawing.Point(12, 182);
-			this.label9.Name = "label9";
-			this.label9.Size = new System.Drawing.Size(210, 16);
-			this.label9.TabIndex = 44;
-			this.label9.Text = "Appt Phone Call Notes quick add ->";
-			// 
-			// listQuickAdd
-			// 
-			this.listQuickAdd.Location = new System.Drawing.Point(12, 198);
-			this.listQuickAdd.Name = "listQuickAdd";
-			this.listQuickAdd.Size = new System.Drawing.Size(192, 108);
-			this.listQuickAdd.TabIndex = 1;
-			this.listQuickAdd.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listQuickAdd_MouseDown);
-			// 
-			// butDateLine
-			// 
-			this.butDateLine.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butDateLine.Location = new System.Drawing.Point(516, 145);
-			this.butDateLine.Name = "butDateLine";
-			this.butDateLine.Size = new System.Drawing.Size(83, 22);
-			this.butDateLine.TabIndex = 3;
-			this.butDateLine.Text = "Insert Date";
-			this.butDateLine.Click += new System.EventHandler(this.butDateLine_Click);
 			// 
 			// textWorkPhone
 			// 
@@ -463,31 +417,55 @@ namespace OpenDental{
 			this.butPin.BtnStyle = OpenDental.enumType.XPStyle.Silver;
 			this.butPin.Image = ((System.Drawing.Image)(resources.GetObject("butPin.Image")));
 			this.butPin.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butPin.Location = new System.Drawing.Point(804, 186);
+			this.butPin.Location = new System.Drawing.Point(815, 186);
 			this.butPin.Name = "butPin";
 			this.butPin.Size = new System.Drawing.Size(98, 26);
 			this.butPin.TabIndex = 57;
-			this.butPin.Text = "Pinboard";
+			this.butPin.Text = "&Pinboard";
 			this.butPin.Click += new System.EventHandler(this.butPin_Click);
+			// 
+			// tbCommlog
+			// 
+			this.tbCommlog.BackColor = System.Drawing.SystemColors.Window;
+			this.tbCommlog.Location = new System.Drawing.Point(184, 153);
+			this.tbCommlog.Name = "tbCommlog";
+			this.tbCommlog.ScrollValue = 700;
+			this.tbCommlog.SelectedIndices = new int[0];
+			this.tbCommlog.SelectionMode = System.Windows.Forms.SelectionMode.None;
+			this.tbCommlog.Size = new System.Drawing.Size(619, 156);
+			this.tbCommlog.TabIndex = 65;
+			// 
+			// butAddComm
+			// 
+			this.butAddComm.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAddComm.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butAddComm.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butAddComm.Image = ((System.Drawing.Image)(resources.GetObject("butAddComm.Image")));
+			this.butAddComm.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butAddComm.Location = new System.Drawing.Point(87, 191);
+			this.butAddComm.Name = "butAddComm";
+			this.butAddComm.Size = new System.Drawing.Size(85, 26);
+			this.butAddComm.TabIndex = 67;
+			this.butAddComm.Text = "Co&mm";
+			this.butAddComm.Click += new System.EventHandler(this.butAddComm_Click);
 			// 
 			// FormRecallEdit
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(920, 663);
+			this.Controls.Add(this.butAddComm);
+			this.Controls.Add(this.tbCommlog);
 			this.Controls.Add(this.butPin);
 			this.Controls.Add(this.label13);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.listStatus);
 			this.Controls.Add(this.butCancel);
-			this.Controls.Add(this.textCalls);
-			this.Controls.Add(this.listQuickAdd);
 			this.Controls.Add(this.panel1);
 			this.Controls.Add(this.contrAccount3);
 			this.Controls.Add(this.butOK);
-			this.Controls.Add(this.label8);
 			this.Controls.Add(this.label10);
-			this.Controls.Add(this.label9);
-			this.Controls.Add(this.butDateLine);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "FormRecallEdit";
@@ -504,9 +482,9 @@ namespace OpenDental{
 		private void FormRecallEdit_Load(object sender, System.EventArgs e) {
 			contrAccount3.InstantClasses();
 			contrAccount3.ViewOnly=true;
-			for(int i=0;i<Defs.Short[(int)DefCat.ApptPhoneNotes].Length;i++){
-				this.listQuickAdd.Items.Add(Defs.Short[(int)DefCat.ApptPhoneNotes][i].ItemName);
-			}
+			//for(int i=0;i<Defs.Short[(int)DefCat.ApptPhoneNotes].Length;i++){
+			//	this.listQuickAdd.Items.Add(Defs.Short[(int)DefCat.ApptPhoneNotes][i].ItemName);
+			//}
 			for(int i=0;i<Defs.Short[(int)DefCat.RecallUnschedStatus].Length;i++){
 				this.listStatus.Items.Add(Defs.Short[(int)DefCat.RecallUnschedStatus][i].ItemName);
 				if(Defs.Short[(int)DefCat.RecallUnschedStatus][i].DefNum==FormRecall.Cur.RecallStatus)
@@ -517,8 +495,8 @@ namespace OpenDental{
 			contrAccount3.ModuleSelected();//also refreshes patient,procedures,claims,adjustments,
 				//paysplits,insplans,covpats and patientnotes.
 			Text="Recall for "+Patients.GetCurNameLF();
-			textCalls.Text=PatientNotes.Cur.ApptPhone;
-			textCalls.SelectionStart=textCalls.Text.Length+2;
+			//textCalls.Text=PatientNotes.Cur.ApptPhone;
+			//textCalls.SelectionStart=textCalls.Text.Length+2;
 			textCreditType.Text=Patients.Cur.CreditType;
 			textBillingType.Text=Defs.GetName(DefCat.BillingTypes,Patients.Cur.BillingType);
 			textAge.Text=Shared.DateToAge(Patients.Cur.Birthdate);
@@ -529,9 +507,35 @@ namespace OpenDental{
 			textWorkPhone.Text=Patients.Cur.WkPhone;
 			textWireless.Text=Patients.Cur.WirelessPhone;
 			textAddrNotes.Text=Patients.Cur.AddrNote;	
+			FillComm();
 		}
 
-		private void listQuickAdd_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
+		/// <summary>Fills the commlog table on this form.</summary>
+		private void FillComm(){
+			Commlogs.Refresh();
+			ALCommItems=new ArrayList();
+			for(int i=0;i<Commlogs.List.Length;i++){
+				if(Commlogs.List[i].CommType==CommItemType.AppointmentScheduling){
+					ALCommItems.Add(Commlogs.List[i]);
+				}
+			}
+			tbCommlog.ResetRows(ALCommItems.Count);
+			for(int i=0;i<ALCommItems.Count;i++){
+				tbCommlog.Cell[0,i]=((Commlog)ALCommItems[i]).CommDate.ToShortDateString();
+				tbCommlog.Cell[1,i]=((Commlog)ALCommItems[i]).Note;
+			}
+			tbCommlog.SetGridColor(Color.Gray);
+			tbCommlog.LayoutTables();
+		}
+
+		private void tbCommlog_CellDoubleClicked(object sender, CellEventArgs e){
+			Commlogs.Cur=(Commlog)ALCommItems[e.Row];
+			FormCommItem FormCI=new FormCommItem();
+			FormCI.ShowDialog();
+			FillComm();
+		}		
+
+		/*private void listQuickAdd_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
 			if(listQuickAdd.IndexFromPoint(e.X,e.Y)==-1){
 				return;
 			}
@@ -543,9 +547,9 @@ namespace OpenDental{
 			textCalls.SelectionStart=caret+strPaste.Length;
 			textCalls.SelectionLength=0;
 			listQuickAdd.SelectedIndex=-1;
-		}
+		}*/
 
-		private void butDateLine_Click(object sender, System.EventArgs e) {
+		/*private void butDateLine_Click(object sender, System.EventArgs e) {
 			int caret=textCalls.SelectionStart;
 			string strPaste;
 			strPaste="**"+DateTime.Today.ToString("d")+"**";
@@ -553,14 +557,14 @@ namespace OpenDental{
 			textCalls.Select();
 			textCalls.SelectionStart=caret+strPaste.Length;
 			textCalls.SelectionLength=0;
-		}
+		}*/
 
 		private void SaveChanges(){
 			if(listStatus.SelectedIndex!=-1){
 				Patients.Cur.RecallStatus=Defs.Short[(int)DefCat.RecallUnschedStatus][listStatus.SelectedIndex].DefNum;
 				Patients.UpdateCur();
 			}
-			PatientNotes.Cur.ApptPhone=textCalls.Text;
+			//PatientNotes.Cur.ApptPhone=textCalls.Text;
 			PatientNotes.UpdateCur();
 		}
 
@@ -576,6 +580,17 @@ namespace OpenDental{
 
 		private void groupBox1_Enter(object sender, System.EventArgs e){
 		
+		}
+
+		private void butAddComm_Click(object sender, System.EventArgs e) {
+			Commlogs.Cur=new Commlog();
+			Commlogs.Cur.PatNum=Patients.Cur.PatNum;
+			Commlogs.Cur.CommDate=DateTime.Today;
+			Commlogs.Cur.CommType=CommItemType.AppointmentScheduling;
+			FormCommItem FormCI=new FormCommItem();
+			FormCI.IsNew=true;
+			FormCI.ShowDialog();
+			FillComm();
 		}
 
 		private void CreateCurInfo(){
@@ -621,7 +636,7 @@ namespace OpenDental{
 				//surf
 				//toothnum
 				//Procedures.Cur.ToothRange="";
-				Procedures.Cur.NoBillIns=ProcCodes.GetProcCode(Procedures.Cur.ADACode).NoBillIns;
+				Procedures.Cur.NoBillIns=ProcedureCodes.GetProcCode(Procedures.Cur.ADACode).NoBillIns;
 				//priority
 				Procedures.Cur.ProcStatus=ProcStat.TP;
 				Procedures.Cur.ProcNote="";
@@ -664,6 +679,8 @@ namespace OpenDental{
 			textHomePhone.Text=TelephoneNumbers.AutoFormat(textHomePhone.Text);
 			textHomePhone.SelectionStart=textHomePhone.Text.Length;	
 		}
+
+		
 
 
 

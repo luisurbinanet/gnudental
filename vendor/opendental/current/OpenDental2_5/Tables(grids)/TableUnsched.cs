@@ -7,10 +7,11 @@ using System.Windows.Forms;
 
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class TableUnsched : OpenDental.ContrTable{
 		private System.ComponentModel.IContainer components = null;
 
+		///<summary></summary>
 		public TableUnsched(){
 			InitializeComponent();// This call is required by the Windows Form Designer.
 			MaxRows=20;
@@ -27,15 +28,16 @@ namespace OpenDental{
 			Fields[4]=Lan.g("TableUnsched","Procedures");
 			Fields[5]=Lan.g("TableUnsched","Notes");
 			ColWidth[0]=140;
-			ColWidth[1]=70;
-			ColWidth[2]=140;
-			ColWidth[3]=60;
-			ColWidth[4]=200;
+			ColWidth[1]=65;
+			ColWidth[2]=110;
+			ColWidth[3]=50;
+			ColWidth[4]=150;
 			ColWidth[5]=200;
 			DefaultGridColor=Color.LightGray;
 			LayoutTables();
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if (components != null){

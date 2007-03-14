@@ -5,23 +5,26 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormUnsched : System.Windows.Forms.Form{
 		private System.ComponentModel.Container components = null;
 		private OpenDental.TableUnsched tbApts;
 		private System.Windows.Forms.Button butClose;
+		///<summary></summary>
 		public bool PinClicked=false;		
+		///<summary></summary>
 		public static string procsForCur;
 
+		///<summary></summary>
 		public FormUnsched(){
 			InitializeComponent();// Required for Windows Form Designer support
-			tbApts.CellClicked += new OpenDental.ContrTable.CellEventHandler(tbApts_CellClicked);
 			tbApts.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbApts_CellDoubleClicked);
 			Lan.C("All", new System.Windows.Forms.Control[] {
 				butClose,
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -47,24 +50,27 @@ namespace OpenDental{
 			this.tbApts.BackColor = System.Drawing.SystemColors.Window;
 			this.tbApts.Location = new System.Drawing.Point(10, 10);
 			this.tbApts.Name = "tbApts";
+			this.tbApts.ScrollValue = 1;
 			this.tbApts.SelectedIndices = new int[0];
 			this.tbApts.SelectionMode = System.Windows.Forms.SelectionMode.One;
-			this.tbApts.Size = new System.Drawing.Size(829, 600);
+			this.tbApts.Size = new System.Drawing.Size(734, 647);
 			this.tbApts.TabIndex = 0;
 			// 
 			// butClose
 			// 
+			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butClose.Location = new System.Drawing.Point(761, 628);
 			this.butClose.Name = "butClose";
 			this.butClose.Size = new System.Drawing.Size(75, 27);
 			this.butClose.TabIndex = 7;
-			this.butClose.Text = "Close";
+			this.butClose.Text = "&Close";
 			this.butClose.Click += new System.EventHandler(this.butClose_Click);
 			// 
 			// FormUnsched
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butClose;
 			this.ClientSize = new System.Drawing.Size(858, 672);
 			this.Controls.Add(this.tbApts);
 			this.Controls.Add(this.butClose);
@@ -86,51 +92,49 @@ namespace OpenDental{
 		}
 
 		private void FillAppointments(){
-			tbApts.SelectedRow=-1;
-			Appointments.RefreshUnsched();
-			int[] aptNums=new int[Appointments.ListUn.Length];
-			for(int i=0;i<Appointments.ListUn.Length;i++){
-				aptNums[i]=Appointments.ListUn[i].AptNum;
-			}
-			Procedures.GetProcsMultApts(aptNums);
+			this.Cursor=Cursors.WaitCursor;
+			Patients.GetHList();
+			Appointments.RefreshUnsched(false);
 			tbApts.ResetRows(Appointments.ListUn.Length);
 			tbApts.SetGridColor(Color.DarkGray);
-			string procs;
 			for (int i=0;i<Appointments.ListUn.Length;i++){
-				Patients.GetLim(Appointments.ListUn[i].PatNum);
-				tbApts.Cell[0,i]=Patients.LimName;
+				tbApts.Cell[0,i]=(string)Patients.HList[Appointments.ListUn[i].PatNum];
 				if(Appointments.ListUn[i].AptDateTime.Year < 1880)
 					tbApts.Cell[1,i]="";
 				else 
 					tbApts.Cell[1,i]=Appointments.ListUn[i].AptDateTime.ToShortDateString();
 				tbApts.Cell[2,i]=Defs.GetName(DefCat.RecallUnschedStatus,Appointments.ListUn[i].UnschedStatus);
 				tbApts.Cell[3,i]=Providers.GetAbbr(Appointments.ListUn[i].ProvNum);
-				Procedures.GetProcsOneApt(Appointments.ListUn[i].AptNum);
-				procs="";
-				for(int p=0;p<Procedures.ProcsOneApt.Length;p++){
-					procs+=Procedures.ProcsOneApt[p];
-					if(p<Procedures.ProcsOneApt.Length-1)
-						procs+=", ";
-				}
-				tbApts.Cell[4,i]=procs;
+				tbApts.Cell[4,i]=Appointments.ListUn[i].ProcDescript;
 				tbApts.Cell[5,i]=Appointments.ListUn[i].Note;
 			}
-			//if(tbApts.SelectedRow!=-1){
-			//	tbApts.ColorRow(tbApts.SelectedRow,Color.LightGray);
-			//}
+			Patients.HList=null;
 			tbApts.LayoutTables();
-			int[] myAptNums=new int[Appointments.ListUn.Length];
-			for(int i=0;i<myAptNums.Length;i++){
-				myAptNums[i]=Appointments.ListUn[i].AptNum;
-			}	
-			Procedures.GetProcsMultApts(myAptNums);
-		}
-
-		private void tbApts_CellClicked(object sender, CellEventArgs e){
-			Appointments.Cur=Appointments.ListUn[e.Row];
+			Cursor=Cursors.Default;
 		}
 
 		private void tbApts_CellDoubleClicked(object sender, CellEventArgs e){
+			int currentSelection=tbApts.SelectedRow;
+			int currentScroll=tbApts.ScrollValue;
+			Appointments.Cur=Appointments.ListUn[e.Row];
+			Patients.GetFamily(Appointments.Cur.PatNum);
+			FormApptEdit FormAE=new FormApptEdit();
+			FormAE.PinIsVisible=true;
+			FormAE.ShowDialog();
+			if(FormAE.DialogResult!=DialogResult.OK)
+				return;
+			if(FormAE.PinClicked){
+				PinClicked=true;
+				CreateCurInfo();
+				Appointments.ListUn=null;
+				DialogResult=DialogResult.OK;
+			}
+			else{
+				FillAppointments();
+				tbApts.SetSelected(currentSelection,true);
+				tbApts.ScrollValue=currentScroll;
+			}
+			/*
 			Procedures.GetProcsOneApt(Appointments.Cur.AptNum);
 			string procs="";
 				for(int p=0;p<Procedures.ProcsOneApt.Length;p++){
@@ -151,7 +155,7 @@ namespace OpenDental{
 				DialogResult=DialogResult.OK;
 			}
 			else
-			 FillAppointments();
+			 FillAppointments();*/
 		}	
 
 		private void CreateCurInfo(){
@@ -159,8 +163,8 @@ namespace OpenDental{
 			ContrAppt.CurInfo.MyApt=Appointments.Cur;
 			ContrAppt.CurInfo.CreditAndIns=Patients.GetCreditIns();
 			ContrAppt.CurInfo.PatientName=Patients.GetCurNameLF();
-			Procedures.GetProcsOneApt(Appointments.Cur.AptNum);
-			ContrAppt.CurInfo.Procs=Procedures.ProcsOneApt;
+			Procedures.GetProcsForSingle(Appointments.Cur.AptNum,false);
+			ContrAppt.CurInfo.Procs=Procedures.ProcsForSingle;
 		}
 
 		/*delete

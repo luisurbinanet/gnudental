@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormProvEdit : System.Windows.Forms.Form{
 		private System.Windows.Forms.Label labelColor;
 		private System.Windows.Forms.Button butColor;
@@ -30,10 +30,11 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textFName;
 		private System.Windows.Forms.TextBox textLName;
 		private System.Windows.Forms.TextBox textDEANum;
-		private System.ComponentModel.Container components = null;
+		private System.ComponentModel.Container components = null;// Required designer variable.
 		private System.Windows.Forms.CheckBox checkIsHidden;
 		private System.Windows.Forms.ColorDialog colorDialog1;
-		private System.Windows.Forms.ListBox listSpecialty;// Required designer variable.
+		private System.Windows.Forms.ListBox listSpecialty;
+		///<summary></summary>
 		public bool IsNew;
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.RadioButton radioSSN;
@@ -52,6 +53,7 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textMedicaidID;
 		private System.Windows.Forms.CheckBox checkSigOnFile;
 
+		///<summary></summary>
 		public FormProvEdit(){
 			InitializeComponent();// Required for Windows Form Designer support
 			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -85,7 +87,7 @@ namespace OpenDental{
 			});
 		}
 
-
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -294,17 +296,20 @@ namespace OpenDental{
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(732, 562);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 15;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// butCancel
 			// 
+			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(732, 595);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 16;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// textAbbr
@@ -452,7 +457,7 @@ namespace OpenDental{
 			this.groupSecurity.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupSecurity.Location = new System.Drawing.Point(417, 22);
 			this.groupSecurity.Name = "groupSecurity";
-			this.groupSecurity.Size = new System.Drawing.Size(396, 480);
+			this.groupSecurity.Size = new System.Drawing.Size(396, 483);
 			this.groupSecurity.TabIndex = 40;
 			this.groupSecurity.TabStop = false;
 			this.groupSecurity.Text = "Security";
@@ -462,6 +467,7 @@ namespace OpenDental{
 			this.tbUserPerm.BackColor = System.Drawing.SystemColors.Window;
 			this.tbUserPerm.Location = new System.Drawing.Point(12, 84);
 			this.tbUserPerm.Name = "tbUserPerm";
+			this.tbUserPerm.ScrollValue = 1;
 			this.tbUserPerm.SelectedIndices = new int[0];
 			this.tbUserPerm.SelectionMode = System.Windows.Forms.SelectionMode.None;
 			this.tbUserPerm.Size = new System.Drawing.Size(369, 356);
@@ -510,8 +516,9 @@ namespace OpenDental{
 			this.butAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butAll.Location = new System.Drawing.Point(14, 448);
 			this.butAll.Name = "butAll";
+			this.butAll.Size = new System.Drawing.Size(75, 26);
 			this.butAll.TabIndex = 37;
-			this.butAll.Text = "All";
+			this.butAll.Text = "&All";
 			this.butAll.Click += new System.EventHandler(this.butAll_Click);
 			// 
 			// butNone
@@ -519,8 +526,9 @@ namespace OpenDental{
 			this.butNone.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butNone.Location = new System.Drawing.Point(104, 448);
 			this.butNone.Name = "butNone";
+			this.butNone.Size = new System.Drawing.Size(75, 26);
 			this.butNone.TabIndex = 38;
-			this.butNone.Text = "None";
+			this.butNone.Text = "&None";
 			this.butNone.Click += new System.EventHandler(this.butNone_Click);
 			// 
 			// textMedicaidID
@@ -542,7 +550,9 @@ namespace OpenDental{
 			// 
 			// FormProvEdit
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(837, 666);
 			this.Controls.Add(this.textMedicaidID);
 			this.Controls.Add(this.label13);

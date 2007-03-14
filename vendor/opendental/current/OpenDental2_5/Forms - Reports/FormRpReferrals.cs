@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormRpReferrals : System.Windows.Forms.Form	{
 		private System.Windows.Forms.TabPage tabData;
 		private System.Windows.Forms.Button butCheckAll;
@@ -36,6 +36,7 @@ namespace OpenDental{
 		private OpenDental.XPButton butDeleteFilter;  //fields used in SELECT 
 		private ArrayList ALrefFilter;
 
+		///<summary></summary>
 		public FormRpReferrals(){
 			InitializeComponent();
 			Text=Lan.g(this,"Referral Report");
@@ -61,6 +62,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -84,6 +86,7 @@ namespace OpenDental{
 			this.butCheckAll = new System.Windows.Forms.Button();
 			this.butClear = new System.Windows.Forms.Button();
 			this.tabFilters = new System.Windows.Forms.TabPage();
+			this.butDeleteFilter = new OpenDental.XPButton();
 			this.comboBox = new System.Windows.Forms.ListBox();
 			this.ListPrerequisites = new System.Windows.Forms.ListBox();
 			this.butAddFilter = new System.Windows.Forms.Button();
@@ -93,7 +96,6 @@ namespace OpenDental{
 			this.butCancel = new System.Windows.Forms.Button();
 			this.butOK = new System.Windows.Forms.Button();
 			this.textSQL = new System.Windows.Forms.TextBox();
-			this.butDeleteFilter = new OpenDental.XPButton();
 			this.tabReferrals.SuspendLayout();
 			this.tabData.SuspendLayout();
 			this.tabFilters.SuspendLayout();
@@ -132,21 +134,21 @@ namespace OpenDental{
 			// butCheckAll
 			// 
 			this.butCheckAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butCheckAll.Location = new System.Drawing.Point(10, 434);
+			this.butCheckAll.Location = new System.Drawing.Point(10, 430);
 			this.butCheckAll.Name = "butCheckAll";
-			this.butCheckAll.Size = new System.Drawing.Size(80, 23);
+			this.butCheckAll.Size = new System.Drawing.Size(80, 26);
 			this.butCheckAll.TabIndex = 1;
-			this.butCheckAll.Text = "All";
+			this.butCheckAll.Text = "&All";
 			this.butCheckAll.Click += new System.EventHandler(this.butAll_Click);
 			// 
 			// butClear
 			// 
 			this.butClear.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butClear.Location = new System.Drawing.Point(100, 434);
+			this.butClear.Location = new System.Drawing.Point(100, 430);
 			this.butClear.Name = "butClear";
-			this.butClear.Size = new System.Drawing.Size(80, 23);
+			this.butClear.Size = new System.Drawing.Size(80, 26);
 			this.butClear.TabIndex = 2;
-			this.butClear.Text = "None";
+			this.butClear.Text = "&None";
 			this.butClear.Click += new System.EventHandler(this.butNone_Click);
 			// 
 			// tabFilters
@@ -164,6 +166,21 @@ namespace OpenDental{
 			this.tabFilters.TabIndex = 0;
 			this.tabFilters.Text = "WHERE";
 			this.tabFilters.Visible = false;
+			// 
+			// butDeleteFilter
+			// 
+			this.butDeleteFilter.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butDeleteFilter.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butDeleteFilter.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butDeleteFilter.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butDeleteFilter.Image = ((System.Drawing.Image)(resources.GetObject("butDeleteFilter.Image")));
+			this.butDeleteFilter.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butDeleteFilter.Location = new System.Drawing.Point(10, 426);
+			this.butDeleteFilter.Name = "butDeleteFilter";
+			this.butDeleteFilter.Size = new System.Drawing.Size(110, 26);
+			this.butDeleteFilter.TabIndex = 34;
+			this.butDeleteFilter.Text = "&Delete Row";
+			this.butDeleteFilter.Click += new System.EventHandler(this.butDeleteFilter_Click);
 			// 
 			// comboBox
 			// 
@@ -191,7 +208,7 @@ namespace OpenDental{
 			this.butAddFilter.Location = new System.Drawing.Point(664, 12);
 			this.butAddFilter.Name = "butAddFilter";
 			this.butAddFilter.TabIndex = 6;
-			this.butAddFilter.Text = "Add";
+			this.butAddFilter.Text = "&Add";
 			this.butAddFilter.Click += new System.EventHandler(this.butAddFilter_Click);
 			// 
 			// ListConditions
@@ -234,17 +251,19 @@ namespace OpenDental{
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(750, 640);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 41;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			// 
 			// butOK
 			// 
 			this.butOK.Enabled = false;
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(750, 608);
+			this.butOK.Location = new System.Drawing.Point(750, 602);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 40;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// textSQL
@@ -257,24 +276,11 @@ namespace OpenDental{
 			this.textSQL.TabIndex = 42;
 			this.textSQL.Text = "";
 			// 
-			// butDeleteFilter
-			// 
-			this.butDeleteFilter.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butDeleteFilter.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butDeleteFilter.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butDeleteFilter.BtnStyle = OpenDental.enumType.XPStyle.Silver;
-			this.butDeleteFilter.Image = ((System.Drawing.Image)(resources.GetObject("butDeleteFilter.Image")));
-			this.butDeleteFilter.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDeleteFilter.Location = new System.Drawing.Point(10, 426);
-			this.butDeleteFilter.Name = "butDeleteFilter";
-			this.butDeleteFilter.Size = new System.Drawing.Size(110, 26);
-			this.butDeleteFilter.TabIndex = 34;
-			this.butDeleteFilter.Text = "Delete Row";
-			this.butDeleteFilter.Click += new System.EventHandler(this.butDeleteFilter_Click);
-			// 
 			// FormRpReferrals
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(842, 683);
 			this.Controls.Add(this.tabReferrals);
 			this.Controls.Add(this.butCancel);

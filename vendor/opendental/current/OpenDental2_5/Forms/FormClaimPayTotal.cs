@@ -29,8 +29,10 @@ namespace OpenDental
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Label label4;
+		///<summary></summary>
 		public ClaimProc[] ClaimProcsToEdit;
 
+		///<summary></summary>
 		public FormClaimPayTotal()
 		{
 			//
@@ -84,6 +86,7 @@ namespace OpenDental
 			this.tbProc.BackColor = System.Drawing.SystemColors.Window;
 			this.tbProc.Location = new System.Drawing.Point(8, 19);
 			this.tbProc.Name = "tbProc";
+			this.tbProc.ScrollValue = 280;
 			this.tbProc.SelectedIndices = new int[0];
 			this.tbProc.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
 			this.tbProc.Size = new System.Drawing.Size(939, 253);
@@ -95,7 +98,7 @@ namespace OpenDental
 			this.butOK.Location = new System.Drawing.Point(757, 324);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 1;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// butCancel
@@ -105,7 +108,7 @@ namespace OpenDental
 			this.butCancel.Location = new System.Drawing.Point(846, 324);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 2;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// textWriteOff
@@ -177,7 +180,7 @@ namespace OpenDental
 			this.butDeductible.Name = "butDeductible";
 			this.butDeductible.Size = new System.Drawing.Size(97, 23);
 			this.butDeductible.TabIndex = 120;
-			this.butDeductible.Text = "Deductible";
+			this.butDeductible.Text = "&Deductible";
 			this.butDeductible.Click += new System.EventHandler(this.butDeductible_Click);
 			// 
 			// butWriteOff
@@ -187,7 +190,7 @@ namespace OpenDental
 			this.butWriteOff.Name = "butWriteOff";
 			this.butWriteOff.Size = new System.Drawing.Size(96, 23);
 			this.butWriteOff.TabIndex = 121;
-			this.butWriteOff.Text = "Write Off";
+			this.butWriteOff.Text = "&Write Off";
 			this.butWriteOff.Click += new System.EventHandler(this.butWriteOff_Click);
 			// 
 			// label2
@@ -219,6 +222,7 @@ namespace OpenDental
 			// 
 			// FormClaimPayTotal
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(948, 363);
@@ -270,7 +274,7 @@ namespace OpenDental
 					Procedures.Cur=(Procedure)Procedures.HList[ClaimProcsToEdit[i].ProcNum];
 					tbProc.Cell[2,i]=Procedures.Cur.ADACode;
 					tbProc.Cell[3,i]=Procedures.Cur.ToothNum;
-					tbProc.Cell[4,i]=ProcCodes.GetProcCode(Procedures.Cur.ADACode).Descript;
+					tbProc.Cell[4,i]=ProcedureCodes.GetProcCode(Procedures.Cur.ADACode).Descript;
 				}
 				tbProc.Cell[0,i]=ClaimProcsToEdit[i].DateCP.ToShortDateString();
 				tbProc.Cell[1,i]=Providers.GetAbbr(ClaimProcsToEdit[i].ProvNum);
@@ -292,6 +296,9 @@ namespace OpenDental
 						break;
 					case ClaimProcStatus.Supplemental:
 						tbProc.Cell[10,i]="Supp";
+						break;
+					case ClaimProcStatus.Capitation:
+						tbProc.Cell[10,i]="Cap";
 						break;
 				}
 				if(ClaimProcsToEdit[i].ClaimPaymentNum>0)

@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+	///<summary></summary>
 	public class FormApptsOther : System.Windows.Forms.Form{
 		private System.Windows.Forms.CheckBox checkDone;
 		private System.Windows.Forms.Label label4;
@@ -13,16 +13,20 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textRecallDue;
 		private System.ComponentModel.Container components = null;
 		private OpenDental.TableApptsOther tbApts;
+		///<summary></summary>
 		public OtherResult oResult;
 		private System.Windows.Forms.TextBox textApptModNote;
 		private System.Windows.Forms.Label label1;
 		private OpenDental.XPButton butGoTo;
 		private OpenDental.XPButton butPin;
 		private OpenDental.XPButton butNew;
+		///<summary></summary>
 		public bool InitialClick;
 
+		///<summary></summary>
 		public FormApptsOther(){
 			InitializeComponent();
+			tbApts.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbApts_CellDoubleClicked);
 			Lan.C(this, new System.Windows.Forms.Control[] {
 				this.butGoTo,
 				this.butNew,
@@ -36,6 +40,7 @@ namespace OpenDental{
 			}); 
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -78,9 +83,10 @@ namespace OpenDental{
 			this.tbApts.BackColor = System.Drawing.SystemColors.Window;
 			this.tbApts.Location = new System.Drawing.Point(28, 80);
 			this.tbApts.Name = "tbApts";
+			this.tbApts.ScrollValue = 1;
 			this.tbApts.SelectedIndices = new int[0];
 			this.tbApts.SelectionMode = System.Windows.Forms.SelectionMode.One;
-			this.tbApts.Size = new System.Drawing.Size(869, 492);
+			this.tbApts.Size = new System.Drawing.Size(769, 492);
 			this.tbApts.TabIndex = 2;
 			this.tbApts.TabStop = false;
 			// 
@@ -152,7 +158,7 @@ namespace OpenDental{
 			this.butGoTo.Name = "butGoTo";
 			this.butGoTo.Size = new System.Drawing.Size(106, 26);
 			this.butGoTo.TabIndex = 46;
-			this.butGoTo.Text = "Go To Appt";
+			this.butGoTo.Text = "&Go To Appt";
 			this.butGoTo.Click += new System.EventHandler(this.butGoTo_Click);
 			// 
 			// butPin
@@ -166,7 +172,7 @@ namespace OpenDental{
 			this.butPin.Name = "butPin";
 			this.butPin.Size = new System.Drawing.Size(134, 26);
 			this.butPin.TabIndex = 47;
-			this.butPin.Text = "Copy To Pinboard";
+			this.butPin.Text = "Copy To &Pinboard";
 			this.butPin.Click += new System.EventHandler(this.butPin_Click);
 			// 
 			// butNew
@@ -180,12 +186,11 @@ namespace OpenDental{
 			this.butNew.Name = "butNew";
 			this.butNew.Size = new System.Drawing.Size(106, 26);
 			this.butNew.TabIndex = 48;
-			this.butNew.Text = "Create New";
+			this.butNew.Text = "Create &New";
 			this.butNew.Click += new System.EventHandler(this.butNew_Click);
 			// 
 			// FormApptsOther
 			// 
-			this.AcceptButton = this.butCancel;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(924, 658);
@@ -212,6 +217,7 @@ namespace OpenDental{
 		}
 		#endregion
 
+		///<summary></summary>
 		public OtherResult OResult{
 			get{return oResult;}
 		}
@@ -230,54 +236,22 @@ namespace OpenDental{
         checkDone.Checked=false;
       }
 			Appointments.RefreshOther();
-			int[] aptNums=new int[Appointments.ListOth.Length];
-			for(int i=0;i<Appointments.ListOth.Length;i++){
-				aptNums[i]=Appointments.ListOth[i].AptNum;
-			}
-			Procedures.GetProcsMultApts(aptNums);
 			tbApts.ResetRows(Appointments.ListOth.Length);
 			tbApts.SetGridColor(Color.DarkGray);
 			for(int i=0;i<Appointments.ListOth.Length;i++){
-				tbApts.Cell[4,i]="";//procs
-				if(Patients.Cur.NextAptNum==Appointments.ListOth[i].AptNum){//Next appt
-					Procedures.GetProcsForSingle(Patients.Cur.NextAptNum,true);
-					for(int j=0;j<Procedures.ProcsForSingle.Length;j++){
-						tbApts.Cell[4,i]+=Procedures.ProcsForSingle[j];
-						if(j<Procedures.ProcsForSingle.Length-1){
-							tbApts.Cell[4,i]+=", ";
-            }
-					}
-					tbApts.Cell[0,i]=Lan.g(this,"NEXT");
-				}
-				else{
-					Procedures.GetProcsOneApt(Appointments.ListOth[i].AptNum);
-					for(int j=0;j<Procedures.ProcsOneApt.Length;j++){
-						tbApts.Cell[4,i]+=Procedures.ProcsOneApt[j];
-						if(j<Procedures.ProcsOneApt.Length-1){
-							tbApts.Cell[4,i]+=", ";
-            }
-					}
-					if(Patients.Cur.NextAptNum==Appointments.ListOth[i].NextAptNum){
-						tbApts.Cell[0,i]=Lan.g(this,"sched");
-          }
-					else{
-            tbApts.Cell[0,i]="";
-          }
-				}
-				tbApts.Cell[1,i]=Appointments.ListOth[i].AptStatus.ToString();
-					//Defs.GetName(DefCat.RecallUnschedStatus,Appointments.List[i].UnschedStatus);
+				tbApts.Cell[0,i]=Appointments.ListOth[i].AptStatus.ToString();
 				if(Appointments.ListOth[i].AptDateTime.Year > 1880){
-					tbApts.Cell[2,i]=Appointments.ListOth[i].AptDateTime.ToString("d");
+					tbApts.Cell[1,i]=Appointments.ListOth[i].AptDateTime.ToString("d");
+					tbApts.Cell[2,i]=Appointments.ListOth[i].AptDateTime.ToString("t");
         }
 				else{
-          tbApts.Cell[2,i]="";
+          tbApts.Cell[1,i]="";
+					tbApts.Cell[2,i]="";
         }
 				tbApts.Cell[3,i]=Appointments.ListOth[i].Pattern.Length.ToString()+"0";
+				tbApts.Cell[4,i]=Appointments.ListOth[i].ProcDescript;
 				tbApts.Cell[5,i]=Appointments.ListOth[i].Note;
 			}
-			//if(tbApts.SelectedRow!=-1){
-			//	tbApts.ColorRow(tbApts.SelectedRow,Color.LightGray);
-			//}
 			tbApts.LayoutTables();
 		}
 
@@ -299,7 +273,9 @@ namespace OpenDental{
 					,ContrAppt.SheetClickedonHour,ContrAppt.SheetClickedonMin,0);
 				Appointments.Cur.Op=ContrAppt.SheetClickedonOp;
 			}
-			//else{//new appt will be placed on pinboard instead of specific time
+			else{
+				//new appt will be placed on pinboard instead of specific time
+			}
 			Appointments.InsertCur();
 			FormApptEdit FormApptEdit2=new FormApptEdit();
 			FormApptEdit2.IsNew=true;
@@ -311,9 +287,8 @@ namespace OpenDental{
 				oResult=OtherResult.CreateNew;
 			}
 			else{
-				CreateCurInfo(true);
+				CreateCurInfo();
 				oResult=OtherResult.NewToPinBoard;
-//fix: will have to include a way to delete appt if user clears pinboard
 			}
 			DialogResult=DialogResult.OK;
 		}
@@ -324,7 +299,17 @@ namespace OpenDental{
 				return;
 			}
 			Appointments.Cur=Appointments.ListOth[tbApts.SelectedRow];
-			if(Patients.Cur.NextAptNum==Appointments.Cur.AptNum){//if clicked on NEXT
+			if(!OKtoSendToPinboard())
+				return;
+			CreateCurInfo();
+			oResult=OtherResult.CopyToPinBoard;
+			Appointments.ListOth=null;
+			DialogResult=DialogResult.OK;
+		}
+
+		/// <summary>Tests the current appointment to see if it is acceptable to send it to the pinboard.  Also asks user appropriate questions to verify that's what they want to do.  Returns false if it will not be going to pinboard after all.</summary>
+		private bool OKtoSendToPinboard(){
+			if(Appointments.Cur.AptStatus==ApptStatus.Next){//if is a NEXT appointment
 				bool NextIsSched=false;
 				for(int i=0;i<Appointments.ListOth.Length;i++){
 					if(Appointments.ListOth[i].NextAptNum==Patients.Cur.NextAptNum){//if the next appointment is already sched
@@ -332,57 +317,70 @@ namespace OpenDental{
 					}
 				}
 				if(NextIsSched){
-					if(MessageBox.Show(Lan.g(this,"The Next appointment is already scheduled.  Do you wish to continue?"),""
-						,MessageBoxButtons.OKCancel)!=DialogResult.OK){
-						return;
+					if(MessageBox.Show(Lan.g(this,"The Next appointment is already scheduled.  Do you wish to continue?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
+						return false;
 					}
 				}
 			}
-			else{//if clicked on any appointment except NEXT
+			else{//if appointment is not NEXT
 				switch(Appointments.Cur.AptStatus){
 					case ApptStatus.Complete:
 						MessageBox.Show(Lan.g(this,"Not allowed to move a completed appointment from here."));
-						return;
+						return false;
 					case ApptStatus.ASAP:
 					case ApptStatus.Scheduled:
-						if(MessageBox.Show(Lan.g(this,"Do you really want to move a previously scheduled appointment?"),""
-							,MessageBoxButtons.OKCancel)!=DialogResult.OK){
-							return;
+						if(MessageBox.Show(Lan.g(this,"Do you really want to move a previously scheduled appointment?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
+							return false;
 						}
 						break;
-					case ApptStatus.Broken:
+					case ApptStatus.Broken://status gets changed after dragging off pinboard.
 					case ApptStatus.None:
-					case ApptStatus.UnschedList:
-						Appointments.Cur.AptStatus=ApptStatus.Scheduled;
+					case ApptStatus.UnschedList://status gets changed after dragging off pinboard.
 						break;
 				}			
 			}
-			CreateCurInfo(false);
-			oResult=OtherResult.CopyToPinBoard;
-			Appointments.ListOth=null;
-			DialogResult=DialogResult.OK;
+			//if it's a next appointment, the next appointment will end up on the pinboard.  The copy will be made after dragging it off the pinboard.
+			return true;
 		}
 
-		private void CreateCurInfo(bool isNew){
+		private void tbApts_CellDoubleClicked(object sender, CellEventArgs e){
+			int currentSelection=tbApts.SelectedRow;
+			int currentScroll=tbApts.ScrollValue;
+			//MessageBox.Show(currentScroll.ToString());
+			Appointments.Cur=Appointments.ListOth[e.Row];
+			FormApptEdit FormAE=new FormApptEdit();
+			FormAE.PinIsVisible=true;
+			FormAE.ShowDialog();
+			if(FormAE.DialogResult!=DialogResult.OK)
+				return;
+			if(FormAE.PinClicked){
+				if(!OKtoSendToPinboard())
+					return;
+				CreateCurInfo();
+				oResult=OtherResult.CopyToPinBoard;
+				Appointments.ListOth=null;
+				DialogResult=DialogResult.OK;
+			}
+			else{
+				Filltb();
+				tbApts.SetSelected(currentSelection,true);
+				tbApts.ScrollValue=currentScroll;
+			}
+		}	
+
+		///<summary>Prepares the necessary info for placement of the appointment on the pinboard.</summary>
+		private void CreateCurInfo(){
 			ContrAppt.CurInfo=new InfoApt();
 			ContrAppt.CurInfo.MyApt=Appointments.Cur;
 			ContrAppt.CurInfo.CreditAndIns=Patients.GetCreditIns();
 			ContrAppt.CurInfo.PatientName=Patients.GetCurNameLF();
 			if(Appointments.Cur.AptNum==Patients.Cur.NextAptNum){//if is Next apt
-				//should already be there: Procedures.GetProcsForSingle(Appointments.Cur.AptNum,true);
-				ContrAppt.CurInfo.Procs=Procedures.ProcsForSingle;
+				Procedures.GetProcsForSingle(Appointments.Cur.AptNum,true);
 			}
 			else{//normal apt
-				if(isNew){
-					Procedures.GetProcsForSingle(Appointments.Cur.AptNum,false);
-					ContrAppt.CurInfo.Procs=Procedures.ProcsForSingle;
-				}
-				else{//from list
-					//gets one from ProcsMultApts:
-					Procedures.GetProcsOneApt(Appointments.Cur.AptNum);
-					ContrAppt.CurInfo.Procs=Procedures.ProcsOneApt;
-				}
+				Procedures.GetProcsForSingle(Appointments.Cur.AptNum,false);
 			}
+			ContrAppt.CurInfo.Procs=Procedures.ProcsForSingle;
 		}
 
 		private void butGoTo_Click(object sender, System.EventArgs e) {

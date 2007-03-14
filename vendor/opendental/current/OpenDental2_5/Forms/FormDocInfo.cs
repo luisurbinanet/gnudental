@@ -15,7 +15,7 @@ using System.Runtime.InteropServices;
 using System.Text; 
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormDocInfo : System.Windows.Forms.Form{
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;
@@ -28,8 +28,10 @@ namespace OpenDental{
 		private OpenDental.ValidDate textDate;
 		private System.ComponentModel.Container components = null;//required by designer
 		private System.Windows.Forms.TextBox textFileName;
+		///<summary></summary>
 		public bool IsNew;
 		
+		///<summary></summary>
 		public FormDocInfo(){
 			InitializeComponent();
 			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -44,6 +46,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -116,6 +119,7 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(429, 314);
 			this.butCancel.Name = "butCancel";
@@ -159,6 +163,7 @@ namespace OpenDental{
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(533, 356);
 			this.Controls.Add(this.textDate);
 			this.Controls.Add(this.label3);
@@ -176,13 +181,14 @@ namespace OpenDental{
 			this.Name = "FormDocInfo";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "Document Info";
+			this.Text = "Item Info";
 			this.Load += new System.EventHandler(this.FormDocInfo_Load);
 			this.ResumeLayout(false);
 
 		}
 		#endregion
 
+		///<summary></summary>
 		public void FormDocInfo_Load(object sender, System.EventArgs e){
 			//if (Docs.Cur.FileName.Equals(null))
 			if(IsNew){

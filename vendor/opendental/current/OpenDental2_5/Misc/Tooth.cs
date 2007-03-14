@@ -5,20 +5,15 @@ using System.Collections;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
-namespace OpenDental
-{
-	/// <summary>
-	/// Summary description for Tooth.
-	/// </summary>
-	public class Tooth
-	{
-		public Tooth()
-		{
-			//
-			// TODO: Add constructor logic here
-			//
+namespace OpenDental{
+	/// <summary></summary>
+	public class Tooth{
+		///<summary></summary>
+		public Tooth(){
+			
 		}
 
+		///<summary></summary>
 		public static bool IsAnterior(string toothNum){
 			if(!IsValidDB(toothNum))
 				return false;
@@ -30,11 +25,13 @@ namespace OpenDental
 			return false;
 		}
 
+		///<summary></summary>
 		public static bool IsAnterior(int intTooth){
 			string toothNum=FromInt(intTooth);
 			return IsAnterior(toothNum);
 		}
 
+		///<summary></summary>
 		public static bool IsPosterior(string toothNum){
 			if(!IsValidDB(toothNum))
 				return false;
@@ -48,11 +45,13 @@ namespace OpenDental
 			return false;
 		}
 
+		///<summary></summary>
 		public static bool IsPosterior(int intTooth){
 			string toothNum=FromInt(intTooth);
 			return IsPosterior(toothNum);
 		}
 
+		///<summary></summary>
 		public static bool IsMolar(string toothNum){
 			if(!IsValidDB(toothNum))
 				return false;
@@ -66,11 +65,13 @@ namespace OpenDental
 			return false;
 		}
 
+		///<summary></summary>
 		public static bool IsMolar(int intTooth){
 			string toothNum=FromInt(intTooth);
 			return IsMolar(toothNum);
 		}
 
+		///<summary></summary>
 		public static bool IsPreMolar(string toothNum){
 			if(!IsValidDB(toothNum))
 				return false;
@@ -87,11 +88,13 @@ namespace OpenDental
 			return false;
 		}
 
+		///<summary></summary>
 		public static bool IsPreMolar(int intTooth){
 			string toothNum=FromInt(intTooth);
 			return IsPreMolar(toothNum);
 		}
 
+		///<summary></summary>
 		public static bool IsValidEntry(string toothNum){
 			//used every time user enters toothNum in procedure box.
 			//this is the *ONLY* method that is designed to accept user input.
@@ -104,6 +107,7 @@ namespace OpenDental
 			//}
 		}
 
+		///<summary></summary>
 		public static bool IsValidDB(string toothNum){
 			//intended to validate toothNum coming in from database.
 			//will not handle any international tooth nums since all database teeth are in US format.
@@ -122,6 +126,7 @@ namespace OpenDental
 			return true;
 		}
 
+		///<summary></summary>
 		public static int ToInt(string toothNum){
 			//the toothNum must be validated before coming here.
 			//Primary or perm are ok.  Empty and null are also ok.
@@ -141,6 +146,7 @@ namespace OpenDental
 			}
 		}
 
+		///<summary></summary>
 		public static string FromInt(int intTooth){
 			//don't need much error checking.
 			string retStr="";
@@ -148,11 +154,13 @@ namespace OpenDental
 			return retStr;
 		}
 
+		///<summary></summary>
 		public static bool IsPrimary(string toothNum){
 			Regex regex=new Regex("^[A-Z]$");
 			return regex.IsMatch(toothNum);
 		}
 
+		///<summary></summary>
 		public static string PermToPri(string toothNum){
 			switch(toothNum){
 				default: return "";
@@ -179,11 +187,13 @@ namespace OpenDental
 			}
 		}
 
+		///<summary></summary>
 		public static string PermToPri(int intTooth){
 			string toothNum=FromInt(intTooth);
 			return PermToPri(toothNum);
 		}
 
+		///<summary></summary>
 		public static string PriToPerm(string toothNum){
 			switch(toothNum){
 				default: return "";
@@ -210,6 +220,7 @@ namespace OpenDental
 			}
 		}
 		
+		///<summary></summary>
 		public static int ToOrdinal(string toothNum){
 			//used to put perm and pri into a single array.  1-32 is perm.  33-52 is pri.
 			if(IsPrimary(toothNum)){
@@ -242,12 +253,13 @@ namespace OpenDental
 			}
 		}
 			
-
+		///<summary></summary>
 		public static bool IsMaxillary(int intTooth){
 			string toothNum=FromInt(intTooth);
 			return IsMaxillary(toothNum);
 		}
 
+		///<summary></summary>
 		public static bool IsMaxillary(string toothNum){
 			if(!IsValidDB(toothNum))
 				return false;
@@ -257,6 +269,7 @@ namespace OpenDental
 			return false;
 		}
 
+		///<summary></summary>
 		public static string SurfTidy(string surf,string toothNum){
 			//yes... this would be a little more elegant with a regex
       string surfTidy="";

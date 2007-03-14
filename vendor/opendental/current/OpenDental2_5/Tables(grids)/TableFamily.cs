@@ -7,15 +7,17 @@ using System.Windows.Forms;
 
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class TableFamily : OpenDental.ContrTable{
 		private System.ComponentModel.IContainer components = null;
 
+		///<summary></summary>
 		public TableFamily(){
 			InitializeComponent();// This call is required by the Windows Form Designer.
 			InstantClasses();
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if (components != null){
@@ -39,6 +41,7 @@ namespace OpenDental{
 		}
 		#endregion
 
+		///<summary></summary>
 		public void InstantClasses(){
 			MaxRows=4;
 			MaxCols=5;

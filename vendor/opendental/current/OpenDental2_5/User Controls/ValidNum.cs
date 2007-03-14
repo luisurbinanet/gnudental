@@ -6,17 +6,22 @@ using System.Data;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary>this differs slightly from ValidNumber.  Use this when default is 0 instead of blank.</summary>
 	public class ValidNum : System.Windows.Forms.TextBox{
 		private System.ComponentModel.Container components = null;
+		///<summary></summary>
 		public System.Windows.Forms.ErrorProvider errorProvider1;
+		///<summary></summary>
 		public int MaxVal=255;
-		public int MinVal=0;
+		///<summary></summary>
+		private int minVal=0;
 
+		///<summary></summary>
 		public ValidNum(){
 			InitializeComponent();
   	}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -47,9 +52,17 @@ namespace OpenDental{
 		}
 		#endregion
 
+		///<summary>The minumum value that this number can be set to without generating an error.</summary>
+		public int MinVal{
+			get{
+				return minVal;
+			}
+			set{
+				minVal=value;
+			}
+		}
+
 		private void ValidNum_Validating(object sender, System.ComponentModel.CancelEventArgs e) {
-			//this differs from ValidNumber slightly.
-			//Use this when default is 0.
 			string myMessage="";
 			try{
 				if(Text==""){
@@ -57,8 +70,8 @@ namespace OpenDental{
 				}
 				if(System.Convert.ToInt32(this.Text)>MaxVal)
 					throw new Exception("Number must be less than "+(MaxVal+1).ToString());
-				if(System.Convert.ToInt32(this.Text)<MinVal)
-					throw new Exception("Number must be greater than or equal to "+(MinVal).ToString());
+				if(System.Convert.ToInt32(this.Text)<minVal)
+					throw new Exception("Number must be greater than or equal to "+(minVal).ToString());
 				errorProvider1.SetError(this,"");
 			}
 			catch(Exception ex){

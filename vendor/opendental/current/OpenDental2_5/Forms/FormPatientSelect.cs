@@ -12,7 +12,7 @@ using System.Data;
 
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormPatientSelect : System.Windows.Forms.Form{
 		private System.Windows.Forms.Label label1;
 		private System.ComponentModel.Container components = null;
@@ -22,6 +22,8 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butOK;
 		private System.Windows.Forms.Button butCancel;
 		private System.Windows.Forms.Button butAddPt;
+		/// <summary>Selection mode only.
+		/// Use when you want to specify a patient without changing the current patient.</summary>
 		public bool OnlyChangingFam;//AKA selection mode only
 		private System.Windows.Forms.GroupBox groupBox2;
 		private System.Windows.Forms.Label label3;
@@ -35,7 +37,10 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label6;
 		private System.Windows.Forms.CheckBox checkHideInactive;
 		private System.Windows.Forms.GroupBox groupAddPt;
+		///<summary>When closing the form, this indicates whether a new patient was added from within this form.</summary>
+		public bool NewPatientAdded;
 
+		///<summary></summary>
 		public FormPatientSelect(){
 			InitializeComponent();//required first
 			tb2.CellClicked += new OpenDental.ContrTable.CellEventHandler(tb2_CellClicked);
@@ -58,7 +63,7 @@ namespace OpenDental{
 
 		}
 
-		// Clean up any resources being used here.
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if (components != null){
@@ -141,10 +146,10 @@ namespace OpenDental{
 			// butAddPt
 			// 
 			this.butAddPt.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butAddPt.Location = new System.Drawing.Point(68, 24);
+			this.butAddPt.Location = new System.Drawing.Point(68, 26);
 			this.butAddPt.Name = "butAddPt";
 			this.butAddPt.TabIndex = 0;
-			this.butAddPt.Text = "Add";
+			this.butAddPt.Text = "&Add";
 			this.butAddPt.Click += new System.EventHandler(this.butAddPt_Click);
 			// 
 			// butOK
@@ -152,9 +157,9 @@ namespace OpenDental{
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(840, 585);
 			this.butOK.Name = "butOK";
-			this.butOK.Size = new System.Drawing.Size(76, 23);
+			this.butOK.Size = new System.Drawing.Size(76, 26);
 			this.butOK.TabIndex = 3;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// butCancel
@@ -163,9 +168,9 @@ namespace OpenDental{
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(840, 621);
 			this.butCancel.Name = "butCancel";
-			this.butCancel.Size = new System.Drawing.Size(76, 23);
+			this.butCancel.Size = new System.Drawing.Size(76, 26);
 			this.butCancel.TabIndex = 4;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// tb2
@@ -173,6 +178,7 @@ namespace OpenDental{
 			this.tb2.BackColor = System.Drawing.SystemColors.Window;
 			this.tb2.Location = new System.Drawing.Point(8, 8);
 			this.tb2.Name = "tb2";
+			this.tb2.ScrollValue = 150;
 			this.tb2.SelectedIndices = new int[0];
 			this.tb2.SelectionMode = System.Windows.Forms.SelectionMode.One;
 			this.tb2.Size = new System.Drawing.Size(702, 314);
@@ -310,6 +316,7 @@ namespace OpenDental{
 		}
 		#endregion
 
+		///<summary></summary>
 		public void FormSelectPatient_Load(object sender, System.EventArgs e){
 			if(OnlyChangingFam){
 				groupAddPt.Visible=false;
@@ -447,6 +454,9 @@ namespace OpenDental{
 			FormPE.IsNew=true;
 			FormPE.ShowDialog();
 			if(FormPE.DialogResult==DialogResult.OK){
+				Patients.PatIsLoaded=true;
+				//patnum set in dialog
+				this.NewPatientAdded=true;
 				DialogResult=DialogResult.OK;
 			}
 		}

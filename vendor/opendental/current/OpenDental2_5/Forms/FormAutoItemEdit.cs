@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+	///<summary></summary>
 	public class FormAutoItemEdit : System.Windows.Forms.Form{
 		private System.ComponentModel.Container components = null;
 		private System.Windows.Forms.Label label1;
@@ -15,8 +15,10 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.ListBox listConditions;
 		private System.Windows.Forms.Button butChange;
+		///<summary></summary>
     public bool IsNew;
 
+		///<summary></summary>
 		public FormAutoItemEdit(){
 			InitializeComponent();
 			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -30,6 +32,7 @@ namespace OpenDental{
 			}); 
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -78,11 +81,11 @@ namespace OpenDental{
 			// butChange
 			// 
 			this.butChange.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butChange.Location = new System.Drawing.Point(186, 54);
+			this.butChange.Location = new System.Drawing.Point(186, 52);
 			this.butChange.Name = "butChange";
-			this.butChange.Size = new System.Drawing.Size(94, 20);
+			this.butChange.Size = new System.Drawing.Size(94, 24);
 			this.butChange.TabIndex = 24;
-			this.butChange.Text = "Change";
+			this.butChange.Text = "C&hange";
 			this.butChange.Click += new System.EventHandler(this.butChange_Click);
 			// 
 			// butCancel
@@ -114,6 +117,7 @@ namespace OpenDental{
 			// 
 			// FormAutoItemEdit
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(592, 490);
@@ -195,9 +199,17 @@ namespace OpenDental{
       }
       else{
 				if(AutoCodeItems.HList.ContainsKey(FormP.SelectedADA)
-					&& (int)AutoCodeItems.HList[FormP.SelectedADA] != AutoCodes.Cur.AutoCodeNum){
-					MessageBox.Show(Lan.g(this,"That ADA code is already in use in a different Auto Code.  Not allowed to use it here."));
-					textADA.Text=AutoCodeItems.Cur.ADACode;
+					&& (int)AutoCodeItems.HList[FormP.SelectedADA] != AutoCodes.Cur.AutoCodeNum)
+				{
+					//This section is a fix for an old bug that did not cause items to get deleted properly
+					if(!AutoCodes.HList.ContainsKey((int)AutoCodeItems.HList[FormP.SelectedADA])){
+						AutoCodeItems.Delete((int)AutoCodeItems.HList[FormP.SelectedADA]);
+						textADA.Text=FormP.SelectedADA;
+					}
+					else{
+						MessageBox.Show(Lan.g(this,"That ADA code is already in use in a different Auto Code.  Not allowed to use it here."));
+						textADA.Text=AutoCodeItems.Cur.ADACode;
+					}
 				}
 				else{
 					textADA.Text=FormP.SelectedADA;
@@ -207,6 +219,18 @@ namespace OpenDental{
 
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

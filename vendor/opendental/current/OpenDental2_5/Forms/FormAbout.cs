@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+	///<summary></summary>
 	public class FormAbout : System.Windows.Forms.Form{
 		private System.Windows.Forms.Label labelVersion;
 		private System.Windows.Forms.Button butClose;
@@ -16,6 +16,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label4;
 		private System.ComponentModel.Container components = null;
 
+		///<summary></summary>
 		public FormAbout(){
 			InitializeComponent();
 			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -27,6 +28,7 @@ namespace OpenDental{
 			}); 
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -115,7 +117,6 @@ namespace OpenDental{
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butClose;
 			this.ClientSize = new System.Drawing.Size(695, 415);
-			this.ControlBox = false;
 			this.Controls.Add(this.label4);
 			this.Controls.Add(this.label3);
 			this.Controls.Add(this.butReset);
@@ -123,7 +124,10 @@ namespace OpenDental{
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.butClose);
 			this.Controls.Add(this.labelVersion);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormAbout";
+			this.ShowInTaskbar = false;
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "About Open Dental";

@@ -8,7 +8,7 @@ using System.Globalization;
 using System.IO;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormTranslation : System.Windows.Forms.Form{
 		private System.Windows.Forms.Button butClose;
 		private OpenDental.TableLan tbLan;
@@ -18,6 +18,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label2;
 		private System.ComponentModel.Container components = null;
 
+		///<summary></summary>
 		public FormTranslation(){
 			InitializeComponent();
       tbLan.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbLan_CellDoubleClicked);
@@ -30,6 +31,7 @@ namespace OpenDental{
 
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -55,6 +57,7 @@ namespace OpenDental{
 			this.tbLan.BackColor = System.Drawing.SystemColors.Window;
 			this.tbLan.Location = new System.Drawing.Point(20, 40);
 			this.tbLan.Name = "tbLan";
+			this.tbLan.ScrollValue = 700;
 			this.tbLan.SelectedIndices = new int[0];
 			this.tbLan.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
 			this.tbLan.Size = new System.Drawing.Size(859, 576);
@@ -66,8 +69,9 @@ namespace OpenDental{
 			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butClose.Location = new System.Drawing.Point(864, 658);
 			this.butClose.Name = "butClose";
+			this.butClose.Size = new System.Drawing.Size(75, 26);
 			this.butClose.TabIndex = 3;
-			this.butClose.Text = "Close";
+			this.butClose.Text = "&Close";
 			this.butClose.Click += new System.EventHandler(this.butClose_Click);
 			// 
 			// label1
@@ -83,7 +87,7 @@ namespace OpenDental{
 			this.butObsolete.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butObsolete.Location = new System.Drawing.Point(386, 650);
 			this.butObsolete.Name = "butObsolete";
-			this.butObsolete.Size = new System.Drawing.Size(94, 23);
+			this.butObsolete.Size = new System.Drawing.Size(94, 26);
 			this.butObsolete.TabIndex = 5;
 			this.butObsolete.Text = "Set Obsolete";
 			this.butObsolete.Visible = false;
@@ -94,7 +98,7 @@ namespace OpenDental{
 			this.butNot.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butNot.Location = new System.Drawing.Point(510, 650);
 			this.butNot.Name = "butNot";
-			this.butNot.Size = new System.Drawing.Size(64, 23);
+			this.butNot.Size = new System.Drawing.Size(64, 26);
 			this.butNot.TabIndex = 6;
 			this.butNot.Text = "Not";
 			this.butNot.Visible = false;
@@ -112,6 +116,7 @@ namespace OpenDental{
 			// FormTranslation
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butClose;
 			this.ClientSize = new System.Drawing.Size(958, 708);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.butNot);

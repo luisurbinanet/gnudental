@@ -5,12 +5,14 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormRpPrintPreview : System.Windows.Forms.Form{
+		///<summary></summary>
 		public System.Windows.Forms.PrintPreviewControl printPreviewControl2;
 		private System.Windows.Forms.Button button1;
 		private System.ComponentModel.Container components = null;
 
+		///<summary></summary>
 		public FormRpPrintPreview(){
 			InitializeComponent();
  			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -19,6 +21,7 @@ namespace OpenDental{
 
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){

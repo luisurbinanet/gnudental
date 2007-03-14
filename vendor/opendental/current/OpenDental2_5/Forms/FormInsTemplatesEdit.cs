@@ -9,7 +9,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormInsTemplatesEdit : System.Windows.Forms.Form{
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;
@@ -45,8 +45,10 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butCopayNone;
 		private System.Windows.Forms.ListBox listCopay;
 		private System.Windows.Forms.Label label25;
+		///<summary></summary>
 		public bool IsNew;
 
+		///<summary></summary>
 		public FormInsTemplatesEdit(){
 			InitializeComponent();// Required for Windows Form Designer support
 			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -67,6 +69,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -248,6 +251,7 @@ namespace OpenDental{
 			// 
 			// textNote
 			// 
+			this.textNote.AcceptsReturn = true;
 			this.textNote.Location = new System.Drawing.Point(134, 461);
 			this.textNote.MaxLength = 256;
 			this.textNote.Multiline = true;
@@ -258,21 +262,21 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
-			this.butOK.DialogResult = System.Windows.Forms.DialogResult.OK;
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(574, 486);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 10;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// butCancel
 			// 
+			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(574, 522);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 11;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// textAddress2
@@ -380,7 +384,7 @@ namespace OpenDental{
 			this.butCopayNone.Location = new System.Drawing.Point(248, 429);
 			this.butCopayNone.Name = "butCopayNone";
 			this.butCopayNone.TabIndex = 108;
-			this.butCopayNone.Text = "None";
+			this.butCopayNone.Text = "&None";
 			this.butCopayNone.Click += new System.EventHandler(this.butCopayNone_Click);
 			// 
 			// listCopay
@@ -400,8 +404,10 @@ namespace OpenDental{
 			// 
 			// FormInsTemplatesEdit
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(678, 573);
+			this.CancelButton = this.butCancel;
+			this.ClientSize = new System.Drawing.Size(671, 561);
 			this.Controls.Add(this.listClaimForm);
 			this.Controls.Add(this.butCopayNone);
 			this.Controls.Add(this.listCopay);
@@ -449,7 +455,7 @@ namespace OpenDental{
 
 		private void FormInsTemplatesEdit_Load(object sender, System.EventArgs e) {
 			if(IsNew){
-				InsTemplates.Cur.PlanType="I";
+				InsTemplates.Cur.PlanType="";
 			}
 			textCarrier.Text=InsTemplates.Cur.Carrier;
 			textAddress.Text=InsTemplates.Cur.Address;

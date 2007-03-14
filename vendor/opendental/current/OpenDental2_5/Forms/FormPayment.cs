@@ -9,7 +9,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormPayment : System.Windows.Forms.Form{
 		private System.Windows.Forms.Button butOK;
 		private System.Windows.Forms.Button butCancel;
@@ -25,6 +25,7 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textTotal;
 		private System.ComponentModel.Container components = null;// Required designer variable.
 		private System.Windows.Forms.TextBox textNote;
+		///<summary></summary>
 		public bool IsNew=false;
 		private OpenDental.ValidDate textDate;
 		private OpenDental.ValidDouble textAmount;
@@ -47,6 +48,7 @@ namespace OpenDental{
 		private OpenDental.XPButton butDiscount;//(not including discounts)
 		private bool NoPermission=false;
 
+		///<summary></summary>
 		public FormPayment(){
 			InitializeComponent();// Required for Windows Form Designer support
 			tbSplits.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbSplits_CellDoubleClicked);
@@ -73,6 +75,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -126,7 +129,7 @@ namespace OpenDental{
 			this.butDeleteAll.Name = "butDeleteAll";
 			this.butDeleteAll.Size = new System.Drawing.Size(75, 26);
 			this.butDeleteAll.TabIndex = 7;
-			this.butDeleteAll.Text = "Delete";
+			this.butDeleteAll.Text = "&Delete";
 			this.butDeleteAll.Click += new System.EventHandler(this.butDeleteAll_Click);
 			// 
 			// butOK
@@ -136,7 +139,7 @@ namespace OpenDental{
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 8;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// butCancel
@@ -147,7 +150,7 @@ namespace OpenDental{
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 9;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// label1
@@ -206,6 +209,7 @@ namespace OpenDental{
 			// 
 			// textNote
 			// 
+			this.textNote.AcceptsReturn = true;
 			this.textNote.Location = new System.Drawing.Point(106, 116);
 			this.textNote.Multiline = true;
 			this.textNote.Name = "textNote";
@@ -281,6 +285,7 @@ namespace OpenDental{
 			this.tbSplits.BackColor = System.Drawing.SystemColors.Window;
 			this.tbSplits.Location = new System.Drawing.Point(44, 206);
 			this.tbSplits.Name = "tbSplits";
+			this.tbSplits.ScrollValue = 1;
 			this.tbSplits.SelectedIndices = new int[0];
 			this.tbSplits.SelectionMode = System.Windows.Forms.SelectionMode.One;
 			this.tbSplits.Size = new System.Drawing.Size(594, 248);
@@ -312,7 +317,7 @@ namespace OpenDental{
 			this.butDiscount.Name = "butDiscount";
 			this.butDiscount.Size = new System.Drawing.Size(92, 26);
 			this.butDiscount.TabIndex = 32;
-			this.butDiscount.Text = "Discount";
+			this.butDiscount.Text = "&Discount";
 			this.butDiscount.Click += new System.EventHandler(this.butDiscount_Click);
 			// 
 			// textBox1
@@ -339,7 +344,7 @@ namespace OpenDental{
 			this.butAdd.Name = "butAdd";
 			this.butAdd.Size = new System.Drawing.Size(75, 26);
 			this.butAdd.TabIndex = 30;
-			this.butAdd.Text = "Add";
+			this.butAdd.Text = "&Add";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
 			// butDeleteSplit
@@ -354,7 +359,7 @@ namespace OpenDental{
 			this.butDeleteSplit.Name = "butDeleteSplit";
 			this.butDeleteSplit.Size = new System.Drawing.Size(75, 26);
 			this.butDeleteSplit.TabIndex = 31;
-			this.butDeleteSplit.Text = "Delete";
+			this.butDeleteSplit.Text = "D&elete";
 			this.butDeleteSplit.Click += new System.EventHandler(this.butDeleteSplit_Click);
 			// 
 			// label9
@@ -376,6 +381,7 @@ namespace OpenDental{
 			// 
 			// FormPayment
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(800, 682);

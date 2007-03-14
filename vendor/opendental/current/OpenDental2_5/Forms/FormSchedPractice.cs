@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormSchedPractice : System.Windows.Forms.Form{
 		private OpenDental.ContrCalendar Calendar2;
 		private System.ComponentModel.Container components = null;
@@ -14,6 +14,7 @@ namespace OpenDental{
     Color HolidayColor;//will be Def "Holiday" Color
     Color OpenColor; //will be Def "Open" Color
 
+		///<summary></summary>
 		public FormSchedPractice(){
 			InitializeComponent();
       Calendar2.ChangeMonth +=new OpenDental.ContrCalendar.EventHandler(Calendar2_ChangeMonth);  
@@ -23,6 +24,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if(disposing){
 				if(components != null){
@@ -45,7 +47,7 @@ namespace OpenDental{
 			this.Calendar2.BackColor = System.Drawing.SystemColors.Control;
 			this.Calendar2.Location = new System.Drawing.Point(21, 14);
 			this.Calendar2.Name = "Calendar2";
-			this.Calendar2.SelectedDate = new System.DateTime(2004, 1, 17, 0, 0, 0, 0);
+			this.Calendar2.SelectedDate = new System.DateTime(2004, 2, 22, 0, 0, 0, 0);
 			this.Calendar2.Size = new System.Drawing.Size(793, 664);
 			this.Calendar2.TabIndex = 0;
 			this.Calendar2.Click += new System.EventHandler(this.Calendar2_Click);
@@ -53,17 +55,18 @@ namespace OpenDental{
 			// 
 			// butClose
 			// 
-			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butClose.Location = new System.Drawing.Point(842, 654);
 			this.butClose.Name = "butClose";
 			this.butClose.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+			this.butClose.Size = new System.Drawing.Size(75, 26);
 			this.butClose.TabIndex = 1;
-			this.butClose.Text = "OK";
+			this.butClose.Text = "&Close";
 			this.butClose.Click += new System.EventHandler(this.butClose_Click);
 			// 
 			// FormSchedPractice
 			// 
+			this.AcceptButton = this.butClose;
 			this.AutoScale = false;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butClose;
@@ -166,7 +169,9 @@ namespace OpenDental{
 			FormScheduleDay FormSD2=new FormScheduleDay();
       FormSD2.ShowDialog();
       GetScheduleData();
-      Calendar2.DrawDays();
+			Graphics grfx=this.CreateGraphics();
+      Calendar2.DrawDays(grfx);
+			grfx.Dispose();
 		}
 
 		private void butClose_Click(object sender, System.EventArgs e) {

@@ -6,17 +6,23 @@ using System.Data;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary>This differs slightly from ValidNum. Use this to allow a blank entry instead of defaulting to 0.
+///</summary>
 	public class ValidNumber : System.Windows.Forms.TextBox{
 		private System.ComponentModel.Container components = null;
+		///<summary></summary>
 		public int MaxVal=255;
+		///<summary></summary>
 		public System.Windows.Forms.ErrorProvider errorProvider1;
+		///<summary></summary>
 		public int MinVal=0;
 
+		///<summary></summary>
 		public ValidNumber(){
 			InitializeComponent();
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -47,8 +53,6 @@ namespace OpenDental{
 		#endregion
 
 		private void ValidNumber_Validating(object sender, System.ComponentModel.CancelEventArgs e) {
-			//This differs slightly from ValidNum
-			//Use this to allow blank entry instead of defaulting to 0.
 			string myMessage="";
 			if(Text==""){
 				errorProvider1.SetError(this,myMessage);//sets no error message. (empty is OK)

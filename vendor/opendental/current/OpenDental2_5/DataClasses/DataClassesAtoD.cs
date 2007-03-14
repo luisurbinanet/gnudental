@@ -16,15 +16,27 @@ namespace OpenDental{
 	
 	/*=========================================================================================
 	=================================== class DataClass ==========================================*/
-	public class DataClass{//this is the parent of all data classes
+	///<summary>This is the parent of all data classes.</summary>
+	///<remarks>Every database table has a corresponding struct of the same or similar name.  For instance, the claim table has the <see cref="Claim">Claim</see> struct which can store each of the individual values for a single claim row.  Each table also has a class with the same or similar name with an 's' on the end, for instance, the <see cref="Claims">Claims</see> class.  These classes all inherit from this DataClass, which means they all have access to the members of this class.  So there are roughly 60 of theses classes, one for every table plus a few extra.  Every query to the database goes through the corresponding class using the data connection members of this parent class.  Usually, <see cref="DataClass.FillTable">FillTable</see> will fill <see cref="DataClass.table">table</see> with data from the database.  Then a class like claims will copy the data into an array of type claim.  The name of the array is usually List for each of the different classes, for instance <see cref="Claims.List">Claims.List</see>.
+	///</remarks>
+	public class DataClass{//
+		///<summary>This data adapter is used for all queries to the database.</summary>
 		protected static MySqlDataAdapter da;
+		///<summary>This is the connection that is used by the data adapter for all queries.</summary>
 		protected static MySqlConnection con;
+		///<summary>A dataset is a set of tables stored locally in memory.</summary>
 		protected static DataSet ds;
+		///<summary>Used to get very small bits of data from the db when the data adapter would be overkill.  For instance retrieving the response after a command is sent.</summary>
 		protected static MySqlDataReader dr;
+		///<summary>Stores the string of the command that will be sent to the database.</summary>
 		public static MySqlCommand cmd;
+		///<summary>After using the FillTable command, this table will have the table that was retrieved from the database.</summary>
 		protected static DataTable table;
+		///<summary>After inserting a row, this variable will contain the primary key for the newly inserted row.  This can frequently save an additional query to the database.</summary>
 		protected static int InsertID;
 
+		///<summary>Sets the connection values.</summary>
+		///<remarks>This is run whenever the connection values have changed by the user and a new connection needs to be established.  Usually only when starting the program.</remarks>
 		public static void SetConnection(){
 		  con= new MySqlConnection(
 				"Server="+FormConfig.ComputerName
@@ -37,6 +49,20 @@ namespace OpenDental{
 			table=new DataTable(null);
 		}
 
+		///<summary>Sets the connection to an alternate database for backup purposes.  Currently only used during conversions to do a quick backup first.</summary>
+		public static void SetConnection(string db){
+		  con= new MySqlConnection(
+				"Server="+FormConfig.ComputerName
+				+";Database="+db
+				+";User ID="+FormConfig.User
+				+";Password="+FormConfig.Password);
+			dr = null;
+			cmd = new MySqlCommand();
+			cmd.Connection = con;
+			table=new DataTable(null);
+		}
+
+		///<summary>Fills table with data from the database.</summary>
 		protected static void FillTable(){
 			try{
 				da=new MySqlDataAdapter(cmd);
@@ -53,7 +79,9 @@ namespace OpenDental{
 			}
 		}
 
-		protected static void FillDataSet(){//the driver is finally good enough to try this
+		///<summary>Used to retrieve multiple tables from the database.</summary>
+		///<remarks>The driver did not used to be good enough to retreive datasets, but now that it is, we are trying to slowly transition to using this method to reduce the number of queries that have to be sent.</remarks>
+		protected static void FillDataSet(){//
 			try{
 				da=new MySqlDataAdapter(cmd);
 				ds=new DataSet();
@@ -70,6 +98,8 @@ namespace OpenDental{
 			}
 		}
 
+		/// <summary>Sends a non query command to the database.</summary>
+		/// <param name="getInsertID">If true, then InsertID will be set to the value of the primary key of the newly inserted row.</param>
 		protected static void NonQ(bool getInsertID){
 			try{
 				con.Open();
@@ -97,10 +127,12 @@ namespace OpenDental{
 
 	/*=========================================================================================
 	=================================== class Batch ========================================*/
-	public class Batch:DataClass{//used to send batch SQL Select statements
-		//this is a first attempt at batch commands.
-		//The huge advantage is that it only involves ONE round trip.
-
+	///<summary>Used to send batch SQL Select statements.</summary>
+	///<remarks>this is a first attempt at batch commands and it needs some refining.  The huge advantage is that it only involves ONE round trip to the database.</remarks>
+	public class Batch:DataClass{
+		/// <summary>Retrieves a set of tables from the database.</summary>
+		/// <param name="tableList">A simple string with the names of each table separated by commas.</param>
+		/// <remarks>Would like to eliminate the switch statement from this class and replace it with a more flexible strategy possibly using reflection.</remarks>
 		public static void Select(string tableList){
 			AssembleCommand(tableList);
 			FillDataSet();
@@ -109,8 +141,6 @@ namespace OpenDental{
 		}
 
 		private static void AssembleCommand(string tableList){
-			//I could avoid a switch statement if I knew how to use reflection to pass table names
-			//instead of using strings.
 			string[] tableArray=tableList.Split(',');
 			cmd.CommandText="";
 			for(int i=0;i<tableArray.Length;i++){
@@ -169,11 +199,16 @@ namespace OpenDental{
 
 	/*=========================================================================================
 	=================================== class Adjustments ==========================================*/
+	///<summary>Handles database commands related to the adjustment table in the db.</summary>
 	public class Adjustments:DataClass{
+		///<summary>A list of adjustments for a single patient.</summary>
 		public static Adjustment[] List;
+		///<summary>Current. A single row of data.</summary>
 		public static Adjustment Cur;
-		public static Adjustment[] PaymentList;
+		//<summary></summary>
+		//public static Adjustment[] PaymentList;
 
+		///<summary></summary>
 		public static void Refresh(){
 			cmd.CommandText =
 				"SELECT adjnum,adjdate,adjamt,patnum, "
@@ -193,7 +228,8 @@ namespace OpenDental{
 			}//end for
 		}
 
-		public static void UpdateCur(){//updates Cur
+		///<summary></summary>
+		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE adjustment SET " 
 				+ "adjdate = '"      +POut.PDate  (Cur.AdjDate)+"'"
 				+ ",adjamt = '"      +POut.PDouble(Cur.AdjAmt)+"'"
@@ -206,6 +242,7 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO adjustment (adjdate,adjamt,patnum, "
 				+"adjtype,provnum,adjnote) VALUES("
@@ -218,43 +255,62 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void DeleteCur(){
 			cmd.CommandText="DELETE FROM adjustment "
 				+"WHERE adjnum = '"+Cur.AdjNum.ToString()+"'";
 			NonQ(false);
 		}
 
-		public static double ComputeBal(){//must make sure Refresh is done first
+		///<summary>Must make sure Refresh is done first.  Returns the sum of all adjustments for this patient.  Amount might be pos or neg.</summary>
+		public static double ComputeBal(){
 			double retVal=0;
 			for(int i=0;i<List.Length;i++){
-				retVal+=List[i].AdjAmt;//amount might be pos or neg
+				retVal+=List[i].AdjAmt;
 			}
 			return retVal;
 		}
 	}
 
+	///<summary>Corresponds to the adjustment table in the database.</summary>
 	public struct Adjustment{
-		public int AdjNum;//primary key
+		///<summary>Primary key.</summary>
+		public int AdjNum;
+		///<summary>Date of adjustment.</summary>
 		public DateTime AdjDate;
+		///<summary>Amount of adjustment.</summary>
 		public double AdjAmt;
-		public int PatNum;//primary key to Patient.PatNum
-		public int AdjType;//foreign key to Definition.DefNum
-		public int ProvNum;//foreign key to Provider.ProvNum
+		///<summary>Foreign key to <see cref="Patient.PatNum">patient.PatNum</see>.  Can be pos or neg.</summary>
+		public int PatNum;
+		///<summary>Foreign key to <see cref="Def.DefNum">definition.DefNum</see>.</summary>
+		public int AdjType;
+		///<summary>Foreign key to <see cref="Provider.ProvNum">provider.ProvNum</see>.</summary>
+		public int ProvNum;
+		///<summary>Note for this adjustment.</summary>
 		public string AdjNote;
 	}
 
 
 	/*=========================================================================================
 	=================================== class Appointments ==========================================*/
+	///<summary>Handles database commands related to the appointment table in the db.</summary>
 	public class Appointments:DataClass{
+		///<summary>This is a temporary private list of appointments which then gets copied to one of the three public lists.</summary>
 		private static Appointment[] List;
+		///<summary>A list of appointments for one day in the schedule, whether hidden or not.</summary>
 		public static Appointment[] ListDay;
+		///<summary>A list of appointments for use on the Unscheduled list or the Next appointment tracker.</summary>
 		public static Appointment[] ListUn;
+		///<summary>A list of appointments for use on the Other appointments list for a single patient.</summary>
 		public static Appointment[] ListOth;
+		///<summary>Current.  A single row of data.</summary>
 		public static Appointment Cur;
+		///<summary>The appointment on the pinboard.</summary>
 		public static Appointment PinBoard;
+		///<summary>The date currently selected in the appointment module.</summary>
 		public static DateTime DateSelected;
 
+		///<summary>Gets the ListDay for a given date.</summary>
 		public static void Refresh(DateTime thisDay){
 			DateSelected = thisDay;
 			cmd.CommandText =
@@ -266,16 +322,28 @@ namespace OpenDental{
 			List=null;
 		}
 
-		public static void RefreshUnsched(){
-			cmd.CommandText =
-				"SELECT * FROM appointment "
-				+"WHERE aptstatus = '"+(int)ApptStatus.UnschedList+"' "
-				+"ORDER BY AptDateTime";
+		///<summary>Gets ListUn for both the unscheduled list and for next appt tracker.
+		///This is in transition, since the unscheduled list will probably eventually be phased out.</summary>
+		///<param name="doGetNext">True if getting Next appointments, false if getting Unscheduled appointments.</param>
+		public static void RefreshUnsched(bool doGetNext){
+			if(doGetNext){
+				cmd.CommandText="SELECT Tnext.*,Tregular.aptnum FROM appointment AS Tnext "
+					+"LEFT JOIN appointment AS Tregular ON Tnext.aptnum = Tregular.nextaptnum "
+					+"WHERE Tnext.aptstatus = '"+(int)ApptStatus.Next+"' "
+					+"AND Tregular.aptnum IS NULL "
+					+"ORDER BY Tnext.UnschedStatus,Tnext.AptDateTime";
+			}
+			else{//unsched
+				cmd.CommandText="SELECT * FROM appointment "
+					+"WHERE aptstatus = '"+(int)ApptStatus.UnschedList+"' "
+					+"ORDER BY AptDateTime";
+			}
 			FillList();
 			ListUn=List;
 			List=null;
 		}
 
+		///<summary>Gets the ListOth for the current patient.</summary>
 		public static void RefreshOther(){
 			cmd.CommandText =
 				"SELECT * FROM appointment "
@@ -289,28 +357,31 @@ namespace OpenDental{
 		private static void FillList(){
 			FillTable();
 			List = new Appointment[table.Rows.Count];
-			for (int i = 0; i < table.Rows.Count; i += 1){
-				List[i].AptNum     =PIn.PInt   (table.Rows[i][0].ToString());
-				List[i].PatNum     =PIn.PInt   (table.Rows[i][1].ToString());
-				List[i].AptStatus  =(ApptStatus)PIn.PInt(table.Rows[i][2].ToString());
-				List[i].Pattern    =PIn.PString(table.Rows[i][3].ToString());
-				List[i].Confirmed  =PIn.PInt   (table.Rows[i][4].ToString());
-				List[i].AddTime    =PIn.PInt   (table.Rows[i][5].ToString());
-				List[i].Op         =PIn.PInt   (table.Rows[i][6].ToString());
-				List[i].Note       =PIn.PString(table.Rows[i][7].ToString());
-				List[i].ProvNum    =PIn.PInt   (table.Rows[i][8].ToString());
-				List[i].ProvHyg    =PIn.PInt   (table.Rows[i][9].ToString());
-				List[i].AptDateTime=PIn.PDateT (table.Rows[i][10].ToString());
-				List[i].NextAptNum =PIn.PInt   (table.Rows[i][11].ToString());
-				List[i].UnschedStatus=PIn.PInt (table.Rows[i][12].ToString());
-				List[i].Lab        =(LabCase)PIn.PInt   (table.Rows[i][13].ToString());
+			for(int i=0;i<table.Rows.Count;i++){
+				List[i].AptNum      =PIn.PInt   (table.Rows[i][0].ToString());
+				List[i].PatNum      =PIn.PInt   (table.Rows[i][1].ToString());
+				List[i].AptStatus   =(ApptStatus)PIn.PInt(table.Rows[i][2].ToString());
+				List[i].Pattern     =PIn.PString(table.Rows[i][3].ToString());
+				List[i].Confirmed   =PIn.PInt   (table.Rows[i][4].ToString());
+				List[i].AddTime     =PIn.PInt   (table.Rows[i][5].ToString());
+				List[i].Op          =PIn.PInt   (table.Rows[i][6].ToString());
+				List[i].Note        =PIn.PString(table.Rows[i][7].ToString());
+				List[i].ProvNum     =PIn.PInt   (table.Rows[i][8].ToString());
+				List[i].ProvHyg     =PIn.PInt   (table.Rows[i][9].ToString());
+				List[i].AptDateTime =PIn.PDateT (table.Rows[i][10].ToString());
+				List[i].NextAptNum  =PIn.PInt   (table.Rows[i][11].ToString());
+				List[i].UnschedStatus=PIn.PInt  (table.Rows[i][12].ToString());
+				List[i].Lab         =(LabCase)PIn.PInt   (table.Rows[i][13].ToString());
+				List[i].IsNewPatient=PIn.PBool  (table.Rows[i][14].ToString());
+				List[i].ProcDescript=PIn.PString(table.Rows[i][15].ToString());
 			}
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO appointment (patnum,aptstatus, "
 				+"pattern,confirmed,addtime,op,note,provnum,"
-				+"provhyg,aptdatetime,nextaptnum,unschedstatus,lab) VALUES("
+				+"provhyg,aptdatetime,nextaptnum,unschedstatus,lab,isnewpatient,procdescript) VALUES("
 				+"'"+POut.PInt   (Cur.PatNum)+"', "
 				+"'"+POut.PInt   ((int)Cur.AptStatus)+"', "
 				+"'"+POut.PString(Cur.Pattern)+"', "
@@ -323,37 +394,41 @@ namespace OpenDental{
 				+"'"+POut.PDateT (Cur.AptDateTime)+"', "
 				+"'"+POut.PInt   (Cur.NextAptNum)+"', "
 				+"'"+POut.PInt   (Cur.UnschedStatus)+"', "
-				+"'"+POut.PInt   ((int)Cur.Lab)+"')";
+				+"'"+POut.PInt   ((int)Cur.Lab)+"', "
+				+"'"+POut.PBool  (Cur.IsNewPatient)+"', "
+				+"'"+POut.PString(Cur.ProcDescript)+"')";
 			NonQ(true);
 			Cur.AptNum=InsertID;
 			//MessageBox.Show(Cur.AptNum.ToString());
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE appointment SET "
-				+"PatNum = '"     +POut.PInt   (Cur.PatNum)+"', "
-				+"AptStatus = '"     +POut.PInt   ((int)Cur.AptStatus)+"', "
-				+"Pattern = '"    +POut.PString(Cur.Pattern)+"', "
-				+"Confirmed = '"  +POut.PInt   (Cur.Confirmed)+"', "
-				+"AddTime = '"    +POut.PInt   (Cur.AddTime)+"', "
-				+"Op = '"         +POut.PInt   (Cur.Op)+"', "
-				+"Note = '"       +POut.PString(Cur.Note)+"', "
-				+"provnum = '"    +POut.PInt   (Cur.ProvNum)+"', "
-				+"provhyg = '"    +POut.PInt   (Cur.ProvHyg)+"', "
-				+"aptdatetime = '"+POut.PDateT (Cur.AptDateTime)+"', "
-				+"nextaptnum = '" +POut.PInt   (Cur.NextAptNum)+"', "
+				+"PatNum = '"      +POut.PInt   (Cur.PatNum)+"', "
+				+"AptStatus = '"   +POut.PInt   ((int)Cur.AptStatus)+"', "
+				+"Pattern = '"     +POut.PString(Cur.Pattern)+"', "
+				+"Confirmed = '"   +POut.PInt   (Cur.Confirmed)+"', "
+				+"AddTime = '"     +POut.PInt   (Cur.AddTime)+"', "
+				+"Op = '"          +POut.PInt   (Cur.Op)+"', "
+				+"Note = '"        +POut.PString(Cur.Note)+"', "
+				+"provnum = '"     +POut.PInt   (Cur.ProvNum)+"', "
+				+"provhyg = '"     +POut.PInt   (Cur.ProvHyg)+"', "
+				+"aptdatetime = '" +POut.PDateT (Cur.AptDateTime)+"', "
+				+"nextaptnum = '"  +POut.PInt   (Cur.NextAptNum)+"', "
 				+"unschedstatus = '" +POut.PInt(Cur.UnschedStatus)+"', "
-				+"lab = '"        +POut.PInt   ((int)Cur.Lab)+"' "
+				+"lab = '"         +POut.PInt   ((int)Cur.Lab)+"', "
+				+"isnewpatient = '"+POut.PBool  (Cur.IsNewPatient)+"', "
+				+"procdescript = '"+POut.PString(Cur.ProcDescript)+"' "
 				+"WHERE AptNum = '"+POut.PInt  (Cur.AptNum)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			NonQ(false);
 		}
 
+		///<summary>Gets one appointment and stores the info in Cur.</summary>
 		public static void RefreshCur(int aptNum){
 			cmd.CommandText =
-				"SELECT aptnum,patnum,aptstatus,"
-				+"pattern,confirmed,addtime,op,note,provnum,"
-				+"provhyg,aptdatetime,nextaptnum,unschedstatus,lab "
+				"SELECT * "
 				+"FROM appointment "
 				+"WHERE aptnum = '"+POut.PInt(aptNum)+"'";
 			FillTable();
@@ -361,22 +436,25 @@ namespace OpenDental{
 			if(table.Rows.Count==0){
 				return;
 			}
-			Cur.AptNum     =PIn.PInt   (table.Rows[0][0].ToString());
-			Cur.PatNum     =PIn.PInt   (table.Rows[0][1].ToString());
-			Cur.AptStatus  =(ApptStatus)PIn.PInt(table.Rows[0][2].ToString());
-			Cur.Pattern    =PIn.PString(table.Rows[0][3].ToString());
-			Cur.Confirmed  =PIn.PInt   (table.Rows[0][4].ToString());
-			Cur.AddTime    =PIn.PInt   (table.Rows[0][5].ToString());
-			Cur.Op         =PIn.PInt   (table.Rows[0][6].ToString());
-			Cur.Note       =PIn.PString(table.Rows[0][7].ToString());
-			Cur.ProvNum    =PIn.PInt   (table.Rows[0][8].ToString());
-			Cur.ProvHyg    =PIn.PInt   (table.Rows[0][9].ToString());
-			Cur.AptDateTime=PIn.PDateT (table.Rows[0][10].ToString());
-			Cur.NextAptNum =PIn.PInt   (table.Rows[0][11].ToString());
-			Cur.UnschedStatus =PIn.PInt(table.Rows[0][12].ToString());
-			Cur.Lab        =(LabCase)PIn.PInt(table.Rows[0][13].ToString());
+			Cur.AptNum      =PIn.PInt   (table.Rows[0][0].ToString());
+			Cur.PatNum      =PIn.PInt   (table.Rows[0][1].ToString());
+			Cur.AptStatus   =(ApptStatus)PIn.PInt(table.Rows[0][2].ToString());
+			Cur.Pattern     =PIn.PString(table.Rows[0][3].ToString());
+			Cur.Confirmed   =PIn.PInt   (table.Rows[0][4].ToString());
+			Cur.AddTime     =PIn.PInt   (table.Rows[0][5].ToString());
+			Cur.Op          =PIn.PInt   (table.Rows[0][6].ToString());
+			Cur.Note        =PIn.PString(table.Rows[0][7].ToString());
+			Cur.ProvNum     =PIn.PInt   (table.Rows[0][8].ToString());
+			Cur.ProvHyg     =PIn.PInt   (table.Rows[0][9].ToString());
+			Cur.AptDateTime =PIn.PDateT (table.Rows[0][10].ToString());
+			Cur.NextAptNum  =PIn.PInt   (table.Rows[0][11].ToString());
+			Cur.UnschedStatus =PIn.PInt (table.Rows[0][12].ToString());
+			Cur.Lab         =(LabCase)PIn.PInt(table.Rows[0][13].ToString());
+			Cur.IsNewPatient=PIn.PBool  (table.Rows[0][14].ToString());
+			Cur.ProcDescript=PIn.PString(table.Rows[0][15].ToString());
 		}
 	
+		///<summary></summary>
 		public static void DeleteCur(){
 			cmd.CommandText="DELETE from appointment WHERE "
 				+"aptnum = '"+POut.PInt(Cur.AptNum)+"'";
@@ -384,6 +462,10 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary>Used when generating the recall list to test whether a patient already has a future appointment scheduled.</summary>
+		///<param name="patNum"></param>
+		///<returns></returns>
+		///<remarks>It was not possible to incorporate this into the main query because it would have been too complex.  A single query might be a good idea at some point.</remarks>
 		public static bool PatientHasFutureRecall(int patNum){
 			cmd.CommandText="SELECT appointment.patNum FROM appointment,procedurelog,procedurecode "
 				+"WHERE procedurelog.patnum = '"+patNum.ToString()+"' "
@@ -402,30 +484,55 @@ namespace OpenDental{
 		}
 	}//end class Appointments
 	
+	///<summary>Corresponds to the appointment table in the database.</summary>
 	public struct Appointment{
-		public int AptNum;//primary key
-		public int PatNum;//foreign key to Patient.PatNum
-		public ApptStatus AptStatus;//enum ApptStatus{None=0,Scheduled=1,Complete=2,UnschedList=3,ASAP=4,Broken=5}
-		public string Pattern;//Time pattern, X for Dr time, / for assist time
-		public int Confirmed;//foreign key to Definition.DefNum
-		public int AddTime;//example: 2 would represent add 20 minutes Dr time.
-		public int Op;//foreign key to Definition.DefNum
+		///<summary>Primary key.</summary>
+		public int AptNum;
+		///<summary>Foreign key to <see cref="Patient.PatNum">patient.PatNum</see>.</summary>
+		public int PatNum;
+		///<summary>See the <see cref="ApptStatus"/> enumeration.</summary>
+		public ApptStatus AptStatus;
+		///<summary>Time pattern, X for Dr time, / for assist time.</summary>
+		public string Pattern;
+		///<summary>Foreign key to <see cref="Def.DefNum">definition.DefNum</see>.</summary>
+		///<remarks>The <see cref="Def.Category">definition.Category</see> in the definition table is <see cref="DefCat.ApptConfirmed">DefCat.ApptConfirmed</see>.</remarks>
+		public int Confirmed;
+		///<summary>Amount of time to add to appointment.  Example: 2 would represent add 20 minutes.</summary>
+		public int AddTime;
+		///<summary>Operatory.  Foreign key to <see cref="Def.DefNum">definition.DefNum</see>.</summary>
+		///<remarks>The <see cref="Def.Category">definition.Category</see> in the definition table is <see cref="DefCat.Operatories">DefCat.Operatories</see>.</remarks>
+		public int Op;
+		///<summary>Note.</summary>
 		public string Note;
-		public int ProvNum;//foreign key to Provider.ProvNum
-		public int ProvHyg;//foreign key to Provider.ProvNum for Hygeine provider
+		///<summary>Foreign key to <see cref="Provider.ProvNum">provider.ProvNum</see>.</summary>
+		public int ProvNum;
+		///<summary>Hygiene provider.  Foreign key to <see cref="Provider.ProvNum">provider.ProvNum</see>.</summary>
+		public int ProvHyg;
+		///<summary>Appointment Date and time.</summary>
 		public DateTime AptDateTime;
-		public int NextAptNum;//Only used to show that this apt is derived from specified next apt. otherwise, 0
-		public int UnschedStatus;//foreign key to Definition.DefNum. Only used if this is an Unsched appt.
-		public LabCase Lab;//enum LabCase{None=0,Sent,Received};
-	}//end struct Appointment
+		///<summary>Only used to show that this apt is derived from specified next apt. Otherwise, 0. Foreign key to appointment.AptNum.</summary>
+		public int NextAptNum;
+		///<summary>Foreign key to <see cref="Def.DefNum">definition.DefNum</see>.</summary>
+		///<remarks>The <see cref="Def.Category">definition.Category</see> in the definition table is <see cref="DefCat.RecallUnschedStatus">DefCat.RecallUnschedStatus</see>.  Only used if this is an Unsched or Next appt.</remarks>
+		public int UnschedStatus;
+		///<summary>A lab case is expected for this appointment.</summary>
+		public LabCase Lab;
+		///<summary>This is the first appoinment this patient has had at this office.</summary>
+		public bool IsNewPatient;
+		///<summary>A one line summary of all procedures.  Can be used in various reports, Unscheduled list, and Next appointment tracker.  Not user editable right now.</summary>
+		public string ProcDescript;
+	}
 
 	/*=========================================================================================
 	=================================== class ApptViews ===========================================*/
-
+	///<summary>Handles database commands related to the apptview table in the database.</summary>
 	public class ApptViews:DataClass{
+		///<summary>Current.  A single row of data.</summary>
 		public static ApptView Cur;
+		///<summary>A list of all apptviews, in order.</summary>
 		public static ApptView[] List;
 
+		///<summary></summary>
 		public static void Refresh(){
 			cmd.CommandText =
 				"SELECT * from apptview ORDER BY itemorder";
@@ -438,6 +545,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO apptview (description,itemorder) "
 				+"VALUES ("
@@ -448,6 +556,7 @@ namespace OpenDental{
 			Cur.ApptViewNum=InsertID;
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE apptview SET "
 				+"description='" +POut.PString(Cur.Description)+"'"
@@ -456,6 +565,7 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void DeleteCur(){
 			cmd.CommandText="DELETE from apptview WHERE apptviewnum = '"
 				+POut.PInt(Cur.ApptViewNum)+"'";
@@ -475,9 +585,9 @@ namespace OpenDental{
 
 	}
 
-	///<summary>table apptcategory. Enables viewing a variety of operatories.</summary>
+	///<summary>Corresponds to the apptview table in the database. Enables viewing a variety of operatories or providers.</summary>
 	public struct ApptView{
-		///<summary>primary key</summary>
+		///<summary>Primary key.</summary>
 		public int ApptViewNum;
 		///<summary>Description of this view.  Gets displayed in Appt module.</summary>
 		public string Description;
@@ -487,17 +597,23 @@ namespace OpenDental{
 
 	/*=========================================================================================
 	=================================== class ApptViewItems ===========================================*/
-
+	///<summary>Handles database commands related to the apptviewitem table in the database.</summary>
 	public class ApptViewItems:DataClass{
+		///<summary>Current.  A single row of data.</summary>
 		public static ApptViewItem Cur;
+		///<summary>A list of all ApptViewItems.</summary>
 		public static ApptViewItem[] List;
+		///<summary>A list of the ApptViewItems for the current view.</summary>
 		public static ApptViewItem[] ForCurView;
 		//these two are subsets of provs and ops. You can't include hidden prov or op in this list.
 		///<summary>Visible providers in appt module.  List of indices to providers.List(short).</summary>
+		///<remarks>Also see VisOps.  This is a subset of the available provs.  You can't include a hidden prov in this list.</remarks>
 		public static int[] VisProvs;
 		///<summary>Visible ops in appt module.  List of indices to Defs.Short[ops].</summary>
+		///<remarks>Also see VisProvs.  This is a subset of the available ops.  You can't include a hidden op in this list.</remarks>
 		public static int[] VisOps;
 
+		///<summary></summary>
 		public static void Refresh(){
 			cmd.CommandText =
 				"SELECT * from apptviewitem";
@@ -511,6 +627,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO apptviewitem (apptviewnum,opnum,provnum) "
 				+"VALUES ("
@@ -522,6 +639,7 @@ namespace OpenDental{
 			//Cur.ApptViewNum=InsertID;
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE apptviewitem SET "
 				+"apptviewnum='" +POut.PInt   (Cur.ApptViewNum)+"'"
@@ -531,12 +649,14 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void DeleteCur(){
 			cmd.CommandText="DELETE from apptviewitem WHERE apptviewitemnum = '"
 				+POut.PInt(Cur.ApptViewItemNum)+"'";
 			NonQ(false);
 		}
 
+		///<summary>Deletes all apptviewitems for the current apptView.</summary>
 		public static void DeleteAllForView(){
 			cmd.CommandText="DELETE from apptviewitem WHERE apptviewnum = '"
 				+POut.PInt(ApptViews.Cur.ApptViewNum)+"'";
@@ -636,10 +756,15 @@ namespace OpenDental{
 
 	}
 
-	public struct ApptViewItem{//table apptviewitem
-		public int ApptViewItemNum;//primary key
-		public int ApptViewNum;//foreign key to apptview
+	///<summary>Corresponds to the apptviewitem table in the database.</summary>
+	public struct ApptViewItem{
+		///<summary>Primary key.</summary>
+		public int ApptViewItemNum;//
+		///<summary>Foreign key to apptview.</summary>
+		public int ApptViewNum;
+		///<summary>Foreign key to definition.DefNum.</summary>
 		public int OpNum;
+		///<summary>Foreign key to provider.ProvNum.</summary>
 		public int ProvNum;
 	}
 
@@ -647,12 +772,18 @@ namespace OpenDental{
 	/*=========================================================================================
 	=================================== class AutoCodes ===========================================*/
 
+	///<summary></summary>
 	public class AutoCodes:DataClass{
+		///<summary></summary>
 		public static AutoCode Cur;
+		///<summary></summary>
 		public static AutoCode[] List;
+		///<summary></summary>
 		public static AutoCode[] ListShort;
+		///<summary></summary>
 		public static Hashtable HList; 
 
+		///<summary></summary>
 		public static void Refresh(){
 			cmd.CommandText =
 				"SELECT * from autocode";
@@ -675,6 +806,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO autocode (description,ishidden) "
 				+"VALUES ("
@@ -685,6 +817,7 @@ namespace OpenDental{
 			Cur.AutoCodeNum=InsertID;
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE autocode SET "
 				+"description='"+POut.PString(Cur.Description)+"'"
@@ -693,6 +826,7 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void DeleteCur(){
 			cmd.CommandText = "DELETE from autocode WHERE autocodenum = '"+POut.PInt(Cur.AutoCodeNum)+"'";
 			NonQ(false);
@@ -700,22 +834,30 @@ namespace OpenDental{
 
 	}
 
-	public struct AutoCode{//table AutoCode
-		public int AutoCodeNum;//primary key
-		public string Description;//Displays meaningful decription, like "amalgam"
-		public bool IsHidden;//User can hide autocodes
+	///<summary>Corresponds to the autocode table in the database.</summary>
+	public struct AutoCode{
+		///<summary>Primary key.</summary>
+		public int AutoCodeNum;
+		///<summary>Displays meaningful decription, like "Amalgam".</summary>
+		public string Description;
+		///<summary>User can hide autocodes</summary>
+		public bool IsHidden;
 	}
 
 	/*=========================================================================================
 	=================================== class AutoCodeConds ===========================================*/
-  
+  ///<summary></summary>
 	public class AutoCodeConds:DataClass{
+		///<summary></summary>
 		public static AutoCodeCond Cur;
+		///<summary></summary>
 		public static AutoCodeCond[] List;
+		///<summary></summary>
 		public static AutoCodeCond[] ListForItem;
 		private static ArrayList ALlist;
 		//public static Hashtable HList; 
 
+		///<summary></summary>
 		public static void Refresh(){
 			cmd.CommandText =
 				"SELECT * from autocodecond ORDER BY condition";
@@ -730,6 +872,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO autocodecond (autocodeitemnum,condition) "
 				+"VALUES ("
@@ -740,6 +883,7 @@ namespace OpenDental{
 			Cur.AutoCodeCondNum=InsertID;
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE autocodecond SET "
 				+"autocodeitemnum='"+POut.PInt(Cur.AutoCodeItemNum)+"'"
@@ -748,18 +892,21 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void DeleteCur(){
 			cmd.CommandText = "DELETE from autocodecond WHERE autocodecondnum = '"
 				+POut.PInt(Cur.AutoCodeCondNum)+"'";
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void DeleteForItemNum(int itemNum){
 			cmd.CommandText = "DELETE from autocodecond WHERE autocodeitemnum = '"
 				+POut.PInt(itemNum)+"'";//AutoCodeItems.Cur.AutoCodeItemNum)
 			NonQ(false); 
 		}
 
+		///<summary></summary>
 		public static void GetListForItem(int autoCodeItemNum){
 			ALlist=new ArrayList();
 			for(int i=0;i<List.Length;i++){
@@ -773,6 +920,7 @@ namespace OpenDental{
 			}     
 		}
 
+		///<summary></summary>
 		public static bool IsSurf(AutoCondition myAutoCondition){
 			switch(myAutoCondition){
 				case AutoCondition.One_Surf:
@@ -786,6 +934,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public static bool ConditionIsMet(AutoCondition myAutoCondition, string toothNum,string surf,bool isAdditional){//MissingTeeth is already available for given patient
 			switch(myAutoCondition){
 				case AutoCondition.Anterior:
@@ -829,22 +978,32 @@ namespace OpenDental{
 
 	}
 
-	public struct AutoCodeCond{//table AutoCodeCond
-		//There is usually only one or two conditions for a given item.
-		public int AutoCodeCondNum;//primary key
-		public int AutoCodeItemNum;//foreign key to AutoCodeItem.AutoCodeItemNum
-		public AutoCondition Condition;//enum {Anterior,Posterior,Premolar,Molar,One_Surf,Two_Surf,Three_Surf,Four_Surf,Five_Surf,First,EachAdditional,Maxillary,Mandibular,Primary,Permanent,Pontic,Retainer}
+	///<summary>Corresponds to the autocodecond table in the database.</summary>
+	///<remarks>There is usually only one or two conditions for a given AutoCodeItem.</remarks>
+	public struct AutoCodeCond{//
+		///<summary>Primary key.</summary>
+		public int AutoCodeCondNum;
+		///<summary>Foreign key to AutoCodeItem.AutoCodeItemNum.</summary>
+		public int AutoCodeItemNum;
+		///<summary>See the AutoCondition enumeration.</summary>
+		public AutoCondition Condition;
 	}
 
 	/*=========================================================================================
 	=================================== class AutoCodeItems ===========================================*/
 
+	///<summary></summary>
 	public class AutoCodeItems:DataClass{
+		///<summary></summary>
 		public static AutoCodeItem Cur;
+		///<summary></summary>
 		public static AutoCodeItem[] List;//all
+		///<summary></summary>
 		public static AutoCodeItem[] ListForCode;//all items for a specific AutoCode
+		///<summary></summary>
 		public static Hashtable HList;//key=ADACode,value=AutoCodeNum
 
+		///<summary></summary>
 		public static void Refresh(){
 			cmd.CommandText =
 				"SELECT * from autocodeitem";
@@ -861,6 +1020,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO autocodeitem (autocodenum,adacode) "
 				+"VALUES ("
@@ -871,6 +1031,7 @@ namespace OpenDental{
 			Cur.AutoCodeItemNum=InsertID;
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE autocodeitem SET "
 				+"autocodenum='"+POut.PInt   (Cur.AutoCodeNum)+"'"
@@ -879,12 +1040,21 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void DeleteCur(){
 			cmd.CommandText = "DELETE from autocodeitem WHERE autocodeitemnum = '"
 				+POut.PInt(Cur.AutoCodeItemNum)+"'";
 			NonQ(false);
 		}
 
+		///<summary></summary>
+		public static void Delete(int autoCodeNum){
+			cmd.CommandText = "DELETE from autocodeitem WHERE AutoCodeNum = '"
+				+POut.PInt(autoCodeNum)+"'";
+			NonQ(false);
+		}
+
+		///<summary></summary>
 		public static void GetListForCode(int autoCodeNum){
 			//loop through AutoCodeItems.List to fill ListForCode
 			ArrayList ALtemp=new ArrayList();
@@ -899,6 +1069,7 @@ namespace OpenDental{
 			}     
 		}
 
+		///<summary></summary>
 		public static string GetADA(int autoCodeNum,string toothNum,string surf,bool isAdditional){
 			bool allCondsMet;
 			GetListForCode(autoCodeNum);
@@ -921,6 +1092,7 @@ namespace OpenDental{
 			return ListForCode[0].ADACode;//if couldn't find a better match
 		}
 
+		///<summary></summary>
 		public static string VerifyCode(string ADACode,string toothNum,string surf,bool isAdditional){
 			bool allCondsMet;
 			if(!AutoCodeItems.HList.ContainsKey(ADACode)){
@@ -946,22 +1118,33 @@ namespace OpenDental{
 
 	}
 
-	public struct AutoCodeItem{//table AutoCodeItem
-		//There are multiple AutoCodeItems for a given AutoCode.  Each Item has one ADA code.
-		public int AutoCodeItemNum;//primary key
-		public int AutoCodeNum;//foreign key to AutoCode.AutoCodeNum
-		public string ADACode;//foreign key to ProcedureCode.ADACode
+	///<summary>Corresponds to the autocodeitem table in the database.</summary>
+	///<remarks>There are multiple AutoCodeItems for a given AutoCode.  Each Item has one ADA code.</remarks>
+	public struct AutoCodeItem{
+		///<summary>Primary key.</summary>
+		public int AutoCodeItemNum;
+		///<summary>Foreign key to AutoCode.AutoCodeNum</summary>
+		public int AutoCodeNum;
+		///<summary>Foreign key to ProcedureCode.ADACode</summary>
+		public string ADACode;
 	}
 	
 	/*=========================================================================================
 	=================================== class Claims ==========================================*/
+	///<summary></summary>
 	public class Claims:DataClass{
+		///<summary></summary>
 		public static Claim[] List;
+		///<summary></summary>
 		public static Hashtable HList;
+		///<summary></summary>
 		public static Claim Cur;
+		///<summary></summary>
 		public static QueueItem[] ListQueue;
+		///<summary></summary>
 		public static QueueItem CurQueue;
 
+		///<summary></summary>
 		public static void RefreshByCheck(int claimPaymentNum, bool showUnattached){
 			cmd.CommandText =
 				"SELECT claim.dateservice,claim.provtreat,CONCAT(patient.lname,', ',patient.fname)"
@@ -971,8 +1154,8 @@ namespace OpenDental{
 				+" WHERE claimproc.claimnum = claim.claimnum"
 				+" && patient.patnum = claim.patnum"
 				+" && insplan.plannum = claim.plannum"
-				+" && claimproc.status = '1'"//received
-				+" && (claimproc.claimpaymentnum = '"+claimPaymentNum+"'";
+				+" && (claimproc.status = '1' || claimproc.status = '4')"//received or supplemental
+ 				+" && (claimproc.claimpaymentnum = '"+claimPaymentNum+"'";
 			if(showUnattached){
 				cmd.CommandText+=" || (claimproc.inspayamt > 0 && claimproc.claimpaymentnum = '0'))"
 					+" GROUP BY claimproc.claimnum";
@@ -996,6 +1179,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public static void Refresh(){
 			cmd.CommandText =
 				"SELECT * FROM claim"
@@ -1042,6 +1226,7 @@ namespace OpenDental{
 			}//end for
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO claim (patnum,dateservice,datesent,claimstatus,datereceived"
 				+",plannum,provtreat,claimfee,inspayest,inspayamt,dedapplied"
@@ -1086,6 +1271,7 @@ namespace OpenDental{
 			Cur.ClaimNum=InsertID;
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE claim SET "
 				+"patnum = '"          +POut.PInt   (Cur.PatNum)+"' "
@@ -1125,6 +1311,7 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void DeleteCur(){
 			cmd.CommandText = "DELETE FROM claim "
 				+"WHERE claimnum = '"+POut.PInt(Cur.ClaimNum)+"'";
@@ -1135,6 +1322,7 @@ namespace OpenDental{
 		//public static void GetProcsInClaim(int myClaimNum){
 			//moved to claimprocs
 
+		///<summary></summary>
 		public static void DetachProcsFromClaim(){
 			cmd.CommandText = "UPDATE procedurelog SET "
 				+"claimnum = '0' "
@@ -1221,6 +1409,7 @@ namespace OpenDental{
 			return retVal;
 		}*/
 
+		///<summary></summary>
 		public static void GetQueueList(){
 			cmd.CommandText =
 				"SELECT T1.claimnum,T2.nosendelect,concat(T3.lname,', ',T3.fname,' ',T3.middlei)"
@@ -1242,6 +1431,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public static void UpdateStatus(int claimNum,string newStatus){
 			cmd.CommandText = "UPDATE claim SET "
 				+"claimstatus = '"+newStatus+"' "
@@ -1251,79 +1441,121 @@ namespace OpenDental{
 
 	}//end class Claims
 
+	///<summary>Corresponds to the claim table in the database.</summary>
+	///<remarks>The claim table holds information about individual claims.  Each row represents one claim.</remarks>
 	public struct Claim{
-		public int ClaimNum;//primary key
-		public int PatNum;//foreign key to Patient.PatNum
-		public DateTime DateService;//procedures might have different dates
-		public DateTime DateSent;
-		public string ClaimStatus;//single char: U,H,W,P,S,or R. A(adj) is no longer used
-		//Unsent,Hold until pri received,Waiting in queue,Probably sent,Sent,Received 
-		public DateTime DateReceived;
-		public int PlanNum;//foreign key to InsPlan.PlanNum
-		public int ProvTreat;//foreign key to Provider.ProvNum.  Treating provider.
-		public double ClaimFee;//total fee of claim
-		public double InsPayEst;//amount insurance is estimated to pay on this claim
-		public double InsPayAmt;//amount insurance actually paid.
-		//public int ClaimPaymentNum;//Dropped in version 2.1
-		public double DedApplied;//deductible applied to this claim
-		//public double OverMax;//Dropped in version 2.1
-		public string PreAuthString;//The preauth number received from ins.
-		public string IsProsthesis;//single char for No, Initial, or Replacement
-		public DateTime PriorDate;//date prior prosthesis was placed
-		public string ReasonUnderPaid;//note for patient for why insurance didn't pay as expected.
-		public string ClaimNote;//note to be sent to insurance
-		//public int PriClaimNum;//Dropped in version 2.1.
-		//public int SecClaimNum;//Dropped in version 2.1.
-		public string ClaimType;//"PreAuth"=preauth, "P"=primary, "S"=secondary, or "Other"=other
-			//ClaimType is the new way of determining claimtype. Not allowed to be blank. The update 
-			//for version 2.1 added P or S to all existing claims.
-		public int ProvBill;//foreign key to Provider.ProvNum .  Billing provider
-		public int ReferringProv;//foreign key to Referral.ReferralNum;
-		public string RefNumString;//referral number
-		public PlaceOfService PlaceService;//enum PlaceOfService{Office=0,PatientsHome,InpatHospital
-			//,OutpatHospital,SkilledNursFac,AdultLivCareFac,OtherLocation=6}
-		public string AccidentRelated;//blank or A=Auto, E=Employment, O=Other
-		public DateTime AccidentDate;
-		public string AccidentST;//State.
-		public YN EmployRelated;//enum YN{Unknown=0, Yes=1, No=2}
-		public bool IsOrtho;
-		public int OrthoRemainM;//Remaining months 1-36.
-		public DateTime OrthoDate;//Date ortho appliance placed
-		public Relat PatRelat;//Relationship to subscriber. You no longer have to look in patient.
-			//enum Relat{Self=0,Spouse=1,Child=2,Employee=3,HandicapDep=4,SignifOther=5
-			//,InjuredPlaintiff=6,LifePartner=7,Dependent=8}
-		//the next 2 fields now provide the user with total control over what other cov shows:
-		//This obviously limits the coverage to two insurance companies
-		public int PlanNum2;//foreign key to InsPlan.PlanNum for other coverage.  0 if none.
-		public Relat PatRelat2;//enum Relat.  for other coverage
-		public double WriteOff;//Sum of ClaimProc.Writeoff for this claim
-	}//end struct Claim
-
-	public struct QueueItem{//not a database table
-		//used in claims waiting tool, and in the Claim Check Edit window.
+		///<summary>Primary key</summary>
 		public int ClaimNum;
-		public bool NoSendElect;
-		public string PatName;
-		public string ClaimStatus;
-		public string Carrier;
-		public int PatNum;
-		public DateTime DateClaim;
-		public string ProvAbbr;
-		public double FeeBilled;
+		///<summary>Foreign key to <see cref="Patient.PatNum">patient.PatNum</see></summary>
+		public int PatNum;//
+		///<summary>Usually the same date as the procedures, but it can be changed if you wish.</summary>
+		public DateTime DateService;//
+		///<summary>Usually the date it was created.  It might be sent a few days later if you don't send your e-claims every day.</summary>
+		public DateTime DateSent;
+		///<summary>Single char: U,H,W,P,S,or R.</summary>
+		///<remarks>U=Unsent, H=Hold until pri received, W=Waiting in queue, P=Probably sent, S=Sent, R=Received.  A(adj) is no longer used.</remarks>
+		public string ClaimStatus;//
+		///<summary>Date the claim was received.</summary>
+		public DateTime DateReceived;
+		///<summary>Foreign key to InsPlan.PlanNum</summary>
+		public int PlanNum;
+		///<summary>Treating provider. Foreign key to Provider.ProvNum.</summary>
+		public int ProvTreat;//
+		///<summary>Total fee of claim.</summary>
+		public double ClaimFee;
+		///<summary>Amount insurance is estimated to pay on this claim.</summary>
+		public double InsPayEst;
+		///<summary>Amount insurance actually paid.</summary>
 		public double InsPayAmt;
+		///<summary>Deductible applied to this claim.</summary>
+		public double DedApplied;
+		///<summary>The preauth number received from ins.</summary>
+		public string PreAuthString;
+		///<summary>single char for No, Initial, or Replacement.</summary>
+		public string IsProsthesis;
+		///<summary>Date prior prosthesis was placed.</summary>
+		public DateTime PriorDate;
+		///<summary>Note for patient for why insurance didn't pay as expected.</summary>
+		public string ReasonUnderPaid;//
+		///<summary>Note to be sent to insurance.</summary>
+		public string ClaimNote;//
+		///<summary>"P"=primary, "S"=secondary, "PreAuth"=preauth, "Other"=other, "Cap"=capitation</summary>
+		///<remarks>ClaimType is the new way of determining claimtype. Not allowed to be blank. The update for version 2.1 added "P" or "S" to all existing claims.</remarks>
+		public string ClaimType;
+		///<summary>Billing provider.  Foreign key to Provider.ProvNum.</summary>
+		public int ProvBill;
+		///<summary>Foreign key to Referral.ReferralNum.</summary>
+		public int ReferringProv;
+		///<summary>Referral number for this claim.</summary>
+		public string RefNumString;
+		///<summary>See the PlaceOfService enum.</summary>
+		public PlaceOfService PlaceService;
+		///<summary>blank or A=Auto, E=Employment, O=Other.</summary>
+		public string AccidentRelated;
+		///<summary>Date of accident, if applicable.</summary>
+		public DateTime AccidentDate;
+		///<summary>Accident state.</summary>
+		public string AccidentST;
+		///<summary>See the YN enum.</summary>
+		public YN EmployRelated;
+		///<summary>True if is ortho.</summary>
+		public bool IsOrtho;
+		///<summary>Remaining months of ortho. Valid values are 1-36.</summary>
+		public int OrthoRemainM;
+		///<summary>Date ortho appliance placed.</summary>
+		public DateTime OrthoDate;
+		///<summary>Relationship to subscriber.  See the Relat enumeration.</summary>
+		///<remarks>You no longer have to look in patient to find the relationship, since it is copied over when the claim is created.</remarks>
+		public Relat PatRelat;
+		///<summary>Other coverage plan number.  Foreign key to InsPlan.PlanNum for other coverage.  0 if none.</summary>
+		///<remarks>This provides the user with total control over what other coverage shows. This obviously limits the coverage on a single claim to two insurance companies.</remarks>
+		public int PlanNum2;
+		///<summary>The relationsip to the subscriber for other coverage on this claim.</summary>
+		public Relat PatRelat2;
+		///<summary>Sum of ClaimProc.Writeoff for this claim.</summary>
+		public double WriteOff;
+	}
+
+	///<summary>Used to hold a list of claims to show in the claims 'queue' waiting to be sent, and in the Claim Check Edit window.</summary>
+	public struct QueueItem{
+		///<summary></summary>
+		public int ClaimNum;
+		///<summary></summary>
+		public bool NoSendElect;
+		///<summary></summary>
+		public string PatName;
+		///<summary>Single char: U,H,W,P,S,or R.</summary>
+		///<remarks>U=Unsent, H=Hold until pri received, W=Waiting in queue, P=Probably sent, S=Sent, R=Received.  A(adj) is no longer used.</remarks>
+		public string ClaimStatus;
+		///<summary></summary>
+		public string Carrier;
+		///<summary></summary>
+		public int PatNum;
+		///<summary></summary>
+		public DateTime DateClaim;
+		///<summary></summary>
+		public string ProvAbbr;
+		///<summary></summary>
+		public double FeeBilled;
+		///<summary></summary>
+		public double InsPayAmt;
+		///<summary></summary>
 		public int ClaimPaymentNum;
-	}//end struct QueueItem
+	}
 
 /*=========================================================================================
 		=================================== class ClaimForms ==========================================*/
 
+	///<summary></summary>
 	public class ClaimForms:DataClass{
 		///<summary>List of all claim forms.</summary>
 		public static ClaimForm[] ListLong;
 		///<summary>List of all claim forms except those marked as hidden.</summary>
 		public static ClaimForm[] ListShort;
+		///<summary></summary>
 		public static ClaimForm Cur;
 
+		///<summary></summary>
 		public static void Refresh(){
 			cmd.CommandText =
 				"SELECT * FROM claimform";
@@ -1337,6 +1569,9 @@ namespace OpenDental{
 				ListLong[i].FontName    = PIn.PString(table.Rows[i][3].ToString());
 				ListLong[i].FontSize    = PIn.PFloat (table.Rows[i][4].ToString());
 				ListLong[i].UniqueID    = PIn.PInt   (table.Rows[i][5].ToString());
+				ListLong[i].PrintImages = PIn.PBool  (table.Rows[i][6].ToString());
+				ListLong[i].OffsetX     = PIn.PInt   (table.Rows[i][7].ToString());
+				ListLong[i].OffsetY     = PIn.PInt   (table.Rows[i][8].ToString());
 				if(!ListLong[i].IsHidden)
 					tempAL.Add(ListLong[i]);
 			}
@@ -1346,19 +1581,24 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO claimform (description,ishidden,fontname,fontsize"
-				+",uniqueid) VALUES("
+				+",uniqueid,printimages,offsetx,offsety) VALUES("
 				+"'"+POut.PString(Cur.Description)+"', "
 				+"'"+POut.PBool  (Cur.IsHidden)+"', "
 				+"'"+POut.PString(Cur.FontName)+"', "
 				+"'"+POut.PFloat (Cur.FontSize)+"', "
-				+"'"+POut.PInt   (Cur.UniqueID)+"')";
+				+"'"+POut.PInt   (Cur.UniqueID)+"', "
+				+"'"+POut.PBool  (Cur.PrintImages)+"', "
+				+"'"+POut.PInt   (Cur.OffsetX)+"', "
+				+"'"+POut.PInt   (Cur.OffsetY)+"')";
 			//MessageBox.Show(cmd.CommandText);
 			NonQ(true);
 			Cur.ClaimFormNum=InsertID;
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE claimform SET "
 				+"description = '" +POut.PString(Cur.Description)+"' "
@@ -1366,11 +1606,15 @@ namespace OpenDental{
 				+",fontname = '"    +POut.PString(Cur.FontName)+"' "
 				+",fontsize = '"    +POut.PFloat (Cur.FontSize)+"' "
 				+",uniqueid = '"    +POut.PInt   (Cur.UniqueID)+"' "
+				+",printimages = '" +POut.PBool  (Cur.PrintImages)+"' "
+				+",offsetx = '"     +POut.PInt   (Cur.OffsetX)+"' "
+				+",offsety = '"     +POut.PInt   (Cur.OffsetY)+"' "
 				+"WHERE ClaimFormNum = '"+POut.PInt   (Cur.ClaimFormNum)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void SetCur(int claimFormNum){
 			for(int i=0;i<ListLong.Length;i++){
 				if(ListLong[i].ClaimFormNum==claimFormNum){
@@ -1381,10 +1625,36 @@ namespace OpenDental{
 			MessageBox.Show("Error. Could not locate Claim Form.");
 		}
 
+		///<summary> Called when cancelling out of creating a new claimform, and from the claimform window when clicking delete. Returns true if successful or false if dependencies found.</summary>
+		public static bool DeleteCur(){
+			//first, do dependency testing
+			cmd.CommandText="SELECT * FROM insplan WHERE claimformnum = '"
+				+Cur.ClaimFormNum.ToString()+"' LIMIT 1";
+			FillTable();
+			if(table.Rows.Count==1){
+				return false;
+			}
+			cmd.CommandText="SELECT * FROM instemplate WHERE claimformnum = '"
+				+Cur.ClaimFormNum.ToString()+"' LIMIT 1";
+			FillTable();
+			if(table.Rows.Count==1){
+				return false;
+			}
+			//Then, delete the claimform
+			cmd.CommandText = "DELETE FROM claimform "
+				+"WHERE ClaimFormNum = '"+POut.PInt(Cur.ClaimFormNum)+"'";
+			NonQ(false);
+			cmd.CommandText = "DELETE FROM claimformitem "
+				+"WHERE ClaimFormNum = '"+POut.PInt(Cur.ClaimFormNum)+"'";
+			NonQ(false);
+			return true;
+		}
+
 
 	}
 
-	///<summary>Table claimform. Stores the information for printing a claim form.</summary>
+	///<summary>Corresponds to the claimform table in the database.</summary>
+	///<remarks>Stores the information for printing different types of claim forms.</remarks>
 	public struct ClaimForm{
 		///<summary>Primary key.</summary>
 		public int ClaimFormNum;
@@ -1399,19 +1669,30 @@ namespace OpenDental{
 		///<summary>Assigned by us for maintenance purposes. Do not change.
 		///Will be 0 for claim forms added by user, protecting them from being changed by us.</summary>
 		public int UniqueID;
+		///<summary>Set to false to not print images.  This removes the background for printing on premade forms.</summary>
+		public bool PrintImages;
+		///<summary>Shifts all items by x/100th's of an inch to compensate for printer, typically less than 1/4 inch.</summary>
+		public int OffsetX;
+		///<summary>Shifts all items by y/100th's of an inch to compensate for printer, typically less than 1/4 inch.</summary>
+		public int OffsetY;
 	}
 
 	/*=========================================================================================
 		=================================== class ClaimFormItems ==========================================*/
 
+	///<summary></summary>
 	public class ClaimFormItems:DataClass{
+		///<summary></summary>
 		public static ClaimFormItem[] List;
+		///<summary></summary>
 		public static ClaimFormItem Cur;
+		///<summary></summary>
 		public static ClaimFormItem[] ListForForm;
 
+		///<summary>Gets all claimformitems for all claimforms.  Items for individual claimforms can later be extracted as needed.</summary>
 		public static void Refresh(){
 			cmd.CommandText =
-				"SELECT * FROM claimformitem";
+				"SELECT * FROM claimformitem ORDER BY imagefilename desc";
 			FillTable();
 			List=new ClaimFormItem[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
@@ -1427,6 +1708,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO claimformitem (claimformnum,imagefilename,fieldname,formatstring"
 				+",xpos,ypos,width,height) VALUES("
@@ -1443,6 +1725,7 @@ namespace OpenDental{
 			Cur.ClaimFormItemNum=InsertID;
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE claimformitem SET "
 				+"claimformnum = '" +POut.PInt   (Cur.ClaimFormNum)+"' "
@@ -1458,6 +1741,7 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void DeleteCur(){
 			cmd.CommandText = "DELETE FROM claimformitem "
 				+"WHERE ClaimFormItemNum = '"+POut.PInt(Cur.ClaimFormItemNum)+"'";
@@ -1465,6 +1749,7 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary>Gets all claimformitems for the current claimform from the preloaded List.</summary>
 		public static void GetListForForm(){
 			ArrayList tempAL=new ArrayList();
 			for(int i=0;i<List.Length;i++){
@@ -1479,24 +1764,40 @@ namespace OpenDental{
 
 	}
 
-	public struct ClaimFormItem{//table claimformitem.
+	///<summary>Corresponds to the claimformitem table in the database.</summary>
+	///<remarks>One item is needed for each field on a claimform.</remarks>
+	public struct ClaimFormItem{
+		///<summary>Primary key.</summary>
 		public int ClaimFormItemNum;
-		public int ClaimFormNum;//foreign key to ClaimForm.
-		public string ImageFileName;//eg ADA2002.emf
-		public string FieldName;//one of the available fieldnames for claims
-		public string FormatString;//usage not finalized yet
-		public float XPos;//the x position of the item on the claim form
-		public float YPos;//the y position
-		public float Width;//limits the printable area of the item
+		///<summary>Foreign key to ClaimForm.</summary>
+		public int ClaimFormNum;
+		///<summary>If this item is an image.  Usually only one per claim.  eg ADA2002.emf</summary>
+		public string ImageFileName;
+		///<summary>Must be one of the hardcoded available fieldnames for claims.</summary>
+		public string FieldName;//
+		///<summary>For dates, the format string. ie MM/dd/yyyy or M d y among many other possibilities.</summary>
+		public string FormatString;
+		///<summary>The x position of the item on the claim form</summary>
+		///<remarks>In pixels. 100 pixels per inch.</remarks>
+		public float XPos;
+		///<summary>The y position.</summary>
+		public float YPos;
+		///<summary>Limits the printable area of the item. Set to zero to not limit.</summary>
+		public float Width;
+		///<summary>Limits the printable area of the item. Set to zero to not limit.</summary>
 		public float Height;
 	}
 
 	/*=========================================================================================
 		=================================== class ClaimPayments ==========================================*/
+	///<summary></summary>
 	public class ClaimPayments:DataClass{
+		///<summary></summary>
 		public static ClaimPayment[] List;
+		///<summary></summary>
 		public static ClaimPayment Cur;
 
+		///<summary></summary>
 		public static void GetForClaim(){	
 		//public static void GetCheck(int claimPaymentNum){
 			cmd.CommandText =
@@ -1526,6 +1827,7 @@ namespace OpenDental{
 			//	Cur=new ClaimPayment();
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO claimpayment (checkdate,checkamt,checknum,"
 				+"bankbranch,note) VALUES("
@@ -1539,6 +1841,7 @@ namespace OpenDental{
 			Cur.ClaimPaymentNum=InsertID;
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE claimpayment SET "
 				+"checkdate = '"   +POut.PDate  (Cur.CheckDate)+"' "
@@ -1551,6 +1854,7 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void DeleteCur(){
 			cmd.CommandText = "DELETE FROM claimpayment "
 				+"WHERE ClaimPaymentnum = '"+POut.PInt(Cur.ClaimPaymentNum)+"'";
@@ -1559,24 +1863,37 @@ namespace OpenDental{
 		}
 	}//end class ClaimPayments
 
+	///<summary>Corresponds to the claimpayment table in the database.</summary>
+	///<remarks>Each row represents a single check from the insurance company.  The amount may be split between patients using claimprocs.  The amount of the check must always exactly equal the sum of all the claimprocs attached to it.  There may be only one claimproc.</remarks>
 	public struct ClaimPayment{
+		///<summary>Primary key.</summary>
 		public int ClaimPaymentNum;
+		///<summary>Date the check was entered into this system, not the date on the check.</summary>
 		public DateTime CheckDate;
+		///<summary>The amount of the check.</summary>
 		public Double CheckAmt;
+		///<summary>The check number.</summary>
 		public string CheckNum;
+		///<summary>Bank and branch.</summary>
 		public string BankBranch;
+		///<summary>Note for this check if needed.</summary>
 		public string Note;
-	}//end struct ClaimPayment
+	}
 
 	/*=========================================================================================
 	=================================== class ClaimProcs ===========================================*/
 
+	///<summary></summary>
 	public class ClaimProcs:DataClass{
+		///<summary></summary>
 		public static ClaimProc Cur;
+		///<summary></summary>
 		public static ClaimProc[] List;//all for Patients.Cur
+		///<summary></summary>
 		public static ClaimProc[] ForClaim;//ClaimProcs for Claims.Cur.ClaimNum
 		//public static ArrayList ProcsInClaim;//AL of Procedures
 
+		///<summary></summary>
 		public static void Refresh(){
 			cmd.CommandText =
 				"SELECT * from claimproc "
@@ -1603,6 +1920,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO claimproc (procnum,claimnum,patnum,provnum"
 				+",feebilled,inspayest,dedapplied,status,inspayamt,remarks,claimpaymentnum"
@@ -1627,6 +1945,7 @@ namespace OpenDental{
 			Cur.ClaimProcNum=InsertID;
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE claimproc SET "
 				+"procnum = '"        +POut.PInt   (Cur.ProcNum)+"'"
@@ -1648,11 +1967,13 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void DeleteCur(){
 			cmd.CommandText = "DELETE from claimproc WHERE claimprocNum = '"+POut.PInt(Cur.ClaimProcNum)+"'";
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void GetForClaim(){
 			//MessageBox.Show(List.Length.ToString());
 			ArrayList ALForClaim=new ArrayList();
@@ -1667,6 +1988,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public static bool ProcIsAttached(int procNum){
 			//used in ProcEdit, and ContrAcct
 			for(int i=0;i<List.Length;i++){
@@ -1677,6 +1999,7 @@ namespace OpenDental{
 			return false;
 		}
 
+		///<summary></summary>
 		public static bool ProcIsSent(int procNum){
 			//Warning: In the future, the claim.hlist might not be already loaded and available.
 			for(int i=0;i<List.Length;i++){
@@ -1691,6 +2014,7 @@ namespace OpenDental{
 			return false;
 		}
 
+		///<summary></summary>
 		public static bool ProcIsPaid(int procNum){
 			for(int i=0;i<List.Length;i++){
 				if(List[i].ProcNum==procNum
@@ -1702,6 +2026,7 @@ namespace OpenDental{
 			return false;
 		}
 
+		///<summary></summary>
 		public static void DetachAllFromCheck(int claimPaymentNum){
 			cmd.CommandText = "UPDATE claimproc SET "
 				+"ClaimPaymentNum = '0' "
@@ -1710,6 +2035,7 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void SetForClaim(int claimNum,int claimPaymentNum,bool setAttached){
 			cmd.CommandText = "UPDATE claimproc SET ClaimPaymentNum = ";
 			if(setAttached){
@@ -1725,21 +2051,22 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static double ComputeBal(){//must make sure Refresh is done first
 			double retVal=0;
 			//double pat;
 			for(int i=0;i<List.Length;i++){
-				if(List[i].Status==ClaimProcStatus.Adjustment){
-					continue;//claim adjustments do not affect patient balance
-				}
-				if(List[i].Status==ClaimProcStatus.Preauth){
-					continue;//preauthorizations do not affect patient balance
+				if(List[i].Status==ClaimProcStatus.Adjustment//ins adjustments do not affect patient balance
+					|| List[i].Status==ClaimProcStatus.Preauth//preauthorizations do not affect patient balance
+					|| List[i].Status==ClaimProcStatus.Capitation//cap procs do not affect patient balance
+					){
+					continue;
 				}
 				if(List[i].Status==ClaimProcStatus.Received
 					|| List[i].Status==ClaimProcStatus.Supplemental){//because supplemental are always received
 					retVal-=List[i].InsPayAmt;
 				}
-				else{
+				else{//not recieved
 					retVal-=List[i].InsPayEst;
 				}
 				retVal-=List[i].WriteOff;
@@ -1750,42 +2077,58 @@ namespace OpenDental{
 
 	}
 
-	public struct ClaimProc{//table claimproc.  
-		//Links procedures to claims.
-		//Also links ins payments to procedures or claims
-		//Warning-One proc might be linked twice to a given claim if insurance made two payments.
-		//Many of the important fields are actually optional.  For instance, ProcNum is only 
-		//required if itemizing ins payment, and ClaimNum is blank if Status=A.
-		public int ClaimProcNum;//primary key
-		public int ProcNum;//foreign key to procedurelog.ProcNum
-		public int ClaimNum;//foreign key to Claim.ClaimNum.  
-		public int PatNum;//foreign key to Patient.PatNum
-		//new fields:
-		public int ProvNum;//foreign key to Provider.ProvNum
-		public double FeeBilled;//might not be the same as the actual fee
-		public double InsPayEst;//amount this carrier is expected to pay.
-		public double DedApplied;//deductible applied to this procedure only.
-		public ClaimProcStatus Status;//enum ClaimProcStatus
-					//{NotReceived=0,Received,Preauth,Adjustment,Supplemental=4}
-		public double InsPayAmt;//amount insurance actually paid
-		public string Remarks;//The remarks that insurance sends about procedures.
-		public int ClaimPaymentNum;//foreign key to ClaimPayment.ClaimPaymentNum(the insurance check)
-		public int PlanNum;//foreign key to insplan.PlanNum
-		public DateTime DateCP;//especially useful for adjustments and balance.
-			//For payments, MUST be date of treatment, not payment, to properly track annual benefits.
-		public Double WriteOff;//amount not covered by ins which is written off
-		public string CodeSent;//valid ADA code already trimmed to 5 char or alternate code.
-			//Blank not allowed if is procedure.
+	///<summary>Corresponds to the claimproc table in the database.</summary>
+	///<remarks>Links procedures to claims.  Also links ins payments to procedures or claims.  Warning: One proc might be linked twice to a given claim if insurance made two payments.  Many of the important fields are actually optional.  For instance, ProcNum is only required if itemizing ins payment, and ClaimNum is blank if Status=A for adjustment.</remarks>
+	public struct ClaimProc{
+		///<summary>Primary key.</summary>
+		public int ClaimProcNum;
+		///<summary>Foreign key to procedurelog.ProcNum.</summary>
+		public int ProcNum;
+		///<summary>Foreign key to claim.ClaimNum.</summary>
+		public int ClaimNum;
+		///<summary>Foreign key to patient.PatNum.</summary>
+		public int PatNum;
+		///<summary>Foreign key to provider.ProvNum.</summary>
+		public int ProvNum;
+		///<summary>Fee billed. Might not be the same as the actual fee.</summary>
+		///<remarks>The fee billed can be different than the actual procedure.  For instance, if you have set the insurance plan to bill insurance using UCR fees, then this field will contain the UCR fee instead of the fee that the patient was charged.</remarks>
+		public double FeeBilled;
+		///<summary>Amount this carrier is expected to pay.</summary>
+		public double InsPayEst;
+		///<summary>Deductible applied to this procedure only.</summary>
+		public double DedApplied;
+		///<summary>See the ClaimProcStatus enumeration.</summary>
+		public ClaimProcStatus Status;
+		///<summary>Amount insurance actually paid.</summary>
+		public double InsPayAmt;
+		///<summary>The remarks that insurance sends in the EOB about procedures.</summary>
+		public string Remarks;
+		///<summary>Foreign key to ClaimPayment.ClaimPaymentNum(the insurance check).</summary>
+		public int ClaimPaymentNum;
+		///<summary>Foreign key to insplan.PlanNum</summary>
+		public int PlanNum;
+		///<summary>Date of this ClaimProc.  Especially useful for adjustments and balance.</summary>
+		///<remarks>For payments, MUST be date of treatment, not payment, to properly track annual benefits.</remarks>
+		public DateTime DateCP;
+		///<summary>Amount not covered by ins which is written off</summary>
+		public Double WriteOff;
+		///<summary>The procedure code that was sent to insurance.</summary>
+		///<remarks>This is not necessarily the usual procedure code.  It will already have been trimmed to 5 char if it started with "D", or it could be the alternate code.  Not allowed to be blank if it is procedure.</remarks>
+		public string CodeSent;
 	}
 
 	/*=========================================================================================
 	=================================== class Commlogs ==========================================*/
 
+	///<summary></summary>
 	public class Commlogs:DataClass{
+		///<summary></summary>
 		public static Commlog[] List;//for one patient
+		///<summary></summary>
 		public static Commlog Cur;
 		//public static Hashtable HList;
 
+		///<summary>Gets all items for the current patient ordered by date.</summary>
 		public static void Refresh(){
 			cmd.CommandText =
 				"SELECT * FROM commlog"
@@ -1797,29 +2140,35 @@ namespace OpenDental{
 				List[i].CommlogNum= PIn.PInt   (table.Rows[i][0].ToString());
 				List[i].PatNum    = PIn.PInt   (table.Rows[i][1].ToString());
 				List[i].CommDate  = PIn.PDate  (table.Rows[i][2].ToString());
-				List[i].CommType  = PIn.PInt   (table.Rows[i][3].ToString());
+				List[i].CommType  = (CommItemType)PIn.PInt(table.Rows[i][3].ToString());
+				List[i].Note      = PIn.PString(table.Rows[i][4].ToString());
 			}
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO commlog (patnum"
-				+",commdate,commtype) VALUES("
+				+",commdate,commtype,note) VALUES("
 				+"'"+POut.PInt   (Cur.PatNum)+"', "
 				+"'"+POut.PDate  (Cur.CommDate)+"', "
-				+"'"+POut.PInt   (Cur.CommType)+"')";
+				+"'"+POut.PInt   ((int)Cur.CommType)+"', "
+				+"'"+POut.PString(Cur.Note)+"')";
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE commlog SET "
 				+"patnum = '"   +POut.PInt   (Cur.PatNum)+"', "
 				+"commdate= '"  +POut.PDate  (Cur.CommDate)+"', "
-				+"commtype = '" +POut.PInt   (Cur.CommType)+"' "
+				+"commtype = '" +POut.PInt   ((int)Cur.CommType)+"', "
+				+"note = '"     +POut.PString(Cur.Note)+"' "
 				+"WHERE commlognum = '"+POut.PInt(Cur.CommlogNum)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void DeleteCur(){
 			cmd.CommandText = "DELETE FROM commlog WHERE commlognum = '"+Cur.CommlogNum.ToString()+"'";
 			NonQ(false);
@@ -1827,23 +2176,36 @@ namespace OpenDental{
 
 	}
 
-	public struct Commlog{//table commlog
-		//Will eventually track all communications including emails, phonecalls, letters, etc.
-		public int CommlogNum;//primary key
-		public int PatNum;//foreign key to patient.PatNum
+	/// <summary>Corresponds to the commlog table in the database.</summary>
+	/// <remarks>Will eventually track all communications including emails, phonecalls, letters, etc.
+	/// There is no user field yet to track who made the entry because we need to add a user table first to get a unique id.</remarks>
+	public struct Commlog{
+		///<summary>Primary key.</summary>
+		public int CommlogNum;
+		///<summary>Foreign key to patient.PatNum</summary>
+		public int PatNum;
+		///<summary>Date of entry</summary>
 		public DateTime CommDate;
-		public int CommType;//always '1' for 'statement sent' in version 2.  Will later be an enum.
+		///<summary>See the CommItemType enumeration.</summary>
+		public CommItemType CommType;
+		///<summary>Note for this commlog entry.</summary>
+		public string Note;
 	}
 
 
 	/*=========================================================================================
 	=================================== class Computers ==========================================*/
 
+	///<summary></summary>
 	public class Computers:DataClass{
+		///<summary></summary>
 		public static Computer[] List;
+		///<summary></summary>
 		public static Computer Cur;
+		///<summary></summary>
 		public static Hashtable HList;
 
+		///<summary></summary>
 		public static void Refresh(){
 			cmd.CommandText =
 				"SELECT * from computer "
@@ -1897,6 +2259,7 @@ namespace OpenDental{
 		}
    
 
+		///<summary></summary>
 		public static void InsertCur(){//ONLY use this if compname is not already present
 			cmd.CommandText = "INSERT INTO computer (compname,"
 				+"printername) VALUES("
@@ -1905,6 +2268,7 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE computer SET "
 				+"compname = '"    +POut.PString(Cur.CompName)+"', "
@@ -1913,22 +2277,40 @@ namespace OpenDental{
 			//MessageBox.Show(cmd.CommandText);
 			NonQ(false);
 		}
+
+		///<summary></summary>
+		public static void DeleteCur(){
+			cmd.CommandText = "DELETE FROM computer WHERE computernum = '"+Cur.ComputerNum.ToString()+"'";
+			NonQ(false);
+		}
+
 	}
 
-	public struct Computer{//keeps track of the computers in an office
-		public int ComputerNum;//primary key
-		public string CompName;//Name of computer
-		public string PrinterName;//Default printer for each computer
+	
+
+	///<summary>Corresponds to the computer table in the database.</summary>
+	///<remarks>Keeps track of the computers in an office.  There is no interface to maintain this list yet.  The list will eventually become cluttered with the names of old computers that are no longer in service.  The old rows can be safely deleted; that will actually speed up the messaging system.</remarks>
+	public struct Computer{//
+		///<summary>Primary key.</summary>
+		public int ComputerNum;
+		///<summary>Name of the computer.</summary>
+		public string CompName;
+		///<summary>Default printer for each computer</summary>
+		public string PrinterName;
 	}
 
 	/*=========================================================================================
 		=================================== class Contacts ==========================================*/
 
+	///<summary></summary>
 	public class Contacts:DataClass{
+		///<summary></summary>
 		public static Contact Cur;
+		///<summary></summary>
 		public static Contact[] List;//for one category only. Not refreshed with local data
 		//public static Contact[] ListForCat;
 
+		///<summary></summary>
 		public static void Refresh(int category){
 			cmd.CommandText =
 				"SELECT * from contact WHERE category = '"+category+"'"
@@ -1946,6 +2328,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO contact (lname,fname,wkphone,fax,category,"
 				+"notes) VALUES("
@@ -1958,6 +2341,7 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE contact SET "
 				+"lname = '"    +POut.PString(Cur.LName)+"' "
@@ -1971,6 +2355,7 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void DeleteCur(){
 			cmd.CommandText = "DELETE FROM contact WHERE contactnum = '"+Cur.ContactNum.ToString()+"'";
 			NonQ(false);
@@ -1978,27 +2363,42 @@ namespace OpenDental{
 
 	}
 
-	public struct Contact{//table contact
-		public int ContactNum;//primary key
+	///<summary>Corresponds to the contact table in the database.</summary>
+	public struct Contact{
+		///<summary>Primary key.</summary>
+		public int ContactNum;
+		///<summary>Last name or, frequently, the entire name.</summary>
 		public string LName;
-		public string FName;//optional
+		///<summary>First name is optional.</summary>
+		public string FName;
+		///<summary>Work phone.</summary>
 		public string WkPhone;
+		///<summary>Fax number.</summary>
 		public string Fax;
-		public int Category;//foreign key to Definitions.DefNum
+		///<summary>Foreign key to definition.DefNum</summary>
+		public int Category;
+		///<summary>Note for this contact.</summary>
 		public string Notes;
 	}
 
 	/*=========================================================================================
 		=================================== class CovPats ==========================================*/
 
+	///<summary></summary>
 	public class CovPats:DataClass{
 		//the first two are the usual lists of interest
+		///<summary></summary>
 		public static int[] PriList;//filled during refresh
+		///<summary></summary>
 		public static int[] SecList;//filled during refresh
+		///<summary></summary>
 		public static CovPat[] List;
+		///<summary></summary>
 		public static CovPat Cur;
+		///<summary></summary>
 		public static CovPat[] ListForPlan;
 
+		///<summary></summary>
 		public static void Refresh(){
 			cmd.CommandText =
 				"SELECT * from covpat"
@@ -2058,6 +2458,7 @@ namespace OpenDental{
 			}
 		}//end method refresh 
 		
+		///<summary></summary>
 		public static void RefreshForPlan(){
 			cmd.CommandText =
 				"SELECT * from covpat"
@@ -2074,6 +2475,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO covpat (covcatnum,plannum,pripatnum,"
 				+"secpatnum,percent) VALUES("
@@ -2085,6 +2487,7 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE covpat SET "
 				+"covcatnum = '" +POut.PInt   (Cur.CovCatNum)+"' "
@@ -2097,6 +2500,7 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void DeleteCur(){
 			cmd.CommandText = "DELETE FROM covpat WHERE covpatnum = '"+Cur.CovPatNum.ToString()+"'";
 			NonQ(false);
@@ -2107,6 +2511,7 @@ namespace OpenDental{
 		//	NonQ(false);
 		//}
 
+		///<summary></summary>
 		public static double GetPercent(string myADACode, PriSecTot pst){//does not return a tot?
 			double retVal=0;
 			int covCatNum=0;
@@ -2151,25 +2556,38 @@ namespace OpenDental{
 
 	}
 
-	public struct CovPat{//table covpat.  
-		//as shown below, a covpat can only be ONE of the three options below
-		public int CovPatNum;//primary key
-		public int CovCatNum;//foreign key to covcat.covcatnum
-		public int PlanNum;//OPT 1: foreign key to insplan.plannum
-		public int PriPatNum;//OPT 2: fk to patient.patnum for primary coverage
-		public int SecPatNum;//OPT 2: fk to patient.patnum for primary coverage
-		public int Percent;//valid -1 to 100???
+	///<summary>Corresponds to the covpat table in the database.</summary>
+	///<remarks>Coverage percentage for a patient.  Each entry in this table is a single percentage value.  A covpat can have a value in ONLY ONE of these three fields: PlanNum, PriPatNum, or SecPatNum.  If it is for a PlanNum, then the percentage is attached to an insurance plan.  If it is one of the others, then it is attached to the coverage for a patient, either primary or secondary, and overrides the plan percentage.</remarks>
+	public struct CovPat{  
+		///<summary>Primary key.</summary>
+		public int CovPatNum;
+		///<summary>Foreign key to covcat.CovCatNum.</summary>
+		public int CovCatNum;
+		///<summary>OPT 1: Foreign key to insplan.PlanNum.</summary>
+		public int PlanNum;
+		///<summary>OPT 2: Foreign key to patient.PatNum for primary coverage.</summary>
+		public int PriPatNum;
+		///<summary>OPT 3: Foreign key to patient.PatNum for secondary coverage.</summary>
+		public int SecPatNum;
+		///<summary>Valid values are 0 to 100. If unknown, the covpat is simply deleted.</summary>
+		public int Percent;
 	}
 
 	/*=========================================================================================
 	=================================== class CovCats ==========================================*/
 
+	///<summary></summary>
 	public class CovCats:DataClass{
+		///<summary></summary>
 		public static CovCat[] List;
+		///<summary></summary>
 		public static CovCat[] ListShort;
+		///<summary></summary>
 		public static CovCat Cur;
+		///<summary></summary>
 		public static int Selected;
 
+		///<summary></summary>
 		public static void Refresh(){
 			cmd.CommandText =
 				"SELECT * from covcat"
@@ -2203,6 +2621,7 @@ namespace OpenDental{
 			}//end for
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE covcat SET "
 				+ "description = '"    +POut.PString(Cur.Description)+"'"
@@ -2214,6 +2633,7 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO covcat (description,defaultpercent,ispreventive,"
 				+"covorder,ishidden) VALUES("
@@ -2226,10 +2646,12 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static int GetCatNum(string myADACode){
 			return 0;
 		}
 		
+		///<summary></summary>
 		public static double GetDefaultPercent(int myCovCatNum){
 			double retVal=0;
 			for(int i=0;i<List.Length;i++){
@@ -2240,6 +2662,7 @@ namespace OpenDental{
 			return retVal;	
 		}
 
+		///<summary></summary>
 		public static string GetDesc(int covCatNum){
 			string retStr="";
 			for(int i=0;i<List.Length;i++){
@@ -2250,6 +2673,7 @@ namespace OpenDental{
 			return retStr;	
 		}
 
+		///<summary></summary>
 		public static int GetCovCatNum(int orderShort){
 			//need to check this again:
 			int retVal=0;
@@ -2261,6 +2685,7 @@ namespace OpenDental{
 			return retVal;	
 		}
 
+		///<summary></summary>
 		public static int GetOrderShort(int CovCatNum){
 			int retVal=-1;
 			for(int i=0;i<ListShort.Length;i++){
@@ -2271,6 +2696,7 @@ namespace OpenDental{
 			return retVal;	
 		}	
 
+		///<summary></summary>
 		public static void MoveUp(){
 			if(Selected==-1){
 				MessageBox.Show(Lan.g("CovCat","Please select an item first."));
@@ -2284,6 +2710,7 @@ namespace OpenDental{
 			Selected-=1;
 		}//end MoveUp
 
+		///<summary></summary>
 		public static void MoveDown(){
 			if(Selected==-1){
 				MessageBox.Show(Lan.g("CovCat","Please select an item first."));
@@ -2297,6 +2724,7 @@ namespace OpenDental{
 			Selected+=1;
 		}
 
+		///<summary></summary>
 		public static void SetOrder(int mySelNum, int myItemOrder){
 			CovCat temp=List[mySelNum];
 			temp.CovOrder=myItemOrder;
@@ -2304,6 +2732,7 @@ namespace OpenDental{
 			UpdateCur();
 		}
 
+		///<summary></summary>
 		public static bool GetIsPrev(string myADACode){
 			int covCatNum=0;
 			for(int i=0;i<CovSpans.List.Length;i++){
@@ -2322,12 +2751,19 @@ namespace OpenDental{
 
 	}
 
+	///<summary>Corresponds to the covcat table in the database.</summary>
 	public struct CovCat{
+		///<summary>Primary key.</summary>
 		public int CovCatNum;
+		///<summary>Description of this category.</summary>
 		public string Description;
+		///<summary>Default percent for this category.</summary>
 		public int DefaultPercent;
+		///<summary>True if this is a preventive category.</summary>
 		public bool IsPreventive;
+		///<summary>The order in which the categories are displayed.</summary>
 		public int CovOrder;
+		///<summary>If true, this category will be hidden.</summary>
 		public bool IsHidden;
 	}
 
@@ -2335,17 +2771,24 @@ namespace OpenDental{
 	/*=========================================================================================
 		=================================== class Conversions ==========================================*/
 
+	///<summary></summary>
 	public class Conversions:DataClass{
-		public static string[] ArrayQueryText;
+		///<summary></summary>
+		public static string[] NonQArray;
+		///<summary></summary>
+		public static string NonQString;
+		///<summary></summary>
 		public static string SelectText;
+		///<summary></summary>
 		public static DataTable TableQ;
 
-		public static bool SubmitQuery(){//return true if successful
+		///<summary></summary>
+		public static bool SubmitNonQArray(){//return true if successful
 			try{
 				//int rowsUpdated;
 				con.Open();
-				for(int i=0;i<ArrayQueryText.Length;i++){
-					cmd.CommandText=ArrayQueryText[i];
+				for(int i=0;i<NonQArray.Length;i++){
+					cmd.CommandText=NonQArray[i];
 					cmd.ExecuteNonQuery();
 				}
 			}
@@ -2363,6 +2806,29 @@ namespace OpenDental{
 			return true;
 		}
 
+		///<summary></summary>
+		public static bool SubmitNonQString(){//return true if successful
+			try{
+				//int rowsUpdated;
+				con.Open();
+				cmd.CommandText=NonQString;
+				cmd.ExecuteNonQuery();
+			}
+			catch(MySqlException e){
+				MessageBox.Show("e:"+e.Message);
+				return false;
+			}
+			catch{
+				MessageBox.Show("Command:"+cmd.CommandText);
+				return false;
+			}
+			finally{
+				con.Close();
+			}
+			return true;
+		}
+
+		///<summary></summary>
 		public static bool SubmitSelect(){//return true if successful
 			try{
 				cmd.CommandText=SelectText;
@@ -2380,6 +2846,7 @@ namespace OpenDental{
 			return true;
 		}	
 
+		///<summary></summary>
 		public static bool AddressNotesVers2_0(){
 			try{
 				cmd.CommandText="SELECT patnum,addrnote FROM patient WHERE patnum = guarantor";
@@ -2406,10 +2873,14 @@ namespace OpenDental{
 	/*=========================================================================================
 		=================================== class CovSpans ==========================================*/
 
+	///<summary></summary>
 	public class CovSpans:DataClass{
+		///<summary></summary>
 		public static CovSpan[] List;
+		///<summary></summary>
 		public static CovSpan Cur;
 		
+		///<summary></summary>
 		public static void Refresh(){
 			cmd.CommandText =
 				"SELECT * from covspan"
@@ -2424,6 +2895,7 @@ namespace OpenDental{
 			}//end for
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE covspan SET "
 				+ "covcatnum = '" +POut.PInt   (Cur.CovCatNum)+"'"
@@ -2433,6 +2905,7 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO covspan (covcatnum,"
 				+"fromcode,tocode) VALUES("
@@ -2443,12 +2916,14 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void DeleteCur(){
 			cmd.CommandText="DELETE FROM covspan"
 				+" WHERE covspannum = '"+POut.PInt(Cur.CovSpanNum)+"'";
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static int GetCat(string myADACode){
 			int retVal=0;
 			for(int i=0;i<List.Length;i++){
@@ -2462,24 +2937,39 @@ namespace OpenDental{
 
 	}
 
+	///<summary>Corresponds to the covspan table in the database.</summary>
 	public struct CovSpan{
+		///<summary>Primary key.</summary>
 		public int CovSpanNum;
+		///<summary>Foreign key</summary>
 		public int CovCatNum;
+		///<summary>Foreign key to procedurecode.ADACode.</summary>
 		public string FromCode;
+		///<summary>Foreign key to procedurecode.ADACode.</summary>
 		public string ToCode;
 	}
 
 	/*=========================================================================================
 	=================================== class Defs ==========================================*/
 
+	///<summary>Handles database commands related to the definition table in the db.</summary>\
+	///<remarks>This class is referenced frequently from many different areas of the program.  It stores data from the definition table in a couple of two dimensional arrays for immediate retrieval.  </remarks>
 	public class Defs:DataClass{
-		public static Def[] List;//for only one category. used in Defs dialog only.
+		///<summary>For only one category. Only used in FormDefinitions.</summary>
+		public static Def[] List;
+		///<summary>Current definition.</summary>
 		public static Def Cur;
+		///<summary>Will probably be phased out.</summary>
 		public static bool IsSelected;
+		///<summary>Will probably be phased out.</summary>
 		public static int Selected;
-		public static Def[][] Short;//not showing the hidden rows
-		public static Def[][] Long;//same list, but showing the hidden rows
+		///<summary>Stores all defs in a 2D array except the hidden ones.</summary>
+		///<remarks>The first dimension is the category, in int format.  The second dimension is the index of the definition in this category.  This is dependent on how it was refreshed, and not on what is in the database.  If you need to reference a specific def, then the DefNum is more effective.</remarks>
+		public static Def[][] Short;
+		///<summary>Stores all defs in a 2D array.</summary>
+		public static Def[][] Long;
 
+		///<summary></summary>
 		public static void Refresh(){
 			Long=new Def[Enum.GetValues(typeof(DefCat)).Length][];
 			for(int j=0;j<Enum.GetValues(typeof(DefCat)).Length;j++){
@@ -2491,7 +2981,7 @@ namespace OpenDental{
 				Long[j]=new Def[table.Rows.Count];
 				for(int i=0;i<table.Rows.Count;i++){
 					Long[j][i].DefNum    = PIn.PInt   (table.Rows[i][0].ToString());
-					Long[j][i].Category  = PIn.PInt   (table.Rows[i][1].ToString());
+					Long[j][i].Category  = (DefCat)PIn.PInt   (table.Rows[i][1].ToString());
 					Long[j][i].ItemOrder = PIn.PInt   (table.Rows[i][2].ToString());
 					Long[j][i].ItemName  = PIn.PString(table.Rows[i][3].ToString());
 					Long[j][i].ItemValue = PIn.PString(table.Rows[i][4].ToString());
@@ -2511,7 +3001,7 @@ namespace OpenDental{
 				Short[j]=new Def[table.Rows.Count];
 				for(int i=0;i<table.Rows.Count;i++){
 					Short[j][i].DefNum    = PIn.PInt   (table.Rows[i][0].ToString());
-					Short[j][i].Category  = PIn.PInt   (table.Rows[i][1].ToString());
+					Short[j][i].Category  = (DefCat)PIn.PInt   (table.Rows[i][1].ToString());
 					Short[j][i].ItemOrder = PIn.PInt   (table.Rows[i][2].ToString());
 					Short[j][i].ItemName  = PIn.PString(table.Rows[i][3].ToString());
 					Short[j][i].ItemValue = PIn.PString(table.Rows[i][4].ToString());
@@ -2522,6 +3012,7 @@ namespace OpenDental{
 			//MessageBox.Show(Short[(int)DefCat.ApptConfirmed].Length.ToString());
 		}
 
+		///<summary></summary>
 		public static string GetName(DefCat myCat, int myDefNum){
 			string retStr="";
 			for(int i=0;i<Long[(int)myCat].GetLength(0);i++){
@@ -2532,6 +3023,7 @@ namespace OpenDental{
 			return retStr;
 		}
 
+		///<summary></summary>
 		public static int GetOrder(DefCat myCat, int myDefNum){
 			//gets the index in the list of unhidden (the Short list).
 			for(int i=0;i<Short[(int)myCat].GetLength(0);i++){
@@ -2542,6 +3034,7 @@ namespace OpenDental{
 			return -1;
 		}
 
+		///<summary></summary>
 		public static string GetValue(DefCat myCat, int myDefNum){
 			string retStr="";
 			for(int i=0;i<Long[(int)myCat].GetLength(0);i++){
@@ -2552,6 +3045,7 @@ namespace OpenDental{
 			return retStr;
 		}
 
+		///<summary></summary>
 		public static Color GetColor(DefCat myCat, int myDefNum){
 			Color retCol=Color.White;
 			for(int i=0;i<Long[(int)myCat].GetLength(0);i++){
@@ -2562,6 +3056,7 @@ namespace OpenDental{
 			return retCol;
 		}
 
+		///<summary></summary>
 		public static void GetCatList(int myCat){
 			cmd.CommandText =
 				"SELECT * from definition"
@@ -2571,7 +3066,7 @@ namespace OpenDental{
 			List=new Def[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
 				List[i].DefNum    = PIn.PInt   (table.Rows[i][0].ToString());
-				List[i].Category  = PIn.PInt   (table.Rows[i][1].ToString());
+				List[i].Category  = (DefCat)PIn.PInt   (table.Rows[i][1].ToString());
 				List[i].ItemOrder = PIn.PInt   (table.Rows[i][2].ToString());
 				List[i].ItemName  = PIn.PString(table.Rows[i][3].ToString());
 				List[i].ItemValue = PIn.PString(table.Rows[i][4].ToString());
@@ -2580,9 +3075,10 @@ namespace OpenDental{
 			}//end for
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE definition SET "
-				+ "category = '"  +POut.PInt   (Cur.Category)+"'"
+				+ "category = '"  +POut.PInt   ((int)Cur.Category)+"'"
 				+",itemorder = '" +POut.PInt   (Cur.ItemOrder)+"'"
 				+",itemname = '"  +POut.PString(Cur.ItemName)+"'"
 				+",itemvalue = '" +POut.PString(Cur.ItemValue)+"'"
@@ -2592,10 +3088,11 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO definition (category,itemorder,"
 				+"itemname,itemvalue,itemcolor,ishidden) VALUES("
-				+"'"+POut.PInt   (Cur.Category)+"', "
+				+"'"+POut.PInt   ((int)Cur.Category)+"', "
 				+"'"+POut.PInt   (Cur.ItemOrder)+"', "
 				+"'"+POut.PString(Cur.ItemName)+"', "
 				+"'"+POut.PString(Cur.ItemValue)+"', "
@@ -2606,12 +3103,14 @@ namespace OpenDental{
 			Defs.Cur.DefNum=InsertID;//used in conversion
 		}
 
+		///<summary></summary>
 		public static void HideDef(){//hides Selected
 			Cur=List[Selected];
 			Cur.IsHidden=true;
 			UpdateCur();
 		}
 
+		///<summary></summary>
 		public static void MoveUp(){
 			if(IsSelected==false){
 				MessageBox.Show(Lan.g("Defs","Please select an item first."));
@@ -2625,6 +3124,7 @@ namespace OpenDental{
 			Selected-=1;
 		}//end MoveUp
 
+		///<summary></summary>
 		public static void MoveDown(){
 			if(IsSelected==false){
 				MessageBox.Show(Lan.g("Defs","Please select an item first."));
@@ -2638,6 +3138,7 @@ namespace OpenDental{
 			Selected+=1;
 		}
 
+		///<summary></summary>
 		public static void SetOrder(int mySelNum, int myItemOrder){
 			//Preference temp=new Preference();
 			//for(int i=0;i<List.Length;i++){
@@ -2652,23 +3153,36 @@ namespace OpenDental{
 
 	}
 
-	public struct Def{//table Definition (almost every table in the database links to Definition
-		public int DefNum;//primary key
-		public int Category;//DefCat is a very long enumeration(22) of the categories
-		public int ItemOrder;//Order that each item shows on various lists
-		public string ItemName;//Each category is a little different.  This field is usually the common name of the item.
-		public string ItemValue;//This field can be used to store extra info about the item.
-		public Color ItemColor;//some categories include color options.
-		public bool IsHidden;//if hidden, the item will not show on any list, but can still be referenced.
+	///<summary>Corresponds to the definition table in the database.</summary>
+	///<remarks>Almost every table in the database links to definition.  Almost all links to this table will be to a DefNum.  Using the DefNum, you can find any of the other fields of interest, usually the ItemName.  Make sure to look at the Defs class to see how the definitions are loaded into memory ahead of time.</remarks>
+	public struct Def{
+		///<summary>Primary key.</summary>
+		public int DefNum;
+		///<summary>See the DefCat enumeration.</summary>
+		public DefCat Category;
+		///<summary>Order that each item shows on various lists.</summary>
+		public int ItemOrder;
+		///<summary>Each category is a little different.  This field is usually the common name of the item.</summary>
+		public string ItemName;
+		///<summary>This field can be used to store extra info about the item.</summary>
+		public string ItemValue;
+		///<summary>Some categories include a color option.</summary>
+		public Color ItemColor;//
+		///<summary>If hidden, the item will not show on any list, but can still be referenced.</summary>
+		public bool IsHidden;
 	}
 
 	/*==================================================================================================
 	 =================================== Class DocAttaches ===========================================*/
+	///<summary></summary>
 	public class DocAttaches:DataClass{
 		//public Break Cur;
+		///<summary></summary>
 		public static DocAttach Cur;
+		///<summary></summary>
 		public static DocAttach[] List;
 
+		///<summary></summary>
 		public static void Refresh(){
 			cmd.CommandText="SELECT * from docattach WHERE patnum = '"
 				+Patients.Cur.PatNum+"'";			//	MessageBox.Show(cmd.CommandText);			FillTable();//find all attachments for that patient
@@ -2681,6 +3195,7 @@ namespace OpenDental{
 			//	MessageBox.Show(List.Length.ToString());
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO docattach (PatNum, DocNum) VALUES ("
 				+"'"+POut.PInt   (Cur.PatNum)+"', "
@@ -2690,6 +3205,7 @@ namespace OpenDental{
 			//Cur.DocAttachNum=InsertID;
 		}
 
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE docattach SET " 
 				+ ",PatNum = '"  +POut.PInt(Cur.PatNum)+"'"
@@ -2706,21 +3222,31 @@ namespace OpenDental{
 		}
 */
 	}
+
+	///<summary>Corresponds to the docattach table in the database.</summary>
+	///<remarks>Links documents (images) to patients.  This will allow one document to be shared between multiple patients in a future version.</remarks>
 	public struct DocAttach{
+		///<summary>Primary key.</summary>
 		public int DocAttachNum;
+		///<summary>Foreign key to patient.PatNum.</summary>
 		public int PatNum;
+		///<summary>Foreign key document.DocNum.</summary>
 		public int DocNum;
 		
 	}//end struct DocAttach
 
 	/*=========================================================================================
-	=================================== class Documentss ==========================================*/
+	=================================== class Documents ==========================================*/
 
+	///<summary></summary>
 	public class Documents:DataClass{
+		///<summary></summary>
 		public static Document[] List;
 		//public static DocBackup[] ListBackup;
+		///<summary></summary>
 		public static Document Cur;	
 
+		///<summary></summary>
 		public static void Refresh(){
 			if(DocAttaches.List.Length==0){
 				List=new Document[0];
@@ -2759,6 +3285,7 @@ namespace OpenDental{
 			}
 		}*/
 
+		///<summary></summary>
 		public static void GetCurrent(string docNum){
 			for (int i = 0; i<List.Length; i+=1){
 				if (List[i].DocNum.ToString()==docNum){
@@ -2767,6 +3294,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public static void DeleteCur(){
 			cmd.CommandText = "DELETE from document WHERE docnum = '"+Cur.DocNum.ToString()+"'";
 			NonQ(false);
@@ -2776,6 +3304,7 @@ namespace OpenDental{
 			//UpdateCur();
 		}
 
+		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = 
 				"INSERT INTO document (Description,DateCreated,DocCategory,"
@@ -2804,6 +3333,8 @@ namespace OpenDental{
 			DocAttaches.Cur.PatNum=Patients.Cur.PatNum;
 			DocAttaches.InsertCur();
 		}
+
+		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE document SET " 
 				+ "Description = '"     +POut.PString(Cur.Description)+"'"
@@ -2820,12 +3351,19 @@ namespace OpenDental{
 
 	}//end class Docs
 
-	public struct Document{//table Document
-		public int DocNum;//primary key
-		public string Description;//description of document
+	///<summary>Corresponds to the document table in the database.</summary>
+	public struct Document{
+		///<summary>Primary key.</summary>
+		public int DocNum;
+		///<summary>Description of the document.</summary>
+		public string Description;
+		///<summary>Date created.</summary>
 		public DateTime DateCreated;
-		public int DocCategory;//foreign key to Definition.DefNum.  Categories for documents
-		public int WithPat;//foreign key to Patient.PatNum.  Patient folder that document is in.(for sharing situations later)    
+		///<summary>Foreign key to definition.DefNum. Cateories for documents.</summary>
+		public int DocCategory;
+		///<summary>Foreign key to patient.PatNum.  Patient folder that document is in.(for sharing situations later)</summary>
+		public int WithPat;
+		///<summary>The name of the file.</summary>
 		public string FileName;
 		//public DateTime LastAltered;
 		//public bool IsDeleted;

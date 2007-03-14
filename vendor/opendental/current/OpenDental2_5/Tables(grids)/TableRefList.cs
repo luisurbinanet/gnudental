@@ -6,15 +6,17 @@ using System.Data;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class TableRefList : OpenDental.ContrTable{
 		private System.ComponentModel.Container components = null;
 
+		///<summary></summary>
 		public TableRefList(){
 			InitializeComponent();
 			InstantClasses();
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -37,6 +39,7 @@ namespace OpenDental{
 		}
 		#endregion
 
+		///<summary></summary>
 		public void InstantClasses(){
 			MaxRows=4;
 			MaxCols=4;

@@ -11,29 +11,46 @@ using System.Data;
 using System.Windows.Forms;
 
 namespace OpenDental{
-	
+	///<summary></summary>
 	public class ContrTable : System.Windows.Forms.UserControl{
 		private System.ComponentModel.Container components = null;// Required designer variable.
 		//initial arbitrary 10x10 table
+		///<summary></summary>
 		public int MaxRows=10;
+		///<summary></summary>
 		public int MaxCols=10;
+		///<summary></summary>
 		public string[,] Cell=new string[10,10];
+		///<summary></summary>
 		public float[,] FontSize = new float[10,10];
+		///<summary></summary>
 		public bool[,] FontBold = new bool[10,10];
+		///<summary></summary>
 		public Color[,] FontColor= new Color[10,10];
 		//public int[,] FontAlign = new int[10,10];
+		///<summary></summary>
 		public Color[,] BackGColor= new Color[10,10];
+		///<summary></summary>
 		public Color[,] LeftBorder= new Color[10,10];
+		///<summary></summary>
 		public Color[,] TopBorder= new Color[10,10];
+		///<summary></summary>
 		public int[] RowHeight= new int[10];
+		///<summary></summary>
 		public int[] ColWidth=new int[10];
 		private int[] colPos = new int[10];
 		private int[] rowPos = new int[10];
+		///<summary></summary>
 		public HorizontalAlignment[] ColAlign = new HorizontalAlignment[10];
+		///<summary></summary>
 		public string Heading="";
+		///<summary></summary>
 		public bool HeadingIsPresent=true;//heading can only be present if fields are present
+		///<summary></summary>
 		public bool FieldsArePresent=true;
+		///<summary></summary>
 		public string[] Fields = new string[10];
+		///<summary></summary>
 		public bool ShowScroll=false;
 		private int scrollWidth=0;
 		private Font fontSS;
@@ -51,18 +68,28 @@ namespace OpenDental{
 		private int offset=0;//distance from left of cell to begin of text
     private bool ControlIsDown;
 		//public Color GridColor=Color.Gray;
-		public bool[,] IsOverflow;    
+		///<summary></summary>
+		public bool[,] IsOverflow;
+		///<summary></summary>
 		public Color DefaultBackGColor=Color.White;
+		///<summary></summary>
 		public Color DefaultGridColor=Color.Gray;
+		///<summary></summary>
 		public int SelectedRow=-1;
+		///<summary></summary>
 		public static int SelectedTable;//for arrays of tables
+		///<summary></summary>
 		public int MySelectedTable;//for arrays of tables
+		///<summary></summary>
 		public int[] SelectedRows;
+		///<summary></summary>
 		public  ArrayList SelectedRowsAL;
 		private SelectionMode selectionMode;
 		private int[] selectedIndices;
-		//private ArrayList SelectedIAL;//only used for tracking selectedIndices		
+		//private ArrayList SelectedIAL;//only used for tracking selectedIndices	
+		//private int scrollValue;
 
+		///<summary></summary>
 		public ContrTable(){
 			InitializeComponent();// This call is required by the Windows.Forms Form Designer.
 			this.panelTable.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.panelTable_MouseWheel);
@@ -71,6 +98,7 @@ namespace OpenDental{
 			selectedIndices=new int[0];
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -159,10 +187,10 @@ namespace OpenDental{
 		}
 		#endregion
 
+		///<summary></summary>
 		[Category("Behavior"),
 			Description("Exactly like the listBox.SelectionMode, except no MultiSimple.")
 		]
-
 		public SelectionMode SelectionMode{
 			get{ 
 				return selectionMode; 
@@ -172,8 +200,23 @@ namespace OpenDental{
 			}
 		}
 
-    [Description("Holds the int values of the indexes of the selected rows")]
+		///<summary>The position of the scrollbar.</summary>
+		public int ScrollValue{
+			get{ 
+				return vScrollBar1.Value; 
+			}
+			set{ 
+				if(value>vScrollBar1.Maximum) 
+					value=vScrollBar1.Maximum;
+				if(value<vScrollBar1.Minimum)
+					value=vScrollBar1.Minimum;
+				vScrollBar1.Value=value;
+				panelTable.Location=new Point(0,-value);
+			}
+		}
 
+		///<summary></summary>
+    [Description("Holds the int values of the indexes of the selected rows")]
 		public int[] SelectedIndices{
 			get{ 
 				return selectedIndices; 
@@ -191,6 +234,7 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public void SetSelected(int index,bool setValue){
 			ArrayList SelectedIAL=new ArrayList();
 			for(int i=0;i<selectedIndices.Length;i++){
@@ -221,6 +265,7 @@ namespace OpenDental{
 			SelectedIAL=null;
 		}
 
+		///<summary></summary>
 		public void SetSelected(int[] iArray,bool setValue){//allows setting multiple values all at once
 			ArrayList SelectedIAL=new ArrayList();
 			for(int i=0;i<selectedIndices.Length;i++){
@@ -253,6 +298,7 @@ namespace OpenDental{
 			SelectedIAL=null;
 		}
 
+		///<summary></summary>
 		public void SetSelected(bool setValue){//sets all to specified value, and only redraws affected rows.
 																					 //Alternative would be to use ResetRows if clearing.
 			ArrayList SelectedIAL=new ArrayList();
@@ -277,6 +323,7 @@ namespace OpenDental{
 			SelectedIAL=null;
 		}
 
+		///<summary></summary>
 		public void InstantClassesPar(){
 			Cell = new string[MaxCols,MaxRows];
 			FontSize = new float[MaxCols,MaxRows];
@@ -301,6 +348,7 @@ namespace OpenDental{
 			//});
 		}
 
+		///<summary></summary>
 		public void ResetRows(int maxRows){
 			MaxRows=maxRows;
 			Cell = new string[MaxCols,MaxRows];
@@ -326,6 +374,7 @@ namespace OpenDental{
       //SelectedIAL=new ArrayList();
 		}
 
+		///<summary></summary>
 		public void SetBackGColor(Color myColor){
 			for (int i=0; i<MaxRows; i++){
 				for (int j=0; j<MaxCols; j++){
@@ -334,15 +383,18 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary></summary>
 		public void LayoutTables(){
-			if (ShowScroll) scrollWidth=17;
-			else scrollWidth=0;
+			if(ShowScroll)
+				scrollWidth=17;
+			else 
+				scrollWidth=0;
 			if (MaxRows!=0) rowPos[0]=0;
-			for (int i=1; i<MaxRows; i++){
+			for(int i=1;i<MaxRows;i++){
 				rowPos[i]=rowPos[i-1]+RowHeight[i-1];
 			}
-			if (!ShowScroll && MaxRows>0)
-				if (FieldsArePresent && HeadingIsPresent)
+			if(!ShowScroll && MaxRows>0)
+				if(FieldsArePresent && HeadingIsPresent)
 					Height=rowPos[MaxRows-1]+RowHeight[MaxRows-1]+1+17+15+1;
 				else if (FieldsArePresent)
 					Height=rowPos[MaxRows-1]+RowHeight[MaxRows-1]+1+15+2;
@@ -350,10 +402,10 @@ namespace OpenDental{
 					Height=rowPos[MaxRows-1]+RowHeight[MaxRows-1]+1;
 				}
 			colPos[0]=0;
-			for (int i=1; i<MaxCols; i++){
+			for(int i=1;i<MaxCols;i++){
 				colPos[i]=colPos[i-1]+ColWidth[i-1];
 			}
-			if (ColWidth[MaxCols-1]!=0){
+			if(ColWidth[MaxCols-1]!=0){
 				panelHead.Width=colPos[MaxCols-1]+ColWidth[MaxCols-1]+scrollWidth;
 				Width=panelHead.Width+2;
 				if (FieldsArePresent && HeadingIsPresent)
@@ -377,6 +429,7 @@ namespace OpenDental{
 				if (ShowScroll){
 					if (panelTable.Height<panelScroll.Height){
 						vScrollBar1.Enabled=false;
+						vScrollBar1.Value=1;
 						panelTable.Location=new Point(0,-1);
 					}
 					else{
@@ -400,12 +453,14 @@ namespace OpenDental{
 			Refresh();
 		}//end Layout Tables
 
+		///<summary></summary>
 		public void SetRowHeight(int rowStart, int rowStop, int rowHeight){
 		  for (int i=rowStart; i<=rowStop; i++){
 				RowHeight[i]=rowHeight;
 			}
 		}
 
+		///<summary></summary>
 		public void ColorRow(int row, Color myColor){
 			//float Foffset=0;
 			Graphics grfx = panelTable.CreateGraphics();
@@ -466,22 +521,25 @@ namespace OpenDental{
 			if(row==MaxRows-1){//if last row
 				grfx.DrawLine(new Pen(Color.Black),0,panelTable.Height-1,panelTable.Width-1,panelTable.Height-1);
 			}
-			grfx=null;
+			grfx.Dispose();
 			//Refresh();//Makes it flicker
 		}
 
+		///<summary></summary>
 		public void SetTextColorRow(int row, Color myColor){
 			for(int j=0;j<MaxCols;j++){
 				FontColor[j,row]=myColor;
 			}
 		}
 
+		///<summary></summary>
 		public void SetBackColorRow(int row, Color myColor){
 			for(int j=0;j<MaxCols;j++){
 				BackGColor[j,row]=myColor;
 			}
 		}
 
+		///<summary></summary>
 		public void SetGridColor(Color myColor){
 			DefaultGridColor=myColor;
 			for (int i=0; i<MaxRows; i++){
@@ -494,6 +552,7 @@ namespace OpenDental{
 			//Refresh();
 		}
 
+		///<summary></summary>
 		protected void panelHead_Paint(object sender, System.Windows.Forms.PaintEventArgs pea) {
 			if (FieldsArePresent==false) return;
 			Graphics grfx = pea.Graphics;
@@ -576,7 +635,10 @@ namespace OpenDental{
 						if (FontSize[j,i]!=0) myFontSize=FontSize[j,i];
 						else if (FontBold[j,i]) myFontSize=8.5f;
 						else myFontSize=8.5f;
-						myFont=new Font(FontFamily.GenericSansSerif,myFontSize,myFontStyle);
+						//temp:
+						//myFontSize=9f;
+						//myFontFamily=new FontFamily("Microsoft Sans Serif");
+						myFont=new Font(myFontFamily,myFontSize,myFontStyle);
 						if(FontColor[j,i].IsEmpty){
 							myFontColor=Color.Black;
 						}
@@ -777,7 +839,7 @@ namespace OpenDental{
 			panelTable.Select();
 		}
 
-
+		///<summary></summary>
 		public void ScrollToLine(int lineNum){
 			if(lineNum<2) lineNum=2;
 			int tempLoc=rowPos[lineNum-2];
@@ -787,21 +849,27 @@ namespace OpenDental{
 			panelTable.Location=new Point(0,-tempLoc);
 		}
 
+		///<summary></summary>
 		public delegate void CellEventHandler(object sender, CellEventArgs e);
+		///<summary></summary>
 		public event CellEventHandler CellClicked;
+		///<summary></summary>
 		public event CellEventHandler CellDoubleClicked;
+		///<summary></summary>
 		protected virtual void OnCellClicked(CellEventArgs e){
 			if(CellClicked !=null){
 				CellClicked(this,e);
 			}
 		}
 
+		///<summary></summary>
 		protected virtual void OnCellDoubleClicked(CellEventArgs e){
 			if(CellDoubleClicked !=null){
 				CellDoubleClicked(this,e);
 			}
 		}
 
+		///<summary></summary>
 		public int WorldToLine(int y){
 			int retVal=0;
 			for(int i=0;i<MaxRows;i++){
@@ -821,16 +889,20 @@ namespace OpenDental{
 
 	}//end class ContrTable
 
+	///<summary></summary>
 	public class CellEventArgs : EventArgs{
 		private int col;
 		private int row;
 		
+		///<summary></summary>
 		public CellEventArgs(int col, int row) : base(){
 			this.row=row;
 			this.col=col;
 		}
 
+		///<summary></summary>
 		public int Col{get{return col;}}
+		///<summary></summary>
 		public int Row{get{return row;}}
 	}
 

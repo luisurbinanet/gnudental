@@ -16,10 +16,12 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
+	///<summary></summary>
 	public class ClassConvertDatabase{
 		private System.Version FromVersion;
 		private System.Version ToVersion;
 
+		///<summary></summary>
 		public bool Convert(string fromVersion){//return false to indicate exit app.
 			//Conversions=new Conversions();
 			FromVersion=new Version(fromVersion);
@@ -28,23 +30,16 @@ namespace OpenDental{
 				MessageBox.Show("Can not convert database to an older version.");
 				return false;
 			}
-			if(FromVersion < new Version("1.0.0")){
-				MessageBox.Show("Can not convert databases before version 1.0.0");
+			if(FromVersion < new Version("1.0.0")
+				|| FromVersion.ToString()=="2.0.1.0"
+				|| FromVersion.ToString()=="2.1.0.0"
+				|| FromVersion.ToString()=="2.1.1.0"
+				|| FromVersion.ToString()=="2.5.0.0"){
+				MessageBox.Show("Can not convert database version "+FromVersion.ToString()
+					+" which was only for development purposes.");
 				return false;
 			}
-			if(FromVersion.CompareTo(new Version("2.0.1"))==0){
-				MessageBox.Show("Can not convert database version 2.0.1 which was only for development purposes.");
-				return false;
-			}
-			if(FromVersion.CompareTo(new Version("2.1.0"))==0){
-				MessageBox.Show("Can not convert database version 2.1.0 which was only for development purposes.");
-				return false;
-			}
-			if(FromVersion.CompareTo(new Version("2.1.1"))==0){
-				MessageBox.Show("Can not convert database version 2.1.1 which was only for development purposes.");
-				return false;
-			}
-			if(FromVersion < new Version("2.1.5")){
+			if(FromVersion < new Version("2.5.7.0")){
 				if(MessageBox.Show("Your database will now be converted from version "
 					+FromVersion.ToString()+" to version "+ToVersion.ToString()
 					+". Please be certain you have a current backup.  "
@@ -58,6 +53,7 @@ namespace OpenDental{
 			else{
 				return true;//no conversion necessary
 			}
+			MakeABackup();
 			if(To1_0_1()){//begins going through the chain of conversion steps, each returning true
 				MessageBox.Show("Conversion successful");
 				Prefs.Refresh();
@@ -68,15 +64,50 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary>Backs up the database to the same directory as the original just in case the user did not have sense enought to do a backup first.</summary>
+		private void MakeABackup(){
+			try{
+				string newDb="opendentalbackup"+DateTime.Today.ToString("MMddyyyy");
+				string oldDb=FormConfig.Database;
+				Conversions.NonQString="CREATE DATABASE "+newDb;
+				if(!Conversions.SubmitNonQString()) throw new Exception("Could not create database "+newDb);
+				Conversions.SelectText="SHOW TABLES";
+				if(!Conversions.SubmitSelect()) throw new Exception("Could not show tables");
+				string[] tableName=new string[Conversions.TableQ.Rows.Count];
+				for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
+					tableName[i]=Conversions.TableQ.Rows[i][0].ToString();
+				}
+				//switch to using the new database
+				DataClass.SetConnection(newDb);
+				for(int i=0;i<tableName.Length;i++){
+					Conversions.SelectText="SHOW CREATE TABLE "+oldDb+"."+tableName[i];
+					if(!Conversions.SubmitSelect()) throw new Exception("Could not show create table.");
+					Conversions.NonQString=Conversions.TableQ.Rows[0][1].ToString();
+					if(!Conversions.SubmitNonQString()) throw new Exception(Conversions.NonQString);
+					Conversions.NonQString="INSERT INTO "+newDb+"."+tableName[i]
+						+" SELECT * FROM "+oldDb+"."+tableName[i];
+					if(!Conversions.SubmitNonQString()) throw new Exception(Conversions.NonQString);
+				}
+			}
+			catch(Exception e){
+				MessageBox.Show("Automated backup unsuccessful because it was already run today. Conversion will now continue.");
+			}
+			finally{
+				//MessageBox.Show("Backup done");
+				//go back to the current db
+				DataClass.SetConnection();
+			}
+		}
+
 		private bool To1_0_1(){//returns true if successful
 			if(FromVersion < new Version("1.0.1")){
 				try{
-					Conversions.ArrayQueryText=new string[] 
+					Conversions.NonQArray=new string[] 
 						{"INSERT INTO preference (PrefName,ValueString) "
 						+"VALUES('TreatmentPlanNote','If you have dental insurance, please be aware that THIS IS AN ESTIMATE ONLY.  Coverage may be different if your deductible has not been met, annual maximum has been met, or if your coverage table is lower than average.')"
 						,"ALTER TABLE patient CHANGE Balance EstBalance DOUBLE DEFAULT '0' NOT NULL" 
 						,"UPDATE preference SET ValueString = '1.0.1.0' WHERE PrefName = 'DataBaseVersion'"}; 
-					if(!Conversions.SubmitQuery()) return false;
+					if(!Conversions.SubmitNonQArray()) return false;
 				}
 				catch{
 					return false;
@@ -88,10 +119,10 @@ namespace OpenDental{
 		private bool To1_0_11(){
 			if(FromVersion < new Version("1.0.11")){
 				try{
-					Conversions.ArrayQueryText=new string[] 
+					Conversions.NonQArray=new string[] 
 						{"ALTER TABLE patient ADD MedicaidID VARCHAR(20) NOT NULL"
 						,"UPDATE preference SET ValueString = '1.0.11' WHERE PrefName = 'DataBaseVersion'"}; 
-					if(!Conversions.SubmitQuery()) return false;
+					if(!Conversions.SubmitNonQArray()) return false;
 				}
 				catch{
 					return false;
@@ -129,13 +160,13 @@ namespace OpenDental{
 						}
 					}
 					AL.Add("UPDATE preference SET ValueString = '2.0.2' WHERE PrefName = 'DataBaseVersion';"); 
-					Conversions.ArrayQueryText=new string[AL.Count];
-					AL.CopyTo(Conversions.ArrayQueryText);
+					Conversions.NonQArray=new string[AL.Count];
+					AL.CopyTo(Conversions.NonQArray);
 					//MessageBox.Show(AL.Count.ToString());
 					//for(int i=30;i<Conversions.ArrayQueryText.Length;i++){
 					//	MessageBox.Show(Conversions.ArrayQueryText[i]);
 					//}
-					if(!Conversions.SubmitQuery()){
+					if(!Conversions.SubmitNonQArray()){
 						sr.Close();
 						return false;
 					}
@@ -143,7 +174,7 @@ namespace OpenDental{
 					//Add a finance charge type to adjustments:
 					Defs.Refresh();
 					Defs.Cur=new Def();
-					Defs.Cur.Category=(int)DefCat.AdjTypes;
+					Defs.Cur.Category=DefCat.AdjTypes;
 					Defs.Cur.ItemName="Finance Charge";
 					Defs.Cur.ItemOrder=Defs.Long[(int)DefCat.AdjTypes].Length;
 					Defs.Cur.ItemValue="+";
@@ -168,6 +199,7 @@ namespace OpenDental{
 		/// <param name="fileName">The filename is always relative to the application directory.</param>
 		/// <returns>True if executed successfully.  False if an error.</returns>
 		public bool ExecuteFile(string fileName){
+			//also used in the function that downloads and installs the latests translations.
 			if(!File.Exists(fileName)){
 				MessageBox.Show(fileName+" could not be found.");
 				return false;
@@ -194,9 +226,9 @@ namespace OpenDental{
 						}
 					}
 				}
-				Conversions.ArrayQueryText=new string[AL.Count];
-				AL.CopyTo(Conversions.ArrayQueryText);
-				if(!Conversions.SubmitQuery()){
+				Conversions.NonQArray=new string[AL.Count];
+				AL.CopyTo(Conversions.NonQArray);
+				if(!Conversions.SubmitNonQArray()){
 					sr.Close();
 					return false;
 				}
@@ -211,7 +243,7 @@ namespace OpenDental{
 		private bool To2_1_2(){
 			if(FromVersion < new Version("2.1.2")){
 				try{
-					Conversions.ArrayQueryText=new string[]{
+					Conversions.NonQArray=new string[]{
 						"UPDATE insplan SET claimformat = '1' WHERE claimformat = '43'"
 						,"UPDATE insplan SET claimformat = '0' WHERE claimformat = '44'"
 						,"ALTER TABLE insplan CHANGE claimformat NoSendElect TINYINT(1) unsigned NOT NULL default '0'"
@@ -270,18 +302,18 @@ namespace OpenDental{
 						,"UPDATE patient SET PriProv='"+((Pref)Prefs.HList["PracticeDefaultProv"]).ValueString
 							+"' WHERE PriProv='0'"
 					}; 
-					if(!Conversions.SubmitQuery()) return false;
+					if(!Conversions.SubmitNonQArray()) return false;
 					//copy SSN into each insplan.subscriberID.
 					Conversions.SelectText="SELECT patient.ssn,insplan.plannum "
 						+"FROM patient,insplan WHERE patient.patnum = insplan.subscriber";
 					if(!Conversions.SubmitSelect()) return false;
 					for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
-						Conversions.ArrayQueryText=new string[]{
+						Conversions.NonQArray=new string[]{
 							"UPDATE insplan SET subscriberid = '"
 							+POut.PString(Conversions.TableQ.Rows[i][0].ToString())+"'"
 							+" WHERE plannum = '"+Conversions.TableQ.Rows[i][1].ToString()+"'"
 						};
-						if(!Conversions.SubmitQuery()) return false;
+						if(!Conversions.SubmitNonQArray()) return false;
 					}
 					//fix any adjustments without provnum
 					Conversions.SelectText="SELECT patient.priprov,adjustment.adjnum "
@@ -289,12 +321,12 @@ namespace OpenDental{
 						+"&& adjustment.provnum = '0'";
 					if(!Conversions.SubmitSelect()) return false;
 					for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
-						Conversions.ArrayQueryText=new string[]{
+						Conversions.NonQArray=new string[]{
 							"UPDATE adjustment SET provnum = '"
 							+Conversions.TableQ.Rows[i][0].ToString()+"'"
 							+" WHERE adjnum = '"+Conversions.TableQ.Rows[i][1].ToString()+"'"
 						};
-						if(!Conversions.SubmitQuery()) return false;
+						if(!Conversions.SubmitNonQArray()) return false;
 					}
 					//fix any procedures without provnum
 					Conversions.SelectText="SELECT patient.priprov,procedurelog.procnum "
@@ -302,12 +334,12 @@ namespace OpenDental{
 						+"&& procedurelog.provnum = '0'";
 					if(!Conversions.SubmitSelect()) return false;
 					for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
-						Conversions.ArrayQueryText=new string[]{
+						Conversions.NonQArray=new string[]{
 							"UPDATE procedurelog SET provnum = '"
 							+Conversions.TableQ.Rows[i][0].ToString()+"'"
 							+" WHERE procnum = '"+Conversions.TableQ.Rows[i][1].ToString()+"'"
 						};
-						if(!Conversions.SubmitQuery()) return false;
+						if(!Conversions.SubmitNonQArray()) return false;
 					}
 					//fix all appointments with status of 0. Move them to unsched list.
 					Conversions.SelectText="SELECT appointment.aptnum from patient,appointment "
@@ -316,11 +348,11 @@ namespace OpenDental{
 						+"&& appointment.aptstatus = '0'";
 					if(!Conversions.SubmitSelect()) return false;
 					for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
-						Conversions.ArrayQueryText=new string[]{
+						Conversions.NonQArray=new string[]{
 							"UPDATE appointment SET aptstatus = '3'"
 							+" WHERE aptnum = '"+Conversions.TableQ.Rows[i][0].ToString()+"'"
 						};
-						if(!Conversions.SubmitQuery()) return false;
+						if(!Conversions.SubmitNonQArray()) return false;
 					}
 					//now, get all claims
 					Conversions.SelectText="SELECT claim.claimnum,claim.patnum,claim.provtreat,claim.claimfee"//3
@@ -388,11 +420,11 @@ namespace OpenDental{
 						else{//secondary
 							thisRelat=(Relat)PIn.PInt(claimTable.Rows[i][15].ToString());
 						}
-						Conversions.ArrayQueryText=new string[]{
+						Conversions.NonQArray=new string[]{
 							"UPDATE claim SET patrelat = '"+POut.PInt((int)thisRelat)+"'"
 							+" WHERE claimnum = '"+claimTable.Rows[i][0].ToString()+"'"
 						};
-						if(!Conversions.SubmitQuery()) return false;
+						if(!Conversions.SubmitNonQArray()) return false;
 						//get procedures for claim
 						Conversions.SelectText="SELECT procnum,provnum,procfee,adacode FROM procedurelog ";
 						if(PIn.PString(claimTable.Rows[i][8].ToString())=="P"){//if type=Pri
@@ -478,22 +510,22 @@ namespace OpenDental{
 						ClaimProcs.InsertCur();
 					}//loop i claimns
 					Defs.Cur=new Def();
-					Defs.Cur.Category=(int)DefCat.ContactCategories;
+					Defs.Cur.Category=DefCat.ContactCategories;
 					Defs.Cur.ItemName="Pharmacies";
 					Defs.Cur.ItemOrder=0;
 					Defs.InsertCur();
 					Defs.Cur=new Def();
-					Defs.Cur.Category=(int)DefCat.ContactCategories;
+					Defs.Cur.Category=DefCat.ContactCategories;
 					Defs.Cur.ItemName="Local Dentists";
 					Defs.Cur.ItemOrder=1;
 					Defs.InsertCur();
 					if(!ExecuteFile(@"ConversionFiles\convert_2_1_2.txt")) return false;
 					File.Copy(@"ConversionFiles\DentiCal.jpg"
 						,((Pref)Prefs.HList["DocPath"]).ValueString+@"\DentiCal.jpg",true);
-					Conversions.ArrayQueryText=new string[]{
+					Conversions.NonQArray=new string[]{
 						"UPDATE preference SET ValueString = '2.1.2' WHERE PrefName = 'DataBaseVersion'"
 					};
-					if(!Conversions.SubmitQuery()) return false;
+					if(!Conversions.SubmitNonQArray()) return false;
 				}
 				catch{
 					return false;
@@ -505,7 +537,7 @@ namespace OpenDental{
 		private bool To2_1_5(){
 			if(FromVersion < new Version("2.1.5")){
 				try{
-					Conversions.ArrayQueryText=new string[]{
+					Conversions.NonQArray=new string[]{
 						"UPDATE claimformitem SET formatstring = 'MM/dd/yy' WHERE "
 							+"claimformitemnum = '280' || claimformitemnum = '286' || claimformitemnum = '292' "
 							+"|| claimformitemnum = '298' || claimformitemnum = '304' || claimformitemnum = '310' "
@@ -514,16 +546,241 @@ namespace OpenDental{
 						,"ALTER TABLE procedurecode CHANGE ADACode ADACode VARCHAR(15) BINARY NOT NULL default ''"
 						,"UPDATE preference SET ValueString = '2.1.5' WHERE PrefName = 'DataBaseVersion'"
 					};
-					if(!Conversions.SubmitQuery()) return false;
+					if(!Conversions.SubmitNonQArray()) return false;
 				}
 				catch{
 					return false;
 				}
 			}//if
-			return To2_5_0();
+			return To2_5_1();
 		}
 
-		private bool To2_5_0(){
+		private bool To2_5_1(){
+			if(FromVersion < new Version("2.5.1")){
+				try{
+					//first check to see if the conversion file is available
+					if(!File.Exists(@"ConversionFiles\convert_2_5_1.txt")){
+						MessageBox.Show(@"ConversionFiles\convert_2_5_1.txt"+" could not be found.");
+						return false;
+					}
+					//then, do all file transfers.
+					try{
+						File.Copy(@"ConversionFiles\DentiCal.jpg"
+							,((Pref)Prefs.HList["DocPath"]).ValueString+@"\DentiCal.jpg",true);
+						File.Copy(@"ConversionFiles\ADA2000.jpg"
+							,((Pref)Prefs.HList["DocPath"]).ValueString+@"\ADA2000.jpg",true);
+						File.Copy(@"ConversionFiles\HCFA1500.gif"
+							,((Pref)Prefs.HList["DocPath"]).ValueString+@"\HCFA1500.gif",true);
+					}
+					catch{
+						MessageBox.Show("Files could not be copied correctly.");
+						return false;
+					}
+					//set the aptstatus of all the next appointments to Next.
+					//and update the dates on all the next appointments
+					Conversions.SelectText="SELECT patient.nextaptnum,procedurelog.procdate "
+						+"FROM patient "
+						+"LEFT JOIN procedurelog ON patient.nextaptnum = procedurelog.nextaptnum "
+						+"WHERE patient.nextaptnum > '0' ";
+					if(!Conversions.SubmitSelect()) return false;
+					for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
+						Conversions.NonQString=
+							"UPDATE appointment SET aptstatus = '6',"
+							+"aptdatetime = '"+POut.PDateT(PIn.PDate(Conversions.TableQ.Rows[i][1].ToString()))+"'"
+							+" WHERE aptnum = '"+Conversions.TableQ.Rows[i][0].ToString()+"'";
+						//MessageBox.Show(Conversions.ArrayQueryText[0]);
+						if(!Conversions.SubmitNonQString()) return false;
+					}
+					//add various columns, rows, and tables in a script
+					//this also adds all new claimform items with dummy foreign keys which will get replaced.
+					if(!ExecuteFile(@"ConversionFiles\convert_2_5_1.txt")) return false;
+					//get the primary keys for the 3(4) claimforms
+					Conversions.SelectText="SELECT ClaimFormNum,UniqueID FROM claimform "
+						+"WHERE UniqueID > '0'";
+					if(!Conversions.SubmitSelect()) return false;
+					//use those primary keys to delete appropriate claimformitems and change foreign keys
+					for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
+						Conversions.NonQString="DELETE FROM claimformitem"
+							+" WHERE ClaimFormNum = '"+Conversions.TableQ.Rows[i][0].ToString()+"'";
+						if(!Conversions.SubmitNonQString()) return false;
+						Conversions.NonQString="UPDATE claimformitem"
+							+" SET ClaimFormNum = '"+Conversions.TableQ.Rows[i][0].ToString()
+							+"' WHERE ClaimFormNum = '1000"+Conversions.TableQ.Rows[i][1].ToString()+"'";
+						if(!Conversions.SubmitNonQString()) return false;
+					}
+					//Move all patientnote.ApptPhone entries into CommLog
+					Conversions.SelectText="SELECT patnum,apptphone "
+						+"FROM patientnote "
+						+"WHERE apptphone != ''";
+					if(!Conversions.SubmitSelect()) return false;
+					for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
+						Conversions.NonQArray=new string[]{
+							"INSERT INTO commlog (patnum"
+							+",commdate,commtype,note) VALUES("
+							+"'"+POut.PInt   (PIn.PInt(Conversions.TableQ.Rows[i][0].ToString()))+"', "
+							+"'"+POut.PDate  (DateTime.Today)+"', "
+							+"'"+POut.PInt   (2)+"', "//2=appointment scheduling
+							+"'"+POut.PString(PIn.PString(Conversions.TableQ.Rows[i][1].ToString()))+"')"
+						};
+						//MessageBox.Show(Conversions.ArrayQueryText[0]);
+						if(!Conversions.SubmitNonQArray()) return false;
+					}
+					//Add a procDescript to each appointment
+					Conversions.SelectText="SELECT procedurelog.aptnum,procedurecode.abbrdesc "
+						+"FROM procedurelog,procedurecode "
+						+"WHERE procedurelog.AptNum > '0' AND procedurelog.adacode = procedurecode.adacode "
+						+"ORDER BY aptnum";
+					if(!Conversions.SubmitSelect()) return false;
+					string procs="";
+					int curAptNum=0;
+					int j=0;
+					while(j<Conversions.TableQ.Rows.Count){
+						curAptNum=PIn.PInt(Conversions.TableQ.Rows[j][0].ToString());
+						procs="";
+						while(j<Conversions.TableQ.Rows.Count &&
+							curAptNum==PIn.PInt(Conversions.TableQ.Rows[j][0].ToString()))
+						{
+							procs+=PIn.PString(Conversions.TableQ.Rows[j][1].ToString())+", ";
+							j++;
+						}
+						procs=procs.Substring(0,procs.Length-2);//trim the last comma and space
+						Conversions.NonQArray=new string[]{
+							"UPDATE appointment SET procdescript = '"+procs+"' "
+							+" WHERE aptnum = '"+curAptNum.ToString()+"'"
+						};
+						//MessageBox.Show(Conversions.ArrayQueryText[0]);
+						if(!Conversions.SubmitNonQArray()) return false;
+					}
+					//Add a procDescript to each next appointment
+					Conversions.SelectText="SELECT procedurelog.nextaptnum,procedurecode.abbrdesc "
+						+"FROM procedurelog,procedurecode "
+						+"WHERE procedurelog.NextAptNum > '0' AND procedurelog.adacode = procedurecode.adacode "
+						+"ORDER BY nextaptnum";
+					if(!Conversions.SubmitSelect()) return false;
+					j=0;
+					while(j<Conversions.TableQ.Rows.Count){
+						curAptNum=PIn.PInt(Conversions.TableQ.Rows[j][0].ToString());
+						procs="";
+						while(j<Conversions.TableQ.Rows.Count &&
+							curAptNum==PIn.PInt(Conversions.TableQ.Rows[j][0].ToString()))
+						{
+							procs+=PIn.PString(Conversions.TableQ.Rows[j][1].ToString())+", ";
+							j++;
+						}
+						procs=procs.Substring(0,procs.Length-2);//trim the last comma and space
+						Conversions.NonQArray=new string[]{
+							"UPDATE appointment SET procdescript = '"+procs+"' "
+							+" WHERE aptnum = '"+curAptNum.ToString()+"'"
+						};
+						//MessageBox.Show(Conversions.ArrayQueryText[0]);
+						if(!Conversions.SubmitNonQArray()) return false;
+					}
+
+					//final changes
+					Conversions.NonQArray=new string[]{
+						"UPDATE patientnote SET ApptPhone = ''"
+						,"UPDATE preference SET ValueString = '2.5.1' WHERE PrefName = 'DataBaseVersion'"
+					};
+					if(!Conversions.SubmitNonQArray()) return false;
+				}
+				catch{
+					return false;
+				}
+			}
+			return To2_5_2();
+		}
+
+		private bool To2_5_2(){
+			if(FromVersion < new Version("2.5.2.0")){
+				try{
+					Conversions.NonQArray=new string[]{
+						"ALTER TABLE claimform CHANGE OffsetX OffsetX SMALLINT(5) NOT NULL default '0'"
+						,"ALTER TABLE claimform CHANGE OffsetY OffsetY SMALLINT(5) NOT NULL default '0'"
+						,"INSERT INTO preference (PrefName,ValueString) VALUES ('BillingExcludeInactive','0')"
+						,"UPDATE preference SET ValueString = '2.5.2.0' WHERE PrefName = 'DataBaseVersion'"
+					};
+					if(!Conversions.SubmitNonQArray()) return false;
+				}
+				catch{
+					return false;
+				}
+			}
+			return To2_5_6();
+		}
+
+		private bool To2_5_6(){
+			if(FromVersion < new Version("2.5.6.0")){
+				try{
+					Conversions.NonQArray=new string[]{
+						"INSERT INTO preference (PrefName,ValueString) VALUES ('GenericEClaimsForm','')"
+						,"UPDATE preference SET ValueString = '2.5.6.0' WHERE PrefName = 'DataBaseVersion'"
+					};
+					if(!Conversions.SubmitNonQArray()) return false;
+				}
+				catch{
+					return false;
+				}
+			}
+			return To2_5_7();
+		}
+
+		private bool To2_5_7(){
+			if(FromVersion < new Version("2.5.7.0")){
+				try{
+					//copy the new ADA2002.gif
+					File.Copy(@"ConversionFiles\ADA2002.gif"
+						,((Pref)Prefs.HList["DocPath"]).ValueString+@"\ADA2002.gif",true);
+					//delete the old ADA2002.emf, and the old ADA2002.jpg if there is one
+					if(File.Exists(((Pref)Prefs.HList["DocPath"]).ValueString+@"\ADA2002.emf")){
+						File.Delete(((Pref)Prefs.HList["DocPath"]).ValueString+@"\ADA2002.emf");
+					}
+					if(File.Exists(((Pref)Prefs.HList["DocPath"]).ValueString+@"\ADA2002.jpg")){
+						File.Delete(((Pref)Prefs.HList["DocPath"]).ValueString+@"\ADA2002.jpg");
+					}
+					//Get the claimformNum of the ADA2002
+					ClaimForms.Refresh();
+					for(int i=0;i<ClaimForms.ListLong.Length;i++){
+						if(ClaimForms.ListLong[i].UniqueID==1){
+							ClaimForms.Cur=ClaimForms.ListLong[i];
+							break;
+						}
+					}
+					//get the claimformitem for the background image
+					ClaimFormItems.Refresh();
+					ClaimFormItems.GetListForForm();
+					ClaimFormItems.Cur=new ClaimFormItem();
+					for(int i=0;i<ClaimFormItems.ListForForm.Length;i++){
+						if(ClaimFormItems.ListForForm[i].ImageFileName=="ADA2002.emf"
+							|| ClaimFormItems.ListForForm[i].ImageFileName=="ADA2002.gif"
+							|| ClaimFormItems.ListForForm[i].ImageFileName=="ADA2002.jpg"){
+							ClaimFormItems.Cur=ClaimFormItems.ListForForm[i];
+						}
+					}
+					//if a match was not found, then it will start from scratch
+					//Change the background to the new gif image
+					ClaimFormItems.Cur.ClaimFormNum=ClaimForms.Cur.ClaimFormNum;
+					ClaimFormItems.Cur.ImageFileName="ADA2002.gif";
+					ClaimFormItems.Cur.XPos=9;
+					ClaimFormItems.Cur.YPos=0;
+					ClaimFormItems.Cur.Width=834;
+					ClaimFormItems.Cur.Height=1058;
+					//save the changes
+					if(ClaimFormItems.Cur.ClaimFormItemNum==0){
+						ClaimFormItems.InsertCur();
+					}
+					else{
+						ClaimFormItems.UpdateCur();
+					}
+					//final:
+					Conversions.NonQArray=new string[]{
+						"UPDATE preference SET ValueString = '2.5.7.0' WHERE PrefName = 'DataBaseVersion'"
+					};
+					if(!Conversions.SubmitNonQArray()) return false;
+				}
+				catch{
+					return false;
+				}
+			}
 			return true;
 		}
 

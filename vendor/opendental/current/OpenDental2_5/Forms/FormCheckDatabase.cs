@@ -28,6 +28,7 @@ namespace OpenDental
 		//private Queries Queries2;
 		private string logData;
 
+		///<summary></summary>
 		public FormCheckDatabase()
 		{
 			//
@@ -73,11 +74,13 @@ namespace OpenDental
 			// 
 			// butClose
 			// 
+			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butClose.Location = new System.Drawing.Point(667, 320);
+			this.butClose.Location = new System.Drawing.Point(655, 317);
 			this.butClose.Name = "butClose";
+			this.butClose.Size = new System.Drawing.Size(87, 26);
 			this.butClose.TabIndex = 0;
-			this.butClose.Text = "Close";
+			this.butClose.Text = "&Close";
 			this.butClose.Click += new System.EventHandler(this.butClose_Click);
 			// 
 			// textBox1
@@ -119,10 +122,11 @@ namespace OpenDental
 			// buttonCheck
 			// 
 			this.buttonCheck.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.buttonCheck.Location = new System.Drawing.Point(667, 281);
+			this.buttonCheck.Location = new System.Drawing.Point(655, 278);
 			this.buttonCheck.Name = "buttonCheck";
+			this.buttonCheck.Size = new System.Drawing.Size(87, 26);
 			this.buttonCheck.TabIndex = 5;
-			this.buttonCheck.Text = "Check Now";
+			this.buttonCheck.Text = "C&heck Now";
 			this.buttonCheck.Click += new System.EventHandler(this.buttonCheck_Click);
 			// 
 			// checkCorrupt
@@ -138,7 +142,9 @@ namespace OpenDental
 			// 
 			// FormCheckDatabase
 			// 
+			this.AcceptButton = this.buttonCheck;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butClose;
 			this.ClientSize = new System.Drawing.Size(763, 371);
 			this.Controls.Add(this.checkCorrupt);
 			this.Controls.Add(this.buttonCheck);

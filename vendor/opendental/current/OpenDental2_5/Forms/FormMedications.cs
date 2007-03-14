@@ -13,15 +13,17 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butOK;
 		private System.Windows.Forms.ListBox listMeds;
 		private System.Windows.Forms.Button butAdd;
-		/// <summary>
-		/// Required designer variable.
-		/// </summary>
+		/// <summary>Required designer variable.</summary>
 		private System.ComponentModel.Container components = null;
+		///<summary></summary>
 		public bool SelectGenericMode;
+		///<summary></summary>
 		public bool SelectMode;
 		private System.Windows.Forms.Label label1;
-		public int MedicationNum;//the number returned if using either of the select modes.
+		///<summary>the number returned if using either of the select modes.</summary>
+		public int MedicationNum;
 
+		///<summary></summary>
 		public FormMedications()
 		{
 			//
@@ -66,25 +68,28 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butCancel.Location = new System.Drawing.Point(858, 640);
+			this.butCancel.Location = new System.Drawing.Point(858, 635);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 0;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// butOK
 			// 
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(858, 599);
+			this.butOK.Location = new System.Drawing.Point(858, 594);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 1;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// listMeds
 			// 
-			this.listMeds.Location = new System.Drawing.Point(8, 24);
+			this.listMeds.Location = new System.Drawing.Point(8, 25);
 			this.listMeds.MultiColumn = true;
 			this.listMeds.Name = "listMeds";
 			this.listMeds.Size = new System.Drawing.Size(841, 628);
@@ -94,23 +99,26 @@ namespace OpenDental{
 			// butAdd
 			// 
 			this.butAdd.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butAdd.Location = new System.Drawing.Point(858, 529);
+			this.butAdd.Location = new System.Drawing.Point(858, 524);
 			this.butAdd.Name = "butAdd";
+			this.butAdd.Size = new System.Drawing.Size(75, 26);
 			this.butAdd.TabIndex = 3;
-			this.butAdd.Text = "Add";
+			this.butAdd.Text = "&Add";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(8, 4);
+			this.label1.Location = new System.Drawing.Point(9, 5);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(591, 16);
+			this.label1.Size = new System.Drawing.Size(506, 17);
 			this.label1.TabIndex = 4;
-			this.label1.Text = "(medications with a * are missing notes.)";
+			this.label1.Text = "(medications marked with a * are missing notes)";
 			// 
 			// FormMedications
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(941, 671);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.butAdd);

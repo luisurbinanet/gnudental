@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormReferralEdit : System.Windows.Forms.Form{
 		private System.Windows.Forms.Button butOK;
 		private System.Windows.Forms.Button butCancel;
@@ -31,7 +31,9 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textMName;
 		private System.Windows.Forms.TextBox textST;
 		private System.ComponentModel.Container components = null;
+		///<summary></summary>
 		public bool IsNew;
+		///<summary></summary>
     public bool IsPatient;
 		private System.Windows.Forms.Label label5;
 		private System.Windows.Forms.TextBox textEmail;
@@ -54,6 +56,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butNone;
 		private System.Windows.Forms.CheckBox checkHidden;
 
+		///<summary></summary>
 		public FormReferralEdit(){
 			InitializeComponent();
 			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -86,6 +89,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -153,8 +157,9 @@ namespace OpenDental{
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(583, 585);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 17;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// butCancel
@@ -164,8 +169,9 @@ namespace OpenDental{
 			this.butCancel.Location = new System.Drawing.Point(583, 623);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.RightToLeft = System.Windows.Forms.RightToLeft.No;
+			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 18;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// textLName
@@ -501,6 +507,7 @@ namespace OpenDental{
 			// 
 			// textNotes
 			// 
+			this.textNotes.AcceptsReturn = true;
 			this.textNotes.Location = new System.Drawing.Point(109, 509);
 			this.textNotes.Multiline = true;
 			this.textNotes.Name = "textNotes";
@@ -553,13 +560,14 @@ namespace OpenDental{
 			this.butNone.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butNone.Location = new System.Drawing.Point(502, 270);
 			this.butNone.Name = "butNone";
-			this.butNone.Size = new System.Drawing.Size(72, 22);
+			this.butNone.Size = new System.Drawing.Size(72, 26);
 			this.butNone.TabIndex = 72;
-			this.butNone.Text = "None";
+			this.butNone.Text = "&None";
 			this.butNone.Click += new System.EventHandler(this.butNone_Click);
 			// 
 			// FormReferralEdit
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(681, 663);

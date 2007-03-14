@@ -9,7 +9,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+	///<summary></summary>
 	public class FormAdjust : System.Windows.Forms.Form{
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label4;
@@ -18,6 +18,7 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textNote;
 		private System.Windows.Forms.Label label2;
 		private System.ComponentModel.Container components = null;// Required designer variable.
+		///<summary></summary>
 		public bool IsNew;
 		private System.Windows.Forms.Button butOK;
 		private System.Windows.Forms.Button butCancel;
@@ -33,6 +34,7 @@ namespace OpenDental{
 		//private DateTime OriginalDate;
 		//private double OriginalAmt;
 
+		///<summary></summary>
 		public FormAdjust(){
 			InitializeComponent();
 			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -50,6 +52,7 @@ namespace OpenDental{
 			}); 
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -171,10 +174,10 @@ namespace OpenDental{
 			// butDelete
 			// 
 			this.butDelete.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butDelete.Location = new System.Drawing.Point(41, 476);
+			this.butDelete.Location = new System.Drawing.Point(45, 479);
 			this.butDelete.Name = "butDelete";
 			this.butDelete.TabIndex = 17;
-			this.butDelete.Text = "Delete";
+			this.butDelete.Text = "&Delete";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
 			// 
 			// textAmount
@@ -228,7 +231,10 @@ namespace OpenDental{
 			this.Controls.Add(this.label5);
 			this.Controls.Add(this.label4);
 			this.Controls.Add(this.label1);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "FormAdjust";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Edit Adjustment";
 			this.Load += new System.EventHandler(this.FormAdjust_Load);
@@ -352,8 +358,11 @@ namespace OpenDental{
 
 	}
 
+	///<summary></summary>
 	public struct AdjustmentItem{
+		///<summary></summary>
 		public string ItemText;
+		///<summary></summary>
 		public int ItemIndex;
 	}
 

@@ -18,7 +18,7 @@ using System.Text;
 
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormPrntScrn : System.Windows.Forms.Form{
 		private System.Windows.Forms.Label label1;
 		private System.Drawing.Printing.PrintDocument pd2;
@@ -57,6 +57,7 @@ namespace OpenDental{
 
 		private System.ComponentModel.Container components = null;
 
+		///<summary></summary>
 		public FormPrntScrn(){
 			InitializeComponent();
 			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -73,6 +74,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -132,12 +134,12 @@ namespace OpenDental{
 			// butCancel
 			// 
 			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butCancel.Location = new System.Drawing.Point(884, 760);
+			this.butCancel.Location = new System.Drawing.Point(884, 759);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 4;
-			this.butCancel.Text = "Close";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// textMouseX
@@ -192,7 +194,7 @@ namespace OpenDental{
 			this.butPrint.Name = "butPrint";
 			this.butPrint.Size = new System.Drawing.Size(75, 26);
 			this.butPrint.TabIndex = 13;
-			this.butPrint.Text = "Print";
+			this.butPrint.Text = "&Print";
 			this.butPrint.Click += new System.EventHandler(this.butPrint_Click);
 			// 
 			// butZoomIn
@@ -207,7 +209,7 @@ namespace OpenDental{
 			this.butZoomIn.Name = "butZoomIn";
 			this.butZoomIn.Size = new System.Drawing.Size(75, 26);
 			this.butZoomIn.TabIndex = 14;
-			this.butZoomIn.Text = "Zoom +";
+			this.butZoomIn.Text = "&Zoom +";
 			this.butZoomIn.Click += new System.EventHandler(this.butZoomIn_Click);
 			// 
 			// butZoomOut
@@ -237,12 +239,14 @@ namespace OpenDental{
 			this.butExport.Name = "butExport";
 			this.butExport.Size = new System.Drawing.Size(75, 26);
 			this.butExport.TabIndex = 16;
-			this.butExport.Text = "Export";
+			this.butExport.Text = "&Export";
 			this.butExport.Click += new System.EventHandler(this.butExport_Click);
 			// 
 			// FormPrntScrn
 			// 
+			this.AcceptButton = this.butPrint;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(976, 792);
 			this.Controls.Add(this.butExport);
 			this.Controls.Add(this.butZoomOut);
@@ -319,6 +323,7 @@ namespace OpenDental{
 			imageTemp.SetResolution(horRes,vertRes);  //sets resolution to fit image on screen
 		}
 
+		///<summary></summary>
 		public void PrintReport(bool justPreview){
 			pd2=new PrintDocument();
 			pd2.PrintPage += new PrintPageEventHandler(this.pd2_PrintPage);
@@ -478,7 +483,7 @@ namespace OpenDental{
 		}
 
 		private void butCancel_Click(object sender, System.EventArgs e) {
-		
+			DialogResult=DialogResult.Cancel;
 		}
 	}
 }

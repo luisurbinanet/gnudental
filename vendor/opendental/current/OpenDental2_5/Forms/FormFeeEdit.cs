@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormFeeEdit : System.Windows.Forms.Form{
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.TextBox textBox1;
@@ -16,6 +16,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butCancel;
 		private System.ComponentModel.Container components = null;// Required designer variable.
 
+		///<summary></summary>
 		public FormFeeEdit(){
 			InitializeComponent();// Required for Windows Form Designer support
 			textFee.Text=Fees.Cur.Amount.ToString("F");
@@ -32,6 +33,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -118,7 +120,7 @@ Use Default Coverage will usually be unchecked even if 'Use Default Fee' is chec
 			this.butOK.Location = new System.Drawing.Point(282, 54);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 3;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// butCancel
@@ -128,7 +130,7 @@ Use Default Coverage will usually be unchecked even if 'Use Default Fee' is chec
 			this.butCancel.Location = new System.Drawing.Point(282, 92);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 4;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// FormFeeEdit

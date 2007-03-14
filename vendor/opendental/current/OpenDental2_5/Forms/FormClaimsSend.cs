@@ -10,7 +10,7 @@ using System.IO;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormClaimsSend : System.Windows.Forms.Form{
 		private OpenDental.TableQueue tbQueue;
 		private System.Windows.Forms.Label label6;
@@ -33,8 +33,11 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butSubmit;
 		private System.Windows.Forms.Button butStatus;
 		private System.Windows.Forms.Button butStatusDown;
-		public static ArrayList eClaimList;//final list of eclaims(as Claim.ClaimNum) to send
+		private System.Windows.Forms.Button butEClaim;
+		///<summary>final list of eclaims(as Claim.ClaimNum) to send</summary>
+		public static ArrayList eClaimList;
 
+		///<summary></summary>
 		public FormClaimsSend(){
 			InitializeComponent();
 			tbQueue.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbQueue_CellDoubleClicked);
@@ -46,6 +49,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -80,6 +84,7 @@ namespace OpenDental{
 			this.butSubmit = new System.Windows.Forms.Button();
 			this.butStatus = new System.Windows.Forms.Button();
 			this.butStatusDown = new System.Windows.Forms.Button();
+			this.butEClaim = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// tbQueue
@@ -87,6 +92,7 @@ namespace OpenDental{
 			this.tbQueue.BackColor = System.Drawing.SystemColors.Window;
 			this.tbQueue.Location = new System.Drawing.Point(24, 64);
 			this.tbQueue.Name = "tbQueue";
+			this.tbQueue.ScrollValue = 1;
 			this.tbQueue.SelectedIndices = new int[0];
 			this.tbQueue.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
 			this.tbQueue.Size = new System.Drawing.Size(419, 462);
@@ -97,17 +103,18 @@ namespace OpenDental{
 			this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
 			this.label6.Location = new System.Drawing.Point(107, -44);
 			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(112, 32);
+			this.label6.Size = new System.Drawing.Size(112, 35);
 			this.label6.TabIndex = 21;
 			this.label6.Text = "Insurance Claims";
 			this.label6.TextAlign = System.Drawing.ContentAlignment.TopCenter;
 			// 
 			// butClose
 			// 
+			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butClose.Location = new System.Drawing.Point(406, 550);
 			this.butClose.Name = "butClose";
 			this.butClose.TabIndex = 22;
-			this.butClose.Text = "Close";
+			this.butClose.Text = "&Close";
 			this.butClose.Click += new System.EventHandler(this.butClose_Click);
 			// 
 			// toolBar2
@@ -193,7 +200,7 @@ namespace OpenDental{
 			this.butPreview.Name = "butPreview";
 			this.butPreview.Size = new System.Drawing.Size(86, 26);
 			this.butPreview.TabIndex = 24;
-			this.butPreview.Text = "Preview";
+			this.butPreview.Text = "P&review";
 			this.butPreview.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.butPreview.Click += new System.EventHandler(this.butPreview_Click);
 			// 
@@ -205,7 +212,7 @@ namespace OpenDental{
 			this.butBlank.Name = "butBlank";
 			this.butBlank.Size = new System.Drawing.Size(86, 26);
 			this.butBlank.TabIndex = 25;
-			this.butBlank.Text = "Blank";
+			this.butBlank.Text = "&Blank";
 			this.butBlank.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.butBlank.Click += new System.EventHandler(this.butBlank_Click);
 			// 
@@ -217,7 +224,7 @@ namespace OpenDental{
 			this.butPrint.Name = "butPrint";
 			this.butPrint.Size = new System.Drawing.Size(86, 26);
 			this.butPrint.TabIndex = 26;
-			this.butPrint.Text = "Print";
+			this.butPrint.Text = "&Print";
 			this.butPrint.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.butPrint.Click += new System.EventHandler(this.butPrint_Click);
 			// 
@@ -229,33 +236,45 @@ namespace OpenDental{
 			this.butSubmit.Name = "butSubmit";
 			this.butSubmit.Size = new System.Drawing.Size(86, 26);
 			this.butSubmit.TabIndex = 27;
-			this.butSubmit.Text = "Submit";
+			this.butSubmit.Text = "&WebClaim";
 			this.butSubmit.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.butSubmit.Click += new System.EventHandler(this.butSubmit_Click);
 			// 
 			// butStatus
 			// 
 			this.butStatus.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butStatus.Location = new System.Drawing.Point(346, 2);
+			this.butStatus.Location = new System.Drawing.Point(458, 2);
 			this.butStatus.Name = "butStatus";
 			this.butStatus.Size = new System.Drawing.Size(86, 26);
 			this.butStatus.TabIndex = 28;
-			this.butStatus.Text = "Status Sent";
+			this.butStatus.Text = "S&tatus Sent";
 			this.butStatus.Click += new System.EventHandler(this.butStatus_Click);
 			// 
 			// butStatusDown
 			// 
 			this.butStatusDown.Image = ((System.Drawing.Image)(resources.GetObject("butStatusDown.Image")));
-			this.butStatusDown.Location = new System.Drawing.Point(432, 2);
+			this.butStatusDown.Location = new System.Drawing.Point(544, 2);
 			this.butStatusDown.Name = "butStatusDown";
 			this.butStatusDown.Size = new System.Drawing.Size(12, 26);
 			this.butStatusDown.TabIndex = 29;
 			this.butStatusDown.Click += new System.EventHandler(this.butStatusDown_Click);
 			// 
+			// butEClaim
+			// 
+			this.butEClaim.Location = new System.Drawing.Point(346, 2);
+			this.butEClaim.Name = "butEClaim";
+			this.butEClaim.Size = new System.Drawing.Size(112, 26);
+			this.butEClaim.TabIndex = 30;
+			this.butEClaim.Text = "Generic E-Claims";
+			this.butEClaim.Click += new System.EventHandler(this.butEClaim_Click);
+			// 
 			// FormClaimsSend
 			// 
+			this.AcceptButton = this.butClose;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(506, 594);
+			this.CancelButton = this.butClose;
+			this.ClientSize = new System.Drawing.Size(562, 594);
+			this.Controls.Add(this.butEClaim);
 			this.Controls.Add(this.butStatusDown);
 			this.Controls.Add(this.butStatus);
 			this.Controls.Add(this.butSubmit);
@@ -421,6 +440,10 @@ namespace OpenDental{
 			toolButSubmit_Click();
 		}
 
+		private void butEClaim_Click(object sender, System.EventArgs e) {
+			toolButEClaim_Click();
+		}
+
 		private void butStatus_Click(object sender, System.EventArgs e) {
 			toolButStatus_Click();
 		}
@@ -448,17 +471,18 @@ namespace OpenDental{
 		}
 
 		private void toolButBlank_Click(){
-			FormClaimPrint FormCP;
-			FormCP=new FormClaimPrint();
+			string printerName="";
+			FormClaimPrint FormCP=new FormClaimPrint();
+
 			FormCP.PrintBlank=true;
-			if(!FormCP.PrintImmediate()){
+			if(!FormCP.PrintImmediate(printerName)){
 				MessageBox.Show(Lan.g(this,"Error printing."));
 			}		
 		}
 
 		private void toolButPrint_Click(){
-			FormClaimPrint FormCP;
-			FormCP=new FormClaimPrint();
+			string printerName;
+			FormClaimPrint FormCP=new FormClaimPrint();
 			printDialog2=new PrintDialog();
 			printDialog2.PrinterSettings=new PrinterSettings();
 			printDialog2.PrinterSettings.PrinterName=Computers.Cur.PrinterName;
@@ -468,15 +492,14 @@ namespace OpenDental{
 					return;
 				}
 				if(printDialog2.ShowDialog()==DialogResult.OK)
-					FormClaimPrint.PrinterName=printDialog2.PrinterSettings.PrinterName;
+					printerName=printDialog2.PrinterSettings.PrinterName;
 				else return;
 				for(int i=0;i<Claims.ListQueue.Length;i++){
 					if(Claims.ListQueue[i].ClaimStatus=="W"
 						&& Claims.ListQueue[i].NoSendElect){
-						//&& Defs.GetValue(DefCat.ClaimFormats,Claims.ListQueue[i].ClaimFormat)!="eclaim"){
 						FormCP.ThisPatNum=Claims.ListQueue[i].PatNum;
 						FormCP.ThisClaimNum=Claims.ListQueue[i].ClaimNum;
-						if(!FormCP.PrintImmediate()){
+						if(!FormCP.PrintImmediate(printerName)){
 							MessageBox.Show(Lan.g(this,"Error printing."));
 							return;
 						}
@@ -486,12 +509,12 @@ namespace OpenDental{
 			}
 			else{
 				if(printDialog2.ShowDialog()==DialogResult.OK)
-					FormClaimPrint.PrinterName=printDialog2.PrinterSettings.PrinterName;
+					printerName=printDialog2.PrinterSettings.PrinterName;
 				else return;
 				for(int i=0;i<tbQueue.SelectedIndices.Length;i++){
 					FormCP.ThisPatNum=Claims.ListQueue[tbQueue.SelectedIndices[i]].PatNum;
 					FormCP.ThisClaimNum=Claims.ListQueue[tbQueue.SelectedIndices[i]].ClaimNum;
-					if(!FormCP.PrintImmediate()){
+					if(!FormCP.PrintImmediate(printerName)){
 						MessageBox.Show(Lan.g(this,"Error printing."));
 						return;
 					}
@@ -525,6 +548,53 @@ namespace OpenDental{
 			FillTable();	
 		}
 
+		private void toolButEClaim_Click(){
+			string printerName;
+			FormClaimPrint FormCP=new FormClaimPrint();
+			FormCP.HideBackground=true;
+			FormCP.ClaimFormNum=PIn.PInt(((Pref)Prefs.HList["GenericEClaimsForm"]).ValueString);
+			printDialog2=new PrintDialog();
+			printDialog2.PrinterSettings=new PrinterSettings();
+			//printDialog2.PrinterSettings.PrinterName=Computers.Cur.PrinterName;
+			if(tbQueue.SelectedIndices.Length==0){
+				if(MessageBox.Show(Lan.g(this,"No items were selected.  Send all e-claims?"),""
+					,MessageBoxButtons.OKCancel)!=DialogResult.OK){
+					return;
+				}
+				if(printDialog2.ShowDialog()==DialogResult.OK)
+					printerName=printDialog2.PrinterSettings.PrinterName;
+				else return;
+				for(int i=0;i<Claims.ListQueue.Length;i++){
+					if((Claims.ListQueue[i].ClaimStatus=="W" || Claims.ListQueue[i].ClaimStatus=="P")
+						&& !Claims.ListQueue[i].NoSendElect)
+					{
+						FormCP.ThisPatNum=Claims.ListQueue[i].PatNum;
+						FormCP.ThisClaimNum=Claims.ListQueue[i].ClaimNum;
+						if(!FormCP.PrintImmediate(printerName)){
+							MessageBox.Show(Lan.g(this,"Error printing."));
+							return;
+						}
+						Claims.UpdateStatus(Claims.ListQueue[i].ClaimNum,"P");
+					}	
+				}
+			}
+			else{
+				if(printDialog2.ShowDialog()==DialogResult.OK)
+					printerName=printDialog2.PrinterSettings.PrinterName;
+				else return;
+				for(int i=0;i<tbQueue.SelectedIndices.Length;i++){
+					FormCP.ThisPatNum=Claims.ListQueue[tbQueue.SelectedIndices[i]].PatNum;
+					FormCP.ThisClaimNum=Claims.ListQueue[tbQueue.SelectedIndices[i]].ClaimNum;
+					if(!FormCP.PrintImmediate(printerName)){
+						MessageBox.Show(Lan.g(this,"Error printing."));
+						return;
+					}
+					Claims.UpdateStatus(Claims.ListQueue[tbQueue.SelectedIndices[i]].ClaimNum,"P");
+				}
+			}
+			FillTable();
+		}
+
 		private void toolButStatus_Click(){
 			//this changes the status of claims from P to S.
 			if(tbQueue.SelectedIndices.Length==0){
@@ -553,6 +623,8 @@ namespace OpenDental{
 		private void butClose_Click(object sender, System.EventArgs e) {
 			DialogResult=DialogResult.Cancel;
 		}
+
+		
 
 		
 

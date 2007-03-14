@@ -7,13 +7,19 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
+	///<summary></summary>
 	public class ContrSchedGrid : System.Windows.Forms.UserControl{
 		private System.ComponentModel.Container components = null;// Required designer variable.
+		///<summary></summary>
 		public static int RowH;
+		///<summary></summary>
 		public static int ColW;
+		///<summary></summary>
 		public static int NumW;
+		///<summary></summary>
 		public SchedDefault[] ArrayBlocks;
 
+		///<summary></summary>
 		public ContrSchedGrid(){
 			InitializeComponent();// This call is required by the Windows.Forms Form Designer.
 			RowH=4;
@@ -22,6 +28,7 @@ namespace OpenDental{
 			ArrayBlocks=new SchedDefault[0];
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -89,9 +96,13 @@ namespace OpenDental{
 		}
 	}
 
+	///<summary></summary>
 	public struct TimeBlock{
+		///<summary></summary>
 		public int Col;
+		///<summary></summary>
 		public DateTime TStart;
+		///<summary></summary>
 		public DateTime TStop;
 	}
 }

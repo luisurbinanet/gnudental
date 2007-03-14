@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+	///<summary></summary>
 	public class FormAutoCodeEdit : System.Windows.Forms.Form{
 		private System.ComponentModel.Container components = null;
 		private System.Windows.Forms.CheckBox checkHidden;
@@ -18,8 +18,10 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label3;
 		private OpenDental.XPButton butDelete;
 		private OpenDental.XPButton butAdd;
+		///<summary></summary>
     public bool IsNew;
 
+		///<summary></summary>
 		public FormAutoCodeEdit(){
 			InitializeComponent();
       tbAutoItem.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbAutoItem_CellDoubleClicked);
@@ -35,6 +37,7 @@ namespace OpenDental{
 			}); 
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -111,6 +114,7 @@ namespace OpenDental{
 			this.tbAutoItem.BackColor = System.Drawing.SystemColors.Window;
 			this.tbAutoItem.Location = new System.Drawing.Point(36, 94);
 			this.tbAutoItem.Name = "tbAutoItem";
+			this.tbAutoItem.ScrollValue = 1;
 			this.tbAutoItem.SelectedIndices = new int[0];
 			this.tbAutoItem.SelectionMode = System.Windows.Forms.SelectionMode.One;
 			this.tbAutoItem.Size = new System.Drawing.Size(719, 356);
@@ -143,7 +147,7 @@ namespace OpenDental{
 			this.butDelete.Name = "butDelete";
 			this.butDelete.Size = new System.Drawing.Size(82, 26);
 			this.butDelete.TabIndex = 29;
-			this.butDelete.Text = "Delete";
+			this.butDelete.Text = "&Delete";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
 			// 
 			// butAdd
@@ -157,11 +161,12 @@ namespace OpenDental{
 			this.butAdd.Name = "butAdd";
 			this.butAdd.Size = new System.Drawing.Size(80, 26);
 			this.butAdd.TabIndex = 28;
-			this.butAdd.Text = "Add";
+			this.butAdd.Text = "&Add";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
 			// FormAutoCodeEdit
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(794, 582);
@@ -213,7 +218,7 @@ namespace OpenDental{
 			tbAutoItem.SetBackGColor(Color.White);      
 			for(int i=0;i<AutoCodeItems.ListForCode.Length;i++){
         tbAutoItem.Cell[0,i]=AutoCodeItems.ListForCode[i].ADACode;
-				tbAutoItem.Cell[1,i]=ProcCodes.GetProcCode(AutoCodeItems.ListForCode[i].ADACode).Descript;
+				tbAutoItem.Cell[1,i]=ProcedureCodes.GetProcCode(AutoCodeItems.ListForCode[i].ADACode).Descript;
         count=0;
         for(int j=0;j<AutoCodeConds.List.Length;j++){
           if(AutoCodeConds.List[j].AutoCodeItemNum==AutoCodeItems.ListForCode[i].AutoCodeItemNum){

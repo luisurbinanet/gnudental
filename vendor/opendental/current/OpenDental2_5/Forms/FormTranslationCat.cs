@@ -8,7 +8,7 @@ using System.IO;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormTranslationCat : System.Windows.Forms.Form{
 		private System.Windows.Forms.ListBox listCats;
 		private System.Windows.Forms.Label label1;
@@ -21,6 +21,7 @@ namespace OpenDental{
 		private System.Windows.Forms.SaveFileDialog saveFileDialog1;
 		private System.ComponentModel.Container components = null;
 
+		///<summary></summary>
 		public FormTranslationCat(){
 			InitializeComponent();
 			Lan.C("All", new System.Windows.Forms.Control[] {
@@ -28,6 +29,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -74,8 +76,9 @@ namespace OpenDental{
 			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butClose.Location = new System.Drawing.Point(416, 600);
 			this.butClose.Name = "butClose";
+			this.butClose.Size = new System.Drawing.Size(75, 26);
 			this.butClose.TabIndex = 2;
-			this.butClose.Text = "Close";
+			this.butClose.Text = "&Close";
 			this.butClose.Click += new System.EventHandler(this.butClose_Click);
 			// 
 			// butExport
@@ -83,9 +86,9 @@ namespace OpenDental{
 			this.butExport.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butExport.Location = new System.Drawing.Point(310, 194);
 			this.butExport.Name = "butExport";
-			this.butExport.Size = new System.Drawing.Size(96, 23);
+			this.butExport.Size = new System.Drawing.Size(96, 26);
 			this.butExport.TabIndex = 3;
-			this.butExport.Text = "Export All";
+			this.butExport.Text = "&Export All";
 			this.butExport.Click += new System.EventHandler(this.butExport_Click);
 			// 
 			// butDownload
@@ -93,9 +96,9 @@ namespace OpenDental{
 			this.butDownload.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butDownload.Location = new System.Drawing.Point(14, 22);
 			this.butDownload.Name = "butDownload";
-			this.butDownload.Size = new System.Drawing.Size(102, 23);
+			this.butDownload.Size = new System.Drawing.Size(102, 26);
 			this.butDownload.TabIndex = 4;
-			this.butDownload.Text = "Download";
+			this.butDownload.Text = "&Download";
 			this.butDownload.Click += new System.EventHandler(this.butDownload_Click);
 			// 
 			// label2
@@ -134,6 +137,7 @@ namespace OpenDental{
 			// FormTranslationCat
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butClose;
 			this.ClientSize = new System.Drawing.Size(520, 648);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.label2);
@@ -188,7 +192,6 @@ namespace OpenDental{
 			WebClient myWebClient = new WebClient();
 			myStringWebResource = remoteUri + fileName;
 			try{
-				//myWebClient.Credentials=new NetworkCredential("username","password","www.open-dent.com");
 				myWebClient.DownloadFile(myStringWebResource,fileName);
 			}
 			catch{
@@ -228,7 +231,7 @@ namespace OpenDental{
 		}
 
 		private void butClose_Click(object sender, System.EventArgs e) {
-			//cancel
+			Close();
 		}
 
 

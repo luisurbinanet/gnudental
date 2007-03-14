@@ -19,6 +19,7 @@ namespace OpenDental{
 		/// </summary>
 		private System.ComponentModel.Container components = null;
 
+		///<summary></summary>
 		public FormContacts()
 		{
 			//
@@ -68,11 +69,12 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
+			this.butOK.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(799, 646);
+			this.butOK.Location = new System.Drawing.Point(798, 627);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 1;
-			this.butOK.Text = "Close";
+			this.butOK.Text = "&Close";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// listCategory
@@ -94,26 +96,29 @@ namespace OpenDental{
 			// tbContacts
 			// 
 			this.tbContacts.BackColor = System.Drawing.SystemColors.Window;
-			this.tbContacts.Location = new System.Drawing.Point(117, 6);
+			this.tbContacts.Location = new System.Drawing.Point(117, 11);
 			this.tbContacts.Name = "tbContacts";
+			this.tbContacts.ScrollValue = 1;
 			this.tbContacts.SelectedIndices = new int[0];
 			this.tbContacts.SelectionMode = System.Windows.Forms.SelectionMode.One;
-			this.tbContacts.Size = new System.Drawing.Size(669, 681);
+			this.tbContacts.Size = new System.Drawing.Size(669, 671);
 			this.tbContacts.TabIndex = 4;
 			// 
 			// butAdd
 			// 
 			this.butAdd.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butAdd.Location = new System.Drawing.Point(798, 525);
+			this.butAdd.Location = new System.Drawing.Point(797, 494);
 			this.butAdd.Name = "butAdd";
 			this.butAdd.TabIndex = 5;
-			this.butAdd.Text = "Add";
+			this.butAdd.Text = "&Add";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
 			// FormContacts
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(883, 691);
+			this.CancelButton = this.butOK;
+			this.ClientSize = new System.Drawing.Size(886, 693);
 			this.Controls.Add(this.butAdd);
 			this.Controls.Add(this.tbContacts);
 			this.Controls.Add(this.label1);

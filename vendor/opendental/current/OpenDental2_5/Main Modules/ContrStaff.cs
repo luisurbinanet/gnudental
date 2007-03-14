@@ -39,10 +39,12 @@ namespace OpenDental
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;
 
+		///<summary></summary>
 		public ContrStaff(){
 			InitializeComponent();
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -289,12 +291,13 @@ namespace OpenDental
 		}
 		#endregion
 
-
+		///<summary></summary>
 		public void InstantClasses(){
 			//Breaks2 = new Breaks();
 			//Break2 = new Break();
 		}
 
+		///<summary></summary>
 		public void ModuleSelected(){
 
 		}

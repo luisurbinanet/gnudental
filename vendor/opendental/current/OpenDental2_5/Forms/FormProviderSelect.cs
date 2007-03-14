@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormProviderSelect : System.Windows.Forms.Form{
 		private System.Windows.Forms.ListBox listProviders;
 		private System.Windows.Forms.Button butClose;
@@ -14,6 +14,7 @@ namespace OpenDental{
 		private OpenDental.XPButton butAdd;
 		private System.ComponentModel.Container components = null;
 		
+		///<summary></summary>
 		public FormProviderSelect(){
 			InitializeComponent();
 			Providers.Selected=-1;
@@ -25,6 +26,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -56,11 +58,13 @@ namespace OpenDental{
 			// 
 			// butClose
 			// 
+			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butClose.Location = new System.Drawing.Point(274, 413);
 			this.butClose.Name = "butClose";
+			this.butClose.Size = new System.Drawing.Size(75, 26);
 			this.butClose.TabIndex = 3;
-			this.butClose.Text = "Close";
+			this.butClose.Text = "&Close";
 			this.butClose.Click += new System.EventHandler(this.butClose_Click);
 			// 
 			// butDown
@@ -74,7 +78,7 @@ namespace OpenDental{
 			this.butDown.Name = "butDown";
 			this.butDown.Size = new System.Drawing.Size(79, 26);
 			this.butDown.TabIndex = 12;
-			this.butDown.Text = "Down";
+			this.butDown.Text = "&Down";
 			this.butDown.Click += new System.EventHandler(this.butDown_Click);
 			// 
 			// butUp
@@ -88,7 +92,7 @@ namespace OpenDental{
 			this.butUp.Name = "butUp";
 			this.butUp.Size = new System.Drawing.Size(79, 26);
 			this.butUp.TabIndex = 11;
-			this.butUp.Text = "Up";
+			this.butUp.Text = "&Up";
 			this.butUp.Click += new System.EventHandler(this.butUp_Click);
 			// 
 			// butAdd
@@ -102,12 +106,13 @@ namespace OpenDental{
 			this.butAdd.Name = "butAdd";
 			this.butAdd.Size = new System.Drawing.Size(79, 26);
 			this.butAdd.TabIndex = 10;
-			this.butAdd.Text = "Add";
+			this.butAdd.Text = "&Add";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
 			// FormProviderSelect
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butClose;
 			this.ClientSize = new System.Drawing.Size(372, 472);
 			this.Controls.Add(this.butDown);
 			this.Controls.Add(this.butUp);

@@ -6,17 +6,18 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormRpOutInsClaims : System.Windows.Forms.Form{
 		private System.Windows.Forms.Button butOK;
 		private System.Windows.Forms.Button butCancel;
 		private FormQuery FormQuery2;
 		private System.Windows.Forms.Label labelDaysOld;
-		private int daysOld=0;
+		//private int daysOld=0;
 		private OpenDental.ValidNum textDaysOld;
 		private System.Windows.Forms.Label label1;
 		private System.ComponentModel.Container components = null;
 
+		///<summary></summary>
 		public FormRpOutInsClaims(){
 			InitializeComponent();
  			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -28,6 +29,7 @@ namespace OpenDental{
 			});  
 		}
 
+		///<summary></summary>
 		protected override void Dispose( bool disposing ){
 			if( disposing ){
 				if(components != null){
@@ -51,8 +53,9 @@ namespace OpenDental{
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butOK.Location = new System.Drawing.Point(365, 144);
 			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 1;
-			this.butOK.Text = "OK";
+			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// butCancel
@@ -61,8 +64,9 @@ namespace OpenDental{
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(365, 184);
 			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 2;
-			this.butCancel.Text = "Cancel";
+			this.butCancel.Text = "&Cancel";
 			// 
 			// labelDaysOld
 			// 
@@ -91,7 +95,9 @@ namespace OpenDental{
 			// 
 			// FormRpOutInsClaims
 			// 
+			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(464, 233);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.textDaysOld);
@@ -123,12 +129,18 @@ namespace OpenDental{
 			//FormQuery2.ResetGrid();//this is a method in FormQuery2;
 			Queries.CurReport=new Report();
 			DateTime startQDate = DateTime.Today.AddDays(-daysOld);
-      Queries.CurReport.Query = "SELECT T2.Carrier,T1.ClaimNum,T1.ClaimType, T1.DateService,"
+			Queries.CurReport.Query = "SELECT T2.Carrier,T1.ClaimNum,T1.ClaimType,T1.DateService,"
+				+"CONCAT(T3.LName,', ',T3.FName,' ',T3.MiddleI), T1.DateSent,T1.ClaimFee,T2.Phone "
+				+"FROM claim AS T1 LEFT JOIN insplan AS T2 ON T1.PlanNum = T2.PlanNum "
+				+"LEFT JOIN patient AS T3 ON T1.PatNum = T3.PatNum " 
+				+"WHERE T1.ClaimStatus='S' && T1.DateSent < '"+POut.PDate(startQDate)+"' "
+				+"ORDER BY T2.Phone,T2.PlanNum";
+      /*Queries.CurReport.Query = "SELECT T2.Carrier,T1.ClaimNum,T1.ClaimType,T1.DateService,"
 				+"CONCAT(T3.LName,', ',T3.FName,' ',T3.MiddleI), T1.DateSent,T1.ClaimFee "
 				+"FROM claim AS T1 LEFT JOIN insplan AS T2 ON T1.PlanNum = T2.PlanNum "
 				+"LEFT JOIN patient AS T3 ON T1.PatNum = T3.PatNum " 
 				+"WHERE T1.ClaimStatus='S' && T1.DateSent < '"+POut.PDate(startQDate)+"' "
-				+"ORDER BY T1.DateService";
+				+"ORDER BY T1.DateService";*/
 			FormQuery2=new FormQuery();
 			FormQuery2.IsReport=true;
 
@@ -140,20 +152,25 @@ namespace OpenDental{
 			Queries.CurReport.ColTotal=new double[Queries.TableQ.Columns.Count];
 			for(int i=0;i<Queries.TableTemp.Rows.Count;i++){//loop through data rows
 				DataRow row = Queries.TableQ.NewRow();//create new row called 'row' based on structure of TableQ
-				row[0]=Queries.TableTemp.Rows[i][0];//start filling 'row'
-        if(PIn.PString(Queries.TableTemp.Rows[i][2].ToString())=="P")
-          row[1]="Primary";
+				//start filling 'row'. First column is carrier:
+				row[0]=Queries.TableTemp.Rows[i][0];
+				row[1]=Queries.TableTemp.Rows[i][7];
+				if(PIn.PString(Queries.TableTemp.Rows[i][2].ToString())=="P")
+          row[2]="Primary";
 				if(PIn.PString(Queries.TableTemp.Rows[i][2].ToString())=="S")
-          row[1]="Secondary";
+          row[2]="Secondary";
 				if(PIn.PString(Queries.TableTemp.Rows[i][2].ToString())=="PreAuth")
-          row[1]="PreAuth";
+          row[2]="PreAuth";
 				if(PIn.PString(Queries.TableTemp.Rows[i][2].ToString())=="Other")
-          row[1]="Other";
-				row[2]=(PIn.PDate(Queries.TableTemp.Rows[i][3].ToString())).ToString("d");//start filling 'row'
-				row[3]=Queries.TableTemp.Rows[i][4];//start filling 'row'
-        TimeSpan d = DateTime.Today.Subtract((PIn.PDate(Queries.TableTemp.Rows[i][5].ToString())));
-        row[4]=d.Days.ToString();
-				row[5]=PIn.PDouble(Queries.TableTemp.Rows[i][6].ToString()).ToString("F");//start filling 'row'
+          row[2]="Other";
+				row[3]=Queries.TableTemp.Rows[i][4];
+				row[4]=(PIn.PDate(Queries.TableTemp.Rows[i][3].ToString())).ToString("d");
+				row[5]=PIn.PDouble(Queries.TableTemp.Rows[i][6].ToString()).ToString("F");
+        //TimeSpan d = DateTime.Today.Subtract((PIn.PDate(Queries.TableTemp.Rows[i][5].ToString())));
+				//if(d.Days>5000)
+				//	row[4]="";
+				//else
+				//	row[4]=d.Days.ToString();
 				Queries.CurReport.ColTotal[5]+=PIn.PDouble(Queries.TableTemp.Rows[i][6].ToString());
 				Queries.TableQ.Rows.Add(row);
       }
@@ -168,17 +185,17 @@ namespace OpenDental{
 			Queries.CurReport.SubTitle[0]=((Pref)Prefs.HList["PracticeTitle"]).ValueString;
 			Queries.CurReport.SubTitle[1]="Days Outstanding: " + daysOld;			
 			Queries.CurReport.ColPos[0]=20;
-			Queries.CurReport.ColPos[1]=170;
-			Queries.CurReport.ColPos[2]=270;
-			Queries.CurReport.ColPos[3]=395;
-			Queries.CurReport.ColPos[4]=595;
-			Queries.CurReport.ColPos[5]=670;
+			Queries.CurReport.ColPos[1]=210;
+			Queries.CurReport.ColPos[2]=330;
+			Queries.CurReport.ColPos[3]=430;
+			Queries.CurReport.ColPos[4]=600;
+			Queries.CurReport.ColPos[5]=690;
 			Queries.CurReport.ColPos[6]=770;
 			Queries.CurReport.ColCaption[0]=Lan.g(this,"Carrier");
-			Queries.CurReport.ColCaption[1]=Lan.g(this,"Type");
-			Queries.CurReport.ColCaption[2]=Lan.g(this,"Date of Service");
+			Queries.CurReport.ColCaption[1]=Lan.g(this,"Phone");
+			Queries.CurReport.ColCaption[2]=Lan.g(this,"Type");
 			Queries.CurReport.ColCaption[3]=Lan.g(this,"Patient Name");
-			Queries.CurReport.ColCaption[4]=Lan.g(this,"Days Old");
+			Queries.CurReport.ColCaption[4]=Lan.g(this,"Date of Service");
 			Queries.CurReport.ColCaption[5]=Lan.g(this,"Amount");
 			Queries.CurReport.ColAlign[5]=HorizontalAlignment.Right;
 			Queries.CurReport.Summary=new string[3];

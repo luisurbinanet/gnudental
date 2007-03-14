@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-
+///<summary></summary>
 	public class FormBilling : System.Windows.Forms.Form{
 		private System.Windows.Forms.Button butCancel;
 		private OpenDental.ContrAccount contrAccount1;
@@ -17,6 +17,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butPrint;
 		private System.ComponentModel.Container components = null;
 
+		///<summary></summary>
 		public FormBilling(){
 			InitializeComponent();
 			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -30,6 +31,7 @@ namespace OpenDental{
 			});
 		}
 
+		///<summary></summary>
 		protected override void Dispose(bool disposing){
 			if(disposing){
 				if(components != null){
@@ -82,10 +84,10 @@ namespace OpenDental{
 			// butNone
 			// 
 			this.butNone.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butNone.Location = new System.Drawing.Point(134, 662);
+			this.butNone.Location = new System.Drawing.Point(142, 662);
 			this.butNone.Name = "butNone";
 			this.butNone.TabIndex = 23;
-			this.butNone.Text = "None";
+			this.butNone.Text = "&None";
 			this.butNone.Click += new System.EventHandler(this.butNone_Click);
 			// 
 			// butAll
@@ -94,7 +96,7 @@ namespace OpenDental{
 			this.butAll.Location = new System.Drawing.Point(42, 662);
 			this.butAll.Name = "butAll";
 			this.butAll.TabIndex = 22;
-			this.butAll.Text = "All";
+			this.butAll.Text = "&All";
 			this.butAll.Click += new System.EventHandler(this.butAll_Click);
 			// 
 			// tbBill
@@ -102,6 +104,7 @@ namespace OpenDental{
 			this.tbBill.BackColor = System.Drawing.SystemColors.Window;
 			this.tbBill.Location = new System.Drawing.Point(42, 46);
 			this.tbBill.Name = "tbBill";
+			this.tbBill.ScrollValue = 700;
 			this.tbBill.SelectedIndices = new int[0];
 			this.tbBill.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
 			this.tbBill.Size = new System.Drawing.Size(499, 606);
@@ -125,6 +128,7 @@ namespace OpenDental{
 			// 
 			// FormBilling
 			// 
+			this.AcceptButton = this.butPrint;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(672, 692);
@@ -139,6 +143,7 @@ namespace OpenDental{
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "FormBilling";
+			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Billing";
 			this.Load += new System.EventHandler(this.FormBilling_Load);
