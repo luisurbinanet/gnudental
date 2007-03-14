@@ -180,8 +180,8 @@ namespace OpenDental{
 					report.ReportTable.Rows[i][11]="0";
 				}
 			}
-			FormReport FormR=new FormReport();
-			FormR.MyReport=report;
+			FormReport FormR=new FormReport(report);
+			//FormR.MyReport=report;
 			FormR.ShowDialog();
 			DialogResult=DialogResult.OK;
 		}

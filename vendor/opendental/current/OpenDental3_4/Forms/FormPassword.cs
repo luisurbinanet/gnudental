@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
@@ -138,7 +139,7 @@ namespace OpenDental{
 
 		private void FormPassword_Load(object sender, System.EventArgs e) {
 			Text=Text+" - "+Lan.g("permissionNames",Permissions.Cur.Name);
-			Users.Refresh();
+			Users.Refresh();//this is clumsy
 			if(Users.List.Length==0){
 				MessageBox.Show(Lan.g(this,"You do not have any usernames or passwords set up yet."));
 				DialogResult=DialogResult.OK;
@@ -202,10 +203,19 @@ namespace OpenDental{
 		///<summary></summary>
 		public static bool CheckPassword(string inputPass,string hashedPass){
 			string hashedInput=EncryptPassword(inputPass);
-			//MessageBox.Show(hashedInput+","+hashedPass);
+			//MessageBox.Show(
+			//Debug.WriteLine(hashedInput+","+hashedPass);
 			return hashedInput==hashedPass;
 		}
 	}
 
 
 }
+
+
+
+
+
+
+
+

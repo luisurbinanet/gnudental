@@ -14,6 +14,7 @@ namespace OpenDental{
 		private OpenDental.UI.Button butDown;
 		private OpenDental.UI.Button butUp;
 		private System.ComponentModel.Container components = null;
+		private bool changed;
 
 		///<summary></summary>
 		public FormProcButtons(){
@@ -186,6 +187,7 @@ namespace OpenDental{
         ProcButtons.UpdateCur();
       }		
       FillList();
+			changed=true;
       listButtons.SelectedIndex=selected;	 
 		}
 
@@ -207,6 +209,7 @@ namespace OpenDental{
         ProcButtons.UpdateCur();
       }	
       FillList();	
+			changed=true;
       listButtons.SelectedIndex=selected;
 		}
 
@@ -214,6 +217,7 @@ namespace OpenDental{
       FormProcButtonEdit FormPBE=new FormProcButtonEdit();
       FormPBE.IsNew=true;
       FormPBE.ShowDialog();
+			changed=true;
       FillList();	
 		}
 
@@ -224,6 +228,7 @@ namespace OpenDental{
 			}
 			ProcButtons.Cur=ProcButtons.List[listButtons.SelectedIndex];
 			ProcButtons.DeleteCur();
+			changed=true;
 			FillList();
 		}
 
@@ -231,6 +236,7 @@ namespace OpenDental{
 			ProcButtons.Cur=ProcButtons.List[listButtons.SelectedIndex];
       FormProcButtonEdit FormPBE=new FormProcButtonEdit();
       FormPBE.ShowDialog();
+			changed=true;
       FillList();
 		}
 
@@ -239,9 +245,9 @@ namespace OpenDental{
 		}
 
 		private void FormProcButtons_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-			DataValid.IType=InvalidType.LocalData;
-			DataValid DataValid2=new DataValid();
-			DataValid2.SetInvalid();
+			if(changed){
+				DataValid.SetInvalid(InvalidTypes.ProcButtons);
+			}
 		}
 
 		

@@ -45,7 +45,6 @@ namespace OpenDental{
 		private PointF mouseDownLoc;
 		private PointF[] oldItemLocs;
 		private System.Drawing.Printing.PrintDocument pd2;
-		private System.Windows.Forms.PrintDialog printDialog2;
 		private System.Windows.Forms.Label labelUniqueID;
 		private System.Windows.Forms.TextBox textUniqueID;
 		private System.Windows.Forms.Label labelWarning;
@@ -113,7 +112,6 @@ namespace OpenDental{
 			this.fontDialog1 = new System.Windows.Forms.FontDialog();
 			this.butFont = new OpenDental.UI.Button();
 			this.butPrint = new OpenDental.UI.Button();
-			this.printDialog2 = new System.Windows.Forms.PrintDialog();
 			this.pd2 = new System.Drawing.Printing.PrintDocument();
 			this.labelUniqueID = new System.Windows.Forms.Label();
 			this.textUniqueID = new System.Windows.Forms.TextBox();
@@ -406,6 +404,7 @@ namespace OpenDental{
 			// textOffsetX
 			// 
 			this.textOffsetX.Location = new System.Drawing.Point(929, 116);
+			this.textOffsetX.MaxVal = 255;
 			this.textOffsetX.MinVal = -9999;
 			this.textOffsetX.Name = "textOffsetX";
 			this.textOffsetX.Size = new System.Drawing.Size(50, 20);
@@ -415,6 +414,7 @@ namespace OpenDental{
 			// textOffsetY
 			// 
 			this.textOffsetY.Location = new System.Drawing.Point(929, 136);
+			this.textOffsetY.MaxVal = 255;
 			this.textOffsetY.MinVal = -9999;
 			this.textOffsetY.Name = "textOffsetY";
 			this.textOffsetY.Size = new System.Drawing.Size(50, 20);
@@ -435,25 +435,25 @@ namespace OpenDental{
 			this.Controls.Add(this.textWidth);
 			this.Controls.Add(this.textYPos);
 			this.Controls.Add(this.textXPos);
+			this.Controls.Add(this.butPrint);
+			this.Controls.Add(this.butFont);
+			this.Controls.Add(this.butAdd);
+			this.Controls.Add(this.butOK);
+			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.label8);
 			this.Controls.Add(this.label3);
 			this.Controls.Add(this.checkPrintImages);
 			this.Controls.Add(this.labelUniqueID);
-			this.Controls.Add(this.butPrint);
-			this.Controls.Add(this.butFont);
 			this.Controls.Add(this.label7);
 			this.Controls.Add(this.label6);
 			this.Controls.Add(this.label5);
 			this.Controls.Add(this.label4);
-			this.Controls.Add(this.butAdd);
 			this.Controls.Add(this.listItems);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.checkIsHidden);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.vScrollBar1);
 			this.Controls.Add(this.panel2);
-			this.Controls.Add(this.butOK);
-			this.Controls.Add(this.butCancel);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.KeyPreview = true;
 			this.Name = "FormClaimFormEdit";
@@ -1117,23 +1117,18 @@ namespace OpenDental{
 		private void butPrint_Click(object sender, System.EventArgs e) {
 			if(!UpdateCur())
 				return;
-			printDialog2=new PrintDialog();
-			printDialog2.PrinterSettings=new PrinterSettings();
-			printDialog2.PrinterSettings.PrinterName=Computers.Cur.PrinterName;
 			pd2=new PrintDocument();
 			pd2.OriginAtMargins=true;
 			pd2.DefaultPageSettings.Margins=new Margins(0,0,0,0);
-			if(printDialog2.ShowDialog()!=DialogResult.OK)
-				return;
-			pd2.PrinterSettings.PrinterName=printDialog2.PrinterSettings.PrinterName;
-			//MessageBox.Show(pd2.DefaultPageSettings.Bounds.Y.ToString());
-			//does not check validity of selected printer.  Assumes user has enough sense to select a funtional printer.
 			pd2.PrintPage+=new PrintPageEventHandler(this.pd2_PrintPage);
+			if(!Printers.SetPrinter(pd2,PrintSituation.Default)){
+				return;
+			}
 			try{
 				pd2.Print();
 			}
 			catch{
-				MessageBox.Show(Lan.g(this,"Error printing."));
+				MessageBox.Show(Lan.g(this,"Printer not available."));
 			}
 		}
 

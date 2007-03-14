@@ -13,7 +13,7 @@ namespace OpenDental{
 		//should later add a faster refresh sequence.
 		private static Hashtable HList;
 
-		///<summary>Refreshes all referrals for all patients.</summary>
+		///<summary>Refreshes all referrals for all patients.  Need to rework at some point so less memory is consumed.  Also refreshes dynamically, so no need to invalidate local data.</summary>
 		public static void Refresh(){
 			string command=
 				"SELECT * from referral "

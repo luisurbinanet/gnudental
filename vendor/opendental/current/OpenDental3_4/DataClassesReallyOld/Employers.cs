@@ -36,7 +36,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public static Employer Cur;
 
-		///<summary></summary>
+		///<summary>The functions that use this are smart enought to refresh as needed.  So no need to invalidate local data for little stuff.</summary>
 		public static void Refresh(){
 			HList=new Hashtable();
 			cmd.CommandText = 

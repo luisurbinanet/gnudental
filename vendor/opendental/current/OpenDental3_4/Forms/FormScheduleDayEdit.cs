@@ -202,9 +202,13 @@ namespace OpenDental{
 		#endregion
 
 		private void FormScheduleDayEdit_Load(object sender, System.EventArgs e) {
-      foreach(string s in Enum.GetNames(typeof(SchedStatus))){
-        listStatus.Items.Add(s);
-      } 
+			string[] enumSchedStatus=Enum.GetNames(typeof(SchedStatus)); //*Ann
+			for(int i=0;i<enumSchedStatus.Length;i++){ //*Ann
+				listStatus.Items.Add(Lan.g("enumSchedStatus",enumSchedStatus[i])); //*Ann
+			}
+      //foreach(string s in Enum.GetNames(typeof(SchedStatus))){
+      //  listStatus.Items.Add(s);
+      //} 
       if(IsNew){
         this.Text=Lan.g(this,"Add Time Block");
         if(Schedules.Cur.Status==SchedStatus.Open){

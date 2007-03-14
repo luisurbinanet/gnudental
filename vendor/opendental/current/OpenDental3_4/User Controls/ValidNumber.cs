@@ -11,11 +11,11 @@ namespace OpenDental{
 	public class ValidNumber : System.Windows.Forms.TextBox{
 		private System.ComponentModel.Container components = null;
 		///<summary></summary>
-		public int MaxVal=255;
+		private int maxVal=255;
 		///<summary></summary>
 		public System.Windows.Forms.ErrorProvider errorProvider1;
 		///<summary></summary>
-		public int MinVal=0;
+		private int minVal=0;
 
 		///<summary></summary>
 		public ValidNumber(){
@@ -52,6 +52,32 @@ namespace OpenDental{
 		}
 		#endregion
 
+		///<summary></summary>
+		[Category("Data"),
+			Description("The maximum value that user can enter.")
+		]
+		public int MaxVal{
+			get{ 
+				return maxVal; 
+			}
+			set{ 
+				maxVal=value;
+			}
+		}
+
+		///<summary></summary>
+		[Category("Data"),
+			Description("The minimum value that user can enter.")
+		]
+		public int MinVal{
+			get{ 
+				return minVal; 
+			}
+			set{ 
+				minVal=value;
+			}
+		}
+		
 		private void ValidNumber_Validating(object sender, System.ComponentModel.CancelEventArgs e) {
 			string myMessage="";
 			if(Text==""){

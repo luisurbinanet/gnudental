@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Printing;
+using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
 using OpenDental.UI;
@@ -23,7 +24,7 @@ namespace OpenDental.Reporting
 		private System.Drawing.Printing.PrintDocument pd2;
 		private System.Windows.Forms.PrintDialog printDialog2;
 		///<summary>The report to display.</summary>
-		public Report MyReport;
+		private Report MyReport;
 		private OpenDental.UI.Button butSetup;
 		private System.Windows.Forms.PageSetupDialog setupDialog2;
 		///<summary>The y position printed through so far in the current section.</summary>
@@ -42,9 +43,9 @@ namespace OpenDental.Reporting
 		private int pagesPrinted;
 
 		///<summary></summary>
-		public FormReport(){
+		public FormReport(Report myReport){
 			InitializeComponent();// Required for Windows Form Designer support
-			
+			MyReport=myReport;
 		}
 
 		/// <summary>Clean up any resources being used.</summary>
@@ -88,7 +89,10 @@ namespace OpenDental.Reporting
 			// 
 			// butClose
 			// 
-			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butClose.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butClose.Autosize = true;
+			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butClose.Location = new System.Drawing.Point(239, 2);
 			this.butClose.Name = "butClose";
 			this.butClose.TabIndex = 1;
@@ -96,7 +100,10 @@ namespace OpenDental.Reporting
 			// 
 			// butPrint
 			// 
-			this.butPrint.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butPrint.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butPrint.Autosize = true;
+			this.butPrint.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butPrint.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butPrint.Location = new System.Drawing.Point(1, 2);
 			this.butPrint.Name = "butPrint";
 			this.butPrint.TabIndex = 2;
@@ -119,6 +126,10 @@ namespace OpenDental.Reporting
 			// 
 			// button1
 			// 
+			this.button1.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.button1.Autosize = true;
+			this.button1.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.button1.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.button1.Location = new System.Drawing.Point(501, 8);
 			this.button1.Name = "button1";
 			this.button1.TabIndex = 4;
@@ -139,6 +150,7 @@ namespace OpenDental.Reporting
 			// butBack
 			// 
 			this.butBack.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butBack.Autosize = true;
 			this.butBack.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butBack.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butBack.Image = ((System.Drawing.Image)(resources.GetObject("butBack.Image")));
@@ -150,6 +162,7 @@ namespace OpenDental.Reporting
 			// butFwd
 			// 
 			this.butFwd.AdjustImageLocation = new System.Drawing.Point(1, 0);
+			this.butFwd.Autosize = true;
 			this.butFwd.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butFwd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butFwd.Image = ((System.Drawing.Image)(resources.GetObject("butFwd.Image")));
@@ -160,6 +173,10 @@ namespace OpenDental.Reporting
 			// 
 			// butSetup
 			// 
+			this.butSetup.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butSetup.Autosize = true;
+			this.butSetup.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butSetup.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butSetup.Location = new System.Drawing.Point(590, 2);
 			this.butSetup.Name = "butSetup";
 			this.butSetup.TabIndex = 3;
@@ -238,6 +255,7 @@ namespace OpenDental.Reporting
 			ToolBarMain.Buttons.Add(button);
 			ToolBarMain.Buttons.Add(new ODToolBarButton("",2,"Go Forward One Page","Fwd"));
 			ToolBarMain.Buttons.Add(new ODToolBarButton(ODToolBarButtonStyle.Separator));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Export"),3,"","Export"));
 			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Close"),-1,"Close This Window","Close"));
 			//ToolBarMain.Invalidate();
 		}
@@ -274,6 +292,9 @@ namespace OpenDental.Reporting
 				case "Fwd":
 					OnFwd_Click();
 					break;
+				case "Export":
+					OnExport_Click();
+					break;
 				case "Close":
 					OnClose_Click();
 					break;
@@ -281,22 +302,15 @@ namespace OpenDental.Reporting
 		}
 
 		///<summary></summary>
-		public void PrintReport(){
-			pd2.PrinterSettings.PrinterName=Computers.Cur.PrinterName;
-			if(!pd2.PrinterSettings.IsValid){
-				pd2.PrinterSettings.PrinterName=null;
-			}
+		private void PrintReport(){
 			try{
-				printDialog2=new PrintDialog();
-				printDialog2.Document=pd2;
-				if(printDialog2.ShowDialog()==DialogResult.OK){
+				if(Printers.SetPrinter(pd2,PrintSituation.Default)){
 					pd2.Print();
 				}
 			}
 			catch{
 				MessageBox.Show(Lan.g(this,"Printer not available"));
 			}
-			
 		}
 
 		///<summary>raised for each page to be printed.</summary>
@@ -437,11 +451,7 @@ namespace OpenDental.Reporting
 			}
 		}
 
-		/// <summary>Prints one section other than details at the specified x and y position on the page.  The math to decide whether it will fit on the current page is done ahead of time. There is no mechanism for splitting a section across multiple pages.</summary>
-		/// <param name="g">The graphics object to use.</param>
-		/// <param name="section">The section to print.</param>
-		/// <param name="xPos">The xPos of this section.</param>
-		/// <param name="yPos">The yPos of this section.</param>
+		///<summary>Prints one section other than details at the specified x and y position on the page.  The math to decide whether it will fit on the current page is done ahead of time. There is no mechanism for splitting a section across multiple pages.</summary>
 		private void PrintSection(Graphics g,Section section,int xPos,int yPos){
 			ReportObject textObject;
 			ReportObject fieldObject;
@@ -495,12 +505,7 @@ namespace OpenDental.Reporting
 			//yPos+=section.Height;//set current yPos to the bottom of the section just printed.
 		}
 
-		/// <summary>Prints some rows of the details section at the specified x and y position on the page.  The math to decide how many rows to print is done ahead of time.  The number of rows printed so far is kept global so that it can be used in calculating the layout of this section.</summary>
-		/// <param name="g">The graphics object to use.</param>
-		/// <param name="section">The section to print.</param>
-		/// <param name="xPos">The xPos of this section.</param>
-		/// <param name="yPos">The yPos of this section.</param>
-		/// <param name="rowsToPrint">The number of rows to print.</param>
+		///<summary>Prints some rows of the details section at the specified x and y position on the page.  The math to decide how many rows to print is done ahead of time.  The number of rows printed so far is kept global so that it can be used in calculating the layout of this section.</summary>
 		private void PrintDetailsSection(Graphics g,Section section,int xPos,int yPos,int rowsToPrint){
 			ReportObject textObject;
 			ReportObject fieldObject;
@@ -608,6 +613,79 @@ namespace OpenDental.Reporting
 			PrintReport();
 		}
 
+		private void OnBack_Click(){
+			if(printPreviewControl2.StartPage==0) return;
+			printPreviewControl2.StartPage--;
+			ToolBarMain.Buttons["PageNum"].Text=(printPreviewControl2.StartPage+1).ToString()
+				+" / "+totalPages.ToString();
+			ToolBarMain.Invalidate();
+			//labelTotPages.Text=
+		}
+
+		private void OnFwd_Click(){
+			if(printPreviewControl2.StartPage==totalPages-1) return;
+			printPreviewControl2.StartPage++;
+			ToolBarMain.Buttons["PageNum"].Text=(printPreviewControl2.StartPage+1).ToString()
+				+" / "+totalPages.ToString();
+			ToolBarMain.Invalidate();
+		}
+
+		private void OnExport_Click(){
+			SaveFileDialog saveFileDialog2=new SaveFileDialog();
+      saveFileDialog2.AddExtension=true;
+			//saveFileDialog2.Title=Lan.g(this,"Select Folder to Save File To");
+			saveFileDialog2.FileName=MyReport.ReportName+".txt";
+			if(!Directory.Exists(Prefs.GetString("ExportPath"))){
+				try{
+					Directory.CreateDirectory(Prefs.GetString("ExportPath"));
+					saveFileDialog2.InitialDirectory=Prefs.GetString("ExportPath");
+				}
+				catch{
+					//initialDirectory will be blank
+				}
+			}
+			else{
+				saveFileDialog2.InitialDirectory=Prefs.GetString("ExportPath");
+			}
+			//saveFileDialog2.DefaultExt="txt";
+			saveFileDialog2.Filter="Text files(*.txt)|*.txt|Excel Files(*.xls)|*.xls|All files(*.*)|*.*";
+      saveFileDialog2.FilterIndex=0;
+		  if(saveFileDialog2.ShowDialog()!=DialogResult.OK){
+	   	  return;
+			}
+			try{
+			  using(StreamWriter sw=new StreamWriter(saveFileDialog2.FileName,false)){
+					String line="";  
+					for(int i=0;i<MyReport.ReportTable.Columns.Count;i++){
+						line+=MyReport.ReportTable.Columns[i].Caption+"\t";
+							//Queries.CurReport.ColCaption[i]+"\t";
+					}
+					sw.WriteLine(line);
+					string cell;
+					for(int i=0;i<MyReport.ReportTable.Rows.Count;i++){
+						line="";
+						for(int j=0;j<MyReport.ReportTable.Columns.Count;j++){
+							cell=MyReport.ReportTable.Rows[i][j].ToString();
+							cell=cell.Replace("\r","");
+							cell=cell.Replace("\n","");
+							cell=cell.Replace("\t","");
+							cell=cell.Replace("\"","");
+							line+=cell;
+							if(j<MyReport.ReportTable.Columns.Count-1){
+								line+="\t";
+							}
+						}
+						sw.WriteLine(line);
+					}
+				}//using
+      }
+      catch{
+        MessageBox.Show(Lan.g(this,"File in use by another program.  Close and try again."));
+				return;
+			}
+			MessageBox.Show(Lan.g(this,"File created successfully"));
+		}
+
 		private void OnClose_Click() {
 			this.Close();
 		}
@@ -654,22 +732,7 @@ namespace OpenDental.Reporting
 
 		}
 
-		private void OnBack_Click(){
-			if(printPreviewControl2.StartPage==0) return;
-			printPreviewControl2.StartPage--;
-			ToolBarMain.Buttons["PageNum"].Text=(printPreviewControl2.StartPage+1).ToString()
-				+" / "+totalPages.ToString();
-			ToolBarMain.Invalidate();
-			//labelTotPages.Text=
-		}
-
-		private void OnFwd_Click(){
-			if(printPreviewControl2.StartPage==totalPages-1) return;
-			printPreviewControl2.StartPage++;
-			ToolBarMain.Buttons["PageNum"].Text=(printPreviewControl2.StartPage+1).ToString()
-				+" / "+totalPages.ToString();
-			ToolBarMain.Invalidate();
-		}
+		
 
 		
 

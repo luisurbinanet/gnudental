@@ -25,6 +25,7 @@ namespace OpenDental{
 		/// Required designer variable.
 		/// </summary>
 		private System.ComponentModel.Container components = null;
+		private bool viewChanged;
 
 		///<summary></summary>
 		public FormApptViews()
@@ -270,15 +271,26 @@ namespace OpenDental{
 			FormApptViewEdit FormAVE=new FormApptViewEdit();
 			FormAVE.IsNew=true;
 			FormAVE.ShowDialog();
+			if(FormAVE.DialogResult!=DialogResult.OK){
+				return;
+			}
+			viewChanged=true;
 			FillViewList();
 			listViews.SelectedIndex=listViews.Items.Count-1;//this works even if no items
 		}
 
 		private void listViews_DoubleClick(object sender, System.EventArgs e) {
+			if(listViews.SelectedIndex==-1){
+				return;
+			}
 			int selected=listViews.SelectedIndex;
 			ApptViews.Cur=ApptViews.List[listViews.SelectedIndex];
 			FormApptViewEdit FormAVE=new FormApptViewEdit();
 			FormAVE.ShowDialog();
+			if(FormAVE.DialogResult!=DialogResult.OK){
+				return;
+			}
+			viewChanged=true;
 			FillViewList();
 			if(selected<listViews.Items.Count){
 				listViews.SelectedIndex=selected;
@@ -302,6 +314,7 @@ namespace OpenDental{
 			ApptViews.Cur=ApptViews.List[listViews.SelectedIndex-1];
 			ApptViews.Cur.ItemOrder=ApptViews.Cur.ItemOrder+1;
 			ApptViews.UpdateCur();
+			viewChanged=true;
 			FillViewList();
 			listViews.SelectedIndex=selected-1;
 		}
@@ -323,16 +336,23 @@ namespace OpenDental{
 			ApptViews.Cur=ApptViews.List[listViews.SelectedIndex+1];
 			ApptViews.Cur.ItemOrder=ApptViews.Cur.ItemOrder-1;
 			ApptViews.UpdateCur();
+			viewChanged=true;
 			FillViewList();
 			listViews.SelectedIndex=selected+1;
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			if(radioTen.Checked){
+			if(Prefs.GetInt("AppointmentTimeIncrement")==15
+				&& radioTen.Checked)
+			{
 				Prefs.UpdateInt("AppointmentTimeIncrement",10);
+				DataValid.SetInvalid(InvalidTypes.Prefs);
 			}
-			else{
+			if(Prefs.GetInt("AppointmentTimeIncrement")==10
+				&& radioFifteen.Checked)
+			{
 				Prefs.UpdateInt("AppointmentTimeIncrement",15);
+				DataValid.SetInvalid(InvalidTypes.Prefs);
 			}
 			DialogResult=DialogResult.OK;
 		}
@@ -343,10 +363,9 @@ namespace OpenDental{
 		}
 
 		private void FormApptViews_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-			//always update
-			DataValid.IType=InvalidType.LocalData;
-			DataValid DataValid2=new DataValid();
-			DataValid2.SetInvalid();
+			if(viewChanged){
+				DataValid.SetInvalid(InvalidTypes.Views);
+			}
 		}
 
 

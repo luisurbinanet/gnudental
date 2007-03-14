@@ -34,8 +34,8 @@ namespace OpenDental.Eclaims
 				string errormsg="";
 				string alertmsg="";
 				string curParam="";
-				string serverName="https://prelive.dentalxchange.com/dci/upload.svl";
-					//"https://claimconnect.dentalxchange.com/dci/upload.svl"
+				string serverName=//"https://prelive.dentalxchange.com/dci/upload.svl";
+					"https://claimconnect.dentalxchange.com/dci/upload.svl";
 				webReq=(HttpWebRequest)WebRequest.Create(serverName);
 				string postData=
 					"Function=Auth"//CONSTANT; signifies that this is an authentication request
@@ -43,7 +43,7 @@ namespace OpenDental.Eclaims
 					+"&Username="+clearhouse.LoginID
 					+"&Password="+clearhouse.Password
 					+"&UploaderName=OpenDental"//CONSTANT
-					+"&UploaderVersion=3.1";//+myVersion.Major.ToString()+"."+myVersion.Minor.ToString();//eg 3.1
+					+"&UploaderVersion="+myVersion.Major.ToString()+"."+myVersion.Minor.ToString();//eg 3.4
 				webReq.KeepAlive=false;
 				webReq.Method="POST";
 				webReq.ContentType="application/x-www-form-urlencoded";
@@ -91,7 +91,7 @@ namespace OpenDental.Eclaims
 				}
 				switch(status){
 					case "0":
-						//MessageBox.Show("Authentication successful.");
+						MessageBox.Show("Authentication successful.");
 						break;
 					case "1":
 						throw new Exception("Authentication failed. "+errormsg);
@@ -147,11 +147,11 @@ namespace OpenDental.Eclaims
 				readStream.Close();
 				errormsg="";
 				status="";
-				str=str.Replace("\r\n","");
-				Debug.Write(str);
 				if(str.Length>300){
+					Debug.WriteLine(str);
 					throw new Exception("Unknown lengthy error message received.");
 				}
+				str=str.Replace("\r\n","");
 				responseParams=str.Split('&');
 				for(int i=0;i<responseParams.Length;i++){
 					curParam=GetParam(responseParams[i]);

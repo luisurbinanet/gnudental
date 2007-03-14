@@ -137,6 +137,7 @@ namespace OpenDental{
 				retVal[i].DateFirstVisit=PIn.PDate  (table.Rows[i][57].ToString());
 				retVal[i].PriPending   = PIn.PBool  (table.Rows[i][58].ToString());
 				retVal[i].SecPending   = PIn.PBool  (table.Rows[i][59].ToString());
+				retVal[i].ClinicNum    = PIn.PInt   (table.Rows[i][60].ToString());
 				//if(isSingle){
 				//	retVal=tempPat.Copy();
 				//}
@@ -157,7 +158,7 @@ namespace OpenDental{
 		}
 
  		///<summary>Only used for the Select Patient dialog</summary>
-		public static DataTable GetPtDataTable(bool limit,string lname,string fname,string hmphone,string address,bool hideInactive,string city,string state,string ssn,string patnum,string chartnumber,int[] billingtypes,bool guarOnly){
+		public static DataTable GetPtDataTable(bool limit,string lname,string fname,string hmphone,string wkphone,string address,bool hideInactive,string city,string state,string ssn,string patnum,string chartnumber,int[] billingtypes,bool guarOnly){
 			//bool retval=false;
 			string billingsnippet="";
 			for(int i=0;i<billingtypes.Length;i++){
@@ -173,13 +174,14 @@ namespace OpenDental{
 				}
 			}
 			string command= 
-				"SELECT PatNum,LName,FName,MiddleI,Preferred,Birthdate,SSN,HmPhone,Address,PatStatus"
+				"SELECT PatNum,LName,FName,MiddleI,Preferred,Birthdate,SSN,HmPhone,WkPhone,Address,PatStatus"
 				+",BillingType,ChartNumber,City,State "
 				+"FROM patient "
 				+"WHERE PatStatus != '4' "//not status 'deleted'
 				+"AND LName LIKE '"      +POut.PString(lname)+"%' "
 				+"AND FName LIKE '"      +POut.PString(fname)+"%' "
 				+"AND HmPhone LIKE '"    +POut.PString(hmphone)+"%' "
+				+"AND WkPhone LIKE '"    +POut.PString(wkphone)+"%' "
 				+"AND Address LIKE '"    +POut.PString(address)+"%' "
 				+"AND City LIKE '"       +POut.PString(city)+"%' "
 				+"AND State LIKE '"      +POut.PString(state)+"%' "
@@ -209,22 +211,23 @@ namespace OpenDental{
 			DataRow r;
 			for(int i=0;i<table.Rows.Count;i++){//table.Rows.Count && i<44;i++){
 				r=PtDataTable.NewRow();
-				//PatNum,LName,FName,MiddleI,Preferred,Birthdate,SSN,HmPhone,Address,PatStatus"
+				//PatNum,LName,FName,MiddleI,Preferred,Birthdate,SSN,HmPhone,WkPhone,Address,PatStatus"
 				//+",BillingType,ChartNumber,City,State
-				r[0]=table.Rows[i][0].ToString();
-				r[1]=table.Rows[i][1].ToString();
-				r[2]=table.Rows[i][2].ToString();
-				r[3]=table.Rows[i][3].ToString();
-				r[4]=table.Rows[i][4].ToString();
-				r[5]=Shared.DateToAge(PIn.PDate(table.Rows[i][5].ToString()));
-				r[6]=table.Rows[i][6].ToString();
-				r[7]=table.Rows[i][7].ToString();
-				r[8]=table.Rows[i][8].ToString();
-				r[9]=((PatientStatus)PIn.PInt(table.Rows[i][9].ToString())).ToString();
-				r[10]=Defs.GetName(DefCat.BillingTypes,PIn.PInt(table.Rows[i][10].ToString()));
-				r[11]=table.Rows[i][11].ToString();
-				r[12]=table.Rows[i][12].ToString();
-				r[13]=table.Rows[i][13].ToString();
+				r[0]=table.Rows[i][0].ToString();//PatNum
+				r[1]=table.Rows[i][1].ToString();//LName
+				r[2]=table.Rows[i][2].ToString();//FName
+				r[3]=table.Rows[i][3].ToString();//MiddleI
+				r[4]=table.Rows[i][4].ToString();//Preferred
+				r[5]=Shared.DateToAge(PIn.PDate(table.Rows[i][5].ToString()));//Birthdate
+				r[6]=table.Rows[i][6].ToString();//SSN
+				r[7]=table.Rows[i][7].ToString();//HmPhone
+				r[8]=table.Rows[i][8].ToString();//WkPhone
+				r[9]=table.Rows[i][9].ToString();//Address
+				r[10]=((PatientStatus)PIn.PInt(table.Rows[i][10].ToString())).ToString();//PatStatus
+				r[11]=Defs.GetName(DefCat.BillingTypes,PIn.PInt(table.Rows[i][11].ToString()));//BillingType
+				r[12]=table.Rows[i][12].ToString();//ChartNumber
+				r[13]=table.Rows[i][13].ToString();//City
+				r[14]=table.Rows[i][14].ToString();//State
 				PtDataTable.Rows.Add(r);
 
 				/*
@@ -330,6 +333,7 @@ namespace OpenDental{
 				multPats[i].DateFirstVisit=PIn.PDate  (table.Rows[i][57].ToString());
 				multPats[i].PriPending   = PIn.PBool  (table.Rows[i][58].ToString());
 				multPats[i].SecPending   = PIn.PBool  (table.Rows[i][59].ToString());
+				multPats[i].ClinicNum    = PIn.PInt   (table.Rows[i][60].ToString());
 			}
 			return multPats;
 		}
@@ -447,7 +451,7 @@ namespace OpenDental{
 			string strCur=PIn.PString(table.Rows[0][0].ToString());
 			command= 
 				"UPDATE patientnote SET "
-				+"famfinancial = '"+strGuar+strCur+"' "
+				+"famfinancial = '"+POut.PString(strGuar+strCur)+"' "
 				+"WHERE patnum = '"+Pat.Guarantor.ToString()+"'";
 			dcon.NonQ(command);
 			//delete cur financial notes
@@ -654,7 +658,7 @@ namespace OpenDental{
 		public static string GetNextChartNum(){
 			string command="SELECT ChartNumber from patient WHERE"
 				+" ChartNumber REGEXP '^[0-9]+$'"//matches any number of digits
-				+" ORDER BY chartnumber DESC LIMIT 1";
+				+" ORDER BY (chartnumber+0) DESC LIMIT 1";//1/13/05 by Keyush Shaw-added 0.
 			DataConnection dcon=new DataConnection();
 			DataTable table=dcon.GetTable(command);
 			if(table.Rows.Count==0){//no existing chart numbers

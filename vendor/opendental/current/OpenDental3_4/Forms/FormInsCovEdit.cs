@@ -322,7 +322,7 @@ namespace OpenDental{
 			this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
 			this.label1.Location = new System.Drawing.Point(16, 307);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(338, 18);
+			this.label1.Size = new System.Drawing.Size(362, 18);
 			this.label1.TabIndex = 79;
 			this.label1.Text = "Override percentages for patient (single click to edit):";
 			// 
@@ -511,7 +511,7 @@ namespace OpenDental{
 			this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
 			this.label2.Location = new System.Drawing.Point(16, 307);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(298, 18);
+			this.label2.Size = new System.Drawing.Size(357, 18);
 			this.label2.TabIndex = 85;
 			this.label2.Text = "Override percentages for patient (single click to edit):";
 			// 
@@ -617,11 +617,19 @@ namespace OpenDental{
 
 		private void InitialFillRelats(){
 			listPriRelat.Items.Clear();
-			listPriRelat.Items.AddRange(Enum.GetNames(typeof(Relat)));
-			listPriRelat.SelectedIndex=(int)PatCur.PriRelationship;
-			listSecRelat.Items.Clear();
-			listSecRelat.Items.AddRange(Enum.GetNames(typeof(Relat)));
-			listSecRelat.SelectedIndex=(int)PatCur.SecRelationship;
+      //listPriRelat.Items.AddRange(Enum.GetNames(typeof(Relat))); //*Ann
+      string[] enumPriRelat=Enum.GetNames(typeof(Relat)); //*Ann
+      for(int i=0;i<enumPriRelat.Length;i++){ //*Ann
+				listPriRelat.Items.Add(Lan.g("enumPriRelat",enumPriRelat[i])); //*Ann
+      }
+      listPriRelat.SelectedIndex=(int)PatCur.PriRelationship;
+      listSecRelat.Items.Clear();
+      //listSecRelat.Items.AddRange(Enum.GetNames(typeof(Relat))); //*Ann
+      string[] enumSecRelat=Enum.GetNames(typeof(Relat)); //*Ann
+      for(int i=0;i<enumSecRelat.Length;i++){//*Ann
+				listSecRelat.Items.Add(Lan.g("enumSecRelat",enumSecRelat[i])); //*Ann
+      }
+      listSecRelat.SelectedIndex=(int)PatCur.SecRelationship;
 		}
 
 		///<summary></summary>

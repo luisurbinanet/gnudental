@@ -131,6 +131,8 @@ namespace OpenDental{
 		public bool PriPending;
 		///<summary>True if secondary insurance is pending. This can be used with or without an insurance plan attached.</summary>
 		public bool SecPending;
+		///<summary>Foreign key to clinic.ClinicNum. Can be zero if not attached to a clinic or no clinics set up.</summary>
+		public int ClinicNum;
 		//<summary>Decided not to add since this data is already available and synchronizing would take too much time.  Will add later.  Not editable. If the patient happens to have a future appointment, this will contain the date of that appointment.  Once appointment is set complete, this date is deleted.  If there is more than one appointment scheduled, this will only contain the earliest one.  Used mostly to exclude patients from recall lists.  If you want all future appointments, use Appointments.GetForPat() instead. You can loop through that list and exclude appointments with dates earlier than today.</summary>
 		//public DateTime DateScheduled;
 
@@ -196,6 +198,7 @@ namespace OpenDental{
 			p.DateFirstVisit=DateFirstVisit;
 			p.PriPending=PriPending;
 			p.SecPending=SecPending;
+			p.ClinicNum=ClinicNum;
 			return p;
 		}
 	
@@ -209,7 +212,7 @@ namespace OpenDental{
 				+"studentstatus,schoolname,chartnumber,medicaidid"
 				+",Bal_0_30,Bal_31_60,Bal_61_90,BalOver90,insest,primaryteeth,BalTotal"
 				+",EmployerNum,EmploymentNote,Race,County,GradeSchool,GradeLevel,Urgency,DateFirstVisit"
-				+",PriPending,SecPending) VALUES("
+				+",PriPending,SecPending,ClinicNum) VALUES("
 				+"'"+POut.PString(LName)+"', "
 				+"'"+POut.PString(FName)+"', "
 				+"'"+POut.PString(MiddleI)+"', "
@@ -268,7 +271,8 @@ namespace OpenDental{
 				+"'"+POut.PInt   ((int)Urgency)+"', "
 				+"'"+POut.PDate  (DateFirstVisit)+"', "
 				+"'"+POut.PBool  (PriPending)+"', "
-				+"'"+POut.PBool  (SecPending)+"')";
+				+"'"+POut.PBool  (SecPending)+"', "
+				+"'"+POut.PInt   (ClinicNum)+"')";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
  			dcon.NonQ(command,true);
@@ -573,6 +577,11 @@ namespace OpenDental{
 				c+="SecPending = '"     +POut.PBool  (SecPending)+"'";
 				comma=true;
 			}
+			if(ClinicNum!=CurOld.ClinicNum){
+				if(comma) c+=",";
+				c+="ClinicNum = '"     +POut.PInt   (ClinicNum)+"'";
+				comma=true;
+			}
 			if(!comma)
 				return 0;//this means no change is actually required.
 			c+=" WHERE PatNum = '"   +POut.PInt   (PatNum)+"'";
@@ -617,7 +626,7 @@ namespace OpenDental{
 			return retStr;
 		}
 
-		///<summary></summary>
+		///<summary>Gets the provider for this patient.</summary>
 		public int GetProvNum(){
 			if(PriProv!=0)
 				return PriProv;

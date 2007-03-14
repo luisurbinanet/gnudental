@@ -71,7 +71,7 @@ namespace OpenDental.Eclaims
 				else if(Clearinghouses.List[i].CommBridge==EclaimsCommBridge.Renaissance){
 					AttemptLaunch(Clearinghouses.List[i],batchNum);
 				}
-				else if(Clearinghouses.List[i].CommBridge==EclaimsCommBridge.WebClaim){
+				else if(Clearinghouses.List[i].CommBridge==EclaimsCommBridge.ClaimConnect){
 					if(!WebClaim.Launch(Clearinghouses.List[i],batchNum)){
 						MessageBox.Show(Lan.g("Eclaims","Error sending."));
 						continue;
@@ -80,6 +80,12 @@ namespace OpenDental.Eclaims
 				else if(Clearinghouses.List[i].CommBridge==EclaimsCommBridge.RECS){
 					if(!RECS.Launch(Clearinghouses.List[i],batchNum)){
 						MessageBox.Show("Claim file created, but could not launch RECS client.");
+						//continue;
+					}
+				}
+				else if(Clearinghouses.List[i].CommBridge==EclaimsCommBridge.Inmediata){
+					if(!Inmediata.Launch(Clearinghouses.List[i],batchNum)){
+						MessageBox.Show("Claim file created, but could not launch Inmediata client.");
 						//continue;
 					}
 				}

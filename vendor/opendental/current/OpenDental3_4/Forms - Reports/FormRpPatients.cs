@@ -430,144 +430,162 @@ namespace OpenDental{
 		}
  
 		private void FillALpatSelect(){ 
-			ALpatSelect.Add(Lan.g(this,"PatNum")); 
-			ALpatSelect.Add(Lan.g(this,"LName"));
-			ALpatSelect.Add(Lan.g(this,"FName"));
-			ALpatSelect.Add(Lan.g(this,"MiddleI")); 
-      ALpatSelect.Add(Lan.g(this,"Preferred"));
-      ALpatSelect.Add(Lan.g(this,"Salutation")); 
-      ALpatSelect.Add(Lan.g(this,"Address")); 
-      ALpatSelect.Add(Lan.g(this,"Address2"));
-      ALpatSelect.Add(Lan.g(this,"City")); 
-      ALpatSelect.Add(Lan.g(this,"State"));   
-      ALpatSelect.Add(Lan.g(this,"Zip"));
-      ALpatSelect.Add(Lan.g(this,"HmPhone"));
-      ALpatSelect.Add(Lan.g(this,"WkPhone")); 
-      ALpatSelect.Add(Lan.g(this,"WirelessPhone")); 
-      ALpatSelect.Add(Lan.g(this,"Birthdate"));
-      ALpatSelect.Add(Lan.g(this,"Email"));
-      ALpatSelect.Add(Lan.g(this,"SSN"));
-      ALpatSelect.Add(Lan.g(this,"Gender"));
-      ALpatSelect.Add(Lan.g(this,"PatStatus"));
-      ALpatSelect.Add(Lan.g(this,"Position"));  
-      ALpatSelect.Add(Lan.g(this,"CreditType"));
-      ALpatSelect.Add(Lan.g(this,"BillingType")); 
-      ALpatSelect.Add(Lan.g(this,"ChartNumber"));   
-      ALpatSelect.Add(Lan.g(this,"PriProv")); 
-      ALpatSelect.Add(Lan.g(this,"SecProv"));
-      ALpatSelect.Add(Lan.g(this,"FeeSched")); 
-      ALpatSelect.Add(Lan.g(this,"ApptModNote"));
-      ALpatSelect.Add(Lan.g(this,"AddrNote")); 
-      ALpatSelect.Add(Lan.g(this,"EstBalance")); 
-      ALpatSelect.Add(Lan.g(this,"FamFinUrgNote")); 
-      ALpatSelect.Add(Lan.g(this,"Guarantor"));   
-      ALpatSelect.Add(Lan.g(this,"ImageFolder"));
-      ALpatSelect.Add(Lan.g(this,"MedUrgNote")); 
-      ALpatSelect.Add(Lan.g(this,"NextAptNum")); 
-      ALpatSelect.Add(Lan.g(this,"PriPlanNum"));//Primary Carrier?
-      ALpatSelect.Add(Lan.g(this,"PriRelationship"));// ?
-			ALpatSelect.Add(Lan.g(this,"SecPlanNum"));//Secondary Carrier? 
-      ALpatSelect.Add(Lan.g(this,"SecRelationship"));// ?
-			//ALpatSelect.Add(Lan.g(this,"RecallInterval")); 
-      ALpatSelect.Add(Lan.g(this,"RecallStatus"));  
-      ALpatSelect.Add(Lan.g(this,"SchoolName")); 
-      ALpatSelect.Add(Lan.g(this,"StudentStatus"));
+			ALpatSelect.Add("PatNum"); 
+			ALpatSelect.Add("LName");
+			ALpatSelect.Add("FName");
+			ALpatSelect.Add("MiddleI"); 
+      ALpatSelect.Add("Preferred");
+      ALpatSelect.Add("Salutation"); 
+      ALpatSelect.Add("Address"); 
+      ALpatSelect.Add("Address2");
+      ALpatSelect.Add("City"); 
+      ALpatSelect.Add("State");   
+      ALpatSelect.Add("Zip");
+      ALpatSelect.Add("HmPhone");
+      ALpatSelect.Add("WkPhone"); 
+      ALpatSelect.Add("WirelessPhone"); 
+      ALpatSelect.Add("Birthdate");
+      ALpatSelect.Add("Email");
+      ALpatSelect.Add("SSN");
+      ALpatSelect.Add("Gender");
+      ALpatSelect.Add("PatStatus");
+      ALpatSelect.Add("Position");  
+      ALpatSelect.Add("CreditType");
+      ALpatSelect.Add("BillingType"); 
+      ALpatSelect.Add("ChartNumber");   
+      ALpatSelect.Add("PriProv"); 
+      ALpatSelect.Add("SecProv");
+      ALpatSelect.Add("FeeSched"); 
+      ALpatSelect.Add("ApptModNote");
+      ALpatSelect.Add("AddrNote"); 
+      ALpatSelect.Add("EstBalance"); 
+      ALpatSelect.Add("FamFinUrgNote"); 
+      ALpatSelect.Add("Guarantor");   
+      ALpatSelect.Add("ImageFolder");
+      ALpatSelect.Add("MedUrgNote"); 
+      ALpatSelect.Add("NextAptNum"); 
+      ALpatSelect.Add("PriPlanNum");//Primary Carrier?
+      ALpatSelect.Add("PriRelationship");// ?
+			ALpatSelect.Add("SecPlanNum");//Secondary Carrier? 
+      ALpatSelect.Add("SecRelationship");// ?
+			//ALpatSelect.Add("RecallInterval")); 
+      ALpatSelect.Add("RecallStatus");  
+      ALpatSelect.Add("SchoolName"); 
+      ALpatSelect.Add("StudentStatus");
+			ALpatSelect.Add("MedicaidID");
+			ALpatSelect.Add("Bal_0_30");
+			ALpatSelect.Add("Bal_31_60");
+			ALpatSelect.Add("Bal_61_90");
+			ALpatSelect.Add("BalOver90");
+			ALpatSelect.Add("InsEst");
+			ALpatSelect.Add("PrimaryTeeth");
+			ALpatSelect.Add("BalTotal");
+			ALpatSelect.Add("EmployerNum");
+			//EmploymentNote
+			ALpatSelect.Add("Race");
+			ALpatSelect.Add("County");
+			ALpatSelect.Add("GradeSchool");
+			ALpatSelect.Add("GradeLevel");
+			ALpatSelect.Add("Urgency");
+			ALpatSelect.Add("DateFirstVisit");
+			ALpatSelect.Add("PriPending");
+			ALpatSelect.Add("SecPending");
  		}
 
     private void FillALrefToSelect(){
-      ALrefToSelect.Add(Lan.g(this,"LName"));
-      ALrefToSelect.Add(Lan.g(this,"FName"));
-      ALrefToSelect.Add(Lan.g(this,"MName"));       
-      ALrefToSelect.Add(Lan.g(this,"Title")); 
-      ALrefToSelect.Add(Lan.g(this,"Address")); 
-      ALrefToSelect.Add(Lan.g(this,"Address2"));
-      ALrefToSelect.Add(Lan.g(this,"City"));
-      ALrefToSelect.Add(Lan.g(this,"ST"));
-      ALrefToSelect.Add(Lan.g(this,"Zip"));
-      ALrefToSelect.Add(Lan.g(this,"Telephone"));
-      ALrefToSelect.Add(Lan.g(this,"Phone2"));
-      ALrefToSelect.Add(Lan.g(this,"Email"));
-      ALrefToSelect.Add(Lan.g(this,"IsHidden")); 
-      ALrefToSelect.Add(Lan.g(this,"NotPerson"));  
-      ALrefToSelect.Add(Lan.g(this,"PatNum")); 
-			ALrefToSelect.Add(Lan.g(this,"ReferralNum"));
-      ALrefToSelect.Add(Lan.g(this,"Specialty")); 
-      ALrefToSelect.Add(Lan.g(this,"SSN"));
-      ALrefToSelect.Add(Lan.g(this,"UsingTIN")); 
-      ALrefToSelect.Add(Lan.g(this,"Note"));
+      ALrefToSelect.Add("LName");
+      ALrefToSelect.Add("FName");
+      ALrefToSelect.Add("MName");       
+      ALrefToSelect.Add("Title"); 
+      ALrefToSelect.Add("Address"); 
+      ALrefToSelect.Add("Address2");
+      ALrefToSelect.Add("City");
+      ALrefToSelect.Add("ST");
+      ALrefToSelect.Add("Zip");
+      ALrefToSelect.Add("Telephone");
+      ALrefToSelect.Add("Phone2");
+      ALrefToSelect.Add("Email");
+      ALrefToSelect.Add("IsHidden"); 
+      ALrefToSelect.Add("NotPerson");  
+      ALrefToSelect.Add("PatNum"); 
+			ALrefToSelect.Add("ReferralNum");
+      ALrefToSelect.Add("Specialty"); 
+      ALrefToSelect.Add("SSN");
+      ALrefToSelect.Add("UsingTIN"); 
+      ALrefToSelect.Add("Note");
 
     }
 
     private void FillALrefFromSelect(){
-      ALrefFromSelect.Add(Lan.g(this,"LName"));
-      ALrefFromSelect.Add(Lan.g(this,"FName"));
-      ALrefFromSelect.Add(Lan.g(this,"MName"));       
-      ALrefFromSelect.Add(Lan.g(this,"Title")); 
-      ALrefFromSelect.Add(Lan.g(this,"Address")); 
-      ALrefFromSelect.Add(Lan.g(this,"Address2"));
-      ALrefFromSelect.Add(Lan.g(this,"City"));
-      ALrefFromSelect.Add(Lan.g(this,"ST"));
-      ALrefFromSelect.Add(Lan.g(this,"Zip"));
-      ALrefFromSelect.Add(Lan.g(this,"Telephone"));
-      ALrefFromSelect.Add(Lan.g(this,"Phone2")); 
-      ALrefFromSelect.Add(Lan.g(this,"Email"));
-      ALrefFromSelect.Add(Lan.g(this,"IsHidden")); 
-      ALrefFromSelect.Add(Lan.g(this,"NotPerson"));  
-      ALrefFromSelect.Add(Lan.g(this,"PatNum")); 
-			ALrefFromSelect.Add(Lan.g(this,"ReferralNum"));
-      ALrefFromSelect.Add(Lan.g(this,"Specialty")); 
-      ALrefFromSelect.Add(Lan.g(this,"SSN"));
-      ALrefFromSelect.Add(Lan.g(this,"UsingTIN")); 
-      ALrefFromSelect.Add(Lan.g(this,"Note"));
+      ALrefFromSelect.Add("LName");
+      ALrefFromSelect.Add("FName");
+      ALrefFromSelect.Add("MName");       
+      ALrefFromSelect.Add("Title"); 
+      ALrefFromSelect.Add("Address"); 
+      ALrefFromSelect.Add("Address2");
+      ALrefFromSelect.Add("City");
+      ALrefFromSelect.Add("ST");
+      ALrefFromSelect.Add("Zip");
+      ALrefFromSelect.Add("Telephone");
+      ALrefFromSelect.Add("Phone2"); 
+      ALrefFromSelect.Add("Email");
+      ALrefFromSelect.Add("IsHidden"); 
+      ALrefFromSelect.Add("NotPerson");  
+      ALrefFromSelect.Add("PatNum"); 
+			ALrefFromSelect.Add("ReferralNum");
+      ALrefFromSelect.Add("Specialty"); 
+      ALrefFromSelect.Add("SSN");
+      ALrefFromSelect.Add("UsingTIN"); 
+      ALrefFromSelect.Add("Note");
     }
 
 		private void FillALpatFilter(){//FillALpatFilter
-      ALpatFilter.Add(Lan.g(this,"Address")); 
-      ALpatFilter.Add(Lan.g(this,"Address2"));
-			ALpatFilter.Add(Lan.g(this,"Age"));
-      ALpatFilter.Add(Lan.g(this,"ApptModNote")); 
-      ALpatFilter.Add(Lan.g(this,"BillingType"));  
-      ALpatFilter.Add(Lan.g(this,"Birthdate"));
-			ALpatFilter.Add(Lan.g(this,"Birthday"));//new, need to add functionality
-      ALpatFilter.Add(Lan.g(this,"City"));  
-      ALpatFilter.Add(Lan.g(this,"ChartNumber")); 
-      ALpatFilter.Add(Lan.g(this,"CreditType"));  
-      ALpatFilter.Add(Lan.g(this,"Email"));
-			ALpatFilter.Add(Lan.g(this,"EstBalance"));
-      ALpatFilter.Add(Lan.g(this,"FamAddrNote")); 
-      ALpatFilter.Add(Lan.g(this,"FamFinUrgNote")); 
-      ALpatFilter.Add(Lan.g(this,"FeeSched"));
-			ALpatFilter.Add(Lan.g(this,"First Visit Date"));//new, need to add functionality  
-      ALpatFilter.Add(Lan.g(this,"FName"));
-      ALpatFilter.Add(Lan.g(this,"Gender")); 
-      ALpatFilter.Add(Lan.g(this,"HmPhone")); 
-			ALpatFilter.Add(Lan.g(this,"Last Visit Date"));//new, need to add functionality 
-			ALpatFilter.Add(Lan.g(this,"LName")); 
-      ALpatFilter.Add(Lan.g(this,"MedUrgNote")); 
-      ALpatFilter.Add(Lan.g(this,"MiddleI"));
-      ALpatFilter.Add(Lan.g(this,"NextAptNum"));
-			ALpatFilter.Add(Lan.g(this,"PatNum"));
-      ALpatFilter.Add(Lan.g(this,"PatStatus")); 
-      ALpatFilter.Add(Lan.g(this,"Position"));  
-      ALpatFilter.Add(Lan.g(this,"Preferred")); 
-      ALpatFilter.Add(Lan.g(this,"Primary Carrier")); 
-      ALpatFilter.Add(Lan.g(this,"PriProv")); 
-      ALpatFilter.Add(Lan.g(this,"PriRelationship")); 
-      //ALpatFilter.Add(Lan.g(this,"RecallInterval")); 
-      //ALpatFilter.Add(Lan.g(this,"RecallStatus"));
-			ALpatFilter.Add(Lan.g(this,"Referred From Dentist"));//new, need to add functionality
-			ALpatFilter.Add(Lan.g(this,"Referred From Patient"));//new, need to add functionality 
-      ALpatFilter.Add(Lan.g(this,"Salutation")); 
-      ALpatFilter.Add(Lan.g(this,"Secondary Carrier"));
-      ALpatFilter.Add(Lan.g(this,"SecProv")); 
-      ALpatFilter.Add(Lan.g(this,"SecRelationship")); 
-      ALpatFilter.Add(Lan.g(this,"SchoolName")); 
-      ALpatFilter.Add(Lan.g(this,"SSN")); 
-      ALpatFilter.Add(Lan.g(this,"State"));
-      ALpatFilter.Add(Lan.g(this,"StudentStatus"));
-      ALpatFilter.Add(Lan.g(this,"WirelessPhone")); 
-      ALpatFilter.Add(Lan.g(this,"WkPhone"));
-      ALpatFilter.Add(Lan.g(this,"Zip"));   
+      ALpatFilter.Add("Address"); 
+      ALpatFilter.Add("Address2");
+			ALpatFilter.Add("Age");
+      ALpatFilter.Add("ApptModNote"); 
+      ALpatFilter.Add("BillingType");  
+      ALpatFilter.Add("Birthdate");
+			ALpatFilter.Add("Birthday");//new, need to add functionality
+      ALpatFilter.Add("City");  
+      ALpatFilter.Add("ChartNumber"); 
+      ALpatFilter.Add("CreditType");  
+      ALpatFilter.Add("Email");
+			ALpatFilter.Add("EstBalance");
+      ALpatFilter.Add("FamAddrNote"); 
+      ALpatFilter.Add("FamFinUrgNote"); 
+      ALpatFilter.Add("FeeSched");
+			ALpatFilter.Add("First Visit Date");//new, need to add functionality  
+      ALpatFilter.Add("FName");
+      ALpatFilter.Add("Gender"); 
+      ALpatFilter.Add("HmPhone"); 
+			ALpatFilter.Add("Last Visit Date");//new, need to add functionality 
+			ALpatFilter.Add("LName"); 
+      ALpatFilter.Add("MedUrgNote"); 
+      ALpatFilter.Add("MiddleI");
+      ALpatFilter.Add("NextAptNum");
+			ALpatFilter.Add("PatNum");
+      ALpatFilter.Add("PatStatus"); 
+      ALpatFilter.Add("Position");  
+      ALpatFilter.Add("Preferred"); 
+      ALpatFilter.Add("Primary Carrier"); 
+      ALpatFilter.Add("PriProv"); 
+      ALpatFilter.Add("PriRelationship"); 
+      //ALpatFilter.Add("RecallInterval"); 
+      //ALpatFilter.Add("RecallStatus");
+			ALpatFilter.Add("Referred From Dentist");//new, need to add functionality
+			ALpatFilter.Add("Referred From Patient");//new, need to add functionality 
+      ALpatFilter.Add("Salutation"); 
+      ALpatFilter.Add("Secondary Carrier");
+      ALpatFilter.Add("SecProv"); 
+      ALpatFilter.Add("SecRelationship"); 
+      ALpatFilter.Add("SchoolName"); 
+      ALpatFilter.Add("SSN"); 
+      ALpatFilter.Add("State");
+      ALpatFilter.Add("StudentStatus");
+      ALpatFilter.Add("WirelessPhone"); 
+      ALpatFilter.Add("WkPhone");
+      ALpatFilter.Add("Zip");   
 		}
 	  
 		private void FillPatientSelectList(){
@@ -577,19 +595,19 @@ namespace OpenDental{
 			SQLselect="";
 		}
 
-      private void FillRefToSelectList(){
-				for(int i=0;i<ALrefToSelect.Count;i++){
-					ListReferredToSelect.Items.Add(ALrefToSelect[i]);
-				}
-					SQLselect="";
-      }
+    private void FillRefToSelectList(){
+			for(int i=0;i<ALrefToSelect.Count;i++){
+				ListReferredToSelect.Items.Add(ALrefToSelect[i]);
+			}
+			SQLselect="";
+    }
 
-      private void FillRefFromSelectList(){
-				for(int i=0;i<ALrefFromSelect.Count;i++){
-					ListReferredFromSelect.Items.Add(ALrefFromSelect[i]);
-				}
-					SQLselect="";
-      }
+    private void FillRefFromSelectList(){
+			for(int i=0;i<ALrefFromSelect.Count;i++){
+				ListReferredFromSelect.Items.Add(ALrefFromSelect[i]);
+			}
+			SQLselect="";
+    }
 
 		private void FillFilterDropList(){
       for(int i=0;i<ALpatFilter.Count;i++){

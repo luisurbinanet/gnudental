@@ -54,8 +54,11 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(523, 328);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
@@ -64,7 +67,10 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.Location = new System.Drawing.Point(523, 293);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
@@ -86,11 +92,12 @@ namespace OpenDental{
 			// 
 			// labelTO
 			// 
-			this.labelTO.Location = new System.Drawing.Point(244, 120);
+			this.labelTO.Location = new System.Drawing.Point(218, 120);
 			this.labelTO.Name = "labelTO";
-			this.labelTO.Size = new System.Drawing.Size(24, 23);
+			this.labelTO.Size = new System.Drawing.Size(70, 23);
 			this.labelTO.TabIndex = 22;
 			this.labelTO.Text = "TO";
+			this.labelTO.TextAlign = System.Drawing.ContentAlignment.TopCenter;
 			// 
 			// radioCheck
 			// 
@@ -156,7 +163,7 @@ namespace OpenDental{
 
 		private void butOK_Click(object sender, System.EventArgs e) {
 			Queries.CurReport=new ReportOld();
-			Queries.CurReport.Query="SELECT payment.PayDate,"
+			Queries.CurReport.Query="(SELECT payment.PayDate AS mydate,"
 				+"CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI) AS plfname"
 				+",'                                                 '"//this is long so union won't get trunc.
 				+",payment.PayType,payment.CheckNum,payment.PayNum,payment.PayAmt "
@@ -164,9 +171,9 @@ namespace OpenDental{
 				+"WHERE "
 				+"payment.PatNum = patient.PatNum "
 				+"AND payment.PayDate >= '"+POut.PDate(date1.SelectionStart)+"' "
-				+"AND payment.PayDate <= '"+POut.PDate(date2.SelectionStart)+"' "
+				+"AND payment.PayDate <= '"+POut.PDate(date2.SelectionStart)+"') "
 				+"UNION "
-				+"SELECT claimpayment.CheckDate,CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI) "
+				+"(SELECT claimpayment.CheckDate AS mydate,CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI) "
 				+"AS plfname,carrier.CarrierName,'',"
 				+"claimpayment.CheckNum,claimproc.ClaimNum,SUM(claimproc.InsPayAmt) "//spk/js
 				+"FROM claimpayment,claimproc,insplan,patient,carrier "
@@ -179,13 +186,13 @@ namespace OpenDental{
 				+"AND claimpayment.CheckDate <= '"+POut.PDate(date2.SelectionStart)+"' ";
 			//this part is run after the union:
 			if(radioPatient.Checked){
-				Queries.CurReport.Query+="GROUP BY claimproc.ClaimNum ";//changed, spk
+				Queries.CurReport.Query+="GROUP BY claimproc.ClaimNum) ";//changed, spk
 			}
 			else{//by check
-				Queries.CurReport.Query+="GROUP BY claimproc.ClaimPaymentNum ";
+				Queries.CurReport.Query+="GROUP BY claimproc.ClaimPaymentNum) ";
 			}
 			//MessageBox.Show(Queries.CurReport.Query);
-			Queries.CurReport.Query+="ORDER BY payment.PayDate,PayType,plfname";//added paytype, plfname, spk
+			Queries.CurReport.Query+="ORDER BY mydate,PayType,plfname";//added paytype, plfname, spk
 			FormQuery2=new FormQuery();
 			FormQuery2.IsReport=true;
 			FormQuery2.SubmitReportQuery();			

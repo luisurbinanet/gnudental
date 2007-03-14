@@ -12,20 +12,14 @@ namespace OpenDental
 		///<summary>List of patients in the family.</summary>
 		public Patient[] List;
 
-		///<summary></summary>
+		///<summary>Tries to get the LastName,FirstName of the patient from this family.  If not found, then gets the name from the database.</summary>
 		public string GetNameInFamLF(int myPatNum){
-			string retStr="";
 			for(int i=0;i<List.Length;i++){
 				if(List[i].PatNum==myPatNum){
-					if(List[i].Preferred==""){
-						retStr=List[i].LName+", "+List[i].FName+" "+List[i].MiddleI; 
-					}
-					else{
-						retStr=List[i].LName+", '"+List[i].Preferred+"' "+List[i].FName+" "+List[i].MiddleI;
-					}
+					return List[i].GetNameLF();
 				}
 			}
-			return retStr;
+			return Patients.GetLim(myPatNum).GetNameLF();
 		}
 
 		///<summary>Gets last, (preferred) first middle</summary>
@@ -68,15 +62,14 @@ namespace OpenDental
 			return retStr;
 		}
 
-		///<summary></summary>
+		///<summary>The index of the patient within the family.  Returns -1 if not found.</summary>
 		public int GetIndex(int patNum){
-			int retVal=-1;//will return -1 if not found
 			for(int i=0;i<List.Length;i++){
 				if(List[i].PatNum==patNum){
-					retVal=i;
+					return i;
 				}
 			}
-			return retVal;
+			return -1;
 		}
 
 		///<summary>Gets a copy of a specific patient from within the family. Does not make a call to the database.</summary>

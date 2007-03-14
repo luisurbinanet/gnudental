@@ -41,7 +41,7 @@ namespace OpenDental{
 		public double WriteOff;
 		///<summary>The procedure code that was sent to insurance. This is not necessarily the usual procedure code.  It will already have been trimmed to 5 char if it started with "D", or it could be the alternate code.  Not allowed to be blank if it is procedure.</summary>
 		public string CodeSent;
-		///<summary>-1 if blank which indicates allowed is same as fee. This is the amount that the percentage is based on. Usually the same as the fee, unless this ins plan has lower UCR. Could also be different for ins substitutions, like posterior composites.</summary>
+		///<summary>-1 if blank which indicates allowed is same as fee. This is the amount that the percentage is based on. Usually the same as the fee, unless this ins plan has lower UCR. Could also be different for ins substitutions, like posterior composites. If -1, then it might be changed during Procedure.ComputeEstimates/ClaimProc.ComputeBaseEst.  But once there is a value, it is guaranteed not to be changed unless user changes it.</summary>
 		public double AllowedAmt;
 		///<summary>-1 if blank.  Otherwise a number between 0 and 100.  The percentage that insurance pays on this procedure, as determined from insurance categories. Not user editable.</summary>
 		public int Percentage;
@@ -183,7 +183,7 @@ namespace OpenDental{
  			dcon.NonQ(command);
 		}
 
-		///<summary>Replaces Procedures.GetEstForCur as the way to actually calculate the Base estimate for a procedure.  However, this is no longer done on the fly.  Use Procedure.GetEst to later retrieve the estimate. This function duplicates/replaces all of the upper estimating logic that is within FormClaimProc.  BaseEst=((fee or allowedAmt)-Copay) x (percentage or percentOverride). The result is now stored in a claimProc.  The claimProcs do get updated frequently depending on certain actions the user takes.  The calling class must have already created the claimProc, and this function simply updates the BaseEst field of that claimproc. pst.Tot not used.  For Estimate and CapEstimate, all the estimate fields will be recalculated except the three overrides.</summary>
+		///<summary>Calculates the Base estimate for a procedure.  This is not done on the fly.  Use Procedure.GetEst to later retrieve the estimate. This function duplicates/replaces all of the upper estimating logic that is within FormClaimProc.  BaseEst=((fee or allowedAmt)-Copay) x (percentage or percentOverride). The result is now stored in a claimProc.  The claimProcs do get updated frequently depending on certain actions the user takes.  The calling class must have already created the claimProc, and this function simply updates the BaseEst field of that claimproc. pst.Tot not used.  For Estimate and CapEstimate, all the estimate fields will be recalculated except the three overrides.</summary>
 		public void ComputeBaseEst(Procedure proc,PriSecTot pst,Patient pat,InsPlan[] PlanList){//,bool resetValues){
 			if(Status==ClaimProcStatus.CapClaim
 				|| Status==ClaimProcStatus.CapComplete
@@ -214,9 +214,14 @@ namespace OpenDental{
 			//This function is called every time a ProcFee is changed,
 			//so the BaseEst does reflect the new ProcFee.
 			BaseEst=proc.ProcFee;
-			if(resetAll){
+			//if(resetAll){
 				//AllowedAmt=-1;
-//later add posterior composite functionality. Needs to go here because the substitute fee changes.
+				//actually, this is a bad place for altering AllowedAmt.
+				//Best to set it at the same time as the fee.
+			//}
+			if(AllowedAmt==-1){//If allowedAmt is blank, try to find an allowed amount.
+				AllowedAmt=InsPlans.GetAllowed(proc.ADACode,PlanNum,PlanList);
+				//later add posterior composite functionality. Needs to go here because the substitute fee changes.
 			}
 			if(AllowedAmt!=-1){
 				BaseEst=AllowedAmt;

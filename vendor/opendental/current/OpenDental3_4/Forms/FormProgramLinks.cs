@@ -12,6 +12,7 @@ namespace OpenDental{
 		private OpenDental.UI.Button butClose;
 		private OpenDental.UI.Button butAdd;// Required designer variable.
 		private Programs Programs=new Programs();
+		private bool changed;
 
 		///<summary></summary>
 		public FormProgramLinks(){
@@ -109,25 +110,12 @@ namespace OpenDental{
 			}
 		}
 
-		/*private void listProgram_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
-			if(listProgram.SelectedIndex==-1){
-				return;
-			}
-			Programs.Cur=Programs.List[listProgram.SelectedIndex];
-			checkEnabled.Checked=Programs.Cur.Enabled;
-		}*/
-
-		/*private void checkEnabled_Click(object sender, System.EventArgs e) {
-			if(listProgram.SelectedIndex==-1) return;
-			Programs.Cur.Enabled=checkEnabled.Checked;
-			Programs.UpdateCur();
-		}*/
-
 		private void butAdd_Click(object sender, System.EventArgs e) {
 			Programs.Cur=new Program();
 			FormProgramLinkEdit FormPE=new FormProgramLinkEdit();
 			FormPE.IsNew=true;
 			FormPE.ShowDialog();
+			changed=true;//because we don't really know what they did, so assume changed.
 			FillList();
 		}
 
@@ -137,6 +125,7 @@ namespace OpenDental{
 			Programs.Cur=Programs.List[listProgram.SelectedIndex];
 			FormProgramLinkEdit FormPE=new FormProgramLinkEdit();
 			FormPE.ShowDialog();
+			changed=true;
 			FillList();
 		}
 
@@ -145,9 +134,9 @@ namespace OpenDental{
 		}
 
 		private void FormProgramLinks_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-			DataValid.IType=InvalidType.LocalData;
-			DataValid DataValid2=new DataValid();
-			DataValid2.SetInvalid();
+			if(changed){
+				DataValid.SetInvalid(InvalidTypes.Programs | InvalidTypes.ToolBut);
+			}
 		}
 
 	

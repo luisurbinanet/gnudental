@@ -15,7 +15,7 @@ namespace OpenDental{
 		public TableApptProcs(){
 			InitializeComponent();// This call is required by the Windows Form Designer.
 			MaxRows=20;
-			MaxCols=5;
+			MaxCols=6;
 			ShowScroll=true;
 			FieldsArePresent=true;
 			HeadingIsPresent=true;
@@ -23,16 +23,18 @@ namespace OpenDental{
 			SetRowHeight(0,19,14);
 			Heading="Procedures";
 			Fields[0]=Lan.g("TableApptProcs","Stat");
-			Fields[1]=Lan.g("TableApptProcs","Tth");
-			Fields[2]=Lan.g("TableApptProcs","Surf");
-			Fields[3]=Lan.g("TableApptProcs","Description");
-			Fields[4]=Lan.g("TableApptProcs","Fee");
-			ColAlign[4]=HorizontalAlignment.Right;
+			Fields[1]=Lan.g("TableApptProcs","Priority");
+			Fields[2]=Lan.g("TableApptProcs","Tth");
+			Fields[3]=Lan.g("TableApptProcs","Surf");
+			Fields[4]=Lan.g("TableApptProcs","Description");
+			Fields[5]=Lan.g("TableApptProcs","Fee");
+			ColAlign[5]=HorizontalAlignment.Right;
 			ColWidth[0]=40;
-			ColWidth[1]=30;
-			ColWidth[2]=40;
-			ColWidth[3]=175;
-			ColWidth[4]=60;			
+			ColWidth[1]=55;
+			ColWidth[2]=30;
+			ColWidth[3]=40;
+			ColWidth[4]=175;
+			ColWidth[5]=60;			
 			LayoutTables();
 		}
 

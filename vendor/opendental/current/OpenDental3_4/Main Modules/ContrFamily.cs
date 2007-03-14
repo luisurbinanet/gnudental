@@ -32,7 +32,6 @@ namespace OpenDental{
 		private OpenDental.UI.ODToolBar ToolBarMain;
 		private System.Windows.Forms.PictureBox picturePatient;
 		private OpenDental.UI.Button butPatEdit;
-		private OpenDental.UI.Button butEditPriCov;
 		private OpenDental.UI.Button butEditPriPlan;
 		private OpenDental.UI.Button butEditSecCov;
 		private OpenDental.UI.Button butEditSecPlan;
@@ -51,6 +50,7 @@ namespace OpenDental{
 		public event PatientSelectedEventHandler PatientSelected=null;
 		private Patient PatCur;
 		private Family FamCur;
+		private OpenDental.UI.Button butEditPriCov;
 		private InsPlan[] PlanList;
 		//private int CurPatNum;
 
@@ -635,14 +635,22 @@ namespace OpenDental{
 
 		private void FillPatientData(){
 			if(PatCur==null){
+				butPatEdit.Enabled=false;
 				return;
 			}
+			butPatEdit.Enabled=true;
 			tbPatient.Cell[1,1]=PatCur.LName;
 			tbPatient.Cell[1,2]=PatCur.FName;
 			tbPatient.Cell[1,3]=PatCur.MiddleI;
 			tbPatient.Cell[1,4]=PatCur.Preferred;
 			tbPatient.Cell[1,5]=PatCur.Salutation;
 			tbPatient.Cell[1,6]=Lan.g("enum PatientStatus",PatCur.PatStatus.ToString());
+			if(PatCur.PatStatus==PatientStatus.Deceased){
+				tbPatient.FontColor[1,6]=Color.Red;
+			}
+			else{
+				tbPatient.FontColor[1,6]=Color.Black;
+			}
 			tbPatient.Cell[1,7]=Lan.g("enum PatientGender",PatCur.Gender.ToString());
 			tbPatient.Cell[1,8]=Lan.g("enum PatientPosition",PatCur.Position.ToString());
 			if(PatCur.Birthdate.Year < 1880)
@@ -806,9 +814,9 @@ namespace OpenDental{
 					//tbFamily.Cell[0,i]=Lan.g(this,"Guar");
 				}
 				tbFamily.Cell[0,i]=FamCur.GetNameInFamLFI(i);
-				tbFamily.Cell[1,i]=Lan.g("enum PatientPosition",FamCur.List[i].Position.ToString());
-				tbFamily.Cell[2,i]=Lan.g("enum PatientGender",FamCur.List[i].Gender.ToString());
-				tbFamily.Cell[3,i]=Lan.g("enum PatientStatus",FamCur.List[i].PatStatus.ToString());
+				tbFamily.Cell[1,i]=Lan.g("enumPatientPosition",FamCur.List[i].Position.ToString());
+				tbFamily.Cell[2,i]=Lan.g("enumPatientGender",FamCur.List[i].Gender.ToString());
+				tbFamily.Cell[3,i]=Lan.g("enumPatientStatus",FamCur.List[i].PatStatus.ToString());
 				tbFamily.Cell[4,i]=Shared.AgeToString(FamCur.List[i].Age);
 				for(int j=0;j<RecallList.Length;j++){
 					if(RecallList[j].PatNum==FamCur.List[i].PatNum){
@@ -870,8 +878,8 @@ namespace OpenDental{
 			//check for plans, appointments, procedures, etc.
 			Procedure[] procList=Procedures.Refresh(PatCur.PatNum);
 			Claims.Refresh(PatCur.PatNum);
-			Adjustments.Refresh(PatCur.PatNum);
-			PaySplits.Refresh(PatCur.PatNum);
+			Adjustment[] AdjustmentList=Adjustments.Refresh(PatCur.PatNum);
+			PaySplit[] PaySplitList=PaySplits.Refresh(PatCur.PatNum);
 			ClaimProc[] claimProcList=ClaimProcs.Refresh(PatCur.PatNum);
 			Commlogs.Refresh(PatCur.PatNum);
 			PayPlans.Refresh(PatCur.Guarantor,PatCur.PatNum);
@@ -880,8 +888,8 @@ namespace OpenDental{
 			RefAttach[] RefAttachList=RefAttaches.Refresh(PatCur.PatNum);
 			bool hasProcs=procList.Length>0;
 			bool hasClaims=Claims.List.Length>0;
-			bool hasAdj=Adjustments.List.Length>0;
-			bool hasPay=PaySplits.List.Length>0;
+			bool hasAdj=AdjustmentList.Length>0;
+			bool hasPay=PaySplitList.Length>0;
 			bool hasClaimProcs=claimProcList.Length>0;
 			bool hasComm=Commlogs.List.Length>0;
 			bool hasPayPlans=PayPlans.List.Length>0;

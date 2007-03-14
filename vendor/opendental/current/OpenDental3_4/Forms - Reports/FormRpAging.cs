@@ -68,8 +68,11 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(466, 375);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
@@ -79,7 +82,10 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.Location = new System.Drawing.Point(466, 341);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
@@ -95,7 +101,7 @@ namespace OpenDental{
 			this.groupBox1.Controls.Add(this.radioAny);
 			this.groupBox1.Location = new System.Drawing.Point(57, 109);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(144, 120);
+			this.groupBox1.Size = new System.Drawing.Size(186, 120);
 			this.groupBox1.TabIndex = 1;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Age of Account";
@@ -105,7 +111,7 @@ namespace OpenDental{
 			this.radio30.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radio30.Location = new System.Drawing.Point(12, 44);
 			this.radio30.Name = "radio30";
-			this.radio30.Size = new System.Drawing.Size(104, 16);
+			this.radio30.Size = new System.Drawing.Size(156, 16);
 			this.radio30.TabIndex = 1;
 			this.radio30.Text = "Over 30 Days";
 			// 
@@ -114,7 +120,7 @@ namespace OpenDental{
 			this.radio90.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radio90.Location = new System.Drawing.Point(12, 90);
 			this.radio90.Name = "radio90";
-			this.radio90.Size = new System.Drawing.Size(104, 18);
+			this.radio90.Size = new System.Drawing.Size(156, 18);
 			this.radio90.TabIndex = 3;
 			this.radio90.Text = "Over 90 Days";
 			// 
@@ -123,7 +129,7 @@ namespace OpenDental{
 			this.radio60.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radio60.Location = new System.Drawing.Point(12, 66);
 			this.radio60.Name = "radio60";
-			this.radio60.Size = new System.Drawing.Size(104, 18);
+			this.radio60.Size = new System.Drawing.Size(156, 18);
 			this.radio60.TabIndex = 2;
 			this.radio60.Text = "Over 60 Days";
 			// 
@@ -168,13 +174,16 @@ namespace OpenDental{
 			// 
 			this.label2.Location = new System.Drawing.Point(378, 25);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(88, 16);
+			this.label2.Size = new System.Drawing.Size(176, 16);
 			this.label2.TabIndex = 14;
 			this.label2.Text = "Billing Types:";
 			// 
 			// butAll
 			// 
-			this.butAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butAll.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAll.Autosize = true;
+			this.butAll.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAll.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butAll.Location = new System.Drawing.Point(380, 237);
 			this.butAll.Name = "butAll";
 			this.butAll.Size = new System.Drawing.Size(75, 26);

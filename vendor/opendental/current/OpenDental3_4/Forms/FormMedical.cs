@@ -270,12 +270,11 @@ namespace OpenDental{
 			tbMeds.SetGridColor(Color.Gray);
 			tbMeds.SetBackGColor(Color.White);  
 			for(int i=0;i<MedicationPats.List.Length;i++){
-				tbMeds.Cell[0,i]=((Medication)Medications.HList
-					[MedicationPats.List[i].MedicationNum]).MedName;
-				tbMeds.Cell[1,i]=((Medication)Medications.HList[((Medication)Medications.HList
-					[MedicationPats.List[i].MedicationNum]).GenericNum]).MedName;
-				tbMeds.Cell[2,i]=((Medication)Medications.HList[((Medication)Medications.HList
-					[MedicationPats.List[i].MedicationNum]).GenericNum]).Notes;
+				tbMeds.Cell[0,i]=((Medication)Medications.HList[MedicationPats.List[i].MedicationNum]).MedName;
+				tbMeds.Cell[1,i]=((Medication)Medications.HList[
+					((Medication)Medications.HList[MedicationPats.List[i].MedicationNum]).GenericNum]).MedName;
+				tbMeds.Cell[2,i]=((Medication)Medications.HList[
+					((Medication)Medications.HList[MedicationPats.List[i].MedicationNum]).GenericNum]).Notes;
 				tbMeds.Cell[3,i]=MedicationPats.List[i].PatNote;
 			}
 			tbMeds.LayoutTables(); 

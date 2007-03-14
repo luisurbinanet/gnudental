@@ -19,7 +19,7 @@ namespace OpenDental{
 		public bool IsSelectMode;
 		private OpenDental.UI.Button butCancel;
 		private OpenDental.UI.Button butOK;
-		private bool listHasChanged;//keeps track of whether an update is necessary.
+		private bool changed;//keeps track of whether an update is necessary.
 
 		///<summary></summary>
 		public FormCarriers()
@@ -214,7 +214,7 @@ namespace OpenDental{
 			FormCE.ShowDialog();
 			if(FormCE.DialogResult!=DialogResult.OK)
 				return;
-			listHasChanged=true;
+			changed=true;
 			FillGrid();
 		}
 
@@ -225,7 +225,7 @@ namespace OpenDental{
 			FormCE.ShowDialog();
 			if(FormCE.DialogResult!=DialogResult.OK)
 				return;
-			listHasChanged=true;
+			changed=true;
 			FillGrid();
 		}
 
@@ -239,7 +239,7 @@ namespace OpenDental{
 			FormCE.ShowDialog();
 			if(FormCE.DialogResult!=DialogResult.OK)
 				return;
-			listHasChanged=true;
+			changed=true;
 			FillGrid();
 		}
 
@@ -260,7 +260,7 @@ namespace OpenDental{
 			if(FormCB.DialogResult!=DialogResult.OK){
 				return;
 			}
-			listHasChanged=true;
+			changed=true;
 			int[] carrierNums=new int[tbCarriers.SelectedIndices.Length];
 			for(int i=0;i<tbCarriers.SelectedIndices.Length;i++){
 				carrierNums[i]=Carriers.List[tbCarriers.SelectedIndices[i]].CarrierNum;
@@ -287,11 +287,8 @@ namespace OpenDental{
 
 		private void FormCarriers_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
 			//it doesn't matter whether the user hits ok, or cancel for this to happen
-			if(listHasChanged){
-				//update all computers including this one:
-				DataValid.IType=InvalidType.LocalData;
-				DataValid DataValid2=new DataValid();
-				DataValid2.SetInvalid();
+			if(changed){
+				DataValid.SetInvalid(InvalidTypes.Carriers);
 			}
 		}
 

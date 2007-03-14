@@ -12,6 +12,7 @@ namespace OpenDental{
 		private OpenDental.UI.Button butDelete;
 		private OpenDental.UI.Button butClose;
 		private System.ComponentModel.Container components = null;
+		private bool changed;
 
 		///<summary></summary>
 		public FormZipCodes(){
@@ -135,6 +136,10 @@ namespace OpenDental{
 			ZipCodes.Cur=ZipCodes.List[tbZips.SelectedRow];
       FormZipCodeEdit FormZCE=new FormZipCodeEdit();
 			FormZCE.ShowDialog();
+			if(FormZCE.DialogResult!=DialogResult.OK){
+				return;
+			}
+			changed=true;
 			FillTable(); 
 		}
 
@@ -144,9 +149,10 @@ namespace OpenDental{
 				return;
 			}	
 			ZipCodes.Cur=ZipCodes.List[tbZips.SelectedRow];		
-			if (MessageBox.Show(Lan.g(this,"Delete Zipcode?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
+			if(MessageBox.Show(Lan.g(this,"Delete Zipcode?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
 				return;   
 			}
+			changed=true;
 			ZipCodes.DeleteCur();
 			FillTable();
 		}
@@ -156,6 +162,10 @@ namespace OpenDental{
 			FormZipCodeEdit FormZCE=new FormZipCodeEdit();
 			FormZCE.IsNew=true;
 			FormZCE.ShowDialog();
+			if(FormZCE.DialogResult!=DialogResult.OK){
+				return;
+			}
+			changed=true;
 			FillTable(); 				
 		}
 
@@ -164,9 +174,9 @@ namespace OpenDental{
 		}
 
 		private void FormZipCodes_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-			DataValid.IType=InvalidType.LocalData;
-			DataValid DataValid2=new DataValid();
-			DataValid2.SetInvalid();
+			if(changed){
+				DataValid.SetInvalid(InvalidTypes.ZipCodes);
+			}
 		}
 	
 

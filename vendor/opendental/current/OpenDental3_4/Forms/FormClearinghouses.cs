@@ -203,9 +203,7 @@ namespace OpenDental{
 			}
 			if(listHasChanged){
 				//update all computers including this one:
-				DataValid.IType=InvalidType.LocalData;
-				DataValid DataValid2=new DataValid();
-				DataValid2.SetInvalid();
+				DataValid.SetInvalid(InvalidTypes.ClearHouses);
 			}
 		}
 

@@ -15,13 +15,17 @@ namespace OpenDental{
 		private OpenDental.UI.Button butOK;
 		private OpenDental.UI.Button butCancel;
 		private System.ComponentModel.Container components = null;// Required designer variable.
+		///<summary></summary>
+		public Fee FeeCur;
+		///<summary></summary>
+		public bool IsNew;
 
 		///<summary></summary>
-		public FormFeeEdit(){
+		public FormFeeEdit(){//(Fee feeCur){
 			InitializeComponent();// Required for Windows Form Designer support
-			textFee.Text=Fees.Cur.Amount.ToString("F");
-			checkDefFee.Checked=Fees.Cur.UseDefaultFee;
-			checkDefCov.Checked=Fees.Cur.UseDefaultCov;
+			//FeeCur=feeCur;
+			//checkDefFee.Checked=FeeCur.UseDefaultFee;
+			//checkDefCov.Checked=FeeCur.UseDefaultCov;
 			Lan.F(this, new System.Windows.Forms.Control[] {
 				//exclude:
 				this.checkDefCov,
@@ -143,14 +147,13 @@ Use Default Coverage will usually be unchecked even if 'Use Default Fee' is chec
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(374, 132);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.textBox1);
+			this.Controls.Add(this.textFee);
 			this.Controls.Add(this.checkDefCov);
 			this.Controls.Add(this.checkDefFee);
-			this.Controls.Add(this.textFee);
 			this.Controls.Add(this.label1);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
@@ -158,6 +161,7 @@ Use Default Coverage will usually be unchecked even if 'Use Default Fee' is chec
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Edit Fee";
+			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormFeeEdit_Closing);
 			this.Load += new System.EventHandler(this.FormFeeEdit_Load);
 			this.ResumeLayout(false);
 
@@ -166,6 +170,7 @@ Use Default Coverage will usually be unchecked even if 'Use Default Fee' is chec
 
 		private void FormFeeEdit_Load(object sender, System.EventArgs e) {
 			Location=new Point(Location.X-190,Location.Y-20);
+			textFee.Text=FeeCur.Amount.ToString("F");
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
@@ -174,18 +179,29 @@ Use Default Coverage will usually be unchecked even if 'Use Default Fee' is chec
 				return;
 			}
 			if(textFee.Text==""){
-				MessageBox.Show(Lan.g(this,"Please enter an amount."));	
-				return;
+				FeeCur.Delete();
 			}
-			else
-				Fees.Cur.Amount=PIn.PDouble(textFee.Text);
-			Fees.Cur.UseDefaultCov=checkDefCov.Checked;
-			Fees.Cur.UseDefaultFee=checkDefFee.Checked;			
+			else{
+				FeeCur.Amount=PIn.PDouble(textFee.Text);
+				//Fee object always created and inserted externally first
+				FeeCur.Update();
+			}
+			//FeeCur.UseDefaultCov=checkDefCov.Checked;
+			//FeeCur.UseDefaultFee=checkDefFee.Checked;			
 			DialogResult=DialogResult.OK;
 		}
 
 		private void butCancel_Click(object sender, System.EventArgs e) {
 			DialogResult=DialogResult.Cancel;
+		}
+
+		private void FormFeeEdit_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+			if(DialogResult==DialogResult.OK){
+				return;
+			}
+			if(IsNew){
+				FeeCur.Delete();
+			}
 		}
 
 	}

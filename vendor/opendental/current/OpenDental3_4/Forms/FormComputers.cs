@@ -14,6 +14,7 @@ namespace OpenDental{
 		private OpenDental.UI.Button butDelete;
 		private System.Windows.Forms.Label label2;// Required designer variable.
 		private Programs Programs=new Programs();
+		private bool changed;
 
 		///<summary></summary>
 		public FormComputers(){
@@ -136,8 +137,8 @@ namespace OpenDental{
 		private void butDelete_Click(object sender, System.EventArgs e) {
 			if(listComputer.SelectedIndex==-1)
 				return;
-			Computers.Cur=Computers.List[listComputer.SelectedIndex];
-			Computers.DeleteCur();
+			Computers.List[listComputer.SelectedIndex].Delete();
+			changed=true;
 			FillList();
 		}
 
@@ -155,9 +156,9 @@ namespace OpenDental{
 		}
 
 		private void FormComputers_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-			DataValid.IType=InvalidType.LocalData;
-			DataValid DataValid2=new DataValid();
-			DataValid2.SetInvalid();
+			if(changed){
+				DataValid.SetInvalid(InvalidTypes.Computers);
+			}
 		}
 
 		

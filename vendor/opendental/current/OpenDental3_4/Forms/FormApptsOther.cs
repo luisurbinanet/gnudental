@@ -273,6 +273,14 @@ namespace OpenDental{
 			Text=Lan.g(this,"Appointments for")+" "+PatCur.GetNameLF();
 			textApptModNote.Text=PatCur.ApptModNote;
 			Filltb();
+			if(PatCur.PatStatus==PatientStatus.Inactive
+				|| PatCur.PatStatus==PatientStatus.Archived)
+			{
+				MsgBox.Show(this,"Warning. Patient is not active.");
+			}
+			if(PatCur.PatStatus==PatientStatus.Deceased){
+				MsgBox.Show(this,"Warning. Patient is deceased.");
+			}
 		}
 
 		private void Filltb(){

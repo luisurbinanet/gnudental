@@ -137,12 +137,12 @@ namespace OpenDental{
 			// 
 			// label6
 			// 
-			this.label6.Location = new System.Drawing.Point(2, 16);
+			this.label6.Location = new System.Drawing.Point(2, 3);
 			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(42, 30);
+			this.label6.Size = new System.Drawing.Size(57, 61);
 			this.label6.TabIndex = 5;
 			this.label6.Text = "Time Pattern";
-			this.label6.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			this.label6.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// label7
 			// 
@@ -306,7 +306,7 @@ namespace OpenDental{
 			// tbTime
 			// 
 			this.tbTime.BackColor = System.Drawing.SystemColors.Window;
-			this.tbTime.Location = new System.Drawing.Point(14, 46);
+			this.tbTime.Location = new System.Drawing.Point(14, 67);
 			this.tbTime.Name = "tbTime";
 			this.tbTime.ScrollValue = 150;
 			this.tbTime.SelectedIndices = new int[0];
@@ -327,7 +327,7 @@ namespace OpenDental{
 			// 
 			// textTime2
 			// 
-			this.textTime2.Location = new System.Drawing.Point(14, 612);
+			this.textTime2.Location = new System.Drawing.Point(14, 633);
 			this.textTime2.Name = "textTime2";
 			this.textTime2.Size = new System.Drawing.Size(60, 20);
 			this.textTime2.TabIndex = 32;
@@ -335,7 +335,7 @@ namespace OpenDental{
 			// 
 			// label11
 			// 
-			this.label11.Location = new System.Drawing.Point(80, 616);
+			this.label11.Location = new System.Drawing.Point(80, 637);
 			this.label11.Name = "label11";
 			this.label11.Size = new System.Drawing.Size(102, 16);
 			this.label11.TabIndex = 33;
@@ -532,17 +532,19 @@ namespace OpenDental{
 			tbTime.Refresh();
 			butSlider.Location=new Point(tbTime.Location.X+2
 				,(tbTime.Location.Y+strBTime.Length*14+1));
-			textTime2.Text=strBTime.Length.ToString()+"0";
+			textTime2.Text=(strBTime.Length*ContrApptSheet.MinPerIncr).ToString();
 		}
 
 		private void FillFees(){
-			Fee temp;
+			Fee fee;
 			tbFees.ResetRows(Defs.Short[(int)DefCat.FeeSchedNames].Length);
 			tbFees.SetGridColor(Color.LightGray);
 			for(int i=0;i<tbFees.MaxRows;i++){
-				temp=Fees.GetFeeByOrder(ProcedureCodes.Cur.ADACode,i);
+				fee=Fees.GetFeeByOrder(ProcedureCodes.Cur.ADACode,i);
 				tbFees.Cell[0,i]=Defs.Short[(int)DefCat.FeeSchedNames][i].ItemName;
-				tbFees.Cell[1,i]=temp.Amount.ToString("F");
+				if(fee!=null){
+					tbFees.Cell[1,i]=fee.Amount.ToString("F");
+				}
 				//if(temp.UseDefaultFee)tbFees.Cell[2,i]="X";
 				//else tbFees.Cell[2,i]="";
 				//if(temp.UseDefaultCov)tbFees.Cell[3,i]="X";
@@ -552,29 +554,23 @@ namespace OpenDental{
 		}
 
 		private void tbFees_CellClicked(object sender, CellEventArgs e){
-			Fees.Cur=Fees.GetFeeByOrder(ProcedureCodes.Cur.ADACode,e.Row);
+			Fee FeeCur=Fees.GetFeeByOrder(ProcedureCodes.Cur.ADACode,e.Row);
 			tbFees.SelectedRow=e.Row;
 			tbFees.ColorRow(e.Row,Color.LightGray);
-			FormFeeEdit FormFeeEdit2=new FormFeeEdit();
-			FormFeeEdit2.ShowDialog();
-			if(FormFeeEdit2.DialogResult!=DialogResult.OK){
-				tbFees.SelectedRow=-1;
-				tbFees.ColorRow(e.Row,Color.White);
-				tbFees.Refresh();
-				return;
+			FormFeeEdit FormFE=new FormFeeEdit();
+			if(FeeCur==null){
+				FeeCur=new Fee();
+				FeeCur.ADACode=ProcedureCodes.Cur.ADACode;
+				FeeCur.FeeSched=Defs.Short[(int)DefCat.FeeSchedNames][e.Row].DefNum;
+				FeeCur.Insert();
+				FormFE.IsNew=true;
 			}
-			if(Fees.Cur.FeeNum==0){
-				Fees.Cur.ADACode=ProcedureCodes.Cur.ADACode;
-				Fees.Cur.FeeSched=Defs.Short[(int)DefCat.FeeSchedNames][e.Row].DefNum;
-				//MessageBox.Show("inserting new record");
-				Fees.InsertCur();
-			}
-			else{
-				//MessageBox.Show("updating existing record");
-				Fees.UpdateCur();
+			FormFE.FeeCur=FeeCur;
+			FormFE.ShowDialog();
+			if(FormFE.DialogResult==DialogResult.OK){
+				FeeChanged=true;
 			}
 			Fees.Refresh();
-			FeeChanged=true;
 			tbFees.SelectedRow=-1;
 			FillFees();
 		}
@@ -674,9 +670,12 @@ namespace OpenDental{
 		}
 
 		private void FormProcCodeEdit_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-			if(DialogResult==DialogResult.OK)
+			if(DialogResult==DialogResult.OK){
 				return;
-			if(FeeChanged) DialogResult=DialogResult.OK;
+			}
+			if(FeeChanged){
+				DialogResult=DialogResult.OK;
+			}
 		}
 
 		

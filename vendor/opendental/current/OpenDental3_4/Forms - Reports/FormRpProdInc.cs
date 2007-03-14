@@ -455,7 +455,7 @@ namespace OpenDental{
 				+"CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI) AS namelf,"
 				+"procedurecode.Descript,"
 				+"provider.Abbr,"
-				+"procedurelog.ProcFee-SUM(claimproc.WriteOff) AS $fee,"
+				+"procedurelog.ProcFee-IFNULL(SUM(claimproc.WriteOff),0) AS $fee,"//if no writeoff, then subtract 0
 				+"'0000000000000' AS $Adj,"
 				+"'0000000000000' AS $PtInc,"
 				+"'0000000000000' AS $InsInc,"
@@ -1005,7 +1005,7 @@ ORDER BY adjdate DESC
 			whereProv+=")";
 			Queries.CurReport.Query="SELECT "
 				+"procedurelog.ProcDate,"
-				+"SUM(procedurelog.ProcFee)-SUM(claimproc.WriteOff) "
+				+"SUM(procedurelog.ProcFee)-IFNULL(SUM(claimproc.WriteOff),0) "
 				+"FROM procedurelog "
 				+"LEFT JOIN claimproc ON procedurelog.ProcNum=claimproc.ProcNum "
 				+"AND claimproc.Status='7' "//only CapComplete writeoffs are subtracted here.

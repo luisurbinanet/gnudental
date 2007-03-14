@@ -150,17 +150,16 @@ namespace OpenDental{
 			else{
 				//MessageBox.Show(Lan.g("ProcCodes","code not found: ")+myADA);
 				//return new ProcedureCode();
-				Cur=new ProcedureCode();
+				/*Cur=new ProcedureCode();
 				Cur.ADACode=myADA;
 				Cur.Descript=myADA;
 				Cur.AbbrDesc=myADA;
 				Cur.ProcCat=Defs.Short[(int)DefCat.ProcCodeCats][0].DefNum;
 				Cur.TreatArea=TreatmentArea.Mouth;
 				InsertCur();
-				DataValid.IType=InvalidType.LocalData;
-				DataValid DataValid2=new DataValid();
-				DataValid2.SetInvalid();
-				return Cur;
+				DataValid.SetInvalid(InvalidTypes.ProcCodes);
+				return Cur;*/
+				return new ProcedureCode();
 			}
 		}
 

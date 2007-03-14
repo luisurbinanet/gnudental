@@ -22,7 +22,6 @@ namespace OpenDental{
 		private OpenDental.UI.Button butZoomIn;
 		private OpenDental.UI.Button butFullPage;
 		private System.ComponentModel.Container components = null;
-		private System.Windows.Forms.PrintDialog printDialog2;
 		private System.Drawing.Printing.PrintDocument pd2;
 		private int totalPages;
 		private Font bodyFont=new Font("Arial",9);
@@ -30,22 +29,27 @@ namespace OpenDental{
 		private Font TotalFont=new Font("Arial",9,FontStyle.Bold);
 		private Font GTotalFont=new Font("Arial",9,FontStyle.Bold);
 		///<summary></summary>
+		private int famsPrinted;
+		///<summary>For one family</summary>
 		private int linesPrinted;
 		private bool isFirstLineOnPage;
 		private bool notePrinted;
+		///<summary>For one family</summary>
 		private int pagesPrinted;
-		///<summary>Gets set externally before printing.  It has to be public for debugging</summary>
-		public bool HidePayment;
-		///<summary>Gets set externally before printing.  It has to be public for debugging</summary>
-		public string Note;
-		///<summary>2D array simply holds the table to print.  This will be improved some day.  Gets set externally before printing.  It has to be public for debugging.</summary>
-		public string[,] StatementA;
-		private Family FamCur;
+		private bool HidePayment;
+		private string Note;
+		///<summary>Simply holds the table to print.  This will be improved some day.  The first dimension is of the family.  The other two dimensions represent a table for that family.</summary>
+		private string[][,] StatementA;
+		//private Family FamCur;
+		private bool SubtotalsOnly;
+		///<summary>Rirst dim is for the family. Second dim is family members</summary>
+		private int[][] PatNums;
+		///<summary>The guarantor for the statement that is currently printing.</summary>
+		private Patient PatGuar;
 
 		///<summary></summary>
-		public FormRpStatement(Family famCur){
+		public FormRpStatement(){
 			InitializeComponent();
-			FamCur=famCur;
 			Lan.F(this, new Control[] 
 				{//exclude:
 					labelTotPages
@@ -80,7 +84,6 @@ namespace OpenDental{
 			this.labelTotPages = new System.Windows.Forms.Label();
 			this.butZoomIn = new OpenDental.UI.Button();
 			this.butFullPage = new OpenDental.UI.Button();
-			this.printDialog2 = new System.Windows.Forms.PrintDialog();
 			this.pd2 = new System.Drawing.Printing.PrintDocument();
 			this.panelZoom.SuspendLayout();
 			this.SuspendLayout();
@@ -96,11 +99,15 @@ namespace OpenDental{
 			// 
 			// butPrint
 			// 
-			this.butPrint.Image = ((System.Drawing.Bitmap)(resources.GetObject("butPrint.Image")));
+			this.butPrint.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butPrint.Autosize = true;
+			this.butPrint.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butPrint.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butPrint.Image = ((System.Drawing.Image)(resources.GetObject("butPrint.Image")));
 			this.butPrint.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butPrint.Location = new System.Drawing.Point(340, 5);
 			this.butPrint.Name = "butPrint";
-			this.butPrint.Size = new System.Drawing.Size(75, 27);
+			this.butPrint.Size = new System.Drawing.Size(85, 27);
 			this.butPrint.TabIndex = 8;
 			this.butPrint.Text = "          Print";
 			this.butPrint.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -108,6 +115,10 @@ namespace OpenDental{
 			// 
 			// butClose
 			// 
+			this.butClose.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butClose.Autosize = true;
+			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butClose.Location = new System.Drawing.Point(434, 5);
 			this.butClose.Name = "butClose";
@@ -117,14 +128,13 @@ namespace OpenDental{
 			// 
 			// panelZoom
 			// 
-			this.panelZoom.Controls.AddRange(new System.Windows.Forms.Control[] {
-																																						this.butFwd,
-																																						this.butBack,
-																																						this.labelTotPages,
-																																						this.butZoomIn,
-																																						this.butFullPage,
-																																						this.butClose,
-																																						this.butPrint});
+			this.panelZoom.Controls.Add(this.butFwd);
+			this.panelZoom.Controls.Add(this.butBack);
+			this.panelZoom.Controls.Add(this.labelTotPages);
+			this.panelZoom.Controls.Add(this.butZoomIn);
+			this.panelZoom.Controls.Add(this.butFullPage);
+			this.panelZoom.Controls.Add(this.butClose);
+			this.panelZoom.Controls.Add(this.butPrint);
 			this.panelZoom.Location = new System.Drawing.Point(35, 419);
 			this.panelZoom.Name = "panelZoom";
 			this.panelZoom.Size = new System.Drawing.Size(524, 37);
@@ -132,7 +142,11 @@ namespace OpenDental{
 			// 
 			// butFwd
 			// 
-			this.butFwd.Image = ((System.Drawing.Bitmap)(resources.GetObject("butFwd.Image")));
+			this.butFwd.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butFwd.Autosize = true;
+			this.butFwd.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butFwd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butFwd.Image = ((System.Drawing.Image)(resources.GetObject("butFwd.Image")));
 			this.butFwd.Location = new System.Drawing.Point(195, 7);
 			this.butFwd.Name = "butFwd";
 			this.butFwd.Size = new System.Drawing.Size(18, 22);
@@ -141,7 +155,11 @@ namespace OpenDental{
 			// 
 			// butBack
 			// 
-			this.butBack.Image = ((System.Drawing.Bitmap)(resources.GetObject("butBack.Image")));
+			this.butBack.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butBack.Autosize = true;
+			this.butBack.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butBack.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butBack.Image = ((System.Drawing.Image)(resources.GetObject("butBack.Image")));
 			this.butBack.Location = new System.Drawing.Point(123, 7);
 			this.butBack.Name = "butBack";
 			this.butBack.Size = new System.Drawing.Size(18, 22);
@@ -160,11 +178,15 @@ namespace OpenDental{
 			// 
 			// butZoomIn
 			// 
-			this.butZoomIn.Image = ((System.Drawing.Bitmap)(resources.GetObject("butZoomIn.Image")));
+			this.butZoomIn.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butZoomIn.Autosize = true;
+			this.butZoomIn.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butZoomIn.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butZoomIn.Image = ((System.Drawing.Image)(resources.GetObject("butZoomIn.Image")));
 			this.butZoomIn.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butZoomIn.Location = new System.Drawing.Point(9, 5);
 			this.butZoomIn.Name = "butZoomIn";
-			this.butZoomIn.Size = new System.Drawing.Size(75, 27);
+			this.butZoomIn.Size = new System.Drawing.Size(94, 27);
 			this.butZoomIn.TabIndex = 10;
 			this.butZoomIn.Text = "       Zoom In";
 			this.butZoomIn.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -172,6 +194,10 @@ namespace OpenDental{
 			// 
 			// butFullPage
 			// 
+			this.butFullPage.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butFullPage.Autosize = true;
+			this.butFullPage.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butFullPage.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butFullPage.Location = new System.Drawing.Point(9, 5);
 			this.butFullPage.Name = "butFullPage";
 			this.butFullPage.Size = new System.Drawing.Size(75, 27);
@@ -184,9 +210,8 @@ namespace OpenDental{
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(787, 610);
-			this.Controls.AddRange(new System.Windows.Forms.Control[] {
-																																	this.panelZoom,
-																																	this.printPreviewControl2});
+			this.Controls.Add(this.panelZoom);
+			this.Controls.Add(this.printPreviewControl2);
 			this.Name = "FormRpStatement";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Statement";
@@ -207,204 +232,241 @@ namespace OpenDental{
 		}
 
 		private void FormRpStatement_Load(object sender, System.EventArgs e) {
-			if(PrinterSettings.InstalledPrinters.Count==0){
-				MessageBox.Show(Lan.g(this,"No printer installed"));
-				DialogResult=DialogResult.OK;
-			}
-			else{
-				PrintReport(true);//this only happens during debugging
-				labelTotPages.Text=Lan.g(this,"/ "+totalPages.ToString());
-				printPreviewControl2.Zoom=((double)printPreviewControl2.ClientSize.Height
-					/(double)pd2.DefaultPageSettings.PaperSize.Height);
-				labelTotPages.Text=Lan.g(this,"/ "+totalPages.ToString());
-			}
+			//this only happens during debugging
+			labelTotPages.Text="/ "+totalPages.ToString();
+			printPreviewControl2.Zoom=((double)printPreviewControl2.ClientSize.Height
+				/(double)pd2.DefaultPageSettings.PaperSize.Height);
+			labelTotPages.Text="/ "+totalPages.ToString();
 		}
 
-		///<summary></summary>
-		public void PrintReport(bool justPreview){
-			pd2=new PrintDocument();
-			pd2.PrintPage += new PrintPageEventHandler(this.pd2_PrintPage);
-			pd2.DefaultPageSettings.Margins=new Margins(10,40,40,60);
-			//pagesPrinted=0;
-			//linesPrinted=0;
-			PrintDocument tempPD = new PrintDocument();
-			tempPD.PrinterSettings.PrinterName=Computers.Cur.PrinterName;
-			if(tempPD.PrinterSettings.IsValid){
-				pd2.PrinterSettings.PrinterName=Computers.Cur.PrinterName;
+		///<summary>Used from FormBilling to print all statements for all the supplied patNums.</summary>
+		public void LoadAndPrint(int[] guarNums){
+			//this will be moved later. Right now, it's functional, but inefficient:
+			int[][] patNums=new int[guarNums.Length][];
+			Family famCur;
+			for(int i=0;i<guarNums.Length;i++){//loop through each family
+				famCur=Patients.GetFamily(guarNums[i]);
+				patNums[i]=new int[famCur.List.Length];
+				for(int j=0;j<famCur.List.Length;j++){
+					patNums[i][j]=famCur.List[j].PatNum;
+				}
 			}
-			//uses default printer if selected printer not valid
-			tempPD.Dispose();
-			try{
-				if(justPreview){
-					printPreviewControl2.Document=pd2;
+			PrintStatements(patNums,DateTime.Today.AddDays(-45),DateTime.Today,true,false,false,false,"");
+		}
+
+		///<summary>This is called from ContrAccount about 3 times and also from FormRpStatement as part of the billing process.  This is what you call to print statements, either one or many.  For the patNum parameter, the first dim is for the family. Second dim is family members.</summary>
+		public void PrintStatements(int[][] patNums,DateTime fromDate,DateTime toDate,bool includeClaims, bool subtotalsOnly,bool hidePayment,bool nextAppt,string note){
+			//these 4 variables are needed by the printing logic. The rest are not.
+			PatNums=(int[][])patNums.Clone();
+			Note=note;
+			SubtotalsOnly=subtotalsOnly;
+			HidePayment=hidePayment;
+			PrintDocument pd=new PrintDocument();
+			if(!Printers.SetPrinter(pd,PrintSituation.Statement)){
+				return;
+			}
+			pd.PrintPage+=new PrintPageEventHandler(this.pd2_PrintPage);
+			pd.DefaultPageSettings.Margins=new Margins(10,40,40,60);//?
+			ContrAccount contrAccount=new ContrAccount();
+			StatementA=new string[patNums.GetLength(0)][,];
+			for(int i=0;i<patNums.GetLength(0);i++){//loop through each family
+				StatementA[i]=AssembleStatement(contrAccount,patNums[i],fromDate,toDate,includeClaims,nextAppt);
+				Commlogs.Cur=new Commlog();
+				Commlogs.Cur.CommDateTime=DateTime.Now;
+				Commlogs.Cur.CommType=CommItemType.StatementSent;
+				Commlogs.Cur.PatNum=patNums[i][0];//uaually the guarantor
+				//there is no dialog here because it is just a simple entry
+				Commlogs.InsertCur();
+			}
+			famsPrinted=0;
+			linesPrinted=0;
+			isFirstLineOnPage=false;
+			notePrinted=false;
+			pagesPrinted=0;
+			#if DEBUG
+				printPreviewControl2.Document=pd;
+			#else
+				try{
+					pd.Print();
+				}
+				catch{
+					MessageBox.Show(Lan.g(this,"Printer not available"));
+				}
+			#endif
+		}
+
+		/// <summary>Gets one statement grid for a single family.</summary>
+		private string[,] AssembleStatement(ContrAccount contrAccount,int[] famPatNums,DateTime fromDate,DateTime toDate,bool includeClaims,bool nextAppt){
+			ArrayList StatementAL=new ArrayList();
+			AcctLine tempLine;
+			double subtotal;//used because .NET won't let me contrAccount.Subtotal.ToString().
+			for(int i=0;i<famPatNums.Length;i++){
+				contrAccount.RefreshModuleData(famPatNums[i]);
+				contrAccount.FillAcctLineAL(fromDate,toDate,includeClaims,SubtotalsOnly);
+				//FamTotDue+=PatCur.EstBalance;
+				tempLine=new AcctLine();
+				tempLine.Description=contrAccount.PatCur.GetNameLF();
+				if(nextAppt){
+					Appointment[] allAppts=Appointments.GetForPat(contrAccount.PatCur.PatNum);
+					for(int a=0;a<allAppts.Length;a++){
+						if(allAppts[a].AptDateTime.Date<=DateTime.Today){
+							continue;//ignore old appts.
+						}
+						tempLine.Description+=":  "+Lan.g(this,"Your next appointment is on")+" "
+							+allAppts[a].AptDateTime.ToString();
+						break;//so that only one appointment will be displayed
+					}
+				}
+				tempLine.StateType="PatName";
+				StatementAL.Add(tempLine);//this adds a group heading for one patient.
+				StatementAL.AddRange(contrAccount.AcctLineAL);//this adds the detail for one patient
+				tempLine=new AcctLine();
+				tempLine.Description="";
+				tempLine.StateType="PatTotal";
+				tempLine.Fee="";
+				tempLine.InsEst="";
+				tempLine.InsPay="";
+				tempLine.Patient="";
+				if(SubtotalsOnly){
+					subtotal=contrAccount.SubTotal;
+					tempLine.Balance=subtotal.ToString("n");
 				}
 				else{
-					//printDialog2=new PrintDialog();
-					//printDialog2.Document=pd2;
-					//if(printDialog2.ShowDialog()==DialogResult.OK){
-						linesPrinted=0;
-						isFirstLineOnPage=false;
-						notePrinted=false;
-						pagesPrinted=0;
-						pd2.Print();
-					DialogResult=DialogResult.OK;
-					//}
+					tempLine.Balance=contrAccount.PatCur.EstBalance.ToString("F");
 				}
+				//group footer for one patient: If subtotalsOnly, then this will actually be a subtotal
+				StatementAL.Add(tempLine);
 			}
-			catch{
-				MessageBox.Show(Lan.g(this,"Printer not available"));
-			}
+			//GrandTotal is no longer used since it is available to FormRpStatement from FamCur.
+			string[,] StatA=new string[12,StatementAL.Count];
+			//now, move the collection of lines into a simple array to print.
+			for(int i=0;i<StatA.GetLength(1);i++){
+				try{//error catch bad dates
+					StatA[0,i]=((AcctLine)StatementAL[i]).Date; 
+				}
+				catch{
+					StatA[0,i]="";
+				}
+				//StatementA[1,i]=((AcctLine)StatementAL[i]).Provider;
+				StatA[1,i]=((AcctLine)StatementAL[i]).Code;
+				StatA[2,i]=((AcctLine)StatementAL[i]).Tooth;
+				StatA[3,i]=((AcctLine)StatementAL[i]).Description;
+				StatA[4,i]=((AcctLine)StatementAL[i]).Fee;
+				StatA[5,i]=((AcctLine)StatementAL[i]).InsEst;
+				StatA[6,i]=((AcctLine)StatementAL[i]).InsPay;
+				if(StatA[6,i]=="In Queue")
+					StatA[6,i]="Sent";//to keep it simple for the patient
+				StatA[7,i]=((AcctLine)StatementAL[i]).Patient;
+				StatA[8,i]=((AcctLine)StatementAL[i]).Adj;
+				StatA[9,i]=((AcctLine)StatementAL[i]).Paid;
+				StatA[10,i]=((AcctLine)StatementAL[i]).Balance;
+				StatA[11,i]=((AcctLine)StatementAL[i]).StateType;
+			}//end for
+			return StatA;
 		}
+
+		private void GetPatGuar(int patNum){
+			if(PatGuar!=null
+				&& patNum==PatGuar.PatNum){//if PatGuar is already set
+				return;
+			}
+			//but if the guarantor is not on the list of patients in the fam to print, it will also refresh
+      Family FamCur=Patients.GetFamily(patNum);
+			PatGuar=FamCur.List[0].Copy();
+		}
+
 		private void pd2_PrintPage(object sender, PrintPageEventArgs ev){//raised for each page to be printed
 			Graphics g=ev.Graphics;
-		  float yPos = 30;
+		  float yPos=30;
+			float xPos=0;
+			float width=0;
+			float height=0;
 			float rowHeight=0;
+			Font font;
+			Pen pen=new Pen(Color.Black);
+			Brush brush=Brushes.Black;
+			string text;
+			GetPatGuar(PatNums[famsPrinted][0]);
 			#region Page 1 header
 			if(pagesPrinted==0){
 				//HEADING------------------------------------------------------------------------------
- 				string heading = "STATEMENT";
-				Font headingFont=new Font("Arial",14,FontStyle.Bold);
-				float xHeading = (float)(425-(g.MeasureString(heading,headingFont).Width/2));
-				g.DrawString(heading,headingFont,Brushes.Black,xHeading,yPos);
-				//Date
- 				string date = DateTime.Today.ToShortDateString();
-				Font dateFont=new Font("Arial",9,FontStyle.Regular);
-				float xDate = (float)(425-(g.MeasureString(date,dateFont).Width/2));
-				g.DrawString(date,dateFont,Brushes.Black,xDate,yPos+20);
+ 				text=Lan.g(this,"STATEMENT");
+				font=new Font("Arial",14,FontStyle.Bold);
+				g.DrawString(text,font,brush,425-g.MeasureString(text,font).Width/2,yPos);
+ 				text=DateTime.Today.ToShortDateString();
+				font=new Font("Arial",10);
+				yPos+=22;
+				g.DrawString(text,font,brush,425-g.MeasureString(text,font).Width/2,yPos);
+				yPos+=18;
+				text=Lan.g(this,"Account Number")+" ";
+				if(Prefs.GetBool("StatementAccountsUseChartNumber")){
+					text+=PatGuar.ChartNumber;
+				}
+				else{
+					text+=PatGuar.PatNum;
+				}
+				g.DrawString(text,font,brush,425-g.MeasureString(text,font).Width/2,yPos);
 				//Practice Address----------------------------------------------------------------------
-				Font pFont=new Font("Arial",10);
+				font=new Font("Arial",10);
 				yPos=50;
-				string pTitle=((Pref)Prefs.HList[Lan.g("Pref","PracticeTitle")]).ValueString;
-				string pAddress=((Pref)Prefs.HList[Lan.g("Pref","PracticeAddress")]).ValueString;
-				string pAddress2=((Pref)Prefs.HList[Lan.g("Pref","PracticeAddress2")]).ValueString;
-				string pCity=((Pref)Prefs.HList[Lan.g("Pref","PracticeCity")]).ValueString;
-				string pState=((Pref)Prefs.HList[Lan.g("Pref","PracticeST")]).ValueString;
-				string pZip=((Pref)Prefs.HList[Lan.g("Pref","PracticeZip")]).ValueString;
-				string CityStateZip=pCity+", "+pState+" "+pZip;
-				string pPhone=((Pref)Prefs.HList[Lan.g("Pref","PracticePhone")]).ValueString;
-				if(pPhone.Length==10)
-					pPhone="("+pPhone.Substring(0,3)+")"+pPhone.Substring(3,3)+"-"+pPhone.Substring(6);
-				float labelX=30;
-				g.DrawString(pTitle,pFont,Brushes.Black,labelX,yPos);
+				xPos=30;
+				g.DrawString(Prefs.GetString("PracticeTitle"),font,brush,xPos,yPos);
 				yPos+=18;
-				g.DrawString(pAddress,pFont,Brushes.Black,labelX,yPos);	    
+				g.DrawString(Prefs.GetString("PracticeAddress"),font,brush,xPos,yPos);	    
 				yPos+=18;
-				if(pAddress2!=""){
-					g.DrawString(pAddress2,pFont,Brushes.Black,labelX,yPos);	    
+				if(Prefs.GetString("PracticeAddress2")!=""){
+					g.DrawString(Prefs.GetString("PracticeAddress2"),font,brush,xPos,yPos);	    
 					yPos+=18;
 				}
-				g.DrawString(CityStateZip,pFont,Brushes.Black,labelX,yPos);
+				g.DrawString(Prefs.GetString("PracticeCity")+", "+Prefs.GetString("PracticeST")+" "
+					+Prefs.GetString("PracticeZip"),font,brush,xPos,yPos);
 				yPos+=18;
-				g.DrawString(pPhone,pFont,Brushes.Black,labelX,yPos);
+				text=Prefs.GetString("PracticePhone");
+				if(text.Length==10)
+					text="("+text.Substring(0,3)+")"+text.Substring(3,3)+"-"+text.Substring(6);
+				g.DrawString(text,font,brush,xPos,yPos);
 				yPos+=18;
-				//Grand Total Headings and Lines ---------------------------------------------------------
-				if(!HidePayment){
-					float yTotal=(float)100;
-					float xTotal=(float)275;
-					float wTotal=300;
-					float hTotal=(float)12.5;
-					g.FillRectangle(Brushes.LightGray,xTotal,yTotal,wTotal,hTotal);
-					g.DrawRectangle(new Pen(Color.Black),xTotal,yTotal,wTotal,hTotal);  
-						for(int i=1;i<4;i++) 
-								g.DrawLine(new Pen(Color.Black),xTotal+(i*75),yTotal,xTotal+(i*75),yTotal+hTotal); 
-					string head1="";
-					string head2="Total";
-					string head3="- Ins Est";
-					string head4="= Amt Due";
-					Font tHeadFont=new Font("Arial",8,FontStyle.Bold);
-					float xHead1 = (float)(xTotal+75/2-(g.MeasureString(head1,tHeadFont).Width/2));
-					float xHead2 = (float)(xTotal+3*75/2-(g.MeasureString(head2,tHeadFont).Width/2));
-					float xHead3 = (float)(xTotal+5*75/2-(g.MeasureString(head3,tHeadFont).Width/2));
-					float xHead4 = (float)(xTotal+7*75/2-(g.MeasureString(head4,tHeadFont).Width/2));
-					g.DrawString(head1,tHeadFont,Brushes.Black,xHead1,yTotal); 
-					g.DrawString(head2,tHeadFont,Brushes.Black,xHead2,yTotal); 			
-					g.DrawString(head3,tHeadFont,Brushes.Black,xHead3,yTotal); 
-					g.DrawString(head4,tHeadFont,Brushes.Black,xHead4,yTotal); 
-					//Grand Total Data and Lines-------------------------------------------------------------
-					for(int i=0;i<5;i++) {
-	  				g.DrawLine(new Pen(Color.Gray),xTotal+(i*75),(float)(yTotal+hTotal+.5),
-							xTotal+(i*75),(float)(yTotal+hTotal+.5+25));
-					} 
-					g.DrawLine(new Pen(Color.Gray),xTotal,yTotal+hTotal+25,xTotal+wTotal,
-						yTotal+hTotal+25);
-					//only prints totals if a GrandTotal line is present at the end of the array
-					if(StatementA[11,StatementA.GetLength(1)-1]=="GrandTotal"){
-						string tot1=StatementA[4,StatementA.GetLength(1)-1];
-						string tot2=StatementA[5,StatementA.GetLength(1)-1];
-						string tot3=StatementA[6,StatementA.GetLength(1)-1];
-						string tot4=StatementA[7,StatementA.GetLength(1)-1];
-						Font tTotalFont=new Font("Arial",8,FontStyle.Regular);
-						float xTotal1=(float)(xTotal+75/2-(g.MeasureString(tot1,bodyFont).Width/2));
-						float xTotal2=(float)(xTotal+3*75/2-(g.MeasureString(tot2,bodyFont).Width/2));
-						float xTotal3=(float)(xTotal+5*75/2-(g.MeasureString(tot3,bodyFont).Width/2));
-						float xTotal4=(float)(xTotal+7*75/2-(g.MeasureString(tot4,bodyFont).Width/2));
-						g.DrawString(tot1,bodyFont,Brushes.Black,xTotal1,yTotal+hTotal+5); 
-						g.DrawString(tot2,bodyFont,Brushes.Black,xTotal2,yTotal+hTotal+5); 			
-						g.DrawString(tot3,bodyFont,Brushes.Black,xTotal3,yTotal+hTotal+5); 
-						g.DrawString(tot4,bodyFont,Brushes.Black,xTotal4,yTotal+hTotal+5); 
-					}				
-					//Credit Card Info-----------------------------------------------------------------------
-					if(((Pref)Prefs.HList[Lan.g("Pref","StatementShowCreditCard")]).ValueString=="1"){
-						float xCredit=(float)450;
-						float yCredit=(float)175;
-						float space=30;
-						string type= "CREDIT CARD TYPE";
-						string amt=  "#";
-						string exp= "EXPIRES";
-						string approv="AMOUNT APPROVED";
-						string name=  "NAME";
-						string dis="(As it appears on card)";          
-						string sig="SIGNATURE";
-						Font creditFont=new Font("Arial",7,FontStyle.Bold);
-						Font disFont=new Font("Arial",5,FontStyle.Regular);
-						float xDis=(float)(625.5-(g.MeasureString(dis,disFont).Width/2)+5);
-						g.DrawString(type,creditFont,Brushes.Black,xCredit,yCredit);
-						g.DrawString(amt,creditFont,Brushes.Black,xCredit,yCredit+space); 
-						g.DrawString(exp,creditFont,Brushes.Black,xCredit,yCredit+space*2);	
- 						g.DrawString(approv,creditFont,Brushes.Black,xCredit,yCredit+space*3);	     
-						g.DrawString(name,creditFont,Brushes.Black,xCredit,yCredit+(space*4));
-						g.DrawString(dis,disFont,Brushes.Black,xDis,yCredit+space*4+13);
-						g.DrawString(sig,creditFont,Brushes.Black,xCredit,yCredit+(space*5)); 
-  					g.DrawLine(new Pen(Color.Black),xCredit+(g.MeasureString(type,creditFont)).Width,
-							yCredit+creditFont.GetHeight(g),776,yCredit+creditFont.GetHeight(g)); 
-  					g.DrawLine(new Pen(Color.Black),xCredit+(g.MeasureString(amt,creditFont)).Width,
-							yCredit+creditFont.GetHeight(g)+space,776,yCredit+creditFont.GetHeight(g)
-							+space); 
-  					g.DrawLine(new Pen(Color.Black),xCredit+(g.MeasureString(exp,creditFont)).Width,
-							yCredit+creditFont.GetHeight(g)+(space*2),776,yCredit+creditFont.GetHeight(g)
-							+(space*2)); 
-  					g.DrawLine(new Pen(Color.Black),xCredit+(g.MeasureString(approv,creditFont)).Width,
-							yCredit+creditFont.GetHeight(g)+(space*3),776,yCredit+creditFont.GetHeight(g)
-							+(space*3)); 
-  					g.DrawLine(new Pen(Color.Black),xCredit+(g.MeasureString(name,creditFont)).Width,
-							yCredit+creditFont.GetHeight(g)+(space*4),776,yCredit+creditFont.GetHeight(g)
-							+(space*4)); 
-						g.DrawLine(new Pen(Color.Black),xCredit+(g.MeasureString(sig,creditFont)).Width,
-							yCredit+creditFont.GetHeight(g)+(space*5),776,yCredit+creditFont.GetHeight(g)
-							+(space*5)); 
+				//AMOUNT ENCLOSED------------------------------------------------------------------------
+				if(!HidePayment && !SubtotalsOnly){
+					yPos=110;
+					xPos=450;
+					width=110;//width of an individual cell
+					height=14;
+					float hCell=20;
+					brush=Brushes.LightGray;
+					pen=new Pen(Color.Black);
+					Pen peng=new Pen(Color.Gray);
+					for(int i=0;i<3;i++){
+						g.FillRectangle(brush,xPos+width*i,yPos,width,height);
+						g.DrawRectangle(pen,xPos+width*i,yPos,width,height);
+						g.DrawLine(peng,xPos+width*i,yPos+height+hCell,xPos+width*(i+1),yPos+height+hCell);//horiz
+						g.DrawLine(peng,xPos+width*i,yPos+height,xPos+width*i,yPos+height+hCell);//vert
 					}
-					//AMOUNT ENCLOSED------------------------------------------------------------------------
-					float yEncl=(float)100;
-					float xEncl=(float)651;
-					float wEncl=125;
-					float hEncl=(float)12.5;
-					g.FillRectangle(Brushes.LightGray,xEncl,yEncl,wEncl,hEncl);
-					g.DrawRectangle(new Pen(Color.Black),xEncl,yEncl,wEncl,hEncl);
-					string amtEncl="Amount Enclosed";
-					Font enclFont=new Font("Arial",8,FontStyle.Bold);
-					float xamtEncl = (float)(713.5-(g.MeasureString(amtEncl,enclFont).Width/2));
-					g.DrawString(amtEncl,enclFont,Brushes.Black,xamtEncl,yEncl); 
-	  			g.DrawLine(new Pen(Color.Gray),xEncl,(float)(yEncl+hEncl+.5),
-						xEncl,(float)(yEncl+hEncl+.5+25));
- 	  			g.DrawLine(new Pen(Color.Gray),xEncl+125,(float)(yEncl+hEncl+.5),
-						xEncl+125,(float)(yEncl+hEncl+.5+25));      
-					g.DrawLine(new Pen(Color.Gray),xEncl,yEncl+hEncl+25,xEncl+wEncl,
-						yEncl+hEncl+25);
-					string payNow="";//"(Payment Due upon Receipt)";
-					Font payNowFont=new Font("Arial",5,FontStyle.Regular);
-					float xPayNow=(float)(713.5-(g.MeasureString(payNow,payNowFont).Width/2)+5);
-					g.DrawString(payNow,payNowFont,Brushes.Black,xPayNow,yEncl+hEncl+30);
-				}//if(!HidePayment){
+					g.DrawLine(peng,xPos+width*3,yPos+height,xPos+width*3,yPos+height+hCell);//vert
+					font=new Font("Arial",8,FontStyle.Bold);
+					brush=Brushes.Black;
+					text=Lan.g(this,"Amount Due");
+					g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
+					xPos+=width;
+					text=Lan.g(this,"Date Due");
+					g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
+					xPos+=width;
+					text=Lan.g(this,"Amount Enclosed");
+					g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
+					xPos=450;
+					yPos+=height+3;
+					font=new Font("Arial",9);
+					text=(PatGuar.BalTotal-PatGuar.InsEst).ToString("F");
+					g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
+					xPos+=width;
+					if(Prefs.GetInt("StatementsCalcDueDate")==-1){
+						text=Lan.g(this,"Upon Receipt");
+					}
+					else{
+						text=DateTime.Today.AddDays(Prefs.GetInt("StatementsCalcDueDate")).ToShortDateString();
+					}
+					g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
+				}
 				// Rectangle size of window to put in address. Here for debugging
 				//float x2=(float)(62.5);
 				//float y2=(float)((225)); //+10
@@ -418,47 +480,145 @@ namespace OpenDental{
 				//float h=(float)((150));
 				//g.DrawRectangle(new Pen(Color.Gray),x,y,w,h);
 				//Patient's Billing Address--------------------------------------------------------	
-				Font addrFont=new Font("Arial",11,FontStyle.Regular);
+				font=new Font("Arial",11);
+				brush=Brushes.Black;
 				yPos=225 + 1;//+10
-				labelX=(float)(62.5+12.5);
-				Patient PatCur=FamCur.List[0].Copy();
-				string pName=PatCur.FName +" "+PatCur.MiddleI+" "+PatCur.LName;
-				pAddress=PatCur.Address;
-				pCity=PatCur.City;
-				pState=PatCur.State;
-				pZip=PatCur.Zip;
-				CityStateZip=pCity+", "+pState+" "+pZip;
-				g.DrawString(pName,addrFont,Brushes.Black,labelX,yPos);
+				xPos=62.5F+12.5F;
+				g.DrawString(PatGuar.GetNameFL(),font,brush,xPos,yPos);
 				yPos+=19;
-				g.DrawString(pAddress,addrFont,Brushes.Black,labelX,yPos);	    
+				g.DrawString(PatGuar.Address,font,brush,xPos,yPos);	    
 				yPos+=19;
-				if(PatCur.Address2!=""){
-					g.DrawString(PatCur.Address2,addrFont,Brushes.Black,labelX,yPos);	    
+				if(PatGuar.Address2!=""){
+					g.DrawString(PatGuar.Address2,font,brush,xPos,yPos);	    
 					yPos+=19;  
 				}
-   			g.DrawString(CityStateZip,addrFont,Brushes.Black,labelX,yPos);
+   			g.DrawString(PatGuar.City+", "+PatGuar.State+" "+PatGuar.Zip,font,brush,xPos,yPos);
+				//Credit Card Info-----------------------------------------------------------------------
 				if(!HidePayment){
-					//perforated line------------------------------------------------------------------
-					Pen pen2 = new Pen(Brushes.Black);
-					pen2.Width=(float).125;
-					pen2.DashStyle=DashStyle.Dot;
-					yPos=350;//3.62 inches from top
-					g.DrawLine(pen2,0,yPos,ev.PageBounds.Width,yPos);
-					//Please Detach Statement----------------------------------------------------
- 					yPos=350;  //  1/3 page down plus one line
- 					string detach = "PLEASE DETACH AND RETURN THE UPPER PORTION WITH YOUR PAYMENT";
-					Font DetachFont=new Font("Arial",6,FontStyle.Bold);
-					float xDetach = (float)(425-(g.MeasureString(detach,DetachFont).Width/2));
-					g.DrawString(detach,DetachFont,Brushes.Gray,xDetach,yPos+5);
-					yPos+=15;
-				}//if(!HidePayment){
-				else{
-					yPos=350+15;
+					if(Prefs.GetBool("StatementShowCreditCard")){
+						xPos=450;
+						yPos=175;
+						font=new Font("Arial",7,FontStyle.Bold);
+						brush=Brushes.Black;
+						pen=new Pen(Color.Black);
+						text=Lan.g(this,"CREDIT CARD TYPE");
+						rowHeight=30;
+						g.DrawString(text,font,brush,xPos,yPos);
+						g.DrawLine(pen,xPos+(g.MeasureString(text,font)).Width,
+							yPos+font.GetHeight(g),776,yPos+font.GetHeight(g));
+						yPos+=rowHeight;
+						text=Lan.g(this,"#");
+						g.DrawString(text,font,brush,xPos,yPos); 
+						g.DrawLine(pen,xPos+(g.MeasureString(text,font)).Width,
+							yPos+font.GetHeight(g),776,yPos+font.GetHeight(g)); 
+						yPos+=rowHeight;
+						text=Lan.g(this,"EXPIRES");
+						g.DrawString(text,font,brush,xPos,yPos); 
+						g.DrawLine(pen,xPos+(g.MeasureString(text,font)).Width,
+							yPos+font.GetHeight(g),776,yPos+font.GetHeight(g)); 
+						yPos+=rowHeight;
+						text=Lan.g(this,"AMOUNT APPROVED");
+						g.DrawString(text,font,brush,xPos,yPos); 
+						g.DrawLine(pen,xPos+(g.MeasureString(text,font)).Width,
+							yPos+font.GetHeight(g),776,yPos+font.GetHeight(g));
+						yPos+=rowHeight;
+						text=Lan.g(this,"NAME");
+						g.DrawString(text,font,brush,xPos,yPos); 
+						g.DrawLine(pen,xPos+(g.MeasureString(text,font)).Width,
+							yPos+font.GetHeight(g),776,yPos+font.GetHeight(g));
+						yPos+=rowHeight;
+						text=Lan.g(this,"SIGNATURE");
+						g.DrawString(text,font,brush,xPos,yPos); 
+						g.DrawLine(pen,xPos+(g.MeasureString(text,font)).Width,
+							yPos+font.GetHeight(g),776,yPos+font.GetHeight(g));
+						yPos-=rowHeight;
+						text=Lan.g(this,"(As it appears on card)");
+						font=new Font("Arial",5);
+						g.DrawString(text,font,brush,625-g.MeasureString(text,font).Width/2+5,yPos+13);
+					}
 				}
+				//perforated line------------------------------------------------------------------
+				if(!HidePayment){
+					pen=new Pen(Brushes.Black);
+					pen.Width=(float).125;
+					pen.DashStyle=DashStyle.Dot;
+					yPos=350;//3.62 inches from top, 1/3 page down
+					g.DrawLine(pen,0,yPos,ev.PageBounds.Width,yPos);
+ 					text=Lan.g(this,"PLEASE DETACH AND RETURN THE UPPER PORTION WITH YOUR PAYMENT");
+					yPos+=5;
+					font=new Font("Arial",6,FontStyle.Bold);
+					xPos=425-g.MeasureString(text,font).Width/2;
+					brush=Brushes.Gray;
+					g.DrawString(text,font,brush,xPos,yPos);
+				}
+				//Aging-----------------------------------------------------------------------------------
+				if(!HidePayment && !SubtotalsOnly){
+					yPos=350+25;
+					xPos=160;
+					width=70;//width of an individual cell
+					height=14;
+					float hCell=20;
+					brush=Brushes.LightGray;
+					pen=new Pen(Color.Black);
+					Pen peng=new Pen(Color.Gray);
+					for(int i=0;i<7;i++){
+						g.FillRectangle(brush,xPos+width*i,yPos,width,height);
+						g.DrawRectangle(pen,xPos+width*i,yPos,width,height);
+						g.DrawLine(peng,xPos+width*i,yPos+height+hCell,xPos+width*(i+1),yPos+height+hCell);//horiz
+						g.DrawLine(peng,xPos+width*i,yPos+height,xPos+width*i,yPos+height+hCell);//vert
+					}
+					g.DrawLine(peng,xPos+width*7,yPos+height,xPos+width*7,yPos+height+hCell);//vert
+					font=new Font("Arial",8,FontStyle.Bold);
+					brush=Brushes.Black;
+					text=Lan.g(this,"0-30");
+					g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
+					xPos+=width;
+					text=Lan.g(this,"31-60");
+					g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
+					xPos+=width;
+					text=Lan.g(this,"61-90");
+					g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
+					xPos+=width;
+					text=Lan.g(this,"over 90");
+					g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
+					xPos+=width;
+					text=Lan.g(this,"Total");
+					g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
+					xPos+=width;
+					text=Lan.g(this,"- InsEst");
+					g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
+					xPos+=width;
+					text=Lan.g(this,"= Balance");
+					g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
+					xPos=160;
+					font=new Font("Arial",9);
+					yPos+=height+3;
+					text=PatGuar.Bal_0_30.ToString("F");
+					g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
+					xPos+=width;
+					text=PatGuar.Bal_31_60.ToString("F");
+					g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
+					xPos+=width;
+					text=PatGuar.Bal_61_90.ToString("F");
+					g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
+					xPos+=width;
+					text=PatGuar.BalOver90.ToString("F");
+					g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
+					xPos+=width;
+					text=PatGuar.BalTotal.ToString("F");
+					g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
+					xPos+=width;
+					text=PatGuar.InsEst.ToString("F");
+					g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
+					xPos+=width;
+					text=(PatGuar.BalTotal-PatGuar.InsEst).ToString("F");
+					g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
+				}
+				yPos=350+68;
 				//yPos=770;//change this value to test multiple pages
 			}//if(pagesPrinted==0){
 			else {
-				yPos=(float)18.75;
+				yPos=18;
 			}
 			#endregion
 			#region Body Tables
@@ -473,8 +633,8 @@ namespace OpenDental{
       ColCaption[3]=Lan.g(this,"Description");
 			ColCaption[4]=Lan.g(this,"Fee");
       ColCaption[5]=Lan.g(this,"Ins Est");
-			ColCaption[6]=Lan.g(this,"Ins Pay");
-      ColCaption[7]=Lan.g(this,"Pat Pay");
+			ColCaption[6]=Lan.g(this,"Ins Pd");
+      ColCaption[7]=Lan.g(this,"Patient");
 			ColCaption[8]=Lan.g(this,"Adj");
 			ColCaption[9]=Lan.g(this,"Paid");
 			ColCaption[10]=Lan.g(this,"Balance");
@@ -492,14 +652,14 @@ namespace OpenDental{
 			colPos[11]=780;//+1  //col 11 is for formatting codes
 			isFirstLineOnPage=true;
 			while(yPos<ev.MarginBounds.Top+ev.MarginBounds.Height
-				&& linesPrinted<StatementA.GetLength(1))
+				&& linesPrinted<StatementA[famsPrinted].GetLength(1))
 			{
-				if(StatementA[11,linesPrinted]=="PatName"){
+				if(StatementA[famsPrinted][11,linesPrinted]=="PatName"){
 					//Patient Name-------------------------------------------------------------------------
 					//if(there is not room for at least a few rows){
 						//break
 					//}
-					g.DrawString(StatementA[3,linesPrinted],NameFont,Brushes.Black,colPos[0],yPos);
+					g.DrawString(StatementA[famsPrinted][3,linesPrinted],NameFont,Brushes.Black,colPos[0],yPos);
 					yPos+=NameFont.GetHeight(g)+7;
 					//Heading Box and Lines----------------------------------------------------------------       
 					rowHeight=TotalFont.GetHeight(g)+3;
@@ -519,13 +679,13 @@ namespace OpenDental{
 			    }
           yPos+=rowHeight;
 				}
-				else if(StatementA[11,linesPrinted]=="PatTotal"){
+				else if(StatementA[famsPrinted][11,linesPrinted]=="PatTotal"){
 					//Totals--------------------------------------------------------------------------------
 					for(int iCol=3;iCol<11;iCol++){
-						g.DrawString(Lan.g(this,StatementA[iCol,linesPrinted])
+						g.DrawString(Lan.g(this,StatementA[famsPrinted][iCol,linesPrinted])
 							,TotalFont,Brushes.Black,new RectangleF(
 							colPos[iCol+1]
-							-g.MeasureString(StatementA[iCol,linesPrinted],TotalFont).Width-1,yPos
+							-g.MeasureString(StatementA[famsPrinted][iCol,linesPrinted],TotalFont).Width-1,yPos
 							,colPos[iCol+1]-colPos[iCol]+8,TotalFont.GetHeight(g)));
 					}
 					yPos+=TotalFont.GetHeight(g);
@@ -543,19 +703,19 @@ namespace OpenDental{
 							g.DrawLine(new Pen(Color.Gray),colPos[i+1],yPos,colPos[i+1],yPos+rowHeight);
 						}
 						if(colAlign[i]==HorizontalAlignment.Right){
-							g.DrawString(Lan.g(this,StatementA[i,linesPrinted])
+							g.DrawString(StatementA[famsPrinted][i,linesPrinted]
 								,bodyFont,Brushes.Black,new RectangleF(
 								colPos[i+1]
-								-g.MeasureString(StatementA[i,linesPrinted],bodyFont).Width-1,yPos
+								-g.MeasureString(StatementA[famsPrinted][i,linesPrinted],bodyFont).Width-1,yPos
 								,colPos[i+1]-colPos[i]+8,bodyFont.GetHeight(g)));
 						}
 						else{
-							g.DrawString(Lan.g(this,StatementA[i,linesPrinted])
+							g.DrawString(StatementA[famsPrinted][i,linesPrinted]
 								,bodyFont,Brushes.Black,new RectangleF(
 								colPos[i],yPos
 								,colPos[i+1]-colPos[i]+6,bodyFont.GetHeight(g)));
 						}
-						if(StatementA[11,linesPrinted+1]=="PatTotal"){
+						if(StatementA[famsPrinted][11,linesPrinted+1]=="PatTotal"){
 							g.DrawLine(new Pen(Color.Gray),colPos[i],yPos+rowHeight,colPos[11],yPos+rowHeight);
 						}
 					}
@@ -563,17 +723,17 @@ namespace OpenDental{
 				}
 				isFirstLineOnPage=false;
 				linesPrinted++;
-				if(linesPrinted<StatementA.GetLength(1)
-					&& StatementA[11,linesPrinted]=="GrandTotal")
-				{
- 					linesPrinted++;
-				}
+				//if(linesPrinted<StatementA[famsPrinted].GetLength(1)
+				//	&& StatementA[famsPrinted][11,linesPrinted]=="GrandTotal")
+				//{
+ 				//	linesPrinted++;
+				//}
 			}//end while lines
 			#endregion
 			#region Note
-			//Note------------------------------------------------------------------------------------------
+			//Note----------------------------------------------------------------------------------------
 			if(!notePrinted && //if note has not printed
-				linesPrinted==StatementA.GetLength(1))//and all table data already printed
+				linesPrinted==StatementA[famsPrinted].GetLength(1))//and all table data already printed
 			{
 				if(Note==""){
 					notePrinted=true;
@@ -589,23 +749,34 @@ namespace OpenDental{
 				}
 			}
 			#endregion
-			if(linesPrinted<StatementA.GetLength(1)){
-				ev.HasMorePages = true;
+			if(linesPrinted<StatementA[famsPrinted].GetLength(1)){//if this family is not done printing
+				ev.HasMorePages=true;
 				pagesPrinted++;
+				totalPages++;
 			}
-			else{
-				ev.HasMorePages = false;
-				totalPages=pagesPrinted+1;
-				labelTotPages.Text="1 / "+totalPages.ToString();
+			else{//family is done printing
 				pagesPrinted=0;
 				linesPrinted=0;
+				totalPages++;
+				famsPrinted++;
+				if(famsPrinted<StatementA.GetLength(0)){//if more families to print
+					ev.HasMorePages=true;
+				}
+				else{//completely done
+					ev.HasMorePages=false;
+					labelTotPages.Text="1 / "+totalPages.ToString();	
+					famsPrinted=0;
+					pagesPrinted=0;
+				}
 			}
 		}
+
 		private void butZoomIn_Click(object sender, System.EventArgs e) {
 			butFullPage.Visible=true;
 			butZoomIn.Visible=false;
 			printPreviewControl2.Zoom=1;		
 		}
+
 		private void butBack_Click(object sender, System.EventArgs e) {
 			if(printPreviewControl2.StartPage==0) 
 				return;
@@ -613,16 +784,20 @@ namespace OpenDental{
 			labelTotPages.Text=(printPreviewControl2.StartPage+1).ToString()
 				+" / "+totalPages.ToString();	
 		}
+
 		private void butFwd_Click(object sender, System.EventArgs e) {
 			if(printPreviewControl2.StartPage==totalPages-1) return;
 			printPreviewControl2.StartPage++;
 			labelTotPages.Text=(printPreviewControl2.StartPage+1).ToString()
 				+" / "+totalPages.ToString();		
 		}
+
 		private void butPrint_Click(object sender, System.EventArgs e) {
-			PrintReport(false);
-			DialogResult=DialogResult.Cancel;			
+			//just for debugging
+			/*PrintReport(false);
+			DialogResult=DialogResult.Cancel;*/			
 		}
+
 		private void butFullPage_Click(object sender, System.EventArgs e) {
 			butFullPage.Visible=false;
 			butZoomIn.Visible=true;

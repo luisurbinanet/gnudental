@@ -14,6 +14,7 @@ namespace OpenDental.Main_Modules
 		///<summary></summary>
 		public TableCommLogAccount(){
 			InitializeComponent();
+			//InstantClasses();
 			MaxRows=50;
 			MaxCols=4;
 			ShowScroll=true;
@@ -69,6 +70,33 @@ namespace OpenDental.Main_Modules
 		private void TableAutoBilling_Load(object sender, System.EventArgs e) {
 		  LayoutTables();
 		}
+
+		///<summary></summary>
+		public void InstantClasses(){
+			//can't move other logic here for some reason, or it causes problems in the refresh
+			Heading=Lan.g("TableCommLogAccount","Communications Log");
+			Fields[0]=Lan.g("TableCommLogAccount","Date");
+			Fields[1]=Lan.g("TableCommLogAccount","Type");
+			Fields[2]=Lan.g("TableCommLogAccount","Mode");
+			Fields[3]=Lan.g("TableCommLogAccount","Note");
+		}
+
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

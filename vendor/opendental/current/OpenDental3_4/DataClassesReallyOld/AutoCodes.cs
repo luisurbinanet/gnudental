@@ -76,7 +76,7 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
-		///<summary></summary>
+		///<summary>This could be improved since it does not delete any autocode items.</summary>
 		public static void DeleteCur(){
 			cmd.CommandText = "DELETE from autocode WHERE autocodenum = '"+POut.PInt(Cur.AutoCodeNum)+"'";
 			NonQ(false);

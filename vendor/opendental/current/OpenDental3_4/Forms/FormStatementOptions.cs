@@ -181,7 +181,7 @@ namespace OpenDental{
 			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupBox1.Location = new System.Drawing.Point(289, 151);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(200, 71);
+			this.groupBox1.Size = new System.Drawing.Size(200, 61);
 			this.groupBox1.TabIndex = 6;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Family Members";
@@ -189,7 +189,7 @@ namespace OpenDental{
 			// radioFamCur
 			// 
 			this.radioFamCur.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.radioFamCur.Location = new System.Drawing.Point(17, 43);
+			this.radioFamCur.Location = new System.Drawing.Point(17, 34);
 			this.radioFamCur.Name = "radioFamCur";
 			this.radioFamCur.Size = new System.Drawing.Size(144, 19);
 			this.radioFamCur.TabIndex = 1;
@@ -199,7 +199,7 @@ namespace OpenDental{
 			// 
 			this.radioFamAll.Checked = true;
 			this.radioFamAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.radioFamAll.Location = new System.Drawing.Point(17, 20);
+			this.radioFamAll.Location = new System.Drawing.Point(17, 16);
 			this.radioFamAll.Name = "radioFamAll";
 			this.radioFamAll.Size = new System.Drawing.Size(144, 19);
 			this.radioFamAll.TabIndex = 0;

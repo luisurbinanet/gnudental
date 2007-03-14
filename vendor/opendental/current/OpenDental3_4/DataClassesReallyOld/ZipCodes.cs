@@ -32,7 +32,7 @@ namespace OpenDental{
 		public static ArrayList ALMatches;
 		//public static Hashtable HList; 
 
-		///<summary></summary>
+		///<summary>Refresh done on startup and then whenever a change is made.</summary>
 		public static void Refresh(){
 			cmd.CommandText =
 				"SELECT * from zipcode ORDER BY zipcodedigits";

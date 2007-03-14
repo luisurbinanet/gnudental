@@ -120,10 +120,10 @@ Order By patient.lname,patient.fname
 				+"insplan.Groupname "
 				+"FROM insplan,patient,carrier "
 				+"WHERE insplan.Subscriber=patient.Patnum "
-				+"&& carrier.CarrierNum = insplan.CarrierNum "
-				+"&& carrier.CarrierName LIKE '"+carrier+"%' "
+				+"AND insplan.PlanNum=patient.PriPlanNum "//Added by SPK 3/05
+				+"AND carrier.CarrierNum = insplan.CarrierNum "
+				+"AND carrier.CarrierName LIKE '"+carrier+"%' "
 				+"ORDER BY insplan.Carrier,patient.LName";
-
 			FormQuery2=new FormQuery();
 			FormQuery2.IsReport=true;
 			FormQuery2.SubmitReportQuery();			

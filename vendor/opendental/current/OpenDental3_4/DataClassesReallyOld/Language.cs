@@ -165,7 +165,7 @@ namespace OpenDental{
 		}
 
 		///<summary>Converts a string to the current language.</summary>
-		public static string g(System.Windows.Forms.Control sender,string text){
+		public static string g(System.Object sender,string text){
 			string retVal=ConvertString(sender.GetType().Name,text);
 			if(itemInserted)
 				Refresh();

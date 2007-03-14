@@ -28,7 +28,6 @@ namespace OpenDental{
 		private System.ComponentModel.Container components = null;// Required designer variable.
 		private System.Windows.Forms.ListBox listProv;
 		private System.Windows.Forms.Label label7;
-		private System.Windows.Forms.PrintDialog printDialog2;
 		private System.Drawing.Printing.PrintDocument pd2;
 		///<summary></summary>
 		public bool IsNew;
@@ -80,7 +79,6 @@ namespace OpenDental{
 			this.textDate = new OpenDental.ValidDate();
 			this.listProv = new System.Windows.Forms.ListBox();
 			this.label7 = new System.Windows.Forms.Label();
-			this.printDialog2 = new System.Windows.Forms.PrintDialog();
 			this.pd2 = new System.Drawing.Printing.PrintDocument();
 			this.butPrint = new OpenDental.UI.Button();
 			this.butDelete = new OpenDental.UI.Button();
@@ -283,16 +281,16 @@ namespace OpenDental{
 			this.Controls.Add(this.textNotes);
 			this.Controls.Add(this.butDelete);
 			this.Controls.Add(this.butPrint);
-			this.Controls.Add(this.label7);
-			this.Controls.Add(this.listProv);
 			this.Controls.Add(this.textDate);
 			this.Controls.Add(this.textSig);
 			this.Controls.Add(this.textDisp);
 			this.Controls.Add(this.textRefills);
 			this.Controls.Add(this.textDrug);
-			this.Controls.Add(this.label2);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
+			this.Controls.Add(this.label7);
+			this.Controls.Add(this.listProv);
+			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label6);
 			this.Controls.Add(this.label5);
 			this.Controls.Add(this.label4);
@@ -360,34 +358,26 @@ namespace OpenDental{
 			return true;
 		}
 
-		///<summary></summary>
+		///<summary>justPreview only used in debugging</summary>
 		public void PrintReport(bool justPreview){
 			pd2=new PrintDocument();
 			pd2.PrintPage += new PrintPageEventHandler(this.pd2_PrintPage);
 			pd2.DefaultPageSettings.Margins=new Margins(10,40,40,60);
-			PrintDocument tempPD = new PrintDocument();
-			tempPD.PrinterSettings.PrinterName=Computers.Cur.PrinterName;
-			if(tempPD.PrinterSettings.IsValid){
-				pd2.PrinterSettings.PrinterName=Computers.Cur.PrinterName;
+			if(justPreview){
+				pView.printPreviewControl2.Document=pd2;
+				pView.ShowDialog();
 			}
-			//uses default printer if selected printer not valid
-			tempPD.Dispose();
-			try{
-				if(justPreview){
-					pView.printPreviewControl2.Document=pd2;
-					pView.ShowDialog();
+			else{
+				if(!Printers.SetPrinter(pd2,PrintSituation.Rx)){
+					return;
 				}
-				else{
-					//printDialog2=new PrintDialog();
-					//printDialog2.Document=pd2;
-					//if(printDialog2.ShowDialog()==DialogResult.OK){
-						pd2.Print();
-					//}
+				try{
+					pd2.Print();
 				}
-			}
-			catch{
-				MessageBox.Show(Lan.g(this,"Printer not available"));
-			}
+				catch{
+					MessageBox.Show(Lan.g(this,"Printer not available"));
+				}
+			}			
 		}
 
 		private void pd2_PrintPage(object sender, System.Drawing.Printing.PrintPageEventArgs e) {

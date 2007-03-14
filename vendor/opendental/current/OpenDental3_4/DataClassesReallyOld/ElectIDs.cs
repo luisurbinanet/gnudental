@@ -32,7 +32,7 @@ namespace OpenDental{
 		///<summary>This is the list of all electronic IDs.</summary>
 		public static ElectID[] List;
 
-		///<summary></summary>
+		///<summary>Since users not allowed to edit, this only gets run on startup.</summary>
 		public static void Refresh(){
 			string command="SELECT * from electid "
 				+"ORDER BY CarrierName";

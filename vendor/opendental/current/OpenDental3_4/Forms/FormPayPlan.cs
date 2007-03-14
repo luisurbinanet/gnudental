@@ -276,7 +276,7 @@ namespace OpenDental{
 			// 
 			// label6
 			// 
-			this.label6.Location = new System.Drawing.Point(20, 59);
+			this.label6.Location = new System.Drawing.Point(18, 59);
 			this.label6.Name = "label6";
 			this.label6.Size = new System.Drawing.Size(148, 17);
 			this.label6.TabIndex = 14;
@@ -304,6 +304,7 @@ namespace OpenDental{
 			// textTerm
 			// 
 			this.textTerm.Location = new System.Drawing.Point(154, 17);
+			this.textTerm.MaxVal = 255;
 			this.textTerm.MinVal = 0;
 			this.textTerm.Name = "textTerm";
 			this.textTerm.Size = new System.Drawing.Size(43, 20);
@@ -873,8 +874,8 @@ namespace OpenDental{
 			yPos+=60;
 			report.ReportObjects.Add(new ReportObject
 				(sectName,new Point(x1,yPos),size,"Signature of Guarantor:",font,alignL));
-			FormReport FormR=new FormReport();
-			FormR.MyReport=report;
+			FormReport FormR=new FormReport(report);
+			//FormR.MyReport=report;
 			FormR.ShowDialog();
 			/*
 			pd2=new PrintDocument();

@@ -31,7 +31,7 @@ namespace OpenDental{
 	
 	/*=========================================================================================
 		=================================== class Carriers ===========================================*/
-	///<summary>Carriers are not refreshed as local data, but are refreshed as needed. A full refresh is frequently triggered if an carrierNum cannot be found in the HList.  Important retrieval is done directly from the db.</summary>
+	///<summary></summary>
 	public class Carriers:DataClass{
 		///<summary></summary>
 		public static Carrier[] List;
@@ -40,7 +40,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public static Carrier Cur;
 
-		///<summary></summary>
+		///<summary>Carriers are not refreshed as local data, but are refreshed as needed. A full refresh is frequently triggered if a carrierNum cannot be found in the HList.  Important retrieval is done directly from the db.</summary>
 		public static void Refresh(){
 			HList=new Hashtable();
 			cmd.CommandText = 

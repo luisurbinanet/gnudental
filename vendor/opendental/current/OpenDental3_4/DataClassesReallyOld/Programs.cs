@@ -155,6 +155,15 @@ namespace OpenDental{
 				Sirona.SendData(pat);
 				return;
 			}
+			else if(Cur.ProgName=="HouseCalls"){
+				FormHouseCalls FormHC=new FormHouseCalls();
+				FormHC.ShowDialog();
+				return;
+			}
+			else if(Cur.ProgName=="Planmeca"){
+				Planmeca.SendData(pat);
+				return;
+			}
 			//all remaining programs:
 			try{
 				Process.Start(Cur.Path,Cur.CommandLine);

@@ -17,7 +17,6 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label6;
 		private OpenDental.UI.Button butClose;
 		private System.ComponentModel.IContainer components;
-		private System.Windows.Forms.PrintDialog printDialog2;
 		private System.Windows.Forms.ImageList imageList1;
 		private System.Windows.Forms.ContextMenu contextMenuStatus;
 		private OpenDental.UI.ODToolBar ToolBarMain;
@@ -50,7 +49,6 @@ namespace OpenDental{
 			this.tbQueue = new OpenDental.TableQueue();
 			this.label6 = new System.Windows.Forms.Label();
 			this.butClose = new OpenDental.UI.Button();
-			this.printDialog2 = new System.Windows.Forms.PrintDialog();
 			this.contextMenuStatus = new System.Windows.Forms.ContextMenu();
 			this.imageList1 = new System.Windows.Forms.ImageList(this.components);
 			this.ToolBarMain = new OpenDental.UI.ODToolBar();
@@ -147,6 +145,7 @@ namespace OpenDental{
 			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Preview"),0,Lan.g(this,"Preview the Selected Claim"),"Preview"));
 			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Blank"),1,Lan.g(this,"Print a Blank Claim Form"),"Blank"));
 			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Print"),2,Lan.g(this,"Print Selected Claims"),"Print"));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Labels"),6,Lan.g(this,"Print Single Labels"),"Labels"));
 			ToolBarMain.Buttons.Add(new ODToolBarButton(ODToolBarButtonStyle.Separator));
 			ODToolBarButton button=new ODToolBarButton(Lan.g(this,"Status Sent"),3,Lan.g(this,"Changes Status of Selected Claims to Sent"),"Status");
 			button.Style=ODToolBarButtonStyle.DropDownButton;
@@ -275,6 +274,9 @@ namespace OpenDental{
 					case "Print":
 						OnPrint_Click();
 						break;
+					case "Labels":
+						OnLabels_Click();
+						break;
 					case "Status":
 						OnStatus_Click();
 						break;
@@ -329,20 +331,17 @@ namespace OpenDental{
 		}
 
 		private void OnBlank_Click(){
-			string printerName="";
+			PrintDocument pd=new PrintDocument();
+			if(!Printers.SetPrinter(pd,PrintSituation.Claim)){
+				return;
+			}
 			FormClaimPrint FormCP=new FormClaimPrint();
 			FormCP.PrintBlank=true;
-			if(!FormCP.PrintImmediate(printerName)){
-				MessageBox.Show(Lan.g(this,"Error printing."));
-			}		
+			FormCP.PrintImmediate(pd.PrinterSettings.PrinterName);
 		}
 
 		private void OnPrint_Click(){
-			string printerName;
 			FormClaimPrint FormCP=new FormClaimPrint();
-			printDialog2=new PrintDialog();
-			printDialog2.PrinterSettings=new PrinterSettings();
-			printDialog2.PrinterSettings.PrinterName=Computers.Cur.PrinterName;
 			if(tbQueue.SelectedIndices.Length==0){
 				for(int i=0;i<listQueue.Length;i++){
 					if((listQueue[i].ClaimStatus=="W" || listQueue[i].ClaimStatus=="P")
@@ -356,19 +355,42 @@ namespace OpenDental{
 					return;
 				}
 			}
-			if(printDialog2.ShowDialog()==DialogResult.OK)
-				printerName=printDialog2.PrinterSettings.PrinterName;
-			else return;
+			PrintDocument pd=new PrintDocument();
+			if(!Printers.SetPrinter(pd,PrintSituation.Claim)){
+				return;
+			}
 			for(int i=0;i<tbQueue.SelectedIndices.Length;i++){
 				FormCP.ThisPatNum=listQueue[tbQueue.SelectedIndices[i]].PatNum;
 				FormCP.ThisClaimNum=listQueue[tbQueue.SelectedIndices[i]].ClaimNum;
-				if(!FormCP.PrintImmediate(printerName)){
-					MessageBox.Show(Lan.g(this,"Error printing."));
+				if(!FormCP.PrintImmediate(pd.PrinterSettings.PrinterName)){
 					return;
 				}
 				Claims.UpdateStatus(listQueue[tbQueue.SelectedIndices[i]].ClaimNum,"P");
 			}
 			FillTable();
+		}
+
+		private void OnLabels_Click(){
+			if(tbQueue.SelectedIndices.Length==0){
+				MessageBox.Show(Lan.g(this,"Please select an item first."));
+				return;
+			}
+			PrintDocument pd=new PrintDocument();//only used to pass printerName
+			if(!Printers.SetPrinter(pd,PrintSituation.LabelSingle)){
+				return;
+			}
+			Carrier carrier;
+			Claim claim;
+			InsPlan plan;
+			for(int i=0;i<tbQueue.SelectedIndices.Length;i++){
+				claim=Claims.GetClaim(listQueue[tbQueue.SelectedIndices[i]].ClaimNum);
+				plan=InsPlans.GetPlan(claim.PlanNum,new InsPlan[] {});
+				carrier=Carriers.GetCarrier(plan.CarrierNum);
+				LabelSingle label=new LabelSingle();
+				if(!label.PrintIns(carrier,pd.PrinterSettings.PrinterName)){
+					return;
+				}
+			}
 		}
 
 		private void OnStatus_Click(){

@@ -262,13 +262,7 @@ namespace OpenDental{
 		}
 
 		private void butSend_Click(object sender, System.EventArgs e) {
-			MessageButtons msg=new MessageButtons();
-			//msg=new MessageInvalid();//because this value is tested when processing
-			msg.Type="Text";
-			msg.Text=textMessage.Text;
-			msg.Row=0;
-			msg.Col=0;
-			msg.Pushed=false;
+			ODMessage msg=new ODMessage(InvalidTypes.None,DateTime.MinValue,"Text",textMessage.Text,0,0,false);
 			Messages.SendMessage(msg);
 		}
 

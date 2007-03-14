@@ -14,6 +14,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public TableAccount(){
 			InitializeComponent();// This call is required by the Windows Form Designer.
+			//InstantClasses();
 			MaxRows=20;
 			MaxCols=12;
 			ShowScroll=true;
@@ -88,6 +89,24 @@ namespace OpenDental{
 
 		private void TableAccount_Load(object sender, System.EventArgs e) {
 			LayoutTables();
+		}
+
+		///<summary></summary>
+		public void InstantClasses(){
+			//can't move other logic here for some reason, or it causes problems in FormRecallListEdit
+			Heading=Lan.g("TableAccount","Patient Account");
+			Fields[0]=Lan.g("TableAccount","Date");
+			Fields[1]=Lan.g("TableAccount","Prov");
+			Fields[2]=Lan.g("TableAccount","Code");
+			Fields[3]=Lan.g("TableAccount","Tth");
+			Fields[4]=Lan.g("TableAccount","Description");
+			Fields[5]=Lan.g("TableAccount","Fee");
+			Fields[6]=Lan.g("TableAccount","Ins Est");
+			Fields[7]=Lan.g("TableAccount","Ins Paid");
+			Fields[8]=Lan.g("TableAccount","Patient");
+			Fields[9]=Lan.g("TableAccount","Adj");
+			Fields[10]=Lan.g("TableAccount","Paid");
+			Fields[11]=Lan.g("TableAccount","Balance");
 		}
 
 		///<summary></summary>

@@ -1133,13 +1133,9 @@ namespace OpenDental{
 				PatientSelected(this,eArgs);
 		}
 
-		///<summary>Sets appointment data invalid on all other computers, causing them to refresh.
-		///Does NOT refresh the data for this computer which must be done separately.</summary>
+		///<summary>Sets appointment data invalid on all other computers, causing them to refresh.  Does NOT refresh the data for this computer which must be done separately.</summary>
 		private void SetInvalid(){
-			DataValid DataValid2=new DataValid();
-			DataValid.IType=InvalidType.Date;
-			DataValid.DateViewing=Appointments.DateSelected;
-			DataValid2.SetInvalid();
+			DataValid.SetInvalid(Appointments.DateSelected);
 		}
 
 		///<summary>Gets all new day info from db and redraws screen</summary>
@@ -1239,12 +1235,12 @@ namespace OpenDental{
 			if(notRec==0){
 				textLab.Font=new Font(FontFamily.GenericSansSerif,8,FontStyle.Regular);
 				textLab.ForeColor=Color.Black;
-				textLab.Text="All Received";
+				textLab.Text=Lan.g(this,"All Received");
 			}
 			else{
 				textLab.Font=new Font(FontFamily.GenericSansSerif,8,FontStyle.Bold);
 				textLab.ForeColor=Color.DarkRed;
-				textLab.Text=notRec.ToString()+" NOT RECEIVED";
+				textLab.Text=notRec.ToString()+Lan.g(this," NOT RECEIVED");
 			}
 		}
 
@@ -2062,41 +2058,26 @@ namespace OpenDental{
 			}
 		}
 
-		///<summary></summary>
+		///<summary>Preview only used during debugging.</summary>
 		public void PrintReport(bool justPreview){
 			pd2=new PrintDocument();
 			pd2.PrintPage += new PrintPageEventHandler(this.pd2_PrintPage);
 			//pd2.DefaultPageSettings.Margins= new Margins(10,40,40,60);
-			PrintDocument tempPD = new PrintDocument();
-			tempPD.PrinterSettings.PrinterName=Computers.Cur.PrinterName;
-			if(tempPD.PrinterSettings.IsValid){
-				pd2.PrinterSettings.PrinterName=Computers.Cur.PrinterName;
+			if(justPreview){
+				pView.printPreviewControl2.Document=pd2;
+  			pView.ShowDialog();
 			}
-			//uses default printer if selected printer not valid
-			tempPD.Dispose();
-			//try  {
-				if(justPreview){
-					pView.printPreviewControl2.Document=pd2;
-  				pView.ShowDialog();
+			else{
+				if(!Printers.SetPrinter(pd2,PrintSituation.Appointments)){
+					return;
 				}
-				else{
-					printDialog2=new PrintDialog();
-					printDialog2.Document=pd2;
-					printDialog2.AllowPrintToFile=false;
-					printDialog2.AllowSelection=false;
-					printDialog2.AllowSomePages=false;
-					printDialog2.ShowHelp=false;
-					if(printDialog2.ShowDialog()==DialogResult.OK){
-						//MessageBox.Show(Lan.g(this,printDialog2.PrinterSettings.Copies.ToString()));
-						//for(int i=0;i<printDialog2.PrinterSettings.Copies;i++){
-							pd2.Print();
-						//}
-					}
+				try{
+					pd2.Print();
 				}
-			//}
-			//catch{
-			//	MessageBox.Show(Lan.g(this,"Printer not available"));
-			//}
+				catch{
+					MessageBox.Show(Lan.g(this,"Printer not available"));
+				}
+			}
 	}
 
 		private void pd2_PrintPage(object sender, System.Drawing.Printing.PrintPageEventArgs e) {
@@ -2207,7 +2188,7 @@ namespace OpenDental{
 				  vertRes+=1;
 			}
       imageTemp.SetResolution(horRes,vertRes);  //sets resolution to fit image on screen
-			//HEADER POSITION AND PRINTING
+			//HEADER POSITION AND PRINTING		 
 			string[] headers = new string[ContrApptSheet.ColCount];
 			Font headerFont=new Font("Arial",8);
       yPos+=30;   //y Position  
@@ -2344,12 +2325,13 @@ namespace OpenDental{
 			Appointments.UpdateCur();
 			RefreshModuleScreen();
 			SetInvalid();
-			FormAdjust FormA=new FormAdjust(PatCur);
+			Adjustment AdjustmentCur=new Adjustment();
+			AdjustmentCur.AdjDate=DateTime.Today;
+			AdjustmentCur.ProcDate=DateTime.Today;
+			AdjustmentCur.ProvNum=Appointments.Cur.ProvNum;
+			AdjustmentCur.PatNum=PatCur.PatNum;
+			FormAdjust FormA=new FormAdjust(PatCur,AdjustmentCur);
 			FormA.IsNew=true;
-			Adjustments.Cur=new Adjustment();
-			Adjustments.Cur.AdjDate=DateTime.Today;
-			Adjustments.Cur.ProvNum=Appointments.Cur.ProvNum;
-			Adjustments.Cur.PatNum=PatCur.PatNum;
 			FormA.ShowDialog();
 		}
 
@@ -2432,11 +2414,9 @@ namespace OpenDental{
 			pd2.PrintPage+=new PrintPageEventHandler(this.pd2_PrintApptCard);
 			pd2.DefaultPageSettings.Margins=new Margins(0,0,0,0);
 			pd2.OriginAtMargins=true;//forces origin to upper left of actual page
-			pd2.PrinterSettings.PrinterName=Computers.Cur.PrinterName;
-			if(!pd2.PrinterSettings.IsValid){
-				pd2.PrinterSettings.PrinterName="";//use default printer
+			if(Printers.SetPrinter(pd2,PrintSituation.Default)){
+				pd2.Print();
 			}
-			pd2.Print();	
 		}
 			
 		private void pd2_PrintApptCard(object sender, PrintPageEventArgs ev){

@@ -44,7 +44,10 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.Location = new System.Drawing.Point(365, 144);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
@@ -54,8 +57,11 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(365, 184);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
@@ -64,16 +70,18 @@ namespace OpenDental{
 			// 
 			// labelDaysOld
 			// 
-			this.labelDaysOld.Location = new System.Drawing.Point(40, 66);
+			this.labelDaysOld.Location = new System.Drawing.Point(9, 73);
 			this.labelDaysOld.Name = "labelDaysOld";
-			this.labelDaysOld.Size = new System.Drawing.Size(56, 24);
+			this.labelDaysOld.Size = new System.Drawing.Size(112, 18);
 			this.labelDaysOld.TabIndex = 3;
 			this.labelDaysOld.Text = "Days Old";
-			this.labelDaysOld.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.labelDaysOld.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// textDaysOld
 			// 
-			this.textDaysOld.Location = new System.Drawing.Point(97, 69);
+			this.textDaysOld.Location = new System.Drawing.Point(125, 69);
+			this.textDaysOld.MaxVal = 255;
+			this.textDaysOld.MinVal = 0;
 			this.textDaysOld.Name = "textDaysOld";
 			this.textDaysOld.Size = new System.Drawing.Size(60, 20);
 			this.textDaysOld.TabIndex = 4;

@@ -11,24 +11,27 @@ namespace OpenDental{
 		private OpenDental.UI.Button butOK;
 		private OpenDental.UI.Button butCancel;
 		private System.ComponentModel.Container components = null;
-		private System.Windows.Forms.TextBox textBox1;
 		private System.Windows.Forms.TextBox textExportPath;
-		private System.Windows.Forms.TextBox textBox3;
 		private System.Windows.Forms.TextBox textDocPath;
 		private OpenDental.UI.Button butBrowseExport;
 		private OpenDental.UI.Button buBrowseDoc;
-		private System.Windows.Forms.FolderBrowserDialog fbExportPath;
-		private System.Windows.Forms.FolderBrowserDialog fbDocPath;
-    private bool IsBackup=false;
+		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.Label label4;
+		private OpenDental.UI.Button butBrowseLetter;
+		private System.Windows.Forms.TextBox textLetterMergePath;
+		private System.Windows.Forms.FolderBrowserDialog fb;
+    //private bool IsBackup=false;
 
 		///<summary></summary>
 		public FormPath(){
 			InitializeComponent();
 			Lan.F(this);
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				this.textBox1,
-				this.textBox3
-			});
+			//Lan.C(this, new System.Windows.Forms.Control[] {
+			//	this.textBox1,
+			//	this.textBox3
+			//});
 		}
 
 		///<summary></summary>
@@ -47,13 +50,16 @@ namespace OpenDental{
 			this.butOK = new OpenDental.UI.Button();
 			this.butCancel = new OpenDental.UI.Button();
 			this.textDocPath = new System.Windows.Forms.TextBox();
-			this.textBox1 = new System.Windows.Forms.TextBox();
 			this.textExportPath = new System.Windows.Forms.TextBox();
-			this.textBox3 = new System.Windows.Forms.TextBox();
 			this.butBrowseExport = new OpenDental.UI.Button();
 			this.buBrowseDoc = new OpenDental.UI.Button();
-			this.fbExportPath = new System.Windows.Forms.FolderBrowserDialog();
-			this.fbDocPath = new System.Windows.Forms.FolderBrowserDialog();
+			this.fb = new System.Windows.Forms.FolderBrowserDialog();
+			this.label1 = new System.Windows.Forms.Label();
+			this.label2 = new System.Windows.Forms.Label();
+			this.label3 = new System.Windows.Forms.Label();
+			this.butBrowseLetter = new OpenDental.UI.Button();
+			this.textLetterMergePath = new System.Windows.Forms.TextBox();
+			this.label4 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// butOK
@@ -63,7 +69,7 @@ namespace OpenDental{
 			this.butOK.Autosize = true;
 			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butOK.Location = new System.Drawing.Point(629, 267);
+			this.butOK.Location = new System.Drawing.Point(620, 362);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 2;
@@ -78,7 +84,7 @@ namespace OpenDental{
 			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.Location = new System.Drawing.Point(629, 301);
+			this.butCancel.Location = new System.Drawing.Point(620, 396);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 3;
@@ -87,43 +93,21 @@ namespace OpenDental{
 			// 
 			// textDocPath
 			// 
-			this.textDocPath.Location = new System.Drawing.Point(11, 84);
+			this.textDocPath.Location = new System.Drawing.Point(10, 104);
 			this.textDocPath.Name = "textDocPath";
 			this.textDocPath.Size = new System.Drawing.Size(518, 20);
 			this.textDocPath.TabIndex = 0;
 			this.textDocPath.Text = "";
 			this.textDocPath.Leave += new System.EventHandler(this.textDocPath_Leave);
 			// 
-			// textBox1
-			// 
-			this.textBox1.BackColor = System.Drawing.SystemColors.Control;
-			this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.textBox1.Location = new System.Drawing.Point(12, 136);
-			this.textBox1.Multiline = true;
-			this.textBox1.Name = "textBox1";
-			this.textBox1.Size = new System.Drawing.Size(510, 72);
-			this.textBox1.TabIndex = 5;
-			this.textBox1.Text = @"Export Path: for exporting tables.  If you use a network path (like \\server\OpenDentalExport\ ), the data will be exported to one central computer.   But it is usually easier to use a local path (like C:\OpenDentalExport\ ), and the data will be stored on the local hard drive of the computer you export on.  The folder will be created later if it does not exist.";
-			// 
 			// textExportPath
 			// 
-			this.textExportPath.Location = new System.Drawing.Point(10, 208);
+			this.textExportPath.Location = new System.Drawing.Point(10, 210);
 			this.textExportPath.Name = "textExportPath";
 			this.textExportPath.Size = new System.Drawing.Size(515, 20);
 			this.textExportPath.TabIndex = 1;
 			this.textExportPath.Text = "";
 			this.textExportPath.Leave += new System.EventHandler(this.textExportPath_Leave);
-			// 
-			// textBox3
-			// 
-			this.textBox3.BackColor = System.Drawing.SystemColors.Control;
-			this.textBox3.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.textBox3.Location = new System.Drawing.Point(12, 14);
-			this.textBox3.Multiline = true;
-			this.textBox3.Name = "textBox3";
-			this.textBox3.Size = new System.Drawing.Size(516, 70);
-			this.textBox3.TabIndex = 7;
-			this.textBox3.Text = @"Document Path: for storing images of documents.  This path is the same for every computer, and there can be only be one folder.  If you have only one computer, then the folder can be local (like C:\OpenDentalData\ ), otherwise it should be a folder shared on the network (like \\server\OpenDentalData\ ).  It must contain the A - Z folders.  ";
 			// 
 			// butBrowseExport
 			// 
@@ -131,7 +115,7 @@ namespace OpenDental{
 			this.butBrowseExport.Autosize = true;
 			this.butBrowseExport.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butBrowseExport.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butBrowseExport.Location = new System.Drawing.Point(530, 206);
+			this.butBrowseExport.Location = new System.Drawing.Point(530, 208);
 			this.butBrowseExport.Name = "butBrowseExport";
 			this.butBrowseExport.Size = new System.Drawing.Size(76, 25);
 			this.butBrowseExport.TabIndex = 91;
@@ -144,33 +128,90 @@ namespace OpenDental{
 			this.buBrowseDoc.Autosize = true;
 			this.buBrowseDoc.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.buBrowseDoc.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.buBrowseDoc.Location = new System.Drawing.Point(531, 82);
+			this.buBrowseDoc.Location = new System.Drawing.Point(531, 102);
 			this.buBrowseDoc.Name = "buBrowseDoc";
 			this.buBrowseDoc.Size = new System.Drawing.Size(76, 25);
 			this.buBrowseDoc.TabIndex = 90;
 			this.buBrowseDoc.Text = "&Browse";
 			this.buBrowseDoc.Click += new System.EventHandler(this.buBrowseDoc_Click);
 			// 
-			// fbExportPath
+			// fb
 			// 
-			this.fbExportPath.SelectedPath = "C:\\";
+			this.fb.SelectedPath = "C:\\";
 			// 
-			// fbDocPath
+			// label1
 			// 
-			this.fbDocPath.SelectedPath = "C:\\";
+			this.label1.Location = new System.Drawing.Point(11, 144);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(543, 65);
+			this.label1.TabIndex = 92;
+			this.label1.Text = @"Export Path: for exporting tables.  If you use a network path (like \\server\OpenDentalExport\ ), the data will be exported to one central computer.   But it is usually easier to use a local path (like C:\OpenDentalExport\ ), and the data will be stored on the local hard drive of the computer you export on.  The folder will be created later if it does not exist.";
+			this.label1.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// label2
+			// 
+			this.label2.Location = new System.Drawing.Point(11, 34);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(545, 63);
+			this.label2.TabIndex = 93;
+			this.label2.Text = @"Document Path: for storing images of documents.  This path is the same for every computer, and there can be only be one folder.  If you have only one computer, then the folder can be local (like C:\OpenDentalData\ ), otherwise it should be a folder shared on the network (like \\server\OpenDentalData\ ).  It must contain the A - Z folders.  ";
+			this.label2.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// label3
+			// 
+			this.label3.Location = new System.Drawing.Point(11, 239);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(543, 65);
+			this.label3.TabIndex = 96;
+			this.label3.Text = @"Letter Merge Path: The location where your letter templates are stored.   Letters are usually stored in one central location, so use a network path (like \\server\OpenDentalLetters\ ).   Don't forget to share the folder so all the computers can access it.  However, if you only have one computer with no network, then use a local path (like C:\OpenDentalLetters\ ). ";
+			this.label3.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// butBrowseLetter
+			// 
+			this.butBrowseLetter.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butBrowseLetter.Autosize = true;
+			this.butBrowseLetter.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butBrowseLetter.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butBrowseLetter.Location = new System.Drawing.Point(530, 303);
+			this.butBrowseLetter.Name = "butBrowseLetter";
+			this.butBrowseLetter.Size = new System.Drawing.Size(76, 25);
+			this.butBrowseLetter.TabIndex = 95;
+			this.butBrowseLetter.Text = "Browse";
+			this.butBrowseLetter.Click += new System.EventHandler(this.butBrowseLetter_Click);
+			// 
+			// textLetterMergePath
+			// 
+			this.textLetterMergePath.Location = new System.Drawing.Point(10, 305);
+			this.textLetterMergePath.Name = "textLetterMergePath";
+			this.textLetterMergePath.Size = new System.Drawing.Size(515, 20);
+			this.textLetterMergePath.TabIndex = 94;
+			this.textLetterMergePath.Text = "";
+			// 
+			// label4
+			// 
+			this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.label4.Location = new System.Drawing.Point(12, 9);
+			this.label4.Name = "label4";
+			this.label4.Size = new System.Drawing.Size(483, 23);
+			this.label4.TabIndex = 97;
+			this.label4.Text = "The first box is mandatory.  The others are optional.";
 			// 
 			// FormPath
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
-			this.ClientSize = new System.Drawing.Size(727, 342);
+			this.ClientSize = new System.Drawing.Size(718, 437);
+			this.Controls.Add(this.label4);
+			this.Controls.Add(this.label3);
+			this.Controls.Add(this.butBrowseLetter);
+			this.Controls.Add(this.textLetterMergePath);
+			this.Controls.Add(this.label2);
+			this.Controls.Add(this.label1);
 			this.Controls.Add(this.butBrowseExport);
 			this.Controls.Add(this.buBrowseDoc);
 			this.Controls.Add(this.textDocPath);
-			this.Controls.Add(this.textBox3);
 			this.Controls.Add(this.textExportPath);
-			this.Controls.Add(this.textBox1);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
 			this.MaximizeBox = false;
@@ -192,16 +233,17 @@ namespace OpenDental{
 				DialogResult=DialogResult.Cancel;
 				return;
 			}
-			Lan.C(this, new System.Windows.Forms.Control[] {
+			/*Lan.C(this, new System.Windows.Forms.Control[] {
 				this.textBox1,
 				this.textBox3
 			});
 			Lan.C("All", new System.Windows.Forms.Control[] {
 				this.butCancel,
 				this.butOK
-			});
+			});*/
 			textDocPath.Text=((Pref)Prefs.HList["DocPath"]).ValueString;
 			textExportPath.Text=((Pref)Prefs.HList["ExportPath"]).ValueString;
+			textLetterMergePath.Text=((Pref)Prefs.HList["LetterMergePath"]).ValueString;
 		}
 
 		private void textDocPath_Leave(object sender, System.EventArgs e) {
@@ -238,11 +280,6 @@ namespace OpenDental{
 			}
 			LanguageForeigns.Refresh();
 			MessageBox.Show("Done");*/
-
-
-
-
-
 			if(!textDocPath.Text.EndsWith(@"\")
 				&& !textDocPath.Text.EndsWith(@"/"))
 			{
@@ -257,26 +294,27 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Document Path is not correct.  Must contain folders A-Z"));
 				return;
 			}
-      CheckIfDocBackup();//checks if new folder is pointing at a backup
-      if(IsBackup){
+      //CheckIfDocBackup();//checks if new folder is pointing at a backup
+      /*if(IsBackup){
 				if(MessageBox.Show(Lan.g(this,"You are setting you Image Folder to a Backup Folder.  Do you wish to continue?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
 					return;   
 				} 
-      }
+      }*/
 			Prefs.Cur=(Pref)Prefs.HList["DocPath"];
 			Prefs.Cur.ValueString=textDocPath.Text;
 			Prefs.UpdateCur();      
 			Prefs.Cur=(Pref)Prefs.HList["ExportPath"];
 			Prefs.Cur.ValueString=textExportPath.Text;
 			Prefs.UpdateCur();
-			DataValid.IType=InvalidType.LocalData;
-			DataValid DataValid2=new DataValid();
-			DataValid2.SetInvalid();
+			Prefs.Cur=(Pref)Prefs.HList["LetterMergePath"];
+			Prefs.Cur.ValueString=textLetterMergePath.Text;
+			Prefs.UpdateCur();
+			DataValid.SetInvalid(InvalidTypes.Prefs);
 			SecurityLogs.MakeLogEntry("Form Path","Altered Path");
 			DialogResult=DialogResult.OK;
 		}
 
-    private void CheckIfDocBackup(){
+    /*private void CheckIfDocBackup(){
       IsBackup=false;
  			DirectoryInfo dirInfo=new DirectoryInfo(textDocPath.Text);
 			FileInfo[] fi=dirInfo.GetFiles();
@@ -285,18 +323,21 @@ namespace OpenDental{
           IsBackup=true;   
         }
 			}	       
-    }
-
-		
+    }*/
 
 		private void buBrowseDoc_Click(object sender, System.EventArgs e){
-		  fbDocPath.ShowDialog();
-      textDocPath.Text=fbDocPath.SelectedPath+@"\";
+		  fb.ShowDialog();
+      textDocPath.Text=fb.SelectedPath+@"\";
 		}
 
 		private void butBrowseExport_Click(object sender, System.EventArgs e){
-		  fbExportPath.ShowDialog();
-      textDocPath.Text=fbExportPath.SelectedPath+@"\";		
+		  fb.ShowDialog();
+      textExportPath.Text=fb.SelectedPath+@"\";		
+		}
+
+		private void butBrowseLetter_Click(object sender, System.EventArgs e) {
+			fb.ShowDialog();
+      textLetterMergePath.Text=fb.SelectedPath+@"\";		
 		}
 
 		private void butCancel_Click(object sender, System.EventArgs e){
@@ -311,6 +352,8 @@ namespace OpenDental{
 				Application.Exit();
 			}
 		}
+
+		
 
 
 

@@ -119,9 +119,7 @@ namespace OpenDental{
 			}
 			Reformat();
 			//refresh carriers:
-			DataValid.IType=InvalidType.LocalData;
-			DataValid DataValid2=new DataValid();
-			DataValid2.SetInvalid();
+			DataValid.SetInvalid(InvalidTypes.Carriers);
 			MessageBox.Show(Lan.g(this,"Telephone numbers reformatted."));
 		}
 			
@@ -139,7 +137,7 @@ namespace OpenDental{
 				newTel=TelephoneNumbers.ReFormat(oldTel);
 				if(oldTel!=newTel){
 					Queries.CurReport.Query="UPDATE patient SET hmphone = '"
-						+newTel+"' WHERE patNum = '"+idNum+"'";
+						+POut.PString(newTel)+"' WHERE patNum = '"+idNum+"'";
 					
 					Queries.SubmitNonQ();
 				}
@@ -148,15 +146,15 @@ namespace OpenDental{
 				newTel=TelephoneNumbers.ReFormat(oldTel);
 				if(oldTel!=newTel){
 					Queries.CurReport.Query="UPDATE patient SET wkphone = '"
-						+newTel+"' WHERE patNum = '"+idNum+"'";
+						+POut.PString(newTel)+"' WHERE patNum = '"+idNum+"'";
 					Queries.SubmitNonQ();
 				}
 				//wireless
 				oldTel=PIn.PString(Queries.TableQ.Rows[i][17].ToString());
 				newTel=TelephoneNumbers.ReFormat(oldTel);
-				if(oldTel!=newTel){
-					Queries.CurReport.Query="UPDATE patient SET wkphone = '"
-						+newTel+"' WHERE patNum = '"+idNum+"'";
+				if(oldTel!=newTel){// Keyush Shah 04/21/04 Bug, was overwriting wireless with work phone here
+					Queries.CurReport.Query="UPDATE patient SET wirelessphone = '"
+						+POut.PString(newTel)+"' WHERE patNum = '"+idNum+"'";
 					Queries.SubmitNonQ();
 				}
 			}
@@ -169,7 +167,7 @@ namespace OpenDental{
 				newTel=TelephoneNumbers.ReFormat(oldTel);
 				if(oldTel!=newTel){
 					Queries.CurReport.Query="UPDATE carrier SET Phone = '"
-						+newTel+"' WHERE CarrierNum = '"+idNum+"'";
+						+POut.PString(newTel)+"' WHERE CarrierNum = '"+idNum+"'";
 					Queries.SubmitNonQ();
 				}
 			}

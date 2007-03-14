@@ -298,11 +298,9 @@ namespace OpenDental{
 				return;
 			if(IsNew){
         for(int i=0;i<AutoCodeItems.ListForCode.Length;i++){
-          //if(AutoCodes.Cur.AutoCodeNum==AutoCodeItems.ListForCode[i].AutoCodeNum){
           AutoCodeItems.Cur=AutoCodeItems.ListForCode[i];
           AutoCodeConds.DeleteForItemNum(AutoCodeItems.Cur.AutoCodeItemNum);
           AutoCodeItems.DeleteCur();
-          //}
         }
         AutoCodes.DeleteCur();
       }

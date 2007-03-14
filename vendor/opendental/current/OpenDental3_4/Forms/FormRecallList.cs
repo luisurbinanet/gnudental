@@ -529,13 +529,10 @@ namespace OpenDental{
 			pd.PrintPage+=new PrintPageEventHandler(this.pdLabels_PrintPage);
 			pd.OriginAtMargins=true;
 			pd.DefaultPageSettings.Margins=new Margins(0,0,0,0);
-			pd.PrinterSettings.PrinterName=Computers.Cur.PrinterName;
-			if(!pd.PrinterSettings.IsValid){
-				pd.PrinterSettings.PrinterName="";
-			}
-			printPreview=new OpenDental.UI.PrintPreview();
-			printPreview.Document=pd;
-			printPreview.TotalPages=(int)Math.Ceiling((double)AddrTable.Rows.Count/30);
+			printPreview=new OpenDental.UI.PrintPreview(PrintSituation.LabelSheet
+				,pd,(int)Math.Ceiling((double)AddrTable.Rows.Count/30));
+			//printPreview.Document=pd;
+			//printPreview.TotalPages=;
 			printPreview.ShowDialog();
 		}
 
@@ -561,9 +558,9 @@ namespace OpenDental{
 			pd.PrintPage+=new PrintPageEventHandler(this.pdCards_PrintPage);
 			pd.OriginAtMargins=true;
 			pd.DefaultPageSettings.Margins=new Margins(0,0,0,0);
-			pd.PrinterSettings.PrinterName=Computers.Cur.PrinterName;
 			if(Prefs.GetInt("RecallPostcardsPerSheet")==1){
-				pd.DefaultPageSettings.PaperSize=new PaperSize("Postcard",600,400);
+				pd.DefaultPageSettings.PaperSize=new PaperSize("Postcard",400,600);
+				pd.DefaultPageSettings.Landscape=true;
 			}
 			else if(Prefs.GetInt("RecallPostcardsPerSheet")==3){
 				pd.DefaultPageSettings.PaperSize=new PaperSize("Postcard",850,1100);
@@ -572,13 +569,10 @@ namespace OpenDental{
 				pd.DefaultPageSettings.PaperSize=new PaperSize("Postcard",850,1100);
 				pd.DefaultPageSettings.Landscape=true;
 			}
-			if(!pd.PrinterSettings.IsValid){
-				pd.PrinterSettings.PrinterName=null;
-			}
-			printPreview=new OpenDental.UI.PrintPreview();
-			printPreview.Document=pd;
-			printPreview.TotalPages=(int)Math.Ceiling
-				((double)AddrTable.Rows.Count/(double)Prefs.GetInt("RecallPostcardsPerSheet"));
+			printPreview=new OpenDental.UI.PrintPreview(PrintSituation.Postcard
+				,pd
+				,(int)Math.Ceiling
+				((double)AddrTable.Rows.Count/(double)Prefs.GetInt("RecallPostcardsPerSheet")));
 			printPreview.ShowDialog();
 		}
 
@@ -720,8 +714,8 @@ namespace OpenDental{
 
 		private void butSave_Click(object sender, System.EventArgs e) {
 			if(  textDaysPast.errorProvider1.GetError(textDaysPast)!=""
-				|| textDaysFuture.errorProvider1.GetError(textDaysFuture)!=""
-				){
+				|| textDaysFuture.errorProvider1.GetError(textDaysFuture)!="")
+			{
 				MessageBox.Show(Lan.g(this,"Please fix data entry errors first."));
 				return;
 			}
@@ -731,9 +725,7 @@ namespace OpenDental{
 			Prefs.Cur.PrefName="RecallDaysFuture";
 			Prefs.Cur.ValueString=textDaysFuture.Text;
 			Prefs.UpdateCur();
-			DataValid.IType=InvalidType.LocalData;//refreshes local data on other computers
-			DataValid DataValid2=new DataValid();
-			DataValid2.SetInvalid();
+			DataValid.SetInvalid(InvalidTypes.Prefs);
 		}
 
 		private void butClose_Click(object sender, System.EventArgs e) {

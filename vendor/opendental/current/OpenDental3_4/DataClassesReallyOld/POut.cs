@@ -26,7 +26,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public static string PDateT(DateTime myDateT){
 			try{
-				return myDateT.ToString("yyyy-MM-dd HH:mm:ss",new DateTimeFormatInfo());
+				return myDateT.ToString("yyyy-MM-dd HH:mm:ss",CultureInfo.InvariantCulture);//new DateTimeFormatInfo());
 			}
 			catch{
 				return "";//this actually saves zero's to the database

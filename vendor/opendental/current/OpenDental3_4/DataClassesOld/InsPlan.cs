@@ -82,6 +82,8 @@ namespace OpenDental{
 		public int EmployerNum;
 		///<summary>Foreign key to carrier.CarrierNum.</summary>
 		public int CarrierNum;
+		///<summary>Foreign key to Definition.DefNum. This fee schedule holds amounts allowed by carriers.</summary>
+		public int AllowedFeeSched;
 		///<summary>This is NOT a database column.  It is just used to display the number of plans with the same info.</summary>
 		public int NumberPlans;
 
@@ -114,6 +116,7 @@ namespace OpenDental{
 			p.SubscriberID=SubscriberID;
 			p.EmployerNum=EmployerNum;
 			p.CarrierNum=CarrierNum;
+			p.AllowedFeeSched=AllowedFeeSched;
 			return p;
 		}
 
@@ -126,8 +129,7 @@ namespace OpenDental{
 				+"flotoage,plannote,misstoothexcl,majorwait,feesched,"
 				+"releaseinfo,assignben,plantype,claimformnum,usealtcode,"
 				+"claimsuseucr,iswrittenoff,copayfeesched,subscriberid,"
-				+"EmployerNum,CarrierNum) VALUES("
-				//+"'"+POut.PInt   (Cur.PlanOrder)+"', "
+				+"EmployerNum,CarrierNum,AllowedFeeSched) VALUES("
 				+"'"+POut.PInt   (Subscriber)+"', "
 				+"'"+POut.PString(Carrier)+"', "
 				+"'"+POut.PDate  (DateEffective)+"', "
@@ -163,8 +165,8 @@ namespace OpenDental{
 				+"'"+POut.PInt   (CopayFeeSched)+"', "
 				+"'"+POut.PString(SubscriberID)+"', "
 				+"'"+POut.PInt   (EmployerNum)+"', "
-				//+"'"+POut.PInt   (TemplateNum)+"', "
-				+"'"+POut.PInt   (CarrierNum)+"')";
+				+"'"+POut.PInt   (CarrierNum)+"', "
+				+"'"+POut.PInt   (AllowedFeeSched)+"')";
 			DataConnection dcon=new DataConnection();
  			dcon.NonQ(command,true);
 			PlanNum=dcon.InsertID;
@@ -173,7 +175,6 @@ namespace OpenDental{
 		///<summary></summary>
 		public void Update(){
 			string command= "UPDATE insplan SET " 
-				//+ "PlanOrder = '"     +POut.PInt   (PlanOrder)+"'"
 				+ "Subscriber = '"   +POut.PInt   (Subscriber)+"'"
 				+ ",Carrier = '"      +POut.PString(Carrier)+"'"
 				+ ",DateEffective = '"+POut.PDate  (DateEffective)+"'"
@@ -209,8 +210,8 @@ namespace OpenDental{
 				+ ",copayfeesched = '"+POut.PInt   (CopayFeeSched)+"'"
 				+ ",subscriberid = '" +POut.PString(SubscriberID)+"'"
 				+ ",EmployerNum = '"  +POut.PInt   (EmployerNum)+"'"
-				//+ ",TemplateNum = '"  +POut.PInt   (TemplateNum)+"'"
 				+ ",CarrierNum = '"   +POut.PInt   (CarrierNum)+"'"
+				+ ",AllowedFeeSched='"+POut.PInt   (AllowedFeeSched)+"'"
 				+" WHERE PlanNum = '" +POut.PInt(PlanNum)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
@@ -220,27 +221,29 @@ namespace OpenDental{
 		///<summary>Called from FormInsPlanEditAll. This updates the synchronized fields for all plans like the specified insPlan.  Cur must be set to the new values that we want.</summary>
 		public void UpdateForLike(InsPlan like){
 			string command= "UPDATE insplan SET "
-				+"EmployerNum = '"   +POut.PInt   (EmployerNum)+"'"
-				+",GroupName = '"    +POut.PString(GroupName)+"'"
-				+",GroupNum = '"     +POut.PString(GroupNum)+"'"
-				+",CarrierNum = '"   +POut.PInt   (CarrierNum)+"'"
-				+",PlanType = '"     +POut.PString(PlanType)+"'"
-				+",UseAltCode = '"   +POut.PBool  (UseAltCode)+"'"
-				+",ClaimsUseUcr = '" +POut.PBool  (ClaimsUseUCR)+"'"
-				+",FeeSched = '"     +POut.PInt   (FeeSched)+"'"
-				+",CopayFeeSched = '"+POut.PInt   (CopayFeeSched)+"'"
-				+",ClaimFormNum = '" +POut.PInt   (ClaimFormNum)+"'"
+				+"EmployerNum = '"     +POut.PInt   (EmployerNum)+"'"
+				+",GroupName = '"      +POut.PString(GroupName)+"'"
+				+",GroupNum = '"       +POut.PString(GroupNum)+"'"
+				+",CarrierNum = '"     +POut.PInt   (CarrierNum)+"'"
+				+",PlanType = '"       +POut.PString(PlanType)+"'"
+				+",UseAltCode = '"     +POut.PBool  (UseAltCode)+"'"
+				+",ClaimsUseUcr = '"   +POut.PBool  (ClaimsUseUCR)+"'"
+				+",FeeSched = '"       +POut.PInt   (FeeSched)+"'"
+				+",CopayFeeSched = '"  +POut.PInt   (CopayFeeSched)+"'"
+				+",ClaimFormNum = '"   +POut.PInt   (ClaimFormNum)+"'"
+				+",AllowedFeeSched= '" +POut.PInt   (AllowedFeeSched)+"'"
 				+" WHERE "
-				+"EmployerNum = '"     +POut.PInt   (like.EmployerNum)+"' "
-				+"&& GroupName = '"    +POut.PString(like.GroupName)+"' "
-				+"&& GroupNum = '"     +POut.PString(like.GroupNum)+"' "
-				+"&& CarrierNum = '"   +POut.PInt   (like.CarrierNum)+"' "
-				+"&& PlanType = '"     +POut.PString(like.PlanType)+"' "
-				+"&& UseAltCode = '"   +POut.PBool  (like.UseAltCode)+"' "
-				+"&& ClaimsUseUCR = '" +POut.PBool  (like.ClaimsUseUCR)+"' "
-				+"&& FeeSched = '"     +POut.PInt   (like.FeeSched)+"' "
-				+"&& CopayFeeSched = '"+POut.PInt   (like.CopayFeeSched)+"' "
-				+"&& ClaimFormNum = '" +POut.PInt   (like.ClaimFormNum)+"'";
+				+"EmployerNum = '"        +POut.PInt   (like.EmployerNum)+"' "
+				+"AND GroupName = '"      +POut.PString(like.GroupName)+"' "
+				+"AND GroupNum = '"       +POut.PString(like.GroupNum)+"' "
+				+"AND CarrierNum = '"     +POut.PInt   (like.CarrierNum)+"' "
+				+"AND PlanType = '"       +POut.PString(like.PlanType)+"' "
+				+"AND UseAltCode = '"     +POut.PBool  (like.UseAltCode)+"' "
+				+"AND ClaimsUseUCR = '"   +POut.PBool  (like.ClaimsUseUCR)+"' "
+				+"AND FeeSched = '"       +POut.PInt   (like.FeeSched)+"' "
+				+"AND CopayFeeSched = '"  +POut.PInt   (like.CopayFeeSched)+"' "
+				+"AND ClaimFormNum = '"   +POut.PInt   (like.ClaimFormNum)+"' "
+				+"AND AllowedFeeSched = '"+POut.PInt   (like.AllowedFeeSched)+"'";
 			DataConnection dcon=new DataConnection();
  			dcon.NonQ(command);
 		}
@@ -330,16 +333,17 @@ namespace OpenDental{
 		public string[] SamePlans(){
 			string command="SELECT CONCAT(LName,', ',FName) FROM patient,insplan" 
 				+" WHERE patient.PatNum=insplan.Subscriber "
-				+"AND insplan.EmployerNum = '"  +POut.PInt   (EmployerNum)+"' "
-				+"AND insplan.GroupName = '"    +POut.PString(GroupName)+"' "
-				+"AND insplan.GroupNum = '"     +POut.PString(GroupNum)+"' "
-				+"AND insplan.CarrierNum = '"   +POut.PInt   (CarrierNum)+"' "
-				+"AND insplan.PlanType = '"     +POut.PString(PlanType)+"' "
-				+"AND insplan.UseAltCode = '"   +POut.PBool  (UseAltCode)+"' "
-				+"AND insplan.ClaimsUseUCR = '" +POut.PBool  (ClaimsUseUCR)+"' "
-				+"AND insplan.FeeSched = '"     +POut.PInt   (FeeSched)+"' "
-				+"AND insplan.CopayFeeSched = '"+POut.PInt   (CopayFeeSched)+"' "
-				+"AND insplan.ClaimFormNum = '" +POut.PInt   (ClaimFormNum)+"'";
+				+"AND insplan.EmployerNum = '"    +POut.PInt   (EmployerNum)+"' "
+				+"AND insplan.GroupName = '"      +POut.PString(GroupName)+"' "
+				+"AND insplan.GroupNum = '"       +POut.PString(GroupNum)+"' "
+				+"AND insplan.CarrierNum = '"     +POut.PInt   (CarrierNum)+"' "
+				+"AND insplan.PlanType = '"       +POut.PString(PlanType)+"' "
+				+"AND insplan.UseAltCode = '"     +POut.PBool  (UseAltCode)+"' "
+				+"AND insplan.ClaimsUseUCR = '"   +POut.PBool  (ClaimsUseUCR)+"' "
+				+"AND insplan.FeeSched = '"       +POut.PInt   (FeeSched)+"' "
+				+"AND insplan.CopayFeeSched = '"  +POut.PInt   (CopayFeeSched)+"' "
+				+"AND insplan.ClaimFormNum = '"   +POut.PInt   (ClaimFormNum)+"' "
+				+"AND insplan.AllowedFeeSched = '"+POut.PInt   (AllowedFeeSched)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
 			DataTable table=dcon.GetTable(command);

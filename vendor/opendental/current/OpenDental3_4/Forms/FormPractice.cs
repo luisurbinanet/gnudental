@@ -7,7 +7,6 @@ using System.Windows.Forms;
 namespace OpenDental{
 ///<summary></summary>
 	public class FormPractice : System.Windows.Forms.Form{
-		private System.Windows.Forms.GroupBox groupBox3;
 		private System.Windows.Forms.Label label12;
 		private System.Windows.Forms.Label label10;
 		private System.Windows.Forms.TextBox textBankNumber;
@@ -31,25 +30,12 @@ namespace OpenDental{
 		private System.Windows.Forms.ListBox listBillType;
 		private System.Windows.Forms.ListBox listProvider;
 		private System.Windows.Forms.Label label16;
-		private OpenDental.UI.Button butTreatProv;
-		private System.Windows.Forms.ListBox listBillProv;
-		private System.Windows.Forms.TextBox textTreatNote;
-		private System.Windows.Forms.CheckBox checkShowCC;
-		private System.Windows.Forms.CheckBox checkAutoRefresh;
-		private System.Windows.Forms.TextBox textMainWindowTitle;
-		private System.Windows.Forms.Label label14;
-		private System.Windows.Forms.Label label15;
-		private System.Windows.Forms.ComboBox comboPatientPictureCat;
-		private System.Windows.Forms.CheckBox checkITooth;
 		private System.Windows.Forms.Label labelPlaceService;
 		private System.Windows.Forms.ListBox listPlaceService;
 		private System.Windows.Forms.TextBox textPhone;
-		private System.Windows.Forms.CheckBox checkTreatPlanShowGraphics;
-		private System.Windows.Forms.CheckBox checkTreatPlanShowCompleted;
-		private System.Windows.Forms.GroupBox groupBox1;
-		private System.Windows.Forms.CheckBox checkTreatPlanShowIns;
-		private System.Windows.Forms.CheckBox checkAllowMultipleCopiesOfProgram;
-		private System.Windows.Forms.Label label1;// Required designer variable.
+		private System.Windows.Forms.RadioButton radioInsBillingProvTreat;
+		private System.Windows.Forms.RadioButton radioInsBillingProvDefault;
+		private System.Windows.Forms.GroupBox groupBox4;// Required designer variable.
 
 		///<summary></summary>
 		public FormPractice(){
@@ -70,9 +56,6 @@ namespace OpenDental{
 		#region Windows Form Designer generated code
 
 		private void InitializeComponent(){
-			this.groupBox3 = new System.Windows.Forms.GroupBox();
-			this.butTreatProv = new OpenDental.UI.Button();
-			this.listBillProv = new System.Windows.Forms.ListBox();
 			this.listBillType = new System.Windows.Forms.ListBox();
 			this.label12 = new System.Windows.Forms.Label();
 			this.label10 = new System.Windows.Forms.Label();
@@ -96,61 +79,14 @@ namespace OpenDental{
 			this.label3 = new System.Windows.Forms.Label();
 			this.butOK = new OpenDental.UI.Button();
 			this.butCancel = new OpenDental.UI.Button();
-			this.textTreatNote = new System.Windows.Forms.TextBox();
-			this.label1 = new System.Windows.Forms.Label();
-			this.checkShowCC = new System.Windows.Forms.CheckBox();
-			this.checkAutoRefresh = new System.Windows.Forms.CheckBox();
-			this.textMainWindowTitle = new System.Windows.Forms.TextBox();
-			this.label14 = new System.Windows.Forms.Label();
-			this.label15 = new System.Windows.Forms.Label();
-			this.comboPatientPictureCat = new System.Windows.Forms.ComboBox();
-			this.checkITooth = new System.Windows.Forms.CheckBox();
 			this.labelPlaceService = new System.Windows.Forms.Label();
 			this.listPlaceService = new System.Windows.Forms.ListBox();
-			this.checkTreatPlanShowGraphics = new System.Windows.Forms.CheckBox();
-			this.checkTreatPlanShowCompleted = new System.Windows.Forms.CheckBox();
-			this.groupBox1 = new System.Windows.Forms.GroupBox();
-			this.checkTreatPlanShowIns = new System.Windows.Forms.CheckBox();
-			this.checkAllowMultipleCopiesOfProgram = new System.Windows.Forms.CheckBox();
-			this.groupBox3.SuspendLayout();
+			this.groupBox4 = new System.Windows.Forms.GroupBox();
+			this.radioInsBillingProvTreat = new System.Windows.Forms.RadioButton();
+			this.radioInsBillingProvDefault = new System.Windows.Forms.RadioButton();
 			this.groupBox2.SuspendLayout();
-			this.groupBox1.SuspendLayout();
+			this.groupBox4.SuspendLayout();
 			this.SuspendLayout();
-			// 
-			// groupBox3
-			// 
-			this.groupBox3.Controls.Add(this.butTreatProv);
-			this.groupBox3.Controls.Add(this.listBillProv);
-			this.groupBox3.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox3.Location = new System.Drawing.Point(477, 214);
-			this.groupBox3.Name = "groupBox3";
-			this.groupBox3.Size = new System.Drawing.Size(188, 242);
-			this.groupBox3.TabIndex = 6;
-			this.groupBox3.TabStop = false;
-			this.groupBox3.Text = "Default Insurance Billing Dentist";
-			this.groupBox3.Visible = false;
-			// 
-			// butTreatProv
-			// 
-			this.butTreatProv.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butTreatProv.Autosize = true;
-			this.butTreatProv.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butTreatProv.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butTreatProv.Location = new System.Drawing.Point(24, 202);
-			this.butTreatProv.Name = "butTreatProv";
-			this.butTreatProv.Size = new System.Drawing.Size(110, 26);
-			this.butTreatProv.TabIndex = 1;
-			this.butTreatProv.Text = "Treating Provider";
-			this.butTreatProv.Click += new System.EventHandler(this.butTreatProv_Click);
-			// 
-			// listBillProv
-			// 
-			this.listBillProv.Items.AddRange(new object[] {
-																											""});
-			this.listBillProv.Location = new System.Drawing.Point(24, 26);
-			this.listBillProv.Name = "listBillProv";
-			this.listBillProv.Size = new System.Drawing.Size(110, 160);
-			this.listBillProv.TabIndex = 0;
 			// 
 			// listBillType
 			// 
@@ -353,7 +289,7 @@ namespace OpenDental{
 			this.butOK.Autosize = true;
 			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butOK.Location = new System.Drawing.Point(810, 578);
+			this.butOK.Location = new System.Drawing.Point(810, 270);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 7;
@@ -368,101 +304,18 @@ namespace OpenDental{
 			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.Location = new System.Drawing.Point(810, 616);
+			this.butCancel.Location = new System.Drawing.Point(810, 308);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 8;
 			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
-			// textTreatNote
-			// 
-			this.textTreatNote.AcceptsReturn = true;
-			this.textTreatNote.Location = new System.Drawing.Point(17, 40);
-			this.textTreatNote.Multiline = true;
-			this.textTreatNote.Name = "textTreatNote";
-			this.textTreatNote.Size = new System.Drawing.Size(346, 114);
-			this.textTreatNote.TabIndex = 3;
-			this.textTreatNote.Text = "";
-			// 
-			// label1
-			// 
-			this.label1.Location = new System.Drawing.Point(18, 22);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(268, 15);
-			this.label1.TabIndex = 35;
-			this.label1.Text = "Note";
-			this.label1.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
-			// 
-			// checkShowCC
-			// 
-			this.checkShowCC.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkShowCC.Location = new System.Drawing.Point(75, 511);
-			this.checkShowCC.Name = "checkShowCC";
-			this.checkShowCC.Size = new System.Drawing.Size(334, 17);
-			this.checkShowCC.TabIndex = 36;
-			this.checkShowCC.Text = "Show Credit Card Info on Statements";
-			// 
-			// checkAutoRefresh
-			// 
-			this.checkAutoRefresh.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkAutoRefresh.Location = new System.Drawing.Point(75, 532);
-			this.checkAutoRefresh.Name = "checkAutoRefresh";
-			this.checkAutoRefresh.Size = new System.Drawing.Size(603, 16);
-			this.checkAutoRefresh.TabIndex = 37;
-			this.checkAutoRefresh.Text = "Disable AutoRefresh.  Warning!  You would not normally do this except for testing" +
-				".";
-			// 
-			// textMainWindowTitle
-			// 
-			this.textMainWindowTitle.Location = new System.Drawing.Point(170, 576);
-			this.textMainWindowTitle.Name = "textMainWindowTitle";
-			this.textMainWindowTitle.Size = new System.Drawing.Size(333, 20);
-			this.textMainWindowTitle.TabIndex = 38;
-			this.textMainWindowTitle.Text = "";
-			// 
-			// label14
-			// 
-			this.label14.Location = new System.Drawing.Point(20, 578);
-			this.label14.Name = "label14";
-			this.label14.Size = new System.Drawing.Size(149, 17);
-			this.label14.TabIndex = 39;
-			this.label14.Text = "Main Window Title";
-			this.label14.TextAlign = System.Drawing.ContentAlignment.TopRight;
-			// 
-			// label15
-			// 
-			this.label15.Location = new System.Drawing.Point(450, 487);
-			this.label15.Name = "label15";
-			this.label15.Size = new System.Drawing.Size(237, 17);
-			this.label15.TabIndex = 40;
-			this.label15.Text = "Image Category for Patient Picture";
-			this.label15.TextAlign = System.Drawing.ContentAlignment.TopRight;
-			this.label15.Visible = false;
-			// 
-			// comboPatientPictureCat
-			// 
-			this.comboPatientPictureCat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboPatientPictureCat.Location = new System.Drawing.Point(688, 483);
-			this.comboPatientPictureCat.Name = "comboPatientPictureCat";
-			this.comboPatientPictureCat.Size = new System.Drawing.Size(261, 21);
-			this.comboPatientPictureCat.TabIndex = 41;
-			this.comboPatientPictureCat.Visible = false;
-			// 
-			// checkITooth
-			// 
-			this.checkITooth.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkITooth.Location = new System.Drawing.Point(75, 600);
-			this.checkITooth.Name = "checkITooth";
-			this.checkITooth.Size = new System.Drawing.Size(334, 24);
-			this.checkITooth.TabIndex = 42;
-			this.checkITooth.Text = "Use International Tooth Numbers (11-48)";
-			// 
 			// labelPlaceService
 			// 
-			this.labelPlaceService.Location = new System.Drawing.Point(735, 27);
+			this.labelPlaceService.Location = new System.Drawing.Point(735, 5);
 			this.labelPlaceService.Name = "labelPlaceService";
-			this.labelPlaceService.Size = new System.Drawing.Size(140, 18);
+			this.labelPlaceService.Size = new System.Drawing.Size(151, 40);
 			this.labelPlaceService.TabIndex = 44;
 			this.labelPlaceService.Text = "Default Proc Place Service";
 			this.labelPlaceService.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
@@ -474,76 +327,47 @@ namespace OpenDental{
 			this.listPlaceService.Size = new System.Drawing.Size(145, 147);
 			this.listPlaceService.TabIndex = 45;
 			// 
-			// checkTreatPlanShowGraphics
+			// groupBox4
 			// 
-			this.checkTreatPlanShowGraphics.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkTreatPlanShowGraphics.Location = new System.Drawing.Point(16, 159);
-			this.checkTreatPlanShowGraphics.Name = "checkTreatPlanShowGraphics";
-			this.checkTreatPlanShowGraphics.Size = new System.Drawing.Size(339, 17);
-			this.checkTreatPlanShowGraphics.TabIndex = 46;
-			this.checkTreatPlanShowGraphics.Text = "Show Graphical Tooth Chart";
+			this.groupBox4.Controls.Add(this.radioInsBillingProvTreat);
+			this.groupBox4.Controls.Add(this.radioInsBillingProvDefault);
+			this.groupBox4.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.groupBox4.Location = new System.Drawing.Point(453, 213);
+			this.groupBox4.Name = "groupBox4";
+			this.groupBox4.Size = new System.Drawing.Size(221, 67);
+			this.groupBox4.TabIndex = 50;
+			this.groupBox4.TabStop = false;
+			this.groupBox4.Text = "Default Insurance Billing Dentist";
 			// 
-			// checkTreatPlanShowCompleted
+			// radioInsBillingProvTreat
 			// 
-			this.checkTreatPlanShowCompleted.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkTreatPlanShowCompleted.Location = new System.Drawing.Point(16, 179);
-			this.checkTreatPlanShowCompleted.Name = "checkTreatPlanShowCompleted";
-			this.checkTreatPlanShowCompleted.Size = new System.Drawing.Size(334, 17);
-			this.checkTreatPlanShowCompleted.TabIndex = 47;
-			this.checkTreatPlanShowCompleted.Text = "Show Completed Work on Graphical Tooth Chart";
+			this.radioInsBillingProvTreat.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.radioInsBillingProvTreat.Location = new System.Drawing.Point(17, 34);
+			this.radioInsBillingProvTreat.Name = "radioInsBillingProvTreat";
+			this.radioInsBillingProvTreat.Size = new System.Drawing.Size(186, 19);
+			this.radioInsBillingProvTreat.TabIndex = 1;
+			this.radioInsBillingProvTreat.Text = "Treating Provider";
 			// 
-			// groupBox1
+			// radioInsBillingProvDefault
 			// 
-			this.groupBox1.Controls.Add(this.checkTreatPlanShowIns);
-			this.groupBox1.Controls.Add(this.label1);
-			this.groupBox1.Controls.Add(this.textTreatNote);
-			this.groupBox1.Controls.Add(this.checkTreatPlanShowGraphics);
-			this.groupBox1.Controls.Add(this.checkTreatPlanShowCompleted);
-			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox1.Location = new System.Drawing.Point(59, 285);
-			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(381, 222);
-			this.groupBox1.TabIndex = 48;
-			this.groupBox1.TabStop = false;
-			this.groupBox1.Text = "Treatment Plans";
-			// 
-			// checkTreatPlanShowIns
-			// 
-			this.checkTreatPlanShowIns.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkTreatPlanShowIns.Location = new System.Drawing.Point(16, 199);
-			this.checkTreatPlanShowIns.Name = "checkTreatPlanShowIns";
-			this.checkTreatPlanShowIns.Size = new System.Drawing.Size(334, 17);
-			this.checkTreatPlanShowIns.TabIndex = 48;
-			this.checkTreatPlanShowIns.Text = "Show Insurance Estimates";
-			// 
-			// checkAllowMultipleCopiesOfProgram
-			// 
-			this.checkAllowMultipleCopiesOfProgram.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkAllowMultipleCopiesOfProgram.Location = new System.Drawing.Point(75, 552);
-			this.checkAllowMultipleCopiesOfProgram.Name = "checkAllowMultipleCopiesOfProgram";
-			this.checkAllowMultipleCopiesOfProgram.Size = new System.Drawing.Size(603, 16);
-			this.checkAllowMultipleCopiesOfProgram.TabIndex = 49;
-			this.checkAllowMultipleCopiesOfProgram.Text = "Allow multiple copies of program to run on one computer";
+			this.radioInsBillingProvDefault.Checked = true;
+			this.radioInsBillingProvDefault.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.radioInsBillingProvDefault.Location = new System.Drawing.Point(17, 16);
+			this.radioInsBillingProvDefault.Name = "radioInsBillingProvDefault";
+			this.radioInsBillingProvDefault.Size = new System.Drawing.Size(186, 19);
+			this.radioInsBillingProvDefault.TabIndex = 0;
+			this.radioInsBillingProvDefault.TabStop = true;
+			this.radioInsBillingProvDefault.Text = "Default Practice Provider";
 			// 
 			// FormPractice
 			// 
-			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.CancelButton = this.butCancel;
-			this.ClientSize = new System.Drawing.Size(899, 654);
-			this.Controls.Add(this.checkAllowMultipleCopiesOfProgram);
-			this.Controls.Add(this.groupBox1);
+			this.ClientSize = new System.Drawing.Size(899, 346);
+			this.Controls.Add(this.groupBox4);
 			this.Controls.Add(this.listPlaceService);
 			this.Controls.Add(this.labelPlaceService);
-			this.Controls.Add(this.checkITooth);
-			this.Controls.Add(this.comboPatientPictureCat);
-			this.Controls.Add(this.label15);
-			this.Controls.Add(this.label14);
-			this.Controls.Add(this.textMainWindowTitle);
 			this.Controls.Add(this.textBankNumber);
 			this.Controls.Add(this.textPracticeTitle);
-			this.Controls.Add(this.checkAutoRefresh);
-			this.Controls.Add(this.checkShowCC);
 			this.Controls.Add(this.listProvider);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
@@ -553,7 +377,6 @@ namespace OpenDental{
 			this.Controls.Add(this.label4);
 			this.Controls.Add(this.groupBox2);
 			this.Controls.Add(this.label3);
-			this.Controls.Add(this.groupBox3);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "FormPractice";
@@ -561,64 +384,57 @@ namespace OpenDental{
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Edit Practice Info";
 			this.Load += new System.EventHandler(this.FormPractice_Load);
-			this.groupBox3.ResumeLayout(false);
 			this.groupBox2.ResumeLayout(false);
-			this.groupBox1.ResumeLayout(false);
+			this.groupBox4.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
 		#endregion
 
 		private void FormPractice_Load(object sender, System.EventArgs e) {
-			if(((Pref)Prefs.HList["EasyHidePublicHealth"]).ValueString=="1"){
-				labelPlaceService.Visible=false;
-				listPlaceService.Visible=false;
-			}
-			textPracticeTitle.Text=((Pref)Prefs.HList["PracticeTitle"]).ValueString;
-			textAddress.Text=((Pref)Prefs.HList["PracticeAddress"]).ValueString;
-			textAddress2.Text=((Pref)Prefs.HList["PracticeAddress2"]).ValueString;
-			textCity.Text=((Pref)Prefs.HList["PracticeCity"]).ValueString;
-			textST.Text=((Pref)Prefs.HList["PracticeST"]).ValueString;
-			textZip.Text=((Pref)Prefs.HList["PracticeZip"]).ValueString;
-			string phone=((Pref)Prefs.HList["PracticePhone"]).ValueString;
+			textPracticeTitle.Text=Prefs.GetString("PracticeTitle");
+			textAddress.Text=Prefs.GetString("PracticeAddress");
+			textAddress2.Text=Prefs.GetString("PracticeAddress2");
+			textCity.Text=Prefs.GetString("PracticeCity");
+			textST.Text=Prefs.GetString("PracticeST");
+			textZip.Text=Prefs.GetString("PracticeZip");
+			string phone=Prefs.GetString("PracticePhone");
 			if(phone.Length==10 && Application.CurrentCulture.Name=="en-US"){
 				textPhone.Text="("+phone.Substring(0,3)+")"+phone.Substring(3,3)+"-"+phone.Substring(6);
 			}
 			else{
 				textPhone.Text=phone;
 			}
-			textBankNumber.Text=((Pref)Prefs.HList["PracticeBankNumber"]).ValueString;
+			textBankNumber.Text=Prefs.GetString("PracticeBankNumber");
 			listProvider.Items.Clear();
 			for(int i=0;i<Providers.List.Length;i++){
 				listProvider.Items.Add(Providers.List[i].Abbr);
-				if(Providers.List[i].ProvNum.ToString()==((Pref)Prefs.HList["PracticeDefaultProv"]).ValueString)
+				if(Providers.List[i].ProvNum==Prefs.GetInt("PracticeDefaultProv")){
 					listProvider.SelectedIndex=i;
+				}
 			}
 			listBillType.Items.Clear();
 			for(int i=0;i<Defs.Short[(int)DefCat.BillingTypes].Length;i++){
 				listBillType.Items.Add(Defs.Short[(int)DefCat.BillingTypes][i].ItemName);
-				if(Defs.Short[(int)DefCat.BillingTypes][i].DefNum.ToString()
-					==((Pref)Prefs.HList["PracticeDefaultBillType"]).ValueString)
+				if(Defs.Short[(int)DefCat.BillingTypes][i].DefNum==Prefs.GetInt("PracticeDefaultBillType"))
 					listBillType.SelectedIndex=i;
 			}
-			textTreatNote.Text=((Pref)Prefs.HList["TreatmentPlanNote"]).ValueString;
-			checkTreatPlanShowGraphics.Checked=Prefs.GetBool("TreatPlanShowGraphics");
-			checkTreatPlanShowCompleted.Checked=Prefs.GetBool("TreatPlanShowCompleted");
-			checkTreatPlanShowIns.Checked=Prefs.GetBool("TreatPlanShowIns");
-			if(((Pref)Prefs.HList["StatementShowCreditCard"]).ValueString=="1"){
-				checkShowCC.Checked=true;
+			if(Prefs.GetBool("EasyHidePublicHealth")){
+				labelPlaceService.Visible=false;
+				listPlaceService.Visible=false;
 			}
-			else checkShowCC.Checked=false;
-			checkAutoRefresh.Checked=Prefs.GetBool("AutoRefreshIsDisabled");
-			checkAllowMultipleCopiesOfProgram.Checked=Prefs.GetBool("AllowMultipleCopiesOfProgram");
-			textMainWindowTitle.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString;
-			checkITooth.Checked=((Pref)Prefs.HList["UseInternationalToothNumbers"]).ValueString=="1";
 			listPlaceService.Items.Clear();
 			for(int i=0;i<Enum.GetNames(typeof(PlaceOfService)).Length;i++){
-				listPlaceService.Items.Add(Lan.g(this,Enum.GetNames(typeof(PlaceOfService))[i]));
+				listPlaceService.Items.Add
+					(Lan.g("enumPlaceOfService",Enum.GetNames(typeof(PlaceOfService))[i]));
 			}
-			listPlaceService.SelectedIndex
-				=PIn.PInt(((Pref)Prefs.HList["DefaultProcedurePlaceService"]).ValueString);
+			listPlaceService.SelectedIndex=Prefs.GetInt("DefaultProcedurePlaceService");
+			if(Prefs.GetInt("InsBillingProv")==0){//this can later be extended to include a 3rd option
+				radioInsBillingProvDefault.Checked=true;//default=0
+			}
+			else{
+				radioInsBillingProvTreat.Checked=true;//treat=1
+			}
 		}
 
 		private void textPhone_TextChanged(object sender, System.EventArgs e) {
@@ -630,9 +446,9 @@ namespace OpenDental{
 			textPhone.SelectionStart=cursor;		
 		}
 
-		private void butTreatProv_Click(object sender, System.EventArgs e) {
-			listBillProv.SelectedIndex=-1;
-		}
+		//private void butTreatProv_Click(object sender, System.EventArgs e) {
+		//	listBillProv.SelectedIndex=-1;
+		//}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
 			string phone=textPhone.Text;
@@ -646,114 +462,51 @@ namespace OpenDental{
 					return;
 				}
 			}
-			Prefs.Cur.PrefName="PracticeTitle";
-			Prefs.Cur.ValueString=textPracticeTitle.Text;
-			Prefs.UpdateCur();
-
-			Prefs.Cur.PrefName="PracticeAddress";
-			Prefs.Cur.ValueString=textAddress.Text;
-			Prefs.UpdateCur();
-
-			Prefs.Cur.PrefName="PracticeAddress2";
-			Prefs.Cur.ValueString=textAddress2.Text;
-			Prefs.UpdateCur();
-
-			Prefs.Cur.PrefName="PracticeCity";
-			Prefs.Cur.ValueString=textCity.Text;
-			Prefs.UpdateCur();
-
-			Prefs.Cur.PrefName="PracticeST";
-			Prefs.Cur.ValueString=textST.Text;
-			Prefs.UpdateCur();
-
-			Prefs.Cur.PrefName="PracticeZip";
-			Prefs.Cur.ValueString=textZip.Text;
-			Prefs.UpdateCur();
-
-			Prefs.Cur.PrefName="PracticePhone";
-			Prefs.Cur.ValueString=phone;
-			Prefs.UpdateCur();
-
-			Prefs.Cur.PrefName="PracticeBankNumber";
-			Prefs.Cur.ValueString=textBankNumber.Text;
-			Prefs.UpdateCur();
-
+			bool changed=false;
+			if( Prefs.UpdateString("PracticeTitle",textPracticeTitle.Text)
+				| Prefs.UpdateString("PracticeAddress",textAddress.Text)
+				| Prefs.UpdateString("PracticeAddress2",textAddress2.Text)
+				| Prefs.UpdateString("PracticeCity",textCity.Text)
+				| Prefs.UpdateString("PracticeST",textST.Text)
+				| Prefs.UpdateString("PracticeZip",textZip.Text)
+				| Prefs.UpdateString("PracticePhone",phone)
+				| Prefs.UpdateString("PracticeBankNumber",textBankNumber.Text))
+			{
+				changed=true;
+			}
 			if(listProvider.SelectedIndex==-1//practice really needs a default prov
-				&& Providers.List.Length > 0){
+				&& Providers.List.Length > 0)
+			{
 				listProvider.SelectedIndex=0;
 			}
-
 			if(listProvider.SelectedIndex!=-1){
-				Prefs.Cur.PrefName="PracticeDefaultProv";
-				Prefs.Cur.ValueString=Providers.List[listProvider.SelectedIndex].ProvNum.ToString();
-				Prefs.UpdateCur();
+				if(Prefs.UpdateInt("PracticeDefaultProv",Providers.List[listProvider.SelectedIndex].ProvNum)){
+					changed=true;
+				}
 			}
-			
 			if(listBillType.SelectedIndex!=-1){
-				Prefs.Cur.PrefName="PracticeDefaultBillType";
-				Prefs.Cur.ValueString=Defs.Short[(int)DefCat.BillingTypes][listBillType.SelectedIndex].DefNum.ToString();
-				Prefs.UpdateCur();
+				if(Prefs.UpdateInt("PracticeDefaultBillType"
+					,Defs.Short[(int)DefCat.BillingTypes][listBillType.SelectedIndex].DefNum))
+				{
+					changed=true;
+				}
 			}
-
-			Prefs.Cur.PrefName="TreatmentPlanNote";
-			Prefs.Cur.ValueString=textTreatNote.Text;
-			Prefs.UpdateCur();
-
-			Prefs.Cur.PrefName="TreatPlanShowGraphics";
-			if(checkTreatPlanShowGraphics.Checked) Prefs.Cur.ValueString="1";
-			else Prefs.Cur.ValueString="0";
-			Prefs.UpdateCur();
-
-			Prefs.Cur.PrefName="TreatPlanShowCompleted";
-			if(checkTreatPlanShowCompleted.Checked) Prefs.Cur.ValueString="1";
-			else Prefs.Cur.ValueString="0";
-			Prefs.UpdateCur();
-
-			Prefs.Cur.PrefName="TreatPlanShowIns";
-			if(checkTreatPlanShowIns.Checked) Prefs.Cur.ValueString="1";
-			else Prefs.Cur.ValueString="0";
-			Prefs.UpdateCur();
-
-			Prefs.Cur.PrefName="StatementShowCreditCard";
-			if(checkShowCC.Checked) Prefs.Cur.ValueString="1";
-			else Prefs.Cur.ValueString="0";
-			Prefs.UpdateCur();
-
-			Prefs.Cur.PrefName="AutoRefreshIsDisabled";
-			if(checkAutoRefresh.Checked) Prefs.Cur.ValueString="1";
-			else Prefs.Cur.ValueString="0";
-			Prefs.UpdateCur();
-
-			Prefs.Cur.PrefName="AllowMultipleCopiesOfProgram";
-			if(checkAllowMultipleCopiesOfProgram.Checked) Prefs.Cur.ValueString="1";
-			else Prefs.Cur.ValueString="0";
-			Prefs.UpdateCur();
-
-			Prefs.Cur.PrefName="MainWindowTitle";
-			Prefs.Cur.ValueString=textMainWindowTitle.Text;
-			Prefs.UpdateCur();
-
-			Prefs.Cur.PrefName="UseInternationalToothNumbers";
-			if(checkITooth.Checked) Prefs.Cur.ValueString="1";
-			else Prefs.Cur.ValueString="0";
-			Prefs.UpdateCur();
-
-			Prefs.Cur.PrefName="DefaultProcedurePlaceService";
-			Prefs.Cur.ValueString=listPlaceService.SelectedIndex.ToString();
-			Prefs.UpdateCur();
-
-			//Prefs.Cur.PrefName="PracticeBillProv"; //might use later
-			//if(listBillProv.SelectedIndex==-1){
-			//	Prefs.Cur.ValueString="0";
-			//}
-			//else{
-			//	Prefs.Cur.ValueString=Providers.List[listBillProv.SelectedIndex].ProvNum.ToString();
-			//}
-			//Prefs.UpdateCur();
-
-			DataValid.IType=InvalidType.LocalData;
-			DataValid DataValid2=new DataValid();
-			DataValid2.SetInvalid();
+			if(Prefs.UpdateInt("DefaultProcedurePlaceService",listPlaceService.SelectedIndex)){
+				changed=true;
+			}
+			if(radioInsBillingProvDefault.Checked){//default=0
+				if(Prefs.UpdateInt("InsBillingProv",0)){
+					changed=true;
+				}
+			}
+			else{//treat=1
+				if(Prefs.UpdateInt("InsBillingProv",1)){
+					changed=true;
+				}
+			}
+			if(changed){
+				DataValid.SetInvalid(InvalidTypes.Prefs);
+			}
 			DialogResult=DialogResult.OK;
 		}
 

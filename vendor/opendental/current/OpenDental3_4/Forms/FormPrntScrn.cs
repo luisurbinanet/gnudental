@@ -327,23 +327,12 @@ namespace OpenDental{
 			pd2=new PrintDocument();
 			pd2.PrintPage += new PrintPageEventHandler(this.pd2_PrintPage);
 //			pd2.DefaultPageSettings.Margins= new Margins(10,40,40,60);
-			PrintDocument tempPD = new PrintDocument();
-			tempPD.PrinterSettings.PrinterName=Computers.Cur.PrinterName;
-			if(tempPD.PrinterSettings.IsValid){
-				pd2.PrinterSettings.PrinterName=Computers.Cur.PrinterName;
-			}
-			//uses default printer if selected printer not valid
-			tempPD.Dispose();
-			try  {
+			try {
 				if(justPreview){
 					printPreviewControl2.Document=pd2;
 				}
-				else{
-					printDialog2=new PrintDialog();
-					printDialog2.Document=pd2;
-					if(printDialog2.ShowDialog()==DialogResult.OK){
-						pd2.Print();
-					}
+				else if(Printers.SetPrinter(pd2,PrintSituation.Default)){
+					pd2.Print();
 				}
 			}
 			catch{

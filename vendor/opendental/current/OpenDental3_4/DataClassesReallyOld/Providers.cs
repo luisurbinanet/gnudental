@@ -182,6 +182,17 @@ namespace OpenDental{
 			return retStr;
 		}
 
+		///<summary>Used in the HouseCalls bridge</summary>
+		public static string GetLName(int provNum){
+			string retStr="";
+			for(int i=0;i<ListLong.Length;i++){
+				if(ListLong[i].ProvNum==provNum){
+					retStr=ListLong[i].LName;
+				}
+			}
+			return retStr;
+		}
+
 		///<summary></summary>
 		public static Color GetColor(int provNum){
 			Color retCol=Color.White;

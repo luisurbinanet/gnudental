@@ -13,6 +13,7 @@ namespace OpenDental{
 		private OpenDental.UI.Button butUp;
 		private OpenDental.UI.Button butAdd;
 		private System.ComponentModel.Container components = null;
+		private bool changed;
 		
 		///<summary></summary>
 		public FormProviderSelect(){
@@ -193,14 +194,15 @@ namespace OpenDental{
 		}
 
 		private void butAdd_Click(object sender, System.EventArgs e) {
-			FormProvEdit FormProvEdit2 = new FormProvEdit();
-			Providers.Cur = new Provider();
+			FormProvEdit FormProvEdit2=new FormProvEdit();
+			Providers.Cur=new Provider();
 			Providers.Cur.ItemOrder=Providers.ListLong.Length;
 			FormProvEdit2.IsNew=true;
 			FormProvEdit2.ShowDialog();
 			if(FormProvEdit2.DialogResult!=DialogResult.OK){
 				return;
 			}
+			changed=true;
 			Providers.Selected=Providers.ListLong.Length;//this is one more than allowed, but it's ok;
 			FillList();
 		}
@@ -216,27 +218,34 @@ namespace OpenDental{
 
 		private void butUp_Click(object sender, System.EventArgs e) {
 			Providers.MoveUp();
+			changed=true;
 			FillList();
 		}
 
 		private void butDown_Click(object sender, System.EventArgs e) {
 			Providers.MoveDown();
+			changed=true;
 			FillList();
 		}
 
 		private void listProviders_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
-			if(listProviders.IndexFromPoint(e.X,e.Y)<0) return;
+			if(listProviders.IndexFromPoint(e.X,e.Y)<0)
+				return;
 			Providers.Selected=listProviders.IndexFromPoint(e.X,e.Y);
 			listProviders.SelectedIndex=listProviders.IndexFromPoint(e.X,e.Y);
-
 		}
 
 		private void listProviders_DoubleClick(object sender, System.EventArgs e) {
-			if(listProviders.SelectedIndex<0) return;
+			if(listProviders.SelectedIndex<0)
+				return;
 			FormProvEdit FormProvEdit2=new FormProvEdit();
 			FormProvEdit2.IsNew=false;
 			Providers.Cur=Providers.ListLong[Providers.Selected];
 			FormProvEdit2.ShowDialog();
+			if(FormProvEdit2.DialogResult!=DialogResult.OK){
+				return;
+			}
+			changed=true;
 			FillList();
 		}
 
@@ -245,9 +254,9 @@ namespace OpenDental{
 		}
 
 		private void FormProviderSelect_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-			DataValid.IType=InvalidType.LocalData;
-			DataValid DataValid2=new DataValid();
-			DataValid2.SetInvalid();
+			if(changed){
+				DataValid.SetInvalid(InvalidTypes.Providers);
+			}
 			SecurityLogs.MakeLogEntry("Providers","Altered Providers");
 		}
 

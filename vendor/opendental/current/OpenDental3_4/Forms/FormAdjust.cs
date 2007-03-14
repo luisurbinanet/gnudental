@@ -21,7 +21,6 @@ namespace OpenDental{
 		public bool IsNew;
 		private OpenDental.UI.Button butOK;
 		private OpenDental.UI.Button butCancel;
-		private OpenDental.ValidDate textDate;
 		private System.Windows.Forms.Label label3;
 		private OpenDental.UI.Button butDelete;
 		private OpenDental.ValidDouble textAmount;
@@ -32,11 +31,16 @@ namespace OpenDental{
 		private OpenDental.ODtextBox textNote;
 		private ArrayList NegIndex=new ArrayList();
 		private Patient PatCur;
+		private OpenDental.ValidDate textProcDate;
+		private System.Windows.Forms.Label label7;
+		private OpenDental.ValidDate textAdjDate;
+		private Adjustment AdjustmentCur;
 
 		///<summary></summary>
-		public FormAdjust(Patient patCur){
+		public FormAdjust(Patient patCur,Adjustment adjustmentCur){
 			InitializeComponent();
 			PatCur=patCur;
+			AdjustmentCur=adjustmentCur;
 			Lan.F(this);
 		}
 
@@ -60,7 +64,7 @@ namespace OpenDental{
 			this.label2 = new System.Windows.Forms.Label();
 			this.butOK = new OpenDental.UI.Button();
 			this.butCancel = new OpenDental.UI.Button();
-			this.textDate = new OpenDental.ValidDate();
+			this.textAdjDate = new OpenDental.ValidDate();
 			this.label3 = new System.Windows.Forms.Label();
 			this.butDelete = new OpenDental.UI.Button();
 			this.textAmount = new OpenDental.ValidDouble();
@@ -68,15 +72,17 @@ namespace OpenDental{
 			this.listTypePos = new System.Windows.Forms.ListBox();
 			this.listTypeNeg = new System.Windows.Forms.ListBox();
 			this.textNote = new OpenDental.ODtextBox();
+			this.textProcDate = new OpenDental.ValidDate();
+			this.label7 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(25, 30);
+			this.label1.Location = new System.Drawing.Point(7, 38);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(86, 16);
+			this.label1.Size = new System.Drawing.Size(104, 16);
 			this.label1.TabIndex = 0;
-			this.label1.Text = "Date";
+			this.label1.Text = "Entry Date";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label4
@@ -90,7 +96,7 @@ namespace OpenDental{
 			// 
 			// label5
 			// 
-			this.label5.Location = new System.Drawing.Point(12, 60);
+			this.label5.Location = new System.Drawing.Point(11, 86);
 			this.label5.Name = "label5";
 			this.label5.Size = new System.Drawing.Size(100, 16);
 			this.label5.TabIndex = 4;
@@ -108,7 +114,7 @@ namespace OpenDental{
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(10, 92);
+			this.label2.Location = new System.Drawing.Point(10, 110);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(100, 16);
 			this.label2.TabIndex = 10;
@@ -144,12 +150,13 @@ namespace OpenDental{
 			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
-			// textDate
+			// textAdjDate
 			// 
-			this.textDate.Location = new System.Drawing.Point(112, 28);
-			this.textDate.Name = "textDate";
-			this.textDate.TabIndex = 0;
-			this.textDate.Text = "";
+			this.textAdjDate.Location = new System.Drawing.Point(112, 36);
+			this.textAdjDate.Name = "textAdjDate";
+			this.textAdjDate.Size = new System.Drawing.Size(80, 20);
+			this.textAdjDate.TabIndex = 0;
+			this.textAdjDate.Text = "";
 			// 
 			// label3
 			// 
@@ -175,7 +182,7 @@ namespace OpenDental{
 			// 
 			// textAmount
 			// 
-			this.textAmount.Location = new System.Drawing.Point(112, 58);
+			this.textAmount.Location = new System.Drawing.Point(112, 84);
 			this.textAmount.Name = "textAmount";
 			this.textAmount.Size = new System.Drawing.Size(80, 20);
 			this.textAmount.TabIndex = 1;
@@ -183,7 +190,7 @@ namespace OpenDental{
 			// 
 			// listProvider
 			// 
-			this.listProvider.Location = new System.Drawing.Point(112, 90);
+			this.listProvider.Location = new System.Drawing.Point(112, 108);
 			this.listProvider.Name = "listProvider";
 			this.listProvider.Size = new System.Drawing.Size(100, 95);
 			this.listProvider.TabIndex = 2;
@@ -216,11 +223,30 @@ namespace OpenDental{
 			this.textNote.TabIndex = 0;
 			this.textNote.Text = "";
 			// 
+			// textProcDate
+			// 
+			this.textProcDate.Location = new System.Drawing.Point(112, 60);
+			this.textProcDate.Name = "textProcDate";
+			this.textProcDate.Size = new System.Drawing.Size(80, 20);
+			this.textProcDate.TabIndex = 19;
+			this.textProcDate.Text = "";
+			// 
+			// label7
+			// 
+			this.label7.Location = new System.Drawing.Point(7, 62);
+			this.label7.Name = "label7";
+			this.label7.Size = new System.Drawing.Size(104, 16);
+			this.label7.TabIndex = 18;
+			this.label7.Text = "Procedure Date";
+			this.label7.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
 			// FormAdjust
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(731, 528);
+			this.Controls.Add(this.textProcDate);
+			this.Controls.Add(this.label7);
 			this.Controls.Add(this.textNote);
 			this.Controls.Add(this.listTypeNeg);
 			this.Controls.Add(this.listTypePos);
@@ -228,7 +254,7 @@ namespace OpenDental{
 			this.Controls.Add(this.textAmount);
 			this.Controls.Add(this.butDelete);
 			this.Controls.Add(this.label3);
-			this.Controls.Add(this.textDate);
+			this.Controls.Add(this.textAdjDate);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.label2);
@@ -253,42 +279,40 @@ namespace OpenDental{
 				//
 			}
 			else{				
-				if(!UserPermissions.CheckUserPassword("Adjustment Edit",Adjustments.Cur.AdjDate)){
-					//MessageBox.Show(Lan.g(this,"You only have permission to view the Adjustment. No changes will be saved."));
+				if(!UserPermissions.CheckUserPassword("Adjustment Edit",AdjustmentCur.AdjDate)){
 					butOK.Enabled=false;
 					butDelete.Enabled=false;
 				}					
 			}
-			//OriginalDate=Adjustments.Cur.AdjDate;
-			//OriginalAmt=Adjustments.Cur.AdjAmt;
-			this.textDate.Text=Adjustments.Cur.AdjDate.ToString("d");
-			if(Defs.GetValue(DefCat.AdjTypes,Adjustments.Cur.AdjType)=="+"){//pos
-				textAmount.Text=Adjustments.Cur.AdjAmt.ToString("F");
+			textAdjDate.Text=AdjustmentCur.AdjDate.ToShortDateString();
+			textProcDate.Text=AdjustmentCur.ProcDate.ToShortDateString();
+			if(Defs.GetValue(DefCat.AdjTypes,AdjustmentCur.AdjType)=="+"){//pos
+				textAmount.Text=AdjustmentCur.AdjAmt.ToString("F");
 			}
 			else{//neg
-				textAmount.Text=(-Adjustments.Cur.AdjAmt).ToString("F");//shows without the neg sign
+				textAmount.Text=(-AdjustmentCur.AdjAmt).ToString("F");//shows without the neg sign
 			}
 			for(int i=0;i<Providers.List.Length;i++){
 				this.listProvider.Items.Add(Providers.List[i].Abbr);
-				if(Providers.List[i].ProvNum==Adjustments.Cur.ProvNum)
+				if(Providers.List[i].ProvNum==AdjustmentCur.ProvNum)
 					listProvider.SelectedIndex=i;
 			}				
 			for(int i=0;i<Defs.Short[1].Length;i++){//temp.AdjType
 				if(Defs.Short[1][i].ItemValue=="+"){
 					PosIndex.Add(i);
 					listTypePos.Items.Add(Defs.Short[1][i].ItemName);
-					if(Defs.Short[1][i].DefNum==Adjustments.Cur.AdjType)
+					if(Defs.Short[1][i].DefNum==AdjustmentCur.AdjType)
 						listTypePos.SelectedIndex=PosIndex.Count-1;
 				}
 				else if(Defs.Short[1][i].ItemValue=="-"){
 					NegIndex.Add(i);
 					listTypeNeg.Items.Add(Defs.Short[1][i].ItemName);
-					if(Defs.Short[1][i].DefNum==Adjustments.Cur.AdjType)
+					if(Defs.Short[1][i].DefNum==AdjustmentCur.AdjType)
 						listTypeNeg.SelectedIndex=NegIndex.Count-1;
 				}
 			}
 			//this.listProvNum.SelectedIndex=(int)temp.ProvNum;
-			this.textNote.Text=Adjustments.Cur.AdjNote;
+			this.textNote.Text=AdjustmentCur.AdjNote;
 		}
 
 		private void listTypePos_SelectedIndexChanged(object sender, System.EventArgs e) {
@@ -300,7 +324,8 @@ namespace OpenDental{
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			if(  textDate.errorProvider1.GetError(textDate)!=""
+			if(  textAdjDate.errorProvider1.GetError(textAdjDate)!=""
+				|| textProcDate.errorProvider1.GetError(textProcDate)!=""
 				|| textAmount.errorProvider1.GetError(textAmount)!=""
 				){
 				MessageBox.Show(Lan.g(this,"Please fix data entry errors first."));
@@ -314,36 +339,38 @@ namespace OpenDental{
 				MsgBox.Show(this,"Please select a type first.");
 				return;
 			}
-			Adjustments.Cur.AdjDate=PIn.PDate(textDate.Text);
+			AdjustmentCur.AdjDate=PIn.PDate(textAdjDate.Text);
+			AdjustmentCur.ProcDate=PIn.PDate(textProcDate.Text);
 			if(listProvider.SelectedIndex==-1)
-				Adjustments.Cur.ProvNum=PatCur.PriProv;
+				AdjustmentCur.ProvNum=PatCur.PriProv;
 			else
-				Adjustments.Cur.ProvNum=Providers.List[this.listProvider.SelectedIndex].ProvNum;
+				AdjustmentCur.ProvNum=Providers.List[this.listProvider.SelectedIndex].ProvNum;
 			if(listTypePos.SelectedIndex!=-1){
-				Adjustments.Cur.AdjType
+				AdjustmentCur.AdjType
 					=Defs.Short[(int)DefCat.AdjTypes][(int)PosIndex[listTypePos.SelectedIndex]].DefNum;
 			}
 			if(listTypeNeg.SelectedIndex!=-1){
-				Adjustments.Cur.AdjType
+				AdjustmentCur.AdjType
 					=Defs.Short[(int)DefCat.AdjTypes][(int)NegIndex[listTypeNeg.SelectedIndex]].DefNum;
 			}
 			//no longer allowed to click OK if neither selected
 			//if(listTypeNeg.SelectedIndex==-1 && listTypePos.SelectedIndex==-1){
-			//	Adjustments.Cur.AdjType=Defs.Short[(int)DefCat.AdjTypes][0].DefNum;
+			//	AdjustmentCur.AdjType=Defs.Short[(int)DefCat.AdjTypes][0].DefNum;
 			//}
-			if(Defs.GetValue(DefCat.AdjTypes,Adjustments.Cur.AdjType)=="+"){//pos
-				Adjustments.Cur.AdjAmt=PIn.PDouble(textAmount.Text);
+			if(Defs.GetValue(DefCat.AdjTypes,AdjustmentCur.AdjType)=="+"){//pos
+				AdjustmentCur.AdjAmt=PIn.PDouble(textAmount.Text);
 			}
 			else{//neg
-				Adjustments.Cur.AdjAmt=-PIn.PDouble(textAmount.Text);
+				AdjustmentCur.AdjAmt=-PIn.PDouble(textAmount.Text);
 			}
-			Adjustments.Cur.AdjNote=textNote.Text;
+			AdjustmentCur.AdjNote=textNote.Text;
 			if(IsNew){
-				Adjustments.InsertCur();
+				AdjustmentCur.Insert();
 			}
 			else{
-				Adjustments.UpdateCur();
-		  	SecurityLogs.MakeLogEntry("Adjustment Edit",Adjustments.cmd.CommandText);
+				AdjustmentCur.Update();
+		  	SecurityLogs.MakeLogEntry("Adjustment Edit","Adjustment edited for patient "
+					+AdjustmentCur.PatNum.ToString());
 			}
 			DialogResult=DialogResult.OK;
 		}
@@ -353,8 +380,8 @@ namespace OpenDental{
 				DialogResult=DialogResult.Cancel;
 			}
 			else{
-				SecurityLogs.MakeLogEntry("Adjustment Edit","Delete. patNum: "+Adjustments.Cur.PatNum.ToString());
-				Adjustments.DeleteCur();
+				SecurityLogs.MakeLogEntry("Adjustment Edit","Delete. patNum: "+AdjustmentCur.PatNum.ToString());
+				AdjustmentCur.Delete();
 				DialogResult=DialogResult.OK;
 			}
 		}

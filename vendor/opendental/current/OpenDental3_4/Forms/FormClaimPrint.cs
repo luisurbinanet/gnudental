@@ -196,24 +196,21 @@ namespace OpenDental{
 			Preview2.Document=pd2;//display document
 		}
 
-		///<summary>Only called from external forms without ever loading this form.  Prints without showing any print preview.  The printer name is set externally before this method is called.  Returns true if printed successfully.</summary>
-		///<param name="printerName">The printername must be determined before calling this method.  However, if the printername is not valid, then the default printer will be used.</param>
+		///<summary>Only called from external forms without ever loading this form.  Prints without showing any print preview.  Returns true if printed successfully.  You have to supply a printer name because this can be called multiple times when printing batch claims.</summary>
 		public bool PrintImmediate(string printerName){
 			pd2=new PrintDocument();
 			pagesPrinted=0;
-			pd2.PrinterSettings.PrinterName=printerName;
-			if(!pd2.PrinterSettings.IsValid){
-				pd2.PrinterSettings.PrinterName=null;
-			}
 			pd2.OriginAtMargins=true;
 			pd2.DefaultPageSettings.Margins=new Margins(0,0,0,0);
 			pd2.PrintPage+=new PrintPageEventHandler(this.pd2_PrintPage);
-			//try{
+			pd2.PrinterSettings.PrinterName=printerName;
+			try{
 				pd2.Print();
-			//}
-			//catch{
-			//	return false;
-			//}
+			}
+			catch{
+				MessageBox.Show(Lan.g("Printer","Printer not available"));
+				return false;
+			}
 			return true;
 		}
 
@@ -300,25 +297,23 @@ namespace OpenDental{
 			}
 		}
 
-		///<summary>Only used when the print button is clicked from within this form during print preview.  Unlike PrintImmediate, this method must include selecting the appropriate printer.</summary>
+		///<summary>Only used when the print button is clicked from within this form during print preview.</summary>
 		public bool PrintClaim(){
-			pd2.PrinterSettings.PrinterName=Computers.Cur.PrinterName;
-			if(!pd2.PrinterSettings.IsValid){
-				pd2.PrinterSettings.PrinterName=null;
-			}
 			pd2.OriginAtMargins=true;
 			pd2.DefaultPageSettings.Margins=new Margins(0,0,0,0);
-			try{
-				printDialog2=new PrintDialog();
-				printDialog2.Document=pd2;
-				if(printDialog2.ShowDialog()==DialogResult.OK){
+			pagesPrinted=0;
+			if(Printers.SetPrinter(pd2,PrintSituation.Claim)){
+				try{
 					pd2.Print();
 				}
+				catch{
+					MessageBox.Show(Lan.g("Printer","Printer not available."));
+					return false;
+				}
 			}
-			catch{
-				MessageBox.Show(Lan.g(this,"Printer not available."));
-				return false;
-			}
+			else{
+				return false;//if they hit cancel
+			}		
 			return true;
 		}
 
@@ -1634,17 +1629,18 @@ namespace OpenDental{
 					//surf blank
 					break;
 				case TreatmentArea.Quad:
-					area=ProcCur.Surf;//area "UL" etc
+					area=AreaToCode(ProcCur.Surf);//"UL" etc -> 20 etc
 					//num blank
 					//surf blank
 					break;
 				case TreatmentArea.Sextant:
-					area="S"+ProcCur.Surf;//area
+					area="";//leave it blank.  Never used anyway.
+					//area="S"+ProcCur.Surf;//area
 					//num blank
 					//surf blank
 					break;
 				case TreatmentArea.Arch:
-					area=ProcCur.Surf;//area "U", etc
+					area=AreaToCode(ProcCur.Surf);//area "U", etc
 					//num blank
 					//surf blank
 					break;
@@ -1678,6 +1674,24 @@ namespace OpenDental{
 			return "";//should never get to here
 		}
 
+		private string AreaToCode(string area){
+			switch(area){
+				case "U":
+					return "01";
+				case "L":
+					return "02";
+				case "UR":
+					return "10";
+				case "UL":
+					return "20";
+				case "LL":
+					return "30";
+				case "LR":
+					return "40";
+			}
+			return "";
+		}
+
 		private void butBack_Click(object sender, System.EventArgs e){
 			if(Preview2.StartPage==0) return;
 			Preview2.StartPage--;
@@ -1693,7 +1707,6 @@ namespace OpenDental{
 		}
 
 		private void butPrint_Click(object sender, System.EventArgs e){
-			pagesPrinted=0;
 			if(PrintClaim()){
 				Claims.UpdateStatus(ThisClaimNum,"P");
 				DialogResult=DialogResult.OK;

@@ -17,7 +17,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public FormProcMode Mode;
 		private OpenDental.UI.Button butCancel;
-		private System.Windows.Forms.Panel panel1;//"select" or "view"
+		private System.Windows.Forms.Panel panel1;
 		///<summary></summary>
 		public string SelectedADA;	
 		private int tableCount;
@@ -25,8 +25,11 @@ namespace OpenDental{
 		private System.Windows.Forms.Label labelFeeSched;
 		private int tableLength;
 		private OpenDental.UI.Button butNew;
+		private System.Windows.Forms.GroupBox groupBox1;
+		private OpenDental.UI.Button butDuplicate;
 		private OpenDental.TableCodeList[] tb;
-		private System.Windows.Forms.DataGrid dataGrid1;
+		private OpenDental.UI.Button butEdit;
+		private bool changed;
 
 		///<summary></summary>
 		public FormProcedures(){
@@ -54,8 +57,10 @@ namespace OpenDental{
 			this.listFeeSched = new System.Windows.Forms.ListBox();
 			this.labelFeeSched = new System.Windows.Forms.Label();
 			this.butNew = new OpenDental.UI.Button();
-			this.dataGrid1 = new System.Windows.Forms.DataGrid();
-			((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).BeginInit();
+			this.butEdit = new OpenDental.UI.Button();
+			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.butDuplicate = new OpenDental.UI.Button();
+			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// butClose
@@ -65,7 +70,7 @@ namespace OpenDental{
 			this.butClose.Autosize = true;
 			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butClose.Location = new System.Drawing.Point(848, 608);
+			this.butClose.Location = new System.Drawing.Point(849, 608);
 			this.butClose.Name = "butClose";
 			this.butClose.Size = new System.Drawing.Size(92, 26);
 			this.butClose.TabIndex = 1;
@@ -115,10 +120,11 @@ namespace OpenDental{
 			// listFeeSched
 			// 
 			this.listFeeSched.Anchor = System.Windows.Forms.AnchorStyles.None;
-			this.listFeeSched.Location = new System.Drawing.Point(838, 52);
+			this.listFeeSched.Location = new System.Drawing.Point(837, 52);
 			this.listFeeSched.Name = "listFeeSched";
 			this.listFeeSched.Size = new System.Drawing.Size(104, 303);
 			this.listFeeSched.TabIndex = 11;
+			this.listFeeSched.DoubleClick += new System.EventHandler(this.listFeeSched_DoubleClick);
 			this.listFeeSched.SelectedIndexChanged += new System.EventHandler(this.listFeeSched_SelectedIndexChanged);
 			// 
 			// labelFeeSched
@@ -140,27 +146,57 @@ namespace OpenDental{
 			this.butNew.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butNew.Location = new System.Drawing.Point(866, 568);
 			this.butNew.Name = "butNew";
-			this.butNew.Size = new System.Drawing.Size(75, 26);
+			this.butNew.Size = new System.Drawing.Size(75, 25);
 			this.butNew.TabIndex = 0;
 			this.butNew.Text = "&New Code";
 			this.butNew.Visible = false;
 			this.butNew.Click += new System.EventHandler(this.butNew_Click);
 			// 
-			// dataGrid1
+			// butEdit
 			// 
-			this.dataGrid1.DataMember = "";
-			this.dataGrid1.HeaderForeColor = System.Drawing.SystemColors.ControlText;
-			this.dataGrid1.Location = new System.Drawing.Point(58, 56);
-			this.dataGrid1.Name = "dataGrid1";
-			this.dataGrid1.Size = new System.Drawing.Size(650, 620);
-			this.dataGrid1.TabIndex = 14;
-			this.dataGrid1.Visible = false;
+			this.butEdit.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butEdit.Autosize = true;
+			this.butEdit.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butEdit.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butEdit.Location = new System.Drawing.Point(10, 18);
+			this.butEdit.Name = "butEdit";
+			this.butEdit.Size = new System.Drawing.Size(85, 25);
+			this.butEdit.TabIndex = 13;
+			this.butEdit.Text = "Edit";
+			this.butEdit.Click += new System.EventHandler(this.butEdit_Click);
+			// 
+			// groupBox1
+			// 
+			this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox1.Controls.Add(this.butDuplicate);
+			this.groupBox1.Controls.Add(this.butEdit);
+			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.groupBox1.Location = new System.Drawing.Point(824, 360);
+			this.groupBox1.Name = "groupBox1";
+			this.groupBox1.Size = new System.Drawing.Size(130, 59);
+			this.groupBox1.TabIndex = 14;
+			this.groupBox1.TabStop = false;
+			this.groupBox1.Text = "Fee Schedules";
+			// 
+			// butDuplicate
+			// 
+			this.butDuplicate.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butDuplicate.Autosize = true;
+			this.butDuplicate.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butDuplicate.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butDuplicate.Location = new System.Drawing.Point(10, 50);
+			this.butDuplicate.Name = "butDuplicate";
+			this.butDuplicate.Size = new System.Drawing.Size(85, 25);
+			this.butDuplicate.TabIndex = 14;
+			this.butDuplicate.Text = "Duplicate";
+			this.butDuplicate.Visible = false;
+			this.butDuplicate.Click += new System.EventHandler(this.butDuplicate_Click);
 			// 
 			// FormProcedures
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(956, 730);
-			this.Controls.Add(this.dataGrid1);
+			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.butNew);
 			this.Controls.Add(this.labelFeeSched);
 			this.Controls.Add(this.listFeeSched);
@@ -175,7 +211,7 @@ namespace OpenDental{
 			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormProcedures_Closing);
 			this.Load += new System.EventHandler(this.FormProcedures_Load);
 			this.Activated += new System.EventHandler(this.FormProcedures_Activated);
-			((System.ComponentModel.ISupportInitialize)(this.dataGrid1)).EndInit();
+			this.groupBox1.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -212,6 +248,7 @@ namespace OpenDental{
 		}
 
 		private void FillTables(){
+			Fee fee;
 			ProcedureCodes.GetProcList();
 			panel1.Controls.Clear();
 			//math to find tableCount
@@ -220,7 +257,7 @@ namespace OpenDental{
 			//tableCount=2;
 			//tableStart=new int[tableCount];
 			//tableEnd=new int[tableCount];
-			this.dataGrid1.SetDataBinding(ProcedureCodes.tableStat,"");
+			//this.dataGrid1.SetDataBinding(ProcedureCodes.tableStat,"");
 			tb=new OpenDental.TableCodeList[tableCount];
 			for(int n=0;n<tableCount;n++){
 				tb[n]=new OpenDental.TableCodeList();
@@ -263,11 +300,12 @@ namespace OpenDental{
 					}
 				}
 				//if(ProcCodes.ProcList[i].ProcCat!=255){//don't print read-only codes
-					tb[iTable].Cell[0,iRow]=ProcedureCodes.ProcList[i].AbbrDesc;
-					tb[iTable].Cell[1,iRow]=Fees.GetFeeByOrder
-						(ProcedureCodes.ProcList[i].ADACode,listFeeSched.SelectedIndex).Amount.ToString("F");
-					tb[iTable].Cell[2,iRow]=ProcedureCodes.ProcList[i].ADACode;
-				//}
+				tb[iTable].Cell[0,iRow]=ProcedureCodes.ProcList[i].AbbrDesc;
+				tb[iTable].Cell[1,iRow]=ProcedureCodes.ProcList[i].ADACode;
+				fee=Fees.GetFeeByOrder(ProcedureCodes.ProcList[i].ADACode,listFeeSched.SelectedIndex);
+				if(fee!=null){
+					tb[iTable].Cell[2,iRow]=fee.Amount.ToString("F");
+				}
 				iRow++;
 				if(iRow==tableLength){
 					iRow=0;
@@ -283,9 +321,41 @@ namespace OpenDental{
 			FillTables();
 		}
 
+		private void listFeeSched_DoubleClick(object sender, System.EventArgs e) {
+			if(Mode!=FormProcMode.Edit){
+				return;
+			}
+			if(listFeeSched.SelectedIndex==-1){
+				return;
+			}
+			//not functional yet
+		}
+
+		private void butEdit_Click(object sender, System.EventArgs e) {
+			int selectedSched=Defs.Short[(int)DefCat.FeeSchedNames][listFeeSched.SelectedIndex].DefNum;
+			FormDefinitions FormD=new FormDefinitions(DefCat.FeeSchedNames);
+			FormD.ShowDialog();
+			listFeeSched.Items.Clear();
+			for(int i=0;i<Defs.Short[(int)DefCat.FeeSchedNames].Length;i++){
+				listFeeSched.Items.Add(Defs.Short[(int)DefCat.FeeSchedNames][i].ItemName);
+				if(Defs.Short[(int)DefCat.FeeSchedNames][i].DefNum==selectedSched){
+					listFeeSched.SelectedIndex=i;
+				}
+			}
+			if(listFeeSched.SelectedIndex==-1){
+				listFeeSched.SelectedIndex=0;
+			}
+			//FillTables();//will be done automatically because of lines above			
+		}
+
+		private void butDuplicate_Click(object sender, System.EventArgs e) {
+			//not functional yet
+		}
+
 		private void tb_CellClicked(object sender, CellEventArgs e){
 			for(int n=0;n<tableCount;n++){
-				if(OpenDental.TableCodeList.SelectedTable!=n){
+				if(OpenDental.TableCodeList.SelectedTable!=n){//for other tables
+					//deselect any rows
 					if(tb[n].SelectedRow==-1){
 						continue;
 					}	
@@ -296,34 +366,57 @@ namespace OpenDental{
 		}
 
 		private void tb_CellDoubleClicked(object sender, CellEventArgs e){
-			SelectedADA=tb[OpenDental.TableCodeList.SelectedTable].Cell[2,e.Row];
+			SelectedADA=tb[OpenDental.TableCodeList.SelectedTable].Cell[1,e.Row];
 			if(SelectedADA=="" || SelectedADA==null){
 				return;
 			}
 			switch(Mode){
 				case FormProcMode.Edit:
-					FormProcCodeEdit FormProcCodeEdit2=new FormProcCodeEdit();
-					ProcedureCodes.Cur=ProcedureCodes.GetProcCode(SelectedADA);
-					FormProcCodeEdit2.IsNew=false;
-					FormProcCodeEdit2.ShowDialog();
-					if(FormProcCodeEdit2.DialogResult==DialogResult.OK){
-						//DataValid.IType=InvalidType.LocalData;
-						//DataValid DataValid2=new DataValid();
-						//DataValid2.SetInvalid();
-						ProcedureCodes.Refresh();
-						//Fees.Refresh();//fees were already refreshed within procCodeEdit
-						FillTables();
-						tb[OpenDental.TableCodeList.SelectedTable].SelectedRow=e.Row;
-						tb[OpenDental.TableCodeList.SelectedTable].ColorRow(e.Row,SystemColors.Highlight);
+					if(e.Col==2){//if clicked on a fee
+						Fee FeeCur=Fees.GetFeeByOrder(SelectedADA,listFeeSched.SelectedIndex);
+						FormFeeEdit FormFE=new FormFeeEdit();
+						if(FeeCur==null){
+							FeeCur=new Fee();
+							FeeCur.ADACode=SelectedADA;
+							FeeCur.FeeSched=Defs.Short[(int)DefCat.FeeSchedNames][listFeeSched.SelectedIndex].DefNum;
+							FeeCur.Insert();
+							FormFE.IsNew=true;
+						}
+						FormFE.FeeCur=FeeCur;
+						FormFE.ShowDialog();
+						if(FormFE.DialogResult==DialogResult.OK){
+							Fees.Refresh();
+							changed=true;
+							FillTables();
+						}
 					}
-				break;
+					else{//not on a fee: Edit code instead
+						FormProcCodeEdit FormPCE=new FormProcCodeEdit();
+						ProcedureCodes.Cur=ProcedureCodes.GetProcCode(SelectedADA);
+						FormPCE.IsNew=false;
+						FormPCE.ShowDialog();
+						if(FormPCE.DialogResult==DialogResult.OK){
+							ProcedureCodes.Refresh();
+							changed=true;
+							//Fees.Refresh();//fees were already refreshed within procCodeEdit
+							FillTables();
+						}
+					}
+					break;
 				case FormProcMode.Select:
 					DialogResult=DialogResult.OK;
 					Close();
-				break;
+					break;
 				case FormProcMode.View:
-				break;
+					break;
 			}//end switch
+			for(int n=0;n<tableCount;n++){
+				for(int i=0;i<tb[n].MaxRows;i++){
+					if(SelectedADA==tb[n].Cell[1,i]){
+						tb[n].SetSelectedRow(i);
+					}
+				}
+			}
 		}
 
 		private void FormProcedures_Activated(object sender, System.EventArgs e){
@@ -348,6 +441,7 @@ namespace OpenDental{
 			//textADACode.Text=FormInputBox2.textBox1.Text;
 			if(FormProcCodeEdit2.DialogResult==DialogResult.OK){
 				ProcedureCodes.Refresh();
+				changed=true;
 				FillTables();
 			}
 			
@@ -366,12 +460,12 @@ namespace OpenDental{
 		}
 
 		private void FormProcedures_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-			if(Mode==FormProcMode.Edit){
-				DataValid.IType=InvalidType.LocalData;
-				DataValid DataValid2=new DataValid();
-				DataValid2.SetInvalid();
+			if(Mode==FormProcMode.Edit && changed){
+				DataValid.SetInvalid(InvalidTypes.ProcCodes | InvalidTypes.Fees);
 			}
 		}
+
+		
 
 
 	}//end class
@@ -383,5 +477,6 @@ namespace OpenDental{
 			///<summary></summary>
 			View,
 			///<summary></summary>
-			Select}
+			Select
+		}
 }//end namespace

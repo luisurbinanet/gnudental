@@ -112,7 +112,7 @@ namespace OpenDental{
 				+" AND (claimproc.Status = '1' OR claimproc.Status = '4')"//received or supplemental
  				+" AND (claimproc.ClaimPaymentNum = '"+claimPaymentNum+"'";
 			if(showUnattached){
-				cmd.CommandText+=" OR (claimproc.InsPayAmt > 0 && claimproc.ClaimPaymentNum = '0'))"
+				cmd.CommandText+=" OR (claimproc.InsPayAmt != 0 && claimproc.ClaimPaymentNum = '0'))"
 					+" GROUP BY claimproc.ClaimNum";
 			}
 			else{//shows only items attached to this payment
@@ -367,7 +367,7 @@ namespace OpenDental{
 				+"WHERE claim.PlanNum=insplan.PlanNum "
 				+"AND carrier.CarrierNum=insplan.CarrierNum "
 				+"AND ("+str.ToString()+") "
-				+"ORDER BY carrier.ElectID,claim.ProvBill,insplan.Subscriber,claim.PatNum";
+				+"ORDER BY carrier.ElectID,claim.ProvBill,insplan.Subscriber,insplan.Subscriber!=claim.PatNum,claim.PatNum";
 			FillTable();
 			object[,] myA=new object[5,table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
@@ -390,6 +390,9 @@ namespace OpenDental{
 			double insPayEst=0;
 			double insPayAmt=0;
 			InsPlan PlanCur=InsPlans.GetPlan(ClaimCur.PlanNum,PlanList);
+			if(PlanCur==null){
+				return;
+			}
 			//InsPlans.Cur=(InsPlan)InsPlans.HList[ClaimCur.PlanNum];
 			int provNum;
 			double dedRem;
@@ -422,7 +425,7 @@ namespace OpenDental{
 					if(provNum==0){//if no prov set, then use practice default.
 						provNum=Convert.ToInt32(((Pref)Prefs.HList["PracticeDefaultProv"]).ValueString);
 					}
-					ClaimProcsForClaim[i].FeeBilled=Fees.GetAmount(//get the fee based on ada and prov fee sched
+					ClaimProcsForClaim[i].FeeBilled=Fees.GetAmount0(//get the fee based on ada and prov fee sched
 						ProcCur.ADACode
 						,Providers.ListLong[Providers.GetIndexLong(provNum)].FeeSched);
 				}

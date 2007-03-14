@@ -22,16 +22,20 @@ namespace OpenDental{
 		private System.Version FromVersion;
 		private System.Version ToVersion;
 
-		///<summary>Return false to indicate exit app.</summary>
-		public bool Convert(string fromVersion){//
+		///<summary>Return false to indicate exit app.  Only called when program first starts up at the beginning of FormOpenDental.RefreshLocalData.</summary>
+		public bool Convert(string fromVersion){
 			FromVersion=new Version(fromVersion);
 			ToVersion=new Version(Application.ProductVersion);
-			if(FromVersion.CompareTo(ToVersion)>0){
-				MessageBox.Show("Cannot convert database to an older version.");
-				return false;
+			if(FromVersion>=new Version("3.4.0") && Prefs.GetBool("CorruptedDatabase")){
+				MsgBox.Show(this,"Your database is corrupted because a conversion failed.  Please contact us.  This database is unusable and you will need to restore from a backup.");
+				return false;//shuts program down.
+			}
+			if(FromVersion.CompareTo(ToVersion)>0){//"Cannot convert database to an older version."
+				//no longer necessary to catch it here.  It will be handled soon enough in CheckProgramVersion
+				return true;
 			}
 			if(FromVersion < new Version("2.1.2")){
-				MessageBox.Show("This database is too old to easily convert in one step. Please uninstall this version and install version 2.1 first. Run the program, and after converting to version 2.1, then install this version. We apologize for the inconvenience.");
+				MsgBox.Show(this,"This database is too old to easily convert in one step. Please uninstall this version and install version 2.1 first. Run the program, and after converting to version 2.1, then install this version. We apologize for the inconvenience.");
 				return false;
 			}
 			if(//FromVersion < new Version("1.0.0")
@@ -40,40 +44,70 @@ namespace OpenDental{
 				//|| FromVersion.ToString()=="2.1.1.0"
 				FromVersion.ToString()=="2.5.0.0"
 				|| FromVersion.ToString()=="2.9.0.0"
-				|| FromVersion.ToString()=="3.0.0.0"){
-				MessageBox.Show("Cannot convert database version "+FromVersion.ToString()
-					+" which was only for development purposes.");
+				|| FromVersion.ToString()=="3.0.0.0")
+			{
+				MsgBox.Show(this,"Cannot convert this database version which was only for development purposes.");
 				return false;
 			}
-			if(FromVersion < new Version("3.1.16.0")){
-				if(MessageBox.Show("Your database will now be converted from version "
-					+FromVersion.ToString()+" to version "+ToVersion.ToString()
-					+". Please be certain you have a current backup.  "
-					+"If the conversion fails for any reason, DO NOT use your corrupted database.  "
-					+"Instead, you MUST restore from a good backup.  "
-					+"The conversion works best if you are on the server.  "
-					+"Depending on the speed of your computer, it can be as fast as a few seconds, "
-					+"or it can take as long as 10 minutes. ","",MessageBoxButtons.OKCancel)
-					!=DialogResult.OK){
-					return false;
+			if(FromVersion < new Version("3.4.30.0")){
+				if(MessageBox.Show(Lan.g(this,"Your database will now be converted")+"\r"
+					+Lan.g(this,"from version")+" "+FromVersion.ToString()+"\r"
+					+Lan.g(this,"to version")+" "+ToVersion.ToString()+"\r"
+					+Lan.g(this,"The conversion works best if you are on the server.  Depending on the speed of your computer, it can be as fast as a few seconds, or it can take as long as 10 minutes.")
+					,"",MessageBoxButtons.OKCancel)
+					!=DialogResult.OK)
+				{
+					return false;//close the program
 				}
 			}
 			else{
 				return true;//no conversion necessary
 			}
-			if(!MakeABackup()){
-				MessageBox.Show("Backup failed. Your database has not been altered.");
-				return false;
-			}
+			#if !DEBUG
+				try{
+					MakeABackup();
+				}
+				catch(Exception e){
+					if(e.Message!=""){
+						MessageBox.Show(e.Message);
+					}
+					MsgBox.Show(this,"Backup failed. Your database has not been altered.");
+					return false;//but this should never happen
+				}
+			#endif
 			try{
+				if(FromVersion>=new Version("3.4.0")){
+					Prefs.UpdateBool("CorruptedDatabase",true);
+				}
 				To2_1_5();//begins going through the chain of conversion steps
-				MessageBox.Show("Conversion successful");
+				MsgBox.Show(this,"Conversion successful");
+				if(FromVersion>=new Version("3.4.0")){
+					Prefs.Refresh();//or it won't know it has to update in the next line.
+					Prefs.UpdateBool("CorruptedDatabase",false);
+				}
 				Prefs.Refresh();
 				return true;
 			}
-			catch(Exception e){
-				MessageBox.Show(e.Message);
-				//after returning false, a message will show the user that it was unsuccessful.
+			catch(System.IO.FileNotFoundException e){
+				MessageBox.Show(e.FileName+" "+Lan.g(this,"could not be found. Your database has not been altered and is still usable if you uninstall this version, then reinstall the previous version."));
+				if(FromVersion>=new Version("3.4.0")){
+					Prefs.UpdateBool("CorruptedDatabase",false);
+				}
+				//Prefs.Refresh();
+				return false;
+			}
+			catch(System.IO.DirectoryNotFoundException){
+				MessageBox.Show(Lan.g(this,"ConversionFiles folder could not be found. Your database has not been altered and is still usable if you uninstall this version, then reinstall the previous version."));
+				if(FromVersion>=new Version("3.4.0")){
+					Prefs.UpdateBool("CorruptedDatabase",false);
+				}
+				//Prefs.Refresh();
+				return false;
+			}
+			catch{
+			//	MessageBox.Show(e.Message);
+				MsgBox.Show(this,"Conversion unsuccessful. Your database is now corrupted and you cannot use it.  Please contact us.");
+				//Then, application will exit, and database will remain tagged as corrupted.
 				return false;
 			}
 		}
@@ -91,67 +125,58 @@ namespace OpenDental{
 		}
 
 		///<summary>Backs up the database to the same directory as the original just in case the user did not have sense enough to do a backup first.</summary>
-		private bool MakeABackup(){
-			try{
-				string oldDb=FormConfig.Database;
-				string newDb=oldDb+"backup_"+DateTime.Today.ToString("MM_dd_yyyy");
-				DataConnection dcon=new DataConnection();
-				string command="SHOW DATABASES";
-				DataTable table=dcon.GetTable(command);
-				string[] databases=new string[table.Rows.Count];
-				for(int i=0;i<table.Rows.Count;i++){
-					databases[i]=table.Rows[i][0].ToString();
+		public void MakeABackup(){
+			string oldDb=FormConfig.Database;
+			string newDb=oldDb+"backup_"+DateTime.Today.ToString("MM_dd_yyyy");
+			DataConnection dcon=new DataConnection();
+			string command="SHOW DATABASES";
+			DataTable table=dcon.GetTable(command);
+			string[] databases=new string[table.Rows.Count];
+			for(int i=0;i<table.Rows.Count;i++){
+				databases[i]=table.Rows[i][0].ToString();
+			}
+			if(Contains(databases,newDb)){//if the new database name already exists
+				//find a unique one
+				int uniqueID=1;
+				string originalNewDb=newDb;
+				do{
+					newDb=originalNewDb+"_"+uniqueID.ToString();
+					uniqueID++;
 				}
-				if(Contains(databases,newDb)){//if the new database name already exists
-					//find a unique one
-					int uniqueID=1;
-					string originalNewDb=newDb;
-					do{
-						newDb=originalNewDb+"_"+uniqueID.ToString();
-						uniqueID++;
-					}
-					while(Contains(databases,newDb));
-				}
-				command="CREATE DATABASE "+newDb;
-				dcon.NonQ(command);
-				command="SHOW TABLES";
+				while(Contains(databases,newDb));
+			}
+			command="CREATE DATABASE "+newDb;
+			dcon.NonQ(command);
+			command="SHOW TABLES";
+			table=dcon.GetTable(command);
+			string[] tableName=new string[table.Rows.Count];
+			for(int i=0;i<table.Rows.Count;i++){
+				tableName[i]=table.Rows[i][0].ToString();
+			}
+			//switch to using the new database
+			dcon=new DataConnection(newDb);
+			for(int i=0;i<tableName.Length;i++){
+				command="SHOW CREATE TABLE "+oldDb+"."+tableName[i];
 				table=dcon.GetTable(command);
-				string[] tableName=new string[table.Rows.Count];
-				for(int i=0;i<table.Rows.Count;i++){
-					tableName[i]=table.Rows[i][0].ToString();
-				}
-				//switch to using the new database
-				dcon=new DataConnection(newDb);
-				for(int i=0;i<tableName.Length;i++){
-					command="SHOW CREATE TABLE "+oldDb+"."+tableName[i];
-					table=dcon.GetTable(command);
-					command=table.Rows[0][1].ToString();
-					dcon.NonQ(command);
-					command="INSERT INTO "+newDb+"."+tableName[i]
-						+" SELECT * FROM "+oldDb+"."+tableName[i];
-					dcon.NonQ(command);
-				}
+				command=table.Rows[0][1].ToString();
+				dcon.NonQ(command);
+				command="INSERT INTO "+newDb+"."+tableName[i]
+					+" SELECT * FROM "+oldDb+"."+tableName[i];
+				dcon.NonQ(command);
 			}
-			catch(Exception e){
-				if(e.Message!=""){
-					MessageBox.Show(e.Message);
-				}
-				return false;
-			}
-			return true;
 		}
 
 		/// <summary>Takes a text file with a series of SQL commands, and sends them as queries to the database.  Used in version upgrades and in the function that downloads and installs the latest translations.  The filename is always relative to the application directory.  Throws an exception if it fails.</summary>
 		public void ExecuteFile(string fileName){
 			//also used in the function that downloads and installs the latests translations.
-			if(!File.Exists(fileName)){
-				throw new Exception(fileName+" could not be found.");
-			}
+			//if(!File.Exists(fileName)){
+			//	throw new Exception(fileName+" could not be found.");
+			//}
 			StreamReader sr;
 			string line="";
 			string cmd="";
 			ArrayList AL=new ArrayList();
-			sr=new StreamReader(fileName);
+			sr=new StreamReader(fileName);//throws a FileNotFoundException if not found. We handle that.
 			while(true){
 				line=sr.ReadLine();
 				if(line==null){
@@ -192,22 +217,13 @@ namespace OpenDental{
 
 		private void To2_5_1(){
 			if(FromVersion < new Version("2.5.1")){
-				//first check to see if the conversion file is available
-				if(!File.Exists(@"ConversionFiles\convert_2_5_1.txt")){
-					throw new Exception(@"ConversionFiles\convert_2_5_1.txt"+" could not be found. Your database has not been altered and is still usable if you install the previous version of Open Dental.");
-				}
-				//then, do all file transfers.
-				try{
-					File.Copy(@"ConversionFiles\DentiCal.jpg"
-						,((Pref)Prefs.HList["DocPath"]).ValueString+@"\DentiCal.jpg",true);
-					File.Copy(@"ConversionFiles\ADA2000.jpg"
-						,((Pref)Prefs.HList["DocPath"]).ValueString+@"\ADA2000.jpg",true);
-					File.Copy(@"ConversionFiles\HCFA1500.gif"
-						,((Pref)Prefs.HList["DocPath"]).ValueString+@"\HCFA1500.gif",true);
-				}
-				catch{
-					throw new Exception("Files could not be copied correctly.");
-				}
+				//these might generate a FileNotFoundException which we handle.
+				File.Copy(@"ConversionFiles\DentiCal.jpg"
+					,((Pref)Prefs.HList["DocPath"]).ValueString+@"\DentiCal.jpg",true);
+				File.Copy(@"ConversionFiles\ADA2000.jpg"
+					,((Pref)Prefs.HList["DocPath"]).ValueString+@"\ADA2000.jpg",true);
+				File.Copy(@"ConversionFiles\HCFA1500.gif"
+					,((Pref)Prefs.HList["DocPath"]).ValueString+@"\HCFA1500.gif",true);
 				//set the aptstatus of all the next appointments to Next.
 				//and update the dates on all the next appointments
 				Conversions.SelectText="SELECT patient.nextaptnum,procedurelog.procdate "
@@ -277,7 +293,7 @@ namespace OpenDental{
 					}
 					procs=procs.Substring(0,procs.Length-2);//trim the last comma and space
 					Conversions.NonQArray=new string[]{
-						"UPDATE appointment SET procdescript = '"+procs+"' "
+						"UPDATE appointment SET procdescript = '"+POut.PString(procs)+"' "
 						+" WHERE aptnum = '"+curAptNum.ToString()+"'"
 					};
 					//MessageBox.Show(Conversions.ArrayQueryText[0]);
@@ -344,13 +360,13 @@ namespace OpenDental{
 		private void To2_5_7(){
 			if(FromVersion < new Version("2.5.7.0")){
 				//copy the new ADA2002.gif
-				try{
+				//try{
 					File.Copy(@"ConversionFiles\ADA2002.gif"
 						,((Pref)Prefs.HList["DocPath"]).ValueString+@"\ADA2002.gif",true);
-				}
-				catch{
-					throw new Exception("ADA2002.gif could not be copied correctly.");
-				}
+				//}
+				//catch{
+				//	throw new Exception("ADA2002.gif could not be copied correctly.");
+				//}
 				//delete the old ADA2002.emf, and the old ADA2002.jpg if there is one
 				if(File.Exists(((Pref)Prefs.HList["DocPath"]).ValueString+@"\ADA2002.emf")){
 					File.Delete(((Pref)Prefs.HList["DocPath"]).ValueString+@"\ADA2002.emf");
@@ -406,14 +422,15 @@ namespace OpenDental{
 		private void To2_8_0(){
 			if(FromVersion < new Version("2.8.0.0")){
 				//warn user about deleting templates
-				if(MessageBox.Show(@"In version 2.8, the concept of insurance templates is being phased out.  As part of the conversion process, your existing insurance template list will be replaced with an insurance plan list and a carrier list.  If you have any notes in your insurance templates, they will be deleted.  If you have important notes in any of your insurance templates, or if you have important templates that you don't want to lose, then you should use the print screen tool to print out the important information before proceeding.  Do you wish to proceed?","",MessageBoxButtons.OKCancel)!=DialogResult.OK){
+				if(MessageBox.Show(@"In version 2.8, the concept of insurance templates is being phased out.  As part of the conversion process, your existing insurance template list will be replaced with an insurance plan list and a carrier list.  If you have any notes in your insurance templates, they will be deleted.  If you have important notes in any of your insurance templates, or if you have important templates that you don't want to lose, then you should use the print screen tool to print out the important information before proceeding.  Do you wish to proceed?","",MessageBoxButtons.OKCancel)!=DialogResult.OK)
+				{
 					throw new Exception();
 				}
 				//check to see if the conversion file is available
-				if(!File.Exists(@"ConversionFiles\convert_2_8_0.txt")){
-					throw new Exception(@"ConversionFiles\convert_2_8_0.txt"+" could not be found.");
-				}
-				ExecuteFile(@"ConversionFiles\convert_2_8_0.txt");
+				//if(!File.Exists(@"ConversionFiles\convert_2_8_0.txt")){
+				//	throw new Exception(@"ConversionFiles\convert_2_8_0.txt"+" could not be found.");
+				//}
+				ExecuteFile(@"ConversionFiles\convert_2_8_0.txt");//might throw an exception
 				//load all existing employer names into the new Employer table:
 				Conversions.SelectText="SELECT DISTINCT Employer FROM insplan WHERE Employer !=''";
 				Conversions.SubmitSelect();
@@ -787,10 +804,10 @@ namespace OpenDental{
 		private void To2_9_1(){
 			if(FromVersion < new Version("2.9.1.0")){
 				//check to see if the conversion file is available
-				if(!File.Exists(@"ConversionFiles\convert_2_9_1.txt")){
-					throw new Exception(@"ConversionFiles\convert_2_9_1.txt"+" could not be found.");
-				}
-				ExecuteFile(@"ConversionFiles\convert_2_9_1.txt");
+				//if(!File.Exists(@"ConversionFiles\convert_2_9_1.txt")){
+				//	throw new Exception(@"ConversionFiles\convert_2_9_1.txt"+" could not be found.");
+				//}
+				ExecuteFile(@"ConversionFiles\convert_2_9_1.txt");//might throw an exception which we handle.
 				Conversions.NonQArray=new string[]
 				{
 					"UPDATE preference SET ValueString = '2.9.1.0' WHERE PrefName = 'DataBaseVersion'"
@@ -968,10 +985,10 @@ namespace OpenDental{
 
 		private void To3_0_1(){
 			if(FromVersion < new Version("3.0.1.0")){
-				if(!File.Exists(@"ConversionFiles\convert_3_0_1.txt")){
-					throw new Exception(@"ConversionFiles\convert_3_0_1.txt"+" could not be found.");
-				}
-				ExecuteFile(@"ConversionFiles\convert_3_0_1.txt");
+				//if(!File.Exists(@"ConversionFiles\convert_3_0_1.txt")){
+				//	throw new Exception(@"ConversionFiles\convert_3_0_1.txt"+" could not be found.");
+				//}
+				ExecuteFile(@"ConversionFiles\convert_3_0_1.txt");//might throw an exception which we handle.
 				//convert appointment patterns from ten minute to five minute intervals---------------------
 				Conversions.SelectText="SELECT AptNum,Pattern FROM appointment";
 				Conversions.SubmitSelect();
@@ -1427,10 +1444,10 @@ namespace OpenDental{
 
 		private void To3_1_0(){
 			if(FromVersion < new Version("3.1.0.0")){
-				if(!File.Exists(@"ConversionFiles\convert_3_1_0.txt")){
-					throw new Exception(@"ConversionFiles\convert_3_1_0.txt"+" could not be found.");
-				}
-				ExecuteFile(@"ConversionFiles\convert_3_1_0.txt");
+				//if(!File.Exists(@"ConversionFiles\convert_3_1_0.txt")){
+				//	throw new Exception(@"ConversionFiles\convert_3_1_0.txt"+" could not be found.");
+				//}
+				ExecuteFile(@"ConversionFiles\convert_3_1_0.txt");//Might throw an exception which we handle
 				//add Sirona Sidexis:
 				string command="INSERT INTO program (ProgName,ProgDesc,Enabled,Path,CommandLine,Note"
 					+") VALUES("
@@ -1635,6 +1652,7 @@ namespace OpenDental{
 						+@"'','5','C:\\Recscom\\Recscom.exe')"
 					,"UPDATE preference SET ValueString = '3.1.13.0' WHERE PrefName = 'DataBaseVersion'"
 				};
+				
 				dcon.NonQ(commands);
 			}
 			To3_1_16();
@@ -1675,24 +1693,267 @@ namespace OpenDental{
 				command="UPDATE preference SET ValueString = '3.1.16.0' WHERE PrefName = 'DataBaseVersion'";
 				dcon.NonQ(command);
 			}
-			//To3_1_?();
+			To3_4_0();
 		}
 
-		/*private void To3_1_5(){
-			if(FromVersion < new Version("3.1.5.0")){
+		private void To3_4_0(){
+			if(FromVersion < new Version("3.4.0.0")){
+				ExecuteFile(@"ConversionFiles\convert_3_4_0.txt");//Might throw an exception which we handle.
+				//----------------Copy payment dates into paysplits--------------------------------------
+				string command="SELECT paysplit.SplitNum,payment.PayDate FROM payment,paysplit "
+					+"WHERE payment.PayNum=paysplit.PayNum";
+				DataConnection dcon=new DataConnection();
+				DataTable table=dcon.GetTable(command);
+				for(int i=0;i<table.Rows.Count;i++){
+					command="UPDATE paysplit SET "
+						+"DatePay='"+POut.PDate (PIn.PDate (table.Rows[i][1].ToString()))+"' "
+						+"WHERE SplitNum="+table.Rows[i][0].ToString();
+					dcon.NonQ(command);
+				}
+				//----------------Convert all discounts to adjustments-----------------------------------
+				//add adjustment categories.
+				command="SELECT Max(ItemOrder) FROM definition WHERE Category=1";
+				table=dcon.GetTable(command);
+				int firstItemOrder=PIn.PInt(table.Rows[0][0].ToString())+1;
+				command="SELECT * FROM definition WHERE Category=15 ORDER BY ItemOrder";//cat=DiscountTypes
+				table=dcon.GetTable(command);
+				Hashtable HDiscToAdj=new Hashtable();//key=original defNum(discountType. value=new defNum(AdjType)
+				for(int i=0;i<table.Rows.Count;i++){
+					command="INSERT INTO definition (category,itemorder,itemname,itemvalue,ishidden) VALUES("
+					+"1, "//category=AdjTypes
+					+"'"+POut.PInt   (firstItemOrder+i)+"', "//itemOrder
+					+"'"+POut.PString(PIn.PString(table.Rows[i][3].ToString()))+"', "//item name
+					+"'-', "//itemValue. All discounts are negative
+					+"'"+table.Rows[i][6].ToString()+"')";//is hidden
+					dcon.NonQ(command,true);
+					HDiscToAdj.Add(PIn.PInt(table.Rows[i][0].ToString()),//defNum of disc
+						dcon.InsertID);//defNum of adj
+				}
+				//handle 0:
+				HDiscToAdj.Add(0,dcon.InsertID);
+				//create new adjustments from existing discounts
+				command="SELECT * FROM paysplit WHERE IsDiscount=1";//0=SplitNum,1=SplitAmt,2=PatNum,3=ProcDate,
+					//4=PayNum,5=IsDiscount,6=DiscountType,7=ProvNum,8=PayPlanNum,9=DatePay
+				table=dcon.GetTable(command);
+				for(int i=0;i<table.Rows.Count;i++){
+					command="INSERT INTO adjustment (AdjDate,AdjAmt,PatNum, "
+					+"AdjType,ProvNum,ProcDate) "//AdjNote
+					+"VALUES("
+					+"'"+POut.PDate  (PIn.PDate  (table.Rows[i][9].ToString()))+"', "//entryDate
+					+"'"+POut.PDouble(-PIn.PDouble(table.Rows[i][1].ToString()))+"', "//amt
+					+"'"+POut.PInt   (PIn.PInt   (table.Rows[i][2].ToString()))+"', "//patNum
+					+"'"+POut.PInt   ((int)HDiscToAdj[PIn.PInt(table.Rows[i][6].ToString())])+"', "//type
+					+"'"+POut.PInt   (PIn.PInt   (table.Rows[i][7].ToString()))+"', "//provNum
+					+"'"+POut.PDate  (PIn.PDate  (table.Rows[i][3].ToString()))+"')";//procDate
+					//note
+					dcon.NonQ(command);
+				}
+				command="DELETE FROM paysplit WHERE IsDiscount=1";
+				dcon.NonQ(command);
+				//--------------------Printers----------------------------------------------------------
+				command="SELECT * FROM computer WHERE PrinterName != ''";
+				table=dcon.GetTable(command);
+				for(int i=0;i<table.Rows.Count;i++){
+					command="INSERT INTO printer (ComputerNum,PrintSit,PrinterName,"
+					+"DisplayPrompt) "
+					+"VALUES("
+					+"'"+POut.PInt   (PIn.PInt   (table.Rows[i][0].ToString()))+"', "
+					+"'"+POut.PInt   ((int)PrintSituation.Default)+"', "
+					+"'"+POut.PString(PIn.PString(table.Rows[i][2].ToString()))+"', "
+					+"'1')";
+					dcon.NonQ(command);
+				}
+				command="UPDATE computer SET PrinterName = ''";
+				dcon.NonQ(command);
+				//HouseCalls link-----------------------------------------------------------------------
+				command="INSERT INTO program (ProgName,ProgDesc,Enabled,Path,CommandLine,Note"
+					+") VALUES("
+					+"'HouseCalls', "
+					+"'HouseCalls from www.housecallsweb.com', "
+					+"'0', "
+					+"'', "
+					+"'', "
+					+"'"+POut.PString(@"Typical Export Path is C:\HouseCalls\")+"')";
+				dcon=new DataConnection();
+				dcon.NonQ(command,true);
+				int programNum=dcon.InsertID;//we now have a ProgramNum to work with
+				command="INSERT INTO programproperty (ProgramNum,PropertyDesc,PropertyValue"
+					+") VALUES("
+					+"'"+programNum.ToString()+"', "
+					+"'Enter 0 to use PatientNum, or 1 to use ChartNum', "
+					+"'0')";
+				dcon.NonQ(command);
+				command="INSERT INTO programproperty (ProgramNum,PropertyDesc,PropertyValue"
+					+") VALUES("
+					+"'"+programNum.ToString()+"', "
+					+"'Export Path', "
+					+"'"+POut.PString(@"C:\HouseCalls\")+"')";
+				dcon.NonQ(command);
+				command="INSERT INTO toolbutitem (ProgramNum,ToolBar,ButtonText) "
+					+"VALUES ("
+					+"'"+programNum.ToString()+"', "
+					+"'"+((int)ToolBarsAvail.ChartModule).ToString()+"', "
+					+"'HouseCalls')";
+				dcon.NonQ(command);
+				//Final cleanup-------------------------------------------------------------------------
+				command="UPDATE preference SET ValueString = '3.4.0.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To3_4_7();
+		}
+		
+		private void To3_4_7(){
+			if(FromVersion < new Version("3.4.7.0")){
 				string[] commands=new string[]
 				{
 					"INSERT INTO clearinghouse(Description,ExportPath,IsDefault,Payors,Eformat,ReceiverID,"
 						+"SenderID,Password,ResponsePath,CommBridge,ClientProgram) "
 						+@"VALUES('WebClaim','C:\\WebClaim\\Upload\\','0','','1','330989922','','',"
-						+@"'C:\\WebClaim\\Response\\','4','')"
-					,"UPDATE preference SET ValueString = '3.1.5.0' WHERE PrefName = 'DataBaseVersion'"
+						+@"'','4','')"
+					,"UPDATE preference SET ValueString = '3.4.7.0' WHERE PrefName = 'DataBaseVersion'"
 				};
 				DataConnection dcon=new DataConnection();
 				dcon.NonQ(commands);
 			}
-			//To3_1_?();
-		}*/
+			To3_4_10();
+		}
+
+		private void To3_4_10(){
+			//the only purpose of this is to check the bug fix in conversions
+			if(FromVersion < new Version("3.4.10.0")){
+				string[] commands=new string[]
+				{
+					"UPDATE preference SET ValueString = '3.4.10.0' WHERE PrefName = 'DataBaseVersion'"
+				};
+				DataConnection dcon=new DataConnection();
+				dcon.NonQ(commands);
+			}
+			To3_4_11();
+		}
+
+		private void To3_4_11(){
+			if(FromVersion < new Version("3.4.11.0")){
+				//Planmeca link-----------------------------------------------------------------------
+				string command="INSERT INTO program (ProgName,ProgDesc,Enabled,Path,CommandLine,Note"
+					+") VALUES("
+					+"'Planmeca', "
+					+"'Dimaxis from Planmeca', "
+					+"'0', "
+					+"'DxStart.exe', "
+					+"'', "
+					+"'"+POut.PString(@"Typical file path is DxStart.exe which is available from Planmeca and should be placed in the same folder as this program.")+"')";
+				DataConnection dcon=new DataConnection();
+				dcon.NonQ(command,true);
+				int programNum=dcon.InsertID;//we now have a ProgramNum to work with
+				command="INSERT INTO programproperty (ProgramNum,PropertyDesc,PropertyValue"
+					+") VALUES("
+					+"'"+programNum.ToString()+"', "
+					+"'Enter 0 to use PatientNum, or 1 to use ChartNum', "
+					+"'0')";
+				dcon.NonQ(command);
+				command="INSERT INTO toolbutitem (ProgramNum,ToolBar,ButtonText) "
+					+"VALUES ("
+					+"'"+programNum.ToString()+"', "
+					+"'"+((int)ToolBarsAvail.ChartModule).ToString()+"', "
+					+"'Planmeca')";
+				dcon.NonQ(command);
+				command=
+					"UPDATE preference SET ValueString = '3.4.11.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To3_4_16();
+		}
+
+		private void To3_4_16(){
+			if(FromVersion < new Version("3.4.16.0")){
+				DataConnection dcon=new DataConnection();
+				string[] commands=new string[]
+				{
+					@"UPDATE clearinghouse SET Description='ClaimConnect',ExportPath='C:\\ClaimConnect\\Upload\\' WHERE Description='WebClaim'"
+					,"UPDATE preference SET ValueString = '3.4.16.0' WHERE PrefName = 'DataBaseVersion'"
+				};
+				dcon.NonQ(commands);
+			}
+			To3_4_17();
+		}
+
+		private void To3_4_17(){
+			if(FromVersion < new Version("3.4.17.0")){
+				DataConnection dcon=new DataConnection();
+				string[] commands=new string[]
+				{
+					"UPDATE patient SET DateFirstVisit='0001-01-01' WHERE DateFirstVisit='0000-00-00'"
+					,"UPDATE preference SET ValueString = '3.4.17.0' WHERE PrefName = 'DataBaseVersion'"
+				};
+				dcon.NonQ(commands);
+			}
+			To3_4_24();
+		}
+
+		private void To3_4_24(){
+			if(FromVersion < new Version("3.4.24.0")){
+				DataConnection dcon=new DataConnection();
+				//Delete program links for WebClaim and Renaissance--------------------------------------
+				string command="SELECT ProgramNum FROM program WHERE ProgName='WebClaim' OR ProgName='Renaissance'";
+				DataTable table=dcon.GetTable(command);
+				for(int i=0;i<table.Rows.Count;i++){
+					command="DELETE FROM program WHERE ProgramNum="+table.Rows[i][0].ToString();
+					dcon.NonQ(command);
+					command="DELETE FROM toolbutitem WHERE ProgramNum="+table.Rows[i][0].ToString();
+					dcon.NonQ(command);
+				}
+				//Fix utf8 binary collations for ADACode columns-------------------------------------------
+				command="SELECT @@version";
+ 				table=dcon.GetTable(command);
+				string thisVersion=PIn.PString(table.Rows[0][0].ToString());
+				string[] commands;
+				if(thisVersion.Substring(0,3)=="4.1" || thisVersion.Substring(0,3)=="5.0"){
+					commands=new string[]
+					{
+						"ALTER TABLE procedurecode CHANGE ADACode ADACode varchar(15) character set utf8 collate utf8_bin NOT NULL"
+						,"ALTER TABLE procedurecode DEFAULT character set utf8"
+						,"ALTER TABLE procedurecode MODIFY Descript varchar(255) character set utf8 NOT NULL"
+						,"ALTER TABLE procedurecode MODIFY AbbrDesc varchar(50) character set utf8 NOT NULL"
+						,"ALTER TABLE procedurecode MODIFY ProcTime varchar(24) character set utf8 NOT NULL"
+						,"ALTER TABLE procedurecode MODIFY DefaultNote text character set utf8 NOT NULL"
+						,"ALTER TABLE procedurecode MODIFY AlternateCode1 varchar(15) character set utf8 NOT NULL"
+						,"ALTER TABLE procedurelog MODIFY ADACode varchar(15) character set utf8 collate utf8_bin NOT NULL"
+						,"ALTER TABLE autocodeitem MODIFY ADACode varchar(15) character set utf8 collate utf8_bin NOT NULL"
+						,"ALTER TABLE procbuttonitem MODIFY ADACode varchar(15) character set utf8 collate utf8_bin NOT NULL"
+						,"ALTER TABLE covspan MODIFY FromCode varchar(15) character set utf8 collate utf8_bin NOT NULL"
+						,"ALTER TABLE covspan MODIFY ToCode varchar(15) character set utf8 collate utf8_bin NOT NULL"
+					};
+					dcon.NonQ(commands);
+				}
+				commands=new string[]
+				{
+				//Inmediata clearinghouse--------------------------------------------------------------
+					"INSERT INTO clearinghouse(Description,ExportPath,IsDefault,Payors,Eformat,ReceiverID,"
+						+"SenderID,Password,ResponsePath,CommBridge,ClientProgram) "
+						+@"VALUES('Inmediata Health Group Corp','C:\\Inmediata\\Claims\\','0','','1','660610220','','',"
+						+@"'C:\\Inmediata\\Reports\\','6','C:\\Program Files\\Inmediata\\IMPlug.exe')"
+					,"UPDATE preference SET ValueString = '3.4.24.0' WHERE PrefName = 'DataBaseVersion'"
+				};
+				dcon.NonQ(commands);
+			}
+			To3_4_30();
+		}
+
+		private void To3_4_30(){
+			if(FromVersion < new Version("3.4.30.0")){
+				string[] commands=new string[]
+				{
+					"DELETE FROM schedule WHERE Status=0 AND StartTime=StopTime"
+					,"UPDATE preference SET ValueString = '3.4.30.0' WHERE PrefName = 'DataBaseVersion'"
+				};
+				DataConnection dcon=new DataConnection();
+				dcon.NonQ(commands);
+			}
+			//To3_4_30();
+		}
+
+
+
 
 	}
 }

@@ -113,7 +113,7 @@ namespace OpenDental
 			// checkDefaultProv
 			// 
 			this.checkDefaultProv.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkDefaultProv.Location = new System.Drawing.Point(29, 85);
+			this.checkDefaultProv.Location = new System.Drawing.Point(30, 85);
 			this.checkDefaultProv.Name = "checkDefaultProv";
 			this.checkDefaultProv.Size = new System.Drawing.Size(679, 22);
 			this.checkDefaultProv.TabIndex = 2;
@@ -123,7 +123,7 @@ namespace OpenDental
 			// checkInvalidTooth
 			// 
 			this.checkInvalidTooth.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkInvalidTooth.Location = new System.Drawing.Point(29, 112);
+			this.checkInvalidTooth.Location = new System.Drawing.Point(30, 110);
 			this.checkInvalidTooth.Name = "checkInvalidTooth";
 			this.checkInvalidTooth.Size = new System.Drawing.Size(724, 31);
 			this.checkInvalidTooth.TabIndex = 3;
@@ -150,7 +150,7 @@ namespace OpenDental
 			this.checkCorrupt.Checked = true;
 			this.checkCorrupt.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.checkCorrupt.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkCorrupt.Location = new System.Drawing.Point(29, 235);
+			this.checkCorrupt.Location = new System.Drawing.Point(30, 225);
 			this.checkCorrupt.Name = "checkCorrupt";
 			this.checkCorrupt.Size = new System.Drawing.Size(709, 24);
 			this.checkCorrupt.TabIndex = 6;
@@ -159,7 +159,7 @@ namespace OpenDental
 			// checkCodes
 			// 
 			this.checkCodes.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkCodes.Location = new System.Drawing.Point(29, 177);
+			this.checkCodes.Location = new System.Drawing.Point(30, 171);
 			this.checkCodes.Name = "checkCodes";
 			this.checkCodes.Size = new System.Drawing.Size(709, 24);
 			this.checkCodes.TabIndex = 8;
@@ -180,20 +180,19 @@ namespace OpenDental
 			// checkDates
 			// 
 			this.checkDates.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkDates.Location = new System.Drawing.Point(29, 148);
+			this.checkDates.Location = new System.Drawing.Point(30, 144);
 			this.checkDates.Name = "checkDates";
 			this.checkDates.Size = new System.Drawing.Size(709, 24);
 			this.checkDates.TabIndex = 10;
-			this.checkDates.Text = "Fix any invalid dates.  This will speed up the program after converting from anot" +
-				"her dental software.";
+			this.checkDates.Text = "Fix any invalid dates.";
 			// 
 			// checkInsPlans
 			// 
 			this.checkInsPlans.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkInsPlans.Location = new System.Drawing.Point(29, 206);
+			this.checkInsPlans.Location = new System.Drawing.Point(30, 198);
 			this.checkInsPlans.Name = "checkInsPlans";
 			this.checkInsPlans.Size = new System.Drawing.Size(709, 24);
-			this.checkInsPlans.TabIndex = 12;
+			this.checkInsPlans.TabIndex = 11;
 			this.checkInsPlans.Text = "Look for insurance plans that no longer exist.";
 			// 
 			// FormCheckDatabase
@@ -382,9 +381,9 @@ namespace OpenDental
 				ProcedureCodes.InsertCur();
 			}
 			MessageBox.Show("Codes added: "+Conversions.TableQ.Rows.Count.ToString());
-			DataValid.IType=InvalidType.LocalData;
-			DataValid DataValid2=new DataValid();
-			DataValid2.SetInvalid();
+			if(Conversions.TableQ.Rows.Count>0){
+				DataValid.SetInvalid(InvalidTypes.ProcCodes);
+			}
 		}
 
 		private void VerifyInsPlans(){

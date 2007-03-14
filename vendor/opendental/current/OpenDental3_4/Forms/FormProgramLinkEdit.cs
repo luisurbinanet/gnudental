@@ -135,7 +135,7 @@ namespace OpenDental{
 			this.butDelete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDelete.Location = new System.Drawing.Point(31, 410);
+			this.butDelete.Location = new System.Drawing.Point(17, 410);
 			this.butDelete.Name = "butDelete";
 			this.butDelete.Size = new System.Drawing.Size(75, 26);
 			this.butDelete.TabIndex = 43;
@@ -213,7 +213,7 @@ namespace OpenDental{
 			// 
 			// listToolBars
 			// 
-			this.listToolBars.Location = new System.Drawing.Point(34, 212);
+			this.listToolBars.Location = new System.Drawing.Point(18, 212);
 			this.listToolBars.Name = "listToolBars";
 			this.listToolBars.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
 			this.listToolBars.Size = new System.Drawing.Size(147, 95);
@@ -238,9 +238,9 @@ namespace OpenDental{
 			// 
 			// label6
 			// 
-			this.label6.Location = new System.Drawing.Point(33, 191);
+			this.label6.Location = new System.Drawing.Point(17, 173);
 			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(181, 17);
+			this.label6.Size = new System.Drawing.Size(217, 35);
 			this.label6.TabIndex = 56;
 			this.label6.Text = "Add a button to these toolbars";
 			this.label6.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
@@ -329,7 +329,7 @@ namespace OpenDental{
 		}
 
 		private void FillForm(){
-			//this is not refined enought to be called more than once on the form because it will not
+			//this is not refined enough to be called more than once on the form because it will not
 			//remember the toolbars that were selected.
 			ToolButItems.Refresh();
 			ProgramProperties.Refresh();

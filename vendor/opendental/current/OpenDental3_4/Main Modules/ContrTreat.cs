@@ -103,6 +103,7 @@ namespace OpenDental{
 		private ClaimProc[] ClaimProcList;
 		private Family FamCur;
 		private Patient PatCur;
+		private System.Windows.Forms.CheckBox checkShowFees;
 		private InsPlan[] PlanList;
 		///<summary></summary>
 		[Category("Data"),Description("Occurs when user changes current patient, usually by clicking on the Select Patient button.")]
@@ -152,6 +153,7 @@ namespace OpenDental{
 			this.butSelectAll = new OpenDental.UI.Button();
 			this.listViewPr = new System.Windows.Forms.ListBox();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.checkShowFees = new System.Windows.Forms.CheckBox();
 			this.checkShowIns = new System.Windows.Forms.CheckBox();
 			this.checkShowCompleted = new System.Windows.Forms.CheckBox();
 			this.label10 = new System.Windows.Forms.Label();
@@ -191,38 +193,41 @@ namespace OpenDental{
 			// label1
 			// 
 			this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.label1.Location = new System.Drawing.Point(44, 15);
+			this.label1.Location = new System.Drawing.Point(19, 23);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(32, 23);
+			this.label1.Size = new System.Drawing.Size(78, 18);
 			this.label1.TabIndex = 4;
 			this.label1.Text = "Set";
+			this.label1.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
 			// 
 			// listSetPr
 			// 
-			this.listSetPr.Location = new System.Drawing.Point(26, 33);
+			this.listSetPr.Location = new System.Drawing.Point(26, 40);
 			this.listSetPr.Name = "listSetPr";
 			this.listSetPr.SelectionMode = System.Windows.Forms.SelectionMode.None;
-			this.listSetPr.Size = new System.Drawing.Size(66, 212);
+			this.listSetPr.Size = new System.Drawing.Size(66, 186);
 			this.listSetPr.TabIndex = 5;
 			this.listSetPr.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listSetPr_MouseDown);
 			// 
 			// label2
 			// 
 			this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.label2.Location = new System.Drawing.Point(130, 15);
+			this.label2.Location = new System.Drawing.Point(109, 24);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(36, 23);
+			this.label2.Size = new System.Drawing.Size(78, 17);
 			this.label2.TabIndex = 6;
 			this.label2.Text = "View";
+			this.label2.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
 			// 
 			// label4
 			// 
 			this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.label4.Location = new System.Drawing.Point(66, 3);
+			this.label4.Location = new System.Drawing.Point(31, 3);
 			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(72, 23);
+			this.label4.Size = new System.Drawing.Size(148, 16);
 			this.label4.TabIndex = 15;
 			this.label4.Text = "Priorities";
+			this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			// 
 			// tbMain
 			// 
@@ -238,9 +243,9 @@ namespace OpenDental{
 			// label5
 			// 
 			this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.label5.Location = new System.Drawing.Point(380, 600);
+			this.label5.Location = new System.Drawing.Point(354, 600);
 			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(36, 14);
+			this.label5.Size = new System.Drawing.Size(62, 35);
 			this.label5.TabIndex = 19;
 			this.label5.Text = "Totals";
 			this.label5.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -336,16 +341,16 @@ namespace OpenDental{
 			// 
 			// panelSide
 			// 
+			this.panelSide.Controls.Add(this.label4);
 			this.panelSide.Controls.Add(this.butSelectAll);
 			this.panelSide.Controls.Add(this.listViewPr);
 			this.panelSide.Controls.Add(this.listSetPr);
 			this.panelSide.Controls.Add(this.label1);
 			this.panelSide.Controls.Add(this.label2);
 			this.panelSide.Controls.Add(this.groupBox1);
-			this.panelSide.Controls.Add(this.label4);
 			this.panelSide.Location = new System.Drawing.Point(704, 54);
 			this.panelSide.Name = "panelSide";
-			this.panelSide.Size = new System.Drawing.Size(215, 341);
+			this.panelSide.Size = new System.Drawing.Size(215, 334);
 			this.panelSide.TabIndex = 29;
 			// 
 			// butSelectAll
@@ -354,7 +359,7 @@ namespace OpenDental{
 			this.butSelectAll.Autosize = true;
 			this.butSelectAll.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butSelectAll.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butSelectAll.Location = new System.Drawing.Point(114, 248);
+			this.butSelectAll.Location = new System.Drawing.Point(114, 228);
 			this.butSelectAll.Name = "butSelectAll";
 			this.butSelectAll.Size = new System.Drawing.Size(68, 23);
 			this.butSelectAll.TabIndex = 17;
@@ -363,29 +368,41 @@ namespace OpenDental{
 			// 
 			// listViewPr
 			// 
-			this.listViewPr.Location = new System.Drawing.Point(114, 33);
+			this.listViewPr.Location = new System.Drawing.Point(114, 40);
 			this.listViewPr.Name = "listViewPr";
 			this.listViewPr.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-			this.listViewPr.Size = new System.Drawing.Size(68, 212);
+			this.listViewPr.Size = new System.Drawing.Size(68, 186);
 			this.listViewPr.TabIndex = 16;
 			this.listViewPr.MouseUp += new System.Windows.Forms.MouseEventHandler(this.listViewPr_MouseUp);
 			// 
 			// groupBox1
 			// 
+			this.groupBox1.Controls.Add(this.checkShowFees);
 			this.groupBox1.Controls.Add(this.checkShowIns);
 			this.groupBox1.Controls.Add(this.checkShowCompleted);
 			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox1.Location = new System.Drawing.Point(7, 268);
+			this.groupBox1.Location = new System.Drawing.Point(7, 255);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(200, 65);
+			this.groupBox1.Size = new System.Drawing.Size(200, 74);
 			this.groupBox1.TabIndex = 59;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Show on printout";
 			// 
+			// checkShowFees
+			// 
+			this.checkShowFees.Checked = true;
+			this.checkShowFees.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.checkShowFees.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkShowFees.Location = new System.Drawing.Point(15, 33);
+			this.checkShowFees.Name = "checkShowFees";
+			this.checkShowFees.Size = new System.Drawing.Size(178, 17);
+			this.checkShowFees.TabIndex = 20;
+			this.checkShowFees.Text = "Fees";
+			// 
 			// checkShowIns
 			// 
 			this.checkShowIns.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkShowIns.Location = new System.Drawing.Point(15, 41);
+			this.checkShowIns.Location = new System.Drawing.Point(15, 50);
 			this.checkShowIns.Name = "checkShowIns";
 			this.checkShowIns.Size = new System.Drawing.Size(178, 17);
 			this.checkShowIns.TabIndex = 19;
@@ -394,7 +411,7 @@ namespace OpenDental{
 			// checkShowCompleted
 			// 
 			this.checkShowCompleted.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkShowCompleted.Location = new System.Drawing.Point(15, 19);
+			this.checkShowCompleted.Location = new System.Drawing.Point(15, 16);
 			this.checkShowCompleted.Name = "checkShowCompleted";
 			this.checkShowCompleted.Size = new System.Drawing.Size(178, 17);
 			this.checkShowCompleted.TabIndex = 18;
@@ -763,6 +780,7 @@ namespace OpenDental{
 				label7,
 				label5
 				});
+			LayoutToolBar();
 		}
 
 		///<summary>Called every time local data is changed from any workstation.  Refreshes priority lists and lays out the toolbar.</summary>
@@ -1204,21 +1222,12 @@ namespace OpenDental{
 			ModuleSelected(PatCur.PatNum);
 		}
 
-		///<summary></summary>
+		///<summary>Preview is only used for debugging.</summary>
 		public void PrintReport(bool justPreview){
 			pd2=new PrintDocument();
 			pd2.PrintPage += new PrintPageEventHandler(this.pd2_PrintPage);
-			//pd2.DefaultPageSettings.Margins=new Margins(0,0,0,0);//useless
-			//pagesPrinted=0;
-			//linesPrinted=0;
 			PrintDocument tempPD = new PrintDocument();
-			tempPD.PrinterSettings.PrinterName=Computers.Cur.PrinterName;
-			if(tempPD.PrinterSettings.IsValid){
-				pd2.PrinterSettings.PrinterName=Computers.Cur.PrinterName;
-			}
-			//uses default printer if selected printer not valid
-			tempPD.Dispose();
-			pd2.DefaultPageSettings.Margins=new Margins(50,50,40,25);//not directly used. Just handy.
+			//pd2.DefaultPageSettings.Margins=new Margins(50,50,40,25);//not directly used. Just handy.
 			try{
 				if(justPreview){
 					pView = new FormRpPrintPreview();
@@ -1226,7 +1235,9 @@ namespace OpenDental{
 					pView.ShowDialog();				
 			  }
 				else{
-					pd2.Print();
+					if(Printers.SetPrinter(pd2,PrintSituation.TPPerio)){
+						pd2.Print();
+					}
 				}
 			}
 			catch{
@@ -1399,7 +1410,9 @@ namespace OpenDental{
 			ColCaption[2]=Lan.g(this,"Surf");
 			ColCaption[3]=Lan.g(this,"ADA Code");
 			ColCaption[4]=Lan.g(this,"Description");
-			ColCaption[5]=Lan.g(this,"Fee");
+			if(checkShowFees.Checked){
+				ColCaption[5]=Lan.g(this,"Fee");
+			}
 			#endregion
 			#region MainTable
 			if(graphicsPrinted && !mainPrinted && yPos < e.MarginBounds.Height-40){
@@ -1412,7 +1425,7 @@ namespace OpenDental{
 				//Prints the Column Titles
 				for(int i=0;i<ColCaption.Length;i++){ 
 					if(colAlign[i]==HorizontalAlignment.Right){
-						e.Graphics.DrawString(Lan.g(this,ColCaption[i]),totalFont,Brushes.Black,
+						e.Graphics.DrawString(ColCaption[i],totalFont,Brushes.Black,
 							colPos[i+1]-e.Graphics.MeasureString(ColCaption[i],totalFont).Width-1,yPos+1);
 					}
 					else 
@@ -1421,23 +1434,26 @@ namespace OpenDental{
 				}
 				yPos+=18;
 				while(yPos < e.MarginBounds.Height-16 && linesPrinted < TPLines2.Count){
-					for(int j=0;j<colPos.Length-1;j++){
-  					if(colAlign[j]==HorizontalAlignment.Right){
+					for(int i=0;i<colPos.Length-1;i++){
+						if(i==5 && !checkShowFees.Checked){
+							continue;
+						}
+  					else if(colAlign[i]==HorizontalAlignment.Right){
 							e.Graphics.DrawString
-								(Lan.g(this,tbMain.Cell[j,linesPrinted].ToString())
-								,bodyFont,new SolidBrush(tbMain.FontColor[j,linesPrinted])//Brushes.Black
-								,colPos[j+1]-e.Graphics.MeasureString
-								(tbMain.Cell[j,linesPrinted].ToString(),bodyFont).Width-1
+								(tbMain.Cell[i,linesPrinted].ToString()
+								,bodyFont,new SolidBrush(tbMain.FontColor[i,linesPrinted])//Brushes.Black
+								,colPos[i+1]-e.Graphics.MeasureString
+								(tbMain.Cell[i,linesPrinted].ToString(),bodyFont).Width-1
 								,yPos);
 						}
 						else{
-							e.Graphics.DrawString(Lan.g(this,tbMain.Cell[j,linesPrinted].ToString()),bodyFont
-								,new SolidBrush(tbMain.FontColor[j,linesPrinted])
-								,new RectangleF(colPos[j]+2,yPos
-								,colPos[j+1]-colPos[j]-5,bodyFont.GetHeight(e.Graphics)));
+							e.Graphics.DrawString(tbMain.Cell[i,linesPrinted].ToString(),bodyFont
+								,new SolidBrush(tbMain.FontColor[i,linesPrinted])
+								,new RectangleF(colPos[i]+2,yPos
+								,colPos[i+1]-colPos[i]-5,bodyFont.GetHeight(e.Graphics)));
 						}
-						if(j>4)
-							ColTotal[j]+=(float)(PIn.PDouble(tbMain.Cell[j,linesPrinted].ToString()));
+						if(i>4)
+							ColTotal[i]+=(float)(PIn.PDouble(tbMain.Cell[i,linesPrinted].ToString()));
 					} 
 					//Column lines		
 					for(int i=0;i<colPos.Length;i++){ 
@@ -1451,10 +1467,15 @@ namespace OpenDental{
 				e.Graphics.DrawLine(new Pen(Color.Gray),colPos[0],yPos,colPos[colPos.Length-1],yPos);
 				if(linesPrinted==TPLines2.Count){
 					mainPrinted=true;
-			    e.Graphics.DrawString(Lan.g(this,"Total"),totalFont,Brushes.Black
-						,colPos[5]-e.Graphics.MeasureString("Total",totalFont).Width,yPos);
+					if(checkShowFees.Checked || checkShowIns.Checked){
+						e.Graphics.DrawString(Lan.g(this,"Total"),totalFont,Brushes.Black
+							,colPos[5]-e.Graphics.MeasureString(Lan.g(this,"Total"),totalFont).Width,yPos);
+					}
           for(int i=5;i<colPos.Length-1;i++){
-				    e.Graphics.DrawString(Lan.g(this,ColTotal[i].ToString("F")),totalFont,Brushes.Black,
+						if(i==5 && !checkShowFees.Checked){
+							continue;
+						}
+				    e.Graphics.DrawString(ColTotal[i].ToString("F"),totalFont,Brushes.Black,
 				    colPos[i+1]-e.Graphics.MeasureString(ColTotal[i].ToString("F"),totalFont).Width-1,yPos);
           }
 				}
@@ -1575,7 +1596,7 @@ namespace OpenDental{
 				procCur=(Procedure)arrayLProc[i];
 				procOld=procCur.Copy();
 				//first the fees
-				procCur.ProcFee=Fees.GetAmount(procCur.ADACode,Fees.GetFeeSched(PatCur,PlanList));
+				procCur.ProcFee=Fees.GetAmount0(procCur.ADACode,Fees.GetFeeSched(PatCur,PlanList));
 				procCur.ComputeEstimates(PatCur.PatNum,PatCur.PriPlanNum
 					,PatCur.SecPlanNum,ClaimProcList,false,PatCur,PlanList);
 				procCur.Update(procOld);//no recall synch required 

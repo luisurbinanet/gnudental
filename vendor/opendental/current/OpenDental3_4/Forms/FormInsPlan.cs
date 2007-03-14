@@ -4,6 +4,7 @@ See header in FormOpenDental.cs for complete text.  Redistributions must retain 
 ===============================================================================================================*/
 using System;
 using System.Drawing;
+using System.Drawing.Printing;
 using System.Collections;
 using System.ComponentModel;
 using System.Globalization;
@@ -124,6 +125,9 @@ namespace OpenDental{
 		private Patient PatCur;
 		private System.Windows.Forms.TextBox textElectIDdescriptt;
 		private System.Windows.Forms.ComboBox comboElectIDdescript;
+		private System.Windows.Forms.Label label12;
+		private System.Windows.Forms.ComboBox comboAllowedFeeSched;
+		private OpenDental.UI.Button butLabel;
 		private Carrier CarrierCur;
 
 		///<summary>Need to pass in the current patNum which is not necessarily the subscriber. But InsPlans do not have a field for PatNum. The result is that the displayed family list might change depending on which family is open when this form is called.  Subscriber is independent of family.</summary>
@@ -258,6 +262,8 @@ namespace OpenDental{
 			this.comboClaimForm = new System.Windows.Forms.ComboBox();
 			this.comboFeeSched = new System.Windows.Forms.ComboBox();
 			this.groupCoPay = new System.Windows.Forms.GroupBox();
+			this.label12 = new System.Windows.Forms.Label();
+			this.comboAllowedFeeSched = new System.Windows.Forms.ComboBox();
 			this.label11 = new System.Windows.Forms.Label();
 			this.label3 = new System.Windows.Forms.Label();
 			this.comboCopay = new System.Windows.Forms.ComboBox();
@@ -271,6 +277,7 @@ namespace OpenDental{
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this.labelDrop = new System.Windows.Forms.Label();
 			this.butDrop = new OpenDental.UI.Button();
+			this.butLabel = new OpenDental.UI.Button();
 			this.panel4.SuspendLayout();
 			this.panel2.SuspendLayout();
 			this.panel3.SuspendLayout();
@@ -515,7 +522,7 @@ namespace OpenDental{
 			this.butOK.Autosize = true;
 			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butOK.Location = new System.Drawing.Point(761, 653);
+			this.butOK.Location = new System.Drawing.Point(761, 666);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 3;
@@ -530,7 +537,7 @@ namespace OpenDental{
 			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.Location = new System.Drawing.Point(851, 653);
+			this.butCancel.Location = new System.Drawing.Point(851, 666);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 4;
@@ -948,7 +955,7 @@ namespace OpenDental{
 			this.butDelete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDelete.Location = new System.Drawing.Point(5, 666);
+			this.butDelete.Location = new System.Drawing.Point(5, 665);
 			this.butDelete.Name = "butDelete";
 			this.butDelete.Size = new System.Drawing.Size(81, 26);
 			this.butDelete.TabIndex = 112;
@@ -1082,42 +1089,61 @@ namespace OpenDental{
 			// 
 			// groupCoPay
 			// 
+			this.groupCoPay.Controls.Add(this.label12);
+			this.groupCoPay.Controls.Add(this.comboAllowedFeeSched);
 			this.groupCoPay.Controls.Add(this.label11);
 			this.groupCoPay.Controls.Add(this.label3);
 			this.groupCoPay.Controls.Add(this.comboCopay);
 			this.groupCoPay.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupCoPay.Location = new System.Drawing.Point(11, 389);
+			this.groupCoPay.Location = new System.Drawing.Point(11, 358);
 			this.groupCoPay.Name = "groupCoPay";
-			this.groupCoPay.Size = new System.Drawing.Size(388, 84);
+			this.groupCoPay.Size = new System.Drawing.Size(392, 104);
 			this.groupCoPay.TabIndex = 107;
 			this.groupCoPay.TabStop = false;
-			this.groupCoPay.Text = "Co-pay Fee Schedule";
+			this.groupCoPay.Text = "Other Fee Schedules";
+			// 
+			// label12
+			// 
+			this.label12.Location = new System.Drawing.Point(6, 75);
+			this.label12.Name = "label12";
+			this.label12.Size = new System.Drawing.Size(168, 16);
+			this.label12.TabIndex = 111;
+			this.label12.Text = "Carrier Allowed Amounts";
+			this.label12.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// comboAllowedFeeSched
+			// 
+			this.comboAllowedFeeSched.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboAllowedFeeSched.Location = new System.Drawing.Point(176, 72);
+			this.comboAllowedFeeSched.MaxDropDownItems = 30;
+			this.comboAllowedFeeSched.Name = "comboAllowedFeeSched";
+			this.comboAllowedFeeSched.Size = new System.Drawing.Size(209, 21);
+			this.comboAllowedFeeSched.TabIndex = 110;
 			// 
 			// label11
 			// 
-			this.label11.Location = new System.Drawing.Point(180, 14);
+			this.label11.Location = new System.Drawing.Point(6, 53);
 			this.label11.Name = "label11";
 			this.label11.Size = new System.Drawing.Size(168, 16);
 			this.label11.TabIndex = 109;
-			this.label11.Text = "Patient Co-pay";
-			this.label11.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			this.label11.Text = "Patient Co-pay Amounts";
+			this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(6, 19);
+			this.label3.Location = new System.Drawing.Point(3, 19);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(160, 60);
+			this.label3.Size = new System.Drawing.Size(381, 29);
 			this.label3.TabIndex = 106;
-			this.label3.Text = "Don\'t select a Co-pay Fee Schedule unless you understand how it will affect your " +
-				"estimates";
+			this.label3.Text = "Don\'t use these unless you understand how they will affect your estimates";
 			// 
 			// comboCopay
 			// 
 			this.comboCopay.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboCopay.Location = new System.Drawing.Point(181, 32);
+			this.comboCopay.Location = new System.Drawing.Point(176, 50);
 			this.comboCopay.MaxDropDownItems = 30;
 			this.comboCopay.Name = "comboCopay";
-			this.comboCopay.Size = new System.Drawing.Size(179, 21);
+			this.comboCopay.Size = new System.Drawing.Size(209, 21);
 			this.comboCopay.TabIndex = 108;
 			// 
 			// groupBox3
@@ -1233,7 +1259,7 @@ namespace OpenDental{
 			// 
 			// labelDrop
 			// 
-			this.labelDrop.Location = new System.Drawing.Point(185, 642);
+			this.labelDrop.Location = new System.Drawing.Point(185, 641);
 			this.labelDrop.Name = "labelDrop";
 			this.labelDrop.Size = new System.Drawing.Size(210, 51);
 			this.labelDrop.TabIndex = 124;
@@ -1248,7 +1274,7 @@ namespace OpenDental{
 			this.butDrop.Autosize = true;
 			this.butDrop.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butDrop.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butDrop.Location = new System.Drawing.Point(100, 666);
+			this.butDrop.Location = new System.Drawing.Point(100, 665);
 			this.butDrop.Name = "butDrop";
 			this.butDrop.Size = new System.Drawing.Size(75, 26);
 			this.butDrop.TabIndex = 123;
@@ -1256,10 +1282,26 @@ namespace OpenDental{
 			this.butDrop.Visible = false;
 			this.butDrop.Click += new System.EventHandler(this.butDrop_Click);
 			// 
+			// butLabel
+			// 
+			this.butLabel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butLabel.Autosize = true;
+			this.butLabel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butLabel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butLabel.Image = ((System.Drawing.Image)(resources.GetObject("butLabel.Image")));
+			this.butLabel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butLabel.Location = new System.Drawing.Point(449, 667);
+			this.butLabel.Name = "butLabel";
+			this.butLabel.Size = new System.Drawing.Size(81, 26);
+			this.butLabel.TabIndex = 125;
+			this.butLabel.Text = "Label";
+			this.butLabel.Click += new System.EventHandler(this.butLabel_Click);
+			// 
 			// FormInsPlan
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(961, 700);
+			this.Controls.Add(this.butLabel);
 			this.Controls.Add(this.labelDrop);
 			this.Controls.Add(this.butDrop);
 			this.Controls.Add(this.groupBox5);
@@ -1318,8 +1360,8 @@ namespace OpenDental{
 				labelDrop.Visible=true;
 			}
 			if(((Pref)Prefs.HList["EasyHideCapitation"]).ValueString=="1"){
-				groupCoPay.Visible=false;
-				comboCopay.Visible=false;
+				//groupCoPay.Visible=false;
+				//comboCopay.Visible=false;
 			}
 			if(((Pref)Prefs.HList["EasyHideMedicaid"]).ValueString=="1"){
 				checkAlternateCode.Visible=false;
@@ -1362,6 +1404,9 @@ namespace OpenDental{
 			}
 			checkAlternateCode.Checked=PlanCur.UseAltCode;
 			checkClaimsUseUCR.Checked=PlanCur.ClaimsUseUCR;
+
+
+
 			comboFeeSched.Items.Clear();
 			comboFeeSched.Items.Add(Lan.g(this,"none"));
 			comboFeeSched.SelectedIndex=0;
@@ -1377,6 +1422,14 @@ namespace OpenDental{
 				comboCopay.Items.Add(Defs.Short[(int)DefCat.FeeSchedNames][i].ItemName);
 				if(Defs.Short[(int)DefCat.FeeSchedNames][i].DefNum==PlanCur.CopayFeeSched)
 					comboCopay.SelectedIndex=i+1;
+			}
+			comboAllowedFeeSched.Items.Clear();
+			comboAllowedFeeSched.Items.Add(Lan.g(this,"none"));
+			comboAllowedFeeSched.SelectedIndex=0;
+			for(int i=0;i<Defs.Short[(int)DefCat.FeeSchedNames].Length;i++){
+				comboAllowedFeeSched.Items.Add(Defs.Short[(int)DefCat.FeeSchedNames][i].ItemName);
+				if(Defs.Short[(int)DefCat.FeeSchedNames][i].DefNum==PlanCur.AllowedFeeSched)
+					comboAllowedFeeSched.SelectedIndex=i+1;
 			}
 			comboClaimForm.Items.Clear();
 			for(int i=0;i<ClaimForms.ListShort.Length;i++){
@@ -1521,7 +1574,6 @@ namespace OpenDental{
 		private void checkSubOtherFam_Click(object sender, System.EventArgs e) {
 			//this happens after the check change has been registered
 			if(checkSubOtherFam.Checked){
-				//int curPatNum=PatCur.PatNum;
 				FormPatientSelect FormPS=new FormPatientSelect();
 				FormPS.SelectionModeOnly=true;//this will cause a change in the patNum only
 				FormPS.ShowDialog();
@@ -1531,9 +1583,6 @@ namespace OpenDental{
 				}
 				PlanCur.Subscriber=FormPS.SelectedPatNum;
 				PlanCur.SubscriberID=Patients.GetLim(FormPS.SelectedPatNum).SSN;
-				//Patient PatCur=Patients.Cur;
-				//PatCur.PatNum=curPatNum;//this preserves the current PatNum
-				//Patients.Cur=PatCur;
 			}
 			else{//switch to family view
 				PlanCur.Subscriber=0;//this will reset the subscriber and ID to current patient
@@ -1962,16 +2011,17 @@ namespace OpenDental{
 			if(FormIP.DialogResult!=DialogResult.OK){
 				return;
 			}
-			PlanCur.EmployerNum  =FormIP.SelectedPlan.EmployerNum;
-			PlanCur.GroupName    =FormIP.SelectedPlan.GroupName;
-			PlanCur.GroupNum     =FormIP.SelectedPlan.GroupNum;
-			PlanCur.CarrierNum   =FormIP.SelectedPlan.CarrierNum;
-			PlanCur.PlanType     =FormIP.SelectedPlan.PlanType;
-			PlanCur.UseAltCode   =FormIP.SelectedPlan.UseAltCode;
-			PlanCur.ClaimsUseUCR =FormIP.SelectedPlan.ClaimsUseUCR;
-			PlanCur.FeeSched     =FormIP.SelectedPlan.FeeSched;
-			PlanCur.CopayFeeSched=FormIP.SelectedPlan.CopayFeeSched;
-			PlanCur.ClaimFormNum =FormIP.SelectedPlan.ClaimFormNum;
+			PlanCur.EmployerNum    =FormIP.SelectedPlan.EmployerNum;
+			PlanCur.GroupName      =FormIP.SelectedPlan.GroupName;
+			PlanCur.GroupNum       =FormIP.SelectedPlan.GroupNum;
+			PlanCur.CarrierNum     =FormIP.SelectedPlan.CarrierNum;
+			PlanCur.PlanType       =FormIP.SelectedPlan.PlanType;
+			PlanCur.UseAltCode     =FormIP.SelectedPlan.UseAltCode;
+			PlanCur.ClaimsUseUCR   =FormIP.SelectedPlan.ClaimsUseUCR;
+			PlanCur.FeeSched       =FormIP.SelectedPlan.FeeSched;
+			PlanCur.CopayFeeSched  =FormIP.SelectedPlan.CopayFeeSched;
+			PlanCur.ClaimFormNum   =FormIP.SelectedPlan.ClaimFormNum;
+			PlanCur.AllowedFeeSched=FormIP.SelectedPlan.AllowedFeeSched;
 			PlanCur.Update();//updates to the db so that the synch info will show correctly
 			FillFormData();
 		}
@@ -2045,6 +2095,16 @@ namespace OpenDental{
 			DialogResult=DialogResult.OK;
 		}
 
+		private void butLabel_Click(object sender, System.EventArgs e) {
+			GetCarrierNum();
+			LabelSingle label=new LabelSingle();
+			PrintDocument pd=new PrintDocument();//only used to pass printerName
+			if(!Printers.SetPrinter(pd,PrintSituation.LabelSingle)){
+				return;
+			}
+			label.PrintIns(CarrierCur,pd.PrinterSettings.PrinterName);
+		}
+
 		///<summary>Gets an employerNum based on the name entered. Called from FillCur</summary>
 		private void GetEmployerNum(){
 			if(PlanCur.EmployerNum==0){//no employer was previously entered.
@@ -2066,7 +2126,7 @@ namespace OpenDental{
 			}
 		}
 
-		///<summary>Gets a carrierNum based on the data entered. Called from FillCur</summary>
+		///<summary>Gets a carrierNum based on the data entered. Called from FillCur and butLabel_Click</summary>
 		private void GetCarrierNum(){
 			CarrierCur=new Carrier();
 			CarrierCur.CarrierName=textCarrier.Text;
@@ -2108,7 +2168,7 @@ namespace OpenDental{
 				// already handled
 			}
 			else{
-				//I think this is already handled too, but here it is again:
+				//This is still needed because it might be zero:
 				PlanCur.Subscriber=FamCur.List[listSubscriber.SelectedIndex].PatNum;
 			}
 			PlanCur.SubscriberID =textSubscriberID.Text;
@@ -2132,6 +2192,11 @@ namespace OpenDental{
 				PlanCur.CopayFeeSched=0;
 			else
 				PlanCur.CopayFeeSched=Defs.Short[(int)DefCat.FeeSchedNames][comboCopay.SelectedIndex-1].DefNum;
+			if(comboAllowedFeeSched.SelectedIndex==0)
+				PlanCur.AllowedFeeSched=0;
+			else
+				PlanCur.AllowedFeeSched
+					=Defs.Short[(int)DefCat.FeeSchedNames][comboAllowedFeeSched.SelectedIndex-1].DefNum;
 			//end of Plan Information
 			if(textAnnualMax.Text=="")
 				PlanCur.AnnualMax=-1;
@@ -2184,6 +2249,8 @@ namespace OpenDental{
 			}
 			//remember to refresh after closing this form!!!!!
 		}
+
+		
 
 		
 

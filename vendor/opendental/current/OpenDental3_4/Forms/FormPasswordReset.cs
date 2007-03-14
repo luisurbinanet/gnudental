@@ -103,7 +103,7 @@ namespace OpenDental{
 		private void FormRP_Load(object sender, System.EventArgs e) {
 			//it does not compromise security to include the hash to the master password in the code
 			//because the user must still enter the password, not the hash.
-			masterHash="921967431631579194136163208691539149188";
+			masterHash="1251671001032231238111186944262869879186";
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {

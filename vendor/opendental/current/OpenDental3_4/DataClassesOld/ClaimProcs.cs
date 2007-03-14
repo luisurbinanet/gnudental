@@ -118,69 +118,8 @@ namespace OpenDental{
 			return ForProc;
 		}
 
-		/*Obsolete. Replaced by better functions
-		///<summary>Used in ProcEdit, and ContrAcct. The list can be all ClaimProcs for patient, or just those for this procedure.</summary>
-		public static bool ProcIsAttachedToClaim(ClaimProc[] List,int procNum){
-			for(int i=0;i<List.Length;i++){
-				if(List[i].ProcNum==procNum 
-					&& List[i].Status!=ClaimProcStatus.Preauth
-					&& List[i].Status!=ClaimProcStatus.CapEstimate
-					&& List[i].Status!=ClaimProcStatus.CapComplete
-					&& List[i].Status!=ClaimProcStatus.Estimate){
-					//adjustment skipped
-					//so true if status=capclaim,NotReceived,Received, or Supplemental
-					return true;
-				}
-			}
-			return false;
-		}*/
-
-		/*///<summary>All claim procs for this procedure are received, not just some of them.</summary>
-		public static bool ProcIsReceivedd(ClaimProc[] List,int procNum){
-			for(int i=0;i<List.Length;i++){
-				if(List[i].ProcNum==procNum
-					&& List[i].Status!=ClaimProcStatus.Received
-					&& List[i].Status!=ClaimProcStatus.Supplemental){
-					return false;
-				}
-			}
-			return true;
-		}*/
-
-		/*Obsolete
-		///<summary>Only called from FormProcEdit.</summary>
-		public static bool ProcIsSentt(ClaimProc[] List,int procNum){
-			//Warning: In the future, the claim.hlist might not be already loaded and available.
-			for(int i=0;i<List.Length;i++){
-				if(List[i].ProcNum==procNum){
-					if(List[i].ClaimNum==0){
-						return false;
-					}
-					if(((Claim)Claims.HList[List[i].ClaimNum]).ClaimStatus != "U"//not unsent
-						&& ((Claim)Claims.HList[List[i].ClaimNum]).ClaimStatus != "H"){//not hold
-						//must be sent
-						return true;
-					}
-				}
-			}
-			return false;
-		}*/
-
-		/*Obsolete
-		///<summary>Tests to see if any payment at all has been received for this proc. The list can be all ClaimProcs for patient, or just those for this procedure.</summary>
-		public static bool ProcIsPaidd(ClaimProc[] List,int procNum){
-			for(int i=0;i<List.Length;i++){
-				if(List[i].ProcNum==procNum
-					&& List[i].InsPayAmt > 0//ins paid
-					&& List[i].Status!=ClaimProcStatus.Preauth){
-					return true;
-				}
-			}
-			return false;
-		}*/
-
-		///<summary>The insurance estimate based on all claimprocs with this procNum that are attached to claims. Includes status of NotReceived,Received, and Supplemental. The list can be all ClaimProcs for patient, or just those for this procedure.</summary>
-		public static double ProcInsEst(ClaimProc[] List,int procNum){
+		///<summary>Used once in Account.  The insurance estimate based on all claimprocs with this procNum that are attached to claims. Includes status of NotReceived,Received, and Supplemental. The list can be all ClaimProcs for patient, or just those for this procedure.</summary>
+		public static string ProcDisplayInsEst(ClaimProc[] List,int procNum){
 			double retVal=0;
 			for(int i=0;i<List.Length;i++){
 				if(List[i].ProcNum==procNum
@@ -193,10 +132,10 @@ namespace OpenDental{
 					retVal+=List[i].InsPayEst;
 				}
 			}
-			return retVal;
+			return retVal.ToString("F");
 		}
 
-		///<summary>The insurance estimate based on all claimprocs with this procNum, but only for those claimprocs that are not received yet. The list can be all ClaimProcs for patient, or just those for this procedure.</summary>
+		///<summary>Used in Account and in PaySplitEdit. The insurance estimate based on all claimprocs with this procNum, but only for those claimprocs that are not received yet. The list can be all ClaimProcs for patient, or just those for this procedure.</summary>
 		public static double ProcEstNotReceived(ClaimProc[] List,int procNum){
 			double retVal=0;
 			for(int i=0;i<List.Length;i++){
@@ -209,8 +148,7 @@ namespace OpenDental{
 			return retVal;
 		}
 		
-
-		///<summary>The insurance amount paid based on all claimprocs with this procNum. The list can be all ClaimProcs for patient, or just those for this procedure.</summary>
+		///<summary>Used in Account and in PaySplitEdit. The insurance amount paid based on all claimprocs with this procNum. The list can be all ClaimProcs for patient, or just those for this procedure.</summary>
 		public static double ProcInsPay(ClaimProc[] List,int procNum){
 			double retVal=0;
 			for(int i=0;i<List.Length;i++){
@@ -226,7 +164,7 @@ namespace OpenDental{
 			return retVal;
 		}
 
-		///<summary>The amount paid on a claim only by total, not including by procedure.  The list can be all ClaimProcs for patient, or just those for this claim.</summary>
+		///<summary>Used once in Account on the Claim line.  The amount paid on a claim only by total, not including by procedure.  The list can be all ClaimProcs for patient, or just those for this claim.</summary>
 		public static double ClaimByTotalOnly(ClaimProc[] List,int claimNum){
 			double retVal=0;
 			for(int i=0;i<List.Length;i++){
@@ -260,7 +198,7 @@ namespace OpenDental{
 			}
 			command+=",DateCP='"+POut.PDate(date)+"' "
 				+"WHERE claimnum = '"+claimNum+"' AND "
-				+"inspayamt > 0 AND ("
+				+"inspayamt != 0 AND ("
 				+"claimpaymentNum = '"+claimPaymentNum+"' OR claimpaymentNum = '0')";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();

@@ -173,9 +173,7 @@ namespace OpenDental{
 			Prefs.Cur.ValueString=textSender.Text;
 			Prefs.UpdateCur();
 
-			DataValid.IType=InvalidType.LocalData;
-			DataValid DataValid2=new DataValid();
-			DataValid2.SetInvalid();
+			DataValid.SetInvalid(InvalidTypes.Prefs);
 			DialogResult=DialogResult.OK;
 		}
 

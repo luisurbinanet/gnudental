@@ -145,11 +145,7 @@ Depending on the size of your database, it could take a few minutes.   The resul
 			Prefs.Cur=(Pref)Prefs.HList["DateLastAging"];
 			Prefs.Cur.ValueString=POut.PDate(Ledgers.GetClosestFirst(DateTime.Today));
 			Prefs.UpdateCur();
-
-			DataValid.IType=InvalidType.LocalData;
-			DataValid DataValid2=new DataValid();
-			DataValid2.SetInvalid();
-
+			DataValid.SetInvalid(InvalidTypes.Prefs);
 			Cursor=Cursors.Default;
 			MessageBox.Show(Lan.g(this,"Aging Complete"));
 			DialogResult=DialogResult.OK;

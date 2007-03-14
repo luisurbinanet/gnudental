@@ -72,14 +72,9 @@ namespace OpenDental{
 		//public static GraphicAssembly[] Sublist;//obsolete
 
 		///<summary></summary>
-		public static string GetSelectText(){
-			//cmd.CommandText =
-			return "SELECT * from graphicassembly;";
-		}
-
-		///<summary></summary>
 		public static void Refresh(){
-			table=ds.Tables["graphicassembly"];
+			cmd.CommandText="SELECT * from graphicassembly";
+			FillTable();
 			List=new GraphicAssembly[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
 				List[i].GAssemblyNum= PIn.PInt   (table.Rows[i][0].ToString());
@@ -165,16 +160,12 @@ namespace OpenDental{
 		public static Hashtable HList;
 		///<summary></summary>
 		public static int[,][] MultElementNum;//[Type.ItemOrder,OrdinalTooth][ElementNum list]
-
-		///<summary></summary>
-		public static string GetSelectText(){
-			return "SELECT * from graphicelement"
-				+" ORDER BY zorder;";
-		}
 		
 		///<summary></summary>
 		public static void Refresh(){//MUST come immediately after GType.Refresh and GAssemb.Refresh
-			table=ds.Tables["graphicelement"];
+			cmd.CommandText="SELECT * from graphicelement"
+				+" ORDER BY zorder";
+			FillTable();
 			List=new GraphicElement[table.Rows.Count];
 			HList=new Hashtable();
 			for(int i=0;i<table.Rows.Count;i++){
@@ -305,6 +296,10 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void GetSublistForFilling(string toothNum,string surf){
+			if(toothNum==""){
+				Sublist=new GraphicElement[0];
+				return;
+			}
 			int typeIndex=GraphicTypes.GetIndex(2);
 			int ordTooth;
 			ordTooth=Tooth.ToOrdinal(toothNum);
@@ -490,16 +485,12 @@ namespace OpenDental{
 		public static Hashtable HList;
 		///<summary></summary>
 		public static Hashtable HbyElement;
-
-		///<summary></summary>
-		public static string GetSelectText(){
-			return "SELECT * from graphicshape"
-				+" order by shapetype;";
-		}
 		
 		///<summary></summary>
 		public static void Refresh(){
-			table=ds.Tables["graphicshape"];
+			cmd.CommandText="SELECT * from graphicshape"
+				+" order by shapetype";
+			FillTable();
 			List=new GraphicShape[table.Rows.Count];
 			HList=new Hashtable();
 			for(int i=0;i<table.Rows.Count;i++){
@@ -586,15 +577,12 @@ namespace OpenDental{
 		///<summary></summary>
 		public static GraphicType Cur;
 
-		///<summary></summary>
-		public static string GetSelectText(){
-			return "SELECT * from graphictype"
-				+" ORDER BY itemorder;";
-		}
 		
 		///<summary></summary>
 		public static void Refresh(){
-			table=ds.Tables["graphictype"];
+			cmd.CommandText="SELECT * from graphictype"
+				+" ORDER BY itemorder";
+			FillTable();
 			List=new GraphicType[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
 				List[i].GTypeNum     = PIn.PInt   (table.Rows[i][0].ToString());

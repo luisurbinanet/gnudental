@@ -73,14 +73,17 @@ namespace OpenDental
 			this.butCancel = new OpenDental.UI.Button();
 			this.butOK = new OpenDental.UI.Button();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
-			this.butTomorrow = new OpenDental.UI.Button();
 			this.butToday = new OpenDental.UI.Button();
+			this.butTomorrow = new OpenDental.UI.Button();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// butAll
 			// 
-			this.butAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butAll.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAll.Autosize = true;
+			this.butAll.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAll.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butAll.Location = new System.Drawing.Point(28, 243);
 			this.butAll.Name = "butAll";
 			this.butAll.Size = new System.Drawing.Size(75, 26);
@@ -139,8 +142,11 @@ namespace OpenDental
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(502, 336);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
@@ -149,7 +155,10 @@ namespace OpenDental
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.Location = new System.Drawing.Point(502, 296);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
@@ -172,25 +181,31 @@ namespace OpenDental
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Date Range";
 			// 
-			// butTomorrow
-			// 
-			this.butTomorrow.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butTomorrow.Location = new System.Drawing.Point(250, 50);
-			this.butTomorrow.Name = "butTomorrow";
-			this.butTomorrow.Size = new System.Drawing.Size(96, 23);
-			this.butTomorrow.TabIndex = 45;
-			this.butTomorrow.Text = "Tomorrow";
-			this.butTomorrow.Click += new System.EventHandler(this.butTomorrow_Click);
-			// 
 			// butToday
 			// 
-			this.butToday.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butToday.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butToday.Autosize = true;
+			this.butToday.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butToday.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butToday.Location = new System.Drawing.Point(250, 23);
 			this.butToday.Name = "butToday";
 			this.butToday.Size = new System.Drawing.Size(96, 23);
 			this.butToday.TabIndex = 46;
 			this.butToday.Text = "Today";
 			this.butToday.Click += new System.EventHandler(this.butToday_Click);
+			// 
+			// butTomorrow
+			// 
+			this.butTomorrow.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butTomorrow.Autosize = true;
+			this.butTomorrow.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butTomorrow.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butTomorrow.Location = new System.Drawing.Point(250, 50);
+			this.butTomorrow.Name = "butTomorrow";
+			this.butTomorrow.Size = new System.Drawing.Size(96, 23);
+			this.butTomorrow.TabIndex = 45;
+			this.butTomorrow.Text = "Tomorrow";
+			this.butTomorrow.Click += new System.EventHandler(this.butTomorrow_Click);
 			// 
 			// FormRpAppointments
 			// 
@@ -205,6 +220,7 @@ namespace OpenDental
 			this.Controls.Add(this.listProv);
 			this.Controls.Add(this.label1);
 			this.Name = "FormRpAppointments";
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Appointments Report";
 			this.Load += new System.EventHandler(this.FormRpApptWithPhones_Load);
 			this.groupBox1.ResumeLayout(false);
@@ -282,13 +298,15 @@ namespace OpenDental
 			//create the report
 			Report report=new Report();
 			report.IsLandscape=true;
+			report.ReportName="Appointments";
 			report.AddTitle("Appointments");
 			report.AddSubTitle(((Pref)Prefs.HList["PracticeTitle"]).ValueString);
 			report.AddSubTitle(dateFrom.ToShortDateString()+" - "+dateTo.ToShortDateString());
 			//setup query
 			report.Query=@"SELECT appointment.AptDateTime, 
 				trim(concat(patient.LName,', ',case when length(patient.Preferred) > 0 
-				then concat('(',patient.Preferred,') ') else '' end,patient.fname, ' ',patient.middlei)),
+				then concat('(',patient.Preferred,') ') else '' end,patient.fname, ' ',patient.middlei))
+				AS PatName,
 				patient.Birthdate,
 				appointment.AptDateTime,
 				length(appointment.Pattern)*5,
@@ -334,8 +352,8 @@ namespace OpenDental
 				return;
 			}
 			// display report
-			FormReport FormR=new FormReport();
-			FormR.MyReport=report;
+			FormReport FormR=new FormReport(report);
+			//FormR.MyReport=report;
 			FormR.ShowDialog();
 			DialogResult=DialogResult.OK;
 		}

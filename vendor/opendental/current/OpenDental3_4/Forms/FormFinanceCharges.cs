@@ -63,7 +63,7 @@ namespace OpenDental{
 			// 
 			// textDate
 			// 
-			this.textDate.Location = new System.Drawing.Point(60, 28);
+			this.textDate.Location = new System.Drawing.Point(84, 28);
 			this.textDate.Name = "textDate";
 			this.textDate.ReadOnly = true;
 			this.textDate.Size = new System.Drawing.Size(78, 20);
@@ -72,9 +72,9 @@ namespace OpenDental{
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(6, 32);
+			this.label1.Location = new System.Drawing.Point(2, 32);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(52, 14);
+			this.label1.Size = new System.Drawing.Size(80, 14);
 			this.label1.TabIndex = 20;
 			this.label1.Text = "Date";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -85,7 +85,7 @@ namespace OpenDental{
 			this.groupBox1.Controls.Add(this.radio90);
 			this.groupBox1.Controls.Add(this.radio60);
 			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox1.Location = new System.Drawing.Point(24, 90);
+			this.groupBox1.Location = new System.Drawing.Point(48, 90);
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.Size = new System.Drawing.Size(144, 98);
 			this.groupBox1.TabIndex = 16;
@@ -97,7 +97,7 @@ namespace OpenDental{
 			this.radio30.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radio30.Location = new System.Drawing.Point(12, 24);
 			this.radio30.Name = "radio30";
-			this.radio30.Size = new System.Drawing.Size(104, 16);
+			this.radio30.Size = new System.Drawing.Size(122, 16);
 			this.radio30.TabIndex = 1;
 			this.radio30.Text = "Over 30 Days";
 			// 
@@ -107,7 +107,7 @@ namespace OpenDental{
 			this.radio90.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radio90.Location = new System.Drawing.Point(12, 70);
 			this.radio90.Name = "radio90";
-			this.radio90.Size = new System.Drawing.Size(104, 18);
+			this.radio90.Size = new System.Drawing.Size(130, 18);
 			this.radio90.TabIndex = 3;
 			this.radio90.TabStop = true;
 			this.radio90.Text = "Over 90 Days";
@@ -117,7 +117,7 @@ namespace OpenDental{
 			this.radio60.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radio60.Location = new System.Drawing.Point(12, 46);
 			this.radio60.Name = "radio60";
-			this.radio60.Size = new System.Drawing.Size(104, 18);
+			this.radio60.Size = new System.Drawing.Size(126, 18);
 			this.radio60.TabIndex = 2;
 			this.radio60.Text = "Over 60 Days";
 			// 
@@ -129,7 +129,7 @@ namespace OpenDental{
 			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.Location = new System.Drawing.Point(510, 258);
+			this.butCancel.Location = new System.Drawing.Point(588, 380);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 25);
 			this.butCancel.TabIndex = 19;
@@ -143,42 +143,43 @@ namespace OpenDental{
 			this.butOK.Autosize = true;
 			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butOK.Location = new System.Drawing.Point(510, 224);
+			this.butOK.Location = new System.Drawing.Point(588, 346);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 25);
 			this.butOK.TabIndex = 18;
-			this.butOK.Text = "&OK";
+			this.butOK.Text = "Run";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(6, 62);
+			this.label2.Location = new System.Drawing.Point(2, 62);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(52, 14);
+			this.label2.Size = new System.Drawing.Size(80, 14);
 			this.label2.TabIndex = 22;
 			this.label2.Text = "APR";
 			this.label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(104, 62);
+			this.label3.Location = new System.Drawing.Point(128, 62);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(12, 14);
+			this.label3.Size = new System.Drawing.Size(20, 14);
 			this.label3.TabIndex = 23;
 			this.label3.Text = "%";
-			this.label3.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// label4
 			// 
-			this.label4.Location = new System.Drawing.Point(122, 62);
+			this.label4.Location = new System.Drawing.Point(146, 62);
 			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(98, 14);
+			this.label4.Size = new System.Drawing.Size(120, 14);
 			this.label4.TabIndex = 24;
 			this.label4.Text = "(For Example: 18)";
 			// 
 			// textAPR
 			// 
-			this.textAPR.Location = new System.Drawing.Point(60, 58);
+			this.textAPR.Location = new System.Drawing.Point(84, 58);
+			this.textAPR.MaxVal = 255;
 			this.textAPR.MinVal = 0;
 			this.textAPR.Name = "textAPR";
 			this.textAPR.Size = new System.Drawing.Size(42, 20);
@@ -195,9 +196,9 @@ namespace OpenDental{
 			// 
 			// label6
 			// 
-			this.label6.Location = new System.Drawing.Point(284, 12);
+			this.label6.Location = new System.Drawing.Point(284, 4);
 			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(192, 72);
+			this.label6.Size = new System.Drawing.Size(192, 80);
 			this.label6.TabIndex = 29;
 			this.label6.Text = "Finance charges are entered into the guarantor\'s account as an adjustment.  Pleas" +
 				"e choose which type of positive adjustment to use.";
@@ -208,7 +209,7 @@ namespace OpenDental{
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
-			this.ClientSize = new System.Drawing.Size(614, 318);
+			this.ClientSize = new System.Drawing.Size(692, 440);
 			this.Controls.Add(this.label6);
 			this.Controls.Add(this.listAdjType);
 			this.Controls.Add(this.textAPR);
@@ -235,8 +236,9 @@ namespace OpenDental{
 
 		private void FormFinanceCharges_Load(object sender, System.EventArgs e) {
 			if(PIn.PDate(((Pref)Prefs.HList["DateLastAging"]).ValueString) 
-				< Ledgers.GetClosestFirst(DateTime.Today)){
-				if(MessageBox.Show(Lan.g(this,"You must update aging first."),"",MessageBoxButtons.OKCancel)==DialogResult.OK){
+				< Ledgers.GetClosestFirst(DateTime.Today))
+			{
+				if(MsgBox.Show(this,true,"You must update aging first.")){//OK
 					FormAging FormA=new FormAging();
 					FormA.ShowDialog();
 				}
@@ -246,7 +248,8 @@ namespace OpenDental{
 				}
 			}
 			if(PIn.PDate(((Pref)Prefs.HList["FinanceChargeLastRun"]).ValueString)
-				==Ledgers.GetClosestFirst(DateTime.Today)){
+				==Ledgers.GetClosestFirst(DateTime.Today))
+			{
 				MessageBox.Show(Lan.g(this,"You cannot run finance charges again this month."));
 				DialogResult=DialogResult.Cancel;
 				return;
@@ -287,7 +290,6 @@ namespace OpenDental{
 			}			
 			//Patients.ResetAging();
 			//Ledgers.UpdateFinanceCharges(PIn.PDate(textDate.Text));
-
 			PatAging[] AgingList=Patients.GetAgingList();
 			double OverallBalance;
 			for(int i=0;i<AgingList.Length;i++){
@@ -302,15 +304,15 @@ namespace OpenDental{
 					OverallBalance=AgingList[i].BalOver90;
 				}
 				if(OverallBalance > 0){
-					Adjustments.Cur=new Adjustment();
-					Adjustments.Cur.PatNum=AgingList[i].PatNum;
-					Adjustments.Cur.AdjDate=PIn.PDate(textDate.Text);
-					Adjustments.Cur.AdjType=Defs.Short[(int)DefCat.AdjTypes]
+					Adjustment AdjustmentCur=new Adjustment();
+					AdjustmentCur.PatNum=AgingList[i].PatNum;
+					AdjustmentCur.AdjDate=PIn.PDate(textDate.Text);
+					AdjustmentCur.AdjType=Defs.Short[(int)DefCat.AdjTypes]
 						[(int)ALPosIndices[listAdjType.SelectedIndex]].DefNum;
-					Adjustments.Cur.AdjNote="Finance Charge";
-					Adjustments.Cur.AdjAmt=Math.Round(((PIn.PDouble(textAPR.Text) * .01 / 12) * OverallBalance),2);
-					Adjustments.Cur.ProvNum=AgingList[i].PriProv;
-					Adjustments.InsertCur();
+					AdjustmentCur.AdjNote="Finance Charge";
+					AdjustmentCur.AdjAmt=Math.Round(((PIn.PDouble(textAPR.Text) * .01 / 12) * OverallBalance),2);
+					AdjustmentCur.ProvNum=AgingList[i].PriProv;
+					AdjustmentCur.Insert();
 				}
 			}
 			Prefs.Cur=(Pref)Prefs.HList["FinanceChargeAPR"];
@@ -323,9 +325,7 @@ namespace OpenDental{
 			Prefs.Cur=(Pref)Prefs.HList["FinanceChargeLastRun"];
 			Prefs.Cur.ValueString=POut.PDate(Ledgers.GetClosestFirst(DateTime.Today));
 			Prefs.UpdateCur();
-			DataValid.IType=InvalidType.LocalData;
-			DataValid DataValid2=new DataValid();
-			DataValid2.SetInvalid();
+			DataValid.SetInvalid(InvalidTypes.Prefs);
 			MessageBox.Show(Lan.g(this,"Finance Charges Added."));
 			DialogResult=DialogResult.OK;
 		}

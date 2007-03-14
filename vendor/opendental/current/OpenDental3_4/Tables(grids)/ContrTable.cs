@@ -74,7 +74,7 @@ namespace OpenDental{
 		public Color DefaultBackGColor=Color.White;
 		///<summary></summary>
 		public Color DefaultGridColor=Color.Gray;
-		///<summary></summary>
+		///<summary>Use this for tables with single selection.</summary>
 		public int SelectedRow=-1;
 		///<summary></summary>
 		public static int SelectedTable;//for arrays of tables
@@ -216,7 +216,7 @@ namespace OpenDental{
 			}
 		}
 
-		///<summary></summary>
+		///<summary>Holds the int values of the indices of the selected rows.  Use for multiple row selection tables.</summary>
     [Description("Holds the int values of the indexes of the selected rows")]
 		public int[] SelectedIndices{
 			get{ 

@@ -98,22 +98,6 @@ namespace OpenDental{
 		Nov,
 		///<summary>12</summary>
 		Dec}
-	///<summary>Account line type used when displaying lines in the Account module.</summary>
-	public enum AcctType{
-		///<summary>1</summary>
-		Proc=1,
-		///<summary>2</summary>
-		Adj,
-		///<summary>3</summary>
-		Pay,
-		///<summary>4</summary>
-		Claim,
-		///<summary>5</summary>
-		Disc,
-		///<summary>6</summary>
-		Comm,
-		///<summary>7</summary>
-		PayPlan}
 	///<summary>Progress notes line type. Used when displaying lines in the Chart module.</summary>
 	public enum ProgType{
 		///<summary>1</summary>
@@ -192,7 +176,10 @@ namespace OpenDental{
 		///<summary>22- Colors for the graphical tooth chart.</summary>
 		ChartGraphicColors,
 		///<summary>23- Categories for the Contact list.</summary>
-		ContactCategories}
+		ContactCategories,
+		///<summary>24- Categories for Letter Merge.</summary>
+		LetterMergeCats
+	}
 	//public enum StudentStat{None,Full,Part};
 	///<summary>Used in procedurecode setup to specify the treatment area for a procedure.  This determines what fields are available when editing an appointment.</summary>
 	public enum TreatmentArea{
@@ -213,11 +200,63 @@ namespace OpenDental{
 		///<summary>7</summary>
 		ToothRange}
 	///<summary>When the autorefresh message is sent to the other computers, this is the type.</summary>
-	public enum InvalidType{
+	[Flags]
+	public enum InvalidTypes{
 		///<summary>0</summary>
-		Date,
-		///<summary>1</summary>
-		LocalData}
+		None=0,
+		///<summary>1- Not used with any other flags</summary>
+		Date=1,
+		///<summary>2</summary>
+		ProcCodes=2,
+		///<summary>4</summary>
+		Prefs=4,
+		///<summary>8</summary>
+		Views=8,
+		///<summary>16</summary>
+		AutoCodes=16,
+		///<summary>32</summary>
+		ProcButtons=32,
+		///<summary>64</summary>
+		Carriers=64,
+		///<summary>128</summary>
+		ClearHouses=128,
+		///<summary>256</summary>
+		Computers=256,
+		///<summary>512</summary>
+		InsCats=512,
+		///<summary>1024</summary>
+		Employees=1024,
+		///<summary>2048</summary>
+		Startup=2048,
+		///<summary>4096</summary>
+		Defs=4096,
+		///<summary>8192</summary>
+		Email=8192,
+		///<summary>16384</summary>
+		Fees=16384,
+		///<summary>32768</summary>
+		Letters=32768,
+		///<summary>65536</summary>
+		QuickPaste=65536,
+		///<summary>131072</summary>
+		Permissions=131072,
+		///<summary>262144</summary>
+		Programs=262144,
+		///<summary>524288</summary>
+		ToolBut=524288,
+		///<summary>1048576  Also includes clinics.</summary>
+		Providers=1048576,
+		///<summary>2097152</summary>
+		Sched=2097152,
+		///<summary>4194304</summary>
+		ClaimForms=4194304,
+		///<summary>8388608</summary>
+		ZipCodes=8388608,
+		///<summary>16777216</summary>
+		LetterMerge=16777216,
+		///<summary>All flags combined except Date.</summary>
+		AllLocal=33554432-1-1
+	}
 	//<summary></summary>
 	/*public enum ButtonType{
 		///<summary></summary>
@@ -580,7 +619,9 @@ namespace OpenDental{
 		///<summary>7</summary>
 		Asian,
 		///<summary>8</summary>
-		Other
+		Other,
+		///<summary>9</summary>
+		Aboriginal
 	}
 
 	///<summary>Grade level used in public health.</summary>
@@ -716,7 +757,9 @@ namespace OpenDental{
 		///<summary>1</summary>
 		BlueShield,
 		///<summary>2</summary>
-		SiteNumber
+		SiteNumber,
+		///<summary>3</summary>
+		CommercialNumber
 	}
 
 	///<summary>Each clearinghouse can have a hard-coded comm bridge which handles all the communications of transfering the claim files to the clearinghouse/carrier.  Does not just include X12, but can include any format at all.</summary>
@@ -730,9 +773,33 @@ namespace OpenDental{
 		///<summary>3</summary>
 		Renaissance,
 		///<summary>4</summary>
-		WebClaim,
+		ClaimConnect,
 		///<summary>5</summary>
-		RECS
+		RECS,
+		///<summary>6</summary>
+		Inmediata
+	}
+
+	///<summary></summary>
+	public enum PrintSituation{
+		///<summary>0- Covers any printing situation not listed separately.</summary>
+		Default,
+		///<summary></summary>
+		Statement,
+		///<summary></summary>
+		LabelSingle,
+		///<summary></summary>
+		Claim,
+		///<summary>TP and perio</summary>
+		TPPerio,
+		///<summary></summary>
+		Rx,
+		///<summary></summary>
+		LabelSheet,
+		///<summary></summary>
+		Postcard,
+		///<summary></summary>
+		Appointments
 	}
 
 

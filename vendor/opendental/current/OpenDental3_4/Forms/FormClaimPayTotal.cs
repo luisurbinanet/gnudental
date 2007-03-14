@@ -345,6 +345,7 @@ namespace OpenDental
 		private void tbProc_CellDoubleClicked(object sender, CellEventArgs e){
 			FormClaimProc FormCP=new FormClaimProc(ClaimProcsToEdit[e.Row],null,FamCur,PlanList);
 			FormCP.IsInClaim=true;
+			//no need to worry about permissions here
 			FormCP.ShowDialog();
 			if(FormCP.DialogResult!=DialogResult.OK){
 				return;

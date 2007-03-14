@@ -24,7 +24,8 @@ namespace OpenDental.Reporting
 		private string description;
 		private string authorID;
 		private int letterOrder;
-		
+		///<summary>This is simply used to measure strings for alignment purposes.</summary>
+		private Graphics grfx;
 
 		#region Properties
 		///<summary>Collection of strings representing available datatable field names. For now, only one table is allowed, so each string will represent a column.</summary>
@@ -152,14 +153,15 @@ namespace OpenDental.Reporting
 			reportObjects=new ReportObjectCollection();
 			dataFields=new ArrayList();
 			parameterFields=new ParameterFieldCollection();
+			grfx=Graphics.FromImage(new Bitmap(1,1));//I'm still trying to find a better way to do this
 		}
 
 		/// <summary>Adds a ReportObject large, centered, and bold, to the top of the Report Header Section.  Should only be done once, and done before any subTitles.</summary>
 		/// <param name="title">The text of the title.</param>
 		public void AddTitle(string title){
-			FormReport FormR=new FormReport();
+			//FormReport FormR=new FormReport();
 			//this is just to get a graphics object. There must be a better way.
-			Graphics grfx=FormR.CreateGraphics();
+			//Graphics grfx=FormR.CreateGraphics();
 			Font font=new Font("Tahoma",17,FontStyle.Bold);
 			Size size=new Size((int)(grfx.MeasureString(title,font).Width/grfx.DpiX*100+2)
 				,(int)(grfx.MeasureString(title,font).Height/grfx.DpiY*100+2));
@@ -185,15 +187,15 @@ namespace OpenDental.Reporting
 			}
 			//this it the only place a white buffer is added to a header.
 			sections["Report Header"].Height=(int)size.Height+20;
-			grfx.Dispose();
-			FormR.Dispose();
+			//grfx.Dispose();
+			//FormR.Dispose();
 		}
 
 		/// <summary>Adds a ReportObject, centered and bold, at the bottom of the Report Header Section.  Should only be done after AddTitle.  You can add as many subtitles as you want.</summary>
 		/// <param name="subTitle">The text of the subtitle.</param>
 		public void AddSubTitle(string subTitle){
-			FormReport FormR=new FormReport();
-			Graphics grfx=FormR.CreateGraphics();
+			//FormReport FormR=new FormReport();
+			//Graphics grfx=FormR.CreateGraphics();
 			Font font=new Font("Tahoma",10,FontStyle.Bold);
 			Size size=new Size((int)(grfx.MeasureString(subTitle,font).Width/grfx.DpiX*100+2)
 				,(int)(grfx.MeasureString(subTitle,font).Height/grfx.DpiY*100+2));
@@ -226,8 +228,8 @@ namespace OpenDental.Reporting
 			reportObjects.Add(
 				new ReportObject("Report Header",new Point(xPos,yPos+5),size,subTitle,font,ContentAlignment.MiddleCenter));
 			sections["Report Header"].Height+=(int)size.Height+5;
-			grfx.Dispose();
-			FormR.Dispose();
+			//grfx.Dispose();
+			//FormR.Dispose();
 		}
 
 		/// <summary>Adds all the objects necessary for a typical column, including the textObject for column header and the fieldObject for the data.  Does not add lines or shading. If the column is type Double, then the alignment is set right and a total field is added. Also, default formatstrings are set for dates and doubles.</summary>
@@ -236,8 +238,8 @@ namespace OpenDental.Reporting
 		/// <param name="valueType"></param>
 		public void AddColumn(string dataField,int width,FieldValueType valueType){
 			dataFields.Add(dataField);
-			FormReport FormR=new FormReport();
-			Graphics grfx=FormR.CreateGraphics();
+			//FormReport FormR=new FormReport();
+			//Graphics grfx=FormR.CreateGraphics();
 			Font font;
 			Size size;
 			ContentAlignment textAlign;
@@ -304,8 +306,8 @@ namespace OpenDental.Reporting
 					,font,textAlign,formatString));
 			}
 			//tidy up
-			grfx.Dispose();
-			FormR.Dispose();
+			//grfx.Dispose();
+			//FormR.Dispose();
 			return;
 		}
 
@@ -325,8 +327,8 @@ namespace OpenDental.Reporting
 
 		/// <summary>Put a pagenumber object on lower left of page footer section.</summary>
 		public void AddPageNum(){
-			FormReport FormR=new FormReport();
-			Graphics grfx=FormR.CreateGraphics();
+			//FormReport FormR=new FormReport();
+			//Graphics grfx=FormR.CreateGraphics();
 			//add page number
 			Font font=new Font("Tahoma",9);
 			Size size=new Size(150,(int)(grfx.MeasureString("anytext",font).Height/grfx.DpiY*100+2));
@@ -343,8 +345,8 @@ namespace OpenDental.Reporting
 				//,new FieldDef("PageNum",FieldValueType.String
 				//,SpecialVarType.PageNumber)
 				,font,ContentAlignment.MiddleLeft,""));
-			grfx.Dispose();
-			FormR.Dispose();
+			//grfx.Dispose();
+			//FormR.Dispose();
 		}
 		
 		/*public void AddParameter(string name,ParameterValueKind valueKind){

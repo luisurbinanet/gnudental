@@ -11,6 +11,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml;
+using System.Xml.Serialization;
 using System.Windows.Forms;
 
 namespace OpenDental{
@@ -21,30 +22,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public Shared(){
 			
-		}//end constructor
-/*
-		public bool SelectPatient(){
-			FormSelectPatient formSelectPatient2 = new FormSelectPatient();
-			formSelectPatient2.ShowDialog();
-			if (formSelectPatient2.DialogResult == DialogResult.OK){
-				InsPlans InsPlans=new InsPlans();
-				InsPlans.Refresh();
-				CovPats CovPats=new CovPats();
-				CovPats.Refresh();
-				return true;
-			}
-			else return false;
-		}*/
-
-		/*public bool ChangePatient(int patNum){
-			Patients Patients=new Patients();
-			Patients.GetFamily(patNum);
-			InsPlans InsPlans=new InsPlans();
-			InsPlans.Refresh();
-			CovPats CovPats=new CovPats();
-			CovPats.Refresh();
-			return true;
-		}*/
+		}
 
 		///<summary>Converts a date to an age. If age is over 115, then returns 0.</summary>
 		public static int DateToAge(DateTime date){
@@ -64,10 +42,14 @@ namespace OpenDental{
 		}
 
 		///<summary>Computes balance for a single patient. Returns true if a refresh is needed.</summary>
-		public static bool ComputeBalances(Procedure[] procList,ClaimProc[] claimProcList,Patient PatCur){
+		public static bool ComputeBalances(Procedure[] procList,ClaimProc[] claimProcList,Patient PatCur,PaySplit[] paySplitList,Adjustment[] AdjustmentList){
 			//must have refreshed all 5 first
-			double calcBal=Procedures.ComputeBal(procList)+ClaimProcs.ComputeBal(claimProcList)
-				+Adjustments.ComputeBal()-PaySplits.ComputeBal()+PayPlans.ComputeBal(PatCur.PatNum);
+			double calcBal
+				=Procedures.ComputeBal(procList)
+				+ClaimProcs.ComputeBal(claimProcList)
+				+Adjustments.ComputeBal(AdjustmentList)
+				-PaySplits.ComputeBal(paySplitList)
+				+PayPlans.ComputeBal(PatCur.PatNum);
 			if(calcBal!=PatCur.EstBalance){
 				Patient PatOld=PatCur.Copy();
 				PatCur.EstBalance=calcBal;
@@ -79,299 +61,68 @@ namespace OpenDental{
 
 	}//end class shared
 
-	/*=================================Class=========================================
+	/*=================================Class Messages=========================================
 ===========================================================================================*/
-
-	/*public class ChartNumDent{//dentrix
-		private static string chartNum;
-
-		public ChartNumDent(){//constructor
-
-		}
-
-		public delegate bool MyDelegate(int first, int second);
-
-		[ DllImport("user32.dll") ] 
-		static extern int GetWindowText(int hWnd, StringBuilder text, int count); 
-		[ DllImport("user32.dll") ] 
-		static extern int EnumWindows(MyDelegate x, int lParam);
-		
-		public static bool EnumWindowsProc (int hwnd, int lParam){
-			const int nChars = 256;
-			StringBuilder buffer = new StringBuilder(nChars);
-			if (GetWindowText(hwnd, buffer, nChars)>0){  // get title bar text
-				if (string.Compare(buffer.ToString(),0,"Dentrix Ledger",0,14)==0){
-					chartNum=buffer.ToString().Substring(buffer.Length-8,6);
-					return false;
-				}//end if
-				else return true;
-			}//end if
-			else return true;
-			//return true; //continue enumeration
-		}//end EnumWindowsProc
-
-		public static string GetChartNum(){
-			MyDelegate UseEnum = new MyDelegate(EnumWindowsProc);
-			EnumWindows(UseEnum, 0);
-			return chartNum;
-		}
-
-
-	}//end class ChartNumDent*/
 
 	///<summary>Handles sending messages between computers for buttons and for invalidating appointment screen and locally stored data. David Adams from Adivad Technologies was very helpful in providing the threading logic.</summary>
 	public class Messages{
-		///<summary></summary>
-		public static MessageInvalid RecdMessage;
-		///<summary></summary>
-		public static MessageButtons RecdMsgBut;
-		///<summary></summary>
-		/*public static MessageInvalid MessageToSend;
-		///<summary></summary>
-		public static MessageButtons ButtonsToSend;*/
-		//private static Thread Thread2;
-		//<summary>This is the new way of handling multiple messages.</summary>
-		//private static ArrayList ALmessagesInvalid;
-		//private static ArrayList ALmessagesButtons;
-		//public event EventHandler Changed;
 
-		//<summary>Static constructor</summary>
-		//static Messages(){
-			//ExitApplicationNow.WantsToExit+=new System.EventHandler(ExitApplicationNow_WantsToExit);
-			//ALmessagesInvalid=new ArrayList();
-			//ALmessagesInvalid=ArrayList.Synchronized(ALmessagesInvalid);
-			//ALmessagesButtons=new ArrayList();
-			//ALmessagesButtons=ArrayList.Synchronized(ALmessagesButtons);
-		//}
-
-		public static void SendMessage(MessageInvalid msg){
-			//ALmessagesInvalid.Add(msg);
-			//OnItemAdded();
-			//MessageInvalid myMsg=msg;
-			//if(
-			ThreadPool.QueueUserWorkItem(new WaitCallback(SendOneInvalidMessage),msg);//){    
-			//#if __DEBUG
-				// Do some debug processing here...
-			//#endif // __DEBUG
-			//}
+		///<summary></summary>
+		public static void SendMessage(ODMessage msg){
+			ThreadPool.QueueUserWorkItem(new WaitCallback(SendOneMessage),msg);
 		}
 
 		///<summary></summary>
-		public static void SendMessage(MessageButtons msg){
-			//ALmessagesButtons.Add(msg);
-			//OnItemAdded();
-			ThreadPool.QueueUserWorkItem(new WaitCallback(SendOneButtonMessage),msg);
-		}
-
-		/*protected virtual void OnChanged(EventArgs e) {
-			if(Changed!=null){
-				Changed(this, e);
-			}
-		}*/
-
-		/*private static void OnItemAdded(){
-			if(Thread2!=null//keeps the second condition from failing the first time
-				&& Thread2.IsAlive){//if the thread is alive
-				return;//then the item is already being handled, so return.
-			}
-			Thread2=new Thread(new ThreadStart(ProcessMessages));
-			if(((Pref)Prefs.HList["AutoRefreshIsDisabled"]).ValueString!="1")
-				Thread2.Start();
-		}*/
-
-		/*public static void ExitApplicationNow_WantsToExit(object sender, System.EventArgs e){
-			if(Thread2!=null){
-				Thread2.Abort();
-			}
-		}*/
-
-		/*static void ThreadProcMessageInvalid(Object myObject){
-			//MessageInvalid msg = (MessageInvalid)myObject;
-			SendOneInvalidMessage((MessageInvalid)myObject);
-		}
-
-		static void ThreadProcMessageButtons(Object myObject){
-			//MessageButtons msg = (MessageButtons)myObject;
-			SendOneButtonMessage((MessageButtons)myObject);
-		}*/
-
-		//<summary>Separate thread.</summary>
-		/*private static void ProcessMessages(){
-			//this should even handle a message that is added during processing of another message
-			while(ALmessagesInvalid.Count>0 || ALmessagesButtons.Count>0){
-				if(ALmessagesInvalid.Count>0){
-					MessageInvalid msg;
-					lock(ALmessagesInvalid){
-						msg=(MessageInvalid)ALmessagesInvalid[ALmessagesInvalid.Count-1];
-						ALmessagesInvalid.RemoveAt(ALmessagesInvalid.Count-1);
-					}
-					SendOneInvalidMessage(msg);
-				}
-				if(ALmessagesButtons.Count>0){
-					MessageButtons msgB;
-					lock(ALmessagesButtons){
-						msgB=(MessageButtons)ALmessagesButtons[ALmessagesButtons.Count-1];
-						ALmessagesButtons.RemoveAt(ALmessagesButtons.Count-1);
-					}
-					SendOneButtonMessage(msgB);
-				}
-			}
-		}*/
-
-		///<summary></summary>
-		private static void SendOneInvalidMessage(Object myObject){
-			MessageInvalid msg=(MessageInvalid)myObject;
-			string msgTo;
-			for(int i=0;i<Computers.List.Length;i++){
-				msgTo=Computers.List[i].CompName;		
-				if(msgTo==SystemInformation.ComputerName){
-					continue;
-				}
-				msg.From=SystemInformation.ComputerName;
-				try{
-					TcpClient TcpClientSend=new TcpClient(msgTo, 2123);//was 2112
-					NetworkStream ns=TcpClientSend.GetStream();
-					StreamWriter writer=new StreamWriter(ns);
-					XmlWriter xmlwriter=new XmlTextWriter(writer);
-					xmlwriter.WriteStartElement("MessageInvalid");
-					xmlwriter.WriteElementString("From", msg.From);
-					xmlwriter.WriteElementString("Type", msg.Type);
-					xmlwriter.WriteElementString("DateViewing", POut.PDate(msg.DateViewing));
-					xmlwriter.WriteEndElement();
-					writer.Close();
-					xmlwriter.Close();
-					//byte[] sendBytes = Encoding.ASCII.GetBytes(strSend);
-					//ns.Write(sendBytes,0,sendBytes.Length);
-					ns.Close();
-					TcpClientSend.Close();
-				}
-				catch{
-					//MessageBox.Show(msgTo+" not found.");
-				}
-			}
-		}
-
-		///<summary></summary>
-		private static void SendOneButtonMessage(Object myObject){
-			MessageButtons msg=(MessageButtons)myObject;
+		private static void SendOneMessage(Object myObject){
+			ODMessage msg=(ODMessage)myObject;
 			string msgTo;
 			for(int i=0;i<Computers.List.Length;i++){
 				msgTo=Computers.List[i].CompName;		
 				if(msgTo==SystemInformation.ComputerName//don't send to self
-					&& msg.Type!="Text"){//unless it's text
+					&& msg.MessageType!="Text"){//unless it's text
 					continue;
 				}
 				msg.From=SystemInformation.ComputerName;
 				try{
 					TcpClient TcpClientSend=new TcpClient(msgTo, 2123);
 					NetworkStream ns=TcpClientSend.GetStream();
-					StreamWriter writer=new StreamWriter(ns);
-					XmlWriter xmlwriter=new XmlTextWriter(writer);
-					xmlwriter.WriteStartElement("MessageButtons");
-					xmlwriter.WriteElementString("From", msg.From);
-					xmlwriter.WriteElementString("Type", msg.Type);
-					xmlwriter.WriteElementString("Text", msg.Text);
-					xmlwriter.WriteElementString("Row", POut.PInt(msg.Row));
-					xmlwriter.WriteElementString("Col", POut.PInt(msg.Col));	
-					xmlwriter.WriteElementString("Pushed", POut.PBool(msg.Pushed));
-					xmlwriter.WriteEndElement();
+					XmlSerializer serializer=new XmlSerializer(typeof(ODMessage));
+					TextWriter writer=new StreamWriter(ns);
+					serializer.Serialize(writer,msg);
 					writer.Close();
-					xmlwriter.Close();
-					//byte[] sendBytes = Encoding.ASCII.GetBytes(strSend);
-					//ns.Write(sendBytes,0,sendBytes.Length);
-					ns.Close();
-					TcpClientSend.Close();
 				}
-				catch{
-					//MessageBox.Show(msgTo+" not found.");
+				catch{//(System.Exception e) {
+					//MessageBox.Show(e.Message);
 				}
 			}
 		}
 				
 		///<summary></summary>
-		public static void RecMessage(string strMessage){
-			//MessageBox.Show(strMessage);
-			StringReader stringReader2 = new StringReader(strMessage);
-			RecdMessage = new MessageInvalid();
-			RecdMsgBut = new MessageButtons();
-			XmlTextReader reader = new XmlTextReader(stringReader2);
-			reader.Read();
-			switch (reader.Name){
-				case "MessageInvalid" :
-					reader.Read();
-					reader.Read();
-					RecdMessage.From = reader.Value;
-					reader.Read();
-					reader.Read();
-					reader.Read();
-					RecdMessage.Type = reader.Value;
-					reader.Read();
-					reader.Read();
-					reader.Read();
-					RecdMessage.DateViewing = PIn.PDate(reader.Value);
-					/*reader.Read();
-					reader.Read();
-					reader.Read();
-					recdMessage.PatNum = reader.Value;
-					reader.Read();
-					reader.Read();
-					reader.Read();
-					recdMessage.TableChanged = reader.Value;*/
-					break;
-				case "MessageButtons" :
-					reader.Read();
-					reader.Read();
-					RecdMsgBut.From = reader.Value;
-					reader.Read();
-					reader.Read();
-					reader.Read();
-					RecdMsgBut.Type = reader.Value;
-					reader.Read();
-					reader.Read();
-					reader.Read();
-					RecdMsgBut.Text = reader.Value;
-					reader.Read();
-					reader.Read();
-					reader.Read();
-					RecdMsgBut.Row = PIn.PInt(reader.Value);
-					reader.Read();
-					reader.Read();
-					reader.Read();
-					RecdMsgBut.Col = PIn.PInt(reader.Value);
-					reader.Read();
-					reader.Read();
-					reader.Read();
-					RecdMsgBut.Pushed = PIn.PBool(reader.Value);
-					//MessageBox.Show(RecdMsgBut.Type);
-					break;
-			}//end switch 
-			//MessageBox.Show(RecdMessage.From+","+RecdMessage.Type+","+RecdMessage.DateViewing);
-			reader.Close();
-			stringReader2.Close();
+		public static ODMessage RecMessage(string strMessage){
+			StringReader sr=new StringReader(strMessage);
+			XmlSerializer serializer=new XmlSerializer(typeof(ODMessage));
+			ClaimForm tempClaimForm=new ClaimForm();
+			try{
+				return (ODMessage)serializer.Deserialize(sr);
+			}
+			catch(System.Exception e) {
+				MessageBox.Show(e.Message);
+				return null;
+			}
 		}
 
-
-	}//end class Messages
-
-	///<summary></summary>
-	public struct MessageInvalid{
-		///<summary></summary>
-		public string From;
-		///<summary></summary>
-		public string Type;//"LocalData" or "Date"
-		///<summary></summary>
-		public DateTime DateViewing;
-		//public string PatNum;
-		//public string TableChanged;
-		//might include type of TableChange: insert, delete, update, etc. 
 	}
 
-	///<summary></summary>
-	public struct MessageButtons{
+	///<summary>From gets filled in during SendMessage. No need to fill it in ahead of time.</summary>
+	public class ODMessage{
 		///<summary></summary>
 		public string From;
+		///<summary>InvalidTypes.None, InvalidTypes.Date, or combined flags for any LocalData</summary>
+		public InvalidTypes ITypes;
 		///<summary></summary>
-		public string Type;//"Button" or "Text"
+		public DateTime DateViewing;
+		///<summary>"Button", "Text", or "Invalid"</summary>
+		public string MessageType;
 		///<summary></summary>
 		public string Text;
 		///<summary></summary>
@@ -380,86 +131,79 @@ namespace OpenDental{
 		public int Col;
 		///<summary></summary>
 		public bool Pushed;
+
+		///<summary></summary>
+		public ODMessage(InvalidTypes iTypes,DateTime dateViewing,string messageType,string text,
+			int row, int col, bool pushed)
+		{
+			ITypes=iTypes;
+			DateViewing=dateViewing;
+			MessageType=messageType;
+			Text=text;
+			Row=row;
+			Col=col;
+			Pushed=pushed;
+		}
+
+		///<summary>This constructor is just here so the serializer will work.</summary>
+		public ODMessage(){
+
+		}
 	}
+
 
 /*=================================Class DataValid=========================================
 ===========================================================================================*/
 
 	///<summary></summary>
 	public class DataValid{
-		/*
-		public struct Module{
-			public static bool ApptDate;
-			public static bool ApptPat;
-			public static bool Acct;
-			public static bool Chart;
-			public static bool Docs;
-			public static bool Fam;
-			public static bool Tools;
-			public static bool Treat;
-		}
-		*/
-		///<summary></summary>
-		public static DateTime DateViewing;
-		//public static int PatNum;
-		//public static string Table;
-		///<summary></summary>
-		public static InvalidType IType;
 
-		/*public void InvalidPat(){
-			Module.ApptPat=false;
-			Module.Acct=false;
-			Module.Chart=false;
-			Module.Docs=false;
-			Module.Fam=false;
-			Module.Tools=false;
-			Module.Treat=false;
+		///<summary></summary>
+		public static event OpenDental.ValidEventHandler BecameInvalid;	
+
+		///<summary>Triggers an event that causes a signal to be sent to all other computers telling them what kind of locally stored data needs to be updated.  Either supply a set of flags for the types, or supply a date if the appointment screen needs to be refreshed.</summary>
+		public static void SetInvalid(InvalidTypes itypes){
+			OnBecameInvalid(new OpenDental.ValidEventArgs(DateTime.MinValue,itypes));
 		}
 
-		public void InvalidDate(){
-			Module.ApptDate=false;
-		}*/
-		///<summary></summary>
-		public static event System.EventHandler BecameInvalid;
-
-		///<summary></summary>
-		public void SetInvalid(){
-			//this is the main method,but you first have to set:
-			//IType and possibly DateViewing
-			OnBecameInvalid(new System.EventArgs());
+		///<summary>Triggers an event that causes a signal to be sent to all other computers telling them what kind of locally stored data needs to be updated.  Either supply a set of flags for the types, or supply a date if the appointment screen needs to be refreshed.</summary>
+		public static void SetInvalid(DateTime date){
+			OnBecameInvalid(new OpenDental.ValidEventArgs(date,InvalidTypes.Date));
 		}
 
 		///<summary></summary>
-		protected virtual void OnBecameInvalid(System.EventArgs e){
+		protected static void OnBecameInvalid(OpenDental.ValidEventArgs e){
 			if(BecameInvalid !=null){
-				BecameInvalid(this,e);
+				BecameInvalid(e);
 			}
 		}
 
-
-
 	}
 
-	/*public class ValidEventArgs : EventArgs{
+	///<summary></summary>
+	public delegate void ValidEventHandler(ValidEventArgs e);
+
+	///<summary></summary>
+	public class ValidEventArgs : System.EventArgs{
 		private DateTime dateViewing;
-		private int patNum;
-		private string tableChanged;
+		private InvalidTypes itypes;
 		
-		public ValidEventArgs(DateTime dateViewing, int patNum, string tableChanged) : base(){
+		///<summary></summary>
+		public ValidEventArgs(DateTime dateViewing, InvalidTypes itypes) : base(){
 			this.dateViewing=dateViewing;
-			this.patNum=patNum;
-			this.tableChanged=tableChanged;
+			this.itypes=itypes;
 		}
 
+		///<summary></summary>
 		public DateTime DateViewing{get{return dateViewing;}}
-		public int PatNum{get{return patNum;}}
-		public string TableChanged{get{return tableChanged;}}
-	}*/
+		///<summary></summary>
+		public InvalidTypes ITypes{get{return itypes;}}
+	}
 
 	/*=================================Class ExitApplicationNow=========================================
 ===========================================================================================*/
 
-	///<summary></summary>
+	///<summary>This really needs to be rewritten.  I mean it works, but it's clumsy.</summary>
 	public class ExitApplicationNow{
 		///<summary></summary>
 		public static event System.EventHandler WantsToExit;
@@ -553,4 +297,4 @@ namespace OpenDental{
 
 	
 
-}//end namespace
+}

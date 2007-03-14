@@ -1420,9 +1420,10 @@ namespace OpenDental{
 			pd2.PrintPage+=new PrintPageEventHandler(this.pd2_PrintPage);
 			pd2.OriginAtMargins=true;
 			pd2.DefaultPageSettings.Margins=new Margins(0,0,0,0);
-			//printPreviewDlg.Document=pd2;
-			//printPreviewDlg.ShowDialog();
-			//return;
+			if(!Printers.SetPrinter(pd2,PrintSituation.TPPerio)){
+				return;
+			}
+			/*
 			printDialog2=new PrintDialog();
 			printDialog2.PrinterSettings=new PrinterSettings();
 			printDialog2.PrinterSettings.PrinterName=Computers.Cur.PrinterName;
@@ -1433,6 +1434,7 @@ namespace OpenDental{
 				pd2.PrinterSettings=printDialog2.PrinterSettings;
 			}
 			//uses default printer if selected printer not valid
+			*/
 			try{
 				pd2.Print();
 			}
@@ -1522,9 +1524,7 @@ namespace OpenDental{
 
 		private void FormPerio_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
 			if(localDefsChanged){
-				DataValid.IType=InvalidType.LocalData;
-				DataValid DataValid2=new DataValid();
-				DataValid2.SetInvalid();
+				DataValid.SetInvalid(InvalidTypes.Defs | InvalidTypes.Prefs);
 			}
 			if(listExams.SelectedIndex!=-1){
 				gridP.SaveCurExam();

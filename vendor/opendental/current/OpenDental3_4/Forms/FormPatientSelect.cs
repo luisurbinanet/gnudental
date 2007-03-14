@@ -56,6 +56,8 @@ namespace OpenDental{
 		///<summary>Only used when double clicking blank area in Appts. Sets this value to the currently selected pt.  That patient will come up on the screen already selected and user just has to click OK. Or they can select a different pt or add a new pt.  If 0, then no initial patient is selected.</summary>
 		public int InitialPatNum;
 		private DataTable PtDataTable;
+		private System.Windows.Forms.TextBox textWkPhone;
+		private System.Windows.Forms.Label label2;
 		///<summary>When closing the form, this will hold the value of the newly selected PatNum.</summary>
 		public int SelectedPatNum;
 
@@ -118,6 +120,8 @@ namespace OpenDental{
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.butSearch = new OpenDental.UI.Button();
 			this.grid2 = new System.Windows.Forms.DataGrid();
+			this.textWkPhone = new System.Windows.Forms.TextBox();
+			this.label2 = new System.Windows.Forms.Label();
 			this.groupAddPt.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.groupBox1.SuspendLayout();
@@ -147,7 +151,7 @@ namespace OpenDental{
 			this.groupAddPt.Controls.Add(this.butAddPt);
 			this.groupAddPt.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupAddPt.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.groupAddPt.Location = new System.Drawing.Point(729, 461);
+			this.groupAddPt.Location = new System.Drawing.Point(729, 475);
 			this.groupAddPt.Name = "groupAddPt";
 			this.groupAddPt.Size = new System.Drawing.Size(207, 65);
 			this.groupAddPt.TabIndex = 1;
@@ -195,6 +199,8 @@ namespace OpenDental{
 			// 
 			// groupBox2
 			// 
+			this.groupBox2.Controls.Add(this.textWkPhone);
+			this.groupBox2.Controls.Add(this.label2);
 			this.groupBox2.Controls.Add(this.textChartNumber);
 			this.groupBox2.Controls.Add(this.listBillingTypes);
 			this.groupBox2.Controls.Add(this.textSSN);
@@ -221,14 +227,14 @@ namespace OpenDental{
 			this.groupBox2.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupBox2.Location = new System.Drawing.Point(729, 8);
 			this.groupBox2.Name = "groupBox2";
-			this.groupBox2.Size = new System.Drawing.Size(207, 341);
+			this.groupBox2.Size = new System.Drawing.Size(207, 359);
 			this.groupBox2.TabIndex = 0;
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "Search by:";
 			// 
 			// textChartNumber
 			// 
-			this.textChartNumber.Location = new System.Drawing.Point(112, 203);
+			this.textChartNumber.Location = new System.Drawing.Point(112, 224);
 			this.textChartNumber.Name = "textChartNumber";
 			this.textChartNumber.Size = new System.Drawing.Size(90, 20);
 			this.textChartNumber.TabIndex = 8;
@@ -237,7 +243,7 @@ namespace OpenDental{
 			// 
 			// listBillingTypes
 			// 
-			this.listBillingTypes.Location = new System.Drawing.Point(63, 226);
+			this.listBillingTypes.Location = new System.Drawing.Point(63, 247);
 			this.listBillingTypes.Name = "listBillingTypes";
 			this.listBillingTypes.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
 			this.listBillingTypes.Size = new System.Drawing.Size(138, 56);
@@ -246,7 +252,7 @@ namespace OpenDental{
 			// 
 			// textSSN
 			// 
-			this.textSSN.Location = new System.Drawing.Point(112, 163);
+			this.textSSN.Location = new System.Drawing.Point(112, 184);
 			this.textSSN.Name = "textSSN";
 			this.textSSN.Size = new System.Drawing.Size(90, 20);
 			this.textSSN.TabIndex = 6;
@@ -255,7 +261,7 @@ namespace OpenDental{
 			// 
 			// label12
 			// 
-			this.label12.Location = new System.Drawing.Point(11, 167);
+			this.label12.Location = new System.Drawing.Point(11, 188);
 			this.label12.Name = "label12";
 			this.label12.Size = new System.Drawing.Size(101, 12);
 			this.label12.TabIndex = 24;
@@ -264,7 +270,7 @@ namespace OpenDental{
 			// 
 			// label11
 			// 
-			this.label11.Location = new System.Drawing.Point(7, 227);
+			this.label11.Location = new System.Drawing.Point(7, 248);
 			this.label11.Name = "label11";
 			this.label11.Size = new System.Drawing.Size(52, 46);
 			this.label11.TabIndex = 21;
@@ -273,7 +279,7 @@ namespace OpenDental{
 			// 
 			// label10
 			// 
-			this.label10.Location = new System.Drawing.Point(14, 207);
+			this.label10.Location = new System.Drawing.Point(14, 228);
 			this.label10.Name = "label10";
 			this.label10.Size = new System.Drawing.Size(99, 12);
 			this.label10.TabIndex = 20;
@@ -282,7 +288,7 @@ namespace OpenDental{
 			// 
 			// textPatNum
 			// 
-			this.textPatNum.Location = new System.Drawing.Point(112, 183);
+			this.textPatNum.Location = new System.Drawing.Point(112, 204);
 			this.textPatNum.Name = "textPatNum";
 			this.textPatNum.Size = new System.Drawing.Size(90, 20);
 			this.textPatNum.TabIndex = 7;
@@ -291,7 +297,7 @@ namespace OpenDental{
 			// 
 			// label9
 			// 
-			this.label9.Location = new System.Drawing.Point(12, 187);
+			this.label9.Location = new System.Drawing.Point(12, 208);
 			this.label9.Name = "label9";
 			this.label9.Size = new System.Drawing.Size(101, 12);
 			this.label9.TabIndex = 18;
@@ -300,7 +306,7 @@ namespace OpenDental{
 			// 
 			// textState
 			// 
-			this.textState.Location = new System.Drawing.Point(112, 143);
+			this.textState.Location = new System.Drawing.Point(112, 164);
 			this.textState.Name = "textState";
 			this.textState.Size = new System.Drawing.Size(90, 20);
 			this.textState.TabIndex = 5;
@@ -309,7 +315,7 @@ namespace OpenDental{
 			// 
 			// label8
 			// 
-			this.label8.Location = new System.Drawing.Point(11, 147);
+			this.label8.Location = new System.Drawing.Point(11, 168);
 			this.label8.Name = "label8";
 			this.label8.Size = new System.Drawing.Size(100, 12);
 			this.label8.TabIndex = 16;
@@ -318,7 +324,7 @@ namespace OpenDental{
 			// 
 			// textCity
 			// 
-			this.textCity.Location = new System.Drawing.Point(112, 123);
+			this.textCity.Location = new System.Drawing.Point(112, 144);
 			this.textCity.Name = "textCity";
 			this.textCity.Size = new System.Drawing.Size(90, 20);
 			this.textCity.TabIndex = 4;
@@ -327,7 +333,7 @@ namespace OpenDental{
 			// 
 			// label7
 			// 
-			this.label7.Location = new System.Drawing.Point(11, 125);
+			this.label7.Location = new System.Drawing.Point(11, 146);
 			this.label7.Name = "label7";
 			this.label7.Size = new System.Drawing.Size(98, 14);
 			this.label7.TabIndex = 14;
@@ -337,7 +343,7 @@ namespace OpenDental{
 			// checkGuarantors
 			// 
 			this.checkGuarantors.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkGuarantors.Location = new System.Drawing.Point(11, 293);
+			this.checkGuarantors.Location = new System.Drawing.Point(11, 314);
 			this.checkGuarantors.Name = "checkGuarantors";
 			this.checkGuarantors.Size = new System.Drawing.Size(163, 17);
 			this.checkGuarantors.TabIndex = 10;
@@ -347,7 +353,7 @@ namespace OpenDental{
 			// checkHideInactive
 			// 
 			this.checkHideInactive.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkHideInactive.Location = new System.Drawing.Point(11, 313);
+			this.checkHideInactive.Location = new System.Drawing.Point(11, 334);
 			this.checkHideInactive.Name = "checkHideInactive";
 			this.checkHideInactive.Size = new System.Drawing.Size(161, 17);
 			this.checkHideInactive.TabIndex = 11;
@@ -365,7 +371,7 @@ namespace OpenDental{
 			// 
 			// textAddress
 			// 
-			this.textAddress.Location = new System.Drawing.Point(112, 103);
+			this.textAddress.Location = new System.Drawing.Point(112, 124);
 			this.textAddress.Name = "textAddress";
 			this.textAddress.Size = new System.Drawing.Size(90, 20);
 			this.textAddress.TabIndex = 3;
@@ -374,7 +380,7 @@ namespace OpenDental{
 			// 
 			// label5
 			// 
-			this.label5.Location = new System.Drawing.Point(11, 106);
+			this.label5.Location = new System.Drawing.Point(11, 127);
 			this.label5.Name = "label5";
 			this.label5.Size = new System.Drawing.Size(100, 12);
 			this.label5.TabIndex = 9;
@@ -392,7 +398,7 @@ namespace OpenDental{
 			// 
 			// label4
 			// 
-			this.label4.Location = new System.Drawing.Point(7, 86);
+			this.label4.Location = new System.Drawing.Point(6, 86);
 			this.label4.Name = "label4";
 			this.label4.Size = new System.Drawing.Size(106, 12);
 			this.label4.TabIndex = 7;
@@ -443,7 +449,7 @@ namespace OpenDental{
 			this.groupBox1.Controls.Add(this.butSearch);
 			this.groupBox1.Controls.Add(this.checkUseSearch);
 			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox1.Location = new System.Drawing.Point(729, 355);
+			this.groupBox1.Location = new System.Drawing.Point(729, 369);
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.Size = new System.Drawing.Size(207, 100);
 			this.groupBox1.TabIndex = 7;
@@ -474,6 +480,24 @@ namespace OpenDental{
 			this.grid2.TabIndex = 8;
 			this.grid2.DoubleClick += new System.EventHandler(this.grid2_DoubleClick);
 			this.grid2.CurrentCellChanged += new System.EventHandler(this.grid2_CurrentCellChanged);
+			// 
+			// textWkPhone
+			// 
+			this.textWkPhone.Location = new System.Drawing.Point(112, 104);
+			this.textWkPhone.Name = "textWkPhone";
+			this.textWkPhone.Size = new System.Drawing.Size(90, 20);
+			this.textWkPhone.TabIndex = 25;
+			this.textWkPhone.Text = "";
+			this.textWkPhone.TextChanged += new System.EventHandler(this.textWkPhone_TextChanged);
+			// 
+			// label2
+			// 
+			this.label2.Location = new System.Drawing.Point(6, 107);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(106, 12);
+			this.label2.TabIndex = 26;
+			this.label2.Text = "Work Phone";
+			this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// FormPatientSelect
 			// 
@@ -594,7 +618,13 @@ namespace OpenDental{
 
 			cstyle=new DataGridTextBoxColumn();
 			cstyle.MappingName="hmphone";
-			cstyle.HeaderText=Lan.g(this,"Phone");
+			cstyle.HeaderText=Lan.g(this,"Hm Phone");
+			cstyle.Width=90;
+			ts.GridColumnStyles.Add(cstyle);
+
+			cstyle=new DataGridTextBoxColumn();
+			cstyle.MappingName="wkphone";
+			cstyle.HeaderText=Lan.g(this,"Wk Phone");
 			cstyle.Width=90;
 			ts.GridColumnStyles.Add(cstyle);
 
@@ -653,6 +683,10 @@ namespace OpenDental{
 		}
 
 		private void textHmPhone_TextChanged(object sender, System.EventArgs e) {
+			OnDataEntered();
+		}
+
+		private void textWkPhone_TextChanged(object sender, System.EventArgs e) {
 			OnDataEntered();
 		}
 
@@ -723,7 +757,8 @@ namespace OpenDental{
 					=Defs.Short[(int)DefCat.BillingTypes][listBillingTypes.SelectedIndices[i]].DefNum;
 			}
 			PtDataTable=Patients.GetPtDataTable(!checkUseSearch.Checked,textLName.Text,textFName.Text
-				,textHmPhone.Text,textAddress.Text,checkHideInactive.Checked,textCity.Text,textState.Text
+				,textHmPhone.Text,textWkPhone.Text
+				,textAddress.Text,checkHideInactive.Checked,textCity.Text,textState.Text
 				,textSSN.Text,textPatNum.Text,textChartNumber.Text,selectedBillingTypes
 				,checkGuarantors.Checked);
 			if(!checkUseSearch.Checked && PtDataTable.Rows.Count==36){
@@ -802,6 +837,8 @@ namespace OpenDental{
 		private void butCancel_Click(object sender, System.EventArgs e) {
 			DialogResult=DialogResult.Cancel;
 		}
+
+		
 
 	
 

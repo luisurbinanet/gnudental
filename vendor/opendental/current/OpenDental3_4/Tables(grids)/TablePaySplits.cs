@@ -15,22 +15,27 @@ namespace OpenDental{
 		public TablePaySplits(){
 			InitializeComponent();// This call is required by the Windows Form Designer.
 			MaxRows=10;
-			MaxCols=4;
+			MaxCols=6;
 			ShowScroll=true;
 			FieldsArePresent=true;
 			HeadingIsPresent=true;
 			InstantClassesPar();
 			SetRowHeight(0,9,14);
 			Heading=Lan.g("TablePaySplits","Payment Splits (optional)");
-			Fields[0]=Lan.g("TablePaySplits","Prov");
-			Fields[1]=Lan.g("TablePaySplits","Patient");
-			Fields[2]=Lan.g("TablePaySplits","Procedure");
-			Fields[3]=Lan.g("TablePaySplits","Amount");
-			ColAlign[3]=HorizontalAlignment.Right;
-			ColWidth[0]=45;
-			ColWidth[1]=150;
-			ColWidth[2]=170;
-			ColWidth[3]=65;
+			Fields[0]=Lan.g("TablePaySplits","Date");
+			Fields[1]=Lan.g("TablePaySplits","Prov");
+			Fields[2]=Lan.g("TablePaySplits","Patient");
+			Fields[3]=Lan.g("TablePaySplits","Tth");
+			Fields[4]=Lan.g("TablePaySplits","Procedure");
+			Fields[5]=Lan.g("TablePaySplits","Amount");
+			ColAlign[3]=HorizontalAlignment.Center;
+			ColAlign[5]=HorizontalAlignment.Right;
+			ColWidth[0]=70;
+			ColWidth[1]=45;
+			ColWidth[2]=150;
+			ColWidth[3]=40;
+			ColWidth[4]=170;
+			ColWidth[5]=65;
 			LayoutTables();
 		}
 

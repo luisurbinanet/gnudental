@@ -17,17 +17,21 @@ namespace OpenDental.UI{
 		private System.ComponentModel.IContainer components;
 		private System.Windows.Forms.PrintDialog printDialog2;
 		///<summary></summary>
-		public int TotalPages;
+		private int TotalPages;
 		private OpenDental.UI.ODToolBar ToolBarMain;
 		private System.Windows.Forms.ImageList imageListMain;
 		private System.Windows.Forms.PrintPreviewControl printPreviewControl2;
 		///<summary></summary>
-		public PrintDocument Document;
-
+		private PrintDocument Document;
 		///<summary></summary>
-		public PrintPreview(){
+		private PrintSituation Sit;
+
+		///<summary>Must supply the printSituation so that when user clicks print, we know where to send it.  Must supply total pages</summary>
+		public PrintPreview(PrintSituation sit,PrintDocument document,int totalPages){
 			InitializeComponent();// Required for Windows Form Designer support
-			
+			Sit=sit;
+			Document=document;
+			TotalPages=totalPages;
 		}
 
 		/// <summary>Clean up any resources being used.</summary>
@@ -147,7 +151,8 @@ namespace OpenDental.UI{
 
 		private void ToolBarMain_ButtonClick(object sender, OpenDental.UI.ODToolBarButtonClickEventArgs e) {
 			//MessageBox.Show(e.Button.Tag.ToString());
-			switch(e.Button.Tag.ToString()){	
+			switch(e.Button.Tag.ToString()){
+					
 				case "Print":
 					OnPrint_Click();
 					break;
@@ -164,12 +169,11 @@ namespace OpenDental.UI{
 		}
 
 		private void OnPrint_Click() {
+			if(!Printers.SetPrinter(Document,Sit)){
+				return;
+			}
 			try{
-				printDialog2=new PrintDialog();
-				printDialog2.Document=Document;
-				if(printDialog2.ShowDialog()==DialogResult.OK){
-					Document.Print();
-				}
+				Document.Print();
 			}
 			catch{
 				MessageBox.Show(Lan.g(this,"Printer not available"));

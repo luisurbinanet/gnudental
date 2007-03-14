@@ -46,7 +46,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label8;
 		private System.Windows.Forms.Label label5;
 		private System.ComponentModel.Container components = null;
-		private bool mysqlIsInstalled;
+		private string mysqlInstalled;
 		private System.Windows.Forms.Label labelStatus;
 		private System.Windows.Forms.TextBox textNotInstalled;
 		private OpenDental.UI.Button butInstall;
@@ -308,6 +308,7 @@ namespace OpenDental{
 			this.textNotInstalled.Text = "MySQL service not present.  You can only start and stop the service from the serv" +
 				"er.  If this computer is the server, then MySQL was not installed properly.  You" +
 				" should reinstall MySQL.  The can be done without disturbing your database.";
+			this.textNotInstalled.Visible = false;
 			// 
 			// butInstall
 			// 
@@ -320,6 +321,7 @@ namespace OpenDental{
 			this.butInstall.Size = new System.Drawing.Size(102, 26);
 			this.butInstall.TabIndex = 21;
 			this.butInstall.Text = "Attempt to Install";
+			this.butInstall.Visible = false;
 			this.butInstall.Click += new System.EventHandler(this.butInstall_Click);
 			// 
 			// FormConfig
@@ -453,32 +455,33 @@ namespace OpenDental{
 
 		private void FillService(){
 			ServiceController[] services=ServiceController.GetServices();
-			mysqlIsInstalled=false;
+			mysqlInstalled="";
 			for(int i=0;i<services.Length;i++){
-				if(services[i].ServiceName=="MySql"){
-					mysqlIsInstalled=true;
+				if(services[i].ServiceName=="MySql"
+					|| services[i].ServiceName=="MySQL"){
+					mysqlInstalled=services[i].ServiceName;
 					break;
 				}
 			}
-			if(!mysqlIsInstalled){
+			if(mysqlInstalled==""){
 				labelStatus.Text="";
 				butStart.Text="Start";
 				butStart.Enabled=false;
-				textNotInstalled.Visible=true;
-				if(File.Exists(@"C:\mysql\bin\mysqld-nt.exe")){
-					butInstall.Visible=true;
-					butInstall.Text="Attempt to install";
-				}
-				else{
-					butInstall.Visible=false;
-				}
+				//textNotInstalled.Visible=true;
+				//if(File.Exists(@"C:\mysql\bin\mysqld-nt.exe")){
+				//	butInstall.Visible=true;
+				//	butInstall.Text="Attempt to install";
+				//}
+				//else{
+				//	butInstall.Visible=false;
+				//}
 				return;
 			}
 			butStart.Enabled=true;
-			textNotInstalled.Visible=false;
-			butInstall.Visible=true;
-			butInstall.Text="Uninstall service";
-			ServiceController sc=new ServiceController("MySql");
+			//textNotInstalled.Visible=false;
+			//butInstall.Visible=true;
+			//butInstall.Text="Uninstall service";
+			ServiceController sc=new ServiceController(mysqlInstalled);
 			if(sc.Status.Equals(ServiceControllerStatus.Running)){
 				mysqlIsStarted=true;
 				labelStatus.Text="Started";
@@ -492,6 +495,7 @@ namespace OpenDental{
 		}
 
 		private void butInstall_Click(object sender, System.EventArgs e) {
+			/*
 			Cursor=Cursors.WaitCursor;
 			Process myProcess=new Process();
 			myProcess.StartInfo.FileName=@"C:\mysql\bin\mysqld-nt.exe";
@@ -540,14 +544,14 @@ namespace OpenDental{
 					MessageBox.Show("Error. No response after 10 seconds.");
 				}
 			}
-			FillService();
+			FillService();*/
 		}
 
 		private void butStart_Click(object sender, System.EventArgs e) {
 			//this button won't even be available unless the service is installed
 			//but the service might be present and unable to start, so must use try.
 			Cursor=Cursors.WaitCursor;
-			ServiceController sc=new ServiceController("MySql");
+			ServiceController sc=new ServiceController(mysqlInstalled);
 			if(mysqlIsStarted){
 				sc.Stop();
 				sc.WaitForStatus(ServiceControllerStatus.Stopped,new TimeSpan(0,0,10));
@@ -566,7 +570,7 @@ namespace OpenDental{
 				}
 				Cursor=Cursors.Default;
 				if(sc.Status!=ServiceControllerStatus.Running){
-					MessageBox.Show("Unable to start the MySQL service. Try removing the service using the button above.");
+					MessageBox.Show("Unable to start the MySQL service.");
 				}
 			}
 			FillService();

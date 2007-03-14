@@ -28,8 +28,6 @@ namespace OpenDental{
 		public static DateTime PDate(string myString){
 			if(myString=="")
 				return DateTime.MinValue;
-			//if(myString=="0000-00-00")//this is useless because of culture differences
-			//	return DateTime.MinValue;
 			try{
 				return (DateTime.Parse(myString));
 			}

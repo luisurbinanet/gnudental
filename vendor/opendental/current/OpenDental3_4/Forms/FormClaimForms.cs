@@ -18,8 +18,6 @@ namespace OpenDental{
 		private OpenDental.UI.Button butCopy;
 		private OpenDental.UI.Button butDelete;
 		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.ListBox listEClaim;
 		private OpenDental.UI.Button butExport;
 		private OpenDental.UI.Button butImport;
 		private System.Windows.Forms.GroupBox groupBox1;
@@ -29,6 +27,7 @@ namespace OpenDental{
 		/// Required designer variable.
 		/// </summary>
 		private System.ComponentModel.Container components = null;
+		private bool changed;
 
 		///<summary></summary>
 		public FormClaimForms()
@@ -69,8 +68,6 @@ namespace OpenDental{
 			this.butCopy = new OpenDental.UI.Button();
 			this.butDelete = new OpenDental.UI.Button();
 			this.label1 = new System.Windows.Forms.Label();
-			this.label2 = new System.Windows.Forms.Label();
-			this.listEClaim = new System.Windows.Forms.ListBox();
 			this.butExport = new OpenDental.UI.Button();
 			this.butImport = new OpenDental.UI.Button();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -81,8 +78,11 @@ namespace OpenDental{
 			// 
 			// butClose
 			// 
+			this.butClose.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butClose.Autosize = true;
+			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butClose.Location = new System.Drawing.Point(320, 395);
 			this.butClose.Name = "butClose";
 			this.butClose.TabIndex = 0;
@@ -99,7 +99,10 @@ namespace OpenDental{
 			// 
 			// butAdd
 			// 
-			this.butAdd.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAdd.Autosize = true;
+			this.butAdd.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAdd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butAdd.Location = new System.Drawing.Point(15, 25);
 			this.butAdd.Name = "butAdd";
 			this.butAdd.TabIndex = 3;
@@ -108,7 +111,10 @@ namespace OpenDental{
 			// 
 			// butCopy
 			// 
-			this.butCopy.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butCopy.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCopy.Autosize = true;
+			this.butCopy.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCopy.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCopy.Location = new System.Drawing.Point(15, 87);
 			this.butCopy.Name = "butCopy";
 			this.butCopy.Size = new System.Drawing.Size(115, 23);
@@ -118,7 +124,10 @@ namespace OpenDental{
 			// 
 			// butDelete
 			// 
-			this.butDelete.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butDelete.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butDelete.Autosize = true;
+			this.butDelete.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butDelete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butDelete.Location = new System.Drawing.Point(15, 56);
 			this.butDelete.Name = "butDelete";
 			this.butDelete.TabIndex = 5;
@@ -134,27 +143,12 @@ namespace OpenDental{
 			this.label1.Text = "Edit Claim Form";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
-			// label2
-			// 
-			this.label2.Location = new System.Drawing.Point(353, 25);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(254, 16);
-			this.label2.TabIndex = 8;
-			this.label2.Text = "Select Claim Form for Generic E-Claims";
-			this.label2.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
-			this.label2.Visible = false;
-			// 
-			// listEClaim
-			// 
-			this.listEClaim.Location = new System.Drawing.Point(354, 44);
-			this.listEClaim.Name = "listEClaim";
-			this.listEClaim.Size = new System.Drawing.Size(203, 251);
-			this.listEClaim.TabIndex = 7;
-			this.listEClaim.Visible = false;
-			// 
 			// butExport
 			// 
-			this.butExport.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butExport.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butExport.Autosize = true;
+			this.butExport.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butExport.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butExport.Location = new System.Drawing.Point(142, 25);
 			this.butExport.Name = "butExport";
 			this.butExport.TabIndex = 9;
@@ -163,7 +157,10 @@ namespace OpenDental{
 			// 
 			// butImport
 			// 
-			this.butImport.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butImport.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butImport.Autosize = true;
+			this.butImport.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butImport.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butImport.Location = new System.Drawing.Point(141, 56);
 			this.butImport.Name = "butImport";
 			this.butImport.TabIndex = 10;
@@ -191,8 +188,6 @@ namespace OpenDental{
 			this.CancelButton = this.butClose;
 			this.ClientSize = new System.Drawing.Size(425, 451);
 			this.Controls.Add(this.groupBox1);
-			this.Controls.Add(this.label2);
-			this.Controls.Add(this.listEClaim);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.listClaimForms);
 			this.Controls.Add(this.butClose);
@@ -213,12 +208,12 @@ namespace OpenDental{
 		#endregion
 
 		private void FormClaimForms_Load(object sender, System.EventArgs e) {
-			FillLists();
+			ClaimFormItems.Refresh();
+			FillList();
 		}
 
-		///<summary>Refreshes ClaimForms, then fills both lists.</summary>
-		private void FillLists(){
-			//ClaimFormItems.Refresh();
+		///<summary></summary>
+		private void FillList(){
 			ClaimForms.Refresh();
 			listClaimForms.Items.Clear();
 			string description;
@@ -228,14 +223,14 @@ namespace OpenDental{
 					description+="(hidden)";
 				listClaimForms.Items.Add(description);
 			}
-			listEClaim.Items.Clear();
-			for(int i=0;i<ClaimForms.ListShort.Length;i++){
-				listEClaim.Items.Add(ClaimForms.ListShort[i].Description);
-				if(PIn.PInt(((Pref)Prefs.HList["GenericEClaimsForm"]).ValueString)
-					==ClaimForms.ListShort[i].ClaimFormNum){
-					listEClaim.SelectedIndex=i;
-				}
-			}
+			//listEClaim.Items.Clear();
+			//for(int i=0;i<ClaimForms.ListShort.Length;i++){
+			//	listEClaim.Items.Add(ClaimForms.ListShort[i].Description);
+			//	if(PIn.PInt(((Pref)Prefs.HList["GenericEClaimsForm"]).ValueString)
+			//		==ClaimForms.ListShort[i].ClaimFormNum){
+			//		listEClaim.SelectedIndex=i;
+			//	}
+			//}
 		}
 
 		private void listClaimForms_DoubleClick(object sender, System.EventArgs e) {
@@ -244,7 +239,9 @@ namespace OpenDental{
 			FormClaimFormEdit FormCFE=new FormClaimFormEdit();
 			FormCFE.ClaimFormCur=ClaimForms.ListLong[listClaimForms.SelectedIndex];
 			FormCFE.ShowDialog();
-			FillLists();
+			changed=true;//we don't really know if they changed it, but always refresh
+			//ClaimFormItems refreshed within FormCFE
+			FillList();
 		}
 
 		private void butAdd_Click(object sender, System.EventArgs e) {
@@ -254,7 +251,12 @@ namespace OpenDental{
 			FormCFE.ClaimFormCur=ClaimFormCur;
 			FormCFE.IsNew=true;
 			FormCFE.ShowDialog();
-			FillLists();
+			if(FormCFE.DialogResult!=DialogResult.OK){
+				return;
+			}
+			changed=true;
+			//ClaimFormItems refreshed within FormCFE
+			FillList();
 		}
 
 		private void butDelete_Click(object sender, System.EventArgs e) {
@@ -269,9 +271,11 @@ namespace OpenDental{
 			}
 			if(!ClaimForms.ListLong[listClaimForms.SelectedIndex].Delete()){
 				MessageBox.Show(Lan.g(this,"Claim form is already in use."));
+				return;
 			}
+			changed=true;
 			ClaimFormItems.Refresh();
-			FillLists();
+			FillList();
 		}
 
 		private void butCopy_Click(object sender, System.EventArgs e) {
@@ -291,7 +295,8 @@ namespace OpenDental{
 				ClaimFormCur.Items[i].Insert();
 			}
 			ClaimFormItems.Refresh();
-			FillLists();
+			changed=true;
+			FillList();
 		}
 
 		private void butExport_Click(object sender, System.EventArgs e) {
@@ -359,25 +364,26 @@ namespace OpenDental{
 			}
 			MessageBox.Show("Imported");
 			ClaimFormItems.Refresh();
-			FillLists();
+			changed=true;
+			FillList();
 		}
 
 		private void butClose_Click(object sender, System.EventArgs e) {
-			Prefs.Cur.PrefName="GenericEClaimsForm";
-			if(listEClaim.SelectedIndex==-1){
-				Prefs.Cur.ValueString="";
-			}
-			else{
-				Prefs.Cur.ValueString=POut.PInt(ClaimForms.ListShort[listEClaim.SelectedIndex].ClaimFormNum);
-			}
-			Prefs.UpdateCur();
+			//Prefs.Cur.PrefName="GenericEClaimsForm";
+			//if(listEClaim.SelectedIndex==-1){
+			//	Prefs.Cur.ValueString="";
+			//}
+			//else{
+			//	Prefs.Cur.ValueString=POut.PInt(ClaimForms.ListShort[listEClaim.SelectedIndex].ClaimFormNum);
+			//}
+			//Prefs.UpdateCur();
 			Close();
 		}
 
 		private void FormClaimForms_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-			DataValid.IType=InvalidType.LocalData;
-			DataValid DataValid2=new DataValid();
-			DataValid2.SetInvalid();
+			if(changed){
+				DataValid.SetInvalid(InvalidTypes.ClaimForms);
+			}
 		}
 
 		

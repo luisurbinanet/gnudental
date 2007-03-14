@@ -12,6 +12,7 @@ namespace OpenDental{
 		private OpenDental.UI.Button butAdd;
 		private OpenDental.UI.Button butDelete;
 		private System.ComponentModel.Container components = null;
+		private bool changed;
 
 		///<summary></summary>
 		public FormAutoCode(){
@@ -136,13 +137,24 @@ namespace OpenDental{
 		  FormAutoCodeEdit FormACE=new FormAutoCodeEdit();
       FormACE.IsNew=true;
       FormACE.ShowDialog();
+			if(FormACE.DialogResult!=DialogResult.OK){
+				return;
+			}
+			changed=true;
       FillList();
 		}
 
 		private void listAutoCodes_DoubleClick(object sender, System.EventArgs e) {
+			if(listAutoCodes.SelectedIndex==-1){
+				return;
+			}
 		  AutoCodes.Cur=AutoCodes.List[listAutoCodes.SelectedIndex];
 		  FormAutoCodeEdit FormACE=new FormAutoCodeEdit();
       FormACE.ShowDialog();
+			if(FormACE.DialogResult!=DialogResult.OK){
+				return;
+			}
+			changed=true;
       FillList();      
 		}
 
@@ -157,13 +169,14 @@ namespace OpenDental{
       }
       AutoCodes.Cur=AutoCodes.List[listAutoCodes.SelectedIndex];
       AutoCodes.DeleteCur();
+			changed=true;
       FillList(); 		
 		}
 
 		private void FormAutoCode_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-			DataValid.IType=InvalidType.LocalData;
-			DataValid DataValid2=new DataValid();
-			DataValid2.SetInvalid();
+			if(changed){
+				DataValid.SetInvalid(InvalidTypes.AutoCodes);
+			}
       DialogResult=DialogResult.OK;
 		}
 	}

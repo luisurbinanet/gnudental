@@ -38,7 +38,6 @@ namespace OpenDental{
 		public bool IsReport;
 		private bool headerPrinted;
 		private System.Windows.Forms.PrintPreviewControl printPreviewControl2;
-		private System.Windows.Forms.PrintDialog printDialog2;
 		private bool tablePrinted;
 		private System.Drawing.Font titleFont = new System.Drawing.Font("Arial",17,FontStyle.Bold);
 		private System.Drawing.Font subtitleFont=new System.Drawing.Font("Arial",10,FontStyle.Bold);
@@ -64,7 +63,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public OpenDental.ODtextBox textQuery;
 		private int totalPages=0;
-		private Hashtable hListPlans;
+		private static Hashtable hListPlans;
 
 		///<summary></summary>
 		public FormQuery(){
@@ -112,7 +111,6 @@ namespace OpenDental{
 			this.pd2 = new System.Drawing.Printing.PrintDocument();
 			this.printPreviewDialog2 = new System.Windows.Forms.PrintPreviewDialog();
 			this.printPreviewControl2 = new System.Windows.Forms.PrintPreviewControl();
-			this.printDialog2 = new System.Windows.Forms.PrintDialog();
 			this.butFullPage = new OpenDental.UI.Button();
 			this.panelZoom = new System.Windows.Forms.Panel();
 			this.labelTotPages = new System.Windows.Forms.Label();
@@ -208,9 +206,9 @@ namespace OpenDental{
 			this.butPaste.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butPaste.Image = ((System.Drawing.Image)(resources.GetObject("butPaste.Image")));
 			this.butPaste.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butPaste.Location = new System.Drawing.Point(620, 54);
+			this.butPaste.Location = new System.Drawing.Point(632, 54);
 			this.butPaste.Name = "butPaste";
-			this.butPaste.Size = new System.Drawing.Size(65, 23);
+			this.butPaste.Size = new System.Drawing.Size(73, 23);
 			this.butPaste.TabIndex = 11;
 			this.butPaste.Text = "Paste";
 			this.butPaste.Click += new System.EventHandler(this.butPaste_Click);
@@ -225,7 +223,6 @@ namespace OpenDental{
 			this.butCopy.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butCopy.Location = new System.Drawing.Point(556, 54);
 			this.butCopy.Name = "butCopy";
-			this.butCopy.Size = new System.Drawing.Size(63, 23);
 			this.butCopy.TabIndex = 10;
 			this.butCopy.Text = "Copy";
 			this.butCopy.Click += new System.EventHandler(this.butCopy_Click);
@@ -255,7 +252,7 @@ namespace OpenDental{
 			this.butAdd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butAdd.Location = new System.Drawing.Point(556, 30);
 			this.butAdd.Name = "butAdd";
-			this.butAdd.Size = new System.Drawing.Size(129, 23);
+			this.butAdd.Size = new System.Drawing.Size(149, 23);
 			this.butAdd.TabIndex = 3;
 			this.butAdd.Text = "Add To Favorites";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
@@ -268,7 +265,7 @@ namespace OpenDental{
 			this.butFormulate.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butFormulate.Location = new System.Drawing.Point(556, 6);
 			this.butFormulate.Name = "butFormulate";
-			this.butFormulate.Size = new System.Drawing.Size(129, 23);
+			this.butFormulate.Size = new System.Drawing.Size(149, 23);
 			this.butFormulate.TabIndex = 2;
 			this.butFormulate.Text = "Favorites";
 			this.butFormulate.Click += new System.EventHandler(this.butFormulate_Click);
@@ -342,12 +339,6 @@ namespace OpenDental{
 			this.printPreviewControl2.Size = new System.Drawing.Size(842, 538);
 			this.printPreviewControl2.TabIndex = 5;
 			this.printPreviewControl2.Zoom = 1;
-			// 
-			// printDialog2
-			// 
-			this.printDialog2.AllowPrintToFile = false;
-			this.printDialog2.AllowSelection = true;
-			this.printDialog2.AllowSomePages = true;
 			// 
 			// butFullPage
 			// 
@@ -496,11 +487,11 @@ namespace OpenDental{
 			this.Controls.Add(this.butQView);
 			this.Controls.Add(this.butExport);
 			this.Controls.Add(this.butPrint);
+			this.Controls.Add(this.butClose);
 			this.Controls.Add(this.panelZoom);
 			this.Controls.Add(this.printPreviewControl2);
 			this.Controls.Add(this.grid2);
 			this.Controls.Add(this.panelTop);
-			this.Controls.Add(this.butClose);
 			this.Name = "FormQuery";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -567,7 +558,7 @@ namespace OpenDental{
 		///<summary>This is used internally instead of SubmitReportQuery.  Can also be called externally if we want to automate a userquery.  Column names will be handled automatically.</summary>
 		public void SubmitQuery(){
 			Patients.GetHList();
-      hListPlans=InsPlans.GetHListAll();
+      //hListPlans=InsPlans.GetHListAll();
 			
 			Queries.SubmitCur();
 			/* (for later if more complex queries with loops:)
@@ -602,7 +593,7 @@ namespace OpenDental{
 			myGridTS = new DataGridTableStyle();
 			grid2.TableStyles.Add(myGridTS);
 			if(radioHuman.Checked){
-				MakeReadable();
+				Queries.TableQ=MakeReadable(Queries.TableQ);
 				grid2.SetDataBinding(Queries.TableQ,"");
 			}
 			//if(!IsReport){
@@ -642,7 +633,7 @@ namespace OpenDental{
 			grid2.SetDataBinding(Queries.TableQ,"");
 			myGridTS = new DataGridTableStyle();
 			grid2.TableStyles.Add(myGridTS);
-			MakeReadable();//?
+			Queries.TableQ=MakeReadable(Queries.TableQ);//?
 			grid2.SetDataBinding(Queries.TableQ,"");//because MakeReadable trashes the TableQ
 		}
 
@@ -670,37 +661,39 @@ namespace OpenDental{
 				}
 				if(Queries.CurReport.ColWidth[i]>400) Queries.CurReport.ColWidth[i]=400;
 				myGridTS.GridColumnStyles[i].Width=Queries.CurReport.ColWidth[i]+12;
-				Queries.CurReport.ColWidth[i]+=4;//so the columns don't touch
+				Queries.CurReport.ColWidth[i]+=6;//so the columns don't touch
 				Queries.CurReport.ColPos[i+1]=Queries.CurReport.ColPos[i]+Queries.CurReport.ColWidth[i];
 			}
 		}
 
-		private void MakeReadable(){
+		///<summary>Starting to use this externally as well.</summary>
+		public static DataTable MakeReadable(DataTable tableIn){
 			//this can probably be improved upon later for speed
-			System.Data.DataTable TableQ;//this is not the same as Queries.TableQ
-			TableQ=Queries.TableQ.Copy();//copy data and structure to a temp table
-			Queries.TableQ=TableQ.Clone();
-			for(int j=0;j<Queries.TableQ.Columns.Count;j++){
-				Queries.TableQ.Columns[j].DataType=typeof(string);
+			if(hListPlans==null){
+				hListPlans=InsPlans.GetHListAll();
+			}
+			DataTable tableOut=tableIn.Clone();//copies just the structure
+			for(int j=0;j<tableOut.Columns.Count;j++){
+				tableOut.Columns[j].DataType=typeof(string);
 			}
 			DataRow thisRow;
-			//copy data from TableQ to Queries.TableQ while converting to strings
-			for(int i=0;i<TableQ.Rows.Count;i++){
-				thisRow=Queries.TableQ.NewRow();
-				for(int j=0;j<TableQ.Columns.Count;j++){
-					thisRow[j]=TableQ.Rows[i][j].ToString();
+			//copy data from tableInput to tableOutput while converting to strings
+			for(int i=0;i<tableIn.Rows.Count;i++){
+				thisRow=tableOut.NewRow();//new row with new schema
+				for(int j=0;j<tableIn.Columns.Count;j++){
+					thisRow[j]=tableIn.Rows[i][j].ToString();
 				}
-				Queries.TableQ.Rows.Add(thisRow);
+				tableOut.Rows.Add(thisRow);
 			}
-			for(int j=0;j<Queries.TableQ.Columns.Count;j++){
-				for(int i=0;i<Queries.TableQ.Rows.Count;i++){
+			for(int j=0;j<tableOut.Columns.Count;j++){
+				for(int i=0;i<tableOut.Rows.Count;i++){
 					try{
-					if(Queries.TableQ.Columns[j].Caption.Substring(0,1)=="$"){
-						Queries.TableQ.Rows[i][j]=PIn.PDouble(Queries.TableQ.Rows[i][j].ToString()).ToString("F");
+					if(tableOut.Columns[j].Caption.Substring(0,1)=="$"){
+						tableOut.Rows[i][j]=PIn.PDouble(tableOut.Rows[i][j].ToString()).ToString("F");
 						Queries.CurReport.ColAlign[j]=HorizontalAlignment.Right;
-						Queries.CurReport.ColTotal[j]+=PIn.PDouble(Queries.TableQ.Rows[i][j].ToString());
+						Queries.CurReport.ColTotal[j]+=PIn.PDouble(tableOut.Rows[i][j].ToString());
 					}
-					else switch(Queries.TableQ.Columns[j].Caption.ToLower())
+					else switch(tableOut.Columns[j].Caption.ToLower())
 					{
 						//bool
 						case "isprosthesis":
@@ -729,7 +722,7 @@ namespace OpenDental{
             case "sigonfile": 
             case "notperson":
             case "isfrom":
-							Queries.TableQ.Rows[i][j]=PIn.PBool(Queries.TableQ.Rows[i][j].ToString()).ToString();
+							tableOut.Rows[i][j]=PIn.PBool(tableOut.Rows[i][j].ToString()).ToString();
 							break;
 						//date
 						case "adjdate":
@@ -754,14 +747,15 @@ namespace OpenDental{
 						case "screendate":
 						case "datedue":
 						case "dateduecalc":
-							Queries.TableQ.Rows[i][j]=PIn.PDate(Queries.TableQ.Rows[i][j].ToString()).ToString("d");
+						case "mydate"://this is a workaround for the daily payment report
+							tableOut.Rows[i][j]=PIn.PDate(tableOut.Rows[i][j].ToString()).ToString("d");
 							break;
             //time 
 						case "aptdatetime":
             case "starttime":
             case "stoptime":
-							Queries.TableQ.Rows[i][j]=PIn.PDateT(Queries.TableQ.Rows[i][j].ToString()).ToString("t")+"   "
-								+PIn.PDateT(Queries.TableQ.Rows[i][j].ToString()).ToString("d");
+							tableOut.Rows[i][j]=PIn.PDateT(tableOut.Rows[i][j].ToString()).ToString("t")+"   "
+								+PIn.PDateT(tableOut.Rows[i][j].ToString()).ToString("d");
 							break;
   					//double
 						case "adjamt":
@@ -789,60 +783,60 @@ namespace OpenDental{
 						case "bal_61_90":
 						case "balover90":
 						case "baltotal":
-							Queries.TableQ.Rows[i][j]=PIn.PDouble(Queries.TableQ.Rows[i][j].ToString()).ToString("F");
+							tableOut.Rows[i][j]=PIn.PDouble(tableOut.Rows[i][j].ToString()).ToString("F");
 							Queries.CurReport.ColAlign[j]=HorizontalAlignment.Right;
 							//myGridTS.GridColumnStyles[j].Alignment=HorizontalAlignment.Right;
-							Queries.CurReport.ColTotal[j]+=PIn.PDouble(Queries.TableQ.Rows[i][j].ToString());
+							Queries.CurReport.ColTotal[j]+=PIn.PDouble(tableOut.Rows[i][j].ToString());
 							break;
 						//definitions:
 						case "adjtype":
-							Queries.TableQ.Rows[i][j]
-								=Defs.GetName(DefCat.AdjTypes,PIn.PInt(Queries.TableQ.Rows[i][j].ToString()));
+							tableOut.Rows[i][j]
+								=Defs.GetName(DefCat.AdjTypes,PIn.PInt(tableOut.Rows[i][j].ToString()));
 							break;
 						case "confirmed":
-							Queries.TableQ.Rows[i][j]
-								=Defs.GetValue(DefCat.ApptConfirmed,PIn.PInt(Queries.TableQ.Rows[i][j].ToString()));
+							tableOut.Rows[i][j]
+								=Defs.GetValue(DefCat.ApptConfirmed,PIn.PInt(tableOut.Rows[i][j].ToString()));
 							break;
 						//case "claimformat":
-						//	Queries.TableQ.Rows[i][j]
-						//		=Defs.GetName(DefCat.ClaimFormats,PIn.PInt(Queries.TableQ.Rows[i][j].ToString()));
+						//	tableOut.Rows[i][j]
+						//		=Defs.GetName(DefCat.ClaimFormats,PIn.PInt(tableOut.Rows[i][j].ToString()));
 						//	break;
 						case "dx":
-							Queries.TableQ.Rows[i][j]
-								=Defs.GetName(DefCat.Diagnosis,PIn.PInt(Queries.TableQ.Rows[i][j].ToString()));
+							tableOut.Rows[i][j]
+								=Defs.GetName(DefCat.Diagnosis,PIn.PInt(tableOut.Rows[i][j].ToString()));
 							break;
 						case "discounttype":
-							Queries.TableQ.Rows[i][j]
-								=Defs.GetName(DefCat.DiscountTypes,PIn.PInt(Queries.TableQ.Rows[i][j].ToString()));
+							tableOut.Rows[i][j]
+								=Defs.GetName(DefCat.DiscountTypes,PIn.PInt(tableOut.Rows[i][j].ToString()));
 							break;
 						case "doccategory":
-							Queries.TableQ.Rows[i][j]
-								=Defs.GetName(DefCat.ImageCats,PIn.PInt(Queries.TableQ.Rows[i][j].ToString()));
+							tableOut.Rows[i][j]
+								=Defs.GetName(DefCat.ImageCats,PIn.PInt(tableOut.Rows[i][j].ToString()));
 							break;
 						case "feesched":
-							Queries.TableQ.Rows[i][j]
-								=Defs.GetName(DefCat.FeeSchedNames,PIn.PInt(Queries.TableQ.Rows[i][j].ToString()));
+							tableOut.Rows[i][j]
+								=Defs.GetName(DefCat.FeeSchedNames,PIn.PInt(tableOut.Rows[i][j].ToString()));
 							break;
 						case "op":
-							Queries.TableQ.Rows[i][j]
-								=Defs.GetValue(DefCat.Operatories,PIn.PInt(Queries.TableQ.Rows[i][j].ToString()));
+							tableOut.Rows[i][j]
+								=Defs.GetValue(DefCat.Operatories,PIn.PInt(tableOut.Rows[i][j].ToString()));
 							break;
 						case "paytype":
-							Queries.TableQ.Rows[i][j]
-								=Defs.GetName(DefCat.PaymentTypes,PIn.PInt(Queries.TableQ.Rows[i][j].ToString()));
+							tableOut.Rows[i][j]
+								=Defs.GetName(DefCat.PaymentTypes,PIn.PInt(tableOut.Rows[i][j].ToString()));
 							break;
 						case "proccat":
-							Queries.TableQ.Rows[i][j]
-								=Defs.GetName(DefCat.ProcCodeCats,PIn.PInt(Queries.TableQ.Rows[i][j].ToString()));
+							tableOut.Rows[i][j]
+								=Defs.GetName(DefCat.ProcCodeCats,PIn.PInt(tableOut.Rows[i][j].ToString()));
 							break;
 						case "unschedstatus":
 						case "recallstatus":
-							Queries.TableQ.Rows[i][j]
-								=Defs.GetName(DefCat.RecallUnschedStatus,PIn.PInt(Queries.TableQ.Rows[i][j].ToString()));
+							tableOut.Rows[i][j]
+								=Defs.GetName(DefCat.RecallUnschedStatus,PIn.PInt(tableOut.Rows[i][j].ToString()));
 							break;
 						case "billingtype":
-							Queries.TableQ.Rows[i][j]
-								=Defs.GetName(DefCat.BillingTypes,PIn.PInt(Queries.TableQ.Rows[i][j].ToString()));
+							tableOut.Rows[i][j]
+								=Defs.GetName(DefCat.BillingTypes,PIn.PInt(tableOut.Rows[i][j].ToString()));
 							break;
 						//patnums:
 						case "patnum":
@@ -852,65 +846,65 @@ namespace OpenDental{
 						case "subscriber":
             case "withpat":
 							 
-							if(Patients.HList.ContainsKey(PIn.PInt(Queries.TableQ.Rows[i][j].ToString()))){
-								//MessageBox.Show((string)Patients.HList[PIn.PInt(Queries.TableQ.Rows[i][j].ToString())]);
-								Queries.TableQ.Rows[i][j]=Patients.HList[PIn.PInt(Queries.TableQ.Rows[i][j].ToString())];
+							if(Patients.HList.ContainsKey(PIn.PInt(tableOut.Rows[i][j].ToString()))){
+								//MessageBox.Show((string)Patients.HList[PIn.PInt(tableOut.Rows[i][j].ToString())]);
+								tableOut.Rows[i][j]=Patients.HList[PIn.PInt(tableOut.Rows[i][j].ToString())];
 							}
 							else
-								Queries.TableQ.Rows[i][j]="";
+								tableOut.Rows[i][j]="";
 							break;
             //plannums:        
             case "plannum":
             case "priplannum":
             case "secplannum": 
-							if(hListPlans.ContainsKey(PIn.PInt(Queries.TableQ.Rows[i][j].ToString())))
-								Queries.TableQ.Rows[i][j]=hListPlans[PIn.PInt(Queries.TableQ.Rows[i][j].ToString())];
+							if(hListPlans.ContainsKey(PIn.PInt(tableOut.Rows[i][j].ToString())))
+								tableOut.Rows[i][j]=hListPlans[PIn.PInt(tableOut.Rows[i][j].ToString())];
 							else
-								Queries.TableQ.Rows[i][j]="";
+								tableOut.Rows[i][j]="";
 							break;
             //referralnum             
             case "referralnum":
-							if(PIn.PInt(Queries.TableQ.Rows[i][j].ToString())!=0){
+							if(PIn.PInt(tableOut.Rows[i][j].ToString())!=0){
 								Referral referral=Referrals.GetReferral
-									(PIn.PInt(Queries.TableQ.Rows[i][j].ToString()));
-								Queries.TableQ.Rows[i][j]
+									(PIn.PInt(tableOut.Rows[i][j].ToString()));
+								tableOut.Rows[i][j]
 									=referral.LName+", "+referral.FName+" "+referral.MName;
 							}
 							else
-								Queries.TableQ.Rows[i][j]="";
+								tableOut.Rows[i][j]="";
 							break; 
 						//enumerations:
 						case "aptstatus":
-							Queries.TableQ.Rows[i][j]
-								=((ApptStatus)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							tableOut.Rows[i][j]
+								=((ApptStatus)PIn.PInt(tableOut.Rows[i][j].ToString())).ToString();
 							break;
 						case "category":
-							Queries.TableQ.Rows[i][j]=((DefCat)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							tableOut.Rows[i][j]=((DefCat)PIn.PInt(tableOut.Rows[i][j].ToString())).ToString();
 							break;
 						case "renewmonth":
-							Queries.TableQ.Rows[i][j]=((Month)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							tableOut.Rows[i][j]=((Month)PIn.PInt(tableOut.Rows[i][j].ToString())).ToString();
 							break;
 						case "patstatus":
-							Queries.TableQ.Rows[i][j]
-								=((PatientStatus)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							tableOut.Rows[i][j]
+								=((PatientStatus)PIn.PInt(tableOut.Rows[i][j].ToString())).ToString();
 							break;
 						case "gender":
-							Queries.TableQ.Rows[i][j]
-								=((PatientGender)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							tableOut.Rows[i][j]
+								=((PatientGender)PIn.PInt(tableOut.Rows[i][j].ToString())).ToString();
 							break;
 						case "lab":
-							Queries.TableQ.Rows[i][j]
-								=((LabCase)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							tableOut.Rows[i][j]
+								=((LabCase)PIn.PInt(tableOut.Rows[i][j].ToString())).ToString();
 						  break;
 						case "position":
-							Queries.TableQ.Rows[i][j]
-								=((PatientPosition)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							tableOut.Rows[i][j]
+								=((PatientPosition)PIn.PInt(tableOut.Rows[i][j].ToString())).ToString();
 							break;
 						case "deductwaivprev":
 						case "flocovered":
 						case "misstoothexcl":
 						case "procstatus":
-							Queries.TableQ.Rows[i][j]=((ProcStat)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							tableOut.Rows[i][j]=((ProcStat)PIn.PInt(tableOut.Rows[i][j].ToString())).ToString();
 							break;
 						case "majorwait":
 						case "hascaries":
@@ -919,47 +913,47 @@ namespace OpenDental{
 						case "earlychildcaries":
 						case "existingsealants":
 						case "missingallteeth":
-							Queries.TableQ.Rows[i][j]=((YN)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							tableOut.Rows[i][j]=((YN)PIn.PInt(tableOut.Rows[i][j].ToString())).ToString();
 							break;
 						case "prirelationship":
 						case "secrelationship":
-							Queries.TableQ.Rows[i][j]=((Relat)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							tableOut.Rows[i][j]=((Relat)PIn.PInt(tableOut.Rows[i][j].ToString())).ToString();
 							break;
 						case "treatarea":
-							Queries.TableQ.Rows[i][j]
-								=((TreatmentArea)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							tableOut.Rows[i][j]
+								=((TreatmentArea)PIn.PInt(tableOut.Rows[i][j].ToString())).ToString();
 							break;
 						case "specialty":
-							Queries.TableQ.Rows[i][j]
-								=((DentalSpecialty)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							tableOut.Rows[i][j]
+								=((DentalSpecialty)PIn.PInt(tableOut.Rows[i][j].ToString())).ToString();
 							break;
 						case "placeservice":
-							Queries.TableQ.Rows[i][j]
-								=((PlaceOfService)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							tableOut.Rows[i][j]
+								=((PlaceOfService)PIn.PInt(tableOut.Rows[i][j].ToString())).ToString();
 							break;
             case "employrelated": 
-							Queries.TableQ.Rows[i][j]
-								=((YN)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							tableOut.Rows[i][j]
+								=((YN)PIn.PInt(tableOut.Rows[i][j].ToString())).ToString();
 							break;
             case "schedtype": 
-							Queries.TableQ.Rows[i][j]
-								=((ScheduleType)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							tableOut.Rows[i][j]
+								=((ScheduleType)PIn.PInt(tableOut.Rows[i][j].ToString())).ToString();
 							break;
             case "dayofweek": 
-							Queries.TableQ.Rows[i][j]
-								=((DayOfWeek)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							tableOut.Rows[i][j]
+								=((DayOfWeek)PIn.PInt(tableOut.Rows[i][j].ToString())).ToString();
 							break;
 						case "race":
-							Queries.TableQ.Rows[i][j]
-								=((PatientRace)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							tableOut.Rows[i][j]
+								=((PatientRace)PIn.PInt(tableOut.Rows[i][j].ToString())).ToString();
 							break;
 						case "gradelevel":
-							Queries.TableQ.Rows[i][j]
-								=((PatientGrade)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							tableOut.Rows[i][j]
+								=((PatientGrade)PIn.PInt(tableOut.Rows[i][j].ToString())).ToString();
 							break;
 						case "urgency":
-							Queries.TableQ.Rows[i][j]
-								=((TreatmentUrgency)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							tableOut.Rows[i][j]
+								=((TreatmentUrgency)PIn.PInt(tableOut.Rows[i][j].ToString())).ToString();
 							break;
 						//miscellaneous:
 						case "provnum":
@@ -968,24 +962,27 @@ namespace OpenDental{
 						case "secprov":
             case "provtreat":
             case "provbill":   
-							Queries.TableQ.Rows[i][j]=Providers.GetAbbr(PIn.PInt(Queries.TableQ.Rows[i][j].ToString()));
+							tableOut.Rows[i][j]=Providers.GetAbbr(PIn.PInt(tableOut.Rows[i][j].ToString()));
 							break;
 
 						case "covcatnum":
-							Queries.TableQ.Rows[i][j]=CovCats.GetDesc(PIn.PInt(Queries.TableQ.Rows[i][j].ToString()));
+							tableOut.Rows[i][j]=CovCats.GetDesc(PIn.PInt(tableOut.Rows[i][j].ToString()));
 							break;
             case "referringprov": 
-	//					  Queries.TableQ.Rows[i][j]=CovCats.GetDesc(PIn.PInt(Queries.TableQ.Rows[i][j].ToString()));
+	//					  tableOut.Rows[i][j]=CovCats.GetDesc(PIn.PInt(tableOut.Rows[i][j].ToString()));
 							break;			
             case "addtime":
-							if(Queries.TableQ.Rows[i][j].ToString()!="0")
-								Queries.TableQ.Rows[i][j]+="0";
+							if(tableOut.Rows[i][j].ToString()!="0")
+								tableOut.Rows[i][j]+="0";
 							break;
 					}//end switch column caption
 					}//end try
-					catch{}
+					catch{
+						//return tableOut;
+					}
 				}//end for i rows
 			}//end for j cols
+			return tableOut;
 		}
 
 		private void butFormulate_Click(object sender, System.EventArgs e) {//is now the 'Favorites' button
@@ -1061,35 +1058,22 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public void PrintReport(bool justPreview){
-			pd2 = new PrintDocument();
+			pd2=new PrintDocument();
 			pd2.PrintPage += new PrintPageEventHandler(this.pd2_PrintPage);
 			pd2.DefaultPageSettings.Margins=new Margins(10,50,50,60);
 			pagesPrinted=0;
 			linesPrinted=0;
-			PrintDocument tempPD = new PrintDocument();
-			tempPD.PrinterSettings.PrinterName=Computers.Cur.PrinterName;
-			if(tempPD.PrinterSettings.IsValid){
-				pd2.PrinterSettings.PrinterName=Computers.Cur.PrinterName;
-			}
-			//uses default printer if selected printer not valid
-			tempPD.Dispose();
 			try{
 				if(justPreview){
 					printPreviewControl2.Document=pd2;
-					
 				}
-				else{
-					printDialog2=new PrintDialog();
-					printDialog2.Document=pd2;
-					if(printDialog2.ShowDialog()==DialogResult.OK){
-						pd2.Print();
-					}
+				else if(Printers.SetPrinter(pd2,PrintSituation.Default)){
+					pd2.Print();
 				}
 			}
 			catch{
 				MessageBox.Show(Lan.g(this,"Printer not available"));
 			}
-			
 		}
 		
 		///<summary>raised for each page to be printed.</summary>
@@ -1326,31 +1310,38 @@ namespace OpenDental{
 				}
 			}
 			else saveFileDialog2.InitialDirectory=((Pref)Prefs.HList["ExportPath"]).ValueString;
-			saveFileDialog2.DefaultExt="txt";
-			//saveFileDialog2.Filter="txt files(*.txt)|*.txt|All files(*.*)|*.*";
-      //saveFileDialog2.FilterIndex=1;
+			//saveFileDialog2.DefaultExt="txt";
+			saveFileDialog2.Filter="Text files(*.txt)|*.txt|Excel Files(*.xls)|*.xls|All files(*.*)|*.*";
+      saveFileDialog2.FilterIndex=0;
 		  if(saveFileDialog2.ShowDialog()!=DialogResult.OK){
 	   	  return;
 			}
 			try{
-			  FileStream fs=new FileStream(@saveFileDialog2.FileName,FileMode.Create,FileAccess.Write,FileShare.Read);
-			  StreamWriter sw=new StreamWriter(fs);
-        String line="";  
-				for(int i=0;i<Queries.CurReport.ColCaption.Length;i++){
-					line+=Queries.CurReport.ColCaption[i]+"\t";
-				}
-        line+="\r\n";
-				sw.Write(line);
-				line="";      
-				for(int i=0;i<Queries.TableQ.Rows.Count;i++){
-					for(int j=0;j<Queries.TableQ.Columns.Count;j++){
-						line+=Regex.Replace(Queries.TableQ.Rows[i][j].ToString(),"\r\n","")+"\t";
+			  using(StreamWriter sw=new StreamWriter(saveFileDialog2.FileName,false))
+					//new FileStream(,FileMode.Create,FileAccess.Write,FileShare.Read)))
+				{
+					String line="";  
+					for(int i=0;i<Queries.CurReport.ColCaption.Length;i++){
+						line+=Queries.CurReport.ColCaption[i]+"\t";
 					}
-					line+="\r\n";
-					sw.Write(line);
-					line="";
+					sw.WriteLine(line);
+					string cell;
+					for(int i=0;i<Queries.TableQ.Rows.Count;i++){
+						line="";
+						for(int j=0;j<Queries.TableQ.Columns.Count;j++){
+							cell=Queries.TableQ.Rows[i][j].ToString();
+							cell=cell.Replace("\r","");
+							cell=cell.Replace("\n","");
+							cell=cell.Replace("\t","");
+							cell=cell.Replace("\"","");
+							line+=cell;
+							if(j<Queries.TableQ.Columns.Count-1){
+								line+="\t";
+							}
+						}
+						sw.WriteLine(line);
+					}
 				}
-				sw.Close();
       }
       catch{
         MessageBox.Show(Lan.g(this,"File in use by another program.  Close and try again."));

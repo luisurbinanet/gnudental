@@ -62,16 +62,20 @@ namespace OpenDental{
 			// 
 			// labelTO
 			// 
-			this.labelTO.Location = new System.Drawing.Point(240, 120);
+			this.labelTO.Location = new System.Drawing.Point(214, 120);
 			this.labelTO.Name = "labelTO";
-			this.labelTO.Size = new System.Drawing.Size(24, 23);
+			this.labelTO.Size = new System.Drawing.Size(76, 23);
 			this.labelTO.TabIndex = 10;
 			this.labelTO.Text = "TO";
+			this.labelTO.TextAlign = System.Drawing.ContentAlignment.TopCenter;
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butCancel.Location = new System.Drawing.Point(520, 328);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
@@ -80,7 +84,10 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.Location = new System.Drawing.Point(520, 292);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);

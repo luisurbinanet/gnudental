@@ -292,7 +292,7 @@ namespace OpenDental{
 			this.butO.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butO.Location = new System.Drawing.Point(28, 43);
 			this.butO.Name = "butO";
-			this.butO.Size = new System.Drawing.Size(18, 20);
+			this.butO.Size = new System.Drawing.Size(17, 20);
 			this.butO.TabIndex = 19;
 			this.butO.Text = "O";
 			this.butO.Click += new System.EventHandler(this.butO_Click);
@@ -304,7 +304,7 @@ namespace OpenDental{
 			this.butD.BackColor = System.Drawing.SystemColors.Control;
 			this.butD.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butD.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butD.Location = new System.Drawing.Point(60, 43);
+			this.butD.Location = new System.Drawing.Point(62, 43);
 			this.butD.Name = "butD";
 			this.butD.Size = new System.Drawing.Size(24, 20);
 			this.butD.TabIndex = 20;
@@ -332,7 +332,7 @@ namespace OpenDental{
 			this.butL.BackColor = System.Drawing.SystemColors.Control;
 			this.butL.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butL.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butL.Location = new System.Drawing.Point(32, 63);
+			this.butL.Location = new System.Drawing.Point(33, 63);
 			this.butL.Name = "butL";
 			this.butL.Size = new System.Drawing.Size(24, 20);
 			this.butL.TabIndex = 22;
@@ -346,9 +346,9 @@ namespace OpenDental{
 			this.butI.BackColor = System.Drawing.SystemColors.Control;
 			this.butI.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butI.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butI.Location = new System.Drawing.Point(44, 43);
+			this.butI.Location = new System.Drawing.Point(45, 43);
 			this.butI.Name = "butI";
-			this.butI.Size = new System.Drawing.Size(16, 20);
+			this.butI.Size = new System.Drawing.Size(17, 20);
 			this.butI.TabIndex = 23;
 			this.butI.Text = "I";
 			this.butI.Click += new System.EventHandler(this.butI_Click);
@@ -360,9 +360,9 @@ namespace OpenDental{
 			this.butF.BackColor = System.Drawing.SystemColors.Control;
 			this.butF.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butF.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butF.Location = new System.Drawing.Point(44, 23);
+			this.butF.Location = new System.Drawing.Point(45, 23);
 			this.butF.Name = "butF";
-			this.butF.Size = new System.Drawing.Size(16, 20);
+			this.butF.Size = new System.Drawing.Size(17, 20);
 			this.butF.TabIndex = 24;
 			this.butF.Text = "F";
 			this.butF.Click += new System.EventHandler(this.butF_Click);
@@ -1109,6 +1109,7 @@ namespace OpenDental{
 			// 
 			// imageListThumbnails
 			// 
+			this.imageListThumbnails.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
 			this.imageListThumbnails.ImageSize = new System.Drawing.Size(100, 100);
 			this.imageListThumbnails.TransparentColor = System.Drawing.Color.Transparent;
 			// 
@@ -1240,7 +1241,9 @@ namespace OpenDental{
 				label3,
 				butMedicalService
 				});
-			
+			Lan.C(this,menuPrimary.MenuItems[0]);
+			Lan.C(this,menuPrimary.MenuItems[1]);
+			Lan.C(this,menuPrimary.MenuItems[2]);
 			LayoutToolBar();
 		}
 
@@ -2307,7 +2310,7 @@ namespace OpenDental{
 			if(newStatus==ProcStat.R || newStatus==ProcStat.EO || newStatus==ProcStat.EC)
 				ProcCur.ProcFee=0;
 			else
-				ProcCur.ProcFee=Fees.GetAmount(ProcCur.ADACode,Fees.GetFeeSched(PatCur,PlanList));
+				ProcCur.ProcFee=Fees.GetAmount0(ProcCur.ADACode,Fees.GetFeeSched(PatCur,PlanList));
 			//ProcCur.OverridePri=-1;
 			//ProcCur.OverrideSec=-1;
 			//surf
@@ -2362,7 +2365,7 @@ namespace OpenDental{
 			if(newStatus==ProcStat.R || newStatus==ProcStat.EO || newStatus==ProcStat.EC)
 				ProcCur.ProcFee=0;
 			else
-				ProcCur.ProcFee=Fees.GetAmount(ProcCur.ADACode,Fees.GetFeeSched(PatCur,PlanList));
+				ProcCur.ProcFee=Fees.GetAmount0(ProcCur.ADACode,Fees.GetFeeSched(PatCur,PlanList));
 			//ProcCur.OverridePri=-1;
 			//ProcCur.OverrideSec=-1;
 			//surf

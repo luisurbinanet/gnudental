@@ -300,9 +300,7 @@ namespace OpenDental{
 			}
 			else{
 				//update the other computers:
-				DataValid.IType=InvalidType.LocalData;
-				DataValid DataValid2=new DataValid();
-				DataValid2.SetInvalid();
+				//DataValid.SetInvalid();//not needed due to intelligent refreshing
 			}
 			DialogResult=DialogResult.OK;
 		}

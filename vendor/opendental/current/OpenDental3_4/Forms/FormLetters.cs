@@ -28,7 +28,6 @@ namespace OpenDental{
 		private System.ComponentModel.Container components = null;
 		private bool localChanged;
 		private System.Drawing.Printing.PrintDocument pd2;
-		private System.Windows.Forms.PrintDialog printDialog2;
 		private bool bodyChanged;
 		private OpenDental.UI.Button butPrint;
 		private OpenDental.ODtextBox textBody;
@@ -75,7 +74,6 @@ namespace OpenDental{
 			this.checkIncludeRet = new System.Windows.Forms.CheckBox();
 			this.butDelete = new OpenDental.UI.Button();
 			this.pd2 = new System.Drawing.Printing.PrintDocument();
-			this.printDialog2 = new System.Windows.Forms.PrintDialog();
 			this.butPrint = new OpenDental.UI.Button();
 			this.textBody = new OpenDental.ODtextBox();
 			this.SuspendLayout();
@@ -227,7 +225,7 @@ namespace OpenDental{
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Letters";
-			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormLetterSetup_Closing);
+			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormLetters_Closing);
 			this.Load += new System.EventHandler(this.FormLetterSetup_Load);
 			this.ResumeLayout(false);
 
@@ -279,7 +277,7 @@ namespace OpenDental{
 			str.Append(PatCur.City+", "+PatCur.State+"  "+PatCur.Zip);
 			str.Append("\r\n\r\n\r\n\r\n");
 			//date
-			str.Append(DateTime.Today.ToShortDateString()+"\r\n\r\n");
+			str.Append(DateTime.Today.ToLongDateString()+"\r\n\r\n");
 			//greeting
 			str.Append("Dear ");
 			if(CultureInfo.CurrentCulture.Name=="en-GB"){
@@ -387,17 +385,9 @@ namespace OpenDental{
 			pd2=new PrintDocument();
 			pd2.PrintPage+=new PrintPageEventHandler(this.pd2_PrintPage);
 			pd2.OriginAtMargins=true;
-			printDialog2=new PrintDialog();
-			printDialog2.PrinterSettings=new PrinterSettings();
-			printDialog2.PrinterSettings.PrinterName=Computers.Cur.PrinterName;
-			if(printDialog2.ShowDialog()!=DialogResult.OK){
+			if(!Printers.SetPrinter(pd2,PrintSituation.Default)){
 				return;
 			}
-			if(printDialog2.PrinterSettings.IsValid){
-				//pd2.PrinterSettings.PrinterName=;
-				pd2.PrinterSettings=printDialog2.PrinterSettings;
-			}
-			//uses default printer if selected printer not valid
 			try{
 				pd2.Print();
 			}
@@ -434,11 +424,9 @@ namespace OpenDental{
 			DialogResult=DialogResult.Cancel;
 		}
 
-		private void FormLetterSetup_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+		private void FormLetters_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
 			if(localChanged){
-				DataValid.IType=InvalidType.LocalData;
-				DataValid DataValid2=new DataValid();
-				DataValid2.SetInvalid();
+				DataValid.SetInvalid(InvalidTypes.Letters);
 			}
 		}
 

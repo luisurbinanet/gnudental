@@ -13,20 +13,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public TableAccountPat(){
 			InitializeComponent();// This call is required by the Windows Form Designer.
-			MaxRows=10;
-			MaxCols=2;
-			ShowScroll=true;
-			FieldsArePresent=true;
-			HeadingIsPresent=true;
-			InstantClassesPar();
-			SetRowHeight(0,9,14);
-			Heading=Lan.g("TableAccountPat","Select Patient");
-			Fields[0]=Lan.g("TableAccountPat","Patient");
-			Fields[1]=Lan.g("TableAccountPat","Est Bal");
-			ColAlign[1]=HorizontalAlignment.Right;
-			ColWidth[0]=95;
-			ColWidth[1]=49;
-			LayoutTables();
+			InstantClasses();
 		}
 
 		///<summary></summary>
@@ -54,6 +41,24 @@ namespace OpenDental{
 		#endregion
 
 		private void TableAccountPat_Load(object sender, System.EventArgs e) {
+			LayoutTables();
+		}
+
+			///<summary></summary>
+		public void InstantClasses(){
+			MaxRows=10;
+			MaxCols=2;
+			ShowScroll=true;
+			FieldsArePresent=true;
+			HeadingIsPresent=true;
+			InstantClassesPar();
+			SetRowHeight(0,9,14);
+			Heading=Lan.g("TableAccountPat","Select Patient");
+			Fields[0]=Lan.g("TableAccountPat","Patient");
+			Fields[1]=Lan.g("TableAccountPat","Est Bal");
+			ColAlign[1]=HorizontalAlignment.Right;
+			ColWidth[0]=95;
+			ColWidth[1]=49;
 			LayoutTables();
 		}
 

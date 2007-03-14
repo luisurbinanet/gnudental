@@ -431,9 +431,9 @@ namespace OpenDental{
 			this.groupSecurity.Controls.Add(this.butAll);
 			this.groupSecurity.Controls.Add(this.butNone);
 			this.groupSecurity.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupSecurity.Location = new System.Drawing.Point(481, 10);
+			this.groupSecurity.Location = new System.Drawing.Point(460, 10);
 			this.groupSecurity.Name = "groupSecurity";
-			this.groupSecurity.Size = new System.Drawing.Size(396, 483);
+			this.groupSecurity.Size = new System.Drawing.Size(417, 483);
 			this.groupSecurity.TabIndex = 40;
 			this.groupSecurity.TabStop = false;
 			this.groupSecurity.Text = "Security";
@@ -441,7 +441,7 @@ namespace OpenDental{
 			// tbUserPerm
 			// 
 			this.tbUserPerm.BackColor = System.Drawing.SystemColors.Window;
-			this.tbUserPerm.Location = new System.Drawing.Point(12, 84);
+			this.tbUserPerm.Location = new System.Drawing.Point(42, 84);
 			this.tbUserPerm.Name = "tbUserPerm";
 			this.tbUserPerm.ScrollValue = 1;
 			this.tbUserPerm.SelectedIndices = new int[0];
@@ -452,7 +452,7 @@ namespace OpenDental{
 			// 
 			// textUserName
 			// 
-			this.textUserName.Location = new System.Drawing.Point(96, 22);
+			this.textUserName.Location = new System.Drawing.Point(126, 22);
 			this.textUserName.MaxLength = 100;
 			this.textUserName.Name = "textUserName";
 			this.textUserName.Size = new System.Drawing.Size(282, 20);
@@ -461,16 +461,16 @@ namespace OpenDental{
 			// 
 			// label4
 			// 
-			this.label4.Location = new System.Drawing.Point(8, 26);
+			this.label4.Location = new System.Drawing.Point(6, 26);
 			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(86, 16);
+			this.label4.Size = new System.Drawing.Size(118, 16);
 			this.label4.TabIndex = 27;
 			this.label4.Text = "UserName";
 			this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// textPassword
 			// 
-			this.textPassword.Location = new System.Drawing.Point(96, 46);
+			this.textPassword.Location = new System.Drawing.Point(126, 46);
 			this.textPassword.MaxLength = 100;
 			this.textPassword.Name = "textPassword";
 			this.textPassword.PasswordChar = '*';
@@ -480,9 +480,9 @@ namespace OpenDental{
 			// 
 			// label12
 			// 
-			this.label12.Location = new System.Drawing.Point(6, 48);
+			this.label12.Location = new System.Drawing.Point(8, 48);
 			this.label12.Name = "label12";
-			this.label12.Size = new System.Drawing.Size(88, 16);
+			this.label12.Size = new System.Drawing.Size(116, 16);
 			this.label12.TabIndex = 30;
 			this.label12.Text = "Password";
 			this.label12.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -493,7 +493,7 @@ namespace OpenDental{
 			this.butAll.Autosize = true;
 			this.butAll.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butAll.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butAll.Location = new System.Drawing.Point(14, 448);
+			this.butAll.Location = new System.Drawing.Point(44, 448);
 			this.butAll.Name = "butAll";
 			this.butAll.Size = new System.Drawing.Size(75, 26);
 			this.butAll.TabIndex = 37;
@@ -506,7 +506,7 @@ namespace OpenDental{
 			this.butNone.Autosize = true;
 			this.butNone.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butNone.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butNone.Location = new System.Drawing.Point(104, 448);
+			this.butNone.Location = new System.Drawing.Point(134, 448);
 			this.butNone.Name = "butNone";
 			this.butNone.Size = new System.Drawing.Size(75, 26);
 			this.butNone.TabIndex = 38;

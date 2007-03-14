@@ -708,9 +708,7 @@ namespace OpenDental{
 			Prefs.Cur=(Pref)Prefs.HList["CropDelta"];
 			Prefs.Cur.ValueString=textCropDelta.Text;
 			Prefs.UpdateCur();
-			DataValid.IType=InvalidType.LocalData;
-			DataValid DataValid2=new DataValid();
-			DataValid2.SetInvalid();
+			DataValid.SetInvalid(InvalidTypes.Prefs);
 			//Defs.IsSelected=false;
 			DialogResult=DialogResult.OK;
 		}

@@ -15,6 +15,7 @@ namespace OpenDental{
 		private OpenDental.UI.Button butDelete;
 		private OpenDental.UI.Button butAdd;
 		private System.ComponentModel.Container components=null;
+		private bool changed;
 
 		///<summary></summary>
 		public FormZipSelect(){
@@ -143,7 +144,6 @@ namespace OpenDental{
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(430, 235);
 			this.Controls.Add(this.butEdit);
 			this.Controls.Add(this.butDelete);
@@ -158,6 +158,7 @@ namespace OpenDental{
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Select Zipcode";
+			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormZipSelect_Closing);
 			this.Load += new System.EventHandler(this.FormZipSelect_Load);
 			this.ResumeLayout(false);
 
@@ -171,7 +172,8 @@ namespace OpenDental{
 		  FillList();
 		}
 		
-		private void FillList(){ 
+		private void FillList(){
+			//refreshing is done within each routine
 			listMatches.Items.Clear();
 			string itemText="";
 			for(int i=0;i<ZipCodes.ALMatches.Count;i++){ 
@@ -194,6 +196,7 @@ namespace OpenDental{
 			if(FormZCE.DialogResult!=DialogResult.OK){
 				return;
 			}
+			changed=true;
 			ZipCodes.Refresh();
 			ZipCodes.GetALMatches(ZipCodes.Cur.ZipCodeDigits);
 			FillList();
@@ -210,6 +213,7 @@ namespace OpenDental{
 			if(FormZCE.DialogResult!=DialogResult.OK){
 				return;
 			}
+			changed=true;
 			ZipCodes.Refresh();
 			ZipCodes.GetALMatches(ZipCodes.Cur.ZipCodeDigits);
 			FillList();
@@ -222,6 +226,7 @@ namespace OpenDental{
 			}
 			ZipCodes.Cur=(ZipCode)ZipCodes.ALMatches[listMatches.SelectedIndex];
 			ZipCodes.DeleteCur();
+			changed=true;
 			ZipCodes.Refresh();
 			ZipCodes.GetALMatches(ZipCodes.Cur.ZipCodeDigits);
 			FillList();
@@ -245,7 +250,13 @@ namespace OpenDental{
 		}
 
 		private void butCancel_Click(object sender, System.EventArgs e) {
-		
+			DialogResult=DialogResult.Cancel;
+		}
+
+		private void FormZipSelect_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+			if(changed){
+				DataValid.SetInvalid(InvalidTypes.ZipCodes);
+			}
 		}
 
 		

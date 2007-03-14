@@ -16,8 +16,8 @@ namespace OpenDental{
 		protected static MySqlDataAdapter da;
 		///<summary>This is the connection that is used by the data adapter for all queries.</summary>
 		protected static MySqlConnection con;
-		///<summary>A dataset is a set of tables stored locally in memory.</summary>
-		protected static DataSet ds;
+		//<summary>A dataset is a set of tables stored locally in memory.</summary>
+		//protected static DataSet ds;
 		///<summary>Used to get very small bits of data from the db when the data adapter would be overkill.  For instance retrieving the response after a command is sent.</summary>
 		protected static MySqlDataReader dr;
 		///<summary>Stores the string of the command that will be sent to the database.</summary>
@@ -34,7 +34,8 @@ namespace OpenDental{
 				"Server="+FormConfig.ComputerName
 				+";Database="+FormConfig.Database
 				+";User ID="+FormConfig.User
-				+";Password="+FormConfig.Password);
+				+";Password="+FormConfig.Password
+				+";CharSet=utf8");
 			dr = null;
 			cmd = new MySqlCommand();
 			cmd.Connection = con;
@@ -61,8 +62,11 @@ namespace OpenDental{
 				da=new MySqlDataAdapter(cmd);
 				da.Fill(table=new DataTable(null));
 			}
-			//catch(MySqlException e){
-			//	MessageBox.Show("MySQL Error: "+e.Message);
+			catch(MySql.Data.Types.MySqlConversionException){
+				MsgBox.Show("DataClass","Invalid date found. Please fix dates in the Check Database Integrity tool in your main menu under misc tools");
+			}
+			//catch(Exception){
+			//	MessageBox.Show(cmd.CommandText);
 			//}
 			catch(MySqlException e){
 				MessageBox.Show("Error: "+e.Message+", "+cmd.CommandText);
@@ -72,6 +76,7 @@ namespace OpenDental{
 			}
 		}
 
+		/*
 		///<summary>Used to retrieve multiple tables from the database.</summary>
 		///<remarks>The driver did not used to be good enough to retreive datasets, but now that it is, we are trying to slowly transition to using this method to reduce the number of queries that have to be sent.</remarks>
 		protected static void FillDataSet(){//
@@ -89,7 +94,7 @@ namespace OpenDental{
 			finally{
 				con.Close();
 			}
-		}
+		}*/
 
 		///<summary></summary>
 		protected static int NonQ(){

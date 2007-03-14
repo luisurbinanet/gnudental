@@ -101,11 +101,12 @@ namespace OpenDental{
 			// 
 			// labelTO
 			// 
-			this.labelTO.Location = new System.Drawing.Point(245, 126);
+			this.labelTO.Location = new System.Drawing.Point(211, 126);
 			this.labelTO.Name = "labelTO";
-			this.labelTO.Size = new System.Drawing.Size(24, 23);
+			this.labelTO.Size = new System.Drawing.Size(71, 23);
 			this.labelTO.TabIndex = 22;
 			this.labelTO.Text = "TO";
+			this.labelTO.TextAlign = System.Drawing.ContentAlignment.TopCenter;
 			// 
 			// butAll
 			// 
@@ -244,7 +245,7 @@ namespace OpenDental{
 			Queries.CurReport.Query="SELECT procedurelog.ProcDate,CONCAT"
 				+"(patient.LName,', ',patient.FName,' ',patient.MiddleI) AS plfname, procedurelog.ADACode,"
 				+"procedurelog.ToothNum,procedurecode.Descript,provider.Abbr,"
-				+"procedurelog.ProcFee-SUM(claimproc.WriteOff) AS $fee "// procedurelog.ProcNum  "
+				+"procedurelog.ProcFee-IFNULL(SUM(claimproc.WriteOff),0) AS $fee "//if no writeoff, then subtract 0
 				+"FROM procedurelog,patient,procedurecode,provider "
 				+"LEFT JOIN claimproc ON procedurelog.ProcNum=claimproc.ProcNum "
 				+"AND claimproc.Status='7' "//only CapComplete writeoffs are subtracted here.

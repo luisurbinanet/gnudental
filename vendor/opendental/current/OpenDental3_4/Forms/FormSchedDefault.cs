@@ -19,6 +19,7 @@ namespace OpenDental{
 		private System.ComponentModel.Container components = null;
 		private OpenDental.UI.Button butAdd;
 		private Point mousePos;
+		private bool changed;
 
 		///<summary></summary>
 		public FormSchedDefault(){
@@ -204,6 +205,10 @@ namespace OpenDental{
 			FormBlockEdit FormBE=new FormBlockEdit();
 			FormBE.IsNew=true;
 			FormBE.ShowDialog();
+			if(FormBE.DialogResult!=DialogResult.OK){
+				return;
+			}
+			changed=true;
 			FillGrid();
 		}
 
@@ -221,12 +226,16 @@ namespace OpenDental{
 			for(int i=0;i<SchedDefaults.List.Length;i++){
 				if(tempDay==SchedDefaults.List[i].DayOfWeek
 					&& tempSpan.CompareTo(SchedDefaults.List[i].StartTime.TimeOfDay) > 0 
-					&& tempSpan.CompareTo(SchedDefaults.List[i].StopTime.TimeOfDay) < 0 
-					){
+					&& tempSpan.CompareTo(SchedDefaults.List[i].StopTime.TimeOfDay) < 0)
+				{
 					FormBlockEdit FormBE=new FormBlockEdit();
 					FormBE.IsNew=false;
 					SchedDefaults.Cur=SchedDefaults.List[i];
 					FormBE.ShowDialog();
+					if(FormBE.DialogResult!=DialogResult.OK){
+						return;
+					}
+					changed=true;
 					FillGrid();
 					return;
 				}
@@ -242,9 +251,9 @@ namespace OpenDental{
 		}
 
 		private void FormSchedDefault_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-			DataValid.IType=InvalidType.LocalData;
-			DataValid DataValid2=new DataValid();
-			DataValid2.SetInvalid();
+			if(changed){
+				DataValid.SetInvalid(InvalidTypes.ZipCodes);
+			}
 			SecurityLogs.MakeLogEntry("Practice Default Schedule","Altered Schedule Defaults");	
 		}
 

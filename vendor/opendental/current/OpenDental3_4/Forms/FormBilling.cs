@@ -8,7 +8,6 @@ namespace OpenDental{
 ///<summary></summary>
 	public class FormBilling : System.Windows.Forms.Form{
 		private OpenDental.UI.Button butCancel;
-		private OpenDental.ContrAccount contrAccount1;
 		private OpenDental.UI.Button butAll;
 		private OpenDental.UI.Button butNone;
 		private OpenDental.TableBilling tbBill;
@@ -16,6 +15,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label1;
 		private OpenDental.UI.Button butPrint;
 		private System.ComponentModel.Container components = null;
+		private System.Windows.Forms.Label label3;
 		///<summary>Set this list externally before openning the billing window.</summary>
 		public PatAging[] AgingList;
 
@@ -40,12 +40,12 @@ namespace OpenDental{
 		private void InitializeComponent(){
 			this.butCancel = new OpenDental.UI.Button();
 			this.butPrint = new OpenDental.UI.Button();
-			this.contrAccount1 = new OpenDental.ContrAccount();
 			this.butNone = new OpenDental.UI.Button();
 			this.butAll = new OpenDental.UI.Button();
 			this.tbBill = new OpenDental.TableBilling();
 			this.label2 = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
+			this.label3 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// butCancel
@@ -76,14 +76,6 @@ namespace OpenDental{
 			this.butPrint.TabIndex = 0;
 			this.butPrint.Text = "&Print";
 			this.butPrint.Click += new System.EventHandler(this.butPrint_Click);
-			// 
-			// contrAccount1
-			// 
-			this.contrAccount1.Location = new System.Drawing.Point(-56, 102);
-			this.contrAccount1.Name = "contrAccount1";
-			this.contrAccount1.Size = new System.Drawing.Size(916, 494);
-			this.contrAccount1.TabIndex = 20;
-			this.contrAccount1.Visible = false;
 			// 
 			// butNone
 			// 
@@ -138,18 +130,27 @@ namespace OpenDental{
 			this.label1.TabIndex = 26;
 			this.label1.Text = "Unhighlight any bills you don\'t want to print.";
 			// 
+			// label3
+			// 
+			this.label3.Location = new System.Drawing.Point(568, 518);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(102, 102);
+			this.label3.TabIndex = 27;
+			this.label3.Text = "This will immediately print all selected bills";
+			this.label3.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
 			// FormBilling
 			// 
 			this.AcceptButton = this.butPrint;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(672, 692);
+			this.Controls.Add(this.label3);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.tbBill);
 			this.Controls.Add(this.butNone);
 			this.Controls.Add(this.butAll);
-			this.Controls.Add(this.contrAccount1);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butPrint);
 			this.MaximizeBox = false;
@@ -198,15 +199,16 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please select items first."));
 				return;
 			}
+			int[] guarNums=new int[tbBill.SelectedIndices.Length];
 			for(int i=0;i<tbBill.SelectedIndices.Length;i++){
-				//Patient PatCur=new Patient();
-				//PatCur.PatNum=;
-				//Patients.Cur=PatCur;
-				//Patients.PatIsLoaded=true;
-				contrAccount1.LoadAndPrint(AgingList[tbBill.SelectedIndices[i]].PatNum);
+				guarNums[i]=AgingList[tbBill.SelectedIndices[i]].PatNum;
 			}
+			FormRpStatement FormS=new FormRpStatement();
+			FormS.LoadAndPrint(guarNums);
+			#if DEBUG
+				FormS.ShowDialog();
+			#endif
 			MessageBox.Show(Lan.g(this,"Printing Statements Complete"));
-			//Patients.Cur=null;
 			DialogResult=DialogResult.OK;
 		}
 

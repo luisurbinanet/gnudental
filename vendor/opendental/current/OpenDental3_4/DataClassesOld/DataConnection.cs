@@ -30,7 +30,8 @@ namespace OpenDental{
 				"Server="+FormConfig.ComputerName
 				+";Database="+FormConfig.Database
 				+";User ID="+FormConfig.User
-				+";Password="+FormConfig.Password);
+				+";Password="+FormConfig.Password
+				+";CharSet=utf8");
 			//dr = null;
 			cmd = new MySqlCommand();
 			cmd.Connection=con;
@@ -43,7 +44,8 @@ namespace OpenDental{
 				"Server="+FormConfig.ComputerName
 				+";Database="+db
 				+";User ID="+FormConfig.User
-				+";Password="+FormConfig.Password);
+				+";Password="+FormConfig.Password
+				+";CharSet=utf8");
 			//dr = null;
 			cmd = new MySqlCommand();
 			cmd.Connection = con;
@@ -70,11 +72,14 @@ namespace OpenDental{
  				da=new MySqlDataAdapter(cmd);
  				da.Fill(table);
  			}
-			//catch(MySqlException e){
-			//	MessageBox.Show("MySQL Error: "+e.Message);
-			//}
+			catch(MySql.Data.Types.MySqlConversionException){
+				MsgBox.Show(this,"Invalid date found. Please fix dates in the Check Database Integrity tool in your main menu under misc tools");
+			}
 			catch(MySqlException e){
 				MessageBox.Show("Error: "+e.Message+","+cmd.CommandText);
+			}
+			catch(Exception){
+				MessageBox.Show(command);
 			}
 			finally{
 				con.Close();

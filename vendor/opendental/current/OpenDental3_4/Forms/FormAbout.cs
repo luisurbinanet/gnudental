@@ -78,7 +78,7 @@ namespace OpenDental{
 			// 
 			this.label1.Location = new System.Drawing.Point(19, 87);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(665, 23);
+			this.label1.Size = new System.Drawing.Size(585, 23);
 			this.label1.TabIndex = 3;
 			this.label1.Text = "Open Dental (AKA Free Dental)  Copyright 2003, Jordan S. Sparks, D.M.D., www.open" +
 				"-dent.com  1-877-686-1248";
@@ -87,7 +87,7 @@ namespace OpenDental{
 			// 
 			this.label2.Location = new System.Drawing.Point(19, 140);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(652, 20);
+			this.label2.Size = new System.Drawing.Size(584, 20);
 			this.label2.TabIndex = 4;
 			this.label2.Text = "ByteFX, the data driver - Copyright 2003, www.bytefx.com";
 			// 
@@ -95,9 +95,9 @@ namespace OpenDental{
 			// 
 			this.butReset.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.butReset.ForeColor = System.Drawing.SystemColors.Control;
-			this.butReset.Location = new System.Drawing.Point(1, 398);
+			this.butReset.Location = new System.Drawing.Point(1, 348);
 			this.butReset.Name = "butReset";
-			this.butReset.Size = new System.Drawing.Size(21, 17);
+			this.butReset.Size = new System.Drawing.Size(94, 67);
 			this.butReset.TabIndex = 5;
 			this.butReset.Click += new System.EventHandler(this.butReset_Click);
 			// 
@@ -105,7 +105,7 @@ namespace OpenDental{
 			// 
 			this.label3.Location = new System.Drawing.Point(19, 113);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(652, 20);
+			this.label3.Size = new System.Drawing.Size(584, 20);
 			this.label3.TabIndex = 6;
 			this.label3.Text = "MySQL - Copyright 1995-2003, www.mysql.com";
 			// 
@@ -113,7 +113,7 @@ namespace OpenDental{
 			// 
 			this.label4.Location = new System.Drawing.Point(20, 62);
 			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(652, 20);
+			this.label4.Size = new System.Drawing.Size(584, 20);
 			this.label4.TabIndex = 7;
 			this.label4.Text = "All parts of this program are licensed under the GPL, www.opensource.org/licenses" +
 				"/gpl-license.php";
@@ -125,7 +125,7 @@ namespace OpenDental{
 			this.textBox1.Location = new System.Drawing.Point(21, 199);
 			this.textBox1.Multiline = true;
 			this.textBox1.Name = "textBox1";
-			this.textBox1.Size = new System.Drawing.Size(628, 181);
+			this.textBox1.Size = new System.Drawing.Size(558, 130);
 			this.textBox1.TabIndex = 8;
 			this.textBox1.Text = "David Adams\r\nDan Crawford\r\nLarry Dagley\r\nAnn Hellemans-De Hondt\r\nSamir Kothari\r\nJ" +
 				"eff Smerdon";
@@ -144,12 +144,12 @@ namespace OpenDental{
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butClose;
 			this.ClientSize = new System.Drawing.Size(709, 462);
+			this.Controls.Add(this.butReset);
 			this.Controls.Add(this.label5);
 			this.Controls.Add(this.textBox1);
 			this.Controls.Add(this.butClose);
 			this.Controls.Add(this.label4);
 			this.Controls.Add(this.label3);
-			this.Controls.Add(this.butReset);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.labelVersion);

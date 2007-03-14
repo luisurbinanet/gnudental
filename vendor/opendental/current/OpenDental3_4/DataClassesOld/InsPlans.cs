@@ -13,7 +13,8 @@ namespace OpenDental{
 		//<summary>Used to display a list of all non duplicate plans. Like the old template table.</summary>
 		//public static InsPlan[] ListAll;
 
-		///<summary>It's fastest if you supply a plan list that contains the plan, but it also works just fine if it can't initally locate the plan in the list.  You can supply an array of length 0.</summary>
+		
+		///<summary>It's fastest if you supply a plan list that contains the plan, but it also works just fine if it can't initally locate the plan in the list.  You can supply an array of length 0.  If still not found, returns null.</summary>
 		public static InsPlan GetPlan(int planNum,InsPlan[] planList){
 			InsPlan retPlan=new InsPlan();
 			if(planNum==0){
@@ -27,13 +28,17 @@ namespace OpenDental{
 				}
 			}
 			if(!found){
-				retPlan=Refresh(planNum);//planNum will now be 0 if not found
+				retPlan=Refresh(planNum);//retPlan will now be null if not found
 			}
 			if(retPlan==null){
 				MessageBox.Show(Lan.g("InsPlans","Database is slightly corrupted.  Please run the database integrity tool."));
 				return new InsPlan();
 			}
+			if(retPlan==null){
+				return null;
+			}
 			if(retPlan.PlanNum>0 && retPlan.RenewMonth<1){//0 or -1
+				//fix small db error:
 				retPlan.RenewMonth=1;
 				retPlan.Update();
 				//don't worry about refreshing plan list for something this minor.
@@ -41,7 +46,7 @@ namespace OpenDental{
 			return retPlan;
 		}
 
-		///<summary>Only loads one plan from db.  Returns null if not found.</summary>
+		///<summary>Only loads one plan from db. Can return null.</summary>
 		private static InsPlan Refresh(int planNum){
 			if(planNum==0)
 				return null;
@@ -86,44 +91,44 @@ namespace OpenDental{
 			InsPlan[] PlanList=new InsPlan[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
 				PlanList[i]=new InsPlan();
-				PlanList[i].PlanNum      = PIn.PInt   (table.Rows[i][0].ToString());
-				PlanList[i].Subscriber   = PIn.PInt   (table.Rows[i][1].ToString());
-				PlanList[i].Carrier      = PIn.PString(table.Rows[i][2].ToString());
-				PlanList[i].DateEffective= PIn.PDate  (table.Rows[i][3].ToString());
-				PlanList[i].DateTerm     = PIn.PDate  (table.Rows[i][4].ToString());
-				PlanList[i].Phone        = PIn.PString(table.Rows[i][5].ToString());
-				PlanList[i].GroupName    = PIn.PString(table.Rows[i][6].ToString());
-				PlanList[i].GroupNum     = PIn.PString(table.Rows[i][7].ToString());
-				PlanList[i].Address      = PIn.PString(table.Rows[i][8].ToString());
-				PlanList[i].Address2     = PIn.PString(table.Rows[i][9].ToString());
-				PlanList[i].City         = PIn.PString(table.Rows[i][10].ToString());
-				PlanList[i].State        = PIn.PString(table.Rows[i][11].ToString());
-				PlanList[i].Zip          = PIn.PString(table.Rows[i][12].ToString());
-				PlanList[i].NoSendElect  = PIn.PBool  (table.Rows[i][13].ToString());
-				PlanList[i].ElectID      = PIn.PString(table.Rows[i][14].ToString());
-				PlanList[i].Employer     = PIn.PString(table.Rows[i][15].ToString());
-				PlanList[i].AnnualMax    = PIn.PInt   (table.Rows[i][16].ToString());
-				PlanList[i].RenewMonth   = PIn.PInt   (table.Rows[i][17].ToString());
-				PlanList[i].Deductible   = PIn.PInt   (table.Rows[i][18].ToString());
-				PlanList[i].DeductWaivPrev=(YN)PIn.PInt(table.Rows[i][19].ToString());
-				PlanList[i].OrthoMax     = PIn.PInt    (table.Rows[i][20].ToString());
-				PlanList[i].FloToAge     = PIn.PInt    (table.Rows[i][21].ToString());
-				PlanList[i].PlanNote     = PIn.PString (table.Rows[i][22].ToString());
-				PlanList[i].MissToothExcl= (YN)PIn.PInt(table.Rows[i][23].ToString());
-				PlanList[i].MajorWait    = (YN)PIn.PInt(table.Rows[i][24].ToString());
-				PlanList[i].FeeSched     = PIn.PInt    (table.Rows[i][25].ToString());
-				PlanList[i].ReleaseInfo  = PIn.PBool   (table.Rows[i][26].ToString());
-				PlanList[i].AssignBen    = PIn.PBool   (table.Rows[i][27].ToString());
-				PlanList[i].PlanType     = PIn.PString (table.Rows[i][28].ToString());
-				PlanList[i].ClaimFormNum = PIn.PInt    (table.Rows[i][29].ToString());
-				PlanList[i].UseAltCode   = PIn.PBool   (table.Rows[i][30].ToString());
-				PlanList[i].ClaimsUseUCR = PIn.PBool   (table.Rows[i][31].ToString());
-				PlanList[i].IsWrittenOff = PIn.PBool   (table.Rows[i][32].ToString());
-				PlanList[i].CopayFeeSched= PIn.PInt    (table.Rows[i][33].ToString());
-				PlanList[i].SubscriberID = PIn.PString (table.Rows[i][34].ToString());
-				PlanList[i].EmployerNum  = PIn.PInt    (table.Rows[i][35].ToString());
-				//PlanList[i].TemplateNum  = PIn.PInt    (table.Rows[i][36].ToString());
-				PlanList[i].CarrierNum   = PIn.PInt    (table.Rows[i][36].ToString());
+				PlanList[i].PlanNum        = PIn.PInt   (table.Rows[i][0].ToString());
+				PlanList[i].Subscriber     = PIn.PInt   (table.Rows[i][1].ToString());
+				//PlanList[i].Carrier        = PIn.PString(table.Rows[i][2].ToString());
+				PlanList[i].DateEffective  = PIn.PDate  (table.Rows[i][3].ToString());
+				PlanList[i].DateTerm       = PIn.PDate  (table.Rows[i][4].ToString());
+				PlanList[i].Phone          = PIn.PString(table.Rows[i][5].ToString());
+				PlanList[i].GroupName      = PIn.PString(table.Rows[i][6].ToString());
+				PlanList[i].GroupNum       = PIn.PString(table.Rows[i][7].ToString());
+				//PlanList[i].Address        = PIn.PString(table.Rows[i][8].ToString());
+				//PlanList[i].Address2       = PIn.PString(table.Rows[i][9].ToString());
+				//PlanList[i].City           = PIn.PString(table.Rows[i][10].ToString());
+				//PlanList[i].State          = PIn.PString(table.Rows[i][11].ToString());
+				//PlanList[i].Zip            = PIn.PString(table.Rows[i][12].ToString());
+				//PlanList[i].NoSendElect    = PIn.PBool  (table.Rows[i][13].ToString());
+				//PlanList[i].ElectID        = PIn.PString(table.Rows[i][14].ToString());
+				//PlanList[i].Employer       = PIn.PString(table.Rows[i][15].ToString());
+				PlanList[i].AnnualMax      = PIn.PInt   (table.Rows[i][16].ToString());
+				PlanList[i].RenewMonth     = PIn.PInt   (table.Rows[i][17].ToString());
+				PlanList[i].Deductible     = PIn.PInt   (table.Rows[i][18].ToString());
+				PlanList[i].DeductWaivPrev =(YN)PIn.PInt(table.Rows[i][19].ToString());
+				PlanList[i].OrthoMax       = PIn.PInt    (table.Rows[i][20].ToString());
+				PlanList[i].FloToAge       = PIn.PInt    (table.Rows[i][21].ToString());
+				PlanList[i].PlanNote       = PIn.PString (table.Rows[i][22].ToString());
+				PlanList[i].MissToothExcl  = (YN)PIn.PInt(table.Rows[i][23].ToString());
+				PlanList[i].MajorWait      = (YN)PIn.PInt(table.Rows[i][24].ToString());
+				PlanList[i].FeeSched       = PIn.PInt    (table.Rows[i][25].ToString());
+				PlanList[i].ReleaseInfo    = PIn.PBool   (table.Rows[i][26].ToString());
+				PlanList[i].AssignBen      = PIn.PBool   (table.Rows[i][27].ToString());
+				PlanList[i].PlanType       = PIn.PString (table.Rows[i][28].ToString());
+				PlanList[i].ClaimFormNum   = PIn.PInt    (table.Rows[i][29].ToString());
+				PlanList[i].UseAltCode     = PIn.PBool   (table.Rows[i][30].ToString());
+				PlanList[i].ClaimsUseUCR   = PIn.PBool   (table.Rows[i][31].ToString());
+				PlanList[i].IsWrittenOff   = PIn.PBool   (table.Rows[i][32].ToString());
+				PlanList[i].CopayFeeSched  = PIn.PInt    (table.Rows[i][33].ToString());
+				PlanList[i].SubscriberID   = PIn.PString (table.Rows[i][34].ToString());
+				PlanList[i].EmployerNum    = PIn.PInt    (table.Rows[i][35].ToString());
+				PlanList[i].CarrierNum     = PIn.PInt    (table.Rows[i][36].ToString());
+				PlanList[i].AllowedFeeSched= PIn.PInt    (table.Rows[i][37].ToString());
 			}
 			return PlanList;
 		}
@@ -216,6 +221,9 @@ namespace OpenDental{
 		///<summary>Used in Ins lines in Account module.</summary>
 		public static string GetCarrierName(int planNum,InsPlan[] PlanList){
 			InsPlan plan=GetPlan(planNum,PlanList);
+			if(plan==null){
+				return "";
+			}
 			Carrier carrier=Carriers.GetCarrier(plan.CarrierNum);
 			if(carrier.CarrierNum==0){//if corrupted
 				return "";
@@ -226,6 +234,9 @@ namespace OpenDental{
 		/// <summary>Get insurance benefits remaining for one benefit year.  InsPlans must be refreshed first.  Returns actual remaining insurance based on ClaimProc data, taking into account inspayed and ins pending. Must supply all claimprocs for the patient.  Date used to determine which benefit year to calc.  Usually today's date.  The insplan.PlanNum is the plan to get value for.  ExcludeClaim is the ClaimNum to exclude, or enter -1 to include all.</summary>
 		public static double GetInsRem(ClaimProc[] ClaimProcList,DateTime date,int planNum,int excludeClaim,InsPlan[] PlanList){
 			InsPlan curPlan=GetPlan(planNum,PlanList);
+			if(curPlan==null){
+				return 0;
+			}
 			if(curPlan.AnnualMax==0){
 				return 0;
 			}
@@ -292,6 +303,9 @@ namespace OpenDental{
 			//	return 0;
 			//}
 			InsPlan curPlan=GetPlan(planNum,PlanList);
+			if(curPlan==null){
+				return 0;
+			}
 			double retVal=0;
 			DateTime startDate;//for benefit year
 			DateTime stopDate;
@@ -320,6 +334,9 @@ namespace OpenDental{
 		///<summary>Gets the deductible remaining for an insurance plan for one benefit year which includes the given date.  InsPlans must be refreshed first.  ClaimProcList should be the entire list of claimprocs for the patient. You can exclude a claim or use -1 to include all.</summary>
 		public static double GetDedRem(ClaimProc[] ClaimProcList,DateTime date,int planNum,int excludeClaim,InsPlan[] PlanList){
 			InsPlan curPlan=GetPlan(planNum,PlanList);
+			if(curPlan==null){
+				return 0;
+			}
 			double retVal=0;
 			if(curPlan.Deductible!=-1){
 				retVal=curPlan.Deductible;
@@ -351,14 +368,34 @@ namespace OpenDental{
 			return retVal;
 		}
 
-		///<summary>Returns -1 for no copay feeschedule, or 0 or more for a patient copay. Can handle a planNum of 0.</summary>
+		///<summary>Returns -1 if no copay feeschedule or fee unknown for this adaCode. Otherwise, returns 0 or more for a patient copay. Can handle a planNum of 0.</summary>
 		public static double GetCopay(string adaCode,int planNum,InsPlan[] PlanList){
-			if(planNum==0)
+			if(planNum==0){
 				return -1;
+			}
 			InsPlan plan=GetPlan(planNum,PlanList);
-			if(plan.CopayFeeSched==0)
+			if(plan==null){
 				return -1;
+			}
+			if(plan.CopayFeeSched==0){
+				return -1;
+			}
 			return Fees.GetAmount(adaCode,plan.CopayFeeSched);
+		}
+
+		///<summary>Returns -1 if no allowed feeschedule or fee unknown for this adaCode. Otherwise, returns the allowed fee including 0. Can handle a planNum of 0.</summary>
+		public static double GetAllowed(string adaCode,int planNum,InsPlan[] PlanList){
+			if(planNum==0){
+				return -1;
+			}
+			InsPlan plan=GetPlan(planNum,PlanList);
+			if(plan==null){
+				return -1;
+			}
+			if(plan.AllowedFeeSched==0){
+				return -1;
+			}
+			return Fees.GetAmount(adaCode,plan.AllowedFeeSched);
 		}
 
 		///<summary>This is used in FormQuery.SubmitQuery to allow display of carrier names.</summary>

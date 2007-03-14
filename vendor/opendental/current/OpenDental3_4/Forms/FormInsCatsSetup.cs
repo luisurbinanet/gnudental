@@ -17,6 +17,7 @@ namespace OpenDental{
 		private OpenDental.UI.Button butAddCat;
 		private OpenDental.UI.Button butDown;
 		private OpenDental.TableCovSpans tbMain;
+		private bool changed;
 
 		///<summary></summary>
 		public FormInsCatsSetup(){
@@ -241,6 +242,7 @@ namespace OpenDental{
 				return;
 			}
 			CovSpans.Refresh();
+			changed=true;
 			FillSpans();
 		}
 
@@ -253,6 +255,7 @@ namespace OpenDental{
 				return;
 			}
 			CovSpans.Refresh();
+			changed=true;
 			FillSpans();
 		}
 
@@ -266,6 +269,7 @@ namespace OpenDental{
 			}
 			CovSpans.DeleteCur();
 			CovSpans.Refresh();
+			changed=true;
 			FillSpans();
 		}
 
@@ -273,6 +277,7 @@ namespace OpenDental{
 			CovCats.Selected=listCovCats.SelectedIndex;
 			CovCats.MoveUp();
 			CovCats.Refresh();
+			changed=true;
 			FillCats();
 		}
 
@@ -280,6 +285,7 @@ namespace OpenDental{
 			CovCats.Selected=listCovCats.SelectedIndex;
 			CovCats.MoveDown();
 			CovCats.Refresh();
+			changed=true;
 			FillCats();
 		}
 
@@ -290,6 +296,7 @@ namespace OpenDental{
 			FormE.ShowDialog();
 			if(FormE.DialogResult==DialogResult.OK){
 				CovCats.Refresh();
+				changed=true;
 				FillCats();
 			}			
 		}
@@ -305,6 +312,7 @@ namespace OpenDental{
 			if(FormE.DialogResult==DialogResult.OK){
 				CovCats.Refresh();
 				FillCats();
+				changed=true;
 				FillSpans();
 			}			
 		}
@@ -314,9 +322,9 @@ namespace OpenDental{
 		}
 
 		private void FormInsCatsSetup_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-			DataValid.IType=InvalidType.LocalData;
-			DataValid DataValid2=new DataValid();
-			DataValid2.SetInvalid();
+			if(changed){
+				DataValid.SetInvalid(InvalidTypes.InsCats);
+			}
 		}		
 
 	}
