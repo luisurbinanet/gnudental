@@ -63,7 +63,7 @@ namespace OpenDental{
 			// 
 			// textDate
 			// 
-			this.textDate.Location = new System.Drawing.Point(84, 28);
+			this.textDate.Location = new System.Drawing.Point(86, 28);
 			this.textDate.Name = "textDate";
 			this.textDate.ReadOnly = true;
 			this.textDate.Size = new System.Drawing.Size(78, 20);
@@ -72,7 +72,7 @@ namespace OpenDental{
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(2, 32);
+			this.label1.Location = new System.Drawing.Point(4, 32);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(80, 14);
 			this.label1.TabIndex = 20;
@@ -85,7 +85,7 @@ namespace OpenDental{
 			this.groupBox1.Controls.Add(this.radio90);
 			this.groupBox1.Controls.Add(this.radio60);
 			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox1.Location = new System.Drawing.Point(48, 90);
+			this.groupBox1.Location = new System.Drawing.Point(50, 90);
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.Size = new System.Drawing.Size(144, 98);
 			this.groupBox1.TabIndex = 16;
@@ -97,7 +97,7 @@ namespace OpenDental{
 			this.radio30.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radio30.Location = new System.Drawing.Point(12, 24);
 			this.radio30.Name = "radio30";
-			this.radio30.Size = new System.Drawing.Size(122, 16);
+			this.radio30.Size = new System.Drawing.Size(104, 16);
 			this.radio30.TabIndex = 1;
 			this.radio30.Text = "Over 30 Days";
 			// 
@@ -107,7 +107,7 @@ namespace OpenDental{
 			this.radio90.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radio90.Location = new System.Drawing.Point(12, 70);
 			this.radio90.Name = "radio90";
-			this.radio90.Size = new System.Drawing.Size(130, 18);
+			this.radio90.Size = new System.Drawing.Size(104, 18);
 			this.radio90.TabIndex = 3;
 			this.radio90.TabStop = true;
 			this.radio90.Text = "Over 90 Days";
@@ -117,7 +117,7 @@ namespace OpenDental{
 			this.radio60.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radio60.Location = new System.Drawing.Point(12, 46);
 			this.radio60.Name = "radio60";
-			this.radio60.Size = new System.Drawing.Size(126, 18);
+			this.radio60.Size = new System.Drawing.Size(104, 18);
 			this.radio60.TabIndex = 2;
 			this.radio60.Text = "Over 60 Days";
 			// 
@@ -152,7 +152,7 @@ namespace OpenDental{
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(2, 62);
+			this.label2.Location = new System.Drawing.Point(4, 62);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(80, 14);
 			this.label2.TabIndex = 22;
@@ -161,24 +161,24 @@ namespace OpenDental{
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(128, 62);
+			this.label3.Location = new System.Drawing.Point(130, 62);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(20, 14);
+			this.label3.Size = new System.Drawing.Size(12, 14);
 			this.label3.TabIndex = 23;
 			this.label3.Text = "%";
-			this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.label3.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label4
 			// 
-			this.label4.Location = new System.Drawing.Point(146, 62);
+			this.label4.Location = new System.Drawing.Point(148, 62);
 			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(120, 14);
+			this.label4.Size = new System.Drawing.Size(144, 14);
 			this.label4.TabIndex = 24;
 			this.label4.Text = "(For Example: 18)";
 			// 
 			// textAPR
 			// 
-			this.textAPR.Location = new System.Drawing.Point(84, 58);
+			this.textAPR.Location = new System.Drawing.Point(86, 58);
 			this.textAPR.MaxVal = 255;
 			this.textAPR.MinVal = 0;
 			this.textAPR.Name = "textAPR";
@@ -188,7 +188,7 @@ namespace OpenDental{
 			// 
 			// listAdjType
 			// 
-			this.listAdjType.Location = new System.Drawing.Point(286, 94);
+			this.listAdjType.Location = new System.Drawing.Point(312, 94);
 			this.listAdjType.Name = "listAdjType";
 			this.listAdjType.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
 			this.listAdjType.Size = new System.Drawing.Size(158, 186);
@@ -196,9 +196,9 @@ namespace OpenDental{
 			// 
 			// label6
 			// 
-			this.label6.Location = new System.Drawing.Point(284, 4);
+			this.label6.Location = new System.Drawing.Point(310, 12);
 			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(192, 80);
+			this.label6.Size = new System.Drawing.Size(192, 72);
 			this.label6.TabIndex = 29;
 			this.label6.Text = "Finance charges are entered into the guarantor\'s account as an adjustment.  Pleas" +
 				"e choose which type of positive adjustment to use.";

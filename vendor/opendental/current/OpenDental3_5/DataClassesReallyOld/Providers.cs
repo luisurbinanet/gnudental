@@ -19,8 +19,8 @@ namespace OpenDental{
 		public string FName;
 		///<summary>Middle inital or name.</summary>
 		public string MI;
-		///<summary>eg. DMD or DDS</summary>
-		public string Title;
+		///<summary>eg. DMD or DDS. Was 'title' in previous versions.</summary>
+		public string Suffix;
 		///<summary>Foreign key to Definition.DefNum.</summary>
 		public int FeeSched;
 		///<summary>See the DentalSpecialty enumeration.</summary>
@@ -51,6 +51,8 @@ namespace OpenDental{
 		public string MedicaidID;
 		///<summary>Color that shows in appointments as outline when highlighted.</summary>
 		public Color OutlineColor;
+		///<summary>Used in dental schools.  Foreign key to schoolclass.SchoolClassNum.  Each student is a provider.  This keeps track of which class they are in.</summary>
+		public int SchoolClassNum;
 	}
 
 	/*=========================================================================================
@@ -77,28 +79,29 @@ namespace OpenDental{
 			FillTable();
 			ListLong=new Provider[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
-				ListLong[i].ProvNum     = PIn.PInt   (table.Rows[i][0].ToString());
-				ListLong[i].Abbr        = PIn.PString(table.Rows[i][1].ToString());
-				ListLong[i].ItemOrder   = PIn.PInt   (table.Rows[i][2].ToString());
-				ListLong[i].LName       = PIn.PString(table.Rows[i][3].ToString());
-				ListLong[i].FName       = PIn.PString(table.Rows[i][4].ToString());
-				ListLong[i].MI          = PIn.PString(table.Rows[i][5].ToString());
-				ListLong[i].Title       = PIn.PString(table.Rows[i][6].ToString());
-				ListLong[i].FeeSched    = PIn.PInt   (table.Rows[i][7].ToString());
-				ListLong[i].Specialty   =(DentalSpecialty)PIn.PInt (table.Rows[i][8].ToString());
-				ListLong[i].SSN         = PIn.PString(table.Rows[i][9].ToString());
-				ListLong[i].StateLicense= PIn.PString(table.Rows[i][10].ToString());
-				ListLong[i].DEANum      = PIn.PString(table.Rows[i][11].ToString());
-				ListLong[i].IsSecondary = PIn.PBool  (table.Rows[i][12].ToString());
-				ListLong[i].ProvColor   = Color.FromArgb(PIn.PInt(table.Rows[i][13].ToString()));
-				ListLong[i].IsHidden    = PIn.PBool  (table.Rows[i][14].ToString());
-				ListLong[i].UsingTIN    = PIn.PBool  (table.Rows[i][15].ToString());
+				ListLong[i].ProvNum       = PIn.PInt   (table.Rows[i][0].ToString());
+				ListLong[i].Abbr          = PIn.PString(table.Rows[i][1].ToString());
+				ListLong[i].ItemOrder     = PIn.PInt   (table.Rows[i][2].ToString());
+				ListLong[i].LName         = PIn.PString(table.Rows[i][3].ToString());
+				ListLong[i].FName         = PIn.PString(table.Rows[i][4].ToString());
+				ListLong[i].MI            = PIn.PString(table.Rows[i][5].ToString());
+				ListLong[i].Suffix        = PIn.PString(table.Rows[i][6].ToString());
+				ListLong[i].FeeSched      = PIn.PInt   (table.Rows[i][7].ToString());
+				ListLong[i].Specialty     =(DentalSpecialty)PIn.PInt (table.Rows[i][8].ToString());
+				ListLong[i].SSN           = PIn.PString(table.Rows[i][9].ToString());
+				ListLong[i].StateLicense  = PIn.PString(table.Rows[i][10].ToString());
+				ListLong[i].DEANum        = PIn.PString(table.Rows[i][11].ToString());
+				ListLong[i].IsSecondary   = PIn.PBool  (table.Rows[i][12].ToString());
+				ListLong[i].ProvColor     = Color.FromArgb(PIn.PInt(table.Rows[i][13].ToString()));
+				ListLong[i].IsHidden      = PIn.PBool  (table.Rows[i][14].ToString());
+				ListLong[i].UsingTIN      = PIn.PBool  (table.Rows[i][15].ToString());
 				//ListLong[i].BlueCrossID = PIn.PString(table.Rows[i][16].ToString());
-				ListLong[i].SigOnFile   = PIn.PBool  (table.Rows[i][17].ToString());
-				ListLong[i].Password    = PIn.PString(table.Rows[i][18].ToString());
-				ListLong[i].UserName    = PIn.PString(table.Rows[i][19].ToString());
-				ListLong[i].MedicaidID  = PIn.PString(table.Rows[i][20].ToString());
-				ListLong[i].OutlineColor= Color.FromArgb(PIn.PInt(table.Rows[i][21].ToString()));
+				ListLong[i].SigOnFile     = PIn.PBool  (table.Rows[i][17].ToString());
+				ListLong[i].Password      = PIn.PString(table.Rows[i][18].ToString());
+				ListLong[i].UserName      = PIn.PString(table.Rows[i][19].ToString());
+				ListLong[i].MedicaidID    = PIn.PString(table.Rows[i][20].ToString());
+				ListLong[i].OutlineColor  = Color.FromArgb(PIn.PInt(table.Rows[i][21].ToString()));
+				ListLong[i].SchoolClassNum= PIn.PInt   (table.Rows[i][22].ToString());
 				if(!ListLong[i].IsHidden) AL.Add(ListLong[i]);	
 			}
 			List=new Provider[AL.Count];
@@ -108,43 +111,44 @@ namespace OpenDental{
 		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE provider SET "
-				+ "abbr = '"        +POut.PString(Cur.Abbr)+"'"
-				+",itemorder = '"   +POut.PInt   (Cur.ItemOrder)+"'"
-				+",lname = '"       +POut.PString(Cur.LName)+"'"
-				+",fname = '"       +POut.PString(Cur.FName)+"'"
-				+",mi = '"          +POut.PString(Cur.MI)+"'"
-				+",title = '"       +POut.PString(Cur.Title)+"'"
-				+",feesched = '"    +POut.PInt   (Cur.FeeSched)+"'"
-				+",specialty = '"   +POut.PInt   ((int)Cur.Specialty)+"'"
-				+",ssn = '"         +POut.PString(Cur.SSN)+"'"
-				+",statelicense = '"+POut.PString(Cur.StateLicense)+"'"
-				+",deanum = '"      +POut.PString(Cur.DEANum)+"'"
-				+",issecondary = '" +POut.PBool  (Cur.IsSecondary)+"'"
-				+",provcolor = '"   +POut.PInt   (Cur.ProvColor.ToArgb())+"'"
-				+",ishidden = '"    +POut.PBool  (Cur.IsHidden)+"'"
-				+",usingtin = '"    +POut.PBool  (Cur.UsingTIN)+"'"
+				+ "abbr = '"          +POut.PString(Cur.Abbr)+"'"
+				+",itemorder = '"     +POut.PInt   (Cur.ItemOrder)+"'"
+				+",lname = '"         +POut.PString(Cur.LName)+"'"
+				+",fname = '"         +POut.PString(Cur.FName)+"'"
+				+",mi = '"            +POut.PString(Cur.MI)+"'"
+				+",suffix = '"        +POut.PString(Cur.Suffix)+"'"
+				+",feesched = '"      +POut.PInt   (Cur.FeeSched)+"'"
+				+",specialty = '"     +POut.PInt   ((int)Cur.Specialty)+"'"
+				+",ssn = '"           +POut.PString(Cur.SSN)+"'"
+				+",statelicense = '"  +POut.PString(Cur.StateLicense)+"'"
+				+",deanum = '"        +POut.PString(Cur.DEANum)+"'"
+				+",issecondary = '"   +POut.PBool  (Cur.IsSecondary)+"'"
+				+",provcolor = '"     +POut.PInt   (Cur.ProvColor.ToArgb())+"'"
+				+",ishidden = '"      +POut.PBool  (Cur.IsHidden)+"'"
+				+",usingtin = '"      +POut.PBool  (Cur.UsingTIN)+"'"
 				//+",bluecrossid = '" +POut.PString(Cur.BlueCrossID)+"'"
-				+",sigonfile = '"   +POut.PBool  (Cur.SigOnFile)+"'"
-				+",password = '"    +POut.PString(Cur.Password)+"'"
-				+",username = '"    +POut.PString(Cur.UserName)+"'"
-				+",medicaidid = '"  +POut.PString(Cur.MedicaidID)+"'"
-				+",OutlineColor = '"+POut.PInt   (Cur.OutlineColor.ToArgb())+"'"
-				+" WHERE provnum = '"+POut.PInt(Cur.ProvNum)+"'";
+				+",sigonfile = '"     +POut.PBool  (Cur.SigOnFile)+"'"
+				+",password = '"      +POut.PString(Cur.Password)+"'"
+				+",username = '"      +POut.PString(Cur.UserName)+"'"
+				+",medicaidid = '"    +POut.PString(Cur.MedicaidID)+"'"
+				+",OutlineColor = '"  +POut.PInt   (Cur.OutlineColor.ToArgb())+"'"
+				+",SchoolClassNum = '"+POut.PInt   (Cur.SchoolClassNum)+"'"
+				+" WHERE provnum = '" +POut.PInt(Cur.ProvNum)+"'";
 			NonQ(false);
 		}
 
 		///<summary></summary>
 		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO provider (abbr,itemorder,lname,fname,mi,title,"
+			cmd.CommandText = "INSERT INTO provider (abbr,itemorder,lname,fname,mi,suffix,"
 				+"feesched,specialty,ssn,statelicense,deanum,issecondary,"
 				+"provcolor,ishidden,usingtin,sigonfile,password,username"
-				+",medicaidid,OutlineColor) VALUES("
+				+",medicaidid,OutlineColor,SchoolClassNum) VALUES("
 				+"'"+POut.PString(Cur.Abbr)+"', "
 				+"'"+POut.PInt   (Cur.ItemOrder)+"', "
 				+"'"+POut.PString(Cur.LName)+"', "
 				+"'"+POut.PString(Cur.FName)+"', "
 				+"'"+POut.PString(Cur.MI)+"', "
-				+"'"+POut.PString(Cur.Title)+"', "
+				+"'"+POut.PString(Cur.Suffix)+"', "
 				+"'"+POut.PInt   (Cur.FeeSched)+"', "
 				+"'"+POut.PInt   ((int)Cur.Specialty)+"', "
 				+"'"+POut.PString(Cur.SSN)+"', "
@@ -159,7 +163,8 @@ namespace OpenDental{
 				+"'"+POut.PString(Cur.Password)+"', "			  
 				+"'"+POut.PString(Cur.UserName)+"', "
 				+"'"+POut.PString(Cur.MedicaidID)+"', "
-				+"'"+POut.PInt   (Cur.OutlineColor.ToArgb())+"')";
+				+"'"+POut.PInt   (Cur.OutlineColor.ToArgb())+"', "
+				+"'"+POut.PInt   (Cur.SchoolClassNum)+"')";
 			//MessageBox.Show(cmd.CommandText);
 			NonQ(true);
 			Cur.ProvNum=InsertID;

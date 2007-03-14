@@ -1,7 +1,7 @@
 using System;
 
 namespace OpenDental{
-	///<summary>This is an enumeration of all the enumeration types that are used in the database.  This is used in the reporting classes to make the data human-readable.</summary>
+	///<summary>This is an enumeration of all the enumeration types that are used in the database.  This is used in the reporting classes to make the data human-readable.  May need to be updated with recent additions.</summary>
 	public enum EnumType{
 		///<summary></summary>
 		YN,
@@ -178,7 +178,9 @@ namespace OpenDental{
 		///<summary>23- Categories for the Contact list.</summary>
 		ContactCategories,
 		///<summary>24- Categories for Letter Merge.</summary>
-		LetterMergeCats
+		LetterMergeCats,
+		///<summary>25- Types of Schedule Blockouts.</summary>
+		BlockoutTypes
 	}
 	//public enum StudentStat{None,Full,Part};
 	///<summary>Used in procedurecode setup to specify the treatment area for a procedure.  This determines what fields are available when editing an appointment.</summary>
@@ -254,8 +256,10 @@ namespace OpenDental{
 		ZipCodes=8388608,
 		///<summary>16777216</summary>
 		LetterMerge=16777216,
+		///<summary>33554432</summary>
+		DentalSchools=33554432,
 		///<summary>All flags combined except Date.</summary>
-		AllLocal=33554432-1-1
+		AllLocal=67108864-1-1
 	}
 	//<summary></summary>
 	/*public enum ButtonType{
@@ -346,9 +350,9 @@ namespace OpenDental{
 	public enum ScheduleType{
 		///<summary>0</summary>
 		Practice,
-		///<summary>1- Not used yet.</summary>
+		///<summary>1</summary>
 		Provider,
-		///<summary>2- Not used yet.</summary>
+		///<summary>2</summary>
 		Blockout}
 	///<summary>Used in the appointment edit window.</summary>
 	public enum LabCase{
@@ -400,7 +404,8 @@ namespace OpenDental{
 		///<summary></summary>
 		CopyToPinBoard,
 		///<summary></summary>
-		NewToPinBoard}
+		NewToPinBoard
+	}
 	//public enum SearchPatType{Lname,Fname,HmPhone,Address}
 	///<summary></summary>
 	public enum PaintType{
@@ -436,7 +441,7 @@ namespace OpenDental{
 		RetainerOutline,
 		///<summary>15</summary>
 		RetainerHatch}
-	///<summary>Schedule status.</summary>
+	///<summary>Schedule status.  Open,Closed,Holiday.</summary>
   public enum SchedStatus{
 		///<summary></summary>
 		Open,
@@ -487,7 +492,9 @@ namespace OpenDental{
 		///<summary>15</summary>
 		Pontic,
 		///<summary>16</summary>
-		Retainer}
+		Retainer,
+		///<summary>17</summary>
+		AgeOver18}
 	///<summary>Claimproc Status.  The status must generally be the same as the claim, although it is sometimes not strictly enforced.</summary>
 	public enum ClaimProcStatus{
 		///<summary>0: For claims that have been created or sent, but have not been received.</summary>
@@ -750,7 +757,7 @@ namespace OpenDental{
 		Renaissance
 	}
 
-	///<summary>Used when submitting e-claims to some carriers who require extra provider identifiers.Usage varies by company.  Only used as needed.</summary>
+	///<summary>Used when submitting e-claims to some carriers who require extra provider identifiers.  Usage varies by company.  Only used as needed.</summary>
 	public enum ProviderSupplementalID{
 		///<summary>0</summary>
 		BlueCross,
@@ -777,7 +784,9 @@ namespace OpenDental{
 		///<summary>5</summary>
 		RECS,
 		///<summary>6</summary>
-		Inmediata
+		Inmediata,
+		///<summary>7</summary>
+		AOS//added by SPK 7/15/05
 	}
 
 	///<summary></summary>
@@ -800,6 +809,38 @@ namespace OpenDental{
 		Postcard,
 		///<summary></summary>
 		Appointments
+	}
+
+	///<summary></summary>
+	public enum TaskDateType{
+		///<summary>0</summary>
+		None,
+		///<summary>1</summary>
+		Day,
+		///<summary>2</summary>
+		Week,
+		///<summary>3</summary>
+		Month
+	}
+
+	///<summary>Used when attaching objects to tasks.  These are the choices.</summary>
+	public enum TaskObjectType{
+		///<summary>0</summary>
+		None,
+		///<summary>1</summary>
+		Patient,
+		///<summary>2</summary>
+		Appointment
+	}
+
+	///<summary>Used as the enumeration of FieldValueType.ForeignKey.  Basically, this allows lists to be included in the parameter list.  The lists are those common short lists that are used so frequently.  The user can only select one from the list, and the primary key of that item will be used as the parameter.</summary>
+	public enum ReportFKType{
+		///<summary>0</summary>
+		None,
+		///<summary>The schoolclass table in the database. Used for dental schools.</summary>
+		SchoolClass,
+		///<summary>The schoolcourse table in the database. Used for dental schools.</summary>
+		SchoolCourse
 	}
 
 

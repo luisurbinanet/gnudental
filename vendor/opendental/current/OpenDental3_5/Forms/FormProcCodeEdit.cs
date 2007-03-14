@@ -129,7 +129,7 @@ namespace OpenDental{
 			// 
 			// label5
 			// 
-			this.label5.Location = new System.Drawing.Point(611, 12);
+			this.label5.Location = new System.Drawing.Point(594, 12);
 			this.label5.Name = "label5";
 			this.label5.Size = new System.Drawing.Size(100, 14);
 			this.label5.TabIndex = 4;
@@ -137,9 +137,9 @@ namespace OpenDental{
 			// 
 			// label6
 			// 
-			this.label6.Location = new System.Drawing.Point(2, 3);
+			this.label6.Location = new System.Drawing.Point(2, 16);
 			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(57, 61);
+			this.label6.Size = new System.Drawing.Size(53, 54);
 			this.label6.TabIndex = 5;
 			this.label6.Text = "Time Pattern";
 			this.label6.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
@@ -269,7 +269,7 @@ namespace OpenDental{
 			// 
 			// listCategory
 			// 
-			this.listCategory.Location = new System.Drawing.Point(611, 31);
+			this.listCategory.Location = new System.Drawing.Point(594, 31);
 			this.listCategory.Name = "listCategory";
 			this.listCategory.Size = new System.Drawing.Size(120, 238);
 			this.listCategory.TabIndex = 3;
@@ -277,12 +277,12 @@ namespace OpenDental{
 			// tbFees
 			// 
 			this.tbFees.BackColor = System.Drawing.SystemColors.Window;
-			this.tbFees.Location = new System.Drawing.Point(741, 29);
+			this.tbFees.Location = new System.Drawing.Point(725, 29);
 			this.tbFees.Name = "tbFees";
 			this.tbFees.ScrollValue = 1;
 			this.tbFees.SelectedIndices = new int[0];
 			this.tbFees.SelectionMode = System.Windows.Forms.SelectionMode.None;
-			this.tbFees.Size = new System.Drawing.Size(169, 356);
+			this.tbFees.Size = new System.Drawing.Size(199, 356);
 			this.tbFees.TabIndex = 9;
 			// 
 			// label3
@@ -306,7 +306,7 @@ namespace OpenDental{
 			// tbTime
 			// 
 			this.tbTime.BackColor = System.Drawing.SystemColors.Window;
-			this.tbTime.Location = new System.Drawing.Point(14, 67);
+			this.tbTime.Location = new System.Drawing.Point(15, 81);
 			this.tbTime.Name = "tbTime";
 			this.tbTime.ScrollValue = 150;
 			this.tbTime.SelectedIndices = new int[0];
@@ -327,7 +327,7 @@ namespace OpenDental{
 			// 
 			// textTime2
 			// 
-			this.textTime2.Location = new System.Drawing.Point(14, 633);
+			this.textTime2.Location = new System.Drawing.Point(15, 647);
 			this.textTime2.Name = "textTime2";
 			this.textTime2.Size = new System.Drawing.Size(60, 20);
 			this.textTime2.TabIndex = 32;
@@ -335,7 +335,7 @@ namespace OpenDental{
 			// 
 			// label11
 			// 
-			this.label11.Location = new System.Drawing.Point(80, 637);
+			this.label11.Location = new System.Drawing.Point(81, 651);
 			this.label11.Name = "label11";
 			this.label11.Size = new System.Drawing.Size(102, 16);
 			this.label11.TabIndex = 33;
@@ -352,14 +352,14 @@ namespace OpenDental{
 			// 
 			// listGraphicType
 			// 
-			this.listGraphicType.Location = new System.Drawing.Point(477, 31);
+			this.listGraphicType.Location = new System.Drawing.Point(468, 31);
 			this.listGraphicType.Name = "listGraphicType";
 			this.listGraphicType.Size = new System.Drawing.Size(118, 290);
 			this.listGraphicType.TabIndex = 34;
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(475, 12);
+			this.label2.Location = new System.Drawing.Point(466, 12);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(100, 18);
 			this.label2.TabIndex = 35;
@@ -371,7 +371,7 @@ namespace OpenDental{
 			this.butNone.Autosize = true;
 			this.butNone.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butNone.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butNone.Location = new System.Drawing.Point(477, 326);
+			this.butNone.Location = new System.Drawing.Point(468, 326);
 			this.butNone.Name = "butNone";
 			this.butNone.Size = new System.Drawing.Size(70, 25);
 			this.butNone.TabIndex = 36;

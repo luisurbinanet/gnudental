@@ -101,7 +101,7 @@ namespace OpenDental{
 			this.groupBox1.Controls.Add(this.radioAny);
 			this.groupBox1.Location = new System.Drawing.Point(57, 109);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(186, 120);
+			this.groupBox1.Size = new System.Drawing.Size(175, 120);
 			this.groupBox1.TabIndex = 1;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Age of Account";
@@ -111,7 +111,7 @@ namespace OpenDental{
 			this.radio30.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radio30.Location = new System.Drawing.Point(12, 44);
 			this.radio30.Name = "radio30";
-			this.radio30.Size = new System.Drawing.Size(156, 16);
+			this.radio30.Size = new System.Drawing.Size(152, 16);
 			this.radio30.TabIndex = 1;
 			this.radio30.Text = "Over 30 Days";
 			// 
@@ -120,7 +120,7 @@ namespace OpenDental{
 			this.radio90.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radio90.Location = new System.Drawing.Point(12, 90);
 			this.radio90.Name = "radio90";
-			this.radio90.Size = new System.Drawing.Size(156, 18);
+			this.radio90.Size = new System.Drawing.Size(152, 18);
 			this.radio90.TabIndex = 3;
 			this.radio90.Text = "Over 90 Days";
 			// 
@@ -129,7 +129,7 @@ namespace OpenDental{
 			this.radio60.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radio60.Location = new System.Drawing.Point(12, 66);
 			this.radio60.Name = "radio60";
-			this.radio60.Size = new System.Drawing.Size(156, 18);
+			this.radio60.Size = new System.Drawing.Size(152, 18);
 			this.radio60.TabIndex = 2;
 			this.radio60.Text = "Over 60 Days";
 			// 
@@ -139,7 +139,7 @@ namespace OpenDental{
 			this.radioAny.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.radioAny.Location = new System.Drawing.Point(12, 20);
 			this.radioAny.Name = "radioAny";
-			this.radioAny.Size = new System.Drawing.Size(104, 18);
+			this.radioAny.Size = new System.Drawing.Size(152, 18);
 			this.radioAny.TabIndex = 0;
 			this.radioAny.TabStop = true;
 			this.radioAny.Text = "Any Balance";
@@ -177,6 +177,7 @@ namespace OpenDental{
 			this.label2.Size = new System.Drawing.Size(176, 16);
 			this.label2.TabIndex = 14;
 			this.label2.Text = "Billing Types:";
+			this.label2.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// butAll
 			// 

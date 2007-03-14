@@ -54,6 +54,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Label labelClinic;
 		///<summary>Set this value to a PaySplitNum if you want one of the splits highlighted when opening this form.</summary>
 		public int InitialPaySplit;
+		private User user;
 
 		///<summary>PatCur and FamCur are not for the PatCur of the payment.  They are for the patient and family from which this window was accessed.</summary>
 		public FormPayment(Patient patCur,Family famCur,Payment paymentCur){
@@ -226,9 +227,9 @@ namespace OpenDental{
 			// 
 			// label7
 			// 
-			this.label7.Location = new System.Drawing.Point(274, 508);
+			this.label7.Location = new System.Drawing.Point(302, 508);
 			this.label7.Name = "label7";
-			this.label7.Size = new System.Drawing.Size(390, 14);
+			this.label7.Size = new System.Drawing.Size(362, 14);
 			this.label7.TabIndex = 18;
 			this.label7.Text = "(must match total amount of payment)";
 			this.label7.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -427,18 +428,23 @@ namespace OpenDental{
 				if(PayPlans.GetValidPlan(PatCur.PatNum)){//a valid payPlan was located
 					PaySplit PaySplitCur=AddOneSplit();//the amount and date will be updated upon closing
 					PaySplitCur.PayPlanNum=PayPlans.Cur.PayPlanNum;
-					PaySplitCur.Update();
+					PaySplitCur.InsertOrUpdate(false);
 				}
 			}
 			else{
-				if(!UserPermissions.CheckUserPassword("Payment Edit",PaymentCur.PayDate)){
-					butOK.Enabled=false;
-					butDeleteAll.Enabled=false;
-					butAdd.Enabled=false;
-					tbSplits.Enabled=false;
-					//butDeleteSplit.Enabled=false;
-					//NoPermission=true;
-				}				
+				if(Permissions.AuthorizationRequired("Payment Edit",PaymentCur.PayDate)){
+					user=Users.Authenticate("Payment Edit");
+					if(user==null){
+						DialogResult=DialogResult.Cancel;
+						return;
+					}
+					if(!UserPermissions.IsAuthorized("Payment Edit",user)){
+						butOK.Enabled=false;
+						butDeleteAll.Enabled=false;
+						butAdd.Enabled=false;
+						tbSplits.Enabled=false;
+					}
+				}		
 			}
 			if(Prefs.GetBool("EasyNoClinics")){
 				comboClinic.Visible=false;
@@ -590,57 +596,33 @@ namespace OpenDental{
 					return;
 				}
 				PaySplitPaymentList[0].PayPlanNum=PayPlans.Cur.PayPlanNum;
-				PaySplitPaymentList[0].Update();
+				PaySplitPaymentList[0].InsertOrUpdate(false);
 			}
 			else{//payPlan unchecked
 				PaySplitPaymentList[0].PayPlanNum=0;
-				PaySplitPaymentList[0].Update();
+				PaySplitPaymentList[0].InsertOrUpdate(false);
 			}
 			FillTable(true);
 		}
 
-		/// <summary>Adds one split to work with.  Called when butOK click, or checkPayPlan click, or upon load if auto attaching to payplan.</summary>
+		/// <summary>Adds one split to work with.  Called when checkPayPlan click, or upon load if auto attaching to payplan.</summary>
 		private PaySplit AddOneSplit(){
 			PaySplit PaySplitCur=new PaySplit();
 			PaySplitCur.PatNum=PatCur.PatNum;
 			PaySplitCur.PayNum=PaymentCur.PayNum;
-			PaySplitCur.ProcDate=PIn.PDate(textDate.Text);//this may be updated upon closing
-			PaySplitCur.DatePay=PIn.PDate(textDate.Text);//this may be updated upon closing
+			PaySplitCur.ProcDate=PaymentCur.PayDate;//this may be updated upon closing
+			PaySplitCur.DatePay=PaymentCur.PayDate;//this may be updated upon closing
 			PaySplitCur.ProvNum=PatCur.GetProvNum();
 			PaySplitCur.SplitAmt=PIn.PDouble(textAmount.Text);
-			PaySplitCur.Insert();//also gets the insertID
+			PaySplitCur.InsertOrUpdate(true);//also gets the insertID
 			return PaySplitCur;
-		}
-
-		///<summary>This checks all the dates first and only updates them if needed. Typically if the user changed the date of the payment. So this keeps the splits in synch with the same date.  But ONLY DatePay, NOT ProcDate.</summary>
-		private void SetDatesSame(){
-			bool datesSame=true;
-			for(int i=0;i<PaySplitPaymentList.Length;i++){
-				if(PaySplitPaymentList[i].DatePay!=PaymentCur.PayDate){
-					datesSame=false;
-					break;
-				}
-			}
-      if(datesSame)
-				return;
-			PaySplits.SetDateInPayment(PaymentCur.PayNum,PaymentCur.PayDate);
-		}
-
-		///<summary>Deletes the payment and all splits.</summary>
-		private void DeleteAll(){
-			for(int i=0;i<PaySplitPaymentList.Length;i++){
-				//PaySplits.Cur=PaySplits.PaymentList[i];
-				//putbal taken care of in deletesplit
-				PaySplitPaymentList[i].Delete();//PaySplits.DeleteCur();
-			}
-			PaymentCur.Delete();
 		}
 
 		private void butDeleteAll_Click(object sender, System.EventArgs e) {
 			if(MessageBox.Show(Lan.g(this,"This will delete the entire payment and all splits."),"",MessageBoxButtons.OKCancel)==DialogResult.Cancel){
 				return;
 			}
-			DeleteAll();
+			PaymentCur.Delete();
 			DialogResult=DialogResult.OK;
 		}
 
@@ -653,34 +635,6 @@ namespace OpenDental{
 			}
 			if(textAmount.Text==""){
 				MessageBox.Show(Lan.g(this,"Please enter an amount."));	
-				return;
-			}
-			if(PIn.PDate(textDate.Text).Year<1880 || PIn.PDate(textDate.Text)>DateTime.Today){
-				MessageBox.Show(Lan.g(this,"Invalid date."));	
-				return;
-			}
-			if(PaySplitPaymentList.Length==0){
-				AddOneSplit();//won't use returned value
-				textTotal.Text=textAmount.Text;
-			}
-			else if(PaySplitPaymentList.Length==1
-				&& PIn.PDouble(textAmount.Text) != PaySplitPaymentList[0].SplitAmt)
-			{
-				PaySplitPaymentList[0].SplitAmt=PIn.PDouble(textAmount.Text);
-				PaySplitPaymentList[0].Update();
-				textTotal.Text=textAmount.Text;
-			}
-			else if(PaySplitPaymentList.Length==1
-				&& PIn.PDate(textDate.Text) != PaySplitPaymentList[0].ProcDate//DatePay is handled further down
-				&& PaySplitPaymentList[0].ProcNum==0)//not attached to procedure
-			{
-				if(MsgBox.Show(this,true,"Change split date to match payment date?")){
-					PaySplitPaymentList[0].ProcDate=PIn.PDate(textDate.Text);
-					PaySplitPaymentList[0].Update();
-				}
-			}
-			if(PIn.PDouble(textAmount.Text)!=PIn.PDouble(textTotal.Text)){
-				MessageBox.Show(Lan.g(this,"Split totals must equal payment amount."));
 				return;
 			}
 			PaymentCur.PayAmt=PIn.PDouble(textAmount.Text);
@@ -696,15 +650,40 @@ namespace OpenDental{
 			PaymentCur.PayNote=textNote.Text;
 			PaymentCur.PayType=Defs.Short[(int)DefCat.PaymentTypes][listPayType.SelectedIndex].DefNum;
 			PaymentCur.PatNum=PatCur.PatNum;
-			//if(paymentCount>1)
-			if(PaySplitPaymentList.Length>1)
-				PaymentCur.IsSplit=true;
-			else
-				PaymentCur.IsSplit=false;
-			PaymentCur.Update();
-			SetDatesSame();
+			try{
+				PaymentCur.InsertOrUpdate(false);//IsSplit handled here. Also updates all paysplit.DatePay
+			}
+			catch(Exception ex){
+				MessageBox.Show(ex.Message);
+				return;
+			}
+			//even though paysplit.DatePays might have changed, no need to refresh.  Enforcement still works.
+			if(PaySplitPaymentList.Length==0){
+				PaymentCur.Allocate();
+			}
+			else if(PaySplitPaymentList.Length==1//if one split
+				&& PaymentCur.PayAmt != PaySplitPaymentList[0].SplitAmt)//and amount doesn't match payment
+			{
+				PaySplitPaymentList[0].SplitAmt=PIn.PDouble(textAmount.Text);//make amounts match
+				PaySplitPaymentList[0].InsertOrUpdate(false);
+			}
+			else if(PaySplitPaymentList.Length==1//if one split
+				&& PaymentCur.PayDate != PaySplitPaymentList[0].ProcDate
+				&& PaySplitPaymentList[0].ProcNum==0)//not attached to procedure
+			{
+				if(MsgBox.Show(this,true,"Change split date to match payment date?")){
+					PaySplitPaymentList[0].ProcDate=PaymentCur.PayDate;
+					PaySplitPaymentList[0].InsertOrUpdate(false);
+					//DatePay already handled in business layer
+				}
+			}
+			else if(PaymentCur.PayAmt!=PIn.PDouble(textTotal.Text)){
+				MsgBox.Show(this,"Split totals must equal payment amount.");
+				//work on reallocation schemes here later
+				return;
+			}
 			if(!IsNew){
-			  SecurityLogs.MakeLogEntry("Payment Edit","Patient Num: "+PaymentCur.PatNum.ToString());
+			  SecurityLogs.MakeLogEntry("Payment Edit","Patient Num: "+PaymentCur.PatNum.ToString(),user);
 			}
 			DialogResult=DialogResult.OK;
 		}
@@ -717,7 +696,7 @@ namespace OpenDental{
 			if(DialogResult==DialogResult.OK)
 				return;
 			if(IsNew){ 
-				DeleteAll();
+				PaymentCur.Delete();
 			}
 			else if(PaymentCur.PayAmt!=tot){
 				MessageBox.Show(Lan.g(this,"Splits have been altered.  Payment must match splits."));

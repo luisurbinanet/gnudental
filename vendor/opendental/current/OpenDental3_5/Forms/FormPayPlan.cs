@@ -276,9 +276,9 @@ namespace OpenDental{
 			// 
 			// label6
 			// 
-			this.label6.Location = new System.Drawing.Point(18, 59);
+			this.label6.Location = new System.Drawing.Point(9, 59);
 			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(148, 17);
+			this.label6.Size = new System.Drawing.Size(156, 17);
 			this.label6.TabIndex = 14;
 			this.label6.Text = "APR (for example 0 or 18)";
 			this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleRight;

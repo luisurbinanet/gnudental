@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
@@ -7,17 +8,24 @@ using System.Windows.Forms;
 namespace OpenDental{
 ///<summary></summary>
 	public class FormSchedPractice : System.Windows.Forms.Form{
-		private OpenDental.ContrCalendar Calendar2;
 		private System.ComponentModel.Container components = null;
 		private OpenDental.UI.Button butClose;
     Color ClosedColor;//will be Def "Closed Practice" Color
     Color HolidayColor;//will be Def "Holiday" Color
+		private OpenDental.ContrCalendar cal;
     Color OpenColor; //will be Def "Open" Color
+		private Schedule[] SchedListMonth;
+		private System.Windows.Forms.ListBox listProv;
+		private System.Windows.Forms.Label labelProv;
+		///<summary></summary>
+		private ScheduleType SchedType;
+		private int ProvNum;
+		private User user;
 
 		///<summary></summary>
-		public FormSchedPractice(){
+		public FormSchedPractice(ScheduleType schedType){
 			InitializeComponent();
-      Calendar2.ChangeMonth +=new OpenDental.ContrCalendar.EventHandler(Calendar2_ChangeMonth);  
+			SchedType=schedType;
 			Lan.F(this);
 		}
 
@@ -35,25 +43,20 @@ namespace OpenDental{
 
 		private void InitializeComponent()
 		{
-			this.Calendar2 = new OpenDental.ContrCalendar();
 			this.butClose = new OpenDental.UI.Button();
+			this.cal = new OpenDental.ContrCalendar();
+			this.listProv = new System.Windows.Forms.ListBox();
+			this.labelProv = new System.Windows.Forms.Label();
 			this.SuspendLayout();
-			// 
-			// Calendar2
-			// 
-			this.Calendar2.BackColor = System.Drawing.SystemColors.Control;
-			this.Calendar2.Location = new System.Drawing.Point(21, 14);
-			this.Calendar2.Name = "Calendar2";
-			this.Calendar2.SelectedDate = new System.DateTime(2004, 2, 22, 0, 0, 0, 0);
-			this.Calendar2.Size = new System.Drawing.Size(793, 664);
-			this.Calendar2.TabIndex = 0;
-			this.Calendar2.Click += new System.EventHandler(this.Calendar2_Click);
-			this.Calendar2.DoubleClick += new System.EventHandler(this.Calendar2_DoubleClick);
 			// 
 			// butClose
 			// 
-			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butClose.Location = new System.Drawing.Point(842, 654);
+			this.butClose.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butClose.Autosize = true;
+			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butClose.Location = new System.Drawing.Point(818, 644);
 			this.butClose.Name = "butClose";
 			this.butClose.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
 			this.butClose.Size = new System.Drawing.Size(75, 26);
@@ -61,15 +64,45 @@ namespace OpenDental{
 			this.butClose.Text = "&Close";
 			this.butClose.Click += new System.EventHandler(this.butClose_Click);
 			// 
+			// cal
+			// 
+			this.cal.BackColor = System.Drawing.SystemColors.Control;
+			this.cal.Location = new System.Drawing.Point(128, 6);
+			this.cal.Name = "cal";
+			this.cal.SelectedDate = new System.DateTime(2005, 3, 11, 0, 0, 0, 0);
+			this.cal.Size = new System.Drawing.Size(764, 632);
+			this.cal.TabIndex = 2;
+			this.cal.DoubleClick += new System.EventHandler(this.cal_DoubleClick);
+			this.cal.ChangeMonth += new OpenDental.ContrCalendar.EventHandler(this.cal_ChangeMonth);
+			// 
+			// listProv
+			// 
+			this.listProv.Location = new System.Drawing.Point(4, 38);
+			this.listProv.Name = "listProv";
+			this.listProv.Size = new System.Drawing.Size(120, 303);
+			this.listProv.TabIndex = 21;
+			this.listProv.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listProv_MouseDown);
+			// 
+			// labelProv
+			// 
+			this.labelProv.Location = new System.Drawing.Point(4, 12);
+			this.labelProv.Name = "labelProv";
+			this.labelProv.Size = new System.Drawing.Size(116, 23);
+			this.labelProv.TabIndex = 20;
+			this.labelProv.Text = "Providers";
+			this.labelProv.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
 			// FormSchedPractice
 			// 
 			this.AcceptButton = this.butClose;
 			this.AutoScale = false;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butClose;
-			this.ClientSize = new System.Drawing.Size(934, 692);
+			this.ClientSize = new System.Drawing.Size(900, 674);
+			this.Controls.Add(this.listProv);
+			this.Controls.Add(this.labelProv);
+			this.Controls.Add(this.cal);
 			this.Controls.Add(this.butClose);
-			this.Controls.Add(this.Calendar2);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "FormSchedPractice";
@@ -85,91 +118,113 @@ namespace OpenDental{
 		#endregion
 
 		private void FormSchedPractice_Load(object sender, System.EventArgs e) {
-			if(!UserPermissions.CheckUserPassword("Practice Schedule")){
-				DialogResult=DialogResult.Cancel;
-				return;
+			if(Permissions.AuthorizationRequired("Practice Schedule")){
+				user=Users.Authenticate("Practice Schedule");
+				if(!UserPermissions.IsAuthorized("Practice Schedule",user)){
+					MsgBox.Show(this,"You do not have permission for this feature");
+					DialogResult=DialogResult.Cancel;
+					return;
+				}	
 			}
-      Schedules.CurDate=Calendar2.SelectedDate;
+			if(SchedType==ScheduleType.Practice){
+				this.Text=Lan.g(this,"Practice Schedule");
+				labelProv.Visible=false;
+				listProv.Visible=false;
+			}
+			else if(SchedType==ScheduleType.Provider){
+				this.Text=Lan.g(this,"Provider Schedules");
+				listProv.Items.Clear();	
+				for(int i=0;i<Providers.List.Length;i++){
+					listProv.Items.Add(Providers.List[i].Abbr);
+				}
+				listProv.SelectedIndex=0;
+			}
       SchedDefaults.Refresh();
 			OpenColor=Defs.Long[(int)DefCat.AppointmentColors][0].ItemColor;
 			ClosedColor=Defs.Long[(int)DefCat.AppointmentColors][1].ItemColor;
 			HolidayColor=Defs.Long[(int)DefCat.AppointmentColors][4].ItemColor;
-      GetScheduleData(); 
-   }
+			cal.SelectedDate=DateTime.Today;
+      GetScheduleData();
+			cal.Invalidate();
+		}
 
-    private void Calendar2_ChangeMonth(object sender, System.EventArgs e){
-      Schedules.CurDate=Calendar2.SelectedDate;
-      GetScheduleData();  
-    }
+		private void cal_ChangeMonth(object sender, System.EventArgs e) {
+      GetScheduleData();
+		}
+
+		private void listProv_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
+			GetScheduleData();
+			cal.Invalidate();
+		}
 
     private void GetScheduleData(){
-      Schedules.RefreshMonth();
-			Schedules.RefreshDay(Schedules.CurDate);//why is this here?
-      Calendar2.ResetList();
+			ProvNum=0;
+			if(SchedType==ScheduleType.Provider){
+				ProvNum=Providers.List[listProv.SelectedIndex].ProvNum;
+			}
+      SchedListMonth=Schedules.RefreshMonth(cal.SelectedDate,SchedType,ProvNum);
+			//Schedules.RefreshDay(cal.SelectedDate);//?
+			SchedDefault[] schedDefForType=SchedDefaults.GetForType(SchedType,ProvNum);
+			//if(SchedType==SchedType.
+      cal.ResetList();
       bool HasSchedDefault;
       bool HasScheduleData; 
-      for(int i=1;i<Calendar2.List.Length;i++){
+      for(int i=1;i<cal.List.Length;i++){//loop through each day
         HasSchedDefault=false;
         HasScheduleData=false;
-
-        for(int j=0;j<Schedules.ListMonth.Length;j++){
-          if(Calendar2.List[i].Date.ToShortDateString() == Schedules.ListMonth[j].SchedDate.ToShortDateString()){
-            if(Schedules.ListMonth[j].Status == SchedStatus.Open){ 
-              Calendar2.AddText(i,Schedules.ListMonth[j].StartTime.ToShortTimeString()+" - "+Schedules.ListMonth[j].StopTime.ToShortTimeString());
-              Calendar2.List[i].color=OpenColor; 
-              if(Schedules.ListMonth[j].Note==""){
+        for(int j=0;j<SchedListMonth.Length;j++){
+          if(cal.List[i].Date==SchedListMonth[j].SchedDate){
+            if(SchedListMonth[j].Status==SchedStatus.Open){ 
+              cal.AddText(i,SchedListMonth[j].StartTime.ToShortTimeString()+" - "
+								+SchedListMonth[j].StopTime.ToShortTimeString());
+              cal.List[i].color=OpenColor; 
+              if(SchedListMonth[j].Note==""){
               }
               else{
-                Calendar2.AddText(i,Schedules.ListMonth[j].Note);
+                cal.AddText(i,SchedListMonth[j].Note);
               }              
             }
-            else if(Schedules.ListMonth[j].Status == SchedStatus.Holiday){
-              if(Schedules.ListMonth[j].Note==""){                
+            else if(SchedListMonth[j].Status == SchedStatus.Holiday){
+              if(SchedListMonth[j].Note==""){                
               }
               else{  
-                Calendar2.AddText(i,Schedules.ListMonth[j].Note);
+                cal.AddText(i,SchedListMonth[j].Note);
               }
-              Calendar2.ChangeColor(i,HolidayColor);
+              cal.ChangeColor(i,HolidayColor);
             }
             else{
-              if(Schedules.ListMonth[j].Note==""){            
+              if(SchedListMonth[j].Note==""){            
               }
               else{ 
-                Calendar2.AddText(i,Schedules.ListMonth[j].Note);                
+                cal.AddText(i,SchedListMonth[j].Note);                
               }
-              Calendar2.ChangeColor(i,ClosedColor);              
+              cal.ChangeColor(i,ClosedColor);              
             }
             HasScheduleData=true;            
           }       
-			  }      
-        if(!HasScheduleData){
-					for(int j=0;j<SchedDefaults.List.Length;j++){
-						if((int)Calendar2.List[i].Date.DayOfWeek==SchedDefaults.List[j].DayOfWeek){
-							Calendar2.AddText(i,SchedDefaults.List[j].StartTime.ToShortTimeString()+" - "
-								+SchedDefaults.List[j].StopTime.ToShortTimeString());
+			  }
+				//Debug.WriteLine(HasScheduleData);
+        if(!HasScheduleData){//use defaults instead
+					for(int j=0;j<schedDefForType.Length;j++){
+						if((int)cal.List[i].Date.DayOfWeek==schedDefForType[j].DayOfWeek){
+							cal.AddText(i,schedDefForType[j].StartTime.ToShortTimeString()+" - "
+								+schedDefForType[j].StopTime.ToShortTimeString());
 							HasSchedDefault=true;
-              Calendar2.ChangeColor(i,OpenColor); 
+              cal.ChangeColor(i,OpenColor); 
 						}
 					}
 					if(!HasSchedDefault){
-						Calendar2.List[i].color=ClosedColor;
+						cal.List[i].color=ClosedColor;
 					} 
         }
-      }
+      }//day loop
     }
 
-		private void Calendar2_Click(object sender, System.EventArgs e) {
-      Schedules.CurDate=Calendar2.SelectedDate;	
-		}
-
-		private void Calendar2_DoubleClick(object sender, System.EventArgs e) {
-			FormScheduleDay FormSD2=new FormScheduleDay();
+		private void cal_DoubleClick(object sender, System.EventArgs e) {
+			FormScheduleDay FormSD2=new FormScheduleDay(cal.SelectedDate,SchedType,ProvNum);
       FormSD2.ShowDialog();
       GetScheduleData();
-			Graphics grfx=this.CreateGraphics();
-      Calendar2.DrawDays(grfx);
-			Calendar2.Invalidate();
-			grfx.Dispose();
+			cal.Invalidate();
 		}
 
 		private void butClose_Click(object sender, System.EventArgs e) {
@@ -178,8 +233,16 @@ namespace OpenDental{
 
 		private void FormSchedPractice_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
 			//The daily schedules is refreshed everytime the Appointment screen is refreshed. Not with LocalData
-			SecurityLogs.MakeLogEntry("Practice Schedule","Altered Practice Schedule");
+			SecurityLogs.MakeLogEntry("Practice Schedule","Altered Practice Schedule",user);
 		}
+
+		
+
+		
+
+		
+
+		
 
 	}
 }

@@ -96,7 +96,7 @@ namespace OpenDental{
 		}
 
 		///<summary>Only called from ContrChart.listProcButtons_Click.  Called once for each tooth selected and for each autocode item attached to the button.</summary>
-		public static string GetADA(int autoCodeNum,string toothNum,string surf,bool isAdditional,int patNum){
+		public static string GetADA(int autoCodeNum,string toothNum,string surf,bool isAdditional,int patNum,int age){
 			bool allCondsMet;
 			GetListForCode(autoCodeNum);
 			if(ListForCode.Length==0){
@@ -108,7 +108,7 @@ namespace OpenDental{
 				allCondsMet=true;
 				for(int j=0;j<AutoCodeConds.ListForItem.Length;j++){
 					if(!AutoCodeConds.ConditionIsMet
-						(AutoCodeConds.ListForItem[j].Cond,toothNum,surf,isAdditional,willBeMissing)){
+						(AutoCodeConds.ListForItem[j].Cond,toothNum,surf,isAdditional,willBeMissing,age)){
 						allCondsMet=false;
 					}
 				}
@@ -120,7 +120,7 @@ namespace OpenDental{
 		}
 
 		///<summary>Only called when closing the procedure edit window. Usually returns the supplied adaCode, unless a better match is found.</summary>
-		public static string VerifyCode(string ADACode,string toothNum,string surf,bool isAdditional,int patNum){
+		public static string VerifyCode(string ADACode,string toothNum,string surf,bool isAdditional,int patNum,int age){
 			bool allCondsMet;
 			if(!HList.ContainsKey(ADACode)){
 				return ADACode;
@@ -140,7 +140,7 @@ namespace OpenDental{
 				allCondsMet=true;
 				for(int j=0;j<AutoCodeConds.ListForItem.Length;j++){
 					if(!AutoCodeConds.ConditionIsMet
-						(AutoCodeConds.ListForItem[j].Cond,toothNum,surf,isAdditional,willBeMissing)){
+						(AutoCodeConds.ListForItem[j].Cond,toothNum,surf,isAdditional,willBeMissing,age)){
 						allCondsMet=false;
 					}
 				}

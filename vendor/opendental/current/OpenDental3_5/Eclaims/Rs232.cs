@@ -25,9 +25,7 @@ namespace OpenDental.Eclaims{
 
 		public Rs232()
 		{
-			//
-			// TODO: Add constructor logic here
-			//
+			
 		}
 
 		public int Port{

@@ -123,12 +123,13 @@ namespace OpenDental{
 				PlanList[i].ClaimFormNum   = PIn.PInt    (table.Rows[i][29].ToString());
 				PlanList[i].UseAltCode     = PIn.PBool   (table.Rows[i][30].ToString());
 				PlanList[i].ClaimsUseUCR   = PIn.PBool   (table.Rows[i][31].ToString());
-				PlanList[i].IsWrittenOff   = PIn.PBool   (table.Rows[i][32].ToString());
+				//PlanList[i].IsWrittenOff   = PIn.PBool   (table.Rows[i][32].ToString());
 				PlanList[i].CopayFeeSched  = PIn.PInt    (table.Rows[i][33].ToString());
 				PlanList[i].SubscriberID   = PIn.PString (table.Rows[i][34].ToString());
 				PlanList[i].EmployerNum    = PIn.PInt    (table.Rows[i][35].ToString());
 				PlanList[i].CarrierNum     = PIn.PInt    (table.Rows[i][36].ToString());
 				PlanList[i].AllowedFeeSched= PIn.PInt    (table.Rows[i][37].ToString());
+				PlanList[i].TrojanID       = PIn.PString (table.Rows[i][38].ToString());
 			}
 			return PlanList;
 		}
@@ -141,13 +142,13 @@ namespace OpenDental{
 					"SELECT insplan.EmployerNum,insplan.GroupName,insplan.GroupNum,insplan.CarrierNum"
 					+",insplan.PlanType,insplan.UseAltCode"
 					+",insplan.ClaimsUseUCR,insplan.FeeSched,insplan.CopayFeeSched,insplan.ClaimFormNum"
-					+",COUNT(*),employer.EmpName,carrier.CarrierName "
+					+",insplan.AllowedFeeSched,COUNT(*),employer.EmpName,carrier.CarrierName "//the last two are for ordering
 					+"FROM insplan "
 					+"LEFT JOIN employer ON employer.EmployerNum = insplan.EmployerNum "
 					+"LEFT JOIN carrier ON carrier.CarrierNum = insplan.CarrierNum "
 					+"GROUP BY insplan.EmployerNum,insplan.GroupName,insplan.GroupNum,insplan.CarrierNum"
 					+",insplan.PlanType,insplan.UseAltCode"
-					+",insplan.ClaimsUseUCR,insplan.FeeSched,insplan.CopayFeeSched,insplan.ClaimFormNum "
+					+",insplan.ClaimsUseUCR,insplan.FeeSched,insplan.CopayFeeSched,insplan.ClaimFormNum,insplan.AllowedFeeSched "
 					+"ORDER BY employer.EmpName IS NULL,employer.EmpName,carrier.CarrierName ASC";
 				//MessageBox.Show(cmd.CommandText);
 			}
@@ -156,11 +157,11 @@ namespace OpenDental{
 					"SELECT insplan.EmployerNum,insplan.GroupName,insplan.GroupNum,insplan.CarrierNum"
 					+",insplan.PlanType,insplan.UseAltCode"
 					+",insplan.ClaimsUseUCR,insplan.FeeSched,insplan.CopayFeeSched,insplan.ClaimFormNum"
-					+",COUNT(*),carrier.CarrierName FROM insplan "
+					+",insplan.AllowedFeeSched,COUNT(*),carrier.CarrierName FROM insplan "
 					+"LEFT JOIN carrier USING(CarrierNum) "
 					+"GROUP BY insplan.EmployerNum,insplan.GroupName,insplan.GroupNum,insplan.CarrierNum"
 					+",insplan.PlanType,insplan.UseAltCode"
-					+",insplan.ClaimsUseUCR,insplan.FeeSched,insplan.CopayFeeSched,insplan.ClaimFormNum "
+					+",insplan.ClaimsUseUCR,insplan.FeeSched,insplan.CopayFeeSched,insplan.ClaimFormNum,insplan.AllowedFeeSched "
 					+"ORDER BY carrier.CarrierName ASC";
 			}
 			//MessageBox.Show(cmd.CommandText);
@@ -169,18 +170,19 @@ namespace OpenDental{
 			InsPlan[] ListAll=new InsPlan[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
 				ListAll[i]=new InsPlan();
-				ListAll[i].EmployerNum  = PIn.PInt   (table.Rows[i][0].ToString());
-				ListAll[i].GroupName    = PIn.PString(table.Rows[i][1].ToString());
-				ListAll[i].GroupNum     = PIn.PString(table.Rows[i][2].ToString());
-				ListAll[i].CarrierNum   = PIn.PInt   (table.Rows[i][3].ToString());
-				ListAll[i].PlanType     = PIn.PString(table.Rows[i][4].ToString());
-				ListAll[i].UseAltCode   = PIn.PBool  (table.Rows[i][5].ToString());
-				ListAll[i].ClaimsUseUCR = PIn.PBool  (table.Rows[i][6].ToString());
-				ListAll[i].FeeSched     = PIn.PInt   (table.Rows[i][7].ToString());
-				ListAll[i].CopayFeeSched= PIn.PInt   (table.Rows[i][8].ToString());
-				ListAll[i].ClaimFormNum = PIn.PInt   (table.Rows[i][9].ToString());
-				ListAll[i].NumberPlans  = PIn.PInt   (table.Rows[i][10].ToString());
-				//ListAll[i].PlanNum      = PIn.PInt   (table.Rows[i][11].ToString());//random
+				ListAll[i].EmployerNum    = PIn.PInt   (table.Rows[i][0].ToString());
+				ListAll[i].GroupName      = PIn.PString(table.Rows[i][1].ToString());
+				ListAll[i].GroupNum       = PIn.PString(table.Rows[i][2].ToString());
+				ListAll[i].CarrierNum     = PIn.PInt   (table.Rows[i][3].ToString());
+				ListAll[i].PlanType       = PIn.PString(table.Rows[i][4].ToString());
+				ListAll[i].UseAltCode     = PIn.PBool  (table.Rows[i][5].ToString());
+				ListAll[i].ClaimsUseUCR   = PIn.PBool  (table.Rows[i][6].ToString());
+				ListAll[i].FeeSched       = PIn.PInt   (table.Rows[i][7].ToString());
+				ListAll[i].CopayFeeSched  = PIn.PInt   (table.Rows[i][8].ToString());
+				ListAll[i].ClaimFormNum   = PIn.PInt   (table.Rows[i][9].ToString());
+				ListAll[i].AllowedFeeSched= PIn.PInt   (table.Rows[i][10].ToString());
+				ListAll[i].NumberPlans    = PIn.PInt   (table.Rows[i][11].ToString());
+				//ListAll[i].PlanNum      = PIn.PInt   (table.Rows[i][12].ToString());//random
 			}
 			return ListAll;
 		}	

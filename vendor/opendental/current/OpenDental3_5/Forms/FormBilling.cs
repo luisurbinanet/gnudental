@@ -8,6 +8,7 @@ namespace OpenDental{
 ///<summary></summary>
 	public class FormBilling : System.Windows.Forms.Form{
 		private OpenDental.UI.Button butCancel;
+		private OpenDental.ContrAccount contrAccount1;
 		private OpenDental.UI.Button butAll;
 		private OpenDental.UI.Button butNone;
 		private OpenDental.TableBilling tbBill;
@@ -40,6 +41,7 @@ namespace OpenDental{
 		private void InitializeComponent(){
 			this.butCancel = new OpenDental.UI.Button();
 			this.butPrint = new OpenDental.UI.Button();
+			this.contrAccount1 = new OpenDental.ContrAccount();
 			this.butNone = new OpenDental.UI.Button();
 			this.butAll = new OpenDental.UI.Button();
 			this.tbBill = new OpenDental.TableBilling();
@@ -76,6 +78,14 @@ namespace OpenDental{
 			this.butPrint.TabIndex = 0;
 			this.butPrint.Text = "&Print";
 			this.butPrint.Click += new System.EventHandler(this.butPrint_Click);
+			// 
+			// contrAccount1
+			// 
+			this.contrAccount1.Location = new System.Drawing.Point(-56, 102);
+			this.contrAccount1.Name = "contrAccount1";
+			this.contrAccount1.Size = new System.Drawing.Size(916, 494);
+			this.contrAccount1.TabIndex = 20;
+			this.contrAccount1.Visible = false;
 			// 
 			// butNone
 			// 
@@ -151,6 +161,7 @@ namespace OpenDental{
 			this.Controls.Add(this.tbBill);
 			this.Controls.Add(this.butNone);
 			this.Controls.Add(this.butAll);
+			this.Controls.Add(this.contrAccount1);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butPrint);
 			this.MaximizeBox = false;

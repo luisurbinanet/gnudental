@@ -103,6 +103,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Label labelIncomplete;
 		///<summary>List of all payments (not paysplits) that this procedure is attached to.</summary>
 		private Payment[] PaymentsForProc;
+		private User user;
 
 		///<summary>Inserts are no longer done within this dialog, but must be done ahead of time from outside.You must specify a procedure to edit, and only the changes that are made in this dialog get saved.  Only used when double click in Account, Chart, TP, and in ContrChart.AddProcedure().  The procedure may be deleted if new and user hits Cancel.</summary>
 		public FormProcEdit(Procedure proc,Patient patCur,Family famCur,InsPlan[] planList){
@@ -293,7 +294,7 @@ namespace OpenDental{
 			// 
 			this.label6.Location = new System.Drawing.Point(166, 10);
 			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(280, 16);
+			this.label6.Size = new System.Drawing.Size(254, 16);
 			this.label6.TabIndex = 13;
 			this.label6.Text = "Procedure Description:";
 			// 
@@ -1138,13 +1139,19 @@ namespace OpenDental{
 			}
 			else{
 				if(ProcCur.ProcStatus==ProcStat.C){
-					if(!UserPermissions.CheckUserPassword("Procedure Completed Edit",ProcCur.ProcDate)){
-						//MessageBox.Show(Lan.g(this,"You only have permission to view the Procedure. No changes will be saved"));
-						butOK.Enabled=false;//use this state to cascade permission to any form openned from here
-						butDelete.Enabled=false;
-						butChange.Enabled=false;
-						butEditAnyway.Enabled=false;
-					}					
+					if(Permissions.AuthorizationRequired("Procedure Completed Edit",ProcCur.ProcDate)){
+						user=Users.Authenticate("Procedure Completed Edit");
+						if(user==null){
+							DialogResult=DialogResult.Cancel;
+							return;
+						}
+						if(!UserPermissions.IsAuthorized("Procedure Completed Edit",user)){
+							butOK.Enabled=false;//use this state to cascade permission to any form openned from here
+							butDelete.Enabled=false;
+							butChange.Enabled=false;
+							butEditAnyway.Enabled=false;
+						}
+					}			
 				}
 			}
 			ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
@@ -1558,9 +1565,10 @@ namespace OpenDental{
 
 		private void butAddAdjust_Click(object sender, System.EventArgs e) {
 			Adjustment adj=new Adjustment();
-			adj.AdjDate=DateTime.Today;
 			adj.PatNum=PatCur.PatNum;
 			adj.ProvNum=ProcCur.ProvNum;
+			//adj.DateEntry=DateTime.Today;//but will get overwritten to server date
+			adj.AdjDate=DateTime.Today;
 			adj.ProcDate=ProcCur.ProcDate;
 			adj.ProcNum=ProcCur.ProcNum;
 			FormAdjust FormA=new FormAdjust(PatCur,adj);
@@ -1980,7 +1988,7 @@ namespace OpenDental{
 			Recalls.Synch(ProcCur.PatNum);
 			if(!IsNew){
 				if(ProcOld.ProcStatus==ProcStat.C){
-					SecurityLogs.MakeLogEntry("Procedure Completed Edit","PatNum:"+ProcCur.PatNum.ToString());
+					SecurityLogs.MakeLogEntry("Procedure Completed Edit","PatNum:"+ProcCur.PatNum.ToString(),user);
 				}
 			}
 			ProcOld=ProcCur.Copy();//in case we now make more changes.
@@ -2001,25 +2009,25 @@ namespace OpenDental{
 				}
 				if(ProcCur.Surf=="U"){
 					verifyADA=AutoCodeItems.VerifyCode
-						(ProcCur.ADACode,"1","",false,PatCur.PatNum);//max
+						(ProcCur.ADACode,"1","",false,PatCur.PatNum,PatCur.Age);//max
 				}
 				else{
 					verifyADA=AutoCodeItems.VerifyCode
-						(ProcCur.ADACode,"32","",false,PatCur.PatNum);//mand
+						(ProcCur.ADACode,"32","",false,PatCur.PatNum,PatCur.Age);//mand
 				}
 			}
 			else if(ProcedureCode2.TreatArea==TreatmentArea.ToothRange){
 				//test for max or mand.
 				if(listBoxTeeth.SelectedItems.Count<1)
 					verifyADA=AutoCodeItems.VerifyCode
-						(ProcCur.ADACode,"32","",false,PatCur.PatNum);//mand
+						(ProcCur.ADACode,"32","",false,PatCur.PatNum,PatCur.Age);//mand
 				else
 					verifyADA=AutoCodeItems.VerifyCode
-						(ProcCur.ADACode,"1","",false,PatCur.PatNum);//max
+						(ProcCur.ADACode,"1","",false,PatCur.PatNum,PatCur.Age);//max
 			}
 			else{//surf or tooth
 				verifyADA=AutoCodeItems.VerifyCode
-					(ProcCur.ADACode,ProcCur.ToothNum,ProcCur.Surf,false,PatCur.PatNum);
+					(ProcCur.ADACode,ProcCur.ToothNum,ProcCur.Surf,false,PatCur.PatNum,PatCur.Age);
 			}
 			if(ProcCur.ADACode!=verifyADA){
 				string desc=ProcedureCodes.GetProcCode(verifyADA).Descript;
@@ -2041,7 +2049,7 @@ namespace OpenDental{
 				ProcCur.Update(ProcOld);
 				Recalls.Synch(ProcCur.PatNum);
 				if(ProcCur.ProcStatus==ProcStat.C){
-					SecurityLogs.MakeLogEntry("Procedure Completed Edit","PatNum:"+ProcCur.PatNum.ToString());
+					SecurityLogs.MakeLogEntry("Procedure Completed Edit","PatNum:"+ProcCur.PatNum.ToString(),user);
 				}
 			}
       DialogResult=DialogResult.OK;

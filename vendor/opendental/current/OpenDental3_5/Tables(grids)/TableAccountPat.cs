@@ -44,7 +44,7 @@ namespace OpenDental{
 			LayoutTables();
 		}
 
-			///<summary></summary>
+		///<summary></summary>
 		public void InstantClasses(){
 			MaxRows=10;
 			MaxCols=2;

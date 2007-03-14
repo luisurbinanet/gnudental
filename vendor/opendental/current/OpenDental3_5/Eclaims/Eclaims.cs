@@ -89,6 +89,12 @@ namespace OpenDental.Eclaims
 						//continue;
 					}
 				}
+				else if(Clearinghouses.List[i].CommBridge==EclaimsCommBridge.AOS){ // added by SPK 7/13/05
+					if(!AOS.Launch(Clearinghouses.List[i],batchNum)){
+						MessageBox.Show("Claim file created, but could not launch AOS Communicator.");
+						//continue;
+					}
+				}
 				//----------------------------------------------------------------------------------------
 				//finally, change the claim statuses to Probably sent.
 				for(int j=0;j<claimsByCHouse[i].Count;j++){

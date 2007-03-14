@@ -35,6 +35,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label7;
 		private OpenDental.ValidDate textAdjDate;
 		private Adjustment AdjustmentCur;
+		private User user;
 
 		///<summary></summary>
 		public FormAdjust(Patient patCur,Adjustment adjustmentCur){
@@ -275,14 +276,14 @@ namespace OpenDental{
 		#endregion
 
 		private void FormAdjust_Load(object sender, System.EventArgs e) {
-			if(IsNew){
-				//
-			}
-			else{				
-				if(!UserPermissions.CheckUserPassword("Adjustment Edit",AdjustmentCur.AdjDate)){
-					butOK.Enabled=false;
-					butDelete.Enabled=false;
-				}					
+			if(!IsNew){		
+				if(Permissions.AuthorizationRequired("Adjustment Edit",AdjustmentCur.AdjDate)){
+					user=Users.Authenticate("Adjustment Edit");
+					if(!UserPermissions.IsAuthorized("Adjustment Edit",user)){
+						butOK.Enabled=false;
+						butDelete.Enabled=false;
+					}
+				}
 			}
 			textAdjDate.Text=AdjustmentCur.AdjDate.ToShortDateString();
 			textProcDate.Text=AdjustmentCur.ProcDate.ToShortDateString();
@@ -369,8 +370,7 @@ namespace OpenDental{
 			}
 			else{
 				AdjustmentCur.Update();
-		  	SecurityLogs.MakeLogEntry("Adjustment Edit","Adjustment edited for patient "
-					+AdjustmentCur.PatNum.ToString());
+		  	SecurityLogs.MakeLogEntry("Adjustment Edit","Adjustment edited for patient "+AdjustmentCur.PatNum.ToString(),user);
 			}
 			DialogResult=DialogResult.OK;
 		}
@@ -380,7 +380,7 @@ namespace OpenDental{
 				DialogResult=DialogResult.Cancel;
 			}
 			else{
-				SecurityLogs.MakeLogEntry("Adjustment Edit","Delete. patNum: "+AdjustmentCur.PatNum.ToString());
+				SecurityLogs.MakeLogEntry("Adjustment Edit","Delete. patNum: "+AdjustmentCur.PatNum.ToString(),user);
 				AdjustmentCur.Delete();
 				DialogResult=DialogResult.OK;
 			}

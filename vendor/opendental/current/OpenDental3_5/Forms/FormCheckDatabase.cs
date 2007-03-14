@@ -184,7 +184,8 @@ namespace OpenDental
 			this.checkDates.Name = "checkDates";
 			this.checkDates.Size = new System.Drawing.Size(709, 24);
 			this.checkDates.TabIndex = 10;
-			this.checkDates.Text = "Fix any invalid dates.";
+			this.checkDates.Text = "Fix any invalid dates.  This will speed up the program after converting from anot" +
+				"her dental software.";
 			// 
 			// checkInsPlans
 			// 

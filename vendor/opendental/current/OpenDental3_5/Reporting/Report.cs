@@ -376,18 +376,22 @@ namespace OpenDental.Reporting
 			parameterFields.Add(new ParameterField(myName,myValueType,myDefaultValues,myPromptingText,mySnippet,myDefCategory));
 		}
 
+		/// <summary>Overload for ValueKind defCat.</summary>
+		public void AddParameter(string myName,FieldValueType myValueType
+			,ArrayList myDefaultValues,string myPromptingText,string mySnippet,ReportFKType myReportFKType){
+			parameterFields.Add(new ParameterField(myName,myValueType,myDefaultValues,myPromptingText,mySnippet,myReportFKType));
+		}
+
 		///<summary>Submits the Query to the database and fills ReportTable with the results.  Returns false if the user clicks Cancel on the Parameters dialog.</summary>
 		public bool SubmitQuery(){
-			//djc moved variable declaration from mid-function
-			string outputQuery=Query;
-			//djc only display parameter dialog if parameters were specified
-			if(parameterFields.Count>0){
+			string outputQuery=Query;			
+			if(parameterFields.Count>0){//djc only display parameter dialog if parameters were specified
 				//display a dialog for user to enter parameters
 				FormParameterInput FormPI=new FormParameterInput();
 				for(int i=0;i<parameterFields.Count;i++){
 					FormPI.AddInputItem(parameterFields[i].PromptingText,parameterFields[i].ValueType
 						,parameterFields[i].DefaultValues,parameterFields[i].EnumerationType
-						,parameterFields[i].DefCategory);
+						,parameterFields[i].DefCategory,parameterFields[i].FKeyType);
 				}
 				FormPI.ShowDialog();
 				if(FormPI.DialogResult!=DialogResult.OK){
@@ -411,6 +415,7 @@ namespace OpenDental.Reporting
 				}
 				//then, submit the query
 			}
+			//MessageBox.Show(outputQuery);
 			reportTable=ODReportData.SubmitQuery(outputQuery);
 			return true;
 		}

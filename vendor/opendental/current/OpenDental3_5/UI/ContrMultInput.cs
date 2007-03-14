@@ -117,16 +117,25 @@ namespace OpenDental.UI
 			panelMain.Height=Height-2;
 			vScrollBar2.Visible=false;
 			panelSlide.Width=Width-2;
-			if(!ArrangeControls(g)){//if the controls were too big to fit
+			int maxH=200;//600
+			int requiredH=ArrangeControls(g);
+			if(requiredH>Height-2 && requiredH<maxH){//resize, but no scrollbar
+				//this should be skipped on second pass because height adequate
+				Height=requiredH+2;
+				ResumeLayout();
+				return;//Layout will be triggered again
+			}
+			if(requiredH>Height-2){//if the controls were too big to fit even with H at max
 				vScrollBar2.Visible=true;
 				panelSlide.Width-=vScrollBar2.Width;
-				ArrangeControls(g);//then layout again
+				ArrangeControls(g);//then layout again, but we don't care about the H
 			}
 			g.Dispose();
 			ResumeLayout();
 		}
 
-		private bool ArrangeControls(Graphics g){
+		/// <summary>Returns the required height.</summary>
+		private int ArrangeControls(Graphics g){
 			//calculate width of input section
 			int inputW=300;//the widest allowed for the input section on the right.
 			if(panelSlide.Width<600){
@@ -214,6 +223,24 @@ namespace OpenDental.UI
 					inputs[i].Size=new Size(inputW-5,20);
 					panelSlide.Controls.Add(inputs[i]);
 				}
+				else if(multInputItems[i].ValueType==FieldValueType.ForeignKey){
+					//add a psuedo combobox filled with values from one table
+					inputs[i]=new ComboBoxMulti();
+					//these two arrays are matched item for item
+					string[] foreignRows=GetFRows(multInputItems[i].FKType);
+					int[] foreignKeys=GetFKeys(multInputItems[i].FKType);
+					for(int j=0;j<foreignRows.Length;j++){
+						((ComboBoxMulti)inputs[i]).Items.Add(foreignRows[j]);
+						if(multInputItems[i].CurrentValues.Count > 0
+							&& multInputItems[i].CurrentValues.Contains(foreignKeys[j])  )
+						{
+							((ComboBoxMulti)inputs[i]).SetSelected(j,true);
+						}
+					}
+					inputs[i].Location=new Point(promptW,yPos+(itemH-20)/2);
+					inputs[i].Size=new Size(inputW-5,20);
+					panelSlide.Controls.Add(inputs[i]);
+				}
 				else if(multInputItems[i].ValueType==FieldValueType.Integer){
 					//add a validNumber box
 					inputs[i]=new ValidNumber();
@@ -257,14 +284,40 @@ namespace OpenDental.UI
 				}
 				yPos+=itemH+5;
 				if(yPos>panelMain.Height && !vScrollBar2.Visible)
-					return false;//There's not enough room, so stop and make the scrollbar visible.
+					return yPos;//There's not enough room, so stop and make the scrollbar visible.
 			}
 			panelSlide.Height=yPos;
 			vScrollBar2.Maximum=panelSlide.Height;
 			vScrollBar2.Minimum=0;
 			vScrollBar2.LargeChange=panelMain.Height;
 			vScrollBar2.SmallChange=5;
-			return true;
+			return -1;
+		}
+
+		private string[] GetFRows(ReportFKType fKType){
+			string[] retVal=new string[0];
+			switch(fKType){
+				case ReportFKType.SchoolClass:
+					retVal=new string[SchoolClasses.List.Length];
+					for(int i=0;i<SchoolClasses.List.Length;i++){
+						retVal[i]=SchoolClasses.List[i].GradYear+" - "+SchoolClasses.List[i].Descript;
+					}
+					break;
+			}
+			return retVal;
+		}
+
+		private int[] GetFKeys(ReportFKType fKType){
+			int[] retVal=new int[0];
+			switch(fKType){
+				case ReportFKType.SchoolClass:
+					retVal=new int[SchoolClasses.List.Length];
+					for(int i=0;i<SchoolClasses.List.Length;i++){
+						retVal[i]=SchoolClasses.List[i].SchoolClassNum;
+					}
+					break;
+			}
+			return retVal;
 		}
 
 		private void vScrollBar2_Scroll(object sender, System.Windows.Forms.ScrollEventArgs e) {
@@ -293,8 +346,8 @@ namespace OpenDental.UI
     }
 
 		/// <summary></summary>
-		public void AddInputItem(string promptingText,FieldValueType valueType,ArrayList currentValues,EnumType enumerationType,DefCat defCategory){
-			multInputItems.Add(new MultInputItem(promptingText,valueType,currentValues,enumerationType,defCategory));
+		public void AddInputItem(string promptingText,FieldValueType valueType,ArrayList currentValues,EnumType enumerationType,DefCat defCategory,ReportFKType fKType){
+			multInputItems.Add(new MultInputItem(promptingText,valueType,currentValues,enumerationType,defCategory,fKType));
 		}
 
 		/// <summary>Overload for just one simple value.</summary>
@@ -302,21 +355,21 @@ namespace OpenDental.UI
 			ArrayList currentValues=new ArrayList();
 			currentValues.Add(currentValue);
 			//the enumtype and defcat are completely arbitrary.
-			multInputItems.Add(new MultInputItem(promptingText,valueType,currentValues,EnumType.ApptStatus,DefCat.AccountColors));
+			multInputItems.Add(new MultInputItem(promptingText,valueType,currentValues,EnumType.ApptStatus,DefCat.AccountColors,ReportFKType.None));
 		}
 
 		/// <summary>Overload for using DefCat.</summary>
 		public void AddInputItem(string promptingText,FieldValueType valueType,ArrayList currentValues,DefCat defCategory){
 			if(currentValues==null)
 				currentValues=new ArrayList();
-			multInputItems.Add(new MultInputItem(promptingText,valueType,currentValues,EnumType.ApptStatus,defCategory));
+			multInputItems.Add(new MultInputItem(promptingText,valueType,currentValues,EnumType.ApptStatus,defCategory,ReportFKType.None));
 		}
 
 		/// <summary>Overload for using Enum.</summary>
 		public void AddInputItem(string promptingText,FieldValueType valueType,ArrayList currentValues,EnumType enumerationType){
 			if(currentValues==null)
 				currentValues=new ArrayList();
-			multInputItems.Add(new MultInputItem(promptingText,valueType,currentValues,enumerationType,DefCat.AccountColors));
+			multInputItems.Add(new MultInputItem(promptingText,valueType,currentValues,enumerationType,DefCat.AccountColors,ReportFKType.None));
 		}
 
 		private void ContrMultInput_Paint(object sender, System.Windows.Forms.PaintEventArgs e) {
@@ -402,12 +455,13 @@ namespace OpenDental.UI
 	///<summary>A single input item in the ContrMultInput control.</summary>
 	public struct MultInputItem{
 		/// <summary></summary>
-		public MultInputItem(string promptingText,FieldValueType valueType,ArrayList currentValues,EnumType enumerationType,DefCat defCategory){
+		public MultInputItem(string promptingText,FieldValueType valueType,ArrayList currentValues,EnumType enumerationType,DefCat defCategory,ReportFKType fKType){
 			PromptingText=promptingText;
 			ValueType=valueType;
 			CurrentValues=currentValues;
 			EnumerationType=enumerationType;
 			DefCategory=defCategory;
+			FKType=fKType;
 		}
 
 		///<summary>The text that prompts the user what information to enter.</summary>
@@ -420,6 +474,8 @@ namespace OpenDental.UI
 		public EnumType EnumerationType;
 		///<summary>If ValueKind is DefParameter, then this specifies which DefCat.</summary>
 		public DefCat DefCategory;
+		///<summary>If ValueKind is Foreign key, then this specifies which table.</summary>
+		public ReportFKType FKType;
 	}
 
 	///<summary>Strongly typed collection of type MultInputItems.</summary>

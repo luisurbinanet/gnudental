@@ -313,9 +313,9 @@ namespace OpenDental{
 			// 
 			// labelPlaceService
 			// 
-			this.labelPlaceService.Location = new System.Drawing.Point(735, 5);
+			this.labelPlaceService.Location = new System.Drawing.Point(735, 8);
 			this.labelPlaceService.Name = "labelPlaceService";
-			this.labelPlaceService.Size = new System.Drawing.Size(151, 40);
+			this.labelPlaceService.Size = new System.Drawing.Size(156, 37);
 			this.labelPlaceService.TabIndex = 44;
 			this.labelPlaceService.Text = "Default Proc Place Service";
 			this.labelPlaceService.TextAlign = System.Drawing.ContentAlignment.BottomLeft;

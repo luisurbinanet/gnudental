@@ -119,7 +119,7 @@ namespace OpenDental{
 			for(int i=0;i<dataFields.Length;i++){
 				Cur.DataFields.Add(dataFields[i]);
 			}
-	//todo: sections
+//incomplete: sections
 			Cur.ReportObjects=ReportObjects.GetForReport();
 			Cur.ParameterFields=ReportParameters.GetForReport();
 			Cur.ReportMargins=new Margins(CurStruct.MarginL,CurStruct.MarginR
@@ -137,7 +137,7 @@ namespace OpenDental{
 			//The Cur Struct will already correspond to the Cur Report,
 			//since the report was created from the struct. (I think)
 			CurStruct.DataFields="";
-//todo: validate user input and strip commas from datafields
+//incomplete: validate user input and strip commas from datafields
 			for(int i=0;i<Cur.DataFields.Count;i++){
 				if(i>0) CurStruct.DataFields+=",";
 				CurStruct.DataFields+=Cur.DataFields[i].ToString();

@@ -84,6 +84,8 @@ namespace OpenDental{
 		public int CarrierNum;
 		///<summary>Foreign key to Definition.DefNum. This fee schedule holds amounts allowed by carriers.</summary>
 		public int AllowedFeeSched;
+		///<summary></summary>
+		public string TrojanID;
 		///<summary>This is NOT a database column.  It is just used to display the number of plans with the same info.</summary>
 		public int NumberPlans;
 
@@ -117,6 +119,7 @@ namespace OpenDental{
 			p.EmployerNum=EmployerNum;
 			p.CarrierNum=CarrierNum;
 			p.AllowedFeeSched=AllowedFeeSched;
+			p.TrojanID=TrojanID;
 			return p;
 		}
 
@@ -129,7 +132,7 @@ namespace OpenDental{
 				+"flotoage,plannote,misstoothexcl,majorwait,feesched,"
 				+"releaseinfo,assignben,plantype,claimformnum,usealtcode,"
 				+"claimsuseucr,iswrittenoff,copayfeesched,subscriberid,"
-				+"EmployerNum,CarrierNum,AllowedFeeSched) VALUES("
+				+"EmployerNum,CarrierNum,AllowedFeeSched,TrojanID) VALUES("
 				+"'"+POut.PInt   (Subscriber)+"', "
 				+"'"+POut.PString(Carrier)+"', "
 				+"'"+POut.PDate  (DateEffective)+"', "
@@ -166,7 +169,8 @@ namespace OpenDental{
 				+"'"+POut.PString(SubscriberID)+"', "
 				+"'"+POut.PInt   (EmployerNum)+"', "
 				+"'"+POut.PInt   (CarrierNum)+"', "
-				+"'"+POut.PInt   (AllowedFeeSched)+"')";
+				+"'"+POut.PInt   (AllowedFeeSched)+"', "
+				+"'"+POut.PString(TrojanID)+"')";
 			DataConnection dcon=new DataConnection();
  			dcon.NonQ(command,true);
 			PlanNum=dcon.InsertID;
@@ -212,6 +216,7 @@ namespace OpenDental{
 				+ ",EmployerNum = '"  +POut.PInt   (EmployerNum)+"'"
 				+ ",CarrierNum = '"   +POut.PInt   (CarrierNum)+"'"
 				+ ",AllowedFeeSched='"+POut.PInt   (AllowedFeeSched)+"'"
+				+ ",TrojanID='"       +POut.PString(TrojanID)+"'"
 				+" WHERE PlanNum = '" +POut.PInt(PlanNum)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
@@ -343,7 +348,8 @@ namespace OpenDental{
 				+"AND insplan.FeeSched = '"       +POut.PInt   (FeeSched)+"' "
 				+"AND insplan.CopayFeeSched = '"  +POut.PInt   (CopayFeeSched)+"' "
 				+"AND insplan.ClaimFormNum = '"   +POut.PInt   (ClaimFormNum)+"' "
-				+"AND insplan.AllowedFeeSched = '"+POut.PInt   (AllowedFeeSched)+"'";
+				+"AND insplan.AllowedFeeSched = '"+POut.PInt   (AllowedFeeSched)+"' "
+				+"AND insplan.TrojanID = '"       +POut.PString(TrojanID)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
 			DataTable table=dcon.GetTable(command);

@@ -49,7 +49,7 @@ namespace OpenDental{
 				MsgBox.Show(this,"Cannot convert this database version which was only for development purposes.");
 				return false;
 			}
-			if(FromVersion < new Version("3.4.30.0")){
+			if(FromVersion < new Version("3.5.6.0")){
 				if(MessageBox.Show(Lan.g(this,"Your database will now be converted")+"\r"
 					+Lan.g(this,"from version")+" "+FromVersion.ToString()+"\r"
 					+Lan.g(this,"to version")+" "+ToVersion.ToString()+"\r"
@@ -67,7 +67,7 @@ namespace OpenDental{
 				try{
 					MakeABackup();
 				}
-				catch(Exception e){
+				catch(Exception e){//this never happens because the exception is caught much earlier.
 					if(e.Message!=""){
 						MessageBox.Show(e.Message);
 					}
@@ -126,7 +126,7 @@ namespace OpenDental{
 
 		///<summary>Backs up the database to the same directory as the original just in case the user did not have sense enough to do a backup first.</summary>
 		public void MakeABackup(){
-			string oldDb=FormConfig.Database;
+			string oldDb=FormChooseDatabase.Database;
 			string newDb=oldDb+"backup_"+DateTime.Today.ToString("MM_dd_yyyy");
 			DataConnection dcon=new DataConnection();
 			string command="SHOW DATABASES";
@@ -145,7 +145,7 @@ namespace OpenDental{
 				}
 				while(Contains(databases,newDb));
 			}
-			command="CREATE DATABASE "+newDb;
+			command="CREATE DATABASE "+newDb+" CHARACTER SET utf8";
 			dcon.NonQ(command);
 			command="SHOW TABLES";
 			table=dcon.GetTable(command);
@@ -1795,6 +1795,9 @@ namespace OpenDental{
 					+"'"+((int)ToolBarsAvail.ChartModule).ToString()+"', "
 					+"'HouseCalls')";
 				dcon.NonQ(command);
+				//Delete program links for WebClaim and Renaissance--------------------------------------
+
+
 				//Final cleanup-------------------------------------------------------------------------
 				command="UPDATE preference SET ValueString = '3.4.0.0' WHERE PrefName = 'DataBaseVersion'";
 				dcon.NonQ(command);
@@ -1936,30 +1939,148 @@ namespace OpenDental{
 				};
 				dcon.NonQ(commands);
 			}
-			To3_4_30();
+			To3_5_0();
 		}
 
-		private void To3_4_30(){
-			if(FromVersion < new Version("3.4.30.0")){
+		private void To3_5_0(){
+			if(FromVersion < new Version("3.5.0.0")){
+				ExecuteFile(@"ConversionFiles\convert_3_5_0.txt");//Might throw an exception which we handle.
+				//Add patient picture category to images
+				DataConnection dcon=new DataConnection();
+				string command="SELECT MAX(ItemOrder) FROM definition WHERE Category=18";
+				DataTable table=dcon.GetTable(command);
+				int lastI=PIn.PInt(table.Rows[0][0].ToString());
+				command="INSERT INTO definition(Category,ItemOrder,ItemName,ItemValue) "
+					+"VALUES(18,"+POut.PInt(lastI+1)+",'Patient Pictures','P')";
+				dcon.NonQ(command);
+				//ImageFX link-----------------------------------------------------------------------
+				command="INSERT INTO program (ProgName,ProgDesc,Enabled,Path,CommandLine,Note"
+					+") VALUES("
+					+"'ImageFX', "
+					+"'ImageFX from scican.com', "
+					+"'0', "
+					+"'"+POut.PString(@"C:\ImageFX\ImageFX.exe")+"', "
+					+"'', "
+					+"'"+POut.PString(@"Typical file path is C:\ImageFX\ImageFX.exe")+"')";
+				dcon.NonQ(command,true);
+				int programNum=dcon.InsertID;//we now have a ProgramNum to work with
+				command="INSERT INTO programproperty (ProgramNum,PropertyDesc,PropertyValue"
+					+") VALUES("
+					+"'"+programNum.ToString()+"', "
+					+"'Enter 0 to use PatientNum, or 1 to use ChartNum', "
+					+"'0')";
+				dcon.NonQ(command);
+				command="INSERT INTO toolbutitem (ProgramNum,ToolBar,ButtonText) "
+					+"VALUES ("
+					+"'"+programNum.ToString()+"', "
+					+"'"+((int)ToolBarsAvail.ChartModule).ToString()+"', "
+					+"'ImageFX')";
+				dcon.NonQ(command);
+				//fix the provider ID field----------------------------------------------------------------
+				command="SELECT ClaimFormNum FROM claimform WHERE UniqueID='OD1'";
+				table=dcon.GetTable(command);
+				if(table.Rows.Count>0){
+					command="UPDATE claimformitem SET FieldName='BillingDentistProviderID' WHERE FieldName='BillingDentistMedicaidID' "
+						+"AND ClaimFormNum="+table.Rows[0][0].ToString();
+					dcon.NonQ(command);
+				}
+				command=
+					"UPDATE preference SET ValueString = '3.5.0.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To3_5_1();
+		}
+
+		private void To3_5_1(){
+			if(FromVersion < new Version("3.5.1.0")){
+				DataConnection dcon=new DataConnection();
 				string[] commands=new string[]
 				{
-					"DELETE FROM schedule WHERE Status=0 AND StartTime=StopTime"
-					,"UPDATE preference SET ValueString = '3.4.30.0' WHERE PrefName = 'DataBaseVersion'"
+					"ALTER TABLE schedule CHANGE Note Note TEXT NOT NULL"
+					,"UPDATE preference SET ValueString = '3.5.1.0' WHERE PrefName = 'DataBaseVersion'"
 				};
-				DataConnection dcon=new DataConnection();
 				dcon.NonQ(commands);
 			}
-			//To3_4_30();
+			To3_5_3();
 		}
 
+		private void To3_5_3(){
+			if(FromVersion < new Version("3.5.3.0")){
+				DataConnection dcon=new DataConnection();
+				//DentForms link-----------------------------------------------------------------------
+				string command="INSERT INTO program (ProgName,ProgDesc,Enabled,Path,CommandLine,Note"
+					+") VALUES("
+					+"'DentForms', "
+					+"'DentForms from medictalk.com', "
+					+"'0', "
+					+"'"+POut.PString(@"C:\MedicTalk\reports\mtconnector.exe")+"', "
+					+"'', "
+					+"'"+POut.PString(@"No command line is needed.  Typical path is C:\MedicTalk\reports\mtconnector.exe")+"')";
+				dcon.NonQ(command,true);
+				int programNum=dcon.InsertID;//we now have a ProgramNum to work with
+				command="INSERT INTO programproperty (ProgramNum,PropertyDesc,PropertyValue"
+					+") VALUES("
+					+"'"+programNum.ToString()+"', "
+					+"'Enter 0 to use PatientNum, or 1 to use ChartNum', "
+					+"'0')";
+				dcon.NonQ(command);
+				command="INSERT INTO toolbutitem (ProgramNum,ToolBar,ButtonText) "
+					+"VALUES ("
+					+"'"+programNum.ToString()+"', "
+					+"'"+((int)ToolBarsAvail.ChartModule).ToString()+"', "
+					+"'DentForms')";
+				dcon.NonQ(command);
+				command="UPDATE tasklist SET DateType=0 WHERE Parent !=0";
+				dcon.NonQ(command);
+				command="UPDATE task SET DateType=0, TaskStatus=0 WHERE TaskListNum !=0";
+				dcon.NonQ(command);
+				command=
+					"UPDATE preference SET ValueString = '3.5.3.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To3_5_6();
+		}
+
+		private void To3_5_6(){
+			if(FromVersion < new Version("3.5.6.0")){
+				DataConnection dcon=new DataConnection();
+				string[] commands=new string[]
+					{
+						"ALTER TABLE procedurecode CHANGE ADACode ADACode varchar(15) character set utf8 collate utf8_bin NOT NULL"
+						,"ALTER TABLE procedurecode DEFAULT character set utf8"
+						,"ALTER TABLE procedurecode MODIFY Descript varchar(255) character set utf8 NOT NULL"
+						,"ALTER TABLE procedurecode MODIFY AbbrDesc varchar(50) character set utf8 NOT NULL"
+						,"ALTER TABLE procedurecode MODIFY ProcTime varchar(24) character set utf8 NOT NULL"
+						,"ALTER TABLE procedurecode MODIFY DefaultNote text character set utf8 NOT NULL"
+						,"ALTER TABLE procedurecode MODIFY AlternateCode1 varchar(15) character set utf8 NOT NULL"
+						,"ALTER TABLE procedurelog MODIFY ADACode varchar(15) character set utf8 collate utf8_bin NOT NULL"
+						,"ALTER TABLE autocodeitem MODIFY ADACode varchar(15) character set utf8 collate utf8_bin NOT NULL"
+						,"ALTER TABLE procbuttonitem MODIFY ADACode varchar(15) character set utf8 collate utf8_bin NOT NULL"
+						,"ALTER TABLE covspan MODIFY FromCode varchar(15) character set utf8 collate utf8_bin NOT NULL"
+						,"ALTER TABLE covspan MODIFY ToCode varchar(15) character set utf8 collate utf8_bin NOT NULL"
+						,"ALTER TABLE fee MODIFY ADACode varchar(15) character set utf8 collate utf8_bin NOT NULL"
+					};
+				dcon.NonQ(commands);
+				commands=new string[]
+				{
+					//AOS DATA clearinghouse----------------------------------------ADDED by SPK 7/13/05----------------------
+					"INSERT INTO clearinghouse(Description,ExportPath,IsDefault,Payors,Eformat,ReceiverID,"
+					+"SenderID,Password,ResponsePath,CommBridge,ClientProgram) "
+					+@"VALUES('AOS Data systems','C:\\Program Files\\AOS\\','0','','1','AOS','','',"
+					+@"'C:\\Program Files\\AOS\\','7','C:\\Program Files\\AOS\\AOSCommunicator\\AOSCommunicator.exe')"
+ 				};
+				dcon.NonQ(commands);
+				string command="UPDATE preference SET ValueString = '3.5.6.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			//To3_5_??();
+		}
 
 
 
 	}
+
 }
-
-
-
 
 
 

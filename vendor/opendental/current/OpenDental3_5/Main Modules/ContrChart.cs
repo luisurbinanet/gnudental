@@ -1492,9 +1492,12 @@ namespace OpenDental{
 		}
 
 		private void OnRx_Click(){
-			if(!UserPermissions.CheckUserPassword("Prescription Create")){
-				MessageBox.Show(Lan.g(this,"You do not have Permission to Add Prescriptions"));
-				return;
+			if(Permissions.AuthorizationRequired("Prescription Create")){
+				User user=Users.Authenticate("Prescription Create");
+				if(!UserPermissions.IsAuthorized("Prescription Create",user)){
+					MsgBox.Show(this,"You do not have Permission to Add Prescriptions");
+					return;
+				}	
 			}
 			FormRxSelect FormRS=new FormRxSelect(PatCur);
 			FormRS.ShowDialog();
@@ -2551,11 +2554,18 @@ namespace OpenDental{
 						break;
 					case ProgType.Rx:		
 						RxPats.Cur=(RxPat)RxAL[((ProgLine)ProgLineAL[tbProg.SelectedIndices[i]]).Index];
-						if(UserPermissions.CheckUserPassword("Prescription Edit",RxPats.Cur.RxDate)){		
-							RxPats.DeleteCur();
+						//this needs to be enhanced some day to only ask for a password once for entire loop
+						if(Permissions.AuthorizationRequired("Prescription Edit",RxPats.Cur.RxDate)){
+							User user=Users.Authenticate("Prescription Edit");
+							if(UserPermissions.IsAuthorized("Prescription Edit",user)){
+								RxPats.DeleteCur();
+							}
+							else{
+								rxSkipped++;
+							}
 						}
 						else{
-							rxSkipped++;
+							RxPats.DeleteCur();
 						}
 						break;
 				}//switch
@@ -2929,7 +2939,7 @@ namespace OpenDental{
 					ProcCur=new Procedure();//this will be an insert, so no need to set CurOld
 					ProcCur.ADACode=AutoCodeItems.GetADA
 							(ProcButtonItems.autoCodeList[i],toothNum
-							,surf,isAdditional,PatCur.PatNum);
+							,surf,isAdditional,PatCur.PatNum,PatCur.Age);
 					tArea=ProcedureCodes.GetProcCode(ProcCur.ADACode).TreatArea;
 					if((tArea==TreatmentArea.Arch
 						|| tArea==TreatmentArea.Mouth

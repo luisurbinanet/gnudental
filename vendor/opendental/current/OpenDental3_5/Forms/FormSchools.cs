@@ -92,9 +92,9 @@ namespace OpenDental{
 			// 
 			// listSchools
 			// 
-			this.listSchools.Location = new System.Drawing.Point(12, 30);
+			this.listSchools.Location = new System.Drawing.Point(12, 66);
 			this.listSchools.Name = "listSchools";
-			this.listSchools.Size = new System.Drawing.Size(298, 602);
+			this.listSchools.Size = new System.Drawing.Size(298, 563);
 			this.listSchools.TabIndex = 2;
 			this.listSchools.DoubleClick += new System.EventHandler(this.listSchools_DoubleClick);
 			// 
@@ -134,10 +134,11 @@ namespace OpenDental{
 			// 
 			this.label1.Location = new System.Drawing.Point(11, 5);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(343, 19);
+			this.label1.Size = new System.Drawing.Size(438, 50);
 			this.label1.TabIndex = 73;
-			this.label1.Text = "This is a list of Grade Schools  for Public Health";
-			this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.label1.Text = "This list is usually used in public health.  It may be used for any location purp" +
+				"ose such as grade schools, nursing homes, etc.  It is frequently used when mobil" +
+				"e clinics are used.";
 			// 
 			// FormSchools
 			// 
@@ -155,7 +156,7 @@ namespace OpenDental{
 			this.Name = "FormSchools";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "Schools";
+			this.Text = "Sites";
 			this.Load += new System.EventHandler(this.FormSchools_Load);
 			this.ResumeLayout(false);
 
@@ -211,7 +212,7 @@ namespace OpenDental{
 			Schools.Cur=Schools.List[listSchools.SelectedIndex];
 			string usedBy=Schools.UsedBy(Schools.Cur.SchoolName);
 			if(usedBy != ""){
-				MessageBox.Show(Lan.g(this,"Cannot delete school because it is already in use by the following patients: \r")+usedBy);
+				MessageBox.Show(Lan.g(this,"Cannot delete site because it is already in use by the following patients: \r")+usedBy);
 				return;
 			}
 			Schools.DeleteCur();

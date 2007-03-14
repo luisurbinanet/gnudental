@@ -16,9 +16,7 @@ namespace OpenDental.Eclaims
 		///<summary></summary>
 		public X12()
 		{
-			//
-			// TODO: Add constructor logic here
-			//
+			
 		}
 
 		///<summary>Gets the filename for this batch. Used when saving or when rolling back.</summary>
@@ -178,10 +176,11 @@ namespace OpenDental.Eclaims
 						//2000A HL: Billing/Pay-to provider HL loop
 						seg++;
 						sw.Write("HL*"+HLcount.ToString()+"*");//HL01: Heirarchical ID
-						if(i==0)
+						//this section had a small bug.  this level is not supposed to have HL02 as far as I can tell.
+						//if(i==0 || newTrans)
 							sw.Write("*");//HL02: No parent
-						else
-							sw.Write("0*");//HL02: No parent
+						//else
+						//	sw.Write("0*");//HL02: No parent
 						sw.WriteLine("20*"//HL03: Heirarchical level code. 20=Information source
 							+"1~");//HL04: Heirarchical child code. 1=child HL present
 						Provider billProv=Providers.ListLong[Providers.GetIndexLong((int)claimAr[1,i])];
@@ -293,7 +292,7 @@ namespace OpenDental.Eclaims
 						else{
 							sw.Write("T*");//T=Tertiary
 						}
-//fix: what about Preauth and Cap?
+//todo: what about Cap?
 						if(claimAr[3,i].ToString()==claimAr[2,i].ToString()){//if patient is the subscriber
 							sw.Write("18*");//SBR02: Relationship. 18=self
 						}
@@ -342,7 +341,7 @@ namespace OpenDental.Eclaims
 							sw.WriteLine("N4*"
 								+Sout(subscriber.City,30,2)+"*"//N401: City
 								+Sout(subscriber.State,2,2)+"*"//N402: State
-								+Sout(subscriber.Zip,15,3)+"~");//N403: Zip
+								+Sout(subscriber.Zip.Replace("-",""),15,3)+"~");//N403: Zip
 						//2010BA DMG: Subscr. Demographics. Only if patient is the subscriber
 							seg++;
 							sw.WriteLine("DMG*D8*"//DMG01: use D8
@@ -354,12 +353,17 @@ namespace OpenDental.Eclaims
 						//2010BB: PayerName
 						//2010BB NM1: Name
 						seg++;
-						sw.WriteLine("NM1*PR*"//NM101: PR=Payer
+						sw.Write("NM1*PR*"//NM101: PR=Payer
 							+"2*"//NM102: 2=Non person
 							+Sout(carrier.CarrierName,35)+"*"//NM103: Name
 							+"****"//NM104-07 not used
-							+"PI*"//NM108: PI=PayorID
-							+Sout(carrier.ElectID)+"~");//NM109: PayorID
+							+"PI*");//NM108: PI=PayorID
+						if(carrier.ElectID==""){
+							sw.WriteLine("06126~");//NM109: PayorID
+						}
+						else{
+							sw.WriteLine(Sout(carrier.ElectID)+"~");//NM109: PayorID
+						}
 						//2010BB N3: Carrier Address
 						seg++;
 						sw.Write("N3*"+Sout(carrier.Address,55));//N301: address
@@ -375,7 +379,7 @@ namespace OpenDental.Eclaims
 						sw.WriteLine("N4*"
 							+Sout(carrier.City,30,2)+"*"//N401: City
 							+Sout(carrier.State,2,2)+"*"//N402: State
-							+Sout(carrier.Zip,15,3)+"~");//N403: Zip
+							+Sout(carrier.Zip.Replace("-",""),15,3)+"~");//N403: Zip , SPK
 						parentSubsc=HLcount;
 						HLcount++;
 					}
@@ -402,7 +406,19 @@ namespace OpenDental.Eclaims
 							+"1*"//NM102: 1=Person
 							+Sout(patient.LName,35)+"*"//NM103: Lname
 							+Sout(patient.FName,25)+"*");//NM104: Fname
-						if(patient.SSN==""){
+						//this needs to be rewritten:
+						string patID=patient.SSN;
+						if(claim.ClaimType=="P"){
+							if(patient.PriPatID!=""){
+								patID=patient.PriPatID;
+							}
+						}
+						else if(claim.ClaimType=="S"){
+							if(patient.SecPatID!=""){
+								patID=patient.SecPatID;
+							}
+						}
+						if(patID==""){
 							if(patient.MiddleI==""){
 								sw.WriteLine("~");
 							}
@@ -410,7 +426,7 @@ namespace OpenDental.Eclaims
 								sw.WriteLine(Sout(patient.MiddleI,25)+"~");//NM105: Mid name
 							}
 						}
-						else{//ssn not blank
+						else{//id not blank
 							sw.WriteLine(Sout(patient.MiddleI,25)+"*"//NM105: Mid name (whether or not empty)
 							+"**"//NM106: prefix not used. NM107: No suffix field in Open Dental
 							+"MI*"//NM108: MI=Member ID
@@ -432,7 +448,7 @@ namespace OpenDental.Eclaims
 						sw.WriteLine("N4*"
 							+Sout(patient.City,30)+"*"//N401: City
 							+Sout(patient.State,2)+"*"//N402: State
-							+Sout(patient.Zip,15)+"~");//N403: Zip
+							+Sout(patient.Zip.Replace("-",""),15)+"~");//N403: Zip
 						//2010CA DMG: Patient demographic
 						seg++;
 						sw.WriteLine("DMG*D8*"//DMG01: use D8
@@ -463,16 +479,22 @@ namespace OpenDental.Eclaims
 					else{
 						sw.Write("N");
 					}
-					if(GetRelatedCauses(claim)==""){
-						sw.WriteLine("~");
+					if(claim.ClaimType=="PreAuth"){
+						sw.WriteLine("**"//* for CLM09. CLM10 not used
+							+GetRelatedCauses(claim)+"*"//CLM11: Accident related, including state. Might be blank.
+							+"*"//CLM12: special programs like EPSTD
+							+"******"//CLM13-18 not used
+							+"PB~");//CLM19 PB=Predetermination of Benefits
 					}
 					else{
-						sw.WriteLine("**"//* for CLM09. CLM10 not used
-							+GetRelatedCauses(claim)+"~");//CLM11: Accident related, including state
+						if(GetRelatedCauses(claim)==""){
+							sw.WriteLine("~");
+						}
+						else{
+							sw.WriteLine("**"//* for CLM09. CLM10 not used
+								+GetRelatedCauses(claim)+"~");//CLM11: Accident related, including state
+						}
 					}
-							//+"*"//CLM12: special programs like EPSTD
-							//+"******"//CLM13-18 not used
-							//+"PB*"//CLM19 PB=Predetermination of Benefits
 							//CLM20: delay reason code
 					//2300 DTP: Date referral
 					//2300 DTP: Date accident
@@ -714,12 +736,15 @@ namespace OpenDental.Eclaims
 							sw.WriteLine("~");
 						}
 						//2400 DTP: Date of service if different from claim
-						if(claim.DateService!=proc.ProcDate){
+						//actually, let's just go ahead and always show the date. Better compatibility
+						//if(claim.DateService!=proc.ProcDate){
+						if(claim.ClaimType!="PreAuth"){
 							seg++;
 							sw.WriteLine("DTP*472*"//DTP01: 472=Service
 								+"D8*"//DTP02: use D8
 								+proc.ProcDate.ToString("yyyyMMdd")+"~");
 						}
+						//}
 						//2400 DTP: Date prior placement
 						if(proc.Prosthesis=="R"){//already validated date
 							seg++;
@@ -743,7 +768,9 @@ namespace OpenDental.Eclaims
 								+Sout(proc.ClaimNote,80)+"~");
 						}
 						//2420A NM1: Rendering provider name. Only if different from the claim.
-						if(claim.ProvTreat!=proc.ProvNum){
+						if(claim.ProvTreat!=proc.ProvNum
+							&& Prefs.GetBool("EclaimsSeparateTreatProv"))
+						{
 							provTreat=Providers.ListLong[Providers.GetIndexLong(proc.ProvNum)];
 							seg++;
 							sw.Write("NM1*82*"//82=rendering prov
@@ -808,7 +835,8 @@ namespace OpenDental.Eclaims
 
 		///<summary>Usually ZZ(mutually defined), but sometimes 30(TIN)</summary>
 		private static string GetISA05(Clearinghouse clearhouse){
-			if(clearhouse.ReceiverID=="660610220")//Inmediata
+			if(clearhouse.ReceiverID=="660610220"//Inmediata
+				|| clearhouse.ReceiverID=="AOS")//AOS by SPK 7/13/05
 			{
 				return "30";//TIN
 			}
@@ -816,10 +844,10 @@ namespace OpenDental.Eclaims
 				return "ZZ";//mutually defined
 			}
 		}
-		
+
 		///<summary>Usually Jordan Sparks's TIN, but sometimes the clinic's TIN.</summary>
 		private static string GetISA06(Clearinghouse clearhouse){
-			if(clearhouse.ReceiverID=="660610220"){//Inmediata
+			if(clearhouse.ReceiverID=="660610220" || clearhouse.ReceiverID=="AOS"){//Inmediata or AOS, SPK 7/13/05
 				Provider defProv=Providers.ListLong[Providers.GetIndexLong(Prefs.GetInt("PracticeDefaultProv"))];
 				return Sout(defProv.SSN,15,15);//TIN or SSN of default provider.  This field should be later added to clearhouse
 			}
@@ -827,11 +855,12 @@ namespace OpenDental.Eclaims
 				return "810624427".PadRight(15,' ');//TIN of Jordan Sparks.
 			}
 		}
-
+		
 		///<summary>Usually ZZ(mutually defined), but sometimes 30(TIN)</summary>
 		private static string GetISA07(Clearinghouse clearhouse){
 			if(clearhouse.ReceiverID=="330989922"//WebClaim
-				|| clearhouse.ReceiverID=="660610220")//Inmediata
+				|| clearhouse.ReceiverID=="660610220"//Inmediata
+				|| clearhouse.ReceiverID=="AOS")//AOS systems, added by SPK 7/13/05
 			{
 				return "30";//TIN
 			}
@@ -842,7 +871,7 @@ namespace OpenDental.Eclaims
 
 		/// <summary>Usually Jordan Sparks's TIN, but sometimes the clinic's TIN.</summary>
 		private static string GetGS02(Clearinghouse clearhouse){
-			if(clearhouse.ReceiverID=="660610220"){//Inmediata
+			if(clearhouse.ReceiverID=="660610220" || clearhouse.ReceiverID=="AOS"){//Inmediata or AOS, SPK 7/13/05
 				Provider defProv=Providers.ListLong[Providers.GetIndexLong(Prefs.GetInt("PracticeDefaultProv"))];
 				return Sout(defProv.SSN,15,2);//TIN or SSN of default provider.  This field should be later added to clearhouse
 			}
@@ -860,7 +889,7 @@ namespace OpenDental.Eclaims
 			return clearhouse.ReceiverID;
 		}
 
-		///<summary>Usually writes the name information for Open Dental. But for inmediata clearinghouse, writes practice info.</summary>
+		///<summary>Usually writes the name information for Open Dental. But for inmediata/AOS clearinghouse, writes practice info.</summary>
 		private static void Write1000A_NM1(StreamWriter sw,Clearinghouse clearhouse){
 			if(clearhouse.ReceiverID=="660610220"){//Inmediata
 				Provider defProv=Providers.ListLong[Providers.GetIndexLong(Prefs.GetInt("PracticeDefaultProv"))];
@@ -868,6 +897,15 @@ namespace OpenDental.Eclaims
 				sw.WriteLine("NM1*41*"//NM101: 41=submitter
 					+"2*"//NM102: 2=nonperson??
 					+Sout(Prefs.GetString("PracticeTitle"),35,1)+"*"//NM103:Submitter Name
+					+"****46*"//NM108: 46 indicates ETIN
+					+Sout(defProv.SSN,80,2)+"~");//NM109: ID Code. aka ETIN#.
+			}
+			else if(clearhouse.ReceiverID=="AOS"){ // AOS added SPK 7/13/05
+				Provider defProv=Providers.ListLong[Providers.GetIndexLong(Prefs.GetInt("PracticeDefaultProv"))];
+				//TIN or SSN of default provider.  This field should be later added to clearhouse
+				sw.WriteLine("NM1*41*"//NM101: 41=submitter
+					+"1*"//NM102: 1=person
+					+Sout(defProv.Abbr,6,1)+"*"//NM103:Submitter AOS Number, SPK
 					+"****46*"//NM108: 46 indicates ETIN
 					+Sout(defProv.SSN,80,2)+"~");//NM109: ID Code. aka ETIN#.
 			}
@@ -890,7 +928,8 @@ namespace OpenDental.Eclaims
 					//this is probably wrong:
 					+"810624427~");//PER04:Comm Number
 			}*/
-			if(clearhouse.ReceiverID=="660610220"){//Inmediata
+			if(clearhouse.ReceiverID=="660610220"//Inmediata
+				|| clearhouse.ReceiverID=="AOS"){ //AOS added SPK 7/13/05
 				sw.WriteLine("PER*IC*"//PER01:Function code: IC=Information Contact
 					+Sout(Prefs.GetString("PracticeTitle"),60,1)+"*"//PER02:Name. Practice title
 					+"TE*"//PER03:Comm Number Qualifier: TE=Telephone
@@ -1256,11 +1295,11 @@ namespace OpenDental.Eclaims
 			}
 			InsPlan insPlan=InsPlans.GetPlan(claim.PlanNum,new InsPlan[] {});
 			Carrier carrier=Carriers.GetCarrier(insPlan.CarrierNum);
-			if(carrier.ElectID==""){
-				if(retVal!="")
-					retVal+=",";
-				retVal+="Carrier ElectronicID";
-			}
+			//if(carrier.ElectID==""){//this will get changed to 06126
+			//	if(retVal!="")
+			//		retVal+=",";
+			//	retVal+="Carrier ElectronicID";
+			//}
 			if(carrier.Address==""){
 				if(retVal!="")
 					retVal+=",";
@@ -1365,11 +1404,11 @@ namespace OpenDental.Eclaims
 					retVal+=",";
 				retVal+="Auto accident State";
 			}
-			if(claim.ClaimType=="PreAuth"){
-				if(retVal!="")
-					retVal+=",";
-				retVal+="PreAuth not supported";
-			}
+			//if(claim.ClaimType=="PreAuth"){
+			//	if(retVal!="")
+			//		retVal+=",";
+			//	retVal+="PreAuth not supported";
+			//}
 			ClaimProc[] claimProcList=ClaimProcs.Refresh(patient.PatNum);
 			ClaimProc[] claimProcs=ClaimProcs.GetForSendClaim(claimProcList,claim.ClaimNum);
 			Procedure[] procList=Procedures.Refresh(claim.PatNum);

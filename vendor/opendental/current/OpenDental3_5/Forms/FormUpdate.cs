@@ -514,8 +514,7 @@ namespace OpenDental{
 			MsgBox.Show(this,"Download succeeded.  Setup program will now begin.  When done, restart the program on this computer, then on the other computers.");
 			try{
 				Process.Start(Prefs.GetString("DocPath")+"Setup.exe");
-				ExitApplicationNow ExitApplicationNow2=new ExitApplicationNow();
-				ExitApplicationNow2.ExitNow();
+				ExitApplicationNow.ExitNow();
 			}
 			catch{
 				MsgBox.Show(this,"Could not launch setup");

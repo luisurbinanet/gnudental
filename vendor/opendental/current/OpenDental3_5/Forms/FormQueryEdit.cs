@@ -50,16 +50,16 @@ namespace OpenDental{
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(5, 12);
+			this.label1.Location = new System.Drawing.Point(33, 15);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(115, 16);
+			this.label1.Size = new System.Drawing.Size(74, 16);
 			this.label1.TabIndex = 0;
 			this.label1.Text = "Title";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// textTitle
 			// 
-			this.textTitle.Location = new System.Drawing.Point(122, 10);
+			this.textTitle.Location = new System.Drawing.Point(109, 13);
 			this.textTitle.Name = "textTitle";
 			this.textTitle.Size = new System.Drawing.Size(328, 20);
 			this.textTitle.TabIndex = 0;
@@ -67,25 +67,25 @@ namespace OpenDental{
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(3, 42);
+			this.label2.Location = new System.Drawing.Point(4, 45);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(117, 16);
+			this.label2.Size = new System.Drawing.Size(103, 49);
 			this.label2.TabIndex = 2;
 			this.label2.Text = "Query Text";
 			this.label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(19, 636);
+			this.label3.Location = new System.Drawing.Point(33, 639);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(145, 16);
+			this.label3.Size = new System.Drawing.Size(118, 16);
 			this.label3.TabIndex = 4;
 			this.label3.Text = "Export File Name";
 			this.label3.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// textFileName
 			// 
-			this.textFileName.Location = new System.Drawing.Point(168, 634);
+			this.textFileName.Location = new System.Drawing.Point(155, 637);
 			this.textFileName.Name = "textFileName";
 			this.textFileName.Size = new System.Drawing.Size(326, 20);
 			this.textFileName.TabIndex = 2;
@@ -97,7 +97,7 @@ namespace OpenDental{
 			this.butOK.Autosize = true;
 			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butOK.Location = new System.Drawing.Point(770, 586);
+			this.butOK.Location = new System.Drawing.Point(757, 589);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 3;
@@ -111,7 +111,7 @@ namespace OpenDental{
 			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.Location = new System.Drawing.Point(770, 624);
+			this.butCancel.Location = new System.Drawing.Point(757, 627);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 4;
@@ -121,7 +121,7 @@ namespace OpenDental{
 			// textQuery
 			// 
 			this.textQuery.AcceptsReturn = true;
-			this.textQuery.Location = new System.Drawing.Point(121, 35);
+			this.textQuery.Location = new System.Drawing.Point(108, 38);
 			this.textQuery.Multiline = true;
 			this.textQuery.Name = "textQuery";
 			this.textQuery.QuickPasteType = OpenDental.QuickPasteType.Query;
@@ -135,7 +135,7 @@ namespace OpenDental{
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
-			this.ClientSize = new System.Drawing.Size(862, 670);
+			this.ClientSize = new System.Drawing.Size(848, 670);
 			this.Controls.Add(this.textQuery);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);

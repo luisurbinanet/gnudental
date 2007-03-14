@@ -197,13 +197,14 @@ namespace OpenDental{
 		}
 
 		///<summary>Only called from external forms without ever loading this form.  Prints without showing any print preview.  Returns true if printed successfully.  You have to supply a printer name because this can be called multiple times when printing batch claims.</summary>
-		public bool PrintImmediate(string printerName){
+		public bool PrintImmediate(string printerName,short copies){
 			pd2=new PrintDocument();
 			pagesPrinted=0;
 			pd2.OriginAtMargins=true;
 			pd2.DefaultPageSettings.Margins=new Margins(0,0,0,0);
 			pd2.PrintPage+=new PrintPageEventHandler(this.pd2_PrintPage);
 			pd2.PrinterSettings.PrinterName=printerName;
+			pd2.PrinterSettings.Copies=copies;
 			try{
 				pd2.Print();
 			}
@@ -1038,7 +1039,7 @@ namespace OpenDental{
 						break;
 					case "BillingDentist":
 						Provider P=Providers.ListLong[Providers.GetIndexLong(Claims.Cur.ProvBill)];
-						displayStrings[i]=P.FName+" "+P.MI+" "+P.LName+" "+P.Title;
+						displayStrings[i]=P.FName+" "+P.MI+" "+P.LName+" "+P.Suffix;
 						break;
 					case "BillingDentistAddress":
 						displayStrings[i]=((Pref)Prefs.HList["PracticeAddress"]).ValueString;
@@ -1058,7 +1059,13 @@ namespace OpenDental{
 					case "BillingDentistMedicaidID":
 						displayStrings[i]=Providers.ListLong[Providers.GetIndexLong(Claims.Cur.ProvBill)].MedicaidID;
 						break;
-					//case "BillingDentistProvID":
+					case "BillingDentistProviderID":
+						ProviderIdent[] provIdents=ProviderIdents.GetForPayor
+							(Providers.ListLong[Providers.GetIndexLong(Claims.Cur.ProvBill)].ProvNum,carrier.ElectID);
+						if(provIdents.Length>0){
+							displayStrings[i]=provIdents[0].IDNumber;//just use the first one we find
+						}
+						break;
 					case "BillingDentistLicenseNum":
 						displayStrings[i]=Providers.ListLong[Providers.GetIndexLong(Claims.Cur.ProvBill)].StateLicense;
 						break;
@@ -1101,7 +1108,7 @@ namespace OpenDental{
 					case "TreatingDentistSignature":
 						if(treatDent.SigOnFile){
 							displayStrings[i]=treatDent.FName+" "+treatDent.MI+" "+treatDent.LName+" "
-								+treatDent.Title;
+								+treatDent.Suffix;
 						}
 						break;
 					case "TreatingDentistSigDate":

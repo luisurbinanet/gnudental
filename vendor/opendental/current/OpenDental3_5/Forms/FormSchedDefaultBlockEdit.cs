@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 ///<summary></summary>
-	public class FormBlockEdit : System.Windows.Forms.Form{
+	public class FormSchedDefaultBlockEdit : System.Windows.Forms.Form{
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label label3;
@@ -20,12 +20,17 @@ namespace OpenDental{
 		///<summary></summary>
 		public bool IsNew;
 		private OpenDental.UI.Button butDelete;
-		private SchedDefaults SchedDefaults=new SchedDefaults();
+		private System.Windows.Forms.ListBox listType;
+		private System.Windows.Forms.Label labelType;
+		private System.Windows.Forms.ListBox listOp;
+		private System.Windows.Forms.Label labelOp;
+		private SchedDefault SchedDefaultCur;
 
 		///<summary></summary>
-		public FormBlockEdit(){
+		public FormSchedDefaultBlockEdit(SchedDefault schedDefaultCur){
 			InitializeComponent();
 			Lan.F(this);
+			SchedDefaultCur=schedDefaultCur;
 			listDay.Items.Clear();
 			listDay.Items.AddRange(CultureInfo.CurrentCulture.DateTimeFormat.DayNames);
 		}
@@ -43,7 +48,7 @@ namespace OpenDental{
 		#region Windows Form Designer generated code
 
 		private void InitializeComponent(){
-			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormBlockEdit));
+			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormSchedDefaultBlockEdit));
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
 			this.label3 = new System.Windows.Forms.Label();
@@ -53,6 +58,10 @@ namespace OpenDental{
 			this.butOK = new OpenDental.UI.Button();
 			this.butCancel = new OpenDental.UI.Button();
 			this.butDelete = new OpenDental.UI.Button();
+			this.listType = new System.Windows.Forms.ListBox();
+			this.labelType = new System.Windows.Forms.Label();
+			this.listOp = new System.Windows.Forms.ListBox();
+			this.labelOp = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// label1
@@ -75,7 +84,7 @@ namespace OpenDental{
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(22, 68);
+			this.label3.Location = new System.Drawing.Point(22, 72);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(84, 16);
 			this.label3.TabIndex = 2;
@@ -84,7 +93,7 @@ namespace OpenDental{
 			// 
 			// listDay
 			// 
-			this.listDay.Location = new System.Drawing.Point(108, 68);
+			this.listDay.Location = new System.Drawing.Point(108, 72);
 			this.listDay.Name = "listDay";
 			this.listDay.Size = new System.Drawing.Size(102, 95);
 			this.listDay.TabIndex = 2;
@@ -110,7 +119,7 @@ namespace OpenDental{
 			this.butOK.Autosize = true;
 			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butOK.Location = new System.Drawing.Point(136, 178);
+			this.butOK.Location = new System.Drawing.Point(309, 194);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 3;
@@ -125,7 +134,7 @@ namespace OpenDental{
 			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.Location = new System.Drawing.Point(136, 212);
+			this.butCancel.Location = new System.Drawing.Point(398, 194);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 5;
@@ -134,24 +143,61 @@ namespace OpenDental{
 			// butDelete
 			// 
 			this.butDelete.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.butDelete.Autosize = true;
 			this.butDelete.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butDelete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDelete.Location = new System.Drawing.Point(10, 212);
+			this.butDelete.Location = new System.Drawing.Point(13, 194);
 			this.butDelete.Name = "butDelete";
 			this.butDelete.Size = new System.Drawing.Size(86, 26);
 			this.butDelete.TabIndex = 7;
 			this.butDelete.Text = "&Delete";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
 			// 
-			// FormBlockEdit
+			// listType
+			// 
+			this.listType.Location = new System.Drawing.Point(227, 34);
+			this.listType.Name = "listType";
+			this.listType.Size = new System.Drawing.Size(115, 134);
+			this.listType.TabIndex = 9;
+			// 
+			// labelType
+			// 
+			this.labelType.Location = new System.Drawing.Point(227, 14);
+			this.labelType.Name = "labelType";
+			this.labelType.Size = new System.Drawing.Size(127, 16);
+			this.labelType.TabIndex = 8;
+			this.labelType.Text = "Blockout Type";
+			this.labelType.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// listOp
+			// 
+			this.listOp.Location = new System.Drawing.Point(357, 35);
+			this.listOp.Name = "listOp";
+			this.listOp.Size = new System.Drawing.Size(115, 134);
+			this.listOp.TabIndex = 11;
+			// 
+			// labelOp
+			// 
+			this.labelOp.Location = new System.Drawing.Point(357, 15);
+			this.labelOp.Name = "labelOp";
+			this.labelOp.Size = new System.Drawing.Size(128, 16);
+			this.labelOp.TabIndex = 10;
+			this.labelOp.Text = "Operatory";
+			this.labelOp.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// FormSchedDefaultBlockEdit
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
-			this.ClientSize = new System.Drawing.Size(224, 244);
+			this.ClientSize = new System.Drawing.Size(486, 231);
+			this.Controls.Add(this.listOp);
+			this.Controls.Add(this.labelOp);
+			this.Controls.Add(this.listType);
+			this.Controls.Add(this.labelType);
 			this.Controls.Add(this.butDelete);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
@@ -163,7 +209,7 @@ namespace OpenDental{
 			this.Controls.Add(this.label1);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
-			this.Name = "FormBlockEdit";
+			this.Name = "FormSchedDefaultBlockEdit";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Edit Block";
@@ -174,12 +220,41 @@ namespace OpenDental{
 		#endregion
 
 		private void FormBlockEdit_Load(object sender, System.EventArgs e) {
-			if(IsNew){
-				SchedDefaults.Cur=new SchedDefault();
+			textStart.Text=SchedDefaultCur.StartTime.ToShortTimeString();
+			textStop.Text=SchedDefaultCur.StopTime.ToShortTimeString();
+			listDay.SelectedIndex=SchedDefaultCur.DayOfWeek;
+			if(SchedDefaultCur.SchedType==ScheduleType.Blockout){
+				listType.Items.Clear();
+				for(int i=0;i<Defs.Short[(int)DefCat.BlockoutTypes].Length;i++){
+					listType.Items.Add(Defs.Short[(int)DefCat.BlockoutTypes][i].ItemName);
+					if(SchedDefaultCur.BlockoutType==Defs.Short[(int)DefCat.BlockoutTypes][i].DefNum){
+						listType.SelectedIndex=i;
+					}
+				}
+				if(listType.Items.Count==0){
+					MsgBox.Show(this,"You must setup blockout types first using the button at the left.");
+					DialogResult=DialogResult.Cancel;
+					return;
+				}
+				if(listType.SelectedIndex==-1){
+					listType.SelectedIndex=0;
+				}
+				listOp.Items.Clear();
+				listOp.Items.Add(Lan.g(this,"All Ops"));
+				listOp.SelectedIndex=0;
+				for(int i=0;i<Defs.Short[(int)DefCat.Operatories].Length;i++){
+					listOp.Items.Add(Defs.Short[(int)DefCat.Operatories][i].ItemValue);
+					if(SchedDefaultCur.Op==Defs.Short[(int)DefCat.Operatories][i].DefNum){
+						listOp.SelectedIndex=i+1;
+					}
+				}
 			}
-			textStart.Text=SchedDefaults.Cur.StartTime.ToShortTimeString();
-			textStop.Text=SchedDefaults.Cur.StopTime.ToShortTimeString();
-			listDay.SelectedIndex=SchedDefaults.Cur.DayOfWeek;
+			else{
+				labelType.Visible=false;
+				listType.Visible=false;
+				labelOp.Visible=false;
+				listOp.Visible=false;
+			}
 		}
 		
 		private void butDelete_Click(object sender, System.EventArgs e) {
@@ -190,60 +265,54 @@ namespace OpenDental{
 				DialogResult=DialogResult.Cancel;
 			}
 			else{
-				SchedDefaults.DeleteCur();
+				SchedDefaultCur.Delete();
 				DialogResult=DialogResult.OK;
 			}
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			//MessageBox.Show
 			try{
-				SchedDefaults.Cur.StartTime=DateTime.Parse(textStart.Text);
-				SchedDefaults.Cur.StopTime=DateTime.Parse(textStop.Text);
-				SchedDefaults.Cur.DayOfWeek=listDay.SelectedIndex;
+				SchedDefaultCur.StartTime=DateTime.Parse(textStart.Text);
+				SchedDefaultCur.StopTime=DateTime.Parse(textStop.Text);
 			}
 			catch{
 				MessageBox.Show(Lan.g(this,"Incorrect time format"));
 				return;
 			}
-			if(SchedDefaults.Cur.StartTime.TimeOfDay.CompareTo(SchedDefaults.Cur.StopTime.TimeOfDay)>0){
-				MessageBox.Show(Lan.g(this,"Stop time must be later than start time."));
+			SchedDefaultCur.DayOfWeek=listDay.SelectedIndex;
+			if(SchedDefaultCur.SchedType==ScheduleType.Blockout){
+				SchedDefaultCur.BlockoutType
+					=Defs.Short[(int)DefCat.BlockoutTypes][listType.SelectedIndex].DefNum;
+				if(listOp.SelectedIndex==0){
+					SchedDefaultCur.Op=0;
+				}
+				else{
+					SchedDefaultCur.Op
+						=Defs.Short[(int)DefCat.Operatories][listOp.SelectedIndex-1].DefNum;
+				}
+			}
+			try{
+				SchedDefaultCur.InsertOrUpdate(IsNew);
+			}
+			catch(Exception ex){
+				MessageBox.Show(ex.Message);
 				return;
-			}
-			for(int i=0;i<SchedDefaults.List.Length;i++){
-				if(SchedDefaults.Cur.SchedDefaultNum!=SchedDefaults.List[i].SchedDefaultNum
-					&& SchedDefaults.Cur.DayOfWeek==SchedDefaults.List[i].DayOfWeek
-					&& SchedDefaults.Cur.StartTime.TimeOfDay.CompareTo(SchedDefaults.List[i].StartTime.TimeOfDay)>=0
-					&& SchedDefaults.Cur.StartTime.TimeOfDay.CompareTo(SchedDefaults.List[i].StopTime.TimeOfDay)<0
-					){
-					MessageBox.Show(Lan.g(this,"Cannot overlap another time block."));
-					return;
-				}
-				if(SchedDefaults.Cur.SchedDefaultNum!=SchedDefaults.List[i].SchedDefaultNum
-					&& SchedDefaults.Cur.DayOfWeek==SchedDefaults.List[i].DayOfWeek
-					&& SchedDefaults.Cur.StopTime.TimeOfDay.CompareTo(SchedDefaults.List[i].StartTime.TimeOfDay)>0
-					&& SchedDefaults.Cur.StopTime.TimeOfDay.CompareTo(SchedDefaults.List[i].StopTime.TimeOfDay)<=0
-					){
-					MessageBox.Show(Lan.g(this,"Cannot overlap another time block."));
-					return;
-				}
-				if(SchedDefaults.Cur.SchedDefaultNum!=SchedDefaults.List[i].SchedDefaultNum
-					&& SchedDefaults.Cur.DayOfWeek==SchedDefaults.List[i].DayOfWeek
-					&& SchedDefaults.Cur.StartTime.TimeOfDay.CompareTo(SchedDefaults.List[i].StartTime.TimeOfDay)<=0
-					&& SchedDefaults.Cur.StopTime.TimeOfDay.CompareTo(SchedDefaults.List[i].StopTime.TimeOfDay)>=0
-					){
-					MessageBox.Show(Lan.g(this,"Cannot overlap another time block."));
-					return;
-				}
-			}
-			if(IsNew){
-				SchedDefaults.InsertCur();
-			}
-			else{
-				SchedDefaults.UpdateCur();
 			}
 			DialogResult=DialogResult.OK;
 		}
 
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

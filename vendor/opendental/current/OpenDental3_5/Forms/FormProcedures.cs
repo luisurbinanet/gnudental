@@ -114,15 +114,15 @@ namespace OpenDental{
 			this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panel1.Location = new System.Drawing.Point(0, 0);
 			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(820, 690);
+			this.panel1.Size = new System.Drawing.Size(809, 690);
 			this.panel1.TabIndex = 10;
 			// 
 			// listFeeSched
 			// 
 			this.listFeeSched.Anchor = System.Windows.Forms.AnchorStyles.None;
-			this.listFeeSched.Location = new System.Drawing.Point(837, 52);
+			this.listFeeSched.Location = new System.Drawing.Point(813, 52);
 			this.listFeeSched.Name = "listFeeSched";
-			this.listFeeSched.Size = new System.Drawing.Size(104, 303);
+			this.listFeeSched.Size = new System.Drawing.Size(137, 303);
 			this.listFeeSched.TabIndex = 11;
 			this.listFeeSched.DoubleClick += new System.EventHandler(this.listFeeSched_DoubleClick);
 			this.listFeeSched.SelectedIndexChanged += new System.EventHandler(this.listFeeSched_SelectedIndexChanged);
@@ -130,9 +130,9 @@ namespace OpenDental{
 			// labelFeeSched
 			// 
 			this.labelFeeSched.Anchor = System.Windows.Forms.AnchorStyles.None;
-			this.labelFeeSched.Location = new System.Drawing.Point(838, 35);
+			this.labelFeeSched.Location = new System.Drawing.Point(813, 34);
 			this.labelFeeSched.Name = "labelFeeSched";
-			this.labelFeeSched.Size = new System.Drawing.Size(107, 16);
+			this.labelFeeSched.Size = new System.Drawing.Size(132, 17);
 			this.labelFeeSched.TabIndex = 12;
 			this.labelFeeSched.Text = "View Fee Sched";
 			this.labelFeeSched.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
@@ -171,9 +171,9 @@ namespace OpenDental{
 			this.groupBox1.Controls.Add(this.butDuplicate);
 			this.groupBox1.Controls.Add(this.butEdit);
 			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox1.Location = new System.Drawing.Point(824, 360);
+			this.groupBox1.Location = new System.Drawing.Point(815, 360);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(130, 59);
+			this.groupBox1.Size = new System.Drawing.Size(139, 57);
 			this.groupBox1.TabIndex = 14;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Fee Schedules";
@@ -335,6 +335,10 @@ namespace OpenDental{
 			int selectedSched=Defs.Short[(int)DefCat.FeeSchedNames][listFeeSched.SelectedIndex].DefNum;
 			FormDefinitions FormD=new FormDefinitions(DefCat.FeeSchedNames);
 			FormD.ShowDialog();
+			DataValid.SetInvalid(InvalidTypes.Defs);
+			Fees.Refresh();
+			ProcedureCodes.Refresh();
+			changed=true;
 			listFeeSched.Items.Clear();
 			for(int i=0;i<Defs.Short[(int)DefCat.FeeSchedNames].Length;i++){
 				listFeeSched.Items.Add(Defs.Short[(int)DefCat.FeeSchedNames][i].ItemName);

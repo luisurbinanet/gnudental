@@ -13,6 +13,7 @@ namespace OpenDental{
 		private System.ComponentModel.Container components = null;
 		private OpenDental.UI.Button butAdd;
 		private ArrayList ALemployees;
+		private User user;
 
 		///<summary></summary>
 		public FormEmployee(){
@@ -115,12 +116,10 @@ namespace OpenDental{
 
 		private void FormEmployee_Load(object sender, System.EventArgs e) {
 			bool requirePass=false;
-			Permissions.GetCur("Security Administration");
-			if(Permissions.Cur.RequiresPassword){
+			if(Permissions.AuthorizationRequired("Security Administration")){
 				requirePass=true;
 			}
-			Permissions.GetCur("Employees");
-			if(Permissions.Cur.RequiresPassword){
+			if(Permissions.AuthorizationRequired("Employees")){
 				requirePass=true;
 			}
 			if(!requirePass){//allow access if no password required
@@ -128,37 +127,25 @@ namespace OpenDental{
 				return;
 			}
 			//check password if either permission requires a password.
-			FormPassword FormP=new FormPassword();
-			FormP.ShowDialog();
-			if(FormP.DialogResult!=DialogResult.OK){
+			user=Users.Authenticate("Employees");
+			if(user==null){
 				DialogResult=DialogResult.Cancel;
 				return;
 			}
 			//allow access if permission for Security Admin (remember, employees not allowed Security Admin)
-			if(Users.Cur.ProvNum > 0){
-				UserPermissions.GetListForProv(Users.Cur.ProvNum);
-				if(UserPermissions.CheckHasPermission("Security Administration",Users.Cur.ProvNum,false)) {
+			if(user.ProvNum > 0){
+				if(UserPermissions.IsAuthorized("Security Administration",user)){
 					FillList();
 					return;
 				}
 			}
 			//allow access if permission for Employees
-			if(Users.Cur.EmployeeNum > 0){
-				UserPermissions.GetListForEmp(Users.Cur.EmployeeNum);
-				if(UserPermissions.CheckHasPermission("Employees",Users.Cur.EmployeeNum,true)) {
-					FillList();
-					return;
-				}
-			}
-			else{//prov
-				UserPermissions.GetListForProv(Users.Cur.ProvNum);
-				if(UserPermissions.CheckHasPermission("Employees",Users.Cur.ProvNum,false)) {
-					FillList();
-					return;
-				}
-			}
-			MessageBox.Show(Lan.g(this,"You do not have permission for this feature"));
-			DialogResult=DialogResult.Cancel;
+			if(!UserPermissions.IsAuthorized("Employees",user)){
+				MsgBox.Show(this,"You do not have permission for this feature");
+				DialogResult=DialogResult.Cancel;
+				return;
+			}	
+			FillList();
 		}
 
 		private void FillList(){
@@ -202,7 +189,9 @@ namespace OpenDental{
 		}
 
 		private void FormEmployee_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-			SecurityLogs.MakeLogEntry("Employees","Altered Employees");
+			if(user!=null){
+				SecurityLogs.MakeLogEntry("Employees","Altered Employees",user);
+			}
 		}
 
 	}

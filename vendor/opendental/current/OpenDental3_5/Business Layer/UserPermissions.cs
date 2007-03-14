@@ -1,42 +1,80 @@
 using System;
 using System.Collections;
+using System.Data;
 using System.Windows.Forms;
 
 namespace OpenDental{
 
 	///<summary>Corresponds to the userpermission table in the database.</summary>
-	public struct UserPermission{
+	public class UserPermission{
 		///<summary>Primary key.</summary>
 		public int UserPermissionNum;
 		///<summary>Foreign key to permission.PermissionNum.</summary>
 		public int PermissionNum;
-		///<summary>Foreign key to employee.EmployeeNum.</summary>
+		///<summary>Foreign key to employee.EmployeeNum.  Will soon be eliminated.</summary>
 		public int EmployeeNum;
-		///<summary>Foreign key to provider.ProvNum.</summary>
+		///<summary>Foreign key to provider.ProvNum.  Will soon be eliminated</summary>
 		public int ProvNum;
 		///<summary>If true, then activities of this permission type will be logged for this user.</summary>
 		public bool IsLogged;
+
+		///<summary></summary>
+		public void Insert(){
+			string command="INSERT INTO userpermission (PermissionNum,EmployeeNum,ProvNum,IsLogged) "
+				+"VALUES ("
+				+"'"+POut.PInt (PermissionNum)+"', "
+				+"'"+POut.PInt (EmployeeNum)+"', "
+				+"'"+POut.PInt (ProvNum)+"', "
+				+"'"+POut.PBool(IsLogged)+"')";
+			//MessageBox.Show(cmd.CommandText);
+			DataConnection dcon=new DataConnection();
+ 			dcon.NonQ(command,true);
+			UserPermissionNum=dcon.InsertID;
+		}
+
+		///<summary></summary>
+		public void Update(){
+			string command="UPDATE userpermission SET "
+				+"PermissionNum='" +POut.PInt (PermissionNum)+"'"
+				+",EmployeeNum ='" +POut.PInt (EmployeeNum)+"'"
+				+",ProvNum ='"     +POut.PInt (ProvNum)+"'"
+				+",IsLogged    ='" +POut.PBool(IsLogged)+"'"
+				+" WHERE UserPermissionNum = '"+POut.PInt(UserPermissionNum)+"'";
+			DataConnection dcon=new DataConnection();
+ 			dcon.NonQ(command);
+		}
+
+		///<summary></summary>
+		public void Delete(){
+			//todo: error checking
+			string command = "DELETE from userpermission WHERE UserPermissionNum = '"
+				+POut.PInt(UserPermissionNum)+"'";
+			DataConnection dcon=new DataConnection();
+ 			dcon.NonQ(command);
+		}
+
+
 	}
 
 	/*=========================================================================================
 	=================================== class UserPermissions ==========================================*/
   ///<summary></summary>
 	public class UserPermissions:DataClass{
-		///<summary></summary>
-		public static UserPermission Cur;
-		///<summary></summary>
-		public static UserPermission[] List;//all user permissions for all users.
-		///<summary></summary>
-		public static UserPermission[] ListForUser;//user permissions for a single user
+		//<summary></summary>
+		//public static UserPermission Cur;
+		///<summary>All user permissions for all users.</summary>
+		private static UserPermission[] List;
+		//<summary>user permissions for a single user</summary>
+		//public static UserPermission[] ListForUser;
 
-		///<summary></summary>
+		///<summary>Gets all userpermissions for all users</summary>
 		public static void Refresh(){
-			//gets all userpermissions for all users
-			cmd.CommandText =
-				"SELECT * from userpermission";
-			FillTable();
+			string command="SELECT * from userpermission";
+			DataConnection dcon=new DataConnection();
+ 			DataTable table=dcon.GetTable(command);
 			List=new UserPermission[table.Rows.Count];
 			for(int i = 0;i<List.Length;i++){
+				List[i]=new UserPermission();
 				List[i].UserPermissionNum= PIn.PInt (table.Rows[i][0].ToString());
 				List[i].PermissionNum    = PIn.PInt (table.Rows[i][1].ToString());
 				List[i].EmployeeNum      = PIn.PInt (table.Rows[i][2].ToString());	
@@ -46,92 +84,60 @@ namespace OpenDental{
 		}
 
 		///<summary></summary>
-		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO userpermission (permissionnum,employeenum,provnum,islogged) "
-				+"VALUES ("
-				+"'"+POut.PInt (Cur.PermissionNum)+"', "
-				+"'"+POut.PInt (Cur.EmployeeNum)+"', "
-				+"'"+POut.PInt (Cur.ProvNum)+"', "
-				+"'"+POut.PBool(Cur.IsLogged)+"')";
-			//MessageBox.Show(cmd.CommandText);
-			NonQ(true);
-			Cur.UserPermissionNum=InsertID;
-		}
-
-		///<summary></summary>
-		public static void UpdateCur(){
-			cmd.CommandText = "UPDATE userpermission SET "
-				+"permissionnum='" +POut.PInt (Cur.PermissionNum)+"'"
-				+",employeenum ='" +POut.PInt (Cur.EmployeeNum)+"'"
-				+",provnum ='"     +POut.PInt (Cur.ProvNum)+"'"
-				+",islogged    ='" +POut.PBool(Cur.IsLogged)+"'"
-				+" WHERE userpermissionnum = '"+POut.PInt(Cur.UserPermissionNum)+"'";
-			NonQ(false);
-		}
-
-		///<summary></summary>
-		public static void DeleteCur(){
-			cmd.CommandText = "DELETE from userpermission WHERE userpermissionnum = '"
-				+POut.PInt(Cur.UserPermissionNum)+"'";
-			NonQ(false);
-		}
-
-		///<summary></summary>
 		public static void DeleteAllForEmp(int employeeNum){
-			cmd.CommandText = "DELETE from userpermission WHERE employeenum = '"+POut.PInt(employeeNum)+"'";
-			NonQ(false);
+			string command="DELETE from userpermission WHERE EmployeeNum = '"+POut.PInt(employeeNum)+"'";
+			DataConnection dcon=new DataConnection();
+ 			dcon.NonQ(command);
 		}
 		
 		///<summary></summary>
 		public static void DeleteAllForProv(int provNum){
-			cmd.CommandText = "DELETE from userpermission WHERE provnum = '"+POut.PInt(provNum)+"'";
-			NonQ(false);
+			string command="DELETE from userpermission WHERE provnum = '"+POut.PInt(provNum)+"'";
+			DataConnection dcon=new DataConnection();
+ 			dcon.NonQ(command);
 		}
 
-		///<summary></summary>
-		public static void GetListForEmp(int employeeNum){
-			//subset of List including only for one user
+		///<summary>Gets a subset of List including only for one user</summary>
+		public static UserPermission[] GetListForEmp(int employeeNum){
+			UserPermission[] retVal;
 			ArrayList ALtemp=new ArrayList();
 			for(int i=0;i<List.Length;i++){
 				if(List[i].EmployeeNum==employeeNum){
 					ALtemp.Add(List[i]);
 				} 
 			}
-			if(ALtemp.Count==0){
-				ListForUser=new UserPermission[0];  
+			retVal=new UserPermission[ALtemp.Count]; 
+			if(ALtemp.Count>0){
+				ALtemp.CopyTo(retVal);
 			}
-			else{
-				ListForUser=new UserPermission[ALtemp.Count];
-				ALtemp.CopyTo(ListForUser);
-			}    
+			return retVal;
 		}
 
-		///<summary></summary>
-		public static void GetListForProv(int provNum){
-			//subset of List including only for one user
+		///<summary>Gets a subset of List including only for one user</summary>
+		public static UserPermission[] GetListForProv(int provNum){
+			UserPermission[] retVal;
 			ArrayList ALtemp=new ArrayList();
 			for(int i=0;i<List.Length;i++){
 				if(List[i].ProvNum==provNum){
 					ALtemp.Add(List[i]);
 				} 
 			}
-			if(ALtemp.Count==0){
-				ListForUser=new UserPermission[0];  
+			retVal=new UserPermission[ALtemp.Count]; 
+			if(ALtemp.Count>0){
+				ALtemp.CopyTo(retVal);
 			}
-			else{
-				ListForUser=new UserPermission[ALtemp.Count];
-				ALtemp.CopyTo(ListForUser);
-			}    
+			return retVal;  
 		}
 
 		///<summary></summary>
 		public static int AdministratorCount(){//TestForAdminCount(){
 			//returns number of provs with security administration permission
-			cmd.CommandText=
+			string command=
 				"SELECT userpermission.userpermissionnum FROM userpermission,permission "
 				+"WHERE userpermission.permissionnum=permission.permissionnum && "
 				+"permission.name='Security Administration'";
-			FillTable();
+			DataConnection dcon=new DataConnection();
+ 			DataTable table=dcon.GetTable(command);
 			return table.Rows.Count;
 		}
 
@@ -142,64 +148,42 @@ namespace OpenDental{
 			NonQ(false);
 		}*/
 
-		///<summary>Used for most security checks in program. Displays user/password dialog only if necessary.</summary>
-		public static bool CheckUserPassword(string permissionName){
-			Permissions.GetCur(permissionName);
-			if(!Permissions.Cur.RequiresPassword){
-				return true;//password not required.
-			}
-			FormPassword FormP=new FormPassword();
-			FormP.ShowDialog();
-			if(FormP.DialogResult!=DialogResult.OK){
-				return false;//bad password
-			}
-			if(Users.Cur.EmployeeNum > 0){
-				GetListForEmp(Users.Cur.EmployeeNum);
-			}
-			else{
-				GetListForProv(Users.Cur.ProvNum);
-			}
-			for(int i=0;i<ListForUser.Length;i++){
-				if(ListForUser[i].PermissionNum==Permissions.Cur.PermissionNum){
-					Cur=ListForUser[i];//not sure why this is necessary.  might be in use.
-					return true;//allow access
-				}
-			}		
-			return false;
-		}
-
-		///<summary></summary>
-		public static bool CheckUserPassword(string permissionName,DateTime myDate){
-			//only checks password if before a certain date or number of days
-			Permissions.GetCur(permissionName);
-			bool doCheck=false;
-			if(myDate <= Permissions.Cur.BeforeDate){//if date is before specified date
-				doCheck=true;
-			}
-			if(myDate <= DateTime.Today.AddDays(-Permissions.Cur.BeforeDays)){//if date is older than # of days
-				doCheck=true;
-			}
-			if(doCheck){
-				return CheckUserPassword(permissionName);
-			}
-			else return true;//allow access if newer
-		}
-
-		///<summary></summary>
-		public static bool CheckHasPermission(string permissionName,int num,bool IsEmployee){
-			//used when selecting all permissions in form prov or emp.
-			//also used whenever we have already displayed a dialog and just want to check permission for a user
-			Permissions.GetCur(permissionName);
-			if(IsEmployee)
-				GetListForEmp(num);
+		/*
+		///<summary>used when selecting all permissions in form prov or emp.  Also used whenever we have already displayed a dialog and just want to check permission for a user</summary>
+		public static bool CheckHasPermission(string permissionName,int num,bool isEmployee){
+			Permission permission=Permissions.GetPermission(permissionName);
+			UserPermission[] listForUser;
+			if(isEmployee)
+				listForUser=GetListForEmp(num);
 			else
-				GetListForProv(num);
-			for(int i=0;i<ListForUser.Length;i++){
-				if(ListForUser[i].PermissionNum==Permissions.Cur.PermissionNum){
-					Cur=ListForUser[i];
+				listForUser=GetListForProv(num);
+			for(int i=0;i<listForUser.Length;i++){
+				if(listForUser[i].PermissionNum==permission.PermissionNum){
+					//Cur=ListForUser[i];
 					return true;
 				}
 			}
+			return false;
+		}*/
+
+		///<summary>Ok to pass null user.  Authorization will come back false.</summary>
+		public static bool IsAuthorized(string permissionName,User user){
+			if(user==null){
+				return false;
+			}
+			Permission permission=Permissions.GetPermission(permissionName);
+			UserPermission[] listForUser;
+			if(user.EmployeeNum > 0){
+				listForUser=GetListForEmp(user.EmployeeNum);
+			}
+			else{
+				listForUser=GetListForProv(user.ProvNum);
+			}
+			for(int i=0;i<listForUser.Length;i++){
+				if(listForUser[i].PermissionNum==permission.PermissionNum){
+					return true;
+				}
+			}		
 			return false;
 		}
 

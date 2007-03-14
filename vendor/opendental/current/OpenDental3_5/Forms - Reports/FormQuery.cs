@@ -206,9 +206,9 @@ namespace OpenDental{
 			this.butPaste.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butPaste.Image = ((System.Drawing.Image)(resources.GetObject("butPaste.Image")));
 			this.butPaste.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butPaste.Location = new System.Drawing.Point(632, 54);
+			this.butPaste.Location = new System.Drawing.Point(631, 54);
 			this.butPaste.Name = "butPaste";
-			this.butPaste.Size = new System.Drawing.Size(73, 23);
+			this.butPaste.Size = new System.Drawing.Size(65, 23);
 			this.butPaste.TabIndex = 11;
 			this.butPaste.Text = "Paste";
 			this.butPaste.Click += new System.EventHandler(this.butPaste_Click);
@@ -223,6 +223,7 @@ namespace OpenDental{
 			this.butCopy.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butCopy.Location = new System.Drawing.Point(556, 54);
 			this.butCopy.Name = "butCopy";
+			this.butCopy.Size = new System.Drawing.Size(72, 23);
 			this.butCopy.TabIndex = 10;
 			this.butCopy.Text = "Copy";
 			this.butCopy.Click += new System.EventHandler(this.butCopy_Click);
@@ -252,7 +253,7 @@ namespace OpenDental{
 			this.butAdd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butAdd.Location = new System.Drawing.Point(556, 30);
 			this.butAdd.Name = "butAdd";
-			this.butAdd.Size = new System.Drawing.Size(149, 23);
+			this.butAdd.Size = new System.Drawing.Size(140, 23);
 			this.butAdd.TabIndex = 3;
 			this.butAdd.Text = "Add To Favorites";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
@@ -265,7 +266,7 @@ namespace OpenDental{
 			this.butFormulate.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butFormulate.Location = new System.Drawing.Point(556, 6);
 			this.butFormulate.Name = "butFormulate";
-			this.butFormulate.Size = new System.Drawing.Size(149, 23);
+			this.butFormulate.Size = new System.Drawing.Size(140, 23);
 			this.butFormulate.TabIndex = 2;
 			this.butFormulate.Text = "Favorites";
 			this.butFormulate.Click += new System.EventHandler(this.butFormulate_Click);
@@ -526,11 +527,6 @@ namespace OpenDental{
 		}
 
 		private void FormQuery_Load(object sender, System.EventArgs e) {
-			if(!UserPermissions.CheckUserPassword("User Query")){
-				MessageBox.Show(Lan.g(this,"You do not have permission for this feature."));
-				DialogResult=DialogResult.Cancel;
-				return;
-			}
 			//Queries.TableQ=null;//this will crash the program
 			grid2.Font=bodyFont;
 			if(IsReport){
@@ -1322,7 +1318,10 @@ namespace OpenDental{
 				{
 					String line="";  
 					for(int i=0;i<Queries.CurReport.ColCaption.Length;i++){
-						line+=Queries.CurReport.ColCaption[i]+"\t";
+						line+=Queries.CurReport.ColCaption[i];
+						if(i<Queries.TableQ.Columns.Count-1){
+							line+="\t";
+						}
 					}
 					sw.WriteLine(line);
 					string cell;
@@ -1370,7 +1369,7 @@ namespace OpenDental{
 		}
 
 		private void FormQuery_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-			SecurityLogs.MakeLogEntry("User Query","");
+			//SecurityLogs.MakeLogEntry("User Query","");
 		}
 
 		

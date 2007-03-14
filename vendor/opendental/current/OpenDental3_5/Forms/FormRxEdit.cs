@@ -37,6 +37,7 @@ namespace OpenDental{
 		///<summary></summary>
     public FormRpPrintPreview pView = new FormRpPrintPreview();
 		private Patient PatCur;
+		private User user;
 
 		///<summary></summary>
 		public FormRxEdit(Patient patCur){//RxPat rxPatCur){
@@ -309,11 +310,18 @@ namespace OpenDental{
 		#endregion
 
 		private void FormRxEdit_Load(object sender, System.EventArgs e) {
+			//Rx create is handled at the button click rather than here
 			if(!IsNew){
-				if(!UserPermissions.CheckUserPassword("Prescription Edit",RxPats.Cur.RxDate)){
-					//MessageBox.Show(Lan.g(this,"You only have permission to view the Prescription. No changes will be saved"));
-					butOK.Enabled=false;
-					butPrint.Enabled=false;
+				if(Permissions.AuthorizationRequired("Prescription Edit",RxPats.Cur.RxDate)){
+					user=Users.Authenticate("Prescription Edit");
+					if(user==null){
+						DialogResult=DialogResult.Cancel;
+						return;
+					}
+					if(!UserPermissions.IsAuthorized("Prescription Edit",user)){
+						butOK.Enabled=false;
+						butPrint.Enabled=false;
+					}
 				}
 			}
 			for(int i=0;i<Providers.List.Length;i++){
@@ -349,11 +357,11 @@ namespace OpenDental{
 			RxPats.Cur.Notes=textNotes.Text;
 			if(IsNew){
 				RxPats.InsertCur();
-				SecurityLogs.MakeLogEntry("Prescription Create",RxPats.cmd.CommandText);
+				SecurityLogs.MakeLogEntry("Prescription Create",RxPats.cmd.CommandText,user);
 			}
 			else{
 				RxPats.UpdateCur();
-				SecurityLogs.MakeLogEntry("Prescription Edit",RxPats.cmd.CommandText);
+				SecurityLogs.MakeLogEntry("Prescription Edit",RxPats.cmd.CommandText,user);
 			}
 			return true;
 		}

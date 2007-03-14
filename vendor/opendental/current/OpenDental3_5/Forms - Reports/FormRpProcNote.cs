@@ -125,7 +125,7 @@ namespace OpenDental{
 			Report report=new Report();
 			report.AddTitle("INCOMPLETE PROCEDURE NOTES");
 			report.AddSubTitle(((Pref)Prefs.HList["PracticeTitle"]).ValueString);
-//todo: Need more flexible default values, eg based on current date instead of fixed date:
+//incomplete: Need more flexible default values, eg based on current date instead of fixed date:
 			report.AddParameter("date1",FieldValueType.Date,DateTime.Today
 				,"From Date"
 				,"procedurelog.ProcDate >= '?'");
@@ -155,7 +155,7 @@ namespace OpenDental{
 				DialogResult=DialogResult.Cancel;
 				return;
 			}
-//todo: Add functionality for using parameter values in textObjects, probably using inline XML:
+//incomplete: Add functionality for using parameter values in textObjects, probably using inline XML:
 			report.AddSubTitle(((DateTime)report.ParameterFields["date1"].CurrentValues[0]).ToShortDateString()+" - "+((DateTime)report.ParameterFields["date2"].CurrentValues[0]).ToShortDateString());
 			FormReport FormR=new FormReport(report);
 			//FormR.MyReport=report;

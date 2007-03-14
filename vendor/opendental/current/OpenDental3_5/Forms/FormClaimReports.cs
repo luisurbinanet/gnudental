@@ -219,6 +219,32 @@ namespace OpenDental{
 					return;
 				}
 			}
+			else if(Clearinghouses.List[comboClearhouse.SelectedIndex].CommBridge
+				==EclaimsCommBridge.ClaimConnect)
+			{ //Added SPK 5/05
+				try
+				{
+					Process.Start(@"http://www.dentalxchange.com/newdxc");
+				}
+				catch
+				{
+					MessageBox.Show("Could not locate the site.");
+				}
+				return;
+			}
+			else if(Clearinghouses.List[comboClearhouse.SelectedIndex].CommBridge
+				==EclaimsCommBridge.AOS)
+			{ //Added SPK 7/05
+				try
+				{
+					Process.Start(@"C:\Program files\AOS\AOSCommunicator\AOSCommunicator.exe");
+				}
+				catch
+				{
+					MessageBox.Show("Could not locate the file.");
+				}
+				return;
+			}
 			MsgBox.Show(this,"Retrieval successful");
 			FillGrid();
 		}

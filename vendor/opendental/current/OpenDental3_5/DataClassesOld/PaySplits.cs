@@ -39,14 +39,12 @@ namespace OpenDental{
 		}*/
 
 		///<summary></summary>
-		public void Update(){
+		private void Update(){
 			string command="UPDATE paysplit SET " 
 				+ "SplitAmt = '"     +POut.PDouble(SplitAmt)+"'"
 				+ ",PatNum = '"      +POut.PInt   (PatNum)+"'"
 				+ ",ProcDate = '"    +POut.PDate  (ProcDate)+"'"
 				+ ",PayNum = '"      +POut.PInt   (PayNum)+"'"
-				//+ ",IsDiscount = '"  +POut.PBool  (IsDiscount)+"'"
-				//+ ",DiscountType = '"+POut.PInt   (DiscountType)+"'"
 				+ ",ProvNum = '"     +POut.PInt   (ProvNum)+"'"
 				+ ",PayPlanNum = '"  +POut.PInt   (PayPlanNum)+"'"
 				+ ",DatePay = '"     +POut.PDate  (DatePay)+"'"
@@ -57,16 +55,14 @@ namespace OpenDental{
  			dcon.NonQ(command);
 		}
 
-		///<summary></summary>
-		public void Insert(){
+		///<summary>Inserts a </summary>
+		private void Insert(){
 			string command="INSERT INTO paysplit (splitamt,patnum,procdate, "
 				+"paynum,provnum,payplannum,DatePay,ProcNum) VALUES("
 				+"'"+POut.PDouble(SplitAmt)+"', "
 				+"'"+POut.PInt   (PatNum)+"', "
 				+"'"+POut.PDate  (ProcDate)+"', "
 				+"'"+POut.PInt   (PayNum)+"', "
-				//+"'"+POut.PBool  (IsDiscount)+"', "
-				//+"'"+POut.PInt   (DiscountType)+"', "
 				+"'"+POut.PInt   (ProvNum)+"', "
 				+"'"+POut.PInt   (PayPlanNum)+"', "
 				+"'"+POut.PDate  (DatePay)+"', "
@@ -74,15 +70,50 @@ namespace OpenDental{
 			DataConnection dcon=new DataConnection();
  			dcon.NonQ(command,true);
 			SplitNum=dcon.InsertID;
+			SetSplit();
 		}
 
-		///<summary></summary>
+		///<summary>Called from Insert and from Delete because both of these actions can change the number of splits in a payment.</summary>
+		private void SetSplit(){
+			string command="SELECT COUNT(*) FROM paysplit WHERE PayNum="+POut.PInt(PayNum);
+			DataConnection dcon=new DataConnection();
+			DataTable table=dcon.GetTable(command);
+			if(table.Rows[0][0].ToString()=="1"){//only 1 paysplit
+				command="UPDATE payment SET IsSplit=0 WHERE PayNum="+POut.PInt(PayNum);//set false
+			}
+			else{
+				command="UPDATE payment SET IsSplit=1 WHERE PayNum="+POut.PInt(PayNum);//set true
+			}
+			dcon.NonQ(command);
+		}
+
+		///<summary>First forces the DatePay of this split to match that of the payment.  Then does the insert or update.  If insert, then it sets the payment.IsSplit accordingly.</summary>
+		public void InsertOrUpdate(bool isNew){
+			//if(){
+			//	throw new Exception(Lan.g(this,""));
+			//}
+			//get the date of the payment and force this split to match
+			string command="SELECT PayDate FROM payment WHERE PayNum="+POut.PInt(PayNum);
+			DataConnection dcon=new DataConnection();
+			DataTable table=dcon.GetTable(command);
+			DatePay=PIn.PDate(table.Rows[0][0].ToString());
+			if(isNew){
+				Insert();
+			}
+			else{
+				Update();
+			}
+		}
+
+		///<summary>Deletes the paysplit and updates the corresponding EstBal. Called from Payment.Delete for each split.</summary>
 		public void Delete(){
-			//Cur=List[Selected];
-			//PutBal(Cur.PatNum,Cur.ProcDate,-Cur.SplitAmt);
 			string command= "DELETE from paysplit WHERE splitNum = '"+SplitNum.ToString()+"'";
 			DataConnection dcon=new DataConnection();
  			dcon.NonQ(command);
+			SetSplit();
+			command="UPDATE patient SET EstBalance=EstBalance+"+POut.PDouble(SplitAmt)
+				+" WHERE PatNum="+POut.PInt(PatNum);
+			dcon.NonQ(command);
 		}
 
 
@@ -192,14 +223,6 @@ namespace OpenDental{
 			return retVal;
 		}
 
-		///<summary>Used in FormPayment to keep all dates on PaySplits synchronized with the Payment.</summary>
-		public static void SetDateInPayment(int payNum,DateTime date){
-			string command="UPDATE paysplit SET DatePay='"+POut.PDate(date)
-				+"' WHERE PayNum = '"+payNum.ToString()+"'";
-			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command);
-		}
-
 		///<summary>Used in ComputeBalances to compute balance for a single patient. Supply a list of all paysplits for the patient.</summary>
 		public static double ComputeBal(PaySplit[] list){//
 			double retVal=0;
@@ -208,6 +231,8 @@ namespace OpenDental{
 			}
 			return retVal;
 		}
+
+		
 
 	}
 

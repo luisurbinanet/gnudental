@@ -22,9 +22,6 @@ namespace OpenDental
 			container.Add(this);
 			InitializeComponent();
 
-			//
-			// TODO: Add any constructor code after InitializeComponent call
-			//
 		}*/
 
 		///<summary></summary>

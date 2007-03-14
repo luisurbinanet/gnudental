@@ -247,6 +247,8 @@ namespace OpenDental{
 			string command="DELETE from procedurelog WHERE ProcNum = '"+POut.PInt(ProcNum)+"'";
 			DataConnection dcon=new DataConnection();
  			dcon.NonQ(command);
+			command="DELETE FROM adjustment WHERE ProcNum='"+POut.PInt(ProcNum)+"'";
+			dcon.NonQ(command);
 			command="DELETE from claimproc WHERE ProcNum = '"+POut.PInt(ProcNum)+"'";
  			dcon.NonQ(command);
 		}

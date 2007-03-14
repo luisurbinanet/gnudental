@@ -1,11 +1,12 @@
 using System;
 using System.Collections;
+using System.Data;
 using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Corresponds to the securitylog table in the database.</summary>
-	public struct SecurityLog{
+	///<summary>Corresponds to the securitylog table in the database.  This table will soon be eliminated</summary>
+	public class SecurityLog{
 		///<summary>Primary key.</summary>
 		public int SecurityLogNum;
 		///<summary>Permission name in plain text.</summary>
@@ -16,16 +17,35 @@ namespace OpenDental{
 		public DateTime LogDateTime;
 		///<summary>The description of exactly what was done. Varies by permission type.</summary>
 		public string LogText;
+
+		///<summary></summary>
+		public void Insert(){
+			string command="INSERT INTO securitylog (permission,username,logdatetime,logtext) "
+				+"VALUES ("
+				+"'"+POut.PString(Permission)+"', "
+				+"'"+POut.PString(UserName)+"', "
+				+"'"+POut.PDateT (LogDateTime)+"', "
+				+"'"+POut.PString(LogText)+"')";
+			//MessageBox.Show(cmd.CommandText);
+			DataConnection dcon=new DataConnection();
+ 			dcon.NonQ(command,true);
+			SecurityLogNum=dcon.InsertID;
+		}
+
+		//there are no methods for deleting or changing log entries because that will never be allowed.
+
+		
+
 	}
 
 	/*=========================================================================================
 	=================================== class SecurityLogs==========================================*/
   ///<summary></summary>
-	public class SecurityLogs:DataClass{
-		///<summary></summary>
-		public static SecurityLog Cur;
-		///<summary></summary>
-		public static SecurityLog[] List;
+	public class SecurityLogs{
+		//<summary></summary>
+		//public static SecurityLog Cur;
+		//<summary></summary>
+		//public static SecurityLog[] List;
 
 		/*public static void Refresh(){//this may be used later for reporting
 			cmd.CommandText =
@@ -42,38 +62,27 @@ namespace OpenDental{
 			}
 		}*/
 
-		///<summary></summary>
-		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO securitylog (permission,username,logdatetime,logtext) "
-				+"VALUES ("
-				+"'"+POut.PString(Cur.Permission)+"', "
-				+"'"+POut.PString(Cur.UserName)+"', "
-				+"'"+POut.PDateT (Cur.LogDateTime)+"', "
-				+"'"+POut.PString(Cur.LogText)+"')";
-			//MessageBox.Show(cmd.CommandText);
-			NonQ(true);
-			Cur.SecurityLogNum=InsertID;
-		}
-
-		//there are no methods for deleting or changing log entries because that will never be allowed.
-
-		///<summary></summary>
-		public static void MakeLogEntry(string permissionName,string logText){
+		///<summary>It's ok if user==null.  It will simply disregard and not make a log entry.</summary>
+		public static void MakeLogEntry(string permissionName,string logText,User user){
+			if(user==null){
+				return;//User should never be null.
+			}
 			bool IsLogged=false;
-			if(Permissions.GetCur(permissionName)){//if permissionName is a recognized permission
-				if(!Permissions.Cur.RequiresPassword){
+			Permission permission=Permissions.GetPermission(permissionName);
+			if(permission!=null){//if permissionName is a recognized permission
+				if(!permission.RequiresPassword){
 					return;//no password required, so no logging either
 				}
-				if(Users.Cur.EmployeeNum > 0){
-					UserPermissions.GetListForEmp(Users.Cur.EmployeeNum);
+				UserPermission[] listForUser;
+				if(user.EmployeeNum > 0){
+					listForUser=UserPermissions.GetListForEmp(user.EmployeeNum);
 				}
 				else{
-					UserPermissions.GetListForProv(Users.Cur.ProvNum);
+					listForUser=UserPermissions.GetListForProv(user.ProvNum);
 				}
-				for(int i=0;i<UserPermissions.ListForUser.Length;i++){
-					if(UserPermissions.ListForUser[i].PermissionNum==Permissions.Cur.PermissionNum 
-						&& UserPermissions.ListForUser[i].IsLogged){
-						UserPermissions.Cur=UserPermissions.ListForUser[i];
+				for(int i=0;i<listForUser.Length;i++){
+					if(listForUser[i].PermissionNum==permission.PermissionNum && listForUser[i].IsLogged){
+						//?? UserPermissions.Cur=UserPermissions.ListForUser[i];
 						IsLogged=true;
 					}
 				}
@@ -81,18 +90,21 @@ namespace OpenDental{
 					return;
 				}
 			}
-			Cur=new SecurityLog();
-			if(Users.Cur.EmployeeNum > 0){
-				Cur.UserName=Employees.GetName(UserPermissions.Cur.EmployeeNum);
+			SecurityLog securityLog=new SecurityLog();
+			//securityLog.UserName=user.UserName;
+			if(user.EmployeeNum > 0){
+				securityLog.UserName=Employees.GetName(user.EmployeeNum);
 			}
 			else{
-				Cur.UserName=Providers.GetAbbr(UserPermissions.Cur.ProvNum);
+				securityLog.UserName=Providers.GetAbbr(user.ProvNum);
 			}
-			Cur.Permission=permissionName;
-			Cur.LogDateTime=DateTime.Now;
-			Cur.LogText=logText;
-			InsertCur();
+			securityLog.Permission=permissionName;
+			securityLog.LogDateTime=DateTime.Now;
+			securityLog.LogText=logText;
+			securityLog.Insert();
 		}
+
+		
 
 	}
 

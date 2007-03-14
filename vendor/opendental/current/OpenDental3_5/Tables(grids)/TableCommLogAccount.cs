@@ -81,22 +81,8 @@ namespace OpenDental.Main_Modules
 			Fields[3]=Lan.g("TableCommLogAccount","Note");
 		}
 
+
+
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

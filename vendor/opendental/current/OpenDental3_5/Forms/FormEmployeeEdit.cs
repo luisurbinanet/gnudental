@@ -28,6 +28,7 @@ namespace OpenDental{
 		private System.Windows.Forms.GroupBox groupSecurity;
 		///<summary></summary>
 		public bool IsNew;
+		private UserPermission[] ListForUser;
 
 		///<summary></summary>
 		public FormEmployeeEdit(){
@@ -284,18 +285,17 @@ namespace OpenDental{
 		#endregion
 
 		private void FormEmployeeEdit_Load(object sender, System.EventArgs e) {
-			groupSecurity.Visible=false;
-			Permissions.GetCur("Security Administration");
-			if(!Permissions.Cur.RequiresPassword){
-				groupSecurity.Visible=true;
-			}
-			if(Users.Cur.EmployeeNum > 0){
-				if(UserPermissions.CheckHasPermission("Security Administration",Users.Cur.EmployeeNum,true))
+			if(Permissions.AuthorizationRequired("Security Administration")){
+				User user=Users.Authenticate("Security Administration");
+				if(user!=null && UserPermissions.IsAuthorized("Security Administration",user)){
 					groupSecurity.Visible=true;
+				}
+				else{
+					groupSecurity.Visible=false;
+				}
 			}
 			else{
-				if(UserPermissions.CheckHasPermission("Security Administration",Users.Cur.ProvNum,false))
-					groupSecurity.Visible=true;
+				groupSecurity.Visible=true;
 			}
 			if(IsNew){
 				Employees.Cur=new Employee();
@@ -317,13 +317,13 @@ namespace OpenDental{
 			UserPermissions.Refresh();
 			tbUserPerm.ResetRows(Permissions.List.Length);
 			tbUserPerm.SetGridColor(Color.Gray);
-			UserPermissions.GetListForEmp(Employees.Cur.EmployeeNum);
+			ListForUser=UserPermissions.GetListForEmp(Employees.Cur.EmployeeNum);
 			for(int i=0;i<Permissions.List.Length;i++){
 				tbUserPerm.Cell[0,i]=Permissions.List[i].Name;
-				for(int j=0;j<UserPermissions.ListForUser.Length;j++){
-					if(UserPermissions.ListForUser[j].PermissionNum==Permissions.List[i].PermissionNum){
+				for(int j=0;j<ListForUser.Length;j++){
+					if(ListForUser[j].PermissionNum==Permissions.List[i].PermissionNum){
 						tbUserPerm.Cell[1,i]="X";
-						if(UserPermissions.ListForUser[j].IsLogged){
+						if(ListForUser[j].IsLogged){
 							tbUserPerm.Cell[2,i]="X";
 						}
 					}
@@ -333,14 +333,18 @@ namespace OpenDental{
 		}
 
 		private void butAll_Click(object sender, System.EventArgs e) {
+			User user=Users.GetUserEmp(Employees.Cur.EmployeeNum);
+			UserPermission userPermission;
 			for(int i=0;i<Permissions.List.Length;i++){
-				if(Permissions.List[i].Name!="Security Administration" &&
-					!UserPermissions.CheckHasPermission(Permissions.List[i].Name,Employees.Cur.EmployeeNum,true)){
-					UserPermissions.Cur=new UserPermission();
-					UserPermissions.Cur.EmployeeNum=Employees.Cur.EmployeeNum;
-					UserPermissions.Cur.PermissionNum=Permissions.List[i].PermissionNum;
-					UserPermissions.Cur.IsLogged=true;
-					UserPermissions.InsertCur();
+				if(Permissions.List[i].Name=="Security Administration"){
+					continue;
+				}
+				if(!UserPermissions.IsAuthorized(Permissions.List[i].Name,user)){
+					userPermission=new UserPermission();
+					userPermission.EmployeeNum=Employees.Cur.EmployeeNum;
+					userPermission.PermissionNum=Permissions.List[i].PermissionNum;
+					userPermission.IsLogged=true;
+					userPermission.Insert();
 				}
 			}
 			FillSecurity();
@@ -352,59 +356,56 @@ namespace OpenDental{
 		}
 
 		private void tbUserPerm_CellClicked(object sender, OpenDental.CellEventArgs e) {
+			UserPermission userPermission;
 			if(e.Col==1){//permission
 				if(tbUserPerm.Cell[1,e.Row]!="X"){//add X
 					if(Permissions.List[e.Row].Name=="Security Administration"){
-						MessageBox.Show(Lan.g(this,"Employees cannot have Security Administration."));
+						MsgBox.Show(this,"Employees cannot have Security Administration.");
 						return;
 					}
-					UserPermissions.Cur=new UserPermission();
-					UserPermissions.Cur.EmployeeNum=Employees.Cur.EmployeeNum;
-					UserPermissions.Cur.PermissionNum=Permissions.List[e.Row].PermissionNum;
-					UserPermissions.InsertCur();
+					userPermission=new UserPermission();
+					userPermission.EmployeeNum=Employees.Cur.EmployeeNum;
+					userPermission.PermissionNum=Permissions.List[e.Row].PermissionNum;
+					userPermission.Insert();
 				}
 				else{//remove X
-					for(int i=0;i<UserPermissions.ListForUser.Length;i++){
-						if(UserPermissions.ListForUser[i].PermissionNum==Permissions.List[e.Row].PermissionNum){
-							UserPermissions.Cur=UserPermissions.ListForUser[i];
-							UserPermissions.DeleteCur();
+					for(int i=0;i<ListForUser.Length;i++){
+						if(ListForUser[i].PermissionNum==Permissions.List[e.Row].PermissionNum){
+							ListForUser[i].Delete();
 						}	
 					}//i
 				}
 				FillSecurity();
-				return;
 			}//e.Col==1
 			else if(e.Col==2){//logging
 				if(tbUserPerm.Cell[2,e.Row]!="X" && tbUserPerm.Cell[1,e.Row]!="X"){//add X
-					UserPermissions.Cur.EmployeeNum=Employees.Cur.EmployeeNum;
-					UserPermissions.Cur.PermissionNum=Permissions.List[e.Row].PermissionNum;
-					UserPermissions.Cur.IsLogged=true;
-					UserPermissions.InsertCur();
+					userPermission=new UserPermission();
+					userPermission.EmployeeNum=Employees.Cur.EmployeeNum;
+					userPermission.PermissionNum=Permissions.List[e.Row].PermissionNum;
+					userPermission.IsLogged=true;
+					userPermission.Insert();
 				}
 				else if(tbUserPerm.Cell[2,e.Row]!="X" && tbUserPerm.Cell[1,e.Row]=="X"){
-					for(int i=0;i<UserPermissions.ListForUser.Length;i++){
-						if(UserPermissions.ListForUser[i].PermissionNum==Permissions.List[e.Row].PermissionNum){
-							UserPermissions.Cur=UserPermissions.ListForUser[i];
-							UserPermissions.Cur.IsLogged=true;
-							UserPermissions.UpdateCur();
+					for(int i=0;i<ListForUser.Length;i++){
+						if(ListForUser[i].PermissionNum==Permissions.List[e.Row].PermissionNum){
+							userPermission=ListForUser[i];
+							userPermission.IsLogged=true;
+							userPermission.Update();
 						}	
 					}//end for
 				}
 				else{//remove X
-					for(int i=0;i<UserPermissions.ListForUser.Length;i++){
-						if(UserPermissions.ListForUser[i].PermissionNum==Permissions.List[e.Row].PermissionNum){
-							UserPermissions.Cur=UserPermissions.ListForUser[i];
-							UserPermissions.Cur.IsLogged=false;
-							UserPermissions.UpdateCur();
+					for(int i=0;i<ListForUser.Length;i++){
+						if(ListForUser[i].PermissionNum==Permissions.List[e.Row].PermissionNum){
+							userPermission=ListForUser[i];
+							userPermission.IsLogged=false;
+							userPermission.Update();
 						}	
 					}//end for
 				}
 				FillSecurity();
-				return;
 			}//e.Col==2
-			else{
-				return;//if e.Col isn't 1 or 2 nothing needs to be done
-			}
+			//if e.Col isn't 1 or 2 nothing needs to be done
 		}
 
 
@@ -414,10 +415,8 @@ namespace OpenDental{
 			Employees.Cur.MiddleI=textMI.Text;
 			Employees.Cur.IsHidden=checkIsHidden.Checked;
 			if(textUserName.Text==""){
-				if(UserPermissions.ListForUser.Length>0){
-					if(MessageBox.Show(Lan.g(this,
-						"UserName is blank.  Are you sure you want to delete this user's permissions?"),"",
-						MessageBoxButtons.OKCancel)!=DialogResult.OK){
+				if(ListForUser.Length>0){
+					if(!MsgBox.Show(this,true,"UserName is blank.  Are you sure you want to delete this user's permissions?")){
 						return;
 					}
 					UserPermissions.DeleteAllForEmp(Employees.Cur.EmployeeNum);

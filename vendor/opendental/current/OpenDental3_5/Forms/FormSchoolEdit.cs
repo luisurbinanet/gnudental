@@ -65,9 +65,13 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butCancel.Location = new System.Drawing.Point(355, 189);
+			this.butCancel.Location = new System.Drawing.Point(355, 182);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(86, 26);
 			this.butCancel.TabIndex = 3;
@@ -76,8 +80,12 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(355, 148);
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butOK.Location = new System.Drawing.Point(355, 147);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(86, 26);
 			this.butOK.TabIndex = 2;
@@ -90,7 +98,7 @@ namespace OpenDental{
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(130, 20);
 			this.label1.TabIndex = 2;
-			this.label1.Text = "School Name";
+			this.label1.Text = "Site Name";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// textSchoolName
@@ -116,13 +124,13 @@ namespace OpenDental{
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(78, 52);
 			this.label2.TabIndex = 4;
-			this.label2.Text = "School Code (use varies)";
+			this.label2.Text = "Site Code (use varies)";
 			this.label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// FormSchoolEdit
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(486, 264);
+			this.ClientSize = new System.Drawing.Size(475, 239);
 			this.Controls.Add(this.textSchoolCode);
 			this.Controls.Add(this.textSchoolName);
 			this.Controls.Add(this.label2);
@@ -135,7 +143,7 @@ namespace OpenDental{
 			this.Name = "FormSchoolEdit";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "School Edit";
+			this.Text = "Site Edit";
 			this.Load += new System.EventHandler(this.FormSchoolEdit_Load);
 			this.ResumeLayout(false);
 
@@ -179,6 +187,8 @@ namespace OpenDental{
 		private void butCancel_Click(object sender, System.EventArgs e) {
 			DialogResult=DialogResult.Cancel;
 		}
+
+		
 
 		
 

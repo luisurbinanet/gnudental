@@ -59,7 +59,7 @@ namespace OpenDental{
 			Graphics g=e.Graphics;
 			g.TranslateTransform(100,0);
 			g.RotateTransform(90);
-			Font mainFont=new Font(FontFamily.GenericSansSerif,10);
+			Font mainFont=new Font(FontFamily.GenericSansSerif,12);
 			float lineH=e.Graphics.MeasureString("any",mainFont).Height;
 			g.DrawString(Pat.GetNameFL(),mainFont,Brushes.Black,xPos,yPos);
 			yPos+=lineH;
@@ -80,7 +80,7 @@ namespace OpenDental{
 			Graphics g=e.Graphics;
 			g.TranslateTransform(100,0);
 			g.RotateTransform(90);
-			Font mainFont=new Font(FontFamily.GenericSansSerif,10);
+			Font mainFont=new Font(FontFamily.GenericSansSerif,12);
 			float lineH=e.Graphics.MeasureString("any",mainFont).Height;
 			g.DrawString(CarrierCur.CarrierName,mainFont,Brushes.Black,xPos,yPos);
 			yPos+=lineH;

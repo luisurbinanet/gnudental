@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Data;
 using System.Drawing.Text;
@@ -39,8 +40,8 @@ namespace OpenDental{
     private Color DayHeadColor;
     private Color FootColor;
     private Color TextColor;
-    private Color ActiveDayColor;
-    private Color SelectedDayColor;
+    private Color DayOpenColor;
+    //private Color SelectedDayColor;
     private Pen LinePen;
     private Font FontText;
     private Font FontText2;
@@ -50,13 +51,14 @@ namespace OpenDental{
     private int DaysInMonth;
     private DateTime selectedDate;
 		///<summary></summary>
-    public ActiveDay[] List;
+    public OneCalendarDay[] List;
 		///<summary></summary>
     public int SelectedDay;
+		///<summary>Was called CurrentDay</summary>
+    public OneCalendarDay Today;
 		///<summary></summary>
-    public ActiveDay CurrentDay;
-		///<summary></summary>
-    public int MaxRowsText;  
+    public int MaxRowsText; 
+		//private int count=0;
 
 		///<summary></summary>
 		public ContrCalendar(){
@@ -71,16 +73,17 @@ namespace OpenDental{
       FootColor=SystemColors.Control;
       DayHeadColor=SystemColors.Window;
       TextColor=Color.Black;//SystemColors.ControlText;
-      ActiveDayColor=Color.White;//SystemColors.Window;
-      SelectedDayColor=Color.Silver;//SystemColors.Highlight;  
+      DayOpenColor=Color.White;//SystemColors.Window; Was ActiveDayColor
+      //SelectedDayColor=Color.White;//SystemColors.Highlight;  
       LinePen=new Pen(Color.SlateGray,2);
 			FontText=new Font("Microsoft Sans Serif",8,FontStyle.Bold);
  			FontText2=new Font("Microsoft Sans Serif",8,FontStyle.Regular);
       DayHeadHeight=FontText.GetHeight()+6;
 			FontHeader = new Font("Microsoft Sans Serif",9,FontStyle.Bold);
       MaxRowsText=5;
-      List=new ActiveDay[32];      
+      List=new OneCalendarDay[32];      
       for(int i=0;i<List.Length;i++){
+				List[i]=new OneCalendarDay();
         List[i].RowsOfText=new string[MaxRowsText];
       }   
     }
@@ -138,6 +141,7 @@ namespace OpenDental{
 		}
 		#endregion
 
+		
 		///<summary></summary>
 		[Category("AAA Custom"),
 			Description("SelectedDate. Keeps track of the date selected")
@@ -155,9 +159,9 @@ namespace OpenDental{
       selectedDate=DateTime.Today;
       SelectedDay=SelectedDate.Day;
 			//this needs work.  should be a simple invalidate instead:
-			Graphics grfx=this.CreateGraphics();
-      this.OnPaint(new PaintEventArgs(grfx,this.ClientRectangle)); 
-			grfx.Dispose();
+			Graphics g=this.CreateGraphics();
+      this.OnPaint(new PaintEventArgs(g,this.ClientRectangle)); 
+			g.Dispose();
 			//this.Invalidate();
     }
 
@@ -178,6 +182,8 @@ namespace OpenDental{
 			e.Graphics.FillRectangle(new SolidBrush(BGColor),RecBG);
       e.Graphics.FillRectangle(new SolidBrush(BG2Color),RecBG2);    
       e.Graphics.DrawRectangle(LinePen,RecBG);
+			//Debug.WriteLine(count);
+			//count++;
       Display(e.Graphics);
     }
  
@@ -188,7 +194,7 @@ namespace OpenDental{
       DisplayDayHeader(grfx); //Draws and Displays Day Header
       PositionButtons();//Position Buttons  
       DisplayFooter(grfx);//Draw Footer
-      MarkCurrentDate(grfx); 
+      MarkTodayDate(grfx); 
    	} 
 
     private void PositionButtons(){
@@ -269,11 +275,11 @@ namespace OpenDental{
 					&& selectedDate.Month==DateTime.Today.Month 
 					&& selectedDate.Year==DateTime.Today.Year)
 				{
-          CurrentDay=List[i];
-          CurrentDay.Rec.X+=1;
-          CurrentDay.Rec.Y+=2;
-          CurrentDay.Rec.Width-=2;
-          CurrentDay.Rec.Height-=3;
+          Today=List[i];
+          Today.Rec.X+=1;
+          Today.Rec.Y+=2;
+          Today.Rec.Width-=2;
+          Today.Rec.Height-=3;
         } 
         if(i==SelectedDay){
           SelectedDay=i; 
@@ -284,31 +290,29 @@ namespace OpenDental{
     }
 
 		///<summary></summary>
-    public void DrawDays(Graphics grfx){
-			//Graphics grfx=this.CreateGraphics();
+    public void DrawDays(Graphics g){
       for(int i=1;i<=DaysInMonth;i++){
-				if(i==SelectedDay){
-					grfx.FillRectangle(new SolidBrush(SelectedDayColor),List[i].Rec);
-					grfx.DrawString(List[i].Day.ToString()
-						,FontText,Brushes.Black,List[i].xPos,List[i].yPos);
-				}
-				else{
+				//if(i==SelectedDay){
+				//	g.FillRectangle(new SolidBrush(SelectedDayColor),List[i].Rec);
+				//	g.DrawString(List[i].Day.ToString()
+				//		,FontText,Brushes.Black,List[i].xPos,List[i].yPos);
+				//}
+				//else{
           if(List[i].color.Equals(Color.Empty)){   
-					  grfx.FillRectangle(new SolidBrush(ActiveDayColor),List[i].Rec);
-					  grfx.DrawString(List[i].Day.ToString()
+					  g.FillRectangle(new SolidBrush(DayOpenColor),List[i].Rec);
+					  g.DrawString(List[i].Day.ToString()
 							,FontText,Brushes.Black,List[i].xPos,List[i].yPos);
           }
           else{
-					  grfx.FillRectangle(new SolidBrush(List[i].color),List[i].Rec);
-					  grfx.DrawString(List[i].Day.ToString()
+					  g.FillRectangle(new SolidBrush(List[i].color),List[i].Rec);
+					  g.DrawString(List[i].Day.ToString()
 							,FontText,Brushes.Black,List[i].xPos,List[i].yPos);
           }           
-				}
-        DrawRowsOfText(i,grfx);
+				//}
+        DrawRowsOfText(i,g);
       }
-			//grfx.Dispose();
-      DrawMonthGrid(grfx); 
-      MarkCurrentDate(grfx);
+      DrawMonthGrid(g); 
+      MarkTodayDate(g);
     }
   
     private void DrawRowsOfText(int day,Graphics grfx){
@@ -343,9 +347,9 @@ namespace OpenDental{
       }
     }
 
-    private void MarkCurrentDate(Graphics grfx){
+    private void MarkTodayDate(Graphics grfx){
       if(List[SelectedDay].Date.Month==DateTime.Today.Month){
-        grfx.DrawRectangle(new Pen(Color.Red),CurrentDay.Rec); 
+        grfx.DrawRectangle(new Pen(Color.Red),Today.Rec); 
       }  
     }     
 
@@ -359,9 +363,10 @@ namespace OpenDental{
           selectedDate=List[i].Date;
           List[i].IsSelected=true;
           List[OldSelected].IsSelected=false; 
+					/*
 					//unpainting selected and repainting Windows color
           if(List[OldSelected].color.Equals(Color.Empty)){
-						grfx.FillRectangle(new SolidBrush(ActiveDayColor),List[OldSelected].Rec);
+						grfx.FillRectangle(new SolidBrush(DayOpenColor),List[OldSelected].Rec);
 						grfx.DrawString(List[OldSelected].Day.ToString()
 							,FontText,Brushes.Black,List[OldSelected].xPos,List[OldSelected].yPos);
             DrawRowsOfText(OldSelected,grfx); 
@@ -378,10 +383,9 @@ namespace OpenDental{
 						,FontText,Brushes.Black,List[i].xPos,List[i].yPos);
           DrawRowsOfText(i,grfx);
 					DrawMonthGrid(grfx); 
-					MarkCurrentDate(grfx);           
-          return;
-        }//end if
-      }//end for
+					MarkTodayDate(grfx); */          
+        }
+      }
 			grfx.Dispose();
 		}
  
@@ -473,9 +477,10 @@ namespace OpenDental{
     }
   }
 
+	
   //Object keeps track of drawing coords,text, and date.  each day is stored in List to draw each month
 	///<summary></summary>
-  public struct ActiveDay{
+  public class OneCalendarDay{
 		///<summary></summary>
     public Rectangle Rec;
 		///<summary></summary>

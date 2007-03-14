@@ -43,6 +43,14 @@ namespace OpenDental{
 		public string ProcDescript;
 		///<summary>Foreign key to employee.EmployeeNum</summary>
 		public int Assistant;
+		///<summary>Dental School field. Foreign key to instructor.InstructorNum</summary>
+		public int InstructorNum;
+		///<summary>Dental School field. Foreign key to schoolclass.SchoolClassNum.</summary>
+		public int SchoolClassNum;
+		///<summary>Dental School field. Foreign key to schoolcourse.SchoolCourseNum.</summary>
+		public int SchoolCourseNum;
+		///<summary>Dental School field. eg 3.5. Only a grade for this single appointment. The course grade shows on a report.</summary>
+		public float GradePoint;
 	}
 
 	/*=========================================================================================
@@ -129,23 +137,27 @@ namespace OpenDental{
 			FillTable();
 			Appointment[] list=new Appointment[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
-				list[i].AptNum      =PIn.PInt   (table.Rows[i][0].ToString());
-				list[i].PatNum      =PIn.PInt   (table.Rows[i][1].ToString());
-				list[i].AptStatus   =(ApptStatus)PIn.PInt(table.Rows[i][2].ToString());
-				list[i].Pattern     =PIn.PString(table.Rows[i][3].ToString());
-				list[i].Confirmed   =PIn.PInt   (table.Rows[i][4].ToString());
-				list[i].AddTime     =PIn.PInt   (table.Rows[i][5].ToString());
-				list[i].Op          =PIn.PInt   (table.Rows[i][6].ToString());
-				list[i].Note        =PIn.PString(table.Rows[i][7].ToString());
-				list[i].ProvNum     =PIn.PInt   (table.Rows[i][8].ToString());
-				list[i].ProvHyg     =PIn.PInt   (table.Rows[i][9].ToString());
-				list[i].AptDateTime =PIn.PDateT (table.Rows[i][10].ToString());
-				list[i].NextAptNum  =PIn.PInt   (table.Rows[i][11].ToString());
-				list[i].UnschedStatus=PIn.PInt  (table.Rows[i][12].ToString());
-				list[i].Lab         =(LabCase)PIn.PInt   (table.Rows[i][13].ToString());
-				list[i].IsNewPatient=PIn.PBool  (table.Rows[i][14].ToString());
-				list[i].ProcDescript=PIn.PString(table.Rows[i][15].ToString());
-				list[i].Assistant   =PIn.PInt   (table.Rows[i][16].ToString());
+				list[i].AptNum         =PIn.PInt   (table.Rows[i][0].ToString());
+				list[i].PatNum         =PIn.PInt   (table.Rows[i][1].ToString());
+				list[i].AptStatus      =(ApptStatus)PIn.PInt(table.Rows[i][2].ToString());
+				list[i].Pattern        =PIn.PString(table.Rows[i][3].ToString());
+				list[i].Confirmed      =PIn.PInt   (table.Rows[i][4].ToString());
+				list[i].AddTime        =PIn.PInt   (table.Rows[i][5].ToString());
+				list[i].Op             =PIn.PInt   (table.Rows[i][6].ToString());
+				list[i].Note           =PIn.PString(table.Rows[i][7].ToString());
+				list[i].ProvNum        =PIn.PInt   (table.Rows[i][8].ToString());
+				list[i].ProvHyg        =PIn.PInt   (table.Rows[i][9].ToString());
+				list[i].AptDateTime    =PIn.PDateT (table.Rows[i][10].ToString());
+				list[i].NextAptNum     =PIn.PInt   (table.Rows[i][11].ToString());
+				list[i].UnschedStatus  =PIn.PInt  (table.Rows[i][12].ToString());
+				list[i].Lab            =(LabCase)PIn.PInt   (table.Rows[i][13].ToString());
+				list[i].IsNewPatient   =PIn.PBool  (table.Rows[i][14].ToString());
+				list[i].ProcDescript   =PIn.PString(table.Rows[i][15].ToString());
+				list[i].Assistant      =PIn.PInt   (table.Rows[i][16].ToString());
+				list[i].InstructorNum  =PIn.PInt   (table.Rows[i][17].ToString());
+				list[i].SchoolClassNum =PIn.PInt   (table.Rows[i][18].ToString());
+				list[i].SchoolCourseNum=PIn.PInt   (table.Rows[i][19].ToString());
+				list[i].GradePoint     =PIn.PFloat (table.Rows[i][20].ToString());
 			}
 			return list;
 		}
@@ -155,7 +167,7 @@ namespace OpenDental{
 			cmd.CommandText = "INSERT INTO appointment (patnum,aptstatus, "
 				+"pattern,confirmed,addtime,op,note,provnum,"
 				+"provhyg,aptdatetime,nextaptnum,unschedstatus,lab,isnewpatient,procdescript,"
-				+"Assistant) VALUES("
+				+"Assistant,InstructorNum,SchoolClassNum,SchoolCourseNum,GradePoint) VALUES("
 				+"'"+POut.PInt   (Cur.PatNum)+"', "
 				+"'"+POut.PInt   ((int)Cur.AptStatus)+"', "
 				+"'"+POut.PString(Cur.Pattern)+"', "
@@ -171,7 +183,11 @@ namespace OpenDental{
 				+"'"+POut.PInt   ((int)Cur.Lab)+"', "
 				+"'"+POut.PBool  (Cur.IsNewPatient)+"', "
 				+"'"+POut.PString(Cur.ProcDescript)+"', "
-				+"'"+POut.PInt   (Cur.Assistant)+"')";
+				+"'"+POut.PInt   (Cur.Assistant)+"', "
+				+"'"+POut.PInt   (Cur.InstructorNum)+"', "
+				+"'"+POut.PInt   (Cur.SchoolClassNum)+"', "
+				+"'"+POut.PInt   (Cur.SchoolCourseNum)+"', "
+				+"'"+POut.PFloat (Cur.GradePoint)+"')";
 			NonQ(true);
 			Cur.AptNum=InsertID;
 			//MessageBox.Show(Cur.AptNum.ToString());
@@ -260,6 +276,26 @@ namespace OpenDental{
 				c+="Assistant = '"   +POut.PInt   (Cur.Assistant)+"'";
 				comma=true;
 			}
+			if(Cur.InstructorNum!=CurOld.InstructorNum){
+				if(comma) c+=",";
+				c+="InstructorNum = '"   +POut.PInt   (Cur.InstructorNum)+"'";
+				comma=true;
+			}
+			if(Cur.SchoolClassNum!=CurOld.SchoolClassNum){
+				if(comma) c+=",";
+				c+="SchoolClassNum = '"   +POut.PInt   (Cur.SchoolClassNum)+"'";
+				comma=true;
+			}
+			if(Cur.SchoolCourseNum!=CurOld.SchoolCourseNum){
+				if(comma) c+=",";
+				c+="SchoolCourseNum = '"   +POut.PInt   (Cur.SchoolCourseNum)+"'";
+				comma=true;
+			}
+			if(Cur.GradePoint!=CurOld.GradePoint){
+				if(comma) c+=",";
+				c+="GradePoint = '"   +POut.PFloat  (Cur.GradePoint)+"'";
+				comma=true;
+			}
 			if(!comma)
 				return 0;//this means no change is actually required.
 			c+=" WHERE AptNum = '"+POut.PInt(Cur.AptNum)+"'";
@@ -279,23 +315,27 @@ namespace OpenDental{
 			if(table.Rows.Count==0){
 				return;
 			}
-			Cur.AptNum      =PIn.PInt   (table.Rows[0][0].ToString());
-			Cur.PatNum      =PIn.PInt   (table.Rows[0][1].ToString());
-			Cur.AptStatus   =(ApptStatus)PIn.PInt(table.Rows[0][2].ToString());
-			Cur.Pattern     =PIn.PString(table.Rows[0][3].ToString());
-			Cur.Confirmed   =PIn.PInt   (table.Rows[0][4].ToString());
-			Cur.AddTime     =PIn.PInt   (table.Rows[0][5].ToString());
-			Cur.Op          =PIn.PInt   (table.Rows[0][6].ToString());
-			Cur.Note        =PIn.PString(table.Rows[0][7].ToString());
-			Cur.ProvNum     =PIn.PInt   (table.Rows[0][8].ToString());
-			Cur.ProvHyg     =PIn.PInt   (table.Rows[0][9].ToString());
-			Cur.AptDateTime =PIn.PDateT (table.Rows[0][10].ToString());
-			Cur.NextAptNum  =PIn.PInt   (table.Rows[0][11].ToString());
-			Cur.UnschedStatus =PIn.PInt (table.Rows[0][12].ToString());
-			Cur.Lab         =(LabCase)PIn.PInt(table.Rows[0][13].ToString());
-			Cur.IsNewPatient=PIn.PBool  (table.Rows[0][14].ToString());
-			Cur.ProcDescript=PIn.PString(table.Rows[0][15].ToString());
-			Cur.Assistant   =PIn.PInt   (table.Rows[0][16].ToString());
+			Cur.AptNum         =PIn.PInt   (table.Rows[0][0].ToString());
+			Cur.PatNum         =PIn.PInt   (table.Rows[0][1].ToString());
+			Cur.AptStatus      =(ApptStatus)PIn.PInt(table.Rows[0][2].ToString());
+			Cur.Pattern        =PIn.PString(table.Rows[0][3].ToString());
+			Cur.Confirmed      =PIn.PInt   (table.Rows[0][4].ToString());
+			Cur.AddTime        =PIn.PInt   (table.Rows[0][5].ToString());
+			Cur.Op             =PIn.PInt   (table.Rows[0][6].ToString());
+			Cur.Note           =PIn.PString(table.Rows[0][7].ToString());
+			Cur.ProvNum        =PIn.PInt   (table.Rows[0][8].ToString());
+			Cur.ProvHyg        =PIn.PInt   (table.Rows[0][9].ToString());
+			Cur.AptDateTime    =PIn.PDateT (table.Rows[0][10].ToString());
+			Cur.NextAptNum     =PIn.PInt   (table.Rows[0][11].ToString());
+			Cur.UnschedStatus  =PIn.PInt (table.Rows[0][12].ToString());
+			Cur.Lab            =(LabCase)PIn.PInt(table.Rows[0][13].ToString());
+			Cur.IsNewPatient   =PIn.PBool  (table.Rows[0][14].ToString());
+			Cur.ProcDescript   =PIn.PString(table.Rows[0][15].ToString());
+			Cur.Assistant      =PIn.PInt   (table.Rows[0][16].ToString());
+			Cur.InstructorNum  =PIn.PInt   (table.Rows[0][17].ToString());
+			Cur.SchoolClassNum =PIn.PInt   (table.Rows[0][18].ToString());
+			Cur.SchoolCourseNum=PIn.PInt   (table.Rows[0][19].ToString());
+			Cur.GradePoint     =PIn.PFloat (table.Rows[0][20].ToString());
 			CurOld=Cur;
 		}
 	

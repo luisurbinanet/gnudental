@@ -133,6 +133,10 @@ namespace OpenDental{
 		public bool SecPending;
 		///<summary>Foreign key to clinic.ClinicNum. Can be zero if not attached to a clinic or no clinics set up.</summary>
 		public int ClinicNum;
+		///<summary>Primary insurance patient ID.  If blank, SSN is used.</summary>
+		public string PriPatID;
+		///<summary>Secondary insurance patient ID.  If blank, SSN is used.</summary>
+		public string SecPatID;
 		//<summary>Decided not to add since this data is already available and synchronizing would take too much time.  Will add later.  Not editable. If the patient happens to have a future appointment, this will contain the date of that appointment.  Once appointment is set complete, this date is deleted.  If there is more than one appointment scheduled, this will only contain the earliest one.  Used mostly to exclude patients from recall lists.  If you want all future appointments, use Appointments.GetForPat() instead. You can loop through that list and exclude appointments with dates earlier than today.</summary>
 		//public DateTime DateScheduled;
 
@@ -199,12 +203,18 @@ namespace OpenDental{
 			p.PriPending=PriPending;
 			p.SecPending=SecPending;
 			p.ClinicNum=ClinicNum;
+			p.PriPatID=PriPatID;
+			p.SecPatID=SecPatID;
 			return p;
 		}
 	
-		///<summary>ONLY for new patients. Uses InsertID to fill PatNum.</summary>
-		public void Insert(){
-			string command= "INSERT INTO patient (lname,fname,middlei,preferred,patstatus,gender,"
+		///<summary>ONLY for new patients. Set includePatNum to true for use the patnum from the import function.  Otherwise, uses InsertID to fill PatNum.</summary>
+		public void Insert(bool includePatNum){
+			string command= "INSERT INTO patient (";
+			if(includePatNum){
+				command+="PatNum,";
+			}
+			command+="lname,fname,middlei,preferred,patstatus,gender,"
 				+"position,birthdate,ssn,address,address2,city,state,zip,hmphone,wkphone,wirelessphone,"
 				+"guarantor,credittype,email,salutation,priplannum,prirelationship,secplannum,"
 				+"secrelationship,estbalance,nextaptnum,priprov,secprov,feesched,billingtype,"
@@ -212,8 +222,11 @@ namespace OpenDental{
 				+"studentstatus,schoolname,chartnumber,medicaidid"
 				+",Bal_0_30,Bal_31_60,Bal_61_90,BalOver90,insest,primaryteeth,BalTotal"
 				+",EmployerNum,EmploymentNote,Race,County,GradeSchool,GradeLevel,Urgency,DateFirstVisit"
-				+",PriPending,SecPending,ClinicNum) VALUES("
-				+"'"+POut.PString(LName)+"', "
+				+",PriPending,SecPending,ClinicNum,PriPatID,SecPatID) VALUES(";
+			if(includePatNum){
+				command+="'"+POut.PInt(PatNum)+"', ";
+			}
+			command+="'"+POut.PString(LName)+"', "
 				+"'"+POut.PString(FName)+"', "
 				+"'"+POut.PString(MiddleI)+"', "
 				+"'"+POut.PString(Preferred)+"', "
@@ -272,7 +285,9 @@ namespace OpenDental{
 				+"'"+POut.PDate  (DateFirstVisit)+"', "
 				+"'"+POut.PBool  (PriPending)+"', "
 				+"'"+POut.PBool  (SecPending)+"', "
-				+"'"+POut.PInt   (ClinicNum)+"')";
+				+"'"+POut.PInt   (ClinicNum)+"', "
+				+"'"+POut.PString(PriPatID)+"', "
+				+"'"+POut.PString(SecPatID)+"')";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
  			dcon.NonQ(command,true);
@@ -580,6 +595,16 @@ namespace OpenDental{
 			if(ClinicNum!=CurOld.ClinicNum){
 				if(comma) c+=",";
 				c+="ClinicNum = '"     +POut.PInt   (ClinicNum)+"'";
+				comma=true;
+			}
+			if(PriPatID!=CurOld.PriPatID){
+				if(comma) c+=",";
+				c+="PriPatID = '"     +POut.PString(PriPatID)+"'";
+				comma=true;
+			}
+			if(SecPatID!=CurOld.SecPatID){
+				if(comma) c+=",";
+				c+="SecPatID = '"     +POut.PString(SecPatID)+"'";
 				comma=true;
 			}
 			if(!comma)

@@ -15,7 +15,7 @@ using System.IO;
 
 namespace OpenDental{
 	///<summary></summary>
-	public class FormConfig : System.Windows.Forms.Form{
+	public class FormChooseDatabase : System.Windows.Forms.Form{
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label label3;
@@ -29,7 +29,7 @@ namespace OpenDental{
 		///<summary></summary>
     public static string Database;
 		///<summary></summary>
-    public static string User;
+    public static string DbUser;
 		///<summary></summary>
     public static string Password;
 		//public static int Port;
@@ -53,9 +53,11 @@ namespace OpenDental{
 		private System.Windows.Forms.ComboBox comboComputerName;
 		private System.Windows.Forms.ComboBox comboDatabase;
 		private bool mysqlIsStarted;
+		///<summary>user lowercase is for internal OD security.  this.DbUser capital is for the MySQL user.  Don't get them confused.</summary>
+		private User user;
 
 		///<summary></summary>
-		public FormConfig(){
+		public FormChooseDatabase(){
 			InitializeComponent();
 			//textPort.MaxVal=System.Int32.MaxValue;
 			Lan.F(this);
@@ -324,7 +326,7 @@ namespace OpenDental{
 			this.butInstall.Visible = false;
 			this.butInstall.Click += new System.EventHandler(this.butInstall_Click);
 			// 
-			// FormConfig
+			// FormChooseDatabase
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(708, 582);
@@ -334,7 +336,7 @@ namespace OpenDental{
 			this.Controls.Add(this.butOK);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
-			this.Name = "FormConfig";
+			this.Name = "FormChooseDatabase";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Choose Database";
@@ -348,14 +350,23 @@ namespace OpenDental{
 		#endregion
 
 		private void FormConfig_Load(object sender, System.EventArgs e) {
-			if(!IsInStartup && !UserPermissions.CheckUserPassword("MySQL Config")){
-				MessageBox.Show(Lan.g(this,"You do not have permission for this feature."));
-				DialogResult=DialogResult.Cancel;
-				return;
+			if(!IsInStartup){
+				if(Permissions.AuthorizationRequired("MySQL Config")){
+					user=Users.Authenticate("MySQL Config");
+					if(user==null){
+						DialogResult=DialogResult.Cancel;
+						return;
+					}
+					if(!UserPermissions.IsAuthorized("MySQL Config",user)){
+						MsgBox.Show(this,"You do not have permission for this feature.");
+						DialogResult=DialogResult.Cancel;
+						return;
+					}	
+				}
 			}
 			originalComputerName=ComputerName;
 			originalDatabase=Database;
-			originalUser=User;
+			originalUser=DbUser;
 			originalPassword=Password;
 			//originalPort=Port;
 			GetConfig();
@@ -419,7 +430,7 @@ namespace OpenDental{
 		///<summary>Gets a list of all computer names on the network (this is not easy)</summary>
 		private string[] GetDatabases(){
 			ComputerName=comboComputerName.Text;
-			User=textUser.Text;
+			DbUser=textUser.Text;
 			Password=textPassword.Text;
 			DataConnection dcon=new DataConnection("mysql");//use the one table that we know exists
 			if(!dcon.IsValid()){
@@ -610,8 +621,8 @@ namespace OpenDental{
 								comboDatabase.Text=Database;
 								break;
 							case "User":
-								User=reader.Value;
-								textUser.Text=User;
+								DbUser=reader.Value;
+								textUser.Text=DbUser;
 								break;
 							case "Password":
 								Password=reader.Value;
@@ -677,7 +688,7 @@ namespace OpenDental{
 		private void ResetToOriginal(){
 			ComputerName=originalComputerName;
 			Database=originalDatabase;
-			User=originalUser;
+			DbUser=originalUser;
 			Password=originalPassword;
 			//Port=originalPort;
 			DataClass.SetConnection();
@@ -711,7 +722,7 @@ namespace OpenDental{
 			}*/
 			ComputerName=comboComputerName.Text;
 			Database=comboDatabase.Text;
-			User=textUser.Text;
+			DbUser=textUser.Text;
 			Password=textPassword.Text;
 			//Port=PIn.PInt(textPort.Text);
       DataClass.SetConnection();
@@ -739,7 +750,7 @@ namespace OpenDental{
 			xmlwriter.Close();
 			if(!IsInStartup){
 				//MessageBox.Show(Lan.g(this,"You must close Open Dental now, and reopen it."));
-				SecurityLogs.MakeLogEntry("MySQL Config","FreeDentalConfig.xml has been changed");
+				SecurityLogs.MakeLogEntry("MySQL Config","FreeDentalConfig.xml has been changed",user);
 			}
 			if(changing && !IsInStartup){
 				//MessageBox.Show(Lan.g(this,"Settings have been changed."));

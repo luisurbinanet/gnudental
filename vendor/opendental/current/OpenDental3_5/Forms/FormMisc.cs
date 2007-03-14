@@ -15,8 +15,6 @@ namespace OpenDental{
 		private System.Windows.Forms.CheckBox checkAutoRefresh;
 		private System.Windows.Forms.TextBox textMainWindowTitle;
 		private System.Windows.Forms.Label label14;
-		private System.Windows.Forms.Label label15;
-		private System.Windows.Forms.ComboBox comboPatientPictureCat;
 		private System.Windows.Forms.CheckBox checkITooth;
 		private System.Windows.Forms.CheckBox checkTreatPlanShowGraphics;
 		private System.Windows.Forms.CheckBox checkTreatPlanShowCompleted;
@@ -29,6 +27,7 @@ namespace OpenDental{
 		private System.Windows.Forms.RadioButton radioUseChartNumber;
 		private System.Windows.Forms.Label label2;
 		private OpenDental.ValidNumber textStatementsCalcDueDate;
+		private System.Windows.Forms.CheckBox checkEclaimsSeparateTreatProv;
 		private System.Windows.Forms.Label label1;// Required designer variable.
 
 		///<summary></summary>
@@ -58,8 +57,6 @@ namespace OpenDental{
 			this.checkAutoRefresh = new System.Windows.Forms.CheckBox();
 			this.textMainWindowTitle = new System.Windows.Forms.TextBox();
 			this.label14 = new System.Windows.Forms.Label();
-			this.label15 = new System.Windows.Forms.Label();
-			this.comboPatientPictureCat = new System.Windows.Forms.ComboBox();
 			this.checkITooth = new System.Windows.Forms.CheckBox();
 			this.checkTreatPlanShowGraphics = new System.Windows.Forms.CheckBox();
 			this.checkTreatPlanShowCompleted = new System.Windows.Forms.CheckBox();
@@ -72,6 +69,7 @@ namespace OpenDental{
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
 			this.radioUsePatNum = new System.Windows.Forms.RadioButton();
 			this.radioUseChartNumber = new System.Windows.Forms.RadioButton();
+			this.checkEclaimsSeparateTreatProv = new System.Windows.Forms.CheckBox();
 			this.groupBox1.SuspendLayout();
 			this.groupBox5.SuspendLayout();
 			this.groupBox2.SuspendLayout();
@@ -84,7 +82,7 @@ namespace OpenDental{
 			this.butOK.Autosize = true;
 			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butOK.Location = new System.Drawing.Point(677, 315);
+			this.butOK.Location = new System.Drawing.Point(792, 453);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 7;
@@ -99,7 +97,7 @@ namespace OpenDental{
 			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.Location = new System.Drawing.Point(677, 353);
+			this.butCancel.Location = new System.Drawing.Point(792, 491);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 8;
@@ -146,7 +144,7 @@ namespace OpenDental{
 			// 
 			// textMainWindowTitle
 			// 
-			this.textMainWindowTitle.Location = new System.Drawing.Point(143, 317);
+			this.textMainWindowTitle.Location = new System.Drawing.Point(143, 316);
 			this.textMainWindowTitle.Name = "textMainWindowTitle";
 			this.textMainWindowTitle.Size = new System.Drawing.Size(333, 20);
 			this.textMainWindowTitle.TabIndex = 38;
@@ -154,38 +152,19 @@ namespace OpenDental{
 			// 
 			// label14
 			// 
-			this.label14.Location = new System.Drawing.Point(-7, 319);
+			this.label14.Location = new System.Drawing.Point(-7, 318);
 			this.label14.Name = "label14";
 			this.label14.Size = new System.Drawing.Size(149, 17);
 			this.label14.TabIndex = 39;
 			this.label14.Text = "Main Window Title";
 			this.label14.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
-			// label15
-			// 
-			this.label15.Location = new System.Drawing.Point(518, 260);
-			this.label15.Name = "label15";
-			this.label15.Size = new System.Drawing.Size(237, 17);
-			this.label15.TabIndex = 40;
-			this.label15.Text = "Image Category for Patient Picture";
-			this.label15.TextAlign = System.Drawing.ContentAlignment.TopRight;
-			this.label15.Visible = false;
-			// 
-			// comboPatientPictureCat
-			// 
-			this.comboPatientPictureCat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboPatientPictureCat.Location = new System.Drawing.Point(661, 282);
-			this.comboPatientPictureCat.Name = "comboPatientPictureCat";
-			this.comboPatientPictureCat.Size = new System.Drawing.Size(261, 21);
-			this.comboPatientPictureCat.TabIndex = 41;
-			this.comboPatientPictureCat.Visible = false;
-			// 
 			// checkITooth
 			// 
 			this.checkITooth.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkITooth.Location = new System.Drawing.Point(48, 341);
+			this.checkITooth.Location = new System.Drawing.Point(48, 358);
 			this.checkITooth.Name = "checkITooth";
-			this.checkITooth.Size = new System.Drawing.Size(334, 24);
+			this.checkITooth.Size = new System.Drawing.Size(338, 21);
 			this.checkITooth.TabIndex = 42;
 			this.checkITooth.Text = "Use International Tooth Numbers (11-48)";
 			// 
@@ -306,16 +285,26 @@ namespace OpenDental{
 			this.radioUseChartNumber.TabStop = true;
 			this.radioUseChartNumber.Text = "Chart Number";
 			// 
+			// checkEclaimsSeparateTreatProv
+			// 
+			this.checkEclaimsSeparateTreatProv.CheckAlign = System.Drawing.ContentAlignment.TopLeft;
+			this.checkEclaimsSeparateTreatProv.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkEclaimsSeparateTreatProv.Location = new System.Drawing.Point(48, 340);
+			this.checkEclaimsSeparateTreatProv.Name = "checkEclaimsSeparateTreatProv";
+			this.checkEclaimsSeparateTreatProv.Size = new System.Drawing.Size(537, 19);
+			this.checkEclaimsSeparateTreatProv.TabIndex = 53;
+			this.checkEclaimsSeparateTreatProv.Text = "On e-claims, send treating provider info for each separate procedure";
+			this.checkEclaimsSeparateTreatProv.TextAlign = System.Drawing.ContentAlignment.TopLeft;
+			// 
 			// FormMisc
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(784, 391);
+			this.ClientSize = new System.Drawing.Size(899, 529);
+			this.Controls.Add(this.checkEclaimsSeparateTreatProv);
 			this.Controls.Add(this.groupBox5);
 			this.Controls.Add(this.checkAllowMultipleCopiesOfProgram);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.checkITooth);
-			this.Controls.Add(this.comboPatientPictureCat);
-			this.Controls.Add(this.label15);
 			this.Controls.Add(this.label14);
 			this.Controls.Add(this.textMainWindowTitle);
 			this.Controls.Add(this.butCancel);
@@ -354,6 +343,7 @@ namespace OpenDental{
 			checkAutoRefresh.Checked=Prefs.GetBool("AutoRefreshIsDisabled");
 			checkAllowMultipleCopiesOfProgram.Checked=Prefs.GetBool("AllowMultipleCopiesOfProgram");
 			textMainWindowTitle.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString;
+			checkEclaimsSeparateTreatProv.Checked=Prefs.GetBool("EclaimsSeparateTreatProv");
 			checkITooth.Checked=Prefs.GetBool("UseInternationalToothNumbers");
 		}
 
@@ -365,15 +355,16 @@ namespace OpenDental{
 			}
 			bool changed=false;
 			if( Prefs.UpdateString("TreatmentPlanNote",textTreatNote.Text)
-				| Prefs.UpdateBool("TreatPlanShowGraphics",checkTreatPlanShowGraphics.Checked)
-				| Prefs.UpdateBool("TreatPlanShowCompleted",checkTreatPlanShowCompleted.Checked)
-				| Prefs.UpdateBool("TreatPlanShowIns",checkTreatPlanShowIns.Checked)
-				| Prefs.UpdateBool("StatementShowCreditCard",checkShowCC.Checked)
-				| Prefs.UpdateBool("StatementAccountsUseChartNumber",radioUseChartNumber.Checked)
-				| Prefs.UpdateBool("AutoRefreshIsDisabled",checkAutoRefresh.Checked)
-				| Prefs.UpdateBool("AllowMultipleCopiesOfProgram",checkAllowMultipleCopiesOfProgram.Checked)
-				| Prefs.UpdateString("MainWindowTitle",textMainWindowTitle.Text)
-				| Prefs.UpdateBool("UseInternationalToothNumbers",checkITooth.Checked))
+				|| Prefs.UpdateBool("TreatPlanShowGraphics",checkTreatPlanShowGraphics.Checked)
+				|| Prefs.UpdateBool("TreatPlanShowCompleted",checkTreatPlanShowCompleted.Checked)
+				|| Prefs.UpdateBool("TreatPlanShowIns",checkTreatPlanShowIns.Checked)
+				|| Prefs.UpdateBool("StatementShowCreditCard",checkShowCC.Checked)
+				|| Prefs.UpdateBool("StatementAccountsUseChartNumber",radioUseChartNumber.Checked)
+				|| Prefs.UpdateBool("AutoRefreshIsDisabled",checkAutoRefresh.Checked)
+				|| Prefs.UpdateBool("AllowMultipleCopiesOfProgram",checkAllowMultipleCopiesOfProgram.Checked)
+				|| Prefs.UpdateString("MainWindowTitle",textMainWindowTitle.Text)
+				|| Prefs.UpdateBool("EclaimsSeparateTreatProv",checkEclaimsSeparateTreatProv.Checked)
+				|| Prefs.UpdateBool("UseInternationalToothNumbers",checkITooth.Checked))
 			{
 				changed=true;
 			}
@@ -397,6 +388,7 @@ namespace OpenDental{
 			DialogResult=DialogResult.Cancel;
 		}
 
+		
 	
 
 	}

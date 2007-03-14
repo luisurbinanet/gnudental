@@ -9,25 +9,10 @@ namespace OpenDental{
 	
 	///<summary></summary>
 	public class Patients{
-		//<summary>Current patient.</summary>
-		//private static Patient curr;
-		//<summary>Used during patient.update.  Stores the original data before any changes were made.</summary>
-		//public static Patient CurOld;
 		///<summary>A list of all patient names. Key=patNum, value=formatted name.  Fill with GetHList.</summary>
 		public static Hashtable HList;
 		///<summary>Collection of Patients. The last five patients. Gets displayed on dropdown button.</summary>
 		private static ArrayList buttonLastFive;
-
-		//<summary>Current Patient. This will be phased out eventually along with all other global variables.</summary>
-		/*public static Patient Curr{
-			get{
-				return curr;
-			}
-			set{
-				curr=value;
-				//curOld=value;
-			}
-		}*/
 
 		///<summary>Returns a Family object for the supplied patNum.  Use Family.GetPatient to extract the desired patient from the family.</summary>
 		public static Family GetFamily(int patNum){
@@ -37,11 +22,6 @@ namespace OpenDental{
 			DataConnection dcon=new DataConnection();
  			DataTable table=dcon.GetTable(command);
 			if(table.Rows.Count==0){
-				//PatIsLoaded=false;
-				//cur=null;
-				//Family.List=null;//new Patient[1];
-				//FamilyList[0]=cur;
-				//GuarIndex=0;
 				return null;
 			}
 			command= 
@@ -60,19 +40,10 @@ namespace OpenDental{
 			return SubmitAndFill(command)[0];
 		}
 
-		private static Patient[] SubmitAndFill(string command){//,int patNum){//,bool isSingle){
-			//MessageBox.Show(cmd.CommandText);
+		private static Patient[] SubmitAndFill(string command){
 			DataConnection dcon=new DataConnection();
  			DataTable table=dcon.GetTable(command);
 			Patient[] retVal=new Patient[table.Rows.Count];
-			//if(isSingle){
-				//
-			//}
-			//else{
-			//	Family.List=new Patient[table.Rows.Count];
-			//}
-			//MessageBox.Show(table.Rows.Count.ToString());
-			//Patient tempPat;
 			for(int i=0;i<table.Rows.Count;i++){
 				retVal[i]=new Patient();
 				retVal[i].PatNum       = PIn.PInt   (table.Rows[i][0].ToString());
@@ -138,23 +109,10 @@ namespace OpenDental{
 				retVal[i].PriPending   = PIn.PBool  (table.Rows[i][58].ToString());
 				retVal[i].SecPending   = PIn.PBool  (table.Rows[i][59].ToString());
 				retVal[i].ClinicNum    = PIn.PInt   (table.Rows[i][60].ToString());
-				//if(isSingle){
-				//	retVal=tempPat.Copy();
-				//}
-				//else{
-				//	Family.List[i]=tempPat.Copy();
-				//	if(Family.List[i].PatNum==patNum){
-				//		cur=Family.List[i].Copy();
-				//		CurOld=Family.List[i].Copy();
-				//	}
-					//if(FamilyList[i].Guarantor==FamilyList[i].PatNum)
-					//	GuarIndex=i;
-				//}
+				retVal[i].PriPatID     = PIn.PString(table.Rows[i][61].ToString());
+				retVal[i].SecPatID     = PIn.PString(table.Rows[i][62].ToString());
 			}
-			//if(!isSingle){
-				//PatIsLoaded=true;
-			//}
-			return retVal;//really only used when isSingle
+			return retVal;
 		}
 
  		///<summary>Only used for the Select Patient dialog</summary>
@@ -334,6 +292,8 @@ namespace OpenDental{
 				multPats[i].PriPending   = PIn.PBool  (table.Rows[i][58].ToString());
 				multPats[i].SecPending   = PIn.PBool  (table.Rows[i][59].ToString());
 				multPats[i].ClinicNum    = PIn.PInt   (table.Rows[i][60].ToString());
+				multPats[i].PriPatID     = PIn.PString(table.Rows[i][61].ToString());
+				multPats[i].SecPatID     = PIn.PString(table.Rows[i][62].ToString());
 			}
 			return multPats;
 		}
@@ -373,9 +333,6 @@ namespace OpenDental{
 			Lim.PriPlanNum = PIn.PInt   (table.Rows[0][7].ToString());
 			Lim.SSN        = PIn.PString(table.Rows[0][8].ToString());
 			return Lim;
-			//if(Lim.Preferred=="")
-			//	LimName=Lim.LName+", "+Lim.FName+" "+Lim.MiddleI;
-			//else LimName=Lim.LName+", '"+Lim.Preferred+"' "+Lim.FName+" "+Lim.MiddleI;
 		}
 
 		///<summary></summary>

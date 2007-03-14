@@ -35,9 +35,8 @@ namespace OpenDental{
 			Buttons[3]=new OutlookButton("Treat' Plan",3);
 			Buttons[4]=new OutlookButton("Chart",4);
 			Buttons[5]=new OutlookButton("Images",5);
-			Buttons[6]=new OutlookButton("Staff",6);
+			Buttons[6]=new OutlookButton("Manage",6);
 			UpdateAll();
-			// TODO: Add any initialization after the InitComponent call
 		}
 
 		/// <summary>Clean up any resources being used.</summary>

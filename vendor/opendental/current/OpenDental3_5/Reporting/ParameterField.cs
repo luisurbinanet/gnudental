@@ -18,6 +18,7 @@ namespace OpenDental.Reporting
 		private string snippet;
 		private EnumType enumerationType;
 		private DefCat defCategory;
+		private ReportFKType fKeyType;
 
 #region Properties
 		///<summary>This is the name as it will show in the query, but without the preceding question mark.</summary>
@@ -101,6 +102,15 @@ namespace OpenDental.Reporting
 				defCategory=value;
 			}
 		}
+		///<summary>If ValueKind is ForeignKey, then this specifies which one.</summary>
+		public ReportFKType FKeyType{
+			get{
+				return fKeyType;
+			}
+			set{
+				fKeyType=value;
+			}
+		}
 #endregion
 
 		///<summary>Default constructor. Used when retrieving data from db.</summary>
@@ -118,6 +128,7 @@ namespace OpenDental.Reporting
 			snippet=thisSnippet;
 			enumerationType=EnumType.ApptStatus;//arbitrary
 			defCategory=DefCat.AccountColors;//arbitrary
+			fKeyType=ReportFKType.None;
 		}
 
 		///<summary>Overload for ValueKind Enum.</summary>
@@ -129,6 +140,7 @@ namespace OpenDental.Reporting
 			snippet=thisSnippet;
 			enumerationType=thisEnumerationType;
 			defCategory=DefCat.AccountColors;//arbitrary
+			fKeyType=ReportFKType.None;
 		}
 
 		///<summary>Overload for ValueKind DefCat.</summary>
@@ -140,6 +152,19 @@ namespace OpenDental.Reporting
 			snippet=thisSnippet;
 			enumerationType=EnumType.ApptStatus;//arbitrary
 			defCategory=thisDefCategory;
+			fKeyType=ReportFKType.None;
+		}
+
+		///<summary>Overload for ValueKind ForeignKey.</summary>
+		public ParameterField(string thisName,FieldValueType thisValueType,ArrayList theseDefaultValues,string thisPromptingText,string thisSnippet,ReportFKType thisReportFKType){
+			name=thisName;
+			valueType=thisValueType;
+			defaultValues=theseDefaultValues;
+			promptingText=thisPromptingText;
+			snippet=thisSnippet;
+			enumerationType=EnumType.ApptStatus;//arbitrary
+			defCategory=DefCat.AccountColors;//arbitrary
+			fKeyType=thisReportFKType;
 		}
 
 		/*
@@ -218,7 +243,9 @@ namespace OpenDental.Reporting
 		///<summary>Field takes definition.DefNum value from a def category. Presented to user as a dropdown list for that category.</summary>
 		Def,
 		///<summary>Only used in ReportObject. When a table comes back from the database, if the expected value is an age, then this column type should be used.  Just retreive the birthdate and the program will convert it to an age.</summary>
-		Age
+		Age,
+		///<summary></summary>
+		ForeignKey
 	}
 
 	

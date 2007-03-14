@@ -497,8 +497,8 @@ namespace OpenDental.Reporting
 					}
 					g.DrawString(displayText,fieldObject.Font,Brushes.Black,layoutRect,strFormat);
 				}
-				//todo: else if lines
-				//todo: else if boxes.
+				//incomplete: else if lines
+				//incomplete: else if boxes.
 			}//foreach reportObject
 			//sectionsPrinted=sectionIndex+1;//mark current section as printed.
 			//MessageBox.Show(pagesPrinted.ToString()+","+sectionsPrinted.ToString());
@@ -591,8 +591,8 @@ namespace OpenDental.Reporting
 						g.DrawString(displayText,fieldObject.Font
 							,new SolidBrush(fieldObject.ForeColor),layoutRect,strFormat);
 					}
-					//todo: else if lines
-					//todo: else if boxes.
+					//incomplete: else if lines
+					//incomplete: else if boxes.
 				}//foreach reportObject
 				yPos+=section.Height;
 			}//for i rows

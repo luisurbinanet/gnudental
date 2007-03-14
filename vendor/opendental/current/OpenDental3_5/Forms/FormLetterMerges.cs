@@ -362,11 +362,10 @@ namespace OpenDental{
 				}
 			}
 			command+=" FROM patient "
-				+"LEFT JOIN refattach ON patient.PatNum=refattach.PatNum "
+				+"LEFT JOIN refattach ON patient.PatNum=refattach.PatNum AND refattach.IsFrom=1 "
 				+"LEFT JOIN referral ON refattach.ReferralNum=referral.ReferralNum "
 				+"WHERE patient.PatNum="+POut.PInt(PatCur.PatNum)
-				+" AND refattach.IsFrom=1 "
-				+"GROUP BY patient.PatNum "
+				+" GROUP BY patient.PatNum "
 				+"ORDER BY refattach.ItemOrder";
 			//MessageBox.Show(command);
 			DataConnection dcon=new DataConnection();

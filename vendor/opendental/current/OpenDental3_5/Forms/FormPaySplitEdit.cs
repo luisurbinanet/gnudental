@@ -114,6 +114,8 @@ namespace OpenDental
 			this.checkPatOtherFam = new System.Windows.Forms.CheckBox();
 			this.groupPatient = new System.Windows.Forms.GroupBox();
 			this.groupProcedure = new System.Windows.Forms.GroupBox();
+			this.textProcTooth = new System.Windows.Forms.TextBox();
+			this.label14 = new System.Windows.Forms.Label();
 			this.textProcProv = new System.Windows.Forms.TextBox();
 			this.textProcDescription = new System.Windows.Forms.TextBox();
 			this.textProcDate2 = new System.Windows.Forms.TextBox();
@@ -136,8 +138,6 @@ namespace OpenDental
 			this.label2 = new System.Windows.Forms.Label();
 			this.butDetach = new OpenDental.UI.Button();
 			this.butAttach = new OpenDental.UI.Button();
-			this.textProcTooth = new System.Windows.Forms.TextBox();
-			this.label14 = new System.Windows.Forms.Label();
 			this.groupPatient.SuspendLayout();
 			this.groupProcedure.SuspendLayout();
 			this.SuspendLayout();
@@ -280,6 +280,7 @@ namespace OpenDental
 			// 
 			this.textDatePay.Location = new System.Drawing.Point(129, 26);
 			this.textDatePay.Name = "textDatePay";
+			this.textDatePay.ReadOnly = true;
 			this.textDatePay.Size = new System.Drawing.Size(92, 20);
 			this.textDatePay.TabIndex = 22;
 			this.textDatePay.Text = "";
@@ -351,12 +352,31 @@ namespace OpenDental
 			this.groupProcedure.Controls.Add(this.label2);
 			this.groupProcedure.Controls.Add(this.butDetach);
 			this.groupProcedure.Controls.Add(this.butAttach);
+			this.groupProcedure.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupProcedure.Location = new System.Drawing.Point(130, 208);
 			this.groupProcedure.Name = "groupProcedure";
 			this.groupProcedure.Size = new System.Drawing.Size(559, 225);
 			this.groupProcedure.TabIndex = 113;
 			this.groupProcedure.TabStop = false;
 			this.groupProcedure.Text = "Procedure";
+			// 
+			// textProcTooth
+			// 
+			this.textProcTooth.Location = new System.Drawing.Point(115, 95);
+			this.textProcTooth.Name = "textProcTooth";
+			this.textProcTooth.ReadOnly = true;
+			this.textProcTooth.Size = new System.Drawing.Size(43, 20);
+			this.textProcTooth.TabIndex = 46;
+			this.textProcTooth.Text = "";
+			// 
+			// label14
+			// 
+			this.label14.Location = new System.Drawing.Point(9, 98);
+			this.label14.Name = "label14";
+			this.label14.Size = new System.Drawing.Size(104, 16);
+			this.label14.TabIndex = 45;
+			this.label14.Text = "Tooth";
+			this.label14.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// textProcProv
 			// 
@@ -570,24 +590,6 @@ namespace OpenDental
 			this.butAttach.TabIndex = 8;
 			this.butAttach.Text = "Attach";
 			this.butAttach.Click += new System.EventHandler(this.butAttach_Click);
-			// 
-			// textProcTooth
-			// 
-			this.textProcTooth.Location = new System.Drawing.Point(115, 95);
-			this.textProcTooth.Name = "textProcTooth";
-			this.textProcTooth.ReadOnly = true;
-			this.textProcTooth.Size = new System.Drawing.Size(43, 20);
-			this.textProcTooth.TabIndex = 46;
-			this.textProcTooth.Text = "";
-			// 
-			// label14
-			// 
-			this.label14.Location = new System.Drawing.Point(9, 98);
-			this.label14.Name = "label14";
-			this.label14.Size = new System.Drawing.Size(104, 16);
-			this.label14.TabIndex = 45;
-			this.label14.Text = "Tooth";
-			this.label14.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// FormPaySplitEdit
 			// 
@@ -855,7 +857,7 @@ namespace OpenDental
 				MessageBox.Show(Lan.g(this,"Please enter an amount."));	
 				return;
 			}
-			PaySplitCur.DatePay=PIn.PDate(textDatePay.Text);
+			PaySplitCur.DatePay=PIn.PDate(textDatePay.Text);//gets overwritten anyway
 			PaySplitCur.ProcDate=PIn.PDate(textProcDate.Text);
 			PaySplitCur.SplitAmt=PIn.PDouble(textAmount.Text);
 			if(listProvider.SelectedIndex!=-1)
@@ -865,12 +867,7 @@ namespace OpenDental
 			//	PaySplitCur.PatNum=FamCur.List[listPatient.SelectedIndex].PatNum;
 			//}
 			//PayPlanNum already handled
-			if(IsNew){
-				PaySplitCur.Insert();
-			}
-			else{
-				PaySplitCur.Update();
-			}
+			PaySplitCur.InsertOrUpdate(IsNew);
 			DialogResult=DialogResult.OK;
 		}
 

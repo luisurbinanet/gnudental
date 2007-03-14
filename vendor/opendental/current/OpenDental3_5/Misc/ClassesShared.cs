@@ -155,7 +155,7 @@ namespace OpenDental{
 /*=================================Class DataValid=========================================
 ===========================================================================================*/
 
-	///<summary></summary>
+	///<summary>Handles a global event to keep local data synchronized.</summary>
 	public class DataValid{
 
 		///<summary></summary>
@@ -163,12 +163,17 @@ namespace OpenDental{
 
 		///<summary>Triggers an event that causes a signal to be sent to all other computers telling them what kind of locally stored data needs to be updated.  Either supply a set of flags for the types, or supply a date if the appointment screen needs to be refreshed.</summary>
 		public static void SetInvalid(InvalidTypes itypes){
-			OnBecameInvalid(new OpenDental.ValidEventArgs(DateTime.MinValue,itypes));
+			OnBecameInvalid(new OpenDental.ValidEventArgs(DateTime.MinValue,itypes,false));
 		}
 
 		///<summary>Triggers an event that causes a signal to be sent to all other computers telling them what kind of locally stored data needs to be updated.  Either supply a set of flags for the types, or supply a date if the appointment screen needs to be refreshed.</summary>
 		public static void SetInvalid(DateTime date){
-			OnBecameInvalid(new OpenDental.ValidEventArgs(date,InvalidTypes.Date));
+			OnBecameInvalid(new OpenDental.ValidEventArgs(date,InvalidTypes.Date,false));
+		}
+
+		///<summary>Triggers an event that only causes this computer to refresh itself as if starting up.  Does not send out signal to other computers.  Used when restoring database from a backup.</summary>
+		public static void SetInvalid(bool onlyLocal){
+			OnBecameInvalid(new OpenDental.ValidEventArgs(DateTime.MinValue,InvalidTypes.AllLocal,true));
 		}
 
 		///<summary></summary>
@@ -187,39 +192,114 @@ namespace OpenDental{
 	public class ValidEventArgs : System.EventArgs{
 		private DateTime dateViewing;
 		private InvalidTypes itypes;
+		private bool onlyLocal;
 		
 		///<summary></summary>
-		public ValidEventArgs(DateTime dateViewing, InvalidTypes itypes) : base(){
+		public ValidEventArgs(DateTime dateViewing, InvalidTypes itypes,bool onlyLocal) : base(){
 			this.dateViewing=dateViewing;
 			this.itypes=itypes;
+			this.onlyLocal=onlyLocal;
 		}
 
 		///<summary></summary>
-		public DateTime DateViewing{get{return dateViewing;}}
+		public DateTime DateViewing{
+			get{return dateViewing;}
+		}
+
 		///<summary></summary>
-		public InvalidTypes ITypes{get{return itypes;}}
+		public InvalidTypes ITypes{
+			get{return itypes;}
+		}
+
+		///<summary></summary>
+		public bool OnlyLocal{
+			get{return onlyLocal;}
+		}
+
 	}
 
 	/*=================================Class ExitApplicationNow=========================================
 ===========================================================================================*/
 
-	///<summary>This really needs to be rewritten.  I mean it works, but it's clumsy.</summary>
+	///<summary></summary>
 	public class ExitApplicationNow{
 		///<summary></summary>
-		public static event System.EventHandler WantsToExit;
+		public static event GenericEventHandler WantsToExit;
 
-		///<summary></summary>
-		public void ExitNow(){
+		///<summary>This triggers a global event which the main form responds to by closing the program.</summary>
+		public static void ExitNow(){
 			OnWantsToExit(new System.EventArgs());
 		}
 
 		///<summary></summary>
-		protected virtual void OnWantsToExit(System.EventArgs e){
+		protected static void OnWantsToExit(System.EventArgs e){
 			if(WantsToExit !=null){
-				WantsToExit(this,e);
+				WantsToExit(e);
 			}
 		}
+	}
 
+	///<summary>This is used for our global events.  Used because 'this' not required.</summary>
+	public delegate void GenericEventHandler(System.EventArgs e);
+
+	/*=================================Class GotoModule==================================================
+	===========================================================================================*/
+
+	///<summary>Used to trigger a global event to jump between modules and perform actions in other modules.</summary>
+	public class GotoModule{
+		///<summary></summary>
+		public static event ModuleEventHandler ModuleSelected;
+
+		///<summary>This triggers a global event which the main form responds to by closing the program.</summary>
+		public static void GoNow(DateTime dateSelected, Appointment pinAppt,int selectedAptNum,int iModule){
+			OnModuleSelected(new ModuleEventArgs(dateSelected,pinAppt,selectedAptNum,iModule));
+		}
+
+		///<summary></summary>
+		protected static void OnModuleSelected(ModuleEventArgs e){
+			if(ModuleSelected !=null){
+				ModuleSelected(e);
+			}
+		}
+	}
+
+	///<summary>This is used for our global module events.</summary>
+	public delegate void ModuleEventHandler(ModuleEventArgs e);
+
+	///<summary></summary>
+	public class ModuleEventArgs : System.EventArgs{
+		private DateTime dateSelected;
+		private Appointment pinAppt;
+		private int selectedAptNum;
+		private int iModule;
+		
+		///<summary></summary>
+		public ModuleEventArgs(DateTime dateSelected,Appointment pinAppt,int selectedAptNum,int iModule) : base(){
+			this.dateSelected=dateSelected;
+			this.pinAppt=pinAppt;
+			this.selectedAptNum=selectedAptNum;
+			this.iModule=iModule;
+		}
+
+		///<summary>If going to the ApptModule, this lets you pick a date.</summary>
+		public DateTime DateSelected{
+			get{return dateSelected;}
+		}
+
+		///<summary></summary>
+		public Appointment PinAppt{
+			get{return pinAppt;}
+		}
+
+		///<summary></summary>
+		public int SelectedAptNum{
+			get{return selectedAptNum;}
+		}
+
+		///<summary></summary>
+		public int IModule{
+			get{return iModule;}
+		}
 	}
 
 	/*=================================Class TelephoneNumbers============================================*/
@@ -227,32 +307,47 @@ namespace OpenDental{
 	///<summary></summary>
 	public class TelephoneNumbers{
 
-		///<summary></summary>
+		///<summary>only used in the tool that loops through the database fixing telephone numbers.</summary>
 		public static string ReFormat(string phoneNum){
-			//only used in the tool that loops through the database fixing telephone numbers.
 			Regex regex;
 			regex=new Regex(@"^\d{10}");//eg. 5033635432
 			if(regex.IsMatch(phoneNum)){
-				return("("+phoneNum.Substring(0,3)+")"+phoneNum.Substring(3,3)+"-"+phoneNum.Substring(6));
+				return "("+phoneNum.Substring(0,3)+")"+phoneNum.Substring(3,3)+"-"+phoneNum.Substring(6);
 			}
 			regex=new Regex(@"^\d{3}-\d{3}-\d{4}");//eg. 503-363-5432
 			if(regex.IsMatch(phoneNum)){
-				return("("+phoneNum.Substring(0,3)+")"+phoneNum.Substring(4));
+				return "("+phoneNum.Substring(0,3)+")"+phoneNum.Substring(4);
 			}
 			regex=new Regex(@"^\d-\d{3}-\d{3}-\d{4}");//eg. 1-503-363-5432 to 1(503)363-5432
 			if(regex.IsMatch(phoneNum)){
-				return(phoneNum.Substring(0,1)+"("+phoneNum.Substring(2,3)+")"+phoneNum.Substring(6));
+				return phoneNum.Substring(0,1)+"("+phoneNum.Substring(2,3)+")"+phoneNum.Substring(6);
 			}
 			regex=new Regex(@"^\d{3} \d{3}-\d{4}");//eg 503 363-5432
 			if(regex.IsMatch(phoneNum)){
-				return("("+phoneNum.Substring(0,3)+")"+phoneNum.Substring(4));
+				return "("+phoneNum.Substring(0,3)+")"+phoneNum.Substring(4);
 			}
-			return phoneNum;     
+			//Keyush Shah 04/21/05 Added more formats:
+			regex=new Regex(@"^\d{3} \d{3} \d{4}");//eg 916 363 5432
+			if(regex.IsMatch(phoneNum)){
+				return "("+phoneNum.Substring(0,3)+")"+phoneNum.Substring(4,3)+"-"+phoneNum.Substring(8,4);
+			}
+      regex=new Regex(@"^\(\d{3}\) \d{3} \d{4}");//eg (916) 363 5432
+			if(regex.IsMatch(phoneNum)){
+				return "("+phoneNum.Substring(1,3)+")"+phoneNum.Substring(6,3)+"-"+phoneNum.Substring(10,4);
+			}
+			regex=new Regex(@"^\(\d{3}\) \d{3}-\d{4}");//eg (916) 363-5432
+			if(regex.IsMatch(phoneNum)){
+				return "("+phoneNum.Substring(1,3)+")"+phoneNum.Substring(6,3)+"-"+phoneNum.Substring(10,4);
+			}
+			regex=new Regex(@"^\d{7}$");//eg 3635432
+			if(regex.IsMatch(phoneNum)){
+				return(phoneNum.Substring(0,3)+"-"+phoneNum.Substring(3));
+			}
+			return phoneNum;   
 		}
 
-		///<summary></summary>
+		///<summary>reformats initial entry with each keystroke</summary>
 		public static string AutoFormat(string phoneNum){
-			//reformats initial entry with each keystroke
 			if(CultureInfo.CurrentCulture.Name!="en-US"){
 				return phoneNum;
 			}

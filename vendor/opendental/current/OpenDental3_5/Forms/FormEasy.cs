@@ -18,6 +18,7 @@ namespace OpenDental{
 		private System.Windows.Forms.CheckBox checkBasicModules;
 		private System.Windows.Forms.CheckBox checkPublicHealth;
 		private System.Windows.Forms.CheckBox checkNoClinics;
+		private System.Windows.Forms.CheckBox checkDentalSchools;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -65,6 +66,7 @@ namespace OpenDental{
 			this.checkBasicModules = new System.Windows.Forms.CheckBox();
 			this.checkPublicHealth = new System.Windows.Forms.CheckBox();
 			this.checkNoClinics = new System.Windows.Forms.CheckBox();
+			this.checkDentalSchools = new System.Windows.Forms.CheckBox();
 			this.SuspendLayout();
 			// 
 			// butCancel
@@ -75,7 +77,7 @@ namespace OpenDental{
 			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.Location = new System.Drawing.Point(584, 225);
+			this.butCancel.Location = new System.Drawing.Point(584, 282);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 0;
@@ -89,7 +91,7 @@ namespace OpenDental{
 			this.butOK.Autosize = true;
 			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butOK.Location = new System.Drawing.Point(584, 184);
+			this.butOK.Location = new System.Drawing.Point(584, 241);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 1;
@@ -100,9 +102,9 @@ namespace OpenDental{
 			// 
 			this.checkCapitation.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.checkCapitation.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkCapitation.Location = new System.Drawing.Point(87, 22);
+			this.checkCapitation.Location = new System.Drawing.Point(99, 19);
 			this.checkCapitation.Name = "checkCapitation";
-			this.checkCapitation.Size = new System.Drawing.Size(304, 19);
+			this.checkCapitation.Size = new System.Drawing.Size(311, 19);
 			this.checkCapitation.TabIndex = 2;
 			this.checkCapitation.Text = "Hide Capitation Features";
 			this.checkCapitation.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -111,9 +113,9 @@ namespace OpenDental{
 			// 
 			this.checkMedicaid.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.checkMedicaid.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkMedicaid.Location = new System.Drawing.Point(87, 49);
+			this.checkMedicaid.Location = new System.Drawing.Point(99, 44);
 			this.checkMedicaid.Name = "checkMedicaid";
-			this.checkMedicaid.Size = new System.Drawing.Size(304, 19);
+			this.checkMedicaid.Size = new System.Drawing.Size(311, 19);
 			this.checkMedicaid.TabIndex = 3;
 			this.checkMedicaid.Text = "Hide Medicaid Features";
 			this.checkMedicaid.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -122,9 +124,9 @@ namespace OpenDental{
 			// 
 			this.checkAdvancedIns.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.checkAdvancedIns.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkAdvancedIns.Location = new System.Drawing.Point(53, 103);
+			this.checkAdvancedIns.Location = new System.Drawing.Point(65, 119);
 			this.checkAdvancedIns.Name = "checkAdvancedIns";
-			this.checkAdvancedIns.Size = new System.Drawing.Size(338, 19);
+			this.checkAdvancedIns.Size = new System.Drawing.Size(345, 19);
 			this.checkAdvancedIns.TabIndex = 4;
 			this.checkAdvancedIns.Text = "Hide Advanced Insurance Fields";
 			this.checkAdvancedIns.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -133,9 +135,9 @@ namespace OpenDental{
 			// 
 			this.checkClinical.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.checkClinical.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkClinical.Location = new System.Drawing.Point(9, 130);
+			this.checkClinical.Location = new System.Drawing.Point(21, 144);
 			this.checkClinical.Name = "checkClinical";
-			this.checkClinical.Size = new System.Drawing.Size(382, 19);
+			this.checkClinical.Size = new System.Drawing.Size(389, 19);
 			this.checkClinical.TabIndex = 5;
 			this.checkClinical.Text = "Hide Clinical Features (no computers in operatories)";
 			this.checkClinical.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -144,9 +146,9 @@ namespace OpenDental{
 			// 
 			this.checkBasicModules.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.checkBasicModules.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkBasicModules.Location = new System.Drawing.Point(9, 157);
+			this.checkBasicModules.Location = new System.Drawing.Point(21, 169);
 			this.checkBasicModules.Name = "checkBasicModules";
-			this.checkBasicModules.Size = new System.Drawing.Size(382, 19);
+			this.checkBasicModules.Size = new System.Drawing.Size(389, 19);
 			this.checkBasicModules.TabIndex = 6;
 			this.checkBasicModules.Text = "Basic Modules Only";
 			this.checkBasicModules.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -155,9 +157,9 @@ namespace OpenDental{
 			// 
 			this.checkPublicHealth.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.checkPublicHealth.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkPublicHealth.Location = new System.Drawing.Point(9, 76);
+			this.checkPublicHealth.Location = new System.Drawing.Point(21, 69);
 			this.checkPublicHealth.Name = "checkPublicHealth";
-			this.checkPublicHealth.Size = new System.Drawing.Size(382, 19);
+			this.checkPublicHealth.Size = new System.Drawing.Size(389, 19);
 			this.checkPublicHealth.TabIndex = 7;
 			this.checkPublicHealth.Text = "Hide Public Health Features";
 			this.checkPublicHealth.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -166,18 +168,30 @@ namespace OpenDental{
 			// 
 			this.checkNoClinics.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.checkNoClinics.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkNoClinics.Location = new System.Drawing.Point(9, 184);
+			this.checkNoClinics.Location = new System.Drawing.Point(21, 194);
 			this.checkNoClinics.Name = "checkNoClinics";
-			this.checkNoClinics.Size = new System.Drawing.Size(382, 19);
+			this.checkNoClinics.Size = new System.Drawing.Size(389, 19);
 			this.checkNoClinics.TabIndex = 8;
 			this.checkNoClinics.Text = "Don\'t use clinics (only one office location)";
 			this.checkNoClinics.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// checkDentalSchools
+			// 
+			this.checkDentalSchools.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.checkDentalSchools.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkDentalSchools.Location = new System.Drawing.Point(21, 94);
+			this.checkDentalSchools.Name = "checkDentalSchools";
+			this.checkDentalSchools.Size = new System.Drawing.Size(389, 19);
+			this.checkDentalSchools.TabIndex = 9;
+			this.checkDentalSchools.Text = "Hide Dental School Features";
+			this.checkDentalSchools.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// FormEasy
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
-			this.ClientSize = new System.Drawing.Size(674, 270);
+			this.ClientSize = new System.Drawing.Size(674, 327);
+			this.Controls.Add(this.checkDentalSchools);
 			this.Controls.Add(this.checkNoClinics);
 			this.Controls.Add(this.checkPublicHealth);
 			this.Controls.Add(this.checkBasicModules);
@@ -204,6 +218,7 @@ namespace OpenDental{
 			checkCapitation.Checked=((Pref)Prefs.HList["EasyHideCapitation"]).ValueString=="1";
 			checkMedicaid.Checked=((Pref)Prefs.HList["EasyHideMedicaid"]).ValueString=="1";
 			checkPublicHealth.Checked=((Pref)Prefs.HList["EasyHidePublicHealth"]).ValueString=="1";
+			checkDentalSchools.Checked=Prefs.GetBool("EasyHideDentalSchools");
 			checkAdvancedIns.Checked=((Pref)Prefs.HList["EasyHideAdvancedIns"]).ValueString=="1";
 			checkClinical.Checked=((Pref)Prefs.HList["EasyHideClinical"]).ValueString=="1";
 			checkBasicModules.Checked=((Pref)Prefs.HList["EasyBasicModules"]).ValueString=="1";
@@ -225,6 +240,8 @@ namespace OpenDental{
 			if(checkPublicHealth.Checked) Prefs.Cur.ValueString="1";
 			else Prefs.Cur.ValueString="0";
 			Prefs.UpdateCur();
+
+			Prefs.UpdateBool("EasyHideDentalSchools",checkDentalSchools.Checked);
 
 			Prefs.Cur.PrefName="EasyHideAdvancedIns";
 			if(checkAdvancedIns.Checked) Prefs.Cur.ValueString="1";

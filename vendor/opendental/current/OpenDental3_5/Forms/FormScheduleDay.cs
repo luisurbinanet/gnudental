@@ -15,13 +15,19 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label1;
     private ArrayList ALdefaults;
 		private System.Windows.Forms.Label labelDefault;
-		private OpenDental.UI.Button butClose;  
-
+		private OpenDental.UI.Button butClose;
 		private System.ComponentModel.Container components = null;
+		private Schedule[] SchedListDay;
+		private DateTime SchedCurDate;
+		private ScheduleType SchedType;
+		private int ProvNum;
 
 		///<summary></summary>
-		public FormScheduleDay(){
+		public FormScheduleDay(DateTime schedCurDate,ScheduleType schedType,int provNum){
 			InitializeComponent();
+			SchedCurDate=schedCurDate;
+			SchedType=schedType;
+			ProvNum=provNum;
 			Lan.F(this);
 		}
 
@@ -181,111 +187,97 @@ namespace OpenDental{
 		}
 
     private void FillList(){
-      Schedules.RefreshDay(Schedules.CurDate); 
+			Schedule[] SchedListAll=Schedules.RefreshDay(SchedCurDate); 
+      SchedListDay=Schedules.GetForType(SchedListAll,SchedType,ProvNum);
       SchedDefaults.Refresh();
+			SchedDefault[] schedDefForType=SchedDefaults.GetForType(SchedType,ProvNum);
       listTimeBlocks.Items.Clear(); 
       ALdefaults=new ArrayList();
       labelDefault.Visible=false; 
-      if(Schedules.ListDay.Length==0){
-        for(int i=0;i<SchedDefaults.List.Length;i++){
-          if((int)Schedules.CurDate.DayOfWeek==SchedDefaults.List[i].DayOfWeek){
-            ALdefaults.Add(SchedDefaults.List[i]); 
-            listTimeBlocks.Items.Add(SchedDefaults.List[i].StartTime.ToShortTimeString()+" - "
-              +SchedDefaults.List[i].StopTime.ToShortTimeString());
+      if(SchedListDay.Length==0){
+				//show defaults instead of user-entered list
+        for(int i=0;i<schedDefForType.Length;i++){
+          if((int)SchedCurDate.DayOfWeek==schedDefForType[i].DayOfWeek){
+            ALdefaults.Add(schedDefForType[i]); 
+            listTimeBlocks.Items.Add(schedDefForType[i].StartTime.ToShortTimeString()+" - "
+              +schedDefForType[i].StopTime.ToShortTimeString());
           }  
         }
         labelDefault.Visible=true;     
       }
-      else{  
-        if(Schedules.ListDay.Length==1 && Schedules.ListDay[0].Status==SchedStatus.Closed){
-          listTimeBlocks.Items.Add("Office Closed "+Schedules.ListDay[0].Note);
+      else{//show the list of user-entered schedule items 
+        if(SchedListDay.Length==1 && SchedListDay[0].Status==SchedStatus.Closed){
+          listTimeBlocks.Items.Add("Office Closed "+SchedListDay[0].Note);
         }
-        else if(Schedules.ListDay.Length==1 && Schedules.ListDay[0].Status==SchedStatus.Holiday){
-          listTimeBlocks.Items.Add("Holiday: "+Schedules.ListDay[0].Note);
+        else if(SchedListDay.Length==1 && SchedListDay[0].Status==SchedStatus.Holiday){
+          listTimeBlocks.Items.Add("Holiday: "+SchedListDay[0].Note);
         } 
         else{  
-					for(int i=0;i<Schedules.ListDay.Length;i++){
-						listTimeBlocks.Items.Add(Schedules.ListDay[i].StartTime.ToShortTimeString()+" - "
-							+Schedules.ListDay[i].StopTime.ToShortTimeString());
+					for(int i=0;i<SchedListDay.Length;i++){
+						listTimeBlocks.Items.Add(SchedListDay[i].StartTime.ToShortTimeString()+" - "
+							+SchedListDay[i].StopTime.ToShortTimeString());
 					}
         } 
       } 
-    }//FillList
+    }
 
 		private void butDefault_Click(object sender, System.EventArgs e) {
-		  SetAllDefault();
-		}
-
-		private void SetAllDefault(){
-			for(int i=0;i<Schedules.ListDay.Length;i++){
-				Schedules.Cur=Schedules.ListDay[i];
-				Schedules.DeleteCur();
-			}
+		  Schedules.SetAllDefault(SchedCurDate,SchedType,ProvNum);
 			FillList();
-		}
-
-		private void ConvertFromDefault(){
-			if(!labelDefault.Visible){
-				return;//already not default
-      } 
-			int selected=listTimeBlocks.SelectedIndex;
-			for(int i=0;i<listTimeBlocks.Items.Count;i++){
-				Schedules.Cur=new Schedule();
-				Schedules.Cur.Status=SchedStatus.Open;
-				Schedules.Cur.SchedDate=Schedules.CurDate;
-				Schedules.Cur.StartTime=((SchedDefault)(ALdefaults[i])).StartTime;
-				Schedules.Cur.StopTime=((SchedDefault)(ALdefaults[i])).StopTime; 
-				Schedules.InsertCur();            
-			}
-			FillList();
-			listTimeBlocks.SelectedIndex=selected;
 		}
 
 		private void butCloseOffice_Click(object sender, System.EventArgs e) {
-      if(Schedules.ListDay.Length==1 
-				&& Schedules.ListDay[0].Status==SchedStatus.Closed){
+      if(SchedListDay.Length==1 
+				&& SchedListDay[0].Status==SchedStatus.Closed)
+			{
         MessageBox.Show(Lan.g(this,"Day is already Closed."));         
         return;
       }
-      if(Schedules.ListDay.Length > 0){
-				for(int i=0;i<Schedules.ListDay.Length;i++){
-					Schedules.Cur=Schedules.ListDay[i];
-					Schedules.DeleteCur();
+      if(SchedListDay.Length > 0){
+				for(int i=0;i<SchedListDay.Length;i++){
+					SchedListDay[i].Delete();
 				}
       } 
-		  Schedules.Cur=new Schedule();
-      Schedules.Cur.SchedDate=Schedules.CurDate;
-      Schedules.Cur.Status=SchedStatus.Closed;
-		  FormScheduleDayEdit FormSDE2=new FormScheduleDayEdit();
-      FormSDE2.IsNew=true;
-      FormSDE2.ShowDialog();
+			Schedule SchedCur=new Schedule();
+      SchedCur.SchedDate=SchedCurDate;
+      SchedCur.Status=SchedStatus.Closed;
+			SchedCur.SchedType=SchedType;
+			SchedCur.ProvNum=ProvNum;
+		  FormScheduleBlockEdit FormSB=new FormScheduleBlockEdit(SchedCur);
+      FormSB.IsNew=true;
+      FormSB.ShowDialog();
       FillList();
 		}
 
 		private void butHoliday_Click(object sender, System.EventArgs e) {
-			if(Schedules.ListDay.Length==1 
-				&& Schedules.ListDay[0].Status==SchedStatus.Holiday){
+			if(SchedListDay.Length==1 
+				&& SchedListDay[0].Status==SchedStatus.Holiday){
         MessageBox.Show(Lan.g(this,"Day is already a Holiday."));         
         return;
       }
-      SetAllDefault();
-		  Schedules.Cur=new Schedule();
-      Schedules.Cur.SchedDate=Schedules.CurDate;
-      Schedules.Cur.Status=SchedStatus.Holiday;
-		  FormScheduleDayEdit FormSDE2=new FormScheduleDayEdit();
-      FormSDE2.IsNew=true;
-      FormSDE2.ShowDialog();
+      Schedules.SetAllDefault(SchedCurDate,SchedType,ProvNum);
+			FillList();
+		  Schedule SchedCur=new Schedule();
+      SchedCur.SchedDate=SchedCurDate;
+      SchedCur.Status=SchedStatus.Holiday;
+			SchedCur.SchedType=SchedType;
+			SchedCur.ProvNum=ProvNum;
+		  FormScheduleBlockEdit FormSB=new FormScheduleBlockEdit(SchedCur);
+      FormSB.IsNew=true;
+      FormSB.ShowDialog();
       FillList();		
 		}
 
 		private void butAddTime_Click(object sender, System.EventArgs e) {
-			ConvertFromDefault();
-      Schedules.Cur=new Schedule();
-      Schedules.Cur.SchedDate=Schedules.CurDate;
-      Schedules.Cur.Status=SchedStatus.Open;
-		  FormScheduleDayEdit FormSDE2=new FormScheduleDayEdit();
-      FormSDE2.IsNew=true;
-      FormSDE2.ShowDialog();
+			Schedules.ConvertFromDefault(SchedCurDate,SchedType,ProvNum);
+      Schedule SchedCur=new Schedule();
+      SchedCur.SchedDate=SchedCurDate;
+      SchedCur.Status=SchedStatus.Open;
+			SchedCur.SchedType=SchedType;
+			SchedCur.ProvNum=ProvNum;
+		  FormScheduleBlockEdit FormSB=new FormScheduleBlockEdit(SchedCur);
+      FormSB.IsNew=true;
+      FormSB.ShowDialog();
       labelDefault.Visible=false; 
       FillList();
 		}
@@ -294,10 +286,13 @@ namespace OpenDental{
 			if(listTimeBlocks.SelectedIndex==-1){
 				return;
 			}
-      ConvertFromDefault();
-      Schedules.Cur=Schedules.ListDay[listTimeBlocks.SelectedIndex];
-			FormScheduleDayEdit FormSDE2=new FormScheduleDayEdit();
-      FormSDE2.ShowDialog();
+			int clickedIndex=listTimeBlocks.SelectedIndex;
+      if(Schedules.ConvertFromDefault(SchedCurDate,SchedType,ProvNum)){
+				FillList();
+			}
+      Schedule SchedCur=SchedListDay[clickedIndex];
+			FormScheduleBlockEdit FormSB=new FormScheduleBlockEdit(SchedCur);
+      FormSB.ShowDialog();
       FillList();
     }
 

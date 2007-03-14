@@ -210,6 +210,31 @@ namespace OpenDental{
 			return retVal;
 		}
 
+		/// <summary>Makes one call to the database to retrieve the filename of the patient pict for the given patNum.  Assumes WithPat will always be same as patnum.</summary>
+		public static string GetPatPict(int patNum){
+			//first establish which category pat pics are in
+			int defNumPicts=0;
+			for(int i=0;i<Defs.Short[(int)DefCat.ImageCats].Length;i++){
+				if(Defs.Short[(int)DefCat.ImageCats][i].ItemValue=="P"){
+					defNumPicts=Defs.Short[(int)DefCat.ImageCats][i].DefNum;
+					break;
+				}
+			}
+			if(defNumPicts==0){//no category set for picts
+				return "";
+			}
+			//then find 
+			cmd.CommandText="SELECT FileName FROM document,docattach "
+				+"WHERE document.DocNum=docattach.DocNum "
+				+"AND docattach.PatNum="+POut.PInt(patNum)
+				+" AND document.DocCategory="+POut.PInt(defNumPicts)
+				+" ORDER BY DateCreated DESC LIMIT 1";//gets the most recent
+			FillTable();
+			if(table.Rows.Count==0){//no pictures
+				return "";
+			}
+			return PIn.PString(table.Rows[0][0].ToString());
+		}
 
 	}
 

@@ -156,23 +156,23 @@ namespace OpenDental{
 			// 
 			// monthCal1
 			// 
-			this.monthCal1.Location = new System.Drawing.Point(20, 61);
+			this.monthCal1.Location = new System.Drawing.Point(24, 61);
 			this.monthCal1.MaxSelectionCount = 1;
 			this.monthCal1.Name = "monthCal1";
 			this.monthCal1.TabIndex = 93;
 			// 
 			// monthCal2
 			// 
-			this.monthCal2.Location = new System.Drawing.Point(264, 61);
+			this.monthCal2.Location = new System.Drawing.Point(258, 61);
 			this.monthCal2.MaxSelectionCount = 1;
 			this.monthCal2.Name = "monthCal2";
 			this.monthCal2.TabIndex = 94;
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(199, 64);
+			this.label1.Location = new System.Drawing.Point(195, 64);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(65, 40);
+			this.label1.Size = new System.Drawing.Size(71, 23);
 			this.label1.TabIndex = 95;
 			this.label1.Text = "TO";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -273,6 +273,28 @@ WHERE claimproc.ClaimPaymentNum=claimpayment.ClaimPaymentNum && claimproc.PlanNu
 GROUP BY CheckDate
 ORDER BY PayDate
 */
+
+/*
+SELECT PayDate,CONCAT(patient.LName,', ',patient.FName,' ',
+patient.MiddleI) AS plfname,'                          ',PayType,
+PayNum,CheckNum,BankBranch,PayAmt 
+FROM payment,patient WHERE 
+payment.PatNum = patient.PatNum AND (
+PayType = '69'
+) AND PayDate = '2005-01-10'
+UNION SELECT CheckDate,CONCAT(patient.LName,', ',patient.FName,' ',
+patient.MiddleI) AS plfname,CarrierName,'Ins',
+claimpayment.ClaimPaymentNum,
+CheckNum,BankBranch,CheckAmt
+FROM claimpayment,claimproc,insplan,carrier,patient
+WHERE claimproc.ClaimPaymentNum = claimpayment.ClaimPaymentNum
+AND claimproc.PlanNum = insplan.PlanNum
+AND claimproc.PatNum=patient.PatNum
+AND insplan.CarrierNum = carrier.CarrierNum
+AND (claimproc.status = '1' OR claimproc.status = '4')
+AND CheckDate = '2005-01-10'
+ORDER BY PayDate, plfname
+*/
 			if(listPayType.SelectedIndices.Count==0
 				&& !checkBoxIns.Checked)
 			{
@@ -309,7 +331,6 @@ ORDER BY PayDate
 					}
 				}
       }
-			
 			if(checkBoxIns.Checked){
 				cmd+="UNION SELECT CheckDate,CONCAT(patient.LName,', ',patient.FName,' ',"
 					+"patient.MiddleI) AS plfname,CarrierName,'Ins',"

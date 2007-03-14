@@ -23,6 +23,7 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textLetterMergePath;
 		private System.Windows.Forms.FolderBrowserDialog fb;
     //private bool IsBackup=false;
+		private User user;
 
 		///<summary></summary>
 		public FormPath(){
@@ -228,19 +229,18 @@ namespace OpenDental{
 		#endregion
 
 		private void FormPath_Load(object sender, System.EventArgs e){
-			if(!UserPermissions.CheckUserPassword("Data Paths")){
-				MessageBox.Show(Lan.g(this,"You do not have permission for this feature."));
-				DialogResult=DialogResult.Cancel;
-				return;
+			if(Permissions.AuthorizationRequired("Data Paths")){
+				user=Users.Authenticate("Data Paths");
+				if(user==null){
+					DialogResult=DialogResult.Cancel;
+					return;
+				}
+				if(!UserPermissions.IsAuthorized("Data Paths",user)){
+					MsgBox.Show(this,"You do not have permission for this feature");
+					DialogResult=DialogResult.Cancel;
+					return;
+				}	
 			}
-			/*Lan.C(this, new System.Windows.Forms.Control[] {
-				this.textBox1,
-				this.textBox3
-			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
-				this.butCancel,
-				this.butOK
-			});*/
 			textDocPath.Text=((Pref)Prefs.HList["DocPath"]).ValueString;
 			textExportPath.Text=((Pref)Prefs.HList["ExportPath"]).ValueString;
 			textLetterMergePath.Text=((Pref)Prefs.HList["LetterMergePath"]).ValueString;
@@ -310,7 +310,7 @@ namespace OpenDental{
 			Prefs.Cur.ValueString=textLetterMergePath.Text;
 			Prefs.UpdateCur();
 			DataValid.SetInvalid(InvalidTypes.Prefs);
-			SecurityLogs.MakeLogEntry("Form Path","Altered Path");
+			SecurityLogs.MakeLogEntry("Form Path","Altered Path",user);
 			DialogResult=DialogResult.OK;
 		}
 

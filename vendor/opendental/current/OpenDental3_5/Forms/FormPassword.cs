@@ -18,11 +18,16 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textUser;
 		private System.Windows.Forms.TextBox textPassword;
 		private System.ComponentModel.Container components = null;
-
+		///<summary>If this window closes with OK, then this contains the authenticated user.</summary>
+		public User AuthenticatedUser;
 		///<summary></summary>
-		public FormPassword(){
+		private string Display;
+
+		///<summary>Must supply display text.</summary>
+		public FormPassword(string display){
 			InitializeComponent();
 			Lan.F(this);
+			Display=display;
 		}
 
 		///<summary></summary>
@@ -90,7 +95,6 @@ namespace OpenDental{
 			this.butCancel.Autosize = true;
 			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.Location = new System.Drawing.Point(296, 106);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
@@ -138,44 +142,36 @@ namespace OpenDental{
 		#endregion
 
 		private void FormPassword_Load(object sender, System.EventArgs e) {
-			Text=Text+" - "+Lan.g("permissionNames",Permissions.Cur.Name);
-			Users.Refresh();//this is clumsy
+			Text=Text+" - "+Lan.g("permissionNames",Display);
+			Users.Refresh();
 			if(Users.List.Length==0){
-				MessageBox.Show(Lan.g(this,"You do not have any usernames or passwords set up yet."));
+				MsgBox.Show(this,"You do not have any usernames or passwords set up yet.");
 				DialogResult=DialogResult.OK;
 			}
-		}
-
-		private void ShowInvalid(){
-			MessageBox.Show(Lan.g(this,"UserName or Password invalid."));
-			SecurityLogs.MakeLogEntry("Failed Login","User: "+textUser.Text);
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			//MessageBox.Show(Users.List.Length.ToString());
-			//DialogResult=DialogResult.OK;
-			//return;
+			User user=null;
 			for(int i=0;i<Users.List.Length;i++){
 				if(textUser.Text==Users.List[i].UserName){
-					Users.Cur=Users.List[i];
+					user=Users.List[i];
 					break;
 				}
-				if(i==Users.List.Length-1){
-					ShowInvalid();
-					return;
-				}
 			}
-			if(Passwords.CheckPassword(textPassword.Text,Users.Cur.Password)){
-				DialogResult=DialogResult.OK;
+			if(user==null){
+				MsgBox.Show(this,"UserName or Password invalid.");
+				return;
 			}
-			else{
-				ShowInvalid();
-				return;				
+			if(!Passwords.CheckPassword(textPassword.Text,user.Password)){
+				MsgBox.Show(this,"UserName or Password invalid.");
+				return;
 			}
+			AuthenticatedUser=user;
+			DialogResult=DialogResult.OK;
 		}
 
 		private void butCancel_Click(object sender, System.EventArgs e) {
-		
+			DialogResult=DialogResult.Cancel;
 		}
 
 

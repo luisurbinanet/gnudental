@@ -105,7 +105,7 @@ namespace OpenDental{
 			dcon.NonQ(command);
 		}
 
-		///<summary>Called from many places in the program.  Every single time we print, this function is used to figure out which printer to use.  It also handles displaying the dialog if necessary.  Tests to see if the selected printer is valid, and if not, then it gives user the option to print to an available printer.  If return value is False, user clicked Cancel.</summary>
+		///<summary>Called from many places in the program.  Every single time we print, this function is used to figure out which printer to use.  It also handles displaying the dialog if necessary.  Tests to see if the selected printer is valid, and if not, then it gives user the option to print to an available printer.</summary>
 		public static bool SetPrinter(PrintDocument pd,PrintSituation sit){
 			PrinterSettings pSet=pd.PrinterSettings;
 			//pSet will always be new when this function is called

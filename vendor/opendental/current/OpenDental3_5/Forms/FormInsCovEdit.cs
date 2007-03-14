@@ -51,7 +51,11 @@ namespace OpenDental{
 		private ArrayList ALSecAdj;
 		private Patient PatCur;
 		private Family FamCur;
-		private int PatNum;//never changes
+		private int PatNum;
+		private System.Windows.Forms.Label label4;
+		private System.Windows.Forms.Label label7;
+		private System.Windows.Forms.TextBox textPriPatID;
+		private System.Windows.Forms.TextBox textSecPatID;//never changes
 		private InsPlan[] PlanList;
 		//private CovPat[] CovPatList;
 
@@ -79,6 +83,8 @@ namespace OpenDental{
 		private void InitializeComponent(){
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormInsCovEdit));
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
+			this.textPriPatID = new System.Windows.Forms.TextBox();
+			this.label4 = new System.Windows.Forms.Label();
 			this.listPriRelat = new System.Windows.Forms.ListBox();
 			this.groupBox3 = new System.Windows.Forms.GroupBox();
 			this.label10 = new System.Windows.Forms.Label();
@@ -97,6 +103,8 @@ namespace OpenDental{
 			this.label13 = new System.Windows.Forms.Label();
 			this.butOK = new OpenDental.UI.Button();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.textSecPatID = new System.Windows.Forms.TextBox();
+			this.label7 = new System.Windows.Forms.Label();
 			this.listSecRelat = new System.Windows.Forms.ListBox();
 			this.label6 = new System.Windows.Forms.Label();
 			this.groupBox4 = new System.Windows.Forms.GroupBox();
@@ -120,6 +128,8 @@ namespace OpenDental{
 			// 
 			// groupBox2
 			// 
+			this.groupBox2.Controls.Add(this.textPriPatID);
+			this.groupBox2.Controls.Add(this.label4);
 			this.groupBox2.Controls.Add(this.listPriRelat);
 			this.groupBox2.Controls.Add(this.groupBox3);
 			this.groupBox2.Controls.Add(this.butEditPriPlan);
@@ -142,10 +152,31 @@ namespace OpenDental{
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "Primary";
 			// 
+			// textPriPatID
+			// 
+			this.textPriPatID.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.textPriPatID.Location = new System.Drawing.Point(17, 300);
+			this.textPriPatID.MaxLength = 100;
+			this.textPriPatID.Name = "textPriPatID";
+			this.textPriPatID.Size = new System.Drawing.Size(210, 20);
+			this.textPriPatID.TabIndex = 99;
+			this.textPriPatID.Text = "";
+			this.textPriPatID.Leave += new System.EventHandler(this.textPriPatID_Leave);
+			// 
+			// label4
+			// 
+			this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.label4.Location = new System.Drawing.Point(16, 277);
+			this.label4.Name = "label4";
+			this.label4.Size = new System.Drawing.Size(159, 18);
+			this.label4.TabIndex = 98;
+			this.label4.Text = "Optional Patient ID";
+			this.label4.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
 			// listPriRelat
 			// 
 			this.listPriRelat.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.listPriRelat.Location = new System.Drawing.Point(17, 233);
+			this.listPriRelat.Location = new System.Drawing.Point(17, 227);
 			this.listPriRelat.Name = "listPriRelat";
 			this.listPriRelat.Size = new System.Drawing.Size(134, 43);
 			this.listPriRelat.TabIndex = 97;
@@ -280,6 +311,7 @@ namespace OpenDental{
 			this.label8.Size = new System.Drawing.Size(218, 17);
 			this.label8.TabIndex = 87;
 			this.label8.Text = "Adjustments to Insurance Benefits: ";
+			this.label8.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// butNone
 			// 
@@ -309,7 +341,7 @@ namespace OpenDental{
 			// tbPercent1
 			// 
 			this.tbPercent1.BackColor = System.Drawing.SystemColors.Window;
-			this.tbPercent1.Location = new System.Drawing.Point(17, 331);
+			this.tbPercent1.Location = new System.Drawing.Point(17, 345);
 			this.tbPercent1.Name = "tbPercent1";
 			this.tbPercent1.ScrollValue = 1;
 			this.tbPercent1.SelectedIndices = new int[0];
@@ -320,20 +352,22 @@ namespace OpenDental{
 			// label1
 			// 
 			this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.label1.Location = new System.Drawing.Point(16, 307);
+			this.label1.Location = new System.Drawing.Point(16, 322);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(362, 18);
+			this.label1.Size = new System.Drawing.Size(361, 18);
 			this.label1.TabIndex = 79;
 			this.label1.Text = "Override percentages for patient (single click to edit):";
+			this.label1.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// label13
 			// 
 			this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.label13.Location = new System.Drawing.Point(16, 216);
+			this.label13.Location = new System.Drawing.Point(16, 210);
 			this.label13.Name = "label13";
 			this.label13.Size = new System.Drawing.Size(148, 14);
 			this.label13.TabIndex = 77;
 			this.label13.Text = "Relationship to Subscriber";
+			this.label13.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// butOK
 			// 
@@ -352,6 +386,8 @@ namespace OpenDental{
 			// groupBox1
 			// 
 			this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox1.Controls.Add(this.textSecPatID);
+			this.groupBox1.Controls.Add(this.label7);
 			this.groupBox1.Controls.Add(this.listSecRelat);
 			this.groupBox1.Controls.Add(this.label6);
 			this.groupBox1.Controls.Add(this.groupBox4);
@@ -374,10 +410,31 @@ namespace OpenDental{
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Secondary";
 			// 
+			// textSecPatID
+			// 
+			this.textSecPatID.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.textSecPatID.Location = new System.Drawing.Point(17, 300);
+			this.textSecPatID.MaxLength = 100;
+			this.textSecPatID.Name = "textSecPatID";
+			this.textSecPatID.Size = new System.Drawing.Size(210, 20);
+			this.textSecPatID.TabIndex = 101;
+			this.textSecPatID.Text = "";
+			this.textSecPatID.Leave += new System.EventHandler(this.textSecPatID_Leave);
+			// 
+			// label7
+			// 
+			this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.label7.Location = new System.Drawing.Point(16, 277);
+			this.label7.Name = "label7";
+			this.label7.Size = new System.Drawing.Size(159, 18);
+			this.label7.TabIndex = 100;
+			this.label7.Text = "Optional Patient ID";
+			this.label7.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
 			// listSecRelat
 			// 
 			this.listSecRelat.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.listSecRelat.Location = new System.Drawing.Point(17, 233);
+			this.listSecRelat.Location = new System.Drawing.Point(17, 227);
 			this.listSecRelat.Name = "listSecRelat";
 			this.listSecRelat.Size = new System.Drawing.Size(134, 43);
 			this.listSecRelat.TabIndex = 99;
@@ -386,11 +443,12 @@ namespace OpenDental{
 			// label6
 			// 
 			this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.label6.Location = new System.Drawing.Point(16, 216);
+			this.label6.Location = new System.Drawing.Point(16, 210);
 			this.label6.Name = "label6";
 			this.label6.Size = new System.Drawing.Size(148, 14);
 			this.label6.TabIndex = 98;
 			this.label6.Text = "Relationship to Subscriber";
+			this.label6.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// groupBox4
 			// 
@@ -494,11 +552,12 @@ namespace OpenDental{
 			this.label5.Size = new System.Drawing.Size(218, 17);
 			this.label5.TabIndex = 92;
 			this.label5.Text = "Adjustments to Insurance Benefits: ";
+			this.label5.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// tbPercent2
 			// 
 			this.tbPercent2.BackColor = System.Drawing.SystemColors.Window;
-			this.tbPercent2.Location = new System.Drawing.Point(16, 331);
+			this.tbPercent2.Location = new System.Drawing.Point(16, 345);
 			this.tbPercent2.Name = "tbPercent2";
 			this.tbPercent2.ScrollValue = 1;
 			this.tbPercent2.SelectedIndices = new int[0];
@@ -509,11 +568,12 @@ namespace OpenDental{
 			// label2
 			// 
 			this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.label2.Location = new System.Drawing.Point(16, 307);
+			this.label2.Location = new System.Drawing.Point(16, 322);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(357, 18);
+			this.label2.Size = new System.Drawing.Size(361, 18);
 			this.label2.TabIndex = 85;
 			this.label2.Text = "Override percentages for patient (single click to edit):";
+			this.label2.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// listSecPlan
 			// 
@@ -630,6 +690,8 @@ namespace OpenDental{
 				listSecRelat.Items.Add(Lan.g("enumSecRelat",enumSecRelat[i])); //*Ann
       }
       listSecRelat.SelectedIndex=(int)PatCur.SecRelationship;
+			textPriPatID.Text=PatCur.PriPatID;
+			textSecPatID.Text=PatCur.SecPatID;
 		}
 
 		///<summary></summary>
@@ -709,6 +771,24 @@ namespace OpenDental{
 			FillAll();
 		}
 
+		private void textPriPatID_Leave(object sender, System.EventArgs e) {
+			if(textPriPatID.Text!=PatCur.PriPatID){
+				Patient PatOld=PatCur.Copy();
+				PatCur.PriPatID=textPriPatID.Text;
+				PatCur.Update(PatOld);
+				FillAll();
+			}
+		}
+
+		private void textSecPatID_Leave(object sender, System.EventArgs e) {
+			if(textSecPatID.Text!=PatCur.SecPatID){
+				Patient PatOld=PatCur.Copy();
+				PatCur.SecPatID=textSecPatID.Text;
+				PatCur.Update(PatOld);
+				FillAll();
+			}
+		}
+
 		private void listPriPlan_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
 			if(listPriPlan.SelectedIndex==-1){
 				return;
@@ -736,9 +816,11 @@ namespace OpenDental{
 			}
 			listPriPlan.SelectedIndex=-1;
 			listPriRelat.SelectedIndex=0;
+			textPriPatID.Text="";
 			Patient PatOld=PatCur.Copy();
 			PatCur.PriPlanNum=0;
 			PatCur.PriRelationship=Relat.Self;
+			PatCur.PriPatID="";
 			PatCur.Update(PatOld);
 			FillAll();
 		}
@@ -746,14 +828,17 @@ namespace OpenDental{
 		private void butNoneSec_Click(object sender, System.EventArgs e) {
 			listSecPlan.SelectedIndex=-1;
 			listSecRelat.SelectedIndex=0;
+			textSecPatID.Text="";
 			Patient PatOld=PatCur.Copy();
 			PatCur.SecPlanNum=0;
 			PatCur.SecRelationship=Relat.Self;
+			PatCur.SecPatID="";
 			PatCur.Update(PatOld);
 			//Patients.CurOld=Patients.Cur.Copy();//important since we aren't refreshing.
 			FillAll();
 		}
 
+		///<summary>This button is not present in the standard version, but is only for PracticeWeb.</summary>
 		private void butAddPlan_Click(object sender, System.EventArgs e) {
 			InsPlan PlanCur=new InsPlan();
 			PlanCur.Subscriber=PatCur.PatNum;
@@ -1012,6 +1097,10 @@ namespace OpenDental{
 			//UpdatePlanInfo();
 			DialogResult=DialogResult.OK;
 		}
+
+		
+
+		
 
 		
 

@@ -32,7 +32,6 @@ namespace OpenDental{
 			DataConnection dcon=new DataConnection();
  			DataTable table=dcon.GetTable(command);
 			string thisVersion=PIn.PString(table.Rows[0][0].ToString());
-			ExitApplicationNow ExitApplicationNow2=new ExitApplicationNow();
 			//if(thisVersion.Substring(0,3)=="4.0"){
 				//do nothing
 			//}
@@ -45,23 +44,21 @@ namespace OpenDental{
 					return true;//already converted
 				}
 				if(!MsgBox.Show("Prefs",true,"Your database will now be converted for use with MySQL 4.1.")){
-					ExitApplicationNow2.ExitNow();
+					ExitApplicationNow.ExitNow();
 					return false;
 				}
 				ClassConvertDatabase CCD=new ClassConvertDatabase();
-				#if !DEBUG
-					try{
-						CCD.MakeABackup();
+				try{
+					CCD.MakeABackup();
+				}
+				catch(Exception e){
+					if(e.Message!=""){
+						MessageBox.Show(e.Message);
 					}
-					catch(Exception e){
-						if(e.Message!=""){
-							MessageBox.Show(e.Message);
-						}
-						MsgBox.Show("Prefs","Backup failed. Your database has not been altered.");
-						ExitApplicationNow2.ExitNow();
-						return false;//but this should never happen
-					}
-				#endif
+					MsgBox.Show("Prefs","Backup failed. Your database has not been altered.");
+					ExitApplicationNow.ExitNow();
+					return false;//but this should never happen
+				}
 				MessageBox.Show("Backup performed");
 				command="SHOW TABLES";
 				table=dcon.GetTable(command);
@@ -89,6 +86,7 @@ namespace OpenDental{
 					,"ALTER TABLE procbuttonitem MODIFY ADACode varchar(15) character set utf8 collate utf8_bin NOT NULL"
 					,"ALTER TABLE covspan MODIFY FromCode varchar(15) character set utf8 collate utf8_bin NOT NULL"
 					,"ALTER TABLE covspan MODIFY ToCode varchar(15) character set utf8 collate utf8_bin NOT NULL"
+					,"ALTER TABLE fee MODIFY ADACode varchar(15) character set utf8 collate utf8_bin NOT NULL"
 				};
 				dcon.NonQ(commands);
 				//and set the default too
@@ -102,33 +100,27 @@ namespace OpenDental{
 			else{
 				MessageBox.Show(Lan.g("Prefs","Your version of MySQL won't work with this program")+": "+thisVersion
 					+".  "+Lan.g("Prefs","You should upgrade to MySQL 4.1"));
-				//but let them through anyway
-					//,"",MessageBoxButtons.OKCancel)!=DialogResult.OK)
-				//{
-					//ExitApplicationNow2.ExitNow();
-					//return false;
-				//}
+				ExitApplicationNow.ExitNow();
+				return false;
 			}
 			return true;
 		}
 
 		///<summary>This ONLY runs when first opening the program</summary>
 		public static bool ConvertDB(){
-			ExitApplicationNow ExitApplicationNow2=new ExitApplicationNow();
 			ClassConvertDatabase ClassConvertDatabase2=new ClassConvertDatabase();
 			if(ClassConvertDatabase2.Convert(((Pref)HList["DataBaseVersion"]).ValueString)){
 				return true;
 			}
 			else{
 				//MessageBox.Show("Conversion unsuccessful");
-				ExitApplicationNow2.ExitNow();
+				ExitApplicationNow.ExitNow();
 				return false;
 			}
 		}
 
 		///<summary>Only called once from RefreshLocalData.</summary>
 		public static bool CheckProgramVersion(){
-			ExitApplicationNow ExitApplicationNow2=new ExitApplicationNow();
 			Version storedVersion=new Version(GetString("ProgramVersion"));
 			Version currentVersion=new Version(Application.ProductVersion);
 			if(storedVersion<currentVersion){
@@ -146,7 +138,7 @@ namespace OpenDental{
 							FormUpdate FormU=new FormUpdate();
 							FormU.ShowDialog();
 						}
-						ExitApplicationNow2.ExitNow();
+						ExitApplicationNow.ExitNow();
 						return false;
 					}
 					try{
@@ -161,7 +153,7 @@ namespace OpenDental{
 					FormUpdate FormU=new FormUpdate();
 					FormU.ShowDialog();
 				}
-				ExitApplicationNow2.ExitNow();//always exits, whether launch of setup worked or no
+				ExitApplicationNow.ExitNow();//always exits, whether launch of setup worked or no
 				return false;
 			}
 			return true;

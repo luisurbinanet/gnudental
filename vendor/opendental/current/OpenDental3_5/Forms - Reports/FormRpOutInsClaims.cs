@@ -70,16 +70,16 @@ namespace OpenDental{
 			// 
 			// labelDaysOld
 			// 
-			this.labelDaysOld.Location = new System.Drawing.Point(9, 73);
+			this.labelDaysOld.Location = new System.Drawing.Point(31, 69);
 			this.labelDaysOld.Name = "labelDaysOld";
-			this.labelDaysOld.Size = new System.Drawing.Size(112, 18);
+			this.labelDaysOld.Size = new System.Drawing.Size(98, 18);
 			this.labelDaysOld.TabIndex = 3;
 			this.labelDaysOld.Text = "Days Old";
-			this.labelDaysOld.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			this.labelDaysOld.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// textDaysOld
 			// 
-			this.textDaysOld.Location = new System.Drawing.Point(125, 69);
+			this.textDaysOld.Location = new System.Drawing.Point(133, 68);
 			this.textDaysOld.MaxVal = 255;
 			this.textDaysOld.MinVal = 0;
 			this.textDaysOld.Name = "textDaysOld";

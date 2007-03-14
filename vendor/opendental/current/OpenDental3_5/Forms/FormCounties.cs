@@ -130,7 +130,7 @@ namespace OpenDental{
 			// 
 			this.label1.Location = new System.Drawing.Point(11, 5);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(445, 19);
+			this.label1.Size = new System.Drawing.Size(437, 19);
 			this.label1.TabIndex = 73;
 			this.label1.Text = "This is a list of Counties  for Public Health";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;

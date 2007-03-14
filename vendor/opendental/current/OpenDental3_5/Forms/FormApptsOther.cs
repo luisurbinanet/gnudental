@@ -11,7 +11,7 @@ namespace OpenDental{
 		private OpenDental.UI.Button butCancel;
 		private System.ComponentModel.Container components = null;
 		private OpenDental.TableApptsOther tbApts;
-		///<summary></summary>
+		///<summary>The result of the window.  In other words, which button was clicked to exit the window.</summary>
 		public OtherResult oResult;
 		private System.Windows.Forms.TextBox textApptModNote;
 		private System.Windows.Forms.Label label1;
@@ -19,7 +19,7 @@ namespace OpenDental{
 		private OpenDental.UI.Button butPin;
 		private OpenDental.UI.Button butNew;
 		private System.Windows.Forms.Label label2;
-		///<summary></summary>
+		///<summary>True if user double clicked on a blank area of appt module to get to this point.</summary>
 		public bool InitialClick;
 		private System.Windows.Forms.ListView listFamily;
 		private System.Windows.Forms.ColumnHeader columnHeader1;
@@ -30,7 +30,10 @@ namespace OpenDental{
 		private Appointment[] ListOth;
 		private Recall[] RecallList;
 		private Patient PatCur;
+		private OpenDental.UI.Button butOK;
 		private Family FamCur;
+		///<summary>Almost always false.  Only set to true from TaskList to allow selecting one appointment for a patient.</summary>
+		public bool SelectOnly;
 
 		///<summary></summary>
 		public FormApptsOther(Patient pat,Family fam){
@@ -73,6 +76,7 @@ namespace OpenDental{
 			this.columnHeader4 = new System.Windows.Forms.ColumnHeader();
 			this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
 			this.columnHeader5 = new System.Windows.Forms.ColumnHeader();
+			this.butOK = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
 			// checkDone
@@ -105,7 +109,6 @@ namespace OpenDental{
 			this.butCancel.Autosize = true;
 			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.ImeMode = System.Windows.Forms.ImeMode.NoControl;
 			this.butCancel.Location = new System.Drawing.Point(834, 618);
 			this.butCancel.Name = "butCancel";
@@ -146,7 +149,7 @@ namespace OpenDental{
 			this.butGoTo.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butGoTo.Image = ((System.Drawing.Image)(resources.GetObject("butGoTo.Image")));
 			this.butGoTo.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butGoTo.Location = new System.Drawing.Point(411, 618);
+			this.butGoTo.Location = new System.Drawing.Point(311, 618);
 			this.butGoTo.Name = "butGoTo";
 			this.butGoTo.Size = new System.Drawing.Size(106, 26);
 			this.butGoTo.TabIndex = 46;
@@ -161,7 +164,7 @@ namespace OpenDental{
 			this.butPin.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butPin.Image = ((System.Drawing.Image)(resources.GetObject("butPin.Image")));
 			this.butPin.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butPin.Location = new System.Drawing.Point(532, 618);
+			this.butPin.Location = new System.Drawing.Point(432, 618);
 			this.butPin.Name = "butPin";
 			this.butPin.Size = new System.Drawing.Size(134, 26);
 			this.butPin.TabIndex = 47;
@@ -176,7 +179,7 @@ namespace OpenDental{
 			this.butNew.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butNew.Image = ((System.Drawing.Image)(resources.GetObject("butNew.Image")));
 			this.butNew.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butNew.Location = new System.Drawing.Point(681, 618);
+			this.butNew.Location = new System.Drawing.Point(581, 618);
 			this.butNew.Name = "butNew";
 			this.butNew.Size = new System.Drawing.Size(106, 26);
 			this.butNew.TabIndex = 48;
@@ -236,19 +239,34 @@ namespace OpenDental{
 			this.columnHeader5.Text = "Scheduled";
 			this.columnHeader5.Width = 74;
 			// 
+			// butOK
+			// 
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butOK.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+			this.butOK.Location = new System.Drawing.Point(748, 618);
+			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75, 26);
+			this.butOK.TabIndex = 59;
+			this.butOK.Text = "OK";
+			this.butOK.Click += new System.EventHandler(this.butOK_Click);
+			// 
 			// FormApptsOther
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(924, 658);
+			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.listFamily);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.butNew);
 			this.Controls.Add(this.butPin);
 			this.Controls.Add(this.butGoTo);
 			this.Controls.Add(this.textApptModNote);
-			this.Controls.Add(this.label1);
 			this.Controls.Add(this.butCancel);
+			this.Controls.Add(this.label1);
 			this.Controls.Add(this.tbApts);
 			this.Controls.Add(this.checkDone);
 			this.MaximizeBox = false;
@@ -272,6 +290,16 @@ namespace OpenDental{
 		private void FormApptsOther_Load(object sender, System.EventArgs e) {
 			Text=Lan.g(this,"Appointments for")+" "+PatCur.GetNameLF();
 			textApptModNote.Text=PatCur.ApptModNote;
+			if(SelectOnly){
+				butGoTo.Visible=false;
+				butPin.Visible=false;
+				butNew.Visible=false;
+				label2.Visible=false;
+				listFamily.Visible=false;
+			}
+			else{//much more typical
+				butOK.Visible=false;
+			}
 			Filltb();
 			if(PatCur.PatStatus==PatientStatus.Inactive
 				|| PatCur.PatStatus==PatientStatus.Archived)
@@ -502,6 +530,17 @@ namespace OpenDental{
 			DialogResult=DialogResult.OK;
 		}
 
+		private void butOK_Click(object sender, System.EventArgs e) {
+			//only used when selecting from TaskList. oResult is completely ignored in this case.
+			//I didn't bother enabling double click. Maybe later.
+			if(tbApts.SelectedRow==-1){
+				MessageBox.Show(Lan.g(this,"Please select appointment first."));
+				return;
+			}
+			Appointments.Cur=ListOth[tbApts.SelectedRow];
+			DialogResult=DialogResult.OK;
+		}
+
 		private void butCancel_Click(object sender, System.EventArgs e) {
 			DialogResult=DialogResult.Cancel;
 		}
@@ -541,6 +580,8 @@ namespace OpenDental{
 				Filltb();
 			}
 		}
+
+		
 
 	}
 }

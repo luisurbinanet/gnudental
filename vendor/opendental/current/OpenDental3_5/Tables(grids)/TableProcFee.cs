@@ -25,7 +25,7 @@ namespace OpenDental{
 			Fields[0]=Lan.g("TableProcFee","Sched");
 			Fields[1]=Lan.g("TableProcFee","Amount");
 			ColAlign[1]=HorizontalAlignment.Right;
-			ColWidth[0]=90;
+			ColWidth[0]=120;
 			ColWidth[1]=60;
 			LayoutTables();
 		}

@@ -191,7 +191,7 @@ namespace OpenDental{
 			return -1;
 		}
 
-		///<summary>Returns the index of the opNum(defNum) within VisOps.</summary>
+		///<summary>Returns the index of the opNum(defNum) within VisOps.  Returns -1 if not in visOps.</summary>
 		public static int GetIndexOp(int opNum){
 			for(int i=0;i<VisOps.Length;i++){
 				if(Defs.Short[(int)DefCat.Operatories][VisOps[i]].DefNum==opNum)

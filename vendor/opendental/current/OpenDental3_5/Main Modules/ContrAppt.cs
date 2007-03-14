@@ -3,7 +3,6 @@ Open Dental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open
 See header in FormOpenDental.cs for complete text.  Redistributions must retain this text.
 ===============================================================================================================*/
 using System;
-//using System.G
 using System.Collections;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -36,11 +35,9 @@ namespace OpenDental{
 		private System.Windows.Forms.ImageList imageListMain;
 		private System.Windows.Forms.PictureBox pictureBox1;
 		private bool boolAptMoved=false;
-		//private FormUnsched FormUnsched2;
 		private OpenDental.UI.Button butToday;
 		private OpenDental.UI.Button butTodayWk;
 		private System.Windows.Forms.Panel panelPinBoard;
-		//private FormRecall FormRecall2;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.Label label5;
@@ -60,7 +57,6 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textMedicalNote;
 		private System.Windows.Forms.TextBox textAddressNote;
 		private System.Windows.Forms.TextBox textFinancialNote;
-		//private bool pinIsOccupied=false;not used
 		///<summary></summary>
 		public static int SheetClickedonOp;
 		///<summary></summary>
@@ -87,7 +83,6 @@ namespace OpenDental{
 		private System.Windows.Forms.Label labelPhoneType;
 		private System.Windows.Forms.TextBox textPhone;
 		private OpenDental.UI.ODToolBar ToolBarMain;
-		private System.Windows.Forms.ContextMenu menuApt;
 		private System.Windows.Forms.TextBox textLab;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.TextBox textProduction;
@@ -100,7 +95,10 @@ namespace OpenDental{
 		private bool cardPrintFamily;
 		private Patient PatCur;
 		private Family FamCur;
+		private System.Windows.Forms.ContextMenu menuApt;
+		private System.Windows.Forms.ContextMenu menuBlockout;
 		private InsPlan[] PlanList;
+		private Schedule[] SchedListDay;
 		///<summary></summary>
 		[Category("Data"),Description("Occurs when user changes current patient, usually by clicking on the Select Patient button.")]
 		public event PatientSelectedEventHandler PatientSelected=null;
@@ -178,6 +176,7 @@ namespace OpenDental{
 			this.ToolBarMain = new OpenDental.UI.ODToolBar();
 			this.menuApt = new System.Windows.Forms.ContextMenu();
 			this.menuPatient = new System.Windows.Forms.ContextMenu();
+			this.menuBlockout = new System.Windows.Forms.ContextMenu();
 			this.panelPinBoard.SuspendLayout();
 			this.panelArrows.SuspendLayout();
 			this.panelSheet.SuspendLayout();
@@ -823,7 +822,7 @@ namespace OpenDental{
 			CovPats.List=null;
 			//from RefreshDay:
 			Appointments.ListDay=null;
-			Schedules.ListDay=null;
+			//Schedules.ListDay=null;
 			ContrApptSheet2.Shadow=null;
 			if(ContrApptSingle3!=null){//too complex?
 				for(int i=0;i<ContrApptSingle3.Length;i++){
@@ -940,6 +939,16 @@ namespace OpenDental{
 			menuApt.MenuItems.Add(Lan.g(this,"Print Card"),new EventHandler(menuApt_Click));
 			menuApt.MenuItems.Add(Lan.g(this,"Print Card for Entire Family")
 				,new EventHandler(menuApt_Click));
+			menuBlockout.MenuItems.Clear();
+			//menuBlockout.MenuItems.Add(Lan.g(this,"BLOCKOUTS"));
+			menuBlockout.MenuItems.Add(Lan.g(this,"Edit Blockout")
+				,new EventHandler(menuBlockout_Click));
+			menuBlockout.MenuItems.Add(Lan.g(this,"Add Blockout")
+				,new EventHandler(menuBlockout_Click));
+			menuBlockout.MenuItems.Add(Lan.g(this,"Set Blockouts for Day to Default")
+				,new EventHandler(menuBlockout_Click));
+			menuBlockout.MenuItems.Add(Lan.g(this,"Edit Blockout Types")
+				,new EventHandler(menuBlockout_Click));
 			Lan.C(this,new Control[]
 				{
 				butToday,
@@ -1066,8 +1075,8 @@ namespace OpenDental{
 			else{
 				butOther.Enabled=false;
 			}
-			if(ContrApptSingle.PinBoardIsSelected
-				|| ContrApptSingle.SelectedAptNum!=-1){
+			if(//ContrApptSingle.PinBoardIsSelected ||
+				ContrApptSingle.SelectedAptNum!=-1){
 				panelNotes.Enabled=true;
 			}
 			else{
@@ -1138,7 +1147,7 @@ namespace OpenDental{
 			DataValid.SetInvalid(Appointments.DateSelected);
 		}
 
-		///<summary>Gets all new day info from db and redraws screen</summary>
+		///<summary>Important.  Gets all new day info from db and redraws screen</summary>
 		private void RefreshDay(DateTime myDate){
 			if(myDate.Year<1880){
 				return;
@@ -1165,7 +1174,7 @@ namespace OpenDental{
 				ContrApptSingle3=null;
 			}
 			Appointments.Refresh(myDate);
-			Schedules.RefreshDay(myDate);
+			SchedListDay=Schedules.RefreshDay(myDate);
 			labelDate.Text=myDate.ToString("ddd");
 			labelDate2.Text=myDate.ToString("-  MMM d");
 			Calendar2.SetDate(myDate);
@@ -1198,8 +1207,8 @@ namespace OpenDental{
 					=Patients.GetOnePat(multPats,Appointments.ListDay[i].PatNum);
 				//copy time pattern to provBar[]:
 				if(ApptViewItems.GetIndexProv(Appointments.ListDay[i].ProvNum)!=-1
-				//if(Providers.GetIndex(ContrApptSingle3[i].Info.MyApt.ProvNum)!=-1
-					&& Appointments.ListDay[i].AptStatus!=ApptStatus.Broken){
+					&& Appointments.ListDay[i].AptStatus!=ApptStatus.Broken)
+				{
 					string pattern=ContrApptSingle.GetPatternShowing(Appointments.ListDay[i].Pattern);
 					int startIndex=ContrApptSingle3[i].ConvertToY()/ContrApptSheet.Lh;//rounds down
 					for(int k=0;k<pattern.Length;k++){
@@ -1216,7 +1225,7 @@ namespace OpenDental{
 			}//end for
 			//if(ContrApptSingle.SelectedAptNum!=1
 			PinApptSingle.Refresh();
-			ContrApptSheet2.CreateShadow();
+			ContrApptSheet2.CreateShadow(SchedListDay);
 			CreateAptShadows();
 			ContrApptSheet2.DrawShadow();
 			FillPanelPatient();
@@ -1261,7 +1270,8 @@ namespace OpenDental{
 			for(int i=0;i<Appointments.ListDay.Length;i++){
 				//MessageBox.Show("i:"+i.ToString()+",height:"+ContrApptSingle3[i].Height.ToString());
 				ContrApptSingle3[i].CreateShadow();
-				if(ContrApptSingle3[i].Location.X>=0 && ContrApptSingle3[i].Width>3
+				if(ContrApptSingle3[i].Location.X>=ContrApptSheet.TimeWidth+ContrApptSheet.ProvWidth*ContrApptSheet.ProvCount
+					&& ContrApptSingle3[i].Width>3
 					&& ContrApptSingle3[i].Shadow!=null)
 				{
 					grfx.DrawImage(ContrApptSingle3[i].Shadow
@@ -1726,6 +1736,52 @@ namespace OpenDental{
 					}
 				}
 				FillPanelPatient();*/
+				if(e.Button==MouseButtons.Right){
+					bool clickedOnBlock=false;
+					Schedule[] ListForType=Schedules.GetForType(SchedListDay,ScheduleType.Blockout,0);
+					for(int i=0;i<ListForType.Length;i++){
+						//skip if op doesn't match
+						if(ListForType[i].Op!=0){//if op is zero, it doesn't matter which op.
+							if(ListForType[i].Op != SheetClickedonOp){
+								continue;
+							}
+						}
+						if(ListForType[i].StartTime.TimeOfDay <= SheetClickedonTime.TimeOfDay
+							&& SheetClickedonTime.TimeOfDay < ListForType[i].StopTime.TimeOfDay)
+						{
+							clickedOnBlock=true;
+							break;
+						}
+					}
+					if(ListForType.Length==0){//only if this day is all defaults
+						SchedDefault[] DefaultsForType=SchedDefaults.GetForType(ScheduleType.Blockout,0);
+						for(int i=0;i<DefaultsForType.Length;i++){
+							//skip if day doesn't match
+							if(DefaultsForType[i].DayOfWeek != (int)Appointments.DateSelected.DayOfWeek){
+								continue;
+							}
+							//skip if op doesn't match
+							if(DefaultsForType[i].Op!=0){//if op is zero, it doesn't matter which op.
+								if(DefaultsForType[i].Op != SheetClickedonOp){
+									continue;
+								}
+							}
+							if(DefaultsForType[i].StartTime.TimeOfDay <= SheetClickedonTime.TimeOfDay
+								&& SheetClickedonTime.TimeOfDay < DefaultsForType[i].StopTime.TimeOfDay)
+							{
+								clickedOnBlock=true;
+								break;
+							}
+						}
+					}
+					if(clickedOnBlock){
+						menuBlockout.MenuItems[0].Visible=true;//Edit
+					}
+					else{
+						menuBlockout.MenuItems[0].Visible=false;
+					}
+					menuBlockout.Show(ContrApptSheet2,new Point(e.X,e.Y));
+				}
 			}
 			grfx.Dispose();
 			if(PinApptSingle.Visible){
@@ -2054,20 +2110,19 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Printer not installed"));
 			}
 			else{
-				PrintReport(false);
+				PrintReport();
 			}
 		}
 
-		///<summary>Preview only used during debugging.</summary>
-		public void PrintReport(bool justPreview){
+		///<summary></summary>
+		public void PrintReport(){
 			pd2=new PrintDocument();
 			pd2.PrintPage += new PrintPageEventHandler(this.pd2_PrintPage);
 			//pd2.DefaultPageSettings.Margins= new Margins(10,40,40,60);
-			if(justPreview){
+			#if DEBUG
 				pView.printPreviewControl2.Document=pd2;
   			pView.ShowDialog();
-			}
-			else{
+			#else
 				if(!Printers.SetPrinter(pd2,PrintSituation.Appointments)){
 					return;
 				}
@@ -2077,7 +2132,7 @@ namespace OpenDental{
 				catch{
 					MessageBox.Show(Lan.g(this,"Printer not available"));
 				}
-			}
+			#endif
 	}
 
 		private void pd2_PrintPage(object sender, System.Drawing.Printing.PrintPageEventArgs e) {
@@ -2106,23 +2161,26 @@ namespace OpenDental{
       DateTime StartTime;
       DateTime StopTime;  
       Rectangle imageRect;  //holds new dimensions for temp image
-		  Bitmap imageTemp;  //clone of shadow image with correct dimensions depending on day of week
+		  Bitmap imageTemp;  //clone of shadow image with correct dimensions depending on day of week. Needs to be rewritten.
       bool IsDefault=true; 	
-      //Schedules.CurDate=Appointments.DateSelected;
-			Schedules.RefreshDay(Appointments.DateSelected);
-      //Schedules.GetDayList();
-      if(Schedules.ListDay.Length > 0){
-        for(int i=0;i<Schedules.ListDay.Length;i++){
-          AListStart.Add(Schedules.ListDay[i].StartTime);
-          AListStop.Add(Schedules.ListDay[i].StopTime); 
+			Schedule[] SchedListDay=Schedules.RefreshDay(Appointments.DateSelected);
+      if(SchedListDay.Length > 0){
+        for(int i=0;i<SchedListDay.Length;i++){
+					if(SchedListDay[i].SchedType!=ScheduleType.Practice){
+						continue;
+					}
+          AListStart.Add(SchedListDay[i].StartTime);
+          AListStop.Add(SchedListDay[i].StopTime);
+					IsDefault=false;
         } 
-        IsDefault=false;
       }
       if(IsDefault){	
-				for(int i=0;i<SchedDefaults.List.Length;i++){
-					if(SchedDefaults.List[i].DayOfWeek==(int)Appointments.DateSelected.DayOfWeek){
-            AListStart.Add(SchedDefaults.List[i].StartTime);
-            AListStop.Add(SchedDefaults.List[i].StopTime); 
+				SchedDefault[] schedDefPract=SchedDefaults.GetForType(ScheduleType.Practice,0);
+				for(int i=0;i<schedDefPract.Length;i++){
+					//if(SchedDefaults.List[i]
+					if(schedDefPract[i].DayOfWeek==(int)Appointments.DateSelected.DayOfWeek){
+            AListStart.Add(schedDefPract[i].StartTime);
+            AListStop.Add(schedDefPract[i].StopTime); 
 					}
 				}
       }
@@ -2286,6 +2344,24 @@ namespace OpenDental{
 			}
 		}
 
+		private void menuBlockout_Click(object sender, System.EventArgs e) {
+			switch(((MenuItem)sender).Index){
+				case 0:
+					OnBlockEdit_Click();
+					break;
+				case 1:
+					OnBlockAdd_Click();
+					break;
+				case 2:
+					OnBlockDefault_Click();
+					break;
+				case 3:
+					OnBlockTypes_Click();
+					break;
+			}
+		}
+		
+
 		///<summary>Sends current appointment to unscheduled list.</summary>
 		private void butUnsched_Click(object sender, System.EventArgs e) {
 			OnUnsched_Click();
@@ -2361,6 +2437,58 @@ namespace OpenDental{
 			SetInvalid();
 		}		
 
+		private void OnBlockEdit_Click(){
+			//not even visible if not right click on a blockout
+			Schedules.ConvertFromDefault(Appointments.DateSelected,ScheduleType.Blockout,0);
+			SchedListDay=Schedules.RefreshDay(Appointments.DateSelected);
+			Schedule[] ListForType=Schedules.GetForType(SchedListDay,ScheduleType.Blockout,0);
+			//now find which blockout
+			Schedule SchedCur=null;
+			//date is irrelevant. This is just for the time:
+			DateTime SheetClickedonTime=new DateTime(2000,1,1,SheetClickedonHour,SheetClickedonMin,0);
+			for(int i=0;i<ListForType.Length;i++){
+				//skip if op doesn't match
+				if(ListForType[i].Op!=0){//if op is zero, it doesn't matter which op.
+					if(ListForType[i].Op != SheetClickedonOp){
+						continue;
+					}
+				}
+				if(ListForType[i].StartTime.TimeOfDay <= SheetClickedonTime.TimeOfDay
+					&& SheetClickedonTime.TimeOfDay < ListForType[i].StopTime.TimeOfDay)
+				{
+					SchedCur=ListForType[i];
+					break;
+				}
+			}
+			FormScheduleBlockEdit FormSB=new FormScheduleBlockEdit(SchedCur);
+      FormSB.ShowDialog();
+			RefreshModuleScreen();
+		}
+
+		private void OnBlockAdd_Click(){
+			Schedules.ConvertFromDefault(Appointments.DateSelected,ScheduleType.Blockout,0);
+      Schedule SchedCur=new Schedule();
+      SchedCur.SchedDate=Appointments.DateSelected;
+			SchedCur.SchedType=ScheduleType.Blockout;
+		  FormScheduleBlockEdit FormSB=new FormScheduleBlockEdit(SchedCur);
+      FormSB.IsNew=true;
+      FormSB.ShowDialog();
+			RefreshModuleScreen();
+		}
+
+		private void OnBlockDefault_Click(){
+			Schedules.SetAllDefault(Appointments.DateSelected,ScheduleType.Blockout,0);
+			RefreshModuleScreen();
+			MsgBox.Show(this,"All blockouts for this date have been set to default values.");
+		}
+
+		private void OnBlockTypes_Click(){
+			FormDefinitions FormD=new FormDefinitions(DefCat.BlockoutTypes);
+			FormD.ShowDialog();
+			RefreshModuleScreen();
+		}
+		
+
 		private void textMedicalNote_TextChanged(object sender, System.EventArgs e) {
 		
 		}
@@ -2398,7 +2526,8 @@ namespace OpenDental{
 		///<summary></summary>
 		public void TickRefresh(){
 			try{
-				ContrApptSheet2.CreateShadow();
+				Schedule[] schedListDay=Schedules.RefreshDay(Appointments.DateSelected);
+				ContrApptSheet2.CreateShadow(schedListDay);
 				CreateAptShadows();
 				ContrApptSheet2.DrawShadow();
 			}

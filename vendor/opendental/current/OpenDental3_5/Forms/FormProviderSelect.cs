@@ -14,6 +14,7 @@ namespace OpenDental{
 		private OpenDental.UI.Button butAdd;
 		private System.ComponentModel.Container components = null;
 		private bool changed;
+		private User user;
 		
 		///<summary></summary>
 		public FormProviderSelect(){
@@ -50,17 +51,20 @@ namespace OpenDental{
 				| System.Windows.Forms.AnchorStyles.Right)));
 			this.listProviders.Location = new System.Drawing.Point(16, 12);
 			this.listProviders.Name = "listProviders";
-			this.listProviders.Size = new System.Drawing.Size(192, 316);
+			this.listProviders.Size = new System.Drawing.Size(194, 303);
 			this.listProviders.TabIndex = 4;
 			this.listProviders.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listProviders_MouseDown);
 			this.listProviders.DoubleClick += new System.EventHandler(this.listProviders_DoubleClick);
 			// 
 			// butClose
 			// 
+			this.butClose.AdjustImageLocation = new System.Drawing.Point(0, 0);
 			this.butClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butClose.Autosize = true;
+			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butClose.Location = new System.Drawing.Point(208, 376);
+			this.butClose.Location = new System.Drawing.Point(210, 368);
 			this.butClose.Name = "butClose";
 			this.butClose.Size = new System.Drawing.Size(75, 26);
 			this.butClose.TabIndex = 3;
@@ -71,11 +75,12 @@ namespace OpenDental{
 			// 
 			this.butDown.AdjustImageLocation = new System.Drawing.Point(0, 0);
 			this.butDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.butDown.Autosize = true;
 			this.butDown.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butDown.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butDown.Image = ((System.Drawing.Image)(resources.GetObject("butDown.Image")));
 			this.butDown.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDown.Location = new System.Drawing.Point(105, 375);
+			this.butDown.Location = new System.Drawing.Point(105, 367);
 			this.butDown.Name = "butDown";
 			this.butDown.Size = new System.Drawing.Size(79, 26);
 			this.butDown.TabIndex = 12;
@@ -86,11 +91,12 @@ namespace OpenDental{
 			// 
 			this.butUp.AdjustImageLocation = new System.Drawing.Point(0, 1);
 			this.butUp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.butUp.Autosize = true;
 			this.butUp.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butUp.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butUp.Image = ((System.Drawing.Image)(resources.GetObject("butUp.Image")));
 			this.butUp.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butUp.Location = new System.Drawing.Point(16, 375);
+			this.butUp.Location = new System.Drawing.Point(16, 367);
 			this.butUp.Name = "butUp";
 			this.butUp.Size = new System.Drawing.Size(79, 26);
 			this.butUp.TabIndex = 11;
@@ -101,11 +107,12 @@ namespace OpenDental{
 			// 
 			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0, 0);
 			this.butAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.butAdd.Autosize = true;
 			this.butAdd.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butAdd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
 			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAdd.Location = new System.Drawing.Point(16, 340);
+			this.butAdd.Location = new System.Drawing.Point(16, 332);
 			this.butAdd.Name = "butAdd";
 			this.butAdd.Size = new System.Drawing.Size(79, 26);
 			this.butAdd.TabIndex = 10;
@@ -116,7 +123,7 @@ namespace OpenDental{
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butClose;
-			this.ClientSize = new System.Drawing.Size(311, 414);
+			this.ClientSize = new System.Drawing.Size(313, 406);
 			this.Controls.Add(this.butDown);
 			this.Controls.Add(this.butUp);
 			this.Controls.Add(this.butAdd);
@@ -137,44 +144,31 @@ namespace OpenDental{
 
 		private void FormProviderSelect_Load(object sender, System.EventArgs e) {
 			//if Security Administration permission has not been enabled, then allow access
-			Permissions.GetCur("Security Administration");
-			if(!Permissions.Cur.RequiresPassword){
+			if(!Permissions.AuthorizationRequired("Security Administration")){
 				FillList();
 				return;
 			}
 			//whether or not Providers requires a password, since Security Admin has been enabled,
 			//verify password so that the security box can be hidden if no permission for that.
-			FormPassword FormP=new FormPassword();
-			FormP.ShowDialog();
-			if(FormP.DialogResult!=DialogResult.OK){
+			user=Users.Authenticate("Providers");
+			if(user==null){
 				DialogResult=DialogResult.Cancel;
 				return;//bad password
 			}
 			//allow access if permission for Security Admin (remember, employees not allowed Security Admin)
-			if(Users.Cur.ProvNum > 0){
-				UserPermissions.GetListForProv(Users.Cur.ProvNum);
-				if(UserPermissions.CheckHasPermission("Security Administration",Users.Cur.ProvNum,false)) {
+			if(user.ProvNum > 0){
+				if(UserPermissions.IsAuthorized("Security Administration",user)){
 					FillList();
 					return;
 				}
 			}
 			//allow access if permission for Providers
-			if(Users.Cur.EmployeeNum > 0){
-				UserPermissions.GetListForEmp(Users.Cur.EmployeeNum);
-				if(UserPermissions.CheckHasPermission("Providers",Users.Cur.EmployeeNum,true)) {
-					FillList();
-					return;
-				}
-			}
-			else{//prov
-				UserPermissions.GetListForProv(Users.Cur.ProvNum);
-				if(UserPermissions.CheckHasPermission("Providers",Users.Cur.ProvNum,false)) {
-					FillList();
-					return;
-				}
-			}
-			MessageBox.Show(Lan.g(this,"You do not have permission for this feature"));
-			DialogResult=DialogResult.Cancel;
+			if(!UserPermissions.IsAuthorized("Providers",user)){
+				MsgBox.Show(this,"You do not have permission for this feature");
+				DialogResult=DialogResult.Cancel;
+				return;
+			}	
+			FillList();
 		}
 
 		private void FillList(){
@@ -257,7 +251,7 @@ namespace OpenDental{
 			if(changed){
 				DataValid.SetInvalid(InvalidTypes.Providers);
 			}
-			SecurityLogs.MakeLogEntry("Providers","Altered Providers");
+			SecurityLogs.MakeLogEntry("Providers","Altered Providers",user);
 		}
 
 	}

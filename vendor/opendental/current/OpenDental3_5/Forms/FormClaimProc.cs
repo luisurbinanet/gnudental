@@ -354,18 +354,18 @@ namespace OpenDental
 			// 
 			// labelDedBeforePerc
 			// 
-			this.labelDedBeforePerc.Location = new System.Drawing.Point(22, 129);
+			this.labelDedBeforePerc.Location = new System.Drawing.Point(8, 129);
 			this.labelDedBeforePerc.Name = "labelDedBeforePerc";
-			this.labelDedBeforePerc.Size = new System.Drawing.Size(114, 17);
+			this.labelDedBeforePerc.Size = new System.Drawing.Size(128, 17);
 			this.labelDedBeforePerc.TabIndex = 11;
 			this.labelDedBeforePerc.Text = "Deductible";
 			this.labelDedBeforePerc.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// labelInsPayAmt
 			// 
-			this.labelInsPayAmt.Location = new System.Drawing.Point(6, 101);
+			this.labelInsPayAmt.Location = new System.Drawing.Point(14, 101);
 			this.labelInsPayAmt.Name = "labelInsPayAmt";
-			this.labelInsPayAmt.Size = new System.Drawing.Size(134, 17);
+			this.labelInsPayAmt.Size = new System.Drawing.Size(126, 17);
 			this.labelInsPayAmt.TabIndex = 13;
 			this.labelInsPayAmt.Text = "Insurance Paid";
 			this.labelInsPayAmt.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -384,14 +384,14 @@ namespace OpenDental
 			// 
 			this.labelRemarks.Location = new System.Drawing.Point(14, 48);
 			this.labelRemarks.Name = "labelRemarks";
-			this.labelRemarks.Size = new System.Drawing.Size(99, 37);
+			this.labelRemarks.Size = new System.Drawing.Size(113, 37);
 			this.labelRemarks.TabIndex = 14;
 			this.labelRemarks.Text = "Remarks from EOB";
 			this.labelRemarks.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// textRemarks
 			// 
-			this.textRemarks.Location = new System.Drawing.Point(115, 49);
+			this.textRemarks.Location = new System.Drawing.Point(129, 49);
 			this.textRemarks.MaxLength = 255;
 			this.textRemarks.Multiline = true;
 			this.textRemarks.Name = "textRemarks";
@@ -403,7 +403,7 @@ namespace OpenDental
 			// 
 			this.label9.Location = new System.Drawing.Point(132, 29);
 			this.label9.Name = "label9";
-			this.label9.Size = new System.Drawing.Size(112, 17);
+			this.label9.Size = new System.Drawing.Size(80, 17);
 			this.label9.TabIndex = 16;
 			this.label9.Text = "Status";
 			this.label9.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
@@ -418,9 +418,9 @@ namespace OpenDental
 			// 
 			// labelWriteOff
 			// 
-			this.labelWriteOff.Location = new System.Drawing.Point(11, 123);
+			this.labelWriteOff.Location = new System.Drawing.Point(19, 123);
 			this.labelWriteOff.Name = "labelWriteOff";
-			this.labelWriteOff.Size = new System.Drawing.Size(128, 17);
+			this.labelWriteOff.Size = new System.Drawing.Size(120, 17);
 			this.labelWriteOff.TabIndex = 19;
 			this.labelWriteOff.Text = "Write Off";
 			this.labelWriteOff.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -447,9 +447,9 @@ namespace OpenDental
 			// 
 			// labelInsPayEst
 			// 
-			this.labelInsPayEst.Location = new System.Drawing.Point(9, 80);
+			this.labelInsPayEst.Location = new System.Drawing.Point(12, 80);
 			this.labelInsPayEst.Name = "labelInsPayEst";
-			this.labelInsPayEst.Size = new System.Drawing.Size(132, 17);
+			this.labelInsPayEst.Size = new System.Drawing.Size(129, 17);
 			this.labelInsPayEst.TabIndex = 21;
 			this.labelInsPayEst.Text = "Insurance Estimate";
 			this.labelInsPayEst.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -466,9 +466,9 @@ namespace OpenDental
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(23, 11);
+			this.label1.Location = new System.Drawing.Point(9, 11);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(107, 14);
+			this.label1.Size = new System.Drawing.Size(121, 14);
 			this.label1.TabIndex = 28;
 			this.label1.Text = "Ins Plan:";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -494,18 +494,18 @@ namespace OpenDental
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(22, 91);
+			this.label3.Location = new System.Drawing.Point(8, 91);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(114, 17);
+			this.label3.Size = new System.Drawing.Size(128, 17);
 			this.label3.TabIndex = 31;
 			this.label3.Text = "Allowed";
 			this.label3.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label4
 			// 
-			this.label4.Location = new System.Drawing.Point(10, 192);
+			this.label4.Location = new System.Drawing.Point(30, 192);
 			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(127, 14);
+			this.label4.Size = new System.Drawing.Size(107, 14);
 			this.label4.TabIndex = 32;
 			this.label4.Text = "Percentage";
 			this.label4.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -592,9 +592,9 @@ namespace OpenDental
 			// label14
 			// 
 			this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.label14.Location = new System.Drawing.Point(198, 9);
+			this.label14.Location = new System.Drawing.Point(210, 9);
 			this.label14.Name = "label14";
-			this.label14.Size = new System.Drawing.Size(86, 36);
+			this.label14.Size = new System.Drawing.Size(74, 36);
 			this.label14.TabIndex = 48;
 			this.label14.Text = "Insurance Portion:";
 			this.label14.TextAlign = System.Drawing.ContentAlignment.BottomRight;
@@ -704,9 +704,9 @@ namespace OpenDental
 			// 
 			// labelOverAnnualMax
 			// 
-			this.labelOverAnnualMax.Location = new System.Drawing.Point(10, 59);
+			this.labelOverAnnualMax.Location = new System.Drawing.Point(11, 59);
 			this.labelOverAnnualMax.Name = "labelOverAnnualMax";
-			this.labelOverAnnualMax.Size = new System.Drawing.Size(130, 17);
+			this.labelOverAnnualMax.Size = new System.Drawing.Size(129, 17);
 			this.labelOverAnnualMax.TabIndex = 62;
 			this.labelOverAnnualMax.Text = "Over Annual Max";
 			this.labelOverAnnualMax.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -739,18 +739,18 @@ namespace OpenDental
 			// 
 			// label28
 			// 
-			this.label28.Location = new System.Drawing.Point(4, 162);
+			this.label28.Location = new System.Drawing.Point(6, 162);
 			this.label28.Name = "label28";
-			this.label28.Size = new System.Drawing.Size(127, 17);
+			this.label28.Size = new System.Drawing.Size(125, 17);
 			this.label28.TabIndex = 65;
 			this.label28.Text = "Entry (Check) Date";
 			this.label28.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label29
 			// 
-			this.label29.Location = new System.Drawing.Point(-2, 206);
+			this.label29.Location = new System.Drawing.Point(9, 206);
 			this.label29.Name = "label29";
-			this.label29.Size = new System.Drawing.Size(132, 17);
+			this.label29.Size = new System.Drawing.Size(121, 17);
 			this.label29.TabIndex = 67;
 			this.label29.Text = "Description";
 			this.label29.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -775,7 +775,7 @@ namespace OpenDental
 			// 
 			this.label30.Location = new System.Drawing.Point(262, 30);
 			this.label30.Name = "label30";
-			this.label30.Size = new System.Drawing.Size(139, 17);
+			this.label30.Size = new System.Drawing.Size(73, 17);
 			this.label30.TabIndex = 69;
 			this.label30.Text = "Provider";
 			this.label30.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
@@ -784,14 +784,14 @@ namespace OpenDental
 			// 
 			this.labelCodeSent.Location = new System.Drawing.Point(8, 10);
 			this.labelCodeSent.Name = "labelCodeSent";
-			this.labelCodeSent.Size = new System.Drawing.Size(107, 14);
+			this.labelCodeSent.Size = new System.Drawing.Size(121, 14);
 			this.labelCodeSent.TabIndex = 74;
 			this.labelCodeSent.Text = "Code Sent to Ins";
 			this.labelCodeSent.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// textCodeSent
 			// 
-			this.textCodeSent.Location = new System.Drawing.Point(115, 7);
+			this.textCodeSent.Location = new System.Drawing.Point(129, 7);
 			this.textCodeSent.Name = "textCodeSent";
 			this.textCodeSent.Size = new System.Drawing.Size(77, 20);
 			this.textCodeSent.TabIndex = 73;
@@ -801,14 +801,14 @@ namespace OpenDental
 			// 
 			this.labelFeeBilled.Location = new System.Drawing.Point(7, 30);
 			this.labelFeeBilled.Name = "labelFeeBilled";
-			this.labelFeeBilled.Size = new System.Drawing.Size(107, 17);
+			this.labelFeeBilled.Size = new System.Drawing.Size(121, 17);
 			this.labelFeeBilled.TabIndex = 71;
 			this.labelFeeBilled.Text = "Fee Billed to Ins";
 			this.labelFeeBilled.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// textFeeBilled
 			// 
-			this.textFeeBilled.Location = new System.Drawing.Point(115, 28);
+			this.textFeeBilled.Location = new System.Drawing.Point(129, 28);
 			this.textFeeBilled.Name = "textFeeBilled";
 			this.textFeeBilled.Size = new System.Drawing.Size(77, 20);
 			this.textFeeBilled.TabIndex = 72;
@@ -835,9 +835,9 @@ namespace OpenDental
 			// 
 			// labelDedApplied
 			// 
-			this.labelDedApplied.Location = new System.Drawing.Point(25, 18);
+			this.labelDedApplied.Location = new System.Drawing.Point(10, 18);
 			this.labelDedApplied.Name = "labelDedApplied";
-			this.labelDedApplied.Size = new System.Drawing.Size(114, 17);
+			this.labelDedApplied.Size = new System.Drawing.Size(129, 17);
 			this.labelDedApplied.TabIndex = 76;
 			this.labelDedApplied.Text = "Deductible";
 			this.labelDedApplied.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -863,9 +863,9 @@ namespace OpenDental
 			// 
 			// labelPaidOtherIns
 			// 
-			this.labelPaidOtherIns.Location = new System.Drawing.Point(10, 39);
+			this.labelPaidOtherIns.Location = new System.Drawing.Point(11, 39);
 			this.labelPaidOtherIns.Name = "labelPaidOtherIns";
-			this.labelPaidOtherIns.Size = new System.Drawing.Size(130, 17);
+			this.labelPaidOtherIns.Size = new System.Drawing.Size(129, 17);
 			this.labelPaidOtherIns.TabIndex = 79;
 			this.labelPaidOtherIns.Text = "Paid By Other Ins";
 			this.labelPaidOtherIns.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -910,9 +910,9 @@ namespace OpenDental
 			// 
 			this.checkDedBeforePerc.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.checkDedBeforePerc.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkDedBeforePerc.Location = new System.Drawing.Point(17, 109);
+			this.checkDedBeforePerc.Location = new System.Drawing.Point(19, 109);
 			this.checkDedBeforePerc.Name = "checkDedBeforePerc";
-			this.checkDedBeforePerc.Size = new System.Drawing.Size(194, 18);
+			this.checkDedBeforePerc.Size = new System.Drawing.Size(192, 18);
 			this.checkDedBeforePerc.TabIndex = 86;
 			this.checkDedBeforePerc.Text = "Apply deductible before %";
 			this.checkDedBeforePerc.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -999,7 +999,7 @@ namespace OpenDental
 			this.panelClaimExtras.Controls.Add(this.textFeeBilled);
 			this.panelClaimExtras.Location = new System.Drawing.Point(4, 54);
 			this.panelClaimExtras.Name = "panelClaimExtras";
-			this.panelClaimExtras.Size = new System.Drawing.Size(421, 188);
+			this.panelClaimExtras.Size = new System.Drawing.Size(438, 188);
 			this.panelClaimExtras.TabIndex = 97;
 			// 
 			// labelPatOverrideInsEst
@@ -1123,9 +1123,9 @@ namespace OpenDental
 			// 
 			// label5
 			// 
-			this.label5.Location = new System.Drawing.Point(9, 234);
+			this.label5.Location = new System.Drawing.Point(30, 234);
 			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(128, 14);
+			this.label5.Size = new System.Drawing.Size(107, 14);
 			this.label5.TabIndex = 94;
 			this.label5.Text = "Base Estimate";
 			this.label5.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -1199,9 +1199,9 @@ namespace OpenDental
 			// 
 			// labelProcDate
 			// 
-			this.labelProcDate.Location = new System.Drawing.Point(2, 184);
+			this.labelProcDate.Location = new System.Drawing.Point(6, 184);
 			this.labelProcDate.Name = "labelProcDate";
-			this.labelProcDate.Size = new System.Drawing.Size(130, 17);
+			this.labelProcDate.Size = new System.Drawing.Size(126, 17);
 			this.labelProcDate.TabIndex = 96;
 			this.labelProcDate.Text = "Procedure Date";
 			this.labelProcDate.TextAlign = System.Drawing.ContentAlignment.TopRight;

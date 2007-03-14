@@ -27,10 +27,10 @@ namespace OpenDental{
 		///<summary>Constructor sets the connection values.</summary>
 		public DataConnection(){
 		  con=new MySqlConnection(
-				"Server="+FormConfig.ComputerName
-				+";Database="+FormConfig.Database
-				+";User ID="+FormConfig.User
-				+";Password="+FormConfig.Password
+				"Server="+FormChooseDatabase.ComputerName
+				+";Database="+FormChooseDatabase.Database
+				+";User ID="+FormChooseDatabase.DbUser
+				+";Password="+FormChooseDatabase.Password
 				+";CharSet=utf8");
 			//dr = null;
 			cmd = new MySqlCommand();
@@ -41,10 +41,10 @@ namespace OpenDental{
 		///<summary>Sets the connection to an alternate database for backup purposes.  Currently only used during conversions to do a quick backup first, and in FormConfig to get db names.</summary>
 		public DataConnection(string db){
 		  con= new MySqlConnection(
-				"Server="+FormConfig.ComputerName
+				"Server="+FormChooseDatabase.ComputerName
 				+";Database="+db
-				+";User ID="+FormConfig.User
-				+";Password="+FormConfig.Password
+				+";User ID="+FormChooseDatabase.DbUser
+				+";Password="+FormChooseDatabase.Password
 				+";CharSet=utf8");
 			//dr = null;
 			cmd = new MySqlCommand();
@@ -75,12 +75,12 @@ namespace OpenDental{
 			catch(MySql.Data.Types.MySqlConversionException){
 				MsgBox.Show(this,"Invalid date found. Please fix dates in the Check Database Integrity tool in your main menu under misc tools");
 			}
-			catch(MySqlException e){
-				MessageBox.Show("Error: "+e.Message+","+cmd.CommandText);
-			}
 			catch(Exception){
 				MessageBox.Show(command);
 			}
+			//catch(MySqlException e){
+			//	MessageBox.Show("Error: "+e.Message+","+cmd.CommandText);
+			//}
 			finally{
 				con.Close();
 			}

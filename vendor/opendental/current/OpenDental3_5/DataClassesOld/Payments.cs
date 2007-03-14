@@ -29,8 +29,8 @@ namespace OpenDental{
 		public int ClinicNum;
 
 
-		///<summary></summary>
-		public void Update(){
+		///<summary>Updates this payment.  Also updates the datePay of all attached paysplits so that they are always in synch.  Updates IsSplit.  DatePay and IsSplit are also updated whenever a paysplit is added or removed, so no need to run this again.</summary>
+		private void Update(){
 			string command="UPDATE payment SET " 
 				+ "paytype = '"      +POut.PInt   (PayType)+"'"
 				+ ",paydate = '"     +POut.PDate  (PayDate)+"'"
@@ -45,10 +45,23 @@ namespace OpenDental{
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
  			dcon.NonQ(command);
+			command="UPDATE paysplit SET DatePay='"+POut.PDate(PayDate)
+				+"' WHERE PayNum = "+POut.PInt(PayNum);
+ 			dcon.NonQ(command);
+			//set IsSplit
+			command="SELECT COUNT(*) FROM paysplit WHERE PayNum="+POut.PInt(PayNum);
+			DataTable table=dcon.GetTable(command);
+			if(table.Rows[0][0].ToString()=="1"){
+				command="UPDATE payment SET IsSplit=0 WHERE PayNum="+POut.PInt(PayNum);
+			}
+			else{
+				command="UPDATE payment SET IsSplit=1 WHERE PayNum="+POut.PInt(PayNum);
+			}
+			dcon.NonQ(command);
 		}
 
 		///<summary></summary>
-		public void Insert(){
+		private void Insert(){
 			string command= "INSERT INTO payment (paytype,paydate,payamt, "
 				+"checknum,bankbranch,paynote,issplit,patnum,ClinicNum) VALUES("
 				+"'"+POut.PInt   (PayType)+"', "
@@ -67,11 +80,101 @@ namespace OpenDental{
 		}
 
 		///<summary></summary>
+		public void InsertOrUpdate(bool isNew){
+			if(PayDate.Date>DateTime.Today){
+				throw new Exception(Lan.g(this,"Date must not be a future date."));
+			}
+			if(PayDate.Year<1880){
+				throw new Exception(Lan.g(this,"Invalid date"));
+			}
+			if(isNew){
+				Insert();
+			}
+			else{
+				Update();
+			}
+		}
+
+		///<summary>Deletes the payment as well as all splits.  Also updates all necessary EstBals</summary>
 		public void Delete(){
 			string command= "DELETE from payment WHERE payNum = '"+PayNum.ToString()+"'";
 			DataConnection dcon=new DataConnection();
  			dcon.NonQ(command);
+			PaySplit[] splitList=PaySplits.RefreshPaymentList(PayNum);
+			for(int i=0;i<splitList.Length;i++){
+				splitList[i].Delete();
+			}
 		}
+
+		/// <summary>Only Called only from FormPayment.butOK click.  Only called if the user did not enter any splits.  Usually just adds one split for the current patient.  But if that would take the balance negative, then it loops through all other family members and creates splits for them.  It might still take the current patient negative once all other family members are zeroed out.</summary>
+		public void Allocate(){//double amtTot,int patNum,Payment payNum){
+			string command= 
+				"SELECT Guarantor FROM patient "
+				+"WHERE PatNum = "+POut.PInt(PatNum);
+			DataConnection dcon=new DataConnection();
+ 			DataTable table=dcon.GetTable(command);
+			if(table.Rows.Count==0){
+				return;
+			}
+			command= 
+				"SELECT PatNum,EstBalance,PriProv FROM patient "
+				+"WHERE Guarantor = "+table.Rows[0][0].ToString()
+				+" ORDER BY PatNum!="+POut.PInt(PatNum);//puts current patient in position 0
+ 			table=dcon.GetTable(command);
+			Patient[] pats=new Patient[table.Rows.Count];
+			for(int i=0;i<table.Rows.Count;i++){
+				pats[i]=new Patient();
+				pats[i].PatNum    = PIn.PInt   (table.Rows[i][0].ToString());
+				pats[i].EstBalance= PIn.PDouble(table.Rows[i][1].ToString());
+				pats[i].PriProv   = PIn.PInt   (table.Rows[i][2].ToString());
+			}
+			//first calculate all the amounts
+			double amtRemain=PayAmt;//start off with the full amount
+			double[] amtSplits=new double[pats.Length];
+			//loop through each family member, starting with current
+			for(int i=0;i<pats.Length;i++){
+				if(pats[i].EstBalance==0 || pats[i].EstBalance<0){
+					continue;//don't apply paysplits to anyone with a negative balance
+				}
+				if(amtRemain<pats[i].EstBalance){//entire remainder can be allocated to this patient
+					amtSplits[i]=amtRemain;
+					amtRemain=0;
+					break;
+				}
+				else{//amount remaining is more than or equal to the estBal for this family member
+					amtSplits[i]=pats[i].EstBalance;
+					amtRemain-=pats[i].EstBalance;
+				}
+			}
+			//add any remainder to the split for this patient
+			amtSplits[0]+=amtRemain;
+			//now create a split for each non-zero amount
+			PaySplit PaySplitCur;
+			for(int i=0;i<pats.Length;i++){
+				if(amtSplits[i]==0){
+					continue;
+				}
+				PaySplitCur=new PaySplit();
+				PaySplitCur.PatNum=pats[i].PatNum;
+				PaySplitCur.PayNum=PayNum;
+				PaySplitCur.ProcDate=PayDate;
+				PaySplitCur.DatePay=PayDate;
+				PaySplitCur.ProvNum=pats[i].GetProvNum();
+				PaySplitCur.SplitAmt=amtSplits[i];
+				PaySplitCur.InsertOrUpdate(true);
+			}
+			//finally, adjust each EstBalance, but no need to do current patient
+			for(int i=1;i<pats.Length;i++){
+				if(amtSplits[i]==0){
+					continue;
+				}
+				command="UPDATE patient SET EstBalance=EstBalance-"+POut.PDouble(amtSplits[i])
+					+" WHERE PatNum="+POut.PInt(pats[i].PatNum);
+				dcon.NonQ(command);
+			}
+		}
+
+		
 
 	}
 
@@ -156,6 +259,9 @@ namespace OpenDental{
 				+" "+Lan.g("Payments","split between patients");
 			return retStr;
 		}*/
+
+		
+
 	}
 
 	

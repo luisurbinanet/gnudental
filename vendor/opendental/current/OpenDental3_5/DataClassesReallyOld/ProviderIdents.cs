@@ -95,7 +95,7 @@ namespace OpenDental{
 			return ForProv;
 		}
 
-		///<summary>Gets all supplemental identifiers that have been attached to this provider and for this particular payorID.  Called from X12 when creating a claim file.</summary>
+		///<summary>Gets all supplemental identifiers that have been attached to this provider and for this particular payorID.  Called from X12 when creating a claim file.  Also used now on printed claims.</summary>
 		public static ProviderIdent[] GetForPayor(int provNum,string payorID){
 			ArrayList arrayL=new ArrayList();
 			for(int i=0;i<List.Length;i++){

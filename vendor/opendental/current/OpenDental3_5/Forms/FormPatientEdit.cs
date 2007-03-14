@@ -635,7 +635,7 @@ namespace OpenDental{
 			// 
 			// label21
 			// 
-			this.label21.Location = new System.Drawing.Point(5, 117);
+			this.label21.Location = new System.Drawing.Point(4, 117);
 			this.label21.Name = "label21";
 			this.label21.Size = new System.Drawing.Size(127, 16);
 			this.label21.TabIndex = 42;
@@ -712,7 +712,7 @@ namespace OpenDental{
 			// 
 			this.label26.Location = new System.Drawing.Point(842, 165);
 			this.label26.Name = "label26";
-			this.label26.Size = new System.Drawing.Size(123, 129);
+			this.label26.Size = new System.Drawing.Size(123, 117);
 			this.label26.TabIndex = 54;
 			this.label26.Text = "If no fee schedule is selected, the Primary Provider\'s fee schedule will be used." +
 				"  If the patient has insurance, that fee schedule will be used instead of either" +
@@ -983,7 +983,7 @@ namespace OpenDental{
 			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butAdd.Location = new System.Drawing.Point(441, 411);
 			this.butAdd.Name = "butAdd";
-			this.butAdd.Size = new System.Drawing.Size(94, 26);
+			this.butAdd.Size = new System.Drawing.Size(75, 26);
 			this.butAdd.TabIndex = 69;
 			this.butAdd.Text = "&Add";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
@@ -996,9 +996,9 @@ namespace OpenDental{
 			this.butDelete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDelete.Location = new System.Drawing.Point(567, 411);
+			this.butDelete.Location = new System.Drawing.Point(571, 411);
 			this.butDelete.Name = "butDelete";
-			this.butDelete.Size = new System.Drawing.Size(100, 26);
+			this.butDelete.Size = new System.Drawing.Size(83, 26);
 			this.butDelete.TabIndex = 70;
 			this.butDelete.Text = "&Remove";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
@@ -1146,7 +1146,7 @@ namespace OpenDental{
 			// 
 			this.comboUrgency.BackColor = System.Drawing.SystemColors.Window;
 			this.comboUrgency.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboUrgency.Location = new System.Drawing.Point(159, 96);
+			this.comboUrgency.Location = new System.Drawing.Point(161, 97);
 			this.comboUrgency.Name = "comboUrgency";
 			this.comboUrgency.Size = new System.Drawing.Size(155, 21);
 			this.comboUrgency.TabIndex = 4;
@@ -1155,7 +1155,7 @@ namespace OpenDental{
 			// 
 			this.comboGradeLevel.BackColor = System.Drawing.SystemColors.Window;
 			this.comboGradeLevel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboGradeLevel.Location = new System.Drawing.Point(159, 75);
+			this.comboGradeLevel.Location = new System.Drawing.Point(161, 76);
 			this.comboGradeLevel.MaxDropDownItems = 25;
 			this.comboGradeLevel.Name = "comboGradeLevel";
 			this.comboGradeLevel.Size = new System.Drawing.Size(155, 21);
@@ -1164,7 +1164,7 @@ namespace OpenDental{
 			// textGradeSchool
 			// 
 			this.textGradeSchool.AcceptsReturn = true;
-			this.textGradeSchool.Location = new System.Drawing.Point(159, 55);
+			this.textGradeSchool.Location = new System.Drawing.Point(161, 56);
 			this.textGradeSchool.Multiline = true;
 			this.textGradeSchool.Name = "textGradeSchool";
 			this.textGradeSchool.Size = new System.Drawing.Size(213, 20);
@@ -1175,9 +1175,9 @@ namespace OpenDental{
 			// 
 			// label35
 			// 
-			this.label35.Location = new System.Drawing.Point(4, 95);
+			this.label35.Location = new System.Drawing.Point(10, 96);
 			this.label35.Name = "label35";
-			this.label35.Size = new System.Drawing.Size(153, 17);
+			this.label35.Size = new System.Drawing.Size(149, 17);
 			this.label35.TabIndex = 6;
 			this.label35.Text = "Treatment Urgency";
 			this.label35.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -1185,7 +1185,7 @@ namespace OpenDental{
 			// comboRace
 			// 
 			this.comboRace.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboRace.Location = new System.Drawing.Point(159, 14);
+			this.comboRace.Location = new System.Drawing.Point(161, 15);
 			this.comboRace.MaxDropDownItems = 20;
 			this.comboRace.Name = "comboRace";
 			this.comboRace.Size = new System.Drawing.Size(156, 21);
@@ -1194,7 +1194,7 @@ namespace OpenDental{
 			// textCounty
 			// 
 			this.textCounty.AcceptsReturn = true;
-			this.textCounty.Location = new System.Drawing.Point(159, 35);
+			this.textCounty.Location = new System.Drawing.Point(161, 36);
 			this.textCounty.Multiline = true;
 			this.textCounty.Name = "textCounty";
 			this.textCounty.Size = new System.Drawing.Size(213, 20);
@@ -1205,36 +1205,36 @@ namespace OpenDental{
 			// 
 			// label15
 			// 
-			this.label15.Location = new System.Drawing.Point(19, 75);
+			this.label15.Location = new System.Drawing.Point(19, 76);
 			this.label15.Name = "label15";
-			this.label15.Size = new System.Drawing.Size(138, 17);
+			this.label15.Size = new System.Drawing.Size(140, 17);
 			this.label15.TabIndex = 3;
 			this.label15.Text = "Grade Level";
 			this.label15.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// label14
 			// 
-			this.label14.Location = new System.Drawing.Point(8, 55);
+			this.label14.Location = new System.Drawing.Point(8, 56);
 			this.label14.Name = "label14";
-			this.label14.Size = new System.Drawing.Size(149, 17);
+			this.label14.Size = new System.Drawing.Size(151, 17);
 			this.label14.TabIndex = 2;
-			this.label14.Text = "School Name";
+			this.label14.Text = "Site (or Grade School)";
 			this.label14.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// label13
 			// 
-			this.label13.Location = new System.Drawing.Point(16, 35);
+			this.label13.Location = new System.Drawing.Point(16, 36);
 			this.label13.Name = "label13";
-			this.label13.Size = new System.Drawing.Size(141, 17);
+			this.label13.Size = new System.Drawing.Size(143, 17);
 			this.label13.TabIndex = 1;
 			this.label13.Text = "County";
 			this.label13.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// label10
 			// 
-			this.label10.Location = new System.Drawing.Point(18, 15);
+			this.label10.Location = new System.Drawing.Point(18, 16);
 			this.label10.Name = "label10";
-			this.label10.Size = new System.Drawing.Size(139, 17);
+			this.label10.Size = new System.Drawing.Size(141, 17);
 			this.label10.TabIndex = 0;
 			this.label10.Text = "Race/Ethnicity";
 			this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleRight;

@@ -65,16 +65,16 @@ namespace OpenDental{
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(2, 34);
+			this.label1.Location = new System.Drawing.Point(17, 32);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(115, 12);
+			this.label1.Size = new System.Drawing.Size(124, 13);
 			this.label1.TabIndex = 25;
 			this.label1.Text = "Description";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// textDescript
 			// 
-			this.textDescript.Location = new System.Drawing.Point(119, 30);
+			this.textDescript.Location = new System.Drawing.Point(143, 29);
 			this.textDescript.Name = "textDescript";
 			this.textDescript.Size = new System.Drawing.Size(316, 20);
 			this.textDescript.TabIndex = 24;
@@ -110,18 +110,18 @@ namespace OpenDental{
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(16, 110);
+			this.label2.Location = new System.Drawing.Point(24, 110);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(203, 12);
+			this.label2.Size = new System.Drawing.Size(188, 12);
 			this.label2.TabIndex = 29;
 			this.label2.Text = "Add ADA Codes";
 			this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(238, 108);
+			this.label3.Location = new System.Drawing.Point(241, 108);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(200, 14);
+			this.label3.Size = new System.Drawing.Size(191, 14);
 			this.label3.TabIndex = 31;
 			this.label3.Text = "Highlight Auto Codes";
 			this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -137,7 +137,7 @@ namespace OpenDental{
 			// 
 			this.label4.Location = new System.Drawing.Point(36, 74);
 			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(462, 23);
+			this.label4.Size = new System.Drawing.Size(460, 23);
 			this.label4.TabIndex = 35;
 			this.label4.Text = "Add any number of ADA codes and Auto Codes";
 			// 

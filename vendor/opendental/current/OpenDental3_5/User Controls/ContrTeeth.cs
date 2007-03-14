@@ -53,7 +53,6 @@ namespace OpenDental
 		{
 			// This call is required by the Windows.Forms Form Designer.
 			InitializeComponent();
-			// TODO: Add any initialization after the InitializeComponent call
 			SelectedTeeth=new string[0];
 			//SelectedTeeth[0]="4";
 		}
@@ -760,6 +759,9 @@ namespace OpenDental
 					GraphicElements.GetSublist(GraphicTypes.GetIndex(6),toothNum);
 			}
 			else if(GraphicTypes.Cur.SpecialType=="bridge"){
+				if(intTooth==-1){//user set up a bridge graphic with a mouth type even though it doesn't make sense.
+					return;
+				}
 				//MessageBox.Show(GraphicTypes.Cur.GTypeNum.ToString());
 				if(IsMirror(intTooth))
 					GraphicElements.GetSublist(GraphicTypes.GetIndex(12),GetMirror(toothNum));

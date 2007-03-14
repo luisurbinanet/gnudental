@@ -120,7 +120,7 @@ namespace OpenDental{
 			report.IsLandscape=true;
 			report.AddTitle("CAPITATION UTILIZATION");
 			report.AddSubTitle(((Pref)Prefs.HList["PracticeTitle"]).ValueString);
-//todo: Need more flexible default values, eg based on current date instead of fixed date:
+//incomplete: Need more flexible default values, eg based on current date instead of fixed date:
 			DateTime DateTimeFirst=new DateTime(DateTime.Today.Year,DateTime.Today.Month,1);
 			report.AddParameter("carrier",FieldValueType.String,""
 				,"Enter a few letters of the name of the insurance carrier"
@@ -172,9 +172,9 @@ namespace OpenDental{
 				DialogResult=DialogResult.Cancel;
 				return;
 			}
-//todo: Add functionality for using parameter values in textObjects, probably using inline XML:
+//incomplete: Add functionality for using parameter values in textObjects, probably using inline XML:
 			report.AddSubTitle(((DateTime)report.ParameterFields["date1"].CurrentValues[0]).ToShortDateString()+" - "+((DateTime)report.ParameterFields["date2"].CurrentValues[0]).ToShortDateString());
-//todo: Implement formulas for situations like this:
+//incomplete: Implement formulas for situations like this:
 			for(int i=0;i<report.ReportTable.Rows.Count;i++){
 				if(PIn.PDouble(report.ReportTable.Rows[i][11].ToString())==-1){
 					report.ReportTable.Rows[i][11]="0";

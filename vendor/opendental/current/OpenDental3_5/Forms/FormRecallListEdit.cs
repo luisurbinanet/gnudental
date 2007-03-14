@@ -119,9 +119,9 @@ namespace OpenDental{
 			this.butPin = new OpenDental.UI.Button();
 			this.comboStatus = new System.Windows.Forms.ComboBox();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
-			this.textNote = new OpenDental.ODtextBox();
 			this.butEditRecall = new OpenDental.UI.Button();
 			this.label3 = new System.Windows.Forms.Label();
+			this.textNote = new OpenDental.ODtextBox();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.SuspendLayout();
@@ -423,18 +423,6 @@ namespace OpenDental{
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "Recall";
 			// 
-			// textNote
-			// 
-			this.textNote.AcceptsReturn = true;
-			this.textNote.Location = new System.Drawing.Point(4, 69);
-			this.textNote.Multiline = true;
-			this.textNote.Name = "textNote";
-			this.textNote.QuickPasteType = OpenDental.QuickPasteType.Recall;
-			this.textNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textNote.Size = new System.Drawing.Size(165, 102);
-			this.textNote.TabIndex = 62;
-			this.textNote.Text = "";
-			// 
 			// butEditRecall
 			// 
 			this.butEditRecall.AdjustImageLocation = new System.Drawing.Point(0, 0);
@@ -457,6 +445,18 @@ namespace OpenDental{
 			this.label3.TabIndex = 59;
 			this.label3.Text = "Note";
 			this.label3.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// textNote
+			// 
+			this.textNote.AcceptsReturn = true;
+			this.textNote.Location = new System.Drawing.Point(4, 69);
+			this.textNote.Multiline = true;
+			this.textNote.Name = "textNote";
+			this.textNote.QuickPasteType = OpenDental.QuickPasteType.Recall;
+			this.textNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.textNote.Size = new System.Drawing.Size(165, 102);
+			this.textNote.TabIndex = 62;
+			this.textNote.Text = "";
 			// 
 			// FormRecallListEdit
 			// 
@@ -720,8 +720,6 @@ namespace OpenDental{
 			DialogResult=DialogResult.Cancel;
 		}
 
-		
-		
 	
 
 

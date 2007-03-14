@@ -17,13 +17,15 @@ namespace OpenDental{
 		private OpenDental.ValidDate textDate;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.TextBox textDays;
+		private Permission Cur;
 
 		private System.ComponentModel.Container components = null;
 
 		///<summary></summary>
-		public FormPermissionEdit(){
+		public FormPermissionEdit(Permission cur){
 			InitializeComponent();
 			Lan.F(this);
+			Cur=cur.Copy();
 		}
 
 		///<summary></summary>
@@ -179,7 +181,7 @@ namespace OpenDental{
 		#endregion
 
 		private void FormPermissionEdit_Load(object sender, System.EventArgs e) {
-			switch(Permissions.Cur.Name){
+			switch(Cur.Name){
 				default:
 					textDate.Enabled=false;
 					textDays.Enabled=false;
@@ -193,16 +195,16 @@ namespace OpenDental{
 					textDays.Enabled=true;
 					break;
 			}
-			textName.Text=Permissions.Cur.Name;
-			if(Permissions.Cur.BeforeDate.Date.Year < 1890){
+			textName.Text=Cur.Name;
+			if(Cur.BeforeDate.Date.Year < 1890){
 				textDate.Text="";
 			}
 			else{
-				textDate.Text=Permissions.Cur.BeforeDate.ToShortDateString();
+				textDate.Text=Cur.BeforeDate.ToShortDateString();
 			}
-			textDays.Text=Permissions.Cur.BeforeDays.ToString();//defaults to zero: always check.
+			textDays.Text=Cur.BeforeDays.ToString();//defaults to zero: always check.
 			//If you only want to take date into consideration, days should be very large. This is consistent.
-			checkRequire.Checked=Permissions.Cur.RequiresPassword;
+			checkRequire.Checked=Cur.RequiresPassword;
 		}
 
 		private void textDays_Validating(object sender, System.ComponentModel.CancelEventArgs e) {
@@ -231,10 +233,10 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please fix data entry errors first."));
 				return;
 			}
-			Permissions.Cur.BeforeDays=PIn.PInt(textDays.Text);
-			Permissions.Cur.RequiresPassword=checkRequire.Checked;
-			Permissions.Cur.BeforeDate=PIn.PDate(textDate.Text);
-			Permissions.UpdateCur();
+			Cur.BeforeDays=PIn.PInt(textDays.Text);
+			Cur.RequiresPassword=checkRequire.Checked;
+			Cur.BeforeDate=PIn.PDate(textDate.Text);
+			Cur.Update();
 			DialogResult=DialogResult.OK;
 		}
 

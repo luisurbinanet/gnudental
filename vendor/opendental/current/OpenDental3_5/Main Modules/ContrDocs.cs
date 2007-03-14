@@ -1881,15 +1881,25 @@ namespace OpenDental{
 				//do nothing
 			}
 			else{
-				//move to new category
+				//might have moved to new category, so test for that
+				int oldCategory=Documents.Cur.DocCategory;
+				int newCategory=0;
 				if(upNode.Parent==null){//category node
-					Documents.Cur.DocCategory=Defs.Short[(int)DefCat.ImageCats][upNode.Index].DefNum;
+					newCategory=Defs.Short[(int)DefCat.ImageCats][upNode.Index].DefNum;
 				}
 				else{
-					Documents.Cur.DocCategory=Documents.GetCategory(upNode.Tag.ToString());
+					newCategory=Documents.GetCategory(upNode.Tag.ToString());
 				}
-				Documents.UpdateCur();
-				FillDocList(true);
+				if(oldCategory!=newCategory){
+					if(upNode.Parent==null){//category node
+						Documents.Cur.DocCategory=Defs.Short[(int)DefCat.ImageCats][upNode.Index].DefNum;
+					}
+					else{
+						Documents.Cur.DocCategory=Documents.GetCategory(upNode.Tag.ToString());
+					}
+					Documents.UpdateCur();
+					FillDocList(true);
+				}
 			}
 		}
 
@@ -1914,6 +1924,7 @@ namespace OpenDental{
 		
 	}
 }
+
 
 
 

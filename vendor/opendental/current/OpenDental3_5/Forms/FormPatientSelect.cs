@@ -94,6 +94,8 @@ namespace OpenDental{
 			this.butOK = new OpenDental.UI.Button();
 			this.butCancel = new OpenDental.UI.Button();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
+			this.textWkPhone = new System.Windows.Forms.TextBox();
+			this.label2 = new System.Windows.Forms.Label();
 			this.textChartNumber = new System.Windows.Forms.TextBox();
 			this.listBillingTypes = new System.Windows.Forms.ListBox();
 			this.textSSN = new System.Windows.Forms.TextBox();
@@ -120,8 +122,6 @@ namespace OpenDental{
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.butSearch = new OpenDental.UI.Button();
 			this.grid2 = new System.Windows.Forms.DataGrid();
-			this.textWkPhone = new System.Windows.Forms.TextBox();
-			this.label2 = new System.Windows.Forms.Label();
 			this.groupAddPt.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.groupBox1.SuspendLayout();
@@ -231,6 +231,24 @@ namespace OpenDental{
 			this.groupBox2.TabIndex = 0;
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "Search by:";
+			// 
+			// textWkPhone
+			// 
+			this.textWkPhone.Location = new System.Drawing.Point(112, 104);
+			this.textWkPhone.Name = "textWkPhone";
+			this.textWkPhone.Size = new System.Drawing.Size(90, 20);
+			this.textWkPhone.TabIndex = 25;
+			this.textWkPhone.Text = "";
+			this.textWkPhone.TextChanged += new System.EventHandler(this.textWkPhone_TextChanged);
+			// 
+			// label2
+			// 
+			this.label2.Location = new System.Drawing.Point(6, 107);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(106, 12);
+			this.label2.TabIndex = 26;
+			this.label2.Text = "Work Phone";
+			this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// textChartNumber
 			// 
@@ -471,6 +489,7 @@ namespace OpenDental{
 			// grid2
 			// 
 			this.grid2.AllowNavigation = false;
+			this.grid2.AllowSorting = false;
 			this.grid2.DataMember = "";
 			this.grid2.HeaderForeColor = System.Drawing.SystemColors.ControlText;
 			this.grid2.Location = new System.Drawing.Point(5, 5);
@@ -480,24 +499,6 @@ namespace OpenDental{
 			this.grid2.TabIndex = 8;
 			this.grid2.DoubleClick += new System.EventHandler(this.grid2_DoubleClick);
 			this.grid2.CurrentCellChanged += new System.EventHandler(this.grid2_CurrentCellChanged);
-			// 
-			// textWkPhone
-			// 
-			this.textWkPhone.Location = new System.Drawing.Point(112, 104);
-			this.textWkPhone.Name = "textWkPhone";
-			this.textWkPhone.Size = new System.Drawing.Size(90, 20);
-			this.textWkPhone.TabIndex = 25;
-			this.textWkPhone.Text = "";
-			this.textWkPhone.TextChanged += new System.EventHandler(this.textWkPhone_TextChanged);
-			// 
-			// label2
-			// 
-			this.label2.Location = new System.Drawing.Point(6, 107);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(106, 12);
-			this.label2.TabIndex = 26;
-			this.label2.Text = "Work Phone";
-			this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// FormPatientSelect
 			// 
@@ -583,13 +584,13 @@ namespace OpenDental{
 			cstyle=new DataGridTextBoxColumn();
 			cstyle.MappingName="lname";
 			cstyle.HeaderText=Lan.g(this,"Last Name");
-			cstyle.Width=80;
+			cstyle.Width=75;
 			ts.GridColumnStyles.Add(cstyle);
 
 			cstyle=new DataGridTextBoxColumn();
 			cstyle.MappingName="fname";
 			cstyle.HeaderText=Lan.g(this,"First Name");
-			cstyle.Width=80;
+			cstyle.Width=75;
 			ts.GridColumnStyles.Add(cstyle);
 
 			cstyle=new DataGridTextBoxColumn();
@@ -601,13 +602,13 @@ namespace OpenDental{
 			cstyle=new DataGridTextBoxColumn();
 			cstyle.MappingName="preferred";
 			cstyle.HeaderText=Lan.g(this,"Pref'd Name");
-			cstyle.Width=80;
+			cstyle.Width=60;
 			ts.GridColumnStyles.Add(cstyle);
 
 			cstyle=new DataGridTextBoxColumn();
 			cstyle.MappingName="birthdate";
 			cstyle.HeaderText=Lan.g(this,"Age");
-			cstyle.Width=40;
+			cstyle.Width=30;
 			ts.GridColumnStyles.Add(cstyle);
 
 			cstyle=new DataGridTextBoxColumn();
@@ -629,6 +630,18 @@ namespace OpenDental{
 			ts.GridColumnStyles.Add(cstyle);
 
 			cstyle=new DataGridTextBoxColumn();
+			cstyle.MappingName="patnum";
+			cstyle.HeaderText=Lan.g(this,"PatNum");
+			cstyle.Width=50;
+			ts.GridColumnStyles.Add(cstyle);
+			
+			cstyle=new DataGridTextBoxColumn();
+			cstyle.MappingName="chartnumber";
+			cstyle.HeaderText=Lan.g(this,"ChartNum");
+			cstyle.Width=60;
+			ts.GridColumnStyles.Add(cstyle);
+
+			cstyle=new DataGridTextBoxColumn();
 			cstyle.MappingName="address";
 			cstyle.HeaderText=Lan.g(this,"Address");
 			cstyle.Width=100;
@@ -645,18 +658,8 @@ namespace OpenDental{
 			cstyle.HeaderText=Lan.g(this,"Bill Type");
 			cstyle.Width=90;
 			ts.GridColumnStyles.Add(cstyle);
-			
-			cstyle=new DataGridTextBoxColumn();
-			cstyle.MappingName="patnum";
-			cstyle.HeaderText=Lan.g(this,"PatNum");
-			cstyle.Width=50;
-			ts.GridColumnStyles.Add(cstyle);
-			
-			cstyle=new DataGridTextBoxColumn();
-			cstyle.MappingName="chartnumber";
-			cstyle.HeaderText=Lan.g(this,"ChartNum");
-			cstyle.Width=60;
-			ts.GridColumnStyles.Add(cstyle);
+
+			//patNum and ChartNumber were here
 			
 			cstyle=new DataGridTextBoxColumn();
 			cstyle.MappingName="city";
@@ -808,7 +811,7 @@ namespace OpenDental{
 				PatCur.FName=textFName.Text.Substring(0,1).ToUpper()+textFName.Text.Substring(1);
 			}
 			PatCur.PatStatus=PatientStatus.Patient;
-			PatCur.Insert();
+			PatCur.Insert(false);
 			Patient PatOld=PatCur.Copy();
 			PatCur.Guarantor=PatCur.PatNum;
 			PatCur.Update(PatOld);

@@ -22,7 +22,6 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label18;
 		private OpenDental.TableClaimProc tbProc;
 		private System.Windows.Forms.TextBox textReasonUnder;
-		private System.Windows.Forms.TextBox textDateService;
 		private System.Windows.Forms.TextBox textPreAuth;
 		private OpenDental.ValidDate textDateRec;
 		private OpenDental.ValidDate textDateSent;
@@ -98,7 +97,9 @@ namespace OpenDental{
 		private Patient PatCur;
 		private Family FamCur;
 		private InsPlan[] PlanList;
+		private OpenDental.ValidDate textDateService;
 		private ClaimPayment[] ClaimPaymentList;
+		private User user;
 
 		///<summary></summary>
 		public FormClaimEdit(Patient patCur,Family famCur){
@@ -148,7 +149,6 @@ namespace OpenDental{
 			this.tbProc = new OpenDental.TableClaimProc();
 			this.textReasonUnder = new System.Windows.Forms.TextBox();
 			this.textInsPayEst = new System.Windows.Forms.TextBox();
-			this.textDateService = new System.Windows.Forms.TextBox();
 			this.textPreAuth = new System.Windows.Forms.TextBox();
 			this.butOK = new OpenDental.UI.Button();
 			this.textClaimFee = new System.Windows.Forms.TextBox();
@@ -197,6 +197,7 @@ namespace OpenDental{
 			this.textRadiographs = new OpenDental.ValidNum();
 			this.label11 = new System.Windows.Forms.Label();
 			this.textNote = new OpenDental.ODtextBox();
+			this.textDateService = new OpenDental.ValidDate();
 			this.groupBox1.SuspendLayout();
 			this.groupBox4.SuspendLayout();
 			this.groupEnterPayment.SuspendLayout();
@@ -385,14 +386,6 @@ namespace OpenDental{
 			this.textInsPayEst.Text = "";
 			this.textInsPayEst.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			// 
-			// textDateService
-			// 
-			this.textDateService.Location = new System.Drawing.Point(111, 91);
-			this.textDateService.Name = "textDateService";
-			this.textDateService.Size = new System.Drawing.Size(82, 20);
-			this.textDateService.TabIndex = 41;
-			this.textDateService.Text = "";
-			// 
 			// textPreAuth
 			// 
 			this.textPreAuth.Location = new System.Drawing.Point(336, 132);
@@ -490,9 +483,9 @@ namespace OpenDental{
 			// 
 			// label20
 			// 
-			this.label20.Location = new System.Drawing.Point(704, 591);
+			this.label20.Location = new System.Drawing.Point(693, 596);
 			this.label20.Name = "label20";
-			this.label20.Size = new System.Drawing.Size(226, 33);
+			this.label20.Size = new System.Drawing.Size(237, 30);
 			this.label20.TabIndex = 92;
 			this.label20.Text = "(does not cancel payment edits)";
 			this.label20.TextAlign = System.Drawing.ContentAlignment.BottomRight;
@@ -910,11 +903,20 @@ namespace OpenDental{
 			this.textNote.TabIndex = 118;
 			this.textNote.Text = "";
 			// 
+			// textDateService
+			// 
+			this.textDateService.Location = new System.Drawing.Point(111, 91);
+			this.textDateService.Name = "textDateService";
+			this.textDateService.Size = new System.Drawing.Size(82, 20);
+			this.textDateService.TabIndex = 119;
+			this.textDateService.Text = "";
+			// 
 			// FormClaimEdit
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.AutoScroll = true;
 			this.ClientSize = new System.Drawing.Size(947, 669);
+			this.Controls.Add(this.textDateService);
 			this.Controls.Add(this.textNote);
 			this.Controls.Add(this.textRadiographs);
 			this.Controls.Add(this.textWriteOff);
@@ -924,7 +926,6 @@ namespace OpenDental{
 			this.Controls.Add(this.textDedApplied);
 			this.Controls.Add(this.textReasonUnder);
 			this.Controls.Add(this.textPreAuth);
-			this.Controls.Add(this.textDateService);
 			this.Controls.Add(this.textDateSent);
 			this.Controls.Add(this.textDateRec);
 			this.Controls.Add(this.butPreview);
@@ -983,11 +984,14 @@ namespace OpenDental{
 			if(IsNew){
 				//butPayWizard.Enabled=false;
 			}
-			else{
-				if(Claims.Cur.ClaimStatus=="S"//sent
-					|| Claims.Cur.ClaimStatus=="R")//or received
-				{
-					if(!UserPermissions.CheckUserPassword("Claims Sent Edit",Claims.Cur.DateSent)){
+			else if(Claims.Cur.ClaimStatus=="S" || Claims.Cur.ClaimStatus=="R"){//sent or received
+				if(Permissions.AuthorizationRequired("Claims Sent Edit",Claims.Cur.DateSent)){
+					user=Users.Authenticate("Claims Sent Edit");
+					if(user==null){
+						DialogResult=DialogResult.Cancel;
+						return;
+					}
+					if(!UserPermissions.IsAuthorized("Claims Sent Edit",user)){
 						butOK.Enabled=false;
 						butDelete.Enabled=false;
 						butPrint.Enabled=false;
@@ -996,8 +1000,8 @@ namespace OpenDental{
 						//tbProc.Enabled=false;
 						listClaimStatus.Enabled=false;
 						butCheckAdd.Enabled=false;
-					}		
-				}	
+					}
+				}		
 			}
 			if(Claims.Cur.ClaimType=="PreAuth"){
 				labelPreAuthNum.Visible=false;
@@ -1596,7 +1600,7 @@ namespace OpenDental{
 			FormClaimPrint FormCP=new FormClaimPrint();
 			FormCP.ThisPatNum=Claims.Cur.PatNum;
 			FormCP.ThisClaimNum=Claims.Cur.ClaimNum;
-			if(!FormCP.PrintImmediate(pd.PrinterSettings.PrinterName)){
+			if(!FormCP.PrintImmediate(pd.PrinterSettings.PrinterName,pd.PrinterSettings.Copies)){
 				return;
 			}
 			Claims.Cur.ClaimStatus="S";
@@ -1718,7 +1722,8 @@ namespace OpenDental{
 		}
 		
 		private bool ClaimIsValid(){
-			if(  textDateSent.errorProvider1.GetError(textDateSent)!=""
+			if(  textDateService.errorProvider1.GetError(textDateSent)!=""
+				|| textDateSent.errorProvider1.GetError(textDateSent)!=""
 				|| textDateRec.errorProvider1.GetError(textDateRec)!=""
 				|| textPriorDate.errorProvider1.GetError(textPriorDate)!=""
 				|| textDedApplied.errorProvider1.GetError(textDedApplied)!=""
@@ -1729,13 +1734,16 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please fix data entry errors first."));
 				return false;
 			}
-			else
-				return true;
+			if(textDateService.Text=="" && Claims.Cur.ClaimType!="PreAuth"){
+				MsgBox.Show(this,"Please enter a date of service");
+				return false;
+			}
+			return true;
 		}
 
 		private void UpdateClaim(){
 			//patnum
-			//dateservice
+			Claims.Cur.DateService=PIn.PDate(textDateService.Text);
 			if(textDateSent.Text=="")
 				Claims.Cur.DateSent=DateTime.MinValue;
 			else Claims.Cur.DateSent=PIn.PDate(textDateSent.Text);
@@ -1765,7 +1773,7 @@ namespace OpenDental{
 			//planNum
 			//patRelats will always be selected
 			Claims.Cur.PatRelat=(Relat)comboPatRelat.SelectedIndex;
-			Claims.Cur.PatRelat2=(Relat)comboPatRelat.SelectedIndex;
+			Claims.Cur.PatRelat2=(Relat)comboPatRelat2.SelectedIndex;
 			if(comboProvTreat.SelectedIndex!=-1)
 				Claims.Cur.ProvTreat=Providers.List[comboProvTreat.SelectedIndex].ProvNum;
 			Claims.Cur.PreAuthString=textPreAuth.Text;
@@ -1782,7 +1790,7 @@ namespace OpenDental{
 			Claims.Cur.Radiographs=PIn.PInt(textRadiographs.Text);
 			Claims.UpdateCur();
 			if(Claims.Cur.ClaimStatus=="S"){
-				SecurityLogs.MakeLogEntry("Claims Sent Edit",Claims.cmd.CommandText);
+				SecurityLogs.MakeLogEntry("Claims Sent Edit",Claims.cmd.CommandText,user);
 			}
 		}
 

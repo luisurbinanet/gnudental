@@ -62,9 +62,13 @@ namespace OpenDental.Reporting{
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butCancel.Location = new System.Drawing.Point(619, 513);
+			this.butCancel.Location = new System.Drawing.Point(597, 237);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 0;
@@ -73,8 +77,12 @@ namespace OpenDental.Reporting{
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(619, 472);
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butOK.Location = new System.Drawing.Point(507, 237);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 1;
@@ -83,16 +91,17 @@ namespace OpenDental.Reporting{
 			// 
 			// MultInput2
 			// 
-			this.MultInput2.Location = new System.Drawing.Point(33, 24);
+			this.MultInput2.Location = new System.Drawing.Point(12, 10);
 			this.MultInput2.Name = "MultInput2";
-			this.MultInput2.Size = new System.Drawing.Size(660, 427);
+			this.MultInput2.Size = new System.Drawing.Size(660, 204);
 			this.MultInput2.TabIndex = 2;
+			this.MultInput2.SizeChanged += new System.EventHandler(this.MultInput2_SizeChanged);
 			// 
 			// FormParameterInput
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
-			this.ClientSize = new System.Drawing.Size(719, 564);
+			this.ClientSize = new System.Drawing.Size(700, 277);
 			this.Controls.Add(this.MultInput2);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.butCancel);
@@ -122,8 +131,8 @@ namespace OpenDental.Reporting{
 		}
 
 		///<summary></summary>
-		public void AddInputItem(string myPromptingText,FieldValueType myValueType,ArrayList myCurrentValues,EnumType myEnumerationType,DefCat myDefCategory){
-			MultInput2.AddInputItem(myPromptingText,myValueType,myCurrentValues,myEnumerationType,myDefCategory);
+		public void AddInputItem(string myPromptingText,FieldValueType myValueType,ArrayList myCurrentValues,EnumType myEnumerationType,DefCat myDefCategory,ReportFKType myFKType){
+			MultInput2.AddInputItem(myPromptingText,myValueType,myCurrentValues,myEnumerationType,myDefCategory,myFKType);
 		}
 
 		///<summary>After this form closes, use this method to retrieve the data that the user entered.</summary>
@@ -131,6 +140,10 @@ namespace OpenDental.Reporting{
 			return MultInput2.GetCurrentValues(itemIndex);
 		}
 
+		private void MultInput2_SizeChanged(object sender, System.EventArgs e) {
+			Height=MultInput2.Bottom+90;
+			Refresh();//this should trigger another layout
+		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
 			//MessageBox.Show(MultInput2.MultInputItems[0].CurrentValue.ToString());
@@ -145,6 +158,8 @@ namespace OpenDental.Reporting{
 			//comboBox1.DroppedDown
 			DialogResult=DialogResult.Cancel;
 		}
+
+	
 
 		
 

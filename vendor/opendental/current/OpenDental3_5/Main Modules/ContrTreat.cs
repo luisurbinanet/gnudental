@@ -195,7 +195,7 @@ namespace OpenDental{
 			this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
 			this.label1.Location = new System.Drawing.Point(19, 23);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(78, 18);
+			this.label1.Size = new System.Drawing.Size(81, 15);
 			this.label1.TabIndex = 4;
 			this.label1.Text = "Set";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
@@ -212,9 +212,9 @@ namespace OpenDental{
 			// label2
 			// 
 			this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.label2.Location = new System.Drawing.Point(109, 24);
+			this.label2.Location = new System.Drawing.Point(111, 20);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(78, 17);
+			this.label2.Size = new System.Drawing.Size(73, 18);
 			this.label2.TabIndex = 6;
 			this.label2.Text = "View";
 			this.label2.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
@@ -222,12 +222,12 @@ namespace OpenDental{
 			// label4
 			// 
 			this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.label4.Location = new System.Drawing.Point(31, 3);
+			this.label4.Location = new System.Drawing.Point(42, 3);
 			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(148, 16);
+			this.label4.Size = new System.Drawing.Size(123, 17);
 			this.label4.TabIndex = 15;
 			this.label4.Text = "Priorities";
-			this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.label4.TextAlign = System.Drawing.ContentAlignment.TopCenter;
 			// 
 			// tbMain
 			// 
@@ -243,9 +243,9 @@ namespace OpenDental{
 			// label5
 			// 
 			this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.label5.Location = new System.Drawing.Point(354, 600);
+			this.label5.Location = new System.Drawing.Point(380, 600);
 			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(62, 35);
+			this.label5.Size = new System.Drawing.Size(36, 14);
 			this.label5.TabIndex = 19;
 			this.label5.Text = "Totals";
 			this.label5.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -341,16 +341,16 @@ namespace OpenDental{
 			// 
 			// panelSide
 			// 
-			this.panelSide.Controls.Add(this.label4);
 			this.panelSide.Controls.Add(this.butSelectAll);
 			this.panelSide.Controls.Add(this.listViewPr);
 			this.panelSide.Controls.Add(this.listSetPr);
 			this.panelSide.Controls.Add(this.label1);
 			this.panelSide.Controls.Add(this.label2);
 			this.panelSide.Controls.Add(this.groupBox1);
+			this.panelSide.Controls.Add(this.label4);
 			this.panelSide.Location = new System.Drawing.Point(704, 54);
 			this.panelSide.Name = "panelSide";
-			this.panelSide.Size = new System.Drawing.Size(215, 334);
+			this.panelSide.Size = new System.Drawing.Size(215, 337);
 			this.panelSide.TabIndex = 29;
 			// 
 			// butSelectAll
@@ -359,7 +359,7 @@ namespace OpenDental{
 			this.butSelectAll.Autosize = true;
 			this.butSelectAll.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butSelectAll.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butSelectAll.Location = new System.Drawing.Point(114, 228);
+			this.butSelectAll.Location = new System.Drawing.Point(114, 230);
 			this.butSelectAll.Name = "butSelectAll";
 			this.butSelectAll.Size = new System.Drawing.Size(68, 23);
 			this.butSelectAll.TabIndex = 17;
@@ -381,7 +381,7 @@ namespace OpenDental{
 			this.groupBox1.Controls.Add(this.checkShowIns);
 			this.groupBox1.Controls.Add(this.checkShowCompleted);
 			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox1.Location = new System.Drawing.Point(7, 255);
+			this.groupBox1.Location = new System.Drawing.Point(7, 257);
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.Size = new System.Drawing.Size(200, 74);
 			this.groupBox1.TabIndex = 59;
@@ -1227,7 +1227,7 @@ namespace OpenDental{
 			pd2=new PrintDocument();
 			pd2.PrintPage += new PrintPageEventHandler(this.pd2_PrintPage);
 			PrintDocument tempPD = new PrintDocument();
-			//pd2.DefaultPageSettings.Margins=new Margins(50,50,40,25);//not directly used. Just handy.
+			pd2.DefaultPageSettings.Margins=new Margins(50,50,40,25);
 			try{
 				if(justPreview){
 					pView = new FormRpPrintPreview();
@@ -1252,7 +1252,11 @@ namespace OpenDental{
 			mainPrinted=false;
 			benefitsPrinted=false;
 			notePrinted=false;
-			PrintReport(false);	
+			#if DEBUG
+				PrintReport(true);
+			#else
+				PrintReport(false);	
+			#endif
 		}
 
 		private void pd2_PrintPage(object sender, System.Drawing.Printing.PrintPageEventArgs e) {
@@ -1631,8 +1635,14 @@ namespace OpenDental{
 				//OK if 0, because auto select first in list when open claim
 			}
 			//Claims.Cur.DedApplied=0;//calcs in ClaimEdit.
-			//change later: set ProvBill according to practice defaults
-			Claims.Cur.ProvBill=Claims.Cur.ProvTreat;//OK if zero, because it will get fixed in claim
+			if(Prefs.GetInt("InsBillingProv")==0){//this can later be extended to include a 3rd option
+				//default=0
+				Claims.Cur.ProvBill=Prefs.GetInt("PracticeDefaultProv");
+			}
+			else{
+				//treat=1
+				Claims.Cur.ProvBill=Claims.Cur.ProvTreat;//OK if zero, because it will get fixed in claim
+			}
 			Claims.Cur.EmployRelated=YN.No;
       Claims.Cur.ClaimType="PreAuth";
 			//this could be a little better if we automate figuring out the patrelat

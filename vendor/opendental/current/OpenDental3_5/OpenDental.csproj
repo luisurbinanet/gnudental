@@ -110,31 +110,19 @@
                     HintPath = "..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Web.dll"
                 />
                 <Reference
+                    Name = "Indy.Sockets"
+                    AssemblyName = "Indy.Sockets"
+                    HintPath = "Required dlls\Indy.Sockets.dll"
+                />
+                <Reference
                     Name = "MySql.Data"
                     AssemblyName = "MySql.Data"
                     HintPath = "Required dlls\MySql.Data.dll"
                 />
                 <Reference
-                    Name = "Indy.Sockets"
-                    AssemblyName = "Indy.Sockets"
-                    HintPath = "Required dlls\Indy.Sockets.dll"
-                    Private = "True"
-                />
-                <Reference
                     Name = "Interop.Microsoft.Office.Core"
                     AssemblyName = "Interop.Microsoft.Office.Core"
                     HintPath = "Required dlls\Interop.Microsoft.Office.Core.dll"
-                />
-                <Reference
-                    Name = "RS232"
-                    AssemblyName = "RS232"
-                    HintPath = "Required dlls\RS232.dll"
-                />
-                <Reference
-                    Name = "stdole"
-                    AssemblyName = "stdole"
-                    HintPath = "Required dlls\stdole.dll"
-                    Private = "True"
                 />
                 <Reference
                     Name = "Interop.VBIDE"
@@ -147,9 +135,14 @@
                     HintPath = "Required dlls\Interop.Word.dll"
                 />
                 <Reference
-                    Name = "ICSharpCode.SharpZipLib"
-                    AssemblyName = "ICSharpCode.SharpZipLib"
-                    HintPath = "Required dlls\ICSharpCode.SharpZipLib.dll"
+                    Name = "RS232"
+                    AssemblyName = "RS232"
+                    HintPath = "Required dlls\RS232.dll"
+                />
+                <Reference
+                    Name = "stdole"
+                    AssemblyName = "stdole"
+                    HintPath = "Required dlls\stdole.dll"
                 />
             </References>
         </Build>
@@ -157,6 +150,11 @@
             <Include>
                 <File
                     RelPath = "Bridges\Apteryx.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Bridges\DentForms.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -174,6 +172,11 @@
                     RelPath = "Bridges\FormHouseCalls.resx"
                     DependentUpon = "FormHouseCalls.cs"
                     BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Bridges\ImageFX.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Bridges\Planmeca.cs"
@@ -206,7 +209,62 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Business Layer\Instructors.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Business Layer\Permissions.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Business Layer\Printers.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Business Layer\SchedDefaults.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Business Layer\Schedules.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Business Layer\SchoolClasses.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Business Layer\SchoolCourses.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Business Layer\SecurityLogs.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Business Layer\TaskLists.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Business Layer\Tasks.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Business Layer\UserPermissions.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Business Layer\Users.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -541,11 +599,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataClassesReallyOld\Permissions.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "DataClassesReallyOld\PIn.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -641,16 +694,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataClassesReallyOld\SchedDefaults.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClassesReallyOld\Schedules.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "DataClassesReallyOld\Schools.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -666,17 +709,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataClassesReallyOld\SecurityLogs.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "DataClassesReallyOld\ToolButItems.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClassesReallyOld\UserPermissions.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -686,12 +719,12 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataClassesReallyOld\Users.cs"
+                    RelPath = "DataClassesReallyOld\ZipCodes.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "DataClassesReallyOld\ZipCodes.cs"
+                    RelPath = "Eclaims\AOS.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -886,6 +919,16 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "Forms\FormBackup.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\FormBackup.resx"
+                    DependentUpon = "FormBackup.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "Forms\FormBilling.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
@@ -903,16 +946,6 @@
                 <File
                     RelPath = "Forms\FormBillingOptions.resx"
                     DependentUpon = "FormBillingOptions.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "Forms\FormBlockEdit.cs"
-                    SubType = "Form"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Forms\FormBlockEdit.resx"
-                    DependentUpon = "FormBlockEdit.cs"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
@@ -953,6 +986,16 @@
                 <File
                     RelPath = "Forms\FormCheckDatabase.resx"
                     DependentUpon = "FormCheckDatabase.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Forms\FormChooseDatabase.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\FormChooseDatabase.resx"
+                    DependentUpon = "FormChooseDatabase.cs"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
@@ -1133,16 +1176,6 @@
                 <File
                     RelPath = "Forms\FormComputers.resx"
                     DependentUpon = "FormComputers.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "Forms\FormConfig.cs"
-                    SubType = "Form"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Forms\FormConfig.resx"
-                    DependentUpon = "FormConfig.cs"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
@@ -1336,6 +1369,16 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "Forms\FormImport.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\FormImport.resx"
+                    DependentUpon = "FormImport.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "Forms\FormInsAdj.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
@@ -1433,6 +1476,26 @@
                 <File
                     RelPath = "Forms\FormInsTemplateCombine.resx"
                     DependentUpon = "FormInsTemplateCombine.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Forms\FormInstructorEdit.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\FormInstructorEdit.resx"
+                    DependentUpon = "FormInstructorEdit.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Forms\FormInstructors.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\FormInstructors.resx"
+                    DependentUpon = "FormInstructors.cs"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
@@ -2056,6 +2119,16 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "Forms\FormSchedDefaultBlockEdit.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\FormSchedDefaultBlockEdit.resx"
+                    DependentUpon = "FormSchedDefaultBlockEdit.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "Forms\FormSchedPractice.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
@@ -2063,6 +2136,16 @@
                 <File
                     RelPath = "Forms\FormSchedPractice.resx"
                     DependentUpon = "FormSchedPractice.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Forms\FormScheduleBlockEdit.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\FormScheduleBlockEdit.resx"
+                    DependentUpon = "FormScheduleBlockEdit.cs"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
@@ -2076,13 +2159,43 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
-                    RelPath = "Forms\FormScheduleDayEdit.cs"
+                    RelPath = "Forms\FormSchoolClassEdit.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Forms\FormScheduleDayEdit.resx"
-                    DependentUpon = "FormScheduleDayEdit.cs"
+                    RelPath = "Forms\FormSchoolClassEdit.resx"
+                    DependentUpon = "FormSchoolClassEdit.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Forms\FormSchoolClasses.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\FormSchoolClasses.resx"
+                    DependentUpon = "FormSchoolClasses.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Forms\FormSchoolCourseEdit.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\FormSchoolCourseEdit.resx"
+                    DependentUpon = "FormSchoolCourseEdit.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Forms\FormSchoolCourses.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\FormSchoolCourses.resx"
+                    DependentUpon = "FormSchoolCourses.cs"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
@@ -2143,6 +2256,46 @@
                 <File
                     RelPath = "Forms\FormStatementOptions.resx"
                     DependentUpon = "FormStatementOptions.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Forms\FormTaskEdit.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\FormTaskEdit.resx"
+                    DependentUpon = "FormTaskEdit.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Forms\FormTaskListEdit.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\FormTaskListEdit.resx"
+                    DependentUpon = "FormTaskListEdit.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Forms\FormTaskListSelect.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\FormTaskListSelect.resx"
+                    DependentUpon = "FormTaskListSelect.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Forms\FormTasks.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\FormTasks.resx"
+                    DependentUpon = "FormTasks.cs"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
@@ -2323,6 +2476,16 @@
                 <File
                     RelPath = "Forms - Reports\FormRpClaimNotSent.resx"
                     DependentUpon = "FormRpClaimNotSent.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Forms - Reports\FormRpCourseGrades.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms - Reports\FormRpCourseGrades.resx"
+                    DependentUpon = "FormRpCourseGrades.cs"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
@@ -3322,6 +3485,16 @@
                     RelPath = "UI\ODToolBarButtonCollection.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "UI\PictureBox.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "UI\PictureBox.resx"
+                    DependentUpon = "PictureBox.cs"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "UI\PrintPreview.cs"

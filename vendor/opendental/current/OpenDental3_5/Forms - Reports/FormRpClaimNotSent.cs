@@ -127,9 +127,9 @@ namespace OpenDental{
 			// 
 			// labelTO
 			// 
-			this.labelTO.Location = new System.Drawing.Point(221, 120);
+			this.labelTO.Location = new System.Drawing.Point(217, 120);
 			this.labelTO.Name = "labelTO";
-			this.labelTO.Size = new System.Drawing.Size(64, 23);
+			this.labelTO.Size = new System.Drawing.Size(70, 23);
 			this.labelTO.TabIndex = 16;
 			this.labelTO.Text = "TO";
 			this.labelTO.TextAlign = System.Drawing.ContentAlignment.TopCenter;

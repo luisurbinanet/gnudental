@@ -337,7 +337,7 @@ namespace OpenDental{
 			}
 			FormClaimPrint FormCP=new FormClaimPrint();
 			FormCP.PrintBlank=true;
-			FormCP.PrintImmediate(pd.PrinterSettings.PrinterName);
+			FormCP.PrintImmediate(pd.PrinterSettings.PrinterName,pd.PrinterSettings.Copies);
 		}
 
 		private void OnPrint_Click(){
@@ -362,7 +362,7 @@ namespace OpenDental{
 			for(int i=0;i<tbQueue.SelectedIndices.Length;i++){
 				FormCP.ThisPatNum=listQueue[tbQueue.SelectedIndices[i]].PatNum;
 				FormCP.ThisClaimNum=listQueue[tbQueue.SelectedIndices[i]].ClaimNum;
-				if(!FormCP.PrintImmediate(pd.PrinterSettings.PrinterName)){
+				if(!FormCP.PrintImmediate(pd.PrinterSettings.PrinterName,1)){
 					return;
 				}
 				Claims.UpdateStatus(listQueue[tbQueue.SelectedIndices[i]].ClaimNum,"P");

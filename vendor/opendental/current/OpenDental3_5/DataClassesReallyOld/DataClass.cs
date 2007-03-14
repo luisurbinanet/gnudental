@@ -31,10 +31,10 @@ namespace OpenDental{
 		///<remarks>This is run whenever the connection values have changed by the user and a new connection needs to be established.  Usually only when starting the program.</remarks>
 		public static void SetConnection(){
 		  con= new MySqlConnection(
-				"Server="+FormConfig.ComputerName
-				+";Database="+FormConfig.Database
-				+";User ID="+FormConfig.User
-				+";Password="+FormConfig.Password
+				"Server="+FormChooseDatabase.ComputerName
+				+";Database="+FormChooseDatabase.Database
+				+";User ID="+FormChooseDatabase.DbUser
+				+";Password="+FormChooseDatabase.Password
 				+";CharSet=utf8");
 			dr = null;
 			cmd = new MySqlCommand();
@@ -65,12 +65,12 @@ namespace OpenDental{
 			catch(MySql.Data.Types.MySqlConversionException){
 				MsgBox.Show("DataClass","Invalid date found. Please fix dates in the Check Database Integrity tool in your main menu under misc tools");
 			}
-			//catch(Exception){
-			//	MessageBox.Show(cmd.CommandText);
-			//}
-			catch(MySqlException e){
-				MessageBox.Show("Error: "+e.Message+", "+cmd.CommandText);
+			catch(Exception){
+				MessageBox.Show(cmd.CommandText);
 			}
+			//catch(MySqlException e){
+			//	MessageBox.Show("Error: "+e.Message+", "+cmd.CommandText);
+			//}
 			finally{
 				con.Close();
 			}

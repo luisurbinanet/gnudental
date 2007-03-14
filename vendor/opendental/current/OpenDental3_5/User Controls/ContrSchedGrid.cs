@@ -12,21 +12,32 @@ namespace OpenDental{
 	public class ContrSchedGrid : System.Windows.Forms.UserControl{
 		private System.ComponentModel.Container components = null;// Required designer variable.
 		///<summary></summary>
-		public static int RowH;
+		public int RowH;
 		///<summary></summary>
-		public static int ColW;
+		public int ColW;
 		///<summary>The width of the time columns</summary>
-		public static int NumW;
-		///<summary></summary>
-		public SchedDefault[] ArrayBlocks;
+		public int NumW;
+		///<summary>The width of one operatory.</summary>
+		public float opW;
+		///<summary>The type of sched we are interested in seeing.</summary>
+		public ScheduleType SchedType; 
+		///<summary>For provider displays, this is the provider.</summary>
+		public int ProvNum;
+		private Font timeFont=new Font("Small Font",7);
+		private Font blockFont=new Font("Arial",8);
 
 		///<summary></summary>
 		public ContrSchedGrid(){
 			InitializeComponent();// This call is required by the Windows.Forms Form Designer.
 			RowH=4;
-			ColW=100;
+			ColW=90;
 			NumW=36;
-			ArrayBlocks=new SchedDefault[0];
+			if(Defs.Short==null){
+				opW=0;
+			}
+			else{
+				opW=ColW/Defs.Short[(int)DefCat.Operatories].Length;
+			}
 		}
 
 		///<summary></summary>
@@ -53,22 +64,73 @@ namespace OpenDental{
 		}
 		#endregion
 
-		private void ContrSchedGrid_Paint(object sender, System.Windows.Forms.PaintEventArgs e) {
-				SolidBrush blockBrush;
-			try{
-				blockBrush=new SolidBrush(Defs.Long[(int)DefCat.AppointmentColors][0].ItemColor);
+		private void ContrSchedGrid_Paint(object sender, System.Windows.Forms.PaintEventArgs e){
+			SolidBrush blockBrush=new SolidBrush(Color.White);
+			float blockW=ColW;//set in each loop
+			float opOffset=0;
+			if(SchedDefaults.List!=null){	
+				for(int i=0;i<SchedDefaults.List.Length;i++){
+					if(SchedType==ScheduleType.Practice){//for practice
+						if(SchedDefaults.List[i].SchedType!=ScheduleType.Practice){
+							continue;//only show practice blocks
+						}
+					}
+					if(SchedType==ScheduleType.Provider){//for providers
+						if(SchedDefaults.List[i].SchedType!=ScheduleType.Provider){
+							continue;//only show prov blocks
+						}
+						if(SchedDefaults.List[i].ProvNum!=ProvNum){
+							continue;//only show blocks for this prov
+						}
+					}
+					if(SchedType==ScheduleType.Blockout){//for blockouts
+						//only show practice blocks and blockout blocks
+						if(SchedDefaults.List[i].SchedType==ScheduleType.Provider){
+							continue;
+						}
+					}
+					if(SchedDefaults.List[i].SchedType==ScheduleType.Practice){//open block color
+						blockBrush=new SolidBrush(Defs.Long[(int)DefCat.AppointmentColors][0].ItemColor);
+						blockW=ColW;
+						opOffset=0;
+					}
+					if(SchedDefaults.List[i].SchedType==ScheduleType.Provider){//open block color
+						blockBrush=new SolidBrush(Defs.Long[(int)DefCat.AppointmentColors][0].ItemColor);
+						blockW=ColW;
+						opOffset=0;
+					}
+					if(SchedDefaults.List[i].SchedType==ScheduleType.Blockout){
+						blockBrush=new SolidBrush(Defs.GetColor(DefCat.BlockoutTypes
+							,SchedDefaults.List[i].BlockoutType));
+						if(SchedDefaults.List[i].Op==0){
+							blockW=ColW;
+						}
+						else{
+							blockW=opW;
+						}
+						if(SchedDefaults.List[i].Op==0){
+							opOffset=0;
+						}
+						else{
+							opOffset=Defs.GetOrder(DefCat.Operatories,SchedDefaults.List[i].Op);
+							if(opOffset==-1){//op not visible
+								continue;
+							}
+							opOffset=opOffset*opW;
+						}
+					}
+					e.Graphics.FillRectangle(blockBrush
+						,NumW+SchedDefaults.List[i].DayOfWeek*ColW
+						+opOffset//usually 0
+						,SchedDefaults.List[i].StartTime.Hour*6*RowH
+						+(int)SchedDefaults.List[i].StartTime.Minute/10*RowH
+						,blockW
+						,((SchedDefaults.List[i].StopTime
+						-SchedDefaults.List[i].StartTime).Hours*6
+						+(SchedDefaults.List[i].StopTime-SchedDefaults.List[i].StartTime).Minutes/10)*RowH);
+					
+				}
 			}
-			catch{
-				blockBrush=new SolidBrush(Color.White);
-			}
-			for(int i=0;i<ArrayBlocks.Length;i++){
-				e.Graphics.FillRectangle(blockBrush
-					,NumW+ArrayBlocks[i].DayOfWeek*ColW
-					,ArrayBlocks[i].StartTime.Hour*6*RowH + (int)ArrayBlocks[i].StartTime.Minute/10*RowH
-					,ColW
-					,((ArrayBlocks[i].StopTime-ArrayBlocks[i].StartTime).Hours*6+(ArrayBlocks[i].StopTime-ArrayBlocks[i].StartTime).Minutes/10)*RowH);
-			}
-			
 			Pen bPen=new Pen(Color.Black);
 			Pen gPen=new Pen(Color.LightGray);
 			for(int y=0;y<24*6;y++){
@@ -80,22 +142,48 @@ namespace OpenDental{
 			for(int x=0;x<8;x++){
 				e.Graphics.DrawLine(bPen,NumW+x*ColW,0,NumW+x*ColW,RowH*6*24);
 			}
-			//e.Graphics.DrawString(Lan.g(this,"12am"),new Font("Small Font",7f),new SolidBrush(Color.Black),0,-2);
-			//e.Graphics.DrawString(Lan.g(this,"12am"),new Font("Small Font",7f),new SolidBrush(Color.Black),NumW+ColW*7,-2);
+			if(SchedDefaults.List!=null
+				&& SchedType==ScheduleType.Blockout)
+			{
+				for(int i=0;i<SchedDefaults.List.Length;i++){
+					if(SchedDefaults.List[i].SchedType==ScheduleType.Blockout){
+						if(SchedDefaults.List[i].Op==0){
+							blockW=ColW;
+						}
+						else{
+							blockW=opW;
+						}
+						if(SchedDefaults.List[i].Op==0){
+							opOffset=0;
+						}
+						else{
+							opOffset=Defs.GetOrder(DefCat.Operatories,SchedDefaults.List[i].Op);
+							if(opOffset==-1){//op not visible
+								continue;
+							}
+							opOffset=opOffset*opW;
+						}
+						e.Graphics.DrawString(
+							Defs.GetName(DefCat.BlockoutTypes,SchedDefaults.List[i].BlockoutType)
+							,blockFont,Brushes.Black
+							,new RectangleF(
+							NumW+SchedDefaults.List[i].DayOfWeek*ColW
+							+opOffset//usually 0
+							,SchedDefaults.List[i].StartTime.Hour*6*RowH
+							+(int)SchedDefaults.List[i].StartTime.Minute/10*RowH
+							,blockW
+							,15));
+					}
+				}
+			}
 			CultureInfo ci=(CultureInfo)CultureInfo.CurrentCulture.Clone();
 			string hFormat=Lan.GetShortTimeFormat(ci);
 			for(int y=0;y<24;y++){
 				e.Graphics.DrawString((new DateTime(2000,1,1,y,0,0)).ToString(hFormat,ci)
-					,new Font("Small Font",7f),new SolidBrush(Color.Black),0,y*RowH*6-3);
+					,timeFont,new SolidBrush(Color.Black),0,y*RowH*6-3);
 				e.Graphics.DrawString((new DateTime(2000,1,1,y,0,0)).ToString(hFormat,ci)
-					,new Font("Small Font",7f),new SolidBrush(Color.Black),NumW+ColW*7,y*RowH*6-3);
+					,timeFont,new SolidBrush(Color.Black),NumW+ColW*7,y*RowH*6-3);
 			}
-			//e.Graphics.DrawString(Lan.g(this,"12pm"),new Font("Small Font",7f),new SolidBrush(Color.Black),0,12*RowH*6-3);
-			//e.Graphics.DrawString(Lan.g(this,"12pm"),new Font("Small Font",7f),new SolidBrush(Color.Black),NumW+ColW*7,12*RowH*6-3);
-			//for(int y=1;y<12;y++){
-			//	e.Graphics.DrawString(Lan.g(this,y.ToString()+"pm"),new Font("Small Font",7f),new SolidBrush(Color.Black),0,(12+y)*RowH*6-3);
-			//	e.Graphics.DrawString(Lan.g(this,y.ToString()+"pm"),new Font("Small Font",7f),new SolidBrush(Color.Black),NumW+ColW*7,(12+y)*RowH*6-3);
-			//}
 			Width=NumW*2+ColW*7;
 			Height=RowH*24*6+1;
 		}

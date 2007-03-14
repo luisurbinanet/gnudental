@@ -111,8 +111,8 @@
         AAEAAAD/////AQAAAAAAAAAMAgAAAFpTeXN0ZW0uV2luZG93cy5Gb3JtcywgVmVyc2lvbj0xLjAuNTAw
         MC4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI3N2E1YzU2MTkzNGUwODkFAQAAACZT
         eXN0ZW0uV2luZG93cy5Gb3Jtcy5JbWFnZUxpc3RTdHJlYW1lcgEAAAAERGF0YQcCAgAAAAkDAAAADwMA
-        AADSCQAAAk1TRnQBSQFMAgEBAgEAAQQBAAEEAQABFgEAARYBAAT/AQkBEAj/AUIBTQE2AQQGAAE2AQQC
-        AAEoAwABWAMAARYDAAEBAQABCAUAAZABBxgAAYACAAGAAwACgAEAAYADAAGAAQABgAEAAoACAAPAAQAB
+        AAAeDgAAAk1TRnQBSQFMAgEBBgEAAQkBAAEEAQABFgEAARYBAAT/AQkBEAj/AUIBTQE2AQQGAAE2AQQC
+        AAEoAwABWAMAAUIDAAEBAQABCAUAAbABFhgAAYACAAGAAwACgAEAAYADAAGAAQABgAEAAoACAAPAAQAB
         wAHcAcABAAHwAcoBpgEAATMFAAEzAQABMwEAATMBAAIzAgADFgEAAxwBAAMiAQADKQEAA1UBAANNAQAD
         QgEAAzkBAAGAAXwB/wEAAlAB/wEAAZMBAAHWAQAB/wHsAcwBAAHGAdYB7wEAAdYC5wEAAZABqQGtAgAB
         /wEzAwABZgMAAZkDAAHMAgABMwMAAjMCAAEzAWYCAAEzAZkCAAEzAcwCAAEzAf8CAAFmAwABZgEzAgAC
@@ -139,21 +139,39 @@
         AAH/AZkBzAEAAf8BmQH/AQAB/wHMAgAB/wHMATMBAAH/AcwBZgEAAf8BzAGZAQAB/wLMAQAB/wHMAf8B
         AAL/ATMBAAHMAf8BZgEAAv8BmQEAAv8BzAEAAmYB/wEAAWYB/wFmAQABZgL/AQAB/wJmAQAB/wFmAf8B
         AAL/AWYBAAEhAQABpQEAA18BAAN3AQADhgEAA5YBAAPLAQADsgEAA9cBAAPdAQAD4wEAA+oBAAPxAQAD
-        +AEAAfAB+wH/AQABpAKgAQADgAMAAf8CAAH/AwAC/wEAAf8DAAH/AQAB/wEAAv8CAAP/GAABbQEAAW0B
-        AAFtAQABbQEAAW0BAAFtAQABbQEAAW1JAAFtAQABbQEAAW0BAAFtAQABbQEAAW0BAAFtAQABbUIABR8C
-        AAFtAQABbQEAAW0BAAFtAQABbQEAAW0BAAFtAQABbUEAAx8C6QEfAgABbQEAAW0BAAFtAQABbQEAAW0B
-        AAFtAQABbQEAAW1BAAYfAgABbQEAAW0BAAFtAQABbQEAAW0BAAFtAQABbQEAAW1BAAYfAgABbQEAAW0B
-        AAFtAQABbQEAAW0BAAFtAQABbQEAAW1BAAYfAgABbQEAAW0BAAFtAQABbQEAAW0BAAFtAQABbQEAAW1B
-        AAYfAQAB7FAABh8CABX8OwAGHwIAFfwzAAETBwAGHwIAFfwsAAGGBQABEwHwARMDAAITAgAFHwEAAexB
-        AAKGAQADEwHwARMB8AETAQABEwHwARNKAAKGARMD8AETAfABEwHwARMB8AETAwAB6wEcAv8JAAVtNgAC
-        hgXwARMB8AETAfABEwMAAf8BkgT/BwACbQMAA200AAKGBvABEwHwARMEAAKSBP8GAAJtBgADbTIAAoYB
-        EwbwARMFAAEUAu0B6wH0AwAIbQYAA20wAAKGAQAGEw0AAm0CAAFtAwACbQcABW1GAAFtBAABbVIAAW0E
-        AAFtUgACbQIAAm1TAARtOQABQgFNAT4HAAE+AwABKAMAAVgDAAEWAwABAQEAAQEFAAEIAQEWAAP/AQAC
-        /wH+AaoBqwHwBgAC/wEGAaoBqwHwBgAB/wH+AQIBqgGrAfAGAAH/AfwBAgGqAasB8AYAAf8B/AECAaoB
-        qwHwBgAB/wH8AQIBqgGrAfAGAAH/AfwBAgGqAasB8AYAAf8B/AoAAf8B/AoAAf8B/AoAAf4B/AoAAXwB
-        cgoAASABIwEPAv8B8AcAAQYBBwH4AT8B8AcAAQwBAwHzAY8B8AcAARwBAwHnAeMB8AcAATwBAgEBAfgB
-        8AYAASABfAEAAdwB/gcAAf8B/gEHAd4B/wHwBgAC/wEPAd4B/wHwBgAD/wHMAf8B8AYAA/8B4QH/AfAc
-        AAs=
+        +AEAAfAB+wH/AQABpAKgAQADgAMAAf8CAAH/AwAC/wEAAf8DAAH/AQAB/wEAAv8CAAP//wD/AP8A/wD/
+        AP8A/wD/AFkABR9SAAYfBAAFH0kABh8DAAYfSQAGHwMABh9JAAYfAwAGHz8AA/8HAAYfAwAGHz4AAycB
+        /wcABh8DAAYfPgADJwH/BwAGHwMABh8+AAMnAf8HAAYfAwAGHz4AAycB/wgABR8DAAYfAwAB/zoAAycB
+        /xEABR8CAAH/AScB/wQAAf80AAMnAf8IAAHrARwC9QwAAycB/wMAAScB/zEAAv8DJwT/BAAB9QGSBPUE
+        AAHrARwC9QQAAycB/wIAAicB/y8ACScB/wQAApIC9QH/AfUDAAH1AZIE9QQAAycC/wMnAf8vAAcnAf8F
+        AAEUAu0B6wH0BAACkgL1Af8B9QUACCcB/y8ABScB/w8AARQC7QHrAfQHAAgnLwAFJwH/HAAGJzEAAycB
+        /x8AAycyAAMnAf8fAAInNAABJwH/IAABJ0cAAW0BAAFtAQABbQEAAW0BAAFtAQABbQEAAW0BAAFtSQAB
+        bQEAAW0BAAFtAQABbQEAAW0BAAFtAQABbQEAAW1CAAUfAgABbQEAAW0BAAFtAQABbQEAAW0BAAFtAQAB
+        bQEAAW0WAAUfEQAFHxAAAx8C6QEfAgABbQEAAW0BAAFtAQABbQEAAW0BAAFtAQABbQEAAW0VAAMfAukB
+        HxAABh8QAAYfAgABbQEAAW0BAAFtAQABbQEAAW0BAAFtAQABbQEAAW0VAAYfEAAGHxAABh8CAAFtAQAB
+        bQEAAW0BAAFtAQABbQEAAW0BAAFtAQABbRUABh8QAAYfEAAGHwIAAW0BAAFtAQABbQEAAW0BAAFtAQAB
+        bQEAAW0BAAFtFQAGHxAABh8QAAYfAQAB7CQABh8QAAYfEAAGHwIAFfwPAAYfEAAGHxAABh8CABX8DwAG
+        HxAABh8IAAETBwAGHwIAFfwGAAL/BwAGHxAABh8BAAGGBQABEwHwARMDAAITAgAFHwEAAewaAAKhAf8I
+        AAUfBAABIAH/BQABIAH/BAAFHwEAAoYBAAMTAfABEwHwARMBAAETAfABEyMAAqEB/xAAAyAB/wMAASAB
+        /wsAAoYBEwPwARMB8AETAfABEwHwARMDAAHrARwC/wkABW0PAAKhAf8IAAHrARwC9QUAAyAB/wEAAiAB
+        /wUAAesBHAL1AgAChgXwARMB8AETAfABEwMAAf8BkgT/BwACbQMAA20KAAP/AqEF/wMAAfUBkgT1BQAF
+        IAH/BQAB9QGSBPUBAAKGBvABEwHwARMEAAKSBP8GAAJtBgADbQcACqEB/wMAApIC9QH/AfUGAAMgAf8G
+        AAKSAvUB/wH1AQAChgETBvABEwUAARQC7QHrAfQDAAhtBgADbQUACqEEAAEUAu0B6wH0BwAEIAH/BQAB
+        FALtAesB9AIAAoYBAAYTDQACbQIAAW0DAAJtBwAFbQUAAqEB/xIAAyAB/wIgAf8lAAFtBAABbREAAqEB
+        /xEAAyAB/wIAAiAB/yQAAW0EAAFtEQACoQH/EAADIAH/BAACIAH/IwACbQIAAm0RAAKhEgABIAH/LAAE
+        bTkAAUIBTQE+BwABPgMAASgDAAFYAwABQgMAAQEBAAEBBQABGAEDFgAD//8ACgAF/wHwBgAC/wEHAv8B
+        8AYAAf8B/gEDAYMB/wHwBgAB/wH8AQMBAQH/AfAGAAH/AfwBAgEBAf8B8AYAAf8B/AECAQEB/wHwBgAB
+        /wH8AQIBAQH/AfAGAAH4AfwBAgEBAf8B8AYAAfAB/AECAQEB/wHwBgAB8AH8AQIBAQH/AfAGAAHwAfwB
+        AgEBAf8B8AYAAfAB/gECAQEBvwHwBgAB8AH/AQ8BAQEeAfAGAAHwAf4BBwGHAQ4BcAYAAcABHAIDAYYB
+        MAYAAYABHAECAQEBwAEQBgABwAE8AQIBAQHgBwAB4AF8AQIBAQHwBwAB4AF+AQYBAQH4ARAGAAHwAf8B
+        DwEDAf4BMAYAAfAC/wGHAf4BcAYAAfkD/wH+AfAGAAL/Af4BqgGrBv8BAAL/AQYBqgGrAv8B8AF/Af8B
+        wQEAAf8B/gECAaoBqwL/AeABPwH/AYABAAH/AfwBAgGqAasC/wHAAT8B/wIAAf8B/AECAaoBqwL/AcAB
+        PwH/AgAB/wH8AQIBqgGrAv8BwAE/Af8CAAH/AfwBAgGqAasC/wHAAT8B/wIAAf8B/AMAAQ8B/wHAAT8B
+        /wIAAf8B/AMAAQ8B/wHAAT8B/wIAAf8B/AMAAQ8B/wHAAT8B/wIAAf4B/AMAAQ8BzwHAAT8B/wIAAXwB
+        cgMAAQ8BjwHgATkB8wGAAQABIAEjAQ8D/wGPAvAB5wHDAgABBgEHAfgBPwH/AY8B4AF4AUcBgQIAAQwB
+        AwHzAY8B/AEAAcABPAEPAwABHAEDAecB4wH4AQABwAE+AR8DAAE8AQIBAQL4AQEBwAE+AQ8CAAEgAXwB
+        AAHcAf4BDwGPAcABPAEHAgAB/wH+AQcB3gL/AY8B4AF4AWMBgQEAAv8BDwHeAv8BjwLwAfEBwwEAA/8B
+        zAL/AZ8B/wH5Av8BAAP/AeEH/xcACw==
 </value>
   </data>
   <data name="tbPlans.Locked" type="System.Boolean, mscorlib, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
@@ -177,19 +195,19 @@
   <data name="textAddrNotes.DefaultModifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>Private</value>
   </data>
+  <data name="textAddrNotes.Modifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>Private</value>
+  </data>
   <data name="textAddrNotes.Locked" type="System.Boolean, mscorlib, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </data>
-  <data name="textAddrNotes.Modifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  <data name="tbFamily.Modifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>Private</value>
   </data>
   <data name="tbFamily.Locked" type="System.Boolean, mscorlib, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </data>
   <data name="tbFamily.DefaultModifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>Private</value>
-  </data>
-  <data name="tbFamily.Modifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>Private</value>
   </data>
   <data name="tbCoverage.Locked" type="System.Boolean, mscorlib, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
@@ -219,96 +237,6 @@
   <data name="textSecPlanNote.Modifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>Private</value>
   </data>
-  <data name="panelFamily.Locked" type="System.Boolean, mscorlib, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>False</value>
-  </data>
-  <data name="panelFamily.SnapToGrid" type="System.Boolean, mscorlib, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>False</value>
-  </data>
-  <data name="panelFamily.DefaultModifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>Private</value>
-  </data>
-  <data name="panelFamily.GridSize" type="System.Drawing.Size, System.Drawing, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>2, 2</value>
-  </data>
-  <data name="panelFamily.DrawGrid" type="System.Boolean, mscorlib, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>False</value>
-  </data>
-  <data name="panelFamily.Modifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>Private</value>
-  </data>
-  <data name="butMovePat.Locked" type="System.Boolean, mscorlib, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>False</value>
-  </data>
-  <data name="butMovePat.DefaultModifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>Private</value>
-  </data>
-  <data name="butMovePat.Modifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>Private</value>
-  </data>
-  <data name="butMovePat.Image" type="System.Drawing.Bitmap, System.Drawing, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        R0lGODlhFgAWAPQAAAAAAAFcAUJFR296eqECAoV2cY+Wl46WmJycmZubnZyfn6iQi/rvr+jw8Pj18fn2
-        8/f5+vn4+v///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAAwALAAA
-        AAAWABYAAAV0ICOOZCkGJgOsQDoGKMmyLgPH6kyX9y0CAsNh0Fjxej5AQvGARB6tFxImUT0QD8cDKg1I
-        JLfqr7DYRm3Uk7c064pt7x9hPm+B43EVnR7NmwB7dTVsgQRng3qBh4OAiogjjXuLNZF8j3KOl4mWmjk7
-        naChLiEAOw==
-</value>
-  </data>
-  <data name="butSetGuar.Locked" type="System.Boolean, mscorlib, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>False</value>
-  </data>
-  <data name="butSetGuar.DefaultModifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>Private</value>
-  </data>
-  <data name="butSetGuar.Modifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>Private</value>
-  </data>
-  <data name="butSetGuar.Image" type="System.Drawing.Bitmap, System.Drawing, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        R0lGODlhFgAWAPQAAAAAAAFcAUJFR296eqECAoV2cY+Wl46WmJycmZubnZyfn6iQi/rvr+jw8Pj18fn2
-        8/f5+vn4+v///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAAwALAAA
-        AAAWABYAAAV1ICOKgTSeaMoErKm+ZPsCNICyuHvW9YnLO15v9QOKAALDYdCgEYtGQELxgEQeNoZEktvq
-        AA/Ew/HA+oy7wqKcHeVmw3NJBSDY7e2nblS/4+V7R35/bmiCg3laWyl9fokwjXePM4MEk3SVl4yZMJuO
-        nYw8oKMhADs=
-</value>
-  </data>
-  <data name="butDeletePt.Locked" type="System.Boolean, mscorlib, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>False</value>
-  </data>
-  <data name="butDeletePt.DefaultModifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>Private</value>
-  </data>
-  <data name="butDeletePt.Modifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>Private</value>
-  </data>
-  <data name="butDeletePt.Image" type="System.Drawing.Bitmap, System.Drawing, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        R0lGODlhFgAWAPQAAAAAAEJFR296eqECAswAAIV2cY+Wl46WmJycmZubnZyfn6iQi/rvr+jw8Pj18fn2
-        8/f5+vn4+v///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAAwALAAA
-        AAAWABYAAAVwICOOZGmShHSuKJG2qgjMQOm+jBszNG3rulGv9wsKA4aDoDEr7mQJxQMSedRGN6PsgXg4
-        HlZsUMsrLMDXnBYn9KGeuR1gQKenWbJ6/Y6f6wd8LH56gSuDe3gkh3aJQn+AjXl/hSeLkJE8k5gyRJsn
-        IQA7
-</value>
-  </data>
-  <data name="butAddPt.Locked" type="System.Boolean, mscorlib, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>False</value>
-  </data>
-  <data name="butAddPt.DefaultModifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>Private</value>
-  </data>
-  <data name="butAddPt.Modifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>Private</value>
-  </data>
-  <data name="butAddPt.Image" type="System.Drawing.Bitmap, System.Drawing, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        R0lGODlhFgAWAPQAAAAAAEJFR296epwNFqECAqsAALQHEoV2cQQEx4+Wl46WmJycmZubnZyfn6iQi/rv
-        r+jw8Pj18fn28/f5+vn4+v///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAA8ALAAA
-        AAAWABYAAAV14COOZGmaCHKuZVqtQAyc7inLKPKW9/2kwKBKBAgkFAJI7CcM7gCMhmRCkcwelawrmyVK
-        FpKIxNrS2Q6O8ZVUs+FyOx6hQKivR115fX9nPQB7fH4kgIEEfSyFgYgwhoeDI4qCkH+OjDZ7BgOPlJWL
-        nUQ+oCchADs=
-</value>
-  </data>
   <data name="tbPercent1.Locked" type="System.Boolean, mscorlib, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </data>
@@ -334,15 +262,6 @@
     <value>False</value>
   </data>
   <data name="ToolBarMain.DefaultModifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>Private</value>
-  </data>
-  <data name="picturePatient.Locked" type="System.Boolean, mscorlib, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>False</value>
-  </data>
-  <data name="picturePatient.DefaultModifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>Private</value>
-  </data>
-  <data name="picturePatient.Modifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>Private</value>
   </data>
   <data name="butPatEdit.Locked" type="System.Boolean, mscorlib, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
@@ -417,6 +336,15 @@
   <data name="menuPatient.Modifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>Private</value>
   </data>
+  <data name="picturePat.DefaultModifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>Private</value>
+  </data>
+  <data name="picturePat.Locked" type="System.Boolean, mscorlib, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
+  </data>
+  <data name="picturePat.Modifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>Private</value>
+  </data>
   <data name="$this.TrayLargeIcon" type="System.Boolean, mscorlib, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </data>
@@ -438,13 +366,13 @@
   <data name="$this.Localizable" type="System.Boolean, mscorlib, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </data>
-  <data name="$this.DefaultModifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>Private</value>
-  </data>
   <data name="$this.Name">
     <value>ContrFamily</value>
   </data>
+  <data name="$this.DefaultModifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>Private</value>
+  </data>
   <data name="$this.GridSize" type="System.Drawing.Size, System.Drawing, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>2, 2</value>
+    <value>4, 4</value>
   </data>
 </root>

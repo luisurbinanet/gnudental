@@ -1240,7 +1240,7 @@ namespace OpenDental
 				else{//tooth was not selected
 					selectedTeeth.Add(intTooth);
 				}
-				Invalidate();//todo: just invalidate the area around the tooth num.
+				Invalidate();//incomplete: just invalidate the area around the tooth num.
 				return;
 			}
 			if(selectedTeeth.Count>0){//if not clicked on a toothnum, but teeth were selected,

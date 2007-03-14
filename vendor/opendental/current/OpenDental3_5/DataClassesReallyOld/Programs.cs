@@ -164,6 +164,14 @@ namespace OpenDental{
 				Planmeca.SendData(pat);
 				return;
 			}
+			else if(Cur.ProgName=="ImageFX"){
+				ImageFX.SendData(pat);
+				return;
+			}
+			else if(Cur.ProgName=="DentForms"){
+				DentForms.SendData(pat);
+				return;
+			}
 			//all remaining programs:
 			try{
 				Process.Start(Cur.Path,Cur.CommandLine);

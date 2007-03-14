@@ -5,9 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace OpenDental{
-	/// <summary>
-	/// Summary description for FormBasicTemplate.
-	/// </summary>
+	/// <summary></summary>
 	public class FormProcSelect : System.Windows.Forms.Form{
 		private OpenDental.UI.Button butCancel;
 		private OpenDental.UI.Button butOK;
@@ -22,7 +20,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public int SelectedProcNum;
 
-		///<summary></summary>
+		///<summary>This form only displays completed procedures to pick from.</summary>
 		public FormProcSelect(int patNum)
 		{
 			//
@@ -134,7 +132,15 @@ namespace OpenDental{
 		#endregion
 
 		private void FormProcSelect_Load(object sender, System.EventArgs e) {
-			ProcedureList=Procedures.Refresh(PatNum);
+			Procedure[] entireList=Procedures.Refresh(PatNum);
+			ArrayList AL=new ArrayList();
+			for(int i=0;i<entireList.Length;i++){
+				if(entireList[i].ProcStatus==ProcStat.C){
+					AL.Add(entireList[i]);
+				}
+			}
+			ProcedureList=new Procedure[AL.Count];
+			AL.CopyTo(ProcedureList);
 			tbProcs.ResetRows(ProcedureList.Length);
 			tbProcs.SetGridColor(Color.LightGray);
 			for(int i=0;i<ProcedureList.Length;i++){

@@ -13,6 +13,7 @@ namespace OpenDental{
 		private OpenDental.UI.Button butAdd;
 		private OpenDental.UI.Button butAdd2;
 		private OpenDental.UI.Button butClose;// Required designer variable.
+		private User user;
 
 		///<summary></summary>
 		public FormRxSetup(){
@@ -81,7 +82,7 @@ namespace OpenDental{
 			this.butDelete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDelete.Location = new System.Drawing.Point(701, 636);
+			this.butDelete.Location = new System.Drawing.Point(683, 636);
 			this.butDelete.Name = "butDelete";
 			this.butDelete.Size = new System.Drawing.Size(84, 26);
 			this.butDelete.TabIndex = 15;
@@ -96,7 +97,7 @@ namespace OpenDental{
 			this.butAdd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
 			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAdd.Location = new System.Drawing.Point(569, 636);
+			this.butAdd.Location = new System.Drawing.Point(548, 636);
 			this.butAdd.Name = "butAdd";
 			this.butAdd.Size = new System.Drawing.Size(92, 26);
 			this.butAdd.TabIndex = 14;
@@ -111,7 +112,7 @@ namespace OpenDental{
 			this.butAdd2.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butAdd2.Image = ((System.Drawing.Image)(resources.GetObject("butAdd2.Image")));
 			this.butAdd2.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAdd2.Location = new System.Drawing.Point(300, 636);
+			this.butAdd2.Location = new System.Drawing.Point(269, 636);
 			this.butAdd2.Name = "butAdd2";
 			this.butAdd2.Size = new System.Drawing.Size(221, 26);
 			this.butAdd2.TabIndex = 16;
@@ -142,10 +143,17 @@ namespace OpenDental{
 		#endregion
 
 		private void FormRxSetup_Load(object sender, System.EventArgs e) {
-			if(!UserPermissions.CheckUserPassword("Prescription Setup")){
-				MessageBox.Show(Lan.g(this,"You do not have permission for this feature"));
-				DialogResult=DialogResult.Cancel;
-				return;
+			if(Permissions.AuthorizationRequired("Prescription Setup")){
+				user=Users.Authenticate("Prescription Setup");
+				if(user==null){
+					DialogResult=DialogResult.Cancel;
+					return;
+				}
+				if(!UserPermissions.IsAuthorized("Prescription Setup",user)){
+					MsgBox.Show(this,"You do not have permission for this feature");
+					DialogResult=DialogResult.Cancel;
+					return;
+				}	
 			}
 			FillMain();
 		}
@@ -218,7 +226,7 @@ namespace OpenDental{
 		}
 
 		private void FormRxSetup_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-			SecurityLogs.MakeLogEntry("Prescription Setup","Altered Prescription Setup");
+			SecurityLogs.MakeLogEntry("Prescription Setup","Altered Prescription Setup",user);
 		}
 
 	}

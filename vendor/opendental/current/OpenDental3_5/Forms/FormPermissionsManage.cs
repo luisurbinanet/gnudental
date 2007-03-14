@@ -12,6 +12,7 @@ namespace OpenDental{
 		private OpenDental.UI.Button butAll;
 		private OpenDental.UI.Button butNone;
 		private System.ComponentModel.Container components = null;
+		private User user;
 
 		///<summary></summary>
 		public FormPermissionsManage(){
@@ -117,10 +118,17 @@ namespace OpenDental{
 		#endregion
 
 		private void FormManagePermissions_Load(object sender, System.EventArgs e) {
-			if(!UserPermissions.CheckUserPassword("Security Administration")){
-				MessageBox.Show(Lan.g(this,"You do not have permission for this feature."));
-				DialogResult=DialogResult.Cancel;
-				return;
+			if(Permissions.AuthorizationRequired("Security Administration")){
+				user=Users.Authenticate("Security Administration");
+				if(user==null){
+					DialogResult=DialogResult.Cancel;
+					return;
+				}
+				if(!UserPermissions.IsAuthorized("Security Administration",user)){
+					MsgBox.Show(this,"You do not have permission for this feature");
+					DialogResult=DialogResult.Cancel;
+					return;
+				}	
 			}
 		  FillTable();
 		}
@@ -155,27 +163,28 @@ namespace OpenDental{
 		}
 
 		private void tbPerm_CellClicked(object sender, CellEventArgs e){
-			Permissions.Cur=Permissions.List[e.Row];
+			//Permissions.Cur=Permissions.List[e.Row];
 			if(e.Col==1){
-				if(Permissions.Cur.Name=="Security Administration"
-					&& !Permissions.Cur.RequiresPassword
-					&& UserPermissions.AdministratorCount()==0){
-					MessageBox.Show(Lan.g(this,"You cannot enable Security Administration until you have set up at least one provider with Security Administration permission."));
+				if(Permissions.List[e.Row].Name=="Security Administration"
+					&& !Permissions.List[e.Row].RequiresPassword
+					&& UserPermissions.AdministratorCount()==0)
+				{
+					MsgBox.Show(this,"You cannot enable Security Administration until you have set up at least one provider with Security Administration permission.");
 					return;
 				}
-				if(Permissions.Cur.RequiresPassword){
-					Permissions.Cur.RequiresPassword=false;
-					Permissions.UpdateCur();
+				if(Permissions.List[e.Row].RequiresPassword){
+					Permissions.List[e.Row].RequiresPassword=false;
+					Permissions.List[e.Row].Update();
 				}
 				else{
-					Permissions.Cur.RequiresPassword=true;
-					Permissions.UpdateCur();
+					Permissions.List[e.Row].RequiresPassword=true;
+					Permissions.List[e.Row].Update();
 				}
 				FillTable();
-				return;
+				//return;
 			}
 			else if(e.Col==2 || e.Col==3){
-				switch(Permissions.Cur.Name){
+				switch(Permissions.List[e.Row].Name){
 					default:
 						break;
 					case "Procedure Completed Edit":
@@ -183,11 +192,11 @@ namespace OpenDental{
 					case "Claims Sent Edit":
 					case "Adjustment Edit":
 					case "Payment Edit":
-						FormPermissionEdit FormPE=new FormPermissionEdit();
+						FormPermissionEdit FormPE=new FormPermissionEdit(Permissions.List[e.Row]);
 						FormPE.ShowDialog();
-						if(FormPE.DialogResult==DialogResult.OK){
-							FillTable();
-						}
+						//if(FormPE.DialogResult==DialogResult.OK){
+						//	FillTable();
+						//}
 						break;
 				}
 			}
@@ -218,7 +227,7 @@ namespace OpenDental{
 		}
 
 		private void FormPermissionsManage_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-			SecurityLogs.MakeLogEntry("Security Administration","Altered Permissions");
+			SecurityLogs.MakeLogEntry("Security Administration","Altered Permissions",user);
 		}
 
 		
