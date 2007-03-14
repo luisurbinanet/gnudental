@@ -149,11 +149,11 @@ namespace OpenDental{
 		}
 
 		///<summary>Gets the fee schedule from the priinsplan, the patient, or the provider in that order.  Either returns a fee schedule (fk to definition.DefNum) or 0.</summary>
-		public static int GetFeeSched(Patient pat,InsPlan[] PlanList){
+		public static int GetFeeSched(Patient pat,InsPlan[] PlanList,PatPlan[] patPlans){
 			//there's not really a good place to put this function, so it's here.
 			int retVal=0;
-			if(pat.PriPlanNum!=0){
-				InsPlan PlanCur=InsPlans.GetPlan(pat.PriPlanNum,PlanList);
+			if(PatPlans.GetPlanNum(patPlans,1)!=0){
+				InsPlan PlanCur=InsPlans.GetPlan(PatPlans.GetPlanNum(patPlans,1),PlanList);
 				if(PlanCur==null){
 					retVal=0;
 				}

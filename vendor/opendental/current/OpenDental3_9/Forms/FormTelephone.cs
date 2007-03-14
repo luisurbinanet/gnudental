@@ -172,7 +172,7 @@ namespace OpenDental{
 				}
 			}
 			//this last part will only be run once during conversion to 2.8. It can be dropped from a future version.
-			Queries.CurReport.Query="select * from insplan";
+			/*Queries.CurReport.Query="select * from insplan";
 			Queries.SubmitCur();	
 			for(int i=0;i<Queries.TableQ.Rows.Count;i++){
 				idNum=PIn.PString(Queries.TableQ.Rows[i][0].ToString());
@@ -184,7 +184,7 @@ namespace OpenDental{
 						+newTel+"' WHERE PlanNum = '"+idNum+"'";
 					Queries.SubmitNonQ();
 				}
-			}
+			}*/
 		}//reformat
 
 		

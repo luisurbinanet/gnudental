@@ -20,6 +20,7 @@ namespace OpenDental{
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.SaveFileDialog saveFileDialog1;
 		private System.ComponentModel.Container components = null;
+		private string[] LanList;
 
 		///<summary></summary>
 		public FormTranslationCat(){
@@ -159,42 +160,41 @@ namespace OpenDental{
 
 		private void FormTranslation_Load(object sender, System.EventArgs e) {
 			//MessageBox.Show(CultureInfo.CurrentCulture.TwoLetterISOLanguageName);
-			if(CultureInfo.CurrentCulture.TwoLetterISOLanguageName=="en"){
-				MessageBox.Show
-					("You must change your language in Windows first to something other than English.");
+			if(CultureInfo.CurrentCulture.Name=="en-US"){
+				MessageBox.Show("You must change your culture in Windows first to something other than English-US.");
 				DialogResult=DialogResult.Cancel;
 				return;
 			}
-			Lan.GetListCat();
+			LanList=Lan.GetListCat();
 			FillList();
 		}
 
 		private void FillList(){
 			listCats.Items.Clear();
-			for(int i=0;i<Lan.ListCat.Length;i++){
-				listCats.Items.Add(Lan.ListCat[i]);
+			for(int i=0;i<LanList.Length;i++){
+				listCats.Items.Add(LanList[i]);
 			}
-
 		}
 
-		private void listCats_DoubleClick(object sender, System.EventArgs e) {
-			Lan.CurCat=Lan.ListCat[listCats.SelectedIndex];
-			FormTranslation FormT=new FormTranslation(); 
+		private void listCats_DoubleClick(object sender, System.EventArgs e){
+			if(listCats.SelectedIndex==-1){
+				return;
+			}
+			FormTranslation FormT=new FormTranslation(LanList[listCats.SelectedIndex]); 
 			FormT.ShowDialog();
 		}
 
 		private void butDownload_Click(object sender, System.EventArgs e) {
-			string remoteUri = "http://www.open-dent.com/languages/";
-			string fileName = CultureInfo.CurrentCulture.TwoLetterISOLanguageName+".sql";//eg. es.sql for spanish
-			//string fileName="bogus.sql";
+			string remoteUri = "http://www.open-dent.com/cultures/";
+			string fileName = CultureInfo.CurrentCulture.Name+".sql";//eg. en-US.sql
 			string myStringWebResource = null;
 			WebClient myWebClient = new WebClient();
-			myStringWebResource = remoteUri + fileName;
+			myStringWebResource=remoteUri+fileName;
 			try{
 				myWebClient.DownloadFile(myStringWebResource,fileName);
 			}
 			catch{
-				MessageBox.Show("Either you do not have internet access, or no translations are available for "+CultureInfo.CurrentCulture.Parent.DisplayName);
+				MessageBox.Show("Either you do not have internet access, or no translations are available for "+CultureInfo.CurrentCulture.DisplayName);
 				return;
 			}
 			ClassConvertDatabase ConvertDB=new ClassConvertDatabase();
@@ -205,29 +205,29 @@ namespace OpenDental{
 				MessageBox.Show("Translations not installed properly.");
 				return;
 			}
-			LanguageForeigns.Refresh();
+			LanguageForeigns.Refresh(CultureInfo.CurrentCulture);
 			MessageBox.Show("Done");
 		}
 
+		///<summary>Only exports for the current culture.</summary>
 		private void butExport_Click(object sender, System.EventArgs e) {
 			saveFileDialog1.InitialDirectory=Application.StartupPath;
-			string fileName=CultureInfo.CurrentCulture.TwoLetterISOLanguageName+".sql";
+			string fileName=CultureInfo.CurrentCulture.Name+".sql";//eg en-US.sql
 			saveFileDialog1.FileName=fileName;
 			if(saveFileDialog1.ShowDialog()!=DialogResult.OK){
 				return;
 			}
 			StreamWriter sw=new StreamWriter(fileName,false);
-			sw.WriteLine("DELETE FROM languageforeign WHERE Culture='"+CultureInfo.CurrentCulture.TwoLetterISOLanguageName+"';");
-			for(int i=0;i<LanguageForeigns.List.Length;i++){
-				if(LanguageForeigns.List[i].Culture==CultureInfo.CurrentCulture.TwoLetterISOLanguageName){
-					sw.WriteLine(
-						"INSERT INTO languageforeign VALUES ('"+POut.PString(LanguageForeigns.List[i].ClassType)
-						+"', '"+POut.PString(LanguageForeigns.List[i].English)
-						+"', '"+POut.PString(LanguageForeigns.List[i].Culture)
-						+"', '"+POut.PString(LanguageForeigns.List[i].Translation)
-						+"', '"+POut.PString(LanguageForeigns.List[i].Comments)+"');"
-					);
-				}
+			sw.WriteLine("DELETE FROM languageforeign WHERE Culture='"+CultureInfo.CurrentCulture.Name+"';");
+			LanguageForeign[] LFList=LanguageForeigns.GetListForCulture(CultureInfo.CurrentCulture);
+			for(int i=0;i<LFList.Length;i++){
+				sw.WriteLine(
+					"INSERT INTO languageforeign VALUES ('"+POut.PString(LFList[i].ClassType)
+					+"', '"+POut.PString(LFList[i].English)
+					+"', '"+POut.PString(LFList[i].Culture)
+					+"', '"+POut.PString(LFList[i].Translation)
+					+"', '"+POut.PString(LFList[i].Comments)+"');"
+				);
 			}//for
 			sw.Close();
 			MessageBox.Show("Done");

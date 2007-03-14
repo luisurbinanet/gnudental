@@ -105,6 +105,7 @@ namespace OpenDental{
 			this.butBlank.TabIndex = 3;
 			this.butBlank.Text = "Blank Plan";
 			this.butBlank.Visible = false;
+			this.butBlank.Click += new System.EventHandler(this.butBlank_Click);
 			// 
 			// butOK
 			// 
@@ -202,6 +203,9 @@ namespace OpenDental{
 			else{//order by carrier only
 				ListAll=InsPlans.RefreshListAll(false);
 			}
+			if(IsSelectMode){
+				butBlank.Visible=true;
+			}
 			int selectedRow=Table2.SelectedRow;//preserves the selected row.
 			Table2.ResetRows(ListAll.Length);
 			Table2.SetGridColor(Color.Gray);
@@ -244,7 +248,7 @@ namespace OpenDental{
 				return;
 			}
 			InsPlan PlanCur=ListAll[e.Row].Copy();
-			FormInsPlanEditAll FormIPE=new FormInsPlanEditAll(PlanCur,0);
+			FormInsPlanEditAll FormIPE=new FormInsPlanEditAll(PlanCur);
 			FormIPE.ShowDialog();
 			if(FormIPE.DialogResult!=DialogResult.OK)
 				return;
@@ -286,6 +290,11 @@ namespace OpenDental{
 			Table2.ScrollToLine(moveToRow);
 		}
 
+		private void butBlank_Click(object sender, System.EventArgs e) {
+			SelectedPlan=new InsPlan();
+			DialogResult=DialogResult.OK;
+		}
+
 		private void butOK_Click(object sender, System.EventArgs e) {
 			if(IsSelectMode){
 				if(Table2.SelectedRow==-1){
@@ -305,6 +314,8 @@ namespace OpenDental{
 		private void butCancel_Click(object sender, System.EventArgs e) {
 			DialogResult=DialogResult.Cancel;
 		}
+
+		
 
 		
 	

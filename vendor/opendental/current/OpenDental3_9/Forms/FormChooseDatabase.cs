@@ -4,6 +4,8 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
+using System.IO.IsolatedStorage;
 using System.Net;
 using System.Net.Sockets;
 using System.ServiceProcess;
@@ -11,7 +13,6 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
-using System.IO;
 
 namespace OpenDental{
 	///<summary></summary>
@@ -25,20 +26,20 @@ namespace OpenDental{
 		private OpenDental.UI.Button butOK;
 		private OpenDental.UI.Button butCancel;
 		///<summary></summary>
-    public static string ComputerName;
-		///<summary></summary>
+    private static string ComputerName;
+		///<summary>The name of the database currently is use.</summary>
     public static string Database;
 		///<summary></summary>
-    public static string DbUser;
+    private static string DbUser;
 		///<summary></summary>
-    public static string Password;
+    private static string Password;
 		//public static int Port;
 		private string originalComputerName;
     private string originalDatabase;
     private string originalUser;
     private string originalPassword;
-		///<summary></summary>
-		public bool IsInStartup;
+		//<summary></summary>
+		//public bool IsInStartup;
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.GroupBox groupBox2;
 		private System.Windows.Forms.Label label7;
@@ -48,22 +49,23 @@ namespace OpenDental{
 		private System.ComponentModel.Container components = null;
 		private string mysqlInstalled;
 		private System.Windows.Forms.Label labelStatus;
-		private System.Windows.Forms.TextBox textNotInstalled;
-		private OpenDental.UI.Button butInstall;
 		private System.Windows.Forms.ComboBox comboComputerName;
 		private System.Windows.Forms.ComboBox comboDatabase;
+		private System.Windows.Forms.CheckBox checkNoShow;
 		private bool mysqlIsStarted;
 		//<summary>user lowercase is for internal OD security.  this.DbUser capital is for the MySQL user.  Don't get them confused.</summary>
 		//private User user;
+		///<summary></summary>
+		public bool NoShow;
 
 		///<summary></summary>
 		public FormChooseDatabase(){
 			InitializeComponent();
 			//textPort.MaxVal=System.Int32.MaxValue;
 			Lan.F(this);
-			Lan.C(this, new System.Windows.Forms.Control[] {
-				textNotInstalled
-			});
+			//Lan.C(this, new System.Windows.Forms.Control[] {
+			//	textNotInstalled
+			//});
 		}
 
 		///<summary></summary>
@@ -100,8 +102,7 @@ namespace OpenDental{
 			this.labelStatus = new System.Windows.Forms.Label();
 			this.label8 = new System.Windows.Forms.Label();
 			this.label7 = new System.Windows.Forms.Label();
-			this.textNotInstalled = new System.Windows.Forms.TextBox();
-			this.butInstall = new OpenDental.UI.Button();
+			this.checkNoShow = new System.Windows.Forms.CheckBox();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.SuspendLayout();
@@ -235,8 +236,6 @@ namespace OpenDental{
 			this.groupBox2.Controls.Add(this.labelStatus);
 			this.groupBox2.Controls.Add(this.label8);
 			this.groupBox2.Controls.Add(this.label7);
-			this.groupBox2.Controls.Add(this.textNotInstalled);
-			this.groupBox2.Controls.Add(this.butInstall);
 			this.groupBox2.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupBox2.Location = new System.Drawing.Point(16, 326);
 			this.groupBox2.Name = "groupBox2";
@@ -297,39 +296,20 @@ namespace OpenDental{
 			this.label7.Text = "(A service is just a kind of program that runs in the background without any wind" +
 				"ow)";
 			// 
-			// textNotInstalled
+			// checkNoShow
 			// 
-			this.textNotInstalled.BackColor = System.Drawing.SystemColors.Control;
-			this.textNotInstalled.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.textNotInstalled.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.textNotInstalled.Location = new System.Drawing.Point(132, 46);
-			this.textNotInstalled.Multiline = true;
-			this.textNotInstalled.Name = "textNotInstalled";
-			this.textNotInstalled.Size = new System.Drawing.Size(512, 60);
-			this.textNotInstalled.TabIndex = 17;
-			this.textNotInstalled.Text = "MySQL service not present.  You can only start and stop the service from the serv" +
-				"er.  If this computer is the server, then MySQL was not installed properly.  You" +
-				" should reinstall MySQL.  The can be done without disturbing your database.";
-			this.textNotInstalled.Visible = false;
-			// 
-			// butInstall
-			// 
-			this.butInstall.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butInstall.Autosize = true;
-			this.butInstall.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butInstall.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butInstall.Location = new System.Drawing.Point(12, 48);
-			this.butInstall.Name = "butInstall";
-			this.butInstall.Size = new System.Drawing.Size(102, 26);
-			this.butInstall.TabIndex = 21;
-			this.butInstall.Text = "Attempt to Install";
-			this.butInstall.Visible = false;
-			this.butInstall.Click += new System.EventHandler(this.butInstall_Click);
+			this.checkNoShow.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkNoShow.Location = new System.Drawing.Point(16, 542);
+			this.checkNoShow.Name = "checkNoShow";
+			this.checkNoShow.Size = new System.Drawing.Size(496, 24);
+			this.checkNoShow.TabIndex = 17;
+			this.checkNoShow.Text = "Do not show this window on startup (this computer only)";
 			// 
 			// FormChooseDatabase
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(708, 582);
+			this.Controls.Add(this.checkNoShow);
 			this.Controls.Add(this.groupBox2);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.butCancel);
@@ -350,29 +330,32 @@ namespace OpenDental{
 		#endregion
 
 		private void FormConfig_Load(object sender, System.EventArgs e) {
-			/*if(!IsInStartup){
-				if(PermissionsOld.AuthorizationRequired("MySQL Config")){
-					user=Users.Authenticate("MySQL Config");
-					if(user==null){
-						DialogResult=DialogResult.Cancel;
-						return;
-					}
-					if(!UserPermissions.IsAuthorized("MySQL Config",user)){
-						MsgBox.Show(this,"You do not have permission for this feature.");
-						DialogResult=DialogResult.Cancel;
-						return;
-					}	
-				}
-			}*/
 			originalComputerName=ComputerName;
 			originalDatabase=Database;
 			originalUser=DbUser;
 			originalPassword=Password;
-			//originalPort=Port;
 			GetConfig();
 			FillComboComputerNames();
 			FillComboDatabases();
 			FillService();
+		}
+
+		///<summary></summary>
+		public static string GetConnectionString(){
+			return "Server="+ComputerName
+				+";Database="+Database
+				+";User ID="+DbUser
+				+";Password="+Password
+				+";CharSet=utf8";
+		}
+
+		///<summary>Sets the connection to an alternate database for backup purposes.  Currently only used during conversions to do a quick backup first, and in FormChooseDatabase to get db names.</summary>
+		public static string GetAlternateConnStr(string db){
+			return "Server="+ComputerName
+				+";Database="+db
+				+";User ID="+DbUser
+				+";Password="+Password
+				+";CharSet=utf8";
 		}
 
 		///<summary>Gets a list of all computer names on the network (this is not easy)</summary>
@@ -478,20 +461,9 @@ namespace OpenDental{
 				labelStatus.Text="";
 				butStart.Text="Start";
 				butStart.Enabled=false;
-				//textNotInstalled.Visible=true;
-				//if(File.Exists(@"C:\mysql\bin\mysqld-nt.exe")){
-				//	butInstall.Visible=true;
-				//	butInstall.Text="Attempt to install";
-				//}
-				//else{
-				//	butInstall.Visible=false;
-				//}
 				return;
 			}
 			butStart.Enabled=true;
-			//textNotInstalled.Visible=false;
-			//butInstall.Visible=true;
-			//butInstall.Text="Uninstall service";
 			ServiceController sc=new ServiceController(mysqlInstalled);
 			if(sc.Status.Equals(ServiceControllerStatus.Running)){
 				mysqlIsStarted=true;
@@ -503,59 +475,6 @@ namespace OpenDental{
 				labelStatus.Text="Stopped";
 				butStart.Text="Start";
 			}
-		}
-
-		private void butInstall_Click(object sender, System.EventArgs e) {
-			/*
-			Cursor=Cursors.WaitCursor;
-			Process myProcess=new Process();
-			myProcess.StartInfo.FileName=@"C:\mysql\bin\mysqld-nt.exe";
-			if(mysqlIsInstalled){//then uninstall it
-				//stop the service first.
-				ServiceController sc=new ServiceController("MySql");
-				if(sc.Status.Equals(ServiceControllerStatus.Running)){
-					sc.Stop();
-					sc.WaitForStatus(ServiceControllerStatus.Stopped,new TimeSpan(0,0,10));
-				}
-				myProcess.StartInfo.Arguments="--remove";
-				try{
-					myProcess.Start();
-				}
-				catch{
-					MessageBox.Show("Unable to remove the service.  Try reinstalling MySQL (but don't touch the database folders).");
-					Cursor=Cursors.Default;
-					return;
-				}
-				DateTime timeStarted=DateTime.Now;
-				ServiceController[] services;
-				while(DateTime.Now<timeStarted.AddSeconds(10)){//loop for 10 seconds
-					services=ServiceController.GetServices();
-					mysqlIsInstalled=false;
-					for(int i=0;i<services.Length;i++){
-						if(services[i].ServiceName=="MySql"){
-							mysqlIsInstalled=true;
-							break;
-						}
-					}
-					if(!mysqlIsInstalled){//once mysql registers as uninstalled
-						break;//break out of 10 second loop
-					}
-				}
-				Cursor=Cursors.Default;
-			}
-			else{//try to install
-				myProcess.StartInfo.Arguments="--install";
-				myProcess.Start();
-				try{
-					myProcess.WaitForExit(10000);
-					Cursor=Cursors.Default;
-				}
-				catch{
-					Cursor=Cursors.Default;
-					MessageBox.Show("Error. No response after 10 seconds.");
-				}
-			}
-			FillService();*/
 		}
 
 		private void butStart_Click(object sender, System.EventArgs e) {
@@ -599,7 +518,6 @@ namespace OpenDental{
 					comboDatabase.Text="opendental";
 				#endif
 				textUser.Text="root";
-				//textPort.Text="3306";
 				return;
 			}
 			try{
@@ -628,103 +546,42 @@ namespace OpenDental{
 								Password=reader.Value;
 								textPassword.Text=Password;
 								break;
-							//case "Port":
-								//MessageBox.Show(reader.Value);
-							//	try{
-							//		Port=Convert.ToInt32(reader.Value);
-							//	}
-							//	catch{
-							//		Port=3306;
-							//	}
-								//MessageBox.Show(Port.ToString());
-							//	textPort.Text=Port.ToString();
-							//	break;
+							case "NoShowOnStartup":
+								if(reader.Value=="True"){
+									NoShow=true;
+									checkNoShow.Checked=true;
+								}
+								else{
+									NoShow=false;
+									checkNoShow.Checked=false;
+								}
+								break;
 						}
 					}
-					
 				}
-
 				reader.Close();
 			}
-			catch{
+			catch(Exception e){
+				MessageBox.Show(e.Message);
 				comboComputerName.Text="localhost";
 				comboDatabase.Text="opendental";
 				textUser.Text="root";
-				//textPort.Text="3306";
 			}
 		}
-
-		/*private void butTestPort_Click(object sender, System.EventArgs e) {
-			
-
-			Thread2=new Thread(new ThreadStart(Listen));
-			IPAddress ipAddress=Dns.Resolve(comboComputerName.Text).AddressList[0];
-			IPEndPoint endpoint=new IPEndPoint(ipAddress,3306);
-			Socket socket
-				=new Socket(endpoint.AddressFamily,SocketType.Stream,ProtocolType.Tcp);
-			try{
-				socket.SetSocketOption(SocketOptionLevel.Socket,SocketOptionName.ReceiveTimeout,10);
-				socket.SetSocketOption(SocketOptionLevel.Socket,SocketOptionName.SendTimeout,10);
-				MessageBox.Show("preparing to connect");
-				socket.Connect(endpoint);
-				if(!socket.Connected){
-					MessageBox.Show("not connected");
-					return;
-				}
-
-				MessageBox.Show("Connected");
-				socket.Close();
-				MessageBox.Show("Port is open");
-			}
-			catch(Exception ex){
-				MessageBox.Show("Exception : " + ex.ToString());
-			}
-			catch{
-				MessageBox.Show("caught");
-			}
-			MessageBox.Show("end");
-		}*/
 
 		private void ResetToOriginal(){
 			ComputerName=originalComputerName;
 			Database=originalDatabase;
 			DbUser=originalUser;
 			Password=originalPassword;
-			//Port=originalPort;
 			DataClass.SetConnection();
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			//if(textPort.errorProvider1.GetError(textPort)!=""){
-			//	MessageBox.Show(Lan.g(this,"Please fix data entry errors first"));
-			//	return;
-			//}
-			//if(!IsInStartup && MessageBox.Show
-			//	(Lan.g(this,"Are you sure? You will have to close the program and then reopen it after changes are saved.")
-			//	,"",MessageBoxButtons.OKCancel)
-			//	!=DialogResult.OK){
-			//	return;
-			//}
-			bool changing=false;
-			if(comboComputerName.Text!=originalComputerName)
-				changing=true;
-			if(comboDatabase.Text!=originalDatabase)
-				changing=true;
-			if(textUser.Text!=originalUser)
-				changing=true;
-			if(textPassword.Text!=originalPassword)
-				changing=true;
-			/*if(changing&& MessageBox.Show
-				(Lan.g(this,"Your connection settings will be changed.")
-				,"",MessageBoxButtons.OKCancel)
-				!=DialogResult.OK){
-				return;
-			}*/
 			ComputerName=comboComputerName.Text;
 			Database=comboDatabase.Text;
 			DbUser=textUser.Text;
 			Password=textPassword.Text;
-			//Port=PIn.PInt(textPort.Text);
       DataClass.SetConnection();
 			if(!Prefs.DBExists()){
         MessageBox.Show(Lan.g(this,"Database not present.  Could not establish connection."));
@@ -735,6 +592,8 @@ namespace OpenDental{
         return;
       }
 			XmlWriter xmlwriter=new XmlTextWriter("FreeDentalConfig.xml",System.Text.Encoding.Default);
+			xmlwriter.WriteRaw("<?xml version=\"1.0\"?>");
+			xmlwriter.WriteWhitespace("\r\n");
 			xmlwriter.WriteStartElement("DatabaseConnection");
 			xmlwriter.WriteWhitespace("\r\n\t");
 			xmlwriter.WriteElementString("ComputerName", comboComputerName.Text);
@@ -744,17 +603,13 @@ namespace OpenDental{
 			xmlwriter.WriteElementString("User",textUser.Text);
 			xmlwriter.WriteWhitespace("\r\n\t");
 			xmlwriter.WriteElementString("Password", textPassword.Text);
+			xmlwriter.WriteWhitespace("\r\n\t");
+			xmlwriter.WriteElementString("NoShowOnStartup", checkNoShow.Checked.ToString());
 			xmlwriter.WriteWhitespace("\r\n");
-			//xmlwriter.WriteElementString("Port", textPort.Text);
-			xmlwriter.WriteEndElement();
+			xmlwriter.WriteEndElement();			
 			xmlwriter.Close();
-			if(!IsInStartup){
-				//MessageBox.Show(Lan.g(this,"You must close Open Dental now, and reopen it."));
-				//SecurityLogs.MakeLogEntry("MySQL Config","FreeDentalConfig.xml has been changed",user);
-			}
-			if(changing && !IsInStartup){
-				//MessageBox.Show(Lan.g(this,"Settings have been changed."));
-			}
+			//fyiReporting.RDL.DataSource.SetOpenDentalConnectionString(
+			//	"Server="+ComputerName+";Database="+Database+";User ID="+DbUser+";Password="+Password+";CharSet=utf8");
 			DialogResult=DialogResult.OK;
     }
 

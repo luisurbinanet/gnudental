@@ -101,6 +101,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label24;
 		private OpenDental.UI.Button butAudit;
 		private Appointment AptOld;
+		private PatPlan[] PatPlanList;
 
 		///<summary></summary>
 		public FormApptEdit(Appointment aptCur){
@@ -980,7 +981,8 @@ namespace OpenDental{
 			fam=Patients.GetFamily(AptCur.PatNum);
 			pat=fam.GetPatient(AptCur.PatNum);
 			PlanList=InsPlans.Refresh(fam);
-			CovPats.Refresh(pat,PlanList);
+			PatPlanList=PatPlans.Refresh(AptCur.PatNum);
+			CovPats.Refresh(PlanList,PatPlanList);
 			if(Prefs.GetBool("EasyHideDentalSchools")){
 				groupDentalSchools.Visible=false;
 			}
@@ -1259,13 +1261,7 @@ namespace OpenDental{
 				}
 			}
 			//changing the AptNum of a proc does not affect the recall synch, so no synch here.
-			try{
-				ProcCur.InsertOrUpdate(ProcOld,false);
-			}
-			catch(Exception ex){
-				MessageBox.Show(ex.Message);
-				//return;//this won't happen. Just changing aptNum.
-			}
+			ProcCur.Update(ProcOld);
 			//ProcCur.Update(ProcOld);
 			FillProcedures();
 			CalculateTime();
@@ -1520,7 +1516,7 @@ namespace OpenDental{
 					ProcCur.AptNum=AptCur.AptNum;
 				ProcCur.ADACode=codes[i];
 				ProcCur.ProcDate=AptCur.AptDateTime.Date;
-				ProcCur.ProcFee=Fees.GetAmount0(ProcCur.ADACode,Fees.GetFeeSched(pat,PlanList));
+				ProcCur.ProcFee=Fees.GetAmount0(ProcCur.ADACode,Fees.GetFeeSched(pat,PlanList,PatPlanList));
 				//surf
 				//toothnum
 				//toothrange
@@ -1532,16 +1528,9 @@ namespace OpenDental{
 				ProcCur.ClinicNum=AptCur.ClinicNum;
 				if(AptCur.AptStatus==ApptStatus.Planned)
           ProcCur.NextAptNum=AptCur.AptNum;
-				try{
-					ProcCur.InsertOrUpdate(null,true);//recall synch not required
-				}
-				catch(Exception ex){
-					MessageBox.Show(ex.Message);
-					continue;
-				}
-				//ProcCur.Insert();
-				ProcCur.ComputeEstimates(pat.PatNum,pat.PriPlanNum
-					,pat.SecPlanNum,ClaimProcList,false,pat,PlanList);
+				ProcCur.MedicalCode=ProcedureCodes.GetProcCode(ProcCur.ADACode).MedicalCode;
+				ProcCur.Insert();//recall synch not required
+				ProcCur.ComputeEstimates(pat.PatNum,ClaimProcList,false,PlanList,PatPlanList);
 			}
 			listQuickAdd.SelectedIndex=-1;
 			FillProcedures();
@@ -1631,7 +1620,7 @@ namespace OpenDental{
 					if(!Security.IsAuthorized(Permissions.ProcComplCreate)){
 						return false;
 					}
-					Procedures.SetCompleteInAppt(AptCur,pat,PlanList);
+					Procedures.SetCompleteInAppt(AptCur,PlanList,PatPlanList);
 					SecurityLogs.MakeLogEntry(Permissions.ProcComplCreate,pat.PatNum,
 						pat.GetNameLF()+" "+AptCur.AptDateTime.ToShortDateString());
 				}

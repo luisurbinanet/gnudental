@@ -55,14 +55,6 @@ namespace OpenDental{
 		public string Email;
 		///<summary></summary>
 		public string Salutation;
-		///<summary>Foreign key to insplan.PlanNum.  Primary insurance.</summary>
-		public int PriPlanNum;//
-		///<summary>Relationship to subscriber for primary insurance.  See the Relat enumeration.</summary>
-		public Relat PriRelationship;
-		///<summary>Foreign key to insplan.PlanNum.  Secondary insurance.</summary>
-		public int SecPlanNum;//
-		///<summary>Relationship to subscriber for secondary insurance.</summary>
-		public Relat SecRelationship;
 		///<summary>Current patient balance.(not family). If user has checked BalancesDontSubtractIns in setup, then this will not take into account insurance.  Otherwise, the insurance estimate pending will have already been subtracted.</summary>
 		public double EstBalance;
 		///<summary>May be 0(none) or -1(done), otherwise it is the foreign key to appointment.AptNum.  This is the appointment that will show in the Chart module and in the Next appointment tracker.  It will never show in the Appointments module. In other words, it is the suggested next appoinment rather than an appointment that has already been scheduled.</summary>
@@ -75,10 +67,6 @@ namespace OpenDental{
 		public int FeeSched;
 		///<summary>Foreign key to definition.DefNum.  Must have a value, or the patient will not show on some reports.</summary>
 		public int BillingType;
-		///<summary>No longer used.  See the recall table instead.</summary>
-		public int OldRecallInterval;
-		///<summary>No longer used.  See the recall table instead.</summary>
-		public int OldRecallStatus;
 		///<summary>Name of folder where images will be stored. Not editable for now.</summary>
 		public string ImageFolder;
 		///<summary>Address or phone note.</summary>
@@ -127,16 +115,10 @@ namespace OpenDental{
 		public TreatmentUrgency Urgency;
 		///<summary>The date that the patient first visited the office.</summary>
 		public DateTime DateFirstVisit;
-		///<summary>True if primary insurance is pending. This can be used with or without an insurance plan attached.</summary>
-		public bool PriPending;
-		///<summary>True if secondary insurance is pending. This can be used with or without an insurance plan attached.</summary>
-		public bool SecPending;
 		///<summary>Foreign key to clinic.ClinicNum. Can be zero if not attached to a clinic or no clinics set up.</summary>
 		public int ClinicNum;
-		///<summary>Primary insurance patient ID.  If blank, SSN is used.</summary>
-		public string PriPatID;
-		///<summary>Secondary insurance patient ID.  If blank, SSN is used.</summary>
-		public string SecPatID;
+		///<summary>For now, an 'I' indicates that the patient has insurance.  This is only used when displaying appointments.  It will later be expanded.  User can't edit.</summary>
+		public string HasIns;
 		//<summary>Decided not to add since this data is already available and synchronizing would take too much time.  Will add later.  Not editable. If the patient happens to have a future appointment, this will contain the date of that appointment.  Once appointment is set complete, this date is deleted.  If there is more than one appointment scheduled, this will only contain the earliest one.  Used mostly to exclude patients from recall lists.  If you want all future appointments, use Appointments.GetForPat() instead. You can loop through that list and exclude appointments with dates earlier than today.</summary>
 		//public DateTime DateScheduled;
 
@@ -166,10 +148,6 @@ namespace OpenDental{
 			p.CreditType=CreditType;
 			p.Email=Email;
 			p.Salutation=Salutation;
-			p.PriPlanNum=PriPlanNum;
-			p.PriRelationship=PriRelationship;
-			p.SecPlanNum=SecPlanNum;
-			p.SecRelationship=SecRelationship;
 			p.EstBalance=EstBalance;
 			p.NextAptNum=NextAptNum;
 			p.PriProv=PriProv;
@@ -200,11 +178,8 @@ namespace OpenDental{
 			p.GradeLevel=GradeLevel;
 			p.Urgency=Urgency;
 			p.DateFirstVisit=DateFirstVisit;
-			p.PriPending=PriPending;
-			p.SecPending=SecPending;
 			p.ClinicNum=ClinicNum;
-			p.PriPatID=PriPatID;
-			p.SecPatID=SecPatID;
+			p.HasIns=HasIns;
 			return p;
 		}
 	
@@ -219,13 +194,13 @@ namespace OpenDental{
 			}
 			command+="lname,fname,middlei,preferred,patstatus,gender,"
 				+"position,birthdate,ssn,address,address2,city,state,zip,hmphone,wkphone,wirelessphone,"
-				+"guarantor,credittype,email,salutation,priplannum,prirelationship,secplannum,"
-				+"secrelationship,estbalance,nextaptnum,priprov,secprov,feesched,billingtype,"
+				+"guarantor,credittype,email,salutation,"
+				+"estbalance,nextaptnum,priprov,secprov,feesched,billingtype,"
 				+"imagefolder,addrnote,famfinurgnote,medurgnote,apptmodnote,"
 				+"studentstatus,schoolname,chartnumber,medicaidid"
 				+",Bal_0_30,Bal_31_60,Bal_61_90,BalOver90,insest,primaryteeth,BalTotal"
 				+",EmployerNum,EmploymentNote,Race,County,GradeSchool,GradeLevel,Urgency,DateFirstVisit"
-				+",PriPending,SecPending,ClinicNum,PriPatID,SecPatID) VALUES(";
+				+",ClinicNum,HasIns) VALUES(";
 			if(includePatNum || Prefs.RandomKeys){
 				command+="'"+POut.PInt(PatNum)+"', ";
 			}
@@ -250,18 +225,12 @@ namespace OpenDental{
 				+"'"+POut.PString(CreditType)+"', "
 				+"'"+POut.PString(Email)+"', "
 				+"'"+POut.PString(Salutation)+"', "
-				+"'"+POut.PInt   (PriPlanNum)+"', "
-				+"'"+POut.PInt   ((int)PriRelationship)+"', "
-				+"'"+POut.PInt   (SecPlanNum)+"', "
-				+"'"+POut.PInt   ((int)SecRelationship)+"', "
 				+"'"+POut.PDouble(EstBalance)+"', "
 				+"'"+POut.PInt   (NextAptNum)+"', "
 				+"'"+POut.PInt   (PriProv)+"', "
 				+"'"+POut.PInt   (SecProv)+"', "
 				+"'"+POut.PInt   (FeeSched)+"', "
 				+"'"+POut.PInt   (BillingType)+"', "
-				//+"'"+POut.PInt   (RecallInterval)+"', "
-				//+"'"+POut.PInt   (RecallStatus)+"', "
 				+"'"+POut.PString(ImageFolder)+"', "
 				+"'"+POut.PString(AddrNote)+"', "
 				+"'"+POut.PString(FamFinUrgNote)+"', "
@@ -286,11 +255,8 @@ namespace OpenDental{
 				+"'"+POut.PInt   ((int)GradeLevel)+"', "
 				+"'"+POut.PInt   ((int)Urgency)+"', "
 				+"'"+POut.PDate  (DateFirstVisit)+"', "
-				+"'"+POut.PBool  (PriPending)+"', "
-				+"'"+POut.PBool  (SecPending)+"', "
 				+"'"+POut.PInt   (ClinicNum)+"', "
-				+"'"+POut.PString(PriPatID)+"', "
-				+"'"+POut.PString(SecPatID)+"')";
+				+"'"+POut.PString(HasIns)+"')";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
 			if(Prefs.RandomKeys){
@@ -410,26 +376,6 @@ namespace OpenDental{
 				c+="Salutation = '"     +POut.PString(Salutation)+"'";
 				comma=true;
 			}
-			if(PriPlanNum!=CurOld.PriPlanNum){
-				if(comma) c+=",";
-				c+="PriPlanNum = '"     +POut.PInt   (PriPlanNum)+"'";
-				comma=true;
-			}
-			if(PriRelationship!=CurOld.PriRelationship){
-				if(comma) c+=",";
-				c+="PriRelationship = '"+POut.PInt((int)PriRelationship)+"'";
-				comma=true;
-			}
-			if(SecPlanNum!=CurOld.SecPlanNum){
-				if(comma) c+=",";
-				c+="SecPlanNum = '"     +POut.PInt   (SecPlanNum)+"'";
-				comma=true;
-			}
-			if(SecRelationship!=CurOld.SecRelationship){
-				if(comma) c+=",";
-				c+="SecRelationship = '"+POut.PInt((int)SecRelationship)+"'";
-				comma=true;
-			}
 			if(EstBalance!=CurOld.EstBalance){
 				if(comma) c+=",";
 				c+="EstBalance = '"     +POut.PDouble(EstBalance)+"'";
@@ -460,16 +406,6 @@ namespace OpenDental{
 				c+="BillingType = '"    +POut.PInt   (BillingType)+"'";
 				comma=true;
 			}
-			/*if(RecallInterval!=CurOld.RecallInterval){
-				if(comma) c+=",";
-				c+="RecallInterval = '" +POut.PInt   (RecallInterval)+"'";
-				comma=true;
-			}
-			if(RecallStatus!=CurOld.RecallStatus){
-				if(comma) c+=",";
-				c+="RecallStatus = '"   +POut.PInt   (RecallStatus)+"'";
-				comma=true;
-			}*/
 			if(ImageFolder!=CurOld.ImageFolder){
 				if(comma) c+=",";
 				c+="ImageFolder = '"    +POut.PString(ImageFolder)+"'";
@@ -590,29 +526,14 @@ namespace OpenDental{
 				c+="DateFirstVisit = '" +POut.PDate  (DateFirstVisit)+"'";
 				comma=true;
 			}
-			if(PriPending!=CurOld.PriPending){
-				if(comma) c+=",";
-				c+="PriPending = '"     +POut.PBool  (PriPending)+"'";
-				comma=true;
-			}
-			if(SecPending!=CurOld.SecPending){
-				if(comma) c+=",";
-				c+="SecPending = '"     +POut.PBool  (SecPending)+"'";
-				comma=true;
-			}
 			if(ClinicNum!=CurOld.ClinicNum){
 				if(comma) c+=",";
 				c+="ClinicNum = '"     +POut.PInt   (ClinicNum)+"'";
 				comma=true;
 			}
-			if(PriPatID!=CurOld.PriPatID){
+			if(HasIns!=CurOld.HasIns){
 				if(comma) c+=",";
-				c+="PriPatID = '"     +POut.PString(PriPatID)+"'";
-				comma=true;
-			}
-			if(SecPatID!=CurOld.SecPatID){
-				if(comma) c+=",";
-				c+="SecPatID = '"     +POut.PString(SecPatID)+"'";
+				c+="HasIns = '"     +POut.PString (HasIns)+"'";
 				comma=true;
 			}
 			if(!comma)
@@ -653,9 +574,7 @@ namespace OpenDental{
 			if(CreditType=="")
 				retStr+=" ";
 			else retStr+=CreditType;
-			if(PriPlanNum==0)
-				retStr+=" ";
-			else retStr+="I";	
+			retStr+=HasIns;
 			return retStr;
 		}
 

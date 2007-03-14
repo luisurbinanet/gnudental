@@ -63,6 +63,12 @@ namespace OpenDental{
 		public DateTime DateEntryC;
 		///<summary>Foreign key to clinic.ClinicNum.  0 if no clinic.</summary>
 		public int ClinicNum;
+		///<summary>Optional. Foreign key to procedureCode.ADACode.</summary>
+		public string MedicalCode;
+		///<summary>Simple text for ICD-9 code. Gets sent with medical claims.</summary>
+		public string DiagnosticCode;
+		///<summary>Set true if this medical diagnostic code is the principal diagnosis for the visit.  If no principal diagnosis is marked for any procedures on a medical e-claim, then it won't be allowed to be sent.  If more than one is marked, then it will just use one at random.</summary>
+		public bool IsPrincDiag;
 
 
 		///<summary>Returns a copy of the procedure.</summary>
@@ -91,9 +97,13 @@ namespace OpenDental{
 			proc.DateLocked=DateLocked;
 			proc.DateEntryC=DateEntryC;
 			proc.ClinicNum=ClinicNum;
+			proc.MedicalCode=MedicalCode;
+			proc.DiagnosticCode=DiagnosticCode;
+			proc.IsPrincDiag=IsPrincDiag;
 			return proc;
 		}
 
+		/*
 		///<summary>If IsNew, just supply null for oldProc.</summary>
 		public void InsertOrUpdate(Procedure oldProc,bool IsNew){
 			//if(){
@@ -105,10 +115,10 @@ namespace OpenDental{
 			else{
 				Update(oldProc);
 			}
-		}
+		}*/
 
 		///<summary>Inserts to db, and also sets the ProcNum.</summary>
-		private void insert(){
+		public void Insert(){
 			if(Prefs.RandomKeys){
 				ProcNum=MiscData.GetKey("procedurelog","ProcNum");
 			}
@@ -122,7 +132,7 @@ namespace OpenDental{
 				+"ToothNum,ToothRange,Priority, "
 				+"ProcStatus, ProcNote, ProvNum,"
 				+"Dx,NextAptNum,PlaceService,HideGraphical,Prosthesis,DateOriginalProsth,ClaimNote,"
-				+"DateLocked,DateEntryC,ClinicNum) VALUES(";
+				+"DateLocked,DateEntryC,ClinicNum,MedicalCode,DiagnosticCode,IsPrincDiag) VALUES(";
 			if(Prefs.RandomKeys){
 				command+="'"+POut.PInt(ProcNum)+"', ";
 			}
@@ -153,7 +163,10 @@ namespace OpenDental{
 				+"'"+POut.PString(ClaimNote)+"', "
 				+"'"+POut.PDate  (DateLocked)+"', "
 				+"NOW(), "//DateEntryC
-				+"'"+POut.PInt   (ClinicNum)+"')";
+				+"'"+POut.PInt   (ClinicNum)+"', "
+				+"'"+POut.PString(MedicalCode)+"', "
+				+"'"+POut.PString(DiagnosticCode)+"', "
+				+"'"+POut.PBool  (IsPrincDiag)+"')";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
  			if(Prefs.RandomKeys){
@@ -166,7 +179,7 @@ namespace OpenDental{
 		}
 
 		///<summary>Updates only the changed columns and returns the number of rows affected.</summary>
-		private int Update(Procedure oldProc){
+		public int Update(Procedure oldProc){
 			bool comma=false;
 			string c = "UPDATE procedurelog SET ";
 			if(PatNum!=oldProc.PatNum){
@@ -278,6 +291,21 @@ namespace OpenDental{
 				c+="ClinicNum = '"+POut.PInt   (ClinicNum)+"'";
 				comma=true;
 			}
+			if(MedicalCode!=oldProc.MedicalCode){
+				if(comma) c+=",";
+				c+="MedicalCode = '"+POut.PString(MedicalCode)+"'";
+				comma=true;
+			}
+			if(DiagnosticCode!=oldProc.DiagnosticCode){
+				if(comma) c+=",";
+				c+="DiagnosticCode = '"+POut.PString(DiagnosticCode)+"'";
+				comma=true;
+			}
+			if(IsPrincDiag!=oldProc.IsPrincDiag){
+				if(comma) c+=",";
+				c+="IsPrincDiag = '"+POut.PBool(IsPrincDiag)+"'";
+				comma=true;
+			}
 			if(!comma)
 				return 0;//this means no change is actually required.
 			c+=" WHERE ProcNum = '"+POut.PInt(ProcNum)+"'";
@@ -300,7 +328,7 @@ namespace OpenDental{
 		}
 
 		///<summary>Base estimate or override is retrieved from supplied claimprocs. Does not take into consideration annual max or deductible, but it does limit total of pri+sec to not be more than total.  The claimProc array typically includes all claimProcs for the patient, but must at least include all claimprocs for this proc.</summary>
-		public double GetEst(ClaimProc[] claimProcs,PriSecTot pst,Patient pat){
+		public double GetEst(ClaimProc[] claimProcs,PriSecTot pst,PatPlan[] patPlans){
 			double priBaseEst=0;
 			double secBaseEst=0;
 			double priOverride=-1;
@@ -313,12 +341,12 @@ namespace OpenDental{
 					continue;
 				}
 				if(claimProcs[i].ProcNum==ProcNum){
-					if(pat.PriPlanNum==claimProcs[i].PlanNum){
+					if(PatPlans.GetPlanNum(patPlans,1)==claimProcs[i].PlanNum){
 						//if this is a Cap, then this will still work. Est comes out 0.
 						priBaseEst=claimProcs[i].BaseEst;
 						priOverride=claimProcs[i].OverrideInsEst;
 					}
-					else if(pat.SecPlanNum==claimProcs[i].PlanNum){
+					else if(PatPlans.GetPlanNum(patPlans,2)==claimProcs[i].PlanNum){
 						secBaseEst=claimProcs[i].BaseEst;
 						secOverride=claimProcs[i].OverrideInsEst;
 					}
@@ -383,20 +411,24 @@ namespace OpenDental{
 		}
 
 		///<summary>Used whenever a procedure changes or a plan changes.  All estimates for a given procedure must be updated. This frequently includes adding claimprocs, but can also just edit the appropriate existing claimprocs. Skips status=Adjustment,CapClaim,Preauth,Supplemental.  Also fixes date,status,and provnum if appropriate.  The claimProc array can be all claimProcs for the patient, but must at least include all claimprocs for this proc.  Only set IsInitialEntry true from Chart module; this is for cap procs.</summary>
-		public void ComputeEstimates(int patNum,int priPlanNum,int secPlanNum,ClaimProc[] claimProcs
-			,bool IsInitialEntry,Patient pat,InsPlan[] PlanList){
-			bool priExists=false;
-			bool secExists=false;
+		public void ComputeEstimates(int patNum,ClaimProc[] claimProcs
+			,bool IsInitialEntry,InsPlan[] PlanList,PatPlan[] patPlans){
+			//bool priExists=false;
+			//bool secExists=false;
 			bool doCreate=true;
 			if(ProcDate<DateTime.Today && ProcStatus==ProcStat.C){
 				//don't automatically create an estimate for completed procedures
 				//especially if they are older than today
+				//this may need to be relaxed a little for offices that enter treatment a few days after it's done.
 				doCreate=false;
 			}
-			//first test to see if pri and sec estimates are present
-			//and delete any other estimates
+			//first test to see if each estimate matches an existing patPlan (current coverage),
+			//delete any other estimates
 			for(int i=0;i<claimProcs.Length;i++){
 				if(claimProcs[i].ProcNum!=ProcNum){
+					continue;
+				}
+				if(claimProcs[i].PlanNum==0){
 					continue;
 				}
 				if(claimProcs[i].Status==ClaimProcStatus.CapClaim
@@ -407,43 +439,75 @@ namespace OpenDental{
 					//ignored: adjustment
 					//included: capComplete,CapEstimate,Estimate,NotReceived,Received
 				}
-				if(priPlanNum>0
-					&& priPlanNum==claimProcs[i].PlanNum){
-					priExists=true;
+				//if(priPlanNum>0 && priPlanNum==claimProcs[i].PlanNum){
+				//	priExists=true;
+				//}
+				//if(secPlanNum>0 && secPlanNum==claimProcs[i].PlanNum){
+				//	secExists=true;
+				//}
+				if(claimProcs[i].Status!=ClaimProcStatus.Estimate && claimProcs[i].Status!=ClaimProcStatus.CapEstimate){
+					continue;
 				}
-				if(secPlanNum>0
-					&& secPlanNum==claimProcs[i].PlanNum){
-					secExists=true;
-				}
-				//claimProc estimate is for a plan that is not pri or sec, so delete it
-				if(claimProcs[i].PlanNum!=0
-					&& claimProcs[i].PlanNum!=priPlanNum
-					&& claimProcs[i].PlanNum!=secPlanNum)
-				{
-					if(claimProcs[i].Status==ClaimProcStatus.Estimate
-						|| claimProcs[i].Status==ClaimProcStatus.CapEstimate)
-					{
-						claimProcs[i].Delete();
+				bool planIsCurrent=false;
+				for(int p=0;p<patPlans.Length;p++){
+					if(patPlans[p].PlanNum==claimProcs[i].PlanNum){
+						planIsCurrent=true;
+						break;
 					}
 				}
+				//If claimProc estimate is for a plan that is not current, delete it
+				if(!planIsCurrent){
+					claimProcs[i].Delete();
+				}
 			}
-			//add pri estimate if missing.
 			InsPlan PlanCur;
-			if(priPlanNum>0 && !priExists && doCreate){
+			bool estExists;
+			bool cpAdded=false;
+			//loop through all patPlans (current coverage), and add any missing estimates
+			for(int p=0;p<patPlans.Length;p++){//typically, loop will only have length of 1 or 2
+				if(!doCreate){
+					break;
+				}
+				//test to see if estimate exists
+				estExists=false;
+				for(int i=0;i<claimProcs.Length;i++){
+					if(claimProcs[i].ProcNum!=ProcNum){
+						continue;
+					}
+					if(claimProcs[i].PlanNum==0){
+						continue;
+					}
+					if(claimProcs[i].Status==ClaimProcStatus.CapClaim
+						|| claimProcs[i].Status==ClaimProcStatus.Preauth
+						|| claimProcs[i].Status==ClaimProcStatus.Supplemental) {
+						continue;
+						//ignored: adjustment
+						//included: capComplete,CapEstimate,Estimate,NotReceived,Received
+					}
+					if(patPlans[p].PlanNum!=claimProcs[i].PlanNum){
+						continue;
+					}
+					estExists=true;
+					break;
+				}
+				if(estExists){
+					continue;
+				}
+				//estimate is missing, so add it.
 				ClaimProc cp=new ClaimProc();
 				cp.ProcNum=ProcNum;
 				cp.PatNum=patNum;
 				cp.ProvNum=ProvNum;
-				PlanCur=InsPlans.GetPlan(priPlanNum,PlanList);
+				PlanCur=InsPlans.GetPlan(patPlans[p].PlanNum,PlanList);
 				if(PlanCur==null){
-					return;
+					continue;//??
 				}
 				if(PlanCur.PlanType=="c")
 					if(ProcStatus==ProcStat.C){
 						cp.Status=ClaimProcStatus.CapComplete;
 					}
 					else{
-						cp.Status=ClaimProcStatus.CapEstimate;
+						cp.Status=ClaimProcStatus.CapEstimate;//this may be changed below
 					}
 				else
 					cp.Status=ClaimProcStatus.Estimate;
@@ -459,38 +523,10 @@ namespace OpenDental{
 				cp.ProcDate=ProcDate;
 				//ComputeBaseEst will fill AllowedAmt,Percentage,CopayAmt,BaseEst
 				cp.Insert();
-			}
-			//add sec estimate if missing.
-			if(secPlanNum>0 && !secExists && doCreate){
-				ClaimProc cp=new ClaimProc();
-				cp.ProcNum=ProcNum;
-				cp.PatNum=patNum;
-				cp.ProvNum=ProvNum;
-				PlanCur=InsPlans.GetPlan(secPlanNum,PlanList);
-				if(PlanCur==null){
-					return;
-				}
-				if(PlanCur.PlanType=="c")
-					cp.Status=ClaimProcStatus.CapEstimate;//this may be changed below
-				else
-					cp.Status=ClaimProcStatus.Estimate;
-				cp.PlanNum=PlanCur.PlanNum;
-				cp.DateCP=ProcDate;
-				cp.AllowedAmt=-1;
-				cp.PercentOverride=-1;
-				cp.OverrideInsEst=-1;
-				cp.NoBillIns=ProcedureCodes.GetProcCode(ADACode).NoBillIns;
-				cp.OverAnnualMax=-1;
-				cp.PaidOtherIns=-1;
-				cp.CopayOverride=-1;
-				cp.ProcDate=ProcDate;
-				//ComputeBaseEst will fill AllowedAmt,Percentage,CopayAmt,BaseEst
-				cp.Insert();
+				cpAdded=true;
 			}
 			//if any were added, refresh the list
-			if((priPlanNum>0 && !priExists && doCreate)
-				|| (secPlanNum>0 && !secExists && doCreate))
-			{
+			if(cpAdded){
 				claimProcs=ClaimProcs.Refresh(patNum);
 			}
 			for(int i=0;i<claimProcs.Length;i++){
@@ -521,11 +557,11 @@ namespace OpenDental{
 				//ignored: adjustment
 				//ComputeBaseEst automatically skips: capComplete,Preauth,capClaim,Supplemental
 				//does recalc est on: CapEstimate,Estimate,NotReceived,Received
-				if(priPlanNum>0 && priPlanNum==claimProcs[i].PlanNum){
-					claimProcs[i].ComputeBaseEst(this,PriSecTot.Pri,pat,PlanList);
+				if(claimProcs[i].PlanNum>0 && PatPlans.GetPlanNum(patPlans,1)==claimProcs[i].PlanNum){
+					claimProcs[i].ComputeBaseEst(this,PriSecTot.Pri,PlanList,patPlans);
 				}
-				if(secPlanNum>0 && secPlanNum==claimProcs[i].PlanNum){
-					claimProcs[i].ComputeBaseEst(this,PriSecTot.Sec,pat,PlanList);
+				if(claimProcs[i].PlanNum>0 && PatPlans.GetPlanNum(patPlans,2)==claimProcs[i].PlanNum){
+					claimProcs[i].ComputeBaseEst(this,PriSecTot.Sec,PlanList,patPlans);
 				}
 				if(IsInitialEntry
 					&& claimProcs[i].Status==ClaimProcStatus.CapEstimate

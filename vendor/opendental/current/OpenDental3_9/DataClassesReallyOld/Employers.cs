@@ -187,6 +187,9 @@ namespace OpenDental{
 
 		///<summary>Gets an employerNum based on the supplied name.  If that empName does not exist, then a new employer is created.</summary>
 		public static int GetEmployerNum(string empName){
+			if(empName==""){
+				return 0;
+			}
 			cmd.CommandText="SELECT EmployerNum FROM employer" 
 				+" WHERE EmpName = '"+POut.PString(empName)+"'";
 			FillTable();

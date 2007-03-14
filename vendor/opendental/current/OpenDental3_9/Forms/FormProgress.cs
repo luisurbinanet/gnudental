@@ -16,21 +16,25 @@ namespace OpenDental{
 		private System.Windows.Forms.Timer timer1;
 		private System.ComponentModel.IContainer components;
 		///<summary></summary>
-		public string FileName;
-		///<summary>The total size of the file in KB to download.</summary>
-		public int MaxVal;
+		//public string FileName;
+		///<summary></summary>
+		public double MaxVal;
 		private System.Windows.Forms.Label labelProgress;
-		///<summary>KB downloaded so far.</summary>
-		public int CurrentVal;
+		///<summary></summary>
+		public double CurrentVal;
+		///<summary>eg: ?currentVal MB of ?maxVal MB copied.  The two parameters will be replaced by numbers using the format based on NumberFormat.  If there are no parameters, then it will just display the text as is.</summary>
+		public string DisplayText;
+		///<summary>F for fixed.2, N to include comma, etc.</summary>
+		public string NumberFormat;
+		///<summary>Since only int values are allowed for progress bar, this allows you to use a double for the current and max.  The true value of the progress bar will be obtained by multiplying the double by the number here.  For example, 100 if you want to show MB like this: 3.15 MB.  The current value might be 3.1496858596859609.  This will set the currentValue of the progress bar to 315.</summary>
+		public int NumberMultiplication;
 
-		///<summary>Supply the fileSize here so that the progress bar will display properly. Also supply the name of the file that is getting downloaded.  The progress bar will use the current size of the file.</summary>
+		///<summary></summary>
 		public FormProgress(){
 			//
 			// Required for Windows Form Designer support
 			//
-			//FileName=fileName;
 			InitializeComponent();
-			//progressBar1.Maximum=maxVal;
 			Lan.F(this);
 		}
 
@@ -88,7 +92,7 @@ namespace OpenDental{
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(70, 49);
+			this.label1.Location = new System.Drawing.Point(71, 49);
 			this.label1.Name = "label1";
 			this.label1.TabIndex = 3;
 			this.label1.Text = "Progress";
@@ -102,9 +106,9 @@ namespace OpenDental{
 			// 
 			// labelProgress
 			// 
-			this.labelProgress.Location = new System.Drawing.Point(72, 119);
+			this.labelProgress.Location = new System.Drawing.Point(71, 115);
 			this.labelProgress.Name = "labelProgress";
-			this.labelProgress.Size = new System.Drawing.Size(213, 23);
+			this.labelProgress.Size = new System.Drawing.Size(402, 55);
 			this.labelProgress.TabIndex = 4;
 			this.labelProgress.Text = "labelProgress";
 			// 
@@ -129,17 +133,20 @@ namespace OpenDental{
 		#endregion
 
 		private void FormProgress_Load(object sender, System.EventArgs e) {
-			progressBar1.Maximum=MaxVal;
+			progressBar1.Maximum=(int)(MaxVal*NumberMultiplication);
 		}
 		
 		///<summary>Happens every 200 ms</summary>
 		private void timer1_Tick(object sender, System.EventArgs e) {
-			//progress bar shows 0 through end file size
-			labelProgress.Text
-				=((double)CurrentVal/1024).ToString("F")+" MB of "
-				+((double)MaxVal/1024).ToString("F")+" MB copied"; 
-			if(CurrentVal<progressBar1.Maximum){
-				progressBar1.Value=CurrentVal;
+			//progress bar shows 0 maxVal size
+			progressBar1.Maximum=(int)(MaxVal*NumberMultiplication);
+			string progress=DisplayText.Replace("?currentVal",CurrentVal.ToString(NumberFormat));
+			progress=progress.Replace("?maxVal",MaxVal.ToString(NumberFormat));
+			labelProgress.Text=progress;
+				//=((double)CurrentVal/1024).ToString("F")+" MB of "
+				//+((double)MaxVal/1024).ToString("F")+" MB copied"; 
+			if(CurrentVal<MaxVal){
+				progressBar1.Value=(int)(CurrentVal*(double)NumberMultiplication);
 			}
 			else{
 				//must be done.
@@ -149,7 +156,6 @@ namespace OpenDental{
 		}
 
 		private void butCancel_Click(object sender, System.EventArgs e) {
-
 			DialogResult=DialogResult.Cancel;
 		}
 
@@ -159,6 +165,9 @@ namespace OpenDental{
 
 
 	}
+
+	///<summary></summary>
+	public delegate void PassProgressDelegate(double newCurVal,string newDisplayText,double newMaxVal);
 }
 
 

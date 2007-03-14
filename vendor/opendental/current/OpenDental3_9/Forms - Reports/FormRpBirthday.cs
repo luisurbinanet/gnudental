@@ -5,7 +5,7 @@ using System.Drawing;
 using System.Collections;
 using System.Globalization;
 using System.Windows.Forms;
-using OpenDental.Reporting;
+using OpenDental.ReportingOld2;
 
 namespace OpenDental
 {
@@ -325,7 +325,7 @@ namespace OpenDental
 				MessageBox.Show(Lan.g(this,"To date cannot be before From date."));
 				return;
 			}
-			Report report=new Report();
+			ReportOld2 report=new ReportOld2();
 			report.ReportName=Lan.g(this,"Birthdays");
 			report.AddTitle(Lan.g(this,"Birthdays"));
 			report.AddSubTitle(Prefs.GetString("PracticeTitle"));
@@ -349,7 +349,7 @@ namespace OpenDental
 			if(!report.SubmitQuery()){
 				return;
 			}
-			FormReport FormR=new FormReport(report);
+			FormReportOld2 FormR=new FormReportOld2(report);
 			FormR.ShowDialog();
 			DialogResult=DialogResult.OK;
 		}

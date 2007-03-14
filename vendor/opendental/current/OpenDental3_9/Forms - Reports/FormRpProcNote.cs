@@ -4,7 +4,7 @@ using System.Drawing.Printing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
-using OpenDental.Reporting;
+using OpenDental.ReportingOld2;
 
 //using System.IO;
 //using System.Text;
@@ -122,7 +122,7 @@ namespace OpenDental{
 		}
 
 		private void ExecuteReport(){
-			Report report=new Report();
+			ReportOld2 report=new ReportOld2();
 			report.AddTitle("INCOMPLETE PROCEDURE NOTES");
 			report.AddSubTitle(((Pref)Prefs.HList["PracticeTitle"]).ValueString);
 //incomplete: Need more flexible default values, eg based on current date instead of fixed date:
@@ -157,7 +157,7 @@ namespace OpenDental{
 			}
 //incomplete: Add functionality for using parameter values in textObjects, probably using inline XML:
 			report.AddSubTitle(((DateTime)report.ParameterFields["date1"].CurrentValues[0]).ToShortDateString()+" - "+((DateTime)report.ParameterFields["date2"].CurrentValues[0]).ToShortDateString());
-			FormReport FormR=new FormReport(report);
+			FormReportOld2 FormR=new FormReportOld2(report);
 			//FormR.MyReport=report;
 			FormR.ShowDialog();
 			DialogResult=DialogResult.OK;

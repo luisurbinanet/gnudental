@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
@@ -118,12 +119,15 @@ Order By patient.lname,patient.fname
 			Queries.CurReport.Query= "SELECT carrier.CarrierName"
 				+",CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI),carrier.Phone,"
 				+"insplan.Groupname "
-				+"FROM insplan,patient,carrier "
-				+"WHERE insplan.Subscriber=patient.Patnum "
-				+"AND insplan.PlanNum=patient.PriPlanNum "//Added by SPK 3/05
-				+"AND carrier.CarrierNum = insplan.CarrierNum "
+				+"FROM insplan,patient,carrier,patplan "
+				+"WHERE insplan.Subscriber=patient.PatNum "
+				+"AND insplan.PlanNum=patplan.PlanNum "
+				+"AND patplan.PatNum=patient.PatNum "
+				+"AND patplan.Ordinal=1 "
+				+"AND carrier.CarrierNum=insplan.CarrierNum "
 				+"AND carrier.CarrierName LIKE '"+carrier+"%' "
-				+"ORDER BY insplan.Carrier,patient.LName";
+				+"ORDER BY carrier.CarrierName,patient.LName";
+			//Debug.WriteLine(Queries.CurReport.Query);
 			FormQuery2=new FormQuery();
 			FormQuery2.IsReport=true;
 			FormQuery2.SubmitReportQuery();			

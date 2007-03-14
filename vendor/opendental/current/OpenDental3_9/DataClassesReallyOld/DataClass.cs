@@ -30,12 +30,7 @@ namespace OpenDental{
 		///<summary>Sets the connection values.</summary>
 		///<remarks>This is run whenever the connection values have changed by the user and a new connection needs to be established.  Usually only when starting the program.</remarks>
 		public static void SetConnection(){
-		  con= new MySqlConnection(
-				"Server="+FormChooseDatabase.ComputerName
-				+";Database="+FormChooseDatabase.Database
-				+";User ID="+FormChooseDatabase.DbUser
-				+";Password="+FormChooseDatabase.Password
-				+";CharSet=utf8");
+		  con= new MySqlConnection(FormChooseDatabase.GetConnectionString());
 			dr = null;
 			cmd = new MySqlCommand();
 			cmd.Connection = con;

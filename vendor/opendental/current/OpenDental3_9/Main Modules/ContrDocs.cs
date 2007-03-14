@@ -48,9 +48,8 @@ namespace OpenDental{
 		private System.Windows.Forms.MenuItem menuItem1;
 		private System.Windows.Forms.MenuItem menuExit;
 		private System.Windows.Forms.MenuItem menuPrefs;
-		private System.Windows.Forms.OpenFileDialog openFileDialog2;
     private Stream myStream;
-    private FormDocInfo formDocInfo2;
+    //private FormDocInfo formDocInfo2;
 		///<summary>The path to the patient folder, including the letter folder, and ending with \</summary>
 		private string patFolder;
 		private OpenDental.UI.ODToolBar ToolBarMain;
@@ -87,6 +86,8 @@ namespace OpenDental{
 		public static extern int TWAIN_EasyVersion();// spk 10/05/04
 		private Patient PatCur;
 		private Family FamCur;
+		private Document[] DocumentList;
+		private Document DocCur;
 
 		///<summary></summary>
 		public ContrDocs(){
@@ -122,7 +123,6 @@ namespace OpenDental{
 			this.menuItem1 = new System.Windows.Forms.MenuItem();
 			this.menuExit = new System.Windows.Forms.MenuItem();
 			this.menuPrefs = new System.Windows.Forms.MenuItem();
-			this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
 			this.ToolBarMain = new OpenDental.UI.ODToolBar();
 			this.menuPatient = new System.Windows.Forms.ContextMenu();
 			this.SuspendLayout();
@@ -149,9 +149,9 @@ namespace OpenDental{
 			// contextTree
 			// 
 			this.contextTree.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-																						this.menuItem2,
-																						this.menuItem3,
-																						this.menuItem4});
+																																								this.menuItem2,
+																																								this.menuItem3,
+																																								this.menuItem4});
 			// 
 			// menuItem2
 			// 
@@ -209,14 +209,14 @@ namespace OpenDental{
 			// mainMenu1
 			// 
 			this.mainMenu1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-																					  this.menuItem1,
-																					  this.menuPrefs});
+																																							this.menuItem1,
+																																							this.menuPrefs});
 			// 
 			// menuItem1
 			// 
 			this.menuItem1.Index = 0;
 			this.menuItem1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-																					  this.menuExit});
+																																							this.menuExit});
 			this.menuItem1.Text = "File";
 			// 
 			// menuExit
@@ -341,7 +341,7 @@ namespace OpenDental{
 			PatCur=null;
 			//from FillDocList:
 			DocAttaches.List=null;
-			Documents.List=null;
+			DocumentList=null;
 		}
 
   	private void RefreshModuleData(int patNum){
@@ -394,22 +394,22 @@ namespace OpenDental{
 			}
 			//now find all files in the patient folder that are not in the db and add them
 			DocAttaches.Refresh(PatCur.PatNum);
-			Documents.Refresh();
+			DocumentList=Documents.Refresh(DocAttaches.List);
 			DirectoryInfo di=new DirectoryInfo(patFolder);
 			FileInfo[] fiList=di.GetFiles();
 			int countAdded=0;
 			for(int i=0;i<fiList.Length;i++){
-				if(!Documents.IsFileNameInList(fiList[i].Name)
+				if(!Documents.IsFileNameInList(fiList[i].Name,DocumentList)
 					&& fiList[i].Name!="Thumbs.db")//Thumbs.db is a hidden Windows file unrelated to OD.
 				{
 					//MessageBox.Show(fiList[i].Name);
-					Documents.Cur=new Document();
-					Documents.Cur.DateCreated=DateTime.Today;
-					Documents.Cur.Description=fiList[i].Name;
-					Documents.Cur.DocCategory=Defs.Short[(int)DefCat.ImageCats][0].DefNum;
-					Documents.Cur.FileName=fiList[i].Name;
-					Documents.Cur.WithPat=PatCur.PatNum;
-					Documents.InsertCur(PatCur);
+					Document doc=new Document();
+					doc.DateCreated=DateTime.Today;
+					doc.Description=fiList[i].Name;
+					doc.DocCategory=Defs.Short[(int)DefCat.ImageCats][0].DefNum;
+					doc.FileName=fiList[i].Name;
+					doc.WithPat=PatCur.PatNum;
+					doc.Insert(PatCur);
 					countAdded++;
 				}
 			}
@@ -500,7 +500,7 @@ namespace OpenDental{
 				mygraphics.FillRectangle(Brushes.White,0,0,PictureBox1.ClientRectangle.Width,PictureBox1.ClientRectangle.Height);
 			}
 			DocAttaches.Refresh(PatCur.PatNum);
-			Documents.Refresh();
+			DocumentList=Documents.Refresh(DocAttaches.List);
 			for(int i=0;i<TreeDocuments.Nodes.Count;i++) 
 				TreeDocuments.Nodes[i].Nodes.Clear();
 			TreeDocuments.Nodes.Clear();
@@ -510,45 +510,45 @@ namespace OpenDental{
 				TreeDocuments.Nodes[i].SelectedImageIndex=1;  
 				TreeDocuments.Nodes[i].ImageIndex=1;          
 			}
-			for (int i=0;i<Documents.List.Length;i++){
-	  		sNewNode=Documents.List[i].DateCreated.ToString("d")+": "+Documents.List[i].Description;
-				if(Documents.List[i].ImgType==ImageType.File)
+			for(int i=0;i<DocumentList.Length;i++){
+	  		sNewNode=DocumentList[i].DateCreated.ToString("d")+": "+DocumentList[i].Description;
+				if(DocumentList[i].ImgType==ImageType.File)
 					indexImageList=5;
-				else if(Documents.List[i].ImgType==ImageType.Radiograph)
+				else if(DocumentList[i].ImgType==ImageType.Radiograph)
 					indexImageList=3;
-				else if(Documents.List[i].ImgType==ImageType.Photo)
+				else if(DocumentList[i].ImgType==ImageType.Photo)
 					indexImageList=4;
 				else//document
 					indexImageList=2;
-				if(Defs.GetOrder(DefCat.ImageCats,Documents.List[i].DocCategory)==-1){//if cat hidden
+				if(Defs.GetOrder(DefCat.ImageCats,DocumentList[i].DocCategory)==-1){//if cat hidden
 					MessageBox.Show(Lan.g(this,"There is a document in a hidden category: "
-						+Defs.GetName(DefCat.ImageCats,Documents.List[i].DocCategory)
+						+Defs.GetName(DefCat.ImageCats,DocumentList[i].DocCategory)
 						+". You can unhide this category in Definitions section."));
 				}
 				else{
-					TreeDocuments.Nodes[Defs.GetOrder(DefCat.ImageCats,Documents.List[i].DocCategory)]
+					TreeDocuments.Nodes[Defs.GetOrder(DefCat.ImageCats,DocumentList[i].DocCategory)]
 						.Nodes.Add(new TreeNode(sNewNode));
 					//store docnum in tag of node:
-					TreeDocuments.Nodes[Defs.GetOrder(DefCat.ImageCats,Documents.List[i].DocCategory)]
-						.LastNode.Tag=Documents.List[i].DocNum;
-					TreeDocuments.Nodes[Defs.GetOrder(DefCat.ImageCats,Documents.List[i].DocCategory)]
+					TreeDocuments.Nodes[Defs.GetOrder(DefCat.ImageCats,DocumentList[i].DocCategory)]
+						.LastNode.Tag=DocumentList[i].DocNum;
+					TreeDocuments.Nodes[Defs.GetOrder(DefCat.ImageCats,DocumentList[i].DocCategory)]
 						.LastNode.ImageIndex=indexImageList;
-					TreeDocuments.Nodes[Defs.GetOrder(DefCat.ImageCats,Documents.List[i].DocCategory)]
+					TreeDocuments.Nodes[Defs.GetOrder(DefCat.ImageCats,DocumentList[i].DocCategory)]
 						.LastNode.SelectedImageIndex=indexImageList;
 				}
 			}
 			TreeDocuments.ExpandAll();
 			string SrcFileName="";
 			if(keepDoc){
-				Documents.GetCurrent(Documents.Cur.DocNum.ToString());
+				DocCur=Documents.GetDocument(DocCur.DocNum.ToString(),DocumentList);
 				//MessageBox.Show(Docs.Cur.DocNum.ToString());
-				if(Defs.GetOrder(DefCat.ImageCats,Documents.Cur.DocCategory)!=-1){
-					foreach(TreeNode n in TreeDocuments.Nodes
-						[Defs.GetOrder(DefCat.ImageCats,Documents.Cur.DocCategory)].Nodes){	
-						if(n.Tag.ToString()==Documents.Cur.DocNum.ToString())
+				if(Defs.GetOrder(DefCat.ImageCats,DocCur.DocCategory)!=-1){
+					foreach(TreeNode n in TreeDocuments.Nodes[Defs.GetOrder(DefCat.ImageCats,DocCur.DocCategory)].Nodes){	
+						if(n.Tag.ToString()==DocCur.DocNum.ToString()){
 							TreeDocuments.SelectedNode=n;
-					}				}				SrcFileName=patFolder+Documents.Cur.FileName;
-				try{					WebRequest request=WebRequest.Create(SrcFileName); 					WebResponse response=request.GetResponse();					if(Path.GetExtension(Documents.Cur.FileName)==".jpg"){//can only display jpg for now						ImageCurrent=(Bitmap)System.Drawing.Bitmap.FromStream (response.GetResponseStream());					}					else{						ImageCurrent=null;//this may be unnecessary					}					response.Close();			  }			  catch(System.Exception exception){					MessageBox.Show(Lan.g(this,exception.Message)); 			  }
+						}
+					}				}				SrcFileName=patFolder+DocCur.FileName;
+				try{					WebRequest request=WebRequest.Create(SrcFileName); 					WebResponse response=request.GetResponse();					if(Path.GetExtension(DocCur.FileName)==".jpg"){//can only display jpg for now						ImageCurrent=(Bitmap)System.Drawing.Bitmap.FromStream (response.GetResponseStream());					}					else{						ImageCurrent=null;//this may be unnecessary					}					response.Close();			  }			  catch(System.Exception exception){					MessageBox.Show(Lan.g(this,exception.Message)); 			  }
 				RecZoom.Width=0;
 			}
 			else TreeDocuments.SelectedNode=TreeDocuments.Nodes[0];
@@ -647,14 +647,14 @@ namespace OpenDental{
 			if(MessageBox.Show(Lan.g(this,"Delete Document?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK)
 				return;
 			try{
-				File.Delete(patFolder+Documents.Cur.FileName);
+				File.Delete(patFolder+DocCur.FileName);
 			}
 			catch{
 				MessageBox.Show(Lan.g(this,"Could not delete file.  It may be in use elsewhere."));
 				return;
 			}
 			DeleteThumbnail();
-			Documents.DeleteCur();
+			DocCur.Delete();
 			FillDocList(false);
 		}
 
@@ -663,8 +663,7 @@ namespace OpenDental{
 				if(TreeDocuments.SelectedNode.Equals(TreeDocuments.Nodes[i]))
 					return;
       }
-			FormDocInfo formDocInfo2=new FormDocInfo(PatCur);
- 			formDocInfo2.IsNew=false;
+			FormDocInfo formDocInfo2=new FormDocInfo(PatCur,DocCur);
 			formDocInfo2.ShowDialog();
 			if(formDocInfo2.DialogResult!=DialogResult.OK){
 				return;
@@ -678,38 +677,37 @@ namespace OpenDental{
 		}
 
 		private void OnImport_Click() {
-			openFileDialog2=new OpenFileDialog();
+			OpenFileDialog openFileDialog=new OpenFileDialog();
   		//openFileDialog2.InitialDirectory=
       //openFileDialog2.Filter="jpg files(*.jpg)|*.jpg|gif files(*.gif)|*.gif|All files(*.*)|*.*";
       //openFileDialog2.FilterIndex=1;
-			if(openFileDialog2.ShowDialog()!=DialogResult.OK){
+			if(openFileDialog.ShowDialog()!=DialogResult.OK){
 				return;
 			}
-			if((myStream=openFileDialog2.OpenFile())==null){
+			if((myStream=openFileDialog.OpenFile())==null){
 				return;
 			}
 			//Documents.Cur.Description=Path.GetFileName(openFileDialog2.FileName);
-			try{				WebRequest request = WebRequest.Create(openFileDialog2.FileName); 				WebResponse response = request.GetResponse();				if(Path.GetExtension(openFileDialog2.FileName)==".jpg"					|| Path.GetExtension(openFileDialog2.FileName)==".gif"){					ImageCurrent = (Bitmap)System.Drawing.Bitmap.FromStream(response.GetResponseStream());				}				else{					ImageCurrent=null;//may not be necessary				}				response.Close();			}			catch(System.Exception exception){				MessageBox.Show(exception.Message);// + " Selected File Not Image."));				myStream.Close();				return;			}
+			try{				WebRequest request = WebRequest.Create(openFileDialog.FileName); 				WebResponse response = request.GetResponse();				if(Path.GetExtension(openFileDialog.FileName)==".jpg"					|| Path.GetExtension(openFileDialog.FileName)==".gif"){					ImageCurrent = (Bitmap)System.Drawing.Bitmap.FromStream(response.GetResponseStream());				}				else{					ImageCurrent=null;//may not be necessary				}				response.Close();			}			catch(System.Exception exception){				MessageBox.Show(exception.Message);// + " Selected File Not Image."));				myStream.Close();				return;			}
 			RecZoom.Width=0;
 			DisplayImage(true,false);
-			Documents.Cur=new Document();
-			//Documents.InsertCur will use this extension when naming:
-			Documents.Cur.FileName=Path.GetExtension(openFileDialog2.FileName);
-			formDocInfo2=new FormDocInfo(PatCur);
-			Documents.Cur.DateCreated=DateTime.Today;
-			Documents.Cur.WithPat=PatCur.PatNum;
-			formDocInfo2.IsNew=true;
-			//formDocInfo2.Extension=;
-			formDocInfo2.ShowDialog();//this saves data to db
-		  if(formDocInfo2.DialogResult==DialogResult.OK){
+			DocCur=new Document();
+			//Document.Insert will use this extension when naming:
+			DocCur.FileName=Path.GetExtension(openFileDialog.FileName);
+			DocCur.DateCreated=DateTime.Today;
+			DocCur.WithPat=PatCur.PatNum;
+			DocCur.Insert(PatCur);//this assigns a filename and saves to db
+			FormDocInfo FormD=new FormDocInfo(PatCur,DocCur);
+			FormD.ShowDialog();//some of the fields might get changed, but not the filename
+		  if(FormD.DialogResult==DialogResult.OK){
 				try{
 					//MessageBox.Show(Path.GetDirectoryName(openFileDialog2.FileName)+"\\"+","+patFolder);
 					//if(Path.GetDirectoryName(openFileDialog2.FileName)==patFolder
-					File.Copy(openFileDialog2.FileName,patFolder+Documents.Cur.FileName);
+					File.Copy(openFileDialog.FileName,patFolder+DocCur.FileName);
 				}
 				catch{
 					MessageBox.Show(Lan.g(this,"Unable to copy file.  May be in use."));
-					Documents.DeleteCur();
+					DocCur.Delete();
 					ImageCurrent=null;
 				}
 			}
@@ -736,24 +734,25 @@ namespace OpenDental{
 			ImageCurrent=(Bitmap)clipboard.GetData(DataFormats.Bitmap);
 			RecZoom.Width=0;
 			DisplayImage(true,false);
-			Documents.Cur=new Document();
-			Documents.Cur.FileName=".jpg";
-			formDocInfo2=new FormDocInfo(PatCur);
-			Documents.Cur.DateCreated=DateTime.Today;
-			Documents.Cur.WithPat=PatCur.PatNum;
-			formDocInfo2.IsNew=true;
-			formDocInfo2.ShowDialog();
-			if(formDocInfo2.DialogResult!=DialogResult.OK){
+			DocCur=new Document();
+			DocCur.FileName=".jpg";
+			DocCur.DateCreated=DateTime.Today;
+			DocCur.WithPat=PatCur.PatNum;
+			DocCur.Insert(PatCur);//this assigns a filename and saves to db
+			FormDocInfo formD=new FormDocInfo(PatCur,DocCur);
+			formD.ShowDialog();
+			if(formD.DialogResult!=DialogResult.OK){
+				DocCur.Delete();
 				return;
 			}
 			try{
-				ImageCurrent.Save(patFolder+Documents.Cur.FileName);
+				ImageCurrent.Save(patFolder+DocCur.FileName);
         //Documents.Cur.LastAltered=DateTime.Today; 
         //Documents.UpdateCur();
 			}
 			catch{
 				MessageBox.Show(Lan.g(this,"Error saving document."));
-				Documents.DeleteCur();
+				DocCur.Delete();
 			}
 			FillDocList(true);
 			DisplayImage(false,true);
@@ -814,12 +813,12 @@ namespace OpenDental{
 			Rectangle sourceRect=GetSourceRect();
 			RecZoom.Height=RecZoom.Height/2;
 			RecZoom.Width=RecZoom.Width/2;
-			if(Documents.Cur.DegreesRotated==90 || Documents.Cur.DegreesRotated==270){
+			if(DocCur.DegreesRotated==90 || DocCur.DegreesRotated==270){
 				//sideways
 				//maintain original x
-				if(Documents.Cur.DegreesRotated==270){
+				if(DocCur.DegreesRotated==270){
 					//maintain the lower edge instead.
-					if(Documents.Cur.IsFlipped){
+					if(DocCur.IsFlipped){
 						RecZoom.X=RecZoom.X+RecZoom.Width;
 					}
 					else{
@@ -843,7 +842,7 @@ namespace OpenDental{
 			}
 			else{//normal
 				//maintain original y
-				if(Documents.Cur.DegreesRotated==0){
+				if(DocCur.DegreesRotated==0){
 					//do nothing. Y is already correct.
 				}
 				else{//180
@@ -852,7 +851,7 @@ namespace OpenDental{
 				}
 				//maintain original x center.(RecZoom.x+width)
 				RecZoom.X=RecZoom.X+(RecZoom.Width/2);//works if flipped
-				if(Documents.Cur.IsFlipped){
+				if(DocCur.IsFlipped){
 					//if white space on right
 					if((RecZoom.X>ImageCurrent.Width)&&(RecZoom.X+RecZoom.Width>0)){
 						RecZoom.X=(ImageCurrent.Width/2)-(RecZoom.Width/2);
@@ -910,7 +909,7 @@ namespace OpenDental{
 				//R
 				if((i==4 && whiteSide=="L") || (i==0 && whiteSide!="L")){
 					//Debug.WriteLine("R");
-					if(Documents.Cur.IsFlipped){
+					if(DocCur.IsFlipped){
 						if(RecZoom.X>ImageCurrent.Width){
 							RecZoom.X=ImageCurrent.Width;
 						}
@@ -924,7 +923,7 @@ namespace OpenDental{
 				//L
 				if((i==4 && whiteSide=="R") || (i==1 && whiteSide!="R")){
 					//Debug.WriteLine("L");
-					if(Documents.Cur.IsFlipped){
+					if(DocCur.IsFlipped){
 						if(RecZoom.X+RecZoom.Width<0){
 							RecZoom.X=-RecZoom.Width;
 						}
@@ -965,15 +964,15 @@ namespace OpenDental{
 				return;
 			}
 			//MessageBox.Show("do flip action");
-			Documents.Cur.IsFlipped=!Documents.Cur.IsFlipped;
-			if(Documents.Cur.DegreesRotated==90 || Documents.Cur.DegreesRotated==270){
+			DocCur.IsFlipped=!DocCur.IsFlipped;
+			if(DocCur.DegreesRotated==90 || DocCur.DegreesRotated==270){
 				//then also rotate 180 to maintain illusion of horizontal flip.
-				Documents.Cur.DegreesRotated+=180;
-				if(Documents.Cur.DegreesRotated>=360){
-					Documents.Cur.DegreesRotated-=360;
+				DocCur.DegreesRotated+=180;
+				if(DocCur.DegreesRotated>=360){
+					DocCur.DegreesRotated-=360;
 				}
 			}		
-			Documents.UpdateCur();
+			DocCur.Update();
 			FillDocList(true);
 			DisplayImage(true,true);
 			DeleteThumbnail();
@@ -983,11 +982,11 @@ namespace OpenDental{
 			if(TreeDocuments.SelectedNode==null || TreeDocuments.SelectedNode.Parent==null){
 				return;
 			}
-			Documents.Cur.DegreesRotated-=90;
-			if(Documents.Cur.DegreesRotated<0){
-				Documents.Cur.DegreesRotated+=360;
+			DocCur.DegreesRotated-=90;
+			if(DocCur.DegreesRotated<0){
+				DocCur.DegreesRotated+=360;
 			}
-			Documents.UpdateCur();
+			DocCur.Update();
 			FillDocList(true);
 			DisplayImage(true,true);
 			DeleteThumbnail();
@@ -997,11 +996,11 @@ namespace OpenDental{
 			if(TreeDocuments.SelectedNode==null || TreeDocuments.SelectedNode.Parent==null){
 				return;
 			}
-			Documents.Cur.DegreesRotated+=90;
-			if(Documents.Cur.DegreesRotated>=360){
-				Documents.Cur.DegreesRotated-=360;
+			DocCur.DegreesRotated+=90;
+			if(DocCur.DegreesRotated>=360){
+				DocCur.DegreesRotated-=360;
 			}
-			Documents.UpdateCur();
+			DocCur.Update();
 			FillDocList(true);
 			DisplayImage(true,true);
 			DeleteThumbnail();
@@ -1009,7 +1008,7 @@ namespace OpenDental{
 
 		///<summary>This is done when deleting and after flipping or rotating.  The next time a thumbnail is needed, it will be created with the proper orientation.</summary>
 		private void DeleteThumbnail(){
-			string thumbFileName=patFolder+@"Thumbnails\"+Documents.Cur.FileName;
+			string thumbFileName=patFolder+@"Thumbnails\"+DocCur.FileName;
 			if(File.Exists(thumbFileName)){
 				try{
 					File.Delete(thumbFileName);
@@ -1143,7 +1142,7 @@ namespace OpenDental{
 			RecZoom.Width=0;//DisplayImage will then recreate RecZoom
 			DisplayImage(true,true);//any flip and rotate will stay in place.
 			//New saved image will be in whatever orientation the original was in, but just smaller.
-			ImageCurrent.Save(patFolder+Documents.Cur.FileName,ImageFormat.Jpeg);
+			ImageCurrent.Save(patFolder+DocCur.FileName,ImageFormat.Jpeg);
       //Documents.Cur.LastAltered=DateTime.Today;
       //Documents.UpdateCur();
 			FillDocList(true);
@@ -1182,23 +1181,24 @@ namespace OpenDental{
 			}
 			RecZoom.Width=0;
 			DisplayImage(true,false);
-			Documents.Cur=new Document();
+			DocCur=new Document();
 			if(scanType=="doc")
-					Documents.Cur.ImgType=ImageType.Document;
+					DocCur.ImgType=ImageType.Document;
 				else if(scanType=="xray")
-					Documents.Cur.ImgType=ImageType.Radiograph;
+					DocCur.ImgType=ImageType.Radiograph;
 				else if(scanType=="photo")
-					Documents.Cur.ImgType=ImageType.Photo;
-			Documents.Cur.FileName=".jpg";
-			formDocInfo2=new FormDocInfo(PatCur);
-			Documents.Cur.DateCreated=DateTime.Today;
-			Documents.Cur.WithPat=PatCur.PatNum;
-			formDocInfo2.IsNew=true;
-			formDocInfo2.ShowDialog();
-			if(formDocInfo2.DialogResult!=DialogResult.OK){
+					DocCur.ImgType=ImageType.Photo;
+			DocCur.FileName=".jpg";
+			DocCur.DateCreated=DateTime.Today;
+			DocCur.WithPat=PatCur.PatNum;
+			DocCur.Insert(PatCur);//creates filename and saves to db
+			FormDocInfo formDocInfo=new FormDocInfo(PatCur,DocCur);
+			formDocInfo.ShowDialog();
+			if(formDocInfo.DialogResult!=DialogResult.OK){
+				DocCur.Delete();
 				return;
 			}
-			//try{
+			try{
 				ImageCodecInfo myImageCodecInfo;
 				ImageCodecInfo[] encoders;
 				encoders = ImageCodecInfo.GetImageEncoders();
@@ -1222,14 +1222,14 @@ namespace OpenDental{
 				}
 				EncoderParameter myEncoderParameter=new EncoderParameter(myEncoder,qualityL);
 				myEncoderParameters.Param[0]=myEncoderParameter;
-				ImageCurrent.Save(patFolder+Documents.Cur.FileName,myImageCodecInfo,myEncoderParameters);
+				ImageCurrent.Save(patFolder+DocCur.FileName,myImageCodecInfo,myEncoderParameters);
 				FillDocList(true);//adds new doc to DocList and TreeDocument and saves path to image
 				DisplayImage(true,true);//sets current image of Docs.Cur image path and displays that image
-			//}
-			//catch{
-			//	MessageBox.Show(Lan.g(this,"Unable to save document."));
-			//	Documents.DeleteCur();
-			//}
+			}
+			catch{
+				MessageBox.Show(Lan.g(this,"Unable to save document."));
+				DocCur.Delete();
+			}
 			//}
 			//catch(Exception ex){
 			//	MessageBox.Show ("ERROR: " + ex.Message);
@@ -1265,7 +1265,7 @@ namespace OpenDental{
         }
 	    }
 			//tag holds the document number of the node
-		  //Documents.GetCurrent(TreeDocuments.SelectedNode.Tag.ToString());			SrcFileName = patFolder+Documents.Cur.FileName;
+		  //Documents.GetCurrent(TreeDocuments.SelectedNode.Tag.ToString());			SrcFileName = patFolder+DocCur.FileName;
 			if(Path.GetExtension(SrcFileName).ToLower()!=".jpg"
 				&& Path.GetExtension(SrcFileName).ToLower()!=".gif"
 				&& Path.GetExtension(SrcFileName).ToLower()!=".jpeg"){
@@ -1291,7 +1291,7 @@ namespace OpenDental{
 			}
 			Graphics g=e.Graphics;
 			if(Enhanced){
-				switch(Documents.Cur.DegreesRotated){
+				switch(DocCur.DegreesRotated){
 					case 0:
 						//
 						break;
@@ -1309,7 +1309,7 @@ namespace OpenDental{
 						g.RotateTransform(270);
 						break;
 				}			
-				if(Documents.Cur.DegreesRotated==0 || Documents.Cur.DegreesRotated==180){
+				if(DocCur.DegreesRotated==0 || DocCur.DegreesRotated==180){
 					g.DrawImage(ImageCurrent
 						,new Rectangle(0,0,PictureBox1.ClientRectangle.Width,PictureBox1.ClientRectangle.Height)
 						,RecZoom,GraphicsUnit.Pixel);
@@ -1342,12 +1342,15 @@ namespace OpenDental{
 				g.Dispose();
 				return;
 			}
+			if(DocCur==null){
+				DocCur=new Document();
+			}
 			if(RecZoom.Width==0){//need to create new RecZoom
 				RecZoom=GetSourceRect();
 			}
 			RecCrop=new Rectangle();//so it won't show anymore
 			if(enhanced){
-				switch(Documents.Cur.DegreesRotated){
+				switch(DocCur.DegreesRotated){
 					case 0:
 						//
 						break;
@@ -1366,7 +1369,7 @@ namespace OpenDental{
 						break;
 				}
 			}
-			if(Documents.Cur.DegreesRotated==0 || Documents.Cur.DegreesRotated==180){
+			if(DocCur.DegreesRotated==0 || DocCur.DegreesRotated==180){
 				g.DrawImage(ImageCurrent
 					,new Rectangle(0,0,PictureBox1.ClientRectangle.Width,PictureBox1.ClientRectangle.Height)
 					,RecZoom,GraphicsUnit.Pixel);
@@ -1383,6 +1386,9 @@ namespace OpenDental{
 		private Rectangle GetSourceRect(){
 			string whiteSide=GetWhiteSide();//L,R,T,or B
 			Rectangle retRect=new Rectangle(0,0,ImageCurrent.Width,ImageCurrent.Height);
+			//if(DocCur==null){
+			//	return retRect;
+			//}
 			float imageRatio=(float)ImageCurrent.Width/(float)ImageCurrent.Height;
 			float screenRatio
 				=(float)PictureBox1.ClientRectangle.Width/(float)PictureBox1.ClientRectangle.Height;
@@ -1394,19 +1400,19 @@ namespace OpenDental{
 					retRect.Height=(int)(retRect.Width/screenRatio);
 				}
 			}
-			else if(Documents.Cur.DegreesRotated==0 || Documents.Cur.DegreesRotated==180){
+			else if(DocCur.DegreesRotated==0 || DocCur.DegreesRotated==180){
 				if(whiteSide=="L" || whiteSide=="R"){
 					retRect.Width=(int)(retRect.Height*screenRatio);
 				}
 				else{
 					retRect.Height=(int)(retRect.Width/screenRatio);
 				}
-				if(Documents.Cur.DegreesRotated==0){
+				if(DocCur.DegreesRotated==0){
 					if(whiteSide=="L"){
 						retRect.X=ImageCurrent.Width-retRect.Width;//a negative value
 					}
 				}
-				if(Documents.Cur.DegreesRotated==180){
+				if(DocCur.DegreesRotated==180){
 					if(whiteSide=="T"){
 						retRect.Y=ImageCurrent.Height-retRect.Height;//a negative value
 					}
@@ -1415,14 +1421,14 @@ namespace OpenDental{
 					}
 				}
 			}
-			else if(Documents.Cur.DegreesRotated==90 || Documents.Cur.DegreesRotated==270){
+			else if(DocCur.DegreesRotated==90 || DocCur.DegreesRotated==270){
 				if(whiteSide=="L" || whiteSide=="R"){//image shorter than screen width
 					retRect.Height=(int)(retRect.Width*screenRatio);//make it taller
 				}
 				else{
 					retRect.Width=(int)(retRect.Height/screenRatio);
 				}
-				if(Documents.Cur.DegreesRotated==90){
+				if(DocCur.DegreesRotated==90){
 					if(whiteSide=="T"){
 						retRect.X=ImageCurrent.Width-retRect.Width;//a negative value
 					}
@@ -1430,13 +1436,13 @@ namespace OpenDental{
 						retRect.Y=ImageCurrent.Height-retRect.Height;//a negative value
 					}
 				}
-				if(Documents.Cur.DegreesRotated==270){
+				if(DocCur.DegreesRotated==270){
 					if(whiteSide=="T"){
 						retRect.X=ImageCurrent.Width-retRect.Width;//a negative value
 					}
 				}
 			}
-			if(Documents.Cur.IsFlipped){
+			if(DocCur.IsFlipped){
 				retRect.X=retRect.Right;
 				retRect.Width=-retRect.Width;
 			}
@@ -1457,9 +1463,9 @@ namespace OpenDental{
 					return "B";
 				}
 			}
-			if(Documents.Cur.DegreesRotated==0){
+			if(DocCur.DegreesRotated==0){
 				if(imageRatio<screenRatio){//if image narrower
-					if(Documents.Cur.IsFlipped)
+					if(DocCur.IsFlipped)
 						return "L";
 					else
 						return "R";
@@ -1468,21 +1474,21 @@ namespace OpenDental{
 					return "B";
 				}
 			}
-			if(Documents.Cur.DegreesRotated==90){//imagine image on side when doing calculations
+			if(DocCur.DegreesRotated==90){//imagine image on side when doing calculations
 				//if the image(laid sideways) is proprortionally narrower than the picturebox
   			if((1/imageRatio)<screenRatio){
 					return "L";
 				}
 				else{//if image is shorter
-					if(Documents.Cur.IsFlipped)
+					if(DocCur.IsFlipped)
 						return "T";
 					else
 						return "B";
 				}
 			}
-			else if(Documents.Cur.DegreesRotated==180){
+			else if(DocCur.DegreesRotated==180){
 				if(imageRatio<screenRatio){//if image narrower
-					if(Documents.Cur.IsFlipped)
+					if(DocCur.IsFlipped)
 						return "R";
 					else
 						return "L";
@@ -1497,7 +1503,7 @@ namespace OpenDental{
 					return "R";
 				}
 				else{//if image is shorter
-					if(Documents.Cur.IsFlipped)
+					if(DocCur.IsFlipped)
 						return "B";
 					else
 						return "T";
@@ -1550,7 +1556,7 @@ namespace OpenDental{
 			if(ImageCurrent==null)
 				return;
 			Graphics g=PictureBox1.CreateGraphics();
-			switch(Documents.Cur.DegreesRotated){
+			switch(DocCur.DegreesRotated){
 				case 0:
 					//
 					break;
@@ -1579,36 +1585,36 @@ namespace OpenDental{
 					Math.Abs((decimal)RecZoom.Width)/(decimal)PictureBox1.ClientRectangle.Width);
 				//Debug.WriteLine(moveX);
 				int moveY=-(e.Y-MouseDownOrigin.Y)*2* RecZoom.Height/PictureBox1.ClientRectangle.Height;
-				if(Documents.Cur.DegreesRotated==0){
+				if(DocCur.DegreesRotated==0){
 					RecTempZoom.Y=RecZoom.Y+moveY;
-					if(Documents.Cur.IsFlipped){
+					if(DocCur.IsFlipped){
 						RecTempZoom.X=RecZoom.X-moveX;
 					}
 					else{//normal
 						RecTempZoom.X=RecZoom.X+moveX;
 					}
 				}
-				else if(Documents.Cur.DegreesRotated==90){
+				else if(DocCur.DegreesRotated==90){
 					RecTempZoom.Y=RecZoom.Y-moveX;
-					if(Documents.Cur.IsFlipped){
+					if(DocCur.IsFlipped){
 						RecTempZoom.X=RecZoom.X-moveY;
 					}
 					else{
 						RecTempZoom.X=RecZoom.X+moveY;
 					}
 				}
-				else if(Documents.Cur.DegreesRotated==180){
+				else if(DocCur.DegreesRotated==180){
 					RecTempZoom.Y=RecZoom.Y-moveY;
-					if(Documents.Cur.IsFlipped){
+					if(DocCur.IsFlipped){
 						RecTempZoom.X=RecZoom.X+moveX;
 					}
 					else{
 						RecTempZoom.X=RecZoom.X-moveX;
 					}
 				}
-				else if(Documents.Cur.DegreesRotated==270){
+				else if(DocCur.DegreesRotated==270){
 					RecTempZoom.Y=RecZoom.Y+moveX;
-					if(Documents.Cur.IsFlipped){
+					if(DocCur.IsFlipped){
 						RecTempZoom.X=RecZoom.X+moveY;
 					}
 					else{
@@ -1624,33 +1630,33 @@ namespace OpenDental{
 				bool startedWhiteL=false;
 				bool startedWhiteB=false;
 				if(RecZoom.Y+RecZoom.Height>ImageCurrent.Height){
-					if(Documents.Cur.DegreesRotated==0 && whiteSide=="B")
+					if(DocCur.DegreesRotated==0 && whiteSide=="B")
 						startedWhiteB=true;
-					else if(Documents.Cur.DegreesRotated==90 && whiteSide=="L")
+					else if(DocCur.DegreesRotated==90 && whiteSide=="L")
 						startedWhiteB=true;
-					else if(Documents.Cur.DegreesRotated==180 && whiteSide=="T")
+					else if(DocCur.DegreesRotated==180 && whiteSide=="T")
 						startedWhiteB=true;
-					else if(Documents.Cur.DegreesRotated==270 && whiteSide=="R")
+					else if(DocCur.DegreesRotated==270 && whiteSide=="R")
 						startedWhiteB=true;
 				}
 				if(RecZoom.X+RecZoom.Width>ImageCurrent.Width){
-					if(Documents.Cur.DegreesRotated==0 && whiteSide=="R")
+					if(DocCur.DegreesRotated==0 && whiteSide=="R")
 						startedWhiteR=true;
-					else if(Documents.Cur.DegreesRotated==90 && whiteSide=="B")
+					else if(DocCur.DegreesRotated==90 && whiteSide=="B")
 						startedWhiteR=true;
-					else if(Documents.Cur.DegreesRotated==180 && whiteSide=="L")
+					else if(DocCur.DegreesRotated==180 && whiteSide=="L")
 						startedWhiteR=true;
-					else if(Documents.Cur.DegreesRotated==270 && whiteSide=="T")
+					else if(DocCur.DegreesRotated==270 && whiteSide=="T")
 						startedWhiteR=true;
 				}
 				if(RecZoom.X+RecZoom.Width<0){//width is neg because only for flipped
-					if(Documents.Cur.DegreesRotated==0 && whiteSide=="L")
+					if(DocCur.DegreesRotated==0 && whiteSide=="L")
 						startedWhiteL=true;
-					else if(Documents.Cur.DegreesRotated==90 && whiteSide=="T")
+					else if(DocCur.DegreesRotated==90 && whiteSide=="T")
 						startedWhiteL=true;
-					else if(Documents.Cur.DegreesRotated==180 && whiteSide=="R")
+					else if(DocCur.DegreesRotated==180 && whiteSide=="R")
 						startedWhiteL=true;
-					else if(Documents.Cur.DegreesRotated==270 && whiteSide=="B")
+					else if(DocCur.DegreesRotated==270 && whiteSide=="B")
 						startedWhiteL=true;
 				}
 				//limit movement to right
@@ -1660,7 +1666,7 @@ namespace OpenDental{
 						RecTempZoom.X=RecZoom.X;
 				}
 				else{
-					if(Documents.Cur.IsFlipped){
+					if(DocCur.IsFlipped){
 						if(RecTempZoom.X>ImageCurrent.Width)
 							RecTempZoom.X=ImageCurrent.Width;
 					}
@@ -1676,7 +1682,7 @@ namespace OpenDental{
 						RecTempZoom.X=RecZoom.X;
 				}
 				else{
-					if(Documents.Cur.IsFlipped){
+					if(DocCur.IsFlipped){
 						if(RecTempZoom.X+RecTempZoom.Width<0)
 							RecTempZoom.X=-RecTempZoom.Width;
 					}
@@ -1698,7 +1704,7 @@ namespace OpenDental{
 				if(RecTempZoom.Y<0)
 					RecTempZoom.Y=0;
 				//draw
-				if(Documents.Cur.DegreesRotated==0 || Documents.Cur.DegreesRotated==180){
+				if(DocCur.DegreesRotated==0 || DocCur.DegreesRotated==180){
 					g.DrawImage(ImageCurrent
 						,new Rectangle(0,0,PictureBox1.ClientRectangle.Width,PictureBox1.ClientRectangle.Height)
 						,RecTempZoom,GraphicsUnit.Pixel);
@@ -1709,7 +1715,7 @@ namespace OpenDental{
 						,RecTempZoom,GraphicsUnit.Pixel);
 				}
 			}
-			else{//Crop Mode				float ratio=1;				if(Documents.Cur.DegreesRotated==0 || Documents.Cur.DegreesRotated==180){					ratio=(float)PictureBox1.ClientRectangle.Width/Math.Abs(RecZoom.Width);				}				else{					ratio=(float)PictureBox1.ClientRectangle.Width/Math.Abs(RecZoom.Height);				}				int rBound=0;//in picturebox coordinates				int bBound=0;				if(Documents.Cur.DegreesRotated==0 || Documents.Cur.DegreesRotated==180){					rBound=(int)(ImageCurrent.Width*ratio);					bBound=(int)(ImageCurrent.Height*ratio);				}				else{					rBound=(int)(ImageCurrent.Height*ratio);					bBound=(int)(ImageCurrent.Width*ratio);				}				if(Documents.Cur.DegreesRotated==0 || Documents.Cur.DegreesRotated==180){
+			else{//Crop Mode				float ratio=1;				if(DocCur.DegreesRotated==0 || DocCur.DegreesRotated==180){					ratio=(float)PictureBox1.ClientRectangle.Width/Math.Abs(RecZoom.Width);				}				else{					ratio=(float)PictureBox1.ClientRectangle.Width/Math.Abs(RecZoom.Height);				}				int rBound=0;//in picturebox coordinates				int bBound=0;				if(DocCur.DegreesRotated==0 || DocCur.DegreesRotated==180){					rBound=(int)(ImageCurrent.Width*ratio);					bBound=(int)(ImageCurrent.Height*ratio);				}				else{					rBound=(int)(ImageCurrent.Height*ratio);					bBound=(int)(ImageCurrent.Width*ratio);				}				if(DocCur.DegreesRotated==0 || DocCur.DegreesRotated==180){
 					g.DrawImage(ImageCurrent
 						,new Rectangle(0,0,PictureBox1.ClientRectangle.Width,PictureBox1.ClientRectangle.Height)
 						,RecZoom,GraphicsUnit.Pixel);
@@ -1738,10 +1744,10 @@ namespace OpenDental{
 				RectangleF sourceRect=new RectangleF();//in image coordinates.
 				//sourceRect has positive width
 				float ratio=1;
-				if(Documents.Cur.DegreesRotated==0 || Documents.Cur.DegreesRotated==180){					ratio=Math.Abs(RecZoom.Width)/(float)PictureBox1.ClientRectangle.Width;				}				else{					ratio=RecZoom.Height/(float)PictureBox1.ClientRectangle.Width;				}
+				if(DocCur.DegreesRotated==0 || DocCur.DegreesRotated==180){					ratio=Math.Abs(RecZoom.Width)/(float)PictureBox1.ClientRectangle.Width;				}				else{					ratio=RecZoom.Height/(float)PictureBox1.ClientRectangle.Width;				}
 				
-				if(Documents.Cur.DegreesRotated==0){
-					if(Documents.Cur.IsFlipped){
+				if(DocCur.DegreesRotated==0){
+					if(DocCur.IsFlipped){
 						sourceRect.X     = RecZoom.Left  -(ratio*RecCrop.Right);
 						sourceRect.Y     = RecZoom.Top   +(ratio*RecCrop.Top);
 						sourceRect.Width = RecCrop.Width *ratio;
@@ -1754,8 +1760,8 @@ namespace OpenDental{
 						sourceRect.Height= RecCrop.Height*ratio;
 					}
 				}
-				else if(Documents.Cur.DegreesRotated==90){
-					if(Documents.Cur.IsFlipped){
+				else if(DocCur.DegreesRotated==90){
+					if(DocCur.IsFlipped){
 						sourceRect.X     = RecZoom.Left -(ratio*RecCrop.Bottom);
 						sourceRect.Y     = RecZoom.Bottom-(ratio*RecCrop.Right);
 						sourceRect.Width = RecCrop.Height*ratio;
@@ -1768,8 +1774,8 @@ namespace OpenDental{
 						sourceRect.Height= RecCrop.Width*ratio;
 					}
 				}
-				else if(Documents.Cur.DegreesRotated==180){
-					if(Documents.Cur.IsFlipped){
+				else if(DocCur.DegreesRotated==180){
+					if(DocCur.IsFlipped){
 						sourceRect.X     = RecZoom.Right  +(ratio*RecCrop.Left);
 						sourceRect.Y     = RecZoom.Bottom-(ratio*RecCrop.Bottom);
 						sourceRect.Width = RecCrop.Width*ratio;
@@ -1782,8 +1788,8 @@ namespace OpenDental{
 						sourceRect.Height= RecCrop.Height*ratio;
 					}
 				}
-				else if(Documents.Cur.DegreesRotated==270){
-					if(Documents.Cur.IsFlipped){
+				else if(DocCur.DegreesRotated==270){
+					if(DocCur.IsFlipped){
 						sourceRect.X     = RecZoom.Right  +(ratio*RecCrop.Top);
 						sourceRect.Y     = RecZoom.Top   +(ratio*RecCrop.Left);
 						sourceRect.Width = RecCrop.Height*ratio;
@@ -1807,7 +1813,7 @@ namespace OpenDental{
 				RecZoom.Width=0;//DisplayImage will then recreate RecZoom
 				DisplayImage(true,true);
 				//the cropped image will stay in the same orientation as the original
-				ImageCurrent.Save(patFolder+Documents.Cur.FileName,ImageFormat.Jpeg);
+				ImageCurrent.Save(patFolder+DocCur.FileName,ImageFormat.Jpeg);
         //Documents.Cur.LastAltered=DateTime.Today;
         //Documents.UpdateCur();
 				FillDocList(true);
@@ -1844,7 +1850,7 @@ namespace OpenDental{
 			//then, display image:
 			string SrcFileName="";
 			//tag holds the document number of the node
-		  Documents.GetCurrent(TreeDocuments.SelectedNode.Tag.ToString());			SrcFileName=patFolder+Documents.Cur.FileName;			try{				//I just used webrequest for kicks. It is faster to use Image.FromFile().		    WebRequest request=WebRequest.Create(SrcFileName); 			  WebResponse response=request.GetResponse();				//MessageBox.Show(Path.GetExtension(SrcFileName));				if(Path.GetExtension(SrcFileName).ToLower()==".jpg"					|| Path.GetExtension(SrcFileName).ToLower()==".gif"					|| Path.GetExtension(SrcFileName).ToLower()==".jpeg")				{					ImageCurrent=(Bitmap)System.Drawing.Bitmap.FromStream(response.GetResponseStream());				}				else{					ImageCurrent=null;//may not be necessary				}			  response.Close();	    }		  catch(System.Exception exception){		    MessageBox.Show(Lan.g(this,exception.Message)); 				ImageCurrent=null;	    }
+		  DocCur=Documents.GetDocument(TreeDocuments.SelectedNode.Tag.ToString(),DocumentList);			SrcFileName=patFolder+DocCur.FileName;			try{				//I just used webrequest for kicks. It is faster to use Image.FromFile().		    WebRequest request=WebRequest.Create(SrcFileName); 			  WebResponse response=request.GetResponse();				//MessageBox.Show(Path.GetExtension(SrcFileName));				if(Path.GetExtension(SrcFileName).ToLower()==".jpg"					|| Path.GetExtension(SrcFileName).ToLower()==".gif"					|| Path.GetExtension(SrcFileName).ToLower()==".jpeg")				{					ImageCurrent=(Bitmap)System.Drawing.Bitmap.FromStream(response.GetResponseStream());				}				else{					ImageCurrent=null;//may not be necessary				}			  response.Close();	    }		  catch(System.Exception exception){		    MessageBox.Show(Lan.g(this,exception.Message)); 				ImageCurrent=null;	    }
 		  RecZoom.Width=0;
 		  DisplayImage(true,true);//clears image, then displays current
 		}
@@ -1882,22 +1888,22 @@ namespace OpenDental{
 			}
 			else{
 				//might have moved to new category, so test for that
-				int oldCategory=Documents.Cur.DocCategory;
+				int oldCategory=DocCur.DocCategory;
 				int newCategory=0;
 				if(upNode.Parent==null){//category node
 					newCategory=Defs.Short[(int)DefCat.ImageCats][upNode.Index].DefNum;
 				}
 				else{
-					newCategory=Documents.GetCategory(upNode.Tag.ToString());
+					newCategory=Documents.GetCategory(upNode.Tag.ToString(),DocumentList);
 				}
 				if(oldCategory!=newCategory){
 					if(upNode.Parent==null){//category node
-						Documents.Cur.DocCategory=Defs.Short[(int)DefCat.ImageCats][upNode.Index].DefNum;
+						DocCur.DocCategory=Defs.Short[(int)DefCat.ImageCats][upNode.Index].DefNum;
 					}
 					else{
-						Documents.Cur.DocCategory=Documents.GetCategory(upNode.Tag.ToString());
+						DocCur.DocCategory=Documents.GetCategory(upNode.Tag.ToString(),DocumentList);
 					}
-					Documents.UpdateCur();
+					DocCur.Update();
 					FillDocList(true);
 				}
 			}

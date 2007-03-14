@@ -8,13 +8,13 @@ namespace OpenDental{
 	///<summary>Corresponds to the language table in the database.</summary>
 	///<remarks>The primary key is a combination of the ClassType and the English phrase.  This table is currently filled dynmically at run time, but the plan is to fill it using a tool that parses the code.</remarks>
 	public struct Language{
-		///<summary>Comments by us regarding usage.</summary>
-		public string EnglishComments;
+		///<summary>Deprecated</summary>
+		public string EnglishCommentsOld;
 		///<summary>A string representing the class where the translation is used. Maximum length is 25 characters.</summary>
 		public string ClassType;
 		///<summary>The English version of the phrase, case sensitive.</summary>
 		public string English;
-		///<summary>As this gets more sophisticated, we will use this field to mark some phrases obsolete instead of just deleting them outright.  That way, translators will still have access to them.</summary>
+		///<summary>As this gets more sophisticated, we will use this field to mark some phrases obsolete instead of just deleting them outright.  That way, translators will still have access to them.  For now, this is not used at all.</summary>
 		public bool IsObsolete;
 	}
 
@@ -27,28 +27,21 @@ namespace OpenDental{
 		///<summary></summary>
 		public static Language Cur;
 		///<summary></summary>
-		public static string[] ListCat;//list of categories
-		///<summary></summary>
 		private static Language[] List;
-		///<summary></summary>
-		public static string CurCat;
-		///<summary></summary>
-		public static Language[] ListForCat;
 		///<summary>Used by g to keep track of whether any language items were inserted into db. If so a refresh gets done.</summary>
 		private static bool itemInserted;
 
 		///<summary>Refreshed automatically to always be kept current with all phrases, regardless of whether there are any entries in LanguageForeign table.</summary>
 		public static void Refresh(){
 			HList=new Hashtable();
-			if(CultureInfo.CurrentCulture.TwoLetterISOLanguageName=="en"){
+			if(CultureInfo.CurrentCulture.Name=="en-US"){
 				return;
 			}
-			cmd.CommandText =
-				"SELECT * from language";
+			cmd.CommandText="SELECT * from language";
 			FillTable();
 			List=new Language[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
-				List[i].EnglishComments= PIn.PString(table.Rows[i][0].ToString());
+				//List[i].EnglishCommentsOld= PIn.PString(table.Rows[i][0].ToString());
 				List[i].ClassType      = PIn.PString(table.Rows[i][1].ToString());
 				List[i].English        = PIn.PString(table.Rows[i][2].ToString());
 				List[i].IsObsolete     = PIn.PBool  (table.Rows[i][3].ToString());
@@ -69,6 +62,7 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
+		/*
 		///<summary>not used to update the english version of text.  Create new instead.</summary>
 		public static void UpdateCur(){
 			cmd.CommandText="UPDATE language SET "
@@ -77,50 +71,37 @@ namespace OpenDental{
 				+" WHERE ClassType = BINARY '"+POut.PString(Cur.ClassType)+"'"
 				+" AND English = BINARY '"     +POut.PString(Cur.English)+"'";
 			NonQ(false);
-			
-		}
+		}*/
 
 		///<summary></summary>
-		public static void GetListCat(){
-			cmd.CommandText =
-				"SELECT Distinct ClassType FROM language ORDER BY ClassType ";
+		public static string[] GetListCat(){
+			cmd.CommandText="SELECT Distinct ClassType FROM language ORDER BY ClassType ";
 			FillTable();
-			ListCat=new string[table.Rows.Count];
+			string[] ListCat=new string[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
 				ListCat[i]=PIn.PString(table.Rows[i][0].ToString());
 			}
+			return ListCat;
 		}
 
-		///<summary></summary>
-		public static void SetObsolete(Language[] lanList,bool isObsolete){
-			for(int i=0;i<lanList.Length;i++){
-				Cur=lanList[i];
-				Cur.IsObsolete=isObsolete;
-				UpdateCur();
-			}
-		}
-
-		///<summary></summary>
-		public static void GetListForCat(string classType){
-			//only used in translation tool
-			if(CultureInfo.CurrentCulture.TwoLetterISOLanguageName=="en"){
-				return;
-			}
-			cmd.CommandText =
-				"SELECT * from language "
+		///<summary>Only used in translation tool to get list for one category</summary>
+		public static Language[] GetListForCat(string classType){
+			cmd.CommandText="SELECT * from language "
 				+"WHERE ClassType = BINARY '"+POut.PString(classType)+"'";
 			FillTable();
-			ListForCat=new Language[table.Rows.Count];
-			for (int i=0;i<table.Rows.Count;i++){
-				ListForCat[i].EnglishComments= PIn.PString(table.Rows[i][0].ToString());
+			Language[] ListForCat=new Language[table.Rows.Count];
+			for(int i=0;i<table.Rows.Count;i++){
+				ListForCat[i]=new Language();
+				//ListForCat[i].EnglishComments= PIn.PString(table.Rows[i][0].ToString());
 				ListForCat[i].ClassType      = PIn.PString(table.Rows[i][1].ToString());
 				ListForCat[i].English        = PIn.PString(table.Rows[i][2].ToString());
 				ListForCat[i].IsObsolete     = PIn.PBool  (table.Rows[i][3].ToString());
 			}
+			return ListForCat;
 		}
 
 		private static string ConvertString(string classType,string text){
-			if(CultureInfo.CurrentCulture.TwoLetterISOLanguageName=="en"){
+			if(CultureInfo.CurrentCulture.Name=="en-US"){
 				return text;
 			}
 			if(text==""){
@@ -221,7 +202,7 @@ namespace OpenDental{
 
 		///<summary>F is for Form. Translates the following controls on the entire form: title Text, labels, buttons, groupboxes, checkboxes, radiobuttons.  Can include a list of controls to exclude. Also puts all the correct controls into the All category (OK,Cancel,Close,Delete,etc).</summary>
 		public static void F(Form sender,Control[] exclusions){
-			if(CultureInfo.CurrentCulture.TwoLetterISOLanguageName=="en"){
+			if(CultureInfo.CurrentCulture.Name=="en-US"){
 				return;
 			}
 			//first translate the main title Text on the form:

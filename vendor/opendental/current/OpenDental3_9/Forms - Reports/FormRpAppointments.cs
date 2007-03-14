@@ -4,7 +4,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
-using OpenDental.Reporting;
+using OpenDental.ReportingOld2;
 
 namespace OpenDental
 {
@@ -296,7 +296,7 @@ namespace OpenDental
 			}
 			whereProv += ") ";
 			//create the report
-			Report report=new Report();
+			ReportOld2 report=new ReportOld2();
 			report.IsLandscape=true;
 			report.ReportName="Appointments";
 			report.AddTitle("Appointments");
@@ -352,7 +352,7 @@ namespace OpenDental
 				return;
 			}
 			// display report
-			FormReport FormR=new FormReport(report);
+			FormReportOld2 FormR=new FormReportOld2(report);
 			//FormR.MyReport=report;
 			FormR.ShowDialog();
 			DialogResult=DialogResult.OK;

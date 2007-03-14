@@ -11,24 +11,26 @@ namespace OpenDental{
 ///<summary></summary>
 	public class FormTranslation : System.Windows.Forms.Form{
 		private OpenDental.UI.Button butClose;
-		private OpenDental.TableLan tbLan;
-		private System.Windows.Forms.Label label1;
-		private OpenDental.UI.Button butObsolete;
-		private OpenDental.UI.Button butNot;
 		private System.ComponentModel.Container components = null;
+		private Language[] LanList;
+		private string ClassType;
+		private OpenDental.UI.ODGrid gridLan;
+		private LanguageForeign[] ListForType;
 
 		///<summary></summary>
-		public FormTranslation(){
+		public FormTranslation(string classType){
 			InitializeComponent();
-      tbLan.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbLan_CellDoubleClicked);
-			tbLan.Heading=Lan.CurCat+" Words";
-			tbLan.Fields[2]=CultureInfo.CurrentCulture.Parent.DisplayName;
-			tbLan.Fields[3]=CultureInfo.CurrentCulture.Parent.DisplayName + " Comments";
+			gridLan.Title=classType+" Words";
+			gridLan.Columns[1].Heading=CultureInfo.CurrentCulture.DisplayName;
+			gridLan.Columns[2].Heading="Other "+CultureInfo.CurrentCulture.Parent.DisplayName+" Translation";
+			gridLan.Columns[3].Heading=CultureInfo.CurrentCulture.DisplayName+" Comments";
+			//tbLan.Fields[2]=CultureInfo.CurrentCulture.Parent.DisplayName;
+			//tbLan.Fields[3]=CultureInfo.CurrentCulture.Parent.DisplayName + " Comments";
 			//no need to translate much here
 			Lan.C("All", new System.Windows.Forms.Control[] {
 				butClose,																											
 			});
-
+			ClassType=classType;
 		}
 
 		///<summary></summary>
@@ -44,23 +46,9 @@ namespace OpenDental{
 		#region Windows Form Designer generated code
 
 		private void InitializeComponent(){
-			this.tbLan = new OpenDental.TableLan();
 			this.butClose = new OpenDental.UI.Button();
-			this.label1 = new System.Windows.Forms.Label();
-			this.butObsolete = new OpenDental.UI.Button();
-			this.butNot = new OpenDental.UI.Button();
+			this.gridLan = new OpenDental.UI.ODGrid();
 			this.SuspendLayout();
-			// 
-			// tbLan
-			// 
-			this.tbLan.BackColor = System.Drawing.SystemColors.Window;
-			this.tbLan.Location = new System.Drawing.Point(20, 23);
-			this.tbLan.Name = "tbLan";
-			this.tbLan.ScrollValue = 143;
-			this.tbLan.SelectedIndices = new int[0];
-			this.tbLan.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-			this.tbLan.Size = new System.Drawing.Size(859, 637);
-			this.tbLan.TabIndex = 0;
 			// 
 			// butClose
 			// 
@@ -68,60 +56,36 @@ namespace OpenDental{
 			this.butClose.Autosize = true;
 			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butClose.Location = new System.Drawing.Point(827, 671);
+			this.butClose.Location = new System.Drawing.Point(847, 671);
 			this.butClose.Name = "butClose";
 			this.butClose.Size = new System.Drawing.Size(75, 26);
 			this.butClose.TabIndex = 3;
 			this.butClose.Text = "&Close";
 			this.butClose.Click += new System.EventHandler(this.butClose_Click);
 			// 
-			// label1
+			// gridLan
 			// 
-			this.label1.Location = new System.Drawing.Point(19, 676);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(256, 18);
-			this.label1.TabIndex = 4;
-			this.label1.Text = "Obsolete translations are shown in gray.";
-			// 
-			// butObsolete
-			// 
-			this.butObsolete.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butObsolete.Autosize = true;
-			this.butObsolete.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butObsolete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butObsolete.Location = new System.Drawing.Point(386, 669);
-			this.butObsolete.Name = "butObsolete";
-			this.butObsolete.Size = new System.Drawing.Size(94, 26);
-			this.butObsolete.TabIndex = 5;
-			this.butObsolete.Text = "Set Obsolete";
-			this.butObsolete.Visible = false;
-			this.butObsolete.Click += new System.EventHandler(this.butObsolete_Click);
-			// 
-			// butNot
-			// 
-			this.butNot.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butNot.Autosize = true;
-			this.butNot.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butNot.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butNot.Location = new System.Drawing.Point(510, 669);
-			this.butNot.Name = "butNot";
-			this.butNot.Size = new System.Drawing.Size(64, 26);
-			this.butNot.TabIndex = 6;
-			this.butNot.Text = "Not";
-			this.butNot.Visible = false;
-			this.butNot.Click += new System.EventHandler(this.butNot_Click);
+			this.gridLan.Columns.Add(new OpenDental.UI.ODGridColumn("English", 220, System.Windows.Forms.HorizontalAlignment.Left));
+			this.gridLan.Columns.Add(new OpenDental.UI.ODGridColumn("Culture", 220, System.Windows.Forms.HorizontalAlignment.Left));
+			this.gridLan.Columns.Add(new OpenDental.UI.ODGridColumn("Other Translation", 220, System.Windows.Forms.HorizontalAlignment.Left));
+			this.gridLan.Columns.Add(new OpenDental.UI.ODGridColumn("Language Comments", 226, System.Windows.Forms.HorizontalAlignment.Left));
+			this.gridLan.HScrollVisible = false;
+			this.gridLan.Location = new System.Drawing.Point(18, 12);
+			this.gridLan.Name = "gridLan";
+			this.gridLan.ScrollValue = 0;
+			this.gridLan.Size = new System.Drawing.Size(905, 643);
+			this.gridLan.TabIndex = 7;
+			this.gridLan.Title = "Translations";
+			this.gridLan.TranslationName = "TableLan";
+			this.gridLan.CellDoubleClick += new OpenDental.UI.ODGridClickEventHandler(this.gridLan_CellDoubleClick);
 			// 
 			// FormTranslation
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butClose;
 			this.ClientSize = new System.Drawing.Size(958, 708);
-			this.Controls.Add(this.butNot);
-			this.Controls.Add(this.butObsolete);
-			this.Controls.Add(this.label1);
+			this.Controls.Add(this.gridLan);
 			this.Controls.Add(this.butClose);
-			this.Controls.Add(this.tbLan);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "FormTranslation";
@@ -136,68 +100,85 @@ namespace OpenDental{
 		#endregion
 
 		private void FormLanguage_Load(object sender, System.EventArgs e) {
-			#if(DEBUG)
-				butObsolete.Visible=true;
-				butNot.Visible=true;
-			#endif
-			FillTable();
+			FillGrid();
 		}
 
-		private void FillTable(){
-			Lan.GetListForCat(Lan.CurCat);
-			LanguageForeigns.Refresh();
-			tbLan.ResetRows(Lan.ListForCat.Length);
-			tbLan.SetGridColor(Color.Gray);
-			for(int i=0;i<Lan.ListForCat.Length;i++){
-				if(Lan.ListForCat[i].IsObsolete){
-					//MessageBox.Show(i.ToString());
-					tbLan.SetTextColorRow(i,SystemColors.GrayText);
-				}
-				tbLan.Cell[0,i]=Lan.ListForCat[i].English;
-				tbLan.Cell[1,i]=Lan.ListForCat[i].EnglishComments;
-				if(LanguageForeigns.HList.ContainsKey(Lan.ListForCat[i].ClassType+Lan.ListForCat[i].English)){
-					tbLan.Cell[2,i]=((LanguageForeign)LanguageForeigns.HList[Lan.ListForCat[i].ClassType+Lan.ListForCat[i].English]).Translation;
-					tbLan.Cell[3,i]=((LanguageForeign)LanguageForeigns.HList[Lan.ListForCat[i].ClassType+Lan.ListForCat[i].English]).Comments;
+		private void FillGrid(){
+			LanList=Lan.GetListForCat(ClassType);
+			ListForType=LanguageForeigns.GetListForType(ClassType);
+			LanguageForeigns.Refresh(CultureInfo.CurrentCulture);
+			gridLan.BeginUpdate();
+			gridLan.Rows.Clear();
+			UI.ODGridRow row;
+			LanguageForeign lanForeign;
+			LanguageForeign lanForeignOther;
+			for(int i=0;i<LanList.Length;i++){
+				row=new OpenDental.UI.ODGridRow();
+				row.Cells.Add(LanList[i].English);
+				lanForeign=LanguageForeigns.GetForCulture(ListForType,LanList[i].English,CultureInfo.CurrentCulture.Name);
+				lanForeignOther=LanguageForeigns.GetOther(ListForType,LanList[i].English,CultureInfo.CurrentCulture.Name);
+				if(lanForeign==null){
+					row.Cells.Add("");
 				}
 				else{
-					tbLan.Cell[2,i]="";
-					tbLan.Cell[3,i]="";
+					row.Cells.Add(lanForeign.Translation);
 				}
+				if(lanForeignOther==null){
+					row.Cells.Add("");
+				}
+				else{
+					row.Cells.Add(lanForeignOther.Translation);
+				}
+				if(lanForeign==null){
+					row.Cells.Add("");
+				}
+				else{
+					row.Cells.Add(lanForeign.Comments);
+				}
+				gridLan.Rows.Add(row);
 			}
-			tbLan.LayoutTables(); 
-			tbLan.SelectedRow=-1;			
+			gridLan.EndUpdate();
 		}
 
-		private void tbLan_CellDoubleClicked(object sender, CellEventArgs e){
-			Lan.Cur=Lan.ListForCat[e.Row];
-			FormTranslationEdit FormTE=new FormTranslationEdit();
+		private void gridLan_CellDoubleClick(object sender, OpenDental.UI.ODGridClickEventArgs e) {
+			Language LanCur=LanList[e.Row];
+			LanguageForeign lanForeign=LanguageForeigns.GetForCulture(ListForType,LanCur.English,CultureInfo.CurrentCulture.Name);
+			LanguageForeign lanForeignOther=LanguageForeigns.GetOther(ListForType,LanCur.English,CultureInfo.CurrentCulture.Name);
+			string otherTrans="";
+			if(lanForeignOther!=null){
+				otherTrans=lanForeignOther.Translation;
+			}
+			FormTranslationEdit FormTE=new FormTranslationEdit(LanCur,lanForeign,otherTrans);
 			FormTE.ShowDialog();
-			FillTable();
-		}
-
-		private void butObsolete_Click(object sender, System.EventArgs e) {
-			Language[] lanList=new Language[tbLan.SelectedIndices.Length];
-			for(int i=0;i<lanList.Length;i++){
-				lanList[i]=Lan.ListForCat[tbLan.SelectedIndices[i]];
-			}
-			Lan.SetObsolete(lanList,true);
-			Lan.Refresh();
-			FillTable();
-		}
-
-		private void butNot_Click(object sender, System.EventArgs e) {
-			Language[] lanList=new Language[tbLan.SelectedIndices.Length];
-			for(int i=0;i<lanList.Length;i++){
-				lanList[i]=Lan.ListForCat[tbLan.SelectedIndices[i]];
-			}
-			Lan.SetObsolete(lanList,false);
-			Lan.Refresh();
-			FillTable();
+			FillGrid();
 		}
 
 		private void butClose_Click(object sender, System.EventArgs e) {
-		
+			DialogResult=DialogResult.Cancel;
 		}
+
+		
 
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -105,6 +105,7 @@ namespace OpenDental{
 		private OpenDental.UI.Button butSplit;
 		//private User user;
 		private bool notAuthorized;
+		private PatPlan[] PatPlanList;
 
 		///<summary></summary>
 		public FormClaimEdit(Patient patCur,Family famCur){
@@ -1108,6 +1109,7 @@ namespace OpenDental{
       ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
 			ProcList=Procedures.Refresh(PatCur.PatNum);
 			PlanList=InsPlans.Refresh(FamCur);
+			PatPlanList=PatPlans.Refresh(PatCur.PatNum);
 			FillForm();			
 		}
 
@@ -1252,7 +1254,7 @@ namespace OpenDental{
 			if(!ClaimIsValid()){
 				return;
 			}
-			Claims.CalculateAndUpdate(ClaimProcList,ProcList,PatCur,PlanList,Claims.Cur);
+			Claims.CalculateAndUpdate(ClaimProcList,ProcList,PlanList,Claims.Cur,PatPlanList);
 			ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
 			FillGrids();
 		}
@@ -1803,10 +1805,10 @@ namespace OpenDental{
 					ClaimProcsForClaim[i].ClaimNum=0;
 					proc=Procedures.GetProc(ProcList,ClaimProcsForClaim[i].ProcNum);
 					if(Claims.Cur.ClaimType=="P"){
-						ClaimProcsForClaim[i].ComputeBaseEst(proc,PriSecTot.Pri,PatCur,PlanList);
+						ClaimProcsForClaim[i].ComputeBaseEst(proc,PriSecTot.Pri,PlanList,PatPlanList);
 					}
 					else if(Claims.Cur.ClaimType=="S"){
-						ClaimProcsForClaim[i].ComputeBaseEst(proc,PriSecTot.Sec,PatCur,PlanList);
+						ClaimProcsForClaim[i].ComputeBaseEst(proc,PriSecTot.Sec,PlanList,PatPlanList);
 					}
 					ClaimProcsForClaim[i].Update();
 				}

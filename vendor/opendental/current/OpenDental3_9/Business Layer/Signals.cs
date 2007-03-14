@@ -1,3 +1,4 @@
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections;
 using System.Data;
@@ -123,15 +124,29 @@ namespace OpenDental{
 	///<summary></summary>
 	public class Signals{
 		
-		///<summary>Gets all Signals Since a given DateTime.</summary>
+		///<summary>Gets all Signals Since a given DateTime.  If it can't connect to the database, then it no longer throws an error, but instead returns a list of length 0.</summary>
 		public static Signal[] Refresh(DateTime sinceDateT){
-			string command=
+			MySqlConnection con=new MySqlConnection(FormChooseDatabase.GetConnectionString());
+			MySqlCommand cmd=new MySqlCommand();
+			MySqlDataAdapter da;
+			Signal[] List;
+			cmd.Connection=con;
+			cmd.CommandText=
 				"SELECT * FROM signal "
 				+"WHERE SigDateTime>'"+POut.PDateT(sinceDateT)+"' "
 				+"ORDER BY SigDateTime";
-			DataConnection dcon=new DataConnection();
- 			DataTable table=dcon.GetTable(command);
-			Signal[] List=new Signal[table.Rows.Count];
+			DataTable table=new DataTable();
+			try{
+				da=new MySqlDataAdapter(cmd);
+				da.Fill(table);
+				con.Close();
+			}
+			catch{
+				con.Close();
+				List=new Signal[0];
+				return List;
+			}
+			List=new Signal[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
 				List[i]=new Signal();
 				List[i].SignalNum  = PIn.PInt   (table.Rows[i][0].ToString());

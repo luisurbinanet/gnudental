@@ -49,7 +49,7 @@ namespace OpenDental{
 				MsgBox.Show(this,"Cannot convert this database version which was only for development purposes.");
 				return false;
 			}
-			if(FromVersion < new Version("3.8.5.0")){
+			if(FromVersion < new Version("3.9.20.0")){
 				if(MessageBox.Show(Lan.g(this,"Your database will now be converted")+"\r"
 					+Lan.g(this,"from version")+" "+FromVersion.ToString()+"\r"
 					+Lan.g(this,"to version")+" "+ToVersion.ToString()+"\r"
@@ -2432,9 +2432,416 @@ namespace OpenDental{
 				command="UPDATE preference SET ValueString = '3.8.5.0' WHERE PrefName = 'DataBaseVersion'";
 				dcon.NonQ(command);
 			}
-			//To3_8_?();
+			To3_9_0();
 		}
 
+		private void To3_9_0(){
+			if(FromVersion < new Version("3.9.0.0")){
+				ExecuteFile(@"ConversionFiles\Version 3 9 0\convert_3_9_0.txt");//Might throw an exception which we handle.
+				DataConnection dcon=new DataConnection();
+				//convert two letter languages to 5 char specific culture names-------------------------------------------------
+				string command="";
+				DataTable table;
+				if(CultureInfo.CurrentCulture.Name=="en-US"){
+					command="DELETE FROM languageforeign";
+					dcon.NonQ(command);
+				}
+				else{
+					command="SELECT DISTINCT Culture FROM languageforeign";
+					table=dcon.GetTable(command);
+					CultureInfo ci;
+					for(int i=0;i<table.Rows.Count;i++){
+						try{
+							ci=new CultureInfo(table.Rows[i][0].ToString());
+						}
+						catch{
+							MessageBox.Show("Invalid culture: "+table.Rows[i][0].ToString());
+							continue;
+						}
+						FormConvertLang39 FormC=new FormConvertLang39();
+						FormC.OldDisplayName=ci.DisplayName;
+						FormC.ShowDialog();
+						if(FormC.DialogResult!=DialogResult.OK){
+							continue;
+						}
+						command="UPDATE languageforeign SET Culture='"+FormC.NewName+"' "
+							+"WHERE Culture='"+table.Rows[i][0].ToString()+"'";
+						dcon.NonQ(command);
+					}
+				}
+				//------------------------------------------------------------------------------------------------------------
+				//move all patient.PriPlanNum,PriRelationship,SecPlanNum,SecRelationship,
+					//PriPending,SecPending,PriPatID,SecPatID to PatPlan objects
+				command="SELECT PatNum,PriPlanNum,PriRelationship,PriPending,PriPatID FROM patient WHERE PriPlanNum>0";
+				table=dcon.GetTable(command);
+				for(int i=0;i<table.Rows.Count;i++){
+					command="INSERT INTO patplan (PatNum,PlanNum,Ordinal,IsPending,Relationship,PatID) VALUES ("
+						+table.Rows[i][0].ToString()+","//patnum
+						+table.Rows[i][1].ToString()+","//planNum
+						+"1,"//Ordinal
+						+table.Rows[i][3].ToString()+","//IsPending
+						+table.Rows[i][2].ToString()+","//Relationship
+						+"'"+POut.PString(PIn.PString(table.Rows[i][4].ToString()))+"'"//PatID
+						+")";
+					dcon.NonQ(command);
+				}
+				command="SELECT PatNum,SecPlanNum,SecRelationship,SecPending,SecPatID FROM patient WHERE SecPlanNum>0";
+				table=dcon.GetTable(command);
+				for(int i=0;i<table.Rows.Count;i++){
+					command="INSERT INTO patplan (PatNum,PlanNum,Ordinal,IsPending,Relationship,PatID) VALUES ("
+						+table.Rows[i][0].ToString()+","//patnum
+						+table.Rows[i][1].ToString()+","//planNum
+						+"2,"//Ordinal
+						+table.Rows[i][3].ToString()+","//IsPending
+						+table.Rows[i][2].ToString()+","//Relationship
+						+"'"+POut.PString(PIn.PString(table.Rows[i][4].ToString()))+"'"//PatID
+						+")";
+					dcon.NonQ(command);
+				}
+				//convert all covpat.PriPatNum and SecPatNum to PatPlanNum-----------------------------------------------------
+				//primary
+				command="SELECT covpat.CovPatNum,patplan.PatPlanNum FROM covpat,patplan "
+					+"WHERE covpat.PriPatNum=patplan.PatNum "
+					+"AND patplan.Ordinal=1";
+				table=dcon.GetTable(command);
+				for(int i=0;i<table.Rows.Count;i++){
+					command="UPDATE covpat SET PatPlanNum="+table.Rows[i][1].ToString()
+						+" WHERE CovPatNum="+table.Rows[i][0].ToString();
+					dcon.NonQ(command);
+				}
+				//secondary
+				command="SELECT covpat.CovPatNum,patplan.PatPlanNum FROM covpat,patplan "
+					+"WHERE covpat.PriPatNum=patplan.PatNum "
+					+"AND patplan.Ordinal=2";
+				table=dcon.GetTable(command);
+				for(int i=0;i<table.Rows.Count;i++){
+					command="UPDATE covpat SET PatPlanNum="+table.Rows[i][1].ToString()
+						+" WHERE CovPatNum="+table.Rows[i][0].ToString();
+					dcon.NonQ(command);
+				}
+				//set patient.HasInsurance for everyone-----------------------------------------------------------------------
+				command="SELECT DISTINCT PatNum FROM patplan";
+				table=dcon.GetTable(command);
+				for(int i=0;i<table.Rows.Count;i++){
+					command="UPDATE patient SET HasIns='I'"
+						+" WHERE PatNum="+table.Rows[i][0].ToString();
+					dcon.NonQ(command);
+				}
+				//delete unwanted columns-------------------------------------------------------------------------------------
+				string[] commands=new string[] {
+					"ALTER TABLE covpat DROP PriPatNum"
+					,"ALTER TABLE covpat DROP SecPatNum"
+					,"ALTER TABLE patient DROP PriPlanNum"
+					,"ALTER TABLE patient DROP SecPlanNum"
+					,"ALTER TABLE patient DROP PriRelationship"
+					,"ALTER TABLE patient DROP SecRelationship"
+					,"ALTER TABLE patient DROP RecallInterval"
+					,"ALTER TABLE patient DROP RecallStatus"
+					,"ALTER TABLE patient DROP PriPending"
+					,"ALTER TABLE patient DROP SecPending"
+					,"ALTER TABLE patient DROP PriPatID"
+					,"ALTER TABLE patient DROP SecPatID"
+					,"ALTER TABLE insplan DROP Carrier"
+					,"ALTER TABLE insplan DROP Phone"
+					,"ALTER TABLE insplan DROP Address"
+					,"ALTER TABLE insplan DROP Address2"
+					,"ALTER TABLE insplan DROP City"
+					,"ALTER TABLE insplan DROP State"
+					,"ALTER TABLE insplan DROP Zip"
+					,"ALTER TABLE insplan DROP NoSendElect"
+					,"ALTER TABLE insplan DROP ElectID"
+					,"ALTER TABLE insplan DROP Employer"
+				};
+				dcon.NonQ(commands);
+				//final cleanup----------------------------------------------------------------------------------------------
+				command="UPDATE preference SET ValueString = '3.9.0.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To3_9_1();
+		}
+
+		private void To3_9_1(){
+			if(FromVersion < new Version("3.9.1.0")){
+				string command="UPDATE preference SET PrefName = 'BackupToPath' WHERE PrefName = 'BackupPath'";
+				DataConnection dcon=new DataConnection();
+				dcon.NonQ(command);
+				command="INSERT INTO preference VALUES ('BackupFromPath', '"+POut.PString(@"C:\mysql\data\")+"')";
+				dcon.NonQ(command);
+				command="INSERT INTO preference VALUES ('BackupRestoreFromPath', '"+POut.PString(@"D:\")+"')";
+				dcon.NonQ(command);
+				command="INSERT INTO preference VALUES ('BackupRestoreToPath', '"+POut.PString(@"C:\mysql\data\")+"')";
+				dcon.NonQ(command);
+				command="UPDATE preference SET ValueString = '3.9.1.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To3_9_2();
+		}
+
+		private void To3_9_2(){
+			if(FromVersion < new Version("3.9.2.0")){
+				DataConnection dcon=new DataConnection();
+				//DBSWin link-----------------------------------------------------------------------
+				string command="INSERT INTO program (ProgName,ProgDesc,Enabled,Path,CommandLine,Note"
+					+") VALUES("
+					+"'DBSWin', "
+					+"'DBSWin from www.duerruk.com', "
+					+"'0', "
+					+"'', "
+					+"'', "
+					+"'"+POut.PString(@"No command line or path is needed.")+"')";
+				dcon.NonQ(command,true);
+				int programNum=dcon.InsertID;//we now have a ProgramNum to work with
+				command="INSERT INTO programproperty (ProgramNum,PropertyDesc,PropertyValue"
+					+") VALUES("
+					+"'"+programNum.ToString()+"', "
+					+"'Enter 0 to use PatientNum, or 1 to use ChartNum', "
+					+"'0')";
+				dcon.NonQ(command);
+				command="INSERT INTO programproperty (ProgramNum,PropertyDesc,PropertyValue"
+					+") VALUES("
+					+"'"+programNum.ToString()+"', "
+					+"'Text file path', "
+					+"'"+POut.PString(@"C:\patdata.txt")+"')";
+				dcon.NonQ(command);
+				command="INSERT INTO toolbutitem (ProgramNum,ToolBar,ButtonText) "
+					+"VALUES ("
+					+"'"+programNum.ToString()+"', "
+					+"'"+((int)ToolBarsAvail.ChartModule).ToString()+"', "
+					+"'DBSWin')";
+				dcon.NonQ(command);
+				command="UPDATE preference SET ValueString = '3.9.2.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To3_9_3();
+		}
+
+		private void To3_9_3(){
+			if(FromVersion < new Version("3.9.3.0")){
+				DataConnection dcon=new DataConnection();
+				string command="UPDATE preference SET ValueString = '-1' WHERE PrefName = 'InsBillingProv' AND ValueString='1'";
+				dcon.NonQ(command);
+				//Add diagnosis fields to HCFA-1500
+				int claimFormNum;
+				command="SELECT ClaimFormNum FROM claimform WHERE UniqueID='OD4'";
+				DataTable table=dcon.GetTable(command);
+				if(table.Rows.Count>0){
+					claimFormNum=PIn.PInt(table.Rows[0][0].ToString());
+					command="INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+						+POut.PInt(claimFormNum)+",'P1Diagnosis',446,749,75,16)";
+					dcon.NonQ(command);
+					command="INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+						+POut.PInt(claimFormNum)+",'P2Diagnosis',446,781,75,16)";
+					dcon.NonQ(command);
+					command="INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+						+POut.PInt(claimFormNum)+",'P3Diagnosis',446,816,75,16)";
+					dcon.NonQ(command);
+					command="INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+						+POut.PInt(claimFormNum)+",'P4Diagnosis',446,849,75,16)";
+					dcon.NonQ(command);
+					command="INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+						+POut.PInt(claimFormNum)+",'P5Diagnosis',446,882,75,16)";
+					dcon.NonQ(command);
+					command="INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+						+POut.PInt(claimFormNum)+",'P6Diagnosis',446,915,75,16)";
+					dcon.NonQ(command);
+				}
+				command="SELECT ClaimFormNum FROM claimform WHERE UniqueID='OD5'";
+				table=dcon.GetTable(command);
+				if(table.Rows.Count>0){
+					claimFormNum=PIn.PInt(table.Rows[0][0].ToString());
+					command="INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+						+POut.PInt(claimFormNum)+",'P1Diagnosis',446,749,75,16)";
+					dcon.NonQ(command);
+					command="INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+						+POut.PInt(claimFormNum)+",'P2Diagnosis',446,781,75,16)";
+					dcon.NonQ(command);
+					command="INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+						+POut.PInt(claimFormNum)+",'P3Diagnosis',446,816,75,16)";
+					dcon.NonQ(command);
+					command="INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+						+POut.PInt(claimFormNum)+",'P4Diagnosis',446,849,75,16)";
+					dcon.NonQ(command);
+					command="INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+						+POut.PInt(claimFormNum)+",'P5Diagnosis',446,882,75,16)";
+					dcon.NonQ(command);
+					command="INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+						+POut.PInt(claimFormNum)+",'P6Diagnosis',446,915,75,16)";
+					dcon.NonQ(command);
+				}
+				command="ALTER TABLE procedurelog ADD IsPrincDiag tinyint unsigned NOT NULL";
+				dcon.NonQ(command);
+				command="UPDATE preference SET ValueString = '3.9.3.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To3_9_4();
+		}
+
+		private void To3_9_4(){
+			if(FromVersion < new Version("3.9.4.0")){
+				DataConnection dcon=new DataConnection();
+				string command="INSERT INTO preference VALUES ('BillingIncludeChanged', '1')";
+				dcon.NonQ(command);
+				command="UPDATE preference SET ValueString = '3.9.4.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To3_9_5();
+		}
+
+		private void To3_9_5(){
+			if(FromVersion < new Version("3.9.5.0")){
+				DataConnection dcon=new DataConnection();
+				string command="INSERT INTO preference VALUES ('BackupRestoreAtoZToPath', '"+POut.PString(@"C:\OpenDentalData\")+"')";
+				dcon.NonQ(command);
+				command="UPDATE preference SET ValueString = '3.9.5.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To3_9_6();
+		}
+
+		private void To3_9_6(){
+			if(FromVersion < new Version("3.9.6.0")){
+				DataConnection dcon=new DataConnection();
+				string command="ALTER TABLE referral CHANGE PatNum PatNum mediumint unsigned NOT NULL";
+				dcon.NonQ(command);
+				command="ALTER TABLE refattach CHANGE PatNum PatNum mediumint unsigned NOT NULL";
+				dcon.NonQ(command);
+				command="UPDATE preference SET ValueString = '3.9.6.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To3_9_8();
+		}
+
+		private void To3_9_8(){
+			if(FromVersion < new Version("3.9.8.0")){
+				DataConnection dcon=new DataConnection();
+				//DentX link-----------------------------------------------------------------------
+				string command="INSERT INTO program (ProgName,ProgDesc,Enabled,Path,CommandLine,Note"
+					+") VALUES("
+					+"'DentX', "
+					+"'ProImage from www.dent-x.com', "
+					+"'0', "
+					+"'', "
+					+"'', "
+					+"'"+POut.PString(@"No command line or path is needed.")+"')";
+				dcon.NonQ(command,true);
+				int programNum=dcon.InsertID;//we now have a ProgramNum to work with
+				command="INSERT INTO programproperty (ProgramNum,PropertyDesc,PropertyValue"
+					+") VALUES("
+					+"'"+programNum.ToString()+"', "
+					+"'Enter 0 to use PatientNum, or 1 to use ChartNum', "
+					+"'0')";
+				dcon.NonQ(command);
+				command="INSERT INTO toolbutitem (ProgramNum,ToolBar,ButtonText) "
+					+"VALUES ("
+					+"'"+programNum.ToString()+"', "
+					+"'"+((int)ToolBarsAvail.ChartModule).ToString()+"', "
+					+"'DentX')";
+				dcon.NonQ(command);
+				//Lightyear bridge--------------------------------------------------------------------------
+				command="INSERT INTO program (ProgName,ProgDesc,Enabled,Path,CommandLine,Note"
+					+") VALUES("
+					+"'Lightyear', "
+					+"'SpeedVision from www.lightyeardirect.com', "
+					+"'0', "
+					+"'"+POut.PString(@"C:\Program Files\Speedvision\speedvision.exe")+"', "
+					+"'', "
+					+"'"+POut.PString(@"Path is usually C:\Program Files\Speedvision\speedvision.exe.  No command line is needed.")+"')";
+				dcon.NonQ(command,true);
+				programNum=dcon.InsertID;//we now have a ProgramNum to work with
+				command="INSERT INTO programproperty (ProgramNum,PropertyDesc,PropertyValue"
+					+") VALUES("
+					+"'"+programNum.ToString()+"', "
+					+"'Enter 0 to use PatientNum, or 1 to use ChartNum', "
+					+"'0')";
+				dcon.NonQ(command);
+				command="INSERT INTO toolbutitem (ProgramNum,ToolBar,ButtonText) "
+					+"VALUES ("
+					+"'"+programNum.ToString()+"', "
+					+"'"+((int)ToolBarsAvail.ChartModule).ToString()+"', "
+					+"'Lightyear')";
+				dcon.NonQ(command);
+				command="UPDATE preference SET ValueString = '3.9.8.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To3_9_9();
+		}
+
+		private void To3_9_9(){
+			if(FromVersion < new Version("3.9.9.0")){
+				//TrackNPost clearinghouse
+				DataConnection dcon=new DataConnection();
+				string command="INSERT INTO clearinghouse(Description,ExportPath,IsDefault,Payors,Eformat,ReceiverID,"
+					+"SenderID,Password,ResponsePath,CommBridge,ClientProgram) "
+					+@"VALUES('Post-n-Track','C:\\PostnTrack\\Exports\\','0','','1','PostnTrack','','',"
+					+@"'C:\\PostnTrack\\Reports\\','8','')";
+				dcon.NonQ(command);
+				command="UPDATE preference SET ValueString = '3.9.9.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To3_9_17();
+		}
+
+		private void To3_9_17(){
+			if(FromVersion < new Version("3.9.17.0")){
+				DataConnection dcon=new DataConnection();
+				//Rename VixWin to VixWinOld-----------------------------------------------------------------------
+				string command="UPDATE program SET ProgName='VixWinOld' WHERE ProgName='VixWin'";
+				dcon.NonQ(command);
+				//Add new VixWin bridge---------------------------------------------------------------------------
+				command="INSERT INTO program (ProgName,ProgDesc,Enabled,Path,CommandLine,Note"
+					+") VALUES("
+					+"'VixWin', "
+					+"'VixWin(new) from www.gendexxray.com', "
+					+"'0', "
+					+"'"+POut.PString(@"C:\VixWin\VixWin.exe")+"', "
+					+"'', "
+					+"'')";
+				dcon.NonQ(command,true);
+				int programNum=dcon.InsertID;//we now have a ProgramNum to work with
+				command="INSERT INTO programproperty (ProgramNum,PropertyDesc,PropertyValue"
+					+") VALUES("
+					+"'"+programNum.ToString()+"', "
+					+"'Enter 0 to use PatientNum, or 1 to use ChartNum', "
+					+"'0')";
+				dcon.NonQ(command);
+				command="INSERT INTO toolbutitem (ProgramNum,ToolBar,ButtonText) "
+					+"VALUES ("
+					+"'"+programNum.ToString()+"', "
+					+"'"+((int)ToolBarsAvail.ChartModule).ToString()+"', "
+					+"'VixWin')";
+				dcon.NonQ(command);
+				command="UPDATE preference SET ValueString = '3.9.17.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To3_9_18();
+		}
+
+		private void To3_9_18() {
+			if(FromVersion < new Version("3.9.18.0")) {
+				//fixes random keys problems:
+				DataConnection dcon=new DataConnection();
+				string command="ALTER TABLE referral CHANGE ReferralNum ReferralNum mediumint unsigned NOT NULL auto_increment";
+				dcon.NonQ(command);
+				//these two lines were previously in place and must be accounted for.
+				//command="ALTER TABLE patient CHANGE NextAptNum NextAptNum mediumint unsigned NOT NULL";
+				//dcon.NonQ(command);
+				command="UPDATE preference SET ValueString = '3.9.18.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To3_9_20();
+		}
+
+		private void To3_9_20() {
+			if(FromVersion < new Version("3.9.20.0")) {
+				DataConnection dcon=new DataConnection();
+				//this command probably won't change most databases. Move to unsigned in 4.0
+				string command="ALTER TABLE patient CHANGE NextAptNum NextAptNum mediumint NOT NULL";
+				dcon.NonQ(command);
+				command="UPDATE preference SET ValueString = '3.9.20.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			//To4_0_0();
+		}
 		
 	}
 

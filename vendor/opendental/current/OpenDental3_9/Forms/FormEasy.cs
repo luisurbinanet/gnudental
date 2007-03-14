@@ -19,6 +19,7 @@ namespace OpenDental{
 		private System.Windows.Forms.CheckBox checkPublicHealth;
 		private System.Windows.Forms.CheckBox checkNoClinics;
 		private System.Windows.Forms.CheckBox checkDentalSchools;
+		private System.Windows.Forms.CheckBox checkRepeatCharges;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -67,6 +68,7 @@ namespace OpenDental{
 			this.checkPublicHealth = new System.Windows.Forms.CheckBox();
 			this.checkNoClinics = new System.Windows.Forms.CheckBox();
 			this.checkDentalSchools = new System.Windows.Forms.CheckBox();
+			this.checkRepeatCharges = new System.Windows.Forms.CheckBox();
 			this.SuspendLayout();
 			// 
 			// butCancel
@@ -77,7 +79,7 @@ namespace OpenDental{
 			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.Location = new System.Drawing.Point(584, 282);
+			this.butCancel.Location = new System.Drawing.Point(584, 291);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 0;
@@ -91,7 +93,7 @@ namespace OpenDental{
 			this.butOK.Autosize = true;
 			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butOK.Location = new System.Drawing.Point(584, 241);
+			this.butOK.Location = new System.Drawing.Point(584, 250);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 1;
@@ -186,11 +188,23 @@ namespace OpenDental{
 			this.checkDentalSchools.Text = "Hide Dental School Features";
 			this.checkDentalSchools.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
+			// checkRepeatCharges
+			// 
+			this.checkRepeatCharges.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.checkRepeatCharges.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkRepeatCharges.Location = new System.Drawing.Point(21, 219);
+			this.checkRepeatCharges.Name = "checkRepeatCharges";
+			this.checkRepeatCharges.Size = new System.Drawing.Size(389, 19);
+			this.checkRepeatCharges.TabIndex = 10;
+			this.checkRepeatCharges.Text = "Hide Repeating Charges";
+			this.checkRepeatCharges.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
 			// FormEasy
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
-			this.ClientSize = new System.Drawing.Size(674, 327);
+			this.ClientSize = new System.Drawing.Size(674, 336);
+			this.Controls.Add(this.checkRepeatCharges);
 			this.Controls.Add(this.checkDentalSchools);
 			this.Controls.Add(this.checkNoClinics);
 			this.Controls.Add(this.checkPublicHealth);
@@ -223,6 +237,7 @@ namespace OpenDental{
 			checkClinical.Checked=((Pref)Prefs.HList["EasyHideClinical"]).ValueString=="1";
 			checkBasicModules.Checked=((Pref)Prefs.HList["EasyBasicModules"]).ValueString=="1";
 			checkNoClinics.Checked=Prefs.GetBool("EasyNoClinics");
+			checkRepeatCharges.Checked=Prefs.GetBool("EasyHideRepeatCharges");
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
@@ -259,6 +274,8 @@ namespace OpenDental{
 			Prefs.UpdateCur();
 
 			Prefs.UpdateBool("EasyNoClinics",checkNoClinics.Checked);
+
+			Prefs.UpdateBool("EasyHideRepeatCharges",checkRepeatCharges.Checked);
 
 			DataValid.SetInvalid(InvalidTypes.Prefs);
 			DialogResult=DialogResult.OK;

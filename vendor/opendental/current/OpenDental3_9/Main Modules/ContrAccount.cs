@@ -96,17 +96,21 @@ namespace OpenDental{
 		private OpenDental.UI.ODGrid gridAccount;
 		private System.Windows.Forms.Label labelAgeInsEst;
 		private InsPlan[] PlanList;
+		private OpenDental.UI.ODGrid gridRepeat;
 		//private PaySplit[] PaySplitList;
 		///<summary></summary>
 		[Category("Data"),Description("Occurs when user changes current patient, usually by clicking on the Select Patient button.")]
 		public event PatientSelectedEventHandler PatientSelected=null;
+		private RepeatCharge[] RepeatChargeList;
+		private System.Windows.Forms.MenuItem menuInsMedical;
+		private System.Windows.Forms.ContextMenu contextMenuRepeat;
+		private System.Windows.Forms.MenuItem menuItemRepeatStand;
+		private System.Windows.Forms.MenuItem menuItemRepeatEmail;
+		private PatPlan[] PatPlanList;
 	
 		///<summary></summary>
 		public ContrAccount(){
 			InitializeComponent();// This call is required by the Windows.Forms Form Designer.
-			//tbAccount.CellClicked += new OpenDental.ContrTable.CellEventHandler(tbAccount_CellClicked);
-			//tbAccount.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbAccount_CellDoubleClicked);
-			//tbAcctPat.CellClicked += new OpenDental.ContrTable.CellEventHandler(tbAcctPat_CellClicked);
 		}
 
 		///<summary></summary>
@@ -147,6 +151,7 @@ namespace OpenDental{
 			this.contextMenuIns = new System.Windows.Forms.ContextMenu();
 			this.menuInsPri = new System.Windows.Forms.MenuItem();
 			this.menuInsSec = new System.Windows.Forms.MenuItem();
+			this.menuInsMedical = new System.Windows.Forms.MenuItem();
 			this.menuInsOther = new System.Windows.Forms.MenuItem();
 			this.ToolBarMain = new OpenDental.UI.ODToolBar();
 			this.imageListMain = new System.Windows.Forms.ImageList(this.components);
@@ -167,6 +172,10 @@ namespace OpenDental{
 			this.gridComm = new OpenDental.UI.ODGrid();
 			this.gridAcctPat = new OpenDental.UI.ODGrid();
 			this.gridAccount = new OpenDental.UI.ODGrid();
+			this.gridRepeat = new OpenDental.UI.ODGrid();
+			this.contextMenuRepeat = new System.Windows.Forms.ContextMenu();
+			this.menuItemRepeatStand = new System.Windows.Forms.MenuItem();
+			this.menuItemRepeatEmail = new System.Windows.Forms.MenuItem();
 			this.panelTotal.SuspendLayout();
 			this.panelCommButs.SuspendLayout();
 			this.groupBox1.SuspendLayout();
@@ -373,9 +382,10 @@ namespace OpenDental{
 			// contextMenuIns
 			// 
 			this.contextMenuIns.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-																						   this.menuInsPri,
-																						   this.menuInsSec,
-																						   this.menuInsOther});
+																																									 this.menuInsPri,
+																																									 this.menuInsSec,
+																																									 this.menuInsMedical,
+																																									 this.menuInsOther});
 			// 
 			// menuInsPri
 			// 
@@ -389,9 +399,15 @@ namespace OpenDental{
 			this.menuInsSec.Text = "Secondary";
 			this.menuInsSec.Click += new System.EventHandler(this.menuInsSec_Click);
 			// 
+			// menuInsMedical
+			// 
+			this.menuInsMedical.Index = 2;
+			this.menuInsMedical.Text = "Medical";
+			this.menuInsMedical.Click += new System.EventHandler(this.menuInsMedical_Click);
+			// 
 			// menuInsOther
 			// 
-			this.menuInsOther.Index = 2;
+			this.menuInsOther.Index = 3;
 			this.menuInsOther.Text = "Other";
 			this.menuInsOther.Click += new System.EventHandler(this.menuInsOther_Click);
 			// 
@@ -546,8 +562,8 @@ namespace OpenDental{
 			// contextMenuStatement
 			// 
 			this.contextMenuStatement.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-																								 this.menuItemStatementWalkout,
-																								 this.menuItemStatementMore});
+																																												 this.menuItemStatementWalkout,
+																																												 this.menuItemStatementMore});
 			// 
 			// menuItemStatementWalkout
 			// 
@@ -566,7 +582,7 @@ namespace OpenDental{
 			this.gridComm.Columns.Add(new OpenDental.UI.ODGridColumn("Date", 70, System.Windows.Forms.HorizontalAlignment.Left));
 			this.gridComm.Columns.Add(new OpenDental.UI.ODGridColumn("Type", 85, System.Windows.Forms.HorizontalAlignment.Left));
 			this.gridComm.Columns.Add(new OpenDental.UI.ODGridColumn("Mode", 80, System.Windows.Forms.HorizontalAlignment.Left));
-			this.gridComm.Columns.Add(new OpenDental.UI.ODGridColumn("Note", 516, System.Windows.Forms.HorizontalAlignment.Left));
+			this.gridComm.Columns.Add(new OpenDental.UI.ODGridColumn("Note", 515, System.Windows.Forms.HorizontalAlignment.Left));
 			this.gridComm.HScrollVisible = false;
 			this.gridComm.Location = new System.Drawing.Point(0, 440);
 			this.gridComm.Name = "gridComm";
@@ -580,7 +596,7 @@ namespace OpenDental{
 			// gridAcctPat
 			// 
 			this.gridAcctPat.Columns.Add(new OpenDental.UI.ODGridColumn("Patient", 95, System.Windows.Forms.HorizontalAlignment.Left));
-			this.gridAcctPat.Columns.Add(new OpenDental.UI.ODGridColumn("Est Bal", 50, System.Windows.Forms.HorizontalAlignment.Right));
+			this.gridAcctPat.Columns.Add(new OpenDental.UI.ODGridColumn("Est Bal", 49, System.Windows.Forms.HorizontalAlignment.Right));
 			this.gridAcctPat.HScrollVisible = false;
 			this.gridAcctPat.Location = new System.Drawing.Point(768, 90);
 			this.gridAcctPat.Name = "gridAcctPat";
@@ -605,21 +621,57 @@ namespace OpenDental{
 			this.gridAccount.Columns.Add(new OpenDental.UI.ODGridColumn("Patient", 48, System.Windows.Forms.HorizontalAlignment.Right));
 			this.gridAccount.Columns.Add(new OpenDental.UI.ODGridColumn("Adj", 48, System.Windows.Forms.HorizontalAlignment.Right));
 			this.gridAccount.Columns.Add(new OpenDental.UI.ODGridColumn("Paid", 48, System.Windows.Forms.HorizontalAlignment.Right));
-			this.gridAccount.Columns.Add(new OpenDental.UI.ODGridColumn("Balance", 49, System.Windows.Forms.HorizontalAlignment.Right));
+			this.gridAccount.Columns.Add(new OpenDental.UI.ODGridColumn("Balance", 48, System.Windows.Forms.HorizontalAlignment.Right));
 			this.gridAccount.HScrollVisible = false;
-			this.gridAccount.Location = new System.Drawing.Point(0, 65);
+			this.gridAccount.Location = new System.Drawing.Point(0, 147);
 			this.gridAccount.Name = "gridAccount";
 			this.gridAccount.ScrollValue = 0;
 			this.gridAccount.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-			this.gridAccount.Size = new System.Drawing.Size(769, 357);
+			this.gridAccount.Size = new System.Drawing.Size(769, 275);
 			this.gridAccount.TabIndex = 73;
 			this.gridAccount.Title = "Patient Account";
 			this.gridAccount.TranslationName = "TableAccount";
 			this.gridAccount.CellClick += new OpenDental.UI.ODGridClickEventHandler(this.gridAccount_CellClick);
 			this.gridAccount.CellDoubleClick += new OpenDental.UI.ODGridClickEventHandler(this.gridAccount_CellDoubleClick);
 			// 
+			// gridRepeat
+			// 
+			this.gridRepeat.Columns.Add(new OpenDental.UI.ODGridColumn("Description", 150, System.Windows.Forms.HorizontalAlignment.Left));
+			this.gridRepeat.Columns.Add(new OpenDental.UI.ODGridColumn("Amount", 70, System.Windows.Forms.HorizontalAlignment.Right));
+			this.gridRepeat.Columns.Add(new OpenDental.UI.ODGridColumn("Start Date", 90, System.Windows.Forms.HorizontalAlignment.Left));
+			this.gridRepeat.Columns.Add(new OpenDental.UI.ODGridColumn("Stop Date", 90, System.Windows.Forms.HorizontalAlignment.Left));
+			this.gridRepeat.Columns.Add(new OpenDental.UI.ODGridColumn("Note", 350, System.Windows.Forms.HorizontalAlignment.Left));
+			this.gridRepeat.HScrollVisible = false;
+			this.gridRepeat.Location = new System.Drawing.Point(0, 65);
+			this.gridRepeat.Name = "gridRepeat";
+			this.gridRepeat.ScrollValue = 0;
+			this.gridRepeat.Size = new System.Drawing.Size(769, 75);
+			this.gridRepeat.TabIndex = 74;
+			this.gridRepeat.Title = "Repeating Charges";
+			this.gridRepeat.TranslationName = "TableRepeatCharges";
+			this.gridRepeat.CellDoubleClick += new OpenDental.UI.ODGridClickEventHandler(this.gridRepeat_CellDoubleClick);
+			// 
+			// contextMenuRepeat
+			// 
+			this.contextMenuRepeat.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+																																											this.menuItemRepeatStand,
+																																											this.menuItemRepeatEmail});
+			// 
+			// menuItemRepeatStand
+			// 
+			this.menuItemRepeatStand.Index = 0;
+			this.menuItemRepeatStand.Text = "Standard Monthly";
+			this.menuItemRepeatStand.Click += new System.EventHandler(this.menuItemRepeatStand_Click);
+			// 
+			// menuItemRepeatEmail
+			// 
+			this.menuItemRepeatEmail.Index = 1;
+			this.menuItemRepeatEmail.Text = "Email Monthly";
+			this.menuItemRepeatEmail.Click += new System.EventHandler(this.menuItemRepeatEmail_Click);
+			// 
 			// ContrAccount
 			// 
+			this.Controls.Add(this.gridRepeat);
 			this.Controls.Add(this.gridAccount);
 			this.Controls.Add(this.gridAcctPat);
 			this.Controls.Add(this.gridComm);
@@ -710,6 +762,12 @@ namespace OpenDental{
 			ToolBarMain.Buttons.Add(button);
 			ToolBarMain.Buttons.Add(new ODToolBarButton(ODToolBarButtonStyle.Separator));
 			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Payment Plan"),-1,"","PayPlan"));
+			if(!Prefs.GetBool("EasyHideRepeatCharges")){
+				button=new ODToolBarButton(Lan.g(this,"Repeating Charge"),-1,"","RepeatCharge");
+				button.Style=ODToolBarButtonStyle.DropDownButton;
+				button.DropDownMenu=contextMenuRepeat;
+				ToolBarMain.Buttons.Add(button);
+			}
 			ToolBarMain.Buttons.Add(new ODToolBarButton(ODToolBarButtonStyle.Separator));
 			button=new ODToolBarButton(Lan.g(this,"Statement"),4,"","Statement");
 			button.Style=ODToolBarButtonStyle.DropDownButton;
@@ -726,6 +784,7 @@ namespace OpenDental{
 
 		private void ContrAccount_Layout(object sender, System.Windows.Forms.LayoutEventArgs e) {
 			//tbAccount.InstantClasses();
+			//gridAccount.Location=new Point(0,65);
 			gridAccount.Height=panelSplitter.Top-gridAccount.Location.Y+1;
 			//tbAccount.LayoutTables();
 			gridComm.Top=panelSplitter.Bottom-1;
@@ -769,18 +828,10 @@ namespace OpenDental{
 				FinNoteChanged=false;
 			}
 			FamCur=null;
-			//InsPlans.List=null;
-			CovPats.List=null;
-			//from FillAcctLineAL(){
-			//Procedures.List=null;
-			//Procedures.HList=null;
-			//Procedures.MissingTeeth=null;
 			Claims.List=null;
-			//Adjustments.List=null;
-			//PaySplitList=null;
 			Commlogs.List=null;
-			//PayPlans.List=null;
 			ClaimProcList=null;
+			RepeatChargeList=null;
 		}
 
 		///<summary>Public because used by FormRpStatement</summary>
@@ -793,7 +844,8 @@ namespace OpenDental{
 			FamCur=Patients.GetFamily(patNum);
 			PatCur=FamCur.GetPatient(patNum);
 			PlanList=InsPlans.Refresh(FamCur);
-			CovPats.Refresh(PatCur,PlanList);
+			PatPlanList=PatPlans.Refresh(patNum);
+			CovPats.Refresh(PlanList,PatPlanList);
 			PatientNotes.Refresh(PatCur.PatNum,PatCur.Guarantor);
 			//other tables are refreshed in FillAcctLineAL
 		}
@@ -833,6 +885,7 @@ namespace OpenDental{
 			FillPats();
 			FillMisc();
 			FillAging();
+			FillRepeatCharges();
 			FillComm();
 		}
 
@@ -927,6 +980,49 @@ namespace OpenDental{
 				textAgeInsEst.Text="";
 				textAgeBalance.Text="";
 			}
+		}
+
+		///<summary></summary>
+		private void FillRepeatCharges(){
+			if(PatCur==null){
+				gridRepeat.Visible=false;
+				gridAccount.Location=gridRepeat.Location;
+				return;
+			}
+			RepeatChargeList=RepeatCharges.Refresh(PatCur.PatNum);
+			if(RepeatChargeList.Length==0){
+				gridRepeat.Visible=false;
+				gridAccount.Location=gridRepeat.Location;
+				return;
+			}
+			gridRepeat.Visible=true;
+			gridRepeat.Height=75;
+			gridAccount.Location=new Point(0,gridRepeat.Bottom+3);
+			gridRepeat.BeginUpdate();
+			gridRepeat.Rows.Clear();
+			UI.ODGridRow row;
+			ProcedureCode procCode;
+			for(int i=0;i<RepeatChargeList.Length;i++){
+				row=new ODGridRow();
+				procCode=ProcedureCodes.GetProcCode(RepeatChargeList[i].ADACode);
+				row.Cells.Add(procCode.Descript);
+				row.Cells.Add(RepeatChargeList[i].ChargeAmt.ToString("F"));
+				if(RepeatChargeList[i].DateStart.Year>1880){
+					row.Cells.Add(RepeatChargeList[i].DateStart.ToShortDateString());
+				}
+				else{
+					row.Cells.Add("");
+				}
+				if(RepeatChargeList[i].DateStop.Year>1880){
+					row.Cells.Add(RepeatChargeList[i].DateStop.ToShortDateString());
+				}
+				else{
+					row.Cells.Add("");
+				}
+				row.Cells.Add(RepeatChargeList[i].Note);
+				gridRepeat.Rows.Add(row);
+			}
+			gridRepeat.EndUpdate();
 		}
 
 		/// <summary>Fills the commlog table on this form.</summary>
@@ -1242,6 +1338,9 @@ namespace OpenDental{
 					tempAcctLine.Code=arrayProc[tempCountProc].ADACode;
 					tempAcctLine.Tooth=Tooth.ToInternat(arrayProc[tempCountProc].ToothNum);
 					tempAcctLine.Description=ProcedureCodes.GetProcCode(arrayProc[tempCountProc].ADACode).Descript;
+					if(arrayProc[tempCountProc].MedicalCode!=""){
+						tempAcctLine.Description=Lan.g(this,"(medical)")+" "+tempAcctLine.Description;
+					}
 					double fee=arrayProc[tempCountProc].ProcFee;
 					double insEst=ClaimProcs.ProcEstNotReceived(ClaimProcList,arrayProc[tempCountProc].ProcNum);
 					double insPay=ClaimProcs.ProcInsPay(ClaimProcList,arrayProc[tempCountProc].ProcNum);
@@ -1828,6 +1927,9 @@ namespace OpenDental{
 					case "PayPlan":
 						OnPayPlan_Click();
 						break;
+					case "RepeatCharge":
+						OnRepeatCharge_Click();
+						break;
 					case "Statement":
 						OnStatement_Click();
 						break;
@@ -1888,8 +1990,8 @@ namespace OpenDental{
 		}
 
 		private void OnIns_Click() {
-			if(PatCur.PriPlanNum==0){
-				MessageBox.Show(Lan.g(this,"Patient does not have insurance."));
+			if(PatPlanList.Length==0){
+				MsgBox.Show(this,"Patient does not have insurance.");
 				return;
 			}
 			if(gridAccount.SelectedIndices.Length==0){
@@ -1901,7 +2003,7 @@ namespace OpenDental{
 					if(arrayProc[((AcctLine)AcctLineAL[i]).Index].ProcFee==0){
 						continue;//ignore zero fee procedures, but user can explicitly select them
 					}
-					if(arrayProc[((AcctLine)AcctLineAL[i]).Index].NeedsSent(ClaimProcList,PatCur.PriPlanNum)){
+					if(arrayProc[((AcctLine)AcctLineAL[i]).Index].NeedsSent(ClaimProcList,PatPlans.GetPlanNum(PatPlanList,1))){
 						gridAccount.SetSelected(i,true);
 					}
 				}
@@ -1917,12 +2019,9 @@ namespace OpenDental{
 				}
 			}
 			if(!allAreProcedures){
-				MessageBox.Show(Lan.g(this,"You can only select procedures."));
+				MsgBox.Show(this,"You can only select procedures.");
 				return;
 			}
-			//no longer tests for noBillIns here
-			//no longer tests for ProcIsAttachedToClaim here
-			//spk had made an alteration to disallow option to create a second claim on same procs. 
 			Claim ClaimCur=CreateClaim("P");
 			if(ClaimCur.ClaimNum==0){
 				ModuleSelected(PatCur.PatNum);
@@ -1932,7 +2031,7 @@ namespace OpenDental{
 			//ClaimProc[] ClaimProcsForClaim=ClaimProcs.GetForClaim(ClaimProcList,ClaimCur.ClaimNum);
 			ClaimCur.ClaimStatus="W";
 			ClaimCur.DateSent=DateTime.Today;
-			Claims.CalculateAndUpdate(ClaimProcList,ProcList,PatCur,PlanList,ClaimCur);
+			Claims.CalculateAndUpdate(ClaimProcList,ProcList,PlanList,ClaimCur,PatPlanList);
 			Claims.Cur=ClaimCur;
 			FormClaimEdit FormCE=new FormClaimEdit(PatCur,FamCur);
 			FormCE.IsNew=true;//this causes it to delete the claim if cancelling.
@@ -1942,7 +2041,7 @@ namespace OpenDental{
 				return;//will have already been deleted
 			}
 			//Claim priClaim=Claims.Cur;//for use a few lines down to display dialog
-			if(PatCur.SecPlanNum>0){
+			if(PatPlans.GetPlanNum(PatPlanList,2)>0){
 				ClaimCur=CreateClaim("S");
 				if(ClaimCur.ClaimNum==0){
 					ModuleSelected(PatCur.PatNum);
@@ -1950,22 +2049,31 @@ namespace OpenDental{
 				}
 				ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
 				ClaimCur.ClaimStatus="H";
-				Claims.CalculateAndUpdate(ClaimProcList,ProcList,PatCur,PlanList,ClaimCur);
+				Claims.CalculateAndUpdate(ClaimProcList,ProcList,PlanList,ClaimCur,PatPlanList);
 				//Claims.Cur=ClaimCur;
 			}
 			ModuleSelected(PatCur.PatNum);
 		}
 
-		///<summary>The only validation that's been done is just to make sure that only procedures are selected.  All validation on the procedures selected is done here.  Creates and saves claim initially, attaching all selected procedures.  But it does not refresh any data. Does not do a final update of the new claim.  Does not enter fee amounts.  claimType=P,S,or Other</summary>
+		///<summary>The only validation that's been done is just to make sure that only procedures are selected.  All validation on the procedures selected is done here.  Creates and saves claim initially, attaching all selected procedures.  But it does not refresh any data. Does not do a final update of the new claim.  Does not enter fee amounts.  claimType=P,S,Med,or Other</summary>
 		private Claim CreateClaim(string claimType){
 			InsPlan PlanCur=new InsPlan();
 			Relat RelatOther=Relat.Self;
 			switch(claimType){
 				case "P":
-					PlanCur=InsPlans.GetPlan(PatCur.PriPlanNum,PlanList);
+					PlanCur=InsPlans.GetPlan(PatPlans.GetPlanNum(PatPlanList,1),PlanList);
 					break;
 				case "S":
-					PlanCur=InsPlans.GetPlan(PatCur.SecPlanNum,PlanList);
+					PlanCur=InsPlans.GetPlan(PatPlans.GetPlanNum(PatPlanList,2),PlanList);
+					break;
+				case "Med":
+					//It's already been verified that a med plan exists
+					for(int i=0;i<PatPlanList.Length;i++){
+						if(InsPlans.GetPlan(PatPlanList[i].PlanNum,PlanList).IsMedical){
+							PlanCur=InsPlans.GetPlan(PatPlanList[i].PlanNum,PlanList);
+							break;
+						}
+					}
 					break;
 				case "Other":
 					FormInsPlanSelect FormIPS=new FormInsPlanSelect(PatCur.PatNum);
@@ -2007,8 +2115,7 @@ namespace OpenDental{
 				//and create any missing estimates. This handles claims to 3rd and 4th ins co's.
 				if(claimProcs[i]==null){
 					claimProcs[i]=new ClaimProc();
-					claimProcs[i].CreateEst(arrayProc[((AcctLine)AcctLineAL[gridAccount.SelectedIndices[i]])
-						.Index],PlanCur);
+					claimProcs[i].CreateEst(arrayProc[((AcctLine)AcctLineAL[gridAccount.SelectedIndices[i]]).Index],PlanCur);
 				}
 			}
 			//now, all claimProcs have a valid value
@@ -2034,29 +2141,25 @@ namespace OpenDental{
 			//datereceived
 			switch(claimType){
 				case "P":
-					ClaimCur.PlanNum=PatCur.PriPlanNum;
-					ClaimCur.PatRelat=PatCur.PriRelationship;
+					ClaimCur.PlanNum=PatPlans.GetPlanNum(PatPlanList,1);
+					ClaimCur.PatRelat=PatPlans.GetRelat(PatPlanList,1);
 					ClaimCur.ClaimType="P";
-					ClaimCur.PlanNum2=PatCur.SecPlanNum;//might be 0 if no sec ins
-					ClaimCur.PatRelat2=PatCur.SecRelationship;
+					ClaimCur.PlanNum2=PatPlans.GetPlanNum(PatPlanList,2);//might be 0 if no sec ins
+					ClaimCur.PatRelat2=PatPlans.GetRelat(PatPlanList,2);
 					break;
 				case "S":
-					ClaimCur.PlanNum=PatCur.SecPlanNum;
-					ClaimCur.PatRelat=PatCur.SecRelationship;
+					ClaimCur.PlanNum=PatPlans.GetPlanNum(PatPlanList,2);
+					ClaimCur.PatRelat=PatPlans.GetRelat(PatPlanList,2);
 					ClaimCur.ClaimType="S";
-					ClaimCur.PlanNum2=PatCur.PriPlanNum;
-					ClaimCur.PatRelat2=PatCur.PriRelationship;
+					ClaimCur.PlanNum2=PatPlans.GetPlanNum(PatPlanList,1);
+					ClaimCur.PatRelat2=PatPlans.GetRelat(PatPlanList,1);
+					break;
+				case "Med":
+					ClaimCur.PlanNum=PlanCur.PlanNum;
+					ClaimCur.PatRelat=Relat.Self;
+					ClaimCur.ClaimType="Other";
 					break;
 				case "Other":
-					//FormInsPlanSelect FormIPS=new FormInsPlanSelect();
-					//FormIPS.ViewRelat=true;
-					//FormIPS.ShowDialog();
-					//if(FormIPS.DialogResult!=DialogResult.OK){
-					//	Claims.Cur=ClaimCur;
-					//	Claims.DeleteCur();
-					//	return new Claim();
-					//}
-					//PlanCur=FormIPS.SelectedPlan;
 					ClaimCur.PlanNum=PlanCur.PlanNum;
 					ClaimCur.PatRelat=RelatOther;
 					ClaimCur.ClaimType="Other";
@@ -2086,13 +2189,14 @@ namespace OpenDental{
 			//ClaimCur.DedApplied=0;//calcs in ClaimEdit.
 			//preauthstring, etc, etc
 			ClaimCur.IsProsthesis="N";
-			if(Prefs.GetInt("InsBillingProv")==0){//this can later be extended to include a 3rd option
-				//default=0
+			if(Prefs.GetInt("InsBillingProv")==0){//default=0
 				ClaimCur.ProvBill=Prefs.GetInt("PracticeDefaultProv");
 			}
-			else{
-				//treat=1
+			else if(Prefs.GetInt("InsBillingProv")==-1){//treat=-1
 				ClaimCur.ProvBill=ClaimCur.ProvTreat;//OK if zero, because it will get fixed in claim
+			}
+			else{
+				ClaimCur.ProvBill=Prefs.GetInt("InsBillingProv");
 			}
 			ClaimCur.EmployRelated=YN.No;
 			//attach procedures
@@ -2118,11 +2222,11 @@ namespace OpenDental{
 				//ClaimProcCur.PlanNum=Claims.Cur.PlanNum;
 				//ClaimProcCur.DateCP=ProcCur.ProcDate;
 				//writeoff
-				if(PlanCur.UseAltCode 
-					&& ((ProcedureCode)ProcedureCodes.HList[ProcCur.ADACode]).AlternateCode1!="")
-				{
-					claimProcs[i].CodeSent
-						=((ProcedureCode)ProcedureCodes.HList[ProcCur.ADACode]).AlternateCode1;
+				if(PlanCur.UseAltCode && ((ProcedureCode)ProcedureCodes.HList[ProcCur.ADACode]).AlternateCode1!=""){
+					claimProcs[i].CodeSent=((ProcedureCode)ProcedureCodes.HList[ProcCur.ADACode]).AlternateCode1;
+				}
+				else if(PlanCur.IsMedical && ProcCur.MedicalCode!=""){
+					claimProcs[i].CodeSent=ProcCur.MedicalCode;
 				}
 				else{
 					claimProcs[i].CodeSent=ProcCur.ADACode;
@@ -2136,7 +2240,7 @@ namespace OpenDental{
 		}
 
 		private void menuInsPri_Click(object sender, System.EventArgs e) {
-			if(PatCur.PriPlanNum==0){
+			if(PatPlanList.Length==0){
 				MessageBox.Show(Lan.g(this,"Patient does not have insurance."));
 				return;
 			}
@@ -2166,15 +2270,15 @@ namespace OpenDental{
 			Claims.Cur=ClaimCur;
 			//still have not saved some changes to the claim at this point
 			FormClaimEdit FormCE=new FormClaimEdit(PatCur,FamCur);
-			Claims.CalculateAndUpdate(ClaimProcList,ProcList,PatCur,PlanList,Claims.Cur);
+			Claims.CalculateAndUpdate(ClaimProcList,ProcList,PlanList,Claims.Cur,PatPlanList);
 			FormCE.IsNew=true;//this causes it to delete the claim if cancelling.
 			FormCE.ShowDialog();
 			ModuleSelected(PatCur.PatNum);
 		}
 
 		private void menuInsSec_Click(object sender, System.EventArgs e) {
-			if(PatCur.PriPlanNum==0 || PatCur.SecPlanNum==0){
-				MessageBox.Show(Lan.g(this,"Patient does not have insurance."));
+			if(PatPlanList.Length<2){
+				MessageBox.Show(Lan.g(this,"Patient does not have secondary insurance."));
 				return;
 			}
 			if(gridAccount.SelectedIndices.Length==0){
@@ -2200,8 +2304,68 @@ namespace OpenDental{
 			//ClaimProc[] ClaimProcsForClaim=ClaimProcs.GetForClaim(ClaimProcList,ClaimCur.ClaimNum);
 			ClaimCur.ClaimStatus="W";
 			ClaimCur.DateSent=DateTime.Today;
-			Claims.CalculateAndUpdate(ClaimProcList,ProcList,PatCur,PlanList,ClaimCur);
+			Claims.CalculateAndUpdate(ClaimProcList,ProcList,PlanList,ClaimCur,PatPlanList);
 			Claims.Cur=ClaimCur;
+			FormClaimEdit FormCE=new FormClaimEdit(PatCur,FamCur);
+			FormCE.IsNew=true;//this causes it to delete the claim if cancelling.
+			FormCE.ShowDialog();
+			ModuleSelected(PatCur.PatNum);
+		}
+
+		private void menuInsMedical_Click(object sender, System.EventArgs e) {
+			int medPlanNum=0;
+			for(int i=0;i<PatPlanList.Length;i++){
+				if(InsPlans.GetPlan(PatPlanList[i].PlanNum,PlanList).IsMedical){
+					medPlanNum=PatPlanList[i].PlanNum;
+					break;
+				}
+			}
+			if(medPlanNum==0){
+				MsgBox.Show(this,"Patient does not have medical insurance.");
+				return;
+			}
+			if(gridAccount.SelectedIndices.Length==0){
+				//autoselect procedures
+				for(int i=0;i<AcctLineAL.Count;i++){//loop through every line showing on screen
+					if(((AcctLine)AcctLineAL[i]).Type!=AcctType.Proc){
+						continue;//ignore non-procedures
+					}
+					if(arrayProc[((AcctLine)AcctLineAL[i]).Index].ProcFee==0){
+						continue;//ignore zero fee procedures, but user can explicitly select them
+					}
+					if(arrayProc[((AcctLine)AcctLineAL[i]).Index].MedicalCode==""){
+						continue;//ignore non-medical procedures
+					}
+					if(arrayProc[((AcctLine)AcctLineAL[i]).Index].NeedsSent(ClaimProcList,medPlanNum)){
+						gridAccount.SetSelected(i,true);
+					}
+				}
+				if(gridAccount.SelectedIndices.Length==0){//if still none selected
+					MsgBox.Show(this,"Please select procedures first.");
+					return;
+				}
+			}
+			bool allAreProcedures=true;
+			for(int i=0;i<gridAccount.SelectedIndices.Length;i++){
+				if(((AcctLine)AcctLineAL[gridAccount.SelectedIndices[i]]).Type!=AcctType.Proc){
+					allAreProcedures=false;
+				}
+			}
+			if(!allAreProcedures){
+				MsgBox.Show(this,"You can only select procedures.");
+				return;
+			}
+			Claim ClaimCur=CreateClaim("Med");
+			if(ClaimCur.ClaimNum==0){
+				ModuleSelected(PatCur.PatNum);
+				return;
+			}
+			ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
+			ClaimCur.ClaimStatus="W";
+			ClaimCur.DateSent=DateTime.Today;
+			Claims.CalculateAndUpdate(ClaimProcList,ProcList,PlanList,ClaimCur,PatPlanList);
+			Claims.Cur=ClaimCur;
+			//still have not saved some changes to the claim at this point
 			FormClaimEdit FormCE=new FormClaimEdit(PatCur,FamCur);
 			FormCE.IsNew=true;//this causes it to delete the claim if cancelling.
 			FormCE.ShowDialog();
@@ -2230,7 +2394,7 @@ namespace OpenDental{
 			}
 			ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
 			//ClaimProc[] ClaimProcsForClaim=ClaimProcs.GetForClaim(ClaimProcList,ClaimCur.ClaimNum);
-			Claims.CalculateAndUpdate(ClaimProcList,ProcList,PatCur,PlanList,ClaimCur);
+			Claims.CalculateAndUpdate(ClaimProcList,ProcList,PlanList,ClaimCur,PatPlanList);
 			Claims.Cur=ClaimCur;
 			//still have not saved some changes to the claim at this point
 			FormClaimEdit FormCE=new FormClaimEdit(PatCur,FamCur);
@@ -2261,6 +2425,49 @@ namespace OpenDental{
 			else{
 				ModuleSelected(PatCur.PatNum);
 			}
+		}
+
+		private void OnRepeatCharge_Click(){
+			/*RepeatCharge repeat=new RepeatCharge();
+			repeat.PatNum=PatCur.PatNum;
+			repeat.DateStart=DateTime.Today;
+			FormRepeatChargeEdit FormR=new FormRepeatChargeEdit(repeat);
+			FormR.IsNew=true;
+			FormR.ShowDialog();
+			ModuleSelected(PatCur.PatNum);*/
+		}
+
+		private void menuItemRepeatStand_Click(object sender, System.EventArgs e) {
+			if(!ProcedureCodes.HList.ContainsKey("001")){
+				return;
+			}
+			RepeatCharge repeat=new RepeatCharge();
+			repeat.PatNum=PatCur.PatNum;
+			repeat.ADACode="001";
+			repeat.ChargeAmt=139;
+			repeat.DateStart=DateTime.Today;
+			repeat.DateStop=DateTime.Today.AddMonths(11);
+			repeat.Insert();
+			repeat=new RepeatCharge();
+			repeat.PatNum=PatCur.PatNum;
+			repeat.ADACode="001";
+			repeat.ChargeAmt=99;
+			repeat.DateStart=DateTime.Today.AddYears(1);
+			repeat.Insert();
+			ModuleSelected(PatCur.PatNum);
+		}
+
+		private void menuItemRepeatEmail_Click(object sender, System.EventArgs e) {
+			if(!ProcedureCodes.HList.ContainsKey("008")){
+				return;
+			}
+			RepeatCharge repeat=new RepeatCharge();
+			repeat.PatNum=PatCur.PatNum;
+			repeat.ADACode="008";
+			repeat.ChargeAmt=89;
+			repeat.DateStart=DateTime.Today;
+			repeat.Insert();
+			ModuleSelected(PatCur.PatNum);
 		}
 
 		private void OnStatement_Click() {
@@ -2446,6 +2653,15 @@ namespace OpenDental{
 				this.OnMouseWheel(e);
 			}
 		}
+
+		private void gridRepeat_CellDoubleClick(object sender, OpenDental.UI.ODGridClickEventArgs e) {
+			FormRepeatChargeEdit FormR=new FormRepeatChargeEdit(RepeatChargeList[e.Row]);
+			FormR.ShowDialog();
+			ModuleSelected(PatCur.PatNum);
+		}
+
+		
+	
 
 		
 

@@ -5,8 +5,11 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.IO;
+using System.ServiceProcess;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
+using MySql.Data.MySqlClient;
 
 namespace OpenDental{
 	/// <summary>
@@ -15,17 +18,30 @@ namespace OpenDental{
 	public class FormBackup : System.Windows.Forms.Form{
 		private OpenDental.UI.Button butCancel;
 		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.Label label2;
-		private OpenDental.UI.Button butBrowse;
-		private OpenDental.UI.Button butSave;
-		private System.Windows.Forms.TextBox textBackupFolder;
 		private OpenDental.UI.Button butRestore;
 		private System.Windows.Forms.GroupBox groupBox1;
-		private System.Windows.Forms.CheckBox checkSkipBackup;
-		/// <summary>
-		/// Required designer variable.
-		/// </summary>
+		private System.Windows.Forms.TextBox textBox1;
+		private System.Windows.Forms.TextBox textBox2;
+		private System.Windows.Forms.TextBox textBox4;
+		private OpenDental.UI.Button butBackup;
+		private OpenDental.UI.Button butBrowseTo;
+		private OpenDental.UI.Button butBrowseFrom;
+		private OpenDental.UI.Button butBrowseRestoreFrom;
+		private System.Windows.Forms.TextBox textBox3;
+		private OpenDental.UI.Button butBrowseRestoreTo;
+		private System.Windows.Forms.TextBox textBackupToPath;
+		private System.Windows.Forms.TextBox textBackupFromPath;
+		private System.Windows.Forms.TextBox textBackupRestoreFromPath;
+		private System.Windows.Forms.TextBox textBackupRestoreToPath;
+		private System.Windows.Forms.TextBox textBox5;
+		private System.Windows.Forms.TextBox textBackupRestoreAtoZToPath;
+		private OpenDental.UI.Button butBrowseRestoreAtoZTo;
+		private OpenDental.UI.Button butSave;
+		//Required designer variable.
 		private System.ComponentModel.Container components = null;
+		private FormProgress FormP;
+		///<summary>Only used by one worker thread at a time. The value of the progressbar (in MB). Still passed in by delegate.</summary>
+		private double curVal;
 
 		///<summary></summary>
 		public FormBackup()
@@ -59,14 +75,26 @@ namespace OpenDental{
 		{
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormBackup));
 			this.butCancel = new OpenDental.UI.Button();
-			this.butSave = new OpenDental.UI.Button();
+			this.butBackup = new OpenDental.UI.Button();
 			this.label1 = new System.Windows.Forms.Label();
-			this.label2 = new System.Windows.Forms.Label();
-			this.textBackupFolder = new System.Windows.Forms.TextBox();
-			this.butBrowse = new OpenDental.UI.Button();
+			this.textBackupToPath = new System.Windows.Forms.TextBox();
+			this.butBrowseTo = new OpenDental.UI.Button();
 			this.butRestore = new OpenDental.UI.Button();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
-			this.checkSkipBackup = new System.Windows.Forms.CheckBox();
+			this.textBox5 = new System.Windows.Forms.TextBox();
+			this.butBrowseRestoreAtoZTo = new OpenDental.UI.Button();
+			this.textBackupRestoreAtoZToPath = new System.Windows.Forms.TextBox();
+			this.textBox3 = new System.Windows.Forms.TextBox();
+			this.butBrowseRestoreTo = new OpenDental.UI.Button();
+			this.textBackupRestoreToPath = new System.Windows.Forms.TextBox();
+			this.textBox4 = new System.Windows.Forms.TextBox();
+			this.butBrowseRestoreFrom = new OpenDental.UI.Button();
+			this.textBackupRestoreFromPath = new System.Windows.Forms.TextBox();
+			this.textBox1 = new System.Windows.Forms.TextBox();
+			this.textBox2 = new System.Windows.Forms.TextBox();
+			this.butBrowseFrom = new OpenDental.UI.Button();
+			this.textBackupFromPath = new System.Windows.Forms.TextBox();
+			this.butSave = new OpenDental.UI.Button();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -77,66 +105,57 @@ namespace OpenDental{
 			this.butCancel.Autosize = true;
 			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butCancel.Location = new System.Drawing.Point(519, 348);
+			this.butCancel.Location = new System.Drawing.Point(660, 477);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(86, 26);
 			this.butCancel.TabIndex = 0;
 			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
-			// butSave
+			// butBackup
 			// 
-			this.butSave.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.butSave.Autosize = true;
-			this.butSave.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butSave.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butSave.Location = new System.Drawing.Point(519, 176);
-			this.butSave.Name = "butSave";
-			this.butSave.Size = new System.Drawing.Size(86, 26);
-			this.butSave.TabIndex = 1;
-			this.butSave.Text = "Backup";
-			this.butSave.Click += new System.EventHandler(this.butBackup_Click);
+			this.butBackup.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butBackup.Autosize = true;
+			this.butBackup.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butBackup.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butBackup.Location = new System.Drawing.Point(665, 190);
+			this.butBackup.Name = "butBackup";
+			this.butBackup.Size = new System.Drawing.Size(86, 26);
+			this.butBackup.TabIndex = 1;
+			this.butBackup.Text = "Backup";
+			this.butBackup.Click += new System.EventHandler(this.butBackup_Click);
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(18, 12);
+			this.label1.Location = new System.Drawing.Point(18, 5);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(611, 60);
+			this.label1.Size = new System.Drawing.Size(713, 28);
 			this.label1.TabIndex = 2;
-			this.label1.Text = @"This only backs up the current database and does not include images.  If you have images in your A to Z folder, be sure to back those up separately.  BACKUPS ARE USELESS UNLESS YOU REGULARLY VERIFY THEIR QUALITY BY TAKING A BACKUP HOME AND RESTORING IT TO YOUR HOME COMPUTER.  We suggest an inexpensive USB flash drive for this purpose.";
+			this.label1.Text = "BACKUPS ARE USELESS UNLESS YOU REGULARLY VERIFY THEIR QUALITY BY TAKING A BACKUP " +
+				"HOME AND RESTORING IT TO YOUR HOME COMPUTER.  We suggest an inexpensive USB flas" +
+				"h drive for this purpose.";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
-			// label2
+			// textBackupToPath
 			// 
-			this.label2.Location = new System.Drawing.Point(16, 94);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(282, 23);
-			this.label2.TabIndex = 3;
-			this.label2.Text = "Default Backup Folder:";
-			this.label2.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			this.textBackupToPath.Location = new System.Drawing.Point(18, 193);
+			this.textBackupToPath.Name = "textBackupToPath";
+			this.textBackupToPath.Size = new System.Drawing.Size(481, 20);
+			this.textBackupToPath.TabIndex = 4;
+			this.textBackupToPath.Text = "";
 			// 
-			// textBackupFolder
+			// butBrowseTo
 			// 
-			this.textBackupFolder.Location = new System.Drawing.Point(18, 121);
-			this.textBackupFolder.Name = "textBackupFolder";
-			this.textBackupFolder.Size = new System.Drawing.Size(481, 20);
-			this.textBackupFolder.TabIndex = 4;
-			this.textBackupFolder.Text = "";
-			// 
-			// butBrowse
-			// 
-			this.butBrowse.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butBrowse.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.butBrowse.Autosize = true;
-			this.butBrowse.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butBrowse.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butBrowse.Location = new System.Drawing.Point(519, 118);
-			this.butBrowse.Name = "butBrowse";
-			this.butBrowse.Size = new System.Drawing.Size(86, 26);
-			this.butBrowse.TabIndex = 5;
-			this.butBrowse.Text = "Browse";
-			this.butBrowse.Click += new System.EventHandler(this.butBrowse_Click);
+			this.butBrowseTo.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butBrowseTo.Autosize = true;
+			this.butBrowseTo.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butBrowseTo.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butBrowseTo.Location = new System.Drawing.Point(512, 190);
+			this.butBrowseTo.Name = "butBrowseTo";
+			this.butBrowseTo.Size = new System.Drawing.Size(86, 26);
+			this.butBrowseTo.TabIndex = 5;
+			this.butBrowseTo.Text = "Browse";
+			this.butBrowseTo.Click += new System.EventHandler(this.butBrowseTo_Click);
 			// 
 			// butRestore
 			// 
@@ -145,7 +164,7 @@ namespace OpenDental{
 			this.butRestore.Autosize = true;
 			this.butRestore.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butRestore.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butRestore.Location = new System.Drawing.Point(493, 19);
+			this.butRestore.Location = new System.Drawing.Point(648, 170);
 			this.butRestore.Name = "butRestore";
 			this.butRestore.Size = new System.Drawing.Size(86, 26);
 			this.butRestore.TabIndex = 6;
@@ -154,38 +173,192 @@ namespace OpenDental{
 			// 
 			// groupBox1
 			// 
-			this.groupBox1.Controls.Add(this.checkSkipBackup);
+			this.groupBox1.Controls.Add(this.textBox5);
+			this.groupBox1.Controls.Add(this.butBrowseRestoreAtoZTo);
+			this.groupBox1.Controls.Add(this.textBackupRestoreAtoZToPath);
+			this.groupBox1.Controls.Add(this.textBox3);
+			this.groupBox1.Controls.Add(this.butBrowseRestoreTo);
+			this.groupBox1.Controls.Add(this.textBackupRestoreToPath);
+			this.groupBox1.Controls.Add(this.textBox4);
+			this.groupBox1.Controls.Add(this.butBrowseRestoreFrom);
+			this.groupBox1.Controls.Add(this.textBackupRestoreFromPath);
 			this.groupBox1.Controls.Add(this.butRestore);
 			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox1.Location = new System.Drawing.Point(18, 214);
+			this.groupBox1.Location = new System.Drawing.Point(12, 236);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(590, 95);
+			this.groupBox1.Size = new System.Drawing.Size(747, 213);
 			this.groupBox1.TabIndex = 8;
 			this.groupBox1.TabStop = false;
-			this.groupBox1.Text = "Restore (takes a few minutes)";
+			this.groupBox1.Text = "Restore";
 			// 
-			// checkSkipBackup
+			// textBox5
 			// 
-			this.checkSkipBackup.CheckAlign = System.Drawing.ContentAlignment.TopLeft;
-			this.checkSkipBackup.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkSkipBackup.Location = new System.Drawing.Point(15, 31);
-			this.checkSkipBackup.Name = "checkSkipBackup";
-			this.checkSkipBackup.Size = new System.Drawing.Size(456, 56);
-			this.checkSkipBackup.TabIndex = 7;
-			this.checkSkipBackup.Text = "Faster - restore without backing up the current database first.  Do NOT use this " +
-				"option on your main server, but only on a secondary computer.";
-			this.checkSkipBackup.TextAlign = System.Drawing.ContentAlignment.TopLeft;
+			this.textBox5.BackColor = System.Drawing.SystemColors.Control;
+			this.textBox5.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.textBox5.Location = new System.Drawing.Point(7, 142);
+			this.textBox5.Multiline = true;
+			this.textBox5.Name = "textBox5";
+			this.textBox5.Size = new System.Drawing.Size(396, 27);
+			this.textBox5.TabIndex = 21;
+			this.textBox5.Text = "Restore A-Z images to this folder: (example:)\r\nC:\\OpenDentalData\\";
+			// 
+			// butBrowseRestoreAtoZTo
+			// 
+			this.butBrowseRestoreAtoZTo.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butBrowseRestoreAtoZTo.Autosize = true;
+			this.butBrowseRestoreAtoZTo.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butBrowseRestoreAtoZTo.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butBrowseRestoreAtoZTo.Location = new System.Drawing.Point(500, 170);
+			this.butBrowseRestoreAtoZTo.Name = "butBrowseRestoreAtoZTo";
+			this.butBrowseRestoreAtoZTo.Size = new System.Drawing.Size(86, 26);
+			this.butBrowseRestoreAtoZTo.TabIndex = 20;
+			this.butBrowseRestoreAtoZTo.Text = "Browse";
+			this.butBrowseRestoreAtoZTo.Click += new System.EventHandler(this.butBrowseRestoreAtoZTo_Click);
+			// 
+			// textBackupRestoreAtoZToPath
+			// 
+			this.textBackupRestoreAtoZToPath.Location = new System.Drawing.Point(6, 173);
+			this.textBackupRestoreAtoZToPath.Name = "textBackupRestoreAtoZToPath";
+			this.textBackupRestoreAtoZToPath.Size = new System.Drawing.Size(481, 20);
+			this.textBackupRestoreAtoZToPath.TabIndex = 19;
+			this.textBackupRestoreAtoZToPath.Text = "";
+			// 
+			// textBox3
+			// 
+			this.textBox3.BackColor = System.Drawing.SystemColors.Control;
+			this.textBox3.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.textBox3.Location = new System.Drawing.Point(7, 81);
+			this.textBox3.Multiline = true;
+			this.textBox3.Name = "textBox3";
+			this.textBox3.Size = new System.Drawing.Size(247, 27);
+			this.textBox3.TabIndex = 18;
+			this.textBox3.Text = "Restore database TO this folder: (example:)\r\nC:\\mysql\\data\\";
+			// 
+			// butBrowseRestoreTo
+			// 
+			this.butBrowseRestoreTo.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butBrowseRestoreTo.Autosize = true;
+			this.butBrowseRestoreTo.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butBrowseRestoreTo.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butBrowseRestoreTo.Location = new System.Drawing.Point(500, 109);
+			this.butBrowseRestoreTo.Name = "butBrowseRestoreTo";
+			this.butBrowseRestoreTo.Size = new System.Drawing.Size(86, 26);
+			this.butBrowseRestoreTo.TabIndex = 17;
+			this.butBrowseRestoreTo.Text = "Browse";
+			this.butBrowseRestoreTo.Click += new System.EventHandler(this.butBrowseRestoreTo_Click);
+			// 
+			// textBackupRestoreToPath
+			// 
+			this.textBackupRestoreToPath.Location = new System.Drawing.Point(6, 112);
+			this.textBackupRestoreToPath.Name = "textBackupRestoreToPath";
+			this.textBackupRestoreToPath.Size = new System.Drawing.Size(481, 20);
+			this.textBackupRestoreToPath.TabIndex = 16;
+			this.textBackupRestoreToPath.Text = "";
+			// 
+			// textBox4
+			// 
+			this.textBox4.BackColor = System.Drawing.SystemColors.Control;
+			this.textBox4.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.textBox4.Location = new System.Drawing.Point(7, 20);
+			this.textBox4.Multiline = true;
+			this.textBox4.Name = "textBox4";
+			this.textBox4.Size = new System.Drawing.Size(280, 29);
+			this.textBox4.TabIndex = 15;
+			this.textBox4.Text = "Restore FROM this folder: (example:)\r\nD:\\";
+			// 
+			// butBrowseRestoreFrom
+			// 
+			this.butBrowseRestoreFrom.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butBrowseRestoreFrom.Autosize = true;
+			this.butBrowseRestoreFrom.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butBrowseRestoreFrom.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butBrowseRestoreFrom.Location = new System.Drawing.Point(500, 47);
+			this.butBrowseRestoreFrom.Name = "butBrowseRestoreFrom";
+			this.butBrowseRestoreFrom.Size = new System.Drawing.Size(86, 26);
+			this.butBrowseRestoreFrom.TabIndex = 14;
+			this.butBrowseRestoreFrom.Text = "Browse";
+			this.butBrowseRestoreFrom.Click += new System.EventHandler(this.butBrowseRestoreFrom_Click);
+			// 
+			// textBackupRestoreFromPath
+			// 
+			this.textBackupRestoreFromPath.Location = new System.Drawing.Point(6, 50);
+			this.textBackupRestoreFromPath.Name = "textBackupRestoreFromPath";
+			this.textBackupRestoreFromPath.Size = new System.Drawing.Size(481, 20);
+			this.textBackupRestoreFromPath.TabIndex = 13;
+			this.textBackupRestoreFromPath.Text = "";
+			// 
+			// textBox1
+			// 
+			this.textBox1.BackColor = System.Drawing.SystemColors.Control;
+			this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.textBox1.Location = new System.Drawing.Point(19, 136);
+			this.textBox1.Multiline = true;
+			this.textBox1.Name = "textBox1";
+			this.textBox1.Size = new System.Drawing.Size(279, 55);
+			this.textBox1.TabIndex = 9;
+			this.textBox1.Text = "Backup TO this folder: (examples:)\r\nD:\\\r\nD:\\Backups\\\r\n\\\\frontdesk\\backups\\";
+			// 
+			// textBox2
+			// 
+			this.textBox2.BackColor = System.Drawing.SystemColors.Control;
+			this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.textBox2.Location = new System.Drawing.Point(19, 62);
+			this.textBox2.Multiline = true;
+			this.textBox2.Name = "textBox2";
+			this.textBox2.Size = new System.Drawing.Size(240, 43);
+			this.textBox2.TabIndex = 12;
+			this.textBox2.Text = "Backup database FROM this folder: (examples:)\r\nC:\\mysql\\data\\\r\n\\\\server\\mysql\\dat" +
+				"a\\";
+			// 
+			// butBrowseFrom
+			// 
+			this.butBrowseFrom.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butBrowseFrom.Autosize = true;
+			this.butBrowseFrom.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butBrowseFrom.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butBrowseFrom.Location = new System.Drawing.Point(512, 104);
+			this.butBrowseFrom.Name = "butBrowseFrom";
+			this.butBrowseFrom.Size = new System.Drawing.Size(86, 26);
+			this.butBrowseFrom.TabIndex = 11;
+			this.butBrowseFrom.Text = "Browse";
+			this.butBrowseFrom.Click += new System.EventHandler(this.butBrowseFrom_Click);
+			// 
+			// textBackupFromPath
+			// 
+			this.textBackupFromPath.Location = new System.Drawing.Point(18, 107);
+			this.textBackupFromPath.Name = "textBackupFromPath";
+			this.textBackupFromPath.Size = new System.Drawing.Size(481, 20);
+			this.textBackupFromPath.TabIndex = 10;
+			this.textBackupFromPath.Text = "";
+			// 
+			// butSave
+			// 
+			this.butSave.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butSave.Autosize = true;
+			this.butSave.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butSave.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butSave.Location = new System.Drawing.Point(19, 477);
+			this.butSave.Name = "butSave";
+			this.butSave.Size = new System.Drawing.Size(86, 26);
+			this.butSave.TabIndex = 13;
+			this.butSave.Text = "Save Defaults";
+			this.butSave.Click += new System.EventHandler(this.butSave_Click);
 			// 
 			// FormBackup
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(636, 398);
-			this.Controls.Add(this.groupBox1);
-			this.Controls.Add(this.butBrowse);
-			this.Controls.Add(this.textBackupFolder);
+			this.ClientSize = new System.Drawing.Size(777, 526);
 			this.Controls.Add(this.butSave);
+			this.Controls.Add(this.textBox2);
+			this.Controls.Add(this.butBrowseFrom);
+			this.Controls.Add(this.textBackupFromPath);
+			this.Controls.Add(this.textBox1);
+			this.Controls.Add(this.butBrowseTo);
+			this.Controls.Add(this.textBackupToPath);
+			this.Controls.Add(this.butBackup);
 			this.Controls.Add(this.butCancel);
-			this.Controls.Add(this.label2);
+			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.label1);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
@@ -202,193 +375,450 @@ namespace OpenDental{
 		#endregion
 
 		private void FormBackup_Load(object sender, System.EventArgs e) {
-			textBackupFolder.Text=Prefs.GetString("BackupPath");//already includes the \
-			DataConnection dcon=new DataConnection();
+			//already include the \
+			textBackupFromPath.Text=Prefs.GetString("BackupFromPath");
+			textBackupToPath.Text=Prefs.GetString("BackupToPath");
+			textBackupRestoreFromPath.Text=Prefs.GetString("BackupRestoreFromPath");
+			textBackupRestoreToPath.Text=Prefs.GetString("BackupRestoreToPath");
+			textBackupRestoreAtoZToPath.Text=Prefs.GetString("BackupRestoreAtoZToPath");
 		}
 
-		private void butBrowse_Click(object sender, System.EventArgs e) {
+		private void butBrowseFrom_Click(object sender, System.EventArgs e) {
 			FolderBrowserDialog browserDlg=new FolderBrowserDialog();
-			browserDlg.SelectedPath=textBackupFolder.Text;
+			browserDlg.SelectedPath=textBackupFromPath.Text;
 			if(browserDlg.ShowDialog()==DialogResult.Cancel){
 				return;
 			}
-			textBackupFolder.Text=browserDlg.SelectedPath;
-			if(textBackupFolder.Text==Prefs.GetString("BackupPath")){
-				return;//already default
+			textBackupFromPath.Text=browserDlg.SelectedPath;
+			if(!textBackupFromPath.Text.EndsWith(@"\")){
+				textBackupFromPath.Text+=@"\";
 			}
-			if(!MsgBox.Show(this,true,"Set as default?")){
+		}
+
+		private void butBrowseTo_Click(object sender, System.EventArgs e) {
+			FolderBrowserDialog browserDlg=new FolderBrowserDialog();
+			browserDlg.SelectedPath=textBackupToPath.Text;
+			if(browserDlg.ShowDialog()==DialogResult.Cancel){
 				return;
 			}
-			if(Prefs.UpdateString("BackupPath",textBackupFolder.Text)){
-				DataValid.SetInvalid(InvalidTypes.Prefs);
-			}		
+			textBackupToPath.Text=browserDlg.SelectedPath;
+			if(!textBackupToPath.Text.EndsWith(@"\")){
+				textBackupToPath.Text+=@"\";
+			}
+		}
+
+		private void butBrowseRestoreFrom_Click(object sender, System.EventArgs e) {
+			FolderBrowserDialog browserDlg=new FolderBrowserDialog();
+			browserDlg.SelectedPath=textBackupRestoreFromPath.Text;
+			if(browserDlg.ShowDialog()==DialogResult.Cancel){
+				return;
+			}
+			textBackupRestoreFromPath.Text=browserDlg.SelectedPath;
+			if(!textBackupRestoreFromPath.Text.EndsWith(@"\")){
+				textBackupRestoreFromPath.Text+=@"\";
+			}
+		}
+
+		private void butBrowseRestoreTo_Click(object sender, System.EventArgs e) {
+			FolderBrowserDialog browserDlg=new FolderBrowserDialog();
+			browserDlg.SelectedPath=textBackupRestoreToPath.Text;
+			if(browserDlg.ShowDialog()==DialogResult.Cancel){
+				return;
+			}
+			textBackupRestoreToPath.Text=browserDlg.SelectedPath;
+			if(!textBackupRestoreToPath.Text.EndsWith(@"\")){
+				textBackupRestoreToPath.Text+=@"\";
+			}
+		}
+
+		private void butBrowseRestoreAtoZTo_Click(object sender, System.EventArgs e) {
+			FolderBrowserDialog browserDlg=new FolderBrowserDialog();
+			browserDlg.SelectedPath=textBackupRestoreAtoZToPath.Text;
+			if(browserDlg.ShowDialog()==DialogResult.Cancel){
+				return;
+			}
+			textBackupRestoreAtoZToPath.Text=browserDlg.SelectedPath;
+			if(!textBackupRestoreAtoZToPath.Text.EndsWith(@"\")){
+				textBackupRestoreAtoZToPath.Text+=@"\";
+			}
 		}
 
 		private void butBackup_Click(object sender, System.EventArgs e) {
-			//only works with mysql 4.1
-			SaveFileDialog saveDlg=new SaveFileDialog();
-			saveDlg.OverwritePrompt=false;
-			saveDlg.CheckPathExists=false;
-			saveDlg.AddExtension=true;
-			saveDlg.CreatePrompt=false;
-			saveDlg.DefaultExt="txt";
-			saveDlg.InitialDirectory=textBackupFolder.Text;
-			saveDlg.FileName=FormChooseDatabase.Database+".txt";
-			if(saveDlg.ShowDialog()==DialogResult.Cancel){
+			//test for trailing slashes
+			if(textBackupFromPath.Text!="" && !textBackupFromPath.Text.EndsWith("\\")){
+				MsgBox.Show(this,"Paths must end with \\.");
 				return;
 			}
-			Cursor=Cursors.WaitCursor;
-			//first, try to backup Setup.exe
-			if(File.Exists(Prefs.GetString("DocPath")+"Setup.exe")){//docPath includes trailing \
-				File.Copy(Prefs.GetString("DocPath")+"Setup.exe",Path.GetDirectoryName(saveDlg.FileName)+@"\DentalSetup.exe",true);
+			if(textBackupToPath.Text!="" && !textBackupToPath.Text.EndsWith("\\")){
+				MsgBox.Show(this,"Paths must end with \\.");
+				return;
 			}
-			//then, save the database			
-			using(StreamWriter sw=new StreamWriter(saveDlg.FileName,false)){
-				sw.Write("v"+Application.ProductVersion+";");
-				DataConnection dcon=new DataConnection();
-				string command="FLUSH TABLES WITH READ LOCK";//locks all tables for all databases. read still allowed.
-				dcon.NonQ(command);
-				command="SHOW TABLES";
-				DataTable table=dcon.GetTable(command);
-				string[] tableName=new string[table.Rows.Count];
-				for(int i=0;i<table.Rows.Count;i++){
-					tableName[i]=table.Rows[i][0].ToString();
-				}
-				string tempFile=Prefs.GetString("DocPath")+"TempDumpFile.txt";//for one table at a time
-				for(int i=0;i<tableName.Length;i++){
-					//delete the tempfile in preparation for dump of the next table
-					File.Delete(tempFile);//no exception if file does not exist
-					//drop table not necessary, because this requires that we start with a fresh database
-					//create table
-					command="SHOW CREATE TABLE "+tableName[i];
-					table=dcon.GetTable(command);
-					sw.Write(table.Rows[0][1].ToString()+";");
-					//data from table
-					command="SELECT * FROM "+tableName[i]+" INTO OUTFILE '"+tempFile.Replace("\\","/")+"'";
-					dcon.NonQ(command);
-					using(StreamReader sr=new StreamReader(tempFile)){
-						sw.Write(sr.ReadToEnd());
-					}
-				}
-				File.Delete(tempFile);
-				command="UNLOCK TABLES";
-				dcon.NonQ(command);
+			if(textBackupRestoreFromPath.Text!="" && !textBackupRestoreFromPath.Text.EndsWith("\\")){
+				MsgBox.Show(this,"Paths must end with \\.");
+				return;
 			}
-			Cursor=Cursors.Default;
-			DialogResult=DialogResult.Cancel;
+			if(textBackupRestoreToPath.Text!="" && !textBackupRestoreToPath.Text.EndsWith("\\")){
+				MsgBox.Show(this,"Paths must end with \\.");
+				return;
+			}
+			if(textBackupRestoreAtoZToPath.Text!="" && !textBackupRestoreAtoZToPath.Text.EndsWith("\\")){
+				MsgBox.Show(this,"Paths must end with \\.");
+				return;
+			}
+			//test saving defaults
+			if(textBackupFromPath.Text!=Prefs.GetString("BackupFromPath")
+				|| textBackupToPath.Text!=Prefs.GetString("BackupToPath")
+				|| textBackupRestoreFromPath.Text!=Prefs.GetString("BackupRestoreFromPath")
+				|| textBackupRestoreToPath.Text!=Prefs.GetString("BackupRestoreToPath")
+				|| textBackupRestoreAtoZToPath.Text!=Prefs.GetString("BackupRestoreAtoZToPath"))
+			{
+				if(MsgBox.Show(this,true,"Set as default?")){
+					Prefs.UpdateString("BackupFromPath",textBackupFromPath.Text);
+					Prefs.UpdateString("BackupToPath",textBackupToPath.Text);
+					Prefs.UpdateString("BackupRestoreFromPath",textBackupRestoreFromPath.Text);
+					Prefs.UpdateString("BackupRestoreToPath",textBackupRestoreToPath.Text);
+					Prefs.UpdateString("BackupRestoreAtoZToPath",textBackupRestoreAtoZToPath.Text);
+					DataValid.SetInvalid(InvalidTypes.Prefs);
+				}
+			}
+			string dbName=FormChooseDatabase.Database;
+			if(!Directory.Exists(textBackupFromPath.Text+dbName)){// C:\mysql\data\opendental
+				MsgBox.Show(this,"Backup FROM path is invalid.");
+				return;
+			}
+			if(!Directory.Exists(textBackupToPath.Text)){// D:\
+				MsgBox.Show(this,"Backup TO path is invalid.");
+				return;
+			}
+			FormP=new FormProgress();
+			FormP.MaxVal=100;//We will be setting maxVal from worker thread.  (double)fileSize/1024;
+			FormP.NumberMultiplication=100;
+			FormP.DisplayText="";//We will set the text from the worker thread.
+			FormP.NumberFormat="N1";
+			//start the thread that will perform the database copy
+			Thread workerThread=new Thread(new ThreadStart(InstanceMethodBackup));
+			workerThread.Start();
+			//display the progress dialog to the user:
+			FormP.ShowDialog();
+			if(FormP.DialogResult==DialogResult.Cancel){
+				workerThread.Abort();
+				return;
+			}
+			Close();
 		}
 
-		private void butRestore_Click(object sender, System.EventArgs e) {
-			OpenFileDialog openDlg=new OpenFileDialog();
-			openDlg.InitialDirectory=textBackupFolder.Text;
-			if(openDlg.ShowDialog()==DialogResult.Cancel){
+		///<summary>This is the function that the worker thread uses to perform the backup.</summary>
+		private void InstanceMethodBackup(){
+			curVal=0;
+			Invoke(new PassProgressDelegate(PassProgressToDialog),new object [] { curVal,
+				Lan.g(this,"Preparing to copy database"),//this happens very fast and probably won't be noticed.
+				100 });//max of 100 keeps dlg from closing
+			string dbName=FormChooseDatabase.Database;
+			double dbSize=GetFileSizes(textBackupFromPath.Text+dbName)/1024;
+			//lower level objects are used here to prevent closing the connection.
+			MySqlConnection con=new MySqlConnection(FormChooseDatabase.GetConnectionString());
+			MySqlCommand cmd=new MySqlCommand();
+			cmd.Connection=con;
+			cmd.CommandText="FLUSH TABLES WITH READ LOCK";//locks all tables for all databases 
+			con.Open();
+			try{
+				cmd.ExecuteNonQuery();
+				if(Directory.Exists(textBackupToPath.Text+dbName)){// D:\opendental
+					Directory.Delete(textBackupToPath.Text+dbName,true);
+				}
+				string fromPath=textBackupFromPath.Text+dbName;
+				string toPath=textBackupToPath.Text;
+				//CopyDirectory(,);
+				DirectoryInfo dirInfo=new DirectoryInfo(fromPath);//does not check to see if dir exists
+				Directory.CreateDirectory(toPath+dirInfo.Name);
+				FileInfo[] files=dirInfo.GetFiles();
+				curVal=0;//curVal gets increased
+				for(int i=0;i<files.Length;i++){
+					File.Copy(files[i].FullName,toPath+dirInfo.Name+@"\"+files[i].Name);
+					curVal+=(double)files[i].Length/(double)1024/(double)1024;
+					if(curVal<dbSize){//this avoids setting progress bar to max, which would close the dialog.
+						Invoke(new PassProgressDelegate(PassProgressToDialog),new object [] { curVal,
+							Lan.g(this,"Database: ?currentVal MB of ?maxVal MB copied"),
+							dbSize});
+					}
+				}
+				cmd.CommandText="UNLOCK TABLES";//might not be needed if con is actually closed.
+				cmd.ExecuteNonQuery();
+			}
+			catch{//for instance, if abort.
+				con.Close();
+				con.Dispose();
 				return;
 			}
-			//make sure the version is exactly the same:
-			FileStream fs=new FileStream(openDlg.FileName,FileMode.Open);
-			using(BinaryReader br=new BinaryReader(fs)){
-				char onechar;
-				string strFileVersion="";
-				while(true){
-					onechar=br.ReadChar();//gets rid of "v3.7.4.0;" or similar
-					if(onechar=='v'){
-						continue;
-					}
-					if(onechar==';'){
-						break;
-					}
-					strFileVersion+=onechar.ToString();
+			con.Close();
+			con.Dispose();
+			//A to Z folder------------------------------------------------------------------------------------
+			string atozFull=Prefs.GetString("DocPath");
+			//remove the trailing \
+			atozFull=atozFull.Substring(0,atozFull.Length-1);// C:\OpenDentalData
+			string atozDir=atozFull.Substring(atozFull.LastIndexOf(Path.DirectorySeparatorChar)+1);//OpenDentalData
+			Invoke(new PassProgressDelegate(PassProgressToDialog),new object [] { 0,
+				Lan.g(this,"Calculating size of files in A to Z folder."),
+				100 });//max of 100 keeps dlg from closing
+			int atozSize=GetFileSizes(atozFull+"\\",textBackupToPath.Text+atozDir+"\\")/1024;
+			if(!Directory.Exists(textBackupToPath.Text+atozDir)){// D:\OpenDentalData
+				Directory.CreateDirectory(textBackupToPath.Text+atozDir);// D:\OpenDentalData
+			}
+			curVal=0;
+			CopyDirectoryIncremental(atozFull+"\\",// C:\OpenDentalData\
+				textBackupToPath.Text+atozDir+"\\",// D:\OpenDentalData\
+				atozSize);
+			//force dlg to close even if no files copied or calculation was slightly off.
+			Invoke(new PassProgressDelegate(PassProgressToDialog),new object [] { 0,"",0});
+		}
+
+		///<summary>This is the function that the worker thread uses to restore the A-Z folder.</summary>
+		private void InstanceMethodRestore(){
+			curVal=0;
+			string atozFull=textBackupRestoreAtoZToPath.Text;// C:\OpenDentalData\
+			//remove the trailing \
+			atozFull=atozFull.Substring(0,atozFull.Length-1);// C:\OpenDentalData
+			string atozDir=atozFull.Substring(atozFull.LastIndexOf(Path.DirectorySeparatorChar)+1);// OpenDentalData
+			Invoke(new PassProgressDelegate(PassProgressToDialog),new object [] { 0,
+				Lan.g(this,"Database restored.\r\nCalculating size of files in A to Z folder."),
+				100 });//max of 100 keeps dlg from closing
+			int atozSize=GetFileSizes(textBackupRestoreFromPath.Text+atozDir+"\\",// D:\OpenDentalData\
+				atozFull+"\\")/1024;// C:\OpenDentalData\
+			if(!Directory.Exists(atozFull)){// C:\OpenDentalData\
+				Directory.CreateDirectory(atozFull);// C:\OpenDentalData\
+			}
+			curVal=0;
+			CopyDirectoryIncremental(textBackupRestoreFromPath.Text+atozDir+"\\",// D:\OpenDentalData\
+				atozFull+"\\",// C:\OpenDentalData\
+				atozSize);
+			//force dlg to close even if no files copied or calculation was slightly off.
+			Invoke(new PassProgressDelegate(PassProgressToDialog),new object [] { 0,"",0});
+		}
+
+		///<summary>This function gets invoked from the worker threads.</summary>
+		private void PassProgressToDialog(double currentVal,string displayText,double maxVal){
+			FormP.CurrentVal=currentVal;
+			FormP.DisplayText=displayText;
+			FormP.MaxVal=maxVal;
+		}
+
+		///<summary>Counts the total KB of all files that will need to be copied from one directory to another.  Recursive.  Only includes missing files, not changed files.  Used to display the progress bar.  Supplied paths must end in \. toPath might not exist.</summary>
+		private int GetFileSizes(string fromPath,string toPath){
+			int retVal=0;
+			DirectoryInfo dirInfo=new DirectoryInfo(fromPath);
+			DirectoryInfo[] dirs=dirInfo.GetDirectories();
+			for(int i=0;i<dirs.Length;i++){
+				retVal+=GetFileSizes(dirs[i].FullName+@"\",toPath+dirs[i].Name+@"\");
+			}
+			FileInfo[] files=dirInfo.GetFiles();//of fromPath
+			for(int i=0;i<files.Length;i++){
+				if(!File.Exists(toPath+files[i].Name)){
+					retVal+=(int)(files[i].Length/1024);
+					//Debug.WriteLine("Added: "+toPath+files[i].Name);
 				}
-				string strActualVersion=Application.ProductVersion;
-				if(strActualVersion!=strFileVersion){
-					if(File.Exists(Path.GetDirectoryName(openDlg.FileName)+@"\DentalSetup.exe")){
-						if(!MsgBox.Show(this,true,"Program versions do not match.  DentalSetup.exe will now be launched from your backup media to update the program first."))
-						{
-							return;
-						}
-						Process.Start(Path.GetDirectoryName(openDlg.FileName)+@"\DentalSetup.exe");
-						ExitApplicationNow.ExitNow();
-						return;
-					}
-					else{//Setup file not found
-						MessageBox.Show(Lan.g(this,"Program versions do not match.")+"\r\n"
-							+Lan.g(this,"Backup is version ")+strFileVersion+"\r\n"
-							+Lan.g(this,"This program is version ")+strActualVersion+"\r\n"
-							+Lan.g(this,"You need to update this program to the same version as the backup.  Try getting a copy of Setup.exe from your A-Z folder on the computer where you made this backup.")
-							);
-						return;
+			}
+			return retVal;
+		}
+
+		///<summary>Counts the total KB of all files in the given directory.  Not recursive since it's just used for db files.  Used to display the progress bar.</summary>
+		private int GetFileSizes(string fromPath){
+			int retVal=0;
+			DirectoryInfo dirInfo=new DirectoryInfo(fromPath);
+			FileInfo[] files=dirInfo.GetFiles();
+			for(int i=0;i<files.Length;i++){
+				retVal+=(int)(files[i].Length/1024);
+			}
+			return retVal;
+		}
+
+		///<summary>A recursive fuction that copies any new or changed files or folders from one directory to another.  An exception will be thrown if either directory does not already exist.  fromPath is the fully qualified path of the directory to copy.  toPath is the fully qualified path of the destination directory.  Both paths must include a trailing \.  The max size should be calculated ahead of time.  It's passed in for use in progress bar.</summary>
+		private void CopyDirectoryIncremental(string fromPath,string toPath,double maxSize){
+			if(!Directory.Exists(fromPath)){
+				throw new Exception(fromPath+" does not exist.");
+			}
+			if(!Directory.Exists(toPath)){
+				throw new Exception(toPath+" does not exist.");
+			}
+			DirectoryInfo dirInfo=new DirectoryInfo(fromPath);
+			DirectoryInfo[] dirs=dirInfo.GetDirectories();
+			for(int i=0;i<dirs.Length;i++){
+				if(!Directory.Exists(toPath+dirs[i].Name)){
+					Directory.CreateDirectory(toPath+dirs[i].Name);
+				}
+				CopyDirectoryIncremental(dirs[i].FullName+@"\",toPath+dirs[i].Name+@"\",maxSize);
+			}
+			FileInfo[] files=dirInfo.GetFiles();//of fromPath
+			for(int i=0;i<files.Length;i++){
+				if(File.Exists(toPath+files[i].Name)){
+					if(files[i].LastWriteTime!=File.GetLastWriteTime(toPath+files[i].Name)){//if modification dates don't match
+						File.Copy(files[i].FullName,toPath+files[i].Name,true);
+						//we don't show user progress of this type of copy since rare
+						/*curVal+=(double)files[i].Length/(double)1024/(double)1024;
+						if(curVal<maxSize){//this avoids setting progress bar to max, which would close the dialog.
+							Invoke(new PassProgressDelegate(PassProgressToDialog),new object [] { curVal,
+								Lan.g(this,"A to Z folder: ?currentVal MB of ?maxVal MB copied"),
+								maxSize});
+						}*/
 					}
 				}
+				else{//file doesn't exist, so copy
+					File.Copy(files[i].FullName,toPath+files[i].Name);
+					curVal+=(double)files[i].Length/(double)1024/(double)1024;
+					if(curVal<maxSize){//this avoids setting progress bar to max, which would close the dialog.
+						Invoke(new PassProgressDelegate(PassProgressToDialog),new object [] { curVal,
+							Lan.g(this,"A to Z folder: ?currentVal MB of ?maxVal MB copied"),
+							maxSize});
+					}
+				}
+			}
+		}
+
+		/*
+		///<summary>A simple function that copies a directory and all its contents to a new location.  An exception will be thrown if the directory already exists.  fromPath is the fully qualified path of the directory to copy.  toPath is the parent directory into which it will be copied.  Both paths must include a trailing \.  Only used for db copy, and includes informing the user of progress.</summary>
+		private void CopyDirectorySimplified(string fromPath,string toPath){
+			DirectoryInfo dirInfo=new DirectoryInfo(fromPath);//does not check to see if dir exists
+			Directory.CreateDirectory(toPath+dirInfo.Name);
+			DirectoryInfo[] dirs=dirInfo.GetDirectories();
+			for(int i=0;i<dirs.Length;i++){
+				CopyDirectory(dirs[i].FullName+@"\",toPath+dirInfo.Name+@"\");
+			}
+			FileInfo[] files=dirInfo.GetFiles();
+			for(int i=0;i<files.Length;i++){
+				File.Copy(files[i].FullName,toPath+dirInfo.Name+@"\"+files[i].Name);
+				curVal+=(double)files[i].Length/1024/1024;
+					//((double)(chunk*i)+((double)buffer.Length/1024))/1024;
+				Invoke(new PassProgressDelegate(PassProgressToDialog),new object [] { curVal });
+			}
+		}*/
+		
+		/*
+		///<summary>A recursive fuction that copies a directory and all its contents to a new location.  An exception will be thrown if the directory already exists.  fromPath is the fully qualified path of the directory to copy.  toPath is the parent directory into which it will be copied.  Both paths must include a trailing \.</summary>
+		private void CopyDirectory(string fromPath,string toPath){
+			DirectoryInfo dirInfo=new DirectoryInfo(fromPath);//does not check to see if dir exists
+			Directory.CreateDirectory(toPath+dirInfo.Name);
+			DirectoryInfo[] dirs=dirInfo.GetDirectories();
+			for(int i=0;i<dirs.Length;i++){
+				CopyDirectory(dirs[i].FullName+@"\",toPath+dirInfo.Name+@"\");
+			}
+			FileInfo[] files=dirInfo.GetFiles();
+			for(int i=0;i<files.Length;i++){
+				File.Copy(files[i].FullName,toPath+dirInfo.Name+@"\"+files[i].Name);
+				curVal+=(double)files[i].Length/1024/1024;
+				//((double)(chunk*i)+((double)buffer.Length/1024))/1024;
+				Invoke(new PassProgressDelegate(PassProgressToDialog),new object [] { curVal });
+			}
+		}*/
+
+		private void butRestore_Click(object sender, System.EventArgs e) {
+			if(textBackupRestoreFromPath.Text!="" && !textBackupRestoreFromPath.Text.EndsWith("\\")){
+				MsgBox.Show(this,"Paths must end with \\.");
+				return;
+			}
+			if(textBackupRestoreToPath.Text!="" && !textBackupRestoreToPath.Text.EndsWith("\\")){
+				MsgBox.Show(this,"Paths must end with \\.");
+				return;
+			}
+			if(textBackupRestoreAtoZToPath.Text!="" && !textBackupRestoreAtoZToPath.Text.EndsWith("\\")){
+				MsgBox.Show(this,"Paths must end with \\.");
+				return;
+			}
+			if(textBackupRestoreToPath.Text!="" && textBackupRestoreToPath.Text.StartsWith(@"\\")){
+				MsgBox.Show(this,"The restore database TO folder must be on this computer.");
+				return;
+			}
+			//pointless to save defaults
+			string dbName=FormChooseDatabase.Database;
+			if(!Directory.Exists(textBackupRestoreFromPath.Text+dbName)){// D:\opendental
+				MsgBox.Show(this,"Restore FROM path is invalid.");
+				return;
+			}
+			if(!Directory.Exists(textBackupRestoreToPath.Text+dbName)){// C:\mysql\data\opendental
+				MsgBox.Show(this,"Restore TO path is invalid.");
+				return;
+			}
+			if(!Directory.Exists(textBackupRestoreAtoZToPath.Text)){// C:\OpenDentalData\
+				MsgBox.Show(this,"Restore A-Z images TO path is invalid.");
+				return;
+			}
+			string atozFull=textBackupRestoreAtoZToPath.Text;// C:\OpenDentalData\
+			//remove the trailing \
+			atozFull=atozFull.Substring(0,atozFull.Length-1);// C:\OpenDentalData
+			string atozDir=atozFull.Substring(atozFull.LastIndexOf(Path.DirectorySeparatorChar)+1);// OpenDentalData
+			if(!Directory.Exists(textBackupRestoreFromPath.Text+atozDir)){// D:\OpenDentalData
+				MsgBox.Show(this,"Restore A-Z images FROM path is invalid.");
+				return;
+			}
+			string fromPath=textBackupRestoreFromPath.Text+dbName+"\\";// D:\opendental\
+			DirectoryInfo dirInfo=new DirectoryInfo(fromPath);//does not check to see if dir exists
+			if(MessageBox.Show(Lan.g(this,"Restore from backup created on")+"\r\n"
+				+dirInfo.LastWriteTime.ToString("dddd")+"  "+dirInfo.LastWriteTime.ToString()
+				,"",MessageBoxButtons.OKCancel,MessageBoxIcon.Question)==DialogResult.Cancel)
+			{
+				return;
 			}
 			Cursor=Cursors.WaitCursor;
-			if(!checkSkipBackup.Checked){
-				//create a backup of the current db before emptying it out
-				ClassConvertDatabase convertdb=new ClassConvertDatabase();
-				convertdb.MakeABackup();
-				MsgBox.Show(this,"Current data backed up");
+			//stop the service--------------------------------------------------------------------------------------
+			ServiceController sc=new ServiceController("MySQL");
+			try{
+				sc.Stop();
+				sc.WaitForStatus(ServiceControllerStatus.Stopped,new TimeSpan(0,0,10));
 			}
-			//we won't delete the current db, because it will be easier just to delete each table.
-			DataConnection dcon=new DataConnection();
-			string command="SHOW TABLES";
-			DataTable table=dcon.GetTable(command);
-			string[] tableNames=new string[table.Rows.Count];
-			for(int i=0;i<table.Rows.Count;i++){
-				tableNames[i]=table.Rows[i][0].ToString();
+			catch{
+				MsgBox.Show(this,"Unable to stop MySQL service.");
+				return;
 			}
-			for(int i=0;i<tableNames.Length;i++){
-				command="DROP TABLE "+tableNames[i];
-				dcon.NonQ(command);
-			}
-			command="ALTER DATABASE CHARACTER SET utf8";//because this is the only info that won't be part of the file.
-			dcon.NonQ(command);
-			fs=new FileStream(openDlg.FileName,FileMode.Open);
-			using(BinaryReader br=new BinaryReader(fs)){
-				char onechar;
-				while(true){
-					onechar=br.ReadChar();//gets rid of "v3.7.4.0;" or similar
-					if(onechar==';'){
-						break;
-					}
+			//rename the current database---------------------------------------------------------------------------
+			//Get a name for the new directory
+			string newDb=dbName+"backup_"+DateTime.Today.ToString("MM_dd_yyyy");
+			if(Directory.Exists(textBackupRestoreToPath.Text+newDb)){//if the new database name already exists
+				//find a unique one
+				int uniqueID=1;
+				string originalNewDb=newDb;
+				do{
+					newDb=originalNewDb+"_"+uniqueID.ToString();
+					uniqueID++;
 				}
-				string tempFile=Prefs.GetString("DocPath")+"TempDumpFile.txt";//for one table at a time
-				string tableName="";
-				StringBuilder createCmd=new StringBuilder();
-				StringBuilder tableData=new StringBuilder();	
-				while(true){
-					try{
-						onechar=br.ReadChar();
-					}
-					catch{
-						FillTableWithData(tableData,tempFile,tableName);
-						break;//this is the only possible place where we can break out of reading lines
-					}
-					if(onechar=='E' && tableData.Length>10 && tableData.ToString().Substring(tableData.Length-11,11)=="CREATE TABL"){
-						tableData.Remove(tableData.Length-11,11);
-						createCmd=new StringBuilder();
-						createCmd.Append("CREATE TABLE");
-						if(tableName!=""){//skip the first one, because no previous table to finish
-							//we'll get right back to the create table command as soon as we fill the previous table
-							FillTableWithData(tableData,tempFile,tableName);
-							tableData=new StringBuilder();
-						}
-					}
-					else if(createCmd.Length>0){//in the middle of reading the create command.
-						createCmd.Append(onechar);
-						if(onechar==';'){ //end of the create command
-							tableName=createCmd.ToString().Split(new char[] {'`'},3)[1];
-							//tableName will be used in FillTableWithData
-							dcon.NonQ(createCmd.ToString());
-							createCmd=new StringBuilder();
-						}
-					}
-					else{
-						tableData.Append(onechar);
-					}
-				}
-				File.Delete(tempFile);
+				while(Directory.Exists(textBackupRestoreToPath.Text+newDb));
+			}
+			//move the current db (rename)
+			Directory.Move(textBackupRestoreToPath.Text+dbName,// C:\mysql\data\opendental
+				textBackupRestoreToPath.Text+newDb);// C:\mysql\data\opendentalbackup_03_25_2006
+			//Restore----------------------------------------------------------------------------------------------
+			
+			string toPath=textBackupRestoreToPath.Text;// C:\mysql\data\
+			Directory.CreateDirectory(toPath+dirInfo.Name);
+			FileInfo[] files=dirInfo.GetFiles();
+			curVal=0;//curVal gets increased
+			for(int i=0;i<files.Length;i++){
+				File.Copy(files[i].FullName,toPath+dirInfo.Name+@"\"+files[i].Name);
+			}
+			//start the service--------------------------------------------------------------------------------------
+			try{
+				sc.Start();
+				sc.WaitForStatus(ServiceControllerStatus.Running,new TimeSpan(0,0,10));
+			}
+			catch{
+				//do nothing
 			}
 			Cursor=Cursors.Default;
-			DialogResult=DialogResult.OK;
+			//restore A-Z folder, and give user a chance to cancel it.
+			FormP=new FormProgress();
+			FormP.MaxVal=100;//We will be setting maxVal from worker thread.  (double)fileSize/1024;
+			FormP.NumberMultiplication=100;
+			FormP.DisplayText="";//We will set the text from the worker thread.
+			FormP.NumberFormat="N1";
+			//start the thread that will perform the database copy
+			Thread workerThread=new Thread(new ThreadStart(InstanceMethodRestore));
+			workerThread.Start();
+			//display the progress dialog to the user:
+			FormP.ShowDialog();
+			if(FormP.DialogResult==DialogResult.Cancel){
+				workerThread.Abort();
+				return;
+			}
+			MsgBox.Show(this,"Done");
+			Prefs.CheckProgramVersion();//this might force program to close if version mismatch could not be resolved.
+			Close();
 		}
 
 		private void FillTableWithData(StringBuilder tableData,string tempFile,string tableName){
@@ -400,47 +830,53 @@ namespace OpenDental{
 			dcon.NonQ(command);
 		}
 
+		private void butSave_Click(object sender, System.EventArgs e) {
+			//test for trailing slashes
+			if(textBackupFromPath.Text!="" && !textBackupFromPath.Text.EndsWith("\\")){
+				MsgBox.Show(this,"Paths must end with \\.");
+				return;
+			}
+			if(textBackupToPath.Text!="" && !textBackupToPath.Text.EndsWith("\\")){
+				MsgBox.Show(this,"Paths must end with \\.");
+				return;
+			}
+			if(textBackupRestoreFromPath.Text!="" && !textBackupRestoreFromPath.Text.EndsWith("\\")){
+				MsgBox.Show(this,"Paths must end with \\.");
+				return;
+			}
+			if(textBackupRestoreToPath.Text!="" && !textBackupRestoreToPath.Text.EndsWith("\\")){
+				MsgBox.Show(this,"Paths must end with \\.");
+				return;
+			}
+			if(textBackupRestoreAtoZToPath.Text!="" && !textBackupRestoreAtoZToPath.Text.EndsWith("\\")){
+				MsgBox.Show(this,"Paths must end with \\.");
+				return;
+			}
+			if(textBackupFromPath.Text!=Prefs.GetString("BackupFromPath")
+				|| textBackupToPath.Text!=Prefs.GetString("BackupToPath")
+				|| textBackupRestoreFromPath.Text!=Prefs.GetString("BackupRestoreFromPath")
+				|| textBackupRestoreToPath.Text!=Prefs.GetString("BackupRestoreToPath")
+				|| textBackupRestoreAtoZToPath.Text!=Prefs.GetString("BackupRestoreAtoZToPath"))
+			{
+				Prefs.UpdateString("BackupFromPath",textBackupFromPath.Text);
+				Prefs.UpdateString("BackupToPath",textBackupToPath.Text);
+				Prefs.UpdateString("BackupRestoreFromPath",textBackupRestoreFromPath.Text);
+				Prefs.UpdateString("BackupRestoreToPath",textBackupRestoreToPath.Text);
+				Prefs.UpdateString("BackupRestoreAtoZToPath",textBackupRestoreAtoZToPath.Text);
+				DataValid.SetInvalid(InvalidTypes.Prefs);
+			}
+		}
+
 		private void butCancel_Click(object sender, System.EventArgs e) {
 			DialogResult=DialogResult.Cancel;
 		}
 
-		/*This was a tool that I used once to compare output files for differences
-		private void button1_Click(object sender, System.EventArgs e) {
-			FileStream fs1=new FileStream(Prefs.GetString("DocPath")+"TempDumpFile.txt",FileMode.Open);
-			//BinaryReader br1=new BinaryReader(fs1);
-			FileStream fs2=new FileStream(@"C:\b\Testing\development35.txt",FileMode.Open);//1 byte larger
-			//BinaryReader br2=new BinaryReader(fs2);
-			MessageBox.Show("lengths: "+fs1.Length.ToString()+" "+fs2.Length.ToString());
-			string leadup="";
-			//try{
-				int byte1;
-				int byte2;
-				while(true){
-					byte1=fs1.ReadByte();
-					byte2=fs2.ReadByte();
-					//if(fs1.Position>106057 && fs1.Position<106088){
-					//	leadup+=(char)byte1;
-					//}
-					if(byte1!=byte2){
-						MessageBox.Show("mismatch at "+fs1.Position.ToString());
-						//MessageBox.Show("leadup:"+leadup);
-						MessageBox.Show(byte1.ToString()+" "+byte2.ToString());
-						//break;
-						byte1=fs1.ReadByte();
-						byte2=fs2.ReadByte();
-						MessageBox.Show("trailing: "+byte1.ToString()+" "+byte2.ToString());
-					}
-					//if(fs1.Position==106088){
-						
-					//}
-				}
-			//}
-			//catch(Exception ex){
-			//	MessageBox.Show(ex.Message);
-				fs1.Close();
-				fs2.Close();
-			//}
-		}*/
+	
+
+		
+
+		
+
 
 		
 

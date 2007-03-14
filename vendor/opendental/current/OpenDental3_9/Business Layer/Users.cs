@@ -70,6 +70,22 @@ namespace OpenDental{
 			if(table.Rows[0][0].ToString()!="0"){
 				throw new Exception(Lan.g(this,"UserName already in use."));
 			}
+			//make sure that there would still be at least one user with security admin permissions
+			if(!isNew){
+				command="SELECT COUNT(*) FROM grouppermission "
+					+"WHERE PermType='"+POut.PInt((int)Permissions.SecurityAdmin)+"' "
+					+"AND UserGroupNum="+POut.PInt(UserGroupNum);
+				if(dcon.GetCount(command)=="0"){//if this user would not have admin
+					//make sure someone else has admin
+					command="SELECT COUNT(*) FROM user,grouppermission "
+						+"WHERE grouppermission.PermType='"+POut.PInt((int)Permissions.SecurityAdmin)+"'"
+						+" AND user.UserGroupNum=grouppermission.UserGroupNum"
+						+" AND user.UserNum != "+POut.PInt(UserNum);
+					if(dcon.GetCount(command)=="0"){//there are no other users with this permission
+						throw new Exception(Lan.g(this,"At least one user must have Security Admin permission."));
+					}
+				}
+			}
 			if(isNew){
 				Insert();
 			}
@@ -159,6 +175,22 @@ namespace OpenDental{
 				}
 			}
 			return null;
+		}
+
+		///<summary>This always returns one admin user.  There must be one and there is rarely more than one.  Only used on startup to determine if security is being used.</summary>
+		public static User GetAdminUser(){
+			//just find any permission for security admin.  There has to be one.
+			for(int i=0;i<GroupPermissions.List.Length;i++){
+				if(GroupPermissions.List[i].PermType!=Permissions.SecurityAdmin){
+					continue;
+				}
+				for(int j=0;j<Users.List.Length;j++){
+					if(Users.List[j].UserGroupNum==GroupPermissions.List[i].UserGroupNum){
+						return Users.List[j];
+					}
+				}
+			}
+			return null;//will never happen
 		}
 
 		

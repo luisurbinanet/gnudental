@@ -690,6 +690,7 @@ namespace OpenDental{
 				}
 			}
 			Procedure ProcCur;
+			PatPlan[] patPlanList=PatPlans.Refresh(patCur.PatNum);
 			//ClaimProc[] claimProcs=ClaimProcs.Refresh(Patients.Cur.PatNum);
 			for(int i=0;i<procs.Length;i++){
 				ProcCur=new Procedure();//this will be an insert
@@ -698,7 +699,7 @@ namespace OpenDental{
 				ProcCur.AptNum=AptCur.AptNum;
 				ProcCur.ADACode=procs[i];
 				ProcCur.ProcDate=DateTime.Now;
-				ProcCur.ProcFee=Fees.GetAmount0(ProcCur.ADACode,Fees.GetFeeSched(patCur,planList));
+				ProcCur.ProcFee=Fees.GetAmount0(ProcCur.ADACode,Fees.GetFeeSched(patCur,planList,patPlanList));
 				//ProcCur.OverridePri=-1;
 				//ProcCur.OverrideSec=-1;
 				//surf
@@ -715,9 +716,9 @@ namespace OpenDental{
 				//Procedures.Cur.Dx=
 				ProcCur.ClinicNum=patCur.ClinicNum;
 				//nextaptnum
-				ProcCur.InsertOrUpdate(null,true);//no recall synch required
-				ProcCur.ComputeEstimates(patCur.PatNum,patCur.PriPlanNum
-					,patCur.SecPlanNum,new ClaimProc[0],false,patCur,planList);
+				ProcCur.MedicalCode=ProcedureCodes.GetProcCode(ProcCur.ADACode).MedicalCode;
+				ProcCur.Insert();//no recall synch required
+				ProcCur.ComputeEstimates(patCur.PatNum,new ClaimProc[0],false,planList,patPlanList);
 			}
 			return AptCur;
 		}

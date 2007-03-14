@@ -1,7 +1,5 @@
 using System;
 using System.Collections;
-//using System.Windows.Forms;
-using OpenDental.Reporting;//for FieldValueType
 
 namespace OpenDental{
 	
@@ -15,8 +13,6 @@ namespace OpenDental{
 		public string PropertyDesc;
 		///<summary>The value.</summary>
 		public string PropertyValue;
-		//<summary></summary>
-		//public FieldValueType ValueType;
 	}
 
 	/*=========================================================================================

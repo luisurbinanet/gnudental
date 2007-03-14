@@ -205,7 +205,7 @@ namespace OpenDental{
 		}
 
 		///<summary>Calculates the Base estimate for a procedure.  This is not done on the fly.  Use Procedure.GetEst to later retrieve the estimate. This function duplicates/replaces all of the upper estimating logic that is within FormClaimProc.  BaseEst=((fee or allowedAmt)-Copay) x (percentage or percentOverride). The result is now stored in a claimProc.  The claimProcs do get updated frequently depending on certain actions the user takes.  The calling class must have already created the claimProc, and this function simply updates the BaseEst field of that claimproc. pst.Tot not used.  For Estimate and CapEstimate, all the estimate fields will be recalculated except the three overrides.</summary>
-		public void ComputeBaseEst(Procedure proc,PriSecTot pst,Patient pat,InsPlan[] PlanList){//,bool resetValues){
+		public void ComputeBaseEst(Procedure proc,PriSecTot pst,InsPlan[] PlanList,PatPlan[] patPlans){//,bool resetValues){
 			if(Status==ClaimProcStatus.CapClaim
 				|| Status==ClaimProcStatus.CapComplete
 				|| Status==ClaimProcStatus.Preauth
@@ -257,10 +257,10 @@ namespace OpenDental{
 			//copayOverride never recalculated
 			if(resetAll){
 				if(pst==PriSecTot.Pri){
-					CopayAmt=InsPlans.GetCopay(proc.ADACode,pat.PriPlanNum,PlanList);//also gets InsPlan
+					CopayAmt=InsPlans.GetCopay(proc.ADACode,PatPlans.GetPlanNum(patPlans,1),PlanList);//also gets InsPlan
 				}
 				else if(pst==PriSecTot.Sec){
-					CopayAmt=InsPlans.GetCopay(proc.ADACode,pat.SecPlanNum,PlanList);
+					CopayAmt=InsPlans.GetCopay(proc.ADACode,PatPlans.GetPlanNum(patPlans,2),PlanList);
 				}
 				else{//pst.Other
 					CopayAmt=-1;

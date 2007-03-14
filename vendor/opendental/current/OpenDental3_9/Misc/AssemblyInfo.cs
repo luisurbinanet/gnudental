@@ -11,7 +11,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Open Dental Software")]
 [assembly: AssemblyProduct("Open Dental")]
-[assembly: AssemblyCopyright("Jordan Sparks, 2003-2005")]
+[assembly: AssemblyCopyright("Jordan Sparks, 2003-2006")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]		
 
@@ -26,7 +26,7 @@ using System.Runtime.CompilerServices;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 
-[assembly: AssemblyVersion("3.8.12")]
+[assembly: AssemblyVersion("3.9.22")]
 
 
 

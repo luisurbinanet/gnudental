@@ -44,8 +44,7 @@ namespace OpenDental{
 		public string ReasonUnderPaid;//
 		///<summary>Note to be sent to insurance. Max 255 char.</summary>
 		public string ClaimNote;//
-		///<summary>"P"=primary, "S"=secondary, "PreAuth"=preauth, "Other"=other, "Cap"=capitation</summary>
-		///<remarks>ClaimType is the new way of determining claimtype. Not allowed to be blank. The update for version 2.1 added "P" or "S" to all existing claims.</remarks>
+		///<summary>"P"=primary, "S"=secondary, "PreAuth"=preauth, "Other"=other, "Cap"=capitation.  Not allowed to be blank. Might need to add "Med"=medical claim.</summary>
 		public string ClaimType;
 		///<summary>Billing provider.  Foreign key to Provider.ProvNum.</summary>
 		public int ProvBill;
@@ -342,12 +341,13 @@ namespace OpenDental{
 			cmd.CommandText =
 				"SELECT claim.ClaimNum,carrier.NoSendElect"
 				+",concat(patient.LName,', ',patient.FName,' ',patient.MiddleI)"
-				+",claim.ClaimStatus,carrier.CarrierName,patient.PatNum,carrier.ElectID "
+				+",claim.ClaimStatus,carrier.CarrierName,patient.PatNum,carrier.ElectID,insplan.IsMedical "
 				+"FROM claim "
 				+"Left join insplan on claim.PlanNum = insplan.PlanNum "
 				+"Left join carrier on insplan.CarrierNum = carrier.CarrierNum "
 				+"Left join patient on patient.PatNum = claim.PatNum "
-				+"WHERE claim.ClaimStatus = 'W' || claim.ClaimStatus = 'P'";
+				+"WHERE claim.ClaimStatus = 'W' || claim.ClaimStatus = 'P' "
+				+"ORDER BY insplan.IsMedical";//this puts the medical claims at the end, helping with the looping in X12.
 			//MessageBox.Show(cmd.CommandText);
 			FillTable();
 			ClaimSendQueueItem[] listQueue=new ClaimSendQueueItem[table.Rows.Count];
@@ -359,8 +359,8 @@ namespace OpenDental{
 				listQueue[i].ClaimStatus     = PIn.PString(table.Rows[i][3].ToString());
 				listQueue[i].Carrier         = PIn.PString(table.Rows[i][4].ToString());
 				listQueue[i].PatNum          = PIn.PInt   (table.Rows[i][5].ToString());
-				listQueue[i].ClearinghouseNum   
-					=Clearinghouses.GetNumForPayor(PIn.PString(table.Rows[i][6].ToString()));
+				listQueue[i].ClearinghouseNum=Clearinghouses.GetNumForPayor(PIn.PString(table.Rows[i][6].ToString()));
+				listQueue[i].IsMedical       = PIn.PBool  (table.Rows[i][7].ToString());
 			}
 			return listQueue;
 		}
@@ -402,7 +402,7 @@ namespace OpenDental{
 		}
 
 		///<summary>Updates all claimproc estimates and also updates claim totals to db. Must supply all claimprocs for this patient.  Must supply procList which includes all procedures that this claim is linked to.  Will also need to refresh afterwards to see the results</summary>
-		public static void CalculateAndUpdate(ClaimProc[] ClaimProcList,Procedure[] procList,Patient pat,InsPlan[] PlanList,Claim ClaimCur){
+		public static void CalculateAndUpdate(ClaimProc[] ClaimProcList,Procedure[] procList,InsPlan[] PlanList,Claim ClaimCur,PatPlan[] patPlans){
 			//Remember that this can be called externally also
 			//ClaimProcList=claimProcList;
 			ClaimProc[] ClaimProcsForClaim=ClaimProcs.GetForClaim(ClaimProcList,ClaimCur.ClaimNum);
@@ -488,16 +488,16 @@ namespace OpenDental{
 					insRem=0;
 				}
 				if(ClaimCur.ClaimType=="P"){//primary
-					ClaimProcsForClaim[i].ComputeBaseEst(ProcCur,PriSecTot.Pri,pat,PlanList);//handles dedBeforePerc
-					ClaimProcsForClaim[i].InsPayEst=ProcCur.GetEst(ClaimProcList,PriSecTot.Pri,pat);
+					ClaimProcsForClaim[i].ComputeBaseEst(ProcCur,PriSecTot.Pri,PlanList,patPlans);//handles dedBeforePerc
+					ClaimProcsForClaim[i].InsPayEst=ProcCur.GetEst(ClaimProcList,PriSecTot.Pri,patPlans);
 						//ClaimProcsForClaim[i].BaseEst;
 					if(!ClaimProcsForClaim[i].DedBeforePerc){
 						ClaimProcsForClaim[i].InsPayEst-=ClaimProcsForClaim[i].DedApplied;
 					}
 				}
 				else if(ClaimCur.ClaimType=="S"){//secondary
-					ClaimProcsForClaim[i].ComputeBaseEst(ProcCur,PriSecTot.Sec,pat,PlanList);
-					ClaimProcsForClaim[i].InsPayEst=ProcCur.GetEst(ClaimProcList,PriSecTot.Sec,pat);
+					ClaimProcsForClaim[i].ComputeBaseEst(ProcCur,PriSecTot.Sec,PlanList,patPlans);
+					ClaimProcsForClaim[i].InsPayEst=ProcCur.GetEst(ClaimProcList,PriSecTot.Sec,patPlans);
 						//ClaimProcsForClaim[i].BaseEst;
 					if(!ClaimProcsForClaim[i].DedBeforePerc){
 						ClaimProcsForClaim[i].InsPayEst-=ClaimProcsForClaim[i].DedApplied;
@@ -549,6 +549,8 @@ namespace OpenDental{
 		public int PatNum;
 		///<summary></summary>
 		public int ClearinghouseNum;
+		///<summary>True if the plan is a medical plan.</summary>
+		public bool IsMedical;
 	}
 
 	///<summary>Used to hold a list of claims to show in the Claim Check Edit window.</summary>

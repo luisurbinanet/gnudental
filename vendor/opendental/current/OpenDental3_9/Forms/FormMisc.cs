@@ -30,6 +30,7 @@ namespace OpenDental{
 		private System.Windows.Forms.CheckBox checkBalancesDontSubtractIns;
 		private System.Windows.Forms.Label label3;
 		private OpenDental.ValidNumber textSigInterval;
+		private System.Windows.Forms.CheckBox checkInsurancePlansShared;
 		private System.Windows.Forms.Label label1;// Required designer variable.
 
 		///<summary></summary>
@@ -74,6 +75,7 @@ namespace OpenDental{
 			this.checkRandomPrimaryKeys = new System.Windows.Forms.CheckBox();
 			this.label3 = new System.Windows.Forms.Label();
 			this.textSigInterval = new OpenDental.ValidNumber();
+			this.checkInsurancePlansShared = new System.Windows.Forms.CheckBox();
 			this.groupBox1.SuspendLayout();
 			this.groupBox5.SuspendLayout();
 			this.groupBox2.SuspendLayout();
@@ -86,7 +88,7 @@ namespace OpenDental{
 			this.butOK.Autosize = true;
 			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butOK.Location = new System.Drawing.Point(676, 354);
+			this.butOK.Location = new System.Drawing.Point(677, 410);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 7;
@@ -101,7 +103,7 @@ namespace OpenDental{
 			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.Location = new System.Drawing.Point(676, 392);
+			this.butCancel.Location = new System.Drawing.Point(677, 448);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 8;
@@ -156,7 +158,7 @@ namespace OpenDental{
 			// checkITooth
 			// 
 			this.checkITooth.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkITooth.Location = new System.Drawing.Point(48, 380);
+			this.checkITooth.Location = new System.Drawing.Point(48, 379);
 			this.checkITooth.Name = "checkITooth";
 			this.checkITooth.Size = new System.Drawing.Size(338, 21);
 			this.checkITooth.TabIndex = 42;
@@ -321,10 +323,21 @@ namespace OpenDental{
 			this.textSigInterval.TabIndex = 57;
 			this.textSigInterval.Text = "";
 			// 
+			// checkInsurancePlansShared
+			// 
+			this.checkInsurancePlansShared.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkInsurancePlansShared.Location = new System.Drawing.Point(48, 399);
+			this.checkInsurancePlansShared.Name = "checkInsurancePlansShared";
+			this.checkInsurancePlansShared.Size = new System.Drawing.Size(495, 32);
+			this.checkInsurancePlansShared.TabIndex = 58;
+			this.checkInsurancePlansShared.Text = "Many patients have identical insurance plans.  Change behavior of program slightl" +
+				"y to optimize for identical plans.";
+			// 
 			// FormMisc
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(783, 430);
+			this.ClientSize = new System.Drawing.Size(773, 486);
+			this.Controls.Add(this.checkInsurancePlansShared);
 			this.Controls.Add(this.textSigInterval);
 			this.Controls.Add(this.textMainWindowTitle);
 			this.Controls.Add(this.butCancel);
@@ -381,6 +394,8 @@ namespace OpenDental{
 			textMainWindowTitle.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString;
 			checkEclaimsSeparateTreatProv.Checked=Prefs.GetBool("EclaimsSeparateTreatProv");
 			checkITooth.Checked=Prefs.GetBool("UseInternationalToothNumbers");
+			checkInsurancePlansShared.Checked=Prefs.GetBool("InsurancePlansShared");
+			
 		}
 
 		private void checkRandomPrimaryKeys_Click(object sender, System.EventArgs e) {
@@ -414,7 +429,8 @@ namespace OpenDental{
 				|| Prefs.UpdateBool("RandomPrimaryKeys",checkRandomPrimaryKeys.Checked)
 				|| Prefs.UpdateString("MainWindowTitle",textMainWindowTitle.Text)
 				|| Prefs.UpdateBool("EclaimsSeparateTreatProv",checkEclaimsSeparateTreatProv.Checked)
-				|| Prefs.UpdateBool("UseInternationalToothNumbers",checkITooth.Checked))
+				|| Prefs.UpdateBool("UseInternationalToothNumbers",checkITooth.Checked)
+				|| Prefs.UpdateBool("InsurancePlansShared",checkInsurancePlansShared.Checked))
 			{
 				changed=true;
 			}

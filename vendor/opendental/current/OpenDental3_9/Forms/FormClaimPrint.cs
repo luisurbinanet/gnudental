@@ -1321,6 +1321,9 @@ namespace OpenDental{
 					case "P1PlaceNumericCode":
 						displayStrings[i]=GetProcInfo("PlaceNumericCode",1+startProc);
 						break;
+					case "P1Diagnosis":
+						displayStrings[i]=GetProcInfo("Diagnosis",1+startProc);
+						break;
 					case "P2Date":
 						displayStrings[i]=GetProcInfo("Date",2+startProc,ClaimFormCur.Items[i].FormatString);
 						break;
@@ -1350,6 +1353,9 @@ namespace OpenDental{
 						break;
 					case "P2PlaceNumericCode":
 						displayStrings[i]=GetProcInfo("PlaceNumericCode",2+startProc);
+						break;
+					case "P2Diagnosis":
+						displayStrings[i]=GetProcInfo("Diagnosis",2+startProc);
 						break;
 					case "P3Date":
 						displayStrings[i]=GetProcInfo("Date",3+startProc,ClaimFormCur.Items[i].FormatString);
@@ -1381,6 +1387,9 @@ namespace OpenDental{
 					case "P3PlaceNumericCode":
 						displayStrings[i]=GetProcInfo("PlaceNumericCode",3+startProc);
 						break;
+					case "P3Diagnosis":
+						displayStrings[i]=GetProcInfo("Diagnosis",3+startProc);
+						break;
 					case "P4Date":
 						displayStrings[i]=GetProcInfo("Date",4+startProc,ClaimFormCur.Items[i].FormatString);
 						break;
@@ -1410,6 +1419,9 @@ namespace OpenDental{
 						break;
 					case "P4PlaceNumericCode":
 						displayStrings[i]=GetProcInfo("PlaceNumericCode",4+startProc);
+						break;
+					case "P4Diagnosis":
+						displayStrings[i]=GetProcInfo("Diagnosis",4+startProc);
 						break;
 					case "P5Date":
 						displayStrings[i]=GetProcInfo("Date",5+startProc,ClaimFormCur.Items[i].FormatString);
@@ -1441,6 +1453,9 @@ namespace OpenDental{
 					case "P5PlaceNumericCode":
 						displayStrings[i]=GetProcInfo("PlaceNumericCode",5+startProc);
 						break;
+					case "P5Diagnosis":
+						displayStrings[i]=GetProcInfo("Diagnosis",5+startProc);
+						break;
 					case "P6Date":
 						displayStrings[i]=GetProcInfo("Date",6+startProc,ClaimFormCur.Items[i].FormatString);
 						break;
@@ -1470,6 +1485,9 @@ namespace OpenDental{
 						break;
 					case "P6PlaceNumericCode":
 						displayStrings[i]=GetProcInfo("PlaceNumericCode",6+startProc);
+						break;
+					case "P6Diagnosis":
+						displayStrings[i]=GetProcInfo("Diagnosis",6+startProc);
 						break;
 					case "P7Date":
 						displayStrings[i]=GetProcInfo("Date",7+startProc,ClaimFormCur.Items[i].FormatString);
@@ -1501,6 +1519,9 @@ namespace OpenDental{
 					case "P7PlaceNumericCode":
 						displayStrings[i]=GetProcInfo("PlaceNumericCode",7+startProc);
 						break;
+					case "P7Diagnosis":
+						displayStrings[i]=GetProcInfo("Diagnosis",7+startProc);
+						break;
 					case "P8Date":
 						displayStrings[i]=GetProcInfo("Date",8+startProc,ClaimFormCur.Items[i].FormatString);
 						break;
@@ -1530,6 +1551,9 @@ namespace OpenDental{
 						break;
 					case "P8PlaceNumericCode":
 						displayStrings[i]=GetProcInfo("PlaceNumericCode",8+startProc);
+						break;
+					case "P8Diagnosis":
+						displayStrings[i]=GetProcInfo("Diagnosis",8+startProc);
 						break;
 					case "P9Date":
 						displayStrings[i]=GetProcInfo("Date",9+startProc,ClaimFormCur.Items[i].FormatString);
@@ -1561,6 +1585,9 @@ namespace OpenDental{
 					case "P9PlaceNumericCode":
 						displayStrings[i]=GetProcInfo("PlaceNumericCode",9+startProc);
 						break;
+					case "P9Diagnosis":
+						displayStrings[i]=GetProcInfo("Diagnosis",9+startProc);
+						break;
 					case "P10Date":
 						displayStrings[i]=GetProcInfo("Date",10+startProc,ClaimFormCur.Items[i].FormatString);
 						break;
@@ -1590,6 +1617,9 @@ namespace OpenDental{
 						break;
 					case "P10PlaceNumericCode":
 						displayStrings[i]=GetProcInfo("PlaceNumericCode",10+startProc);
+						break;
+					case "P10Diagnosis":
+						displayStrings[i]=GetProcInfo("Diagnosis",10+startProc);
 						break;
 					case "TotalFee":
 						double fee=0;//fee only for this page. Each page is treated like a separate claim.
@@ -1702,7 +1732,10 @@ namespace OpenDental{
 			}
 			Procedure ProcCur=Procedures.GetProc(ProcList,((ClaimProc)claimprocs[procIndex]).ProcNum);
 				//(Procedure)Procedures.HList[ClaimProcsForClaim[procIndex].ProcNum];
-			Procedure ProcOld=ProcCur.Copy();
+			//Procedure ProcOld=ProcCur.Copy();
+			if(field=="Diagnosis"){
+				return ProcCur.DiagnosticCode;
+			}
 			string area="";
 			string toothNum="";
 			string surf="";

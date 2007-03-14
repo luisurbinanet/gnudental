@@ -5,7 +5,7 @@ using System.Collections;
 using System.ComponentModel;
 //using System.Web.Mail;
 using System.Windows.Forms;
-using OpenDental.Reporting;
+//using OpenDental.Reporting;
 using Indy.Sockets.IndySMTP;
 using Indy.Sockets.IndyMessage;
 

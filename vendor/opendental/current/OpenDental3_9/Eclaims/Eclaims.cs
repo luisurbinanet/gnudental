@@ -95,6 +95,13 @@ namespace OpenDental.Eclaims
 						//continue;
 					}
 				}
+				else if(Clearinghouses.List[i].CommBridge==EclaimsCommBridge.PostnTrack){
+					AttemptLaunch(Clearinghouses.List[i],batchNum);
+					//if(!PostnTrack.Launch(Clearinghouses.List[i],batchNum)){
+					//	MessageBox.Show("Claim file created, but could not launch AOS Communicator.");
+						//continue;
+					//}
+				}
 				//----------------------------------------------------------------------------------------
 				//finally, change the claim statuses to Probably sent.
 				for(int j=0;j<claimsByCHouse[i].Count;j++){

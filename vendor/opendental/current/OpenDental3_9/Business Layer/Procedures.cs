@@ -68,6 +68,9 @@ namespace OpenDental{
 				List[i].DateLocked	    = PIn.PDate  (table.Rows[i][25].ToString());
 				List[i].DateEntryC      = PIn.PDate  (table.Rows[i][26].ToString());
 				List[i].ClinicNum       = PIn.PInt   (table.Rows[i][27].ToString());
+				List[i].MedicalCode     = PIn.PString(table.Rows[i][28].ToString());
+				List[i].DiagnosticCode  = PIn.PString(table.Rows[i][29].ToString());
+				List[i].IsPrincDiag     = PIn.PBool  (table.Rows[i][30].ToString());
 			}
 			return List;
 		}
@@ -291,10 +294,10 @@ namespace OpenDental{
 		}
 
 		///<summary>Loops through each proc. Does not add notes to a procedure that already has notes. Used twice, security checked in both places before calling this.</summary>
-		public static void SetCompleteInAppt(Appointment apt,Patient pat,InsPlan[] PlanList){
-			Procedure[] ProcList=Procedures.Refresh(pat.PatNum);
-			ClaimProc[] ClaimProcList=ClaimProcs.Refresh(pat.PatNum);
-			CovPats.Refresh(pat,PlanList);
+		public static void SetCompleteInAppt(Appointment apt,InsPlan[] PlanList,PatPlan[] patPlans){
+			Procedure[] ProcList=Procedures.Refresh(apt.PatNum);
+			ClaimProc[] ClaimProcList=ClaimProcs.Refresh(apt.PatNum);
+			CovPats.Refresh(PlanList,patPlans);
 			//bool doResetRecallStatus=false;
 			ProcedureCode procCode;
 			Procedure oldProc;
@@ -309,7 +312,7 @@ namespace OpenDental{
 				}
 				//if is a recall proc
 				//if(procCode.SetRecall){
-				//doResetRecallStatus=true;
+				//	doResetRecallStatus=true;
 				//}
 				ProcList[i].ProcStatus=ProcStat.C;
 				ProcList[i].ProcDate=apt.AptDateTime.Date;
@@ -334,20 +337,13 @@ namespace OpenDental{
 				else{//same provider for every procedure
 					ProcList[i].ProvNum=apt.ProvNum;
 				}
-				try{
-					ProcList[i].InsertOrUpdate(oldProc,false);
-				}
-				catch(Exception ex){
-					MessageBox.Show(ex.Message);
-					continue;
-				}
-				ProcList[i].ComputeEstimates(pat.PatNum,pat.PriPlanNum
-					,pat.SecPlanNum,ClaimProcList,false,pat,PlanList);
+				ProcList[i].Update(oldProc);
+				ProcList[i].ComputeEstimates(apt.PatNum,ClaimProcList,false,PlanList,patPlans);
 			}
 			//if(doResetRecallStatus){
-			//	Recalls.Reset(pat.PatNum);//this also synchs recall
+			//	Recalls.Reset(apt.PatNum);//this also synchs recall
 			//}
-			Recalls.Synch(pat.PatNum);
+			Recalls.Synch(apt.PatNum);
 		}
 
 		///<summary>Does not make any calls to db.</summary>
@@ -428,12 +424,10 @@ namespace OpenDental{
 		}
 
 		///<summary>After changing important coverage plan info, this is called to recompute estimates for all procedures for this patient.</summary>
-		public static void ComputeEstimatesForAll(int patNum,int priPlanNum,int secPlanNum
-			,ClaimProc[] claimProcs,Procedure[] procs,Patient pat,InsPlan[] PlanList)
+		public static void ComputeEstimatesForAll(int patNum,ClaimProc[] claimProcs,Procedure[] procs,InsPlan[] PlanList,PatPlan[] patPlans)
 		{
 			for(int i=0;i<procs.Length;i++){
-				procs[i].ComputeEstimates(patNum,priPlanNum
-					,secPlanNum,claimProcs,false,pat,PlanList);
+				procs[i].ComputeEstimates(patNum,claimProcs,false,PlanList,patPlans);
 			}
 		}
 

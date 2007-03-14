@@ -10,7 +10,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-using OpenDental.Reporting;
+//using OpenDental.Reporting;
 
 namespace OpenDental{
 	/// <summary>
@@ -511,7 +511,14 @@ namespace OpenDental{
 			}
 			Word.MailMerge wrdMailMerge;
 			//Create an instance of Word.
-			Word.Application WrdApp=LetterMerges.WordApp;
+			Word.Application WrdApp;
+			try{
+				WrdApp=LetterMerges.WordApp;
+			}
+			catch{
+				MsgBox.Show(this,"Error. Is Word installed?");
+				return;
+			}
 			//Open a document.
 			Object oName=templateFile;
 			wrdDoc=WrdApp.Documents.Open(ref oName,ref oMissing,ref oMissing,

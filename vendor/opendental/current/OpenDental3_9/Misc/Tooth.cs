@@ -183,11 +183,41 @@ namespace OpenDental{
 			}
 			return "";//should never happen
 		}
+		
+		///<summary>Incomplete. The supplied toothNumbers will be a series of tooth numbers separated by commas.  They will be in american format.  For display purposes, ranges will use dashes, and international numbers will be used.</summary>
+		public static string FormatRangeForDisplay(string toothNumbers){
+			return toothNumbers;
+		}
+
+		///<summary>Incomplete. Takes a user entered string and validates/formats it for the database.  Throws an exception if any formatting errors.</summary>
+		public static string FormatRangeForDb(string toothNumbers){
+			ArrayList individAL=new ArrayList();//this list will contain a list of tooth numbers, but not converted yet
+			string curTooth="";
+			string curChar;//a string of length one.
+			string rangeStart="";
+			//string rangeEnd="";
+			for(int i=0;i<toothNumbers.Length;i++){
+				curChar=toothNumbers.Substring(i,1);
+				if(curChar=="-"){
+					rangeStart=curTooth;
+					individAL.Add(curTooth);
+					
+
+					
+				}
+				if(curChar==","){
+          individAL.Add(curTooth);
+		
+				}
+			}
+
+			return toothNumbers;
+		}
 
 		///<summary>Used every time user enters toothNum in procedure box. Must be followed with FromInternat. These are the *ONLY* methods that are designed to accept user input.  Can also handle international toothnum</summary>
 		public static bool IsValidEntry(string toothNum){
 			//international
-			if(((Pref)Prefs.HList["UseInternationalToothNumbers"]).ValueString=="1"){
+			if(Prefs.GetBool("UseInternationalToothNumbers")){
 				if(toothNum==null || toothNum=="")
 					return false;
 				Regex regex=new Regex("^[1-4][1-8]$");//perm teeth: matches firt digit 1-4 and second digit 1-8,9 would be supernumerary?

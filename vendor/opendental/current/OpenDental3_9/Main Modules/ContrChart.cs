@@ -136,6 +136,8 @@ namespace OpenDental{
 		private int linesPrinted;
 		private System.Windows.Forms.CheckBox checkShowTeeth;//used in printing progress notes
 		private bool headingPrinted;
+		private Document[] DocumentList;
+		private PatPlan[] PatPlanList;
 			
 		///<summary></summary>
 		public ContrChart(){
@@ -1313,8 +1315,6 @@ namespace OpenDental{
 			FamCur=null;
 			PatCur=null;
 			PlanList=null;
-			CovPats.List=null;
-			//ClaimProcs.List=null;
 			//from FillProgNotes:
 			ProcList=null;
 			//Procedures.HList=null;
@@ -1332,13 +1332,14 @@ namespace OpenDental{
 			FamCur=Patients.GetFamily(patNum);
 			PatCur=FamCur.GetPatient(patNum);
 			PlanList=InsPlans.Refresh(FamCur);
-			CovPats.Refresh(PatCur,PlanList);
+			PatPlanList=PatPlans.Refresh(patNum);
+			CovPats.Refresh(PlanList,PatPlanList);
 			PatientNotes.Refresh(patNum,PatCur.Guarantor);
       //ClaimProcs.Refresh();
 			//RefAttaches.Refresh();
 			GetImageFolder();
 			DocAttaches.Refresh(patNum);
-			Documents.Refresh();
+			DocumentList=Documents.Refresh(DocAttaches.List);
 			//Procs get refreshed in FillProgNotes
 			ApptList=Appointments.GetForPat(patNum);
 		}
@@ -1619,23 +1620,25 @@ namespace OpenDental{
 				textDateFirstVisit.Text=PatCur.DateFirstVisit.ToShortDateString();
 			textIns.Text="";
 			string name="";
-			if(PatCur.PriPlanNum!=0)
-				name=InsPlans.GetCarrierName(PatCur.PriPlanNum,PlanList);
-			if(name.Length>20)
-				name=name.Substring(0,20)+"...";
-			textIns.Text+=name+" ";
-			if(PatCur.PriPending)
-				textIns.Text+="(pending) ";
+			if(PatPlanList.Length>0){
+				name=InsPlans.GetCarrierName(PatPlans.GetPlanNum(PatPlanList,1),PlanList);
+				if(name.Length>20)
+					name=name.Substring(0,20)+"...";
+				textIns.Text+=name+" ";
+				if(PatPlanList[0].IsPending)
+					textIns.Text+="(pending) ";
+			}
 			name="";
-			if(PatCur.SecPlanNum!=0)
-				name=InsPlans.GetCarrierName(PatCur.SecPlanNum,PlanList);
-			if(name.Length>20)
-				name=name.Substring(0,20)+"...";
-			textIns.Text+=name+" ";
-			if(PatCur.SecPending)
-				textIns.Text+="(pending)";
+			if(PatPlanList.Length>1){
+				name=InsPlans.GetCarrierName(PatPlans.GetPlanNum(PatPlanList,2),PlanList);
+				if(name.Length>20)
+					name=name.Substring(0,20)+"...";
+				textIns.Text+=name+" ";
+				if(PatPlanList[1].IsPending)
+					textIns.Text+="(pending)";
+			}
 			if(textIns.Text=="  ")
-				textIns.Text="No Insurance";
+				textIns.Text=Lan.g(this,"No Insurance");
 		}
 
 		private void textTreatmentNotes_TextChanged(object sender, System.EventArgs e) {
@@ -2084,23 +2087,23 @@ namespace OpenDental{
 			StringFormat notAvailFormat=new StringFormat();
 			notAvailFormat.Alignment=StringAlignment.Center;
 			notAvailFormat.LineAlignment=StringAlignment.Center;
-			for(int i=0;i<Documents.List.Length;i++){
-				if(!visImageCats.Contains(Defs.GetOrder(DefCat.ImageCats,Documents.List[i].DocCategory))){
+			for(int i=0;i<DocumentList.Length;i++){
+				if(!visImageCats.Contains(Defs.GetOrder(DefCat.ImageCats,DocumentList[i].DocCategory))){
 					continue;//if category not visible, continue
 				}
 				if(tabControlImages.SelectedIndex>0){//any category except 'all'
-					if(Documents.List[i].DocCategory!=Defs.Short[(int)DefCat.ImageCats]
+					if(DocumentList[i].DocCategory!=Defs.Short[(int)DefCat.ImageCats]
 						[(int)visImageCats[tabControlImages.SelectedIndex-1]].DefNum)
 					{
 						continue;//if not in category, continue
 					}
 				}
-				Documents.Cur=Documents.List[i];
-				string thumbFileName=patFolder+@"Thumbnails\"+Documents.Cur.FileName;
+				//Documents.Cur=DocumentList[i];
+				string thumbFileName=patFolder+@"Thumbnails\"+DocumentList[i].FileName;
 				//Thumbs.db has nothing to do with Open Dental. It is a hidden Windows file.
 				if(File.Exists(thumbFileName) 
-					&& (Path.GetExtension(Documents.Cur.FileName).ToLower()==".jpg"
-					|| Path.GetExtension(Documents.Cur.FileName).ToLower()==".gif"))
+					&& (Path.GetExtension(DocumentList[i].FileName).ToLower()==".jpg"
+					|| Path.GetExtension(DocumentList[i].FileName).ToLower()==".gif"))
 				{//use existing thumbnail
 					imageListThumbnails.Images.Add(Bitmap.FromFile(thumbFileName));
 				}
@@ -2109,11 +2112,11 @@ namespace OpenDental{
 					Bitmap thumbBitmap=new Bitmap(thumbSize,thumbSize);
 					Graphics g=Graphics.FromImage(thumbBitmap);
 					g.InterpolationMode=InterpolationMode.High;
-					if(File.Exists(patFolder+Documents.Cur.FileName)
-						&& (Path.GetExtension(Documents.Cur.FileName).ToLower()==".jpg"
-						|| Path.GetExtension(Documents.Cur.FileName).ToLower()==".gif"))
+					if(File.Exists(patFolder+DocumentList[i].FileName)
+						&& (Path.GetExtension(DocumentList[i].FileName).ToLower()==".jpg"
+						|| Path.GetExtension(DocumentList[i].FileName).ToLower()==".gif"))
 					{//create and save thumbnail
-						Image fullImage=Image.FromFile(patFolder+Documents.Cur.FileName);
+						Image fullImage=Image.FromFile(patFolder+DocumentList[i].FileName);
 						float resizeRatio;
 						if(fullImage.Width>fullImage.Height){//size by width
 							resizeRatio=(float)thumbSize/(float)fullImage.Width;
@@ -2135,7 +2138,7 @@ namespace OpenDental{
 						if(newHeight<thumbSize){
 							newY=(thumbSize-newHeight)/2;
 						}
-						switch(Documents.Cur.DegreesRotated){
+						switch(DocumentList[i].DegreesRotated){
 							case 0:
 								//
 								break;
@@ -2153,11 +2156,11 @@ namespace OpenDental{
 								g.TranslateTransform(0,(float)thumbSize,MatrixOrder.Append);
 								break;
 						}
-						if(Documents.Cur.IsFlipped){
+						if(DocumentList[i].IsFlipped){
 							g.DrawImage(fullImage,newX+newWidth,newY,-newWidth,newHeight);
 							g.ResetTransform();
 							//handles annoying blue artifact:
-							switch(Documents.Cur.DegreesRotated){
+							switch(DocumentList[i].DegreesRotated){
 								case 0:
 									g.DrawRectangle(new Pen(new SolidBrush(SystemColors.Control))
 										,newX,newY,newWidth,newHeight);
@@ -2180,7 +2183,7 @@ namespace OpenDental{
 							g.DrawImage(fullImage,newX,newY,newWidth,newHeight);
 							g.ResetTransform();
 							//handles annoying blue artifact:
-							switch(Documents.Cur.DegreesRotated){
+							switch(DocumentList[i].DegreesRotated){
 								case 0:
 									//g.DrawRectangle(new Pen(new SolidBrush(SystemColors.Control))
 									//	,newX,newY,newWidth,newHeight);
@@ -2210,8 +2213,8 @@ namespace OpenDental{
 					imageListThumbnails.Images.Add(thumbBitmap);
 				}//else add thumbnail
 				visImages.Add(i);
-				ListViewItem item=new ListViewItem(Documents.List[i].DateCreated.ToShortDateString()+": "
-					+Documents.List[i].Description,imageListThumbnails.Images.Count-1);
+				ListViewItem item=new ListViewItem(DocumentList[i].DateCreated.ToShortDateString()+": "
+					+DocumentList[i].Description,imageListThumbnails.Images.Count-1);
         listViewImages.Items.Add(item);
 			}//for
 			
@@ -2366,7 +2369,7 @@ namespace OpenDental{
 			if(newStatus==ProcStat.R || newStatus==ProcStat.EO || newStatus==ProcStat.EC)
 				ProcCur.ProcFee=0;
 			else
-				ProcCur.ProcFee=Fees.GetAmount0(ProcCur.ADACode,Fees.GetFeeSched(PatCur,PlanList));
+				ProcCur.ProcFee=Fees.GetAmount0(ProcCur.ADACode,Fees.GetFeeSched(PatCur,PlanList,PatPlanList));
 			//ProcCur.OverridePri=-1;
 			//ProcCur.OverrideSec=-1;
 			//surf
@@ -2391,16 +2394,9 @@ namespace OpenDental{
 				ProcCur.Dx=Defs.Short[(int)DefCat.Diagnosis][listDx.SelectedIndex].DefNum;
 			//nextaptnum
 			ProcCur.DateEntryC=DateTime.Now;
-			try{
-				ProcCur.InsertOrUpdate(null,true);
-			}
-			catch(Exception ex){
-				MessageBox.Show(ex.Message);
-				return;//this won't happen
-			}
-			//ProcCur.Insert();
-			ProcCur.ComputeEstimates(PatCur.PatNum,PatCur.PriPlanNum
-				,PatCur.SecPlanNum,new ClaimProc[0],true,PatCur.Copy(),PlanList);
+			ProcCur.MedicalCode=ProcedureCodes.GetProcCode(ProcCur.ADACode).MedicalCode;
+			ProcCur.Insert();
+			ProcCur.ComputeEstimates(PatCur.PatNum,new ClaimProc[0],true,PlanList,PatPlanList);
 			FormProcEdit FormPE=new FormProcEdit(ProcCur,PatCur.Copy(),FamCur,PlanList);
 			FormPE.IsNew=true;
 			FormPE.ShowDialog();
@@ -2430,7 +2426,7 @@ namespace OpenDental{
 			if(newStatus==ProcStat.R || newStatus==ProcStat.EO || newStatus==ProcStat.EC)
 				ProcCur.ProcFee=0;
 			else
-				ProcCur.ProcFee=Fees.GetAmount0(ProcCur.ADACode,Fees.GetFeeSched(PatCur,PlanList));
+				ProcCur.ProcFee=Fees.GetAmount0(ProcCur.ADACode,Fees.GetFeeSched(PatCur,PlanList,PatPlanList));
 			//ProcCur.OverridePri=-1;
 			//ProcCur.OverrideSec=-1;
 			//surf
@@ -2453,6 +2449,7 @@ namespace OpenDental{
 			ProcCur.ClinicNum=PatCur.ClinicNum;
 			if(listDx.SelectedIndex!=-1)
 				ProcCur.Dx=Defs.Short[(int)DefCat.Diagnosis][listDx.SelectedIndex].DefNum;
+			ProcCur.MedicalCode=ProcedureCodes.GetProcCode(ProcCur.ADACode).MedicalCode;
 			//nextaptnum
 			//ProcCur.CapCoPay=-1;
 			//if(Patients.Cur.PriPlanNum!=0){//if patient has insurance
@@ -2468,17 +2465,9 @@ namespace OpenDental{
 			//if(Procedures.Cur.ProcStatus==ProcStat.C){
 			//	Procedures.PutBal(Procedures.Cur.ProcDate,Procedures.Cur.ProcFee);
 			//}
-			try{
-				ProcCur.InsertOrUpdate(null,true);
-			}
-			catch(Exception ex){
-				MessageBox.Show(ex.Message);
-				return;//this won't happen
-			}
-			//ProcCur.Insert();
+			ProcCur.Insert();
 			Recalls.Synch(PatCur.PatNum);
-			ProcCur.ComputeEstimates(PatCur.PatNum,PatCur.PriPlanNum
-					,PatCur.SecPlanNum,new ClaimProc[0],true,PatCur.Copy(),PlanList);
+			ProcCur.ComputeEstimates(PatCur.PatNum,new ClaimProc[0],true,PlanList,PatPlanList);
 		}
 
 		private void butAddProc_Click(object sender, System.EventArgs e){
@@ -3287,7 +3276,7 @@ namespace OpenDental{
 		public void PrintReport(bool justPreview){
 			pd2=new PrintDocument();
 			pd2.PrintPage += new PrintPageEventHandler(this.pd2_PrintPage);
-			pd2.DefaultPageSettings.Margins=new Margins(50,50,40,25);
+			pd2.DefaultPageSettings.Margins=new Margins(25,25,40,25);
 			try{
 				if(justPreview){
 					FormRpPrintPreview pView = new FormRpPrintPreview();
@@ -3345,7 +3334,7 @@ namespace OpenDental{
 			int[] colPos=new int[colW.Length+1];//last entry represents the right side of the last col
 			for(int i=0;i<colW.Length;i++){
 				if(i==0){
-					colPos[i]=100;
+					colPos[i]=75;
 					continue;
 				}
 				colPos[i]=colPos[i-1]+colW[i-1];
@@ -3552,12 +3541,12 @@ namespace OpenDental{
 			if(listViewImages.SelectedIndices.Count==0){
 				return;//clicked on white space.
 			}
-			Documents.Cur=Documents.List[(int)visImages[listViewImages.SelectedIndices[0]]];
-			if(Path.GetExtension(Documents.Cur.FileName).ToLower()!=".jpg"
-				&& Path.GetExtension(Documents.Cur.FileName).ToLower()!=".gif")
+			Document DocCur=DocumentList[(int)visImages[listViewImages.SelectedIndices[0]]];
+			if(Path.GetExtension(DocCur.FileName).ToLower()!=".jpg"
+				&& Path.GetExtension(DocCur.FileName).ToLower()!=".gif")
 			{
 				try{
-					Process.Start(patFolder+Documents.Cur.FileName);
+					Process.Start(patFolder+DocCur.FileName);
 				}
 				catch(Exception ex){
 					MessageBox.Show(ex.Message);
@@ -3572,8 +3561,8 @@ namespace OpenDental{
 				formImageViewer.WindowState=FormWindowState.Normal;
 			}
 			formImageViewer.BringToFront();
-			formImageViewer.SetImage(Documents.Cur,PatCur.GetNameLF()+" - "
-				+Documents.Cur.DateCreated.ToShortDateString()+": "+Documents.Cur.Description);
+			formImageViewer.SetImage(DocCur,PatCur.GetNameLF()+" - "
+				+DocCur.DateCreated.ToShortDateString()+": "+DocCur.Description);
 		}
 
 		

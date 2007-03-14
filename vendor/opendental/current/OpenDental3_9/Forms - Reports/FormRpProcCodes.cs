@@ -181,34 +181,34 @@ namespace OpenDental{
       }
 			else {
 			  Queries.SubmitTemp();//create TableTemp which is not actually used
-	      ProcedureCodes.GetProcList();
+	      ProcedureCode[] ProcList=ProcedureCodes.GetProcList();
 				Queries.TableQ=new DataTable(null);
 			  for(int i=0;i<5;i++){//add columns
 				  Queries.TableQ.Columns.Add(new System.Data.DataColumn());//blank columns
 			  }
 				Queries.CurReport.ColTotal=new double[Queries.TableQ.Columns.Count];
         DataRow row=Queries.TableQ.NewRow();//add first row by hand to get value for temp
-				row[0]=Defs.GetName(DefCat.ProcCodeCats,ProcedureCodes.ProcList[0].ProcCat);
+				row[0]=Defs.GetName(DefCat.ProcCodeCats,ProcList[0].ProcCat);
 				catName=row[0].ToString();
-				row[1]=ProcedureCodes.ProcList[0].ADACode;
-				row[2]=ProcedureCodes.ProcList[0].Descript;
-				row[3]=ProcedureCodes.ProcList[0].AbbrDesc;
-			  row[4]=((double)Fees.GetAmount0(ProcedureCodes.ProcList[0].ADACode,feeSched)).ToString("F");
+				row[1]=ProcList[0].ADACode;
+				row[2]=ProcList[0].Descript;
+				row[3]=ProcList[0].AbbrDesc;
+			  row[4]=((double)Fees.GetAmount0(ProcList[0].ADACode,feeSched)).ToString("F");
 				Queries.CurReport.ColTotal[4]+=PIn.PDouble(row[4].ToString());
 				Queries.TableQ.Rows.Add(row);
-				for(int i=1;i<ProcedureCodes.ProcList.Length;i++){//loop through data rows
+				for(int i=1;i<ProcList.Length;i++){//loop through data rows
 					row=Queries.TableQ.NewRow();//create new row called 'row' based on structure of TableQ
-					row[0]=Defs.GetName(DefCat.ProcCodeCats,ProcedureCodes.ProcList[i].ProcCat);
+					row[0]=Defs.GetName(DefCat.ProcCodeCats,ProcList[i].ProcCat);
 					if(catName==row[0].ToString()){
             row[0]=""; 
 					}
 					else  {
 						catName=row[0].ToString();
           }
-					row[1]=ProcedureCodes.ProcList[i].ADACode.ToString();
-					row[2]=ProcedureCodes.ProcList[i].Descript;
-					row[3]=ProcedureCodes.ProcList[i].AbbrDesc.ToString();
-					row[4]=((double)Fees.GetAmount0(ProcedureCodes.ProcList[i].ADACode,feeSched)).ToString("F");
+					row[1]=ProcList[i].ADACode.ToString();
+					row[2]=ProcList[i].Descript;
+					row[3]=ProcList[i].AbbrDesc.ToString();
+					row[4]=((double)Fees.GetAmount0(ProcList[i].ADACode,feeSched)).ToString("F");
   				//Queries.CurReport.ColTotal[4]+=PIn.PDouble(row[4].ToString());
 					Queries.TableQ.Rows.Add(row);
 				}

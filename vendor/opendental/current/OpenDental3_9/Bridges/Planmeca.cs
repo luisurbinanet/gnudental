@@ -17,7 +17,6 @@ namespace OpenDental.Bridges{
 		///<summary>Launches the program using the patient.Cur data.</summary>
 		public static void SendData(Patient pat){
 			//DxStart.exe ”PatientID” ”FamilyName” ”FirstName” ”BirthDate”
-			//this should strip " from fields, but I didn't bother
 			ProgramProperties.GetForProgram();
 			if(pat==null){
 				MessageBox.Show("Please select a patient first");
@@ -30,10 +29,10 @@ namespace OpenDental.Bridges{
 				info+="\""+pat.PatNum.ToString()+"\" ";
 			}
 			else{
-				info+="\""+pat.ChartNumber+"\" ";
+				info+="\""+pat.ChartNumber.Replace("\"","")+"\" ";
 			}
-			info+="\""+pat.LName+"\" "
-				+"\""+pat.FName+"\" "
+			info+="\""+pat.LName.Replace("\"","")+"\" "
+				+"\""+pat.FName.Replace("\"","")+"\" "
 				+"\""+pat.Birthdate.ToShortDateString()+"\"";
 			try{
 				Process.Start(Programs.Cur.Path,info);

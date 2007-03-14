@@ -154,6 +154,10 @@ namespace OpenDental{
 				Dexis.SendData(pat);
 				return;
 			}
+			else if(Cur.ProgName=="VixWinOld"){
+				VixWinOld.SendData(pat);
+				return;
+			}
 			else if(Cur.ProgName=="VixWin"){
 				VixWin.SendData(pat);
 				return;
@@ -181,6 +185,18 @@ namespace OpenDental{
 			}
 			else if(Cur.ProgName=="DentForms"){
 				DentForms.SendData(pat);
+				return;
+			}
+			else if(Cur.ProgName=="DBSWin"){
+				DBSWin.SendData(pat);
+				return;
+			}
+			else if(Cur.ProgName=="DentX"){
+				DentX.SendData(pat);
+				return;
+			}
+			else if(Cur.ProgName=="Lightyear"){
+				Lightyear.SendData(pat);
 				return;
 			}
 			//all remaining programs:

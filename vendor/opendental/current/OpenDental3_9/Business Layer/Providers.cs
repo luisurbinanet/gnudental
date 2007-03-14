@@ -50,7 +50,7 @@ namespace OpenDental{
 		public Color OutlineColor;
 		///<summary>Used in dental schools.  Foreign key to schoolclass.SchoolClassNum.  Each student is a provider.  This keeps track of which class they are in.</summary>
 		public int SchoolClassNum;
-		///<summary>Only used for Canadian claims right now, but will be required in US within a year or two.</summary>
+		///<summary>Used for Canadian claims right now, and will be required in US within a year or two.  Goes out on eclaims if avaialable.</summary>
 		public string NationalProvID;
 
 		///<summary>Returns a copy of this Provider.</summary>

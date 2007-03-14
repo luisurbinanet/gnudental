@@ -30,6 +30,7 @@ namespace OpenDental{
 		private OpenDental.UI.Button butTools;
 		private System.Windows.Forms.GroupBox groupFeeScheds;
 		private bool changed;
+		private ProcedureCode[] ProcList;
 
 		///<summary></summary>
 		public FormProcedures(){
@@ -119,18 +120,19 @@ namespace OpenDental{
 			// 
 			// listFeeSched
 			// 
-			this.listFeeSched.Anchor = System.Windows.Forms.AnchorStyles.None;
-			this.listFeeSched.Location = new System.Drawing.Point(813, 52);
+			this.listFeeSched.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.listFeeSched.Location = new System.Drawing.Point(813, 36);
 			this.listFeeSched.Name = "listFeeSched";
-			this.listFeeSched.Size = new System.Drawing.Size(137, 303);
+			this.listFeeSched.Size = new System.Drawing.Size(137, 316);
 			this.listFeeSched.TabIndex = 11;
+			this.listFeeSched.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listFeeSched_MouseDown);
 			this.listFeeSched.DoubleClick += new System.EventHandler(this.listFeeSched_DoubleClick);
 			this.listFeeSched.SelectedIndexChanged += new System.EventHandler(this.listFeeSched_SelectedIndexChanged);
 			// 
 			// labelFeeSched
 			// 
-			this.labelFeeSched.Anchor = System.Windows.Forms.AnchorStyles.None;
-			this.labelFeeSched.Location = new System.Drawing.Point(813, 34);
+			this.labelFeeSched.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.labelFeeSched.Location = new System.Drawing.Point(813, 16);
 			this.labelFeeSched.Name = "labelFeeSched";
 			this.labelFeeSched.Size = new System.Drawing.Size(132, 17);
 			this.labelFeeSched.TabIndex = 12;
@@ -207,6 +209,7 @@ namespace OpenDental{
 			this.ShowInTaskbar = false;
 			this.Text = "Procedures";
 			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+			this.Resize += new System.EventHandler(this.FormProcedures_Resize);
 			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormProcedures_Closing);
 			this.Load += new System.EventHandler(this.FormProcedures_Load);
 			this.Activated += new System.EventHandler(this.FormProcedures_Activated);
@@ -218,14 +221,6 @@ namespace OpenDental{
 
 
 		private void FormProcedures_Load(object sender, System.EventArgs e) {
-			panel1.Height=this.ClientSize.Height;
-			panel1.Width=this.ClientSize.Width-150;
-			butNew.Location=new Point(ClientSize.Width-100,ClientSize.Height-196);
-			butClose.Location=new Point(ClientSize.Width-100,ClientSize.Height-156);
-			butOK.Location=new Point(ClientSize.Width-100,ClientSize.Height-116);
-			butCancel.Location=new Point(ClientSize.Width-100,ClientSize.Height-76);
-			labelFeeSched.Location=new Point(ClientSize.Width-125,30);
-			listFeeSched.Location=new Point(ClientSize.Width-125,50);
 			switch(Mode){
 				case FormProcMode.Edit:
 					//Edit mode is the only place where groupFeeScheds is visible. Security will already have been checked.
@@ -246,16 +241,25 @@ namespace OpenDental{
 				this.listFeeSched.Items.Add(Defs.Short[(int)DefCat.FeeSchedNames][i].ItemName);
 			}
 			listFeeSched.SelectedIndex=0;
-			//FillTables();//will be done automatically because of line above			
+			FillTables();	
+		}
+
+		private void FormProcedures_Resize(object sender,System.EventArgs e) {
+			if(listFeeSched.SelectedIndex==-1){
+				return;
+			}
+			FillTables();
 		}
 
 		private void FillTables(){
+			panel1.Height=this.ClientSize.Height;
+			panel1.Width=this.ClientSize.Width-150;
 			Fee fee;
-			ProcedureCodes.GetProcList();
+			ProcList=ProcedureCodes.GetProcList();
 			panel1.Controls.Clear();
 			//math to find tableCount
-			tableLength=(int)Math.Floor((panel1.Height-18)/OpenDental.TableCodeList.rowHeight);
-			tableCount=(int)Math.Ceiling((ProcedureCodes.ProcList.Length+14)/tableLength)+2;//this line needs help
+			tableLength=(int)Math.Floor((double)(panel1.Height-18)/(double)OpenDental.TableCodeList.rowHeight);
+			tableCount=(int)Math.Ceiling((double)(ProcList.Length+14)/(double)tableLength)+2;//this line needs help
 			//tableCount=2;
 			//tableStart=new int[tableCount];
 			//tableEnd=new int[tableCount];
@@ -279,9 +283,9 @@ namespace OpenDental{
 			}
 			int iTable=0;
 			int iRow=0;
-			for(int i=0;i<ProcedureCodes.ProcList.Length;i++){
+			for(int i=0;i<ProcList.Length;i++){
 				if(i==0){
-					tb[iTable].Cell[0,iRow]=Defs.GetName(DefCat.ProcCodeCats,ProcedureCodes.ProcList[i].ProcCat);
+					tb[iTable].Cell[0,iRow]=Defs.GetName(DefCat.ProcCodeCats,ProcList[i].ProcCat);
 					tb[iTable].FontBold[0,iRow]=true;
 					iRow++;
 					if(iRow==tableLength){
@@ -289,11 +293,11 @@ namespace OpenDental{
 						iTable++;
 					}
 				}
-				else if(ProcedureCodes.ProcList[i].ProcCat!=ProcedureCodes.ProcList[i-1].ProcCat){
+				else if(ProcList[i].ProcCat!=ProcList[i-1].ProcCat){
 					//if(ProcCodes.ProcList[i].ProcCat==255)
 					//	tb[iTable].Cell[0,iRow]="";//read only codes
 					//else
-						tb[iTable].Cell[0,iRow]=Defs.GetName(DefCat.ProcCodeCats,ProcedureCodes.ProcList[i].ProcCat);
+						tb[iTable].Cell[0,iRow]=Defs.GetName(DefCat.ProcCodeCats,ProcList[i].ProcCat);
 					tb[iTable].FontBold[0,iRow]=true;
 					iRow++;
 					if(iRow==tableLength){
@@ -302,9 +306,9 @@ namespace OpenDental{
 					}
 				}
 				//if(ProcCodes.ProcList[i].ProcCat!=255){//don't print read-only codes
-				tb[iTable].Cell[0,iRow]=ProcedureCodes.ProcList[i].AbbrDesc;
-				tb[iTable].Cell[1,iRow]=ProcedureCodes.ProcList[i].ADACode;
-				fee=Fees.GetFeeByOrder(ProcedureCodes.ProcList[i].ADACode,listFeeSched.SelectedIndex);
+				tb[iTable].Cell[0,iRow]=ProcList[i].AbbrDesc;
+				tb[iTable].Cell[1,iRow]=ProcList[i].ADACode;
+				fee=Fees.GetFeeByOrder(ProcList[i].ADACode,listFeeSched.SelectedIndex);
 				if(fee!=null){
 					tb[iTable].Cell[2,iRow]=fee.Amount.ToString("F");
 				}
@@ -320,17 +324,21 @@ namespace OpenDental{
 		}
 
 		private void listFeeSched_SelectedIndexChanged(object sender, System.EventArgs e) {
+			//FillTables();
+		}
+
+		private void listFeeSched_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
 			FillTables();
+			//listFeeSched.SelectedIndex.ToString());
 		}
 
 		private void listFeeSched_DoubleClick(object sender, System.EventArgs e) {
-			if(Mode!=FormProcMode.Edit){
+			/*if(Mode!=FormProcMode.Edit){
 				return;
 			}
 			if(listFeeSched.SelectedIndex==-1){
 				return;
-			}
-			//not functional yet
+			}*/
 		}
 
 		private void butEdit_Click(object sender, System.EventArgs e) {
@@ -408,8 +416,7 @@ namespace OpenDental{
 						}
 					}
 					else{//not on a fee: Edit code instead
-						FormProcCodeEdit FormPCE=new FormProcCodeEdit();
-						ProcedureCodes.Cur=ProcedureCodes.GetProcCode(SelectedADA);
+						FormProcCodeEdit FormPCE=new FormProcCodeEdit(ProcedureCodes.GetProcCode(SelectedADA));
 						FormPCE.IsNew=false;
 						FormPCE.ShowDialog();
 						if(FormPCE.DialogResult==DialogResult.OK){
@@ -450,18 +457,19 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"That code already exists."));
 				return;
 			}
-			FormProcCodeEdit FormProcCodeEdit2=new FormProcCodeEdit();
-			//ProcCodes.Cur=ProcCodes.GetProcCode(SelectedADA);
-			FormProcCodeEdit2.NewADA=FormPCN.textNewCode.Text;
-			FormProcCodeEdit2.IsNew=true;
-			FormProcCodeEdit2.ShowDialog();
-			//textADACode.Text=FormInputBox2.textBox1.Text;
-			if(FormProcCodeEdit2.DialogResult==DialogResult.OK){
+			ProcedureCode procCode=new ProcedureCode();
+			procCode.ADACode=FormPCN.textNewCode.Text;
+			procCode.ProcTime="/X/";
+			procCode.ProcCat=Defs.Short[(int)DefCat.ProcCodeCats][0].DefNum;
+			procCode.Insert();
+			FormProcCodeEdit FormP=new FormProcCodeEdit(procCode);
+			FormP.IsNew=true;
+			FormP.ShowDialog();
+			if(FormP.DialogResult==DialogResult.OK){
 				ProcedureCodes.Refresh();
 				changed=true;
 				FillTables();
 			}
-			
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e){
@@ -481,6 +489,10 @@ namespace OpenDental{
 				DataValid.SetInvalid(InvalidTypes.ProcCodes | InvalidTypes.Fees);
 			}
 		}
+
+		
+
+		
 
 		
 

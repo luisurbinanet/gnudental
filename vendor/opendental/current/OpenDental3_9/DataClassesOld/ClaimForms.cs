@@ -81,7 +81,7 @@ namespace OpenDental{
 				+",UniqueID = '"    +POut.PString(UniqueID)+"' "
 				+",PrintImages = '" +POut.PBool  (PrintImages)+"' "
 				+",OffsetX = '"     +POut.PInt   (OffsetX)+"' "
-				+",OffsetX = '"     +POut.PInt   (OffsetY)+"' "
+				+",OffsetY = '"     +POut.PInt   (OffsetY)+"' "
 				+"WHERE ClaimFormNum = '"+POut.PInt   (ClaimFormNum)+"'";
 			DataConnection dcon=new DataConnection();
  			dcon.NonQ(command);

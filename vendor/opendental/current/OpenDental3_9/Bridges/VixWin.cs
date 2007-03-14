@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
@@ -12,44 +13,28 @@ namespace OpenDental.Bridges{
 			
 		}
 
-		
-
-
-		///<summary>Sends data for Patient.Cur to the QuikLink directory. No further action is required.</summary>
+		///<summary>Sends data for Patient.Cur by command line interface.</summary>
 		public static void SendData(Patient pat){
 			ProgramProperties.GetForProgram();
-			ProgramProperties.GetCur("QuikLink directory.");
-			string quikLinkDir=ProgramProperties.Cur.PropertyValue;
 			if(pat==null){
 				return;
 			}
-			if(!Directory.Exists(quikLinkDir)){
-				MessageBox.Show(quikLinkDir+" is not a valid folder.");
-				return;
+			//Example: c:\vixwin\vixwin -I 123ABC -N Bill^Smith
+			string info="-I ";
+			ProgramProperties.GetCur("Enter 0 to use PatientNum, or 1 to use ChartNum");
+			if(ProgramProperties.Cur.PropertyValue=="0"){
+				info+=pat.PatNum.ToString();
 			}
+			else{
+				info+=pat.ChartNumber;//max 64 char
+			}
+			info+=" -N "+pat.FName.Replace(" ","")+"^"+pat.LName.Replace(" ","");//no spaces allowed
+			//MessageBox.Show(info);
 			try{
-				string patID;
-				ProgramProperties.GetCur("Enter 0 to use PatientNum, or 1 to use ChartNum");
-				if(ProgramProperties.Cur.PropertyValue=="0"){
-					patID=pat.PatNum.ToString().PadLeft(6,'0');
-				}
-				else{
-					patID=pat.ChartNumber.PadLeft(6,'0');
-				}
-				if(patID.Length>6){
-					MessageBox.Show("Patient ID is longer than six digits, so link failed.");
-					return;
-				}
-				string fileName=quikLinkDir+patID+".DDE";
-				//MessageBox.Show(fileName);
-				using(StreamWriter sw=new StreamWriter(fileName,false)){
-					sw.WriteLine("\""+pat.FName+"\","
-						+"\""+pat.LName+"\","
-						+"\""+patID+"\"");
-				}
+				Process.Start(Programs.Cur.Path,info);
 			}
 			catch{
-				MessageBox.Show("Error creating file.");
+				MessageBox.Show(Programs.Cur.Path+" is not available.");
 			}
 		}
 			

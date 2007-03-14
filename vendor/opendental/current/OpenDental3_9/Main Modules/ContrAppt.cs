@@ -128,6 +128,7 @@ namespace OpenDental{
 		private Appointment AptCur;
 		//private Appointment AptOld;
 		private DateTime[] SearchResults;
+		private PatPlan[] PatPlanList;
 
 		///<summary></summary>
 		public ContrAppt(){
@@ -1108,7 +1109,6 @@ namespace OpenDental{
 			FamCur=null;
 			PatCur=null;
 			PlanList=null;
-			CovPats.List=null;
 			//from RefreshDay:
 			ListDay=null;
 			//Schedules.ListDay=null;
@@ -1133,7 +1133,8 @@ namespace OpenDental{
 				FamCur=Patients.GetFamily(patNum);
 				PatCur=FamCur.GetPatient(patNum);
 				PlanList=InsPlans.Refresh(FamCur);
-				CovPats.Refresh(PatCur,PlanList);
+				PatPlanList=PatPlans.Refresh(patNum);
+				CovPats.Refresh(PlanList,PatPlanList);
 			}
 			FillPatientButton();
 		}
@@ -1547,11 +1548,22 @@ namespace OpenDental{
 
 		///<summary>Fills the production summary for the day.</summary>
 		private void FillProduction(){
-			double production=0;
-			for(int i=0;i<ListDay.Length;i++){
-				production+=Procedures.GetProductionOneApt(ListDay[i].AptNum);
+			bool showProduction=false;
+			for(int i=0;i<ApptViewItems.ApptRows.Length;i++){
+				if(ApptViewItems.ApptRows[i].ElementDesc=="Production"){
+					showProduction=true;
+				}
 			}
-			textProduction.Text=production.ToString("c0");
+			if(showProduction){
+				double production=0;
+				for(int i=0;i<ListDay.Length;i++){
+					production+=Procedures.GetProductionOneApt(ListDay[i].AptNum);
+				}
+				textProduction.Text=production.ToString("c0");
+			}
+			else{
+				textProduction.Text="";
+			}
 		}
 
 		///<summary>Creates one bitmap image for each appointment if visible.</summary>
@@ -1771,13 +1783,7 @@ namespace OpenDental{
 							ProcCur=ProcList[i];
 							ProcOld=ProcCur.Copy();
 							ProcCur.AptNum=aptCur.AptNum;
-							try{
-								ProcCur.InsertOrUpdate(ProcOld,false);//recall synch not required.
-							}
-							catch(Exception ex){
-								MessageBox.Show(ex.Message);
-								return;//this won't happen. Just changing the apt num.
-							}
+							ProcCur.Update(ProcOld);//recall synch not required.
 						}
 					}
 				}
@@ -2079,7 +2085,8 @@ namespace OpenDental{
 				mouseIsDown=false;
 				TempApptSingle.Dispose();
 				PlanList=InsPlans.Refresh(FamCur);
-				CovPats.Refresh(PatCur,PlanList);
+				PatPlanList=PatPlans.Refresh(PatCur.PatNum);
+				CovPats.Refresh(PlanList,PatPlanList);
 				//PinApptSingle.Refresh();
 				return;
 			}
@@ -2089,7 +2096,8 @@ namespace OpenDental{
 					mouseIsDown=false;
 					TempApptSingle.Dispose();
 					PlanList=InsPlans.Refresh(FamCur);
-					CovPats.Refresh(PatCur,PlanList);
+					PatPlanList=PatPlans.Refresh(PatCur.PatNum);
+					CovPats.Refresh(PlanList,PatPlanList);
 					return;
 				}
 				int prevSel=GetIndex(ContrApptSingle.SelectedAptNum);
@@ -2100,7 +2108,8 @@ namespace OpenDental{
 					ContrApptSheet2.DrawShadow();
 				}
 				PlanList=InsPlans.Refresh(FamCur);
-				CovPats.Refresh(PatCur,PlanList);
+				PatPlanList=PatPlans.Refresh(PatCur.PatNum);
+				CovPats.Refresh(PlanList,PatPlanList);
 				FillPanelPatient();
 				TempApptSingle.Dispose();
 				return;
@@ -2117,7 +2126,8 @@ namespace OpenDental{
 					boolAptMoved=false;
 					TempApptSingle.Dispose();
 					PlanList=InsPlans.Refresh(FamCur);
-					CovPats.Refresh(PatCur,PlanList);
+					PatPlanList=PatPlans.Refresh(PatCur.PatNum);
+					CovPats.Refresh(PlanList,PatPlanList);
 					return;
 				}
 			}
@@ -2156,7 +2166,8 @@ namespace OpenDental{
 					boolAptMoved=false;
 					TempApptSingle.Dispose();
 					PlanList=InsPlans.Refresh(FamCur);
-					CovPats.Refresh(PatCur,PlanList);
+					PatPlanList=PatPlans.Refresh(PatCur.PatNum);
+					CovPats.Refresh(PlanList,PatPlanList);
 					return;
 				}
 			}//end if DoesOverlap
@@ -2191,7 +2202,8 @@ namespace OpenDental{
 			boolAptMoved=false;
 			TempApptSingle.Dispose();
 			PlanList=InsPlans.Refresh(FamCur);
-			CovPats.Refresh(PatCur,PlanList);
+			PatPlanList=PatPlans.Refresh(PatCur.PatNum);
+			CovPats.Refresh(PlanList,PatPlanList);
 		}
 
 		///<summary>Double click on appt sheet or on a single appointment.</summary>
@@ -2780,7 +2792,7 @@ namespace OpenDental{
 			Appointment aptOld=AptCur.Copy();
 			AptCur.AptStatus=ApptStatus.Complete;
 			//Procedures.SetDateFirstVisit(Appointments.Cur.AptDateTime.Date);//done when making appt instead
-			Procedures.SetCompleteInAppt(AptCur,PatCur,PlanList);//loops through each proc
+			Procedures.SetCompleteInAppt(AptCur,PlanList,PatPlanList);//loops through each proc
 			try{
 				AptCur.InsertOrUpdate(aptOld,false);
 				SecurityLogs.MakeLogEntry(Permissions.AppointmentEdit,AptCur.PatNum,

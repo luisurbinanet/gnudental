@@ -93,6 +93,7 @@ namespace OpenDental{
 		///<summary></summary>
 		[Category("Data"),Description("Occurs when user changes current patient, usually by clicking on the Select Patient button.")]
 		public event PatientSelectedEventHandler PatientSelected=null;
+		private PatPlan[] PatPlanList;
 
 		///<summary></summary>
 		public ContrTreat(){
@@ -646,7 +647,6 @@ namespace OpenDental{
 			FamCur=null;
 			PatCur=null;
 			InsPlanList=null;
-			CovPats.List=null;
 			Claims.List=null;
 			Claims.HList=null;
 			//ClaimProcs.List=null;
@@ -662,7 +662,8 @@ namespace OpenDental{
 				FamCur=Patients.GetFamily(patNum);
 				PatCur=FamCur.GetPatient(patNum);
 				InsPlanList=InsPlans.Refresh(FamCur);
-				CovPats.Refresh(PatCur,InsPlanList);
+				PatPlanList=PatPlans.Refresh(patNum);
+				CovPats.Refresh(InsPlanList,PatPlanList);
 				Claims.Refresh(PatCur.PatNum);
         Fees.Refresh();
         ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
@@ -773,8 +774,8 @@ namespace OpenDental{
 			double totPat=0;
 			for(int i=0;i<ProcListTP.Length;i++){
 				fee=ProcListTP[i].ProcFee;
-				priIns=ProcListTP[i].GetEst(ClaimProcList,PriSecTot.Pri,PatCur);
-				secIns=ProcListTP[i].GetEst(ClaimProcList,PriSecTot.Sec,PatCur);
+				priIns=ProcListTP[i].GetEst(ClaimProcList,PriSecTot.Pri,PatPlanList);
+				secIns=ProcListTP[i].GetEst(ClaimProcList,PriSecTot.Sec,PatPlanList);
 				pat=fee-priIns-secIns-ProcListTP[i].GetWriteOff(ClaimProcList);
 				if(pat<0)
 					pat=0;
@@ -840,8 +841,8 @@ namespace OpenDental{
 					row.Cells.Add(ProcListTP[i].ADACode);
 					row.Cells.Add(ProcedureCodes.GetProcCode(ProcListTP[i].ADACode).Descript);
 					fee=ProcListTP[i].ProcFee;
-					priIns=ProcListTP[i].GetEst(ClaimProcList,PriSecTot.Pri,PatCur);
-					secIns=ProcListTP[i].GetEst(ClaimProcList,PriSecTot.Sec,PatCur);
+					priIns=ProcListTP[i].GetEst(ClaimProcList,PriSecTot.Pri,PatPlanList);
+					secIns=ProcListTP[i].GetEst(ClaimProcList,PriSecTot.Sec,PatPlanList);
 					pat=fee-priIns-secIns-ProcListTP[i].GetWriteOff(ClaimProcList);
 					if(pat<0)
 						pat=0;
@@ -916,10 +917,10 @@ namespace OpenDental{
 			double pend=0;
 			double used=0;
 			InsPlan PlanCur;//=new InsPlan();
-			if(PatCur.PriPlanNum!=0){
-				PlanCur=InsPlans.GetPlan(PatCur.PriPlanNum,InsPlanList);
+			if(PatPlanList.Length>0){
+				PlanCur=InsPlans.GetPlan(PatPlans.GetPlanNum(PatPlanList,1),InsPlanList);
 				//pending:
-				pend=InsPlans.GetPending(ClaimProcList,DateTime.Today,PatCur.PriPlanNum,InsPlanList);
+				pend=InsPlans.GetPending(ClaimProcList,DateTime.Today,PatPlans.GetPlanNum(PatPlanList,1),InsPlanList);
 				textPriPend.Text=pend.ToString("F");
 				//max, used, and remaining:
 				if(PlanCur.AnnualMax==-1){//annual max is blank
@@ -930,7 +931,7 @@ namespace OpenDental{
 				}
 				else{
 					max=PlanCur.AnnualMax;
-					remain=InsPlans.GetInsRem(ClaimProcList,DateTime.Today,PatCur.PriPlanNum,-1,InsPlanList);
+					remain=InsPlans.GetInsRem(ClaimProcList,DateTime.Today,PatPlans.GetPlanNum(PatPlanList,1),-1,InsPlanList);
 					used=max-remain-pend;//math done in reverse to take advantage of GetInsRem
 					//fix later to: remain=max-used-pend
 					textPriMax.Text=max.ToString("F");
@@ -940,12 +941,12 @@ namespace OpenDental{
 				//deductible:
 				if(PlanCur.Deductible!=-1)
 					textPriDed.Text=PlanCur.Deductible.ToString("F");
-				textPriDedRem.Text=InsPlans.GetDedRem(ClaimProcList,DateTime.Today,PatCur.PriPlanNum
+				textPriDedRem.Text=InsPlans.GetDedRem(ClaimProcList,DateTime.Today,PatPlans.GetPlanNum(PatPlanList,1)
 					,-1,InsPlanList).ToString("F");
 			}
-			if(PatCur.SecPlanNum!=0){
-				PlanCur=InsPlans.GetPlan(PatCur.SecPlanNum,InsPlanList);
-				pend=InsPlans.GetPending(ClaimProcList,DateTime.Today,PatCur.SecPlanNum,InsPlanList);
+			if(PatPlanList.Length>1){
+				PlanCur=InsPlans.GetPlan(PatPlans.GetPlanNum(PatPlanList,2),InsPlanList);
+				pend=InsPlans.GetPending(ClaimProcList,DateTime.Today,PatPlans.GetPlanNum(PatPlanList,2),InsPlanList);
 				textSecPend.Text=pend.ToString("F");
 				if(PlanCur.AnnualMax==-1){//annual max is blank
 					textSecMax.Text="";
@@ -954,7 +955,7 @@ namespace OpenDental{
 				}
 				else{
 					max=PlanCur.AnnualMax;
-					remain=InsPlans.GetInsRem(ClaimProcList,DateTime.Today,PatCur.SecPlanNum,-1,InsPlanList);
+					remain=InsPlans.GetInsRem(ClaimProcList,DateTime.Today,PatPlans.GetPlanNum(PatPlanList,2),-1,InsPlanList);
 					used=max-remain-pend;
 					textSecMax.Text=max.ToString("F");
 					textSecRem.Text=remain.ToString("F");
@@ -963,7 +964,7 @@ namespace OpenDental{
 				if(PlanCur.Deductible!=-1)
 					textSecDed.Text=PlanCur.Deductible.ToString("F");
 				textSecDedRem.Text=InsPlans.GetDedRem(ClaimProcList,DateTime.Today,
-					PatCur.SecPlanNum,-1,InsPlanList).ToString("F");
+					PatPlans.GetPlanNum(PatPlanList,2),-1,InsPlanList).ToString("F");
 			}
 		}
 
@@ -1071,13 +1072,7 @@ namespace OpenDental{
 						ProcCur.Priority=0;
 					else
 						ProcCur.Priority=Defs.Short[(int)DefCat.TxPriorities][clickedRow-1].DefNum;
-					try{
-						ProcCur.InsertOrUpdate(ProcOld,false);//no recall synch required
-					}
-					catch(Exception ex){
-						MessageBox.Show(ex.Message);
-						continue;
-					}
+					ProcCur.Update(ProcOld);//no recall synch required
 				}
 				ModuleSelected(PatCur.PatNum);
 			}
@@ -1526,17 +1521,9 @@ namespace OpenDental{
 				procCur=ProcListTP[i];
 				procOld=procCur.Copy();
 				//first the fees
-				procCur.ProcFee=Fees.GetAmount0(procCur.ADACode,Fees.GetFeeSched(PatCur,InsPlanList));
-				procCur.ComputeEstimates(PatCur.PatNum,PatCur.PriPlanNum
-					,PatCur.SecPlanNum,ClaimProcList,false,PatCur,InsPlanList);
-				try{
-					procCur.InsertOrUpdate(procOld,false);//no recall synch required 
-				}
-				catch(Exception ex){
-					MessageBox.Show(ex.Message);
-					continue;
-				}
-				//procCur.Update(procOld);
+				procCur.ProcFee=Fees.GetAmount0(procCur.ADACode,Fees.GetFeeSched(PatCur,InsPlanList,PatPlanList));
+				procCur.ComputeEstimates(PatCur.PatNum,ClaimProcList,false,InsPlanList,PatPlanList);
+				procCur.Update(procOld);//no recall synch required 
       }
       ModuleSelected(PatCur.PatNum);
 		}
@@ -1572,8 +1559,8 @@ namespace OpenDental{
 				procTP.ADACode=ProcListTP[gridMain.SelectedIndices[i]].ADACode;
 				procTP.Descript=ProcedureCodes.GetProcCode(ProcListTP[gridMain.SelectedIndices[i]].ADACode).Descript;
 				fee=ProcListTP[gridMain.SelectedIndices[i]].ProcFee;
-				priIns=ProcListTP[gridMain.SelectedIndices[i]].GetEst(ClaimProcList,PriSecTot.Pri,PatCur);
-				secIns=ProcListTP[gridMain.SelectedIndices[i]].GetEst(ClaimProcList,PriSecTot.Sec,PatCur);
+				priIns=ProcListTP[gridMain.SelectedIndices[i]].GetEst(ClaimProcList,PriSecTot.Pri,PatPlanList);
+				secIns=ProcListTP[gridMain.SelectedIndices[i]].GetEst(ClaimProcList,PriSecTot.Sec,PatPlanList);
 				pat=fee-priIns-secIns-ProcListTP[gridMain.SelectedIndices[i]].GetWriteOff(ClaimProcList);
 				if(pat<0)
 					pat=0;
@@ -1638,7 +1625,6 @@ namespace OpenDental{
 			//instead of making the user enter it:
 			Claims.Cur.PatRelat=FormIPS.PatRelat;
 			Claims.InsertCur();
-			//this loop adds the claimprocs but does not add any fees
 			Procedure ProcCur;
 			//Procedure ProcOld;
 			ClaimProc ClaimProcCur;
@@ -1667,7 +1653,7 @@ namespace OpenDental{
 			ProcList=Procedures.Refresh(PatCur.PatNum);
 			ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
 			//ClaimProc[] ClaimProcsForClaim=ClaimProcs.GetForClaim(ClaimProcList,Claims.Cur.ClaimNum);
-			Claims.CalculateAndUpdate(ClaimProcList,ProcList,PatCur,InsPlanList,Claims.Cur);
+			Claims.CalculateAndUpdate(ClaimProcList,ProcList,InsPlanList,Claims.Cur,PatPlanList);
 			FormClaimEdit FormCE=new FormClaimEdit(PatCur,FamCur);
 			//FormCE.CalculateEstimates(
 			FormCE.IsNew=true;//this causes it to delete the claim if cancelling.

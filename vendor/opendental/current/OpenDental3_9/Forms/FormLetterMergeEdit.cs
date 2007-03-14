@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Drawing.Printing;
 using System.IO;
 using System.Windows.Forms;
-using OpenDental.Reporting;
+//using OpenDental.Reporting;
 
 namespace OpenDental{
 	/// <summary>
@@ -513,7 +513,14 @@ namespace OpenDental{
 			Object oMissing=System.Reflection.Missing.Value;
 			Object oFalse=false;
 			//Create an instance of Word.
-			Word.Application WrdApp=LetterMerges.WordApp;
+			Word.Application WrdApp;
+			try{
+				WrdApp=LetterMerges.WordApp;
+			}
+			catch{
+				MsgBox.Show(this,"Error.  Is MS Word installed?");
+				return;
+			}
 			//Create a new document.
 			Object oName=templateFile;
 			Word._Document wrdDoc;

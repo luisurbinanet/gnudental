@@ -7,7 +7,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Globalization;
 using System.Windows.Forms;
-using OpenDental.Reporting;
+using OpenDental.ReportingOld2;
 
 namespace OpenDental{
 	/// <summary>
@@ -1167,7 +1167,7 @@ namespace OpenDental{
 			if(!SaveData()){
 				return;
 			}
-			Report report=new Report();
+			ReportOld2 report=new ReportOld2();
 			report.AddTitle("Payment Plan Terms");
 			report.AddSubTitle(Prefs.GetString("PracticeTitle"));
 			report.AddSubTitle(DateTime.Today.ToShortDateString());
@@ -1239,7 +1239,7 @@ namespace OpenDental{
 			//yPos+=60;
 			report.ReportObjects.Add(new ReportObject
 				("Report Footer",new Point(x1,70),size,"Signature of Guarantor:",font,alignL));
-			FormReport FormR=new FormReport(report);
+			FormReportOld2 FormR=new FormReportOld2(report);
 			FormR.ShowDialog();
 		}
 

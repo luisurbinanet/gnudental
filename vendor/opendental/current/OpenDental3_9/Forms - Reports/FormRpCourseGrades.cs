@@ -4,7 +4,7 @@ using System.Drawing.Printing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
-using OpenDental.Reporting;
+//using OpenDental.ReportingOld2;
 
 //using System.IO;
 //using System.Text;

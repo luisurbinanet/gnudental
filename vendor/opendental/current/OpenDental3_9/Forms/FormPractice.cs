@@ -35,6 +35,8 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textPhone;
 		private System.Windows.Forms.RadioButton radioInsBillingProvTreat;
 		private System.Windows.Forms.RadioButton radioInsBillingProvDefault;
+		private System.Windows.Forms.RadioButton radioInsBillingProvSpecific;
+		private System.Windows.Forms.ComboBox comboInsBillingProv;
 		private System.Windows.Forms.GroupBox groupBox4;// Required designer variable.
 
 		///<summary></summary>
@@ -84,6 +86,8 @@ namespace OpenDental{
 			this.groupBox4 = new System.Windows.Forms.GroupBox();
 			this.radioInsBillingProvTreat = new System.Windows.Forms.RadioButton();
 			this.radioInsBillingProvDefault = new System.Windows.Forms.RadioButton();
+			this.radioInsBillingProvSpecific = new System.Windows.Forms.RadioButton();
+			this.comboInsBillingProv = new System.Windows.Forms.ComboBox();
 			this.groupBox2.SuspendLayout();
 			this.groupBox4.SuspendLayout();
 			this.SuspendLayout();
@@ -330,12 +334,14 @@ namespace OpenDental{
 			// 
 			// groupBox4
 			// 
+			this.groupBox4.Controls.Add(this.comboInsBillingProv);
+			this.groupBox4.Controls.Add(this.radioInsBillingProvSpecific);
 			this.groupBox4.Controls.Add(this.radioInsBillingProvTreat);
 			this.groupBox4.Controls.Add(this.radioInsBillingProvDefault);
 			this.groupBox4.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupBox4.Location = new System.Drawing.Point(453, 213);
 			this.groupBox4.Name = "groupBox4";
-			this.groupBox4.Size = new System.Drawing.Size(221, 67);
+			this.groupBox4.Size = new System.Drawing.Size(235, 104);
 			this.groupBox4.TabIndex = 50;
 			this.groupBox4.TabStop = false;
 			this.groupBox4.Text = "Default Insurance Billing Dentist";
@@ -359,6 +365,23 @@ namespace OpenDental{
 			this.radioInsBillingProvDefault.TabIndex = 0;
 			this.radioInsBillingProvDefault.TabStop = true;
 			this.radioInsBillingProvDefault.Text = "Default Practice Provider";
+			// 
+			// radioInsBillingProvSpecific
+			// 
+			this.radioInsBillingProvSpecific.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.radioInsBillingProvSpecific.Location = new System.Drawing.Point(17, 53);
+			this.radioInsBillingProvSpecific.Name = "radioInsBillingProvSpecific";
+			this.radioInsBillingProvSpecific.Size = new System.Drawing.Size(186, 19);
+			this.radioInsBillingProvSpecific.TabIndex = 2;
+			this.radioInsBillingProvSpecific.Text = "Specific Provider:";
+			// 
+			// comboInsBillingProv
+			// 
+			this.comboInsBillingProv.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboInsBillingProv.Location = new System.Drawing.Point(35, 73);
+			this.comboInsBillingProv.Name = "comboInsBillingProv";
+			this.comboInsBillingProv.Size = new System.Drawing.Size(121, 21);
+			this.comboInsBillingProv.TabIndex = 3;
 			// 
 			// FormPractice
 			// 
@@ -430,11 +453,18 @@ namespace OpenDental{
 					(Lan.g("enumPlaceOfService",Enum.GetNames(typeof(PlaceOfService))[i]));
 			}
 			listPlaceService.SelectedIndex=Prefs.GetInt("DefaultProcedurePlaceService");
+			for(int i=0;i<Providers.List.Length;i++){
+				comboInsBillingProv.Items.Add(Providers.List[i].Abbr);
+			}
 			if(Prefs.GetInt("InsBillingProv")==0){//this can later be extended to include a 3rd option
 				radioInsBillingProvDefault.Checked=true;//default=0
 			}
+			else if(Prefs.GetInt("InsBillingProv")==-1){
+				radioInsBillingProvTreat.Checked=true;//treat=-1
+			}
 			else{
-				radioInsBillingProvTreat.Checked=true;//treat=1
+				radioInsBillingProvSpecific.Checked=true;//specific=any number >0. Foreign key to ProvNum
+				comboInsBillingProv.SelectedIndex=Providers.GetIndex(Prefs.GetInt("InsBillingProv"));
 			}
 		}
 
@@ -462,6 +492,10 @@ namespace OpenDental{
 					MessageBox.Show(Lan.g(this,"Invalid phone"));
 					return;
 				}
+			}
+			if(radioInsBillingProvSpecific.Checked && comboInsBillingProv.SelectedIndex==-1){
+				MsgBox.Show(this,"You must select a provider.");
+				return;
 			}
 			bool changed=false;
 			if( Prefs.UpdateString("PracticeTitle",textPracticeTitle.Text)
@@ -500,8 +534,13 @@ namespace OpenDental{
 					changed=true;
 				}
 			}
-			else{//treat=1
-				if(Prefs.UpdateInt("InsBillingProv",1)){
+			else if(radioInsBillingProvTreat.Checked){//treat=-1
+				if(Prefs.UpdateInt("InsBillingProv",-1)){
+					changed=true;
+				}
+			}
+			else{
+				if(Prefs.UpdateInt("InsBillingProv",Providers.List[comboInsBillingProv.SelectedIndex].ProvNum)){
 					changed=true;
 				}
 			}

@@ -76,7 +76,7 @@ namespace OpenDental.Eclaims{
 			Fill(41,"OtherInsSubscrDOB","MM/dd/yyyy");
 			Fill(42,"OtherInsSubscrIsMale");
 			Fill(43,"OtherInsSubscrIsFemale");
-			Fill(44,"OtherInsCarrierName");//Other Plan/Program name
+			Fill(44,"OtherInsGroupNum");//Other Plan/Program name
 			Fill(45,"SubscrCity");
 			Fill(46,"SubscrST");
 			Fill(47,"SubscrZip");
@@ -213,7 +213,7 @@ namespace OpenDental.Eclaims{
 			Fill(170,"P8Fee");
 			//end of procs
 			Fill(171,"TotalFee");
-			Fill(172,"");//payment by other plan
+			Fill(172,"");//payment by other plan. They want us to fill this in, but we don't know how.
 			Fill(173,"");//max allowable
 			Fill(174,"");//deductible
 			Fill(175,"");//carrier percent
@@ -257,8 +257,8 @@ namespace OpenDental.Eclaims{
 			Fill(213,"Miss23");
 			Fill(214,"Miss22");
 			Fill(215,"Miss21");
-			Fill(216,"Miss20");
-			Fill(217,"Miss19");
+			Fill(216,"OtherInsCarrierName");
+			Fill(217,"OtherInsAddress");
 			Fill(218,"Miss18");
 			Fill(219,"Miss17");
 			Fill(220,"");//T through

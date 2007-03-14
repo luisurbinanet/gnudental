@@ -12,7 +12,7 @@ namespace OpenDental{
 
 	/*=========================================================================================
 		=================================== class Queries ==========================================*/
-///<summary>This is an old class that will be replaced by the new reporting classes.</summary>
+///<summary>This is a very old class that will be replaced by the new reporting classes.</summary>
 	public class Queries:DataClass{
 		//public static string queryString;
 		///<summary></summary>

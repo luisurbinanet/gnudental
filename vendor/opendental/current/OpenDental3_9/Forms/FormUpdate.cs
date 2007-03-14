@@ -504,8 +504,10 @@ namespace OpenDental{
       workerThread.Start();
 			//display the progress dialog to the user:
 			FormP=new FormProgress();
-			FormP.MaxVal=fileSize;
-			FormP.FileName=Prefs.GetString("DocPath")+"Setup.exe";
+			FormP.MaxVal=(double)fileSize/1024;
+			FormP.NumberMultiplication=100;
+			FormP.DisplayText="?currentVal MB of ?maxVal MB copied";
+			FormP.NumberFormat="F";
 			FormP.ShowDialog();
 			if(FormP.DialogResult==DialogResult.Cancel){
 				workerThread.Abort();
@@ -514,7 +516,7 @@ namespace OpenDental{
 			MsgBox.Show(this,"Download succeeded.  Setup program will now begin.  When done, restart the program on this computer, then on the other computers.");
 			try{
 				Process.Start(Prefs.GetString("DocPath")+"Setup.exe");
-				ExitApplicationNow.ExitNow();
+				Application.Exit();
 			}
 			catch{
 				MsgBox.Show(this,"Could not launch setup");
@@ -537,8 +539,8 @@ namespace OpenDental{
 					if(buffer.Length==0){
 						break;
 					}
-					Invoke(new PassProgressDelegate(PassProgressToDialog),
-						new object [] { (chunk*i)+(int)((double)buffer.Length/1024) });
+					double curVal=((double)(chunk*i)+((double)buffer.Length/1024))/1024;
+					Invoke(new PassProgressDelegate(PassProgressToDialog),new object [] { curVal,"",0 });
 					bw.Write(buffer);
 					i++;
 				}
@@ -556,8 +558,10 @@ namespace OpenDental{
 		}
 
 		///<summary>This function gets invoked from the worker thread.</summary>
-		private void PassProgressToDialog(int msg){
-			FormP.CurrentVal=msg;
+		private void PassProgressToDialog(double newCurVal,string newDisplayText,double newMaxVal){
+			FormP.CurrentVal=newCurVal;
+			//we won't be changing the text here
+			//we won't be changing max val here
 		}
 
 		private void SavePrefs(){
@@ -592,8 +596,7 @@ namespace OpenDental{
 
 	}
 
-	///<summary></summary>
-	public delegate void PassProgressDelegate(int msg);
+	
 }
 
 

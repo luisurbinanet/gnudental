@@ -12,39 +12,19 @@ namespace OpenDental{
 		public int PlanNum;
 		///<summary>Foreign key to patient.PatNum.</summary>
 		public int Subscriber;
-		///<summary>No longer used. See CarrierNum column instead.</summary>
-		public string Carrier;
 		///<summary>Date plan became effective</summary>
 		public DateTime DateEffective;
 		///<summary>Date plan was terminated</summary>
 		public DateTime DateTerm;
-		///<summary>No longer used. See CarrierNum column instead.</summary>
-		public string Phone;
 		///<summary>Optional</summary>
 		public string GroupName;
 		///<summary></summary>
 		public string GroupNum;
-		///<summary>No longer used. See CarrierNum column instead.</summary>
-		public string Address;
-		///<summary>No longer used. See CarrierNum column instead.</summary>
-		public string Address2;
-		///<summary>No longer used. See CarrierNum column instead.</summary>
-		public string City;
-		///<summary>No longer used. See CarrierNum column instead.</summary>
-		public string State;
-		///<summary>No longer used. See CarrierNum column instead.</summary>
-		public string Zip;
-		///<summary>No longer used. See CarrierNum column instead.</summary>
-		public bool NoSendElect;
-		///<summary>No longer used. See CarrierNum column instead.</summary>
-		public string ElectID;
-		///<summary>No longer used! Must use the EmployerNum column instead.</summary>
-		public string Employer;
-		///<summary>Annual maximum.</summary>
+		///<summary>Annual maximum. -1 if unknown.</summary>
 		public int AnnualMax;
 		///<summary>Renewal month. Valid 1-12.  For instance, 1 means January.</summary>
 		public int RenewMonth;
-		///<summary>Amount of deductible per year.</summary>
+		///<summary>Amount of deductible per year. -1 if unknown.</summary>
 		public int Deductible;
 		///<summary>See the YN enum. 0=unknown, 1=Yes-covered,2=No-not covered.</summary>
 		public YN DeductWaivPrev;
@@ -90,6 +70,8 @@ namespace OpenDental{
 		public string DivisionNo;
 		///<summary>User doesn't usually put these in.  Only used when automatically requesting benefits, such as with Trojan.  All the benefits get stored here in text form for later reference.</summary>
 		public string BenefitNotes;
+		///<summary>True if this is medical insurance rather than dental insurance.</summary>
+		public bool IsMedical;
 		///<summary>This is NOT a database column.  It is just used to display the number of plans with the same info.</summary>
 		public int NumberPlans;
 
@@ -126,6 +108,7 @@ namespace OpenDental{
 			p.TrojanID=TrojanID;
 			p.DivisionNo=DivisionNo;
 			p.BenefitNotes=BenefitNotes;
+			p.IsMedical=IsMedical;
 			return p;
 		}
 
@@ -138,33 +121,23 @@ namespace OpenDental{
 			if(Prefs.RandomKeys){
 				command+="PlanNum,";
 			}
-			command+="Subscriber,Carrier,"
-				+"DateEffective,DateTerm,Phone,GroupName,GroupNum,Address,Address2,City,State,Zip,"
-				+"NoSendElect,ElectID,Employer,AnnualMax,RenewMonth,Deductible,"
+			command+="Subscriber,"
+				+"DateEffective,DateTerm,GroupName,GroupNum,"
+				+"AnnualMax,RenewMonth,Deductible,"
 				+"DeductWaivPrev,OrthoMax,"
 				+"FlotoAge,PlanNote,MissToothExcl,MajorWait,FeeSched,"
 				+"ReleaseInfo,AssignBen,PlanType,ClaimFormNum,UseAltCode,"
 				+"ClaimsUseUCR,IsWrittenOff,CopayFeeSched,SubscriberID,"
-				+"EmployerNum,CarrierNum,AllowedFeeSched,TrojanID,DivisionNo,BenefitNotes) VALUES(";
+				+"EmployerNum,CarrierNum,AllowedFeeSched,TrojanID,DivisionNo,BenefitNotes,IsMedical) VALUES(";
 			if(Prefs.RandomKeys){
 				command+="'"+POut.PInt(PlanNum)+"', ";
 			}
 			command+=
 				 "'"+POut.PInt   (Subscriber)+"', "
-				+"'"+POut.PString(Carrier)+"', "
 				+"'"+POut.PDate  (DateEffective)+"', "
 				+"'"+POut.PDate  (DateTerm)+"', "
-				+"'"+POut.PString(Phone)+"', "
 				+"'"+POut.PString(GroupName)+"', "
 				+"'"+POut.PString(GroupNum)+"', "
-				+"'"+POut.PString(Address)+"', "
-				+"'"+POut.PString(Address2)+"', "
-				+"'"+POut.PString(City)+"', "
-				+"'"+POut.PString(State)+"', "
-				+"'"+POut.PString(Zip)+"', "
-				+"'"+POut.PBool  (NoSendElect)+"', "
-				+"'"+POut.PString(ElectID)+"', "
-				+"'"+POut.PString(Employer)+"', "
 				+"'"+POut.PInt   (AnnualMax)+"', "
 				+"'"+POut.PInt   (RenewMonth)+"', "
 				+"'"+POut.PInt   (Deductible)+"', "
@@ -189,7 +162,8 @@ namespace OpenDental{
 				+"'"+POut.PInt   (AllowedFeeSched)+"', "
 				+"'"+POut.PString(TrojanID)+"', "
 				+"'"+POut.PString(DivisionNo)+"', "
-				+"'"+POut.PString(BenefitNotes)+"')";
+				+"'"+POut.PString(BenefitNotes)+"', "
+				+"'"+POut.PBool  (IsMedical)+"')";
 			DataConnection dcon=new DataConnection();
 			if(Prefs.RandomKeys){
 				dcon.NonQ(command);
@@ -204,20 +178,10 @@ namespace OpenDental{
 		public void Update(){
 			string command= "UPDATE insplan SET " 
 				+ "Subscriber = '"   +POut.PInt   (Subscriber)+"'"
-				+ ",Carrier = '"      +POut.PString(Carrier)+"'"
 				+ ",DateEffective = '"+POut.PDate  (DateEffective)+"'"
 				+ ",DateTerm = '"     +POut.PDate  (DateTerm)+"'"
-				+ ",Phone = '"        +POut.PString(Phone)+"'"
 				+ ",GroupName = '"    +POut.PString(GroupName)+"'"
 				+ ",GroupNum = '"     +POut.PString(GroupNum)+"'"
-				+ ",Address = '"      +POut.PString(Address)+"'"
-				+ ",Address2 = '"     +POut.PString(Address2)+"'"
-				+ ",City = '"         +POut.PString(City)+"'"
-				+ ",State = '"        +POut.PString(State)+"'"
-				+ ",Zip = '"          +POut.PString(Zip)+"'"
-				+ ",NoSendElect = '"  +POut.PBool  (NoSendElect)+"'"
-				+ ",ElectID = '"      +POut.PString(ElectID)+"'"
-				+ ",Employer = '"     +POut.PString(Employer)+"'"
 				+ ",AnnualMax = '"    +POut.PInt   (AnnualMax)+"'"
 				+ ",RenewMonth = '"   +POut.PInt   (RenewMonth)+"'"
 				+ ",Deductible = '"   +POut.PInt   (Deductible)+"'"
@@ -243,6 +207,7 @@ namespace OpenDental{
 				+ ",TrojanID='"       +POut.PString(TrojanID)+"'"
 				+ ",DivisionNo='"     +POut.PString(DivisionNo)+"'"
 				+ ",BenefitNotes='"   +POut.PString(BenefitNotes)+"'"
+				+ ",IsMedical='"      +POut.PBool  (IsMedical)+"'"
 				+" WHERE PlanNum = '" +POut.PInt(PlanNum)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
@@ -259,6 +224,7 @@ namespace OpenDental{
 				+",CarrierNum = '"     +POut.PInt   (CarrierNum)+"'"
 				+",PlanType = '"       +POut.PString(PlanType)+"'"
 				+",UseAltCode = '"     +POut.PBool  (UseAltCode)+"'"
+				+",IsMedical = '"      +POut.PBool  (IsMedical)+"'"
 				+",ClaimsUseUcr = '"   +POut.PBool  (ClaimsUseUCR)+"'"
 				+",FeeSched = '"       +POut.PInt   (FeeSched)+"'"
 				+",CopayFeeSched = '"  +POut.PInt   (CopayFeeSched)+"'"
@@ -272,6 +238,7 @@ namespace OpenDental{
 				+"AND CarrierNum = '"     +POut.PInt   (like.CarrierNum)+"' "
 				+"AND PlanType = '"       +POut.PString(like.PlanType)+"' "
 				+"AND UseAltCode = '"     +POut.PBool  (like.UseAltCode)+"' "
+				+"AND IsMedical = '"      +POut.PBool  (like.IsMedical)+"' "
 				+"AND ClaimsUseUCR = '"   +POut.PBool  (like.ClaimsUseUCR)+"' "
 				+"AND FeeSched = '"       +POut.PInt   (like.FeeSched)+"' "
 				+"AND CopayFeeSched = '"  +POut.PInt   (like.CopayFeeSched)+"' "
@@ -281,16 +248,15 @@ namespace OpenDental{
  			dcon.NonQ(command);
 		}
 
-		/// <summary>Only used from FormInsPlan. Returns true if successful. This is quite complex, because it also must update all claimprocs for all patients affected by the deletion.</summary>
-		public bool Delete(InsPlan[] PlanList){
+		/// <summary>Only used from FormInsPlan. Throws ApplicationException if any dependencies. This is quite complex, because it also must update all claimprocs for all patients affected by the deletion.</summary>
+		public void Delete(){
 			//first, check claims
-			string command="SELECT patnum FROM claim "
+			string command="SELECT PatNum FROM claim "
 				+"WHERE plannum = '"+PlanNum.ToString()+"' LIMIT 1";
 			DataConnection dcon=new DataConnection();
  			DataTable table=dcon.GetTable(command);
 			if(table.Rows.Count!=0){
-				MessageBox.Show(Lan.g("FormInsPlan","Not allowed to delete a plan with existing claims."));
-				return false;
+				throw new ApplicationException(Lan.g("FormInsPlan","Not allowed to delete a plan with existing claims."));
 			}
 			//then, check claimprocs
 			command="SELECT PatNum FROM claimproc "
@@ -298,68 +264,21 @@ namespace OpenDental{
 			dcon=new DataConnection();
  			table=dcon.GetTable(command);
 			if(table.Rows.Count!=0){
-				MessageBox.Show(Lan.g("FormInsPlan","Not allowed to delete a plan attached to procedures."));
-				return false;
+				throw new ApplicationException(Lan.g("FormInsPlan","Not allowed to delete a plan attached to procedures."));
 			}
-			//then, find any primary coverage for this ins.
-			command="SELECT patnum,secplannum,secrelationship FROM patient "
-				+"WHERE priplannum = '"+PlanNum.ToString()+"'";
-			table=dcon.GetTable(command);
-			//and move the existing secondary into primary. This also works if secondary is 0.
-			int patNum=0;
-			Patient pat;
-			for(int i=0;i<table.Rows.Count;i++){
-				patNum=PIn.PInt(table.Rows[i][0].ToString());
-				//if both primary and secondary are set to this plan:
-				if(PlanNum.ToString()==table.Rows[i][1].ToString()){
-					command="UPDATE patient SET "
-						+"priplannum = '0'"
-						+",prirelationship = '0'"
-						+",secplannum = '0'"
-						+",secrelationship = '0' "
-						+"WHERE patnum = '"+patNum.ToString()+"'";
-				}
-				else{//only the primary
-					command="UPDATE patient SET "
-						+"priplannum = '"+table.Rows[i][1].ToString()+"' "
-						+",prirelationship = '"+table.Rows[i][2].ToString()+"' "
-						+",secplannum = '0' "
-						+",secrelationship = '0' "
-						+"WHERE patnum = '"+patNum.ToString()+"'";
-				}
-				dcon.NonQ(command);
-				//Patients.GetFamily(patNum);
-				pat=Patients.GetPat(patNum);
-				ClaimProc[] claimProcs=ClaimProcs.Refresh(patNum);
-				Procedure[] procs=Procedures.Refresh(patNum);
-				Procedures.ComputeEstimatesForAll(patNum,pat.PriPlanNum,
-					pat.SecPlanNum,claimProcs,procs,pat,PlanList);
-			}
-			//then secondary only
-			command="SELECT patnum FROM patient "
-				+"WHERE secplannum = '"+PlanNum.ToString()+"'";
+			//get a list of all patplans with this planNum
+			command="SELECT PatPlanNum FROM patplan "
+				+"WHERE PlanNum = "+PlanNum.ToString();
 			table=dcon.GetTable(command);
 			for(int i=0;i<table.Rows.Count;i++){
-				patNum=PIn.PInt(table.Rows[i][0].ToString());
-				command="UPDATE patient SET "
-					+"SecPlanNum = '0'"
-					+",SecRelationship = '0' "
-					+"WHERE PatNum = '"+patNum.ToString()+"'";
-				dcon.NonQ(command);
-				pat=Patients.GetPat(patNum);
-				ClaimProc[] claimProcs=ClaimProcs.Refresh(pat.PatNum);
-				Procedure[] procs=Procedures.Refresh(pat.PatNum);
-				Procedures.ComputeEstimatesForAll(pat.PatNum,pat.PriPlanNum,
-					pat.SecPlanNum,claimProcs,procs,pat,PlanList);
-			}			
-			command="DELETE FROM covpat WHERE plannum = '"+PlanNum.ToString()+"'";
+				//covpats with this PatPlanNum are also deleted here
+				PatPlans.Delete(PIn.PInt(table.Rows[i][0].ToString()));
+			}
+			command="DELETE FROM covpat WHERE PlanNum="+POut.PInt(PlanNum);
 			dcon.NonQ(command);
 			command="DELETE FROM insplan "
-				+"WHERE planNum = '"+PlanNum.ToString()+"'";
+				+"WHERE PlanNum = '"+PlanNum.ToString()+"'";
 			dcon.NonQ(command);
-			return true;
-			//one unfinished detail is that if the secondary gets moved to primary,
-			//it still does not move the percentages over.
 		}
 
 		///<summary>Gets a list of insplans from the database that have identical info as this one. Used to display in the insplan window.</summary>
@@ -373,6 +292,7 @@ namespace OpenDental{
 				+"AND insplan.CarrierNum = '"     +POut.PInt   (CarrierNum)+"' "
 				+"AND insplan.PlanType = '"       +POut.PString(PlanType)+"' "
 				+"AND insplan.UseAltCode = '"     +POut.PBool  (UseAltCode)+"' "
+				+"AND insplan.IsMedical = '"      +POut.PBool  (IsMedical)+"' "
 				+"AND insplan.ClaimsUseUCR = '"   +POut.PBool  (ClaimsUseUCR)+"' "
 				+"AND insplan.FeeSched = '"       +POut.PInt   (FeeSched)+"' "
 				+"AND insplan.CopayFeeSched = '"  +POut.PInt   (CopayFeeSched)+"' "
@@ -390,24 +310,21 @@ namespace OpenDental{
 		}
 
 		///<summary>Used when closing the edit plan window to find all patients using this plan and to update all claimProcs for each patient.  This keeps estimates correct.</summary>
-		public void ComputeEstimatesForCur(Family FamCur){
-			string command="SELECT PatNum,PriPlanNum,SecPlanNum FROM patient "
-				+"WHERE PriPlanNum='"+PlanNum.ToString()+"' "
-				+"OR SecPlanNum='"+PlanNum.ToString()+"'";
+		public void ComputeEstimatesForCur(){
+			string command="SELECT PatNum FROM patplan WHERE PlanNum="+POut.PInt(PlanNum);
 			DataConnection dcon=new DataConnection();
 			DataTable table=dcon.GetTable(command);
 			int patNum=0;
-			Patient pat;
 			for(int i=0;i<table.Rows.Count;i++){
 				patNum=PIn.PInt(table.Rows[i][0].ToString());
-				//Patients.GetFamily(patNum);
-				pat=Patients.GetPat(patNum);
+				Family fam=Patients.GetFamily(patNum);
+				Patient pat=fam.GetPatient(patNum);
 				ClaimProc[] claimProcs=ClaimProcs.Refresh(patNum);
 				Procedure[] procs=Procedures.Refresh(patNum);
-				InsPlan[] plans=InsPlans.Refresh(FamCur);
-				Procedures.ComputeEstimatesForAll(patNum,
-					PIn.PInt(table.Rows[i][1].ToString()),
-					PIn.PInt(table.Rows[i][2].ToString()),claimProcs,procs,pat,plans);
+				InsPlan[] plans=InsPlans.Refresh(fam);
+				PatPlan[] patPlans=PatPlans.Refresh(patNum);
+				Procedures.ComputeEstimatesForAll(patNum,claimProcs,procs,plans,patPlans);
+				Patients.SetHasIns(patNum);
 			}
 
 			

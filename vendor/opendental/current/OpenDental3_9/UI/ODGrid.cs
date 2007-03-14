@@ -40,6 +40,8 @@ namespace OpenDental.UI{
 		private bool IsUpdating;
 		///<summary>The total height of the grid.</summary>
 		private int GridH;
+		///<summary>The total width of the grid.</summary>
+		private int GridW;
 		///<summary>This array has one element for each row.  For each row, it keeps track of the vertical height of the row in pixels.</summary>
 		private int[] RowHeights;
 		///<summary>This array has one element for each row.  For each row, it keeps track of the vertical location at which to start drawing this row in pixels.  This makes it much easier to paint rows.</summary>
@@ -49,6 +51,7 @@ namespace OpenDental.UI{
 		private int[] ColPos;
 		private ArrayList selectedIndices;
 		private int MouseDownRow;
+		private int MouseDownCol;
 		private bool ControlIsDown;
 		private bool ShiftIsDown;
 		private SelectionMode selectionMode;
@@ -70,6 +73,10 @@ namespace OpenDental.UI{
 			vScroll.MouseLeave+=new EventHandler(vScroll_MouseLeave);
 			vScroll.MouseMove+=new MouseEventHandler(vScroll_MouseMove);
 			hScroll=new HScrollBar();
+			hScroll.Scroll+=new ScrollEventHandler(hScroll_Scroll);
+			hScroll.MouseEnter+=new EventHandler(hScroll_MouseEnter);
+			hScroll.MouseLeave+=new EventHandler(hScroll_MouseLeave);
+			hScroll.MouseMove+=new MouseEventHandler(hScroll_MouseMove);
 			this.Controls.Add(vScroll);
 			this.Controls.Add(hScroll);
 			selectedIndices=new ArrayList();
@@ -143,7 +150,7 @@ namespace OpenDental.UI{
 			}	
 		}
 
-		///<summary>Gets or sets the position of the scrollbar.  Does all error checking and invalidates.</summary>
+		///<summary>Gets or sets the position of the vertical scrollbar.  Does all error checking and invalidates.</summary>
 		[Browsable(false)]
 		public int ScrollValue{
 			get{ 
@@ -238,14 +245,7 @@ namespace OpenDental.UI{
 		///<summary>Runs any time the control is invalidated.</summary>
 		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e){
 			if(IsUpdating) return;
-			//set the position of each column.  Only need to do it once for the entire process
-			ColPos=new int[columns.Count];
-			for(int i=0;i<ColPos.Length;i++){
-				if(i==0)
-					ColPos[i]=0;
-				else
-					ColPos[i]=ColPos[i-1]+columns[i-1].ColWidth;
-			}
+			ComputeColumns();//it's only here because I can't figure out how to do it when columns are added.
 			Bitmap doubleBuffer=new Bitmap(Width,Height,e.Graphics);
 			Graphics g=Graphics.FromImage(doubleBuffer);
 			DrawBackG(g);
@@ -256,40 +256,33 @@ namespace OpenDental.UI{
 			g.Dispose();
 		}
 
-		private void DrawTitleAndHeaders(Graphics g){
-			//Title----------------------------------------------------------------------------------------------------
-			g.FillRectangle(new LinearGradientBrush(new Rectangle(0,0,Width,titleHeight+5),
-				//Color.FromArgb(172,171,196)
-				Color.White,Color.FromArgb(200,200,215),LinearGradientMode.Vertical),0,0,Width,titleHeight);
-			g.DrawString(title,titleFont,Brushes.Black,Width/2-g.MeasureString(title,titleFont).Width/2,2);
-			//Column Headers-----------------------------------------------------------------------------------------
-			g.FillRectangle(new SolidBrush(this.cTitleBackG),0,titleHeight,Width,headerHeight);//background
-			g.DrawLine(new Pen(Color.FromArgb(102,102,122)),0,titleHeight,Width,titleHeight);//line between title and headers
-			for(int i=0;i<columns.Count;i++){
-				if(i!=0){
-					//vertical lines separating column headers
-					g.DrawLine(new Pen(Color.FromArgb(120,120,120)),1+ColPos[i],titleHeight+3,1+ColPos[i],titleHeight+headerHeight-2);
-					g.DrawLine(new Pen(Color.White),1+ColPos[i]+1,titleHeight+3,1+ColPos[i]+1,titleHeight+headerHeight-2);
-				}
-				g.DrawString(columns[i].Heading,headerFont,Brushes.Black,
-					ColPos[i]+columns[i].ColWidth/2-g.MeasureString(columns[i].Heading,headerFont).Width/2,titleHeight+2);
+		///<summary>Computes the position of each column and the overall width.  Called from endUpdate and also from</summary>
+		private void ComputeColumns(){
+			ColPos=new int[columns.Count];
+			for(int i=0;i<ColPos.Length;i++){
+				if(i==0)
+					ColPos[i]=0;
+				else
+					ColPos[i]=ColPos[i-1]+columns[i-1].ColWidth;
 			}
-			//line below headers
-			g.DrawLine(new Pen(Color.FromArgb(120,120,120)),0,titleHeight+headerHeight,Width,titleHeight+headerHeight);
+			GridW=ColPos[ColPos.Length-1]+columns[columns.Count-1].ColWidth;
 		}
 
-		///<summary>Draws the background of all rows, including selected rows.</summary>
+		///<summary>Draws a solid gray background.</summary>
 		private void DrawBackG(Graphics g){
-			if(vScroll.Enabled){//all backg white, since no gray will show
-				g.FillRectangle(new SolidBrush(Color.White),0,titleHeight+headerHeight+1,Width,this.Height-titleHeight-headerHeight-1);
-			}
-			else{
-				g.FillRectangle(new SolidBrush(Color.FromArgb(224,223,227)),0,titleHeight+headerHeight+1,
-					Width,this.Height-titleHeight-headerHeight-1);
-			}
+			//if(vScroll.Enabled){//all backg white, since no gray will show
+			//	g.FillRectangle(new SolidBrush(Color.White),
+			//		0,titleHeight+headerHeight+1,
+			//		Width,this.Height-titleHeight-headerHeight-1);
+			//}
+			//else{
+			g.FillRectangle(new SolidBrush(Color.FromArgb(224,223,227)),
+				0,titleHeight+headerHeight+1,
+				Width,this.Height-titleHeight-headerHeight-1);
+			//}
 		}
 
-		///<summary>Draws the lines and text for all rows</summary>
+		///<summary>Draws the background, lines, and text for all rows that are visible.</summary>
 		private void DrawRows(Graphics g){
 			for(int i=0;i<rows.Count;i++){
 				if(-vScroll.Value+RowLocs[i]+RowHeights[i]<0){
@@ -302,15 +295,9 @@ namespace OpenDental.UI{
 			}
 		}
 
-		///<summary>Draws lines and text for a single row.</summary>
+		///<summary>Draws background, lines, and text for a single row.</summary>
 		private void DrawRow(int rowI,Graphics g){
 			RectangleF textRect;
-			if(rows[rowI].Bold){
-				cellFont=new Font(cellFont,FontStyle.Bold);
-			}
-			else{
-				cellFont=new Font(cellFont,FontStyle.Regular);				
-			}
 			StringFormat format=new StringFormat();
 			Pen rightPen=new Pen(this.cGridLine);
 			Pen lowerPen=new Pen(this.cGridLine);
@@ -320,13 +307,13 @@ namespace OpenDental.UI{
 			else if(rows[rowI].ColorLborder!=Color.Empty){
 				lowerPen=new Pen(rows[rowI].ColorLborder);
 			}
-			SolidBrush textBrush=new SolidBrush(rows[rowI].ColorText);
+			SolidBrush textBrush;
 			//selected row color
 			if(selectedIndices.Contains(rowI)){
 				g.FillRectangle(new SolidBrush(selectedRowColor),
 					1,
 					-vScroll.Value+1+titleHeight+headerHeight+RowLocs[rowI]+1,
-					Width,
+					GridW,
 					RowHeights[rowI]-1);
 			}
 			//colored row background
@@ -334,46 +321,46 @@ namespace OpenDental.UI{
 				g.FillRectangle(new SolidBrush(rows[rowI].ColorBackG),
 					1,
 					-vScroll.Value+1+titleHeight+headerHeight+RowLocs[rowI]+1,
-					Width,
+					GridW,
 					RowHeights[rowI]-1);
 			}
-			//background row color
-			else if(!vScroll.Enabled){//need to draw over the gray background
+			//normal row color
+			else{//need to draw over the gray background
 				g.FillRectangle(new SolidBrush(rows[rowI].ColorBackG),
 					1,
 					-vScroll.Value+1+titleHeight+headerHeight+RowLocs[rowI]+1,
-					Width,
+					GridW,//this is a really simple width value that always works well
 					RowHeights[rowI]-1);
 			}
 			for(int i=0;i<columns.Count;i++){
 				//right vertical gridline
 				if(rowI==0){
 					g.DrawLine(rightPen,
-						1+ColPos[i]+columns[i].ColWidth,
+						-hScroll.Value+1+ColPos[i]+columns[i].ColWidth,
 						-vScroll.Value+1+titleHeight+headerHeight+RowLocs[rowI],
-						1+ColPos[i]+columns[i].ColWidth,
+						-hScroll.Value+1+ColPos[i]+columns[i].ColWidth,
 						-vScroll.Value+1+titleHeight+headerHeight+RowLocs[rowI]+RowHeights[rowI]);
 				}
 				else{
 					g.DrawLine(rightPen,
-						1+ColPos[i]+columns[i].ColWidth,
+						-hScroll.Value+1+ColPos[i]+columns[i].ColWidth,
 						-vScroll.Value+1+titleHeight+headerHeight+RowLocs[rowI]+1,
-						1+ColPos[i]+columns[i].ColWidth,
+						-hScroll.Value+1+ColPos[i]+columns[i].ColWidth,
 						-vScroll.Value+1+titleHeight+headerHeight+RowLocs[rowI]+RowHeights[rowI]);
 				}
 				//lower horizontal gridline
 				if(i==0){
 					g.DrawLine(lowerPen,
-						1+ColPos[i],
+						-hScroll.Value+1+ColPos[i],
 						-vScroll.Value+1+titleHeight+headerHeight+RowLocs[rowI]+RowHeights[rowI],
-						1+ColPos[i]+columns[i].ColWidth,
+						-hScroll.Value+1+ColPos[i]+columns[i].ColWidth,
 						-vScroll.Value+1+titleHeight+headerHeight+RowLocs[rowI]+RowHeights[rowI]);
 				}
 				else{
 					g.DrawLine(lowerPen,
-						1+ColPos[i]+1,
+						-hScroll.Value+1+ColPos[i]+1,
 						-vScroll.Value+1+titleHeight+headerHeight+RowLocs[rowI]+RowHeights[rowI],
-						1+ColPos[i]+columns[i].ColWidth,
+						-hScroll.Value+1+ColPos[i]+columns[i].ColWidth,
 						-vScroll.Value+1+titleHeight+headerHeight+RowLocs[rowI]+RowHeights[rowI]);
 				}
 				//text
@@ -393,21 +380,66 @@ namespace OpenDental.UI{
 				}
 				if(columns[i].TextAlign==HorizontalAlignment.Right){
 					textRect=new RectangleF(
-						1+ColPos[i]-1,
+						-hScroll.Value+1+ColPos[i]-1,
 						-vScroll.Value+1+titleHeight+headerHeight+RowLocs[rowI]+1,
 						columns[i].ColWidth+2,
 						RowHeights[rowI]);
 				}
 				else{
 					textRect=new RectangleF(
-						1+ColPos[i]+1,
+						-hScroll.Value+1+ColPos[i]+1,
 						-vScroll.Value+1+titleHeight+headerHeight+RowLocs[rowI]+1,
 						columns[i].ColWidth,
 						RowHeights[rowI]);
 				}
+				if(rows[rowI].Cells[i].ColorText==Color.Empty){
+					textBrush=new SolidBrush(rows[rowI].ColorText);
+				}
+				else{
+					textBrush=new SolidBrush(rows[rowI].Cells[i].ColorText);
+				}
+				if(rows[rowI].Cells[i].Bold==YN.Yes){
+					cellFont=new Font(cellFont,FontStyle.Bold);
+				}
+				else if(rows[rowI].Cells[i].Bold==YN.No){
+					cellFont=new Font(cellFont,FontStyle.Regular);
+				}
+				else{//unknown.  Use row bold
+					if(rows[rowI].Bold){
+						cellFont=new Font(cellFont,FontStyle.Bold);
+					}
+					else{
+						cellFont=new Font(cellFont,FontStyle.Regular);				
+					}
+				}
 				g.DrawString(rows[rowI].Cells[i].Text,cellFont,textBrush,textRect,format);
 			}
 			
+		}
+
+		private void DrawTitleAndHeaders(Graphics g){
+			//Title----------------------------------------------------------------------------------------------------
+			g.FillRectangle(new LinearGradientBrush(new Rectangle(0,0,Width,titleHeight+5),
+				//Color.FromArgb(172,171,196)
+				Color.White,Color.FromArgb(200,200,215),LinearGradientMode.Vertical),0,0,Width,titleHeight);
+			g.DrawString(title,titleFont,Brushes.Black,Width/2-g.MeasureString(title,titleFont).Width/2,2);
+			//Column Headers-----------------------------------------------------------------------------------------
+			g.FillRectangle(new SolidBrush(this.cTitleBackG),0,titleHeight,Width,headerHeight);//background
+			g.DrawLine(new Pen(Color.FromArgb(102,102,122)),0,titleHeight,Width,titleHeight);//line between title and headers
+			for(int i=0;i<columns.Count;i++){
+				if(i!=0){
+					//vertical lines separating column headers
+					g.DrawLine(new Pen(Color.FromArgb(120,120,120)),-hScroll.Value+1+ColPos[i],titleHeight+3,
+						-hScroll.Value+1+ColPos[i],titleHeight+headerHeight-2);
+					g.DrawLine(new Pen(Color.White),-hScroll.Value+1+ColPos[i]+1,titleHeight+3,
+						-hScroll.Value+1+ColPos[i]+1,titleHeight+headerHeight-2);
+				}
+				g.DrawString(columns[i].Heading,headerFont,Brushes.Black,
+					-hScroll.Value+ColPos[i]+columns[i].ColWidth/2-g.MeasureString(columns[i].Heading,headerFont).Width/2,
+					titleHeight+2);
+			}
+			//line below headers
+			g.DrawLine(new Pen(Color.FromArgb(120,120,120)),0,titleHeight+headerHeight,Width,titleHeight+headerHeight);
 		}
 
 		///<summary>Draws outline around entire control.</summary>
@@ -422,7 +454,7 @@ namespace OpenDental.UI{
 
 		///<summary></summary>
 		protected void OnCellDoubleClick(int col,int row){
-			ODGridClickEventArgs gArgs=new ODGridClickEventArgs(0,row);
+			ODGridClickEventArgs gArgs=new ODGridClickEventArgs(col,row);
 			if(CellDoubleClick!=null)
 				CellDoubleClick(this,gArgs);
 		}
@@ -433,12 +465,15 @@ namespace OpenDental.UI{
 			if(MouseDownRow==-1){
 				return;//double click was in the title or header section
 			}
-			OnCellDoubleClick(0,MouseDownRow);
+			if(MouseDownCol==-1){
+				return;//click was to the right of the columns
+			}
+			OnCellDoubleClick(MouseDownCol,MouseDownRow);
 		}
 
 		///<summary></summary>
 		protected void OnCellClick(int col,int row){
-			ODGridClickEventArgs gArgs=new ODGridClickEventArgs(0,row);
+			ODGridClickEventArgs gArgs=new ODGridClickEventArgs(col,row);
 			if(CellClick!=null)
 				CellClick(this,gArgs);
 		}
@@ -449,7 +484,10 @@ namespace OpenDental.UI{
 			if(MouseDownRow==-1){
 				return;//click was in the title or header section
 			}
-			OnCellClick(0,MouseDownRow);
+			if(MouseDownCol==-1){
+				return;//click was to the right of the columns
+			}
+			OnCellClick(MouseDownCol,MouseDownRow);
 		}
 
 		///<summary></summary>
@@ -485,6 +523,7 @@ namespace OpenDental.UI{
 
 		///<summary>Must be called after adding rows.  This computes the rows, lays out the scrollbars, clears SelectedIndices, and invalidates.</summary>
 		public void EndUpdate(){
+			ComputeColumns();
 			ComputeRows();
 			LayoutScrollBars();
 			selectedIndices=new ArrayList();
@@ -523,6 +562,18 @@ namespace OpenDental.UI{
 				vScroll.Height=this.Height-titleHeight-headerHeight-hScroll.Height-2;
 				hScroll.Location=new Point(1,this.Height-hScroll.Height-1);
 				hScroll.Width=this.Width-vScroll.Width-2;
+				if(GridW<hScroll.Width){
+					hScroll.Value=0;
+					hScroll.Enabled=false;
+				}
+				else{
+					hScroll.Enabled=true;
+					hScroll.Minimum = 0;
+					hScroll.Maximum=GridW;
+					hScroll.LargeChange=hScroll.Width;
+					hScroll.SmallChange=(int)(50);
+				}
+
 			}
 			else{
 				hScroll.Visible=false;
@@ -540,11 +591,6 @@ namespace OpenDental.UI{
 				vScroll.LargeChange=vScroll.Height;
 				vScroll.SmallChange=(int)(14*3.4);//it's not an even number so that it is obvious to user that rows moved
 			}
-		}
-
-		private void vScroll_Scroll(object sender,System.Windows.Forms.ScrollEventArgs e){
-			Invalidate();
-			this.Focus();
 		}
 
 		///<summary></summary>
@@ -619,7 +665,7 @@ namespace OpenDental.UI{
 			Invalidate();
 		}
 
-		///<summary>Returns row.  Supply the y position in pixels.  But ALWAYS make sure the point is not in the header first, because the logic only works if within the visible grid area.</summary>
+		///<summary>Returns row.  Supply the y position in pixels.</summary>
 		private int PointToRow(int y){
 			if(y<1+titleHeight+headerHeight){
 				return-1;
@@ -633,7 +679,33 @@ namespace OpenDental.UI{
 			return -1;
 		}
 
-	
+		///<summary>Returns col.  Supply the x position in pixels.</summary>
+		private int PointToCol(int x){
+			int colRight;//the right edge of each column
+			for(int i=0;i<columns.Count;i++){
+				colRight=0;
+				for(int c=0;c<i+1;c++){
+					colRight+=columns[c].ColWidth;
+				}
+				if(x>-hScroll.Value+colRight){
+					continue;//clicked to the right of this col
+				}
+				return i;
+			}
+			return -1;
+		}
+
+		#region ScrollEvents
+		private void vScroll_Scroll(object sender,System.Windows.Forms.ScrollEventArgs e){
+			Invalidate();
+			this.Focus();
+		}
+
+		private void hScroll_Scroll(object sender,System.Windows.Forms.ScrollEventArgs e){
+			Invalidate();
+			this.Focus();
+		}
+		#endregion
 
 		#region MouseEvents
 
@@ -645,7 +717,11 @@ namespace OpenDental.UI{
 			}
 			MouseIsDown=true;
 			MouseDownRow=PointToRow(e.Y);
+			MouseDownCol=PointToCol(e.X);
 			if(MouseDownRow==-1){//mouse down was in the title or header section
+				return;
+			}
+			if(MouseDownCol==-1){//mouse down was to the right of columns
 				return;
 			}
 			if(!allowSelection){
@@ -748,6 +824,18 @@ namespace OpenDental.UI{
 		}
 
 		private void vScroll_MouseMove(Object sender,MouseEventArgs e){
+			MouseIsOver=true;
+		}
+
+		private void hScroll_MouseEnter(Object sender,EventArgs e){
+			MouseIsOver=true;
+		}
+
+		private void hScroll_MouseLeave(Object sender,EventArgs e){
+			MouseIsOver=false;
+		}
+
+		private void hScroll_MouseMove(Object sender,MouseEventArgs e){
 			MouseIsOver=true;
 		}
 

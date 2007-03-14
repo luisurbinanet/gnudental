@@ -68,98 +68,7 @@ namespace OpenDental{
 			return false;
 		}
 
-	}//end class shared
-
-	/*=================================Class Messages=========================================
-===========================================================================================
-
-	///<summary>Handles sending messages between computers for buttons and for invalidating appointment screen and locally stored data. David Adams from Adivad Technologies was very helpful in providing the threading logic.</summary>
-	public class Messages{
-
-		///<summary></summary>
-		public static void SendMessage(ODMessage msg){
-			ThreadPool.QueueUserWorkItem(new WaitCallback(SendOneMessage),msg);
-		}
-
-		///<summary></summary>
-		private static void SendOneMessage(Object myObject){
-			ODMessage msg=(ODMessage)myObject;
-			string msgTo;
-			for(int i=0;i<Computers.List.Length;i++){
-				msgTo=Computers.List[i].CompName;		
-				if(msgTo==SystemInformation.ComputerName//don't send to self
-					&& msg.MessageType!="Text"){//unless it's text
-					continue;
-				}
-				msg.From=SystemInformation.ComputerName;
-				try{
-					TcpClient TcpClientSend=new TcpClient(msgTo, 2123);
-					NetworkStream ns=TcpClientSend.GetStream();
-					XmlSerializer serializer=new XmlSerializer(typeof(ODMessage));
-					TextWriter writer=new StreamWriter(ns);
-					serializer.Serialize(writer,msg);
-					writer.Close();
-				}
-				catch{//(System.Exception e) {
-					//MessageBox.Show(e.Message);
-				}
-			}
-		}
-				
-		///<summary></summary>
-		public static ODMessage RecMessage(string strMessage){
-			StringReader sr=new StringReader(strMessage);
-			XmlSerializer serializer=new XmlSerializer(typeof(ODMessage));
-			ClaimForm tempClaimForm=new ClaimForm();
-			try{
-				return (ODMessage)serializer.Deserialize(sr);
-			}
-			catch(System.Exception e) {
-				MessageBox.Show(e.Message);
-				return null;
-			}
-		}
-
 	}
-
-	///<summary>From gets filled in during SendMessage. No need to fill it in ahead of time.</summary>
-	public class ODMessage{
-		///<summary></summary>
-		public string From;
-		///<summary>InvalidTypes.None, InvalidTypes.Date, or combined flags for any LocalData</summary>
-		public InvalidTypes ITypes;
-		///<summary></summary>
-		public DateTime DateViewing;
-		///<summary>"Button", "Text", or "Invalid"</summary>
-		public string MessageType;
-		///<summary></summary>
-		public string Text;
-		///<summary></summary>
-		public int Row;
-		///<summary></summary>
-		public int Col;
-		///<summary></summary>
-		public bool Pushed;
-
-		///<summary></summary>
-		public ODMessage(InvalidTypes iTypes,DateTime dateViewing,string messageType,string text,
-			int row, int col, bool pushed)
-		{
-			ITypes=iTypes;
-			DateViewing=dateViewing;
-			MessageType=messageType;
-			Text=text;
-			Row=row;
-			Col=col;
-			Pushed=pushed;
-		}
-
-		///<summary>This constructor is just here so the serializer will work.</summary>
-		public ODMessage(){
-
-		}
-	}*/
-
 
 /*=================================Class DataValid=========================================
 ===========================================================================================*/
@@ -227,30 +136,6 @@ namespace OpenDental{
 
 	}
 
-	/*=================================Class ExitApplicationNow=========================================
-===========================================================================================*/
-
-	///<summary></summary>
-	public class ExitApplicationNow{
-		///<summary></summary>
-		public static event GenericEventHandler WantsToExit;
-
-		///<summary>This triggers a global event which the main form responds to by closing the program.</summary>
-		public static void ExitNow(){
-			OnWantsToExit(new System.EventArgs());
-		}
-
-		///<summary></summary>
-		protected static void OnWantsToExit(System.EventArgs e){
-			if(WantsToExit !=null){
-				WantsToExit(e);
-			}
-		}
-	}
-
-	///<summary>This is used for our global events.  Used because 'this' not required.</summary>
-	public delegate void GenericEventHandler(System.EventArgs e);
-
 	/*=================================Class GotoModule==================================================
 	===========================================================================================*/
 
@@ -316,8 +201,11 @@ namespace OpenDental{
 	///<summary></summary>
 	public class TelephoneNumbers{
 
-		///<summary>only used in the tool that loops through the database fixing telephone numbers.</summary>
+		///<summary>Used in the tool that loops through the database fixing telephone numbers.  Also used in the patient import from XML tool.</summary>
 		public static string ReFormat(string phoneNum){
+			if(CultureInfo.CurrentCulture.Name!="en-US" && CultureInfo.CurrentCulture.Name!="en-CA"){
+				return phoneNum;
+			}
 			Regex regex;
 			regex=new Regex(@"^\d{10}");//eg. 5033635432
 			if(regex.IsMatch(phoneNum)){

@@ -34,8 +34,6 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butSlider;
 		private OpenDental.TableTimeBar tbTime;
 		private System.Windows.Forms.TextBox textTime2;
-		///<summary></summary>
-		public string NewADA;
 		private bool mouseIsDown;
 		private Point	mouseOrigin;
 		private Point sliderOrigin;
@@ -50,15 +48,19 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textAlternateCode1;
 		private OpenDental.ODtextBox textNote;
 		private System.Windows.Forms.CheckBox checkIsProsth;
+		private System.Windows.Forms.Label label14;
 		private bool FeeChanged;
+		private System.Windows.Forms.TextBox textMedicalCode;
+		private ProcedureCode ProcCode;
 
-		///<summary></summary>
-		public FormProcCodeEdit(){
+		///<summary>The procedure code must have already been insterted into the database.</summary>
+		public FormProcCodeEdit(ProcedureCode procCode){
 			InitializeComponent();// Required for Windows Form Designer support
 			//tbTime.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbTime_CellDoubleClicked);
 			tbTime.CellClicked += new OpenDental.ContrTable.CellEventHandler(tbTime_CellClicked);
 			tbFees.CellClicked += new OpenDental.ContrTable.CellEventHandler(tbFees_CellClicked);
 			Lan.F(this);
+			ProcCode=procCode;
 		}
 
 		///<summary></summary>
@@ -108,6 +110,8 @@ namespace OpenDental{
 			this.label13 = new System.Windows.Forms.Label();
 			this.textNote = new OpenDental.ODtextBox();
 			this.checkIsProsth = new System.Windows.Forms.CheckBox();
+			this.textMedicalCode = new System.Windows.Forms.TextBox();
+			this.label14 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// label1
@@ -146,7 +150,7 @@ namespace OpenDental{
 			// 
 			// label7
 			// 
-			this.label7.Location = new System.Drawing.Point(35, 105);
+			this.label7.Location = new System.Drawing.Point(35, 102);
 			this.label7.Name = "label7";
 			this.label7.Size = new System.Drawing.Size(94, 24);
 			this.label7.TabIndex = 6;
@@ -155,7 +159,7 @@ namespace OpenDental{
 			// 
 			// label8
 			// 
-			this.label8.Location = new System.Drawing.Point(35, 77);
+			this.label8.Location = new System.Drawing.Point(35, 83);
 			this.label8.Name = "label8";
 			this.label8.Size = new System.Drawing.Size(94, 14);
 			this.label8.TabIndex = 7;
@@ -210,7 +214,7 @@ namespace OpenDental{
 			// 
 			// textAbbrev
 			// 
-			this.textAbbrev.Location = new System.Drawing.Point(131, 107);
+			this.textAbbrev.Location = new System.Drawing.Point(131, 104);
 			this.textAbbrev.MaxLength = 20;
 			this.textAbbrev.Name = "textAbbrev";
 			this.textAbbrev.TabIndex = 1;
@@ -218,7 +222,7 @@ namespace OpenDental{
 			// 
 			// textDescription
 			// 
-			this.textDescription.Location = new System.Drawing.Point(131, 75);
+			this.textDescription.Location = new System.Drawing.Point(131, 81);
 			this.textDescription.MaxLength = 255;
 			this.textDescription.Name = "textDescription";
 			this.textDescription.Size = new System.Drawing.Size(330, 20);
@@ -380,7 +384,7 @@ namespace OpenDental{
 			// 
 			// textAlternateCode1
 			// 
-			this.textAlternateCode1.Location = new System.Drawing.Point(131, 44);
+			this.textAlternateCode1.Location = new System.Drawing.Point(131, 35);
 			this.textAlternateCode1.MaxLength = 15;
 			this.textAlternateCode1.Name = "textAlternateCode1";
 			this.textAlternateCode1.TabIndex = 38;
@@ -388,7 +392,7 @@ namespace OpenDental{
 			// 
 			// label12
 			// 
-			this.label12.Location = new System.Drawing.Point(52, 46);
+			this.label12.Location = new System.Drawing.Point(52, 37);
 			this.label12.Name = "label12";
 			this.label12.Size = new System.Drawing.Size(79, 14);
 			this.label12.TabIndex = 37;
@@ -397,7 +401,7 @@ namespace OpenDental{
 			// 
 			// label13
 			// 
-			this.label13.Location = new System.Drawing.Point(237, 46);
+			this.label13.Location = new System.Drawing.Point(237, 37);
 			this.label13.Name = "label13";
 			this.label13.Size = new System.Drawing.Size(202, 19);
 			this.label13.TabIndex = 39;
@@ -424,12 +428,31 @@ namespace OpenDental{
 			this.checkIsProsth.TabIndex = 41;
 			this.checkIsProsth.Text = "Is Prosthesis (Crown,Bridge,Denture,RPD)";
 			// 
+			// textMedicalCode
+			// 
+			this.textMedicalCode.Location = new System.Drawing.Point(131, 58);
+			this.textMedicalCode.MaxLength = 15;
+			this.textMedicalCode.Name = "textMedicalCode";
+			this.textMedicalCode.TabIndex = 43;
+			this.textMedicalCode.Text = "";
+			// 
+			// label14
+			// 
+			this.label14.Location = new System.Drawing.Point(52, 60);
+			this.label14.Name = "label14";
+			this.label14.Size = new System.Drawing.Size(79, 14);
+			this.label14.TabIndex = 42;
+			this.label14.Text = "Medical Code";
+			this.label14.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
 			// FormProcCodeEdit
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(941, 707);
+			this.Controls.Add(this.textMedicalCode);
+			this.Controls.Add(this.label14);
 			this.Controls.Add(this.checkIsProsth);
 			this.Controls.Add(this.textNote);
 			this.Controls.Add(this.label13);
@@ -477,41 +500,32 @@ namespace OpenDental{
 		#endregion
 
 		private void FormProcCodeEdit_Load(object sender, System.EventArgs e) {
-			if(IsNew){
-				ProcedureCodes.Cur=new ProcedureCode();
-				ProcedureCodes.Cur.ADACode=NewADA;
-				ProcedureCodes.Cur.ProcTime="/X/";
-				ProcedureCodes.Cur.ProcCat=Defs.Short[(int)DefCat.ProcCodeCats][0].DefNum;
-				ProcedureCodes.InsertCur();
-			}
-			else{
-				;
-			}
-			textADACode.Text=ProcedureCodes.Cur.ADACode;
-			textAlternateCode1.Text=ProcedureCodes.Cur.AlternateCode1;
-			textDescription.Text=ProcedureCodes.Cur.Descript;
-			textAbbrev.Text=ProcedureCodes.Cur.AbbrDesc;
-			strBTime=new StringBuilder(ProcedureCodes.Cur.ProcTime);
-			checkRemoveTth.Checked=ProcedureCodes.Cur.RemoveTooth;
-			checkSetRecall.Checked=ProcedureCodes.Cur.SetRecall;
-			checkNoBillIns.Checked=ProcedureCodes.Cur.NoBillIns;
-			checkIsProsth.Checked=ProcedureCodes.Cur.IsProsth;
-			checkIsHygiene.Checked=ProcedureCodes.Cur.IsHygiene;
-			textNote.Text=ProcedureCodes.Cur.DefaultNote;
+			textADACode.Text=ProcCode.ADACode;
+			textAlternateCode1.Text=ProcCode.AlternateCode1;
+			textMedicalCode.Text=ProcCode.MedicalCode;
+			textDescription.Text=ProcCode.Descript;
+			textAbbrev.Text=ProcCode.AbbrDesc;
+			strBTime=new StringBuilder(ProcCode.ProcTime);
+			checkRemoveTth.Checked=ProcCode.RemoveTooth;
+			checkSetRecall.Checked=ProcCode.SetRecall;
+			checkNoBillIns.Checked=ProcCode.NoBillIns;
+			checkIsProsth.Checked=ProcCode.IsProsth;
+			checkIsHygiene.Checked=ProcCode.IsHygiene;
+			textNote.Text=ProcCode.DefaultNote;
 			listTreatArea.Items.Clear();
 			for(int i=1;i<Enum.GetNames(typeof(TreatmentArea)).Length;i++){
 				listTreatArea.Items.Add(Lan.g(this,Enum.GetNames(typeof(TreatmentArea))[i]));
 			}
-			listTreatArea.SelectedIndex=(int)ProcedureCodes.Cur.TreatArea-1;
+			listTreatArea.SelectedIndex=(int)ProcCode.TreatArea-1;
 			if(listTreatArea.SelectedIndex==-1) listTreatArea.SelectedIndex=2;
 			for(int i=0;i<GraphicTypes.List.Length;i++){
 				listGraphicType.Items.Add(Lan.g(this,GraphicTypes.List[i].Description));
-				if(GraphicTypes.List[i].GTypeNum==ProcedureCodes.Cur.GTypeNum)
+				if(GraphicTypes.List[i].GTypeNum==ProcCode.GTypeNum)
 					listGraphicType.SelectedIndex=i;
 			}
 			for(int i=0;i<Defs.Short[(int)DefCat.ProcCodeCats].Length;i++){
 				listCategory.Items.Add(Defs.Short[(int)DefCat.ProcCodeCats][i].ItemName);
-				if(Defs.Short[(int)DefCat.ProcCodeCats][i].DefNum==ProcedureCodes.Cur.ProcCat)
+				if(Defs.Short[(int)DefCat.ProcCodeCats][i].DefNum==ProcCode.ProcCat)
 					listCategory.SelectedIndex=i;
 			}
 			if(listCategory.SelectedIndex==-1)
@@ -540,7 +554,7 @@ namespace OpenDental{
 			tbFees.ResetRows(Defs.Short[(int)DefCat.FeeSchedNames].Length);
 			tbFees.SetGridColor(Color.LightGray);
 			for(int i=0;i<tbFees.MaxRows;i++){
-				fee=Fees.GetFeeByOrder(ProcedureCodes.Cur.ADACode,i);
+				fee=Fees.GetFeeByOrder(ProcCode.ADACode,i);
 				tbFees.Cell[0,i]=Defs.Short[(int)DefCat.FeeSchedNames][i].ItemName;
 				if(fee!=null){
 					tbFees.Cell[1,i]=fee.Amount.ToString("F");
@@ -554,13 +568,13 @@ namespace OpenDental{
 		}
 
 		private void tbFees_CellClicked(object sender, CellEventArgs e){
-			Fee FeeCur=Fees.GetFeeByOrder(ProcedureCodes.Cur.ADACode,e.Row);
+			Fee FeeCur=Fees.GetFeeByOrder(ProcCode.ADACode,e.Row);
 			tbFees.SelectedRow=e.Row;
 			tbFees.ColorRow(e.Row,Color.LightGray);
 			FormFeeEdit FormFE=new FormFeeEdit();
 			if(FeeCur==null){
 				FeeCur=new Fee();
-				FeeCur.ADACode=ProcedureCodes.Cur.ADACode;
+				FeeCur.ADACode=ProcCode.ADACode;
 				FeeCur.FeeSched=Defs.Short[(int)DefCat.FeeSchedNames][e.Row].DefNum;
 				FeeCur.Insert();
 				FormFE.IsNew=true;
@@ -622,11 +636,15 @@ namespace OpenDental{
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
+			if(textMedicalCode.Text!="" && !ProcedureCodes.HList.Contains(textMedicalCode.Text)){
+				MsgBox.Show(this,"Invalid medical code.  It must refer to an existing procedure code entered separately");
+				return;
+			}
 			bool DoSynchRecall=false;
 			if(IsNew && checkSetRecall.Checked){
 				DoSynchRecall=true;
 			}
-			else if(ProcedureCodes.Cur.SetRecall!=checkSetRecall.Checked){//set recall changed
+			else if(ProcCode.SetRecall!=checkSetRecall.Checked){//set recall changed
 				DoSynchRecall=true;
 			}
 			if(DoSynchRecall){
@@ -634,29 +652,25 @@ namespace OpenDental{
 					return;
 				}
 			}
-			ProcedureCodes.Cur.AlternateCode1=textAlternateCode1.Text;
-			ProcedureCodes.Cur.Descript=textDescription.Text;
-			ProcedureCodes.Cur.AbbrDesc=textAbbrev.Text;
-			ProcedureCodes.Cur.ProcTime=strBTime.ToString();
-			ProcedureCodes.Cur.RemoveTooth=checkRemoveTth.Checked;
-			ProcedureCodes.Cur.SetRecall=checkSetRecall.Checked;
-			ProcedureCodes.Cur.NoBillIns=checkNoBillIns.Checked;
-			ProcedureCodes.Cur.IsProsth=checkIsProsth.Checked;
-			ProcedureCodes.Cur.IsHygiene=checkIsHygiene.Checked;
-			ProcedureCodes.Cur.DefaultNote=textNote.Text;
+			ProcCode.AlternateCode1=textAlternateCode1.Text;
+			ProcCode.MedicalCode=textMedicalCode.Text;
+			ProcCode.Descript=textDescription.Text;
+			ProcCode.AbbrDesc=textAbbrev.Text;
+			ProcCode.ProcTime=strBTime.ToString();
+			ProcCode.RemoveTooth=checkRemoveTth.Checked;
+			ProcCode.SetRecall=checkSetRecall.Checked;
+			ProcCode.NoBillIns=checkNoBillIns.Checked;
+			ProcCode.IsProsth=checkIsProsth.Checked;
+			ProcCode.IsHygiene=checkIsHygiene.Checked;
+			ProcCode.DefaultNote=textNote.Text;
 			if(listGraphicType.SelectedIndex==-1)
-				ProcedureCodes.Cur.GTypeNum=0;
+				ProcCode.GTypeNum=0;
 			else
-				ProcedureCodes.Cur.GTypeNum=GraphicTypes.List[listGraphicType.SelectedIndex].GTypeNum;
-			ProcedureCodes.Cur.TreatArea=(TreatmentArea)listTreatArea.SelectedIndex+1;
+				ProcCode.GTypeNum=GraphicTypes.List[listGraphicType.SelectedIndex].GTypeNum;
+			ProcCode.TreatArea=(TreatmentArea)listTreatArea.SelectedIndex+1;
 			if(listCategory.SelectedIndex!=-1)
-				ProcedureCodes.Cur.ProcCat=Defs.Short[(int)DefCat.ProcCodeCats][listCategory.SelectedIndex].DefNum;
-			if(IsNew){
-				ProcedureCodes.UpdateCur();
-			}
-			else{
-				ProcedureCodes.UpdateCur();
-			}
+				ProcCode.ProcCat=Defs.Short[(int)DefCat.ProcCodeCats][listCategory.SelectedIndex].DefNum;
+			ProcCode.Update();//whether new or not.
 			if(DoSynchRecall){
 				Cursor=Cursors.WaitCursor;
 				Recalls.SynchAllPatients();

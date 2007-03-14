@@ -4,7 +4,7 @@ using System.Drawing.Printing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
-using OpenDental.Reporting;
+using OpenDental.ReportingOld2;
 
 //using System.IO;
 //using System.Text;
@@ -116,7 +116,7 @@ namespace OpenDental{
 		}
 
 		private void ExecuteReport(){
-			Report report=new Report();
+			ReportOld2 report=new ReportOld2();
 			report.IsLandscape=true;
 			report.AddTitle("CAPITATION UTILIZATION");
 			report.AddSubTitle(((Pref)Prefs.HList["PracticeTitle"]).ValueString);
@@ -180,7 +180,7 @@ namespace OpenDental{
 					report.ReportTable.Rows[i][11]="0";
 				}
 			}
-			FormReport FormR=new FormReport(report);
+			FormReportOld2 FormR=new FormReportOld2(report);
 			//FormR.MyReport=report;
 			FormR.ShowDialog();
 			DialogResult=DialogResult.OK;

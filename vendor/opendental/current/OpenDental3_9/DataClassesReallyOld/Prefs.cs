@@ -51,7 +51,7 @@ namespace OpenDental{
 					return true;//already converted
 				}
 				if(!MsgBox.Show("Prefs",true,"Your database will now be converted for use with MySQL 4.1.")){
-					ExitApplicationNow.ExitNow();
+					Application.Exit();
 					return false;
 				}
 				ClassConvertDatabase CCD=new ClassConvertDatabase();
@@ -63,7 +63,7 @@ namespace OpenDental{
 						MessageBox.Show(e.Message);
 					}
 					MsgBox.Show("Prefs","Backup failed. Your database has not been altered.");
-					ExitApplicationNow.ExitNow();
+					Application.Exit();
 					return false;//but this should never happen
 				}
 				MessageBox.Show("Backup performed");
@@ -107,7 +107,7 @@ namespace OpenDental{
 			else{
 				MessageBox.Show(Lan.g("Prefs","Your version of MySQL won't work with this program")+": "+thisVersion
 					+".  "+Lan.g("Prefs","You should upgrade to MySQL 4.1"));
-				ExitApplicationNow.ExitNow();
+				Application.Exit();
 				return false;
 			}
 			return true;
@@ -120,13 +120,12 @@ namespace OpenDental{
 				return true;
 			}
 			else{
-				//MessageBox.Show("Conversion unsuccessful");
-				ExitApplicationNow.ExitNow();
+				Application.Exit();
 				return false;
 			}
 		}
 
-		///<summary>Only called once from RefreshLocalData.</summary>
+		///<summary>Called in two places.  Once from RefreshLocalData, and also from FormBackups after a restore.</summary>
 		public static bool CheckProgramVersion(){
 			Version storedVersion=new Version(GetString("ProgramVersion"));
 			Version currentVersion=new Version(Application.ProductVersion);
@@ -150,7 +149,7 @@ namespace OpenDental{
 							FormUpdate FormU=new FormUpdate();
 							FormU.ShowDialog();
 						}
-						ExitApplicationNow.ExitNow();
+						Application.Exit();
 						return false;
 					}
 					try{
@@ -165,7 +164,7 @@ namespace OpenDental{
 					FormUpdate FormU=new FormUpdate();
 					FormU.ShowDialog();
 				}
-				ExitApplicationNow.ExitNow();//always exits, whether launch of setup worked or no
+				Application.Exit();//always exits, whether launch of setup worked or no
 				return false;
 			}
 			return true;
@@ -212,7 +211,7 @@ namespace OpenDental{
 			return ((Pref)HList[prefName]).ValueString;
 		}
 
-		///<summary></summary>
+		///<summary>Attempts to write a simple value to the database.  If it fails, then we know we don't have a good connection with write permissions.</summary>
 		public static bool TryToConnect(){
 			try{
 				con.Open();

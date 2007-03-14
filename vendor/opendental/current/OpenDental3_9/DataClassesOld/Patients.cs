@@ -70,47 +70,38 @@ namespace OpenDental{
 				retVal[i].CreditType   = PIn.PString(table.Rows[i][19].ToString());
 				retVal[i].Email        = PIn.PString(table.Rows[i][20].ToString());
 				retVal[i].Salutation   = PIn.PString(table.Rows[i][21].ToString());
-				retVal[i].PriPlanNum   = PIn.PInt   (table.Rows[i][22].ToString());
-				retVal[i].PriRelationship=(Relat)PIn.PInt(table.Rows[i][23].ToString());
-				retVal[i].SecPlanNum   = PIn.PInt   (table.Rows[i][24].ToString());
-				retVal[i].SecRelationship=(Relat)PIn.PInt(table.Rows[i][25].ToString());
-				retVal[i].EstBalance   = PIn.PDouble(table.Rows[i][26].ToString());
-				retVal[i].NextAptNum   = PIn.PInt   (table.Rows[i][27].ToString());
-				retVal[i].PriProv      = PIn.PInt   (table.Rows[i][28].ToString());
-				retVal[i].SecProv      = PIn.PInt   (table.Rows[i][29].ToString());
-				retVal[i].FeeSched     = PIn.PInt   (table.Rows[i][30].ToString());
-				retVal[i].BillingType  = PIn.PInt   (table.Rows[i][31].ToString());
-				//retVal[i].RecallInterval=PIn.PInt   (table.Rows[i][32].ToString());
-				//retVal[i].RecallStatus = PIn.PInt   (table.Rows[i][33].ToString());
-				retVal[i].ImageFolder  = PIn.PString(table.Rows[i][34].ToString());
-				retVal[i].AddrNote     = PIn.PString(table.Rows[i][35].ToString());
-				retVal[i].FamFinUrgNote= PIn.PString(table.Rows[i][36].ToString());
-				retVal[i].MedUrgNote   = PIn.PString(table.Rows[i][37].ToString());
-				retVal[i].ApptModNote  = PIn.PString(table.Rows[i][38].ToString());
-				retVal[i].StudentStatus= PIn.PString(table.Rows[i][39].ToString());
-				retVal[i].SchoolName   = PIn.PString(table.Rows[i][40].ToString());
-				retVal[i].ChartNumber  = PIn.PString(table.Rows[i][41].ToString());
-				retVal[i].MedicaidID   = PIn.PString(table.Rows[i][42].ToString());
-				retVal[i].Bal_0_30     = PIn.PDouble(table.Rows[i][43].ToString());
-				retVal[i].Bal_31_60    = PIn.PDouble(table.Rows[i][44].ToString());
-				retVal[i].Bal_61_90    = PIn.PDouble(table.Rows[i][45].ToString());
-				retVal[i].BalOver90    = PIn.PDouble(table.Rows[i][46].ToString());
-				retVal[i].InsEst       = PIn.PDouble(table.Rows[i][47].ToString());
-				retVal[i].PrimaryTeeth = PIn.PString(table.Rows[i][48].ToString());
-				retVal[i].BalTotal     = PIn.PDouble(table.Rows[i][49].ToString());
-				retVal[i].EmployerNum  = PIn.PInt   (table.Rows[i][50].ToString());
-				retVal[i].EmploymentNote=PIn.PString(table.Rows[i][51].ToString());
-				retVal[i].Race         = (PatientRace)PIn.PInt(table.Rows[i][52].ToString());
-				retVal[i].County       = PIn.PString(table.Rows[i][53].ToString());
-				retVal[i].GradeSchool  = PIn.PString(table.Rows[i][54].ToString());
-				retVal[i].GradeLevel   = (PatientGrade)PIn.PInt(table.Rows[i][55].ToString());
-				retVal[i].Urgency      = (TreatmentUrgency)PIn.PInt(table.Rows[i][56].ToString());
-				retVal[i].DateFirstVisit=PIn.PDate  (table.Rows[i][57].ToString());
-				retVal[i].PriPending   = PIn.PBool  (table.Rows[i][58].ToString());
-				retVal[i].SecPending   = PIn.PBool  (table.Rows[i][59].ToString());
-				retVal[i].ClinicNum    = PIn.PInt   (table.Rows[i][60].ToString());
-				retVal[i].PriPatID     = PIn.PString(table.Rows[i][61].ToString());
-				retVal[i].SecPatID     = PIn.PString(table.Rows[i][62].ToString());
+				retVal[i].EstBalance   = PIn.PDouble(table.Rows[i][22].ToString());
+				retVal[i].NextAptNum   = PIn.PInt   (table.Rows[i][23].ToString());
+				retVal[i].PriProv      = PIn.PInt   (table.Rows[i][24].ToString());
+				retVal[i].SecProv      = PIn.PInt   (table.Rows[i][25].ToString());
+				retVal[i].FeeSched     = PIn.PInt   (table.Rows[i][26].ToString());
+				retVal[i].BillingType  = PIn.PInt   (table.Rows[i][27].ToString());
+				retVal[i].ImageFolder  = PIn.PString(table.Rows[i][28].ToString());
+				retVal[i].AddrNote     = PIn.PString(table.Rows[i][29].ToString());
+				retVal[i].FamFinUrgNote= PIn.PString(table.Rows[i][30].ToString());
+				retVal[i].MedUrgNote   = PIn.PString(table.Rows[i][31].ToString());
+				retVal[i].ApptModNote  = PIn.PString(table.Rows[i][32].ToString());
+				retVal[i].StudentStatus= PIn.PString(table.Rows[i][33].ToString());
+				retVal[i].SchoolName   = PIn.PString(table.Rows[i][34].ToString());
+				retVal[i].ChartNumber  = PIn.PString(table.Rows[i][35].ToString());
+				retVal[i].MedicaidID   = PIn.PString(table.Rows[i][36].ToString());
+				retVal[i].Bal_0_30     = PIn.PDouble(table.Rows[i][37].ToString());
+				retVal[i].Bal_31_60    = PIn.PDouble(table.Rows[i][38].ToString());
+				retVal[i].Bal_61_90    = PIn.PDouble(table.Rows[i][39].ToString());
+				retVal[i].BalOver90    = PIn.PDouble(table.Rows[i][40].ToString());
+				retVal[i].InsEst       = PIn.PDouble(table.Rows[i][41].ToString());
+				retVal[i].PrimaryTeeth = PIn.PString(table.Rows[i][42].ToString());
+				retVal[i].BalTotal     = PIn.PDouble(table.Rows[i][43].ToString());
+				retVal[i].EmployerNum  = PIn.PInt   (table.Rows[i][44].ToString());
+				retVal[i].EmploymentNote=PIn.PString(table.Rows[i][45].ToString());
+				retVal[i].Race         = (PatientRace)PIn.PInt(table.Rows[i][46].ToString());
+				retVal[i].County       = PIn.PString(table.Rows[i][47].ToString());
+				retVal[i].GradeSchool  = PIn.PString(table.Rows[i][48].ToString());
+				retVal[i].GradeLevel   = (PatientGrade)PIn.PInt(table.Rows[i][49].ToString());
+				retVal[i].Urgency      = (TreatmentUrgency)PIn.PInt(table.Rows[i][50].ToString());
+				retVal[i].DateFirstVisit=PIn.PDate  (table.Rows[i][51].ToString());
+				retVal[i].ClinicNum    = PIn.PInt   (table.Rows[i][52].ToString());
+				retVal[i].HasIns       = PIn.PString(table.Rows[i][53].ToString());
 			}
 			return retVal;
 		}
@@ -253,47 +244,38 @@ namespace OpenDental{
 				multPats[i].CreditType   = PIn.PString(table.Rows[i][19].ToString());
 				multPats[i].Email        = PIn.PString(table.Rows[i][20].ToString());
 				multPats[i].Salutation   = PIn.PString(table.Rows[i][21].ToString());
-				multPats[i].PriPlanNum   = PIn.PInt   (table.Rows[i][22].ToString());
-				multPats[i].PriRelationship=(Relat)PIn.PInt(table.Rows[i][23].ToString());
-				multPats[i].SecPlanNum   = PIn.PInt   (table.Rows[i][24].ToString());
-				multPats[i].SecRelationship=(Relat)PIn.PInt(table.Rows[i][25].ToString());
-				multPats[i].EstBalance   = PIn.PDouble(table.Rows[i][26].ToString());
-				multPats[i].NextAptNum   = PIn.PInt   (table.Rows[i][27].ToString());
-				multPats[i].PriProv      = PIn.PInt   (table.Rows[i][28].ToString());
-				multPats[i].SecProv      = PIn.PInt   (table.Rows[i][29].ToString());
-				multPats[i].FeeSched     = PIn.PInt   (table.Rows[i][30].ToString());
-				multPats[i].BillingType  = PIn.PInt   (table.Rows[i][31].ToString());
-				//multPats[i].RecallInterval=PIn.PInt   (table.Rows[i][32].ToString());
-				//multPats[i].RecallStatus = PIn.PInt   (table.Rows[i][33].ToString());
-				multPats[i].ImageFolder  = PIn.PString(table.Rows[i][34].ToString());
-				multPats[i].AddrNote     = PIn.PString(table.Rows[i][35].ToString());
-				multPats[i].FamFinUrgNote= PIn.PString(table.Rows[i][36].ToString());
-				multPats[i].MedUrgNote   = PIn.PString(table.Rows[i][37].ToString());
-				multPats[i].ApptModNote  = PIn.PString(table.Rows[i][38].ToString());
-				multPats[i].StudentStatus= PIn.PString(table.Rows[i][39].ToString());
-				multPats[i].SchoolName   = PIn.PString(table.Rows[i][40].ToString());
-				multPats[i].ChartNumber  = PIn.PString(table.Rows[i][41].ToString());
-				multPats[i].MedicaidID   = PIn.PString(table.Rows[i][42].ToString());
-				multPats[i].Bal_0_30     = PIn.PDouble(table.Rows[i][43].ToString());
-				multPats[i].Bal_31_60    = PIn.PDouble(table.Rows[i][44].ToString());
-				multPats[i].Bal_61_90    = PIn.PDouble(table.Rows[i][45].ToString());
-				multPats[i].BalOver90    = PIn.PDouble(table.Rows[i][46].ToString());
-				multPats[i].InsEst       = PIn.PDouble(table.Rows[i][47].ToString());
-				multPats[i].PrimaryTeeth = PIn.PString(table.Rows[i][48].ToString());
-				multPats[i].BalTotal     = PIn.PDouble(table.Rows[i][49].ToString());
-				multPats[i].EmployerNum  = PIn.PInt   (table.Rows[i][50].ToString());
-				multPats[i].EmploymentNote=PIn.PString(table.Rows[i][51].ToString());
-				multPats[i].Race         = (PatientRace)PIn.PInt(table.Rows[i][52].ToString());
-				multPats[i].County       = PIn.PString(table.Rows[i][53].ToString());
-				multPats[i].GradeSchool  = PIn.PString(table.Rows[i][54].ToString());
-				multPats[i].GradeLevel   = (PatientGrade)PIn.PInt(table.Rows[i][55].ToString());
-				multPats[i].Urgency      = (TreatmentUrgency)PIn.PInt(table.Rows[i][56].ToString());
-				multPats[i].DateFirstVisit=PIn.PDate  (table.Rows[i][57].ToString());
-				multPats[i].PriPending   = PIn.PBool  (table.Rows[i][58].ToString());
-				multPats[i].SecPending   = PIn.PBool  (table.Rows[i][59].ToString());
-				multPats[i].ClinicNum    = PIn.PInt   (table.Rows[i][60].ToString());
-				multPats[i].PriPatID     = PIn.PString(table.Rows[i][61].ToString());
-				multPats[i].SecPatID     = PIn.PString(table.Rows[i][62].ToString());
+				multPats[i].EstBalance   = PIn.PDouble(table.Rows[i][22].ToString());
+				multPats[i].NextAptNum   = PIn.PInt   (table.Rows[i][23].ToString());
+				multPats[i].PriProv      = PIn.PInt   (table.Rows[i][24].ToString());
+				multPats[i].SecProv      = PIn.PInt   (table.Rows[i][25].ToString());
+				multPats[i].FeeSched     = PIn.PInt   (table.Rows[i][26].ToString());
+				multPats[i].BillingType  = PIn.PInt   (table.Rows[i][27].ToString());
+				multPats[i].ImageFolder  = PIn.PString(table.Rows[i][28].ToString());
+				multPats[i].AddrNote     = PIn.PString(table.Rows[i][29].ToString());
+				multPats[i].FamFinUrgNote= PIn.PString(table.Rows[i][30].ToString());
+				multPats[i].MedUrgNote   = PIn.PString(table.Rows[i][31].ToString());
+				multPats[i].ApptModNote  = PIn.PString(table.Rows[i][32].ToString());
+				multPats[i].StudentStatus= PIn.PString(table.Rows[i][33].ToString());
+				multPats[i].SchoolName   = PIn.PString(table.Rows[i][34].ToString());
+				multPats[i].ChartNumber  = PIn.PString(table.Rows[i][35].ToString());
+				multPats[i].MedicaidID   = PIn.PString(table.Rows[i][36].ToString());
+				multPats[i].Bal_0_30     = PIn.PDouble(table.Rows[i][37].ToString());
+				multPats[i].Bal_31_60    = PIn.PDouble(table.Rows[i][38].ToString());
+				multPats[i].Bal_61_90    = PIn.PDouble(table.Rows[i][39].ToString());
+				multPats[i].BalOver90    = PIn.PDouble(table.Rows[i][40].ToString());
+				multPats[i].InsEst       = PIn.PDouble(table.Rows[i][41].ToString());
+				multPats[i].PrimaryTeeth = PIn.PString(table.Rows[i][42].ToString());
+				multPats[i].BalTotal     = PIn.PDouble(table.Rows[i][43].ToString());
+				multPats[i].EmployerNum  = PIn.PInt   (table.Rows[i][44].ToString());
+				multPats[i].EmploymentNote=PIn.PString(table.Rows[i][45].ToString());
+				multPats[i].Race         = (PatientRace)PIn.PInt(table.Rows[i][46].ToString());
+				multPats[i].County       = PIn.PString(table.Rows[i][47].ToString());
+				multPats[i].GradeSchool  = PIn.PString(table.Rows[i][48].ToString());
+				multPats[i].GradeLevel   = (PatientGrade)PIn.PInt(table.Rows[i][49].ToString());
+				multPats[i].Urgency      = (TreatmentUrgency)PIn.PInt(table.Rows[i][50].ToString());
+				multPats[i].DateFirstVisit=PIn.PDate  (table.Rows[i][51].ToString());
+				multPats[i].ClinicNum    = PIn.PInt   (table.Rows[i][52].ToString());
+				multPats[i].HasIns       = PIn.PString(table.Rows[i][53].ToString());
 			}
 			return multPats;
 		}
@@ -314,7 +296,7 @@ namespace OpenDental{
 				return new Patient();
 			}
 			string command= 
-				"SELECT PatNum,LName,FName,MiddleI,Preferred,CreditType,Guarantor,PriPlanNum,SSN " 
+				"SELECT PatNum,LName,FName,MiddleI,Preferred,CreditType,Guarantor,HasIns,SSN " 
 				+"FROM patient "
 				+"WHERE PatNum = '"+patNum.ToString()+"'";
 			DataConnection dcon=new DataConnection();
@@ -330,7 +312,7 @@ namespace OpenDental{
 			Lim.Preferred  = PIn.PString(table.Rows[0][4].ToString());
 			Lim.CreditType = PIn.PString(table.Rows[0][5].ToString());
 			Lim.Guarantor  = PIn.PInt   (table.Rows[0][6].ToString());
-			Lim.PriPlanNum = PIn.PInt   (table.Rows[0][7].ToString());
+			Lim.HasIns     = PIn.PString(table.Rows[0][7].ToString());
 			Lim.SSN        = PIn.PString(table.Rows[0][8].ToString());
 			return Lim;
 		}
@@ -474,16 +456,51 @@ namespace OpenDental{
 
 		///<summary>This is only used in the Billing dialog</summary>
 		public static PatAging[] GetAgingList(string age,DateTime lastStatement,int[] billingIndices,bool excludeAddr
-			,bool excludeNeg,double excludeLessThan,bool excludeInactive){
-			string command=
-				"SELECT patient.PatNum,Bal_0_30,Bal_31_60,Bal_61_90,BalOver90,BalTotal,InsEst,LName,FName,MiddleI, "
-				+"IFNULL(MAX(commlog.CommDateTime),'0001-01-01') "
-				+"FROM patient "//actually only gets guarantors since others are 0.
+			,bool excludeNeg,double excludeLessThan,bool excludeInactive,bool includeChanged)
+		{
+			string command="";
+			DataConnection dcon=new DataConnection();
+			if(includeChanged){
+				command+=@"DROP TABLE IF EXISTS templastproc;
+					CREATE TABLE templastproc(
+					Guarantor mediumint unsigned NOT NULL,
+					LastProc date NOT NULL,
+					PRIMARY KEY (Guarantor));
+					INSERT INTO templastproc
+					SELECT patient.Guarantor,MAX(ProcDate)
+					FROM procedurelog,patient
+					WHERE patient.PatNum=procedurelog.PatNum
+					AND procedurelog.ProcStatus=2
+					AND procedurelog.ProcFee>0
+					GROUP BY patient.Guarantor;
+					
+					DROP TABLE IF EXISTS templastpay;
+					CREATE TABLE templastpay(
+					Guarantor mediumint unsigned NOT NULL,
+					LastPay date NOT NULL,
+					PRIMARY KEY (Guarantor));
+					INSERT INTO templastpay
+					SELECT patient.Guarantor,MAX(DateCP)
+					FROM claimproc,patient
+					WHERE claimproc.PatNum=patient.PatNum
+					AND claimproc.InsPayAmt>0
+					GROUP BY patient.Guarantor;";
+			}
+			command+="SELECT patient.PatNum,Bal_0_30,Bal_31_60,Bal_61_90,BalOver90,BalTotal,InsEst,LName,FName,MiddleI, "
+				+"IFNULL(MAX(commlog.CommDateTime),'0001-01-01') AS LastStatement ";
+			if(includeChanged){
+				command+=",IFNULL(templastproc.LastProc,'0001-01-01') AS LastChange,"
+					+"IFNULL(templastpay.LastPay,'0001-01-01') AS LastPayment ";
+			}
+			command+=
+				"FROM patient "//actually only gets guarantors since others are 0.
 				+"LEFT JOIN commlog ON patient.PatNum=commlog.PatNum "
-				+"AND CommType='1' "
-				//+"WHERE LastStatement < '"+POut.PDate(lastStatement.AddDays(1))+"' "//>midnight of lastStatement date
-				//there does not appear to be a way to filter out lastStatement date.  MAX is not allowed in WHERE clause.
-				+"WHERE ";
+				+"AND CommType='1' ";
+			if(includeChanged){
+				command+="LEFT JOIN templastproc ON patient.PatNum=templastproc.Guarantor "
+					+"LEFT JOIN templastpay ON patient.PatNum=templastpay.Guarantor ";
+			}
+			command+="WHERE ";
 			if(excludeInactive){
 				command+="(patstatus != '2') AND ";
 			}
@@ -520,36 +537,40 @@ namespace OpenDental{
 			if(excludeAddr){
 				command+=" AND (zip !='')";
 			}	
-			command+=" GROUP BY patient.PatNum "
-				+"ORDER BY LName,FName";
+			command+=" GROUP BY patient.PatNum ";
+			if(includeChanged){
+				command+="HAVING LastStatement < '"+POut.PDate(lastStatement.AddDays(1))+"' "//<midnight of lastStatement date
+					+"OR LastChange > LastStatement "//eg '2005-10-25' > '2005-10-24 15:00:00'
+					+"OR LastPayment > LastStatement ";
+			}
+			else{
+				command+="HAVING LastStatement < '"+POut.PDate(lastStatement.AddDays(1))+"' ";//<midnight of lastStatement date
+			}
+			command+="ORDER BY LName,FName";
 			//Debug.WriteLine(command);
-			DataConnection dcon=new DataConnection();
 			DataTable table=dcon.GetTable(command);
-			ArrayList AL=new ArrayList();
-			PatAging patAging;
+			PatAging[] retVal=new PatAging[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
-				if(PIn.PDate(table.Rows[i][10].ToString())>lastStatement.AddDays(1)){//>midnight of lastStatement date
-					continue;
-				}
-				patAging=new PatAging();
-				patAging.PatNum   = PIn.PInt   (table.Rows[i][0].ToString());
-				patAging.Bal_0_30 = PIn.PDouble(table.Rows[i][1].ToString());
-				patAging.Bal_31_60= PIn.PDouble(table.Rows[i][2].ToString());
-				patAging.Bal_61_90= PIn.PDouble(table.Rows[i][3].ToString());
-				patAging.BalOver90= PIn.PDouble(table.Rows[i][4].ToString());
-				patAging.BalTotal = PIn.PDouble(table.Rows[i][5].ToString());
-				patAging.InsEst   = PIn.PDouble(table.Rows[i][6].ToString());
-				patAging.PatName=PIn.PString(table.Rows[i][7].ToString())
+				retVal[i]=new PatAging();
+				retVal[i].PatNum   = PIn.PInt   (table.Rows[i][0].ToString());
+				retVal[i].Bal_0_30 = PIn.PDouble(table.Rows[i][1].ToString());
+				retVal[i].Bal_31_60= PIn.PDouble(table.Rows[i][2].ToString());
+				retVal[i].Bal_61_90= PIn.PDouble(table.Rows[i][3].ToString());
+				retVal[i].BalOver90= PIn.PDouble(table.Rows[i][4].ToString());
+				retVal[i].BalTotal = PIn.PDouble(table.Rows[i][5].ToString());
+				retVal[i].InsEst   = PIn.PDouble(table.Rows[i][6].ToString());
+				retVal[i].PatName=PIn.PString(table.Rows[i][7].ToString())
 					+", "+PIn.PString(table.Rows[i][8].ToString())
 					+" "+PIn.PString(table.Rows[i][9].ToString());
-				//AgingList[i].Balance=AgingList[i].Bal_0_30+AgingList[i].Bal_31_60
-				//	+AgingList[i].Bal_61_90+AgingList[i].BalOver90;
-				patAging.AmountDue=patAging.BalTotal-patAging.InsEst;
-				patAging.DateLastStatement=PIn.PDate(table.Rows[i][10].ToString());
-				AL.Add(patAging);
+				retVal[i].AmountDue=retVal[i].BalTotal-retVal[i].InsEst;
+				retVal[i].DateLastStatement=PIn.PDate(table.Rows[i][10].ToString());
 			}
-			PatAging[] retVal=new PatAging[AL.Count];
-			AL.CopyTo(retVal);
+			if(includeChanged){
+				command="DROP TABLE IF EXISTS templastproc";
+				dcon.NonQ(command);
+				command="DROP TABLE IF EXISTS templastpay";
+				dcon.NonQ(command);
+			}
 			return retVal;
 		}
 
@@ -703,6 +724,25 @@ namespace OpenDental{
 				return ((Patient)buttonLastFive[index]).PatNum;
 			}
 			return fam.List[index-buttonLastFive.Count-2].PatNum;
+		}
+
+		///<summary>Makes a call to the db to figure out if the current HasIns status is correct.  If not, then it changes it.</summary>
+		public static void SetHasIns(int patNum){
+			string command="SELECT patient.HasIns,COUNT(patplan.PatNum) FROM patient "
+				+"LEFT JOIN patplan ON patplan.PatNum=patient.PatNum"
+				+" WHERE patient.PatNum="+POut.PInt(patNum)
+				+" GROUP BY patplan.PatNum";
+			DataConnection dcon=new DataConnection();
+			DataTable table=dcon.GetTable(command);
+			string newVal="";
+			if(table.Rows[0][1].ToString()!="0"){
+				newVal="I";
+			}
+			if(newVal!=table.Rows[0][0].ToString()){
+				command="UPDATE patient SET HasIns='"+POut.PString(newVal)
+					+"' WHERE PatNum="+POut.PInt(patNum);
+				dcon.NonQ(command);
+			}
 		}
 
 		

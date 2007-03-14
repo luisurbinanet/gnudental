@@ -47,8 +47,8 @@ namespace OpenDental{
 		private OpenDental.UI.Button butEdit;
 		///<summary>Keeps track of the original settings of the plan before any changes are made.  That way, the update can be applied to all plans that are the same as the original.</summary>
 		private InsPlan OriginalPlan;
-		///<summary>Might be set to 0 if no relevant current patient.  Maybe need to get rid of this field.</summary>
-		private int PatNum;
+		//<summary>Might be set to 0 if no relevant current patient.  Maybe need to get rid of this field.</summary>
+		//private int PatNum;
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.ComboBox comboClaimForm;
 		private System.Windows.Forms.ComboBox comboFeeSched;
@@ -64,12 +64,13 @@ namespace OpenDental{
 		private System.Windows.Forms.Label labelDivisionDash;
 		private System.Windows.Forms.Label labelCitySTZip;
 		private System.Windows.Forms.Label labelElectronicID;
+		private System.Windows.Forms.CheckBox checkIsMedical;
 		private InsPlan PlanCur;
 
 		///<summary></summary>
-		public FormInsPlanEditAll(InsPlan originalPlan,int patNum){
+		public FormInsPlanEditAll(InsPlan originalPlan){
 			OriginalPlan=originalPlan;
-			PatNum=patNum;
+			//PatNum=patNum;
 			InitializeComponent();// Required for Windows Form Designer support
 			Lan.F(this);
 		}
@@ -115,6 +116,8 @@ namespace OpenDental{
 			this.textEmployer = new System.Windows.Forms.TextBox();
 			this.label16 = new System.Windows.Forms.Label();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
+			this.textDivisionNo = new System.Windows.Forms.TextBox();
+			this.labelDivisionDash = new System.Windows.Forms.Label();
 			this.label13 = new System.Windows.Forms.Label();
 			this.label15 = new System.Windows.Forms.Label();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -132,8 +135,7 @@ namespace OpenDental{
 			this.comboLinked = new System.Windows.Forms.ComboBox();
 			this.textLinkedNum = new System.Windows.Forms.TextBox();
 			this.label4 = new System.Windows.Forms.Label();
-			this.textDivisionNo = new System.Windows.Forms.TextBox();
-			this.labelDivisionDash = new System.Windows.Forms.Label();
+			this.checkIsMedical = new System.Windows.Forms.CheckBox();
 			this.groupBox2.SuspendLayout();
 			this.groupBox1.SuspendLayout();
 			this.groupCoPay.SuspendLayout();
@@ -322,7 +324,7 @@ namespace OpenDental{
 			// checkClaimsUseUCR
 			// 
 			this.checkClaimsUseUCR.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkClaimsUseUCR.Location = new System.Drawing.Point(110, 289);
+			this.checkClaimsUseUCR.Location = new System.Drawing.Point(110, 302);
 			this.checkClaimsUseUCR.Name = "checkClaimsUseUCR";
 			this.checkClaimsUseUCR.Size = new System.Drawing.Size(286, 17);
 			this.checkClaimsUseUCR.TabIndex = 9;
@@ -407,6 +409,7 @@ namespace OpenDental{
 			// 
 			// groupBox2
 			// 
+			this.groupBox2.Controls.Add(this.checkIsMedical);
 			this.groupBox2.Controls.Add(this.textDivisionNo);
 			this.groupBox2.Controls.Add(this.labelDivisionDash);
 			this.groupBox2.Controls.Add(this.label13);
@@ -429,14 +432,31 @@ namespace OpenDental{
 			this.groupBox2.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupBox2.Location = new System.Drawing.Point(7, 4);
 			this.groupBox2.Name = "groupBox2";
-			this.groupBox2.Size = new System.Drawing.Size(424, 481);
+			this.groupBox2.Size = new System.Drawing.Size(424, 516);
 			this.groupBox2.TabIndex = 0;
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "Synchronized Information";
 			// 
+			// textDivisionNo
+			// 
+			this.textDivisionNo.Location = new System.Drawing.Point(257, 57);
+			this.textDivisionNo.MaxLength = 20;
+			this.textDivisionNo.Name = "textDivisionNo";
+			this.textDivisionNo.Size = new System.Drawing.Size(107, 20);
+			this.textDivisionNo.TabIndex = 128;
+			this.textDivisionNo.Text = "";
+			// 
+			// labelDivisionDash
+			// 
+			this.labelDivisionDash.Location = new System.Drawing.Point(242, 60);
+			this.labelDivisionDash.Name = "labelDivisionDash";
+			this.labelDivisionDash.Size = new System.Drawing.Size(31, 16);
+			this.labelDivisionDash.TabIndex = 127;
+			this.labelDivisionDash.Text = "--";
+			// 
 			// label13
 			// 
-			this.label13.Location = new System.Drawing.Point(11, 309);
+			this.label13.Location = new System.Drawing.Point(11, 322);
 			this.label13.Name = "label13";
 			this.label13.Size = new System.Drawing.Size(96, 15);
 			this.label13.TabIndex = 125;
@@ -445,7 +465,7 @@ namespace OpenDental{
 			// 
 			// label15
 			// 
-			this.label15.Location = new System.Drawing.Point(10, 333);
+			this.label15.Location = new System.Drawing.Point(10, 346);
 			this.label15.Name = "label15";
 			this.label15.Size = new System.Drawing.Size(95, 14);
 			this.label15.TabIndex = 126;
@@ -507,7 +527,7 @@ namespace OpenDental{
 			// comboClaimForm
 			// 
 			this.comboClaimForm.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboClaimForm.Location = new System.Drawing.Point(110, 329);
+			this.comboClaimForm.Location = new System.Drawing.Point(110, 342);
 			this.comboClaimForm.MaxDropDownItems = 30;
 			this.comboClaimForm.Name = "comboClaimForm";
 			this.comboClaimForm.Size = new System.Drawing.Size(212, 21);
@@ -516,7 +536,7 @@ namespace OpenDental{
 			// comboFeeSched
 			// 
 			this.comboFeeSched.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboFeeSched.Location = new System.Drawing.Point(110, 307);
+			this.comboFeeSched.Location = new System.Drawing.Point(110, 320);
 			this.comboFeeSched.MaxDropDownItems = 30;
 			this.comboFeeSched.Name = "comboFeeSched";
 			this.comboFeeSched.Size = new System.Drawing.Size(212, 21);
@@ -530,7 +550,7 @@ namespace OpenDental{
 			this.groupCoPay.Controls.Add(this.label8);
 			this.groupCoPay.Controls.Add(this.comboCopay);
 			this.groupCoPay.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupCoPay.Location = new System.Drawing.Point(17, 363);
+			this.groupCoPay.Location = new System.Drawing.Point(17, 376);
 			this.groupCoPay.Name = "groupCoPay";
 			this.groupCoPay.Size = new System.Drawing.Size(392, 104);
 			this.groupCoPay.TabIndex = 122;
@@ -622,22 +642,14 @@ namespace OpenDental{
 			this.label4.Text = "These plans are the same:";
 			this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
-			// textDivisionNo
+			// checkIsMedical
 			// 
-			this.textDivisionNo.Location = new System.Drawing.Point(257, 57);
-			this.textDivisionNo.MaxLength = 20;
-			this.textDivisionNo.Name = "textDivisionNo";
-			this.textDivisionNo.Size = new System.Drawing.Size(107, 20);
-			this.textDivisionNo.TabIndex = 128;
-			this.textDivisionNo.Text = "";
-			// 
-			// labelDivisionDash
-			// 
-			this.labelDivisionDash.Location = new System.Drawing.Point(242, 60);
-			this.labelDivisionDash.Name = "labelDivisionDash";
-			this.labelDivisionDash.Size = new System.Drawing.Size(31, 16);
-			this.labelDivisionDash.TabIndex = 127;
-			this.labelDivisionDash.Text = "--";
+			this.checkIsMedical.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkIsMedical.Location = new System.Drawing.Point(110, 287);
+			this.checkIsMedical.Name = "checkIsMedical";
+			this.checkIsMedical.Size = new System.Drawing.Size(286, 17);
+			this.checkIsMedical.TabIndex = 129;
+			this.checkIsMedical.Text = "Medical Insurance";
 			// 
 			// FormInsPlanEditAll
 			// 
@@ -700,6 +712,7 @@ namespace OpenDental{
 					listPlanType.SelectedIndex=2;
 			}
 			checkAlternateCode.Checked=PlanCur.UseAltCode;
+			checkIsMedical.Checked=PlanCur.IsMedical;
 			checkClaimsUseUCR.Checked=PlanCur.ClaimsUseUCR;
 			comboFeeSched.Items.Clear();
 			comboFeeSched.Items.Add(Lan.g(this,"none"));
@@ -829,6 +842,7 @@ namespace OpenDental{
 			if(comboClaimForm.SelectedIndex!=-1)
 				PlanCur.ClaimFormNum=ClaimForms.ListShort[comboClaimForm.SelectedIndex].ClaimFormNum;	
 			PlanCur.UseAltCode=checkAlternateCode.Checked;
+			PlanCur.IsMedical=checkIsMedical.Checked;
 			PlanCur.ClaimsUseUCR=checkClaimsUseUCR.Checked;
 			if(comboFeeSched.SelectedIndex==0)
 				PlanCur.FeeSched=0;

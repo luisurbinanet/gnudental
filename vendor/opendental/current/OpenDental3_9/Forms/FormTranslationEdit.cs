@@ -19,15 +19,21 @@ namespace OpenDental{
 		private bool IsNew;
 		//private bool IsNewCulTran;
 		private System.Windows.Forms.TextBox textComments;
-		private System.Windows.Forms.Label label3;
-		private System.Windows.Forms.TextBox textEnglishComments;
 		private System.Windows.Forms.TextBox textTranslation;
+		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.TextBox textOtherTranslation;
 		private System.ComponentModel.Container components = null;
+		private Language LanCur;
+		private LanguageForeign LanForeign;
+		private string OtherTrans;
 
-		///<summary></summary>
-		public FormTranslationEdit(){
+		///<summary>lanForeign might be null.</summary>
+		public FormTranslationEdit(Language lanCur,LanguageForeign lanForeign,string otherTrans){
 			InitializeComponent();
 			//no need to translate anything here
+			LanCur=lanCur;
+			LanForeign=lanForeign;
+			OtherTrans=otherTrans;
 		}
 
 		///<summary></summary>
@@ -51,13 +57,16 @@ namespace OpenDental{
 			this.textTranslation = new System.Windows.Forms.TextBox();
 			this.label4 = new System.Windows.Forms.Label();
 			this.textComments = new System.Windows.Forms.TextBox();
-			this.textEnglishComments = new System.Windows.Forms.TextBox();
+			this.textOtherTranslation = new System.Windows.Forms.TextBox();
 			this.label3 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOK.Location = new System.Drawing.Point(786, 594);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
@@ -67,8 +76,10 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
-			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.Location = new System.Drawing.Point(786, 628);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
@@ -78,7 +89,7 @@ namespace OpenDental{
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(16, 36);
+			this.label1.Location = new System.Drawing.Point(43, 36);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(82, 23);
 			this.label1.TabIndex = 2;
@@ -87,7 +98,7 @@ namespace OpenDental{
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(12, 308);
+			this.label2.Location = new System.Drawing.Point(38, 168);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(88, 16);
 			this.label2.TabIndex = 5;
@@ -97,7 +108,7 @@ namespace OpenDental{
 			// textEnglish
 			// 
 			this.textEnglish.AcceptsReturn = true;
-			this.textEnglish.Location = new System.Drawing.Point(100, 34);
+			this.textEnglish.Location = new System.Drawing.Point(127, 34);
 			this.textEnglish.Multiline = true;
 			this.textEnglish.Name = "textEnglish";
 			this.textEnglish.ReadOnly = true;
@@ -108,7 +119,7 @@ namespace OpenDental{
 			// textTranslation
 			// 
 			this.textTranslation.AcceptsReturn = true;
-			this.textTranslation.Location = new System.Drawing.Point(100, 306);
+			this.textTranslation.Location = new System.Drawing.Point(127, 166);
 			this.textTranslation.Multiline = true;
 			this.textTranslation.Name = "textTranslation";
 			this.textTranslation.Size = new System.Drawing.Size(672, 130);
@@ -117,7 +128,7 @@ namespace OpenDental{
 			// 
 			// label4
 			// 
-			this.label4.Location = new System.Drawing.Point(18, 444);
+			this.label4.Location = new System.Drawing.Point(44, 434);
 			this.label4.Name = "label4";
 			this.label4.Size = new System.Drawing.Size(82, 14);
 			this.label4.TabIndex = 10;
@@ -127,31 +138,30 @@ namespace OpenDental{
 			// textComments
 			// 
 			this.textComments.AcceptsReturn = true;
-			this.textComments.Location = new System.Drawing.Point(100, 442);
+			this.textComments.Location = new System.Drawing.Point(127, 432);
 			this.textComments.Multiline = true;
 			this.textComments.Name = "textComments";
 			this.textComments.Size = new System.Drawing.Size(672, 130);
 			this.textComments.TabIndex = 11;
 			this.textComments.Text = "";
 			// 
-			// textEnglishComments
+			// textOtherTranslation
 			// 
-			this.textEnglishComments.AcceptsReturn = true;
-			this.textEnglishComments.Location = new System.Drawing.Point(100, 170);
-			this.textEnglishComments.Multiline = true;
-			this.textEnglishComments.Name = "textEnglishComments";
-			this.textEnglishComments.ReadOnly = true;
-			this.textEnglishComments.Size = new System.Drawing.Size(672, 130);
-			this.textEnglishComments.TabIndex = 13;
-			this.textEnglishComments.Text = "";
+			this.textOtherTranslation.Location = new System.Drawing.Point(127, 299);
+			this.textOtherTranslation.Multiline = true;
+			this.textOtherTranslation.Name = "textOtherTranslation";
+			this.textOtherTranslation.ReadOnly = true;
+			this.textOtherTranslation.Size = new System.Drawing.Size(671, 130);
+			this.textOtherTranslation.TabIndex = 0;
+			this.textOtherTranslation.Text = "";
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(8, 170);
+			this.label3.Location = new System.Drawing.Point(4, 301);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(88, 40);
+			this.label3.Size = new System.Drawing.Size(121, 16);
 			this.label3.TabIndex = 12;
-			this.label3.Text = "English Comments";
+			this.label3.Text = "Other Translation";
 			this.label3.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// FormTranslationEdit
@@ -160,16 +170,16 @@ namespace OpenDental{
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(880, 668);
-			this.Controls.Add(this.textEnglishComments);
+			this.Controls.Add(this.textOtherTranslation);
 			this.Controls.Add(this.label3);
 			this.Controls.Add(this.textComments);
-			this.Controls.Add(this.label4);
 			this.Controls.Add(this.textTranslation);
 			this.Controls.Add(this.textEnglish);
-			this.Controls.Add(this.label2);
-			this.Controls.Add(this.label1);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
+			this.Controls.Add(this.label4);
+			this.Controls.Add(this.label2);
+			this.Controls.Add(this.label1);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "FormTranslationEdit";
@@ -184,62 +194,52 @@ namespace OpenDental{
 		#endregion
 
 		private void FormTranslationEdit_Load(object sender, System.EventArgs e){
-			#if(DEBUG)
-				textEnglishComments.ReadOnly=false;
-			#endif
-			textEnglish.Text=Lan.Cur.English;
-			textEnglishComments.Text=Lan.Cur.EnglishComments;
-			if(LanguageForeigns.HList.ContainsKey(Lan.Cur.ClassType+Lan.Cur.English)){
-				LanguageForeigns.Cur=((LanguageForeign)LanguageForeigns.HList[Lan.Cur.ClassType+Lan.Cur.English]);
-				textTranslation.Text=LanguageForeigns.Cur.Translation;
-				textComments.Text=LanguageForeigns.Cur.Comments;
-				Text="Edit Translation";
-				IsNew=false;
-			}
-			else{
-				LanguageForeigns.Cur=new LanguageForeign();
-				LanguageForeigns.Cur.ClassType=Lan.Cur.ClassType;
-				LanguageForeigns.Cur.English=Lan.Cur.English;
-				LanguageForeigns.Cur.Culture=CultureInfo.CurrentCulture.TwoLetterISOLanguageName;
+			textEnglish.Text=LanCur.English;
+			textOtherTranslation.Text=OtherTrans;
+			if(LanForeign==null){
+				LanForeign=new LanguageForeign();
+				LanForeign.ClassType=LanCur.ClassType;
+				LanForeign.English=LanCur.English;
+				LanForeign.Culture=CultureInfo.CurrentCulture.Name;
 				Text="Add Translation";
 				IsNew=true;
+			}
+			else{
+				//LanguageForeigns.Cur=((LanguageForeign)LanguageForeigns.HList[Lan.Cur.ClassType+Lan.Cur.English]);
+				textTranslation.Text=LanForeign.Translation;
+				textComments.Text=LanForeign.Comments;
+				Text="Edit Translation";
+				IsNew=false;
 			}
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e){
 			if(textTranslation.Text=="" && textComments.Text==""){
-				//if only the translation is "",
-				//then the Lan.g routine will simply ignore it and use English.
+				//If only the translation is "", then the Lan.g routine will simply ignore it and use English.
 				if(!IsNew){
 					if(MessageBox.Show("This translation is blank and will be deleted.  Continue?",""
-						,MessageBoxButtons.OKCancel)!=DialogResult.OK){
+						,MessageBoxButtons.OKCancel)!=DialogResult.OK)
+					{
 						return;
 					}
-					LanguageForeigns.DeleteCur();
+					LanForeign.Delete();
 				}
 				DialogResult=DialogResult.OK;
 				return;
 			}
-			LanguageForeigns.Cur.Translation=textTranslation.Text;
-			LanguageForeigns.Cur.Comments=textComments.Text;
-			#if(DEBUG)
-				if(Lan.Cur.EnglishComments!=textEnglishComments.Text){
-					Lan.Cur.EnglishComments=textEnglishComments.Text;
-					Lan.UpdateCur();
-					Lan.Refresh();
-				}
-			#endif
+			LanForeign.Translation=textTranslation.Text;
+			LanForeign.Comments=textComments.Text;
 			if(IsNew){
-				LanguageForeigns.InsertCur();
+				LanForeign.Insert();
 			}
 			else{
-				LanguageForeigns.UpdateCur();
+				LanForeign.Update();
 			}
 			DialogResult=DialogResult.OK;
 		}
 
 		private void butCancel_Click(object sender, System.EventArgs e) {
-		
+			DialogResult=DialogResult.Cancel;
 		}
 
 	}

@@ -50,14 +50,21 @@ namespace OpenDental.Eclaims
 
 		///<summary>Supply an arrayList of type ClaimSendQueueItem. Called from Eclaims and includes multiple claims.</summary>
 		public static bool SendBatch(ArrayList queueItems,int interchangeNum){
-			Clearinghouse clearhouse=Clearinghouses.GetClearinghouse(
-				((ClaimSendQueueItem)queueItems[0]).ClearinghouseNum);
+			Clearinghouse clearhouse=Clearinghouses.GetClearinghouse(((ClaimSendQueueItem)queueItems[0]).ClearinghouseNum);
+			ArrayList functionalGroupDental=new ArrayList();//arrayList of ClaimSendQueueItem
+			ArrayList functionalGroupMedical=new ArrayList();
+			for(int i=0;i<queueItems.Count;i++){
+				if(((ClaimSendQueueItem)queueItems[i]).IsMedical){
+					functionalGroupMedical.Add(queueItems[i]);
+				}
+				else{
+					functionalGroupDental.Add(queueItems[i]);
+				}
+			}
 			string saveFile=GetFileName(clearhouse,interchangeNum);
 			if(saveFile==""){
 				return false;
 			}
-			//one for each carrier. Can be reused in other interchanges, so not persisted:
-			int transactionNum=1;
 			bool isTesting=false;
 			#if DEBUG
 				isTesting=true;
@@ -65,6 +72,7 @@ namespace OpenDental.Eclaims
 			using(StreamWriter sw=new StreamWriter(saveFile,false,Encoding.ASCII))
 			{
 				//Interchange Control Header (Interchange number tracked separately from transactionNum)
+				//We set it to between 1 and 999 for simplicity
 				sw.Write("ISA*00*          *"//ISA01,ISA02: 00 + 10 spaces
 					+"00*          *"//ISA03,ISA04: 00 + 10 spaces
 					+GetISA05(clearhouse)+"*"//ISA05: Sender ID type: ZZ=mutually defined. 30=TIN
@@ -84,60 +92,119 @@ namespace OpenDental.Eclaims
 						sw.Write("P*");
 					}
 					sw.WriteLine(":~");//ISA16: use ':'
-				//Functional Group Header (only one)
+				//Functional groups: one for dental and one for medical
+				if(functionalGroupMedical.Count>0){
+					WriteFunctionalGroup(sw,functionalGroupMedical,interchangeNum,clearhouse);
+				}
+				if(functionalGroupDental.Count>0){
+					WriteFunctionalGroup(sw,functionalGroupDental,interchangeNum,clearhouse);
+				}
+				//Interchange Control Trailer
+				sw.WriteLine("IEA*1*"//IEA01: number of functional groups
+					+interchangeNum.ToString().PadLeft(9,'0')+"~");//IEA02: Interchange control number
+			}//using sw
+			if(clearhouse.CommBridge==EclaimsCommBridge.PostnTrack){
+				//need to clear out all CRLF from entire file
+				string strFile="";
+				using(StreamReader sr=new StreamReader(saveFile,Encoding.ASCII)){
+					strFile=sr.ReadToEnd();
+				}
+				strFile=strFile.Replace("\r","");
+				strFile=strFile.Replace("\n","");
+				using(StreamWriter sw=new StreamWriter(saveFile,false,Encoding.ASCII)){
+					sw.Write(strFile);
+				}
+			}
+			CopyToArchive(saveFile);
+			return true;
+		}
+
+		private static void WriteFunctionalGroup(StreamWriter sw,ArrayList queueItems,int interchangeNum,Clearinghouse clearhouse){
+			int transactionNum=1;//one for each carrier. Can be reused in other functional groups and interchanges, so not persisted
+			bool isTesting=false;
+			#if DEBUG
+				isTesting=true;
+			#endif
+			//Functional Group Header
+			string groupControlNumber="";//Must be unique within file.
+			bool isMedical=((ClaimSendQueueItem)queueItems[0]).IsMedical;
+			if(isMedical){
+				groupControlNumber="2";//this works for now because only two groups
 				sw.WriteLine("GS*HC*"//GS01: Health Care Claim
 					+GetGS02(clearhouse)+"*"//GS02: Application Senders Code. Sometimes Jordan Sparks.  Sometimes the sending clinic.
 					+GetGS03(clearhouse)+"*"//GS03: Application Receiver's Code
 					+DateTime.Today.ToString("yyyyMMdd")+"*"//GS04: today's date
 					+DateTime.Now.ToString("HHmm")+"*"//GS05: current time
-					//GS06: Group control number. Max length 9. No padding necessary. Using interchangeNum
-					+interchangeNum.ToString()+"*"
+					+groupControlNumber+"*"//GS06: Group control number. Max length 9. No padding necessary. 
+					+"X*"//GS07: X
+					+"005010X222~");//GS08: Version
+			}
+			else{//dental
+				groupControlNumber="1";
+				sw.WriteLine("GS*HC*"//GS01: Health Care Claim
+					+GetGS02(clearhouse)+"*"//GS02: Application Senders Code. Sometimes Jordan Sparks.  Sometimes the sending clinic.
+					+GetGS03(clearhouse)+"*"//GS03: Application Receiver's Code
+					+DateTime.Today.ToString("yyyyMMdd")+"*"//GS04: today's date
+					+DateTime.Now.ToString("HHmm")+"*"//GS05: current time
+					+groupControlNumber+"*"//GS06: Group control number. Max length 9. No padding necessary.
 					+"X*"//GS07: X
 					+"004010X097A1~");//GS08: Version
-				//Gets an array with PayorID,ProvBill,Subscriber,PatNum,ClaimNum all in the correct order
-				object[,] claimAr=Claims.GetX12TransactionInfo(queueItems);
-				bool newTrans;//true if this loop has transaction header
-				bool hasFooter;//true if this loop has transaction footer(if the Next loop is a newTrans)
-				int HLcount=1;
-				int parentProv=0;//the HL sequence # of the current provider.
-				int parentSubsc=0;//the HL sequence # of the current subscriber.
-				string hasSubord="";//0 if no subordinate, 1 if at least one subordinate
-				Claim claim;
-				InsPlan insPlan;
-				InsPlan otherPlan=new InsPlan();
-				Patient patient;
-				Patient subscriber;
-				Patient otherSubsc=new Patient();
-				Carrier carrier;
-				Carrier otherCarrier=new Carrier();
-				ClaimProc[] claimProcList;//all claimProcs for a patient.
-				ClaimProc[] claimProcs;
-				Procedure[] procList;
-				Procedure proc;
-				ProcedureCode procCode;
-				Provider provTreat;//might be different for each proc
-				Clinic clinic;
-				int seg=0;//segments for a particular ST-SE transaction
-				for(int i=0;i<claimAr.GetLength(1);i++){
-					#region Transaction Set Header
-					if(i==0//if this is the first claim
-						|| claimAr[0,i].ToString() != claimAr[0,i-1].ToString())//or the payorID has changed
-					{
-						newTrans=true;
-						seg=0;
+			}
+			//Gets an array with PayorID,ProvBill,Subscriber,PatNum,ClaimNum all in the correct order
+			object[,] claimAr=Claims.GetX12TransactionInfo(queueItems);
+			bool newTrans;//true if this loop has transaction header
+			bool hasFooter;//true if this loop has transaction footer(if the Next loop is a newTrans)
+			int HLcount=1;
+			int parentProv=0;//the HL sequence # of the current provider.
+			int parentSubsc=0;//the HL sequence # of the current subscriber.
+			string hasSubord="";//0 if no subordinate, 1 if at least one subordinate
+			Claim claim;
+			InsPlan insPlan;
+			InsPlan otherPlan=new InsPlan();
+			Patient patient;
+			Patient subscriber;
+			Patient otherSubsc=new Patient();
+			Carrier carrier;
+			Carrier otherCarrier=new Carrier();
+			ClaimProc[] claimProcList;//all claimProcs for a patient.
+			ClaimProc[] claimProcs;
+			Procedure[] procList;
+			Procedure proc;
+			ProcedureCode procCode;
+			Provider provTreat;//might be different for each proc
+			Clinic clinic;
+			int seg=0;//segments for a particular ST-SE transaction
+			for(int i=0;i<claimAr.GetLength(1);i++){
+				#region Transaction Set Header
+				if(i==0//if this is the first claim
+					|| claimAr[0,i].ToString() != claimAr[0,i-1].ToString())//or the payorID has changed
+				{
+					newTrans=true;
+					seg=0;
+				}
+				else newTrans=false;
+				if(newTrans){
+					//Transaction Set Header (one for each carrier)
+					//transactionNum gets incremented in SE section
+					//ST02 Transact. control #. Must be unique within ISA
+					//So we used combination of transaction and group, eg 00011
+					seg++;
+					if(isMedical){
+						sw.WriteLine("ST*837*"//ST01
+							+transactionNum.ToString().PadLeft(4,'0')+groupControlNumber+"*"//ST02
+							+"005010X222~");//ST03: Implementation convention reference
 					}
-					else newTrans=false;
-					if(newTrans){
-						//Transaction Set Header (one for each carrier)
-						seg++;
-						sw.WriteLine("ST*837*"
-							+transactionNum.ToString().PadLeft(4,'0')+"~");//ST02 Transact. control #.
-						//transactionNum gets incremented in SE section
-						seg++;
-						sw.WriteLine("BHT*0019*00*"
-							+transactionNum.ToString().PadLeft(4,'0')+"*"//BHT03. Can be same as ST02
-							+DateTime.Now.ToString("yyyyMMdd")+"*"
-							+DateTime.Now.ToString("HHmmss")+"*CH~");
+					else{//dental
+						sw.WriteLine("ST*837*"//ST01
+							+transactionNum.ToString().PadLeft(4,'0')+groupControlNumber+"~");//ST02
+					}
+					seg++;
+					sw.WriteLine("BHT*0019*00*"
+						+transactionNum.ToString().PadLeft(4,'0')+groupControlNumber+"*"//BHT03. Can be same as ST02
+						+DateTime.Now.ToString("yyyyMMdd")+"*"//BHT04: Date
+						+DateTime.Now.ToString("HHmmss")+"*"//BHT05: Time
+						+"CH~");//BHT06: Type=Chargable
+					if(!isMedical){
 						seg++;
 						if(isTesting){
 							sw.WriteLine("REF*87*004010X097DA1~");
@@ -145,106 +212,130 @@ namespace OpenDental.Eclaims
 						else{
 							sw.WriteLine("REF*87*004010X097A1~");
 						}
-						//1000A Submitter is usually OPEN DENTAL, but for inmediata it's the practice
-							//(depends on clearinghouse and Partnership agreements)
-						//1000A NM1: required
-						seg++;
-						Write1000A_NM1(sw,clearhouse);
-						//1000A PER: required. Contact number.
-						seg++;//always one seg
-						Write1000A_PER(sw,clearhouse);
-						//1000B Receiver is always the Clearinghouse
-						//1000B NM1: required
-						seg++;
-						sw.WriteLine("NM1*40*"//NM101: 40=receiver
-							+"2*"//NM102: 2=nonperson
-							+Sout(clearhouse.Description,35,1)+"*"//NM103:Receiver Name
-							+"****"//NM104-NM107 not used since not a person
-							+"46*"//NM108: 46 indicates ETIN
-							+clearhouse.ReceiverID.ToUpper()+"~");//NM109: Receiver ID Code. aka ETIN#.
-						HLcount=1;
-						parentProv=0;//the HL sequence # of the current provider.
-						parentSubsc=0;//the HL sequence # of the current subscriber.
-						hasSubord="";//0 if no subordinate, 1 if at least one subordinate
 					}
-					#endregion
-					//HL Loops:
-					#region Billing Provider
-					if(i==0//if first claim
-						|| newTrans //or new Transaction set
-						|| claimAr[1,i].ToString() != claimAr[1,i-1].ToString())//or prov has changed
-					{
-						clinic=Clinics.GetClinic((int)claimAr[4,i]);
-						//2000A HL: Billing/Pay-to provider HL loop
+					//1000A Submitter is usually OPEN DENTAL, but for inmediata it's the practice
+						//(depends on clearinghouse and Partnership agreements)
+						//See 2010AA PER (after REF) for the new billing provider contact phone number
+					//1000A NM1: required
+					seg++;
+					Write1000A_NM1(sw,clearhouse);
+					//1000A PER: required. Contact number.
+					seg++;//always one seg
+					Write1000A_PER(sw,clearhouse);
+					//1000B Receiver is always the Clearinghouse
+					//1000B NM1: required
+					seg++;
+					sw.WriteLine("NM1*40*"//NM101: 40=receiver
+						+"2*"//NM102: 2=nonperson
+						+Sout(clearhouse.Description,35,1)+"*"//NM103:Receiver Name
+						+"****"//NM104-NM107 not used since not a person
+						+"46*"//NM108: 46 indicates ETIN
+						+clearhouse.ReceiverID.ToUpper()+"~");//NM109: Receiver ID Code. aka ETIN#.
+					HLcount=1;
+					parentProv=0;//the HL sequence # of the current provider.
+					parentSubsc=0;//the HL sequence # of the current subscriber.
+					hasSubord="";//0 if no subordinate, 1 if at least one subordinate
+				}
+				#endregion
+				//HL Loops:
+				#region Billing Provider
+				if(i==0//if first claim
+					|| newTrans //or new Transaction set
+					|| claimAr[1,i].ToString() != claimAr[1,i-1].ToString())//or prov has changed
+				{
+					clinic=Clinics.GetClinic((int)claimAr[4,i]);
+					//2000A HL: Billing/Pay-to provider HL loop
+					seg++;
+					sw.WriteLine("HL*"+HLcount.ToString()+"*"//HL01: Heirarchical ID
+						+"*"//HL02: No parent. Not used
+						+"20*"//HL03: Heirarchical level code. 20=Information source
+						+"1~");//HL04: Heirarchical child code. 1=child HL present
+					Provider billProv=Providers.ListLong[Providers.GetIndexLong((int)claimAr[1,i])];
+					if(isMedical){
+						//2000A PRV: Provider Specialty Information
 						seg++;
-						sw.Write("HL*"+HLcount.ToString()+"*");//HL01: Heirarchical ID
-						//this section had a small bug.  this level is not supposed to have HL02 as far as I can tell.
-						//if(i==0 || newTrans)
-							sw.Write("*");//HL02: No parent
-						//else
-						//	sw.Write("0*");//HL02: No parent
-						sw.WriteLine("20*"//HL03: Heirarchical level code. 20=Information source
-							+"1~");//HL04: Heirarchical child code. 1=child HL present
-						Provider billProv=Providers.ListLong[Providers.GetIndexLong((int)claimAr[1,i])];
-						//2000A PRV: Provider Information (Optional Rendering prov for all claims in this HL)
+						sw.WriteLine("PRV*BI*"//PRV01: Provider Code. BI=Billing
+							+"PXC*"//PRV02: taxonomy code
+							+GetTaxonomy(billProv.Specialty)+"~");//PRV03: Provider taxonomy code
+					}
+					else{//dental
+						//2000A PRV: Provider Specialty Information (Optional Rendering prov for all claims in this HL)
 						//used instead of 2310B.
 						seg++;
 						sw.WriteLine("PRV*PT*"//PRV01: Provider Code. BI=Billing, PT=Pay-To
 							+"ZZ*"//PRV02: mutually defined taxonomy codes
 							+GetTaxonomy(billProv.Specialty)+"~");//PRV03: Provider taxonomy code
-						//2010AA NM1: Billing provider
-						seg++;
-						sw.Write("NM1*85*"//NM101: 85=Billing provider
-							+"1*"//NM102: 1=person,2=non-person
-							+Sout(billProv.LName,35)+"*"//NM103: Last name
-							+Sout(billProv.FName,25)+"*"//NM104: First name
-							+Sout(billProv.MI,25,1)+"*"//NM105: Middle name
-							+"*"//NM106: not used
-							+"*");//NM107: Name suffix. not used
-						if(billProv.UsingTIN)
-							sw.Write("24*");//NM108: ID code qualifier. 24=EIN. 34=SSN.
-						else
-							sw.Write("34*");
+					}
+					//2010AA NM1: Billing provider
+					seg++;
+					sw.Write("NM1*85*"//NM101: 85=Billing provider
+						+"1*"//NM102: 1=person,2=non-person
+						+Sout(billProv.LName,35)+"*"//NM103: Last name
+						//NM103 allowable length increased to 60
+						+Sout(billProv.FName,25)+"*"//NM104: First name
+						+Sout(billProv.MI,25,1)+"*"//NM105: Middle name
+						+"*"//NM106: not used
+						+"*");//NM107: Name suffix. not used
+					//If medical, it's unclear what needs to be send before the NPI date.
+					//We'll assume it's ok to use TIN or SSN if NPI not available.
+					if(billProv.NationalProvID!=""){
+						sw.Write("XX*");//NM108: ID code qualifier. 24=EIN. 34=SSN, XX=NPI
+						sw.WriteLine(Sout(billProv.NationalProvID,80)+"~");//NM109: ID code
+					}
+					else if(billProv.UsingTIN){
+						sw.Write("24*");//NM108
 						sw.WriteLine(Sout(billProv.SSN,80)+"~");//NM109: ID code (EIN or SSN)
-						//2010AA N3: Billing provider address
-						seg++;
-						if(clinic==null){
-							sw.Write("N3*"+Sout(Prefs.GetString("PracticeAddress"),55));//N301: Address
+					}
+					else{
+						sw.Write("34*");//NM108
+						sw.WriteLine(Sout(billProv.SSN,80)+"~");//NM109: ID code (EIN or SSN)
+					}
+					//2010AA N3: Billing provider address
+					seg++;
+					if(clinic==null){
+						sw.Write("N3*"+Sout(Prefs.GetString("PracticeAddress"),55));//N301: Address
+					}
+					else{
+						sw.Write("N3*"+Sout(clinic.Address,55));//N301: Address
+					}
+					if(clinic==null){
+						if(Prefs.GetString("PracticeAddress2")==""){
+							sw.WriteLine("~");
 						}
 						else{
-							sw.Write("N3*"+Sout(clinic.Address,55));//N301: Address
+							//N302: Address2. Optional.
+							sw.WriteLine("*"+Sout(Prefs.GetString("PracticeAddress2"),55)+"~");
 						}
-						if(clinic==null){
-							if(Prefs.GetString("PracticeAddress2")==""){
-								sw.WriteLine("~");
-							}
-							else{
-								//N302: Address2. Optional.
-								sw.WriteLine("*"+Sout(Prefs.GetString("PracticeAddress2"),55)+"~");
-							}
+					}
+					else{
+						if(clinic.Address2==""){
+							sw.WriteLine("~");
 						}
 						else{
-							if(clinic.Address2==""){
-								sw.WriteLine("~");
-							}
-							else{
-								//N302: Address2. Optional.
-								sw.WriteLine("*"+Sout(clinic.Address2,55)+"~");
-							}
+							//N302: Address2. Optional.
+							sw.WriteLine("*"+Sout(clinic.Address2,55)+"~");
 						}
-						//2010AA N4: Billing prov City,State,Zip
-						seg++;
-						if(clinic==null){
-							sw.WriteLine("N4*"+Sout(Prefs.GetString("PracticeCity"),30)+"*"//N401: City
-								+Sout(Prefs.GetString("PracticeST"),2)+"*"//N402: State
-								+Sout(Prefs.GetString("PracticeZip").Replace("-",""),15)+"~");//N403: Zip
-						}
-						else{
-							sw.WriteLine("N4*"+Sout(clinic.City,30)+"*"//N401: City
-								+Sout(clinic.State,2)+"*"//N402: State
-								+Sout(clinic.Zip.Replace("-",""),15)+"~");//N403: Zip
-						}
-						//2010AA REF: Office phone number. Required by WebMD.
+					}
+					//2010AA N4: Billing prov City,State,Zip
+					seg++;
+					if(clinic==null){
+						sw.WriteLine("N4*"+Sout(Prefs.GetString("PracticeCity"),30)+"*"//N401: City
+							+Sout(Prefs.GetString("PracticeST"),2)+"*"//N402: State
+							+Sout(Prefs.GetString("PracticeZip").Replace("-",""),15)+"~");//N403: Zip
+					}
+					else{
+						sw.WriteLine("N4*"+Sout(clinic.City,30)+"*"//N401: City
+							+Sout(clinic.State,2)+"*"//N402: State
+							+Sout(clinic.Zip.Replace("-",""),15)+"~");//N403: Zip
+					}
+					//2010AA REF: Billing provider secondary ID.  Required if NPI was used in 2010AA NM1
+					//if(isMedical){
+						//Before NPI date, all secondary IDs must be sent as required by carrier.
+						//But AFTER the NPI date, exactly ONE secondary ID is required: either TIN or SSN (EI or SY)
+					//}
+					//if(billProv.NationalProvID==""){//NPI not used
+					if(!isMedical){
+						//2010AA REF: Office phone number. Required by WebMD.  Needs to be removed later if using NPI.
 						if(clearhouse.ReceiverID=="0135WCH00"){//if WebMD
 							seg++;
 							if(clinic==null){
@@ -259,294 +350,342 @@ namespace OpenDental.Eclaims
 						//2010AA REF: License #. Required by RECS clearinghouse,
 						//but everyone else should find it useful too.
 						seg++;
-						sw.WriteLine("REF*1E*"//REF01: 1E=license #
+						sw.WriteLine("REF*0B*"//REF01: 0B=state license #.
 							+Sout(billProv.StateLicense,30)+"~");
 						//2010AA REF: Secondary ID number(s). Only required by some carriers.
 						seg+=WriteProv_REF(sw,billProv,(string)claimAr[0,i]);
-						parentProv=HLcount;
-						HLcount++;
 					}
-					#endregion
-					claim=Claims.GetClaim((int)claimAr[4,i]);
-					insPlan=InsPlans.GetPlan(claim.PlanNum,new InsPlan[] {});
-					//insPlan could be null if db corruption. No error checking for that
-					if(claim.PlanNum2>0){
-						otherPlan=InsPlans.GetPlan(claim.PlanNum2,new InsPlan[] {});
-						otherSubsc=Patients.GetPat(otherPlan.Subscriber);
-						otherCarrier=Carriers.GetCarrier(otherPlan.CarrierNum);
+					if(billProv.NationalProvID!=""){//NPI was used, so EXACTLY ONE secondary ID is required and allowed
+						seg++;
+						sw.Write("REF*");
+						if(billProv.UsingTIN){
+							sw.Write("EI*");//REF01: qualifier. EI=EIN
+						}
+						else{//SSN
+							sw.Write("SY*");//REF01: qualifier. SY=SSN
+						}
+						sw.WriteLine(Sout(billProv.SSN,30)+"~");//REF02: ID #
 					}
-					patient=Patients.GetPat(claim.PatNum);
-					subscriber=Patients.GetPat(insPlan.Subscriber);
-					carrier=Carriers.GetCarrier(insPlan.CarrierNum);
-					claimProcList=ClaimProcs.Refresh(patient.PatNum);
-					claimProcs=ClaimProcs.GetForSendClaim(claimProcList,claim.ClaimNum);
-					procList=Procedures.Refresh(claim.PatNum);
-					#region Subscriber
-					//if(i==0 || claimAr[2,i].ToString() != claimAr[2,i-1].ToString()){//if subscriber changed
-					if(i==0 || claimAr[3,i].ToString() != claimAr[3,i-1].ToString())//if patient changed
-					{
-						//situation 1:
-						if(claimAr[3,i].ToString()==claimAr[2,i].ToString()){//if patient is the subscriber
-							//-claim level will follow
-							hasSubord="0";
-							//subordinate patients will no longer follow. They will all have their own subscriber loop
-													/*
-													//-then, possibly more patients ONLY IF they have the same subscriber
-													//loop through ALL the claims again and check for matching subscribers, diff pats
-													for(int j=0;j<claimAr.GetLength(1);j++){
-														if(j!=i//we are only trying to match different lines
-															//other claims with same subscriber
-															&& claimAr[2,j].ToString()==claimAr[2,i].ToString()
-															&& claimAr[3,j].ToString()!=claimAr[3,i].ToString())//and patient is different
-														{
-															hasSubord="1";//so there will be a subord HL after the claim info
-														}
-													}*/
-						}
-						//situation 2:
-						else{//patient is not the subscriber
-							//-patient will always follow
-							hasSubord="1";
-						}
-						//2000B HL: Subscriber HL loop
+					if(isMedical){
+						//2010AA PER: Billing Provider Contact Info. Required if different than in 1000A
+						//We'll always include it for simplicity
 						seg++;
-						sw.WriteLine("HL*"+HLcount.ToString()+"*"//HL01: Heirarchical ID
-							+parentProv.ToString()+"*"//HL02: parent is always the provider HL
-							+"22*"//HL03: 22=Subscriber
-							+hasSubord+"~");//HL04: 1=additional subordinate HL segment (patient). 0=no subord
-						//2000B SBR:
-						seg++;
-						sw.Write("SBR*");
-						if(claim.ClaimType=="P"){
-							sw.Write("P*");//SBR01: Payer responsibility code
-						}
-						else if(claim.ClaimType=="S"){
-							sw.Write("S*");
+						if(clinic==null){
+							sw.WriteLine("PER*IC*"//PER01: IC=Information Contact
+								+Sout(Prefs.GetString("PracticeTitle"),60,1)+"*"//PER02:Name. Practice title
+								+"TE*"//PER03:Comm Number Qualifier: TE=Telephone
+								+Sout(Prefs.GetString("PracticePhone"),256,1)+"~");//PER04:Comm Number. aka telephone number
 						}
 						else{
-							sw.Write("T*");//T=Tertiary
+							sw.WriteLine("PER*IC*"//PER01: IC=Information Contact
+								+Sout(Prefs.GetString("PracticeTitle"),60,1)+"*"//PER02:Name. Practice title
+								+"TE*"//PER03:Comm Number Qualifier: TE=Telephone
+								+Sout(clinic.Phone,256,1)+"~");//PER04:Comm Number. aka telephone number
 						}
+					}
+					parentProv=HLcount;
+					HLcount++;
+				}
+				#endregion
+				claim=Claims.GetClaim((int)claimAr[4,i]);
+				insPlan=InsPlans.GetPlan(claim.PlanNum,new InsPlan[] {});
+				//insPlan could be null if db corruption. No error checking for that
+				if(claim.PlanNum2>0){
+					otherPlan=InsPlans.GetPlan(claim.PlanNum2,new InsPlan[] {});
+					otherSubsc=Patients.GetPat(otherPlan.Subscriber);
+					otherCarrier=Carriers.GetCarrier(otherPlan.CarrierNum);
+				}
+				patient=Patients.GetPat(claim.PatNum);
+				subscriber=Patients.GetPat(insPlan.Subscriber);
+				carrier=Carriers.GetCarrier(insPlan.CarrierNum);
+				claimProcList=ClaimProcs.Refresh(patient.PatNum);
+				claimProcs=ClaimProcs.GetForSendClaim(claimProcList,claim.ClaimNum);
+				procList=Procedures.Refresh(claim.PatNum);
+				#region Subscriber
+				//if(i==0 || claimAr[2,i].ToString() != claimAr[2,i-1].ToString()){//if subscriber changed
+				if(i==0 || claimAr[3,i].ToString() != claimAr[3,i-1].ToString()){//if patient changed
+					if(claimAr[3,i].ToString()==claimAr[2,i].ToString()){//if patient is the subscriber
+						hasSubord="0";//-claim level will follow
+						//subordinate patients will not follow in this loop.  The subscriber loop will be duplicated for them.
+					}
+					else{//patient is not the subscriber
+						hasSubord="1";//-patient will always follow
+					}
+					//2000B HL: Subscriber HL loop
+					seg++;
+					sw.WriteLine("HL*"+HLcount.ToString()+"*"//HL01: Heirarchical ID
+						+parentProv.ToString()+"*"//HL02: parent is always the provider HL
+						+"22*"//HL03: 22=Subscriber
+						+hasSubord+"~");//HL04: 1=additional subordinate HL segment (patient). 0=no subord
+					//2000B SBR:
+					seg++;
+					sw.Write("SBR*");
+					if(claim.ClaimType=="P"){
+						sw.Write("P*");//SBR01: Payer responsibility code
+					}
+					else if(claim.ClaimType=="S"){
+						sw.Write("S*");
+					}
+					else{
+						sw.Write("T*");//T=Tertiary
+					}
 //todo: what about Cap?
-						if(claimAr[3,i].ToString()==claimAr[2,i].ToString()){//if patient is the subscriber
-							sw.Write("18*");//SBR02: Relationship. 18=self
-						}
-						else{
-							sw.Write("*");//empty if patient is not subscriber.
-						}
-						sw.Write(Sout(insPlan.GroupNum,30)+"*"//SBR03: Group Number
-							+Sout(insPlan.GroupName,60)+"*"//SBR04: Group Name
-							+"*");//SBR05: Not used
+					if(claimAr[3,i].ToString()==claimAr[2,i].ToString()){//if patient is the subscriber
+						sw.Write("18*");//SBR02: Relationship. 18=self
+					}
+					else{
+						sw.Write("*");//empty if patient is not subscriber.
+					}
+					sw.Write(Sout(insPlan.GroupNum,30)+"*"//SBR03: Group Number
+						+Sout(insPlan.GroupName,60)+"*"//SBR04: Group Name
+						+"*");//SBR05: Not used
+					if(isMedical){
+						sw.Write("*");//SBR06 not used.
+					}
+					else{
 						if(claim.PlanNum2>0){
 							sw.Write("1*");//SBR06: 1=Coordination of benefits. 6=No coordination
 						}
 						else{
 							sw.Write("6*");
 						}
-						sw.Write("**");//SBR07 & 08 not used.
-						sw.WriteLine("CI~");//SBR09: 12=PPO,17=DMO,BL=BCBS,CI=CommercialIns,FI=FEP,HM=HMO
-								//,MC=Medicaid,SA=self-administered, etc. There are too many. I'm just goint 
-								//to use CI for everyone. I don't think anyone will care.
-						//2010BA NM1: Subscriber Name
+					}
+					sw.Write("**");//SBR07 & 08 not used.
+					sw.WriteLine("CI~");//SBR09: 12=PPO,17=DMO,BL=BCBS,CI=CommercialIns,FI=FEP,HM=HMO
+							//,MC=Medicaid,SA=self-administered, etc. There are too many. I'm just going 
+							//to use CI for everyone. I don't think anyone will care.
+							//Anyway, SBR09 will not be used once PlanID is mandated.
+					//if(isMedical){
+						//2000B PAT. Required when patient is subscriber and one of the fields is needed.
+						//We will never need these fields: deceased date, weight, or pregnancy
+					//}
+					//2010BA NM1: Subscriber Name
+					seg++;
+					sw.WriteLine("NM1*IL*"//NM101: IL=Insured or Subscriber
+						+"1*"//NM102: 1=Person
+						+Sout(subscriber.LName,35)+"*"//NM103: LName
+						+Sout(subscriber.FName,25)+"*"//NM104: FName
+						+Sout(subscriber.MiddleI,25)+"*"//NM105: MiddleName
+						+"*"//NM106: not used
+						+"*"//NM107: suffix. Not present in Open Dental yet.
+						+"MI*"//NM108: MI=MemberID
+						+Sout(insPlan.SubscriberID,80)+"~");//NM109: Subscriber ID
+					//At the request of WebMD, we are including N3,N4,and DMG even if patient is not subscriber.
+					//This does not make the transaction non-compliant, and they find it useful.
+					//if(claimAr[3,i].ToString()==claimAr[2,i].ToString()){//if patient is the subscriber
+					//2010BA N3: Subscriber Address. Only if patient is the subscriber
 						seg++;
-						sw.WriteLine("NM1*IL*"//NM101: IL=Insured or Subscriber
-							+"1*"//NM102: 1=Person
-							+Sout(subscriber.LName,35)+"*"//NM103: LName
-							+Sout(subscriber.FName,25)+"*"//NM104: FName
-							+Sout(subscriber.MiddleI,25)+"*"//NM105: MiddleName
-							+"*"//NM106: not used
-							+"*"//NM107: suffix. Not present in Open Dental yet.
-							+"MI*"//NM108: MI=MemberID
-							+Sout(insPlan.SubscriberID,80)+"~");//NM109: Subscriber ID
-						//At the request of WebMD, we are including N3,N4,and DMG even if patient is not subscriber.
-						//This does not make the transaction non-compliant, and they find it useful.
-						//if(claimAr[3,i].ToString()==claimAr[2,i].ToString()){//if patient is the subscriber
-						//2010BA N3: Subscriber Address. Only if patient is the subscriber
-							seg++;
-							sw.Write("N3*"+Sout(subscriber.Address,55));//N301: address
-								if(subscriber.Address2==""){
-									sw.WriteLine("~");
-								}
-								else{
-									//N302: Address2. Optional.
-									sw.WriteLine("*"+Sout(subscriber.Address2,55)+"~");
-								}
-						//2010BA N4: CityStZip. Only if patient is the subscriber
-							seg++;
-							sw.WriteLine("N4*"
-								+Sout(subscriber.City,30,2)+"*"//N401: City
-								+Sout(subscriber.State,2,2)+"*"//N402: State
-								+Sout(subscriber.Zip.Replace("-",""),15,3)+"~");//N403: Zip
-						//2010BA DMG: Subscr. Demographics. Only if patient is the subscriber
-							seg++;
-							if(subscriber.Birthdate.Year<1900){
-								sw.WriteLine("DMG*D8*"//DMG01: use D8
-									+subscriber.Birthdate.ToString("19000101")+"*"//DMG02: birthdate
-									+GetGender(subscriber.Gender)+"~");//DMG03: gender. F,M,or U
-							}
-							else{
-								sw.WriteLine("DMG*D8*"//DMG01: use D8
-									+subscriber.Birthdate.ToString("yyyyMMdd")+"*"//DMG02: birthdate
-									+GetGender(subscriber.Gender)+"~");//DMG03: gender. F,M,or U
-							}
-						//}//if provider is the subscriber
-						//2010BA REF: Secondary ID. Situational. Not used.
-						//2010BA REF: Casualty Claim number. Not used.
-						//2010BB: PayerName
-						//2010BB NM1: Name
-						seg++;
-						sw.Write("NM1*PR*"//NM101: PR=Payer
-							+"2*"//NM102: 2=Non person
-							+Sout(carrier.CarrierName,35)+"*"//NM103: Name
-							+"****"//NM104-07 not used
-							+"PI*");//NM108: PI=PayorID
-						if(carrier.ElectID==""){
-							sw.WriteLine("06126~");//NM109: PayorID
-						}
-						else{
-							sw.WriteLine(Sout(carrier.ElectID)+"~");//NM109: PayorID
-						}
-						//2010BB N3: Carrier Address
-						seg++;
-						sw.Write("N3*"+Sout(carrier.Address,55));//N301: address
-							if(carrier.Address2==""){
+						sw.Write("N3*"+Sout(subscriber.Address,55,1));//N301: address
+							if(subscriber.Address2==""){
 								sw.WriteLine("~");
 							}
 							else{
 								//N302: Address2. Optional.
-								sw.WriteLine("*"+Sout(carrier.Address2,55)+"~");
+								sw.WriteLine("*"+Sout(subscriber.Address2,55)+"~");
 							}
-						//2010BB N4: Carrier City,St,Zip
+					//2010BA N4: CityStZip. Only if patient is the subscriber
 						seg++;
 						sw.WriteLine("N4*"
-							+Sout(carrier.City,30,2)+"*"//N401: City
-							+Sout(carrier.State,2,2)+"*"//N402: State
-							+Sout(carrier.Zip.Replace("-",""),15,3)+"~");//N403: Zip
-						parentSubsc=HLcount;
-						HLcount++;
+							+Sout(subscriber.City,30,2)+"*"//N401: City
+							+Sout(subscriber.State,2,2)+"*"//N402: State
+							+Sout(subscriber.Zip.Replace("-",""),15,3)+"~");//N403: Zip
+					//2010BA DMG: Subscr. Demographics. Only if patient is the subscriber
+						seg++;
+						if(subscriber.Birthdate.Year<1900){
+							sw.WriteLine("DMG*D8*"//DMG01: use D8
+								+subscriber.Birthdate.ToString("19000101")+"*"//DMG02: birthdate
+								+GetGender(subscriber.Gender)+"~");//DMG03: gender. F,M,or U
+						}
+						else{
+							sw.WriteLine("DMG*D8*"//DMG01: use D8
+								+subscriber.Birthdate.ToString("yyyyMMdd")+"*"//DMG02: birthdate
+								+GetGender(subscriber.Gender)+"~");//DMG03: gender. F,M,or U
+						}
+					//}//if provider is the subscriber
+					//2010BA REF: Secondary ID. Situational. Not used.
+					//2010BA REF: Casualty Claim number. Not used.
+					//Medical: 2010BA PER: Property and casualty subscriber contact info. Not used
+					//2010BB: PayerName
+					//2010BB NM1: Name
+					seg++;
+					sw.Write("NM1*PR*"//NM101: PR=Payer
+						+"2*"//NM102: 2=Non person
+						+Sout(carrier.CarrierName,35)+"*"//NM103: Name. Length can be 60 in the new medical specs.
+						+"****"//NM104-07 not used
+						+"PI*");//NM108: PI=PayorID
+					if(carrier.ElectID==""){
+						sw.WriteLine("06126~");//NM109: PayorID
 					}
-					#endregion
-					#region Patient
-					//if((i==0 || claimAr[3,i].ToString() != claimAr[3,i-1].ToString())//if patient changed
-					//	&& claimAr[3,i].ToString() != claimAr[2,i].ToString())//AND patient is not subscriber
-					//{
-					if(claimAr[3,i].ToString() != claimAr[2,i].ToString())//if patient is not subscriber
-					{
-						//2000C Patient HL loop
-						seg++;
-						sw.WriteLine("HL*"+HLcount.ToString()+"*"//HL01:Heirarchical ID
-							+parentSubsc.ToString()+"*"//HL02: parent is always the subscriber HL
-							+"23*"//HL03: 23=Dependent
-							+"0~");//HL04: never a subordinate
-						//2000C PAT
-						seg++;
+					else{
+						sw.WriteLine(Sout(carrier.ElectID)+"~");//NM109: PayorID
+					}
+					//2010BB N3: Carrier Address
+					seg++;
+					sw.Write("N3*"+Sout(carrier.Address,55));//N301: address
+						if(carrier.Address2==""){
+							sw.WriteLine("~");
+						}
+						else{
+							//N302: Address2. Optional.
+							sw.WriteLine("*"+Sout(carrier.Address2,55)+"~");
+						}
+					//2010BB N4: Carrier City,St,Zip
+					seg++;
+					sw.WriteLine("N4*"
+						+Sout(carrier.City,30,2)+"*"//N401: City
+						+Sout(carrier.State,2,2)+"*"//N402: State
+						+Sout(carrier.Zip.Replace("-",""),15,3)+"~");//N403: Zip
+					//2010BB Ref: Payer secondary ID. Not used
+					//Credit card info. Not used.
+					parentSubsc=HLcount;
+					HLcount++;
+				}
+				#endregion
+				#region Patient
+				//if((i==0 || claimAr[3,i].ToString() != claimAr[3,i-1].ToString())//if patient changed
+				//	&& claimAr[3,i].ToString() != claimAr[2,i].ToString())//AND patient is not subscriber
+				//{
+				if(claimAr[3,i].ToString() != claimAr[2,i].ToString())//if patient is not subscriber
+				{
+					//2000C Patient HL loop
+					seg++;
+					sw.WriteLine("HL*"+HLcount.ToString()+"*"//HL01:Heirarchical ID
+						+parentSubsc.ToString()+"*"//HL02: parent is always the subscriber HL
+						+"23*"//HL03: 23=Dependent
+						+"0~");//HL04: never a subordinate
+					//2000C PAT
+					seg++;
+					if(isMedical){
+						sw.WriteLine("PAT*"
+							+GetRelat(claim.PatRelat)+"~");//PAT01: Relat
+							//PAT04 not used, so no further lines needed.
+					}
+					else{
 						sw.WriteLine("PAT*"
 							+GetRelat(claim.PatRelat)+"*"//PAT01: Relat
 							+"**"//PAT02 & 03 not used
 							+GetStudent(patient.StudentStatus)+"~");//PAT04: Student status code: N,P,or F
-						//2010CA NM1: Patient Name
-						seg++;
-						sw.Write("NM1*QC*"//NM101: QC=Patient
-							+"1*"//NM102: 1=Person
-							+Sout(patient.LName,35)+"*"//NM103: Lname
-							+Sout(patient.FName,25)+"*");//NM104: Fname
-						//this needs to be rewritten:
-						string patID=patient.SSN;
-						if(claim.ClaimType=="P"){
-							if(patient.PriPatID!=""){
-								patID=patient.PriPatID;
-							}
+					}
+					//2010CA NM1: Patient Name
+					seg++;
+					sw.Write("NM1*QC*"//NM101: QC=Patient
+						+"1*"//NM102: 1=Person
+						+Sout(patient.LName,35)+"*"//NM103: Lname
+						+Sout(patient.FName,25));//NM104: Fname
+					string patID=patient.SSN;
+					PatPlan[] patPlans=PatPlans.Refresh(patient.PatNum);
+					for(int p=0;p<patPlans.Length;p++){
+						if(patPlans[p].PlanNum==claim.PlanNum){
+							patID=patPlans[p].PatID;
 						}
-						else if(claim.ClaimType=="S"){
-							if(patient.SecPatID!=""){
-								patID=patient.SecPatID;
-							}
+					}
+					if(isMedical){
+						if(patient.MiddleI==""){
+							sw.WriteLine("~");
 						}
+						else{
+							sw.WriteLine("*"+Sout(patient.MiddleI,25)+"~");//NM105: Mid name
+						}
+						//NM106: prefix not used. NM107: No suffix field in Open Dental
+						//NM108-NM112 no longer allowed to be used.
+						//instead of including a patID here, the patient should get their own subsriber loop.
+					}
+					else{
 						if(patID==""){
 							if(patient.MiddleI==""){
 								sw.WriteLine("~");
 							}
 							else{
-								sw.WriteLine(Sout(patient.MiddleI,25)+"~");//NM105: Mid name
+								sw.WriteLine("*"+Sout(patient.MiddleI,25)+"~");//NM105: Mid name
 							}
 						}
 						else{//id not blank
-							sw.WriteLine(Sout(patient.MiddleI,25)+"*"//NM105: Mid name (whether or not empty)
+							sw.WriteLine("*"+Sout(patient.MiddleI,25)+"*"//NM105: Mid name (whether or not empty)
 							+"**"//NM106: prefix not used. NM107: No suffix field in Open Dental
 							+"MI*"//NM108: MI=Member ID
 							+Sout(patID,80)+"~");//NM109: Patient ID
 						}
-						//2010CA N3: Patient address
-						seg++;
-						sw.Write("N3*"
-							+Sout(patient.Address,55));//N301: address
-							if(patient.Address2==""){
-									sw.WriteLine("~");
-								}
-								else{
-									//N302: Address2. Optional.
-									sw.WriteLine("*"+Sout(patient.Address2,55)+"~");
-								}
-						//2010CA N4: City State Zip
-						seg++;
-						sw.WriteLine("N4*"
-							+Sout(patient.City,30)+"*"//N401: City
-							+Sout(patient.State,2)+"*"//N402: State
-							+Sout(patient.Zip.Replace("-",""),15)+"~");//N403: Zip
-						//2010CA DMG: Patient demographic
-						seg++;
-						sw.WriteLine("DMG*D8*"//DMG01: use D8
-							+patient.Birthdate.ToString("yyyyMMdd")+"*"//DMG02: Birthdate
-							+GetGender(patient.Gender)+"~");//DMG03: gender
-						HLcount++;
 					}
-					#endregion
-					#region Claim
-					//2300 CLM: Claim
+					//2010CA N3: Patient address
 					seg++;
-					sw.Write("CLM*"
-						+claim.ClaimNum.ToString()+"*"//CLM01: ClaimNum, a unique id.
-						+claim.ClaimFee.ToString()+"*"//CLM02: Claim Fee
-						+"**"//CLM03 & 04 not used
-						+GetPlaceService(claim.PlaceService)+"::1*"//CLM05: place+1. 1=Original claim
-						+"Y*"//CLM06: prov sig on file (always yes)
-						+"A*");//CLM07: prov accepts medicaid assignment. OD has no field for this, so no choice
-					if(insPlan.AssignBen){
-						sw.Write("Y*");//CLM08: assign ben. Y or N
+					sw.Write("N3*"
+						+Sout(patient.Address,55));//N301: address
+						if(patient.Address2==""){
+								sw.WriteLine("~");
+							}
+							else{
+								//N302: Address2. Optional.
+								sw.WriteLine("*"+Sout(patient.Address2,55)+"~");
+							}
+					//2010CA N4: City State Zip
+					seg++;
+					sw.WriteLine("N4*"
+						+Sout(patient.City,30)+"*"//N401: City
+						+Sout(patient.State,2)+"*"//N402: State
+						+Sout(patient.Zip.Replace("-",""),15)+"~");//N403: Zip
+					//2010CA DMG: Patient demographic
+					seg++;
+					sw.WriteLine("DMG*D8*"//DMG01: use D8
+						+patient.Birthdate.ToString("yyyyMMdd")+"*"//DMG02: Birthdate
+						+GetGender(patient.Gender)+"~");//DMG03: gender
+					//2010CA REF: Property and casualty claim number.
+					//2010CA PER: Property and casualty patient contact info
+					HLcount++;
+				}
+				#endregion
+				#region Claim
+				//2300 CLM: Claim
+				seg++;
+				sw.Write("CLM*"
+					+claim.ClaimNum.ToString()+"*"//CLM01: ClaimNum, a unique id.
+					+claim.ClaimFee.ToString()+"*"//CLM02: Claim Fee
+					+"**"//CLM03 & 04 not used
+					+GetPlaceService(claim.PlaceService)+"::1*"//CLM05: place+1. 1=Original claim
+					+"Y*"//CLM06: prov sig on file (always yes)
+					+"A*");//CLM07: prov accepts medicaid assignment. OD has no field for this, so no choice
+				if(insPlan.AssignBen){
+					sw.Write("Y*");//CLM08: assign ben. Y or N
+				}
+				else{
+					sw.Write("N*");
+				}
+				//if(insPlan.ReleaseInfo){
+					sw.Write("Y");//CLM09: release info. Y or I(which we don't support)
+				//}
+				//else{
+				//	sw.Write("N");//this is not allowed and is now blocked way ahead of time.
+				//}
+				if(!isMedical && claim.ClaimType=="PreAuth"){
+					sw.WriteLine("**"//* for CLM09. CLM10 not used
+						+GetRelatedCauses(claim)+"*"//CLM11: Accident related, including state. Might be blank.
+						+"*"//CLM12: special programs like EPSTD
+						+"******"//CLM13-18 not used
+						+"PB~");//CLM19 PB=Predetermination of Benefits. Not allowed in medical claims. What is the replacement??
+				}
+				else{
+					if(GetRelatedCauses(claim)==""){
+						sw.WriteLine("~");
 					}
 					else{
-						sw.Write("N*");
-					}
-					if(insPlan.ReleaseInfo){
-						sw.Write("Y");//CLM09: release info. Y or N
-					}
-					else{
-						sw.Write("N");
-					}
-					if(claim.ClaimType=="PreAuth"){
 						sw.WriteLine("**"//* for CLM09. CLM10 not used
-							+GetRelatedCauses(claim)+"*"//CLM11: Accident related, including state. Might be blank.
-							+"*"//CLM12: special programs like EPSTD
-							+"******"//CLM13-18 not used
-							+"PB~");//CLM19 PB=Predetermination of Benefits
+							+GetRelatedCauses(claim)+"~");//CLM11: Accident related, including state
 					}
-					else{
-						if(GetRelatedCauses(claim)==""){
-							sw.WriteLine("~");
-						}
-						else{
-							sw.WriteLine("**"//* for CLM09. CLM10 not used
-								+GetRelatedCauses(claim)+"~");//CLM11: Accident related, including state
-						}
-					}
-							//CLM20: delay reason code
-					//2300 DTP: Date referral
-					//2300 DTP: Date accident
-					if(claim.AccidentDate.Year>1880){
-						seg++;
-						sw.WriteLine("DTP*439*"//DTP01: 439=accident
-							+"D8*"//DTP02: use D8
-							+claim.AccidentDate.ToString("yyyyMMdd")+"~");
-					}
+				}
+						//CLM20: delay reason code
+				//2300 DTP: Date of onset of current illness (medical)
+				//2300 DTP: Initial treatment date (spinal manipulation) (medical)
+				//2300 DTP: Date last seen (foot care) (medical)
+				//2300 DTP: Date accute manifestation (spinal manipulation) (medical)
+				//2300 DTP: Date referral
+				//2300 DTP: Date accident
+				if(claim.AccidentDate.Year>1880){
+					seg++;
+					sw.WriteLine("DTP*439*"//DTP01: 439=accident
+						+"D8*"//DTP02: use D8
+						+claim.AccidentDate.ToString("yyyyMMdd")+"~");
+				}
+				//2300 DTP: (a bunch more useless medical dates)
+				if(!isMedical){
 					//2300 DTP: Date ortho appliance placed
 					if(claim.OrthoDate.Year>1880){
 						seg++;
@@ -592,181 +731,324 @@ namespace OpenDental.Eclaims
 							+missingTeeth[j]+"*"//DN201: tooth number
 							+"M~");//DN202: M=Missing, I=Impacted, E=To be extracted
 					}
-					//2300 PWK: Paperwork. Used to identify attachments.
-					//2300 AMT: Patient amount paid
-					//2300 REF: Predetermination ID
-					if(claim.PreAuthString!=""){
-						seg++;
-						sw.WriteLine("REF*G3*"//REF01: G3=predeterm
+				}
+				//2300 PWK: Paperwork. Used to identify attachments.
+				//2300 CN1: Contract Info (medical)
+				//2300 AMT: Patient amount paid
+				//2300 AMT: Total Purchased Service Amt (medical)
+				//2300 REF: (A bunch of ref segments for medical which we don't need)
+				//2300 REF: Predetermination ID
+				if(claim.PreAuthString!=""){
+					seg++;
+					if(isMedical){
+						sw.WriteLine("REF*G1*"//REF01: G1=medical prior auth
+							+Sout(claim.PreAuthString,30)+"~");//REF02: Prior Auth Identifier
+					}
+					else{
+						sw.WriteLine("REF*G3*"//REF01: G3=dental predeterm
 							+Sout(claim.PreAuthString,30)+"~");//REF02: Predeterm Identifier
 					}
-					//2300 REF: Referral number
-					if(claim.RefNumString!=""){
-						seg++;
-						sw.WriteLine("REF*9F*"//REF01: 9F=Referral number
-							+Sout(claim.RefNumString,30)+"~");
-					}
-					//2300 NTE: Note
-					if(claim.ClaimNote!=""){
-						seg++;
-						sw.WriteLine("NTE*ADD*"//NTE01: ADD=Additional infor
-							+Sout(claim.ClaimNote,80)+"~");
-					}
-					//2310B Rendering provider. Only required if different from the billing provider
-					//But required by WebClaim, so we will always include it
-					provTreat=Providers.ListLong[Providers.GetIndexLong(claim.ProvTreat)];
-					//if(claim.ProvTreat!=claim.ProvBill){
-					//2310B NM1: name
-						seg++;
-						sw.Write("NM1*82*"//82=rendering prov
-							+"1*"//NM102: 1=person
-							+Sout(provTreat.LName,35)+"*"//NM103: LName
-							+Sout(provTreat.FName,25)+"*"//NM104: FName
-							+Sout(provTreat.MI,25)+"*"//NM105: MiddleName
-							+"*"//NM106: not used
-							+"*");//NM107: suffix. not used
-						if(provTreat.UsingTIN){
-							sw.Write("24*");//NM108: 24=EIN, 34=SSN
-						}
-						else{
-							sw.Write("34*");
-						}
-						sw.WriteLine(Sout(provTreat.SSN,80)+"~");//NM109: ID
-					//2310B PRV: Rendering provider information
-						seg++;
-						sw.WriteLine("PRV*"
-							+"PE*"//PRV01: PE=Performing
-							+"ZZ*"//PRV02: ZZ=mutually defined taxonomy code
-							+GetTaxonomy(provTreat.Specialty)+"~");//PRV03: Taxonomy code
-					//2310B REF: Rendering provider secondary ID.
-						seg++;
-						sw.WriteLine("REF*1E*"//REF01: 1E=license #
-							+Sout(provTreat.StateLicense,30)+"~");
-					//2310B REF: Rendering provider secondary ID
-						seg+=WriteProv_REF(sw,provTreat,(string)claimAr[0,i]);
-					//}//if(claim.ProvTreat!=claim.ProvBill){
-					//2310C NM1: Service facility location if not office
-					if(claim.PlaceService!=PlaceOfService.Office){
-						Provider provFac
-							=Providers.List[Providers.GetIndex(Prefs.GetInt("PracticeDefaultProv"))];
-						seg++;
-						sw.Write("NM1*FA*"//FA=Facility
-							+"2*"//NM102: 2=non-person
-							+Sout(Prefs.GetString("PracticeTitle"),35)+"*"//NM103:Submitter Name
-							+"*"//NM104: not used
-							+"*"//NM105: not used
-							+"*"//NM106: not used
-							+"*");//NM107: not used
-						if(provFac.UsingTIN){
-							sw.Write("24*");//NM108: 24=EIN, 34=SSN
-						}
-						else{
-							sw.Write("34*");
-						}
-						sw.WriteLine(Sout(provFac.SSN,80)+"~");//NM109: ID
-					}
-					//2320 Other subscriber
-					if(claim.PlanNum2>0){
-						seg++;
-						sw.Write("SBR*");
-						if(claim.ClaimType=="S"){
-							sw.Write("P*");//SBR01: Payer responsibility code
-						}
-						else if(claim.ClaimType=="P"){
-							sw.Write("S*");
-						}
-						else{
-							sw.Write("T*");//T=Tertiary
-						}
-						sw.Write(GetRelat(claim.PatRelat2)+"*");
-						sw.Write(Sout(otherPlan.GroupNum,30)+"*"//SBR03: Group Number
-							+Sout(otherPlan.GroupName,60)+"*"//SBR04: Group Name
-							+"*"//SBR05: Not used
-							+"*");//SBR06: Not used
-						sw.Write("**");//SBR07 & 08 not used.
-						sw.WriteLine("CI~");//SBR09: 12=PPO,17=DMO,BL=BCBS,CI=CommercialIns,FI=FEP,HM=HMO
-								//,MC=Medicaid,SA=self-administered, etc. There are too many. I'm just going 
-								//to use CI for everyone. I don't think anyone will care.
-					//2320 AMT: COB paid amount
-						double paidOtherIns=0;
-						for(int j=0;j<claimProcs.Length;j++){
-							paidOtherIns+=ClaimProcs.ProcInsPayPri(claimProcList,claimProcs[j].ProcNum,claimProcs[j].PlanNum);
-						}
-						seg++;
-						sw.WriteLine("AMT*D8*"//AMT01: D=Payor amount paid
-							+paidOtherIns.ToString("F")+"~");//AMT02: Amount
-					//2320 AMT: COB patient responsibility
-					//2320 AMT: COB discount amount
-					//2320 AMT: COB paid to patient
-					//2320 DMG: Other subscriber demographics
-						seg++;
-						sw.WriteLine("DMG*D8*"//DMG01: use D8
-							+otherSubsc.Birthdate.ToString("yyyyMMdd")+"*"//DMG02: Birthdate
-							+GetGender(otherSubsc.Gender)+"~");//DMG03: gender
-					//2320 OI: Other ins info
-						seg++;
-						sw.Write("OI***");//OI01 & 02 not used
-						if(otherPlan.AssignBen){
-							sw.Write("Y***");//OI03: assign ben. Y or N
-						}
-						else{
-							sw.Write("N***");
-						}
-						if(otherPlan.ReleaseInfo){
-							sw.WriteLine("Y~");//OI06: release info. Y or N
-						}
-						else{
-							sw.WriteLine("N~");
-						}
-					//2330A NM1: Other subsc name
-						seg++;
-						sw.WriteLine("NM1*IL*"//NM010: IL=insured
-							+"1*"//NM102: 1=person
-							+Sout(otherSubsc.LName,35)+"*"//NM103: LName
-							+Sout(otherSubsc.FName,25)+"*"//NM104: FName
-							+Sout(otherSubsc.MiddleI,25)+"*"//NM105: MiddleName
-							+"*"//NM106: not used
-							+"*"//NM107: suffix. No corresponding field in OD
-							+"MI*"//NM108: MI=Member ID
-							+Sout(otherPlan.SubscriberID,80)+"~");//NM109: ID
-					//2330A N3: Address
-						seg++;
-						sw.Write("N3*"
-							+Sout(otherSubsc.Address,55));//N301: address
-							if(otherSubsc.Address2==""){
-								sw.WriteLine("~");
-							}
-							else{
-								sw.WriteLine("*"+Sout(otherSubsc.Address2,55)+"~");//N302: address2
-							}
-					//2330A N4: City State Zip
-						seg++;
-						sw.WriteLine("N4*"
-							+Sout(otherSubsc.City,30)+"*"//N401: City
-							+Sout(otherSubsc.State,2)+"*"//N402: State
-							+Sout(otherSubsc.Zip,15)+"~");//N403: Zip
-					//2330B NM1: Other payer name
-						seg++;
-						sw.WriteLine("NM1*PR*"//NM010: PR=Payer
-							+"2*"//NM102: 2=non-person
-							+Sout(otherCarrier.CarrierName,35)+"*"//NM103: Name
-							+"*"//NM104:
-							+"*"//NM105:
-							+"*"//NM106: not used
-							+"*"//NM107: not used
-							+"PI*"//NM108: PI=Payor ID
-							+Sout(otherCarrier.ElectID,80,2)+"~");//NM109: ID
-					//2330 DTP Claim Paid date
-					}//if(claim.PlanNum2>0){
-					#endregion
-					#region Line Items
-					//2400 Service Lines
+				}
+				//2300 REF: Referral number
+				if(claim.RefNumString!=""){
+					seg++;
+					sw.WriteLine("REF*9F*"//REF01: 9F=Referral number. Ok for medical, too.
+						+Sout(claim.RefNumString,30)+"~");
+				}
+				//2300 K3: File info (medical). Not used.
+				//2300 NTE: Note
+				if(claim.ClaimNote!=""){
+					seg++;
+					sw.WriteLine("NTE*ADD*"//NTE01: ADD=Additional infor
+						+Sout(claim.ClaimNote,80)+"~");
+				}
+				//2300 CR1: (medical)Ambulance transport info
+				//2300 CR2: (medical) Spinal Manipulation Service Info
+				//2300 CRC: (medical) About 3 irrelevant segments
+				ArrayList diagnoses=new ArrayList();//princDiag will always be the first element.
+				if(isMedical){
 					for(int j=0;j<claimProcs.Length;j++){
 						proc=Procedures.GetProc(procList,claimProcs[j].ProcNum);
-						procCode=ProcedureCodes.GetProcCode(proc.ADACode);
-						//2400 LX: Line Counter
+						if(proc.DiagnosticCode==""){
+							continue;
+						}
+						if(proc.IsPrincDiag){
+							if(diagnoses.Contains(proc.DiagnosticCode)){
+								diagnoses.Remove(proc.DiagnosticCode);
+							}
+							diagnoses.Insert(0,proc.DiagnosticCode);//princDiag always goes first. There will always be one.
+						}
+						else{//not princDiag
+							if(!diagnoses.Contains(proc.DiagnosticCode)){
+								diagnoses.Add(proc.DiagnosticCode);
+							}
+						}
+					}
+					//2300 HI: (medical) Health Care Diagnosis Code. Required
+					seg++;
+					sw.Write("HI*"
+						+"BK:"//HI01-1: BK=ICD-9 Principal Diagnosis
+						+Sout((string)diagnoses[0],30).Replace(".",""));//HI01-2: Diagnosis code. No periods.
+					for(int j=1;j<diagnoses.Count;j++){
+						if(j>11){//maximum of 12 diagnoses
+							continue;
+						}
+						sw.Write("*"//this is the * from the _previous_ field.
+							+"BF:"//HI0#-1: BF=ICD-9 Diagnosis
+							+Sout((string)diagnoses[j],30).Replace(".",""));//HI0#-2: Diagnosis code. No periods.
+					}
+					sw.WriteLine("~");
+					//2300 HI: (medical) Anesthesia related procedure
+					//2300 HI: (medical) Condition information
+				}
+				//2300 HCP: (medical) (not used) Claim Pricing/Repricing Info
+				//2310A Referring provider. We don't use.
+				//2310B Rendering provider. Only required if different from the billing provider
+				//But required by WebClaim, so we will always include it
+				provTreat=Providers.ListLong[Providers.GetIndexLong(claim.ProvTreat)];
+				//if(claim.ProvTreat!=claim.ProvBill){
+				//2310B NM1: name
+				seg++;
+				sw.Write("NM1*82*"//82=rendering prov
+					+"1*"//NM102: 1=person
+					+Sout(provTreat.LName,35)+"*"//NM103: LName
+					+Sout(provTreat.FName,25)+"*"//NM104: FName
+					+Sout(provTreat.MI,25)+"*"//NM105: MiddleName
+					+"*"//NM106: not used
+					+"*");//NM107: suffix. We don't support
+				//If medical, it's unclear what needs to be sent before the NPI date.
+				//We'll assume it's ok to use TIN or SSN if NPI not available.
+				if(provTreat.NationalProvID!=""){
+					sw.Write("XX*");//NM108: ID code qualifier. 24=EIN. 34=SSN, XX=NPI
+					sw.WriteLine(Sout(provTreat.NationalProvID,80)+"~");//NM109: ID code
+				}
+				else if(provTreat.UsingTIN){
+					sw.Write("24*");
+					sw.WriteLine(Sout(provTreat.SSN,80)+"~");
+				}
+				else{
+					sw.Write("34*");
+					sw.WriteLine(Sout(provTreat.SSN,80)+"~");
+				}
+				//2310B PRV: Rendering provider information
+				if(isMedical){
+					seg++;
+					sw.WriteLine("PRV*"
+						+"PE*"//PRV01: PE=Performing
+						+"PXC*"//PRV02: PXC=Health Care Provider Taxonomy Code
+						+GetTaxonomy(provTreat.Specialty)+"~");//PRV03: Taxonomy code
+				}
+				else{//dental
+					seg++;
+					sw.WriteLine("PRV*"
+						+"PE*"//PRV01: PE=Performing
+						+"ZZ*"//PRV02: ZZ=mutually defined taxonomy code
+						+GetTaxonomy(provTreat.Specialty)+"~");//PRV03: Taxonomy code
+				}
+				//2310B REF: Rendering provider secondary ID
+					//All of these will be eliminated when NPI is mandated.
+					//isMedical, only allowed types are 0B,1G,G2,and LU.
+				//2310B REF: Rendering provider secondary ID.
+				seg++;
+				sw.WriteLine("REF*0B*"//REF01: 0B=state license #
+					+Sout(provTreat.StateLicense,30)+"~");
+				if(!isMedical){//we can't support these numbers very well yet for medical
+					//2310B REF: Rendering Provider Secondary ID number(s). Only required by some carriers.
+					seg+=WriteProv_REF(sw,provTreat,(string)claimAr[0,i]);
+				}
+				//2310C (medical)Purchased Service provider secondary ID. We don't support this for medical
+				//2310C (not medical)NM1: Service facility location if not office
+				//or 2310D (medical)NM1: Service facility location. Required if different from 2010AA. Not supported.
+				//2310D (medical)N3,N4,REF,PER: not supported.
+				if(!isMedical && claim.PlaceService!=PlaceOfService.Office){
+					Provider provFac=Providers.List[Providers.GetIndex(Prefs.GetInt("PracticeDefaultProv"))];
+					seg++;
+					sw.Write("NM1*FA*"//FA=Facility
+						+"2*"//NM102: 2=non-person
+						+Sout(Prefs.GetString("PracticeTitle"),35)+"*"//NM103:Submitter Name
+						+"*"//NM104: not used
+						+"*"//NM105: not used
+						+"*"//NM106: not used
+						+"*");//NM107: not used
+					if(provFac.UsingTIN){
+						sw.Write("24*");//NM108: 24=EIN, 34=SSN
+					}
+					else{
+						sw.Write("34*");
+					}
+					sw.WriteLine(Sout(provFac.SSN,80)+"~");//NM109: ID
+				}
+				//2310E (medical)NM1,REF Supervising Provider. Not supported.
+				//2310F (medical)NM1,N3,N4 Ambulance Pickup location. Not supported.
+				//2310G (medical)NM1,N3,N4 Ambulance Dropoff location. Not supported.
+				//2320 Other subscriber
+				if(claim.PlanNum2>0){
+					seg++;
+					sw.Write("SBR*");
+					if(claim.ClaimType=="S"){
+						sw.Write("P*");//SBR01: Payer responsibility code
+					}
+					else if(claim.ClaimType=="P"){
+						sw.Write("S*");
+					}
+					else{
+						sw.Write("T*");//T=Tertiary
+					}
+					sw.Write(GetRelat(claim.PatRelat2)+"*");//SBR02: Individual Relationship Code
+					sw.Write(Sout(otherPlan.GroupNum,30)+"*"//SBR03: Group Number
+						+Sout(otherPlan.GroupName,60)+"*"//SBR04: Group Name
+						+"*"//SBR05: Dental: Not used, Medical: not supported
+						+"*");//SBR06: Not used
+					sw.Write("**");//SBR07 & 08 not used.
+					sw.WriteLine("CI~");//SBR09: 12=PPO,17=DMO,BL=BCBS,CI=CommercialIns,FI=FEP,HM=HMO
+							//,MC=Medicaid,SA=self-administered, etc. There are too many. I'm just going 
+							//to use CI for everyone. I don't think anyone will care.
+							//After mandated National Plan ID, then not used anymore.
+				//2320 CAS: Claim Level Adjustments. Not supported.
+				//2320 AMT: COB Payer paid amount
+					double paidOtherIns=0;
+					for(int j=0;j<claimProcs.Length;j++){
+						paidOtherIns+=ClaimProcs.ProcInsPayPri(claimProcList,claimProcs[j].ProcNum,claimProcs[j].PlanNum);
+					}
+					seg++;
+					sw.WriteLine("AMT*D*"//AMT01: D=Payor amount paid
+						+paidOtherIns.ToString("F")+"~");//AMT02: Amount
+				//2320 AMT: (medical) COB Total Non-Covered Amt (A8)
+				//2320 AMT: (medical) Remaining Patient liability (EAF)
+				//2320 AMT: COB Approved Amt (AAE)
+				//2320 AMT: COB Allowed Amt (B6)
+				//2320 AMT: COB Patient Responsibility (F2)
+				//2320 AMT: COB Coverage Amt (AU)
+				//2320 AMT: COB Discount Amt (D8)
+				//2320 AMT: COB Patient Paid Amt (F5)
+				//2320 DMG: Other subscriber demographics
+					seg++;
+					sw.WriteLine("DMG*D8*"//DMG01: use D8
+						+otherSubsc.Birthdate.ToString("yyyyMMdd")+"*"//DMG02: Birthdate
+						+GetGender(otherSubsc.Gender)+"~");//DMG03: gender
+				//2320 OI: Other ins info
+					seg++;
+					sw.Write("OI***");//OI01 & 02 not used
+					if(otherPlan.AssignBen){
+						sw.Write("Y***");//OI03: assign ben. Y or N. OI04(medical): we don't support
+					}
+					else{
+						sw.Write("N***");
+					}
+					//if(otherPlan.ReleaseInfo){
+						sw.WriteLine("Y~");//OI06: release info. Y or I(which we don't support)
+					//}
+					//else{
+					//	sw.WriteLine("N~");
+					//}
+					//2320 MOA: (medical) We don't support
+					//2330A NM1: Other subscriber name
+					seg++;
+					sw.WriteLine("NM1*IL*"//NM010: IL=insured
+						+"1*"//NM102: 1=person
+						+Sout(otherSubsc.LName,35)+"*"//NM103: LName
+						+Sout(otherSubsc.FName,25)+"*"//NM104: FName
+						+Sout(otherSubsc.MiddleI,25)+"*"//NM105: MiddleName
+						+"*"//NM106: not used
+						+"*"//NM107: suffix. No corresponding field in OD
+						+"MI*"//NM108: MI=Member ID
+						+Sout(otherPlan.SubscriberID,80)+"~");//NM109: ID
+					//2330A N3: Address
+					seg++;
+					sw.Write("N3*"
+						+Sout(otherSubsc.Address,55));//N301: address
+						if(otherSubsc.Address2==""){
+							sw.WriteLine("~");
+						}
+						else{
+							sw.WriteLine("*"+Sout(otherSubsc.Address2,55)+"~");//N302: address2
+						}
+					//2330A N4: City State Zip
+					seg++;
+					sw.WriteLine("N4*"
+						+Sout(otherSubsc.City,30)+"*"//N401: City
+						+Sout(otherSubsc.State,2)+"*"//N402: State
+						+Sout(otherSubsc.Zip,15)+"~");//N403: Zip
+					//2330A REF: Other subscriber secondary ID. Not supported.
+					//2330B NM1: Other payer name
+					seg++;
+					sw.WriteLine("NM1*PR*"//NM101: PR=Payer
+						+"2*"//NM102: 2=non-person
+						+Sout(otherCarrier.CarrierName,35)+"*"//NM103: Name
+						+"*"//NM104:
+						+"*"//NM105:
+						+"*"//NM106: not used
+						+"*"//NM107: not used
+						+"PI*"//NM108: PI=Payor ID. XV must be used after national plan ID mandated.
+						+Sout(otherCarrier.ElectID,80,2)+"~");//NM109: ID
+					//2230B N3,N4: (medical) Other payer address. We don't support.
+					//2330B PER: Other payer contact info. Not needed.
+					//2330B DTP: Claim Paid date
+					//2330B DTP: (medical) Claim adjudication date. We might need to add this
+					//2330B REF: Other payer secondary ID
+					//2330B REF: Other payer referral number
+					//2330B REF: Other payer claim adjustment indicator
+					//2330C: Other payer patient info. Only used in COB.
+					//2330D: Other payer referring provider. We don't support
+					//2330E,F,G,H,I: (medical) not supported
+				}//if(claim.PlanNum2>0){
+				#endregion
+				#region Line Items
+				//2400 Service Lines
+				for(int j=0;j<claimProcs.Length;j++){
+					proc=Procedures.GetProc(procList,claimProcs[j].ProcNum);
+					procCode=ProcedureCodes.GetProcCode(proc.ADACode);
+					//2400 LX: Line Counter. or (medical) Service Line Number
+					seg++;
+					sw.WriteLine("LX*"+(j+1).ToString()+"~");
+					if(isMedical){
+						//2400 SV1: Professional Service
 						seg++;
-						sw.WriteLine("LX*"+(j+1).ToString()+"~");
+						sw.Write("SV1*"
+							//SV101 Composite Medical Procedure Identifier
+							+"HC:"//SV101-1: HC=Health Care
+							+Sout(claimProcs[j].CodeSent)+"*"//SV101-2: Procedure code. The rest of SV101 is not supported
+							+claimProcs[j].FeeBilled.ToString()+"*"//SV102: Charge Amt
+							+"MJ*"//SV103: MJ=minutes
+							+"0*");//SV104: Quantity of anesthesia. We don't support, so always 0.
+						if(proc.PlaceService==claim.PlaceService){
+							sw.Write("*");//SV105: Place of Service Code if different from claim
+						}
+						else{
+							sw.Write(GetPlaceService(proc.PlaceService)+"*");
+						}
+						sw.Write("*");//SV106: not used
+						//SV107: Composite Diagnosis Code Pointer. Required when 2300HI(Health Care Diagnosis Code) is used (always).
+						//SV107-1: Primary diagnosis. Only allowed pointers 1-8 even though 2300HI supports 12 diagnoses.
+						//We don't validate that there are not more than 8 diagnoses on one claim.
+						//If the diagnosis we need is not in the first 8, then we will use the primary.
+						if(proc.DiagnosticCode==""){//If the diagnosis is blank, we will use the primary.
+							sw.Write("1");//use primary.
+						}
+						else{
+							int diagI=1;
+							for(int d=0;d<diagnoses.Count;d++){
+								if(d>7){//we can't point to any except first 8.
+									continue;
+								}
+								if((string)diagnoses[d]==proc.DiagnosticCode){
+									diagI=d+1;
+								}
+							}
+							sw.Write(diagI.ToString());
+						}
+						//SV107-2 through 4: Other diagnoses, which we don't support yet.
+						sw.WriteLine("~");
+						//sw.Write("*");//SV108: not used
+						//sw.Write("*");//SV109: Emergency indicator. Required if emergency. Y or blank. Not supported.
+						//sw.Write("*");//SV110: not used
+						//sw.Write("*");//SV111: EPSTD indicator (Medicaid from screening). Y or blank. Not supported.
+						//sw.Write("*");//SV112: Family planning indicator for Medicaid. Y or blank. Not supported.
+						//sw.Write("**");//SV113 and SV114: not used
+						//SV115: Copay status code: 0 or blank. Not supported
+						//2400 SV5,PWK,CR1,CR2,CR3,CR5,CRC(x4): (medical)Unsupported
+					}//if isMedical
+					else{
 						//2400 SV3: Dental Service
 						seg++;
 						sw.Write("SV3*"
@@ -791,110 +1073,140 @@ namespace OpenDental.Eclaims
 							seg++;
 							sw.Write("TOO*JP*"//TOO01: JP=National tooth numbering
 								+proc.ToothNum+"*");//TOO02: Tooth number
-							for(int k=0;k<proc.Surf.Length;k++){
+							string validSurfaces=Tooth.SurfTidy(proc.Surf,proc.ToothNum);
+							for(int k=0;k<validSurfaces.Length;k++){
 								if(k>0){
 									sw.Write(":");
 								}
-								sw.Write(proc.Surf.Substring(k,1));//TOO03: Surfaces
+								sw.Write(validSurfaces.Substring(k,1));//TOO03: Surfaces
 							}
 							sw.WriteLine("~");
 						}
-						//2400 DTP: Date of service if different from claim
-						//actually, let's just go ahead and always show the date. Better compatibility
-						//if(claim.DateService!=proc.ProcDate){
-						if(claim.ClaimType!="PreAuth"){
-							seg++;
-							sw.WriteLine("DTP*472*"//DTP01: 472=Service
-								+"D8*"//DTP02: use D8
-								+proc.ProcDate.ToString("yyyyMMdd")+"~");
-						}
-						//}
-						//2400 DTP: Date prior placement
-						if(proc.Prosthesis=="R"){//already validated date
-							seg++;
-							sw.WriteLine("DTP*441*"//DTP01: 441=Prior placement
-								+"D8*"//DTP02: use D8
-								+proc.DateOriginalProsth.ToString("yyyyMMdd")+"~");
-						}
-						//2400 DTP: Date ortho appliance placed. Not used.
-						//2400 DTP: Date ortho appliance replaced.  Not used.
-						//2400 QTY: Anesthesia quantity. Not used.
-						//2400 REF: Pretermination ID. Not used.
-						//2400 REF: Referral #. Not used.
-						//2400 REF: Line item control number(Proc Num)
+					}
+					//2400 DTP: Date of service if different from claim, but we will always show the date. Better compatibility.
+					//Required if medical anyway.
+					//if(claim.DateService!=proc.ProcDate){
+					if(claim.ClaimType!="PreAuth"){
 						seg++;
-						sw.WriteLine("REF*6R*"//REF01: 6R=Procedure control number
-							+proc.ProcNum.ToString()+"~");
-						//2400 NTE: Line note
-						if(proc.ClaimNote!=""){
-							seg++;
-							sw.WriteLine("NTE*ADD*"//NTE01: ADD=Additional info
-								+Sout(proc.ClaimNote,80)+"~");
+						sw.WriteLine("DTP*472*"//DTP01: 472=Service
+							+"D8*"//DTP02: use D8
+							+proc.ProcDate.ToString("yyyyMMdd")+"~");
+					}
+					//}
+					//2400 DTP: Date prior placement
+					if(proc.Prosthesis=="R"){//already validated date
+						seg++;
+						sw.WriteLine("DTP*441*"//DTP01: 441=Prior placement
+							+"D8*"//DTP02: use D8
+							+proc.DateOriginalProsth.ToString("yyyyMMdd")+"~");
+					}
+					//2400 DTP: Date ortho appliance placed. Not used.
+					//2400 DTP: Date ortho appliance replaced.  Not used.
+					//2400 DTP: (medical) Rx date. Not supported.
+					//2400 DTP: (medical) Date Certification Revision. Not supported.
+					//2400 DTP: (medical) Date begin therapy. Not supported.
+					//2400 DTP: (medical) Date last certification. Not supported.
+					//2400 DTP: (medical) Date last seen. Not supported.
+					//2400 DTP: (medical) Dialysis test dates. Not supported.
+					//2400 DTP: (medical) Date blood gas test. Not supported.
+					//2400 DTP: (medical) Date shipped. Not supported.
+					//2400 DTP: (medical) Date last x-ray. Not supported.
+					//2400 DTP: (medical) Date initial tx. Not supported.
+					//2400 QTY: (medical) Ambulance patient count. Not supported.
+					//2400 QTY: Anesthesia quantity. Not used.
+					//2400 MEA,CN1: (medical) . Not supported.
+					//2400 REF: (medical) A variety of medical REFs not supported.
+					//2400 REF: Pretermination ID. Not used.
+					//2400 REF: Referral #. Not used.
+					//2400 REF: Line item control number(Proc Num)
+					seg++;
+					sw.WriteLine("REF*6R*"//REF01: 6R=Procedure control number
+						+proc.ProcNum.ToString()+"~");
+					//2400 AMT(x4): (medical) Various amounts. Not supported
+					//2400 K3: (medical) Not supported.
+					//2400 NTE: Line note
+					if(proc.ClaimNote!=""){
+						seg++;
+						sw.WriteLine("NTE*ADD*"//NTE01: ADD=Additional info
+							+Sout(proc.ClaimNote,80)+"~");
+					}
+					//2400 NTE,PS1,HCP: (medical) Not supported
+					//2410 LIN,CTP,REF: (medical) Not supported
+					//2420A NM1: Rendering provider name. Only if different from the claim.
+					if(claim.ProvTreat!=proc.ProvNum
+						&& Prefs.GetBool("EclaimsSeparateTreatProv"))
+					{
+						provTreat=Providers.ListLong[Providers.GetIndexLong(proc.ProvNum)];
+						seg++;
+						sw.Write("NM1*82*"//82=rendering prov
+							+"1*"//NM102: 1=person
+							+Sout(provTreat.LName,35)+"*"//NM103: LName
+							+Sout(provTreat.FName,25)+"*"//NM104: FName
+							+Sout(provTreat.MI,25)+"*"//NM105: MiddleName
+							+"*"//NM106: not used.
+							+"*");//NM107: suffix. not supported.
+						if(isMedical){
+							sw.Write("XX*");//NM108: XX=NPI
+							sw.Write(Sout(provTreat.SSN,80));//NM109: ID
 						}
-						//2420A NM1: Rendering provider name. Only if different from the claim.
-						if(claim.ProvTreat!=proc.ProvNum
-							&& Prefs.GetBool("EclaimsSeparateTreatProv"))
-						{
-							provTreat=Providers.ListLong[Providers.GetIndexLong(proc.ProvNum)];
-							seg++;
-							sw.Write("NM1*82*"//82=rendering prov
-								+"1*"//NM102: 1=person
-								+Sout(provTreat.LName,35)+"*"//NM103: LName
-								+Sout(provTreat.FName,25)+"*"//NM104: FName
-								+Sout(provTreat.MI,25)+"*"//NM105: MiddleName
-								+"*"//NM106: not used
-								+"*");//NM107: suffix. not used
+						else{
 							if(provTreat.UsingTIN){
 								sw.Write("24*");//NM108: 24=EIN, 34=SSN
 							}
 							else{
 								sw.Write("34*");
 							}
-							sw.WriteLine(Sout(provTreat.SSN,80)+"~");//NM109: ID
+							sw.Write(Sout(provTreat.NationalProvID,80));//NM109: ID
+						}
+						sw.WriteLine("~");
 						//2420A PRV: Rendering provider information
-							seg++;
-							sw.WriteLine("PRV*"
-								+"PE*"//PRV01: PE=Performing
-								+"ZZ*"//PRV02: ZZ=mutually defined taxonomy code
-								+GetTaxonomy(provTreat.Specialty)+"~");//PRV03: Taxonomy code
-							seg++;
+						seg++;
+						sw.Write("PRV*");
+						sw.Write("PE*");//PRV01: PE=Performing
+						if(isMedical){
+							sw.Write("PXC*");//PRV02: PXC=health care provider taxonomy code
+						}
+						else{
+							sw.Write("ZZ*");//PRV02: ZZ=mutually defined taxonomy code
+						}
+						sw.WriteLine(GetTaxonomy(provTreat.Specialty)+"~");//PRV03: Taxonomy code
+						//2420A REF: Rendering provider secondary ID. 
+						//2420A REF: (medical)Required before NPI date. We already enforce NPI in NM109.  Less allowed values.
+						seg++;
+						sw.WriteLine("REF*0B*"//REF01: 0B=state license #
+							+Sout(provTreat.StateLicense,30)+"~");
 						//2420A REF: Rendering provider secondary ID
-							sw.WriteLine("REF*1E*"//REF01: 1E=license #
-								+Sout(provTreat.StateLicense,30)+"~");
-						//2420A REF: Rendering provider secondary ID
+						if(!isMedical){//we can't support these numbers very well yet for medical
 							seg+=WriteProv_REF(sw,provTreat,(string)claimAr[0,i]);
 						}
-					}//for int i claimProcs
-					#endregion
-					if(i==claimAr.GetLength(1)-1//if this is the last loop
-						|| claimAr[0,i].ToString() != claimAr[0,i+1].ToString())//or the payorID will change
-					{
-						hasFooter=true;
+						//2420B,C,D,E,F,G,H,I,2430,2440: (medical) not supported
 					}
-					else{
-						hasFooter=false;
+				}//for int i claimProcs
+				#endregion
+				if(i==claimAr.GetLength(1)-1//if this is the last loop
+					|| claimAr[0,i].ToString() != claimAr[0,i+1].ToString())//or the payorID will change
+				{
+					hasFooter=true;
+				}
+				else{
+					hasFooter=false;
+				}
+				if(hasFooter){
+					//Transaction Trailer
+					seg++;
+					sw.WriteLine("SE*"
+						+seg.ToString()+"*"//SE01: Total segments, including ST & SE
+						+transactionNum.ToString().PadLeft(4,'0')+groupControlNumber+"~");
+					if(i<claimAr.GetLength(1)-1){//if this is not the last loop
+						transactionNum++;
 					}
-					if(hasFooter){
-						//Transaction Trailer
-						seg++;
-						sw.WriteLine("SE*"
-							+seg.ToString()+"*"//SE01: Total segments, including ST & SE
-							+transactionNum.ToString().PadLeft(4,'0')+"~");
-						if(i<claimAr.GetLength(1)-1){//if this is not the last loop
-							transactionNum++;
-						}
-						//sw.WriteLine();
-					}
-				}//for claimAr i
-				//Functional Group Trailer
-				sw.WriteLine("GE*"+transactionNum.ToString()+"*"//GE01: Number of transaction sets included
-					+interchangeNum.ToString()+"~");//GE02: Group Control number. Must be identical to GS06
-				//Interchange Control Trailer
-				sw.WriteLine("IEA*1*"//IEA01: number of functional groups
-					+interchangeNum.ToString().PadLeft(9,'0')+"~");//IEA02: Interchange control number
-			}//using sw
-			CopyToArchive(saveFile);
-			return true;
+					//sw.WriteLine();
+				}
+			}//for claimAr i
+			//Functional Group Trailer
+			sw.WriteLine("GE*"+transactionNum.ToString()+"*"//GE01: Number of transaction sets included
+				+groupControlNumber+"~");//GE02: Group Control number. Must be identical to GS06
+			
 		}
 
 		///<summary>Usually ZZ(mutually defined), but sometimes 30(TIN)</summary>
@@ -953,7 +1265,7 @@ namespace OpenDental.Eclaims
 			return clearhouse.ReceiverID;
 		}
 
-		///<summary>Usually writes the name information for Open Dental. But for inmediata/AOS clearinghouse, writes practice info.</summary>
+		///<summary>Usually writes the name information for Open Dental. But for inmediata/AOS clearinghouses, it writes practice info.</summary>
 		private static void Write1000A_NM1(StreamWriter sw,Clearinghouse clearhouse){
 			if(clearhouse.ReceiverID=="660610220"){//Inmediata
 				Provider defProv=Providers.ListLong[Providers.GetIndexLong(Prefs.GetInt("PracticeDefaultProv"))];
@@ -982,7 +1294,7 @@ namespace OpenDental.Eclaims
 			}
 		}
 
-		///<summary>Usually writes the contact information for Open Dental. But for inmediata clearinghouse, writes practice contact info.</summary>
+		///<summary>Usually writes the contact information for Open Dental. But for inmediata and AOS clearinghouses, it writes practice contact info.</summary>
 		private static void Write1000A_PER(StreamWriter sw,Clearinghouse clearhouse){
 			//if this is used, MUST ++ seg:
 			/*if(clearhouse.ReceiverID=="BCBSGA"){
@@ -993,7 +1305,8 @@ namespace OpenDental.Eclaims
 					+"810624427~");//PER04:Comm Number
 			}*/
 			if(clearhouse.ReceiverID=="660610220"//Inmediata
-				|| clearhouse.ReceiverID=="AOS"){ //AOS added SPK 7/13/05
+				|| clearhouse.ReceiverID=="AOS")//AOS added SPK 7/13/05
+			{
 				sw.WriteLine("PER*IC*"//PER01:Function code: IC=Information Contact
 					+Sout(Prefs.GetString("PracticeTitle"),60,1)+"*"//PER02:Name. Practice title
 					+"TE*"//PER03:Comm Number Qualifier: TE=Telephone
@@ -1307,6 +1620,9 @@ namespace OpenDental.Eclaims
 			queueItems.Add(queueItem);
 			object[,] claimAr=Claims.GetX12TransactionInfo(queueItems);//just to get prov. Needs work.
 			Provider billProv=Providers.ListLong[Providers.GetIndexLong((int)claimAr[1,0])];
+			Provider treatProv=Providers.ListLong[Providers.GetIndexLong(claim.ProvTreat)];
+			InsPlan insPlan=InsPlans.GetPlan(claim.PlanNum,new InsPlan[] {});
+			//billProv
 			if(billProv.LName==""){
 				if(retVal!="")
 					retVal+=",";
@@ -1327,7 +1643,7 @@ namespace OpenDental.Eclaims
 					retVal+=",";
 				retVal+="Billing Prov Lic #";
 			}
-			Provider treatProv=Providers.ListLong[Providers.GetIndexLong(claim.ProvTreat)];
+			//treatProv
 			if(treatProv.LName==""){
 				if(retVal!="")
 					retVal+=",";
@@ -1347,6 +1663,13 @@ namespace OpenDental.Eclaims
 				if(retVal!="")
 					retVal+=",";
 				retVal+="Treating Prov Lic #";
+			}
+			if(insPlan.IsMedical){
+				if(treatProv.NationalProvID.Length<2){
+					if(retVal!="")
+						retVal+=",";
+					retVal+="Treating Prov NPI";
+				}
 			}
 			if(clinic==null){
 				if(Prefs.GetString("PracticeAddress")==""){
@@ -1392,7 +1715,11 @@ namespace OpenDental.Eclaims
 					retVal+="Clinic Zip";
 				}
 			}
-			InsPlan insPlan=InsPlans.GetPlan(claim.PlanNum,new InsPlan[] {});
+			if(!insPlan.ReleaseInfo){
+				if(retVal!="")
+					retVal+=",";
+				retVal+="InsPlan Release of Info";
+			}
 			Carrier carrier=Carriers.GetCarrier(insPlan.CarrierNum);
 			if(carrier.Address==""){
 				if(retVal!="")
@@ -1495,6 +1822,7 @@ namespace OpenDental.Eclaims
 			Procedure[] procList=Procedures.Refresh(claim.PatNum);
 			Procedure proc;
 			ProcedureCode procCode;
+			bool princDiagExists=false;
 			for(int i=0;i<claimProcs.Length;i++){
 				proc=Procedures.GetProc(procList,claimProcs[i].ProcNum);
 				procCode=ProcedureCodes.GetProcCode(proc.ADACode);		
@@ -1522,30 +1850,52 @@ namespace OpenDental.Eclaims
 						retVal+=procCode.AbbrDesc+" Prosth Date";
 					}
 				}
-				treatProv=Providers.ListLong[Providers.GetIndexLong(proc.ProvNum)];
-				if(treatProv.LName==""){
-					if(retVal!="")
-						retVal+=",";
-					retVal+="Treating Prov LName";
+				if(insPlan.IsMedical){
+					if(proc.DiagnosticCode==""){
+						if(retVal!="")
+							retVal+=",";
+						retVal+="Procedure Diagnosis";
+					}
+					if(proc.IsPrincDiag && proc.DiagnosticCode!=""){
+						princDiagExists=true;
+					}
 				}
-				if(treatProv.FName==""){
+				if(proc.ProvNum==0){
 					if(retVal!="")
 						retVal+=",";
-					retVal+="Treating Prov FName";
+					//MessageBox.Show(proc.PatNum.ToString()+" "+proc.ADACode);
+					retVal+="No provider for "+proc.ADACode;
 				}
-				if(treatProv.SSN.Length<2){
-					if(retVal!="")
-						retVal+=",";
-					retVal+="Treating Prov SSN";
-				}
-				if(treatProv.StateLicense==""){
-					if(retVal!="")
-						retVal+=",";
-					retVal+="Treating Prov Lic #";
+				else{
+					treatProv=Providers.ListLong[Providers.GetIndexLong(proc.ProvNum)];
+					if(treatProv.LName==""){
+						if(retVal!="")
+							retVal+=",";
+						retVal+="Treating Prov LName";
+					}
+					if(treatProv.FName==""){
+						if(retVal!="")
+							retVal+=",";
+						retVal+="Treating Prov FName";
+					}
+					if(treatProv.SSN.Length<2){
+						if(retVal!="")
+							retVal+=",";
+						retVal+="Treating Prov SSN";
+					}
+					if(treatProv.StateLicense==""){
+						if(retVal!="")
+							retVal+=",";
+						retVal+="Treating Prov Lic #";
+					}
 				}
 				//will add any other checks as needed. Can't think of any others at the moment.
 			}//for int i claimProcs
-
+			if(insPlan.IsMedical && !princDiagExists){
+				if(retVal!="")
+					retVal+=",";
+				retVal+="Princ Diagnosis";
+			}
 			
 /*
 			if(==""){

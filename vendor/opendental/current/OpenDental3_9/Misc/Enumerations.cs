@@ -790,7 +790,9 @@ namespace OpenDental{
 		///<summary>6</summary>
 		Inmediata,
 		///<summary>7</summary>
-		AOS//added by SPK 7/15/05
+		AOS,//added by SPK 7/15/05
+		///<summary>8</summary>
+		PostnTrack
 	}
 
 	///<summary></summary>

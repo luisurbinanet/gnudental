@@ -498,6 +498,14 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Clearinghouse name cannot be blank."));
 				return;
 			}
+			if(textExportPath.Text!="" && !textExportPath.Text.EndsWith("\\")){
+				MsgBox.Show(this,"Paths must end in \\");
+				return;
+			}
+			if(textResponsePath.Text!="" && !textResponsePath.Text.EndsWith("\\")){
+				MsgBox.Show(this,"Paths must end in \\");
+				return;
+			}
 			if(!Directory.Exists(textExportPath.Text)){
 				if(MessageBox.Show("Export path does not exist. Continue anyway?",""
 					,MessageBoxButtons.OKCancel)!=DialogResult.OK)
@@ -518,6 +526,8 @@ namespace OpenDental{
 					&& textReceiverID.Text!="0135WCH00"//WebMD
 					&& textReceiverID.Text!="330989922"//WebClaim
 					&& textReceiverID.Text!="RECS"
+					&& textReceiverID.Text!="AOS"
+					&& textReceiverID.Text!="PostnTrack"
 					)
 				{
 					if(!MsgBox.Show(this,true,"Clearinghouse ID not recognized. Continue anyway?")){

@@ -5,7 +5,7 @@ using System.Drawing;
 using System.Data;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using OpenDental.Reporting;
+using OpenDental.ReportingOld2;
 
 namespace OpenDental.UI
 {

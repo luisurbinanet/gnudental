@@ -380,45 +380,47 @@ namespace OpenDental
 		}
 
 		private void AddCodes(){
-			Conversions.SelectText=@"SELECT DISTINCT procedurelog.ADACode
+			string command=@"SELECT DISTINCT procedurelog.ADACode
 				FROM procedurelog
 				LEFT JOIN procedurecode ON procedurelog.ADACode=procedurecode.ADACode
 				WHERE procedurecode.ADACode IS NULL";
-			Conversions.SubmitSelect();
+			DataConnection dcon=new DataConnection();
+			DataTable table=dcon.GetTable(command);
 			string myADA;
-			for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
-				myADA=PIn.PString(Conversions.TableQ.Rows[i][0].ToString());
-				ProcedureCodes.Cur=new ProcedureCode();
-				ProcedureCodes.Cur.ADACode=myADA;
-				ProcedureCodes.Cur.Descript=myADA;
-				ProcedureCodes.Cur.AbbrDesc=myADA;
-				ProcedureCodes.Cur.ProcTime="/X/";
-				ProcedureCodes.Cur.ProcCat=Defs.Short[(int)DefCat.ProcCodeCats][0].DefNum;
-				ProcedureCodes.Cur.TreatArea=TreatmentArea.Mouth;
-				ProcedureCodes.InsertCur();
+			ProcedureCode procCode;
+			for(int i=0;i<table.Rows.Count;i++){
+				myADA=PIn.PString(table.Rows[i][0].ToString());
+				procCode=new ProcedureCode();
+				procCode.ADACode=myADA;
+				procCode.Descript=myADA;
+				procCode.AbbrDesc=myADA;
+				procCode.ProcTime="/X/";
+				procCode.ProcCat=Defs.Short[(int)DefCat.ProcCodeCats][0].DefNum;
+				procCode.TreatArea=TreatmentArea.Mouth;
+				procCode.Insert();
 			}
-			MessageBox.Show("Codes added: "+Conversions.TableQ.Rows.Count.ToString());
-			if(Conversions.TableQ.Rows.Count>0){
+			MessageBox.Show(Lan.g(this,"Codes added: ")+table.Rows.Count.ToString());
+			if(table.Rows.Count>0){
 				DataValid.SetInvalid(InvalidTypes.ProcCodes);
 			}
 		}
 
 		private void VerifyInsPlans(){
-			string command=@"SELECT PatNum FROM patient
-				LEFT JOIN insplan on patient.PriPlanNum=insplan.PlanNum
-				WHERE patient.PriPlanNum != 0
-				AND insplan.PlanNum IS NULL";
-			DataConnection dcon=new DataConnection();
+			/*string command=@"SELECT PatPlanNum FROM patplan
+				LEFT JOIN insplan on patplan.PlanNum=insplan.PlanNum
+				WHERE insplan.PlanNum IS NULL";
+			
 			DataTable table=dcon.GetTable(command);
 			for(int i=0;i<table.Rows.Count;i++){
-				command="UPDATE patient set PriPlanNum=0 "
+				command="UPDATE patplan set PriPlanNum=0 "
 					+"WHERE PatNum="+table.Rows[i][0].ToString();
 				dcon.NonQ(command);
-			}
-			command=@"SELECT ClaimProcNum FROM claimproc
+			}*/
+			DataConnection dcon=new DataConnection();
+			string command=@"SELECT ClaimProcNum FROM claimproc
 				LEFT JOIN insplan ON claimproc.PlanNum=insplan.PlanNum
 				WHERE insplan.PlanNum IS NULL";
-			table=dcon.GetTable(command);
+			DataTable table=dcon.GetTable(command);
 			for(int i=0;i<table.Rows.Count;i++){
 				command="DELETE FROM claimproc "
 					+"WHERE ClaimProcNum="+table.Rows[i][0].ToString();

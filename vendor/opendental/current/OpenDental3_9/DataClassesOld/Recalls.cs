@@ -131,8 +131,7 @@ namespace OpenDental{
 			if(recall!=null 
 				&& !recall.IsDisabled
 				&& previousDate.Year>1880//this protects recalls that were manually added as part of a conversion
-				&& previousDate != recall.DatePrevious)//if datePrevious has changed, reset
-			{
+				&& previousDate != recall.DatePrevious) {//if datePrevious has changed, reset
 				recall.RecallStatus=0;
 				recall.Note="";
 				recall.DateDue=recall.DateDueCalc;//now it is allowed to be changed in the steps below
@@ -172,8 +171,7 @@ namespace OpenDental{
 					}
 					else{//but if not disabled
 						if(recall.DateDue==recall.DateDueCalc//if user did not enter a DateDue
-							|| recall.DateDue.Year<1880)//or DateDue was blank
-						{
+							|| recall.DateDue.Year<1880) {//or DateDue was blank
 							recall.DateDue=recall.DatePrevious+recall.RecallInterval;//set same as DateDueCalc
 						}
 					}
