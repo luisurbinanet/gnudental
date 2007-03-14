@@ -115,7 +115,7 @@ namespace OpenDental{
 			return false;
 		}
 
-		///<summary></summary>
+		///<summary>Supply a valid program Name, and this will set Cur to be the corresponding Program object.</summary>
 		public static void GetCur(string progName){
 			for(int i=0;i<List.Length;i++){
 				if(List[i].ProgName==progName){
@@ -154,7 +154,7 @@ namespace OpenDental{
 				Dexis.SendData(pat);
 				return;
 			}
-			else if(Cur.ProgName=="VixWinOld"){
+			else if(Cur.ProgName=="VixWinOld") {
 				VixWinOld.SendData(pat);
 				return;
 			}
@@ -164,6 +164,10 @@ namespace OpenDental{
 			}
 			else if(Cur.ProgName=="Trophy"){
 				Trophy.SendData(pat);
+				return;
+			}
+			else if(Cur.ProgName=="TrophyEnhanced") {
+				TrophyEnhanced.SendData(pat);
 				return;
 			}
 			else if(Cur.ProgName=="Sirona"){
@@ -197,6 +201,10 @@ namespace OpenDental{
 			}
 			else if(Cur.ProgName=="Lightyear"){
 				Lightyear.SendData(pat);
+				return;
+			}
+			else if(Cur.ProgName=="DentalEye") {
+				DentalEye.SendData(pat);
 				return;
 			}
 			//all remaining programs:

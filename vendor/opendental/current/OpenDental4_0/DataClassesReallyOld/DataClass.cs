@@ -60,9 +60,16 @@ namespace OpenDental{
 			catch(MySql.Data.Types.MySqlConversionException){
 				MsgBox.Show("DataClass","Invalid date found. Please fix dates in the Check Database Integrity tool in your main menu under misc tools");
 			}
-			catch(Exception){
-				MessageBox.Show(cmd.CommandText);
+			catch(MySqlException e) {
+				MsgBoxCopyPaste MB=new MsgBoxCopyPaste(Lan.g("DataClass","Error in query:")+"\r\n"
+					+e.Message+"\r\n"+"\r\n"
+					+cmd.CommandText);
+				MB.ShowDialog();
+				//MessageBox.Show(command);
 			}
+			//catch(Exception){
+				//MessageBox.Show(cmd.CommandText);
+			//}
 			//catch(MySqlException e){
 			//	MessageBox.Show("Error: "+e.Message+", "+cmd.CommandText);
 			//}

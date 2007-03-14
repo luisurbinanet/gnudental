@@ -8,16 +8,13 @@ namespace OpenDental{
 
 	///<summary></summary>
 	public class Procedures{
-		private static ProcDesc[] procsMultApts;
-		///<summary>Descriptions of procedures for one appointment or one next appointment. Fill by using GetProcsMultApts, then GetProcsOneApt to pull data from that list.</summary>
-		public static string[] ProcsOneApt;
 		
 		///<summary>Gets all procedures for a single patient.</summary>
 		public static Procedure[] Refresh(int patNum){
 			string command=
 				"SELECT * from procedurelog "
 				+"WHERE PatNum = '"+patNum.ToString()+"' "
-				+"ORDER BY ProcDate";
+				+"ORDER BY ProcDate,ADACode";
 			return RefreshAndFill(command);
 		}
 
@@ -71,6 +68,7 @@ namespace OpenDental{
 				List[i].MedicalCode     = PIn.PString(table.Rows[i][28].ToString());
 				List[i].DiagnosticCode  = PIn.PString(table.Rows[i][29].ToString());
 				List[i].IsPrincDiag     = PIn.PBool  (table.Rows[i][30].ToString());
+				List[i].LabFee          = PIn.PDouble(table.Rows[i][31].ToString());
 			}
 			return List;
 		}
@@ -92,47 +90,20 @@ namespace OpenDental{
 			return missing;
 		}
 
-		//public static void RefreshByDate(){
-		//	RefreshAndFill();
-		//}
-
-		//public static void RefreshByPriority(){
-		//	cmd.CommandText =
-		//		"SELECT * from procedurelog "
-		//		+"WHERE PatNum = '"+POut.PInt(Patients.cur.PatNum)+"' "
-		//		+"ORDER BY Priority";
-		//	RefreshAndFill();
-		//}
-
-		///<summary>Returns a ProcDesc(AptNum,ProcLines,Production) struct for a single appointment.</summary>
-		public static ProcDesc GetProcsForSingle(int aptNum, bool isNext){
+		///<summary>Returns a ProcDesc(AptNum,ProcLines,Production) struct for a single appointment directly from the database</summary>
+		public static Procedure[] GetProcsForSingle(int aptNum, bool isNext){
 			string command;
 			if(isNext){
-				command = "SELECT * from procedurelog WHERE nextaptnum = '"+POut.PInt(aptNum)+"'";
+				command = "SELECT * from procedurelog WHERE NextAptNum = '"+POut.PInt(aptNum)+"'";
 			}
 			else{
-				command = "SELECT * from procedurelog WHERE aptnum = '"+POut.PInt(aptNum)+"'";
+				command = "SELECT * from procedurelog WHERE AptNum = '"+POut.PInt(aptNum)+"'";
 			}
-			DataConnection dcon=new DataConnection();
- 			DataTable table=dcon.GetTable(command);
-			ProcDesc procsForSingle=new ProcDesc();
-			procsForSingle.AptNum=aptNum;
-			procsForSingle.ProcLines=new string[table.Rows.Count];
-			string pADACode;
-			string pSurf;
-			string pToothNum;
-			for(int j=0;j<table.Rows.Count;j++){
-				pADACode = PIn.PString(table.Rows[j][3].ToString());
-				pSurf    = PIn.PString(table.Rows[j][8].ToString());
-				pToothNum= PIn.PString(table.Rows[j][9].ToString());
-				procsForSingle.ProcLines[j]=ConvertProcToString(pADACode,pSurf,pToothNum);
-				procsForSingle.Production+=PIn.PDouble(table.Rows[j][5].ToString());
-			}
-			return procsForSingle;
+			return RefreshAndFill(command);
 		}
 
 		/// <summary>Used by GetProcsForSingle and GetProcsMultApts to generate a short string description of a procedure.</summary>
-		private static string ConvertProcToString(string aDACode,string surf,string toothNum){
+		public static string ConvertProcToString(string aDACode,string surf,string toothNum){
 			string strLine="";
 			switch (ProcedureCodes.GetProcCode(aDACode).TreatArea){
 				case TreatmentArea.Surf :
@@ -160,108 +131,59 @@ namespace OpenDental{
 			return strLine;
 		}
 
-		///<summary>Gets a list (procsMultApts is a struct of type ProcDesc(aptNum, string[], and production) of all the procedures attached to the specified appointments.  Then, use GetProcsOneApt to pull procedures for one appointment from this list.  This process requires only one call to the database.</summary>
-		/// <param name="myAptNums">The list of appointments to get procedures for.</param>
-		public static void GetProcsMultApts(int[] myAptNums){
-			GetProcsMultApts(myAptNums,false);
+		///<summary>Gets a list (procsMultApts is a struct of type ProcDesc(aptNum, string[], and production) of all the procedures attached to the specified appointments.  Then, use GetProcsOneApt to pull procedures for one appointment from this list.  This process requires only one call to the database. "myAptNums" is the list of appointments to get procedures for.</summary>
+		public static Procedure[] GetProcsMultApts(int[] myAptNums){
+			return GetProcsMultApts(myAptNums,false);
 		}
 
-		///<summary>Gets a list (procsMultApts is a struct of type ProcDesc(aptNum, string[], and production) of all the procedures attached to the specified appointments.  Then, use GetProcsOneApt to pull procedures for one appointment from this list or GetProductionOneApt.  This process requires only one call to the database.</summary>
-		/// <param name="myAptNums">The list of appointments to get procedures for.</param>
-		/// <param name="isForNext">Gets procedures for a list of next appointments rather than regular appointments.</param>
-		public static void GetProcsMultApts(int[] myAptNums,bool isForNext){
-			DataTable table=new DataTable();
-			//if (myAptNums.Length==0)
-			Procedure tempProcedure = new Procedure();
+		///<summary>Gets a list (procsMultApts is a struct of type ProcDesc(aptNum, string[], and production) of all the procedures attached to the specified appointments.  Then, use GetProcsOneApt to pull procedures for one appointment from this list or GetProductionOneApt.  This process requires only one call to the database.  "myAptNums" is the list of appointments to get procedures for.  isForNext gets procedures for a list of next appointments rather than regular appointments.</summary>
+		public static Procedure[] GetProcsMultApts(int[] myAptNums,bool isForNext){
+			if(myAptNums.Length==0){
+				return new Procedure[0];
+			}
 			string strAptNums="";
-			if(myAptNums.Length>0){
+			for(int i=0;i<myAptNums.Length;i++){
+				if(i>0){
+					strAptNums+=" OR";
+				}
 				if(isForNext){
-					strAptNums="NextAptNum='"+myAptNums[0].ToString()+"'";
-					for (int i=1;i<myAptNums.Length;i++){
-						strAptNums+=" || NextAptNum='"+myAptNums[i].ToString()+"'";
-					}
+					strAptNums+=" NextAptNum='"+POut.PInt(myAptNums[i])+"'";
 				}
 				else{
-					strAptNums="AptNum='"+myAptNums[0].ToString()+"'";
-					for (int i=1;i<myAptNums.Length;i++){
-						strAptNums+=" || AptNum='"+myAptNums[i].ToString()+"'";
-					}
+					strAptNums+=" AptNum='"+POut.PInt(myAptNums[i])+"'";
 				}
-				//MessageBox.Show(strAptNums);
-				string command = "SELECT * from procedurelog WHERE "+strAptNums;
-				DataConnection dcon=new DataConnection();
- 				table=dcon.GetTable(command);
-			}//end if >0
-			//else
-			//	table=new DataTable();
-			//int count3 = table.Rows.Count;
-			//already defined: ProcDesc[] procsEntireDay
-			//MessageBox.Show(count3.ToString());
-			procsMultApts=new ProcDesc[myAptNums.Length];
-			int procCount;
-			for(int i=0;i<myAptNums.Length;i++){
-				procsMultApts[i].AptNum=myAptNums[i];
-				procsMultApts[i].Production=0;
-				procCount=0;
-				for(int j=0;j<table.Rows.Count;j++){
-					if(isForNext){
-						if(PIn.PInt(table.Rows[j][17].ToString())==myAptNums[i]){
-							procCount++;
-						}
-					}
-					else{//regular appt
-						if(PIn.PInt(table.Rows[j][2].ToString())==myAptNums[i]){
-							procCount++;
-						}
-					}
-				}
-				procsMultApts[i].ProcLines=new string[procCount];
-				procCount=0;
-				string pADACode="";
-				string pSurf="";
-				string pToothNum="";
-				for(int j=0;j<table.Rows.Count;j++){
-					pADACode = PIn.PString(table.Rows[j][3].ToString());
-					pSurf    = PIn.PString(table.Rows[j][8].ToString());
-					pToothNum= PIn.PString(table.Rows[j][9].ToString());
-					if(isForNext){
-						if(PIn.PInt(table.Rows[j][17].ToString())==myAptNums[i]){
-							procsMultApts[i].Production+=PIn.PDouble(table.Rows[j][5].ToString());
-							procsMultApts[i].ProcLines[procCount]=ConvertProcToString(pADACode,pSurf,pToothNum);
-							procCount++;
-						}
-					}
-					else{//regular appt
-						if(PIn.PInt(table.Rows[j][2].ToString())==myAptNums[i]){
-							procsMultApts[i].Production+=PIn.PDouble(table.Rows[j][5].ToString());
-							procsMultApts[i].ProcLines[procCount]=ConvertProcToString(pADACode,pSurf,pToothNum);
-							procCount++;
-						}
-					}
-				}
-			}//end for myAptNums
-			//MessageBox.Show(procsEntireDay[0].AptNum.ToString()+procsEntireDay[1].AptNum.ToString());
+			}
+			string command = "SELECT * FROM procedurelog WHERE"+strAptNums;
+			return RefreshAndFill(command);
+		}
+
+		///<summary>Used do display procedure descriptions on appointments. The returned string also includes surf and toothNum.</summary>
+		public static string GetDescription(Procedure proc){
+			return ConvertProcToString(proc.ADACode,proc.Surf,proc.ToothNum);
 		}
 
 		///<summary>Gets procedures for one appointment by looping through the procsMultApts which was filled previously from GetProcsMultApts.</summary>
-		public static void GetProcsOneApt(int myAptNum){
+		public static Procedure[] GetProcsOneApt(int myAptNum,Procedure[] procsMultApts){
+			ArrayList AL=new ArrayList();
 			for(int i=0;i<procsMultApts.Length;i++){
-				if (procsMultApts[i].AptNum==myAptNum){
-					//MessageBox.Show(myAptNum.ToString());
-					ProcsOneApt=procsMultApts[i].ProcLines;
+				if(procsMultApts[i].AptNum==myAptNum){
+					AL.Add(procsMultApts[i].Copy());
 				}
 			}
+			Procedure[] retVal=new Procedure[AL.Count];
+			AL.CopyTo(retVal);
+			return retVal;
 		}
 
 		///<summary>Gets the production for one appointment by looping through the procsMultApts which was filled previously from GetProcsMultApts.</summary>
-		public static double GetProductionOneApt(int myAptNum){
+		public static double GetProductionOneApt(int myAptNum,Procedure[] procsMultApts){
+			double retVal=0;
 			for(int i=0;i<procsMultApts.Length;i++){
 				if(procsMultApts[i].AptNum==myAptNum){
-					//MessageBox.Show(myAptNum.ToString());
-					return procsMultApts[i].Production;
+					retVal+=procsMultApts[i].ProcFee;
 				}
 			}
-			return 0;
+			return retVal;
 		}
 
 		///<summary>Used in FormClaimEdit,FormClaimPrint,FormClaimPayTotal, etc to get description of procedure. Procedure list needs to include the procedure we are looking for.</summary>
@@ -297,7 +219,8 @@ namespace OpenDental{
 		public static void SetCompleteInAppt(Appointment apt,InsPlan[] PlanList,PatPlan[] patPlans){
 			Procedure[] ProcList=Procedures.Refresh(apt.PatNum);
 			ClaimProc[] ClaimProcList=ClaimProcs.Refresh(apt.PatNum);
-			CovPats.Refresh(PlanList,patPlans);
+			Benefit[] benefitList=Benefits.Refresh(patPlans);
+			//CovPats.Refresh(PlanList,patPlans);
 			//bool doResetRecallStatus=false;
 			ProcedureCode procCode;
 			Procedure oldProc;
@@ -310,19 +233,15 @@ namespace OpenDental{
 				if(procCode.RemoveTooth){//if an extraction, then mark previous procs hidden
 					ProcList[i].SetHideGraphical();
 				}
-				//if is a recall proc
-				//if(procCode.SetRecall){
-				//	doResetRecallStatus=true;
-				//}
 				ProcList[i].ProcStatus=ProcStat.C;
 				ProcList[i].ProcDate=apt.AptDateTime.Date;
 				if(oldProc.ProcStatus!=ProcStat.C){
 					ProcList[i].DateEntryC=DateTime.Now;//this triggers it to set to server time NOW().
 				}
 				ProcList[i].PlaceService=(PlaceOfService)Prefs.GetInt("DefaultProcedurePlaceService");
-				//if a note already exists, then don't add more. This was by special request.
-				if(ProcList[i].ProcNote==""){
-					ProcList[i].ProcNote=procCode.DefaultNote;
+				//if procedure was already complete, then don't add more notes.
+				if(oldProc.ProcStatus!=ProcStat.C){
+					ProcList[i].ProcNote+=procCode.DefaultNote;
 				}
 				ProcList[i].ClinicNum=apt.ClinicNum;
 				ProcList[i].PlaceService=Clinics.GetPlaceService(apt.ClinicNum);
@@ -338,7 +257,7 @@ namespace OpenDental{
 					ProcList[i].ProvNum=apt.ProvNum;
 				}
 				ProcList[i].Update(oldProc);
-				ProcList[i].ComputeEstimates(apt.PatNum,ClaimProcList,false,PlanList,patPlans);
+				ProcList[i].ComputeEstimates(apt.PatNum,ClaimProcList,false,PlanList,patPlans,benefitList);
 			}
 			//if(doResetRecallStatus){
 			//	Recalls.Reset(apt.PatNum);//this also synchs recall
@@ -424,10 +343,10 @@ namespace OpenDental{
 		}
 
 		///<summary>After changing important coverage plan info, this is called to recompute estimates for all procedures for this patient.</summary>
-		public static void ComputeEstimatesForAll(int patNum,ClaimProc[] claimProcs,Procedure[] procs,InsPlan[] PlanList,PatPlan[] patPlans)
+		public static void ComputeEstimatesForAll(int patNum,ClaimProc[] claimProcs,Procedure[] procs,InsPlan[] PlanList,PatPlan[] patPlans,Benefit[] benefitList)
 		{
 			for(int i=0;i<procs.Length;i++){
-				procs[i].ComputeEstimates(patNum,claimProcs,false,PlanList,patPlans);
+				procs[i].ComputeEstimates(patNum,claimProcs,false,PlanList,patPlans,benefitList);
 			}
 		}
 
@@ -520,16 +439,6 @@ namespace OpenDental{
 	}
 
 	
-	
-	///<summary>Not a database table.</summary>
-	public struct ProcDesc{
-		///<summary></summary>
-		public int AptNum;
-		///<summary></summary>
-		public string[] ProcLines;
-		///<summary></summary>
-		public double Production;
-	}
 
 	
 

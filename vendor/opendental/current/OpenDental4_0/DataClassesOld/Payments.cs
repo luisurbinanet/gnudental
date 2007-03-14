@@ -33,8 +33,26 @@ namespace OpenDental{
 		public int DepositNum;
 
 
-		///<summary>Updates this payment.  Also updates the datePay of all attached paysplits so that they are always in synch.  Updates IsSplit.  DatePay and IsSplit are also updated whenever a paysplit is added or removed, so no need to run this again.</summary>
-		private void Update(){
+		///<summary>Updates this payment.  Must make sure to updates the datePay of all attached paysplits so that they are always in synch.  Also need to manually set IsSplit before here.  Will throw an exception if bad date, so surround by try-catch.</summary>
+		public void Update(){
+			if(PayDate.Date>DateTime.Today) {
+				throw new ApplicationException(Lan.g(this,"Date must not be a future date."));
+			}
+			if(PayDate.Year<1880) {
+				throw new ApplicationException(Lan.g(this,"Invalid date"));
+			}
+			//the functionality below needs to be taken care of before calling the function:
+			/*string command="SELECT DepositNum,PayAmt FROM payment "
+					+"WHERE PayNum="+POut.PInt(PayNum);
+			DataConnection dcon=new DataConnection();
+			DataTable table=dcon.GetTable(command);
+			if(table.Rows.Count==0) {
+				return;
+			}
+			if(table.Rows[0][0].ToString()!="0"//if payment is already attached to a deposit
+					&& PIn.PDouble(table.Rows[0][1].ToString())!=PayAmt) {//and PayAmt changes
+				throw new ApplicationException(Lan.g("Payments","Not allowed to change the amount on payments attached to deposits."));
+			}*/
 			string command="UPDATE payment SET " 
 				+ "paytype = '"      +POut.PInt   (PayType)+"'"
 				+ ",paydate = '"     +POut.PDate  (PayDate)+"'"
@@ -51,6 +69,7 @@ namespace OpenDental{
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
  			dcon.NonQ(command);
+			/*
 			command="UPDATE paysplit SET DatePay='"+POut.PDate(PayDate)
 				+"' WHERE PayNum = "+POut.PInt(PayNum);
  			dcon.NonQ(command);
@@ -63,11 +82,11 @@ namespace OpenDental{
 			else{
 				command="UPDATE payment SET IsSplit=1 WHERE PayNum="+POut.PInt(PayNum);
 			}
-			dcon.NonQ(command);
+			dcon.NonQ(command);*/
 		}
 
-		///<summary></summary>
-		private void Insert(){
+		///<summary>There's only one place in the program where this is called from.  Date is today, so no need to validate the date.</summary>
+		public void Insert(){
 			if(Prefs.RandomKeys){
 				PayNum=MiscData.GetKey("payment","PayNum");
 			}
@@ -102,39 +121,9 @@ namespace OpenDental{
 			}
 		}
 
-		///<summary>If trying to change the amount and already attached to a deposit, it will throw an error, so surround with try catch.  </summary>
-		public void InsertOrUpdate(bool isNew){
-			if(PayDate.Date>DateTime.Today){
-				throw new ApplicationException(Lan.g(this,"Date must not be a future date."));
-			}
-			if(PayDate.Year<1880){
-				throw new ApplicationException(Lan.g(this,"Invalid date"));
-			}
-			if(!isNew){//only for updates
-				string command="SELECT DepositNum,PayAmt FROM payment "
-					+"WHERE PayNum="+POut.PInt(PayNum);
-				DataConnection dcon=new DataConnection();
-				DataTable table=dcon.GetTable(command);
-				if(table.Rows.Count==0){
-					return;
-				}
-				if(table.Rows[0][0].ToString()!="0"//if payment is already attached to a deposit
-					&& PIn.PDouble(table.Rows[0][1].ToString())!=PayAmt) {//and PayAmt changes
-					throw new ApplicationException(Lan.g("Payments","Not allowed to change the amount on payments attached to deposits."));
-				}
-			}
-			if(isNew){
-				Insert();
-			}
-			else{
-				Update();
-			}
-		}
-
-		///<summary>Deletes the payment as well as all splits.  Also updates all necessary EstBals.  Surround by try catch, because it will throw an exception if trying to delete a claimpayment attached to a deposit.</summary>
+		///<summary>Deletes the payment as well as all splits.  Surround by try catch, because it will throw an exception if trying to delete a payment attached to a deposit.</summary>
 		public void Delete(){
-			string command="SELECT DepositNum FROM payment "
-				+"WHERE PayNum="+POut.PInt(PayNum);
+			string command="SELECT DepositNum FROM payment WHERE PayNum="+POut.PInt(PayNum);
 			DataConnection dcon=new DataConnection();
 			DataTable table=dcon.GetTable(command);
 			if(table.Rows.Count==0){
@@ -145,21 +134,24 @@ namespace OpenDental{
 			}
 			command= "DELETE from payment WHERE payNum = '"+PayNum.ToString()+"'";
  			dcon.NonQ(command);
-			PaySplit[] splitList=PaySplits.RefreshPaymentList(PayNum);
-			for(int i=0;i<splitList.Length;i++){
-				splitList[i].Delete();
-			}
+			//this needs to be improved to handle EstBal
+			command= "DELETE from paysplit WHERE payNum = '"+PayNum.ToString()+"'";
+			dcon.NonQ(command);
+			//PaySplit[] splitList=PaySplits.RefreshPaymentList(PayNum);
+			//for(int i=0;i<splitList.Length;i++){
+			//	splitList[i].Delete();
+			//}
 		}
 
-		/// <summary>Only Called only from FormPayment.butOK click.  Only called if the user did not enter any splits.  Usually just adds one split for the current patient.  But if that would take the balance negative, then it loops through all other family members and creates splits for them.  It might still take the current patient negative once all other family members are zeroed out.</summary>
-		public void Allocate(){//double amtTot,int patNum,Payment payNum){
+		/// <summary>Returns an array list of PaySplits.  Only Called only from FormPayment.butOK click.  Only called if the user did not enter any splits.  Usually just adds one split for the current patient.  But if that would take the balance negative, then it loops through all other family members and creates splits for them.  It might still take the current patient negative once all other family members are zeroed out.</summary>
+		public ArrayList Allocate(){//double amtTot,int patNum,Payment payNum){
 			string command= 
 				"SELECT Guarantor FROM patient "
 				+"WHERE PatNum = "+POut.PInt(PatNum);
 			DataConnection dcon=new DataConnection();
  			DataTable table=dcon.GetTable(command);
 			if(table.Rows.Count==0){
-				return;
+				return new ArrayList();
 			}
 			command= 
 				"SELECT PatNum,EstBalance,PriProv FROM patient "
@@ -195,6 +187,7 @@ namespace OpenDental{
 			amtSplits[0]+=amtRemain;
 			//now create a split for each non-zero amount
 			PaySplit PaySplitCur;
+			ArrayList retVal=new ArrayList();
 			for(int i=0;i<pats.Length;i++){
 				if(amtSplits[i]==0){
 					continue;
@@ -206,17 +199,20 @@ namespace OpenDental{
 				PaySplitCur.DatePay=PayDate;
 				PaySplitCur.ProvNum=pats[i].GetProvNum();
 				PaySplitCur.SplitAmt=amtSplits[i];
-				PaySplitCur.InsertOrUpdate(true);
+				//PaySplitCur.InsertOrUpdate(true);
+				retVal.Add(PaySplitCur);
 			}
 			//finally, adjust each EstBalance, but no need to do current patient
-			for(int i=1;i<pats.Length;i++){
+			//This no longer works here.  Must do it when closing payment window somehow
+			/*for(int i=1;i<pats.Length;i++){
 				if(amtSplits[i]==0){
 					continue;
 				}
 				command="UPDATE patient SET EstBalance=EstBalance-"+POut.PDouble(amtSplits[i])
 					+" WHERE PatNum="+POut.PInt(pats[i].PatNum);
 				dcon.NonQ(command);
-			}
+			}*/
+			return retVal;
 		}
 
 		

@@ -36,7 +36,8 @@ namespace OpenDental{
 		private string insRelat;
 		private string NoteMedicalComp;
 		private bool insPresent;
-
+		private double annualMax;
+		private double deductible;
 
 		///<summary></summary>
 		public FormImportXML()
@@ -153,11 +154,6 @@ namespace OpenDental{
 			subsc.PriProv=Prefs.GetInt("PracticeDefaultProv");
 			subsc.BillingType=Prefs.GetInt("PracticeDefaultBillType");
 			plan=new InsPlan();
-			plan.AnnualMax=-1;//blank
-			plan.OrthoMax=-1;
-			plan.RenewMonth=1;
-			plan.Deductible=-1;
-			plan.FloToAge=-1;
 			plan.ReleaseInfo=true;
 			plan.AssignBen=true;
 			carrier=new Carrier();
@@ -167,6 +163,8 @@ namespace OpenDental{
 			GuarEmp="";
 			NoteMedicalComp="";
 			insPresent=false;
+			annualMax=-1;
+			deductible=-1;
 			XmlTextReader reader=new XmlTextReader(new StringReader(textMain.Text));
 			reader.WhitespaceHandling=WhitespaceHandling.None;
 			string element="";
@@ -464,6 +462,25 @@ namespace OpenDental{
 					break;
 			}
 			patplan.Insert();
+			//benefits
+			if(annualMax!=-1 && CovCats.ListShort.Length>0){
+				Benefit ben=new Benefit();
+				ben.BenefitType=InsBenefitType.Limitations;
+				ben.CovCatNum=CovCats.ListShort[0].CovCatNum;
+				ben.MonetaryAmt=annualMax;
+				ben.PlanNum=plan.PlanNum;
+				ben.TimePeriod=BenefitTimePeriod.CalendarYear;
+				ben.Insert();
+			}
+			if(deductible!=-1 && CovCats.ListShort.Length>0) {
+				Benefit ben=new Benefit();
+				ben.BenefitType=InsBenefitType.Deductible;
+				ben.CovCatNum=CovCats.ListShort[0].CovCatNum;
+				ben.MonetaryAmt=deductible;
+				ben.PlanNum=plan.PlanNum;
+				ben.TimePeriod=BenefitTimePeriod.CalendarYear;
+				ben.Insert();
+			}
 			MsgBox.Show(this,"Done");
 			DialogResult=DialogResult.OK;
 		}
@@ -874,10 +891,10 @@ namespace OpenDental{
 					plan.SubscriberID=textValue;
 					break;
 				case "PolicyDeductible":
-					plan.Deductible=-1;//unknown
+					deductible=-1;//unknown
 					if(textValue.Length>0){
 						try{
-							plan.Deductible=System.Convert.ToInt32(textValue);
+							deductible=System.Convert.ToInt32(textValue);
 						}
 						catch{
 							warnings+="Invalid PolicyDeductible\r\n";
@@ -885,10 +902,10 @@ namespace OpenDental{
 					}
 					break;
 				case "PolicyLimitAmount":
-					plan.AnnualMax=-1;//unknown
+					annualMax=-1;//unknown
 					if(textValue.Length>0){
 						try{
-							plan.AnnualMax=System.Convert.ToInt32(textValue);
+							annualMax=System.Convert.ToInt32(textValue);
 						}
 						catch{
 							warnings+="Invalid PolicyLimitAmount\r\n";

@@ -102,6 +102,7 @@ namespace OpenDental{
 		private OpenDental.UI.Button butAudit;
 		private Appointment AptOld;
 		private PatPlan[] PatPlanList;
+		private Commlog[] CommlogList;
 
 		///<summary></summary>
 		public FormApptEdit(Appointment aptCur){
@@ -982,7 +983,7 @@ namespace OpenDental{
 			pat=fam.GetPatient(AptCur.PatNum);
 			PlanList=InsPlans.Refresh(fam);
 			PatPlanList=PatPlans.Refresh(AptCur.PatNum);
-			CovPats.Refresh(PlanList,PatPlanList);
+			//CovPats.Refresh(PlanList,PatPlanList);
 			if(Prefs.GetBool("EasyHideDentalSchools")){
 				groupDentalSchools.Visible=false;
 			}
@@ -1461,12 +1462,12 @@ namespace OpenDental{
 
 		/// <summary>Fills the commlog table on this form.</summary>
 		private void FillComm(){
-			Commlogs.Refresh(AptCur.PatNum);
+			CommlogList=Commlogs.Refresh(AptCur.PatNum);
 			ALCommItems=new ArrayList();
-			for(int i=0;i<Commlogs.List.Length;i++){
+			for(int i=0;i<CommlogList.Length;i++){
 				//if(Commlogs.List[i].CommType==CommItemType.ApptRelated){
-				if(Commlogs.List[i].CommType!=CommItemType.StatementSent){
-					ALCommItems.Add(Commlogs.List[i]);
+				if(CommlogList[i].CommType!=CommItemType.StatementSent){
+					ALCommItems.Add(CommlogList[i]);
 				}
 			}
 			tbCommlog.ResetRows(ALCommItems.Count);
@@ -1483,8 +1484,7 @@ namespace OpenDental{
 		}
 
 		private void tbCommlog_CellDoubleClicked(object sender, CellEventArgs e){
-			Commlogs.Cur=(Commlog)ALCommItems[e.Row];
-			FormCommItem FormCI=new FormCommItem();
+			FormCommItem FormCI=new FormCommItem((Commlog)ALCommItems[e.Row]);
 			FormCI.ShowDialog();
 			FillComm();
 		}		
@@ -1505,6 +1505,7 @@ namespace OpenDental{
 				}
 			}
 			Procedures.SetDateFirstVisit(AptCur.AptDateTime.Date,1,pat);
+			Benefit[] benefitList=Benefits.Refresh(PatPlanList);
 			string[] codes=Defs.Short[(int)DefCat.ApptProcsQuickAdd]
 				[listQuickAdd.IndexFromPoint(e.X,e.Y)].ItemValue.Split(',');
 			for(int i=0;i<codes.Length;i++){
@@ -1530,7 +1531,7 @@ namespace OpenDental{
           ProcCur.NextAptNum=AptCur.AptNum;
 				ProcCur.MedicalCode=ProcedureCodes.GetProcCode(ProcCur.ADACode).MedicalCode;
 				ProcCur.Insert();//recall synch not required
-				ProcCur.ComputeEstimates(pat.PatNum,ClaimProcList,false,PlanList,PatPlanList);
+				ProcCur.ComputeEstimates(pat.PatNum,ClaimProcList,false,PlanList,PatPlanList,benefitList);
 			}
 			listQuickAdd.SelectedIndex=-1;
 			FillProcedures();
@@ -1539,11 +1540,11 @@ namespace OpenDental{
 		}
 
 		private void butAddComm_Click(object sender, System.EventArgs e) {
-			Commlogs.Cur=new Commlog();
-			Commlogs.Cur.PatNum=pat.PatNum;
-			Commlogs.Cur.CommDateTime=DateTime.Now;
-			Commlogs.Cur.CommType=CommItemType.ApptRelated;
-			FormCommItem FormCI=new FormCommItem();
+			Commlog CommlogCur=new Commlog();
+			CommlogCur.PatNum=pat.PatNum;
+			CommlogCur.CommDateTime=DateTime.Now;
+			CommlogCur.CommType=CommItemType.ApptRelated;
+			FormCommItem FormCI=new FormCommItem(CommlogCur);
 			FormCI.IsNew=true;
 			FormCI.ShowDialog();
 			FillComm();

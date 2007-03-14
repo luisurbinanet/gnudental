@@ -102,6 +102,8 @@ namespace OpenDental{
 				retVal[i].DateFirstVisit=PIn.PDate  (table.Rows[i][51].ToString());
 				retVal[i].ClinicNum    = PIn.PInt   (table.Rows[i][52].ToString());
 				retVal[i].HasIns       = PIn.PString(table.Rows[i][53].ToString());
+				retVal[i].TrophyFolder = PIn.PString(table.Rows[i][54].ToString());
+				retVal[i].PlannedIsDone= PIn.PBool  (table.Rows[i][55].ToString());
 			}
 			return retVal;
 		}
@@ -276,6 +278,8 @@ namespace OpenDental{
 				multPats[i].DateFirstVisit=PIn.PDate  (table.Rows[i][51].ToString());
 				multPats[i].ClinicNum    = PIn.PInt   (table.Rows[i][52].ToString());
 				multPats[i].HasIns       = PIn.PString(table.Rows[i][53].ToString());
+				multPats[i].TrophyFolder = PIn.PString(table.Rows[i][54].ToString());
+				multPats[i].PlannedIsDone= PIn.PBool  (table.Rows[i][55].ToString());
 			}
 			return multPats;
 		}
@@ -743,6 +747,23 @@ namespace OpenDental{
 					+"' WHERE PatNum="+POut.PInt(patNum);
 				dcon.NonQ(command);
 			}
+		}
+
+		///<summary></summary>
+		public static DataTable GetBirthdayList(DateTime dateFrom,DateTime dateTo){
+			string command="SELECT LName,FName,Preferred,Address,Address2,City,State,Zip,Birthdate "
+				+"FROM patient " 
+				+"WHERE SUBSTRING(Birthdate,6,5) >= '"+dateFrom.ToString("MM-dd")+"' "
+				+"AND SUBSTRING(Birthdate,6,5) <= '"+dateTo.ToString("MM-dd")+"' "
+				+"AND Birthdate > '1880-01-01' "
+				+"AND PatStatus=0	ORDER BY LName,FName";
+			DataConnection dcon=new DataConnection();
+			DataTable table=dcon.GetTable(command);
+			table.Columns.Add("Age");
+			for(int i=0;i<table.Rows.Count;i++){
+				table.Rows[i]["Age"]=Shared.DateToAge(PIn.PDate(table.Rows[i]["Birthdate"].ToString()),dateTo.AddDays(1)).ToString();
+			}
+			return table;
 		}
 
 		

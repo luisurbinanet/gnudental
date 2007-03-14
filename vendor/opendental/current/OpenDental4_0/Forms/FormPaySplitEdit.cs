@@ -23,10 +23,11 @@ namespace OpenDental
 		///<summary></summary>
 		public bool IsNew;
 		private System.Windows.Forms.Label labelRemainder;
-		///<summary></summary>
+		///<summary>The value needed to make the splits balance.</summary>
 		public double Remain;
 		private System.Windows.Forms.CheckBox checkPayPlan;
-		private PaySplit PaySplitCur;
+		///<summary></summary>
+		public PaySplit PaySplitCur;
 		private OpenDental.UI.Button butDelete;
 		private OpenDental.ValidDate textProcDate;
 		private System.Windows.Forms.Label label7;
@@ -75,10 +76,8 @@ namespace OpenDental
 
 
 		///<summary></summary>
-		public FormPaySplitEdit(PaySplit paySplitCur,Family famCur){
+		public FormPaySplitEdit(Family famCur){//PaySplit paySplitCur,Family famCur){
 			InitializeComponent();
-			PaySplitCur=paySplitCur;
-			//PatCur=patCur;//only used for new paysplits. Not the patNum of this split
 			FamCur=famCur;
 			Lan.F(this);
 		}
@@ -653,8 +652,9 @@ namespace OpenDental
 		#endregion
 
 		private void FormPaySplitEdit_Load(object sender, System.EventArgs e) {
-			//OriginalPatNum=PaySplitCur.PatNum;
-			//Location=new Point(Location.X,Location.Y+150);
+			if(PaySplitCur==null) {
+				MessageBox.Show("Split cannot be null.");//just for debugging
+			}
 			textDateEntry.Text=PaySplitCur.DateEntry.ToShortDateString();
 			textDatePay.Text=PaySplitCur.DatePay.ToShortDateString();
 			textProcDate.Text=PaySplitCur.ProcDate.ToShortDateString();
@@ -877,10 +877,14 @@ namespace OpenDental
 		}
 
 		private void butDelete_Click(object sender, System.EventArgs e) {
-			if(!MsgBox.Show(this,true,"Delete Item?")){
+			if(!MsgBox.Show(this,true,"Delete Item?")) {
 				return;
 			}
-			PaySplitCur.Delete();
+			PaySplitCur=null;
+			if(IsNew) {
+				DialogResult=DialogResult.Cancel;
+				return;
+			}
 			DialogResult=DialogResult.OK;
 		}
 
@@ -906,11 +910,14 @@ namespace OpenDental
 			//	PaySplitCur.PatNum=FamCur.List[listPatient.SelectedIndex].PatNum;
 			//}
 			//PayPlanNum already handled
-			PaySplitCur.InsertOrUpdate(IsNew);
+			//PaySplitCur.InsertOrUpdate(IsNew);
 			DialogResult=DialogResult.OK;
 		}
 
 		private void ButCancel_Click(object sender, System.EventArgs e) {
+			if(IsNew) {
+				PaySplitCur=null;
+			}
 			DialogResult=DialogResult.Cancel;
 		}
 

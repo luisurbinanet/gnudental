@@ -152,7 +152,6 @@ namespace OpenDental.UI{
 		private void ToolBarMain_ButtonClick(object sender, OpenDental.UI.ODToolBarButtonClickEventArgs e) {
 			//MessageBox.Show(e.Button.Tag.ToString());
 			switch(e.Button.Tag.ToString()){
-					
 				case "Print":
 					OnPrint_Click();
 					break;
@@ -165,7 +164,7 @@ namespace OpenDental.UI{
 				case "Close":
 					OnClose_Click();
 					break;
-				}
+			}
 		}
 
 		private void OnPrint_Click() {
@@ -178,6 +177,7 @@ namespace OpenDental.UI{
 			catch{
 				MessageBox.Show(Lan.g(this,"Printer not available"));
 			}
+			DialogResult=DialogResult.OK;
 		}
 
 		private void OnClose_Click() {

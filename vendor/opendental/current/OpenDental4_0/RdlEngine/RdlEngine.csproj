@@ -1,1495 +1,941 @@
-<VisualStudioProject>
-    <CSHARP
-        ProjectType = "Local"
-        ProductVersion = "7.10.3077"
-        SchemaVersion = "2.0"
-        ProjectGuid = "{C97E91F4-B310-44E2-9B6C-96775395722D}"
-    >
-        <Build>
-            <Settings
-                ApplicationIcon = ""
-                AssemblyKeyContainerName = ""
-                AssemblyName = "RdlEngine"
-                AssemblyOriginatorKeyFile = ""
-                DefaultClientScript = "JScript"
-                DefaultHTMLPageLayout = "Grid"
-                DefaultTargetSchema = "IE50"
-                DelaySign = "false"
-                OutputType = "Library"
-                PreBuildEvent = ""
-                PostBuildEvent = ""
-                RootNamespace = "RdlEngine"
-                RunPostBuildEvent = "OnBuildSuccess"
-                StartupObject = ""
-            >
-                <Config
-                    Name = "Debug"
-                    AllowUnsafeBlocks = "false"
-                    BaseAddress = "285212672"
-                    CheckForOverflowUnderflow = "false"
-                    ConfigurationOverrideFile = ""
-                    DefineConstants = "DEBUG;TRACE"
-                    DocumentationFile = ""
-                    DebugSymbols = "true"
-                    FileAlignment = "4096"
-                    IncrementalBuild = "false"
-                    NoStdLib = "false"
-                    NoWarn = ""
-                    Optimize = "false"
-                    OutputPath = "bin\Debug\"
-                    RegisterForComInterop = "false"
-                    RemoveIntegerChecks = "false"
-                    TreatWarningsAsErrors = "false"
-                    WarningLevel = "4"
-                />
-                <Config
-                    Name = "Release"
-                    AllowUnsafeBlocks = "false"
-                    BaseAddress = "285212672"
-                    CheckForOverflowUnderflow = "false"
-                    ConfigurationOverrideFile = ""
-                    DefineConstants = "TRACE"
-                    DocumentationFile = ""
-                    DebugSymbols = "false"
-                    FileAlignment = "4096"
-                    IncrementalBuild = "false"
-                    NoStdLib = "false"
-                    NoWarn = ""
-                    Optimize = "true"
-                    OutputPath = "bin\Release\"
-                    RegisterForComInterop = "false"
-                    RemoveIntegerChecks = "false"
-                    TreatWarningsAsErrors = "false"
-                    WarningLevel = "4"
-                />
-            </Settings>
-            <References>
-                <Reference
-                    Name = "System"
-                    AssemblyName = "System"
-                    HintPath = "..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.dll"
-                />
-                <Reference
-                    Name = "System.Data"
-                    AssemblyName = "System.Data"
-                    HintPath = "..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Data.dll"
-                />
-                <Reference
-                    Name = "System.XML"
-                    AssemblyName = "System.Xml"
-                    HintPath = "..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.XML.dll"
-                />
-                <Reference
-                    Name = "System.Drawing"
-                    AssemblyName = "System.Drawing"
-                    HintPath = "..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Drawing.dll"
-                />
-                <Reference
-                    Name = "MySql.Data"
-                    AssemblyName = "MySql.Data"
-                    HintPath = "..\Required dlls\MySql.Data.dll"
-                />
-            </References>
-        </Build>
-        <Files>
-            <Include>
-                <File
-                    RelPath = "AssemblyInfo.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Action.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Axis.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\AxisTickMarks.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Body.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\CategoryAxis.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\CategoryGrouping.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\CategoryGroupings.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Chart.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ChartBar.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ChartBase.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ChartColumn.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ChartData.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ChartElementOutput.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ChartExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ChartGridLines.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ChartLayout.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ChartLine.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ChartPalette.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ChartPie.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ChartSeries.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ChartSubType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ChartType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Classes.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\CodeModule.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\CodeModules.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ColumnGrouping.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ColumnGroupings.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ConnectionProperties.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Corner.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Custom.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\CustomReportItem.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\DataElementOutput.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\DataElementStyle.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\DataElementStyleEnum.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\DataInstanceElementOutput.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\DataLabel.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\DataLabelPosition.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\DataPoint.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\DataPoints.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\DataRegion.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\DataSet.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\DataSetReference.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\DataSets.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\DataSource.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\DataSourceReference.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\DataSources.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\DataType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\DataValue.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\DataValues.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\DefaultValue.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Details.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Drillthrough.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\DrillthroughParameter.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\DrillthroughParameters.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\DynamicCategories.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\DynamicColumns.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\DynamicRows.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\DynamicSeries.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\EmbeddedImage.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\EmbeddedImages.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Expression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ExpressionType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Field.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Fields.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Filter.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\FilterOperator.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Filters.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\FilterValue.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\FilterValues.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Footer.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\GroupEntry.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\GroupExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\GroupExpressions.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Grouping.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Header.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Image.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ImageSizing.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ImageSource.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Legend.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\LegendLayout.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\LegendPosition.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Line.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\List.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Marker.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\MarkerType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Matrix.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\MatrixCell.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\MatrixCellDataElementOutput.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\MatrixCellEntry.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\MatrixCells.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\MatrixColumn.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\MatrixColumns.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\MatrixEntry.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\MatrixLayoutDirection.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\MatrixRow.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\MatrixRows.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Name.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\NameLookup.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\PageFooter.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\PageHeader.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Pages.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ParameterValue.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ParameterValues.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\PlotArea.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\PlotType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Query.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\QueryColumn.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\QueryCommandType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\QueryParameter.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\QueryParameters.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\RDLParser.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Rectangle.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Report.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ReportClass.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ReportItem.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ReportItems.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ReportLink.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ReportLog.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ReportParameter.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ReportParameters.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Row.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\RowGrouping.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\RowGroupings.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Rows.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\RSize.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\SeriesGrouping.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\SeriesGroupings.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\SortBy.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\SortDirection.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Sorting.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\StaticCategories.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\StaticColumn.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\StaticColumns.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\StaticMember.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\StaticRow.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\StaticRows.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\StaticSeries.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Style.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\StyleBackgroundImage.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\StyleBackgroundImageSource.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\StyleBorderColor.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\StyleBorderStyle.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\StyleBorderWidth.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\StyleInfo.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Subreport.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\SubreportParameter.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\SubreportParameters.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Subtotal.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\SubtotalPosition.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Table.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\TableCell.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\TableCells.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\TableColumn.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\TableColumns.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\TableGroup.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\TableGroups.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\TableRow.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\TableRows.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Textbox.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ThreeDProperties.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ThreeDPropertiesDrawingStyle.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ThreeDPropertiesProjectionMode.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ThreeDPropertiesShading.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Title.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\TitlePosition.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ToggleImage.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\TrueFalseAuto.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ValidValues.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\ValueAxis.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Values.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\Visibility.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Definition\XmlUtil.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ExprParser\CharReader.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ExprParser\Lexer.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ExprParser\Parser.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ExprParser\ParserException.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ExprParser\Token.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ExprParser\TokenList.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ExprParser\TokenTypes.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\Constant.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\ConstantBoolean.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\ConstantDateTime.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\ConstantDecimal.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\ConstantDouble.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\ConstantError.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\ConstantInteger.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\ConstantString.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\Financial.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionAggr.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionAggrAvg.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionAggrCount.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionAggrCountDistinct.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionAggrCountRows.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionAggrFirst.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionAggrLast.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionAggrLevel.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionAggrMax.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionAggrMin.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionAggrRvAvg.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionAggrRvCount.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionAggrRvMax.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionAggrRvMin.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionAggrRvStdev.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionAggrRvStdevp.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionAggrRvSum.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionAggrRvVar.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionAggrRvVarp.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionAggrStdev.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionAggrStdevp.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionAggrSum.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionAggrVar.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionAggrVarp.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionAnd.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionBinary.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionChoose.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionCustomInstance.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionCustomStatic.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionDiv.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionDivDecimal.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionExecutionTime.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionExp.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionField.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionFieldIsMissing.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionFormat.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionIif.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionMinus.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionMinusDecimal.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionModulus.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionMult.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionMultDecimal.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionNot.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionOr.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionPageNumber.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionPlus.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionPlusDecimal.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionPlusString.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionRelopEQ.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionRelopGT.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionRelopGTE.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionRelopLT.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionRelopLTE.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionRelopNE.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionReportFolder.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionReportName.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionReportParameter.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionReportParameterLabel.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionSwitch.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionSystem.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionTextbox.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionTotalPages.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionUnaryMinus.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionUnaryMinusDecimal.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionUnaryMinusInteger.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionUserID.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\FunctionUserLanguage.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\ICacheData.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\Identifier.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\IdentifierKey.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\IExpr.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Functions\VBFunctions.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Render\IPresent.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Render\IStreamGen.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Render\MemoryStreamGen.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Render\OneFileStreamGen.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Render\PdfBase.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Render\PdfCatalog.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Render\PdfContent.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Render\PdfElements.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Render\PdfFont.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Render\PdfImage.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Render\PdfInfo.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Render\PdfPage.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Render\PdfUtility.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Render\ProcessReport.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Render\RenderHtml.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Render\RenderPdf.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Render\RenderXml.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Render\StreamGen.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-            </Include>
-        </Files>
-    </CSHARP>
-</VisualStudioProject>
-
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{C97E91F4-B310-44E2-9B6C-96775395722D}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>RdlEngine</AssemblyName>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>Library</OutputType>
+    <RootNamespace>RdlEngine</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>false</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>none</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="MySql.Data">
+      <Name>MySql.Data</Name>
+      <HintPath>..\Required dlls\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <Name>System.Drawing</Name>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml">
+      <Name>System.XML</Name>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Action.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Axis.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\AxisTickMarks.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Body.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\CategoryAxis.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\CategoryGrouping.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\CategoryGroupings.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Chart.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ChartBar.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ChartBase.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ChartColumn.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ChartData.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ChartElementOutput.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ChartExpression.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ChartGridLines.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ChartLayout.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ChartLine.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ChartPalette.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ChartPie.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ChartSeries.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ChartSubType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ChartType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Classes.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\CodeModule.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\CodeModules.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ColumnGrouping.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ColumnGroupings.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ConnectionProperties.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Corner.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Custom.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\CustomReportItem.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\DataElementOutput.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\DataElementStyle.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\DataElementStyleEnum.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\DataInstanceElementOutput.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\DataLabel.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\DataLabelPosition.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\DataPoint.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\DataPoints.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\DataRegion.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\DataSet.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\DataSetReference.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\DataSets.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\DataSource.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\DataSourceReference.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\DataSources.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\DataType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\DataValue.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\DataValues.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\DefaultValue.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Details.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Drillthrough.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\DrillthroughParameter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\DrillthroughParameters.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\DynamicCategories.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\DynamicColumns.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\DynamicRows.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\DynamicSeries.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\EmbeddedImage.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\EmbeddedImages.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Expression.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ExpressionType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Field.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Fields.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Filter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\FilterOperator.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Filters.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\FilterValue.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\FilterValues.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Footer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\GroupEntry.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\GroupExpression.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\GroupExpressions.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Grouping.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Header.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Image.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ImageSizing.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ImageSource.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Legend.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\LegendLayout.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\LegendPosition.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Line.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\List.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Marker.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\MarkerType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Matrix.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\MatrixCell.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\MatrixCellDataElementOutput.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\MatrixCellEntry.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\MatrixCells.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\MatrixColumn.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\MatrixColumns.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\MatrixEntry.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\MatrixLayoutDirection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\MatrixRow.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\MatrixRows.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Name.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\NameLookup.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\PageFooter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\PageHeader.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Pages.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ParameterValue.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ParameterValues.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\PlotArea.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\PlotType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Query.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\QueryColumn.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\QueryCommandType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\QueryParameter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\QueryParameters.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\RDLParser.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Rectangle.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Report.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ReportClass.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ReportItem.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ReportItems.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ReportLink.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ReportLog.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ReportParameter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ReportParameters.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Row.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\RowGrouping.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\RowGroupings.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Rows.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\RSize.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\SeriesGrouping.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\SeriesGroupings.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\SortBy.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\SortDirection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Sorting.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\StaticCategories.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\StaticColumn.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\StaticColumns.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\StaticMember.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\StaticRow.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\StaticRows.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\StaticSeries.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Style.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\StyleBackgroundImage.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\StyleBackgroundImageSource.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\StyleBorderColor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\StyleBorderStyle.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\StyleBorderWidth.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\StyleInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Subreport.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\SubreportParameter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\SubreportParameters.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Subtotal.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\SubtotalPosition.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Table.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\TableCell.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\TableCells.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\TableColumn.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\TableColumns.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\TableGroup.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\TableGroups.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\TableRow.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\TableRows.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Textbox.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ThreeDProperties.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ThreeDPropertiesDrawingStyle.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ThreeDPropertiesProjectionMode.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ThreeDPropertiesShading.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Title.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\TitlePosition.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ToggleImage.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\TrueFalseAuto.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ValidValues.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\ValueAxis.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Values.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\Visibility.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Definition\XmlUtil.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ExprParser\CharReader.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ExprParser\Lexer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ExprParser\Parser.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ExprParser\ParserException.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ExprParser\Token.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ExprParser\TokenList.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ExprParser\TokenTypes.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\Constant.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\ConstantBoolean.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\ConstantDateTime.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\ConstantDecimal.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\ConstantDouble.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\ConstantError.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\ConstantInteger.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\ConstantString.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\Financial.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionAggr.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionAggrAvg.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionAggrCount.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionAggrCountDistinct.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionAggrCountRows.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionAggrFirst.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionAggrLast.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionAggrLevel.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionAggrMax.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionAggrMin.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionAggrRvAvg.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionAggrRvCount.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionAggrRvMax.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionAggrRvMin.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionAggrRvStdev.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionAggrRvStdevp.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionAggrRvSum.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionAggrRvVar.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionAggrRvVarp.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionAggrStdev.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionAggrStdevp.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionAggrSum.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionAggrVar.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionAggrVarp.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionAnd.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionBinary.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionChoose.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionCustomInstance.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionCustomStatic.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionDiv.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionDivDecimal.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionExecutionTime.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionExp.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionField.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionFieldIsMissing.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionFormat.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionIif.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionMinus.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionMinusDecimal.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionModulus.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionMult.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionMultDecimal.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionNot.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionOr.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionPageNumber.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionPlus.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionPlusDecimal.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionPlusString.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionRelopEQ.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionRelopGT.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionRelopGTE.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionRelopLT.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionRelopLTE.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionRelopNE.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionReportFolder.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionReportName.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionReportParameter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionReportParameterLabel.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionSwitch.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionSystem.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionTextbox.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionTotalPages.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionUnaryMinus.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionUnaryMinusDecimal.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionUnaryMinusInteger.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionUserID.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\FunctionUserLanguage.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\ICacheData.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\Identifier.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\IdentifierKey.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\IExpr.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Functions\VBFunctions.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Render\IPresent.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Render\IStreamGen.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Render\MemoryStreamGen.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Render\OneFileStreamGen.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Render\PdfBase.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Render\PdfCatalog.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Render\PdfContent.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Render\PdfElements.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Render\PdfFont.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Render\PdfImage.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Render\PdfInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Render\PdfPage.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Render\PdfUtility.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Render\ProcessReport.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Render\RenderHtml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Render\RenderPdf.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Render\RenderXml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Render\StreamGen.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>

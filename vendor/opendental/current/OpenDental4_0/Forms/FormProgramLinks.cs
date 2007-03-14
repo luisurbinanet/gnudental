@@ -33,7 +33,7 @@ namespace OpenDental{
 		#region Windows Form Designer generated code
 
 		private void InitializeComponent(){
-			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormProgramLinks));
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormProgramLinks));
 			this.listProgram = new System.Windows.Forms.ListBox();
 			this.butClose = new OpenDental.UI.Button();
 			this.butAdd = new OpenDental.UI.Button();
@@ -42,42 +42,48 @@ namespace OpenDental{
 			// listProgram
 			// 
 			this.listProgram.Items.AddRange(new object[] {
-																										 ""});
-			this.listProgram.Location = new System.Drawing.Point(17, 63);
+            ""});
+			this.listProgram.Location = new System.Drawing.Point(17,11);
 			this.listProgram.Name = "listProgram";
-			this.listProgram.Size = new System.Drawing.Size(282, 277);
+			this.listProgram.Size = new System.Drawing.Size(282,394);
 			this.listProgram.TabIndex = 34;
 			this.listProgram.DoubleClick += new System.EventHandler(this.listProgram_DoubleClick);
 			// 
 			// butClose
 			// 
+			this.butClose.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butClose.Autosize = true;
+			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butClose.Location = new System.Drawing.Point(345, 359);
+			this.butClose.Location = new System.Drawing.Point(344,437);
 			this.butClose.Name = "butClose";
-			this.butClose.Size = new System.Drawing.Size(75, 26);
+			this.butClose.Size = new System.Drawing.Size(75,26);
 			this.butClose.TabIndex = 38;
 			this.butClose.Text = "&Close";
 			this.butClose.Click += new System.EventHandler(this.butClose_Click);
 			// 
 			// butAdd
 			// 
-			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.butAdd.Autosize = true;
 			this.butAdd.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butAdd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
 			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAdd.Location = new System.Drawing.Point(18, 357);
+			this.butAdd.Location = new System.Drawing.Point(17,435);
 			this.butAdd.Name = "butAdd";
-			this.butAdd.Size = new System.Drawing.Size(75, 26);
+			this.butAdd.Size = new System.Drawing.Size(75,26);
 			this.butAdd.TabIndex = 41;
 			this.butAdd.Text = "&Add";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
 			// FormProgramLinks
 			// 
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(447, 412);
+			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
+			this.ClientSize = new System.Drawing.Size(447,473);
 			this.Controls.Add(this.butAdd);
 			this.Controls.Add(this.listProgram);
 			this.Controls.Add(this.butClose);

@@ -115,7 +115,7 @@ namespace OpenDental{
 			return List;
 		}
 
-		///<summary>Supply a PatPlan list.  This function loops through the list and returns the plan num of the specified ordinal.  If ordinal not valid, then it returns 0.</summary>
+		///<summary>Supply a PatPlan list.  This function loops through the list and returns the plan num of the specified ordinal.  If ordinal not valid, then it returns 0.  The main purpose of this function is so we don't have to check the length of the list.</summary>
 		public static int GetPlanNum(PatPlan[] list,int ordinal){
 			for(int i=0;i<list.Length;i++){
 				if(list[i].Ordinal==ordinal){
@@ -156,7 +156,7 @@ namespace OpenDental{
 				if(patPlans[i].PatPlanNum==patPlanNum){
 					command="DELETE FROM patplan WHERE PatPlanNum="+POut.PInt(patPlanNum);
 					dcon.NonQ(command);
-					command="DELETE FROM covpat WHERE PatPlanNum=" +POut.PInt(patPlanNum);
+					command="DELETE FROM benefit WHERE PatPlanNum=" +POut.PInt(patPlanNum);
 					dcon.NonQ(command);
 					doDecrement=true;
 				}
@@ -167,7 +167,8 @@ namespace OpenDental{
 			Procedure[] procs=Procedures.Refresh(patNum);
 			patPlans=PatPlans.Refresh(patNum);
 			InsPlan[] planList=InsPlans.Refresh(fam);
-			Procedures.ComputeEstimatesForAll(patNum,claimProcs,procs,planList,patPlans);
+			Benefit[] benList=Benefits.Refresh(patPlans);
+			Procedures.ComputeEstimatesForAll(patNum,claimProcs,procs,planList,patPlans,benList);
 			Patients.SetHasIns(patNum);
 		}
 
@@ -214,6 +215,16 @@ namespace OpenDental{
 				}
 			}
 			return null;
+		}
+
+		///<summary>Loops through the supplied list to find the one patplanNum needed based on the planNum.  Returns 0 if patient is not currently covered by the planNum supplied.  Only used once in Claims.cs.</summary>
+		public static int GetPatPlanNum(PatPlan[] patPlans,int planNum) {
+			for(int i=0;i<patPlans.Length;i++) {
+				if(patPlans[i].PlanNum==planNum) {
+					return patPlans[i].PatPlanNum;
+				}
+			}
+			return 0;
 		}
 
 

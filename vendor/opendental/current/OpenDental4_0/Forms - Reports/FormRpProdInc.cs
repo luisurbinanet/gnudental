@@ -461,7 +461,7 @@ namespace OpenDental{
 				+"'0000000000000' AS $PtInc,"
 				+"'0000000000000' AS $InsInc,"
 				+"procedurelog.ProcNum "
-				+"FROM procedurelog,patient,procedurecode,provider "
+				+"FROM patient,procedurecode,provider,procedurelog "
 				+"LEFT JOIN claimproc ON procedurelog.ProcNum=claimproc.ProcNum "
 				+"AND claimproc.Status='7' "//only CapComplete writeoffs are subtracted here.
 				+"WHERE procedurelog.ProcStatus = '2' "

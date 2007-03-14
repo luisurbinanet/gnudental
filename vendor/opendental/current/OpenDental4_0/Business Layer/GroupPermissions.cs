@@ -200,6 +200,10 @@ namespace OpenDental{
 		///<summary>Gets the description for the specified permisssion.  Already translated.</summary>
 		public static string GetDesc(Permissions perm){
 			switch(perm){
+				case Permissions.AccountingCreate:
+					return Lan.g("enumPermissions","Accounting Create Entry");
+				case Permissions.AccountingEdit:
+					return Lan.g("enumPermissions","Accounting Edit Entry");
 				case Permissions.AccountModule:
 					return Lan.g("enumPermissions","Account Module");
 				case Permissions.AdjustmentCreate:
@@ -267,6 +271,9 @@ namespace OpenDental{
 			if(permType==Permissions.AdjustmentEdit
 				|| permType==Permissions.PaymentEdit
 				|| permType==Permissions.ProcComplEdit
+				|| permType==Permissions.AccountingEdit
+				|| permType==Permissions.AccountingCreate//prevents backdating
+				|| permType==Permissions.DepositSlips//prevents backdating
 				)
 			{
 				return true;

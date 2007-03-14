@@ -26,7 +26,7 @@ namespace OpenDental{
 
 		///<summary>Converts a date to an age. If age is over 115, then returns 0.</summary>
 		public static int DateToAge(DateTime date){
-			if(date.Year<1890)
+			if(date.Year<1880)
 				return 0;
 			if(date.Month < DateTime.Now.Month){//birthday in previous month
 				return DateTime.Now.Year-date.Year;
@@ -35,6 +35,19 @@ namespace OpenDental{
 				return DateTime.Now.Year-date.Year;
 			}
 			return DateTime.Now.Year-date.Year-1;
+		}
+
+		///<summary>Converts a date to an age. If age is over 115, then returns 0.</summary>
+		public static int DateToAge(DateTime date,DateTime asofDate) {
+			if(date.Year<1880)
+				return 0;
+			if(date.Month < asofDate.Month) {//birthday in previous month
+				return asofDate.Year-date.Year;
+			}
+			if(date.Month == asofDate.Month && date.Day <= asofDate.Day) {//birthday in this month
+				return asofDate.Year-date.Year;
+			}
+			return asofDate.Year-date.Year-1;
 		}
 
 		///<summary></summary>
@@ -50,7 +63,30 @@ namespace OpenDental{
 			return AgeToString(DateToAge(date));
 		}
 
-		///<summary>Computes balance for a single patient. Returns true if a refresh is needed.</summary>
+		///<summary>Converts numbers to ordinals.  For example, 120 to 120th, 73 to 73rd.  Probably doesn't work too well with foreign language translations.  Used in the Birthday postcards.</summary>
+		public static string NumberToOrdinal(int number){
+			string str=number.ToString();
+			string last=str.Substring(str.Length-1);
+			switch(last){
+				case "0":
+				case "4":
+				case "5":
+				case "6":
+				case "7":
+				case "8":
+				case "9":
+					return str+"th";
+				case "1":
+					return str+"st";
+				case "2":
+					return str+"nd";
+				case "3":
+					return str+"rd";
+			}
+			return "";//will never happen
+		}
+
+		///<summary>Computes balance for a single patient without making any calls to the database. If the balance doesn't match the stored patient balance, then it makes one update to the database and returns true to trigger calculation of aging.</summary>
 		public static bool ComputeBalances(Procedure[] procList,ClaimProc[] claimProcList,Patient PatCur,PaySplit[] paySplitList,Adjustment[] AdjustmentList,PayPlan[] payPlanList,PayPlanCharge[] payPlanChargeList){
 			//must have refreshed all 5 first
 			double calcBal
@@ -144,9 +180,30 @@ namespace OpenDental{
 		///<summary></summary>
 		public static event ModuleEventHandler ModuleSelected;
 
+		/*
 		///<summary>This triggers a global event which the main form responds to by going directly to a module.</summary>
-		public static void GoNow(DateTime dateSelected, Appointment pinAppt,int selectedAptNum,int iModule){
-			OnModuleSelected(new ModuleEventArgs(dateSelected,pinAppt,selectedAptNum,iModule));
+		public static void GoNow(DateTime dateSelected,Appointment pinAppt,int selectedAptNum,int iModule,int claimNum) {
+			OnModuleSelected(new ModuleEventArgs(dateSelected,pinAppt,selectedAptNum,iModule,claimNum));
+		}*/
+
+		///<summary>Goes directly to an existing appointment.</summary>
+		public static void GotoAppointment(DateTime dateSelected,int selectedAptNum) {
+			OnModuleSelected(new ModuleEventArgs(dateSelected,null,selectedAptNum,0,0));
+		}
+
+		///<summary>Goes directly to a claim in someone's Account.</summary>
+		public static void GotoClaim(int claimNum){
+			OnModuleSelected(new ModuleEventArgs(DateTime.MinValue,null,0,2,claimNum));
+		}
+
+		///<summary>Goes directly to an Account.  Patient should already have been selected</summary>
+		public static void GotoAccount() {
+			OnModuleSelected(new ModuleEventArgs(DateTime.MinValue,null,0,2,0));
+		}
+
+		///<summary>Puts appointment on pinboard, then jumps to Appointments module.  Patient should already have been selected</summary>
+		public static void PinToAppt(Appointment pinAppt) {
+			OnModuleSelected(new ModuleEventArgs(DateTime.Today,pinAppt,0,0,0));
 		}
 
 		///<summary></summary>
@@ -166,13 +223,17 @@ namespace OpenDental{
 		private Appointment pinAppt;
 		private int selectedAptNum;
 		private int iModule;
+		private int claimNum;
 		
 		///<summary></summary>
-		public ModuleEventArgs(DateTime dateSelected,Appointment pinAppt,int selectedAptNum,int iModule) : base(){
+		public ModuleEventArgs(DateTime dateSelected,Appointment pinAppt,int selectedAptNum,int iModule,
+			int claimNum) : base()
+		{
 			this.dateSelected=dateSelected;
 			this.pinAppt=pinAppt;
 			this.selectedAptNum=selectedAptNum;
 			this.iModule=iModule;
+			this.claimNum=claimNum;
 		}
 
 		///<summary>If going to the ApptModule, this lets you pick a date.</summary>
@@ -180,7 +241,7 @@ namespace OpenDental{
 			get{return dateSelected;}
 		}
 
-		///<summary>Don't remember why I called this one pin.  I don't think it has anything to do with pinboard.</summary>
+		///<summary>This will be for the pinboard appt.  Just not implemented yet.</summary>
 		public Appointment PinAppt{
 			get{return pinAppt;}
 		}
@@ -193,6 +254,11 @@ namespace OpenDental{
 		///<summary></summary>
 		public int IModule{
 			get{return iModule;}
+		}
+
+		///<summary>If going to Account module, this lets you pick a claim.</summary>
+		public int ClaimNum{
+			get{return claimNum;}
 		}
 	}
 

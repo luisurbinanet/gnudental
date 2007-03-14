@@ -212,7 +212,7 @@ namespace OpenDental{
 		ProcCodes=2,
 		///<summary>4</summary>
 		Prefs=4,
-		///<summary>8</summary>
+		///<summary>8- Also includes appt rules</summary>
 		Views=8,
 		///<summary>16</summary>
 		AutoCodes=16,
@@ -226,7 +226,7 @@ namespace OpenDental{
 		Computers=256,
 		///<summary>512</summary>
 		InsCats=512,
-		///<summary>1024</summary>
+		///<summary>1024. Also includes payperiods.</summary>
 		Employees=1024,
 		///<summary>2048</summary>
 		Startup=2048,
@@ -258,7 +258,7 @@ namespace OpenDental{
 		LetterMerge=16777216,
 		///<summary>33554432</summary>
 		DentalSchools=33554432,
-		///<summary>67108864</summary>
+		///<summary>67108864. Includes AccountingAutoPay.</summary>
 		Operatories=67108864,
 		///<summary>All flags combined except Date.</summary>
 		AllLocal=134217728-1-1
@@ -347,7 +347,9 @@ namespace OpenDental{
 		///<summary>2</summary>
 		Child,
 		///<summary>3</summary>
-		Widowed}
+		Widowed,
+		///<summary>4</summary>
+		Divorced}
 	///<summary>For schedule timeblocks.</summary>
 	public enum ScheduleType{
 		///<summary>0</summary>
@@ -673,7 +675,7 @@ namespace OpenDental{
 		Other
 	}
 
-	///<summary>For public health.</summary>
+	///<summary>For public health.  Unknown, NoProblems, NeedsCarE, or Urgent.</summary>
 	public enum TreatmentUrgency{
 		///<summary></summary>
 		Unknown,
@@ -912,7 +914,11 @@ namespace OpenDental{
 		///<summary>29</summary>
 		TimecardsEditAll,
 		///<summary>30</summary>
-		DepositSlips
+		DepositSlips,
+		///<summary>31</summary>
+		AccountingEdit,
+		///<summary>32</summary>
+		AccountingCreate
 	}
 
 	///<summary>The type of signal being sent.</summary>
@@ -923,6 +929,94 @@ namespace OpenDental{
 		Text,
 		///<summary>2</summary>
 		Invalid
+	}
+
+	///<summary>Used in the benefit table.  Corresponds to X12 EB01.</summary>
+	public enum InsBenefitType{
+		///<summary>0- Not usually used.  Would only be used if you are just indicating that the patient is covered, but without any specifics.</summary>
+		ActiveCoverage,
+		///<summary>1- This corresponds to the X12 Co-Insurance type.  Except it's the opposite because it's the insurance coverage percentage, whereas X12 sends the percentage as the patient's responsibility portion.</summary>
+		Percentage,
+		///<summary>2- The deductible amount.  Might be two entries if, for instance, deductible is waived on preventive.</summary>
+		Deductible,
+		///<summary>3- A dollar amount.</summary>
+		CoPayment,
+		///<summary>4- Services that are simply not covered at all.</summary>
+		Exclusions,
+		///<summary>5- Covers a variety of limitations, including Max, frequency, fee reductions, etc.</summary>
+		Limitations
+	}
+
+	///<summary>Used in the benefit table.  Corresponds to X12 EB06.</summary>
+	public enum BenefitTimePeriod{
+		///<summary>0- A timeperiod is frequenly not needed.  For example, percentages.</summary>
+		None,
+		///<summary>1- The renewal month is not Jan.  In this case, we need to know the effective date so that we know which month the benefits start over in.</summary>
+		ServiceYear,
+		///<summary>2- Renewal month is Jan.</summary>
+		CalendarYear,
+		///<summary>3- Usually used for ortho max.</summary>
+		Lifetime,
+		///<summary>4- Wouldn't be used alone.  Years would again be specified in the quantity field along with a number.</summary>
+		Years
+	}
+
+	///<summary>Used in the benefit table in conjunction with an integer quantity.</summary>
+	public enum BenefitQuantity{
+		///<summary>0- This is used a lot. Most benefits do not need any sort of quantity.</summary>
+		None,
+		///<summary>1- For example, two exams per year</summary>
+		NumberOfServices,
+		///<summary>2- For example, 18 when flouride only covered to 18 y.o.</summary>
+		AgeLimit,
+		///<summary>3- For example, copay per 1 visit.</summary>
+		Visits,
+		///<summary>4- For example, pano every 5 years.</summary>
+		Years
+	}
+
+	///<summary>The X12 benefit categories.  Used to link the user-defined CovCats to the corresponding X12 category.</summary>
+	public enum EbenefitCategory{
+		///<summary>0- Default</summary>
+		None,
+		///<summary>1- X12: 30 and 35</summary>
+		General,
+		///<summary>2- X12: 23</summary>
+		Diagnostic,
+		///<summary>3- X12: 24</summary>
+		Periodontics,
+		///<summary>4- X12: 25</summary>
+		Restorative,
+		///<summary>5- X12: 26</summary>
+		Endodontics,
+		///<summary>6- X12: 27</summary>
+		MaxillofacialProsth,
+		///<summary>7- X12: 36</summary>
+		Crowns,
+		///<summary>8- X12: 37</summary>
+		Accident,
+		///<summary>9- X12: 38</summary>
+		Orthodontics,
+		///<summary>10- X12: 39</summary>
+		Prosthodontics,
+		///<summary>11- X12: 40</summary>
+		OralSurgery,
+		///<summary>12- X12: 41</summary>
+		RoutinePreventive
+	}
+
+	///<summary>Used in accounting for chart of accounts.</summary>
+	public enum AccountType{
+		///<summary>0</summary>
+		Asset,
+		///<summary>1</summary>
+		Liability,
+		///<summary>2</summary>
+		Equity,
+		///<summary>3</summary>
+		Revenue,
+		///<summary>4</summary>
+		Expense
 	}
 
 	

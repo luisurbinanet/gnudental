@@ -239,11 +239,30 @@ namespace OpenDental{
 						|| ClaimFormCur.Items[i].FieldName=="P8Fee"
 						|| ClaimFormCur.Items[i].FieldName=="P9Fee"
 						|| ClaimFormCur.Items[i].FieldName=="P10Fee"
+						|| ClaimFormCur.Items[i].FieldName=="P1Lab"
+						|| ClaimFormCur.Items[i].FieldName=="P2Lab"
+						|| ClaimFormCur.Items[i].FieldName=="P3Lab"
+						|| ClaimFormCur.Items[i].FieldName=="P4Lab"
+						|| ClaimFormCur.Items[i].FieldName=="P5Lab"
+						|| ClaimFormCur.Items[i].FieldName=="P6Lab"
+						|| ClaimFormCur.Items[i].FieldName=="P7Lab"
+						|| ClaimFormCur.Items[i].FieldName=="P8Lab"
+						|| ClaimFormCur.Items[i].FieldName=="P9Lab"
+						|| ClaimFormCur.Items[i].FieldName=="P10Lab"
+						|| ClaimFormCur.Items[i].FieldName=="P1FeeMinusLab"
+						|| ClaimFormCur.Items[i].FieldName=="P2FeeMinusLab"
+						|| ClaimFormCur.Items[i].FieldName=="P3FeeMinusLab"
+						|| ClaimFormCur.Items[i].FieldName=="P4FeeMinusLab"
+						|| ClaimFormCur.Items[i].FieldName=="P5FeeMinusLab"
+						|| ClaimFormCur.Items[i].FieldName=="P6FeeMinusLab"
+						|| ClaimFormCur.Items[i].FieldName=="P7FeeMinusLab"
+						|| ClaimFormCur.Items[i].FieldName=="P8FeeMinusLab"
+						|| ClaimFormCur.Items[i].FieldName=="P9FeeMinusLab"
+						|| ClaimFormCur.Items[i].FieldName=="P10FeeMinusLab"
 						|| ClaimFormCur.Items[i].FieldName=="TotalFee")
 					{
 						//this aligns it to the right
-						xPosText-=grfx.MeasureString(displayStrings[i]
-							,new Font(ClaimFormCur.FontName,ClaimFormCur.FontSize)).Width;
+						xPosText-=grfx.MeasureString(displayStrings[i],new Font(ClaimFormCur.FontName,ClaimFormCur.FontSize)).Width;
 					}
 					grfx.DrawString(displayStrings[i]
 						,new Font(ClaimFormCur.FontName,ClaimFormCur.FontSize)
@@ -1324,6 +1343,12 @@ namespace OpenDental{
 					case "P1Diagnosis":
 						displayStrings[i]=GetProcInfo("Diagnosis",1+startProc);
 						break;
+					case "P1Lab":
+						displayStrings[i]=GetProcInfo("Lab",1+startProc);
+						break;
+					case "P1FeeMinusLab":
+						displayStrings[i]=GetProcInfo("FeeMinusLab",1+startProc);
+						break;
 					case "P2Date":
 						displayStrings[i]=GetProcInfo("Date",2+startProc,ClaimFormCur.Items[i].FormatString);
 						break;
@@ -1356,6 +1381,12 @@ namespace OpenDental{
 						break;
 					case "P2Diagnosis":
 						displayStrings[i]=GetProcInfo("Diagnosis",2+startProc);
+						break;
+					case "P2Lab":
+						displayStrings[i]=GetProcInfo("Lab",2+startProc);
+						break;
+					case "P2FeeMinusLab":
+						displayStrings[i]=GetProcInfo("FeeMinusLab",2+startProc);
 						break;
 					case "P3Date":
 						displayStrings[i]=GetProcInfo("Date",3+startProc,ClaimFormCur.Items[i].FormatString);
@@ -1390,6 +1421,12 @@ namespace OpenDental{
 					case "P3Diagnosis":
 						displayStrings[i]=GetProcInfo("Diagnosis",3+startProc);
 						break;
+					case "P3Lab":
+						displayStrings[i]=GetProcInfo("Lab",3+startProc);
+						break;
+					case "P3FeeMinusLab":
+						displayStrings[i]=GetProcInfo("FeeMinusLab",3+startProc);
+						break;
 					case "P4Date":
 						displayStrings[i]=GetProcInfo("Date",4+startProc,ClaimFormCur.Items[i].FormatString);
 						break;
@@ -1422,6 +1459,12 @@ namespace OpenDental{
 						break;
 					case "P4Diagnosis":
 						displayStrings[i]=GetProcInfo("Diagnosis",4+startProc);
+						break;
+					case "P4Lab":
+						displayStrings[i]=GetProcInfo("Lab",4+startProc);
+						break;
+					case "P4FeeMinusLab":
+						displayStrings[i]=GetProcInfo("FeeMinusLab",4+startProc);
 						break;
 					case "P5Date":
 						displayStrings[i]=GetProcInfo("Date",5+startProc,ClaimFormCur.Items[i].FormatString);
@@ -1456,6 +1499,12 @@ namespace OpenDental{
 					case "P5Diagnosis":
 						displayStrings[i]=GetProcInfo("Diagnosis",5+startProc);
 						break;
+					case "P5Lab":
+						displayStrings[i]=GetProcInfo("Lab",5+startProc);
+						break;
+					case "P5FeeMinusLab":
+						displayStrings[i]=GetProcInfo("FeeMinusLab",5+startProc);
+						break;
 					case "P6Date":
 						displayStrings[i]=GetProcInfo("Date",6+startProc,ClaimFormCur.Items[i].FormatString);
 						break;
@@ -1488,6 +1537,12 @@ namespace OpenDental{
 						break;
 					case "P6Diagnosis":
 						displayStrings[i]=GetProcInfo("Diagnosis",6+startProc);
+						break;
+					case "P6Lab":
+						displayStrings[i]=GetProcInfo("Lab",6+startProc);
+						break;
+					case "P6FeeMinusLab":
+						displayStrings[i]=GetProcInfo("FeeMinusLab",6+startProc);
 						break;
 					case "P7Date":
 						displayStrings[i]=GetProcInfo("Date",7+startProc,ClaimFormCur.Items[i].FormatString);
@@ -1522,6 +1577,12 @@ namespace OpenDental{
 					case "P7Diagnosis":
 						displayStrings[i]=GetProcInfo("Diagnosis",7+startProc);
 						break;
+					case "P7Lab":
+						displayStrings[i]=GetProcInfo("Lab",7+startProc);
+						break;
+					case "P7FeeMinusLab":
+						displayStrings[i]=GetProcInfo("FeeMinusLab",7+startProc);
+						break;
 					case "P8Date":
 						displayStrings[i]=GetProcInfo("Date",8+startProc,ClaimFormCur.Items[i].FormatString);
 						break;
@@ -1554,6 +1615,12 @@ namespace OpenDental{
 						break;
 					case "P8Diagnosis":
 						displayStrings[i]=GetProcInfo("Diagnosis",8+startProc);
+						break;
+					case "P8Lab":
+						displayStrings[i]=GetProcInfo("Lab",8+startProc);
+						break;
+					case "P8FeeMinusLab":
+						displayStrings[i]=GetProcInfo("FeeMinusLab",8+startProc);
 						break;
 					case "P9Date":
 						displayStrings[i]=GetProcInfo("Date",9+startProc,ClaimFormCur.Items[i].FormatString);
@@ -1588,6 +1655,12 @@ namespace OpenDental{
 					case "P9Diagnosis":
 						displayStrings[i]=GetProcInfo("Diagnosis",9+startProc);
 						break;
+					case "P9Lab":
+						displayStrings[i]=GetProcInfo("Lab",9+startProc);
+						break;
+					case "P9FeeMinusLab":
+						displayStrings[i]=GetProcInfo("FeeMinusLab",9+startProc);
+						break;
 					case "P10Date":
 						displayStrings[i]=GetProcInfo("Date",10+startProc,ClaimFormCur.Items[i].FormatString);
 						break;
@@ -1620,6 +1693,12 @@ namespace OpenDental{
 						break;
 					case "P10Diagnosis":
 						displayStrings[i]=GetProcInfo("Diagnosis",10+startProc);
+						break;
+					case "P10Lab":
+						displayStrings[i]=GetProcInfo("Lab",10+startProc);
+						break;
+					case "P10FeeMinusLab":
+						displayStrings[i]=GetProcInfo("FeeMinusLab",10+startProc);
 						break;
 					case "TotalFee":
 						double fee=0;//fee only for this page. Each page is treated like a separate claim.
@@ -1709,10 +1788,15 @@ namespace OpenDental{
 			if(field=="Fee"){
 				return ((ClaimProc)claimprocs[procIndex]).FeeBilled.ToString("F");
 			}
+			Procedure ProcCur=Procedures.GetProc(ProcList,((ClaimProc)claimprocs[procIndex]).ProcNum);
+			ProcedureCode procCode=ProcedureCodes.GetProcCode(ProcCur.ADACode);
 			if(field=="Desc")
-				return ProcedureCodes.GetProcCode(
-					Procedures.GetProc(ProcList,((ClaimProc)claimprocs[procIndex]).ProcNum).ADACode).Descript;
-					//((Procedure)Procedures.HList[((ClaimProc)claimprocs[procIndex]).ProcNum]).ADACode).Descript;
+				if(procCode.TreatArea==TreatmentArea.Quad){
+					return ProcCur.Surf+" "+procCode.Descript;
+				}
+				else{
+					return procCode.Descript;
+				}
 			if(field=="Date"){
 				if(Claims.Cur.ClaimType=="PreAuth")//no date on preauth procedures
 					return "";
@@ -1730,11 +1814,17 @@ namespace OpenDental{
 			if(field=="PlaceNumericCode"){
 				return GetPlaceOfServiceNum(Claims.Cur.PlaceService);
 			}
-			Procedure ProcCur=Procedures.GetProc(ProcList,((ClaimProc)claimprocs[procIndex]).ProcNum);
+			
 				//(Procedure)Procedures.HList[ClaimProcsForClaim[procIndex].ProcNum];
 			//Procedure ProcOld=ProcCur.Copy();
 			if(field=="Diagnosis"){
 				return ProcCur.DiagnosticCode;
+			}
+			if(field=="Lab" && ProcCur.LabFee>0) {
+				return ProcCur.LabFee.ToString("n");
+			}
+			if(field=="FeeMinusLab") {
+				return (((ClaimProc)claimprocs[procIndex]).FeeBilled-ProcCur.LabFee).ToString("n");
 			}
 			string area="";
 			string toothNum="";

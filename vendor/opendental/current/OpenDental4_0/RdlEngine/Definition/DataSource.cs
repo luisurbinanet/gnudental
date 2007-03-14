@@ -28,6 +28,7 @@ using System.Data.SqlClient;
 using System.Data.OleDb;
 using System.Data.Odbc;
 using System.IO;
+using System.Windows.Forms;
 using MySql.Data.MySqlClient;
 
 namespace fyiReporting.RDL
@@ -185,7 +186,9 @@ namespace fyiReporting.RDL
 		///<summary></summary>
 		private static string GetOpenDentalConnStr(){
 			XmlDocument document=new XmlDocument();
-			if(!File.Exists("FreeDentalConfig.xml")){
+			string path=Application.StartupPath+"\\"+"FreeDentalConfig.xml";
+			//MessageBox.Show(path);
+			if(!File.Exists(path)){
 				return "";
 			}
 			string computerName="";
@@ -193,7 +196,7 @@ namespace fyiReporting.RDL
 			string user="";
 			string password="";
 			try{
-				document.Load("FreeDentalConfig.xml");
+				document.Load(path);
 				XmlNodeReader reader=new XmlNodeReader(document);
 				string currentElement="";
 				while(reader.Read()){

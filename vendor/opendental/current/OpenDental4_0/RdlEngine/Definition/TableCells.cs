@@ -102,7 +102,7 @@ namespace fyiReporting.RDL
 				}
 				else if (maxy > pgs.CurrentPage.YOffset)
 				{
-					maxy = maxy;
+					//maxy = maxy;
 				}
 				// restore the beginning start of the row
 				pgs.CurrentPage = savepg;

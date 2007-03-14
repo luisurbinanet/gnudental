@@ -138,8 +138,7 @@ namespace OpenDental{
 			return -1;//code not found
 		}
 
-		///<summary>Almost the same as GetAmount.  But never returns -1;  Returns 0 if code can't be found.
-		///Returns an amount if a fee has been entered.  Otherwise returns -1.</summary>
+		///<summary>Almost the same as GetAmount.  But never returns -1;  Returns an amount if a fee has been entered.  Returns 0 if code can't be found.///</summary>
 		public static double GetAmount0(string adacode, int feeSched){
 			double retVal=GetAmount(adacode,feeSched);
 			if(retVal==-1){

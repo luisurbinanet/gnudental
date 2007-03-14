@@ -51,8 +51,8 @@ namespace OpenDental{
 		private System.Windows.Forms.Label labelStatus;
 		private System.Windows.Forms.ComboBox comboComputerName;
 		private System.Windows.Forms.ComboBox comboDatabase;
-		private System.Windows.Forms.CheckBox checkNoShow;
 		private bool mysqlIsStarted;
+		private CheckBox checkNoShow;
 		//<summary>user lowercase is for internal OD security.  this.DbUser capital is for the MySQL user.  Don't get them confused.</summary>
 		//private User user;
 		///<summary></summary>
@@ -85,6 +85,7 @@ namespace OpenDental{
 		/// </summary>
 		private void InitializeComponent()
 		{
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormChooseDatabase));
 			this.label1 = new System.Windows.Forms.Label();
 			this.textPassword = new System.Windows.Forms.TextBox();
 			this.label2 = new System.Windows.Forms.Label();
@@ -109,85 +110,83 @@ namespace OpenDental{
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(40, 20);
+			this.label1.Location = new System.Drawing.Point(40,20);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(582, 46);
+			this.label1.Size = new System.Drawing.Size(582,46);
 			this.label1.TabIndex = 0;
 			this.label1.Text = "Computer Name: The name of the computer where the MySQL server and database are l" +
-				"ocated.  If you are running Open Dental on a single computer only, then the comp" +
-				"uter name may be localhost.";
+    "ocated.  If you are running Open Dental on a single computer only, then the comp" +
+    "uter name may be localhost.";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// textPassword
 			// 
-			this.textPassword.Location = new System.Drawing.Point(42, 260);
+			this.textPassword.Location = new System.Drawing.Point(42,260);
 			this.textPassword.Name = "textPassword";
-			this.textPassword.Size = new System.Drawing.Size(280, 20);
+			this.textPassword.Size = new System.Drawing.Size(280,20);
 			this.textPassword.TabIndex = 3;
-			this.textPassword.Text = "";
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(40, 222);
+			this.label2.Location = new System.Drawing.Point(40,222);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(588, 34);
+			this.label2.Size = new System.Drawing.Size(588,34);
 			this.label2.TabIndex = 2;
 			this.label2.Text = "Password: For new installations, the password will be blank.  You probably don\'t " +
-				"need to change this.";
+    "need to change this.";
 			this.label2.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// textUser
 			// 
-			this.textUser.Location = new System.Drawing.Point(42, 192);
+			this.textUser.Location = new System.Drawing.Point(42,192);
 			this.textUser.Name = "textUser";
-			this.textUser.Size = new System.Drawing.Size(280, 20);
+			this.textUser.Size = new System.Drawing.Size(280,20);
 			this.textUser.TabIndex = 2;
-			this.textUser.Text = "";
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(40, 156);
+			this.label3.Location = new System.Drawing.Point(40,156);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(592, 32);
+			this.label3.Size = new System.Drawing.Size(592,32);
 			this.label3.TabIndex = 4;
 			this.label3.Text = "User: When MySQL is first installed, the user is root.  You probably don\'t need t" +
-				"o change this.";
+    "o change this.";
 			this.label3.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// label4
 			// 
-			this.label4.Location = new System.Drawing.Point(40, 100);
+			this.label4.Location = new System.Drawing.Point(40,100);
 			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(582, 26);
+			this.label4.Size = new System.Drawing.Size(582,26);
 			this.label4.TabIndex = 6;
 			this.label4.Text = "DataBase: usually opendental unless you changed the name.";
 			this.label4.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// butOK
 			// 
-			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.butOK.Autosize = true;
 			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butOK.Location = new System.Drawing.Point(602, 506);
+			this.butOK.Location = new System.Drawing.Point(602,506);
 			this.butOK.Name = "butOK";
-			this.butOK.Size = new System.Drawing.Size(75, 25);
+			this.butOK.Size = new System.Drawing.Size(75,25);
 			this.butOK.TabIndex = 5;
 			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// butCancel
 			// 
-			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.butCancel.Autosize = true;
 			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.Location = new System.Drawing.Point(602, 542);
+			this.butCancel.Location = new System.Drawing.Point(602,542);
 			this.butCancel.Name = "butCancel";
-			this.butCancel.Size = new System.Drawing.Size(75, 25);
+			this.butCancel.Size = new System.Drawing.Size(75,25);
 			this.butCancel.TabIndex = 6;
 			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
@@ -203,28 +202,28 @@ namespace OpenDental{
 			this.groupBox1.Controls.Add(this.label3);
 			this.groupBox1.Controls.Add(this.label4);
 			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox1.Location = new System.Drawing.Point(16, 16);
+			this.groupBox1.Location = new System.Drawing.Point(16,16);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(660, 298);
+			this.groupBox1.Size = new System.Drawing.Size(660,298);
 			this.groupBox1.TabIndex = 13;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Connection Settings - These values will only be used on this computer.  They have" +
-				" to be set on each computer";
+    " to be set on each computer";
 			// 
 			// comboDatabase
 			// 
-			this.comboDatabase.Location = new System.Drawing.Point(42, 130);
+			this.comboDatabase.Location = new System.Drawing.Point(42,130);
 			this.comboDatabase.MaxDropDownItems = 100;
 			this.comboDatabase.Name = "comboDatabase";
-			this.comboDatabase.Size = new System.Drawing.Size(280, 21);
+			this.comboDatabase.Size = new System.Drawing.Size(280,21);
 			this.comboDatabase.TabIndex = 9;
 			// 
 			// comboComputerName
 			// 
-			this.comboComputerName.Location = new System.Drawing.Point(42, 72);
+			this.comboComputerName.Location = new System.Drawing.Point(42,72);
 			this.comboComputerName.MaxDropDownItems = 100;
 			this.comboComputerName.Name = "comboComputerName";
-			this.comboComputerName.Size = new System.Drawing.Size(280, 21);
+			this.comboComputerName.Size = new System.Drawing.Size(280,21);
 			this.comboComputerName.TabIndex = 8;
 			this.comboComputerName.Leave += new System.EventHandler(this.comboComputerName_Leave);
 			this.comboComputerName.SelectionChangeCommitted += new System.EventHandler(this.comboComputerName_SelectionChangeCommitted);
@@ -237,78 +236,77 @@ namespace OpenDental{
 			this.groupBox2.Controls.Add(this.label8);
 			this.groupBox2.Controls.Add(this.label7);
 			this.groupBox2.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox2.Location = new System.Drawing.Point(16, 326);
+			this.groupBox2.Location = new System.Drawing.Point(16,326);
 			this.groupBox2.Name = "groupBox2";
-			this.groupBox2.Size = new System.Drawing.Size(660, 160);
+			this.groupBox2.Size = new System.Drawing.Size(660,160);
 			this.groupBox2.TabIndex = 16;
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "MySQL service";
 			// 
 			// label5
 			// 
-			this.label5.Location = new System.Drawing.Point(260, 98);
+			this.label5.Location = new System.Drawing.Point(260,98);
 			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(386, 54);
+			this.label5.Size = new System.Drawing.Size(386,54);
 			this.label5.TabIndex = 21;
-			this.label5.Text = "You should stop the service before restoring from a backup or renaming a database" +
-				" folder in C:\\mysql\\data\\.  You do not need to stop the service when making back" +
-				"ups to a flash drive or another computer, but you may need to stop it to make a " +
-				"backup to CD.";
+			this.label5.Text = resources.GetString("label5.Text");
 			// 
 			// butStart
 			// 
-			this.butStart.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butStart.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butStart.Autosize = true;
 			this.butStart.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butStart.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butStart.Location = new System.Drawing.Point(172, 108);
+			this.butStart.Location = new System.Drawing.Point(172,108);
 			this.butStart.Name = "butStart";
-			this.butStart.Size = new System.Drawing.Size(75, 25);
+			this.butStart.Size = new System.Drawing.Size(75,25);
 			this.butStart.TabIndex = 20;
 			this.butStart.Text = "Stop";
 			this.butStart.Click += new System.EventHandler(this.butStart_Click);
 			// 
 			// labelStatus
 			// 
-			this.labelStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.labelStatus.Location = new System.Drawing.Point(100, 112);
+			this.labelStatus.Font = new System.Drawing.Font("Microsoft Sans Serif",8.25F,System.Drawing.FontStyle.Bold,System.Drawing.GraphicsUnit.Point,((byte)(0)));
+			this.labelStatus.Location = new System.Drawing.Point(100,112);
 			this.labelStatus.Name = "labelStatus";
-			this.labelStatus.Size = new System.Drawing.Size(72, 18);
+			this.labelStatus.Size = new System.Drawing.Size(72,18);
 			this.labelStatus.TabIndex = 19;
 			this.labelStatus.Text = "Started";
 			this.labelStatus.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			// 
 			// label8
 			// 
-			this.label8.Location = new System.Drawing.Point(14, 112);
+			this.label8.Location = new System.Drawing.Point(14,112);
 			this.label8.Name = "label8";
-			this.label8.Size = new System.Drawing.Size(88, 18);
+			this.label8.Size = new System.Drawing.Size(88,18);
 			this.label8.TabIndex = 18;
 			this.label8.Text = "Status:";
 			this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// label7
 			// 
-			this.label7.Location = new System.Drawing.Point(8, 24);
+			this.label7.Location = new System.Drawing.Point(8,24);
 			this.label7.Name = "label7";
-			this.label7.Size = new System.Drawing.Size(628, 20);
+			this.label7.Size = new System.Drawing.Size(628,20);
 			this.label7.TabIndex = 0;
 			this.label7.Text = "(A service is just a kind of program that runs in the background without any wind" +
-				"ow)";
+    "ow)";
 			// 
 			// checkNoShow
 			// 
+			this.checkNoShow.AutoSize = true;
 			this.checkNoShow.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkNoShow.Location = new System.Drawing.Point(16, 542);
+			this.checkNoShow.Location = new System.Drawing.Point(16,542);
 			this.checkNoShow.Name = "checkNoShow";
-			this.checkNoShow.Size = new System.Drawing.Size(496, 24);
+			this.checkNoShow.Size = new System.Drawing.Size(294,18);
 			this.checkNoShow.TabIndex = 17;
 			this.checkNoShow.Text = "Do not show this window on startup (this computer only)";
+			this.checkNoShow.UseVisualStyleBackColor = true;
 			// 
 			// FormChooseDatabase
 			// 
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(708, 582);
+			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
+			this.ClientSize = new System.Drawing.Size(708,582);
 			this.Controls.Add(this.checkNoShow);
 			this.Controls.Add(this.groupBox2);
 			this.Controls.Add(this.groupBox1);
@@ -323,8 +321,10 @@ namespace OpenDental{
 			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormConfig_Closing);
 			this.Load += new System.EventHandler(this.FormConfig_Load);
 			this.groupBox1.ResumeLayout(false);
+			this.groupBox1.PerformLayout();
 			this.groupBox2.ResumeLayout(false);
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 		#endregion
@@ -362,7 +362,8 @@ namespace OpenDental{
 		private string[] GetComputerNames(){
 			try{
 				ArrayList retList=new ArrayList();
-				string myAdd=Dns.GetHostByName(Dns.GetHostName()).AddressList[0].ToString();
+				//string myAdd=Dns.GetHostByName(Dns.GetHostName()).AddressList[0].ToString();//obsolete
+				string myAdd=Dns.GetHostEntry(Dns.GetHostName()).AddressList[0].ToString();
 				ProcessStartInfo psi=new ProcessStartInfo();
 				psi.FileName=@"C:\WINDOWS\system32\cmd.exe";//Path for the cmd prompt
 				psi.Arguments="/c net view > tempCompNames.txt";//Arguments for the command prompt
@@ -547,11 +548,11 @@ namespace OpenDental{
 								textPassword.Text=Password;
 								break;
 							case "NoShowOnStartup":
-								if(reader.Value=="True"){
+								if(reader.Value=="True") {
 									NoShow=true;
 									checkNoShow.Checked=true;
 								}
-								else{
+								else {
 									NoShow=false;
 									checkNoShow.Checked=false;
 								}
@@ -561,8 +562,8 @@ namespace OpenDental{
 				}
 				reader.Close();
 			}
-			catch(Exception e){
-				MessageBox.Show(e.Message);
+			catch{//Exception e) {
+				//MessageBox.Show(e.Message);
 				comboComputerName.Text="localhost";
 				comboDatabase.Text="opendental";
 				textUser.Text="root";
@@ -596,17 +597,17 @@ namespace OpenDental{
 			xmlwriter.WriteWhitespace("\r\n");
 			xmlwriter.WriteStartElement("DatabaseConnection");
 			xmlwriter.WriteWhitespace("\r\n\t");
-			xmlwriter.WriteElementString("ComputerName", comboComputerName.Text);
+			xmlwriter.WriteElementString("ComputerName",comboComputerName.Text);
 			xmlwriter.WriteWhitespace("\r\n\t");
 			xmlwriter.WriteElementString("Database",comboDatabase.Text);
 			xmlwriter.WriteWhitespace("\r\n\t");
 			xmlwriter.WriteElementString("User",textUser.Text);
 			xmlwriter.WriteWhitespace("\r\n\t");
-			xmlwriter.WriteElementString("Password", textPassword.Text);
+			xmlwriter.WriteElementString("Password",textPassword.Text);
 			xmlwriter.WriteWhitespace("\r\n\t");
-			xmlwriter.WriteElementString("NoShowOnStartup", checkNoShow.Checked.ToString());
+			xmlwriter.WriteElementString("NoShowOnStartup",checkNoShow.Checked.ToString());
 			xmlwriter.WriteWhitespace("\r\n");
-			xmlwriter.WriteEndElement();			
+			xmlwriter.WriteEndElement();
 			xmlwriter.Close();
 			//fyiReporting.RDL.DataSource.SetOpenDentalConnectionString(
 			//	"Server="+ComputerName+";Database="+Database+";User ID="+DbUser+";Password="+Password+";CharSet=utf8");

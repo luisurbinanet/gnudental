@@ -69,6 +69,8 @@ namespace OpenDental{
 		public string DiagnosticCode;
 		///<summary>Set true if this medical diagnostic code is the principal diagnosis for the visit.  If no principal diagnosis is marked for any procedures on a medical e-claim, then it won't be allowed to be sent.  If more than one is marked, then it will just use one at random.</summary>
 		public bool IsPrincDiag;
+		///<summary>This is only used in Canada because their insurance companies require this number.</summary>
+		public double LabFee;
 
 
 		///<summary>Returns a copy of the procedure.</summary>
@@ -100,6 +102,7 @@ namespace OpenDental{
 			proc.MedicalCode=MedicalCode;
 			proc.DiagnosticCode=DiagnosticCode;
 			proc.IsPrincDiag=IsPrincDiag;
+			proc.LabFee=LabFee;
 			return proc;
 		}
 
@@ -132,7 +135,7 @@ namespace OpenDental{
 				+"ToothNum,ToothRange,Priority, "
 				+"ProcStatus, ProcNote, ProvNum,"
 				+"Dx,NextAptNum,PlaceService,HideGraphical,Prosthesis,DateOriginalProsth,ClaimNote,"
-				+"DateLocked,DateEntryC,ClinicNum,MedicalCode,DiagnosticCode,IsPrincDiag) VALUES(";
+				+"DateLocked,DateEntryC,ClinicNum,MedicalCode,DiagnosticCode,IsPrincDiag,LabFee) VALUES(";
 			if(Prefs.RandomKeys){
 				command+="'"+POut.PInt(ProcNum)+"', ";
 			}
@@ -166,7 +169,8 @@ namespace OpenDental{
 				+"'"+POut.PInt   (ClinicNum)+"', "
 				+"'"+POut.PString(MedicalCode)+"', "
 				+"'"+POut.PString(DiagnosticCode)+"', "
-				+"'"+POut.PBool  (IsPrincDiag)+"')";
+				+"'"+POut.PBool  (IsPrincDiag)+"', "
+				+"'"+POut.PDouble(LabFee)+"')";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
  			if(Prefs.RandomKeys){
@@ -306,6 +310,11 @@ namespace OpenDental{
 				c+="IsPrincDiag = '"+POut.PBool(IsPrincDiag)+"'";
 				comma=true;
 			}
+			if(LabFee!=oldProc.LabFee) {
+				if(comma) c+=",";
+				c+="LabFee = '"+POut.PDouble(LabFee)+"'";
+				comma=true;
+			}
 			if(!comma)
 				return 0;//this means no change is actually required.
 			c+=" WHERE ProcNum = '"+POut.PInt(ProcNum)+"'";
@@ -411,10 +420,7 @@ namespace OpenDental{
 		}
 
 		///<summary>Used whenever a procedure changes or a plan changes.  All estimates for a given procedure must be updated. This frequently includes adding claimprocs, but can also just edit the appropriate existing claimprocs. Skips status=Adjustment,CapClaim,Preauth,Supplemental.  Also fixes date,status,and provnum if appropriate.  The claimProc array can be all claimProcs for the patient, but must at least include all claimprocs for this proc.  Only set IsInitialEntry true from Chart module; this is for cap procs.</summary>
-		public void ComputeEstimates(int patNum,ClaimProc[] claimProcs
-			,bool IsInitialEntry,InsPlan[] PlanList,PatPlan[] patPlans){
-			//bool priExists=false;
-			//bool secExists=false;
+		public void ComputeEstimates(int patNum,ClaimProc[] claimProcs,bool IsInitialEntry,InsPlan[] PlanList,PatPlan[] patPlans,Benefit[] benefitList){
 			bool doCreate=true;
 			if(ProcDate<DateTime.Today && ProcStatus==ProcStat.C){
 				//don't automatically create an estimate for completed procedures
@@ -439,12 +445,6 @@ namespace OpenDental{
 					//ignored: adjustment
 					//included: capComplete,CapEstimate,Estimate,NotReceived,Received
 				}
-				//if(priPlanNum>0 && priPlanNum==claimProcs[i].PlanNum){
-				//	priExists=true;
-				//}
-				//if(secPlanNum>0 && secPlanNum==claimProcs[i].PlanNum){
-				//	secExists=true;
-				//}
 				if(claimProcs[i].Status!=ClaimProcStatus.Estimate && claimProcs[i].Status!=ClaimProcStatus.CapEstimate){
 					continue;
 				}
@@ -502,15 +502,17 @@ namespace OpenDental{
 				if(PlanCur==null){
 					continue;//??
 				}
-				if(PlanCur.PlanType=="c")
+				if(PlanCur.PlanType=="c"){
 					if(ProcStatus==ProcStat.C){
 						cp.Status=ClaimProcStatus.CapComplete;
 					}
 					else{
 						cp.Status=ClaimProcStatus.CapEstimate;//this may be changed below
 					}
-				else
+				}
+				else{
 					cp.Status=ClaimProcStatus.Estimate;
+				}
 				cp.PlanNum=PlanCur.PlanNum;
 				cp.DateCP=ProcDate;
 				cp.AllowedAmt=-1;
@@ -558,10 +560,10 @@ namespace OpenDental{
 				//ComputeBaseEst automatically skips: capComplete,Preauth,capClaim,Supplemental
 				//does recalc est on: CapEstimate,Estimate,NotReceived,Received
 				if(claimProcs[i].PlanNum>0 && PatPlans.GetPlanNum(patPlans,1)==claimProcs[i].PlanNum){
-					claimProcs[i].ComputeBaseEst(this,PriSecTot.Pri,PlanList,patPlans);
+					claimProcs[i].ComputeBaseEst(this,PriSecTot.Pri,PlanList,patPlans,benefitList);
 				}
 				if(claimProcs[i].PlanNum>0 && PatPlans.GetPlanNum(patPlans,2)==claimProcs[i].PlanNum){
-					claimProcs[i].ComputeBaseEst(this,PriSecTot.Sec,PlanList,patPlans);
+					claimProcs[i].ComputeBaseEst(this,PriSecTot.Sec,PlanList,patPlans,benefitList);
 				}
 				if(IsInitialEntry
 					&& claimProcs[i].Status==ClaimProcStatus.CapEstimate
@@ -712,6 +714,11 @@ namespace OpenDental{
 				+" AND ProcNum !="+ProcNum.ToString();
 			DataConnection dcon=new DataConnection();
  			dcon.NonQ(command);
+		}
+
+		///<summary>Used do display procedure descriptions on appointments and in other places. The returned string also includes surf and toothNum.</summary>
+		public string GetDescription() {
+			return Procedures.ConvertProcToString(ADACode,Surf,ToothNum);
 		}
 		
 

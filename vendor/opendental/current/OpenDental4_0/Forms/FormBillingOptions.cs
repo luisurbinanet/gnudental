@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDental.UI;
 
 namespace OpenDental{
 	///<summary></summary>
@@ -35,6 +36,7 @@ namespace OpenDental{
 		private System.Windows.Forms.CheckBox checkIncludeChanged;
 		private OpenDental.ValidDate textLastStatement;
 		private OpenDental.UI.Button butCreate;
+		private OpenDental.UI.Button butUndo;
 		private Dunning[] dunningList;
 
 		///<summary></summary>
@@ -56,7 +58,7 @@ namespace OpenDental{
 		#region Windows Form Designer generated code
 
 		private void InitializeComponent(){
-			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormBillingOptions));
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormBillingOptions));
 			this.butCancel = new OpenDental.UI.Button();
 			this.butCreate = new OpenDental.UI.Button();
 			this.listBillType = new System.Windows.Forms.ListBox();
@@ -67,6 +69,7 @@ namespace OpenDental{
 			this.textExcludeLessThan = new OpenDental.ValidDouble();
 			this.checkExcludeInactive = new System.Windows.Forms.CheckBox();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
+			this.checkIncludeChanged = new System.Windows.Forms.CheckBox();
 			this.textLastStatement = new OpenDental.ValidDate();
 			this.label5 = new System.Windows.Forms.Label();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -81,105 +84,104 @@ namespace OpenDental{
 			this.label3 = new System.Windows.Forms.Label();
 			this.label4 = new System.Windows.Forms.Label();
 			this.textNote = new OpenDental.ODtextBox();
-			this.checkIncludeChanged = new System.Windows.Forms.CheckBox();
+			this.butUndo = new OpenDental.UI.Button();
 			this.groupBox2.SuspendLayout();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// butCancel
 			// 
-			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.butCancel.Autosize = true;
 			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.Location = new System.Drawing.Point(806, 631);
+			this.butCancel.Location = new System.Drawing.Point(806,631);
 			this.butCancel.Name = "butCancel";
-			this.butCancel.Size = new System.Drawing.Size(79, 26);
+			this.butCancel.Size = new System.Drawing.Size(79,26);
 			this.butCancel.TabIndex = 4;
 			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// butCreate
 			// 
-			this.butCreate.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCreate.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butCreate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.butCreate.Autosize = true;
 			this.butCreate.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butCreate.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butCreate.Location = new System.Drawing.Point(693, 631);
+			this.butCreate.Location = new System.Drawing.Point(693,631);
 			this.butCreate.Name = "butCreate";
-			this.butCreate.Size = new System.Drawing.Size(92, 26);
+			this.butCreate.Size = new System.Drawing.Size(92,26);
 			this.butCreate.TabIndex = 3;
 			this.butCreate.Text = "Create &List";
 			this.butCreate.Click += new System.EventHandler(this.butCreate_Click);
 			// 
 			// listBillType
 			// 
-			this.listBillType.Location = new System.Drawing.Point(21, 342);
+			this.listBillType.Location = new System.Drawing.Point(21,342);
 			this.listBillType.Name = "listBillType";
 			this.listBillType.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-			this.listBillType.Size = new System.Drawing.Size(158, 186);
+			this.listBillType.Size = new System.Drawing.Size(158,186);
 			this.listBillType.TabIndex = 2;
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(20, 324);
+			this.label2.Location = new System.Drawing.Point(20,324);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(147, 16);
+			this.label2.Size = new System.Drawing.Size(147,16);
 			this.label2.TabIndex = 14;
 			this.label2.Text = "Billing Types:";
 			// 
 			// butAll
 			// 
-			this.butAll.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAll.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butAll.Autosize = true;
 			this.butAll.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butAll.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butAll.Location = new System.Drawing.Point(21, 532);
+			this.butAll.Location = new System.Drawing.Point(21,532);
 			this.butAll.Name = "butAll";
-			this.butAll.Size = new System.Drawing.Size(68, 26);
+			this.butAll.Size = new System.Drawing.Size(68,26);
 			this.butAll.TabIndex = 15;
 			this.butAll.Text = "&All";
 			this.butAll.Click += new System.EventHandler(this.butAll_Click);
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(19, 272);
+			this.label1.Location = new System.Drawing.Point(19,272);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(232, 18);
+			this.label1.Size = new System.Drawing.Size(232,18);
 			this.label1.TabIndex = 18;
 			this.label1.Text = "Exclude if Balance is less than:";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// butSaveDefault
 			// 
-			this.butSaveDefault.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butSaveDefault.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butSaveDefault.Autosize = true;
 			this.butSaveDefault.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butSaveDefault.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butSaveDefault.Location = new System.Drawing.Point(20, 574);
+			this.butSaveDefault.Location = new System.Drawing.Point(20,574);
 			this.butSaveDefault.Name = "butSaveDefault";
-			this.butSaveDefault.Size = new System.Drawing.Size(108, 25);
+			this.butSaveDefault.Size = new System.Drawing.Size(108,25);
 			this.butSaveDefault.TabIndex = 20;
 			this.butSaveDefault.Text = "&Save As Default";
 			this.butSaveDefault.Click += new System.EventHandler(this.butSaveDefault_Click);
 			// 
 			// textExcludeLessThan
 			// 
-			this.textExcludeLessThan.Location = new System.Drawing.Point(21, 293);
+			this.textExcludeLessThan.Location = new System.Drawing.Point(21,293);
 			this.textExcludeLessThan.Name = "textExcludeLessThan";
-			this.textExcludeLessThan.Size = new System.Drawing.Size(77, 20);
+			this.textExcludeLessThan.Size = new System.Drawing.Size(77,20);
 			this.textExcludeLessThan.TabIndex = 22;
-			this.textExcludeLessThan.Text = "";
 			// 
 			// checkExcludeInactive
 			// 
 			this.checkExcludeInactive.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkExcludeInactive.Location = new System.Drawing.Point(22, 228);
+			this.checkExcludeInactive.Location = new System.Drawing.Point(22,228);
 			this.checkExcludeInactive.Name = "checkExcludeInactive";
-			this.checkExcludeInactive.Size = new System.Drawing.Size(229, 22);
+			this.checkExcludeInactive.Size = new System.Drawing.Size(229,22);
 			this.checkExcludeInactive.TabIndex = 23;
 			this.checkExcludeInactive.Text = "Exclude inactive patients";
 			// 
@@ -199,26 +201,34 @@ namespace OpenDental{
 			this.groupBox2.Controls.Add(this.butAll);
 			this.groupBox2.Controls.Add(this.label2);
 			this.groupBox2.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox2.Location = new System.Drawing.Point(21, 12);
+			this.groupBox2.Location = new System.Drawing.Point(21,12);
 			this.groupBox2.Name = "groupBox2";
-			this.groupBox2.Size = new System.Drawing.Size(263, 609);
+			this.groupBox2.Size = new System.Drawing.Size(263,609);
 			this.groupBox2.TabIndex = 24;
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "Filter";
 			// 
+			// checkIncludeChanged
+			// 
+			this.checkIncludeChanged.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkIncludeChanged.Location = new System.Drawing.Point(21,63);
+			this.checkIncludeChanged.Name = "checkIncludeChanged";
+			this.checkIncludeChanged.Size = new System.Drawing.Size(238,28);
+			this.checkIncludeChanged.TabIndex = 26;
+			this.checkIncludeChanged.Text = "Include any accounts with insurance payments or procedures since the last bill";
+			// 
 			// textLastStatement
 			// 
-			this.textLastStatement.Location = new System.Drawing.Point(22, 37);
+			this.textLastStatement.Location = new System.Drawing.Point(22,37);
 			this.textLastStatement.Name = "textLastStatement";
-			this.textLastStatement.Size = new System.Drawing.Size(94, 20);
+			this.textLastStatement.Size = new System.Drawing.Size(94,20);
 			this.textLastStatement.TabIndex = 25;
-			this.textLastStatement.Text = "";
 			// 
 			// label5
 			// 
-			this.label5.Location = new System.Drawing.Point(21, 17);
+			this.label5.Location = new System.Drawing.Point(21,17);
 			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(232, 16);
+			this.label5.Size = new System.Drawing.Size(232,16);
 			this.label5.TabIndex = 24;
 			this.label5.Text = "Include anyone not billed since";
 			this.label5.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
@@ -230,9 +240,9 @@ namespace OpenDental{
 			this.groupBox1.Controls.Add(this.radio60);
 			this.groupBox1.Controls.Add(this.radioAny);
 			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox1.Location = new System.Drawing.Point(21, 97);
+			this.groupBox1.Location = new System.Drawing.Point(21,97);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(144, 106);
+			this.groupBox1.Size = new System.Drawing.Size(144,106);
 			this.groupBox1.TabIndex = 1;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Age of Account";
@@ -240,27 +250,27 @@ namespace OpenDental{
 			// radio30
 			// 
 			this.radio30.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.radio30.Location = new System.Drawing.Point(12, 41);
+			this.radio30.Location = new System.Drawing.Point(12,41);
 			this.radio30.Name = "radio30";
-			this.radio30.Size = new System.Drawing.Size(120, 16);
+			this.radio30.Size = new System.Drawing.Size(120,16);
 			this.radio30.TabIndex = 1;
 			this.radio30.Text = "Over 30 Days";
 			// 
 			// radio90
 			// 
 			this.radio90.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.radio90.Location = new System.Drawing.Point(12, 83);
+			this.radio90.Location = new System.Drawing.Point(12,83);
 			this.radio90.Name = "radio90";
-			this.radio90.Size = new System.Drawing.Size(120, 18);
+			this.radio90.Size = new System.Drawing.Size(120,18);
 			this.radio90.TabIndex = 3;
 			this.radio90.Text = "Over 90 Days";
 			// 
 			// radio60
 			// 
 			this.radio60.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.radio60.Location = new System.Drawing.Point(12, 61);
+			this.radio60.Location = new System.Drawing.Point(12,61);
 			this.radio60.Name = "radio60";
-			this.radio60.Size = new System.Drawing.Size(117, 18);
+			this.radio60.Size = new System.Drawing.Size(117,18);
 			this.radio60.TabIndex = 2;
 			this.radio60.Text = "Over 60 Days";
 			// 
@@ -268,9 +278,9 @@ namespace OpenDental{
 			// 
 			this.radioAny.Checked = true;
 			this.radioAny.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.radioAny.Location = new System.Drawing.Point(12, 19);
+			this.radioAny.Location = new System.Drawing.Point(12,19);
 			this.radioAny.Name = "radioAny";
-			this.radioAny.Size = new System.Drawing.Size(117, 18);
+			this.radioAny.Size = new System.Drawing.Size(117,18);
 			this.radioAny.TabIndex = 0;
 			this.radioAny.TabStop = true;
 			this.radioAny.Text = "Any Balance";
@@ -278,32 +288,28 @@ namespace OpenDental{
 			// checkExcludeNegative
 			// 
 			this.checkExcludeNegative.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkExcludeNegative.Location = new System.Drawing.Point(22, 249);
+			this.checkExcludeNegative.Location = new System.Drawing.Point(22,249);
 			this.checkExcludeNegative.Name = "checkExcludeNegative";
-			this.checkExcludeNegative.Size = new System.Drawing.Size(231, 22);
+			this.checkExcludeNegative.Size = new System.Drawing.Size(231,22);
 			this.checkExcludeNegative.TabIndex = 17;
 			this.checkExcludeNegative.Text = "Exclude negative balances (credits)";
 			// 
 			// checkBadAddress
 			// 
 			this.checkBadAddress.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkBadAddress.Location = new System.Drawing.Point(22, 207);
+			this.checkBadAddress.Location = new System.Drawing.Point(22,207);
 			this.checkBadAddress.Name = "checkBadAddress";
-			this.checkBadAddress.Size = new System.Drawing.Size(231, 22);
+			this.checkBadAddress.Size = new System.Drawing.Size(231,22);
 			this.checkBadAddress.TabIndex = 16;
 			this.checkBadAddress.Text = "Exclude bad addresses (no zipcode)";
 			// 
 			// gridDun
 			// 
-			this.gridDun.Columns.Add(new OpenDental.UI.ODGridColumn("Billing Type", 100, System.Windows.Forms.HorizontalAlignment.Left));
-			this.gridDun.Columns.Add(new OpenDental.UI.ODGridColumn("Aging", 70, System.Windows.Forms.HorizontalAlignment.Left));
-			this.gridDun.Columns.Add(new OpenDental.UI.ODGridColumn("Ins", 40, System.Windows.Forms.HorizontalAlignment.Left));
-			this.gridDun.Columns.Add(new OpenDental.UI.ODGridColumn("Message", 356, System.Windows.Forms.HorizontalAlignment.Left));
 			this.gridDun.HScrollVisible = false;
-			this.gridDun.Location = new System.Drawing.Point(299, 31);
+			this.gridDun.Location = new System.Drawing.Point(299,31);
 			this.gridDun.Name = "gridDun";
 			this.gridDun.ScrollValue = 0;
-			this.gridDun.Size = new System.Drawing.Size(585, 430);
+			this.gridDun.Size = new System.Drawing.Size(585,430);
 			this.gridDun.TabIndex = 0;
 			this.gridDun.Title = "Dunning Messages";
 			this.gridDun.TranslationName = "TableBillingMessages";
@@ -311,35 +317,35 @@ namespace OpenDental{
 			// 
 			// butAdd
 			// 
-			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.butAdd.Autosize = true;
 			this.butAdd.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butAdd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
 			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAdd.Location = new System.Drawing.Point(298, 465);
+			this.butAdd.Location = new System.Drawing.Point(298,465);
 			this.butAdd.Name = "butAdd";
-			this.butAdd.Size = new System.Drawing.Size(128, 26);
+			this.butAdd.Size = new System.Drawing.Size(128,26);
 			this.butAdd.TabIndex = 5;
 			this.butAdd.Text = "Add Dunning Msg";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(299, 10);
+			this.label3.Location = new System.Drawing.Point(299,10);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(581, 16);
+			this.label3.Size = new System.Drawing.Size(581,16);
 			this.label3.TabIndex = 25;
 			this.label3.Text = "Items higher in the list are more general.  Items lower in the list take preceden" +
-				"ce .";
+    "ce .";
 			this.label3.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// label4
 			// 
-			this.label4.Location = new System.Drawing.Point(298, 498);
+			this.label4.Location = new System.Drawing.Point(298,498);
 			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(575, 16);
+			this.label4.Size = new System.Drawing.Size(575,16);
 			this.label4.TabIndex = 26;
 			this.label4.Text = "General Message (in addition to any dunning messages)";
 			this.label4.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
@@ -347,30 +353,34 @@ namespace OpenDental{
 			// textNote
 			// 
 			this.textNote.AcceptsReturn = true;
-			this.textNote.Location = new System.Drawing.Point(299, 518);
+			this.textNote.Location = new System.Drawing.Point(299,518);
 			this.textNote.Multiline = true;
 			this.textNote.Name = "textNote";
 			this.textNote.QuickPasteType = OpenDental.QuickPasteType.Statement;
 			this.textNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textNote.Size = new System.Drawing.Size(584, 102);
+			this.textNote.Size = new System.Drawing.Size(584,102);
 			this.textNote.TabIndex = 28;
-			this.textNote.Text = "";
 			// 
-			// checkIncludeChanged
+			// butUndo
 			// 
-			this.checkIncludeChanged.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkIncludeChanged.Location = new System.Drawing.Point(21, 63);
-			this.checkIncludeChanged.Name = "checkIncludeChanged";
-			this.checkIncludeChanged.Size = new System.Drawing.Size(238, 28);
-			this.checkIncludeChanged.TabIndex = 26;
-			this.checkIncludeChanged.Text = "Include any accounts with insurance payments or procedures since the last bill";
+			this.butUndo.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butUndo.Autosize = true;
+			this.butUndo.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butUndo.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butUndo.Location = new System.Drawing.Point(21,632);
+			this.butUndo.Name = "butUndo";
+			this.butUndo.Size = new System.Drawing.Size(98,25);
+			this.butUndo.TabIndex = 29;
+			this.butUndo.Text = "Undo a Billing";
+			this.butUndo.Click += new System.EventHandler(this.butUndo_Click);
 			// 
 			// FormBillingOptions
 			// 
 			this.AcceptButton = this.butCreate;
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
 			this.CancelButton = this.butCancel;
-			this.ClientSize = new System.Drawing.Size(898, 666);
+			this.ClientSize = new System.Drawing.Size(898,666);
+			this.Controls.Add(this.butUndo);
 			this.Controls.Add(this.textNote);
 			this.Controls.Add(this.label4);
 			this.Controls.Add(this.label3);
@@ -387,8 +397,10 @@ namespace OpenDental{
 			this.Text = "Billing Options";
 			this.Load += new System.EventHandler(this.FormBillingOptions_Load);
 			this.groupBox2.ResumeLayout(false);
+			this.groupBox2.PerformLayout();
 			this.groupBox1.ResumeLayout(false);
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 		#endregion
@@ -508,6 +520,15 @@ namespace OpenDental{
 		private void FillDunning(){
 			dunningList=Dunnings.Refresh();
 			gridDun.BeginUpdate();
+			gridDun.Columns.Clear();
+			ODGridColumn col=new ODGridColumn("Billing Type",100);
+			gridDun.Columns.Add(col);
+			col=new ODGridColumn("Aging",70);
+			gridDun.Columns.Add(col);
+			col=new ODGridColumn("Ins",40);
+			gridDun.Columns.Add(col);
+			col=new ODGridColumn("Message",356);
+			gridDun.Columns.Add(col);
 			gridDun.Rows.Clear();
 			OpenDental.UI.ODGridRow row;
 			//string text;
@@ -557,6 +578,12 @@ namespace OpenDental{
 			FillDunning();
 		}
 
+		private void butUndo_Click(object sender,EventArgs e) {
+			FormBillingUndo FormB=new FormBillingUndo();
+			FormB.ShowDialog();
+			DialogResult=DialogResult.OK;
+		}
+
 		private void butCreate_Click(object sender, System.EventArgs e) {
 			if( textExcludeLessThan.errorProvider1.GetError(textExcludeLessThan)!=""
 				|| textLastStatement.errorProvider1.GetError(textLastStatement)!=""
@@ -587,6 +614,8 @@ namespace OpenDental{
 		private void butCancel_Click(object sender, System.EventArgs e) {
 			DialogResult=DialogResult.Cancel;
 		}
+
+		
 
 		
 

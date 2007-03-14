@@ -131,7 +131,7 @@ You should run aging when you are done.";
 				if(chargeList[i].DateStart>DateTime.Today){//not started yet
 					continue;
 				}
-				if(chargeList[i].DateStop.Month>1880//not blank
+				if(chargeList[i].DateStop.Year>1880//not blank
 					&& chargeList[i].DateStop<DateTime.Today)//but already ended
 				{
 					continue;

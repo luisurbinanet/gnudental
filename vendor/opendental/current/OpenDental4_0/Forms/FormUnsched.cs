@@ -134,9 +134,9 @@ namespace OpenDental{
 		private void CreateCurInfo(Appointment aptCur){
 			ContrAppt.CurInfo=new InfoApt();
 			ContrAppt.CurInfo.MyApt=aptCur;
-			ProcDesc procDesc=Procedures.GetProcsForSingle(aptCur.AptNum,false);
-			ContrAppt.CurInfo.Procs=procDesc.ProcLines;
-			ContrAppt.CurInfo.Production=procDesc.Production;
+			Procedure[] procs=Procedures.GetProcsForSingle(aptCur.AptNum,false);
+			ContrAppt.CurInfo.Procs=procs;
+			ContrAppt.CurInfo.Production=Procedures.GetProductionOneApt(aptCur.AptNum,procs);
 			ContrAppt.CurInfo.MyPatient=Patients.GetPat(aptCur.PatNum);
 		}
 

@@ -73,7 +73,7 @@ namespace OpenDental{
 			Patients.UpdateAging(guarantor,Bal[0],Bal[1],Bal[2],Bal[3],InsEst,BalTotal);
 		}*/
 
-		///<summary></summary>
+		///<summary>Computes aging for entire family.  Gets all info from database.</summary>
 		public static void ComputeAging(int guarantor,DateTime asOfDate){
 			AsOfDate=asOfDate;
 			Bal=new double[4];

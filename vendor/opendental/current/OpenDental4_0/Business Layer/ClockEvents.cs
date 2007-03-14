@@ -1,11 +1,12 @@
 using System;
 using System.Collections;
+using System.Data;
 using System.Windows.Forms;
 
 namespace OpenDental{
 
 	///<summary>Corresponds to the clockevent table in the database.</summary>
-	public struct ClockEvent{
+	public class ClockEvent{
 		///<summary>Primary key.</summary>
 		public int ClockEventNum;
 		///<summary>Foreign key to employee.EmployeeNum</summary>
@@ -20,38 +21,104 @@ namespace OpenDental{
 		public TimeClockStatus ClockStatus;
 		///<summary></summary>
 		public string Note;
+
+		///<summary></summary>
+		public ClockEvent Copy() {
+			ClockEvent c=new ClockEvent();
+			c.ClockEventNum=ClockEventNum;
+			c.EmployeeNum=EmployeeNum;
+			c.TimeEntered=TimeEntered;
+			c.TimeDisplayed=TimeDisplayed;
+			c.ClockIn=ClockIn;
+			c.ClockStatus=ClockStatus;
+			c.Note=Note;
+			return c;
+		}
+
+		///<summary></summary>
+		public void Insert() {
+			if(Prefs.RandomKeys) {
+				ClockEventNum=MiscData.GetKey("clockevent","ClockEventNum");
+			}
+			string command="INSERT INTO clockevent (";
+			if(Prefs.RandomKeys) {
+				command+="ClockEventNum,";
+			}
+			command+="EmployeeNum,TimeEntered,TimeDisplayed,ClockIn"
+				+",ClockStatus,Note) VALUES(";
+			if(Prefs.RandomKeys) {
+				command+="'"+POut.PInt(ClockEventNum)+"', ";
+			}
+			command+=
+				 "'"+POut.PInt   (EmployeeNum)+"', "
+				+"'"+POut.PDateT (TimeEntered)+"', "
+				+"'"+POut.PDateT (TimeDisplayed)+"', "
+				+"'"+POut.PBool  (ClockIn)+"', "
+				+"'"+POut.PInt   ((int)ClockStatus)+"', "
+				+"'"+POut.PString(Note)+"')";
+			DataConnection dcon=new DataConnection();
+			if(Prefs.RandomKeys) {
+				dcon.NonQ(command);
+			}
+			else {
+				dcon.NonQ(command,true);
+				ClockEventNum=dcon.InsertID;
+			}
+		}
+
+		///<summary></summary>
+		public void Update() {
+			string command= "UPDATE clockevent SET "
+				+"EmployeeNum = '"    +POut.PInt   (EmployeeNum)+"' "
+				+",TimeEntered = '"   +POut.PDateT (TimeEntered)+"' "
+				+",TimeDisplayed = '" +POut.PDateT (TimeDisplayed)+"' "
+				+",ClockIn = '"       +POut.PBool  (ClockIn)+"' "
+				+",ClockStatus = '"   +POut.PInt   ((int)ClockStatus)+"' "
+				+",Note = '"          +POut.PString(Note)+"' "
+				+"WHERE ClockEventNum = '"+POut.PInt(ClockEventNum)+"'";
+			DataConnection dcon=new DataConnection();
+			dcon.NonQ(command);
+		}
+
+		///<summary></summary>
+		public void Delete() {
+			string command= "DELETE FROM clockevent WHERE ClockEventNum = "+POut.PInt(ClockEventNum);
+			DataConnection dcon=new DataConnection();
+			dcon.NonQ(command);
+		}
+
 	}
 
 	/*=========================================================================================
 		=================================== class ClockEvents ==========================================*/
 
 	///<summary></summary>
-	public class ClockEvents:DataClass{
-		///<summary></summary>
-		public static ClockEvent Cur;
-		///<summary>For one employee only. Frequently, only a subset of the events for one employee.</summary>
-		public static ClockEvent[] List;
+	public class ClockEvents{
+		//<summary></summary>
+		//public static ClockEvent Cur;
+		//<summary>For one employee only. Frequently, only a subset of the events for one employee.</summary>
+		//public static ClockEvent[] List;
 
-		///<summary></summary>
-		///<remarks>isBreaks is ignored if getAll is true.</remarks>
-		public static void Refresh(DateTime fromDate,DateTime toDate,bool getAll,bool isBreaks){
-			cmd.CommandText =
+		///<summary>isBreaks is ignored if getAll is true.</summary>
+		public static ClockEvent[] Refresh(int empNum,DateTime fromDate,DateTime toDate,bool getAll,bool isBreaks){
+			string command=
 				"SELECT * from clockevent WHERE"
-				+" EmployeeNum = '"+Employees.Cur.EmployeeNum.ToString()+"'"
+				+" EmployeeNum = '"+POut.PInt(empNum)+"'"
 				+" && TimeDisplayed >= '"+POut.PDate(fromDate)+"'"
 				//adding a day takes it to midnight of the specified toDate
 				+" && TimeDisplayed <= '"+POut.PDate(toDate.AddDays(1))+"'";
 			if(!getAll){
 				if(isBreaks)
-					cmd.CommandText+=" && ClockStatus = '2'";
+					command+=" AND ClockStatus = '2'";
 				else
-					cmd.CommandText+=" && (ClockStatus = '0' OR ClockStatus = '1')";
+					command+=" AND (ClockStatus = '0' OR ClockStatus = '1')";
 			}
-			cmd.CommandText+=
-				" ORDER BY TimeDisplayed";
-			FillTable();
-			List=new ClockEvent[table.Rows.Count];
+			command+=" ORDER BY TimeDisplayed";
+			DataConnection dcon=new DataConnection();
+			DataTable table=dcon.GetTable(command);
+			ClockEvent[] List=new ClockEvent[table.Rows.Count];
 			for(int i=0;i<List.Length;i++){
+				List[i]=new ClockEvent();
 				List[i].ClockEventNum = PIn.PInt   (table.Rows[i][0].ToString());
 				List[i].EmployeeNum   = PIn.PInt   (table.Rows[i][1].ToString());
 				List[i].TimeEntered   = PIn.PDateT (table.Rows[i][2].ToString());
@@ -60,6 +127,7 @@ namespace OpenDental{
 				List[i].ClockStatus   =(TimeClockStatus)PIn.PInt(table.Rows[i][5].ToString());
 				List[i].Note          = PIn.PString(table.Rows[i][6].ToString());
 			}
+			return List;
 		}
 
 		//<summary>This is stupid.  It takes too long.</summary>
@@ -67,61 +135,14 @@ namespace OpenDental{
 		//	Refresh(DateTime.MinValue,new DateTime(3000,1,1),true,true);
 		//}
 
-		///<summary></summary>
-		public static void InsertCur(){
-			if(Prefs.RandomKeys){
-				Cur.ClockEventNum=MiscData.GetKey("clockevent","ClockEventNum");
-			}
-			cmd.CommandText="INSERT INTO clockevent (";
-			if(Prefs.RandomKeys){
-				cmd.CommandText+="ClockEventNum,";
-			}
-			cmd.CommandText+="EmployeeNum,TimeEntered,TimeDisplayed,ClockIn"
-				+",ClockStatus,Note) VALUES(";
-			if(Prefs.RandomKeys){
-				cmd.CommandText+="'"+POut.PInt(Cur.ClockEventNum)+"', ";
-			}
-			cmd.CommandText+=
-				 "'"+POut.PInt   (Cur.EmployeeNum)+"', "
-				+"'"+POut.PDateT (Cur.TimeEntered)+"', "
-				+"'"+POut.PDateT (Cur.TimeDisplayed)+"', "
-				+"'"+POut.PBool  (Cur.ClockIn)+"', "
-				+"'"+POut.PInt   ((int)Cur.ClockStatus)+"', "
-				+"'"+POut.PString(Cur.Note)+"')";
-			if(Prefs.RandomKeys){
-				NonQ();
-			}
-			else{
- 				NonQ(true);
-				Cur.ClockEventNum=InsertID;
-			}
-		}
-
-		///<summary></summary>
-		public static void UpdateCur(){
-			cmd.CommandText = "UPDATE clockevent SET "
-				+"EmployeeNum = '"    +POut.PInt   (Cur.EmployeeNum)+"' "
-				+",TimeEntered = '"   +POut.PDateT (Cur.TimeEntered)+"' "
-				+",TimeDisplayed = '" +POut.PDateT (Cur.TimeDisplayed)+"' "
-				+",ClockIn = '"       +POut.PBool  (Cur.ClockIn)+"' "
-				+",ClockStatus = '"   +POut.PInt   ((int)Cur.ClockStatus)+"' "
-				+",Note = '"          +POut.PString(Cur.Note)+"' "
-				+"WHERE ClockEventNum = '"+POut.PInt(Cur.ClockEventNum)+"'";
-			//MessageBox.Show(cmd.CommandText);
-			NonQ();
-		}
-
-		///<summary></summary>
-		public static void DeleteCur(){
-			cmd.CommandText = "DELETE FROM clockevent WHERE ClockEventNum = '"+Cur.ClockEventNum.ToString()+"'";
-			NonQ();
-		}
+		
 
 		///<summary>Gets directly from the database.  Returns true if the last time clock entry for this employee was a clockin.</summary>
 		public static bool IsClockedIn(int employeeNum){
-			cmd.CommandText="SELECT ClockIn FROM clockevent WHERE EmployeeNum="+POut.PInt(employeeNum)
+			string command="SELECT ClockIn FROM clockevent WHERE EmployeeNum="+POut.PInt(employeeNum)
 				+" ORDER BY TimeDisplayed DESC LIMIT 1";
-			FillTable();
+			DataConnection dcon=new DataConnection();
+			DataTable table=dcon.GetTable(command);
 			if(table.Rows.Count==0)//if this employee has never clocked in or out.
 				return false;
 			if(PIn.PBool(table.Rows[0][0].ToString())){//if the last clockevent was a clockin
@@ -132,9 +153,10 @@ namespace OpenDental{
 
 		///<summary>Gets info directly from database.  If the employee is clocked out, this gets the status for clockin is based on how they last clocked out.  Also used to determine how to initially display timecard.</summary>
 		public static TimeClockStatus GetLastStatus(int employeeNum){
-			cmd.CommandText="SELECT ClockStatus FROM clockevent WHERE EmployeeNum="+POut.PInt(employeeNum)
+			string command="SELECT ClockStatus FROM clockevent WHERE EmployeeNum="+POut.PInt(employeeNum)
 				+" ORDER BY TimeDisplayed DESC LIMIT 1";
-			FillTable();
+			DataConnection dcon=new DataConnection();
+			DataTable table=dcon.GetTable(command);
 			if(table.Rows.Count==0)//if this employee has never clocked in or out.
 				return TimeClockStatus.Home;
 			return (TimeClockStatus)PIn.PInt(table.Rows[0][0].ToString());
@@ -142,9 +164,26 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static DateTime GetServerTime(){
-			cmd.CommandText="SELECT NOW()";
-			FillTable();
+			string command="SELECT NOW()";
+			DataConnection dcon=new DataConnection();
+			DataTable table=dcon.GetTable(command);
 			return PIn.PDateT(table.Rows[0][0].ToString());
+		}
+
+		///<summary>Used in the timecard to track hours worked per week when the week started in a previous time period.  This gets all the hours of the first week before the date listed.</summary>
+		public static TimeSpan GetWeekTotal(int empNum,DateTime date){
+			ClockEvent[] events=Refresh(empNum,date.AddDays(-6),date.AddDays(-1),false,false);
+			//eg, if this is Thursday, then we are getting last Friday through this Wed.
+			TimeSpan retVal=new TimeSpan(0);
+			for(int i=0;i<events.Length;i++){
+				if(events[i].TimeDisplayed.DayOfWeek > date.DayOfWeek){//eg, Friday > Thursday, so ignore
+					continue;
+				}
+				if(i>0 && !events[i].ClockIn){
+					retVal+=events[i].TimeDisplayed-events[i-1].TimeDisplayed;
+				}
+			}
+			return retVal;
 		}
 
 

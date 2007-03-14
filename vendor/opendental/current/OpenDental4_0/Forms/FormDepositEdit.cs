@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDental.UI;
 
 namespace OpenDental{
 	/// <summary>
@@ -38,7 +39,12 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label5;
 		private OpenDental.UI.Button butRefresh;
 		private Payment[] PatPayList;
+		private ComboBox comboDepositAccount;
+		private Label labelDepositAccount;
 		private bool changed;
+		private TextBox textDepositAccount;
+		///<summary>Only used if linking to accounts</summary>
+		private int[] DepositAccounts;
 
 		///<summary></summary>
 		public FormDepositEdit(Deposit depositCur)
@@ -73,57 +79,32 @@ namespace OpenDental{
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormDepositEdit));
-			this.butCancel = new OpenDental.UI.Button();
-			this.butOK = new OpenDental.UI.Button();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormDepositEdit));
 			this.groupSelect = new System.Windows.Forms.GroupBox();
+			this.label5 = new System.Windows.Forms.Label();
 			this.comboClinic = new System.Windows.Forms.ComboBox();
 			this.labelClinic = new System.Windows.Forms.Label();
 			this.listPayType = new System.Windows.Forms.ListBox();
 			this.label2 = new System.Windows.Forms.Label();
-			this.gridPat = new OpenDental.UI.ODGrid();
-			this.butDelete = new OpenDental.UI.Button();
 			this.label1 = new System.Windows.Forms.Label();
-			this.textDate = new OpenDental.ValidDate();
 			this.label3 = new System.Windows.Forms.Label();
 			this.textBankAccountInfo = new System.Windows.Forms.TextBox();
 			this.label4 = new System.Windows.Forms.Label();
 			this.textAmount = new System.Windows.Forms.TextBox();
-			this.butPrint = new OpenDental.UI.Button();
+			this.comboDepositAccount = new System.Windows.Forms.ComboBox();
+			this.labelDepositAccount = new System.Windows.Forms.Label();
 			this.gridIns = new OpenDental.UI.ODGrid();
-			this.textDateStart = new OpenDental.ValidDate();
-			this.label5 = new System.Windows.Forms.Label();
+			this.butPrint = new OpenDental.UI.Button();
+			this.textDate = new OpenDental.ValidDate();
+			this.butDelete = new OpenDental.UI.Button();
+			this.gridPat = new OpenDental.UI.ODGrid();
 			this.butRefresh = new OpenDental.UI.Button();
+			this.textDateStart = new OpenDental.ValidDate();
+			this.butOK = new OpenDental.UI.Button();
+			this.butCancel = new OpenDental.UI.Button();
+			this.textDepositAccount = new System.Windows.Forms.TextBox();
 			this.groupSelect.SuspendLayout();
 			this.SuspendLayout();
-			// 
-			// butCancel
-			// 
-			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butCancel.Autosize = true;
-			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butCancel.Location = new System.Drawing.Point(805, 631);
-			this.butCancel.Name = "butCancel";
-			this.butCancel.Size = new System.Drawing.Size(75, 26);
-			this.butCancel.TabIndex = 0;
-			this.butCancel.Text = "&Cancel";
-			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
-			// 
-			// butOK
-			// 
-			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butOK.Autosize = true;
-			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butOK.Location = new System.Drawing.Point(712, 631);
-			this.butOK.Name = "butOK";
-			this.butOK.Size = new System.Drawing.Size(75, 26);
-			this.butOK.TabIndex = 1;
-			this.butOK.Text = "&OK";
-			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// groupSelect
 			// 
@@ -135,204 +116,246 @@ namespace OpenDental{
 			this.groupSelect.Controls.Add(this.listPayType);
 			this.groupSelect.Controls.Add(this.label2);
 			this.groupSelect.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupSelect.Location = new System.Drawing.Point(602, 276);
+			this.groupSelect.Location = new System.Drawing.Point(602,276);
 			this.groupSelect.Name = "groupSelect";
-			this.groupSelect.Size = new System.Drawing.Size(204, 344);
+			this.groupSelect.Size = new System.Drawing.Size(204,344);
 			this.groupSelect.TabIndex = 99;
 			this.groupSelect.TabStop = false;
 			this.groupSelect.Text = "Show";
 			// 
+			// label5
+			// 
+			this.label5.Location = new System.Drawing.Point(14,19);
+			this.label5.Name = "label5";
+			this.label5.Size = new System.Drawing.Size(118,15);
+			this.label5.TabIndex = 104;
+			this.label5.Text = "Start Date";
+			this.label5.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
 			// comboClinic
 			// 
 			this.comboClinic.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboClinic.Location = new System.Drawing.Point(14, 75);
+			this.comboClinic.Location = new System.Drawing.Point(14,75);
 			this.comboClinic.MaxDropDownItems = 30;
 			this.comboClinic.Name = "comboClinic";
-			this.comboClinic.Size = new System.Drawing.Size(180, 21);
+			this.comboClinic.Size = new System.Drawing.Size(180,21);
 			this.comboClinic.TabIndex = 94;
 			// 
 			// labelClinic
 			// 
-			this.labelClinic.Location = new System.Drawing.Point(14, 59);
+			this.labelClinic.Location = new System.Drawing.Point(14,59);
 			this.labelClinic.Name = "labelClinic";
-			this.labelClinic.Size = new System.Drawing.Size(102, 15);
+			this.labelClinic.Size = new System.Drawing.Size(102,15);
 			this.labelClinic.TabIndex = 93;
 			this.labelClinic.Text = "Clinic";
 			this.labelClinic.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// listPayType
 			// 
-			this.listPayType.Location = new System.Drawing.Point(14, 127);
+			this.listPayType.Location = new System.Drawing.Point(14,127);
 			this.listPayType.Name = "listPayType";
 			this.listPayType.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-			this.listPayType.Size = new System.Drawing.Size(134, 173);
+			this.listPayType.Size = new System.Drawing.Size(134,173);
 			this.listPayType.TabIndex = 96;
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(14, 105);
+			this.label2.Location = new System.Drawing.Point(14,105);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(171, 18);
+			this.label2.Size = new System.Drawing.Size(171,18);
 			this.label2.TabIndex = 97;
 			this.label2.Text = "Patient Payment Types";
 			this.label2.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
-			// gridPat
-			// 
-			this.gridPat.Columns.Add(new OpenDental.UI.ODGridColumn("Date", 80, System.Windows.Forms.HorizontalAlignment.Left));
-			this.gridPat.Columns.Add(new OpenDental.UI.ODGridColumn("Patient", 130, System.Windows.Forms.HorizontalAlignment.Left));
-			this.gridPat.Columns.Add(new OpenDental.UI.ODGridColumn("Type", 90, System.Windows.Forms.HorizontalAlignment.Left));
-			this.gridPat.Columns.Add(new OpenDental.UI.ODGridColumn("Check Number", 95, System.Windows.Forms.HorizontalAlignment.Left));
-			this.gridPat.Columns.Add(new OpenDental.UI.ODGridColumn("Bank-Branch", 80, System.Windows.Forms.HorizontalAlignment.Left));
-			this.gridPat.Columns.Add(new OpenDental.UI.ODGridColumn("Amount", 90, System.Windows.Forms.HorizontalAlignment.Right));
-			this.gridPat.HScrollVisible = false;
-			this.gridPat.Location = new System.Drawing.Point(8, 12);
-			this.gridPat.Name = "gridPat";
-			this.gridPat.ScrollValue = 0;
-			this.gridPat.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-			this.gridPat.Size = new System.Drawing.Size(584, 299);
-			this.gridPat.TabIndex = 100;
-			this.gridPat.Title = "Patient Payments";
-			this.gridPat.TranslationName = "TableDepositSlipPat";
-			this.gridPat.CellClick += new OpenDental.UI.ODGridClickEventHandler(this.gridPat_CellClick);
-			// 
-			// butDelete
-			// 
-			this.butDelete.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.butDelete.Autosize = true;
-			this.butDelete.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butDelete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
-			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDelete.Location = new System.Drawing.Point(7, 631);
-			this.butDelete.Name = "butDelete";
-			this.butDelete.Size = new System.Drawing.Size(85, 26);
-			this.butDelete.TabIndex = 101;
-			this.butDelete.Text = "Delete";
-			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
-			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(602, 8);
+			this.label1.Location = new System.Drawing.Point(602,8);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(95, 15);
+			this.label1.Size = new System.Drawing.Size(95,15);
 			this.label1.TabIndex = 102;
 			this.label1.Text = "Date";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
-			// textDate
-			// 
-			this.textDate.Location = new System.Drawing.Point(602, 25);
-			this.textDate.Name = "textDate";
-			this.textDate.Size = new System.Drawing.Size(94, 20);
-			this.textDate.TabIndex = 103;
-			this.textDate.Text = "";
-			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(602, 95);
+			this.label3.Location = new System.Drawing.Point(602,95);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(127, 18);
+			this.label3.Size = new System.Drawing.Size(127,18);
 			this.label3.TabIndex = 104;
 			this.label3.Text = "Bank Account Info";
 			this.label3.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// textBankAccountInfo
 			// 
-			this.textBankAccountInfo.Location = new System.Drawing.Point(602, 116);
+			this.textBankAccountInfo.Location = new System.Drawing.Point(602,116);
 			this.textBankAccountInfo.Multiline = true;
 			this.textBankAccountInfo.Name = "textBankAccountInfo";
-			this.textBankAccountInfo.Size = new System.Drawing.Size(289, 75);
+			this.textBankAccountInfo.Size = new System.Drawing.Size(289,75);
 			this.textBankAccountInfo.TabIndex = 105;
-			this.textBankAccountInfo.Text = "";
 			// 
 			// label4
 			// 
-			this.label4.Location = new System.Drawing.Point(602, 49);
+			this.label4.Location = new System.Drawing.Point(602,49);
 			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(127, 18);
+			this.label4.Size = new System.Drawing.Size(127,18);
 			this.label4.TabIndex = 106;
 			this.label4.Text = "Amount";
 			this.label4.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// textAmount
 			// 
-			this.textAmount.Location = new System.Drawing.Point(602, 70);
+			this.textAmount.Location = new System.Drawing.Point(602,70);
 			this.textAmount.Name = "textAmount";
 			this.textAmount.ReadOnly = true;
-			this.textAmount.Size = new System.Drawing.Size(94, 20);
+			this.textAmount.Size = new System.Drawing.Size(94,20);
 			this.textAmount.TabIndex = 107;
-			this.textAmount.Text = "";
+			// 
+			// comboDepositAccount
+			// 
+			this.comboDepositAccount.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboDepositAccount.FormattingEnabled = true;
+			this.comboDepositAccount.Location = new System.Drawing.Point(602,216);
+			this.comboDepositAccount.Name = "comboDepositAccount";
+			this.comboDepositAccount.Size = new System.Drawing.Size(289,21);
+			this.comboDepositAccount.TabIndex = 110;
+			// 
+			// labelDepositAccount
+			// 
+			this.labelDepositAccount.Location = new System.Drawing.Point(602,196);
+			this.labelDepositAccount.Name = "labelDepositAccount";
+			this.labelDepositAccount.Size = new System.Drawing.Size(289,18);
+			this.labelDepositAccount.TabIndex = 111;
+			this.labelDepositAccount.Text = "Deposit into Account";
+			this.labelDepositAccount.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// gridIns
+			// 
+			this.gridIns.HScrollVisible = false;
+			this.gridIns.Location = new System.Drawing.Point(8,319);
+			this.gridIns.Name = "gridIns";
+			this.gridIns.ScrollValue = 0;
+			this.gridIns.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+			this.gridIns.Size = new System.Drawing.Size(584,301);
+			this.gridIns.TabIndex = 109;
+			this.gridIns.Title = "Insurance Payments";
+			this.gridIns.TranslationName = "TableDepositSlipIns";
+			this.gridIns.CellClick += new OpenDental.UI.ODGridClickEventHandler(this.gridIns_CellClick);
 			// 
 			// butPrint
 			// 
-			this.butPrint.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butPrint.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butPrint.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.butPrint.Autosize = true;
 			this.butPrint.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butPrint.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butPrint.Image = ((System.Drawing.Image)(resources.GetObject("butPrint.Image")));
 			this.butPrint.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butPrint.Location = new System.Drawing.Point(583, 631);
+			this.butPrint.Location = new System.Drawing.Point(583,631);
 			this.butPrint.Name = "butPrint";
-			this.butPrint.Size = new System.Drawing.Size(81, 26);
+			this.butPrint.Size = new System.Drawing.Size(81,26);
 			this.butPrint.TabIndex = 108;
 			this.butPrint.Text = "&Print";
 			this.butPrint.Click += new System.EventHandler(this.butPrint_Click);
 			// 
-			// gridIns
+			// textDate
 			// 
-			this.gridIns.Columns.Add(new OpenDental.UI.ODGridColumn("Date", 80, System.Windows.Forms.HorizontalAlignment.Left));
-			this.gridIns.Columns.Add(new OpenDental.UI.ODGridColumn("Carrier", 220, System.Windows.Forms.HorizontalAlignment.Left));
-			this.gridIns.Columns.Add(new OpenDental.UI.ODGridColumn("Check Number", 95, System.Windows.Forms.HorizontalAlignment.Left));
-			this.gridIns.Columns.Add(new OpenDental.UI.ODGridColumn("Bank-Branch", 80, System.Windows.Forms.HorizontalAlignment.Left));
-			this.gridIns.Columns.Add(new OpenDental.UI.ODGridColumn("Amount", 90, System.Windows.Forms.HorizontalAlignment.Right));
-			this.gridIns.HScrollVisible = false;
-			this.gridIns.Location = new System.Drawing.Point(8, 319);
-			this.gridIns.Name = "gridIns";
-			this.gridIns.ScrollValue = 0;
-			this.gridIns.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-			this.gridIns.Size = new System.Drawing.Size(584, 301);
-			this.gridIns.TabIndex = 109;
-			this.gridIns.Title = "Insurance Payments";
-			this.gridIns.TranslationName = "TableDepositSlipIns";
-			this.gridIns.CellClick += new OpenDental.UI.ODGridClickEventHandler(this.gridIns_CellClick);
+			this.textDate.Location = new System.Drawing.Point(602,25);
+			this.textDate.Name = "textDate";
+			this.textDate.Size = new System.Drawing.Size(94,20);
+			this.textDate.TabIndex = 103;
 			// 
-			// textDateStart
+			// butDelete
 			// 
-			this.textDateStart.Location = new System.Drawing.Point(14, 36);
-			this.textDateStart.Name = "textDateStart";
-			this.textDateStart.Size = new System.Drawing.Size(94, 20);
-			this.textDateStart.TabIndex = 105;
-			this.textDateStart.Text = "";
+			this.butDelete.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.butDelete.Autosize = true;
+			this.butDelete.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butDelete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
+			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butDelete.Location = new System.Drawing.Point(7,631);
+			this.butDelete.Name = "butDelete";
+			this.butDelete.Size = new System.Drawing.Size(85,26);
+			this.butDelete.TabIndex = 101;
+			this.butDelete.Text = "Delete";
+			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
 			// 
-			// label5
+			// gridPat
 			// 
-			this.label5.Location = new System.Drawing.Point(14, 19);
-			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(118, 15);
-			this.label5.TabIndex = 104;
-			this.label5.Text = "Start Date";
-			this.label5.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			this.gridPat.HScrollVisible = false;
+			this.gridPat.Location = new System.Drawing.Point(8,12);
+			this.gridPat.Name = "gridPat";
+			this.gridPat.ScrollValue = 0;
+			this.gridPat.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+			this.gridPat.Size = new System.Drawing.Size(584,299);
+			this.gridPat.TabIndex = 100;
+			this.gridPat.Title = "Patient Payments";
+			this.gridPat.TranslationName = "TableDepositSlipPat";
+			this.gridPat.CellClick += new OpenDental.UI.ODGridClickEventHandler(this.gridPat_CellClick);
 			// 
 			// butRefresh
 			// 
-			this.butRefresh.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butRefresh.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butRefresh.Autosize = true;
 			this.butRefresh.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butRefresh.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butRefresh.Location = new System.Drawing.Point(13, 307);
+			this.butRefresh.Location = new System.Drawing.Point(13,307);
 			this.butRefresh.Name = "butRefresh";
-			this.butRefresh.Size = new System.Drawing.Size(75, 26);
+			this.butRefresh.Size = new System.Drawing.Size(75,26);
 			this.butRefresh.TabIndex = 106;
 			this.butRefresh.Text = "Refresh";
 			this.butRefresh.Click += new System.EventHandler(this.butRefresh_Click);
 			// 
+			// textDateStart
+			// 
+			this.textDateStart.Location = new System.Drawing.Point(14,36);
+			this.textDateStart.Name = "textDateStart";
+			this.textDateStart.Size = new System.Drawing.Size(94,20);
+			this.textDateStart.TabIndex = 105;
+			// 
+			// butOK
+			// 
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butOK.Location = new System.Drawing.Point(712,631);
+			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75,26);
+			this.butOK.TabIndex = 1;
+			this.butOK.Text = "&OK";
+			this.butOK.Click += new System.EventHandler(this.butOK_Click);
+			// 
+			// butCancel
+			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butCancel.Location = new System.Drawing.Point(805,631);
+			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75,26);
+			this.butCancel.TabIndex = 0;
+			this.butCancel.Text = "&Cancel";
+			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
+			// 
+			// textDepositAccount
+			// 
+			this.textDepositAccount.Location = new System.Drawing.Point(602,241);
+			this.textDepositAccount.Name = "textDepositAccount";
+			this.textDepositAccount.ReadOnly = true;
+			this.textDepositAccount.Size = new System.Drawing.Size(289,20);
+			this.textDepositAccount.TabIndex = 112;
+			// 
 			// FormDepositEdit
 			// 
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(897, 667);
+			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
+			this.ClientSize = new System.Drawing.Size(897,667);
+			this.Controls.Add(this.textDepositAccount);
+			this.Controls.Add(this.labelDepositAccount);
+			this.Controls.Add(this.comboDepositAccount);
 			this.Controls.Add(this.gridIns);
 			this.Controls.Add(this.butPrint);
 			this.Controls.Add(this.textAmount);
@@ -357,12 +380,28 @@ namespace OpenDental{
 			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormDepositEdit_Closing);
 			this.Load += new System.EventHandler(this.FormDepositEdit_Load);
 			this.groupSelect.ResumeLayout(false);
+			this.groupSelect.PerformLayout();
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 		#endregion
 
 		private void FormDepositEdit_Load(object sender, System.EventArgs e) {
+			if(IsNew) {
+				if(!Security.IsAuthorized(Permissions.DepositSlips,DateTime.Today)){
+					//we will check the date again when saving
+					DialogResult=DialogResult.Cancel;
+					return;
+				}
+			}
+			else {
+				//We enforce security here based on date displayed, not date entered
+				if(!Security.IsAuthorized(Permissions.DepositSlips,DepositCur.DateDeposit)){
+					butOK.Enabled=false;
+					butDelete.Enabled=false;
+				}
+			}
 			if(IsNew){
 				textDateStart.Text=PIn.PDate(Prefs.GetString("DateDepositsStarted")).ToShortDateString();
 				if(Prefs.GetBool("EasyNoClinics")){
@@ -379,11 +418,46 @@ namespace OpenDental{
 					listPayType.Items.Add(Defs.Short[(int)DefCat.PaymentTypes][i].ItemName);
 					listPayType.SetSelected(i,true);
 				}
+				textDepositAccount.Visible=false;//this is never visible for new. It's a description if already attached.
+				if(Accounts.DepositsLinked()) {
+					DepositAccounts=Accounts.GetDepositAccounts();
+					for(int i=0;i<DepositAccounts.Length;i++){
+						comboDepositAccount.Items.Add(Accounts.GetDescript(DepositAccounts[i]));
+					}
+					comboDepositAccount.SelectedIndex=0;
+				}
+				else{
+					labelDepositAccount.Visible=false;
+					comboDepositAccount.Visible=false;
+				}
 			}
 			else{
 				groupSelect.Visible=false;
 				gridIns.SelectionMode=SelectionMode.None;
 				gridPat.SelectionMode=SelectionMode.None;
+				//we never again let user change the deposit linking again from here.
+				//They need to detach it from within the transaction
+				//Might be enhanced later to allow, but that's very complex.
+				Transaction trans=Transactions.GetAttachedToDeposit(DepositCur.DepositNum);
+				if(trans==null){
+					labelDepositAccount.Visible=false;
+					comboDepositAccount.Visible=false;
+					textDepositAccount.Visible=false;
+				}
+				else{
+					comboDepositAccount.Enabled=false;
+					labelDepositAccount.Text=Lan.g(this,"Deposited into Account");
+					ArrayList jeAL=JournalEntries.GetForTrans(trans.TransactionNum);
+					for(int i=0;i<jeAL.Count;i++){
+						if(Accounts.GetAccount(((JournalEntry)jeAL[i]).AccountNum).AcctType==AccountType.Asset){
+							comboDepositAccount.Items.Add(Accounts.GetDescript(((JournalEntry)jeAL[i]).AccountNum));
+							comboDepositAccount.SelectedIndex=0;
+							textDepositAccount.Text=((JournalEntry)jeAL[i]).DateDisplayed.ToShortDateString()
+								+" "+((JournalEntry)jeAL[i]).DebitAmt.ToString("c");
+							break;
+						}
+					}
+				}
 			}
 			textDate.Text=DepositCur.DateDeposit.ToShortDateString();
 			textAmount.Text=DepositCur.Amount.ToString("F");
@@ -424,6 +498,19 @@ namespace OpenDental{
 			patNumAL.CopyTo(patNums);
 			Patient[] pats=Patients.GetMultPats(patNums);
 			gridPat.BeginUpdate();
+			gridPat.Columns.Clear();
+			ODGridColumn col=new ODGridColumn(Lan.g("TableDepositSlipPat","Date"),80);
+			gridPat.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableDepositSlipPat","Patient"),130);
+			gridPat.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableDepositSlipPat","Type"),90);
+			gridPat.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableDepositSlipPat","Check Number"),95);
+			gridPat.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableDepositSlipPat","Bank-Branch"),80);
+			gridPat.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableDepositSlipPat","Amount"),80);
+			gridPat.Columns.Add(col);
 			gridPat.Rows.Clear();
 			OpenDental.UI.ODGridRow row;
 			for(int i=0;i<PatPayList.Length;i++){
@@ -439,6 +526,17 @@ namespace OpenDental{
 			gridPat.EndUpdate();
 			//Fill Insurance Payment Grid-------------------------------------
 			gridIns.BeginUpdate();
+			gridIns.Columns.Clear();
+			col=new ODGridColumn(Lan.g("TableDepositSlipIns","Date"),80);
+			gridIns.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableDepositSlipIns","Carrier"),220);
+			gridIns.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableDepositSlipIns","Check Number"),95);
+			gridIns.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableDepositSlipIns","Bank-Branch"),80);
+			gridIns.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableDepositSlipIns","Amount"),90);
+			gridIns.Columns.Add(col);
 			gridIns.Rows.Clear();
 			for(int i=0;i<ClaimPayList.Length;i++){
 				row=new OpenDental.UI.ODGridRow();
@@ -498,13 +596,55 @@ namespace OpenDental{
 		}
 
 		private void butDelete_Click(object sender, System.EventArgs e) {
+			if(IsNew){
+				DialogResult=DialogResult.Cancel;
+				return;
+			}
+			//If deposit is attached to a transaction which is more than 48 hours old, then not allowed to delete.
+			//This is hard coded.  User would have to delete or detach from within transaction rather than here.
+			Transaction trans=Transactions.GetAttachedToDeposit(DepositCur.DepositNum);
+			if(trans != null){
+				if(trans.DateTimeEntry < MiscData.GetNowDateTime().AddDays(-2) ){
+					MsgBox.Show(this,"Not allowed to delete.  This deposit is already attached to an accounting transaction.  You will need to detach it from within the accounting section of the program.");
+					return;
+				}
+				if(Transactions.IsReconciled(trans)) {
+					MsgBox.Show(this,"Not allowed to delete.  This deposit is attached to an accounting transaction that has been reconciled.  You will need to detach it from within the accounting section of the program.");
+					return;
+				}
+				try{
+					trans.Delete();
+				}
+				catch(ApplicationException ex){
+					MessageBox.Show(ex.Message);
+					return;
+				}
+			}
 			DepositCur.Delete();
 			DialogResult=DialogResult.OK;
 		}
 
 		private void butPrint_Click(object sender, System.EventArgs e) {
-			if(!SaveToDB()){
+			if(textDate.errorProvider1.GetError(textDate)!="") {
+				MsgBox.Show(this,"Please fix data entry errors first.");
 				return;
+			}
+			if(IsNew){
+				if(!SaveToDB()) {
+					return;
+				}
+			}
+			else{//not new
+				//Only allowed to change date and bank account info, NOT attached checks.
+				//We enforce security here based on date displayed, not date entered.
+				//If user is trying to change date without permission:
+				DateTime date=PIn.PDate(textDate.Text);
+				if(Security.IsAuthorized(Permissions.DepositSlips,date,true)){
+					if(!SaveToDB()) {
+						return;
+					}
+				}
+				//if security.NotAuthorized, then it simply skips the save process before printing
 			}
 			//refresh the lists because some items may not be highlighted
 			PatPayList=Payments.GetForDeposit(DepositCur.DepositNum);
@@ -571,28 +711,81 @@ namespace OpenDental{
 			Queries.CurReport.ColCaption[4]="Amount";
 			Queries.CurReport.ColAlign[4]=HorizontalAlignment.Right;
 			FormQuery2.ShowDialog();
-			DialogResult=DialogResult.OK;
+			DialogResult=DialogResult.OK;//this is imporant, since we don't want to insert the deposit slip twice.
 		}
 
-		///<summary>Saves the selected rows to database.</summary>
+		///<summary>Saves the selected rows to database.  MUST close window after this.</summary>
 		private bool SaveToDB(){
 			if(textDate.errorProvider1.GetError(textDate)!=""){
 				MsgBox.Show(this,"Please fix data entry errors first.");
 				return false;
 			}
+			//Prevent backdating----------------------------------------------------------------------------------------
+			DateTime date=PIn.PDate(textDate.Text);
+			if(IsNew) {
+				if(!Security.IsAuthorized(Permissions.DepositSlips,date)) {
+					return false;
+				}
+			}
+			else {
+				//We enforce security here based on date displayed, not date entered
+				if(!Security.IsAuthorized(Permissions.DepositSlips,date)) {
+					return false;
+				}
+			}
 			DepositCur.DateDeposit=PIn.PDate(textDate.Text);
 			//amount already handled.
 			DepositCur.BankAccountInfo=PIn.PString(textBankAccountInfo.Text);
-			DepositCur.InsertOrUpdate(IsNew);
-			if(IsNew){//never allowed to change attached more checks after initial creation of deposit slip
+			if(IsNew){
+				DepositCur.Insert();
+				if(Accounts.DepositsLinked() && DepositCur.Amount>0){
+					//create a transaction here
+					Transaction trans=new Transaction();
+					trans.DepositNum=DepositCur.DepositNum;
+					trans.UserNum=Security.CurUser.UserNum;
+					trans.Insert();
+					//first the deposit entry
+					JournalEntry je=new JournalEntry();
+					je.AccountNum=DepositAccounts[comboDepositAccount.SelectedIndex];
+					je.CheckNumber=Lan.g(this,"DEP");
+					je.DateDisplayed=DepositCur.DateDeposit;//it would be nice to add security here.
+					je.DebitAmt=DepositCur.Amount;
+					je.Memo=Lan.g(this,"Deposit");
+					je.Splits=Accounts.GetDescript(Prefs.GetInt("AccountingIncomeAccount"));
+					je.TransactionNum=trans.TransactionNum;
+					je.Insert();
+					//then, the income entry
+					je=new JournalEntry();
+					je.AccountNum=Prefs.GetInt("AccountingIncomeAccount");
+					//je.CheckNumber=;
+					je.DateDisplayed=DepositCur.DateDeposit;//it would be nice to add security here.
+					je.CreditAmt=DepositCur.Amount;
+					je.Memo=Lan.g(this,"Deposit");
+					je.Splits=Accounts.GetDescript(DepositAccounts[comboDepositAccount.SelectedIndex]);
+					je.TransactionNum=trans.TransactionNum;
+					je.Insert();
+				}
+			}
+			else{
+				DepositCur.Update();
+			}
+			if(IsNew){//never allowed to change or attach more checks after initial creation of deposit slip
 				for(int i=0;i<gridPat.SelectedIndices.Length;i++){
 					PatPayList[gridPat.SelectedIndices[i]].DepositNum=DepositCur.DepositNum;
-					PatPayList[gridPat.SelectedIndices[i]].InsertOrUpdate(false);
+					PatPayList[gridPat.SelectedIndices[i]].Update();
 				}
 				for(int i=0;i<gridIns.SelectedIndices.Length;i++){
 					ClaimPayList[gridIns.SelectedIndices[i]].DepositNum=DepositCur.DepositNum;
 					ClaimPayList[gridIns.SelectedIndices[i]].Update();
 				}
+			}
+			if(IsNew) {
+				SecurityLogs.MakeLogEntry(Permissions.DepositSlips,0,
+					DepositCur.DateDeposit.ToShortDateString()+" New "+DepositCur.Amount.ToString("c"));
+			}
+			else {
+				SecurityLogs.MakeLogEntry(Permissions.AdjustmentEdit,0,
+					DepositCur.DateDeposit.ToShortDateString()+" "+DepositCur.Amount.ToString("c"));
 			}
 			return true;
 		}
@@ -606,6 +799,7 @@ namespace OpenDental{
 
 		private void butCancel_Click(object sender, System.EventArgs e) {
 			if(IsNew){
+				//no need to worry about deposit links, since none made yet.
 				DepositCur.Delete();
 			}
 			DialogResult=DialogResult.Cancel;

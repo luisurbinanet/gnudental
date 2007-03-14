@@ -65,8 +65,12 @@ namespace OpenDental{
 			catch(MySql.Data.Types.MySqlConversionException){
 				MsgBox.Show(this,"Invalid date found. Please fix dates in the Check Database Integrity tool in your main menu under misc tools");
 			}
-			catch(Exception){
-				MessageBox.Show(command);
+			catch(MySqlException e){
+				MsgBoxCopyPaste MB=new MsgBoxCopyPaste(Lan.g("DataConnection","Error in query:")+"\r\n"
+					+e.Message+"\r\n"+"\r\n"
+					+command);
+				MB.ShowDialog();
+				//MessageBox.Show(command);
 			}
 			//catch(MySqlException e){
 			//	MessageBox.Show("Error: "+e.Message+","+cmd.CommandText);
@@ -97,7 +101,11 @@ namespace OpenDental{
 				}
 			}
 			catch(MySqlException e){
-				MessageBox.Show("Error: "+e.Message+","+cmd.CommandText);
+				MsgBoxCopyPaste MB=new MsgBoxCopyPaste(Lan.g("DataConnection","Error in query:")+"\r\n"
+					+e.Message+"\r\n"+"\r\n"
+					+command);
+				MB.ShowDialog();
+				//MessageBox.Show("Error: "+e.Message+","+cmd.CommandText);
 			}
 			//catch{
 			//	MessageBox.Show("Error: "+);
@@ -121,7 +129,7 @@ namespace OpenDental{
 			return rowsChanged;
 		}
 
-		///<summary>Use this for count(*) queries.  They are always guaranteed to return one and only one value.  Uses datareader instead of datatable, so faster.</summary>
+		///<summary>Use this for count(*) queries.  They are always guaranteed to return one and only one value.  Uses datareader instead of datatable, so faster.  Can also be used when retrieving prefs manually, since they will also return exactly one value</summary>
 		public string GetCount(string command){
 			cmd.CommandText=command;
 			con.Open();

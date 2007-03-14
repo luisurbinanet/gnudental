@@ -316,7 +316,7 @@ namespace OpenDental{
 		}
 
 		private void contrGrid_DoubleClick(object sender, System.EventArgs e) {
-			int tempDay=(int)Math.Floor((mousePos.X-contrGrid.NumW)/contrGrid.ColW);
+      int tempDay=(int)Math.Floor((double)(mousePos.X-contrGrid.NumW)/(double)contrGrid.ColW);
 			if(tempDay==7)
 				return;
 			if(tempDay==-1){
@@ -324,8 +324,8 @@ namespace OpenDental{
 			}
 			int tempOpI
 				=(int)Math.Floor((mousePos.X-contrGrid.NumW-(tempDay*contrGrid.ColW))/contrGrid.opW);
-			int tempMin=(int)((mousePos.Y-Math.Floor(mousePos.Y/contrGrid.RowH/6)*contrGrid.RowH*6)/contrGrid.RowH)*10;
-			int tempHr=(int)Math.Floor(mousePos.Y/contrGrid.RowH/6);
+      int tempMin=(int)((mousePos.Y-Math.Floor((double)mousePos.Y/(double)contrGrid.RowH/6)*contrGrid.RowH*6)/contrGrid.RowH)*10;
+			int tempHr=(int)Math.Floor((double)mousePos.Y/(double)contrGrid.RowH/(double)6);
 			TimeSpan tempSpan=new TimeSpan(tempHr,tempMin,0);
 			//MessageBox.Show(tempDay.ToString()+","+tempHr.ToString()+":"+tempMin.ToString());
 			for(int i=0;i<SchedDefaults.List.Length;i++){

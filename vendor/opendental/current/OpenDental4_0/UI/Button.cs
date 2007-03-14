@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Data;
 using System.Windows.Forms;
 using System.Drawing.Drawing2D;
@@ -10,15 +11,21 @@ using System.Drawing.Design;
 namespace OpenDental.UI
 {
 	/// <summary>
-	/// Summary description for UserControl1.
+	/// Summary description for Button
 	/// </summary>
 	public class Button : System.Windows.Forms.Button{
-		private ControlState enmState = ControlState.Normal;
+		private ControlState butState = ControlState.Normal;
 		private bool bCanClick = false;
-		private Point locPoint;
-		private enumType.XPStyle m_btnStyle=enumType.XPStyle.Silver;
-		private enumType.BtnShape m_btnShape=enumType.BtnShape.Rectangle;
+		private Point adjustImageLocation;
 		private bool autosize=true;
+		private const float cornerRadius=5;
+		private Color colorBorder;
+		private Color colorDisabledFore;
+		private Color colorShadow;
+		private Color colorDarkest;
+		private Color colorMain;
+		private Color colorLightest;
+		private Color colorDarkDefault;
 
 		///<summary></summary>
 		public enum ControlState{
@@ -36,69 +43,56 @@ namespace OpenDental.UI
 		/// <summary>Required designer variable.</summary>
 		private System.ComponentModel.Container components = null;
 
-		///<summary>Initializes a new instance of the XpButton class.</summary>
+		///<summary>Initializes a new instance of the Button class.</summary>
 		public Button(){
 			// This call is required by the Windows.Forms Form Designer.
 			InitializeComponent();
 			this.SetStyle(ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint |
 				ControlStyles.DoubleBuffer, true);
+			colorBorder      =Color.FromArgb(150,190,210);
+			colorDisabledFore=Color.FromArgb(161,161,146);
+			colorShadow      =Color.FromArgb(180,180,180);
+			colorDarkest     =Color.FromArgb(50,70,150);
+			colorLightest    =Color.FromArgb(255,255,255);
+			colorMain        =Color.FromArgb(200,202,220);
+			colorDarkDefault =Color.FromArgb(50,70,230);
 		}
 
-		#region Static members (colors)
-		// Fields
-		private static readonly Size sizeBorderPixelIndent;
-		private static readonly int borderRoundness;
-		private static readonly Color clrOuterShadow1;
-		private static readonly Color clrOuterShadow2;
-		private static readonly Color clrBackground1;
-		private static readonly Color clrBackground2;
-		private static readonly Color clrBorder;
-		private static readonly Color clrInnerShadowBottom1;
-		private static readonly Color clrInnerShadowBottom2;
-		private static readonly Color clrInnerShadowBottom3;
-		private static readonly Color clrInnerShadowRight1a;
-		private static readonly Color clrInnerShadowRight1b;
-		private static readonly Color clrInnerShadowRight2a;
-		private static readonly Color clrInnerShadowRight2b;
-		private static readonly Color clrInnerShadowBottomPressed1;
-		private static readonly Color clrInnerShadowBottomPressed2;
-		private static readonly Color clrInnerShadowTopPressed1;
-		private static readonly Color clrInnerShadowTopPressed2;
-		private static readonly Color clrInnerShadowLeftPressed1;
-		private static readonly Color clrInnerShadowLeftPressed2;
-	
-		/// <summary>Initializes all static fields of the Button class.</summary>
-		static Button(){
-			// 1 pixel indent in the roundness of the border (from XP Visual Design Guidelines)
-			// To make pixel indentation larger, change by a factor of 4,
-			// i. e., 2 pixels indent = Size(8, 8);
-			sizeBorderPixelIndent = new Size(4, 4);
-			//but replacing it with a simple pixel indent, usually 1.
-			borderRoundness=1;
-			// Normal colors
-			clrOuterShadow1 = Color.FromArgb(64, 164, 164, 164);
-			clrOuterShadow2 = Color.FromArgb(64, Color.White);
-			clrBackground1 = Color.FromArgb(250, 250, 248);
-			clrBackground2 = Color.FromArgb(240, 240, 234);
-			clrBorder = Color.FromArgb(0, 60, 116);
-			clrInnerShadowBottom1 = Color.FromArgb(236, 235, 230);
-			clrInnerShadowBottom2 = Color.FromArgb(226, 223, 214);
-			clrInnerShadowBottom3 = Color.FromArgb(214, 208, 197);
-			clrInnerShadowRight1a = Color.FromArgb(128, 236, 234, 230);
-			clrInnerShadowRight1b = Color.FromArgb(128, 224, 220, 212);
-			clrInnerShadowRight2a = Color.FromArgb(128, 234, 228, 218);
-			clrInnerShadowRight2b = Color.FromArgb(128, 212, 208, 196);
-			// Pressed colors
-			clrInnerShadowBottomPressed1 = Color.FromArgb(234, 233, 227);
-			clrInnerShadowBottomPressed2 = Color.FromArgb(242, 241, 238);
-			clrInnerShadowTopPressed1 = Color.FromArgb(209, 204, 193);
-			clrInnerShadowTopPressed2 = Color.FromArgb(220, 216, 207);
-			clrInnerShadowLeftPressed1 = Color.FromArgb(216, 213, 203);
-			clrInnerShadowLeftPressed2 = Color.FromArgb(222, 220, 211);
+		///<summary>Clean up any resources being used</summary>
+		protected override void Dispose(bool disposing) {
+			if(disposing) {
+				if(components != null)
+					components.Dispose();
+			}
+			base.Dispose(disposing);
+		}
+
+		#region Component Designer generated code
+		///<summary>Required method for Designer support - do not modify the contents of this method with the code editor.</summary>
+		private void InitializeComponent() {
+			components = new System.ComponentModel.Container();
 		}
 		#endregion
 
 		#region Properties
+		///<summary></summary>
+		public enumType.BtnShape BtnShape {
+			set {
+			}
+		}
+
+		///<summary></summary>
+		//[DefaultValue("Silver"),System.ComponentModel.RefreshProperties(RefreshProperties.Repaint)]
+		public enumType.XPStyle BtnStyle {
+			//get {
+			//	return enumType.XPStyle.Silver;
+			//}
+			set {
+				//m_btnStyle = value;
+				//this.Invalidate();
+			}
+		}
+
 		///<summary></summary>
 		public new FlatStyle FlatStyle{
 			get{
@@ -120,59 +114,27 @@ namespace OpenDental.UI
 		}
 
 		///<summary></summary>
-		public enumType.BtnShape BtnShape{
-			get{
-				return m_btnShape;
-			}
-			set{ 
-				m_btnShape = value;
-				base.Invalidate();
-			}
-		}
-
-		///<summary></summary>
-		[DefaultValue("Silver"),System.ComponentModel.RefreshProperties(RefreshProperties.Repaint)]
-		public enumType.XPStyle BtnStyle{
-			get{
-				return m_btnStyle;
-			}
-			set{ 
-				m_btnStyle = value;
-				this.Invalidate();
-			}
-		}
-
-		///<summary></summary>
 		public Point AdjustImageLocation{
 			get{
-				return locPoint;
+				return adjustImageLocation;
 			}
 			set{ 
-				locPoint = value;
+				adjustImageLocation=value;
 				this.Invalidate();
-			}
-		}
-
-		/// <value>Gets the clipping rectangle of the XpButton object's border.</value>
-		private Rectangle BorderRectangle{
-			get{ 
-				Rectangle rc = ClientRectangle;
-				return new Rectangle(1, 1, rc.Width - 3, rc.Height - 3);
 			}
 		}
 	
 		#endregion
 
-		#region Methods
-		// Overridden Event Handlers
+		#region Overridden Event Handlers
 		///<summary></summary>
 		protected override void OnClick(EventArgs ea){
 			this.Capture = false;
 			bCanClick = false;
-			if (this.ClientRectangle.Contains(this.PointToClient(Control.MousePosition)))
-				enmState = ControlState.Hover;
+			if(this.ClientRectangle.Contains(this.PointToClient(Control.MousePosition)))
+				butState = ControlState.Hover;
 			else
-				enmState = ControlState.Normal;
+				butState = ControlState.Normal;
 			this.Invalidate();
 			base.OnClick(ea);
 		}
@@ -180,7 +142,7 @@ namespace OpenDental.UI
 		///<summary></summary>
 		protected override void OnMouseEnter(EventArgs ea){
 			base.OnMouseEnter(ea);
-			enmState = ControlState.Hover;
+			butState = ControlState.Hover;
 			this.Invalidate();
 		}
 
@@ -189,7 +151,7 @@ namespace OpenDental.UI
 			base.OnMouseDown(mea);
 			if (mea.Button == MouseButtons.Left){
 				bCanClick = true;
-				enmState = ControlState.Pressed;
+				butState = ControlState.Pressed;
 				this.Invalidate();
 			}
 		}
@@ -198,16 +160,16 @@ namespace OpenDental.UI
 		protected override void OnMouseMove(MouseEventArgs mea){
 			base.OnMouseMove(mea);
 			if (ClientRectangle.Contains(mea.X, mea.Y)) {
-				if (enmState == ControlState.Hover && this.Capture && !bCanClick){
+				if(butState == ControlState.Hover && this.Capture && !bCanClick){
 					bCanClick = true;
-					enmState = ControlState.Pressed;
+					butState = ControlState.Pressed;
 					this.Invalidate();
 				}
 			}
 			else{
-				if (enmState == ControlState.Pressed){
+				if(butState == ControlState.Pressed){
 					bCanClick = false;
-					enmState = ControlState.Hover;
+					butState = ControlState.Hover;
 					this.Invalidate();
 				}
 			}
@@ -216,81 +178,14 @@ namespace OpenDental.UI
 		///<summary></summary>
 		protected override void OnMouseLeave(EventArgs ea){
 			base.OnMouseLeave(ea);
-			enmState = ControlState.Normal;
+			butState = ControlState.Normal;
 			this.Invalidate();
-		}
-
-		///<summary></summary>
-		protected override void OnPaint(PaintEventArgs pea){
-			this.OnPaintBackground(pea);     		
-			switch(enmState){
-				case ControlState.Normal:
-					if(Enabled){
-						if(Focused || IsDefault){
-							switch(m_btnShape){
-								case enumType.BtnShape.Rectangle:
-									OnDrawDefault(pea.Graphics);
-									break;
-								case enumType.BtnShape.Ellipse:
-									OnDrawDefaultEllipse(pea.Graphics);
-									break;
-							}
-						}
-						else{
-							switch(m_btnShape){
-								case enumType.BtnShape.Rectangle:
-									OnDrawNormal(pea.Graphics);
-									break;
-								case enumType.BtnShape.Ellipse:
-									OnDrawNormalEllipse(pea.Graphics);
-									break;
-							}
-						}
-					}//if(Enabled)
-					else{
-						OnDrawDisabled(pea.Graphics);
-					}
-					break;
-				case ControlState.Hover:
-					switch(m_btnShape){
-						case enumType.BtnShape.Rectangle:
-							OnDrawHover(pea.Graphics);
-							break;
-						case enumType.BtnShape.Ellipse:
-							OnDrawHoverEllipse(pea.Graphics);
-							break;
-					}
-					break;
-				case ControlState.Pressed:
-					switch(m_btnShape){
-						case enumType.BtnShape.Rectangle:
-							OnDrawPressed(pea.Graphics);
-							break;
-						case enumType.BtnShape.Ellipse:
-							OnDrawPressedEllipse(pea.Graphics);
-							break;
-					}
-					break;
-			}
-			// enmState will never be == ControlState.Default
-			// When (IsDefault == true), enmState will be == ControlState.Normal
-			// So when (IsDefault == true), pass ControlState.Default instead of enmState
-			OnDrawTextAndImage(pea.Graphics);
-
-			// Not really needed!
-			/*if (this.Focused)
-			{
-				Rectangle rcFocus = this.ClientRectangle;
-				rcFocus.Inflate(-3, -3);
-				System.Windows.Forms.ControlPaint.DrawFocusRectangle(pea.Graphics, rcFocus,
-					this.ForeColor, Color.Transparent);
-			}*/
 		}
 
 		///<summary></summary>
 		protected override void OnEnabledChanged(EventArgs ea){
 			base.OnEnabledChanged(ea);
-			enmState = ControlState.Normal;
+			butState = ControlState.Normal;
 			this.Invalidate();
 		}
 
@@ -319,260 +214,239 @@ namespace OpenDental.UI
 				}
 			}
 		}
+		#endregion Overridden Event Handlers
 
-
-
-		/// <summary>
-		/// Draws the normal state of the XpButton.
-		/// </summary>
-		/// <param name="g">The System.Drawing.Graphics object to be used to paint the XpButton.</param>
-		private void OnDrawNormal(Graphics g){
-			DrawNormalButton(g);
-			// no need to call base class implementation
+		#region Painting
+		///<summary></summary>
+		protected override void OnPaint(PaintEventArgs p) {
+			this.OnPaintBackground(p);
+			Graphics g=p.Graphics;
+			RectangleF recOutline=new RectangleF(0,0,ClientRectangle.Width-1,ClientRectangle.Height-1);
+			float radius=cornerRadius;
+			switch(butState) {
+				case ControlState.Normal:
+					if(Enabled) {
+						radius=cornerRadius;
+						if(Focused || IsDefault) {
+							DrawBackground(g,recOutline,radius,colorDarkDefault,colorMain,colorLightest);
+						}
+						else{
+							DrawBackground(g,recOutline,radius,colorDarkest,colorMain,colorLightest);
+						}
+					}
+					else {
+						radius=cornerRadius;
+						//DrawBackground(g,recOutline,radius,colorDarkest,colorMain,colorLightest);
+					}
+					break;
+				case ControlState.Hover:
+					radius=cornerRadius-1;
+					DrawBackground(g,recOutline,radius,colorDarkest,colorMain,colorLightest);
+					break;
+				case ControlState.Pressed:
+					radius=cornerRadius-3;
+					DrawBackground(g,recOutline,radius,colorDarkest,colorMain,colorLightest);
+					break;
+			}
+			// enmState will never be == ControlState.Default
+			// When (IsDefault == true), enmState will be == ControlState.Normal
+			// So when (IsDefault == true), pass ControlState.Default instead of enmState
+			//g.DrawLine(Pens.Red,new PointF(recOutline.X,recOutline.Y),
+			//	new PointF(recOutline.Right,recOutline.Bottom));
+			float diagonalLength=(float)Math.Sqrt(recOutline.Height*recOutline.Height+recOutline.Width*recOutline.Width);
+			//unit vector representing direction of diagonal
+			float unitvectorx=recOutline.Width/diagonalLength;
+			float unitvectory=-recOutline.Height/diagonalLength;
+			//g.DrawLine(Pens.Red,0,recOutline.Bottom,unitvectorx*800,recOutline.Bottom+unitvectory*800);
+			//unit vector rotated 90 degrees:
+			float unitvector90x=-unitvectory;
+			float unitvector90y=unitvectorx;
+			//g.DrawLine(Pens.Red,0,0,unitvector90x*200,unitvector90y*200);
+			//compute the location where the two vectors intersect.
+			//solve for x,y, 
+			//solve for x
+			//x=recOutline.X+unitvectorx*length;
+			//x=recOutline.X+unitvector90x*length90;
+			//So   length=(unitvector90x*length90)/unitvectorx
+			//y=recOutline.Height+unitvectory*length;
+			//y=unitvector90y*length90;
+			//So   length=(unitvector90y*length90-recOutline.Height)/unitvectory;
+			//Combine the two equations:
+			//(unitvector90x*length90)/unitvectorx=(unitvector90y*length90-recOutline.Height)/unitvectory;
+			//Solve for length90
+			//(unitvector90x*length90)*unitvectory=unitvectorx*(unitvector90y*length90-recOutline.Height);
+			//unitvector90x*length90*unitvectory=unitvectorx*unitvector90y*length90-unitvectorx*recOutline.Height;
+			//unitvectorx*unitvector90y*length90-unitvector90x*length90*unitvectory=unitvectorx*recOutline.Height;
+			//length90(unitvectorx*unitvector90y-unitvector90x*unitvectory)=unitvectorx*recOutline.Height;
+			float length90=unitvectorx*recOutline.Height/(unitvectorx*unitvector90y-unitvector90x*unitvectory);
+			//g.DrawEllipse(Pens.Red,unitvector90x*length90-1,unitvector90y*length90-1,2,2);
+			LinearGradientBrush brush=new LinearGradientBrush(new PointF(recOutline.X,recOutline.Y),
+				new PointF(unitvector90x*length90*2,unitvector90y*length90*2),
+				colorBorder,colorDarkest);
+			if(IsDefault){
+				DrawRoundedRectangle(g,new Pen(colorDarkDefault),recOutline,radius);
+			}
+			else{
+				DrawRoundedRectangle(g,new Pen(brush),recOutline,radius);
+			}
+			DrawTextAndImage(g);
+			DrawReflection(g,recOutline,radius);
 		}
 
-		private void OnDrawHoverEllipse(Graphics g){
-			DrawNormalEllipse(g);
-			DrawEllipseHoverBorder(g);
-			DrawEllipseBorder(g);
+		///<summary>Draws a rectangle with rounded edges.</summary>
+		public static void DrawRoundedRectangle(Graphics grfx,Pen pen,RectangleF rect,float round) {
+			SmoothingMode oldSmoothingMode = grfx.SmoothingMode;
+			grfx.SmoothingMode = SmoothingMode.AntiAlias;
+			//top
+			grfx.DrawLine(pen,rect.Left+round,rect.Top,rect.Right-round,rect.Top);
+			grfx.DrawArc(pen,rect.Right-round*2,rect.Top,round*2,round*2,270,90);
+			//
+			grfx.DrawLine(pen,rect.Right,rect.Top+round,rect.Right,rect.Bottom-round);
+			grfx.DrawArc(pen,rect.Right-round*2,rect.Bottom-round*2,round*2,round*2,0,90);
+			//
+			grfx.DrawLine(pen,rect.Right-round,rect.Bottom,rect.Left+round,rect.Bottom);
+			grfx.DrawArc(pen,rect.Left,rect.Bottom-round*2,round*2,round*2,90,90);
+			//
+			grfx.DrawLine(pen,rect.Left,rect.Bottom-round,rect.Left,rect.Top+round);
+			grfx.DrawArc(pen,rect.Left,rect.Top,round*2,round*2,180,90);
+			//
+			grfx.SmoothingMode = oldSmoothingMode;
 		}
 
-		///<summary>Draws the hover state of the Button.</summary>
-		private void OnDrawHover(Graphics g){
-			DrawNormalButton(g);
-			// Need to draw only the "thick border" for hover buttons
-			Rectangle rcBorder = this.BorderRectangle;
-			// Top
-			Pen penTop1 = new Pen(Color.FromArgb(255, 240, 207));
-			Pen penTop2 = new Pen(Color.FromArgb(253, 216, 137));
-			g.DrawLine(penTop1, rcBorder.Left + 2, rcBorder.Top + 1,
-				rcBorder.Right - 2, rcBorder.Top + 1);
-			g.DrawLine(penTop2, rcBorder.Left + 1, rcBorder.Top + 2,
-				rcBorder.Right - 1, rcBorder.Top + 2);
-			penTop1.Dispose();
-			penTop2.Dispose();
-			// Bottom
-			Pen penBottom1 = new Pen(Color.FromArgb(248, 178, 48));
-			Pen penBottom2 = new Pen(Color.FromArgb(229, 151, 0));
-			g.DrawLine(penBottom1, rcBorder.Left + 1, rcBorder.Bottom - 2,
-				rcBorder.Right - 1, rcBorder.Bottom - 2);
-			g.DrawLine(penBottom2, rcBorder.Left + 2, rcBorder.Bottom - 1,
-				rcBorder.Right - 2, rcBorder.Bottom - 1);
-			penBottom1.Dispose();
-			penBottom2.Dispose();
-			// Left and Right
-			Rectangle rcLeft = new Rectangle(rcBorder.Left + 1, rcBorder.Top + 3,
-				2, rcBorder.Height - 5); 
-			Rectangle rcRight = new Rectangle(rcBorder.Right - 2, rcBorder.Top + 3,
-				2, rcBorder.Height - 5); 
-			LinearGradientBrush brushSide = new LinearGradientBrush(
-				rcLeft, Color.FromArgb(254, 221, 149), Color.FromArgb(249, 180, 53),
-				LinearGradientMode.Vertical);
-			g.FillRectangle(brushSide, rcLeft);
-			g.FillRectangle(brushSide, rcRight);
-			brushSide.Dispose();
+		private void DrawReflection(Graphics g,RectangleF rect,float radius){
+			//lower--------------------------------------------------------------------
+			Color clrDarkOverlay=Color.FromArgb(50,125,125,125);
+			LinearGradientBrush brush=new LinearGradientBrush(new PointF(rect.Left,rect.Bottom),
+				new PointF(rect.Left,rect.Top+rect.Height/2-radius*2f),Color.FromArgb(0,0,0,0),
+				Color.FromArgb(50,0,0,0));
+			GraphicsPath path=new GraphicsPath();
+			path.AddLine(rect.Left+radius,rect.Top+rect.Height/2f,rect.Right-radius*2f,rect.Top+rect.Height/2f);
+			path.AddArc(new RectangleF(rect.Right-(radius*4f),rect.Top+rect.Height/2f-radius*4f,radius*4f,radius*4f),90,-90);
+			path.AddLine(rect.Right,rect.Top+rect.Height/2f-radius,rect.Right,rect.Bottom);
+			path.AddLine(rect.Right,rect.Bottom,rect.Left,rect.Bottom);
+			path.AddLine(rect.Left,rect.Bottom,rect.Left,rect.Top+rect.Height/2f-radius/2f);
+			path.AddArc(new RectangleF(rect.Left,rect.Top+rect.Height/2f-radius,radius*2f,radius),180,-90);
+			//g.DrawPath(Pens.Red,path);
+			g.FillPath(brush,path);
 		}
 
-		private void OnDrawPressedEllipse(Graphics g)
-		{
-			DrawPressedEllipse(g);
-			DrawEllipseBorder(g);
-		}
-		private void DrawPressedEllipse(Graphics g)
-		{
-			Rectangle rcBorder = this.BorderRectangle;
-			Rectangle rcBackground = new Rectangle(
-				rcBorder.X + 1, rcBorder.Y + 1, rcBorder.Width - 1, rcBorder.Height - 1);
-			SolidBrush brushBackground = new SolidBrush(Color.FromArgb(226, 225, 218));
-			// Draw an ellipse to the screen using the LinearGradientBrush.
-			g.FillEllipse(brushBackground, rcBackground);
-			// Create a triangular shaped brush with the peak at the center
-			// of the drawing area.
-		}
-		/// <summary>
-		/// Draws the pressed state of the XpButton.
-		/// </summary>
-		/// <param name="g">The System.Drawing.Graphics object to be used to paint the XpButton.</param>
-		private void OnDrawPressed(Graphics g)
-		{
-			Rectangle rcBorder = this.BorderRectangle;
-		
-			//			
-			// Outer shadow
-			//
-			DrawOuterShadow(g);
-		
-			//
-			// Background
-			//
-			Rectangle rcBackground = new Rectangle(
-				rcBorder.X + 1, rcBorder.Y + 1, rcBorder.Width - 1, rcBorder.Height - 1);
-			SolidBrush brushBackground = new SolidBrush(Color.FromArgb(226, 225, 218));
-			g.FillRectangle(brushBackground, rcBackground);
-			brushBackground.Dispose();
-		
-			//
-			// Border
-			//
-			DrawBorder(g);
-
-			//
-			// Inner shadow above the bottom border (2 solid lines)
-			//
-			Pen penInnerShadowBottomPressed1 = new Pen(clrInnerShadowBottomPressed1);
-			Pen penInnerShadowBottomPressed2 = new Pen(clrInnerShadowBottomPressed2);
-
-			g.DrawLine(penInnerShadowBottomPressed1, rcBorder.Left + 1, rcBorder.Bottom - 2, 
-				rcBorder.Right - 1, rcBorder.Bottom - 2);
-			g.DrawLine(penInnerShadowBottomPressed2, rcBorder.Left + 2, rcBorder.Bottom - 1, 
-				rcBorder.Right - 2, rcBorder.Bottom - 1);
-		
-			penInnerShadowBottomPressed1.Dispose();
-			penInnerShadowBottomPressed2.Dispose();
-
-			//
-			// Inner shadow below the top border (2 solid lines)
-			//
-			Pen penInnerShadowTopPressed1 = new Pen(clrInnerShadowTopPressed1);
-			Pen penInnerShadowTopPressed2 = new Pen(clrInnerShadowTopPressed2);
-
-			g.DrawLine(penInnerShadowTopPressed1, rcBorder.Left + 2, rcBorder.Top + 1,
-				rcBorder.Right - 2, rcBorder.Top + 1);
-			g.DrawLine(penInnerShadowTopPressed2, rcBorder.Left + 1, rcBorder.Top + 2,
-				rcBorder.Right - 1, rcBorder.Top + 2);
-		
-			penInnerShadowTopPressed1.Dispose();
-			penInnerShadowTopPressed2.Dispose();
-	
-			//
-			// Inner shadow right the left border (2 solid lines)
-			//
-			Pen penInnerShadowLeftPressed1 = new Pen(clrInnerShadowLeftPressed1);
-			Pen penInnerShadowLeftPressed2 = new Pen(clrInnerShadowLeftPressed2);
-
-			g.DrawLine(penInnerShadowLeftPressed1, rcBorder.Left + 1, rcBorder.Top + 3,
-				rcBorder.Left + 1, rcBorder.Bottom - 3);
-			g.DrawLine(penInnerShadowLeftPressed2, rcBorder.Left + 2, rcBorder.Top + 3,
-				rcBorder.Left + 2, rcBorder.Bottom - 3);
-		
-			penInnerShadowLeftPressed1.Dispose();
-			penInnerShadowLeftPressed2.Dispose();
-		}
-
-		/// <summary>
-		/// Draws the default state of the XpButton.
-		/// </summary>
-		/// <param name="g">The System.Drawing.Graphics object to be used to paint the XpButton.</param>
-		private void OnDrawNormalEllipse(Graphics g)
-		{
-			DrawNormalEllipse(g);
-			DrawEllipseBorder(g);
-		}
-		private void OnDrawDefaultEllipse(Graphics g)
-		{
-			DrawNormalEllipse(g);
-			DrawEllipseDefaultBorder(g);
-			DrawEllipseBorder(g);
-		}
-		private void OnDrawDefault(Graphics g)
-		{
-			DrawNormalButton(g);
-
-			//
-			// Need to draw only the "thick border" for default buttons
-			//
-		
-			Rectangle rcBorder = this.BorderRectangle;
-
-			// Top
-			Pen penTop1 = new Pen(Color.FromArgb(206, 231, 255));
-			Pen penTop2 = new Pen(Color.FromArgb(188, 212, 246));
-
-			g.DrawLine(penTop1, rcBorder.Left + 2, rcBorder.Top + 1,
-				rcBorder.Right - 2, rcBorder.Top + 1);
-			g.DrawLine(penTop2, rcBorder.Left + 1, rcBorder.Top + 2,
-				rcBorder.Right - 1, rcBorder.Top + 2);
-
-			penTop1.Dispose();
-			penTop2.Dispose();
-
-			// Bottom
-			Pen penBottom1 = new Pen(Color.FromArgb(137, 173, 228));
-			Pen penBottom2 = new Pen(Color.FromArgb(105, 130, 238));
-
-			g.DrawLine(penBottom1, rcBorder.Left + 1, rcBorder.Bottom - 2,
-				rcBorder.Right - 1, rcBorder.Bottom - 2);
-			g.DrawLine(penBottom2, rcBorder.Left + 2, rcBorder.Bottom - 1,
-				rcBorder.Right - 2, rcBorder.Bottom - 1);
-
-			penBottom1.Dispose();
-			penBottom2.Dispose();
-
-			// Left and Right
-			Rectangle rcLeft = new Rectangle(rcBorder.Left + 1, rcBorder.Top + 3,
-				2, rcBorder.Height - 5); 
-			Rectangle rcRight = new Rectangle(rcBorder.Right - 2, rcBorder.Top + 3,
-				2, rcBorder.Height - 5); 
-		
-			LinearGradientBrush brushSide = new LinearGradientBrush(
-				rcLeft, Color.FromArgb(186, 211, 245), Color.FromArgb(137, 173, 228),
-				LinearGradientMode.Vertical);
-		
-			g.FillRectangle(brushSide, rcLeft);
-			g.FillRectangle(brushSide, rcRight);
-
-			brushSide.Dispose();
+		private void DrawBackground(Graphics g,RectangleF rect,float radius,Color clrDark,Color clrMain,Color clrLight){
+			if(radius<0){
+				radius=0;
+			}
+			LinearGradientBrush brush;
+			SolidBrush brushS=new SolidBrush(clrMain);
+			g.SmoothingMode = SmoothingMode.HighQuality;
+			//sin(45)=.85. But experimentally, .7 works much better.
+			//1/.85=1.18 But experimentally, 1.37 works better. What gives?
+			//top
+			brush=new LinearGradientBrush(new PointF(rect.Left+radius,rect.Top+radius),
+				new PointF(rect.Left+radius,rect.Top),
+				clrMain,clrLight);
+			g.FillRectangle(brushS,rect.Left+radius,rect.Top,rect.Width-(radius*2),radius);
+			//UR
+			//2 pies of 45 each.
+			brush=new LinearGradientBrush(new PointF(rect.Right-radius,rect.Top),
+				new PointF(rect.Right-(radius/2f),rect.Top+(radius/2f)),
+				clrLight,clrMain);
+			g.FillPie(brushS,rect.Right-(radius*2),rect.Top,radius*2,radius*2,270,45);
+			brush=new LinearGradientBrush(new PointF(rect.Right-(radius/2f)-.5f,rect.Top+(radius/2f)-.5f),
+				new PointF(rect.Right,rect.Top+radius),
+				clrMain,clrDark);
+			g.FillPie(brush,rect.Right-(radius*2),rect.Top,radius*2,radius*2,315,45);
+			//right
+			brush=new LinearGradientBrush(new PointF(rect.Right-radius,rect.Top+radius),
+				new PointF(rect.Right,rect.Top+radius),
+				clrMain,clrDark);
+			g.FillRectangle(brush,rect.Right-radius,rect.Top+radius-.5f,radius,rect.Height-(radius*2)+1f);
+			//LR
+			g.FillPie(new SolidBrush(clrDark),rect.Right-(radius*2),rect.Bottom-(radius*2),radius*2,radius*2,0,90);
+			brush=new LinearGradientBrush(new PointF(rect.Right-radius,rect.Bottom-radius),
+				new PointF(rect.Right-(radius*.5f)+.5f,rect.Bottom-(radius*.5f)+.5f),
+				clrMain,clrDark);
+			g.FillPolygon(brush,new PointF[] {
+				new PointF(rect.Right-radius,rect.Bottom-radius),
+				new PointF(rect.Right,rect.Bottom-radius),
+				new PointF(rect.Right-radius,rect.Bottom)});
+			//bottom
+			brush=new LinearGradientBrush(new PointF(rect.Left+radius,rect.Bottom-radius),
+				new PointF(rect.Left+radius,rect.Bottom),
+				clrMain,clrDark);
+			g.FillRectangle(brush,rect.Left+radius-.5f,rect.Bottom-radius,rect.Width-(radius*2)+1f,radius);
+			//LL
+			//2 pies of 45 each.
+			brush=new LinearGradientBrush(new PointF(rect.Left+(radius/2f),rect.Bottom-(radius/2f)),
+				new PointF(rect.Left+radius,rect.Bottom),
+				clrMain,clrDark);
+			g.FillPie(brush,rect.Left,rect.Bottom-(radius*2),radius*2,radius*2,90,45);
+			brush=new LinearGradientBrush(new PointF(rect.Left+(radius/2f),rect.Bottom-(radius/2f)),
+				new PointF(rect.Left,rect.Bottom-radius),
+				clrMain,clrLight);
+			g.FillPie(brushS,rect.Left,rect.Bottom-(radius*2),radius*2,radius*2,135,45);
+			//left
+			brush=new LinearGradientBrush(new PointF(rect.Left+radius,rect.Top),
+				new PointF(rect.Left,rect.Top),
+				clrMain,clrLight);
+			g.FillRectangle(brushS,rect.Left,rect.Top+radius,radius,rect.Height-(radius*2));
+			//UL
+			g.FillPie(//new SolidBrush(clrLight)
+				brushS,rect.Left,rect.Top,radius*2,radius*2,180,90);
+			brush=new LinearGradientBrush(new PointF(rect.Left+radius,rect.Top+radius),
+				new PointF(rect.Left+(radius/2f),rect.Top+(radius/2f)),
+				clrMain,clrLight);
+			//center
+			GraphicsPath path=new GraphicsPath();
+			path.AddEllipse(rect.Left-rect.Width/8f,rect.Top-rect.Height/2f,rect.Width,rect.Height*3f/2f);
+			PathGradientBrush pathBrush=new PathGradientBrush(path);
+			pathBrush.CenterColor=Color.FromArgb(255,255,255,255);
+			pathBrush.SurroundColors=new Color[] {Color.FromArgb(0,255,255,255)};
+			g.FillRectangle(new SolidBrush(clrMain),
+				rect.Left+radius-.5f,rect.Top+radius-.5f,
+				rect.Width-(radius*2)+1f,rect.Height-(radius*2)+1f);
+			g.FillRectangle(
+				pathBrush,
+				rect.Left+radius-.5f,rect.Top+radius-.5f,
+				rect.Width-(radius*2)+1f,rect.Height-(radius*2)+1f);
+			//highlights
+			brush=new LinearGradientBrush(new PointF(rect.Left+radius,rect.Top),
+				new PointF(rect.Left+radius+rect.Width*2f/3f,rect.Top),
+				clrLight,clrMain);
+			g.FillRectangle(brush,rect.Left+radius,rect.Y+radius*3f/8f,rect.Width/2f,radius/4f);
+			path=new GraphicsPath();
+			path.AddLine(rect.Left+radius,rect.Top+radius*3/8,rect.Left+radius,rect.Top+radius*5/8);
+			path.AddArc(new RectangleF(rect.Left+radius*5/8,rect.Top+radius*5/8,radius*3/4,radius*3/4),270,-90);
+			path.AddArc(new RectangleF(rect.Left+radius*3/8,rect.Top+radius*7/8,radius*1/4,radius*1/4),0,180);
+			path.AddArc(new RectangleF(rect.Left+radius*3/8,rect.Top+radius*3/8,radius*5/4,radius*5/4),180,90);
+			//g.DrawPath(Pens.Red,path);
+			g.FillPath(Brushes.White,path);
 		}
 
-		/// <summary>
-		/// Draws the disabled state of the XpButton.
-		/// </summary>
-		/// <param name="g">The System.Drawing.Graphics object to be used to paint the XpButton.</param>
-		private void OnDrawDisabled(Graphics g)
-		{
-			Rectangle rcBorder = this.BorderRectangle;
-
-			//
-			// Background
-			//
-			Rectangle rcBackground = new Rectangle(
-				rcBorder.X + 1, rcBorder.Y + 1, rcBorder.Width - 1, rcBorder.Height - 1);
-			SolidBrush brushBackground = new SolidBrush(Color.FromArgb(245, 244, 234));
-
-			g.FillRectangle(brushBackground, rcBackground);
-			brushBackground.Dispose();
-		
-			//
-			// Border
-			//
-			Pen penBorder = new Pen(Color.FromArgb(201, 199, 186));
-			ControlPaint.DrawRoundedRectangle(g, penBorder, rcBorder, 
-				borderRoundness);
-			penBorder.Dispose();
-		}
-
-		///<summary>Draws the text and image (duh!)</summary>
-		private void OnDrawTextAndImage(Graphics g){
+		///<summary>Draws the text and image</summary>
+		private void DrawTextAndImage(Graphics g){
+			g.SmoothingMode = SmoothingMode.HighQuality;
 			SolidBrush brushText;
-			if (Enabled)
-				brushText = new SolidBrush(ForeColor);
-			else
-				brushText = new SolidBrush(ControlPaint.DisabledForeColor);
-			StringFormat sf = ControlPaint.GetStringFormat(this.TextAlign);
+			SolidBrush brushGlow=null;
+			if(Enabled){
+				brushText=new SolidBrush(ForeColor);
+				brushGlow=new SolidBrush(Color.White);
+			}
+			else{
+				brushText=new SolidBrush(colorDisabledFore);
+			}
+			StringFormat sf=GetStringFormat(this.TextAlign);
 			if(ShowKeyboardCues){
 				sf.HotkeyPrefix = System.Drawing.Text.HotkeyPrefix.Show;
 			}
 			else{
 				sf.HotkeyPrefix = System.Drawing.Text.HotkeyPrefix.Hide;
 			}
-			if (this.Image != null)
-			{
+			RectangleF recGlow1;
+			if(this.Image != null){
 				Rectangle rc=new Rectangle();
 				Point ImagePoint= new Point(6, 4);
 				switch(this.ImageAlign)
 				{
 					case ContentAlignment.MiddleLeft:
-					{
 						ImagePoint.X = 6;
 						ImagePoint.Y = this.ClientRectangle.Height/2-Image.Height/2;
 						rc.Width=this.ClientRectangle.Width-this.Image.Width;
@@ -580,29 +454,7 @@ namespace OpenDental.UI
 						rc.X=this.Image.Width;
 						rc.Y=0;
 						break;
-					}
-					case ContentAlignment.MiddleRight:
-					{
-						rc.Width=this.ClientRectangle.Width-this.Image.Width-8;
-						rc.Height=this.ClientRectangle.Height;
-						rc.X=0;
-						rc.Y=0;
-						ImagePoint.X = rc.Width;
-						ImagePoint.Y = this.ClientRectangle.Height/2-Image.Height/2;
-						break;
-					}
-					case ContentAlignment.TopCenter:
-					{
-						ImagePoint.Y = 2;
-						ImagePoint.X = (this.ClientRectangle.Width-this.Image.Width)/2;
-						rc.Width=this.ClientRectangle.Width;
-						rc.Height=this.ClientRectangle.Height-this.Image.Height-4;
-						rc.X=this.ClientRectangle.X;
-						rc.Y=this.Image.Height;
-						break;
-					}
-					case ContentAlignment.MiddleCenter:
-					{ // no text in this alignment
+					case ContentAlignment.MiddleCenter:// no text in this alignment
 						ImagePoint.X = (this.ClientRectangle.Width-this.Image.Width)/2;
 						ImagePoint.Y = (this.ClientRectangle.Height-this.Image.Height)/2;
 						rc.Width=0;
@@ -610,342 +462,43 @@ namespace OpenDental.UI
 						rc.X=this.ClientRectangle.Width;
 						rc.Y=this.ClientRectangle.Height;
 						break;
-					}
 				}
-				ImagePoint.X += locPoint.X;
-				ImagePoint.Y += locPoint.Y;
-				if (this.Enabled) 
-					g.DrawImage(this.Image, ImagePoint); 
-				else 
-					System.Windows.Forms.ControlPaint.DrawImageDisabled(g, this.Image, locPoint.X, locPoint.Y, this.BackColor);
-				if(ContentAlignment.MiddleCenter !=this.ImageAlign)
-					g.DrawString(
-						this.Text, 
-						this.Font, 
-						brushText, 
-						rc, 
-						sf);
+				ImagePoint.X+=adjustImageLocation.X;
+				ImagePoint.Y+=adjustImageLocation.Y;
+				if(this.Enabled){
+					g.DrawImage(this.Image,ImagePoint);
+				}
+				else{
+					System.Windows.Forms.ControlPaint.DrawImageDisabled(g,this.Image,ImagePoint.X,ImagePoint.Y,BackColor);
+				}
+				recGlow1=new RectangleF(rc.X+.5f,rc.Y+.5f,rc.Width,rc.Height);
+				if(this.ImageAlign != ContentAlignment.MiddleCenter){
+					if(Enabled){
+						//first draw white text slightly off center
+						g.DrawString(this.Text,this.Font,brushGlow,recGlow1,sf);
+					}
+					//then, the black text
+					g.DrawString(this.Text,this.Font,brushText,rc,sf);
+				}
 			}
-			else//image is null
-				g.DrawString(
-					this.Text, 
-					this.Font, 
-					brushText, 
-					this.ClientRectangle, 
-					sf);
-		
+			else{//image is null
+				recGlow1=new RectangleF(ClientRectangle.X+.5f,ClientRectangle.Y+.5f,ClientRectangle.Width,ClientRectangle.Height);
+				if(this.Enabled){
+					g.DrawString(this.Text,this.Font,brushGlow,recGlow1,sf);
+				}
+				g.DrawString(this.Text,this.Font,brushText,this.ClientRectangle,sf);
+			}
 			brushText.Dispose();
 			sf.Dispose();
 		}
+		#endregion Painting
 
-
-		private void DrawNormalEllipse(Graphics g)
-		{
-			Rectangle rcBackground = this.BorderRectangle;
-			LinearGradientBrush brushBackground=null;
-			switch(m_btnStyle)
-			{
-				case enumType.XPStyle.Default:
-					brushBackground = new LinearGradientBrush(rcBackground, clrBackground1, clrBackground2,
-						LinearGradientMode.Vertical);
-					break;
-				case enumType.XPStyle.Blue:
-					brushBackground = new LinearGradientBrush(rcBackground, Color.FromArgb(248, 252, 253),Color.FromArgb(172, 171, 201),LinearGradientMode.Vertical);
-					break;
-				case enumType.XPStyle.OliveGreen:
-					brushBackground = new LinearGradientBrush(rcBackground, Color.FromArgb(250, 250, 240), Color.FromArgb(235, 220, 190),LinearGradientMode.Vertical);
-					break;
-				case enumType.XPStyle.Silver:
-					brushBackground = new LinearGradientBrush(rcBackground, Color.FromArgb(253, 253, 253),Color.FromArgb(205, 205, 205), 
-						LinearGradientMode.Vertical);
-					break;
-			}
-			float[] relativeIntensities = {0.0f, 0.008f, 1.0f}; 
-			float[] relativePositions = {0.0f, 0.22f, 1.0f};
-
-			Blend blend = new Blend();
-			blend.Factors = relativeIntensities;
-			blend.Positions = relativePositions; 
-			brushBackground.Blend = blend; 
-			// Create a triangular shaped brush with the peak at the center
-			// of the drawing area.
-//			brushBackground.SetBlendTriangularShape(.5f, 1.0f);
-			// Use the triangular brush to draw a second ellipse.
-//			rcBackground.Y = 150;
-			g.FillEllipse(brushBackground, rcBackground);
-		}
-		/// <summary>
-		/// Draws the ordinary look of the XpButton object.
-		/// </summary>
-		/// <param name="g">The System.Drawing.Graphics object to be used to paint the XpButton.</param>
-		private void DrawNormalButton(Graphics g)
-		{
-			Rectangle rcBorder = this.BorderRectangle;
-		
-			//			
-			// Outer shadow
-			//
-			DrawOuterShadow(g);
-		
-			//
-			// Background
-			//
-			Rectangle rcBackground = new Rectangle(
-				rcBorder.X + 1, rcBorder.Y + 1, rcBorder.Width - 1, rcBorder.Height - 1);
-			LinearGradientBrush brushBackground=null;
-			switch(m_btnStyle)
-			{
-				case enumType.XPStyle.Default:
-					brushBackground = new LinearGradientBrush(rcBackground, clrBackground1, clrBackground2,
-						LinearGradientMode.Vertical);
-					break;
-				case enumType.XPStyle.Blue:
-					brushBackground = new LinearGradientBrush(rcBackground, Color.FromArgb(248, 252, 253),Color.FromArgb(172, 171, 201),LinearGradientMode.Vertical);
-					break;
-				case enumType.XPStyle.OliveGreen:
-					brushBackground = new LinearGradientBrush(rcBackground, Color.FromArgb(250, 250, 240), Color.FromArgb(235, 220, 190),LinearGradientMode.Vertical);
-					break;
-				case enumType.XPStyle.Silver:
-					brushBackground = new LinearGradientBrush(rcBackground, Color.FromArgb(255, 255, 255),Color.FromArgb(198, 197, 215), 
-						LinearGradientMode.Vertical);
-					break;
-			}
-		
-			//float[] relativeIntensities = {0.0f, 0.08f, 1.0f}; 
-			float[] relativeIntensities = {0.0f, 0.2f, 0.8f, 1.0f};
-			//float[] relativePositions = {0.0f, 0.32f, 1.0f};
-			float[] relativePositions = {0.0f, 0.3f, 0.75f, 1.0f};
-			Blend blend = new Blend();
-			blend.Factors = relativeIntensities;
-			blend.Positions = relativePositions; 
-			brushBackground.Blend = blend; 
-
-			g.FillRectangle(brushBackground, rcBackground);
-			brushBackground.Dispose();
-			//
-			// Border
-			//
-			DrawBorder(g);
-
-			if(enumType.XPStyle.Default == m_btnStyle)
-			{
-				//
-				// Inner shadow above the bottom border (3 solid lines)
-				//
-				Pen penInnerShadowBottom1 = new Pen(clrInnerShadowBottom1);
-				Pen penInnerShadowBottom2 = new Pen(clrInnerShadowBottom2);
-				Pen penInnerShadowBottom3 = new Pen(clrInnerShadowBottom3);
-
-				g.DrawLine(penInnerShadowBottom1, rcBorder.Left + 1, rcBorder.Bottom - 3, 
-					rcBorder.Right - 1, rcBorder.Bottom - 3);
-				g.DrawLine(penInnerShadowBottom2, rcBorder.Left + 1, rcBorder.Bottom - 2, 
-					rcBorder.Right - 1, rcBorder.Bottom - 2);
-				g.DrawLine(penInnerShadowBottom3, rcBorder.Left + 2, rcBorder.Bottom - 1, 
-					rcBorder.Right - 2, rcBorder.Bottom - 1);
-		
-				penInnerShadowBottom1.Dispose();
-				penInnerShadowBottom2.Dispose();
-				penInnerShadowBottom3.Dispose();
-
-				//
-				// Inner shadow to the left of the right border (2 gradient lines)
-				//
-				Point ptInnerShadowRight1a = new Point(rcBorder.Right - 2, rcBorder.Top + 1);
-				Point ptInnerShadowRight1b = new Point(rcBorder.Right - 2, rcBorder.Bottom - 1);
-				Point ptInnerShadowRight2a = new Point(rcBorder.Right - 1, rcBorder.Top + 2);
-				Point ptInnerShadowRight2b = new Point(rcBorder.Right - 1, rcBorder.Bottom - 2);
-
-				LinearGradientBrush brushInnerShadowRight1 = new LinearGradientBrush(
-					ptInnerShadowRight1a , ptInnerShadowRight1b ,
-					clrInnerShadowRight1a, clrInnerShadowRight1b);
-				Pen penInnerShadowRight1 = new Pen(brushInnerShadowRight1);
-		
-				LinearGradientBrush brushInnerShadowRight2 = new LinearGradientBrush(
-					ptInnerShadowRight2a , ptInnerShadowRight2b ,
-					clrInnerShadowRight2a, clrInnerShadowRight2b);
-				Pen penInnerShadowRight2 = new Pen(brushInnerShadowRight2);
-
-				g.DrawLine(penInnerShadowRight1, ptInnerShadowRight1a, ptInnerShadowRight1b);
-				g.DrawLine(penInnerShadowRight2, ptInnerShadowRight2a, ptInnerShadowRight2b);
-			
-				penInnerShadowRight1.Dispose();
-				penInnerShadowRight2.Dispose();
-				brushInnerShadowRight1.Dispose();
-				brushInnerShadowRight2.Dispose();
-
-				// Top showing light source
-				Pen penTop = new Pen(Color.White);
-		
-				g.DrawLine(penTop, rcBorder.Left + 2, rcBorder.Top + 1,
-					rcBorder.Right - 2, rcBorder.Top + 1);
-				g.DrawLine(penTop, rcBorder.Left + 1, rcBorder.Top + 2,
-					rcBorder.Right - 1, rcBorder.Top + 2);
-				g.DrawLine(penTop, rcBorder.Left + 1, rcBorder.Top + 3,
-					rcBorder.Right - 1, rcBorder.Top + 3);
-
-				penTop.Dispose();
-			}
-		}
-	
-		/// <summary>
-		/// Draws the outer shadow of the XpButton object.
-		/// </summary>
-		/// <param name="g">The System.Drawing.Graphics object to be used to paint the outer shadow.</param>
-		private void DrawOuterShadow(Graphics g)
-		{
-			LinearGradientBrush brushOuterShadow = new LinearGradientBrush(
-				ClientRectangle, clrOuterShadow1, clrOuterShadow2, LinearGradientMode.Vertical);
-			g.FillRectangle(brushOuterShadow, ClientRectangle);
-			brushOuterShadow.Dispose();
-		}
-		private void DrawEllipseOuterShadow(Graphics g)
-		{
-			LinearGradientBrush brushOuterShadow = new LinearGradientBrush(
-				ClientRectangle, clrOuterShadow1, clrOuterShadow2, LinearGradientMode.Vertical);
-			g.FillRectangle(brushOuterShadow, ClientRectangle);
-			brushOuterShadow.Dispose();
-		}
-
-		/// <summary>
-		/// Draws the dark blue border of the XpButton object.
-		/// </summary>
-		/// <param name="g">The System.Drawing.Graphics object to be used to paint the border.</param>
-		private void DrawBorder(Graphics g)
-		{
-			Pen penBorder = new Pen(clrBorder);
-			ControlPaint.DrawRoundedRectangle(g, penBorder, this.BorderRectangle, 
-				borderRoundness);
-			penBorder.Dispose();
-		}
-		private void DrawEllipseBorder(Graphics g)
-		{
-			Pen penBorder = new Pen(Color.FromArgb(0, 0, 0));
-
-			SmoothingMode oldSmoothingMode = g.SmoothingMode;
-			g.SmoothingMode = SmoothingMode.AntiAlias;
-			g.DrawEllipse(penBorder,this.BorderRectangle);
-			g.SmoothingMode = oldSmoothingMode;
-
-			penBorder.Dispose();
-		}
-		private void DrawEllipseDefaultBorder(Graphics g)
-		{
-			Pen penTop2 = new Pen(Color.FromArgb(137, 173, 228),2);
-			Rectangle rcInFrame = new Rectangle(
-				this.BorderRectangle.X + 2, this.BorderRectangle.Y + 1, this.BorderRectangle.Width - 4, this.BorderRectangle.Height - 2);
-
-			SmoothingMode oldSmoothingMode = g.SmoothingMode;
-			g.SmoothingMode = SmoothingMode.AntiAlias;
-			g.DrawEllipse(penTop2,rcInFrame);
-			g.SmoothingMode = oldSmoothingMode;
-
-			penTop2.Dispose();
-		}
-		private void DrawEllipseHoverBorder(Graphics g)
-		{
-			Pen penTop2 = new Pen(Color.FromArgb(248, 178, 48),2);
-			Rectangle rcInFrame = new Rectangle(
-				this.BorderRectangle.X + 2, this.BorderRectangle.Y + 1, this.BorderRectangle.Width - 4, this.BorderRectangle.Height - 2);
-
-			SmoothingMode oldSmoothingMode = g.SmoothingMode;
-			g.SmoothingMode = SmoothingMode.AntiAlias;
-			g.DrawEllipse(penTop2,rcInFrame);
-			g.SmoothingMode = oldSmoothingMode;
-
-			penTop2.Dispose();
-		}
-		#endregion
-
-		/// <summary>
-		/// Clean up any resources being used.
-		/// </summary>
-		protected override void Dispose( bool disposing )
-		{
-			if( disposing )
-			{
-				if( components != null )
-					components.Dispose();
-			}
-			base.Dispose( disposing );
-		}
-
-		#region Component Designer generated code
-		/// <summary>
-		/// Required method for Designer support - do not modify 
-		/// the contents of this method with the code editor.
-		/// </summary>
-		private void InitializeComponent()
-		{
-			components = new System.ComponentModel.Container();
-		}
-		#endregion
-	}
-	///<summary></summary>
-	public class enumType{
-		///<summary></summary>
-		public enum XPStyle	{
-			///<summary></summary>
-			Default,
-			///<summary></summary>
-			Blue,
-			///<summary></summary>
-			OliveGreen,
-			///<summary></summary>
-			Silver}
-		///<summary></summary>
-		public enum BtnShape {
-			///<summary></summary>
-			Rectangle, 
-			///<summary></summary>
-			Ellipse}
-	}
-
-	internal sealed class ControlPaint
-	{
-		private ControlPaint()
-		{
-		}
-
-
-
-		public static Color BorderColor
-		{
-			get { return Color.FromArgb(127, 157, 185); }
-		}
-
-		public static Color DisabledBorderColor
-		{
-			get { return Color.FromArgb(201, 199, 186); }
-		}
-
-		public static Color ButtonBorderColor
-		{
-			get { return Color.FromArgb(28, 81, 128); }
-		}
-
-		public static Color DisabledButtonBorderColor
-		{
-			get { return Color.FromArgb(202, 200, 187); }
-		}
-
-		public static Color DisabledBackColor
-		{
-			get { return Color.FromArgb(236, 233, 216); }
-		}
-
-		public static Color DisabledForeColor
-		{
-			get { return Color.FromArgb(161, 161, 146); }
-		}
-
-
-
-		public static StringFormat GetStringFormat(ContentAlignment contentAlignment){
+		private StringFormat GetStringFormat(ContentAlignment contentAlignment) {
 			if(!Enum.IsDefined(typeof(ContentAlignment),(int)contentAlignment))
 				throw new System.ComponentModel.InvalidEnumArgumentException(
 					"contentAlignment",(int)contentAlignment,typeof(ContentAlignment));
 			StringFormat stringFormat = new StringFormat();
-			switch (contentAlignment){
+			switch(contentAlignment) {
 				case ContentAlignment.MiddleCenter:
 					stringFormat.LineAlignment = StringAlignment.Center;
 					stringFormat.Alignment = StringAlignment.Center;
@@ -986,47 +539,32 @@ namespace OpenDental.UI
 			return stringFormat;
 		}
 
-		/// <summary>
-		/// Draws a rectangle with rounded edges.
-		/// </summary>
-		/// <param name="grfx">The System.Drawing.Graphics object to be used to draw the rectangle.</param>
-		/// <param name="pen">A System.Drawing.Pen object that determines the color, width, and style of the rectangle.</param>
-		/// <param name="rect">A System.Drawing.Rectangle structure that represents the rectangle to draw.</param>
-		/// <param name="round">Pixel indentation that determines the roundness of the corners.</param>
-		public static void DrawRoundedRectangle(Graphics grfx, Pen pen, Rectangle rect, int round){
-			//round usually = 1 pixel, but can also be set to 2 pixels
-			//old way of doing it:
-			// 1 pixel indent in all sides = Size(4, 4)
-			// To make pixel indentation larger, change by a factor of 4,
-			// i. e., 2 pixels indent = Size(8, 8);
-			SmoothingMode oldSmoothingMode = grfx.SmoothingMode;
-			grfx.SmoothingMode = SmoothingMode.AntiAlias;
-			//top
-			grfx.DrawLine(pen,rect.Left+round*2,rect.Top,rect.Right-round*2,rect.Top);
-			grfx.DrawArc(pen,rect.Right-round*4,rect.Top,round*4,round*4,270,90);
-			//
-			grfx.DrawLine(pen,rect.Right,rect.Top+round*2,rect.Right,rect.Bottom-round*2);
-			grfx.DrawArc(pen,rect.Right-round*4,rect.Bottom-round*4,round*4,round*4,0,90);
-			//
-			grfx.DrawLine(pen,rect.Right-round*2,rect.Bottom,rect.Left+round*2,rect.Bottom);
-			grfx.DrawArc(pen,rect.Left,rect.Bottom-round*4,round*4,round*4,90,90);
-			//
-			grfx.DrawLine(pen,rect.Left,rect.Bottom-round*2,rect.Left,rect.Top+round*2);
-			grfx.DrawArc(pen,rect.Left,rect.Top,round*4,round*4,180,90);
-			//
-			grfx.SmoothingMode = oldSmoothingMode;
-		}
+		
 
-		public static void DrawBorder(Graphics g, int x, int y, int width, int height){
-			g.DrawRectangle(new Pen(ControlPaint.BorderColor, 0), x, y, 
-				width, height);
-		}
-
-		public static void EraseExcessOldDropDown(Graphics g, Rectangle newButton){
-			g.FillRectangle(new SolidBrush(SystemColors.Window), newButton.X - 2, newButton.Y,
-				2, newButton.Height + 1);
-		}
-
+		
 	}
+
+	///<summary>Just for backward compatibility.</summary>
+	public class enumType {
+		///<summary></summary>
+		public enum XPStyle {
+			///<summary></summary>
+			Default,
+			///<summary></summary>
+			Blue,
+			///<summary></summary>
+			OliveGreen,
+			///<summary></summary>
+			Silver
+		}
+		///<summary></summary>
+		public enum BtnShape {
+			///<summary></summary>
+			Rectangle,
+			///<summary></summary>
+			Ellipse
+		}
+	}
+
 
 }

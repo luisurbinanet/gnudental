@@ -60,6 +60,7 @@ namespace OpenDental.UI{
 		private string translationName;
 		private Color selectedRowColor;
 		private bool allowSelection;
+		private bool wrapText;
 
 		///<summary></summary>
 		public ODGrid(){
@@ -83,6 +84,7 @@ namespace OpenDental.UI{
 			selectionMode=SelectionMode.One;
 			selectedRowColor=Color.Silver;
 			allowSelection=true;
+			wrapText=true;
 		}
 
 		///<summary>Clean up any resources being used.</summary>
@@ -108,8 +110,9 @@ namespace OpenDental.UI{
 
 		#region Properties
 		///<summary>Gets the collection of ODGridColumns assigned to the ODGrid control.</summary>
-		[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
-		[Editor(typeof(System.ComponentModel.Design.CollectionEditor),typeof(System.Drawing.Design.UITypeEditor))]
+		//[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+		//[Editor(typeof(System.ComponentModel.Design.CollectionEditor),typeof(System.Drawing.Design.UITypeEditor))]
+		//[Browsable(false)]//only because MS is buggy.
 		public ODGridColumnCollection Columns{
 			get{
 				return columns;
@@ -231,6 +234,18 @@ namespace OpenDental.UI{
 			}
 		}
 
+		///<summary>Text within each cell will wrap, making some rows taller.</summary>
+		[Category("Behavior"),Description("Text within each cell will wrap, making some rows taller.")]
+		[DefaultValue(true)]
+		public bool WrapText{
+			get {
+				return wrapText;
+			}
+			set {
+				wrapText=value;
+			}
+		}
+
 		#endregion
 
 		///<summary></summary>
@@ -245,7 +260,7 @@ namespace OpenDental.UI{
 		///<summary>Runs any time the control is invalidated.</summary>
 		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e){
 			if(IsUpdating) return;
-			ComputeColumns();//it's only here because I can't figure out how to do it when columns are added.
+			ComputeColumns();//it's only here because I can't figure out how to do it when columns are added. It will be removed.
 			Bitmap doubleBuffer=new Bitmap(Width,Height,e.Graphics);
 			Graphics g=Graphics.FromImage(doubleBuffer);
 			DrawBackG(g);
@@ -256,8 +271,25 @@ namespace OpenDental.UI{
 			g.Dispose();
 		}
 
-		///<summary>Computes the position of each column and the overall width.  Called from endUpdate and also from</summary>
+		///<summary>Computes the position of each column and the overall width.  Called from endUpdate and also from OnPaint.</summary>
 		private void ComputeColumns(){
+			if(!hScrollVisible) {//this used to be in the resize logic
+				int minGridW=0;//sum of columns widths except last one.
+				for(int i=0;i<columns.Count;i++) {
+					if(i<columns.Count-1) {
+						minGridW+=columns[i].ColWidth;
+					}
+				}
+				if(Width<minGridW+2+vScroll.Width+5) {//trying to make it too narrow
+					this.Width=minGridW
+					+2//outline
+					+vScroll.Width
+					+5;
+				}
+				else if(columns.Count>0) {//resize the last column automatically
+					columns[columns.Count-1].ColWidth=Width-2-vScroll.Width-minGridW;
+				}
+			}
 			ColPos=new int[columns.Count];
 			for(int i=0;i<ColPos.Length;i++){
 				if(i==0)
@@ -265,7 +297,9 @@ namespace OpenDental.UI{
 				else
 					ColPos[i]=ColPos[i-1]+columns[i-1].ColWidth;
 			}
-			GridW=ColPos[ColPos.Length-1]+columns[columns.Count-1].ColWidth;
+			if(columns.Count>0){
+				GridW=ColPos[ColPos.Length-1]+columns[columns.Count-1].ColWidth;
+			}
 		}
 
 		///<summary>Draws a solid gray background.</summary>
@@ -493,25 +527,6 @@ namespace OpenDental.UI{
 		///<summary></summary>
 		protected override void OnResize(EventArgs e){
 			base.OnResize (e);
-			if(!hScrollVisible){
-				int gridW=0;
-				int minGridW=0;//sum of columns widths except last one.
-				for(int i=0;i<columns.Count;i++){
-					gridW+=columns[i].ColWidth;
-					if(i<columns.Count-1){
-						minGridW+=columns[i].ColWidth;
-					}
-				}
-				if(Width<minGridW+2+vScroll.Width+5){//trying to make it too narrow
-					this.Width=minGridW
-					+2//outline
-					+vScroll.Width
-					+5;
-				}
-				else if(columns.Count>0){//resize the last column automatically
-					columns[columns.Count-1].ColWidth=Width-2-vScroll.Width-minGridW;
-				}
-			}
 			LayoutScrollBars();
 			Invalidate();
 		}
@@ -521,7 +536,7 @@ namespace OpenDental.UI{
 			IsUpdating=true;
 		}
 
-		///<summary>Must be called after adding rows.  This computes the rows, lays out the scrollbars, clears SelectedIndices, and invalidates.</summary>
+		///<summary>Must be called after adding rows.  This computes the columns, computes the rows, lays out the scrollbars, clears SelectedIndices, and invalidates.</summary>
 		public void EndUpdate(){
 			ComputeColumns();
 			ComputeRows();
@@ -540,11 +555,17 @@ namespace OpenDental.UI{
 			int cellH;
 			for(int i=0;i<rows.Count;i++){
 				RowHeights[i]=0;//rowHeight;
-				for(int j=0;j<rows[i].Cells.Count;j++){
-					cellH=(int)g.MeasureString(rows[i].Cells[j].Text,this.cellFont,columns[j].ColWidth).Height+1;
-					if(cellH>RowHeights[i]){
-						RowHeights[i]=cellH;
+				if(wrapText){
+					//find the tallest row
+					for(int j=0;j<rows[i].Cells.Count;j++) {
+						cellH=(int)g.MeasureString(rows[i].Cells[j].Text,this.cellFont,columns[j].ColWidth).Height+1;
+						if(cellH>RowHeights[i]) {
+							RowHeights[i]=cellH;
+						}
 					}
+				}
+				else{
+					RowHeights[i]=(int)g.MeasureString("Any",this.cellFont).Height+1;
 				}
 				if(i==0)
 					RowLocs[i]=0;
@@ -604,13 +625,16 @@ namespace OpenDental.UI{
 			ScrollValue=vScroll.Maximum;//this does all error checking and invalidates
 		}
 
-		///<summary>Use to set a row selected or not.</summary>
+		///<summary>Use to set a row selected or not.  Can handle values outside the acceptable range.</summary>
 		public void SetSelected(int index,bool setValue){
 			if(setValue){//select specified index
 				if(selectionMode==SelectionMode.None){
 					throw new Exception("Selection mode is none.");
 				}
-				else if(selectionMode==SelectionMode.One){
+				if(index<0 || index>rows.Count-1){//check to see if index is within the valid range of values
+					return;//if not, then ignore.
+				}
+				if(selectionMode==SelectionMode.One){
 					selectedIndices.Clear();//clear existing selection before assigning the new one.
 				}
 				if(!selectedIndices.Contains(index)){
@@ -635,6 +659,9 @@ namespace OpenDental.UI{
 			}
 			for(int i=0;i<iArray.Length;i++){
 				if(setValue){//select specified index
+					if(iArray[i]<0 || iArray[i]>rows.Count-1) {//check to see if index is within the valid range of values
+						return;//if not, then ignore.
+					}
 					if(!selectedIndices.Contains(iArray[i])){
 						selectedIndices.Add(iArray[i]);
 					}
@@ -663,6 +690,14 @@ namespace OpenDental.UI{
 				}
 			}
 			Invalidate();
+		}
+
+		///<summary>If one row is selected, it returns the index to that row.  Really only useful for SelectionMode.One.  If no rows selected, returns -1.</summary>
+		public int GetSelectedIndex(){
+			if(selectedIndices.Count>0){
+				return (int)selectedIndices[0];
+			}
+			return -1;
 		}
 
 		///<summary>Returns row.  Supply the y position in pixels.</summary>
@@ -713,7 +748,10 @@ namespace OpenDental.UI{
 		protected override void OnMouseDown(MouseEventArgs e) {
 			base.OnMouseDown(e);
 			if(e.Button==MouseButtons.Right){
-				return;
+				if(selectedIndices.Count>0){//if there are already rows selected, then ignore right click
+					return;
+				}
+				//otherwise, row will be selected. Useful when using context menu.
 			}
 			MouseIsDown=true;
 			MouseDownRow=PointToRow(e.Y);
@@ -959,3 +997,32 @@ namespace OpenDental.UI{
 	}
 
 }
+
+
+
+
+
+
+/*This is a template of typical grid code which can be quickly pasted into any form.
+ 
+//using OpenDental.UI;
+			gridMain.BeginUpdate();
+			gridMain.Columns.Clear();
+			ODGridColumn col=new ODGridColumn(Lan.g("Table",""),);
+			gridMain.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("Table",""),);
+			gridMain.Columns.Add(col);
+			 
+			gridMain.Rows.Clear();
+			ODGridRow row;
+			for(int i=0;i<List.Length;i++){
+				row=new ODGridRow();
+				row.Cells.Add("");
+				row.Cells.Add("");
+			  
+				gridMain.Rows.Add(row);
+			}
+			gridMain.EndUpdate();
+
+
+*/

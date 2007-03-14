@@ -89,12 +89,15 @@ namespace fyiReporting.RDL
 			XmlDocument xDoc = new XmlDocument();
 			xDoc.LoadXml(inXml);
 
-			XslTransform xslt = new XslTransform();
+			//XslTransform xslt = new XslTransform();
+            XslCompiledTransform xslct = new XslCompiledTransform();
 
 			//Load the stylesheet.
-			xslt.Load(xslFile);
+			//xslt.Load(xslFile);
+            xslct.Load(xslFile);//?
 
-			xslt.Transform(xDoc,null,outResult, null);
+			//xslt.Transform(xDoc,null,outResult, null);
+            xslct.Transform(xslFile,null,outResult);
 
 			return;
 		}

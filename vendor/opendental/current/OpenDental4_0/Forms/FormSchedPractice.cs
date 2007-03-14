@@ -95,7 +95,6 @@ namespace OpenDental{
 			// FormSchedPractice
 			// 
 			this.AcceptButton = this.butClose;
-			this.AutoScale = false;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butClose;
 			this.ClientSize = new System.Drawing.Size(900, 674);

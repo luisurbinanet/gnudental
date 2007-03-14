@@ -423,7 +423,6 @@ namespace OpenDental{
 			// 
 			// FormScreenGroup
 			// 
-			this.AutoScale = false;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(714, 588);
 			this.Controls.Add(this.butDelete);

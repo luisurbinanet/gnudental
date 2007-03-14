@@ -575,9 +575,9 @@ namespace OpenDental{
 			ContrAppt.CurInfo=new InfoApt();
 			Appointment AptCur=Appointments.CreateRecallApt(PatCur,ProcList,RecallCur,PlanList);
 			ContrAppt.CurInfo.MyApt=AptCur.Copy();
-			ProcDesc procDesc=Procedures.GetProcsForSingle(AptCur.AptNum,false);
-			ContrAppt.CurInfo.Procs=procDesc.ProcLines;
-			ContrAppt.CurInfo.Production=procDesc.Production;
+			Procedure[] procs=Procedures.GetProcsForSingle(AptCur.AptNum,false);
+			ContrAppt.CurInfo.Procs=procs;
+			ContrAppt.CurInfo.Production=Procedures.GetProductionOneApt(AptCur.AptNum,procs);
 			ContrAppt.CurInfo.MyPatient=PatCur;
 		}
 
@@ -596,31 +596,32 @@ namespace OpenDental{
 				//make a commlog entry
 				//unless there is an existing recall commlog entry for today
 				bool recallEntryToday=false;
-				for(int i=0;i<Commlogs.List.Length;i++){
-					if(Commlogs.List[i].CommDateTime.Date==DateTime.Today
-						&& Commlogs.List[i].CommType==CommItemType.Recall){
+				Commlog[] CommlogList=Commlogs.Refresh(PatCur.PatNum);
+				for(int i=0;i<CommlogList.Length;i++){
+					if(CommlogList[i].CommDateTime.Date==DateTime.Today
+						&& CommlogList[i].CommType==CommItemType.Recall){
 						recallEntryToday=true;
 					}
 				}
 				if(!recallEntryToday){
-					Commlogs.Cur=new Commlog();
-					Commlogs.Cur.CommDateTime=DateTime.Now;
-					Commlogs.Cur.CommType=CommItemType.Recall;
-					Commlogs.Cur.PatNum=PatCur.PatNum;
+					Commlog CommlogCur=new Commlog();
+					CommlogCur.CommDateTime=DateTime.Now;
+					CommlogCur.CommType=CommItemType.Recall;
+					CommlogCur.PatNum=PatCur.PatNum;
 					if(newStatus!=RecallCur.RecallStatus){
 						//Commlogs.Cur.Note+=Lan.g(this,"Status changed to")+" ";
 						if(newStatus==0)
-							Commlogs.Cur.Note+=Lan.g(this,"Status None");
+							CommlogCur.Note+=Lan.g(this,"Status None");
 						else
-							Commlogs.Cur.Note+=Defs.GetName(DefCat.RecallUnschedStatus,newStatus);
+							CommlogCur.Note+=Defs.GetName(DefCat.RecallUnschedStatus,newStatus);
 						if(RecallCur.Note=="" && textNote.Text!="")
-							Commlogs.Cur.Note+=", ";
+							CommlogCur.Note+=", ";
 					}
 					if(RecallCur.Note=="" && textNote.Text!=""){
-						Commlogs.Cur.Note+=textNote.Text;
+						CommlogCur.Note+=textNote.Text;
 					}
-					Commlogs.Cur.Note+=".  ";
-					FormCommItem FormCI=new FormCommItem();
+					CommlogCur.Note+=".  ";
+					FormCommItem FormCI=new FormCommItem(CommlogCur);
 					FormCI.IsNew=true;
 					//forces user to at least consider a commlog entry
 					FormCI.ShowDialog();//typically saved in this window.

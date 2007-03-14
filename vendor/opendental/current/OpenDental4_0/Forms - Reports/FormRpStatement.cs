@@ -305,14 +305,15 @@ namespace OpenDental{
 			pd.DefaultPageSettings.Margins=new Margins(10,40,40,60);//?
 			ContrAccount contrAccount=new ContrAccount();
 			StatementA=new string[patNums.GetLength(0)][,];
+			Commlog commlog;
 			for(int i=0;i<patNums.GetLength(0);i++){//loop through each family
 				StatementA[i]=AssembleStatement(contrAccount,patNums[i],fromDate,toDate,includeClaims,nextAppt);
-				Commlogs.Cur=new Commlog();
-				Commlogs.Cur.CommDateTime=DateTime.Now;
-				Commlogs.Cur.CommType=CommItemType.StatementSent;
-				Commlogs.Cur.PatNum=patNums[i][0];//uaually the guarantor
+				commlog=new Commlog();
+				commlog.CommDateTime=DateTime.Now;
+				commlog.CommType=CommItemType.StatementSent;
+				commlog.PatNum=patNums[i][0];//uaually the guarantor
 				//there is no dialog here because it is just a simple entry
-				Commlogs.InsertCur();
+				commlog.Insert();
 			}
 			famsPrinted=0;
 			linesPrinted=0;

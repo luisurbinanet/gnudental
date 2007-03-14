@@ -402,7 +402,7 @@ namespace OpenDental{
 		}
 
 		///<summary>Updates all claimproc estimates and also updates claim totals to db. Must supply all claimprocs for this patient.  Must supply procList which includes all procedures that this claim is linked to.  Will also need to refresh afterwards to see the results</summary>
-		public static void CalculateAndUpdate(ClaimProc[] ClaimProcList,Procedure[] procList,InsPlan[] PlanList,Claim ClaimCur,PatPlan[] patPlans){
+		public static void CalculateAndUpdate(ClaimProc[] ClaimProcList,Procedure[] procList,InsPlan[] PlanList,Claim ClaimCur,PatPlan[] patPlans,Benefit[] benefitList){
 			//Remember that this can be called externally also
 			//ClaimProcList=claimProcList;
 			ClaimProc[] ClaimProcsForClaim=ClaimProcs.GetForClaim(ClaimProcList,ClaimCur.ClaimNum);
@@ -431,6 +431,7 @@ namespace OpenDental{
 			//loop again only for procs not received.
 			//And for preauth.
 			Procedure ProcCur;
+			int patPlanNum;
 			for(int i=0;i<ClaimProcsForClaim.Length;i++){
 				if(ClaimProcsForClaim[i].Status!=ClaimProcStatus.NotReceived
 					&& ClaimProcsForClaim[i].Status!=ClaimProcStatus.Preauth){
@@ -460,35 +461,41 @@ namespace OpenDental{
 					continue;
 				}
 				//deduct:
-				if((CovCats.GetIsPrev(ProcCur.ADACode)//if is preventive 
-					&& PlanCur.DeductWaivPrev==YN.No)//and deductible is not waived on preventive
-					|| !CovCats.GetIsPrev(ProcCur.ADACode))//or if not preventive
-				{
-					dedRem=InsPlans.GetDedRem(ClaimProcList,ClaimProcsForClaim[i].ProcDate
-						,ClaimCur.PlanNum,ClaimCur.ClaimNum,PlanList)
+				patPlanNum=PatPlans.GetPatPlanNum(patPlans,ClaimCur.PlanNum);
+				if(patPlanNum==0){//patient does not have current coverage
+					dedRem=0;
+				}
+				else{
+					dedRem=InsPlans.GetDedRem(ClaimProcList,ClaimProcsForClaim[i].ProcDate,ClaimCur.PlanNum,patPlanNum,
+						ClaimCur.ClaimNum,PlanList,benefitList,ProcCur.ADACode)
 						-dedApplied;//subtracts deductible amounts already applied on this claim
-					if(dedRem<0){
+					if(dedRem<0) {
 						dedRem=0;
 					}
-					if(dedRem > ClaimProcsForClaim[i].FeeBilled){//if deductible is more than cost of procedure
-						ClaimProcsForClaim[i].DedApplied=ClaimProcsForClaim[i].FeeBilled;
-					}
-					else{
-						ClaimProcsForClaim[i].DedApplied=dedRem;
-					}
+
+				}
+				if(dedRem > ClaimProcsForClaim[i].FeeBilled){//if deductible is more than cost of procedure
+					ClaimProcsForClaim[i].DedApplied=ClaimProcsForClaim[i].FeeBilled;
+				}
+				else{
+					ClaimProcsForClaim[i].DedApplied=dedRem;
 				}
 				//??obsolete: if dedApplied is too big, it might be adjusted in the next few lines.??
 				//insest:
 				//Unlike deductible, we do not need to take into account any of the received claimprocs when calculating insest.  So insRem takes care of annual max rather than received+est.
-				insRem
-					=InsPlans.GetInsRem(ClaimProcList,ClaimProcsForClaim[i].ProcDate
-					,ClaimCur.PlanNum,ClaimCur.ClaimNum,PlanList)
-					-insPayEst;//subtracts insest amounts already applied on this claim
-				if(insRem<0){
+				if(patPlanNum==0){//patient does not have current coverage
 					insRem=0;
 				}
+				else{
+					insRem=InsPlans.GetInsRem(ClaimProcList,ClaimProcsForClaim[i].ProcDate,ClaimCur.PlanNum,
+						patPlanNum,ClaimCur.ClaimNum,PlanList,benefitList)
+						-insPayEst;//subtracts insest amounts already applied on this claim
+					if(insRem<0) {
+						insRem=0;
+					}
+				}
 				if(ClaimCur.ClaimType=="P"){//primary
-					ClaimProcsForClaim[i].ComputeBaseEst(ProcCur,PriSecTot.Pri,PlanList,patPlans);//handles dedBeforePerc
+					ClaimProcsForClaim[i].ComputeBaseEst(ProcCur,PriSecTot.Pri,PlanList,patPlans,benefitList);//handles dedBeforePerc
 					ClaimProcsForClaim[i].InsPayEst=ProcCur.GetEst(ClaimProcList,PriSecTot.Pri,patPlans);
 						//ClaimProcsForClaim[i].BaseEst;
 					if(!ClaimProcsForClaim[i].DedBeforePerc){
@@ -496,7 +503,7 @@ namespace OpenDental{
 					}
 				}
 				else if(ClaimCur.ClaimType=="S"){//secondary
-					ClaimProcsForClaim[i].ComputeBaseEst(ProcCur,PriSecTot.Sec,PlanList,patPlans);
+					ClaimProcsForClaim[i].ComputeBaseEst(ProcCur,PriSecTot.Sec,PlanList,patPlans,benefitList);
 					ClaimProcsForClaim[i].InsPayEst=ProcCur.GetEst(ClaimProcList,PriSecTot.Sec,patPlans);
 						//ClaimProcsForClaim[i].BaseEst;
 					if(!ClaimProcsForClaim[i].DedBeforePerc){
@@ -525,9 +532,6 @@ namespace OpenDental{
 			Cur=ClaimCur;
 			UpdateCur();
 		}
-
-	
-
 	}//end class Claims
 
 

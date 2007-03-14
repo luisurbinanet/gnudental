@@ -26,15 +26,17 @@ namespace OpenDental{
 		/// Required designer variable.
 		/// </summary>
 		private System.ComponentModel.Container components = null;
+		private ClockEvent ClockEventCur;
 
 		///<summary></summary>
-		public FormClockEventEdit()
+		public FormClockEventEdit(ClockEvent clockEventCur)
 		{
 			//
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
 			Lan.F(this);
+			ClockEventCur=clockEventCur.Copy();
 		}
 
 		/// <summary>
@@ -239,9 +241,9 @@ namespace OpenDental{
 		#endregion
 
 		private void FormClockEventEdit_Load(object sender, System.EventArgs e) {
-			textTimeEntered.Text=ClockEvents.Cur.TimeEntered.ToString();
-			textTimeDisplayed.Text=ClockEvents.Cur.TimeDisplayed.ToString();
-			if(ClockEvents.Cur.ClockIn){
+			textTimeEntered.Text=ClockEventCur.TimeEntered.ToString();
+			textTimeDisplayed.Text=ClockEventCur.TimeDisplayed.ToString();
+			if(ClockEventCur.ClockIn){
 				radioClockIn.Checked=true;
 			}
 			else{
@@ -251,13 +253,13 @@ namespace OpenDental{
 			for(int i=0;i<Enum.GetNames(typeof(TimeClockStatus)).Length;i++){
 				listStatus.Items.Add(Lan.g("enumTimeClockStatus",Enum.GetNames(typeof(TimeClockStatus))[i]));
 			}
-			listStatus.SelectedIndex=(int)ClockEvents.Cur.ClockStatus;//all clockevents have a status
-			textNote.Text=ClockEvents.Cur.Note;
+			listStatus.SelectedIndex=(int)ClockEventCur.ClockStatus;//all clockevents have a status
+			textNote.Text=ClockEventCur.Note;
 		}
 
 		private void textTimeDisplayed_Validating(object sender, System.ComponentModel.CancelEventArgs e) {
 			try{
-				ClockEvents.Cur.TimeDisplayed=DateTime.Parse(textTimeDisplayed.Text);
+				ClockEventCur.TimeDisplayed=DateTime.Parse(textTimeDisplayed.Text);
 			}
 			catch{
 				MessageBox.Show(Lan.g(this,"Please enter a valid date and time."));
@@ -269,16 +271,16 @@ namespace OpenDental{
 			if(!MsgBox.Show(this,true,"Delete this clock event?")){
 				return;
 			}
-			ClockEvents.DeleteCur();
+			ClockEventCur.Delete();
 			DialogResult=DialogResult.OK;
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
 			//TimeDisplayed already handled
-			ClockEvents.Cur.ClockIn=radioClockIn.Checked;
-			ClockEvents.Cur.ClockStatus=(TimeClockStatus)listStatus.SelectedIndex;
-			ClockEvents.Cur.Note=textNote.Text;
-			ClockEvents.UpdateCur();
+			ClockEventCur.ClockIn=radioClockIn.Checked;
+			ClockEventCur.ClockStatus=(TimeClockStatus)listStatus.SelectedIndex;
+			ClockEventCur.Note=textNote.Text;
+			ClockEventCur.Update();
 			DialogResult=DialogResult.OK;
 		}
 

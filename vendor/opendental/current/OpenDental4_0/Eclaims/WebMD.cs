@@ -25,6 +25,9 @@ namespace OpenDental.Eclaims
 				if(!Directory.Exists(clearhouse.ResponsePath)){
 					throw new Exception("Clearinghouse response path is invalid.");
 				}
+				if(!File.Exists(clearhouse.ClientProgram)) {
+					throw new Exception("Client program not installed properly.");
+				}
 				arguments=clearhouse.ExportPath+"*.* "//upload claims path
 					+clearhouse.ResponsePath+" "//Mail path
 					+"316 "//vendor number.  
@@ -50,7 +53,7 @@ namespace OpenDental.Eclaims
 				}
 			}
 			catch(Exception e){
-				MessageBox.Show(e.Message+"\r\n"+clearhouse.ClientProgram+" "+arguments);
+				MessageBox.Show(e.Message);//+"\r\n"+clearhouse.ClientProgram+" "+arguments);
 				X12.Rollback(clearhouse,batchNum);
 				return false;
 			}

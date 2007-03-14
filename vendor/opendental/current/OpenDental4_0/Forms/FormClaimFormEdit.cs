@@ -771,6 +771,26 @@ namespace OpenDental{
 					case "P8Fee":
 					case "P9Fee":
 					case "P10Fee":
+					case "P1Lab":
+					case "P2Lab":
+					case "P3Lab":
+					case "P4Lab":
+					case "P5Lab":
+					case "P6Lab":
+					case "P7Lab":
+					case "P8Lab":
+					case "P9Lab":
+					case "P10Lab":
+					case "P1FeeMinusLab":
+					case "P2FeeMinusLab":
+					case "P3FeeMinusLab":
+					case "P4FeeMinusLab":
+					case "P5FeeMinusLab":
+					case "P6FeeMinusLab":
+					case "P7FeeMinusLab":
+					case "P8FeeMinusLab":
+					case "P9FeeMinusLab":
+					case "P10FeeMinusLab":
 					case "TotalFee":
 						displayStrings[i]="1234.00";
 						break;

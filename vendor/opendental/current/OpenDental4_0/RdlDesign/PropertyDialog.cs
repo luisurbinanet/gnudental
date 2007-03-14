@@ -531,7 +531,6 @@ namespace fyiReporting.RdlDesign
 			// PropertyDialog
 			// 
 			this.AcceptButton = this.bOK;
-			this.AutoScale = false;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.bCancel;
 			this.ClientSize = new System.Drawing.Size(458, 366);

@@ -66,14 +66,14 @@ namespace OpenDental{
 			// 
 			// butClose
 			// 
-			this.butClose.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butClose.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.butClose.Autosize = true;
 			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butClose.Location = new System.Drawing.Point(849, 608);
+			this.butClose.Location = new System.Drawing.Point(849,608);
 			this.butClose.Name = "butClose";
-			this.butClose.Size = new System.Drawing.Size(92, 26);
+			this.butClose.Size = new System.Drawing.Size(92,26);
 			this.butClose.TabIndex = 1;
 			this.butClose.Text = "Close Window";
 			this.butClose.Visible = false;
@@ -81,14 +81,14 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
-			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.butOK.Autosize = true;
 			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butOK.Location = new System.Drawing.Point(866, 648);
+			this.butOK.Location = new System.Drawing.Point(866,648);
 			this.butOK.Name = "butOK";
-			this.butOK.Size = new System.Drawing.Size(75, 26);
+			this.butOK.Size = new System.Drawing.Size(75,26);
 			this.butOK.TabIndex = 2;
 			this.butOK.Text = "&OK";
 			this.butOK.Visible = false;
@@ -96,14 +96,14 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
-			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.butCancel.Autosize = true;
 			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butCancel.Location = new System.Drawing.Point(866, 688);
+			this.butCancel.Location = new System.Drawing.Point(866,688);
 			this.butCancel.Name = "butCancel";
-			this.butCancel.Size = new System.Drawing.Size(75, 26);
+			this.butCancel.Size = new System.Drawing.Size(75,26);
 			this.butCancel.TabIndex = 3;
 			this.butCancel.Text = "&Cancel";
 			this.butCancel.Visible = false;
@@ -113,42 +113,42 @@ namespace OpenDental{
 			// 
 			this.panel1.AutoScroll = true;
 			this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.panel1.Location = new System.Drawing.Point(0, 0);
+			this.panel1.Location = new System.Drawing.Point(0,0);
 			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(809, 690);
+			this.panel1.Size = new System.Drawing.Size(809,690);
 			this.panel1.TabIndex = 10;
 			// 
 			// listFeeSched
 			// 
 			this.listFeeSched.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.listFeeSched.Location = new System.Drawing.Point(813, 36);
+			this.listFeeSched.Location = new System.Drawing.Point(813,28);
 			this.listFeeSched.Name = "listFeeSched";
-			this.listFeeSched.Size = new System.Drawing.Size(137, 316);
+			this.listFeeSched.Size = new System.Drawing.Size(137,329);
 			this.listFeeSched.TabIndex = 11;
-			this.listFeeSched.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listFeeSched_MouseDown);
 			this.listFeeSched.DoubleClick += new System.EventHandler(this.listFeeSched_DoubleClick);
 			this.listFeeSched.SelectedIndexChanged += new System.EventHandler(this.listFeeSched_SelectedIndexChanged);
+			this.listFeeSched.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listFeeSched_MouseDown);
 			// 
 			// labelFeeSched
 			// 
 			this.labelFeeSched.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.labelFeeSched.Location = new System.Drawing.Point(813, 16);
+			this.labelFeeSched.Location = new System.Drawing.Point(813,8);
 			this.labelFeeSched.Name = "labelFeeSched";
-			this.labelFeeSched.Size = new System.Drawing.Size(132, 17);
+			this.labelFeeSched.Size = new System.Drawing.Size(132,17);
 			this.labelFeeSched.TabIndex = 12;
 			this.labelFeeSched.Text = "View Fee Sched";
 			this.labelFeeSched.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// butNew
 			// 
-			this.butNew.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butNew.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butNew.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.butNew.Autosize = true;
 			this.butNew.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butNew.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butNew.Location = new System.Drawing.Point(866, 568);
+			this.butNew.Location = new System.Drawing.Point(866,568);
 			this.butNew.Name = "butNew";
-			this.butNew.Size = new System.Drawing.Size(75, 25);
+			this.butNew.Size = new System.Drawing.Size(75,25);
 			this.butNew.TabIndex = 0;
 			this.butNew.Text = "&New Code";
 			this.butNew.Visible = false;
@@ -156,13 +156,13 @@ namespace OpenDental{
 			// 
 			// butEdit
 			// 
-			this.butEdit.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butEdit.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butEdit.Autosize = true;
 			this.butEdit.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butEdit.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butEdit.Location = new System.Drawing.Point(12, 18);
+			this.butEdit.Location = new System.Drawing.Point(12,18);
 			this.butEdit.Name = "butEdit";
-			this.butEdit.Size = new System.Drawing.Size(81, 25);
+			this.butEdit.Size = new System.Drawing.Size(81,25);
 			this.butEdit.TabIndex = 13;
 			this.butEdit.Text = "Edit Def";
 			this.butEdit.Click += new System.EventHandler(this.butEdit_Click);
@@ -173,30 +173,30 @@ namespace OpenDental{
 			this.groupFeeScheds.Controls.Add(this.butTools);
 			this.groupFeeScheds.Controls.Add(this.butEdit);
 			this.groupFeeScheds.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupFeeScheds.Location = new System.Drawing.Point(814, 360);
+			this.groupFeeScheds.Location = new System.Drawing.Point(814,360);
 			this.groupFeeScheds.Name = "groupFeeScheds";
-			this.groupFeeScheds.Size = new System.Drawing.Size(139, 84);
+			this.groupFeeScheds.Size = new System.Drawing.Size(139,84);
 			this.groupFeeScheds.TabIndex = 14;
 			this.groupFeeScheds.TabStop = false;
 			this.groupFeeScheds.Text = "Fee Schedules";
 			// 
 			// butTools
 			// 
-			this.butTools.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butTools.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butTools.Autosize = true;
 			this.butTools.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butTools.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butTools.Location = new System.Drawing.Point(12, 50);
+			this.butTools.Location = new System.Drawing.Point(12,50);
 			this.butTools.Name = "butTools";
-			this.butTools.Size = new System.Drawing.Size(81, 25);
+			this.butTools.Size = new System.Drawing.Size(81,25);
 			this.butTools.TabIndex = 14;
 			this.butTools.Text = "Tools";
 			this.butTools.Click += new System.EventHandler(this.butTools_Click);
 			// 
 			// FormProcedures
 			// 
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(956, 730);
+			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
+			this.ClientSize = new System.Drawing.Size(956,730);
 			this.Controls.Add(this.groupFeeScheds);
 			this.Controls.Add(this.butNew);
 			this.Controls.Add(this.labelFeeSched);
@@ -210,9 +210,9 @@ namespace OpenDental{
 			this.Text = "Procedures";
 			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
 			this.Resize += new System.EventHandler(this.FormProcedures_Resize);
+			this.Activated += new System.EventHandler(this.FormProcedures_Activated);
 			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormProcedures_Closing);
 			this.Load += new System.EventHandler(this.FormProcedures_Load);
-			this.Activated += new System.EventHandler(this.FormProcedures_Activated);
 			this.groupFeeScheds.ResumeLayout(false);
 			this.ResumeLayout(false);
 
@@ -241,7 +241,7 @@ namespace OpenDental{
 				this.listFeeSched.Items.Add(Defs.Short[(int)DefCat.FeeSchedNames][i].ItemName);
 			}
 			listFeeSched.SelectedIndex=0;
-			FillTables();	
+			FillTables();
 		}
 
 		private void FormProcedures_Resize(object sender,System.EventArgs e) {
@@ -489,10 +489,6 @@ namespace OpenDental{
 				DataValid.SetInvalid(InvalidTypes.ProcCodes | InvalidTypes.Fees);
 			}
 		}
-
-		
-
-		
 
 		
 

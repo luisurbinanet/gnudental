@@ -28,14 +28,13 @@ namespace OpenDental{
 		private OpenDental.UI.Button butEmail;
 		private OpenDental.ODtextBox textNote;
 		private System.Windows.Forms.ListBox listType;
-		//private ArrayList NegIndex=new ArrayList();
-		//private DateTime OriginalDate;
-		//private double OriginalAmt;
+		private Commlog CommlogCur;
 
 		///<summary></summary>
-		public FormCommItem(){
+		public FormCommItem(Commlog commlogCur){
 			InitializeComponent();
 			Lan.F(this);
+			CommlogCur=commlogCur.Copy();
 		}
 
 		///<summary></summary>
@@ -247,39 +246,39 @@ namespace OpenDental{
 					butDelete.Enabled=false;
 				}					
 			}*/
-			textDateTime.Text=Commlogs.Cur.CommDateTime.ToString();
+			textDateTime.Text=CommlogCur.CommDateTime.ToString();
 			//remember, this list is 1-based
 			//there will ALWAYS be a commtype set before this dialog is opened
 			for(int i=0;i<Enum.GetNames(typeof(CommItemType)).Length;i++){
 				listType.Items.Add(Lan.g("enumCommItemType",Enum.GetNames(typeof(CommItemType))[i]));
 			}
-			listType.SelectedIndex=(int)Commlogs.Cur.CommType-1;
+			listType.SelectedIndex=(int)CommlogCur.CommType-1;
 			for(int i=0;i<Enum.GetNames(typeof(CommItemMode)).Length;i++){
 				listMode.Items.Add(Lan.g("enumCommItemMode",Enum.GetNames(typeof(CommItemMode))[i]));
 			}
-			listMode.SelectedIndex=(int)Commlogs.Cur.Mode;
+			listMode.SelectedIndex=(int)CommlogCur.Mode;
 			for(int i=0;i<Enum.GetNames(typeof(CommSentOrReceived)).Length;i++){
 				listSentOrReceived.Items.Add
 					(Lan.g("enumCommSentOrReceived",Enum.GetNames(typeof(CommSentOrReceived))[i]));
 			}
 			try{
-				listSentOrReceived.SelectedIndex=(int)Commlogs.Cur.SentOrReceived;
+				listSentOrReceived.SelectedIndex=(int)CommlogCur.SentOrReceived;
 			}
 			catch{
-				MessageBox.Show(((int)Commlogs.Cur.SentOrReceived).ToString());
+				MessageBox.Show(((int)CommlogCur.SentOrReceived).ToString());
 			}
-			if(Commlogs.Cur.EmailMessageNum==0)
+			if(CommlogCur.EmailMessageNum==0)
 				butEmail.Visible=false;
-			textNote.Text=Commlogs.Cur.Note;
+			textNote.Text=CommlogCur.Note;
 			textNote.SelectionStart=textNote.Text.Length;
 			textNote.Select();
 		}
 
 		///<summary>This button won't even be visible unless there is an email to view.</summary>
 		private void butEmail_Click(object sender, System.EventArgs e) {
-			EmailMessages.Refresh(Commlogs.Cur.EmailMessageNum);
+			EmailMessages.Refresh(CommlogCur.EmailMessageNum);
 			//a date is entered, so they will not be able to click Send to save any changes
-			FormEmailMessageEdit FormE=new FormEmailMessageEdit(Commlogs.Cur.PatNum);
+			FormEmailMessageEdit FormE=new FormEmailMessageEdit(CommlogCur.PatNum);
 			FormE.ShowDialog();
 		}
 
@@ -297,17 +296,17 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Date and time invalid."));
 				return;
 			}
-			Commlogs.Cur.CommDateTime=PIn.PDateT(textDateTime.Text);
+			CommlogCur.CommDateTime=PIn.PDateT(textDateTime.Text);
 			//there will always be a commtype selected.
-			Commlogs.Cur.CommType=(CommItemType)(listType.SelectedIndex+1);
-			Commlogs.Cur.Mode=(CommItemMode)listMode.SelectedIndex;
-			Commlogs.Cur.SentOrReceived=(CommSentOrReceived)listSentOrReceived.SelectedIndex;
-			Commlogs.Cur.Note=textNote.Text;
+			CommlogCur.CommType=(CommItemType)(listType.SelectedIndex+1);
+			CommlogCur.Mode=(CommItemMode)listMode.SelectedIndex;
+			CommlogCur.SentOrReceived=(CommSentOrReceived)listSentOrReceived.SelectedIndex;
+			CommlogCur.Note=textNote.Text;
 			if(IsNew){
-				Commlogs.InsertCur();
+				CommlogCur.Insert();
 			}
 			else{
-				Commlogs.UpdateCur();
+				CommlogCur.Update();
 		  	//SecurityLogs.MakeLogEntry("Adjustment Edit",Adjustments.cmd.CommandText);
 			}
 			DialogResult=DialogResult.OK;
@@ -319,7 +318,7 @@ namespace OpenDental{
 			}
 			else{
 				//SecurityLogs.MakeLogEntry("Adjustment Edit","Delete. patNum: "+Adjustments.Cur.PatNum.ToString());
-				Commlogs.DeleteCur();
+				CommlogCur.Delete();
 				DialogResult=DialogResult.OK;
 			}
 		}

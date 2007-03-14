@@ -334,6 +334,39 @@ namespace OpenDental{
 			return FillList(command);
 		}
 
+		///<summary>Gets one appointment from db.  Returns null if not found.</summary>
+		public static Appointment GetOneApt(int aptNum) {
+			if(aptNum==0) {
+				return null;
+			}
+			string command="SELECT * FROM appointment "
+				+"WHERE AptNum = '"+POut.PInt(aptNum)+"'";
+			Appointment[] list=FillList(command);
+			if(list.Length==0) {
+				return null;
+			}
+			return list[0];
+		}
+
+		///<summary>Gets a list of appointments for one day in the schedule for a given set of providers.</summary>
+		public static Appointment[] GetRouting(DateTime date,int[] provNums) {
+			string command=
+				"SELECT * FROM appointment "
+				+"WHERE AptDateTime LIKE '"+POut.PDate(date)+"%' "
+				+"AND aptstatus != '"+(int)ApptStatus.UnschedList+"' "
+				+"AND aptstatus != '"+(int)ApptStatus.Planned+"' "
+				+"AND (";
+			for(int i=0;i<provNums.Length;i++){
+				if(i>0){
+					command+=" OR";
+				}
+				command+=" ProvNum="+POut.PInt(provNums[i])
+					+" OR ProvHyg="+POut.PInt(provNums[i]);
+			}
+			command+=") ORDER BY AptDateTime";
+			return FillList(command);
+		}
+
 		///<summary>Fills the specified array of Appointments using the supplied SQL command.</summary>
 		private static Appointment[] FillList(string command){
 			DataConnection dcon=new DataConnection();
@@ -366,20 +399,6 @@ namespace OpenDental{
 				list[i].IsHygiene      =PIn.PBool  (table.Rows[i][22].ToString());
 			}
 			return list;
-		}
-
-		///<summary>Gets one appointment from db.</summary>
-		public static Appointment GetOneApt(int aptNum){
-			if(aptNum==0){
-				return null;
-			}
-			string command="SELECT * FROM appointment "
-				+"WHERE AptNum = '"+POut.PInt(aptNum)+"'";
-			Appointment[] list=FillList(command);
-			if(list.Length==0){
-				return null;
-			}
-			return list[0];
 		}
 
 		///<summary>Used when generating the recall list to test whether a patient already has a future appointment scheduled.  It was not possible to incorporate this into the main query because it would have been too complex.  A single query is planned at some point.</summary>
@@ -421,7 +440,7 @@ namespace OpenDental{
 				+"CONCAT(patient.FName,' ',patient.Preferred,' ',patient.MiddleI) AS 'Patient Name', "//2-FName
 				+"Guarantor,AptDateTime,Birthdate,HmPhone,"//3-6
 				+"WkPhone,WirelessPhone,ProcDescript,Confirmed,Note,"//7-11
-				+"AddrNote,AptNum "//12-13
+				+"AddrNote,AptNum,MedUrgNote "//12-14
 				+"FROM patient,appointment "
 				+"WHERE patient.PatNum=appointment.PatNum "
 				+"AND AptDateTime > '"+POut.PDate(dateFrom)+"' "
@@ -691,6 +710,7 @@ namespace OpenDental{
 			}
 			Procedure ProcCur;
 			PatPlan[] patPlanList=PatPlans.Refresh(patCur.PatNum);
+			Benefit[] benefitList=Benefits.Refresh(patPlanList);
 			//ClaimProc[] claimProcs=ClaimProcs.Refresh(Patients.Cur.PatNum);
 			for(int i=0;i<procs.Length;i++){
 				ProcCur=new Procedure();//this will be an insert
@@ -718,12 +738,91 @@ namespace OpenDental{
 				//nextaptnum
 				ProcCur.MedicalCode=ProcedureCodes.GetProcCode(ProcCur.ADACode).MedicalCode;
 				ProcCur.Insert();//no recall synch required
-				ProcCur.ComputeEstimates(patCur.PatNum,new ClaimProc[0],false,planList,patPlanList);
+				ProcCur.ComputeEstimates(patCur.PatNum,new ClaimProc[0],false,planList,patPlanList,benefitList);
 			}
 			return AptCur;
 		}
 
-		
+		///<summary>Tests to see if this appointment will create a double booking. Returns arrayList with no items in it if no double bookings for this appt.  But if double booking, then it returns an arrayList of adacodes which would be double booked.  You must supply the appointment being scheduled as well as a list of all appointments for that day.  The list can include the appointment being tested if user is moving it to a different time on the same day.  The ProcsForOne list of procedures needs to contain the procedures for the apt becauese procsMultApts won't necessarily, especially if it's a planned appt on the pinboard.</summary>
+		public static ArrayList GetDoubleBookedCodes(Appointment apt,Appointment[] dayList,Procedure[] procsMultApts,Procedure[] procsForOne) {
+			ArrayList retVal=new ArrayList();//ADAcodes
+			//figure out which provider we are testing for
+			int provNum;
+			if(apt.IsHygiene){
+				provNum=apt.ProvHyg;
+			}
+			else{
+				provNum=apt.ProvNum;
+			}
+			//compute the starting row of this appt
+			int convertToY=(int)(((double)apt.AptDateTime.Hour*(double)60
+				/(double)Prefs.GetInt("AppointmentTimeIncrement")
+				+(double)apt.AptDateTime.Minute
+				/(double)Prefs.GetInt("AppointmentTimeIncrement")
+				)*(double)ContrApptSheet.Lh*ContrApptSheet.RowsPerIncr);
+			int startIndex=convertToY/ContrApptSheet.Lh;//rounds down
+			string pattern=ContrApptSingle.GetPatternShowing(apt.Pattern);
+			//keep track of which rows in the entire day would be occupied by provider time for this appt
+			ArrayList aptProvTime=new ArrayList();
+			for(int k=0;k<pattern.Length;k++){
+				if(pattern.Substring(k,1)=="X"){
+					aptProvTime.Add(startIndex+k);//even if it extends past midnight, we don't care
+				}
+			}
+			//Now, loop through all the other appointments for the day, and see if any would overlap this one
+			bool overlaps;
+			Procedure[] procs;
+			bool doubleBooked=false;//applies to all appts, not just one at a time.
+			for(int i=0;i<dayList.Length;i++){
+				if(dayList[i].AptNum==apt.AptNum){//ignore current apt in its old location
+					continue;
+				}
+				//ignore other providers
+				if(dayList[i].IsHygiene && dayList[i].ProvHyg!=provNum){
+					continue;
+				}
+				if(!dayList[i].IsHygiene && dayList[i].ProvNum!=provNum){
+					continue;
+				}
+				if(dayList[i].AptStatus==ApptStatus.Broken){//ignore broken appts
+					continue;
+				}
+				//calculate starting row
+				//this math is copied from another section of the program, so it's sloppy. Safer than trying to rewrite it:
+				convertToY=(int)(((double)dayList[i].AptDateTime.Hour*(double)60
+					/(double)Prefs.GetInt("AppointmentTimeIncrement")
+					+(double)dayList[i].AptDateTime.Minute
+					/(double)Prefs.GetInt("AppointmentTimeIncrement")
+					)*(double)ContrApptSheet.Lh*ContrApptSheet.RowsPerIncr);
+				startIndex=convertToY/ContrApptSheet.Lh;//rounds down
+				pattern=ContrApptSingle.GetPatternShowing(dayList[i].Pattern);
+				//now compare it to apt
+				overlaps=false;
+				for(int k=0;k<pattern.Length;k++){
+					if(pattern.Substring(k,1)=="X"){
+						if(aptProvTime.Contains(startIndex+k)){
+							overlaps=true;
+							doubleBooked=true;
+						}
+					}
+				}
+				if(overlaps){
+					//we need to add all ADACodes for this appt to retVal
+					procs=Procedures.GetProcsOneApt(dayList[i].AptNum,procsMultApts);
+					for(int j=0;j<procs.Length;j++){
+						retVal.Add(procs[j].ADACode);
+					}
+				}
+			}
+			//now, retVal contains all double booked procs except for this appt
+			//need to all procs for this appt.
+			if(doubleBooked){
+				for(int j=0;j<procsForOne.Length;j++) {
+					retVal.Add(procsForOne[j].ADACode);
+				}
+			}
+			return retVal;
+		}
 
 		
 		

@@ -1,4 +1,4 @@
-using System;
+/*using System;
 using System.Collections;
 using System.Windows.Forms;
 
@@ -19,8 +19,8 @@ namespace OpenDental{
 		public int PatPlanNum;
 	}
 
-	/*=========================================================================================
-		=================================== class CovPats ==========================================*/
+	=========================================================================================
+		=================================== class CovPats ==========================================
 
 	///<summary></summary>
 	public class CovPats:DataClass{
@@ -216,7 +216,7 @@ namespace OpenDental{
 			return retVal;	
 		}
 		
-		/*public double GetCatPercent(int myCovCatNum){
+		public double GetCatPercent(int myCovCatNum){
 			double retVal=0;
 			for(int i=0;i<List.Length;i++){
 				if(myCovCatNum==List[i].CovCatNum){
@@ -224,7 +224,7 @@ namespace OpenDental{
 				}
 			}
 			return retVal;	
-		}*/
+		}
 
 	}
 
@@ -232,7 +232,7 @@ namespace OpenDental{
 
 	
 
-}
+}*/
 
 
 

@@ -175,7 +175,7 @@ namespace OpenDental{
 			return retVall;
 		}
 
-		///<summary>Gets a carrierNum based on the other data in Cur.  If there is no matching carrier, then a new carrier is created.  The end result is that a valid Cur will always be set.</summary>
+		///<summary>Gets a carrierNum from the database based on the other data in Cur.  Sets Cur.CarrierNum accordingly. If there is no matching carrier, then a new carrier is created.  The end result is that Cur will now always have a valid carrierNum to use.</summary>
 		public static void GetCurSame(){
 			if(Cur.CarrierName==""){
 				Cur=new Carrier();

@@ -17,12 +17,12 @@ namespace OpenDental{
 		private System.Windows.Forms.TreeView treePermissions;
 		private System.Windows.Forms.ImageList imageListPerm;
 		private System.Windows.Forms.Label labelPerm;
-		private System.Windows.Forms.Label labelMultiuser;
 		private System.ComponentModel.IContainer components;
 		private int SelectedGroupNum;
 		private TreeNode clickedPermNode;
 		private OpenDental.UI.Button butAudit;
 		private System.Windows.Forms.CheckBox checkTimecardSecurityEnabled;
+		private OpenDental.UI.Button butSetAll;
 		private bool changed;
 
 		///<summary></summary>
@@ -58,39 +58,25 @@ namespace OpenDental{
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormSecurity));
-			this.butClose = new OpenDental.UI.Button();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormSecurity));
 			this.label2 = new System.Windows.Forms.Label();
 			this.treeUsers = new System.Windows.Forms.TreeView();
-			this.butAddGroup = new OpenDental.UI.Button();
-			this.butAddUser = new OpenDental.UI.Button();
 			this.treePermissions = new System.Windows.Forms.TreeView();
 			this.imageListPerm = new System.Windows.Forms.ImageList(this.components);
 			this.labelPerm = new System.Windows.Forms.Label();
-			this.labelMultiuser = new System.Windows.Forms.Label();
-			this.butAudit = new OpenDental.UI.Button();
 			this.checkTimecardSecurityEnabled = new System.Windows.Forms.CheckBox();
+			this.butSetAll = new OpenDental.UI.Button();
+			this.butAudit = new OpenDental.UI.Button();
+			this.butAddUser = new OpenDental.UI.Button();
+			this.butAddGroup = new OpenDental.UI.Button();
+			this.butClose = new OpenDental.UI.Button();
 			this.SuspendLayout();
-			// 
-			// butClose
-			// 
-			this.butClose.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butClose.Autosize = true;
-			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butClose.Location = new System.Drawing.Point(793, 579);
-			this.butClose.Name = "butClose";
-			this.butClose.Size = new System.Drawing.Size(75, 26);
-			this.butClose.TabIndex = 0;
-			this.butClose.Text = "Close";
-			this.butClose.Click += new System.EventHandler(this.butClose_Click);
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(8, 14);
+			this.label2.Location = new System.Drawing.Point(8,6);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(141, 19);
+			this.label2.Size = new System.Drawing.Size(141,19);
 			this.label2.TabIndex = 3;
 			this.label2.Text = "Groups and Users";
 			this.label2.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
@@ -98,117 +84,140 @@ namespace OpenDental{
 			// treeUsers
 			// 
 			this.treeUsers.HideSelection = false;
-			this.treeUsers.ImageIndex = -1;
-			this.treeUsers.Location = new System.Drawing.Point(8, 37);
+			this.treeUsers.Location = new System.Drawing.Point(8,29);
 			this.treeUsers.Name = "treeUsers";
-			this.treeUsers.SelectedImageIndex = -1;
 			this.treeUsers.ShowRootLines = false;
-			this.treeUsers.Size = new System.Drawing.Size(184, 529);
+			this.treeUsers.Size = new System.Drawing.Size(184,565);
 			this.treeUsers.TabIndex = 4;
-			this.treeUsers.MouseDown += new System.Windows.Forms.MouseEventHandler(this.treeUsers_MouseDown);
 			this.treeUsers.DoubleClick += new System.EventHandler(this.treeUsers_DoubleClick);
-			// 
-			// butAddGroup
-			// 
-			this.butAddGroup.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butAddGroup.Autosize = true;
-			this.butAddGroup.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butAddGroup.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butAddGroup.Location = new System.Drawing.Point(8, 579);
-			this.butAddGroup.Name = "butAddGroup";
-			this.butAddGroup.Size = new System.Drawing.Size(75, 25);
-			this.butAddGroup.TabIndex = 1;
-			this.butAddGroup.Text = "Add Group";
-			this.butAddGroup.Click += new System.EventHandler(this.butAddGroup_Click);
-			// 
-			// butAddUser
-			// 
-			this.butAddUser.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butAddUser.Autosize = true;
-			this.butAddUser.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butAddUser.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butAddUser.Location = new System.Drawing.Point(118, 579);
-			this.butAddUser.Name = "butAddUser";
-			this.butAddUser.Size = new System.Drawing.Size(75, 25);
-			this.butAddUser.TabIndex = 0;
-			this.butAddUser.Text = "Add User";
-			this.butAddUser.Click += new System.EventHandler(this.butAddUser_Click);
+			this.treeUsers.MouseDown += new System.Windows.Forms.MouseEventHandler(this.treeUsers_MouseDown);
 			// 
 			// treePermissions
 			// 
 			this.treePermissions.HideSelection = false;
+			this.treePermissions.ImageIndex = 0;
 			this.treePermissions.ImageList = this.imageListPerm;
-			this.treePermissions.Location = new System.Drawing.Point(388, 37);
+			this.treePermissions.Location = new System.Drawing.Point(388,29);
 			this.treePermissions.Name = "treePermissions";
+			this.treePermissions.SelectedImageIndex = 0;
 			this.treePermissions.ShowPlusMinus = false;
 			this.treePermissions.ShowRootLines = false;
-			this.treePermissions.Size = new System.Drawing.Size(479, 529);
+			this.treePermissions.Size = new System.Drawing.Size(479,565);
 			this.treePermissions.TabIndex = 6;
-			this.treePermissions.MouseDown += new System.Windows.Forms.MouseEventHandler(this.treePermissions_MouseDown);
 			this.treePermissions.DoubleClick += new System.EventHandler(this.treePermissions_DoubleClick);
 			this.treePermissions.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treePermissions_AfterSelect);
+			this.treePermissions.MouseDown += new System.Windows.Forms.MouseEventHandler(this.treePermissions_MouseDown);
 			// 
 			// imageListPerm
 			// 
-			this.imageListPerm.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
-			this.imageListPerm.ImageSize = new System.Drawing.Size(16, 16);
 			this.imageListPerm.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListPerm.ImageStream")));
 			this.imageListPerm.TransparentColor = System.Drawing.Color.Transparent;
+			this.imageListPerm.Images.SetKeyName(0,"");
+			this.imageListPerm.Images.SetKeyName(1,"");
+			this.imageListPerm.Images.SetKeyName(2,"");
 			// 
 			// labelPerm
 			// 
-			this.labelPerm.Location = new System.Drawing.Point(386, 14);
+			this.labelPerm.Location = new System.Drawing.Point(386,6);
 			this.labelPerm.Name = "labelPerm";
-			this.labelPerm.Size = new System.Drawing.Size(425, 19);
+			this.labelPerm.Size = new System.Drawing.Size(425,19);
 			this.labelPerm.TabIndex = 5;
 			this.labelPerm.Text = "Permissions for group:";
 			this.labelPerm.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
-			// 
-			// labelMultiuser
-			// 
-			this.labelMultiuser.Location = new System.Drawing.Point(199, 36);
-			this.labelMultiuser.Name = "labelMultiuser";
-			this.labelMultiuser.Size = new System.Drawing.Size(182, 188);
-			this.labelMultiuser.TabIndex = 8;
-			this.labelMultiuser.Text = "When in multiuser mode,  anyone will have permission for the items you select.  I" +
-				"n this case, the actions will not be logged in an audit trail.  Any unchecked pe" +
-				"rmission will require user to enter a password each time and will be logged.";
-			// 
-			// butAudit
-			// 
-			this.butAudit.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butAudit.Autosize = true;
-			this.butAudit.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butAudit.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butAudit.Location = new System.Drawing.Point(388, 579);
-			this.butAudit.Name = "butAudit";
-			this.butAudit.Size = new System.Drawing.Size(107, 25);
-			this.butAudit.TabIndex = 9;
-			this.butAudit.Text = "View Audit Trail";
-			this.butAudit.Click += new System.EventHandler(this.butAudit_Click);
 			// 
 			// checkTimecardSecurityEnabled
 			// 
 			this.checkTimecardSecurityEnabled.CheckAlign = System.Drawing.ContentAlignment.TopLeft;
 			this.checkTimecardSecurityEnabled.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkTimecardSecurityEnabled.Location = new System.Drawing.Point(198, 552);
+			this.checkTimecardSecurityEnabled.Location = new System.Drawing.Point(198,580);
 			this.checkTimecardSecurityEnabled.Name = "checkTimecardSecurityEnabled";
-			this.checkTimecardSecurityEnabled.Size = new System.Drawing.Size(182, 19);
+			this.checkTimecardSecurityEnabled.Size = new System.Drawing.Size(192,19);
 			this.checkTimecardSecurityEnabled.TabIndex = 57;
 			this.checkTimecardSecurityEnabled.Text = "TimecardSecurityEnabled";
 			this.checkTimecardSecurityEnabled.TextAlign = System.Drawing.ContentAlignment.TopLeft;
 			// 
+			// butSetAll
+			// 
+			this.butSetAll.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butSetAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.butSetAll.Autosize = true;
+			this.butSetAll.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butSetAll.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butSetAll.Location = new System.Drawing.Point(388,608);
+			this.butSetAll.Name = "butSetAll";
+			this.butSetAll.Size = new System.Drawing.Size(79,25);
+			this.butSetAll.TabIndex = 58;
+			this.butSetAll.Text = "Set All";
+			this.butSetAll.Visible = false;
+			this.butSetAll.Click += new System.EventHandler(this.butSetAll_Click);
+			// 
+			// butAudit
+			// 
+			this.butAudit.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butAudit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.butAudit.Autosize = true;
+			this.butAudit.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAudit.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butAudit.Location = new System.Drawing.Point(604,608);
+			this.butAudit.Name = "butAudit";
+			this.butAudit.Size = new System.Drawing.Size(107,25);
+			this.butAudit.TabIndex = 9;
+			this.butAudit.Text = "View Audit Trail";
+			this.butAudit.Click += new System.EventHandler(this.butAudit_Click);
+			// 
+			// butAddUser
+			// 
+			this.butAddUser.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butAddUser.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.butAddUser.Autosize = true;
+			this.butAddUser.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAddUser.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butAddUser.Location = new System.Drawing.Point(118,608);
+			this.butAddUser.Name = "butAddUser";
+			this.butAddUser.Size = new System.Drawing.Size(75,25);
+			this.butAddUser.TabIndex = 0;
+			this.butAddUser.Text = "Add User";
+			this.butAddUser.Click += new System.EventHandler(this.butAddUser_Click);
+			// 
+			// butAddGroup
+			// 
+			this.butAddGroup.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butAddGroup.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.butAddGroup.Autosize = true;
+			this.butAddGroup.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAddGroup.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butAddGroup.Location = new System.Drawing.Point(8,608);
+			this.butAddGroup.Name = "butAddGroup";
+			this.butAddGroup.Size = new System.Drawing.Size(75,25);
+			this.butAddGroup.TabIndex = 1;
+			this.butAddGroup.Text = "Add Group";
+			this.butAddGroup.Click += new System.EventHandler(this.butAddGroup_Click);
+			// 
+			// butClose
+			// 
+			this.butClose.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butClose.Autosize = true;
+			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butClose.Location = new System.Drawing.Point(792,608);
+			this.butClose.Name = "butClose";
+			this.butClose.Size = new System.Drawing.Size(75,25);
+			this.butClose.TabIndex = 0;
+			this.butClose.Text = "Close";
+			this.butClose.Click += new System.EventHandler(this.butClose_Click);
+			// 
 			// FormSecurity
 			// 
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(884, 619);
+			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
+			this.ClientSize = new System.Drawing.Size(884,642);
+			this.Controls.Add(this.butSetAll);
+			this.Controls.Add(this.treePermissions);
 			this.Controls.Add(this.checkTimecardSecurityEnabled);
 			this.Controls.Add(this.butAudit);
 			this.Controls.Add(this.butAddUser);
 			this.Controls.Add(this.butAddGroup);
 			this.Controls.Add(this.butClose);
-			this.Controls.Add(this.labelMultiuser);
-			this.Controls.Add(this.treePermissions);
 			this.Controls.Add(this.labelPerm);
 			this.Controls.Add(this.treeUsers);
 			this.Controls.Add(this.label2);
@@ -293,6 +302,12 @@ namespace OpenDental{
 			node=SetNode(Permissions.ImagesModule);
 				treePermissions.Nodes.Add(node);
 			node=SetNode(Permissions.ManageModule);
+				node2=SetNode("Accounting");
+					node3=SetNode(Permissions.AccountingCreate);
+						node2.Nodes.Add(node3);
+					node3=SetNode(Permissions.AccountingEdit);
+						node2.Nodes.Add(node3);
+					node.Nodes.Add(node2);
 				node2=SetNode(Permissions.DepositSlips);
 					node.Nodes.Add(node2);
 				node2=SetNode(Permissions.Backup);
@@ -313,9 +328,10 @@ namespace OpenDental{
 			return retVal;
 		}
 
+		///<summary>Only called from FillTreePermissionsInitial</summary>
 		private TreeNode SetNode(string text){
 			TreeNode retVal=new TreeNode();
-			retVal.Text=text;
+			retVal.Text=Lan.g(this,text);
 			retVal.Tag=Permissions.None;
 			retVal.ImageIndex=0;
 			retVal.SelectedImageIndex=0;
@@ -432,7 +448,6 @@ namespace OpenDental{
 		private void FillTreePerm(){
 			GroupPermissions.Refresh();
 			labelPerm.Text=Lan.g(this,"Permissions for group:")+"  "+UserGroups.GetGroup(SelectedGroupNum).Description;
-			labelMultiuser.Visible=false;
 			for(int i=0;i<treePermissions.Nodes.Count;i++){
 				FillNodes(treePermissions.Nodes[i],SelectedGroupNum);
 			}
@@ -548,6 +563,10 @@ namespace OpenDental{
 			changed=true;
 		}
 
+		private void butSetAll_Click(object sender,EventArgs e) {
+
+		}
+
 		private void butAudit_Click(object sender, System.EventArgs e) {
 			FormAudit FormA=new FormAudit();
 			FormA.ShowDialog();
@@ -562,6 +581,8 @@ namespace OpenDental{
 			}
 			Close();
 		}
+
+	
 
 		
 

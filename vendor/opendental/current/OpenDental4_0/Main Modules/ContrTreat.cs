@@ -94,6 +94,7 @@ namespace OpenDental{
 		[Category("Data"),Description("Occurs when user changes current patient, usually by clicking on the Select Patient button.")]
 		public event PatientSelectedEventHandler PatientSelected=null;
 		private PatPlan[] PatPlanList;
+		private Benefit[] BenefitList;
 
 		///<summary></summary>
 		public ContrTreat(){
@@ -663,7 +664,8 @@ namespace OpenDental{
 				PatCur=FamCur.GetPatient(patNum);
 				InsPlanList=InsPlans.Refresh(FamCur);
 				PatPlanList=PatPlans.Refresh(patNum);
-				CovPats.Refresh(InsPlanList,PatPlanList);
+				BenefitList=Benefits.Refresh(PatPlanList);
+				//CovPats.Refresh(InsPlanList,PatPlanList);
 				Claims.Refresh(PatCur.PatNum);
         Fees.Refresh();
         ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
@@ -913,58 +915,66 @@ namespace OpenDental{
 				return;
 			}
 			double max=0;
+			double ded=0;
+			double dedUsed=0;
 			double remain=0;
 			double pend=0;
 			double used=0;
 			InsPlan PlanCur;//=new InsPlan();
 			if(PatPlanList.Length>0){
-				PlanCur=InsPlans.GetPlan(PatPlans.GetPlanNum(PatPlanList,1),InsPlanList);
-				//pending:
-				pend=InsPlans.GetPending(ClaimProcList,DateTime.Today,PatPlans.GetPlanNum(PatPlanList,1),InsPlanList);
+				PlanCur=InsPlans.GetPlan(PatPlanList[0].PlanNum,InsPlanList);
+				pend=InsPlans.GetPending
+					(ClaimProcList,DateTime.Today,PatPlanList[0].PlanNum,PatPlanList[0].PatPlanNum,InsPlanList,BenefitList);
 				textPriPend.Text=pend.ToString("F");
-				//max, used, and remaining:
-				if(PlanCur.AnnualMax==-1){//annual max is blank
-					//used cannot display because there is no way to calculate it until all the math is reworked.
+				used=InsPlans.GetInsUsed
+					(ClaimProcList,DateTime.Today,PlanCur.PlanNum,PatPlanList[0].PatPlanNum,-1,InsPlanList,BenefitList);
+				textPriUsed.Text=used.ToString("F");
+				max=Benefits.GetAnnualMax(BenefitList,PlanCur.PlanNum,PatPlanList[0].PatPlanNum);
+				if(max==-1){//if annual max is blank
 					textPriMax.Text="";
 					textPriRem.Text="";
-					textPriUsed.Text="";
 				}
 				else{
-					max=PlanCur.AnnualMax;
-					remain=InsPlans.GetInsRem(ClaimProcList,DateTime.Today,PatPlans.GetPlanNum(PatPlanList,1),-1,InsPlanList);
-					used=max-remain-pend;//math done in reverse to take advantage of GetInsRem
-					//fix later to: remain=max-used-pend
+					//remain=max-used-pend
+					//remain=InsPlans.GetInsRem(ClaimProcList,DateTime.Today,PatPlans.GetPlanNum(PatPlanList,1),-1,InsPlanList);
+					remain=max-used-pend;
 					textPriMax.Text=max.ToString("F");
 					textPriRem.Text=remain.ToString("F");
-					textPriUsed.Text=used.ToString("F");
 				}
 				//deductible:
-				if(PlanCur.Deductible!=-1)
-					textPriDed.Text=PlanCur.Deductible.ToString("F");
-				textPriDedRem.Text=InsPlans.GetDedRem(ClaimProcList,DateTime.Today,PatPlans.GetPlanNum(PatPlanList,1)
-					,-1,InsPlanList).ToString("F");
+				ded=Benefits.GetDeductible(BenefitList,PlanCur.PlanNum,PatPlanList[0].PatPlanNum);
+				if(ded!=-1){
+					textPriDed.Text=ded.ToString("F");
+					dedUsed=InsPlans.GetDedUsed
+						(ClaimProcList,DateTime.Today,PlanCur.PlanNum,PatPlanList[0].PatPlanNum,-1,InsPlanList,BenefitList);
+					textPriDedRem.Text=(ded-dedUsed).ToString("F");
+				}
 			}
 			if(PatPlanList.Length>1){
-				PlanCur=InsPlans.GetPlan(PatPlans.GetPlanNum(PatPlanList,2),InsPlanList);
-				pend=InsPlans.GetPending(ClaimProcList,DateTime.Today,PatPlans.GetPlanNum(PatPlanList,2),InsPlanList);
+				PlanCur=InsPlans.GetPlan(PatPlanList[1].PlanNum,InsPlanList);
+				pend=InsPlans.GetPending
+					(ClaimProcList,DateTime.Today,PatPlanList[1].PlanNum,PatPlanList[1].PatPlanNum,InsPlanList,BenefitList);
 				textSecPend.Text=pend.ToString("F");
-				if(PlanCur.AnnualMax==-1){//annual max is blank
+				used=InsPlans.GetInsUsed
+									(ClaimProcList,DateTime.Today,PlanCur.PlanNum,PatPlanList[1].PatPlanNum,-1,InsPlanList,BenefitList);
+				textSecUsed.Text=used.ToString("F");
+				max=Benefits.GetAnnualMax(BenefitList,PlanCur.PlanNum,PatPlanList[1].PatPlanNum);
+				if(max==-1){
 					textSecMax.Text="";
 					textSecRem.Text="";
-					textSecUsed.Text="";
 				}
 				else{
-					max=PlanCur.AnnualMax;
-					remain=InsPlans.GetInsRem(ClaimProcList,DateTime.Today,PatPlans.GetPlanNum(PatPlanList,2),-1,InsPlanList);
-					used=max-remain-pend;
+					remain=max-used-pend;
 					textSecMax.Text=max.ToString("F");
 					textSecRem.Text=remain.ToString("F");
-					textSecUsed.Text=used.ToString("F");
 				}
-				if(PlanCur.Deductible!=-1)
-					textSecDed.Text=PlanCur.Deductible.ToString("F");
-				textSecDedRem.Text=InsPlans.GetDedRem(ClaimProcList,DateTime.Today,
-					PatPlans.GetPlanNum(PatPlanList,2),-1,InsPlanList).ToString("F");
+				ded=Benefits.GetDeductible(BenefitList,PlanCur.PlanNum,PatPlanList[1].PatPlanNum);
+				if(ded!=-1){
+					textSecDed.Text=ded.ToString("F");
+					dedUsed=InsPlans.GetDedUsed
+						(ClaimProcList,DateTime.Today,PlanCur.PlanNum,PatPlanList[1].PatPlanNum,-1,InsPlanList,BenefitList);
+					textSecDedRem.Text=(ded-dedUsed).ToString("F");
+				}
 			}
 		}
 
@@ -1341,7 +1351,7 @@ namespace OpenDental{
 							colPos[i+1]-e.Graphics.MeasureString(ColCaption[i],totalFont).Width-1,yPos+1);
 					}
 					else 
-						e.Graphics.DrawString(Lan.g(this,ColCaption[i]),totalFont,Brushes.Black,colPos[i]+2,yPos+1);
+						e.Graphics.DrawString(ColCaption[i],totalFont,Brushes.Black,colPos[i]+2,yPos+1);
 
 				}
 				yPos+=18;
@@ -1522,7 +1532,7 @@ namespace OpenDental{
 				procOld=procCur.Copy();
 				//first the fees
 				procCur.ProcFee=Fees.GetAmount0(procCur.ADACode,Fees.GetFeeSched(PatCur,InsPlanList,PatPlanList));
-				procCur.ComputeEstimates(PatCur.PatNum,ClaimProcList,false,InsPlanList,PatPlanList);
+				procCur.ComputeEstimates(PatCur.PatNum,ClaimProcList,false,InsPlanList,PatPlanList,BenefitList);
 				procCur.Update(procOld);//no recall synch required 
       }
       ModuleSelected(PatCur.PatNum);
@@ -1653,7 +1663,7 @@ namespace OpenDental{
 			ProcList=Procedures.Refresh(PatCur.PatNum);
 			ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
 			//ClaimProc[] ClaimProcsForClaim=ClaimProcs.GetForClaim(ClaimProcList,Claims.Cur.ClaimNum);
-			Claims.CalculateAndUpdate(ClaimProcList,ProcList,InsPlanList,Claims.Cur,PatPlanList);
+			Claims.CalculateAndUpdate(ClaimProcList,ProcList,InsPlanList,Claims.Cur,PatPlanList,BenefitList);
 			FormClaimEdit FormCE=new FormClaimEdit(PatCur,FamCur);
 			//FormCE.CalculateEstimates(
 			FormCE.IsNew=true;//this causes it to delete the claim if cancelling.

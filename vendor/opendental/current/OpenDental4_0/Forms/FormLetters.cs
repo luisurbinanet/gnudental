@@ -394,12 +394,12 @@ namespace OpenDental{
 			catch{
 				MessageBox.Show(Lan.g(this,"Printer not available"));
 			}
-			Commlogs.Cur=new Commlog();
-			Commlogs.Cur.CommDateTime=DateTime.Now;
-			Commlogs.Cur.CommType=CommItemType.Misc;
-			Commlogs.Cur.PatNum=PatCur.PatNum;
-			Commlogs.Cur.Note="Letter sent: "+Letters.Cur.Description+". ";
-			FormCommItem FormCI=new FormCommItem();
+			Commlog CommlogCur=new Commlog();
+			CommlogCur.CommDateTime=DateTime.Now;
+			CommlogCur.CommType=CommItemType.Misc;
+			CommlogCur.PatNum=PatCur.PatNum;
+			CommlogCur.Note="Letter sent: "+Letters.Cur.Description+". ";
+			FormCommItem FormCI=new FormCommItem(CommlogCur);
 			FormCI.IsNew=true;
 			FormCI.ShowDialog();
 			//this window now closes regardless of whether the user saved the comm item.

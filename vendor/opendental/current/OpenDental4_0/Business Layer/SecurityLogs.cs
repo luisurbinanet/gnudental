@@ -107,7 +107,7 @@ namespace OpenDental{
 			return List;
 		}
 
-		///<summary>User can never be null.</summary>
+		///<summary>PatNum can be 0.</summary>
 		public static void MakeLogEntry(Permissions permType,int patNum, string logText){
 			SecurityLog securityLog=new SecurityLog();
 			securityLog.PermType=permType;

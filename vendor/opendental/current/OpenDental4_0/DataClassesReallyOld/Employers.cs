@@ -185,7 +185,7 @@ namespace OpenDental{
 			
 		}
 
-		///<summary>Gets an employerNum based on the supplied name.  If that empName does not exist, then a new employer is created.</summary>
+		///<summary>Gets an employerNum from the database based on the supplied name.  If that empName does not exist, then a new employer is created, and the employerNum for the new employer is returned.</summary>
 		public static int GetEmployerNum(string empName){
 			if(empName==""){
 				return 0;

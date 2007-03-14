@@ -479,18 +479,14 @@ namespace OpenDental{
 			WrdApp.WindowState=Word.WdWindowState.wdWindowStateMinimize;
 			wrdMailMerge=null;
 			wrdDoc=null;
-			Commlogs.Cur=new Commlog();
-			Commlogs.Cur.CommDateTime=DateTime.Now;
-			Commlogs.Cur.CommType=CommItemType.Misc;
-			Commlogs.Cur.Mode=CommItemMode.Mail;
-			Commlogs.Cur.SentOrReceived=CommSentOrReceived.Sent;
-			Commlogs.Cur.PatNum=PatCur.PatNum;
-			Commlogs.Cur.Note="Letter sent: "+letterCur.Description+". ";
-			//FormCommItem FormCI=new FormCommItem();
-			//FormCI.IsNew=true;
-			//FormCI.ShowDialog();
-			Commlogs.InsertCur();
-			//this window now closes regardless of whether the user saved the comm item.
+			Commlog CommlogCur=new Commlog();
+			CommlogCur.CommDateTime=DateTime.Now;
+			CommlogCur.CommType=CommItemType.Misc;
+			CommlogCur.Mode=CommItemMode.Mail;
+			CommlogCur.SentOrReceived=CommSentOrReceived.Sent;
+			CommlogCur.PatNum=PatCur.PatNum;
+			CommlogCur.Note="Letter sent: "+letterCur.Description+". ";
+			CommlogCur.Insert();
 			DialogResult=DialogResult.OK;
 		}
 
@@ -542,17 +538,14 @@ namespace OpenDental{
 			}
 			wrdMailMerge=null;
 			wrdDoc=null;
-			Commlogs.Cur=new Commlog();
-			Commlogs.Cur.CommDateTime=DateTime.Now;
-			Commlogs.Cur.CommType=CommItemType.Misc;
-			Commlogs.Cur.Mode=CommItemMode.Mail;
-			Commlogs.Cur.SentOrReceived=CommSentOrReceived.Sent;
-			Commlogs.Cur.PatNum=PatCur.PatNum;
-			Commlogs.Cur.Note="Letter sent: "+letterCur.Description+". ";
-			//FormCommItem FormCI=new FormCommItem();
-			//FormCI.IsNew=true;
-			//FormCI.ShowDialog();
-			Commlogs.InsertCur();
+			Commlog CommlogCur=new Commlog();
+			CommlogCur.CommDateTime=DateTime.Now;
+			CommlogCur.CommType=CommItemType.Misc;
+			CommlogCur.Mode=CommItemMode.Mail;
+			CommlogCur.SentOrReceived=CommSentOrReceived.Sent;
+			CommlogCur.PatNum=PatCur.PatNum;
+			CommlogCur.Note="Letter sent: "+letterCur.Description+". ";
+			CommlogCur.Insert();
 			//this window now closes regardless of whether the user saved the comm item.
 			DialogResult=DialogResult.OK;
 		}

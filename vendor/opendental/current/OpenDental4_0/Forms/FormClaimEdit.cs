@@ -1254,7 +1254,8 @@ namespace OpenDental{
 			if(!ClaimIsValid()){
 				return;
 			}
-			Claims.CalculateAndUpdate(ClaimProcList,ProcList,PlanList,Claims.Cur,PatPlanList);
+			Benefit[] benefitList=Benefits.Refresh(PatPlanList);
+			Claims.CalculateAndUpdate(ClaimProcList,ProcList,PlanList,Claims.Cur,PatPlanList,benefitList);
 			ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
 			FillGrids();
 		}
@@ -1792,6 +1793,7 @@ namespace OpenDental{
 				}
 			}
 			else{//all other claim types use original estimate claimproc.
+				Benefit[] benList=Benefits.Refresh(PatPlanList);
 				for(int i=0;i<ClaimProcsForClaim.Length;i++){
 					//ClaimProcs.Cur=ClaimProcs.ForClaim[i];
 					if(ClaimProcsForClaim[i].Status==ClaimProcStatus.Supplemental//supplementals are duplicate
@@ -1805,10 +1807,10 @@ namespace OpenDental{
 					ClaimProcsForClaim[i].ClaimNum=0;
 					proc=Procedures.GetProc(ProcList,ClaimProcsForClaim[i].ProcNum);
 					if(Claims.Cur.ClaimType=="P"){
-						ClaimProcsForClaim[i].ComputeBaseEst(proc,PriSecTot.Pri,PlanList,PatPlanList);
+						ClaimProcsForClaim[i].ComputeBaseEst(proc,PriSecTot.Pri,PlanList,PatPlanList,benList);
 					}
 					else if(Claims.Cur.ClaimType=="S"){
-						ClaimProcsForClaim[i].ComputeBaseEst(proc,PriSecTot.Sec,PlanList,PatPlanList);
+						ClaimProcsForClaim[i].ComputeBaseEst(proc,PriSecTot.Sec,PlanList,PatPlanList,benList);
 					}
 					ClaimProcsForClaim[i].Update();
 				}

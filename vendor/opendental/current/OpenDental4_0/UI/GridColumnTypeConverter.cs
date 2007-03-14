@@ -1,6 +1,7 @@
-using System;
+/*using System;
 using System.ComponentModel;
 using System.ComponentModel.Design.Serialization;
+using System.Diagnostics;
 using System.Globalization;
 using System.Windows.Forms;
 
@@ -18,6 +19,7 @@ namespace OpenDental.UI{
 			if(t==typeof(string)){
 				return true;
 			}
+			MessageBox.Show("Error 3");
 			return base.CanConvertFrom(context,t);
 		}
 
@@ -26,6 +28,7 @@ namespace OpenDental.UI{
 			if(destType==typeof(InstanceDescriptor) || destType==typeof(string)){
 				return true;
 			}
+			MessageBox.Show("Error 4");
 			return base.CanConvertTo(context,destType);
 		}	
 	
@@ -59,19 +62,33 @@ namespace OpenDental.UI{
 				}
 			}
 			return base.ConvertFrom(context,info,value);
+	{
+		 
+	}
 		}
 
 		///<summary></summary>
 		public override object ConvertTo(ITypeDescriptorContext context,CultureInfo info,object value,Type destType){
 			if((destType==typeof(string))){
-				ODGridColumn gc=(ODGridColumn)value;
+				ODGridColumn gc=new ODGridColumn();
+				try{
+					gc=(ODGridColumn)value;
+				}
+				catch{
+					MessageBox.Show("Error 1: "+value.GetType().ToString());
+				}
 				return gc.Heading+";"+gc.ColWidth.ToString()+";"+gc.TextAlign.ToString();
 			}
 			else if(destType==typeof(InstanceDescriptor)){
-				return new InstanceDescriptor(
-					typeof(ODGridColumn).GetConstructor(new Type[]{typeof(string),typeof(int),typeof(HorizontalAlignment)}),
-					new object[]{((ODGridColumn)value).Heading,((ODGridColumn)value).ColWidth,((ODGridColumn)value).TextAlign},
-					true);
+				try{
+					return new InstanceDescriptor(
+						typeof(ODGridColumn).GetConstructor(new Type[]{typeof(string),typeof(int),typeof(HorizontalAlignment)}),
+						new object[]{((ODGridColumn)value).Heading,((ODGridColumn)value).ColWidth,((ODGridColumn)value).TextAlign},
+						true);
+				}
+				catch(Exception e){
+					MessageBox.Show("Error 2:"+e.Message);
+				}
 			}
 			return base.ConvertTo(context,info,value,destType);
 		}
@@ -84,7 +101,7 @@ namespace OpenDental.UI{
 	}
 }
 
-
+*/
 
 
 

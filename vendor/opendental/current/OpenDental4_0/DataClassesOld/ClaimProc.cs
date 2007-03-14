@@ -205,7 +205,7 @@ namespace OpenDental{
 		}
 
 		///<summary>Calculates the Base estimate for a procedure.  This is not done on the fly.  Use Procedure.GetEst to later retrieve the estimate. This function duplicates/replaces all of the upper estimating logic that is within FormClaimProc.  BaseEst=((fee or allowedAmt)-Copay) x (percentage or percentOverride). The result is now stored in a claimProc.  The claimProcs do get updated frequently depending on certain actions the user takes.  The calling class must have already created the claimProc, and this function simply updates the BaseEst field of that claimproc. pst.Tot not used.  For Estimate and CapEstimate, all the estimate fields will be recalculated except the three overrides.</summary>
-		public void ComputeBaseEst(Procedure proc,PriSecTot pst,InsPlan[] PlanList,PatPlan[] patPlans){//,bool resetValues){
+		public void ComputeBaseEst(Procedure proc,PriSecTot pst,InsPlan[] PlanList,PatPlan[] patPlans,Benefit[] benList){//,bool resetValues){
 			if(Status==ClaimProcStatus.CapClaim
 				|| Status==ClaimProcStatus.CapComplete
 				|| Status==ClaimProcStatus.Preauth
@@ -214,9 +214,7 @@ namespace OpenDental{
 				return;//never compute estimates for those types listed above.
 			}
 			bool resetAll=false;
-			if(Status==ClaimProcStatus.Estimate
-				|| Status==ClaimProcStatus.CapEstimate)
-			{
+			if(Status==ClaimProcStatus.Estimate || Status==ClaimProcStatus.CapEstimate){
 				resetAll=true;
 			}
 			//NoBillIns is only calculated when creating the claimproc, even if resetAll is true.
@@ -255,12 +253,19 @@ namespace OpenDental{
 			}
 			//copayAmt
 			//copayOverride never recalculated
+			InsPlan plan=null;
+			if(pst==PriSecTot.Pri){
+				plan=InsPlans.GetPlan(patPlans[0].PlanNum,PlanList);
+			}
+			else if(pst==PriSecTot.Sec){
+				plan=InsPlans.GetPlan(patPlans[1].PlanNum,PlanList);
+			}
 			if(resetAll){
 				if(pst==PriSecTot.Pri){
-					CopayAmt=InsPlans.GetCopay(proc.ADACode,PatPlans.GetPlanNum(patPlans,1),PlanList);//also gets InsPlan
+					CopayAmt=InsPlans.GetCopay(proc.ADACode,plan);
 				}
 				else if(pst==PriSecTot.Sec){
-					CopayAmt=InsPlans.GetCopay(proc.ADACode,PatPlans.GetPlanNum(patPlans,2),PlanList);
+					CopayAmt=InsPlans.GetCopay(proc.ADACode,plan);
 				}
 				else{//pst.Other
 					CopayAmt=-1;
@@ -299,7 +304,12 @@ namespace OpenDental{
 			}
 			//percentage
 			//percentoverride never recalculated
-			Percentage=CovPats.GetPercent(proc.ADACode,pst);//will never =-1
+			if(pst==PriSecTot.Pri){
+				Percentage=Benefits.GetPercent(proc.ADACode,plan,patPlans[0],benList);//will never =-1
+			}
+			else if(pst==PriSecTot.Sec){
+				Percentage=Benefits.GetPercent(proc.ADACode,plan,patPlans[1],benList);
+			}
 			if(PercentOverride==-1){//no override, so use calculated Percentage
 				BaseEst=BaseEst*(double)Percentage/100;
 			}

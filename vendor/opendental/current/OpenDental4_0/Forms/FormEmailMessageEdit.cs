@@ -450,15 +450,15 @@ namespace OpenDental{
 			EmailMessages.Cur.BodyText=textBodyText.Text;
 			EmailMessages.Cur.PatNum=PatNum;
 			EmailMessages.InsertCur();
-			Commlogs.Cur=new Commlog();
-			Commlogs.Cur.PatNum=PatNum;
-			Commlogs.Cur.CommDateTime=DateTime.Now;
-			Commlogs.Cur.CommType=CommItemType.Misc;
-			Commlogs.Cur.EmailMessageNum=EmailMessages.Cur.EmailMessageNum;
-			Commlogs.Cur.Mode=CommItemMode.Email;
-			Commlogs.Cur.SentOrReceived=CommSentOrReceived.Sent;
-			Commlogs.Cur.Note=EmailMessages.Cur.Subject;
-			Commlogs.InsertCur();
+			Commlog CommlogCur=new Commlog();
+			CommlogCur.PatNum=PatNum;
+			CommlogCur.CommDateTime=DateTime.Now;
+			CommlogCur.CommType=CommItemType.Misc;
+			CommlogCur.EmailMessageNum=EmailMessages.Cur.EmailMessageNum;
+			CommlogCur.Mode=CommItemMode.Email;
+			CommlogCur.SentOrReceived=CommSentOrReceived.Sent;
+			CommlogCur.Note=EmailMessages.Cur.Subject;
+			CommlogCur.Insert();
 			DialogResult=DialogResult.OK;
 		}
 

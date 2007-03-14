@@ -178,14 +178,14 @@ namespace OpenDental{
 		}
 
 		///<summary>This always returns one admin user.  There must be one and there is rarely more than one.  Only used on startup to determine if security is being used.</summary>
-		public static User GetAdminUser(){
+		public static User GetAdminUser() {
 			//just find any permission for security admin.  There has to be one.
-			for(int i=0;i<GroupPermissions.List.Length;i++){
-				if(GroupPermissions.List[i].PermType!=Permissions.SecurityAdmin){
+			for(int i=0;i<GroupPermissions.List.Length;i++) {
+				if(GroupPermissions.List[i].PermType!=Permissions.SecurityAdmin) {
 					continue;
 				}
-				for(int j=0;j<Users.List.Length;j++){
-					if(Users.List[j].UserGroupNum==GroupPermissions.List[i].UserGroupNum){
+				for(int j=0;j<Users.List.Length;j++) {
+					if(Users.List[j].UserGroupNum==GroupPermissions.List[i].UserGroupNum) {
 						return Users.List[j];
 					}
 				}

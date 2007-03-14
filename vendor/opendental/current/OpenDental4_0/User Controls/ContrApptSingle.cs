@@ -36,6 +36,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public ContrApptSingle(){
 			InitializeComponent();// This call is required by the Windows.Forms Form Designer.
+			Info=new InfoApt();
 		}
 
 		///<summary></summary>
@@ -332,7 +333,7 @@ namespace OpenDental{
 				case "Procs":
 					int rowsUsed=0;
 					for(int j=0;j<Info.Procs.Length;j++){
-						g.DrawString(Info.Procs[j],baseFont,brush,xPos,yPos);
+						g.DrawString(Procedures.GetDescription(Info.Procs[j]),baseFont,brush,xPos,yPos);
 						yPos+=ContrApptSheet.Lh;
 						rowsUsed++;
 					}

@@ -38,6 +38,8 @@ namespace OpenDental{
 		public string AlternateCode1;
 		///<summary>Foreign key to procedurecode.ADACode.  Anytime a procedure it added, this medical code will also be added to that procedure.  The user can change it in procedurelog.</summary>
 		public string MedicalCode;
+		///<summary>Not used yet. No user interface built yet.  SalesTaxPercentage has been added to the preference table to store the amount of sales tax to apply as an adjustment attached to a procedurelog entry.</summary>
+		public bool IsTaxed;
 
 		///<summary>Returns a copy of this Procedurecode.</summary>
 		public ProcedureCode Copy(){
@@ -56,7 +58,8 @@ namespace OpenDental{
 			p.IsHygiene=IsHygiene;
 			p.GTypeNum=GTypeNum;
 			p.AlternateCode1=AlternateCode1;
-			p.MedicalCode=MedicalCode;			
+			p.MedicalCode=MedicalCode;
+			p.IsTaxed=IsTaxed;
 			return p;
 		}
 
@@ -65,7 +68,7 @@ namespace OpenDental{
 			//must have already checked ADACode for nonduplicate.
 			string command="INSERT INTO procedurecode (adacode,descript,abbrdesc,"
 				+"proctime,proccat,treatarea,removetooth,setrecall,"
-				+"nobillins,isprosth,defaultnote,ishygiene,gtypenum,alternatecode1,MedicalCode) VALUES("
+				+"nobillins,isprosth,defaultnote,ishygiene,gtypenum,alternatecode1,MedicalCode,IsTaxed) VALUES("
 				+"'"+POut.PString(ADACode)+"', "
 				+"'"+POut.PString(Descript)+"', "
 				+"'"+POut.PString(AbbrDesc)+"', "
@@ -80,7 +83,8 @@ namespace OpenDental{
 				+"'"+POut.PBool  (IsHygiene)+"', "
 				+"'"+POut.PInt   (GTypeNum)+"', "
 				+"'"+POut.PString(AlternateCode1)+"', "
-				+"'"+POut.PString(MedicalCode)+"')";
+				+"'"+POut.PString(MedicalCode)+"', "
+				+"'"+POut.PBool  (IsTaxed)+"')";
 			DataConnection dcon=new DataConnection();
 			dcon.NonQ(command);
 			ProcedureCodes.Refresh();
@@ -106,6 +110,7 @@ namespace OpenDental{
 				+ ",gtypenum = '"      +POut.PInt   (GTypeNum)+"'"
 				+ ",alternatecode1 = '"+POut.PString(AlternateCode1)+"'"
 				+ ",MedicalCode = '"   +POut.PString(MedicalCode)+"'"
+				+ ",IsTaxed = '"       +POut.PBool  (IsTaxed)+"'"
 				+" WHERE adacode = '"+POut.PString(ADACode)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
@@ -125,8 +130,8 @@ namespace OpenDental{
 		private static DataTable tableStat;
 		///<summary></summary>
 		public static ArrayList RecallAL;
-		///<summary></summary>
-		public static Hashtable HList;//key:AdaCode, value:ProcedureCode 
+		///<summary>key:AdaCode, value:ProcedureCode</summary>
+		public static Hashtable HList;//
 		///<summary></summary>
 		public static ProcedureCode[] List;
 
@@ -157,6 +162,7 @@ namespace OpenDental{
 				tempCode.GTypeNum      =PIn.PInt   (tableStat.Rows[i][12].ToString());
 				tempCode.AlternateCode1=PIn.PString(tableStat.Rows[i][13].ToString());
 				tempCode.MedicalCode   =PIn.PString(tableStat.Rows[i][14].ToString());
+				tempCode.IsTaxed       =PIn.PBool  (tableStat.Rows[i][15].ToString());
 				HList.Add(tempCode.ADACode,tempCode.Copy());
 				List[i]=tempCode.Copy();
 				if(tempCode.SetRecall){
@@ -176,6 +182,19 @@ namespace OpenDental{
 			}
 			else{
 				return new ProcedureCode();
+			}
+		}
+
+		///<summary></summary>
+		public static bool IsValidCode(string adaCode){
+			if(adaCode==null || adaCode=="") {
+				return false;
+			}
+			if(HList.Contains(adaCode)) {
+				return true;
+			}
+			else {
+				return false;
 			}
 		}
 

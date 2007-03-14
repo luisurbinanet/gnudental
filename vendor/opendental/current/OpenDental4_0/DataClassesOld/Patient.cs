@@ -57,8 +57,8 @@ namespace OpenDental{
 		public string Salutation;
 		///<summary>Current patient balance.(not family). If user has checked BalancesDontSubtractIns in setup, then this will not take into account insurance.  Otherwise, the insurance estimate pending will have already been subtracted.</summary>
 		public double EstBalance;
-		///<summary>May be 0(none) or -1(done), otherwise it is the foreign key to appointment.AptNum.  This is the appointment that will show in the Chart module and in the Next appointment tracker.  It will never show in the Appointments module. In other words, it is the suggested next appoinment rather than an appointment that has already been scheduled.</summary>
-		public int NextAptNum;//
+		///<summary>May be 0. (done has been moved to the PlannedIsDone field instead of -1 here.) Otherwise it is the foreign key to appointment.AptNum.  This is the appointment that will show in the Chart module and in the Next appointment tracker.  It will never show in the Appointments module. In other words, it is the suggested next appoinment rather than an appointment that has already been scheduled.</summary>
+		public int NextAptNum;
 		///<summary>Foreign key to provider.ProvNum.  The patient's primary provider.</summary>
 		public int PriProv;
 		///<summary>Foreign key to provider.ProvNum.  Secondary provider (hygienist)</summary>
@@ -119,6 +119,10 @@ namespace OpenDental{
 		public int ClinicNum;
 		///<summary>For now, an 'I' indicates that the patient has insurance.  This is only used when displaying appointments.  It will later be expanded.  User can't edit.</summary>
 		public string HasIns;
+		///<summary>The Trophy bridge is inadequate.  This is an attempt to make it usable for offices that have already invested in Trophy hardware.</summary>
+		public string TrophyFolder;
+		///<summary>This simply indicates whether the 'done' box is checked in the chart module.  Used to be handled as a -1 in the NextAptNum field, but now that field is unsigned.</summary>
+		public bool PlannedIsDone;
 		//<summary>Decided not to add since this data is already available and synchronizing would take too much time.  Will add later.  Not editable. If the patient happens to have a future appointment, this will contain the date of that appointment.  Once appointment is set complete, this date is deleted.  If there is more than one appointment scheduled, this will only contain the earliest one.  Used mostly to exclude patients from recall lists.  If you want all future appointments, use Appointments.GetForPat() instead. You can loop through that list and exclude appointments with dates earlier than today.</summary>
 		//public DateTime DateScheduled;
 
@@ -180,6 +184,8 @@ namespace OpenDental{
 			p.DateFirstVisit=DateFirstVisit;
 			p.ClinicNum=ClinicNum;
 			p.HasIns=HasIns;
+			p.TrophyFolder=TrophyFolder;
+			p.PlannedIsDone=PlannedIsDone;
 			return p;
 		}
 	
@@ -200,7 +206,7 @@ namespace OpenDental{
 				+"studentstatus,schoolname,chartnumber,medicaidid"
 				+",Bal_0_30,Bal_31_60,Bal_61_90,BalOver90,insest,primaryteeth,BalTotal"
 				+",EmployerNum,EmploymentNote,Race,County,GradeSchool,GradeLevel,Urgency,DateFirstVisit"
-				+",ClinicNum,HasIns) VALUES(";
+				+",ClinicNum,HasIns,TrophyFolder,PlannedIsDone) VALUES(";
 			if(includePatNum || Prefs.RandomKeys){
 				command+="'"+POut.PInt(PatNum)+"', ";
 			}
@@ -256,7 +262,9 @@ namespace OpenDental{
 				+"'"+POut.PInt   ((int)Urgency)+"', "
 				+"'"+POut.PDate  (DateFirstVisit)+"', "
 				+"'"+POut.PInt   (ClinicNum)+"', "
-				+"'"+POut.PString(HasIns)+"')";
+				+"'"+POut.PString(HasIns)+"', "
+				+"'"+POut.PString(TrophyFolder)+"', "
+				+"'"+POut.PBool  (PlannedIsDone)+"')";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
 			if(Prefs.RandomKeys){
@@ -534,6 +542,16 @@ namespace OpenDental{
 			if(HasIns!=CurOld.HasIns){
 				if(comma) c+=",";
 				c+="HasIns = '"     +POut.PString (HasIns)+"'";
+				comma=true;
+			}
+			if(TrophyFolder!=CurOld.TrophyFolder) {
+				if(comma) c+=",";
+				c+="TrophyFolder = '"     +POut.PString(TrophyFolder)+"'";
+				comma=true;
+			}
+			if(PlannedIsDone!=CurOld.PlannedIsDone) {
+				if(comma) c+=",";
+				c+="PlannedIsDone = '"     +POut.PBool(PlannedIsDone)+"'";
 				comma=true;
 			}
 			if(!comma)

@@ -9,6 +9,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
+using OpenDental.UI;
 
 
 namespace OpenDental{
@@ -50,7 +51,6 @@ namespace OpenDental{
 		private System.Windows.Forms.CheckBox checkUseSearch;
 		private System.Windows.Forms.GroupBox groupBox1;
 		private OpenDental.UI.Button butSearch;
-		private System.Windows.Forms.DataGrid grid2;
 		///<summary>When closing the form, this indicates whether a new patient was added from within this form.</summary>
 		public bool NewPatientAdded;
 		///<summary>Only used when double clicking blank area in Appts. Sets this value to the currently selected pt.  That patient will come up on the screen already selected and user just has to click OK. Or they can select a different pt or add a new pt.  If 0, then no initial patient is selected.</summary>
@@ -58,6 +58,7 @@ namespace OpenDental{
 		private DataTable PtDataTable;
 		private System.Windows.Forms.TextBox textWkPhone;
 		private System.Windows.Forms.Label label2;
+		private OpenDental.UI.ODGrid gridMain;
 		///<summary>When closing the form, this will hold the value of the newly selected PatNum.</summary>
 		public int SelectedPatNum;
 
@@ -121,27 +122,25 @@ namespace OpenDental{
 			this.checkUseSearch = new System.Windows.Forms.CheckBox();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.butSearch = new OpenDental.UI.Button();
-			this.grid2 = new System.Windows.Forms.DataGrid();
+			this.gridMain = new OpenDental.UI.ODGrid();
 			this.groupAddPt.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.groupBox1.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.grid2)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// textLName
 			// 
-			this.textLName.Location = new System.Drawing.Point(112, 43);
+			this.textLName.Location = new System.Drawing.Point(112,43);
 			this.textLName.Name = "textLName";
-			this.textLName.Size = new System.Drawing.Size(90, 20);
+			this.textLName.Size = new System.Drawing.Size(90,20);
 			this.textLName.TabIndex = 0;
-			this.textLName.Text = "";
 			this.textLName.TextChanged += new System.EventHandler(this.textLName_TextChanged);
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(8, 46);
+			this.label1.Location = new System.Drawing.Point(8,46);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(103, 12);
+			this.label1.Size = new System.Drawing.Size(103,12);
 			this.label1.TabIndex = 3;
 			this.label1.Text = "Last Name";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -150,49 +149,50 @@ namespace OpenDental{
 			// 
 			this.groupAddPt.Controls.Add(this.butAddPt);
 			this.groupAddPt.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupAddPt.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.groupAddPt.Location = new System.Drawing.Point(729, 475);
+			this.groupAddPt.Font = new System.Drawing.Font("Microsoft Sans Serif",8.25F,System.Drawing.FontStyle.Regular,System.Drawing.GraphicsUnit.Point,((byte)(0)));
+			this.groupAddPt.Location = new System.Drawing.Point(729,475);
 			this.groupAddPt.Name = "groupAddPt";
-			this.groupAddPt.Size = new System.Drawing.Size(207, 65);
+			this.groupAddPt.Size = new System.Drawing.Size(207,65);
 			this.groupAddPt.TabIndex = 1;
 			this.groupAddPt.TabStop = false;
 			this.groupAddPt.Text = "Add New Family:";
 			// 
 			// butAddPt
 			// 
-			this.butAddPt.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAddPt.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butAddPt.Autosize = true;
 			this.butAddPt.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butAddPt.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butAddPt.Location = new System.Drawing.Point(68, 26);
+			this.butAddPt.Location = new System.Drawing.Point(68,26);
 			this.butAddPt.Name = "butAddPt";
+			this.butAddPt.Size = new System.Drawing.Size(75,23);
 			this.butAddPt.TabIndex = 0;
 			this.butAddPt.Text = "&Add";
 			this.butAddPt.Click += new System.EventHandler(this.butAddPt_Click);
 			// 
 			// butOK
 			// 
-			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butOK.Autosize = true;
 			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butOK.Location = new System.Drawing.Point(840, 585);
+			this.butOK.Location = new System.Drawing.Point(840,585);
 			this.butOK.Name = "butOK";
-			this.butOK.Size = new System.Drawing.Size(76, 26);
+			this.butOK.Size = new System.Drawing.Size(76,26);
 			this.butOK.TabIndex = 2;
 			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// butCancel
 			// 
-			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butCancel.Autosize = true;
 			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.Location = new System.Drawing.Point(840, 621);
+			this.butCancel.Location = new System.Drawing.Point(840,621);
 			this.butCancel.Name = "butCancel";
-			this.butCancel.Size = new System.Drawing.Size(76, 26);
+			this.butCancel.Size = new System.Drawing.Size(76,26);
 			this.butCancel.TabIndex = 3;
 			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
@@ -225,135 +225,129 @@ namespace OpenDental{
 			this.groupBox2.Controls.Add(this.textLName);
 			this.groupBox2.Controls.Add(this.label1);
 			this.groupBox2.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox2.Location = new System.Drawing.Point(729, 8);
+			this.groupBox2.Location = new System.Drawing.Point(729,8);
 			this.groupBox2.Name = "groupBox2";
-			this.groupBox2.Size = new System.Drawing.Size(207, 359);
+			this.groupBox2.Size = new System.Drawing.Size(207,359);
 			this.groupBox2.TabIndex = 0;
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "Search by:";
 			// 
 			// textWkPhone
 			// 
-			this.textWkPhone.Location = new System.Drawing.Point(112, 104);
+			this.textWkPhone.Location = new System.Drawing.Point(112,104);
 			this.textWkPhone.Name = "textWkPhone";
-			this.textWkPhone.Size = new System.Drawing.Size(90, 20);
+			this.textWkPhone.Size = new System.Drawing.Size(90,20);
 			this.textWkPhone.TabIndex = 25;
-			this.textWkPhone.Text = "";
 			this.textWkPhone.TextChanged += new System.EventHandler(this.textWkPhone_TextChanged);
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(6, 107);
+			this.label2.Location = new System.Drawing.Point(6,107);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(106, 12);
+			this.label2.Size = new System.Drawing.Size(106,12);
 			this.label2.TabIndex = 26;
 			this.label2.Text = "Work Phone";
 			this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// textChartNumber
 			// 
-			this.textChartNumber.Location = new System.Drawing.Point(112, 224);
+			this.textChartNumber.Location = new System.Drawing.Point(112,224);
 			this.textChartNumber.Name = "textChartNumber";
-			this.textChartNumber.Size = new System.Drawing.Size(90, 20);
+			this.textChartNumber.Size = new System.Drawing.Size(90,20);
 			this.textChartNumber.TabIndex = 8;
-			this.textChartNumber.Text = "";
 			this.textChartNumber.TextChanged += new System.EventHandler(this.textChartNumber_TextChanged);
 			// 
 			// listBillingTypes
 			// 
-			this.listBillingTypes.Location = new System.Drawing.Point(63, 247);
+			this.listBillingTypes.Location = new System.Drawing.Point(63,247);
 			this.listBillingTypes.Name = "listBillingTypes";
 			this.listBillingTypes.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-			this.listBillingTypes.Size = new System.Drawing.Size(138, 56);
+			this.listBillingTypes.Size = new System.Drawing.Size(138,56);
 			this.listBillingTypes.TabIndex = 9;
 			this.listBillingTypes.SelectedIndexChanged += new System.EventHandler(this.listBillingTypes_SelectedIndexChanged);
 			// 
 			// textSSN
 			// 
-			this.textSSN.Location = new System.Drawing.Point(112, 184);
+			this.textSSN.Location = new System.Drawing.Point(112,184);
 			this.textSSN.Name = "textSSN";
-			this.textSSN.Size = new System.Drawing.Size(90, 20);
+			this.textSSN.Size = new System.Drawing.Size(90,20);
 			this.textSSN.TabIndex = 6;
-			this.textSSN.Text = "";
 			this.textSSN.TextChanged += new System.EventHandler(this.textSSN_TextChanged);
 			// 
 			// label12
 			// 
-			this.label12.Location = new System.Drawing.Point(11, 188);
+			this.label12.Location = new System.Drawing.Point(11,188);
 			this.label12.Name = "label12";
-			this.label12.Size = new System.Drawing.Size(101, 12);
+			this.label12.Size = new System.Drawing.Size(101,12);
 			this.label12.TabIndex = 24;
 			this.label12.Text = "SSN";
 			this.label12.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// label11
 			// 
-			this.label11.Location = new System.Drawing.Point(7, 248);
+			this.label11.Location = new System.Drawing.Point(7,248);
 			this.label11.Name = "label11";
-			this.label11.Size = new System.Drawing.Size(52, 46);
+			this.label11.Size = new System.Drawing.Size(52,46);
 			this.label11.TabIndex = 21;
 			this.label11.Text = "Billing Types";
 			this.label11.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label10
 			// 
-			this.label10.Location = new System.Drawing.Point(14, 228);
+			this.label10.Location = new System.Drawing.Point(14,228);
 			this.label10.Name = "label10";
-			this.label10.Size = new System.Drawing.Size(99, 12);
+			this.label10.Size = new System.Drawing.Size(99,12);
 			this.label10.TabIndex = 20;
 			this.label10.Text = "Chart Number";
 			this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// textPatNum
 			// 
-			this.textPatNum.Location = new System.Drawing.Point(112, 204);
+			this.textPatNum.Location = new System.Drawing.Point(112,204);
 			this.textPatNum.Name = "textPatNum";
-			this.textPatNum.Size = new System.Drawing.Size(90, 20);
+			this.textPatNum.Size = new System.Drawing.Size(90,20);
 			this.textPatNum.TabIndex = 7;
-			this.textPatNum.Text = "";
 			this.textPatNum.TextChanged += new System.EventHandler(this.textPatNum_TextChanged);
 			// 
 			// label9
 			// 
-			this.label9.Location = new System.Drawing.Point(12, 208);
+			this.label9.Location = new System.Drawing.Point(12,208);
 			this.label9.Name = "label9";
-			this.label9.Size = new System.Drawing.Size(101, 12);
+			this.label9.Size = new System.Drawing.Size(101,12);
 			this.label9.TabIndex = 18;
 			this.label9.Text = "Patient Number";
 			this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// textState
 			// 
-			this.textState.Location = new System.Drawing.Point(112, 164);
+			this.textState.Location = new System.Drawing.Point(112,164);
 			this.textState.Name = "textState";
-			this.textState.Size = new System.Drawing.Size(90, 20);
+			this.textState.Size = new System.Drawing.Size(90,20);
 			this.textState.TabIndex = 5;
-			this.textState.Text = "";
 			this.textState.TextChanged += new System.EventHandler(this.textState_TextChanged);
 			// 
 			// label8
 			// 
-			this.label8.Location = new System.Drawing.Point(11, 168);
+			this.label8.Location = new System.Drawing.Point(11,168);
 			this.label8.Name = "label8";
-			this.label8.Size = new System.Drawing.Size(100, 12);
+			this.label8.Size = new System.Drawing.Size(100,12);
 			this.label8.TabIndex = 16;
 			this.label8.Text = "State";
 			this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// textCity
 			// 
-			this.textCity.Location = new System.Drawing.Point(112, 144);
+			this.textCity.Location = new System.Drawing.Point(112,144);
 			this.textCity.Name = "textCity";
-			this.textCity.Size = new System.Drawing.Size(90, 20);
+			this.textCity.Size = new System.Drawing.Size(90,20);
 			this.textCity.TabIndex = 4;
-			this.textCity.Text = "";
 			this.textCity.TextChanged += new System.EventHandler(this.textCity_TextChanged);
 			// 
 			// label7
 			// 
-			this.label7.Location = new System.Drawing.Point(11, 146);
+			this.label7.Location = new System.Drawing.Point(11,146);
 			this.label7.Name = "label7";
-			this.label7.Size = new System.Drawing.Size(98, 14);
+			this.label7.Size = new System.Drawing.Size(98,14);
 			this.label7.TabIndex = 14;
 			this.label7.Text = "City";
 			this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -361,9 +355,9 @@ namespace OpenDental{
 			// checkGuarantors
 			// 
 			this.checkGuarantors.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkGuarantors.Location = new System.Drawing.Point(11, 314);
+			this.checkGuarantors.Location = new System.Drawing.Point(11,314);
 			this.checkGuarantors.Name = "checkGuarantors";
-			this.checkGuarantors.Size = new System.Drawing.Size(163, 17);
+			this.checkGuarantors.Size = new System.Drawing.Size(163,17);
 			this.checkGuarantors.TabIndex = 10;
 			this.checkGuarantors.Text = "Guarantors Only";
 			this.checkGuarantors.CheckedChanged += new System.EventHandler(this.checkGuarantors_CheckedChanged);
@@ -371,81 +365,78 @@ namespace OpenDental{
 			// checkHideInactive
 			// 
 			this.checkHideInactive.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkHideInactive.Location = new System.Drawing.Point(11, 334);
+			this.checkHideInactive.Location = new System.Drawing.Point(11,334);
 			this.checkHideInactive.Name = "checkHideInactive";
-			this.checkHideInactive.Size = new System.Drawing.Size(161, 17);
+			this.checkHideInactive.Size = new System.Drawing.Size(161,17);
 			this.checkHideInactive.TabIndex = 11;
 			this.checkHideInactive.Text = "Hide Inactive Patients";
 			this.checkHideInactive.CheckedChanged += new System.EventHandler(this.checkHideInactive_CheckedChanged);
 			// 
 			// label6
 			// 
-			this.label6.Location = new System.Drawing.Point(4, 18);
+			this.label6.Location = new System.Drawing.Point(4,18);
 			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(200, 16);
+			this.label6.Size = new System.Drawing.Size(200,16);
 			this.label6.TabIndex = 10;
 			this.label6.Text = "Hint: enter values in multiple boxes.";
 			this.label6.TextAlign = System.Drawing.ContentAlignment.TopCenter;
 			// 
 			// textAddress
 			// 
-			this.textAddress.Location = new System.Drawing.Point(112, 124);
+			this.textAddress.Location = new System.Drawing.Point(112,124);
 			this.textAddress.Name = "textAddress";
-			this.textAddress.Size = new System.Drawing.Size(90, 20);
+			this.textAddress.Size = new System.Drawing.Size(90,20);
 			this.textAddress.TabIndex = 3;
-			this.textAddress.Text = "";
 			this.textAddress.TextChanged += new System.EventHandler(this.textAddress_TextChanged);
 			// 
 			// label5
 			// 
-			this.label5.Location = new System.Drawing.Point(11, 127);
+			this.label5.Location = new System.Drawing.Point(11,127);
 			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(100, 12);
+			this.label5.Size = new System.Drawing.Size(100,12);
 			this.label5.TabIndex = 9;
 			this.label5.Text = "Address";
 			this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// textHmPhone
 			// 
-			this.textHmPhone.Location = new System.Drawing.Point(112, 83);
+			this.textHmPhone.Location = new System.Drawing.Point(112,83);
 			this.textHmPhone.Name = "textHmPhone";
-			this.textHmPhone.Size = new System.Drawing.Size(90, 20);
+			this.textHmPhone.Size = new System.Drawing.Size(90,20);
 			this.textHmPhone.TabIndex = 2;
-			this.textHmPhone.Text = "";
 			this.textHmPhone.TextChanged += new System.EventHandler(this.textHmPhone_TextChanged);
 			// 
 			// label4
 			// 
-			this.label4.Location = new System.Drawing.Point(6, 86);
+			this.label4.Location = new System.Drawing.Point(6,86);
 			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(106, 12);
+			this.label4.Size = new System.Drawing.Size(106,12);
 			this.label4.TabIndex = 7;
 			this.label4.Text = "Home Phone";
 			this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// textFName
 			// 
-			this.textFName.Location = new System.Drawing.Point(112, 63);
+			this.textFName.Location = new System.Drawing.Point(112,63);
 			this.textFName.Name = "textFName";
-			this.textFName.Size = new System.Drawing.Size(90, 20);
+			this.textFName.Size = new System.Drawing.Size(90,20);
 			this.textFName.TabIndex = 1;
-			this.textFName.Text = "";
 			this.textFName.TextChanged += new System.EventHandler(this.textFName_TextChanged);
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(11, 67);
+			this.label3.Location = new System.Drawing.Point(11,67);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(100, 12);
+			this.label3.Size = new System.Drawing.Size(100,12);
 			this.label3.TabIndex = 5;
 			this.label3.Text = "First Name";
 			this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// labelMore
 			// 
-			this.labelMore.Location = new System.Drawing.Point(723, 646);
+			this.labelMore.Location = new System.Drawing.Point(723,646);
 			this.labelMore.Name = "labelMore";
-			this.labelMore.Size = new System.Drawing.Size(89, 16);
+			this.labelMore.Size = new System.Drawing.Size(89,16);
 			this.labelMore.TabIndex = 5;
 			this.labelMore.Text = "(more)";
 			this.labelMore.Visible = false;
@@ -454,9 +445,9 @@ namespace OpenDental{
 			// 
 			this.checkUseSearch.CheckAlign = System.Drawing.ContentAlignment.TopLeft;
 			this.checkUseSearch.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkUseSearch.Location = new System.Drawing.Point(13, 60);
+			this.checkUseSearch.Location = new System.Drawing.Point(13,60);
 			this.checkUseSearch.Name = "checkUseSearch";
-			this.checkUseSearch.Size = new System.Drawing.Size(184, 35);
+			this.checkUseSearch.Size = new System.Drawing.Size(184,35);
 			this.checkUseSearch.TabIndex = 6;
 			this.checkUseSearch.Text = "Use Search Button (may take longer to load)";
 			this.checkUseSearch.TextAlign = System.Drawing.ContentAlignment.TopLeft;
@@ -467,47 +458,46 @@ namespace OpenDental{
 			this.groupBox1.Controls.Add(this.butSearch);
 			this.groupBox1.Controls.Add(this.checkUseSearch);
 			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox1.Location = new System.Drawing.Point(729, 369);
+			this.groupBox1.Location = new System.Drawing.Point(729,369);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(207, 100);
+			this.groupBox1.Size = new System.Drawing.Size(207,100);
 			this.groupBox1.TabIndex = 7;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Search behavior";
 			// 
 			// butSearch
 			// 
-			this.butSearch.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butSearch.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butSearch.Autosize = true;
 			this.butSearch.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butSearch.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butSearch.Location = new System.Drawing.Point(68, 27);
+			this.butSearch.Location = new System.Drawing.Point(68,27);
 			this.butSearch.Name = "butSearch";
+			this.butSearch.Size = new System.Drawing.Size(75,23);
 			this.butSearch.TabIndex = 7;
 			this.butSearch.Text = "&Search";
 			this.butSearch.Click += new System.EventHandler(this.butSearch_Click);
 			// 
-			// grid2
+			// gridMain
 			// 
-			this.grid2.AllowNavigation = false;
-			this.grid2.AllowSorting = false;
-			this.grid2.DataMember = "";
-			this.grid2.HeaderForeColor = System.Drawing.SystemColors.ControlText;
-			this.grid2.Location = new System.Drawing.Point(5, 5);
-			this.grid2.Name = "grid2";
-			this.grid2.ReadOnly = true;
-			this.grid2.Size = new System.Drawing.Size(718, 659);
-			this.grid2.TabIndex = 8;
-			this.grid2.DoubleClick += new System.EventHandler(this.grid2_DoubleClick);
-			this.grid2.CurrentCellChanged += new System.EventHandler(this.grid2_CurrentCellChanged);
+			this.gridMain.HScrollVisible = true;
+			this.gridMain.Location = new System.Drawing.Point(5,12);
+			this.gridMain.Name = "gridMain";
+			this.gridMain.ScrollValue = 0;
+			this.gridMain.Size = new System.Drawing.Size(718,650);
+			this.gridMain.TabIndex = 9;
+			this.gridMain.Title = "Select Patient";
+			this.gridMain.TranslationName = "FormPatientSelect";
+			this.gridMain.WrapText = false;
+			this.gridMain.CellDoubleClick += new OpenDental.UI.ODGridClickEventHandler(this.gridMain_CellDoubleClick);
 			// 
 			// FormPatientSelect
 			// 
 			this.AcceptButton = this.butOK;
-			this.AutoScale = false;
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
 			this.CancelButton = this.butCancel;
-			this.ClientSize = new System.Drawing.Size(944, 668);
-			this.Controls.Add(this.grid2);
+			this.ClientSize = new System.Drawing.Size(944,668);
+			this.Controls.Add(this.gridMain);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.labelMore);
 			this.Controls.Add(this.groupBox2);
@@ -526,8 +516,8 @@ namespace OpenDental{
 			this.Load += new System.EventHandler(this.FormSelectPatient_Load);
 			this.groupAddPt.ResumeLayout(false);
 			this.groupBox2.ResumeLayout(false);
+			this.groupBox2.PerformLayout();
 			this.groupBox1.ResumeLayout(false);
-			((System.ComponentModel.ISupportInitialize)(this.grid2)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -542,12 +532,12 @@ namespace OpenDental{
 				listBillingTypes.Items.Add(Defs.Short[(int)DefCat.BillingTypes][i].ItemName);
 			}
 			FillSearchOption();
-			SetGridStyles();
+			SetGridCols();
 			if(InitialPatNum!=0){
 				Patient iPatient=Patients.GetLim(InitialPatNum);
 				textLName.Text=iPatient.LName;
-				FillList();
-				if(grid2.CurrentRowIndex>-1){
+				FillGrid();
+				/*if(grid2.CurrentRowIndex>-1){
 					grid2.UnSelect(grid2.CurrentRowIndex);
 				}
 				for(int i=0;i<PtDataTable.Rows.Count;i++){
@@ -556,11 +546,18 @@ namespace OpenDental{
 						grid2.Select(i);
 						break;
 					}
+				}*/
+				gridMain.SetSelected(false);
+				for(int i=0;i<PtDataTable.Rows.Count;i++){
+					if(PIn.PInt(PtDataTable.Rows[i][0].ToString())==InitialPatNum) {
+						gridMain.SetSelected(i,true);
+						break;
+					}
 				}
 				return;
 			}
 			if(!checkUseSearch.Checked){
-				FillList();
+				FillGrid();
 			}
 		}
 
@@ -572,109 +569,40 @@ namespace OpenDental{
 				butSearch.Enabled=false;
 		}
 
-		private void SetGridStyles(){
-			DataGridTableStyle ts=new DataGridTableStyle();
-			ts.GridLineColor=Color.Silver;
-			ts.ReadOnly=true;
-			//grid2..PreferredRowHeight=13;
-			//ts.PreferredRowHeight=25;			
-
-			DataGridTextBoxColumn cstyle;
-
-			cstyle=new DataGridTextBoxColumn();
-			cstyle.MappingName="lname";
-			cstyle.HeaderText=Lan.g(this,"Last Name");
-			cstyle.Width=75;
-			ts.GridColumnStyles.Add(cstyle);
-
-			cstyle=new DataGridTextBoxColumn();
-			cstyle.MappingName="fname";
-			cstyle.HeaderText=Lan.g(this,"First Name");
-			cstyle.Width=75;
-			ts.GridColumnStyles.Add(cstyle);
-
-			cstyle=new DataGridTextBoxColumn();
-			cstyle.MappingName="middlei";
-			cstyle.HeaderText=Lan.g(this,"MI");
-			cstyle.Width=25;
-			ts.GridColumnStyles.Add(cstyle);
-
-			cstyle=new DataGridTextBoxColumn();
-			cstyle.MappingName="preferred";
-			cstyle.HeaderText=Lan.g(this,"Pref'd Name");
-			cstyle.Width=60;
-			ts.GridColumnStyles.Add(cstyle);
-
-			cstyle=new DataGridTextBoxColumn();
-			cstyle.MappingName="birthdate";
-			cstyle.HeaderText=Lan.g(this,"Age");
-			cstyle.Width=30;
-			ts.GridColumnStyles.Add(cstyle);
-
-			cstyle=new DataGridTextBoxColumn();
-			cstyle.MappingName="ssn";
-			cstyle.HeaderText=Lan.g(this,"SSN");
-			cstyle.Width=65;
-			ts.GridColumnStyles.Add(cstyle);
-
-			cstyle=new DataGridTextBoxColumn();
-			cstyle.MappingName="hmphone";
-			cstyle.HeaderText=Lan.g(this,"Hm Phone");
-			cstyle.Width=90;
-			ts.GridColumnStyles.Add(cstyle);
-
-			cstyle=new DataGridTextBoxColumn();
-			cstyle.MappingName="wkphone";
-			cstyle.HeaderText=Lan.g(this,"Wk Phone");
-			cstyle.Width=90;
-			ts.GridColumnStyles.Add(cstyle);
-
-			cstyle=new DataGridTextBoxColumn();
-			cstyle.MappingName="patnum";
-			cstyle.HeaderText=Lan.g(this,"PatNum");
-			cstyle.Width=50;
-			ts.GridColumnStyles.Add(cstyle);
-			
-			cstyle=new DataGridTextBoxColumn();
-			cstyle.MappingName="chartnumber";
-			cstyle.HeaderText=Lan.g(this,"ChartNum");
-			cstyle.Width=60;
-			ts.GridColumnStyles.Add(cstyle);
-
-			cstyle=new DataGridTextBoxColumn();
-			cstyle.MappingName="address";
-			cstyle.HeaderText=Lan.g(this,"Address");
-			cstyle.Width=100;
-			ts.GridColumnStyles.Add(cstyle);
-
-			cstyle=new DataGridTextBoxColumn();
-			cstyle.MappingName="patstatus";
-			cstyle.HeaderText=Lan.g(this,"Status");
-			cstyle.Width=65;
-			ts.GridColumnStyles.Add(cstyle);
-
-			cstyle=new DataGridTextBoxColumn();
-			cstyle.MappingName="billingtype";
-			cstyle.HeaderText=Lan.g(this,"Bill Type");
-			cstyle.Width=90;
-			ts.GridColumnStyles.Add(cstyle);
-
-			//patNum and ChartNumber were here
-			
-			cstyle=new DataGridTextBoxColumn();
-			cstyle.MappingName="city";
-			cstyle.HeaderText=Lan.g(this,"City");
-			cstyle.Width=80;
-			ts.GridColumnStyles.Add(cstyle);
-			
-			cstyle=new DataGridTextBoxColumn();
-			cstyle.MappingName="state";
-			cstyle.HeaderText=Lan.g(this,"State");
-			cstyle.Width=55;
-			ts.GridColumnStyles.Add(cstyle);
-
-			grid2.TableStyles.Clear();
-			grid2.TableStyles.Add(ts);
+		private void SetGridCols(){
+			gridMain.BeginUpdate();
+			gridMain.Columns.Clear();
+			ODGridColumn col=new ODGridColumn("LastName",75);
+			gridMain.Columns.Add(col);
+			col=new ODGridColumn("First Name",75);
+			gridMain.Columns.Add(col);
+			col=new ODGridColumn("MI",25);
+			gridMain.Columns.Add(col);
+			col=new ODGridColumn("Pref Name",60);
+			gridMain.Columns.Add(col);
+			col=new ODGridColumn("Age",30);
+			gridMain.Columns.Add(col);
+			col=new ODGridColumn("SSN",65);
+			gridMain.Columns.Add(col);
+			col=new ODGridColumn("Hm Phone",90);
+			gridMain.Columns.Add(col);
+			col=new ODGridColumn("Wk Phone",90);
+			gridMain.Columns.Add(col);
+			col=new ODGridColumn("PatNum",50);
+			gridMain.Columns.Add(col);
+			col=new ODGridColumn("ChartNum",60);
+			gridMain.Columns.Add(col);
+			col=new ODGridColumn("Address",100);
+			gridMain.Columns.Add(col);
+			col=new ODGridColumn("Status",65);
+			gridMain.Columns.Add(col);
+			col=new ODGridColumn("Bill Type",90);
+			gridMain.Columns.Add(col);
+			col=new ODGridColumn("City",80);
+			gridMain.Columns.Add(col);
+			col=new ODGridColumn("State",55);
+			gridMain.Columns.Add(col);
+			gridMain.EndUpdate();
 		}
 
 		private void textLName_TextChanged(object sender, System.EventArgs e){
@@ -740,20 +668,20 @@ namespace OpenDental{
 			//simply not important enough to send an update to the other computers.
 			FillSearchOption();
 			if(!checkUseSearch.Checked)
-				FillList();
+				FillGrid();
 		}
 
 		private void butSearch_Click(object sender, System.EventArgs e) {
-			FillList();
+			FillGrid();
 		}
 
 		private void OnDataEntered(){
 			if(!checkUseSearch.Checked){
-				FillList();
+				FillGrid();
 			}
 		}
 
-		private void FillList(){
+		private void FillGrid(){
 			int[] selectedBillingTypes=new int[listBillingTypes.SelectedIndices.Count];
 			for(int i=0;i<selectedBillingTypes.Length;i++){
 				selectedBillingTypes[i]
@@ -771,18 +699,40 @@ namespace OpenDental{
 			else{
 				labelMore.Visible=false;
 			}
-			grid2.SetDataBinding(PtDataTable,"");
-			if(PtDataTable.Rows.Count>grid2.CurrentCell.RowNumber){
-				grid2.Select(grid2.CurrentCell.RowNumber);
+			//grid2.SetDataBinding(PtDataTable,"");
+			//if(PtDataTable.Rows.Count>grid2.CurrentCell.RowNumber){
+			//	grid2.Select(grid2.CurrentCell.RowNumber);
+			//}
+			//int selectedRow=gridMain.GetSelectedIndex();
+			gridMain.BeginUpdate();
+			gridMain.Rows.Clear();
+			ODGridRow row;
+			for(int i=0;i<PtDataTable.Rows.Count;i++){
+				//Order in PtDataTable: PatNum,LName,FName,MiddleI,Preferred,Birthdate,SSN,HmPhone,WkPhone 0-8
+				//,Address,PatStatus,BillingType,ChartNumber,City,State 9-14
+				row=new ODGridRow();				
+				row.Cells.Add(PtDataTable.Rows[i][1].ToString());//LastName				
+				row.Cells.Add(PtDataTable.Rows[i][2].ToString());//First Name			
+				row.Cells.Add(PtDataTable.Rows[i][3].ToString());//MI
+				row.Cells.Add(PtDataTable.Rows[i][4].ToString());//Pref Name			
+				row.Cells.Add(PtDataTable.Rows[i][5].ToString());//Age
+				row.Cells.Add(PtDataTable.Rows[i][6].ToString());//SSN
+				row.Cells.Add(PtDataTable.Rows[i][7].ToString());//Hm Phone
+				row.Cells.Add(PtDataTable.Rows[i][8].ToString());//Wk Phone
+				row.Cells.Add(PtDataTable.Rows[i][0].ToString());//PatNum
+				row.Cells.Add(PtDataTable.Rows[i][12].ToString());//ChartNum
+				row.Cells.Add(PtDataTable.Rows[i][9].ToString());//Address
+				row.Cells.Add(PtDataTable.Rows[i][10].ToString());//Status
+				row.Cells.Add(PtDataTable.Rows[i][11].ToString());//Bill Type
+				row.Cells.Add(PtDataTable.Rows[i][13].ToString());//City
+				row.Cells.Add(PtDataTable.Rows[i][14].ToString());//State
+				gridMain.Rows.Add(row);
 			}
+			gridMain.EndUpdate();
+			gridMain.SetSelected(0,true);
 		}
 
-		private void grid2_CurrentCellChanged(object sender, System.EventArgs e) {
-			grid2.Select(grid2.CurrentCell.RowNumber);
-			//PatSelected();
-		}
-
-		private void grid2_DoubleClick(object sender, System.EventArgs e) {
+		private void gridMain_CellDoubleClick(object sender,ODGridClickEventArgs e) {
 			PatSelected();
 		}
 
@@ -795,7 +745,7 @@ namespace OpenDental{
 			#if(TRIALONLY)
 				MsgBox.Show(this,"Trial version.  Maximum 30 patients");
 				if(Patients.GetNumberPatients()>30){
-					MsgBox.Show(this,"Maximum reached");
+					MsgBox.Show("Maximum reached");
 					return;
 				}
 			#endif
@@ -827,19 +777,26 @@ namespace OpenDental{
 		}
 
 		private void PatSelected(){
-			SelectedPatNum=PIn.PInt(PtDataTable.Rows[grid2.CurrentRowIndex][0].ToString());
+			//SelectedPatNum=PIn.PInt(PtDataTable.Rows[grid2.CurrentRowIndex][0].ToString());
+			SelectedPatNum=PIn.PInt(PtDataTable.Rows[gridMain.GetSelectedIndex()][0].ToString());
 			DialogResult=DialogResult.OK;
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e){
-			if(grid2.CurrentRowIndex!=-1){
-				PatSelected();
+			if(gridMain.GetSelectedIndex()==-1){
+				MsgBox.Show(this,"Please select a patient first.");
+				return;
 			}
+			//if(grid2.CurrentRowIndex!=-1){
+			PatSelected();
+			//}
 		}
 
 		private void butCancel_Click(object sender, System.EventArgs e) {
 			DialogResult=DialogResult.Cancel;
 		}
+
+		
 
 		
 

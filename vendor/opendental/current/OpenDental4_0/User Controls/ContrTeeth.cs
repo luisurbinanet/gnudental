@@ -535,11 +535,22 @@ namespace OpenDental
 					}
 				}
 			}
+			DrawProcsOfStatus(procList,ProcStat.EO);
+			DrawProcsOfStatus(procList,ProcStat.EC);
+			DrawProcsOfStatus(procList,ProcStat.C);
+			DrawProcsOfStatus(procList,ProcStat.R);
+			DrawProcsOfStatus(procList,ProcStat.TP);
+		}
+
+		private void DrawProcsOfStatus(Procedure[] procList,ProcStat procStat){
 			Color elemColor;
 			bool doDraw;
 			int gTypeNum;
 			int intTooth;
 			for(int i=0;i<procList.Length;i++){
+				if(procList[i].ProcStatus!=procStat){
+					continue;
+				}
 				doDraw=true;
 				switch(procList[i].ProcStatus){
 					case ProcStat.C:
@@ -647,9 +658,7 @@ namespace OpenDental
 						//maybe add an error log to the database at some point to track errors without user's awareness
 					}
 				}
-			}//for proclist
-			//DrawConnector(true,23,Color.Red);
-			//DrawConnector(false,9,Color.Red);
+			}
 		}
 
 		private void DrawConnector(bool isM,int intTooth,Color color){

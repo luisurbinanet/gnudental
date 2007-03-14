@@ -1622,6 +1622,9 @@ namespace OpenDental.Eclaims
 			Provider billProv=Providers.ListLong[Providers.GetIndexLong((int)claimAr[1,0])];
 			Provider treatProv=Providers.ListLong[Providers.GetIndexLong(claim.ProvTreat)];
 			InsPlan insPlan=InsPlans.GetPlan(claim.PlanNum,new InsPlan[] {});
+			if(insPlan.IsMedical && !Prefs.GetBool("MedicalEclaimsEnabled")) {
+				return "Medical e-claims not allowed";
+			}
 			//billProv
 			if(billProv.LName==""){
 				if(retVal!="")
@@ -1860,34 +1863,26 @@ namespace OpenDental.Eclaims
 						princDiagExists=true;
 					}
 				}
-				if(proc.ProvNum==0){
+				treatProv=Providers.ListLong[Providers.GetIndexLong(proc.ProvNum)];
+				if(treatProv.LName==""){
 					if(retVal!="")
 						retVal+=",";
-					//MessageBox.Show(proc.PatNum.ToString()+" "+proc.ADACode);
-					retVal+="No provider for "+proc.ADACode;
+					retVal+="Treating Prov LName";
 				}
-				else{
-					treatProv=Providers.ListLong[Providers.GetIndexLong(proc.ProvNum)];
-					if(treatProv.LName==""){
-						if(retVal!="")
-							retVal+=",";
-						retVal+="Treating Prov LName";
-					}
-					if(treatProv.FName==""){
-						if(retVal!="")
-							retVal+=",";
-						retVal+="Treating Prov FName";
-					}
-					if(treatProv.SSN.Length<2){
-						if(retVal!="")
-							retVal+=",";
-						retVal+="Treating Prov SSN";
-					}
-					if(treatProv.StateLicense==""){
-						if(retVal!="")
-							retVal+=",";
-						retVal+="Treating Prov Lic #";
-					}
+				if(treatProv.FName==""){
+					if(retVal!="")
+						retVal+=",";
+					retVal+="Treating Prov FName";
+				}
+				if(treatProv.SSN.Length<2){
+					if(retVal!="")
+						retVal+=",";
+					retVal+="Treating Prov SSN";
+				}
+				if(treatProv.StateLicense==""){
+					if(retVal!="")
+						retVal+=",";
+					retVal+="Treating Prov Lic #";
 				}
 				//will add any other checks as needed. Can't think of any others at the moment.
 			}//for int i claimProcs

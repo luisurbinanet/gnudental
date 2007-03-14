@@ -108,7 +108,7 @@ namespace OpenDental{
 
 		private void InitializeComponent(){
 			this.components = new System.ComponentModel.Container();
-			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(ContrDocs));
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ContrDocs));
 			this.TreeDocuments = new System.Windows.Forms.TreeView();
 			this.contextTree = new System.Windows.Forms.ContextMenu();
 			this.menuItem2 = new System.Windows.Forms.MenuItem();
@@ -119,39 +119,40 @@ namespace OpenDental{
 			this.PrintDocument2 = new System.Drawing.Printing.PrintDocument();
 			this.imageListTools2 = new System.Windows.Forms.ImageList(this.components);
 			this.PictureBox1 = new System.Windows.Forms.PictureBox();
-			this.mainMenu1 = new System.Windows.Forms.MainMenu();
+			this.mainMenu1 = new System.Windows.Forms.MainMenu(this.components);
 			this.menuItem1 = new System.Windows.Forms.MenuItem();
 			this.menuExit = new System.Windows.Forms.MenuItem();
 			this.menuPrefs = new System.Windows.Forms.MenuItem();
 			this.ToolBarMain = new OpenDental.UI.ODToolBar();
 			this.menuPatient = new System.Windows.Forms.ContextMenu();
+			((System.ComponentModel.ISupportInitialize)(this.PictureBox1)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// TreeDocuments
 			// 
 			this.TreeDocuments.ContextMenu = this.contextTree;
-			this.TreeDocuments.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.TreeDocuments.Font = new System.Drawing.Font("Microsoft Sans Serif",8.25F,System.Drawing.FontStyle.Regular,System.Drawing.GraphicsUnit.Point,((byte)(0)));
 			this.TreeDocuments.FullRowSelect = true;
 			this.TreeDocuments.HideSelection = false;
 			this.TreeDocuments.ImageIndex = 2;
 			this.TreeDocuments.ImageList = this.imageListTree;
 			this.TreeDocuments.Indent = 20;
-			this.TreeDocuments.Location = new System.Drawing.Point(0, 33);
+			this.TreeDocuments.Location = new System.Drawing.Point(0,33);
 			this.TreeDocuments.Name = "TreeDocuments";
 			this.TreeDocuments.SelectedImageIndex = 2;
-			this.TreeDocuments.Size = new System.Drawing.Size(228, 519);
+			this.TreeDocuments.Size = new System.Drawing.Size(228,519);
 			this.TreeDocuments.TabIndex = 0;
-			this.TreeDocuments.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TreeDocuments_MouseDown);
-			this.TreeDocuments.MouseUp += new System.Windows.Forms.MouseEventHandler(this.TreeDocuments_MouseUp);
 			this.TreeDocuments.DoubleClick += new System.EventHandler(this.TreeDocuments_DoubleClick);
+			this.TreeDocuments.MouseUp += new System.Windows.Forms.MouseEventHandler(this.TreeDocuments_MouseUp);
 			this.TreeDocuments.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TreeDocuments_MouseMove);
+			this.TreeDocuments.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TreeDocuments_MouseDown);
 			// 
 			// contextTree
 			// 
 			this.contextTree.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-																																								this.menuItem2,
-																																								this.menuItem3,
-																																								this.menuItem4});
+            this.menuItem2,
+            this.menuItem3,
+            this.menuItem4});
 			// 
 			// menuItem2
 			// 
@@ -170,10 +171,14 @@ namespace OpenDental{
 			// 
 			// imageListTree
 			// 
-			this.imageListTree.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
-			this.imageListTree.ImageSize = new System.Drawing.Size(16, 16);
 			this.imageListTree.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListTree.ImageStream")));
 			this.imageListTree.TransparentColor = System.Drawing.Color.Transparent;
+			this.imageListTree.Images.SetKeyName(0,"");
+			this.imageListTree.Images.SetKeyName(1,"");
+			this.imageListTree.Images.SetKeyName(2,"");
+			this.imageListTree.Images.SetKeyName(3,"");
+			this.imageListTree.Images.SetKeyName(4,"");
+			this.imageListTree.Images.SetKeyName(5,"");
 			// 
 			// PrintDialog1
 			// 
@@ -186,37 +191,53 @@ namespace OpenDental{
 			// 
 			// imageListTools2
 			// 
-			this.imageListTools2.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
-			this.imageListTools2.ImageSize = new System.Drawing.Size(22, 22);
 			this.imageListTools2.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListTools2.ImageStream")));
 			this.imageListTools2.TransparentColor = System.Drawing.Color.Transparent;
+			this.imageListTools2.Images.SetKeyName(0,"");
+			this.imageListTools2.Images.SetKeyName(1,"");
+			this.imageListTools2.Images.SetKeyName(2,"");
+			this.imageListTools2.Images.SetKeyName(3,"");
+			this.imageListTools2.Images.SetKeyName(4,"");
+			this.imageListTools2.Images.SetKeyName(5,"");
+			this.imageListTools2.Images.SetKeyName(6,"");
+			this.imageListTools2.Images.SetKeyName(7,"");
+			this.imageListTools2.Images.SetKeyName(8,"");
+			this.imageListTools2.Images.SetKeyName(9,"");
+			this.imageListTools2.Images.SetKeyName(10,"");
+			this.imageListTools2.Images.SetKeyName(11,"");
+			this.imageListTools2.Images.SetKeyName(12,"");
+			this.imageListTools2.Images.SetKeyName(13,"");
+			this.imageListTools2.Images.SetKeyName(14,"");
+			this.imageListTools2.Images.SetKeyName(15,"");
+			this.imageListTools2.Images.SetKeyName(16,"");
+			this.imageListTools2.Images.SetKeyName(17,"copy.gif");
 			// 
 			// PictureBox1
 			// 
 			this.PictureBox1.BackColor = System.Drawing.SystemColors.Window;
 			this.PictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
 			this.PictureBox1.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.PictureBox1.Location = new System.Drawing.Point(232, 33);
+			this.PictureBox1.Location = new System.Drawing.Point(232,33);
 			this.PictureBox1.Name = "PictureBox1";
-			this.PictureBox1.Size = new System.Drawing.Size(600, 400);
+			this.PictureBox1.Size = new System.Drawing.Size(600,400);
 			this.PictureBox1.TabIndex = 6;
 			this.PictureBox1.TabStop = false;
+			this.PictureBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PictureBox1_MouseDown);
+			this.PictureBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PictureBox1_MouseMove);
 			this.PictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.PictureBox1_Paint);
 			this.PictureBox1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PictureBox1_MouseUp);
-			this.PictureBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PictureBox1_MouseMove);
-			this.PictureBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PictureBox1_MouseDown);
 			// 
 			// mainMenu1
 			// 
 			this.mainMenu1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-																																							this.menuItem1,
-																																							this.menuPrefs});
+            this.menuItem1,
+            this.menuPrefs});
 			// 
 			// menuItem1
 			// 
 			this.menuItem1.Index = 0;
 			this.menuItem1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-																																							this.menuExit});
+            this.menuExit});
 			this.menuItem1.Text = "File";
 			// 
 			// menuExit
@@ -233,9 +254,9 @@ namespace OpenDental{
 			// 
 			this.ToolBarMain.Dock = System.Windows.Forms.DockStyle.Top;
 			this.ToolBarMain.ImageList = this.imageListTools2;
-			this.ToolBarMain.Location = new System.Drawing.Point(0, 0);
+			this.ToolBarMain.Location = new System.Drawing.Point(0,0);
 			this.ToolBarMain.Name = "ToolBarMain";
-			this.ToolBarMain.Size = new System.Drawing.Size(939, 29);
+			this.ToolBarMain.Size = new System.Drawing.Size(939,29);
 			this.ToolBarMain.TabIndex = 10;
 			this.ToolBarMain.ButtonClick += new OpenDental.UI.ODToolBarButtonClickEventHandler(this.ToolBarMain_ButtonClick);
 			// 
@@ -245,9 +266,10 @@ namespace OpenDental{
 			this.Controls.Add(this.PictureBox1);
 			this.Controls.Add(this.TreeDocuments);
 			this.Name = "ContrDocs";
-			this.Size = new System.Drawing.Size(939, 606);
-			this.Load += new System.EventHandler(this.ContrDocs_Load);
+			this.Size = new System.Drawing.Size(939,606);
 			this.Layout += new System.Windows.Forms.LayoutEventHandler(this.ContrDocs_Layout);
+			this.Load += new System.EventHandler(this.ContrDocs_Load);
+			((System.ComponentModel.ISupportInitialize)(this.PictureBox1)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -295,10 +317,9 @@ namespace OpenDental{
 			ToolBarMain.Buttons.Add(new ODToolBarButton("",16,Lan.g(this,"Scan Radiograph"),"ScanXRay"));
 			ToolBarMain.Buttons.Add(new ODToolBarButton("",15,Lan.g(this,"Scan Photo"),"ScanPhoto"));
 			ToolBarMain.Buttons.Add(new ODToolBarButton(ODToolBarButtonStyle.Separator));
-			ToolBarMain.Buttons.Add(new ODToolBarButton
-				(Lan.g(this,"Import"),5,Lan.g(this,"Import From File"),"Import"));
-			ToolBarMain.Buttons.Add(new ODToolBarButton
-				(Lan.g(this,"Paste"),6,Lan.g(this,"Paste From Clipboard"),"Paste"));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Import"),5,Lan.g(this,"Import From File"),"Import"));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Copy"),17,Lan.g(this,"Copy displayed image to clipboard"),"Copy"));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Paste"),6,Lan.g(this,"Paste From Clipboard"),"Paste"));
 			ToolBarMain.Buttons.Add(new ODToolBarButton(ODToolBarButtonStyle.Separator));
 			button=new ODToolBarButton("",7,Lan.g(this,"Crop Tool"),"Crop");
 			button.Style=ODToolBarButtonStyle.ToggleButton;
@@ -430,6 +451,7 @@ namespace OpenDental{
 				ToolBarMain.Buttons["ScanDoc"].Enabled=true;
 				ToolBarMain.Buttons["ScanXRay"].Enabled=true;
 				ToolBarMain.Buttons["ScanPhoto"].Enabled=true;
+				ToolBarMain.Buttons["Copy"].Enabled=true;
 				ToolBarMain.Buttons["Paste"].Enabled=true;
 				ToolBarMain.Buttons["Crop"].Enabled=true;
 				ToolBarMain.Buttons["Hand"].Enabled=true;
@@ -449,6 +471,7 @@ namespace OpenDental{
 				ToolBarMain.Buttons["ScanDoc"].Enabled=false;
 				ToolBarMain.Buttons["ScanXRay"].Enabled=false;
 				ToolBarMain.Buttons["ScanPhoto"].Enabled=false;
+				ToolBarMain.Buttons["Copy"].Enabled=false;
 				ToolBarMain.Buttons["Paste"].Enabled=false;
 				ToolBarMain.Buttons["Crop"].Enabled=false;
 				ToolBarMain.Buttons["Hand"].Enabled=false;
@@ -583,6 +606,9 @@ namespace OpenDental{
 					case "Import":
 						OnImport_Click();
 						break;
+					case "Copy":
+						OnCopy_Click();
+						break;
 					case "Paste":
 						OnPaste_Click();
 						break;
@@ -713,6 +739,7 @@ namespace OpenDental{
 			}
 			else{
 				ImageCurrent=null;
+				DocCur.Delete();
 			}
 			myStream.Close();
 			//MessageBox.Show("check 2");
@@ -723,6 +750,10 @@ namespace OpenDental{
 				FillDocList(true);	
 			}	
 			DisplayImage(true,true);
+		}
+
+		private void OnCopy_Click() {
+			Clipboard.SetDataObject(ImageCurrent);
 		}
 
 		private void OnPaste_Click() {

@@ -362,10 +362,15 @@ namespace OpenDental{
 				labelObjectDesc.Text=Lan.g(this,"Appointment Desc");
 				if(Cur.KeyNum>0){
 					Appointment AptCur=Appointments.GetOneApt(Cur.KeyNum);
-					textObjectDesc.Text=Patients.GetPat(AptCur.PatNum).GetNameLF()
-						+"  "+AptCur.AptDateTime.ToString()
-						+"  "+AptCur.ProcDescript
-						+"  "+AptCur.Note;
+					if(AptCur==null){
+						textObjectDesc.Text=Lan.g(this,"(appointment deleted)");
+					}
+					else{
+						textObjectDesc.Text=Patients.GetPat(AptCur.PatNum).GetNameLF()
+							+"  "+AptCur.AptDateTime.ToString()
+							+"  "+AptCur.ProcDescript
+							+"  "+AptCur.Note;
+					}
 				}
 				else{
 					textObjectDesc.Text="";

@@ -544,11 +544,13 @@ namespace OpenDental{
 				else if(TasksList[i].ObjectType==TaskObjectType.Appointment){
 					if(TasksList[i].KeyNum!=0){
 						Appointment AptCur=Appointments.GetOneApt(TasksList[i].KeyNum);
-						objDesc=Patients.GetPat(AptCur.PatNum).GetNameLF()
-							+"  "+AptCur.AptDateTime.ToString()
-							+"  "+AptCur.ProcDescript
-							+"  "+AptCur.Note
-							+" - ";
+						if(AptCur!=null){
+							objDesc=Patients.GetPat(AptCur.PatNum).GetNameLF()
+								+"  "+AptCur.AptDateTime.ToString()
+								+"  "+AptCur.ProcDescript
+								+"  "+AptCur.Note
+								+" - ";
+						}
 					}
 				}
 				if(TasksList[i].TaskStatus){//complete

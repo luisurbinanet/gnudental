@@ -246,7 +246,7 @@ namespace OpenDental{
 				+"(patient.LName,', ',patient.FName,' ',patient.MiddleI) AS plfname, procedurelog.ADACode,"
 				+"procedurelog.ToothNum,procedurecode.Descript,provider.Abbr,"
 				+"procedurelog.ProcFee-IFNULL(SUM(claimproc.WriteOff),0) AS $fee "//if no writeoff, then subtract 0
-				+"FROM procedurelog,patient,procedurecode,provider "
+				+"FROM patient,procedurecode,provider,procedurelog "
 				+"LEFT JOIN claimproc ON procedurelog.ProcNum=claimproc.ProcNum "
 				+"AND claimproc.Status='7' "//only CapComplete writeoffs are subtracted here.
 				+"WHERE procedurelog.ProcStatus = '2' "

@@ -330,7 +330,8 @@ namespace fyiReporting.RdlDesign
 		///<summary></summary>
 		private static string GetOpenDentalConnStr(){
 			XmlDocument document=new XmlDocument();
-			if(!File.Exists("FreeDentalConfig.xml")){
+			string path=Application.StartupPath+"\\"+"FreeDentalConfig.xml";
+			if(!File.Exists(path)){
 				return "";
 			}
 			string computerName="";
@@ -338,7 +339,7 @@ namespace fyiReporting.RdlDesign
 			string user="";
 			string password="";
 			try{
-				document.Load("FreeDentalConfig.xml");
+				document.Load(path);
 				XmlNodeReader reader=new XmlNodeReader(document);
 				string currentElement="";
 				while(reader.Read()){
@@ -380,7 +381,7 @@ namespace fyiReporting.RdlDesign
 			bool bResult = false;
 			try
 			{
-				switch (dataProvider)
+				/*switch (dataProvider)
 				{
 					case "SQL":
 						cnSQL = new SqlConnection(connection);
@@ -394,7 +395,9 @@ namespace fyiReporting.RdlDesign
 						cnSQL = new OleDbConnection(connection);
 						cnSQL.Open();
 						break;
-				}
+				}*/
+				cnSQL = new MySqlConnection(GetOpenDentalConnStr());
+				cnSQL.Open();
 				bResult = true;			// we opened the connection
 			}
 			catch (Exception e)

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Design;
@@ -49,7 +50,7 @@ namespace OpenDental{
 				MsgBox.Show(this,"Cannot convert this database version which was only for development purposes.");
 				return false;
 			}
-			if(FromVersion < new Version("3.9.20.0")){
+			if(FromVersion < new Version("4.0.13.0")){
 				if(MessageBox.Show(Lan.g(this,"Your database will now be converted")+"\r"
 					+Lan.g(this,"from version")+" "+FromVersion.ToString()+"\r"
 					+Lan.g(this,"to version")+" "+ToVersion.ToString()+"\r"
@@ -113,11 +114,11 @@ namespace OpenDental{
 		}
 
 		///<summary>Used in MakeABackup to ensure a unique backup database name.</summary>
-		private bool Contains(string[] arrayToSearch,string valueToTest){
+		private bool Contains(string[] arrayToSearch,string valueToTest) {
 			string compare;
-			for(int i=0;i<arrayToSearch.Length;i++){
+			for(int i=0;i<arrayToSearch.Length;i++) {
 				compare=arrayToSearch[i];
-				if(arrayToSearch[i]==valueToTest){
+				if(arrayToSearch[i]==valueToTest) {
 					return true;
 				}
 			}
@@ -125,21 +126,21 @@ namespace OpenDental{
 		}
 
 		///<summary>Backs up the database to the same directory as the original just in case the user did not have sense enough to do a backup first.</summary>
-		public void MakeABackup(){
+		public void MakeABackup() {
 			string oldDb=FormChooseDatabase.Database;
 			string newDb=oldDb+"backup_"+DateTime.Today.ToString("MM_dd_yyyy");
 			DataConnection dcon=new DataConnection();
 			string command="SHOW DATABASES";
 			DataTable table=dcon.GetTable(command);
 			string[] databases=new string[table.Rows.Count];
-			for(int i=0;i<table.Rows.Count;i++){
+			for(int i=0;i<table.Rows.Count;i++) {
 				databases[i]=table.Rows[i][0].ToString();
 			}
-			if(Contains(databases,newDb)){//if the new database name already exists
+			if(Contains(databases,newDb)) {//if the new database name already exists
 				//find a unique one
 				int uniqueID=1;
 				string originalNewDb=newDb;
-				do{
+				do {
 					newDb=originalNewDb+"_"+uniqueID.ToString();
 					uniqueID++;
 				}
@@ -150,12 +151,12 @@ namespace OpenDental{
 			command="SHOW TABLES";
 			table=dcon.GetTable(command);
 			string[] tableName=new string[table.Rows.Count];
-			for(int i=0;i<table.Rows.Count;i++){
+			for(int i=0;i<table.Rows.Count;i++) {
 				tableName[i]=table.Rows[i][0].ToString();
 			}
 			//switch to using the new database
 			dcon=new DataConnection(newDb);
-			for(int i=0;i<tableName.Length;i++){
+			for(int i=0;i<tableName.Length;i++) {
 				command="SHOW CREATE TABLE "+oldDb+"."+tableName[i];
 				table=dcon.GetTable(command);
 				command=table.Rows[0][1].ToString();
@@ -167,7 +168,7 @@ namespace OpenDental{
 		}
 
 		/// <summary>Takes a text file with a series of SQL commands, and sends them as queries to the database.  Used in version upgrades and in the function that downloads and installs the latest translations.  The filename is always relative to the application directory.  Throws an exception if it fails.</summary>
-		public void ExecuteFile(string fileName){
+		public void ExecuteFile(string fileName) {
 			//also used in the function that downloads and installs the latests translations.
 			//if(!File.Exists(fileName)){
 			//	throw new Exception(fileName+" could not be found.");
@@ -177,17 +178,17 @@ namespace OpenDental{
 			string cmd="";
 			ArrayList AL=new ArrayList();
 			sr=new StreamReader(fileName);//throws a FileNotFoundException if not found. We handle that.
-			while(true){
+			while(true) {
 				line=sr.ReadLine();
-				if(line==null){
+				if(line==null) {
 					break;
 				}
-				if(line.Length==0 || line.Substring(0,1)=="#"){//could improve white space handling
+				if(line.Length==0 || line.Substring(0,1)=="#") {//could improve white space handling
 					//continue;
 				}
-				else{
+				else {
 					cmd+=" "+line;
-					if(cmd.Substring(cmd.Length-1)==";"){//again, need to handle white space better
+					if(cmd.Substring(cmd.Length-1)==";") {//again, need to handle white space better
 						AL.Add(cmd);
 						cmd="";
 					}
@@ -195,12 +196,12 @@ namespace OpenDental{
 			}
 			Conversions.NonQArray=new string[AL.Count];
 			AL.CopyTo(Conversions.NonQArray);
-				Conversions.SubmitNonQArray();
+			Conversions.SubmitNonQArray();
 			sr.Close();
 		}
 
-		private void To2_1_5(){
-			if(FromVersion < new Version("2.1.5")){
+		private void To2_1_5() {
+			if(FromVersion < new Version("2.1.5")) {
 				Conversions.NonQArray=new string[]{
 					"UPDATE claimformitem SET formatstring = 'MM/dd/yy' WHERE "
 						+"claimformitemnum = '280' || claimformitemnum = '286' || claimformitemnum = '292' "
@@ -215,8 +216,8 @@ namespace OpenDental{
 			To2_5_1();
 		}
 
-		private void To2_5_1(){
-			if(FromVersion < new Version("2.5.1")){
+		private void To2_5_1() {
+			if(FromVersion < new Version("2.5.1")) {
 				//these might generate a FileNotFoundException which we handle.
 				File.Copy(@"ConversionFiles\DentiCal.jpg"
 					,((Pref)Prefs.HList["DocPath"]).ValueString+@"\DentiCal.jpg",true);
@@ -231,7 +232,7 @@ namespace OpenDental{
 					+"LEFT JOIN procedurelog ON patient.nextaptnum = procedurelog.nextaptnum "
 					+"WHERE patient.nextaptnum > '0' ";
 				Conversions.SubmitSelect();
-				for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
+				for(int i=0;i<Conversions.TableQ.Rows.Count;i++) {
 					Conversions.NonQString=
 						"UPDATE appointment SET aptstatus = '6',"
 						+"aptdatetime = '"+POut.PDateT(PIn.PDate(Conversions.TableQ.Rows[i][1].ToString()))+"'"
@@ -247,7 +248,7 @@ namespace OpenDental{
 					+"WHERE UniqueID > '0'";
 				Conversions.SubmitSelect();
 				//use those primary keys to delete appropriate claimformitems and change foreign keys
-				for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
+				for(int i=0;i<Conversions.TableQ.Rows.Count;i++) {
 					Conversions.NonQString="DELETE FROM claimformitem"
 						+" WHERE ClaimFormNum = '"+Conversions.TableQ.Rows[i][0].ToString()+"'";
 					Conversions.SubmitNonQString();
@@ -261,7 +262,7 @@ namespace OpenDental{
 					+"FROM patientnote "
 					+"WHERE apptphone != ''";
 				Conversions.SubmitSelect();
-				for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
+				for(int i=0;i<Conversions.TableQ.Rows.Count;i++) {
 					Conversions.NonQArray=new string[]{
 						"INSERT INTO commlog (patnum"
 						+",commdate,commtype,note) VALUES("
@@ -282,12 +283,11 @@ namespace OpenDental{
 				string procs="";
 				int curAptNum=0;
 				int j=0;
-				while(j<Conversions.TableQ.Rows.Count){
+				while(j<Conversions.TableQ.Rows.Count) {
 					curAptNum=PIn.PInt(Conversions.TableQ.Rows[j][0].ToString());
 					procs="";
 					while(j<Conversions.TableQ.Rows.Count &&
-						curAptNum==PIn.PInt(Conversions.TableQ.Rows[j][0].ToString()))
-					{
+						curAptNum==PIn.PInt(Conversions.TableQ.Rows[j][0].ToString())) {
 						procs+=PIn.PString(Conversions.TableQ.Rows[j][1].ToString())+", ";
 						j++;
 					}
@@ -306,12 +306,11 @@ namespace OpenDental{
 					+"ORDER BY nextaptnum";
 				Conversions.SubmitSelect();
 				j=0;
-				while(j<Conversions.TableQ.Rows.Count){
+				while(j<Conversions.TableQ.Rows.Count) {
 					curAptNum=PIn.PInt(Conversions.TableQ.Rows[j][0].ToString());
 					procs="";
 					while(j<Conversions.TableQ.Rows.Count &&
-						curAptNum==PIn.PInt(Conversions.TableQ.Rows[j][0].ToString()))
-					{
+						curAptNum==PIn.PInt(Conversions.TableQ.Rows[j][0].ToString())) {
 						procs+=PIn.PString(Conversions.TableQ.Rows[j][1].ToString())+", ";
 						j++;
 					}
@@ -333,8 +332,8 @@ namespace OpenDental{
 			To2_5_2();
 		}
 
-		private void To2_5_2(){
-			if(FromVersion < new Version("2.5.2.0")){
+		private void To2_5_2() {
+			if(FromVersion < new Version("2.5.2.0")) {
 				Conversions.NonQArray=new string[]{
 					"ALTER TABLE claimform CHANGE OffsetX OffsetX SMALLINT(5) NOT NULL default '0'"
 					,"ALTER TABLE claimform CHANGE OffsetY OffsetY SMALLINT(5) NOT NULL default '0'"
@@ -346,8 +345,8 @@ namespace OpenDental{
 			To2_5_6();
 		}
 
-		private void To2_5_6(){
-			if(FromVersion < new Version("2.5.6.0")){
+		private void To2_5_6() {
+			if(FromVersion < new Version("2.5.6.0")) {
 				Conversions.NonQArray=new string[]{
 					"INSERT INTO preference (PrefName,ValueString) VALUES ('GenericEClaimsForm','')"
 					,"UPDATE preference SET ValueString = '2.5.6.0' WHERE PrefName = 'DataBaseVersion'"
@@ -357,29 +356,29 @@ namespace OpenDental{
 			To2_5_7();
 		}
 
-		private void To2_5_7(){
-			if(FromVersion < new Version("2.5.7.0")){
+		private void To2_5_7() {
+			if(FromVersion < new Version("2.5.7.0")) {
 				//copy the new ADA2002.gif
 				//try{
-					File.Copy(@"ConversionFiles\ADA2002.gif"
-						,((Pref)Prefs.HList["DocPath"]).ValueString+@"\ADA2002.gif",true);
+				File.Copy(@"ConversionFiles\ADA2002.gif"
+					,((Pref)Prefs.HList["DocPath"]).ValueString+@"\ADA2002.gif",true);
 				//}
 				//catch{
 				//	throw new Exception("ADA2002.gif could not be copied correctly.");
 				//}
 				//delete the old ADA2002.emf, and the old ADA2002.jpg if there is one
-				if(File.Exists(((Pref)Prefs.HList["DocPath"]).ValueString+@"\ADA2002.emf")){
+				if(File.Exists(((Pref)Prefs.HList["DocPath"]).ValueString+@"\ADA2002.emf")) {
 					File.Delete(((Pref)Prefs.HList["DocPath"]).ValueString+@"\ADA2002.emf");
 				}
-				if(File.Exists(((Pref)Prefs.HList["DocPath"]).ValueString+@"\ADA2002.jpg")){
+				if(File.Exists(((Pref)Prefs.HList["DocPath"]).ValueString+@"\ADA2002.jpg")) {
 					File.Delete(((Pref)Prefs.HList["DocPath"]).ValueString+@"\ADA2002.jpg");
 				}
 				//Get the claimformNum of the ADA2002
 				ClaimFormItems.Refresh();//I added this line much later to prevent a crash in the next line.
 				ClaimForms.Refresh();
 				ClaimForm ClaimFormCur=new ClaimForm();
-				for(int i=0;i<ClaimForms.ListLong.Length;i++){
-					if(ClaimForms.ListLong[i].UniqueID=="1"){
+				for(int i=0;i<ClaimForms.ListLong.Length;i++) {
+					if(ClaimForms.ListLong[i].UniqueID=="1") {
 						ClaimFormCur=ClaimForms.ListLong[i];
 						break;
 					}
@@ -388,10 +387,10 @@ namespace OpenDental{
 				ClaimFormItems.Refresh();
 				//ClaimFormItems.GetListForForm(ClaimFormCur.ClaimFormNum);
 				ClaimFormItem CFIcur=new ClaimFormItem();
-				for(int i=0;i<ClaimFormCur.Items.Length;i++){
+				for(int i=0;i<ClaimFormCur.Items.Length;i++) {
 					if(ClaimFormCur.Items[i].ImageFileName=="ADA2002.emf"
 						|| ClaimFormCur.Items[i].ImageFileName=="ADA2002.gif"
-						|| ClaimFormCur.Items[i].ImageFileName=="ADA2002.jpg"){
+						|| ClaimFormCur.Items[i].ImageFileName=="ADA2002.jpg") {
 						CFIcur=ClaimFormCur.Items[i];
 					}
 				}
@@ -404,10 +403,10 @@ namespace OpenDental{
 				CFIcur.Width=834;
 				CFIcur.Height=1058;
 				//save the changes
-				if(CFIcur.ClaimFormItemNum==0){
+				if(CFIcur.ClaimFormItemNum==0) {
 					CFIcur.Insert();
 				}
-				else{
+				else {
 					CFIcur.Update();
 				}
 				//final:
@@ -419,11 +418,10 @@ namespace OpenDental{
 			To2_8_0();
 		}
 
-		private void To2_8_0(){
-			if(FromVersion < new Version("2.8.0.0")){
+		private void To2_8_0() {
+			if(FromVersion < new Version("2.8.0.0")) {
 				//warn user about deleting templates
-				if(MessageBox.Show(@"In version 2.8, the concept of insurance templates is being phased out.  As part of the conversion process, your existing insurance template list will be replaced with an insurance plan list and a carrier list.  If you have any notes in your insurance templates, they will be deleted.  If you have important notes in any of your insurance templates, or if you have important templates that you don't want to lose, then you should use the print screen tool to print out the important information before proceeding.  Do you wish to proceed?","",MessageBoxButtons.OKCancel)!=DialogResult.OK)
-				{
+				if(MessageBox.Show(@"In version 2.8, the concept of insurance templates is being phased out.  As part of the conversion process, your existing insurance template list will be replaced with an insurance plan list and a carrier list.  If you have any notes in your insurance templates, they will be deleted.  If you have important notes in any of your insurance templates, or if you have important templates that you don't want to lose, then you should use the print screen tool to print out the important information before proceeding.  Do you wish to proceed?","",MessageBoxButtons.OKCancel)!=DialogResult.OK) {
 					throw new Exception();
 				}
 				//check to see if the conversion file is available
@@ -434,7 +432,7 @@ namespace OpenDental{
 				//load all existing employer names into the new Employer table:
 				Conversions.SelectText="SELECT DISTINCT Employer FROM insplan WHERE Employer !=''";
 				Conversions.SubmitSelect();
-				for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
+				for(int i=0;i<Conversions.TableQ.Rows.Count;i++) {
 					Conversions.NonQString="INSERT INTO employer(EmpName) VALUES('"
 						+POut.PString(PIn.PString(Conversions.TableQ.Rows[i][0].ToString()))+"')";
 					Conversions.SubmitNonQString();
@@ -443,15 +441,15 @@ namespace OpenDental{
 				Hashtable HEmpNames=new Hashtable();
 				Conversions.SelectText="SELECT EmpName,EmployerNum FROM employer";
 				Conversions.SubmitSelect();
-				for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
+				for(int i=0;i<Conversions.TableQ.Rows.Count;i++) {
 					HEmpNames.Add(PIn.PString(Conversions.TableQ.Rows[i][0].ToString()),//name
 						PIn.PInt(Conversions.TableQ.Rows[i][1].ToString()));//num
 				}
 				//replace Employer with EmployerNum in insplan and add to patient
 				Conversions.SelectText="SELECT PlanNum,Subscriber,Employer FROM insplan WHERE Employer !=''";
 				Conversions.SubmitSelect();
-				for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
-					try{
+				for(int i=0;i<Conversions.TableQ.Rows.Count;i++) {
+					try {
 						Conversions.NonQString="UPDATE insplan SET EmployerNum = '"
 							+((int)HEmpNames[PIn.PString(Conversions.TableQ.Rows[i][2].ToString())]).ToString()
 							+"' WHERE PlanNum = '"+Conversions.TableQ.Rows[i][0].ToString()+"'";
@@ -461,7 +459,7 @@ namespace OpenDental{
 							+"' WHERE PatNum = '"+Conversions.TableQ.Rows[i][1].ToString()+"'";
 						Conversions.SubmitNonQString();
 					}
-					catch{
+					catch {
 						//will sometimes fail due to capitalization, but it's not that important
 					}
 				}
@@ -469,7 +467,7 @@ namespace OpenDental{
 				Conversions.NonQString="UPDATE insplan SET Employer = ''";
 				Conversions.SubmitNonQString();
 				//reformat phone numbers in preparation for extracting carrier info
-				if(CultureInfo.CurrentCulture.Name=="en-US"){
+				if(CultureInfo.CurrentCulture.Name=="en-US") {
 					FormTelephone.Reformat();
 					Carriers.Refresh();
 				}
@@ -478,7 +476,7 @@ namespace OpenDental{
 					+",NoSendElect,ElectID"
 					+" FROM insplan WHERE Carrier !=''";
 				Conversions.SubmitSelect();
-				for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
+				for(int i=0;i<Conversions.TableQ.Rows.Count;i++) {
 					Carriers.Cur=new Carrier();
 					Carriers.Cur.CarrierName=PIn.PString(Conversions.TableQ.Rows[i][0].ToString());
 					Carriers.Cur.Phone      =PIn.PString(Conversions.TableQ.Rows[i][1].ToString());
@@ -487,13 +485,13 @@ namespace OpenDental{
 					Carriers.Cur.City       =PIn.PString(Conversions.TableQ.Rows[i][4].ToString());
 					Carriers.Cur.State      =PIn.PString(Conversions.TableQ.Rows[i][5].ToString());
 					Carriers.Cur.Zip        =PIn.PString(Conversions.TableQ.Rows[i][6].ToString());
-					Carriers.Cur.NoSendElect=PIn.PBool  (Conversions.TableQ.Rows[i][7].ToString());
+					Carriers.Cur.NoSendElect=PIn.PBool(Conversions.TableQ.Rows[i][7].ToString());
 					Carriers.Cur.ElectID    =PIn.PString(Conversions.TableQ.Rows[i][8].ToString());
 					Carriers.InsertCur();
 				}
 				Carriers.Refresh();
 				//loop through all Carriers and update CarrierNum in insplan
-				for(int i=0;i<Carriers.List.Length;i++){
+				for(int i=0;i<Carriers.List.Length;i++) {
 					Conversions.NonQString="UPDATE insplan SET "
 						+"CarrierNum = '"+POut.PInt(Carriers.List[i].CarrierNum)+"' "
 						+"WHERE "
@@ -504,7 +502,7 @@ namespace OpenDental{
 						+"&& City = '"       +POut.PString(Carriers.List[i].City)+"' "
 						+"&& State = '"      +POut.PString(Carriers.List[i].State)+"' "
 						+"&& Zip = '"        +POut.PString(Carriers.List[i].Zip)+"' "
-						+"&& NoSendElect = '"+POut.PBool  (Carriers.List[i].NoSendElect)+"' "
+						+"&& NoSendElect = '"+POut.PBool(Carriers.List[i].NoSendElect)+"' "
 						+"&& ElectID = '"    +POut.PString(Carriers.List[i].ElectID)+"'";
 					Conversions.SubmitNonQString();
 				}
@@ -519,12 +517,12 @@ namespace OpenDental{
 				Conversions.SubmitNonQString();
 				//Add PracticeWeb Reporting program link
 				Programs.Refresh();
-				if(Programs.HList.ContainsKey("PracticeWebReports")){
+				if(Programs.HList.ContainsKey("PracticeWebReports")) {
 					Programs.Cur=(Program)Programs.HList["PracticeWebReports"];
 					Programs.Cur.Path="PWReports.exe";
 					Programs.UpdateCur();
 				}
-				else{
+				else {
 					Programs.Cur=new Program();
 					Programs.Cur.ProgName="PracticeWebReports";
 					Programs.Cur.ProgDesc="PracticeWeb Reports from practice-web.com";
@@ -725,8 +723,8 @@ namespace OpenDental{
 			To2_8_2();
 		}
 
-		private void To2_8_2(){
-			if(FromVersion < new Version("2.8.2.0")){
+		private void To2_8_2() {
+			if(FromVersion < new Version("2.8.2.0")) {
 				Conversions.NonQArray=new string[]
 				{
 					"ALTER TABLE insplan DROP TemplateNum"
@@ -738,8 +736,8 @@ namespace OpenDental{
 			To2_8_3();
 		}
 
-		private void To2_8_3(){
-			if(FromVersion < new Version("2.8.3.0")){
+		private void To2_8_3() {
+			if(FromVersion < new Version("2.8.3.0")) {
 				Conversions.NonQArray=new string[]
 				{
 					"INSERT INTO preference VALUES ('RenaissanceLastBatchNumber','0')"
@@ -751,8 +749,8 @@ namespace OpenDental{
 			To2_8_6();
 		}
 
-		private void To2_8_6(){
-			if(FromVersion < new Version("2.8.6.0")){
+		private void To2_8_6() {
+			if(FromVersion < new Version("2.8.6.0")) {
 				Conversions.NonQArray=new string[]
 				{
 					"ALTER TABLE patient CHANGE City City VARCHAR(100) NOT NULL"
@@ -766,8 +764,8 @@ namespace OpenDental{
 			To2_8_10();
 		}
 
-		private void To2_8_10(){
-			if(FromVersion < new Version("2.8.10.0")){
+		private void To2_8_10() {
+			if(FromVersion < new Version("2.8.10.0")) {
 				Conversions.NonQArray=new string[]
 				{
 					"ALTER TABLE employer ADD Address varchar(255) NOT NULL"
@@ -784,8 +782,8 @@ namespace OpenDental{
 			To2_8_14();
 		}
 
-		private void To2_8_14(){
-			if(FromVersion < new Version("2.8.14.0")){
+		private void To2_8_14() {
+			if(FromVersion < new Version("2.8.14.0")) {
 				Conversions.NonQArray=new string[]
 				{
 					"ALTER TABLE adjustment CHANGE AdjType AdjType smallint unsigned NOT NULL"
@@ -801,8 +799,8 @@ namespace OpenDental{
 			To2_9_1();
 		}
 
-		private void To2_9_1(){
-			if(FromVersion < new Version("2.9.1.0")){
+		private void To2_9_1() {
+			if(FromVersion < new Version("2.9.1.0")) {
 				//check to see if the conversion file is available
 				//if(!File.Exists(@"ConversionFiles\convert_2_9_1.txt")){
 				//	throw new Exception(@"ConversionFiles\convert_2_9_1.txt"+" could not be found.");
@@ -817,8 +815,8 @@ namespace OpenDental{
 			To2_9_2();
 		}
 
-		private void To2_9_2(){
-			if(FromVersion < new Version("2.9.2.0")){
+		private void To2_9_2() {
+			if(FromVersion < new Version("2.9.2.0")) {
 				Conversions.NonQArray=new string[]
 				{
 					"ALTER TABLE patient ADD PriPending tinyint(1) unsigned NOT NULL"
@@ -831,8 +829,8 @@ namespace OpenDental{
 			To2_9_5();
 		}
 
-		private void To2_9_5(){
-			if(FromVersion < new Version("2.9.5.0")){
+		private void To2_9_5() {
+			if(FromVersion < new Version("2.9.5.0")) {
 				Conversions.NonQArray=new string[]
 				{
 					"ALTER TABLE autocode ADD LessIntrusive tinyint(1) unsigned NOT NULL"
@@ -843,13 +841,13 @@ namespace OpenDental{
 			To2_9_8();
 		}
 
-		private void To2_9_8(){
-			if(FromVersion < new Version("2.9.8.0")){
+		private void To2_9_8() {
+			if(FromVersion < new Version("2.9.8.0")) {
 				string claimFormNum;
 				//Change the PlaceNumericCode field for both HCFA forms
 				Conversions.SelectText="SELECT ClaimFormNum FROM claimform WHERE UniqueID = '4'";
 				Conversions.SubmitSelect();
-				if(Conversions.TableQ.Rows.Count>0){
+				if(Conversions.TableQ.Rows.Count>0) {
 					claimFormNum=Conversions.TableQ.Rows[0][0].ToString();
 					Conversions.NonQArray=new string[]
 					{
@@ -876,7 +874,7 @@ namespace OpenDental{
 				}
 				Conversions.SelectText="SELECT ClaimFormNum FROM claimform WHERE UniqueID = '5'";
 				Conversions.SubmitSelect();
-				if(Conversions.TableQ.Rows.Count>0){
+				if(Conversions.TableQ.Rows.Count>0) {
 					claimFormNum=Conversions.TableQ.Rows[0][0].ToString();
 					Conversions.NonQArray=new string[]
 					{
@@ -904,7 +902,7 @@ namespace OpenDental{
 				//ADA2002 medicaid id's
 				Conversions.SelectText="SELECT ClaimFormNum FROM claimform WHERE UniqueID = '1'";
 				Conversions.SubmitSelect();
-				if(Conversions.TableQ.Rows.Count>0){
+				if(Conversions.TableQ.Rows.Count>0) {
 					claimFormNum=Conversions.TableQ.Rows[0][0].ToString();
 					Conversions.NonQArray=new string[]
 					{
@@ -918,7 +916,7 @@ namespace OpenDental{
 				//ADA2000 employer and 3 radiograph fields.
 				Conversions.SelectText="SELECT ClaimFormNum FROM claimform WHERE UniqueID = '3'";
 				Conversions.SubmitSelect();
-				if(Conversions.TableQ.Rows.Count>0){
+				if(Conversions.TableQ.Rows.Count>0) {
 					claimFormNum=Conversions.TableQ.Rows[0][0].ToString();
 					Conversions.NonQArray=new string[]
 					{
@@ -943,14 +941,14 @@ namespace OpenDental{
 		}
 
 		///<summary>Used by To3_0_1. IMPORTANT: remember that this method alters TableQ.</summary>
-		private int GetPercent(int patNum,int priPlanNum,int secPlanNum,string adaCode,string priORsec){
+		private int GetPercent(int patNum,int priPlanNum,int secPlanNum,string adaCode,string priORsec) {
 			//Conversions.SelectText="SELECT 
 			//get the covCatNum for this adaCode
 			Conversions.SelectText="SELECT CovCatNum FROM covspan "
 				+"WHERE '"+POut.PString(adaCode)+"' > FromCode "
 				+"AND '"+POut.PString(adaCode)+"' < ToCode";
 			Conversions.SubmitSelect();
-			if(Conversions.TableQ.Rows.Count==0){
+			if(Conversions.TableQ.Rows.Count==0) {
 				return 0;//this code is not in any category, so coverage=0
 			}
 			int covCatNum=PIn.PInt(Conversions.TableQ.Rows[0][0].ToString());
@@ -961,30 +959,30 @@ namespace OpenDental{
 				+"OR PriPatNum = '"+patNum.ToString()+"' "
 				+"OR SecPatNum = '"+patNum.ToString()+"')";
 			Conversions.SubmitSelect();
-			if(Conversions.TableQ.Rows.Count==0){
+			if(Conversions.TableQ.Rows.Count==0) {
 				return 0;//no percentages have been entered for this patient or plan
 			}
-			for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
+			for(int i=0;i<Conversions.TableQ.Rows.Count;i++) {
 				//first handle the patient overrides
-				if(priORsec=="pri" && PIn.PInt(Conversions.TableQ.Rows[i][1].ToString())==patNum){
+				if(priORsec=="pri" && PIn.PInt(Conversions.TableQ.Rows[i][1].ToString())==patNum) {
 					return PIn.PInt(Conversions.TableQ.Rows[i][3].ToString());
 				}
-				if(priORsec=="sec" && PIn.PInt(Conversions.TableQ.Rows[i][2].ToString())==patNum){
+				if(priORsec=="sec" && PIn.PInt(Conversions.TableQ.Rows[i][2].ToString())==patNum) {
 					return PIn.PInt(Conversions.TableQ.Rows[i][3].ToString());
 				}
 				//then handle the percentages attached to plans(much more common)
-				if(priORsec=="pri" && PIn.PInt(Conversions.TableQ.Rows[i][0].ToString())==priPlanNum){
+				if(priORsec=="pri" && PIn.PInt(Conversions.TableQ.Rows[i][0].ToString())==priPlanNum) {
 					return PIn.PInt(Conversions.TableQ.Rows[i][3].ToString());
 				}
-				if(priORsec=="sec" && PIn.PInt(Conversions.TableQ.Rows[i][0].ToString())==secPlanNum){
+				if(priORsec=="sec" && PIn.PInt(Conversions.TableQ.Rows[i][0].ToString())==secPlanNum) {
 					return PIn.PInt(Conversions.TableQ.Rows[i][3].ToString());
 				}
 			}
 			return 0;
 		}
 
-		private void To3_0_1(){
-			if(FromVersion < new Version("3.0.1.0")){
+		private void To3_0_1() {
+			if(FromVersion < new Version("3.0.1.0")) {
 				//if(!File.Exists(@"ConversionFiles\convert_3_0_1.txt")){
 				//	throw new Exception(@"ConversionFiles\convert_3_0_1.txt"+" could not be found.");
 				//}
@@ -994,10 +992,10 @@ namespace OpenDental{
 				Conversions.SubmitSelect();
 				StringBuilder sb;
 				string pattern;
-				for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
+				for(int i=0;i<Conversions.TableQ.Rows.Count;i++) {
 					pattern=PIn.PString(Conversions.TableQ.Rows[i][1].ToString());
 					sb=new StringBuilder();
-					for(int j=0;j<pattern.Length;j++){
+					for(int j=0;j<pattern.Length;j++) {
 						sb.Append(pattern.Substring(j,1));
 						sb.Append(pattern.Substring(j,1));
 					}
@@ -1009,7 +1007,7 @@ namespace OpenDental{
 				//add the default 5 Elements to each ApptView-----------------------------------------------
 				Conversions.SelectText="SELECT ApptViewNum FROM apptview";
 				Conversions.SubmitSelect();
-				for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
+				for(int i=0;i<Conversions.TableQ.Rows.Count;i++) {
 					Conversions.NonQArray=new string[]
 					{
 						"INSERT INTO apptviewitem(ApptViewNum,ElementDesc,ElementOrder,ElementColor) "
@@ -1024,7 +1022,7 @@ namespace OpenDental{
 							+"VALUES('"+Conversions.TableQ.Rows[i][0].ToString()+"','Production','4','-16777216')"
 					};
 					Conversions.SubmitNonQArray();
-				}				
+				}
 				//MessageBox.Show("Appointments converted.");
 				//Any claimprocs attached to claims with ins being Cap, should be CapClaim, even if paid
 				Conversions.SelectText="SELECT claimproc.ClaimProcNum FROM claimproc,insplan "
@@ -1032,7 +1030,7 @@ namespace OpenDental{
 					+"AND claimproc.ClaimNum != '0' "
 					+"AND insplan.PlanType='c'";
 				Conversions.SubmitSelect();
-				for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
+				for(int i=0;i<Conversions.TableQ.Rows.Count;i++) {
 					Conversions.NonQString="UPDATE claimproc SET Status='5' "//CapClaim
 						+"WHERE ClaimProcNum='"+Conversions.TableQ.Rows[i][0].ToString()+"'";
 					Conversions.SubmitNonQString();
@@ -1059,10 +1057,10 @@ namespace OpenDental{
 					+"AND claimproc.Status != 5 ";//skips capClaim
 				Conversions.SubmitSelect();
 				procTable=Conversions.TableQ.Copy();//so that we can perform other queries
-				for(int i=0;i<procTable.Rows.Count;i++){
+				for(int i=0;i<procTable.Rows.Count;i++) {
 					planNum=PIn.PInt(procTable.Rows[i][4].ToString());//claimproc.PlanNum
 					//if primary
-					if(planNum==PIn.PInt(procTable.Rows[i][1].ToString())){//priPlanNum
+					if(planNum==PIn.PInt(procTable.Rows[i][1].ToString())) {//priPlanNum
 						percentage=GetPercent(PIn.PInt(procTable.Rows[i][3].ToString()),//patNum
 							PIn.PInt(procTable.Rows[i][1].ToString()),//priPlanNum
 							PIn.PInt(procTable.Rows[i][2].ToString()),//secPlanNum
@@ -1071,7 +1069,7 @@ namespace OpenDental{
 						overrideAmt=PIn.PDouble(procTable.Rows[i][6].ToString());
 					}
 					//else if secondary
-					else if(planNum==PIn.PInt(procTable.Rows[i][2].ToString())){//priPlanNum
+					else if(planNum==PIn.PInt(procTable.Rows[i][2].ToString())) {//priPlanNum
 						percentage=GetPercent(PIn.PInt(procTable.Rows[i][3].ToString()),//patNum
 							PIn.PInt(procTable.Rows[i][1].ToString()),//priPlanNum
 							PIn.PInt(procTable.Rows[i][2].ToString()),//secPlanNum
@@ -1079,7 +1077,7 @@ namespace OpenDental{
 							"sec");
 						overrideAmt=PIn.PDouble(procTable.Rows[i][7].ToString());
 					}
-					else{
+					else {
 						//plan is neither pri or sec, so disregard
 						continue;
 					}
@@ -1121,12 +1119,12 @@ namespace OpenDental{
 				int status=0;
 				double copay=0;
 				double writeoff=0;
-				for(int i=0;i<procTable.Rows.Count;i++){//loop procedures
+				for(int i=0;i<procTable.Rows.Count;i++) {//loop procedures
 					//1. noBillIns
 					if(PIn.PBool(procTable.Rows[i][10].ToString())//if noBillIns
-						&& PIn.PDouble(procTable.Rows[i][11].ToString()) ==-1){//and not a cap procedure
+						&& PIn.PDouble(procTable.Rows[i][11].ToString()) ==-1) {//and not a cap procedure
 						//primary
-						if(PIn.PInt(procTable.Rows[i][3].ToString())!=0){//if has pri ins
+						if(PIn.PInt(procTable.Rows[i][3].ToString())!=0) {//if has pri ins
 							Conversions.NonQString="INSERT INTO claimproc(ProcNum,PatNum,ProvNum,Status,PlanNum,"
 								+"DateCP,AllowedAmt,Percentage,PercentOverride,CopayAmt,OverrideInsEst,"
 								+"NoBillIns,OverAnnualMax,PaidOtherIns) "
@@ -1150,7 +1148,7 @@ namespace OpenDental{
 							Conversions.SubmitNonQString();
 						}
 						//secondary
-						if(PIn.PInt(procTable.Rows[i][4].ToString())!=0){//if has sec ins
+						if(PIn.PInt(procTable.Rows[i][4].ToString())!=0) {//if has sec ins
 							Conversions.NonQString="INSERT INTO claimproc(ProcNum,PatNum,ProvNum,Status,PlanNum,"
 								+"DateCP,AllowedAmt,Percentage,PercentOverride,CopayAmt,OverrideInsEst,"
 								+"NoBillIns,OverAnnualMax,PaidOtherIns) "
@@ -1175,14 +1173,14 @@ namespace OpenDental{
 						continue;
 					}//1. noBillIns
 					//2. capitation. Always primary. If C, then affects aging via CapComplete.
-							//Never attached to claim.
+					//Never attached to claim.
 					copay=PIn.PDouble(procTable.Rows[i][11].ToString());
 					//if CapCoPay not -1, and priIns is cap, then this is a cap proc
-					if(copay!=-1 && PIn.PString(procTable.Rows[i][14].ToString())=="c"){
-						if(PIn.PInt(procTable.Rows[i][12].ToString())==1){//proc status =tp
+					if(copay!=-1 && PIn.PString(procTable.Rows[i][14].ToString())=="c") {
+						if(PIn.PInt(procTable.Rows[i][12].ToString())==1) {//proc status =tp
 							status=8;//claimProc status=CapEstimate
 						}
-						if(PIn.PInt(procTable.Rows[i][12].ToString())==2){//proc status =c
+						if(PIn.PInt(procTable.Rows[i][12].ToString())==2) {//proc status =c
 							status=7;//claimProc status=CapComplete
 						}
 						writeoff=PIn.PDouble(procTable.Rows[i][13].ToString())//procFee
@@ -1244,7 +1242,7 @@ namespace OpenDental{
 					//4. standard secondary estimate
 					//secondary can be in addition to primary, or not at all
 					planNum=PIn.PInt(procTable.Rows[i][4].ToString());//secPlanNum
-					if(planNum==0){
+					if(planNum==0) {
 						continue;
 					}
 					percentage=GetPercent(PIn.PInt(procTable.Rows[i][1].ToString()),//patNum
@@ -1300,7 +1298,7 @@ namespace OpenDental{
 				Conversions.SubmitNonQArray();
 				Conversions.SelectText="SELECT * FROM definition WHERE Category='8'";//Medical Notes
 				Conversions.SubmitSelect();
-				for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
+				for(int i=0;i<Conversions.TableQ.Rows.Count;i++) {
 					Conversions.NonQString="INSERT INTO quickpastenote (QuickPasteCatNum,ItemOrder,Note) "
 						+"VALUES ('1','"+i.ToString()+"','"
 						+POut.PString(Conversions.TableQ.Rows[i][3].ToString())+"')";
@@ -1316,7 +1314,7 @@ namespace OpenDental{
 				}
 				Conversions.SelectText="SELECT * FROM definition WHERE Category='14'";//Service Notes
 				Conversions.SubmitSelect();
-				for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
+				for(int i=0;i<Conversions.TableQ.Rows.Count;i++) {
 					Conversions.NonQString="INSERT INTO quickpastenote (QuickPasteCatNum,ItemOrder,Note) "
 						+"VALUES ('3','"+i.ToString()+"','"
 						+POut.PString(Conversions.TableQ.Rows[i][3].ToString())+"')";
@@ -1343,8 +1341,8 @@ namespace OpenDental{
 			To3_0_2();
 		}
 
-		private void To3_0_2(){
-			if(FromVersion < new Version("3.0.2.0")){
+		private void To3_0_2() {
+			if(FromVersion < new Version("3.0.2.0")) {
 				Conversions.NonQArray=new string[]
 				{
 					"INSERT INTO preference VALUES('TreatPlanShowGraphics','1')"
@@ -1357,19 +1355,19 @@ namespace OpenDental{
 			To3_0_3();
 		}
 
-		private void To3_0_3(){
-			if(FromVersion < new Version("3.0.3.0")){
+		private void To3_0_3() {
+			if(FromVersion < new Version("3.0.3.0")) {
 				Conversions.SelectText="SELECT CONCAT(LName,', ',FName) FROM payplan,patient "
 					+"WHERE patient.PatNum=payplan.PatNum";
 				Conversions.SubmitSelect();
-				if(Conversions.TableQ.Rows.Count>0){
+				if(Conversions.TableQ.Rows.Count>0) {
 					string planPats="";
-					for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
-						if(i>0){
+					for(int i=0;i<Conversions.TableQ.Rows.Count;i++) {
+						if(i>0) {
 							planPats+=",";
 						}
 						planPats+=PIn.PString(Conversions.TableQ.Rows[i][0].ToString());
-					}				
+					}
 					MessageBox.Show("You have payment plans for the following patients: "
 						+planPats+".  "
 						+"There was a bug in the way the amount due was being calculated, so you will "
@@ -1388,8 +1386,8 @@ namespace OpenDental{
 			To3_0_4();
 		}
 
-		private void To3_0_4(){
-			if(FromVersion < new Version("3.0.4.0")){
+		private void To3_0_4() {
+			if(FromVersion < new Version("3.0.4.0")) {
 				Conversions.NonQArray=new string[]
 				{
 					"ALTER TABLE procedurelog ADD HideGraphical tinyint unsigned NOT NULL"
@@ -1401,14 +1399,14 @@ namespace OpenDental{
 			To3_0_5();
 		}
 
-		private void To3_0_5(){
-			if(FromVersion < new Version("3.0.5.0")){
+		private void To3_0_5() {
+			if(FromVersion < new Version("3.0.5.0")) {
 				//Delete procedures for patients that have been deleted:
 				Conversions.SelectText="SELECT patient.PatNum FROM patient,procedurelog "
 					+"WHERE patient.PatNum=procedurelog.PatNum "
 					+"AND patient.PatStatus=4";
 				Conversions.SubmitSelect();
-				for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
+				for(int i=0;i<Conversions.TableQ.Rows.Count;i++) {
 					Conversions.NonQString="DELETE FROM procedurelog "
 						+"WHERE PatNum="+Conversions.TableQ.Rows[i][0].ToString();
 					Conversions.SubmitNonQString();
@@ -1425,7 +1423,7 @@ namespace OpenDental{
 					AND cp1.ClaimProcNum!=cp2.ClaimProcNum
 					AND cp1.Status=6";//estimate
 				Conversions.SubmitSelect();
-				for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
+				for(int i=0;i<Conversions.TableQ.Rows.Count;i++) {
 					Conversions.NonQString="DELETE FROM claimproc "
 						+"WHERE ClaimProcNum="+Conversions.TableQ.Rows[i][0].ToString();
 					Conversions.SubmitNonQString();
@@ -1442,8 +1440,8 @@ namespace OpenDental{
 			To3_1_0();
 		}
 
-		private void To3_1_0(){
-			if(FromVersion < new Version("3.1.0.0")){
+		private void To3_1_0() {
+			if(FromVersion < new Version("3.1.0.0")) {
 				//if(!File.Exists(@"ConversionFiles\convert_3_1_0.txt")){
 				//	throw new Exception(@"ConversionFiles\convert_3_1_0.txt"+" could not be found.");
 				//}
@@ -1485,7 +1483,7 @@ namespace OpenDental{
 				int status;
 				int interval;
 				Interval newInterval;
-				for(int i=0;i<patTable.Rows.Count;i++){
+				for(int i=0;i<patTable.Rows.Count;i++) {
 					patNum=PIn.PInt(patTable.Rows[i][0].ToString());
 					status=PIn.PInt(patTable.Rows[i][1].ToString());
 					interval=PIn.PInt(patTable.Rows[i][2].ToString());
@@ -1500,10 +1498,10 @@ namespace OpenDental{
 						+"OR procedurelog.ProcStatus = 4) "
 						+"GROUP BY procedurelog.PatNum";
 					table=dcon.GetTable(command);
-					if(table.Rows.Count==0){
+					if(table.Rows.Count==0) {
 						previousDate=DateTime.MinValue;
 					}
-					else{
+					else {
 						previousDate=PIn.PDate(table.Rows[0][0].ToString());
 					}
 					//If no useful info and no trigger. No recall created
@@ -1512,27 +1510,27 @@ namespace OpenDental{
 					{
 						continue;
 					}
-					if(interval==0){
+					if(interval==0) {
 						newInterval=new Interval(0,0,6,0);
 					}
-					else{
+					else {
 						newInterval=new Interval(0,0,interval,0);
 					}
-					if(previousDate==DateTime.MinValue){
+					if(previousDate==DateTime.MinValue) {
 						dueDate=DateTime.MinValue;
 					}
-					else{
+					else {
 						dueDate=previousDate+newInterval;
 					}
 					command="INSERT INTO recall (PatNum,DateDueCalc,DateDue,DatePrevious,"
 						+"RecallInterval,RecallStatus"
 						+") VALUES ("
-						+"'"+POut.PInt   (patNum)+"', "
-						+"'"+POut.PDate  (dueDate)+"', "
-						+"'"+POut.PDate  (dueDate)+"', "
-						+"'"+POut.PDate  (previousDate)+"', "
-						+"'"+POut.PInt   (newInterval.ToInt())+"', "
-						+"'"+POut.PInt   (status)+"')";
+						+"'"+POut.PInt(patNum)+"', "
+						+"'"+POut.PDate(dueDate)+"', "
+						+"'"+POut.PDate(dueDate)+"', "
+						+"'"+POut.PDate(previousDate)+"', "
+						+"'"+POut.PInt(newInterval.ToInt())+"', "
+						+"'"+POut.PInt(status)+"')";
 					dcon.NonQ(command);
 				}//for int i<patTable
 				command="UPDATE preference SET ValueString = '3.1.0.0' WHERE PrefName = 'DataBaseVersion'";
@@ -1541,8 +1539,8 @@ namespace OpenDental{
 			To3_1_3();
 		}
 
-		private void To3_1_3(){
-			if(FromVersion < new Version("3.1.3.0")){
+		private void To3_1_3() {
+			if(FromVersion < new Version("3.1.3.0")) {
 				//0 values in date fields are causing a lot of program slowdown
 				string[] commands=new string[]
 				{
@@ -1615,8 +1613,8 @@ namespace OpenDental{
 			To3_1_4();
 		}
 
-		private void To3_1_4(){
-			if(FromVersion < new Version("3.1.4.0")){
+		private void To3_1_4() {
+			if(FromVersion < new Version("3.1.4.0")) {
 				string[] commands=new string[]
 				{
 					"ALTER table clearinghouse ADD LoginID varchar(255) NOT NULL"
@@ -1631,15 +1629,15 @@ namespace OpenDental{
 			To3_1_13();
 		}
 
-		private void To3_1_13(){
-			if(FromVersion < new Version("3.1.13.0")){
+		private void To3_1_13() {
+			if(FromVersion < new Version("3.1.13.0")) {
 				//get rid of any medication pats where medication no longer exists.
 				string command="SELECT medicationpat.MedicationPatNum FROM medicationpat "
 					+"LEFT JOIN medication ON medicationpat.MedicationNum=medication.MedicationNum "
 					+"WHERE medication.MedicationNum IS NULL";
 				DataConnection dcon=new DataConnection();
 				DataTable table=dcon.GetTable(command);
-				for(int i=0;i<table.Rows.Count;i++){
+				for(int i=0;i<table.Rows.Count;i++) {
 					command="DELETE FROM medicationpat WHERE MedicationPatNum="
 						+table.Rows[i][0].ToString();
 					dcon.NonQ(command);
@@ -1652,14 +1650,14 @@ namespace OpenDental{
 						+@"'','5','C:\\Recscom\\Recscom.exe')"
 					,"UPDATE preference SET ValueString = '3.1.13.0' WHERE PrefName = 'DataBaseVersion'"
 				};
-				
+
 				dcon.NonQ(commands);
 			}
 			To3_1_16();
 		}
 
-		private void To3_1_16(){
-			if(FromVersion < new Version("3.1.16.0")){
+		private void To3_1_16() {
+			if(FromVersion < new Version("3.1.16.0")) {
 				//this functionality is all copied directly from the Check Database tool.
 				string command=@"SELECT PatNum FROM patient
 					LEFT JOIN insplan on patient.PriPlanNum=insplan.PlanNum
@@ -1667,7 +1665,7 @@ namespace OpenDental{
 					AND insplan.PlanNum IS NULL";
 				DataConnection dcon=new DataConnection();
 				DataTable table=dcon.GetTable(command);
-				for(int i=0;i<table.Rows.Count;i++){
+				for(int i=0;i<table.Rows.Count;i++) {
 					command="UPDATE patient set PriPlanNum=0 "
 						+"WHERE PatNum="+table.Rows[i][0].ToString();
 					dcon.NonQ(command);
@@ -1676,7 +1674,7 @@ namespace OpenDental{
 					LEFT JOIN insplan ON claimproc.PlanNum=insplan.PlanNum
 					WHERE insplan.PlanNum IS NULL";
 				table=dcon.GetTable(command);
-				for(int i=0;i<table.Rows.Count;i++){
+				for(int i=0;i<table.Rows.Count;i++) {
 					command="DELETE FROM claimproc "
 						+"WHERE ClaimProcNum="+table.Rows[i][0].ToString();
 					dcon.NonQ(command);
@@ -1685,7 +1683,7 @@ namespace OpenDental{
 					LEFT JOIN insplan ON claim.PlanNum=insplan.PlanNum
 					WHERE insplan.PlanNum IS NULL";
 				table=dcon.GetTable(command);
-				for(int i=0;i<table.Rows.Count;i++){
+				for(int i=0;i<table.Rows.Count;i++) {
 					command="DELETE FROM claim "
 						+"WHERE ClaimNum="+table.Rows[i][0].ToString();
 					dcon.NonQ(command);
@@ -1696,17 +1694,17 @@ namespace OpenDental{
 			To3_4_0();
 		}
 
-		private void To3_4_0(){
-			if(FromVersion < new Version("3.4.0.0")){
+		private void To3_4_0() {
+			if(FromVersion < new Version("3.4.0.0")) {
 				ExecuteFile(@"ConversionFiles\convert_3_4_0.txt");//Might throw an exception which we handle.
 				//----------------Copy payment dates into paysplits--------------------------------------
 				string command="SELECT paysplit.SplitNum,payment.PayDate FROM payment,paysplit "
 					+"WHERE payment.PayNum=paysplit.PayNum";
 				DataConnection dcon=new DataConnection();
 				DataTable table=dcon.GetTable(command);
-				for(int i=0;i<table.Rows.Count;i++){
+				for(int i=0;i<table.Rows.Count;i++) {
 					command="UPDATE paysplit SET "
-						+"DatePay='"+POut.PDate (PIn.PDate (table.Rows[i][1].ToString()))+"' "
+						+"DatePay='"+POut.PDate(PIn.PDate(table.Rows[i][1].ToString()))+"' "
 						+"WHERE SplitNum="+table.Rows[i][0].ToString();
 					dcon.NonQ(command);
 				}
@@ -1718,10 +1716,10 @@ namespace OpenDental{
 				command="SELECT * FROM definition WHERE Category=15 ORDER BY ItemOrder";//cat=DiscountTypes
 				table=dcon.GetTable(command);
 				Hashtable HDiscToAdj=new Hashtable();//key=original defNum(discountType. value=new defNum(AdjType)
-				for(int i=0;i<table.Rows.Count;i++){
+				for(int i=0;i<table.Rows.Count;i++) {
 					command="INSERT INTO definition (category,itemorder,itemname,itemvalue,ishidden) VALUES("
 					+"1, "//category=AdjTypes
-					+"'"+POut.PInt   (firstItemOrder+i)+"', "//itemOrder
+					+"'"+POut.PInt(firstItemOrder+i)+"', "//itemOrder
 					+"'"+POut.PString(PIn.PString(table.Rows[i][3].ToString()))+"', "//item name
 					+"'-', "//itemValue. All discounts are negative
 					+"'"+table.Rows[i][6].ToString()+"')";//is hidden
@@ -1733,18 +1731,18 @@ namespace OpenDental{
 				HDiscToAdj.Add(0,dcon.InsertID);
 				//create new adjustments from existing discounts
 				command="SELECT * FROM paysplit WHERE IsDiscount=1";//0=SplitNum,1=SplitAmt,2=PatNum,3=ProcDate,
-					//4=PayNum,5=IsDiscount,6=DiscountType,7=ProvNum,8=PayPlanNum,9=DatePay
+				//4=PayNum,5=IsDiscount,6=DiscountType,7=ProvNum,8=PayPlanNum,9=DatePay
 				table=dcon.GetTable(command);
-				for(int i=0;i<table.Rows.Count;i++){
+				for(int i=0;i<table.Rows.Count;i++) {
 					command="INSERT INTO adjustment (AdjDate,AdjAmt,PatNum, "
 					+"AdjType,ProvNum,ProcDate) "//AdjNote
 					+"VALUES("
-					+"'"+POut.PDate  (PIn.PDate  (table.Rows[i][9].ToString()))+"', "//entryDate
+					+"'"+POut.PDate(PIn.PDate(table.Rows[i][9].ToString()))+"', "//entryDate
 					+"'"+POut.PDouble(-PIn.PDouble(table.Rows[i][1].ToString()))+"', "//amt
-					+"'"+POut.PInt   (PIn.PInt   (table.Rows[i][2].ToString()))+"', "//patNum
-					+"'"+POut.PInt   ((int)HDiscToAdj[PIn.PInt(table.Rows[i][6].ToString())])+"', "//type
-					+"'"+POut.PInt   (PIn.PInt   (table.Rows[i][7].ToString()))+"', "//provNum
-					+"'"+POut.PDate  (PIn.PDate  (table.Rows[i][3].ToString()))+"')";//procDate
+					+"'"+POut.PInt(PIn.PInt(table.Rows[i][2].ToString()))+"', "//patNum
+					+"'"+POut.PInt((int)HDiscToAdj[PIn.PInt(table.Rows[i][6].ToString())])+"', "//type
+					+"'"+POut.PInt(PIn.PInt(table.Rows[i][7].ToString()))+"', "//provNum
+					+"'"+POut.PDate(PIn.PDate(table.Rows[i][3].ToString()))+"')";//procDate
 					//note
 					dcon.NonQ(command);
 				}
@@ -1753,12 +1751,12 @@ namespace OpenDental{
 				//--------------------Printers----------------------------------------------------------
 				command="SELECT * FROM computer WHERE PrinterName != ''";
 				table=dcon.GetTable(command);
-				for(int i=0;i<table.Rows.Count;i++){
+				for(int i=0;i<table.Rows.Count;i++) {
 					command="INSERT INTO printer (ComputerNum,PrintSit,PrinterName,"
 					+"DisplayPrompt) "
 					+"VALUES("
-					+"'"+POut.PInt   (PIn.PInt   (table.Rows[i][0].ToString()))+"', "
-					+"'"+POut.PInt   ((int)PrintSituation.Default)+"', "
+					+"'"+POut.PInt(PIn.PInt(table.Rows[i][0].ToString()))+"', "
+					+"'"+POut.PInt((int)PrintSituation.Default)+"', "
 					+"'"+POut.PString(PIn.PString(table.Rows[i][2].ToString()))+"', "
 					+"'1')";
 					dcon.NonQ(command);
@@ -1804,9 +1802,9 @@ namespace OpenDental{
 			}
 			To3_4_7();
 		}
-		
-		private void To3_4_7(){
-			if(FromVersion < new Version("3.4.7.0")){
+
+		private void To3_4_7() {
+			if(FromVersion < new Version("3.4.7.0")) {
 				string[] commands=new string[]
 				{
 					"INSERT INTO clearinghouse(Description,ExportPath,IsDefault,Payors,Eformat,ReceiverID,"
@@ -1821,9 +1819,9 @@ namespace OpenDental{
 			To3_4_10();
 		}
 
-		private void To3_4_10(){
+		private void To3_4_10() {
 			//the only purpose of this is to check the bug fix in conversions
-			if(FromVersion < new Version("3.4.10.0")){
+			if(FromVersion < new Version("3.4.10.0")) {
 				string[] commands=new string[]
 				{
 					"UPDATE preference SET ValueString = '3.4.10.0' WHERE PrefName = 'DataBaseVersion'"
@@ -1834,8 +1832,8 @@ namespace OpenDental{
 			To3_4_11();
 		}
 
-		private void To3_4_11(){
-			if(FromVersion < new Version("3.4.11.0")){
+		private void To3_4_11() {
+			if(FromVersion < new Version("3.4.11.0")) {
 				//Planmeca link-----------------------------------------------------------------------
 				string command="INSERT INTO program (ProgName,ProgDesc,Enabled,Path,CommandLine,Note"
 					+") VALUES("
@@ -1867,8 +1865,8 @@ namespace OpenDental{
 			To3_4_16();
 		}
 
-		private void To3_4_16(){
-			if(FromVersion < new Version("3.4.16.0")){
+		private void To3_4_16() {
+			if(FromVersion < new Version("3.4.16.0")) {
 				DataConnection dcon=new DataConnection();
 				string[] commands=new string[]
 				{
@@ -1880,8 +1878,8 @@ namespace OpenDental{
 			To3_4_17();
 		}
 
-		private void To3_4_17(){
-			if(FromVersion < new Version("3.4.17.0")){
+		private void To3_4_17() {
+			if(FromVersion < new Version("3.4.17.0")) {
 				DataConnection dcon=new DataConnection();
 				string[] commands=new string[]
 				{
@@ -1893,13 +1891,13 @@ namespace OpenDental{
 			To3_4_24();
 		}
 
-		private void To3_4_24(){
-			if(FromVersion < new Version("3.4.24.0")){
+		private void To3_4_24() {
+			if(FromVersion < new Version("3.4.24.0")) {
 				DataConnection dcon=new DataConnection();
 				//Delete program links for WebClaim and Renaissance--------------------------------------
 				string command="SELECT ProgramNum FROM program WHERE ProgName='WebClaim' OR ProgName='Renaissance'";
 				DataTable table=dcon.GetTable(command);
-				for(int i=0;i<table.Rows.Count;i++){
+				for(int i=0;i<table.Rows.Count;i++) {
 					command="DELETE FROM program WHERE ProgramNum="+table.Rows[i][0].ToString();
 					dcon.NonQ(command);
 					command="DELETE FROM toolbutitem WHERE ProgramNum="+table.Rows[i][0].ToString();
@@ -1907,10 +1905,10 @@ namespace OpenDental{
 				}
 				//Fix utf8 binary collations for ADACode columns-------------------------------------------
 				command="SELECT @@version";
- 				table=dcon.GetTable(command);
+				table=dcon.GetTable(command);
 				string thisVersion=PIn.PString(table.Rows[0][0].ToString());
 				string[] commands;
-				if(thisVersion.Substring(0,3)=="4.1" || thisVersion.Substring(0,3)=="5.0"){
+				if(thisVersion.Substring(0,3)=="4.1" || thisVersion.Substring(0,3)=="5.0") {
 					commands=new string[]
 					{
 						"ALTER TABLE procedurecode CHANGE ADACode ADACode varchar(15) character set utf8 collate utf8_bin NOT NULL"
@@ -1942,8 +1940,8 @@ namespace OpenDental{
 			To3_5_0();
 		}
 
-		private void To3_5_0(){
-			if(FromVersion < new Version("3.5.0.0")){
+		private void To3_5_0() {
+			if(FromVersion < new Version("3.5.0.0")) {
 				ExecuteFile(@"ConversionFiles\convert_3_5_0.txt");//Might throw an exception which we handle.
 				//Add patient picture category to images
 				DataConnection dcon=new DataConnection();
@@ -1979,7 +1977,7 @@ namespace OpenDental{
 				//fix the provider ID field----------------------------------------------------------------
 				command="SELECT ClaimFormNum FROM claimform WHERE UniqueID='OD1'";
 				table=dcon.GetTable(command);
-				if(table.Rows.Count>0){
+				if(table.Rows.Count>0) {
 					command="UPDATE claimformitem SET FieldName='BillingDentistProviderID' WHERE FieldName='BillingDentistMedicaidID' "
 						+"AND ClaimFormNum="+table.Rows[0][0].ToString();
 					dcon.NonQ(command);
@@ -1991,8 +1989,8 @@ namespace OpenDental{
 			To3_5_1();
 		}
 
-		private void To3_5_1(){
-			if(FromVersion < new Version("3.5.1.0")){
+		private void To3_5_1() {
+			if(FromVersion < new Version("3.5.1.0")) {
 				DataConnection dcon=new DataConnection();
 				string[] commands=new string[]
 				{
@@ -2004,8 +2002,8 @@ namespace OpenDental{
 			To3_5_3();
 		}
 
-		private void To3_5_3(){
-			if(FromVersion < new Version("3.5.3.0")){
+		private void To3_5_3() {
+			if(FromVersion < new Version("3.5.3.0")) {
 				DataConnection dcon=new DataConnection();
 				//DentForms link-----------------------------------------------------------------------
 				string command="INSERT INTO program (ProgName,ProgDesc,Enabled,Path,CommandLine,Note"
@@ -2041,8 +2039,8 @@ namespace OpenDental{
 			To3_6_0();
 		}
 
-		private void To3_6_0(){
-			if(FromVersion < new Version("3.6.0.0")){
+		private void To3_6_0() {
+			if(FromVersion < new Version("3.6.0.0")) {
 				ExecuteFile(@"ConversionFiles\convert_3_6_0.txt");//Might throw an exception which we handle.
 				DataConnection dcon=new DataConnection();
 				string command;
@@ -2053,8 +2051,8 @@ namespace OpenDental{
 			To3_6_1();
 		}
 
-		private void To3_6_1(){
-			if(FromVersion < new Version("3.6.1.0")){
+		private void To3_6_1() {
+			if(FromVersion < new Version("3.6.1.0")) {
 				DataConnection dcon=new DataConnection();
 				string command;
 				//Not sure how some of the dates got out of synch:
@@ -2071,9 +2069,9 @@ namespace OpenDental{
 			To3_6_4();
 		}
 
-		private void To3_6_4(){
+		private void To3_6_4() {
 			//duplicate of To3_5_6 because we needed to fix for users who had already upgraded to 3.6
-			if(FromVersion < new Version("3.6.4.0")){
+			if(FromVersion < new Version("3.6.4.0")) {
 				DataConnection dcon=new DataConnection();
 				string[] commands=new string[]
 					{
@@ -2107,8 +2105,8 @@ namespace OpenDental{
 			To3_6_5();
 		}
 
-		private void To3_6_5(){
-			if(FromVersion < new Version("3.6.5.0")){
+		private void To3_6_5() {
+			if(FromVersion < new Version("3.6.5.0")) {
 				//delete any unattached adjustments
 				DataConnection dcon=new DataConnection();
 				string command="SELECT adjustment.AdjNum,procedurelog.ProcNum FROM adjustment "
@@ -2116,7 +2114,7 @@ namespace OpenDental{
 					+"WHERE adjustment.ProcNum !=0 "
 					+"AND procedurelog.ProcNum IS NULL";
 				DataTable table=dcon.GetTable(command);
-				for(int i=0;i<table.Rows.Count;i++){
+				for(int i=0;i<table.Rows.Count;i++) {
 					command="DELETE FROM adjustment WHERE AdjNum="+table.Rows[i][0].ToString();
 					dcon.NonQ(command);
 				}
@@ -2126,8 +2124,8 @@ namespace OpenDental{
 			To3_7_0();
 		}
 
-		private void To3_7_0(){
-			if(FromVersion < new Version("3.7.0.0")){
+		private void To3_7_0() {
+			if(FromVersion < new Version("3.7.0.0")) {
 				ExecuteFile(@"ConversionFiles\convert_3_7_0.txt");//Might throw an exception which we handle.
 				DataConnection dcon=new DataConnection();
 				string command;
@@ -2156,45 +2154,45 @@ namespace OpenDental{
 				double principal;
 				double interest;
 				double monthlyRate;
-				for(int i=0;i<table.Rows.Count;i++){
-					payPlanNum=    PIn.PInt   (table.Rows[i][0].ToString());
-					patNum=        PIn.PInt   (table.Rows[i][1].ToString());
-					guarantor=     PIn.PInt   (table.Rows[i][2].ToString());
-					payPlanDate=   PIn.PDate  (table.Rows[i][3].ToString());
+				for(int i=0;i<table.Rows.Count;i++) {
+					payPlanNum=    PIn.PInt(table.Rows[i][0].ToString());
+					patNum=        PIn.PInt(table.Rows[i][1].ToString());
+					guarantor=     PIn.PInt(table.Rows[i][2].ToString());
+					payPlanDate=   PIn.PDate(table.Rows[i][3].ToString());
 					totalAmount=   PIn.PDouble(table.Rows[i][4].ToString());
 					APR=           PIn.PDouble(table.Rows[i][5].ToString());
 					monthlyPayment=PIn.PDouble(table.Rows[i][6].ToString());
-					term=          PIn.PInt   (table.Rows[i][7].ToString());
-					dateFirstPay=  PIn.PDate  (table.Rows[i][9].ToString());
+					term=          PIn.PInt(table.Rows[i][7].ToString());
+					dateFirstPay=  PIn.PDate(table.Rows[i][9].ToString());
 					downPayment=   PIn.PDouble(table.Rows[i][10].ToString());
 					totalCost=     PIn.PDouble(table.Rows[i][12].ToString());
 					lastPayment=   PIn.PDouble(table.Rows[i][13].ToString());
 					//down payment
-					if(downPayment>0){
+					if(downPayment>0) {
 						chargeDate=payPlanDate;
 						principal=downPayment;
 						totalCost-=downPayment;
 						totalAmount-=downPayment;
 						interest=0;
 						command="INSERT INTO payplancharge (PayPlanNum,Guarantor,PatNum,ChargeDate,Principal,Interest,Note) VALUES("
-							+"'"+POut.PInt   (payPlanNum)+"', "
-							+"'"+POut.PInt   (guarantor)+"', "
-							+"'"+POut.PInt   (patNum)+"', "
-							+"'"+POut.PDate  (chargeDate)+"', "
+							+"'"+POut.PInt(payPlanNum)+"', "
+							+"'"+POut.PInt(guarantor)+"', "
+							+"'"+POut.PInt(patNum)+"', "
+							+"'"+POut.PDate(chargeDate)+"', "
 							+"'"+POut.PDouble(principal)+"', "
 							+"'"+POut.PDouble(interest)+"', "
 							+"'Downpayment')";
 						dcon.NonQ(command);
 					}
-					if(APR==0){
+					if(APR==0) {
 						monthlyRate=0;
 					}
-					else{
+					else {
 						monthlyRate=APR/100/12;
 					}
-					for(int j=0;j<term;j++){
+					for(int j=0;j<term;j++) {
 						chargeDate=dateFirstPay.AddMonths(j);
-						if(j==term-1 && lastPayment==0){//if this is the very last payment
+						if(j==term-1 && lastPayment==0) {//if this is the very last payment
 							//all remaining principal gets applied
 							principal=totalAmount;
 							totalCost-=totalAmount;
@@ -2203,29 +2201,29 @@ namespace OpenDental{
 							interest=totalCost;
 							totalCost=0;
 						}
-						else{
+						else {
 							interest=Math.Round((totalAmount*monthlyRate),2);//2 decimals
 							principal=monthlyPayment-interest;
 							totalAmount-=principal;
 							totalCost-=monthlyPayment;
 						}
-						if(principal<0){
+						if(principal<0) {
 							principal=0;
 						}
-						if(interest<0){
+						if(interest<0) {
 							interest=0;
 						}
 						command="INSERT INTO payplancharge (PayPlanNum,Guarantor,PatNum,ChargeDate,Principal,Interest) VALUES("
-							+"'"+POut.PInt   (payPlanNum)+"', "
-							+"'"+POut.PInt   (guarantor)+"', "
-							+"'"+POut.PInt   (patNum)+"', "
-							+"'"+POut.PDate  (chargeDate)+"', "
+							+"'"+POut.PInt(payPlanNum)+"', "
+							+"'"+POut.PInt(guarantor)+"', "
+							+"'"+POut.PInt(patNum)+"', "
+							+"'"+POut.PDate(chargeDate)+"', "
 							+"'"+POut.PDouble(principal)+"', "
 							+"'"+POut.PDouble(interest)+"')";
 						dcon.NonQ(command);
 					}//loop term
 					//last payment
-					if(lastPayment!=0){
+					if(lastPayment!=0) {
 						chargeDate=dateFirstPay.AddMonths(term);
 						//all remaining principal gets applied
 						principal=totalAmount;
@@ -2235,10 +2233,10 @@ namespace OpenDental{
 						interest=totalCost;
 						totalCost=0;
 						command="INSERT INTO payplancharge (PayPlanNum,Guarantor,PatNum,ChargeDate,Principal,Interest) VALUES("
-							+"'"+POut.PInt   (payPlanNum)+"', "
-							+"'"+POut.PInt   (guarantor)+"', "
-							+"'"+POut.PInt   (patNum)+"', "
-							+"'"+POut.PDate  (chargeDate)+"', "
+							+"'"+POut.PInt(payPlanNum)+"', "
+							+"'"+POut.PInt(guarantor)+"', "
+							+"'"+POut.PInt(patNum)+"', "
+							+"'"+POut.PDate(chargeDate)+"', "
 							+"'"+POut.PDouble(principal)+"', "
 							+"'"+POut.PDouble(interest)+"')";
 						dcon.NonQ(command);
@@ -2265,7 +2263,7 @@ namespace OpenDental{
 				int opNum;//the newly assigned key
 				string itemName;
 				string itemValue;
-				for(int i=0;i<table.Rows.Count;i++){
+				for(int i=0;i<table.Rows.Count;i++) {
 					defNum=PIn.PInt(table.Rows[i][0].ToString());
 					itemName=PIn.PString(table.Rows[i][2].ToString());
 					itemValue=PIn.PString(table.Rows[i][3].ToString());
@@ -2293,14 +2291,14 @@ namespace OpenDental{
 			To3_7_2();
 		}
 
-		private void To3_7_2(){
-			if(FromVersion < new Version("3.7.2.0")){
+		private void To3_7_2() {
+			if(FromVersion < new Version("3.7.2.0")) {
 				//add the new permission types to each group
 				DataConnection dcon=new DataConnection();
 				string command="SELECT UserGroupNum FROM usergroup";
 				DataTable table=dcon.GetTable(command);
 				int groupNum;
-				for(int i=0;i<table.Rows.Count;i++){
+				for(int i=0;i<table.Rows.Count;i++) {
 					groupNum=PIn.PInt(table.Rows[i][0].ToString());
 					command="INSERT INTO grouppermission (UserGroupNum,PermType) VALUES("+POut.PInt(groupNum)+",25)";
 					dcon.NonQ(command);
@@ -2321,8 +2319,8 @@ namespace OpenDental{
 			To3_7_3();
 		}
 
-		private void To3_7_3(){
-			if(FromVersion < new Version("3.7.3.0")){
+		private void To3_7_3() {
+			if(FromVersion < new Version("3.7.3.0")) {
 				DataConnection dcon=new DataConnection();
 				string command="ALTER TABLE securitylog ADD PatNum mediumint unsigned NOT NULL";
 				dcon.NonQ(command);
@@ -2338,8 +2336,8 @@ namespace OpenDental{
 			To3_7_4();
 		}
 
-		private void To3_7_4(){
-			if(FromVersion < new Version("3.7.4.0")){
+		private void To3_7_4() {
+			if(FromVersion < new Version("3.7.4.0")) {
 				DataConnection dcon=new DataConnection();
 				//Easy Notes Pro link-----------------------------------------------------------------------
 				string command="INSERT INTO program (ProgName,ProgDesc,Enabled,Path,CommandLine,Note"
@@ -2358,8 +2356,8 @@ namespace OpenDental{
 			To3_7_5();
 		}
 
-		private void To3_7_5(){
-			if(FromVersion < new Version("3.7.5.0")){
+		private void To3_7_5() {
+			if(FromVersion < new Version("3.7.5.0")) {
 				DataConnection dcon=new DataConnection();
 				string command="INSERT INTO preference VALUES ('TimecardSecurityEnabled','0')";
 				dcon.NonQ(command);
@@ -2373,8 +2371,8 @@ namespace OpenDental{
 			To3_7_6();
 		}
 
-		private void To3_7_6(){
-			if(FromVersion < new Version("3.7.6.0")){
+		private void To3_7_6() {
+			if(FromVersion < new Version("3.7.6.0")) {
 				DataConnection dcon=new DataConnection();
 				string command="ALTER TABLE clinic ADD DefaultPlaceService tinyint unsigned NOT NULL";
 				dcon.NonQ(command);
@@ -2384,15 +2382,15 @@ namespace OpenDental{
 			To3_8_0();
 		}
 
-		private void To3_8_0(){
-			if(FromVersion < new Version("3.8.0.0")){
+		private void To3_8_0() {
+			if(FromVersion < new Version("3.8.0.0")) {
 				ExecuteFile(@"ConversionFiles\convert_3_8_0.txt");//Might throw an exception which we handle.
 				//add deposit slip permission to each group
 				DataConnection dcon=new DataConnection();
 				string command="SELECT UserGroupNum FROM usergroup";
 				DataTable table=dcon.GetTable(command);
 				int groupNum;
-				for(int i=0;i<table.Rows.Count;i++){
+				for(int i=0;i<table.Rows.Count;i++) {
 					groupNum=PIn.PInt(table.Rows[i][0].ToString());
 					command="INSERT INTO grouppermission (UserGroupNum,PermType) VALUES("+POut.PInt(groupNum)+",30)";
 					dcon.NonQ(command);
@@ -2405,7 +2403,7 @@ namespace OpenDental{
 					+"AND insplan.CarrierNum = carrier.CarrierNum "
 					+"GROUP BY claimpayment.ClaimPaymentNum";
 				table=dcon.GetTable(command);
-				for(int i=0;i<table.Rows.Count;i++){
+				for(int i=0;i<table.Rows.Count;i++) {
 					command="UPDATE claimpayment SET CarrierName='"+POut.PString(PIn.PString(table.Rows[i][1].ToString()))+"' "
 						+"WHERE ClaimPaymentNum="+table.Rows[i][0].ToString();
 					dcon.NonQ(command);
@@ -2416,14 +2414,14 @@ namespace OpenDental{
 			To3_8_5();
 		}
 
-		private void To3_8_5(){
-			if(FromVersion < new Version("3.8.5.0")){
+		private void To3_8_5() {
+			if(FromVersion < new Version("3.8.5.0")) {
 				//Make a few changes to the paths in the ENP bridge
 				string command;//="SELECT ProgramNum FROM program WHERE ProgName='EasyNotesPro'";
 				DataConnection dcon=new DataConnection();
 				//DataTable table=dcon.GetTable(command);
 				//if(table.Rows.Count>0){//otherwise user might have deleted the bridge
-					//int programNum=PIn.PInt(table.Rows[0][0].ToString());
+				//int programNum=PIn.PInt(table.Rows[0][0].ToString());
 				command="UPDATE program SET "
 					+"CommandLine='"+POut.PString("\""+@"C:\Program Files\EasyNotesPro\DefaultDentalToolbar.etb"+"\""+" standalone true")+"' "
 					+"WHERE ProgName='EasyNotesPro'";//+POut.PInt(programNum);
@@ -2435,33 +2433,33 @@ namespace OpenDental{
 			To3_9_0();
 		}
 
-		private void To3_9_0(){
-			if(FromVersion < new Version("3.9.0.0")){
+		private void To3_9_0() {
+			if(FromVersion < new Version("3.9.0.0")) {
 				ExecuteFile(@"ConversionFiles\Version 3 9 0\convert_3_9_0.txt");//Might throw an exception which we handle.
 				DataConnection dcon=new DataConnection();
 				//convert two letter languages to 5 char specific culture names-------------------------------------------------
 				string command="";
 				DataTable table;
-				if(CultureInfo.CurrentCulture.Name=="en-US"){
+				if(CultureInfo.CurrentCulture.Name=="en-US") {
 					command="DELETE FROM languageforeign";
 					dcon.NonQ(command);
 				}
-				else{
+				else {
 					command="SELECT DISTINCT Culture FROM languageforeign";
 					table=dcon.GetTable(command);
 					CultureInfo ci;
-					for(int i=0;i<table.Rows.Count;i++){
-						try{
+					for(int i=0;i<table.Rows.Count;i++) {
+						try {
 							ci=new CultureInfo(table.Rows[i][0].ToString());
 						}
-						catch{
+						catch {
 							MessageBox.Show("Invalid culture: "+table.Rows[i][0].ToString());
 							continue;
 						}
 						FormConvertLang39 FormC=new FormConvertLang39();
 						FormC.OldDisplayName=ci.DisplayName;
 						FormC.ShowDialog();
-						if(FormC.DialogResult!=DialogResult.OK){
+						if(FormC.DialogResult!=DialogResult.OK) {
 							continue;
 						}
 						command="UPDATE languageforeign SET Culture='"+FormC.NewName+"' "
@@ -2471,10 +2469,10 @@ namespace OpenDental{
 				}
 				//------------------------------------------------------------------------------------------------------------
 				//move all patient.PriPlanNum,PriRelationship,SecPlanNum,SecRelationship,
-					//PriPending,SecPending,PriPatID,SecPatID to PatPlan objects
+				//PriPending,SecPending,PriPatID,SecPatID to PatPlan objects
 				command="SELECT PatNum,PriPlanNum,PriRelationship,PriPending,PriPatID FROM patient WHERE PriPlanNum>0";
 				table=dcon.GetTable(command);
-				for(int i=0;i<table.Rows.Count;i++){
+				for(int i=0;i<table.Rows.Count;i++) {
 					command="INSERT INTO patplan (PatNum,PlanNum,Ordinal,IsPending,Relationship,PatID) VALUES ("
 						+table.Rows[i][0].ToString()+","//patnum
 						+table.Rows[i][1].ToString()+","//planNum
@@ -2487,7 +2485,7 @@ namespace OpenDental{
 				}
 				command="SELECT PatNum,SecPlanNum,SecRelationship,SecPending,SecPatID FROM patient WHERE SecPlanNum>0";
 				table=dcon.GetTable(command);
-				for(int i=0;i<table.Rows.Count;i++){
+				for(int i=0;i<table.Rows.Count;i++) {
 					command="INSERT INTO patplan (PatNum,PlanNum,Ordinal,IsPending,Relationship,PatID) VALUES ("
 						+table.Rows[i][0].ToString()+","//patnum
 						+table.Rows[i][1].ToString()+","//planNum
@@ -2504,7 +2502,7 @@ namespace OpenDental{
 					+"WHERE covpat.PriPatNum=patplan.PatNum "
 					+"AND patplan.Ordinal=1";
 				table=dcon.GetTable(command);
-				for(int i=0;i<table.Rows.Count;i++){
+				for(int i=0;i<table.Rows.Count;i++) {
 					command="UPDATE covpat SET PatPlanNum="+table.Rows[i][1].ToString()
 						+" WHERE CovPatNum="+table.Rows[i][0].ToString();
 					dcon.NonQ(command);
@@ -2514,7 +2512,7 @@ namespace OpenDental{
 					+"WHERE covpat.PriPatNum=patplan.PatNum "
 					+"AND patplan.Ordinal=2";
 				table=dcon.GetTable(command);
-				for(int i=0;i<table.Rows.Count;i++){
+				for(int i=0;i<table.Rows.Count;i++) {
 					command="UPDATE covpat SET PatPlanNum="+table.Rows[i][1].ToString()
 						+" WHERE CovPatNum="+table.Rows[i][0].ToString();
 					dcon.NonQ(command);
@@ -2522,7 +2520,7 @@ namespace OpenDental{
 				//set patient.HasInsurance for everyone-----------------------------------------------------------------------
 				command="SELECT DISTINCT PatNum FROM patplan";
 				table=dcon.GetTable(command);
-				for(int i=0;i<table.Rows.Count;i++){
+				for(int i=0;i<table.Rows.Count;i++) {
 					command="UPDATE patient SET HasIns='I'"
 						+" WHERE PatNum="+table.Rows[i][0].ToString();
 					dcon.NonQ(command);
@@ -2560,8 +2558,8 @@ namespace OpenDental{
 			To3_9_1();
 		}
 
-		private void To3_9_1(){
-			if(FromVersion < new Version("3.9.1.0")){
+		private void To3_9_1() {
+			if(FromVersion < new Version("3.9.1.0")) {
 				string command="UPDATE preference SET PrefName = 'BackupToPath' WHERE PrefName = 'BackupPath'";
 				DataConnection dcon=new DataConnection();
 				dcon.NonQ(command);
@@ -2577,8 +2575,8 @@ namespace OpenDental{
 			To3_9_2();
 		}
 
-		private void To3_9_2(){
-			if(FromVersion < new Version("3.9.2.0")){
+		private void To3_9_2() {
+			if(FromVersion < new Version("3.9.2.0")) {
 				DataConnection dcon=new DataConnection();
 				//DBSWin link-----------------------------------------------------------------------
 				string command="INSERT INTO program (ProgName,ProgDesc,Enabled,Path,CommandLine,Note"
@@ -2615,8 +2613,8 @@ namespace OpenDental{
 			To3_9_3();
 		}
 
-		private void To3_9_3(){
-			if(FromVersion < new Version("3.9.3.0")){
+		private void To3_9_3() {
+			if(FromVersion < new Version("3.9.3.0")) {
 				DataConnection dcon=new DataConnection();
 				string command="UPDATE preference SET ValueString = '-1' WHERE PrefName = 'InsBillingProv' AND ValueString='1'";
 				dcon.NonQ(command);
@@ -2624,7 +2622,7 @@ namespace OpenDental{
 				int claimFormNum;
 				command="SELECT ClaimFormNum FROM claimform WHERE UniqueID='OD4'";
 				DataTable table=dcon.GetTable(command);
-				if(table.Rows.Count>0){
+				if(table.Rows.Count>0) {
 					claimFormNum=PIn.PInt(table.Rows[0][0].ToString());
 					command="INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
 						+POut.PInt(claimFormNum)+",'P1Diagnosis',446,749,75,16)";
@@ -2647,7 +2645,7 @@ namespace OpenDental{
 				}
 				command="SELECT ClaimFormNum FROM claimform WHERE UniqueID='OD5'";
 				table=dcon.GetTable(command);
-				if(table.Rows.Count>0){
+				if(table.Rows.Count>0) {
 					claimFormNum=PIn.PInt(table.Rows[0][0].ToString());
 					command="INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
 						+POut.PInt(claimFormNum)+",'P1Diagnosis',446,749,75,16)";
@@ -2676,8 +2674,8 @@ namespace OpenDental{
 			To3_9_4();
 		}
 
-		private void To3_9_4(){
-			if(FromVersion < new Version("3.9.4.0")){
+		private void To3_9_4() {
+			if(FromVersion < new Version("3.9.4.0")) {
 				DataConnection dcon=new DataConnection();
 				string command="INSERT INTO preference VALUES ('BillingIncludeChanged', '1')";
 				dcon.NonQ(command);
@@ -2687,8 +2685,8 @@ namespace OpenDental{
 			To3_9_5();
 		}
 
-		private void To3_9_5(){
-			if(FromVersion < new Version("3.9.5.0")){
+		private void To3_9_5() {
+			if(FromVersion < new Version("3.9.5.0")) {
 				DataConnection dcon=new DataConnection();
 				string command="INSERT INTO preference VALUES ('BackupRestoreAtoZToPath', '"+POut.PString(@"C:\OpenDentalData\")+"')";
 				dcon.NonQ(command);
@@ -2698,8 +2696,8 @@ namespace OpenDental{
 			To3_9_6();
 		}
 
-		private void To3_9_6(){
-			if(FromVersion < new Version("3.9.6.0")){
+		private void To3_9_6() {
+			if(FromVersion < new Version("3.9.6.0")) {
 				DataConnection dcon=new DataConnection();
 				string command="ALTER TABLE referral CHANGE PatNum PatNum mediumint unsigned NOT NULL";
 				dcon.NonQ(command);
@@ -2711,8 +2709,8 @@ namespace OpenDental{
 			To3_9_8();
 		}
 
-		private void To3_9_8(){
-			if(FromVersion < new Version("3.9.8.0")){
+		private void To3_9_8() {
+			if(FromVersion < new Version("3.9.8.0")) {
 				DataConnection dcon=new DataConnection();
 				//DentX link-----------------------------------------------------------------------
 				string command="INSERT INTO program (ProgName,ProgDesc,Enabled,Path,CommandLine,Note"
@@ -2766,8 +2764,8 @@ namespace OpenDental{
 			To3_9_9();
 		}
 
-		private void To3_9_9(){
-			if(FromVersion < new Version("3.9.9.0")){
+		private void To3_9_9() {
+			if(FromVersion < new Version("3.9.9.0")) {
 				//TrackNPost clearinghouse
 				DataConnection dcon=new DataConnection();
 				string command="INSERT INTO clearinghouse(Description,ExportPath,IsDefault,Payors,Eformat,ReceiverID,"
@@ -2781,8 +2779,8 @@ namespace OpenDental{
 			To3_9_17();
 		}
 
-		private void To3_9_17(){
-			if(FromVersion < new Version("3.9.17.0")){
+		private void To3_9_17() {
+			if(FromVersion < new Version("3.9.17.0")) {
 				DataConnection dcon=new DataConnection();
 				//Rename VixWin to VixWinOld-----------------------------------------------------------------------
 				string command="UPDATE program SET ProgName='VixWinOld' WHERE ProgName='VixWin'";
@@ -2828,19 +2826,540 @@ namespace OpenDental{
 				command="UPDATE preference SET ValueString = '3.9.18.0' WHERE PrefName = 'DataBaseVersion'";
 				dcon.NonQ(command);
 			}
-			To3_9_20();
+			To4_0_0();
 		}
 
-		private void To3_9_20() {
-			if(FromVersion < new Version("3.9.20.0")) {
+		private void To4_0_0() {
+			if(FromVersion < new Version("4.0.0.0")) {
+				ExecuteFile(@"ConversionFiles\Version 4 0 0\convert_4_0_0.txt");//Might throw an exception which we handle.
 				DataConnection dcon=new DataConnection();
-				//this command probably won't change most databases. Move to unsigned in 4.0
-				string command="ALTER TABLE patient CHANGE NextAptNum NextAptNum mediumint NOT NULL";
+				//first, get rid of a slight database inconsistency------------------------------------------------------------  
+				//In my database, I found 65 duplicate covpat entries for certain plans. Users would not notice.
+				//Running this loop adds a few minutes to the process, but is unavoidable.
+				//Add some indexes to make this query go faster
+				string command="ALTER TABLE covpat ADD INDEX indexPlanNum (PlanNum)";
 				dcon.NonQ(command);
-				command="UPDATE preference SET ValueString = '3.9.20.0' WHERE PrefName = 'DataBaseVersion'";
+				command="ALTER TABLE covpat ADD INDEX indexCovCatNum (CovCatNum)";
+				dcon.NonQ(command);
+				command="ALTER TABLE covpat ADD INDEX indexPatPlanNum (PatPlanNum)";
+				dcon.NonQ(command);
+				command="ALTER TABLE covpat ADD INDEX indexCovPatNum (CovPatNum)";
+				dcon.NonQ(command);
+				command=@"SELECT * FROM covpat c1
+					WHERE EXISTS(SELECT * FROM covpat c2 
+					WHERE c1.PlanNum=c2.PlanNum
+					AND c1.CovCatNum=c2.CovCatNum
+					AND c1.PatPlanNum=c2.PatPlanNum
+					AND c1.CovPatNum<c2.CovPatNum)";
+				DataTable table=dcon.GetTable(command);
+				for(int i=0;i<table.Rows.Count;i++) {
+					command="DELETE FROM covpat WHERE CovPatNum="+table.Rows[i][0].ToString();
+					dcon.NonQ(command);
+				}
+				//Add a CovCat for General------------------------------------------------------------------------------
+				command="UPDATE covcat SET CovOrder=CovOrder+1";//Move all other covcats down one in order
+				dcon.NonQ(command);
+				command="INSERT INTO covcat (Description,DefaultPercent,IsPreventive,"
+					+"CovOrder,IsHidden) VALUES('General',-1,0,0,0)";
+				dcon.NonQ(command,true);
+				int covCatNumGeneral=dcon.InsertID;
+				command="INSERT INTO covspan (CovCatNum,FromCode,ToCode) VALUES("+POut.PInt(covCatNumGeneral)+",'D0000','D9999')";
+				dcon.NonQ(command);
+				//Add a note to all InsPlans that do not renew in Jan----------------------------------------------------------
+				command="SELECT PlanNum,RenewMonth FROM insplan WHERE RenewMonth != '1'";
+				table=dcon.GetTable(command);
+				for(int i=0;i<table.Rows.Count;i++) {
+					command="UPDATE insplan SET "
+						+"PlanNote = CONCAT('BENEFIT YEAR BEGINS IN MONTH "+table.Rows[i][1].ToString()
+						+". SET EFFECTIVE DATE TO MATCH.',PlanNote) "
+						+"WHERE PlanNum='"+table.Rows[i][0].ToString()+"'";
+					dcon.NonQ(command);
+				}
+				//Convert CovPats to Benefits---------------------------------------------------------------------------------
+				command="SELECT DISTINCT covpat.CovCatNum,covpat.PlanNum,covpat.Percent,covpat.PatPlanNum,"//0-3
+					+"IFNULL(insplan.DeductWaivPrev,1),covcat.IsPreventive,insplan.Deductible,"//4-6
+					+"IFNULL(insplan.RenewMonth,1) "//7
+					+"FROM covpat "
+					+"LEFT JOIN insplan ON covpat.PlanNum=insplan.PlanNum "
+					+"LEFT JOIN covcat ON covpat.CovCatNum=covcat.CovCatNum";
+				Debug.WriteLine(command);
+				//+"ORDER BY covpat.PatPlanNum DESC";
+				table=dcon.GetTable(command);
+				for(int i=0;i<table.Rows.Count;i++) {
+					//percentages
+					command="INSERT INTO benefit (PlanNum,PatPlanNum,CovCatNum,BenefitType,Percent,MonetaryAmt,TimePeriod"
+						+") VALUES("
+						+"'"+table.Rows[i][1].ToString()+"', "//planNum=1
+						+"'"+table.Rows[i][3].ToString()+"', "//patPlanNum=3
+						+"'"+table.Rows[i][0].ToString()+"', "//CovCatNum=0
+						+"'1', "//benefitType=Percentage
+						+"'"+table.Rows[i][2].ToString()+"', "//Percent=2
+						+"'0', ";//MonetaryAmt
+					if(table.Rows[i][7].ToString()=="1") {//RenewMonth=Jan
+						command+="'2')";//TimePeriod=CalendarYear
+					}
+					else {
+						command+="'1')";//TimePeriod=ServiceYear
+					}
+					dcon.NonQ(command);
+					//deductibles waived on preventive
+					if(table.Rows[i][6].ToString()=="-1"//deductible=-1(unknown)
+						|| table.Rows[i][6].ToString()=="0"//deductible=0
+						|| table.Rows[i][5].ToString()=="0"//not preventive
+						|| table.Rows[i][4].ToString()=="-1"//deductWaivPrev=-1 (not known if waived)
+						|| table.Rows[i][4].ToString()=="0")//deductWaivPrev=0 (not waived)
+					{
+						continue;
+					}
+					command="INSERT INTO benefit (PlanNum,PatPlanNum,CovCatNum,BenefitType,Percent,MonetaryAmt,TimePeriod"
+						+") VALUES("
+						+"'"+table.Rows[i][1].ToString()+"', "//planNum=1
+						+"'"+table.Rows[i][3].ToString()+"', "//patPlanNum=3
+						+"'"+table.Rows[i][0].ToString()+"', "//CovCatNum=0
+						+"'2', "//benefitType=Deductible
+						+"'0', "//Percent=3
+						+"'0', ";//MonetaryAmt=0 since waived
+					if(table.Rows[i][7].ToString()=="1") {//RenewMonth=Jan
+						command+="'2')";//TimePeriod=CalendarYear
+					}
+					else {
+						command+="'1')";//TimePeriod=ServiceYear
+					}
+					dcon.NonQ(command);
+				}
+				//Convert remaining InsPlan fields to benefits-------------------------------------------------------------
+				command="SELECT PlanNum,AnnualMax,Deductible,FloToAge,MissToothExcl,MajorWait,OrthoMax,RenewMonth "
+					+"FROM insplan";
+				table=dcon.GetTable(command);
+				for(int i=0;i<table.Rows.Count;i++) {
+					//AnnualMax
+					if(PIn.PDouble(table.Rows[i][1].ToString())>0) {//if there is an annual max
+						command="INSERT INTO benefit (PlanNum,PatPlanNum,CovCatNum,BenefitType,Percent,MonetaryAmt,TimePeriod"
+							+") VALUES("
+							+"'"+table.Rows[i][0].ToString()+"', "//planNum
+							+"'0',"//patPlanNum
+							+"'"+POut.PInt(covCatNumGeneral)+"',"//CovCatNum
+							+"'"+POut.PInt((int)InsBenefitType.Limitations)+"', "
+							+"'0',"//percent
+							+"'"+table.Rows[i][1].ToString()+"', ";//max
+						if(table.Rows[i][7].ToString()=="1") {//RenewMonth=Jan
+							command+="'"+POut.PInt((int)BenefitTimePeriod.CalendarYear)+"')";
+						}
+						else {
+							command+="'"+POut.PInt((int)BenefitTimePeriod.ServiceYear)+"')";
+						}
+						dcon.NonQ(command);
+					}
+					//Deductible
+					if(PIn.PDouble(table.Rows[i][2].ToString())>-1) {//if there is a deductible
+						command="INSERT INTO benefit (PlanNum,PatPlanNum,CovCatNum,BenefitType,Percent,MonetaryAmt,TimePeriod"
+							+") VALUES("
+							+"'"+table.Rows[i][0].ToString()+"', "//planNum
+							+"'0',"//patPlanNum
+							+"'"+POut.PInt(covCatNumGeneral)+"',"//CovCatNum
+							+"'"+POut.PInt((int)InsBenefitType.Deductible)+"', "
+							+"'0',"//percent
+							+"'"+table.Rows[i][2].ToString()+"', ";//deductible amt
+						if(table.Rows[i][7].ToString()=="1") {//RenewMonth=Jan
+							command+="'"+POut.PInt((int)BenefitTimePeriod.CalendarYear)+"')";
+						}
+						else {
+							command+="'"+POut.PInt((int)BenefitTimePeriod.ServiceYear)+"')";
+						}
+						dcon.NonQ(command);
+					}
+					//FloToAge
+					if(CultureInfo.CurrentCulture.Name=="en-US" && table.Rows[i][3].ToString() != "-1") {
+						command="INSERT INTO benefit (PlanNum,PatPlanNum,CovCatNum,ADACode,BenefitType,Percent,MonetaryAmt,"
+							+"TimePeriod,QuantityQualifier,Quantity) VALUES("
+							+"'"+table.Rows[i][0].ToString()+"', "//planNum
+							+"'0',"//patPlanNum
+							+"'"+POut.PInt(covCatNumGeneral)+"',"//CovCatNum=general. But ignored because of ADACode
+							+"'D1204',"//ADACode for Adult Flo
+							+"'"+POut.PInt((int)InsBenefitType.Limitations)+"', "
+							+"'0',"//percent
+							+"'0', ";//amt
+						if(table.Rows[i][7].ToString()=="1") {//RenewMonth=Jan
+							command+="'"+POut.PInt((int)BenefitTimePeriod.CalendarYear)+"', ";
+						}
+						else {
+							command+="'"+POut.PInt((int)BenefitTimePeriod.ServiceYear)+"', ";
+						}
+						command+="'"+POut.PInt((int)BenefitQuantity.AgeLimit)+"', "
+							+"'"+table.Rows[i][3].ToString()+"')";//this should work for 0,18, and 99
+						dcon.NonQ(command);
+					}
+					//MissToothExcl
+					if(table.Rows[i][4].ToString()!="0") {//if it's not unknown
+						command="UPDATE insplan SET "
+							+"PlanNote = CONCAT('Missing tooth exclusion: "+((YN)PIn.PInt(table.Rows[i][4].ToString())).ToString()
+							+". ',PlanNote) "
+							+"WHERE PlanNum='"+table.Rows[i][0].ToString()+"'";
+						dcon.NonQ(command);
+					}
+					//MajorWait
+					if(table.Rows[i][5].ToString()!="0") {//if it's not unknown
+						command="UPDATE insplan SET "
+							+"PlanNote = CONCAT('Wait on major: "+((YN)PIn.PInt(table.Rows[i][5].ToString())).ToString()
+							+". ',PlanNote) "
+							+"WHERE PlanNum='"+table.Rows[i][0].ToString()+"'";
+						dcon.NonQ(command);
+					}
+					//OrthoMax
+					if(PIn.PInt(table.Rows[i][6].ToString())>0) {//not -1 or 0
+						command="UPDATE insplan SET "
+							+"PlanNote = CONCAT('Ortho Max: "+table.Rows[i][6].ToString()
+							+". ',PlanNote) "
+							+"WHERE PlanNum='"+table.Rows[i][0].ToString()+"'";
+						dcon.NonQ(command);
+					}
+				}
+				string[] commands=new string[]
+				{
+					 "ALTER TABLE insplan DROP AnnualMax"
+					,"ALTER TABLE insplan DROP RenewMonth"
+					,"ALTER TABLE insplan DROP Deductible"
+					,"ALTER TABLE insplan DROP DeductWaivPrev"
+					,"ALTER TABLE insplan DROP OrthoMax"
+					,"ALTER TABLE insplan DROP FloToAge"
+					,"ALTER TABLE insplan DROP MissToothExcl"
+					,"ALTER TABLE insplan DROP MajorWait"
+					,"ALTER TABLE insplan DROP IsWrittenOff"
+					,"DROP TABLE covpat"
+					,"ALTER TABLE covcat DROP IsPreventive"
+					,"ALTER TABLE covcat ADD EbenefitCat tinyint unsigned NOT NULL"
+					,"UPDATE insplan SET SubscNote=PlanNote"
+					,"UPDATE insplan SET PlanNote=''"
+				};
+				dcon.NonQ(commands);
+				//Add enhanced Trophy bridge---------------------------------------------------------------------------
+				command="INSERT INTO program (ProgName,ProgDesc,Enabled,Path,CommandLine,Note"
+					+") VALUES("
+					+"'TrophyEnhanced', "
+					+"'Trophy(enhanced) from www.trophy-imaging.com', "
+					+"'0', "
+					+"'"+POut.PString(@"TW.exe")+"', "
+					+"'', "
+					+"'"+POut.PString(@"The storage path is where all images are stored.  For instance \\SERVER\TrophyImages (no trailing \).  Each patient must also have a folder specified in the patient edit window.  For instance S\SmithJohn or whatever the current folder structure is.")+"')";
+				dcon.NonQ(command,true);
+				int programNum=dcon.InsertID;//we now have a ProgramNum to work with
+				command="INSERT INTO programproperty (ProgramNum,PropertyDesc,PropertyValue"
+					+") VALUES("
+					+"'"+programNum.ToString()+"', "
+					+"'Storage Path', "
+					+"'')";
+				dcon.NonQ(command);
+				command="INSERT INTO toolbutitem (ProgramNum,ToolBar,ButtonText) "
+					+"VALUES ("
+					+"'"+programNum.ToString()+"', "
+					+"'"+((int)ToolBarsAvail.ChartModule).ToString()+"', "
+					+"'Trophy')";
+				dcon.NonQ(command);
+				//Add DentalEye bridge----------------------------------------------------------------------------------------
+				command="INSERT INTO program (ProgName,ProgDesc,Enabled,Path,CommandLine,Note"
+					+") VALUES("
+					+"'DentalEye', "
+					+"'DentalEye from www.dentaleye.com', "
+					+"'0', "
+					+"'"+POut.PString(@"C:\DentalEye\DentalEye.exe")+"', "
+					+"'', "
+					+"'')";
+				dcon.NonQ(command,true);
+				programNum=dcon.InsertID;//we now have a ProgramNum to work with
+				command="INSERT INTO programproperty (ProgramNum,PropertyDesc,PropertyValue"
+					+") VALUES("
+					+"'"+programNum.ToString()+"', "
+					+"'Enter 0 to use PatientNum, or 1 to use ChartNum', "
+					+"'0')";
+				dcon.NonQ(command);
+				command="INSERT INTO toolbutitem (ProgramNum,ToolBar,ButtonText) "
+					+"VALUES ("
+					+"'"+programNum.ToString()+"', "
+					+"'"+((int)ToolBarsAvail.ChartModule).ToString()+"', "
+					+"'DentalEye')";
+				dcon.NonQ(command);
+				//Add lab fee fields to Canadian claim form
+				int claimFormNum;
+				command="SELECT ClaimFormNum FROM claimform WHERE UniqueID='OD6'";
+				table=dcon.GetTable(command);
+				if(table.Rows.Count>0) {
+					claimFormNum=PIn.PInt(table.Rows[0][0].ToString());
+					//get rid of the existing dentist fee column.
+					command="DELETE FROM claimformitem WHERE ClaimFormNum='"+POut.PInt(claimFormNum)
+						+"' AND XPos=342 AND FieldName LIKE '%Fee'";
+					dcon.NonQ(command);
+					//add the lab fee column
+					command="INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+						+POut.PInt(claimFormNum)+",'P1Lab',440,394,66,16)";
+					dcon.NonQ(command);
+					command="INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+						+POut.PInt(claimFormNum)+",'P2Lab',440,411,66,16)";
+					dcon.NonQ(command);
+					command="INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+						+POut.PInt(claimFormNum)+",'P3Lab',440,428,66,16)";
+					dcon.NonQ(command);
+					command="INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+						+POut.PInt(claimFormNum)+",'P4Lab',440,445,66,16)";
+					dcon.NonQ(command);
+					command="INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+						+POut.PInt(claimFormNum)+",'P5Lab',440,462,66,16)";
+					dcon.NonQ(command);
+					command="INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+						+POut.PInt(claimFormNum)+",'P6Lab',440,479,66,16)";
+					dcon.NonQ(command);
+					command="INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+						+POut.PInt(claimFormNum)+",'P7Lab',440,496,66,16)";
+					dcon.NonQ(command);
+					command="INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+						+POut.PInt(claimFormNum)+",'P8Lab',440,513,66,16)";
+					dcon.NonQ(command);
+					command="INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+						+POut.PInt(claimFormNum)+",'P9Lab',440,530,66,16)";
+					dcon.NonQ(command);
+					command="INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+						+POut.PInt(claimFormNum)+",'P10Lab',440,547,66,16)";
+					dcon.NonQ(command);
+					//add the dentist fee column (fee-lab)
+					command="INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+						+POut.PInt(claimFormNum)+",'P1FeeMinusLab',342,394,62,16)";
+					dcon.NonQ(command);
+					command="INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+						+POut.PInt(claimFormNum)+",'P2FeeMinusLab',342,411,62,16)";
+					dcon.NonQ(command);
+					command="INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+						+POut.PInt(claimFormNum)+",'P3FeeMinusLab',342,428,62,16)";
+					dcon.NonQ(command);
+					command="INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+						+POut.PInt(claimFormNum)+",'P4FeeMinusLab',342,445,62,16)";
+					dcon.NonQ(command);
+					command="INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+						+POut.PInt(claimFormNum)+",'P5FeeMinusLab',342,462,62,16)";
+					dcon.NonQ(command);
+					command="INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+						+POut.PInt(claimFormNum)+",'P6FeeMinusLab',342,479,62,16)";
+					dcon.NonQ(command);
+					command="INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+						+POut.PInt(claimFormNum)+",'P7FeeMinusLab',342,496,62,16)";
+					dcon.NonQ(command);
+					command="INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+						+POut.PInt(claimFormNum)+",'P8FeeMinusLab',342,513,62,16)";
+					dcon.NonQ(command);
+					command="INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+						+POut.PInt(claimFormNum)+",'P9FeeMinusLab',342,530,62,16)";
+					dcon.NonQ(command);
+					command="INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+						+POut.PInt(claimFormNum)+",'P10FeeMinusLab',342,547,62,16)";
+					dcon.NonQ(command);
+					//make dates wider so the year doesn't get cut off
+					command="UPDATE claimformitem SET Width=85,XPos=28 "
+						+"WHERE FieldName LIKE 'P%Date' AND XPos=38 "
+						+"AND ClaimFormNum="+POut.PInt(claimFormNum);
+					dcon.NonQ(command);
+				}
+				//add chart of accounts-----------------------------------------------------------------
+				commands=new string[]
+				{
+					 "INSERT INTO account (Description,AcctType) VALUES('Checking Account',0)"
+					,"INSERT INTO account (Description,AcctType) VALUES('Cash Box',0)"
+					,"INSERT INTO account (Description,AcctType) VALUES('Employee Advances',0)"
+					,"INSERT INTO account (Description,AcctType) VALUES('Equipment',0)"
+					,"INSERT INTO account (Description,AcctType) VALUES('Accumulated Depreciation, Equipment',0)"
+					,"INSERT INTO account (Description,AcctType) VALUES('Bank Loans Payable',1)"
+					,"INSERT INTO account (Description,AcctType) VALUES('Stated Capital',2)"
+					,"INSERT INTO account (Description,AcctType) VALUES('Retained Earnings',2)"
+					,"INSERT INTO account (Description,AcctType) VALUES('Patient Fee Income',3)"
+					,"INSERT INTO account (Description,AcctType) VALUES('Employee Benefits',4)"
+					,"INSERT INTO account (Description,AcctType) VALUES('Supplies',4)"
+					,"INSERT INTO account (Description,AcctType) VALUES('Services',4)"
+					,"INSERT INTO account (Description,AcctType) VALUES('Wages',4)"
+				};
+				dcon.NonQ(commands);
+				command="UPDATE preference SET ValueString = '4.0.0.0' WHERE PrefName = 'DataBaseVersion'";
 				dcon.NonQ(command);
 			}
-			//To4_0_0();
+			To4_0_2();
+		}
+
+		private void To4_0_2() {
+			if(FromVersion < new Version("4.0.2.0")) {
+				DataConnection dcon=new DataConnection();
+				string command="ALTER TABLE account ADD Inactive tinyint unsigned NOT NULL";
+				dcon.NonQ(command);
+				//add accounting permission to each admin group------------------------------------------------------
+				command="SELECT UserGroupNum FROM grouppermission "
+					+"WHERE PermType="+POut.PInt((int)Permissions.SecurityAdmin);
+				DataTable table=dcon.GetTable(command);
+				int groupNum;
+				for(int i=0;i<table.Rows.Count;i++) {
+					groupNum=PIn.PInt(table.Rows[i][0].ToString());
+					command="INSERT INTO grouppermission (UserGroupNum,PermType) "
+						+"VALUES("+POut.PInt(groupNum)+","+POut.PInt((int)Permissions.AccountingCreate)+")";
+					dcon.NonQ(command);
+					command="INSERT INTO grouppermission (UserGroupNum,PermType) "
+						+"VALUES("+POut.PInt(groupNum)+","+POut.PInt((int)Permissions.AccountingEdit)+")";
+					dcon.NonQ(command);
+				}
+				//fix the planned appointment 'done' feature--------------------------------------------------------------
+				command="ALTER TABLE patient ADD PlannedIsDone tinyint unsigned NOT NULL";
+				dcon.NonQ(command);
+				command="UPDATE patient SET PlannedIsDone=1 WHERE NextAptNum = -1";
+				dcon.NonQ(command);
+				//these two lines were previously in place in version 3.9.18.  Calling them again doesn't hurt
+				command="ALTER TABLE patient CHANGE NextAptNum NextAptNum mediumint unsigned NOT NULL";
+				dcon.NonQ(command);
+				command="UPDATE preference SET ValueString = '4.0.2.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To4_0_3();
+		}
+
+		private void To4_0_3() {
+			if(FromVersion < new Version("4.0.3.0")) {
+				DataConnection dcon=new DataConnection();
+				string command="ALTER TABLE account ADD AccountColor int NOT NULL";
+				dcon.NonQ(command);
+				command="UPDATE account SET AccountColor = -1";//white
+				dcon.NonQ(command);
+				command="INSERT INTO preference VALUES ('AccountingDepositAccounts','')";
+				dcon.NonQ(command);
+				command="INSERT INTO preference VALUES ('AccountingIncomeAccount','')";
+				dcon.NonQ(command);
+				//two of these were simply deleted in the very next upgrade.
+				//command="INSERT INTO preference VALUES ('AccountingCashDepAccounts','')";
+				//dcon.NonQ(command);
+				command="INSERT INTO preference VALUES ('AccountingCashIncomeAccount','')";
+				dcon.NonQ(command);
+				//command="INSERT INTO preference VALUES ('AccountingCashPaymentType','')";
+				//dcon.NonQ(command);
+				command="UPDATE preference SET ValueString = '4.0.3.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To4_0_4();
+		}
+
+		private void To4_0_4() {
+			if(FromVersion < new Version("4.0.4.0")) {
+				DataConnection dcon=new DataConnection();
+				string command=@"CREATE TABLE accountingautopay(
+					AccountingAutoPayNum mediumint unsigned NOT NULL auto_increment,
+					PayType smallint unsigned NOT NULL,
+					PickList varchar(255) NOT NULL,
+					PRIMARY KEY (AccountingAutoPayNum)
+					) DEFAULT CHARSET=utf8;";
+				dcon.NonQ(command);
+				command="DELETE FROM preference WHERE PrefName='AccountingCashDepAccounts'";
+				dcon.NonQ(command);
+				command="DELETE FROM preference WHERE PrefName='AccountingCashPaymentType'";
+				dcon.NonQ(command);
+				command="ALTER TABLE transaction ADD PayNum mediumint unsigned NOT NULL";
+				dcon.NonQ(command);
+				command="UPDATE preference SET ValueString = '4.0.4.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To4_0_5();
+		}
+
+		private void To4_0_5() {
+			if(FromVersion < new Version("4.0.5.0")) {
+				DataConnection dcon=new DataConnection();
+				string command=@"CREATE TABLE reconcile(
+					ReconcileNum mediumint unsigned NOT NULL auto_increment,
+					AccountNum mediumint unsigned NOT NULL,
+					StartingBal double NOT NULL,
+					EndingBal double NOT NULL,
+					DateReconcile date NOT NULL default '0001-01-01',
+					IsLocked tinyint unsigned NOT NULL,
+					PRIMARY KEY (ReconcileNum)
+					) DEFAULT CHARSET=utf8;";
+				dcon.NonQ(command);
+				command="ALTER TABLE journalentry ADD ReconcileNum mediumint unsigned NOT NULL";
+				dcon.NonQ(command);
+				command="UPDATE preference SET ValueString = '4.0.5.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To4_0_9();
+		}
+
+		private void To4_0_9() {
+			if(FromVersion < new Version("4.0.9.0")) {
+				DataConnection dcon=new DataConnection();
+				string command="INSERT INTO preference VALUES ('SkipComputeAgingInAccount','0')";
+				dcon.NonQ(command);
+				command="UPDATE preference SET ValueString = '4.0.9.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To4_0_10();
+		}
+
+		private void To4_0_10() {
+			if(FromVersion < new Version("4.0.10.0")) {
+				DataConnection dcon=new DataConnection();
+				string command="";
+				dcon.NonQ(command);
+				//Add Trojan bridge----------------------------------------------------------------------------------------
+				command="INSERT INTO program (ProgName,ProgDesc,Enabled,Path,CommandLine,Note"
+					+") VALUES("
+					+"'Trojan', "
+					+"'Trojan from www.trojanonline.com', "
+					+"'0', "
+					+"'', "
+					+"'', "
+					+"'No path is needed.  No buttons are available.  Uses the standalone Trojan program.')";
+				dcon.NonQ(command);
+				//Add IAP bridge----------------------------------------------------------------------------------------
+				command="INSERT INTO program (ProgName,ProgDesc,Enabled,Path,CommandLine,Note"
+					+") VALUES("
+					+"'IAP', "
+					+"'Insurance Answers Plus from www.iaplus.com', "
+					+"'0', "
+					+"'', "
+					+"'', "
+					+"'No path is needed.  No buttons are available.')";
+				dcon.NonQ(command);
+				//fix referrals
+				command="ALTER TABLE refattach CHANGE ReferralNum ReferralNum mediumint unsigned NOT NULL";
+				dcon.NonQ(command);
+				//disable medical claims
+				command="INSERT INTO preference VALUES ('MedicalEclaimsEnabled','0')";
+				dcon.NonQ(command);
+				command="UPDATE preference SET ValueString = '4.0.10.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To4_0_11();
+		}
+
+		private void To4_0_11() {
+			if(FromVersion < new Version("4.0.11.0")) {
+				DataConnection dcon=new DataConnection();
+				//delete all percentages for medicaid and capitation plans
+				string command=@"SELECT BenefitNum
+					FROM insplan,benefit 
+					WHERE benefit.PlanNum=insplan.PlanNum
+					AND (PlanType='f' OR PlanType='c')
+					AND BenefitType=1";
+				DataTable table=dcon.GetTable(command);
+				for(int i=0;i<table.Rows.Count;i++){
+					command="DELETE FROM benefit WHERE BenefitNum="+table.Rows[i][0].ToString();
+					dcon.NonQ(command);
+				}
+				command="UPDATE preference SET ValueString = '4.0.11.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To4_0_13();
+		}
+
+		private void To4_0_13() {
+			if(FromVersion < new Version("4.0.13.0")) {
+				DataConnection dcon=new DataConnection();
+				//Add sales tax fields. Even though we will not use them yet, some customers might make user of them. 
+				string command="INSERT INTO preference VALUES ('SalesTaxPercentage','0')";
+				dcon.NonQ(command);
+				command="ALTER TABLE procedurecode ADD IsTaxed tinyint unsigned NOT NULL";
+				dcon.NonQ(command);
+				command="UPDATE preference SET ValueString = '4.0.13.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			//To4_0_?();
 		}
 		
 	}

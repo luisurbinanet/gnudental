@@ -695,7 +695,7 @@ namespace OpenDental.ReportingOld2
 
 		private void button1_Click(object sender, System.EventArgs e) {
 			//ScriptEngine.FormulaCode = 
-			string functionCode=
+			/*string functionCode=
 			@"using System.Windows.Forms;
 				using System;
 				public class Test{
@@ -731,7 +731,7 @@ namespace OpenDental.ReportingOld2
 			Assembly assembly = results.CompiledAssembly;	
 			//Use reflection to call the Main function in the assembly
 			ScriptEngine.RunScript(assembly, "Main");		
-			
+			*/
 
 		}
 

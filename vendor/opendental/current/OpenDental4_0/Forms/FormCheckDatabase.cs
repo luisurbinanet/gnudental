@@ -421,7 +421,7 @@ namespace OpenDental
 				LEFT JOIN insplan ON claimproc.PlanNum=insplan.PlanNum
 				WHERE insplan.PlanNum IS NULL";
 			DataTable table=dcon.GetTable(command);
-			for(int i=0;i<table.Rows.Count;i++){
+			for(int i=0;i<table.Rows.Count;i++) {
 				command="DELETE FROM claimproc "
 					+"WHERE ClaimProcNum="+table.Rows[i][0].ToString();
 				dcon.NonQ(command);
@@ -430,7 +430,7 @@ namespace OpenDental
 				LEFT JOIN insplan ON claim.PlanNum=insplan.PlanNum
 				WHERE insplan.PlanNum IS NULL";
 			table=dcon.GetTable(command);
-			for(int i=0;i<table.Rows.Count;i++){
+			for(int i=0;i<table.Rows.Count;i++) {
 				command="DELETE FROM claim "
 					+"WHERE ClaimNum="+table.Rows[i][0].ToString();
 				dcon.NonQ(command);
