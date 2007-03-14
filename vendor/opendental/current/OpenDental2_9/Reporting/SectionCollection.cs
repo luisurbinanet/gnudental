@@ -31,7 +31,7 @@ namespace OpenDental.Reporting
       //}
 		}
 
-		///<summary>Adds the specified section to the collection, but not to the end.  Instead, it inserts it exactly where it belongs based on the type.  The order can not be changed by the user. Returns the index at which the section has been added, or -1 if not allowed because it already exists.</summary>
+		///<summary>Adds the specified section to the collection, but not to the end.  Instead, it inserts it exactly where it belongs based on the type.  The order cannot be changed by the user. Returns the index at which the section has been added, or -1 if not allowed because it already exists.</summary>
 		public int Add(Section value){
 			//if(value.Kind==AreaSectionKind.GroupHeader);
 			//if(value.Kind==AreaSectionKind.GroupFooter);

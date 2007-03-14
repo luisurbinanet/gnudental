@@ -222,7 +222,7 @@ namespace OpenDental{
 					&& SchedDefaults.Cur.StartTime.TimeOfDay.CompareTo(SchedDefaults.List[i].StartTime.TimeOfDay)>=0
 					&& SchedDefaults.Cur.StartTime.TimeOfDay.CompareTo(SchedDefaults.List[i].StopTime.TimeOfDay)<0
 					){
-					MessageBox.Show(Lan.g(this,"Can not overlap another time block."));
+					MessageBox.Show(Lan.g(this,"Cannot overlap another time block."));
 					return;
 				}
 				if(SchedDefaults.Cur.SchedDefaultNum!=SchedDefaults.List[i].SchedDefaultNum
@@ -230,7 +230,7 @@ namespace OpenDental{
 					&& SchedDefaults.Cur.StopTime.TimeOfDay.CompareTo(SchedDefaults.List[i].StartTime.TimeOfDay)>0
 					&& SchedDefaults.Cur.StopTime.TimeOfDay.CompareTo(SchedDefaults.List[i].StopTime.TimeOfDay)<=0
 					){
-					MessageBox.Show(Lan.g(this,"Can not overlap another time block."));
+					MessageBox.Show(Lan.g(this,"Cannot overlap another time block."));
 					return;
 				}
 				if(SchedDefaults.Cur.SchedDefaultNum!=SchedDefaults.List[i].SchedDefaultNum
@@ -238,7 +238,7 @@ namespace OpenDental{
 					&& SchedDefaults.Cur.StartTime.TimeOfDay.CompareTo(SchedDefaults.List[i].StartTime.TimeOfDay)<=0
 					&& SchedDefaults.Cur.StopTime.TimeOfDay.CompareTo(SchedDefaults.List[i].StopTime.TimeOfDay)>=0
 					){
-					MessageBox.Show(Lan.g(this,"Can not overlap another time block."));
+					MessageBox.Show(Lan.g(this,"Cannot overlap another time block."));
 					return;
 				}
 			}

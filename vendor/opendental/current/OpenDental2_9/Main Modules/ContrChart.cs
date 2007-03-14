@@ -80,9 +80,23 @@ namespace OpenDental{
 		private OpenDental.UI.ODToolBar ToolBarMain;
 		private System.Windows.Forms.Label labelDx;
 		private System.Windows.Forms.Label labelNewProcHint;
+		private System.Windows.Forms.TextBox textTreatmentNotes;
+		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.ListBox listProcButtons;
+		private System.Windows.Forms.TextBox textCreditType;
+		private System.Windows.Forms.TextBox textIns;
+		private System.Windows.Forms.Panel panelABCins;
+		private System.Windows.Forms.TextBox textReferral;
+		private System.Windows.Forms.TextBox textBillingType;
+		private System.Windows.Forms.TextBox textDateFirstVisit;
+		private System.Windows.Forms.ToolTip toolTip1;
+		private System.Windows.Forms.ComboBox comboPriority;
+		private System.Windows.Forms.Label label5;
+		private System.Windows.Forms.ContextMenu menuProgRight;
+		private System.Windows.Forms.MenuItem menuItemPrintProg;
 //fix: use AL for tbProg.SelectedRowsAL
 		//public	VisiQuick VQLink;  // TJE
+		private bool TreatmentNoteChanged;
 			
 		///<summary></summary>
 		public ContrChart(){
@@ -131,11 +145,11 @@ namespace OpenDental{
 			this.radioEntryTP = new System.Windows.Forms.RadioButton();
 			this.button1 = new System.Windows.Forms.Button();
 			this.panelMedical = new System.Windows.Forms.Panel();
+			this.butMedicalService = new System.Windows.Forms.Button();
+			this.textMedUrgNote = new System.Windows.Forms.TextBox();
 			this.textService = new System.Windows.Forms.TextBox();
 			this.label3 = new System.Windows.Forms.Label();
-			this.butMedicalService = new System.Windows.Forms.Button();
 			this.label2 = new System.Windows.Forms.Label();
-			this.textMedUrgNote = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.textMedical = new System.Windows.Forms.TextBox();
 			this.listDx = new System.Windows.Forms.ListBox();
@@ -147,6 +161,8 @@ namespace OpenDental{
 			this.labelMinutes = new System.Windows.Forms.Label();
 			this.checkDone = new System.Windows.Forms.CheckBox();
 			this.panelEnterTx = new System.Windows.Forms.Panel();
+			this.label5 = new System.Windows.Forms.Label();
+			this.comboPriority = new System.Windows.Forms.ComboBox();
 			this.butOK = new System.Windows.Forms.Button();
 			this.textADACode = new System.Windows.Forms.TextBox();
 			this.label14 = new System.Windows.Forms.Label();
@@ -171,18 +187,30 @@ namespace OpenDental{
 			this.imageListMain = new System.Windows.Forms.ImageList(this.components);
 			this.ToolBarMain = new OpenDental.UI.ODToolBar();
 			this.labelNewProcHint = new System.Windows.Forms.Label();
+			this.textTreatmentNotes = new System.Windows.Forms.TextBox();
+			this.label4 = new System.Windows.Forms.Label();
+			this.textCreditType = new System.Windows.Forms.TextBox();
+			this.textIns = new System.Windows.Forms.TextBox();
+			this.panelABCins = new System.Windows.Forms.Panel();
+			this.textReferral = new System.Windows.Forms.TextBox();
+			this.textBillingType = new System.Windows.Forms.TextBox();
+			this.textDateFirstVisit = new System.Windows.Forms.TextBox();
+			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+			this.menuProgRight = new System.Windows.Forms.ContextMenu();
+			this.menuItemPrintProg = new System.Windows.Forms.MenuItem();
 			this.groupBox2.SuspendLayout();
 			this.panelMedical.SuspendLayout();
 			this.groupNext.SuspendLayout();
 			this.panelEnterTx.SuspendLayout();
 			this.groupShow.SuspendLayout();
+			this.panelABCins.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// butAddProc
 			// 
 			this.butAddProc.BackColor = System.Drawing.SystemColors.Control;
 			this.butAddProc.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butAddProc.Location = new System.Drawing.Point(193, 2);
+			this.butAddProc.Location = new System.Drawing.Point(192, 2);
 			this.butAddProc.Name = "butAddProc";
 			this.butAddProc.Size = new System.Drawing.Size(105, 20);
 			this.butAddProc.TabIndex = 17;
@@ -345,7 +373,7 @@ namespace OpenDental{
 			// 
 			// button1
 			// 
-			this.button1.Location = new System.Drawing.Point(49, 483);
+			this.button1.Location = new System.Drawing.Point(127, 692);
 			this.button1.Name = "button1";
 			this.button1.TabIndex = 36;
 			this.button1.Text = "invisible";
@@ -354,22 +382,48 @@ namespace OpenDental{
 			// 
 			// panelMedical
 			// 
+			this.panelMedical.BackColor = System.Drawing.Color.FromArgb(((System.Byte)(255)), ((System.Byte)(192)), ((System.Byte)(192)));
+			this.panelMedical.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.panelMedical.Controls.Add(this.butMedicalService);
+			this.panelMedical.Controls.Add(this.textMedUrgNote);
 			this.panelMedical.Controls.Add(this.textService);
 			this.panelMedical.Controls.Add(this.label3);
-			this.panelMedical.Controls.Add(this.butMedicalService);
 			this.panelMedical.Controls.Add(this.label2);
-			this.panelMedical.Controls.Add(this.textMedUrgNote);
 			this.panelMedical.Controls.Add(this.label1);
 			this.panelMedical.Controls.Add(this.textMedical);
-			this.panelMedical.Location = new System.Drawing.Point(2, 556);
+			this.panelMedical.Location = new System.Drawing.Point(1, 581);
 			this.panelMedical.Name = "panelMedical";
-			this.panelMedical.Size = new System.Drawing.Size(413, 122);
+			this.panelMedical.Size = new System.Drawing.Size(411, 97);
 			this.panelMedical.TabIndex = 39;
+			// 
+			// butMedicalService
+			// 
+			this.butMedicalService.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butMedicalService.Location = new System.Drawing.Point(279, 1);
+			this.butMedicalService.Name = "butMedicalService";
+			this.butMedicalService.Size = new System.Drawing.Size(128, 23);
+			this.butMedicalService.TabIndex = 43;
+			this.butMedicalService.Text = "Edit Medical/Service";
+			this.butMedicalService.Click += new System.EventHandler(this.butMedicalService_Click);
+			// 
+			// textMedUrgNote
+			// 
+			this.textMedUrgNote.BackColor = System.Drawing.Color.White;
+			this.textMedUrgNote.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.textMedUrgNote.ForeColor = System.Drawing.Color.Red;
+			this.textMedUrgNote.Location = new System.Drawing.Point(66, 1);
+			this.textMedUrgNote.Multiline = true;
+			this.textMedUrgNote.Name = "textMedUrgNote";
+			this.textMedUrgNote.ReadOnly = true;
+			this.textMedUrgNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.textMedUrgNote.Size = new System.Drawing.Size(202, 20);
+			this.textMedUrgNote.TabIndex = 41;
+			this.textMedUrgNote.Text = "";
 			// 
 			// textService
 			// 
 			this.textService.BackColor = System.Drawing.Color.White;
-			this.textService.Location = new System.Drawing.Point(206, 62);
+			this.textService.Location = new System.Drawing.Point(205, 37);
 			this.textService.Multiline = true;
 			this.textService.Name = "textService";
 			this.textService.ReadOnly = true;
@@ -380,56 +434,33 @@ namespace OpenDental{
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(204, 48);
+			this.label3.Location = new System.Drawing.Point(203, 23);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(100, 16);
 			this.label3.TabIndex = 44;
 			this.label3.Text = "Service Notes";
 			// 
-			// butMedicalService
-			// 
-			this.butMedicalService.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butMedicalService.Location = new System.Drawing.Point(284, 20);
-			this.butMedicalService.Name = "butMedicalService";
-			this.butMedicalService.Size = new System.Drawing.Size(128, 23);
-			this.butMedicalService.TabIndex = 43;
-			this.butMedicalService.Text = "Edit Medical/Service";
-			this.butMedicalService.Click += new System.EventHandler(this.butMedicalService_Click);
-			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(4, 6);
+			this.label2.Location = new System.Drawing.Point(3, 4);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(116, 14);
+			this.label2.Size = new System.Drawing.Size(63, 14);
 			this.label2.TabIndex = 42;
-			this.label2.Text = "Urgent Medical Notes";
-			// 
-			// textMedUrgNote
-			// 
-			this.textMedUrgNote.BackColor = System.Drawing.Color.White;
-			this.textMedUrgNote.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.textMedUrgNote.ForeColor = System.Drawing.Color.Red;
-			this.textMedUrgNote.Location = new System.Drawing.Point(3, 22);
-			this.textMedUrgNote.Multiline = true;
-			this.textMedUrgNote.Name = "textMedUrgNote";
-			this.textMedUrgNote.ReadOnly = true;
-			this.textMedUrgNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textMedUrgNote.Size = new System.Drawing.Size(202, 20);
-			this.textMedUrgNote.TabIndex = 41;
-			this.textMedUrgNote.Text = "";
+			this.label2.Text = "Med Urgent";
+			this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(4, 47);
+			this.label1.Location = new System.Drawing.Point(2, 22);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(182, 12);
+			this.label1.Size = new System.Drawing.Size(182, 13);
 			this.label1.TabIndex = 40;
 			this.label1.Text = "Medical Summary";
 			// 
 			// textMedical
 			// 
 			this.textMedical.BackColor = System.Drawing.Color.White;
-			this.textMedical.Location = new System.Drawing.Point(3, 62);
+			this.textMedical.Location = new System.Drawing.Point(2, 37);
 			this.textMedical.Multiline = true;
 			this.textMedical.Name = "textMedical";
 			this.textMedical.ReadOnly = true;
@@ -457,13 +488,14 @@ namespace OpenDental{
 			// tbProg
 			// 
 			this.tbProg.BackColor = System.Drawing.SystemColors.Window;
-			this.tbProg.Location = new System.Drawing.Point(415, 251);
+			this.tbProg.Location = new System.Drawing.Point(415, 281);
 			this.tbProg.Name = "tbProg";
 			this.tbProg.ScrollValue = 1;
 			this.tbProg.SelectedIndices = new int[0];
 			this.tbProg.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-			this.tbProg.Size = new System.Drawing.Size(498, 427);
+			this.tbProg.Size = new System.Drawing.Size(498, 397);
 			this.tbProg.TabIndex = 40;
+			this.tbProg.MouseUp += new System.Windows.Forms.MouseEventHandler(this.tbProg_MouseUp);
 			this.tbProg.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tbProg_KeyDown);
 			// 
 			// groupNext
@@ -529,13 +561,15 @@ namespace OpenDental{
 			// 
 			this.panelEnterTx.BackColor = System.Drawing.SystemColors.Control;
 			this.panelEnterTx.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.panelEnterTx.Controls.Add(this.listDx);
+			this.panelEnterTx.Controls.Add(this.label5);
+			this.panelEnterTx.Controls.Add(this.comboPriority);
 			this.panelEnterTx.Controls.Add(this.butOK);
 			this.panelEnterTx.Controls.Add(this.butAddProc);
 			this.panelEnterTx.Controls.Add(this.textADACode);
 			this.panelEnterTx.Controls.Add(this.label14);
 			this.panelEnterTx.Controls.Add(this.listProcButtons);
 			this.panelEnterTx.Controls.Add(this.label13);
-			this.panelEnterTx.Controls.Add(this.listDx);
 			this.panelEnterTx.Controls.Add(this.labelDx);
 			this.panelEnterTx.Controls.Add(this.butO);
 			this.panelEnterTx.Controls.Add(this.butF);
@@ -548,14 +582,32 @@ namespace OpenDental{
 			this.panelEnterTx.Controls.Add(this.groupBox2);
 			this.panelEnterTx.Location = new System.Drawing.Point(416, 51);
 			this.panelEnterTx.Name = "panelEnterTx";
-			this.panelEnterTx.Size = new System.Drawing.Size(496, 198);
+			this.panelEnterTx.Size = new System.Drawing.Size(496, 229);
 			this.panelEnterTx.TabIndex = 44;
 			this.panelEnterTx.Visible = false;
+			// 
+			// label5
+			// 
+			this.label5.Location = new System.Drawing.Point(3, 202);
+			this.label5.Name = "label5";
+			this.label5.Size = new System.Drawing.Size(88, 18);
+			this.label5.TabIndex = 55;
+			this.label5.Text = "Entry Priority";
+			this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// comboPriority
+			// 
+			this.comboPriority.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboPriority.Location = new System.Drawing.Point(92, 200);
+			this.comboPriority.MaxDropDownItems = 40;
+			this.comboPriority.Name = "comboPriority";
+			this.comboPriority.Size = new System.Drawing.Size(96, 21);
+			this.comboPriority.TabIndex = 54;
 			// 
 			// butOK
 			// 
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(449, 2);
+			this.butOK.Location = new System.Drawing.Point(447, 2);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(44, 20);
 			this.butOK.TabIndex = 52;
@@ -564,7 +616,7 @@ namespace OpenDental{
 			// 
 			// textADACode
 			// 
-			this.textADACode.Location = new System.Drawing.Point(339, 3);
+			this.textADACode.Location = new System.Drawing.Point(337, 3);
 			this.textADACode.Name = "textADACode";
 			this.textADACode.Size = new System.Drawing.Size(108, 20);
 			this.textADACode.TabIndex = 50;
@@ -575,7 +627,7 @@ namespace OpenDental{
 			// 
 			// label14
 			// 
-			this.label14.Location = new System.Drawing.Point(298, 5);
+			this.label14.Location = new System.Drawing.Point(303, 7);
 			this.label14.Name = "label14";
 			this.label14.Size = new System.Drawing.Size(42, 17);
 			this.label14.TabIndex = 51;
@@ -584,19 +636,20 @@ namespace OpenDental{
 			// 
 			// listProcButtons
 			// 
-			this.listProcButtons.Location = new System.Drawing.Point(193, 44);
+			this.listProcButtons.Location = new System.Drawing.Point(192, 40);
 			this.listProcButtons.MultiColumn = true;
 			this.listProcButtons.Name = "listProcButtons";
-			this.listProcButtons.Size = new System.Drawing.Size(299, 147);
+			this.listProcButtons.Size = new System.Drawing.Size(300, 186);
 			this.listProcButtons.TabIndex = 48;
 			// 
 			// label13
 			// 
-			this.label13.Location = new System.Drawing.Point(193, 26);
+			this.label13.Location = new System.Drawing.Point(191, 20);
 			this.label13.Name = "label13";
 			this.label13.Size = new System.Drawing.Size(128, 18);
 			this.label13.TabIndex = 49;
 			this.label13.Text = "Or Single Click:";
+			this.label13.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// butEnterTx
 			// 
@@ -789,13 +842,108 @@ namespace OpenDental{
 			this.labelNewProcHint.TabIndex = 178;
 			this.labelNewProcHint.Text = "Enter New Procedures Here:";
 			// 
+			// textTreatmentNotes
+			// 
+			this.textTreatmentNotes.Location = new System.Drawing.Point(0, 427);
+			this.textTreatmentNotes.Multiline = true;
+			this.textTreatmentNotes.Name = "textTreatmentNotes";
+			this.textTreatmentNotes.Size = new System.Drawing.Size(411, 104);
+			this.textTreatmentNotes.TabIndex = 179;
+			this.textTreatmentNotes.Text = "";
+			this.textTreatmentNotes.TextChanged += new System.EventHandler(this.textTreatmentNotes_TextChanged);
+			this.textTreatmentNotes.Leave += new System.EventHandler(this.textTreatmentNotes_Leave);
+			// 
+			// label4
+			// 
+			this.label4.Location = new System.Drawing.Point(1, 411);
+			this.label4.Name = "label4";
+			this.label4.Size = new System.Drawing.Size(384, 18);
+			this.label4.TabIndex = 180;
+			this.label4.Text = "Treatment Notes (for items that do not display above)";
+			// 
+			// textCreditType
+			// 
+			this.textCreditType.Location = new System.Drawing.Point(0, 0);
+			this.textCreditType.Name = "textCreditType";
+			this.textCreditType.ReadOnly = true;
+			this.textCreditType.Size = new System.Drawing.Size(22, 20);
+			this.textCreditType.TabIndex = 181;
+			this.textCreditType.Text = "A";
+			this.toolTip1.SetToolTip(this.textCreditType, "Credit Type");
+			// 
+			// textIns
+			// 
+			this.textIns.Location = new System.Drawing.Point(69, 20);
+			this.textIns.Name = "textIns";
+			this.textIns.ReadOnly = true;
+			this.textIns.Size = new System.Drawing.Size(342, 20);
+			this.textIns.TabIndex = 182;
+			this.textIns.Text = "Ins";
+			this.toolTip1.SetToolTip(this.textIns, "Insurance");
+			// 
+			// panelABCins
+			// 
+			this.panelABCins.Controls.Add(this.textReferral);
+			this.panelABCins.Controls.Add(this.textCreditType);
+			this.panelABCins.Controls.Add(this.textIns);
+			this.panelABCins.Controls.Add(this.textBillingType);
+			this.panelABCins.Controls.Add(this.textDateFirstVisit);
+			this.panelABCins.Location = new System.Drawing.Point(0, 537);
+			this.panelABCins.Name = "panelABCins";
+			this.panelABCins.Size = new System.Drawing.Size(429, 40);
+			this.panelABCins.TabIndex = 183;
+			// 
+			// textReferral
+			// 
+			this.textReferral.Location = new System.Drawing.Point(208, 0);
+			this.textReferral.Name = "textReferral";
+			this.textReferral.ReadOnly = true;
+			this.textReferral.Size = new System.Drawing.Size(202, 20);
+			this.textReferral.TabIndex = 183;
+			this.textReferral.Text = "Referral";
+			this.toolTip1.SetToolTip(this.textReferral, "Referral");
+			// 
+			// textBillingType
+			// 
+			this.textBillingType.Location = new System.Drawing.Point(22, 0);
+			this.textBillingType.Name = "textBillingType";
+			this.textBillingType.ReadOnly = true;
+			this.textBillingType.Size = new System.Drawing.Size(186, 20);
+			this.textBillingType.TabIndex = 184;
+			this.textBillingType.Text = "Billing Type";
+			this.toolTip1.SetToolTip(this.textBillingType, "BillingType");
+			// 
+			// textDateFirstVisit
+			// 
+			this.textDateFirstVisit.Location = new System.Drawing.Point(0, 20);
+			this.textDateFirstVisit.Name = "textDateFirstVisit";
+			this.textDateFirstVisit.ReadOnly = true;
+			this.textDateFirstVisit.Size = new System.Drawing.Size(69, 20);
+			this.textDateFirstVisit.TabIndex = 184;
+			this.textDateFirstVisit.Text = "Date";
+			this.toolTip1.SetToolTip(this.textDateFirstVisit, "Date of First Visit");
+			// 
+			// menuProgRight
+			// 
+			this.menuProgRight.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+																																									this.menuItemPrintProg});
+			// 
+			// menuItemPrintProg
+			// 
+			this.menuItemPrintProg.Index = 0;
+			this.menuItemPrintProg.Text = "Print Progress Notes ...";
+			this.menuItemPrintProg.Click += new System.EventHandler(this.menuItemPrintProg_Click);
+			// 
 			// ContrChart
 			// 
+			this.Controls.Add(this.tbProg);
+			this.Controls.Add(this.panelABCins);
+			this.Controls.Add(this.textTreatmentNotes);
+			this.Controls.Add(this.label4);
 			this.Controls.Add(this.labelNewProcHint);
 			this.Controls.Add(this.ToolBarMain);
 			this.Controls.Add(this.cTeeth);
 			this.Controls.Add(this.panelEnterTx);
-			this.Controls.Add(this.tbProg);
 			this.Controls.Add(this.panelMedical);
 			this.Controls.Add(this.groupNext);
 			this.Controls.Add(this.butEnterTx);
@@ -810,6 +958,7 @@ namespace OpenDental{
 			this.groupNext.ResumeLayout(false);
 			this.panelEnterTx.ResumeLayout(false);
 			this.groupShow.ResumeLayout(false);
+			this.panelABCins.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -904,10 +1053,13 @@ namespace OpenDental{
 			ToolBarMain.Buttons.Add(new ODToolBarButton(ToolBarButtonStyle.Separator));
 			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"New Rx"),1,"","Rx"));
 			ToolBarMain.Buttons.Add(new ODToolBarButton(ToolBarButtonStyle.Separator));
-			ODToolBarButton button=new ODToolBarButton(Lan.g(this,"Primary"),-1,"Change the Primary/Permanent status of teeth","Primary");
+			ODToolBarButton button=new ODToolBarButton(Lan.g(this,"Primary"),-1
+				,Lan.g(this,"Change the Primary/Permanent status of teeth"),"Primary");
 			button.Style=ToolBarButtonStyle.DropDownButton;
 			button.DropDownMenu=menuPrimary;
 			ToolBarMain.Buttons.Add(button);
+			ToolBarMain.Buttons.Add(new ODToolBarButton(ToolBarButtonStyle.Separator));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Perio Chart"),-1,"","Perio"));
 			ArrayList toolButItems=ToolButItems.GetForToolBar(ToolBarsAvail.ChartModule);
 			for(int i=0;i<toolButItems.Count;i++){
 				ToolBarMain.Buttons.Add(new ODToolBarButton(ToolBarButtonStyle.Separator));
@@ -926,6 +1078,13 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public void ModuleUnselected(){
+			if(Patients.FamilyList==null)
+				return;
+			if(TreatmentNoteChanged){
+				PatientNotes.Cur.Treatment=textTreatmentNotes.Text;
+				PatientNotes.UpdateCur();
+				TreatmentNoteChanged=false;
+			}
 			Patients.FamilyList=null;
 			InsPlans.List=null;
 			CovPats.List=null;
@@ -935,6 +1094,7 @@ namespace OpenDental{
 			Procedures.HList=null;
 			Procedures.MissingTeeth=null;
 			RxPats.List=null;
+			RefAttaches.List=null;
 		}
 
 		private void RefreshModuleData(){
@@ -944,6 +1104,7 @@ namespace OpenDental{
 				CovPats.Refresh();
 				PatientNotes.Refresh();
         ClaimProcs.Refresh();
+				RefAttaches.Refresh();
 			}
 		}
 
@@ -957,6 +1118,7 @@ namespace OpenDental{
 				tbProg.Enabled=true;
 				ToolBarMain.Buttons["Rx"].Enabled=true;
 				ToolBarMain.Buttons["Primary"].Enabled=true;
+				ToolBarMain.Buttons["Perio"].Enabled=true;
 				ToolBarMain.Invalidate();
 				panelEnterTx.Enabled=true;//?
 			}
@@ -969,6 +1131,7 @@ namespace OpenDental{
 				tbProg.Enabled=false;
 				ToolBarMain.Buttons["Rx"].Enabled=false;
 				ToolBarMain.Buttons["Primary"].Enabled=false;
+				ToolBarMain.Buttons["Perio"].Enabled=false;
 				ToolBarMain.Invalidate();
 				panelEnterTx.Enabled=false;//?
 			}
@@ -1044,6 +1207,9 @@ namespace OpenDental{
 						//only respond to dropdown
 						//OnPrimary_Click();
 						break;
+					case "Perio":
+						OnPerio_Click();
+						break;
 				}
 			}
 			else if(e.Button.Tag.GetType()==typeof(int)){
@@ -1070,6 +1236,11 @@ namespace OpenDental{
 			ModuleSelected();
 		}
 
+		private void OnPerio_Click(){
+			FormPerio FormP=new FormPerio();
+			FormP.ShowDialog();
+		}
+
 		private void FillNext(){
 			if(!Patients.PatIsLoaded){
 				ApptNext.Visible=false;
@@ -1093,8 +1264,11 @@ namespace OpenDental{
 			//MessageBox.Show
 			Appointments.RefreshCur(Patients.Cur.NextAptNum);
 			if(Appointments.Cur.AptNum==0){//next appointment not found
-				Patients.Cur.NextAptNum=0;
+				Patient PatCur=Patients.Cur;
+				PatCur.NextAptNum=0;
+				Patients.Cur=PatCur;
 				Patients.UpdateCur();//no need to refresh
+				Patients.CurOld=Patients.Cur;//because no refresh
 				ApptNext.Visible=false;
 				checkDone.Checked=false;
 				labelMinutes.Text="";
@@ -1153,15 +1327,83 @@ namespace OpenDental{
 		}
 
 		private void FillMedical(){
+			panelMedical.BackColor=Defs.Long[(int)DefCat.MiscColors][3].ItemColor;
 			if(!Patients.PatIsLoaded){
 				textMedUrgNote.Text="";
 				textMedical.Text="";
 				textService.Text="";
+				textTreatmentNotes.Text="";
+				textTreatmentNotes.Enabled=false;
+				panelABCins.Enabled=false;
+				textCreditType.Text="";
+				textBillingType.Text="";
+				textReferral.Text="";
+				textDateFirstVisit.Text="";
+				textIns.Text="";
 				return;
 			}
 			textMedUrgNote.Text=Patients.Cur.MedUrgNote;
 			textMedical.Text=PatientNotes.Cur.Medical;
 			textService.Text=PatientNotes.Cur.Service;
+			textTreatmentNotes.Text=PatientNotes.Cur.Treatment;
+			textTreatmentNotes.Enabled=true;
+			textTreatmentNotes.Select(textTreatmentNotes.Text.Length+2,1);
+			textTreatmentNotes.ScrollToCaret();
+			TreatmentNoteChanged=false;
+			panelABCins.Enabled=true;
+			textCreditType.Text=Patients.Cur.CreditType;
+			textBillingType.Text=Defs.GetName(DefCat.BillingTypes,Patients.Cur.BillingType);
+			textReferral.Text="";
+			for(int i=0;i<RefAttaches.List.Length;i++){
+				if(RefAttaches.List[i].IsFrom){
+					Referrals.GetCur(RefAttaches.List[i].ReferralNum);
+					textReferral.Text=Referrals.GetCurName();
+					break;
+				}				
+			}
+			if(textReferral.Text==""){
+				textReferral.Text="referral ??";
+			}
+			if(Patients.Cur.DateFirstVisit.Year<1880)
+				textDateFirstVisit.Text="date ??";
+			else if(Patients.Cur.DateFirstVisit==DateTime.Today)
+				textDateFirstVisit.Text="NEW PAT";
+			else
+				textDateFirstVisit.Text=Patients.Cur.DateFirstVisit.ToShortDateString();
+			textIns.Text="";
+			string name="";
+			if(Patients.Cur.PriPlanNum!=0)
+				name=InsPlans.GetCarrierName(Patients.Cur.PriPlanNum);
+			if(name.Length>20)
+				name=name.Substring(0,20)+"...";
+			textIns.Text+=name+" ";
+			if(Patients.Cur.PriPending)
+				textIns.Text+="(pending) ";
+			name="";
+			if(Patients.Cur.SecPlanNum!=0)
+				name=InsPlans.GetCarrierName(Patients.Cur.SecPlanNum);
+			if(name.Length>20)
+				name=name.Substring(0,20)+"...";
+			textIns.Text+=name+" ";
+			if(Patients.Cur.SecPending)
+				textIns.Text+="(pending)";
+			if(textIns.Text=="  ")
+				textIns.Text="No Insurance";
+		}
+
+		private void textTreatmentNotes_TextChanged(object sender, System.EventArgs e) {
+			TreatmentNoteChanged=true;
+		}
+
+		private void textTreatmentNotes_Leave(object sender, System.EventArgs e) {
+			//need to skip this if selecting another module. Handled in ModuleUnselected due to click event
+			if(Patients.FamilyList==null)
+				return;
+			if(TreatmentNoteChanged){
+				PatientNotes.Cur.Treatment=textTreatmentNotes.Text;
+				PatientNotes.UpdateCur();
+				TreatmentNoteChanged=false;
+			}
 		}
 
 		private void FillProgNotes(){
@@ -1432,6 +1674,18 @@ namespace OpenDental{
 			for(int i=0;i<Defs.Short[(int)DefCat.Diagnosis].Length;i++){//move to instantClasses?
 				this.listDx.Items.Add(Defs.Short[(int)DefCat.Diagnosis][i].ItemName);
 			}
+			int selectedPriority=comboPriority.SelectedIndex;//retain current selection
+			comboPriority.Items.Clear();
+			comboPriority.Items.Add(Lan.g(this,"no priority"));
+			for(int i=0;i<Defs.Short[(int)DefCat.TxPriorities].Length;i++){
+				this.comboPriority.Items.Add(Defs.Short[(int)DefCat.TxPriorities][i].ItemName);
+			}
+			if(selectedPriority>0 && selectedPriority<comboPriority.Items.Count)
+				//set the selected to what it was before.
+				comboPriority.SelectedIndex=selectedPriority;
+			else
+				comboPriority.SelectedIndex=0;
+				//or just set to no priority
       listProcButtons.Items.Clear();
 			for(int i=0;i<ProcButtons.List.Length;i++){
         listProcButtons.Items.Add(ProcButtons.List[i].Description);  
@@ -1522,11 +1776,12 @@ namespace OpenDental{
 		private void tbProg_CellDoubleClicked(object sender, CellEventArgs e){
 			switch(((ProgLine)ProgLineAL[e.Row]).Type){
 				case ProgType.Proc:
-					Procedures.Cur = ((Procedure)ProcAL[((ProgLine)ProgLineAL[e.Row]).Index]);
-					FormProcEdit FormPE = new FormProcEdit();
+					Procedures.Cur=((Procedure)ProcAL[((ProgLine)ProgLineAL[e.Row]).Index]);
+					Procedures.CurOld=Procedures.Cur;
+					FormProcEdit FormPE=new FormProcEdit();
 					FormPE.IsNew=false;
 					FormPE.ShowDialog();
-					if (FormPE.DialogResult!=DialogResult.OK) return;
+					if(FormPE.DialogResult!=DialogResult.OK) return;
 					break;
 				case ProgType.Rx:
 					//MessageBox.Show(((ProgLine)ProgLineAL[e.Row]).Index.ToString());
@@ -1596,79 +1851,94 @@ namespace OpenDental{
 
 		///<summary>Sets many fields for a new procedure, then displays it for editing before inserting it into the db.</summary>
 		private void AddProcedure(){
+			Procedure ProcCur=Procedures.Cur;
 			//procnum
-			Procedures.Cur.PatNum=Patients.Cur.PatNum;
+			ProcCur.PatNum=Patients.Cur.PatNum;
 			//aptnum
 			//adacode
-			Procedures.Cur.ProcDate=DateTime.Now;
-			Procedures.Cur.ProcFee = Fees.GetAmount(Procedures.Cur.ADACode,GetFeeSched());
-			Procedures.Cur.OverridePri=-1;
-			Procedures.Cur.OverrideSec=-1;
+			ProcCur.ProcDate=DateTime.Today;
+			if(newStatus==ProcStat.R || newStatus==ProcStat.EO || newStatus==ProcStat.EC)
+				ProcCur.ProcFee=0;
+			else
+				ProcCur.ProcFee=Fees.GetAmount(ProcCur.ADACode,GetFeeSched());
+			ProcCur.OverridePri=-1;
+			ProcCur.OverrideSec=-1;
 			//surf
 			//ToothNum
 			//Procedures.Cur.ToothRange
-			Procedures.Cur.NoBillIns=ProcedureCodes.GetProcCode(Procedures.Cur.ADACode).NoBillIns;
-			//priority
-			Procedures.Cur.ProcStatus=newStatus;
-			Procedures.Cur.ProcNote="";
-			if(ProcedureCodes.GetProcCode(Procedures.Cur.ADACode).IsHygiene
+			ProcCur.NoBillIns=ProcedureCodes.GetProcCode(ProcCur.ADACode).NoBillIns;
+			if(comboPriority.SelectedIndex==0)
+				ProcCur.Priority=0;
+			else
+				ProcCur.Priority=Defs.Short[(int)DefCat.TxPriorities][comboPriority.SelectedIndex-1].DefNum;
+			ProcCur.ProcStatus=newStatus;
+			ProcCur.ProcNote="";
+			if(ProcedureCodes.GetProcCode(ProcCur.ADACode).IsHygiene
 				&& Patients.Cur.SecProv != 0){
-				Procedures.Cur.ProvNum=Patients.Cur.SecProv;
+				ProcCur.ProvNum=Patients.Cur.SecProv;
 			}
 			else{
-				Procedures.Cur.ProvNum=Patients.Cur.PriProv;
+				ProcCur.ProvNum=Patients.Cur.PriProv;
 			}
 			if(listDx.SelectedIndex!=-1)
-				Procedures.Cur.Dx=Defs.Short[(int)DefCat.Diagnosis][listDx.SelectedIndex].DefNum;
+				ProcCur.Dx=Defs.Short[(int)DefCat.Diagnosis][listDx.SelectedIndex].DefNum;
 			//nextaptnum
-			Procedures.Cur.CapCoPay=-1;
+			ProcCur.CapCoPay=-1;
 			if(Patients.Cur.PriPlanNum!=0){//if patient has insurance
-				Procedures.Cur.IsCovIns=true;
+				ProcCur.IsCovIns=true;
 				InsPlans.GetCur(Patients.Cur.PriPlanNum);
 				if(InsPlans.Cur.PlanType=="c"){
 					//also handles fine if copayfeesched=0:
-					Procedures.Cur.CapCoPay=Fees.GetAmount(Procedures.Cur.ADACode,InsPlans.Cur.CopayFeeSched);
+					ProcCur.CapCoPay=Fees.GetAmount(ProcCur.ADACode,InsPlans.Cur.CopayFeeSched);
 				}
 			}
-			FormProcEdit FormPE = new FormProcEdit();
+			Procedures.Cur=ProcCur;
+			FormProcEdit FormPE=new FormProcEdit();
 			FormPE.IsNew=true;
 			FormPE.ShowDialog();
 			//insertcur is done in dialog
 		}
 			
 		private void AddQuick(){
+			Procedure ProcCur=Procedures.Cur;
 			//procnum
-			Procedures.Cur.PatNum=Patients.Cur.PatNum;
+			ProcCur.PatNum=Patients.Cur.PatNum;
 			//aptnum
 			//adacode
-			Procedures.Cur.ProcDate=DateTime.Now;
-			Procedures.Cur.ProcFee = Fees.GetAmount(Procedures.Cur.ADACode,GetFeeSched());
-			Procedures.Cur.OverridePri=-1;
-			Procedures.Cur.OverrideSec=-1;
+			ProcCur.ProcDate=DateTime.Now;
+			if(newStatus==ProcStat.R || newStatus==ProcStat.EO || newStatus==ProcStat.EC)
+				ProcCur.ProcFee=0;
+			else
+				ProcCur.ProcFee=Fees.GetAmount(ProcCur.ADACode,GetFeeSched());
+			ProcCur.OverridePri=-1;
+			ProcCur.OverrideSec=-1;
 			//surf
 			//toothnum
 			//ToothRange
-			Procedures.Cur.NoBillIns=ProcedureCodes.GetProcCode(Procedures.Cur.ADACode).NoBillIns;
-			//priority
-			Procedures.Cur.ProcStatus=newStatus;
-			Procedures.Cur.ProcNote="";
-			if(ProcedureCodes.GetProcCode(Procedures.Cur.ADACode).IsHygiene
+			ProcCur.NoBillIns=ProcedureCodes.GetProcCode(ProcCur.ADACode).NoBillIns;
+			if(comboPriority.SelectedIndex==0)
+				ProcCur.Priority=0;
+			else
+				ProcCur.Priority=Defs.Short[(int)DefCat.TxPriorities][comboPriority.SelectedIndex-1].DefNum;
+			ProcCur.ProcStatus=newStatus;
+			ProcCur.ProcNote="";
+			if(ProcedureCodes.GetProcCode(ProcCur.ADACode).IsHygiene
 				&& Patients.Cur.SecProv != 0){
-				Procedures.Cur.ProvNum=Patients.Cur.SecProv;
+				ProcCur.ProvNum=Patients.Cur.SecProv;
 			}
 			else{
-				Procedures.Cur.ProvNum=Patients.Cur.PriProv;
+				ProcCur.ProvNum=Patients.Cur.PriProv;
 			}
 			if(listDx.SelectedIndex!=-1)
-				Procedures.Cur.Dx=Defs.Short[(int)DefCat.Diagnosis][listDx.SelectedIndex].DefNum;
+				ProcCur.Dx=Defs.Short[(int)DefCat.Diagnosis][listDx.SelectedIndex].DefNum;
 			//nextaptnum
-			Procedures.Cur.CapCoPay=-1;
+			ProcCur.CapCoPay=-1;
 			if(Patients.Cur.PriPlanNum!=0){//if patient has insurance
-				Procedures.Cur.IsCovIns=true;
+				ProcCur.IsCovIns=true;
 				InsPlans.GetCur(Patients.Cur.PriPlanNum);
 				if(InsPlans.Cur.PlanType=="c"){
 					//also handles fine if copayfeesched=0:
-					Procedures.Cur.CapCoPay=Fees.GetAmount(Procedures.Cur.ADACode,InsPlans.Cur.CopayFeeSched);
+					ProcCur.CapCoPay=Fees.GetAmount(ProcCur.ADACode,InsPlans.Cur.CopayFeeSched);
 				}
 			}
 			//MessageBox.Show(Procedures.NewProcedure.ProcFee.ToString());
@@ -1676,22 +1946,26 @@ namespace OpenDental{
 			//if(Procedures.Cur.ProcStatus==ProcStat.C){
 			//	Procedures.PutBal(Procedures.Cur.ProcDate,Procedures.Cur.ProcFee);
 			//}
+			Procedures.Cur=ProcCur;
 			Procedures.InsertCur();
 		}
 
 		private void butAddProc_Click(object sender, System.EventArgs e){
 			bool isValid;
 			TreatmentArea tArea;
-			FormProcedures FormP = new FormProcedures();
+			FormProcedures FormP=new FormProcedures();
 			FormP.Mode=FormProcMode.Select;
 			FormP.ShowDialog();
 			if(FormP.DialogResult!=DialogResult.OK) return;
+			Procedures.SetDateFirstVisit(DateTime.Today,1);
+			Procedure ProcCur;
 			for(int n=0;n==0 || n<cTeeth.SelectedTeeth.Length;n++){
 				isValid=true;
-				Procedures.Cur=new Procedure();
-				Procedures.Cur.ADACode = FormP.SelectedADA;
+				ProcCur=new Procedure();//going to be an insert, so no need to set Procedures.CurOld
+				//Procedure
+				ProcCur.ADACode = FormP.SelectedADA;
 				//Procedures.Cur.ADACode=ProcButtonItems.adaCodeList[i];
-				tArea=ProcedureCodes.GetProcCode(Procedures.Cur.ADACode).TreatArea;
+				tArea=ProcedureCodes.GetProcCode(ProcCur.ADACode).TreatArea;
 				if((tArea==TreatmentArea.Arch
 					|| tArea==TreatmentArea.Mouth
 					|| tArea==TreatmentArea.Quad
@@ -1710,17 +1984,19 @@ namespace OpenDental{
 				//	}
 				//	quadCount++;
 				//	AddQuick();
+					Procedures.Cur=ProcCur;
 					AddProcedure();
 				}
 				else if(tArea==TreatmentArea.Surf){
 					if(textSurf.Text=="")
 						isValid=false;
 					else
-						Procedures.Cur.Surf=textSurf.Text;
+						ProcCur.Surf=textSurf.Text;
 					if(cTeeth.SelectedTeeth.Length==0)
 						isValid=false;
 					else
-						Procedures.Cur.ToothNum=cTeeth.SelectedTeeth[n];
+						ProcCur.ToothNum=cTeeth.SelectedTeeth[n];
+					Procedures.Cur=ProcCur;
 					if(isValid)
 						AddQuick();
 					else
@@ -1728,43 +2004,51 @@ namespace OpenDental{
 				}
 				else if(tArea==TreatmentArea.Tooth){
 					if(cTeeth.SelectedTeeth.Length==0){
+						Procedures.Cur=ProcCur;
 						AddProcedure();
 					}
 					else{
-						Procedures.Cur.ToothNum=cTeeth.SelectedTeeth[n];
+						ProcCur.ToothNum=cTeeth.SelectedTeeth[n];
+						Procedures.Cur=ProcCur;
 						AddQuick();
 					}
 				}
 				else if(tArea==TreatmentArea.ToothRange){
 					if(cTeeth.SelectedTeeth.Length==0){
+						Procedures.Cur=ProcCur;
 						AddProcedure();
 					}
 					else{
-						Procedures.Cur.ToothRange="";
+						ProcCur.ToothRange="";
 						for(int b=0;b<cTeeth.SelectedTeeth.Length;b++){
-							if(b!=0) Procedures.Cur.ToothRange+=",";
-							Procedures.Cur.ToothRange+=cTeeth.SelectedTeeth[b];
+							if(b!=0) ProcCur.ToothRange+=",";
+							ProcCur.ToothRange+=cTeeth.SelectedTeeth[b];
 						}
+						Procedures.Cur=ProcCur;
 						AddProcedure();//it's nice to see the procedure to verify the range
 					}
 				}
 				else if(tArea==TreatmentArea.Arch){
 					if(cTeeth.SelectedTeeth.Length==0){
+						Procedures.Cur=ProcCur;
 						AddProcedure();
 						continue;
 					}
 					if(Tooth.IsMaxillary(cTeeth.SelectedTeeth[0])){
-						Procedures.Cur.Surf="U";
+						ProcCur.Surf="U";
 					}
 					else{
-						Procedures.Cur.Surf="L";
+						ProcCur.Surf="L";
 					}
+					Procedures.Cur=ProcCur;
 					AddQuick();
 				}
 				else if(tArea==TreatmentArea.Sextant){
+					Procedures.Cur=ProcCur;
 					AddProcedure();
 				}
 				else{//mouth
+					Procedures.Cur=ProcCur;
 					AddQuick();
 				}
 			}//for n
@@ -1913,6 +2197,7 @@ namespace OpenDental{
 		}
 
 		private void checkDone_Click(object sender, System.EventArgs e) {
+			Patient PatCur;
 			if(checkDone.Checked){
 				if(ApptNext.Visible){
 					if(MessageBox.Show(Lan.g(this,"Existing next appointment will be deleted"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK)
@@ -1921,11 +2206,15 @@ namespace OpenDental{
 					Procedures.UnattachProcsInNextAppt(Appointments.Cur.AptNum);
 					Appointments.DeleteCur();
 				}
-				Patients.Cur.NextAptNum=-1;
+				PatCur=Patients.Cur;
+				PatCur.NextAptNum=-1;
+				Patients.Cur=PatCur;
 				Patients.UpdateCur();
 			}
 			else{
-				Patients.Cur.NextAptNum=0;
+				PatCur=Patients.Cur;
+				PatCur.NextAptNum=0;
+				Patients.Cur=PatCur;
 				Patients.UpdateCur();
 			}
 			FillNext();
@@ -1933,7 +2222,8 @@ namespace OpenDental{
 
 		private void butNew_Click(object sender, System.EventArgs e) {
 			if(ApptNext.Visible){
-				if(MessageBox.Show(Lan.g(this,"Replace existing next appointment?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK)
+				if(MessageBox.Show(Lan.g(this,"Replace existing next appointment?")
+					,"",MessageBoxButtons.OKCancel)!=DialogResult.OK)
 					return;
 				Appointments.Cur=ApptNext.Info.MyApt;
 				Procedures.UnattachProcsInNextAppt(Appointments.Cur.AptNum);
@@ -1946,6 +2236,7 @@ namespace OpenDental{
 			Appointments.Cur.AptDateTime=DateTime.Today;
 			Appointments.Cur.Pattern="/X/";
 			Appointments.InsertCur();
+			Appointments.CurOld=Appointments.Cur;
 			FormApptEdit FormApptEdit2=new FormApptEdit();
 			FormApptEdit2.IsNew=true;
 			FormApptEdit2.ShowDialog();
@@ -1954,8 +2245,10 @@ namespace OpenDental{
 				//not needed: Patients.Cur.NextAptNum=0;
 				FillNext();
 				return;
-			}	
-			Patients.Cur.NextAptNum=Appointments.Cur.AptNum;
+			}
+			Patient PatCur=Patients.Cur;
+			PatCur.NextAptNum=Appointments.Cur.AptNum;
+			Patients.Cur=PatCur;
 			Patients.UpdateCur();
 			ModuleSelected();//if procs were added in appt, then this will display them
 		}
@@ -1970,13 +2263,16 @@ namespace OpenDental{
 			Appointments.Cur=ApptNext.Info.MyApt;
 			Procedures.UnattachProcsInNextAppt(Appointments.Cur.AptNum);
 			Appointments.DeleteCur();
-			Patients.Cur.NextAptNum=0;
+			Patient PatCur=Patients.Cur;
+			PatCur.NextAptNum=0;
+			Patients.Cur=PatCur;
 			Patients.UpdateCur();
 			FillNext();
 		}
 
 		private void ApptNext_DoubleClick(object sender, System.EventArgs e){
 			Appointments.Cur=ApptNext.Info.MyApt;
+			Appointments.CurOld=Appointments.Cur;
 			FormApptEdit FormApptEdit2 = new FormApptEdit();
 			FormApptEdit2.ShowDialog();
 			ModuleSelected();//if procs were added in appt, then this will display them
@@ -2052,18 +2348,20 @@ namespace OpenDental{
 		}*/
 
 		private void listProcButtons_Click(object sender, System.EventArgs e) {
+			Procedures.SetDateFirstVisit(DateTime.Today,1);
 			bool isValid;
 			TreatmentArea tArea;
 			int quadCount=0;//automates quadrant codes.
 		  ProcButtons.Cur=ProcButtons.List[listProcButtons.SelectedIndex];
 			ProcButtonItems.GetListsForButton(ProcButtons.Cur.ProcButtonNum);
+			Procedure ProcCur;
 			for(int i=0;i<ProcButtonItems.adaCodeList.Length;i++){
 				//needs to loop at least once, regardless of whether any teeth are selected.	
 				for(int n=0;n==0 || n<cTeeth.SelectedTeeth.Length;n++){
 					isValid=true;
-					Procedures.Cur=new Procedure();
-					Procedures.Cur.ADACode=ProcButtonItems.adaCodeList[i];
-					tArea=ProcedureCodes.GetProcCode(Procedures.Cur.ADACode).TreatArea;
+					ProcCur=new Procedure();//insert, so no need to set CurOld
+					ProcCur.ADACode=ProcButtonItems.adaCodeList[i];
+					tArea=ProcedureCodes.GetProcCode(ProcCur.ADACode).TreatArea;
 					if((tArea==TreatmentArea.Arch
 						|| tArea==TreatmentArea.Mouth
 						|| tArea==TreatmentArea.Quad
@@ -2074,24 +2372,26 @@ namespace OpenDental{
 					}
 					else if(tArea==TreatmentArea.Quad){
 						switch(quadCount){
-							case 0: Procedures.Cur.Surf="UR"; break;
-							case 1: Procedures.Cur.Surf="UL"; break;
-							case 2: Procedures.Cur.Surf="LL"; break;
-							case 3: Procedures.Cur.Surf="LR"; break;
-							default: Procedures.Cur.Surf="UR"; break;//this could happen.
+							case 0: ProcCur.Surf="UR"; break;
+							case 1: ProcCur.Surf="UL"; break;
+							case 2: ProcCur.Surf="LL"; break;
+							case 3: ProcCur.Surf="LR"; break;
+							default: ProcCur.Surf="UR"; break;//this could happen.
 						}
 						quadCount++;
+						Procedures.Cur=ProcCur;
 						AddQuick();
 					}
 					else if(tArea==TreatmentArea.Surf){
 						if(textSurf.Text=="")
 							isValid=false;
 						else
-							Procedures.Cur.Surf=textSurf.Text;
+							ProcCur.Surf=textSurf.Text;
 						if(cTeeth.SelectedTeeth.Length==0)
 							isValid=false;
 						else
-							Procedures.Cur.ToothNum=cTeeth.SelectedTeeth[n];
+							ProcCur.ToothNum=cTeeth.SelectedTeeth[n];
+						Procedures.Cur=ProcCur;
 						if(isValid)
 							AddQuick();
 						else
@@ -2099,43 +2399,51 @@ namespace OpenDental{
 					}
 					else if(tArea==TreatmentArea.Tooth){
 						if(cTeeth.SelectedTeeth.Length==0){
+							Procedures.Cur=ProcCur;
 							AddProcedure();
 						}
 						else{
-							Procedures.Cur.ToothNum=cTeeth.SelectedTeeth[n];
+							ProcCur.ToothNum=cTeeth.SelectedTeeth[n];
+							Procedures.Cur=ProcCur;
 							AddQuick();
 						}
 					}
 					else if(tArea==TreatmentArea.ToothRange){
 						if(cTeeth.SelectedTeeth.Length==0){
+							Procedures.Cur=ProcCur;
 							AddProcedure();
 						}
 						else{
-							Procedures.Cur.ToothRange="";
+							ProcCur.ToothRange="";
 							for(int b=0;b<cTeeth.SelectedTeeth.Length;b++){
-								if(b!=0) Procedures.Cur.ToothRange+=",";
-								Procedures.Cur.ToothRange+=cTeeth.SelectedTeeth[b];
+								if(b!=0) ProcCur.ToothRange+=",";
+								ProcCur.ToothRange+=cTeeth.SelectedTeeth[b];
 							}
+							Procedures.Cur=ProcCur;
 							AddQuick();
 						}
 					}
 					else if(tArea==TreatmentArea.Arch){
 						if(cTeeth.SelectedTeeth.Length==0){
+							Procedures.Cur=ProcCur;
 							AddProcedure();
 							continue;
 						}
 						if(Tooth.IsMaxillary(cTeeth.SelectedTeeth[0])){
-							Procedures.Cur.Surf="U";
+							ProcCur.Surf="U";
 						}
 						else{
-							Procedures.Cur.Surf="L";
+							ProcCur.Surf="L";
 						}
+						Procedures.Cur=ProcCur;
 						AddQuick();
 					}
 					else if(tArea==TreatmentArea.Sextant){
+						Procedures.Cur=ProcCur;
 						AddProcedure();
 					}
 					else{//mouth
+						Procedures.Cur=ProcCur;
 						AddQuick();
 					}
 				}//n selected teeth
@@ -2152,11 +2460,11 @@ namespace OpenDental{
 						toothNum="";
 					surf=textSurf.Text;
 					isAdditional= n!=0;
-					Procedures.Cur=new Procedure();
-					Procedures.Cur.ADACode=AutoCodeItems.GetADA
+					ProcCur=new Procedure();//this will be an insert, so no need to set CurOld
+					ProcCur.ADACode=AutoCodeItems.GetADA
 							(ProcButtonItems.autoCodeList[i],toothNum
 							,surf,isAdditional);
-					tArea=ProcedureCodes.GetProcCode(Procedures.Cur.ADACode).TreatArea;
+					tArea=ProcedureCodes.GetProcCode(ProcCur.ADACode).TreatArea;
 					if((tArea==TreatmentArea.Arch
 						|| tArea==TreatmentArea.Mouth
 						|| tArea==TreatmentArea.Quad
@@ -2167,24 +2475,26 @@ namespace OpenDental{
 					}
 					else if(tArea==TreatmentArea.Quad){
 						switch(quadCount){
-							case 0: Procedures.Cur.Surf="UR"; break;
-							case 1: Procedures.Cur.Surf="UL"; break;
-							case 2: Procedures.Cur.Surf="LL"; break;
-							case 3: Procedures.Cur.Surf="LR"; break;
-							default: Procedures.Cur.Surf="UR"; break;//this could happen.
+							case 0: ProcCur.Surf="UR"; break;
+							case 1: ProcCur.Surf="UL"; break;
+							case 2: ProcCur.Surf="LL"; break;
+							case 3: ProcCur.Surf="LR"; break;
+							default: ProcCur.Surf="UR"; break;//this could happen.
 						}
 						quadCount++;
+						Procedures.Cur=ProcCur;
 						AddQuick();
 					}
 					else if(tArea==TreatmentArea.Surf){
 						if(textSurf.Text=="")
 							isValid=false;
 						else
-							Procedures.Cur.Surf=textSurf.Text;
+							ProcCur.Surf=textSurf.Text;
 						if(cTeeth.SelectedTeeth.Length==0)
 							isValid=false;
 						else
-							Procedures.Cur.ToothNum=cTeeth.SelectedTeeth[n];
+							ProcCur.ToothNum=cTeeth.SelectedTeeth[n];
+						Procedures.Cur=ProcCur;
 						if(isValid)
 							AddQuick();
 						else
@@ -2192,43 +2502,51 @@ namespace OpenDental{
 					}
 					else if(tArea==TreatmentArea.Tooth){
 						if(cTeeth.SelectedTeeth.Length==0){
+							Procedures.Cur=ProcCur;
 							AddProcedure();
 						}
 						else{
-							Procedures.Cur.ToothNum=cTeeth.SelectedTeeth[n];
+							ProcCur.ToothNum=cTeeth.SelectedTeeth[n];
+							Procedures.Cur=ProcCur;
 							AddQuick();
 						}
 					}
 					else if(tArea==TreatmentArea.ToothRange){
 						if(cTeeth.SelectedTeeth.Length==0){
+							Procedures.Cur=ProcCur;
 							AddProcedure();
 						}
 						else{
-							Procedures.Cur.ToothRange="";
+							ProcCur.ToothRange="";
 							for(int b=0;b<cTeeth.SelectedTeeth.Length;b++){
-								if(b!=0) Procedures.Cur.ToothRange+=",";
-								Procedures.Cur.ToothRange+=cTeeth.SelectedTeeth[b];
+								if(b!=0) ProcCur.ToothRange+=",";
+								ProcCur.ToothRange+=cTeeth.SelectedTeeth[b];
 							}
+							Procedures.Cur=ProcCur;
 							AddQuick();
 						}
 					}
 					else if(tArea==TreatmentArea.Arch){
 						if(cTeeth.SelectedTeeth.Length==0){
+							Procedures.Cur=ProcCur;
 							AddProcedure();
 							continue;
 						}
 						if(Tooth.IsMaxillary(cTeeth.SelectedTeeth[0])){
-							Procedures.Cur.Surf="U";
+							ProcCur.Surf="U";
 						}
 						else{
-							Procedures.Cur.Surf="L";
+							ProcCur.Surf="L";
 						}
+						Procedures.Cur=ProcCur;
 						AddQuick();
 					}
 					else if(tArea==TreatmentArea.Sextant){
+						Procedures.Cur=ProcCur;
 						AddProcedure();
 					}
 					else{//mouth
+						Procedures.Cur=ProcCur;
 						AddQuick();
 					}
 				}//n selected teeth
@@ -2241,18 +2559,24 @@ namespace OpenDental{
 		}
 
 		private void menuPrimaryAll_Click(object sender, System.EventArgs e) {
-			Patients.Cur.PrimaryTeeth="";
+			Patient PatCur=Patients.Cur;
+			PatCur.PrimaryTeeth="";
 			for(int i=1;i<=32;i++){
-				Patients.Cur.PrimaryTeeth+=i.ToString()+",";
+				PatCur.PrimaryTeeth+=i.ToString()+",";
 			}
+			Patients.Cur=PatCur;
 			Patients.UpdateCur();
-			RefreshModuleScreen();
+			ModuleSelected();
+			//RefreshModuleScreen();
 		}
 
 		private void menuPrimaryNone_Click(object sender, System.EventArgs e) {
-			Patients.Cur.PrimaryTeeth="";
+			Patient PatCur=Patients.Cur;
+			PatCur.PrimaryTeeth="";
+			Patients.Cur=PatCur;
 			Patients.UpdateCur();
-			RefreshModuleScreen();
+			ModuleSelected();
+			//RefreshModuleScreen();
 		}
 
 		private void menuPrimaryToggle_Click(object sender, System.EventArgs e) {
@@ -2277,12 +2601,15 @@ namespace OpenDental{
 					ALpri.Add(toothInt.ToString());
 				}
 			}
-			Patients.Cur.PrimaryTeeth="";
+			Patient PatCur=Patients.Cur;
+			PatCur.PrimaryTeeth="";
 			for(int i=0;i<ALpri.Count;i++){
-				Patients.Cur.PrimaryTeeth+=ALpri[i]+",";
+				PatCur.PrimaryTeeth+=ALpri[i]+",";
 			}
+			Patients.Cur=PatCur;
 			Patients.UpdateCur();
-			RefreshModuleScreen();
+			ModuleSelected();
+			//RefreshModuleScreen();
 		}
 
 		private void textADACode_Enter(object sender, System.EventArgs e) {
@@ -2319,13 +2646,15 @@ namespace OpenDental{
 				textADACode.SelectionStart=textADACode.Text.Length;
 				return;
 			}
+			Procedures.SetDateFirstVisit(DateTime.Today,1);
 			TreatmentArea tArea;
+			Procedure ProcCur;
 			int quadCount=0;//automates quadrant codes.
 			for(int n=0;n==0 || n<cTeeth.SelectedTeeth.Length;n++){//always loops at least once.
-				Procedures.Cur=new Procedure();
-				Procedures.Cur.ADACode=textADACode.Text;
+				ProcCur=new Procedure();//this will be an insert, so no need to set CurOld
+				ProcCur.ADACode=textADACode.Text;
 				bool isValid=true;
-				tArea=ProcedureCodes.GetProcCode(Procedures.Cur.ADACode).TreatArea;
+				tArea=ProcedureCodes.GetProcCode(ProcCur.ADACode).TreatArea;
 				if((tArea==TreatmentArea.Arch
 					|| tArea==TreatmentArea.Mouth
 					|| tArea==TreatmentArea.Quad
@@ -2336,24 +2665,26 @@ namespace OpenDental{
 				}
 				else if(tArea==TreatmentArea.Quad){
 					switch(quadCount){
-						case 0: Procedures.Cur.Surf="UR"; break;
-						case 1: Procedures.Cur.Surf="UL"; break;
-						case 2: Procedures.Cur.Surf="LL"; break;
-						case 3: Procedures.Cur.Surf="LR"; break;
-						default: Procedures.Cur.Surf="UR"; break;//this could happen.
+						case 0: ProcCur.Surf="UR"; break;
+						case 1: ProcCur.Surf="UL"; break;
+						case 2: ProcCur.Surf="LL"; break;
+						case 3: ProcCur.Surf="LR"; break;
+						default: ProcCur.Surf="UR"; break;//this could happen.
 					}
 					quadCount++;
+					Procedures.Cur=ProcCur;
 					AddQuick();
 				}
 				else if(tArea==TreatmentArea.Surf){
 					if(textSurf.Text=="")
 						isValid=false;
 					else
-						Procedures.Cur.Surf=textSurf.Text;
+						ProcCur.Surf=textSurf.Text;
 					if(cTeeth.SelectedTeeth.Length==0)
 						isValid=false;
 					else
-						Procedures.Cur.ToothNum=cTeeth.SelectedTeeth[n];
+						ProcCur.ToothNum=cTeeth.SelectedTeeth[n];
+					Procedures.Cur=ProcCur;
 					if(isValid)
 						AddQuick();
 					else
@@ -2361,43 +2692,51 @@ namespace OpenDental{
 				}
 				else if(tArea==TreatmentArea.Tooth){
 					if(cTeeth.SelectedTeeth.Length==0){
+						Procedures.Cur=ProcCur;
 						AddProcedure();
 					}
 					else{
-						Procedures.Cur.ToothNum=cTeeth.SelectedTeeth[n];
+						ProcCur.ToothNum=cTeeth.SelectedTeeth[n];
+						Procedures.Cur=ProcCur;
 						AddQuick();
 					}
 				}
 				else if(tArea==TreatmentArea.ToothRange){
 					if(cTeeth.SelectedTeeth.Length==0){
+						Procedures.Cur=ProcCur;
 						AddProcedure();
 					}
 					else{
-						Procedures.Cur.ToothRange="";
+						ProcCur.ToothRange="";
 						for(int b=0;b<cTeeth.SelectedTeeth.Length;b++){
-							if(b!=0) Procedures.Cur.ToothRange+=",";
-							Procedures.Cur.ToothRange+=cTeeth.SelectedTeeth[b];
+							if(b!=0) ProcCur.ToothRange+=",";
+							ProcCur.ToothRange+=cTeeth.SelectedTeeth[b];
 						}
+						Procedures.Cur=ProcCur;
 						AddQuick();
 					}
 				}
 				else if(tArea==TreatmentArea.Arch){
 					if(cTeeth.SelectedTeeth.Length==0){
+						Procedures.Cur=ProcCur;
 						AddProcedure();
 						continue;
 					}
 					if(Tooth.IsMaxillary(cTeeth.SelectedTeeth[0])){
-						Procedures.Cur.Surf="U";
+						ProcCur.Surf="U";
 					}
 					else{
-						Procedures.Cur.Surf="L";
+						ProcCur.Surf="L";
 					}
+					Procedures.Cur=ProcCur;
 					AddQuick();
 				}
 				else if(tArea==TreatmentArea.Sextant){
+					Procedures.Cur=ProcCur;
 					AddProcedure();
 				}
 				else{//mouth
+					Procedures.Cur=ProcCur;
 					AddQuick();
 				}
 			}//n selected teeth
@@ -2436,6 +2775,18 @@ namespace OpenDental{
 				butI.Enabled=false;
 			}
 		}
+
+		private void tbProg_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e) {
+			if(e.Button==MouseButtons.Right){
+				menuProgRight.Show(tbProg,new Point(e.X,e.Y));
+			}
+		}
+
+		private void menuItemPrintProg_Click(object sender, System.EventArgs e) {
+			//print progress notes
+		}
+
+		
 
 		
 

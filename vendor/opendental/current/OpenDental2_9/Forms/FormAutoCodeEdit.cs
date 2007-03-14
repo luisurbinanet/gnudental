@@ -18,6 +18,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label3;
 		private OpenDental.XPButton butDelete;
 		private OpenDental.XPButton butAdd;
+		private System.Windows.Forms.CheckBox checkLessIntrusive;
 		///<summary></summary>
     public bool IsNew;
 
@@ -61,12 +62,13 @@ namespace OpenDental{
 			this.label3 = new System.Windows.Forms.Label();
 			this.butDelete = new OpenDental.XPButton();
 			this.butAdd = new OpenDental.XPButton();
+			this.checkLessIntrusive = new System.Windows.Forms.CheckBox();
 			this.SuspendLayout();
 			// 
 			// checkHidden
 			// 
 			this.checkHidden.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkHidden.Location = new System.Drawing.Point(454, 20);
+			this.checkHidden.Location = new System.Drawing.Point(390, 14);
 			this.checkHidden.Name = "checkHidden";
 			this.checkHidden.Size = new System.Drawing.Size(124, 18);
 			this.checkHidden.TabIndex = 1;
@@ -130,7 +132,7 @@ namespace OpenDental{
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(40, 64);
+			this.label3.Location = new System.Drawing.Point(40, 72);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(436, 18);
 			this.label3.TabIndex = 27;
@@ -164,12 +166,24 @@ namespace OpenDental{
 			this.butAdd.Text = "&Add";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
+			// checkLessIntrusive
+			// 
+			this.checkLessIntrusive.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkLessIntrusive.Location = new System.Drawing.Point(390, 34);
+			this.checkLessIntrusive.Name = "checkLessIntrusive";
+			this.checkLessIntrusive.Size = new System.Drawing.Size(354, 30);
+			this.checkLessIntrusive.TabIndex = 30;
+			this.checkLessIntrusive.Text = "Do not check codes in the procedure edit window, but only use this auto code for " +
+				"procedure buttons.";
+			this.checkLessIntrusive.TextAlign = System.Drawing.ContentAlignment.TopLeft;
+			// 
 			// FormAutoCodeEdit
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(794, 582);
+			this.Controls.Add(this.checkLessIntrusive);
 			this.Controls.Add(this.butDelete);
 			this.Controls.Add(this.butAdd);
 			this.Controls.Add(this.label3);
@@ -204,6 +218,7 @@ namespace OpenDental{
         this.Text=Lan.g(this,"Edit Auto Code");
         textDescript.Text=AutoCodes.Cur.Description;
         checkHidden.Checked=AutoCodes.Cur.IsHidden;
+				checkLessIntrusive.Checked=AutoCodes.Cur.LessIntrusive;
       }
 		  FillTable();
 		}
@@ -265,6 +280,7 @@ namespace OpenDental{
       }
       AutoCodes.Cur.Description=textDescript.Text;
       AutoCodes.Cur.IsHidden=checkHidden.Checked;
+			AutoCodes.Cur.LessIntrusive=checkLessIntrusive.Checked;
 			AutoCodes.UpdateCur();
       DialogResult=DialogResult.OK;
 		}

@@ -79,7 +79,7 @@ namespace OpenDental.Reporting
 	}
 
 
-	///<summary>The type of section is used in the Section class.  Only ONE of each type is allowed except for the GroupHeader and GroupFooter which are optional and can have one pair for each group.  The order of the sections is locked and user can not change.</summary>
+	///<summary>The type of section is used in the Section class.  Only ONE of each type is allowed except for the GroupHeader and GroupFooter which are optional and can have one pair for each group.  The order of the sections is locked and user cannot change.</summary>
 	public enum AreaSectionKind{
 		///<summary>Printed at the top of the report.</summary>
 		ReportHeader,

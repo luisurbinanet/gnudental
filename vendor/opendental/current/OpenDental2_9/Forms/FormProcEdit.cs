@@ -86,7 +86,13 @@ namespace OpenDental{
 		private OpenDental.ValidDouble textCapCoPay;
 		private System.Windows.Forms.Label labelCapCoPay;
 		private System.Windows.Forms.Label labelDx;
+		private System.Windows.Forms.ComboBox comboPlaceService;
+		private System.Windows.Forms.Label labelPlaceService;
+		private System.Windows.Forms.Button butSetComplete;
+		private System.Windows.Forms.Label label10;
+		private System.Windows.Forms.ListBox listPriority;
 		private ProcedureCode ProcedureCode2;
+		private Procedure ProcCur;
 
 		///<summary></summary>
 		public FormProcEdit(){
@@ -227,6 +233,11 @@ namespace OpenDental{
 			this.checkIsCovIns = new System.Windows.Forms.CheckBox();
 			this.errorProvider2 = new System.Windows.Forms.ErrorProvider();
 			this.butEditAnyway = new System.Windows.Forms.Button();
+			this.comboPlaceService = new System.Windows.Forms.ComboBox();
+			this.labelPlaceService = new System.Windows.Forms.Label();
+			this.butSetComplete = new System.Windows.Forms.Button();
+			this.label10 = new System.Windows.Forms.Label();
+			this.listPriority = new System.Windows.Forms.ListBox();
 			this.groupBox1.SuspendLayout();
 			this.groupStatus.SuspendLayout();
 			this.groupQuadrant.SuspendLayout();
@@ -378,7 +389,7 @@ namespace OpenDental{
 			this.groupStatus.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupStatus.Location = new System.Drawing.Point(656, 14);
 			this.groupStatus.Name = "groupStatus";
-			this.groupStatus.Size = new System.Drawing.Size(148, 154);
+			this.groupStatus.Size = new System.Drawing.Size(148, 149);
 			this.groupStatus.TabIndex = 4;
 			this.groupStatus.TabStop = false;
 			this.groupStatus.Text = "Procedure Status";
@@ -464,7 +475,7 @@ namespace OpenDental{
 			// 
 			this.label7.Location = new System.Drawing.Point(48, 418);
 			this.label7.Name = "label7";
-			this.label7.Size = new System.Drawing.Size(60, 16);
+			this.label7.Size = new System.Drawing.Size(89, 16);
 			this.label7.TabIndex = 19;
 			this.label7.Text = "Notes:";
 			// 
@@ -793,21 +804,21 @@ namespace OpenDental{
 			// 
 			// listProvNum
 			// 
-			this.listProvNum.Location = new System.Drawing.Point(216, 176);
+			this.listProvNum.Location = new System.Drawing.Point(172, 176);
 			this.listProvNum.Name = "listProvNum";
-			this.listProvNum.Size = new System.Drawing.Size(120, 225);
+			this.listProvNum.Size = new System.Drawing.Size(92, 225);
 			this.listProvNum.TabIndex = 3;
 			// 
 			// listDx
 			// 
 			this.listDx.Location = new System.Drawing.Point(48, 176);
 			this.listDx.Name = "listDx";
-			this.listDx.Size = new System.Drawing.Size(120, 225);
+			this.listDx.Size = new System.Drawing.Size(114, 225);
 			this.listDx.TabIndex = 2;
 			// 
 			// label9
 			// 
-			this.label9.Location = new System.Drawing.Point(216, 160);
+			this.label9.Location = new System.Drawing.Point(172, 160);
 			this.label9.Name = "label9";
 			this.label9.Size = new System.Drawing.Size(100, 14);
 			this.label9.TabIndex = 45;
@@ -862,7 +873,7 @@ namespace OpenDental{
 			this.panel1.Controls.Add(this.textProc);
 			this.panel1.Location = new System.Drawing.Point(12, 8);
 			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(576, 140);
+			this.panel1.Size = new System.Drawing.Size(493, 140);
 			this.panel1.TabIndex = 1;
 			// 
 			// listBoxTeeth2
@@ -974,12 +985,60 @@ namespace OpenDental{
 			this.butEditAnyway.Visible = false;
 			this.butEditAnyway.Click += new System.EventHandler(this.butEditAnyway_Click);
 			// 
+			// comboPlaceService
+			// 
+			this.comboPlaceService.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboPlaceService.Location = new System.Drawing.Point(581, 436);
+			this.comboPlaceService.MaxDropDownItems = 30;
+			this.comboPlaceService.Name = "comboPlaceService";
+			this.comboPlaceService.Size = new System.Drawing.Size(177, 21);
+			this.comboPlaceService.TabIndex = 52;
+			// 
+			// labelPlaceService
+			// 
+			this.labelPlaceService.Location = new System.Drawing.Point(579, 418);
+			this.labelPlaceService.Name = "labelPlaceService";
+			this.labelPlaceService.Size = new System.Drawing.Size(133, 16);
+			this.labelPlaceService.TabIndex = 53;
+			this.labelPlaceService.Text = "Place of Service";
+			// 
+			// butSetComplete
+			// 
+			this.butSetComplete.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butSetComplete.Location = new System.Drawing.Point(669, 170);
+			this.butSetComplete.Name = "butSetComplete";
+			this.butSetComplete.Size = new System.Drawing.Size(98, 23);
+			this.butSetComplete.TabIndex = 54;
+			this.butSetComplete.Text = "Set Complete";
+			this.butSetComplete.Click += new System.EventHandler(this.butSetComplete_Click);
+			// 
+			// label10
+			// 
+			this.label10.Location = new System.Drawing.Point(273, 160);
+			this.label10.Name = "label10";
+			this.label10.Size = new System.Drawing.Size(89, 16);
+			this.label10.TabIndex = 56;
+			this.label10.Text = "Priority";
+			this.label10.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// listPriority
+			// 
+			this.listPriority.Location = new System.Drawing.Point(274, 177);
+			this.listPriority.Name = "listPriority";
+			this.listPriority.Size = new System.Drawing.Size(76, 225);
+			this.listPriority.TabIndex = 57;
+			// 
 			// FormProcEdit
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(846, 648);
+			this.Controls.Add(this.listPriority);
+			this.Controls.Add(this.label10);
+			this.Controls.Add(this.butSetComplete);
+			this.Controls.Add(this.labelPlaceService);
+			this.Controls.Add(this.comboPlaceService);
 			this.Controls.Add(this.butEditAnyway);
 			this.Controls.Add(this.butChange);
 			this.Controls.Add(this.checkIsCovIns);
@@ -1017,6 +1076,13 @@ namespace OpenDental{
 		#endregion
 
 		private void FormProcInfo_Load(object sender, System.EventArgs e){
+			//as long as Procedures.CurOld is set every single time Procedures.Cur is before opening this form,
+			//we shouldn't do that here.
+			ProcCur=Procedures.Cur;
+			if(((Pref)Prefs.HList["EasyHidePublicHealth"]).ValueString=="1"){
+				labelPlaceService.Visible=false;
+				comboPlaceService.Visible=false;
+			}
 			if(((Pref)Prefs.HList["UseInternationalToothNumbers"]).ValueString=="1"){
 				listBoxTeeth.Items.Clear();
 				listBoxTeeth.Items.AddRange(new string[] {"18","17","16","15","14","13","12","11","21","22","23","24","25","26","27","28"});
@@ -1024,13 +1090,13 @@ namespace OpenDental{
 				listBoxTeeth2.Items.AddRange(new string[] {"48","47","46","45","44","43","42","41","31","32","33","34","35","36","37","38"});
 			}
 			Claims.Refresh();
-			ProcedureCode2=ProcedureCodes.GetProcCode(Procedures.Cur.ADACode);
+			ProcedureCode2=ProcedureCodes.GetProcCode(ProcCur.ADACode);
 			if (IsNew){
 				SetControls();
 				return;
 			}
 			else{
-				if(Procedures.Cur.ProcStatus==ProcStat.C){
+				if(ProcCur.ProcStatus==ProcStat.C){
 					if(!UserPermissions.CheckUserPassword("Procedure Completed Edit",Procedures.Cur.ProcDate)){
 						//MessageBox.Show(Lan.g(this,"You only have permission to view the Procedure. No changes will be saved"));
 						butOK.Enabled=false;
@@ -1040,9 +1106,9 @@ namespace OpenDental{
 					}					
 				}
 			}
-			if(ClaimProcs.ProcIsAttached(Procedures.Cur.ProcNum)){//attached to claim
+			if(ClaimProcs.ProcIsAttached(ProcCur.ProcNum)){//attached to claim
 				checkIsCovIns.Enabled=false;
-				if(ClaimProcs.ProcIsSent(Procedures.Cur.ProcNum)){//if also sent
+				if(ClaimProcs.ProcIsSent(ProcCur.ProcNum)){//if also sent
 					panel1.Enabled=false;
 					groupStatus.Enabled=false;
 					checkNoBillIns.Enabled=false;
@@ -1053,7 +1119,7 @@ namespace OpenDental{
 					//if(ClaimProcs.ProcIsPaid(Procedures.Cur.ProcNum)){//if also paid on
 					//	butDelete.Enabled=false;
 					//	labelClaim.Text+="  "
-					//		+Lan.g(this,"You can not delete a procedure that is attached to a payment.");
+					//		+Lan.g(this,"You cannot delete a procedure that is attached to a payment.");
 					//}
 				}
 			}
@@ -1072,8 +1138,8 @@ namespace OpenDental{
 		}		
 
 		private void SetControls(){
-			textDate.Text=Procedures.Cur.ProcDate.ToString("d");
-			textProc.Text=Procedures.Cur.ADACode;
+			textDate.Text=ProcCur.ProcDate.ToString("d");
+			textProc.Text=ProcCur.ADACode;
 			textDesc.Text=ProcedureCode2.Descript;
 			switch (ProcedureCode2.TreatArea){
 				case TreatmentArea.Surf:
@@ -1081,15 +1147,15 @@ namespace OpenDental{
 					this.labelTooth.Visible=true;
 					this.textSurfaces.Visible=true;
 					this.labelSurfaces.Visible=true;
-					if(Tooth.IsValidDB(Procedures.Cur.ToothNum)){
+					if(Tooth.IsValidDB(ProcCur.ToothNum)){
 						errorProvider2.SetError(textTooth,"");
-						textTooth.Text=Tooth.ToInternat(Procedures.Cur.ToothNum);
-						textSurfaces.Text=Tooth.SurfTidy(Procedures.Cur.Surf,Procedures.Cur.ToothNum);
+						textTooth.Text=Tooth.ToInternat(ProcCur.ToothNum);
+						textSurfaces.Text=Tooth.SurfTidy(ProcCur.Surf,Procedures.Cur.ToothNum);
 					}
 					else{
 						errorProvider2.SetError(textTooth,Lan.g(this,"Invalid tooth number."));
 						textTooth.Text=Procedures.Cur.ToothNum;
-						textSurfaces.Text=Tooth.SurfTidy(Procedures.Cur.Surf,"");//only valid toothnums allowed
+						textSurfaces.Text=Tooth.SurfTidy(ProcCur.Surf,"");//only valid toothnums allowed
 					}
 					if(textSurfaces.Text=="")
 						errorProvider2.SetError(textSurfaces,"No surfaces selected.");
@@ -1101,11 +1167,11 @@ namespace OpenDental{
 					this.labelTooth.Visible=true;
 					if(Tooth.IsValidDB(Procedures.Cur.ToothNum)){
 						errorProvider2.SetError(textTooth,"");
-						textTooth.Text=Tooth.ToInternat(Procedures.Cur.ToothNum);
+						textTooth.Text=Tooth.ToInternat(ProcCur.ToothNum);
 					}
 					else{
 						errorProvider2.SetError(textTooth,Lan.g(this,"Invalid tooth number."));
-						textTooth.Text=Procedures.Cur.ToothNum;
+						textTooth.Text=ProcCur.ToothNum;
 					}
 					break;
 				case TreatmentArea.Mouth:
@@ -1146,7 +1212,7 @@ namespace OpenDental{
 					if(Procedures.Cur.ToothRange==null){
 						break;
 					}
-   			  string[] sArray=Procedures.Cur.ToothRange.Split(',');
+   			  string[] sArray=ProcCur.ToothRange.Split(',');
           for(int i=0;i<sArray.Length;i++)  {
             for(int j=0;j<listBoxTeeth.Items.Count;j++)  {
               if(Tooth.ToInternat(sArray[i])==listBoxTeeth.Items[j].ToString())
@@ -1159,64 +1225,77 @@ namespace OpenDental{
 					} 
 					break;
 			}//end switch
-			textAmount.Text=Procedures.Cur.ProcFee.ToString("F");
-			switch (Procedures.Cur.ProcStatus){
+			textAmount.Text=ProcCur.ProcFee.ToString("F");
+			switch (ProcCur.ProcStatus){
 				case ProcStat.TP: radioStatusTP.Checked=true; break;
 				case ProcStat.C: radioStatusC.Checked=true; break;
 				case ProcStat.EC: radioStatusEC.Checked=true; break;
 				case ProcStat.EO: radioStatusEO.Checked=true; break;
 				case ProcStat.R: radioStatusR.Checked=true; break;
 			}
+			listDx.Items.Clear();
 			for(int i=0;i<Defs.Short[(int)DefCat.Diagnosis].Length;i++){
 				this.listDx.Items.Add(Defs.Short[(int)DefCat.Diagnosis][i].ItemName);
 				if(Defs.Short[(int)DefCat.Diagnosis][i].DefNum==Procedures.Cur.Dx)
 					listDx.SelectedIndex=i;
 			}
+			listProvNum.Items.Clear();
 			for(int i=0;i<Providers.List.Length;i++){
 				this.listProvNum.Items.Add(Providers.List[i].Abbr);
-				if(Providers.List[i].ProvNum==Procedures.Cur.ProvNum)
+				if(Providers.List[i].ProvNum==ProcCur.ProvNum)
 					listProvNum.SelectedIndex=i;
 			}
-			if(Procedures.Cur.OverridePri==-1)
+			listPriority.Items.Clear();
+			listPriority.Items.Add(Lan.g(this,"no priority"));
+			listPriority.SelectedIndex=0;
+			for(int i=0;i<Defs.Short[(int)DefCat.TxPriorities].Length;i++){
+				listPriority.Items.Add(Defs.Short[(int)DefCat.TxPriorities][i].ItemName);
+				if(Defs.Short[(int)DefCat.TxPriorities][i].DefNum==ProcCur.Priority)
+					listPriority.SelectedIndex=i+1;
+			}
+			if(ProcCur.OverridePri==-1)
 				textOverridePri.Text="";
 			else
-				textOverridePri.Text=Procedures.Cur.OverridePri.ToString("F");
-			if(Procedures.Cur.OverrideSec==-1)
+				textOverridePri.Text=ProcCur.OverridePri.ToString("F");
+			if(ProcCur.OverrideSec==-1)
 				textOverrideSec.Text="";
 			else 
-				textOverrideSec.Text=Procedures.Cur.OverrideSec.ToString("F");
-			checkNoBillIns.Checked=Procedures.Cur.NoBillIns;
-			textNotes.Text=Procedures.Cur.ProcNote;
-			checkIsCovIns.Checked=Procedures.Cur.IsCovIns;
+				textOverrideSec.Text=ProcCur.OverrideSec.ToString("F");
+			checkNoBillIns.Checked=ProcCur.NoBillIns;
+			textNotes.Text=ProcCur.ProcNote;
+			checkIsCovIns.Checked=ProcCur.IsCovIns;
 			if(checkIsCovIns.Checked){
 				groupIns.Visible=true;
 			}
 			else groupIns.Visible=false;
-			if(Procedures.Cur.CapCoPay==-1)
+			if(ProcCur.CapCoPay==-1)
 				textCapCoPay.Text="";
 			else
-				textCapCoPay.Text=Procedures.Cur.CapCoPay.ToString("F");
+				textCapCoPay.Text=ProcCur.CapCoPay.ToString("F");
 			textNotes.Select(textNotes.Text.Length,0);
+			comboPlaceService.Items.Clear();
+			comboPlaceService.Items.AddRange(Enum.GetNames(typeof(PlaceOfService)));
+			comboPlaceService.SelectedIndex=(int)ProcCur.PlaceService;
 		}//end SetControls
 
 		private void computeEstimates(){
 			double amt;
 			try{
 				amt=Convert.ToDouble(textAmount.Text.ToString());
-				Procedures.Cur.ProcFee=PIn.PDouble(textAmount.Text.ToString());
+				ProcCur.ProcFee=PIn.PDouble(textAmount.Text.ToString());
 			}
 			catch{
 				return;
 			}
-			double priPercent=CovPats.GetPercent(Procedures.Cur.ADACode,PriSecTot.Pri);
-			double secPercent=CovPats.GetPercent(Procedures.Cur.ADACode,PriSecTot.Sec);
+			double priPercent=CovPats.GetPercent(ProcCur.ADACode,PriSecTot.Pri);
+			double secPercent=CovPats.GetPercent(ProcCur.ADACode,PriSecTot.Sec);
 			textPriPercent.Text=(priPercent*100).ToString();
 			textSecPercent.Text=(secPercent*100).ToString();
-			double priEst=Procedures.Cur.ProcFee*priPercent;
-			double secEst=Procedures.Cur.ProcFee*secPercent;
+			double priEst=ProcCur.ProcFee*priPercent;
+			double secEst=ProcCur.ProcFee*secPercent;
 			textPriEst.Text=(priEst).ToString("F");
-			if(Procedures.Cur.ProcFee-priEst < secEst)
-				secEst=Procedures.Cur.ProcFee-priEst;
+			if(ProcCur.ProcFee-priEst < secEst)
+				secEst=ProcCur.ProcFee-priEst;
 			textSecEst.Text=secEst.ToString("F");
 		}
 
@@ -1240,7 +1319,7 @@ namespace OpenDental{
 				if(InsPlans.Cur.PlanType!="c")
 					return;
 				textCapCoPay.Text
-					=Fees.GetAmount(Procedures.Cur.ADACode,InsPlans.Cur.CopayFeeSched).ToString("F");
+					=Fees.GetAmount(ProcCur.ADACode,InsPlans.Cur.CopayFeeSched).ToString("F");
 			}
 			else{//not checked
 				textCapCoPay.Text="";
@@ -1285,13 +1364,28 @@ namespace OpenDental{
 			FormProcedures FormP=new FormProcedures();
       FormP.Mode=FormProcMode.Select;
       FormP.ShowDialog();
-      if(FormP.DialogResult!=DialogResult.Cancel){
-        Procedures.Cur.ADACode=FormP.SelectedADA;
-        ProcedureCode2 = ProcedureCodes.GetProcCode(FormP.SelectedADA);
-        textDesc.Text=ProcedureCode2.Descript;
-        Procedures.Cur.ProcFee=Fees.GetAmount(FormP.SelectedADA,ContrChart.GetFeeSched());
-        SetControls();
-      }
+      if(FormP.DialogResult!=DialogResult.OK){
+				return;
+			}
+      ProcCur.ADACode=FormP.SelectedADA;
+      ProcedureCode2=ProcedureCodes.GetProcCode(FormP.SelectedADA);
+      textDesc.Text=ProcedureCode2.Descript;
+      ProcCur.ProcFee=Fees.GetAmount(FormP.SelectedADA,ContrChart.GetFeeSched());
+			switch(ProcedureCode2.TreatArea){
+				case TreatmentArea.Quad:
+					ProcCur.Surf="UR";
+					radioUR.Checked=true;
+					break;
+				case TreatmentArea.Sextant:
+					ProcCur.Surf="1";
+					radioS1.Checked=true;
+					break;
+				case TreatmentArea.Arch:
+					ProcCur.Surf="U";
+					radioU.Checked=true;
+					break;
+			}
+      SetControls();
 		}
 
 		private void butEditAnyway_Click(object sender, System.EventArgs e) {
@@ -1301,6 +1395,116 @@ namespace OpenDental{
 			butDelete.Enabled=true;
 			butChange.Enabled=true;
 			checkIsCovIns.Enabled=true;
+		}
+
+		private void radioTP_Click(object sender, System.EventArgs e) {
+			ProcCur.ProcStatus=ProcStat.TP;
+		}
+
+		private void radioC_Click(object sender, System.EventArgs e) {
+			Procedures.SetDateFirstVisit(DateTime.Today,2);
+			ProcCur.ProcStatus=ProcStat.C;
+		}
+
+		private void radioExist_Click(object sender, System.EventArgs e) {
+			ProcCur.ProcStatus=ProcStat.EC;
+		}
+
+		private void radioEO_Click(object sender, System.EventArgs e) {
+			ProcCur.ProcStatus=ProcStat.EO;
+		}
+
+		private void radioStatusR_Click(object sender, System.EventArgs e) {
+			ProcCur.ProcStatus=ProcStat.R;
+		}
+
+		private void butSetComplete_Click(object sender, System.EventArgs e) {
+			Procedures.SetDateFirstVisit(DateTime.Today,2);
+			if(ProcCur.AptNum!=0){//if attached to an appointment
+				Appointments.RefreshCur(ProcCur.AptNum);
+				textDate.Text=Appointments.Cur.AptDateTime.ToShortDateString();
+			}
+			else
+				textDate.Text=DateTime.Today.ToShortDateString();
+			textNotes.Text+=ProcedureCode2.DefaultNote;
+			radioStatusC.Checked=true;
+			ProcCur.ProcStatus=ProcStat.C;
+			comboPlaceService.SelectedIndex
+				=PIn.PInt(((Pref)Prefs.HList["DefaultProcedurePlaceService"]).ValueString);
+		}
+
+		private void radioUR_Click(object sender, System.EventArgs e) {
+			ProcCur.Surf="UR";
+		}
+
+		private void radioUL_Click(object sender, System.EventArgs e) {
+			ProcCur.Surf="UL";
+		}
+
+		private void radioLR_Click(object sender, System.EventArgs e) {
+			ProcCur.Surf="LR";
+		}
+
+		private void radioLL_Click(object sender, System.EventArgs e) {
+			ProcCur.Surf="LL";
+		}
+
+		private void radioU_Click(object sender, System.EventArgs e) {
+			ProcCur.Surf="U";
+		}
+
+		private void radioL_Click(object sender, System.EventArgs e) {
+			ProcCur.Surf="L";
+		}
+
+		private void radioS1_Click(object sender, System.EventArgs e) {
+			ProcCur.Surf="1";
+		}
+
+		private void radioS2_Click(object sender, System.EventArgs e) {
+			ProcCur.Surf="2";
+		}
+
+		private void radioS3_Click(object sender, System.EventArgs e) {
+			ProcCur.Surf="3";
+		}
+
+		private void radioS4_Click(object sender, System.EventArgs e) {
+			ProcCur.Surf="4";
+		}
+
+		private void radioS5_Click(object sender, System.EventArgs e) {
+			ProcCur.Surf="5";
+		}
+
+		private void radioS6_Click(object sender, System.EventArgs e) {
+			ProcCur.Surf="6";
+		}
+
+		private void butDelete_Click(object sender, System.EventArgs e) {
+			if(MessageBox.Show(Lan.g(this,"Delete Procedure?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
+				return;
+			}
+			if(IsNew){
+				DialogResult=DialogResult.Cancel;
+				return;
+			}
+			else if(ClaimProcs.ProcIsAttached(ProcCur.ProcNum)){//attached to claim
+				ClaimProcs.Refresh();
+				if(ClaimProcs.ProcIsPaid(ProcCur.ProcNum)){//if also paid on
+					MessageBox.Show
+						(Lan.g(this,"Not allowed to delete a procedure that is attached to a payment."));
+					return;
+				}
+				for(int i=0;i<ClaimProcs.List.Length;i++){
+					if(ClaimProcs.List[i].ProcNum==ProcCur.ProcNum){
+						ClaimProcs.Cur=ClaimProcs.List[i];
+						ClaimProcs.DeleteCur();
+					}
+				}
+			}
+			Procedures.DeleteCur();
+			DialogResult=DialogResult.OK;	
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e){
@@ -1322,39 +1526,44 @@ namespace OpenDental{
 			if(textAmount.Text==""){
 				textAmount.Text="0";
 			}
-			Procedures.Cur.PatNum=Patients.Cur.PatNum;
-			Procedures.Cur.ADACode=this.textProc.Text;
-			Procedures.Cur.ProcDate=PIn.PDate(this.textDate.Text);
-			Procedures.Cur.ProcFee=System.Convert.ToDouble(textAmount.Text);
+			ProcCur.PatNum=Patients.Cur.PatNum;
+			ProcCur.ADACode=this.textProc.Text;
+			ProcCur.ProcDate=PIn.PDate(this.textDate.Text);
+			ProcCur.ProcFee=System.Convert.ToDouble(textAmount.Text);
 			if(textOverridePri.Text=="")
-				Procedures.Cur.OverridePri=-1;
+				ProcCur.OverridePri=-1;
 			else
-				Procedures.Cur.OverridePri=System.Convert.ToDouble(textOverridePri.Text);
+				ProcCur.OverridePri=System.Convert.ToDouble(textOverridePri.Text);
 			if(textOverrideSec.Text=="")
-				Procedures.Cur.OverrideSec=-1;
+				ProcCur.OverrideSec=-1;
 			else
-				Procedures.Cur.OverrideSec=System.Convert.ToDouble(textOverrideSec.Text);
+				ProcCur.OverrideSec=System.Convert.ToDouble(textOverrideSec.Text);
 			//Dx taken care of when radio pushed
-			switch (ProcedureCode2.TreatArea){
+			switch(ProcedureCode2.TreatArea){
 				case TreatmentArea.Surf:
-					Procedures.Cur.Surf=textSurfaces.Text;
-					Procedures.Cur.ToothNum=Tooth.FromInternat(textTooth.Text);
+					ProcCur.Surf=textSurfaces.Text;
+					ProcCur.ToothNum=Tooth.FromInternat(textTooth.Text);
 					break;
 				case TreatmentArea.Tooth:
-					Procedures.Cur.ToothNum=Tooth.FromInternat(textTooth.Text);
+					ProcCur.Surf="";
+					ProcCur.ToothNum=Tooth.FromInternat(textTooth.Text);
 					break;
 				case TreatmentArea.Mouth:
-						Procedures.Cur.Surf="";
-						break;
+					ProcCur.Surf="";
+					ProcCur.ToothNum="";	
+					break;
 				case TreatmentArea.Quad:
-					//value set when radio pushed
+					//surf set when radio pushed
+					ProcCur.ToothNum="";	
 					break;
 				case TreatmentArea.Sextant:
-					//taken care of when radio pushed
+					//surf taken care of when radio pushed
+					ProcCur.ToothNum="";	
 					break;
 				case TreatmentArea.Arch:
 					//don't HAVE to select arch
 					//taken care of when radio pushed
+					ProcCur.ToothNum="";	
 					break;
 				case TreatmentArea.ToothRange:
 					if (listBoxTeeth.SelectedItems.Count<1 && listBoxTeeth2.SelectedItems.Count<1) {
@@ -1372,22 +1581,30 @@ namespace OpenDental{
 							range+=",";
             range+=Tooth.FromInternat(listBoxTeeth2.SelectedItems[j].ToString());
           }
-			    Procedures.Cur.ToothRange=range;
+			    ProcCur.ToothRange=range;
+					ProcCur.Surf="";
+					ProcCur.ToothNum="";	
 					break;
 			}
-			Procedures.Cur.NoBillIns=this.checkNoBillIns.Checked;
+			ProcCur.NoBillIns=this.checkNoBillIns.Checked;
 			//Status taken care of when radio pushed
-			Procedures.Cur.ProcNote=this.textNotes.Text;
+			ProcCur.ProcNote=this.textNotes.Text;
 			if(textCapCoPay.Text=="")
-				Procedures.Cur.CapCoPay=-1;
+				ProcCur.CapCoPay=-1;
 			else
-				Procedures.Cur.CapCoPay=System.Convert.ToDouble(textCapCoPay.Text);
+				ProcCur.CapCoPay=System.Convert.ToDouble(textCapCoPay.Text);
 			if(listProvNum.SelectedIndex!=-1)
-				Procedures.Cur.ProvNum=Providers.List[listProvNum.SelectedIndex].ProvNum;
+				ProcCur.ProvNum=Providers.List[listProvNum.SelectedIndex].ProvNum;
 			if(listDx.SelectedIndex!=-1)
-				Procedures.Cur.Dx=Defs.Short[(int)DefCat.Diagnosis][listDx.SelectedIndex].DefNum;
-			Procedures.Cur.IsCovIns=checkIsCovIns.Checked;
-			if (IsNew){
+				ProcCur.Dx=Defs.Short[(int)DefCat.Diagnosis][listDx.SelectedIndex].DefNum;
+			if(listPriority.SelectedIndex==0)
+				ProcCur.Priority=0;
+			else
+				ProcCur.Priority=Defs.Short[(int)DefCat.TxPriorities][listPriority.SelectedIndex-1].DefNum;
+			ProcCur.IsCovIns=checkIsCovIns.Checked;
+			ProcCur.PlaceService=(PlaceOfService)comboPlaceService.SelectedIndex;
+			Procedures.Cur=ProcCur;
+			if(IsNew){
 				Procedures.InsertCur();
 			}
 			else{
@@ -1396,16 +1613,20 @@ namespace OpenDental{
 					SecurityLogs.MakeLogEntry("Procedure Completed Edit",Procedures.cmd.CommandText);
 				}
 			}
+			ProcCur=Procedures.Cur;
+			Procedures.CurOld=Procedures.Cur;//in case we now make more changes.
+			//these areas have no autocodes
 			if(ProcedureCode2.TreatArea==TreatmentArea.Mouth
 				|| ProcedureCode2.TreatArea==TreatmentArea.Quad
 				|| ProcedureCode2.TreatArea==TreatmentArea.Sextant){
 				DialogResult = DialogResult.OK;
 				return;
 			}
+			//this represents the suggested ADAcode based on the autocodes set up.
 			string verifyADA;
 			if(ProcedureCode2.TreatArea==TreatmentArea.Arch){
 				if(Procedures.Cur.Surf==""){
-					DialogResult = DialogResult.OK;
+					DialogResult=DialogResult.OK;
 					return;
 				}
 				if(Procedures.Cur.Surf=="U"){
@@ -1432,125 +1653,37 @@ namespace OpenDental{
 			}
 			if(Procedures.Cur.ADACode!=verifyADA){
 				string desc=ProcedureCodes.GetProcCode(verifyADA).Descript;
-				if(MessageBox.Show(verifyADA+" ("+desc+") "+Lan.g(this,"is the recommended procedure code for this procedure.  Change procedure code and fee?"
-					),"",MessageBoxButtons.YesNo)==DialogResult.Yes){
-					Procedures.Cur.ADACode=verifyADA;
-					Procedures.Cur.ProcFee=Fees.GetAmount(Procedures.Cur.ADACode,ContrChart.GetFeeSched());
-					Procedures.UpdateCur();
-					if(Procedures.Cur.ProcStatus==ProcStat.C){
-						SecurityLogs.MakeLogEntry("Procedure Completed Edit",Procedures.cmd.CommandText);
-					}
+				FormAutoCodeLessIntrusive FormA=new FormAutoCodeLessIntrusive();
+				FormA.mainText=verifyADA+" ("+desc+") "+Lan.g(this,"is the recommended procedure code for this procedure.  Change procedure code and fee?");
+				FormA.ShowDialog();
+				if(FormA.DialogResult!=DialogResult.OK){
+					DialogResult=DialogResult.OK;
+					return;
+				}
+				if(FormA.CheckedBox){
+					AutoCodes.Cur.LessIntrusive=true;
+					AutoCodes.UpdateCur();
+					DataValid.IType=InvalidType.LocalData;
+					DataValid DataValid2=new DataValid();
+					DataValid2.SetInvalid();
+				}
+				ProcCur.ADACode=verifyADA;
+				ProcCur.ProcFee=Fees.GetAmount(ProcCur.ADACode,ContrChart.GetFeeSched());
+				Procedures.Cur=ProcCur;
+				Procedures.UpdateCur();
+				if(Procedures.Cur.ProcStatus==ProcStat.C){
+					SecurityLogs.MakeLogEntry("Procedure Completed Edit",Procedures.cmd.CommandText);
 				}
 			}
       DialogResult=DialogResult.OK;
-		}//end method save data
-
-
-		private void radioTP_Click(object sender, System.EventArgs e) {
-			Procedures.Cur.ProcStatus=ProcStat.TP;
-		}
-
-		private void radioC_Click(object sender, System.EventArgs e) {
-			//if(Procedures.Cur.ProcStatus==ProcStat.TP)
-			if(Procedures.Cur.AptNum!=0){//if attached to an appointment
-				Appointments.RefreshCur(Procedures.Cur.AptNum);
-				textDate.Text=Appointments.Cur.AptDateTime.ToShortDateString();
-			}
-			else
-				textDate.Text=DateTime.Today.ToShortDateString();
-			textNotes.Text+=ProcedureCode2.DefaultNote;
-			Procedures.Cur.ProcStatus=ProcStat.C;
-		}
-
-		private void radioExist_Click(object sender, System.EventArgs e) {
-			Procedures.Cur.ProcStatus=ProcStat.EC;
-		}
-
-		private void radioEO_Click(object sender, System.EventArgs e) {
-			Procedures.Cur.ProcStatus=ProcStat.EO;
-		}
-
-		private void radioStatusR_Click(object sender, System.EventArgs e) {
-			Procedures.Cur.ProcStatus=ProcStat.R;
-		}
-
-		private void radioUR_Click(object sender, System.EventArgs e) {
-			Procedures.Cur.Surf="UR";
-		}
-
-		private void radioUL_Click(object sender, System.EventArgs e) {
-			Procedures.Cur.Surf="UL";
-		}
-
-		private void radioLR_Click(object sender, System.EventArgs e) {
-			Procedures.Cur.Surf="LR";
-		}
-
-		private void radioLL_Click(object sender, System.EventArgs e) {
-			Procedures.Cur.Surf="LL";
-		}
-
-		private void radioU_Click(object sender, System.EventArgs e) {
-			Procedures.Cur.Surf="U";
-		}
-
-		private void radioL_Click(object sender, System.EventArgs e) {
-			Procedures.Cur.Surf="L";
-		}
-
-		private void radioS1_Click(object sender, System.EventArgs e) {
-			Procedures.Cur.Surf="1";
-		}
-
-		private void radioS2_Click(object sender, System.EventArgs e) {
-			Procedures.Cur.Surf="2";
-		}
-
-		private void radioS3_Click(object sender, System.EventArgs e) {
-			Procedures.Cur.Surf="3";
-		}
-
-		private void radioS4_Click(object sender, System.EventArgs e) {
-			Procedures.Cur.Surf="4";
-		}
-
-		private void radioS5_Click(object sender, System.EventArgs e) {
-			Procedures.Cur.Surf="5";
-		}
-
-		private void radioS6_Click(object sender, System.EventArgs e) {
-			Procedures.Cur.Surf="6";
-		}
-
-		private void butDelete_Click(object sender, System.EventArgs e) {
-			if(MessageBox.Show(Lan.g(this,"Delete Procedure?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
-				return;
-			}
-			if(IsNew){
-				DialogResult=DialogResult.Cancel;
-				return;
-			}
-			else if(ClaimProcs.ProcIsAttached(Procedures.Cur.ProcNum)){//attached to claim
-				ClaimProcs.Refresh();
-				if(ClaimProcs.ProcIsPaid(Procedures.Cur.ProcNum)){//if also paid on
-					MessageBox.Show
-						(Lan.g(this,"Not allowed to delete a procedure that is attached to a payment."));
-					return;
-				}
-				for(int i=0;i<ClaimProcs.List.Length;i++){
-					if(ClaimProcs.List[i].ProcNum==Procedures.Cur.ProcNum){
-						ClaimProcs.Cur=ClaimProcs.List[i];
-						ClaimProcs.DeleteCur();
-					}
-				}
-			}
-			Procedures.DeleteCur();
-			DialogResult=DialogResult.OK;	
+			//it is assumed that we will do an immediate refresh after closing this window.
 		}
 
 		private void butCancel_Click(object sender, System.EventArgs e) {
 			DialogResult=DialogResult.Cancel;
 		}
+
+		
 
 		
 		

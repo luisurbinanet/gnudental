@@ -642,13 +642,15 @@ namespace OpenDental{
 			}
 			int patNum=Patients.Cur.PatNum;
 			FormPatientSelect FormPS=new FormPatientSelect();
-			FormPS.OnlyChangingFam=true;
+			FormPS.SelectionModeOnly=true;
 			FormPS.ShowDialog();
 			if(FormPS.DialogResult!=DialogResult.OK){
 				return;
 			}
 			PayPlans.Cur.Guarantor=Patients.Cur.PatNum;
-			Patients.Cur.PatNum=patNum;//return patnum to original value.
+			Patient PatCur=Patients.Cur;
+			PatCur.PatNum=patNum;//return patnum to original value.
+			Patients.Cur=PatCur;
 			Patients.GetLim(PayPlans.Cur.Guarantor);
 			textGuarantor.Text=Patients.LimName;
 		}

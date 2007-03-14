@@ -193,6 +193,7 @@ namespace OpenDental{
 			}//for
 		}//RefreshFill
 
+		///<summary></summary>
 		public static void RefreshListAll(bool byEmployer){
 			if(byEmployer){
 				cmd.CommandText =
@@ -457,6 +458,9 @@ namespace OpenDental{
 		public static string GetCarrierName(int planNum){
 			GetCur(planNum);
 			Carriers.GetCur(Cur.CarrierNum);
+			if(Cur.CarrierNum==0){//if corrupted
+				return "";
+			}
 			return Carriers.Cur.CarrierName;
 		}
 
@@ -598,9 +602,9 @@ namespace OpenDental{
 			return Fees.GetAmount(adaCode,Cur.CopayFeeSched);
 		}
 
+		/*
 		///<summary>Not used anymore since insplans and claims can use information from other families.</summary>
 		public static bool HasDependencies(int patNum){
-			/*
 			//get insplans for this subscriber.
 			cmd.CommandText="SELECT planNum FROM insplan WHERE "
 				+"subscriber = '"+patNum.ToString()+"'";
@@ -628,9 +632,9 @@ namespace OpenDental{
 					MessageBox.Show(Lan.g("ContrFamily","Patient has insurance that has existing claims for other family members. Please see the manual for instructions."));
 					return true;
 				}
-			}*/
+			}
 			return false;
-		}
+		}*/
 
 		///<summary>This is used in FormQuery.SubmitQuery to allow display of carrier names.</summary>
 		public static void GetHListAll(){

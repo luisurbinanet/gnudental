@@ -6,10 +6,12 @@ using System.Windows.Forms;
 
 namespace OpenDental
 {
+	///<summary></summary>
 	public class TableTemplates : OpenDental.ContrTable
 	{
 		private System.ComponentModel.IContainer components = null;
 
+		///<summary></summary>
 		public TableTemplates(){
 			InitializeComponent();
 			MaxRows=20;

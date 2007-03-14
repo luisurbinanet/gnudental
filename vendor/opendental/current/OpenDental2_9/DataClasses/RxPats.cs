@@ -91,8 +91,8 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void DeleteCur(){
-			cmd.CommandText = "DELETE from rxpat WHERE rxnum = '"+POut.PInt(Cur.RxNum)+"'";
-			NonQ(false);
+			cmd.CommandText = "DELETE from rxpat WHERE RxNum = '"+POut.PInt(Cur.RxNum)+"'";
+			NonQ();
 		}
 	}
 

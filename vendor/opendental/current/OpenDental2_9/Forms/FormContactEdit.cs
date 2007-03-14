@@ -320,7 +320,7 @@ namespace OpenDental{
 
 		private void butOK_Click(object sender, System.EventArgs e) {
 			if(textLName.Text==""){
-				MessageBox.Show(Lan.g(this,"Last Name can not be blank."));
+				MessageBox.Show(Lan.g(this,"Last Name cannot be blank."));
 				return;
 			}
 			//a category will always be selected because of the manner in which Contact is accessed

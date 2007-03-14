@@ -24,8 +24,8 @@ namespace OpenDental{
 		=================================== class RefAttaches ==========================================*/
 ///<summary></summary>
 	public class RefAttaches:DataClass{
-		///<summary></summary>
-		public static RefAttach[] List;//for this patient only
+		///<summary>for this patient only</summary>
+		public static RefAttach[] List;
 		///<summary></summary>
 		public static RefAttach Cur;
 		///<summary></summary>
@@ -81,7 +81,7 @@ namespace OpenDental{
 		public static void DeleteCur(){
 			cmd.CommandText = "DELETE FROM refattach "
 				+"WHERE refattachnum = '"+Cur.RefAttachNum+"'";
-			NonQ(false);
+			NonQ();
 		}
 
 		///<summary></summary>

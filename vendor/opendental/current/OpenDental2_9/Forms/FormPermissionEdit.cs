@@ -15,8 +15,8 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.CheckBox checkRequire;
 		private OpenDental.ValidDate textDate;
-		private OpenDental.ValidNum textDays;
 		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.TextBox textDays;
 
 		private System.ComponentModel.Container components = null;
 
@@ -57,8 +57,8 @@ namespace OpenDental{
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
 			this.textDate = new OpenDental.ValidDate();
-			this.textDays = new OpenDental.ValidNum();
 			this.label3 = new System.Windows.Forms.Label();
+			this.textDays = new System.Windows.Forms.TextBox();
 			this.SuspendLayout();
 			// 
 			// butCancel
@@ -134,14 +134,6 @@ namespace OpenDental{
 			this.textDate.TabIndex = 50;
 			this.textDate.Text = "";
 			// 
-			// textDays
-			// 
-			this.textDays.Location = new System.Drawing.Point(102, 110);
-			this.textDays.Name = "textDays";
-			this.textDays.Size = new System.Drawing.Size(76, 20);
-			this.textDays.TabIndex = 51;
-			this.textDays.Text = "";
-			// 
 			// label3
 			// 
 			this.label3.Location = new System.Drawing.Point(104, 138);
@@ -151,14 +143,23 @@ namespace OpenDental{
 			this.label3.Text = "(Set to 0 to always check password.  If you only want to take date into considera" +
 				"tion, then Days should be very large.  Perhaps 1000)";
 			// 
+			// textDays
+			// 
+			this.textDays.Location = new System.Drawing.Point(102, 109);
+			this.textDays.Name = "textDays";
+			this.textDays.Size = new System.Drawing.Size(46, 20);
+			this.textDays.TabIndex = 0;
+			this.textDays.Text = "";
+			this.textDays.Validating += new System.ComponentModel.CancelEventHandler(this.textDays_Validating);
+			// 
 			// FormPermissionEdit
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(554, 254);
-			this.Controls.Add(this.label3);
 			this.Controls.Add(this.textDays);
+			this.Controls.Add(this.label3);
 			this.Controls.Add(this.textDate);
 			this.Controls.Add(this.textName);
 			this.Controls.Add(this.label2);
@@ -206,9 +207,28 @@ namespace OpenDental{
 			checkRequire.Checked=Permissions.Cur.RequiresPassword;
 		}
 
+		private void textDays_Validating(object sender, System.ComponentModel.CancelEventArgs e) {
+			if(textDays.Text==""){
+				textDays.Text="0";
+				return;
+			}
+			try{
+				if(Convert.ToInt32(textDays.Text)<0){
+					MessageBox.Show(Lan.g(this,"Value cannot be less than 0"));
+					e.Cancel=true;
+					return;
+				}
+			}
+			catch{
+				MessageBox.Show(Lan.g(this,"Cannot contain letters or symbols"));
+				e.Cancel=true;
+				return;
+			}
+		}
+
 		private void butOK_Click(object sender, System.EventArgs e) {
-			if(textDays.errorProvider1.GetError(textDays)!=""
-				|| textDate.errorProvider1.GetError(textDate)!=""
+			if(//textDays.errorProvider1.GetError(textDays)!=""
+				textDate.errorProvider1.GetError(textDate)!=""
 				){
 				MessageBox.Show(Lan.g(this,"Please fix data entry errors first."));
 				return;
@@ -223,6 +243,8 @@ namespace OpenDental{
 		private void butCancel_Click(object sender, System.EventArgs e) {
 			DialogResult=DialogResult.Cancel;
 		}
+
+		
 
 
 

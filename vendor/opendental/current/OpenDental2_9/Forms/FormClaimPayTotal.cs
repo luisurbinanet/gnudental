@@ -272,6 +272,7 @@ namespace OpenDental
 				}
 				else{
 					Procedures.Cur=(Procedure)Procedures.HList[ClaimProcsToEdit[i].ProcNum];
+					Procedures.CurOld=Procedures.Cur;//may not be necessary
 					tbProc.Cell[2,i]=Procedures.Cur.ADACode;
 					tbProc.Cell[3,i]=Procedures.Cur.ToothNum;
 					tbProc.Cell[4,i]=ProcedureCodes.GetProcCode(Procedures.Cur.ADACode).Descript;

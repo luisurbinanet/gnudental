@@ -657,6 +657,7 @@ namespace OpenDental
 				groupTotal.Visible=false;
 				butDelete.Text=Lan.g(this,"Remove");
 				Procedures.Cur=(Procedure)Procedures.HList[ClaimProcs.Cur.ProcNum];
+				Procedures.CurOld=Procedures.Cur;
 				textDescription.Text=ProcedureCodes.GetProcCode(Procedures.Cur.ADACode).Descript;
 				textAmount.Text=Procedures.Cur.ProcFee.ToString("F");
 				if(Procedures.Cur.OverridePri==-1)
@@ -709,7 +710,7 @@ namespace OpenDental
 				case ClaimProcStatus.Preauth:
 					listStatus.SelectedIndex=2;
 					break;
-				//adjustments have a completely different user interface. Can not access from claim.
+				//adjustments have a completely different user interface. Cannot access from claim.
 				case ClaimProcStatus.Supplemental:
 					listStatus.SelectedIndex=3;
 					break;
@@ -748,18 +749,22 @@ namespace OpenDental
 			if(MessageBox.Show(Lan.g(this,"Save changes?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
 				return;
 			}
+			Procedure ProcCur=Procedures.Cur;
 			if(textOverridePri.Text=="")
-				Procedures.Cur.OverridePri=-1;
+				ProcCur.OverridePri=-1;
 			else{
-				Procedures.Cur.OverridePri=System.Convert.ToDouble(textOverridePri.Text);
+				ProcCur.OverridePri=System.Convert.ToDouble(textOverridePri.Text);
 				textOverridePri.Text=Procedures.Cur.OverridePri.ToString("F");
 				priChanged=false;
 			}
 			if(Claims.Cur.ClaimType=="P"){
 				textInsPayEst.Text=textOverridePri.Text;
 			}
+			Procedures.Cur=ProcCur;
 			Procedures.UpdateCur();
-			Procedures.Refresh();//?
+			Procedures.Refresh();
+			Procedures.Cur=(Procedure)Procedures.HList[ClaimProcs.Cur.ProcNum];
+			Procedures.CurOld=Procedures.Cur;
 		}
 
 		private void textOverrideSec_TextChanged(object sender, System.EventArgs e) {
@@ -778,18 +783,22 @@ namespace OpenDental
 			if(MessageBox.Show(Lan.g(this,"Save changes?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
 				return;
 			}
+			Procedure ProcCur=Procedures.Cur;
 			if(textOverrideSec.Text=="")
-				Procedures.Cur.OverrideSec=-1;
+				ProcCur.OverrideSec=-1;
 			else{
-				Procedures.Cur.OverrideSec=System.Convert.ToDouble(textOverrideSec.Text);
+				ProcCur.OverrideSec=System.Convert.ToDouble(textOverrideSec.Text);
 				textOverrideSec.Text=Procedures.Cur.OverrideSec.ToString("F");
 				secChanged=false;
 			}
 			if(Claims.Cur.ClaimType=="S"){
 				textInsPayEst.Text=textOverrideSec.Text;
 			}
+			Procedures.Cur=ProcCur;
 			Procedures.UpdateCur();
-			Procedures.Refresh();//?
+			Procedures.Refresh();
+			Procedures.Cur=(Procedure)Procedures.HList[ClaimProcs.Cur.ProcNum];
+			Procedures.CurOld=Procedures.Cur;
 		}
 
 		private void butDelete_Click(object sender, System.EventArgs e) {

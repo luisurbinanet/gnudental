@@ -273,21 +273,21 @@ namespace OpenDental{
 						&& Schedules.Cur.StartTime.TimeOfDay.CompareTo(Schedules.ListDay[i].StartTime.TimeOfDay) >= 0
 						&& Schedules.Cur.StartTime.TimeOfDay.CompareTo(Schedules.ListDay[i].StopTime.TimeOfDay) < 0
 						){
-						MessageBox.Show(Lan.g(this,"Can not overlap another time block."));
+						MessageBox.Show(Lan.g(this,"Cannot overlap another time block."));
 						return;
 					}
 					if(Schedules.Cur.ScheduleNum!=Schedules.ListDay[i].ScheduleNum
 						&& Schedules.Cur.StopTime.TimeOfDay.CompareTo(Schedules.ListDay[i].StartTime.TimeOfDay) > 0
 						&& Schedules.Cur.StopTime.TimeOfDay.CompareTo(Schedules.ListDay[i].StopTime.TimeOfDay) <= 0
 						){
-						MessageBox.Show(Lan.g(this,"Can not overlap another time block."));
+						MessageBox.Show(Lan.g(this,"Cannot overlap another time block."));
 						return;
 					}
 					if(Schedules.Cur.ScheduleNum!=Schedules.ListDay[i].ScheduleNum
 						&& Schedules.Cur.StartTime.TimeOfDay.CompareTo(Schedules.ListDay[i].StartTime.TimeOfDay) <= 0
 						&& Schedules.Cur.StopTime.TimeOfDay.CompareTo(Schedules.ListDay[i].StopTime.TimeOfDay) >= 0
 						){
-						MessageBox.Show(Lan.g(this,"Can not overlap another time block."));
+						MessageBox.Show(Lan.g(this,"Cannot overlap another time block."));
 					  return;
 					}
 				}  

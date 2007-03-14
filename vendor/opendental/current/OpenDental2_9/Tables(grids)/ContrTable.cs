@@ -113,8 +113,8 @@ namespace OpenDental{
 		private void InitializeComponent()
 		{
 			this.panelScroll = new System.Windows.Forms.Panel();
-			this.panelTable = new OpenDental.ContrPanelTable();
 			this.vScrollBar1 = new System.Windows.Forms.VScrollBar();
+			this.panelTable = new OpenDental.ContrPanelTable();
 			this.panelHead = new System.Windows.Forms.Panel();
 			this.panelScroll.SuspendLayout();
 			this.SuspendLayout();
@@ -131,22 +131,6 @@ namespace OpenDental{
 			this.panelScroll.TabIndex = 1;
 			this.panelScroll.Paint += new System.Windows.Forms.PaintEventHandler(this.panelScroll_Paint);
 			// 
-			// panelTable
-			// 
-			this.panelTable.BackColor = System.Drawing.SystemColors.Window;
-			this.panelTable.Location = new System.Drawing.Point(0, 0);
-			this.panelTable.Name = "panelTable";
-			this.panelTable.Size = new System.Drawing.Size(420, 168);
-			this.panelTable.TabIndex = 2;
-			this.panelTable.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.panelTable_KeyPress);
-			this.panelTable.Click += new System.EventHandler(this.panelTable_Click);
-			this.panelTable.Paint += new System.Windows.Forms.PaintEventHandler(this.panelTable_Paint);
-			this.panelTable.KeyUp += new System.Windows.Forms.KeyEventHandler(this.panelTable_KeyUp);
-			this.panelTable.KeyDown += new System.Windows.Forms.KeyEventHandler(this.panelTable_KeyDown);
-			this.panelTable.DoubleClick += new System.EventHandler(this.panelTable_DoubleClick);
-			this.panelTable.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.panelTable_MouseWheel);
-			this.panelTable.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panelTable_MouseDown);
-			// 
 			// vScrollBar1
 			// 
 			this.vScrollBar1.Dock = System.Windows.Forms.DockStyle.Right;
@@ -161,6 +145,23 @@ namespace OpenDental{
 			this.vScrollBar1.Value = 150;
 			this.vScrollBar1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.vScrollBar1_KeyPress);
 			this.vScrollBar1.Scroll += new System.Windows.Forms.ScrollEventHandler(this.vScrollBar1_Scroll);
+			// 
+			// panelTable
+			// 
+			this.panelTable.BackColor = System.Drawing.SystemColors.Window;
+			this.panelTable.Location = new System.Drawing.Point(0, 0);
+			this.panelTable.Name = "panelTable";
+			this.panelTable.Size = new System.Drawing.Size(420, 168);
+			this.panelTable.TabIndex = 2;
+			this.panelTable.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.panelTable_KeyPress);
+			this.panelTable.Click += new System.EventHandler(this.panelTable_Click);
+			this.panelTable.MouseUp += new System.Windows.Forms.MouseEventHandler(this.panelTable_MouseUp);
+			this.panelTable.Paint += new System.Windows.Forms.PaintEventHandler(this.panelTable_Paint);
+			this.panelTable.KeyUp += new System.Windows.Forms.KeyEventHandler(this.panelTable_KeyUp);
+			this.panelTable.KeyDown += new System.Windows.Forms.KeyEventHandler(this.panelTable_KeyDown);
+			this.panelTable.DoubleClick += new System.EventHandler(this.panelTable_DoubleClick);
+			this.panelTable.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.panelTable_MouseWheel);
+			this.panelTable.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panelTable_MouseDown);
 			// 
 			// panelHead
 			// 
@@ -402,11 +403,13 @@ namespace OpenDental{
 				scrollWidth=17;
 			else 
 				scrollWidth=0;
-			if (MaxRows!=0) rowPos[0]=0;
+			if(MaxRows!=0)
+				rowPos[0]=0;
 			for(int i=1;i<MaxRows;i++){
 				rowPos[i]=rowPos[i-1]+RowHeight[i-1];
 			}
-			if(!ShowScroll && MaxRows>0)
+			//MessageBox.Show(Height.ToString());
+			if(!ShowScroll && MaxRows>0)//true 50
 				if(FieldsArePresent && HeadingIsPresent)
 					Height=rowPos[MaxRows-1]+RowHeight[MaxRows-1]+1+17+15+1;
 				else if (FieldsArePresent)
@@ -439,8 +442,11 @@ namespace OpenDental{
 				panelScroll.Location=new Point(1,panelHead.Height-1);
 				panelScroll.Height=this.Height-panelHead.Height;
 								//scrollbar:
-				if (ShowScroll){
-					if (panelTable.Height<panelScroll.Height){
+				if(ShowScroll){
+					//if(panelScroll.Height<0){//prevents a bug
+					//	return;
+					//}
+					if(panelTable.Height<panelScroll.Height){
 						vScrollBar1.Enabled=false;
 						vScrollBar1.Value=1;
 						panelTable.Location=new Point(0,-1);
@@ -449,9 +455,9 @@ namespace OpenDental{
 						vScrollBar1.Enabled=true;
 						vScrollBar1.Minimum=1;
 						vScrollBar1.Maximum=panelTable.Height+2;
-						vScrollBar1.LargeChange=panelScroll.Height;
+							vScrollBar1.LargeChange=panelScroll.Height;
 						vScrollBar1.SmallChange=3*14;//(3 rows)
-						if(panelTable.Height==0)//vScrollBar.Value can not=0
+						if(panelTable.Height==0)//vScrollBar.Value cannot=0
 							vScrollBar1.Value=1;
 						else
 							vScrollBar1.Value=panelTable.Height-panelScroll.Height+2;
@@ -482,6 +488,8 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public void ColorRow(int row, Color myColor){
+			if(row>MaxRows-1)
+				return;
 			//float Foffset=0;
 			Graphics grfx = panelTable.CreateGraphics();
 			int i=row;
@@ -726,6 +734,39 @@ namespace OpenDental{
 		}*/
 
 		private void panelTable_Click(object sender, System.EventArgs e) {
+			//logic moved to mouse up event
+		}
+
+		private void panelTable_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e) {
+			this.OnKeyPress(e);
+		}
+
+		private void panelTable_DoubleClick(object sender, System.EventArgs e) {
+			//MessageBox.Show("panelTable doubleclicked");
+			int myCol=0;
+			int myRow=0;
+			for (int i=0;i<this.MaxCols;i++){
+				if (mouseDownPosition.X>this.colPos[i]) myCol=i;
+			}
+			for (int i=0;i<this.MaxRows;i++){
+				if (mouseDownPosition.Y>this.rowPos[i]) myRow=i;
+			}
+			OnCellDoubleClicked(new CellEventArgs(myCol,myRow));
+		}
+
+		private void panelTable_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
+			//this.OnMouseDown(e);
+			//if(e.Button==MouseButtons.Right)
+			
+			mouseDownPosition=new Point(e.X,e.Y);
+		}
+
+		private void panelTable_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e) {
+			MouseEventArgs ea=new MouseEventArgs(e.Button,e.Clicks,e.X,e.Y+panelScroll.Top+panelTable.Top,e.Delta);
+			this.OnMouseUp(ea);
+			if(e.Button==MouseButtons.Right){
+				return;
+			}
 			//this.OnClick(e);
 			ArrayList SelectedIAL;
 			int myCol=0;
@@ -794,27 +835,6 @@ namespace OpenDental{
 			SelectedTable=MySelectedTable;//this is to identify one in an array of tables.
 			//MessageBox.Show(Row:+" "+myRow+" "+this.ToString());
 			OnCellClicked(new CellEventArgs(myCol,myRow));
-		}
-
-		private void panelTable_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e) {
-			this.OnKeyPress(e);
-		}
-
-		private void panelTable_DoubleClick(object sender, System.EventArgs e) {
-			int myCol=0;
-			int myRow=0;
-			for (int i=0;i<this.MaxCols;i++){
-				if (mouseDownPosition.X>this.colPos[i]) myCol=i;
-			}
-			for (int i=0;i<this.MaxRows;i++){
-				if (mouseDownPosition.Y>this.rowPos[i]) myRow=i;
-			}
-			OnCellDoubleClicked(new CellEventArgs(myCol,myRow));
-		}
-
-		private void panelTable_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
-			//this.OnMouseDown(e);
-			mouseDownPosition=new Point(e.X,e.Y);
 		}
 
     private void panelTable_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e){
@@ -903,6 +923,8 @@ namespace OpenDental{
 		private void panelHead_Click(object sender, System.EventArgs e) {
 			this.panelTable.Select();
 		}
+
+		
 		//if (mouseDownPosition.Y>this.rowPos[i]) myRow=i;
 
 

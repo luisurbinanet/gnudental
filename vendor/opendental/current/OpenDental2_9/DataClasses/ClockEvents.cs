@@ -119,6 +119,7 @@ namespace OpenDental{
 			return List[List.Length-1].ClockStatus;
 		}
 
+		///<summary></summary>
 		public static DateTime GetServerTime(){
 			cmd.CommandText="SELECT NOW()";
 			FillTable();

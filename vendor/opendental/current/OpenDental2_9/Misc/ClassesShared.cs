@@ -57,10 +57,12 @@ namespace OpenDental{
 		///<summary></summary>
 		public static void ComputeBalances(){//operates on Patients.Cur
 			//must have refreshed all 5 first
-			double curBal=Patients.Cur.EstBalance;
-			Patients.Cur.EstBalance=Procedures.ComputeBal()+ClaimProcs.ComputeBal()
+			Patient PatCur=Patients.Cur;
+			double curBal=PatCur.EstBalance;
+			PatCur.EstBalance=Procedures.ComputeBal()+ClaimProcs.ComputeBal()
 				+Adjustments.ComputeBal()-PaySplits.ComputeBal()+PayPlans.ComputeBal();
-			if(curBal!=Patients.Cur.EstBalance){
+			if(curBal!=PatCur.EstBalance){
+				Patients.Cur=PatCur;
 				Patients.UpdateCur();
 				Patients.GetFamily(Patients.Cur.PatNum);
 			}

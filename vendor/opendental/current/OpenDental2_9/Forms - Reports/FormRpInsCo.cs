@@ -50,7 +50,7 @@ namespace OpenDental{
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butCancel.Location = new System.Drawing.Point(528, 328);
+			this.butCancel.Location = new System.Drawing.Point(490, 173);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 2;
@@ -59,7 +59,7 @@ namespace OpenDental{
 			// butOK
 			// 
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(528, 293);
+			this.butOK.Location = new System.Drawing.Point(490, 138);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 1;
@@ -88,7 +88,7 @@ namespace OpenDental{
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
-			this.ClientSize = new System.Drawing.Size(616, 366);
+			this.ClientSize = new System.Drawing.Size(591, 229);
 			this.Controls.Add(this.labelPatName);
 			this.Controls.Add(this.textBoxCarrier);
 			this.Controls.Add(this.butCancel);
@@ -98,7 +98,7 @@ namespace OpenDental{
 			this.Name = "FormRpInsCo";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "Insurance Company Report";
+			this.Text = "Insurance Plan Report";
 			this.ResumeLayout(false);
 
 		}
@@ -115,17 +115,19 @@ insplan.groupname FROM insplan,patient WHERE insplan.subscriber=patient.patnum
 Order By patient.lname,patient.fname
 
 */
-			Queries.CurReport.Query= "SELECT insplan.Carrier"
-				+",CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI),insplan.Phone,"
-				+"insplan.Groupname FROM insplan,patient "
+			Queries.CurReport.Query= "SELECT carrier.CarrierName"
+				+",CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI),carrier.Phone,"
+				+"insplan.Groupname "
+				+"FROM insplan,patient,carrier "
 				+"WHERE insplan.Subscriber=patient.Patnum "
-				+"&& insplan.Carrier LIKE '"+carrier+"%' "
+				+"&& carrier.CarrierNum = insplan.CarrierNum "
+				+"&& carrier.CarrierName LIKE '"+carrier+"%' "
 				+"ORDER BY insplan.Carrier,patient.LName";
 
 			FormQuery2=new FormQuery();
 			FormQuery2.IsReport=true;
 			FormQuery2.SubmitReportQuery();			
-			Queries.CurReport.Title="Insurance Companies List";
+			Queries.CurReport.Title="Insurance Plan List";
 			Queries.CurReport.SubTitle=new string[2];
 			Queries.CurReport.SubTitle[0]=((Pref)Prefs.HList["PracticeTitle"]).ValueString;
 

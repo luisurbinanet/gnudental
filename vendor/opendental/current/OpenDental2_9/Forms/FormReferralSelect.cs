@@ -258,10 +258,12 @@ namespace OpenDental{
 			FormRE2.IsNew=true; 
 			if (MessageBox.Show(Lan.g(this,"Is the referral source an existing patient?"),"",MessageBoxButtons.YesNo)==DialogResult.Yes){
 				FormPatientSelect FormPS=new FormPatientSelect();
-				FormPS.OnlyChangingFam=true;        
+				FormPS.SelectionModeOnly=true;        
 				FormPS.ShowDialog();
 				if(FormPS.DialogResult!=DialogResult.OK){
-					Patients.Cur.PatNum=tempPatNum; 
+					Patient PatCur=Patients.Cur;
+					PatCur.PatNum=tempPatNum;//return patnum to original
+					Patients.Cur=PatCur;
 					return;  
 				}
 				FormRE2.IsPatient=true;

@@ -15,19 +15,19 @@ namespace OpenDental{
 	///<summary></summary>
 	public class ContrApptSingle : System.Windows.Forms.UserControl{
 		private System.ComponentModel.Container components = null;// Required designer variable.
-		///<summary></summary>
-		public static int ClickedAptNum;//Set on mouse down or from Appt module
-		///<summary></summary>
-		public static int SelectedAptNum;//set manually
-		///<summary></summary>
+		///<summary>Set on mouse down or from Appt module</summary>
+		public static int ClickedAptNum;
+		///<summary>set manually</summary>
+		public static int SelectedAptNum;
+		///<summary>True if this control is on the pinboard</summary>
 		public bool ThisIsPinBoard;
-		///<summary></summary>
+		///<summary>True if pinboard is selected</summary>
 		public static bool PinBoardIsSelected;
-		///<summary></summary>
+		///<summary>Stores the shading info for the provider bar on the left of the appointments module</summary>
 		public static int[][] ProvBar;
-		///<summary></summary>
+		///<summary>Contains info inluding the lines, procs, and the Appointment object</summary>
 		public InfoApt Info;
-		///<summary></summary>
+		///<summary>Stores the background bitmap for this control</summary>
 		public Bitmap Shadow;
 
 		///<summary></summary>
@@ -125,10 +125,13 @@ namespace OpenDental{
 					grfx.DrawString(Info.Lines[i],fontSF,new SolidBrush(Color.Black),9,i*ContrApptSheet.Lh);
 
 			}
+			//Credit and ins
 			grfx.DrawRectangle(new Pen(Color.Black),0,0,Width-1,Height-1);
 			grfx.FillRectangle(new SolidBrush(Color.White),1,1,12,ContrApptSheet.Lh-2);
 			grfx.DrawRectangle(new Pen(Color.Black),0,0,13,ContrApptSheet.Lh-1);//started out as 11
 			grfx.DrawString(Info.CreditAndIns,fontSF,new SolidBrush(Color.Black),0,-1);
+			
+				//  .CreditAndIns
 			//if (apptIsSelected)
 				//if (selectedIndex==myIndex){
 			if(PinBoardIsSelected & ThisIsPinBoard
@@ -149,6 +152,15 @@ namespace OpenDental{
 					//bottom
 					grfx.DrawLine(penDG,9,Height-2,Width-2,Height-2);
 					grfx.DrawLine(penDG,10,Height-3,Width-3,Height-3);
+			}
+			//assistant box
+			if(Info.MyApt.Assistant!=0){
+				grfx.FillRectangle(new SolidBrush(Color.White)
+					,Width-18,Height-ContrApptSheet.Lh,17,ContrApptSheet.Lh-1);
+				grfx.DrawLine(Pens.Gray,Width-18,Height-ContrApptSheet.Lh,Width,Height-ContrApptSheet.Lh);
+				grfx.DrawLine(Pens.Gray,Width-18,Height-ContrApptSheet.Lh,Width-18,Height);
+				grfx.DrawString(Employees.GetAbbr(Info.MyApt.Assistant)
+					,fontSF,new SolidBrush(Color.Black),Width-18,Height-ContrApptSheet.Lh-1);
 			}
 			//grfx.DrawString(":10",font,new SolidBrush(Color.Black),timeWidth-19,i*Lh*6+Lh-1);
 			if(Info.MyApt.AptStatus==ApptStatus.Broken){

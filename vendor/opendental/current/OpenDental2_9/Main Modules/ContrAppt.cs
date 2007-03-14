@@ -86,9 +86,13 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label labelPhoneType;
 		private System.Windows.Forms.TextBox textPhone;
-		private System.Windows.Forms.ComboBox comboView;
 		private OpenDental.UI.ODToolBar ToolBarMain;
-		private System.Windows.Forms.ContextMenu menuApt;	
+		private System.Windows.Forms.ContextMenu menuApt;
+		private System.Windows.Forms.TextBox textLab;
+		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.ComboBox comboView;
+		private System.Windows.Forms.TextBox textProduction;
+		private System.Windows.Forms.Label label7;	
 		///<summary></summary>
 	  public FormRpPrintPreview pView = new FormRpPrintPreview();
 
@@ -147,7 +151,11 @@ namespace OpenDental{
 			this.butBreak = new System.Windows.Forms.Button();
 			this.butOther = new System.Windows.Forms.Button();
 			this.panelCalendar = new System.Windows.Forms.Panel();
+			this.textProduction = new System.Windows.Forms.TextBox();
+			this.label7 = new System.Windows.Forms.Label();
+			this.textLab = new System.Windows.Forms.TextBox();
 			this.comboView = new System.Windows.Forms.ComboBox();
+			this.label3 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
 			this.butClearPin = new OpenDental.XPButton();
 			this.panelOps = new System.Windows.Forms.Panel();
@@ -318,7 +326,7 @@ namespace OpenDental{
 			// 
 			this.textApptModNote.BackColor = System.Drawing.Color.White;
 			this.textApptModNote.ForeColor = System.Drawing.Color.Red;
-			this.textApptModNote.Location = new System.Drawing.Point(0, 182);
+			this.textApptModNote.Location = new System.Drawing.Point(0, 148);
 			this.textApptModNote.Multiline = true;
 			this.textApptModNote.Name = "textApptModNote";
 			this.textApptModNote.ReadOnly = true;
@@ -332,7 +340,7 @@ namespace OpenDental{
 			this.textMedicalNote.BackColor = System.Drawing.Color.White;
 			this.textMedicalNote.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
 			this.textMedicalNote.ForeColor = System.Drawing.Color.Red;
-			this.textMedicalNote.Location = new System.Drawing.Point(0, 142);
+			this.textMedicalNote.Location = new System.Drawing.Point(0, 108);
 			this.textMedicalNote.Multiline = true;
 			this.textMedicalNote.Name = "textMedicalNote";
 			this.textMedicalNote.ReadOnly = true;
@@ -344,7 +352,7 @@ namespace OpenDental{
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(0, 168);
+			this.label1.Location = new System.Drawing.Point(0, 134);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(160, 18);
 			this.label1.TabIndex = 36;
@@ -354,12 +362,12 @@ namespace OpenDental{
 			// 
 			this.textAddressNote.BackColor = System.Drawing.Color.White;
 			this.textAddressNote.ForeColor = System.Drawing.Color.Red;
-			this.textAddressNote.Location = new System.Drawing.Point(0, 90);
+			this.textAddressNote.Location = new System.Drawing.Point(0, 72);
 			this.textAddressNote.Multiline = true;
 			this.textAddressNote.Name = "textAddressNote";
 			this.textAddressNote.ReadOnly = true;
 			this.textAddressNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textAddressNote.Size = new System.Drawing.Size(202, 36);
+			this.textAddressNote.Size = new System.Drawing.Size(202, 20);
 			this.textAddressNote.TabIndex = 39;
 			this.textAddressNote.Text = "";
 			// 
@@ -373,7 +381,7 @@ namespace OpenDental{
 			this.textFinancialNote.Name = "textFinancialNote";
 			this.textFinancialNote.ReadOnly = true;
 			this.textFinancialNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textFinancialNote.Size = new System.Drawing.Size(202, 36);
+			this.textFinancialNote.Size = new System.Drawing.Size(202, 20);
 			this.textFinancialNote.TabIndex = 40;
 			this.textFinancialNote.Text = "";
 			// 
@@ -388,7 +396,7 @@ namespace OpenDental{
 			// 
 			// label5
 			// 
-			this.label5.Location = new System.Drawing.Point(0, 128);
+			this.label5.Location = new System.Drawing.Point(0, 94);
 			this.label5.Name = "label5";
 			this.label5.Size = new System.Drawing.Size(134, 14);
 			this.label5.TabIndex = 42;
@@ -396,7 +404,7 @@ namespace OpenDental{
 			// 
 			// label6
 			// 
-			this.label6.Location = new System.Drawing.Point(0, 76);
+			this.label6.Location = new System.Drawing.Point(0, 58);
 			this.label6.Name = "label6";
 			this.label6.Size = new System.Drawing.Size(100, 14);
 			this.label6.TabIndex = 43;
@@ -429,7 +437,7 @@ namespace OpenDental{
 			this.panelAptInfo.Controls.Add(this.butUnsched);
 			this.panelAptInfo.Controls.Add(this.butDelete);
 			this.panelAptInfo.Controls.Add(this.butBreak);
-			this.panelAptInfo.Location = new System.Drawing.Point(680, 330);
+			this.panelAptInfo.Location = new System.Drawing.Point(680, 365);
 			this.panelAptInfo.Name = "panelAptInfo";
 			this.panelAptInfo.Size = new System.Drawing.Size(204, 142);
 			this.panelAptInfo.TabIndex = 45;
@@ -441,7 +449,6 @@ namespace OpenDental{
 			this.listConfirmed.Size = new System.Drawing.Size(73, 134);
 			this.listConfirmed.TabIndex = 75;
 			this.listConfirmed.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listConfirmed_MouseDown);
-			this.listConfirmed.SelectedIndexChanged += new System.EventHandler(this.listConfirmed_SelectedIndexChanged);
 			// 
 			// butComplete
 			// 
@@ -504,7 +511,7 @@ namespace OpenDental{
 			this.butOther.BackColor = System.Drawing.SystemColors.Control;
 			this.butOther.Image = ((System.Drawing.Image)(resources.GetObject("butOther.Image")));
 			this.butOther.ImageAlign = System.Drawing.ContentAlignment.BottomRight;
-			this.butOther.Location = new System.Drawing.Point(682, 443);
+			this.butOther.Location = new System.Drawing.Point(682, 478);
 			this.butOther.Name = "butOther";
 			this.butOther.Size = new System.Drawing.Size(28, 28);
 			this.butOther.TabIndex = 72;
@@ -512,7 +519,11 @@ namespace OpenDental{
 			// 
 			// panelCalendar
 			// 
+			this.panelCalendar.Controls.Add(this.textProduction);
+			this.panelCalendar.Controls.Add(this.label7);
+			this.panelCalendar.Controls.Add(this.textLab);
 			this.panelCalendar.Controls.Add(this.comboView);
+			this.panelCalendar.Controls.Add(this.label3);
 			this.panelCalendar.Controls.Add(this.label2);
 			this.panelCalendar.Controls.Add(this.butClearPin);
 			this.panelCalendar.Controls.Add(this.Calendar2);
@@ -522,8 +533,37 @@ namespace OpenDental{
 			this.panelCalendar.Controls.Add(this.panelArrows);
 			this.panelCalendar.Location = new System.Drawing.Point(680, 28);
 			this.panelCalendar.Name = "panelCalendar";
-			this.panelCalendar.Size = new System.Drawing.Size(204, 301);
+			this.panelCalendar.Size = new System.Drawing.Size(204, 337);
 			this.panelCalendar.TabIndex = 46;
+			// 
+			// textProduction
+			// 
+			this.textProduction.BackColor = System.Drawing.Color.White;
+			this.textProduction.Location = new System.Drawing.Point(148, 318);
+			this.textProduction.Name = "textProduction";
+			this.textProduction.ReadOnly = true;
+			this.textProduction.Size = new System.Drawing.Size(53, 20);
+			this.textProduction.TabIndex = 38;
+			this.textProduction.Text = "$100";
+			// 
+			// label7
+			// 
+			this.label7.Location = new System.Drawing.Point(1, 320);
+			this.label7.Name = "label7";
+			this.label7.Size = new System.Drawing.Size(141, 15);
+			this.label7.TabIndex = 39;
+			this.label7.Text = "Daily Production";
+			this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// textLab
+			// 
+			this.textLab.BackColor = System.Drawing.Color.White;
+			this.textLab.Location = new System.Drawing.Point(75, 298);
+			this.textLab.Name = "textLab";
+			this.textLab.ReadOnly = true;
+			this.textLab.Size = new System.Drawing.Size(128, 20);
+			this.textLab.TabIndex = 36;
+			this.textLab.Text = "All Received";
 			// 
 			// comboView
 			// 
@@ -533,6 +573,15 @@ namespace OpenDental{
 			this.comboView.Size = new System.Drawing.Size(203, 21);
 			this.comboView.TabIndex = 35;
 			this.comboView.SelectedIndexChanged += new System.EventHandler(this.comboView_SelectedIndexChanged);
+			// 
+			// label3
+			// 
+			this.label3.Location = new System.Drawing.Point(2, 300);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(71, 15);
+			this.label3.TabIndex = 37;
+			this.label3.Text = "Lab Cases";
+			this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// label2
 			// 
@@ -572,7 +621,7 @@ namespace OpenDental{
 			// 
 			// panelNarrow
 			// 
-			this.panelNarrow.Location = new System.Drawing.Point(877, 18);
+			this.panelNarrow.Location = new System.Drawing.Point(903, 18);
 			this.panelNarrow.Name = "panelNarrow";
 			this.panelNarrow.Size = new System.Drawing.Size(34, 716);
 			this.panelNarrow.TabIndex = 49;
@@ -591,14 +640,14 @@ namespace OpenDental{
 			this.panelNotes.Controls.Add(this.label5);
 			this.panelNotes.Controls.Add(this.label6);
 			this.panelNotes.Controls.Add(this.label4);
-			this.panelNotes.Location = new System.Drawing.Point(680, 473);
+			this.panelNotes.Location = new System.Drawing.Point(680, 508);
 			this.panelNotes.Name = "panelNotes";
-			this.panelNotes.Size = new System.Drawing.Size(204, 223);
+			this.panelNotes.Size = new System.Drawing.Size(204, 188);
 			this.panelNotes.TabIndex = 50;
 			// 
 			// textPhone
 			// 
-			this.textPhone.Location = new System.Drawing.Point(102, 56);
+			this.textPhone.Location = new System.Drawing.Point(102, 38);
 			this.textPhone.Name = "textPhone";
 			this.textPhone.ReadOnly = true;
 			this.textPhone.TabIndex = 53;
@@ -606,7 +655,7 @@ namespace OpenDental{
 			// 
 			// labelPhoneType
 			// 
-			this.labelPhoneType.Location = new System.Drawing.Point(4, 58);
+			this.labelPhoneType.Location = new System.Drawing.Point(4, 40);
 			this.labelPhoneType.Name = "labelPhoneType";
 			this.labelPhoneType.Size = new System.Drawing.Size(100, 14);
 			this.labelPhoneType.TabIndex = 52;
@@ -616,7 +665,7 @@ namespace OpenDental{
 			// butAptModNoteEdit
 			// 
 			this.butAptModNoteEdit.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butAptModNoteEdit.Location = new System.Drawing.Point(150, 166);
+			this.butAptModNoteEdit.Location = new System.Drawing.Point(150, 132);
 			this.butAptModNoteEdit.Name = "butAptModNoteEdit";
 			this.butAptModNoteEdit.Size = new System.Drawing.Size(52, 17);
 			this.butAptModNoteEdit.TabIndex = 51;
@@ -685,6 +734,8 @@ namespace OpenDental{
 		///<summary></summary>
 		public void ModuleSelected(){
 			//the scrollbar logic cannot be moved to someplace where it will be activated while working in apptbook
+			//MessageBox.Show("about to refresh");
+			RefreshVisops();//forces reset after changing databases
 			this.SuspendLayout();
 			vScrollBar1.Enabled=true;
 			vScrollBar1.Minimum=0;
@@ -771,6 +822,7 @@ namespace OpenDental{
 
 		///<summary>Triggered every time a control(including appt) is added or removed.</summary>
 		private void ContrAppt_Layout(object sender, System.Windows.Forms.LayoutEventArgs e) {
+			//MessageBox.Show("appt layout");
 			//This event actually happens quite frequently: once for every appointment placed on the screen.
 			//Would like to rework it somehow to only be called when needed.
 			//Assumes widths of the first 4 panels were set the same in the designer,
@@ -783,13 +835,18 @@ namespace OpenDental{
 				,ToolBarMain.Height+panelCalendar.Height+panelAptInfo.Height);
 			panelSheet.Width=ClientSize.Width-panelAptInfo.Width-2;
 			panelSheet.Height=ClientSize.Height-panelSheet.Location.Y;
-			if(Defs.Short!=null){
-				ApptViews.SetCur(comboView.SelectedIndex);
-				ApptViewItems.GetForCurView();
-				ContrApptSheet2.ComputeColWidth(panelSheet.Width-vScrollBar1.Width);
-			}
+			RefreshVisops();
 			//ContrApptSheet2.Height=panelSheet.Height;
 			panelOps.Width=panelSheet.Width;
+		}
+
+		///<summary>Also refreshes some other display values. Needs to be called when switching databases.</summary>
+		private void RefreshVisops(){
+			if(Defs.Short!=null){
+				ApptViews.SetCur(comboView.SelectedIndex);
+				ApptViewItems.GetForCurView();//refreshes visops,etc
+				ContrApptSheet2.ComputeColWidth(panelSheet.Width-vScrollBar1.Width);
+			}
 		}
 
 		///<summary>Not used right now</summary>
@@ -960,6 +1017,7 @@ namespace OpenDental{
 					if(Appointments.ListDay[i].AptNum==ContrApptSingle.SelectedAptNum){
 						isPresent=true;
 						Appointments.Cur=Appointments.ListDay[i];
+						Appointments.CurOld=Appointments.Cur;
 					}
 				}
 				if(isPresent)	panelAptInfo.Enabled=true;//apt selected and present
@@ -995,6 +1053,12 @@ namespace OpenDental{
 				labelPhoneType.Text="";
 				textPhone.Text="";
 			}
+			if(panelAptInfo.Enabled){
+				listConfirmed.SelectedIndex=Defs.GetOrder(DefCat.ApptConfirmed,Appointments.Cur.Confirmed);
+			}
+			else{
+				listConfirmed.SelectedIndex=-1;
+			}
 		}
 
 		///<summary>Sets appointment data invalid on all other computers, causing them to refresh.
@@ -1008,6 +1072,14 @@ namespace OpenDental{
 
 		///<summary>Gets all new day info from db and redraws screen</summary>
 		private void RefreshDay(DateTime myDate){
+			if(myDate.Year<1880){
+				return;
+			}
+			if(!Patients.PatIsLoaded){
+				//there cannot be a selected appointment if no patient is loaded.
+				ContrApptSingle.SelectedAptNum=-1;//fixes a minor bug.
+			}
+			//else if(ContrApptSingle.se
 			ApptViews.SetCur(comboView.SelectedIndex);
 			ApptViewItems.GetForCurView();
 			ContrApptSingle.ProvBar = new int[ApptViewItems.VisProvs.Length][];
@@ -1023,19 +1095,25 @@ namespace OpenDental{
 			}
 			Appointments.Refresh(myDate);
 			Schedules.RefreshDay(myDate);
-			labelDate.Text = myDate.ToString("ddd");
-			labelDate2.Text = myDate.ToString("-  MMM d");
+			labelDate.Text=myDate.ToString("ddd");
+			labelDate2.Text=myDate.ToString("-  MMM d");
 			Calendar2.SetDate(myDate);
 			ContrApptSheet2.Controls.Clear();
-			ContrApptSingle3 = new ContrApptSingle[Appointments.ListDay.Length];
-			int[] AptNums = new int[Appointments.ListDay.Length];
+			ContrApptSingle3=new ContrApptSingle[Appointments.ListDay.Length];
+			int[] AptNums=new int[Appointments.ListDay.Length];
 			for(int i=0;i<Appointments.ListDay.Length;i++){
 				AptNums[i]=Appointments.ListDay[i].AptNum;
 			}
 			Procedures.GetProcsMultApts(AptNums);
-			for (int i=0;i<Appointments.ListDay.Length;i++){
+			for(int i=0;i<Appointments.ListDay.Length;i++){
 				CurInfo=new InfoApt();
 				CurInfo.MyApt=Appointments.ListDay[i];
+				if(ContrApptSingle.SelectedAptNum==CurInfo.MyApt.AptNum){//if this is the selected apt
+					//if the selected patient was changed from another module, then deselect the apt.
+					if(Patients.Cur.PatNum!=CurInfo.MyApt.PatNum){
+						ContrApptSingle.SelectedAptNum=-1;
+					}
+				}
 				Patients.GetLim(Appointments.ListDay[i].PatNum);
 				CurInfo.CreditAndIns=Patients.GetLimCreditIns();
 				CurInfo.PatientName=Patients.LimName;
@@ -1067,7 +1145,37 @@ namespace OpenDental{
 			CreateAptShadows();
 			ContrApptSheet2.DrawShadow();
 			FillPanelPatient();
+			FillLab();
+			FillProduction();
+		}
 
+		///<summary>Fills the lab summary for the day.</summary>
+		private void FillLab(){
+			int notRec=0;
+			for(int i=0;i<Appointments.ListDay.Length;i++){
+				if(Appointments.ListDay[i].Lab==LabCase.Sent){
+					notRec++;
+				}
+			}
+			if(notRec==0){
+				textLab.Font=new Font(FontFamily.GenericSansSerif,8,FontStyle.Regular);
+				textLab.ForeColor=Color.Black;
+				textLab.Text="All Received";
+			}
+			else{
+				textLab.Font=new Font(FontFamily.GenericSansSerif,8,FontStyle.Bold);
+				textLab.ForeColor=Color.DarkRed;
+				textLab.Text=notRec.ToString()+" NOT RECEIVED";
+			}
+		}
+
+		///<summary>Fills the production summary for the day.</summary>
+		private void FillProduction(){
+			double production=0;
+			for(int i=0;i<Appointments.ListDay.Length;i++){
+				production+=Procedures.GetProductionOneApt(Appointments.ListDay[i].AptNum);
+			}
+			textProduction.Text=production.ToString("c0");
 		}
 
 		///<summary>Creates one bitmap image for each appointment if visible.</summary>
@@ -1113,6 +1221,10 @@ namespace OpenDental{
 						break;
 					case LabCase.Received:
 						CurInfo.Lines[1]=" LAB RECEIVED";
+						nextLine=2;
+						break;
+					case LabCase.QualityChecked:
+						CurInfo.Lines[1]=" LAB QUALITY CHECKED";
 						nextLine=2;
 						break;
 				}
@@ -1248,92 +1360,112 @@ namespace OpenDental{
 				//pinIsOccupied=true;
 				TempApptSingle.Dispose();
 				//ContrApptSheet2.Refresh();//?
+				return;
 			}
-			else if (MessageBox.Show(Lan.g(this,"Move Appointment?"),"",MessageBoxButtons.OKCancel)==DialogResult.OK){
-				//convert loc to new time
-				Appointments.Cur=Appointments.PinBoard;
-				int tHr=ContrApptSheet2.ConvertToHour
-					(TempApptSingle.Location.Y-ContrApptSheet2.Location.Y-panelSheet.Location.Y);
-				int tMin=ContrApptSheet2.ConvertToMin
-					(TempApptSingle.Location.Y-ContrApptSheet2.Location.Y-panelSheet.Location.Y);
-				DateTime tDate=Appointments.DateSelected;
-				DateTime fromDate=Appointments.Cur.AptDateTime.Date;
-				Appointments.Cur.AptDateTime=new DateTime(tDate.Year,tDate.Month,tDate.Day,tHr,tMin,0);
-				Appointments.Cur.Op=Defs.Short[(int)DefCat.Operatories]
-					[ApptViewItems.VisOps
-					[ContrApptSheet2.ConvertToOp(TempApptSingle.Location.X-ContrApptSheet2.Location.X)]]
-					.DefNum;
-				if(DoesOverlap()){
-					int startingOp=ApptViewItems.GetIndexOp(Appointments.Cur.Op);
-						//Defs.GetOrder(DefCat.Operatories,Appointments.Cur.Op);
-					bool stillOverlaps=true;
-					for(int i=startingOp;i<ApptViewItems.VisOps.Length;i++){
-						//Defs.Short[(int)DefCat.Operatories].Length
+			if(MessageBox.Show(Lan.g(this,"Move Appointment?"),"",MessageBoxButtons.OKCancel)
+				!=DialogResult.OK)
+			{//responds no, don't move off pinboard.
+				mouseIsDown = false;
+				boolAptMoved=false;
+				//pinIsOccupied=true;
+				TempApptSingle.Dispose();
+			}
+			
+			//convert loc to new time
+			Appointments.Cur=Appointments.PinBoard;
+			Appointments.CurOld=Appointments.Cur;
+			if(Appointments.Cur.IsNewPatient
+				&& Appointments.DateSelected!=Appointments.Cur.AptDateTime){
+				Procedures.SetDateFirstVisit(Appointments.DateSelected,4);
+			}
+			int tHr=ContrApptSheet2.ConvertToHour
+				(TempApptSingle.Location.Y-ContrApptSheet2.Location.Y-panelSheet.Location.Y);
+			int tMin=ContrApptSheet2.ConvertToMin
+				(TempApptSingle.Location.Y-ContrApptSheet2.Location.Y-panelSheet.Location.Y);
+			DateTime tDate=Appointments.DateSelected;
+			DateTime fromDate=Appointments.Cur.AptDateTime.Date;
+			Appointments.Cur.AptDateTime=new DateTime(tDate.Year,tDate.Month,tDate.Day,tHr,tMin,0);
+			Appointments.Cur.Op=Defs.Short[(int)DefCat.Operatories]
+				[ApptViewItems.VisOps
+				[ContrApptSheet2.ConvertToOp(TempApptSingle.Location.X-ContrApptSheet2.Location.X)]]
+				.DefNum;
+			if(DoesOverlap()){
+				int startingOp=ApptViewItems.GetIndexOp(Appointments.Cur.Op);
+					//Defs.GetOrder(DefCat.Operatories,Appointments.Cur.Op);
+				bool stillOverlaps=true;
+				for(int i=startingOp;i<ApptViewItems.VisOps.Length;i++){
+					//Defs.Short[(int)DefCat.Operatories].Length
+					Appointments.Cur.Op=Defs.Short[(int)DefCat.Operatories][ApptViewItems.VisOps[i]].DefNum;
+					if(!DoesOverlap()){
+						stillOverlaps=false;
+						break;
+					}
+				}
+				if(stillOverlaps){
+					for(int i=startingOp;i>=0;i--){
 						Appointments.Cur.Op=Defs.Short[(int)DefCat.Operatories][ApptViewItems.VisOps[i]].DefNum;
 						if(!DoesOverlap()){
 							stillOverlaps=false;
 							break;
 						}
 					}
-					if(stillOverlaps){
-						for(int i=startingOp;i>=0;i--){
-							Appointments.Cur.Op=Defs.Short[(int)DefCat.Operatories][ApptViewItems.VisOps[i]].DefNum;
-							if(!DoesOverlap()){
-								stillOverlaps=false;
-								break;
-							}
+				}
+				if(stillOverlaps){
+					MessageBox.Show(Lan.g(this,"Appointment overlaps existing appointment."));
+					mouseIsDown=false;
+					boolAptMoved=false;
+					TempApptSingle.Dispose();
+					return;
+				}
+			}
+			if(Appointments.Cur.AptStatus==ApptStatus.Broken){
+				Appointments.Cur.AptStatus=ApptStatus.Scheduled;
+			}
+			if(Appointments.Cur.AptStatus==ApptStatus.UnschedList){
+				Appointments.Cur.AptStatus=ApptStatus.Scheduled;
+			}
+			if(Appointments.Cur.AptStatus==ApptStatus.Next){//if Next appt is on pinboard
+				Appointments.Cur.NextAptNum=Appointments.Cur.AptNum;
+				Appointments.Cur.AptStatus=ApptStatus.Scheduled;
+				Appointments.InsertCur();//now, aptnum is different.
+				Procedures.Refresh();
+				bool procAlreadyAttached=false;
+				Procedure ProcCur;
+				for(int i=0;i<Procedures.List.Length;i++){
+					if(Procedures.List[i].NextAptNum==Patients.Cur.NextAptNum){//if on the next apt
+						if(Procedures.List[i].AptNum>0){//already attached to another appt
+							procAlreadyAttached=true;
 						}
-					}
-					if(stillOverlaps){
-						MessageBox.Show(Lan.g(this,"Appointment overlaps existing appointment."));
-						mouseIsDown=false;
-						boolAptMoved=false;
-						TempApptSingle.Dispose();
-						return;
-					}
-				}
-				if(Appointments.Cur.AptStatus==ApptStatus.Broken){
-					Appointments.Cur.AptStatus=ApptStatus.Scheduled;
-				}
-				if(Appointments.Cur.AptStatus==ApptStatus.UnschedList){
-					Appointments.Cur.AptStatus=ApptStatus.Scheduled;
-				}
-				if(Appointments.Cur.AptStatus==ApptStatus.Next){//if Next appt is on pinboard
-					Appointments.Cur.NextAptNum=Appointments.Cur.AptNum;
-					Appointments.Cur.AptStatus=ApptStatus.Scheduled;
-					Appointments.InsertCur();//now, aptnum is different.
-					Procedures.Refresh();
-					for(int i=0;i<Procedures.List.Length;i++){
-						if(Procedures.List[i].NextAptNum==Patients.Cur.NextAptNum){
+						else{//only update procedures not already attached to another apt
 							Procedures.Cur=Procedures.List[i];
-							Procedures.Cur.AptNum=Appointments.Cur.AptNum;
+							Procedures.CurOld=Procedures.Cur;
+							ProcCur=Procedures.Cur;
+							ProcCur.AptNum=Appointments.Cur.AptNum;
+							Procedures.Cur=ProcCur;
 							Procedures.UpdateCur();
 						}
 					}
-					Procedures.GetProcsForSingle(Appointments.Cur.AptNum,true);
-					ContrAppt.CurInfo.Procs=Procedures.ProcsForSingle;
 				}
-				else{
-					Appointments.UpdateCur();
+				if(procAlreadyAttached){
+					MessageBox.Show(Lan.g(this,"One or more procedures could not be scheduled because they were already attached to another appointment. Someone probably forgot to update the Next appointment in the Chart module."));
 				}
-				TempApptSingle.Dispose();
-				PinApptSingle.Visible=false;
-				ContrApptSingle.PinBoardIsSelected=false;
-				ContrApptSingle.SelectedAptNum=Appointments.Cur.AptNum;
-				RefreshModuleScreen();//date moving to for this computer
-				SetInvalid();//date moving to for other computers
-				Appointments.DateSelected=fromDate;
-				SetInvalid();//for date moved from for other computers.
-				Appointments.DateSelected=Appointments.Cur.AptDateTime;
-				mouseIsDown = false;
-				boolAptMoved=false;
+				Procedures.GetProcsForSingle(Appointments.Cur.AptNum,true);
+				ContrAppt.CurInfo.Procs=Procedures.ProcsForSingle;
 			}
-			else{//responds no, don't move off pinboard.
-				mouseIsDown = false;
-				boolAptMoved=false;
-				//pinIsOccupied=true;
-				TempApptSingle.Dispose();
+			else{
+				Appointments.UpdateCur();
 			}
+			TempApptSingle.Dispose();
+			PinApptSingle.Visible=false;
+			ContrApptSingle.PinBoardIsSelected=false;
+			ContrApptSingle.SelectedAptNum=Appointments.Cur.AptNum;
+			RefreshModuleScreen();//date moving to for this computer
+			SetInvalid();//date moving to for other computers
+			Appointments.DateSelected=fromDate;
+			SetInvalid();//for date moved from for other computers.
+			Appointments.DateSelected=Appointments.Cur.AptDateTime;
+			mouseIsDown = false;
+			boolAptMoved=false;
 		}//end PinApptSingle_mouseup
 
 
@@ -1452,6 +1584,7 @@ namespace OpenDental{
 				int thisIndex=GetIndex(ContrApptSingle.ClickedAptNum);
 				ContrApptSingle.PinBoardIsSelected=false;
 				Appointments.Cur=ContrApptSingle3[thisIndex].Info.MyApt;
+				Appointments.CurOld=Appointments.Cur;
 				if(ContrApptSingle.SelectedAptNum!=-1//unselects previously selected unless it's the same appt
 					&& ContrApptSingle.SelectedAptNum!=ContrApptSingle.ClickedAptNum){
 					int prevSel=GetIndex(ContrApptSingle.SelectedAptNum);
@@ -1558,65 +1691,68 @@ namespace OpenDental{
 				}
 				FillPanelPatient();
 				TempApptSingle.Dispose();
+				return;
 			}
-			else if(MessageBox.Show(Lan.g(this,"Move Appointment?"),"",MessageBoxButtons.OKCancel)
-				==DialogResult.OK)
-			{
-				//convert loc to new time
-				//Appointments.Cur = Appointments.List[ContrApptSingle.SelectedIndex];
-				int tHr=ContrApptSheet2.ConvertToHour
-					(TempApptSingle.Location.Y-ContrApptSheet2.Location.Y-panelSheet.Location.Y);
-				int tMin=ContrApptSheet2.ConvertToMin
-					(TempApptSingle.Location.Y-ContrApptSheet2.Location.Y-panelSheet.Location.Y);
-				DateTime tDate=Appointments.Cur.AptDateTime.Date;
-				Appointments.Cur=TempApptSingle.Info.MyApt;
-				Appointments.Cur.AptDateTime=new DateTime(tDate.Year,tDate.Month,tDate.Day,tHr,tMin,0);
-				Appointments.Cur.Op=Defs.Short[(int)DefCat.Operatories]
-					[ApptViewItems.VisOps
-					[ContrApptSheet2.ConvertToOp(TempApptSingle.Location.X-ContrApptSheet2.Location.X)]].DefNum;
-				if(DoesOverlap()){
-					int startingOp=ApptViewItems.GetIndexOp(Appointments.Cur.Op);
-					bool stillOverlaps=true;
-					for(int i=startingOp;i<ApptViewItems.VisOps.Length;i++){
-						//Defs.Short[(int)DefCat.Operatories]
+			int tHr=ContrApptSheet2.ConvertToHour
+				(TempApptSingle.Location.Y-ContrApptSheet2.Location.Y-panelSheet.Location.Y);
+			int tMin=ContrApptSheet2.ConvertToMin
+				(TempApptSingle.Location.Y-ContrApptSheet2.Location.Y-panelSheet.Location.Y);
+			//if time was moved
+			if(tHr!=Appointments.Cur.AptDateTime.Hour || tMin!=Appointments.Cur.AptDateTime.Minute){
+				if(MessageBox.Show(Lan.g(this,"Move Appointment?"),"",MessageBoxButtons.OKCancel)
+					!=DialogResult.OK){
+					mouseIsDown=false;
+					boolAptMoved=false;
+					TempApptSingle.Dispose();
+					return;
+				}
+			}
+			//convert loc to new time
+			//Appointments.Cur = Appointments.List[ContrApptSingle.SelectedIndex];
+			DateTime tDate=Appointments.Cur.AptDateTime.Date;
+			Appointments.Cur=TempApptSingle.Info.MyApt;
+			Appointments.CurOld=Appointments.Cur;
+			Appointments.Cur.AptDateTime=new DateTime(tDate.Year,tDate.Month,tDate.Day,tHr,tMin,0);
+			Appointments.Cur.Op=Defs.Short[(int)DefCat.Operatories]
+				[ApptViewItems.VisOps
+				[ContrApptSheet2.ConvertToOp(TempApptSingle.Location.X-ContrApptSheet2.Location.X)]].DefNum;
+			if(DoesOverlap()){
+				int startingOp=ApptViewItems.GetIndexOp(Appointments.Cur.Op);
+				bool stillOverlaps=true;
+				for(int i=startingOp;i<ApptViewItems.VisOps.Length;i++){
+					//Defs.Short[(int)DefCat.Operatories]
+					Appointments.Cur.Op=Defs.Short[(int)DefCat.Operatories][ApptViewItems.VisOps[i]].DefNum;
+					if(!DoesOverlap()){
+						stillOverlaps=false;
+						break;
+					}
+				}
+				if(stillOverlaps){
+					for(int i=startingOp;i>=0;i--){
 						Appointments.Cur.Op=Defs.Short[(int)DefCat.Operatories][ApptViewItems.VisOps[i]].DefNum;
 						if(!DoesOverlap()){
 							stillOverlaps=false;
 							break;
 						}
 					}
-					if(stillOverlaps){
-						for(int i=startingOp;i>=0;i--){
-							Appointments.Cur.Op=Defs.Short[(int)DefCat.Operatories][ApptViewItems.VisOps[i]].DefNum;
-							if(!DoesOverlap()){
-								stillOverlaps=false;
-								break;
-							}
-						}
-					}
-					if(stillOverlaps){
-						MessageBox.Show(Lan.g(this,"Appointment overlaps existing appointment."));
-						mouseIsDown=false;
-						boolAptMoved=false;
-						TempApptSingle.Dispose();
-						return;
-					}
-				}//end if DoesOverlap
-				if(Appointments.Cur.AptStatus==ApptStatus.Broken){
-					Appointments.Cur.AptStatus=ApptStatus.Scheduled;
 				}
-				Appointments.UpdateCur();
-				RefreshModuleScreen();
-				SetInvalid();
-				mouseIsDown = false;
-				boolAptMoved=false;
-				TempApptSingle.Dispose();
-			}//end if move appt
-			else{
-				mouseIsDown = false;
-				boolAptMoved=false;
-				TempApptSingle.Dispose();
+				if(stillOverlaps){
+					MessageBox.Show(Lan.g(this,"Appointment overlaps existing appointment."));
+					mouseIsDown=false;
+					boolAptMoved=false;
+					TempApptSingle.Dispose();
+					return;
+				}
+			}//end if DoesOverlap
+			if(Appointments.Cur.AptStatus==ApptStatus.Broken){
+				Appointments.Cur.AptStatus=ApptStatus.Scheduled;
 			}
+			Appointments.UpdateCur();
+			RefreshModuleScreen();
+			SetInvalid();
+			mouseIsDown = false;
+			boolAptMoved=false;
+			TempApptSingle.Dispose();
 		}
 
 		///<summary>Double click on appt sheet or on a single appointment.</summary>
@@ -1655,6 +1791,7 @@ namespace OpenDental{
 				if(FormPS.NewPatientAdded){
 					Appointments.Cur=new Appointment();
 					Appointments.Cur.PatNum=Patients.Cur.PatNum;
+					Appointments.Cur.IsNewPatient=true;
 					Appointments.Cur.Pattern="/X/";
 					if(Patients.Cur.PriProv==0){
 						Appointments.Cur.ProvNum=PIn.PInt(((Pref)Prefs.HList["PracticeDefaultProv"]).ValueString);
@@ -1669,6 +1806,7 @@ namespace OpenDental{
 						,ContrAppt.SheetClickedonHour,ContrAppt.SheetClickedonMin,0);
 					Appointments.Cur.Op=ContrAppt.SheetClickedonOp;
 					Appointments.InsertCur();
+					Appointments.CurOld=Appointments.Cur;
 					FormApptEdit FormAE=new FormApptEdit();
 					FormAE.IsNew=true;
 					FormAE.ShowDialog();
@@ -1973,7 +2111,10 @@ namespace OpenDental{
 			}
 			PinApptSingle.Visible=false;
 			Appointments.Cur=PinApptSingle.Info.MyApt;
-			Patients.Cur.PatNum=Appointments.Cur.PatNum;
+			//get the patient associate with the pinboard appt so we can test for next apt.
+			Patient PatCur=Patients.Cur;//but we don't really care
+			PatCur.PatNum=Appointments.Cur.PatNum;
+			Patients.Cur=PatCur;
 			RefreshModuleData();
 			ContrApptSingle.SelectedAptNum=-1;
 			ContrApptSingle.PinBoardIsSelected=false;
@@ -1985,7 +2126,7 @@ namespace OpenDental{
 					//do nothing except remove it from pinboard
 				}
 				else{//for normal appt:
-					//this gets rid of new appointments that never made it off the pinvboard
+					//this gets rid of new appointments that never made it off the pinboard
 					Procedures.UnattachProcsInAppt(Appointments.Cur.AptNum);
 					Appointments.DeleteCur();
 				}
@@ -2079,6 +2220,7 @@ namespace OpenDental{
 		private void OnComplete_Click(){
 			int thisIndex=GetIndex(ContrApptSingle.SelectedAptNum);
 			Appointments.Cur.AptStatus=ApptStatus.Complete;
+			//Procedures.SetDateFirstVisit(Appointments.Cur.AptDateTime.Date);//done when making appt instead
 			Procedures.SetCompleteInAppt();//loops through each proc
 			Appointments.UpdateCur();
 			RefreshModuleScreen();
@@ -2088,7 +2230,8 @@ namespace OpenDental{
 		}
 
 		private void OnDelete_Click(){
-			if(MessageBox.Show(Lan.g(this,"Delete Appointment?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
+			if(MessageBox.Show(Lan.g(this,"Delete Appointment?"),"",MessageBoxButtons.OKCancel)
+				!=DialogResult.OK){
 				return;
 			}
 			Procedures.UnattachProcsInAppt(Appointments.Cur.AptNum);
@@ -2104,9 +2247,9 @@ namespace OpenDental{
 		
 		}
 
-		private void listConfirmed_SelectedIndexChanged(object sender, System.EventArgs e) {
+		/*private void listConfirmed_SelectedIndexChanged(object sender, System.EventArgs e) {
 			listConfirmed.SelectedIndex=-1;
-		}
+		}*/
 
 		private void listConfirmed_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
 			if(listConfirmed.IndexFromPoint(e.X,e.Y)==-1){

@@ -41,6 +41,8 @@ namespace OpenDental{
 		public bool IsNewPatient;
 		///<summary>A one line summary of all procedures.  Can be used in various reports, Unscheduled list, and Next appointment tracker.  Not user editable right now.</summary>
 		public string ProcDescript;
+		///<summary>Foreign key to employee.EmployeeNum</summary>
+		public int Assistant;
 	}
 
 	/*=========================================================================================
@@ -56,8 +58,10 @@ namespace OpenDental{
 		public static Appointment[] ListUn;
 		///<summary>A list of appointments for use on the Other appointments list for a single patient.</summary>
 		public static Appointment[] ListOth;
-		///<summary>Current.  A single row of data.</summary>
+		///<summary>Current appointment.  A single row of data.</summary>
 		public static Appointment Cur;
+		///<summary>When doing update, this Appointment is the original before any changes were made. This allows only the changed fields to be updated, minimizing concurrency issues.</summary>
+		public static Appointment CurOld;
 		///<summary>The appointment on the pinboard.</summary>
 		public static Appointment PinBoard;
 		///<summary>The date currently selected in the appointment module.</summary>
@@ -69,7 +73,8 @@ namespace OpenDental{
 			cmd.CommandText =
 				"SELECT * from appointment "
 				+"WHERE AptDateTime LIKE '"+POut.PDate(thisDay)+"%' "
-				+"&& aptstatus != '"+(int)ApptStatus.UnschedList+"'";
+				+"&& aptstatus != '"+(int)ApptStatus.UnschedList+"' "
+				+"&& aptstatus != '"+(int)ApptStatus.Next+"'";
 			FillList();
 			ListDay=List;
 			List=null;
@@ -127,14 +132,16 @@ namespace OpenDental{
 				List[i].Lab         =(LabCase)PIn.PInt   (table.Rows[i][13].ToString());
 				List[i].IsNewPatient=PIn.PBool  (table.Rows[i][14].ToString());
 				List[i].ProcDescript=PIn.PString(table.Rows[i][15].ToString());
+				List[i].Assistant   =PIn.PInt   (table.Rows[i][16].ToString());
 			}
 		}
 
-		///<summary></summary>
+		///<summary>Also fills AptNum with the insertID.</summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO appointment (patnum,aptstatus, "
 				+"pattern,confirmed,addtime,op,note,provnum,"
-				+"provhyg,aptdatetime,nextaptnum,unschedstatus,lab,isnewpatient,procdescript) VALUES("
+				+"provhyg,aptdatetime,nextaptnum,unschedstatus,lab,isnewpatient,procdescript,"
+				+"Assistant) VALUES("
 				+"'"+POut.PInt   (Cur.PatNum)+"', "
 				+"'"+POut.PInt   ((int)Cur.AptStatus)+"', "
 				+"'"+POut.PString(Cur.Pattern)+"', "
@@ -149,36 +156,105 @@ namespace OpenDental{
 				+"'"+POut.PInt   (Cur.UnschedStatus)+"', "
 				+"'"+POut.PInt   ((int)Cur.Lab)+"', "
 				+"'"+POut.PBool  (Cur.IsNewPatient)+"', "
-				+"'"+POut.PString(Cur.ProcDescript)+"')";
+				+"'"+POut.PString(Cur.ProcDescript)+"', "
+				+"'"+POut.PInt   (Cur.Assistant)+"')";
 			NonQ(true);
 			Cur.AptNum=InsertID;
 			//MessageBox.Show(Cur.AptNum.ToString());
 		}
 
-		///<summary></summary>
-		public static void UpdateCur(){
-			cmd.CommandText = "UPDATE appointment SET "
-				+"PatNum = '"      +POut.PInt   (Cur.PatNum)+"', "
-				+"AptStatus = '"   +POut.PInt   ((int)Cur.AptStatus)+"', "
-				+"Pattern = '"     +POut.PString(Cur.Pattern)+"', "
-				+"Confirmed = '"   +POut.PInt   (Cur.Confirmed)+"', "
-				+"AddTime = '"     +POut.PInt   (Cur.AddTime)+"', "
-				+"Op = '"          +POut.PInt   (Cur.Op)+"', "
-				+"Note = '"        +POut.PString(Cur.Note)+"', "
-				+"provnum = '"     +POut.PInt   (Cur.ProvNum)+"', "
-				+"provhyg = '"     +POut.PInt   (Cur.ProvHyg)+"', "
-				+"aptdatetime = '" +POut.PDateT (Cur.AptDateTime)+"', "
-				+"nextaptnum = '"  +POut.PInt   (Cur.NextAptNum)+"', "
-				+"unschedstatus = '" +POut.PInt(Cur.UnschedStatus)+"', "
-				+"lab = '"         +POut.PInt   ((int)Cur.Lab)+"', "
-				+"isnewpatient = '"+POut.PBool  (Cur.IsNewPatient)+"', "
-				+"procdescript = '"+POut.PString(Cur.ProcDescript)+"' "
-				+"WHERE AptNum = '"+POut.PInt  (Cur.AptNum)+"'";
+		///<summary>Updates only the changed columns and returns the number of rows affected.</summary>
+		public static int UpdateCur(){
+			bool comma=false;
+			string c = "UPDATE appointment SET ";
+			if(Cur.PatNum!=CurOld.PatNum){
+				c+="PatNum = '"      +POut.PInt   (Cur.PatNum)+"'";
+				comma=true;
+			}
+			if(Cur.AptStatus!=CurOld.AptStatus){
+				if(comma) c+=",";
+				c+="AptStatus = '"   +POut.PInt   ((int)Cur.AptStatus)+"'";
+				comma=true;
+			}
+			if(Cur.Pattern!=CurOld.Pattern){
+				if(comma) c+=",";
+				c+="Pattern = '"     +POut.PString(Cur.Pattern)+"'";
+				comma=true;
+			}
+			if(Cur.Confirmed!=CurOld.Confirmed){
+				if(comma) c+=",";
+				c+="Confirmed = '"   +POut.PInt   (Cur.Confirmed)+"'";
+				comma=true;
+			}
+			if(Cur.AddTime!=CurOld.AddTime){
+				if(comma) c+=",";
+				c+="AddTime = '"     +POut.PInt   (Cur.AddTime)+"'";
+				comma=true;
+			}
+			if(Cur.Op!=CurOld.Op){
+				if(comma) c+=",";
+				c+="Op = '"          +POut.PInt   (Cur.Op)+"'";
+				comma=true;
+			}
+			if(Cur.Note!=CurOld.Note){
+				if(comma) c+=",";
+				c+="Note = '"        +POut.PString(Cur.Note)+"'";
+				comma=true;
+			}
+			if(Cur.ProvNum!=CurOld.ProvNum){
+				if(comma) c+=",";
+				c+="ProvNum = '"     +POut.PInt   (Cur.ProvNum)+"'";
+				comma=true;
+			}
+			if(Cur.ProvHyg!=CurOld.ProvHyg){
+				if(comma) c+=",";
+				c+="ProvHyg = '"     +POut.PInt   (Cur.ProvHyg)+"'";
+				comma=true;
+			}
+			if(Cur.AptDateTime!=CurOld.AptDateTime){
+				if(comma) c+=",";
+				c+="AptDateTime = '" +POut.PDateT (Cur.AptDateTime)+"'";
+				comma=true;
+			}
+			if(Cur.NextAptNum!=CurOld.NextAptNum){
+				if(comma) c+=",";
+				c+="NextAptNum = '"  +POut.PInt   (Cur.NextAptNum)+"'";
+				comma=true;
+			}
+			if(Cur.UnschedStatus!=CurOld.UnschedStatus){
+				if(comma) c+=",";
+				c+="UnschedStatus = '" +POut.PInt(Cur.UnschedStatus)+"'";
+				comma=true;
+			}
+			if(Cur.Lab!=CurOld.Lab){
+				if(comma) c+=",";
+				c+="Lab = '"         +POut.PInt   ((int)Cur.Lab)+"'";
+				comma=true;
+			}
+			if(Cur.IsNewPatient!=CurOld.IsNewPatient){
+				if(comma) c+=",";
+				c+="IsNewPatient = '"+POut.PBool  (Cur.IsNewPatient)+"'";
+				comma=true;
+			}
+			if(Cur.ProcDescript!=CurOld.ProcDescript){
+				if(comma) c+=",";
+				c+="ProcDescript = '"+POut.PString(Cur.ProcDescript)+"'";
+				comma=true;
+			}
+			if(Cur.Assistant!=CurOld.Assistant){
+				if(comma) c+=",";
+				c+="Assistant = '"   +POut.PInt   (Cur.Assistant)+"'";
+				comma=true;
+			}
+			if(!comma)
+				return 0;//this means no change is actually required.
+			c+=" WHERE AptNum = '"+POut.PInt(Cur.AptNum)+"'";
+			cmd.CommandText=c;
 			//MessageBox.Show(cmd.CommandText);
-			NonQ(false);
+			return NonQ();
 		}
 
-		///<summary>Gets one appointment and stores the info in Cur.</summary>
+		///<summary>Gets one appointment and stores the info in Cur and CurOld.</summary>
 		public static void RefreshCur(int aptNum){
 			cmd.CommandText =
 				"SELECT * "
@@ -205,10 +281,13 @@ namespace OpenDental{
 			Cur.Lab         =(LabCase)PIn.PInt(table.Rows[0][13].ToString());
 			Cur.IsNewPatient=PIn.PBool  (table.Rows[0][14].ToString());
 			Cur.ProcDescript=PIn.PString(table.Rows[0][15].ToString());
+			Cur.Assistant   =PIn.PInt   (table.Rows[0][16].ToString());
+			CurOld=Cur;
 		}
 	
 		///<summary></summary>
 		public static void DeleteCur(){
+			Procedures.SetDateFirstVisit(DateTime.MinValue,3);
 			cmd.CommandText="DELETE from appointment WHERE "
 				+"aptnum = '"+POut.PInt(Cur.AptNum)+"'";
 			//MessageBox.Show(cmd.CommandText);
@@ -235,6 +314,15 @@ namespace OpenDental{
 				return true;
 			}
 		}
+
+		
+		
+
+
+
+
+
+
 	}
 	
 	

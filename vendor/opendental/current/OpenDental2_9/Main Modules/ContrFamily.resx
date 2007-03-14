@@ -202,14 +202,14 @@
   <data name="textPriPlanNote.Modifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>Private</value>
   </data>
-  <data name="textSecPlanNote.Modifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>Private</value>
-  </data>
   <data name="textSecPlanNote.DefaultModifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>Private</value>
   </data>
   <data name="textSecPlanNote.Locked" type="System.Boolean, mscorlib, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
+  </data>
+  <data name="textSecPlanNote.Modifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>Private</value>
   </data>
   <data name="panelFamily.Locked" type="System.Boolean, mscorlib, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
@@ -228,6 +228,78 @@
   </data>
   <data name="panelFamily.Modifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>Private</value>
+  </data>
+  <data name="butMovePat.Locked" type="System.Boolean, mscorlib, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
+  </data>
+  <data name="butMovePat.DefaultModifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>Private</value>
+  </data>
+  <data name="butMovePat.Modifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>Private</value>
+  </data>
+  <data name="butMovePat.Image" type="System.Drawing.Bitmap, System.Drawing, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        R0lGODlhFgAWAPQAAAAAAAFcAUJFR296eqECAoV2cY+Wl46WmJycmZubnZyfn6iQi/rvr+jw8Pj18fn2
+        8/f5+vn4+v///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAAwALAAA
+        AAAWABYAAAV0ICOOZCkGJgOsQDoGKMmyLgPH6kyX9y0CAsNh0Fjxej5AQvGARB6tFxImUT0QD8cDKg1I
+        JLfqr7DYRm3Uk7c064pt7x9hPm+B43EVnR7NmwB7dTVsgQRng3qBh4OAiogjjXuLNZF8j3KOl4mWmjk7
+        naChLiEAOw==
+</value>
+  </data>
+  <data name="butSetGuar.Locked" type="System.Boolean, mscorlib, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
+  </data>
+  <data name="butSetGuar.DefaultModifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>Private</value>
+  </data>
+  <data name="butSetGuar.Modifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>Private</value>
+  </data>
+  <data name="butSetGuar.Image" type="System.Drawing.Bitmap, System.Drawing, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        R0lGODlhFgAWAPQAAAAAAAFcAUJFR296eqECAoV2cY+Wl46WmJycmZubnZyfn6iQi/rvr+jw8Pj18fn2
+        8/f5+vn4+v///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAAwALAAA
+        AAAWABYAAAV1ICOKgTSeaMoErKm+ZPsCNICyuHvW9YnLO15v9QOKAALDYdCgEYtGQELxgEQeNoZEktvq
+        AA/Ew/HA+oy7wqKcHeVmw3NJBSDY7e2nblS/4+V7R35/bmiCg3laWyl9fokwjXePM4MEk3SVl4yZMJuO
+        nYw8oKMhADs=
+</value>
+  </data>
+  <data name="butDeletePt.Locked" type="System.Boolean, mscorlib, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
+  </data>
+  <data name="butDeletePt.DefaultModifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>Private</value>
+  </data>
+  <data name="butDeletePt.Modifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>Private</value>
+  </data>
+  <data name="butDeletePt.Image" type="System.Drawing.Bitmap, System.Drawing, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        R0lGODlhFgAWAPQAAAAAAEJFR296eqECAswAAIV2cY+Wl46WmJycmZubnZyfn6iQi/rvr+jw8Pj18fn2
+        8/f5+vn4+v///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAAwALAAA
+        AAAWABYAAAVwICOOZGmShHSuKJG2qgjMQOm+jBszNG3rulGv9wsKA4aDoDEr7mQJxQMSedRGN6PsgXg4
+        HlZsUMsrLMDXnBYn9KGeuR1gQKenWbJ6/Y6f6wd8LH56gSuDe3gkh3aJQn+AjXl/hSeLkJE8k5gyRJsn
+        IQA7
+</value>
+  </data>
+  <data name="butAddPt.Locked" type="System.Boolean, mscorlib, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
+  </data>
+  <data name="butAddPt.DefaultModifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>Private</value>
+  </data>
+  <data name="butAddPt.Modifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>Private</value>
+  </data>
+  <data name="butAddPt.Image" type="System.Drawing.Bitmap, System.Drawing, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        R0lGODlhFgAWAPQAAAAAAEJFR296epwNFqECAqsAALQHEoV2cQQEx4+Wl46WmJycmZubnZyfn6iQi/rv
+        r+jw8Pj18fn28/f5+vn4+v///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAA8ALAAA
+        AAAWABYAAAV14COOZGmaCHKuZVqtQAyc7inLKPKW9/2kwKBKBAgkFAJI7CcM7gCMhmRCkcwelawrmyVK
+        FpKIxNrS2Q6O8ZVUs+FyOx6hQKivR115fX9nPQB7fH4kgIEEfSyFgYgwhoeDI4qCkH+OjDZ7BgOPlJWL
+        nUQ+oCchADs=
+</value>
   </data>
   <data name="tbPercent1.Locked" type="System.Boolean, mscorlib, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
@@ -310,77 +382,23 @@
   <data name="butEditSecPlan.Modifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>Private</value>
   </data>
-  <data name="butAddPt.Locked" type="System.Boolean, mscorlib, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  <data name="checkPriPending.Locked" type="System.Boolean, mscorlib, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </data>
-  <data name="butAddPt.DefaultModifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  <data name="checkPriPending.DefaultModifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>Private</value>
   </data>
-  <data name="butAddPt.Modifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  <data name="checkPriPending.Modifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>Private</value>
   </data>
-  <data name="butAddPt.Image" type="System.Drawing.Bitmap, System.Drawing, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        R0lGODlhFgAWAPQAAAAAAEJFR296epwNFqECAqsAALQHEoV2cQQEx4+Wl46WmJycmZubnZyfn6iQi/rv
-        r+jw8Pj18fn28/f5+vn4+v///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAA8ALAAA
-        AAAWABYAAAV14COOZGmaCHKuZVqtQAyc7inLKPKW9/2kwKBKBAgkFAJI7CcM7gCMhmRCkcwelawrmyVK
-        FpKIxNrS2Q6O8ZVUs+FyOx6hQKivR115fX9nPQB7fH4kgIEEfSyFgYgwhoeDI4qCkH+OjDZ7BgOPlJWL
-        nUQ+oCchADs=
-</value>
-  </data>
-  <data name="butDeletePt.Locked" type="System.Boolean, mscorlib, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  <data name="checkSecPending.Locked" type="System.Boolean, mscorlib, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </data>
-  <data name="butDeletePt.DefaultModifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  <data name="checkSecPending.DefaultModifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>Private</value>
   </data>
-  <data name="butDeletePt.Modifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  <data name="checkSecPending.Modifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>Private</value>
-  </data>
-  <data name="butDeletePt.Image" type="System.Drawing.Bitmap, System.Drawing, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        R0lGODlhFgAWAPQAAAAAAEJFR296eqECAswAAIV2cY+Wl46WmJycmZubnZyfn6iQi/rvr+jw8Pj18fn2
-        8/f5+vn4+v///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAAwALAAA
-        AAAWABYAAAVwICOOZGmShHSuKJG2qgjMQOm+jBszNG3rulGv9wsKA4aDoDEr7mQJxQMSedRGN6PsgXg4
-        HlZsUMsrLMDXnBYn9KGeuR1gQKenWbJ6/Y6f6wd8LH56gSuDe3gkh3aJQn+AjXl/hSeLkJE8k5gyRJsn
-        IQA7
-</value>
-  </data>
-  <data name="butSetGuar.Locked" type="System.Boolean, mscorlib, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>False</value>
-  </data>
-  <data name="butSetGuar.DefaultModifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>Private</value>
-  </data>
-  <data name="butSetGuar.Modifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>Private</value>
-  </data>
-  <data name="butSetGuar.Image" type="System.Drawing.Bitmap, System.Drawing, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        R0lGODlhFgAWAPQAAAAAAAFcAUJFR296eqECAoV2cY+Wl46WmJycmZubnZyfn6iQi/rvr+jw8Pj18fn2
-        8/f5+vn4+v///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAAwALAAA
-        AAAWABYAAAV1ICOKgTSeaMoErKm+ZPsCNICyuHvW9YnLO15v9QOKAALDYdCgEYtGQELxgEQeNoZEktvq
-        AA/Ew/HA+oy7wqKcHeVmw3NJBSDY7e2nblS/4+V7R35/bmiCg3laWyl9fokwjXePM4MEk3SVl4yZMJuO
-        nYw8oKMhADs=
-</value>
-  </data>
-  <data name="butMovePat.Locked" type="System.Boolean, mscorlib, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>False</value>
-  </data>
-  <data name="butMovePat.DefaultModifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>Private</value>
-  </data>
-  <data name="butMovePat.Modifiers" type="System.CodeDom.MemberAttributes, System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>Private</value>
-  </data>
-  <data name="butMovePat.Image" type="System.Drawing.Bitmap, System.Drawing, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        R0lGODlhFgAWAPQAAAAAAAFcAUJFR296eqECAoV2cY+Wl46WmJycmZubnZyfn6iQi/rvr+jw8Pj18fn2
-        8/f5+vn4+v///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAAwALAAA
-        AAAWABYAAAV0ICOOZCkGJgOsQDoGKMmyLgPH6kyX9y0CAsNh0Fjxej5AQvGARB6tFxImUT0QD8cDKg1I
-        JLfqr7DYRm3Uk7c064pt7x9hPm+B43EVnR7NmwB7dTVsgQRng3qBh4OAiogjjXuLNZF8j3KOl4mWmjk7
-        naChLiEAOw==
-</value>
   </data>
   <data name="$this.TrayLargeIcon" type="System.Boolean, mscorlib, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>

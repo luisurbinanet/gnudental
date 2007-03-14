@@ -12,11 +12,7 @@ namespace OpenDental{
 ///<summary></summary>
 	public class FormInsCovEdit : System.Windows.Forms.Form{
 		private System.Windows.Forms.GroupBox groupBox2;
-		private System.Windows.Forms.Panel panel5;
 		private System.Windows.Forms.Label label13;
-		private System.Windows.Forms.RadioButton radioPriChild;
-		private System.Windows.Forms.RadioButton radioPriSpouse;
-		private System.Windows.Forms.RadioButton radioPriSelf;
 		private System.ComponentModel.Container components = null;
 		private System.Windows.Forms.Button butOK;// Required designer variable.
 		//public bool IsNew;
@@ -30,15 +26,6 @@ namespace OpenDental{
 		private System.Windows.Forms.ListBox listSecPlan;
 		private OpenDental.TablePercent tbPercent2;
 		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.ComboBox comboPriOther;
-		private System.Windows.Forms.Label label6;
-		private System.Windows.Forms.Label label7;
-		private System.Windows.Forms.Panel panel1;
-		private System.Windows.Forms.RadioButton radioSecSelf;
-		private System.Windows.Forms.ComboBox comboSecOther;
-		private System.Windows.Forms.RadioButton radioSecChild;
-		private System.Windows.Forms.RadioButton radioSecSpouse;
-		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.Label label8;
 		private System.Windows.Forms.ListBox listPriAdj;
 		private System.Windows.Forms.Button butPriAdd;
@@ -58,6 +45,9 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butExistSecPlan;
 		private System.Windows.Forms.Label label10;
 		private System.Windows.Forms.Label label11;
+		private System.Windows.Forms.ListBox listPriRelat;
+		private System.Windows.Forms.ListBox listSecRelat;
+		private System.Windows.Forms.Label label6;
 		private ArrayList ALSecAdj;
 
 		///<summary></summary>
@@ -71,10 +61,7 @@ namespace OpenDental{
 				//this.label14,
 				this.label2,
 				this.label3,
-				this.label4,
 				this.label5,
-				this.label6,
-				this.label7,
 				this.label8,
 				this.butEditPriPlan,
 				this.butEditSecPlan,
@@ -85,13 +72,7 @@ namespace OpenDental{
 				this.butSecAdd,
 				this.butSecDelete,
 				this.groupBox1,
-				this.groupBox2,
-				this.radioPriChild,
-				this.radioPriSelf,
-				this.radioPriSpouse,
-				this.radioSecChild,
-				this.radioSecSelf,
-				this.radioSecSpouse
+				this.groupBox2
 			});
 			Lan.C("All", new System.Windows.Forms.Control[] {
 				butOK,
@@ -114,27 +95,22 @@ namespace OpenDental{
 		private void InitializeComponent(){
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormInsCovEdit));
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
+			this.listPriRelat = new System.Windows.Forms.ListBox();
 			this.groupBox3 = new System.Windows.Forms.GroupBox();
 			this.label10 = new System.Windows.Forms.Label();
 			this.butExistPriPlan = new System.Windows.Forms.Button();
+			this.butAddPlan = new OpenDental.XPButton();
 			this.butEditPriPlan = new OpenDental.XPButton();
 			this.label9 = new System.Windows.Forms.Label();
 			this.butPriDelete = new System.Windows.Forms.Button();
 			this.butPriAdd = new System.Windows.Forms.Button();
 			this.listPriAdj = new System.Windows.Forms.ListBox();
 			this.label8 = new System.Windows.Forms.Label();
-			this.comboPriOther = new System.Windows.Forms.ComboBox();
-			this.label6 = new System.Windows.Forms.Label();
 			this.butNone = new System.Windows.Forms.Button();
 			this.listPriPlan = new System.Windows.Forms.ListBox();
 			this.tbPercent1 = new OpenDental.TablePercent();
 			this.label1 = new System.Windows.Forms.Label();
 			this.label13 = new System.Windows.Forms.Label();
-			this.panel5 = new System.Windows.Forms.Panel();
-			this.radioPriChild = new System.Windows.Forms.RadioButton();
-			this.radioPriSpouse = new System.Windows.Forms.RadioButton();
-			this.radioPriSelf = new System.Windows.Forms.RadioButton();
-			this.butAddPlan = new OpenDental.XPButton();
 			this.butOK = new System.Windows.Forms.Button();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.groupBox4 = new System.Windows.Forms.GroupBox();
@@ -145,28 +121,22 @@ namespace OpenDental{
 			this.butSecAdd = new System.Windows.Forms.Button();
 			this.listSecAdj = new System.Windows.Forms.ListBox();
 			this.label5 = new System.Windows.Forms.Label();
-			this.label4 = new System.Windows.Forms.Label();
-			this.comboSecOther = new System.Windows.Forms.ComboBox();
-			this.label7 = new System.Windows.Forms.Label();
-			this.panel1 = new System.Windows.Forms.Panel();
-			this.radioSecChild = new System.Windows.Forms.RadioButton();
-			this.radioSecSpouse = new System.Windows.Forms.RadioButton();
-			this.radioSecSelf = new System.Windows.Forms.RadioButton();
 			this.tbPercent2 = new OpenDental.TablePercent();
 			this.label2 = new System.Windows.Forms.Label();
 			this.listSecPlan = new System.Windows.Forms.ListBox();
 			this.butNoneSec = new System.Windows.Forms.Button();
 			this.label3 = new System.Windows.Forms.Label();
+			this.listSecRelat = new System.Windows.Forms.ListBox();
+			this.label6 = new System.Windows.Forms.Label();
 			this.groupBox2.SuspendLayout();
 			this.groupBox3.SuspendLayout();
-			this.panel5.SuspendLayout();
 			this.groupBox1.SuspendLayout();
 			this.groupBox4.SuspendLayout();
-			this.panel1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// groupBox2
 			// 
+			this.groupBox2.Controls.Add(this.listPriRelat);
 			this.groupBox2.Controls.Add(this.groupBox3);
 			this.groupBox2.Controls.Add(this.butEditPriPlan);
 			this.groupBox2.Controls.Add(this.label9);
@@ -174,14 +144,11 @@ namespace OpenDental{
 			this.groupBox2.Controls.Add(this.butPriAdd);
 			this.groupBox2.Controls.Add(this.listPriAdj);
 			this.groupBox2.Controls.Add(this.label8);
-			this.groupBox2.Controls.Add(this.comboPriOther);
-			this.groupBox2.Controls.Add(this.label6);
 			this.groupBox2.Controls.Add(this.butNone);
 			this.groupBox2.Controls.Add(this.listPriPlan);
 			this.groupBox2.Controls.Add(this.tbPercent1);
 			this.groupBox2.Controls.Add(this.label1);
 			this.groupBox2.Controls.Add(this.label13);
-			this.groupBox2.Controls.Add(this.panel5);
 			this.groupBox2.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
 			this.groupBox2.Location = new System.Drawing.Point(8, 10);
@@ -191,6 +158,15 @@ namespace OpenDental{
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "Primary";
 			// 
+			// listPriRelat
+			// 
+			this.listPriRelat.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.listPriRelat.Location = new System.Drawing.Point(17, 233);
+			this.listPriRelat.Name = "listPriRelat";
+			this.listPriRelat.Size = new System.Drawing.Size(134, 43);
+			this.listPriRelat.TabIndex = 97;
+			this.listPriRelat.MouseUp += new System.Windows.Forms.MouseEventHandler(this.listPriRelat_MouseUp);
+			// 
 			// groupBox3
 			// 
 			this.groupBox3.Controls.Add(this.label10);
@@ -199,7 +175,7 @@ namespace OpenDental{
 			this.groupBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
 			this.groupBox3.Location = new System.Drawing.Point(16, 109);
 			this.groupBox3.Name = "groupBox3";
-			this.groupBox3.Size = new System.Drawing.Size(252, 96);
+			this.groupBox3.Size = new System.Drawing.Size(252, 93);
 			this.groupBox3.TabIndex = 96;
 			this.groupBox3.TabStop = false;
 			this.groupBox3.Text = "Add a plan to the list above";
@@ -224,6 +200,22 @@ namespace OpenDental{
 			this.butExistPriPlan.Text = "E&xisting";
 			this.butExistPriPlan.Click += new System.EventHandler(this.butExistPriPlan_Click);
 			// 
+			// butAddPlan
+			// 
+			this.butAddPlan.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAddPlan.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butAddPlan.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butAddPlan.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.butAddPlan.Image = ((System.Drawing.Image)(resources.GetObject("butAddPlan.Image")));
+			this.butAddPlan.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butAddPlan.Location = new System.Drawing.Point(13, 57);
+			this.butAddPlan.Name = "butAddPlan";
+			this.butAddPlan.Size = new System.Drawing.Size(92, 26);
+			this.butAddPlan.TabIndex = 91;
+			this.butAddPlan.Text = "&New";
+			this.butAddPlan.Visible = false;
+			this.butAddPlan.Click += new System.EventHandler(this.butAddPlan_Click);
+			// 
 			// butEditPriPlan
 			// 
 			this.butEditPriPlan.AdjustImageLocation = new System.Drawing.Point(0, 0);
@@ -232,7 +224,7 @@ namespace OpenDental{
 			this.butEditPriPlan.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
 			this.butEditPriPlan.Image = ((System.Drawing.Image)(resources.GetObject("butEditPriPlan.Image")));
 			this.butEditPriPlan.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butEditPriPlan.Location = new System.Drawing.Point(274, 179);
+			this.butEditPriPlan.Location = new System.Drawing.Point(276, 133);
 			this.butEditPriPlan.Name = "butEditPriPlan";
 			this.butEditPriPlan.Size = new System.Drawing.Size(95, 26);
 			this.butEditPriPlan.TabIndex = 93;
@@ -292,33 +284,6 @@ namespace OpenDental{
 			this.label8.TabIndex = 87;
 			this.label8.Text = "Adjustments to Insurance Benefits: ";
 			// 
-			// comboPriOther
-			// 
-			this.comboPriOther.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboPriOther.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.comboPriOther.Items.AddRange(new object[] {
-																											 "Employee",
-																											 "Handicapped Dependent",
-																											 "Significant Other",
-																											 "Injured Plaintiff",
-																											 "Life Partner",
-																											 "Dependent"});
-			this.comboPriOther.Location = new System.Drawing.Point(235, 255);
-			this.comboPriOther.Name = "comboPriOther";
-			this.comboPriOther.Size = new System.Drawing.Size(125, 21);
-			this.comboPriOther.TabIndex = 2;
-			this.comboPriOther.Click += new System.EventHandler(this.comboPriOther_Click);
-			this.comboPriOther.SelectedIndexChanged += new System.EventHandler(this.comboPriOther_SelectedIndexChanged);
-			// 
-			// label6
-			// 
-			this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.label6.Location = new System.Drawing.Point(199, 259);
-			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(38, 14);
-			this.label6.TabIndex = 86;
-			this.label6.Text = "Other:";
-			// 
 			// butNone
 			// 
 			this.butNone.FlatStyle = System.Windows.Forms.FlatStyle.System;
@@ -363,68 +328,11 @@ namespace OpenDental{
 			// label13
 			// 
 			this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.label13.Location = new System.Drawing.Point(15, 238);
+			this.label13.Location = new System.Drawing.Point(16, 216);
 			this.label13.Name = "label13";
 			this.label13.Size = new System.Drawing.Size(148, 14);
 			this.label13.TabIndex = 77;
 			this.label13.Text = "Relationship to Subscriber";
-			// 
-			// panel5
-			// 
-			this.panel5.Controls.Add(this.radioPriChild);
-			this.panel5.Controls.Add(this.radioPriSpouse);
-			this.panel5.Controls.Add(this.radioPriSelf);
-			this.panel5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.panel5.Location = new System.Drawing.Point(17, 258);
-			this.panel5.Name = "panel5";
-			this.panel5.Size = new System.Drawing.Size(170, 18);
-			this.panel5.TabIndex = 1;
-			// 
-			// radioPriChild
-			// 
-			this.radioPriChild.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.radioPriChild.Location = new System.Drawing.Point(120, 0);
-			this.radioPriChild.Name = "radioPriChild";
-			this.radioPriChild.Size = new System.Drawing.Size(48, 15);
-			this.radioPriChild.TabIndex = 2;
-			this.radioPriChild.Text = "Child";
-			this.radioPriChild.Click += new System.EventHandler(this.radioPriChild_Click);
-			// 
-			// radioPriSpouse
-			// 
-			this.radioPriSpouse.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.radioPriSpouse.Location = new System.Drawing.Point(52, -1);
-			this.radioPriSpouse.Name = "radioPriSpouse";
-			this.radioPriSpouse.Size = new System.Drawing.Size(64, 17);
-			this.radioPriSpouse.TabIndex = 1;
-			this.radioPriSpouse.Text = "Spouse";
-			this.radioPriSpouse.Click += new System.EventHandler(this.radioPriSpouse_Click);
-			// 
-			// radioPriSelf
-			// 
-			this.radioPriSelf.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.radioPriSelf.Location = new System.Drawing.Point(0, 0);
-			this.radioPriSelf.Name = "radioPriSelf";
-			this.radioPriSelf.Size = new System.Drawing.Size(46, 15);
-			this.radioPriSelf.TabIndex = 0;
-			this.radioPriSelf.Text = "Self";
-			this.radioPriSelf.Click += new System.EventHandler(this.radioPriSelf_Click);
-			// 
-			// butAddPlan
-			// 
-			this.butAddPlan.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butAddPlan.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butAddPlan.BtnStyle = OpenDental.enumType.XPStyle.Silver;
-			this.butAddPlan.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.butAddPlan.Image = ((System.Drawing.Image)(resources.GetObject("butAddPlan.Image")));
-			this.butAddPlan.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAddPlan.Location = new System.Drawing.Point(13, 59);
-			this.butAddPlan.Name = "butAddPlan";
-			this.butAddPlan.Size = new System.Drawing.Size(92, 26);
-			this.butAddPlan.TabIndex = 91;
-			this.butAddPlan.Text = "&New";
-			this.butAddPlan.Visible = false;
-			this.butAddPlan.Click += new System.EventHandler(this.butAddPlan_Click);
 			// 
 			// butOK
 			// 
@@ -438,16 +346,14 @@ namespace OpenDental{
 			// 
 			// groupBox1
 			// 
+			this.groupBox1.Controls.Add(this.listSecRelat);
+			this.groupBox1.Controls.Add(this.label6);
 			this.groupBox1.Controls.Add(this.groupBox4);
 			this.groupBox1.Controls.Add(this.butEditSecPlan);
 			this.groupBox1.Controls.Add(this.butSecDelete);
 			this.groupBox1.Controls.Add(this.butSecAdd);
 			this.groupBox1.Controls.Add(this.listSecAdj);
 			this.groupBox1.Controls.Add(this.label5);
-			this.groupBox1.Controls.Add(this.label4);
-			this.groupBox1.Controls.Add(this.comboSecOther);
-			this.groupBox1.Controls.Add(this.label7);
-			this.groupBox1.Controls.Add(this.panel1);
 			this.groupBox1.Controls.Add(this.tbPercent2);
 			this.groupBox1.Controls.Add(this.label2);
 			this.groupBox1.Controls.Add(this.listSecPlan);
@@ -502,7 +408,7 @@ namespace OpenDental{
 			this.butEditSecPlan.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
 			this.butEditSecPlan.Image = ((System.Drawing.Image)(resources.GetObject("butEditSecPlan.Image")));
 			this.butEditSecPlan.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butEditSecPlan.Location = new System.Drawing.Point(273, 207);
+			this.butEditSecPlan.Location = new System.Drawing.Point(276, 133);
 			this.butEditSecPlan.Name = "butEditSecPlan";
 			this.butEditSecPlan.Size = new System.Drawing.Size(95, 26);
 			this.butEditSecPlan.TabIndex = 96;
@@ -552,83 +458,6 @@ namespace OpenDental{
 			this.label5.Size = new System.Drawing.Size(218, 17);
 			this.label5.TabIndex = 92;
 			this.label5.Text = "Adjustments to Insurance Benefits: ";
-			// 
-			// label4
-			// 
-			this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.label4.Location = new System.Drawing.Point(15, 238);
-			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(148, 14);
-			this.label4.TabIndex = 91;
-			this.label4.Text = "Relationship to Subscriber";
-			// 
-			// comboSecOther
-			// 
-			this.comboSecOther.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboSecOther.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.comboSecOther.Items.AddRange(new object[] {
-																											 "Employee",
-																											 "Handicapped Dependent",
-																											 "Significant Other",
-																											 "Injured Plaintiff",
-																											 "Life Partner",
-																											 "Dependent"});
-			this.comboSecOther.Location = new System.Drawing.Point(235, 255);
-			this.comboSecOther.Name = "comboSecOther";
-			this.comboSecOther.Size = new System.Drawing.Size(125, 21);
-			this.comboSecOther.TabIndex = 2;
-			this.comboSecOther.Click += new System.EventHandler(this.comboSecOther_Click);
-			this.comboSecOther.SelectedIndexChanged += new System.EventHandler(this.comboSecOther_SelectedIndexChanged);
-			// 
-			// label7
-			// 
-			this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.label7.Location = new System.Drawing.Point(199, 259);
-			this.label7.Name = "label7";
-			this.label7.Size = new System.Drawing.Size(38, 14);
-			this.label7.TabIndex = 90;
-			this.label7.Text = "Other:";
-			// 
-			// panel1
-			// 
-			this.panel1.Controls.Add(this.radioSecChild);
-			this.panel1.Controls.Add(this.radioSecSpouse);
-			this.panel1.Controls.Add(this.radioSecSelf);
-			this.panel1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.panel1.Location = new System.Drawing.Point(17, 258);
-			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(170, 18);
-			this.panel1.TabIndex = 1;
-			// 
-			// radioSecChild
-			// 
-			this.radioSecChild.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.radioSecChild.Location = new System.Drawing.Point(120, 0);
-			this.radioSecChild.Name = "radioSecChild";
-			this.radioSecChild.Size = new System.Drawing.Size(48, 15);
-			this.radioSecChild.TabIndex = 2;
-			this.radioSecChild.Text = "Child";
-			this.radioSecChild.Click += new System.EventHandler(this.radioSecChild_Click);
-			// 
-			// radioSecSpouse
-			// 
-			this.radioSecSpouse.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.radioSecSpouse.Location = new System.Drawing.Point(52, -1);
-			this.radioSecSpouse.Name = "radioSecSpouse";
-			this.radioSecSpouse.Size = new System.Drawing.Size(64, 17);
-			this.radioSecSpouse.TabIndex = 1;
-			this.radioSecSpouse.Text = "Spouse";
-			this.radioSecSpouse.Click += new System.EventHandler(this.radioSecSpouse_Click);
-			// 
-			// radioSecSelf
-			// 
-			this.radioSecSelf.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.radioSecSelf.Location = new System.Drawing.Point(0, 0);
-			this.radioSecSelf.Name = "radioSecSelf";
-			this.radioSecSelf.Size = new System.Drawing.Size(46, 15);
-			this.radioSecSelf.TabIndex = 0;
-			this.radioSecSelf.Text = "Self";
-			this.radioSecSelf.Click += new System.EventHandler(this.radioSecSelf_Click);
 			// 
 			// tbPercent2
 			// 
@@ -680,6 +509,24 @@ namespace OpenDental{
 			this.label3.TabIndex = 78;
 			this.label3.Text = "Highlight an insurance plan from the family list:";
 			// 
+			// listSecRelat
+			// 
+			this.listSecRelat.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.listSecRelat.Location = new System.Drawing.Point(17, 233);
+			this.listSecRelat.Name = "listSecRelat";
+			this.listSecRelat.Size = new System.Drawing.Size(134, 43);
+			this.listSecRelat.TabIndex = 99;
+			this.listSecRelat.MouseUp += new System.Windows.Forms.MouseEventHandler(this.listSecRelat_MouseUp);
+			// 
+			// label6
+			// 
+			this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.label6.Location = new System.Drawing.Point(16, 216);
+			this.label6.Name = "label6";
+			this.label6.Size = new System.Drawing.Size(148, 14);
+			this.label6.TabIndex = 98;
+			this.label6.Text = "Relationship to Subscriber";
+			// 
 			// FormInsCovEdit
 			// 
 			this.AcceptButton = this.butOK;
@@ -698,10 +545,8 @@ namespace OpenDental{
 			this.Load += new System.EventHandler(this.FormInsCovEdit_Load);
 			this.groupBox2.ResumeLayout(false);
 			this.groupBox3.ResumeLayout(false);
-			this.panel5.ResumeLayout(false);
 			this.groupBox1.ResumeLayout(false);
 			this.groupBox4.ResumeLayout(false);
-			this.panel1.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -717,8 +562,8 @@ namespace OpenDental{
 			FillAdj();
 		}
 
+		///<summary>Patients.GetFamily() and Insplans.Refresh() MUST already be done</summary>
 		private void FillPlans(){
-			//patients.getfamily and insplans.refresh MUST already be done
 			listPriPlan.Items.Clear();
 			for(int i=0;i<InsPlans.List.Length;i++){
 				listPriPlan.Items.Add(InsPlans.GetDescript(InsPlans.List[i].PlanNum));
@@ -738,32 +583,16 @@ namespace OpenDental{
 		}
 
 		private void InitialFillRelats(){
-			switch(Patients.Cur.PriRelationship){
-				case Relat.Self: this.radioPriSelf.Checked=true; break;
-				case Relat.Spouse: this.radioPriSpouse.Checked=true; break;
-				case Relat.Child: this.radioPriChild.Checked=true; break;
-				case Relat.Employee:         comboPriOther.SelectedIndex=0; break;
-				case Relat.HandicapDep:      comboPriOther.SelectedIndex=1; break;
-				case Relat.SignifOther:      comboPriOther.SelectedIndex=2; break;
-				case Relat.InjuredPlaintiff: comboPriOther.SelectedIndex=3; break;
-				case Relat.LifePartner:      comboPriOther.SelectedIndex=4; break;
-				case Relat.Dependent:        comboPriOther.SelectedIndex=5; break;
-			}
-			switch(Patients.Cur.SecRelationship){
-				case Relat.Self: this.radioSecSelf.Checked=true; break;
-				case Relat.Spouse: this.radioSecSpouse.Checked=true; break;
-				case Relat.Child: this.radioSecChild.Checked=true; break;
-				case Relat.Employee:         comboSecOther.SelectedIndex=0; break;
-				case Relat.HandicapDep:      comboSecOther.SelectedIndex=1; break;
-				case Relat.SignifOther:      comboSecOther.SelectedIndex=2; break;
-				case Relat.InjuredPlaintiff: comboSecOther.SelectedIndex=3; break;
-				case Relat.LifePartner:      comboSecOther.SelectedIndex=4; break;
-				case Relat.Dependent:        comboSecOther.SelectedIndex=5; break;
-			}
+			listPriRelat.Items.Clear();
+			listPriRelat.Items.AddRange(Enum.GetNames(typeof(Relat)));
+			listPriRelat.SelectedIndex=(int)Patients.Cur.PriRelationship;
+			listSecRelat.Items.Clear();
+			listSecRelat.Items.AddRange(Enum.GetNames(typeof(Relat)));
+			listSecRelat.SelectedIndex=(int)Patients.Cur.SecRelationship;
 		}
 
+		///<summary>Covpats.refresh must already be done</summary>
 		private void FillPercent(){
-			//covpats.refresh must already be done
 			tbPercent1.ResetRows(CovPats.PriList.Length);
 			tbPercent1.SetGridColor(Color.LightGray);
 			for(int i=0;i<CovCats.ListShort.Length;i++){
@@ -824,103 +653,32 @@ namespace OpenDental{
 				listSecAdj.Items.Add(s);
 			}
 		}
-		
-		//pri
-		private void radioPriSelf_Click(object sender, System.EventArgs e) {
-			Patients.Cur.PriRelationship=Relat.Self;
-			comboPriOther.SelectedIndex=-1;
+
+		private void listPriRelat_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e) {
+			Patient PatCur=Patients.Cur;
+			PatCur.PriRelationship=(Relat)listPriRelat.SelectedIndex;
+			Patients.Cur=PatCur;
 			Patients.UpdateCur();
+			Patients.CurOld=Patients.Cur;//important since we aren't refreshing.
 		}
 
-		private void radioPriSpouse_Click(object sender, System.EventArgs e) {
-			Patients.Cur.PriRelationship=Relat.Spouse;
-			comboPriOther.SelectedIndex=-1;
+		private void listSecRelat_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e) {
+			Patient PatCur=Patients.Cur;
+			PatCur.SecRelationship=(Relat)listSecRelat.SelectedIndex;
+			Patients.Cur=PatCur;
 			Patients.UpdateCur();
-		}
-
-		private void radioPriChild_Click(object sender, System.EventArgs e) {
-			Patients.Cur.PriRelationship=Relat.Child;
-			comboPriOther.SelectedIndex=-1;
-			Patients.UpdateCur();
-		}
-
-		private void comboPriOther_Click(object sender, System.EventArgs e) {
-			radioPriSelf.Checked=false;
-			radioPriSpouse.Checked=false;
-			radioPriChild.Checked=false;
-			if(comboPriOther.SelectedIndex==-1){
-				comboPriOther.SelectedIndex=0;
-			}
-		}
-
-		private void comboPriOther_SelectedIndexChanged(object sender, System.EventArgs e) {
-			if(comboPriOther.SelectedIndex==-1){
-				return;
-			}
-			Relat prevSel=Patients.Cur.PriRelationship;
-			switch(comboPriOther.SelectedIndex){
-				case 0:	Patients.Cur.PriRelationship=Relat.Employee; break;
-				case 1:	Patients.Cur.PriRelationship=Relat.HandicapDep; break;
-				case 2:	Patients.Cur.PriRelationship=Relat.SignifOther; break;
-				case 3:	Patients.Cur.PriRelationship=Relat.InjuredPlaintiff; break;
-				case 4:	Patients.Cur.PriRelationship=Relat.LifePartner; break;
-				case 5:	Patients.Cur.PriRelationship=Relat.Dependent; break;
-			}
-			if(prevSel!=Patients.Cur.PriRelationship)//prevents extra updates
-				Patients.UpdateCur();
-		}
-
-		//sec:
-		private void radioSecSelf_Click(object sender, System.EventArgs e) {
-			Patients.Cur.SecRelationship=Relat.Self;
-			comboSecOther.SelectedIndex=-1;
-			Patients.UpdateCur();
-		}
-
-		private void radioSecSpouse_Click(object sender, System.EventArgs e) {
-			Patients.Cur.SecRelationship=Relat.Spouse;
-			comboSecOther.SelectedIndex=-1;
-			Patients.UpdateCur();
-		}
-
-		private void radioSecChild_Click(object sender, System.EventArgs e) {
-			Patients.Cur.SecRelationship=Relat.Child;
-			comboSecOther.SelectedIndex=-1;
-			Patients.UpdateCur();
-		}
-
-		private void comboSecOther_Click(object sender, System.EventArgs e) {
-			radioSecSelf.Checked=false;
-			radioSecSpouse.Checked=false;
-			radioSecChild.Checked=false;
-			if(comboSecOther.SelectedIndex==-1){
-				comboSecOther.SelectedIndex=0;
-			}
-		}
-
-		private void comboSecOther_SelectedIndexChanged(object sender, System.EventArgs e) {
-			if(comboSecOther.SelectedIndex==-1){
-				return;
-			}
-			Relat prevSel=Patients.Cur.SecRelationship;
-			switch(comboSecOther.SelectedIndex){
-				case 0:	Patients.Cur.SecRelationship=Relat.Employee; break;
-				case 1:	Patients.Cur.SecRelationship=Relat.HandicapDep; break;
-				case 2:	Patients.Cur.SecRelationship=Relat.SignifOther; break;
-				case 3:	Patients.Cur.SecRelationship=Relat.InjuredPlaintiff; break;
-				case 4:	Patients.Cur.SecRelationship=Relat.LifePartner; break;
-				case 5:	Patients.Cur.SecRelationship=Relat.Dependent; break;
-			}
-			if(prevSel!=Patients.Cur.SecRelationship)
-				Patients.UpdateCur();
+			Patients.CurOld=Patients.Cur;//important since we aren't refreshing.
 		}
 
 		private void listPriPlan_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
 			if(listPriPlan.SelectedIndex==-1){
 				return;
 			}
-			Patients.Cur.PriPlanNum=InsPlans.List[listPriPlan.SelectedIndex].PlanNum;
+			Patient PatCur=Patients.Cur;
+			PatCur.PriPlanNum=InsPlans.List[listPriPlan.SelectedIndex].PlanNum;
+			Patients.Cur=PatCur;
 			Patients.UpdateCur();
+			Patients.CurOld=Patients.Cur;//important since we aren't refreshing.
 			CovPats.Refresh();
 			FillPercent();
 			FillAdj();
@@ -930,8 +688,11 @@ namespace OpenDental{
 			if(listSecPlan.SelectedIndex==-1){
 				return;
 			}
-			Patients.Cur.SecPlanNum=InsPlans.List[listSecPlan.SelectedIndex].PlanNum;
+			Patient PatCur=Patients.Cur;
+			PatCur.SecPlanNum=InsPlans.List[listSecPlan.SelectedIndex].PlanNum;
+			Patients.Cur=PatCur;
 			Patients.UpdateCur();
+			Patients.CurOld=Patients.Cur;//important since we aren't refreshing.
 			CovPats.Refresh();
 			FillPercent();
 			FillAdj();
@@ -943,18 +704,24 @@ namespace OpenDental{
 				return;//this can be cleaned up later with more intelligent analysis
 			}
 			listPriPlan.SelectedIndex=-1;
-			radioPriSelf.Checked=true;
-			Patients.Cur.PriPlanNum=0;
-			Patients.Cur.PriRelationship=Relat.Self;
+			listPriRelat.SelectedIndex=0;
+			Patient PatCur=Patients.Cur;
+			PatCur.PriPlanNum=0;
+			PatCur.PriRelationship=Relat.Self;
+			Patients.Cur=PatCur;
 			Patients.UpdateCur();
+			Patients.CurOld=Patients.Cur;//important since we aren't refreshing.
 		}
 
 		private void butNoneSec_Click(object sender, System.EventArgs e) {
 			listSecPlan.SelectedIndex=-1;
-			radioSecSelf.Checked=true;
-			Patients.Cur.SecPlanNum=0;
-			Patients.Cur.SecRelationship=Relat.Self;
+			listSecRelat.SelectedIndex=0;
+			Patient PatCur=Patients.Cur;
+			PatCur.SecPlanNum=0;
+			PatCur.SecRelationship=Relat.Self;
+			Patients.Cur=PatCur;
 			Patients.UpdateCur();
+			Patients.CurOld=Patients.Cur;//important since we aren't refreshing.
 		}
 
 		private void butAddPlan_Click(object sender, System.EventArgs e) {
@@ -972,11 +739,16 @@ namespace OpenDental{
 			InsPlans.InsertCur();
 			FormInsPlan FormIP=new FormInsPlan();
 			FormIP.IsNew=true;
+			//but butDrop will not be visible.
 			FormIP.ShowDialog();
+			//very important to always refresh after closing the FormInsPlan
+			Patients.GetFamily(Patients.Cur.PatNum);
 			if(FormIP.DialogResult!=DialogResult.OK){
 				return;
 			}
-			Patients.Cur.PriPlanNum=InsPlans.Cur.PlanNum;
+			Patient PatCur=Patients.Cur;
+			PatCur.PriPlanNum=InsPlans.Cur.PlanNum;
+			Patients.Cur=PatCur;
 			Patients.UpdateCur();
 			Patients.GetFamily(Patients.Cur.PatNum);
 			InsPlans.Refresh();
@@ -988,7 +760,7 @@ namespace OpenDental{
 		private void butExistPriPlan_Click(object sender, System.EventArgs e) {
 			int curPat=Patients.Cur.PatNum;
 			FormPatientSelect FormPS=new FormPatientSelect();
-			FormPS.OnlyChangingFam=true;
+			FormPS.SelectionModeOnly=true;
 			FormPS.ShowDialog();
 			if(FormPS.DialogResult!=DialogResult.OK){
 				Patients.GetFamily(curPat);
@@ -1006,7 +778,9 @@ namespace OpenDental{
 				return;
 			}
 			Patients.GetFamily(curPat);
-			Patients.Cur.PriPlanNum=InsPlans.Cur.PlanNum;
+			Patient PatCur=Patients.Cur;
+			PatCur.PriPlanNum=InsPlans.Cur.PlanNum;
+			Patients.Cur=PatCur;
 			Patients.UpdateCur();
 			Patients.GetFamily(curPat);
 			InsPlans.Refresh();
@@ -1020,7 +794,7 @@ namespace OpenDental{
 		private void butExistSecPlan_Click(object sender, System.EventArgs e) {
 			int curPat=Patients.Cur.PatNum;
 			FormPatientSelect FormPS=new FormPatientSelect();
-			FormPS.OnlyChangingFam=true;
+			FormPS.SelectionModeOnly=true;
 			FormPS.ShowDialog();
 			if(FormPS.DialogResult!=DialogResult.OK){
 				Patients.GetFamily(curPat);
@@ -1038,7 +812,9 @@ namespace OpenDental{
 				return;
 			}
 			Patients.GetFamily(curPat);
-			Patients.Cur.SecPlanNum=InsPlans.Cur.PlanNum;
+			Patient PatCur=Patients.Cur;
+			PatCur.SecPlanNum=InsPlans.Cur.PlanNum;
+			Patients.Cur=PatCur;
 			Patients.UpdateCur();
 			Patients.GetFamily(curPat);
 			InsPlans.Refresh();
@@ -1142,7 +918,7 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please select an item from the list first."));
 				return;
 			}
-			FormInsPlan FormIP = new FormInsPlan();
+			FormInsPlan FormIP=new FormInsPlan();
 			for(int i=0;i<InsPlans.List.Length;i++){
 				if(InsPlans.List[i].PlanNum==Patients.Cur.PriPlanNum){
 					InsPlans.Cur=InsPlans.List[i];
@@ -1157,7 +933,7 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please select an item from the list first."));
 				return;
 			}
-			FormInsPlan FormIP = new FormInsPlan();
+			FormInsPlan FormIP=new FormInsPlan();
 			for(int i=0;i<InsPlans.List.Length;i++){
 				if(InsPlans.List[i].PlanNum==Patients.Cur.SecPlanNum){
 					InsPlans.Cur=InsPlans.List[i];
@@ -1247,6 +1023,10 @@ namespace OpenDental{
 			//UpdatePlanInfo();
 			DialogResult=DialogResult.OK;
 		}
+
+		
+
+		
 
 		
 

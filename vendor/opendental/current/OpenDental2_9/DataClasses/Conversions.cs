@@ -23,6 +23,8 @@ namespace OpenDental{
 		public static string SelectText;
 		///<summary>The result table after calling SubmitSelect().</summary>
 		public static DataTable TableQ;
+		///<summary>Temporary only. Used for backing up.</summary>
+		public static string ReaderText;
 
 		///<summary></summary>
 		public static bool SubmitNonQArray(){//return true if successful
@@ -70,21 +72,51 @@ namespace OpenDental{
 			return true;
 		}
 
+		///<summary>Only used in making backups. always returns the second column of row 1. This is used because of a bug in the data adaptor.</summary>
+		public static string SubmitReader(){
+			//try{
+			cmd.CommandText=ReaderText;
+			con.Open();
+			MySqlDataReader reader=cmd.ExecuteReader();
+			//try{
+			MessageBox.Show(reader.HasRows.ToString()+","+reader.FieldCount.ToString());
+			reader.Read();
+			//}
+			//catch{
+			//	MessageBox.Show(cmd.CommandText);
+			//}
+			con.Close();
+			return reader.GetString(0);
+			
+			//FillTable();
+			//	TableQ=table.Copy();
+			//}
+			//catch(MySqlException e){
+			//	MessageBox.Show("e:"+e.Message);
+			//	return false;
+			//}
+			//catch{
+			//	MessageBox.Show("Command:"+cmd.CommandText);
+			//	return false;
+			//}
+			//return "";//true;
+		}	
+
 		///<summary>Returns true if successful.</summary>
 		public static bool SubmitSelect(){
-			try{
+			//try{
 				cmd.CommandText=SelectText;
 				FillTable();
 				TableQ=table.Copy();
-			}
-			catch(MySqlException e){
-				MessageBox.Show("e:"+e.Message);
-				return false;
-			}
-			catch{
-				MessageBox.Show("Command:"+cmd.CommandText);
-				return false;
-			}
+			//}
+			//catch(MySqlException e){
+			//	MessageBox.Show("e:"+e.Message);
+			//	return false;
+			//}
+			//catch{
+			//	MessageBox.Show("Command:"+cmd.CommandText);
+			//	return false;
+			//}
 			return true;
 		}	
 

@@ -117,6 +117,22 @@ namespace OpenDental{
 			return "";
 		}
 
+		///<summary>Loops through List to find matching employee, and returns first 2 letters of first name.  Will later be improved with abbr field.</summary>
+		public static string GetAbbr(int employeeNum){
+			string retVal="";
+			for(int i=0;i<ListLong.Length;i++){
+				if(ListLong[i].EmployeeNum==employeeNum){
+					retVal=ListLong[i].FName;
+					if(retVal.Length>2)
+						retVal=retVal.Substring(0,2);
+					return retVal;
+				}
+			}
+			return "";
+		}
+
+
+
 	}
 
 	

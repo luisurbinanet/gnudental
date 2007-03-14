@@ -31,7 +31,7 @@ namespace OpenDental{
 	
 	/*=========================================================================================
 		=================================== class Carriers ===========================================*/
-	///<summary>Carriers are not refreshed as local data, but are refreshed as needed. A full refresh is frequently triggered if an carrierNum can not be found in the HList.  Important retrieval is done directly from the db.</summary>
+	///<summary>Carriers are not refreshed as local data, but are refreshed as needed. A full refresh is frequently triggered if an carrierNum cannot be found in the HList.  Important retrieval is done directly from the db.</summary>
 	public class Carriers:DataClass{
 		///<summary></summary>
 		public static Carrier[] List;

@@ -43,7 +43,7 @@ namespace OpenDental{
 			table=new DataTable(null);
 		}
 
-		///<summary>Sets the connection to an alternate database for backup purposes.  Currently only used during conversions to do a quick backup first.</summary>
+		///<summary>Sets the connection to an alternate database for backup purposes.  Currently only used during conversions to do a quick backup first, and in FormConfig to get db names.</summary>
 		public static void SetConnection(string db){
 		  con= new MySqlConnection(
 				"Server="+FormConfig.ComputerName
@@ -63,11 +63,11 @@ namespace OpenDental{
 				da.Fill(table=new DataTable(null));
 			}
 			catch(MySqlException e){
-				MessageBox.Show("Error: "+e.Message);
+				MessageBox.Show("MySQL Error: "+e.Message);
 			}
-			//catch{
-			//	MessageBox.Show("Error: "+cmd.CommandText);
-			//}
+			catch{
+				MessageBox.Show("Error: "+cmd.CommandText);
+			}
 			finally{
 				con.Close();
 			}
@@ -93,16 +93,17 @@ namespace OpenDental{
 		}
 
 		///<summary></summary>
-		protected static void NonQ(){
-			NonQ(false);
+		protected static int NonQ(){
+			return NonQ(false);
 		}
 
-		/// <summary>Sends a non query command to the database.</summary>
+		/// <summary>Sends a non query command to the database and returns the number of rows affected.</summary>
 		/// <param name="getInsertID">If true, then InsertID will be set to the value of the primary key of the newly inserted row.</param>
-		protected static void NonQ(bool getInsertID){
+		protected static int NonQ(bool getInsertID){
+			int retVal=0;
 			try{
 				con.Open();
-				cmd.ExecuteNonQuery();
+				retVal=cmd.ExecuteNonQuery();
 				if(getInsertID){
 					cmd.CommandText = "SELECT LAST_INSERT_ID()";
 					dr = (MySqlDataReader)cmd.ExecuteReader();
@@ -120,6 +121,7 @@ namespace OpenDental{
 				con.Close();
 				dr=null;
 			}
+			return retVal;
 		}
 
 	}//end DataClass

@@ -92,7 +92,7 @@ namespace OpenDental{
 			// 
 			this.labelValue.Location = new System.Drawing.Point(218, 22);
 			this.labelValue.Name = "labelValue";
-			this.labelValue.Size = new System.Drawing.Size(164, 45);
+			this.labelValue.Size = new System.Drawing.Size(164, 16);
 			this.labelValue.TabIndex = 1;
 			this.labelValue.Text = "Value";
 			this.labelValue.TextAlign = System.Drawing.ContentAlignment.TopCenter;

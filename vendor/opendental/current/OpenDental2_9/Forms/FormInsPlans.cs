@@ -106,7 +106,7 @@ namespace OpenDental{
 			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butCancel.Location = new System.Drawing.Point(871, 634);
+			this.butCancel.Location = new System.Drawing.Point(871, 636);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(86, 26);
 			this.butCancel.TabIndex = 4;
@@ -117,7 +117,7 @@ namespace OpenDental{
 			// 
 			this.butBlank.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.butBlank.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butBlank.Location = new System.Drawing.Point(535, 634);
+			this.butBlank.Location = new System.Drawing.Point(535, 636);
 			this.butBlank.Name = "butBlank";
 			this.butBlank.Size = new System.Drawing.Size(87, 26);
 			this.butBlank.TabIndex = 3;
@@ -173,7 +173,7 @@ namespace OpenDental{
 			this.groupEdit.Controls.Add(this.butEdit);
 			this.groupEdit.Controls.Add(this.butCombine);
 			this.groupEdit.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupEdit.Location = new System.Drawing.Point(135, 456);
+			this.groupEdit.Location = new System.Drawing.Point(137, 547);
 			this.groupEdit.Name = "groupEdit";
 			this.groupEdit.Size = new System.Drawing.Size(459, 70);
 			this.groupEdit.TabIndex = 10;
@@ -218,7 +218,7 @@ namespace OpenDental{
 			// 
 			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(776, 634);
+			this.butOK.Location = new System.Drawing.Point(776, 636);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(86, 26);
 			this.butOK.TabIndex = 11;
@@ -231,7 +231,7 @@ namespace OpenDental{
 			this.groupBox2.Controls.Add(this.radioOrderCarrier);
 			this.groupBox2.Controls.Add(this.radioOrderEmp);
 			this.groupBox2.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox2.Location = new System.Drawing.Point(4, 621);
+			this.groupBox2.Location = new System.Drawing.Point(4, 623);
 			this.groupBox2.Name = "groupBox2";
 			this.groupBox2.Size = new System.Drawing.Size(115, 44);
 			this.groupBox2.TabIndex = 12;
@@ -268,7 +268,7 @@ namespace OpenDental{
 			this.Table2.ScrollValue = 1;
 			this.Table2.SelectedIndices = new int[0];
 			this.Table2.SelectionMode = System.Windows.Forms.SelectionMode.One;
-			this.Table2.Size = new System.Drawing.Size(936, 594);
+			this.Table2.Size = new System.Drawing.Size(936, 595);
 			this.Table2.TabIndex = 14;
 			this.Table2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Table2_KeyPress);
 			this.Table2.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(this.Table2_CellDoubleClicked);
@@ -277,7 +277,7 @@ namespace OpenDental{
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
-			this.ClientSize = new System.Drawing.Size(962, 667);
+			this.ClientSize = new System.Drawing.Size(962, 669);
 			this.Controls.Add(this.groupEdit);
 			this.Controls.Add(this.Table2);
 			this.Controls.Add(this.groupBox2);
@@ -435,7 +435,7 @@ namespace OpenDental{
 				string[] dependentPlans=InsTemplates.LinkedPlans();
 				if(dependentPlans.Length>0){
 					MessageBox.Show(Lan.g(this
-						,"Can not delete a selected template because it is linked to one or more insurance plans."));
+						,"Cannot delete a selected template because it is linked to one or more insurance plans."));
 					return;
 				}
 			}

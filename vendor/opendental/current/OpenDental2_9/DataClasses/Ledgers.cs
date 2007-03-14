@@ -141,7 +141,7 @@ namespace OpenDental{
 			//for now, we are trying to keep it consistent with the layout in the account module.
 			//Using date of service.  Later will eliminate datecp?
 			cmd.CommandText="SELECT datecp,inspayamt,writeoff FROM claimproc"
-				+" WHERE (status = '1' || status = '4')"//recieved or supplemental
+				+" WHERE (status = '1' || status = '4')"//received or supplemental
 				//pending insurance is handled further down
 				//ins adjustments do not affect patient balance, but only insurance benefits
 				+" && ("+wherePats+")"

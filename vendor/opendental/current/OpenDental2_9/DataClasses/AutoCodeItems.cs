@@ -26,8 +26,8 @@ namespace OpenDental{
 		public static AutoCodeItem[] List;//all
 		///<summary></summary>
 		public static AutoCodeItem[] ListForCode;//all items for a specific AutoCode
-		///<summary></summary>
-		public static Hashtable HList;//key=ADACode,value=AutoCodeNum
+		///<summary>key=ADACode,value=AutoCodeNum</summary>
+		public static Hashtable HList;
 
 		///<summary></summary>
 		public static void Refresh(){
@@ -118,10 +118,17 @@ namespace OpenDental{
 			return ListForCode[0].ADACode;//if couldn't find a better match
 		}
 
-		///<summary></summary>
+		///<summary>Only called when closing the procedure edit window.</summary>
 		public static string VerifyCode(string ADACode,string toothNum,string surf,bool isAdditional){
 			bool allCondsMet;
-			if(!AutoCodeItems.HList.ContainsKey(ADACode)){
+			if(!HList.ContainsKey(ADACode)){
+				return ADACode;
+			}
+			if(!AutoCodes.HList.ContainsKey((int)HList[ADACode])){
+				return ADACode;//just in case.
+			}
+			AutoCodes.Cur=(AutoCode)AutoCodes.HList[(int)HList[ADACode]];
+			if(AutoCodes.Cur.LessIntrusive){
 				return ADACode;
 			}
 			//AutoCode verAutoCode=(AutoCode)HList[ADACode];
@@ -141,6 +148,10 @@ namespace OpenDental{
 			}
 			return ADACode;//if couldn't find a better match
 		}
+
+		
+
+
 
 	}
 

@@ -98,7 +98,9 @@ namespace OpenDental{
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			Patients.Cur.ApptModNote=textApptModNote.Text;
+			Patient PatCur=Patients.Cur;
+			PatCur.ApptModNote=textApptModNote.Text;
+			Patients.Cur=PatCur;
 			Patients.UpdateCur();
 			DialogResult=DialogResult.OK;
 		}

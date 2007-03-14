@@ -258,6 +258,9 @@ namespace OpenDental{
 		private void butNew_Click(object sender, System.EventArgs e) {
 			Appointments.Cur=new Appointment();
 			Appointments.Cur.PatNum=Patients.Cur.PatNum;
+			if(Patients.Cur.DateFirstVisit.Year<1880){
+				Appointments.Cur.IsNewPatient=true;
+			}
 			Appointments.Cur.Pattern="/X/";
 			if(Patients.Cur.PriProv==0){
 				Appointments.Cur.ProvNum=PIn.PInt(((Pref)Prefs.HList["PracticeDefaultProv"]).ValueString);
@@ -277,6 +280,7 @@ namespace OpenDental{
 				//new appt will be placed on pinboard instead of specific time
 			}
 			Appointments.InsertCur();
+			Appointments.CurOld=Appointments.Cur;
 			FormApptEdit FormApptEdit2=new FormApptEdit();
 			FormApptEdit2.IsNew=true;
 			FormApptEdit2.ShowDialog();
@@ -299,6 +303,7 @@ namespace OpenDental{
 				return;
 			}
 			Appointments.Cur=Appointments.ListOth[tbApts.SelectedRow];
+			Appointments.CurOld=Appointments.Cur;
 			if(!OKtoSendToPinboard())
 				return;
 			CreateCurInfo();
@@ -348,6 +353,7 @@ namespace OpenDental{
 			int currentScroll=tbApts.ScrollValue;
 			//MessageBox.Show(currentScroll.ToString());
 			Appointments.Cur=Appointments.ListOth[e.Row];
+			Appointments.CurOld=Appointments.Cur;
 			FormApptEdit FormAE=new FormApptEdit();
 			FormAE.PinIsVisible=true;
 			FormAE.ShowDialog();
@@ -389,7 +395,8 @@ namespace OpenDental{
 				return;
 			}
 			Appointments.Cur=Appointments.ListOth[tbApts.SelectedRow];
-			if(Appointments.Cur.AptDateTime.CompareTo(DateTime.Parse("1/1/1880")) <0){
+			Appointments.CurOld=Appointments.Cur;
+			if(Appointments.Cur.AptDateTime.Year<1880){
 				MessageBox.Show(Lan.g(this,"Unable to go to unscheduled appointment."));
 				return;
 			}

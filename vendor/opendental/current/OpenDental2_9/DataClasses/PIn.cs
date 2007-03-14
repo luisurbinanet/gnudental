@@ -66,7 +66,7 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static int PInt (string myString){
-			if (myString==""){
+			if(myString==""){
 				return 0;
 			}
 			else{

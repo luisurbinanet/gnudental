@@ -117,6 +117,7 @@ namespace OpenDental{
 			int currentSelection=tbApts.SelectedRow;
 			int currentScroll=tbApts.ScrollValue;
 			Appointments.Cur=Appointments.ListUn[e.Row];
+			Appointments.CurOld=Appointments.Cur;
 			Patients.GetFamily(Appointments.Cur.PatNum);
 			FormApptEdit FormAE=new FormApptEdit();
 			FormAE.PinIsVisible=true;

@@ -12,7 +12,7 @@ using System.Data;
 
 
 namespace OpenDental{
-///<summary></summary>
+///<summary>All this dialog does is set the patnum and it is up to the calling form to do an immediate refresh, or possibly just change the patnum back to what it was.  So the other patient fields must remain intact during all logic in this form, especially if SelectionModeOnly.</summary>
 	public class FormPatientSelect : System.Windows.Forms.Form{
 		private System.Windows.Forms.Label label1;
 		private System.ComponentModel.Container components = null;
@@ -21,9 +21,8 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butOK;
 		private System.Windows.Forms.Button butCancel;
 		private System.Windows.Forms.Button butAddPt;
-		/// <summary>Selection mode only.
-		/// Use when you want to specify a patient without changing the current patient.</summary>
-		public bool OnlyChangingFam;//AKA selection mode only
+		/// <summary>was "OnlyChangingFam". Use when you want to specify a patient without changing the current patient.</summary>
+		public bool SelectionModeOnly;
 		private System.Windows.Forms.GroupBox groupBox2;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Label label4;
@@ -528,7 +527,7 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public void FormSelectPatient_Load(object sender, System.EventArgs e){
-			if(OnlyChangingFam){
+			if(SelectionModeOnly){
 				groupAddPt.Visible=false;
 			}
 			for(int i=0;i<Defs.Short[(int)DefCat.BillingTypes].Length;i++){
@@ -826,6 +825,7 @@ namespace OpenDental{
 				textLastName.SelectionStart=20;
 		}*/
 
+		///<summary>Remember, this button is not even visible if SelectionModeOnly.</summary>
 		private void butAddPt_Click(object sender, System.EventArgs e){
 			#if(TRIALONLY)
 				MessageBox.Show("Trial version.  Maximum 30 patients");
@@ -834,24 +834,35 @@ namespace OpenDental{
 					return;
 				}
 			#endif
-			Patients.Cur=new Patient();
+			int oldPatNum=Patients.Cur.PatNum;
+			Patient PatCur=new Patient();
 			//Later: Make it dummy proof by testing for whether patient is in DB already.
-			Patients.Cur.PatStatus=PatientStatus.Patient;
-			Patients.Cur.RecallInterval=6;
+			PatCur.PatStatus=PatientStatus.Patient;
+			PatCur.RecallInterval=6;
+			Patients.Cur=PatCur;
+			Patients.InsertCur();
+			Patients.CurOld=Patients.Cur;
 			FormPatientEdit FormPE=new FormPatientEdit();
 			FormPE.IsNew=true;
 			FormPE.ShowDialog();
 			if(FormPE.DialogResult==DialogResult.OK){
 				Patients.PatIsLoaded=true;
-				//patnum set in dialog
-				this.NewPatientAdded=true;
+				NewPatientAdded=true;
 				DialogResult=DialogResult.OK;
+				Patients.CurOld=Patients.Cur;
+				//just in case a GetFamily is not done when exiting this window. May be able to do a line by line search to verify what happens when this window closes, but almost positive it will never be needed since this is never used if SelectionModeOnly.
+			}
+			else{//they cancelled out of entering the new patient.
+				Patients.GetFamily(oldPatNum);//current patient completely restored.
 			}
 		}
 
 		private void PatSelected(){
 			Patients.PatIsLoaded=true;
-			Patients.Cur.PatNum=PIn.PInt(Patients.PtDataTable.Rows[grid2.CurrentRowIndex][0].ToString());
+			//All this dialog does is set the patnum and it is up to the calling form to do an immediate refresh, or possibly just change the patnum back to what it was.  So the other patient fields must remain intact.
+			Patient PatCur=Patients.Cur;
+			PatCur.PatNum=PIn.PInt(Patients.PtDataTable.Rows[grid2.CurrentRowIndex][0].ToString());
+			Patients.Cur=PatCur;
 				//=Patients.PtList[tb2.SelectedRow].PatNum;
 			DialogResult=DialogResult.OK;
 		}

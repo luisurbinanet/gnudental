@@ -52,8 +52,8 @@ namespace OpenDental{
 		=================================== class Referrals ==========================================*/
 ///<summary></summary>
 	public class Referrals:DataClass{
-		///<summary></summary>
-		public static Referral[] List;//all referrals for all patients
+		///<summary>All referrals for all patients</summary>
+		public static Referral[] List;
 		//should later add a list for single patient, along with a faster refresh sequence.
 		///<summary></summary>
 		public static Referral Cur;
@@ -156,16 +156,37 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void GetCur(int referralNum){
-			if(Referrals.HList.ContainsKey(referralNum)){
-				Referrals.Cur=(Referral)Referrals.HList[referralNum];
+			if(referralNum==0){
+				Cur=new Referral();
+				return;
+			}
+			if(HList.ContainsKey(referralNum)){
+				Cur=(Referral)HList[referralNum];
 				return;
 			}
 			Refresh();//must be outdated
-			if(!Referrals.HList.ContainsKey(referralNum)){
+			if(!HList.ContainsKey(referralNum)){
 				MessageBox.Show("Error.  Referral not found: "+referralNum.ToString());
+				Cur=new Referral();
+				return;
 			}
-			Referrals.Cur=(Referral)Referrals.HList[referralNum];
+			Cur=(Referral)HList[referralNum];
 		}
+
+		///<summary></summary>
+		public static string GetCurName(){
+			if(Cur.ReferralNum==0)
+				return "";
+			string retVal=Referrals.Cur.LName;
+			if(Referrals.Cur.FName!=""){
+				retVal+=", "+Referrals.Cur.FName+" "+Referrals.Cur.MName;
+			}
+			return retVal;
+		}
+
+
+
+
 
 	}
 

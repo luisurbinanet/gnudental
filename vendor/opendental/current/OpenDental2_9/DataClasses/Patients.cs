@@ -112,8 +112,24 @@ namespace OpenDental{
 		public double BalTotal;
 		///<summary>Foreign key to employer.EmployerNum.</summary>
 		public int EmployerNum;
-		///<summary>A freeform not section for details about this patient's employment. It will later be viewable in the Chart module next to the service notes.</summary>
+		///<summary>AKA occupation. This field was only present in version 2.8, but did not seem useful, so it has been hidden. It will very likely be deprecated.</summary>
 		public string EmploymentNote;
+		///<summary>Race and ethnicity. See the PatientRace enum.</summary>
+		public PatientRace Race;
+		///<summary>Foreign key to county.CountyName, although it will not crash if key absent.</summary>
+		public string County;
+		///<summary>Name of gradeschool or highschool. Foreign key to school.SchoolName, although it will not crash if key absent.</summary>
+		public string GradeSchool;
+		///<summary>See the PatientGrade enumeration.</summary>
+		public PatientGrade GradeLevel;
+		///<summary>See the TreatmentUrgency enumeration.</summary>
+		public TreatmentUrgency Urgency;
+		///<summary>The date that the patient first visited the office.</summary>
+		public DateTime DateFirstVisit;
+		///<summary>True if primary insurance is pending. This can be used with or without an insurance plan attached.</summary>
+		public bool PriPending;
+		///<summary>True if secondary insurance is pending. This can be used with or without an insurance plan attached.</summary>
+		public bool SecPending;
 	}
 
 	/*=========================================================================================
@@ -123,7 +139,9 @@ namespace OpenDental{
 		///<summary>Always test this to see if a patient is loaded, not patient.Cur.PatNum.</summary>
 		public static bool PatIsLoaded=false;
 		///<summary>Current patient.</summary>
-		public static Patient Cur;
+		private static Patient cur;
+		///<summary>When doing update, this Patient is the original before any changes were made. This allows only the changed fields to be updated, minimizing concurrency issues.</summary>
+		public static Patient CurOld;
 		///<summary>Stores limited information about a patient. Filled first via GetLim.</summary>
 		public static Patient Lim;
 		///<summary>Stores formatted LName, FName, MI for the Lim patient.</summary>
@@ -143,6 +161,16 @@ namespace OpenDental{
 		///<summary>This replaces the PtList for use in the Select Patient window.</summary>
 		public static DataTable PtDataTable;
 
+		public static Patient Cur{
+			get{
+				return cur;
+			}
+			set{
+				cur=value;
+				//curOld=value;
+			}
+		}
+
 		///<summary></summary>
 		public static void GetFamily(int patNum){
 			cmd.CommandText= 
@@ -151,9 +179,9 @@ namespace OpenDental{
 			FillTable();
 			if(table.Rows.Count==0){
 				PatIsLoaded=false;
-				Cur=new Patient();
+				cur=new Patient();
 				FamilyList=new Patient[1];
-				FamilyList[0]=Cur;
+				FamilyList[0]=cur;
 				GuarIndex=0;
 				return;
 			}
@@ -220,17 +248,27 @@ namespace OpenDental{
 				FamilyList[i].BalTotal     = PIn.PDouble(table.Rows[i][49].ToString());
 				FamilyList[i].EmployerNum  = PIn.PInt   (table.Rows[i][50].ToString());
 				FamilyList[i].EmploymentNote=PIn.PString(table.Rows[i][51].ToString());
-				if(FamilyList[i].PatNum==patNum)
-					Cur=FamilyList[i];
-				if (FamilyList[i].Guarantor==FamilyList[i].PatNum)
+				FamilyList[i].Race         = (PatientRace)PIn.PInt(table.Rows[i][52].ToString());
+				FamilyList[i].County       = PIn.PString(table.Rows[i][53].ToString());
+				FamilyList[i].GradeSchool  = PIn.PString(table.Rows[i][54].ToString());
+				FamilyList[i].GradeLevel   = (PatientGrade)PIn.PInt(table.Rows[i][55].ToString());
+				FamilyList[i].Urgency      = (TreatmentUrgency)PIn.PInt(table.Rows[i][56].ToString());
+				FamilyList[i].DateFirstVisit=PIn.PDate  (table.Rows[i][57].ToString());
+				FamilyList[i].PriPending   = PIn.PBool  (table.Rows[i][58].ToString());
+				FamilyList[i].SecPending   = PIn.PBool  (table.Rows[i][59].ToString());
+				if(FamilyList[i].PatNum==patNum){
+					cur=FamilyList[i];
+					CurOld=FamilyList[i];
+				}
+				if(FamilyList[i].Guarantor==FamilyList[i].PatNum)
 					GuarIndex=i;
 			}
 			PatIsLoaded=true;
 			//InfoChanged=false;//unused?
 		}
 
-		///<summary></summary>
-		public static void InsertCur(){//ONLY for new patients
+		///<summary>ONLY for new patients. Uses InsertID to fill PatNum.</summary>
+		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO patient (lname,fname,middlei,preferred,patstatus,gender,"
 				+"position,birthdate,ssn,address,address2,city,state,zip,hmphone,wkphone,wirelessphone,"
 				+"guarantor,credittype,email,salutation,priplannum,prirelationship,secplannum,"
@@ -238,123 +276,385 @@ namespace OpenDental{
 				+"recallstatus,imagefolder,addrnote,famfinurgnote,medurgnote,apptmodnote,"
 				+"studentstatus,schoolname,chartnumber,medicaidid"
 				+",Bal_0_30,Bal_31_60,Bal_61_90,BalOver90,insest,primaryteeth,BalTotal"
-				+",EmployerNum,EmploymentNote) VALUES("
-				+"'"+POut.PString(Cur.LName)+"', "
-				+"'"+POut.PString(Cur.FName)+"', "
-				+"'"+POut.PString(Cur.MiddleI)+"', "
-				+"'"+POut.PString(Cur.Preferred)+"', "
-				+"'"+POut.PInt   ((int)Cur.PatStatus)+"', "
-				+"'"+POut.PInt   ((int)Cur.Gender)+"', "
-				+"'"+POut.PInt   ((int)Cur.Position)+"', "
-				+"'"+POut.PDate  (Cur.Birthdate)+"', "
-				+"'"+POut.PString(Cur.SSN)+"', "
-				+"'"+POut.PString(Cur.Address)+"', "
-				+"'"+POut.PString(Cur.Address2)+"', "
-				+"'"+POut.PString(Cur.City)+"', "
-				+"'"+POut.PString(Cur.State)+"', "
-				+"'"+POut.PString(Cur.Zip)+"', "
-				+"'"+POut.PString(Cur.HmPhone)+"', "
-				+"'"+POut.PString(Cur.WkPhone)+"', "
-				+"'"+POut.PString(Cur.WirelessPhone)+"', "
-				+"'"+POut.PInt   (Cur.Guarantor)+"', "
-				+"'"+POut.PString(Cur.CreditType)+"', "
-				+"'"+POut.PString(Cur.Email)+"', "
-				+"'"+POut.PString(Cur.Salutation)+"', "
-				+"'"+POut.PInt   (Cur.PriPlanNum)+"', "
-				+"'"+POut.PInt   ((int)Cur.PriRelationship)+"', "
-				+"'"+POut.PInt   (Cur.SecPlanNum)+"', "
-				+"'"+POut.PInt   ((int)Cur.SecRelationship)+"', "
-				+"'"+POut.PDouble(Cur.EstBalance)+"', "
-				+"'"+POut.PInt   (Cur.NextAptNum)+"', "
-				+"'"+POut.PInt   (Cur.PriProv)+"', "
-				+"'"+POut.PInt   (Cur.SecProv)+"', "
-				+"'"+POut.PInt   (Cur.FeeSched)+"', "
-				+"'"+POut.PInt   (Cur.BillingType)+"', "
-				+"'"+POut.PInt   (Cur.RecallInterval)+"', "
-				+"'"+POut.PInt   (Cur.RecallStatus)+"', "
-				+"'"+POut.PString(Cur.ImageFolder)+"', "
-				+"'"+POut.PString(Cur.AddrNote)+"', "
-				+"'"+POut.PString(Cur.FamFinUrgNote)+"', "
-				+"'"+POut.PString(Cur.MedUrgNote)+"', "
-				+"'"+POut.PString(Cur.ApptModNote)+"', "
-				+"'"+POut.PString(Cur.StudentStatus)+"', "
-				+"'"+POut.PString(Cur.SchoolName)+"', "
-				+"'"+POut.PString(Cur.ChartNumber)+"', "
-				+"'"+POut.PString(Cur.MedicaidID)+"', "
-				+"'"+POut.PDouble(Cur.Bal_0_30)+"', "
-				+"'"+POut.PDouble(Cur.Bal_31_60)+"', "
-				+"'"+POut.PDouble(Cur.Bal_61_90)+"', "
-				+"'"+POut.PDouble(Cur.BalOver90)+"', "
-				+"'"+POut.PDouble(Cur.InsEst)+"', "
-				+"'"+POut.PString(Cur.PrimaryTeeth)+"', "
-				+"'"+POut.PDouble(Cur.BalTotal)+"', "
-				+"'"+POut.PInt   (Cur.EmployerNum)+"', "
-				+"'"+POut.PString(Cur.EmploymentNote)+"')";
+				+",EmployerNum,EmploymentNote,Race,County,GradeSchool,GradeLevel,Urgency,DateFirstVisit"
+				+",PriPending,SecPending) VALUES("
+				+"'"+POut.PString(cur.LName)+"', "
+				+"'"+POut.PString(cur.FName)+"', "
+				+"'"+POut.PString(cur.MiddleI)+"', "
+				+"'"+POut.PString(cur.Preferred)+"', "
+				+"'"+POut.PInt   ((int)cur.PatStatus)+"', "
+				+"'"+POut.PInt   ((int)cur.Gender)+"', "
+				+"'"+POut.PInt   ((int)cur.Position)+"', "
+				+"'"+POut.PDate  (cur.Birthdate)+"', "
+				+"'"+POut.PString(cur.SSN)+"', "
+				+"'"+POut.PString(cur.Address)+"', "
+				+"'"+POut.PString(cur.Address2)+"', "
+				+"'"+POut.PString(cur.City)+"', "
+				+"'"+POut.PString(cur.State)+"', "
+				+"'"+POut.PString(cur.Zip)+"', "
+				+"'"+POut.PString(cur.HmPhone)+"', "
+				+"'"+POut.PString(cur.WkPhone)+"', "
+				+"'"+POut.PString(cur.WirelessPhone)+"', "
+				+"'"+POut.PInt   (cur.Guarantor)+"', "
+				+"'"+POut.PString(cur.CreditType)+"', "
+				+"'"+POut.PString(cur.Email)+"', "
+				+"'"+POut.PString(cur.Salutation)+"', "
+				+"'"+POut.PInt   (cur.PriPlanNum)+"', "
+				+"'"+POut.PInt   ((int)cur.PriRelationship)+"', "
+				+"'"+POut.PInt   (cur.SecPlanNum)+"', "
+				+"'"+POut.PInt   ((int)cur.SecRelationship)+"', "
+				+"'"+POut.PDouble(cur.EstBalance)+"', "
+				+"'"+POut.PInt   (cur.NextAptNum)+"', "
+				+"'"+POut.PInt   (cur.PriProv)+"', "
+				+"'"+POut.PInt   (cur.SecProv)+"', "
+				+"'"+POut.PInt   (cur.FeeSched)+"', "
+				+"'"+POut.PInt   (cur.BillingType)+"', "
+				+"'"+POut.PInt   (cur.RecallInterval)+"', "
+				+"'"+POut.PInt   (cur.RecallStatus)+"', "
+				+"'"+POut.PString(cur.ImageFolder)+"', "
+				+"'"+POut.PString(cur.AddrNote)+"', "
+				+"'"+POut.PString(cur.FamFinUrgNote)+"', "
+				+"'"+POut.PString(cur.MedUrgNote)+"', "
+				+"'"+POut.PString(cur.ApptModNote)+"', "
+				+"'"+POut.PString(cur.StudentStatus)+"', "
+				+"'"+POut.PString(cur.SchoolName)+"', "
+				+"'"+POut.PString(cur.ChartNumber)+"', "
+				+"'"+POut.PString(cur.MedicaidID)+"', "
+				+"'"+POut.PDouble(cur.Bal_0_30)+"', "
+				+"'"+POut.PDouble(cur.Bal_31_60)+"', "
+				+"'"+POut.PDouble(cur.Bal_61_90)+"', "
+				+"'"+POut.PDouble(cur.BalOver90)+"', "
+				+"'"+POut.PDouble(cur.InsEst)+"', "
+				+"'"+POut.PString(cur.PrimaryTeeth)+"', "
+				+"'"+POut.PDouble(cur.BalTotal)+"', "
+				+"'"+POut.PInt   (cur.EmployerNum)+"', "
+				+"'"+POut.PString(cur.EmploymentNote)+"', "
+				+"'"+POut.PInt   ((int)cur.Race)+"', "
+				+"'"+POut.PString(cur.County)+"', "
+				+"'"+POut.PString(cur.GradeSchool)+"', "
+				+"'"+POut.PInt   ((int)cur.GradeLevel)+"', "
+				+"'"+POut.PInt   ((int)cur.Urgency)+"', "
+				+"'"+POut.PDate  (cur.DateFirstVisit)+"', "
+				+"'"+POut.PBool  (cur.PriPending)+"', "
+				+"'"+POut.PBool  (cur.SecPending)+"')";
 			//MessageBox.Show(cmd.CommandText);
 			NonQ(true);
-			Cur.PatNum=InsertID;
+			cur.PatNum=InsertID;
 			//PatientNotes PatientNotes=new PatientNotes();
 			//PatientNotes.SaveCur();
 		}
 
-		///<summary></summary>
-		public static void UpdateCur(){
-			cmd.CommandText = "UPDATE patient SET " 
-				+ "LName = '"     +POut.PString(Cur.LName)+"'"
-				+",FName = '"     +POut.PString(Cur.FName)+"'"
-				+",MiddleI = '"   +POut.PString(Cur.MiddleI)+"'"
-				+",Preferred = '" +POut.PString(Cur.Preferred)+"'"
-				+",patStatus = '" +POut.PInt   ((int)Cur.PatStatus)+"'"
-				+",Gender = '"    +POut.PInt   ((int)Cur.Gender)+"'"
-				+",Position = '"  +POut.PInt   ((int)Cur.Position)+"'"
-				+",Birthdate = '" +POut.PDate  (Cur.Birthdate)+"'" 
-				+",SSN = '"       +POut.PString(Cur.SSN)+"'"
-				+",Address = '"   +POut.PString(Cur.Address)+"'"
-				+",Address2 = '"  +POut.PString(Cur.Address2)+"'"
-				+",City = '"      +POut.PString(Cur.City)+"'"
-				+",State = '"     +POut.PString(Cur.State)+"'"
-				+",Zip = '"       +POut.PString(Cur.Zip)+"'"
-				+",HmPhone = '"   +POut.PString(Cur.HmPhone)+"'"
-				+",WkPhone = '"   +POut.PString(Cur.WkPhone)+"'"
-				+",WirelessPhone='"    +POut.PString(Cur.WirelessPhone)+"'"
-				+",guarantor = '"      +POut.PInt   (Cur.Guarantor)+"'"
-				+",credittype = '"     +POut.PString(Cur.CreditType)+"'"
-				+",Email = '"          +POut.PString(Cur.Email)+"'"
-				+",Salutation = '"     +POut.PString(Cur.Salutation)+"'"
-				+",priplannum = '"     +POut.PInt   (Cur.PriPlanNum)+"'"
-				+",prirelationship = '"+POut.PInt((int)Cur.PriRelationship)+"'"
-				+",secplannum = '"     +POut.PInt   (Cur.SecPlanNum)+"'"
-				+",secrelationship = '"+POut.PInt((int)Cur.SecRelationship)+"'"
-				+",estbalance = '"     +POut.PDouble(Cur.EstBalance)+"'"
-				+",nextaptnum = '"     +POut.PInt   (Cur.NextAptNum)+"'"
-				+",priprov = '"        +POut.PInt   (Cur.PriProv)+"'"
-				+",secprov = '"        +POut.PInt   (Cur.SecProv)+"'"
-				+",feesched = '"       +POut.PInt   (Cur.FeeSched)+"'"
-				+",billingtype = '"    +POut.PInt   (Cur.BillingType)+"'"
-				+",recallinterval = '" +POut.PInt   (Cur.RecallInterval)+"'"
-				+",recallstatus = '"   +POut.PInt   (Cur.RecallStatus)+"'"
-				+",imagefolder = '"    +POut.PString(Cur.ImageFolder)+"'"
-				+",addrnote = '"       +POut.PString(Cur.AddrNote)+"'"
-				+",famfinurgnote = '"  +POut.PString(Cur.FamFinUrgNote)+"'"
-				+",medurgnote = '"     +POut.PString(Cur.MedUrgNote)+"'"
-				+",apptmodnote = '"    +POut.PString(Cur.ApptModNote)+"'"
-				+",studentstatus = '"  +POut.PString(Cur.StudentStatus)+"'"
-				+",schoolname = '"     +POut.PString(Cur.SchoolName)+"'"
-				+",chartnumber = '"    +POut.PString(Cur.ChartNumber)+"'"
-				+",medicaidid = '"     +POut.PString(Cur.MedicaidID)+"'"
-				+",Bal_0_30 = '"       +POut.PDouble(Cur.Bal_0_30)+"'"
-				+",Bal_31_60 = '"      +POut.PDouble(Cur.Bal_31_60)+"'"
-				+",Bal_61_90 = '"      +POut.PDouble(Cur.Bal_61_90)+"'"
-				+",BalOver90 = '"      +POut.PDouble(Cur.BalOver90)+"'"
-				+",insest    = '"      +POut.PDouble(Cur.InsEst)+"'"
-				+",primaryteeth = '"   +POut.PString(Cur.PrimaryTeeth)+"'"
-				+",BalTotal = '"       +POut.PDouble(Cur.BalTotal)+"'"
-				+",EmployerNum = '"    +POut.PInt   (Cur.EmployerNum)+"'"
-				+",EmploymentNote = '" +POut.PString(Cur.EmploymentNote)+"'"
-				+" WHERE PatNum = '"   +POut.PInt   (Cur.PatNum)+"'";
-			NonQ(false);
+		///<summary>Updates only the changed columns and returns the number of rows affected.</summary>
+		public static int UpdateCur(){
+			bool comma=false;
+			string c = "UPDATE patient SET ";
+			if(cur.LName!=CurOld.LName){
+				c+="LName = '"     +POut.PString(cur.LName)+"'";
+				comma=true;
+			}
+			if(cur.FName!=CurOld.FName){
+				if(comma) c+=",";
+				c+="FName = '"     +POut.PString(cur.FName)+"'";
+				comma=true;
+			}
+			if(cur.MiddleI!=CurOld.MiddleI){
+				if(comma) c+=",";
+				c+="MiddleI = '"   +POut.PString(cur.MiddleI)+"'";
+				comma=true;
+			}
+			if(cur.Preferred!=CurOld.Preferred){
+				if(comma) c+=",";
+				c+="Preferred = '" +POut.PString(cur.Preferred)+"'";
+				comma=true;
+			}
+			if(cur.PatStatus!=CurOld.PatStatus){
+				if(comma) c+=",";
+				c+="PatStatus = '" +POut.PInt   ((int)cur.PatStatus)+"'";
+				comma=true;
+			}
+			if(cur.Gender!=CurOld.Gender){
+				if(comma) c+=",";
+				c+="Gender = '"    +POut.PInt   ((int)cur.Gender)+"'";
+				comma=true;
+			}
+			if(cur.Position!=CurOld.Position){
+				if(comma) c+=",";
+				c+="Position = '"  +POut.PInt   ((int)cur.Position)+"'";
+				comma=true;
+			}
+			if(cur.Birthdate!=CurOld.Birthdate){
+				if(comma) c+=",";
+				c+="Birthdate = '" +POut.PDate  (cur.Birthdate)+"'";
+				comma=true;
+			}
+			if(cur.SSN!=CurOld.SSN){
+				if(comma) c+=",";
+				c+="SSN = '"       +POut.PString(cur.SSN)+"'";
+				comma=true;
+			}
+			if(cur.Address!=CurOld.Address){
+				if(comma) c+=",";
+				c+="Address = '"   +POut.PString(cur.Address)+"'";
+				comma=true;
+			}
+			if(cur.Address2!=CurOld.Address2){
+				if(comma) c+=",";
+				c+="Address2 = '"  +POut.PString(cur.Address2)+"'";
+				comma=true;
+			}
+			if(cur.City!=CurOld.City){
+				if(comma) c+=",";
+				c+="City = '"      +POut.PString(cur.City)+"'";
+				comma=true;
+			}
+			if(cur.State!=CurOld.State){
+				if(comma) c+=",";
+				c+="State = '"     +POut.PString(cur.State)+"'";
+				comma=true;
+			}
+			if(cur.Zip!=CurOld.Zip){
+				if(comma) c+=",";
+				c+="Zip = '"       +POut.PString(cur.Zip)+"'";
+				comma=true;
+			}
+			if(cur.HmPhone!=CurOld.HmPhone){
+				if(comma) c+=",";
+				c+="HmPhone = '"   +POut.PString(cur.HmPhone)+"'";
+				comma=true;
+			}
+			if(cur.WkPhone!=CurOld.WkPhone){
+				if(comma) c+=",";
+				c+="WkPhone = '"   +POut.PString(cur.WkPhone)+"'";
+				comma=true;
+			}
+			if(cur.WirelessPhone!=CurOld.WirelessPhone){
+				if(comma) c+=",";
+				c+="WirelessPhone='"    +POut.PString(cur.WirelessPhone)+"'";
+				comma=true;
+			}
+			if(cur.Guarantor!=CurOld.Guarantor){
+				if(comma) c+=",";
+				c+="Guarantor = '"      +POut.PInt   (cur.Guarantor)+"'";
+				comma=true;
+			}
+			if(cur.CreditType!=CurOld.CreditType){
+				if(comma) c+=",";
+				c+="CreditType = '"     +POut.PString(cur.CreditType)+"'";
+				comma=true;
+			}
+			if(cur.Email!=CurOld.Email){
+				if(comma) c+=",";
+				c+="Email = '"          +POut.PString(cur.Email)+"'";
+				comma=true;
+			}
+			if(cur.Salutation!=CurOld.Salutation){
+				if(comma) c+=",";
+				c+="Salutation = '"     +POut.PString(cur.Salutation)+"'";
+				comma=true;
+			}
+			if(cur.PriPlanNum!=CurOld.PriPlanNum){
+				if(comma) c+=",";
+				c+="PriPlanNum = '"     +POut.PInt   (cur.PriPlanNum)+"'";
+				comma=true;
+			}
+			if(cur.PriRelationship!=CurOld.PriRelationship){
+				if(comma) c+=",";
+				c+="PriRelationship = '"+POut.PInt((int)cur.PriRelationship)+"'";
+				comma=true;
+			}
+			if(cur.SecPlanNum!=CurOld.SecPlanNum){
+				if(comma) c+=",";
+				c+="SecPlanNum = '"     +POut.PInt   (cur.SecPlanNum)+"'";
+				comma=true;
+			}
+			if(cur.SecRelationship!=CurOld.SecRelationship){
+				if(comma) c+=",";
+				c+="SecRelationship = '"+POut.PInt((int)cur.SecRelationship)+"'";
+				comma=true;
+			}
+			if(cur.EstBalance!=CurOld.EstBalance){
+				if(comma) c+=",";
+				c+="EstBalance = '"     +POut.PDouble(cur.EstBalance)+"'";
+				comma=true;
+			}
+			if(cur.NextAptNum!=CurOld.NextAptNum){
+				if(comma) c+=",";
+				c+="NextAptNum = '"     +POut.PInt   (cur.NextAptNum)+"'";
+				comma=true;
+			}
+			if(cur.PriProv!=CurOld.PriProv){
+				if(comma) c+=",";
+				c+="PriProv = '"        +POut.PInt   (cur.PriProv)+"'";
+				comma=true;
+			}
+			if(cur.SecProv!=CurOld.SecProv){
+				if(comma) c+=",";
+				c+="SecProv = '"        +POut.PInt   (cur.SecProv)+"'";
+				comma=true;
+			}
+			if(cur.FeeSched!=CurOld.FeeSched){
+				if(comma) c+=",";
+				c+="FeeSched = '"       +POut.PInt   (cur.FeeSched)+"'";
+				comma=true;
+			}
+			if(cur.BillingType!=CurOld.BillingType){
+				if(comma) c+=",";
+				c+="BillingType = '"    +POut.PInt   (cur.BillingType)+"'";
+				comma=true;
+			}
+			if(cur.RecallInterval!=CurOld.RecallInterval){
+				if(comma) c+=",";
+				c+="RecallInterval = '" +POut.PInt   (cur.RecallInterval)+"'";
+				comma=true;
+			}
+			if(cur.RecallStatus!=CurOld.RecallStatus){
+				if(comma) c+=",";
+				c+="RecallStatus = '"   +POut.PInt   (cur.RecallStatus)+"'";
+				comma=true;
+			}
+			if(cur.ImageFolder!=CurOld.ImageFolder){
+				if(comma) c+=",";
+				c+="ImageFolder = '"    +POut.PString(cur.ImageFolder)+"'";
+				comma=true;
+			}
+			if(cur.AddrNote!=CurOld.AddrNote){
+				if(comma) c+=",";
+				c+="AddrNote = '"       +POut.PString(cur.AddrNote)+"'";
+				comma=true;
+			}
+			if(cur.FamFinUrgNote!=CurOld.FamFinUrgNote){
+				if(comma) c+=",";
+				c+="FamFinUrgNote = '"  +POut.PString(cur.FamFinUrgNote)+"'";
+				comma=true;
+			}
+			if(cur.MedUrgNote!=CurOld.MedUrgNote){
+				if(comma) c+=",";
+				c+="MedUrgNote = '"     +POut.PString(cur.MedUrgNote)+"'";
+				comma=true;
+			}
+			if(cur.ApptModNote!=CurOld.ApptModNote){
+				if(comma) c+=",";
+				c+="ApptModNote = '"    +POut.PString(cur.ApptModNote)+"'";
+				comma=true;
+			}
+			if(cur.StudentStatus!=CurOld.StudentStatus){
+				if(comma) c+=",";
+				c+="StudentStatus = '"  +POut.PString(cur.StudentStatus)+"'";
+				comma=true;
+			}
+			if(cur.SchoolName!=CurOld.SchoolName){
+				if(comma) c+=",";
+				c+="SchoolName = '"     +POut.PString(cur.SchoolName)+"'";
+				comma=true;
+			}
+			if(cur.ChartNumber!=CurOld.ChartNumber){
+				if(comma) c+=",";
+				c+="ChartNumber = '"    +POut.PString(cur.ChartNumber)+"'";
+				comma=true;
+			}
+			if(cur.MedicaidID!=CurOld.MedicaidID){
+				if(comma) c+=",";
+				c+="MedicaidID = '"     +POut.PString(cur.MedicaidID)+"'";
+				comma=true;
+			}
+			if(cur.Bal_0_30!=CurOld.Bal_0_30){
+				if(comma) c+=",";
+				c+="Bal_0_30 = '"       +POut.PDouble(cur.Bal_0_30)+"'";
+				comma=true;
+			}
+			if(cur.Bal_31_60!=CurOld.Bal_31_60){
+				if(comma) c+=",";
+				c+="Bal_31_60 = '"      +POut.PDouble(cur.Bal_31_60)+"'";
+				comma=true;
+			}
+			if(cur.Bal_61_90!=CurOld.Bal_61_90){
+				if(comma) c+=",";
+				c+="Bal_61_90 = '"      +POut.PDouble(cur.Bal_61_90)+"'";
+				comma=true;
+			}
+			if(cur.BalOver90!=CurOld.BalOver90){
+				if(comma) c+=",";
+				c+="BalOver90 = '"      +POut.PDouble(cur.BalOver90)+"'";
+				comma=true;
+			}
+			if(cur.InsEst!=CurOld.InsEst){
+				if(comma) c+=",";
+				c+="InsEst    = '"      +POut.PDouble(cur.InsEst)+"'";
+				comma=true;
+			}
+			if(cur.PrimaryTeeth!=CurOld.PrimaryTeeth){
+				if(comma) c+=",";
+				c+="PrimaryTeeth = '"   +POut.PString(cur.PrimaryTeeth)+"'";
+				comma=true;
+			}
+			if(cur.BalTotal!=CurOld.BalTotal){
+				if(comma) c+=",";
+				c+="BalTotal = '"       +POut.PDouble(cur.BalTotal)+"'";
+				comma=true;
+			}
+			if(cur.EmployerNum!=CurOld.EmployerNum){
+				if(comma) c+=",";
+				c+="EmployerNum = '"    +POut.PInt   (cur.EmployerNum)+"'";
+				comma=true;
+			}
+			if(cur.EmploymentNote!=CurOld.EmploymentNote){
+				if(comma) c+=",";
+				c+="EmploymentNote = '" +POut.PString(cur.EmploymentNote)+"'";
+				comma=true;
+			}
+			if(cur.Race!=CurOld.Race){
+				if(comma) c+=",";
+				c+="Race = '"           +POut.PInt   ((int)cur.Race)+"'";
+				comma=true;
+			}
+			if(cur.County!=CurOld.County){
+				if(comma) c+=",";
+				c+="County = '"         +POut.PString(cur.County)+"'";
+				comma=true;
+			}
+			if(cur.GradeSchool!=CurOld.GradeSchool){
+				if(comma) c+=",";
+				c+="GradeSchool = '"    +POut.PString(cur.GradeSchool)+"'";
+				comma=true;
+			}
+			if(cur.GradeLevel!=CurOld.GradeLevel){
+				if(comma) c+=",";
+				c+="GradeLevel = '"     +POut.PInt   ((int)cur.GradeLevel)+"'";
+				comma=true;
+			}
+			if(cur.Urgency!=CurOld.Urgency){
+				if(comma) c+=",";
+				c+="Urgency = '"        +POut.PInt   ((int)cur.Urgency)+"'";
+				comma=true;
+			}
+			if(cur.DateFirstVisit!=CurOld.DateFirstVisit){
+				if(comma) c+=",";
+				c+="DateFirstVisit = '" +POut.PDate  (cur.DateFirstVisit)+"'";
+				comma=true;
+			}
+			if(cur.PriPending!=CurOld.PriPending){
+				if(comma) c+=",";
+				c+="PriPending = '"     +POut.PBool  (cur.PriPending)+"'";
+				comma=true;
+			}
+			if(cur.SecPending!=CurOld.SecPending){
+				if(comma) c+=",";
+				c+="SecPending = '"     +POut.PBool  (cur.SecPending)+"'";
+				comma=true;
+			}
+			if(!comma)
+				return 0;//this means no change is actually required.
+			c+=" WHERE PatNum = '"   +POut.PInt   (cur.PatNum)+"'";
+			cmd.CommandText=c;
 			//MessageBox.Show(cmd.CommandText);
+			return NonQ();
 		}//end UpdatePatient
+
+		///<summary>Only used when entering a new patient and user clicks cancel. To delete an existing patient, the PatStatus is simply changed to 4.</summary>
+		public static void DeleteCur(){
+			cmd.CommandText="DELETE FROM patient WHERE PatNum = '"+cur.PatNum.ToString()+"'";
+			NonQ();
+		}
 
 		///<summary></summary>
 		public static bool GetPtDataTable(bool limit,string lname,string fname,string hmphone,string address,bool hideInactive,string city,string state,string ssn,string patnum,string chartnumber,int[] billingtypes,bool guarOnly){
@@ -521,7 +821,7 @@ ORDER BY DueDate
 			return retStr;
 		}
 
-		///<summary></summary>
+		///<summary>Gets last, (preferred) first middle</summary>
 		public static string GetNameInFamLFI(int myi){
 			string retStr="";
 			if(FamilyList[myi].Preferred==""){
@@ -549,8 +849,8 @@ ORDER BY DueDate
 			return retStr;
 		}
 
-		///<summary></summary>
-		public static string GetNameInFamFLI(int myi){
+		///<summary>Gets (preferred)first middle last</summary>
+		public static string GetNameInFamFIL(int myi){
 			string retStr="";
 			if(FamilyList[myi].Preferred==""){
 				retStr=FamilyList[myi].FName+" "+FamilyList[myi].MiddleI+" "+FamilyList[myi].LName; 
@@ -596,10 +896,18 @@ ORDER BY DueDate
 
 		///<summary></summary>
 		public static string GetCurNameLF(){
-			if(Cur.Preferred=="")
-				return Cur.LName+", "+Cur.FName+" "+Cur.MiddleI;
+			if(cur.Preferred=="")
+				return cur.LName+", "+cur.FName+" "+cur.MiddleI;
 			else
-				return Cur.LName+", '"+Cur.Preferred+"' "+Cur.FName+" "+Cur.MiddleI;
+				return cur.LName+", '"+cur.Preferred+"' "+cur.FName+" "+cur.MiddleI;
+		}
+
+		///<summary></summary>
+		public static string GetCurNameFL(){
+			if(cur.Preferred=="")
+				return cur.FName+" "+cur.MiddleI+" "+cur.LName;
+			else
+				return cur.FName+" '"+cur.Preferred+"' "+cur.MiddleI+" "+cur.LName;
 		}
 
 		///<summary></summary>
@@ -617,10 +925,10 @@ ORDER BY DueDate
 		///<summary></summary>
 		public static string GetCreditIns(){
 			string retStr="";
-			if(Cur.CreditType=="")
+			if(cur.CreditType=="")
 				retStr+=" ";
-			else retStr+=Cur.CreditType;
-			if(Cur.PriPlanNum==0)
+			else retStr+=cur.CreditType;
+			if(cur.PriPlanNum==0)
 				retStr+=" ";
 			else retStr+="I";	
 			return retStr;
@@ -652,35 +960,35 @@ ORDER BY DueDate
 				"UPDATE patient SET "
 				//+"famaddrnote = '"  +FamilyList[GuarIndex].FamAddrNote+"', "
 				+"famfinurgnote = '"+FamilyList[GuarIndex].FamFinUrgNote+"' "
-				+"WHERE patnum = '"+Cur.PatNum.ToString()+"'";
+				+"WHERE patnum = '"+cur.PatNum.ToString()+"'";
 			NonQ(false);
 			cmd.CommandText = 
 				"UPDATE patient SET "
 				//+"famaddrnote = '', "
 				+"famfinurgnote = '' "
-				+"WHERE patnum = '"+Cur.Guarantor.ToString()+"'";
+				+"WHERE patnum = '"+cur.Guarantor.ToString()+"'";
 			NonQ(false);
 			//Move family financial note to current patient:
 			cmd.CommandText="SELECT FamFinancial FROM patientnote "
-				+"WHERE patnum = '"+Cur.Guarantor.ToString()+"'";
+				+"WHERE patnum = '"+cur.Guarantor.ToString()+"'";
 			FillTable();
 			if(table.Rows.Count==1){
 				cmd.CommandText = 
 					"UPDATE patientnote SET "
 					+"famfinancial = '"+table.Rows[0][0].ToString()+"' "
-					+"WHERE patnum = '"+Cur.PatNum.ToString()+"'";
+					+"WHERE patnum = '"+cur.PatNum.ToString()+"'";
 				NonQ(false);
 			}
 			cmd.CommandText = 
 				"UPDATE patientnote SET "
 				+"famfinancial = ''"
-				+"WHERE patnum = '"+Cur.Guarantor.ToString()+"'";
+				+"WHERE patnum = '"+cur.Guarantor.ToString()+"'";
 			NonQ(false);
 			//change guarantor of all family members:
 			cmd.CommandText = 
 				"UPDATE patient SET "
-				+"guarantor = '"+Cur.PatNum.ToString()+"' "
-				+"WHERE guarantor = '"+Cur.Guarantor.ToString()+"'";
+				+"guarantor = '"+cur.PatNum.ToString()+"' "
+				+"WHERE guarantor = '"+cur.Guarantor.ToString()+"'";
 			NonQ(false);
 		}
 		
@@ -690,41 +998,41 @@ ORDER BY DueDate
 			cmd.CommandText = 
 				"UPDATE patient SET "
 				//+"addrnote = '"+POut.PString(FamilyList[GuarIndex].FamAddrNote)
-				//									+POut.PString(Cur.FamAddrNote)+"', "
+				//									+POut.PString(cur.FamAddrNote)+"', "
 				+"famfinurgnote = '"+POut.PString(FamilyList[GuarIndex].FamFinUrgNote)
-				+POut.PString(Cur.FamFinUrgNote)+"' "
-				+"WHERE patnum = '"+Cur.Guarantor.ToString()+"'";
+				+POut.PString(cur.FamFinUrgNote)+"' "
+				+"WHERE patnum = '"+cur.Guarantor.ToString()+"'";
 			NonQ(false);
 			//delete cur notes
 			cmd.CommandText = 
 				"UPDATE patient SET "
 				//+"famaddrnote = '', "
 				+"famfinurgnote = '' "
-				+"WHERE patnum = '"+Cur.PatNum+"'";
+				+"WHERE patnum = '"+cur.PatNum+"'";
 			NonQ(false);
 			//concat family financial notes
 			PatientNotes PatientNotes=new PatientNotes();
 			PatientNotes.Refresh();
 			//patientnote table must have been refreshed for this to work.
 			//Makes sure there are entries for patient and for guarantor.
-			//Also, PatientNotes.Cur.FamFinancial will now have the guar info in it.
+			//Also, PatientNotes.cur.FamFinancial will now have the guar info in it.
 			string strGuar=PatientNotes.Cur.FamFinancial;
 			cmd.CommandText = 
 				"SELECT famfinancial "
-				+"FROM patientnote WHERE patnum ='"+POut.PInt(Patients.Cur.PatNum)+"'";
+				+"FROM patientnote WHERE patnum ='"+POut.PInt(cur.PatNum)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			FillTable();
 			string strCur=PIn.PString(table.Rows[0][0].ToString());
 			cmd.CommandText = 
 				"UPDATE patientnote SET "
 				+"famfinancial = '"+strGuar+strCur+"' "
-				+"WHERE patnum = '"+Cur.Guarantor.ToString()+"'";
+				+"WHERE patnum = '"+cur.Guarantor.ToString()+"'";
 			NonQ(false);
 			//delete cur financial notes
 			cmd.CommandText = 
 				"UPDATE patientnote SET "
 				+"famfinancial = ''"
-				+"WHERE patnum = '"+Cur.PatNum.ToString()+"'";
+				+"WHERE patnum = '"+cur.PatNum.ToString()+"'";
 			NonQ(false);
 		}
 
@@ -754,18 +1062,18 @@ ORDER BY DueDate
 		///<summary></summary>
 		public static void UpdateAddressForFam(){
 			cmd.CommandText = "UPDATE patient SET " 
-				+"Address = '"    +POut.PString(Cur.Address)+"'"
-				+",Address2 = '"   +POut.PString(Cur.Address2)+"'"
-				+",City = '"       +POut.PString(Cur.City)+"'"
-				+",State = '"      +POut.PString(Cur.State)+"'"
-				+",Zip = '"        +POut.PString(Cur.Zip)+"'"
-				+",HmPhone = '"    +POut.PString(Cur.HmPhone)+"'"
-				+",credittype = '" +POut.PString(Cur.CreditType)+"'"
-				+",priprov = '"    +POut.PInt   (Cur.PriProv)+"'"
-				+",secprov = '"    +POut.PInt   (Cur.SecProv)+"'"
-				+",feesched = '"   +POut.PInt   (Cur.FeeSched)+"'"
-				+",billingtype = '"+POut.PInt   (Cur.BillingType)+"'"
-				+" WHERE guarantor = '"+POut.PDouble(Cur.Guarantor)+"'";
+				+"Address = '"    +POut.PString(cur.Address)+"'"
+				+",Address2 = '"   +POut.PString(cur.Address2)+"'"
+				+",City = '"       +POut.PString(cur.City)+"'"
+				+",State = '"      +POut.PString(cur.State)+"'"
+				+",Zip = '"        +POut.PString(cur.Zip)+"'"
+				+",HmPhone = '"    +POut.PString(cur.HmPhone)+"'"
+				+",credittype = '" +POut.PString(cur.CreditType)+"'"
+				+",priprov = '"    +POut.PInt   (cur.PriProv)+"'"
+				+",secprov = '"    +POut.PInt   (cur.SecProv)+"'"
+				+",feesched = '"   +POut.PInt   (cur.FeeSched)+"'"
+				+",billingtype = '"+POut.PInt   (cur.BillingType)+"'"
+				+" WHERE guarantor = '"+POut.PDouble(cur.Guarantor)+"'";
 			NonQ(false);
 			//MessageBox.Show(cmd.CommandText);
 		}
@@ -773,8 +1081,8 @@ ORDER BY DueDate
 		///<summary></summary>
 		public static void UpdateNotesForFam(){
 			cmd.CommandText = "UPDATE patient SET " 
-				+"addrnote = '"   +POut.PString(Cur.AddrNote)+"'"
-				+" WHERE guarantor = '"+POut.PDouble(Cur.Guarantor)+"'";
+				+"addrnote = '"   +POut.PString(cur.AddrNote)+"'"
+				+" WHERE guarantor = '"+POut.PDouble(cur.Guarantor)+"'";
 			NonQ(false);
 			//MessageBox.Show(cmd.CommandText);
 		}
@@ -912,8 +1220,8 @@ ORDER BY DueDate
 
 		///<summary></summary>
 		public static int GetProvForCur(){
-			if(Cur.PriProv!=0)
-				return Cur.PriProv;
+			if(cur.PriProv!=0)
+				return cur.PriProv;
 			if(PIn.PInt(((Pref)Prefs.HList["PracticeDefaultProv"]).ValueString)==0){
 				MessageBox.Show(Lan.g("Patients","Please set a default provider in the practice setup window."));
 				return Providers.List[0].ProvNum;
@@ -938,16 +1246,17 @@ ORDER BY DueDate
 			//return "1";//if there are no integer chartnumbers yet
 		}
 
-		///<summary></summary>
-		public static bool ChartNumIsUnique(string chartNum,int excludePatNum){
-			cmd.CommandText="SELECT ChartNumber from patient WHERE "
+		///<summary>Returns the name(only one) of the patient using this chartnumber.</summary>
+		public static string ChartNumUsedBy(string chartNum,int excludePatNum){
+			cmd.CommandText="SELECT LName,FName from patient WHERE "
 				+"ChartNumber = '"+chartNum
 				+"' && PatNum != '"+excludePatNum.ToString()+"'";
 			FillTable();
-			if(table.Rows.Count==0){//no duplicate chart numbers
-				return true;
+			string retVal="";
+			if(table.Rows.Count!=0){//found duplicate chart number
+				retVal=PIn.PString(table.Rows[0][1].ToString())+" "+PIn.PString(table.Rows[0][0].ToString());
 			}
-			else return false;
+			return retVal;
 		}
 
 		///<summary>Used in the patient select window to determine if a trial version user is over their limit.</summary>

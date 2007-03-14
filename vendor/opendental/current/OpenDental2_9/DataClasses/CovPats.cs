@@ -38,7 +38,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public static CovPat[] ListForPlan;
 
-		///<summary></summary>
+		///<summary>Gets the PriList and SecList based on the combination of 4 possible plans.</summary>
 		public static void Refresh(){
 			cmd.CommandText =
 				"SELECT * from covpat"

@@ -154,7 +154,7 @@ namespace OpenDental{
 				if(Permissions.Cur.Name=="Security Administration"
 					&& !Permissions.Cur.RequiresPassword
 					&& UserPermissions.AdministratorCount()==0){
-					MessageBox.Show(Lan.g(this,"You can not enable Security Administration until you have set up at least one provider with Security Administration permission."));
+					MessageBox.Show(Lan.g(this,"You cannot enable Security Administration until you have set up at least one provider with Security Administration permission."));
 					return;
 				}
 				if(Permissions.Cur.RequiresPassword){

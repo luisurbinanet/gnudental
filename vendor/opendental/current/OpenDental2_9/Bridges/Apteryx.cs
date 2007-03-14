@@ -39,6 +39,7 @@ namespace OpenDental.Bridges{
 					info+="M";
 				info+="\"";
 				try{
+					//commandline default is /p
 					Process.Start(Programs.Cur.Path,Programs.Cur.CommandLine+info);
 				}
 				catch{

@@ -270,14 +270,18 @@ namespace OpenDental{
 			Patients.GetFamily(Patients.Cur.PatNum);
 			ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString+" - "+Patients.GetCurNameLF();
 			if(Patients.Cur.ImageFolder==""){//creates new folder for patient if none present
-				string s=Patients.Cur.LName+Patients.Cur.FName;
-				for(int i=0;i<s.Length;i++){
-					if(Char.IsLetter(s,i)){
-						Patients.Cur.ImageFolder+=s.Substring(i,1);
+				string name=Patients.Cur.LName+Patients.Cur.FName;
+				string folder="";
+				for(int i=0;i<name.Length;i++){
+					if(Char.IsLetter(name,i)){
+						folder+=name.Substring(i,1);
 					}
 				}
-				Patients.Cur.ImageFolder+=Patients.Cur.PatNum.ToString();//ensures unique name
+				folder+=Patients.Cur.PatNum.ToString();//ensures unique name
 				try{
+					Patient PatCur=Patients.Cur;
+					PatCur.ImageFolder=folder;
+					Patients.Cur=PatCur;
 					patFolder=((Pref)Prefs.HList["DocPath"]).ValueString
 						+Patients.Cur.ImageFolder.Substring(0,1)+@"\"
 						+Patients.Cur.ImageFolder+@"\";
@@ -286,6 +290,7 @@ namespace OpenDental{
 				}
 				catch{
 					MessageBox.Show(Lan.g(this,"Error.  Could not create folder for patient. "));
+					return;
 				}
 			}
 			else{//patient folder already created once
@@ -967,7 +972,7 @@ namespace OpenDental{
         }
 	    }
 			//tag holds the document number of the node
-		  Documents.GetCurrent(TreeDocuments.SelectedNode.Tag.ToString());			SrcFileName = patFolder+Documents.Cur.FileName;			try{		    WebRequest request=WebRequest.Create(SrcFileName); 			  WebResponse response=request.GetResponse();				//MessageBox.Show(Path.GetExtension(SrcFileName));				if(Path.GetExtension(SrcFileName)==".jpg"					|| Path.GetExtension(SrcFileName)==".gif"){					ImageCurrent = (Bitmap)System.Drawing.Bitmap.FromStream(response.GetResponseStream());				}				else{					ImageCurrent=null;//may not be necessary				}			  response.Close();	    }		  catch(System.Exception exception){		    MessageBox.Show(Lan.g(this,exception.Message)); 				ImageCurrent=null;	    }
+		  Documents.GetCurrent(TreeDocuments.SelectedNode.Tag.ToString());			SrcFileName = patFolder+Documents.Cur.FileName;			try{		    WebRequest request=WebRequest.Create(SrcFileName); 			  WebResponse response=request.GetResponse();				//MessageBox.Show(Path.GetExtension(SrcFileName));				if(Path.GetExtension(SrcFileName)==".jpg"					|| Path.GetExtension(SrcFileName)==".JPG"					|| Path.GetExtension(SrcFileName)==".gif"					|| Path.GetExtension(SrcFileName)==".GIF"){					ImageCurrent = (Bitmap)System.Drawing.Bitmap.FromStream(response.GetResponseStream());				}				else{					ImageCurrent=null;//may not be necessary				}			  response.Close();	    }		  catch(System.Exception exception){		    MessageBox.Show(Lan.g(this,exception.Message)); 				ImageCurrent=null;	    }
 		  RecZoom.Width=0;
 		  DisplayImage(true);
 		}
@@ -983,7 +988,8 @@ namespace OpenDental{
 	    }
 			//tag holds the document number of the node
 		  //Documents.GetCurrent(TreeDocuments.SelectedNode.Tag.ToString());			SrcFileName = patFolder+Documents.Cur.FileName;
-			if(Path.GetExtension(SrcFileName)!=".jpg"){
+			if(Path.GetExtension(SrcFileName)!=".jpg"
+				&& Path.GetExtension(SrcFileName)!=".JPG"){
 				try{
 					Process.Start(SrcFileName);
 				}
@@ -1099,6 +1105,9 @@ namespace OpenDental{
 			}
 			else{//Crop Mode
 				//Graphics grfx=PictureBox1.CreateGraphics();
+				if(RecCrop.Width==0 || RecCrop.Height==0){
+					return;//the size of a rectangle must be larger than 0
+				}
 				if(MessageBox.Show(Lan.g(this,"Crop to Rectangle?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK)
 					return;
 				//math to convert RecCrop from client coord to image coords:

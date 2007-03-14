@@ -41,9 +41,8 @@ namespace OpenDental{
 		private System.Windows.Forms.Panel panelSide;
 		private System.Windows.Forms.ListBox listViewPr;
 		private System.Windows.Forms.Button butSelectAll;
-		private System.Windows.Forms.Button butSelectNone;
-		private System.Windows.Forms.Button button1;
-		private bool[] selectedPrs;//had to use this because of deficiency in available Listbox events.
+		//private bool[] selectedPrs;//had to use this because of deficiency in available Listbox events.
+		///<summary>If set to true, procedures will show that have a priority which is hidden in Defs. This keeps procedures from disappearing permanantly because by viewing "all" it will include even hidden.</summary>
 		private bool showHidden;
 		private System.Windows.Forms.Label label10;
 		private System.Windows.Forms.Label label11;
@@ -136,8 +135,6 @@ namespace OpenDental{
 			this.label8 = new System.Windows.Forms.Label();
 			this.label9 = new System.Windows.Forms.Label();
 			this.panelSide = new System.Windows.Forms.Panel();
-			this.button1 = new System.Windows.Forms.Button();
-			this.butSelectNone = new System.Windows.Forms.Button();
 			this.butSelectAll = new System.Windows.Forms.Button();
 			this.listViewPr = new System.Windows.Forms.ListBox();
 			this.label10 = new System.Windows.Forms.Label();
@@ -320,8 +317,6 @@ namespace OpenDental{
 			// 
 			// panelSide
 			// 
-			this.panelSide.Controls.Add(this.button1);
-			this.panelSide.Controls.Add(this.butSelectNone);
 			this.panelSide.Controls.Add(this.butSelectAll);
 			this.panelSide.Controls.Add(this.listViewPr);
 			this.panelSide.Controls.Add(this.listSetPr);
@@ -332,25 +327,6 @@ namespace OpenDental{
 			this.panelSide.Name = "panelSide";
 			this.panelSide.Size = new System.Drawing.Size(190, 317);
 			this.panelSide.TabIndex = 29;
-			// 
-			// button1
-			// 
-			this.button1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.button1.Location = new System.Drawing.Point(26, 266);
-			this.button1.Name = "button1";
-			this.button1.Size = new System.Drawing.Size(68, 20);
-			this.button1.TabIndex = 19;
-			this.button1.Text = "Clear";
-			// 
-			// butSelectNone
-			// 
-			this.butSelectNone.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butSelectNone.Location = new System.Drawing.Point(114, 288);
-			this.butSelectNone.Name = "butSelectNone";
-			this.butSelectNone.Size = new System.Drawing.Size(68, 18);
-			this.butSelectNone.TabIndex = 18;
-			this.butSelectNone.Text = "None";
-			this.butSelectNone.Click += new System.EventHandler(this.butSelectNone_Click);
 			// 
 			// butSelectAll
 			// 
@@ -366,10 +342,10 @@ namespace OpenDental{
 			// 
 			this.listViewPr.Location = new System.Drawing.Point(114, 48);
 			this.listViewPr.Name = "listViewPr";
-			this.listViewPr.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple;
+			this.listViewPr.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
 			this.listViewPr.Size = new System.Drawing.Size(68, 212);
 			this.listViewPr.TabIndex = 16;
-			this.listViewPr.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listViewPr_MouseDown);
+			this.listViewPr.MouseUp += new System.Windows.Forms.MouseEventHandler(this.listViewPr_MouseUp);
 			// 
 			// label10
 			// 
@@ -705,23 +681,25 @@ namespace OpenDental{
 		public void InstantClasses(){
 			listSetPr.Items.Clear();
 			listViewPr.Items.Clear();
+			listSetPr.Items.Add(Lan.g(this,"no priority"));
+			listViewPr.Items.Add(Lan.g(this,"no priority"));
+			listViewPr.SetSelected(0,true);
 			for(int i=0;i<Defs.Short[(int)DefCat.TxPriorities].Length;i++){
 				listSetPr.Items.Add(Defs.Short[(int)DefCat.TxPriorities][i].ItemName);
 				listViewPr.Items.Add(Defs.Short[(int)DefCat.TxPriorities][i].ItemName);
+				listViewPr.SetSelected(i+1,true);
 				//if(Defs.Defns[(int)DefCat.TxPriorities][i].DefNum==Payments.Cur.PayType)
 				//	listPayType.SelectedIndex=i;
 			}
-			selectedPrs=new bool[Defs.Short[(int)DefCat.TxPriorities].Length];
-			for(int i=0;i<selectedPrs.Length;i++){
-				listViewPr.SetSelected(i,true);
-				selectedPrs[i]=true;
-			}
+			//selectedPrs=new bool[Defs.Short[(int)DefCat.TxPriorities].Length];
+			//for(int i=0;i<selectedPrs.Length;i++){
+			//	listViewPr.SetSelected(i+1,true);
+			//	selectedPrs[i]=true;
+			//}
 			showHidden=true;//shows hidden priorities
 			textNote.Text=((Pref)Prefs.HList["TreatmentPlanNote"]).ValueString; 
 			Lan.C(this, new System.Windows.Forms.Control[] {
 				this.butSelectAll,
-				this.butSelectNone,
-				this.button1,
 				this.label1,
 				this.label10,
 				this.label11,
@@ -765,6 +743,7 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public void ModuleSelected(){
+			//MessageBox.Show("module selected");
 			RefreshModuleData();
 			RefreshModuleScreen();
 		}
@@ -784,7 +763,7 @@ namespace OpenDental{
 		}
 
 		private void RefreshModuleData(){
-			if (Patients.PatIsLoaded){
+			if(Patients.PatIsLoaded){
 				Patients.GetFamily(Patients.Cur.PatNum);
 				InsPlans.Refresh();
 				CovPats.Refresh();
@@ -795,7 +774,7 @@ namespace OpenDental{
 		}
 
 		private void RefreshModuleScreen(){
-			if (Patients.PatIsLoaded){
+			if(Patients.PatIsLoaded){
 				ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString+" - "+Patients.GetCurNameLF();
 				tbMain.Enabled=true;
 				panelSide.Enabled=true;
@@ -871,54 +850,66 @@ namespace OpenDental{
 			//Notes will handled like any
 			//other line, just no numbers(eventually)
 			Procedures.Refresh();
-			arrayLProc = new ArrayList();
+			arrayLProc=new ArrayList();
 			bool doAdd;
 			int iPriority;
 			int oPriority;
 			int iToothInt;
 			int oToothInt;
-			for (int i=0;i<Procedures.List.Length;i++){
+			for(int i=0;i<Procedures.List.Length;i++){
 				doAdd=false;
-				if (Procedures.List[i].ProcStatus==ProcStat.TP){
-					if(Defs.GetOrder(DefCat.TxPriorities,Procedures.List[i].Priority)==-1 && showHidden)
-						doAdd=true;
-					else if(Defs.GetOrder(DefCat.TxPriorities,Procedures.List[i].Priority)!=-1
-						&& selectedPrs[Defs.GetOrder(DefCat.TxPriorities,Procedures.List[i].Priority)])
-						doAdd=true;
+				if(Procedures.List[i].ProcStatus==ProcStat.TP){
+					//if priority is 0 && "no priority" selected
+					if(Procedures.List[i].Priority==0){
+						if(listViewPr.SelectedIndices.Contains(0))
+							doAdd=true;
+					}
+					else{//any priority other than 0
+						//if priority is hidden && showHidden
+						if(Defs.GetOrder(DefCat.TxPriorities,Procedures.List[i].Priority)==-1 && showHidden)
+							doAdd=true;
+						//or if priority not hidden && priority selected
+						else if(Defs.GetOrder(DefCat.TxPriorities,Procedures.List[i].Priority)!=-1
+							//&& selectedPrs[Defs.GetOrder(DefCat.TxPriorities,Procedures.List[i].Priority)])
+							&& listViewPr.SelectedIndices.Contains
+							(Defs.GetOrder(DefCat.TxPriorities,Procedures.List[i].Priority)+1))
+							doAdd=true;
+					}
 				}
-				if(doAdd){
-					if(arrayLProc.Count==0)
-						arrayLProc.Add(Procedures.List[i]);
-					else{
-						iPriority=Defs.GetOrder(DefCat.TxPriorities,Procedures.List[i].Priority);
-						if(Tooth.IsValidDB(Procedures.List[i].ToothNum))
-							iToothInt=Tooth.ToInt(Procedures.List[i].ToothNum);
+				if(!doAdd){
+					continue;
+				}
+				if(arrayLProc.Count==0)//first procedure simple add
+					arrayLProc.Add(Procedures.List[i]);
+				else{//after that, figure out where to place the procedure to order things properly
+					iPriority=Defs.GetOrder(DefCat.TxPriorities,Procedures.List[i].Priority);
+					if(Tooth.IsValidDB(Procedures.List[i].ToothNum))
+						iToothInt=Tooth.ToInt(Procedures.List[i].ToothNum);
+					else
+						iToothInt=0;
+					for(int o=0;o<arrayLProc.Count;o++){
+						oPriority=Defs.GetOrder(DefCat.TxPriorities,((Procedure)arrayLProc[o]).Priority);
+						if(Tooth.IsValidDB(((Procedure)arrayLProc[o]).ToothNum))
+							oToothInt=Tooth.ToInt(((Procedure)arrayLProc[o]).ToothNum);
 						else
-							iToothInt=0;
-						for(int o=0;o<arrayLProc.Count;o++){
-							oPriority=Defs.GetOrder(DefCat.TxPriorities,((Procedure)arrayLProc[o]).Priority);
-							if(Tooth.IsValidDB(((Procedure)arrayLProc[o]).ToothNum))
-								oToothInt=Tooth.ToInt(((Procedure)arrayLProc[o]).ToothNum);
-							else
-								oToothInt=0;
-							if(iPriority==oPriority){
-								if(iToothInt < oToothInt){
-									arrayLProc.Insert(o,Procedures.List[i]);
-									break;
-								}
-							}
-							if(iPriority < oPriority){
+							oToothInt=0;
+						if(iPriority==oPriority){
+							if(iToothInt < oToothInt){
 								arrayLProc.Insert(o,Procedures.List[i]);
 								break;
 							}
-							if(o==arrayLProc.Count-1){
-								arrayLProc.Add(Procedures.List[i]);
-								break;
-							}
-						}//end for
-					}//end else
-				}
-			}//end for		
+						}
+						if(iPriority < oPriority){
+							arrayLProc.Insert(o,Procedures.List[i]);
+							break;
+						}
+						if(o==arrayLProc.Count-1){
+							arrayLProc.Add(Procedures.List[i]);
+							break;
+						}
+					}//end for
+				}//end else
+			}//end for Procedures.List	
 			TPLines2 = new ArrayList();
 			//This is where to transfer procedures and notes to TPLines2:
 			TPLine tempTPLine;
@@ -938,6 +929,7 @@ namespace OpenDental{
 				tempTPLine.Description=ProcedureCodes.GetProcCode(((Procedure)arrayLProc[i]).ADACode).Descript;
 				tempTPLine.ADACode=((Procedure)arrayLProc[i]).ADACode;
 				Procedures.Cur=(Procedure)arrayLProc[i];
+				Procedures.CurOld=Procedures.Cur;
 				double fee=Procedures.Cur.ProcFee;
 				double priIns=Procedures.GetEstForCur(PriSecTot.Pri);
 				double secIns=Procedures.GetEstForCur(PriSecTot.Sec);
@@ -1011,7 +1003,7 @@ namespace OpenDental{
 				textPriPend.Text=pend.ToString("F");
 				//max, used, and remaining:
 				if(InsPlans.Cur.AnnualMax==-1){//annual max is blank
-					//used can not display because there is no way to calculate it until all the math is reworked.
+					//used cannot display because there is no way to calculate it until all the math is reworked.
 					textPriMax.Text="";
 					textPriRem.Text="";
 					textPriUsed.Text="";
@@ -1085,8 +1077,9 @@ namespace OpenDental{
 		}
 
 		private void tbMain_CellDoubleClicked(object sender, CellEventArgs e){
-			Procedures.Cur = (Procedure)arrayLProc[((TPLine)TPLines2[e.Row]).Index];
-			FormProcEdit FormPE = new FormProcEdit();
+			Procedures.Cur=(Procedure)arrayLProc[((TPLine)TPLines2[e.Row]).Index];
+			Procedures.CurOld=Procedures.Cur;
+			FormProcEdit FormPE=new FormProcEdit();
 			FormPE.IsNew=false;
 			FormPE.ShowDialog();
 			if (FormPE.DialogResult!=DialogResult.OK) return;
@@ -1096,38 +1089,40 @@ namespace OpenDental{
 		}
 
 
-		private void listSetPr_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
-			if(listSetPr.IndexFromPoint(e.X,e.Y)==-1)
+		private void listSetPr_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e){
+			int clickedRow=listSetPr.IndexFromPoint(e.X,e.Y);
+			if(clickedRow==-1)
 				return;
-			for(int i=0;i<tbMain.SelectedIndices.Length;i++){
+			Procedure ProcCur;
+			for(int i=0;i<tbMain.SelectedIndices.Length;i++){//loop through the main list of selected procs
 				Procedures.Cur=(Procedure)arrayLProc[((TPLine)TPLines2[tbMain.SelectedIndices[i]]).Index];
-				Procedures.Cur.Priority=Defs.Short[(int)DefCat.TxPriorities][listSetPr.IndexFromPoint(e.X,e.Y)].DefNum;
+				Procedures.CurOld=Procedures.Cur;
+				ProcCur=Procedures.Cur;
+				if(clickedRow==0)//set priority to "no priority"
+					ProcCur.Priority=0;
+				else
+					ProcCur.Priority=Defs.Short[(int)DefCat.TxPriorities][clickedRow-1].DefNum;
+				Procedures.Cur=ProcCur;
 				Procedures.UpdateCur();
 			}
 			ModuleSelected();
 		}
 
-		private void listViewPr_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
-			if(listViewPr.IndexFromPoint(e.X,e.Y)==-1)
-				return;
-			selectedPrs[listViewPr.IndexFromPoint(e.X,e.Y)]
-				=!selectedPrs[listViewPr.IndexFromPoint(e.X,e.Y)];
-			ModuleSelected();
-		}
-
-		private void butSelectNone_Click(object sender, System.EventArgs e) {
-			for(int i=0;i<listViewPr.Items.Count;i++){
-				listViewPr.SetSelected(i,false);
-				selectedPrs[i]=false;
+		private void listViewPr_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e) {
+			if(listViewPr.SelectedIndices.Count==0){
+				//all items were unselected
+				showHidden=false;
 			}
-			showHidden=false;
 			ModuleSelected();
 		}
 
-		private void butSelectAll_Click(object sender, System.EventArgs e) {
+		private void butSelectAll_Click(object sender, System.EventArgs e){
+			//listViewPr.SetSelected(0,false);
 			for(int i=0;i<listViewPr.Items.Count;i++){
+				listViewPr.SuspendLayout();
 				listViewPr.SetSelected(i,true);
-				selectedPrs[i]=true;
+				listViewPr.ResumeLayout();
+				//selectedPrs[i-1]=true;
 			}
 			showHidden=true;
 			ModuleSelected();
@@ -1388,23 +1383,27 @@ namespace OpenDental{
       }
 			if(Patients.Cur.PriPlanNum!=0)
 				InsPlans.GetCur(Patients.Cur.PriPlanNum);//in preparation for the capcopay changes
+			Procedure ProcCur;
       for(int i=0;i<arrayLProc.Count;i++){
-				Procedures.Cur=(Procedure)arrayLProc[i]; 
+				Procedures.Cur=(Procedure)arrayLProc[i];
+				Procedures.CurOld=Procedures.Cur;
+				ProcCur=Procedures.Cur;
 				//first the fees
-				Procedures.Cur.ProcFee = Fees.GetAmount(Procedures.Cur.ADACode,ContrChart.GetFeeSched());
+				ProcCur.ProcFee = Fees.GetAmount(ProcCur.ADACode,ContrChart.GetFeeSched());
 				//then the 'Patient has insurance' checkbox
 				//and the CapCoPay
-				Procedures.Cur.CapCoPay=-1;
+				ProcCur.CapCoPay=-1;
 				if(Patients.Cur.PriPlanNum==0){//no ins
-					Procedures.Cur.IsCovIns=false;
+					ProcCur.IsCovIns=false;
 				}
 				else{//has ins
-					Procedures.Cur.IsCovIns=true;
+					ProcCur.IsCovIns=true;
 					if(InsPlans.Cur.PlanType=="c"){
 						//also handles fine if copayfeesched=0:
-						Procedures.Cur.CapCoPay=Fees.GetAmount(Procedures.Cur.ADACode,InsPlans.Cur.CopayFeeSched);
+						ProcCur.CapCoPay=Fees.GetAmount(Procedures.Cur.ADACode,InsPlans.Cur.CopayFeeSched);
 					}
 				}
+				Procedures.Cur=ProcCur;
 				Procedures.UpdateCur();
       }
       ModuleSelected();
@@ -1447,10 +1446,13 @@ namespace OpenDental{
 			Claims.Cur.PatRelat=FormIPS.PatRelat;
 			Claims.InsertCur();
 			//this loop adds the claimprocs but does not add any fees
+			Procedure ProcCur;
 			for(int i=0;i<tbMain.SelectedIndices.Length;i++){
 				Procedures.Cur=((Procedure)arrayLProc[tbMain.SelectedIndices[i]]);
+				ProcCur=Procedures.Cur;
+				Procedures.CurOld=Procedures.Cur;
 				if(!Procedures.Cur.IsCovIns){
-          Procedures.Cur.IsCovIns=true;
+          ProcCur.IsCovIns=true;
         }
         ClaimProcs.Cur=new ClaimProc();
         ClaimProcs.Cur.ClaimNum=Claims.Cur.ClaimNum;
@@ -1467,6 +1469,7 @@ namespace OpenDental{
 					}
 				}
         ClaimProcs.InsertCur();
+				Procedures.Cur=ProcCur;
 				Procedures.UpdateCur();
 			}
 			Procedures.Refresh();
@@ -1511,6 +1514,11 @@ namespace OpenDental{
         }
       }
 		}
+
+		
+
+		
+
 
 		
 	}

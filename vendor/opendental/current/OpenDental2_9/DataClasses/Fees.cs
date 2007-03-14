@@ -120,7 +120,7 @@ namespace OpenDental{
 				return 0;
 			int i=Defs.GetOrder(DefCat.FeeSchedNames,feeSched);
 			if(i==-1){
-				return 0;//you can not obtain fees for hidden fee schedules
+				return 0;//you cannot obtain fees for hidden fee schedules
 			}
 			if(HList[i].Contains(adacode)){
 				return ((Fee)HList[i][adacode]).Amount;

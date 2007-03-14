@@ -138,7 +138,7 @@ namespace OpenDental{
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(194, 30);
 			this.label2.TabIndex = 12;
-			this.label2.Text = "You can not delete a category, but you can hide it.";
+			this.label2.Text = "You cannot delete a category, but you can hide it.";
 			// 
 			// label3
 			// 

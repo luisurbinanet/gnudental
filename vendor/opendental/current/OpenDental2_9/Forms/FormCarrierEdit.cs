@@ -450,7 +450,7 @@ namespace OpenDental{
 
 		private void butOK_Click(object sender, System.EventArgs e) {
 			if(textCarrierName.Text==""){
-				MessageBox.Show(Lan.g(this,"Carrier Name can not be blank."));
+				MessageBox.Show(Lan.g(this,"Carrier Name cannot be blank."));
 				return;
 			}
 			Carriers.Cur.CarrierName=textCarrierName.Text;

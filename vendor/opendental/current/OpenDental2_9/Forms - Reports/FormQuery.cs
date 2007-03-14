@@ -47,7 +47,8 @@ namespace OpenDental{
 		private System.Windows.Forms.Panel panelZoom;
 		private System.Windows.Forms.Label labelTotPages;
 		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.TextBox textTitle;
+		///<summary></summary>
+		public System.Windows.Forms.TextBox textTitle;
 		private System.Windows.Forms.SaveFileDialog saveFileDialog2;
 		private OpenDental.XPButton butCopy;
 		private OpenDental.XPButton butPaste;
@@ -111,6 +112,7 @@ namespace OpenDental{
 			this.butClose = new System.Windows.Forms.Button();
 			this.grid2 = new System.Windows.Forms.DataGrid();
 			this.panelTop = new System.Windows.Forms.Panel();
+			this.butExportExcel = new OpenDental.XPButton();
 			this.butPaste = new OpenDental.XPButton();
 			this.butCopy = new OpenDental.XPButton();
 			this.textTitle = new System.Windows.Forms.TextBox();
@@ -137,7 +139,6 @@ namespace OpenDental{
 			this.butExport = new OpenDental.XPButton();
 			this.butQView = new OpenDental.XPButton();
 			this.butPrintPreview = new OpenDental.XPButton();
-			this.butExportExcel = new OpenDental.XPButton();
 			((System.ComponentModel.ISupportInitialize)(this.grid2)).BeginInit();
 			this.panelTop.SuspendLayout();
 			this.groupBox1.SuspendLayout();
@@ -181,6 +182,21 @@ namespace OpenDental{
 			this.panelTop.Name = "panelTop";
 			this.panelTop.Size = new System.Drawing.Size(956, 104);
 			this.panelTop.TabIndex = 2;
+			// 
+			// butExportExcel
+			// 
+			this.butExportExcel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butExportExcel.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butExportExcel.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butExportExcel.Image = ((System.Drawing.Image)(resources.GetObject("butExportExcel.Image")));
+			this.butExportExcel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butExportExcel.Location = new System.Drawing.Point(712, 69);
+			this.butExportExcel.Name = "butExportExcel";
+			this.butExportExcel.Size = new System.Drawing.Size(79, 26);
+			this.butExportExcel.TabIndex = 15;
+			this.butExportExcel.Text = "Excel";
+			this.butExportExcel.Visible = false;
+			this.butExportExcel.Click += new System.EventHandler(this.butExportExcel_Click);
 			// 
 			// butPaste
 			// 
@@ -458,21 +474,6 @@ namespace OpenDental{
 			this.butPrintPreview.Text = "P&rint Preview";
 			this.butPrintPreview.Click += new System.EventHandler(this.butPrintPreview_Click);
 			// 
-			// butExportExcel
-			// 
-			this.butExportExcel.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butExportExcel.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butExportExcel.BtnStyle = OpenDental.enumType.XPStyle.Silver;
-			this.butExportExcel.Image = ((System.Drawing.Image)(resources.GetObject("butExportExcel.Image")));
-			this.butExportExcel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butExportExcel.Location = new System.Drawing.Point(712, 69);
-			this.butExportExcel.Name = "butExportExcel";
-			this.butExportExcel.Size = new System.Drawing.Size(79, 26);
-			this.butExportExcel.TabIndex = 15;
-			this.butExportExcel.Text = "Excel";
-			this.butExportExcel.Visible = false;
-			this.butExportExcel.Click += new System.EventHandler(this.butExportExcel_Click);
-			// 
 			// FormQuery
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
@@ -550,9 +551,9 @@ namespace OpenDental{
 			SubmitQuery();
 		}
 
-		///<summary></summary>
+		///<summary>This is used internally instead of SubmitReportQuery.  Can also be called externally if we want to automate a userquery.  Column names will be handled automatically.</summary>
 		public void SubmitQuery(){
-			Patients.GetHList();//names are handled manually in reports
+			Patients.GetHList();
       InsPlans.GetHListAll();
 			
 			Queries.SubmitCur();
@@ -615,7 +616,7 @@ namespace OpenDental{
 			//Queries.SubmitCur();
 		//}
 
-		///<summary></summary>
+		///<summary>When used as a report, this is called externally. Used instead of SubmitQuery(). Column names will be handled manually by the external form calling this report.</summary>
 		public void SubmitReportQuery(){	
 			Queries.SubmitCur();
 			Queries.CurReport.ColWidth=new int[Queries.TableQ.Columns.Count];
@@ -655,7 +656,7 @@ namespace OpenDental{
 						Queries.CurReport.ColWidth[i]=tempWidth;
 				}
 				if(Queries.CurReport.ColWidth[i]>400) Queries.CurReport.ColWidth[i]=400;
-				myGridTS.GridColumnStyles[i].Width=Queries.CurReport.ColWidth[i]+7;
+				myGridTS.GridColumnStyles[i].Width=Queries.CurReport.ColWidth[i]+12;
 				Queries.CurReport.ColWidth[i]+=4;//so the columns don't touch
 				Queries.CurReport.ColPos[i+1]=Queries.CurReport.ColPos[i]+Queries.CurReport.ColWidth[i];
 			}
@@ -686,7 +687,8 @@ namespace OpenDental{
 						Queries.CurReport.ColAlign[j]=HorizontalAlignment.Right;
 						Queries.CurReport.ColTotal[j]+=PIn.PDouble(Queries.TableQ.Rows[i][j].ToString());
 					}
-					else switch(Queries.TableQ.Columns[j].Caption.ToLower()){
+					else switch(Queries.TableQ.Columns[j].Caption.ToLower())
+					{
 						//bool
 						case "isprosthesis":
 						case "ispreventive":
@@ -736,6 +738,7 @@ namespace OpenDental{
             case "accidentdate":
 						case "orthodate":
             case "checkdate":
+						case "screendate":
 							Queries.TableQ.Rows[i][j]=PIn.PDate(Queries.TableQ.Rows[i][j].ToString()).ToString("d");
 							break;
             //time 
@@ -894,6 +897,12 @@ namespace OpenDental{
 							Queries.TableQ.Rows[i][j]=((ProcStat)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
 							break;
 						case "majorwait":
+						case "hascaries":
+						case "needssealants":
+						case "cariesexperience":
+						case "earlychildcaries":
+						case "existingsealants":
+						case "missingallteeth":
 							Queries.TableQ.Rows[i][j]=((YN)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
 							break;
 						case "prirelationship":
@@ -923,6 +932,18 @@ namespace OpenDental{
             case "dayofweek": 
 							Queries.TableQ.Rows[i][j]
 								=((DayOfWeek)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							break;
+						case "race":
+							Queries.TableQ.Rows[i][j]
+								=((PatientRace)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							break;
+						case "gradelevel":
+							Queries.TableQ.Rows[i][j]
+								=((PatientGrade)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
+							break;
+						case "urgency":
+							Queries.TableQ.Rows[i][j]
+								=((TreatmentUrgency)PIn.PInt(Queries.TableQ.Rows[i][j].ToString())).ToString();
 							break;
 						//miscellaneous:
 						case "provnum":
@@ -1265,7 +1286,10 @@ namespace OpenDental{
 				saveFileDialog2.FileName=Queries.CurReport.Title;
 			}
       else{
-        saveFileDialog2.FileName=UserQueries.Cur.FileName;
+				if(UserQueries.Cur.FileName==null)
+					saveFileDialog2.FileName=Queries.CurReport.Title;
+				else
+					saveFileDialog2.FileName=UserQueries.Cur.FileName;
 			}
 			if(!Directory.Exists( ((Pref)Prefs.HList["ExportPath"]).ValueString )){
 				try{

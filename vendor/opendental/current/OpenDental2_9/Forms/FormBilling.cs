@@ -75,9 +75,9 @@ namespace OpenDental{
 			// 
 			// contrAccount1
 			// 
-			this.contrAccount1.Location = new System.Drawing.Point(-56, 332);
+			this.contrAccount1.Location = new System.Drawing.Point(-56, 102);
 			this.contrAccount1.Name = "contrAccount1";
-			this.contrAccount1.Size = new System.Drawing.Size(916, 264);
+			this.contrAccount1.Size = new System.Drawing.Size(916, 494);
 			this.contrAccount1.TabIndex = 20;
 			this.contrAccount1.Visible = false;
 			// 
@@ -104,7 +104,7 @@ namespace OpenDental{
 			this.tbBill.BackColor = System.Drawing.SystemColors.Window;
 			this.tbBill.Location = new System.Drawing.Point(42, 46);
 			this.tbBill.Name = "tbBill";
-			this.tbBill.ScrollValue = 700;
+			this.tbBill.ScrollValue = 113;
 			this.tbBill.SelectedIndices = new int[0];
 			this.tbBill.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
 			this.tbBill.Size = new System.Drawing.Size(499, 606);
@@ -124,7 +124,7 @@ namespace OpenDental{
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(500, 14);
 			this.label1.TabIndex = 26;
-			this.label1.Text = "Highlight the bills you want to print.";
+			this.label1.Text = "Unhighlight any bills you don\'t want to print.";
 			// 
 			// FormBilling
 			// 
@@ -187,8 +187,9 @@ namespace OpenDental{
 				return;
 			}
 			for(int i=0;i<tbBill.SelectedIndices.Length;i++){
-				Patients.Cur=new Patient();
-				Patients.Cur.PatNum=Patients.AgingList[tbBill.SelectedIndices[i]].PatNum;
+				Patient PatCur=new Patient();
+				PatCur.PatNum=Patients.AgingList[tbBill.SelectedIndices[i]].PatNum;
+				Patients.Cur=PatCur;
 				Patients.PatIsLoaded=true;
 				contrAccount1.LoadAndPrint();
 			}

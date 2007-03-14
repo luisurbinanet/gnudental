@@ -148,21 +148,19 @@ namespace OpenDental{
 				return (ProcedureCode)HList[myADA];
 			}
 			else{
-				MessageBox.Show(Lan.g("ProcCodes","code not found: ")+myADA);
-				return new ProcedureCode();
-				/*MessageBox.Show("Adding procedurecode: "+myADA);
+				//MessageBox.Show(Lan.g("ProcCodes","code not found: ")+myADA);
+				//return new ProcedureCode();
 				Cur=new ProcedureCode();
 				Cur.ADACode=myADA;
 				Cur.Descript=myADA;
 				Cur.AbbrDesc=myADA;
-				Cur.ProcTime="/X/";
 				Cur.ProcCat=Defs.Short[(int)DefCat.ProcCodeCats][0].DefNum;
 				Cur.TreatArea=TreatmentArea.Mouth;
 				InsertCur();
 				DataValid.IType=InvalidType.LocalData;
 				DataValid DataValid2=new DataValid();
 				DataValid2.SetInvalid();
-				return Cur;*/
+				return Cur;
 			}
 		}
 

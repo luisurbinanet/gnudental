@@ -40,10 +40,6 @@ namespace OpenDental{
 		private Point	mouseOrigin;
 		private Point sliderOrigin;
 		private StringBuilder strBTime;
-		private System.Windows.Forms.GroupBox groupBox1;
-		private System.Windows.Forms.RadioButton radioLabNone;
-		private System.Windows.Forms.RadioButton radioLabReceived;
-		private System.Windows.Forms.RadioButton radioLabSent;
 		private System.Windows.Forms.Label label14;
 		private System.Windows.Forms.GroupBox groupFinancial;
 		private System.Windows.Forms.Label label15;
@@ -75,6 +71,10 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label8;
 		private System.Windows.Forms.TextBox textFamilyBal;
 		private System.Windows.Forms.Label label10;
+		private System.Windows.Forms.Label label12;
+		private System.Windows.Forms.ListBox listAssistant;
+		private System.Windows.Forms.Label label13;
+		private System.Windows.Forms.ListBox listLab;
 		///<summary>If the user clicks on the pinboard button this will be set to true.</summary>
 		public bool PinClicked;
 	
@@ -100,11 +100,8 @@ namespace OpenDental{
 				this.butCalcTime,
 				this.butHygClear,
 				this.butSlider,
-				this.radioLabNone,
-				this.radioLabReceived,
-				this.radioLabSent,
 				this.groupFinancial,
-				this.groupBox1,
+				this.label13
 			});
 			Lan.C("All", new System.Windows.Forms.Control[] {
 				butOK,
@@ -153,10 +150,6 @@ namespace OpenDental{
 			this.textFeeTotal = new System.Windows.Forms.TextBox();
 			this.textAddTime = new OpenDental.ValidNum();
 			this.butSlider = new System.Windows.Forms.Button();
-			this.groupBox1 = new System.Windows.Forms.GroupBox();
-			this.radioLabSent = new System.Windows.Forms.RadioButton();
-			this.radioLabReceived = new System.Windows.Forms.RadioButton();
-			this.radioLabNone = new System.Windows.Forms.RadioButton();
 			this.label14 = new System.Windows.Forms.Label();
 			this.groupFinancial = new System.Windows.Forms.GroupBox();
 			this.textFamilyBal = new System.Windows.Forms.TextBox();
@@ -180,7 +173,10 @@ namespace OpenDental{
 			this.label4 = new System.Windows.Forms.Label();
 			this.butPin = new OpenDental.XPButton();
 			this.butDelete = new OpenDental.XPButton();
-			this.groupBox1.SuspendLayout();
+			this.label12 = new System.Windows.Forms.Label();
+			this.listAssistant = new System.Windows.Forms.ListBox();
+			this.label13 = new System.Windows.Forms.Label();
+			this.listLab = new System.Windows.Forms.ListBox();
 			this.groupFinancial.SuspendLayout();
 			this.groupContact.SuspendLayout();
 			this.SuspendLayout();
@@ -259,40 +255,41 @@ namespace OpenDental{
 			// 
 			this.listProvNum.Location = new System.Drawing.Point(681, 42);
 			this.listProvNum.Name = "listProvNum";
-			this.listProvNum.Size = new System.Drawing.Size(82, 147);
+			this.listProvNum.Size = new System.Drawing.Size(82, 69);
 			this.listProvNum.TabIndex = 4;
 			// 
 			// listProvHyg
 			// 
-			this.listProvHyg.Location = new System.Drawing.Point(769, 42);
+			this.listProvHyg.Location = new System.Drawing.Point(770, 42);
 			this.listProvHyg.Name = "listProvHyg";
-			this.listProvHyg.Size = new System.Drawing.Size(82, 147);
+			this.listProvHyg.Size = new System.Drawing.Size(82, 69);
 			this.listProvHyg.TabIndex = 5;
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(680, 24);
+			this.label2.Location = new System.Drawing.Point(680, 26);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(88, 16);
 			this.label2.TabIndex = 11;
-			this.label2.Text = "Provider";
+			this.label2.Text = "Dentist";
 			// 
 			// butHygClear
 			// 
 			this.butHygClear.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butHygClear.Location = new System.Drawing.Point(771, 196);
+			this.butHygClear.Location = new System.Drawing.Point(778, 115);
 			this.butHygClear.Name = "butHygClear";
+			this.butHygClear.Size = new System.Drawing.Size(66, 21);
 			this.butHygClear.TabIndex = 12;
 			this.butHygClear.Text = "&none";
 			this.butHygClear.Click += new System.EventHandler(this.butHygClear_Click);
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(768, 24);
+			this.label3.Location = new System.Drawing.Point(769, 26);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(98, 16);
 			this.label3.TabIndex = 13;
-			this.label3.Text = "Hygiene Provider";
+			this.label3.Text = "Hygienist";
 			// 
 			// labelStatus
 			// 
@@ -430,49 +427,6 @@ namespace OpenDental{
 			this.butSlider.MouseMove += new System.Windows.Forms.MouseEventHandler(this.butSlider_MouseMove);
 			this.butSlider.MouseDown += new System.Windows.Forms.MouseEventHandler(this.butSlider_MouseDown);
 			// 
-			// groupBox1
-			// 
-			this.groupBox1.Controls.Add(this.radioLabSent);
-			this.groupBox1.Controls.Add(this.radioLabReceived);
-			this.groupBox1.Controls.Add(this.radioLabNone);
-			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox1.Location = new System.Drawing.Point(861, 37);
-			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(105, 85);
-			this.groupBox1.TabIndex = 6;
-			this.groupBox1.TabStop = false;
-			this.groupBox1.Text = "Lab Case";
-			// 
-			// radioLabSent
-			// 
-			this.radioLabSent.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.radioLabSent.Location = new System.Drawing.Point(12, 39);
-			this.radioLabSent.Name = "radioLabSent";
-			this.radioLabSent.Size = new System.Drawing.Size(81, 19);
-			this.radioLabSent.TabIndex = 2;
-			this.radioLabSent.Text = "Sent";
-			this.radioLabSent.Click += new System.EventHandler(this.radioLabSent_Click);
-			// 
-			// radioLabReceived
-			// 
-			this.radioLabReceived.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.radioLabReceived.Location = new System.Drawing.Point(12, 62);
-			this.radioLabReceived.Name = "radioLabReceived";
-			this.radioLabReceived.Size = new System.Drawing.Size(79, 17);
-			this.radioLabReceived.TabIndex = 1;
-			this.radioLabReceived.Text = "Received";
-			this.radioLabReceived.Click += new System.EventHandler(this.radioLabReceived_Click);
-			// 
-			// radioLabNone
-			// 
-			this.radioLabNone.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.radioLabNone.Location = new System.Drawing.Point(12, 17);
-			this.radioLabNone.Name = "radioLabNone";
-			this.radioLabNone.Size = new System.Drawing.Size(79, 19);
-			this.radioLabNone.TabIndex = 0;
-			this.radioLabNone.Text = "None";
-			this.radioLabNone.Click += new System.EventHandler(this.radioLabNone_Click);
-			// 
 			// label14
 			// 
 			this.label14.Location = new System.Drawing.Point(312, 13);
@@ -544,7 +498,7 @@ namespace OpenDental{
 			this.tbCommlog.BackColor = System.Drawing.SystemColors.Window;
 			this.tbCommlog.Location = new System.Drawing.Point(112, 413);
 			this.tbCommlog.Name = "tbCommlog";
-			this.tbCommlog.ScrollValue = 700;
+			this.tbCommlog.ScrollValue = 461;
 			this.tbCommlog.SelectedIndices = new int[0];
 			this.tbCommlog.SelectionMode = System.Windows.Forms.SelectionMode.None;
 			this.tbCommlog.Size = new System.Drawing.Size(619, 274);
@@ -716,12 +670,46 @@ namespace OpenDental{
 			this.butDelete.Text = "&Delete";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
 			// 
+			// label12
+			// 
+			this.label12.Location = new System.Drawing.Point(858, 26);
+			this.label12.Name = "label12";
+			this.label12.Size = new System.Drawing.Size(88, 16);
+			this.label12.TabIndex = 74;
+			this.label12.Text = "Assistant";
+			// 
+			// listAssistant
+			// 
+			this.listAssistant.Location = new System.Drawing.Point(859, 42);
+			this.listAssistant.Name = "listAssistant";
+			this.listAssistant.Size = new System.Drawing.Size(82, 69);
+			this.listAssistant.TabIndex = 73;
+			// 
+			// label13
+			// 
+			this.label13.Location = new System.Drawing.Point(861, 145);
+			this.label13.Name = "label13";
+			this.label13.Size = new System.Drawing.Size(88, 16);
+			this.label13.TabIndex = 76;
+			this.label13.Text = "Lab Case";
+			// 
+			// listLab
+			// 
+			this.listLab.Location = new System.Drawing.Point(862, 161);
+			this.listLab.Name = "listLab";
+			this.listLab.Size = new System.Drawing.Size(82, 56);
+			this.listLab.TabIndex = 75;
+			// 
 			// FormApptEdit
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(974, 695);
+			this.Controls.Add(this.label13);
+			this.Controls.Add(this.listLab);
+			this.Controls.Add(this.label12);
+			this.Controls.Add(this.listAssistant);
 			this.Controls.Add(this.butDelete);
 			this.Controls.Add(this.butPin);
 			this.Controls.Add(this.comboUnschedStatus);
@@ -733,7 +721,6 @@ namespace OpenDental{
 			this.Controls.Add(this.tbCommlog);
 			this.Controls.Add(this.groupFinancial);
 			this.Controls.Add(this.label14);
-			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.butSlider);
 			this.Controls.Add(this.textAddTime);
 			this.Controls.Add(this.textNote);
@@ -763,7 +750,6 @@ namespace OpenDental{
 			this.Text = "Edit Appointment";
 			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormApptEdit_Closing);
 			this.Load += new System.EventHandler(this.FormApptEdit_Load);
-			this.groupBox1.ResumeLayout(false);
 			this.groupFinancial.ResumeLayout(false);
 			this.groupContact.ResumeLayout(false);
 			this.ResumeLayout(false);
@@ -833,17 +819,19 @@ namespace OpenDental{
 				if(Providers.List[i].ProvNum==Appointments.Cur.ProvHyg)
 					listProvHyg.SelectedIndex=i;
 			}
-			switch(Appointments.Cur.Lab){
-				case LabCase.None:
-					radioLabNone.Checked=true;
-					break;
-				case LabCase.Sent:
-					radioLabSent.Checked=true;
-					break;
-				case LabCase.Received:
-					radioLabReceived.Checked=true;
-					break;
+			listAssistant.Items.Add(Lan.g(this,"none"));
+			listAssistant.SelectedIndex=0;
+			for(int i=0;i<Employees.ListShort.Length;i++){
+				listAssistant.Items.Add(Employees.ListShort[i].FName);
+				if(Employees.ListShort[i].EmployeeNum==Appointments.Cur.Assistant)
+					listAssistant.SelectedIndex=i+1;
 			}
+			for(int i=0;i<Enum.GetNames(typeof(LabCase)).Length;i++){
+				listLab.Items.Add(Enum.GetNames(typeof(LabCase))[i]);
+				if(i==(int)Appointments.Cur.Lab)
+					listLab.SelectedIndex=i;
+			}
+			//IsNewPatient is set well before opening this form.
 			checkIsNewPatient.Checked=Appointments.Cur.IsNewPatient;
 			textHmPhone.Text=Patients.Cur.HmPhone;
 			textWkPhone.Text=Patients.Cur.WkPhone;
@@ -920,7 +908,7 @@ namespace OpenDental{
 			tbProc.SetGridColor(Color.Gray);
 			for (int i=0;i<ApptProc2.Length;i++){
 				tbProc.Cell[0,i]=ApptProc2[i].Status;
-				tbProc.Cell[1,i]=ApptProc2[i].ToothNum;
+				tbProc.Cell[1,i]=Tooth.ToInternat(ApptProc2[i].ToothNum);
 				tbProc.Cell[2,i]=ApptProc2[i].Surf;
 				tbProc.Cell[3,i]=ApptProc2[i].AbbrDesc;
 				tbProc.Cell[4,i]=ApptProc2[i].Fee;
@@ -951,22 +939,25 @@ namespace OpenDental{
 			}
 			procsHaveChanged=true;
 			Procedures.Cur=arrayProc[ApptProc2[e.Row].Index];
+			Procedures.CurOld=Procedures.Cur;
+			Procedure ProcCur=Procedures.Cur;
 			if(Appointments.Cur.AptStatus==ApptStatus.Next){
 				if(Procedures.Cur.NextAptNum==Appointments.Cur.AptNum){
-					Procedures.Cur.NextAptNum=0;
+					ProcCur.NextAptNum=0;
 				}
 				else{
-					Procedures.Cur.NextAptNum=Appointments.Cur.AptNum;
+					ProcCur.NextAptNum=Appointments.Cur.AptNum;
 				}
 			}
 			else{//not Next
 				if(Procedures.Cur.AptNum==Appointments.Cur.AptNum){
-					Procedures.Cur.AptNum=0;
+					ProcCur.AptNum=0;
 				}
 				else{
-					Procedures.Cur.AptNum=Appointments.Cur.AptNum;
+					ProcCur.AptNum=Appointments.Cur.AptNum;
 				}
 			}
+			Procedures.Cur=ProcCur;
 			Procedures.UpdateCur();
 			FillProcedures();
 			CalculateTime();
@@ -1115,7 +1106,7 @@ namespace OpenDental{
 			Commlogs.Refresh();
 			ALCommItems=new ArrayList();
 			for(int i=0;i<Commlogs.List.Length;i++){
-				if(Commlogs.List[i].CommType==CommItemType.AppointmentScheduling){
+				if(Commlogs.List[i].CommType==CommItemType.ApptRelated){
 					ALCommItems.Add(Commlogs.List[i]);
 				}
 			}
@@ -1148,40 +1139,42 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please fix data entry errors first."));
 				return;
 			}
+			Procedures.SetDateFirstVisit(Appointments.Cur.AptDateTime.Date,1);
 			string[] procs=Defs.Short[(int)DefCat.ApptProcsQuickAdd]
 				[listQuickAdd.IndexFromPoint(e.X,e.Y)].ItemValue.Split(',');
 			for(int i=0;i<procs.Length;i++){
-				Procedures.Cur=new Procedure();
+				Procedure ProcCur=new Procedure();
 				//maybe test codes in defs before allowing them in the first place(no tooth num)
 				//if(ProcCodes.GetProcCode(Procedures.Cur.ADACode). 
-				Procedures.Cur.PatNum=Appointments.Cur.PatNum;
+				ProcCur.PatNum=Appointments.Cur.PatNum;
 				if(Appointments.Cur.AptStatus!=ApptStatus.Next)
-					Procedures.Cur.AptNum=Appointments.Cur.AptNum;
-				Procedures.Cur.ADACode=procs[i];
-				Procedures.Cur.ProcDate=Appointments.Cur.AptDateTime.Date;
-				Procedures.Cur.ProcFee=Fees.GetAmount(Procedures.Cur.ADACode,ContrChart.GetFeeSched());
-				Procedures.Cur.OverridePri=-1;
-				Procedures.Cur.OverrideSec=-1;
+					ProcCur.AptNum=Appointments.Cur.AptNum;
+				ProcCur.ADACode=procs[i];
+				ProcCur.ProcDate=Appointments.Cur.AptDateTime.Date;
+				ProcCur.ProcFee=Fees.GetAmount(ProcCur.ADACode,ContrChart.GetFeeSched());
+				ProcCur.OverridePri=-1;
+				ProcCur.OverrideSec=-1;
 				//surf
 				//toothnum
 				//toothrange
-				Procedures.Cur.NoBillIns=ProcedureCodes.GetProcCode(Procedures.Cur.ADACode).NoBillIns;
+				ProcCur.NoBillIns=ProcedureCodes.GetProcCode(ProcCur.ADACode).NoBillIns;
 				//priority
-				Procedures.Cur.ProcStatus=ProcStat.TP;
+				ProcCur.ProcStatus=ProcStat.TP;
 				//procnote
-				Procedures.Cur.ProvNum=Appointments.Cur.ProvNum;
+				ProcCur.ProvNum=Appointments.Cur.ProvNum;
 				//Dx
 				if(Appointments.Cur.AptStatus==ApptStatus.Next)
-          Procedures.Cur.NextAptNum=Appointments.Cur.AptNum;
-				Procedures.Cur.CapCoPay=-1;
+          ProcCur.NextAptNum=Appointments.Cur.AptNum;
+				ProcCur.CapCoPay=-1;
 				if(Patients.Cur.PriPlanNum!=0){//if patient has insurance
-					Procedures.Cur.IsCovIns=true;
+					ProcCur.IsCovIns=true;
 					InsPlans.GetCur(Patients.Cur.PriPlanNum);
 					if(InsPlans.Cur.PlanType=="c"){
 						//also handles fine if copayfeesched=0:
-						Procedures.Cur.CapCoPay=Fees.GetAmount(Procedures.Cur.ADACode,InsPlans.Cur.CopayFeeSched);
+						ProcCur.CapCoPay=Fees.GetAmount(ProcCur.ADACode,InsPlans.Cur.CopayFeeSched);
 					}
 				}
+				Procedures.Cur=ProcCur;
 				Procedures.InsertCur();
 			}
 			listQuickAdd.SelectedIndex=-1;
@@ -1194,23 +1187,11 @@ namespace OpenDental{
 			//listQuickAdd.SelectedIndex=-1;
 		}
 
-		private void radioLabNone_Click(object sender, System.EventArgs e) {
-			Appointments.Cur.Lab=LabCase.None;
-		}
-
-		private void radioLabSent_Click(object sender, System.EventArgs e) {
-			Appointments.Cur.Lab=LabCase.Sent;
-		}
-
-		private void radioLabReceived_Click(object sender, System.EventArgs e) {
-			Appointments.Cur.Lab=LabCase.Received;
-		}
-
 		private void butAddComm_Click(object sender, System.EventArgs e) {
 			Commlogs.Cur=new Commlog();
 			Commlogs.Cur.PatNum=Patients.Cur.PatNum;
 			Commlogs.Cur.CommDate=DateTime.Today;
-			Commlogs.Cur.CommType=CommItemType.AppointmentScheduling;
+			Commlogs.Cur.CommType=CommItemType.ApptRelated;
 			FormCommItem FormCI=new FormCommItem();
 			FormCI.IsNew=true;
 			FormCI.ShowDialog();
@@ -1266,6 +1247,11 @@ namespace OpenDental{
 				Appointments.Cur.ProvHyg=0;
 			else
 				Appointments.Cur.ProvHyg=Providers.List[listProvHyg.SelectedIndex].ProvNum;
+			if(listAssistant.SelectedIndex==0)//none
+				Appointments.Cur.Assistant=0;
+			else
+				Appointments.Cur.Assistant=Employees.ListShort[listAssistant.SelectedIndex-1].EmployeeNum;
+			Appointments.Cur.Lab=(LabCase)listLab.SelectedIndex;
 			Appointments.Cur.IsNewPatient=checkIsNewPatient.Checked;
 			Appointments.Cur.ProcDescript="";
 			if(Appointments.Cur.AptStatus==ApptStatus.Next){

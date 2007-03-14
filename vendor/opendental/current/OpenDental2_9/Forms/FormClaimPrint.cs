@@ -5,6 +5,7 @@ using System.Drawing.Printing;
 using System.Collections;
 using System.ComponentModel;
 using System.IO;
+using System.Text;
 using System.Windows.Forms;
 
 namespace OpenDental{
@@ -319,7 +320,12 @@ namespace OpenDental{
 				pagesPrinted=i;
 				//not sure if I also need to do FillDisplayStrings here
 				FillProcStrings(pagesPrinted*procLimit,procLimit);
-				retVal[i]=displayStrings;
+				/*StringBuilder str=new StringBuilder();
+				for(int s=0;s<displayStrings.Length;s++){
+					str.Append(displayStrings[s]);
+				}
+				MessageBox.Show(str.ToString());*/
+				retVal[i]=(string[])displayStrings.Clone();
 			}
 			return retVal;
 		}
@@ -341,7 +347,8 @@ namespace OpenDental{
 			InsPlan otherPlan=InsPlans.Cur;
 			Carriers.GetCur(otherPlan.CarrierNum);
 			Carrier otherCarrier=Carriers.Cur;
-			//Employer otherEmployer=Employers.GetEmployer(otherPlan.EmployerNum);//not actually used
+			//Employers.GetEmployer(otherPlan.EmployerNum);
+			//Employer otherEmployer=Employers.Cur;//not actually used
 			//then get the main plan
 			InsPlans.GetCur(Claims.Cur.PlanNum);
 			Carriers.GetCur(InsPlans.Cur.CarrierNum);
@@ -587,7 +594,7 @@ namespace OpenDental{
 						displayStrings[i]=InsPlans.Cur.GroupNum;
 						break;
 					case "EmployerName":
-						displayStrings[i]=Employers.GetEmployer(InsPlans.Cur.EmployerNum).EmpName;
+						displayStrings[i]=Employers.GetEmployer(InsPlans.Cur.EmployerNum).EmpName;;
 						break;
 					case "RelatIsSelf":
 						if(Claims.Cur.PatRelat==Relat.Self)
@@ -610,12 +617,19 @@ namespace OpenDental{
 							|| Claims.Cur.PatRelat==Relat.SignifOther)
 							displayStrings[i]="X";
 						break;
+					case "Relationship":
+						displayStrings[i]=Claims.Cur.PatRelat.ToString();
+						break;
 					case "IsFTStudent":
 						if(Patients.Cur.StudentStatus=="F")
 							displayStrings[i]="X";
 						break;
 					case "IsPTStudent":
 						if(Patients.Cur.StudentStatus=="P")
+							displayStrings[i]="X";
+						break;
+					case "IsStudent":
+						if(Patients.Cur.StudentStatus=="P" || Patients.Cur.StudentStatus=="F")
 							displayStrings[i]="X";
 						break;
 					case "PatientLastFirst":
@@ -885,26 +899,7 @@ namespace OpenDental{
 							displayStrings[i]="X";
 						break;
 					case "PlaceNumericCode":
-						switch(Claims.Cur.PlaceService){
-							case PlaceOfService.AdultLivCareFac:
-								displayStrings[i]="33";//aka Custodial care facility
-								break;
-							case PlaceOfService.InpatHospital:
-								displayStrings[i]="21";
-								break;
-							case PlaceOfService.Office:
-								displayStrings[i]="11";
-								break;
-							case PlaceOfService.OutpatHospital:
-								displayStrings[i]="22";
-								break;
-							case PlaceOfService.PatientsHome:
-								displayStrings[i]="12";
-								break;
-							case PlaceOfService.SkilledNursFac:
-								displayStrings[i]="31";
-								break;
-						}
+						displayStrings[i]=GetPlaceOfServiceNum(Claims.Cur.PlaceService);
 						break;
 					case "IsRadiographsAttached":
 						if(Claims.Cur.Radiographs>0)
@@ -993,6 +988,10 @@ namespace OpenDental{
 						if(Claims.Cur.AccidentRelated!="O" && Claims.Cur.AccidentRelated!="A")
 							displayStrings[i]="X";
 						break;
+					case "IsAccident":
+						if(Claims.Cur.AccidentRelated!="")
+							displayStrings[i]="X";
+						break;
 					case "AccidentDate":
 						if(Claims.Cur.AccidentDate.Year > 1860){
 							if(ClaimFormItems.ListForForm[i].FormatString=="")
@@ -1064,6 +1063,9 @@ namespace OpenDental{
 								+"-"+((Pref)Prefs.HList["PracticePhone"]).ValueString.Substring(6);
 						}
 						break;
+					case "BillingDentistPhoneRaw":
+						displayStrings[i]=((Pref)Prefs.HList["PracticePhone"]).ValueString;
+						break;
 					case "TreatingDentistSignature":
 						if(treatDent.SigOnFile){
 							displayStrings[i]=treatDent.FName+" "+treatDent.MI+" "+treatDent.LName+" "
@@ -1133,6 +1135,38 @@ namespace OpenDental{
 				}//switch
 			}//for
 		}
+	
+		/// <summary></summary>
+		private string GetPlaceOfServiceNum(PlaceOfService place){
+			switch(place){
+				default:
+					return "";
+				case PlaceOfService.AdultLivCareFac:
+					return "33";//aka Custodial care facility
+				case PlaceOfService.InpatHospital:
+					return "21";
+				case PlaceOfService.Office:
+					return "11";
+				case PlaceOfService.OutpatHospital:
+					return "22";
+				case PlaceOfService.PatientsHome:
+					return "12";
+				case PlaceOfService.SkilledNursFac:
+					return "31";
+				case PlaceOfService.MobileUnit:
+					return "15";
+				case PlaceOfService.School:
+					return "03";
+				case PlaceOfService.MilitaryTreatFac:
+					return "26";
+				case PlaceOfService.FederalHealthCenter:
+					return "50";
+				case PlaceOfService.PublicHealthClinic:
+					return "71";
+				case PlaceOfService.RuralHealthClinic:
+					return "72";
+			}
+		}
 
 		/// <summary></summary>
 		/// <param name="startProc">For page 1, this will be 0, otherwise it might be 10, 8, 20, or whatever.  It is the 0-based index of the first proc. Depends on how many procedures this claim format can display and which page we are on.</param>
@@ -1168,6 +1202,9 @@ namespace OpenDental{
 					case "P1TreatDentMedicaidID":
 						displayStrings[i]=GetProcInfo("TreatDentMedicaidID",1+startProc);
 						break;
+					case "P1PlaceNumericCode":
+						displayStrings[i]=GetProcInfo("PlaceNumericCode",1+startProc);
+						break;
 					case "P2Date":
 						displayStrings[i]=GetProcInfo("Date",2+startProc,ClaimFormItems.ListForForm[i].FormatString);
 						break;
@@ -1194,6 +1231,9 @@ namespace OpenDental{
 						break;
 					case "P2TreatDentMedicaidID":
 						displayStrings[i]=GetProcInfo("TreatDentMedicaidID",2+startProc);
+						break;
+					case "P2PlaceNumericCode":
+						displayStrings[i]=GetProcInfo("PlaceNumericCode",2+startProc);
 						break;
 					case "P3Date":
 						displayStrings[i]=GetProcInfo("Date",3+startProc,ClaimFormItems.ListForForm[i].FormatString);
@@ -1222,6 +1262,9 @@ namespace OpenDental{
 					case "P3TreatDentMedicaidID":
 						displayStrings[i]=GetProcInfo("TreatDentMedicaidID",3+startProc);
 						break;
+					case "P3PlaceNumericCode":
+						displayStrings[i]=GetProcInfo("PlaceNumericCode",3+startProc);
+						break;
 					case "P4Date":
 						displayStrings[i]=GetProcInfo("Date",4+startProc,ClaimFormItems.ListForForm[i].FormatString);
 						break;
@@ -1248,6 +1291,9 @@ namespace OpenDental{
 						break;
 					case "P4TreatDentMedicaidID":
 						displayStrings[i]=GetProcInfo("TreatDentMedicaidID",4+startProc);
+						break;
+					case "P4PlaceNumericCode":
+						displayStrings[i]=GetProcInfo("PlaceNumericCode",4+startProc);
 						break;
 					case "P5Date":
 						displayStrings[i]=GetProcInfo("Date",5+startProc,ClaimFormItems.ListForForm[i].FormatString);
@@ -1276,6 +1322,9 @@ namespace OpenDental{
 					case "P5TreatDentMedicaidID":
 						displayStrings[i]=GetProcInfo("TreatDentMedicaidID",5);
 						break;
+					case "P5PlaceNumericCode":
+						displayStrings[i]=GetProcInfo("PlaceNumericCode",5+startProc);
+						break;
 					case "P6Date":
 						displayStrings[i]=GetProcInfo("Date",6+startProc,ClaimFormItems.ListForForm[i].FormatString);
 						break;
@@ -1302,6 +1351,9 @@ namespace OpenDental{
 						break;
 					case "P6TreatDentMedicaidID":
 						displayStrings[i]=GetProcInfo("TreatDentMedicaidID",6+startProc);
+						break;
+					case "P6PlaceNumericCode":
+						displayStrings[i]=GetProcInfo("PlaceNumericCode",6+startProc);
 						break;
 					case "P7Date":
 						displayStrings[i]=GetProcInfo("Date",7+startProc,ClaimFormItems.ListForForm[i].FormatString);
@@ -1330,6 +1382,9 @@ namespace OpenDental{
 					case "P7TreatDentMedicaidID":
 						displayStrings[i]=GetProcInfo("TreatDentMedicaidID",7+startProc);
 						break;
+					case "P7PlaceNumericCode":
+						displayStrings[i]=GetProcInfo("PlaceNumericCode",7+startProc);
+						break;
 					case "P8Date":
 						displayStrings[i]=GetProcInfo("Date",8+startProc,ClaimFormItems.ListForForm[i].FormatString);
 						break;
@@ -1356,6 +1411,9 @@ namespace OpenDental{
 						break;
 					case "P8TreatDentMedicaidID":
 						displayStrings[i]=GetProcInfo("TreatDentMedicaidID",8+startProc);
+						break;
+					case "P8PlaceNumericCode":
+						displayStrings[i]=GetProcInfo("PlaceNumericCode",8+startProc);
 						break;
 					case "P9Date":
 						displayStrings[i]=GetProcInfo("Date",9+startProc,ClaimFormItems.ListForForm[i].FormatString);
@@ -1384,6 +1442,9 @@ namespace OpenDental{
 					case "P9TreatDentMedicaidID":
 						displayStrings[i]=GetProcInfo("TreatDentMedicaidID",9+startProc);
 						break;
+					case "P9PlaceNumericCode":
+						displayStrings[i]=GetProcInfo("PlaceNumericCode",9+startProc);
+						break;
 					case "P10Date":
 						displayStrings[i]=GetProcInfo("Date",10+startProc,ClaimFormItems.ListForForm[i].FormatString);
 						break;
@@ -1410,6 +1471,9 @@ namespace OpenDental{
 						break;
 					case "P10TreatDentMedicaidID":
 						displayStrings[i]=GetProcInfo("TreatDentMedicaidID",10+startProc);
+						break;
+					case "P10PlaceNumericCode":
+						displayStrings[i]=GetProcInfo("PlaceNumericCode",10+startProc);
 						break;
 					case "TotalFee":
 						double fee=0;//fee only for this page. Each page is treated like a separate claim.
@@ -1491,24 +1555,26 @@ namespace OpenDental{
 				if(((ClaimProc)claimprocs[procIndex]).ProvNum==0){
 					return "";
 				}
-				else{
-					return Providers.ListLong[Providers.GetIndexLong
-						(((ClaimProc)claimprocs[procIndex]).ProvNum)].MedicaidID;
-				}
+				else return
+					Providers.ListLong[Providers.GetIndexLong(((ClaimProc)claimprocs[procIndex]).ProvNum)].MedicaidID;
+			}
+			if(field=="PlaceNumericCode"){
+				return GetPlaceOfServiceNum(Claims.Cur.PlaceService);
 			}
 			Procedures.Cur=(Procedure)Procedures.HList[ClaimProcs.ForClaim[procIndex].ProcNum];
+			Procedures.CurOld=Procedures.Cur;//may not be necessary
 			string area="";
 			string toothNum="";
 			string surf="";
 			switch(((ProcedureCode)ProcedureCodes.HList[Procedures.Cur.ADACode]).TreatArea){
 				case TreatmentArea.Surf:
 					//area blank
-					toothNum=Procedures.Cur.ToothNum;
+					toothNum=Tooth.ToInternat(Procedures.Cur.ToothNum);
 					surf=Procedures.Cur.Surf;
 					break;
 				case TreatmentArea.Tooth:
 					//area blank
-					toothNum=Procedures.Cur.ToothNum;
+					toothNum=Tooth.ToInternat(Procedures.Cur.ToothNum);
 					//surf blank
 					break;
 				case TreatmentArea.Quad:
@@ -1536,7 +1602,7 @@ namespace OpenDental{
 						if(i>0){
 							toothNum+=",";
 						}
-						toothNum+=Procedures.Cur.ToothRange.Split(',')[i];
+						toothNum+=Tooth.ToInternat(Procedures.Cur.ToothRange.Split(',')[i]);
 					}
 					//surf blank
 					break;

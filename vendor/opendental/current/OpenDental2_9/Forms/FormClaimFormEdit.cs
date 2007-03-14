@@ -590,7 +590,9 @@ namespace OpenDental{
 					string fileName=((Pref)Prefs.HList["DocPath"]).ValueString+@"\"
 						+ClaimFormItems.ListForForm[i].ImageFileName;
 					if(!File.Exists(fileName)){
-						MessageBox.Show("File not found.");
+						grfx.DrawString("IMAGE FILE NOT FOUND",new Font(FontFamily.GenericSansSerif,12,FontStyle.Bold)
+							,Brushes.DarkRed,0,0);
+						//MessageBox.Show("File not found.");
 						continue;
 					}
 					Image thisImage=Image.FromFile(fileName);
@@ -650,6 +652,7 @@ namespace OpenDental{
 					case "RelatIsOther":
 					case "IsFTStudent":
 					case "IsPTStudent":
+					case "IsStudent":
 					case "PatientIsMale":
 					case "PatientIsFemale":
 					case "PatientIsMarried":
@@ -711,6 +714,7 @@ namespace OpenDental{
 					case "IsOtherAccident":
 					case "IsNotOtherAccident":
 					case "IsNotAccident"://of either kind
+					case "IsAccident":
 					case "BillingDentistNumIsSSN":
 					case "BillingDentistNumIsTIN":
 						displayStrings[i]="X";

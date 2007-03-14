@@ -346,6 +346,7 @@ namespace OpenDental{
 			//if(tbApts.SelectedRow!=-1){
 			//	tbApts.ColorRow(tbApts.SelectedRow,Color.LightGray);
 			//}
+			//MessageBox.Show("Laying out tables. Height: "+tbMain.Height.ToString());
 			tbMain.LayoutTables();
 		}
 
@@ -360,7 +361,7 @@ namespace OpenDental{
 
 		private void tbMain_CellDoubleClicked(object sender, CellEventArgs e){
 			FormRecallEdit FormRE=new FormRecallEdit();
-			if(Cur.DueDate.CompareTo(DateTime.Parse("1/1/1880"))>0){
+			if(Cur.DueDate.Year>1880){
 				FormRE.DueDate=Cur.DueDate;
 			}
 			FormRE.ShowDialog();

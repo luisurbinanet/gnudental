@@ -25,8 +25,8 @@ namespace OpenDental{
 
 	///<summary></summary>
 	public class Commlogs:DataClass{
-		///<summary></summary>
-		public static Commlog[] List;//for one patient
+		///<summary>All commlog items for one patient, ordered by date.</summary>
+		public static Commlog[] List;
 		///<summary></summary>
 		public static Commlog Cur;
 		//public static Hashtable HList;

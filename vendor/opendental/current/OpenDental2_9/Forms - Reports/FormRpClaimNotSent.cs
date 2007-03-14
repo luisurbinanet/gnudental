@@ -170,13 +170,14 @@ namespace OpenDental{
 
 		private void butOK_Click(object sender, System.EventArgs e) {
 			Queries.CurReport=new ReportOld();
-
+			// replaced insplan.carrier by carrier.carrierName, SPK 7/15/04
 			Queries.CurReport.Query="SELECT claim.dateservice,claim.claimnum,claim.claimtype,claim.claimstatus,"
-				+"CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI),insplan.carrier,claim.claimfee "
-				+"FROM patient,claim,insplan "
+				+"CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI),carrier.CarrierName,claim.claimfee "
+				+"FROM patient,claim,insplan,carrier "
 				+"WHERE patient.patnum=claim.patnum && insplan.plannum=claim.plannum "
-				+"&& (claim.claimstatus = 'U' || claim.claimstatus = 'H')";
-			if(radioRange.Checked==true){
+				+"&& insplan.CarrierNum=carrier.CarrierNum "	// added SPK 
+				+"&& (claim.claimstatus = 'U' || claim.claimstatus = 'H' ||  claim.claimstatus = 'W')";
+			if(radioRange.Checked==true){			// added 'W', SPK 7/15/04
 				Queries.CurReport.Query
 					+=" && claim.dateservice >= '" + date1.SelectionStart.ToString("yyyy-MM-dd")+"' "
 					+"&& claim.dateservice <= '" + date2.SelectionStart.ToString("yyyy-MM-dd")+"'";
@@ -206,6 +207,8 @@ namespace OpenDental{
           row[1]="Other";
 				if (Queries.TableTemp.Rows[i][3].ToString().Equals("H"))
 				  row[2]="Holding";//Claim Status
+				else if (Queries.TableTemp.Rows[i][3].ToString().Equals("W"))
+					row[2]="WaitQ";//Claim Status, added SPK 7/15/04
 				else
 				  row[2]="Unsent";//Claim Status
 				row[3]=Queries.TableTemp.Rows[i][4];//Patient name

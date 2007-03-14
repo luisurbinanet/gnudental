@@ -12,6 +12,8 @@ namespace OpenDental{
 		public string Description;
 		///<summary>User can hide autocodes</summary>
 		public bool IsHidden;
+		///<summary>This will be true if user no longer wants to see this autocode message when closing a procedure. This makes it less intrusive, but it can still be used in procedure buttons.</summary>
+		public bool LessIntrusive;
 	}	
 
 	/*=========================================================================================
@@ -25,7 +27,7 @@ namespace OpenDental{
 		public static AutoCode[] List;
 		///<summary></summary>
 		public static AutoCode[] ListShort;
-		///<summary></summary>
+		///<summary>key=AutoCodeNum, value=AutoCode</summary>
 		public static Hashtable HList; 
 
 		///<summary></summary>
@@ -37,9 +39,10 @@ namespace OpenDental{
 			List=new AutoCode[table.Rows.Count];
 			ArrayList ALshort=new ArrayList();//int of indexes of short list
 			for(int i = 0;i<List.Length;i++){
-				List[i].AutoCodeNum= PIn.PInt   (table.Rows[i][0].ToString());
-				List[i].Description= PIn.PString(table.Rows[i][1].ToString());
-				List[i].IsHidden   = PIn.PBool  (table.Rows[i][2].ToString());	
+				List[i].AutoCodeNum  = PIn.PInt   (table.Rows[i][0].ToString());
+				List[i].Description  = PIn.PString(table.Rows[i][1].ToString());
+				List[i].IsHidden     = PIn.PBool  (table.Rows[i][2].ToString());	
+				List[i].LessIntrusive= PIn.PBool  (table.Rows[i][3].ToString());	
 				HList.Add(List[i].AutoCodeNum,List[i]);
 				if(!List[i].IsHidden){
 					ALshort.Add(i);
@@ -53,10 +56,11 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO autocode (description,ishidden) "
+			cmd.CommandText = "INSERT INTO autocode (Description,IsHidden,LessIntrusive) "
 				+"VALUES ("
 				+"'"+POut.PString(Cur.Description)+"', "
-				+"'"+POut.PBool  (Cur.IsHidden)+"')";
+				+"'"+POut.PBool  (Cur.IsHidden)+"', "
+				+"'"+POut.PBool  (Cur.LessIntrusive)+"')";
 			//MessageBox.Show(cmd.CommandText);
 			NonQ(true);
 			Cur.AutoCodeNum=InsertID;
@@ -65,8 +69,9 @@ namespace OpenDental{
 		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE autocode SET "
-				+"description='"+POut.PString(Cur.Description)+"'"
-				+",ishidden = '" +POut.PBool  (Cur.IsHidden)+"'"
+				+"Description='"      +POut.PString(Cur.Description)+"'"
+				+",IsHidden = '"      +POut.PBool  (Cur.IsHidden)+"'"
+				+",LessIntrusive = '" +POut.PBool  (Cur.LessIntrusive)+"'"
 				+" WHERE autocodenum = '"+POut.PInt (Cur.AutoCodeNum)+"'";
 			NonQ(false);
 		}
@@ -76,6 +81,9 @@ namespace OpenDental{
 			cmd.CommandText = "DELETE from autocode WHERE autocodenum = '"+POut.PInt(Cur.AutoCodeNum)+"'";
 			NonQ(false);
 		}
+
+		
+
 
 	}
 

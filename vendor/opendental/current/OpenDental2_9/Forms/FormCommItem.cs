@@ -67,16 +67,16 @@ namespace OpenDental{
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(10, 33);
+			this.label1.Location = new System.Drawing.Point(11, 16);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(78, 16);
+			this.label1.Size = new System.Drawing.Size(96, 16);
 			this.label1.TabIndex = 0;
 			this.label1.Text = "Date";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label6
 			// 
-			this.label6.Location = new System.Drawing.Point(5, 58);
+			this.label6.Location = new System.Drawing.Point(24, 44);
 			this.label6.Name = "label6";
 			this.label6.Size = new System.Drawing.Size(82, 16);
 			this.label6.TabIndex = 5;
@@ -86,7 +86,7 @@ namespace OpenDental{
 			// butOK
 			// 
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(521, 237);
+			this.butOK.Location = new System.Drawing.Point(538, 309);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 6;
 			this.butOK.Text = "&OK";
@@ -96,7 +96,7 @@ namespace OpenDental{
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butCancel.Location = new System.Drawing.Point(521, 275);
+			this.butCancel.Location = new System.Drawing.Point(538, 342);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 7;
 			this.butCancel.Text = "&Cancel";
@@ -104,15 +104,16 @@ namespace OpenDental{
 			// 
 			// textDate
 			// 
-			this.textDate.Location = new System.Drawing.Point(88, 31);
+			this.textDate.Location = new System.Drawing.Point(107, 14);
 			this.textDate.Name = "textDate";
+			this.textDate.Size = new System.Drawing.Size(99, 20);
 			this.textDate.TabIndex = 0;
 			this.textDate.Text = "";
 			// 
 			// butDelete
 			// 
 			this.butDelete.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butDelete.Location = new System.Drawing.Point(36, 275);
+			this.butDelete.Location = new System.Drawing.Point(35, 342);
 			this.butDelete.Name = "butDelete";
 			this.butDelete.TabIndex = 17;
 			this.butDelete.Text = "&Delete";
@@ -120,7 +121,7 @@ namespace OpenDental{
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(4, 100);
+			this.label2.Location = new System.Drawing.Point(24, 171);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(82, 16);
 			this.label2.TabIndex = 18;
@@ -130,7 +131,7 @@ namespace OpenDental{
 			// textNote
 			// 
 			this.textNote.AcceptsReturn = true;
-			this.textNote.Location = new System.Drawing.Point(88, 95);
+			this.textNote.Location = new System.Drawing.Point(107, 170);
 			this.textNote.Multiline = true;
 			this.textNote.Name = "textNote";
 			this.textNote.Size = new System.Drawing.Size(507, 97);
@@ -139,16 +140,16 @@ namespace OpenDental{
 			// 
 			// listType
 			// 
-			this.listType.Location = new System.Drawing.Point(88, 58);
+			this.listType.Location = new System.Drawing.Point(107, 43);
 			this.listType.Name = "listType";
-			this.listType.Size = new System.Drawing.Size(120, 30);
+			this.listType.Size = new System.Drawing.Size(120, 82);
 			this.listType.TabIndex = 20;
 			// 
 			// FormCommItem
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
-			this.ClientSize = new System.Drawing.Size(619, 318);
+			this.ClientSize = new System.Drawing.Size(634, 383);
 			this.Controls.Add(this.listType);
 			this.Controls.Add(this.textNote);
 			this.Controls.Add(this.textDate);
@@ -186,6 +187,8 @@ namespace OpenDental{
 			}
 			listType.SelectedIndex=(int)Commlogs.Cur.CommType-1;
 			textNote.Text=Commlogs.Cur.Note;
+			textNote.SelectionStart=textNote.Text.Length;
+			textNote.Select();
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
@@ -222,6 +225,10 @@ namespace OpenDental{
 
 		private void butCancel_Click(object sender, System.EventArgs e) {
 			DialogResult=DialogResult.Cancel;
+		}
+
+		private void button1_Click(object sender, System.EventArgs e) {
+			textNote.Select(textNote.Text.Length,1);
 		}
 
 	}

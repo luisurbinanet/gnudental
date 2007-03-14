@@ -128,6 +128,7 @@ namespace OpenDental{
 			MessageBox.Show(Lan.g(this,"Telephone numbers reformatted."));
 		}
 			
+		///<summary></summary>
 		public static void Reformat(){
 			string oldTel;
 			string newTel;

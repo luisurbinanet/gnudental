@@ -295,7 +295,7 @@ namespace OpenDental{
 					|| List[i].Status==ClaimProcStatus.Supplemental){//because supplemental are always received
 					retVal-=List[i].InsPayAmt;
 				}
-				else{//not recieved
+				else{//not received
 					retVal-=List[i].InsPayEst;
 				}
 				retVal-=List[i].WriteOff;

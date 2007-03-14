@@ -10,7 +10,7 @@ using System.Globalization;
 using System.Windows.Forms;
 
 namespace OpenDental{
-///<summary></summary>
+///<summary>Must refresh Patients.GetFamily after exiting this form because a lot could have changed including drop or delete.</summary>
 	public class FormInsPlan : System.Windows.Forms.Form{
 		private System.ComponentModel.IContainer components;
 		private System.Windows.Forms.Label label5;
@@ -116,9 +116,10 @@ namespace OpenDental{
 		private System.Windows.Forms.GroupBox groupBox3;
 		private System.Windows.Forms.Button butSelect;
 		private System.Windows.Forms.Label labelCitySTZip;
-		private System.Windows.Forms.Button butDrop;
 		private bool mouseIsInListCars;
 		private System.Windows.Forms.Label labelDrop;
+		private System.Windows.Forms.Button butDrop;
+		///<summary></summary>
 		public bool DropButVisible;
 
 		///<summary></summary>
@@ -318,8 +319,8 @@ namespace OpenDental{
 			this.panelAdvancedIns = new System.Windows.Forms.Panel();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this.groupBox6 = new System.Windows.Forms.GroupBox();
-			this.butDrop = new System.Windows.Forms.Button();
 			this.labelDrop = new System.Windows.Forms.Label();
+			this.butDrop = new System.Windows.Forms.Button();
 			this.panel4.SuspendLayout();
 			this.panel2.SuspendLayout();
 			this.panel3.SuspendLayout();
@@ -1274,7 +1275,7 @@ namespace OpenDental{
 			this.groupBox6.Controls.Add(this.butChangeCarrier);
 			this.groupBox6.Controls.Add(this.butDetach);
 			this.groupBox6.Controls.Add(this.butChangeLink);
-			this.groupBox6.Location = new System.Drawing.Point(430, 583);
+			this.groupBox6.Location = new System.Drawing.Point(460, 587);
 			this.groupBox6.Name = "groupBox6";
 			this.groupBox6.Size = new System.Drawing.Size(266, 84);
 			this.groupBox6.TabIndex = 120;
@@ -1282,27 +1283,27 @@ namespace OpenDental{
 			this.groupBox6.Text = "Not visible";
 			this.groupBox6.Visible = false;
 			// 
-			// butDrop
-			// 
-			this.butDrop.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butDrop.Location = new System.Drawing.Point(99, 639);
-			this.butDrop.Name = "butDrop";
-			this.butDrop.Size = new System.Drawing.Size(75, 26);
-			this.butDrop.TabIndex = 121;
-			this.butDrop.Text = "Drop";
-			this.butDrop.Visible = false;
-			this.butDrop.Click += new System.EventHandler(this.butDrop_Click);
-			// 
 			// labelDrop
 			// 
-			this.labelDrop.Location = new System.Drawing.Point(184, 615);
+			this.labelDrop.Location = new System.Drawing.Point(185, 615);
 			this.labelDrop.Name = "labelDrop";
 			this.labelDrop.Size = new System.Drawing.Size(210, 51);
-			this.labelDrop.TabIndex = 122;
+			this.labelDrop.TabIndex = 124;
 			this.labelDrop.Text = "Drop a plan when a patient changes carriers or is no longer covered.  This does n" +
 				"ot delete the plan.";
 			this.labelDrop.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			this.labelDrop.Visible = false;
+			// 
+			// butDrop
+			// 
+			this.butDrop.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butDrop.Location = new System.Drawing.Point(100, 639);
+			this.butDrop.Name = "butDrop";
+			this.butDrop.Size = new System.Drawing.Size(75, 26);
+			this.butDrop.TabIndex = 123;
+			this.butDrop.Text = "Drop";
+			this.butDrop.Visible = false;
+			this.butDrop.Click += new System.EventHandler(this.butDrop_Click);
 			// 
 			// FormInsPlan
 			// 
@@ -1541,7 +1542,7 @@ namespace OpenDental{
 			if(checkSubOtherFam.Checked){
 				int curPatNum=Patients.Cur.PatNum;
 				FormPatientSelect FormPS=new FormPatientSelect();
-				FormPS.OnlyChangingFam=true;//this will cause a change in the patNum only
+				FormPS.SelectionModeOnly=true;//this will cause a change in the patNum only
 				FormPS.ShowDialog();
 				if(FormPS.DialogResult!=DialogResult.OK){
 					checkSubOtherFam.Checked=false;
@@ -1550,7 +1551,9 @@ namespace OpenDental{
 				InsPlans.Cur.Subscriber=Patients.Cur.PatNum;
 				Patients.GetLim(Patients.Cur.PatNum);
 				InsPlans.Cur.SubscriberID=Patients.Lim.SSN;
-				Patients.Cur.PatNum=curPatNum;//this preserves the current PatNum
+				Patient PatCur=Patients.Cur;
+				PatCur.PatNum=curPatNum;//this preserves the current PatNum
+				Patients.Cur=PatCur;
 			}
 			else{//switch to family view
 				InsPlans.Cur.Subscriber=0;//this will reset the subscriber and ID to current patient
@@ -2119,34 +2122,39 @@ namespace OpenDental{
 			if(!InsPlans.DeleteCur()){//checks dependencies first
 				return;
 			}
+			InsPlans.Cur=new InsPlan();//this sets the PlanNum to 0
 			DialogResult=DialogResult.OK;
 		}
 
 		private void butDrop_Click(object sender, System.EventArgs e) {
+			Patient PatCur=Patients.Cur;
 			//if dropping primary ins
 			if(Patients.Cur.PriPlanNum==InsPlans.Cur.PlanNum){
 				if(Patients.Cur.SecPlanNum!=0){//if patient has secondary ins.
-					Patients.Cur.PriPlanNum=Patients.Cur.SecPlanNum;
-					Patients.Cur.PriRelationship=Patients.Cur.SecRelationship;
-					Patients.Cur.SecPlanNum=0;
-					Patients.Cur.SecRelationship=Relat.Self;
+					PatCur.PriPlanNum=Patients.Cur.SecPlanNum;
+					PatCur.PriRelationship=Patients.Cur.SecRelationship;
+					PatCur.SecPlanNum=0;
+					PatCur.SecRelationship=Relat.Self;
 				}
 				else{//patient does not have secondary
-					Patients.Cur.PriPlanNum=0;
-					Patients.Cur.PriRelationship=Relat.Self;
+					PatCur.PriPlanNum=0;
+					PatCur.PriRelationship=Relat.Self;
 				}
+				Patients.Cur=PatCur;
 				Patients.UpdateCur();
 			}
 			//if dropping sec ins.
 			else if(Patients.Cur.SecPlanNum==InsPlans.Cur.PlanNum){
-				Patients.Cur.SecPlanNum=0;
-				Patients.Cur.SecRelationship=Relat.Self;
+				PatCur.SecPlanNum=0;
+				PatCur.SecRelationship=Relat.Self;
+				Patients.Cur=PatCur;
 				Patients.UpdateCur();
 			}
 			else{
 				MessageBox.Show("Error. Current patient is not covered by this plan.");
 				return;
 			}
+			//remember to refresh after closing this form!!!
 			DialogResult=DialogResult.OK;
 		}
 
@@ -2286,9 +2294,8 @@ namespace OpenDental{
 				//	InsTemplates.DeleteCur();
 				//}
 			}
+			//remember to refresh after closing this form!!!!!
 		}
-
-		
 
 		
 

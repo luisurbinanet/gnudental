@@ -49,18 +49,22 @@ namespace OpenDental{
 			// 
 			// listProviders
 			// 
-			this.listProviders.Location = new System.Drawing.Point(16, 22);
+			this.listProviders.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+				| System.Windows.Forms.AnchorStyles.Left) 
+				| System.Windows.Forms.AnchorStyles.Right)));
+			this.listProviders.Location = new System.Drawing.Point(16, 12);
 			this.listProviders.Name = "listProviders";
-			this.listProviders.Size = new System.Drawing.Size(120, 316);
+			this.listProviders.Size = new System.Drawing.Size(192, 316);
 			this.listProviders.TabIndex = 4;
 			this.listProviders.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listProviders_MouseDown);
 			this.listProviders.DoubleClick += new System.EventHandler(this.listProviders_DoubleClick);
 			// 
 			// butClose
 			// 
+			this.butClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butClose.Location = new System.Drawing.Point(274, 413);
+			this.butClose.Location = new System.Drawing.Point(208, 376);
 			this.butClose.Name = "butClose";
 			this.butClose.Size = new System.Drawing.Size(75, 26);
 			this.butClose.TabIndex = 3;
@@ -70,11 +74,12 @@ namespace OpenDental{
 			// butDown
 			// 
 			this.butDown.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.butDown.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
 			this.butDown.BtnStyle = OpenDental.enumType.XPStyle.Silver;
 			this.butDown.Image = ((System.Drawing.Image)(resources.GetObject("butDown.Image")));
 			this.butDown.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDown.Location = new System.Drawing.Point(105, 392);
+			this.butDown.Location = new System.Drawing.Point(105, 375);
 			this.butDown.Name = "butDown";
 			this.butDown.Size = new System.Drawing.Size(79, 26);
 			this.butDown.TabIndex = 12;
@@ -84,11 +89,12 @@ namespace OpenDental{
 			// butUp
 			// 
 			this.butUp.AdjustImageLocation = new System.Drawing.Point(0, 1);
+			this.butUp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.butUp.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
 			this.butUp.BtnStyle = OpenDental.enumType.XPStyle.Silver;
 			this.butUp.Image = ((System.Drawing.Image)(resources.GetObject("butUp.Image")));
 			this.butUp.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butUp.Location = new System.Drawing.Point(16, 392);
+			this.butUp.Location = new System.Drawing.Point(16, 375);
 			this.butUp.Name = "butUp";
 			this.butUp.Size = new System.Drawing.Size(79, 26);
 			this.butUp.TabIndex = 11;
@@ -98,11 +104,12 @@ namespace OpenDental{
 			// butAdd
 			// 
 			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.butAdd.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
 			this.butAdd.BtnStyle = OpenDental.enumType.XPStyle.Silver;
 			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
 			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAdd.Location = new System.Drawing.Point(16, 351);
+			this.butAdd.Location = new System.Drawing.Point(16, 340);
 			this.butAdd.Name = "butAdd";
 			this.butAdd.Size = new System.Drawing.Size(79, 26);
 			this.butAdd.TabIndex = 10;
@@ -113,7 +120,7 @@ namespace OpenDental{
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butClose;
-			this.ClientSize = new System.Drawing.Size(372, 472);
+			this.ClientSize = new System.Drawing.Size(311, 414);
 			this.Controls.Add(this.butDown);
 			this.Controls.Add(this.butUp);
 			this.Controls.Add(this.butAdd);
@@ -184,6 +191,10 @@ namespace OpenDental{
 					listProviders.Items.Add(Providers.ListLong[i].Abbr);
 			}
 			listProviders.SelectedIndex=Providers.Selected;
+			if(listProviders.Items.Count>20){//for large institutions, like dental schools
+				this.Size=new Size(900,700);
+				this.Location=new Point((SystemInformation.WorkingArea.Width-Width)/2,(SystemInformation.WorkingArea.Height-Height)/2);
+			}
 		}
 
 		private void butAdd_Click(object sender, System.EventArgs e) {

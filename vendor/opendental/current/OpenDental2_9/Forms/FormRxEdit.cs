@@ -34,6 +34,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public bool IsNew;
 		private OpenDental.XPButton butPrint;
+		private OpenDental.XPButton butDelete;
 		///<summary></summary>
     public FormRpPrintPreview pView = new FormRpPrintPreview();
 
@@ -92,6 +93,7 @@ namespace OpenDental{
 			this.printDialog2 = new System.Windows.Forms.PrintDialog();
 			this.pd2 = new System.Drawing.Printing.PrintDocument();
 			this.butPrint = new OpenDental.XPButton();
+			this.butDelete = new OpenDental.XPButton();
 			this.SuspendLayout();
 			// 
 			// butCancel
@@ -254,12 +256,28 @@ namespace OpenDental{
 			this.butPrint.Text = "&Print";
 			this.butPrint.Click += new System.EventHandler(this.butPrint_Click);
 			// 
+			// butDelete
+			// 
+			this.butDelete.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butDelete.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butDelete.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
+			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butDelete.Location = new System.Drawing.Point(38, 424);
+			this.butDelete.Name = "butDelete";
+			this.butDelete.Size = new System.Drawing.Size(88, 26);
+			this.butDelete.TabIndex = 30;
+			this.butDelete.Text = "&Delete";
+			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
+			// 
 			// FormRxEdit
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(710, 472);
+			this.Controls.Add(this.butDelete);
 			this.Controls.Add(this.butPrint);
 			this.Controls.Add(this.label7);
 			this.Controls.Add(this.listProv);
@@ -313,11 +331,6 @@ namespace OpenDental{
 			textNotes.Text=RxPats.Cur.Notes;
 		}
 
-		private void butOK_Click(object sender, System.EventArgs e) {
-			if(SaveRx())
-				DialogResult=DialogResult.OK;
-		}
-
 		private bool SaveRx(){
 			if(  textDate.errorProvider1.GetError(textDate)!=""
 				//|| textAmount.errorProvider1.GetError(textAmount)!=""
@@ -344,46 +357,36 @@ namespace OpenDental{
 			return true;
 		}
 
-		private void butCancel_Click(object sender, System.EventArgs e) {
-			DialogResult=DialogResult.Cancel;
-		}
-
-		private void butPrint_Click(object sender, System.EventArgs e) {
-			if(SaveRx()){
-				PrintReport(false);
-				DialogResult=DialogResult.OK;
-			}
-		}
-
 		///<summary></summary>
 		public void PrintReport(bool justPreview){
-		pd2=new PrintDocument();
-		pd2.PrintPage += new PrintPageEventHandler(this.pd2_PrintPage);
-		pd2.DefaultPageSettings.Margins=new Margins(10,40,40,60);
-		PrintDocument tempPD = new PrintDocument();
-		tempPD.PrinterSettings.PrinterName=Computers.Cur.PrinterName;
-		if(tempPD.PrinterSettings.IsValid){
-			pd2.PrinterSettings.PrinterName=Computers.Cur.PrinterName;
-		}
-		//uses default printer if selected printer not valid
-		tempPD.Dispose();
-		try  {
-			if(justPreview){
-				pView.printPreviewControl2.Document=pd2;
-				pView.ShowDialog();
+			pd2=new PrintDocument();
+			pd2.PrintPage += new PrintPageEventHandler(this.pd2_PrintPage);
+			pd2.DefaultPageSettings.Margins=new Margins(10,40,40,60);
+			PrintDocument tempPD = new PrintDocument();
+			tempPD.PrinterSettings.PrinterName=Computers.Cur.PrinterName;
+			if(tempPD.PrinterSettings.IsValid){
+				pd2.PrinterSettings.PrinterName=Computers.Cur.PrinterName;
 			}
-			else{
-			  //printDialog2=new PrintDialog();
-			  //printDialog2.Document=pd2;
-			  //if(printDialog2.ShowDialog()==DialogResult.OK){
-				  pd2.Print();
-			  //}
+			//uses default printer if selected printer not valid
+			tempPD.Dispose();
+			try{
+				if(justPreview){
+					pView.printPreviewControl2.Document=pd2;
+					pView.ShowDialog();
+				}
+				else{
+					//printDialog2=new PrintDialog();
+					//printDialog2.Document=pd2;
+					//if(printDialog2.ShowDialog()==DialogResult.OK){
+						pd2.Print();
+					//}
+				}
+			}
+			catch{
+				MessageBox.Show(Lan.g(this,"Printer not available"));
 			}
 		}
-		catch{
-			MessageBox.Show(Lan.g(this,"Printer not available"));
-		}
-	}
+
 		private void pd2_PrintPage(object sender, System.Drawing.Printing.PrintPageEventArgs e) {
 			//Draw borders to cut			
       Pen penBorder=new Pen(Color.Black,(float)(.125));
@@ -542,6 +545,37 @@ namespace OpenDental{
 			xPos=344-(int)(e.Graphics.MeasureString(sigLine,checkFont).Width/2);
 		  e.Graphics.DrawString(sigLine,checkFont,Brushes.Black,xPos,yPos+4);
 		}
+
+		private void butDelete_Click(object sender, System.EventArgs e) {
+			if(IsNew){
+				DialogResult=DialogResult.Cancel;
+				return;
+			}
+			if(MessageBox.Show(Lan.g(this,"Delete Prescription?"),"",MessageBoxButtons.OKCancel)
+				!=DialogResult.OK){
+				return;
+			}
+			RxPats.DeleteCur();
+			DialogResult=DialogResult.OK;	
+		}
+
+		private void butPrint_Click(object sender, System.EventArgs e) {
+			if(SaveRx()){
+				PrintReport(false);
+				DialogResult=DialogResult.OK;
+			}
+		}
+
+		private void butOK_Click(object sender, System.EventArgs e) {
+			if(SaveRx())
+				DialogResult=DialogResult.OK;
+		}
+
+		private void butCancel_Click(object sender, System.EventArgs e) {
+			DialogResult=DialogResult.Cancel;
+		}
+
+		
 
 	}
 }

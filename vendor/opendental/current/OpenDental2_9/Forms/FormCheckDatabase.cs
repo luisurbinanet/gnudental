@@ -136,7 +136,7 @@ namespace OpenDental
 			this.checkCorrupt.Checked = true;
 			this.checkCorrupt.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.checkCorrupt.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkCorrupt.Location = new System.Drawing.Point(30, 174);
+			this.checkCorrupt.Location = new System.Drawing.Point(30, 155);
 			this.checkCorrupt.Name = "checkCorrupt";
 			this.checkCorrupt.Size = new System.Drawing.Size(709, 24);
 			this.checkCorrupt.TabIndex = 6;
@@ -147,10 +147,10 @@ namespace OpenDental
 			this.checkCodes.Checked = true;
 			this.checkCodes.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.checkCodes.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkCodes.Location = new System.Drawing.Point(30, 136);
+			this.checkCodes.Location = new System.Drawing.Point(30, 127);
 			this.checkCodes.Name = "checkCodes";
 			this.checkCodes.Size = new System.Drawing.Size(709, 24);
-			this.checkCodes.TabIndex = 7;
+			this.checkCodes.TabIndex = 8;
 			this.checkCodes.Text = "Add any missing procedure codes.";
 			// 
 			// FormCheckDatabase

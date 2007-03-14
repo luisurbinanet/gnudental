@@ -28,22 +28,25 @@ namespace OpenDental{
 			FromVersion=new Version(fromVersion);
 			ToVersion=new Version(Application.ProductVersion);
 			if(FromVersion.CompareTo(ToVersion)>0){
-				MessageBox.Show("Can not convert database to an older version.");
+				MessageBox.Show("Cannot convert database to an older version.");
 				return false;
 			}
 			if(FromVersion < new Version("1.0.0")
 				|| FromVersion.ToString()=="2.0.1.0"
 				|| FromVersion.ToString()=="2.1.0.0"
 				|| FromVersion.ToString()=="2.1.1.0"
-				|| FromVersion.ToString()=="2.5.0.0"){
-				MessageBox.Show("Can not convert database version "+FromVersion.ToString()
+				|| FromVersion.ToString()=="2.5.0.0"
+				|| FromVersion.ToString()=="2.9.0.0"){
+				MessageBox.Show("Cannot convert database version "+FromVersion.ToString()
 					+" which was only for development purposes.");
 				return false;
 			}
-			if(FromVersion < new Version("2.8.14.0")){
+			if(FromVersion < new Version("2.9.8.0")){
 				if(MessageBox.Show("Your database will now be converted from version "
 					+FromVersion.ToString()+" to version "+ToVersion.ToString()
 					+". Please be certain you have a current backup.  "
+					+"If the conversion fails for any reason, DO NOT use your corrupted database.  "
+					+"Instead, you MUST restore from a good backup.  "
 					+"The conversion works best if you are on the server.  "
 					+"Depending on the speed of your computer, it can be as fast as a few seconds, "
 					+"or it can take as long as 10 minutes. ","",MessageBoxButtons.OKCancel)
@@ -67,9 +70,13 @@ namespace OpenDental{
 
 		///<summary>Backs up the database to the same directory as the original just in case the user did not have sense enough to do a backup first.</summary>
 		private void MakeABackup(){
-			try{
+			//there is a bug in the driver, so we can't do backups for now.
+			return;
+			string oldDb=FormConfig.Database;
+			//try{
 				string newDb="opendentalbackup"+DateTime.Today.ToString("MMddyyyy");
-				string oldDb=FormConfig.Database;
+				Conversions.NonQString="DROP DATABASE IF EXISTS "+newDb;
+				Conversions.SubmitNonQString();
 				Conversions.NonQString="CREATE DATABASE "+newDb;
 				if(!Conversions.SubmitNonQString()) throw new Exception("Could not create database "+newDb);
 				Conversions.SelectText="SHOW TABLES";
@@ -79,28 +86,46 @@ namespace OpenDental{
 					tableName[i]=Conversions.TableQ.Rows[i][0].ToString();
 				}
 				//switch to using the new database
-				DataClass.SetConnection(newDb);
+				//DataClass.SetConnection(newDb);
+				
+				//Conversions.NonQString="SET SQL_QUOTE_SHOW_CREATE=0";
+				//Conversions.SubmitNonQString();
+
+				Conversions.NonQString="USE "+newDb;
+				Conversions.SubmitNonQString();
+				string creationText="";
 				for(int i=0;i<tableName.Length;i++){
-					Conversions.SelectText="SHOW CREATE TABLE "+oldDb+"."+tableName[i];
-					if(!Conversions.SubmitSelect()) throw new Exception("Could not show create table.");
-					Conversions.NonQString=Conversions.TableQ.Rows[0][1].ToString();
-					if(!Conversions.SubmitNonQString()) throw new Exception(Conversions.NonQString);
+					//DataClass.SetConnection(oldDb);
+					Conversions.ReaderText="SHOW CREATE TABLE "+oldDb+"."+tableName[i];
+					creationText=Conversions.SubmitReader();
+					//Conversions.SelectText="SHOW CREATE TABLE `"+tableName[i]+"`";//"+oldDb+"."+tableName[i]+"";
+					//Conversions.SubmitSelect();
+					//if(!Conversions.SubmitSelect()) throw new Exception("Could not show create table.");
+					MessageBox.Show(creationText);
+					//DataClass.SetConnection(newDb);
+					//Conversions.NonQString="USE "+newDb;
+					//Conversions.SubmitNonQString();
+					Conversions.NonQString=creationText;
+					//Conversions.NonQString=Conversions.TableQ.Rows[0][1].ToString();
+					Conversions.SubmitNonQString();
 					Conversions.NonQString="INSERT INTO "+newDb+"."+tableName[i]
 						+" SELECT * FROM "+oldDb+"."+tableName[i];
-					if(!Conversions.SubmitNonQString()) throw new Exception(Conversions.NonQString);
+					Conversions.SubmitNonQString();
 				}
-			}
-			catch(Exception e){
+			//}
+			/*catch(Exception e){
 				if(e.Message!=""){
 					//MessageBox.Show(e.Message);
 				}
 				MessageBox.Show("You can disregard the previous error message.  It came up simply because the automated backup had already been run today.  The conversion will now begin.");
 			}
-			finally{
+			finally{*/
 				//MessageBox.Show("Backup done");
 				//go back to the current db
-				DataClass.SetConnection();
-			}
+				Conversions.NonQString="USE "+oldDb;
+				Conversions.SubmitNonQString();
+				//DataClass.SetConnection();
+			//}
 		}
 
 		private bool To1_0_1(){//returns true if successful
@@ -818,7 +843,6 @@ namespace OpenDental{
 						//Employers.Cur=new Employer();
 						//Employers.Cur.EmpName=PIn.PString(Conversions.TableQ.Rows[i][0].ToString());
 						//Employers.InsertCur();
-						
 					}
 					//now, get the employers into HEmpNames so we can retrieve the empnum from the name
 					Hashtable HEmpNames=new Hashtable();
@@ -899,41 +923,7 @@ namespace OpenDental{
 					//Delete all ins templates
 					Conversions.NonQString="DELETE FROM instemplate";
 					Conversions.SubmitNonQString();
-					//Create all new ins templates based on and linked to identical insplans
-					/*
-					Conversions.SelectText="SELECT DISTINCT PlanType,ClaimFormNum,UseAltCode,ClaimsUseUCR"
-						+",FeeSched,CopayFeeSched,EmployerNum,GroupName,GroupNum,CarrierNum"
-						+" FROM insplan WHERE CarrierNum !='0'";//this will skip insplans with blank carrier(?if any)
-					Conversions.SubmitSelect();
-					for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
-						InsTemplates.Cur=new InsTemplate();
-						InsTemplates.Cur.PlanType     =PIn.PString(Conversions.TableQ.Rows[i][0].ToString());
-						InsTemplates.Cur.ClaimFormNum =PIn.PInt   (Conversions.TableQ.Rows[i][1].ToString());
-						InsTemplates.Cur.UseAltCode   =PIn.PBool  (Conversions.TableQ.Rows[i][2].ToString());
-						InsTemplates.Cur.ClaimsUseUCR =PIn.PBool  (Conversions.TableQ.Rows[i][3].ToString());
-						InsTemplates.Cur.FeeSched     =PIn.PInt   (Conversions.TableQ.Rows[i][4].ToString());
-						InsTemplates.Cur.CopayFeeSched=PIn.PInt   (Conversions.TableQ.Rows[i][5].ToString());
-						InsTemplates.Cur.EmployerNum  =PIn.PInt   (Conversions.TableQ.Rows[i][6].ToString());
-						InsTemplates.Cur.GroupName    =PIn.PString(Conversions.TableQ.Rows[i][7].ToString());
-						InsTemplates.Cur.GroupNum     =PIn.PString(Conversions.TableQ.Rows[i][8].ToString());
-						InsTemplates.Cur.CarrierNum   =PIn.PInt   (Conversions.TableQ.Rows[i][9].ToString());
-						InsTemplates.InsertCur();
-						Conversions.NonQString="UPDATE insplan SET TemplateNum = '"
-							+POut.PInt(InsTemplates.Cur.TemplateNum)+"' WHERE "
-							+"PlanType = '"        +POut.PString(InsTemplates.Cur.PlanType)+"' "
-							+"&& ClaimFormNum = '" +POut.PInt   (InsTemplates.Cur.ClaimFormNum)+"' "
-							+"&& UseAltCode = '"   +POut.PBool  (InsTemplates.Cur.UseAltCode)+"' "
-							+"&& ClaimsUseUCR = '" +POut.PBool  (InsTemplates.Cur.ClaimsUseUCR)+"' "
-							+"&& FeeSched = '"     +POut.PInt   (InsTemplates.Cur.FeeSched)+"' "
-							+"&& CopayFeeSched = '"+POut.PInt   (InsTemplates.Cur.CopayFeeSched)+"' "
-							+"&& EmployerNum = '"  +POut.PInt   (InsTemplates.Cur.EmployerNum)+"' "
-							+"&& GroupName = '"    +POut.PString(InsTemplates.Cur.GroupName)+"' "
-							+"&& GroupNum = '"     +POut.PString(InsTemplates.Cur.GroupNum)+"' "
-							+"&& CarrierNum = '"   +POut.PInt   (InsTemplates.Cur.CarrierNum)+"'";
-						Conversions.SubmitNonQString();
-					}*/
 					//Add PracticeWeb Reporting program link
-					//UPDATE program SET Path = 'PWReports.exe' WHERE ProgName = 'PracticeWebReports';
 					Programs.Refresh();
 					if(Programs.HList.ContainsKey("PracticeWebReports")){
 						Programs.Cur=(Program)Programs.HList["PracticeWebReports"];
@@ -1063,7 +1053,7 @@ namespace OpenDental{
 					Programs.Cur.ProgName="VixWin";
 					Programs.Cur.ProgDesc="VixWin from www.gendexxray.com";
 					Programs.Cur.Path="";
-					Programs.Cur.Note=@"This link uses the VixWin QuikLink program to listen for new files in the quiklink directory. No other file path or command line arguments are needed.  The QuikLink directory would typically be C:\vx_qlink\ .  If you use ChartNum for link, it can not be more than 6 characters.";
+					Programs.Cur.Note=@"This link uses the VixWin QuikLink program to listen for new files in the quiklink directory. No other file path or command line arguments are needed.  The QuikLink directory would typically be C:\vx_qlink\ .  If you use ChartNum for link, it cannot be more than 6 characters.";
 					Programs.InsertCur();//we now have a ProgramNum to work with
 					ProgramProperties.Cur=new ProgramProperty();
 					ProgramProperties.Cur.ProgramNum=Programs.Cur.ProgramNum;
@@ -1242,6 +1232,168 @@ namespace OpenDental{
 				catch{
 					return false;
 				}
+			}
+			return To2_9_1();
+		}
+
+		private bool To2_9_1(){
+			if(FromVersion < new Version("2.9.1.0")){
+				//try{
+					//check to see if the conversion file is available
+					if(!File.Exists(@"ConversionFiles\convert_2_9_1.txt")){
+						MessageBox.Show(@"ConversionFiles\convert_2_9_1.txt"+" could not be found.");
+						return false;
+					}
+					if(!ExecuteFile(@"ConversionFiles\convert_2_9_1.txt")) return false;
+					Conversions.NonQArray=new string[]
+					{
+						"UPDATE preference SET ValueString = '2.9.1.0' WHERE PrefName = 'DataBaseVersion'"
+					};
+					if(!Conversions.SubmitNonQArray()) return false;
+				//}
+				//catch{
+				//	return false;
+				//}
+			}
+			return To2_9_2();
+		}
+
+		private bool To2_9_2(){
+			if(FromVersion < new Version("2.9.2.0")){
+				//try{
+					Conversions.NonQArray=new string[]
+					{
+						"ALTER TABLE patient ADD PriPending tinyint(1) unsigned NOT NULL"
+						,"ALTER TABLE patient ADD SecPending tinyint(1) unsigned NOT NULL"
+						,"ALTER TABLE appointment ADD Assistant smallint unsigned NOT NULL"
+						,"UPDATE preference SET ValueString = '2.9.2.0' WHERE PrefName = 'DataBaseVersion'"
+					};
+					if(!Conversions.SubmitNonQArray()) return false;
+				//}
+				//catch{
+				//	return false;
+				//}
+			}
+			return To2_9_5();
+		}
+
+		private bool To2_9_5(){
+			if(FromVersion < new Version("2.9.5.0")){
+				//try{
+					Conversions.NonQArray=new string[]
+					{
+						"ALTER TABLE autocode ADD LessIntrusive tinyint(1) unsigned NOT NULL"
+						,"UPDATE preference SET ValueString = '2.9.5.0' WHERE PrefName = 'DataBaseVersion'"
+					};
+					if(!Conversions.SubmitNonQArray()) return false;
+				//}
+				//catch{
+				//	return false;
+				//}
+			}
+			return To2_9_8();
+		}
+
+		private bool To2_9_8(){
+			if(FromVersion < new Version("2.9.8.0")){
+				//try{
+					string claimFormNum;
+					//Change the PlaceNumericCode field for both HCFA forms
+					Conversions.SelectText="SELECT ClaimFormNum FROM claimform WHERE UniqueID = '4'";
+					Conversions.SubmitSelect();
+					if(Conversions.TableQ.Rows.Count>0){
+						claimFormNum=Conversions.TableQ.Rows[0][0].ToString();
+						Conversions.NonQArray=new string[]
+						{
+							"UPDATE claimformitem SET FieldName='P1PlaceNumericCode' "
+							+"WHERE FieldName='PlaceNumericCode' && ClaimFormNum='"+claimFormNum+"' "
+							+"&& YPos='751'"
+							,"UPDATE claimformitem SET FieldName='P2PlaceNumericCode' "
+							+"WHERE FieldName='PlaceNumericCode' && ClaimFormNum='"+claimFormNum+"' "
+							+"&& YPos='784'"
+							,"UPDATE claimformitem SET FieldName='P3PlaceNumericCode' "
+							+"WHERE FieldName='PlaceNumericCode' && ClaimFormNum='"+claimFormNum+"' "
+							+"&& YPos='817'"
+							,"UPDATE claimformitem SET FieldName='P4PlaceNumericCode' "
+							+"WHERE FieldName='PlaceNumericCode' && ClaimFormNum='"+claimFormNum+"' "
+							+"&& YPos='850'"
+							,"UPDATE claimformitem SET FieldName='P5PlaceNumericCode' "
+							+"WHERE FieldName='PlaceNumericCode' && ClaimFormNum='"+claimFormNum+"' "
+							+"&& YPos='884'"
+							,"UPDATE claimformitem SET FieldName='P6PlaceNumericCode' "
+							+"WHERE FieldName='PlaceNumericCode' && ClaimFormNum='"+claimFormNum+"' "
+							+"&& YPos='917'"
+						};
+						if(!Conversions.SubmitNonQArray()) return false;
+					}
+					Conversions.SelectText="SELECT ClaimFormNum FROM claimform WHERE UniqueID = '5'";
+					Conversions.SubmitSelect();
+					if(Conversions.TableQ.Rows.Count>0){
+						claimFormNum=Conversions.TableQ.Rows[0][0].ToString();
+						Conversions.NonQArray=new string[]
+						{
+							"UPDATE claimformitem SET FieldName='P1PlaceNumericCode' "
+							+"WHERE FieldName='PlaceNumericCode' && ClaimFormNum='"+claimFormNum+"' "
+							+"&& YPos='751'"
+							,"UPDATE claimformitem SET FieldName='P2PlaceNumericCode' "
+							+"WHERE FieldName='PlaceNumericCode' && ClaimFormNum='"+claimFormNum+"' "
+							+"&& YPos='784'"
+							,"UPDATE claimformitem SET FieldName='P3PlaceNumericCode' "
+							+"WHERE FieldName='PlaceNumericCode' && ClaimFormNum='"+claimFormNum+"' "
+							+"&& YPos='817'"
+							,"UPDATE claimformitem SET FieldName='P4PlaceNumericCode' "
+							+"WHERE FieldName='PlaceNumericCode' && ClaimFormNum='"+claimFormNum+"' "
+							+"&& YPos='850'"
+							,"UPDATE claimformitem SET FieldName='P5PlaceNumericCode' "
+							+"WHERE FieldName='PlaceNumericCode' && ClaimFormNum='"+claimFormNum+"' "
+							+"&& YPos='884'"
+							,"UPDATE claimformitem SET FieldName='P6PlaceNumericCode' "
+							+"WHERE FieldName='PlaceNumericCode' && ClaimFormNum='"+claimFormNum+"' "
+							+"&& YPos='917'"
+						};
+						if(!Conversions.SubmitNonQArray()) return false;
+					}
+					//ADA2002 medicaid id's
+					Conversions.SelectText="SELECT ClaimFormNum FROM claimform WHERE UniqueID = '1'";
+					Conversions.SubmitSelect();
+					if(Conversions.TableQ.Rows.Count>0){
+						claimFormNum=Conversions.TableQ.Rows[0][0].ToString();
+						Conversions.NonQArray=new string[]
+						{
+							"INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+							+"'"+claimFormNum+"','TreatingDentistMedicaidID','492','946','117','14')"
+							,"INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+							+"'"+claimFormNum+"','BillingDentistMedicaidID','39','990','120','14')"
+						};
+						if(!Conversions.SubmitNonQArray()) return false;
+					}
+					//ADA2000 employer and 3 radiograph fields.
+					Conversions.SelectText="SELECT ClaimFormNum FROM claimform WHERE UniqueID = '3'";
+					Conversions.SubmitSelect();
+					if(Conversions.TableQ.Rows.Count>0){
+						claimFormNum=Conversions.TableQ.Rows[0][0].ToString();
+						Conversions.NonQArray=new string[]
+						{
+							"INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+							+"'"+claimFormNum+"','EmployerName','482','391','140','14')"
+							,"INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+							+"'"+claimFormNum+"','IsRadiographsAttached','388','548','0','0')"
+							,"INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+							+"'"+claimFormNum+"','RadiographsNotAttached','495','547','0','0')"
+							,"INSERT INTO claimformitem (ClaimFormNum,FieldName,XPos,YPos,Width,Height) VALUES("
+							+"'"+claimFormNum+"','RadiographsNumAttached','460','545','35','14')"
+						};
+						if(!Conversions.SubmitNonQArray()) return false;
+					}
+					Conversions.NonQArray=new string[]
+					{
+						"UPDATE preference SET ValueString = '2.9.8.0' WHERE PrefName = 'DataBaseVersion'"
+					};
+					if(!Conversions.SubmitNonQArray()) return false;
+				//}
+				//catch{
+				//	return false;
+				//}
 			}
 			return true;
 		}

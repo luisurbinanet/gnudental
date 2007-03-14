@@ -56,9 +56,9 @@ namespace OpenDental{
 
 	///<summary></summary>
 	public class Providers:DataClass{
-		///<summary></summary>
+		///<summary>Rarely used. Includes all providers, even if hidden.</summary>
 		public static Provider[] ListLong;
-		///<summary></summary>
+		///<summary>This is the list used most often. It does not include hidden providers.</summary>
 		public static Provider[] List;
 		///<summary></summary>
 		public static Provider Cur;

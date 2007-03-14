@@ -391,7 +391,7 @@ namespace OpenDental{
 			this.tbProc.BackColor = System.Drawing.SystemColors.Window;
 			this.tbProc.Location = new System.Drawing.Point(2, 166);
 			this.tbProc.Name = "tbProc";
-			this.tbProc.ScrollValue = 280;
+			this.tbProc.ScrollValue = 111;
 			this.tbProc.SelectedIndices = new int[0];
 			this.tbProc.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
 			this.tbProc.Size = new System.Drawing.Size(939, 204);
@@ -620,7 +620,7 @@ namespace OpenDental{
 			this.tbPay.BackColor = System.Drawing.SystemColors.Window;
 			this.tbPay.Location = new System.Drawing.Point(2, 399);
 			this.tbPay.Name = "tbPay";
-			this.tbPay.ScrollValue = 280;
+			this.tbPay.ScrollValue = 209;
 			this.tbPay.SelectedIndices = new int[0];
 			this.tbPay.SelectionMode = System.Windows.Forms.SelectionMode.One;
 			this.tbPay.Size = new System.Drawing.Size(549, 106);
@@ -764,6 +764,7 @@ namespace OpenDental{
 			// 
 			this.comboPatRelat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.comboPatRelat.Location = new System.Drawing.Point(90, 43);
+			this.comboPatRelat.MaxDropDownItems = 20;
 			this.comboPatRelat.Name = "comboPatRelat";
 			this.comboPatRelat.Size = new System.Drawing.Size(151, 21);
 			this.comboPatRelat.TabIndex = 3;
@@ -815,6 +816,7 @@ namespace OpenDental{
 			// 
 			this.comboPatRelat2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.comboPatRelat2.Location = new System.Drawing.Point(90, 57);
+			this.comboPatRelat2.MaxDropDownItems = 20;
 			this.comboPatRelat2.Name = "comboPatRelat2";
 			this.comboPatRelat2.Size = new System.Drawing.Size(151, 21);
 			this.comboPatRelat2.TabIndex = 3;
@@ -1190,6 +1192,7 @@ namespace OpenDental{
 					continue;//ignores payments, etc
 				}
 				Procedures.Cur=(Procedure)Procedures.HList[ClaimProcs.Cur.ProcNum];
+				Procedures.CurOld=Procedures.Cur;//may not be necessary.
 				//fee:
 				if(InsPlans.Cur.ClaimsUseUCR){//use UCR for the provider of the procedure
 					provNum=Procedures.Cur.ProvNum;
@@ -1295,6 +1298,7 @@ namespace OpenDental{
 						continue;
 					}
 					Procedures.Cur=(Procedure)Procedures.HList[ClaimProcs.ForClaim[i].ProcNum];
+					Procedures.CurOld=Procedures.Cur;//may not be necessary
 					tbProc.Cell[2,i]=ClaimProcs.ForClaim[i].CodeSent;
 					tbProc.Cell[3,i]=Procedures.Cur.ToothNum;
 					tbProc.Cell[4,i]=ProcedureCodes.GetProcCode(Procedures.Cur.ADACode).Descript;
@@ -1490,7 +1494,7 @@ namespace OpenDental{
 					ClaimProcs.UpdateCur();
 				}
 			}
-			listClaimStatus.SelectedIndex=5;//Recieved
+			listClaimStatus.SelectedIndex=5;//Received
 			if(textDateRec.Text==""){
 				textDateRec.Text=DateTime.Today.ToShortDateString();
 			}
@@ -1721,11 +1725,11 @@ namespace OpenDental{
 				}
 			}
 			if(paymentIsAttached){
-				MessageBox.Show(Lan.g(this,"You can not delete this claim while any insurance checks are attached.  You will have to detach all insurance checks first."));
+				MessageBox.Show(Lan.g(this,"You cannot delete this claim while any insurance checks are attached.  You will have to detach all insurance checks first."));
 				return;
 			}
 			if(Claims.Cur.ClaimStatus=="R"){
-				MessageBox.Show(Lan.g(this,"You can not delete this claim while status is Received.  You will have to change the status first."));
+				MessageBox.Show(Lan.g(this,"You cannot delete this claim while status is Received.  You will have to change the status first."));
 				return;
 			}
       for(int i=0;i<ClaimProcs.ForClaim.Length;i++){
@@ -1748,7 +1752,7 @@ namespace OpenDental{
 					}
 				}
 				if(!allReceived){
-					if(MessageBox.Show(Lan.g(this,"All items will be marked recieved.  Continue?")
+					if(MessageBox.Show(Lan.g(this,"All items will be marked received.  Continue?")
 						,"",MessageBoxButtons.OKCancel)!=DialogResult.OK)
 					return;
 					for(int i=0;i<ClaimProcs.ForClaim.Length;i++){
@@ -1814,6 +1818,9 @@ namespace OpenDental{
 				Claims.Cur.DateReceived=DateTime.MinValue;
 			else Claims.Cur.DateReceived=PIn.PDate(textDateRec.Text);
 			//planNum
+			//patRelats will always be selected
+			Claims.Cur.PatRelat=(Relat)comboPatRelat.SelectedIndex;
+			Claims.Cur.PatRelat2=(Relat)comboPatRelat.SelectedIndex;
 			if(comboProvTreat.SelectedIndex!=-1)
 				Claims.Cur.ProvTreat=Providers.List[comboProvTreat.SelectedIndex].ProvNum;
 			Claims.Cur.PreAuthString=textPreAuth.Text;

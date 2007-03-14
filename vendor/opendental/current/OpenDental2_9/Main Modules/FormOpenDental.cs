@@ -140,6 +140,15 @@ namespace OpenDental{
 		private OpenDental.ContrStaff ContrStaff2;
 		private System.Windows.Forms.MenuItem menuItemEasy;
 		private System.Windows.Forms.MenuItem menuItemCarriers;
+		private System.Windows.Forms.MenuItem menuItemSchools;
+		private System.Windows.Forms.MenuItem menuItemCounties;
+		private System.Windows.Forms.MenuItem menuItemScreening;
+		private System.Windows.Forms.MenuItem menuItemPublicHealth;
+		private System.Windows.Forms.MenuItem menuItemPHSep;
+		private System.Windows.Forms.MenuItem menuItemPHRawScreen;
+		private System.Windows.Forms.MenuItem menuItemPHRawPop;
+		private System.Windows.Forms.MenuItem menuItemPHScreen;
+		private System.Windows.Forms.MenuItem menuItemInsCarriers;
 		private Image buttonsShadow;
 
 		///<summary></summary>
@@ -203,6 +212,7 @@ namespace OpenDental{
 			this.menuItemRecall = new System.Windows.Forms.MenuItem();
 			this.menuItemLists = new System.Windows.Forms.MenuItem();
 			this.menuItemContacts = new System.Windows.Forms.MenuItem();
+			this.menuItemCounties = new System.Windows.Forms.MenuItem();
 			this.menuItemEmployees = new System.Windows.Forms.MenuItem();
 			this.menuItemEmployers = new System.Windows.Forms.MenuItem();
 			this.menuItemCarriers = new System.Windows.Forms.MenuItem();
@@ -211,6 +221,7 @@ namespace OpenDental{
 			this.menuItemProviders = new System.Windows.Forms.MenuItem();
 			this.menuItemPrescriptions = new System.Windows.Forms.MenuItem();
 			this.menuItemReferrals = new System.Windows.Forms.MenuItem();
+			this.menuItemSchools = new System.Windows.Forms.MenuItem();
 			this.menuItemZipCodes = new System.Windows.Forms.MenuItem();
 			this.menuItem5 = new System.Windows.Forms.MenuItem();
 			this.menuItemProcCode = new System.Windows.Forms.MenuItem();
@@ -236,10 +247,16 @@ namespace OpenDental{
 			this.menuItemRpProduction = new System.Windows.Forms.MenuItem();
 			this.menuItem8 = new System.Windows.Forms.MenuItem();
 			this.menuItemList = new System.Windows.Forms.MenuItem();
+			this.menuItemInsCarriers = new System.Windows.Forms.MenuItem();
 			this.menuItemPatList = new System.Windows.Forms.MenuItem();
 			this.menuItemRxs = new System.Windows.Forms.MenuItem();
 			this.menuItemProcCodes = new System.Windows.Forms.MenuItem();
 			this.menuItemRefs = new System.Windows.Forms.MenuItem();
+			this.menuItemPHSep = new System.Windows.Forms.MenuItem();
+			this.menuItemPublicHealth = new System.Windows.Forms.MenuItem();
+			this.menuItemPHRawScreen = new System.Windows.Forms.MenuItem();
+			this.menuItemPHRawPop = new System.Windows.Forms.MenuItem();
+			this.menuItemPHScreen = new System.Windows.Forms.MenuItem();
 			this.menuItemTools = new System.Windows.Forms.MenuItem();
 			this.menuItemPrintScreen = new System.Windows.Forms.MenuItem();
 			this.menuItem1 = new System.Windows.Forms.MenuItem();
@@ -252,6 +269,7 @@ namespace OpenDental{
 			this.menuItemFinanceCharge = new System.Windows.Forms.MenuItem();
 			this.menuItemBilling = new System.Windows.Forms.MenuItem();
 			this.menuItem11 = new System.Windows.Forms.MenuItem();
+			this.menuItemScreening = new System.Windows.Forms.MenuItem();
 			this.menuItemClaims = new System.Windows.Forms.MenuItem();
 			this.menuItem12 = new System.Windows.Forms.MenuItem();
 			this.menuItemHelp = new System.Windows.Forms.MenuItem();
@@ -280,7 +298,7 @@ namespace OpenDental{
 			// 
 			// ContrTreat2
 			// 
-			this.ContrTreat2.Location = new System.Drawing.Point(148, 4);
+			this.ContrTreat2.Location = new System.Drawing.Point(143, 4);
 			this.ContrTreat2.Name = "ContrTreat2";
 			this.ContrTreat2.Size = new System.Drawing.Size(880, 690);
 			this.ContrTreat2.TabIndex = 5;
@@ -305,7 +323,7 @@ namespace OpenDental{
 			// ContrAppt2
 			// 
 			this.ContrAppt2.DockPadding.Left = 56;
-			this.ContrAppt2.Location = new System.Drawing.Point(147, 1);
+			this.ContrAppt2.Location = new System.Drawing.Point(51, 1);
 			this.ContrAppt2.Name = "ContrAppt2";
 			this.ContrAppt2.Size = new System.Drawing.Size(880, 690);
 			this.ContrAppt2.TabIndex = 9;
@@ -544,6 +562,7 @@ namespace OpenDental{
 			this.menuItemLists.Index = 2;
 			this.menuItemLists.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
 																																									this.menuItemContacts,
+																																									this.menuItemCounties,
 																																									this.menuItemEmployees,
 																																									this.menuItemEmployers,
 																																									this.menuItemCarriers,
@@ -552,6 +571,7 @@ namespace OpenDental{
 																																									this.menuItemProviders,
 																																									this.menuItemPrescriptions,
 																																									this.menuItemReferrals,
+																																									this.menuItemSchools,
 																																									this.menuItemZipCodes,
 																																									this.menuItem5,
 																																									this.menuItemProcCode,
@@ -567,79 +587,91 @@ namespace OpenDental{
 			this.menuItemContacts.Text = "&Contacts";
 			this.menuItemContacts.Click += new System.EventHandler(this.menuItemContacts_Click);
 			// 
+			// menuItemCounties
+			// 
+			this.menuItemCounties.Index = 1;
+			this.menuItemCounties.Text = "Counties";
+			this.menuItemCounties.Click += new System.EventHandler(this.menuItemCounties_Click);
+			// 
 			// menuItemEmployees
 			// 
-			this.menuItemEmployees.Index = 1;
+			this.menuItemEmployees.Index = 2;
 			this.menuItemEmployees.Text = "&Employees";
 			this.menuItemEmployees.Click += new System.EventHandler(this.menuItemEmployees_Click);
 			// 
 			// menuItemEmployers
 			// 
-			this.menuItemEmployers.Index = 2;
+			this.menuItemEmployers.Index = 3;
 			this.menuItemEmployers.Text = "Employers";
 			this.menuItemEmployers.Click += new System.EventHandler(this.menuItemEmployers_Click);
 			// 
 			// menuItemCarriers
 			// 
-			this.menuItemCarriers.Index = 3;
+			this.menuItemCarriers.Index = 4;
 			this.menuItemCarriers.Text = "Insurance Carriers";
 			this.menuItemCarriers.Click += new System.EventHandler(this.menuItemCarriers_Click);
 			// 
 			// menuItemInsTemplates
 			// 
-			this.menuItemInsTemplates.Index = 4;
+			this.menuItemInsTemplates.Index = 5;
 			this.menuItemInsTemplates.Text = "&Insurance Plans";
 			this.menuItemInsTemplates.Click += new System.EventHandler(this.menuItemInsTemplates_Click);
 			// 
 			// menuItemMedications
 			// 
-			this.menuItemMedications.Index = 5;
+			this.menuItemMedications.Index = 6;
 			this.menuItemMedications.Text = "&Medications";
 			this.menuItemMedications.Click += new System.EventHandler(this.menuItemMedications_Click);
 			// 
 			// menuItemProviders
 			// 
-			this.menuItemProviders.Index = 6;
+			this.menuItemProviders.Index = 7;
 			this.menuItemProviders.Text = "&Providers";
 			this.menuItemProviders.Click += new System.EventHandler(this.menuItemProviders_Click);
 			// 
 			// menuItemPrescriptions
 			// 
-			this.menuItemPrescriptions.Index = 7;
+			this.menuItemPrescriptions.Index = 8;
 			this.menuItemPrescriptions.Text = "Pre&scriptions";
 			this.menuItemPrescriptions.Click += new System.EventHandler(this.menuItemPrescriptions_Click);
 			// 
 			// menuItemReferrals
 			// 
-			this.menuItemReferrals.Index = 8;
+			this.menuItemReferrals.Index = 9;
 			this.menuItemReferrals.Text = "&Referrals";
 			this.menuItemReferrals.Click += new System.EventHandler(this.menuItemReferrals_Click);
 			// 
+			// menuItemSchools
+			// 
+			this.menuItemSchools.Index = 10;
+			this.menuItemSchools.Text = "Schools";
+			this.menuItemSchools.Click += new System.EventHandler(this.menuItemSchools_Click);
+			// 
 			// menuItemZipCodes
 			// 
-			this.menuItemZipCodes.Index = 9;
+			this.menuItemZipCodes.Index = 11;
 			this.menuItemZipCodes.Text = "&Zip Codes";
 			this.menuItemZipCodes.Click += new System.EventHandler(this.menuItemZipCodes_Click);
 			// 
 			// menuItem5
 			// 
-			this.menuItem5.Index = 10;
+			this.menuItem5.Index = 12;
 			this.menuItem5.Text = "-";
 			// 
 			// menuItemProcCode
 			// 
-			this.menuItemProcCode.Index = 11;
+			this.menuItemProcCode.Index = 13;
 			this.menuItemProcCode.Text = "PROCEDURE CODES";
 			// 
 			// menuItemEditCode
 			// 
-			this.menuItemEditCode.Index = 12;
+			this.menuItemEditCode.Index = 14;
 			this.menuItemEditCode.Text = "   E&dit Codes";
 			this.menuItemEditCode.Click += new System.EventHandler(this.menuItemEditCode_Click);
 			// 
 			// menuItemViewCode
 			// 
-			this.menuItemViewCode.Index = 13;
+			this.menuItemViewCode.Index = 15;
 			this.menuItemViewCode.Shortcut = System.Windows.Forms.Shortcut.CtrlShiftF;
 			this.menuItemViewCode.Text = "   View &Fees";
 			this.menuItemViewCode.Click += new System.EventHandler(this.menuItemViewCode_Click);
@@ -667,10 +699,16 @@ namespace OpenDental{
 																																										this.menuItemRpProduction,
 																																										this.menuItem8,
 																																										this.menuItemList,
+																																										this.menuItemInsCarriers,
 																																										this.menuItemPatList,
 																																										this.menuItemRxs,
 																																										this.menuItemProcCodes,
-																																										this.menuItemRefs});
+																																										this.menuItemRefs,
+																																										this.menuItemPHSep,
+																																										this.menuItemPublicHealth,
+																																										this.menuItemPHRawScreen,
+																																										this.menuItemPHRawPop,
+																																										this.menuItemPHScreen});
 			this.menuItemReports.Shortcut = System.Windows.Forms.Shortcut.CtrlR;
 			this.menuItemReports.Text = "&Reports";
 			// 
@@ -785,29 +823,63 @@ namespace OpenDental{
 			this.menuItemList.Index = 18;
 			this.menuItemList.Text = "LISTS";
 			// 
+			// menuItemInsCarriers
+			// 
+			this.menuItemInsCarriers.Index = 19;
+			this.menuItemInsCarriers.Text = "   Insurance Plans";
+			this.menuItemInsCarriers.Click += new System.EventHandler(this.menuItemInsCarriers_Click);
+			// 
 			// menuItemPatList
 			// 
-			this.menuItemPatList.Index = 19;
+			this.menuItemPatList.Index = 20;
 			this.menuItemPatList.Text = "   Patients";
 			this.menuItemPatList.Click += new System.EventHandler(this.menuItemPatList_Click);
 			// 
 			// menuItemRxs
 			// 
-			this.menuItemRxs.Index = 20;
+			this.menuItemRxs.Index = 21;
 			this.menuItemRxs.Text = "   Prescriptions";
 			this.menuItemRxs.Click += new System.EventHandler(this.menuItemRxs_Click);
 			// 
 			// menuItemProcCodes
 			// 
-			this.menuItemProcCodes.Index = 21;
+			this.menuItemProcCodes.Index = 22;
 			this.menuItemProcCodes.Text = "   Procedure Codes";
 			this.menuItemProcCodes.Click += new System.EventHandler(this.menuItemProcCodes_Click);
 			// 
 			// menuItemRefs
 			// 
-			this.menuItemRefs.Index = 22;
+			this.menuItemRefs.Index = 23;
 			this.menuItemRefs.Text = "   Referrals";
 			this.menuItemRefs.Click += new System.EventHandler(this.menuItemRefs_Click);
+			// 
+			// menuItemPHSep
+			// 
+			this.menuItemPHSep.Index = 24;
+			this.menuItemPHSep.Text = "-";
+			// 
+			// menuItemPublicHealth
+			// 
+			this.menuItemPublicHealth.Index = 25;
+			this.menuItemPublicHealth.Text = "PUBLIC HEALTH";
+			// 
+			// menuItemPHRawScreen
+			// 
+			this.menuItemPHRawScreen.Index = 26;
+			this.menuItemPHRawScreen.Text = "   Raw Screening Data";
+			this.menuItemPHRawScreen.Click += new System.EventHandler(this.menuItemPHRawScreen_Click);
+			// 
+			// menuItemPHRawPop
+			// 
+			this.menuItemPHRawPop.Index = 27;
+			this.menuItemPHRawPop.Text = "   Raw Population Data";
+			this.menuItemPHRawPop.Click += new System.EventHandler(this.menuItemPHRawPop_Click);
+			// 
+			// menuItemPHScreen
+			// 
+			this.menuItemPHScreen.Index = 28;
+			this.menuItemPHScreen.Text = "   Screening Report";
+			this.menuItemPHScreen.Click += new System.EventHandler(this.menuItemPHScreen_Click);
 			// 
 			// menuItemTools
 			// 
@@ -821,6 +893,7 @@ namespace OpenDental{
 																																									this.menuItemFinanceCharge,
 																																									this.menuItemBilling,
 																																									this.menuItem11,
+																																									this.menuItemScreening,
 																																									this.menuItemClaims});
 			this.menuItemTools.Shortcut = System.Windows.Forms.Shortcut.CtrlU;
 			this.menuItemTools.Text = "&Tools";
@@ -892,9 +965,15 @@ namespace OpenDental{
 			this.menuItem11.Index = 7;
 			this.menuItem11.Text = "-";
 			// 
+			// menuItemScreening
+			// 
+			this.menuItemScreening.Index = 8;
+			this.menuItemScreening.Text = "Public Health Screening";
+			this.menuItemScreening.Click += new System.EventHandler(this.menuItemScreening_Click);
+			// 
 			// menuItemClaims
 			// 
-			this.menuItemClaims.Index = 8;
+			this.menuItemClaims.Index = 9;
 			this.menuItemClaims.Shortcut = System.Windows.Forms.Shortcut.CtrlC;
 			this.menuItemClaims.Text = "Send &Claims";
 			this.menuItemClaims.Click += new System.EventHandler(this.menuItemClaims_Click);
@@ -959,13 +1038,13 @@ namespace OpenDental{
 			this.Controls.Add(this.pictButtons);
 			this.Controls.Add(this.myOutlookBar);
 			this.Controls.Add(this.button1);
+			this.Controls.Add(this.ContrAppt2);
+			this.Controls.Add(this.ContrStaff2);
 			this.Controls.Add(this.ContrAccount2);
 			this.Controls.Add(this.ContrFamily2);
 			this.Controls.Add(this.ContrDocs2);
 			this.Controls.Add(this.ContrChart2);
 			this.Controls.Add(this.ContrTreat2);
-			this.Controls.Add(this.ContrAppt2);
-			this.Controls.Add(this.ContrStaff2);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.KeyPreview = true;
 			this.Menu = this.mainMenu;
@@ -984,6 +1063,10 @@ namespace OpenDental{
 	
 		[STAThread]
 		static void Main() {
+			if(Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length>1){
+				//if an instance of the program is already running.
+				return;//then don't open another
+			}
 			Application.EnableVisualStyles();//changes appearance to XP
 			Application.DoEvents();//workaround for a known MS bug in the line above
 			Application.Run(new FormOpenDental());
@@ -992,7 +1075,7 @@ namespace OpenDental{
 		private void FormOpenDental_Load(object sender, System.EventArgs e){
 			allNeutral();
 			ExitApplicationNow.WantsToExit += new System.EventHandler(ExitApplicationNow_WantsToExit);
-			FormConfig FormCfg = new FormConfig();
+			FormConfig FormCfg=new FormConfig();
 			FormCfg.GetConfig();
 			DataClass.SetConnection();
       if(!Prefs.TryToConnect()){
@@ -1101,6 +1184,7 @@ namespace OpenDental{
 			Employers.Refresh();//really only needed when opening the prog.
 			Defs.Refresh();
 			Fees.Refresh();
+			Letters.Refresh();
 			Permissions.Refresh();
 			Programs.Refresh();
 			ProgramProperties.Refresh();
@@ -1135,6 +1219,26 @@ namespace OpenDental{
 				else{
 					Prefs.Refresh();//because listening thread not started yet.
 				}
+			}
+			if(((Pref)Prefs.HList["EasyHidePublicHealth"]).ValueString=="1"){
+				menuItemSchools.Visible=false;
+				menuItemCounties.Visible=false;
+				menuItemScreening.Visible=false;
+				menuItemPHSep.Visible=false;
+				menuItemPublicHealth.Visible=false;
+				menuItemPHRawScreen.Visible=false;
+				menuItemPHRawPop.Visible=false;
+				menuItemPHScreen.Visible=false;
+			}
+			else{
+				menuItemSchools.Visible=true;
+				menuItemCounties.Visible=true;
+				menuItemScreening.Visible=true;
+				menuItemPHSep.Visible=true;
+				menuItemPublicHealth.Visible=true;
+				menuItemPHRawScreen.Visible=true;
+				menuItemPHRawPop.Visible=true;
+				menuItemPHScreen.Visible=true;
 			}
 			if(((Pref)Prefs.HList["EasyHideClinical"]).ValueString=="1"){
 				myOutlookBar.Buttons[4].Caption=Lan.g(this,"Procs");
@@ -1625,8 +1729,12 @@ namespace OpenDental{
 		}
 
 		private void menuItemConfig_Click(object sender, System.EventArgs e) {
-			FormConfig FormCfg = new FormConfig();
-			FormCfg.ShowDialog();	
+			FormConfig FormC=new FormConfig();
+			FormC.ShowDialog();
+			if(FormC.DialogResult==DialogResult.OK){
+				RefreshLocalData();
+				RefreshCurrentModule();
+			}
 		}
 
 		private void menuItemExit_Click(object sender, System.EventArgs e) {
@@ -1728,6 +1836,11 @@ namespace OpenDental{
 			FormC.ShowDialog();
 		}
 
+		private void menuItemCounties_Click(object sender, System.EventArgs e) {
+			FormCounties FormC=new FormCounties();
+			FormC.ShowDialog();
+		}
+
 		private void menuItemEmployees_Click(object sender, System.EventArgs e) {
 			FormEmployee FormEmp=new FormEmployee();
 			FormEmp.ShowDialog();		
@@ -1769,6 +1882,11 @@ namespace OpenDental{
 			FormReferralSelect FormReferralSelect2=new FormReferralSelect();
 			FormReferralSelect2.ViewOnly=true;  
 			FormReferralSelect2.ShowDialog();		
+		}
+
+		private void menuItemSchools_Click(object sender, System.EventArgs e) {
+			FormSchools FormS=new FormSchools();
+			FormS.ShowDialog();
 		}
 
 		private void menuItemZipCodes_Click(object sender, System.EventArgs e) {
@@ -1867,9 +1985,9 @@ namespace OpenDental{
 		}
 
 		//Reports-Lists
-		private void menuItemInsCo_Click(object sender, System.EventArgs e) {
+		private void menuItemInsCarriers_Click(object sender, System.EventArgs e) {
 			FormRpInsCo FormInsCo=new FormRpInsCo();
-			FormInsCo.ShowDialog();			
+			FormInsCo.ShowDialog();		
 		}
 
 		private void menuItemPatList_Click(object sender, System.EventArgs e) {
@@ -1890,6 +2008,21 @@ namespace OpenDental{
 		private void menuItemRefs_Click(object sender, System.EventArgs e) {
 			FormRpReferrals FormReferral=new FormRpReferrals();
 			FormReferral.ShowDialog();		
+		}
+
+		//Public Health
+		private void menuItemPHRawScreen_Click(object sender, System.EventArgs e) {
+			FormRpPHRawScreen FormPH=new FormRpPHRawScreen();
+			FormPH.ShowDialog();
+		}
+
+		private void menuItemPHRawPop_Click(object sender, System.EventArgs e) {
+			FormRpPHRawPop FormPH=new FormRpPHRawPop();
+			FormPH.ShowDialog();
+		}
+
+		private void menuItemPHScreen_Click(object sender, System.EventArgs e) {
+			MessageBox.Show("This report is incomplete.");
 		}
 
 		//Letters
@@ -1948,11 +2081,18 @@ namespace OpenDental{
 			FormBO.ShowDialog();
 		}
 
+		private void menuItemScreening_Click(object sender, System.EventArgs e) {
+			FormScreenings FormS=new FormScreenings();
+			FormS.ShowDialog();
+		}
+
 		private void menuItemClaims_Click(object sender, System.EventArgs e) {
 			int	oldPatNum=Patients.Cur.PatNum;
 			FormClaimsSend FormCS=new FormClaimsSend();
 			FormCS.ShowDialog();
-			Patients.Cur.PatNum=oldPatNum;
+			Patient oldPatient=new Patient();
+			oldPatient.PatNum=oldPatNum;
+			Patients.Cur=oldPatient;
 			RefreshCurrentModule();
 		}
 
@@ -2002,6 +2142,16 @@ namespace OpenDental{
 		}
 
 		#endregion
+
+		
+
+		
+
+		
+
+		
+
+		
 
 		
 

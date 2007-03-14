@@ -420,7 +420,9 @@ namespace OpenDental{
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			Patients.Cur.MedUrgNote=textMedUrgNote.Text;
+			Patient PatCur=Patients.Cur;
+			PatCur.MedUrgNote=textMedUrgNote.Text;
+			Patients.Cur=PatCur;
 			Patients.UpdateCur();
 			PatientNotes.Cur.Medical=textMedical.Text;
 			PatientNotes.Cur.Service=textService.Text;

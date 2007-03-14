@@ -663,7 +663,7 @@ namespace OpenDental{
 					listClaimForm.SelectedIndex=i;
 				}
 			}
-			if(listClaimForm.SelectedIndex==-1){
+			if(listClaimForm.Items.Count>0 && listClaimForm.SelectedIndex==-1){
 				listClaimForm.SelectedIndex=0;//this will let the user rearrange the default later
 			}
 			//textNote.Text=InsPlans.Cur.Note;
@@ -767,7 +767,8 @@ namespace OpenDental{
 			else
 				InsPlans.Cur.CopayFeeSched
 					=Defs.Short[(int)DefCat.FeeSchedNames][listCopay.SelectedIndex].DefNum;
-			InsPlans.Cur.ClaimFormNum=ClaimForms.ListShort[listClaimForm.SelectedIndex].ClaimFormNum;
+			if(listClaimForm.SelectedIndex!=-1)
+				InsPlans.Cur.ClaimFormNum=ClaimForms.ListShort[listClaimForm.SelectedIndex].ClaimFormNum;
 			InsPlans.UpdateForLike(originalPlan);
 			DialogResult=DialogResult.OK;
 		}

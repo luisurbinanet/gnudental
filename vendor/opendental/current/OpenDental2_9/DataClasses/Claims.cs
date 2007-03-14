@@ -100,12 +100,13 @@ namespace OpenDental{
 		public static void RefreshByCheck(int claimPaymentNum, bool showUnattached){
 			cmd.CommandText =
 				"SELECT claim.dateservice,claim.provtreat,CONCAT(patient.lname,', ',patient.fname)"
-				+",insplan.carrier,SUM(claimproc.feebilled),SUM(claimproc.inspayamt),claim.claimnum"
+				+",carrier.carrierName,SUM(claimproc.feebilled),SUM(claimproc.inspayamt),claim.claimnum"
 				+",claimproc.claimpaymentnum"
-				+" FROM claim,patient,insplan,claimproc"
+				+" FROM claim,patient,insplan,carrier,claimproc" // added carrier, SPK 8/04
 				+" WHERE claimproc.claimnum = claim.claimnum"
 				+" && patient.patnum = claim.patnum"
 				+" && insplan.plannum = claim.plannum"
+				+" && insplan.CarrierNum = carrier.CarrierNum"	// added SPK
 				+" && (claimproc.status = '1' || claimproc.status = '4')"//received or supplemental
  				+" && (claimproc.claimpaymentnum = '"+claimPaymentNum+"'";
 			if(showUnattached){

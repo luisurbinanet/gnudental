@@ -119,12 +119,12 @@ namespace OpenDental{
 			if(table.Rows.Count==1){
 				return false;
 			}
-			cmd.CommandText="SELECT * FROM instemplate WHERE claimformnum = '"
-				+Cur.ClaimFormNum.ToString()+"' LIMIT 1";
-			FillTable();
-			if(table.Rows.Count==1){
-				return false;
-			}
+			//cmd.CommandText="SELECT * FROM instemplate WHERE claimformnum = '"
+			//	+Cur.ClaimFormNum.ToString()+"' LIMIT 1";
+			//FillTable();
+			//if(table.Rows.Count==1){
+			//	return false;
+			//}
 			//Then, delete the claimform
 			cmd.CommandText = "DELETE FROM claimform "
 				+"WHERE ClaimFormNum = '"+POut.PInt(Cur.ClaimFormNum)+"'";

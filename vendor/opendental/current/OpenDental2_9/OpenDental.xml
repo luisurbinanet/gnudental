@@ -128,7 +128,7 @@
             <remarks>This is run whenever the connection values have changed by the user and a new connection needs to be established.  Usually only when starting the program.</remarks>
         </member>
         <member name="M:OpenDental.DataClass.SetConnection(System.String)">
-            <summary>Sets the connection to an alternate database for backup purposes.  Currently only used during conversions to do a quick backup first.</summary>
+            <summary>Sets the connection to an alternate database for backup purposes.  Currently only used during conversions to do a quick backup first, and in FormConfig to get db names.</summary>
         </member>
         <member name="M:OpenDental.DataClass.FillTable">
             <summary>Fills table with data from the database.</summary>
@@ -141,7 +141,7 @@
             <summary></summary>
         </member>
         <member name="M:OpenDental.DataClass.NonQ(System.Boolean)">
-            <summary>Sends a non query command to the database.</summary>
+            <summary>Sends a non query command to the database and returns the number of rows affected.</summary>
             <param name="getInsertID">If true, then InsertID will be set to the value of the primary key of the newly inserted row.</param>
         </member>
         <member name="F:OpenDental.Adjustments.List">
@@ -219,6 +219,9 @@
         <member name="F:OpenDental.Appointment.ProcDescript">
             <summary>A one line summary of all procedures.  Can be used in various reports, Unscheduled list, and Next appointment tracker.  Not user editable right now.</summary>
         </member>
+        <member name="F:OpenDental.Appointment.Assistant">
+            <summary>Foreign key to employee.EmployeeNum</summary>
+        </member>
         <member name="T:OpenDental.Appointments">
             <summary>Handles database commands related to the appointment table in the db.</summary>
         </member>
@@ -235,7 +238,10 @@
             <summary>A list of appointments for use on the Other appointments list for a single patient.</summary>
         </member>
         <member name="F:OpenDental.Appointments.Cur">
-            <summary>Current.  A single row of data.</summary>
+            <summary>Current appointment.  A single row of data.</summary>
+        </member>
+        <member name="F:OpenDental.Appointments.CurOld">
+            <summary>When doing update, this Appointment is the original before any changes were made. This allows only the changed fields to be updated, minimizing concurrency issues.</summary>
         </member>
         <member name="F:OpenDental.Appointments.PinBoard">
             <summary>The appointment on the pinboard.</summary>
@@ -255,13 +261,13 @@
             <summary>Gets the ListOth for the current patient.</summary>
         </member>
         <member name="M:OpenDental.Appointments.InsertCur">
-            <summary></summary>
+            <summary>Also fills AptNum with the insertID.</summary>
         </member>
         <member name="M:OpenDental.Appointments.UpdateCur">
-            <summary></summary>
+            <summary>Updates only the changed columns and returns the number of rows affected.</summary>
         </member>
         <member name="M:OpenDental.Appointments.RefreshCur(System.Int32)">
-            <summary>Gets one appointment and stores the info in Cur.</summary>
+            <summary>Gets one appointment and stores the info in Cur and CurOld.</summary>
         </member>
         <member name="M:OpenDental.Appointments.DeleteCur">
             <summary></summary>
@@ -449,7 +455,7 @@
             <summary></summary>
         </member>
         <member name="F:OpenDental.AutoCodeItems.HList">
-            <summary></summary>
+            <summary>key=ADACode,value=AutoCodeNum</summary>
         </member>
         <member name="M:OpenDental.AutoCodeItems.Refresh">
             <summary></summary>
@@ -473,7 +479,7 @@
             <summary></summary>
         </member>
         <member name="M:OpenDental.AutoCodeItems.VerifyCode(System.String,System.String,System.String,System.Boolean)">
-            <summary></summary>
+            <summary>Only called when closing the procedure edit window.</summary>
         </member>
         <member name="T:OpenDental.AutoCode">
             <summary>Corresponds to the autocode table in the database.</summary>
@@ -486,6 +492,9 @@
         </member>
         <member name="F:OpenDental.AutoCode.IsHidden">
             <summary>User can hide autocodes</summary>
+        </member>
+        <member name="F:OpenDental.AutoCode.LessIntrusive">
+            <summary>This will be true if user no longer wants to see this autocode message when closing a procedure. This makes it less intrusive, but it can still be used in procedure buttons.</summary>
         </member>
         <member name="T:OpenDental.AutoCodes">
             <summary></summary>
@@ -500,7 +509,7 @@
             <summary></summary>
         </member>
         <member name="F:OpenDental.AutoCodes.HList">
-            <summary></summary>
+            <summary>key=AutoCodeNum, value=AutoCode</summary>
         </member>
         <member name="M:OpenDental.AutoCodes.Refresh">
             <summary></summary>
@@ -557,7 +566,7 @@
             <summary>Do not send electronically.  It's just a default; you can still send electronically.</summary>
         </member>
         <member name="T:OpenDental.Carriers">
-            <summary>Carriers are not refreshed as local data, but are refreshed as needed. A full refresh is frequently triggered if an carrierNum can not be found in the HList.  Important retrieval is done directly from the db.</summary>
+            <summary>Carriers are not refreshed as local data, but are refreshed as needed. A full refresh is frequently triggered if an carrierNum cannot be found in the HList.  Important retrieval is done directly from the db.</summary>
         </member>
         <member name="F:OpenDental.Carriers.List">
             <summary></summary>
@@ -1118,6 +1127,9 @@
         <member name="M:OpenDental.ClockEvents.GetLastStatus">
             <summary>If the employee is clocked out, this gets the status for clockin is based on how they last clocked out.  Also used to determine how to initially display timecard.</summary>
         </member>
+        <member name="M:OpenDental.ClockEvents.GetServerTime">
+            <summary></summary>
+        </member>
         <member name="T:OpenDental.Commlog">
             <summary>Corresponds to the commlog table in the database.</summary>
             <remarks>Will eventually track all communications including emails, phonecalls, letters, etc.
@@ -1142,7 +1154,7 @@
             <summary></summary>
         </member>
         <member name="F:OpenDental.Commlogs.List">
-            <summary></summary>
+            <summary>All commlog items for one patient, ordered by date.</summary>
         </member>
         <member name="F:OpenDental.Commlogs.Cur">
             <summary></summary>
@@ -1256,17 +1268,71 @@
         <member name="F:OpenDental.Conversions.TableQ">
             <summary>The result table after calling SubmitSelect().</summary>
         </member>
+        <member name="F:OpenDental.Conversions.ReaderText">
+            <summary>Temporary only. Used for backing up.</summary>
+        </member>
         <member name="M:OpenDental.Conversions.SubmitNonQArray">
             <summary></summary>
         </member>
         <member name="M:OpenDental.Conversions.SubmitNonQString">
             <summary></summary>
         </member>
+        <member name="M:OpenDental.Conversions.SubmitReader">
+            <summary>Only used in making backups. always returns the second column of row 1. This is used because of a bug in the data adaptor.</summary>
+        </member>
         <member name="M:OpenDental.Conversions.SubmitSelect">
             <summary>Returns true if successful.</summary>
         </member>
         <member name="M:OpenDental.Conversions.AddressNotesVers2_0">
             <summary></summary>
+        </member>
+        <member name="T:OpenDental.County">
+            <summary>Corresponds to the school table in the database. Used in public health.</summary>
+        </member>
+        <member name="F:OpenDental.County.CountyName">
+            <summary>Primary key, but allowed to change.  Change is programmatically synchronized.</summary>
+        </member>
+        <member name="F:OpenDental.County.CountyCode">
+            <summary>Optional. Usage varies.</summary>
+        </member>
+        <member name="F:OpenDental.County.OldCountyName">
+            <summary>Not a database field. This is the unaltered CountyName. Used for Update.</summary>
+        </member>
+        <member name="T:OpenDental.Counties">
+            <summary></summary>
+        </member>
+        <member name="F:OpenDental.Counties.Cur">
+            <summary></summary>
+        </member>
+        <member name="F:OpenDental.Counties.List">
+            <summary>This list is only refreshed as needed rather than being part of the local data.</summary>
+        </member>
+        <member name="F:OpenDental.Counties.ListNames">
+            <summary>Used in screening window. Simpler interface.</summary>
+        </member>
+        <member name="M:OpenDental.Counties.Refresh(System.String)">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.Counties.Refresh">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.Counties.GetListNames">
+            <summary>Gets an array of strings containing all the counties in alphabetical order.  Used for the screening interface which must be simpler than the usual interface.</summary>
+        </member>
+        <member name="M:OpenDental.Counties.InsertCur">
+            <summary>Need to make sure Countyname not already in db.</summary>
+        </member>
+        <member name="M:OpenDental.Counties.UpdateCur">
+            <summary>Updates the Countyname and code in the County table, and also updates all patients that were using the oldCounty name.</summary>
+        </member>
+        <member name="M:OpenDental.Counties.DeleteCur">
+            <summary>Must run UsedBy before running this.</summary>
+        </member>
+        <member name="M:OpenDental.Counties.UsedBy(System.String)">
+            <summary>Use before DeleteCur to determine if this County name is in use. Returns a formatted string that can be used to quickly display the names of all patients using the Countyname.</summary>
+        </member>
+        <member name="M:OpenDental.Counties.DoesExist(System.String)">
+            <summary>Use before InsertCur to determine if this County name already exists. Also used when closing patient edit window to validate that the Countyname exists.</summary>
         </member>
         <member name="T:OpenDental.CovCat">
             <summary>Corresponds to the covcat table in the database.</summary>
@@ -1381,7 +1447,7 @@
             <summary></summary>
         </member>
         <member name="M:OpenDental.CovPats.Refresh">
-            <summary></summary>
+            <summary>Gets the PriList and SecList based on the combination of 4 possible plans.</summary>
         </member>
         <member name="M:OpenDental.CovPats.RefreshForPlan">
             <summary></summary>
@@ -1657,6 +1723,9 @@
         <member name="M:OpenDental.Employees.GetName(System.Int32)">
             <summary>Loops through List to find matching employee, and returns LName,FName MiddleI.</summary>
         </member>
+        <member name="M:OpenDental.Employees.GetAbbr(System.Int32)">
+            <summary>Loops through List to find matching employee, and returns first 2 letters of first name.  Will later be improved with abbr field.</summary>
+        </member>
         <member name="T:OpenDental.Employer">
             <summary>Corresponds to the employer table in the database.</summary>
         </member>
@@ -1685,7 +1754,7 @@
             <summary>Includes any punctuation.</summary>
         </member>
         <member name="T:OpenDental.Employers">
-            <summary>Employers are not refreshed as local data, but are refreshed as needed. A full refresh is frequently triggered if an employerNum can not be found in the HList.  Important retrieval is done directly from the db.</summary>
+            <summary>Employers are not refreshed as local data, but are refreshed as needed. A full refresh is frequently triggered if an employerNum cannot be found in the HList.  Important retrieval is done directly from the db.</summary>
         </member>
         <member name="F:OpenDental.Employers.List">
             <summary></summary>
@@ -2187,6 +2256,9 @@
         <member name="M:OpenDental.InsPlans.Refresh">
             <summary>Gets new List for the current family.  Family must have been loaded properly first.</summary>
         </member>
+        <member name="M:OpenDental.InsPlans.RefreshListAll(System.Boolean)">
+            <summary></summary>
+        </member>
         <member name="M:OpenDental.InsPlans.InsertCur">
             <summary></summary>
         </member>
@@ -2227,9 +2299,6 @@
         </member>
         <member name="M:OpenDental.InsPlans.GetCopay(System.String,System.Int32)">
             <summary>Returns -1 for no copay feeschedule, or 0 or more for a patient copay. Can handle a planNum of 0.</summary>
-        </member>
-        <member name="M:OpenDental.InsPlans.HasDependencies(System.Int32)">
-            <summary>Not used anymore since insplans and claims can use information from other families.</summary>
         </member>
         <member name="M:OpenDental.InsPlans.GetHListAll">
             <summary>This is used in FormQuery.SubmitQuery to allow display of carrier names.</summary>
@@ -2392,6 +2461,39 @@
         <member name="F:OpenDental.Ledgers.DateValuePair.Value">
             <summary></summary>
         </member>
+        <member name="T:OpenDental.Letter">
+            <summary>Corresponds to the letter table in the database.</summary>
+        </member>
+        <member name="F:OpenDental.Letter.LetterNum">
+            <summary>Primary key.</summary>
+        </member>
+        <member name="F:OpenDental.Letter.Description">
+            <summary>Description of the Letter.</summary>
+        </member>
+        <member name="F:OpenDental.Letter.BodyText">
+            <summary>Text of the letter</summary>
+        </member>
+        <member name="T:OpenDental.Letters">
+            <summary>Letters are refreshed as local data.</summary>
+        </member>
+        <member name="F:OpenDental.Letters.List">
+            <summary>List of</summary>
+        </member>
+        <member name="F:OpenDental.Letters.Cur">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.Letters.Refresh">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.Letters.UpdateCur">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.Letters.InsertCur">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.Letters.DeleteCur">
+            <summary></summary>
+        </member>
         <member name="T:OpenDental.MedicationPat">
             <summary>Corresponds to the medicationpat table in the database. It links medications to patients.</summary>
         </member>
@@ -2497,6 +2599,9 @@
         </member>
         <member name="F:OpenDental.PatientNote.MedicalComp">
             <summary>Complete current Medical History</summary>
+        </member>
+        <member name="F:OpenDental.PatientNote.Treatment">
+            <summary>Shows in the Chart module just below the graphical tooth chart.</summary>
         </member>
         <member name="T:OpenDental.PatientNotes">
             <summary></summary>
@@ -2673,7 +2778,31 @@
             <summary>Foreign key to employer.EmployerNum.</summary>
         </member>
         <member name="F:OpenDental.Patient.EmploymentNote">
-            <summary>A freeform not section for details about this patient's employment. It will later be viewable in the Chart module next to the service notes.</summary>
+            <summary>AKA occupation. This field was only present in version 2.8, but did not seem useful, so it has been hidden. It will very likely be deprecated.</summary>
+        </member>
+        <member name="F:OpenDental.Patient.Race">
+            <summary>Race and ethnicity. See the PatientRace enum.</summary>
+        </member>
+        <member name="F:OpenDental.Patient.County">
+            <summary>Foreign key to county.CountyName, although it will not crash if key absent.</summary>
+        </member>
+        <member name="F:OpenDental.Patient.GradeSchool">
+            <summary>Name of gradeschool or highschool. Foreign key to school.SchoolName, although it will not crash if key absent.</summary>
+        </member>
+        <member name="F:OpenDental.Patient.GradeLevel">
+            <summary>See the PatientGrade enumeration.</summary>
+        </member>
+        <member name="F:OpenDental.Patient.Urgency">
+            <summary>See the TreatmentUrgency enumeration.</summary>
+        </member>
+        <member name="F:OpenDental.Patient.DateFirstVisit">
+            <summary>The date that the patient first visited the office.</summary>
+        </member>
+        <member name="F:OpenDental.Patient.PriPending">
+            <summary>True if primary insurance is pending. This can be used with or without an insurance plan attached.</summary>
+        </member>
+        <member name="F:OpenDental.Patient.SecPending">
+            <summary>True if secondary insurance is pending. This can be used with or without an insurance plan attached.</summary>
         </member>
         <member name="T:OpenDental.Patients">
             <summary></summary>
@@ -2681,8 +2810,11 @@
         <member name="F:OpenDental.Patients.PatIsLoaded">
             <summary>Always test this to see if a patient is loaded, not patient.Cur.PatNum.</summary>
         </member>
-        <member name="F:OpenDental.Patients.Cur">
+        <member name="F:OpenDental.Patients.cur">
             <summary>Current patient.</summary>
+        </member>
+        <member name="F:OpenDental.Patients.CurOld">
+            <summary>When doing update, this Patient is the original before any changes were made. This allows only the changed fields to be updated, minimizing concurrency issues.</summary>
         </member>
         <member name="F:OpenDental.Patients.Lim">
             <summary>Stores limited information about a patient. Filled first via GetLim.</summary>
@@ -2712,10 +2844,13 @@
             <summary></summary>
         </member>
         <member name="M:OpenDental.Patients.InsertCur">
-            <summary></summary>
+            <summary>ONLY for new patients. Uses InsertID to fill PatNum.</summary>
         </member>
         <member name="M:OpenDental.Patients.UpdateCur">
-            <summary></summary>
+            <summary>Updates only the changed columns and returns the number of rows affected.</summary>
+        </member>
+        <member name="M:OpenDental.Patients.DeleteCur">
+            <summary>Only used when entering a new patient and user clicks cancel. To delete an existing patient, the PatStatus is simply changed to 4.</summary>
         </member>
         <member name="M:OpenDental.Patients.GetPtDataTable(System.Boolean,System.String,System.String,System.String,System.String,System.Boolean,System.String,System.String,System.String,System.String,System.String,System.Int32[],System.Boolean)">
             <summary></summary>
@@ -2727,13 +2862,13 @@
             <summary></summary>
         </member>
         <member name="M:OpenDental.Patients.GetNameInFamLFI(System.Int32)">
-            <summary></summary>
+            <summary>Gets last, (preferred) first middle</summary>
         </member>
         <member name="M:OpenDental.Patients.GetNameInFamFL(System.Int32)">
             <summary></summary>
         </member>
-        <member name="M:OpenDental.Patients.GetNameInFamFLI(System.Int32)">
-            <summary></summary>
+        <member name="M:OpenDental.Patients.GetNameInFamFIL(System.Int32)">
+            <summary>Gets (preferred)first middle last</summary>
         </member>
         <member name="M:OpenDental.Patients.GetLim(System.Int32)">
             <summary>Gets nine of the most useful fields from the db for the given patnums, saving the data
@@ -2741,6 +2876,9 @@
             <param name="patNum">The PatNum to use in retrieving the data.</param>
         </member>
         <member name="M:OpenDental.Patients.GetCurNameLF">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.Patients.GetCurNameFL">
             <summary></summary>
         </member>
         <member name="M:OpenDental.Patients.GetLimCreditIns">
@@ -2788,8 +2926,8 @@
         <member name="M:OpenDental.Patients.GetNextChartNum">
             <summary>Gets the next available integer chart number.  Willl later add a where clause based on preferred format.</summary>
         </member>
-        <member name="M:OpenDental.Patients.ChartNumIsUnique(System.String,System.Int32)">
-            <summary></summary>
+        <member name="M:OpenDental.Patients.ChartNumUsedBy(System.String,System.Int32)">
+            <summary>Returns the name(only one) of the patient using this chartnumber.</summary>
         </member>
         <member name="M:OpenDental.Patients.GetNumberPatients">
             <summary>Used in the patient select window to determine if a trial version user is over their limit.</summary>
@@ -3020,6 +3158,108 @@
         </member>
         <member name="M:OpenDental.PaySplits.ComputeBal">
             <summary></summary>
+        </member>
+        <member name="T:OpenDental.PerioExam">
+            <summary>Corresponds to the perioexam table in the database.</summary>
+        </member>
+        <member name="F:OpenDental.PerioExam.PerioExamNum">
+            <summary>Primary key.</summary>
+        </member>
+        <member name="F:OpenDental.PerioExam.PatNum">
+            <summary>Foreign key to patient.PatNum.</summary>
+        </member>
+        <member name="F:OpenDental.PerioExam.ExamDate">
+            <summary></summary>
+        </member>
+        <member name="F:OpenDental.PerioExam.ProvNum">
+            <summary>Foreign key to provider.ProvNum.</summary>
+        </member>
+        <member name="T:OpenDental.PerioExams">
+            <summary></summary>
+        </member>
+        <member name="F:OpenDental.PerioExams.List">
+            <summary>List of all perio exams for the current patient.</summary>
+        </member>
+        <member name="F:OpenDental.PerioExams.Cur">
+            <summary>The current exam</summary>
+        </member>
+        <member name="M:OpenDental.PerioExams.Refresh">
+            <summary>Most recent date last.  All exams loaded, even if not displayed. Also refreshes all related Measurement data.</summary>
+        </member>
+        <member name="M:OpenDental.PerioExams.UpdateCur">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.PerioExams.InsertCur">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.PerioExams.DeleteCur">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.PerioExams.GetExamIndex(System.Int32)">
+            <summary>Used by PerioMeasures when refreshing to organize array.</summary>
+        </member>
+        <member name="T:OpenDental.PerioMeasure">
+            <summary>Corresponds to the periomeasure table in the database.</summary>
+        </member>
+        <member name="F:OpenDental.PerioMeasure.PerioMeasureNum">
+            <summary>Primary key.</summary>
+        </member>
+        <member name="F:OpenDental.PerioMeasure.PerioExamNum">
+            <summary>Foreign key to perioexam.PerioExamNum.</summary>
+        </member>
+        <member name="F:OpenDental.PerioMeasure.SequenceType">
+            <summary>eg probing, mobility, recession, etc.</summary>
+        </member>
+        <member name="F:OpenDental.PerioMeasure.IntTooth">
+            <summary>Valid values are 1-32. Every measurement must be associated with a tooth.</summary>
+        </member>
+        <member name="F:OpenDental.PerioMeasure.ToothValue">
+            <summary>This is used when the measurement does not apply to a surface(mobility and skiptooth).  Valid values for all surfaces are 0 through 19, or -1 to represent no measurement taken.</summary>
+        </member>
+        <member name="F:OpenDental.PerioMeasure.MBvalue">
+            <summary></summary>
+        </member>
+        <member name="F:OpenDental.PerioMeasure.Bvalue">
+            <summary></summary>
+        </member>
+        <member name="F:OpenDental.PerioMeasure.DBvalue">
+            <summary></summary>
+        </member>
+        <member name="F:OpenDental.PerioMeasure.MLvalue">
+            <summary></summary>
+        </member>
+        <member name="F:OpenDental.PerioMeasure.Lvalue">
+            <summary></summary>
+        </member>
+        <member name="F:OpenDental.PerioMeasure.DLvalue">
+            <summary></summary>
+        </member>
+        <member name="T:OpenDental.PerioMeasures">
+            <summary></summary>
+        </member>
+        <member name="F:OpenDental.PerioMeasures.List">
+            <summary>List of all perio measures for the current patient. Dim 1 is exams. Dim 2 is Sequences. Dim 3 is Measurements, always 33 per sequence(0 is not used).</summary>
+        </member>
+        <member name="F:OpenDental.PerioMeasures.Cur">
+            <summary>The current perio measurement</summary>
+        </member>
+        <member name="M:OpenDental.PerioMeasures.Refresh">
+            <summary>Gets all measurements for the current patient, then organizes them by exam and sequence.</summary>
+        </member>
+        <member name="M:OpenDental.PerioMeasures.UpdateCur">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.PerioMeasures.InsertCur">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.PerioMeasures.DeleteCur">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.PerioMeasures.SetSkipped(System.Collections.ArrayList)">
+            <summary>For the current exam, clears existing skipped teeth and resets them to the specified skipped teeth. The ArrayList valid values are 1-32 int.</summary>
+        </member>
+        <member name="M:OpenDental.PerioMeasures.GetSkipped(System.Int32)">
+            <summary>Used in FormPerio.Add_Click. For the specified exam, gets a list of all skipped teeth. The ArrayList valid values are 1-32 int.</summary>
         </member>
         <member name="T:OpenDental.Permission">
             <summary>Corresponds to the permission table in the database.</summary>
@@ -3383,7 +3623,7 @@
             <summary>Foreign key to definition.DefNum, which contains the text of the priority.</summary>
         </member>
         <member name="F:OpenDental.Procedure.ProcStatus">
-            <summary>See the ProcStat enumeration.</summary>
+            <summary>TP=1,Complete=2,Existing Cur Prov=3,Existing Other Prov=4,Referred=5.</summary>
         </member>
         <member name="F:OpenDental.Procedure.ProcNote">
             <summary>Procedure note.</summary>
@@ -3403,29 +3643,32 @@
         <member name="F:OpenDental.Procedure.CapCoPay">
             <summary>Capitation Co-pay amount.  Will always be -1 if patient does not have capitation coverage for this procedure.</summary>
         </member>
+        <member name="F:OpenDental.Procedure.PlaceService">
+            <summary>Only used in Public Health. See the PlaceOfService enum. Zero(Office) until procedure set complete. Then it's set to the value of the DefaultProcedurePlaceService preference.</summary>
+        </member>
         <member name="T:OpenDental.Procedures">
             <summary></summary>
         </member>
-        <member name="F:OpenDental.Procedures.Cur">
-            <summary></summary>
+        <member name="F:OpenDental.Procedures.cur">
+            <summary>The current procedure. Always taken from the List.</summary>
+        </member>
+        <member name="F:OpenDental.Procedures.CurOld">
+            <summary>When doing update, this Patient is the original before any changes were made. This allows only the changed fields to be updated, minimizing concurrency issues.</summary>
         </member>
         <member name="F:OpenDental.Procedures.List">
-            <summary></summary>
+            <summary>all procedures for current patient</summary>
         </member>
         <member name="F:OpenDental.Procedures.HList">
-            <summary></summary>
+            <summary>Hashtable of all procedures for current patient</summary>
         </member>
         <member name="F:OpenDental.Procedures.MissingTeeth">
-            <summary></summary>
+            <summary>Strings. Valid "1"-"32", and "A"-"Z"</summary>
         </member>
         <member name="F:OpenDental.Procedures.ProcsOneApt">
             <summary>Descriptions of procedures for one appointment or one next appointment. Fill by using GetProcsMultApts, then GetProcsOneApt to pull data from that list.</summary>
         </member>
         <member name="F:OpenDental.Procedures.ProcsForSingle">
             <summary>Descriptions of procedures for one appointment or one next appointment. Fill using GetProcsForSingle to get data directly from the database.</summary>
-        </member>
-        <member name="M:OpenDental.Procedures.#ctor">
-            <summary></summary>
         </member>
         <member name="M:OpenDental.Procedures.Refresh">
             <summary></summary>
@@ -3434,13 +3677,13 @@
             <summary></summary>
         </member>
         <member name="M:OpenDental.Procedures.UpdateCur">
-            <summary></summary>
+            <summary>Updates only the changed columns and returns the number of rows affected.</summary>
         </member>
         <member name="M:OpenDental.Procedures.DeleteCur">
             <summary></summary>
         </member>
         <member name="M:OpenDental.Procedures.GetProcsForSingle(System.Int32,System.Boolean)">
-            <summary>Gets a string[] (ProcsForSingle) of the procedures for a single appointment or Next appointment from the database.</summary>
+            <summary>Gets a string[] (ProcsForSingle) of the procedures for a single appointment or Next appointment from the database.  Could later be improved to include production by moving to a ProcDesc struct like procsMultApts.</summary>
         </member>
         <member name="M:OpenDental.Procedures.ConvertProcToString(System.String,System.String,System.String)">
             <summary>Used by GetProcsForSingle and GetProcsMultApts to generate a short string description of a procedure.</summary>
@@ -3450,16 +3693,19 @@
             <returns></returns>
         </member>
         <member name="M:OpenDental.Procedures.GetProcsMultApts(System.Int32[])">
-            <summary>Gets a list (procsMultApts is a struct of type ProcDesc(aptNum and string[]) of all the procedures attached to the specified appointments.  Then, use GetProcsOneApt to pull procedures for one appointment from this list.  This process requires only one call to the database.</summary>
+            <summary>Gets a list (procsMultApts is a struct of type ProcDesc(aptNum, string[], and production) of all the procedures attached to the specified appointments.  Then, use GetProcsOneApt to pull procedures for one appointment from this list.  This process requires only one call to the database.</summary>
              <param name="myAptNums">The list of appointments to get procedures for.</param>
         </member>
         <member name="M:OpenDental.Procedures.GetProcsMultApts(System.Int32[],System.Boolean)">
-            <summary>Gets a list (procsMultApts is a struct of type ProcDesc(aptNum and string[]) of all the procedures attached to the specified appointments.  Then, use GetProcsOneApt to pull procedures for one appointment from this list.  This process requires only one call to the database.</summary>
+            <summary>Gets a list (procsMultApts is a struct of type ProcDesc(aptNum, string[], and production) of all the procedures attached to the specified appointments.  Then, use GetProcsOneApt to pull procedures for one appointment from this list or GetProductionOneApt.  This process requires only one call to the database.</summary>
              <param name="myAptNums">The list of appointments to get procedures for.</param>
              <param name="isForNext">Gets procedures for a list of next appointments rather than regular appointments.</param>
         </member>
         <member name="M:OpenDental.Procedures.GetProcsOneApt(System.Int32)">
             <summary>Gets procedures for one appointment by looping through the procsMultApts which was filled previously from GetProcsMultApts.</summary>
+        </member>
+        <member name="M:OpenDental.Procedures.GetProductionOneApt(System.Int32)">
+            <summary>Gets the production for one appointment by looping through the procsMultApts which was filled previously from GetProcsMultApts.</summary>
         </member>
         <member name="M:OpenDental.Procedures.GetEstForCur(OpenDental.PriSecTot)">
             <summary></summary>
@@ -3471,13 +3717,21 @@
             <summary></summary>
         </member>
         <member name="M:OpenDental.Procedures.SetCompleteInAppt">
-            <summary></summary>
+            <summary>Loops through each proc.  Assumes you have set Appointments.Cur</summary>
         </member>
         <member name="M:OpenDental.Procedures.PutBal(System.DateTime,System.Double)">
             <summary></summary>
         </member>
         <member name="M:OpenDental.Procedures.ComputeBal">
             <summary></summary>
+        </member>
+        <member name="M:OpenDental.Procedures.SetDateFirstVisit(System.DateTime,System.Int32)">
+            <summary>Sets the patient.DateFirstVisit if necessary. A visitDate is required to be passed in because it may not be today's date. This is triggered by:
+            1. When any procedure is inserted regardless of status. From Chart or appointment. If no C procs and date blank, changes date.
+            2. When updating a procedure to status C. If no C procs, update visit date. Ask user first?
+            3. When an appointment is deleted. If no C procs, clear visit date.
+            4. Changing an appt date of type IsNewPatient. If no C procs, change visit date.
+            Old: when setting a procedure complete in the Chart module or the ProcEdit window.  Also when saving an appointment that is marked IsNewPat.</summary>
         </member>
         <member name="T:OpenDental.ProcDesc">
             <summary>Not a database table.</summary>
@@ -3486,6 +3740,9 @@
             <summary></summary>
         </member>
         <member name="F:OpenDental.ProcDesc.ProcLines">
+            <summary></summary>
+        </member>
+        <member name="F:OpenDental.ProcDesc.Production">
             <summary></summary>
         </member>
         <member name="T:OpenDental.ProgramProperty">
@@ -3579,7 +3836,7 @@
             <summary></summary>
         </member>
         <member name="M:OpenDental.Programs.DeleteCur">
-            <summary>This can only be called by the user if it is a program link that they created. Included program links can not be deleted.  If calling this from ClassConversion, must delete any dependent ProgramProperties first.  It will delete ToolButItems for you.</summary>
+            <summary>This can only be called by the user if it is a program link that they created. Included program links cannot be deleted.  If calling this from ClassConversion, must delete any dependent ProgramProperties first.  It will delete ToolButItems for you.</summary>
         </member>
         <member name="M:OpenDental.Programs.IsEnabled(System.String)">
             <summary>Returns true if a Program link with the given name or number exists and is enabled.</summary>
@@ -3660,10 +3917,10 @@
             <summary></summary>
         </member>
         <member name="F:OpenDental.Providers.ListLong">
-            <summary></summary>
+            <summary>Rarely used. Includes all providers, even if hidden.</summary>
         </member>
         <member name="F:OpenDental.Providers.List">
-            <summary></summary>
+            <summary>This is the list used most often. It does not include hidden providers.</summary>
         </member>
         <member name="F:OpenDental.Providers.Cur">
             <summary></summary>
@@ -3783,7 +4040,7 @@
             <summary></summary>
         </member>
         <member name="F:OpenDental.RefAttaches.List">
-            <summary></summary>
+            <summary>for this patient only</summary>
         </member>
         <member name="F:OpenDental.RefAttaches.Cur">
             <summary></summary>
@@ -3873,7 +4130,7 @@
             <summary></summary>
         </member>
         <member name="F:OpenDental.Referrals.List">
-            <summary></summary>
+            <summary>All referrals for all patients</summary>
         </member>
         <member name="F:OpenDental.Referrals.Cur">
             <summary></summary>
@@ -3891,6 +4148,9 @@
             <summary></summary>
         </member>
         <member name="M:OpenDental.Referrals.GetCur(System.Int32)">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.Referrals.GetCurName">
             <summary></summary>
         </member>
         <member name="T:OpenDental.ReportObjectStruct">
@@ -4320,6 +4580,197 @@
             <summary></summary>
         </member>
         <member name="M:OpenDental.Schedules.DeleteCur">
+            <summary></summary>
+        </member>
+        <member name="T:OpenDental.School">
+            <summary>Corresponds to the school table in the database. Used in public health.</summary>
+        </member>
+        <member name="F:OpenDental.School.SchoolName">
+            <summary>Primary key, but allowed to change.  Change is programmatically synchronized.</summary>
+        </member>
+        <member name="F:OpenDental.School.SchoolCode">
+            <summary>Optional. Usage varies.</summary>
+        </member>
+        <member name="F:OpenDental.School.OldSchoolName">
+            <summary>Not a database field. This is the unaltered SchoolName. Used for Update.</summary>
+        </member>
+        <member name="T:OpenDental.Schools">
+            <summary></summary>
+        </member>
+        <member name="F:OpenDental.Schools.Cur">
+            <summary></summary>
+        </member>
+        <member name="F:OpenDental.Schools.List">
+            <summary>This list is only refreshed as needed rather than being part of the local data.</summary>
+        </member>
+        <member name="F:OpenDental.Schools.ListNames">
+            <summary>Used in screening window. Simpler interface.</summary>
+        </member>
+        <member name="M:OpenDental.Schools.Refresh(System.String)">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.Schools.Refresh">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.Schools.GetListNames">
+            <summary>Gets an array of strings containing all the schools in alphabetical order.  Used for the screening interface which must be simpler than the usual interface.</summary>
+        </member>
+        <member name="M:OpenDental.Schools.InsertCur">
+            <summary>Need to make sure schoolname not already in db.</summary>
+        </member>
+        <member name="M:OpenDental.Schools.UpdateCur">
+            <summary>Updates the schoolname and code in the school table, and also updates all patients that were using the oldschool name.</summary>
+        </member>
+        <member name="M:OpenDental.Schools.DeleteCur">
+            <summary>Must run UsedBy before running this.</summary>
+        </member>
+        <member name="M:OpenDental.Schools.UsedBy(System.String)">
+            <summary>Use before DeleteCur to determine if this school name is in use. Returns a formatted string that can be used to quickly display the names of all patients using the schoolname.</summary>
+        </member>
+        <member name="M:OpenDental.Schools.DoesExist(System.String)">
+            <summary>Use before InsertCur to determine if this school name already exists. Also used when closing patient edit window to validate that the schoolname exists.</summary>
+        </member>
+        <member name="T:OpenDental.ScreenGroup">
+            <summary>Corresponds to the screengroup table in the database. Used in public health.</summary>
+            <remarks>There are many extra fields in common with the screen table, but they are only in this struct and not in the database itself, where that data is stored with the individual screen items. The data in this table is irrelevant in reports.  It is just used to help organize the user interface.</remarks>
+        </member>
+        <member name="F:OpenDental.ScreenGroup.ScreenGroupNum">
+            <summary>Primary key</summary>
+        </member>
+        <member name="F:OpenDental.ScreenGroup.Description">
+            <summary>Up to the user.</summary>
+        </member>
+        <member name="F:OpenDental.ScreenGroup.SGDate">
+            <summary>Date used to help order the groups.</summary>
+        </member>
+        <member name="F:OpenDental.ScreenGroup.ProvName">
+            <summary>Not a database column. Used if ProvNum=0.</summary>
+        </member>
+        <member name="F:OpenDental.ScreenGroup.ProvNum">
+            <summary>Not a database column. Foreign key to provider.ProvNum. Can be 0 if not a standard provider.  In that case, a ProvName should be entered.</summary>
+        </member>
+        <member name="F:OpenDental.ScreenGroup.PlaceService">
+            <summary>Not a database column. See the PlaceOfService enum.</summary>
+        </member>
+        <member name="F:OpenDental.ScreenGroup.County">
+            <summary>Not a database column. Foreign key to county.CountyName, although it will not crash if key absent.</summary>
+        </member>
+        <member name="F:OpenDental.ScreenGroup.GradeSchool">
+            <summary>Not a database column. Foreign key to school.SchoolName, although it will not crash if key absent.</summary>
+        </member>
+        <member name="T:OpenDental.ScreenGroups">
+            <summary></summary>
+        </member>
+        <member name="F:OpenDental.ScreenGroups.Cur">
+            <summary></summary>
+        </member>
+        <member name="F:OpenDental.ScreenGroups.List">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.ScreenGroups.Refresh(System.DateTime,System.DateTime)">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.ScreenGroups.InsertCur">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.ScreenGroups.UpdateCur">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.ScreenGroups.DeleteCur">
+            <summary>This will also delete all screen items, so may need to ask user first.</summary>
+        </member>
+        <member name="T:OpenDental.Screen">
+            <summary>Corresponds to the screen table in the database. Used in public health.</summary>
+            <remarks>This screening table is meant to be general purpose.  It is compliant with the popular Basic Screening Survey.  It is also designed with minimal foreign keys and can be easily adapted to a palm or pocketPC.  This table can be used with only the screengroup table, but is more efficient if provider, school, and county tables are also available.</remarks>
+        </member>
+        <member name="F:OpenDental.Screen.ScreenNum">
+            <summary>Primary key</summary>
+        </member>
+        <member name="F:OpenDental.Screen.ScreenDate">
+            <summary>The date of the screening.</summary>
+        </member>
+        <member name="F:OpenDental.Screen.GradeSchool">
+            <summary>Foreign key to school.SchoolName, although it will not crash if key absent.</summary>
+        </member>
+        <member name="F:OpenDental.Screen.County">
+            <summary>Foreign key to county.CountyName, although it will not crash if key absent.</summary>
+        </member>
+        <member name="F:OpenDental.Screen.PlaceService">
+            <summary>See the PlaceOfService enum.</summary>
+        </member>
+        <member name="F:OpenDental.Screen.ProvNum">
+            <summary>Foreign key to provider.ProvNum.  ProvNAME is always entered, but ProvNum supplements it by letting user select from list.  When entering a provNum, the name will be filled in automatically. Can be 0 if the provider is not in the list, but provName is required.</summary>
+        </member>
+        <member name="F:OpenDental.Screen.ProvName">
+            <summary>Required.</summary>
+        </member>
+        <member name="F:OpenDental.Screen.Gender">
+            <summary>See the PatientGender enumeration.</summary>
+        </member>
+        <member name="F:OpenDental.Screen.Race">
+            <summary>Race and ethnicity. See the PatientRace enum.</summary>
+        </member>
+        <member name="F:OpenDental.Screen.GradeLevel">
+            <summary>See the PatientGrade enumeration.</summary>
+        </member>
+        <member name="F:OpenDental.Screen.Age">
+            <summary>Age of patient at the time the screening was done. Faster than recording birthdates.</summary>
+        </member>
+        <member name="F:OpenDental.Screen.Urgency">
+            <summary>See the TreatmentUrgency enumeration.</summary>
+        </member>
+        <member name="F:OpenDental.Screen.HasCaries">
+            <summary>Set to true if patient has cavities.</summary>
+        </member>
+        <member name="F:OpenDental.Screen.NeedsSealants">
+            <summary>Set to true if patient needs sealants.</summary>
+        </member>
+        <member name="F:OpenDental.Screen.CariesExperience">
+            <summary></summary>
+        </member>
+        <member name="F:OpenDental.Screen.EarlyChildCaries">
+            <summary></summary>
+        </member>
+        <member name="F:OpenDental.Screen.ExistingSealants">
+            <summary></summary>
+        </member>
+        <member name="F:OpenDental.Screen.MissingAllTeeth">
+            <summary></summary>
+        </member>
+        <member name="F:OpenDental.Screen.Birthdate">
+            <summary>Optional</summary>
+        </member>
+        <member name="F:OpenDental.Screen.ScreenGroupNum">
+            <summary>Foreign Key to screengroup.ScreenGroupNum.</summary>
+        </member>
+        <member name="F:OpenDental.Screen.ScreenGroupOrder">
+            <summary>The order of this item within its group.</summary>
+        </member>
+        <member name="F:OpenDental.Screen.Comments">
+            <summary></summary>
+        </member>
+        <member name="T:OpenDental.Screens">
+            <summary></summary>
+        </member>
+        <member name="F:OpenDental.Screens.Cur">
+            <summary></summary>
+        </member>
+        <member name="F:OpenDental.Screens.List">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.Screens.Refresh(System.Int32)">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.Screens.InsertCur">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.Screens.UpdateCur">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.Screens.UpdateForGroup">
+            <summary>Updates all screens for a group with the date,prov, and location info of the current group.</summary>
+        </member>
+        <member name="M:OpenDental.Screens.DeleteCur">
             <summary></summary>
         </member>
         <member name="T:OpenDental.SecurityLog">
@@ -4788,6 +5239,30 @@
         <member name="M:OpenDental.FormAutoCodeEdit.Dispose(System.Boolean)">
             <summary></summary>
         </member>
+        <member name="T:OpenDental.FormAutoCodeLessIntrusive">
+            <summary>
+            Summary description for FormBasicTemplate.
+            </summary>
+        </member>
+        <member name="F:OpenDental.FormAutoCodeLessIntrusive.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:OpenDental.FormAutoCodeLessIntrusive.#ctor">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.FormAutoCodeLessIntrusive.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:OpenDental.FormAutoCodeLessIntrusive.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
         <member name="T:OpenDental.FormAutoItemEdit">
             <summary></summary>
         </member>
@@ -5001,6 +5476,9 @@
             Required designer variable.
             </summary>
         </member>
+        <member name="F:OpenDental.FormClaimFormItemEdit.FieldNames">
+            <summary></summary>
+        </member>
         <member name="F:OpenDental.FormClaimFormItemEdit.IsNew">
             <summary></summary>
         </member>
@@ -5123,6 +5601,9 @@
         </member>
         <member name="M:OpenDental.FormClaimPrint.FillRenaissance">
             <summary>Called from Bridges.Renaissance, this takes the supplied ClaimFormItems.ListForForm, and generates an array of strings that will get saved into a text file.  First dimension of array is the pages. Second dimension is the lines in the page.</summary>
+        </member>
+        <member name="M:OpenDental.FormClaimPrint.GetPlaceOfServiceNum(OpenDental.PlaceOfService)">
+            <summary></summary>
         </member>
         <member name="M:OpenDental.FormClaimPrint.FillProcStrings(System.Int32,System.Int32)">
             <summary></summary>
@@ -5275,6 +5756,12 @@
             the contents of this method with the code editor.
             </summary>
         </member>
+        <member name="M:OpenDental.FormConfig.GetComputerNames">
+            <summary>Gets a list of all computer names on the network (this is not easy)</summary>
+        </member>
+        <member name="M:OpenDental.FormConfig.GetDatabases">
+            <summary>Gets a list of all databases on the selected computer.</summary>
+        </member>
         <member name="M:OpenDental.FormConfig.GetConfig">
             <summary></summary>
         </member>
@@ -5324,6 +5811,57 @@
             </summary>
         </member>
         <member name="M:OpenDental.FormContacts.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:OpenDental.FormCounties">
+            <summary>
+            Summary description for FormBasicTemplate.
+            </summary>
+        </member>
+        <member name="F:OpenDental.FormCounties.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:OpenDental.FormCounties.#ctor">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.FormCounties.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:OpenDental.FormCounties.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:OpenDental.FormCountyEdit">
+            <summary>
+            Summary description for FormBasicTemplate.
+            </summary>
+        </member>
+        <member name="F:OpenDental.FormCountyEdit.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="F:OpenDental.FormCountyEdit.IsNew">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.FormCountyEdit.#ctor">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.FormCountyEdit.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:OpenDental.FormCountyEdit.InitializeComponent">
             <summary>
             Required method for Designer support - do not modify
             the contents of this method with the code editor.
@@ -5570,10 +6108,19 @@
         <member name="M:OpenDental.FormInsCovEdit.Dispose(System.Boolean)">
             <summary></summary>
         </member>
+        <member name="M:OpenDental.FormInsCovEdit.FillPlans">
+            <summary>Patients.GetFamily() and Insplans.Refresh() MUST already be done</summary>
+        </member>
+        <member name="M:OpenDental.FormInsCovEdit.FillPercent">
+            <summary>Covpats.refresh must already be done</summary>
+        </member>
         <member name="T:OpenDental.FormInsPlan">
-            <summary></summary>
+            <summary>Must refresh Patients.GetFamily after exiting this form because a lot could have changed including drop or delete.</summary>
         </member>
         <member name="F:OpenDental.FormInsPlan.IsNew">
+            <summary></summary>
+        </member>
+        <member name="F:OpenDental.FormInsPlan.DropButVisible">
             <summary></summary>
         </member>
         <member name="M:OpenDental.FormInsPlan.#ctor">
@@ -5697,29 +6244,57 @@
             the contents of this method with the code editor.
             </summary>
         </member>
-        <member name="T:OpenDental.FormLetterSetup">
+        <member name="T:OpenDental.FormLetterEditOld">
             <summary>
             Summary description for FormBasicTemplate.
             </summary>
         </member>
-        <member name="F:OpenDental.FormLetterSetup.components">
-            <summary>
-            Required designer variable.
-            </summary>
+        <member name="F:OpenDental.FormLetterEditOld.components">
+            <summary>Required designer variable.</summary>
         </member>
-        <member name="M:OpenDental.FormLetterSetup.#ctor">
+        <member name="F:OpenDental.FormLetterEditOld.IsNew">
             <summary></summary>
         </member>
-        <member name="M:OpenDental.FormLetterSetup.Dispose(System.Boolean)">
+        <member name="M:OpenDental.FormLetterEditOld.#ctor">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.FormLetterEditOld.Dispose(System.Boolean)">
             <summary>
             Clean up any resources being used.
             </summary>
         </member>
-        <member name="M:OpenDental.FormLetterSetup.InitializeComponent">
+        <member name="M:OpenDental.FormLetterEditOld.InitializeComponent">
             <summary>
             Required method for Designer support - do not modify
             the contents of this method with the code editor.
             </summary>
+        </member>
+        <member name="T:OpenDental.FormLetters">
+            <summary>
+            Summary description for FormBasicTemplate.
+            </summary>
+        </member>
+        <member name="F:OpenDental.FormLetters.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:OpenDental.FormLetters.#ctor">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.FormLetters.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:OpenDental.FormLetters.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:OpenDental.FormLetters.WarnOK">
+            <summary>If the user has selected a letter, and then edited it in the main textbox, this warns them before continuing.</summary>
         </member>
         <member name="T:OpenDental.FormLetter">
             <summary>
@@ -5913,7 +6488,10 @@
             <summary></summary>
         </member>
         <member name="F:OpenDental.FormPatientEdit.IsNew">
-            <summary></summary>
+            <summary>Set true if this is a new patient. Patient must have been already inserted. If users clicks cancel, this patient will be deleted.</summary>
+        </member>
+        <member name="F:OpenDental.FormPatientEdit.PatCur">
+            <summary>This is the object that is altered in this form, then saved to Patients.Cur just before update.</summary>
         </member>
         <member name="M:OpenDental.FormPatientEdit.#ctor">
             <summary></summary>
@@ -5922,11 +6500,10 @@
             <summary></summary>
         </member>
         <member name="T:OpenDental.FormPatientSelect">
-            <summary></summary>
+            <summary>All this dialog does is set the patnum and it is up to the calling form to do an immediate refresh, or possibly just change the patnum back to what it was.  So the other patient fields must remain intact during all logic in this form, especially if SelectionModeOnly.</summary>
         </member>
-        <member name="F:OpenDental.FormPatientSelect.OnlyChangingFam">
-            <summary>Selection mode only.
-            Use when you want to specify a patient without changing the current patient.</summary>
+        <member name="F:OpenDental.FormPatientSelect.SelectionModeOnly">
+            <summary>was "OnlyChangingFam". Use when you want to specify a patient without changing the current patient.</summary>
         </member>
         <member name="F:OpenDental.FormPatientSelect.NewPatientAdded">
             <summary>When closing the form, this indicates whether a new patient was added from within this form.</summary>
@@ -5945,6 +6522,9 @@
         </member>
         <member name="M:OpenDental.FormPatientSelect.FormSelectPatient_Load(System.Object,System.EventArgs)">
             <summary></summary>
+        </member>
+        <member name="M:OpenDental.FormPatientSelect.butAddPt_Click(System.Object,System.EventArgs)">
+            <summary>Remember, this button is not even visible if SelectionModeOnly.</summary>
         </member>
         <member name="T:OpenDental.FormPayment">
             <summary></summary>
@@ -6088,6 +6668,58 @@
         </member>
         <member name="M:OpenDental.FormPercentEdit.Dispose(System.Boolean)">
             <summary></summary>
+        </member>
+        <member name="T:OpenDental.FormPerio">
+            <summary>
+            Summary description for FormBasicTemplate.
+            </summary>
+        </member>
+        <member name="M:OpenDental.FormPerio.#ctor">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.FormPerio.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:OpenDental.FormPerio.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:OpenDental.FormPerio.RefreshListExams">
+            <summary>After this method runs, the selected index is usually set.</summary>
+        </member>
+        <member name="M:OpenDental.FormPerio.FillGrid">
+            <summary>Usually set the selected index first</summary>
+        </member>
+        <member name="M:OpenDental.FormPerio.NumberClicked(System.Int32)">
+            <summary>The only valid numbers are 0 through 9</summary>
+        </member>
+        <member name="T:OpenDental.FormPerioEdit">
+            <summary>
+            Summary description for FormBasicTemplate.
+            </summary>
+        </member>
+        <member name="F:OpenDental.FormPerioEdit.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:OpenDental.FormPerioEdit.#ctor">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.FormPerioEdit.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:OpenDental.FormPerioEdit.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
         </member>
         <member name="T:OpenDental.FormPermissionEdit">
             <summary></summary>
@@ -6376,7 +7008,7 @@
             <summary></summary>
         </member>
         <member name="F:OpenDental.FormRecallEdit.PinClicked">
-            <summary></summary>
+            <summary>If Pin clicked, this allows FormRecall to know about it.</summary>
         </member>
         <member name="F:OpenDental.FormRecallEdit.DueDate">
             <summary></summary>
@@ -6393,8 +7025,8 @@
             the contents of this method with the code editor.
             </summary>
         </member>
-        <member name="M:OpenDental.FormRecallEdit.FillComm">
-            <summary>Fills the commlog table on this form.</summary>
+        <member name="M:OpenDental.FormRecallEdit.CreateCurInfo">
+            <summary>Creates appointment and appropriate procedures, and places data in ContrAppt.CurInfo so it will display on pinboard.</summary>
         </member>
         <member name="T:OpenDental.FormRecallSetup">
             <summary></summary>
@@ -6594,6 +7226,138 @@
             the contents of this method with the code editor.
             </summary>
         </member>
+        <member name="T:OpenDental.FormSchoolEdit">
+            <summary>
+            Summary description for FormBasicTemplate.
+            </summary>
+        </member>
+        <member name="F:OpenDental.FormSchoolEdit.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="F:OpenDental.FormSchoolEdit.IsNew">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.FormSchoolEdit.#ctor">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.FormSchoolEdit.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:OpenDental.FormSchoolEdit.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:OpenDental.FormSchools">
+            <summary>
+            Summary description for FormBasicTemplate.
+            </summary>
+        </member>
+        <member name="F:OpenDental.FormSchools.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:OpenDental.FormSchools.#ctor">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.FormSchools.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:OpenDental.FormSchools.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:OpenDental.FormScreenEdit">
+            <summary>
+            Summary description for FormBasicTemplate.
+            </summary>
+        </member>
+        <member name="F:OpenDental.FormScreenEdit.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="F:OpenDental.FormScreenEdit.IsNew">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.FormScreenEdit.#ctor">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.FormScreenEdit.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:OpenDental.FormScreenEdit.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:OpenDental.FormScreenEdit.checkBox_Click(System.Object,System.EventArgs)">
+            <summary>Used by all 6 checkboxes to customize order of 3-state checking.</summary>
+        </member>
+        <member name="T:OpenDental.FormScreenGroup">
+            <summary>
+            Summary description for FormBasicTemplate.
+            </summary>
+        </member>
+        <member name="F:OpenDental.FormScreenGroup.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="F:OpenDental.FormScreenGroup.IsNew">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.FormScreenGroup.#ctor">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.FormScreenGroup.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:OpenDental.FormScreenGroup.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:OpenDental.FormScreenings">
+            <summary>
+            Summary description for FormBasicTemplate.
+            </summary>
+        </member>
+        <member name="F:OpenDental.FormScreenings.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:OpenDental.FormScreenings.#ctor">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.FormScreenings.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:OpenDental.FormScreenings.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
         <member name="T:OpenDental.FormStatementOptions">
             <summary></summary>
         </member>
@@ -6650,6 +7414,9 @@
             Required method for Designer support - do not modify
             the contents of this method with the code editor.
             </summary>
+        </member>
+        <member name="M:OpenDental.FormTelephone.Reformat">
+            <summary></summary>
         </member>
         <member name="T:OpenDental.FormTimeCard">
             <summary>
@@ -6797,6 +7564,9 @@
         <member name="F:OpenDental.FormQuery.IsReport">
             <summary></summary>
         </member>
+        <member name="F:OpenDental.FormQuery.textTitle">
+            <summary></summary>
+        </member>
         <member name="M:OpenDental.FormQuery.#ctor">
             <summary></summary>
         </member>
@@ -6810,10 +7580,10 @@
             </summary>
         </member>
         <member name="M:OpenDental.FormQuery.SubmitQuery">
-            <summary></summary>
+            <summary>This is used internally instead of SubmitReportQuery.  Can also be called externally if we want to automate a userquery.  Column names will be handled automatically.</summary>
         </member>
         <member name="M:OpenDental.FormQuery.SubmitReportQuery">
-            <summary></summary>
+            <summary>When used as a report, this is called externally. Used instead of SubmitQuery(). Column names will be handled manually by the external form calling this report.</summary>
         </member>
         <member name="M:OpenDental.FormQuery.ResetGrid">
             <summary></summary>
@@ -6956,6 +7726,24 @@
             the contents of this method with the code editor.
             </summary>
         </member>
+        <member name="T:OpenDental.FormRpPHRawPop">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.FormRpPHRawPop.#ctor">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.FormRpPHRawPop.Dispose(System.Boolean)">
+            <summary></summary>
+        </member>
+        <member name="T:OpenDental.FormRpPHRawScreen">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.FormRpPHRawScreen.#ctor">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.FormRpPHRawScreen.Dispose(System.Boolean)">
+            <summary></summary>
+        </member>
         <member name="T:OpenDental.FormRpPrescriptions">
             <summary></summary>
         </member>
@@ -7013,8 +7801,20 @@
             the contents of this method with the code editor.
             </summary>
         </member>
+        <member name="T:OpenDental.FormRpPHRawProc">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.FormRpPHRawProc.#ctor">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.FormRpPHRawProc.Dispose(System.Boolean)">
+            <summary></summary>
+        </member>
         <member name="T:OpenDental.FormRpProcSheet">
             <summary></summary>
+        </member>
+        <member name="F:OpenDental.FormRpProcSheet.whereProv">
+            <summary>The where clause for the providers.</summary>
         </member>
         <member name="M:OpenDental.FormRpProcSheet.#ctor">
             <summary></summary>
@@ -7094,8 +7894,8 @@
         <member name="F:OpenDental.ContrAccount.StatementA">
             <summary></summary>
         </member>
-        <member name="F:OpenDental.ContrAccount.ViewOnly">
-            <summary></summary>
+        <member name="F:OpenDental.ContrAccount.ViewingInRecall">
+            <summary>Set to true if this control is placed in the recall edit window. This affects the control behavior.</summary>
         </member>
         <member name="F:OpenDental.ContrAccount.SubTotal">
             <summary>Used only in printing reports that show subtotal only.</summary>
@@ -7117,6 +7917,9 @@
         </member>
         <member name="M:OpenDental.ContrAccount.ModuleUnselected">
             <summary></summary>
+        </member>
+        <member name="M:OpenDental.ContrAccount.FillComm">
+            <summary>Fills the commlog table on this form.</summary>
         </member>
         <member name="M:OpenDental.ContrAccount.LoadAndPrint">
             <summary>Used from FormBilling to print one statement for the entire family of the current patient.PatNum which was set ahead of time.</summary>
@@ -7214,6 +8017,9 @@
         <member name="M:OpenDental.ContrAppt.ContrAppt_Layout(System.Object,System.Windows.Forms.LayoutEventArgs)">
             <summary>Triggered every time a control(including appt) is added or removed.</summary>
         </member>
+        <member name="M:OpenDental.ContrAppt.RefreshVisops">
+            <summary>Also refreshes some other display values. Needs to be called when switching databases.</summary>
+        </member>
         <member name="M:OpenDental.ContrAppt.ContrAppt_Resize(System.Object,System.EventArgs)">
             <summary>Not used right now</summary>
         </member>
@@ -7252,6 +8058,12 @@
         </member>
         <member name="M:OpenDental.ContrAppt.RefreshDay(System.DateTime)">
             <summary>Gets all new day info from db and redraws screen</summary>
+        </member>
+        <member name="M:OpenDental.ContrAppt.FillLab">
+            <summary>Fills the lab summary for the day.</summary>
+        </member>
+        <member name="M:OpenDental.ContrAppt.FillProduction">
+            <summary>Fills the production summary for the day.</summary>
         </member>
         <member name="M:OpenDental.ContrAppt.CreateAptShadows">
             <summary>Creates one bitmap image for each appointment if visible.</summary>
@@ -7527,6 +8339,9 @@
         </member>
         <member name="F:OpenDental.ContrTreat.TPLines2">
             <summary></summary>
+        </member>
+        <member name="F:OpenDental.ContrTreat.showHidden">
+            <summary>If set to true, procedures will show that have a priority which is hidden in Defs. This keeps procedures from disappearing permanantly because by viewing "all" it will include even hidden.</summary>
         </member>
         <member name="F:OpenDental.ContrTreat.pView">
             <summary></summary>
@@ -8204,29 +9019,50 @@
         <member name="F:OpenDental.LabCase.Received">
             <summary>2</summary>
         </member>
+        <member name="F:OpenDental.LabCase.QualityChecked">
+            <summary>3</summary>
+        </member>
         <member name="T:OpenDental.PlaceOfService">
             <summary></summary>
         </member>
         <member name="F:OpenDental.PlaceOfService.Office">
-            <summary>0</summary>
+            <summary>0. CPT code 11</summary>
         </member>
         <member name="F:OpenDental.PlaceOfService.PatientsHome">
-            <summary>1</summary>
+            <summary>1. CPT code 12</summary>
         </member>
         <member name="F:OpenDental.PlaceOfService.InpatHospital">
-            <summary>2</summary>
+            <summary>2. CPT code 21</summary>
         </member>
         <member name="F:OpenDental.PlaceOfService.OutpatHospital">
-            <summary>3</summary>
+            <summary>3. CPT code 22</summary>
         </member>
         <member name="F:OpenDental.PlaceOfService.SkilledNursFac">
-            <summary>4</summary>
+            <summary>4. CPT code 31</summary>
         </member>
         <member name="F:OpenDental.PlaceOfService.AdultLivCareFac">
-            <summary>5</summary>
+            <summary>5. CPT code 33</summary>
         </member>
         <member name="F:OpenDental.PlaceOfService.OtherLocation">
-            <summary>6</summary>
+            <summary>6. CPT code ?</summary>
+        </member>
+        <member name="F:OpenDental.PlaceOfService.MobileUnit">
+            <summary>7. CPT code 15</summary>
+        </member>
+        <member name="F:OpenDental.PlaceOfService.School">
+            <summary>8. CPT code 03</summary>
+        </member>
+        <member name="F:OpenDental.PlaceOfService.MilitaryTreatFac">
+            <summary>9. CPT code 26</summary>
+        </member>
+        <member name="F:OpenDental.PlaceOfService.FederalHealthCenter">
+            <summary>10. CPT code 50</summary>
+        </member>
+        <member name="F:OpenDental.PlaceOfService.PublicHealthClinic">
+            <summary>11. CPT code 71</summary>
+        </member>
+        <member name="F:OpenDental.PlaceOfService.RuralHealthClinic">
+            <summary>12. CPT code 72</summary>
         </member>
         <member name="T:OpenDental.OtherResult">
             <summary>Used in the other appointments window to keep track of the result when closing.</summary>
@@ -8382,16 +9218,28 @@
             <summary>4:This differs from received only slightly.  It's for additional payments on claims already received.  It might be superfluous.</summary>
         </member>
         <member name="F:OpenDental.ClaimProcStatus.Capitation">
-            <summary>5: Capitation claimprocs do not affect the patient balance and can not be attached to a check.</summary>
+            <summary>5: Capitation claimprocs do not affect the patient balance and cannot be attached to a check.</summary>
         </member>
         <member name="T:OpenDental.CommItemType">
             <summary></summary>
         </member>
         <member name="F:OpenDental.CommItemType.StatementSent">
-            <summary>1</summary>
+            <summary>1- auto. </summary>
         </member>
-        <member name="F:OpenDental.CommItemType.AppointmentScheduling">
-            <summary>2- This will be replacing some of the existing note sections.</summary>
+        <member name="F:OpenDental.CommItemType.ApptRelated">
+            <summary>2- Any activity related to appointment scheduling.</summary>
+        </member>
+        <member name="F:OpenDental.CommItemType.Insurance">
+            <summary>3- </summary>
+        </member>
+        <member name="F:OpenDental.CommItemType.Financial">
+            <summary>4- </summary>
+        </member>
+        <member name="F:OpenDental.CommItemType.Recall">
+            <summary>5- </summary>
+        </member>
+        <member name="F:OpenDental.CommItemType.LetterSent">
+            <summary>6- </summary>
         </member>
         <member name="T:OpenDental.ToolBarsAvail">
             <summary></summary>
@@ -8428,6 +9276,132 @@
         </member>
         <member name="F:OpenDental.TimeClockStatus.Break">
             <summary>2</summary>
+        </member>
+        <member name="T:OpenDental.PerioSequenceType">
+            <summary>In perio, the type of measurements for a given row.</summary>
+        </member>
+        <member name="F:OpenDental.PerioSequenceType.Mobility">
+            <summary>0</summary>
+        </member>
+        <member name="F:OpenDental.PerioSequenceType.Furcation">
+            <summary>1</summary>
+        </member>
+        <member name="F:OpenDental.PerioSequenceType.GingMargin">
+            <summary>2-AKA recession.</summary>
+        </member>
+        <member name="F:OpenDental.PerioSequenceType.MGJ">
+            <summary>3-MucoGingivalJunction- the division between attached and unattached mucosa.</summary>
+        </member>
+        <member name="F:OpenDental.PerioSequenceType.Probing">
+            <summary>4</summary>
+        </member>
+        <member name="F:OpenDental.PerioSequenceType.SkipTooth">
+            <summary>5</summary>
+        </member>
+        <member name="F:OpenDental.PerioSequenceType.Bleeding">
+            <summary>6</summary>
+        </member>
+        <member name="F:OpenDental.PerioSequenceType.CAL">
+            <summary>7. But this type is never saved to the db. It is always calculated on the fly.</summary>
+        </member>
+        <member name="T:OpenDental.PatientRace">
+            <summary>Race and ethnicity for patient. Used by public health.</summary>
+        </member>
+        <member name="F:OpenDental.PatientRace.Unknown">
+            <summary>0</summary>
+        </member>
+        <member name="F:OpenDental.PatientRace.Multiracial">
+            <summary>1</summary>
+        </member>
+        <member name="F:OpenDental.PatientRace.HispanicLatino">
+            <summary>2</summary>
+        </member>
+        <member name="F:OpenDental.PatientRace.AfricanAmerican">
+            <summary>3</summary>
+        </member>
+        <member name="F:OpenDental.PatientRace.White">
+            <summary>4</summary>
+        </member>
+        <member name="F:OpenDental.PatientRace.HawaiiOrPacIsland">
+            <summary>5</summary>
+        </member>
+        <member name="F:OpenDental.PatientRace.AmericanIndian">
+            <summary>6</summary>
+        </member>
+        <member name="F:OpenDental.PatientRace.Asian">
+            <summary>7</summary>
+        </member>
+        <member name="F:OpenDental.PatientRace.Other">
+            <summary>8</summary>
+        </member>
+        <member name="T:OpenDental.PatientGrade">
+            <summary>Grade level used in public health.</summary>
+        </member>
+        <member name="F:OpenDental.PatientGrade.Unknown">
+            <summary>0</summary>
+        </member>
+        <member name="F:OpenDental.PatientGrade.First">
+            <summary>1</summary>
+        </member>
+        <member name="F:OpenDental.PatientGrade.Second">
+            <summary>2</summary>
+        </member>
+        <member name="F:OpenDental.PatientGrade.Third">
+            <summary>3</summary>
+        </member>
+        <member name="F:OpenDental.PatientGrade.Fourth">
+            <summary>4</summary>
+        </member>
+        <member name="F:OpenDental.PatientGrade.Fifth">
+            <summary>5</summary>
+        </member>
+        <member name="F:OpenDental.PatientGrade.Sixth">
+            <summary>6</summary>
+        </member>
+        <member name="F:OpenDental.PatientGrade.Seventh">
+            <summary>7</summary>
+        </member>
+        <member name="F:OpenDental.PatientGrade.Eighth">
+            <summary>8</summary>
+        </member>
+        <member name="F:OpenDental.PatientGrade.Ninth">
+            <summary>9</summary>
+        </member>
+        <member name="F:OpenDental.PatientGrade.Tenth">
+            <summary>10</summary>
+        </member>
+        <member name="F:OpenDental.PatientGrade.Eleventh">
+            <summary>11</summary>
+        </member>
+        <member name="F:OpenDental.PatientGrade.Twelfth">
+            <summary>12</summary>
+        </member>
+        <member name="F:OpenDental.PatientGrade.PrenatalWIC">
+            <summary>13</summary>
+        </member>
+        <member name="F:OpenDental.PatientGrade.PreK">
+            <summary>14</summary>
+        </member>
+        <member name="F:OpenDental.PatientGrade.Kindergarten">
+            <summary>15</summary>
+        </member>
+        <member name="F:OpenDental.PatientGrade.Other">
+            <summary>16</summary>
+        </member>
+        <member name="T:OpenDental.TreatmentUrgency">
+            <summary>For public health.</summary>
+        </member>
+        <member name="F:OpenDental.TreatmentUrgency.Unknown">
+            <summary></summary>
+        </member>
+        <member name="F:OpenDental.TreatmentUrgency.NoProblems">
+            <summary></summary>
+        </member>
+        <member name="F:OpenDental.TreatmentUrgency.NeedsCare">
+            <summary></summary>
+        </member>
+        <member name="F:OpenDental.TreatmentUrgency.Urgent">
+            <summary></summary>
         </member>
         <member name="T:OpenDental.Tooth">
             <summary></summary>
@@ -8965,7 +9939,7 @@
             <summary></summary>
         </member>
         <member name="T:OpenDental.Reporting.AreaSectionKind">
-            <summary>The type of section is used in the Section class.  Only ONE of each type is allowed except for the GroupHeader and GroupFooter which are optional and can have one pair for each group.  The order of the sections is locked and user can not change.</summary>
+            <summary>The type of section is used in the Section class.  Only ONE of each type is allowed except for the GroupHeader and GroupFooter which are optional and can have one pair for each group.  The order of the sections is locked and user cannot change.</summary>
         </member>
         <member name="F:OpenDental.Reporting.AreaSectionKind.ReportHeader">
             <summary>Printed at the top of the report.</summary>
@@ -8992,7 +9966,7 @@
             <summary>Strongly typed collection of Sections.</summary>
         </member>
         <member name="M:OpenDental.Reporting.SectionCollection.Add(OpenDental.Reporting.Section)">
-            <summary>Adds the specified section to the collection, but not to the end.  Instead, it inserts it exactly where it belongs based on the type.  The order can not be changed by the user. Returns the index at which the section has been added, or -1 if not allowed because it already exists.</summary>
+            <summary>Adds the specified section to the collection, but not to the end.  Instead, it inserts it exactly where it belongs based on the type.  The order cannot be changed by the user. Returns the index at which the section has been added, or -1 if not allowed because it already exists.</summary>
         </member>
         <member name="M:OpenDental.Reporting.SectionCollection.IndexOf(OpenDental.Reporting.Section)">
             <summary></summary>
@@ -9312,6 +10286,23 @@
         <member name="M:OpenDental.TableCommLog.Dispose(System.Boolean)">
             <summary></summary>
         </member>
+        <member name="T:OpenDental.Main_Modules.TableCommLogAccount">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.Main_Modules.TableCommLogAccount.#ctor">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.Main_Modules.TableCommLogAccount.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:OpenDental.Main_Modules.TableCommLogAccount.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
         <member name="T:OpenDental.TableContacts">
             <summary></summary>
         </member>
@@ -9541,6 +10532,12 @@
             <summary></summary>
         </member>
         <member name="M:OpenDental.TableTeeth.Dispose(System.Boolean)">
+            <summary></summary>
+        </member>
+        <member name="T:OpenDental.TableTemplates">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.TableTemplates.#ctor">
             <summary></summary>
         </member>
         <member name="M:OpenDental.TableTemplates.Dispose(System.Boolean)">
@@ -9942,25 +10939,25 @@
             <summary></summary>
         </member>
         <member name="F:OpenDental.ContrApptSingle.ClickedAptNum">
-            <summary></summary>
+            <summary>Set on mouse down or from Appt module</summary>
         </member>
         <member name="F:OpenDental.ContrApptSingle.SelectedAptNum">
-            <summary></summary>
+            <summary>set manually</summary>
         </member>
         <member name="F:OpenDental.ContrApptSingle.ThisIsPinBoard">
-            <summary></summary>
+            <summary>True if this control is on the pinboard</summary>
         </member>
         <member name="F:OpenDental.ContrApptSingle.PinBoardIsSelected">
-            <summary></summary>
+            <summary>True if pinboard is selected</summary>
         </member>
         <member name="F:OpenDental.ContrApptSingle.ProvBar">
-            <summary></summary>
+            <summary>Stores the shading info for the provider bar on the left of the appointments module</summary>
         </member>
         <member name="F:OpenDental.ContrApptSingle.Info">
-            <summary></summary>
+            <summary>Contains info inluding the lines, procs, and the Appointment object</summary>
         </member>
         <member name="F:OpenDental.ContrApptSingle.Shadow">
-            <summary></summary>
+            <summary>Stores the background bitmap for this control</summary>
         </member>
         <member name="M:OpenDental.ContrApptSingle.#ctor">
             <summary></summary>
@@ -10072,6 +11069,276 @@
         </member>
         <member name="F:OpenDental.ActiveDay.NumRowsText">
             <summary></summary>
+        </member>
+        <member name="T:OpenDental.ContrPerio">
+            <summary>Summary description for ContrPerio.</summary>
+        </member>
+        <member name="F:OpenDental.ContrPerio.components">
+            <summary>Required designer variable.</summary>
+        </member>
+        <member name="F:OpenDental.ContrPerio.Wmeas">
+            <summary>Width of one measurement. A tooth is 3 times this amount, not counting borders.</summary> 
+        </member>
+        <member name="F:OpenDental.ContrPerio.Hprob">
+            <summary>Height of one row of probing. Gives a little extra room for bleeding.</summary> 
+        </member>
+        <member name="F:OpenDental.ContrPerio.Hshort">
+            <summary>Height of one of the shorter rows (non probing).</summary> 
+        </member>
+        <member name="F:OpenDental.ContrPerio.RowsProbing">
+            <summary>Rows of probing depths.</summary> 
+        </member>
+        <member name="F:OpenDental.ContrPerio.RowTypes">
+            <summary>First dimension is either UF, UL, LF, or LL. Second dim is an array of the types of rows showing in that section.</summary>
+        </member>
+        <member name="F:OpenDental.ContrPerio.Wleft">
+            <summary>Width of the left column that holds descriptions and dates.</summary> 
+        </member>
+        <member name="F:OpenDental.ContrPerio.Htooth">
+            <summary>Height of the 'tooth' sections. Right now, it just holds the tooth number.</summary> 
+        </member>
+        <member name="F:OpenDental.ContrPerio.cBorder">
+            <summary>Color of the outer border and the major dividers.</summary>
+        </member>
+        <member name="F:OpenDental.ContrPerio.cBackShort">
+            <summary>Color of the background section of the shorter inner rows.</summary>
+        </member>
+        <member name="F:OpenDental.ContrPerio.cHi">
+            <summary>Color of a highlighted cell.</summary>
+        </member>
+        <member name="F:OpenDental.ContrPerio.cSkip">
+            <summary>Color of the text of a skipped tooth.</summary>
+        </member>
+        <member name="F:OpenDental.ContrPerio.cVertical">
+            <summary>Color of the vertical lines between each tooth.</summary>
+        </member>
+        <member name="F:OpenDental.ContrPerio.cHoriz">
+            <summary>Color of the minor horizontal lines between rows.</summary>
+        </member>
+        <member name="F:OpenDental.ContrPerio.cBack">
+            <summary>Color of the main background.</summary>
+        </member>
+        <member name="F:OpenDental.ContrPerio.cHorizShort">
+            <summary>Color of the horizontal lines in the shorter inner rows.</summary>
+        </member>
+        <member name="F:OpenDental.ContrPerio.cRedText">
+            <summary>Color of red probing depths.</summary>
+        </member>
+        <member name="F:OpenDental.ContrPerio.cBlood">
+            <summary>Color of the dot over a number representing blood.</summary>
+        </member>
+        <member name="F:OpenDental.ContrPerio.cSupp">
+            <summary>Color of the dot over a number representing suppuration.</summary>
+        </member>
+        <member name="F:OpenDental.ContrPerio.cPlaque">
+            <summary>Color of the dot over a number representing plaque.</summary>
+        </member>
+        <member name="F:OpenDental.ContrPerio.cCalc">
+            <summary>Color of the dot over a number representing calculus.</summary>
+        </member>
+        <member name="F:OpenDental.ContrPerio.cOldText">
+            <summary>Color of previous measurements from a different exam. Slightly grey.</summary>
+        </member>
+        <member name="F:OpenDental.ContrPerio.cOldTextRed">
+            <summary>Color of previous red measurements from a different exam. Lighter red.</summary>
+        </member>
+        <member name="F:OpenDental.ContrPerio.DataArray">
+            <summary>This data array gets filled when loading an exam. It is altered as the user makes changes, and then the results are saved to the db by reading from this array.</summary>
+        </member>
+        <member name="F:OpenDental.ContrPerio.TopCoordinates">
+            <summary>Since it is complex to compute Y coordinate of each cell, the values are stored in this array.  Used by GetBounds.</summary>
+        </member>
+        <member name="F:OpenDental.ContrPerio.CurCell">
+            <summary>Stores the column,row of the currently selected cell. Null if none selected.</summary>
+        </member>
+        <member name="F:OpenDental.ContrPerio.DirectionIsRight">
+            <summary>Set true to go right, false to go left.</summary>
+        </member>
+        <member name="F:OpenDental.ContrPerio.selectedExam">
+            <summary>The index in PerioExams.List of the currently selected exam.</summary>
+        </member>
+        <member name="F:OpenDental.ContrPerio.ProbingOffset">
+            <summary>the offset when there are more rows than will display. Value is set at the same time as SelectedExam. So usually 0. Otherwise 1,2,3 or....</summary>
+        </member>
+        <member name="F:OpenDental.ContrPerio.HasChanged">
+            <summary>Keeps track of what has changed for current exam. Dim 1 is sequence. Dim 2 is toothNum.</summary>
+        </member>
+        <member name="F:OpenDental.ContrPerio.selectedTeeth">
+            <summary>Valid values 1-32 int. User can highlight teeth to mark them as skip tooth. The highighting is done completely separately from the normal highlighting functionality because multiple teeth can be highlighted.</summary>
+        </member>
+        <member name="F:OpenDental.ContrPerio.skippedTeeth">
+            <summary>Valid values 1-32 int. Applies only to the current exam. Loaded from the db durring LoadData().</summary>
+        </member>
+        <member name="F:OpenDental.ContrPerio.ThreeAtATime">
+            <summary>Causes each data entry to be entered three times. Also, if the data is a bleeding flag entry, then it changes the behavior by causing it to advance also.</summary>
+        </member>
+        <member name="M:OpenDental.ContrPerio.#ctor">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.ContrPerio.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:OpenDental.ContrPerio.SetColors">
+            <summary>Sets the user editable colors</summary>
+        </member>
+        <member name="M:OpenDental.ContrPerio.OnPaint(System.Windows.Forms.PaintEventArgs)">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.ContrPerio.DrawSkippedTeeth(System.Windows.Forms.PaintEventArgs)">
+            <summary>Draws the greyed out background for the skipped teeth.</summary>
+        </member>
+        <member name="M:OpenDental.ContrPerio.DrawSelectedTeeth(System.Windows.Forms.PaintEventArgs)">
+            <summary>Draws the highlighted background for selected teeth(not used very often unless user has been clicking on tooth numbers in preparation for setting skipped teeth. Then, highlighting goes away.</summary>
+        </member>
+        <member name="M:OpenDental.ContrPerio.DrawCurCell(System.Windows.Forms.PaintEventArgs)">
+            <summary>Draws the highlighted background for the current cell.</summary>
+        </member>
+        <member name="M:OpenDental.ContrPerio.GetBounds(System.Int32,System.Int32)">
+            <summary>Gets the bounds for a single cell.</summary>
+        </member>
+        <member name="M:OpenDental.ContrPerio.FillTopCoordinates">
+            <summary>Fills an array with all the Y coordinates of each row for faster retrieval by GetBounds, and calculation of click events.</summary>
+        </member>
+        <member name="M:OpenDental.ContrPerio.LoadData">
+            <summary>Loads data from the PerioMeasures lists into the visible grid.</summary>
+        </member>
+        <member name="M:OpenDental.ContrPerio.FillDates">
+            <summary>Used in LoadData.</summary>
+        </member>
+        <member name="M:OpenDental.ContrPerio.GetCell(System.Int32,OpenDental.PerioSequenceType,System.Int32,OpenDental.PerioSurf)">
+            <summary>Used in LoadData.</summary>
+        </member>
+        <member name="M:OpenDental.ContrPerio.SaveCurExam">
+            <summary>Saves the cur exam measurements to the db by looping through each tooth and deciding whether the data for that tooth has changed.  If so, it either updates or inserts a measurement.  It won't delete a measurement if all values for that tooth are cleared, but just sets that measurement to all -1's.</summary>
+        </member>
+        <member name="M:OpenDental.ContrPerio.GetCellValue(System.Int32,OpenDental.PerioSequenceType,System.Int32,OpenDental.PerioSurf)">
+            <summary>Used in SaveCurExam to retrieve data from grid to save it.</summary>
+        </member>
+        <member name="M:OpenDental.ContrPerio.GetCellBleedValue(System.Int32,System.Int32,OpenDental.PerioSurf)">
+            <summary>Used in SaveCurExam to retrieve data from grid to save it.</summary>
+        </member>
+        <member name="M:OpenDental.ContrPerio.GetTableRow(System.Int32,System.Int32,OpenDental.PerioSequenceType)">
+            <summary>Used in GetCell during LoadData. Also used in AdvanceCell when looping to a new section.</summary>
+        </member>
+        <member name="M:OpenDental.ContrPerio.GetTableRow(System.Boolean)">
+            <summary>If true, then returns the row of the max teeth, otherwise mand.</summary>
+        </member>
+        <member name="M:OpenDental.ContrPerio.GetSection(System.Int32)">
+            <summary>Returns -1 if a tooth row and not a section row. Used in GetBounds, DrawRow, and OnMouseDown.</summary>
+        </member>
+        <member name="M:OpenDental.ContrPerio.GetSectionRow(System.Int32)">
+            <summary>Returns -1 if a tooth row and not a section row.  Used in GetBounds,SetHasChanged, AdvanceCell, and DrawRow</summary>
+        </member>
+        <member name="M:OpenDental.ContrPerio.GetCellFromPixel(System.Int32,System.Int32)">
+            <summary>Gets the current cell as a col,row based on the x-y pixel coordinate supplied.</summary>
+        </member>
+        <member name="M:OpenDental.ContrPerio.OnMouseDown(System.Windows.Forms.MouseEventArgs)">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.ContrPerio.IsInputKey(System.Windows.Forms.Keys)">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.ContrPerio.OnKeyDown(System.Windows.Forms.KeyEventArgs)">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.ContrPerio.ButtonPressed(System.String)">
+            <summary>Accepts button clicks from window rather than the usual keyboard entry.  All validation MUST be done before the value is sent here.  Only valid values are b,s,p,or c. Numbers entered using overload.</summary>
+        </member>
+        <member name="M:OpenDental.ContrPerio.ButtonPressed(System.Int32)">
+            <summary>Accepts button clicks from window rather than the usual keyboard entry.  All validation MUST be done before the value is sent here.  Only valid values are numbers 0 through 19.</summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:OpenDental.ContrPerio.EnterValue(System.String)" -->
+        <member name="M:OpenDental.ContrPerio.EnterValue(System.Int32)">
+            <summary>Only valid values are numbers 0 through 19. Validation should be done before sending here.</summary>
+        </member>
+        <member name="M:OpenDental.ContrPerio.SetNewCell(System.Int32,System.Int32)">
+            <summary>Used in OnMouseDown to change the currently selected cell.</summary>
+        </member>
+        <member name="M:OpenDental.ContrPerio.ToggleSkip">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.ContrPerio.OnDirectionChangedRight">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.ContrPerio.OnDirectionChangedLeft">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.ContrPerio.ComputeIndex(OpenDental.BleedingFlags)">
+            <summary></summary>
+        </member>
+        <member name="M:OpenDental.ContrPerio.CountTeeth(OpenDental.PerioSequenceType)">
+            <summary>Returns a list of strings, each between "1" and "32" (or similar international #'s), representing the teeth with red values based on prefs.  The result can be used to print summary, or can be counted to show # of teeth.</summary>
+        </member>
+        <member name="M:OpenDental.ContrPerio.DrawChart(System.Drawing.Graphics)">
+            <summary>Uses this control to draw onto the specified graphics object (the printer).</summary>
+        </member>
+        <member name="E:OpenDental.ContrPerio.DirectionChangedRight">
+            <summary></summary>
+        </member>
+        <member name="E:OpenDental.ContrPerio.DirectionChangedLeft">
+            <summary></summary>
+        </member>
+        <member name="P:OpenDental.ContrPerio.SelectedExam">
+            <summary>The index in PerioExams.List of the currently selected exam.</summary>
+        </member>
+        <member name="P:OpenDental.ContrPerio.DefaultSize">
+            <summary></summary>
+        </member>
+        <member name="T:OpenDental.BleedingFlags">
+            <summary>Blood,pus,plaque,and calculus. Used in ContrPerio.PerioCell</summary>
+        </member>
+        <member name="F:OpenDental.BleedingFlags.None">
+            <summary>0</summary>
+        </member>
+        <member name="F:OpenDental.BleedingFlags.Blood">
+            <summary>1</summary>
+        </member>
+        <member name="F:OpenDental.BleedingFlags.Suppuration">
+            <summary>2</summary>
+        </member>
+        <member name="F:OpenDental.BleedingFlags.Plaque">
+            <summary>4</summary>
+        </member>
+        <member name="F:OpenDental.BleedingFlags.Calculus">
+            <summary>8</summary>
+        </member>
+        <member name="T:OpenDental.PerioCell">
+            <summary></summary>
+        </member>
+        <member name="F:OpenDental.PerioCell.Text">
+            <summary>The value to display for this exam. Overwrites any oldText from previous exams.</summary>
+        </member>
+        <member name="F:OpenDental.PerioCell.Bleeding">
+            <summary>None, blood, pus, or both</summary>
+        </member>
+        <member name="F:OpenDental.PerioCell.OldText">
+            <summary>Values from previous exams. Slightly greyed out.</summary>
+        </member>
+        <member name="T:OpenDental.PerioSurf">
+            <summary>Currently, only six surfaces are supported, but more can always be added.</summary>
+        </member>
+        <member name="F:OpenDental.PerioSurf.None">
+            <summary>Might be used for things such as mobility or missing tooth.</summary>
+        </member>
+        <member name="F:OpenDental.PerioSurf.MB">
+            <summary>1</summary>
+        </member>
+        <member name="F:OpenDental.PerioSurf.B">
+            <summary>2</summary>
+        </member>
+        <member name="F:OpenDental.PerioSurf.DB">
+            <summary>3</summary>
+        </member>
+        <member name="F:OpenDental.PerioSurf.ML">
+            <summary>4</summary>
+        </member>
+        <member name="F:OpenDental.PerioSurf.L">
+            <summary>5</summary>
+        </member>
+        <member name="F:OpenDental.PerioSurf.DL">
+            <summary>6</summary>
         </member>
         <member name="T:OpenDental.ContrSchedGrid">
             <summary></summary>

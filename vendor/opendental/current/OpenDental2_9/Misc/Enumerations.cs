@@ -313,23 +313,38 @@ namespace OpenDental{
 		///<summary>1</summary>
 		Sent,
 		///<summary>2</summary>
-		Received};
+		Received,
+		///<summary>3</summary>
+		QualityChecked};
 	///<summary></summary>
 	public enum PlaceOfService{
-		///<summary>0</summary>
+		///<summary>0. CPT code 11</summary>
 		Office,
-		///<summary>1</summary>
+		///<summary>1. CPT code 12</summary>
 		PatientsHome,
-		///<summary>2</summary>
+		///<summary>2. CPT code 21</summary>
 		InpatHospital,
-		///<summary>3</summary>
+		///<summary>3. CPT code 22</summary>
 		OutpatHospital,
-		///<summary>4</summary>
+		///<summary>4. CPT code 31</summary>
 		SkilledNursFac,
-		///<summary>5</summary>
+		///<summary>5. CPT code 33</summary>
 		AdultLivCareFac,
-		///<summary>6</summary>
-		OtherLocation}
+		///<summary>6. CPT code ?</summary>
+		OtherLocation,
+		///<summary>7. CPT code 15</summary>
+		MobileUnit,
+		///<summary>8. CPT code 03</summary>
+		School,
+		///<summary>9. CPT code 26</summary>
+		MilitaryTreatFac,
+		///<summary>10. CPT code 50</summary>
+		FederalHealthCenter,
+		///<summary>11. CPT code 71</summary>
+		PublicHealthClinic,
+		///<summary>12. CPT code 72</summary>
+		RuralHealthClinic,
+	}
 	///<summary>Used in the other appointments window to keep track of the result when closing.</summary>
 	public enum OtherResult{
 		///<summary></summary>
@@ -441,15 +456,23 @@ namespace OpenDental{
 		Adjustment,
 		///<summary>4:This differs from received only slightly.  It's for additional payments on claims already received.  It might be superfluous.</summary>
 		Supplemental,
-		///<summary>5: Capitation claimprocs do not affect the patient balance and can not be attached to a check.</summary>
+		///<summary>5: Capitation claimprocs do not affect the patient balance and cannot be attached to a check.</summary>
 		Capitation
 	}
 	///<summary></summary>
 	public enum CommItemType{
-		///<summary>1</summary>
+		///<summary>1- auto. </summary>
 		StatementSent=1,
-		///<summary>2- This will be replacing some of the existing note sections.</summary>
-		AppointmentScheduling
+		///<summary>2- Any activity related to appointment scheduling.</summary>
+		ApptRelated,
+		///<summary>3- </summary>
+		Insurance,
+		///<summary>4- </summary>
+		Financial,
+		///<summary>5- </summary>
+		Recall,
+		///<summary>6- </summary>
+		LetterSent
 	}
 
 	///<summary></summary>
@@ -479,6 +502,101 @@ namespace OpenDental{
 		///<summary>2</summary>
 		Break
 	}
+
+	///<summary>In perio, the type of measurements for a given row.</summary>
+	public enum PerioSequenceType{
+		///<summary>0</summary>
+		Mobility,
+		///<summary>1</summary>
+		Furcation,
+		///<summary>2-AKA recession.</summary>
+		GingMargin,
+		///<summary>3-MucoGingivalJunction- the division between attached and unattached mucosa.</summary>
+		MGJ,
+		///<summary>4</summary>
+		Probing,
+		///<summary>5</summary>
+		SkipTooth,
+		///<summary>6</summary>
+		Bleeding,
+		///<summary>7. But this type is never saved to the db. It is always calculated on the fly.</summary>
+		CAL
+	}
+
+	///<summary>Race and ethnicity for patient. Used by public health.</summary>
+	public enum PatientRace{
+		///<summary>0</summary>
+		Unknown,
+		///<summary>1</summary>
+		Multiracial,
+		///<summary>2</summary>
+		HispanicLatino,
+		///<summary>3</summary>
+		AfricanAmerican,
+		///<summary>4</summary>
+		White,
+		///<summary>5</summary>
+		HawaiiOrPacIsland,
+		///<summary>6</summary>
+		AmericanIndian,
+		///<summary>7</summary>
+		Asian,
+		///<summary>8</summary>
+		Other
+	}
+
+	///<summary>Grade level used in public health.</summary>
+	public enum PatientGrade{
+		///<summary>0</summary>
+		Unknown,
+		///<summary>1</summary>
+		First,
+		///<summary>2</summary>
+		Second,
+		///<summary>3</summary>
+		Third,
+		///<summary>4</summary>
+		Fourth,
+		///<summary>5</summary>
+		Fifth,
+		///<summary>6</summary>
+		Sixth,
+		///<summary>7</summary>
+		Seventh,
+		///<summary>8</summary>
+		Eighth,
+		///<summary>9</summary>
+		Ninth,
+		///<summary>10</summary>
+		Tenth,
+		///<summary>11</summary>
+		Eleventh,
+		///<summary>12</summary>
+		Twelfth,
+		///<summary>13</summary>
+		PrenatalWIC,
+		///<summary>14</summary>
+		PreK,
+		///<summary>15</summary>
+		Kindergarten,
+		///<summary>16</summary>
+		Other
+	}
+
+	///<summary>For public health.</summary>
+	public enum TreatmentUrgency{
+		///<summary></summary>
+		Unknown,
+		///<summary></summary>
+		NoProblems,
+		///<summary></summary>
+		NeedsCare,
+		///<summary></summary>
+		Urgent
+	}
+
+
+	
 		
 	
 

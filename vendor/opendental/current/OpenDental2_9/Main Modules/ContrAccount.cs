@@ -32,8 +32,8 @@ namespace OpenDental{
 		private System.Windows.Forms.Label labelUrgFinNote;
 		private System.Windows.Forms.TextBox textUrgFinNote;
 		private System.Windows.Forms.Panel panelTotal;
-		///<summary></summary>
-		public bool ViewOnly=false;
+		///<summary>Set to true if this control is placed in the recall edit window. This affects the control behavior.</summary>
+		public bool ViewingInRecall=false;
 		private double FamTotBal;
 		private double FamInsEst;
 		private double FamTotDue;
@@ -65,8 +65,16 @@ namespace OpenDental{
 		private bool FinNoteChanged;
 		private OpenDental.UI.ODToolBar ToolBarMain;
 		private System.Windows.Forms.ImageList imageListMain;
+		private System.Windows.Forms.Panel panelSplitter;
 		///<summary>Used only in printing reports that show subtotal only.</summary>
 		private double SubTotal;
+		private OpenDental.Main_Modules.TableCommLogAccount tbComm;
+		private bool MouseIsDownOnSplitter;
+		private int SplitterOriginalY;
+		private OpenDental.XPButton butLetters;
+		private OpenDental.XPButton butComm;
+		private System.Windows.Forms.Panel panelCommButs;
+		private int OriginalMousePos;
 	
 		///<summary></summary>
 		public ContrAccount(){
@@ -120,7 +128,13 @@ namespace OpenDental{
 			this.menuInsOther = new System.Windows.Forms.MenuItem();
 			this.ToolBarMain = new OpenDental.UI.ODToolBar();
 			this.imageListMain = new System.Windows.Forms.ImageList(this.components);
+			this.tbComm = new OpenDental.Main_Modules.TableCommLogAccount();
+			this.panelSplitter = new System.Windows.Forms.Panel();
+			this.butLetters = new OpenDental.XPButton();
+			this.butComm = new OpenDental.XPButton();
+			this.panelCommButs = new System.Windows.Forms.Panel();
 			this.panelTotal.SuspendLayout();
+			this.panelCommButs.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// textFinNotes
@@ -130,7 +144,7 @@ namespace OpenDental{
 			this.textFinNotes.Multiline = true;
 			this.textFinNotes.Name = "textFinNotes";
 			this.textFinNotes.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textFinNotes.Size = new System.Drawing.Size(163, 473);
+			this.textFinNotes.Size = new System.Drawing.Size(163, 174);
 			this.textFinNotes.TabIndex = 7;
 			this.textFinNotes.Text = "";
 			this.textFinNotes.TextChanged += new System.EventHandler(this.textFinNotes_TextChanged);
@@ -179,7 +193,7 @@ namespace OpenDental{
 			this.tbAccount.ScrollValue = 1;
 			this.tbAccount.SelectedIndices = new int[0];
 			this.tbAccount.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-			this.tbAccount.Size = new System.Drawing.Size(730, 655);
+			this.tbAccount.Size = new System.Drawing.Size(769, 357);
 			this.tbAccount.TabIndex = 20;
 			// 
 			// tbAcctPat
@@ -397,8 +411,69 @@ namespace OpenDental{
 			this.imageListMain.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListMain.ImageStream")));
 			this.imageListMain.TransparentColor = System.Drawing.Color.Transparent;
 			// 
+			// tbComm
+			// 
+			this.tbComm.BackColor = System.Drawing.SystemColors.Window;
+			this.tbComm.Location = new System.Drawing.Point(0, 430);
+			this.tbComm.Name = "tbComm";
+			this.tbComm.ScrollValue = 433;
+			this.tbComm.SelectedIndices = new int[0];
+			this.tbComm.SelectionMode = System.Windows.Forms.SelectionMode.One;
+			this.tbComm.Size = new System.Drawing.Size(769, 302);
+			this.tbComm.TabIndex = 48;
+			this.tbComm.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(this.tbComm_CellDoubleClicked);
+			// 
+			// panelSplitter
+			// 
+			this.panelSplitter.Cursor = System.Windows.Forms.Cursors.SizeNS;
+			this.panelSplitter.Location = new System.Drawing.Point(0, 425);
+			this.panelSplitter.Name = "panelSplitter";
+			this.panelSplitter.Size = new System.Drawing.Size(769, 4);
+			this.panelSplitter.TabIndex = 49;
+			this.panelSplitter.MouseUp += new System.Windows.Forms.MouseEventHandler(this.panelSplitter_MouseUp);
+			this.panelSplitter.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panelSplitter_MouseMove);
+			this.panelSplitter.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panelSplitter_MouseDown);
+			// 
+			// butLetters
+			// 
+			this.butLetters.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butLetters.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butLetters.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butLetters.Location = new System.Drawing.Point(0, 29);
+			this.butLetters.Name = "butLetters";
+			this.butLetters.Size = new System.Drawing.Size(90, 26);
+			this.butLetters.TabIndex = 50;
+			this.butLetters.Text = "Letters";
+			this.butLetters.Click += new System.EventHandler(this.butLetters_Click);
+			// 
+			// butComm
+			// 
+			this.butComm.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butComm.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butComm.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butComm.Image = ((System.Drawing.Image)(resources.GetObject("butComm.Image")));
+			this.butComm.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butComm.Location = new System.Drawing.Point(0, 0);
+			this.butComm.Name = "butComm";
+			this.butComm.Size = new System.Drawing.Size(90, 26);
+			this.butComm.TabIndex = 68;
+			this.butComm.Text = "Comm";
+			this.butComm.Click += new System.EventHandler(this.butComm_Click);
+			// 
+			// panelCommButs
+			// 
+			this.panelCommButs.Controls.Add(this.butLetters);
+			this.panelCommButs.Controls.Add(this.butComm);
+			this.panelCommButs.Location = new System.Drawing.Point(769, 429);
+			this.panelCommButs.Name = "panelCommButs";
+			this.panelCommButs.Size = new System.Drawing.Size(163, 167);
+			this.panelCommButs.TabIndex = 69;
+			// 
 			// ContrAccount
 			// 
+			this.Controls.Add(this.panelSplitter);
+			this.Controls.Add(this.tbComm);
+			this.Controls.Add(this.panelCommButs);
 			this.Controls.Add(this.ToolBarMain);
 			this.Controls.Add(this.label10);
 			this.Controls.Add(this.textAgeBalance);
@@ -426,6 +501,7 @@ namespace OpenDental{
 			this.Size = new System.Drawing.Size(939, 732);
 			this.Layout += new System.Windows.Forms.LayoutEventHandler(this.ContrAccount_Layout);
 			this.panelTotal.ResumeLayout(false);
+			this.panelCommButs.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -440,6 +516,9 @@ namespace OpenDental{
 				this.checkShowAll,
 			});
 			LayoutToolBar();
+			if(ViewingInRecall){
+				panelSplitter.Top=300;//start the splitter higher for recall window.
+			}
 		}
 
 		///<summary>Causes the toolbar to be laid out again.</summary>
@@ -467,9 +546,13 @@ namespace OpenDental{
 		}
 
 		private void ContrAccount_Layout(object sender, System.Windows.Forms.LayoutEventArgs e) {
-			tbAccount.Height=Height-tbAccount.Location.Y;
+			tbAccount.Height=panelSplitter.Top-tbAccount.Location.Y+1;
 			tbAccount.LayoutTables();
-			if(Height>=446){
+			tbComm.Top=panelSplitter.Bottom-1;
+			tbComm.Height=Height-tbComm.Top;
+			panelCommButs.Top=panelSplitter.Bottom-1;
+			tbComm.LayoutTables();
+			if(panelSplitter.Top>=446){//Height>=446){
 				textUrgFinNote.Height=72;//5 lines
 			}
 			else{
@@ -478,7 +561,7 @@ namespace OpenDental{
 			tbAcctPat.Location=new Point(768,textUrgFinNote.Location.Y+textUrgFinNote.Height);
 			panelTotal.Location=new Point(768,tbAcctPat.Location.Y+tbAcctPat.Height);
 			textFinNotes.Location=new Point(768,panelTotal.Location.Y+panelTotal.Height);
-			textFinNotes.Height=Height-textFinNotes.Location.Y-1;
+			textFinNotes.Height=panelSplitter.Top-textFinNotes.Top;
 		}
 
 		///<summary></summary>
@@ -494,7 +577,10 @@ namespace OpenDental{
 			if(UrgFinNoteChanged){
 				Patient tempPat=Patients.Cur;
 				Patients.Cur=Patients.FamilyList[Patients.GuarIndex];
-				Patients.Cur.FamFinUrgNote=textUrgFinNote.Text;
+				Patients.CurOld=Patients.Cur;//important
+				Patient PatCur=Patients.Cur;
+				PatCur.FamFinUrgNote=textUrgFinNote.Text;
+				Patients.Cur=PatCur;
 				Patients.UpdateCur();
 				Patients.GetFamily(tempPat.PatNum);
 				UrgFinNoteChanged=false;
@@ -526,7 +612,7 @@ namespace OpenDental{
 				CovPats.Refresh();
 				PatientNotes.Refresh();
 			}
-			//other tables are refreshed in the filltable
+			//other tables are refreshed in FillAcctLineAL
 		}
 
 		private void RefreshModuleScreen(){
@@ -562,6 +648,56 @@ namespace OpenDental{
 			FillPats();
 			FillMisc();
 			FillAging();
+			FillComm();
+		}
+
+		private void FillPats(){
+			if(!Patients.PatIsLoaded){
+				tbAcctPat.ResetRows(0);
+				tbAcctPat.LayoutTables();
+				return;
+			}
+			//double total=0;
+			tbAcctPat.ResetRows(Patients.FamilyList.Length);
+			for(int i=0;i<Patients.FamilyList.Length;i++){
+				tbAcctPat.Cell[0,i]=Patients.GetNameInFamLFI(i);
+				tbAcctPat.Cell[1,i]=Patients.FamilyList[i].EstBalance.ToString("F");
+				if(i==Patients.GuarIndex){
+					tbAcctPat.FontBold[0,i]=true;
+					tbAcctPat.FontBold[1,i]=true;
+				}
+				//total=total+Patients.FamilyList[i].EstBalance;
+				if(Patients.FamilyList[i].PatNum==Patients.Cur.PatNum){
+					tbAcctPat.ColorRow(i,Color.DarkSalmon);
+					tbAcctPat.SelectedRow=i;
+				}
+			}
+			tbAcctPat.LayoutTables();
+		}
+
+		private void FillMisc(){
+			if(Patients.PatIsLoaded){
+				textUrgFinNote.Text=Patients.FamilyList[Patients.GuarIndex].FamFinUrgNote;
+				textFinNotes.Text=PatientNotes.Cur.FamFinancial;	
+				textFinNotes.Select(textFinNotes.Text.Length+2,1);
+				textFinNotes.ScrollToCaret();
+				textUrgFinNote.SelectionStart=0;
+				textUrgFinNote.ScrollToCaret();
+			}
+			else{
+				textUrgFinNote.Text="";
+				textFinNotes.Text="";				
+			}
+			UrgFinNoteChanged=false;
+			FinNoteChanged=false;
+			if(ViewingInRecall){
+				textUrgFinNote.ReadOnly=true;
+				textFinNotes.ReadOnly=true;		
+			}
+			else{
+				textUrgFinNote.ReadOnly=false;
+				textFinNotes.ReadOnly=false;		
+			}
 		}
 
 		private void FillAging(){
@@ -586,29 +722,22 @@ namespace OpenDental{
 			}
 		}
 
-		private void FillMisc(){
-			if(Patients.PatIsLoaded){
-				textUrgFinNote.Text=Patients.FamilyList[Patients.GuarIndex].FamFinUrgNote;
-				textFinNotes.Text=PatientNotes.Cur.FamFinancial;	
-				textFinNotes.Select(textFinNotes.Text.Length+2,1);
-				textFinNotes.ScrollToCaret();
-				textUrgFinNote.SelectionStart=0;
-				textUrgFinNote.ScrollToCaret();
+		/// <summary>Fills the commlog table on this form.</summary>
+		private void FillComm(){
+			if(!Patients.PatIsLoaded){
+				tbComm.ResetRows(0);
+				tbComm.LayoutTables();
+				return;
 			}
-			else{
-				textUrgFinNote.Text="";
-				textFinNotes.Text="";				
+			//Commlogs.Refresh();//already done in FillMain().
+			tbComm.ResetRows(Commlogs.List.Length);
+			for(int i=0;i<Commlogs.List.Length;i++){
+				tbComm.Cell[0,i]=Commlogs.List[i].CommDate.ToShortDateString();
+				tbComm.Cell[1,i]=Commlogs.List[i].CommType.ToString();
+				tbComm.Cell[2,i]=Commlogs.List[i].Note;
 			}
-			UrgFinNoteChanged=false;
-			FinNoteChanged=false;
-			if(ViewOnly){
-				textUrgFinNote.ReadOnly=true;
-				textFinNotes.ReadOnly=true;		
-			}
-			else{
-				textUrgFinNote.ReadOnly=false;
-				textFinNotes.ReadOnly=false;		
-			}
+			tbComm.SetGridColor(Color.Gray);
+			tbComm.LayoutTables();
 		}
 
 		private void FillMain(DateTime fromDate, DateTime toDate,bool includeClaims,bool subtotalsOnly){
@@ -745,6 +874,7 @@ namespace OpenDental{
 					tempAcctLine.Description=ProcedureCodes.GetProcCode(arrayProc[tempCountProc].ADACode).Descript;
 					double fee=arrayProc[tempCountProc].ProcFee;
 					Procedures.Cur=arrayProc[tempCountProc];
+					Procedures.CurOld=Procedures.Cur;//may not be necessary
 					double insEst=Procedures.GetEstForCur(PriSecTot.Tot);
 					double pat=0;
 					tempAcctLine.Fee=fee.ToString("F");
@@ -1088,32 +1218,12 @@ namespace OpenDental{
 				tbAccount.LayoutTables();
 		}//end FilltbAccount
 
-		private void FillPats(){
-			if(!Patients.PatIsLoaded){
-				tbAcctPat.ResetRows(0);
-				tbAcctPat.LayoutTables();
+		private void tbAccount_CellClicked(object sender, CellEventArgs e){
+			//this seems to fire after a doubleclick, so this prevents error:
+			if(e.Row>=AcctLineAL.Count){
 				return;
 			}
-			//double total=0;
-			tbAcctPat.ResetRows(Patients.FamilyList.Length);
-			for(int i=0;i<Patients.FamilyList.Length;i++){
-				tbAcctPat.Cell[0,i]=Patients.GetNameInFamLFI(i);
-				tbAcctPat.Cell[1,i]=Patients.FamilyList[i].EstBalance.ToString("F");
-				if(i==Patients.GuarIndex){
-					tbAcctPat.FontBold[0,i]=true;
-					tbAcctPat.FontBold[1,i]=true;
-				}
-				//total=total+Patients.FamilyList[i].EstBalance;
-				if(Patients.FamilyList[i].PatNum==Patients.Cur.PatNum){
-					tbAcctPat.ColorRow(i,Color.DarkSalmon);
-					tbAcctPat.SelectedRow=i;
-				}
-			}
-			tbAcctPat.LayoutTables();
-		}
-
-		private void tbAccount_CellClicked(object sender, CellEventArgs e){
-			if(ViewOnly) return;
+			if(ViewingInRecall) return;
 			switch (((AcctLine)AcctLineAL[e.Row]).Type){
 				default://procedure
 					break;
@@ -1160,10 +1270,11 @@ namespace OpenDental{
 		}
 
 		private void tbAccount_CellDoubleClicked(object sender, CellEventArgs e){
-			if(ViewOnly) return;
+			if(ViewingInRecall) return;
 			switch (((AcctLine)AcctLineAL[e.Row]).Type){
 				default:
 					Procedures.Cur=arrayProc[((AcctLine)AcctLineAL[e.Row]).Index];
+					Procedures.CurOld=Procedures.Cur;
 					FormProcEdit FormPE = new FormProcEdit();
 					FormPE.IsNew=false;
 					FormPE.ShowDialog();
@@ -1203,8 +1314,11 @@ namespace OpenDental{
 					FormPayPlan2=new FormPayPlan();
 					FormPayPlan2.IsNew=false;
 					FormPayPlan2.ShowDialog();
-					if(FormPayPlan2.GotoPatNum!=0)
-						Patients.Cur.PatNum=FormPayPlan2.GotoPatNum;//switches to other patient.
+					if(FormPayPlan2.GotoPatNum!=0){
+						Patient PatCur=Patients.Cur;
+						PatCur.PatNum=FormPayPlan2.GotoPatNum;//switches to other patient.
+						Patients.Cur=PatCur;
+					}
 					break;	
 			}//end switch
 			//Shared.ComputeBalances();//use whenever a change would affect the total
@@ -1212,7 +1326,7 @@ namespace OpenDental{
 		}
 
 		private void tbAcctPat_CellClicked(object sender, CellEventArgs e){
-			if(ViewOnly) return;
+			if(ViewingInRecall) return;
 			tbAcctPat.ColorRow(tbAcctPat.SelectedRow,Color.White);
 			tbAcctPat.SelectedRow=e.Row;
 			tbAcctPat.ColorRow(e.Row,Color.DarkSalmon);
@@ -1320,7 +1434,7 @@ namespace OpenDental{
 				}
 			}
 			if(noBillIns){
-				MessageBox.Show(Lan.g(this,"You can not send procedures that are marked 'do not bill to ins'."));
+				MessageBox.Show(Lan.g(this,"You cannot send procedures that are marked 'do not bill to ins'."));
 				return;
 			}
 			bool isAttached=false;
@@ -1439,10 +1553,14 @@ namespace OpenDental{
 			Claims.Cur.ProvBill=PIn.PInt(((Pref)Prefs.HList["PracticeDefaultProv"]).ValueString);
 			Claims.Cur.EmployRelated=YN.No;
 			//attach procedures
+			Procedure ProcCur;
 			for(int i=0;i<tbAccount.SelectedIndices.Length;i++){
 				Procedures.Cur=arrayProc[((AcctLine)AcctLineAL[tbAccount.SelectedIndices[i]]).Index];
 				if(!Procedures.Cur.IsCovIns){
-					Procedures.Cur.IsCovIns=true;
+					Procedures.CurOld=Procedures.Cur;
+					ProcCur=Procedures.Cur;
+					ProcCur.IsCovIns=true;
+					Procedures.Cur=ProcCur;
 					Procedures.UpdateCur();
 				}
 				ClaimProcs.Cur=new ClaimProc();
@@ -1554,8 +1672,11 @@ namespace OpenDental{
 			FormPayPlan FormPP=new FormPayPlan();
 			FormPP.IsNew=true;
 			FormPP.ShowDialog();
-			if(FormPP.GotoPatNum!=0)
-				Patients.Cur.PatNum=FormPP.GotoPatNum;//switches to other patient.
+			if(FormPP.GotoPatNum!=0){
+				Patient PatCur=Patients.Cur;
+				PatCur.PatNum=FormPP.GotoPatNum;//switches to other patient.
+				Patients.Cur=PatCur;
+			}
 			ModuleSelected();
 		}
 
@@ -1592,7 +1713,10 @@ namespace OpenDental{
 			if(UrgFinNoteChanged){
 				Patient tempPat=Patients.Cur;
 				Patients.Cur=Patients.FamilyList[Patients.GuarIndex];
-				Patients.Cur.FamFinUrgNote=textUrgFinNote.Text;
+				Patients.CurOld=Patients.Cur;//important
+				Patient PatCur=Patients.Cur;
+				PatCur.FamFinUrgNote=textUrgFinNote.Text;
+				Patients.Cur=PatCur;
 				Patients.UpdateCur();
 				Patients.GetFamily(tempPat.PatNum);
 				UrgFinNoteChanged=false;
@@ -1613,6 +1737,29 @@ namespace OpenDental{
 			RefreshModuleScreen();
 		}
 
+		private void panelSplitter_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
+			MouseIsDownOnSplitter=true;
+			SplitterOriginalY=panelSplitter.Top;
+			OriginalMousePos=panelSplitter.Top+e.Y;
+		}
+
+		private void panelSplitter_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e) {
+			if(!MouseIsDownOnSplitter)
+				return;
+			int splitterNewLoc=SplitterOriginalY+(panelSplitter.Top+e.Y)-OriginalMousePos;
+			if(splitterNewLoc<tbAcctPat.Bottom)
+				splitterNewLoc=tbAcctPat.Bottom;//keeps it from going too high
+			if(splitterNewLoc>Height)
+				splitterNewLoc=Height-panelSplitter.Height;//keeps it from going off the bottom edge
+			panelSplitter.Top=splitterNewLoc;
+		}
+
+		private void panelSplitter_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e) {
+			MouseIsDownOnSplitter=false;
+			tbAccount.LayoutTables();
+			tbComm.LayoutTables();
+		}
+
 		///<summary>Used from FormBilling to print one statement for the entire family of the current patient.PatNum which was set ahead of time.</summary>
 		public void LoadAndPrint(){
 			Patients.GetFamily(Patients.Cur.PatNum);
@@ -1628,6 +1775,7 @@ namespace OpenDental{
 
 		/// <summary></summary>
 		private void PrintStatement(int[] patNums,DateTime fromDate,DateTime toDate,bool includeClaims, bool subtotalsOnly){
+			Patient PatCur;
 			int curPatNum=Patients.Cur.PatNum;
 			FamTotBal=0;
 			FamInsEst=0;
@@ -1640,7 +1788,9 @@ namespace OpenDental{
 			}*/
 			AcctLine tempLine;
 			for(int i=0;i<patNums.Length;i++){
-				Patients.Cur.PatNum=patNums[i];
+				PatCur=new Patient();//because the patnum is all we care about
+				PatCur.PatNum=patNums[i];
+				Patients.Cur=PatCur;
 				RefreshModuleData();
 				FillAcctLineAL(fromDate,toDate,includeClaims,subtotalsOnly);
 				FamTotDue+=Patients.Cur.EstBalance;
@@ -1704,7 +1854,9 @@ namespace OpenDental{
 			FormRpStatement FormST=new FormRpStatement();
 			//FormST.ShowDialog();
 			FormST.PrintReport(false);
-			Patients.Cur.PatNum=curPatNum;
+			PatCur=Patients.Cur;//but we are really just interested in the patnum
+			PatCur.PatNum=curPatNum;
+			Patients.Cur=PatCur;
 			Commlogs.Cur=new Commlog();
 			Commlogs.Cur.CommDate=DateTime.Today;
 			Commlogs.Cur.CommType=CommItemType.StatementSent;
@@ -1712,6 +1864,40 @@ namespace OpenDental{
 			//there is no dialog here because it is just a simple entry
 			Commlogs.InsertCur();
 		}
+
+		private void butComm_Click(object sender, System.EventArgs e) {
+			Commlogs.Cur=new Commlog();
+			Commlogs.Cur.PatNum=Patients.Cur.PatNum;
+			Commlogs.Cur.CommDate=DateTime.Today;
+			if(ViewingInRecall)
+				Commlogs.Cur.CommType=CommItemType.Recall;
+			else
+				Commlogs.Cur.CommType=CommItemType.Financial;
+			FormCommItem FormCI=new FormCommItem();
+			FormCI.IsNew=true;
+			FormCI.ShowDialog();
+			Commlogs.Refresh();
+			FillComm();
+		}
+
+		private void butLetters_Click(object sender, System.EventArgs e) {
+			FormLetters FormL=new FormLetters();
+			FormL.ShowDialog();
+			Commlogs.Refresh();
+			FillComm();
+		}
+
+		private void tbComm_CellDoubleClicked(object sender, OpenDental.CellEventArgs e) {
+			Commlogs.Cur=Commlogs.List[e.Row];
+			FormCommItem FormCI=new FormCommItem();
+			FormCI.ShowDialog();
+			Commlogs.Refresh();
+			FillComm();
+		}
+
+		
+
+		
 
 		
 

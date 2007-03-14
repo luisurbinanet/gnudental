@@ -87,7 +87,7 @@ namespace OpenDental{
 			Cur.ProgramNum=InsertID;
 		}
 
-		///<summary>This can only be called by the user if it is a program link that they created. Included program links can not be deleted.  If calling this from ClassConversion, must delete any dependent ProgramProperties first.  It will delete ToolButItems for you.</summary>
+		///<summary>This can only be called by the user if it is a program link that they created. Included program links cannot be deleted.  If calling this from ClassConversion, must delete any dependent ProgramProperties first.  It will delete ToolButItems for you.</summary>
 		public static void DeleteCur(){
 			ToolButItems.DeleteAllForProgram();
 			cmd.CommandText = "DELETE from program WHERE programnum = '"+Cur.ProgramNum.ToString()+"'";

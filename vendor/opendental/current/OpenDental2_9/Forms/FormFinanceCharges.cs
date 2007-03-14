@@ -249,7 +249,7 @@ namespace OpenDental{
 			}
 			if(PIn.PDate(((Pref)Prefs.HList["FinanceChargeLastRun"]).ValueString)
 				==Ledgers.GetClosestFirst(DateTime.Today)){
-				MessageBox.Show(Lan.g(this,"You can not run finance charges again this month."));
+				MessageBox.Show(Lan.g(this,"You cannot run finance charges again this month."));
 				DialogResult=DialogResult.Cancel;
 				return;
 			}

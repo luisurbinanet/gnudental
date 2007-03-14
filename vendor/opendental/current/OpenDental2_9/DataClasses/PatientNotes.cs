@@ -20,6 +20,8 @@ namespace OpenDental{
 		public string Service;
 		///<summary>Complete current Medical History</summary>
 		public string MedicalComp;
+		///<summary>Shows in the Chart module just below the graphical tooth chart.</summary>
+		public string Treatment;
 	}
 
 	/*=========================================================================================
@@ -38,7 +40,7 @@ namespace OpenDental{
 				InsertRow(Patients.Cur.PatNum);
 			}
 			cmd.CommandText = 
-				"SELECT patnum,apptphone,medical,service,medicalcomp "
+				"SELECT PatNum,ApptPhone,Medical,Service,MedicalComp,Treatment "
 				+"FROM patientnote WHERE patnum ='"+POut.PInt(Patients.Cur.PatNum)+"'";
 			FillTable();
 			Cur.PatNum      = PIn.PInt   (table.Rows[0][0].ToString());
@@ -46,7 +48,8 @@ namespace OpenDental{
 			Cur.Medical     = PIn.PString(table.Rows[0][2].ToString());
 			Cur.Service     = PIn.PString(table.Rows[0][3].ToString());
 			Cur.MedicalComp = PIn.PString(table.Rows[0][4].ToString());
-			//fam note:
+			Cur.Treatment   = PIn.PString(table.Rows[0][5].ToString());
+			//fam financial note:
 			cmd.CommandText = 
 				"SELECT * FROM patientnote WHERE patnum ='"+POut.PInt(Patients.Cur.Guarantor)+"'";
 			FillTable();
@@ -65,9 +68,10 @@ namespace OpenDental{
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE patientnote SET "
 				//+ "apptphone = '"   +POut.PString(Cur.ApptPhone)+"'"
-				+ "medical = '"    +POut.PString(Cur.Medical)+"'"
-				+ ",service = '"    +POut.PString(Cur.Service)+"'"
-				+ ",medicalcomp = '"+POut.PString(Cur.MedicalComp)+"'"
+				+ "Medical = '"     +POut.PString(Cur.Medical)+"'"
+				+ ",Service = '"    +POut.PString(Cur.Service)+"'"
+				+ ",MedicalComp = '"+POut.PString(Cur.MedicalComp)+"'"
+				+ ",Treatment = '"  +POut.PString(Cur.Treatment)+"'"
 				+" WHERE patnum = '"+POut.PInt   (Cur.PatNum)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			NonQ(false);
@@ -79,7 +83,7 @@ namespace OpenDental{
 		}
 
 		///<summary></summary>
-		public static void InsertRow(int patNum){
+		private static void InsertRow(int patNum){
 			cmd.CommandText = "INSERT INTO patientnote (patnum"
 				+") VALUES('"+patNum+"')";
 			//MessageBox.Show(cmd.CommandText);
