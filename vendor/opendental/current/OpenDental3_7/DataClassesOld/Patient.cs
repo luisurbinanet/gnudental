@@ -63,7 +63,7 @@ namespace OpenDental{
 		public int SecPlanNum;//
 		///<summary>Relationship to subscriber for secondary insurance.</summary>
 		public Relat SecRelationship;
-		///<summary>Current patient balance.(not family)</summary>
+		///<summary>Current patient balance.(not family). If user has checked BalancesDontSubtractIns in setup, then this will not take into account insurance.  Otherwise, the insurance estimate pending will have already been subtracted.</summary>
 		public double EstBalance;
 		///<summary>May be 0(none) or -1(done), otherwise it is the foreign key to appointment.AptNum.  This is the appointment that will show in the Chart module and in the Next appointment tracker.  It will never show in the Appointments module. In other words, it is the suggested next appoinment rather than an appointment that has already been scheduled.</summary>
 		public int NextAptNum;//
@@ -119,7 +119,7 @@ namespace OpenDental{
 		public PatientRace Race;
 		///<summary>Foreign key to county.CountyName, although it will not crash if key absent.</summary>
 		public string County;
-		///<summary>Name of gradeschool or highschool. Foreign key to school.SchoolName, although it will not crash if key absent.</summary>
+		///<summary>Site.  Name of gradeschool or highschool. Foreign key to school.SchoolName, although it will not crash if key absent.</summary>
 		public string GradeSchool;
 		///<summary>See the PatientGrade enumeration.</summary>
 		public PatientGrade GradeLevel;

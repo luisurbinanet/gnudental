@@ -86,6 +86,10 @@ namespace OpenDental{
 		public int AllowedFeeSched;
 		///<summary></summary>
 		public string TrojanID;
+		///<summary>Only used in Canada. It's a suffix to the group number.</summary>
+		public string DivisionNo;
+		///<summary>User doesn't usually put these in.  Only used when automatically requesting benefits, such as with Trojan.  All the benefits get stored here in text form for later reference.</summary>
+		public string BenefitNotes;
 		///<summary>This is NOT a database column.  It is just used to display the number of plans with the same info.</summary>
 		public int NumberPlans;
 
@@ -120,6 +124,8 @@ namespace OpenDental{
 			p.CarrierNum=CarrierNum;
 			p.AllowedFeeSched=AllowedFeeSched;
 			p.TrojanID=TrojanID;
+			p.DivisionNo=DivisionNo;
+			p.BenefitNotes=BenefitNotes;
 			return p;
 		}
 
@@ -139,7 +145,7 @@ namespace OpenDental{
 				+"FlotoAge,PlanNote,MissToothExcl,MajorWait,FeeSched,"
 				+"ReleaseInfo,AssignBen,PlanType,ClaimFormNum,UseAltCode,"
 				+"ClaimsUseUCR,IsWrittenOff,CopayFeeSched,SubscriberID,"
-				+"EmployerNum,CarrierNum,AllowedFeeSched,TrojanID) VALUES(";
+				+"EmployerNum,CarrierNum,AllowedFeeSched,TrojanID,DivisionNo,BenefitNotes) VALUES(";
 			if(Prefs.RandomKeys){
 				command+="'"+POut.PInt(PlanNum)+"', ";
 			}
@@ -181,7 +187,9 @@ namespace OpenDental{
 				+"'"+POut.PInt   (EmployerNum)+"', "
 				+"'"+POut.PInt   (CarrierNum)+"', "
 				+"'"+POut.PInt   (AllowedFeeSched)+"', "
-				+"'"+POut.PString(TrojanID)+"')";
+				+"'"+POut.PString(TrojanID)+"', "
+				+"'"+POut.PString(DivisionNo)+"', "
+				+"'"+POut.PString(BenefitNotes)+"')";
 			DataConnection dcon=new DataConnection();
 			if(Prefs.RandomKeys){
 				dcon.NonQ(command);
@@ -233,6 +241,8 @@ namespace OpenDental{
 				+ ",CarrierNum = '"   +POut.PInt   (CarrierNum)+"'"
 				+ ",AllowedFeeSched='"+POut.PInt   (AllowedFeeSched)+"'"
 				+ ",TrojanID='"       +POut.PString(TrojanID)+"'"
+				+ ",DivisionNo='"     +POut.PString(DivisionNo)+"'"
+				+ ",BenefitNotes='"   +POut.PString(BenefitNotes)+"'"
 				+" WHERE PlanNum = '" +POut.PInt(PlanNum)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
@@ -245,6 +255,7 @@ namespace OpenDental{
 				+"EmployerNum = '"     +POut.PInt   (EmployerNum)+"'"
 				+",GroupName = '"      +POut.PString(GroupName)+"'"
 				+",GroupNum = '"       +POut.PString(GroupNum)+"'"
+				+",DivisionNo = '"     +POut.PString(DivisionNo)+"'"
 				+",CarrierNum = '"     +POut.PInt   (CarrierNum)+"'"
 				+",PlanType = '"       +POut.PString(PlanType)+"'"
 				+",UseAltCode = '"     +POut.PBool  (UseAltCode)+"'"
@@ -257,6 +268,7 @@ namespace OpenDental{
 				+"EmployerNum = '"        +POut.PInt   (like.EmployerNum)+"' "
 				+"AND GroupName = '"      +POut.PString(like.GroupName)+"' "
 				+"AND GroupNum = '"       +POut.PString(like.GroupNum)+"' "
+				+"AND DivisionNo = '"     +POut.PString(like.DivisionNo)+"'"
 				+"AND CarrierNum = '"     +POut.PInt   (like.CarrierNum)+"' "
 				+"AND PlanType = '"       +POut.PString(like.PlanType)+"' "
 				+"AND UseAltCode = '"     +POut.PBool  (like.UseAltCode)+"' "
@@ -350,13 +362,14 @@ namespace OpenDental{
 			//it still does not move the percentages over.
 		}
 
-		///<summary>Returns a list of insplans that have identical info as this one. Used to display in the insplan window.</summary>
+		///<summary>Gets a list of insplans from the database that have identical info as this one. Used to display in the insplan window.</summary>
 		public string[] SamePlans(){
 			string command="SELECT CONCAT(LName,', ',FName) FROM patient,insplan" 
 				+" WHERE patient.PatNum=insplan.Subscriber "
 				+"AND insplan.EmployerNum = '"    +POut.PInt   (EmployerNum)+"' "
 				+"AND insplan.GroupName = '"      +POut.PString(GroupName)+"' "
 				+"AND insplan.GroupNum = '"       +POut.PString(GroupNum)+"' "
+				+"AND insplan.DivisionNo = '"     +POut.PString(DivisionNo)+"' "
 				+"AND insplan.CarrierNum = '"     +POut.PInt   (CarrierNum)+"' "
 				+"AND insplan.PlanType = '"       +POut.PString(PlanType)+"' "
 				+"AND insplan.UseAltCode = '"     +POut.PBool  (UseAltCode)+"' "

@@ -1165,7 +1165,6 @@ namespace OpenDental{
 			// 
 			this.textGradeSchool.AcceptsReturn = true;
 			this.textGradeSchool.Location = new System.Drawing.Point(161, 56);
-			this.textGradeSchool.Multiline = true;
 			this.textGradeSchool.Name = "textGradeSchool";
 			this.textGradeSchool.Size = new System.Drawing.Size(213, 20);
 			this.textGradeSchool.TabIndex = 2;
@@ -1195,7 +1194,6 @@ namespace OpenDental{
 			// 
 			this.textCounty.AcceptsReturn = true;
 			this.textCounty.Location = new System.Drawing.Point(161, 36);
-			this.textCounty.Multiline = true;
 			this.textCounty.Name = "textCounty";
 			this.textCounty.Size = new System.Drawing.Size(213, 20);
 			this.textCounty.TabIndex = 1;
@@ -1885,8 +1883,6 @@ namespace OpenDental{
 			schoolOriginal=textGradeSchool.Text;//the original text is preserved when using up and down arrows
 			listSchools.Items.Clear();
 			Schools.Refresh(textGradeSchool.Text);
-			//similarSchools=
-				//Carriers.GetSimilarNames(textGradeSchool.Text);
 			for(int i=0;i<Schools.List.Length;i++){
 				listSchools.Items.Add(Schools.List[i].SchoolName);
 			}

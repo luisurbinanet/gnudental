@@ -101,6 +101,7 @@ namespace OpenDental{
 			// 
 			// imageListToolBar
 			// 
+			this.imageListToolBar.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
 			this.imageListToolBar.ImageSize = new System.Drawing.Size(22, 22);
 			this.imageListToolBar.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListToolBar.ImageStream")));
 			this.imageListToolBar.TransparentColor = System.Drawing.Color.Transparent;
@@ -846,7 +847,7 @@ namespace OpenDental{
 			PaySplit[] PaySplitList=PaySplits.Refresh(PatCur.PatNum);//
 			ClaimProc[] claimProcList=ClaimProcs.Refresh(PatCur.PatNum);
 			Commlogs.Refresh(PatCur.PatNum);
-			PayPlans.Refresh(PatCur.Guarantor,PatCur.PatNum);
+			PayPlan[] payPlanList=PayPlans.Refresh(PatCur.Guarantor,PatCur.PatNum);
 			InsPlan[] planList=InsPlans.Refresh(FamCur);
 			CovPats.Refresh(PatCur,planList);
 			RefAttach[] RefAttachList=RefAttaches.Refresh(PatCur.PatNum);
@@ -856,7 +857,7 @@ namespace OpenDental{
 			bool hasPay=PaySplitList.Length>0;
 			bool hasClaimProcs=claimProcList.Length>0;
 			bool hasComm=Commlogs.List.Length>0;
-			bool hasPayPlans=PayPlans.List.Length>0;
+			bool hasPayPlans=payPlanList.Length>0;
 			bool hasInsPlans=false;
 			for(int i=0;i<planList.Length;i++){
 				if(planList[i].Subscriber==PatCur.PatNum){

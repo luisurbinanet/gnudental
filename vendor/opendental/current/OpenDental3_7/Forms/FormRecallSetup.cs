@@ -28,6 +28,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label9;
+		private System.Windows.Forms.CheckBox checkReturnAdd;
 		private System.ComponentModel.Container components = null;
 
 		///<summary></summary>
@@ -77,6 +78,7 @@ namespace OpenDental{
 			this.label2 = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
 			this.label9 = new System.Windows.Forms.Label();
+			this.checkReturnAdd = new System.Windows.Forms.CheckBox();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -88,7 +90,7 @@ namespace OpenDental{
 			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.Location = new System.Drawing.Point(684, 509);
+			this.butCancel.Location = new System.Drawing.Point(678, 484);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 4;
@@ -102,7 +104,7 @@ namespace OpenDental{
 			this.butOK.Autosize = true;
 			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butOK.Location = new System.Drawing.Point(684, 467);
+			this.butOK.Location = new System.Drawing.Point(678, 442);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 3;
@@ -126,7 +128,7 @@ namespace OpenDental{
 			// 
 			this.textBox6.BackColor = System.Drawing.SystemColors.Control;
 			this.textBox6.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.textBox6.Location = new System.Drawing.Point(23, 178);
+			this.textBox6.Location = new System.Drawing.Point(23, 161);
 			this.textBox6.Multiline = true;
 			this.textBox6.Name = "textBox6";
 			this.textBox6.Size = new System.Drawing.Size(672, 20);
@@ -137,7 +139,7 @@ namespace OpenDental{
 			// textPostcardMessage
 			// 
 			this.textPostcardMessage.AcceptsReturn = true;
-			this.textPostcardMessage.Location = new System.Drawing.Point(176, 232);
+			this.textPostcardMessage.Location = new System.Drawing.Point(176, 212);
 			this.textPostcardMessage.MaxLength = 255;
 			this.textPostcardMessage.Multiline = true;
 			this.textPostcardMessage.Name = "textPostcardMessage";
@@ -147,7 +149,7 @@ namespace OpenDental{
 			// 
 			// label7
 			// 
-			this.label7.Location = new System.Drawing.Point(44, 235);
+			this.label7.Location = new System.Drawing.Point(44, 215);
 			this.label7.Name = "label7";
 			this.label7.Size = new System.Drawing.Size(132, 90);
 			this.label7.TabIndex = 17;
@@ -156,7 +158,7 @@ namespace OpenDental{
 			// 
 			// textPostcardsPerSheet
 			// 
-			this.textPostcardsPerSheet.Location = new System.Drawing.Point(176, 359);
+			this.textPostcardsPerSheet.Location = new System.Drawing.Point(176, 333);
 			this.textPostcardsPerSheet.Name = "textPostcardsPerSheet";
 			this.textPostcardsPerSheet.Size = new System.Drawing.Size(34, 20);
 			this.textPostcardsPerSheet.TabIndex = 18;
@@ -164,9 +166,9 @@ namespace OpenDental{
 			// 
 			// label8
 			// 
-			this.label8.Location = new System.Drawing.Point(49, 362);
+			this.label8.Location = new System.Drawing.Point(49, 336);
 			this.label8.Name = "label8";
-			this.label8.Size = new System.Drawing.Size(127, 35);
+			this.label8.Size = new System.Drawing.Size(127, 31);
 			this.label8.TabIndex = 19;
 			this.label8.Text = "Postcards per sheet (1,3,or 4)";
 			this.label8.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -174,7 +176,7 @@ namespace OpenDental{
 			// listProcs
 			// 
 			this.listProcs.BackColor = System.Drawing.SystemColors.Control;
-			this.listProcs.Location = new System.Drawing.Point(176, 410);
+			this.listProcs.Location = new System.Drawing.Point(176, 390);
 			this.listProcs.Name = "listProcs";
 			this.listProcs.SelectionMode = System.Windows.Forms.SelectionMode.None;
 			this.listProcs.Size = new System.Drawing.Size(130, 121);
@@ -195,20 +197,20 @@ namespace OpenDental{
 			this.groupBox1.Controls.Add(this.textBox6);
 			this.groupBox1.Location = new System.Drawing.Point(16, 13);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(737, 205);
+			this.groupBox1.Size = new System.Drawing.Size(737, 193);
 			this.groupBox1.TabIndex = 21;
 			this.groupBox1.TabStop = false;
 			// 
 			// textBW
 			// 
-			this.textBW.Location = new System.Drawing.Point(159, 139);
+			this.textBW.Location = new System.Drawing.Point(159, 128);
 			this.textBW.Name = "textBW";
 			this.textBW.TabIndex = 15;
 			this.textBW.Text = "";
 			// 
 			// textProcs
 			// 
-			this.textProcs.Location = new System.Drawing.Point(159, 89);
+			this.textProcs.Location = new System.Drawing.Point(159, 84);
 			this.textProcs.Multiline = true;
 			this.textProcs.Name = "textProcs";
 			this.textProcs.Size = new System.Drawing.Size(336, 42);
@@ -225,7 +227,7 @@ namespace OpenDental{
 			// 
 			// label6
 			// 
-			this.label6.Location = new System.Drawing.Point(266, 140);
+			this.label6.Location = new System.Drawing.Point(266, 129);
 			this.label6.Name = "label6";
 			this.label6.Size = new System.Drawing.Size(445, 15);
 			this.label6.TabIndex = 20;
@@ -234,7 +236,7 @@ namespace OpenDental{
 			// 
 			// label5
 			// 
-			this.label5.Location = new System.Drawing.Point(499, 90);
+			this.label5.Location = new System.Drawing.Point(499, 85);
 			this.label5.Name = "label5";
 			this.label5.Size = new System.Drawing.Size(216, 34);
 			this.label5.TabIndex = 19;
@@ -250,7 +252,7 @@ namespace OpenDental{
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(1, 142);
+			this.label3.Location = new System.Drawing.Point(1, 131);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(156, 16);
 			this.label3.TabIndex = 17;
@@ -259,7 +261,7 @@ namespace OpenDental{
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(14, 92);
+			this.label2.Location = new System.Drawing.Point(14, 87);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(143, 16);
 			this.label2.TabIndex = 16;
@@ -277,17 +279,29 @@ namespace OpenDental{
 			// 
 			// label9
 			// 
-			this.label9.Location = new System.Drawing.Point(20, 409);
+			this.label9.Location = new System.Drawing.Point(20, 389);
 			this.label9.Name = "label9";
 			this.label9.Size = new System.Drawing.Size(151, 88);
 			this.label9.TabIndex = 22;
 			this.label9.Text = "Procedures that Trigger Recall - You can change these in procedure code setup";
 			this.label9.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
+			// checkReturnAdd
+			// 
+			this.checkReturnAdd.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.checkReturnAdd.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkReturnAdd.Location = new System.Drawing.Point(6, 366);
+			this.checkReturnAdd.Name = "checkReturnAdd";
+			this.checkReturnAdd.Size = new System.Drawing.Size(184, 19);
+			this.checkReturnAdd.TabIndex = 43;
+			this.checkReturnAdd.Text = "Show return address";
+			this.checkReturnAdd.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
 			// FormRecallSetup
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(783, 550);
+			this.ClientSize = new System.Drawing.Size(777, 525);
+			this.Controls.Add(this.checkReturnAdd);
 			this.Controls.Add(this.label9);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.textPostcardsPerSheet);
@@ -326,6 +340,7 @@ namespace OpenDental{
 			textBW.Text=((Pref)Prefs.HList["RecallBW"]).ValueString;
 			textPostcardMessage.Text=((Pref)Prefs.HList["RecallPostcardMessage"]).ValueString;
 			textPostcardsPerSheet.Text=Prefs.GetInt("RecallPostcardsPerSheet").ToString();
+			checkReturnAdd.Checked=Prefs.GetBool("RecallCardsShowReturnAdd");
 			listProcs.Items.Clear();
 			for(int i=0;i<ProcedureCodes.RecallAL.Count;i++){
 				listProcs.Items.Add(((ProcedureCode)ProcedureCodes.RecallAL[i]).Descript);
@@ -370,6 +385,8 @@ namespace OpenDental{
 			Prefs.Cur.ValueString=textPostcardsPerSheet.Text;
 			Prefs.UpdateCur();
 
+			Prefs.UpdateBool("RecallCardsShowReturnAdd",checkReturnAdd.Checked);
+			
 			DataValid.SetInvalid(InvalidTypes.Prefs);
 			DialogResult=DialogResult.OK;
 		}

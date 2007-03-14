@@ -15,6 +15,8 @@ namespace OpenDental{
 		public string Password;
 		///<summary>Foreign key to UserGroup.UserGroupNum.  Every user belongs to exactly one user group.</summary>
 		public int UserGroupNum;
+		///<summary>Foreign key to employee.EmployeeNum.  Used for timecards to block access by other users.</summary>
+		public int EmployeeNum;
 
 		///<summary></summary>
 		public User Copy(){
@@ -23,6 +25,7 @@ namespace OpenDental{
 			u.UserName=UserName;
 			u.Password=Password;
 			u.UserGroupNum=UserGroupNum;
+			u.EmployeeNum=EmployeeNum;
 			return u;
 		}
 
@@ -32,6 +35,7 @@ namespace OpenDental{
 				+"UserName = '"      +POut.PString(UserName)+"'"
 				+",Password = '"     +POut.PString(Password)+"'"
 				+",UserGroupNum = '" +POut.PInt   (UserGroupNum)+"'"
+				+",EmployeeNum = '"  +POut.PInt   (EmployeeNum)+"'"
 				+" WHERE UserNum = '"+POut.PInt   (UserNum)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
@@ -40,10 +44,11 @@ namespace OpenDental{
 
 		///<summary></summary>
 		private void Insert(){
-			string command= "INSERT INTO user (UserName,Password,UserGroupNum) VALUES("
+			string command= "INSERT INTO user (UserName,Password,UserGroupNum,EmployeeNum) VALUES("
 				+"'"+POut.PString(UserName)+"', "
 				+"'"+POut.PString(Password)+"', "
-				+"'"+POut.PInt   (UserGroupNum)+"')";
+				+"'"+POut.PInt   (UserGroupNum)+"', "
+				+"'"+POut.PInt   (EmployeeNum)+"')";
 			DataConnection dcon=new DataConnection();
  			dcon.NonQ(command,true);
 			UserNum=dcon.InsertID;
@@ -118,6 +123,7 @@ namespace OpenDental{
 				List[i].UserName      = PIn.PString(table.Rows[i][1].ToString());
 				List[i].Password      = PIn.PString(table.Rows[i][2].ToString());	
 				List[i].UserGroupNum  = PIn.PInt   (table.Rows[i][3].ToString());
+				List[i].EmployeeNum   = PIn.PInt   (table.Rows[i][4].ToString());
 			}
 		}
 

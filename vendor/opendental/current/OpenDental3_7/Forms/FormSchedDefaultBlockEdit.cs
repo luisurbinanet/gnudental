@@ -242,9 +242,9 @@ namespace OpenDental{
 				listOp.Items.Clear();
 				listOp.Items.Add(Lan.g(this,"All Ops"));
 				listOp.SelectedIndex=0;
-				for(int i=0;i<Defs.Short[(int)DefCat.Operatories].Length;i++){
-					listOp.Items.Add(Defs.Short[(int)DefCat.Operatories][i].ItemValue);
-					if(SchedDefaultCur.Op==Defs.Short[(int)DefCat.Operatories][i].DefNum){
+				for(int i=0;i<Operatories.ListShort.Length;i++){
+					listOp.Items.Add(Operatories.ListShort[i].Abbrev);
+					if(SchedDefaultCur.Op==Operatories.ListShort[i].OperatoryNum){
 						listOp.SelectedIndex=i+1;
 					}
 				}
@@ -287,8 +287,7 @@ namespace OpenDental{
 					SchedDefaultCur.Op=0;
 				}
 				else{
-					SchedDefaultCur.Op
-						=Defs.Short[(int)DefCat.Operatories][listOp.SelectedIndex-1].DefNum;
+					SchedDefaultCur.Op=Operatories.ListShort[listOp.SelectedIndex-1].OperatoryNum;
 				}
 			}
 			try{

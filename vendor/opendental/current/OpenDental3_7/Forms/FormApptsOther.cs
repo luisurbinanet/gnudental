@@ -34,6 +34,8 @@ namespace OpenDental{
 		private Family FamCur;
 		///<summary>Almost always false.  Only set to true from TaskList to allow selecting one appointment for a patient.</summary>
 		public bool SelectOnly;
+		///<summary>This will contain a selected appointment upon closing of the form in some situations.  Used when picking an appointment for task lists.  Also used if the GoTo or Create new buttons are clicked.</summary>
+		public Appointment SelectedAppt;
 
 		///<summary></summary>
 		public FormApptsOther(Patient pat,Family fam){
@@ -379,46 +381,53 @@ namespace OpenDental{
 		}
 
 		private void butNew_Click(object sender, System.EventArgs e) {
-			Appointments.Cur=new Appointment();
-			Appointments.Cur.PatNum=PatCur.PatNum;
+			Appointment AptCur=new Appointment();
+			AptCur.PatNum=PatCur.PatNum;
 			if(PatCur.DateFirstVisit.Year<1880
 				&& !Procedures.AreAnyComplete(PatCur.PatNum))//this only runs if firstVisit blank
 			{
-				Appointments.Cur.IsNewPatient=true;
+				AptCur.IsNewPatient=true;
 			}
-			Appointments.Cur.Pattern="/X/";
+			AptCur.Pattern="/X/";
 			if(PatCur.PriProv==0){
-				Appointments.Cur.ProvNum=PIn.PInt(((Pref)Prefs.HList["PracticeDefaultProv"]).ValueString);
+				AptCur.ProvNum=PIn.PInt(((Pref)Prefs.HList["PracticeDefaultProv"]).ValueString);
 			}
 			else{			
-				Appointments.Cur.ProvNum=PatCur.PriProv;
+				AptCur.ProvNum=PatCur.PriProv;
 			}
-			Appointments.Cur.ProvHyg=PatCur.SecProv;
-			Appointments.Cur.AptStatus=ApptStatus.Scheduled;
+			AptCur.ProvHyg=PatCur.SecProv;
+			AptCur.AptStatus=ApptStatus.Scheduled;
+			AptCur.ClinicNum=PatCur.ClinicNum;
 			if(InitialClick){//initially double clicked on appt module
 				DateTime d=Appointments.DateSelected;
 				int minutes=(int)(ContrAppt.SheetClickedonMin/ContrApptSheet.MinPerIncr)
 					*ContrApptSheet.MinPerIncr;
-				Appointments.Cur.AptDateTime=new DateTime(d.Year,d.Month,d.Day
+				AptCur.AptDateTime=new DateTime(d.Year,d.Month,d.Day
 					,ContrAppt.SheetClickedonHour,minutes,0);
-				Appointments.Cur.Op=ContrAppt.SheetClickedonOp;
+				AptCur.Op=ContrAppt.SheetClickedonOp;
 			}
 			else{
 				//new appt will be placed on pinboard instead of specific time
 			}
-			Appointments.InsertCur();
-			Appointments.CurOld=Appointments.Cur;
-			FormApptEdit FormApptEdit2=new FormApptEdit();
+			try{
+				AptCur.InsertOrUpdate(null,true);
+			}
+			catch(Exception ex){
+				MessageBox.Show(ex.Message);
+				return;
+			}
+			FormApptEdit FormApptEdit2=new FormApptEdit(AptCur);
 			FormApptEdit2.IsNew=true;
 			FormApptEdit2.ShowDialog();
 			if(FormApptEdit2.DialogResult!=DialogResult.OK){
 				return;
 			}
 			if(InitialClick){
+				SelectedAppt=AptCur;
 				oResult=OtherResult.CreateNew;
 			}
 			else{
-				CreateCurInfo();
+				CreateCurInfo(AptCur);
 				oResult=OtherResult.NewToPinBoard;
 			}
 			DialogResult=DialogResult.OK;
@@ -429,18 +438,16 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please select appointment first."));
 				return;
 			}
-			Appointments.Cur=ListOth[tbApts.SelectedRow];
-			Appointments.CurOld=Appointments.Cur;
-			if(!OKtoSendToPinboard())
+			if(!OKtoSendToPinboard(ListOth[tbApts.SelectedRow]))
 				return;
-			CreateCurInfo();
+			CreateCurInfo(ListOth[tbApts.SelectedRow]);
 			oResult=OtherResult.CopyToPinBoard;
 			DialogResult=DialogResult.OK;
 		}
 
-		/// <summary>Tests the current appointment to see if it is acceptable to send it to the pinboard.  Also asks user appropriate questions to verify that's what they want to do.  Returns false if it will not be going to pinboard after all.</summary>
-		private bool OKtoSendToPinboard(){
-			if(Appointments.Cur.AptStatus==ApptStatus.Planned){//if is a Planned appointment
+		/// <summary>Tests the appointment to see if it is acceptable to send it to the pinboard.  Also asks user appropriate questions to verify that's what they want to do.  Returns false if it will not be going to pinboard after all.</summary>
+		private bool OKtoSendToPinboard(Appointment AptCur){
+			if(AptCur.AptStatus==ApptStatus.Planned){//if is a Planned appointment
 				bool PlannedIsSched=false;
 				for(int i=0;i<ListOth.Length;i++){
 					if(ListOth[i].NextAptNum==PatCur.NextAptNum){//if the planned appointment is already sched
@@ -454,7 +461,7 @@ namespace OpenDental{
 				}
 			}
 			else{//if appointment is not Planned
-				switch(Appointments.Cur.AptStatus){
+				switch(AptCur.AptStatus){
 					case ApptStatus.Complete:
 						MessageBox.Show(Lan.g(this,"Not allowed to move a completed appointment from here."));
 						return false;
@@ -477,18 +484,15 @@ namespace OpenDental{
 		private void tbApts_CellDoubleClicked(object sender, CellEventArgs e){
 			int currentSelection=tbApts.SelectedRow;
 			int currentScroll=tbApts.ScrollValue;
-			//MessageBox.Show(currentScroll.ToString());
-			Appointments.Cur=ListOth[e.Row];
-			Appointments.CurOld=Appointments.Cur;
-			FormApptEdit FormAE=new FormApptEdit();
+			FormApptEdit FormAE=new FormApptEdit(ListOth[e.Row]);
 			FormAE.PinIsVisible=true;
 			FormAE.ShowDialog();
 			if(FormAE.DialogResult!=DialogResult.OK)
 				return;
 			if(FormAE.PinClicked){
-				if(!OKtoSendToPinboard())
+				if(!OKtoSendToPinboard(ListOth[e.Row]))
 					return;
-				CreateCurInfo();
+				CreateCurInfo(ListOth[e.Row]);
 				oResult=OtherResult.CopyToPinBoard;
 				DialogResult=DialogResult.OK;
 			}
@@ -500,15 +504,15 @@ namespace OpenDental{
 		}	
 
 		///<summary>Prepares the necessary info for placement of the appointment on the pinboard.</summary>
-		private void CreateCurInfo(){
+		private void CreateCurInfo(Appointment AptCur){
 			ContrAppt.CurInfo=new InfoApt();
-			ContrAppt.CurInfo.MyApt=Appointments.Cur;
+			ContrAppt.CurInfo.MyApt=AptCur.Copy();
 			ProcDesc procsForSingle;
-			if(Appointments.Cur.AptNum==PatCur.NextAptNum){//if is Next apt
-				procsForSingle=Procedures.GetProcsForSingle(Appointments.Cur.AptNum,true);
+			if(AptCur.AptNum==PatCur.NextAptNum){//if is Next apt
+				procsForSingle=Procedures.GetProcsForSingle(AptCur.AptNum,true);
 			}
 			else{//normal apt
-				procsForSingle=Procedures.GetProcsForSingle(Appointments.Cur.AptNum,false);
+				procsForSingle=Procedures.GetProcsForSingle(AptCur.AptNum,false);
 			}
 			ContrAppt.CurInfo.Procs=procsForSingle.ProcLines;
 			ContrAppt.CurInfo.Production=procsForSingle.Production;
@@ -520,12 +524,11 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please select appointment first."));
 				return;
 			}
-			Appointments.Cur=ListOth[tbApts.SelectedRow];
-			Appointments.CurOld=Appointments.Cur;
-			if(Appointments.Cur.AptDateTime.Year<1880){
+			if(ListOth[tbApts.SelectedRow].AptDateTime.Year<1880){
 				MessageBox.Show(Lan.g(this,"Unable to go to unscheduled appointment."));
 				return;
 			}
+			SelectedAppt=ListOth[tbApts.SelectedRow];
 			oResult=OtherResult.GoTo;
 			DialogResult=DialogResult.OK;
 		}
@@ -537,7 +540,7 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please select appointment first."));
 				return;
 			}
-			Appointments.Cur=ListOth[tbApts.SelectedRow];
+			SelectedAppt=ListOth[tbApts.SelectedRow];
 			DialogResult=DialogResult.OK;
 		}
 

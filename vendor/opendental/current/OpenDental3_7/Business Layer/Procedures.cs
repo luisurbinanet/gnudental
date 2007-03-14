@@ -67,6 +67,7 @@ namespace OpenDental{
 				List[i].ClaimNote		    = PIn.PString(table.Rows[i][24].ToString());
 				List[i].DateLocked	    = PIn.PDate  (table.Rows[i][25].ToString());
 				List[i].DateEntryC      = PIn.PDate  (table.Rows[i][26].ToString());
+				List[i].ClinicNum       = PIn.PInt   (table.Rows[i][27].ToString());
 			}
 			return List;
 		}
@@ -77,10 +78,10 @@ namespace OpenDental{
 		public static ArrayList GetMissingTeeth(Procedure[] procs){
 			ArrayList missing=new ArrayList();
 			for(int i=0;i<procs.Length;i++){
-				if(ProcedureCodes.GetProcCode(procs[i].ADACode).RemoveTooth && (
-					procs[i].ProcStatus==ProcStat.C
-					|| procs[i].ProcStatus==ProcStat.EC
-					|| procs[i].ProcStatus==ProcStat.EO))
+				if(ProcedureCodes.GetProcCode(procs[i].ADACode).RemoveTooth
+					&& Tooth.IsValidDB(procs[i].ToothNum)
+					&& !Tooth.IsSuperNum(procs[i].ToothNum)
+					&& (procs[i].ProcStatus==ProcStat.C	|| procs[i].ProcStatus==ProcStat.EC	|| procs[i].ProcStatus==ProcStat.EO))
 				{
 					missing.Add(procs[i].ToothNum);
 				}  
@@ -320,6 +321,8 @@ namespace OpenDental{
 				if(ProcList[i].ProcNote==""){
 					ProcList[i].ProcNote=procCode.DefaultNote;
 				}
+				ProcList[i].ClinicNum=apt.ClinicNum;
+				ProcList[i].PlaceService=Clinics.GetPlaceService(apt.ClinicNum);
 				if(apt.ProvHyg!=0){//if the appointment has a hygiene provider
 					if(procCode.IsHygiene){//hyg proc
 						ProcList[i].ProvNum=apt.ProvHyg;

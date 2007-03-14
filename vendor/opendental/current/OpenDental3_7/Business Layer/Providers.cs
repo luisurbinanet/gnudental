@@ -1,12 +1,13 @@
 using System;
 using System.Collections;
+using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
 
 namespace OpenDental{
 	
 	///<summary>Corresponds to the provider table in the database.</summary>
-	public struct Provider{
+	public class Provider{
 		///<summary>Primary key.</summary>
 		public int ProvNum;
 		///<summary>Abbreviation.</summary>
@@ -31,7 +32,7 @@ namespace OpenDental{
 		public string StateLicense;
 		///<summary></summary>
 		public string DEANum;
-		///<summary>True if hygeinist.</summary>
+		///<summary>True if hygienist.</summary>
 		public bool IsSecondary;//
 		///<summary>Color that shows in appointments</summary>
 		public Color ProvColor;
@@ -49,32 +50,144 @@ namespace OpenDental{
 		public Color OutlineColor;
 		///<summary>Used in dental schools.  Foreign key to schoolclass.SchoolClassNum.  Each student is a provider.  This keeps track of which class they are in.</summary>
 		public int SchoolClassNum;
+		///<summary>Only used for Canadian claims right now, but will be required in US within a year or two.</summary>
+		public string NationalProvID;
+
+		///<summary>Returns a copy of this Provider.</summary>
+		public Provider Copy(){
+			Provider p=new Provider();
+			p.ProvNum=ProvNum;
+			p.Abbr=Abbr;
+			p.ItemOrder=ItemOrder;
+			p.LName=LName;
+			p.FName=FName;
+			p.MI=MI;
+			p.Suffix=Suffix;
+			p.FeeSched=FeeSched;
+			p.Specialty=Specialty;
+			p.SSN=SSN;
+			p.StateLicense=StateLicense;
+			p.DEANum=DEANum;
+			p.IsSecondary=IsSecondary;
+			p.ProvColor=ProvColor;
+			p.IsHidden=IsHidden;
+			p.UsingTIN=UsingTIN;
+			//bluecross
+			p.SigOnFile=SigOnFile;
+			p.MedicaidID=MedicaidID;
+			p.OutlineColor=OutlineColor;
+			p.SchoolClassNum=SchoolClassNum;
+			p.NationalProvID=NationalProvID;
+			return p;
+		}
+
+		///<summary></summary>
+		private void Update(){
+			string command="UPDATE provider SET "
+				+ "Abbr = '"          +POut.PString(Abbr)+"'"
+				+",ItemOrder = '"     +POut.PInt   (ItemOrder)+"'"
+				+",LName = '"         +POut.PString(LName)+"'"
+				+",FName = '"         +POut.PString(FName)+"'"
+				+",MI = '"            +POut.PString(MI)+"'"
+				+",Suffix = '"        +POut.PString(Suffix)+"'"
+				+",FeeSched = '"      +POut.PInt   (FeeSched)+"'"
+				+",Specialty = '"     +POut.PInt   ((int)Specialty)+"'"
+				+",SSN = '"           +POut.PString(SSN)+"'"
+				+",StateLicense = '"  +POut.PString(StateLicense)+"'"
+				+",DEANum = '"        +POut.PString(DEANum)+"'"
+				+",IsSecondary = '"   +POut.PBool  (IsSecondary)+"'"
+				+",ProvColor = '"     +POut.PInt   (ProvColor.ToArgb())+"'"
+				+",IsHidden = '"      +POut.PBool  (IsHidden)+"'"
+				+",UsingTIN = '"      +POut.PBool  (UsingTIN)+"'"
+				//+",bluecrossid = '" +POut.PString(BlueCrossID)+"'"
+				+",SigOnFile = '"     +POut.PBool  (SigOnFile)+"'"
+				+",MedicaidID = '"    +POut.PString(MedicaidID)+"'"
+				+",OutlineColor = '"  +POut.PInt   (OutlineColor.ToArgb())+"'"
+				+",SchoolClassNum = '"+POut.PInt   (SchoolClassNum)+"'"
+				+",NationalProvID = '"+POut.PString(NationalProvID)+"'"
+				+" WHERE provnum = '" +POut.PInt(ProvNum)+"'";
+			DataConnection dcon=new DataConnection();
+ 			dcon.NonQ(command);
+		}
+
+		///<summary></summary>
+		private void Insert(){
+			string command= "INSERT INTO provider (Abbr,ItemOrder,LName,FName,MI,Suffix,"
+				+"FeeSched,Specialty,SSN,StateLicense,DEANum,IsSecondary,"
+				+"ProvColor,IsHidden,UsingTIN,SigOnFile"
+				+",MedicaidID,OutlineColor,SchoolClassNum,NationalProvID) VALUES("
+				+"'"+POut.PString(Abbr)+"', "
+				+"'"+POut.PInt   (ItemOrder)+"', "
+				+"'"+POut.PString(LName)+"', "
+				+"'"+POut.PString(FName)+"', "
+				+"'"+POut.PString(MI)+"', "
+				+"'"+POut.PString(Suffix)+"', "
+				+"'"+POut.PInt   (FeeSched)+"', "
+				+"'"+POut.PInt   ((int)Specialty)+"', "
+				+"'"+POut.PString(SSN)+"', "
+				+"'"+POut.PString(StateLicense)+"', "
+				+"'"+POut.PString(DEANum)+"', "
+				+"'"+POut.PBool  (IsSecondary)+"', "
+				+"'"+POut.PInt   (ProvColor.ToArgb())+"', "
+				+"'"+POut.PBool  (IsHidden)+"', "
+				+"'"+POut.PBool  (UsingTIN)+"', "
+				//+"'"+POut.PString(BlueCrossID)+"', "
+				+"'"+POut.PBool  (SigOnFile)+"', "
+				+"'"+POut.PString(MedicaidID)+"', "
+				+"'"+POut.PInt   (OutlineColor.ToArgb())+"', "
+				+"'"+POut.PInt   (SchoolClassNum)+"', "
+				+"'"+POut.PString(NationalProvID)+"')";
+			//MessageBox.Show(cmd.CommandText);
+			DataConnection dcon=new DataConnection();
+ 			dcon.NonQ(command,true);
+			ProvNum=dcon.InsertID;
+		}
+
+		///<summary></summary>
+		public void InsertOrUpdate(bool IsNew){
+			//if(){
+				//throw new ApplicationException(Lan.g(this,""));
+			//}
+			if(IsNew){
+				Insert();
+			}
+			else{
+				Update();
+			}
+		}
+
+		///<summary>Only used from FormProvEdit if user clicks cancel before finishing entering a new provider.</summary>
+		public void Delete(){
+			string command="DELETE from provider WHERE provnum = '"+ProvNum.ToString()+"'";
+			DataConnection dcon=new DataConnection();
+ 			dcon.NonQ(command);
+		}
+
 	}
 
 	/*=========================================================================================
 	=================================== class Providers ==========================================*/
 
 	///<summary></summary>
-	public class Providers:DataClass{
+	public class Providers{
 		///<summary>Rarely used. Includes all providers, even if hidden.</summary>
 		public static Provider[] ListLong;
 		///<summary>This is the list used most often. It does not include hidden providers.</summary>
 		public static Provider[] List;
-		///<summary></summary>
-		public static Provider Cur;
-		///<summary></summary>
+		//<summary></summary>
+		//public static Provider Cur;
+		///<summary>This should be eliminated when time.  It's just used in FormProviderSelect to keep track of which provider is highlighted.</summary>
 		public static int Selected;
 
-		///<summary></summary>
+		///<summary>Refreshes List with all providers.</summary>
 		public static void Refresh(){
 			ArrayList AL=new ArrayList();
-			cmd.CommandText =
-				"SELECT * from provider"
-				//+" WHERE category = '"+j+"'"
-				+" ORDER BY itemorder";
-			FillTable();
+			string command="SELECT * from provider ORDER BY itemorder";
+			DataConnection dcon=new DataConnection();
+			DataTable table=dcon.GetTable(command);
 			ListLong=new Provider[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
+				ListLong[i]=new Provider();
 				ListLong[i].ProvNum       = PIn.PInt   (table.Rows[i][0].ToString());
 				ListLong[i].Abbr          = PIn.PString(table.Rows[i][1].ToString());
 				ListLong[i].ItemOrder     = PIn.PInt   (table.Rows[i][2].ToString());
@@ -96,6 +209,7 @@ namespace OpenDental{
 				ListLong[i].MedicaidID    = PIn.PString(table.Rows[i][18].ToString());
 				ListLong[i].OutlineColor  = Color.FromArgb(PIn.PInt(table.Rows[i][19].ToString()));
 				ListLong[i].SchoolClassNum= PIn.PInt   (table.Rows[i][20].ToString());
+				ListLong[i].NationalProvID= PIn.PString(table.Rows[i][21].ToString());
 				if(!ListLong[i].IsHidden) AL.Add(ListLong[i]);	
 			}
 			List=new Provider[AL.Count];
@@ -103,78 +217,13 @@ namespace OpenDental{
 		}
 
 		///<summary></summary>
-		public static void UpdateCur(){
-			cmd.CommandText = "UPDATE provider SET "
-				+ "abbr = '"          +POut.PString(Cur.Abbr)+"'"
-				+",itemorder = '"     +POut.PInt   (Cur.ItemOrder)+"'"
-				+",lname = '"         +POut.PString(Cur.LName)+"'"
-				+",fname = '"         +POut.PString(Cur.FName)+"'"
-				+",mi = '"            +POut.PString(Cur.MI)+"'"
-				+",suffix = '"        +POut.PString(Cur.Suffix)+"'"
-				+",feesched = '"      +POut.PInt   (Cur.FeeSched)+"'"
-				+",specialty = '"     +POut.PInt   ((int)Cur.Specialty)+"'"
-				+",ssn = '"           +POut.PString(Cur.SSN)+"'"
-				+",statelicense = '"  +POut.PString(Cur.StateLicense)+"'"
-				+",deanum = '"        +POut.PString(Cur.DEANum)+"'"
-				+",issecondary = '"   +POut.PBool  (Cur.IsSecondary)+"'"
-				+",provcolor = '"     +POut.PInt   (Cur.ProvColor.ToArgb())+"'"
-				+",ishidden = '"      +POut.PBool  (Cur.IsHidden)+"'"
-				+",usingtin = '"      +POut.PBool  (Cur.UsingTIN)+"'"
-				//+",bluecrossid = '" +POut.PString(Cur.BlueCrossID)+"'"
-				+",sigonfile = '"     +POut.PBool  (Cur.SigOnFile)+"'"
-				+",medicaidid = '"    +POut.PString(Cur.MedicaidID)+"'"
-				+",OutlineColor = '"  +POut.PInt   (Cur.OutlineColor.ToArgb())+"'"
-				+",SchoolClassNum = '"+POut.PInt   (Cur.SchoolClassNum)+"'"
-				+" WHERE provnum = '" +POut.PInt(Cur.ProvNum)+"'";
-			NonQ(false);
-		}
-
-		///<summary></summary>
-		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO provider (abbr,itemorder,lname,fname,mi,suffix,"
-				+"feesched,specialty,ssn,statelicense,deanum,issecondary,"
-				+"provcolor,ishidden,usingtin,sigonfile"
-				+",medicaidid,OutlineColor,SchoolClassNum) VALUES("
-				+"'"+POut.PString(Cur.Abbr)+"', "
-				+"'"+POut.PInt   (Cur.ItemOrder)+"', "
-				+"'"+POut.PString(Cur.LName)+"', "
-				+"'"+POut.PString(Cur.FName)+"', "
-				+"'"+POut.PString(Cur.MI)+"', "
-				+"'"+POut.PString(Cur.Suffix)+"', "
-				+"'"+POut.PInt   (Cur.FeeSched)+"', "
-				+"'"+POut.PInt   ((int)Cur.Specialty)+"', "
-				+"'"+POut.PString(Cur.SSN)+"', "
-				+"'"+POut.PString(Cur.StateLicense)+"', "
-				+"'"+POut.PString(Cur.DEANum)+"', "
-				+"'"+POut.PBool  (Cur.IsSecondary)+"', "
-				+"'"+POut.PInt   (Cur.ProvColor.ToArgb())+"', "
-				+"'"+POut.PBool  (Cur.IsHidden)+"', "
-				+"'"+POut.PBool  (Cur.UsingTIN)+"', "
-				//+"'"+POut.PString(Cur.BlueCrossID)+"', "
-				+"'"+POut.PBool  (Cur.SigOnFile)+"', "
-				+"'"+POut.PString(Cur.MedicaidID)+"', "
-				+"'"+POut.PInt   (Cur.OutlineColor.ToArgb())+"', "
-				+"'"+POut.PInt   (Cur.SchoolClassNum)+"')";
-			//MessageBox.Show(cmd.CommandText);
-			NonQ(true);
-			Cur.ProvNum=InsertID;
-		}
-
-		///<summary></summary>
-		public static void DeleteCur(){
-			cmd.CommandText = "DELETE from provider WHERE provnum = '"+Cur.ProvNum.ToString()+"'";
-			NonQ(false);
-		}
-
-		///<summary></summary>
 		public static string GetAbbr(int provNum){
-			string retStr="";
 			for(int i=0;i<ListLong.Length;i++){
 				if(ListLong[i].ProvNum==provNum){
-					retStr=ListLong[i].Abbr;
+					return ListLong[i].Abbr;
 				}
 			}
-			return retStr;
+			return "";
 		}
 
 		///<summary>Used in the HouseCalls bridge</summary>
@@ -270,12 +319,11 @@ namespace OpenDental{
 			Selected+=1;
 		}
 
-		///<summary></summary>
-		public static void SetOrder(int mySelNum, int myItemOrder){
+		///<summary>Used by MoveUp and MoveDown.</summary>
+		private static void SetOrder(int mySelNum, int myItemOrder){
 			Provider temp=ListLong[mySelNum];
 			temp.ItemOrder=myItemOrder;
-			Cur=temp;
-			UpdateCur();
+			temp.InsertOrUpdate(false);
 		}
 	}
 	

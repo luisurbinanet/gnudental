@@ -13,6 +13,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Microsoft.Win32;
+using OpenDental.Bridges;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -24,7 +25,6 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label8;
 		private System.Windows.Forms.Label label9;
 		private System.Windows.Forms.Label label10;
-		private System.Windows.Forms.Label label15;
 		private System.Windows.Forms.Label label17;
 		private System.Windows.Forms.Label label18;
 		private System.Windows.Forms.Label label19;
@@ -95,7 +95,6 @@ namespace OpenDental{
 		private System.Windows.Forms.ComboBox comboLinked;
 		private System.Windows.Forms.TextBox textLinkedNum;
 		private System.Windows.Forms.ToolTip toolTip1;
-		private OpenDental.UI.Button butEditTemplate;
 		private System.Windows.Forms.CheckBox checkAssign;
 		private ArrayList similarEmps;
 		private string empOriginal;//used in the emp dropdown logic
@@ -135,6 +134,14 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label13;
 		private System.Windows.Forms.TextBox textTrojanID;
 		private OpenDental.UI.Button butImportTrojan;
+		private System.Windows.Forms.Label labelDivisionDash;
+		private System.Windows.Forms.TextBox textDivisionNo;
+		private System.Windows.Forms.Label labelElectronicID;
+		private OpenDental.UI.Button butEditAll;
+		private System.Windows.Forms.Label label15;
+		private OpenDental.UI.Button butIapFind;
+		private System.Windows.Forms.Label label24;
+		private OpenDental.UI.Button butBenefitNotes;
 		private Carrier CarrierCur;
 
 		///<summary>Need to pass in the current patNum which is not necessarily the subscriber. But InsPlans do not have a field for PatNum. The result is that the displayed family list might change depending on which family is open when this form is called.  Subscriber is independent of family.</summary>
@@ -196,7 +203,7 @@ namespace OpenDental{
 			this.label9 = new System.Windows.Forms.Label();
 			this.label10 = new System.Windows.Forms.Label();
 			this.labelCitySTZip = new System.Windows.Forms.Label();
-			this.label15 = new System.Windows.Forms.Label();
+			this.labelElectronicID = new System.Windows.Forms.Label();
 			this.label17 = new System.Windows.Forms.Label();
 			this.label18 = new System.Windows.Forms.Label();
 			this.label19 = new System.Windows.Forms.Label();
@@ -261,11 +268,13 @@ namespace OpenDental{
 			this.textRenewMonth = new OpenDental.ValidNum();
 			this.groupSynch = new System.Windows.Forms.GroupBox();
 			this.butSelect = new OpenDental.UI.Button();
-			this.butEditTemplate = new OpenDental.UI.Button();
+			this.butEditAll = new OpenDental.UI.Button();
 			this.comboLinked = new System.Windows.Forms.ComboBox();
 			this.textLinkedNum = new System.Windows.Forms.TextBox();
 			this.label4 = new System.Windows.Forms.Label();
 			this.groupBox4 = new System.Windows.Forms.GroupBox();
+			this.textDivisionNo = new System.Windows.Forms.TextBox();
+			this.labelDivisionDash = new System.Windows.Forms.Label();
 			this.comboClaimForm = new System.Windows.Forms.ComboBox();
 			this.comboFeeSched = new System.Windows.Forms.ComboBox();
 			this.groupCoPay = new System.Windows.Forms.GroupBox();
@@ -281,13 +290,17 @@ namespace OpenDental{
 			this.textPlanNote = new OpenDental.ODtextBox();
 			this.panelAdvancedIns = new System.Windows.Forms.Panel();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+			this.butImportTrojan = new OpenDental.UI.Button();
+			this.butIapFind = new OpenDental.UI.Button();
 			this.labelDrop = new System.Windows.Forms.Label();
 			this.butDrop = new OpenDental.UI.Button();
 			this.butLabel = new OpenDental.UI.Button();
 			this.groupBox6 = new System.Windows.Forms.GroupBox();
+			this.label24 = new System.Windows.Forms.Label();
+			this.label15 = new System.Windows.Forms.Label();
 			this.label13 = new System.Windows.Forms.Label();
 			this.textTrojanID = new System.Windows.Forms.TextBox();
-			this.butImportTrojan = new OpenDental.UI.Button();
+			this.butBenefitNotes = new OpenDental.UI.Button();
 			this.panel4.SuspendLayout();
 			this.panel2.SuspendLayout();
 			this.panel3.SuspendLayout();
@@ -365,14 +378,14 @@ namespace OpenDental{
 			this.labelCitySTZip.Text = "City,ST,Zip";
 			this.labelCitySTZip.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
-			// label15
+			// labelElectronicID
 			// 
-			this.label15.Location = new System.Drawing.Point(2, 111);
-			this.label15.Name = "label15";
-			this.label15.Size = new System.Drawing.Size(95, 15);
-			this.label15.TabIndex = 15;
-			this.label15.Text = "Electronic ID";
-			this.label15.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			this.labelElectronicID.Location = new System.Drawing.Point(2, 111);
+			this.labelElectronicID.Name = "labelElectronicID";
+			this.labelElectronicID.Size = new System.Drawing.Size(95, 15);
+			this.labelElectronicID.TabIndex = 15;
+			this.labelElectronicID.Text = "Electronic ID";
+			this.labelElectronicID.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label17
 			// 
@@ -994,7 +1007,7 @@ namespace OpenDental{
 			// groupSynch
 			// 
 			this.groupSynch.Controls.Add(this.butSelect);
-			this.groupSynch.Controls.Add(this.butEditTemplate);
+			this.groupSynch.Controls.Add(this.butEditAll);
 			this.groupSynch.Controls.Add(this.comboLinked);
 			this.groupSynch.Controls.Add(this.textLinkedNum);
 			this.groupSynch.Controls.Add(this.label4);
@@ -1020,19 +1033,19 @@ namespace OpenDental{
 			this.toolTip1.SetToolTip(this.butSelect, "Select a plan from the main list");
 			this.butSelect.Click += new System.EventHandler(this.butSelect_Click);
 			// 
-			// butEditTemplate
+			// butEditAll
 			// 
-			this.butEditTemplate.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butEditTemplate.Autosize = true;
-			this.butEditTemplate.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butEditTemplate.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butEditTemplate.Location = new System.Drawing.Point(358, 40);
-			this.butEditTemplate.Name = "butEditTemplate";
-			this.butEditTemplate.Size = new System.Drawing.Size(90, 25);
-			this.butEditTemplate.TabIndex = 71;
-			this.butEditTemplate.Text = "Edit All";
-			this.toolTip1.SetToolTip(this.butEditTemplate, "Edit all the similar plans at once");
-			this.butEditTemplate.Click += new System.EventHandler(this.butEditTemplate_Click);
+			this.butEditAll.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butEditAll.Autosize = true;
+			this.butEditAll.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butEditAll.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butEditAll.Location = new System.Drawing.Point(371, 40);
+			this.butEditAll.Name = "butEditAll";
+			this.butEditAll.Size = new System.Drawing.Size(90, 25);
+			this.butEditAll.TabIndex = 71;
+			this.butEditAll.Text = "Edit All";
+			this.toolTip1.SetToolTip(this.butEditAll, "Edit all the similar plans at once");
+			this.butEditAll.Click += new System.EventHandler(this.butEditAll_Click);
 			// 
 			// comboLinked
 			// 
@@ -1040,7 +1053,7 @@ namespace OpenDental{
 			this.comboLinked.Location = new System.Drawing.Point(253, 14);
 			this.comboLinked.MaxDropDownItems = 30;
 			this.comboLinked.Name = "comboLinked";
-			this.comboLinked.Size = new System.Drawing.Size(197, 21);
+			this.comboLinked.Size = new System.Drawing.Size(207, 21);
 			this.comboLinked.TabIndex = 68;
 			// 
 			// textLinkedNum
@@ -1064,6 +1077,8 @@ namespace OpenDental{
 			// 
 			// groupBox4
 			// 
+			this.groupBox4.Controls.Add(this.textDivisionNo);
+			this.groupBox4.Controls.Add(this.labelDivisionDash);
 			this.groupBox4.Controls.Add(this.comboClaimForm);
 			this.groupBox4.Controls.Add(this.comboFeeSched);
 			this.groupBox4.Controls.Add(this.groupCoPay);
@@ -1087,6 +1102,23 @@ namespace OpenDental{
 			this.groupBox4.TabIndex = 1;
 			this.groupBox4.TabStop = false;
 			this.groupBox4.Text = "Synchronized Information";
+			// 
+			// textDivisionNo
+			// 
+			this.textDivisionNo.Location = new System.Drawing.Point(256, 57);
+			this.textDivisionNo.MaxLength = 20;
+			this.textDivisionNo.Name = "textDivisionNo";
+			this.textDivisionNo.Size = new System.Drawing.Size(107, 20);
+			this.textDivisionNo.TabIndex = 112;
+			this.textDivisionNo.Text = "";
+			// 
+			// labelDivisionDash
+			// 
+			this.labelDivisionDash.Location = new System.Drawing.Point(241, 60);
+			this.labelDivisionDash.Name = "labelDivisionDash";
+			this.labelDivisionDash.Size = new System.Drawing.Size(31, 16);
+			this.labelDivisionDash.TabIndex = 111;
+			this.labelDivisionDash.Text = "--";
 			// 
 			// comboClaimForm
 			// 
@@ -1179,7 +1211,7 @@ namespace OpenDental{
 			this.groupBox3.Controls.Add(this.textZip);
 			this.groupBox3.Controls.Add(this.label7);
 			this.groupBox3.Controls.Add(this.labelCitySTZip);
-			this.groupBox3.Controls.Add(this.label15);
+			this.groupBox3.Controls.Add(this.labelElectronicID);
 			this.groupBox3.Controls.Add(this.checkNoSendElect);
 			this.groupBox3.Controls.Add(this.textPhone);
 			this.groupBox3.Controls.Add(this.butSearch);
@@ -1266,6 +1298,34 @@ namespace OpenDental{
 			this.panelAdvancedIns.Size = new System.Drawing.Size(335, 112);
 			this.panelAdvancedIns.TabIndex = 4;
 			// 
+			// butImportTrojan
+			// 
+			this.butImportTrojan.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butImportTrojan.Autosize = true;
+			this.butImportTrojan.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butImportTrojan.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butImportTrojan.Location = new System.Drawing.Point(132, 14);
+			this.butImportTrojan.Name = "butImportTrojan";
+			this.butImportTrojan.Size = new System.Drawing.Size(82, 25);
+			this.butImportTrojan.TabIndex = 72;
+			this.butImportTrojan.Text = "Import";
+			this.toolTip1.SetToolTip(this.butImportTrojan, "Edit all the similar plans at once");
+			this.butImportTrojan.Click += new System.EventHandler(this.butImportTrojan_Click);
+			// 
+			// butIapFind
+			// 
+			this.butIapFind.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butIapFind.Autosize = true;
+			this.butIapFind.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butIapFind.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butIapFind.Location = new System.Drawing.Point(132, 42);
+			this.butIapFind.Name = "butIapFind";
+			this.butIapFind.Size = new System.Drawing.Size(82, 25);
+			this.butIapFind.TabIndex = 74;
+			this.butIapFind.Text = "Find Plan";
+			this.toolTip1.SetToolTip(this.butIapFind, "Edit all the similar plans at once");
+			this.butIapFind.Click += new System.EventHandler(this.butIapFind_Click);
+			// 
 			// labelDrop
 			// 
 			this.labelDrop.Location = new System.Drawing.Point(185, 641);
@@ -1308,6 +1368,10 @@ namespace OpenDental{
 			// 
 			// groupBox6
 			// 
+			this.groupBox6.Controls.Add(this.butBenefitNotes);
+			this.groupBox6.Controls.Add(this.label24);
+			this.groupBox6.Controls.Add(this.butIapFind);
+			this.groupBox6.Controls.Add(this.label15);
 			this.groupBox6.Controls.Add(this.butImportTrojan);
 			this.groupBox6.Controls.Add(this.label13);
 			this.groupBox6.Controls.Add(this.textTrojanID);
@@ -1319,37 +1383,55 @@ namespace OpenDental{
 			this.groupBox6.TabStop = false;
 			this.groupBox6.Text = "Request Benefits";
 			// 
+			// label24
+			// 
+			this.label24.Location = new System.Drawing.Point(59, 21);
+			this.label24.Name = "label24";
+			this.label24.Size = new System.Drawing.Size(71, 15);
+			this.label24.TabIndex = 75;
+			this.label24.Text = "Trojan:";
+			this.label24.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
+			// label15
+			// 
+			this.label15.Location = new System.Drawing.Point(2, 48);
+			this.label15.Name = "label15";
+			this.label15.Size = new System.Drawing.Size(128, 15);
+			this.label15.TabIndex = 73;
+			this.label15.Text = "Insurance Answers Plus:";
+			this.label15.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
 			// label13
 			// 
-			this.label13.Location = new System.Drawing.Point(41, 28);
+			this.label13.Location = new System.Drawing.Point(218, 21);
 			this.label13.Name = "label13";
-			this.label13.Size = new System.Drawing.Size(95, 15);
+			this.label13.Size = new System.Drawing.Size(23, 15);
 			this.label13.TabIndex = 9;
-			this.label13.Text = "Trojan ID";
+			this.label13.Text = "ID";
 			this.label13.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// textTrojanID
 			// 
-			this.textTrojanID.Location = new System.Drawing.Point(139, 25);
+			this.textTrojanID.Location = new System.Drawing.Point(245, 17);
 			this.textTrojanID.MaxLength = 30;
 			this.textTrojanID.Name = "textTrojanID";
 			this.textTrojanID.Size = new System.Drawing.Size(109, 20);
 			this.textTrojanID.TabIndex = 8;
 			this.textTrojanID.Text = "";
 			// 
-			// butImportTrojan
+			// butBenefitNotes
 			// 
-			this.butImportTrojan.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butImportTrojan.Autosize = true;
-			this.butImportTrojan.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butImportTrojan.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butImportTrojan.Location = new System.Drawing.Point(271, 22);
-			this.butImportTrojan.Name = "butImportTrojan";
-			this.butImportTrojan.Size = new System.Drawing.Size(82, 25);
-			this.butImportTrojan.TabIndex = 72;
-			this.butImportTrojan.Text = "Import";
-			this.toolTip1.SetToolTip(this.butImportTrojan, "Edit all the similar plans at once");
-			this.butImportTrojan.Click += new System.EventHandler(this.butImportTrojan_Click);
+			this.butBenefitNotes.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butBenefitNotes.Autosize = true;
+			this.butBenefitNotes.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butBenefitNotes.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butBenefitNotes.Location = new System.Drawing.Point(378, 27);
+			this.butBenefitNotes.Name = "butBenefitNotes";
+			this.butBenefitNotes.Size = new System.Drawing.Size(82, 25);
+			this.butBenefitNotes.TabIndex = 76;
+			this.butBenefitNotes.Text = "View Benefits";
+			this.toolTip1.SetToolTip(this.butBenefitNotes, "Edit all the similar plans at once");
+			this.butBenefitNotes.Click += new System.EventHandler(this.butBenefitNotes_Click);
 			// 
 			// FormInsPlan
 			// 
@@ -1357,14 +1439,14 @@ namespace OpenDental{
 			this.ClientSize = new System.Drawing.Size(961, 700);
 			this.Controls.Add(this.groupBox6);
 			this.Controls.Add(this.butLabel);
-			this.Controls.Add(this.labelDrop);
 			this.Controls.Add(this.butDrop);
-			this.Controls.Add(this.groupBox5);
-			this.Controls.Add(this.groupBox4);
 			this.Controls.Add(this.butDelete);
-			this.Controls.Add(this.groupBox2);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
+			this.Controls.Add(this.labelDrop);
+			this.Controls.Add(this.groupBox5);
+			this.Controls.Add(this.groupBox4);
+			this.Controls.Add(this.groupBox2);
 			this.Controls.Add(this.groupSynch);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
@@ -1427,7 +1509,18 @@ namespace OpenDental{
 				panelAdvancedIns.Visible=false;
 				groupSynch.Visible=false;
 			}
+			if(CultureInfo.CurrentCulture.Name.Substring(3)=="CA"){//en-CA or fr-CA
+				labelCitySTZip.Text="City,Prov,Post";
+				labelElectronicID.Text="EDI Code";
+			}
+			else{
+				labelDivisionDash.Visible=false;
+				textDivisionNo.Visible=false;
+			}
 			FillFormData();
+			if(PlanCur.BenefitNotes==""){
+				butBenefitNotes.Enabled=false;
+			}
 		}
 
 		///<summary>Fills the form based on the data in PlanCur.  Includes calls to FillSubscriber, FillCarrier, FillPercentages, and	LayoutSynch.</summary>
@@ -1445,6 +1538,7 @@ namespace OpenDental{
 			textEmployer.Text=Employers.GetName(PlanCur.EmployerNum);
 			textGroupName.Text=PlanCur.GroupName;
 			textGroupNum.Text=PlanCur.GroupNum;
+			textDivisionNo.Text=PlanCur.DivisionNo;//only visible in Canada
 			listPlanType.Items.Clear();
 			listPlanType.Items.Add(Lan.g(this,"Category Percentage"));
 			if(PlanCur.PlanType=="")
@@ -1459,9 +1553,6 @@ namespace OpenDental{
 			}
 			checkAlternateCode.Checked=PlanCur.UseAltCode;
 			checkClaimsUseUCR.Checked=PlanCur.ClaimsUseUCR;
-
-
-
 			comboFeeSched.Items.Clear();
 			comboFeeSched.Items.Add(Lan.g(this,"none"));
 			comboFeeSched.SelectedIndex=0;
@@ -2069,6 +2160,7 @@ namespace OpenDental{
 			PlanCur.EmployerNum    =FormIP.SelectedPlan.EmployerNum;
 			PlanCur.GroupName      =FormIP.SelectedPlan.GroupName;
 			PlanCur.GroupNum       =FormIP.SelectedPlan.GroupNum;
+			PlanCur.DivisionNo     =FormIP.SelectedPlan.DivisionNo;
 			PlanCur.CarrierNum     =FormIP.SelectedPlan.CarrierNum;
 			PlanCur.PlanType       =FormIP.SelectedPlan.PlanType;
 			PlanCur.UseAltCode     =FormIP.SelectedPlan.UseAltCode;
@@ -2081,7 +2173,7 @@ namespace OpenDental{
 			FillFormData();
 		}
 
-		private void butEditTemplate_Click(object sender, System.EventArgs e) {
+		private void butEditAll_Click(object sender, System.EventArgs e) {
 			//notice that this is called without saving any changes that have been made so far.
 			//int curPlanNum=InsPlans.Cur.PlanNum;
 			FormInsPlanEditAll FormIPE=new FormInsPlanEditAll(PlanCur.Copy(),PatCur.PatNum);
@@ -2115,6 +2207,7 @@ namespace OpenDental{
 					string line;
 					string[] fields;
 					int percent;
+					string[] splitField;//if a field is a sentence with more than one word, we can split it for analysis
           while((line=sr.ReadLine())!=null){
 						fields=line.Split(new char[] {'\t'});
 						if(fields.Length!=3){
@@ -2124,7 +2217,17 @@ namespace OpenDental{
 						fields[0]=fields[0].Trim();
 						fields[1]=fields[1].Trim();
 						fields[2]=fields[2].Trim();
+						if(fields[2]==""){
+							continue;
+						}
+						else{//as long as there is data, add it to the notes
+							if(PlanCur.BenefitNotes!=""){
+								PlanCur.BenefitNotes+="\r\n";
+							}
+							PlanCur.BenefitNotes+=fields[1]+": "+fields[2];
+						}
 						switch(fields[0]){
+							//default://for all rows that are not handled below
 							case "TROJANID":
 								textTrojanID.Text=fields[2];
 								break;
@@ -2188,11 +2291,12 @@ namespace OpenDental{
 								textDeductible.Text=fields[2];
 								break;
 							case "PREV"://eg 100%
-								if(!fields[2].EndsWith("%")){
+								splitField=fields[2].Split(new char[] {' '});
+								if(splitField.Length==0 || !splitField[0].EndsWith("%")){
 									break;
 								}
-								fields[2]=fields[2].Remove(fields[2].Length-1,1);//remove %
-								percent=PIn.PInt(fields[2]);
+								splitField[0]=splitField[0].Remove(splitField[0].Length-1,1);//remove %
+								percent=PIn.PInt(splitField[0]);
 								if(percent<0 || percent>100){
 									break;
 								}
@@ -2203,11 +2307,12 @@ namespace OpenDental{
 								CovPats.InsertCur();
 								break;
 							case "BASIC":
-								if(!fields[2].EndsWith("%")){
+								splitField=fields[2].Split(new char[] {' '});
+								if(splitField.Length==0 || !splitField[0].EndsWith("%")){
 									break;
 								}
-								fields[2]=fields[2].Remove(fields[2].Length-1,1);//remove %
-								percent=PIn.PInt(fields[2]);
+								splitField[0]=splitField[0].Remove(splitField[0].Length-1,1);//remove %
+								percent=PIn.PInt(splitField[0]);
 								if(percent<0 || percent>100){
 									break;
 								}
@@ -2228,11 +2333,12 @@ namespace OpenDental{
 								CovPats.InsertCur();
 								break;
 							case "MAJOR":
-								if(!fields[2].EndsWith("%")){
+								splitField=fields[2].Split(new char[] {' '});
+								if(splitField.Length==0 || !splitField[0].EndsWith("%")){
 									break;
 								}
-								fields[2]=fields[2].Remove(fields[2].Length-1,1);//remove %
-								percent=PIn.PInt(fields[2]);
+								splitField[0]=splitField[0].Remove(splitField[0].Length-1,1);//remove %
+								percent=PIn.PInt(splitField[0]);
 								if(percent<0 || percent>100){
 									break;
 								}
@@ -2246,11 +2352,409 @@ namespace OpenDental{
           }
 				}
 				File.Delete(file);
+				butBenefitNotes.Enabled=true;
       }
       catch(Exception ex){
 				MessageBox.Show("Error: "+ex.Message);
       }
 			FillPercentages();
+		}
+
+		private void butIapFind_Click(object sender, System.EventArgs e) {
+			FormIap FormI=new FormIap();
+			FormI.ShowDialog();
+			if(FormI.DialogResult==DialogResult.Cancel){
+				return;
+			}
+			//clear exising percentages:
+			for(int i=0;i<CovPats.ListForPlan.Length;i++){
+				CovPats.Cur=CovPats.ListForPlan[i];
+				CovPats.DeleteCur();
+			}
+			string emp=FormI.selectedEmployer;
+			string field;
+			string[] splitField;//if a field is a sentence with more than one word, we can split it for analysis
+			int percent;
+			try{
+				Iap.ReadRecord(emp);
+				for(int i=1;i<122;i++){
+					field=Iap.ReadField(i);
+					switch(i){
+						default:
+							//do nothing
+							break;
+						case Iap.Employer:
+							if(PlanCur.BenefitNotes!=""){
+								PlanCur.BenefitNotes+="\r\n";
+							}
+							PlanCur.BenefitNotes+="Employer: "+field;
+							textEmployer.Text=field;
+							break;
+						case Iap.Phone:
+							PlanCur.BenefitNotes+="\r\n"+"Phone: "+field;
+							break;
+						case Iap.InsUnder:
+							PlanCur.BenefitNotes+="\r\n"+"InsUnder: "+field;
+							break;
+						case Iap.Carrier:
+							PlanCur.BenefitNotes+="\r\n"+"Carrier: "+field;
+							textCarrier.Text=field;
+							break;
+						case Iap.CarrierPh:
+							PlanCur.BenefitNotes+="\r\n"+"CarrierPh: "+field;
+							textPhone.Text=field;
+							break;
+						case Iap.Group://seems to be used as groupnum
+							PlanCur.BenefitNotes+="\r\n"+"Group: "+field;
+							textGroupNum.Text=field;
+							break;
+						case Iap.MailTo://the carrier name again
+							PlanCur.BenefitNotes+="\r\n"+"MailTo: "+field;
+							break;
+						case Iap.MailTo2://address
+							PlanCur.BenefitNotes+="\r\n"+"MailTo2: "+field;
+							textAddress.Text=field;
+							break;
+						case Iap.MailTo3://address2
+							PlanCur.BenefitNotes+="\r\n"+"MailTo3: "+field;
+							textAddress2.Text=field;
+							break;
+						case Iap.EClaims:
+							PlanCur.BenefitNotes+="\r\n"+"EClaims: "+field;//this contains the PayorID at the end, but also a bunch of other drivel.
+							int payorIDloc=field.LastIndexOf("Payor ID#:");
+							if(payorIDloc!=-1 && field.Length>payorIDloc+10){
+								textElectID.Text=field.Substring(payorIDloc+10);
+							}
+							break;
+						case Iap.FAXClaims:
+							PlanCur.BenefitNotes+="\r\n"+"FAXClaims: "+field;
+							break;
+						case Iap.DMOOption:
+							PlanCur.BenefitNotes+="\r\n"+"DMOOption: "+field;
+							break;
+						case Iap.Medical:
+							PlanCur.BenefitNotes+="\r\n"+"Medical: "+field;
+							break;
+						case Iap.GroupNum://not used.  They seem to use the group field instead
+							PlanCur.BenefitNotes+="\r\n"+"GroupNum: "+field;
+							break;
+						case Iap.Phone2://?
+							PlanCur.BenefitNotes+="\r\n"+"Phone2: "+field;
+							break;
+						case Iap.Deductible:
+							PlanCur.BenefitNotes+="\r\n"+"Deductible: "+field;
+							if(field.StartsWith("$")){
+								splitField=field.Split(new char[] {' '});
+								textDeductible.Text=splitField[0].Remove(0,1);//removes the $
+							}
+							break;
+						case Iap.FamilyDed:
+							PlanCur.BenefitNotes+="\r\n"+"FamilyDed: "+field;
+							break;
+						case Iap.Maximum:
+							PlanCur.BenefitNotes+="\r\n"+"Maximum: "+field;
+							if(field.StartsWith("$")){
+								splitField=field.Split(new char[] {' '});
+								textAnnualMax.Text=splitField[0].Remove(0,1);//removes the $
+							}
+							break;
+						case Iap.BenefitYear://text is too complex to parse
+							PlanCur.BenefitNotes+="\r\n"+"BenefitYear: "+field;
+							break;
+						case Iap.DependentAge://too complex to parse
+							PlanCur.BenefitNotes+="\r\n"+"DependentAge: "+field;
+							break;
+						case Iap.Preventive:
+							PlanCur.BenefitNotes+="\r\n"+"Preventive: "+field;
+							splitField=field.Split(new char[] {' '});
+							if(splitField.Length==0 || !splitField[0].EndsWith("%")){
+								break;
+							}
+							splitField[0]=splitField[0].Remove(splitField[0].Length-1,1);//remove %
+							percent=PIn.PInt(splitField[0]);
+							if(percent<0 || percent>100){
+								break;
+							}
+							CovPats.Cur=new CovPat();
+							CovPats.Cur.CovCatNum=CovCats.ListShort[0].CovCatNum;
+							CovPats.Cur.PlanNum=PlanCur.PlanNum;
+							CovPats.Cur.Percent=percent;
+							CovPats.InsertCur();
+							break;
+						case Iap.Basic:
+							PlanCur.BenefitNotes+="\r\n"+"Basic: "+field;
+							splitField=field.Split(new char[] {' '});
+							if(splitField.Length==0 || !splitField[0].EndsWith("%")){
+								break;
+							}
+							splitField[0]=splitField[0].Remove(splitField[0].Length-1,1);//remove %
+							percent=PIn.PInt(splitField[0]);
+							if(percent<0 || percent>100){
+								break;
+							}
+							CovPats.Cur=new CovPat();
+							CovPats.Cur.CovCatNum=CovCats.ListShort[1].CovCatNum;//basic
+							CovPats.Cur.PlanNum=PlanCur.PlanNum;
+							CovPats.Cur.Percent=percent;
+							CovPats.InsertCur();
+							CovPats.Cur=new CovPat();
+							CovPats.Cur.CovCatNum=CovCats.ListShort[3].CovCatNum;//endo
+							CovPats.Cur.PlanNum=PlanCur.PlanNum;
+							CovPats.Cur.Percent=percent;
+							CovPats.InsertCur();
+							CovPats.Cur=new CovPat();
+							CovPats.Cur.CovCatNum=CovCats.ListShort[4].CovCatNum;//perio
+							CovPats.Cur.PlanNum=PlanCur.PlanNum;
+							CovPats.Cur.Percent=percent;
+							CovPats.InsertCur();
+							break;
+						case Iap.Major:
+							PlanCur.BenefitNotes+="\r\n"+"Major: "+field;
+							splitField=field.Split(new char[] {' '});
+							if(splitField.Length==0 || !splitField[0].EndsWith("%")){
+								break;
+							}
+							splitField[0]=splitField[0].Remove(splitField[0].Length-1,1);//remove %
+							percent=PIn.PInt(splitField[0]);
+							if(percent<0 || percent>100){
+								break;
+							}
+							CovPats.Cur=new CovPat();
+							CovPats.Cur.CovCatNum=CovCats.ListShort[2].CovCatNum;
+							CovPats.Cur.PlanNum=PlanCur.PlanNum;
+							CovPats.Cur.Percent=percent;
+							CovPats.InsertCur();
+							break;
+						case Iap.InitialPlacement:
+							PlanCur.BenefitNotes+="\r\n"+"InitialPlacement: "+field;
+							break;
+						case Iap.ExtractionClause:
+							PlanCur.BenefitNotes+="\r\n"+"ExtractionClause: "+field;
+							break;
+						case Iap.Replacement:
+							PlanCur.BenefitNotes+="\r\n"+"Replacement: "+field;
+							break;
+						case Iap.Other:
+							PlanCur.BenefitNotes+="\r\n"+"Other: "+field;
+							break;
+						case Iap.Orthodontics:
+							PlanCur.BenefitNotes+="\r\n"+"Orthodontics: "+field;
+							splitField=field.Split(new char[] {' '});
+							if(splitField.Length==0 || !splitField[0].EndsWith("%")){
+								break;
+							}
+							splitField[0]=splitField[0].Remove(splitField[0].Length-1,1);//remove %
+							percent=PIn.PInt(splitField[0]);
+							if(percent<0 || percent>100){
+								break;
+							}
+							CovPats.Cur=new CovPat();
+							CovPats.Cur.CovCatNum=CovCats.ListShort[5].CovCatNum;
+							CovPats.Cur.PlanNum=PlanCur.PlanNum;
+							CovPats.Cur.Percent=percent;
+							CovPats.InsertCur();
+							break;
+						case Iap.Deductible2:
+							PlanCur.BenefitNotes+="\r\n"+"Deductible2: "+field;
+							break;
+						case Iap.Maximum2://ortho Max
+							PlanCur.BenefitNotes+="\r\n"+"Maximum2: "+field;
+							if(field.StartsWith("$")){
+								splitField=field.Split(new char[] {' '});
+								textOrthoMax.Text=splitField[0].Remove(0,1);//removes the $
+							}
+							break;
+						case Iap.PymtSchedule:
+							PlanCur.BenefitNotes+="\r\n"+"PymtSchedule: "+field;
+							break;
+						case Iap.AgeLimit:
+							PlanCur.BenefitNotes+="\r\n"+"AgeLimit: "+field;
+							break;
+						case Iap.SignatureonFile:
+							PlanCur.BenefitNotes+="\r\n"+"SignatureonFile: "+field;
+							break;
+						case Iap.StandardADAForm:
+							PlanCur.BenefitNotes+="\r\n"+"StandardADAForm: "+field;
+							break;
+						case Iap.CoordinationRule:
+							PlanCur.BenefitNotes+="\r\n"+"CoordinationRule: "+field;
+							break;
+						case Iap.CoordinationCOB:
+							PlanCur.BenefitNotes+="\r\n"+"CoordinationCOB: "+field;
+							break;
+						case Iap.NightguardsforBruxism:
+							PlanCur.BenefitNotes+="\r\n"+"NightguardsforBruxism: "+field;
+							break;
+						case Iap.OcclusalAdjustments:
+							PlanCur.BenefitNotes+="\r\n"+"OcclusalAdjustments: "+field;
+							break;
+						case Iap.XXXXXX:
+							PlanCur.BenefitNotes+="\r\n"+"XXXXXX: "+field;
+							break;
+						case Iap.TMJNonSurgical:
+							PlanCur.BenefitNotes+="\r\n"+"TMJNonSurgical: "+field;
+							break;
+						case Iap.Implants:
+							PlanCur.BenefitNotes+="\r\n"+"Implants: "+field;
+							break;
+						case Iap.InfectionControl:
+							PlanCur.BenefitNotes+="\r\n"+"InfectionControl: "+field;
+							break;
+						case Iap.Cleanings:
+							PlanCur.BenefitNotes+="\r\n"+"Cleanings: "+field;
+							break;
+						case Iap.OralEvaluation:
+							PlanCur.BenefitNotes+="\r\n"+"OralEvaluation: "+field;
+							break;
+						case Iap.Fluoride1200s:
+							PlanCur.BenefitNotes+="\r\n"+"Fluoride1200s: "+field;
+							break;
+						case Iap.Code0220:
+							PlanCur.BenefitNotes+="\r\n"+"Code0220: "+field;
+							break;
+						case Iap.Code0272_0274:
+							PlanCur.BenefitNotes+="\r\n"+"Code0272_0274: "+field;
+							break;
+						case Iap.Code0210:
+							PlanCur.BenefitNotes+="\r\n"+"Code0210: "+field;
+							break;
+						case Iap.Code0330:
+							PlanCur.BenefitNotes+="\r\n"+"Code0330: "+field;
+							break;
+						case Iap.SpaceMaintainers:
+							PlanCur.BenefitNotes+="\r\n"+"SpaceMaintainers: "+field;
+							break;
+						case Iap.EmergencyExams:
+							PlanCur.BenefitNotes+="\r\n"+"EmergencyExams: "+field;
+							break;
+						case Iap.EmergencyTreatment:
+							PlanCur.BenefitNotes+="\r\n"+"EmergencyTreatment: "+field;
+							break;
+						case Iap.Sealants1351:
+							PlanCur.BenefitNotes+="\r\n"+"Sealants1351: "+field;
+							break;
+						case Iap.Fillings2100:
+							PlanCur.BenefitNotes+="\r\n"+"Fillings2100: "+field;
+							break;
+						case Iap.Extractions:
+							PlanCur.BenefitNotes+="\r\n"+"Extractions: "+field;
+							break;
+						case Iap.RootCanals:
+							PlanCur.BenefitNotes+="\r\n"+"RootCanals: "+field;
+							break;
+						case Iap.MolarRootCanal:
+							PlanCur.BenefitNotes+="\r\n"+"MolarRootCanal: "+field;
+							break;
+						case Iap.OralSurgery:
+							PlanCur.BenefitNotes+="\r\n"+"OralSurgery: "+field;
+							break;
+						case Iap.ImpactionSoftTissue:
+							PlanCur.BenefitNotes+="\r\n"+"ImpactionSoftTissue: "+field;
+							break;
+						case Iap.ImpactionPartialBony:
+							PlanCur.BenefitNotes+="\r\n"+"ImpactionPartialBony: "+field;
+							break;
+						case Iap.ImpactionCompleteBony:
+							PlanCur.BenefitNotes+="\r\n"+"ImpactionCompleteBony: "+field;
+							break;
+						case Iap.SurgicalProceduresGeneral:
+							PlanCur.BenefitNotes+="\r\n"+"SurgicalProceduresGeneral: "+field;
+							break;
+						case Iap.PerioSurgicalPerioOsseous:
+							PlanCur.BenefitNotes+="\r\n"+"PerioSurgicalPerioOsseous: "+field;
+							break;
+						case Iap.SurgicalPerioOther:
+							PlanCur.BenefitNotes+="\r\n"+"SurgicalPerioOther: "+field;
+							break;
+						case Iap.RootPlaning:
+							PlanCur.BenefitNotes+="\r\n"+"RootPlaning: "+field;
+							break;
+						case Iap.Scaling4345:
+							PlanCur.BenefitNotes+="\r\n"+"Scaling4345: "+field;
+							break;
+						case Iap.PerioPx:
+							PlanCur.BenefitNotes+="\r\n"+"PerioPx: "+field;
+							break;
+						case Iap.PerioComment:
+							PlanCur.BenefitNotes+="\r\n"+"PerioComment: "+field;
+							break;
+						case Iap.IVSedation:
+							PlanCur.BenefitNotes+="\r\n"+"IVSedation: "+field;
+							break;
+						case Iap.General9220:
+							PlanCur.BenefitNotes+="\r\n"+"General9220: "+field;
+							break;
+						case Iap.Relines5700s:
+							PlanCur.BenefitNotes+="\r\n"+"Relines5700s: "+field;
+							break;
+						case Iap.StainlessSteelCrowns:
+							PlanCur.BenefitNotes+="\r\n"+"StainlessSteelCrowns: "+field;
+							break;
+						case Iap.Crowns2700s:
+							PlanCur.BenefitNotes+="\r\n"+"Crowns2700s: "+field;
+							break;
+						case Iap.Bridges6200:
+							PlanCur.BenefitNotes+="\r\n"+"Bridges6200: "+field;
+							break;
+						case Iap.Partials5200s:
+							PlanCur.BenefitNotes+="\r\n"+"Partials5200s: "+field;
+							break;
+						case Iap.Dentures5100s:
+							PlanCur.BenefitNotes+="\r\n"+"Dentures5100s: "+field;
+							break;
+						case Iap.EmpNumberXXX:
+							PlanCur.BenefitNotes+="\r\n"+"EmpNumberXXX: "+field;
+							break;
+						case Iap.DateXXX:
+							PlanCur.BenefitNotes+="\r\n"+"DateXXX: "+field;
+							break;
+						case Iap.Line4://city state
+							PlanCur.BenefitNotes+="\r\n"+"Line4: "+field;
+							field=field.Replace("  "," ");//get rid of double space before zip
+							splitField=field.Split(new char[] {' '});
+							if(splitField.Length<3){
+								break;
+							}
+							textCity.Text=splitField[0].Replace(",","");//gets rid of the comma on the end of city
+							textState.Text=splitField[1];
+							textZip.Text=splitField[2];
+							break;
+						case Iap.Note:
+							PlanCur.BenefitNotes+="\r\n"+"Note: "+field;
+							break;
+						case Iap.Plan://?
+							PlanCur.BenefitNotes+="\r\n"+"Plan: "+field;
+							break;
+						case Iap.BuildUps:
+							PlanCur.BenefitNotes+="\r\n"+"BuildUps: "+field;
+							break;
+						case Iap.PosteriorComposites:
+							PlanCur.BenefitNotes+="\r\n"+"PosteriorComposites: "+field;
+							break;
+					}
+				}
+				Iap.CloseDatabase();
+				butBenefitNotes.Enabled=true;
+			}
+			catch(ApplicationException ex){
+				Iap.CloseDatabase();
+				MessageBox.Show(ex.Message);
+			}
+			catch(Exception ex){
+				Iap.CloseDatabase();
+				MessageBox.Show("Error: "+ex.Message);
+			}
+			FillPercentages();
+		}
+
+		private void butBenefitNotes_Click(object sender, System.EventArgs e) {
+			FormInsBenefitNotes FormI=new FormInsBenefitNotes();
+			FormI.BenefitNotes=PlanCur.BenefitNotes;
+			FormI.ShowDialog();
+			if(FormI.DialogResult==DialogResult.Cancel){
+				return;
+			}
+			PlanCur.BenefitNotes=FormI.BenefitNotes;
 		}
 
 		private void butDelete_Click(object sender, System.EventArgs e) {
@@ -2393,6 +2897,7 @@ namespace OpenDental{
 			GetEmployerNum();
 			PlanCur.GroupName=textGroupName.Text;
 			PlanCur.GroupNum=textGroupNum.Text;
+			PlanCur.DivisionNo=textDivisionNo.Text;//only visible in Canada
 			GetCarrierNum();
 			//plantype already handled.
 			if(comboClaimForm.SelectedIndex!=-1)
@@ -2413,6 +2918,7 @@ namespace OpenDental{
 				PlanCur.AllowedFeeSched
 					=Defs.Short[(int)DefCat.FeeSchedNames][comboAllowedFeeSched.SelectedIndex-1].DefNum;
 			//end of Plan Information
+			PlanCur.TrojanID=textTrojanID.Text;
 			if(textAnnualMax.Text=="")
 				PlanCur.AnnualMax=-1;
 			else
@@ -2465,6 +2971,9 @@ namespace OpenDental{
 			//remember to refresh after closing this form!!!!!
 		}
 
+		
+
+		
 		
 
 		

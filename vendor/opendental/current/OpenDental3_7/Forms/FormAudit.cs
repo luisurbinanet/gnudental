@@ -11,7 +11,6 @@ namespace OpenDental{
 	/// </summary>
 	public class FormAudit : System.Windows.Forms.Form{
 		private OpenDental.UI.ODGrid grid;
-		private OpenDental.UI.Button butClose;
 		private System.Windows.Forms.Label label2;
 		private OpenDental.ValidDate textDateFrom;
 		private OpenDental.ValidDate textDateTo;
@@ -52,7 +51,6 @@ namespace OpenDental{
 		private void InitializeComponent()
 		{
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormAudit));
-			this.butClose = new OpenDental.UI.Button();
 			this.grid = new OpenDental.UI.ODGrid();
 			this.label2 = new System.Windows.Forms.Label();
 			this.textDateFrom = new OpenDental.ValidDate();
@@ -61,32 +59,18 @@ namespace OpenDental{
 			this.butRefresh = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
-			// butClose
-			// 
-			this.butClose.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butClose.Autosize = true;
-			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butClose.Location = new System.Drawing.Point(793, 591);
-			this.butClose.Name = "butClose";
-			this.butClose.Size = new System.Drawing.Size(75, 26);
-			this.butClose.TabIndex = 0;
-			this.butClose.Text = "&Close";
-			this.butClose.Click += new System.EventHandler(this.butClose_Click);
-			// 
 			// grid
 			// 
-			this.grid.Columns.Add(new OpenDental.UI.ODGridColumn("Date", 80, System.Windows.Forms.HorizontalAlignment.Left));
-			this.grid.Columns.Add(new OpenDental.UI.ODGridColumn("User", 80, System.Windows.Forms.HorizontalAlignment.Left));
-			this.grid.Columns.Add(new OpenDental.UI.ODGridColumn("Permission", 120, System.Windows.Forms.HorizontalAlignment.Left));
-			this.grid.Columns.Add(new OpenDental.UI.ODGridColumn("Log Text", 451, System.Windows.Forms.HorizontalAlignment.Left));
+			this.grid.Columns.Add(new OpenDental.UI.ODGridColumn("Date Time", 120, System.Windows.Forms.HorizontalAlignment.Left));
+			this.grid.Columns.Add(new OpenDental.UI.ODGridColumn("User", 70, System.Windows.Forms.HorizontalAlignment.Left));
+			this.grid.Columns.Add(new OpenDental.UI.ODGridColumn("Permission", 110, System.Windows.Forms.HorizontalAlignment.Left));
+			this.grid.Columns.Add(new OpenDental.UI.ODGridColumn("Log Text", 570, System.Windows.Forms.HorizontalAlignment.Left));
 			this.grid.HScrollVisible = false;
 			this.grid.Location = new System.Drawing.Point(8, 31);
 			this.grid.Name = "grid";
 			this.grid.ScrollValue = 0;
 			this.grid.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-			this.grid.Size = new System.Drawing.Size(750, 585);
+			this.grid.Size = new System.Drawing.Size(889, 593);
 			this.grid.TabIndex = 2;
 			this.grid.Title = "Audit Trail";
 			this.grid.TranslationName = "TableAudit";
@@ -144,7 +128,6 @@ namespace OpenDental{
 			this.Controls.Add(this.butRefresh);
 			this.Controls.Add(this.textDateFrom);
 			this.Controls.Add(this.textDateTo);
-			this.Controls.Add(this.butClose);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label3);
 			this.Controls.Add(this.grid);
@@ -175,7 +158,7 @@ namespace OpenDental{
 			ODGridRow row;
 			for(int i=0;i<logList.Length;i++){
 				row=new ODGridRow();
-				row.Cells.Add(logList[i].LogDateTime.ToShortDateString());
+				row.Cells.Add(logList[i].LogDateTime.ToShortDateString()+" "+logList[i].LogDateTime.ToShortTimeString());
 				row.Cells.Add(Users.GetUser(logList[i].UserNum).UserName);
 				row.Cells.Add(logList[i].PermType.ToString());
 				row.Cells.Add(logList[i].LogText);

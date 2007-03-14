@@ -99,6 +99,10 @@ namespace OpenDental{
 		private InsPlan[] PlanList;
 		private OpenDental.ValidDate textDateService;
 		private ClaimPayment[] ClaimPaymentList;
+		private System.Windows.Forms.ComboBox comboClinic;
+		private System.Windows.Forms.Label labelClinic;
+		private OpenDental.UI.Button butLabel;
+		private OpenDental.UI.Button butSplit;
 		//private User user;
 		private bool notAuthorized;
 
@@ -199,6 +203,10 @@ namespace OpenDental{
 			this.label11 = new System.Windows.Forms.Label();
 			this.textNote = new OpenDental.ODtextBox();
 			this.textDateService = new OpenDental.ValidDate();
+			this.comboClinic = new System.Windows.Forms.ComboBox();
+			this.labelClinic = new System.Windows.Forms.Label();
+			this.butLabel = new OpenDental.UI.Button();
+			this.butSplit = new OpenDental.UI.Button();
 			this.groupBox1.SuspendLayout();
 			this.groupBox4.SuspendLayout();
 			this.groupEnterPayment.SuspendLayout();
@@ -208,7 +216,7 @@ namespace OpenDental{
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(241, 92);
+			this.label3.Location = new System.Drawing.Point(241, 98);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(94, 15);
 			this.label3.TabIndex = 2;
@@ -244,7 +252,7 @@ namespace OpenDental{
 			// 
 			// labelPreAuthNum
 			// 
-			this.labelPreAuthNum.Location = new System.Drawing.Point(230, 136);
+			this.labelPreAuthNum.Location = new System.Drawing.Point(230, 142);
 			this.labelPreAuthNum.Name = "labelPreAuthNum";
 			this.labelPreAuthNum.Size = new System.Drawing.Size(107, 16);
 			this.labelPreAuthNum.TabIndex = 11;
@@ -360,7 +368,7 @@ namespace OpenDental{
 			this.tbProc.BackColor = System.Drawing.SystemColors.Window;
 			this.tbProc.Location = new System.Drawing.Point(2, 164);
 			this.tbProc.Name = "tbProc";
-			this.tbProc.ScrollValue = 111;
+			this.tbProc.ScrollValue = 109;
 			this.tbProc.SelectedIndices = new int[0];
 			this.tbProc.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
 			this.tbProc.Size = new System.Drawing.Size(939, 206);
@@ -389,7 +397,7 @@ namespace OpenDental{
 			// 
 			// textPreAuth
 			// 
-			this.textPreAuth.Location = new System.Drawing.Point(336, 132);
+			this.textPreAuth.Location = new System.Drawing.Point(336, 138);
 			this.textPreAuth.Name = "textPreAuth";
 			this.textPreAuth.Size = new System.Drawing.Size(170, 20);
 			this.textPreAuth.TabIndex = 1;
@@ -493,7 +501,7 @@ namespace OpenDental{
 			// 
 			// label21
 			// 
-			this.label21.Location = new System.Drawing.Point(234, 113);
+			this.label21.Location = new System.Drawing.Point(234, 119);
 			this.label21.Name = "label21";
 			this.label21.Size = new System.Drawing.Size(102, 15);
 			this.label21.TabIndex = 93;
@@ -576,7 +584,7 @@ namespace OpenDental{
 			// comboProvBill
 			// 
 			this.comboProvBill.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboProvBill.Location = new System.Drawing.Point(336, 88);
+			this.comboProvBill.Location = new System.Drawing.Point(336, 94);
 			this.comboProvBill.Name = "comboProvBill";
 			this.comboProvBill.Size = new System.Drawing.Size(100, 21);
 			this.comboProvBill.TabIndex = 97;
@@ -595,7 +603,7 @@ namespace OpenDental{
 			// comboProvTreat
 			// 
 			this.comboProvTreat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboProvTreat.Location = new System.Drawing.Point(336, 110);
+			this.comboProvTreat.Location = new System.Drawing.Point(336, 116);
 			this.comboProvTreat.Name = "comboProvTreat";
 			this.comboProvTreat.Size = new System.Drawing.Size(100, 21);
 			this.comboProvTreat.TabIndex = 99;
@@ -606,7 +614,7 @@ namespace OpenDental{
 			this.butPayTotal.Autosize = true;
 			this.butPayTotal.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butPayTotal.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butPayTotal.Location = new System.Drawing.Point(17, 21);
+			this.butPayTotal.Location = new System.Drawing.Point(17, 16);
 			this.butPayTotal.Name = "butPayTotal";
 			this.butPayTotal.Size = new System.Drawing.Size(99, 23);
 			this.butPayTotal.TabIndex = 100;
@@ -619,7 +627,7 @@ namespace OpenDental{
 			this.butPayProc.Autosize = true;
 			this.butPayProc.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butPayProc.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butPayProc.Location = new System.Drawing.Point(17, 51);
+			this.butPayProc.Location = new System.Drawing.Point(17, 41);
 			this.butPayProc.Name = "butPayProc";
 			this.butPayProc.Size = new System.Drawing.Size(99, 23);
 			this.butPayProc.TabIndex = 101;
@@ -632,9 +640,9 @@ namespace OpenDental{
 			this.groupEnterPayment.Controls.Add(this.butPayTotal);
 			this.groupEnterPayment.Controls.Add(this.butPayProc);
 			this.groupEnterPayment.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupEnterPayment.Location = new System.Drawing.Point(801, 13);
+			this.groupEnterPayment.Location = new System.Drawing.Point(801, 5);
 			this.groupEnterPayment.Name = "groupEnterPayment";
-			this.groupEnterPayment.Size = new System.Drawing.Size(133, 127);
+			this.groupEnterPayment.Size = new System.Drawing.Size(133, 107);
 			this.groupEnterPayment.TabIndex = 102;
 			this.groupEnterPayment.TabStop = false;
 			this.groupEnterPayment.Text = "Enter Payment";
@@ -645,7 +653,7 @@ namespace OpenDental{
 			this.butPaySupp.Autosize = true;
 			this.butPaySupp.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butPaySupp.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butPaySupp.Location = new System.Drawing.Point(17, 97);
+			this.butPaySupp.Location = new System.Drawing.Point(17, 78);
 			this.butPaySupp.Name = "butPaySupp";
 			this.butPaySupp.Size = new System.Drawing.Size(99, 23);
 			this.butPaySupp.TabIndex = 102;
@@ -709,7 +717,7 @@ namespace OpenDental{
 			// listClaimType
 			// 
 			this.listClaimType.ForeColor = System.Drawing.SystemColors.WindowText;
-			this.listClaimType.Location = new System.Drawing.Point(336, 18);
+			this.listClaimType.Location = new System.Drawing.Point(336, 24);
 			this.listClaimType.Name = "listClaimType";
 			this.listClaimType.Size = new System.Drawing.Size(98, 69);
 			this.listClaimType.TabIndex = 108;
@@ -717,7 +725,7 @@ namespace OpenDental{
 			// 
 			// label9
 			// 
-			this.label9.Location = new System.Drawing.Point(239, 20);
+			this.label9.Location = new System.Drawing.Point(239, 26);
 			this.label9.Name = "label9";
 			this.label9.Size = new System.Drawing.Size(95, 17);
 			this.label9.TabIndex = 109;
@@ -850,7 +858,7 @@ namespace OpenDental{
 			this.butPrint.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butPrint.Image = ((System.Drawing.Image)(resources.GetObject("butPrint.Image")));
 			this.butPrint.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butPrint.Location = new System.Drawing.Point(326, 636);
+			this.butPrint.Location = new System.Drawing.Point(429, 636);
 			this.butPrint.Name = "butPrint";
 			this.butPrint.Size = new System.Drawing.Size(86, 26);
 			this.butPrint.TabIndex = 114;
@@ -865,7 +873,7 @@ namespace OpenDental{
 			this.butPreview.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butPreview.Image = ((System.Drawing.Image)(resources.GetObject("butPreview.Image")));
 			this.butPreview.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butPreview.Location = new System.Drawing.Point(428, 636);
+			this.butPreview.Location = new System.Drawing.Point(519, 636);
 			this.butPreview.Name = "butPreview";
 			this.butPreview.Size = new System.Drawing.Size(92, 26);
 			this.butPreview.TabIndex = 115;
@@ -912,11 +920,61 @@ namespace OpenDental{
 			this.textDateService.TabIndex = 119;
 			this.textDateService.Text = "";
 			// 
+			// comboClinic
+			// 
+			this.comboClinic.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboClinic.Location = new System.Drawing.Point(336, 2);
+			this.comboClinic.MaxDropDownItems = 100;
+			this.comboClinic.Name = "comboClinic";
+			this.comboClinic.Size = new System.Drawing.Size(126, 21);
+			this.comboClinic.TabIndex = 121;
+			// 
+			// labelClinic
+			// 
+			this.labelClinic.Location = new System.Drawing.Point(235, 6);
+			this.labelClinic.Name = "labelClinic";
+			this.labelClinic.Size = new System.Drawing.Size(98, 16);
+			this.labelClinic.TabIndex = 120;
+			this.labelClinic.Text = "Clinic";
+			this.labelClinic.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// butLabel
+			// 
+			this.butLabel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butLabel.Autosize = true;
+			this.butLabel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butLabel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butLabel.Image = ((System.Drawing.Image)(resources.GetObject("butLabel.Image")));
+			this.butLabel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butLabel.Location = new System.Drawing.Point(345, 636);
+			this.butLabel.Name = "butLabel";
+			this.butLabel.Size = new System.Drawing.Size(81, 26);
+			this.butLabel.TabIndex = 126;
+			this.butLabel.Text = "Label";
+			this.butLabel.Click += new System.EventHandler(this.butLabel_Click);
+			// 
+			// butSplit
+			// 
+			this.butSplit.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butSplit.Autosize = true;
+			this.butSplit.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butSplit.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butSplit.Location = new System.Drawing.Point(818, 134);
+			this.butSplit.Name = "butSplit";
+			this.butSplit.Size = new System.Drawing.Size(99, 23);
+			this.butSplit.TabIndex = 127;
+			this.butSplit.Text = "Split Claim";
+			this.butSplit.Click += new System.EventHandler(this.butSplit_Click);
+			// 
 			// FormClaimEdit
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.AutoScroll = true;
 			this.ClientSize = new System.Drawing.Size(947, 669);
+			this.Controls.Add(this.butSplit);
+			this.Controls.Add(this.butLabel);
+			this.Controls.Add(this.comboClinic);
+			this.Controls.Add(this.labelClinic);
 			this.Controls.Add(this.textDateService);
 			this.Controls.Add(this.textNote);
 			this.Controls.Add(this.textRadiographs);
@@ -1024,7 +1082,12 @@ namespace OpenDental{
 				textReasonUnder.Visible=false;
 				label4.Visible=false;//reason under
 				butPayTotal.Visible=false;	
+				butSplit.Visible=false;
       }
+			if(Prefs.GetBool("EasyNoClinics")){
+				labelClinic.Visible=false;
+				comboClinic.Visible=false;
+			}
 			listClaimType.Items.Add(Lan.g(this,"Primary"));
 			listClaimType.Items.Add(Lan.g(this,"Secondary"));
 			listClaimType.Items.Add(Lan.g(this,"PreAuth"));
@@ -1082,6 +1145,14 @@ namespace OpenDental{
 				case "R"://received
 					listClaimStatus.SelectedIndex=5;
 					break;
+			}
+			comboClinic.Items.Clear();
+			comboClinic.Items.Add(Lan.g(this,"none"));
+			comboClinic.SelectedIndex=0;
+			for(int i=0;i<Clinics.List.Length;i++){
+				comboClinic.Items.Add(Clinics.List[i].Description);
+				if(Clinics.List[i].ClinicNum==Claims.Cur.ClinicNum)
+					comboClinic.SelectedIndex=i+1;
 			}
 			switch(Claims.Cur.ClaimType){
 				case "P":
@@ -1185,8 +1256,6 @@ namespace OpenDental{
 			ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
 			FillGrids();
 		}
-
-		
 
 		private void FillGrids(){
 			//must run claimprocs.refresh separately beforehand
@@ -1544,9 +1613,40 @@ namespace OpenDental{
 			FillGrids();
 		}
 
-		private void butCheckDelete_Click(object sender, System.EventArgs e) {
-		
+		private void butSplit_Click(object sender, System.EventArgs e) {
+			if(!ClaimIsValid())
+				return;
+			UpdateClaim();
+			if(tbProc.SelectedIndices.Length==0){
+				MessageBox.Show(Lan.g(this,"Please highlight procedures first."));
+				return;
+			}
+			for(int i=0;i<tbProc.SelectedIndices.Length;i++){
+				if(ClaimProcsForClaim[tbProc.SelectedIndices[i]].ProcNum==0){
+					MessageBox.Show(Lan.g(this,"Only procedures can be selected."));
+					return;
+				}
+				if(ClaimProcsForClaim[tbProc.SelectedIndices[i]].InsPayAmt!=0){
+					MessageBox.Show(Lan.g(this,"All selected procedures must have zero insurance payment amounts."));
+					return;
+				}
+			}
+			Claim originalClaim=Claims.Cur;//.Copy()
+			Claims.InsertCur();
+			//now this claim has been precisely duplicated, except it has a new ClaimNum.  So there are no attached claimprocs.
+			for(int i=0;i<tbProc.SelectedIndices.Length;i++){
+				ClaimProcsForClaim[tbProc.SelectedIndices[i]].ClaimNum=Claims.Cur.ClaimNum;
+				ClaimProcsForClaim[tbProc.SelectedIndices[i]].Update();//moves it to the new claim
+			}
+			//now, set Claims.Cur back to the originalClaim.  The new claim will now show on the account.
+			Claims.Cur=originalClaim;//.Copy()
+			ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
+			FillGrids();
 		}
+
+		//private void butCheckDelete_Click(object sender, System.EventArgs e) {
+		
+		//}
 
 		///<summary>Creates insurance check</summary>
 		private void butCheckAdd_Click(object sender, System.EventArgs e) {
@@ -1600,6 +1700,18 @@ namespace OpenDental{
 			textDateSent.Text=DateTime.Today.ToString("d");
 			UpdateClaim();		
 			DialogResult=DialogResult.OK;
+		}
+
+		private void butLabel_Click(object sender, System.EventArgs e) {
+			LabelSingle label=new LabelSingle();
+			PrintDocument pd=new PrintDocument();//only used to pass printerName
+			if(!Printers.SetPrinter(pd,PrintSituation.LabelSingle)){
+				return;
+			}
+			//ask if print secondary?
+			InsPlan planCur=InsPlans.GetPlan(Claims.Cur.PlanNum,PlanList);
+			Carrier carrierCur=Carriers.GetCarrier(planCur.CarrierNum);
+			label.PrintIns(carrierCur,pd.PrinterSettings.PrinterName);
 		}
 
 		private void ButPrint_Click(object sender, System.EventArgs e) {
@@ -1755,6 +1867,7 @@ namespace OpenDental{
 			return true;
 		}
 
+		///<summary>Updates this claim to the database.</summary>
 		private void UpdateClaim(){
 			if(notAuthorized){
 				return;
@@ -1805,6 +1918,10 @@ namespace OpenDental{
 			Claims.Cur.OrthoRemainM=PIn.PInt(textOrthoRemainM.Text);
 			Claims.Cur.OrthoDate=PIn.PDate(textOrthoDate.Text);
 			Claims.Cur.Radiographs=PIn.PInt(textRadiographs.Text);
+			if(comboClinic.SelectedIndex==0)//none
+				Claims.Cur.ClinicNum=0;
+			else
+				Claims.Cur.ClinicNum=Clinics.List[comboClinic.SelectedIndex-1].ClinicNum;
 			Claims.UpdateCur();
 			if(Claims.Cur.ClaimStatus=="S"){
 				//SecurityLogs.MakeLogEntry("Claims Sent Edit",Claims.cmd.CommandText,user);
@@ -1833,6 +1950,10 @@ namespace OpenDental{
 				Claims.DeleteCur();
 			}
 		}
+
+		
+
+		
 
 		
 

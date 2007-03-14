@@ -20,16 +20,16 @@ namespace OpenDental{
 		public static int GetKey(string tablename,string field){
 			Random random=new Random();
 			double rnd=random.NextDouble();
-			while(rnd==0 || InUse(tablename,field,(int)(rnd*16777215))){
+			while(rnd==0 || KeyInUse(tablename,field,(int)(rnd*16777215))){
 				rnd=random.NextDouble();
 			}
 			return (int)(rnd*16777215);
 		}
 
-		private static bool InUse(string tablename,string field,int keynum){
+		private static bool KeyInUse(string tablename,string field,int keynum){
 			string command="SELECT COUNT(*) FROM "+tablename+" WHERE "+field+"="+keynum.ToString();
 			DataConnection dcon=new DataConnection();
-			if(dcon.GetOneValue(command)=="0"){
+			if(dcon.GetCount(command)=="0"){
 				return false;
 			}
 			return true;//already in use

@@ -49,7 +49,7 @@ namespace OpenDental{
 				MsgBox.Show(this,"Cannot convert this database version which was only for development purposes.");
 				return false;
 			}
-			if(FromVersion < new Version("3.6.5.0")){
+			if(FromVersion < new Version("3.7.6.0")){
 				if(MessageBox.Show(Lan.g(this,"Your database will now be converted")+"\r"
 					+Lan.g(this,"from version")+" "+FromVersion.ToString()+"\r"
 					+Lan.g(this,"to version")+" "+ToVersion.ToString()+"\r"
@@ -2109,6 +2109,7 @@ namespace OpenDental{
 
 		private void To3_6_5(){
 			if(FromVersion < new Version("3.6.5.0")){
+				//delete any unattached adjustments
 				DataConnection dcon=new DataConnection();
 				string command="SELECT adjustment.AdjNum,procedurelog.ProcNum FROM adjustment "
 					+"LEFT JOIN procedurelog ON procedurelog.ProcNum=adjustment.ProcNum "
@@ -2122,13 +2123,272 @@ namespace OpenDental{
 				command="UPDATE preference SET ValueString = '3.6.5.0' WHERE PrefName = 'DataBaseVersion'";
 				dcon.NonQ(command);
 			}
-			//To3_6_??();
+			To3_7_0();
 		}
 
+		private void To3_7_0(){
+			if(FromVersion < new Version("3.7.0.0")){
+				ExecuteFile(@"ConversionFiles\convert_3_7_0.txt");//Might throw an exception which we handle.
+				DataConnection dcon=new DataConnection();
+				string command;
+				//Convert pay plans-----------------------------------------------------------------------------
+				command="SELECT PayPlanNum,PatNum,Guarantor,PayPlanDate,TotalAmount,APR,"//0-5
+					+"PeriodPayment,Term,AccumulatedDue,DateFirstPay,DownPayment,"//6-10
+					+"Note,TotalCost,LastPayment "//11-13
+					+"FROM payplan";
+				DataTable table=dcon.GetTable(command);
+				int payPlanNum;//0
+				int patNum;//1
+				int guarantor;//2
+				DateTime payPlanDate;// 3
+				double totalAmount;//4 aka principal. This gets reduced to 0 in loop
+				double APR;// 5
+				double monthlyPayment;//6
+				int term;//7
+				//CurrentDue 8
+				DateTime dateFirstPay;//9
+				double downPayment;//10
+				//Note 11
+				double totalCost;// 12. Princ+Int. This gets reduced to 0 in loop
+				double lastPayment;//13
+				//variables used for the individual charges:
+				DateTime chargeDate;
+				double principal;
+				double interest;
+				double monthlyRate;
+				for(int i=0;i<table.Rows.Count;i++){
+					payPlanNum=    PIn.PInt   (table.Rows[i][0].ToString());
+					patNum=        PIn.PInt   (table.Rows[i][1].ToString());
+					guarantor=     PIn.PInt   (table.Rows[i][2].ToString());
+					payPlanDate=   PIn.PDate  (table.Rows[i][3].ToString());
+					totalAmount=   PIn.PDouble(table.Rows[i][4].ToString());
+					APR=           PIn.PDouble(table.Rows[i][5].ToString());
+					monthlyPayment=PIn.PDouble(table.Rows[i][6].ToString());
+					term=          PIn.PInt   (table.Rows[i][7].ToString());
+					dateFirstPay=  PIn.PDate  (table.Rows[i][9].ToString());
+					downPayment=   PIn.PDouble(table.Rows[i][10].ToString());
+					totalCost=     PIn.PDouble(table.Rows[i][12].ToString());
+					lastPayment=   PIn.PDouble(table.Rows[i][13].ToString());
+					//down payment
+					if(downPayment>0){
+						chargeDate=payPlanDate;
+						principal=downPayment;
+						totalCost-=downPayment;
+						totalAmount-=downPayment;
+						interest=0;
+						command="INSERT INTO payplancharge (PayPlanNum,Guarantor,PatNum,ChargeDate,Principal,Interest,Note) VALUES("
+							+"'"+POut.PInt   (payPlanNum)+"', "
+							+"'"+POut.PInt   (guarantor)+"', "
+							+"'"+POut.PInt   (patNum)+"', "
+							+"'"+POut.PDate  (chargeDate)+"', "
+							+"'"+POut.PDouble(principal)+"', "
+							+"'"+POut.PDouble(interest)+"', "
+							+"'Downpayment')";
+						dcon.NonQ(command);
+					}
+					if(APR==0){
+						monthlyRate=0;
+					}
+					else{
+						monthlyRate=APR/100/12;
+					}
+					for(int j=0;j<term;j++){
+						chargeDate=dateFirstPay.AddMonths(j);
+						if(j==term-1 && lastPayment==0){//if this is the very last payment
+							//all remaining principal gets applied
+							principal=totalAmount;
+							totalCost-=totalAmount;
+							totalAmount=0;
+							//all remaining interest gets applied
+							interest=totalCost;
+							totalCost=0;
+						}
+						else{
+							interest=Math.Round((totalAmount*monthlyRate),2);//2 decimals
+							principal=monthlyPayment-interest;
+							totalAmount-=principal;
+							totalCost-=monthlyPayment;
+						}
+						if(principal<0){
+							principal=0;
+						}
+						if(interest<0){
+							interest=0;
+						}
+						command="INSERT INTO payplancharge (PayPlanNum,Guarantor,PatNum,ChargeDate,Principal,Interest) VALUES("
+							+"'"+POut.PInt   (payPlanNum)+"', "
+							+"'"+POut.PInt   (guarantor)+"', "
+							+"'"+POut.PInt   (patNum)+"', "
+							+"'"+POut.PDate  (chargeDate)+"', "
+							+"'"+POut.PDouble(principal)+"', "
+							+"'"+POut.PDouble(interest)+"')";
+						dcon.NonQ(command);
+					}//loop term
+					//last payment
+					if(lastPayment!=0){
+						chargeDate=dateFirstPay.AddMonths(term);
+						//all remaining principal gets applied
+						principal=totalAmount;
+						totalCost-=totalAmount;
+						totalAmount=0;
+						//all remaining interest gets applied
+						interest=totalCost;
+						totalCost=0;
+						command="INSERT INTO payplancharge (PayPlanNum,Guarantor,PatNum,ChargeDate,Principal,Interest) VALUES("
+							+"'"+POut.PInt   (payPlanNum)+"', "
+							+"'"+POut.PInt   (guarantor)+"', "
+							+"'"+POut.PInt   (patNum)+"', "
+							+"'"+POut.PDate  (chargeDate)+"', "
+							+"'"+POut.PDouble(principal)+"', "
+							+"'"+POut.PDouble(interest)+"')";
+						dcon.NonQ(command);
+					}
+				}
+				//get rid of unwanted columns in pay plans
+				string[] commands=new string[]
+					{
+						"ALTER TABLE payplan DROP TotalAmount"
+						,"ALTER TABLE payplan DROP PeriodPayment"
+						,"ALTER TABLE payplan DROP Term"
+						,"ALTER TABLE payplan DROP AccumulatedDue"
+						,"ALTER TABLE payplan DROP DateFirstPay"
+						,"ALTER TABLE payplan DROP DownPayment"
+						,"ALTER TABLE payplan DROP TotalCost"
+						,"ALTER TABLE payplan DROP LastPayment"
+					};
+				dcon.NonQ(commands);
+				//Operatories----------------------------------------------------------------------------------------------
+				command="SELECT DefNum,ItemOrder,ItemName,ItemValue,IsHidden FROM definition WHERE Category=9 ORDER BY ItemOrder";
+				table=dcon.GetTable(command);
+				//Hashtable hashOps=new Hashtable();//key=defNum,value=OperatoryNum
+				int defNum;//represents the old opNum as it was in the database
+				int opNum;//the newly assigned key
+				string itemName;
+				string itemValue;
+				for(int i=0;i<table.Rows.Count;i++){
+					defNum=PIn.PInt(table.Rows[i][0].ToString());
+					itemName=PIn.PString(table.Rows[i][2].ToString());
+					itemValue=PIn.PString(table.Rows[i][3].ToString());
+					command="INSERT INTO operatory (OpName,Abbrev,ItemOrder,IsHidden) VALUES("
+						+"'"+POut.PString(itemName)+"', "
+						+"'"+POut.PString(itemValue)+"', "
+						+"'"+table.Rows[i][1].ToString()+"', "
+						+"'"+table.Rows[i][4].ToString()+"')";
+					dcon.NonQ(command,true);
+					opNum=dcon.InsertID;
+					command="UPDATE appointment SET Op="+POut.PInt(opNum)+" WHERE Op="+POut.PInt(defNum);
+					dcon.NonQ(command);
+					command="UPDATE scheddefault SET Op="+POut.PInt(opNum)+" WHERE Op="+POut.PInt(defNum);
+					dcon.NonQ(command);
+					command="UPDATE apptviewitem SET OpNum="+POut.PInt(opNum)+" WHERE OpNum="+POut.PInt(defNum);
+					dcon.NonQ(command);
+				}
+				command="DELETE FROM definition WHERE Category=9";
+				dcon.NonQ(command);
+				//final cleanup-----------------------------------------------------------------------------------------
+				command=
+					"UPDATE preference SET ValueString = '3.7.0.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To3_7_2();
+		}
+
+		private void To3_7_2(){
+			if(FromVersion < new Version("3.7.2.0")){
+				//add the new permission types to each group
+				DataConnection dcon=new DataConnection();
+				string command="SELECT UserGroupNum FROM usergroup";
+				DataTable table=dcon.GetTable(command);
+				int groupNum;
+				for(int i=0;i<table.Rows.Count;i++){
+					groupNum=PIn.PInt(table.Rows[i][0].ToString());
+					command="INSERT INTO grouppermission (UserGroupNum,PermType) VALUES("+POut.PInt(groupNum)+",25)";
+					dcon.NonQ(command);
+					command="INSERT INTO grouppermission (UserGroupNum,PermType) VALUES("+POut.PInt(groupNum)+",26)";
+					dcon.NonQ(command);
+					command="INSERT INTO grouppermission (UserGroupNum,PermType) VALUES("+POut.PInt(groupNum)+",27)";
+					dcon.NonQ(command);
+					//by default, nobody will have permission to backup
+					//command="INSERT INTO grouppermission (UserGroupNum,PermType) VALUES("+POut.PInt(groupNum)+",28)";
+					//dcon.NonQ(command);
+					//also by default, nobody will have permission to TimcardsEditAll
+				}
+				command="ALTER TABLE user ADD EmployeeNum smallint NOT NULL";
+				dcon.NonQ(command);
+				command="UPDATE preference SET ValueString = '3.7.2.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To3_7_3();
+		}
+
+		private void To3_7_3(){
+			if(FromVersion < new Version("3.7.3.0")){
+				DataConnection dcon=new DataConnection();
+				string command="ALTER TABLE securitylog ADD PatNum mediumint unsigned NOT NULL";
+				dcon.NonQ(command);
+				command="ALTER TABLE tasklist ADD DateTimeEntry datetime NOT NULL default '0001-01-01'";
+				dcon.NonQ(command);
+				command="ALTER TABLE task ADD DateTimeEntry datetime NOT NULL default '0001-01-01'";
+				dcon.NonQ(command);
+				command="INSERT INTO preference VALUES ('BalancesDontSubtractIns','0')";
+				dcon.NonQ(command);
+				command="UPDATE preference SET ValueString = '3.7.3.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To3_7_4();
+		}
+
+		private void To3_7_4(){
+			if(FromVersion < new Version("3.7.4.0")){
+				DataConnection dcon=new DataConnection();
+				//Easy Notes Pro link-----------------------------------------------------------------------
+				string command="INSERT INTO program (ProgName,ProgDesc,Enabled,Path,CommandLine,Note"
+					+") VALUES("
+					+"'EasyNotesPro', "
+					+"'Easy Notes Pro from easynotespro.com', "
+					+"'0', "
+					+"'"+POut.PString(@"C:\Program Files\EasyNotesPro\AppBarProcess.exe")+"', "
+					+"'"+POut.PString("\""+@"C:\Program Files\EasyNotesPro\DefaultDentalToolbar.etb"+"\""+" OpenDental false")+"', "
+					+"'"+POut.PString(@"Do not try to add buttons to your toolbars because that won't work.  Typical path is C:\Program Files\EasyNotesPro\AppBarProcess.exe")+"')";
+				dcon.NonQ(command,true);
+				command=
+					"UPDATE preference SET ValueString = '3.7.4.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To3_7_5();
+		}
+
+		private void To3_7_5(){
+			if(FromVersion < new Version("3.7.5.0")){
+				DataConnection dcon=new DataConnection();
+				string command="INSERT INTO preference VALUES ('TimecardSecurityEnabled','0')";
+				dcon.NonQ(command);
+				command="INSERT INTO preference VALUES ('RecallCardsShowReturnAdd','1')";
+				dcon.NonQ(command);
+				command="ALTER TABLE insplan ADD BenefitNotes text NOT NULL";
+				dcon.NonQ(command);
+				command="UPDATE preference SET ValueString = '3.7.5.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To3_7_6();
+		}
+
+		private void To3_7_6(){
+			if(FromVersion < new Version("3.7.6.0")){
+				DataConnection dcon=new DataConnection();
+				string command="ALTER TABLE clinic ADD DefaultPlaceService tinyint unsigned NOT NULL";
+				dcon.NonQ(command);
+				command="UPDATE preference SET ValueString = '3.7.6.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			//To3_7_4();
+		}
+
+
+		
 	}
 
 }
-
 
 
 

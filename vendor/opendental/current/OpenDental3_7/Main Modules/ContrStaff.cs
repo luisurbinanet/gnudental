@@ -11,7 +11,6 @@ namespace OpenDental{
 	public class ContrStaff : System.Windows.Forms.UserControl{
 		private OpenDental.UI.Button butTimeCard;
 		private System.Windows.Forms.ListBox listStatus;
-		private OpenDental.TableEmpClock tbEmp;
 		private System.Windows.Forms.Label textTime;
 		private System.Windows.Forms.Timer timer1;
 		private OpenDental.UI.Button butClockIn;
@@ -27,6 +26,7 @@ namespace OpenDental{
 		private OpenDental.UI.Button butSendClaims;
 		private OpenDental.UI.Button butTasks;
 		private OpenDental.UI.Button butBackup;
+		private OpenDental.UI.ODGrid gridEmp;
 		///<summary>Server time minus local computer time, usually +/- 1 or 2 minutes</summary>
 		private TimeSpan TimeDelta;
 		///<summary></summary>
@@ -57,11 +57,11 @@ namespace OpenDental{
 			this.butClockIn = new OpenDental.UI.Button();
 			this.listStatus = new System.Windows.Forms.ListBox();
 			this.butClockOut = new OpenDental.UI.Button();
-			this.tbEmp = new OpenDental.TableEmpClock();
 			this.butTimeCard = new OpenDental.UI.Button();
 			this.textTime = new System.Windows.Forms.Label();
 			this.timer1 = new System.Windows.Forms.Timer(this.components);
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.gridEmp = new OpenDental.UI.ODGrid();
 			this.label2 = new System.Windows.Forms.Label();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
 			this.butClear = new OpenDental.UI.Button();
@@ -108,18 +108,6 @@ namespace OpenDental{
 			this.butClockOut.Text = "Clock Out For:";
 			this.butClockOut.Click += new System.EventHandler(this.butClockOut_Click);
 			// 
-			// tbEmp
-			// 
-			this.tbEmp.BackColor = System.Drawing.SystemColors.Window;
-			this.tbEmp.Location = new System.Drawing.Point(58, 38);
-			this.tbEmp.Name = "tbEmp";
-			this.tbEmp.ScrollValue = 70;
-			this.tbEmp.SelectedIndices = new int[0];
-			this.tbEmp.SelectionMode = System.Windows.Forms.SelectionMode.One;
-			this.tbEmp.Size = new System.Drawing.Size(299, 229);
-			this.tbEmp.TabIndex = 15;
-			this.tbEmp.CellClicked += new OpenDental.ContrTable.CellEventHandler(this.tbEmp_CellClicked);
-			// 
 			// butTimeCard
 			// 
 			this.butTimeCard.AdjustImageLocation = new System.Drawing.Point(0, 0);
@@ -151,10 +139,10 @@ namespace OpenDental{
 			// 
 			// groupBox1
 			// 
+			this.groupBox1.Controls.Add(this.gridEmp);
 			this.groupBox1.Controls.Add(this.label2);
 			this.groupBox1.Controls.Add(this.listStatus);
 			this.groupBox1.Controls.Add(this.butClockOut);
-			this.groupBox1.Controls.Add(this.tbEmp);
 			this.groupBox1.Controls.Add(this.butTimeCard);
 			this.groupBox1.Controls.Add(this.textTime);
 			this.groupBox1.Controls.Add(this.butClockIn);
@@ -165,6 +153,21 @@ namespace OpenDental{
 			this.groupBox1.TabIndex = 18;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Time Clock";
+			// 
+			// gridEmp
+			// 
+			this.gridEmp.AllowSelection = false;
+			this.gridEmp.Columns.Add(new OpenDental.UI.ODGridColumn("Employee", 180, System.Windows.Forms.HorizontalAlignment.Left));
+			this.gridEmp.Columns.Add(new OpenDental.UI.ODGridColumn("Status", 104, System.Windows.Forms.HorizontalAlignment.Left));
+			this.gridEmp.HScrollVisible = false;
+			this.gridEmp.Location = new System.Drawing.Point(22, 26);
+			this.gridEmp.Name = "gridEmp";
+			this.gridEmp.ScrollValue = 0;
+			this.gridEmp.Size = new System.Drawing.Size(303, 238);
+			this.gridEmp.TabIndex = 21;
+			this.gridEmp.Title = "Employee";
+			this.gridEmp.TranslationName = "TableEmpClock";
+			this.gridEmp.CellClick += new OpenDental.UI.ODGridClickEventHandler(this.gridEmp_CellClick);
 			// 
 			// label2
 			// 
@@ -348,6 +351,9 @@ namespace OpenDental{
 		}
 
 		private void butBackup_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Backup)){
+				return;
+			}
 			FormBackup FormB=new FormBackup();
 			FormB.ShowDialog();
 			if(FormB.DialogResult==DialogResult.Cancel){
@@ -371,18 +377,17 @@ namespace OpenDental{
 			}
 			if(FormT.GotoType==TaskObjectType.Appointment){
 				if(FormT.GotoKeyNum!=0){
-					Appointments.RefreshCur(FormT.GotoKeyNum);
+					Appointment apt=Appointments.GetOneApt(FormT.GotoKeyNum);
 					DateTime dateSelected=DateTime.MinValue;
-					if(Appointments.Cur.AptStatus==ApptStatus.Planned
-						|| Appointments.Cur.AptStatus==ApptStatus.UnschedList)
-					{//I did not add feature to put planned or unsched apt on pinboard.
+					if(apt.AptStatus==ApptStatus.Planned || apt.AptStatus==ApptStatus.UnschedList){
+						//I did not add feature to put planned or unsched apt on pinboard.
 						MsgBox.Show(this,"Cannot navigate to appointment.  Use the Other Appointments button.");
 					}
 					else{
-						dateSelected=Appointments.Cur.AptDateTime;
+						dateSelected=apt.AptDateTime;
 					}
-					OnPatientSelected(Appointments.Cur.PatNum);
-					GotoModule.GoNow(dateSelected,new Appointment(),Appointments.Cur.AptNum,0);
+					OnPatientSelected(apt.PatNum);
+					GotoModule.GoNow(dateSelected,new Appointment(),apt.AptNum,0);
 				}
 			}
 		}
@@ -403,28 +408,42 @@ namespace OpenDental{
 		}
 
 		private void FillEmps(){
-			tbEmp.ResetRows(Employees.ListShort.Length);
-			tbEmp.SetGridColor(Color.Gray);
-			tbEmp.SetBackGColor(Color.White);
+			gridEmp.BeginUpdate();
+			gridEmp.Rows.Clear();
+			UI.ODGridRow row;
 			for(int i=0;i<Employees.ListShort.Length;i++){
-				tbEmp.Cell[0,i]=Employees.GetName(Employees.ListShort[i]);
-				tbEmp.Cell[1,i]=Employees.ListShort[i].ClockStatus;
+				row=new OpenDental.UI.ODGridRow();
+				row.Cells.Add(Employees.GetName(Employees.ListShort[i]));
+				row.Cells.Add(Employees.ListShort[i].ClockStatus);
+				gridEmp.Rows.Add(row);
 			}
-			tbEmp.LayoutTables();
+			gridEmp.EndUpdate();
 			listStatus.Items.Clear();
 			for(int i=0;i<Enum.GetNames(typeof(TimeClockStatus)).Length;i++){
 				listStatus.Items.Add(Lan.g("enumTimeClockStatus",Enum.GetNames(typeof(TimeClockStatus))[i]));
 			}
-			butClockIn.Enabled=false;
-			butClockOut.Enabled=false;
-			butTimeCard.Enabled=false;
-			listStatus.Enabled=false;
+			for(int i=0;i<Employees.ListShort.Length;i++){
+				if(Employees.ListShort[i].EmployeeNum==Security.CurUser.EmployeeNum){
+					SelectEmpI(i);
+					return;
+				}
+			}
+			SelectEmpI(-1);
 		}
 
-		private void tbEmp_CellClicked(object sender, OpenDental.CellEventArgs e) {
-			Employees.Cur=Employees.ListShort[e.Row];
-			ClockEvents.Refresh();
-			if(ClockEvents.IsClockedIn()){
+		///<summary>-1 is also valid.</summary>
+		private void SelectEmpI(int index){
+			gridEmp.SetSelected(false);
+			if(index==-1){
+				butClockIn.Enabled=false;
+				butClockOut.Enabled=false;
+				butTimeCard.Enabled=false;
+				listStatus.Enabled=false;
+				return;
+			}
+			gridEmp.SetSelected(index,true);
+			Employees.Cur=Employees.ListShort[index];
+			if(ClockEvents.IsClockedIn(Employees.Cur.EmployeeNum)){
 				butClockIn.Enabled=false;
 				butClockOut.Enabled=true;
 				butTimeCard.Enabled=true;
@@ -434,9 +453,21 @@ namespace OpenDental{
 				butClockIn.Enabled=true;
 				butClockOut.Enabled=false;
 				butTimeCard.Enabled=true;
-				listStatus.SelectedIndex=(int)ClockEvents.GetLastStatus();
+				listStatus.SelectedIndex=(int)ClockEvents.GetLastStatus(Employees.Cur.EmployeeNum);
 				listStatus.Enabled=false;
 			}
+		}
+
+		private void gridEmp_CellClick(object sender, OpenDental.UI.ODGridClickEventArgs e) {
+			if(Prefs.GetBool("TimecardSecurityEnabled")){
+				if(Security.CurUser.EmployeeNum!=Employees.ListShort[e.Row].EmployeeNum){
+					if(!Security.IsAuthorized(Permissions.TimecardsEditAll)){
+						SelectEmpI(-1);
+						return;
+					}
+				}
+			}
+			SelectEmpI(e.Row);
 		}
 
 		private void listStatus_Click(object sender, System.EventArgs e) {
@@ -483,12 +514,14 @@ namespace OpenDental{
 
 		private void butTimeCard_Click(object sender, System.EventArgs e) {
 			FormTimeCard FormTC=new FormTimeCard();
-			if(ClockEvents.GetLastStatus()==TimeClockStatus.Break){
+			if(ClockEvents.GetLastStatus(Employees.Cur.EmployeeNum)==TimeClockStatus.Break){
 				FormTC.IsBreaks=true;
 			}
 			FormTC.ShowDialog();
 			ModuleSelected();
 		}
+
+		
 
 		
 

@@ -108,7 +108,7 @@ namespace OpenDental{
 			}
 			cmd.CommandText =
 				"SELECT * from language "
-				+"WHERE ClassType = BINARY '"+classType+"'";
+				+"WHERE ClassType = BINARY '"+POut.PString(classType)+"'";
 			FillTable();
 			ListForCat=new Language[table.Rows.Count];
 			for (int i=0;i<table.Rows.Count;i++){

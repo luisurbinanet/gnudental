@@ -271,7 +271,7 @@ namespace OpenDental{
 			//13-ApptDate
 			//13-ApptTime
 			//14-ApptReason (procedures descriptions-user can't edit)
-			//15-DoctorNumber (for the Doctor, we currently use the patient primary provider. Otherwise, we would run into trouble with appointments assigned to a specific hygeinist.)
+			//15-DoctorNumber (for the Doctor, we currently use the patient primary provider. Otherwise, we would run into trouble with appointments assigned to a specific hygienist.)
 			//15-DoctorName
 			string command=@"SELECT patient.LName,patient.FName,patient.Preferred
 				,patient.PatNum,patient.ChartNumber,patient.HmPhone,patient.WkPhone

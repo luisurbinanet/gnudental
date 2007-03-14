@@ -6,15 +6,14 @@ using System;
 using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
+using System.Globalization;
 using System.Windows.Forms;
 
 namespace OpenDental{
 ///<summary></summary>
 	public class FormInsPlanEditAll : System.Windows.Forms.Form{
 		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Label label6;
-		private System.Windows.Forms.Label label9;
 		private OpenDental.UI.Button butOK;
 		private OpenDental.UI.Button butCancel;
 		private System.Windows.Forms.TextBox textCarrier;
@@ -61,6 +60,10 @@ namespace OpenDental{
 		private System.Windows.Forms.ComboBox comboCopay;
 		private System.Windows.Forms.Label label13;
 		private System.Windows.Forms.Label label15;
+		private System.Windows.Forms.TextBox textDivisionNo;
+		private System.Windows.Forms.Label labelDivisionDash;
+		private System.Windows.Forms.Label labelCitySTZip;
+		private System.Windows.Forms.Label labelElectronicID;
 		private InsPlan PlanCur;
 
 		///<summary></summary>
@@ -85,9 +88,9 @@ namespace OpenDental{
 
 		private void InitializeComponent(){
 			this.label2 = new System.Windows.Forms.Label();
-			this.label3 = new System.Windows.Forms.Label();
+			this.labelCitySTZip = new System.Windows.Forms.Label();
 			this.label6 = new System.Windows.Forms.Label();
-			this.label9 = new System.Windows.Forms.Label();
+			this.labelElectronicID = new System.Windows.Forms.Label();
 			this.textCarrier = new System.Windows.Forms.TextBox();
 			this.textAddress = new System.Windows.Forms.TextBox();
 			this.textCity = new System.Windows.Forms.TextBox();
@@ -112,13 +115,11 @@ namespace OpenDental{
 			this.textEmployer = new System.Windows.Forms.TextBox();
 			this.label16 = new System.Windows.Forms.Label();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
+			this.label13 = new System.Windows.Forms.Label();
+			this.label15 = new System.Windows.Forms.Label();
+			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.butEdit = new OpenDental.UI.Button();
 			this.butChangeCarrier = new OpenDental.UI.Button();
-			this.groupBox4 = new System.Windows.Forms.GroupBox();
-			this.comboLinked = new System.Windows.Forms.ComboBox();
-			this.textLinkedNum = new System.Windows.Forms.TextBox();
-			this.label4 = new System.Windows.Forms.Label();
-			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.comboClaimForm = new System.Windows.Forms.ComboBox();
 			this.comboFeeSched = new System.Windows.Forms.ComboBox();
 			this.groupCoPay = new System.Windows.Forms.GroupBox();
@@ -127,12 +128,16 @@ namespace OpenDental{
 			this.label5 = new System.Windows.Forms.Label();
 			this.label8 = new System.Windows.Forms.Label();
 			this.comboCopay = new System.Windows.Forms.ComboBox();
-			this.label13 = new System.Windows.Forms.Label();
-			this.label15 = new System.Windows.Forms.Label();
+			this.groupBox4 = new System.Windows.Forms.GroupBox();
+			this.comboLinked = new System.Windows.Forms.ComboBox();
+			this.textLinkedNum = new System.Windows.Forms.TextBox();
+			this.label4 = new System.Windows.Forms.Label();
+			this.textDivisionNo = new System.Windows.Forms.TextBox();
+			this.labelDivisionDash = new System.Windows.Forms.Label();
 			this.groupBox2.SuspendLayout();
-			this.groupBox4.SuspendLayout();
 			this.groupBox1.SuspendLayout();
 			this.groupCoPay.SuspendLayout();
+			this.groupBox4.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// label2
@@ -144,14 +149,14 @@ namespace OpenDental{
 			this.label2.Text = "Address";
 			this.label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
-			// label3
+			// labelCitySTZip
 			// 
-			this.label3.Location = new System.Drawing.Point(3, 88);
-			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(100, 15);
-			this.label3.TabIndex = 2;
-			this.label3.Text = "City";
-			this.label3.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			this.labelCitySTZip.Location = new System.Drawing.Point(3, 90);
+			this.labelCitySTZip.Name = "labelCitySTZip";
+			this.labelCitySTZip.Size = new System.Drawing.Size(100, 15);
+			this.labelCitySTZip.TabIndex = 2;
+			this.labelCitySTZip.Text = "City,ST,Zip";
+			this.labelCitySTZip.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label6
 			// 
@@ -162,14 +167,14 @@ namespace OpenDental{
 			this.label6.Text = "Phone";
 			this.label6.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
-			// label9
+			// labelElectronicID
 			// 
-			this.label9.Location = new System.Drawing.Point(3, 108);
-			this.label9.Name = "label9";
-			this.label9.Size = new System.Drawing.Size(100, 15);
-			this.label9.TabIndex = 8;
-			this.label9.Text = "ElectID";
-			this.label9.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			this.labelElectronicID.Location = new System.Drawing.Point(3, 111);
+			this.labelElectronicID.Name = "labelElectronicID";
+			this.labelElectronicID.Size = new System.Drawing.Size(100, 15);
+			this.labelElectronicID.TabIndex = 8;
+			this.labelElectronicID.Text = "ElectID";
+			this.labelElectronicID.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// textCarrier
 			// 
@@ -402,6 +407,8 @@ namespace OpenDental{
 			// 
 			// groupBox2
 			// 
+			this.groupBox2.Controls.Add(this.textDivisionNo);
+			this.groupBox2.Controls.Add(this.labelDivisionDash);
 			this.groupBox2.Controls.Add(this.label13);
 			this.groupBox2.Controls.Add(this.label15);
 			this.groupBox2.Controls.Add(this.groupBox1);
@@ -426,6 +433,50 @@ namespace OpenDental{
 			this.groupBox2.TabIndex = 0;
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "Synchronized Information";
+			// 
+			// label13
+			// 
+			this.label13.Location = new System.Drawing.Point(11, 309);
+			this.label13.Name = "label13";
+			this.label13.Size = new System.Drawing.Size(96, 15);
+			this.label13.TabIndex = 125;
+			this.label13.Text = "Fee Schedule";
+			this.label13.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// label15
+			// 
+			this.label15.Location = new System.Drawing.Point(10, 333);
+			this.label15.Name = "label15";
+			this.label15.Size = new System.Drawing.Size(95, 14);
+			this.label15.TabIndex = 126;
+			this.label15.Text = "Claim Form";
+			this.label15.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// groupBox1
+			// 
+			this.groupBox1.Controls.Add(this.textCity);
+			this.groupBox1.Controls.Add(this.textZip);
+			this.groupBox1.Controls.Add(this.textState);
+			this.groupBox1.Controls.Add(this.checkNoSendElect);
+			this.groupBox1.Controls.Add(this.textAddress);
+			this.groupBox1.Controls.Add(this.butEdit);
+			this.groupBox1.Controls.Add(this.butChangeCarrier);
+			this.groupBox1.Controls.Add(this.textAddress2);
+			this.groupBox1.Controls.Add(this.label2);
+			this.groupBox1.Controls.Add(this.labelCitySTZip);
+			this.groupBox1.Controls.Add(this.label6);
+			this.groupBox1.Controls.Add(this.textElectID);
+			this.groupBox1.Controls.Add(this.labelElectronicID);
+			this.groupBox1.Controls.Add(this.textCarrier);
+			this.groupBox1.Controls.Add(this.label10);
+			this.groupBox1.Controls.Add(this.textPhone);
+			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.groupBox1.Location = new System.Drawing.Point(2, 79);
+			this.groupBox1.Name = "groupBox1";
+			this.groupBox1.Size = new System.Drawing.Size(418, 145);
+			this.groupBox1.TabIndex = 121;
+			this.groupBox1.TabStop = false;
+			this.groupBox1.Text = "Carrier";
 			// 
 			// butEdit
 			// 
@@ -452,73 +503,6 @@ namespace OpenDental{
 			this.butChangeCarrier.TabIndex = 3;
 			this.butChangeCarrier.Text = "Change";
 			this.butChangeCarrier.Click += new System.EventHandler(this.butChangeCarrier_Click);
-			// 
-			// groupBox4
-			// 
-			this.groupBox4.Controls.Add(this.comboLinked);
-			this.groupBox4.Controls.Add(this.textLinkedNum);
-			this.groupBox4.Controls.Add(this.label4);
-			this.groupBox4.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox4.Location = new System.Drawing.Point(461, 5);
-			this.groupBox4.Name = "groupBox4";
-			this.groupBox4.Size = new System.Drawing.Size(466, 70);
-			this.groupBox4.TabIndex = 145;
-			this.groupBox4.TabStop = false;
-			this.groupBox4.Text = "Synchronization";
-			// 
-			// comboLinked
-			// 
-			this.comboLinked.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboLinked.Location = new System.Drawing.Point(234, 21);
-			this.comboLinked.MaxDropDownItems = 30;
-			this.comboLinked.Name = "comboLinked";
-			this.comboLinked.Size = new System.Drawing.Size(197, 21);
-			this.comboLinked.TabIndex = 65;
-			// 
-			// textLinkedNum
-			// 
-			this.textLinkedNum.BackColor = System.Drawing.Color.White;
-			this.textLinkedNum.Location = new System.Drawing.Point(195, 21);
-			this.textLinkedNum.Name = "textLinkedNum";
-			this.textLinkedNum.ReadOnly = true;
-			this.textLinkedNum.Size = new System.Drawing.Size(35, 20);
-			this.textLinkedNum.TabIndex = 64;
-			this.textLinkedNum.Text = "";
-			// 
-			// label4
-			// 
-			this.label4.Location = new System.Drawing.Point(15, 23);
-			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(177, 17);
-			this.label4.TabIndex = 63;
-			this.label4.Text = "These plans are the same:";
-			this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			// 
-			// groupBox1
-			// 
-			this.groupBox1.Controls.Add(this.textCity);
-			this.groupBox1.Controls.Add(this.textZip);
-			this.groupBox1.Controls.Add(this.textState);
-			this.groupBox1.Controls.Add(this.checkNoSendElect);
-			this.groupBox1.Controls.Add(this.textAddress);
-			this.groupBox1.Controls.Add(this.butEdit);
-			this.groupBox1.Controls.Add(this.butChangeCarrier);
-			this.groupBox1.Controls.Add(this.textAddress2);
-			this.groupBox1.Controls.Add(this.label2);
-			this.groupBox1.Controls.Add(this.label3);
-			this.groupBox1.Controls.Add(this.label6);
-			this.groupBox1.Controls.Add(this.textElectID);
-			this.groupBox1.Controls.Add(this.label9);
-			this.groupBox1.Controls.Add(this.textCarrier);
-			this.groupBox1.Controls.Add(this.label10);
-			this.groupBox1.Controls.Add(this.textPhone);
-			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox1.Location = new System.Drawing.Point(2, 79);
-			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(418, 145);
-			this.groupBox1.TabIndex = 121;
-			this.groupBox1.TabStop = false;
-			this.groupBox1.Text = "Carrier";
 			// 
 			// comboClaimForm
 			// 
@@ -597,23 +581,63 @@ namespace OpenDental{
 			this.comboCopay.Size = new System.Drawing.Size(209, 21);
 			this.comboCopay.TabIndex = 108;
 			// 
-			// label13
+			// groupBox4
 			// 
-			this.label13.Location = new System.Drawing.Point(11, 309);
-			this.label13.Name = "label13";
-			this.label13.Size = new System.Drawing.Size(96, 15);
-			this.label13.TabIndex = 125;
-			this.label13.Text = "Fee Schedule";
-			this.label13.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.groupBox4.Controls.Add(this.comboLinked);
+			this.groupBox4.Controls.Add(this.textLinkedNum);
+			this.groupBox4.Controls.Add(this.label4);
+			this.groupBox4.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.groupBox4.Location = new System.Drawing.Point(461, 5);
+			this.groupBox4.Name = "groupBox4";
+			this.groupBox4.Size = new System.Drawing.Size(466, 70);
+			this.groupBox4.TabIndex = 145;
+			this.groupBox4.TabStop = false;
+			this.groupBox4.Text = "Synchronization";
 			// 
-			// label15
+			// comboLinked
 			// 
-			this.label15.Location = new System.Drawing.Point(10, 333);
-			this.label15.Name = "label15";
-			this.label15.Size = new System.Drawing.Size(95, 14);
-			this.label15.TabIndex = 126;
-			this.label15.Text = "Claim Form";
-			this.label15.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.comboLinked.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboLinked.Location = new System.Drawing.Point(234, 21);
+			this.comboLinked.MaxDropDownItems = 30;
+			this.comboLinked.Name = "comboLinked";
+			this.comboLinked.Size = new System.Drawing.Size(197, 21);
+			this.comboLinked.TabIndex = 65;
+			// 
+			// textLinkedNum
+			// 
+			this.textLinkedNum.BackColor = System.Drawing.Color.White;
+			this.textLinkedNum.Location = new System.Drawing.Point(195, 21);
+			this.textLinkedNum.Name = "textLinkedNum";
+			this.textLinkedNum.ReadOnly = true;
+			this.textLinkedNum.Size = new System.Drawing.Size(35, 20);
+			this.textLinkedNum.TabIndex = 64;
+			this.textLinkedNum.Text = "";
+			// 
+			// label4
+			// 
+			this.label4.Location = new System.Drawing.Point(15, 23);
+			this.label4.Name = "label4";
+			this.label4.Size = new System.Drawing.Size(177, 17);
+			this.label4.TabIndex = 63;
+			this.label4.Text = "These plans are the same:";
+			this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// textDivisionNo
+			// 
+			this.textDivisionNo.Location = new System.Drawing.Point(257, 57);
+			this.textDivisionNo.MaxLength = 20;
+			this.textDivisionNo.Name = "textDivisionNo";
+			this.textDivisionNo.Size = new System.Drawing.Size(107, 20);
+			this.textDivisionNo.TabIndex = 128;
+			this.textDivisionNo.Text = "";
+			// 
+			// labelDivisionDash
+			// 
+			this.labelDivisionDash.Location = new System.Drawing.Point(242, 60);
+			this.labelDivisionDash.Name = "labelDivisionDash";
+			this.labelDivisionDash.Size = new System.Drawing.Size(31, 16);
+			this.labelDivisionDash.TabIndex = 127;
+			this.labelDivisionDash.Text = "--";
 			// 
 			// FormInsPlanEditAll
 			// 
@@ -633,9 +657,9 @@ namespace OpenDental{
 			this.Text = "Edit Insurance Plan For All";
 			this.Load += new System.EventHandler(this.FormInsPlanEditAll_Load);
 			this.groupBox2.ResumeLayout(false);
-			this.groupBox4.ResumeLayout(false);
 			this.groupBox1.ResumeLayout(false);
 			this.groupCoPay.ResumeLayout(false);
+			this.groupBox4.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -652,9 +676,18 @@ namespace OpenDental{
 			if(((Pref)Prefs.HList["EasyHideCapitation"]).ValueString=="1"){
 				checkAlternateCode.Visible=false;
 			}
+			if(CultureInfo.CurrentCulture.Name.Substring(3)=="CA"){//en-CA or fr-CA
+				labelCitySTZip.Text="City,Prov,Post";
+				labelElectronicID.Text="EDI Code";
+			}
+			else{
+				labelDivisionDash.Visible=false;
+				textDivisionNo.Visible=false;
+			}
 			textEmployer.Text=Employers.GetName(PlanCur.EmployerNum);
 			textGroupName.Text=PlanCur.GroupName;
 			textGroupNum.Text=PlanCur.GroupNum;
+			textDivisionNo.Text=PlanCur.DivisionNo;//only visible in Canada
 			listPlanType.Items.Add(Lan.g(this,"Category Percentage"));
 			if(PlanCur.PlanType=="")
 				listPlanType.SelectedIndex=0;
@@ -780,6 +813,7 @@ namespace OpenDental{
 			//Employer already handled
 			PlanCur.GroupName=textGroupName.Text;
 			PlanCur.GroupNum=textGroupNum.Text;
+			PlanCur.DivisionNo=textDivisionNo.Text;//only visible in Canada
 			//Carrier already handled
 			switch(listPlanType.SelectedIndex){
 				case 0:

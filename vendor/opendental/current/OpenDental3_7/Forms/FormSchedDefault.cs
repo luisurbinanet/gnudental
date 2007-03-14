@@ -349,7 +349,7 @@ namespace OpenDental{
 					}
 					//if op is zero (any), then don't filter
 					if(SchedDefaults.List[i].Op!=0){
-						if(Defs.GetOrder(DefCat.Operatories,SchedDefaults.List[i].Op)!=tempOpI){
+						if(Operatories.GetOrder(SchedDefaults.List[i].Op)!=tempOpI){
 							continue;
 						}
 					}

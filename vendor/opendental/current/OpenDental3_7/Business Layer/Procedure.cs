@@ -61,6 +61,8 @@ namespace OpenDental{
 		public DateTime DateLocked;
 		///<summary>This is the date this procedure was entered or set complete.  If not status C, then the value is ignored, so it might be minValue 0001-01-01 or any other date.  It gets updated when set complete.  User never allowed to edit.  This will be enhanced later.</summary>
 		public DateTime DateEntryC;
+		///<summary>Foreign key to clinic.ClinicNum.  0 if no clinic.</summary>
+		public int ClinicNum;
 
 
 		///<summary>Returns a copy of the procedure.</summary>
@@ -88,6 +90,7 @@ namespace OpenDental{
 			proc.ClaimNote=ClaimNote;
 			proc.DateLocked=DateLocked;
 			proc.DateEntryC=DateEntryC;
+			proc.ClinicNum=ClinicNum;
 			return proc;
 		}
 
@@ -119,7 +122,7 @@ namespace OpenDental{
 				+"ToothNum,ToothRange,Priority, "
 				+"ProcStatus, ProcNote, ProvNum,"
 				+"Dx,NextAptNum,PlaceService,HideGraphical,Prosthesis,DateOriginalProsth,ClaimNote,"
-				+"DateLocked,DateEntryC) VALUES(";
+				+"DateLocked,DateEntryC,ClinicNum) VALUES(";
 			if(Prefs.RandomKeys){
 				command+="'"+POut.PInt(ProcNum)+"', ";
 			}
@@ -149,7 +152,8 @@ namespace OpenDental{
 				+"'"+POut.PDate  (DateOriginalProsth)+"', "
 				+"'"+POut.PString(ClaimNote)+"', "
 				+"'"+POut.PDate  (DateLocked)+"', "
-				+"NOW())";//DateEntryC
+				+"NOW(), "//DateEntryC
+				+"'"+POut.PInt   (ClinicNum)+"')";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
  			if(Prefs.RandomKeys){
@@ -269,6 +273,11 @@ namespace OpenDental{
 				c+="DateEntryC = NOW()";
 				comma=true;
 			}
+			if(ClinicNum!=oldProc.ClinicNum){
+				if(comma) c+=",";
+				c+="ClinicNum = '"+POut.PInt   (ClinicNum)+"'";
+				comma=true;
+			}
 			if(!comma)
 				return 0;//this means no change is actually required.
 			c+=" WHERE ProcNum = '"+POut.PInt(ProcNum)+"'";
@@ -280,6 +289,7 @@ namespace OpenDental{
 
 		///<summary>Also deletes any claimProcs. Must test to make sure claimProcs are not part of a payment first.</summary>
 		public void Delete(){
+//todo: all validation should be done here instead of before calling this method
 			string command="DELETE from procedurelog WHERE ProcNum = '"+POut.PInt(ProcNum)+"'";
 			DataConnection dcon=new DataConnection();
  			dcon.NonQ(command);

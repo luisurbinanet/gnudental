@@ -149,9 +149,9 @@ namespace OpenDental{
 			// contextTree
 			// 
 			this.contextTree.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-																																								this.menuItem2,
-																																								this.menuItem3,
-																																								this.menuItem4});
+																						this.menuItem2,
+																						this.menuItem3,
+																						this.menuItem4});
 			// 
 			// menuItem2
 			// 
@@ -170,7 +170,7 @@ namespace OpenDental{
 			// 
 			// imageListTree
 			// 
-			this.imageListTree.ColorDepth = System.Windows.Forms.ColorDepth.Depth24Bit;
+			this.imageListTree.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
 			this.imageListTree.ImageSize = new System.Drawing.Size(16, 16);
 			this.imageListTree.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListTree.ImageStream")));
 			this.imageListTree.TransparentColor = System.Drawing.Color.Transparent;
@@ -209,14 +209,14 @@ namespace OpenDental{
 			// mainMenu1
 			// 
 			this.mainMenu1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-																																							this.menuItem1,
-																																							this.menuPrefs});
+																					  this.menuItem1,
+																					  this.menuPrefs});
 			// 
 			// menuItem1
 			// 
 			this.menuItem1.Index = 0;
 			this.menuItem1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-																																							this.menuExit});
+																					  this.menuExit});
 			this.menuItem1.Text = "File";
 			// 
 			// menuExit

@@ -361,11 +361,11 @@ namespace OpenDental{
 				panelObject.Visible=true;
 				labelObjectDesc.Text=Lan.g(this,"Appointment Desc");
 				if(Cur.KeyNum>0){
-					Appointments.RefreshCur(Cur.KeyNum);
-					textObjectDesc.Text=Patients.GetPat(Appointments.Cur.PatNum).GetNameLF()
-						+"  "+Appointments.Cur.AptDateTime.ToString()
-						+"  "+Appointments.Cur.ProcDescript
-						+"  "+Appointments.Cur.Note;
+					Appointment AptCur=Appointments.GetOneApt(Cur.KeyNum);
+					textObjectDesc.Text=Patients.GetPat(AptCur.PatNum).GetNameLF()
+						+"  "+AptCur.AptDateTime.ToString()
+						+"  "+AptCur.ProcDescript
+						+"  "+AptCur.Note;
 				}
 				else{
 					textObjectDesc.Text="";
@@ -404,7 +404,7 @@ namespace OpenDental{
 				if(FormA.DialogResult==DialogResult.Cancel){
 					return;
 				}
-				Cur.KeyNum=Appointments.Cur.AptNum;
+				Cur.KeyNum=FormA.SelectedAppt.AptNum;
 			}
 			FillObject();
 		}

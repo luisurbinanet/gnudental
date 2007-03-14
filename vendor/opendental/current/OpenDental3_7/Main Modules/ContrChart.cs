@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Printing;
 using System.Data;
 using System.IO;
 using System.Windows.Forms;
@@ -131,6 +132,9 @@ namespace OpenDental{
 		public event PatientSelectedEventHandler PatientSelected=null;
 		///<summary>For one patient. Allows highlighting rows.</summary>
 		private Appointment[] ApptList;
+		private System.Drawing.Printing.PrintDocument pd2;
+		private int linesPrinted;//used in printing progress notes
+		private bool headingPrinted;
 			
 		///<summary></summary>
 		public ContrChart(){
@@ -245,6 +249,7 @@ namespace OpenDental{
 			this.imageListThumbnails = new System.Windows.Forms.ImageList(this.components);
 			this.textTreatmentNotes = new OpenDental.ODtextBox();
 			this.menuPatient = new System.Windows.Forms.ContextMenu();
+			this.pd2 = new System.Drawing.Printing.PrintDocument();
 			this.groupBox2.SuspendLayout();
 			this.panelMedical.SuspendLayout();
 			this.groupPlanned.SuspendLayout();
@@ -774,6 +779,7 @@ namespace OpenDental{
 			// 
 			// imageListUpDown
 			// 
+			this.imageListUpDown.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
 			this.imageListUpDown.ImageSize = new System.Drawing.Size(10, 10);
 			this.imageListUpDown.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListUpDown.ImageStream")));
 			this.imageListUpDown.TransparentColor = System.Drawing.Color.Transparent;
@@ -908,9 +914,9 @@ namespace OpenDental{
 			// menuPrimary
 			// 
 			this.menuPrimary.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-																																								this.menuPrimaryToggle,
-																																								this.menuPrimaryAll,
-																																								this.menuPrimaryNone});
+																						this.menuPrimaryToggle,
+																						this.menuPrimaryAll,
+																						this.menuPrimaryNone});
 			// 
 			// menuPrimaryToggle
 			// 
@@ -1029,7 +1035,7 @@ namespace OpenDental{
 			// menuProgRight
 			// 
 			this.menuProgRight.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-																																									this.menuItemPrintProg});
+																						  this.menuItemPrintProg});
 			// 
 			// menuItemPrintProg
 			// 
@@ -1126,6 +1132,10 @@ namespace OpenDental{
 			this.textTreatmentNotes.Text = "";
 			this.textTreatmentNotes.Leave += new System.EventHandler(this.textTreatmentNotes_Leave);
 			this.textTreatmentNotes.TextChanged += new System.EventHandler(this.textTreatmentNotes_TextChanged);
+			// 
+			// pd2
+			// 
+			this.pd2.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.pd2_PrintPage);
 			// 
 			// ContrChart
 			// 
@@ -1499,7 +1509,7 @@ namespace OpenDental{
 			FormRS.ShowDialog();
 			if(FormRS.DialogResult!=DialogResult.OK) return;
 			ModuleSelected(PatCur.PatNum);
-			SecurityLogs.MakeLogEntry(Permissions.RxCreate,PatCur.GetNameLF());
+			SecurityLogs.MakeLogEntry(Permissions.RxCreate,PatCur.PatNum,PatCur.GetNameLF());
 		}
 
 		private void OnPerio_Click(){
@@ -1528,8 +1538,8 @@ namespace OpenDental{
 			}
 			checkDone.Checked=false;
 			//MessageBox.Show
-			Appointments.RefreshCur(PatCur.NextAptNum);
-			if(Appointments.Cur.AptNum==0){//next appointment not found
+			Appointment apt=Appointments.GetOneApt(PatCur.NextAptNum);
+			if(apt==null){//next appointment not found
 				Patient patOld=PatCur.Copy();
 				PatCur.NextAptNum=0;
 				PatCur.Update(patOld);
@@ -1539,52 +1549,11 @@ namespace OpenDental{
 				labelMinutes.Text="";
 				return;
 			}
-			ApptPlanned.Info.MyApt=Appointments.Cur;
-			//string hasIns="";
-			//if(Patients.Cur.PriPlanNum!=0) hasIns="i";
-			//ApptNext.Info.CreditAndIns=Patients.Cur.CreditType+hasIns;
-			//ApptNext.Info.Lines=new string[ApptNext.Info.MyApt.Pattern.Length];
-			//ApptNext.Info.Lines[0]=Patients.GetCurNameLF();
+			ApptPlanned.Info.MyApt=apt.Copy();
 			ProcDesc procDesc=Procedures.GetProcsForSingle(ApptPlanned.Info.MyApt.AptNum,true);
 			ApptPlanned.Info.Procs=procDesc.ProcLines;
 			ApptPlanned.Info.Production=procDesc.Production;
 			ApptPlanned.Info.MyPatient=PatCur.Copy();
-			/*int nextLine=1;
-			for(int j=0;j<Procedures.ProcsForSingle.Length;j++){
-				if(j+nextLine<ApptNext.Info.Lines.Length)
-					ApptNext.Info.Lines[j+nextLine]=Procedures.ProcsForSingle[j];
-			}
-			ArrayList AListNote=new ArrayList();
-			Graphics grfx=this.CreateGraphics();
-			int iChars=0;
-			int iLines=0;
-			Font myFont=new Font("Small Font",7f);
-			RectangleF rectf 
-				=new Rectangle(0,0
-				,System.Convert.ToInt32((110-12)/.95)//.95 is arbitrary
-				,(int)myFont.GetHeight(grfx));
-			string remainNote = ApptNext.Info.MyApt.Note;
-			while (remainNote.Length>0){
-				grfx.MeasureString(remainNote,myFont,rectf.Size,new StringFormat(),out iChars, out iLines);
-				if (iChars!=remainNote.Length)
-					while (iChars!=0&&(remainNote.Substring(iChars-1,1)!=" ")){
-						iChars=iChars-1;
-					}
-				if (iChars==0){//this will wrap even if no spaces at all, whether short or very long
-					grfx.MeasureString(remainNote,myFont,rectf.Size,new StringFormat(),out iChars, out iLines);
-				}
-				AListNote.Add(remainNote.Substring(0,iChars));
-				remainNote = remainNote.Substring(iChars);
-			}//end while
-			grfx.Dispose();
-			int noteLine=0;
-			for (int j=nextLine+Procedures.ProcsForSingle.Length;
-				j<nextLine+Procedures.ProcsForSingle.Length+AListNote.Count;j++){
-				if(j<ApptNext.Info.Lines.Length){
-					ApptNext.Info.Lines[j]=(string)AListNote[noteLine];
-					noteLine++;
-				}
-			}*/
 			ApptPlanned.SetSize();
 			ApptPlanned.Width=114;
 			ApptPlanned.CreateShadow();
@@ -2331,6 +2300,7 @@ namespace OpenDental{
 			else{
 				ProcCur.ProvNum=PatCur.PriProv;
 			}
+			ProcCur.ClinicNum=PatCur.ClinicNum;
 			if(listDx.SelectedIndex!=-1)
 				ProcCur.Dx=Defs.Short[(int)DefCat.Diagnosis][listDx.SelectedIndex].DefNum;
 			//nextaptnum
@@ -2394,6 +2364,7 @@ namespace OpenDental{
 			else{
 				ProcCur.ProvNum=PatCur.PriProv;
 			}
+			ProcCur.ClinicNum=PatCur.ClinicNum;
 			if(listDx.SelectedIndex!=-1)
 				ProcCur.Dx=Defs.Short[(int)DefCat.Diagnosis][listDx.SelectedIndex].DefNum;
 			//nextaptnum
@@ -2533,7 +2504,7 @@ namespace OpenDental{
 			}//for n
 			ModuleSelected(PatCur.PatNum);
 			if(newStatus==ProcStat.C){
-				SecurityLogs.MakeLogEntry(Permissions.ProcComplCreate,
+				SecurityLogs.MakeLogEntry(Permissions.ProcComplCreate,PatCur.PatNum,
 					PatCur.GetNameLF()+", "
 					+DateTime.Today.ToShortDateString());
 			}
@@ -2681,9 +2652,8 @@ namespace OpenDental{
 				if(ApptPlanned.Visible){
 					if(MessageBox.Show(Lan.g(this,"Existing planned appointment will be deleted"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK)
 						return; 
-					Appointments.Cur=ApptPlanned.Info.MyApt;
-					Procedures.UnattachProcsInPlannedAppt(Appointments.Cur.AptNum);
-					Appointments.DeleteCur(PatCur.Copy());
+					Procedures.UnattachProcsInPlannedAppt(ApptPlanned.Info.MyApt.AptNum);
+					ApptPlanned.Info.MyApt.Delete();
 				}
 				PatCur.NextAptNum=-1;
 				PatCur.Update(oldPat);
@@ -2693,7 +2663,6 @@ namespace OpenDental{
 				PatCur.Update(oldPat);
 			}
 			ModuleSelected(PatCur.PatNum);
-			//FillNext();
 		}
 
 		private void butNew_Click(object sender, System.EventArgs e) {
@@ -2701,19 +2670,18 @@ namespace OpenDental{
 				if(MessageBox.Show(Lan.g(this,"Replace existing planned appointment?")
 					,"",MessageBoxButtons.OKCancel)!=DialogResult.OK)
 					return;
-				Appointments.Cur=ApptPlanned.Info.MyApt;
-				Procedures.UnattachProcsInPlannedAppt(Appointments.Cur.AptNum);
-				Appointments.DeleteCur(PatCur);
+				Procedures.UnattachProcsInPlannedAppt(ApptPlanned.Info.MyApt.AptNum);
+				ApptPlanned.Info.MyApt.Delete();
 			}
-			Appointments.Cur=new Appointment();
-			Appointments.Cur.PatNum=PatCur.PatNum;
-			Appointments.Cur.ProvNum=PatCur.PriProv;
-			Appointments.Cur.AptStatus=ApptStatus.Planned;
-			Appointments.Cur.AptDateTime=DateTime.Today;
-			Appointments.Cur.Pattern="/X/";
-			Appointments.InsertCur();
-			Appointments.CurOld=Appointments.Cur;
-			FormApptEdit FormApptEdit2=new FormApptEdit();
+			Appointment AptCur=new Appointment();
+			AptCur.PatNum=PatCur.PatNum;
+			AptCur.ProvNum=PatCur.PriProv;
+			AptCur.ClinicNum=PatCur.ClinicNum;
+			AptCur.AptStatus=ApptStatus.Planned;
+			AptCur.AptDateTime=DateTime.Today;
+			AptCur.Pattern="/X/";
+			AptCur.InsertOrUpdate(null,true);
+			FormApptEdit FormApptEdit2=new FormApptEdit(AptCur);
 			FormApptEdit2.IsNew=true;
 			FormApptEdit2.ShowDialog();
 			if(FormApptEdit2.DialogResult!=DialogResult.OK){
@@ -2725,7 +2693,7 @@ namespace OpenDental{
 			ProcList=Procedures.Refresh(PatCur.PatNum);
 			bool allProcsHyg=true;
 			for(int i=0;i<ProcList.Length;i++){
-				if(ProcList[i].NextAptNum!=Appointments.Cur.AptNum)
+				if(ProcList[i].NextAptNum!=AptCur.AptNum)
 					continue;//only concerned with procs on this nextApt
 				if(!ProcedureCodes.GetProcCode(ProcList[i].ADACode).IsHygiene){
 					allProcsHyg=false;
@@ -2733,12 +2701,12 @@ namespace OpenDental{
 				}
 			}
 			if(allProcsHyg && PatCur.SecProv!=0){
-				Appointments.Cur.ProvNum=PatCur.SecProv;
-				Appointments.UpdateCur();
-				Appointments.CurOld=Appointments.Cur;
+				Appointment aptOld=AptCur.Copy();
+				AptCur.ProvNum=PatCur.SecProv;
+				AptCur.InsertOrUpdate(aptOld,false);
 			}
 			Patient patOld=PatCur.Copy();
-			PatCur.NextAptNum=Appointments.Cur.AptNum;
+			PatCur.NextAptNum=AptCur.AptNum;
 			PatCur.Update(patOld);
 			ModuleSelected(PatCur.PatNum);//if procs were added in appt, then this will display them
 		}
@@ -2750,9 +2718,8 @@ namespace OpenDental{
 			}
 			if(MessageBox.Show(Lan.g(this,"Delete planned appointment?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK)
 				return;
-			Appointments.Cur=ApptPlanned.Info.MyApt;
-			Procedures.UnattachProcsInPlannedAppt(Appointments.Cur.AptNum);
-			Appointments.DeleteCur(PatCur.Copy());
+			Procedures.UnattachProcsInPlannedAppt(ApptPlanned.Info.MyApt.AptNum);
+			ApptPlanned.Info.MyApt.Delete();
 			Patient patOld=PatCur.Copy();
 			PatCur.NextAptNum=0;
 			PatCur.Update(patOld);
@@ -2761,9 +2728,7 @@ namespace OpenDental{
 		}
 
 		private void ApptPlanned_DoubleClick(object sender, System.EventArgs e){
-			Appointments.Cur=ApptPlanned.Info.MyApt;
-			Appointments.CurOld=Appointments.Cur;
-			FormApptEdit FormAE=new FormApptEdit();
+			FormApptEdit FormAE=new FormApptEdit(ApptPlanned.Info.MyApt);
 			FormAE.ShowDialog();
 			ModuleSelected(PatCur.PatNum);//if procs were added in appt, then this will display them
 		}
@@ -2788,54 +2753,6 @@ namespace OpenDental{
 				butEnterTx.ImageIndex=0;//up arrow
 			}
 		}
-
-		/*private bool AddNewProc(string adaCode,string toothNum,string surf,string range){
-			MessageBox.Show(adaCode+","+toothNum+","+surf+","+range);
-			return;
-			bool invalid=false;
-			bool needSurf=false;
-			bool needTooth=false;
-			//procnum
-			Procedures.Cur.PatNum=Patients.Cur.PatNum;
-			//aptnum
-			Procedures.Cur.ADACode=adaCode;
-			Procedures.Cur.ProcDate=DateTime.Now;
-			Procedures.Cur.ProcFee = Fees.GetAmount(Procedures.Cur.ADACode,GetFeeSched());
-			Procedures.Cur.OverridePri=-1;
-			Procedures.Cur.OverrideSec=-1;
-			Procedures.Cur.Surf=surf;
-			Procedures.Cur.ToothNum=toothNum;
-			if(((ProcedureCode)ProcCodes.HList[Procedures.Cur.ADACode]).TreatArea==TreatmentArea.Tooth
-				|| ((ProcedureCode)ProcCodes.HList[Procedures.Cur.ADACode]).TreatArea==TreatmentArea.Surf){
-				if(newToothNum2[0] != null)
-					Procedures.Cur.ToothNum=newToothNum2[0];
-			}
-			//string range="";
-			//if(((ProcedureCode)ProcCodes.HList[Procedures.Cur.ADACode]).TreatArea==TreatmentArea.ToothRange){
-			//	for(int i=0;i<newToothNum2.Length;i++){
-			//		range+=newToothNum2[i]+","; 
-			//	}
-			//}
-			Procedures.Cur.ToothRange=range;
-			Procedures.Cur.NoBillIns=ProcCodes.GetProcCode(Procedures.Cur.ADACode).NoBillIns;
-			//priority
-			Procedures.Cur.ProcStatus=newStatus;
-			Procedures.Cur.ProcNote="";
-			//Procedures.Cur.PriEstim=
-			//Procedures.Cur.SecEstim=
-			//claimnum
-			Procedures.Cur.ProvNum=Patients.Cur.PriProv;
-			if(listDx.SelectedIndex!=-1)
-				Procedures.Cur.Dx=Defs.Short[(int)DefCat.Diagnosis][listDx.SelectedIndex].DefNum;
-			//nextaptnum
-			if(Patients.Cur.PriPlanNum!=0){//if patient has insurance
-				Procedures.Cur.IsCovIns=true;
-			}
-			FormProcEdit FormPE = new FormProcEdit();
-			FormPE.IsNew=true;
-			FormPE.ShowDialog();
-			//insertcur is done in dialog
-		}*/
 
 		private void listProcButtons_Click(object sender, System.EventArgs e) {
 			if(newStatus==ProcStat.C){
@@ -3031,7 +2948,7 @@ namespace OpenDental{
 			}//for i
 			ModuleSelected(PatCur.PatNum);
 			if(newStatus==ProcStat.C){
-				SecurityLogs.MakeLogEntry(Permissions.ProcComplCreate,
+				SecurityLogs.MakeLogEntry(Permissions.ProcComplCreate,PatCur.PatNum,
 					PatCur.GetNameLF()+", "
 					+DateTime.Today.ToShortDateString());
 			}
@@ -3218,7 +3135,7 @@ namespace OpenDental{
 			textADACode.Text="";
 			textADACode.Select();
 			if(newStatus==ProcStat.C){
-				SecurityLogs.MakeLogEntry(Permissions.ProcComplCreate,
+				SecurityLogs.MakeLogEntry(Permissions.ProcComplCreate,PatCur.PatNum,
 					PatCur.GetNameLF()+", "
 					+DateTime.Today.ToShortDateString());
 			}
@@ -3257,12 +3174,192 @@ namespace OpenDental{
 
 		private void tbProg_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e) {
 			if(e.Button==MouseButtons.Right){
-				//menuProgRight.Show(tbProg,new Point(e.X,e.Y));
+				menuProgRight.Show(tbProg,new Point(e.X,e.Y));
 			}
 		}
 
 		private void menuItemPrintProg_Click(object sender, System.EventArgs e) {
-			//print progress notes
+			linesPrinted=0;
+			headingPrinted=false;
+			#if DEBUG
+				PrintReport(true);
+			#else
+				PrintReport(false);	
+			#endif
+		}
+
+		///<summary>Preview is only used for debugging.</summary>
+		public void PrintReport(bool justPreview){
+			pd2=new PrintDocument();
+			pd2.PrintPage += new PrintPageEventHandler(this.pd2_PrintPage);
+			pd2.DefaultPageSettings.Margins=new Margins(50,50,40,25);
+			try{
+				if(justPreview){
+					FormRpPrintPreview pView = new FormRpPrintPreview();
+					pView.printPreviewControl2.Document=pd2;
+					pView.ShowDialog();				
+			  }
+				else{
+					if(Printers.SetPrinter(pd2,PrintSituation.Default)){
+						pd2.Print();
+					}
+				}
+			}
+			catch{
+				MessageBox.Show(Lan.g(this,"Printer not available"));
+			}
+		}
+
+		private void pd2_PrintPage(object sender, System.Drawing.Printing.PrintPageEventArgs e) {
+			//printable area is w=800.
+			//Height is 1035 for standard paper.  Some printers can handle up to 1042.
+			Graphics g=e.Graphics;
+			string text;
+			Font headingFont=new Font("Arial",13,FontStyle.Bold);
+			Font subHeadingFont=new Font("Arial",10,FontStyle.Bold);
+			Font bodyFont=new Font("Arial",9);
+			Font totalFont=new Font("Arial",9,FontStyle.Bold);
+			int yPos=44;
+			//int xPos=50;
+			#region printHeading
+			if(!headingPrinted){
+				text="Chart Progress Notes";
+				g.DrawString(text,headingFont,Brushes.Black,400-g.MeasureString(text,headingFont).Width/2,yPos);
+				yPos+=(int)g.MeasureString(text,headingFont).Height;
+				text=PatCur.GetNameFL();
+				g.DrawString(text,subHeadingFont,Brushes.Black,400-g.MeasureString(text,subHeadingFont).Width/2,yPos);
+				yPos+=(int)g.MeasureString(text,subHeadingFont).Height;
+				text=DateTime.Today.ToShortDateString();
+				g.DrawString(text,subHeadingFont,Brushes.Black,400-g.MeasureString(text,subHeadingFont).Width/2,yPos);
+				yPos+=30;
+				headingPrinted=true;
+			}
+			#endregion
+			#region ColDefs
+			//always defines and always prints on each page
+			int rowH=(int)g.MeasureString("anything",bodyFont).Height;
+			int[] colW=new int[8];
+			colW[0]=80;
+			colW[1]=30;
+			colW[2]=53;
+			colW[3]=30;
+			colW[4]=325;
+			colW[5]=30;
+			colW[6]=55;
+			colW[7]=60;
+			int[] colPos=new int[colW.Length+1];//last entry represents the right side of the last col
+			for(int i=0;i<colW.Length;i++){
+				if(i==0){
+					colPos[i]=100;
+					continue;
+				}
+				colPos[i]=colPos[i-1]+colW[i-1];
+				if(i==colW.Length-1){
+					colPos[i+1]=colPos[i]+colW[i];
+				}
+			}
+			HorizontalAlignment[] colAlign=new HorizontalAlignment[8];
+			colAlign[7]=HorizontalAlignment.Right;
+			string[] ColCaption=new string[8];
+			ColCaption[0]=Lan.g("TableProg","Date");
+			ColCaption[1]=Lan.g("TableProg","Th");
+			ColCaption[2]=Lan.g("TableProg","Surf");
+			ColCaption[3]=Lan.g("TableProg","Dx");
+			ColCaption[4]=Lan.g("TableProg","Description");
+			ColCaption[5]=Lan.g("TableProg","Stat");
+			ColCaption[6]=Lan.g("TableProg","Prov");
+			ColCaption[7]=Lan.g("TableProg","Amount");
+			g.FillRectangle(Brushes.LightGray,colPos[0],yPos,colPos[colPos.Length-1]-colPos[0],16);
+			g.DrawRectangle(Pens.Black,colPos[0],yPos,colPos[colPos.Length-1]-colPos[0],16);  
+			for(int i=1;i<colPos.Length;i++) 
+				g.DrawLine(new Pen(Color.Black),colPos[i],yPos,colPos[i],yPos+16);
+			//Prints the Column Titles
+			for(int i=0;i<ColCaption.Length;i++){ 
+				if(colAlign[i]==HorizontalAlignment.Right){
+					g.DrawString(ColCaption[i],totalFont,Brushes.Black,colPos[i+1]-g.MeasureString(ColCaption[i],totalFont).Width-1,yPos);
+				}
+				else 
+					g.DrawString(Lan.g(this,ColCaption[i]),totalFont,Brushes.Black,colPos[i]+1,yPos);
+			}
+			yPos+=16;
+			#endregion
+			#region printBody
+			while(linesPrinted < ProgLineAL.Count 
+				&& yPos+g.MeasureString(((ProgLine)ProgLineAL[linesPrinted]).Note,bodyFont,colPos[5]-colPos[4]).Height < e.MarginBounds.Height)
+			{
+				if(((ProgLine)ProgLineAL[linesPrinted]).IsNote){
+					text=((ProgLine)ProgLineAL[linesPrinted]).Note;
+					g.DrawString(text,bodyFont,Brushes.Black,new RectangleF(colPos[2]+1,yPos,colPos[8]-colPos[2]-4,bodyFont.GetHeight(g)));
+					//Column lines		
+					for(int i=0;i<colPos.Length-1;i++){
+						//left vertical
+						if(i<3){
+	  					g.DrawLine(Pens.Gray,colPos[i],yPos+rowH,colPos[i],yPos);
+						}
+						//lower
+						if(linesPrinted==ProgLineAL.Count || !((ProgLine)ProgLineAL[linesPrinted+1]).IsNote){
+							g.DrawLine(Pens.Gray,colPos[i],yPos+rowH,colPos[i+1],yPos+rowH);
+						}
+					}
+					//right vertical
+					g.DrawLine(Pens.Gray,colPos[colPos.Length-1],yPos+rowH,colPos[colPos.Length-1],yPos);
+					yPos+=rowH;
+					linesPrinted++;
+					continue;
+				}
+				for(int i=0;i<colPos.Length-1;i++){
+					switch(i){
+						case 0:
+							text=((ProgLine)ProgLineAL[linesPrinted]).Date;
+							break;
+						case 1:
+							text=((ProgLine)ProgLineAL[linesPrinted]).Th;
+							break;
+						case 2:
+							text=((ProgLine)ProgLineAL[linesPrinted]).Surf;
+							break;
+						case 3:
+							text=((ProgLine)ProgLineAL[linesPrinted]).Dx;
+							break;
+						case 4:
+							text=((ProgLine)ProgLineAL[linesPrinted]).Description;
+							break;
+						case 5:
+							text=((ProgLine)ProgLineAL[linesPrinted]).Stat;
+							break;
+						case 6:
+							text=((ProgLine)ProgLineAL[linesPrinted]).Prov;
+							break;
+						case 7:
+							text=((ProgLine)ProgLineAL[linesPrinted]).Amount;
+							break;
+						default:
+							text="";
+							break;
+					}
+  				if(colAlign[i]==HorizontalAlignment.Right){
+						g.DrawString(text,bodyFont,Brushes.Black,colPos[i+1]-g.MeasureString(text,bodyFont).Width-1,yPos);
+					}
+					else{
+						g.DrawString(text,bodyFont,Brushes.Black,new RectangleF(colPos[i]+1,yPos,colPos[i+1]-colPos[i]-4,bodyFont.GetHeight(g)));
+					}
+					//left vertical
+					g.DrawLine(Pens.Gray,colPos[i],yPos+rowH,colPos[i],yPos);
+					//lower
+					g.DrawLine(Pens.Gray,colPos[i],yPos+rowH,colPos[i+1],yPos+rowH);
+				} 
+				//right vertical
+				g.DrawLine(Pens.Gray,colPos[colPos.Length-1],yPos+rowH,colPos[colPos.Length-1],yPos);
+				yPos+=rowH;
+				linesPrinted++;
+			}
+			#endregion
+			if(linesPrinted < ProgLineAL.Count){
+				e.HasMorePages=true;
+			}
+			else{
+				e.HasMorePages=false;
+			}
 		}
 
 		///<summary>Draws one button for the tabControlImages.</summary>
@@ -3383,6 +3480,8 @@ namespace OpenDental{
 			formImageViewer.SetImage(Documents.Cur,PatCur.GetNameLF()+" - "
 				+Documents.Cur.DateCreated.ToShortDateString()+": "+Documents.Cur.Description);
 		}
+
+		
 
 		
 

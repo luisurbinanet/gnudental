@@ -14,7 +14,8 @@ namespace OpenDental{
 		/// </summary>
 		private System.ComponentModel.Container components = null;
 		///<summary>Passes the pinclicked result down from the appointment to the parent form.</summary>
-		public bool PinClicked;		
+		public bool PinClicked;
+		private Appointment[] ListUn;
 
 		///<summary></summary>
 		public FormTrackNext(){
@@ -96,27 +97,26 @@ namespace OpenDental{
 		#endregion
 
 		private void FormTrackNext_Load(object sender, System.EventArgs e) {
+			Patients.GetHList();
 			FillAppointments();
 		}
 
 		private void FillAppointments(){
 			this.Cursor=Cursors.WaitCursor;
-			Patients.GetHList();
-			Appointments.RefreshUnsched(true);
-			tbApts.ResetRows(Appointments.ListUn.Length);
+			ListUn=Appointments.RefreshUnsched(true);
+			tbApts.ResetRows(ListUn.Length);
 			tbApts.SetGridColor(Color.DarkGray);
-			for (int i=0;i<Appointments.ListUn.Length;i++){
-				tbApts.Cell[0,i]=(string)Patients.HList[Appointments.ListUn[i].PatNum];
-				if(Appointments.ListUn[i].AptDateTime.Year < 1880)
+			for (int i=0;i<ListUn.Length;i++){
+				tbApts.Cell[0,i]=(string)Patients.HList[ListUn[i].PatNum];
+				if(ListUn[i].AptDateTime.Year < 1880)
 					tbApts.Cell[1,i]="";
 				else 
-					tbApts.Cell[1,i]=Appointments.ListUn[i].AptDateTime.ToShortDateString();
-				tbApts.Cell[2,i]=Defs.GetName(DefCat.RecallUnschedStatus,Appointments.ListUn[i].UnschedStatus);
-				tbApts.Cell[3,i]=Providers.GetAbbr(Appointments.ListUn[i].ProvNum);
-				tbApts.Cell[4,i]=Appointments.ListUn[i].ProcDescript;
-				tbApts.Cell[5,i]=Appointments.ListUn[i].Note;
+					tbApts.Cell[1,i]=ListUn[i].AptDateTime.ToShortDateString();
+				tbApts.Cell[2,i]=Defs.GetName(DefCat.RecallUnschedStatus,ListUn[i].UnschedStatus);
+				tbApts.Cell[3,i]=Providers.GetAbbr(ListUn[i].ProvNum);
+				tbApts.Cell[4,i]=ListUn[i].ProcDescript;
+				tbApts.Cell[5,i]=ListUn[i].Note;
 			}
-			Patients.HList=null;
 			tbApts.LayoutTables();
 			Cursor=Cursors.Default;
 		}
@@ -124,19 +124,14 @@ namespace OpenDental{
 		private void tbApts_CellDoubleClicked(object sender, CellEventArgs e){
 			int currentSelection=tbApts.SelectedRow;
 			int currentScroll=tbApts.ScrollValue;
-			Appointments.Cur=Appointments.ListUn[e.Row];
-			Appointments.CurOld=Appointments.Cur;
-			Family famCur=Patients.GetFamily(Appointments.Cur.PatNum);
-			Patient patCur=famCur.GetPatient(Appointments.Cur.PatNum);
-			FormApptEdit FormAE=new FormApptEdit();
+			FormApptEdit FormAE=new FormApptEdit(ListUn[e.Row]);
 			FormAE.PinIsVisible=true;
 			FormAE.ShowDialog();
 			if(FormAE.DialogResult!=DialogResult.OK)
 				return;
 			if(FormAE.PinClicked){
 				PinClicked=true;
-				CreateCurInfo(patCur);
-				Appointments.ListUn=null;
+				CreateCurInfo(ListUn[e.Row]);
 				DialogResult=DialogResult.OK;
 			}
 			else{
@@ -147,15 +142,16 @@ namespace OpenDental{
 		}	
 
 		/// <summary>This is not the best way to handle this for the long term.  There must be a better way to get some of the extra display info.</summary>
-		private void CreateCurInfo(Patient patCur){
+		private void CreateCurInfo(Appointment aptCur){
 			ContrAppt.CurInfo=new InfoApt();
-			ContrAppt.CurInfo.MyApt=Appointments.Cur;
+			ContrAppt.CurInfo.MyApt=aptCur.Copy();
 			//ContrAppt.CurInfo.CreditAndIns=Patients.GetCreditIns();
 			//ContrAppt.CurInfo.PatientName=Patients.GetCurNameLF();
-			ProcDesc procDesc=Procedures.GetProcsForSingle(Appointments.Cur.AptNum,true);
+			ProcDesc procDesc=Procedures.GetProcsForSingle(aptCur.AptNum,true);
 			ContrAppt.CurInfo.Procs=procDesc.ProcLines;
 			ContrAppt.CurInfo.Production=procDesc.Production;
-			ContrAppt.CurInfo.MyPatient=patCur.Copy();
+			ContrAppt.CurInfo.MyPatient=Patients.GetPat(aptCur.PatNum);
+				//patCur.Copy();
 		}
 
 		private void butClose_Click(object sender, System.EventArgs e) {
@@ -163,7 +159,7 @@ namespace OpenDental{
 		}
 
 		private void FormUnsched_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-			Appointments.ListUn=null;
+			Patients.HList=null;
 		}
 		
 

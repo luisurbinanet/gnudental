@@ -206,8 +206,16 @@ namespace OpenDental{
 					return Lan.g("enumPermissions","Adjustment Create");
 				case Permissions.AdjustmentEdit:
 					return Lan.g("enumPermissions","Adjustment Edit");
+				case Permissions.AppointmentCreate:
+					return Lan.g("enumPermissions","Appointment Create");
+				case Permissions.AppointmentEdit:
+					return Lan.g("enumPermissions","Appointment Edit");
+				case Permissions.AppointmentMove:
+					return Lan.g("enumPermissions","Appointment Move");
 				case Permissions.AppointmentsModule:
 					return Lan.g("enumPermissions","Appointments Module");
+				case Permissions.Backup:
+					return Lan.g("enumPermissions","Backup");
 				case Permissions.Blockouts:
 					return Lan.g("enumPermissions","Blockouts");
 				case Permissions.ChartModule:
@@ -242,10 +250,8 @@ namespace OpenDental{
 					return Lan.g("enumPermissions","Security Admin");
 				case Permissions.Setup:
 					return Lan.g("enumPermissions","Setup - Covers a wide variety of setup functions");
-				//case Permissions.StartupMultiUser:
-				//	return Lan.g("enumPermissions","Multiuser mode");
-				case Permissions.StartupSingleUser:
-					return Lan.g("enumPermissions","Single user mode");
+				case Permissions.TimecardsEditAll:
+					return Lan.g("enumPermissions","Edit All Timecards");
 				case Permissions.TPModule:
 					return Lan.g("enumPermissions","TreatmentPlan Module");
 				case Permissions.UserQuery:

@@ -300,6 +300,10 @@ namespace OpenDental{
 				Sublist=new GraphicElement[0];
 				return;
 			}
+			if(Tooth.IsSuperNum(toothNum)){
+				Sublist=new GraphicElement[0];
+				return;
+			}
 			int typeIndex=GraphicTypes.GetIndex(2);
 			int ordTooth;
 			ordTooth=Tooth.ToOrdinal(toothNum);

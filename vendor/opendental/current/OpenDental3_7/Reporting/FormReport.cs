@@ -196,6 +196,7 @@ namespace OpenDental.Reporting
 			// 
 			// imageListMain
 			// 
+			this.imageListMain.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
 			this.imageListMain.ImageSize = new System.Drawing.Size(22, 22);
 			this.imageListMain.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListMain.ImageStream")));
 			this.imageListMain.TransparentColor = System.Drawing.Color.Transparent;
@@ -657,8 +658,10 @@ namespace OpenDental.Reporting
 			  using(StreamWriter sw=new StreamWriter(saveFileDialog2.FileName,false)){
 					String line="";  
 					for(int i=0;i<MyReport.ReportTable.Columns.Count;i++){
-						line+=MyReport.ReportTable.Columns[i].Caption+"\t";
-							//Queries.CurReport.ColCaption[i]+"\t";
+						line+=MyReport.ReportTable.Columns[i].Caption;
+						if(i<MyReport.ReportTable.Columns.Count-1){
+							line+="\t";
+						}
 					}
 					sw.WriteLine(line);
 					string cell;

@@ -415,13 +415,15 @@ ORDER BY PayDate, plfname
 			Queries.CurReport.ColCaption[7]="Amount";
 			//Queries.CurReport.ColAlign[4]=HorizontalAlignment.Right;
 			Queries.CurReport.ColAlign[7]=HorizontalAlignment.Right;
-			if(Prefs.GetBool("EasyNoClinics")){//only show account number if no clinics
+			if(Prefs.GetBool("EasyNoClinics") || comboClinic.SelectedIndex==0){
 				Queries.CurReport.Summary=new string[3];
 				Queries.CurReport.Summary[0]="For Deposit to Account of "+((Pref)Prefs.HList["PracticeTitle"]).ValueString;
 				Queries.CurReport.Summary[2]="Account number: "+((Pref)Prefs.HList["PracticeBankNumber"]).ValueString;
 			}
 			else{
-				Queries.CurReport.Summary=new string[0];
+				Queries.CurReport.Summary=new string[3];
+				Queries.CurReport.Summary[0]="For Deposit to Account of "+Clinics.List[comboClinic.SelectedIndex-1].Description;
+				Queries.CurReport.Summary[2]="Account number: "+Clinics.List[comboClinic.SelectedIndex-1].BankNumber;
 			}
 			FormQuery2.ShowDialog();
 

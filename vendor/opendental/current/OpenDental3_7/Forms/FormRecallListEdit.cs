@@ -573,9 +573,9 @@ namespace OpenDental{
 		/// <summary>Creates appointment and appropriate procedures, and places data in ContrAppt.CurInfo so it will display on pinboard.</summary>
 		private void CreateCurInfo(){
 			ContrAppt.CurInfo=new InfoApt();
-			Appointments.Cur=new Appointment();
-			Appointments.Cur.PatNum=PatCur.PatNum;
-			Appointments.Cur.AptStatus=ApptStatus.Scheduled;
+			Appointment AptCur=new Appointment();
+			AptCur.PatNum=PatCur.PatNum;
+			AptCur.AptStatus=ApptStatus.Scheduled;
 			//convert time pattern to 5 minute increment
 			StringBuilder savePattern=new StringBuilder();
 			for(int i=0;i<Prefs.GetString("RecallPattern").Length;i++){
@@ -585,17 +585,15 @@ namespace OpenDental{
 					savePattern.Append(Prefs.GetString("RecallPattern").Substring(i,1));
 				}
 			}
-			Appointments.Cur.Pattern=savePattern.ToString();
-				//((Pref)Prefs.HList["RecallPattern"]).ValueString;
-			Appointments.Cur.Note="";
+			AptCur.Pattern=savePattern.ToString();
 			if(PatCur.PriProv==0)
-				Appointments.Cur.ProvNum=PIn.PInt(((Pref)Prefs.HList["PracticeDefaultProv"]).ValueString);
+				AptCur.ProvNum=Prefs.GetInt("PracticeDefaultProv");
 			else
-				Appointments.Cur.ProvNum=PatCur.PriProv;
-			Appointments.Cur.ProvHyg=PatCur.SecProv;
-			Appointments.InsertCur();
-			Appointments.CurOld=Appointments.Cur;
-      string[] procs=((Pref)Prefs.HList["RecallProcedures"]).ValueString.Split(',');
+				AptCur.ProvNum=PatCur.PriProv;
+			AptCur.ProvHyg=PatCur.SecProv;
+			AptCur.ClinicNum=PatCur.ClinicNum;
+			AptCur.InsertOrUpdate(null,true);
+      string[] procs=Prefs.GetString("RecallProcedures").Split(',');
 			if(((Pref)Prefs.HList["RecallBW"]).ValueString!=""){//BWs
 				bool dueBW=true;
 				//DateTime dueDate=PIn.PDate(listFamily.Items[
@@ -621,7 +619,7 @@ namespace OpenDental{
 				ProcCur=new Procedure();//this will be an insert
 				//procnum
 				ProcCur.PatNum=PatCur.PatNum;
-				ProcCur.AptNum=Appointments.Cur.AptNum;
+				ProcCur.AptNum=AptCur.AptNum;
 				ProcCur.ADACode=procs[i];
 				ProcCur.ProcDate=DateTime.Now;
 				ProcCur.ProcFee=Fees.GetAmount0(ProcCur.ADACode,Fees.GetFeeSched(PatCur,PlanList));
@@ -639,6 +637,7 @@ namespace OpenDental{
 				//claimnum
 				ProcCur.ProvNum=PatCur.PriProv;
 				//Procedures.Cur.Dx=
+				ProcCur.ClinicNum=PatCur.ClinicNum;
 				//nextaptnum
 				try{
 					ProcCur.InsertOrUpdate(null,true);//no recall synch required
@@ -650,10 +649,10 @@ namespace OpenDental{
 				ProcCur.ComputeEstimates(PatCur.PatNum,PatCur.PriPlanNum
 					,PatCur.SecPlanNum,new ClaimProc[0],false,PatCur,PlanList);
 			}
-			ContrAppt.CurInfo.MyApt=Appointments.Cur;
+			ContrAppt.CurInfo.MyApt=AptCur.Copy();
 			//ContrAppt.CurInfo.CreditAndIns=Patients.GetCreditIns();
 			//ContrAppt.CurInfo.PatientName=Patients.GetCurNameLF();
-			ProcDesc procDesc=Procedures.GetProcsForSingle(Appointments.Cur.AptNum,false);
+			ProcDesc procDesc=Procedures.GetProcsForSingle(AptCur.AptNum,false);
 			ContrAppt.CurInfo.Procs=procDesc.ProcLines;
 			ContrAppt.CurInfo.Production=procDesc.Production;
 			ContrAppt.CurInfo.MyPatient=PatCur;

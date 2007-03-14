@@ -110,12 +110,13 @@ namespace OpenDental.Eclaims
 				Patient otherSubsc=new Patient();
 				Carrier carrier;
 				Carrier otherCarrier=new Carrier();
-				ClaimProc[] claimProcList;//all claimProcs for a patient. Only used briefly.
+				ClaimProc[] claimProcList;//all claimProcs for a patient.
 				ClaimProc[] claimProcs;
 				Procedure[] procList;
 				Procedure proc;
 				ProcedureCode procCode;
 				Provider provTreat;//might be different for each proc
+				Clinic clinic;
 				int seg=0;//segments for a particular ST-SE transaction
 				for(int i=0;i<claimAr.GetLength(1);i++){
 					#region Transaction Set Header
@@ -173,6 +174,7 @@ namespace OpenDental.Eclaims
 						|| newTrans //or new Transaction set
 						|| claimAr[1,i].ToString() != claimAr[1,i-1].ToString())//or prov has changed
 					{
+						clinic=Clinics.GetClinic((int)claimAr[4,i]);
 						//2000A HL: Billing/Pay-to provider HL loop
 						seg++;
 						sw.Write("HL*"+HLcount.ToString()+"*");//HL01: Heirarchical ID
@@ -206,24 +208,53 @@ namespace OpenDental.Eclaims
 						sw.WriteLine(Sout(billProv.SSN,80)+"~");//NM109: ID code (EIN or SSN)
 						//2010AA N3: Billing provider address
 						seg++;
-						sw.Write("N3*"+Sout(Prefs.GetString("PracticeAddress"),55));//N301: Address
-						if(Prefs.GetString("PracticeAddress2")==""){
-							sw.WriteLine("~");
+						if(clinic==null){
+							sw.Write("N3*"+Sout(Prefs.GetString("PracticeAddress"),55));//N301: Address
 						}
 						else{
-							//N302: Address2. Optional.
-							sw.WriteLine("*"+Sout(Prefs.GetString("PracticeAddress2"),55)+"~");
+							sw.Write("N3*"+Sout(clinic.Address,55));//N301: Address
+						}
+						if(clinic==null){
+							if(Prefs.GetString("PracticeAddress2")==""){
+								sw.WriteLine("~");
+							}
+							else{
+								//N302: Address2. Optional.
+								sw.WriteLine("*"+Sout(Prefs.GetString("PracticeAddress2"),55)+"~");
+							}
+						}
+						else{
+							if(clinic.Address2==""){
+								sw.WriteLine("~");
+							}
+							else{
+								//N302: Address2. Optional.
+								sw.WriteLine("*"+Sout(clinic.Address2,55)+"~");
+							}
 						}
 						//2010AA N4: Billing prov City,State,Zip
 						seg++;
-						sw.WriteLine("N4*"+Sout(Prefs.GetString("PracticeCity"),30)+"*"//N401: City
-							+Sout(Prefs.GetString("PracticeST"),2)+"*"//N402: State
-							+Sout(Prefs.GetString("PracticeZip").Replace("-",""),15)+"~");//N403: Zip
+						if(clinic==null){
+							sw.WriteLine("N4*"+Sout(Prefs.GetString("PracticeCity"),30)+"*"//N401: City
+								+Sout(Prefs.GetString("PracticeST"),2)+"*"//N402: State
+								+Sout(Prefs.GetString("PracticeZip").Replace("-",""),15)+"~");//N403: Zip
+						}
+						else{
+							sw.WriteLine("N4*"+Sout(clinic.City,30)+"*"//N401: City
+								+Sout(clinic.State,2)+"*"//N402: State
+								+Sout(clinic.Zip.Replace("-",""),15)+"~");//N403: Zip
+						}
 						//2010AA REF: Office phone number. Required by WebMD.
 						if(clearhouse.ReceiverID=="0135WCH00"){//if WebMD
 							seg++;
-							sw.WriteLine("REF*LU*"
-								+Prefs.GetString("PracticePhone")+"~");
+							if(clinic==null){
+								sw.WriteLine("REF*LU*"
+									+Prefs.GetString("PracticePhone")+"~");
+							}
+							else{
+								sw.WriteLine("REF*LU*"
+									+clinic.Phone+"~");
+							}
 						}
 						//2010AA REF: License #. Required by RECS clearinghouse,
 						//but everyone else should find it useful too.
@@ -251,22 +282,26 @@ namespace OpenDental.Eclaims
 					claimProcs=ClaimProcs.GetForSendClaim(claimProcList,claim.ClaimNum);
 					procList=Procedures.Refresh(claim.PatNum);
 					#region Subscriber
-					if(i==0 || claimAr[2,i].ToString() != claimAr[2,i-1].ToString()){//if subscriber changed
+					//if(i==0 || claimAr[2,i].ToString() != claimAr[2,i-1].ToString()){//if subscriber changed
+					if(i==0 || claimAr[3,i].ToString() != claimAr[3,i-1].ToString())//if patient changed
+					{
 						//situation 1:
 						if(claimAr[3,i].ToString()==claimAr[2,i].ToString()){//if patient is the subscriber
 							//-claim level will follow
-							//-then, possibly more patients ONLY IF they have the same subscriber
 							hasSubord="0";
-							//loop through ALL the claims again and check for matching subscribers, diff pats
-							for(int j=0;j<claimAr.GetLength(1);j++){
-								if(j!=i//we are only trying to match different lines
-									//other claims with same subscriber
-									&& claimAr[2,j].ToString()==claimAr[2,i].ToString()
-									&& claimAr[3,j].ToString()!=claimAr[3,i].ToString())//and patient is different
-								{
-									hasSubord="1";//so there will be a subord HL after the claim info
-								}
-							}
+							//subordinate patients will no longer follow. They will all have their own subscriber loop
+													/*
+													//-then, possibly more patients ONLY IF they have the same subscriber
+													//loop through ALL the claims again and check for matching subscribers, diff pats
+													for(int j=0;j<claimAr.GetLength(1);j++){
+														if(j!=i//we are only trying to match different lines
+															//other claims with same subscriber
+															&& claimAr[2,j].ToString()==claimAr[2,i].ToString()
+															&& claimAr[3,j].ToString()!=claimAr[3,i].ToString())//and patient is different
+														{
+															hasSubord="1";//so there will be a subord HL after the claim info
+														}
+													}*/
 						}
 						//situation 2:
 						else{//patient is not the subscriber
@@ -278,8 +313,7 @@ namespace OpenDental.Eclaims
 						sw.WriteLine("HL*"+HLcount.ToString()+"*"//HL01: Heirarchical ID
 							+parentProv.ToString()+"*"//HL02: parent is always the provider HL
 							+"22*"//HL03: 22=Subscriber
-							+hasSubord+"~");//HL04: 1=additional subordinate HL segments. 0=no subord
-
+							+hasSubord+"~");//HL04: 1=additional subordinate HL segment (patient). 0=no subord
 						//2000B SBR:
 						seg++;
 						sw.Write("SBR*");
@@ -344,9 +378,16 @@ namespace OpenDental.Eclaims
 								+Sout(subscriber.Zip.Replace("-",""),15,3)+"~");//N403: Zip
 						//2010BA DMG: Subscr. Demographics. Only if patient is the subscriber
 							seg++;
-							sw.WriteLine("DMG*D8*"//DMG01: use D8
-								+subscriber.Birthdate.ToString("yyyyMMdd")+"*"//DMG02: birthdate
-								+GetGender(subscriber.Gender)+"~");//DMG03: gender. F,M,or U
+							if(subscriber.Birthdate.Year<1900){
+								sw.WriteLine("DMG*D8*"//DMG01: use D8
+									+subscriber.Birthdate.ToString("19000101")+"*"//DMG02: birthdate
+									+GetGender(subscriber.Gender)+"~");//DMG03: gender. F,M,or U
+							}
+							else{
+								sw.WriteLine("DMG*D8*"//DMG01: use D8
+									+subscriber.Birthdate.ToString("yyyyMMdd")+"*"//DMG02: birthdate
+									+GetGender(subscriber.Gender)+"~");//DMG03: gender. F,M,or U
+							}
 						//}//if provider is the subscriber
 						//2010BA REF: Secondary ID. Situational. Not used.
 						//2010BA REF: Casualty Claim number. Not used.
@@ -379,14 +420,16 @@ namespace OpenDental.Eclaims
 						sw.WriteLine("N4*"
 							+Sout(carrier.City,30,2)+"*"//N401: City
 							+Sout(carrier.State,2,2)+"*"//N402: State
-							+Sout(carrier.Zip,15,3)+"~");//N403: Zip
+							+Sout(carrier.Zip.Replace("-",""),15,3)+"~");//N403: Zip
 						parentSubsc=HLcount;
 						HLcount++;
 					}
 					#endregion
 					#region Patient
-					if((i==0 || claimAr[3,i].ToString() != claimAr[3,i-1].ToString())//if patient changed
-						&& claimAr[3,i].ToString() != claimAr[2,i].ToString())//AND patient is not subscriber
+					//if((i==0 || claimAr[3,i].ToString() != claimAr[3,i-1].ToString())//if patient changed
+					//	&& claimAr[3,i].ToString() != claimAr[2,i].ToString())//AND patient is not subscriber
+					//{
+					if(claimAr[3,i].ToString() != claimAr[2,i].ToString())//if patient is not subscriber
 					{
 						//2000C Patient HL loop
 						seg++;
@@ -527,9 +570,23 @@ namespace OpenDental.Eclaims
 							+"*"//DN101 not used because no field yet in OD.
 							+claim.OrthoRemainM.ToString()+"~");
 					}
-					//2300 DN2
+					//2300 DN2: Missing teeth
 					ArrayList missingTeeth=Procedures.GetMissingTeeth(procList);
+					bool doSkip;
 					for(int j=0;j<missingTeeth.Count;j++){
+						//if the missing tooth is missing because of an extraction being billed here, then exclude it
+						doSkip=false;
+						for(int p=0;p<claimProcs.Length;p++){
+							proc=Procedures.GetProc(procList,claimProcs[p].ProcNum);
+							procCode=ProcedureCodes.GetProcCode(proc.ADACode);
+							if(procCode.RemoveTooth && proc.ToothNum==(string)missingTeeth[j]){
+								doSkip=true;
+								break;
+							}
+						}
+						if(doSkip){
+							continue;
+						}
 						seg++;
 						sw.WriteLine("DN2*"
 							+missingTeeth[j]+"*"//DN201: tooth number
@@ -631,6 +688,13 @@ namespace OpenDental.Eclaims
 								//,MC=Medicaid,SA=self-administered, etc. There are too many. I'm just going 
 								//to use CI for everyone. I don't think anyone will care.
 					//2320 AMT: COB paid amount
+						double paidOtherIns=0;
+						for(int j=0;j<claimProcs.Length;j++){
+							paidOtherIns+=ClaimProcs.ProcInsPayPri(claimProcList,claimProcs[j].ProcNum,claimProcs[j].PlanNum);
+						}
+						seg++;
+						sw.WriteLine("AMT*D8*"//AMT01: D=Payor amount paid
+							+paidOtherIns.ToString("F")+"~");//AMT02: Amount
 					//2320 AMT: COB patient responsibility
 					//2320 AMT: COB discount amount
 					//2320 AMT: COB paid to patient
@@ -1215,11 +1279,23 @@ namespace OpenDental.Eclaims
 					retVal+=",";
 				retVal+="Default Prov SSN/TIN";
 			}
-			if(Prefs.GetString("PracticePhone").Length!=10){//1000A PER04 min length=1.
-				//But 10 digit phone is required by WebMD and is universally assumed 
-				if(retVal!="")
-					retVal+=",";
-				retVal+="Practice Phone";
+			Claim claim=Claims.GetClaim(queueItem.ClaimNum);
+			Clinic clinic=Clinics.GetClinic(claim.ClinicNum);
+			if(clinic==null){
+				if(Prefs.GetString("PracticePhone").Length!=10){//1000A PER04 min length=1.
+					//But 10 digit phone is required by WebMD and is universally assumed 
+					if(retVal!="")
+						retVal+=",";
+					retVal+="Practice Phone";
+				}
+			}
+			else{
+				if(clinic.Phone.Length!=10){//1000A PER04 min length=1.
+					//But 10 digit phone is required by WebMD and is universally assumed 
+					if(retVal!="")
+						retVal+=",";
+					retVal+="Clinic Phone";
+				}
 			}
 			//1000B NM109: Receiver ID Code. aka ETIN#. Min length=2
 			/*if(clearhouse.IDCode.Length<2){
@@ -1251,7 +1327,6 @@ namespace OpenDental.Eclaims
 					retVal+=",";
 				retVal+="Billing Prov Lic #";
 			}
-			Claim claim=Claims.GetClaim(queueItem.ClaimNum);
 			Provider treatProv=Providers.ListLong[Providers.GetIndexLong(claim.ProvTreat)];
 			if(treatProv.LName==""){
 				if(retVal!="")
@@ -1273,33 +1348,52 @@ namespace OpenDental.Eclaims
 					retVal+=",";
 				retVal+="Treating Prov Lic #";
 			}
-			if(Prefs.GetString("PracticeAddress")==""){
-				if(retVal!="")
-					retVal+=",";
-				retVal+="Practice Address";
+			if(clinic==null){
+				if(Prefs.GetString("PracticeAddress")==""){
+					if(retVal!="")
+						retVal+=",";
+					retVal+="Practice Address";
+				}
+				if(Prefs.GetString("PracticeCity").Length<2){
+					if(retVal!="")
+						retVal+=",";
+					retVal+="Practice City";
+				}
+				if(Prefs.GetString("PracticeST").Length!=2){
+					if(retVal!="")
+						retVal+=",";
+					retVal+="Practice State(2 char)";
+				}
+				if(Prefs.GetString("PracticeZip").Length<3){
+					if(retVal!="")
+						retVal+=",";
+					retVal+="Practice Zip";
+				}
 			}
-			if(Prefs.GetString("PracticeCity").Length<2){
-				if(retVal!="")
-					retVal+=",";
-				retVal+="Practice City";
-			}
-			if(Prefs.GetString("PracticeST").Length!=2){
-				if(retVal!="")
-					retVal+=",";
-				retVal+="Practice State(2 char)";
-			}
-			if(Prefs.GetString("PracticeZip").Length<3){
-				if(retVal!="")
-					retVal+=",";
-				retVal+="Practice Zip";
+			else{
+				if(clinic.Address==""){
+					if(retVal!="")
+						retVal+=",";
+					retVal+="Clinic Address";
+				}
+				if(clinic.City.Length<2){
+					if(retVal!="")
+						retVal+=",";
+					retVal+="Clinic City";
+				}
+				if(clinic.State.Length!=2){
+					if(retVal!="")
+						retVal+=",";
+					retVal+="Clinic State(2 char)";
+				}
+				if(clinic.Zip.Length<3){
+					if(retVal!="")
+						retVal+=",";
+					retVal+="Clinic Zip";
+				}
 			}
 			InsPlan insPlan=InsPlans.GetPlan(claim.PlanNum,new InsPlan[] {});
 			Carrier carrier=Carriers.GetCarrier(insPlan.CarrierNum);
-			//if(carrier.ElectID==""){//this will get changed to 06126
-			//	if(retVal!="")
-			//		retVal+=",";
-			//	retVal+="Carrier ElectronicID";
-			//}
 			if(carrier.Address==""){
 				if(retVal!="")
 					retVal+=",";
@@ -1366,38 +1460,6 @@ namespace OpenDental.Eclaims
 					retVal+=",";
 				retVal+="Relationship";
 			}
-			//if(patient.SSN.Length<2){//required when patient is not subscriber
-			//	if(retVal!="")
-			//		retVal+=",";
-			//	retVal+="Patient SSN";
-			//}
-			/*Turns out we don't really need this info for subscriber, but only for patient
-			if(subscriber.Address==""){
-				if(retVal!="")
-					retVal+=",";
-				retVal+="Subscriber Address";
-			}
-			if(subscriber.City.Length<2){
-				if(retVal!="")
-					retVal+=",";
-				retVal+="Subscriber City";
-			}
-			if(subscriber.State.Length!=2){
-				if(retVal!="")
-					retVal+=",";
-				retVal+="Subscriber State";
-			}
-			if(subscriber.Zip.Length<3){
-				if(retVal!="")
-					retVal+=",";
-				retVal+="Subscriber Zip";
-			}
-			if(subscriber.Birthdate.Year<1880){
-				if(retVal!="")
-					retVal+=",";
-				retVal+="Subscriber Birthdate";
-			}
-			*/
 			if(patient.Address==""){
 				if(retVal!="")
 					retVal+=",";
@@ -1428,11 +1490,6 @@ namespace OpenDental.Eclaims
 					retVal+=",";
 				retVal+="Auto accident State";
 			}
-			//if(claim.ClaimType=="PreAuth"){
-			//	if(retVal!="")
-			//		retVal+=",";
-			//	retVal+="PreAuth not supported";
-			//}
 			ClaimProc[] claimProcList=ClaimProcs.Refresh(patient.PatNum);
 			ClaimProc[] claimProcs=ClaimProcs.GetForSendClaim(claimProcList,claim.ClaimNum);
 			Procedure[] procList=Procedures.Refresh(claim.PatNum);

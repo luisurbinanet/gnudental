@@ -5,13 +5,13 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Corresponds to the schoolclass table in the database. eg. Dental 2009 or Hygeine 2007.</summary>
+	///<summary>Corresponds to the schoolclass table in the database. eg. Dental 2009 or Hygiene 2007.</summary>
 	public class SchoolClass{
 		///<summary>Primary key.</summary>
 		public int SchoolClassNum;
 		///<summary>The year this class will graduate</summary>
 		public int GradYear;
-		///<summary>Description of this class. eg Dental or Hygeine</summary>
+		///<summary>Description of this class. eg Dental or Hygiene</summary>
 		public string Descript;
 
 		///<summary></summary>

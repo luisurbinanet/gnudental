@@ -46,14 +46,14 @@ namespace OpenDental{
 		}
 
 		///<summary>Computes balance for a single patient. Returns true if a refresh is needed.</summary>
-		public static bool ComputeBalances(Procedure[] procList,ClaimProc[] claimProcList,Patient PatCur,PaySplit[] paySplitList,Adjustment[] AdjustmentList){
+		public static bool ComputeBalances(Procedure[] procList,ClaimProc[] claimProcList,Patient PatCur,PaySplit[] paySplitList,Adjustment[] AdjustmentList,PayPlan[] payPlanList,PayPlanCharge[] payPlanChargeList){
 			//must have refreshed all 5 first
 			double calcBal
 				=Procedures.ComputeBal(procList)
 				+ClaimProcs.ComputeBal(claimProcList)
 				+Adjustments.ComputeBal(AdjustmentList)
 				-PaySplits.ComputeBal(paySplitList)
-				+PayPlans.ComputeBal(PatCur.PatNum);
+				+PayPlans.ComputeBal(PatCur.PatNum,payPlanList,payPlanChargeList);
 			if(calcBal!=PatCur.EstBalance){
 				Patient PatOld=PatCur.Copy();
 				PatCur.EstBalance=calcBal;
@@ -254,7 +254,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public static event ModuleEventHandler ModuleSelected;
 
-		///<summary>This triggers a global event which the main form responds to by closing the program.</summary>
+		///<summary>This triggers a global event which the main form responds to by going directly to a module.</summary>
 		public static void GoNow(DateTime dateSelected, Appointment pinAppt,int selectedAptNum,int iModule){
 			OnModuleSelected(new ModuleEventArgs(dateSelected,pinAppt,selectedAptNum,iModule));
 		}
@@ -290,7 +290,7 @@ namespace OpenDental{
 			get{return dateSelected;}
 		}
 
-		///<summary></summary>
+		///<summary>Don't remember why I called this one pin.  I don't think it has anything to do with pinboard.</summary>
 		public Appointment PinAppt{
 			get{return pinAppt;}
 		}

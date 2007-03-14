@@ -62,10 +62,10 @@ namespace OpenDental{
 			}
 		}
 
-		///<summary></summary>
-		public static void Refresh(){
-			Refresh(DateTime.MinValue,new DateTime(3000,1,1),true,true);
-		}
+		//<summary>This is stupid.  It takes too long.</summary>
+		//public static void Refresh(){
+		//	Refresh(DateTime.MinValue,new DateTime(3000,1,1),true,true);
+		//}
 
 		///<summary></summary>
 		public static void InsertCur(){
@@ -117,23 +117,27 @@ namespace OpenDental{
 			NonQ();
 		}
 
-		///<summary></summary>
-		public static bool IsClockedIn(){
-			if(List.Length==0)//if this employee has never clocked in or out.
+		///<summary>Gets directly from the database.  Returns true if the last time clock entry for this employee was a clockin.</summary>
+		public static bool IsClockedIn(int employeeNum){
+			cmd.CommandText="SELECT ClockIn FROM clockevent WHERE EmployeeNum="+POut.PInt(employeeNum)
+				+" ORDER BY TimeDisplayed DESC LIMIT 1";
+			FillTable();
+			if(table.Rows.Count==0)//if this employee has never clocked in or out.
 				return false;
-			if(List[List.Length-1].ClockIn){//if the last clockevent was a clockin
+			if(PIn.PBool(table.Rows[0][0].ToString())){//if the last clockevent was a clockin
 				return true;
 			}
-			else{
-				return false;
-			}
+			return false;
 		}
 
-		///<summary>If the employee is clocked out, this gets the status for clockin is based on how they last clocked out.  Also used to determine how to initially display timecard.</summary>
-		public static TimeClockStatus GetLastStatus(){
-			if(List.Length==0)//if this employee has never clocked in or out.
+		///<summary>Gets info directly from database.  If the employee is clocked out, this gets the status for clockin is based on how they last clocked out.  Also used to determine how to initially display timecard.</summary>
+		public static TimeClockStatus GetLastStatus(int employeeNum){
+			cmd.CommandText="SELECT ClockStatus FROM clockevent WHERE EmployeeNum="+POut.PInt(employeeNum)
+				+" ORDER BY TimeDisplayed DESC LIMIT 1";
+			FillTable();
+			if(table.Rows.Count==0)//if this employee has never clocked in or out.
 				return TimeClockStatus.Home;
-			return List[List.Length-1].ClockStatus;
+			return (TimeClockStatus)PIn.PInt(table.Rows[0][0].ToString());
 		}
 
 		///<summary></summary>

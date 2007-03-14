@@ -29,6 +29,7 @@ namespace OpenDental{
 		private OpenDental.ValidNumber textStatementsCalcDueDate;
 		private System.Windows.Forms.CheckBox checkEclaimsSeparateTreatProv;
 		private System.Windows.Forms.CheckBox checkRandomPrimaryKeys;
+		private System.Windows.Forms.CheckBox checkBalancesDontSubtractIns;
 		private System.Windows.Forms.Label label1;// Required designer variable.
 
 		///<summary></summary>
@@ -65,6 +66,7 @@ namespace OpenDental{
 			this.checkTreatPlanShowIns = new System.Windows.Forms.CheckBox();
 			this.checkAllowMultipleCopiesOfProgram = new System.Windows.Forms.CheckBox();
 			this.groupBox5 = new System.Windows.Forms.GroupBox();
+			this.checkBalancesDontSubtractIns = new System.Windows.Forms.CheckBox();
 			this.textStatementsCalcDueDate = new OpenDental.ValidNumber();
 			this.label2 = new System.Windows.Forms.Label();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -84,7 +86,7 @@ namespace OpenDental{
 			this.butOK.Autosize = true;
 			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butOK.Location = new System.Drawing.Point(792, 453);
+			this.butOK.Location = new System.Drawing.Point(676, 354);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 7;
@@ -99,7 +101,7 @@ namespace OpenDental{
 			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.Location = new System.Drawing.Point(792, 491);
+			this.butCancel.Location = new System.Drawing.Point(676, 392);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 8;
@@ -164,7 +166,7 @@ namespace OpenDental{
 			// checkITooth
 			// 
 			this.checkITooth.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkITooth.Location = new System.Drawing.Point(48, 379);
+			this.checkITooth.Location = new System.Drawing.Point(48, 380);
 			this.checkITooth.Name = "checkITooth";
 			this.checkITooth.Size = new System.Drawing.Size(338, 21);
 			this.checkITooth.TabIndex = 42;
@@ -223,6 +225,7 @@ namespace OpenDental{
 			// 
 			// groupBox5
 			// 
+			this.groupBox5.Controls.Add(this.checkBalancesDontSubtractIns);
 			this.groupBox5.Controls.Add(this.textStatementsCalcDueDate);
 			this.groupBox5.Controls.Add(this.label2);
 			this.groupBox5.Controls.Add(this.groupBox2);
@@ -234,6 +237,15 @@ namespace OpenDental{
 			this.groupBox5.TabIndex = 52;
 			this.groupBox5.TabStop = false;
 			this.groupBox5.Text = "Statements";
+			// 
+			// checkBalancesDontSubtractIns
+			// 
+			this.checkBalancesDontSubtractIns.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkBalancesDontSubtractIns.Location = new System.Drawing.Point(19, 189);
+			this.checkBalancesDontSubtractIns.Name = "checkBalancesDontSubtractIns";
+			this.checkBalancesDontSubtractIns.Size = new System.Drawing.Size(288, 17);
+			this.checkBalancesDontSubtractIns.TabIndex = 55;
+			this.checkBalancesDontSubtractIns.Text = "Balances Don\'t Subtract Insurance Estimate";
 			// 
 			// textStatementsCalcDueDate
 			// 
@@ -311,7 +323,7 @@ namespace OpenDental{
 			// FormMisc
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(899, 529);
+			this.ClientSize = new System.Drawing.Size(783, 430);
 			this.Controls.Add(this.checkRandomPrimaryKeys);
 			this.Controls.Add(this.checkEclaimsSeparateTreatProv);
 			this.Controls.Add(this.groupBox5);
@@ -353,6 +365,7 @@ namespace OpenDental{
 			if(Prefs.GetInt("StatementsCalcDueDate")!=-1){
 				textStatementsCalcDueDate.Text=Prefs.GetInt("StatementsCalcDueDate").ToString();
 			}
+			checkBalancesDontSubtractIns.Checked=Prefs.GetBool("BalancesDontSubtractIns");
 			checkAutoRefresh.Checked=Prefs.GetBool("AutoRefreshIsDisabled");
 			checkAllowMultipleCopiesOfProgram.Checked=Prefs.GetBool("AllowMultipleCopiesOfProgram");
 			checkRandomPrimaryKeys.Checked=Prefs.GetBool("RandomPrimaryKeys");
@@ -392,6 +405,7 @@ namespace OpenDental{
 				|| Prefs.UpdateBool("TreatPlanShowIns",checkTreatPlanShowIns.Checked)
 				|| Prefs.UpdateBool("StatementShowCreditCard",checkShowCC.Checked)
 				|| Prefs.UpdateBool("StatementAccountsUseChartNumber",radioUseChartNumber.Checked)
+				|| Prefs.UpdateBool("BalancesDontSubtractIns",checkBalancesDontSubtractIns.Checked)
 				|| Prefs.UpdateBool("AutoRefreshIsDisabled",checkAutoRefresh.Checked)
 				|| Prefs.UpdateBool("AllowMultipleCopiesOfProgram",checkAllowMultipleCopiesOfProgram.Checked)
 				|| Prefs.UpdateBool("RandomPrimaryKeys",checkRandomPrimaryKeys.Checked)

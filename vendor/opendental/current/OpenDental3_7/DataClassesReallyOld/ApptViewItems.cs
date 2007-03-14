@@ -11,7 +11,7 @@ namespace OpenDental{
 		public int ApptViewItemNum;//
 		///<summary>Foreign key to apptview.</summary>
 		public int ApptViewNum;
-		///<summary>Foreign key to definition.DefNum.</summary>
+		///<summary>Foreign key to operatory.OperatoryNum.</summary>
 		public int OpNum;
 		///<summary>Foreign key to provider.ProvNum.</summary>
 		public int ProvNum;
@@ -48,7 +48,7 @@ namespace OpenDental{
 		///<summary>Visible providers in appt module.  List of indices to providers.List(short).</summary>
 		///<remarks>Also see VisOps.  This is a subset of the available provs.  You can't include a hidden prov in this list.</remarks>
 		public static int[] VisProvs;
-		///<summary>Visible ops in appt module.  List of indices to Defs.Short[ops].</summary>
+		///<summary>Visible ops in appt module.  List of indices to Operatories.ListShort[ops].</summary>
 		///<remarks>Also see VisProvs.  This is a subset of the available ops.  You can't include a hidden op in this list.</remarks>
 		public static int[] VisOps;
 		///<summary>Subset of ForCurView. Just items for rowElements. If now view is selected, then the elements are filled with default info.</summary>
@@ -114,8 +114,7 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
-		/// <summary>Gets (list)ForCurView, VisOps, VisProvs, and ApptRows.  Also sets TwoRows. Works even if no apptview is selected.
-		/// </summary>
+		///<summary>Gets (list)ForCurView, VisOps, VisProvs, and ApptRows.  Also sets TwoRows. Works even if no apptview is selected.</summary>
 		public static void GetForCurView(){
 			ArrayList tempAL=new ArrayList();
 			ArrayList ALprov=new ArrayList();
@@ -123,8 +122,8 @@ namespace OpenDental{
 			ArrayList ALelements=new ArrayList();
 			if(ApptViews.Cur.ApptViewNum==0){
 				//MessageBox.Show("apptcategorynum:"+ApptCategories.Cur.ApptCategoryNum.ToString());
-				//make visible ops exactly the same as the short def list (all except hidden)
-				for(int i=0;i<Defs.Short[(int)DefCat.Operatories].Length;i++){
+				//make visible ops exactly the same as the short ops list (all except hidden)
+				for(int i=0;i<Operatories.ListShort.Length;i++){
 					ALops.Add(i);
 				}
 				//make visible provs exactly the same as the prov list (all except hidden)
@@ -144,7 +143,7 @@ namespace OpenDental{
 					if(List[i].ApptViewNum==ApptViews.Cur.ApptViewNum){
 						tempAL.Add(List[i]);
 						if(List[i].OpNum>0){//op
-							index=Defs.GetOrder(DefCat.Operatories,List[i].OpNum);
+							index=Operatories.GetOrder(List[i].OpNum);
 							if(index!=-1){
 								ALops.Add(index);
 							}
@@ -191,10 +190,10 @@ namespace OpenDental{
 			return -1;
 		}
 
-		///<summary>Returns the index of the opNum(defNum) within VisOps.  Returns -1 if not in visOps.</summary>
+		///<summary>Returns the index of the opNum within VisOps.  Returns -1 if not in visOps.</summary>
 		public static int GetIndexOp(int opNum){
 			for(int i=0;i<VisOps.Length;i++){
-				if(Defs.Short[(int)DefCat.Operatories][VisOps[i]].DefNum==opNum)
+				if(Operatories.ListShort[VisOps[i]].OperatoryNum==opNum)
 					return i;
 			}		
 			return -1;

@@ -25,10 +25,10 @@ namespace OpenDental{
 		private System.Windows.Forms.Label labelFeeSched;
 		private int tableLength;
 		private OpenDental.UI.Button butNew;
-		private System.Windows.Forms.GroupBox groupBox1;
-		private OpenDental.UI.Button butDuplicate;
 		private OpenDental.TableCodeList[] tb;
 		private OpenDental.UI.Button butEdit;
+		private OpenDental.UI.Button butTools;
+		private System.Windows.Forms.GroupBox groupFeeScheds;
 		private bool changed;
 
 		///<summary></summary>
@@ -58,9 +58,9 @@ namespace OpenDental{
 			this.labelFeeSched = new System.Windows.Forms.Label();
 			this.butNew = new OpenDental.UI.Button();
 			this.butEdit = new OpenDental.UI.Button();
-			this.groupBox1 = new System.Windows.Forms.GroupBox();
-			this.butDuplicate = new OpenDental.UI.Button();
-			this.groupBox1.SuspendLayout();
+			this.groupFeeScheds = new System.Windows.Forms.GroupBox();
+			this.butTools = new OpenDental.UI.Button();
+			this.groupFeeScheds.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// butClose
@@ -158,45 +158,44 @@ namespace OpenDental{
 			this.butEdit.Autosize = true;
 			this.butEdit.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butEdit.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butEdit.Location = new System.Drawing.Point(10, 18);
+			this.butEdit.Location = new System.Drawing.Point(12, 18);
 			this.butEdit.Name = "butEdit";
-			this.butEdit.Size = new System.Drawing.Size(85, 25);
+			this.butEdit.Size = new System.Drawing.Size(81, 25);
 			this.butEdit.TabIndex = 13;
-			this.butEdit.Text = "Edit";
+			this.butEdit.Text = "Edit Def";
 			this.butEdit.Click += new System.EventHandler(this.butEdit_Click);
 			// 
-			// groupBox1
+			// groupFeeScheds
 			// 
-			this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.groupBox1.Controls.Add(this.butDuplicate);
-			this.groupBox1.Controls.Add(this.butEdit);
-			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox1.Location = new System.Drawing.Point(815, 360);
-			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(139, 57);
-			this.groupBox1.TabIndex = 14;
-			this.groupBox1.TabStop = false;
-			this.groupBox1.Text = "Fee Schedules";
+			this.groupFeeScheds.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.groupFeeScheds.Controls.Add(this.butTools);
+			this.groupFeeScheds.Controls.Add(this.butEdit);
+			this.groupFeeScheds.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.groupFeeScheds.Location = new System.Drawing.Point(814, 360);
+			this.groupFeeScheds.Name = "groupFeeScheds";
+			this.groupFeeScheds.Size = new System.Drawing.Size(139, 84);
+			this.groupFeeScheds.TabIndex = 14;
+			this.groupFeeScheds.TabStop = false;
+			this.groupFeeScheds.Text = "Fee Schedules";
 			// 
-			// butDuplicate
+			// butTools
 			// 
-			this.butDuplicate.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butDuplicate.Autosize = true;
-			this.butDuplicate.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butDuplicate.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butDuplicate.Location = new System.Drawing.Point(10, 50);
-			this.butDuplicate.Name = "butDuplicate";
-			this.butDuplicate.Size = new System.Drawing.Size(85, 25);
-			this.butDuplicate.TabIndex = 14;
-			this.butDuplicate.Text = "Duplicate";
-			this.butDuplicate.Visible = false;
-			this.butDuplicate.Click += new System.EventHandler(this.butDuplicate_Click);
+			this.butTools.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butTools.Autosize = true;
+			this.butTools.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butTools.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butTools.Location = new System.Drawing.Point(12, 50);
+			this.butTools.Name = "butTools";
+			this.butTools.Size = new System.Drawing.Size(81, 25);
+			this.butTools.TabIndex = 14;
+			this.butTools.Text = "Tools";
+			this.butTools.Click += new System.EventHandler(this.butTools_Click);
 			// 
 			// FormProcedures
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(956, 730);
-			this.Controls.Add(this.groupBox1);
+			this.Controls.Add(this.groupFeeScheds);
 			this.Controls.Add(this.butNew);
 			this.Controls.Add(this.labelFeeSched);
 			this.Controls.Add(this.listFeeSched);
@@ -211,7 +210,7 @@ namespace OpenDental{
 			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormProcedures_Closing);
 			this.Load += new System.EventHandler(this.FormProcedures_Load);
 			this.Activated += new System.EventHandler(this.FormProcedures_Activated);
-			this.groupBox1.ResumeLayout(false);
+			this.groupFeeScheds.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -229,14 +228,17 @@ namespace OpenDental{
 			listFeeSched.Location=new Point(ClientSize.Width-125,50);
 			switch(Mode){
 				case FormProcMode.Edit:
+					//Edit mode is the only place where groupFeeScheds is visible. Security will already have been checked.
 					butNew.Visible=true;
 					butClose.Visible=true;
 				break;
 				case FormProcMode.Select:
 					butCancel.Visible=true;
+					groupFeeScheds.Visible=false;
 				break;
 				case FormProcMode.View:
 					butClose.Visible=true;
+					groupFeeScheds.Visible=false;
 				break;
 			}
 			listFeeSched.Items.Clear();
@@ -332,9 +334,7 @@ namespace OpenDental{
 		}
 
 		private void butEdit_Click(object sender, System.EventArgs e) {
-			if(!Security.IsAuthorized(Permissions.Setup)){
-				return;
-			}
+			//won't even be visible if no permission
 			int selectedSched=Defs.Short[(int)DefCat.FeeSchedNames][listFeeSched.SelectedIndex].DefNum;
 			FormDefinitions FormD=new FormDefinitions(DefCat.FeeSchedNames);
 			FormD.ShowDialog();
@@ -352,11 +352,21 @@ namespace OpenDental{
 			if(listFeeSched.SelectedIndex==-1){
 				listFeeSched.SelectedIndex=0;
 			}
+			SecurityLogs.MakeLogEntry(Permissions.Setup,0,"Definitions");
 			//FillTables();//will be done automatically because of lines above			
 		}
 
-		private void butDuplicate_Click(object sender, System.EventArgs e) {
-			//not functional yet
+		private void butTools_Click(object sender, System.EventArgs e) {
+			FormFeeSchedTools FormF=new FormFeeSchedTools(Defs.Short[(int)DefCat.FeeSchedNames][listFeeSched.SelectedIndex].DefNum);
+			FormF.ShowDialog();
+			if(FormF.DialogResult==DialogResult.Cancel){
+				return;
+			}
+			Fees.Refresh();
+			ProcedureCodes.Refresh();
+			changed=true;
+			FillTables();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,0,"Fee Schedule Tools");
 		}
 
 		private void tb_CellClicked(object sender, CellEventArgs e){

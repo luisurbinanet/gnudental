@@ -42,11 +42,16 @@ namespace OpenDental{
 		///<summary></summary>
 		public bool IsScrolling=false;
 		//public int selectedCat;//selected ApptCategory.
+		private SolidBrush openBrush;
+		private SolidBrush closedBrush;
+    private SolidBrush holidayBrush;
+		///<summary>This gets set externally each time the module is selected.  It is the background schedule for the entire day.  Includes all types.</summary>
+		public Schedule[] SchedListDay;
 
 		///<summary></summary>
 		public ContrApptSheet(){
 			InitializeComponent();// This call is required by the Windows.Forms Form Designer.
-			//fix: need to add following for design-time support??(would currently cause bugs):
+			//might need to add following for design-time support??(would currently cause bugs):
 				//ColWidth=100;
 				//ColCount=4;
 				//ProvCount=3;
@@ -140,9 +145,7 @@ namespace OpenDental{
 			retVal=(int)Math.Round((double)(newX-TimeWidth-ProvWidth*ProvCount)/ColWidth);
 			//make sure it's not outside bounds of array:
 			if(retVal > ApptViewItems.VisOps.Length-1)
-				//Defs.Short[(int)DefCat.Operatories].Length-1)
 				retVal=ApptViewItems.VisOps.Length-1;
-					//Defs.Short[(int)DefCat.Operatories].Length-1;
 			if(retVal<0)
 				retVal=0;
 			return retVal;
@@ -187,8 +190,8 @@ namespace OpenDental{
 			DrawShadow();
 		}
 
-		///<summary>Supply a list of all Scheds for the day. Includes all types</summary>
-		public void CreateShadow(Schedule[] SchedListDay){
+		///<summary>This technique is just stupid.  Needs to be rewritten to use OnDraw with double buffering.</summary>
+		public void CreateShadow(){
 			if(Shadow!=null){
 				Shadow=null;
 			}
@@ -201,14 +204,11 @@ namespace OpenDental{
 				return;//not sure if this is necessary
 			}
 			Graphics g=Graphics.FromImage(Shadow);
-			SchedDefault[] schedDefs;//for one type at a time
-			Schedule[] schedForType;
+			//SchedDefault[] schedDefs;//for one type at a time
+			//Schedule[] schedForType;
 			//background
 			g.FillRectangle(new SolidBrush(Color.LightGray),0,0,TimeWidth,Height);//L time bar
 			g.FillRectangle(new SolidBrush(Color.LightGray),TimeWidth+ColWidth*ColCount+ProvWidth*ProvCount,0,TimeWidth,Height);//R time bar
-			SolidBrush openBrush;
-			SolidBrush closedBrush;
-      SolidBrush holidayBrush;
 			try{
 				openBrush=new SolidBrush(Defs.Long[(int)DefCat.AppointmentColors][0].ItemColor);
 				closedBrush=new SolidBrush(Defs.Long[(int)DefCat.AppointmentColors][1].ItemColor);
@@ -219,44 +219,78 @@ namespace OpenDental{
 				closedBrush=new SolidBrush(Color.LightGray);
         holidayBrush=new SolidBrush(Color.FromArgb(255,128,128));
 			}
-			//main background-----------------------------------------------------------------------
+			DrawMainBackground(g);
+			DrawBlockouts(g);
+			DrawProvSchedInTimebar(g);
+			DrawProvTimebar(g);
+			DrawGridLines(g);
+			DrawRedTimeIndicator(g);
+			DrawMinutes(g);
+			g.Dispose();
+		}
+
+		///<summary>Including the practice schedule</summary>
+		private void DrawMainBackground(Graphics g){
+			SchedDefault[] schedDefs;//for one type at a time
+			Schedule[] schedForType;
+			//one giant rectangle for everything closed
 			g.FillRectangle(closedBrush,TimeWidth,0,ColWidth*ColCount+ProvWidth*ProvCount,Height);
-			schedForType=Schedules.GetForType(SchedListDay,ScheduleType.Practice,0);
-      if(schedForType.Length==0){//use default sched
-				schedDefs=SchedDefaults.GetForType(ScheduleType.Practice,0);
-				for(int i=0;i<schedDefs.Length;i++){
-					if(schedDefs[i].DayOfWeek==(int)Appointments.DateSelected.DayOfWeek){
-						//if(
-						g.FillRectangle(openBrush
-							,TimeWidth+ProvWidth*ProvCount
-							,schedDefs[i].StartTime.Hour*Lh*RowsPerHr
-							+schedDefs[i].StartTime.Minute*Lh/MinPerRow
-							,ColWidth*ColCount
-							,(schedDefs[i].StopTime
-							-schedDefs[i].StartTime).Hours*Lh*RowsPerHr
-							+(schedDefs[i].StopTime
-							-schedDefs[i].StartTime).Minutes*Lh/MinPerRow);
+			//then, loop through each operatory
+			Operatory curOp;
+			for(int j=0;j<ColCount;j++){
+				curOp=Operatories.ListShort[ApptViewItems.VisOps[j]];
+				if(curOp.ProvDentist!=0 && !curOp.IsHygiene){//dentist
+					schedForType=Schedules.GetForType(SchedListDay,ScheduleType.Provider,curOp.ProvDentist);
+				}
+				else if(curOp.ProvHygienist!=0 && curOp.IsHygiene){//hygienist
+					schedForType=Schedules.GetForType(SchedListDay,ScheduleType.Provider,curOp.ProvHygienist);
+				}
+				else{//practice
+					schedForType=Schedules.GetForType(SchedListDay,ScheduleType.Practice,0);
+				}
+				if(schedForType.Length==0){//use default sched
+					if(curOp.ProvDentist!=0 && !curOp.IsHygiene){//dentist
+						schedDefs=SchedDefaults.GetForType(ScheduleType.Provider,curOp.ProvDentist);
+					}
+					else if(curOp.ProvHygienist!=0 && curOp.IsHygiene){//hygienist
+						schedDefs=SchedDefaults.GetForType(ScheduleType.Provider,curOp.ProvHygienist);
+					}
+					else{//practice
+						schedDefs=SchedDefaults.GetForType(ScheduleType.Practice,0);
+					}
+					for(int i=0;i<schedDefs.Length;i++){
+						if(schedDefs[i].DayOfWeek==(int)Appointments.DateSelected.DayOfWeek){
+							g.FillRectangle(openBrush
+								,TimeWidth+ProvWidth*ProvCount+j*ColWidth
+								,schedDefs[i].StartTime.Hour*Lh*RowsPerHr+schedDefs[i].StartTime.Minute*Lh/MinPerRow
+								,ColWidth
+								,(schedDefs[i].StopTime-schedDefs[i].StartTime).Hours*Lh*RowsPerHr
+								+(schedDefs[i].StopTime-schedDefs[i].StartTime).Minutes*Lh/MinPerRow);
+						}
 					}
 				}
-			}
-			else{//use schedForType
-				for(int i=0;i<schedForType.Length;i++){	
-					if(schedForType[i].Status==SchedStatus.Holiday){
- 						g.FillRectangle(holidayBrush,TimeWidth+ProvWidth*ProvCount,0
-							,ColWidth*ColCount,Height);
-					} 
-          else{
- 						g.FillRectangle(openBrush
-							,TimeWidth+ProvWidth*ProvCount
-							,schedForType[i].StartTime.Hour*Lh*RowsPerHr//6
-							+(int)schedForType[i].StartTime.Minute*Lh/MinPerRow//10
-							,ColWidth*ColCount
-							,(schedForType[i].StopTime-schedForType[i].StartTime).Hours*Lh*RowsPerHr//6
-							+(schedForType[i].StopTime-schedForType[i].StartTime).Minutes*Lh/MinPerRow);//10
-          }
-				}         
-      }
-			//Blockouts-------------------------------------------------------------------------
+				else{//use schedForType
+					for(int i=0;i<schedForType.Length;i++){	
+						if(schedForType[i].Status==SchedStatus.Holiday){
+ 							g.FillRectangle(holidayBrush,TimeWidth+ProvWidth*ProvCount,0,ColWidth*ColCount,Height);
+						} 
+						else{
+ 							g.FillRectangle(openBrush
+								,TimeWidth+ProvWidth*ProvCount+j*ColWidth
+								,schedForType[i].StartTime.Hour*Lh*RowsPerHr+(int)schedForType[i].StartTime.Minute*Lh/MinPerRow//6RowsPerHr 10MinPerRow
+								,ColWidth
+								,(schedForType[i].StopTime-schedForType[i].StartTime).Hours*Lh*RowsPerHr//6
+								+(schedForType[i].StopTime-schedForType[i].StartTime).Minutes*Lh/MinPerRow);//10
+						}
+					}         
+				}//else use schedForType
+			}//for colCount
+		}
+
+		///<summary>Draws all the blockouts for the entire day.</summary>
+		private void DrawBlockouts(Graphics g){
+			SchedDefault[] schedDefs;//for one type at a time
+			Schedule[] schedForType;
 			schedForType=Schedules.GetForType(SchedListDay,ScheduleType.Blockout,0);
 			SolidBrush blockBrush;
 			Pen blockOutlinePen=new Pen(Color.Black,1);
@@ -335,8 +369,13 @@ namespace OpenDental{
 						,new SolidBrush(Defs.Short[(int)DefCat.AppointmentColors][5].ItemColor),rect);
 				}         
       }
-			//Prov sched---------------------------------------------------------------------------
+		}
+
+		///<summary>The background provider schedule for the timebar on the left</summary>
+		private void DrawProvSchedInTimebar(Graphics g){
 			Provider provCur;
+			SchedDefault[] schedDefs;//for one type at a time
+			Schedule[] schedForType;
 			for(int j=0;j<ApptViewItems.VisProvs.Length;j++){
 				provCur=Providers.List[ApptViewItems.VisProvs[j]];
 				schedForType=Schedules.GetForType(SchedListDay,ScheduleType.Provider,provCur.ProvNum);
@@ -374,7 +413,10 @@ namespace OpenDental{
 					}         
 				}
 			}
-			//Prov time bar----------------------------------------------------------------------
+		}
+
+		///<summary>Not the schedule, but just the indicators of scheduling in the ops.</summary>
+		private void DrawProvTimebar(Graphics g){			
 			for(int j=0;j<ContrApptSingle.ProvBar.Length;j++){
 				for(int i=0;i<24*RowsPerHr;i++){
 					//144;i++){//ContrApptSingle.TimeBar.Length;i++){
@@ -403,8 +445,11 @@ namespace OpenDental{
 					}
 				}
 			}
-			//Lines-----------------------------------------------------------------------------
-			//Vert
+		}
+
+		///<summary></summary>
+		private void DrawGridLines(Graphics g){
+		//Vert
 			g.DrawLine(new Pen(Color.DarkGray),0,0,0,Height);
 			g.DrawLine(new Pen(Color.White),TimeWidth-2,0,TimeWidth-2,Height);
 			g.DrawLine(new Pen(Color.DarkGray),TimeWidth-1,0,TimeWidth-1,Height);
@@ -434,13 +479,19 @@ namespace OpenDental{
 				g.DrawLine(new Pen(Color.DarkSlateGray),TimeWidth+ColWidth*ColCount+ProvWidth*ProvCount,i
 					,TimeWidth*2+ColWidth*ColCount+ProvWidth*ProvCount,i);
 			}
-			//Red time indicator------------------------------------------------------------------
+		}
+
+		///<summary></summary>
+		private void DrawRedTimeIndicator(Graphics g){
 			int curTimeY=(int)(DateTime.Now.Hour*Lh*RowsPerHr+DateTime.Now.Minute/60f*(float)Lh*RowsPerHr);
 			g.DrawLine(new Pen(Color.Red),0,curTimeY
 				,TimeWidth*2+ProvWidth*ProvCount+ColWidth*ColCount,curTimeY);
 			g.DrawLine(new Pen(Color.Red),0,curTimeY+1
 				,TimeWidth*2+ProvWidth*ProvCount+ColWidth*ColCount,curTimeY+1);
-			//Minutes-----------------------------------------------------------------------------
+		}
+
+		/// <summary></summary>
+		private void DrawMinutes(Graphics g){
 			Font font=new Font(FontFamily.GenericSansSerif,8);//was msSans
 			Font bfont=new Font(FontFamily.GenericSansSerif,8,FontStyle.Bold);//was Arial
 			g.TextRenderingHint=TextRenderingHint.SingleBitPerPixelGridFit;//to make printing clearer
@@ -491,8 +542,7 @@ namespace OpenDental{
 					g.DrawString(":45",font,new SolidBrush(Color.Black)
 						,TimeWidth+ColWidth*ColCount+ProvWidth*ProvCount,i*Lh*RowsPerHr+Lh*RowsPerIncr*3);
 				}
-			}//end for minutes
-			g.Dispose();
+			}
 		}
 
 		///<summary></summary>

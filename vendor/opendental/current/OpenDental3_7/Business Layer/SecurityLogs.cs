@@ -17,6 +17,8 @@ namespace OpenDental{
 		public DateTime LogDateTime;
 		///<summary>The description of exactly what was done. Varies by permission type.</summary>
 		public string LogText;
+		///<summary>Foreign key to patient.PatNum.  Can be 0 if not applicable.</summary>
+		public int PatNum;
 
 		///<summary></summary>
 		public void Insert(){
@@ -27,7 +29,7 @@ namespace OpenDental{
 			if(Prefs.RandomKeys){
 				command+="SecurityLogNum,";
 			}
-			command+="PermType,UserNum,LogDateTime,LogText) VALUES(";
+			command+="PermType,UserNum,LogDateTime,LogText,PatNum) VALUES(";
 			if(Prefs.RandomKeys){
 				command+="'"+POut.PInt(SecurityLogNum)+"', ";
 			}
@@ -35,7 +37,8 @@ namespace OpenDental{
 				 "'"+POut.PInt   ((int)PermType)+"', "
 				+"'"+POut.PInt   (UserNum)+"', "
 				+"NOW(), "//LogDateTime set to current server time
-				+"'"+POut.PString(LogText)+"')";
+				+"'"+POut.PString(LogText)+"', "
+				+"'"+POut.PInt   (PatNum)+"')";
 			DataConnection dcon=new DataConnection();
  			if(Prefs.RandomKeys){
 				dcon.NonQ(command);
@@ -57,9 +60,9 @@ namespace OpenDental{
   ///<summary></summary>
 	public class SecurityLogs{
 
-		///<summary></summary>
+		///<summary>Used when viewing securityLog from the security admin window.</summary>
 		public static SecurityLog[] Refresh(DateTime dateFrom,DateTime dateTo){
-			string command="SELECT * from securitylog "
+			string command="SELECT * FROM securitylog "
 				+"WHERE LogDateTime >= '"+POut.PDate(dateFrom)+"' "
 				+"AND LogDateTime <= '"+POut.PDate(dateTo.AddDays(1))+"'";
 			DataConnection dcon=new DataConnection();
@@ -72,16 +75,45 @@ namespace OpenDental{
 				List[i].UserNum       = PIn.PInt   (table.Rows[i][2].ToString());
 				List[i].LogDateTime   = PIn.PDateT (table.Rows[i][3].ToString());	
 				List[i].LogText       = PIn.PString(table.Rows[i][4].ToString());
+				List[i].PatNum        = PIn.PInt   (table.Rows[i][5].ToString());
 			}
 			return List;
 		}
 
-		///<summary>User may never be null.</summary>
-		public static void MakeLogEntry(Permissions permType, string logText){
+		///<summary>Used when viewing various audit trails of specific types.</summary>
+		public static SecurityLog[] Refresh(int patNum,Permissions[] permTypes){
+			string types="";
+			for(int i=0;i<permTypes.Length;i++){
+				if(i>0){
+					types+=" OR";
+				}
+				types+=" PermType="+POut.PInt((int)permTypes[i]);
+			}
+			string command="SELECT * FROM securitylog "
+				+"WHERE PatNum= '"+POut.PInt(patNum)+"' "
+				+"AND ("+types+")";
+			DataConnection dcon=new DataConnection();
+			DataTable table=dcon.GetTable(command);
+			SecurityLog[] List=new SecurityLog[table.Rows.Count];
+			for(int i=0;i<List.Length;i++){
+				List[i]=new SecurityLog();
+				List[i].SecurityLogNum= PIn.PInt   (table.Rows[i][0].ToString());
+				List[i].PermType      = (Permissions)PIn.PInt(table.Rows[i][1].ToString());
+				List[i].UserNum       = PIn.PInt   (table.Rows[i][2].ToString());
+				List[i].LogDateTime   = PIn.PDateT (table.Rows[i][3].ToString());	
+				List[i].LogText       = PIn.PString(table.Rows[i][4].ToString());
+				List[i].PatNum        = PIn.PInt   (table.Rows[i][5].ToString());
+			}
+			return List;
+		}
+
+		///<summary>User can never be null.</summary>
+		public static void MakeLogEntry(Permissions permType,int patNum, string logText){
 			SecurityLog securityLog=new SecurityLog();
 			securityLog.PermType=permType;
 			securityLog.UserNum=Security.CurUser.UserNum;
 			securityLog.LogText=logText;
+			securityLog.PatNum=patNum;
 			securityLog.Insert();
 		}
 

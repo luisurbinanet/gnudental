@@ -210,16 +210,21 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please select items first."));
 				return;
 			}
+			if(!MsgBox.Show(this,true,"Please be prepared to wait up to ten minutes while all the bills get processed.  Continue?")){
+				return;
+			}
+			Cursor=Cursors.WaitCursor;
 			int[] guarNums=new int[tbBill.SelectedIndices.Length];
 			for(int i=0;i<tbBill.SelectedIndices.Length;i++){
 				guarNums[i]=AgingList[tbBill.SelectedIndices[i]].PatNum;
 			}
 			FormRpStatement FormS=new FormRpStatement();
 			FormS.LoadAndPrint(guarNums);
+			Cursor=Cursors.Default;
 			#if DEBUG
 				FormS.ShowDialog();
 			#endif
-			MessageBox.Show(Lan.g(this,"Printing Statements Complete"));
+			MsgBox.Show(this,"Printing Statements Complete");
 			DialogResult=DialogResult.OK;
 		}
 

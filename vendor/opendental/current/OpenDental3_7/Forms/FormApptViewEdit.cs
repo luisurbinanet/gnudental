@@ -365,9 +365,9 @@ namespace OpenDental{
 			else
 				textRowsPerIncr.Text=ApptViews.Cur.RowsPerIncr.ToString();
 			ApptViewItems.GetForCurView();
-			for(int i=0;i<Defs.Short[(int)DefCat.Operatories].Length;i++){
-				listOps.Items.Add(Defs.Short[(int)DefCat.Operatories][i].ItemName);
-				if(ApptViewItems.OpIsInView(Defs.Short[(int)DefCat.Operatories][i].DefNum)){
+			for(int i=0;i<Operatories.ListShort.Length;i++){
+				listOps.Items.Add(Operatories.ListShort[i].OpName);
+				if(ApptViewItems.OpIsInView(Operatories.ListShort[i].OperatoryNum)){
 					listOps.SetSelected(i,true);
 				}
 			}
@@ -541,11 +541,11 @@ namespace OpenDental{
 				return;
 			}
 			ApptViewItems.DeleteAllForView();//start with a clean slate
-			for(int i=0;i<Defs.Short[(int)DefCat.Operatories].Length;i++){
+			for(int i=0;i<Operatories.ListShort.Length;i++){
 				if(listOps.SelectedIndices.Contains(i)){
 					ApptViewItems.Cur=new ApptViewItem();
 					ApptViewItems.Cur.ApptViewNum=ApptViews.Cur.ApptViewNum;
-					ApptViewItems.Cur.OpNum=Defs.Short[(int)DefCat.Operatories][i].DefNum;
+					ApptViewItems.Cur.OpNum=Operatories.ListShort[i].OperatoryNum;
 					ApptViewItems.InsertCur();
 				}
 			}

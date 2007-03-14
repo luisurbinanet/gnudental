@@ -1,263 +1,274 @@
 using System;
+using System.Data;
 using System.Collections;
 using System.Windows.Forms;
 
 namespace OpenDental{
 	
 	/// <summary>Corresponds to the payplan table in the database.  Each row represents one signed agreement to make payments. </summary>
-	public struct PayPlan{
+	public class PayPlan{
 		/// <summary>Primary key</summary>
 		public int PayPlanNum;
 		/// <summary>Foreign key to  patient.PatNum.  The patient who had the treatment done.</summary>
 		public int PatNum;
-		/// <summary>Foreign key to  patient.PatNum.  The person responsible for the payments.  
-		/// Does not need to be in the same family as the patient.</summary>
+		/// <summary>Foreign key to  patient.PatNum.  The person responsible for the payments.  Does not need to be in the same family as the patient.  Will be 0 if planNum has a value.</summary>
 		public int Guarantor;
-		/// <summary>Date that the payment plan was started.</summary>
+		/// <summary>Date that the payment plan will display in the account.</summary>
 		public DateTime PayPlanDate;
-		/// <summary>Total amount financed.</summary>
-		public double TotalAmount;
-		/// <summary>Annual percentage rate.  eg 18.  This does not take into consideration any late payments, but only the percentage used to determine the current amount due.</summary>
+		/// <summary>Annual percentage rate.  eg 18.  This does not take into consideration any late payments, but only the percentage used to calculate the amortization schedule.</summary>
 		public double APR;
-		/// <summary>Amount of payment agreed to for each month</summary>
-		public double MonthlyPayment;
-		/// <summary>Number of months agreed for payment.</summary>
-		public int Term;
-		/// <summary>The current amount due not taking into account payments made.  Updated every time it's loaded.  Also updated using the update tool.</summary>
-		public double CurrentDue;
-		/// <summary>Date first payment is due.</summary>
-		public DateTime DateFirstPay;
-		/// <summary>The amount of downpayment not counting the first payment.</summary>
-		public double DownPayment;
-		///<summary>Generally used to archive the terms so they don't accidently get changed.</summary>
+		///<summary>Generally used to archive the terms when the amortization schedule is created.</summary>
 		public string Note;
-		///<summary>Calculated in the payment plan edit window, then stored here. Current due will never go over the total cost amount.</summary>
-		public double TotalCost;
-		///<summary>The amount of the last payment in the series. Usually 0 or at least less than the usual monthly payment.</summary>
-		public double LastPayment;
+		///<summary>Will be 0 if standard payment plan.  But if this is being used to track expected insurance payments, then this will be the foreign key to insplan.PlanNum and Guarantor will be 0.</summary>
+		public int PlanNum;
+
+		/*deleted columns from previous versions:
+			TotalAmount
+			PeriodPayment
+			Term
+			AccumulatedDue
+			DateFirstPay
+			DownPayment
+			TotalCost
+			LastPayment
+		*/
+
+		///<summary></summary>
+		public PayPlan Copy(){
+			PayPlan p=new PayPlan();
+			p.PayPlanNum=PayPlanNum;
+			p.PatNum=PatNum;
+			p.Guarantor=Guarantor;
+			p.PayPlanDate=PayPlanDate;
+			p.APR=APR;
+			p.Note=Note;
+			p.PlanNum=PlanNum;
+			return p;
+		}
+
+		///<summary></summary>
+		public void InsertOrUpdate(bool isNew){
+			//if(){
+			//	throw new Exception(Lan.g(this,""));
+			//}
+			if(isNew){
+				Insert();
+			}
+			else{
+				Update();
+			}
+		}
+
+		///<summary></summary>
+		private void Update(){
+			string command="UPDATE payplan SET " 
+				+"PatNum = '"         +POut.PInt   (PatNum)+"'"
+				+",Guarantor = '"     +POut.PInt   (Guarantor)+"'"
+				+",PayPlanDate = '"   +POut.PDate  (PayPlanDate)+"'"
+				+",APR = '"           +POut.PDouble(APR)+"'"
+				+",Note = '"          +POut.PString(Note)+"'"
+				+",PlanNum = '"       +POut.PInt   (PlanNum)+"'"
+				+" WHERE PayPlanNum = '" +POut.PInt(PayPlanNum)+"'";
+			DataConnection dcon=new DataConnection();
+ 			dcon.NonQ(command);
+		}
+
+		///<summary></summary>
+		private void Insert(){
+			if(Prefs.RandomKeys){
+				PayPlanNum=MiscData.GetKey("payplan","PayPlanNum");
+			}
+			string command="INSERT INTO payplan (";
+			if(Prefs.RandomKeys){
+				command+="PayPlanNum,";
+			}
+			command+="PatNum,Guarantor,PayPlanDate,APR,Note,PlanNum) VALUES(";
+			if(Prefs.RandomKeys){
+				command+="'"+POut.PInt(PayPlanNum)+"', ";
+			}
+			command+=
+				 "'"+POut.PInt   (PatNum)+"', "
+				+"'"+POut.PInt   (Guarantor)+"', "
+				+"'"+POut.PDate  (PayPlanDate)+"', "
+				+"'"+POut.PDouble(APR)+"', "
+				+"'"+POut.PString(Note)+"', "
+				+"'"+POut.PInt   (PlanNum)+"')";
+			DataConnection dcon=new DataConnection();
+			if(Prefs.RandomKeys){
+				dcon.NonQ(command);
+			}
+			else{
+ 				dcon.NonQ(command,true);
+				PayPlanNum=dcon.InsertID;
+			}
+		}
+
+		///<summary>Called from FormPayPlan.  Also deletes all attached payplancharges.  Throws exception if there are any paysplits attached.</summary>
+		public void Delete(){
+			string command="SELECT COUNT(*) FROM paysplit WHERE PayPlanNum="+PayPlanNum.ToString();
+			DataConnection dcon=new DataConnection();
+			if(dcon.GetCount(command)!="0"){
+				throw new ApplicationException
+					(Lan.g(this,"You cannot delete a payment plan with payments attached.  Unattach the payments first."));
+			}
+			command="DELETE FROM payplancharge WHERE PayPlanNum="+PayPlanNum.ToString();
+			dcon.NonQ(command);
+			command="DELETE FROM payplan WHERE PayPlanNum ="+PayPlanNum.ToString();
+			dcon.NonQ(command);
+		}
+
+		
+
 	}
 
 	/*=========================================================================================
 	=================================== class PayPlans ==========================================*/
 
 	///<summary></summary>
-	public class PayPlans:DataClass{
-		///<summary>List of all payplans for a given patient, whether they are the guarantor or the patient.  This is also used in UpdateAll to store all payment plans in entire database.</summary>
-		public static PayPlan[] List;
-		///<summary></summary>
-		public static PayPlan Cur;
-
-		///<summary>Refresh List for the specified guarantor and patient.</summary>
-		public static void Refresh(int guarantor,int patNum){
-			//if(guarantor==0){
-				cmd.CommandText =
-					"SELECT * from payplan"
-					+" WHERE patnum = "+patNum.ToString()
-					+" OR guarantor = "+guarantor.ToString()+" ORDER BY payplandate";
-			//}
-			//else{
-			//	cmd.CommandText =
-			//		"SELECT * from payplan"
-			//		+" WHERE guarantor = '"+guarantor+"' ORDER BY payplandate";
-			//}
-			FillTable();
-			List=new PayPlan[table.Rows.Count];
+	public class PayPlans{
+		///<summary>Gets a list of all payplans for a given patient, whether they are the guarantor or the patient.  This is also used in UpdateAll to store all payment plans in entire database.</summary>
+		public static PayPlan[] Refresh(int guarantor,int patNum){
+			string command="SELECT * from payplan"
+				+" WHERE PatNum = "+patNum.ToString()
+				+" OR Guarantor = "+guarantor.ToString()+" ORDER BY payplandate";
+			DataConnection dcon=new DataConnection();
+ 			DataTable table=dcon.GetTable(command);
+			PayPlan[] List=new PayPlan[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
+				List[i]=new PayPlan();
 				List[i].PayPlanNum    = PIn.PInt   (table.Rows[i][0].ToString());
 				List[i].PatNum        = PIn.PInt   (table.Rows[i][1].ToString());
 				List[i].Guarantor     = PIn.PInt   (table.Rows[i][2].ToString());
 				List[i].PayPlanDate   = PIn.PDate  (table.Rows[i][3].ToString());
-				List[i].TotalAmount   = PIn.PDouble(table.Rows[i][4].ToString());
-				List[i].APR           = PIn.PDouble(table.Rows[i][5].ToString());
-				List[i].MonthlyPayment= PIn.PDouble(table.Rows[i][6].ToString());
-				List[i].Term          = PIn.PInt   (table.Rows[i][7].ToString());
-				List[i].CurrentDue    = PIn.PDouble(table.Rows[i][8].ToString());
-				List[i].DateFirstPay  = PIn.PDate  (table.Rows[i][9].ToString());
-				List[i].DownPayment   = PIn.PDouble(table.Rows[i][10].ToString());
-				List[i].Note          = PIn.PString(table.Rows[i][11].ToString());
-				List[i].TotalCost     = PIn.PDouble(table.Rows[i][12].ToString());
-				List[i].LastPayment   = PIn.PDouble(table.Rows[i][13].ToString());
-			}//end for
+				List[i].APR           = PIn.PDouble(table.Rows[i][4].ToString());
+				List[i].Note          = PIn.PString(table.Rows[i][5].ToString());
+				List[i].PlanNum       = PIn.PInt   (table.Rows[i][6].ToString());
+			}
+			return List;
 		}
 
-		//<summary>Refresh for the cur patient, both for patnum and guarantor.</summary>
-		//public static void Refreshh(int patNum){
-		//	Refresh(patNum,patNum);
-		//}
-
-		///<summary></summary>
-		public static void UpdateCur(){
-			cmd.CommandText = "UPDATE payplan SET " 
-				+ "patnum = '"         +POut.PInt   (Cur.PatNum)+"'"
-				+ ",guarantor = '"     +POut.PInt   (Cur.Guarantor)+"'"
-				+ ",payplandate = '"   +POut.PDate  (Cur.PayPlanDate)+"'"
-				+ ",totalamount = '"   +POut.PDouble(Cur.TotalAmount)+"'"
-				+ ",apr = '"           +POut.PDouble(Cur.APR)+"'"
-				+ ",monthlypayment = '"+POut.PDouble(Cur.MonthlyPayment)+"'"
-				+ ",term = '"          +POut.PInt   (Cur.Term)+"'"
-				+ ",currentdue = '"    +POut.PDouble(Cur.CurrentDue)+"'"
-				+ ",datefirstpay = '"  +POut.PDate  (Cur.DateFirstPay)+"'"
-				+ ",downpayment = '"   +POut.PDouble(Cur.DownPayment)+"'"
-				+ ",note = '"          +POut.PString(Cur.Note)+"'"
-				+ ",totalcost = '"     +POut.PDouble(Cur.TotalCost)+"'"
-				+ ",LastPayment = '"   +POut.PDouble(Cur.LastPayment)+"'"
-				+" WHERE PayPlanNum = '" +POut.PInt   (Cur.PayPlanNum)+"'";
-			//MessageBox.Show(cmd.CommandText);
-			NonQ(false);
-		}
-
-		///<summary></summary>
-		public static void InsertCur(){
-			if(Prefs.RandomKeys){
-				Cur.PayPlanNum=MiscData.GetKey("payplan","PayPlanNum");
-			}
-			cmd.CommandText="INSERT INTO payplan (";
-			if(Prefs.RandomKeys){
-				cmd.CommandText+="PayPlanNum,";
-			}
-			cmd.CommandText+="PatNum,Guarantor,PayPlanDate,TotalAmount,"
-				+"APR,MonthlyPayment,Term,CurrentDue,DateFirstPay,DownPayment,Note,TotalCost,"
-				+"LastPayment) VALUES(";
-			if(Prefs.RandomKeys){
-				cmd.CommandText+="'"+POut.PInt(Cur.PayPlanNum)+"', ";
-			}
-			cmd.CommandText+=
-				 "'"+POut.PInt   (Cur.PatNum)+"', "
-				+"'"+POut.PInt   (Cur.Guarantor)+"', "
-				+"'"+POut.PDate  (Cur.PayPlanDate)+"', "
-				+"'"+POut.PDouble(Cur.TotalAmount)+"', "
-				+"'"+POut.PDouble(Cur.APR)+"', "
-				+"'"+POut.PDouble(Cur.MonthlyPayment)+"', "
-				+"'"+POut.PInt   (Cur.Term)+"', "
-				+"'"+POut.PDouble(Cur.CurrentDue)+"', "
-				+"'"+POut.PDate  (Cur.DateFirstPay)+"', "
-				+"'"+POut.PDouble(Cur.DownPayment)+"', "
-				+"'"+POut.PString(Cur.Note)+"', "
-				+"'"+POut.PDouble(Cur.TotalCost)+"', "
-				+"'"+POut.PDouble(Cur.LastPayment)+"')";
-			if(Prefs.RandomKeys){
-				NonQ();
-			}
-			else{
- 				NonQ(true);
-				Cur.PayPlanNum=InsertID;
-			}
-		}
-
-		///<summary>Must have already verified that there are no paysplits attached.  Called from FormPayPlan.</summary>
-		public static void DeleteCur(){
-			cmd.CommandText="DELETE FROM payplan WHERE payplannum = '"
-				+Cur.PayPlanNum.ToString()+"'";
-			NonQ(false);
-		}
-
-		/// <summary>Recalculates the CurrentDue for all payment plans based on the specified date.  Does not take into account any payments made.</summary>
-		public static void UpdateAll(DateTime date){
-			cmd.CommandText =
-				"SELECT * FROM payplan";
-			FillTable();
-			List=new PayPlan[table.Rows.Count];
-			for(int i=0;i<table.Rows.Count;i++){
-				List[i].PayPlanNum    = PIn.PInt   (table.Rows[i][0].ToString());
-				List[i].PatNum        = PIn.PInt   (table.Rows[i][1].ToString());
-				List[i].Guarantor     = PIn.PInt   (table.Rows[i][2].ToString());
-				List[i].PayPlanDate   = PIn.PDate  (table.Rows[i][3].ToString());
-				List[i].TotalAmount   = PIn.PDouble(table.Rows[i][4].ToString());
-				List[i].APR           = PIn.PDouble(table.Rows[i][5].ToString());
-				List[i].MonthlyPayment= PIn.PDouble(table.Rows[i][6].ToString());
-				List[i].Term          = PIn.PInt   (table.Rows[i][7].ToString());
-				List[i].CurrentDue    = PIn.PDouble(table.Rows[i][8].ToString());
-				List[i].DateFirstPay  = PIn.PDate  (table.Rows[i][9].ToString());
-				List[i].DownPayment   = PIn.PDouble(table.Rows[i][10].ToString());
-				//List[i].Note          = PIn.PString(table.Rows[i][11].ToString());
-				List[i].TotalCost     = PIn.PDouble(table.Rows[i][12].ToString());
-				List[i].LastPayment   = PIn.PDouble(table.Rows[i][13].ToString());
-			}//end for
-			for(int i=0;i<List.Length;i++){
-				//Cur=List[i];
-				cmd.CommandText="UPDATE payplan SET CurrentDue = '"
-					+GetAmtDue(List[i].DownPayment,List[i].MonthlyPayment,List[i].DateFirstPay,List[i].TotalCost)
-					.ToString()+"' WHERE PayPlanNum = '"+POut.PInt(List[i].PayPlanNum)+"'";
-				NonQ(false);
-			}
-		}
-
-		///<summary>Gets the amount due for the current payment plan based on today's date.  It is simply the number of months x monthly payment.  Includes interest, but does not include payments made so far.</summary>
-		public static double GetAmtDue(double downPayment,double monthlyPayment,DateTime dateFirstPay,
-			double totalCost)
-		{
-			double retVal=downPayment+monthlyPayment*GetMonthsDue(dateFirstPay);
-			if(retVal>totalCost){
-				retVal=totalCost;
-			}
-			return retVal;
-		}
-
-		/// <summary>For the Cur payment plan, gets the number of months, rounded up, between the first payment date and today's date.  This is the number of payments that are due.  Used from GetAmtDue() and from FormPayPlan. The last payment may be a partial payment.  The number of months due may actually be much larger than the number of payments that were agreed upon.  That's ok, because total cost will still be accurate.</summary>
-		public static int GetMonthsDue(DateTime dateFirstPay){
-			int retVal=0;
-			for(int i=0;i<100;i++){
-				//MessageBox.Show(Cur.DateFirstPay.AddMonths(i).ToString()+","+DateTime.Today.ToString());
-				if(dateFirstPay.AddMonths(i)>DateTime.Today){
-					retVal=i;
-					break;
-				}
-			}
-			return retVal;
-		}
-
-		/// <summary>Used from PayPlan window to get the amount paid so far on one payment plan.</summary>
-		/// <param name="payPlanNum"></param>
+		/// <summary>Gets info directly from database. Used from PayPlan and Account windows to get the amount paid so far on one payment plan.</summary>
 		public static double GetAmtPaid(int payPlanNum){
-			if(payPlanNum==0){//for a new paymentPlan
-				return 0;
-			}
-			cmd.CommandText="SELECT SUM(paysplit.splitamt) FROM paysplit "
-				+"WHERE paysplit.payplannum = '"+payPlanNum.ToString()+"' "
-				+"GROUP BY paysplit.payplannum";
-			FillTable();
+			string command="SELECT SUM(paysplit.SplitAmt) FROM paysplit "
+				+"WHERE paysplit.PayPlanNum = '"+payPlanNum.ToString()+"' "
+				+"GROUP BY paysplit.PayPlanNum";
+			DataConnection dcon=new DataConnection();
+			DataTable table=dcon.GetTable(command);
 			if(table.Rows.Count==0){
 				return 0;
 			}
 			return PIn.PDouble(table.Rows[0][0].ToString());
 		}
 
-		///<summary>Must make sure Refresh is done first.  Returns the sum of all payment plan entries for guarantor and/or patient.</summary>
-		public static double ComputeBal(int patNum){
+		///<summary>Used from FormPayPlan, Account, and ComputeBal to get the accumulated amount due for a payment plan based on today's date.  Includes interest, but does not include payments made so far.  The chargelist must include all charges for this payplan, but it can include more as well.</summary>
+		public static double GetAccumDue(int payPlanNum, PayPlanCharge[] chargeList){
 			double retVal=0;
-			for(int i=0;i<List.Length;i++){
-				//one or both of these conditions may be met:
-				if(List[i].Guarantor==patNum){
-					retVal+=List[i].CurrentDue;
+			for(int i=0;i<chargeList.Length;i++){
+				if(chargeList[i].PayPlanNum!=payPlanNum){
+					continue;
 				}
-				if(List[i].PatNum==patNum){
-					retVal-=List[i].TotalAmount;
+				if(chargeList[i].ChargeDate>DateTime.Today){//not due yet
+					continue;
+				}
+				retVal+=chargeList[i].Principal+chargeList[i].Interest;
+			}
+			return retVal;
+		}
+
+		/// <summary>Used from Account window to get the amount paid so far on one payment plan.  Must pass in the total amount paid and the returned value will not be more than this.  The chargelist must include all charges for this payplan, but it can include more as well.  It will loop sequentially through the charges to get just the principal portion.</summary>
+		public static double GetPrincPaid(double amtPaid,int payPlanNum,PayPlanCharge[] chargeList){
+			//amtPaid gets reduced to 0 throughout this loop.
+			double retVal=0;
+			for(int i=0;i<chargeList.Length;i++){
+				if(chargeList[i].PayPlanNum!=payPlanNum){
+					continue;
+				}
+				//For this charge, first apply payment to interest
+				if(amtPaid>chargeList[i].Interest){
+					amtPaid-=chargeList[i].Interest;
+				}
+				else{//interest will eat up the remainder of the payment
+					amtPaid=0;
+					break;
+				}
+				//Then, apply payment to principal
+				if(amtPaid>chargeList[i].Principal){
+					retVal+=chargeList[i].Principal;
+					amtPaid-=chargeList[i].Principal;
+				}
+				else{//principal will eat up the remainder of the payment
+					retVal+=amtPaid;
+					amtPaid=0;
+					break;
 				}
 			}
 			return retVal;
 		}
 
-		///<summary>Refreshes the list for the specified guarantor, and then determines if there are any valid plans with that patient as the guarantor.  If more than one valid payment plan, displays list to select from.  If any valid plans, then it sets Cur, else returns false.</summary>
-		public static bool GetValidPlan(int guarNum){
-			Refresh(guarNum,0);
-			if(List.Length==0){
-				return false;
+		/// <summary>Used from Account and ComputeBal to get the total amount of the original principal for one payment plan.  Does not include any interest.The chargelist must include all charges for this payplan, but it can include more as well.</summary>
+		public static double GetTotalPrinc(int payPlanNum, PayPlanCharge[] chargeList){
+			double retVal=0;
+			for(int i=0;i<chargeList.Length;i++){
+				if(chargeList[i].PayPlanNum!=payPlanNum){
+					continue;
+				}
+				retVal+=chargeList[i].Principal;
 			}
-			if(List.Length==1){ //if there is only one valid payplan
-				Cur=List[0];
-				return true;
+			return retVal;
+		}
+
+		///<summary>Returns the sum of all payment plan entries for guarantor and/or patient.</summary>
+		public static double ComputeBal(int patNum,PayPlan[] list,PayPlanCharge[] chargeList){
+			double retVal=0;
+			for(int i=0;i<list.Length;i++){
+				//one or both of these conditions may be met:
+				if(list[i].Guarantor==patNum){
+					retVal+=GetAccumDue(list[i].PayPlanNum,chargeList);
+				}
+				if(list[i].PatNum==patNum){
+					retVal-=GetTotalPrinc(list[i].PayPlanNum,chargeList);
+				}
 			}
+			return retVal;
+		}
+
+		///<summary>Refreshes the list for the specified guarantor, and then determines if there are any valid plans with that patient as the guarantor.  If more than one valid payment plan, displays list to select from.  If any valid plans, then it returns that plan, else returns null.</summary>
+		public static PayPlan GetValidPlan(int guarNum,bool isIns){
+			PayPlan[] PlanListAll=Refresh(guarNum,0);
+			PayPlan[] PayPlanList=GetListOneType(PlanListAll,isIns);
+			if(PayPlanList.Length==0){
+				return null;
+			}
+			if(PayPlanList.Length==1){ //if there is only one valid payplan
+				return PayPlanList[0].Copy();
+			}
+			PayPlanCharge[] ChargeList=PayPlanCharges.Refresh(guarNum);
+			//enhancement needed to weed out payment plans that are all paid off
 			//more than one valid PayPlan
-			FormPayPlanSelect FormPPS=new FormPayPlanSelect();
-			FormPPS.ValidPlans=List;
+			FormPayPlanSelect FormPPS=new FormPayPlanSelect(PayPlanList,ChargeList);
 			FormPPS.ShowDialog();
 			if(FormPPS.DialogResult==DialogResult.OK){
-				Cur=List[FormPPS.IndexSelected];
-				return true;
+				return PayPlanList[FormPPS.IndexSelected].Copy();
 			}
 			else{
-				return false;
+				return null;
 			}
+		}
+
+		///<summary>Supply a list of all payment plans for a guarantor.  Based on the isIns setting, it will either return a list of all regular payment plans or only those for ins.  Used just before displaying FormPayPlanSelect.</summary>
+		public static PayPlan[] GetListOneType(PayPlan[] payPlanList,bool isIns){
+			ArrayList AL=new ArrayList();
+			for(int i=0;i<payPlanList.Length;i++){
+				if(isIns && payPlanList[i].PlanNum>0){
+					AL.Add(payPlanList[i]);
+				}
+				else if(!isIns && payPlanList[i].PlanNum==0){
+					AL.Add(payPlanList[i]);
+				}
+			}
+			PayPlan[] retVal=new PayPlan[AL.Count];
+			AL.CopyTo(retVal);
+			return retVal;
 		}
 
 

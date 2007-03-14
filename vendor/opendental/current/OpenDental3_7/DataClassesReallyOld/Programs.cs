@@ -115,6 +115,17 @@ namespace OpenDental{
 			return false;
 		}
 
+		///<summary></summary>
+		public static void GetCur(string progName){
+			for(int i=0;i<List.Length;i++){
+				if(List[i].ProgName==progName){
+					Cur=List[i];
+					return;
+				}
+			}
+			Cur.ProgramNum=0;//to signify that the program could not be located. (user deleted it in an older version)
+		}
+
 		///<summary>Typically used when user clicks a button to a Program link.  This method attempts to identify and execute the program based on the given programNum.</summary>
 		public static void Execute(int programNum,Patient pat){
 			Cur.ProgramNum=0;

@@ -1742,7 +1742,7 @@ namespace OpenDental{
 			}
 			string command="SELECT COUNT(*) FROM patient";
 			DataConnection dcon=new DataConnection();
-			if(dcon.GetOneValue(command)!="0"){
+			if(dcon.GetCount(command)!="0"){
 				if(!MsgBox.Show(this,true,"Warning! This database already has at least one patient.  It is typically recommended to start with a blank database.  Continue anyway?"))
 				{
 					DialogResult=DialogResult.Cancel;
@@ -2727,6 +2727,7 @@ namespace OpenDental{
 			Adjustment adj;
 			int adjType=189;
 			Patient patOld=new Patient();
+			Provider prov;
 			for(int i=0;i<table.Rows.Count;i++){
 				pat=new Patient();
 				Carriers.Cur=new Carrier();
@@ -2863,18 +2864,18 @@ namespace OpenDental{
 								}
 							}
 							if(provNum==0){
-								Providers.Cur=new Provider();
-								Providers.Cur.ItemOrder=Providers.ListLong[Providers.ListLong.Length-1].ItemOrder+1;
-								Providers.Cur.LName=table.Rows[i][table.Columns["PriProv"].Ordinal].ToString();
-								Providers.Cur.Abbr=Providers.Cur.LName;
-								Providers.Cur.FeeSched=Defs.Short[(int)DefCat.FeeSchedNames][0].DefNum;
-								Providers.Cur.ProvColor=Color.White;
-								Providers.Cur.SigOnFile=true;
-								Providers.Cur.OutlineColor=Color.Gray;
-								Providers.InsertCur();
+								prov=new Provider();
+								prov.ItemOrder=Providers.ListLong[Providers.ListLong.Length-1].ItemOrder+1;
+								prov.LName=table.Rows[i][table.Columns["PriProv"].Ordinal].ToString();
+								prov.Abbr=prov.LName;
+								prov.FeeSched=Defs.Short[(int)DefCat.FeeSchedNames][0].DefNum;
+								prov.ProvColor=Color.White;
+								prov.SigOnFile=true;
+								prov.OutlineColor=Color.Gray;
+								prov.InsertOrUpdate(true);
 								Providers.Refresh();//this is because SetInvalid might be too slow
 								DataValid.SetInvalid(InvalidTypes.Providers);//also refreshes local
-								provNum=Providers.Cur.ProvNum;
+								provNum=prov.ProvNum;
 							}
 							pat.PriProv=provNum;
 						}

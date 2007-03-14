@@ -152,21 +152,41 @@ namespace OpenDental{
 			Pen penW=new Pen(Color.White);
 			Pen penGr=new Pen(Color.SlateGray);
 			Pen penDG=new Pen(Color.DarkSlateGray);
-			Pen penO=new Pen(Providers.GetOutlineColor(Info.MyApt.ProvNum));
-				//new Pen(Color.Red);
+			Pen penO;//provider outline color
+			Color backColor;
 			Color timeColor;
 			if(Info.MyApt.AptStatus==ApptStatus.Complete){
-				g.FillRectangle(new SolidBrush(Defs.GetColor(DefCat.AppointmentColors,141)),7,0,Width-7,Height);
+				backColor=Defs.Long[(int)DefCat.AppointmentColors][3].ItemColor;
 				timeColor=Defs.Long[(int)DefCat.AppointmentColors][2].ItemColor;
-					//.GetColor(DefCat.AppointmentColors,140);
+				if(Info.MyApt.ProvNum!=0 && !Info.MyApt.IsHygiene){//dentist
+					penO=new Pen(Providers.GetOutlineColor(Info.MyApt.ProvNum));
+				}
+				else if(Info.MyApt.ProvHyg!=0 && Info.MyApt.IsHygiene){//hygienist
+					penO=new Pen(Providers.GetOutlineColor(Info.MyApt.ProvHyg));
+				}
+				else{//unknown
+					penO=new Pen(Color.Black);
+				}
 			}
 			else{
-				g.FillRectangle(new SolidBrush(Providers.GetColor(Info.MyApt.ProvNum)),7,0,Width-7,Height);
+				if(Info.MyApt.ProvNum!=0 && !Info.MyApt.IsHygiene){//dentist
+					backColor=Providers.GetColor(Info.MyApt.ProvNum);
+					penO=new Pen(Providers.GetOutlineColor(Info.MyApt.ProvNum));
+				}
+				else if(Info.MyApt.ProvHyg!=0 && Info.MyApt.IsHygiene){//hygienist
+					backColor=Providers.GetColor(Info.MyApt.ProvHyg);
+					penO=new Pen(Providers.GetOutlineColor(Info.MyApt.ProvHyg));
+				}
+				else{//unknown
+					backColor=Color.White;
+					penO=new Pen(Color.Black);
+				}
 				timeColor=Defs.GetColor(DefCat.ApptConfirmed,Info.MyApt.Confirmed);
 			}
+			g.FillRectangle(new SolidBrush(backColor),7,0,Width-7,Height);
 			g.FillRectangle(new SolidBrush(timeColor),0,0,7,Height);
 			g.DrawLine(penB,7,0,7,Height);
-			//Highlighting boarder
+			//Highlighting border
 			if(PinBoardIsSelected && ThisIsPinBoard
 				|| (Info.MyApt.AptNum==SelectedAptNum && !ThisIsPinBoard))
 			{

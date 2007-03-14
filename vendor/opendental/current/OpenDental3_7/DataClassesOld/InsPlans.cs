@@ -130,6 +130,8 @@ namespace OpenDental{
 				PlanList[i].CarrierNum     = PIn.PInt    (table.Rows[i][36].ToString());
 				PlanList[i].AllowedFeeSched= PIn.PInt    (table.Rows[i][37].ToString());
 				PlanList[i].TrojanID       = PIn.PString (table.Rows[i][38].ToString());
+				PlanList[i].DivisionNo     = PIn.PString (table.Rows[i][39].ToString());
+				PlanList[i].BenefitNotes   = PIn.PString (table.Rows[i][40].ToString());
 			}
 			return PlanList;
 		}
@@ -142,13 +144,13 @@ namespace OpenDental{
 					"SELECT insplan.EmployerNum,insplan.GroupName,insplan.GroupNum,insplan.CarrierNum"
 					+",insplan.PlanType,insplan.UseAltCode"
 					+",insplan.ClaimsUseUCR,insplan.FeeSched,insplan.CopayFeeSched,insplan.ClaimFormNum"
-					+",insplan.AllowedFeeSched,COUNT(*),employer.EmpName,carrier.CarrierName "//the last two are for ordering
+					+",insplan.AllowedFeeSched,insplan.DivisionNo,COUNT(*),employer.EmpName,carrier.CarrierName "//the last two are for ordering
 					+"FROM insplan "
 					+"LEFT JOIN employer ON employer.EmployerNum = insplan.EmployerNum "
 					+"LEFT JOIN carrier ON carrier.CarrierNum = insplan.CarrierNum "
 					+"GROUP BY insplan.EmployerNum,insplan.GroupName,insplan.GroupNum,insplan.CarrierNum"
 					+",insplan.PlanType,insplan.UseAltCode"
-					+",insplan.ClaimsUseUCR,insplan.FeeSched,insplan.CopayFeeSched,insplan.ClaimFormNum,insplan.AllowedFeeSched "
+					+",insplan.ClaimsUseUCR,insplan.FeeSched,insplan.CopayFeeSched,insplan.ClaimFormNum,insplan.AllowedFeeSched,DivisionNo "
 					+"ORDER BY employer.EmpName IS NULL,employer.EmpName,carrier.CarrierName ASC";
 				//MessageBox.Show(cmd.CommandText);
 			}
@@ -157,11 +159,11 @@ namespace OpenDental{
 					"SELECT insplan.EmployerNum,insplan.GroupName,insplan.GroupNum,insplan.CarrierNum"
 					+",insplan.PlanType,insplan.UseAltCode"
 					+",insplan.ClaimsUseUCR,insplan.FeeSched,insplan.CopayFeeSched,insplan.ClaimFormNum"
-					+",insplan.AllowedFeeSched,COUNT(*),carrier.CarrierName FROM insplan "
+					+",insplan.AllowedFeeSched,insplan.DivisionNo,COUNT(*),carrier.CarrierName FROM insplan "
 					+"LEFT JOIN carrier USING(CarrierNum) "
 					+"GROUP BY insplan.EmployerNum,insplan.GroupName,insplan.GroupNum,insplan.CarrierNum"
 					+",insplan.PlanType,insplan.UseAltCode"
-					+",insplan.ClaimsUseUCR,insplan.FeeSched,insplan.CopayFeeSched,insplan.ClaimFormNum,insplan.AllowedFeeSched "
+					+",insplan.ClaimsUseUCR,insplan.FeeSched,insplan.CopayFeeSched,insplan.ClaimFormNum,insplan.AllowedFeeSched,DivisionNo "
 					+"ORDER BY carrier.CarrierName ASC";
 			}
 			//MessageBox.Show(cmd.CommandText);
@@ -181,13 +183,14 @@ namespace OpenDental{
 				ListAll[i].CopayFeeSched  = PIn.PInt   (table.Rows[i][8].ToString());
 				ListAll[i].ClaimFormNum   = PIn.PInt   (table.Rows[i][9].ToString());
 				ListAll[i].AllowedFeeSched= PIn.PInt   (table.Rows[i][10].ToString());
-				ListAll[i].NumberPlans    = PIn.PInt   (table.Rows[i][11].ToString());
+				ListAll[i].DivisionNo     = PIn.PString(table.Rows[i][11].ToString());
+				ListAll[i].NumberPlans    = PIn.PInt   (table.Rows[i][12].ToString());
 				//ListAll[i].PlanNum      = PIn.PInt   (table.Rows[i][12].ToString());//random
 			}
 			return ListAll;
 		}	
 
-		///<summary>Gets a description of the specified plan, including carrier name and subscriber. It's fastest if you supply a plan list that contains the plan, but it also works just fine if it can't initally locate the plan in the list.  You can supply an array of length 0.</summary>
+		///<summary>Gets a description of the specified plan, including carrier name and subscriber. It's fastest if you supply a plan list that contains the plan, but it also works just fine if it can't initally locate the plan in the list.  You can supply an array of length 0 for both family and planlist.</summary>
 		public static string GetDescript(int planNum,Family family,InsPlan[] PlanList){
 			if(planNum==0)
 				return "";

@@ -165,6 +165,23 @@ namespace OpenDental{
 			return retVal;
 		}
 
+		///<summary>Used in E-claims to get the amount paid by primary. The insurance amount paid by the planNum based on all claimprocs with this procNum. The list can be all ClaimProcs for patient, or just those for this procedure.</summary>
+		public static double ProcInsPayPri(ClaimProc[] List,int procNum,int planNum){
+			double retVal=0;
+			for(int i=0;i<List.Length;i++){
+				if(List[i].ProcNum==procNum
+					&& List[i].PlanNum==planNum
+					&& List[i].Status!=ClaimProcStatus.Preauth
+					&& List[i].Status!=ClaimProcStatus.CapEstimate
+					&& List[i].Status!=ClaimProcStatus.CapComplete
+					&& List[i].Status!=ClaimProcStatus.Estimate)
+				{
+					retVal+=List[i].InsPayAmt;
+				}
+			}
+			return retVal;
+		}
+
 		///<summary>Used once in Account on the Claim line.  The amount paid on a claim only by total, not including by procedure.  The list can be all ClaimProcs for patient, or just those for this claim.</summary>
 		public static double ClaimByTotalOnly(ClaimProc[] List,int claimNum){
 			double retVal=0;
@@ -224,17 +241,10 @@ namespace OpenDental{
 					retVal-=List[i].InsPayAmt;
 				}
 				else if(List[i].Status==ClaimProcStatus.NotReceived){
-					retVal-=List[i].InsPayEst;
+					if(!Prefs.GetBool("BalancesDontSubtractIns")){
+						retVal-=List[i].InsPayEst;//this typically happens
+					}
 				}
-				//else if(List[i].Status==ClaimProcStatus.CapClaim){//does not currently do estimating on cap
-				//	if(List[i].InsPayAmt>0){
-				//		
-				//	}
-				//	else{
-				//		retVal-=List[i].InsPayEst;
-				//	}
-				//}
-				//if Status=CapComplete, then only this next line has an effect
 				retVal-=List[i].WriteOff;
 			}
 			return retVal;

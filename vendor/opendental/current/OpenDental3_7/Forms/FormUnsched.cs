@@ -14,6 +14,7 @@ namespace OpenDental{
 		public bool PinClicked=false;		
 		///<summary></summary>
 		public static string procsForCur;
+		private Appointment[] ListUn;
 
 		///<summary></summary>
 		public FormUnsched(){
@@ -86,27 +87,26 @@ namespace OpenDental{
 		#endregion
 
 		private void FormUnsched_Load(object sender, System.EventArgs e) {
+			Patients.GetHList();
 			FillAppointments();
 		}
 
 		private void FillAppointments(){
 			this.Cursor=Cursors.WaitCursor;
-			Patients.GetHList();
-			Appointments.RefreshUnsched(false);
-			tbApts.ResetRows(Appointments.ListUn.Length);
+			ListUn=Appointments.RefreshUnsched(false);
+			tbApts.ResetRows(ListUn.Length);
 			tbApts.SetGridColor(Color.DarkGray);
-			for (int i=0;i<Appointments.ListUn.Length;i++){
-				tbApts.Cell[0,i]=(string)Patients.HList[Appointments.ListUn[i].PatNum];
-				if(Appointments.ListUn[i].AptDateTime.Year < 1880)
+			for(int i=0;i<ListUn.Length;i++){
+				tbApts.Cell[0,i]=(string)Patients.HList[ListUn[i].PatNum];
+				if(ListUn[i].AptDateTime.Year < 1880)
 					tbApts.Cell[1,i]="";
 				else 
-					tbApts.Cell[1,i]=Appointments.ListUn[i].AptDateTime.ToShortDateString();
-				tbApts.Cell[2,i]=Defs.GetName(DefCat.RecallUnschedStatus,Appointments.ListUn[i].UnschedStatus);
-				tbApts.Cell[3,i]=Providers.GetAbbr(Appointments.ListUn[i].ProvNum);
-				tbApts.Cell[4,i]=Appointments.ListUn[i].ProcDescript;
-				tbApts.Cell[5,i]=Appointments.ListUn[i].Note;
+					tbApts.Cell[1,i]=ListUn[i].AptDateTime.ToShortDateString();
+				tbApts.Cell[2,i]=Defs.GetName(DefCat.RecallUnschedStatus,ListUn[i].UnschedStatus);
+				tbApts.Cell[3,i]=Providers.GetAbbr(ListUn[i].ProvNum);
+				tbApts.Cell[4,i]=ListUn[i].ProcDescript;
+				tbApts.Cell[5,i]=ListUn[i].Note;
 			}
-			Patients.HList=null;
 			tbApts.LayoutTables();
 			Cursor=Cursors.Default;
 		}
@@ -114,19 +114,14 @@ namespace OpenDental{
 		private void tbApts_CellDoubleClicked(object sender, CellEventArgs e){
 			int currentSelection=tbApts.SelectedRow;
 			int currentScroll=tbApts.ScrollValue;
-			Appointments.Cur=Appointments.ListUn[e.Row];
-			Appointments.CurOld=Appointments.Cur;
-			Family famCur=Patients.GetFamily(Appointments.Cur.PatNum);
-			Patient patCur=famCur.GetPatient(Appointments.Cur.PatNum);
-			FormApptEdit FormAE=new FormApptEdit();
+			FormApptEdit FormAE=new FormApptEdit(ListUn[e.Row]);
 			FormAE.PinIsVisible=true;
 			FormAE.ShowDialog();
 			if(FormAE.DialogResult!=DialogResult.OK)
 				return;
 			if(FormAE.PinClicked){
 				PinClicked=true;
-				CreateCurInfo(patCur);
-				Appointments.ListUn=null;
+				CreateCurInfo(ListUn[e.Row]);
 				DialogResult=DialogResult.OK;
 			}
 			else{
@@ -134,60 +129,23 @@ namespace OpenDental{
 				tbApts.SetSelected(currentSelection,true);
 				tbApts.ScrollValue=currentScroll;
 			}
-			/*
-			Procedures.GetProcsOneApt(Appointments.Cur.AptNum);
-			string procs="";
-				for(int p=0;p<Procedures.ProcsOneApt.Length;p++){
-					procs+=Procedures.ProcsOneApt[p];
-					if(p<Procedures.ProcsOneApt.Length-1)
-						procs+=", ";
-				}
-			procsForCur=procs;
-			FormUnschedEdit FormUE=new FormUnschedEdit();
-			FormUE.ShowDialog();
-			if(FormUE.DialogResult!=DialogResult.OK)
-				return;
-			if(FormUE.PinClicked){
-				PinClicked=true;
-				Patients.GetFamily(Appointments.Cur.PatNum);
-				CreateCurInfo();
-				Appointments.ListUn=null;
-				DialogResult=DialogResult.OK;
-			}
-			else
-			 FillAppointments();*/
 		}	
 
-		private void CreateCurInfo(Patient patCur){
+		private void CreateCurInfo(Appointment aptCur){
 			ContrAppt.CurInfo=new InfoApt();
-			ContrAppt.CurInfo.MyApt=Appointments.Cur;
-			//ContrAppt.CurInfo.CreditAndIns=Patients.GetCreditIns();
-			//ContrAppt.CurInfo.PatientName=Patients.GetCurNameLF();
-			ProcDesc procDesc=Procedures.GetProcsForSingle(Appointments.Cur.AptNum,false);
+			ContrAppt.CurInfo.MyApt=aptCur;
+			ProcDesc procDesc=Procedures.GetProcsForSingle(aptCur.AptNum,false);
 			ContrAppt.CurInfo.Procs=procDesc.ProcLines;
 			ContrAppt.CurInfo.Production=procDesc.Production;
-			ContrAppt.CurInfo.MyPatient=patCur.Copy();
+			ContrAppt.CurInfo.MyPatient=Patients.GetPat(aptCur.PatNum);
 		}
-
-		/*delete
-			if(tbApts.SelectedRow==-1){
-				MessageBox.Show("Please select appointment first.");
-				return;
-			}
-			if(MessageBox.Show("Delete appointment?","",MessageBoxButtons.OKCancel)!=DialogResult.OK){
-				return;
-			}
-			Procedures.UnattachProcsInAppt(Appointments.Cur.AptNum);
-			Appointments.DeleteCur();
-			FillAppointments();
-		}*/
 
 		private void butClose_Click(object sender, System.EventArgs e) {
 			Close();
 		}
 
 		private void FormUnsched_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-			Appointments.ListUn=null;
+			Patients.HList=null;
 		}
 
 	}

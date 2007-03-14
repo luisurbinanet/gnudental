@@ -1,0 +1,21 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenDental3_7", "OpenDental3_7.csproj", "{12FD98F8-7291-4072-8EE2-DA5B1DD68931}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{12FD98F8-7291-4072-8EE2-DA5B1DD68931}.Debug.ActiveCfg = Debug|.NET
+		{12FD98F8-7291-4072-8EE2-DA5B1DD68931}.Debug.Build.0 = Debug|.NET
+		{12FD98F8-7291-4072-8EE2-DA5B1DD68931}.Release.ActiveCfg = Release|.NET
+		{12FD98F8-7291-4072-8EE2-DA5B1DD68931}.Release.Build.0 = Release|.NET
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

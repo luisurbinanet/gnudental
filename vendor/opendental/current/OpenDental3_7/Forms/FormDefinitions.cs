@@ -284,7 +284,7 @@ namespace OpenDental{
 			lookupCat[16]=DefCat.LetterMergeCats;
 			lookupCat[17]=DefCat.MedicalNotes;
 			lookupCat[18]=DefCat.MiscColors;
-			lookupCat[19]=DefCat.Operatories;
+			lookupCat[19]=DefCat.OperatoriesOld;
 			lookupCat[20]=DefCat.PaymentTypes;
 			lookupCat[21]=DefCat.ProcCodeCats;
 			lookupCat[22]=DefCat.ProgNoteColors;
@@ -427,7 +427,7 @@ namespace OpenDental{
 					//SelectedCat=9;
 					FormDefEdit.EnableValue=true;
 					FormDefEdit.ValueText=Lan.g(this,"Abbreviation");
-					FormDefEdit.HelpText=Lan.g(this,"Ops will be displayed in the appointment book in the order shown above.  Max length of abbreviations is 5 characters.");
+					FormDefEdit.HelpText=Lan.g(this,"This category is obsolete. Operatories have their own setup screen now.");
 					break;
 				case 20://"Payment Types":
 					//SelectedCat=10;

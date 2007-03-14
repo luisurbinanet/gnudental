@@ -118,7 +118,7 @@ namespace OpenDental{
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(199, 19);
 			this.label2.TabIndex = 4;
-			this.label2.Text = "Description (Dental or Hygeine)";
+			this.label2.Text = "Description (Dental or Hygiene)";
 			this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// butDelete

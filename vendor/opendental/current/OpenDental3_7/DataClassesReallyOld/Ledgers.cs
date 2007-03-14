@@ -93,7 +93,7 @@ namespace OpenDental{
 			for(int i=0;i<table.Rows.Count;i++){
 				ALpatNums.Add(PIn.PInt(table.Rows[i][0].ToString()));
 				if(i>0) wherePats+=" OR";
-				wherePats+=" patnum = '"+table.Rows[i][0].ToString()+"'";
+				wherePats+=" PatNum = '"+table.Rows[i][0].ToString()+"'";
 			}
 			//REGULAR PROCEDURES:
 			cmd.CommandText="SELECT procdate,procfee,capcopay FROM procedurelog"
@@ -169,17 +169,19 @@ namespace OpenDental{
 			}
 			ComputePayments(pairs);
 			//PAYMENT PLANS:
-			//all payment plan amounts are considered current, regardless of date
 			string whereGuars="";
 			for(int i=0;i<ALpatNums.Count;i++){
-				if(i>0) whereGuars+=" OR";
-				whereGuars+=" guarantor = '"+((int)ALpatNums[i]).ToString()+"'";
+				if(i>0)
+					whereGuars+=" OR";
+				whereGuars+=" Guarantor = '"+((int)ALpatNums[i]).ToString()+"'";
 			}
-			cmd.CommandText="SELECT currentdue,totalamount,patnum,guarantor FROM payplan"
+			cmd.CommandText="SELECT PatNum,Guarantor,Principal,Interest,ChargeDate FROM payplancharge"
+				//"SELECT currentdue,totalamount,patnum,guarantor FROM payplan"
 				+" WHERE"
 				+wherePats
 				+" OR"
-				+whereGuars;
+				+whereGuars
+				+" ORDER BY ChargeDate";
 			FillTable();
 			pairs=new DateValuePair[1];//always just one single combined entry
 			pairs[0].Date=DateTime.Today;
@@ -187,12 +189,15 @@ namespace OpenDental{
 				for(int i=0;i<table.Rows.Count;i++){
 					//one or both of these conditions may be met:
 					//if is guarantor
-					if(PIn.PInt(table.Rows[i][3].ToString())==patNum){
-						pairs[0].Value+=PIn.PDouble(table.Rows[i][0].ToString());
+					if(PIn.PInt(table.Rows[i][1].ToString())==patNum){
+						if(PIn.PDate(table.Rows[i][4].ToString())<=DateTime.Today){
+							pairs[0].Value+=PIn.PDouble(table.Rows[i][2].ToString())
+								+PIn.PDouble(table.Rows[i][3].ToString());
+						}
 					}
 					//if is patient
-					if(PIn.PInt(table.Rows[i][2].ToString())==patNum){
-						pairs[0].Value-=PIn.PDouble(table.Rows[i][1].ToString());
+					if(PIn.PInt(table.Rows[i][0].ToString())==patNum){
+						pairs[0].Value-=PIn.PDouble(table.Rows[i][2].ToString());
 					}
 				}
 			}

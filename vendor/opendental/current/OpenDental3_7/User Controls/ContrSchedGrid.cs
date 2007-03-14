@@ -32,11 +32,11 @@ namespace OpenDental{
 			RowH=4;
 			ColW=90;
 			NumW=36;
-			if(Defs.Short==null){
+			if(Operatories.ListShort==null){
 				opW=0;
 			}
 			else{
-				opW=ColW/Defs.Short[(int)DefCat.Operatories].Length;
+				opW=ColW/Operatories.ListShort.Length;
 			}
 		}
 
@@ -112,7 +112,7 @@ namespace OpenDental{
 							opOffset=0;
 						}
 						else{
-							opOffset=Defs.GetOrder(DefCat.Operatories,SchedDefaults.List[i].Op);
+							opOffset=Operatories.GetOrder(SchedDefaults.List[i].Op);
 							if(opOffset==-1){//op not visible
 								continue;
 							}
@@ -157,7 +157,7 @@ namespace OpenDental{
 							opOffset=0;
 						}
 						else{
-							opOffset=Defs.GetOrder(DefCat.Operatories,SchedDefaults.List[i].Op);
+							opOffset=Operatories.GetOrder(SchedDefaults.List[i].Op);
 							if(opOffset==-1){//op not visible
 								continue;
 							}

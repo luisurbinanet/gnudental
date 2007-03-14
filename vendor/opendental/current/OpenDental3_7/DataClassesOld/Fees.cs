@@ -21,6 +21,15 @@ namespace OpenDental{
 		///<summary>Not used.</summary>
 		public bool UseDefaultCov;
 
+		public Fee Copy(){
+			Fee f=new Fee();
+			f.FeeNum=FeeNum;
+			f.Amount=Amount;
+			f.ADACode=ADACode;
+			f.FeeSched=FeeSched;
+			return f;
+		}
+
 		///<summary></summary>
 		public void Update(){
 			string command= "UPDATE fee SET " 
@@ -169,9 +178,56 @@ namespace OpenDental{
 			return retVal;
 		}
 
+		///<summary>Clears all fees from one fee schedule.  Supply the DefNum of the feeSchedule.</summary>
+		public static void ClearFeeSched(int schedNum){
+			string command="DELETE FROM fee WHERE FeeSched="+schedNum;
+			DataConnection dcon=new DataConnection();
+			dcon.NonQ(command);
+		}
+
+		///<summary>Copies any fee objects over to the new fee schedule.  Usually run ClearFeeSched first.  Be careful exactly which int's you supply.</summary>
+		public static void CopyFees(int fromSchedI,int toSchedNum){
+			//Fee fee;
+			Fee[] feeArray=new Fee[HList[fromSchedI].Values.Count];
+			HList[fromSchedI].Values.CopyTo(feeArray,0);
+			for(int i=0;i<feeArray.Length;i++){
+				//fee=((Fee)HList[fromSchedI].Values  [i]).Copy();
+				feeArray[i].FeeSched=toSchedNum;
+				feeArray[i].Insert();
+			}
+		}
+
+		///<summary>Increases the fee schedule by percent.  Round should be the number of decimal places, either 0,1,or 2.</summary>
+		public static void Increase(int schedI,int percent,int round){
+			Fee[] feeArray=new Fee[HList[schedI].Values.Count];
+			HList[schedI].Values.CopyTo(feeArray,0);
+			double newVal;
+			for(int i=0;i<feeArray.Length;i++){
+				if(feeArray[i].Amount==0){
+					continue;
+				}
+				newVal=(double)feeArray[i].Amount*(1+(double)percent/100);
+				feeArray[i].Amount=Math.Round(newVal,round);
+				feeArray[i].Update();
+			}
+		}
+
 
 	}
 
 	
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

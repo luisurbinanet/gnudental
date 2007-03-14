@@ -73,7 +73,7 @@ namespace OpenDental{
 			this.butCancel.Autosize = true;
 			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butCancel.Location = new System.Drawing.Point(407, 316);
+			this.butCancel.Location = new System.Drawing.Point(361, 321);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 2;
@@ -87,7 +87,7 @@ namespace OpenDental{
 			this.butOK.Autosize = true;
 			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butOK.Location = new System.Drawing.Point(407, 275);
+			this.butOK.Location = new System.Drawing.Point(361, 280);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 1;
@@ -96,14 +96,15 @@ namespace OpenDental{
 			// 
 			// listUser
 			// 
-			this.listUser.Location = new System.Drawing.Point(47, 25);
+			this.listUser.Location = new System.Drawing.Point(51, 31);
 			this.listUser.Name = "listUser";
 			this.listUser.Size = new System.Drawing.Size(120, 316);
 			this.listUser.TabIndex = 2;
+			this.listUser.MouseUp += new System.Windows.Forms.MouseEventHandler(this.listUser_MouseUp);
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(46, 4);
+			this.label1.Location = new System.Drawing.Point(50, 10);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(122, 18);
 			this.label1.TabIndex = 6;
@@ -112,7 +113,7 @@ namespace OpenDental{
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(184, 4);
+			this.label2.Location = new System.Drawing.Point(188, 10);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(122, 18);
 			this.label2.TabIndex = 7;
@@ -121,7 +122,7 @@ namespace OpenDental{
 			// 
 			// textPassword
 			// 
-			this.textPassword.Location = new System.Drawing.Point(185, 25);
+			this.textPassword.Location = new System.Drawing.Point(189, 31);
 			this.textPassword.Name = "textPassword";
 			this.textPassword.PasswordChar = '*';
 			this.textPassword.Size = new System.Drawing.Size(215, 20);
@@ -132,7 +133,7 @@ namespace OpenDental{
 			// 
 			this.butResetPassword.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.butResetPassword.ForeColor = System.Drawing.SystemColors.Control;
-			this.butResetPassword.Location = new System.Drawing.Point(-5, 328);
+			this.butResetPassword.Location = new System.Drawing.Point(-1, 334);
 			this.butResetPassword.Name = "butResetPassword";
 			this.butResetPassword.Size = new System.Drawing.Size(50, 38);
 			this.butResetPassword.TabIndex = 45;
@@ -142,7 +143,7 @@ namespace OpenDental{
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(520, 373);
+			this.ClientSize = new System.Drawing.Size(464, 378);
 			this.Controls.Add(this.butResetPassword);
 			this.Controls.Add(this.textPassword);
 			this.Controls.Add(this.butOK);
@@ -150,14 +151,13 @@ namespace OpenDental{
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.listUser);
+			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "FormLogOn";
-			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Log On";
-			this.TopMost = true;
 			this.Load += new System.EventHandler(this.FormLogOn_Load);
 			this.ResumeLayout(false);
 
@@ -176,6 +176,10 @@ namespace OpenDental{
 			}
 		}
 
+		private void listUser_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e) {
+			textPassword.Focus();
+		}
+
 		private void butResetPassword_Click(object sender, System.EventArgs e) {
 			FormPasswordReset FormPR=new FormPasswordReset();
 			FormPR.ShowDialog();
@@ -189,13 +193,15 @@ namespace OpenDental{
 				}
 			}
 			Security.CurUser=Users.List[listUser.SelectedIndex].Copy();
-			SecurityLogs.MakeLogEntry(Permissions.StartupSingleUser,"");
+			//SecurityLogs.MakeLogEntry(Permissions.StartupSingleUser,"");
 			DialogResult=DialogResult.OK;
 		}
 
 		private void butCancel_Click(object sender, System.EventArgs e) {
 			DialogResult=DialogResult.Cancel;
 		}
+
+		
 
 		
 		
@@ -222,9 +228,6 @@ namespace OpenDental{
 			return hashedInput==hashedPass;
 		}
 	}
-
-
-
 
 
 }

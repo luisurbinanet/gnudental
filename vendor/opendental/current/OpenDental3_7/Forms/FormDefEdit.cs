@@ -277,7 +277,7 @@ namespace OpenDental{
 					}
 					textValue.Text=discVal.ToString();
 					break;
-				case DefCat.Operatories:
+				case DefCat.OperatoriesOld:
 					if(textValue.Text.Length > 5){
 						MessageBox.Show(Lan.g(this,"Maximum length of abbreviation is 5."));
 						return;

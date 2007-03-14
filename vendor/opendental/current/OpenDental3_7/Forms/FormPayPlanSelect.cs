@@ -14,19 +14,23 @@ namespace OpenDental{
 		/// </summary>
 		private System.ComponentModel.Container components = null;
 		/// <summary>A list of plans passed to this form which are to be displayed.</summary>
-		public PayPlan[] ValidPlans;
+		private PayPlan[] ValidPlans;
+		/// <summary>A list of payPlanCharges passed to this form used to calculate princ for each payplan.</summary>
+		private PayPlanCharge[] ChargeList;
 		private System.Windows.Forms.ListBox listPayPlans;
 		/// <summary>The index of the plan selected.</summary>
 		public int IndexSelected;
 
 		///<summary></summary>
-		public FormPayPlanSelect()
+		public FormPayPlanSelect(PayPlan[] validPlans,PayPlanCharge[] chargeList)
 		{
 			//
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
 			Lan.F(this);
+			ValidPlans=validPlans;
+			ChargeList=chargeList;
 		}
 
 		/// <summary>
@@ -59,9 +63,13 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butCancel.Location = new System.Drawing.Point(195, 175);
+			this.butCancel.Location = new System.Drawing.Point(256, 185);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 0;
@@ -70,8 +78,12 @@ namespace OpenDental{
 			// 
 			// butOK
 			// 
-			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(99, 175);
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butOK.Location = new System.Drawing.Point(160, 185);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 1;
@@ -82,7 +94,7 @@ namespace OpenDental{
 			// 
 			this.listPayPlans.Location = new System.Drawing.Point(32, 51);
 			this.listPayPlans.Name = "listPayPlans";
-			this.listPayPlans.Size = new System.Drawing.Size(238, 95);
+			this.listPayPlans.Size = new System.Drawing.Size(300, 95);
 			this.listPayPlans.TabIndex = 2;
 			this.listPayPlans.DoubleClick += new System.EventHandler(this.listPayPlans_DoubleClick);
 			// 
@@ -90,7 +102,7 @@ namespace OpenDental{
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
-			this.ClientSize = new System.Drawing.Size(295, 222);
+			this.ClientSize = new System.Drawing.Size(356, 232);
 			this.Controls.Add(this.listPayPlans);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.butCancel);
@@ -110,7 +122,7 @@ namespace OpenDental{
 		private void FormPayPlanSelect_Load(object sender, System.EventArgs e) {
 			for(int i=0;i<ValidPlans.Length;i++){
 				listPayPlans.Items.Add(ValidPlans[i].PayPlanDate.ToShortDateString()
-					+"  "+ValidPlans[i].TotalAmount.ToString("F")
+					+"  "+PayPlans.GetTotalPrinc(ValidPlans[i].PayPlanNum,ChargeList).ToString("F")
 					+"  "+Patients.GetPat(ValidPlans[i].PatNum).GetNameFL());
 			}
 		}
@@ -143,6 +155,18 @@ namespace OpenDental{
 
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

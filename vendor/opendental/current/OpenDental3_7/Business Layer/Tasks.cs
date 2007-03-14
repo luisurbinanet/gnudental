@@ -27,6 +27,8 @@ namespace OpenDental{
 		public int FromNum;
 		///<summary>See TaskObjectType enumeration.  0=none,1=Patient,2=Appointment.  More will be added later. If a type is selected, then the KeyNum will contain the primary key of the corresponding Patient or Appointment.  Does not really have anything to do with the ObjectType of the parent tasklist, although they tend to match.</summary>
 		public TaskObjectType ObjectType;
+		///<summary>The date and time that this task was added.  Used to sort the list by the order entered.</summary>
+		public DateTime DateTimeEntry;
 		
 		///<summary></summary>
 		public Task Copy(){
@@ -41,6 +43,7 @@ namespace OpenDental{
 			t.DateType=DateType;
 			t.FromNum=FromNum;
 			t.ObjectType=ObjectType;
+			t.DateTimeEntry=DateTimeEntry;
 			return t;
 		}
 
@@ -56,6 +59,7 @@ namespace OpenDental{
 				+",DateType = '"      +POut.PInt   ((int)DateType)+"'"
 				+",FromNum = '"       +POut.PInt   (FromNum)+"'"
 				+",ObjectType = '"    +POut.PInt   ((int)ObjectType)+"'"
+				+",DateTimeEntry = '" +POut.PDateT (DateTimeEntry)+"'"
 				+" WHERE TaskNum = '"+POut.PInt(TaskNum)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
@@ -72,7 +76,7 @@ namespace OpenDental{
 				command+="TaskNum,";
 			}
 			command+="TaskListNum,DateTask,KeyNum,Descript,TaskStatus,"
-				+"IsRepeating,DateType,FromNum,ObjectType) VALUES(";
+				+"IsRepeating,DateType,FromNum,ObjectType,DateTimeEntry) VALUES(";
 			if(Prefs.RandomKeys){
 				command+="'"+POut.PInt(TaskNum)+"', ";
 			}
@@ -85,7 +89,8 @@ namespace OpenDental{
 				+"'"+POut.PBool  (IsRepeating)+"', "
 				+"'"+POut.PInt   ((int)DateType)+"', "
 				+"'"+POut.PInt   (FromNum)+"', "
-				+"'"+POut.PInt   ((int)ObjectType)+"')";
+				+"'"+POut.PInt   ((int)ObjectType)+"', "
+				+"NOW())";//DateTimeEntry set to current server time
 			DataConnection dcon=new DataConnection();
  			if(Prefs.RandomKeys){
 				dcon.NonQ(command);
@@ -179,9 +184,8 @@ namespace OpenDental{
 			}
 			string command=
 				"SELECT * FROM task "
-				+"WHERE "
-				+where
-				+"ORDER BY Descript";
+				+"WHERE "+where
+				+"ORDER BY DateTimeEntry";
 			DataConnection dcon=new DataConnection();
  			DataTable table=dcon.GetTable(command);
 			Task[] List=new Task[table.Rows.Count];
@@ -197,6 +201,7 @@ namespace OpenDental{
 				List[i].DateType       = (TaskDateType)PIn.PInt(table.Rows[i][7].ToString());
 				List[i].FromNum        = PIn.PInt   (table.Rows[i][8].ToString());
 				List[i].ObjectType     = (TaskObjectType)PIn.PInt(table.Rows[i][9].ToString());
+				List[i].DateTimeEntry  = PIn.PDateT (table.Rows[i][10].ToString());
 			}
 			return List;
 		}

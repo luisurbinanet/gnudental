@@ -147,6 +147,7 @@ namespace OpenDental{
 		=================================== class Schedules ==========================================*/
 ///<summary></summary>
 	public class Schedules{	
+
 		///<summary>Used in the schedule setup window</summary>
 		public static Schedule[] RefreshMonth(DateTime CurDate,ScheduleType schedType,int provNum){
 			string command=

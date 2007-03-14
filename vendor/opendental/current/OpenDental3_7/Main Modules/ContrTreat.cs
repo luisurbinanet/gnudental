@@ -694,6 +694,7 @@ namespace OpenDental{
 			// 
 			// imageListMain
 			// 
+			this.imageListMain.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
 			this.imageListMain.ImageSize = new System.Drawing.Size(22, 22);
 			this.imageListMain.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListMain.ImageStream")));
 			this.imageListMain.TransparentColor = System.Drawing.Color.Transparent;
@@ -1233,7 +1234,6 @@ namespace OpenDental{
 		public void PrintReport(bool justPreview){
 			pd2=new PrintDocument();
 			pd2.PrintPage += new PrintPageEventHandler(this.pd2_PrintPage);
-			PrintDocument tempPD = new PrintDocument();
 			pd2.DefaultPageSettings.Margins=new Margins(50,50,40,25);
 			try{
 				if(justPreview){
@@ -1251,6 +1251,7 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Printer not available"));
 			}
 		}
+
 		private void OnPrint_Click() {
 			linesPrinted=0;
 			ColTotal = new double[10];
@@ -1427,7 +1428,7 @@ namespace OpenDental{
 			#endregion
 			#region MainTable
 			if(graphicsPrinted && !mainPrinted && yPos < e.MarginBounds.Height-40){
-				//this might be starting somewhere int the middle of the table
+				//this might be starting somewhere in the middle of the table
 				e.Graphics.FillRectangle(Brushes.LightGray,colPos[0],yPos,colPos[colPos.Length-1]-colPos[0],18);
 				e.Graphics.DrawRectangle
 					(new Pen(Color.Black),colPos[0],yPos,colPos[colPos.Length-1]-colPos[0],18);  
@@ -1644,6 +1645,7 @@ namespace OpenDental{
 					Claims.Cur.ProvTreat=((Procedure)arrayLProc[tbMain.SelectedIndices[i]]).ProvNum;
 				}
 			}
+			Claims.Cur.ClinicNum=PatCur.ClinicNum;
 			if(Providers.GetIsSec(Claims.Cur.ProvTreat)){
 				Claims.Cur.ProvTreat=PatCur.PriProv;
 				//OK if 0, because auto select first in list when open claim

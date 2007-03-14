@@ -147,8 +147,8 @@ namespace OpenDental{
 		FeeSchedNames,
 		///<summary>8- Medical notes for quick paste.</summary>
 		MedicalNotes,
-		///<summary>9- Operatory names.</summary>
-		Operatories,
+		///<summary>9- No longer used</summary>
+		OperatoriesOld,
 		///<summary>10- Payment types.</summary>
 		PaymentTypes,
 		///<summary>11- Procedure code categories.</summary>
@@ -258,8 +258,10 @@ namespace OpenDental{
 		LetterMerge=16777216,
 		///<summary>33554432</summary>
 		DentalSchools=33554432,
+		///<summary>67108864</summary>
+		Operatories=67108864,
 		///<summary>All flags combined except Date.</summary>
-		AllLocal=67108864-1-1
+		AllLocal=134217728-1-1
 	}
 	//<summary></summary>
 	/*public enum ButtonType{
@@ -843,7 +845,7 @@ namespace OpenDental{
 		SchoolCourse
 	}
 
-	///<summary>A hard-coded list of permission which may be granted to usergroups.</summary>
+	///<summary>A hard-coded list of permissions which may be granted to usergroups.</summary>
 	public enum Permissions{
 		///<summary>0</summary>
 		None,
@@ -885,16 +887,26 @@ namespace OpenDental{
 		AdjustmentEdit,
 		///<summary>19</summary>
 		UserQuery,
-		///<summary>20. Everyone has permission for this. Not used anymore.</summary>
-		StartupSingleUser,
-		///<summary>21 Not used anymore</summary>
+		///<summary>20.  Not used anymore.</summary>
+		StartupSingleUserOld,
+		///<summary>21 Not used anymore.</summary>
 		StartupMultiUserOld,
 		///<summary>22</summary>
 		Reports,
 		///<summary>23. Includes setting procedures complete.</summary>
 		ProcComplCreate,
 		///<summary>24. At least one user must have this permission.</summary>
-		SecurityAdmin
+		SecurityAdmin,
+		///<summary>25</summary>
+		AppointmentCreate,
+		///<summary>26</summary>
+		AppointmentMove,
+		///<summary>27</summary>
+		AppointmentEdit,
+		///<summary>28</summary>
+		Backup,
+		///<summary>29</summary>
+		TimecardsEditAll
 	}
 
 

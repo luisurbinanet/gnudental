@@ -27,7 +27,7 @@ namespace OpenDental{
 		///<summary>Used in screening window. Simpler interface.</summary>
 		public static string[] ListNames;
 
-		///<summary></summary>
+		///<summary>Refreshes List as needed directly from the database.  List only includes items that will show in dropdown list.</summary>
 		public static void Refresh(string name){
 			cmd.CommandText =
 				"SELECT * from school "

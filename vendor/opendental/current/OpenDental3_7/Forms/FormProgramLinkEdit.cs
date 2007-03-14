@@ -376,6 +376,10 @@ namespace OpenDental{
 		}
 
 		private void butDelete_Click(object sender, System.EventArgs e) {
+			if(Programs.Cur.ProgName!=""){//prevent users from deleting program links that we included.
+				MsgBox.Show(this,"Not allowed to delete a program link with an internal name.");
+				return;
+			}
 			if(MessageBox.Show(Lan.g(this,"Delete this program link?"),"",MessageBoxButtons.OKCancel)
 				!=DialogResult.OK){
 				return;

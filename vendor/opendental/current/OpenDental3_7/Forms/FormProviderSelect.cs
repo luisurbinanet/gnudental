@@ -64,7 +64,7 @@ namespace OpenDental{
 			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butClose.Location = new System.Drawing.Point(210, 368);
+			this.butClose.Location = new System.Drawing.Point(225, 364);
 			this.butClose.Name = "butClose";
 			this.butClose.Size = new System.Drawing.Size(75, 26);
 			this.butClose.TabIndex = 3;
@@ -80,7 +80,7 @@ namespace OpenDental{
 			this.butDown.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butDown.Image = ((System.Drawing.Image)(resources.GetObject("butDown.Image")));
 			this.butDown.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDown.Location = new System.Drawing.Point(105, 367);
+			this.butDown.Location = new System.Drawing.Point(100, 363);
 			this.butDown.Name = "butDown";
 			this.butDown.Size = new System.Drawing.Size(79, 26);
 			this.butDown.TabIndex = 12;
@@ -96,7 +96,7 @@ namespace OpenDental{
 			this.butUp.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butUp.Image = ((System.Drawing.Image)(resources.GetObject("butUp.Image")));
 			this.butUp.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butUp.Location = new System.Drawing.Point(16, 367);
+			this.butUp.Location = new System.Drawing.Point(16, 363);
 			this.butUp.Name = "butUp";
 			this.butUp.Size = new System.Drawing.Size(79, 26);
 			this.butUp.TabIndex = 11;
@@ -143,31 +143,6 @@ namespace OpenDental{
 		#endregion
 
 		private void FormProviderSelect_Load(object sender, System.EventArgs e) {
-			//if Security Administration permission has not been enabled, then allow access
-			//if(!PermissionsOld.AuthorizationRequired("Security Administration")){
-			//	FillList();
-			//	return;
-			//}
-			//whether or not Providers requires a password, since Security Admin has been enabled,
-			//verify password so that the security box can be hidden if no permission for that.
-			//user=Users.Authenticate("Providers");
-			//if(user==null){
-			//	DialogResult=DialogResult.Cancel;
-			//	return;//bad password
-			//}
-			//allow access if permission for Security Admin (remember, employees not allowed Security Admin)
-			//if(user.ProvNum > 0){
-			//	if(UserPermissions.IsAuthorized("Security Administration",user)){
-			//		FillList();
-			//		return;
-			//	}
-			//}
-			//allow access if permission for Providers
-			/*if(!UserPermissions.IsAuthorized("Providers",user)){
-				MsgBox.Show(this,"You do not have permission for this feature");
-				DialogResult=DialogResult.Cancel;
-				return;
-			}	*/
 			FillList();
 		}
 
@@ -188,27 +163,18 @@ namespace OpenDental{
 		}
 
 		private void butAdd_Click(object sender, System.EventArgs e) {
-			FormProvEdit FormProvEdit2=new FormProvEdit();
-			Providers.Cur=new Provider();
-			Providers.Cur.ItemOrder=Providers.ListLong.Length;
-			FormProvEdit2.IsNew=true;
-			FormProvEdit2.ShowDialog();
-			if(FormProvEdit2.DialogResult!=DialogResult.OK){
+			Provider provCur=new Provider();
+			provCur.ItemOrder=Providers.ListLong.Length;
+			FormProvEdit FormP=new FormProvEdit(provCur);
+			FormP.IsNew=true;
+			FormP.ShowDialog();
+			if(FormP.DialogResult!=DialogResult.OK){
 				return;
 			}
 			changed=true;
 			Providers.Selected=Providers.ListLong.Length;//this is one more than allowed, but it's ok;
 			FillList();
 		}
-
-		//private void butHide_Click(object sender, System.EventArgs e) {
-			//if(listProviders.SelectedIndex<0){
-			//	MessageBox.Show("Please select provider first,");
-			//	return;
-			//}
-			//Providers.HideProv();
-			//FillList();
-		//}
 
 		private void butUp_Click(object sender, System.EventArgs e) {
 			Providers.MoveUp();
@@ -232,11 +198,9 @@ namespace OpenDental{
 		private void listProviders_DoubleClick(object sender, System.EventArgs e) {
 			if(listProviders.SelectedIndex<0)
 				return;
-			FormProvEdit FormProvEdit2=new FormProvEdit();
-			FormProvEdit2.IsNew=false;
-			Providers.Cur=Providers.ListLong[Providers.Selected];
-			FormProvEdit2.ShowDialog();
-			if(FormProvEdit2.DialogResult!=DialogResult.OK){
+			FormProvEdit FormP=new FormProvEdit(Providers.ListLong[Providers.Selected]);
+			FormP.ShowDialog();
+			if(FormP.DialogResult!=DialogResult.OK){
 				return;
 			}
 			changed=true;

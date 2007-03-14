@@ -190,7 +190,7 @@ namespace OpenDental{
 			if(((Pref)Prefs.HList["UseInternationalToothNumbers"]).ValueString=="1"){
 				if(toothNum==null || toothNum=="")
 					return false;
-				Regex regex=new Regex("^[1-4][1-8]$");//perm teeth: matches firt digit 1-4 and second digit 1-8
+				Regex regex=new Regex("^[1-4][1-8]$");//perm teeth: matches firt digit 1-4 and second digit 1-8,9 would be supernumerary?
 				if(regex.IsMatch(toothNum))
 					return true;
 				regex=new Regex("^[5-8][1-5]$");//pri teeth: matches firt digit 5-8 and second digit 1-5
@@ -208,17 +208,38 @@ namespace OpenDental{
 		public static bool IsValidDB(string toothNum){
 			if(toothNum==null || toothNum=="")
 				return false;
-			Regex regex=new Regex("^[A-T]$");
-			if(regex.IsMatch(toothNum))
+			if(Regex.IsMatch(toothNum,"^[A-T]$"))
 				return true;
-			regex=new Regex(@"^[1-9]\d?$");//matches 1 or 2 digits, leading 0 not allowed
-			if(!regex.IsMatch(toothNum)){
+			if(Regex.IsMatch(toothNum,"^[A-T]S$"))//supernumerary
+				return true;
+			if(!Regex.IsMatch(toothNum,@"^[1-9]\d?$")){//matches 1 or 2 digits, leading 0 not allowed
 				return false;
 			}
 			int intTooth=Convert.ToInt32(toothNum);
-			if(intTooth>32)
+			if(intTooth<=32)
+				return true;
+			if(intTooth>=51 && intTooth<=82)//supernumerary
+				return true;	
+			return false;
+		}
+
+		///<summary></summary>
+		public static bool IsSuperNum(string toothNum){
+			if(toothNum==null || toothNum=="")
 				return false;
-			return true;
+			if(Regex.IsMatch(toothNum,"^[A-T]$"))
+				return false;
+			if(Regex.IsMatch(toothNum,"^[A-T]S$"))//supernumerary
+				return true;
+			if(!Regex.IsMatch(toothNum,@"^[1-9]\d?$")){//matches 1 or 2 digits, leading 0 not allowed
+				return false;
+			}
+			int intTooth=Convert.ToInt32(toothNum);
+			if(intTooth<=32)
+				return false;
+			if(intTooth>=51 && intTooth<=82)//supernumerary
+				return true;	
+			return false;
 		}
 
 		///<summary></summary>
@@ -227,11 +248,16 @@ namespace OpenDental{
 			//Primary or perm are ok.  Empty and null are also ok.
 			if(toothNum==null || toothNum=="")
 				return -1;
-			if(IsPrimary(toothNum)){
-				return Convert.ToInt32(PriToPerm(toothNum));
+			try{
+				if(IsPrimary(toothNum)){
+					return Convert.ToInt32(PriToPerm(toothNum));
+				}
+				else{
+					return Convert.ToInt32(toothNum);
+				}
 			}
-			else{
-				return Convert.ToInt32(toothNum);
+			catch{
+				return -1;
 			}
 		}
 
@@ -245,8 +271,13 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static bool IsPrimary(string toothNum){
-			Regex regex=new Regex("^[A-T]$");
-			return regex.IsMatch(toothNum);
+			if(Regex.IsMatch(toothNum,"^[A-T]$")){
+				return true;
+			}
+			if(Regex.IsMatch(toothNum,"^[A-T]S$")){
+				return true;
+			}
+			return false;
 		}
 
 		///<summary></summary>

@@ -23,6 +23,8 @@ namespace OpenDental{
 		public bool IsNew;
 		private OpenDental.UI.Button butPassword;
 		private OpenDental.UI.Button butDelete;
+		private System.Windows.Forms.ListBox listEmployee;
+		private System.Windows.Forms.Label label2;
 		///<summary></summary>
 		public User UserCur;
 
@@ -68,6 +70,8 @@ namespace OpenDental{
 			this.listUserGroup = new System.Windows.Forms.ListBox();
 			this.butPassword = new OpenDental.UI.Button();
 			this.butDelete = new OpenDental.UI.Button();
+			this.listEmployee = new System.Windows.Forms.ListBox();
+			this.label2 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// butCancel
@@ -77,7 +81,7 @@ namespace OpenDental{
 			this.butCancel.Autosize = true;
 			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butCancel.Location = new System.Drawing.Point(485, 316);
+			this.butCancel.Location = new System.Drawing.Point(666, 381);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 0;
@@ -91,7 +95,7 @@ namespace OpenDental{
 			this.butOK.Autosize = true;
 			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butOK.Location = new System.Drawing.Point(485, 275);
+			this.butOK.Location = new System.Drawing.Point(666, 340);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 1;
@@ -134,11 +138,11 @@ namespace OpenDental{
 			// butPassword
 			// 
 			this.butPassword.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butPassword.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butPassword.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.butPassword.Autosize = true;
 			this.butPassword.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butPassword.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butPassword.Location = new System.Drawing.Point(457, 24);
+			this.butPassword.Location = new System.Drawing.Point(412, 381);
 			this.butPassword.Name = "butPassword";
 			this.butPassword.Size = new System.Drawing.Size(103, 26);
 			this.butPassword.TabIndex = 8;
@@ -154,17 +158,35 @@ namespace OpenDental{
 			this.butDelete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDelete.Location = new System.Drawing.Point(17, 315);
+			this.butDelete.Location = new System.Drawing.Point(17, 381);
 			this.butDelete.Name = "butDelete";
 			this.butDelete.Size = new System.Drawing.Size(88, 26);
 			this.butDelete.TabIndex = 9;
 			this.butDelete.Text = "Delete";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
 			// 
+			// listEmployee
+			// 
+			this.listEmployee.Location = new System.Drawing.Point(455, 58);
+			this.listEmployee.Name = "listEmployee";
+			this.listEmployee.Size = new System.Drawing.Size(124, 225);
+			this.listEmployee.TabIndex = 11;
+			// 
+			// label2
+			// 
+			this.label2.Location = new System.Drawing.Point(454, 34);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(222, 20);
+			this.label2.TabIndex = 10;
+			this.label2.Text = "Employee (for timecards)";
+			this.label2.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
 			// FormUserEdit
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(612, 367);
+			this.ClientSize = new System.Drawing.Size(777, 432);
+			this.Controls.Add(this.listEmployee);
+			this.Controls.Add(this.label2);
 			this.Controls.Add(this.butDelete);
 			this.Controls.Add(this.butPassword);
 			this.Controls.Add(this.textUserName);
@@ -196,6 +218,15 @@ namespace OpenDental{
 			}
 			if(listUserGroup.SelectedIndex==-1){//never allowed to delete last group, so this won't fail
 				listUserGroup.SelectedIndex=0;
+			}
+			listEmployee.Items.Clear();
+			listEmployee.Items.Add(Lan.g(this,"none"));
+			listEmployee.SelectedIndex=0;
+			for(int i=0;i<Employees.ListShort.Length;i++){
+				listEmployee.Items.Add(Employees.GetName(Employees.ListShort[i]));
+				if(UserCur.EmployeeNum==Employees.ListShort[i].EmployeeNum){
+					listEmployee.SelectedIndex=i+1;
+				}
 			}
 			if(UserCur.Password==""){
 				butPassword.Text=Lan.g(this,"Create Password");
@@ -241,6 +272,12 @@ namespace OpenDental{
 			}
 			UserCur.UserName=textUserName.Text;
 			UserCur.UserGroupNum=UserGroups.List[listUserGroup.SelectedIndex].UserGroupNum;
+			if(listEmployee.SelectedIndex==0){
+				UserCur.EmployeeNum=0;
+			}
+			else{
+				UserCur.EmployeeNum=Employees.ListShort[listEmployee.SelectedIndex-1].EmployeeNum;
+			}
 			try{
 				UserCur.InsertOrUpdate(IsNew);
 			}

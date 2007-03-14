@@ -453,9 +453,10 @@ namespace OpenDental{
 					DialogResult=DialogResult.Cancel;
 					return;
 				}
-				if(PayPlans.GetValidPlan(PatCur.PatNum)){//a valid payPlan was located
+				PayPlan payPlanCur=PayPlans.GetValidPlan(PatCur.PatNum,false);
+				if(payPlanCur!=null){//a valid payPlan was located
 					PaySplit PaySplitCur=AddOneSplit();//the amount and date will be updated upon closing
-					PaySplitCur.PayPlanNum=PayPlans.Cur.PayPlanNum;
+					PaySplitCur.PayPlanNum=payPlanCur.PayPlanNum;
 					PaySplitCur.InsertOrUpdate(false);
 				}
 			}
@@ -610,14 +611,13 @@ namespace OpenDental{
 			}
 			//PaySplits.Cur=PaySplits.PaymentList[0];
 			if(checkPayPlan.Checked){
-				if(!PayPlans.GetValidPlan(PaySplitPaymentList[0].PatNum)){//no valid plans
-					//if(PayPlans.List.Length==0){
+				PayPlan payPlanCur=PayPlans.GetValidPlan(PaySplitPaymentList[0].PatNum,false);
+				if(payPlanCur==null){//no valid plans
 					MsgBox.Show(this,"The selected patient is not the guarantor for any payment plans.");
-					//}
 					checkPayPlan.Checked=false;
 					return;
 				}
-				PaySplitPaymentList[0].PayPlanNum=PayPlans.Cur.PayPlanNum;
+				PaySplitPaymentList[0].PayPlanNum=payPlanCur.PayPlanNum;
 				PaySplitPaymentList[0].InsertOrUpdate(false);
 			}
 			else{//payPlan unchecked
@@ -645,7 +645,8 @@ namespace OpenDental{
 				return;
 			}
 			PaymentCur.Delete();
-			SecurityLogs.MakeLogEntry(Permissions.PaymentEdit,"Delete for: "
+			SecurityLogs.MakeLogEntry(Permissions.PaymentEdit,PaymentCur.PatNum,
+				"Delete for: "
 				+Patients.GetLim(PaymentCur.PatNum).GetNameLF()+", "
 				+PaymentCur.PayAmt.ToString("c"));
 			DialogResult=DialogResult.OK;
@@ -708,12 +709,12 @@ namespace OpenDental{
 				return;
 			}
 			if(IsNew){
-				SecurityLogs.MakeLogEntry(Permissions.PaymentCreate,
+				SecurityLogs.MakeLogEntry(Permissions.PaymentCreate,PaymentCur.PatNum,
 					Patients.GetLim(PaymentCur.PatNum).GetNameLF()+", "
 					+PaymentCur.PayAmt.ToString("c"));
 			}
 			else{
-			  SecurityLogs.MakeLogEntry(Permissions.PaymentEdit,
+			  SecurityLogs.MakeLogEntry(Permissions.PaymentEdit,PaymentCur.PatNum,
 					Patients.GetLim(PaymentCur.PatNum).GetNameLF()+", "
 					+PaymentCur.PayAmt.ToString("c"));
 			}

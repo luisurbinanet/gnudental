@@ -456,7 +456,12 @@ namespace OpenDental{
 					xPos=450;
 					yPos+=height+3;
 					font=new Font("Arial",9);
-					text=(PatGuar.BalTotal-PatGuar.InsEst).ToString("F");
+					if(Prefs.GetBool("BalancesDontSubtractIns")){
+						text=PatGuar.BalTotal.ToString("F");
+					}
+					else{//this is more typical
+						text=(PatGuar.BalTotal-PatGuar.InsEst).ToString("F");
+					}
 					g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
 					xPos+=width;
 					if(Prefs.GetInt("StatementsCalcDueDate")==-1){
@@ -585,8 +590,10 @@ namespace OpenDental{
 					text=Lan.g(this,"Total");
 					g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
 					xPos+=width;
-					text=Lan.g(this,"- InsEst");
-					g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
+					if(!Prefs.GetBool("BalancesDontSubtractIns")){//this typically happens
+						text=Lan.g(this,"- InsEst");
+						g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
+					}
 					xPos+=width;
 					text=Lan.g(this,"= Balance");
 					g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
@@ -608,11 +615,18 @@ namespace OpenDental{
 					text=PatGuar.BalTotal.ToString("F");
 					g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
 					xPos+=width;
-					text=PatGuar.InsEst.ToString("F");
-					g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
-					xPos+=width;
-					text=(PatGuar.BalTotal-PatGuar.InsEst).ToString("F");
-					g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
+					if(Prefs.GetBool("BalancesDontSubtractIns")){
+						xPos+=width;
+						text=PatGuar.BalTotal.ToString("F");
+						g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
+					}
+					else{//this is more typical
+						text=PatGuar.InsEst.ToString("F");
+						g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
+						xPos+=width;
+						text=(PatGuar.BalTotal-PatGuar.InsEst).ToString("F");
+						g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
+					}
 				}
 				yPos=350+68;
 				//yPos=770;//change this value to test multiple pages

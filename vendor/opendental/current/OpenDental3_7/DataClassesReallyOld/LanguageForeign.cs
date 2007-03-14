@@ -73,8 +73,8 @@ namespace OpenDental{
 			cmd.CommandText = "UPDATE languageforeign SET " 
 				+"Translation	= '"+POut.PString(Cur.Translation)+"'"
 				+",Comments = '"+POut.PString(Cur.Comments)+"'" 
-				+" WHERE ClassType= BINARY '"+Cur.ClassType+"'" 
-				+" AND English= BINARY '"+Cur.English+"'"
+				+" WHERE ClassType= BINARY '"+POut.PString(Cur.ClassType)+"'" 
+				+" AND English= BINARY '"+POut.PString(Cur.English)+"'"
 				+" AND Culture= '"+CultureInfo.CurrentCulture.TwoLetterISOLanguageName+"'";
 			NonQ();
 		}
@@ -82,8 +82,8 @@ namespace OpenDental{
 		///<summary></summary>
 		public static void DeleteCur(){
 			cmd.CommandText = "DELETE from languageforeign "
-				+"WHERE ClassType=BINARY '"+Cur.ClassType+"' "
-				+"AND English=BINARY '"+Cur.English+"' "
+				+"WHERE ClassType=BINARY '"+POut.PString(Cur.ClassType)+"' "
+				+"AND English=BINARY '"+POut.PString(Cur.English)+"' "
 				+"AND Culture='"+CultureInfo.CurrentCulture.TwoLetterISOLanguageName+"'";
 			NonQ();
 		}

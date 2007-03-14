@@ -401,12 +401,12 @@ namespace OpenDental{
 				return;
 			}
 			if(IsNew){
-				SecurityLogs.MakeLogEntry(Permissions.AdjustmentCreate,
+				SecurityLogs.MakeLogEntry(Permissions.AdjustmentCreate,AdjustmentCur.PatNum,
 					Patients.GetLim(AdjustmentCur.PatNum).GetNameLF()+", "
 					+AdjustmentCur.AdjAmt.ToString("c"));
 			}
 			else{
-				SecurityLogs.MakeLogEntry(Permissions.AdjustmentEdit,
+				SecurityLogs.MakeLogEntry(Permissions.AdjustmentEdit,AdjustmentCur.PatNum,
 					Patients.GetLim(AdjustmentCur.PatNum).GetNameLF()+", "
 					+AdjustmentCur.AdjAmt.ToString("c"));
 			}
@@ -418,7 +418,8 @@ namespace OpenDental{
 				DialogResult=DialogResult.Cancel;
 			}
 			else{
-				SecurityLogs.MakeLogEntry(Permissions.AdjustmentEdit,"Delete for patient: "
+				SecurityLogs.MakeLogEntry(Permissions.AdjustmentEdit,AdjustmentCur.PatNum,
+					"Delete for patient: "
 					+Patients.GetLim(AdjustmentCur.PatNum).GetNameLF()+", "
 					+AdjustmentCur.AdjAmt.ToString("c"));
 				AdjustmentCur.Delete();

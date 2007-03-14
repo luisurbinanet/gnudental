@@ -21,8 +21,6 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;
 		private OpenDental.UI.Button butSave;
-		private System.Windows.Forms.GroupBox groupBox2;
-		private System.Windows.Forms.ListBox listProcs;
 		private System.ComponentModel.Container components = null;
 		private System.Windows.Forms.Label label3;
 		private OpenDental.TableRecallList tbMain;
@@ -32,7 +30,6 @@ namespace OpenDental{
 		///<summary>Will be set to true when form closes if user click Send to Pinboard.</summary>
 		public bool PinClicked=false;
 		private OpenDental.UI.Button butReport;
-		private System.Windows.Forms.TextBox textBox1;
 		private System.Windows.Forms.PrintDialog printDialog2;
 		private int pagesPrinted;
 		private DataTable AddrTable;
@@ -56,10 +53,10 @@ namespace OpenDental{
 			tbMain.CellClicked += new OpenDental.ContrTable.CellEventHandler(tbMain_CellClicked);
 			tbMain.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbMain_CellDoubleClicked);
 			Lan.F(this);
-			Lan.C(this,new Control[]
-				{
-					textBox1
-				});
+			//Lan.C(this,new Control[]
+			//	{
+			//		textBox1
+			//	});
 		}
 
 		///<summary></summary>
@@ -87,9 +84,6 @@ namespace OpenDental{
 			this.butSave = new OpenDental.UI.Button();
 			this.label2 = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
-			this.groupBox2 = new System.Windows.Forms.GroupBox();
-			this.listProcs = new System.Windows.Forms.ListBox();
-			this.textBox1 = new System.Windows.Forms.TextBox();
 			this.butReport = new OpenDental.UI.Button();
 			this.butLabels = new OpenDental.UI.Button();
 			this.printDialog2 = new System.Windows.Forms.PrintDialog();
@@ -101,7 +95,6 @@ namespace OpenDental{
 			this.label4 = new System.Windows.Forms.Label();
 			this.textPostcardMessage = new System.Windows.Forms.TextBox();
 			this.groupBox1.SuspendLayout();
-			this.groupBox2.SuspendLayout();
 			this.groupBox3.SuspendLayout();
 			this.groupBox4.SuspendLayout();
 			this.SuspendLayout();
@@ -167,6 +160,8 @@ namespace OpenDental{
 			// textDaysFuture
 			// 
 			this.textDaysFuture.Location = new System.Drawing.Point(124, 58);
+			this.textDaysFuture.MaxVal = 255;
+			this.textDaysFuture.MinVal = 0;
 			this.textDaysFuture.Name = "textDaysFuture";
 			this.textDaysFuture.Size = new System.Drawing.Size(51, 20);
 			this.textDaysFuture.TabIndex = 1;
@@ -175,6 +170,8 @@ namespace OpenDental{
 			// textDaysPast
 			// 
 			this.textDaysPast.Location = new System.Drawing.Point(124, 31);
+			this.textDaysPast.MaxVal = 255;
+			this.textDaysPast.MinVal = 0;
 			this.textDaysPast.Name = "textDaysPast";
 			this.textDaysPast.Size = new System.Drawing.Size(51, 20);
 			this.textDaysPast.TabIndex = 0;
@@ -220,38 +217,6 @@ namespace OpenDental{
 			this.label1.TabIndex = 11;
 			this.label1.Text = "Days Past";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
-			// 
-			// groupBox2
-			// 
-			this.groupBox2.Controls.Add(this.listProcs);
-			this.groupBox2.Controls.Add(this.textBox1);
-			this.groupBox2.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox2.Location = new System.Drawing.Point(37, 660);
-			this.groupBox2.Name = "groupBox2";
-			this.groupBox2.Size = new System.Drawing.Size(158, 68);
-			this.groupBox2.TabIndex = 12;
-			this.groupBox2.TabStop = false;
-			this.groupBox2.Visible = false;
-			// 
-			// listProcs
-			// 
-			this.listProcs.BackColor = System.Drawing.SystemColors.Control;
-			this.listProcs.Location = new System.Drawing.Point(15, 45);
-			this.listProcs.Name = "listProcs";
-			this.listProcs.SelectionMode = System.Windows.Forms.SelectionMode.None;
-			this.listProcs.Size = new System.Drawing.Size(130, 199);
-			this.listProcs.TabIndex = 0;
-			// 
-			// textBox1
-			// 
-			this.textBox1.BackColor = System.Drawing.SystemColors.Control;
-			this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.textBox1.Location = new System.Drawing.Point(14, 12);
-			this.textBox1.Multiline = true;
-			this.textBox1.Name = "textBox1";
-			this.textBox1.Size = new System.Drawing.Size(139, 28);
-			this.textBox1.TabIndex = 14;
-			this.textBox1.Text = "Procedures that Trigger Recall - You can change these in procedure code setup";
 			// 
 			// butReport
 			// 
@@ -335,7 +300,7 @@ namespace OpenDental{
 			this.butPostcards.Name = "butPostcards";
 			this.butPostcards.Size = new System.Drawing.Size(87, 26);
 			this.butPostcards.TabIndex = 16;
-			this.butPostcards.Text = "Print";
+			this.butPostcards.Text = "Preview";
 			this.butPostcards.Click += new System.EventHandler(this.butPostcards_Click);
 			// 
 			// groupBox4
@@ -379,7 +344,6 @@ namespace OpenDental{
 			this.Controls.Add(this.groupBox3);
 			this.Controls.Add(this.butLabels);
 			this.Controls.Add(this.butReport);
-			this.Controls.Add(this.groupBox2);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.tbMain);
 			this.Controls.Add(this.butClose);
@@ -391,7 +355,6 @@ namespace OpenDental{
 			this.Text = "Recall List";
 			this.Load += new System.EventHandler(this.FormRecallList_Load);
 			this.groupBox1.ResumeLayout(false);
-			this.groupBox2.ResumeLayout(false);
 			this.groupBox3.ResumeLayout(false);
 			this.groupBox4.ResumeLayout(false);
 			this.ResumeLayout(false);
@@ -569,10 +532,8 @@ namespace OpenDental{
 				pd.DefaultPageSettings.PaperSize=new PaperSize("Postcard",850,1100);
 				pd.DefaultPageSettings.Landscape=true;
 			}
-			printPreview=new OpenDental.UI.PrintPreview(PrintSituation.Postcard
-				,pd
-				,(int)Math.Ceiling
-				((double)AddrTable.Rows.Count/(double)Prefs.GetInt("RecallPostcardsPerSheet")));
+			printPreview=new OpenDental.UI.PrintPreview(PrintSituation.Postcard,pd,
+				(int)Math.Ceiling((double)AddrTable.Rows.Count/(double)Prefs.GetInt("RecallPostcardsPerSheet")));
 			printPreview.ShowDialog();
 		}
 
@@ -616,50 +577,46 @@ namespace OpenDental{
 
 		///<summary>raised for each page to be printed.</summary>
 		private void pdCards_PrintPage(object sender, PrintPageEventArgs ev){
-			int totalPages=(int)Math.Ceiling
-				((double)AddrTable.Rows.Count/(double)Prefs.GetInt("RecallPostcardsPerSheet"));
+			int totalPages=(int)Math.Ceiling((double)AddrTable.Rows.Count/(double)Prefs.GetInt("RecallPostcardsPerSheet"));
 			Graphics g=ev.Graphics;
 			float yPos=0;//these refer to the upper left origin of each postcard
 			float xPos=0;
+			string str;
 			while(yPos<ev.PageBounds.Height-100 && patientsPrinted<AddrTable.Rows.Count){
 				//Return Address--------------------------------------------------------------------------
-				string str=Prefs.GetString("PracticeTitle")+"\r\n";
-				g.DrawString(str,new Font(FontFamily.GenericSansSerif,9,FontStyle.Bold)
-					,Brushes.Black,xPos+45,yPos+60);
-				str=Prefs.GetString("PracticeAddress")+"\r\n";
-				if(Prefs.GetString("PracticeAddress2")!=""){
-					str+=Prefs.GetString("PracticeAddress2")+"\r\n";
+				if(Prefs.GetBool("RecallCardsShowReturnAdd")){
+					str=Prefs.GetString("PracticeTitle")+"\r\n";
+					g.DrawString(str,new Font(FontFamily.GenericSansSerif,9,FontStyle.Bold),Brushes.Black,xPos+45,yPos+60);
+					str=Prefs.GetString("PracticeAddress")+"\r\n";
+					if(Prefs.GetString("PracticeAddress2")!=""){
+						str+=Prefs.GetString("PracticeAddress2")+"\r\n";
+					}
+					str+=Prefs.GetString("PracticeCity")+",  "+Prefs.GetString("PracticeST")+"  "+Prefs.GetString("PracticeZip")+"\r\n";
+					string phone=Prefs.GetString("PracticePhone");
+					if(CultureInfo.CurrentCulture.Name=="en-US"&& phone.Length==10){
+						str+="("+phone.Substring(0,3)+")"+phone.Substring(3,3)+"-"+phone.Substring(6);
+					}
+					else{//any other phone format
+						str+=phone;
+					}
+					g.DrawString(str,new Font(FontFamily.GenericSansSerif,8),Brushes.Black,xPos+45,yPos+75);
 				}
-				str+=Prefs.GetString("PracticeCity")+",  "
-					+Prefs.GetString("PracticeST")+"  "
-					+Prefs.GetString("PracticeZip")+"\r\n";
-				string phone=Prefs.GetString("PracticePhone");
-				if(CultureInfo.CurrentCulture.Name=="en-US"
-					&& phone.Length==10)
-				{
-					str+="("+phone.Substring(0,3)+")"+phone.Substring(3,3)+"-"+phone.Substring(6);
-				}
-				else{//any other phone format
-					str+=phone;
-				}
-				g.DrawString(str,new Font(FontFamily.GenericSansSerif,8),Brushes.Black,xPos+45,yPos+75);
 				//Body text-------------------------------------------------------------------------------
 				str=textPostcardMessage.Text.Replace("?DueDate"
 					,PIn.PDate(AddrTable.Rows[patientsPrinted]["DateDue"].ToString()).ToShortDateString());
-				g.DrawString(str,new Font(FontFamily.GenericSansSerif,10),Brushes.Black
-					,new RectangleF(xPos+45,yPos+180,250,190));
+				g.DrawString(str,new Font(FontFamily.GenericSansSerif,10),Brushes.Black,new RectangleF(xPos+45,yPos+180,250,190));
 				//Patient's Address-----------------------------------------------------------------------
-				string text=AddrTable.Rows[patientsPrinted]["FName"].ToString()+" "
+				str=AddrTable.Rows[patientsPrinted]["FName"].ToString()+" "
 						+AddrTable.Rows[patientsPrinted]["MiddleI"].ToString()+" "
 						+AddrTable.Rows[patientsPrinted]["LName"].ToString()+"\r\n"
 						+AddrTable.Rows[patientsPrinted]["Address"].ToString()+"\r\n";
 					if(AddrTable.Rows[patientsPrinted]["Address2"].ToString()!=""){
-						text+=AddrTable.Rows[patientsPrinted]["Address2"].ToString()+"\r\n";
+						str+=AddrTable.Rows[patientsPrinted]["Address2"].ToString()+"\r\n";
 					}
-					text+=AddrTable.Rows[patientsPrinted]["City"].ToString()+", "
+					str+=AddrTable.Rows[patientsPrinted]["City"].ToString()+", "
 						+AddrTable.Rows[patientsPrinted]["State"].ToString()+"   "
 						+AddrTable.Rows[patientsPrinted]["Zip"].ToString()+"\r\n";
-				g.DrawString(text,new Font(FontFamily.GenericSansSerif,11),Brushes.Black,xPos+320,yPos+240);
+				g.DrawString(str,new Font(FontFamily.GenericSansSerif,11),Brushes.Black,xPos+320,yPos+240);
 				if(Prefs.GetInt("RecallPostcardsPerSheet")==1){
 					yPos+=400;
 				}

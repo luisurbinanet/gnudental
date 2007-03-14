@@ -127,6 +127,7 @@ namespace OpenDental{
 			// 
 			// imageListMain
 			// 
+			this.imageListMain.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
 			this.imageListMain.ImageSize = new System.Drawing.Size(22, 22);
 			this.imageListMain.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListMain.ImageStream")));
 			this.imageListMain.TransparentColor = System.Drawing.Color.Transparent;
@@ -139,7 +140,7 @@ namespace OpenDental{
 				| System.Windows.Forms.AnchorStyles.Right)));
 			this.listMain.AutoArrange = false;
 			this.listMain.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-																																							 this.columnHeader1});
+																					   this.columnHeader1});
 			this.listMain.ContextMenu = this.menuEdit;
 			this.listMain.Location = new System.Drawing.Point(0, 266);
 			this.listMain.MultiSelect = false;
@@ -161,14 +162,14 @@ namespace OpenDental{
 			// menuEdit
 			// 
 			this.menuEdit.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-																																						 this.menuItemEdit,
-																																						 this.menuItem6,
-																																						 this.menuItemCut,
-																																						 this.menuItemCopy,
-																																						 this.menuItemPaste,
-																																						 this.menuItemDelete,
-																																						 this.menuItem2,
-																																						 this.menuItemGoto});
+																					 this.menuItemEdit,
+																					 this.menuItem6,
+																					 this.menuItemCut,
+																					 this.menuItemCopy,
+																					 this.menuItemPaste,
+																					 this.menuItemDelete,
+																					 this.menuItem2,
+																					 this.menuItemGoto});
 			this.menuEdit.Popup += new System.EventHandler(this.menuEdit_Popup);
 			// 
 			// menuItemEdit
@@ -267,7 +268,7 @@ namespace OpenDental{
 			// 
 			this.tabRepeating.Location = new System.Drawing.Point(4, 22);
 			this.tabRepeating.Name = "tabRepeating";
-			this.tabRepeating.Size = new System.Drawing.Size(1212, -3);
+			this.tabRepeating.Size = new System.Drawing.Size(877, -3);
 			this.tabRepeating.TabIndex = 2;
 			this.tabRepeating.Text = "Repeating";
 			// 
@@ -275,7 +276,7 @@ namespace OpenDental{
 			// 
 			this.tabDate.Location = new System.Drawing.Point(4, 22);
 			this.tabDate.Name = "tabDate";
-			this.tabDate.Size = new System.Drawing.Size(1212, -3);
+			this.tabDate.Size = new System.Drawing.Size(877, -3);
 			this.tabDate.TabIndex = 1;
 			this.tabDate.Text = "By Date";
 			// 
@@ -283,7 +284,7 @@ namespace OpenDental{
 			// 
 			this.tabWeek.Location = new System.Drawing.Point(4, 22);
 			this.tabWeek.Name = "tabWeek";
-			this.tabWeek.Size = new System.Drawing.Size(1212, -3);
+			this.tabWeek.Size = new System.Drawing.Size(877, -3);
 			this.tabWeek.TabIndex = 3;
 			this.tabWeek.Text = "By Week";
 			// 
@@ -291,7 +292,7 @@ namespace OpenDental{
 			// 
 			this.tabMonth.Location = new System.Drawing.Point(4, 22);
 			this.tabMonth.Name = "tabMonth";
-			this.tabMonth.Size = new System.Drawing.Size(1212, -3);
+			this.tabMonth.Size = new System.Drawing.Size(877, -3);
 			this.tabMonth.TabIndex = 4;
 			this.tabMonth.Text = "By Month";
 			// 
@@ -542,11 +543,11 @@ namespace OpenDental{
 				}
 				else if(TasksList[i].ObjectType==TaskObjectType.Appointment){
 					if(TasksList[i].KeyNum!=0){
-						Appointments.RefreshCur(TasksList[i].KeyNum);
-						objDesc=Patients.GetPat(Appointments.Cur.PatNum).GetNameLF()
-							+"  "+Appointments.Cur.AptDateTime.ToString()
-							+"  "+Appointments.Cur.ProcDescript
-							+"  "+Appointments.Cur.Note
+						Appointment AptCur=Appointments.GetOneApt(TasksList[i].KeyNum);
+						objDesc=Patients.GetPat(AptCur.PatNum).GetNameLF()
+							+"  "+AptCur.AptDateTime.ToString()
+							+"  "+AptCur.ProcDescript
+							+"  "+AptCur.Note
 							+" - ";
 					}
 				}

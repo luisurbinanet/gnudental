@@ -4,24 +4,20 @@ using System.Windows.Forms;
 namespace OpenDental{
 	///<summary></summary>
 	public class Security{
-		//<summary></summary>
-		//public static bool IsMultiUserMode;
-		///<summary>The current user.  Might be null when program is first starting up.  After that, it always contains a valid user.</summary>
+		///<summary>The current user.  Might be null when first starting the program.  Otherwise, must contain valid user.</summary>
 		public static User CurUser;
-		//<summary>If in multiuser mode, this holds the last authenticated user.  CurUser remains null.  This will be null also if permission to a function is present in multiuser mode.  Since we don't know the user, no log entry can be made.</summary>
-		//public static User MultiUser;
 
 		///<summary></summary>
 		public Security(){
 			
 		}
 
-		///<summary>Checks to see if current user is authorized.  Then, if in multiuser mode and not authorized, it authenticates the user by making them enter username and password, and checks the authenticated user for authorization.  It also checks any date restrictions.  If not authorized, it gives a Message box saying so and returns false.</summary>
+		///<summary>Checks to see if current user is authorized.  It also checks any date restrictions.  If not authorized, it gives a Message box saying so and returns false.</summary>
 		public static bool IsAuthorized(Permissions perm){
 			return IsAuthorized(perm,DateTime.MinValue,false);
 		}
 
-		///<summary>Checks to see if current user is authorized.  Then, if in multiuser mode and not authorized, it authenticates the user by making them enter username and password, and checks the authenticated user for authorization.  It also checks any date restrictions.  If not authorized, it gives a Message box saying so and returns false.</summary>
+		///<summary>Checks to see if current user is authorized.  It also checks any date restrictions.  If not authorized, it gives a Message box saying so and returns false.</summary>
 		public static bool IsAuthorized(Permissions perm,DateTime date){
 			return IsAuthorized(perm,date,false);
 		}

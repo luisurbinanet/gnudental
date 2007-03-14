@@ -56,6 +56,7 @@ namespace OpenDental.UI{
 		private bool MouseIsOver;//helps automate scrolling
 		private string translationName;
 		private Color selectedRowColor;
+		private bool allowSelection;
 
 		///<summary></summary>
 		public ODGrid(){
@@ -74,6 +75,7 @@ namespace OpenDental.UI{
 			selectedIndices=new ArrayList();
 			selectionMode=SelectionMode.One;
 			selectedRowColor=Color.Silver;
+			allowSelection=true;
 		}
 
 		///<summary>Clean up any resources being used.</summary>
@@ -188,6 +190,18 @@ namespace OpenDental.UI{
 		}
 
 		///<summary></summary>
+		[Category("Behavior"),Description("Set false to disable row selection when user clicks.  Row selection should then be handled by the form using the cellClick event.")]
+		[DefaultValue(true)]
+		public bool AllowSelection{
+			get{ 
+				return allowSelection; 
+			}
+			set{
+				allowSelection=value;
+			}
+		}
+
+		///<summary>Uniquely identifies the grid for translation to another language.</summary>
 		[Category("Appearance"),Description("Uniquely identifies the grid for translation to another language.")]
 		public string TranslationName{
 			get{ 
@@ -198,7 +212,7 @@ namespace OpenDental.UI{
 			}
 		}
 
-		///<summary></summary>
+		///<summary>The background color that is used for selected rows.</summary>
 		[Category("Appearance"),Description("The background color that is used for selected rows.")]
 		[DefaultValue(typeof(Color),"Silver")]
 		public Color SelectedRowColor{
@@ -363,6 +377,9 @@ namespace OpenDental.UI{
 						-vScroll.Value+1+titleHeight+headerHeight+RowLocs[rowI]+RowHeights[rowI]);
 				}
 				//text
+				if(rows[rowI].Cells.Count-1<i){
+					continue;
+				}
 				switch(columns[i].TextAlign){
 					case HorizontalAlignment.Left:
 						format.Alignment=StringAlignment.Near;
@@ -590,11 +607,11 @@ namespace OpenDental.UI{
 			if(selectionMode==SelectionMode.None){
 				throw new Exception("Selection mode is none.");
 			}
-			if(selectionMode==SelectionMode.One){
+			if(selectionMode==SelectionMode.One && setValue==true){
 				throw new Exception("Selection mode is one.");
 			}
 			selectedIndices.Clear();
-			if(setValue){//select all{
+			if(setValue){//select all
 				for(int i=0;i<rows.Count;i++){
 					selectedIndices.Add(i);
 				}
@@ -630,6 +647,9 @@ namespace OpenDental.UI{
 			MouseDownRow=PointToRow(e.Y);
 			if(MouseDownRow==-1){//mouse down was in the title or header section
 				return;
+			}
+			if(!allowSelection){
+				return;//clicks do not trigger selection of rows, but cell click event still gets fired
 			}
 			switch(selectionMode){
 				case SelectionMode.None:

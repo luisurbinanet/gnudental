@@ -17,10 +17,12 @@ namespace OpenDental{
 		private System.Windows.Forms.TreeView treePermissions;
 		private System.Windows.Forms.ImageList imageListPerm;
 		private System.Windows.Forms.Label labelPerm;
+		private System.Windows.Forms.Label labelMultiuser;
 		private System.ComponentModel.IContainer components;
 		private int SelectedGroupNum;
 		private TreeNode clickedPermNode;
 		private OpenDental.UI.Button butAudit;
+		private System.Windows.Forms.CheckBox checkTimecardSecurityEnabled;
 		private bool changed;
 
 		///<summary></summary>
@@ -65,7 +67,9 @@ namespace OpenDental{
 			this.treePermissions = new System.Windows.Forms.TreeView();
 			this.imageListPerm = new System.Windows.Forms.ImageList(this.components);
 			this.labelPerm = new System.Windows.Forms.Label();
+			this.labelMultiuser = new System.Windows.Forms.Label();
 			this.butAudit = new OpenDental.UI.Button();
+			this.checkTimecardSecurityEnabled = new System.Windows.Forms.CheckBox();
 			this.SuspendLayout();
 			// 
 			// butClose
@@ -75,7 +79,7 @@ namespace OpenDental{
 			this.butClose.Autosize = true;
 			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butClose.Location = new System.Drawing.Point(793, 578);
+			this.butClose.Location = new System.Drawing.Point(793, 579);
 			this.butClose.Name = "butClose";
 			this.butClose.Size = new System.Drawing.Size(75, 26);
 			this.butClose.TabIndex = 0;
@@ -146,6 +150,7 @@ namespace OpenDental{
 			// 
 			// imageListPerm
 			// 
+			this.imageListPerm.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
 			this.imageListPerm.ImageSize = new System.Drawing.Size(16, 16);
 			this.imageListPerm.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListPerm.ImageStream")));
 			this.imageListPerm.TransparentColor = System.Drawing.Color.Transparent;
@@ -159,27 +164,50 @@ namespace OpenDental{
 			this.labelPerm.Text = "Permissions for group:";
 			this.labelPerm.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
+			// labelMultiuser
+			// 
+			this.labelMultiuser.Location = new System.Drawing.Point(199, 36);
+			this.labelMultiuser.Name = "labelMultiuser";
+			this.labelMultiuser.Size = new System.Drawing.Size(182, 188);
+			this.labelMultiuser.TabIndex = 8;
+			this.labelMultiuser.Text = "When in multiuser mode,  anyone will have permission for the items you select.  I" +
+				"n this case, the actions will not be logged in an audit trail.  Any unchecked pe" +
+				"rmission will require user to enter a password each time and will be logged.";
+			// 
 			// butAudit
 			// 
 			this.butAudit.AdjustImageLocation = new System.Drawing.Point(0, 0);
 			this.butAudit.Autosize = true;
 			this.butAudit.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butAudit.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butAudit.Location = new System.Drawing.Point(279, 579);
+			this.butAudit.Location = new System.Drawing.Point(388, 579);
 			this.butAudit.Name = "butAudit";
 			this.butAudit.Size = new System.Drawing.Size(107, 25);
 			this.butAudit.TabIndex = 9;
 			this.butAudit.Text = "View Audit Trail";
 			this.butAudit.Click += new System.EventHandler(this.butAudit_Click);
 			// 
+			// checkTimecardSecurityEnabled
+			// 
+			this.checkTimecardSecurityEnabled.CheckAlign = System.Drawing.ContentAlignment.TopLeft;
+			this.checkTimecardSecurityEnabled.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkTimecardSecurityEnabled.Location = new System.Drawing.Point(198, 552);
+			this.checkTimecardSecurityEnabled.Name = "checkTimecardSecurityEnabled";
+			this.checkTimecardSecurityEnabled.Size = new System.Drawing.Size(182, 19);
+			this.checkTimecardSecurityEnabled.TabIndex = 57;
+			this.checkTimecardSecurityEnabled.Text = "TimecardSecurityEnabled";
+			this.checkTimecardSecurityEnabled.TextAlign = System.Drawing.ContentAlignment.TopLeft;
+			// 
 			// FormSecurity
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(884, 619);
+			this.Controls.Add(this.checkTimecardSecurityEnabled);
 			this.Controls.Add(this.butAudit);
 			this.Controls.Add(this.butAddUser);
 			this.Controls.Add(this.butAddGroup);
 			this.Controls.Add(this.butClose);
+			this.Controls.Add(this.labelMultiuser);
 			this.Controls.Add(this.treePermissions);
 			this.Controls.Add(this.labelPerm);
 			this.Controls.Add(this.treeUsers);
@@ -201,6 +229,7 @@ namespace OpenDental{
 			FillTreePermissionsInitial();
 			FillTreeUsers();
 			FillTreePerm();
+			checkTimecardSecurityEnabled.Checked=Prefs.GetBool("TimecardSecurityEnabled");
 		}
 
 		private void FillTreePermissionsInitial(){
@@ -224,6 +253,12 @@ namespace OpenDental{
 					node.Nodes.Add(node2);
 				treePermissions.Nodes.Add(node);
 			node=SetNode(Permissions.AppointmentsModule);
+				node2=SetNode(Permissions.AppointmentCreate);
+					node.Nodes.Add(node2);
+				node2=SetNode(Permissions.AppointmentMove);
+					node.Nodes.Add(node2);
+				node2=SetNode(Permissions.AppointmentEdit);
+					node.Nodes.Add(node2);
 				treePermissions.Nodes.Add(node);
 			node=SetNode(Permissions.FamilyModule);
 				treePermissions.Nodes.Add(node);
@@ -258,6 +293,10 @@ namespace OpenDental{
 			node=SetNode(Permissions.ImagesModule);
 				treePermissions.Nodes.Add(node);
 			node=SetNode(Permissions.ManageModule);
+				node2=SetNode(Permissions.Backup);
+					node.Nodes.Add(node2);
+				node2=SetNode(Permissions.TimecardsEditAll);
+					node.Nodes.Add(node2);
 				treePermissions.Nodes.Add(node);
 			treePermissions.ExpandAll();
 		}
@@ -391,6 +430,7 @@ namespace OpenDental{
 		private void FillTreePerm(){
 			GroupPermissions.Refresh();
 			labelPerm.Text=Lan.g(this,"Permissions for group:")+"  "+UserGroups.GetGroup(SelectedGroupNum).Description;
+			labelMultiuser.Visible=false;
 			for(int i=0;i<treePermissions.Nodes.Count;i++){
 				FillNodes(treePermissions.Nodes[i],SelectedGroupNum);
 			}
@@ -514,6 +554,9 @@ namespace OpenDental{
 		private void butClose_Click(object sender, System.EventArgs e) {
 			if(changed){
 				DataValid.SetInvalid(InvalidTypes.Security);
+			}
+			if(Prefs.UpdateBool("TimecardSecurityEnabled",checkTimecardSecurityEnabled.Checked)){
+				DataValid.SetInvalid(InvalidTypes.Prefs);
 			}
 			Close();
 		}

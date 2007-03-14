@@ -21,7 +21,7 @@ namespace OpenDental{
 		public int ProvNum;
 		///<summary>Foreign key to definition.DefNum.</summary>
 		public int BlockoutType;
-		///<summary>Foreign key to definition.DefNum.  Only used right now for Blockouts.  Will later add practice type.  If 0, then it applies to all ops.</summary>
+		///<summary>Foreign key to operatory.OperatoryNum.  Only used right now for Blockouts.  Will later add practice type.  If 0, then it applies to all ops.</summary>
 		public int Op;
 
 		///<summary></summary>
