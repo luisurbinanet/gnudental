@@ -277,7 +277,9 @@ namespace OpenDental{
 		///<summary></summary>
 		public void Delete(){
 			Patient pat=Patients.GetPat(PatNum);
-			Procedures.SetDateFirstVisit(DateTime.MinValue,3,pat);
+			if(this.IsNewPatient){
+				Procedures.SetDateFirstVisit(DateTime.MinValue,3,pat);
+			}
 			string command="DELETE from appointment WHERE "
 				+"AptNum = '"+POut.PInt(AptNum)+"'";
 			DataConnection dcon=new DataConnection();

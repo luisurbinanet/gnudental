@@ -807,7 +807,7 @@ namespace OpenDental.UI{
 			return totalPages+1;
 		}
 
-		///<summary>Use in conjunction with GetNumberOfPages.  Prints the requested pageNumber based on the supplied printing bounds and start of the first page.  Returns the vertical space consumed by the printing so that the calling function can print below it if needed.</summary>
+		///<summary>Use in conjunction with GetNumberOfPages.  Prints the requested pageNumber based on the supplied printing bounds and start of the first page.  Returns the yPos of where the printing stopped so that the calling function can print below it if needed.</summary>
 		public int PrintPage(Graphics g,int pageNumber,Rectangle bounds,int marginTopFirstPage){
 			float adj=100f/96f;//This is a hack for an MS problem.  100 is printer dpi, and 96 is screen dpi.
 			int currentPage=0;//this is for looping.  We need to loop through all pages each time
@@ -984,7 +984,7 @@ namespace OpenDental.UI{
 				rowsPrinted++;
 			}
 			#endregion Rows
-			return yPos;
+			return yPos+4;
 		}
 
 		///<summary>Returns row.  Supply the y position in pixels.</summary>

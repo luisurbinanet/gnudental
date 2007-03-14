@@ -1,4 +1,4 @@
-using System;
+/*using System;
 using System.Collections;
 using System.ComponentModel;
 using System.Drawing;
@@ -495,7 +495,7 @@ namespace OpenDental
 			te.color=color;
 			te.surf=surf;
 			ALelements.Add(te);
-		}*/
+		}
 
 		///<summary></summary>
 		public void DrawProcs(ArrayList ALprocs){
@@ -1098,7 +1098,7 @@ namespace OpenDental
 			if(e.KeyCode==Keys.ControlKey){
 				ControlIsDown=false;
 			}
-		}*/
+		}
 
 
 	}
@@ -1108,10 +1108,11 @@ namespace OpenDental
 		public int gTypeNum;
 		public Color color;
 		public string surf;
-	}*/
+	}
 
 }
 
 
 
 
+*/

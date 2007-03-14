@@ -123,6 +123,8 @@ namespace OpenDental{
 		public string TrophyFolder;
 		///<summary>This simply indicates whether the 'done' box is checked in the chart module.  Used to be handled as a -1 in the NextAptNum field, but now that field is unsigned.</summary>
 		public bool PlannedIsDone;
+		///<summary>Set to true if patient needs to be premedicated for appointments, includes PAC, halcion, etc.</summary>
+		public bool Premed;
 		//<summary>Decided not to add since this data is already available and synchronizing would take too much time.  Will add later.  Not editable. If the patient happens to have a future appointment, this will contain the date of that appointment.  Once appointment is set complete, this date is deleted.  If there is more than one appointment scheduled, this will only contain the earliest one.  Used mostly to exclude patients from recall lists.  If you want all future appointments, use Appointments.GetForPat() instead. You can loop through that list and exclude appointments with dates earlier than today.</summary>
 		//public DateTime DateScheduled;
 
@@ -186,6 +188,7 @@ namespace OpenDental{
 			p.HasIns=HasIns;
 			p.TrophyFolder=TrophyFolder;
 			p.PlannedIsDone=PlannedIsDone;
+			p.Premed=Premed;
 			return p;
 		}
 	
@@ -206,7 +209,7 @@ namespace OpenDental{
 				+"studentstatus,schoolname,chartnumber,medicaidid"
 				+",Bal_0_30,Bal_31_60,Bal_61_90,BalOver90,insest,BalTotal"
 				+",EmployerNum,EmploymentNote,Race,County,GradeSchool,GradeLevel,Urgency,DateFirstVisit"
-				+",ClinicNum,HasIns,TrophyFolder,PlannedIsDone) VALUES(";
+				+",ClinicNum,HasIns,TrophyFolder,PlannedIsDone,Premed) VALUES(";
 			if(includePatNum || Prefs.RandomKeys){
 				command+="'"+POut.PInt(PatNum)+"', ";
 			}
@@ -264,7 +267,8 @@ namespace OpenDental{
 				+"'"+POut.PInt   (ClinicNum)+"', "
 				+"'"+POut.PString(HasIns)+"', "
 				+"'"+POut.PString(TrophyFolder)+"', "
-				+"'"+POut.PBool  (PlannedIsDone)+"')";
+				+"'"+POut.PBool  (PlannedIsDone)+"', "
+				+"'"+POut.PBool  (Premed)+"')";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
 			if(Prefs.RandomKeys){
@@ -554,6 +558,11 @@ namespace OpenDental{
 				c+="PlannedIsDone = '"     +POut.PBool(PlannedIsDone)+"'";
 				comma=true;
 			}
+			if(Premed!=CurOld.Premed) {
+				if(comma) c+=",";
+				c+="Premed = '"     +POut.PBool(Premed)+"'";
+				comma=true;
+			}
 			if(!comma)
 				return 0;//this means no change is actually required.
 			c+=" WHERE PatNum = '"   +POut.PInt   (PatNum)+"'";
@@ -596,7 +605,7 @@ namespace OpenDental{
 			return retStr;
 		}
 
-		///<summary>Gets the provider for this patient.</summary>
+		///<summary>Gets the provider for this patient.  If provNum==0, then it gets the practice default prov.</summary>
 		public int GetProvNum(){
 			if(PriProv!=0)
 				return PriProv;

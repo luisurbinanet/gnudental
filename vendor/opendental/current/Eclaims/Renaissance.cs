@@ -141,7 +141,7 @@ namespace OpenDental.Eclaims{
 			Fill(106,"");//''
 			//proc 1
 			Fill(107,"P1Date","MM/dd/yyyy");
-			Fill(108,"P1ToothNumber");
+			Fill(108,"P1ToothNumOrArea");
 			Fill(109,"P1Surface");
 			Fill(110,"");//diag index
 			Fill(111,"P1Code");
@@ -150,7 +150,7 @@ namespace OpenDental.Eclaims{
 			Fill(114,"P1Fee");
 			//proc 2
 			Fill(115,"P2Date","MM/dd/yyyy");
-			Fill(116,"P2ToothNumber");
+			Fill(116,"P2ToothNumOrArea");
 			Fill(117,"P2Surface");
 			Fill(118,"");
 			Fill(119,"P2Code");
@@ -159,7 +159,7 @@ namespace OpenDental.Eclaims{
 			Fill(122,"P2Fee");
 			//proc 3
 			Fill(123,"P3Date","MM/dd/yyyy");
-			Fill(124,"P3ToothNumber");
+			Fill(124,"P3ToothNumOrArea");
 			Fill(125,"P3Surface");
 			Fill(126,"");
 			Fill(127,"P3Code");
@@ -168,7 +168,7 @@ namespace OpenDental.Eclaims{
 			Fill(130,"P3Fee");
 			//proc 4
 			Fill(131,"P4Date","MM/dd/yyyy");
-			Fill(132,"P4ToothNumber");
+			Fill(132,"P4ToothNumOrArea");
 			Fill(133,"P4Surface");
 			Fill(134,"");
 			Fill(135,"P4Code");
@@ -177,7 +177,7 @@ namespace OpenDental.Eclaims{
 			Fill(138,"P4Fee");
 			//proc 5
 			Fill(139,"P5Date","MM/dd/yyyy");
-			Fill(140,"P5ToothNumber");
+			Fill(140,"P5ToothNumOrArea");
 			Fill(141,"P5Surface");
 			Fill(142,"");
 			Fill(143,"P5Code");
@@ -186,7 +186,7 @@ namespace OpenDental.Eclaims{
 			Fill(146,"P5Fee");
 			//proc 6
 			Fill(147,"P6Date","MM/dd/yyyy");
-			Fill(148,"P6ToothNumber");
+			Fill(148,"P6ToothNumOrArea");
 			Fill(149,"P6Surface");
 			Fill(150,"");
 			Fill(151,"P6Code");
@@ -195,7 +195,7 @@ namespace OpenDental.Eclaims{
 			Fill(154,"P6Fee");
 			//proc 7
 			Fill(155,"P7Date","MM/dd/yyyy");
-			Fill(156,"P7ToothNumber");
+			Fill(156,"P7ToothNumOrArea");
 			Fill(157,"P7Surface");
 			Fill(158,"");
 			Fill(159,"P7Code");
@@ -204,7 +204,7 @@ namespace OpenDental.Eclaims{
 			Fill(162,"P7Fee");
 			//proc 8
 			Fill(163,"P8Date","MM/dd/yyyy");
-			Fill(164,"P8ToothNumber");
+			Fill(164,"P8ToothNumOrArea");
 			Fill(165,"P8Surface");
 			Fill(166,"");
 			Fill(167,"P8Code");

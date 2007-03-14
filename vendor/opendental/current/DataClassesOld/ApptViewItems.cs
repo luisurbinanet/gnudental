@@ -51,7 +51,7 @@ namespace OpenDental{
 		///<summary>Visible ops in appt module.  List of indices to Operatories.ListShort[ops].</summary>
 		///<remarks>Also see VisProvs.  This is a subset of the available ops.  You can't include a hidden op in this list.</remarks>
 		public static int[] VisOps;
-		///<summary>Subset of ForCurView. Just items for rowElements. If now view is selected, then the elements are filled with default info.</summary>
+		///<summary>Subset of ForCurView. Just items for rowElements. If no view is selected, then the elements are filled with default info.</summary>
 		public static ApptViewItem[] ApptRows;
 
 		///<summary></summary>

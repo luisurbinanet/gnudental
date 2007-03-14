@@ -104,6 +104,7 @@ namespace OpenDental{
 				retVal[i].HasIns       = PIn.PString(table.Rows[i][53].ToString());
 				retVal[i].TrophyFolder = PIn.PString(table.Rows[i][54].ToString());
 				retVal[i].PlannedIsDone= PIn.PBool  (table.Rows[i][55].ToString());
+				retVal[i].Premed       = PIn.PBool  (table.Rows[i][56].ToString());
 			}
 			return retVal;
 		}
@@ -280,6 +281,7 @@ namespace OpenDental{
 				multPats[i].HasIns       = PIn.PString(table.Rows[i][53].ToString());
 				multPats[i].TrophyFolder = PIn.PString(table.Rows[i][54].ToString());
 				multPats[i].PlannedIsDone= PIn.PBool  (table.Rows[i][55].ToString());
+				multPats[i].Premed       = PIn.PBool  (table.Rows[i][56].ToString());
 			}
 			return multPats;
 		}
@@ -443,6 +445,20 @@ namespace OpenDental{
 				+",secprov = '"    +POut.PInt   (pat.SecProv)+"'"
 				+",feesched = '"   +POut.PInt   (pat.FeeSched)+"'"
 				+",billingtype = '"+POut.PInt   (pat.BillingType)+"'"
+				+" WHERE guarantor = '"+POut.PDouble(pat.Guarantor)+"'";
+			DataConnection dcon=new DataConnection();
+			dcon.NonQ(command);
+		}
+
+		///<summary>Used in new patient terminal.  Synchs less fields the the normal synch.</summary>
+		public static void UpdateAddressForFamTerminal(Patient pat) {
+			string command= "UPDATE patient SET " 
+				+"Address = '"    +POut.PString(pat.Address)+"'"
+				+",Address2 = '"   +POut.PString(pat.Address2)+"'"
+				+",City = '"       +POut.PString(pat.City)+"'"
+				+",State = '"      +POut.PString(pat.State)+"'"
+				+",Zip = '"        +POut.PString(pat.Zip)+"'"
+				+",HmPhone = '"    +POut.PString(pat.HmPhone)+"'"
 				+" WHERE guarantor = '"+POut.PDouble(pat.Guarantor)+"'";
 			DataConnection dcon=new DataConnection();
 			dcon.NonQ(command);

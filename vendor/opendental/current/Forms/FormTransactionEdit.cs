@@ -791,10 +791,10 @@ namespace OpenDental{
 			FormJ.ShowDialog();
 			if(FormJ.DialogResult==DialogResult.OK) {
 				JournalList.Add(FormJ.EntryCur);
-			}
-			if(checkMemoSame.Checked){
-				for(int i=0;i<JournalList.Count;i++){
-					((JournalEntry)JournalList[i]).Memo=FormJ.EntryCur.Memo;
+				if(checkMemoSame.Checked) {
+					for(int i=0;i<JournalList.Count;i++) {
+						((JournalEntry)JournalList[i]).Memo=FormJ.EntryCur.Memo;
+					}
 				}
 			}
 			FillCompound();

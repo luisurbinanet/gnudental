@@ -1882,12 +1882,20 @@ namespace OpenDental{
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			if(panelSimple.Visible && !ConvertFormToBenefits()){
-				return;
+			if(panelSimple.Visible){
+				if(!ConvertFormToBenefits()){
+					return;
+				}
+				OriginalBenList.Clear();
+				for(int i=0;i<benefitListAll.Count;i++){
+					OriginalBenList.Add(benefitListAll[i]);
+				}
 			}
-			OriginalBenList.Clear();
-			for(int i=0;i<benefitListAll.Count;i++){
-				OriginalBenList.Add(benefitListAll[i]);
+			else{//not simple view
+				OriginalBenList.Clear();
+				for(int i=0;i<benefitList.Count;i++){
+					OriginalBenList.Add(benefitList[i]);
+				}
 			}
 			Note=textSubscNote.Text;
 			DialogResult=DialogResult.OK;

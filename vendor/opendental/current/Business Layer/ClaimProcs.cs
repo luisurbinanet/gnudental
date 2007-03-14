@@ -112,11 +112,26 @@ namespace OpenDental{
 					ALForProc.Add(List[i]);  
 				}
 			}
+			//need to sort by pri, sec, etc.  BUT,
+			//the only way to do it would be to add an ordinal field to claimprocs or something similar.
+			//Then a sorter could be built.  Otherwise, we don't know which order to put them in.
+			//Maybe supply PatPlanList to this function, because it's ordered.
+			//But, then if patient changes ins, it will 'forget' which is pri and which is sec.
 			ClaimProc[] ForProc=new ClaimProc[ALForProc.Count];
 			for(int i=0;i<ALForProc.Count;i++){
 				ForProc[i]=(ClaimProc)ALForProc[i];
 			}
 			return ForProc;
+		}
+
+		///<summary>Used in TP module to get one estimate. The List must be all ClaimProcs for this patient. If estimate can't be found, then return null.  The procedure is always status TP, so there shouldn't be more than one estimate for one plan.</summary>
+		public static ClaimProc GetEstimate(ClaimProc[] List,int procNum,int planNum) {
+			for(int i=0;i<List.Length;i++) {
+				if(List[i].ProcNum==procNum && List[i].PlanNum==planNum) {
+					return List[i];
+				}
+			}
+			return null;
 		}
 
 		///<summary>Used once in Account.  The insurance estimate based on all claimprocs with this procNum that are attached to claims. Includes status of NotReceived,Received, and Supplemental. The list can be all ClaimProcs for patient, or just those for this procedure.</summary>

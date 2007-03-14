@@ -336,8 +336,8 @@ namespace OpenDental{
  			dcon.NonQ(command);
 		}
 
-		///<summary>Base estimate or override is retrieved from supplied claimprocs. Does not take into consideration annual max or deductible, but it does limit total of pri+sec to not be more than total.  The claimProc array typically includes all claimProcs for the patient, but must at least include all claimprocs for this proc.</summary>
-		public double GetEst(ClaimProc[] claimProcs,PriSecTot pst,PatPlan[] patPlans){
+		///<summary>Base estimate or override is retrieved from supplied claimprocs. Does not take into consideration annual max or deductible.  If limitToTotal set to true, then it does limit total of pri+sec to not be more than total fee.  The claimProc array typically includes all claimProcs for the patient, but must at least include all claimprocs for this proc.</summary>
+		public double GetEst(ClaimProc[] claimProcs,PriSecTot pst,PatPlan[] patPlans,bool limitToTotal){
 			double priBaseEst=0;
 			double secBaseEst=0;
 			double priOverride=-1;
@@ -367,8 +367,9 @@ namespace OpenDental{
 			if(secOverride!=-1){
 				secBaseEst=secOverride;
 			}
-			if(ProcFee-priBaseEst-secBaseEst < 0)
+			if(limitToTotal && ProcFee-priBaseEst-secBaseEst < 0){
 				secBaseEst=ProcFee-priBaseEst;
+			}
 			switch(pst){
 				case PriSecTot.Pri:
 					return priBaseEst;

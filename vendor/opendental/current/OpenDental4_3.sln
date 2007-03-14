@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenDental4_2", "OpenDental4_2.csproj", "{9B9879E3-0726-4042-BCB3-ADCB604B9B42}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenDental4_3", "OpenDental4_3.csproj", "{9B9879E3-0726-4042-BCB3-ADCB604B9B42}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ODR", "ODR\ODR.csproj", "{84688345-BB6A-4F2F-8672-A82B52FD433B}"
 EndProject
@@ -11,6 +11,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportDesigner", "RdlDesign\ReportDesigner.csproj", "{3E1D2C49-44A2-46A0-B107-9E8A87AE78A7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SparksToothChart", "SparksToothChart\SparksToothChart.csproj", "{033B77F4-2E98-49A7-901F-5F388DEDF83E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseIntegrityCheck", "DatabaseIntegrityCheck\DatabaseIntegrityCheck.csproj", "{3FB82BFD-6E2A-4CDD-987E-0AC199771BC8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,6 +44,10 @@ Global
 		{033B77F4-2E98-49A7-901F-5F388DEDF83E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{033B77F4-2E98-49A7-901F-5F388DEDF83E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{033B77F4-2E98-49A7-901F-5F388DEDF83E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FB82BFD-6E2A-4CDD-987E-0AC199771BC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FB82BFD-6E2A-4CDD-987E-0AC199771BC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FB82BFD-6E2A-4CDD-987E-0AC199771BC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FB82BFD-6E2A-4CDD-987E-0AC199771BC8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

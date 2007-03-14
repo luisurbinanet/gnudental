@@ -25,6 +25,8 @@ namespace OpenDental{
 		private System.Windows.Forms.MenuItem menuItemFacing;
 		private System.Windows.Forms.MenuItem menuItemSinglePage;
 		private System.ComponentModel.IContainer components;
+		///<summary>This should be set before opening the form.</summary>
+		public string SourceFilePath;
 
 		///<summary></summary>
 		public FormReport()
@@ -59,7 +61,7 @@ namespace OpenDental{
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormReport));
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormReport));
 			this.viewer = new fyiReporting.RdlViewer.RdlViewer();
 			this.ToolBarMain = new OpenDental.UI.ODToolBar();
 			this.imageListMain = new System.Windows.Forms.ImageList(this.components);
@@ -74,13 +76,13 @@ namespace OpenDental{
 			// 
 			this.viewer.Cursor = System.Windows.Forms.Cursors.Default;
 			this.viewer.Folder = null;
-			this.viewer.Location = new System.Drawing.Point(45, 56);
+			this.viewer.Location = new System.Drawing.Point(45,56);
 			this.viewer.Name = "viewer";
 			this.viewer.Parameters = null;
 			this.viewer.ReportName = null;
 			this.viewer.ScrollMode = fyiReporting.RdlViewer.ScrollModeEnum.Continuous;
 			this.viewer.ShowParameterPanel = true;
-			this.viewer.Size = new System.Drawing.Size(856, 453);
+			this.viewer.Size = new System.Drawing.Size(856,453);
 			this.viewer.SourceFile = null;
 			this.viewer.SourceRdl = null;
 			this.viewer.TabIndex = 2;
@@ -92,26 +94,31 @@ namespace OpenDental{
 			// 
 			this.ToolBarMain.Dock = System.Windows.Forms.DockStyle.Top;
 			this.ToolBarMain.ImageList = this.imageListMain;
-			this.ToolBarMain.Location = new System.Drawing.Point(0, 0);
+			this.ToolBarMain.Location = new System.Drawing.Point(0,0);
 			this.ToolBarMain.Name = "ToolBarMain";
-			this.ToolBarMain.Size = new System.Drawing.Size(987, 29);
+			this.ToolBarMain.Size = new System.Drawing.Size(987,29);
 			this.ToolBarMain.TabIndex = 5;
 			this.ToolBarMain.ButtonClick += new OpenDental.UI.ODToolBarButtonClickEventHandler(this.ToolBarMain_ButtonClick);
 			// 
 			// imageListMain
 			// 
-			this.imageListMain.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
-			this.imageListMain.ImageSize = new System.Drawing.Size(22, 22);
 			this.imageListMain.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListMain.ImageStream")));
 			this.imageListMain.TransparentColor = System.Drawing.Color.Transparent;
+			this.imageListMain.Images.SetKeyName(0,"");
+			this.imageListMain.Images.SetKeyName(1,"");
+			this.imageListMain.Images.SetKeyName(2,"");
+			this.imageListMain.Images.SetKeyName(3,"");
+			this.imageListMain.Images.SetKeyName(4,"");
+			this.imageListMain.Images.SetKeyName(5,"");
+			this.imageListMain.Images.SetKeyName(6,"");
 			// 
 			// menuScrollMode
 			// 
 			this.menuScrollMode.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-																																									 this.menuItemContinuous,
-																																									 this.menuItemContinuousFacing,
-																																									 this.menuItemFacing,
-																																									 this.menuItemSinglePage});
+            this.menuItemContinuous,
+            this.menuItemContinuousFacing,
+            this.menuItemFacing,
+            this.menuItemSinglePage});
 			// 
 			// menuItemContinuous
 			// 
@@ -139,19 +146,18 @@ namespace OpenDental{
 			// 
 			// FormReport
 			// 
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(987, 712);
+			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
+			this.ClientSize = new System.Drawing.Size(987,712);
 			this.Controls.Add(this.ToolBarMain);
 			this.Controls.Add(this.viewer);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-			this.MaximizeBox = false;
-			this.MinimizeBox = false;
 			this.Name = "FormReport";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Report";
-			this.Load += new System.EventHandler(this.FormRDLreport_Load);
+			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
 			this.Layout += new System.Windows.Forms.LayoutEventHandler(this.FormReport_Layout);
+			this.Load += new System.EventHandler(this.FormRDLreport_Load);
 			this.ResumeLayout(false);
 
 		}
@@ -159,7 +165,8 @@ namespace OpenDental{
 
 		private void FormRDLreport_Load(object sender, System.EventArgs e) {
 			LayoutToolBar();
-			viewer.SourceFile=Prefs.GetString("DocPath")+"Reports\\test.rdl";
+			viewer.SourceFile=SourceFilePath;
+				//Prefs.GetString("DocPath")+"Reports\\test.rdl";
 		}
 
 		private void FormReport_Layout(object sender, System.Windows.Forms.LayoutEventArgs e) {

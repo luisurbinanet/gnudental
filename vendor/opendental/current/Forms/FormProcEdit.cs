@@ -109,10 +109,6 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label12;
 		private System.Windows.Forms.ComboBox comboClinic;
 		private System.Windows.Forms.Label labelClinic;
-		private OpenDental.UI.Button butENPlaunch;
-		private OpenDental.UI.Button butENPshow;
-		private OpenDental.UI.Button butENPpaste;
-		private System.Windows.Forms.GroupBox groupENP;
 		///<summary>List of all payments (not paysplits) that this procedure is attached to.</summary>
 		private Payment[] PaymentsForProc;
 		//private User user;
@@ -245,10 +241,6 @@ namespace OpenDental{
 			this.labelIncomplete = new System.Windows.Forms.Label();
 			this.comboClinic = new System.Windows.Forms.ComboBox();
 			this.labelClinic = new System.Windows.Forms.Label();
-			this.butENPlaunch = new OpenDental.UI.Button();
-			this.groupENP = new System.Windows.Forms.GroupBox();
-			this.butENPpaste = new OpenDental.UI.Button();
-			this.butENPshow = new OpenDental.UI.Button();
 			this.groupStatus.SuspendLayout();
 			this.groupQuadrant.SuspendLayout();
 			this.groupArch.SuspendLayout();
@@ -257,7 +249,6 @@ namespace OpenDental{
 			this.groupBox1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.errorProvider2)).BeginInit();
 			this.groupProsth.SuspendLayout();
-			this.groupENP.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// label1
@@ -1204,64 +1195,12 @@ namespace OpenDental{
 			this.labelClinic.TabIndex = 75;
 			this.labelClinic.Text = "Clinic";
 			// 
-			// butENPlaunch
-			// 
-			this.butENPlaunch.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butENPlaunch.Autosize = true;
-			this.butENPlaunch.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butENPlaunch.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butENPlaunch.Location = new System.Drawing.Point(7,30);
-			this.butENPlaunch.Name = "butENPlaunch";
-			this.butENPlaunch.Size = new System.Drawing.Size(62,21);
-			this.butENPlaunch.TabIndex = 76;
-			this.butENPlaunch.Text = "Launch";
-			this.butENPlaunch.Click += new System.EventHandler(this.butENPlaunch_Click);
-			// 
-			// groupENP
-			// 
-			this.groupENP.Controls.Add(this.butENPpaste);
-			this.groupENP.Controls.Add(this.butENPshow);
-			this.groupENP.Controls.Add(this.butENPlaunch);
-			this.groupENP.Location = new System.Drawing.Point(563,79);
-			this.groupENP.Name = "groupENP";
-			this.groupENP.Size = new System.Drawing.Size(77,98);
-			this.groupENP.TabIndex = 77;
-			this.groupENP.TabStop = false;
-			this.groupENP.Text = "Easy Notes Pro";
-			// 
-			// butENPpaste
-			// 
-			this.butENPpaste.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butENPpaste.Autosize = true;
-			this.butENPpaste.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butENPpaste.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butENPpaste.Location = new System.Drawing.Point(7,72);
-			this.butENPpaste.Name = "butENPpaste";
-			this.butENPpaste.Size = new System.Drawing.Size(62,21);
-			this.butENPpaste.TabIndex = 78;
-			this.butENPpaste.Text = "Paste";
-			this.butENPpaste.Click += new System.EventHandler(this.butENPpaste_Click);
-			// 
-			// butENPshow
-			// 
-			this.butENPshow.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butENPshow.Autosize = true;
-			this.butENPshow.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butENPshow.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butENPshow.Location = new System.Drawing.Point(7,51);
-			this.butENPshow.Name = "butENPshow";
-			this.butENPshow.Size = new System.Drawing.Size(62,21);
-			this.butENPshow.TabIndex = 77;
-			this.butENPshow.Text = "Show";
-			this.butENPshow.Click += new System.EventHandler(this.butENPshow_Click);
-			// 
 			// FormProcEdit
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(962,649);
-			this.Controls.Add(this.groupENP);
 			this.Controls.Add(this.comboClinic);
 			this.Controls.Add(this.labelClinic);
 			this.Controls.Add(this.labelIncomplete);
@@ -1316,14 +1255,13 @@ namespace OpenDental{
 			((System.ComponentModel.ISupportInitialize)(this.errorProvider2)).EndInit();
 			this.groupProsth.ResumeLayout(false);
 			this.groupProsth.PerformLayout();
-			this.groupENP.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
 		}
 		#endregion
 
-
+		/*
 		///<summary></summary>
 		[DllImport("user32.dll")]
 		public static extern bool PostMessage(IntPtr hWnd, uint message, uint wParam, uint lParam);
@@ -1332,10 +1270,11 @@ namespace OpenDental{
 		public static extern uint RegisterWindowMessage(string lpString);
 		///<summary></summary>
 		[DllImport("user32.dll")]
-		public static extern bool SetForegroundWindow(IntPtr hWnd);
+		public static extern bool SetForegroundWindow(IntPtr hWnd);*/
 
 		private void FormProcInfo_Load(object sender, System.EventArgs e){
 			//richTextBox1.Text="This is a test of the functions of a rich text box.";
+			//webBrowser1.
 			//richTextBox1.Select(10,4);
 			//richTextBox1.SelectionFont=new Font(FontFamily.GenericMonospace,8);
 			//richTextBox1.Select(22,9);
@@ -1350,9 +1289,6 @@ namespace OpenDental{
 				listBoxTeeth.Items.AddRange(new string[] {"18","17","16","15","14","13","12","11","21","22","23","24","25","26","27","28"});
 				listBoxTeeth2.Items.Clear();
 				listBoxTeeth2.Items.AddRange(new string[] {"48","47","46","45","44","43","42","41","31","32","33","34","35","36","37","38"});
-			}
-			if(!Programs.IsEnabled("EasyNotesPro")){
-				groupENP.Visible=false;
 			}
 			Claims.Refresh(PatCur.PatNum);
 			ProcedureCode2=ProcedureCodes.GetProcCode(ProcCur.ADACode);
@@ -1720,8 +1656,8 @@ namespace OpenDental{
 					tbIns.Cell[10,i]="";//inspay
 				}
 				if(ClaimProcsForProc[i].Status==ClaimProcStatus.Estimate){
-					tbIns.Cell[8,i]="";//deduct
-					tbIns.Cell[9,i]="";//insest
+					//tbIns.Cell[8,i]="";//deduct
+					//tbIns.Cell[9,i]="";//insest
 					tbIns.Cell[10,i]="";//inspay
 					tbIns.Cell[11,i]="";//writeoff
 				}
@@ -2028,7 +1964,7 @@ namespace OpenDental{
 			ProcCur.Surf="6";
 		}
 
-		private void butENPlaunch_Click(object sender, System.EventArgs e) {
+		/*private void butENPlaunch_Click(object sender, System.EventArgs e) {
 			Programs.GetCur("EasyNotesPro");
 			if(Programs.Cur.ProgramNum==0){
 				MsgBox.Show(this,"Link not found.");
@@ -2127,7 +2063,7 @@ namespace OpenDental{
 			catch(Exception ex){
 				MessageBox.Show(ex.Message);
 			}
-		}
+		}*/
 
 		private void butLock_Click(object sender, System.EventArgs e) {
 			if(ProcCur.ProcStatus!=ProcStat.C){
@@ -2465,6 +2401,7 @@ namespace OpenDental{
 				}
 			}
 		}
+
 
 		
 

@@ -107,6 +107,10 @@ namespace OpenDental{
 			Cursor=Cursors.WaitCursor;
 			toothChart.SuspendLayout();
 			toothChart.UseInternational=Prefs.GetBool("UseInternationalToothNumbers");
+			toothChart.ColorBackground=Defs.Long[(int)DefCat.ChartGraphicColors][10].ItemColor;
+			toothChart.ColorText=Defs.Long[(int)DefCat.ChartGraphicColors][11].ItemColor;
+			toothChart.ColorTextHighlight=Defs.Long[(int)DefCat.ChartGraphicColors][12].ItemColor;
+			toothChart.ColorBackHighlight=Defs.Long[(int)DefCat.ChartGraphicColors][13].ItemColor;
 			//remember which teeth were selected
 			ArrayList selectedTeeth=new ArrayList();//integers 1-32
 			for(int i=0;i<toothChart.SelectedTeeth.Length;i++) {

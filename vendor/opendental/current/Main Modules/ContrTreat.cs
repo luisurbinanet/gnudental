@@ -13,7 +13,9 @@ using System.Drawing.Design;
 using System.Drawing.Imaging;
 using System.Drawing.Text;
 using System.Drawing.Printing;
+using System.Threading;
 using OpenDental.UI;
+using SparksToothChart;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -24,7 +26,6 @@ namespace OpenDental{
 		private System.Windows.Forms.ListBox listSetPr;
 		//<summary></summary>
 		//public static ArrayList TPLines2;
-		private System.Windows.Forms.Panel panelSide;
 		//private bool[] selectedPrs;//had to use this because of deficiency in available Listbox events.
 		private System.Windows.Forms.Label label10;
 		private System.Windows.Forms.Label label11;
@@ -49,8 +50,8 @@ namespace OpenDental{
 		private Font subHeadingFont=new Font("Arial",10,FontStyle.Bold);
 		private System.Drawing.Printing.PrintDocument pd2;
 		private Font totalFont=new Font("Arial",9,FontStyle.Bold);
-		private int yPos=938;
-	  private	int xPos=25;
+		//private int yPos=938;
+	  //private	int xPos=25;
 		private System.Windows.Forms.TextBox textPriMax;
 		private System.Windows.Forms.TextBox textSecUsed;
 		private System.Windows.Forms.TextBox textSecDed;
@@ -73,7 +74,7 @@ namespace OpenDental{
 		private Procedure[] ProcListTP;
 		private System.Windows.Forms.ContextMenu menuPatient;
 		private System.Windows.Forms.CheckBox checkShowCompleted;
-		private System.Windows.Forms.GroupBox groupBox1;
+		private System.Windows.Forms.GroupBox groupShow;
 		private System.Windows.Forms.CheckBox checkShowIns;
 		private ClaimProc[] ClaimProcList;
 		private Family FamCur;
@@ -95,6 +96,19 @@ namespace OpenDental{
 		public event PatientSelectedEventHandler PatientSelected=null;
 		private PatPlan[] PatPlanList;
 		private Benefit[] BenefitList;
+		private ArrayList ProcAL;
+		///<summary>Only used for printing graphical chart.</summary>
+		private ToothInitial[] ToothInitialList;
+		///<summary>Only used for printing graphical chart.</summary>
+		private GraphicalToothChart toothChart;
+		private CheckBox checkShowStandard;
+		private CheckBox checkShowSubtotals;
+		private CheckBox checkShowMaxDed;
+		///<summary>Only used for printing graphical chart.</summary>
+		private Bitmap chartBitmap;
+		private int headingPrintH;
+		private CheckBox checkShowTotals;
+		private int pagesPrinted;
 
 		///<summary></summary>
 		public ContrTreat(){
@@ -120,8 +134,11 @@ namespace OpenDental{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ContrTreat));
 			this.label1 = new System.Windows.Forms.Label();
 			this.listSetPr = new System.Windows.Forms.ListBox();
-			this.panelSide = new System.Windows.Forms.Panel();
-			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.groupShow = new System.Windows.Forms.GroupBox();
+			this.checkShowTotals = new System.Windows.Forms.CheckBox();
+			this.checkShowMaxDed = new System.Windows.Forms.CheckBox();
+			this.checkShowSubtotals = new System.Windows.Forms.CheckBox();
+			this.checkShowStandard = new System.Windows.Forms.CheckBox();
 			this.checkShowFees = new System.Windows.Forms.CheckBox();
 			this.checkShowIns = new System.Windows.Forms.CheckBox();
 			this.checkShowCompleted = new System.Windows.Forms.CheckBox();
@@ -150,18 +167,17 @@ namespace OpenDental{
 			this.textNote = new System.Windows.Forms.TextBox();
 			this.imageListMain = new System.Windows.Forms.ImageList(this.components);
 			this.menuPatient = new System.Windows.Forms.ContextMenu();
+			this.ToolBarMain = new OpenDental.UI.ODToolBar();
+			this.gridMain = new OpenDental.UI.ODGrid();
 			this.gridPreAuth = new OpenDental.UI.ODGrid();
 			this.gridPlans = new OpenDental.UI.ODGrid();
-			this.gridMain = new OpenDental.UI.ODGrid();
-			this.ToolBarMain = new OpenDental.UI.ODToolBar();
-			this.panelSide.SuspendLayout();
-			this.groupBox1.SuspendLayout();
+			this.groupShow.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// label1
 			// 
 			this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif",8F,System.Drawing.FontStyle.Regular,System.Drawing.GraphicsUnit.Point,((byte)(0)));
-			this.label1.Location = new System.Drawing.Point(22,3);
+			this.label1.Location = new System.Drawing.Point(755,171);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(97,15);
 			this.label1.TabIndex = 4;
@@ -170,72 +186,114 @@ namespace OpenDental{
 			// 
 			// listSetPr
 			// 
-			this.listSetPr.Location = new System.Drawing.Point(24,20);
+			this.listSetPr.Location = new System.Drawing.Point(757,188);
 			this.listSetPr.Name = "listSetPr";
 			this.listSetPr.SelectionMode = System.Windows.Forms.SelectionMode.None;
-			this.listSetPr.Size = new System.Drawing.Size(70,225);
+			this.listSetPr.Size = new System.Drawing.Size(70,212);
 			this.listSetPr.TabIndex = 5;
 			this.listSetPr.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listSetPr_MouseDown);
 			// 
-			// panelSide
+			// groupShow
 			// 
-			this.panelSide.Controls.Add(this.listSetPr);
-			this.panelSide.Controls.Add(this.label1);
-			this.panelSide.Controls.Add(this.groupBox1);
-			this.panelSide.Location = new System.Drawing.Point(711,153);
-			this.panelSide.Name = "panelSide";
-			this.panelSide.Size = new System.Drawing.Size(190,337);
-			this.panelSide.TabIndex = 29;
+			this.groupShow.Controls.Add(this.checkShowTotals);
+			this.groupShow.Controls.Add(this.checkShowMaxDed);
+			this.groupShow.Controls.Add(this.checkShowSubtotals);
+			this.groupShow.Controls.Add(this.checkShowStandard);
+			this.groupShow.Controls.Add(this.checkShowFees);
+			this.groupShow.Controls.Add(this.checkShowIns);
+			this.groupShow.Controls.Add(this.checkShowCompleted);
+			this.groupShow.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.groupShow.Location = new System.Drawing.Point(466,29);
+			this.groupShow.Name = "groupShow";
+			this.groupShow.Size = new System.Drawing.Size(173,138);
+			this.groupShow.TabIndex = 59;
+			this.groupShow.TabStop = false;
+			this.groupShow.Text = "Show";
 			// 
-			// groupBox1
+			// checkShowTotals
 			// 
-			this.groupBox1.Controls.Add(this.checkShowFees);
-			this.groupBox1.Controls.Add(this.checkShowIns);
-			this.groupBox1.Controls.Add(this.checkShowCompleted);
-			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox1.Location = new System.Drawing.Point(10,256);
-			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(173,74);
-			this.groupBox1.TabIndex = 59;
-			this.groupBox1.TabStop = false;
-			this.groupBox1.Text = "Show on printout";
+			this.checkShowTotals.Checked = true;
+			this.checkShowTotals.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.checkShowTotals.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkShowTotals.Location = new System.Drawing.Point(31,118);
+			this.checkShowTotals.Name = "checkShowTotals";
+			this.checkShowTotals.Size = new System.Drawing.Size(128,15);
+			this.checkShowTotals.TabIndex = 24;
+			this.checkShowTotals.Text = "Totals";
+			this.checkShowTotals.Click += new System.EventHandler(this.checkShowTotals_Click);
+			// 
+			// checkShowMaxDed
+			// 
+			this.checkShowMaxDed.Checked = true;
+			this.checkShowMaxDed.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.checkShowMaxDed.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkShowMaxDed.Location = new System.Drawing.Point(15,32);
+			this.checkShowMaxDed.Name = "checkShowMaxDed";
+			this.checkShowMaxDed.Size = new System.Drawing.Size(154,17);
+			this.checkShowMaxDed.TabIndex = 23;
+			this.checkShowMaxDed.Text = "Use Ins Max and Deduct";
+			this.checkShowMaxDed.Click += new System.EventHandler(this.checkShowMaxDed_Click);
+			// 
+			// checkShowSubtotals
+			// 
+			this.checkShowSubtotals.Checked = true;
+			this.checkShowSubtotals.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.checkShowSubtotals.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkShowSubtotals.Location = new System.Drawing.Point(31,100);
+			this.checkShowSubtotals.Name = "checkShowSubtotals";
+			this.checkShowSubtotals.Size = new System.Drawing.Size(128,17);
+			this.checkShowSubtotals.TabIndex = 22;
+			this.checkShowSubtotals.Text = "Subtotals";
+			this.checkShowSubtotals.Click += new System.EventHandler(this.checkShowSubtotals_Click);
+			// 
+			// checkShowStandard
+			// 
+			this.checkShowStandard.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkShowStandard.Location = new System.Drawing.Point(31,66);
+			this.checkShowStandard.Name = "checkShowStandard";
+			this.checkShowStandard.Size = new System.Drawing.Size(129,17);
+			this.checkShowStandard.TabIndex = 21;
+			this.checkShowStandard.Text = "Standard Fees";
+			this.checkShowStandard.Click += new System.EventHandler(this.checkShowStandard_Click);
 			// 
 			// checkShowFees
 			// 
 			this.checkShowFees.Checked = true;
 			this.checkShowFees.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.checkShowFees.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkShowFees.Location = new System.Drawing.Point(15,33);
+			this.checkShowFees.Location = new System.Drawing.Point(15,49);
 			this.checkShowFees.Name = "checkShowFees";
 			this.checkShowFees.Size = new System.Drawing.Size(146,17);
 			this.checkShowFees.TabIndex = 20;
 			this.checkShowFees.Text = "Fees";
+			this.checkShowFees.Click += new System.EventHandler(this.checkShowFees_Click);
 			// 
 			// checkShowIns
 			// 
 			this.checkShowIns.Checked = true;
 			this.checkShowIns.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.checkShowIns.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkShowIns.Location = new System.Drawing.Point(15,50);
+			this.checkShowIns.Location = new System.Drawing.Point(31,83);
 			this.checkShowIns.Name = "checkShowIns";
-			this.checkShowIns.Size = new System.Drawing.Size(148,17);
+			this.checkShowIns.Size = new System.Drawing.Size(131,17);
 			this.checkShowIns.TabIndex = 19;
 			this.checkShowIns.Text = "Insurance Estimates";
+			this.checkShowIns.Click += new System.EventHandler(this.checkShowIns_Click);
 			// 
 			// checkShowCompleted
 			// 
 			this.checkShowCompleted.Checked = true;
 			this.checkShowCompleted.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.checkShowCompleted.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkShowCompleted.Location = new System.Drawing.Point(15,16);
+			this.checkShowCompleted.Location = new System.Drawing.Point(15,15);
 			this.checkShowCompleted.Name = "checkShowCompleted";
 			this.checkShowCompleted.Size = new System.Drawing.Size(154,17);
 			this.checkShowCompleted.TabIndex = 18;
-			this.checkShowCompleted.Text = "Completed Treatment";
+			this.checkShowCompleted.Text = "Graphical Completed Tx";
 			// 
 			// label10
 			// 
-			this.label10.Location = new System.Drawing.Point(806,513);
+			this.label10.Location = new System.Drawing.Point(810,541);
 			this.label10.Name = "label10";
 			this.label10.Size = new System.Drawing.Size(60,15);
 			this.label10.TabIndex = 31;
@@ -244,7 +302,7 @@ namespace OpenDental{
 			// 
 			// label11
 			// 
-			this.label11.Location = new System.Drawing.Point(725,534);
+			this.label11.Location = new System.Drawing.Point(730,562);
 			this.label11.Name = "label11";
 			this.label11.Size = new System.Drawing.Size(78,15);
 			this.label11.TabIndex = 32;
@@ -253,7 +311,7 @@ namespace OpenDental{
 			// 
 			// label12
 			// 
-			this.label12.Location = new System.Drawing.Point(724,555);
+			this.label12.Location = new System.Drawing.Point(729,583);
 			this.label12.Name = "label12";
 			this.label12.Size = new System.Drawing.Size(79,15);
 			this.label12.TabIndex = 33;
@@ -262,7 +320,7 @@ namespace OpenDental{
 			// 
 			// label13
 			// 
-			this.label13.Location = new System.Drawing.Point(724,597);
+			this.label13.Location = new System.Drawing.Point(729,625);
 			this.label13.Name = "label13";
 			this.label13.Size = new System.Drawing.Size(79,13);
 			this.label13.TabIndex = 34;
@@ -271,7 +329,7 @@ namespace OpenDental{
 			// 
 			// label14
 			// 
-			this.label14.Location = new System.Drawing.Point(725,635);
+			this.label14.Location = new System.Drawing.Point(730,663);
 			this.label14.Name = "label14";
 			this.label14.Size = new System.Drawing.Size(79,14);
 			this.label14.TabIndex = 35;
@@ -280,7 +338,7 @@ namespace OpenDental{
 			// 
 			// label15
 			// 
-			this.label15.Location = new System.Drawing.Point(723,615);
+			this.label15.Location = new System.Drawing.Point(728,643);
 			this.label15.Name = "label15";
 			this.label15.Size = new System.Drawing.Size(81,14);
 			this.label15.TabIndex = 36;
@@ -289,7 +347,7 @@ namespace OpenDental{
 			// 
 			// label16
 			// 
-			this.label16.Location = new System.Drawing.Point(874,513);
+			this.label16.Location = new System.Drawing.Point(876,541);
 			this.label16.Name = "label16";
 			this.label16.Size = new System.Drawing.Size(60,14);
 			this.label16.TabIndex = 37;
@@ -299,7 +357,7 @@ namespace OpenDental{
 			// textPriMax
 			// 
 			this.textPriMax.BackColor = System.Drawing.Color.White;
-			this.textPriMax.Location = new System.Drawing.Point(806,532);
+			this.textPriMax.Location = new System.Drawing.Point(810,560);
 			this.textPriMax.Name = "textPriMax";
 			this.textPriMax.ReadOnly = true;
 			this.textPriMax.Size = new System.Drawing.Size(60,20);
@@ -309,7 +367,7 @@ namespace OpenDental{
 			// textSecUsed
 			// 
 			this.textSecUsed.BackColor = System.Drawing.Color.White;
-			this.textSecUsed.Location = new System.Drawing.Point(874,592);
+			this.textSecUsed.Location = new System.Drawing.Point(876,620);
 			this.textSecUsed.Name = "textSecUsed";
 			this.textSecUsed.ReadOnly = true;
 			this.textSecUsed.Size = new System.Drawing.Size(60,20);
@@ -319,7 +377,7 @@ namespace OpenDental{
 			// textSecDed
 			// 
 			this.textSecDed.BackColor = System.Drawing.Color.White;
-			this.textSecDed.Location = new System.Drawing.Point(874,552);
+			this.textSecDed.Location = new System.Drawing.Point(876,580);
 			this.textSecDed.Name = "textSecDed";
 			this.textSecDed.ReadOnly = true;
 			this.textSecDed.Size = new System.Drawing.Size(60,20);
@@ -329,7 +387,7 @@ namespace OpenDental{
 			// textSecMax
 			// 
 			this.textSecMax.BackColor = System.Drawing.Color.White;
-			this.textSecMax.Location = new System.Drawing.Point(874,532);
+			this.textSecMax.Location = new System.Drawing.Point(876,560);
 			this.textSecMax.Name = "textSecMax";
 			this.textSecMax.ReadOnly = true;
 			this.textSecMax.Size = new System.Drawing.Size(60,20);
@@ -339,7 +397,7 @@ namespace OpenDental{
 			// textPriRem
 			// 
 			this.textPriRem.BackColor = System.Drawing.Color.White;
-			this.textPriRem.Location = new System.Drawing.Point(806,632);
+			this.textPriRem.Location = new System.Drawing.Point(810,660);
 			this.textPriRem.Name = "textPriRem";
 			this.textPriRem.ReadOnly = true;
 			this.textPriRem.Size = new System.Drawing.Size(60,20);
@@ -349,7 +407,7 @@ namespace OpenDental{
 			// textPriPend
 			// 
 			this.textPriPend.BackColor = System.Drawing.Color.White;
-			this.textPriPend.Location = new System.Drawing.Point(806,612);
+			this.textPriPend.Location = new System.Drawing.Point(810,640);
 			this.textPriPend.Name = "textPriPend";
 			this.textPriPend.ReadOnly = true;
 			this.textPriPend.Size = new System.Drawing.Size(60,20);
@@ -359,7 +417,7 @@ namespace OpenDental{
 			// textPriUsed
 			// 
 			this.textPriUsed.BackColor = System.Drawing.Color.White;
-			this.textPriUsed.Location = new System.Drawing.Point(806,592);
+			this.textPriUsed.Location = new System.Drawing.Point(810,620);
 			this.textPriUsed.Name = "textPriUsed";
 			this.textPriUsed.ReadOnly = true;
 			this.textPriUsed.Size = new System.Drawing.Size(60,20);
@@ -369,7 +427,7 @@ namespace OpenDental{
 			// textPriDed
 			// 
 			this.textPriDed.BackColor = System.Drawing.Color.White;
-			this.textPriDed.Location = new System.Drawing.Point(806,552);
+			this.textPriDed.Location = new System.Drawing.Point(810,580);
 			this.textPriDed.Name = "textPriDed";
 			this.textPriDed.ReadOnly = true;
 			this.textPriDed.Size = new System.Drawing.Size(60,20);
@@ -379,7 +437,7 @@ namespace OpenDental{
 			// textSecRem
 			// 
 			this.textSecRem.BackColor = System.Drawing.Color.White;
-			this.textSecRem.Location = new System.Drawing.Point(874,632);
+			this.textSecRem.Location = new System.Drawing.Point(876,660);
 			this.textSecRem.Name = "textSecRem";
 			this.textSecRem.ReadOnly = true;
 			this.textSecRem.Size = new System.Drawing.Size(60,20);
@@ -389,7 +447,7 @@ namespace OpenDental{
 			// textSecPend
 			// 
 			this.textSecPend.BackColor = System.Drawing.Color.White;
-			this.textSecPend.Location = new System.Drawing.Point(874,612);
+			this.textSecPend.Location = new System.Drawing.Point(876,640);
 			this.textSecPend.Name = "textSecPend";
 			this.textSecPend.ReadOnly = true;
 			this.textSecPend.Size = new System.Drawing.Size(60,20);
@@ -403,7 +461,7 @@ namespace OpenDental{
 			// textPriDedRem
 			// 
 			this.textPriDedRem.BackColor = System.Drawing.Color.White;
-			this.textPriDedRem.Location = new System.Drawing.Point(806,572);
+			this.textPriDedRem.Location = new System.Drawing.Point(810,600);
 			this.textPriDedRem.Name = "textPriDedRem";
 			this.textPriDedRem.ReadOnly = true;
 			this.textPriDedRem.Size = new System.Drawing.Size(60,20);
@@ -412,17 +470,17 @@ namespace OpenDental{
 			// 
 			// label18
 			// 
-			this.label18.Location = new System.Drawing.Point(709,576);
+			this.label18.Location = new System.Drawing.Point(714,604);
 			this.label18.Name = "label18";
 			this.label18.Size = new System.Drawing.Size(96,15);
 			this.label18.TabIndex = 50;
-			this.label18.Text = "Deduct Remain";
+			this.label18.Text = "Ded Remain";
 			this.label18.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// textSecDedRem
 			// 
 			this.textSecDedRem.BackColor = System.Drawing.Color.White;
-			this.textSecDedRem.Location = new System.Drawing.Point(874,572);
+			this.textSecDedRem.Location = new System.Drawing.Point(876,600);
 			this.textSecDedRem.Name = "textSecDedRem";
 			this.textSecDedRem.ReadOnly = true;
 			this.textSecDedRem.Size = new System.Drawing.Size(60,20);
@@ -431,7 +489,7 @@ namespace OpenDental{
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(820,498);
+			this.label3.Location = new System.Drawing.Point(822,526);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(100,12);
 			this.label3.TabIndex = 53;
@@ -441,11 +499,11 @@ namespace OpenDental{
 			// textNote
 			// 
 			this.textNote.BackColor = System.Drawing.Color.White;
-			this.textNote.Location = new System.Drawing.Point(0,587);
+			this.textNote.Location = new System.Drawing.Point(0,626);
 			this.textNote.Multiline = true;
 			this.textNote.Name = "textNote";
 			this.textNote.ReadOnly = true;
-			this.textNote.Size = new System.Drawing.Size(707,52);
+			this.textNote.Size = new System.Drawing.Size(698,52);
 			this.textNote.TabIndex = 54;
 			// 
 			// imageListMain
@@ -457,13 +515,37 @@ namespace OpenDental{
 			this.imageListMain.Images.SetKeyName(2,"");
 			this.imageListMain.Images.SetKeyName(3,"");
 			// 
+			// ToolBarMain
+			// 
+			this.ToolBarMain.Dock = System.Windows.Forms.DockStyle.Top;
+			this.ToolBarMain.ImageList = this.imageListMain;
+			this.ToolBarMain.Location = new System.Drawing.Point(0,0);
+			this.ToolBarMain.Name = "ToolBarMain";
+			this.ToolBarMain.Size = new System.Drawing.Size(939,29);
+			this.ToolBarMain.TabIndex = 58;
+			this.ToolBarMain.ButtonClick += new OpenDental.UI.ODToolBarButtonClickEventHandler(this.ToolBarMain_ButtonClick);
+			// 
+			// gridMain
+			// 
+			this.gridMain.HScrollVisible = false;
+			this.gridMain.Location = new System.Drawing.Point(0,173);
+			this.gridMain.Name = "gridMain";
+			this.gridMain.ScrollValue = 0;
+			this.gridMain.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+			this.gridMain.Size = new System.Drawing.Size(698,447);
+			this.gridMain.TabIndex = 59;
+			this.gridMain.Title = "Procedures";
+			this.gridMain.TranslationName = "TableTP";
+			this.gridMain.CellClick += new OpenDental.UI.ODGridClickEventHandler(this.gridMain_CellClick);
+			this.gridMain.CellDoubleClick += new OpenDental.UI.ODGridClickEventHandler(this.gridMain_CellDoubleClick);
+			// 
 			// gridPreAuth
 			// 
 			this.gridPreAuth.HScrollVisible = false;
-			this.gridPreAuth.Location = new System.Drawing.Point(676,33);
+			this.gridPreAuth.Location = new System.Drawing.Point(659,33);
 			this.gridPreAuth.Name = "gridPreAuth";
 			this.gridPreAuth.ScrollValue = 0;
-			this.gridPreAuth.Size = new System.Drawing.Size(252,119);
+			this.gridPreAuth.Size = new System.Drawing.Size(252,134);
 			this.gridPreAuth.TabIndex = 62;
 			this.gridPreAuth.Title = "Pre Authorizations";
 			this.gridPreAuth.TranslationName = "TablePreAuth";
@@ -476,43 +558,22 @@ namespace OpenDental{
 			this.gridPlans.Location = new System.Drawing.Point(0,33);
 			this.gridPlans.Name = "gridPlans";
 			this.gridPlans.ScrollValue = 0;
-			this.gridPlans.Size = new System.Drawing.Size(658,134);
+			this.gridPlans.Size = new System.Drawing.Size(460,134);
 			this.gridPlans.TabIndex = 60;
 			this.gridPlans.Title = "Treatment Plans";
 			this.gridPlans.TranslationName = "TableTPList";
 			this.gridPlans.CellClick += new OpenDental.UI.ODGridClickEventHandler(this.gridPlans_CellClick);
 			this.gridPlans.CellDoubleClick += new OpenDental.UI.ODGridClickEventHandler(this.gridPlans_CellDoubleClick);
 			// 
-			// gridMain
-			// 
-			this.gridMain.HScrollVisible = false;
-			this.gridMain.Location = new System.Drawing.Point(0,173);
-			this.gridMain.Name = "gridMain";
-			this.gridMain.ScrollValue = 0;
-			this.gridMain.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-			this.gridMain.Size = new System.Drawing.Size(698,411);
-			this.gridMain.TabIndex = 59;
-			this.gridMain.Title = "Procedures";
-			this.gridMain.TranslationName = "TableTP";
-			this.gridMain.CellClick += new OpenDental.UI.ODGridClickEventHandler(this.gridMain_CellClick);
-			this.gridMain.CellDoubleClick += new OpenDental.UI.ODGridClickEventHandler(this.gridMain_CellDoubleClick);
-			// 
-			// ToolBarMain
-			// 
-			this.ToolBarMain.Dock = System.Windows.Forms.DockStyle.Top;
-			this.ToolBarMain.ImageList = this.imageListMain;
-			this.ToolBarMain.Location = new System.Drawing.Point(0,0);
-			this.ToolBarMain.Name = "ToolBarMain";
-			this.ToolBarMain.Size = new System.Drawing.Size(939,29);
-			this.ToolBarMain.TabIndex = 58;
-			this.ToolBarMain.ButtonClick += new OpenDental.UI.ODToolBarButtonClickEventHandler(this.ToolBarMain_ButtonClick);
-			// 
 			// ContrTreat
 			// 
-			this.Controls.Add(this.gridPreAuth);
-			this.Controls.Add(this.gridPlans);
-			this.Controls.Add(this.gridMain);
+			this.Controls.Add(this.listSetPr);
 			this.Controls.Add(this.ToolBarMain);
+			this.Controls.Add(this.label1);
+			this.Controls.Add(this.gridMain);
+			this.Controls.Add(this.gridPreAuth);
+			this.Controls.Add(this.groupShow);
+			this.Controls.Add(this.gridPlans);
 			this.Controls.Add(this.textNote);
 			this.Controls.Add(this.label3);
 			this.Controls.Add(this.textSecDedRem);
@@ -535,11 +596,9 @@ namespace OpenDental{
 			this.Controls.Add(this.label12);
 			this.Controls.Add(this.label11);
 			this.Controls.Add(this.label10);
-			this.Controls.Add(this.panelSide);
 			this.Name = "ContrTreat";
 			this.Size = new System.Drawing.Size(939,708);
-			this.panelSide.ResumeLayout(false);
-			this.groupBox1.ResumeLayout(false);
+			this.groupShow.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -553,11 +612,16 @@ namespace OpenDental{
 			//showHidden=true;//shows hidden priorities
 			//can't use Lan.F(this);
 			Lan.C(this,new Control[]
-				{
+			{
 				label1,
-				groupBox1,
+				groupShow,
 				checkShowCompleted,
 				checkShowIns,
+				checkShowMaxDed,
+				checkShowFees,
+				checkShowStandard,
+				checkShowSubtotals,
+				checkShowTotals,
 				label3,
 				label10,
 				label16,
@@ -574,16 +638,21 @@ namespace OpenDental{
 		///<summary>Called every time local data is changed from any workstation.  Refreshes priority lists and lays out the toolbar.</summary>
 		public void InitializeLocalData(){
 			listSetPr.Items.Clear();
-			//listViewPr.Items.Clear();
 			listSetPr.Items.Add(Lan.g(this,"no priority"));
-			//listViewPr.Items.Add(Lan.g(this,"no priority"));
-			//listViewPr.SetSelected(0,true);
 			for(int i=0;i<Defs.Short[(int)DefCat.TxPriorities].Length;i++){
 				listSetPr.Items.Add(Defs.Short[(int)DefCat.TxPriorities][i].ItemName);
-				//listViewPr.Items.Add(Defs.Short[(int)DefCat.TxPriorities][i].ItemName);
-				//listViewPr.SetSelected(i+1,true);
 			}
 			LayoutToolBar();
+			if(Prefs.GetBool("EasyHideInsurance")){
+				checkShowIns.Visible=false;
+				checkShowIns.Checked=false;
+				checkShowMaxDed.Visible=false;
+				//checkShowMaxDed.Checked=false;
+			}
+			else{
+				checkShowIns.Visible=true;
+				checkShowMaxDed.Visible=true;
+			}
 		}
 
 		///<summary>Causes the toolbar to be laid out again.</summary>
@@ -647,28 +716,45 @@ namespace OpenDental{
 			ParentForm.Text=Patients.GetMainTitle(PatCur);
 			if(PatCur!=null){
 				gridMain.Enabled=true;
-				panelSide.Enabled=true;
+				groupShow.Enabled=true;
+				listSetPr.Enabled=true;
+				//panelSide.Enabled=true;
 				ToolBarMain.Buttons["PreAuth"].Enabled=true;
 				ToolBarMain.Buttons["Update"].Enabled=true;
 				ToolBarMain.Buttons["Print"].Enabled=true;
 				ToolBarMain.Invalidate();
-        //listPreAuth.Enabled=true;
+				if(PatPlanList.Length==0){//patient doesn't have insurance
+					checkShowIns.Checked=false;
+					checkShowMaxDed.Visible=false;
+				}
+				else{//patient has insurance
+					if(!Prefs.GetBool("EasyHideInsurance")){//if insurance isn't hidden
+						checkShowMaxDed.Visible=true;
+						if(checkShowFees.Checked){//if fees are showing
+							checkShowIns.Checked=true;
+						}
+					}
+				}
 			}
 			else{
 				gridMain.Enabled=false;
-				panelSide.Enabled=false;
+				groupShow.Enabled=false;
+				listSetPr.Enabled=false;
+				//panelSide.Enabled=false;
 				ToolBarMain.Buttons["PreAuth"].Enabled=false;
 				ToolBarMain.Buttons["Update"].Enabled=false;
 				ToolBarMain.Buttons["Print"].Enabled=false;
 				ToolBarMain.Invalidate();
         //listPreAuth.Enabled=false;
 			}
+			
 			FillPatientButton();
 			FillPlans();
 			FillMain();
 			FillSummary();
       FillPreAuth();
 			//FillMisc();
+
 		}
 
 		private void FillPatientButton(){
@@ -730,74 +816,24 @@ namespace OpenDental{
 			gridPlans.Columns.Add(col);
 			col=new ODGridColumn(Lan.g("TableTPList","Heading"),360);
 			gridPlans.Columns.Add(col);
-			col=new ODGridColumn(Lan.g("TableTPList","Fee"),50,HorizontalAlignment.Right);
-			gridPlans.Columns.Add(col);
-			col=new ODGridColumn(Lan.g("TableTPList","Pri Ins"),50,HorizontalAlignment.Right);
-			gridPlans.Columns.Add(col);
-			col=new ODGridColumn(Lan.g("TableTPList","Sec Ins"),50,HorizontalAlignment.Right);
-			gridPlans.Columns.Add(col);
-			col=new ODGridColumn(Lan.g("TableTPList","Pat"),50,HorizontalAlignment.Right);
-			gridPlans.Columns.Add(col);
 			gridPlans.Rows.Clear();
 			if(PatCur==null){
 				gridPlans.EndUpdate();
 				return;
 			}
 			ProcList=Procedures.Refresh(PatCur.PatNum);
-			ProcListTP=Procedures.GetListTP(ProcList);
+			ProcListTP=Procedures.GetListTP(ProcList);//sorted by priority, then toothnum
 			PlanList=TreatPlans.Refresh(PatCur.PatNum);
 			ProcTPList=ProcTPs.Refresh(PatCur.PatNum);
-			//fill the first line
-			double fee;
-			double priIns;
-			double secIns;
-			double pat;
-			double totFee=0;
-			double totPriIns=0;
-			double totSecIns=0;
-			double totPat=0;
-			for(int i=0;i<ProcListTP.Length;i++){
-				fee=ProcListTP[i].ProcFee;
-				priIns=ProcListTP[i].GetEst(ClaimProcList,PriSecTot.Pri,PatPlanList);
-				secIns=ProcListTP[i].GetEst(ClaimProcList,PriSecTot.Sec,PatPlanList);
-				pat=fee-priIns-secIns-ProcListTP[i].GetWriteOff(ClaimProcList);
-				if(pat<0)
-					pat=0;
-				totFee+=fee;
-				totPriIns+=priIns;
-				totSecIns+=secIns;
-				totPat+=pat;
-			}
 			OpenDental.UI.ODGridRow row;
 			row=new ODGridRow();
 			row.Cells.Add("");//date empty
 			row.Cells.Add(Lan.g(this,"Default"));
-			row.Cells.Add(totFee.ToString("F"));
-			row.Cells.Add(totPriIns.ToString("F"));
-			row.Cells.Add(totSecIns.ToString("F"));
-			row.Cells.Add(totPat.ToString("F"));
 			gridPlans.Rows.Add(row);
 			for(int i=0;i<PlanList.Length;i++){
 				row=new ODGridRow();
 				row.Cells.Add(PlanList[i].DateTP.ToShortDateString());
 				row.Cells.Add(PlanList[i].Heading);
-				totFee=0;
-				totPriIns=0;
-				totSecIns=0;
-				totPat=0;
-				for(int j=0;j<ProcTPList.Length;j++){
-					if(ProcTPList[j].TreatPlanNum!=PlanList[i].TreatPlanNum){
-						continue;
-					}
-					totFee+=ProcTPList[j].FeeAmt;
-					totPriIns+=ProcTPList[j].PriInsAmt;
-					totSecIns+=ProcTPList[j].SecInsAmt;
-					totPat+=ProcTPList[j].PatAmt;
-				}
-				row.Cells.Add(totFee.ToString("F"));
-				row.Cells.Add(totPriIns.ToString("F"));
-				row.Cells.Add(totSecIns.ToString("F"));
-				row.Cells.Add(totPat.ToString("F"));
 				gridPlans.Rows.Add(row);
 			}
 			gridPlans.EndUpdate();
@@ -807,97 +843,410 @@ namespace OpenDental{
 		private void FillMain(){
 			gridMain.BeginUpdate();
 			gridMain.Columns.Clear();
-			ODGridColumn col=new ODGridColumn(Lan.g("TableTP","Priority"),50);
+			ODGridColumn col;
+			col=new ODGridColumn(Lan.g("TableTP","Done"),50,HorizontalAlignment.Center);
+			gridMain.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableTP","Priority"),50);
 			gridMain.Columns.Add(col);
 			col=new ODGridColumn(Lan.g("TableTP","Tth"),40);
 			gridMain.Columns.Add(col);
-			col=new ODGridColumn(Lan.g("TableTP","Surf"),40);
+			col=new ODGridColumn(Lan.g("TableTP","Surf"),45);
 			gridMain.Columns.Add(col);
 			col=new ODGridColumn(Lan.g("TableTP","Code"),50);
 			gridMain.Columns.Add(col);
-			col=new ODGridColumn(Lan.g("TableTP","Description"),250);
+			col=new ODGridColumn(Lan.g("TableTP","Description"),235);
 			gridMain.Columns.Add(col);
-			col=new ODGridColumn(Lan.g("TableTP","Fee"),50,HorizontalAlignment.Right);
-			gridMain.Columns.Add(col);
-			col=new ODGridColumn(Lan.g("TableTP","Pri Ins"),50,HorizontalAlignment.Right);
-			gridMain.Columns.Add(col);
-			col=new ODGridColumn(Lan.g("TableTP","Sec Ins"),50,HorizontalAlignment.Right);
-			gridMain.Columns.Add(col);
-			col=new ODGridColumn(Lan.g("TableTP","Pat"),50,HorizontalAlignment.Right);
-			gridMain.Columns.Add(col);
-			col=new ODGridColumn(Lan.g("TableTP","Done"),50,HorizontalAlignment.Center);
-			gridMain.Columns.Add(col);
+			if(checkShowStandard.Checked){
+				col=new ODGridColumn(Lan.g("TableTP","Standard"),55,HorizontalAlignment.Right);
+				gridMain.Columns.Add(col);
+			}
+			//caution: If you change the names of the columns here,
+			//also be sure to change them in OnCreate_Click()
+			if(checkShowFees.Checked){
+				col=new ODGridColumn(Lan.g("TableTP","Fee"),50,HorizontalAlignment.Right);
+				gridMain.Columns.Add(col);
+			}
+			if(checkShowIns.Checked){
+				col=new ODGridColumn(Lan.g("TableTP","Pri Ins"),50,HorizontalAlignment.Right);
+				gridMain.Columns.Add(col);
+				col=new ODGridColumn(Lan.g("TableTP","Sec Ins"),50,HorizontalAlignment.Right);
+				gridMain.Columns.Add(col);
+				col=new ODGridColumn(Lan.g("TableTP","Pat"),50,HorizontalAlignment.Right);
+				gridMain.Columns.Add(col);
+			}
 			gridMain.Rows.Clear();
 			if(PatCur==null){
 				gridMain.EndUpdate();
 				return;
 			}
+			double standard;
 			double fee;
 			double priIns;
 			double secIns;
 			double pat;
+			double substandard=0;
+			double subfee=0;
+			double subpriIns=0;
+			double subsecIns=0;
+			double subpat=0;
+			double totStandard=0;
+			double totFee=0;
+			double totPriIns=0;
+			double totSecIns=0;
+			double totPat=0;
+			int feeSched=Providers.GetProv(PatCur.GetProvNum()).FeeSched;//for standard fee
 			OpenDental.UI.ODGridRow row;
+			#region currentTP
 			if(gridPlans.SelectedIndices[0]==0){//current treatplan selected
+				InsPlan	PriPlanCur=null;
+				if(PatPlanList.Length>0) {//primary
+					PriPlanCur=InsPlans.GetPlan(PatPlanList[0].PlanNum,InsPlanList);
+				}
+				InsPlan SecPlanCur=null;
+				if(PatPlanList.Length>1) {//secondary
+					SecPlanCur=InsPlans.GetPlan(PatPlanList[1].PlanNum,InsPlanList);
+				}
+				double dedAppliedPri=0;//cumulative per plan
+				double insPayEstPri=0;//cumulative per plan
+				double dedAppliedSec=0;
+				double insPayEstSec=0;
+				double dedRem;
+				double insRem;
+				bool hasMaxedPri=false;//this tracks exactly which row max happens on so that note can be placed.
+				bool hasMaxedSec=false;
+				ClaimProc claimproc;//holds the estimate.
 				for(int i=0;i<ProcListTP.Length;i++){
 					row=new ODGridRow();
+					row.Cells.Add("");//never done
 					row.Cells.Add(Defs.GetName(DefCat.TxPriorities,ProcListTP[i].Priority));
 					row.Cells.Add(Tooth.ToInternat(ProcListTP[i].ToothNum));
 					row.Cells.Add(ProcListTP[i].Surf);
 					row.Cells.Add(ProcListTP[i].ADACode);
-					row.Cells.Add(ProcedureCodes.GetProcCode(ProcListTP[i].ADACode).Descript);
+					row.Cells.Add(ProcedureCodes.GetLaymanTerm(ProcListTP[i].ADACode));
+					if(checkShowStandard.Checked){
+						standard=Fees.GetAmount0(ProcListTP[i].ADACode,feeSched);
+						substandard+=standard;
+						totStandard+=standard;
+						row.Cells.Add(standard.ToString("F"));//standard
+					}
 					fee=ProcListTP[i].ProcFee;
-					priIns=ProcListTP[i].GetEst(ClaimProcList,PriSecTot.Pri,PatPlanList);
-					secIns=ProcListTP[i].GetEst(ClaimProcList,PriSecTot.Sec,PatPlanList);
+					subfee+=fee;
+					totFee+=fee;
+					#region ShowMaxDed
+					if(checkShowMaxDed.Checked){//whether visible or not
+						//math sequence and logic based on Claims.CalculateAndUpdate(). It's really complicated.
+						//We will skip Procedure.ComputeEstimates(), and assume that all estimates have been created properly.
+						if(PatPlanList.Length>0){//Primary
+							claimproc=ClaimProcs.GetEstimate(ClaimProcList,ProcListTP[i].ProcNum,PriPlanCur.PlanNum);
+							if(claimproc==null){
+								priIns=0;
+							}
+							else{
+								//deduct:
+								dedRem=InsPlans.GetDedRem(ClaimProcList,DateTime.Today,PriPlanCur.PlanNum,PatPlanList[0].PatPlanNum,
+									-1,InsPlanList,BenefitList,ProcListTP[i].ADACode)
+									-dedAppliedPri;//subtracts deductible amounts already applied on this TP
+								if(dedRem<0) {
+									dedRem=0;
+								}
+								if(dedRem > fee) {//if deductible is more than cost of procedure
+									claimproc.DedApplied=fee;
+								}
+								else {
+									claimproc.DedApplied=dedRem;
+								}
+								if(claimproc.DedApplied>0){
+									row.Cells[5].Text+="\r\n"+Lan.g(this,"Pri Deduct Applied: ")+claimproc.DedApplied.ToString("F");
+								}
+								//insest:
+								insRem=InsPlans.GetInsRem(ClaimProcList,DateTime.Today,PriPlanCur.PlanNum,
+									PatPlanList[0].PatPlanNum,-1,InsPlanList,BenefitList)
+									-insPayEstPri;//subtracts insest amounts already applied on this TP
+								if(insRem<0) {
+									insRem=0;
+								}
+								claimproc.ComputeBaseEst(ProcListTP[i],PriSecTot.Pri,InsPlanList,PatPlanList,BenefitList);//handles dedBeforePerc
+								claimproc.InsPayEst=ProcListTP[i].GetEst(ClaimProcList,PriSecTot.Pri,PatPlanList,false);
+								if(!claimproc.DedBeforePerc) {
+									claimproc.InsPayEst-=claimproc.DedApplied;
+								}
+								if(claimproc.InsPayEst<0) {
+									//example: if inspayest = 19 - 50(ded) for total of -31.
+									claimproc.DedApplied+=claimproc.InsPayEst;//eg. 50+(-31)=19
+									claimproc.InsPayEst=0;
+									//so only 19 of deductible gets applied, and inspayest is 0
+								}
+								if(claimproc.InsPayEst>insRem) {//if ins has maxed out
+									if(!hasMaxedPri){
+										row.Cells[5].Text+="\r\n"+Lan.g(this,"Pri Annual Max Met.");
+									}
+									hasMaxedPri=true;
+									claimproc.OverAnnualMax=claimproc.InsPayEst-insRem;
+									claimproc.InsPayEst=insRem;
+
+								}
+								dedAppliedPri+=claimproc.DedApplied;
+								insPayEstPri+=claimproc.InsPayEst;
+								claimproc.Update();
+								priIns=claimproc.InsPayEst;
+							}
+						}//primary
+						else{//no primary ins
+							priIns=0;
+						}
+						if(PatPlanList.Length>1) {//Secondary
+							claimproc=ClaimProcs.GetEstimate(ClaimProcList,ProcListTP[i].ProcNum,SecPlanCur.PlanNum);
+							if(claimproc==null){
+								secIns=0;
+							}
+							else{
+								//deduct:
+								dedRem=InsPlans.GetDedRem(ClaimProcList,DateTime.Today,SecPlanCur.PlanNum,PatPlanList[1].PatPlanNum,
+									-1,InsPlanList,BenefitList,ProcListTP[i].ADACode)
+									-dedAppliedSec;//subtracts deductible amounts already applied on this TP
+								if(dedRem<0){
+									dedRem=0;
+								}
+								if(dedRem>fee-priIns){//if deductible is more than cost of procedure
+									claimproc.DedApplied=fee-priIns;
+								}
+								else{
+									claimproc.DedApplied=dedRem;
+								}
+								claimproc.PaidOtherIns=priIns;
+								//insest:
+								insRem=InsPlans.GetInsRem(ClaimProcList,DateTime.Today,SecPlanCur.PlanNum,
+									PatPlanList[1].PatPlanNum,-1,InsPlanList,BenefitList)
+									-insPayEstSec;//subtracts insest amounts already applied on this TP
+								if(insRem<0) {
+									insRem=0;
+								}
+								//next line is supposed to handle dedBeforePerc, but it will get confused with sec ins.
+								//There is no easy solution
+								claimproc.ComputeBaseEst(ProcListTP[i],PriSecTot.Sec,InsPlanList,PatPlanList,BenefitList);
+								secIns=ProcListTP[i].GetEst(ClaimProcList,PriSecTot.Sec,PatPlanList,false);
+								//this math is done here instead of in GetEst to ensure accuracy:
+								if(fee-priIns-secIns < 0) {
+									secIns=fee-priIns;
+								}
+								if(!claimproc.DedBeforePerc) {
+									secIns-=claimproc.DedApplied;
+								}
+								if(secIns<0) {
+									//example: if secins = 19 - 50(ded) for total of -31.
+									claimproc.DedApplied+=secIns;//eg. 50+(-31)=19
+									secIns=0;
+									//so only 19 of deductible gets applied, and secins is 0
+								}
+								if(claimproc.DedApplied>0) {
+									row.Cells[5].Text+="\r\n"+Lan.g(this,"Sec Deduct Applied: ")+claimproc.DedApplied.ToString("F");
+								}
+								if(secIns>insRem) {//if ins has maxed out
+									if(!hasMaxedSec) {
+										row.Cells[5].Text+="\r\n"+Lan.g(this,"Sec Annual Max Met.");
+									}
+									hasMaxedSec=true;
+									secIns=insRem;
+								}
+								claimproc.InsPayEst=secIns;
+								dedAppliedSec+=claimproc.DedApplied;
+								insPayEstSec+=secIns;
+								claimproc.Update();
+							}
+						}//secondary
+						else{//no secondary ins
+							secIns=0;
+						}
+					}//showMaxDed
+					else{
+						priIns=ProcListTP[i].GetEst(ClaimProcList,PriSecTot.Pri,PatPlanList,true);
+						secIns=ProcListTP[i].GetEst(ClaimProcList,PriSecTot.Sec,PatPlanList,true);
+					}
+					#endregion ShowMaxDed
+					subpriIns+=priIns;
+					totPriIns+=priIns;
+					subsecIns+=secIns;
+					totSecIns+=secIns;
 					pat=fee-priIns-secIns-ProcListTP[i].GetWriteOff(ClaimProcList);
-					if(pat<0)
+					if(pat<0){
 						pat=0;
-					row.Cells.Add(fee.ToString("F"));
-					row.Cells.Add(priIns.ToString("F"));
-					row.Cells.Add(secIns.ToString("F"));
-					row.Cells.Add(pat.ToString("F"));
-					row.Cells.Add("");
+					}
+					subpat+=pat;
+					totPat+=pat;
+					if(checkShowFees.Checked){
+						row.Cells.Add(fee.ToString("F"));
+					}
+					if(checkShowIns.Checked){
+						row.Cells.Add(priIns.ToString("F"));
+						row.Cells.Add(secIns.ToString("F"));
+						row.Cells.Add(pat.ToString("F"));
+					}
 					row.ColorText=Defs.GetColor(DefCat.TxPriorities,ProcListTP[i].Priority);
 					if(row.ColorText==Color.White){
 						row.ColorText=Color.Black;
 					}
+					row.Tag=ProcListTP[i].Copy();
 					gridMain.Rows.Add(row);
-				}
+					#region subtotal
+					if(checkShowSubtotals.Checked &&
+						(i==ProcListTP.Length-1 || ProcListTP[i+1].Priority != ProcListTP[i].Priority))
+					{
+						row=new ODGridRow();
+						row.Cells.Add("");//done
+						row.Cells.Add("");//priority
+						row.Cells.Add("");//toothnum
+						row.Cells.Add("");//surf
+						row.Cells.Add("");//adacode
+						row.Cells.Add(Lan.g(this,"Subtotal"));//descript
+						if(checkShowStandard.Checked){
+							row.Cells.Add(substandard.ToString("F"));//standard
+						}
+						if(checkShowFees.Checked){
+							row.Cells.Add(subfee.ToString("F"));//fee
+						}
+						if(checkShowIns.Checked){
+							row.Cells.Add(subpriIns.ToString("F"));//pri
+							row.Cells.Add(subsecIns.ToString("F"));//sec
+							row.Cells.Add(subpat.ToString("F"));//pat portion
+						}
+						row.ColorText=Defs.GetColor(DefCat.TxPriorities,ProcListTP[i].Priority);
+						if(row.ColorText==Color.White) {
+							row.ColorText=Color.Black;
+						}
+						row.Bold=true;
+						row.ColorLborder=Color.Black;
+						gridMain.Rows.Add(row);
+						substandard=0;
+						subfee=0;
+						subpriIns=0;
+						subsecIns=0;
+						subpat=0;
+					}
+					#endregion subtotal
+				}//for(int i=0;i<ProcListTP.Length
 				textNote.Text=Prefs.GetString("TreatmentPlanNote");
 			}
-			else{//any except current tp selected
+			#endregion currentTP
+			#region AnyTP except current
+			else {//any except current tp selected
 				ProcTPSelectList=ProcTPs.GetListForTP(PlanList[gridPlans.SelectedIndices[0]-1].TreatPlanNum,ProcTPList);
 				bool isDone;
 				for(int i=0;i<ProcTPSelectList.Length;i++){
 					row=new ODGridRow();
-					row.Cells.Add(Defs.GetName(DefCat.TxPriorities,ProcTPSelectList[i].Priority));
-					row.Cells.Add(ProcTPSelectList[i].ToothNumTP);
-					row.Cells.Add(ProcTPSelectList[i].Surf);
-					row.Cells.Add(ProcTPSelectList[i].ADACode);
-					row.Cells.Add(ProcTPSelectList[i].Descript);
-					row.Cells.Add(ProcTPSelectList[i].FeeAmt.ToString("F"));
-					row.Cells.Add(ProcTPSelectList[i].PriInsAmt.ToString("F"));
-					row.Cells.Add(ProcTPSelectList[i].SecInsAmt.ToString("F"));
-					row.Cells.Add(ProcTPSelectList[i].PatAmt.ToString("F"));
 					isDone=true;
-					for(int j=0;j<ProcListTP.Length;j++){
-						if(ProcListTP[j].ProcNum==ProcTPSelectList[i].ProcNumOrig){
+					for(int j=0;j<ProcListTP.Length;j++) {
+						if(ProcListTP[j].ProcNum==ProcTPSelectList[i].ProcNumOrig) {
 							isDone=false;
 						}
 					}
 					if(isDone){
 						row.Cells.Add("X");
 					}
-					else{
+					else {
 						row.Cells.Add("");
-					}		
+					}	
+					row.Cells.Add(Defs.GetName(DefCat.TxPriorities,ProcTPSelectList[i].Priority));
+					row.Cells.Add(ProcTPSelectList[i].ToothNumTP);
+					row.Cells.Add(ProcTPSelectList[i].Surf);
+					row.Cells.Add(ProcTPSelectList[i].ADACode);
+					row.Cells.Add(ProcTPSelectList[i].Descript);
+					if(checkShowStandard.Checked) {
+						standard=Fees.GetAmount0(ProcTPSelectList[i].ADACode,feeSched);
+						row.Cells.Add(standard.ToString("F"));//standard
+						substandard+=standard;
+						totStandard+=standard;
+					}
+					if(checkShowFees.Checked){
+						row.Cells.Add(ProcTPSelectList[i].FeeAmt.ToString("F"));
+						subfee+=ProcTPSelectList[i].FeeAmt;
+						totFee+=ProcTPSelectList[i].FeeAmt;
+					}
+					if(checkShowIns.Checked){
+						row.Cells.Add(ProcTPSelectList[i].PriInsAmt.ToString("F"));
+						row.Cells.Add(ProcTPSelectList[i].SecInsAmt.ToString("F"));
+						row.Cells.Add(ProcTPSelectList[i].PatAmt.ToString("F"));
+						subpriIns+=ProcTPSelectList[i].PriInsAmt;
+						totPriIns+=ProcTPSelectList[i].PriInsAmt;
+						subsecIns+=ProcTPSelectList[i].SecInsAmt;
+						totSecIns+=ProcTPSelectList[i].SecInsAmt;
+						subpat+=ProcTPSelectList[i].PatAmt;
+						totPat+=ProcTPSelectList[i].PatAmt;
+					}
 					row.ColorText=Defs.GetColor(DefCat.TxPriorities,ProcTPSelectList[i].Priority);
 					if(row.ColorText==Color.White){
 						row.ColorText=Color.Black;
 					}
+					row.Tag=ProcTPSelectList[i].Copy();
 					gridMain.Rows.Add(row);
+					#region subtotal
+					if(checkShowSubtotals.Checked &&
+						(i==ProcTPSelectList.Length-1 || ProcTPSelectList[i+1].Priority != ProcTPSelectList[i].Priority)) {
+						row=new ODGridRow();
+						row.Cells.Add("");//done
+						row.Cells.Add("");//priority
+						row.Cells.Add("");//toothnum
+						row.Cells.Add("");//surf
+						row.Cells.Add("");//adacode
+						row.Cells.Add(Lan.g(this,"Subtotal"));//descript
+						if(checkShowStandard.Checked) {
+							row.Cells.Add(substandard.ToString("F"));//standard
+						}
+						if(checkShowFees.Checked) {
+							row.Cells.Add(subfee.ToString("F"));//fee
+						}
+						if(checkShowIns.Checked) {
+							row.Cells.Add(subpriIns.ToString("F"));//pri
+							row.Cells.Add(subsecIns.ToString("F"));//sec
+							row.Cells.Add(subpat.ToString("F"));//pat portion
+						}
+						row.ColorText=Defs.GetColor(DefCat.TxPriorities,ProcTPSelectList[i].Priority);
+						if(row.ColorText==Color.White) {
+							row.ColorText=Color.Black;
+						}
+						row.Bold=true;
+						row.ColorLborder=Color.Black;
+						gridMain.Rows.Add(row);
+						substandard=0;
+						subfee=0;
+						subpriIns=0;
+						subsecIns=0;
+						subpat=0;
+					}
+					#endregion
 				}
 				textNote.Text=PlanList[gridPlans.SelectedIndices[0]-1].Note;
 			}
+			#endregion AnyTP except current
+			#region Totals
+			if(checkShowTotals.Checked) {
+				row=new ODGridRow();
+				row.Cells.Add("");//done
+				row.Cells.Add("");//priority
+				row.Cells.Add("");//toothnum
+				row.Cells.Add("");//surf
+				row.Cells.Add("");//adacode
+				row.Cells.Add(Lan.g(this,"Total"));//descript
+				if(checkShowStandard.Checked) {
+					row.Cells.Add(totStandard.ToString("F"));//standard
+				}
+				if(checkShowFees.Checked) {
+					row.Cells.Add(totFee.ToString("F"));//fee
+				}
+				if(checkShowIns.Checked) {
+					row.Cells.Add(totPriIns.ToString("F"));//pri
+					row.Cells.Add(totSecIns.ToString("F"));//sec
+					row.Cells.Add(totPat.ToString("F"));//pat portion
+				}
+				row.Bold=true;
+				//row.ColorLborder=Color.Black;
+				gridMain.Rows.Add(row);
+			}
+			#endregion Totals
+			int gridW=0;
+			for(int i=0;i<gridMain.Columns.Count;i++){
+				gridW+=gridMain.Columns[i].ColWidth;
+			}
+			gridMain.Width=gridW+20;
 			gridMain.EndUpdate();
 		}
 
@@ -926,7 +1275,6 @@ namespace OpenDental{
 			InsPlan PlanCur;//=new InsPlan();
 			if(PatPlanList.Length>0){
 				PlanCur=InsPlans.GetPlan(PatPlanList[0].PlanNum,InsPlanList);
-				//MessageBox.Show("mark0");
 				pend=InsPlans.GetPending
 					(ClaimProcList,DateTime.Today,PatPlanList[0].PlanNum,PatPlanList[0].PatPlanNum,InsPlanList,BenefitList);
 				textPriPend.Text=pend.ToString("F");
@@ -939,8 +1287,6 @@ namespace OpenDental{
 					textPriRem.Text="";
 				}
 				else{
-					//remain=max-used-pend
-					//remain=InsPlans.GetInsRem(ClaimProcList,DateTime.Today,PatPlans.GetPlanNum(PatPlanList,1),-1,InsPlanList);
 					remain=max-used-pend;
 					if(remain<0){
 						remain=0;
@@ -1030,20 +1376,23 @@ namespace OpenDental{
 		}
 
 		private void gridMain_CellDoubleClick(object sender, OpenDental.UI.ODGridClickEventArgs e) {
+			if(gridMain.Rows[e.Row].Tag==null){
+				return;//user double clicked on a subtotal row
+			}
 			if(gridPlans.SelectedIndices[0]==0){//current plan
-				Procedure ProcCur=ProcListTP[e.Row];
+				Procedure ProcCur=(Procedure)gridMain.Rows[e.Row].Tag; 
 				FormProcEdit FormPE=new FormProcEdit(ProcCur,PatCur,FamCur,InsPlanList);
 				FormPE.ShowDialog();
 				ModuleSelected(PatCur.PatNum);
-				for(int i=0;i<ProcListTP.Length;i++){
-					if(ProcListTP[i].ProcNum==ProcCur.ProcNum){
+				for(int i=0;i<gridMain.Rows.Count;i++){
+					if(gridMain.Rows[i].Tag !=null && ((Procedure)gridMain.Rows[i].Tag).ProcNum==ProcCur.ProcNum){
 						gridMain.SetSelected(i,true);
 					}
 				}
 				return;
 			}
 			//any other TP
-			ProcTP procT=ProcTPSelectList[e.Row];
+			ProcTP procT=(ProcTP)gridMain.Rows[e.Row].Tag;
 			FormProcTPEdit FormP=new FormProcTPEdit(procT);
 			FormP.ShowDialog();
 			if(FormP.DialogResult==DialogResult.Cancel){
@@ -1054,8 +1403,8 @@ namespace OpenDental{
 			ModuleSelected(PatCur.PatNum);
 			gridPlans.SetSelected(selectedPlan,true);
 			FillMain();
-			for(int i=0;i<ProcTPSelectList.Length;i++){
-				if(ProcTPSelectList[i].ProcTPNum==selectedProc){
+			for(int i=0;i<gridMain.Rows.Count;i++){
+				if(gridMain.Rows[i].Tag !=null && ((ProcTP)gridMain.Rows[i].Tag).ProcTPNum==selectedProc){ 
 					gridMain.SetSelected(i,true);
 				}
 			}
@@ -1083,9 +1432,6 @@ namespace OpenDental{
 		}
 
 		private void listSetPr_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e){
-			if(gridMain.SelectedIndices.Length==0){
-				return;
-			}
 			int clickedRow=listSetPr.IndexFromPoint(e.X,e.Y);
 			if(clickedRow==-1)
 				return;
@@ -1093,7 +1439,11 @@ namespace OpenDental{
 				Procedure ProcCur;
 				Procedure ProcOld;
 				for(int i=0;i<gridMain.SelectedIndices.Length;i++){//loop through the main list of selected procs
-					ProcCur=ProcListTP[gridMain.SelectedIndices[i]];
+					if(gridMain.Rows[gridMain.SelectedIndices[i]].Tag==null){
+						//user must have highlighted a subtotal row, so ignore
+						continue;
+					}
+					ProcCur=(Procedure)gridMain.Rows[gridMain.SelectedIndices[i]].Tag;
 					ProcOld=ProcCur.Copy();
 					if(clickedRow==0)//set priority to "no priority"
 						ProcCur.Priority=0;
@@ -1107,7 +1457,11 @@ namespace OpenDental{
 				int selectedTP=gridPlans.SelectedIndices[0];
 				ProcTP proc;
 				for(int i=0;i<gridMain.SelectedIndices.Length;i++){//loop through the main list of selected procTPs
-					proc=ProcTPSelectList[gridMain.SelectedIndices[i]];
+					if(gridMain.Rows[gridMain.SelectedIndices[i]].Tag==null) {
+						//user must have highlighted a subtotal row, so ignore
+						continue;
+					}
+					proc=(ProcTP)gridMain.Rows[gridMain.SelectedIndices[i]].Tag;
 					if(clickedRow==0)//set priority to "no priority"
 						proc.Priority=0;
 					else
@@ -1120,11 +1474,48 @@ namespace OpenDental{
 			}
 		}
 
+		private void checkShowMaxDed_Click(object sender,EventArgs e) {
+			FillMain();
+		}
+
+		private void checkShowFees_Click(object sender,EventArgs e) {
+			if(checkShowFees.Checked){
+				checkShowStandard.Checked=true;
+				checkShowIns.Checked=true;
+				checkShowSubtotals.Checked=true;
+				checkShowTotals.Checked=true;
+			}
+			else{
+				checkShowStandard.Checked=false;
+				checkShowIns.Checked=false;
+				checkShowSubtotals.Checked=false;
+				checkShowTotals.Checked=false;
+			}
+			FillMain();
+		}
+
+		private void checkShowStandard_Click(object sender,EventArgs e) {
+			FillMain();
+		}
+
+		private void checkShowIns_Click(object sender,EventArgs e) {
+			FillMain();
+		}
+
+		private void checkShowSubtotals_Click(object sender,EventArgs e) {
+			FillMain();
+		}
+
+		private void checkShowTotals_Click(object sender,EventArgs e) {
+			FillMain();
+		}
+
 		///<summary>Preview is only used for debugging.</summary>
 		public void PrintReport(bool justPreview){
 			pd2=new PrintDocument();
 			pd2.PrintPage += new PrintPageEventHandler(this.pd2_PrintPage);
-			pd2.DefaultPageSettings.Margins=new Margins(50,50,40,25);
+			pd2.DefaultPageSettings.Margins=new Margins(0,0,0,0);
+			pd2.OriginAtMargins=true;
 			try{
 				if(justPreview){
 					pView = new FormRpPrintPreview();
@@ -1150,6 +1541,74 @@ namespace OpenDental{
 			mainPrinted=false;
 			benefitsPrinted=false;
 			notePrinted=false;
+			pagesPrinted=0;
+			if(Prefs.GetBool("TreatPlanShowGraphics")){
+				//prints the graphical tooth chart and legend
+				//Panel panelHide=new Panel();
+				//panelHide.Size=new Size(600,500);
+				//panelHide.BackColor=this.BackColor;
+				//panelHide.SendToBack();
+				//this.Controls.Add(panelHide);
+				toothChart=new GraphicalToothChart();
+				toothChart.UseInternational=Prefs.GetBool("UseInternationalToothNumbers");
+				toothChart.ColorBackground=Defs.Long[(int)DefCat.ChartGraphicColors][14].ItemColor;
+				toothChart.ColorText=Defs.Long[(int)DefCat.ChartGraphicColors][15].ItemColor;
+				toothChart.Size=new Size(600,500);
+				//toothChart.Location=new Point(-600,-500);//off the visible screen
+				//toothChart.SendToBack();
+				this.Controls.Add(toothChart);
+				toothChart.BringToFront();
+				ToothInitialList=ToothInitials.Refresh(PatCur.PatNum);
+				//first, primary.  That way, you can still set a primary tooth missing afterwards.
+				for(int i=0;i<ToothInitialList.Length;i++) {
+					if(ToothInitialList[i].InitialType==ToothInitialType.Primary) {
+						toothChart.SetToPrimary(ToothInitialList[i].ToothNum);
+					}
+				}
+				for(int i=0;i<ToothInitialList.Length;i++) {
+					switch(ToothInitialList[i].InitialType) {
+						case ToothInitialType.Missing:
+							toothChart.SetInvisible(ToothInitialList[i].ToothNum);
+							break;
+						case ToothInitialType.Hidden:
+							toothChart.HideTooth(ToothInitialList[i].ToothNum);
+							break;
+						case ToothInitialType.Rotate:
+							toothChart.MoveTooth(ToothInitialList[i].ToothNum,ToothInitialList[i].Movement,0,0,0,0,0);
+							break;
+						case ToothInitialType.TipM:
+							toothChart.MoveTooth(ToothInitialList[i].ToothNum,0,ToothInitialList[i].Movement,0,0,0,0);
+							break;
+						case ToothInitialType.TipB:
+							toothChart.MoveTooth(ToothInitialList[i].ToothNum,0,0,ToothInitialList[i].Movement,0,0,0);
+							break;
+						case ToothInitialType.ShiftM:
+							toothChart.MoveTooth(ToothInitialList[i].ToothNum,0,0,0,ToothInitialList[i].Movement,0,0);
+							break;
+						case ToothInitialType.ShiftO:
+							toothChart.MoveTooth(ToothInitialList[i].ToothNum,0,0,0,0,ToothInitialList[i].Movement,0);
+							break;
+						case ToothInitialType.ShiftB:
+							toothChart.MoveTooth(ToothInitialList[i].ToothNum,0,0,0,0,0,ToothInitialList[i].Movement);
+							break;
+					}
+				}
+				ComputeProcAL();
+				DrawProcsOfStatus(ProcStat.EO);
+				DrawProcsOfStatus(ProcStat.EC);
+				DrawProcsOfStatus(ProcStat.C);
+				DrawProcsOfStatus(ProcStat.R);
+				DrawProcsOfStatus(ProcStat.TP);
+				toothChart.Refresh();
+				Thread.Sleep(500);//wait for 1/2 second for graphics to refresh
+				//chartBitmap=new Bitmap(toothChart.Width,toothChart.Height);
+				chartBitmap=toothChart.GetBitmap();
+				//Graphics g=Graphics.FromImage(chartBitmap);
+				//Rectangle bounds=Rectangle.FromLTRB(0,0,chartBitmap.Width,chartBitmap.Height);
+				//toothChart.DrawToBitmap(chartBitmap,bounds);
+				toothChart.Dispose();
+				//panelHide.Dispose();
+			}
 			#if DEBUG
 				PrintReport(true);
 			#else
@@ -1158,11 +1617,10 @@ namespace OpenDental{
 		}
 
 		private void pd2_PrintPage(object sender, System.Drawing.Printing.PrintPageEventArgs e) {
-			//printable area is w=800.
-			//Height is 1035 for standard paper.  Some printers can handle up to 1042. was 1037
-			//MessageBox.Show(e.MarginBounds.Height.ToString());
-			yPos=44;
-			xPos=25;
+			Rectangle bounds=new Rectangle(50,50,800,1020);//Some printers can handle up to 1042 if upper bound is 40
+			Graphics g=e.Graphics;
+			int yPos=bounds.Top;
+			int xPos=bounds.Left;
 			#region printHeading
 			if(!headingPrinted){
 				string heading;
@@ -1177,17 +1635,17 @@ namespace OpenDental{
 				string date=DateTime.Today.ToShortDateString();
 				if(PatCur.Preferred!="")
 					name="'"+PatCur.Preferred+"' "+name;
-				e.Graphics.DrawString(heading,headingFont,Brushes.Black
-					,400-e.Graphics.MeasureString(heading,headingFont).Width/2,yPos);
-				yPos+=(int)e.Graphics.MeasureString(heading,headingFont).Height;
-				e.Graphics.DrawString(practice,subHeadingFont,Brushes.Black
-					,400-e.Graphics.MeasureString(practice,subHeadingFont).Width/2,yPos);
-				yPos+=(int)e.Graphics.MeasureString(heading,headingFont).Height;
-				e.Graphics.DrawString(date,subHeadingFont,Brushes.Black
-					,400-e.Graphics.MeasureString(date,subHeadingFont).Width/2,yPos);
+				g.DrawString(heading,headingFont,Brushes.Black,
+					xPos+bounds.Width/2-g.MeasureString(heading,headingFont).Width/2,yPos);
+				yPos+=(int)g.MeasureString(heading,headingFont).Height;
+				g.DrawString(practice,subHeadingFont,Brushes.Black,
+					xPos+bounds.Width/2-g.MeasureString(practice,subHeadingFont).Width/2,yPos);
+				yPos+=(int)g.MeasureString(heading,headingFont).Height;
+				g.DrawString(date,subHeadingFont,Brushes.Black,
+					xPos+bounds.Width/2-g.MeasureString(date,subHeadingFont).Width/2,yPos);
 				yPos+=30;
-				e.Graphics.DrawString(name,subHeadingFont,Brushes.Black
-					,400-e.Graphics.MeasureString(name,subHeadingFont).Width/2,yPos);
+				g.DrawString(name,subHeadingFont,Brushes.Black,
+					xPos+bounds.Width/2-g.MeasureString(name,subHeadingFont).Width/2,yPos);
 				yPos+=30;
 				headingPrinted=true;
 			}
@@ -1195,101 +1653,38 @@ namespace OpenDental{
 			#region PrintGraphics
 			if(headingPrinted && !graphicsPrinted){
 				if(Prefs.GetBool("TreatPlanShowGraphics")){
-					//prints the graphical tooth chart and legend
-					ContrTeeth cTeeth=new ContrTeeth();
-					cTeeth.PatCur=PatCur;
-					cTeeth.SetWidth(589);//this is not very precise
-					//MessageBox.Show(cTeeth.Width.ToString());
-					cTeeth.CreateBackShadow();
-					cTeeth.ClearProcs();
-					//ProcList already refreshed
-					ArrayList procAL = new ArrayList();
-					//arrayLProc already filled
-					//first, add all completed work. C,EC,EO
-					//and Referred
-					for(int i=0;i<ProcList.Length;i++){
-						if(ProcList[i].ProcStatus==ProcStat.C
-							|| ProcList[i].ProcStatus==ProcStat.EC
-							|| ProcList[i].ProcStatus==ProcStat.EO)
-						{
-							//always show missing teeth
-							if(ProcedureCodes.GetProcCode(ProcList[i].ADACode).PaintType==ToothPaintingType.Extraction){
-								procAL.Add(ProcList[i]);
-							}
-							else if(checkShowCompleted.Checked){
-								procAL.Add(ProcList[i]);
-							}
-						}
-						if(ProcList[i].ProcStatus==ProcStat.R){//always show all referred
-							procAL.Add(ProcList[i]);
-						}
-					}//for
-					//then add whatever is showing on the selected TP
-					if(gridPlans.SelectedIndices[0]==0){//current plan
-						for(int i=0;i<ProcListTP.Length;i++){
-							procAL.Add(ProcListTP[i]);
-						}
-					}
-					else{
-						Procedure procDummy;//not a real procedure.  Just used to help display on graphical chart
-						for(int i=0;i<ProcTPSelectList.Length;i++){
-							procDummy=new Procedure();
-							//this next loop is a way to get missing fields like tooth range.  Could be improved.
-							for(int j=0;j<ProcList.Length;j++){
-								if(ProcList[j].ProcNum==ProcTPSelectList[i].ProcNumOrig){
-									//but remember that even if the procedure is found, Status might have been altered
-									procDummy=ProcList[j].Copy();
-								}
-							}
-							if(Tooth.IsValidEntry(ProcTPSelectList[i].ToothNumTP)){
-								procDummy.ToothNum=Tooth.FromInternat(ProcTPSelectList[i].ToothNumTP);
-							}
-							procDummy.Surf=ProcTPSelectList[i].Surf;
-							//procDummy.HideGraphical??
-							procDummy.ProcStatus=ProcStat.TP;
-							procDummy.ADACode=ProcTPSelectList[i].ADACode;
-							procAL.Add(procDummy);
-						}
-					}
-					cTeeth.DrawProcs(procAL);
 					//xPos and yPos will be the upper left of this entire section.
-					//some arbitrary adjustments to alignment made here because cTeeth.Width not accurate
 					e.Graphics.DrawString(Lan.g(this,"Your Right"),bodyFont,Brushes.Black,
-						new RectangleF(400-cTeeth.Width/2-60,(float)yPos+cTeeth.Height/2-10,50,200));
-					cTeeth.PrintChart(e.Graphics,400-cTeeth.Width/2-10,yPos);
+						new RectangleF(xPos+bounds.Width/2-toothChart.Width/2-50,(float)yPos+toothChart.Height/2-10,50,200));
+					e.Graphics.DrawImageUnscaled(chartBitmap,xPos+bounds.Width/2-chartBitmap.Width/2-10,yPos);
 					e.Graphics.DrawString(Lan.g(this,"Your Left"),bodyFont,Brushes.Black,
-						new RectangleF(400+cTeeth.Width/2+25,(float)yPos+cTeeth.Height/2-10,50,200));
-					yPos+=cTeeth.Height;
+						new RectangleF(xPos+bounds.Width/2+toothChart.Width/2+17,(float)yPos+toothChart.Height/2-10,50,200));
+					yPos+=toothChart.Height;
 					if(checkShowCompleted.Checked){
 						yPos+=15;
-						xPos=190;
+						xPos=225;
 						e.Graphics.FillRectangle
-							(new SolidBrush(Defs.Short[(int)DefCat.ChartGraphicColors][3].ItemColor),
-							xPos,yPos,14,14);
+							(new SolidBrush(Defs.Short[(int)DefCat.ChartGraphicColors][3].ItemColor),xPos,yPos,14,14);
 						xPos+=15;
 						e.Graphics.DrawString(Lan.g(this,"Existing"),bodyFont,Brushes.Black,xPos,yPos);
 						xPos+=(int)e.Graphics.MeasureString(Lan.g(this,"Existing"),bodyFont).Width+23;
 						//The Complete work is actually a combination of EC and C. Usually same color.
 						//But just in case they are different, this will show it.
 						e.Graphics.FillRectangle
-							(new SolidBrush(Defs.Short[(int)DefCat.ChartGraphicColors][2].ItemColor),
-							xPos,yPos,7,14);
+							(new SolidBrush(Defs.Short[(int)DefCat.ChartGraphicColors][2].ItemColor),xPos,yPos,7,14);
 						xPos+=7;
 						e.Graphics.FillRectangle
-							(new SolidBrush(Defs.Short[(int)DefCat.ChartGraphicColors][1].ItemColor),
-							xPos,yPos,7,14);
+							(new SolidBrush(Defs.Short[(int)DefCat.ChartGraphicColors][1].ItemColor),xPos,yPos,7,14);
 						xPos+=8;
 						e.Graphics.DrawString(Lan.g(this,"Complete"),bodyFont,Brushes.Black,xPos,yPos);
 						xPos+=(int)e.Graphics.MeasureString(Lan.g(this,"Complete"),bodyFont).Width+23;
 						e.Graphics.FillRectangle
-							(new SolidBrush(Defs.Short[(int)DefCat.ChartGraphicColors][4].ItemColor),
-							xPos,yPos,14,14);
+							(new SolidBrush(Defs.Short[(int)DefCat.ChartGraphicColors][4].ItemColor),xPos,yPos,14,14);
 						xPos+=15;
 						e.Graphics.DrawString(Lan.g(this,"Referred Out"),bodyFont,Brushes.Black,xPos,yPos);
 						xPos+=(int)e.Graphics.MeasureString(Lan.g(this,"Referred Out"),bodyFont).Width+23;
 						e.Graphics.FillRectangle
-							(new SolidBrush(Defs.Short[(int)DefCat.ChartGraphicColors][0].ItemColor),
-							xPos,yPos,14,14);
+							(new SolidBrush(Defs.Short[(int)DefCat.ChartGraphicColors][0].ItemColor),xPos,yPos,14,14);
 						xPos+=15;
 						e.Graphics.DrawString(Lan.g(this,"Treatment Planned"),bodyFont,Brushes.Black,xPos,yPos);
 					}
@@ -1297,150 +1692,39 @@ namespace OpenDental{
 					xPos=25;
 				}//if(Prefs.GetBool("TreatPlanShowGraphics"))
 				graphicsPrinted=true;
+				headingPrintH=yPos;
 			}
 			#endregion
-			#region DefineColumns
-			//no condition, so runs again on each page
-			int[] colPos;
-			HorizontalAlignment[] colAlign;
-			string[] ColCaption;
-			int[] colW;
-			if(checkShowIns.Checked){
-				colPos=new int[10];
-				colAlign=new HorizontalAlignment[9];
-				ColCaption=new string[9];
-				ColCaption[6]=Lan.g(this,"Pri Ins");
-				ColCaption[7]=Lan.g(this,"Sec Ins");
-				ColCaption[8]=Lan.g(this,"Pat Pay");
-				colW=new int[9];
-				colW[0]=70;  colAlign[0]=HorizontalAlignment.Left;//priority
-				colW[1]=45;	 colAlign[1]=HorizontalAlignment.Left;//tooth
-				colW[2]=60;  colAlign[2]=HorizontalAlignment.Left;//surf
-				colW[3]=70;  colAlign[3]=HorizontalAlignment.Left;//adacode
-				colW[4]=215; colAlign[4]=HorizontalAlignment.Left;//description
-				colW[5]=60;  colAlign[5]=HorizontalAlignment.Right;//fee
-				colW[6]=50;  colAlign[6]=HorizontalAlignment.Right;//pri ins
-				colW[7]=60;  colAlign[7]=HorizontalAlignment.Right;//sec ins
-				colW[8]=65;  colAlign[8]=HorizontalAlignment.Right;//pat Pay
-				colPos=new int[colW.Length+1];
-				colPos[0]=55;
-				for(int i=1;i<colPos.Length;i++){
-					colPos[i]=colPos[i-1]+colW[i-1];
-				}
+			//this would be the number of pages except for the benefits and the note. Used to print grid properly.
+			int totalPages=gridMain.GetNumberOfPages(bounds,headingPrintH);
+			//grid gets printed on each page, unless current page is more than total pages.
+			if(!mainPrinted){
+				yPos=gridMain.PrintPage(g,pagesPrinted,bounds,headingPrintH);
+				yPos+=15;
 			}
-			else{//don't show ins
-				colW=new int[6];
-				colAlign=new HorizontalAlignment[6];
-				ColCaption=new string[6];
-				colW[0]=70;  colAlign[0]=HorizontalAlignment.Left;//priority
-				colW[1]=45;	 colAlign[1]=HorizontalAlignment.Left;//tooth
-				colW[2]=60;  colAlign[2]=HorizontalAlignment.Left;//surf
-				colW[3]=70;  colAlign[3]=HorizontalAlignment.Left;//adacode
-				colW[4]=205; colAlign[4]=HorizontalAlignment.Left;//description
-				colW[5]=70;  colAlign[5]=HorizontalAlignment.Right;//fee
-				colPos=new int[colW.Length+1];
-				colPos[0]=145;
-				for(int i=1;i<colPos.Length;i++){
-					colPos[i]=colPos[i-1]+colW[i-1];
-				}
+			if(pagesPrinted==totalPages-1) {
+				mainPrinted=true;
 			}
-			ColCaption[0]=Lan.g(this,"Priority");
-			ColCaption[1]=Lan.g(this,"Tooth");
-			ColCaption[2]=Lan.g(this,"Surf");
-			ColCaption[3]=Lan.g(this,"ADA Code");
-			ColCaption[4]=Lan.g(this,"Description");
-			if(checkShowFees.Checked){
-				ColCaption[5]=Lan.g(this,"Fee");
-			}
-			#endregion
-			#region MainTable
-			if(graphicsPrinted && !mainPrinted && yPos < e.MarginBounds.Height-40){
-				//this might be starting somewhere in the middle of the table
-				e.Graphics.FillRectangle(Brushes.LightGray,colPos[0],yPos,colPos[colPos.Length-1]-colPos[0],18);
-				e.Graphics.DrawRectangle
-					(new Pen(Color.Black),colPos[0],yPos,colPos[colPos.Length-1]-colPos[0],18);  
-				for(int i=1;i<colPos.Length;i++) 
-					e.Graphics.DrawLine(new Pen(Color.Black),colPos[i],yPos,colPos[i],yPos+18);
-				//Prints the Column Titles
-				for(int i=0;i<ColCaption.Length;i++){ 
-					if(colAlign[i]==HorizontalAlignment.Right){
-						e.Graphics.DrawString(ColCaption[i],totalFont,Brushes.Black,
-							colPos[i+1]-e.Graphics.MeasureString(ColCaption[i],totalFont).Width-1,yPos+1);
-					}
-					else 
-						e.Graphics.DrawString(ColCaption[i],totalFont,Brushes.Black,colPos[i]+2,yPos+1);
-
-				}
-				yPos+=18;
-				while(yPos < e.MarginBounds.Height-16 && linesPrinted < gridMain.Rows.Count){
-					for(int i=0;i<colPos.Length-1;i++){
-						if(i==5 && !checkShowFees.Checked){
-							continue;
-						}
-  					else if(colAlign[i]==HorizontalAlignment.Right){
-							e.Graphics.DrawString
-								(gridMain.Rows[linesPrinted].Cells[i].Text
-								,bodyFont,new SolidBrush(gridMain.Rows[linesPrinted].ColorText)
-								,colPos[i+1]-e.Graphics.MeasureString
-								(gridMain.Rows[linesPrinted].Cells[i].Text,bodyFont).Width-1
-								,yPos);
-						}
-						else{
-							e.Graphics.DrawString(gridMain.Rows[linesPrinted].Cells[i].Text,bodyFont
-								,new SolidBrush(gridMain.Rows[linesPrinted].ColorText)
-								,new RectangleF(colPos[i]+2,yPos
-								,colPos[i+1]-colPos[i]-5,bodyFont.GetHeight(e.Graphics)));
-						}
-						if(i>4)
-							ColTotal[i]+=(float)(PIn.PDouble(gridMain.Rows[linesPrinted].Cells[i].Text));
-					} 
-					//Column lines		
-					for(int i=0;i<colPos.Length;i++){ 
-	  				e.Graphics.DrawLine(new Pen(Color.Gray),colPos[i],yPos+16,colPos[i],yPos);
-					}
-					//e.Graphics.DrawLine(new Pen(Color.Gray),colPos[0],yPos,colPos[9],yPos);
-					linesPrinted++;
-					yPos+=16;
-				}//end while 
-				//bottom line
-				e.Graphics.DrawLine(new Pen(Color.Gray),colPos[0],yPos,colPos[colPos.Length-1],yPos);
-				if(linesPrinted==gridMain.Rows.Count){
-					mainPrinted=true;
-					if(checkShowFees.Checked || checkShowIns.Checked){
-						e.Graphics.DrawString(Lan.g(this,"Total"),totalFont,Brushes.Black
-							,colPos[5]-e.Graphics.MeasureString(Lan.g(this,"Total"),totalFont).Width,yPos);
-					}
-          for(int i=5;i<colPos.Length-1;i++){
-						if(i==5 && !checkShowFees.Checked){
-							continue;
-						}
-				    e.Graphics.DrawString(ColTotal[i].ToString("F"),totalFont,Brushes.Black,
-				    colPos[i+1]-e.Graphics.MeasureString(ColTotal[i].ToString("F"),totalFont).Width-1,yPos);
-          }
-				}
-				yPos+=40;
-			}//main table
-			#endregion
 			#region printBenefits
-			if(mainPrinted && !benefitsPrinted && yPos < e.MarginBounds.Height-16*8){//1037
+			if(mainPrinted && !benefitsPrinted && yPos < bounds.Bottom-16*8){//1037
 				if(checkShowIns.Checked){
 					int[] insColX=new int[4];
-					insColX[0]=250;
-					insColX[1]=400;
-					insColX[2]=475;
-					insColX[3]=550;//right edge
+					insColX[0]=275;
+					insColX[1]=425;
+					insColX[2]=500;
+					insColX[3]=575;//right edge
 					int lineSpacing=16;
-					e.Graphics.FillRectangle(Brushes.LightGray,insColX[0],yPos,insColX[3]-insColX[0],16);
-					e.Graphics.DrawRectangle(new Pen(Color.Black),insColX[0],yPos-1,insColX[3]-insColX[0],16); 
+					g.FillRectangle(Brushes.LightGray,insColX[0],yPos,insColX[3]-insColX[0],16);
+					g.DrawRectangle(new Pen(Color.Black),insColX[0],yPos-1,insColX[3]-insColX[0],16); 
 					string insTitle="Dental Insurance Benefits";
-					e.Graphics.DrawString(Lan.g(this,insTitle),totalFont,Brushes.Black
-							,insColX[1]-e.Graphics.MeasureString(insTitle,totalFont).Width/2,yPos);
+					g.DrawString(Lan.g(this,insTitle),totalFont,Brushes.Black
+							,insColX[1]-g.MeasureString(insTitle,totalFont).Width/2,yPos);
 					yPos+=lineSpacing;
 					for(int i=0;i<4;i++) 
-						e.Graphics.DrawLine(new Pen(Color.Gray),insColX[i],yPos,insColX[i],yPos+lineSpacing*7);
-					e.Graphics.DrawLine(new Pen(Color.Gray),insColX[0],yPos+lineSpacing
+						g.DrawLine(new Pen(Color.Gray),insColX[i],yPos,insColX[i],yPos+lineSpacing*7);
+					g.DrawLine(new Pen(Color.Gray),insColX[0],yPos+lineSpacing
 						,insColX[3],yPos+lineSpacing);
-					e.Graphics.DrawLine(new Pen(Color.Gray),insColX[0],yPos+lineSpacing*7
+					g.DrawLine(new Pen(Color.Gray),insColX[0],yPos+lineSpacing*7
 						,insColX[3],yPos+lineSpacing*7);
 					Font insFont=new Font("Arial",9);
 					string insHead="";
@@ -1484,20 +1768,20 @@ namespace OpenDental{
 								insSec=textSecRem.Text;
     						break;
 						}//end switch
-						e.Graphics.DrawString(Lan.g(this,insHead),insFont,Brushes.Black,insColX[0]+2,yPos+1);
+						g.DrawString(Lan.g(this,insHead),insFont,Brushes.Black,insColX[0]+2,yPos+1);
 						if(i==0){
 							//float xHead=(float)();
-							e.Graphics.DrawString(Lan.g(this,insPri),insFont,Brushes.Black,insColX[2]
-								-e.Graphics.MeasureString(insPri,insFont).Width-1,yPos+1);
+							g.DrawString(Lan.g(this,insPri),insFont,Brushes.Black,insColX[2]
+								-g.MeasureString(insPri,insFont).Width-1,yPos+1);
 							//xHead=(float)();
-							e.Graphics.DrawString(Lan.g(this,insSec),insFont,Brushes.Black,insColX[3]
-								-e.Graphics.MeasureString(insSec,insFont).Width-1,yPos+1);					
+							g.DrawString(Lan.g(this,insSec),insFont,Brushes.Black,insColX[3]
+								-g.MeasureString(insSec,insFont).Width-1,yPos+1);					
 						}
 						else{
-							e.Graphics.DrawString(Lan.g(this,insPri),insFont,Brushes.Black,insColX[2]
-								-e.Graphics.MeasureString(insPri,insFont).Width-1,yPos+1);
-							e.Graphics.DrawString(Lan.g(this,insSec),insFont,Brushes.Black,insColX[3]
-								-e.Graphics.MeasureString(insSec,insFont).Width-1,yPos+1);
+							g.DrawString(Lan.g(this,insPri),insFont,Brushes.Black,insColX[2]
+								-g.MeasureString(insPri,insFont).Width-1,yPos+1);
+							g.DrawString(Lan.g(this,insSec),insFont,Brushes.Black,insColX[3]
+								-g.MeasureString(insSec,insFont).Width-1,yPos+1);
 						}
 						yPos+=lineSpacing;
 					}//end for 0-7
@@ -1515,19 +1799,213 @@ namespace OpenDental{
 				else{
 					note=PlanList[gridPlans.SelectedIndices[0]-1].Note;
 				}
-				float noteH=e.Graphics.MeasureString(note,bodyFont,695).Height;
-				if(yPos < e.MarginBounds.Height-noteH){//1037
-					e.Graphics.DrawRectangle(Pens.Gray,50,yPos,700,noteH+8);
-					e.Graphics.DrawString(note,bodyFont,Brushes.Black,new RectangleF(55f,yPos+5,695f,noteH));
+				float noteH=g.MeasureString(note,bodyFont,bounds.Width-10).Height;
+				if(yPos < bounds.Bottom-noteH){//if there is room for the note
+					g.DrawRectangle(Pens.Gray,bounds.Left,yPos,bounds.Width,noteH+8);
+					g.DrawString(note,bodyFont,Brushes.Black,new RectangleF(bounds.Left+5,yPos+5,bounds.Width-10,noteH));
 					notePrinted=true;
 				}
 			}
 			#endregion
+			pagesPrinted++;
 			if(!notePrinted){
 				e.HasMorePages=true;
 			}
 			else{
 				e.HasMorePages=false;
+			}
+		}
+
+		///<summary>Just used for printing the 3D chart.</summary>
+		private void ComputeProcAL() {
+			ProcAL=new ArrayList();
+			//first, add all completed work. C,EC,EO, and Referred
+			for(int i=0;i<ProcList.Length;i++) {
+				if(ProcList[i].ProcStatus==ProcStat.C
+					|| ProcList[i].ProcStatus==ProcStat.EC
+					|| ProcList[i].ProcStatus==ProcStat.EO)
+				{
+					if(checkShowCompleted.Checked){
+						ProcAL.Add(ProcList[i]);
+					}
+				}
+				if(ProcList[i].ProcStatus==ProcStat.R){//always show all referred
+					ProcAL.Add(ProcList[i]);
+				}
+			}
+			//then add whatever is showing on the selected TP
+			if(gridPlans.SelectedIndices[0]==0) {//current plan
+				for(int i=0;i<ProcListTP.Length;i++) {
+					ProcAL.Add(ProcListTP[i]);
+				}
+			}
+			else {
+				Procedure procDummy;//not a real procedure.  Just used to help display on graphical chart
+				for(int i=0;i<ProcTPSelectList.Length;i++) {
+					procDummy=new Procedure();
+					//this next loop is a way to get missing fields like tooth range.  Could be improved.
+					for(int j=0;j<ProcList.Length;j++) {
+						if(ProcList[j].ProcNum==ProcTPSelectList[i].ProcNumOrig) {
+							//but remember that even if the procedure is found, Status might have been altered
+							procDummy=ProcList[j].Copy();
+						}
+					}
+					if(Tooth.IsValidEntry(ProcTPSelectList[i].ToothNumTP)) {
+						procDummy.ToothNum=Tooth.FromInternat(ProcTPSelectList[i].ToothNumTP);
+					}
+					procDummy.Surf=ProcTPSelectList[i].Surf;
+					//procDummy.HideGraphical??
+					procDummy.ProcStatus=ProcStat.TP;
+					procDummy.ADACode=ProcTPSelectList[i].ADACode;
+					ProcAL.Add(procDummy);
+				}
+			}
+		}
+
+		private void DrawProcsOfStatus(ProcStat procStat) {
+			Procedure proc;
+			string[] teeth;
+			Color cLight=Color.White;
+			Color cDark=Color.White;
+			for(int i=0;i<ProcAL.Count;i++) {
+				proc=(Procedure)ProcAL[i];
+				if(proc.ProcStatus!=procStat) {
+					continue;
+				}
+				if(proc.HideGraphical) {
+					//We don't care about HideGraphical anymore.  It will be enhanced later to a 3-state.
+					//continue;
+				}
+				if(ProcedureCodes.GetProcCode(proc.ADACode).PaintType==ToothPaintingType.Extraction && (
+					proc.ProcStatus==ProcStat.C
+					|| proc.ProcStatus==ProcStat.EC
+					|| proc.ProcStatus==ProcStat.EO
+					)) {
+					continue;//prevents the red X. Missing teeth already handled.
+				}
+				if(ProcedureCodes.GetProcCode(proc.ADACode).GraphicColor==Color.FromArgb(0)) {
+					switch(proc.ProcStatus) {
+						case ProcStat.C:
+							cDark=Defs.Short[(int)DefCat.ChartGraphicColors][1].ItemColor;
+							cLight=Defs.Short[(int)DefCat.ChartGraphicColors][6].ItemColor;
+							break;
+						case ProcStat.TP:
+							cDark=Defs.Short[(int)DefCat.ChartGraphicColors][0].ItemColor;
+							cLight=Defs.Short[(int)DefCat.ChartGraphicColors][5].ItemColor;
+							break;
+						case ProcStat.EC:
+							cDark=Defs.Short[(int)DefCat.ChartGraphicColors][2].ItemColor;
+							cLight=Defs.Short[(int)DefCat.ChartGraphicColors][7].ItemColor;
+							break;
+						case ProcStat.EO:
+							cDark=Defs.Short[(int)DefCat.ChartGraphicColors][3].ItemColor;
+							cLight=Defs.Short[(int)DefCat.ChartGraphicColors][8].ItemColor;
+							break;
+						case ProcStat.R:
+							cDark=Defs.Short[(int)DefCat.ChartGraphicColors][4].ItemColor;
+							cLight=Defs.Short[(int)DefCat.ChartGraphicColors][9].ItemColor;
+							break;
+					}
+				}
+				else {
+					cDark=ProcedureCodes.GetProcCode(proc.ADACode).GraphicColor;
+					cLight=ProcedureCodes.GetProcCode(proc.ADACode).GraphicColor;
+				}
+				switch(ProcedureCodes.GetProcCode(proc.ADACode).PaintType) {
+					case ToothPaintingType.BridgeDark:
+						if(ToothInitials.ToothIsMissingOrHidden(ToothInitialList,proc.ToothNum)) {
+							toothChart.SetPontic(proc.ToothNum,cDark);
+						}
+						else {
+							toothChart.SetCrown(proc.ToothNum,cDark);
+						}
+						break;
+					case ToothPaintingType.BridgeLight:
+						if(ToothInitials.ToothIsMissingOrHidden(ToothInitialList,proc.ToothNum)) {
+							toothChart.SetPontic(proc.ToothNum,cLight);
+						}
+						else {
+							toothChart.SetCrown(proc.ToothNum,cLight);
+						}
+						break;
+					case ToothPaintingType.CrownDark:
+						toothChart.SetCrown(proc.ToothNum,cDark);
+						break;
+					case ToothPaintingType.CrownLight:
+						toothChart.SetCrown(proc.ToothNum,cLight);
+						break;
+					case ToothPaintingType.DentureDark:
+						if(proc.Surf=="U") {
+							teeth=new string[14];
+							for(int t=0;t<14;t++) {
+								teeth[t]=(t+2).ToString();
+							}
+						}
+						else if(proc.Surf=="L") {
+							teeth=new string[14];
+							for(int t=0;t<14;t++) {
+								teeth[t]=(t+18).ToString();
+							}
+						}
+						else {
+							teeth=proc.ToothRange.Split(new char[] { ',' });
+						}
+						for(int t=0;t<teeth.Length;t++) {
+							if(ToothInitials.ToothIsMissingOrHidden(ToothInitialList,teeth[t])) {
+								toothChart.SetPontic(teeth[t],cDark);
+							}
+							else {
+								toothChart.SetCrown(teeth[t],cDark);
+							}
+						}
+						break;
+					case ToothPaintingType.DentureLight:
+						if(proc.Surf=="U") {
+							teeth=new string[14];
+							for(int t=0;t<14;t++) {
+								teeth[t]=(t+2).ToString();
+							}
+						}
+						else if(proc.Surf=="L") {
+							teeth=new string[14];
+							for(int t=0;t<14;t++) {
+								teeth[t]=(t+18).ToString();
+							}
+						}
+						else {
+							teeth=proc.ToothRange.Split(new char[] { ',' });
+						}
+						for(int t=0;t<teeth.Length;t++) {
+							if(ToothInitials.ToothIsMissingOrHidden(ToothInitialList,teeth[t])) {
+								toothChart.SetPontic(teeth[t],cLight);
+							}
+							else {
+								toothChart.SetCrown(teeth[t],cLight);
+							}
+						}
+						break;
+					case ToothPaintingType.Extraction:
+						toothChart.SetBigX(proc.ToothNum,cDark);
+						break;
+					case ToothPaintingType.FillingDark:
+						toothChart.SetSurfaceColors(proc.ToothNum,proc.Surf,cDark);
+						break;
+					case ToothPaintingType.FillingLight:
+						toothChart.SetSurfaceColors(proc.ToothNum,proc.Surf,cLight);
+						break;
+					case ToothPaintingType.Implant:
+						toothChart.SetImplant(proc.ToothNum,cDark);
+						break;
+					case ToothPaintingType.PostBU:
+						toothChart.SetBU(proc.ToothNum,cDark);
+						break;
+					case ToothPaintingType.RCT:
+						toothChart.SetRCT(proc.ToothNum,cDark);
+						break;
+					case ToothPaintingType.Sealant:
+						toothChart.SetSealant(proc.ToothNum,cDark);
+						break;
+				}
 			}
 		}
 
@@ -1570,32 +2048,39 @@ namespace OpenDental{
 			tp.Note=Prefs.GetString("TreatmentPlanNote");
 			tp.InsertOrUpdate(true);
 			ProcTP procTP;
-			double fee;
-			double priIns;
-			double secIns;
-			double pat;
+			Procedure proc;
+			int itemNo=0;
 			for(int i=0;i<gridMain.SelectedIndices.Length;i++){
+				if(gridMain.Rows[gridMain.SelectedIndices[i]].Tag==null){
+					//user must have highlighted a subtotal row.
+					continue;
+				}
+				proc=(Procedure)gridMain.Rows[gridMain.SelectedIndices[i]].Tag;
 				procTP=new ProcTP();
 				procTP.TreatPlanNum=tp.TreatPlanNum;
 				procTP.PatNum=PatCur.PatNum;
-				procTP.ProcNumOrig=ProcListTP[gridMain.SelectedIndices[i]].ProcNum;
-				procTP.ItemOrder=i;
-				procTP.Priority=ProcListTP[gridMain.SelectedIndices[i]].Priority;
-				procTP.ToothNumTP=Tooth.ToInternat(ProcListTP[gridMain.SelectedIndices[i]].ToothNum);
-				procTP.Surf=ProcListTP[gridMain.SelectedIndices[i]].Surf;
-				procTP.ADACode=ProcListTP[gridMain.SelectedIndices[i]].ADACode;
-				procTP.Descript=ProcedureCodes.GetProcCode(ProcListTP[gridMain.SelectedIndices[i]].ADACode).Descript;
-				fee=ProcListTP[gridMain.SelectedIndices[i]].ProcFee;
-				priIns=ProcListTP[gridMain.SelectedIndices[i]].GetEst(ClaimProcList,PriSecTot.Pri,PatPlanList);
-				secIns=ProcListTP[gridMain.SelectedIndices[i]].GetEst(ClaimProcList,PriSecTot.Sec,PatPlanList);
-				pat=fee-priIns-secIns-ProcListTP[gridMain.SelectedIndices[i]].GetWriteOff(ClaimProcList);
-				if(pat<0)
-					pat=0;
-				procTP.FeeAmt=fee;
-				procTP.PriInsAmt=priIns;
-				procTP.SecInsAmt=secIns;
-				procTP.PatAmt=pat;
+				procTP.ProcNumOrig=proc.ProcNum;
+				procTP.ItemOrder=itemNo;
+				procTP.Priority=proc.Priority;
+				procTP.ToothNumTP=Tooth.ToInternat(proc.ToothNum);
+				procTP.Surf=proc.Surf;
+				procTP.ADACode=proc.ADACode;
+				procTP.Descript=gridMain.Rows[gridMain.SelectedIndices[i]]
+					.Cells[gridMain.Columns.GetIndex(Lan.g("TableTP","Description"))].Text;
+				if(checkShowFees.Checked){
+					procTP.FeeAmt=PIn.PDouble(gridMain.Rows[gridMain.SelectedIndices[i]]
+						.Cells[gridMain.Columns.GetIndex(Lan.g("TableTP","Fee"))].Text);
+				}
+				if(checkShowIns.Checked){
+					procTP.PriInsAmt=PIn.PDouble(gridMain.Rows[gridMain.SelectedIndices[i]]
+						.Cells[gridMain.Columns.GetIndex(Lan.g("TableTP","Pri Ins"))].Text);
+					procTP.SecInsAmt=PIn.PDouble(gridMain.Rows[gridMain.SelectedIndices[i]]
+						.Cells[gridMain.Columns.GetIndex(Lan.g("TableTP","Sec Ins"))].Text);
+					procTP.PatAmt=PIn.PDouble(gridMain.Rows[gridMain.SelectedIndices[i]]
+						.Cells[gridMain.Columns.GetIndex(Lan.g("TableTP","Pat"))].Text);
+				}
 				procTP.InsertOrUpdate(true);
+				itemNo++;
 			}
 			ModuleSelected(PatCur.PatNum);
 			for(int i=0;i<PlanList.Length;i++){
@@ -1615,6 +2100,16 @@ namespace OpenDental{
         MessageBox.Show(Lan.g(this,"Please select procedures first."));
         return;
       }
+			bool procsSelected=false;
+			for(int i=0;i<gridMain.SelectedIndices.Length;i++){
+				if(gridMain.Rows[gridMain.SelectedIndices[i]].Tag!=null){
+					procsSelected=true;
+				}
+			}
+			if(!procsSelected) {
+				MessageBox.Show(Lan.g(this,"Please select procedures first."));
+				return;
+			}
       FormInsPlanSelect FormIPS=new FormInsPlanSelect(PatCur.PatNum); 
 			FormIPS.ViewRelat=true;
       FormIPS.ShowDialog();
@@ -1626,10 +2121,16 @@ namespace OpenDental{
 			Claims.Cur.ClaimStatus="W";
 			Claims.Cur.DateSent=DateTime.Today;
 			Claims.Cur.PlanNum=FormIPS.SelectedPlan.PlanNum;
-			Claims.Cur.ProvTreat=ProcListTP[gridMain.SelectedIndices[0]].ProvNum;
+			Claims.Cur.ProvTreat=0;
 			for(int i=0;i<gridMain.SelectedIndices.Length;i++){
-				if(!Providers.GetIsSec(ProcListTP[gridMain.SelectedIndices[i]].ProvNum)){
-					Claims.Cur.ProvTreat=ProcListTP[gridMain.SelectedIndices[i]].ProvNum;
+				if(gridMain.Rows[gridMain.SelectedIndices[i]].Tag==null){
+					continue;//skip any hightlighted subtotal lines
+				}
+				if(Claims.Cur.ProvTreat==0){//makes sure that at least one prov is set
+					Claims.Cur.ProvTreat=((Procedure)gridMain.Rows[gridMain.SelectedIndices[i]].Tag).ProvNum;
+				}
+				if(!Providers.GetIsSec(((Procedure)gridMain.Rows[gridMain.SelectedIndices[i]].Tag).ProvNum)){
+					Claims.Cur.ProvTreat=((Procedure)gridMain.Rows[gridMain.SelectedIndices[i]].Tag).ProvNum;
 				}
 			}
 			Claims.Cur.ClinicNum=PatCur.ClinicNum;
@@ -1637,14 +2138,14 @@ namespace OpenDental{
 				Claims.Cur.ProvTreat=PatCur.PriProv;
 				//OK if 0, because auto select first in list when open claim
 			}
-			//Claims.Cur.DedApplied=0;//calcs in ClaimEdit.
-			if(Prefs.GetInt("InsBillingProv")==0){//this can later be extended to include a 3rd option
-				//default=0
+			if(Prefs.GetInt("InsBillingProv")==0){//default=0
 				Claims.Cur.ProvBill=Prefs.GetInt("PracticeDefaultProv");
 			}
-			else{
-				//treat=1
+			else if(Prefs.GetInt("InsBillingProv")==-1){//treat=-1
 				Claims.Cur.ProvBill=Claims.Cur.ProvTreat;//OK if zero, because it will get fixed in claim
+			}
+			else{//specific=any number >0. Foreign key to ProvNum
+				Claims.Cur.ProvBill=Prefs.GetInt("InsBillingProv");
 			}
 			Claims.Cur.EmployRelated=YN.No;
       Claims.Cur.ClaimType="PreAuth";
@@ -1653,11 +2154,12 @@ namespace OpenDental{
 			Claims.Cur.PatRelat=FormIPS.PatRelat;
 			Claims.InsertCur();
 			Procedure ProcCur;
-			//Procedure ProcOld;
 			ClaimProc ClaimProcCur;
 			for(int i=0;i<gridMain.SelectedIndices.Length;i++){
-				ProcCur=ProcListTP[gridMain.SelectedIndices[i]];
-				//ProcOld=ProcCur.Copy();
+				if(gridMain.Rows[gridMain.SelectedIndices[i]].Tag==null) {
+					continue;//skip any highlighted subtotal lines
+				}
+				ProcCur=(Procedure)gridMain.Rows[gridMain.SelectedIndices[i]].Tag;
         ClaimProcCur=new ClaimProc();
 				ClaimProcCur.ProcNum=ProcCur.ProcNum;
         ClaimProcCur.ClaimNum=Claims.Cur.ClaimNum;
@@ -1714,6 +2216,12 @@ namespace OpenDental{
 				}
 			}
 		}
+
+	
+
+		
+
+		
 
 		
 	

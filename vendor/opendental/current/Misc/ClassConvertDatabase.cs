@@ -50,7 +50,7 @@ namespace OpenDental{
 				MsgBox.Show(this,"Cannot convert this database version which was only for development purposes.");
 				return false;
 			}
-			if(FromVersion < new Version("4.2.10.0")){
+			if(FromVersion < new Version("4.3.4.0")){
 				if(MessageBox.Show(Lan.g(this,"Your database will now be converted")+"\r"
 					+Lan.g(this,"from version")+" "+FromVersion.ToString()+"\r"
 					+Lan.g(this,"to version")+" "+ToVersion.ToString()+"\r"
@@ -76,7 +76,7 @@ namespace OpenDental{
 					return false;//but this should never happen
 				}
 			#endif
-			try{
+			//try{
 				if(FromVersion>=new Version("3.4.0")){
 					Prefs.UpdateBool("CorruptedDatabase",true);
 				}
@@ -88,7 +88,7 @@ namespace OpenDental{
 				}
 				Prefs.Refresh();
 				return true;
-			}
+			/*}
 			catch(System.IO.FileNotFoundException e){
 				MessageBox.Show(e.FileName+" "+Lan.g(this,"could not be found. Your database has not been altered and is still usable if you uninstall this version, then reinstall the previous version."));
 				if(FromVersion>=new Version("3.4.0")){
@@ -110,7 +110,7 @@ namespace OpenDental{
 				MsgBox.Show(this,"Conversion unsuccessful. Your database is now corrupted and you cannot use it.  Please contact us.");
 				//Then, application will exit, and database will remain tagged as corrupted.
 				return false;
-			}
+			}*/
 		}
 
 		///<summary>Used in MakeABackup to ensure a unique backup database name.</summary>
@@ -3700,33 +3700,79 @@ namespace OpenDental{
 				command="UPDATE preference SET ValueString = '4.2.10.0' WHERE PrefName = 'DataBaseVersion'";
 				dcon.NonQ(command);
 			}
-			//To4_2_?();
+			To4_3_0();
+		}
+
+		private void To4_3_0(){
+			if(FromVersion < new Version("4.3.0.0")) {
+				ExecuteFile(@"ConversionFiles\Version 4 3 0\convert_4_3_0.txt");//Might throw an exception which we handle.
+				DataConnection dcon=new DataConnection();
+				string command;
+				//Add NewPatientForm bridge-----------------------------------------------------------------------------------
+				command="INSERT INTO program (ProgName,ProgDesc,Enabled,Path,CommandLine,Note"
+					+") VALUES("
+					+"'NewPatientForm.com', "
+					+"'NewPatientForm.com - Online Registration', "
+					+"'0', "
+					+"'"+POut.PString(@"https://secure.newpatientform.com/ODXNewForms.aspx?un=[username]&pw=[password]")+"', "
+					+"'', "
+					+"'This function automatically downloads and imports new patient forms that have been completed online.  The button only works from the Images module.')";
+				dcon.NonQ(command,true);
+				int programNum=dcon.InsertID;//we now have a ProgramNum to work with
+				command="INSERT INTO toolbutitem (ProgramNum,ToolBar,ButtonText) "
+					+"VALUES ("
+					+"'"+programNum.ToString()+"', "
+					+"'"+((int)ToolBarsAvail.ImagesModule).ToString()+"', "
+					+"'NewPatientForm')";
+				dcon.NonQ(command);
+				command="UPDATE preference SET ValueString = '4.3.0.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To4_3_3();
+		}
+
+		private void To4_3_3() {
+			if(FromVersion < new Version("4.3.3.0")) {
+				DataConnection dcon=new DataConnection();
+				string command="INSERT INTO preference VALUES ('ReportFolderName','Reports')";
+				dcon.NonQ(command);
+				if(!Directory.Exists(Prefs.GetString("DocPath")+"Reports")){
+					if(Directory.Exists(Prefs.GetString("DocPath"))) {
+						Directory.CreateDirectory(Prefs.GetString("DocPath")+"Reports");
+					}
+				}
+				command="UPDATE preference SET ValueString = '4.3.3.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To4_3_4();
+		}
+
+		private void To4_3_4() {
+			if(FromVersion < new Version("4.3.4.0")) {
+				DataConnection dcon=new DataConnection();
+				//get rid of any leading ? in quickpastenote
+				string command="SELECT QuickPasteNoteNum,Abbreviation FROM quickpastenote";
+				DataTable table=dcon.GetTable(command);
+				string note;
+				for(int i=0;i<table.Rows.Count;i++) {
+					note=PIn.PString(table.Rows[i][1].ToString());
+					if(note.Contains("?")){
+						note=note.Replace("?","");
+						command="UPDATE quickpastenote SET Abbreviation='"+POut.PString(note)+"' "
+							+"WHERE QuickPasteNoteNum="+table.Rows[i][0].ToString();
+						dcon.NonQ(command);
+					}
+				}
+				command="UPDATE preference SET ValueString = '4.3.4.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			//To4_3_?();
 		}
 
 
 	}
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

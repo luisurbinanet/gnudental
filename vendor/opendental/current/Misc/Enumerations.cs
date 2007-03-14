@@ -234,7 +234,7 @@ namespace OpenDental{
 		Startup=2048,
 		///<summary>4096</summary>
 		Defs=4096,
-		///<summary>8192</summary>
+		///<summary>8192. Also includes diseases.</summary>
 		Email=8192,
 		///<summary>16384</summary>
 		Fees=16384,
@@ -254,7 +254,7 @@ namespace OpenDental{
 		Sched=2097152,
 		///<summary>4194304</summary>
 		ClaimForms=4194304,
-		///<summary>8388608</summary>
+		///<summary>8388608  Also includes patientfields</summary>
 		ZipCodes=8388608,
 		///<summary>16777216</summary>
 		LetterMerge=16777216,
@@ -1077,10 +1077,25 @@ namespace OpenDental{
 		TipB
 	}
 	
-	
-		
-	
+	///<summary>Indicates at what point the patient is in the sequence. 0=standby, 1=PatientInfo, 2=Diseases, 3=Questions, 4=UpdateOnly.</summary>
+	public enum TerminalStatusEnum{
+		///<summary>0</summary>
+		Standby,
+		///<summary>1</summary>
+		PatientInfo,
+		///<summary>2</summary>
+		Medical,
+		///<summary>3. Only the patient info tab will be visible.  This is just to let patient up date their address and phone number.</summary>
+		UpdateOnly
+	}
 
+	///<summary>0=FreeformText, 1=YesNoUnknown. Allows for later adding other types, 3=picklist, 4, etc</summary>
+	public enum QuestionType{
+		///<summary>0</summary>
+		FreeformText,
+		///<summary>1</summary>
+		YesNoUnknown
+	}
 
 
 

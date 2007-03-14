@@ -55,8 +55,10 @@ namespace OpenDental {
 			}
 			//types are the same, so check covCat. This is a loose comparison, ignored if either is 0.
 			if(CovCatNum!=0 && ben.CovCatNum!=0//if both covcats have values
-				&& CovCatNum!=ben.CovCatNum) {
-				return CovCats.GetOrderShort(CovCatNum).CompareTo(CovCats.GetOrderShort(ben.CovCatNum));
+				&& CovCatNum!=ben.CovCatNum) {//and they are different
+				//return CovCats.GetOrderShort(CovCatNum).CompareTo(CovCats.GetOrderShort(ben.CovCatNum));
+				//this line was changed because we really do need to know if they have different covcats.
+				return CovCats.GetOrderLong(CovCatNum).CompareTo(CovCats.GetOrderLong(ben.CovCatNum));
 			}
 			//ADACode
 			if(ADACode!=ben.ADACode) {
@@ -246,15 +248,7 @@ namespace OpenDental {
 				+"AND GroupNum = '"       +POut.PString(like.GroupNum)+"' "
 				+"AND DivisionNo = '"     +POut.PString(like.DivisionNo)+"'"
 				+"AND CarrierNum = '"     +POut.PInt   (like.CarrierNum)+"' "
-				+"AND PlanType = '"       +POut.PString(like.PlanType)+"' "
-				+"AND UseAltCode = '"     +POut.PBool  (like.UseAltCode)+"' "
-				+"AND IsMedical = '"      +POut.PBool  (like.IsMedical)+"' "
-				+"AND ClaimsUseUCR = '"   +POut.PBool  (like.ClaimsUseUCR)+"' "
-				+"AND FeeSched = '"       +POut.PInt   (like.FeeSched)+"' "
-				+"AND CopayFeeSched = '"  +POut.PInt   (like.CopayFeeSched)+"' "
-				+"AND ClaimFormNum = '"   +POut.PInt   (like.ClaimFormNum)+"' "
-				+"AND AllowedFeeSched = '"+POut.PInt   (like.AllowedFeeSched)+"' "
-				+"AND TrojanID = '"       +POut.PString(like.TrojanID)+"'";
+				+"AND IsMedical = '"      +POut.PBool  (like.IsMedical)+"' ";
 			DataConnection dcon=new DataConnection();
 			DataTable table=dcon.GetTable(command);
 			string planNums="";
@@ -302,7 +296,7 @@ namespace OpenDental {
 			}
 			for(int i=0;i<retVal.Count;i++) {
 				((Benefit)retVal[i]).PlanNum=like.PlanNum;//change all the planNums to match the current plan
-				((Benefit)retVal[i]).BenefitNum=0;//and change all benefitNums to 0 to trigger having them saved as new.
+				//all set to 0 if the plan IsForIdentical.
 			}
 			return retVal;
 		}
@@ -493,8 +487,8 @@ namespace OpenDental {
 			}
 		}
 
-		///<summary>Used in FormInsPlan when applying changes to all identical plans.  It first compares the old benefit list with the new one.  If there are no changes, it does nothing.  But if there are any changes, then we no longer care what the old benefit list was.  We will just delete it for all similar plans and recreate it.</summary>
-		public static void UpdateListForIdentical(ArrayList oldBenefitList,ArrayList newBenefitList,InsPlan plan) {
+		///<summary>Used in FormInsPlan when applying changes to all identical plans.  Also used when merging plans. It first compares the old benefit list with the new one.  If there are no changes, it does nothing.  But if there are any changes, then we no longer care what the old benefit list was.  We will just delete it for all similar plans and recreate it.  Returns true if a change was made, false if no change made.</summary>
+		public static bool UpdateListForIdentical(ArrayList oldBenefitList,ArrayList newBenefitList,InsPlan plan) {
 			Benefit newBenefit;
 			bool changed=false;
 			for(int i=0;i<newBenefitList.Count;i++) {//loop through the new list
@@ -539,7 +533,7 @@ namespace OpenDental {
 				}
 			}
 			if(!changed){
-				return;
+				return false;
 			}
 			int[] planNums=plan.GetPlanNumsOfSamePlans();
 			string command="";
@@ -560,6 +554,7 @@ namespace OpenDental {
 					newBenefit.Insert();
 				}
 			}
+			return true;
 			//don't forget to compute estimates for each plan now.
 		}
 

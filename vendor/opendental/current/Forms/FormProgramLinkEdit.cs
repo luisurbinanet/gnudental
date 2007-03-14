@@ -29,7 +29,8 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textButtonText;
 		private System.Windows.Forms.Label label7;
 		private System.Windows.Forms.Label label8;
-		private System.Windows.Forms.TextBox textNote;// Required designer variable.
+		private System.Windows.Forms.TextBox textNote;
+		private Label label9;// Required designer variable.
 		/// <summary>This Program link is new.</summary>
 		public bool IsNew;
 
@@ -85,6 +86,7 @@ namespace OpenDental{
 			this.label7 = new System.Windows.Forms.Label();
 			this.textNote = new System.Windows.Forms.TextBox();
 			this.label8 = new System.Windows.Forms.Label();
+			this.label9 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// butCancel
@@ -193,19 +195,18 @@ namespace OpenDental{
 			// 
 			// textCommandLine
 			// 
-			this.textCommandLine.Location = new System.Drawing.Point(246,107);
+			this.textCommandLine.Location = new System.Drawing.Point(246,105);
 			this.textCommandLine.Name = "textCommandLine";
 			this.textCommandLine.Size = new System.Drawing.Size(410,20);
 			this.textCommandLine.TabIndex = 52;
 			// 
 			// label4
 			// 
-			this.label4.Location = new System.Drawing.Point(3,107);
+			this.label4.Location = new System.Drawing.Point(3,105);
 			this.label4.Name = "label4";
 			this.label4.Size = new System.Drawing.Size(241,52);
 			this.label4.TabIndex = 51;
-			this.label4.Text = "Optional command line arguments.  You can use [PatNum] or [ChartNumber], but ONLY" +
-    " if this is a custom bridge.  Leave this blank for most bridges.";
+			this.label4.Text = "Optional command line arguments.  Leave this blank for most bridges.";
 			this.label4.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// listToolBars
@@ -276,11 +277,21 @@ namespace OpenDental{
 			this.label8.Text = "Notes";
 			this.label8.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
+			// label9
+			// 
+			this.label9.Location = new System.Drawing.Point(244,128);
+			this.label9.Name = "label9";
+			this.label9.Size = new System.Drawing.Size(410,29);
+			this.label9.TabIndex = 61;
+			this.label9.Text = "For custom bridges, NOT for regular bridges, you can also include [PatNum] or [Ch" +
+    "artNumber] in either of the two boxes above.";
+			// 
 			// FormProgramLinkEdit
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(757,456);
+			this.Controls.Add(this.label9);
 			this.Controls.Add(this.label8);
 			this.Controls.Add(this.textNote);
 			this.Controls.Add(this.textButtonText);

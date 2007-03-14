@@ -1365,6 +1365,9 @@ namespace OpenDental{
 					case "P1FeeMinusLab":
 						displayStrings[i]=GetProcInfo("FeeMinusLab",1+startProc);
 						break;
+					case "P1ToothNumOrArea":
+						displayStrings[i]=GetProcInfo("ToothNumOrArea",1+startProc);
+						break;
 					case "P2Date":
 						displayStrings[i]=GetProcInfo("Date",2+startProc,ClaimFormCur.Items[i].FormatString);
 						break;
@@ -1403,6 +1406,9 @@ namespace OpenDental{
 						break;
 					case "P2FeeMinusLab":
 						displayStrings[i]=GetProcInfo("FeeMinusLab",2+startProc);
+						break;
+					case "P2ToothNumOrArea":
+						displayStrings[i]=GetProcInfo("ToothNumOrArea",2+startProc);
 						break;
 					case "P3Date":
 						displayStrings[i]=GetProcInfo("Date",3+startProc,ClaimFormCur.Items[i].FormatString);
@@ -1443,6 +1449,9 @@ namespace OpenDental{
 					case "P3FeeMinusLab":
 						displayStrings[i]=GetProcInfo("FeeMinusLab",3+startProc);
 						break;
+					case "P3ToothNumOrArea":
+						displayStrings[i]=GetProcInfo("ToothNumOrArea",3+startProc);
+						break;
 					case "P4Date":
 						displayStrings[i]=GetProcInfo("Date",4+startProc,ClaimFormCur.Items[i].FormatString);
 						break;
@@ -1481,6 +1490,9 @@ namespace OpenDental{
 						break;
 					case "P4FeeMinusLab":
 						displayStrings[i]=GetProcInfo("FeeMinusLab",4+startProc);
+						break;
+					case "P4ToothNumOrArea":
+						displayStrings[i]=GetProcInfo("ToothNumOrArea",4+startProc);
 						break;
 					case "P5Date":
 						displayStrings[i]=GetProcInfo("Date",5+startProc,ClaimFormCur.Items[i].FormatString);
@@ -1521,6 +1533,9 @@ namespace OpenDental{
 					case "P5FeeMinusLab":
 						displayStrings[i]=GetProcInfo("FeeMinusLab",5+startProc);
 						break;
+					case "P5ToothNumOrArea":
+						displayStrings[i]=GetProcInfo("ToothNumOrArea",5+startProc);
+						break;
 					case "P6Date":
 						displayStrings[i]=GetProcInfo("Date",6+startProc,ClaimFormCur.Items[i].FormatString);
 						break;
@@ -1559,6 +1574,9 @@ namespace OpenDental{
 						break;
 					case "P6FeeMinusLab":
 						displayStrings[i]=GetProcInfo("FeeMinusLab",6+startProc);
+						break;
+					case "P6ToothNumOrArea":
+						displayStrings[i]=GetProcInfo("ToothNumOrArea",6+startProc);
 						break;
 					case "P7Date":
 						displayStrings[i]=GetProcInfo("Date",7+startProc,ClaimFormCur.Items[i].FormatString);
@@ -1599,6 +1617,9 @@ namespace OpenDental{
 					case "P7FeeMinusLab":
 						displayStrings[i]=GetProcInfo("FeeMinusLab",7+startProc);
 						break;
+					case "P7ToothNumOrArea":
+						displayStrings[i]=GetProcInfo("ToothNumOrArea",7+startProc);
+						break;
 					case "P8Date":
 						displayStrings[i]=GetProcInfo("Date",8+startProc,ClaimFormCur.Items[i].FormatString);
 						break;
@@ -1637,6 +1658,9 @@ namespace OpenDental{
 						break;
 					case "P8FeeMinusLab":
 						displayStrings[i]=GetProcInfo("FeeMinusLab",8+startProc);
+						break;
+					case "P8ToothNumOrArea":
+						displayStrings[i]=GetProcInfo("ToothNumOrArea",8+startProc);
 						break;
 					case "P9Date":
 						displayStrings[i]=GetProcInfo("Date",9+startProc,ClaimFormCur.Items[i].FormatString);
@@ -1677,6 +1701,9 @@ namespace OpenDental{
 					case "P9FeeMinusLab":
 						displayStrings[i]=GetProcInfo("FeeMinusLab",9+startProc);
 						break;
+					case "P9ToothNumOrArea":
+						displayStrings[i]=GetProcInfo("ToothNumOrArea",9+startProc);
+						break;
 					case "P10Date":
 						displayStrings[i]=GetProcInfo("Date",10+startProc,ClaimFormCur.Items[i].FormatString);
 						break;
@@ -1715,6 +1742,9 @@ namespace OpenDental{
 						break;
 					case "P10FeeMinusLab":
 						displayStrings[i]=GetProcInfo("FeeMinusLab",10+startProc);
+						break;
+					case "P10ToothNumOrArea":
+						displayStrings[i]=GetProcInfo("ToothNumOrArea",10+startProc);
 						break;
 					case "TotalFee":
 						double fee=0;//fee only for this page. Each page is treated like a separate claim.
@@ -1897,6 +1927,13 @@ namespace OpenDental{
 					return toothNum;
 				case "Surface":
 					return surf;
+				case "ToothNumOrArea":
+					if(toothNum!=""){
+						return toothNum;
+					}
+					else{
+						return area;
+					}
 			}
 			MessageBox.Show("error in getprocinfo");
 			return "";//should never get to here

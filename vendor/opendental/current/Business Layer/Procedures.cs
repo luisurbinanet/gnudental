@@ -268,7 +268,9 @@ namespace OpenDental{
 		///<summary>Sets the patient.DateFirstVisit if necessary. A visitDate is required to be passed in because it may not be today's date. This is triggered by:
 		///1. When any procedure is inserted regardless of status. From Chart or appointment. If no C procs and date blank, changes date.
 		///2. When updating a procedure to status C. If no C procs, update visit date. Ask user first?
+		///  #2 was recently changed to only happen if date is blank or less than 7 days old.
 		///3. When an appointment is deleted. If no C procs, clear visit date.
+		///  #3 was recently changed to not occur at all unless appt is of type IsNewPatient
 		///4. Changing an appt date of type IsNewPatient. If no C procs, change visit date.
 		///Old: when setting a procedure complete in the Chart module or the ProcEdit window.  Also when saving an appointment that is marked IsNewPat.</summary>
 		public static void SetDateFirstVisit(DateTime visitDate, int situation,Patient pat){
@@ -276,7 +278,12 @@ namespace OpenDental{
 				if(pat.DateFirstVisit.Year>1880){
 					return;//a date has already been set.
 				}
-			}	
+			}
+			if(situation==2) {
+				if(pat.DateFirstVisit.Year>1880 && pat.DateFirstVisit<DateTime.Now.AddDays(-7)) {
+					return;//a date has already been set.
+				}
+			}
 			string command="SELECT Count(*) from procedurelog WHERE "
 				+"PatNum = '"+POut.PInt(pat.PatNum)+"' "
 				+"&& ProcStatus = '2'";
@@ -373,45 +380,13 @@ namespace OpenDental{
 		///<summary>Used from TP to get a list of all TP procs, ordered by priority, toothnum.</summary>
 		public static Procedure[] GetListTP(Procedure[] procList){
 			ArrayList AL=new ArrayList();
-			int iPriority;
-			int oPriority;
-			int iToothInt;
-			int oToothInt;
 			for(int i=0;i<procList.Length;i++){
-				if(procList[i].ProcStatus!=ProcStat.TP){
-					continue;
-				}
-				if(AL.Count==0)//first procedure simple add
+				if(procList[i].ProcStatus==ProcStat.TP){
 					AL.Add(procList[i]);
-				else{//after that, figure out where to place the procedure to order things properly
-					iPriority=Defs.GetOrder(DefCat.TxPriorities,procList[i].Priority);
-					if(Tooth.IsValidDB(procList[i].ToothNum))
-						iToothInt=Tooth.ToInt(procList[i].ToothNum);
-					else
-						iToothInt=0;
-					for(int o=0;o<AL.Count;o++){
-						oPriority=Defs.GetOrder(DefCat.TxPriorities,((Procedure)AL[o]).Priority);
-						if(Tooth.IsValidDB(((Procedure)AL[o]).ToothNum))
-							oToothInt=Tooth.ToInt(((Procedure)AL[o]).ToothNum);
-						else
-							oToothInt=0;
-						if(iPriority==oPriority){
-							if(iToothInt < oToothInt){
-								AL.Insert(o,procList[i]);
-								break;
-							}
-						}
-						if(iPriority < oPriority){
-							AL.Insert(o,procList[i]);
-							break;
-						}
-						if(o==AL.Count-1){
-							AL.Add(procList[i]);
-							break;
-						}
-					}//for o
-				}//else
-			}//for i
+				}
+			}
+			IComparer myComparer=new ProcedureComparer();
+			AL.Sort(myComparer);
 			Procedure[] retVal=new Procedure[AL.Count];
 			AL.CopyTo(retVal);
 			return retVal;
@@ -419,6 +394,42 @@ namespace OpenDental{
 
 		
 
+
+	}
+
+	/*================================================================================================================
+	=========================================== class ProcedureComparer =============================================*/
+
+	///<summary>This sorts procedures based on priority, then tooth number, then adaCode.  It does not care about dates or status.  Currently used in TP module and Chart module sorting.</summary>
+	public class ProcedureComparer:IComparer {
+		///<summary>This sorts procedures based on priority, then tooth number.  It does not care about dates or status.  Currently used in TP module and Chart module sorting.</summary>
+		int IComparer.Compare(Object objx,Object objy) {
+			Procedure x=(Procedure)objx;
+			Procedure y=(Procedure)objy;
+			//first, by priority
+			if(x.Priority!=y.Priority) {//if priorities are different
+				if(x.Priority==0){
+					return 1;//x is greater than y. Priorities always come first.
+				}
+				if(y.Priority==0){
+					return -1;//x is less than y. Priorities always come first.
+				}
+				return Defs.GetOrder(DefCat.TxPriorities,x.Priority).CompareTo(Defs.GetOrder(DefCat.TxPriorities,y.Priority));
+			}
+			//priorities are the same, so sort by toothrange
+			if(x.ToothRange != y.ToothRange){
+				//empty toothranges come before filled toothrange values
+				return x.ToothRange.CompareTo(y.ToothRange);
+			}
+			//toothranges are the same (usually empty), so compare toothnumbers
+			if(x.ToothNum != y.ToothNum){
+				//this also puts invalid or empty toothnumbers before the others.
+				return Tooth.ToInt(x.ToothNum).CompareTo(Tooth.ToInt(y.ToothNum));
+			}
+			//priority and toothnums are the same, so sort by adacode.
+			return x.ADACode.CompareTo(y.ADACode);
+			//return 0;//priority, tooth number, and adacode are all the same
+		}
 
 	}
 

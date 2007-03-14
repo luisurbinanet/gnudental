@@ -53,6 +53,8 @@ namespace OpenDental{
 		private Label labelColor;
 		private System.Windows.Forms.Button butColor;
 		private OpenDental.UI.Button butColorClear;
+		private TextBox textLaymanTerm;
+		private Label label2;
 		private ProcedureCode ProcCode;
 
 		///<summary>The procedure code must have already been insterted into the database.</summary>
@@ -113,11 +115,13 @@ namespace OpenDental{
 			this.labelColor = new System.Windows.Forms.Label();
 			this.butColor = new System.Windows.Forms.Button();
 			this.butColorClear = new OpenDental.UI.Button();
+			this.textLaymanTerm = new System.Windows.Forms.TextBox();
+			this.label2 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(49,14);
+			this.label1.Location = new System.Drawing.Point(80,14);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(82,14);
 			this.label1.TabIndex = 0;
@@ -153,16 +157,16 @@ namespace OpenDental{
 			// 
 			// label7
 			// 
-			this.label7.Location = new System.Drawing.Point(35,102);
+			this.label7.Location = new System.Drawing.Point(66,105);
 			this.label7.Name = "label7";
-			this.label7.Size = new System.Drawing.Size(94,24);
+			this.label7.Size = new System.Drawing.Size(94,16);
 			this.label7.TabIndex = 6;
-			this.label7.Text = "Abbreviated Description";
-			this.label7.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			this.label7.Text = "Abbreviation";
+			this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// label8
 			// 
-			this.label8.Location = new System.Drawing.Point(35,83);
+			this.label8.Location = new System.Drawing.Point(66,83);
 			this.label8.Name = "label8";
 			this.label8.Size = new System.Drawing.Size(94,14);
 			this.label8.TabIndex = 7;
@@ -209,7 +213,7 @@ namespace OpenDental{
 			// 
 			// textADACode
 			// 
-			this.textADACode.Location = new System.Drawing.Point(131,12);
+			this.textADACode.Location = new System.Drawing.Point(162,12);
 			this.textADACode.Name = "textADACode";
 			this.textADACode.ReadOnly = true;
 			this.textADACode.Size = new System.Drawing.Size(100,20);
@@ -217,7 +221,7 @@ namespace OpenDental{
 			// 
 			// textAbbrev
 			// 
-			this.textAbbrev.Location = new System.Drawing.Point(131,104);
+			this.textAbbrev.Location = new System.Drawing.Point(162,104);
 			this.textAbbrev.MaxLength = 20;
 			this.textAbbrev.Name = "textAbbrev";
 			this.textAbbrev.Size = new System.Drawing.Size(100,20);
@@ -225,10 +229,10 @@ namespace OpenDental{
 			// 
 			// textDescription
 			// 
-			this.textDescription.Location = new System.Drawing.Point(131,81);
+			this.textDescription.Location = new System.Drawing.Point(162,81);
 			this.textDescription.MaxLength = 255;
 			this.textDescription.Name = "textDescription";
-			this.textDescription.Size = new System.Drawing.Size(330,20);
+			this.textDescription.Size = new System.Drawing.Size(287,20);
 			this.textDescription.TabIndex = 0;
 			// 
 			// listTreatArea
@@ -338,7 +342,7 @@ namespace OpenDental{
 			// 
 			// textAlternateCode1
 			// 
-			this.textAlternateCode1.Location = new System.Drawing.Point(131,35);
+			this.textAlternateCode1.Location = new System.Drawing.Point(162,35);
 			this.textAlternateCode1.MaxLength = 15;
 			this.textAlternateCode1.Name = "textAlternateCode1";
 			this.textAlternateCode1.Size = new System.Drawing.Size(100,20);
@@ -346,7 +350,7 @@ namespace OpenDental{
 			// 
 			// label12
 			// 
-			this.label12.Location = new System.Drawing.Point(52,37);
+			this.label12.Location = new System.Drawing.Point(83,37);
 			this.label12.Name = "label12";
 			this.label12.Size = new System.Drawing.Size(79,14);
 			this.label12.TabIndex = 37;
@@ -355,7 +359,7 @@ namespace OpenDental{
 			// 
 			// label13
 			// 
-			this.label13.Location = new System.Drawing.Point(237,37);
+			this.label13.Location = new System.Drawing.Point(268,37);
 			this.label13.Name = "label13";
 			this.label13.Size = new System.Drawing.Size(202,19);
 			this.label13.TabIndex = 39;
@@ -383,7 +387,7 @@ namespace OpenDental{
 			// 
 			// textMedicalCode
 			// 
-			this.textMedicalCode.Location = new System.Drawing.Point(131,58);
+			this.textMedicalCode.Location = new System.Drawing.Point(162,58);
 			this.textMedicalCode.MaxLength = 15;
 			this.textMedicalCode.Name = "textMedicalCode";
 			this.textMedicalCode.Size = new System.Drawing.Size(100,20);
@@ -391,7 +395,7 @@ namespace OpenDental{
 			// 
 			// label14
 			// 
-			this.label14.Location = new System.Drawing.Point(52,60);
+			this.label14.Location = new System.Drawing.Point(83,60);
 			this.label14.Name = "label14";
 			this.label14.Size = new System.Drawing.Size(79,14);
 			this.label14.TabIndex = 42;
@@ -458,12 +462,31 @@ namespace OpenDental{
 			this.butColorClear.Text = "Clear Color";
 			this.butColorClear.Click += new System.EventHandler(this.butColorClear_Click);
 			// 
+			// textLaymanTerm
+			// 
+			this.textLaymanTerm.Location = new System.Drawing.Point(162,127);
+			this.textLaymanTerm.MaxLength = 255;
+			this.textLaymanTerm.Name = "textLaymanTerm";
+			this.textLaymanTerm.Size = new System.Drawing.Size(178,20);
+			this.textLaymanTerm.TabIndex = 50;
+			// 
+			// label2
+			// 
+			this.label2.Location = new System.Drawing.Point(36,128);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(124,16);
+			this.label2.TabIndex = 51;
+			this.label2.Text = "Layman\'s Term";
+			this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
 			// FormProcCodeEdit
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(941,707);
+			this.Controls.Add(this.textLaymanTerm);
+			this.Controls.Add(this.label2);
 			this.Controls.Add(this.butColorClear);
 			this.Controls.Add(this.labelColor);
 			this.Controls.Add(this.butColor);
@@ -520,6 +543,7 @@ namespace OpenDental{
 			textMedicalCode.Text=ProcCode.MedicalCode;
 			textDescription.Text=ProcCode.Descript;
 			textAbbrev.Text=ProcCode.AbbrDesc;
+			textLaymanTerm.Text=ProcCode.LaymanTerm;
 			strBTime=new StringBuilder(ProcCode.ProcTime);
 			butColor.BackColor=ProcCode.GraphicColor;
 			checkSetRecall.Checked=ProcCode.SetRecall;
@@ -688,6 +712,7 @@ namespace OpenDental{
 			ProcCode.MedicalCode=textMedicalCode.Text;
 			ProcCode.Descript=textDescription.Text;
 			ProcCode.AbbrDesc=textAbbrev.Text;
+			ProcCode.LaymanTerm=textLaymanTerm.Text;
 			ProcCode.ProcTime=strBTime.ToString();
 			ProcCode.GraphicColor=butColor.BackColor;
 			ProcCode.SetRecall=checkSetRecall.Checked;

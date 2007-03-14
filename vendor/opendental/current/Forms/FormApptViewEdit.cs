@@ -385,6 +385,7 @@ namespace OpenDental{
 			allElements.Add("HmPhone");
 			allElements.Add("Lab");
 			allElements.Add("MedUrgNote");
+			allElements.Add("PremedFlag");
 			allElements.Add("Note");
 			allElements.Add("PatientName");
 			allElements.Add("PatNum");

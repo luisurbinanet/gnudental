@@ -39,6 +39,7 @@ namespace OpenDental{
 		private ContextMenu menuInsurance;
 		private MenuItem menuPlansForFam;
 		private Benefit[] BenefitList;
+		private PatField[] PatFieldList;
 
 		///<summary></summary>
 		public ContrFamily(){
@@ -161,6 +162,7 @@ namespace OpenDental{
 			this.Name = "ContrFamily";
 			this.Size = new System.Drawing.Size(939,708);
 			this.Layout += new System.Windows.Forms.LayoutEventHandler(this.ContrFamily_Layout);
+			this.Resize += new System.EventHandler(this.ContrFamily_Resize);
 			this.ResumeLayout(false);
 
 		}
@@ -193,6 +195,7 @@ namespace OpenDental{
 			//CovPats.Refresh(PlanList,PatPlanList);
 			//RefAttaches.Refresh();
 			RecallList=Recalls.GetList(FamCur.List);
+			PatFieldList=PatFields.Refresh(patNum);
 		}
 
 		private void RefreshModuleScreen(){
@@ -203,7 +206,9 @@ namespace OpenDental{
 				ToolBarMain.Buttons["Delete"].Enabled=true;
 				ToolBarMain.Buttons["Guarantor"].Enabled=true;
 				ToolBarMain.Buttons["Move"].Enabled=true;
-				ToolBarMain.Buttons["Ins"].Enabled=true;
+				if(!Prefs.GetBool("EasyHideInsurance")){
+					ToolBarMain.Buttons["Ins"].Enabled=true;
+				}
 				ToolBarMain.Invalidate();
 			}
 			else{
@@ -212,7 +217,9 @@ namespace OpenDental{
 				ToolBarMain.Buttons["Delete"].Enabled=false;
 				ToolBarMain.Buttons["Guarantor"].Enabled=false;
 				ToolBarMain.Buttons["Move"].Enabled=false;
-				ToolBarMain.Buttons["Ins"].Enabled=false;
+				if(!Prefs.GetBool("EasyHideInsurance")){
+					ToolBarMain.Buttons["Ins"].Enabled=false;
+				}
 				ToolBarMain.Invalidate();
 				//Patients.Cur=new Patient();
 			}
@@ -318,7 +325,17 @@ namespace OpenDental{
 
 		private void ContrFamily_Layout(object sender, System.Windows.Forms.LayoutEventArgs e) {
 			
-		}		
+		}
+
+		private void ContrFamily_Resize(object sender,EventArgs e) {
+			if(Height>gridPat.Top){
+				gridPat.Height=Height-gridPat.Top-2;
+				gridIns.Height=Height-gridIns.Top-2;
+			}
+			if(Width>gridIns.Left){
+				gridIns.Width=Width-gridIns.Left-2;
+			}
+		}
 
 		//private void butOutlook_Click(object sender, System.EventArgs e) {
 			/*Process[] procsOutlook = Process.GetProcessesByName("outlook");
@@ -404,9 +421,33 @@ namespace OpenDental{
 		#region gridPatient
 
 		private void gridPat_CellDoubleClick(object sender,ODGridClickEventArgs e) {
-			FormPatientEdit FormP=new FormPatientEdit(PatCur,FamCur);
-			FormP.IsNew=false;
-			FormP.ShowDialog();
+			if(TerminalActives.PatIsInUse(PatCur.PatNum)){
+				MsgBox.Show(this,"Patient is currently entering info at a reception terminal.  Please try again later.");
+				return;
+			}
+			if(gridPat.Rows[e.Row].Tag!=null){
+				string tag=gridPat.Rows[e.Row].Tag.ToString();
+				tag=tag.Substring(8);//strips off all but the number: PatField1
+				int index=PIn.PInt(tag);
+				PatField field=PatFields.GetByName(PatFieldDefs.List[index].FieldName,PatFieldList);
+				if(field==null) {
+					field=new PatField();
+					field.PatNum=PatCur.PatNum;
+					field.FieldName=PatFieldDefs.List[index].FieldName;
+					FormPatFieldEdit FormPF=new FormPatFieldEdit(field);
+					FormPF.IsNew=true;
+					FormPF.ShowDialog();
+				}
+				else{
+					FormPatFieldEdit FormPF=new FormPatFieldEdit(field);
+					FormPF.ShowDialog();
+				}
+			}
+			else{
+				FormPatientEdit FormP=new FormPatientEdit(PatCur,FamCur);
+				FormP.IsNew=false;
+				FormP.ShowDialog();
+			}
 			ModuleSelected(PatCur.PatNum);
 		}
 
@@ -616,52 +657,25 @@ namespace OpenDental{
 				row.Bold=true;
 				gridPat.Rows.Add(row);
 			}
+			//PatFields-------------------------------------------
+			PatField field;
+			for(int i=0;i<PatFieldDefs.List.Length;i++){
+				row=new ODGridRow();
+				row.Cells.Add(PatFieldDefs.List[i].FieldName);
+				field=PatFields.GetByName(PatFieldDefs.List[i].FieldName,PatFieldList);
+				if(field==null){
+					row.Cells.Add("");
+				}
+				else{
+					row.Cells.Add(field.FieldValue);
+				}
+				row.Tag="PatField"+i.ToString();
+				gridPat.Rows.Add(row);
+			}
 			gridPat.EndUpdate();
 		}
 
 		#endregion gridPatient 
-
-		/*
-		#region tbPlans
-		private void FillPlanData(){
-			if(PatCur==null){
-				tbPlans.ResetRows(0);
-				tbPlans.LayoutTables();
-				return;
-			}
-			//InsPlans.Refresh();
-			tbPlans.ResetRows(PlanList.Length);
-			tbPlans.SetGridColor(Color.Gray);
-			tbPlans.SetBackGColor(Color.White);
-			for(int i=0;i<PlanList.Length;i++){
-				tbPlans.Cell[0,i]=(i+1).ToString();
-				tbPlans.Cell[1,i]=FamCur.GetNameInFamLF(PlanList[i].Subscriber);
-				if(tbPlans.Cell[1,i]==""){//subscriber from another family
-					tbPlans.Cell[1,i]=Patients.GetLim(PlanList[i].Subscriber).GetNameLF();
-				}
-				tbPlans.Cell[2,i]=Carriers.GetName(PlanList[i].CarrierNum);
-				if(PlanList[i].DateEffective.Year<1880)
-					tbPlans.Cell[3,i]="";
-				else
-					tbPlans.Cell[3,i]=PlanList[i].DateEffective.ToString("d");
-				if(PlanList[i].DateTerm.Year<1880)
-					tbPlans.Cell[4,i]="";
-				else
-					tbPlans.Cell[4,i]=PlanList[i].DateTerm.ToString("d");
-				//tbPlans.Cell[5,i]=PlanList[i].PlanNote;
-			}
-			tbPlans.LayoutTables();
-			
-			
-		}
-
-		private void tbPlans_CellDoubleClicked(object sender, CellEventArgs e){
-			FormInsPlan FormIP=new FormInsPlan(PlanList[e.Row],null);
-			FormIP.ShowDialog();
-			ModuleSelected(PatCur.PatNum);
-		}
-
-		#endregion*/
 
 		#region tbFamily
 
@@ -966,7 +980,12 @@ namespace OpenDental{
 				plan=new InsPlan();
 				plan.EmployerNum=subscriber.EmployerNum;
 				plan.Subscriber=subscriber.PatNum;
-				plan.SubscriberID=subscriber.SSN;
+				if(subscriber.MedicaidID==""){
+					plan.SubscriberID=subscriber.SSN;
+				}
+				else{
+					plan.SubscriberID=subscriber.MedicaidID;
+				}
 				plan.ReleaseInfo=true;
 				plan.AssignBen=true;
 				plan.PlanType="";
@@ -1047,6 +1066,13 @@ namespace OpenDental{
 			}
 			row.ColorBackG=Defs.Long[(int)DefCat.MiscColors][0].ItemColor;
 			gridIns.Rows.Add(row);
+			/*subscriber ID
+			row.Cells.Add(Lan.g("TableCoverage","Subscriber ID"));
+			for(int i=0;i<PatPlanList.Length;i++) {
+				row.Cells.Add(planArray[i].SubscriberID);
+			}
+			row.ColorBackG=Defs.Long[(int)DefCat.MiscColors][0].ItemColor;
+			gridIns.Rows.Add(row);*/
 			//relationship
 			row=new ODGridRow();
 			row.Cells.Add(Lan.g("TableCoverage","Rel'ship to Sub"));
@@ -1253,6 +1279,8 @@ namespace OpenDental{
 		}
 
 		#endregion gridIns
+
+		
 
 		
 

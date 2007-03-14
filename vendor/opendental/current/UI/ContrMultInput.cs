@@ -10,7 +10,7 @@ using OpenDental.ReportingOld2;
 namespace OpenDental.UI
 {
 	///<summary>This control can be used anywhere that the user can enter a series of values.</summary>
-	///<remarks>Typically used in reports to let the user specify the parameters.  Will also be used in the Patient Edit window for custom fields, etc.  Each item in the list can be of a different input type, and this control will dynamically arrange them from the top down.  It adapts to many different widths.  If the input fields extend beyond the lower edge of the control, then a scrollbar is added.  This control can also be used for a series of values that are not to be displayed, but not altered.</remarks>
+	///<remarks>Typically used in reports to let the user specify the parameters.  Also used in the new patient medical questionnaire.  Each item in the list can be of a different input type, and this control will dynamically arrange them from the top down.  It adapts to many different widths.  If the input fields extend beyond the lower edge of the control, then a scrollbar is added.  This control can also be used for a series of values that are not to be displayed, but not altered.</remarks>
 	public class ContrMultInput : System.Windows.Forms.UserControl{
 		///<summary>Required designer variable.</summary>
 		private System.ComponentModel.Container components = null;
@@ -21,6 +21,8 @@ namespace OpenDental.UI
 		private System.Windows.Forms.Panel panelSlide;
 		///<summary>These are the actual input fields that get laid out on the window based on the type.</summary>
 		private Control[] inputs;
+		///<summary>This just changes the alignment slighly to make more room for answers and less for questions.</summary>
+		public bool IsQuestionnaire;
 
 		///<summary></summary>
 		public ContrMultInput(){
@@ -138,6 +140,9 @@ namespace OpenDental.UI
 		private int ArrangeControls(Graphics g){
 			//calculate width of input section
 			int inputW=300;//the widest allowed for the input section on the right.
+			if(IsQuestionnaire){
+				inputW=450;
+			}
 			if(panelSlide.Width<600){
 				inputW=panelSlide.Width/2;
 			}
@@ -154,7 +159,7 @@ namespace OpenDental.UI
 					itemH=20;
 				//promptingText
 				labels[i]=new Label();
-				labels[i].Location=new Point(5,yPos);
+				labels[i].Location=new Point(2,yPos);
 				//labels[i].Name="Label"+i.ToString();
 				labels[i].Size=new Size(promptW-5,itemH);
 				labels[i].Text=multInputItems[i].PromptingText;
@@ -213,8 +218,7 @@ namespace OpenDental.UI
 					for(int j=0;j<Enum.GetNames(eType).Length;j++){
 						((ComboBoxMulti)inputs[i]).Items.Add(Enum.GetNames(eType)[j]);
 						if(multInputItems[i].CurrentValues.Count > 0
-							&& multInputItems[i].CurrentValues
-							.Contains((int)(Enum.Parse(eType,Enum.GetNames(eType)[j])))  )
+							&& multInputItems[i].CurrentValues.Contains((int)(Enum.Parse(eType,Enum.GetNames(eType)[j])))  )
 						{
 							((ComboBoxMulti)inputs[i]).SetSelected(j,true);
 						}
@@ -280,6 +284,16 @@ namespace OpenDental.UI
 					if(multInputItems[i].CurrentValues.Count>0){
 						inputs[i].Text=multInputItems[i].CurrentValues[0].ToString();
 					}
+					panelSlide.Controls.Add(inputs[i]);
+				}
+				else if(multInputItems[i].ValueType==FieldValueType.YesNoUnknown) {
+					//add two checkboxes: Yes(1) and No(2).
+					inputs[i]=new ContrYN();
+					if(multInputItems[i].CurrentValues.Count>0){
+						((ContrYN)inputs[i]).CurrentValue=(YN)multInputItems[i].CurrentValues[0];
+					}
+					inputs[i].Location=new Point(promptW,yPos+(itemH-20)/2);
+					inputs[i].Size=new Size(inputW-5,20);
 					panelSlide.Controls.Add(inputs[i]);
 				}
 				yPos+=itemH+5;
@@ -420,6 +434,9 @@ namespace OpenDental.UI
 					retVal.Add(Regex.Replace(inputs[item].Text,@"\?",""));
 				}
 			}
+			else if(multInputItems[item].ValueType==FieldValueType.YesNoUnknown) {
+				retVal.Add(  ((ContrYN)inputs[item]).CurrentValue   );
+			}
 			//MessageBox.Show(multInputItems[1].CurrentValues.Count.ToString());
 			return retVal;
 		}
@@ -446,7 +463,10 @@ namespace OpenDental.UI
 			return true;
 		}
 
-		
+		///<summary></summary>
+		public void ClearInputItems(){
+			multInputItems.Clear();
+		}
 
 
 

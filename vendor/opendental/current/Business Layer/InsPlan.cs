@@ -7,7 +7,7 @@ using System.Windows.Forms;
 namespace OpenDental{
 	
 	///<summary>Corresponds to the insplan table in the database.</summary>
-	public class InsPlan{
+	public class InsPlan:IComparable{
 		///<summary>Primary key.</summary>
 		public int PlanNum;
 		///<summary>Foreign key to patient.PatNum.</summary>
@@ -60,6 +60,24 @@ namespace OpenDental{
 		///<summary>This is NOT a database column.  It is just used to display the number of plans with the same info.</summary>
 		public int NumberPlans;
 
+		///<summary>IComparable.CompareTo implementation.  This is used to determine if plans are identical.  The criteria is that they have 6 fields in common: Employer, Carrier, GroupName, GroupNum, DivisionNo, and IsMedical.  There is no less than or greater than; just not equal.</summary>
+		public int CompareTo(object obj) {
+			if(!(obj is InsPlan)) {
+				throw new ArgumentException("object is not an InsPlan");
+			}
+			InsPlan plan=(InsPlan)obj;
+			if(plan.EmployerNum==EmployerNum
+				&& plan.CarrierNum==CarrierNum
+				&& plan.GroupName==GroupName
+				&& plan.GroupNum==GroupNum
+				&& plan.DivisionNo==DivisionNo
+				&& plan.IsMedical==IsMedical)
+			{
+				return 0;//they are the same
+			}
+			return -1;
+		}
+
 		///<summary>Returns a copy of this InsPlan.</summary>
 		public InsPlan Copy(){
 			InsPlan p=new InsPlan();
@@ -87,6 +105,7 @@ namespace OpenDental{
 			p.BenefitNotes=BenefitNotes;
 			p.IsMedical=IsMedical;
 			p.SubscNote=SubscNote;
+			p.NumberPlans=NumberPlans;
 			return p;
 		}
 
@@ -173,7 +192,7 @@ namespace OpenDental{
  			dcon.NonQ(command);
 		}
 
-		///<summary>Called from FormInsPlan when applying changes to all identical insurance plans. This updates the synchronized fields for all plans like the specified insPlan.  Cur must be set to the new values that we want.  BenefitNotes and SubscNote are specific to subscriber and are not changed.  PlanNotes are handled separately in a different function after this one is complete.</summary>
+		///<summary>Called from FormInsPlan when applying changes to all identical insurance plans. This updates the synchronized fields for all plans like the specified insPlan.  Current InsPlan must be set to the new values that we want.  BenefitNotes and SubscNote are specific to subscriber and are not changed.  PlanNotes are handled separately in a different function after this one is complete.</summary>
 		public void UpdateForLike(InsPlan like){
 			string command= "UPDATE insplan SET "
 				+"EmployerNum = '"     +POut.PInt   (EmployerNum)+"'"
@@ -196,15 +215,15 @@ namespace OpenDental{
 				+"AND GroupNum = '"       +POut.PString(like.GroupNum)+"' "
 				+"AND DivisionNo = '"     +POut.PString(like.DivisionNo)+"'"
 				+"AND CarrierNum = '"     +POut.PInt   (like.CarrierNum)+"' "
-				+"AND PlanType = '"       +POut.PString(like.PlanType)+"' "
-				+"AND UseAltCode = '"     +POut.PBool  (like.UseAltCode)+"' "
-				+"AND IsMedical = '"      +POut.PBool  (like.IsMedical)+"' "
-				+"AND ClaimsUseUCR = '"   +POut.PBool  (like.ClaimsUseUCR)+"' "
-				+"AND FeeSched = '"       +POut.PInt   (like.FeeSched)+"' "
-				+"AND CopayFeeSched = '"  +POut.PInt   (like.CopayFeeSched)+"' "
-				+"AND ClaimFormNum = '"   +POut.PInt   (like.ClaimFormNum)+"' "
-				+"AND AllowedFeeSched = '"+POut.PInt   (like.AllowedFeeSched)+"' "
-				+"AND TrojanID = '"       +POut.PString(like.TrojanID)+"'";
+				//+"AND PlanType = '"       +POut.PString(like.PlanType)+"' "
+				//+"AND UseAltCode = '"     +POut.PBool  (like.UseAltCode)+"' "
+				+"AND IsMedical = '"      +POut.PBool  (like.IsMedical)+"'";
+				//+"AND ClaimsUseUCR = '"   +POut.PBool  (like.ClaimsUseUCR)+"' "
+				//+"AND FeeSched = '"       +POut.PInt   (like.FeeSched)+"' "
+				//+"AND CopayFeeSched = '"  +POut.PInt   (like.CopayFeeSched)+"' "
+				//+"AND ClaimFormNum = '"   +POut.PInt   (like.ClaimFormNum)+"' "
+				//+"AND AllowedFeeSched = '"+POut.PInt   (like.AllowedFeeSched)+"' "
+				//+"AND TrojanID = '"       +POut.PString(like.TrojanID)+"'";
 			DataConnection dcon=new DataConnection();
  			dcon.NonQ(command);
 		}
@@ -255,15 +274,15 @@ namespace OpenDental{
 				+"AND insplan.GroupNum = '"       +POut.PString(GroupNum)+"' "
 				+"AND insplan.DivisionNo = '"     +POut.PString(DivisionNo)+"' "
 				+"AND insplan.CarrierNum = '"     +POut.PInt   (CarrierNum)+"' "
-				+"AND insplan.PlanType = '"       +POut.PString(PlanType)+"' "
-				+"AND insplan.UseAltCode = '"     +POut.PBool  (UseAltCode)+"' "
-				+"AND insplan.IsMedical = '"      +POut.PBool  (IsMedical)+"' "
-				+"AND insplan.ClaimsUseUCR = '"   +POut.PBool  (ClaimsUseUCR)+"' "
-				+"AND insplan.FeeSched = '"       +POut.PInt   (FeeSched)+"' "
-				+"AND insplan.CopayFeeSched = '"  +POut.PInt   (CopayFeeSched)+"' "
-				+"AND insplan.ClaimFormNum = '"   +POut.PInt   (ClaimFormNum)+"' "
-				+"AND insplan.AllowedFeeSched = '"+POut.PInt   (AllowedFeeSched)+"' "
-				+"AND insplan.TrojanID = '"       +POut.PString(TrojanID)+"'";
+				//+"AND insplan.PlanType = '"       +POut.PString(PlanType)+"' "
+				//+"AND insplan.UseAltCode = '"     +POut.PBool  (UseAltCode)+"' "
+				+"AND insplan.IsMedical = '"      +POut.PBool  (IsMedical)+"'";
+				//+"AND insplan.ClaimsUseUCR = '"   +POut.PBool  (ClaimsUseUCR)+"' "
+				//+"AND insplan.FeeSched = '"       +POut.PInt   (FeeSched)+"' "
+				//+"AND insplan.CopayFeeSched = '"  +POut.PInt   (CopayFeeSched)+"' "
+				//+"AND insplan.ClaimFormNum = '"   +POut.PInt   (ClaimFormNum)+"' "
+				//+"AND insplan.AllowedFeeSched = '"+POut.PInt   (AllowedFeeSched)+"' "
+				//+"AND insplan.TrojanID = '"       +POut.PString(TrojanID)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
 			DataTable table=dcon.GetTable(command);
@@ -282,15 +301,15 @@ namespace OpenDental{
 				+"AND insplan.GroupNum = '"       +POut.PString(GroupNum)+"' "
 				+"AND insplan.DivisionNo = '"     +POut.PString(DivisionNo)+"' "
 				+"AND insplan.CarrierNum = '"     +POut.PInt   (CarrierNum)+"' "
-				+"AND insplan.PlanType = '"       +POut.PString(PlanType)+"' "
-				+"AND insplan.UseAltCode = '"     +POut.PBool  (UseAltCode)+"' "
-				+"AND insplan.IsMedical = '"      +POut.PBool  (IsMedical)+"' "
-				+"AND insplan.ClaimsUseUCR = '"   +POut.PBool  (ClaimsUseUCR)+"' "
-				+"AND insplan.FeeSched = '"       +POut.PInt   (FeeSched)+"' "
-				+"AND insplan.CopayFeeSched = '"  +POut.PInt   (CopayFeeSched)+"' "
-				+"AND insplan.ClaimFormNum = '"   +POut.PInt   (ClaimFormNum)+"' "
-				+"AND insplan.AllowedFeeSched = '"+POut.PInt   (AllowedFeeSched)+"' "
-				+"AND insplan.TrojanID = '"       +POut.PString(TrojanID)+"'";
+				//+"AND insplan.PlanType = '"       +POut.PString(PlanType)+"' "
+				//+"AND insplan.UseAltCode = '"     +POut.PBool  (UseAltCode)+"' "
+				+"AND insplan.IsMedical = '"      +POut.PBool  (IsMedical)+"'";
+				//+"AND insplan.ClaimsUseUCR = '"   +POut.PBool  (ClaimsUseUCR)+"' "
+				//+"AND insplan.FeeSched = '"       +POut.PInt   (FeeSched)+"' "
+				//+"AND insplan.CopayFeeSched = '"  +POut.PInt   (CopayFeeSched)+"' "
+				//+"AND insplan.ClaimFormNum = '"   +POut.PInt   (ClaimFormNum)+"' "
+				//+"AND insplan.AllowedFeeSched = '"+POut.PInt   (AllowedFeeSched)+"' "
+				//+"AND insplan.TrojanID = '"       +POut.PString(TrojanID)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
 			DataTable table=dcon.GetTable(command);

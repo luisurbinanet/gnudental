@@ -307,6 +307,14 @@ namespace OpenDental{
 					rect=new RectangleF(new PointF(xPos,yPos),noteSize);
 					g.DrawString(Info.MyPatient.MedUrgNote,baseFont,brush,rect,format);
 					return linesFilled;
+				case "PremedFlag":
+					if(Info.MyPatient.Premed){
+						g.DrawString(Lan.g(this,"Premedicate"),baseFont,brush,xPos,yPos);
+						return 1;
+					}
+					else{
+						return 0;
+					}
 				case "Note":
 					if(rowI==0)
 						noteSize=g.MeasureString(Info.MyApt.Note,baseFont,ContrApptSheet.ColWidth-9-4);

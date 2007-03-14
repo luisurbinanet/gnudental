@@ -117,6 +117,52 @@ namespace ODR{
 			return outputQuery;
 		}
 
+		public string GetParameterValue(string name){
+			if(Parameters.Count==0){
+				return "";
+			}
+			foreach(Parameter p in Parameters) {
+				if(p.Name==name){
+					string retVal="";
+					for(int i=0;i<p.CurrentValues.Count;i++){
+						if(i>0){
+							retVal+=", ";
+						}
+						switch(p.ValueType){
+							case ParamValueType.Date:
+								retVal+=((DateTime)p.CurrentValues[i]).ToShortDateString();
+								break;
+							case ParamValueType.String:
+								retVal+=p.CurrentValues[i].ToString();
+								break;
+							case ParamValueType.Boolean:
+								if(((bool)p.CurrentValues[i])){
+									retVal+="true";
+								}
+								else{
+									retVal+="false";
+								}
+								break;
+							case ParamValueType.Integer:
+								retVal+=((int)p.CurrentValues[i]).ToString();
+								break;
+							case ParamValueType.Number:
+								retVal+=((Double)p.CurrentValues[i]).ToString("n");
+								break;
+							case ParamValueType.Enum:
+								retVal+=((int)p.CurrentValues[i]).ToString();//needs some work to convert # to string
+								break;
+							case ParamValueType.QueryData:
+								retVal+=((int)p.CurrentValues[i]).ToString();//again, we should convert this to string
+								break;
+						}//switch
+					}//for CurrentValues
+					return retVal;
+				}
+			}
+			return "";
+		}
+
 
 	}
 

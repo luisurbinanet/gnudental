@@ -215,12 +215,20 @@ namespace OpenDental{
 				DrCeph.SendData(pat);
 				return;
 			}
+			else if(Cur.ProgName=="NewPatientForm.com") {
+				NewPatientForm npf=new NewPatientForm();
+				npf.ShowDownload(Cur.Path);//NewPatientForm.com
+				return;
+			}
 			//all remaining programs:
 			try{
 				string cmdline=Cur.CommandLine;
-				cmdline.Replace("[PatNum]",pat.PatNum.ToString());
-				cmdline.Replace("[ChartNumber]",pat.ChartNumber);
-				Process.Start(Cur.Path,cmdline);
+				cmdline=cmdline.Replace("[PatNum]",pat.PatNum.ToString());
+				cmdline=cmdline.Replace("[ChartNumber]",pat.ChartNumber);
+				string path=Cur.Path;
+				path=path.Replace("[PatNum]",pat.PatNum.ToString());
+				path=path.Replace("[ChartNumber]",pat.ChartNumber);
+				Process.Start(path,cmdline);
 			}
 			catch{
 				MessageBox.Show(Cur.ProgDesc+" is not available.");

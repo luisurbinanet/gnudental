@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Resources;
 using System.Text;
@@ -175,7 +176,7 @@ namespace SparksToothChart {
 		private void SetDefaultColors(){
 			for(int i=0;i<Groups.Count;i++){
 				if(((ToothGroup)Groups[i]).GroupType==ToothGroupType.Cementum){
-					((ToothGroup)Groups[i]).PaintColor=Color.FromArgb(255,230,214,143);
+					((ToothGroup)Groups[i]).PaintColor=Color.FromArgb(255,243,234,176);//230,214,143);
 				}
 				else{//enamel
 					((ToothGroup)Groups[i]).PaintColor=Color.FromArgb(255,255,253,209);
@@ -594,13 +595,13 @@ namespace SparksToothChart {
 						items=line.Split(new char[] { ' ' });
 						vertex=new float[3];
 						if(flipHorizontally) {
-							vertex[0]=-Convert.ToSingle(items[1]);
+							vertex[0]=-Convert.ToSingle(items[1],CultureInfo.InvariantCulture);
 						}
 						else {
-							vertex[0]=Convert.ToSingle(items[1]);
+							vertex[0]=Convert.ToSingle(items[1],CultureInfo.InvariantCulture);
 						}
-						vertex[1]=Convert.ToSingle(items[2]);
-						vertex[2]=Convert.ToSingle(items[3]);
+						vertex[1]=Convert.ToSingle(items[2],CultureInfo.InvariantCulture);
+						vertex[2]=Convert.ToSingle(items[3],CultureInfo.InvariantCulture);
 						ALv.Add(vertex);
 						continue;
 					}
@@ -608,13 +609,13 @@ namespace SparksToothChart {
 						items=line.Split(new char[] { ' ' });
 						vertex=new float[3];
 						if(flipHorizontally) {
-							vertex[0]=-Convert.ToSingle(items[1]);
+							vertex[0]=-Convert.ToSingle(items[1],CultureInfo.InvariantCulture);
 						}
 						else {
-							vertex[0]=Convert.ToSingle(items[1]);
+							vertex[0]=Convert.ToSingle(items[1],CultureInfo.InvariantCulture);
 						}
-						vertex[1]=Convert.ToSingle(items[2]);
-						vertex[2]=Convert.ToSingle(items[3]);
+						vertex[1]=Convert.ToSingle(items[2],CultureInfo.InvariantCulture);
+						vertex[2]=Convert.ToSingle(items[3],CultureInfo.InvariantCulture);
 						ALvn.Add(vertex);
 						continue;
 					}

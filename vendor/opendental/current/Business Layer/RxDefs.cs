@@ -1,11 +1,12 @@
 using System;
 using System.Collections;
+using System.Data;
 using System.Windows.Forms;
 
 namespace OpenDental{
 
 	///<summary>Corresponds to the rxdef table in the database.</summary>
-	public struct RxDef{
+	public class RxDef{
 		///<summary>Primary key.</summary>
 		public int RxDefNum;
 		///<summary>The name of the drug.</summary>
@@ -18,25 +19,74 @@ namespace OpenDental{
 		public string Refills;
 		///<summary>Notes about this drug. Will not be copied to the rxpat.</summary>
 		public string Notes;
+
+		///<summary></summary>
+		public RxDef Copy() {
+			RxDef r=new RxDef();
+			r.RxDefNum=RxDefNum;
+			r.Drug=Drug;
+			r.Sig=Sig;
+			r.Disp=Disp;
+			r.Refills=Refills;
+			r.Notes=Notes;
+			return r;
+		}
+
+		///<summary></summary>
+		public void Update() {
+			string command= "UPDATE rxdef SET " 
+				+"Drug = '"    +POut.PString(Drug)+"'"
+				+",Sig = '"    +POut.PString(Sig)+"'"
+				+",Disp = '"   +POut.PString(Disp)+"'"
+				+",Refills = '"+POut.PString(Refills)+"'"
+				+",Notes = '"  +POut.PString(Notes)+"'"
+				+" WHERE RxDefNum = '" +POut.PInt(RxDefNum)+"'";
+			DataConnection dcon=new DataConnection();
+			dcon.NonQ(command);
+		}
+
+		///<summary></summary>
+		public void Insert() {
+			string command= "INSERT INTO rxdef (Drug,Sig,Disp,Refills,Notes) VALUES("
+				+"'"+POut.PString(Drug)+"', "
+				+"'"+POut.PString(Sig)+"', "
+				+"'"+POut.PString(Disp)+"', "
+				+"'"+POut.PString(Refills)+"', "
+				+"'"+POut.PString(Notes)+"')";
+			DataConnection dcon=new DataConnection();
+			dcon.NonQ(command,true);
+			RxDefNum=dcon.InsertID;
+		}
+
+		///<summary>Also deletes all RxAlerts that were attached.</summary>
+		public void Delete() {
+			string command="DELETE FROM rxalert WHERE RxDefNum="+POut.PInt(RxDefNum);
+			DataConnection dcon=new DataConnection();
+			dcon.NonQ(command);
+			command= "DELETE FROM rxdef "
+				+"WHERE rxdefnum = "+POut.PInt(RxDefNum);
+			dcon.NonQ(command);
+		}
+
+
+
 	}
 
 	/*=========================================================================================
 		=================================== class RxDefs ==========================================*/
 ///<summary></summary>
-	public class RxDefs:DataClass{
-		///<summary></summary>
-		public static RxDef[] List;
-		///<summary></summary>
-		public static RxDef Cur;
+	public class RxDefs{
+		//<summary></summary>
+		//public static RxDef[] List;
 	
 		///<summary></summary>
-		public static void Refresh(){
-			cmd.CommandText =
-				"SELECT * from rxdef"
-				+" ORDER BY drug";
-			FillTable();
-			List=new RxDef[table.Rows.Count];
-			for(int i=0;i<table.Rows.Count;i++){
+		public static RxDef[] Refresh(){
+			string command="SELECT * FROM rxdef ORDER BY Drug";
+			DataConnection dcon=new DataConnection();
+			DataTable table=dcon.GetTable(command);
+			RxDef[] List=new RxDef[table.Rows.Count];
+			for(int i=0;i<table.Rows.Count;i++) {
+				List[i]=new RxDef();
 				List[i].RxDefNum   = PIn.PInt   (table.Rows[i][0].ToString());
 				List[i].Drug       = PIn.PString(table.Rows[i][1].ToString());
 				List[i].Sig        = PIn.PString(table.Rows[i][2].ToString());
@@ -44,41 +94,10 @@ namespace OpenDental{
 				List[i].Refills    = PIn.PString(table.Rows[i][4].ToString());
 				List[i].Notes      = PIn.PString(table.Rows[i][5].ToString());
 			}
+			return List;
 		}
 	
-		///<summary></summary>
-		public static void UpdateCur(){
-			cmd.CommandText = "UPDATE rxdef SET " 
-				+ "drug = '"       +POut.PString(Cur.Drug)+"'"
-				+ ",sig = '"        +POut.PString(Cur.Sig)+"'"
-				+ ",disp = '"       +POut.PString(Cur.Disp)+"'"
-				+ ",refills = '"    +POut.PString(Cur.Refills)+"'"
-				+ ",notes = '"      +POut.PString(Cur.Notes)+"'"
-				+" WHERE RxDefNum = '" +POut.PInt (Cur.RxDefNum)+"'";
-			//MessageBox.Show(cmd.CommandText);
-			NonQ(false);
-		}
-
-		///<summary></summary>
-		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO rxdef (drug,sig,"
-				+"disp,refills,notes) VALUES("
-				//+"'"+POut.PString(Cur.Description)+"', "
-				+"'"+POut.PString(Cur.Drug)+"', "
-				+"'"+POut.PString(Cur.Sig)+"', "
-				+"'"+POut.PString(Cur.Disp)+"', "
-				+"'"+POut.PString(Cur.Refills)+"', "
-				+"'"+POut.PString(Cur.Notes)+"')";
-			NonQ(true);
-			Cur.RxDefNum=InsertID;
-		}
-
-		///<summary></summary>
-		public static void DeleteCur(){
-			cmd.CommandText = "DELETE FROM rxdef "
-				+"WHERE rxdefnum = '"+Cur.RxDefNum+"'";
-			NonQ(false);
-		}
+	
 	}
 
 	

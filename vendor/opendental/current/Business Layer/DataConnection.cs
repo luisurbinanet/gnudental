@@ -72,6 +72,9 @@ namespace OpenDental{
 				MB.ShowDialog();
 				//MessageBox.Show(command);
 			}
+			//System.Net.Sockets.SocketException will be thrown if database connection is unavailable.
+			//SocketException should be handled by the calling function.
+			//usually only a problem for timed refreshes.
 			//catch(MySqlException e){
 			//	MessageBox.Show("Error: "+e.Message+","+cmd.CommandText);
 			//}

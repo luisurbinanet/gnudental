@@ -279,7 +279,7 @@ namespace OpenDental.Eclaims
 						+"*");//NM107: Name suffix. not used
 					//If medical, it's unclear what needs to be send before the NPI date.
 					//We'll assume it's ok to use TIN or SSN if NPI not available.
-					if(billProv.NationalProvID!=""){
+					if(isMedical && billProv.NationalProvID!=""){
 						sw.Write("XX*");//NM108: ID code qualifier. 24=EIN. 34=SSN, XX=NPI
 						sw.WriteLine(Sout(billProv.NationalProvID,80)+"~");//NM109: ID code
 					}
@@ -515,7 +515,7 @@ namespace OpenDental.Eclaims
 						+Sout(carrier.CarrierName,35)+"*"//NM103: Name. Length can be 60 in the new medical specs.
 						+"****"//NM104-07 not used
 						+"PI*");//NM108: PI=PayorID
-					if(carrier.ElectID==""){
+					if(carrier.ElectID.Length<3){
 						sw.WriteLine("06126~");//NM109: PayorID
 					}
 					else{
@@ -1746,6 +1746,12 @@ namespace OpenDental.Eclaims
 				if(retVal!="")
 					retVal+=",";
 				retVal+="Carrier Zip";
+			}
+			ElectID electID=ElectIDs.GetID(carrier.ElectID);
+			if(electID!=null && electID.IsMedicaid && billProv.MedicaidID=="") {
+				if(retVal!="")
+					retVal+=",";
+				retVal+="Medicaid ID";
 			}
 			if(claim.PlanNum2>0){
 				InsPlan insPlan2=InsPlans.GetPlan(claim.PlanNum2,new InsPlan[] {});

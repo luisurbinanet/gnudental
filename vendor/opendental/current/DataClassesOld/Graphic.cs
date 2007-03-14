@@ -1,9 +1,9 @@
-
+/*
 using System;
 using System.Collections;
 using System.Windows.Forms;
 
-namespace OpenDental{
+namespace OpenDental{*/
 	
 	
 
@@ -62,7 +62,7 @@ namespace OpenDental{
 	}//end struct Gen*/
 	
 	/*=========================================================================================
-	=================================== class GraphicAssemblies ========================================*/
+	=================================== class GraphicAssemblies ========================================
 	///<summary></summary>
 	public class GraphicAssemblies:DataClass{
 		///<summary></summary>
@@ -145,7 +145,7 @@ namespace OpenDental{
 	}
 
 	/*=========================================================================================
-	=================================== class GraphicElements ==========================================*/
+	=================================== class GraphicElements ==========================================
 	///<summary></summary>
 	public class GraphicElements:DataClass{
 		///<summary></summary>
@@ -355,7 +355,7 @@ namespace OpenDental{
 	}
 
 	/*=========================================================================================
-	=================================== class GraphicPoints ==========================================*/
+	=================================== class GraphicPoints ==========================================
 	///<summary></summary>
 	public class GraphicPoints:DataClass{
 		///<summary></summary>
@@ -476,7 +476,7 @@ namespace OpenDental{
 
 
 	/*=========================================================================================
-	=================================== class GraphicShapes ==========================================*/
+	=================================== class GraphicShapes ==========================================
 	///<summary></summary>
 	public class GraphicShapes:DataClass{
 		///<summary></summary>
@@ -573,7 +573,7 @@ namespace OpenDental{
 	}
 
 	/*=========================================================================================
-	=================================== class GraphicTypes ==========================================*/
+	=================================== class GraphicTypes ==========================================
 	///<summary></summary>
 	public class GraphicTypes:DataClass{
 		///<summary></summary>
@@ -664,6 +664,7 @@ namespace OpenDental{
 			return "";
 		}
 
+		///<summary></summary>
 		public static GraphicType GetByType(int gTypeNum) {
 			for(int i=0;i<List.Length;i++) {
 				if(List[i].GTypeNum==gTypeNum) {
@@ -698,7 +699,7 @@ namespace OpenDental{
 	}
 
 }
-
+	*/
 
 
 

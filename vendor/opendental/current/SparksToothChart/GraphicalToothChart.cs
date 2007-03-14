@@ -19,10 +19,12 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using Tao.OpenGl;
+using Tao.Platform.Windows;
 
 namespace SparksToothChart {
 	public partial class GraphicalToothChart:Tao.Platform.Windows.SimpleOpenGlControl {
@@ -37,26 +39,36 @@ namespace SparksToothChart {
 		private string[] selectedTeeth;
 		///<summary>valid values are 1 to 32 (int)</summary>
 		private ArrayList ALSelectedTeeth;
-		private Color ClearColor;
+		private Color colorBackground;
+		///<summary></summary>
+		public Color ColorText;
+		///<summary></summary>
+		public Color ColorTextHighlight;
+		///<summary></summary>
+		public Color ColorBackHighlight;		
 		private bool MouseIsDown;
 		///<summary>Mouse move causes this variable to be updated with the current tooth that the mouse is hovering over.</summary>
 		private int hotTooth;
 		///<summary>The previous hotTooth.  If this is different than hotTooth, then mouse has just now moved to a new tooth.  Can be 0 to represent no previous.</summary>
 		private int hotToothOld;
 		private bool useInternational;
-		//<summary>Since only one implant needs to be stored, it is stored here.  It needs to be rotated 180 for max. </summary>
-		//private ToothGroup ImplantGroup;
 
 		public GraphicalToothChart() {
 			InitializeComponent();
 			WidthProjection=130;
 			ListToothGraphics=new ToothGraphicCollection();
 			ALSelectedTeeth=new ArrayList();
+			//set default colors
+			colorBackground=Color.FromArgb(95,95,130);
+			ColorText=Color.Green;
+			ColorTextHighlight=Color.Purple;
+			ColorBackHighlight=Color.Orange;
 			ResetTeeth();
 		}
 
 		protected override void OnLoad(EventArgs e) {
 			base.OnLoad(e);
+			//Initialize();
 		}
 
 		protected override void OnResize(EventArgs e) {
@@ -64,13 +76,22 @@ namespace SparksToothChart {
 			Initialize();
 		}
 
+		/*protected override void OnVisibleChanged(EventArgs e) {
+			base.OnVisibleChanged(e);
+			if(Visible){
+				Initialize();
+			}
+			else{
+				this.DestroyContexts();
+			}
+		}*/
+
 		private void Initialize(){
 			InitializeContexts();//initializes the device context for the control.
-			ClearColor=Color.FromArgb(95,95,130);
-			Color backColor=ClearColor;
+			//Color backColor=ClearColor;
 			//Color.FromArgb(95,95,130);
 			//set clearing color. Only needs to be set once.
-			Gl.glClearColor((float)backColor.R/255f,(float)backColor.G/255f,(float)backColor.B/255f,0f);
+			Gl.glClearColor((float)ColorBackground.R/255f,(float)ColorBackground.G/255f,(float)ColorBackground.B/255f,0f);
 			Gl.glClearAccum(0f,0f,0f,0f);
 			//Lighting
 			float ambI=.2f;
@@ -118,6 +139,18 @@ namespace SparksToothChart {
 			}
 			set{
 				useInternational=value;
+			}
+		}
+
+		///<summary></summary>
+		public Color ColorBackground {
+			get {
+				return colorBackground;
+			}
+			set {
+				colorBackground=value;
+				Gl.glClearColor((float)ColorBackground.R/255f,(float)ColorBackground.G/255f,(float)ColorBackground.B/255f,0f);
+				Invalidate();
 			}
 		}
 
@@ -321,6 +354,26 @@ namespace SparksToothChart {
 			}
 			ListToothGraphics[toothID].IsSealant=true;
 			ListToothGraphics[toothID].colorSealant=color;
+		}
+
+		///<summary>Returns a bitmap of what is showing in the control.  Used for printing.</summary>
+		public Bitmap GetBitmap(){
+			Gl.glFlush();
+			Bitmap bitmap=new Bitmap(this.Width,this.Height);
+			Graphics g=Graphics.FromImage(bitmap);
+			//base.DrawToBitmap(bmap,new Rectangle(0,0,Width,Height));
+			//return bmap;
+			//Gl.glReadPixels()
+			//Graphics g=this.CreateGraphics();
+			Point screenLoc=PointToScreen(Location);
+			g.CopyFromScreen(screenLoc.X,screenLoc.Y,0,0,new Size(Width,Height));
+			//BitmapData bitmapData=bitmap.LockBits(new Rectangle(0,0,bitmap.Width,bitmap.Height),
+			//	ImageLockMode.WriteOnly,PixelFormat.Format24bppRgb);
+			//Gl.glReadPixels(0,0,bitmap.Width,bitmap.Height,Gl.GL_BGR_EXT,Gl.GL_UNSIGNED_BYTE,bitmapData.Scan0);
+			//bitmap.UnlockBits(bitmapData);
+			//bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
+			g.Dispose();
+			return bitmap;
 		}
 
 		#endregion Public Methods
@@ -658,11 +711,14 @@ namespace SparksToothChart {
 
 		private void DrawTextAndLines(Graphics g) {
 			//this does not use OpenGL
-			g.DrawLine(Pens.White,0,this.Height/2,this.Width,this.Height/2);
+			g.DrawLine(new Pen(ColorText),0,this.Height/2,this.Width,this.Height/2);
 			//set position to center of control
 			int xPos;
 			int yPos;
 			string displayNum;
+			SolidBrush brushText=new SolidBrush(ColorText);
+			SolidBrush brushTextHighlight=new SolidBrush(ColorTextHighlight);
+			SolidBrush brushBackHighlight=new SolidBrush(ColorBackHighlight);
 			for(int t=0;t<ListToothGraphics.Count;t++) {//loop through each tooth
 				if(ListToothGraphics[t].ToothID=="implant"){
 					continue;
@@ -704,12 +760,12 @@ namespace SparksToothChart {
 					xPos-=(int)(ListToothGraphics[t].ShiftM*(float)Width/WidthProjection);
 				}
 				if(ALSelectedTeeth.Contains(ToothGraphic.IdToInt(ListToothGraphics[t].ToothID))) {
-					g.FillRectangle(Brushes.White,xPos,yPos,(int)g.MeasureString(displayNum,Font).Width+1,
+					g.FillRectangle(brushBackHighlight,xPos,yPos,(int)g.MeasureString(displayNum,Font).Width+1,
 						(int)g.MeasureString(displayNum,Font).Height);
-					g.DrawString(displayNum,Font,Brushes.Red,xPos,yPos);
+					g.DrawString(displayNum,Font,brushTextHighlight,xPos,yPos);
 				}
 				else {
-					g.DrawString(displayNum,Font,Brushes.White,xPos,yPos);
+					g.DrawString(displayNum,Font,brushText,xPos,yPos);
 				}
 			}
 		}
@@ -1015,7 +1071,7 @@ namespace SparksToothChart {
 				else {
 					xPos-=(int)(ListToothGraphics[tooth_id].ShiftM*(float)Width/WidthProjection);
 				}
-				g.FillRectangle(new SolidBrush(ClearColor),xPos,yPos,(int)g.MeasureString(tooth_id,Font).Width+2,
+				g.FillRectangle(new SolidBrush(colorBackground),xPos,yPos,(int)g.MeasureString(tooth_id,Font).Width+2,
 					(int)g.MeasureString(tooth_id,Font).Height);
 			}
 			this.DrawTextAndLines(g);//this handles the text and any needed white rectangles

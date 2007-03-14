@@ -27,7 +27,7 @@ namespace OpenDental {
 				retPlan=Refresh(planNum);//retPlan will now be null if not found
 			}
 			if(retPlan==null) {
-				MessageBox.Show(Lan.g("InsPlans","Database is slightly corrupted.  Please run the database integrity tool."));
+				MessageBox.Show(Lan.g("InsPlans","Database is inconsistent.  Please run the database maintenance tool."));
 				return new InsPlan();
 			}
 			if(retPlan==null) {
@@ -116,49 +116,36 @@ namespace OpenDental {
 		}
 
 		///<summary>Gets all plans in the database, organized by carrier name or by employer.  Identical plans are grouped as one row.</summary>
-		public static InsPlan[] RefreshListAll(bool byEmployer,string empName,string carrierName) {
-			string command;
+		public static InsPlan[] RefreshListAll(bool byEmployer,string empName,string carrierName,
+				string groupName,string groupNum) {
+			string command=
+				"SELECT insplan.EmployerNum,insplan.GroupName,insplan.GroupNum,insplan.CarrierNum"
+				+",insplan.PlanType,insplan.UseAltCode"
+				+",insplan.ClaimsUseUCR,insplan.FeeSched,insplan.CopayFeeSched,insplan.ClaimFormNum"
+				+",insplan.AllowedFeeSched,insplan.DivisionNo,insplan.IsMedical,insplan.TrojanID,PlanNote,COUNT(*)"
+				+",employer.EmpName,carrier.CarrierName "//the last two are for ordering
+				+"FROM insplan "
+				+"LEFT JOIN employer ON employer.EmployerNum = insplan.EmployerNum "
+				+"LEFT JOIN carrier ON carrier.CarrierNum = insplan.CarrierNum "
+				+"WHERE carrier.CarrierName LIKE '%"+POut.PString(carrierName)+"%' ";
+			if(empName!=""){
+				command+="AND employer.EmpName LIKE '%"+POut.PString(empName)+"%' ";
+			}
+			if(groupName!="") {
+				command+="AND insplan.GroupName LIKE '%"+POut.PString(groupName)+"%' ";
+			}
+			if(groupNum!="") {
+				command+="AND insplan.GroupNum LIKE '%"+POut.PString(groupNum)+"%' ";
+			}
+			command+="GROUP BY insplan.EmployerNum,insplan.GroupName,insplan.GroupNum,insplan.DivisionNo,"
+				+"insplan.CarrierNum,insplan.IsMedical ";
 			if(byEmployer) {
-				command=
-					"SELECT insplan.EmployerNum,insplan.GroupName,insplan.GroupNum,insplan.CarrierNum"
-					+",insplan.PlanType,insplan.UseAltCode"
-					+",insplan.ClaimsUseUCR,insplan.FeeSched,insplan.CopayFeeSched,insplan.ClaimFormNum"
-					+",insplan.AllowedFeeSched,insplan.DivisionNo,insplan.IsMedical,insplan.TrojanID,PlanNote,COUNT(*)"
-					+",employer.EmpName,carrier.CarrierName "//the last two are for ordering
-					+"FROM insplan "
-					+"LEFT JOIN employer ON employer.EmployerNum = insplan.EmployerNum "
-					+"LEFT JOIN carrier ON carrier.CarrierNum = insplan.CarrierNum "
-					+"WHERE carrier.CarrierName LIKE '%"+POut.PString(carrierName)+"%' ";
-				if(empName!=""){
-					command+="AND employer.EmpName LIKE '%"+POut.PString(empName)+"%' ";
-				}
-				command+="GROUP BY insplan.EmployerNum,insplan.GroupName,insplan.GroupNum,insplan.CarrierNum"
-					+",insplan.PlanType,insplan.UseAltCode"
-					+",insplan.ClaimsUseUCR,insplan.FeeSched,insplan.CopayFeeSched,insplan.ClaimFormNum"
-					+",insplan.AllowedFeeSched,insplan.DivisionNo,insplan.IsMedical,insplan.TrojanID "//note _might_ be different
-					+"ORDER BY employer.EmpName IS NULL,employer.EmpName,carrier.CarrierName ASC";
-				//MessageBox.Show(cmd.CommandText);
+				command+="ORDER BY employer.EmpName IS NULL,employer.EmpName,carrier.CarrierName ASC";
 			}
-			else {//not by employer
-				command=
-					"SELECT insplan.EmployerNum,insplan.GroupName,insplan.GroupNum,insplan.CarrierNum"
-					+",insplan.PlanType,insplan.UseAltCode"
-					+",insplan.ClaimsUseUCR,insplan.FeeSched,insplan.CopayFeeSched,insplan.ClaimFormNum"
-					+",insplan.AllowedFeeSched,insplan.DivisionNo,insplan.IsMedical,insplan.TrojanID,PlanNote,COUNT(*)"
-					+",carrier.CarrierName FROM insplan "
-					+"LEFT JOIN carrier USING(CarrierNum) "
-					+"LEFT JOIN employer ON employer.EmployerNum = insplan.EmployerNum "
-					+"WHERE carrier.CarrierName LIKE '%"+POut.PString(carrierName)+"%' ";
-				if(empName!=""){
-					command+="AND employer.EmpName LIKE '%"+POut.PString(empName)+"%' ";
-				}
-				command+="GROUP BY insplan.EmployerNum,insplan.GroupName,insplan.GroupNum,insplan.CarrierNum"
-					+",insplan.PlanType,insplan.UseAltCode"
-					+",insplan.ClaimsUseUCR,insplan.FeeSched,insplan.CopayFeeSched,insplan.ClaimFormNum"
-					+",insplan.AllowedFeeSched,insplan.DivisionNo,insplan.IsMedical,insplan.TrojanID "
-					+"ORDER BY carrier.CarrierName ASC";
+			else{//not by employer
+				command+="ORDER BY carrier.CarrierName ASC";
 			}
-			//MessageBox.Show(cmd.CommandText);
+			Debug.WriteLine(command);
 			DataConnection dcon=new DataConnection();
 			DataTable table=dcon.GetTable(command);
 			InsPlan[] ListAll=new InsPlan[table.Rows.Count];
@@ -180,7 +167,6 @@ namespace OpenDental {
 				ListAll[i].TrojanID       = PIn.PString(table.Rows[i][13].ToString());
 				ListAll[i].PlanNote       = PIn.PString(table.Rows[i][14].ToString());
 				ListAll[i].NumberPlans    = PIn.PInt   (table.Rows[i][15].ToString());
-				//ListAll[i].PlanNum      = PIn.PInt   (table.Rows[i][12].ToString());//random
 			}
 			return ListAll;
 		}
@@ -310,7 +296,12 @@ namespace OpenDental {
 					&& ClaimProcList[i].ProcDate < stopDate
 					&& ClaimProcList[i].ProcDate >= startDate
 					//enum ClaimProcStatus{NotReceived,Received,Preauth,Adjustment,Supplemental}
-					&& ClaimProcList[i].Status!=ClaimProcStatus.Preauth) {
+					&& (ClaimProcList[i].Status==ClaimProcStatus.Adjustment
+					|| ClaimProcList[i].Status==ClaimProcStatus.NotReceived
+					|| ClaimProcList[i].Status==ClaimProcStatus.Received
+					|| ClaimProcList[i].Status==ClaimProcStatus.Supplemental)
+					)
+				{
 					retVal+=ClaimProcList[i].DedApplied;
 				}
 			}
@@ -358,7 +349,7 @@ namespace OpenDental {
 			return retVal;
 		}
 
-		///<summary>Only used once from Claims.  Gets insurance deductible remaining for one benefit year which includes the given date.  Must supply all claimprocs for the patient.  Must supply all benefits for patient so that we know if it's a service year or a calendar year.  Date used to determine which benefit year to calc.  Usually today's date.  The insplan.PlanNum is the plan to get value for.  ExcludeClaim is the ClaimNum to exclude, or enter -1 to include all.  The supplied adaCode is needed because some deductibles, for instance, do not apply to preventive.</summary>
+		///<summary>Used once from Claims and also in ContrTreat.  Gets insurance deductible remaining for one benefit year which includes the given date.  Must supply all claimprocs for the patient.  Must supply all benefits for patient so that we know if it's a service year or a calendar year.  Date used to determine which benefit year to calc.  Usually today's date.  The insplan.PlanNum is the plan to get value for.  ExcludeClaim is the ClaimNum to exclude, or enter -1 to include all.  The supplied adaCode is needed because some deductibles, for instance, do not apply to preventive.</summary>
 		public static double GetDedRem(ClaimProc[] ClaimProcList,DateTime date,int planNum,int patPlanNum,int excludeClaim,InsPlan[] PlanList,Benefit[] benList,string adaCode){
 			double dedTot=Benefits.GetDeductibleByCode(benList,planNum,patPlanNum,adaCode);
 			double dedUsed=GetDedUsed(ClaimProcList,date,planNum,patPlanNum,excludeClaim,PlanList,benList);
@@ -434,6 +425,9 @@ namespace OpenDental {
 
 		///<summary>Gets all distinct notes for the planNums supplied.  Supply a planNum to exclude it.  Only called when closing FormInsPlan.  Includes blank notes.</summary>
 		public static string[] GetNotesForPlans(int[] planNums,int excludePlanNum){
+			if(planNums.Length==0) {//this should never happen, but just in case...
+				return new string[0];
+			}
 			if(planNums.Length==1 && planNums[0]==excludePlanNum){
 				return new string[0];
 			}

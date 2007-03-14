@@ -181,6 +181,8 @@ namespace OpenDental{
 		private ODGrid gridPtInfo;
 		private CheckBox checkComm;
 		private ToothInitial[] ToothInitialList;
+		///<summary>a list of the hidden teeth as strings. Includes "1"-"32", and "A"-"Z"</summary>
+		private ArrayList HiddenTeeth;
 			
 		///<summary></summary>
 		public ContrChart(){
@@ -1605,6 +1607,7 @@ namespace OpenDental{
 			this.toothChart.AutoMakeCurrent = true;
 			this.toothChart.AutoSwapBuffers = true;
 			this.toothChart.BackColor = System.Drawing.Color.Black;
+			this.toothChart.ColorBackground = System.Drawing.Color.FromArgb(((int)(((byte)(95)))),((int)(((byte)(95)))),((int)(((byte)(130)))));
 			this.toothChart.ColorBits = ((byte)(32));
 			this.toothChart.DepthBits = ((byte)(16));
 			this.toothChart.Location = new System.Drawing.Point(0,146);
@@ -1865,6 +1868,7 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public void ModuleSelected(int patNum){
+			//toothChart.Visible=true;
 			EasyHideClinicalData();
 			RefreshModuleData(patNum);
 			RefreshModuleScreen();
@@ -1872,6 +1876,7 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public void ModuleUnselected(){
+			//toothChart.Dispose();
 			if(FamCur==null)
 				return;
 			if(TreatmentNoteChanged){
@@ -2231,10 +2236,47 @@ namespace OpenDental{
 				row.Cells.Add("");
 			}
 			gridPtInfo.Rows.Add(row);
-			//MedUrgNote. Row 6
+			ODGridCell cell;
+			//premed flag. Row 6
+			if(PatCur.Premed){
+				row=new ODGridRow();
+				row.Cells.Add("");
+				cell=new ODGridCell();
+				cell.Text=Lan.g("TableChartPtInfo","Premedicate");
+				cell.ColorText=Color.Red;
+				cell.Bold=YN.Yes;
+				row.Cells.Add(cell);
+				row.ColorBackG=Defs.Long[(int)DefCat.MiscColors][3].ItemColor;
+				gridPtInfo.Rows.Add(row);
+			}
+			//diseases
+			Disease[] DiseaseList=Diseases.Refresh(PatCur.PatNum);
+			row=new ODGridRow();
+			cell=new ODGridCell(Lan.g("TableChartPtInfo","Diseases"));
+			cell.Bold=YN.Yes;
+			row.Cells.Add(cell);
+			if(DiseaseList.Length>0) {
+				row.Cells.Add("");
+			}
+			else {
+				row.Cells.Add(Lan.g("TableChartPtInfo","none"));
+			}
+			row.ColorBackG=Defs.Long[(int)DefCat.MiscColors][3].ItemColor;
+			gridPtInfo.Rows.Add(row);
+			for(int i=0;i<DiseaseList.Length;i++) {
+				row=new ODGridRow();
+				cell=new ODGridCell(DiseaseDefs.GetName(DiseaseList[i].DiseaseDefNum));
+				cell.ColorText=Color.Red;
+				cell.Bold=YN.Yes;
+				row.Cells.Add(cell);
+				row.Cells.Add(DiseaseList[i].PatNote);
+				row.ColorBackG=Defs.Long[(int)DefCat.MiscColors][3].ItemColor;
+				gridPtInfo.Rows.Add(row);
+			}
+			//MedUrgNote 
 			row=new ODGridRow();
 			row.Cells.Add(Lan.g("TableChartPtInfo","Med Urgent"));
-			ODGridCell cell=new ODGridCell();
+			cell=new ODGridCell();
 			cell.Text=PatCur.MedUrgNote;
 			cell.ColorText=Color.Red;
 			cell.Bold=YN.Yes;
@@ -2257,13 +2299,16 @@ namespace OpenDental{
 			Medications.Refresh();
 			MedicationPats.Refresh(PatCur.PatNum);
 			row=new ODGridRow();
-			row.Cells.Add(Lan.g("TableChartPtInfo","Medications"));
+			cell=new ODGridCell(Lan.g("TableChartPtInfo","Medications"));
+			cell.Bold=YN.Yes;
+			row.Cells.Add(cell);
 			if(MedicationPats.List.Length>0) {
 				row.Cells.Add("");
 			}
 			else{
 				row.Cells.Add(Lan.g("TableChartPtInfo","none"));
 			}
+			row.ColorBackG=Defs.Long[(int)DefCat.MiscColors][3].ItemColor;
 			gridPtInfo.Rows.Add(row);
 			string text;
 			Medication med;
@@ -2278,8 +2323,10 @@ namespace OpenDental{
 				text=MedicationPats.List[i].PatNote
 					+"("+Medications.GetGeneric(MedicationPats.List[i].MedicationNum).Notes+")";
 				row.Cells.Add(text);
+				row.ColorBackG=Defs.Long[(int)DefCat.MiscColors][3].ItemColor;
 				gridPtInfo.Rows.Add(row);
 			}
+			
 			gridPtInfo.EndUpdate();
 		}
 
@@ -2299,7 +2346,7 @@ namespace OpenDental{
 		}
 
 		private void ComputeProcAL(){
-			ProcAL = new ArrayList();//this AL is also used when user clicks on a row
+			ProcAL = new ArrayList();
 			if(PatCur==null){
 				return;
 			}
@@ -2420,7 +2467,7 @@ namespace OpenDental{
 					}
 				}
 			}
-			IComparer myComparer = new ObjectDateComparer();
+			IComparer myComparer = new ChartObjectComparer();
 			mergedAL.Sort(myComparer);
 			gridProg.BeginUpdate();
 			gridProg.Columns.Clear();
@@ -2541,6 +2588,10 @@ namespace OpenDental{
 			Cursor=Cursors.WaitCursor;
 			toothChart.SuspendLayout();
 			toothChart.UseInternational=Prefs.GetBool("UseInternationalToothNumbers");
+			toothChart.ColorBackground=Defs.Long[(int)DefCat.ChartGraphicColors][10].ItemColor;
+			toothChart.ColorText=Defs.Long[(int)DefCat.ChartGraphicColors][11].ItemColor;
+			toothChart.ColorTextHighlight=Defs.Long[(int)DefCat.ChartGraphicColors][12].ItemColor;
+			toothChart.ColorBackHighlight=Defs.Long[(int)DefCat.ChartGraphicColors][13].ItemColor;
 			//remember which teeth were selected
 			ArrayList selectedTeeth=new ArrayList();//integers 1-32
 			for(int i=0;i<toothChart.SelectedTeeth.Length;i++) {
@@ -3879,7 +3930,7 @@ namespace OpenDental{
 				MsgBox.Show(this,"Please select an item from the list first.");
 				return;
 			}
-			ToothInitials.ClearValue(PatCur.PatNum,(string)listHidden.SelectedItem,ToothInitialType.Hidden);
+			ToothInitials.ClearValue(PatCur.PatNum,(string)HiddenTeeth[listHidden.SelectedIndex],ToothInitialType.Hidden);
 			ToothInitialList=ToothInitials.Refresh(PatCur.PatNum);
 			FillToothChart(false);
 		}
@@ -3944,12 +3995,11 @@ namespace OpenDental{
 					}
 				}
 			}//if movements tab
-			if(tabProc.SelectedIndex==1)//missing teeth
-			{
+			if(tabProc.SelectedIndex==1){//missing teeth
 				listHidden.Items.Clear();
-				ArrayList hidden=ToothInitials.GetHiddenTeeth(ToothInitialList);
-				for(int i=0;i<hidden.Count;i++){
-					listHidden.Items.Add(hidden[i]);
+				HiddenTeeth=ToothInitials.GetHiddenTeeth(ToothInitialList);
+				for(int i=0;i<HiddenTeeth.Count;i++){
+					listHidden.Items.Add(Tooth.ToInternat((string)HiddenTeeth[i]));
 				}
 			}
 		}
@@ -4542,7 +4592,7 @@ namespace OpenDental{
 			}
 			#endregion
 			int totalPages=gridProg.GetNumberOfPages(bounds,headingPrintH);
-			yPos+=gridProg.PrintPage(g,pagesPrinted,bounds,headingPrintH);
+			yPos=gridProg.PrintPage(g,pagesPrinted,bounds,headingPrintH);
 			#region OldCode
 			/*
 			#region ColDefs
@@ -4831,26 +4881,6 @@ namespace OpenDental{
 
 		
 
-
-		
-
-
-
-		
-
-
-		
-
-		
-
-		
-
-		
-
-		
-
-		
-
 		
 
 		#region VisiQuick integration code written by Thomas Jensen tje@thomsystems.com 
@@ -4992,9 +5022,24 @@ namespace OpenDental{
 		#endregion
 	}//end class
 
-	
-	
 
+
+	///<summary>This sorts all objects in Chart module based on their dates, times, priority, and toothnum.</summary>
+	public class ChartObjectComparer:IComparer {
+		///<summary>This sorts all objects in Chart module based on their dates, times, priority, and toothnum.</summary>
+		int IComparer.Compare(Object x,Object y) {
+			if(x.GetType()==typeof(Procedure) && y.GetType()==typeof(Procedure)){//if both are procedures
+				if(((Procedure)x).ProcDate==((Procedure)y).ProcDate){//and the dates are the same
+					IComparer procComparer=new ProcedureComparer();
+					return procComparer.Compare(x,y);//sort by priority, toothnum
+				}
+			}
+			//In all other situations, all we care about is the dates.
+			IComparer myComparer = new ObjectDateComparer();
+			return myComparer.Compare(x,y);
+		}
+
+	}
 
 
 

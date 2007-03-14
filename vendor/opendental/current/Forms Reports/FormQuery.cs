@@ -1126,7 +1126,7 @@ namespace OpenDental{
 			}
 			yPos+=bodyFont.GetHeight(ev.Graphics)+5;
 			//table:
-			while(yPos<ev.MarginBounds.Top+ev.MarginBounds.Height-18//The 18 is allowance for the line about to print.
+			while(yPos<ev.MarginBounds.Top+ev.MarginBounds.Height-18//The 18 is allowance for the line about to print. 
 				&& linesPrinted < Queries.TableQ.Rows.Count)
 			{
 				for(int iCol=0;iCol<Queries.TableQ.Columns.Count;iCol++){

@@ -21,6 +21,10 @@ namespace OpenDental{
 		public TimeClockStatus ClockStatus;
 		///<summary></summary>
 		public string Note;
+		///<summary></summary>
+		public DateTime TimeEnteredTwo;
+		///<summary></summary>
+		public DateTime TimeDisplayedTwo;
 
 		///<summary></summary>
 		public ClockEvent Copy() {

@@ -34,6 +34,11 @@ namespace OpenDental{
 		private InsPlan[] ListAll;
 		///<summary>Supply a string here to start off the search with filtered employers.</summary>
 		public string empText;
+		private TextBox textGroupNum;
+		private Label label3;
+		private TextBox textGroupName;
+		private Label label4;
+		private OpenDental.UI.Button butMerge;
 		///<summary>Supply a string here to start off the search with filtered carriers.</summary>
 		public string carrierText;
 
@@ -63,6 +68,11 @@ namespace OpenDental{
 			this.textEmployer = new System.Windows.Forms.TextBox();
 			this.textCarrier = new System.Windows.Forms.TextBox();
 			this.label2 = new System.Windows.Forms.Label();
+			this.textGroupNum = new System.Windows.Forms.TextBox();
+			this.label3 = new System.Windows.Forms.Label();
+			this.textGroupName = new System.Windows.Forms.TextBox();
+			this.label4 = new System.Windows.Forms.Label();
+			this.butMerge = new OpenDental.UI.Button();
 			this.gridMain = new OpenDental.UI.ODGrid();
 			this.butOK = new OpenDental.UI.Button();
 			this.butBlank = new OpenDental.UI.Button();
@@ -108,7 +118,7 @@ namespace OpenDental{
 			// label1
 			// 
 			this.label1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.label1.Location = new System.Drawing.Point(12,9);
+			this.label1.Location = new System.Drawing.Point(12,7);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(100,17);
 			this.label1.TabIndex = 15;
@@ -117,7 +127,7 @@ namespace OpenDental{
 			// 
 			// textEmployer
 			// 
-			this.textEmployer.Location = new System.Drawing.Point(118,6);
+			this.textEmployer.Location = new System.Drawing.Point(118,4);
 			this.textEmployer.Name = "textEmployer";
 			this.textEmployer.Size = new System.Drawing.Size(140,20);
 			this.textEmployer.TabIndex = 1;
@@ -125,7 +135,7 @@ namespace OpenDental{
 			// 
 			// textCarrier
 			// 
-			this.textCarrier.Location = new System.Drawing.Point(390,6);
+			this.textCarrier.Location = new System.Drawing.Point(118,25);
 			this.textCarrier.Name = "textCarrier";
 			this.textCarrier.Size = new System.Drawing.Size(140,20);
 			this.textCarrier.TabIndex = 0;
@@ -134,20 +144,72 @@ namespace OpenDental{
 			// label2
 			// 
 			this.label2.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.label2.Location = new System.Drawing.Point(284,9);
+			this.label2.Location = new System.Drawing.Point(12,28);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(100,17);
 			this.label2.TabIndex = 17;
 			this.label2.Text = "Carrier";
 			this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
+			// textGroupNum
+			// 
+			this.textGroupNum.Location = new System.Drawing.Point(408,25);
+			this.textGroupNum.Name = "textGroupNum";
+			this.textGroupNum.Size = new System.Drawing.Size(140,20);
+			this.textGroupNum.TabIndex = 20;
+			this.textGroupNum.TextChanged += new System.EventHandler(this.textGroupNum_TextChanged);
+			// 
+			// label3
+			// 
+			this.label3.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.label3.Location = new System.Drawing.Point(302,28);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(100,17);
+			this.label3.TabIndex = 23;
+			this.label3.Text = "Group Num";
+			this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// textGroupName
+			// 
+			this.textGroupName.Location = new System.Drawing.Point(408,4);
+			this.textGroupName.Name = "textGroupName";
+			this.textGroupName.Size = new System.Drawing.Size(140,20);
+			this.textGroupName.TabIndex = 21;
+			this.textGroupName.TextChanged += new System.EventHandler(this.textGroupName_TextChanged);
+			// 
+			// label4
+			// 
+			this.label4.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.label4.Location = new System.Drawing.Point(302,7);
+			this.label4.Name = "label4";
+			this.label4.Size = new System.Drawing.Size(100,17);
+			this.label4.TabIndex = 22;
+			this.label4.Text = "Group Name";
+			this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// butMerge
+			// 
+			this.butMerge.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butMerge.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.butMerge.Autosize = true;
+			this.butMerge.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butMerge.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butMerge.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butMerge.Location = new System.Drawing.Point(11,636);
+			this.butMerge.Name = "butMerge";
+			this.butMerge.Size = new System.Drawing.Size(74,26);
+			this.butMerge.TabIndex = 24;
+			this.butMerge.Text = "Combine";
+			this.butMerge.Click += new System.EventHandler(this.butMerge_Click);
+			// 
 			// gridMain
 			// 
 			this.gridMain.HScrollVisible = false;
-			this.gridMain.Location = new System.Drawing.Point(11,47);
+			this.gridMain.Location = new System.Drawing.Point(11,51);
 			this.gridMain.Name = "gridMain";
 			this.gridMain.ScrollValue = 0;
-			this.gridMain.Size = new System.Drawing.Size(936,583);
+			this.gridMain.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+			this.gridMain.Size = new System.Drawing.Size(936,579);
 			this.gridMain.TabIndex = 19;
 			this.gridMain.Title = "Insurance Plans";
 			this.gridMain.TranslationName = "TableTemplates";
@@ -202,6 +264,11 @@ namespace OpenDental{
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
 			this.ClientSize = new System.Drawing.Size(962,669);
+			this.Controls.Add(this.butMerge);
+			this.Controls.Add(this.textGroupNum);
+			this.Controls.Add(this.label3);
+			this.Controls.Add(this.textGroupName);
+			this.Controls.Add(this.label4);
 			this.Controls.Add(this.gridMain);
 			this.Controls.Add(this.textCarrier);
 			this.Controls.Add(this.label2);
@@ -231,12 +298,8 @@ namespace OpenDental{
 
 		private void FillGrid(){
 			Cursor=Cursors.WaitCursor;
-			if(radioOrderEmp.Checked){//order by employer,carrier
-				ListAll=InsPlans.RefreshListAll(true,textEmployer.Text,textCarrier.Text);
-			}
-			else{//order by carrier only
-				ListAll=InsPlans.RefreshListAll(false,textEmployer.Text,textCarrier.Text);
-			}
+			ListAll=InsPlans.RefreshListAll(radioOrderEmp.Checked,textEmployer.Text,textCarrier.Text,
+				textGroupName.Text,textGroupNum.Text);
 			if(IsSelectMode){
 				butBlank.Visible=true;
 			}
@@ -279,11 +342,7 @@ namespace OpenDental{
 			Carrier carrier;
 			for(int i=0;i<ListAll.Length;i++) {
 				row=new ODGridRow();
-				if(radioOrderEmp.Checked && i>0 && ListAll[i].EmployerNum==ListAll[i-1].EmployerNum)
-					row.Cells.Add("");//suppresses duplicate employer names for easier reading
-				else
-					row.Cells.Add(Employers.GetName(ListAll[i].EmployerNum));
-				//MessageBox.Show(InsPlans.ListAll[i].CarrierNum.ToString());
+				row.Cells.Add(Employers.GetName(ListAll[i].EmployerNum));
 				carrier=Carriers.GetCarrier(ListAll[i].CarrierNum);
 				row.Cells.Add(carrier.CarrierName);
 				row.Cells.Add(carrier.Phone);
@@ -337,6 +396,60 @@ namespace OpenDental{
 			FillGrid();
 		}
 
+		private void textGroupName_TextChanged(object sender,EventArgs e) {
+			FillGrid();
+		}
+
+		private void textGroupNum_TextChanged(object sender,EventArgs e) {
+			FillGrid();
+		}
+
+		private void butMerge_Click(object sender,EventArgs e) {
+			if(gridMain.SelectedIndices.Length<2) {
+				MessageBox.Show(Lan.g(this,"Please select at least two items first."));
+				return;
+			}
+			InsPlan[] listSelected=new InsPlan[gridMain.SelectedIndices.Length];
+			for(int i=0;i<listSelected.Length;i++){
+				listSelected[i]=ListAll[gridMain.SelectedIndices[i]].Copy();
+			}
+			FormInsPlansMerge FormI=new FormInsPlansMerge();
+			FormI.ListAll=listSelected;
+			FormI.ShowDialog();
+			if(FormI.DialogResult!=DialogResult.OK){
+				return;
+			}
+			//Do the merge.
+			InsPlan mergedPlan=FormI.MergedPlan.Copy();
+			ArrayList benList=Benefits.RefreshForAll(mergedPlan);
+			Cursor=Cursors.WaitCursor;
+			int[] planNums;
+			for(int i=0;i<listSelected.Length;i++){//loop through each selected plan group
+				//skip the merged plan, because it's already correct
+				if(mergedPlan.CompareTo(listSelected[i])==0){
+					continue;
+				}
+				planNums=listSelected[i].GetPlanNumsOfSamePlans();
+				//First the plan info and benefits
+				//must do benefits first, because this method has to do a search for similar plans. So plan can't be updated yet.
+				Benefits.UpdateListForIdentical(new ArrayList(),benList,listSelected[i]);//there will always be changes
+				mergedPlan.UpdateForLike(listSelected[i]);
+				for(int j=0;j<planNums.Length;j++) {
+					InsPlans.ComputeEstimatesForPlan(planNums[j]);
+				}
+				//Then PlanNote.  This is much simpler than the usual synch, because user has seen all versions of note.
+				InsPlans.UpdateNoteForPlans(planNums,mergedPlan.PlanNote);
+			}
+			FillGrid();
+			//highlight the merged plan
+			for(int i=0;i<ListAll.Length;i++){
+				if(ListAll[i].CompareTo(mergedPlan)==0){
+					gridMain.SetSelected(i,true);
+				}
+			}
+			Cursor=Cursors.Default;
+		}
+
 		private void butBlank_Click(object sender, System.EventArgs e) {
 			SelectedPlan=new InsPlan();
 			DialogResult=DialogResult.OK;
@@ -348,8 +461,10 @@ namespace OpenDental{
 					MessageBox.Show(Lan.g(this,"Please select an item first."));
 					return;
 				}
-				//CreateNewPlan();//if the user then hits cancel, then this will not close this window.
-				//AlterCurPlan();
+				if(gridMain.SelectedIndices.Length>1) {
+					MessageBox.Show(Lan.g(this,"Please select only one item first."));
+					return;
+				}
 				SelectedPlan=ListAll[gridMain.SelectedIndices[0]].Copy();
 				DialogResult=DialogResult.OK;
 			}
@@ -361,6 +476,10 @@ namespace OpenDental{
 		private void butCancel_Click(object sender, System.EventArgs e) {
 			DialogResult=DialogResult.Cancel;
 		}
+
+		
+
+		
 
 		
 

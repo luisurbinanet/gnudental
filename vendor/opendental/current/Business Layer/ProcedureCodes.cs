@@ -44,6 +44,8 @@ namespace OpenDental{
 		public ToothPaintingType PaintType;
 		///<summary>If set to anything but 0, then this will override the graphic color for all procedures of this code, regardless of the status.</summary>
 		public Color GraphicColor;
+		///<summary>When creating treatment plans, this description will be used instead of the technical description.</summary>
+		public string LaymanTerm;
 
 		///<summary>Returns a copy of this Procedurecode.</summary>
 		public ProcedureCode Copy(){
@@ -66,6 +68,7 @@ namespace OpenDental{
 			p.IsTaxed=IsTaxed;
 			p.PaintType=PaintType;
 			p.GraphicColor=GraphicColor;
+			p.LaymanTerm=LaymanTerm;
 			return p;
 		}
 
@@ -75,7 +78,7 @@ namespace OpenDental{
 			string command="INSERT INTO procedurecode (adacode,descript,abbrdesc,"
 				+"proctime,proccat,treatarea,setrecall,"
 				+"nobillins,isprosth,defaultnote,ishygiene,gtypenum,alternatecode1,MedicalCode,IsTaxed,"
-				+"PaintType,GraphicColor) VALUES("
+				+"PaintType,GraphicColor,LaymanTerm) VALUES("
 				+"'"+POut.PString(ADACode)+"', "
 				+"'"+POut.PString(Descript)+"', "
 				+"'"+POut.PString(AbbrDesc)+"', "
@@ -93,7 +96,8 @@ namespace OpenDental{
 				+"'"+POut.PString(MedicalCode)+"', "
 				+"'"+POut.PBool  (IsTaxed)+"', "
 				+"'"+POut.PInt   ((int)PaintType)+"', "
-				+"'"+POut.PInt   (GraphicColor.ToArgb())+"')";
+				+"'"+POut.PInt   (GraphicColor.ToArgb())+"', "
+				+"'"+POut.PString(LaymanTerm)+"')";
 			DataConnection dcon=new DataConnection();
 			dcon.NonQ(command);
 			ProcedureCodes.Refresh();
@@ -122,6 +126,7 @@ namespace OpenDental{
 				+ ",IsTaxed = '"       +POut.PBool  (IsTaxed)+"'"
 				+ ",PaintType = '"     +POut.PInt   ((int)PaintType)+"'"
 				+ ",GraphicColor = '"  +POut.PInt   (GraphicColor.ToArgb())+"'"
+				+ ",LaymanTerm = '"    +POut.PString(LaymanTerm)+"'"
 				+" WHERE adacode = '"+POut.PString(ADACode)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
@@ -176,6 +181,7 @@ namespace OpenDental{
 				tempCode.IsTaxed       =PIn.PBool  (tableStat.Rows[i][15].ToString());
 				tempCode.PaintType     =(ToothPaintingType)PIn.PInt(tableStat.Rows[i][16].ToString());
 				tempCode.GraphicColor  =Color.FromArgb(PIn.PInt(tableStat.Rows[i][17].ToString()));
+				tempCode.LaymanTerm    =PIn.PString(tableStat.Rows[i][18].ToString());
 				HList.Add(tempCode.ADACode,tempCode.Copy());
 				List[i]=tempCode.Copy();
 				if(tempCode.SetRecall){
@@ -278,6 +284,23 @@ namespace OpenDental{
 			//msg.ShowDialog();
 			DataConnection dcon=new DataConnection();
 			return dcon.GetTable(command);
+		}
+
+		///<summary>Returns the LaymanTerm for the supplied adaCode, or the description if none present.</summary>
+		public static string GetLaymanTerm(string myADA) {
+			if(myADA==null) {
+				MessageBox.Show(Lan.g("ProcCodes","Error. Invalid procedure code."));
+				return "";
+			}
+			if(HList.Contains(myADA)) {
+				if(((ProcedureCode)HList[myADA]).LaymanTerm !=""){
+					return ((ProcedureCode)HList[myADA]).LaymanTerm;
+				}
+				return ((ProcedureCode)HList[myADA]).Descript;
+			}
+			else {
+				return "";
+			}
 		}
 
 	}

@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDental.UI;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -14,21 +15,23 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.Label label6;
 		private OpenDental.UI.Button butAdd;
-		private System.Windows.Forms.Label label8;
-		private OpenDental.TableMedications tbMeds;
 		private OpenDental.ODtextBox textMedical;
 		private OpenDental.ODtextBox textService;
 		private OpenDental.ODtextBox textMedicalComp;
 		private OpenDental.ODtextBox textMedUrgNote;
 		private System.ComponentModel.Container components = null;
-		private Label label1;// Required designer variable.
+		private OpenDental.UI.Button butAddDisease;// Required designer variable.
 		private Patient PatCur;
+		private OpenDental.UI.ODGrid gridMeds;
+		private OpenDental.UI.ODGrid gridDiseases;
+		private CheckBox checkPremed;
+		private OpenDental.UI.Button butQuestions;
+		private Disease[] DiseaseList;
 
 		///<summary></summary>
 		public FormMedical(Patient patCur){
 			InitializeComponent();// Required for Windows Form Designer support
 			PatCur=patCur;
-			tbMeds.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbMeds_CellDoubleClicked);
 			Lan.F(this);
 		}
 
@@ -52,6 +55,7 @@ namespace OpenDental{
 		/// </summary>
 		private void InitializeComponent()
 		{
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMedical));
 			this.butOK = new OpenDental.UI.Button();
 			this.butCancel = new OpenDental.UI.Button();
 			this.textMedUrgNote = new OpenDental.ODtextBox();
@@ -62,10 +66,12 @@ namespace OpenDental{
 			this.label4 = new System.Windows.Forms.Label();
 			this.label6 = new System.Windows.Forms.Label();
 			this.butAdd = new OpenDental.UI.Button();
-			this.label8 = new System.Windows.Forms.Label();
-			this.tbMeds = new OpenDental.TableMedications();
 			this.textMedicalComp = new OpenDental.ODtextBox();
-			this.label1 = new System.Windows.Forms.Label();
+			this.butAddDisease = new OpenDental.UI.Button();
+			this.gridMeds = new OpenDental.UI.ODGrid();
+			this.gridDiseases = new OpenDental.UI.ODGrid();
+			this.checkPremed = new System.Windows.Forms.CheckBox();
+			this.butQuestions = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
 			// butOK
@@ -102,39 +108,39 @@ namespace OpenDental{
 			this.textMedUrgNote.AcceptsReturn = true;
 			this.textMedUrgNote.Font = new System.Drawing.Font("Microsoft Sans Serif",8.25F,System.Drawing.FontStyle.Bold,System.Drawing.GraphicsUnit.Point,((byte)(0)));
 			this.textMedUrgNote.ForeColor = System.Drawing.Color.Red;
-			this.textMedUrgNote.Location = new System.Drawing.Point(144,232);
+			this.textMedUrgNote.Location = new System.Drawing.Point(156,447);
 			this.textMedUrgNote.Multiline = true;
 			this.textMedUrgNote.Name = "textMedUrgNote";
 			this.textMedUrgNote.QuickPasteType = OpenDental.QuickPasteType.MedicalUrgent;
 			this.textMedUrgNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textMedUrgNote.Size = new System.Drawing.Size(252,50);
+			this.textMedUrgNote.Size = new System.Drawing.Size(252,33);
 			this.textMedUrgNote.TabIndex = 53;
 			// 
 			// textService
 			// 
 			this.textService.AcceptsReturn = true;
-			this.textService.Location = new System.Drawing.Point(144,393);
+			this.textService.Location = new System.Drawing.Point(156,558);
 			this.textService.Multiline = true;
 			this.textService.Name = "textService";
 			this.textService.QuickPasteType = OpenDental.QuickPasteType.ServiceNotes;
 			this.textService.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textService.Size = new System.Drawing.Size(252,95);
+			this.textService.Size = new System.Drawing.Size(252,83);
 			this.textService.TabIndex = 52;
 			// 
 			// textMedical
 			// 
 			this.textMedical.AcceptsReturn = true;
-			this.textMedical.Location = new System.Drawing.Point(144,288);
+			this.textMedical.Location = new System.Drawing.Point(156,482);
 			this.textMedical.Multiline = true;
 			this.textMedical.Name = "textMedical";
 			this.textMedical.QuickPasteType = OpenDental.QuickPasteType.MedicalSummary;
 			this.textMedical.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textMedical.Size = new System.Drawing.Size(252,99);
+			this.textMedical.Size = new System.Drawing.Size(252,74);
 			this.textMedical.TabIndex = 51;
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(1,394);
+			this.label3.Location = new System.Drawing.Point(13,559);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(140,16);
 			this.label3.TabIndex = 50;
@@ -143,7 +149,7 @@ namespace OpenDental{
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(1,231);
+			this.label2.Location = new System.Drawing.Point(13,445);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(140,21);
 			this.label2.TabIndex = 49;
@@ -152,7 +158,7 @@ namespace OpenDental{
 			// 
 			// label4
 			// 
-			this.label4.Location = new System.Drawing.Point(1,289);
+			this.label4.Location = new System.Drawing.Point(13,483);
 			this.label4.Name = "label4";
 			this.label4.Size = new System.Drawing.Size(140,17);
 			this.label4.TabIndex = 47;
@@ -163,42 +169,25 @@ namespace OpenDental{
 			// 
 			this.label6.Location = new System.Drawing.Point(419,212);
 			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(299,18);
+			this.label6.Size = new System.Drawing.Size(421,18);
 			this.label6.TabIndex = 6;
-			this.label6.Text = "Medical History - Complete and Detailed";
+			this.label6.Text = "Medical History - Complete and Detailed (does not show in chart)";
 			this.label6.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// butAdd
 			// 
-			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0,1);
 			this.butAdd.Autosize = true;
 			this.butAdd.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butAdd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butAdd.Location = new System.Drawing.Point(142,0);
+			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
+			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butAdd.Location = new System.Drawing.Point(3,1);
 			this.butAdd.Name = "butAdd";
-			this.butAdd.Size = new System.Drawing.Size(75,23);
+			this.butAdd.Size = new System.Drawing.Size(123,23);
 			this.butAdd.TabIndex = 51;
-			this.butAdd.Text = "&Add";
+			this.butAdd.Text = "&Add Medication";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
-			// 
-			// label8
-			// 
-			this.label8.Location = new System.Drawing.Point(2,6);
-			this.label8.Name = "label8";
-			this.label8.Size = new System.Drawing.Size(128,16);
-			this.label8.TabIndex = 52;
-			this.label8.Text = "Medications";
-			// 
-			// tbMeds
-			// 
-			this.tbMeds.BackColor = System.Drawing.SystemColors.Window;
-			this.tbMeds.Location = new System.Drawing.Point(3,24);
-			this.tbMeds.Name = "tbMeds";
-			this.tbMeds.ScrollValue = 544;
-			this.tbMeds.SelectedIndices = new int[0];
-			this.tbMeds.SelectionMode = System.Windows.Forms.SelectionMode.None;
-			this.tbMeds.Size = new System.Drawing.Size(959,175);
-			this.tbMeds.TabIndex = 53;
 			// 
 			// textMedicalComp
 			// 
@@ -211,14 +200,69 @@ namespace OpenDental{
 			this.textMedicalComp.Size = new System.Drawing.Size(530,409);
 			this.textMedicalComp.TabIndex = 54;
 			// 
-			// label1
+			// butAddDisease
 			// 
-			this.label1.Location = new System.Drawing.Point(141,212);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(261,18);
-			this.label1.TabIndex = 55;
-			this.label1.Text = "These summaries show in the Chart";
-			this.label1.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			this.butAddDisease.AdjustImageLocation = new System.Drawing.Point(0,1);
+			this.butAddDisease.Autosize = true;
+			this.butAddDisease.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAddDisease.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butAddDisease.Image = ((System.Drawing.Image)(resources.GetObject("butAddDisease.Image")));
+			this.butAddDisease.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butAddDisease.Location = new System.Drawing.Point(3,207);
+			this.butAddDisease.Name = "butAddDisease";
+			this.butAddDisease.Size = new System.Drawing.Size(98,23);
+			this.butAddDisease.TabIndex = 58;
+			this.butAddDisease.Text = "Add Disease";
+			this.butAddDisease.Click += new System.EventHandler(this.butAddDisease_Click);
+			// 
+			// gridMeds
+			// 
+			this.gridMeds.HScrollVisible = false;
+			this.gridMeds.Location = new System.Drawing.Point(3,25);
+			this.gridMeds.Name = "gridMeds";
+			this.gridMeds.ScrollValue = 0;
+			this.gridMeds.Size = new System.Drawing.Size(959,180);
+			this.gridMeds.TabIndex = 59;
+			this.gridMeds.Title = "Medications";
+			this.gridMeds.TranslationName = "TableMedications";
+			this.gridMeds.CellDoubleClick += new OpenDental.UI.ODGridClickEventHandler(this.gridMeds_CellDoubleClick);
+			// 
+			// gridDiseases
+			// 
+			this.gridDiseases.HScrollVisible = false;
+			this.gridDiseases.Location = new System.Drawing.Point(3,231);
+			this.gridDiseases.Name = "gridDiseases";
+			this.gridDiseases.ScrollValue = 0;
+			this.gridDiseases.Size = new System.Drawing.Size(405,186);
+			this.gridDiseases.TabIndex = 60;
+			this.gridDiseases.Title = "Diseases and Allergies";
+			this.gridDiseases.TranslationName = "TableDiseases";
+			this.gridDiseases.CellDoubleClick += new OpenDental.UI.ODGridClickEventHandler(this.gridDiseases_CellDoubleClick);
+			// 
+			// checkPremed
+			// 
+			this.checkPremed.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.checkPremed.Location = new System.Drawing.Point(3,424);
+			this.checkPremed.Name = "checkPremed";
+			this.checkPremed.Size = new System.Drawing.Size(167,18);
+			this.checkPremed.TabIndex = 61;
+			this.checkPremed.Text = "Premedicate (PAC or other)";
+			this.checkPremed.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.checkPremed.UseVisualStyleBackColor = true;
+			// 
+			// butQuestions
+			// 
+			this.butQuestions.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butQuestions.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butQuestions.Autosize = true;
+			this.butQuestions.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butQuestions.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butQuestions.Location = new System.Drawing.Point(328,650);
+			this.butQuestions.Name = "butQuestions";
+			this.butQuestions.Size = new System.Drawing.Size(80,25);
+			this.butQuestions.TabIndex = 62;
+			this.butQuestions.Text = "Questionnaire";
+			this.butQuestions.Click += new System.EventHandler(this.butQuestions_Click);
 			// 
 			// FormMedical
 			// 
@@ -226,16 +270,18 @@ namespace OpenDental{
 			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(964,683);
-			this.Controls.Add(this.label1);
+			this.Controls.Add(this.butQuestions);
+			this.Controls.Add(this.checkPremed);
+			this.Controls.Add(this.gridDiseases);
+			this.Controls.Add(this.gridMeds);
+			this.Controls.Add(this.butAddDisease);
 			this.Controls.Add(this.textMedUrgNote);
 			this.Controls.Add(this.textService);
 			this.Controls.Add(this.textMedicalComp);
 			this.Controls.Add(this.textMedical);
 			this.Controls.Add(this.butAdd);
 			this.Controls.Add(this.label3);
-			this.Controls.Add(this.tbMeds);
 			this.Controls.Add(this.label2);
-			this.Controls.Add(this.label8);
 			this.Controls.Add(this.label4);
 			this.Controls.Add(this.label6);
 			this.Controls.Add(this.butCancel);
@@ -254,29 +300,48 @@ namespace OpenDental{
 		#endregion
 
 		private void FormMedical_Load(object sender, System.EventArgs e){
+			checkPremed.Checked=PatCur.Premed;
 			textMedUrgNote.Text=PatCur.MedUrgNote;
 			textMedical.Text=PatientNotes.Cur.Medical;
 			textMedicalComp.Text=PatientNotes.Cur.MedicalComp;
 			textService.Text=PatientNotes.Cur.Service;
 			FillMeds();
+			FillDiseases();
+			if(Questions.PatHasQuest(PatCur.PatNum)){
+				butQuestions.Text=Lan.g(this,"Edit Questionnaire");
+			}
+			else{
+				butQuestions.Text=Lan.g(this,"New Questionnaire");
+			}
 		}
 
 		private void FillMeds(){
 			Medications.Refresh();
 			MedicationPats.Refresh(PatCur.PatNum);
-			tbMeds.ResetRows(MedicationPats.List.Length);
-			tbMeds.SetGridColor(Color.Gray);
-			tbMeds.SetBackGColor(Color.White);  
+			gridMeds.BeginUpdate();
+			gridMeds.Columns.Clear();
+			ODGridColumn col=new ODGridColumn(Lan.g("TableMedications","Drug Name"),100);
+			gridMeds.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableMedications","Generic Name"),100);
+			gridMeds.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableMedications","Notes"),370);
+			gridMeds.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableMedications","Notes for Patient"),370);
+			gridMeds.Columns.Add(col);
+			gridMeds.Rows.Clear();
+			ODGridRow row;
 			for(int i=0;i<MedicationPats.List.Length;i++){
-				tbMeds.Cell[0,i]=Medications.GetMedication(MedicationPats.List[i].MedicationNum).MedName;
-				tbMeds.Cell[1,i]=Medications.GetGeneric(MedicationPats.List[i].MedicationNum).MedName;
-				tbMeds.Cell[2,i]=Medications.GetGeneric(MedicationPats.List[i].MedicationNum).Notes;
-				tbMeds.Cell[3,i]=MedicationPats.List[i].PatNote;
+				row=new ODGridRow();
+				row.Cells.Add(Medications.GetMedication(MedicationPats.List[i].MedicationNum).MedName);
+				row.Cells.Add(Medications.GetGeneric(MedicationPats.List[i].MedicationNum).MedName);
+				row.Cells.Add(Medications.GetGeneric(MedicationPats.List[i].MedicationNum).Notes);
+				row.Cells.Add(MedicationPats.List[i].PatNote);
+				gridMeds.Rows.Add(row);
 			}
-			tbMeds.LayoutTables(); 
+			gridMeds.EndUpdate();
 		}
 
-		private void tbMeds_CellDoubleClicked(object sender, CellEventArgs e){
+		private void gridMeds_CellDoubleClick(object sender,ODGridClickEventArgs e) {
 			MedicationPats.Cur=MedicationPats.List[e.Row];
 			FormMedPat FormMP=new FormMedPat();
 			FormMP.ShowDialog();
@@ -303,8 +368,54 @@ namespace OpenDental{
 			FillMeds();
 		}
 
+		private void FillDiseases(){
+			DiseaseList=Diseases.Refresh(PatCur.PatNum);
+			gridDiseases.BeginUpdate();
+			gridDiseases.Columns.Clear();
+			ODGridColumn col=new ODGridColumn(Lan.g("TableDiseases","Name"),180);//total is about 385
+			gridDiseases.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableDiseases","Patient Note"),205);
+			gridDiseases.Columns.Add(col);
+			gridDiseases.Rows.Clear();
+			ODGridRow row;
+			for(int i=0;i<DiseaseList.Length;i++){
+				row=new ODGridRow();
+				row.Cells.Add(DiseaseDefs.GetName(DiseaseList[i].DiseaseDefNum));
+				row.Cells.Add(DiseaseList[i].PatNote);
+				gridDiseases.Rows.Add(row);
+			}
+			gridDiseases.EndUpdate();
+		}
+
+		private void butAddDisease_Click(object sender,EventArgs e) {
+			Disease disease=new Disease();
+			disease.PatNum=PatCur.PatNum;
+			FormDiseaseEdit FormD=new FormDiseaseEdit(disease);
+			FormD.IsNew=true;
+			FormD.ShowDialog();
+			FillDiseases();
+		}
+
+		private void gridDiseases_CellDoubleClick(object sender,ODGridClickEventArgs e) {
+			FormDiseaseEdit FormD=new FormDiseaseEdit(DiseaseList[e.Row]);
+			FormD.ShowDialog();
+			FillDiseases();
+		}
+
+		private void butQuestions_Click(object sender,EventArgs e) {
+			FormQuestionnaire FormQ=new FormQuestionnaire(PatCur.PatNum);
+			FormQ.ShowDialog();
+			if(Questions.PatHasQuest(PatCur.PatNum)) {
+				butQuestions.Text=Lan.g(this,"Edit Questionnaire");
+			}
+			else {
+				butQuestions.Text=Lan.g(this,"New Questionnaire");
+			}
+		}
+
 		private void butOK_Click(object sender, System.EventArgs e) {
 			Patient PatOld=PatCur.Copy();
+			PatCur.Premed=checkPremed.Checked;
 			PatCur.MedUrgNote=textMedUrgNote.Text;
 			PatCur.Update(PatOld);
 			PatientNotes.Cur.Medical=textMedical.Text;
@@ -317,6 +428,16 @@ namespace OpenDental{
 		private void butCancel_Click(object sender, System.EventArgs e) {
 			DialogResult=DialogResult.Cancel;
 		}
+
+	
+
+		
+
+		
+
+		
+
+	
 
 		
 

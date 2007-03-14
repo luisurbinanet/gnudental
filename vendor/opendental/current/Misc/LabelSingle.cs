@@ -55,7 +55,7 @@ namespace OpenDental{
 
 		private void pd_PrintPagePat(object sender, System.Drawing.Printing.PrintPageEventArgs e) {
 			float xPos=25;
-			float yPos=22;
+			float yPos=10;//22;
 			Graphics g=e.Graphics;
 			g.TranslateTransform(100,0);
 			g.RotateTransform(90);
@@ -76,7 +76,7 @@ namespace OpenDental{
 
 		private void pd_PrintPageIns(object sender, System.Drawing.Printing.PrintPageEventArgs e) {
 			float xPos=25;
-			float yPos=22;
+			float yPos=10;
 			Graphics g=e.Graphics;
 			g.TranslateTransform(100,0);
 			g.RotateTransform(90);

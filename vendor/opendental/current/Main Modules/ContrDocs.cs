@@ -50,8 +50,8 @@ namespace OpenDental{
 		private System.Windows.Forms.MenuItem menuPrefs;
     private Stream myStream;
     //private FormDocInfo formDocInfo2;
-		///<summary>The path to the patient folder, including the letter folder, and ending with \</summary>
-		private string patFolder;
+		///<summary>The path to the patient folder, including the letter folder, and ending with \.  It's public for NewPatientForm.com functionality.</summary>
+		public string patFolder;
 		private OpenDental.UI.ODToolBar ToolBarMain;
 		//private string imageFileName;
 		///<summary>Starts out as false. It's only used when repainting the toolbar, not to test mode.</summary>
@@ -84,7 +84,8 @@ namespace OpenDental{
 		///<summary></summary>
 		[System.Runtime.InteropServices.DllImport("EZTW32.DLL")] 
 		public static extern int TWAIN_EasyVersion();// spk 10/05/04
-		private Patient PatCur;
+		///<summary>The only reason this is public is for NewPatientForm.com functionality.</summary>
+		public Patient PatCur;
 		private Family FamCur;
 		private Document[] DocumentList;
 		private Document DocCur;
@@ -365,7 +366,8 @@ namespace OpenDental{
 			DocumentList=null;
 		}
 
-  	private void RefreshModuleData(int patNum){
+		///<summary>This is public for NewPatientForm functionality.</summary>
+  	public void RefreshModuleData(int patNum){
 			if(patNum==0){
 				PatCur=null;
 				FamCur=null;
@@ -373,7 +375,9 @@ namespace OpenDental{
 			}
 			FamCur=Patients.GetFamily(patNum);
 			PatCur=FamCur.GetPatient(patNum);
-			ParentForm.Text=Patients.GetMainTitle(PatCur);
+			if(ParentForm != null){ //Added so NewPatientform can have access without showing
+				ParentForm.Text=Patients.GetMainTitle(PatCur);
+			}
 			if(PatCur.ImageFolder==""){//creates new folder for patient if none present
 				string name=PatCur.LName+PatCur.FName;
 				string folder="";

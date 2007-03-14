@@ -730,6 +730,10 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Abbreviation not allowed to be blank."));
 				return;
 			}
+			if(textSSN.Text.Contains("-")){
+				MsgBox.Show(this,"SSN/TIN not allowed to have dash.");
+				return;
+			}
 			ProvCur.Abbr=textAbbr.Text;
 			ProvCur.LName=textLName.Text;
 			ProvCur.FName=textFName.Text;

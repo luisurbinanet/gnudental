@@ -94,14 +94,6 @@ namespace OpenDental{
 					throw new ApplicationException(Lan.g("FormAccountEdit","Account is in use in the setup section."));
 				}
 			}
-			command="SELECT ValueString FROM preference WHERE PrefName='AccountingCashDepAccounts'";
-			result=dcon.GetCount(command);
-			strArray=result.Split(new char[] { ',' });
-			for(int i=0;i<strArray.Length;i++) {
-				if(strArray[i]==AccountNum.ToString()) {
-					throw new ApplicationException(Lan.g("FormAccountEdit","Account is in use in the setup section."));
-				}
-			}
 			command="SELECT ValueString FROM preference WHERE PrefName='AccountingIncomeAccount'";
 			result=dcon.GetCount(command);
 			if(result==AccountNum.ToString()) {
@@ -112,8 +104,15 @@ namespace OpenDental{
 			if(result==AccountNum.ToString()) {
 				throw new ApplicationException(Lan.g("FormAccountEdit","Account is in use in the setup section."));
 			}
-
-
+			//check AccountingAutoPay entries
+			for(int i=0;i<AccountingAutoPays.AList.Count;i++){
+				strArray=((AccountingAutoPay)AccountingAutoPays.AList[i]).PickList.Split(new char[] { ',' });
+				for(int s=0;s<strArray.Length;s++){
+					if(strArray[s]==AccountNum.ToString()){
+						throw new ApplicationException(Lan.g("FormAccountEdit","Account is in use in the setup section."));
+					}
+				}
+			}
 			command="DELETE FROM account WHERE AccountNum = "+POut.PInt(AccountNum);
 			dcon.NonQ(command);
 		}

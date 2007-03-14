@@ -50,10 +50,11 @@ namespace OpenDental{
 		///<summary>Only used in FormRecallList to get a list of patients with recall.  Supply a date range, using min(-1 day) and max values if user left blank.</summary>
 		public static RecallItem[] GetRecallList(DateTime fromDate,DateTime toDate){
 			string command=
-				"SELECT recall.*,"
+				"SELECT recall.RecallNum,recall.PatNum,recall.DateDueCalc,recall.DateDue,"
+				+"recall.RecallInterval,recall.RecallStatus,recall.Note,"
 				+"CONCAT(patient.LName,', ',patient.FName,' ',patient.Preferred,' ',"
 				+"patient.MiddleI) AS 'Patient Name', "
-				+"patient.Birthdate "
+				+"patient.Birthdate,patient.Guarantor "
 				+"FROM recall,patient "
 				+"WHERE recall.PatNum=patient.PatNum "
 				+"AND recall.DateDue >= '"+POut.PDate(fromDate)+"' "
@@ -65,24 +66,25 @@ namespace OpenDental{
 			RecallItem[] RecallList = new RecallItem[table.Rows.Count];
 			DateTime[] orderDate=new DateTime[table.Rows.Count];
 			DateTime dateDue;
-			DateTime dateDueOverride;
+			DateTime dateDueCalc;
 			for(int i=0;i<table.Rows.Count;i++){
-				dateDue        =PIn.PDate  (table.Rows[i][2].ToString());
-				dateDueOverride=PIn.PDate  (table.Rows[i][3].ToString());
-				if(dateDueOverride.Year>1880){
-					RecallList[i].DueDate=dateDueOverride;
-				}
-				else{
+				dateDueCalc   =PIn.PDate  (table.Rows[i][2].ToString());
+				dateDue       =PIn.PDate  (table.Rows[i][3].ToString());
+				if(dateDue.Year>1880){
 					RecallList[i].DueDate=dateDue;
 				}
-				RecallList[i].PatientName   = PIn.PString(table.Rows[i][9].ToString());
-				RecallList[i].BirthDate     = PIn.PDate  (table.Rows[i][10].ToString());
-				RecallList[i].RecallInterval= new Interval(PIn.PInt(table.Rows[i][5].ToString()));
-				RecallList[i].RecallStatus  = PIn.PInt   (table.Rows[i][6].ToString());
+				else{
+					RecallList[i].DueDate=dateDueCalc;
+				}
+				RecallList[i].PatientName   = PIn.PString(table.Rows[i][7].ToString());
+				RecallList[i].BirthDate     = PIn.PDate  (table.Rows[i][8].ToString());
+				RecallList[i].RecallInterval= new Interval(PIn.PInt(table.Rows[i][4].ToString()));
+				RecallList[i].RecallStatus  = PIn.PInt   (table.Rows[i][5].ToString());
 				RecallList[i].PatNum        = PIn.PInt   (table.Rows[i][1].ToString());
 				RecallList[i].Age           = Shared.DateToAge(RecallList[i].BirthDate);
-				RecallList[i].Note          = PIn.PString(table.Rows[i][7].ToString());
+				RecallList[i].Note          = PIn.PString(table.Rows[i][6].ToString());
 				RecallList[i].RecallNum     = PIn.PInt   (table.Rows[i][0].ToString());
+				RecallList[i].Guarantor     = PIn.PInt   (table.Rows[i][9].ToString());
 				orderDate[i]=RecallList[i].DueDate;
 			}
 			Array.Sort(orderDate,RecallList);

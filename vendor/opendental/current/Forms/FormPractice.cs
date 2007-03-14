@@ -456,7 +456,7 @@ namespace OpenDental{
 			for(int i=0;i<Providers.List.Length;i++){
 				comboInsBillingProv.Items.Add(Providers.List[i].Abbr);
 			}
-			if(Prefs.GetInt("InsBillingProv")==0){//this can later be extended to include a 3rd option
+			if(Prefs.GetInt("InsBillingProv")==0){
 				radioInsBillingProvDefault.Checked=true;//default=0
 			}
 			else if(Prefs.GetInt("InsBillingProv")==-1){

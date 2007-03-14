@@ -446,7 +446,7 @@ namespace OpenDental{
 				if(PlanCur.ClaimsUseUCR){//use UCR for the provider of the procedure
 					provNum=ProcCur.ProvNum;
 					if(provNum==0){//if no prov set, then use practice default.
-						provNum=Convert.ToInt32(((Pref)Prefs.HList["PracticeDefaultProv"]).ValueString);
+						provNum=Prefs.GetInt("PracticeDefaultProv");
 					}
 					ClaimProcsForClaim[i].FeeBilled=Fees.GetAmount0(//get the fee based on ada and prov fee sched
 						ProcCur.ADACode
@@ -473,7 +473,6 @@ namespace OpenDental{
 					if(dedRem<0) {
 						dedRem=0;
 					}
-
 				}
 				if(dedRem > ClaimProcsForClaim[i].FeeBilled){//if deductible is more than cost of procedure
 					ClaimProcsForClaim[i].DedApplied=ClaimProcsForClaim[i].FeeBilled;
@@ -497,7 +496,7 @@ namespace OpenDental{
 				}
 				if(ClaimCur.ClaimType=="P"){//primary
 					ClaimProcsForClaim[i].ComputeBaseEst(ProcCur,PriSecTot.Pri,PlanList,patPlans,benefitList);//handles dedBeforePerc
-					ClaimProcsForClaim[i].InsPayEst=ProcCur.GetEst(ClaimProcList,PriSecTot.Pri,patPlans);
+					ClaimProcsForClaim[i].InsPayEst=ProcCur.GetEst(ClaimProcList,PriSecTot.Pri,patPlans,true);
 						//ClaimProcsForClaim[i].BaseEst;
 					if(!ClaimProcsForClaim[i].DedBeforePerc){
 						ClaimProcsForClaim[i].InsPayEst-=ClaimProcsForClaim[i].DedApplied;
@@ -505,7 +504,7 @@ namespace OpenDental{
 				}
 				else if(ClaimCur.ClaimType=="S"){//secondary
 					ClaimProcsForClaim[i].ComputeBaseEst(ProcCur,PriSecTot.Sec,PlanList,patPlans,benefitList);
-					ClaimProcsForClaim[i].InsPayEst=ProcCur.GetEst(ClaimProcList,PriSecTot.Sec,patPlans);
+					ClaimProcsForClaim[i].InsPayEst=ProcCur.GetEst(ClaimProcList,PriSecTot.Sec,patPlans,true);
 						//ClaimProcsForClaim[i].BaseEst;
 					if(!ClaimProcsForClaim[i].DedBeforePerc){
 						ClaimProcsForClaim[i].InsPayEst-=ClaimProcsForClaim[i].DedApplied;

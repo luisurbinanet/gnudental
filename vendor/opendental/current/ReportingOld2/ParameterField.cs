@@ -245,7 +245,9 @@ namespace OpenDental.ReportingOld2
 		///<summary>Only used in ReportObject. When a table comes back from the database, if the expected value is an age, then this column type should be used.  Just retreive the birthdate and the program will convert it to an age.</summary>
 		Age,
 		///<summary></summary>
-		ForeignKey
+		ForeignKey,
+		///<summary>Only used in FormQuestionnaire.</summary>
+		YesNoUnknown
 	}
 
 	

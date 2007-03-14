@@ -21,9 +21,9 @@ namespace OpenDental{
 		///<summary>Fee billed to insurance. Might not be the same as the actual fee.</summary>
 		///<remarks>The fee billed can be different than the actual procedure.  For instance, if you have set the insurance plan to bill insurance using UCR fees, then this field will contain the UCR fee instead of the fee that the patient was charged.</remarks>
 		public double FeeBilled;
-		///<summary>Actual amount this carrier is expected to pay, after taking everything else into account. Considers annual max, override, percentAmt, copayAmt, deductible, etc. In this version, not computed until sent to insurance.  In a future version, it will be computed automatically but not visible until it is sent to ins. It will be computed ahead of time so that it can be used in treatment plans.</summary>
+		///<summary>Actual amount this carrier is expected to pay, after taking everything else into account. Considers annual max, override, percentAmt, copayAmt, deductible, etc. In previous versions, it was not computed until sent to insurance.  But in this version, it is computed automatically in TP module, and gets overwritten when sent to ins.</summary>
 		public double InsPayEst;
-		///<summary>Deductible applied to this procedure only. Will be zero until sent to insurance.</summary>
+		///<summary>Deductible applied to this procedure only. If not sent to ins yet, then this will be set to an estimated amount based on the order in the TP.  Will be overwritten when actually sent to ins.</summary>
 		public double DedApplied;
 		///<summary>See the ClaimProcStatus enumeration.</summary>
 		public ClaimProcStatus Status;

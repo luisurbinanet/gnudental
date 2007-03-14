@@ -651,9 +651,9 @@ namespace OpenDental{
 			// 
 			// label23
 			// 
-			this.label23.Location = new System.Drawing.Point(732,6);
+			this.label23.Location = new System.Drawing.Point(732,3);
 			this.label23.Name = "label23";
-			this.label23.Size = new System.Drawing.Size(110,28);
+			this.label23.Size = new System.Drawing.Size(110,16);
 			this.label23.TabIndex = 50;
 			this.label23.Text = "Secondary Provider";
 			this.label23.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
@@ -662,44 +662,44 @@ namespace OpenDental{
 			// 
 			this.label24.Location = new System.Drawing.Point(622,3);
 			this.label24.Name = "label24";
-			this.label24.Size = new System.Drawing.Size(98,31);
+			this.label24.Size = new System.Drawing.Size(98,16);
 			this.label24.TabIndex = 48;
 			this.label24.Text = "Primary Provider";
 			this.label24.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// listSecProv
 			// 
-			this.listSecProv.Location = new System.Drawing.Point(734,35);
+			this.listSecProv.Location = new System.Drawing.Point(734,22);
 			this.listSecProv.Name = "listSecProv";
-			this.listSecProv.Size = new System.Drawing.Size(82,121);
+			this.listSecProv.Size = new System.Drawing.Size(82,134);
 			this.listSecProv.TabIndex = 20;
 			// 
 			// listPriProv
 			// 
-			this.listPriProv.Location = new System.Drawing.Point(624,35);
+			this.listPriProv.Location = new System.Drawing.Point(624,22);
 			this.listPriProv.Name = "listPriProv";
-			this.listPriProv.Size = new System.Drawing.Size(82,121);
+			this.listPriProv.Size = new System.Drawing.Size(82,134);
 			this.listPriProv.TabIndex = 19;
 			// 
 			// listFeeSched
 			// 
-			this.listFeeSched.Location = new System.Drawing.Point(844,36);
+			this.listFeeSched.Location = new System.Drawing.Point(844,23);
 			this.listFeeSched.Name = "listFeeSched";
-			this.listFeeSched.Size = new System.Drawing.Size(108,121);
+			this.listFeeSched.Size = new System.Drawing.Size(108,134);
 			this.listFeeSched.TabIndex = 21;
 			// 
 			// label25
 			// 
-			this.label25.Location = new System.Drawing.Point(842,4);
+			this.label25.Location = new System.Drawing.Point(842,3);
 			this.label25.Name = "label25";
-			this.label25.Size = new System.Drawing.Size(121,30);
+			this.label25.Size = new System.Drawing.Size(121,16);
 			this.label25.TabIndex = 51;
 			this.label25.Text = "Fee Schedule(optional)";
 			this.label25.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// label26
 			// 
-			this.label26.Location = new System.Drawing.Point(842,165);
+			this.label26.Location = new System.Drawing.Point(842,162);
 			this.label26.Name = "label26";
 			this.label26.Size = new System.Drawing.Size(123,117);
 			this.label26.TabIndex = 54;
@@ -727,16 +727,16 @@ namespace OpenDental{
 			// 
 			// listBillType
 			// 
-			this.listBillType.Location = new System.Drawing.Point(440,35);
+			this.listBillType.Location = new System.Drawing.Point(440,22);
 			this.listBillType.Name = "listBillType";
-			this.listBillType.Size = new System.Drawing.Size(158,121);
+			this.listBillType.Size = new System.Drawing.Size(158,134);
 			this.listBillType.TabIndex = 18;
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(438,8);
+			this.label1.Location = new System.Drawing.Point(438,3);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(158,26);
+			this.label1.Size = new System.Drawing.Size(158,16);
 			this.label1.TabIndex = 57;
 			this.label1.Text = "Billing Type:";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.BottomLeft;

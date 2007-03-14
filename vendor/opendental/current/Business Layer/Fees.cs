@@ -155,9 +155,9 @@ namespace OpenDental{
 		///<summary>Returns an amount if a fee has been entered.  Otherwise returns -1.  Not usually used directly.</summary>
 		public static double GetAmount(string adacode, int feeSched){
 			if(adacode==null)
-				return -1;//was 0
+				return -1;
 			if(feeSched==0)
-				return -1;//was 0
+				return -1;
 			int i=Defs.GetOrder(DefCat.FeeSchedNames,feeSched);
 			if(i==-1){
 				return -1;//you cannot obtain fees for hidden fee schedules
@@ -168,7 +168,7 @@ namespace OpenDental{
 			return -1;//code not found
 		}
 
-		///<summary>Almost the same as GetAmount.  But never returns -1;  Returns an amount if a fee has been entered.  Returns 0 if code can't be found.///</summary>
+		///<summary>Almost the same as GetAmount.  But never returns -1;  Returns an amount if a fee has been entered.  Returns 0 if code can't be found.</summary>
 		public static double GetAmount0(string adacode, int feeSched){
 			double retVal=GetAmount(adacode,feeSched);
 			if(retVal==-1){

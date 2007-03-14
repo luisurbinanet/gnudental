@@ -271,6 +271,16 @@ namespace OpenDental{
 		}
 
 		///<summary></summary>
+		public static Provider GetProv(int provNum) {
+			for(int i=0;i<ListLong.Length;i++) {
+				if(ListLong[i].ProvNum==provNum) {
+					return ListLong[i].Copy();
+				}
+			}
+			return null;
+		}
+
+		///<summary></summary>
 		public static int GetIndexLong(int provNum){
 			for(int i=0;i<ListLong.Length;i++){
 				if(ListLong[i].ProvNum==provNum){

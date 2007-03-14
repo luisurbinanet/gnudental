@@ -1,29 +1,45 @@
 using System;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Reflection;
+//using System.Diagnostics;
+//using System.Runtime.InteropServices;
+//using System.Reflection;
 using System.Windows.Forms;
 
 namespace OpenDental.Bridges{
 	///<summary>Provides bridging functionality to Schick CDR.</summary>
 	public class Schick{
-		private static object cdrApp;
-		private static object exam;
+		//private static object cdrApp;
+		//private static object exam;
 
 		///<summary>Default constructor</summary>
 		public Schick(){
 
 		}
 
-		///<summary>Declare managed prototype for unmanaged function.</summary>
-		[DllImport("User32.dll")]
-		public static extern bool SetForegroundWindow(int hndRef);
+		//<summary>Declare managed prototype for unmanaged function.</summary>
+		//[DllImport("User32.dll")]
+		//public static extern bool SetForegroundWindow(int hndRef);
 
 		///<summary>Launches the main Patient Document window of Schick.</summary>
 		public static void SendData(Patient pat){
 			if(pat==null){
 				return;
 			}
+			ProgramProperties.GetForProgram();
+			ProgramProperties.GetCur("Enter 0 to use PatientNum, or 1 to use ChartNum");
+			string patID="";
+			if(ProgramProperties.Cur.PropertyValue=="0") {
+				patID=pat.PatNum.ToString();
+			}
+			else {
+				patID=pat.ChartNumber;
+			}
+			try {
+				VBbridges.Schick.Launch(patID,pat.LName,pat.FName);
+			}
+			catch {
+				MessageBox.Show("Error launching Schick CDR Dicom.");
+			}
+			/*
 			try{
 				//Late bound COM object so that we don't have to add a reference
 				//first define an Application type
@@ -97,7 +113,7 @@ namespace OpenDental.Bridges{
 			}
 			catch{
 				MessageBox.Show("Error calling Schick CDR Dicom.");
-			}
+			}*/
 			
 
 

@@ -11,6 +11,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Globalization;
 using System.Windows.Forms;
+using OpenDental.UI;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -23,7 +24,6 @@ namespace OpenDental{
 		private OpenDental.UI.Button butSave;
 		private System.ComponentModel.Container components = null;
 		private System.Windows.Forms.Label label3;
-		private OpenDental.TableRecallList tbMain;
 		private ArrayList MainAL;
 		private OpenDental.ValidNumber textDaysPast;
 		private OpenDental.ValidNumber textDaysFuture;
@@ -44,14 +44,15 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textPostcardMessage;
 		private System.Windows.Forms.Label label4;
 		private PrintDocument pd;
+		private OpenDental.UI.ODGrid gridMain;
 		///<summary>When this form closes, this will be the patNum of the last patient viewed.  The calling form should then make use of this to refresh to that patient.  If 0, then calling form should not refresh.</summary>
 		public int SelectedPatNum;
 
 		///<summary></summary>
 		public FormRecallList(){
 			InitializeComponent();// Required for Windows Form Designer support
-			tbMain.CellClicked += new OpenDental.ContrTable.CellEventHandler(tbMain_CellClicked);
-			tbMain.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbMain_CellDoubleClicked);
+			//tbMain.CellClicked += new OpenDental.ContrTable.CellEventHandler(tbMain_CellClicked);
+			//tbMain.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbMain_CellDoubleClicked);
 			Lan.F(this);
 			//Lan.C(this,new Control[]
 			//	{
@@ -73,9 +74,8 @@ namespace OpenDental{
 
 		private void InitializeComponent()
 		{
-			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormRecallList));
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormRecallList));
 			this.butClose = new OpenDental.UI.Button();
-			this.tbMain = new OpenDental.TableRecallList();
 			this.butRefresh = new OpenDental.UI.Button();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.textDaysFuture = new OpenDental.ValidNumber();
@@ -94,6 +94,7 @@ namespace OpenDental{
 			this.groupBox4 = new System.Windows.Forms.GroupBox();
 			this.label4 = new System.Windows.Forms.Label();
 			this.textPostcardMessage = new System.Windows.Forms.TextBox();
+			this.gridMain = new OpenDental.UI.ODGrid();
 			this.groupBox1.SuspendLayout();
 			this.groupBox3.SuspendLayout();
 			this.groupBox4.SuspendLayout();
@@ -101,40 +102,29 @@ namespace OpenDental{
 			// 
 			// butClose
 			// 
-			this.butClose.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butClose.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.butClose.Autosize = true;
 			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butClose.Location = new System.Drawing.Point(873, 645);
+			this.butClose.Location = new System.Drawing.Point(873,645);
 			this.butClose.Name = "butClose";
-			this.butClose.Size = new System.Drawing.Size(75, 26);
+			this.butClose.Size = new System.Drawing.Size(75,26);
 			this.butClose.TabIndex = 2;
 			this.butClose.Text = "&Close";
 			this.butClose.Click += new System.EventHandler(this.butClose_Click);
 			// 
-			// tbMain
-			// 
-			this.tbMain.BackColor = System.Drawing.SystemColors.Window;
-			this.tbMain.Location = new System.Drawing.Point(9, 18);
-			this.tbMain.Name = "tbMain";
-			this.tbMain.ScrollValue = 1;
-			this.tbMain.SelectedIndices = new int[0];
-			this.tbMain.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-			this.tbMain.Size = new System.Drawing.Size(754, 657);
-			this.tbMain.TabIndex = 0;
-			// 
 			// butRefresh
 			// 
-			this.butRefresh.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butRefresh.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.butRefresh.Autosize = true;
 			this.butRefresh.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butRefresh.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butRefresh.Location = new System.Drawing.Point(79, 107);
+			this.butRefresh.Location = new System.Drawing.Point(79,107);
 			this.butRefresh.Name = "butRefresh";
-			this.butRefresh.Size = new System.Drawing.Size(98, 26);
+			this.butRefresh.Size = new System.Drawing.Size(98,26);
 			this.butRefresh.TabIndex = 2;
 			this.butRefresh.Text = "&Refresh List";
 			this.butRefresh.Click += new System.EventHandler(this.butRefresh_Click);
@@ -150,100 +140,98 @@ namespace OpenDental{
 			this.groupBox1.Controls.Add(this.label1);
 			this.groupBox1.Controls.Add(this.butRefresh);
 			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox1.Location = new System.Drawing.Point(771, 14);
+			this.groupBox1.Location = new System.Drawing.Point(771,14);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(188, 180);
+			this.groupBox1.Size = new System.Drawing.Size(188,180);
 			this.groupBox1.TabIndex = 1;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "View";
 			// 
 			// textDaysFuture
 			// 
-			this.textDaysFuture.Location = new System.Drawing.Point(124, 58);
+			this.textDaysFuture.Location = new System.Drawing.Point(124,58);
 			this.textDaysFuture.MaxVal = 255;
 			this.textDaysFuture.MinVal = 0;
 			this.textDaysFuture.Name = "textDaysFuture";
-			this.textDaysFuture.Size = new System.Drawing.Size(51, 20);
+			this.textDaysFuture.Size = new System.Drawing.Size(51,20);
 			this.textDaysFuture.TabIndex = 1;
-			this.textDaysFuture.Text = "";
 			// 
 			// textDaysPast
 			// 
-			this.textDaysPast.Location = new System.Drawing.Point(124, 31);
+			this.textDaysPast.Location = new System.Drawing.Point(124,31);
 			this.textDaysPast.MaxVal = 255;
 			this.textDaysPast.MinVal = 0;
 			this.textDaysPast.Name = "textDaysPast";
-			this.textDaysPast.Size = new System.Drawing.Size(51, 20);
+			this.textDaysPast.Size = new System.Drawing.Size(51,20);
 			this.textDaysPast.TabIndex = 0;
-			this.textDaysPast.Text = "";
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(13, 88);
+			this.label3.Location = new System.Drawing.Point(13,88);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(162, 17);
+			this.label3.Size = new System.Drawing.Size(162,17);
 			this.label3.TabIndex = 16;
 			this.label3.Text = "(leave days blank to view all)";
 			this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// butSave
 			// 
-			this.butSave.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butSave.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.butSave.Autosize = true;
 			this.butSave.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butSave.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butSave.Location = new System.Drawing.Point(79, 141);
+			this.butSave.Location = new System.Drawing.Point(79,141);
 			this.butSave.Name = "butSave";
-			this.butSave.Size = new System.Drawing.Size(98, 26);
+			this.butSave.Size = new System.Drawing.Size(98,26);
 			this.butSave.TabIndex = 3;
 			this.butSave.Text = "&Save As Default";
 			this.butSave.Click += new System.EventHandler(this.butSave_Click);
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(31, 61);
+			this.label2.Location = new System.Drawing.Point(31,61);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(91, 14);
+			this.label2.Size = new System.Drawing.Size(91,14);
 			this.label2.TabIndex = 12;
 			this.label2.Text = "Days Future";
 			this.label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(37, 34);
+			this.label1.Location = new System.Drawing.Point(37,34);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(84, 14);
+			this.label1.Size = new System.Drawing.Size(84,14);
 			this.label1.TabIndex = 11;
 			this.label1.Text = "Days Past";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// butReport
 			// 
-			this.butReport.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butReport.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butReport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.butReport.Autosize = true;
 			this.butReport.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butReport.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butReport.Location = new System.Drawing.Point(861, 571);
+			this.butReport.Location = new System.Drawing.Point(861,571);
 			this.butReport.Name = "butReport";
-			this.butReport.Size = new System.Drawing.Size(87, 26);
+			this.butReport.Size = new System.Drawing.Size(87,26);
 			this.butReport.TabIndex = 13;
 			this.butReport.Text = "R&un Report";
 			this.butReport.Click += new System.EventHandler(this.butReport_Click);
 			// 
 			// butLabels
 			// 
-			this.butLabels.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butLabels.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butLabels.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.butLabels.Autosize = true;
 			this.butLabels.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butLabels.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butLabels.Image = ((System.Drawing.Image)(resources.GetObject("butLabels.Image")));
 			this.butLabels.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butLabels.Location = new System.Drawing.Point(861, 535);
+			this.butLabels.Location = new System.Drawing.Point(861,535);
 			this.butLabels.Name = "butLabels";
-			this.butLabels.Size = new System.Drawing.Size(87, 26);
+			this.butLabels.Size = new System.Drawing.Size(87,26);
 			this.butLabels.TabIndex = 14;
 			this.butLabels.Text = "Labels";
 			this.butLabels.Click += new System.EventHandler(this.butLabels_Click);
@@ -257,9 +245,9 @@ namespace OpenDental{
 			this.groupBox3.Controls.Add(this.comboStatus);
 			this.groupBox3.Controls.Add(this.butSetStatus);
 			this.groupBox3.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox3.Location = new System.Drawing.Point(771, 203);
+			this.groupBox3.Location = new System.Drawing.Point(771,203);
 			this.groupBox3.Name = "groupBox3";
-			this.groupBox3.Size = new System.Drawing.Size(188, 96);
+			this.groupBox3.Size = new System.Drawing.Size(188,96);
 			this.groupBox3.TabIndex = 15;
 			this.groupBox3.TabStop = false;
 			this.groupBox3.Text = "Set Status";
@@ -267,38 +255,38 @@ namespace OpenDental{
 			// comboStatus
 			// 
 			this.comboStatus.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboStatus.Location = new System.Drawing.Point(17, 24);
+			this.comboStatus.Location = new System.Drawing.Point(17,24);
 			this.comboStatus.MaxDropDownItems = 40;
 			this.comboStatus.Name = "comboStatus";
-			this.comboStatus.Size = new System.Drawing.Size(160, 21);
+			this.comboStatus.Size = new System.Drawing.Size(160,21);
 			this.comboStatus.TabIndex = 15;
 			// 
 			// butSetStatus
 			// 
-			this.butSetStatus.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butSetStatus.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butSetStatus.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.butSetStatus.Autosize = true;
 			this.butSetStatus.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butSetStatus.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butSetStatus.Location = new System.Drawing.Point(110, 56);
+			this.butSetStatus.Location = new System.Drawing.Point(110,56);
 			this.butSetStatus.Name = "butSetStatus";
-			this.butSetStatus.Size = new System.Drawing.Size(67, 26);
+			this.butSetStatus.Size = new System.Drawing.Size(67,26);
 			this.butSetStatus.TabIndex = 14;
 			this.butSetStatus.Text = "Set";
 			this.butSetStatus.Click += new System.EventHandler(this.butSetStatus_Click);
 			// 
 			// butPostcards
 			// 
-			this.butPostcards.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butPostcards.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butPostcards.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.butPostcards.Autosize = true;
 			this.butPostcards.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butPostcards.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butPostcards.Image = ((System.Drawing.Image)(resources.GetObject("butPostcards.Image")));
 			this.butPostcards.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butPostcards.Location = new System.Drawing.Point(90, 162);
+			this.butPostcards.Location = new System.Drawing.Point(90,162);
 			this.butPostcards.Name = "butPostcards";
-			this.butPostcards.Size = new System.Drawing.Size(87, 26);
+			this.butPostcards.Size = new System.Drawing.Size(87,26);
 			this.butPostcards.TabIndex = 16;
 			this.butPostcards.Text = "Preview";
 			this.butPostcards.Click += new System.EventHandler(this.butPostcards_Click);
@@ -309,18 +297,18 @@ namespace OpenDental{
 			this.groupBox4.Controls.Add(this.textPostcardMessage);
 			this.groupBox4.Controls.Add(this.butPostcards);
 			this.groupBox4.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox4.Location = new System.Drawing.Point(771, 310);
+			this.groupBox4.Location = new System.Drawing.Point(771,310);
 			this.groupBox4.Name = "groupBox4";
-			this.groupBox4.Size = new System.Drawing.Size(188, 200);
+			this.groupBox4.Size = new System.Drawing.Size(188,200);
 			this.groupBox4.TabIndex = 17;
 			this.groupBox4.TabStop = false;
 			this.groupBox4.Text = "Postcards";
 			// 
 			// label4
 			// 
-			this.label4.Location = new System.Drawing.Point(7, 11);
+			this.label4.Location = new System.Drawing.Point(7,11);
 			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(158, 19);
+			this.label4.Size = new System.Drawing.Size(158,19);
 			this.label4.TabIndex = 18;
 			this.label4.Text = "Message";
 			this.label4.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
@@ -328,24 +316,37 @@ namespace OpenDental{
 			// textPostcardMessage
 			// 
 			this.textPostcardMessage.AcceptsReturn = true;
-			this.textPostcardMessage.Location = new System.Drawing.Point(8, 32);
+			this.textPostcardMessage.Location = new System.Drawing.Point(8,32);
 			this.textPostcardMessage.Multiline = true;
 			this.textPostcardMessage.Name = "textPostcardMessage";
-			this.textPostcardMessage.Size = new System.Drawing.Size(168, 119);
+			this.textPostcardMessage.Size = new System.Drawing.Size(168,119);
 			this.textPostcardMessage.TabIndex = 17;
-			this.textPostcardMessage.Text = "";
+			// 
+			// gridMain
+			// 
+			this.gridMain.HScrollVisible = false;
+			this.gridMain.Location = new System.Drawing.Point(9,14);
+			this.gridMain.Name = "gridMain";
+			this.gridMain.ScrollValue = 0;
+			this.gridMain.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+			this.gridMain.Size = new System.Drawing.Size(754,657);
+			this.gridMain.TabIndex = 18;
+			this.gridMain.Title = "Recall List";
+			this.gridMain.TranslationName = "TableRecallList";
+			this.gridMain.CellClick += new OpenDental.UI.ODGridClickEventHandler(this.gridMain_CellClick);
+			this.gridMain.CellDoubleClick += new OpenDental.UI.ODGridClickEventHandler(this.gridMain_CellDoubleClick);
 			// 
 			// FormRecallList
 			// 
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
 			this.CancelButton = this.butClose;
-			this.ClientSize = new System.Drawing.Size(975, 691);
+			this.ClientSize = new System.Drawing.Size(975,691);
+			this.Controls.Add(this.gridMain);
 			this.Controls.Add(this.groupBox4);
 			this.Controls.Add(this.groupBox3);
 			this.Controls.Add(this.butLabels);
 			this.Controls.Add(this.butReport);
 			this.Controls.Add(this.groupBox1);
-			this.Controls.Add(this.tbMain);
 			this.Controls.Add(this.butClose);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
@@ -355,8 +356,10 @@ namespace OpenDental{
 			this.Text = "Recall List";
 			this.Load += new System.EventHandler(this.FormRecallList_Load);
 			this.groupBox1.ResumeLayout(false);
+			this.groupBox1.PerformLayout();
 			this.groupBox3.ResumeLayout(false);
 			this.groupBox4.ResumeLayout(false);
+			this.groupBox4.PerformLayout();
 			this.ResumeLayout(false);
 
 		}
@@ -416,25 +419,68 @@ namespace OpenDental{
 				}
 			}
 			//Fill list:
-			tbMain.SelectedRow=-1;
-			tbMain.ResetRows(MainAL.Count);
-			tbMain.SetGridColor(Color.DarkGray);
-			for (int i=0;i<MainAL.Count;i++){
-				tbMain.Cell[0,i]=((RecallItem)MainAL[i]).DueDate.ToString("d");
-				tbMain.Cell[1,i]=((RecallItem)MainAL[i]).PatientName;
-				tbMain.Cell[2,i]=Shared.AgeToString(((RecallItem)MainAL[i]).Age);
-				tbMain.Cell[3,i]=((RecallItem)MainAL[i]).RecallInterval.ToString();;
-				tbMain.Cell[4,i]=Defs.GetName(DefCat.RecallUnschedStatus,((RecallItem)MainAL[i]).RecallStatus);
-				tbMain.Cell[5,i]=((RecallItem)MainAL[i]).Note;
+			gridMain.BeginUpdate();
+			gridMain.Columns.Clear();
+			ODGridColumn col=new ODGridColumn(Lan.g("TableRecallList","Due Date"),75);
+			gridMain.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableRecallList","Patient"),120);
+			gridMain.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableRecallList","Age"),30);
+			gridMain.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableRecallList","Interval"),50);
+			gridMain.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableRecallList","Status"),150);
+			gridMain.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableRecallList","Note"),310);
+			gridMain.Columns.Add(col);
+			gridMain.Rows.Clear();
+			ODGridRow row;
+			for(int i=0;i<MainAL.Count;i++){
+				row=new ODGridRow();
+				row.Cells.Add(((RecallItem)MainAL[i]).DueDate.ToString("d"));
+				row.Cells.Add(((RecallItem)MainAL[i]).PatientName);
+				row.Cells.Add(Shared.AgeToString(((RecallItem)MainAL[i]).Age));
+				row.Cells.Add(((RecallItem)MainAL[i]).RecallInterval.ToString());
+				row.Cells.Add(Defs.GetName(DefCat.RecallUnschedStatus,((RecallItem)MainAL[i]).RecallStatus));
+				row.Cells.Add(((RecallItem)MainAL[i]).Note);
+				gridMain.Rows.Add(row);
 			}
-			tbMain.LayoutTables();
+			gridMain.EndUpdate();
 		}
 
-		private void tbMain_CellClicked(object sender, CellEventArgs e){
+		private void gridMain_CellClick(object sender,OpenDental.UI.ODGridClickEventArgs e) {
+			//row selected before this event triggered
+			SetFamilyColors();
+			//comboStatus.SelectedIndex=-1;//mess with this later
+		}
+
+		private void SetFamilyColors() {
+			if(gridMain.SelectedIndices.Length!=1) {
+				for(int i=0;i<gridMain.Rows.Count;i++) {
+					gridMain.Rows[i].ColorText=Color.Black;
+				}
+				gridMain.Invalidate();
+				return;
+			}
+			int guar=((RecallItem)MainAL[gridMain.SelectedIndices[0]]).Guarantor;
+			int famCount=0;
+			for(int i=0;i<MainAL.Count;i++) {
+				if(((RecallItem)MainAL[i]).Guarantor==guar) {
+					famCount++;
+					gridMain.Rows[i].ColorText=Color.Red;
+				}
+				else {
+					gridMain.Rows[i].ColorText=Color.Black;
+				}
+			}
+			if(famCount==1) {//only the highlighted patient is red at this point
+				gridMain.Rows[gridMain.SelectedIndices[0]].ColorText=Color.Black;
+			}
+			gridMain.Invalidate();
+		}
+
+		private void gridMain_CellDoubleClick(object sender,ODGridClickEventArgs e) {
 			SelectedPatNum=((RecallItem)MainAL[e.Row]).PatNum;
-		}
-
-		private void tbMain_CellDoubleClicked(object sender, CellEventArgs e){
 			Recall[] recalls=Recalls.GetList(new int[] {((RecallItem)MainAL[e.Row]).PatNum});
 			FormRecallListEdit FormRE=new FormRecallListEdit(recalls[0]);
 			//FormRE.RecallCur=recalls[0];
@@ -446,6 +492,12 @@ namespace OpenDental{
 			else{
 				FillMain();
 			}
+			for(int i=0;i<MainAL.Count;i++) {
+				if(((RecallItem)MainAL[i]).PatNum==SelectedPatNum) {
+					gridMain.SetSelected(i,true);
+				}
+			}
+			SetFamilyColors();
 		}
 
 		private void butReport_Click(object sender, System.EventArgs e) {
@@ -454,16 +506,16 @@ namespace OpenDental{
         return;
       }
       int[] PatNums;
-      if(tbMain.SelectedIndices.Length < 1){
+      if(gridMain.SelectedIndices.Length < 1){
         PatNums=new int[MainAL.Count];
         for(int i=0;i<PatNums.Length;i++){
           PatNums[i]=((RecallItem)MainAL[i]).PatNum;
         }
       }
       else{
-        PatNums=new int[tbMain.SelectedIndices.Length];
+        PatNums=new int[gridMain.SelectedIndices.Length];
         for(int i=0;i<PatNums.Length;i++){
-          PatNums[i]=((RecallItem)MainAL[tbMain.SelectedIndices[i]]).PatNum;
+          PatNums[i]=((RecallItem)MainAL[gridMain.SelectedIndices[i]]).PatNum;
         }
       }
       FormRpRecall FormRPR=new FormRpRecall(PatNums);
@@ -475,15 +527,13 @@ namespace OpenDental{
         MessageBox.Show(Lan.g(this,"There are no Patients in the Recall table.  Must have at least one to print."));    
         return;
       }
-			if(tbMain.SelectedIndices.Length==0){
-				for(int i=0;i<MainAL.Count;i++){
-					tbMain.SetSelected(i,true);
-				}
+			if(gridMain.SelectedIndices.Length==0){
+				gridMain.SetSelected(true);
 			}
       int[] PatNums;
-      PatNums=new int[tbMain.SelectedIndices.Length];
+      PatNums=new int[gridMain.SelectedIndices.Length];
       for(int i=0;i<PatNums.Length;i++){
-        PatNums[i]=((RecallItem)MainAL[tbMain.SelectedIndices[i]]).PatNum;
+        PatNums[i]=((RecallItem)MainAL[gridMain.SelectedIndices[i]]).PatNum;
       }
 			AddrTable=Recalls.GetAddrTable(PatNums);
 			pagesPrinted=0;
@@ -504,15 +554,13 @@ namespace OpenDental{
         MessageBox.Show(Lan.g(this,"There are no Patients in the Recall table.  Must have at least one to print."));    
         return;
       }
-			if(tbMain.SelectedIndices.Length==0){
-				for(int i=0;i<MainAL.Count;i++){
-					tbMain.SetSelected(i,true);
-				}
+			if(gridMain.SelectedIndices.Length==0){
+				gridMain.SetSelected(true);
 			}
       int[] PatNums;
-      PatNums=new int[tbMain.SelectedIndices.Length];
+      PatNums=new int[gridMain.SelectedIndices.Length];
       for(int i=0;i<PatNums.Length;i++){
-        PatNums[i]=((RecallItem)MainAL[tbMain.SelectedIndices[i]]).PatNum;
+        PatNums[i]=((RecallItem)MainAL[gridMain.SelectedIndices[i]]).PatNum;
       }
 			AddrTable=Recalls.GetAddrTable(PatNums);
 			pagesPrinted=0;
@@ -651,19 +699,19 @@ namespace OpenDental{
 			if(comboStatus.SelectedIndex==-1){
 				return;
 			}
-			int[] originalRecalls=new int[tbMain.SelectedIndices.Length];
-			for(int i=0;i<tbMain.SelectedIndices.Length;i++){
-				originalRecalls[i]=((RecallItem)MainAL[tbMain.SelectedIndices[i]]).RecallNum;
+			int[] originalRecalls=new int[gridMain.SelectedIndices.Length];
+			for(int i=0;i<gridMain.SelectedIndices.Length;i++){
+				originalRecalls[i]=((RecallItem)MainAL[gridMain.SelectedIndices[i]]).RecallNum;
 				Recalls.UpdateStatus(
-					((RecallItem)MainAL[tbMain.SelectedIndices[i]]).RecallNum,
+					((RecallItem)MainAL[gridMain.SelectedIndices[i]]).RecallNum,
 					Defs.Short[(int)DefCat.RecallUnschedStatus][comboStatus.SelectedIndex].DefNum);
 				//((RecallItem)MainAL[tbMain.SelectedIndices[i]]).up
 			}
 			FillMain();
-			for(int i=0;i<tbMain.MaxRows;i++){
+			for(int i=0;i<MainAL.Count;i++){
 				for(int j=0;j<originalRecalls.Length;j++){
 					if(originalRecalls[j]==((RecallItem)MainAL[i]).RecallNum){
-						tbMain.SetSelected(i,true);
+						gridMain.SetSelected(i,true);
 					}
 				}
 			}
@@ -694,6 +742,8 @@ namespace OpenDental{
 		
 
 		
+
+		
 	}
 
 
@@ -717,5 +767,7 @@ namespace OpenDental{
 		public string Note;
 		///<summary></summary>
 		public int RecallNum;
+		///<summary></summary>
+		public int Guarantor;
 	}
 }

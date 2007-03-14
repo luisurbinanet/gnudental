@@ -158,6 +158,9 @@ namespace OpenDental{
 
 		///<summary>Gets the name of an employer based on the employerNum.  This also refreshes the list if necessary, so it will work even if the list has not been refreshed recently.</summary>
 		public static string GetName(int employerNum){
+			if(employerNum==0){
+				return "";
+			}
 			if(HList.ContainsKey(employerNum)){
 				return ((Employer)HList[employerNum]).EmpName;
 			}
