@@ -15,7 +15,7 @@ namespace OpenDental.Main_Modules
 		public TableCommLogAccount(){
 			InitializeComponent();
 			MaxRows=50;
-			MaxCols=3;
+			MaxCols=4;
 			ShowScroll=true;
 			FieldsArePresent=true;
 			HeadingIsPresent=true;
@@ -24,10 +24,12 @@ namespace OpenDental.Main_Modules
 			SetRowHeight(0,49,14);
 			Fields[0]=Lan.g("TableCommLogAccount","Date");
 			Fields[1]=Lan.g("TableCommLogAccount","Type");
-			Fields[2]=Lan.g("TableCommLogAccount","Note");
+			Fields[2]=Lan.g("TableCommLogAccount","Mode");
+			Fields[3]=Lan.g("TableCommLogAccount","Note");
 			ColWidth[0]=70;
-			ColWidth[1]=90;
-			ColWidth[2]=590;
+			ColWidth[1]=85;
+			ColWidth[2]=80;
+			ColWidth[3]=515;
 			//ColAlign[1]=HorizontalAlignment.Right;
 			DefaultGridColor=Color.LightGray;
 			LayoutTables();

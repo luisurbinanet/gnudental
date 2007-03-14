@@ -24,12 +24,12 @@ namespace OpenDental{
 			ColWidth[0]=13;
 			ColAlign[0]=HorizontalAlignment.Center;
 			SetGridColor(Color.LightGray);
-			TopBorder[0,6]=Color.Black;
+			/*TopBorder[0,6]=Color.Black;
 			TopBorder[0,12]=Color.Black;
 			TopBorder[0,18]=Color.Black;
 			TopBorder[0,24]=Color.Black;
 			TopBorder[0,30]=Color.Black;
-			TopBorder[0,36]=Color.Black;
+			TopBorder[0,36]=Color.Black;*/
 			LayoutTables();
 		}
 

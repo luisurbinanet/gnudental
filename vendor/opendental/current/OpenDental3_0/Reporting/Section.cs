@@ -40,7 +40,7 @@ namespace OpenDental.Reporting
 		}
 
 #region Properties
-		///<summary></summary>
+		///<summary>Not user editable.</summary>
 		public string Name{
 			get{
 				return name;

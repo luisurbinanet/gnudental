@@ -9,14 +9,7 @@ namespace OpenDental{
 	public class FormStatementOptions : System.Windows.Forms.Form{
 		private System.Windows.Forms.Button butCancel;
 		private System.Windows.Forms.Button butOK;
-		/// <summary>
-		/// Required designer variable.
-		/// </summary>
-		private System.ComponentModel.Container components = null;
-		///<summary></summary>
-		public int[] PatNums;
-		///<summary>This is the only parameter that gets passes to this form. But all the parameters are sent back out from this form.</summary>
-		public DateTime FromDate;
+		private System.ComponentModel.IContainer components;// Required designer variable.
 		private System.Windows.Forms.Label label1;
 		private OpenDental.ValidDate textDateFrom;
 		private OpenDental.ValidDate textDateTo;
@@ -28,15 +21,32 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butAll;
 		private System.Windows.Forms.Button but30;
 		private System.Windows.Forms.Button but45;
-		///<summary></summary>
-		public DateTime ToDate;
 		private System.Windows.Forms.CheckBox checkIncludeClaims;
 		private System.Windows.Forms.Button butToday;
 		private System.Windows.Forms.CheckBox checkSubtotals;
+		private System.Windows.Forms.Button butWalkout;
+		private System.Windows.Forms.CheckBox checkNextAppt;
+		private System.Windows.Forms.CheckBox checkHidePayment;
+		///<summary></summary>
+		public int[] PatNums;
+		///<summary>This is the only parameter that gets passed to this form. But all the parameters are sent back out from this form.</summary>
+		public DateTime FromDate;
+		///<summary></summary>
+		public DateTime ToDate;
 		///<summary></summary>
 		public bool IncludeClaims;
 		///<summary></summary>
 		public bool SubtotalsOnly;
+		///<summary></summary>
+		public bool HidePayment;
+		///<summary></summary>
+		public bool NextAppt;
+		///<summary></summary>
+		public string Note;
+		private System.Windows.Forms.ToolTip toolTip1;
+		private System.Windows.Forms.Label label3;
+		private OpenDental.ODtextBox textNote;
+		
 
 		///<summary></summary>
 		public FormStatementOptions()
@@ -73,6 +83,7 @@ namespace OpenDental{
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormStatementOptions));
 			this.butCancel = new System.Windows.Forms.Button();
 			this.butOK = new System.Windows.Forms.Button();
@@ -88,8 +99,14 @@ namespace OpenDental{
 			this.but45 = new System.Windows.Forms.Button();
 			this.but30 = new System.Windows.Forms.Button();
 			this.butAll = new System.Windows.Forms.Button();
+			this.butWalkout = new System.Windows.Forms.Button();
 			this.checkIncludeClaims = new System.Windows.Forms.CheckBox();
 			this.checkSubtotals = new System.Windows.Forms.CheckBox();
+			this.checkNextAppt = new System.Windows.Forms.CheckBox();
+			this.checkHidePayment = new System.Windows.Forms.CheckBox();
+			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+			this.label3 = new System.Windows.Forms.Label();
+			this.textNote = new OpenDental.ODtextBox();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.SuspendLayout();
@@ -98,7 +115,7 @@ namespace OpenDental{
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butCancel.Location = new System.Drawing.Point(336, 258);
+			this.butCancel.Location = new System.Drawing.Point(535, 407);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 0;
@@ -108,7 +125,7 @@ namespace OpenDental{
 			// butOK
 			// 
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(336, 217);
+			this.butOK.Location = new System.Drawing.Point(535, 367);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 1;
@@ -117,7 +134,7 @@ namespace OpenDental{
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(6, 26);
+			this.label1.Location = new System.Drawing.Point(30, 26);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(100, 17);
 			this.label1.TabIndex = 2;
@@ -126,7 +143,7 @@ namespace OpenDental{
 			// 
 			// textDateFrom
 			// 
-			this.textDateFrom.Location = new System.Drawing.Point(113, 27);
+			this.textDateFrom.Location = new System.Drawing.Point(137, 27);
 			this.textDateFrom.Name = "textDateFrom";
 			this.textDateFrom.Size = new System.Drawing.Size(84, 20);
 			this.textDateFrom.TabIndex = 3;
@@ -134,7 +151,7 @@ namespace OpenDental{
 			// 
 			// textDateTo
 			// 
-			this.textDateTo.Location = new System.Drawing.Point(113, 55);
+			this.textDateTo.Location = new System.Drawing.Point(137, 55);
 			this.textDateTo.Name = "textDateTo";
 			this.textDateTo.Size = new System.Drawing.Size(85, 20);
 			this.textDateTo.TabIndex = 5;
@@ -142,7 +159,7 @@ namespace OpenDental{
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(6, 54);
+			this.label2.Location = new System.Drawing.Point(30, 54);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(100, 17);
 			this.label2.TabIndex = 4;
@@ -154,7 +171,7 @@ namespace OpenDental{
 			this.groupBox1.Controls.Add(this.radioFamCur);
 			this.groupBox1.Controls.Add(this.radioFamAll);
 			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox1.Location = new System.Drawing.Point(25, 212);
+			this.groupBox1.Location = new System.Drawing.Point(289, 151);
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.Size = new System.Drawing.Size(200, 71);
 			this.groupBox1.TabIndex = 6;
@@ -194,7 +211,7 @@ namespace OpenDental{
 			this.groupBox2.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupBox2.Location = new System.Drawing.Point(26, 8);
 			this.groupBox2.Name = "groupBox2";
-			this.groupBox2.Size = new System.Drawing.Size(380, 121);
+			this.groupBox2.Size = new System.Drawing.Size(462, 127);
 			this.groupBox2.TabIndex = 7;
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "Date Range";
@@ -202,7 +219,7 @@ namespace OpenDental{
 			// butToday
 			// 
 			this.butToday.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butToday.Location = new System.Drawing.Point(261, 13);
+			this.butToday.Location = new System.Drawing.Point(285, 13);
 			this.butToday.Name = "butToday";
 			this.butToday.Size = new System.Drawing.Size(96, 23);
 			this.butToday.TabIndex = 9;
@@ -212,7 +229,7 @@ namespace OpenDental{
 			// but45
 			// 
 			this.but45.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.but45.Location = new System.Drawing.Point(261, 65);
+			this.but45.Location = new System.Drawing.Point(285, 65);
 			this.but45.Name = "but45";
 			this.but45.Size = new System.Drawing.Size(96, 23);
 			this.but45.TabIndex = 8;
@@ -222,7 +239,7 @@ namespace OpenDental{
 			// but30
 			// 
 			this.but30.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.but30.Location = new System.Drawing.Point(261, 39);
+			this.but30.Location = new System.Drawing.Point(285, 39);
 			this.but30.Name = "but30";
 			this.but30.Size = new System.Drawing.Size(96, 23);
 			this.but30.TabIndex = 7;
@@ -232,19 +249,30 @@ namespace OpenDental{
 			// butAll
 			// 
 			this.butAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butAll.Location = new System.Drawing.Point(261, 91);
+			this.butAll.Location = new System.Drawing.Point(285, 91);
 			this.butAll.Name = "butAll";
 			this.butAll.Size = new System.Drawing.Size(96, 23);
 			this.butAll.TabIndex = 6;
 			this.butAll.Text = "All Dates";
 			this.butAll.Click += new System.EventHandler(this.butAll_Click);
 			// 
+			// butWalkout
+			// 
+			this.butWalkout.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butWalkout.Location = new System.Drawing.Point(514, 289);
+			this.butWalkout.Name = "butWalkout";
+			this.butWalkout.Size = new System.Drawing.Size(96, 26);
+			this.butWalkout.TabIndex = 10;
+			this.butWalkout.Text = "Walkout";
+			this.toolTip1.SetToolTip(this.butWalkout, "Automatically sets the options and prints with a single click");
+			this.butWalkout.Click += new System.EventHandler(this.butWalkout_Click);
+			// 
 			// checkIncludeClaims
 			// 
 			this.checkIncludeClaims.Checked = true;
 			this.checkIncludeClaims.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.checkIncludeClaims.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkIncludeClaims.Location = new System.Drawing.Point(26, 141);
+			this.checkIncludeClaims.Location = new System.Drawing.Point(26, 150);
 			this.checkIncludeClaims.Name = "checkIncludeClaims";
 			this.checkIncludeClaims.Size = new System.Drawing.Size(257, 20);
 			this.checkIncludeClaims.TabIndex = 8;
@@ -253,23 +281,67 @@ namespace OpenDental{
 			// checkSubtotals
 			// 
 			this.checkSubtotals.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkSubtotals.Location = new System.Drawing.Point(26, 167);
+			this.checkSubtotals.Location = new System.Drawing.Point(26, 171);
 			this.checkSubtotals.Name = "checkSubtotals";
 			this.checkSubtotals.Size = new System.Drawing.Size(257, 20);
 			this.checkSubtotals.TabIndex = 9;
 			this.checkSubtotals.Text = "Subtotals Only";
 			// 
+			// checkNextAppt
+			// 
+			this.checkNextAppt.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkNextAppt.Location = new System.Drawing.Point(26, 213);
+			this.checkNextAppt.Name = "checkNextAppt";
+			this.checkNextAppt.Size = new System.Drawing.Size(257, 20);
+			this.checkNextAppt.TabIndex = 10;
+			this.checkNextAppt.Text = "Next Appointment";
+			// 
+			// checkHidePayment
+			// 
+			this.checkHidePayment.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkHidePayment.Location = new System.Drawing.Point(26, 192);
+			this.checkHidePayment.Name = "checkHidePayment";
+			this.checkHidePayment.Size = new System.Drawing.Size(257, 20);
+			this.checkHidePayment.TabIndex = 11;
+			this.checkHidePayment.Text = "Hide Payment Options";
+			// 
+			// label3
+			// 
+			this.label3.Location = new System.Drawing.Point(26, 267);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(195, 17);
+			this.label3.TabIndex = 13;
+			this.label3.Text = "Note";
+			this.label3.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// textNote
+			// 
+			this.textNote.AcceptsReturn = true;
+			this.textNote.Location = new System.Drawing.Point(25, 286);
+			this.textNote.Multiline = true;
+			this.textNote.Name = "textNote";
+			this.textNote.QuickPasteType = OpenDental.QuickPasteType.Statement;
+			this.textNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.textNote.Size = new System.Drawing.Size(464, 147);
+			this.textNote.TabIndex = 14;
+			this.textNote.Text = "";
+			// 
 			// FormStatementOptions
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(443, 306);
+			this.ClientSize = new System.Drawing.Size(631, 456);
+			this.Controls.Add(this.textNote);
+			this.Controls.Add(this.label3);
+			this.Controls.Add(this.checkHidePayment);
+			this.Controls.Add(this.checkNextAppt);
 			this.Controls.Add(this.checkSubtotals);
 			this.Controls.Add(this.checkIncludeClaims);
 			this.Controls.Add(this.groupBox2);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.butCancel);
+			this.Controls.Add(this.butWalkout);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
@@ -298,6 +370,17 @@ namespace OpenDental{
 			textDateTo.Text=DateTime.Today.ToShortDateString();
 		}
 
+		private void butWalkout_Click(object sender, System.EventArgs e) {
+			textDateFrom.Text=DateTime.Today.ToShortDateString();
+			textDateTo.Text=DateTime.Today.ToShortDateString();
+			radioFamCur.Checked=true;
+			checkIncludeClaims.Checked=false;
+			checkSubtotals.Checked=false;
+			checkHidePayment.Checked=true;
+			checkNextAppt.Checked=true;
+			SaveAndClose();
+		}
+
 		private void but30_Click(object sender, System.EventArgs e) {
 			textDateFrom.Text=DateTime.Today.AddDays(-30).ToShortDateString();
 			textDateTo.Text=DateTime.Today.ToShortDateString();
@@ -314,6 +397,10 @@ namespace OpenDental{
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
+			SaveAndClose();
+		}
+
+		private void SaveAndClose(){
 			if(  textDateFrom.errorProvider1.GetError(textDateFrom)!=""
 				|| textDateTo.errorProvider1.GetError(textDateTo)!=""
 				){
@@ -330,6 +417,9 @@ namespace OpenDental{
 				ToDate=PIn.PDate(textDateTo.Text);
 			IncludeClaims=checkIncludeClaims.Checked;
 			SubtotalsOnly=checkSubtotals.Checked;
+			HidePayment=checkHidePayment.Checked;
+			NextAppt=checkNextAppt.Checked;
+			Note=textNote.Text;
 			if(radioFamAll.Checked){
 				PatNums=new int[Patients.FamilyList.Length];
 				for(int i=0;i<Patients.FamilyList.Length;i++){
@@ -346,6 +436,8 @@ namespace OpenDental{
 		private void butCancel_Click(object sender, System.EventArgs e) {
 			DialogResult=DialogResult.Cancel;
 		}
+
+		
 
 		
 

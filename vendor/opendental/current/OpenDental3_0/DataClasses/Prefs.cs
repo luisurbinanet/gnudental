@@ -51,6 +51,33 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary>Gets a pref of type int.</summary>
+		public static int GetInt(string prefName){
+			if(!HList.ContainsKey(prefName)){
+				MessageBox.Show(prefName+" is an invalid pref name.");
+				return 0;
+			}
+			return PIn.PInt(((Pref)HList[prefName]).ValueString);
+		}
+
+		///<summary>Gets a pref of type bool.</summary>
+		public static bool GetBool(string prefName){
+			if(!HList.ContainsKey(prefName)){
+				MessageBox.Show(prefName+" is an invalid pref name.");
+				return false;
+			}
+			return PIn.PBool(((Pref)HList[prefName]).ValueString);
+		}
+
+		///<summary>Gets a pref of type string.</summary>
+		public static string GetString(string prefName){
+			if(!HList.ContainsKey(prefName)){
+				MessageBox.Show(prefName+" is an invalid pref name.");
+				return "";
+			}
+			return ((Pref)HList[prefName]).ValueString;
+		}
+
 		///<summary></summary>
 		public static bool TryToConnect(){
 			try{
@@ -86,7 +113,19 @@ namespace OpenDental{
 			cmd.CommandText = "UPDATE preference SET "
 				+"valuestring = '"  +POut.PString(Cur.ValueString)+"'"
 				+" WHERE prefname = '"+POut.PString(Cur.PrefName)+"'";
-			NonQ(false);
+			NonQ();
+		}
+
+		///<summary>Updates a pref of type int.</summary>
+		public static void UpdateInt(string prefName,int newValue){
+			if(!HList.ContainsKey(prefName)){
+				MessageBox.Show(prefName+" is an invalid pref name.");
+				return;
+			}
+			cmd.CommandText = "UPDATE preference SET "
+				+"ValueString = '"+POut.PInt(newValue)+"' "
+				+"WHERE PrefName = '"+POut.PString(prefName)+"'";
+			NonQ();
 		}
 
 		///<summary></summary>

@@ -20,10 +20,10 @@ namespace OpenDental{
 		public string BankBranch;
 		///<summary></summary>
 		public string PayNote;
-		///<summary></summary>
-		public bool IsSplit;//(between patients.  Not including discounts)
-		///<summary></summary>
-		public int PatNum;//Selected automatically from the splits.  Just to make reports easier
+		///<summary>Set to true to indicate that a payment is split between patients.  This does not include discounts. Can't remember why this is here.  I think it makes the deposit slip easier to print.</summary>
+		public bool IsSplit;
+		///<summary>Selected automatically from the splits.  Just to make reports easier</summary>
+		public int PatNum;
 	}
 
 	/*=========================================================================================

@@ -17,7 +17,6 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textSig;
 		private System.Windows.Forms.TextBox textDisp;
 		private System.Windows.Forms.TextBox textRefills;
-		private System.Windows.Forms.TextBox textNotes;
 		private System.Windows.Forms.TextBox textDrug;
 		private System.Windows.Forms.Label label6;
 		private System.Windows.Forms.Label label5;
@@ -35,6 +34,7 @@ namespace OpenDental{
 		public bool IsNew;
 		private OpenDental.XPButton butPrint;
 		private OpenDental.XPButton butDelete;
+		private OpenDental.ODtextBox textNotes;
 		///<summary></summary>
     public FormRpPrintPreview pView = new FormRpPrintPreview();
 
@@ -79,7 +79,6 @@ namespace OpenDental{
 			this.textSig = new System.Windows.Forms.TextBox();
 			this.textDisp = new System.Windows.Forms.TextBox();
 			this.textRefills = new System.Windows.Forms.TextBox();
-			this.textNotes = new System.Windows.Forms.TextBox();
 			this.textDrug = new System.Windows.Forms.TextBox();
 			this.label6 = new System.Windows.Forms.Label();
 			this.label5 = new System.Windows.Forms.Label();
@@ -94,6 +93,7 @@ namespace OpenDental{
 			this.pd2 = new System.Drawing.Printing.PrintDocument();
 			this.butPrint = new OpenDental.XPButton();
 			this.butDelete = new OpenDental.XPButton();
+			this.textNotes = new OpenDental.ODtextBox();
 			this.SuspendLayout();
 			// 
 			// butCancel
@@ -142,16 +142,6 @@ namespace OpenDental{
 			this.textRefills.Size = new System.Drawing.Size(114, 20);
 			this.textRefills.TabIndex = 4;
 			this.textRefills.Text = "";
-			// 
-			// textNotes
-			// 
-			this.textNotes.AcceptsReturn = true;
-			this.textNotes.Location = new System.Drawing.Point(110, 228);
-			this.textNotes.Multiline = true;
-			this.textNotes.Name = "textNotes";
-			this.textNotes.Size = new System.Drawing.Size(386, 92);
-			this.textNotes.TabIndex = 5;
-			this.textNotes.Text = "";
 			// 
 			// textDrug
 			// 
@@ -271,12 +261,25 @@ namespace OpenDental{
 			this.butDelete.Text = "&Delete";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
 			// 
+			// textNotes
+			// 
+			this.textNotes.AcceptsReturn = true;
+			this.textNotes.Location = new System.Drawing.Point(110, 231);
+			this.textNotes.Multiline = true;
+			this.textNotes.Name = "textNotes";
+			this.textNotes.QuickPasteType = OpenDental.QuickPasteType.Rx;
+			this.textNotes.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.textNotes.Size = new System.Drawing.Size(373, 111);
+			this.textNotes.TabIndex = 31;
+			this.textNotes.Text = "";
+			// 
 			// FormRxEdit
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(710, 472);
+			this.Controls.Add(this.textNotes);
 			this.Controls.Add(this.butDelete);
 			this.Controls.Add(this.butPrint);
 			this.Controls.Add(this.label7);
@@ -285,7 +288,6 @@ namespace OpenDental{
 			this.Controls.Add(this.textSig);
 			this.Controls.Add(this.textDisp);
 			this.Controls.Add(this.textRefills);
-			this.Controls.Add(this.textNotes);
 			this.Controls.Add(this.textDrug);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.butCancel);

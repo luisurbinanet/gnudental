@@ -25,7 +25,6 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textADACode;
 		private System.Windows.Forms.TextBox textAbbrev;
 		private System.Windows.Forms.TextBox textDescription;
-		private System.Windows.Forms.TextBox textNote;
 		private System.Windows.Forms.CheckBox checkRemoveTth;
 		private System.Windows.Forms.CheckBox checkSetRecall;
 		private System.Windows.Forms.CheckBox checkNoBillIns;
@@ -49,6 +48,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label12;
 		private System.Windows.Forms.Label label13;
 		private System.Windows.Forms.TextBox textAlternateCode1;
+		private OpenDental.ODtextBox textNote;
 		private bool FeeChanged;
 
 		///<summary></summary>
@@ -103,7 +103,6 @@ namespace OpenDental{
 			this.label7 = new System.Windows.Forms.Label();
 			this.label8 = new System.Windows.Forms.Label();
 			this.label10 = new System.Windows.Forms.Label();
-			this.textNote = new System.Windows.Forms.TextBox();
 			this.butOK = new System.Windows.Forms.Button();
 			this.butCancel = new System.Windows.Forms.Button();
 			this.textADACode = new System.Windows.Forms.TextBox();
@@ -128,6 +127,7 @@ namespace OpenDental{
 			this.textAlternateCode1 = new System.Windows.Forms.TextBox();
 			this.label12 = new System.Windows.Forms.Label();
 			this.label13 = new System.Windows.Forms.Label();
+			this.textNote = new OpenDental.ODtextBox();
 			this.SuspendLayout();
 			// 
 			// label1
@@ -189,16 +189,6 @@ namespace OpenDental{
 			this.label10.Size = new System.Drawing.Size(78, 14);
 			this.label10.TabIndex = 9;
 			this.label10.Text = "Default Note";
-			// 
-			// textNote
-			// 
-			this.textNote.AcceptsReturn = true;
-			this.textNote.Location = new System.Drawing.Point(54, 364);
-			this.textNote.Multiline = true;
-			this.textNote.Name = "textNote";
-			this.textNote.Size = new System.Drawing.Size(522, 200);
-			this.textNote.TabIndex = 8;
-			this.textNote.Text = "";
 			// 
 			// butOK
 			// 
@@ -421,12 +411,25 @@ namespace OpenDental{
 			this.label13.TabIndex = 39;
 			this.label13.Text = "(For some Medicaid)";
 			// 
+			// textNote
+			// 
+			this.textNote.AcceptsReturn = true;
+			this.textNote.Location = new System.Drawing.Point(55, 365);
+			this.textNote.Multiline = true;
+			this.textNote.Name = "textNote";
+			this.textNote.QuickPasteType = OpenDental.QuickPasteType.Procedure;
+			this.textNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.textNote.Size = new System.Drawing.Size(540, 213);
+			this.textNote.TabIndex = 40;
+			this.textNote.Text = "";
+			// 
 			// FormProcCodeEdit
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(941, 707);
+			this.Controls.Add(this.textNote);
 			this.Controls.Add(this.label13);
 			this.Controls.Add(this.textAlternateCode1);
 			this.Controls.Add(this.label12);
@@ -439,7 +442,6 @@ namespace OpenDental{
 			this.Controls.Add(this.textDescription);
 			this.Controls.Add(this.textAbbrev);
 			this.Controls.Add(this.textADACode);
-			this.Controls.Add(this.textNote);
 			this.Controls.Add(this.butSlider);
 			this.Controls.Add(this.tbTime);
 			this.Controls.Add(this.label9);

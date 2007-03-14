@@ -24,6 +24,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label4;
 		private OpenDental.TableTP tbMain;
 		private System.ComponentModel.IContainer components;// Required designer variable.
+		///<summary>The procedures to show in the list.</summary>
 		private ArrayList arrayLProc;
 		private System.Windows.Forms.ListBox listSetPr;
 		///<summary></summary>
@@ -59,6 +60,7 @@ namespace OpenDental{
     public FormRpPrintPreview pView;
 //		private System.Windows.Forms.PrintDialog printDialog2;
 		private bool headingPrinted;
+		private bool graphicsPrinted;
 		private bool mainPrinted;
 		private bool benefitsPrinted;
 		private bool notePrinted;
@@ -92,7 +94,13 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textToday;
 		private System.Windows.Forms.ImageList imageListMain;
 		private OpenDental.UI.ODToolBar ToolBarMain;
-    private ArrayList ALPreAuth;  
+    private ArrayList ALPreAuth;
+		private Procedure[] ProcList;
+		private System.Windows.Forms.ContextMenu menuPatient;
+		private System.Windows.Forms.CheckBox checkShowCompleted;
+		private System.Windows.Forms.GroupBox groupBox1;
+		private System.Windows.Forms.CheckBox checkShowIns;
+		private ClaimProc[] ClaimProcList;
 
 		///<summary></summary>
 		public ContrTreat(){
@@ -135,6 +143,9 @@ namespace OpenDental{
 			this.label8 = new System.Windows.Forms.Label();
 			this.label9 = new System.Windows.Forms.Label();
 			this.panelSide = new System.Windows.Forms.Panel();
+			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.checkShowIns = new System.Windows.Forms.CheckBox();
+			this.checkShowCompleted = new System.Windows.Forms.CheckBox();
 			this.butSelectAll = new System.Windows.Forms.Button();
 			this.listViewPr = new System.Windows.Forms.ListBox();
 			this.label10 = new System.Windows.Forms.Label();
@@ -166,13 +177,15 @@ namespace OpenDental{
 			this.textToday = new System.Windows.Forms.TextBox();
 			this.ToolBarMain = new OpenDental.UI.ODToolBar();
 			this.imageListMain = new System.Windows.Forms.ImageList(this.components);
+			this.menuPatient = new System.Windows.Forms.ContextMenu();
 			this.panelSide.SuspendLayout();
+			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// label1
 			// 
 			this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.label1.Location = new System.Drawing.Point(44, 30);
+			this.label1.Location = new System.Drawing.Point(44, 15);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(32, 23);
 			this.label1.TabIndex = 4;
@@ -180,7 +193,7 @@ namespace OpenDental{
 			// 
 			// listSetPr
 			// 
-			this.listSetPr.Location = new System.Drawing.Point(26, 48);
+			this.listSetPr.Location = new System.Drawing.Point(26, 33);
 			this.listSetPr.Name = "listSetPr";
 			this.listSetPr.SelectionMode = System.Windows.Forms.SelectionMode.None;
 			this.listSetPr.Size = new System.Drawing.Size(66, 212);
@@ -190,7 +203,7 @@ namespace OpenDental{
 			// label2
 			// 
 			this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.label2.Location = new System.Drawing.Point(130, 30);
+			this.label2.Location = new System.Drawing.Point(130, 15);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(36, 23);
 			this.label2.TabIndex = 6;
@@ -199,7 +212,7 @@ namespace OpenDental{
 			// label4
 			// 
 			this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.label4.Location = new System.Drawing.Point(64, 6);
+			this.label4.Location = new System.Drawing.Point(66, 3);
 			this.label4.Name = "label4";
 			this.label4.Size = new System.Drawing.Size(72, 23);
 			this.label4.TabIndex = 15;
@@ -321,17 +334,48 @@ namespace OpenDental{
 			this.panelSide.Controls.Add(this.listViewPr);
 			this.panelSide.Controls.Add(this.listSetPr);
 			this.panelSide.Controls.Add(this.label1);
-			this.panelSide.Controls.Add(this.label4);
 			this.panelSide.Controls.Add(this.label2);
-			this.panelSide.Location = new System.Drawing.Point(704, 75);
+			this.panelSide.Controls.Add(this.groupBox1);
+			this.panelSide.Controls.Add(this.label4);
+			this.panelSide.Location = new System.Drawing.Point(704, 54);
 			this.panelSide.Name = "panelSide";
-			this.panelSide.Size = new System.Drawing.Size(190, 317);
+			this.panelSide.Size = new System.Drawing.Size(215, 341);
 			this.panelSide.TabIndex = 29;
+			// 
+			// groupBox1
+			// 
+			this.groupBox1.Controls.Add(this.checkShowIns);
+			this.groupBox1.Controls.Add(this.checkShowCompleted);
+			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.groupBox1.Location = new System.Drawing.Point(7, 268);
+			this.groupBox1.Name = "groupBox1";
+			this.groupBox1.Size = new System.Drawing.Size(200, 65);
+			this.groupBox1.TabIndex = 59;
+			this.groupBox1.TabStop = false;
+			this.groupBox1.Text = "Show on printout";
+			// 
+			// checkShowIns
+			// 
+			this.checkShowIns.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkShowIns.Location = new System.Drawing.Point(15, 41);
+			this.checkShowIns.Name = "checkShowIns";
+			this.checkShowIns.Size = new System.Drawing.Size(178, 17);
+			this.checkShowIns.TabIndex = 19;
+			this.checkShowIns.Text = "Insurance Estimates";
+			// 
+			// checkShowCompleted
+			// 
+			this.checkShowCompleted.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkShowCompleted.Location = new System.Drawing.Point(15, 19);
+			this.checkShowCompleted.Name = "checkShowCompleted";
+			this.checkShowCompleted.Size = new System.Drawing.Size(178, 17);
+			this.checkShowCompleted.TabIndex = 18;
+			this.checkShowCompleted.Text = "Completed Treatment";
 			// 
 			// butSelectAll
 			// 
 			this.butSelectAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butSelectAll.Location = new System.Drawing.Point(114, 266);
+			this.butSelectAll.Location = new System.Drawing.Point(114, 248);
 			this.butSelectAll.Name = "butSelectAll";
 			this.butSelectAll.Size = new System.Drawing.Size(68, 20);
 			this.butSelectAll.TabIndex = 17;
@@ -340,7 +384,7 @@ namespace OpenDental{
 			// 
 			// listViewPr
 			// 
-			this.listViewPr.Location = new System.Drawing.Point(114, 48);
+			this.listViewPr.Location = new System.Drawing.Point(114, 33);
 			this.listViewPr.Name = "listViewPr";
 			this.listViewPr.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
 			this.listViewPr.Size = new System.Drawing.Size(68, 212);
@@ -595,7 +639,7 @@ namespace OpenDental{
 			// 
 			// label19
 			// 
-			this.label19.Location = new System.Drawing.Point(701, 45);
+			this.label19.Location = new System.Drawing.Point(701, 35);
 			this.label19.Name = "label19";
 			this.label19.Size = new System.Drawing.Size(69, 15);
 			this.label19.TabIndex = 55;
@@ -605,7 +649,7 @@ namespace OpenDental{
 			// textToday
 			// 
 			this.textToday.BackColor = System.Drawing.Color.White;
-			this.textToday.Location = new System.Drawing.Point(773, 43);
+			this.textToday.Location = new System.Drawing.Point(773, 33);
 			this.textToday.Name = "textToday";
 			this.textToday.ReadOnly = true;
 			this.textToday.Size = new System.Drawing.Size(71, 20);
@@ -672,32 +716,17 @@ namespace OpenDental{
 			this.Name = "ContrTreat";
 			this.Size = new System.Drawing.Size(939, 708);
 			this.panelSide.ResumeLayout(false);
+			this.groupBox1.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
 		#endregion
 
-		///<summary></summary>
-		public void InstantClasses(){
-			listSetPr.Items.Clear();
-			listViewPr.Items.Clear();
-			listSetPr.Items.Add(Lan.g(this,"no priority"));
-			listViewPr.Items.Add(Lan.g(this,"no priority"));
-			listViewPr.SetSelected(0,true);
-			for(int i=0;i<Defs.Short[(int)DefCat.TxPriorities].Length;i++){
-				listSetPr.Items.Add(Defs.Short[(int)DefCat.TxPriorities][i].ItemName);
-				listViewPr.Items.Add(Defs.Short[(int)DefCat.TxPriorities][i].ItemName);
-				listViewPr.SetSelected(i+1,true);
-				//if(Defs.Defns[(int)DefCat.TxPriorities][i].DefNum==Payments.Cur.PayType)
-				//	listPayType.SelectedIndex=i;
-			}
-			//selectedPrs=new bool[Defs.Short[(int)DefCat.TxPriorities].Length];
-			//for(int i=0;i<selectedPrs.Length;i++){
-			//	listViewPr.SetSelected(i+1,true);
-			//	selectedPrs[i]=true;
-			//}
+		///<summary>Only called on startup, but after local data loaded from db.</summary>
+		public void InitializeOnStartup(){
+			checkShowCompleted.Checked=Prefs.GetBool("TreatPlanShowCompleted");
+			checkShowIns.Checked=Prefs.GetBool("TreatPlanShowIns");
 			showHidden=true;//shows hidden priorities
-			textNote.Text=((Pref)Prefs.HList["TreatmentPlanNote"]).ValueString; 
 			Lan.C(this, new System.Windows.Forms.Control[] {
 				this.butSelectAll,
 				this.label1,
@@ -721,20 +750,39 @@ namespace OpenDental{
 				this.label9,
 				this.panelSide,
 			});
+		}
+
+		///<summary>Called every time local data is changed from any workstation.  Refreshes priority lists and lays out the toolbar.</summary>
+		public void InitializeLocalData(){
+			listSetPr.Items.Clear();
+			listViewPr.Items.Clear();
+			listSetPr.Items.Add(Lan.g(this,"no priority"));
+			listViewPr.Items.Add(Lan.g(this,"no priority"));
+			listViewPr.SetSelected(0,true);
+			for(int i=0;i<Defs.Short[(int)DefCat.TxPriorities].Length;i++){
+				listSetPr.Items.Add(Defs.Short[(int)DefCat.TxPriorities][i].ItemName);
+				listViewPr.Items.Add(Defs.Short[(int)DefCat.TxPriorities][i].ItemName);
+				listViewPr.SetSelected(i+1,true);
+			}
+			textNote.Text=((Pref)Prefs.HList["TreatmentPlanNote"]).ValueString;
 			LayoutToolBar();
 		}
 
 		///<summary>Causes the toolbar to be laid out again.</summary>
 		public void LayoutToolBar(){
 			ToolBarMain.Buttons.Clear();
-			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Select Patient"),0,"","Patient"));
-			ToolBarMain.Buttons.Add(new ODToolBarButton(ToolBarButtonStyle.Separator));
+			ODToolBarButton button;
+			button=new ODToolBarButton(Lan.g(this,"Select Patient"),0,"","Patient");
+			button.Style=ODToolBarButtonStyle.DropDownButton;
+			button.DropDownMenu=menuPatient;
+			ToolBarMain.Buttons.Add(button);
+			ToolBarMain.Buttons.Add(new ODToolBarButton(ODToolBarButtonStyle.Separator));
 			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"PreAuthorization"),-1,"","PreAuth"));
 			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Update Fees"),1,"","Update"));
 			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Print TP"),2,"","Print"));
 			ArrayList toolButItems=ToolButItems.GetForToolBar(ToolBarsAvail.TreatmentPlanModule);
 			for(int i=0;i<toolButItems.Count;i++){
-				ToolBarMain.Buttons.Add(new ODToolBarButton(ToolBarButtonStyle.Separator));
+				ToolBarMain.Buttons.Add(new ODToolBarButton(ODToolBarButtonStyle.Separator));
 				ToolBarMain.Buttons.Add(new ODToolBarButton(((ToolButItem)toolButItems[i]).ButtonText
 					,-1,"",((ToolButItem)toolButItems[i]).ProgramNum));
 			}
@@ -755,10 +803,10 @@ namespace OpenDental{
 			CovPats.List=null;
 			Claims.List=null;
 			Claims.HList=null;
-			ClaimProcs.List=null;
+			//ClaimProcs.List=null;
 			//from FillMain:
-			Procedures.List=null;
-			Procedures.HList=null;
+			ProcList=null;
+			//Procedures.HList=null;
 			Procedures.MissingTeeth=null;
 		}
 
@@ -769,7 +817,7 @@ namespace OpenDental{
 				CovPats.Refresh();
 				Claims.Refresh();
         Fees.Refresh();
-        ClaimProcs.Refresh();
+        ClaimProcList=ClaimProcs.Refresh(Patients.Cur.PatNum);
 			}
 		}
 
@@ -794,10 +842,20 @@ namespace OpenDental{
 				ToolBarMain.Invalidate();
         listPreAuth.Enabled=false;
 			}
+			FillPatientButton();
 			FillMain();
 			FillSummary();
       FillPreAuth();
 			//FillMisc();
+		}
+
+		private void FillPatientButton(){
+			Patients.AddPatsToMenu(menuPatient,new EventHandler(menuPatient_Click));
+		}
+
+		private void menuPatient_Click(object sender,System.EventArgs e) {
+			Patients.ButtonSelect(menuPatient,sender);
+			ModuleSelected();
 		}
 
 		private void ToolBarMain_ButtonClick(object sender, OpenDental.UI.ODToolBarButtonClickEventArgs e) {
@@ -847,32 +905,32 @@ namespace OpenDental{
 			//Pull into TPLines2 arrayList for display.  Every TPLines2 entry
 			//contains an index to access original arrayList.
 			//Procedures.List is never used again after initial passthrough
-			//Notes will handled like any
+			//Notes will be handled like any
 			//other line, just no numbers(eventually)
-			Procedures.Refresh();
+			ProcList=Procedures.Refresh(Patients.Cur.PatNum);
 			arrayLProc=new ArrayList();
 			bool doAdd;
 			int iPriority;
 			int oPriority;
 			int iToothInt;
 			int oToothInt;
-			for(int i=0;i<Procedures.List.Length;i++){
+			for(int i=0;i<ProcList.Length;i++){
 				doAdd=false;
-				if(Procedures.List[i].ProcStatus==ProcStat.TP){
+				if(ProcList[i].ProcStatus==ProcStat.TP){
 					//if priority is 0 && "no priority" selected
-					if(Procedures.List[i].Priority==0){
+					if(ProcList[i].Priority==0){
 						if(listViewPr.SelectedIndices.Contains(0))
 							doAdd=true;
 					}
 					else{//any priority other than 0
 						//if priority is hidden && showHidden
-						if(Defs.GetOrder(DefCat.TxPriorities,Procedures.List[i].Priority)==-1 && showHidden)
+						if(Defs.GetOrder(DefCat.TxPriorities,ProcList[i].Priority)==-1 && showHidden)
 							doAdd=true;
 						//or if priority not hidden && priority selected
-						else if(Defs.GetOrder(DefCat.TxPriorities,Procedures.List[i].Priority)!=-1
+						else if(Defs.GetOrder(DefCat.TxPriorities,ProcList[i].Priority)!=-1
 							//&& selectedPrs[Defs.GetOrder(DefCat.TxPriorities,Procedures.List[i].Priority)])
 							&& listViewPr.SelectedIndices.Contains
-							(Defs.GetOrder(DefCat.TxPriorities,Procedures.List[i].Priority)+1))
+							(Defs.GetOrder(DefCat.TxPriorities,ProcList[i].Priority)+1))
 							doAdd=true;
 					}
 				}
@@ -880,11 +938,11 @@ namespace OpenDental{
 					continue;
 				}
 				if(arrayLProc.Count==0)//first procedure simple add
-					arrayLProc.Add(Procedures.List[i]);
+					arrayLProc.Add(ProcList[i]);
 				else{//after that, figure out where to place the procedure to order things properly
-					iPriority=Defs.GetOrder(DefCat.TxPriorities,Procedures.List[i].Priority);
-					if(Tooth.IsValidDB(Procedures.List[i].ToothNum))
-						iToothInt=Tooth.ToInt(Procedures.List[i].ToothNum);
+					iPriority=Defs.GetOrder(DefCat.TxPriorities,ProcList[i].Priority);
+					if(Tooth.IsValidDB(ProcList[i].ToothNum))
+						iToothInt=Tooth.ToInt(ProcList[i].ToothNum);
 					else
 						iToothInt=0;
 					for(int o=0;o<arrayLProc.Count;o++){
@@ -895,16 +953,16 @@ namespace OpenDental{
 							oToothInt=0;
 						if(iPriority==oPriority){
 							if(iToothInt < oToothInt){
-								arrayLProc.Insert(o,Procedures.List[i]);
+								arrayLProc.Insert(o,ProcList[i]);
 								break;
 							}
 						}
 						if(iPriority < oPriority){
-							arrayLProc.Insert(o,Procedures.List[i]);
+							arrayLProc.Insert(o,ProcList[i]);
 							break;
 						}
 						if(o==arrayLProc.Count-1){
-							arrayLProc.Add(Procedures.List[i]);
+							arrayLProc.Add(ProcList[i]);
 							break;
 						}
 					}//end for
@@ -928,17 +986,13 @@ namespace OpenDental{
 				tempTPLine.Surface=((Procedure)arrayLProc[i]).Surf;
 				tempTPLine.Description=ProcedureCodes.GetProcCode(((Procedure)arrayLProc[i]).ADACode).Descript;
 				tempTPLine.ADACode=((Procedure)arrayLProc[i]).ADACode;
-				Procedures.Cur=(Procedure)arrayLProc[i];
-				Procedures.CurOld=Procedures.Cur;
-				double fee=Procedures.Cur.ProcFee;
-				double priIns=Procedures.GetEstForCur(PriSecTot.Pri);
-				double secIns=Procedures.GetEstForCur(PriSecTot.Sec);
-				double pat=fee-priIns-secIns;
-				if(Procedures.Cur.CapCoPay!=-1){//covered by capitation
-					priIns=0;
-					secIns=0;
-					pat=Procedures.Cur.CapCoPay;
-				}
+				double fee=((Procedure)arrayLProc[i]).ProcFee;
+				double priIns=((Procedure)arrayLProc[i]).GetEst(ClaimProcList,PriSecTot.Pri);
+				double secIns=((Procedure)arrayLProc[i]).GetEst(ClaimProcList,PriSecTot.Sec);
+				double pat=fee-priIns-secIns
+					-((Procedure)arrayLProc[i]).GetWriteOff(ClaimProcList);
+				if(pat<0)
+					pat=0;
 				totFee+=fee;
 				totPriIns+=priIns;
 				totSecIns+=secIns;
@@ -999,7 +1053,7 @@ namespace OpenDental{
 			if(Patients.Cur.PriPlanNum!=0){
 				InsPlans.GetCur(Patients.Cur.PriPlanNum);
 				//pending:
-				pend=InsPlans.GetPending(DateTime.Today,Patients.Cur.PriPlanNum);
+				pend=InsPlans.GetPending(ClaimProcList,DateTime.Today,Patients.Cur.PriPlanNum);
 				textPriPend.Text=pend.ToString("F");
 				//max, used, and remaining:
 				if(InsPlans.Cur.AnnualMax==-1){//annual max is blank
@@ -1010,7 +1064,7 @@ namespace OpenDental{
 				}
 				else{
 					max=InsPlans.Cur.AnnualMax;
-					remain=InsPlans.GetInsRem(DateTime.Today,Patients.Cur.PriPlanNum,-1);
+					remain=InsPlans.GetInsRem(ClaimProcList,DateTime.Today,Patients.Cur.PriPlanNum,-1);
 					used=max-remain-pend;//math done in reverse to take advantage of GetInsRem
 					//fix later to: remain=max-used-pend
 					textPriMax.Text=max.ToString("F");
@@ -1020,11 +1074,11 @@ namespace OpenDental{
 				//deductible:
 				if(InsPlans.Cur.Deductible!=-1)
 					textPriDed.Text=InsPlans.Cur.Deductible.ToString("F");
-				textPriDedRem.Text=InsPlans.GetDedRem(DateTime.Today,Patients.Cur.PriPlanNum,-1).ToString("F");
+				textPriDedRem.Text=InsPlans.GetDedRem(ClaimProcList,DateTime.Today,Patients.Cur.PriPlanNum,-1).ToString("F");
 			}
 			if(Patients.Cur.SecPlanNum!=0){
 				InsPlans.GetCur(Patients.Cur.SecPlanNum);
-				pend=InsPlans.GetPending(DateTime.Today,Patients.Cur.SecPlanNum);
+				pend=InsPlans.GetPending(ClaimProcList,DateTime.Today,Patients.Cur.SecPlanNum);
 				textSecPend.Text=pend.ToString("F");
 				if(InsPlans.Cur.AnnualMax==-1){//annual max is blank
 					textSecMax.Text="";
@@ -1033,7 +1087,7 @@ namespace OpenDental{
 				}
 				else{
 					max=InsPlans.Cur.AnnualMax;
-					remain=InsPlans.GetInsRem(DateTime.Today,Patients.Cur.SecPlanNum,-1);
+					remain=InsPlans.GetInsRem(ClaimProcList,DateTime.Today,Patients.Cur.SecPlanNum,-1);
 					used=max-remain-pend;
 					textSecMax.Text=max.ToString("F");
 					textSecRem.Text=remain.ToString("F");
@@ -1041,7 +1095,8 @@ namespace OpenDental{
 				}
 				if(InsPlans.Cur.Deductible!=-1)
 					textSecDed.Text=InsPlans.Cur.Deductible.ToString("F");
-				textSecDedRem.Text=InsPlans.GetDedRem(DateTime.Today,Patients.Cur.SecPlanNum,-1).ToString("F");
+				textSecDedRem.Text=InsPlans.GetDedRem(ClaimProcList,DateTime.Today,
+					Patients.Cur.SecPlanNum,-1).ToString("F");
 			}
 		}
 
@@ -1077,12 +1132,10 @@ namespace OpenDental{
 		}
 
 		private void tbMain_CellDoubleClicked(object sender, CellEventArgs e){
-			Procedures.Cur=(Procedure)arrayLProc[((TPLine)TPLines2[e.Row]).Index];
-			Procedures.CurOld=Procedures.Cur;
-			FormProcEdit FormPE=new FormProcEdit();
-			FormPE.IsNew=false;
+			Procedure ProcCur=(Procedure)arrayLProc[((TPLine)TPLines2[e.Row]).Index];
+			FormProcEdit FormPE=new FormProcEdit(ProcCur);
 			FormPE.ShowDialog();
-			if (FormPE.DialogResult!=DialogResult.OK) return;
+			//if(FormPE.DialogResult!=DialogResult.OK) return;
 			//Procedures.Update();//moved into dialog
 			ModuleSelected();
 			//MessageBox.Show(e.Col.ToString()+","+e.Row.ToString()+" Double Clicked");
@@ -1094,16 +1147,15 @@ namespace OpenDental{
 			if(clickedRow==-1)
 				return;
 			Procedure ProcCur;
+			Procedure ProcOld;
 			for(int i=0;i<tbMain.SelectedIndices.Length;i++){//loop through the main list of selected procs
-				Procedures.Cur=(Procedure)arrayLProc[((TPLine)TPLines2[tbMain.SelectedIndices[i]]).Index];
-				Procedures.CurOld=Procedures.Cur;
-				ProcCur=Procedures.Cur;
+				ProcCur=(Procedure)arrayLProc[((TPLine)TPLines2[tbMain.SelectedIndices[i]]).Index];
+				ProcOld=ProcCur.Copy();
 				if(clickedRow==0)//set priority to "no priority"
 					ProcCur.Priority=0;
 				else
 					ProcCur.Priority=Defs.Short[(int)DefCat.TxPriorities][clickedRow-1].DefNum;
-				Procedures.Cur=ProcCur;
-				Procedures.UpdateCur();
+				ProcCur.Update(ProcOld);
 			}
 			ModuleSelected();
 		}
@@ -1132,7 +1184,7 @@ namespace OpenDental{
 		public void PrintReport(bool justPreview){
 			pd2=new PrintDocument();
 			pd2.PrintPage += new PrintPageEventHandler(this.pd2_PrintPage);
-			pd2.DefaultPageSettings.Margins=new Margins(0,0,0,0);//useless
+			//pd2.DefaultPageSettings.Margins=new Margins(0,0,0,0);//useless
 			//pagesPrinted=0;
 			//linesPrinted=0;
 			PrintDocument tempPD = new PrintDocument();
@@ -1142,6 +1194,7 @@ namespace OpenDental{
 			}
 			//uses default printer if selected printer not valid
 			tempPD.Dispose();
+			pd2.DefaultPageSettings.Margins=new Margins(50,50,40,25);//not directly used. Just handy.
 			try{
 				if(justPreview){
 					pView = new FormRpPrintPreview();
@@ -1160,6 +1213,7 @@ namespace OpenDental{
 			linesPrinted=0;
 			ColTotal = new double[10];
 			headingPrinted=false;
+			graphicsPrinted=false;
 			mainPrinted=false;
 			benefitsPrinted=false;
 			notePrinted=false;
@@ -1167,64 +1221,168 @@ namespace OpenDental{
 		}
 
 		private void pd2_PrintPage(object sender, System.Drawing.Printing.PrintPageEventArgs e) {
-			//assumes printable area is w=800 x h=1037, some printers can handle 1042.
+			//printable area is w=800.
+			//Height is 1035 for standard paper.  Some printers can handle up to 1042. was 1037
+			//MessageBox.Show(e.MarginBounds.Height.ToString());
 			yPos=44;
 			xPos=25;
 			#region printHeading
 			if(!headingPrinted){
-				string heading="PROPOSED TREATMENT PLAN";
+				string heading=Lan.g(this,"PROPOSED TREATMENT PLAN");
 				string practice=((Pref)Prefs.HList["PracticeTitle"]).ValueString;
 				string name=Patients.Cur.FName+" "+Patients.Cur.MiddleI+" "+Patients.Cur.LName;
 				string date=DateTime.Today.ToShortDateString();
 				if(Patients.Cur.Preferred!="")
 					name="'"+Patients.Cur.Preferred+"' "+name;
-				e.Graphics.DrawString(Lan.g(this,heading),headingFont,Brushes.Black
+				e.Graphics.DrawString(heading,headingFont,Brushes.Black
 					,400-e.Graphics.MeasureString(heading,headingFont).Width/2,yPos);
 				yPos+=(int)e.Graphics.MeasureString(heading,headingFont).Height;
-				e.Graphics.DrawString(Lan.g(this,practice),subHeadingFont,Brushes.Black
+				e.Graphics.DrawString(practice,subHeadingFont,Brushes.Black
 					,400-e.Graphics.MeasureString(practice,subHeadingFont).Width/2,yPos);
 				yPos+=(int)e.Graphics.MeasureString(heading,headingFont).Height;
-				e.Graphics.DrawString(Lan.g(this,date),subHeadingFont,Brushes.Black
+				e.Graphics.DrawString(date,subHeadingFont,Brushes.Black
 					,400-e.Graphics.MeasureString(date,subHeadingFont).Width/2,yPos);
 				yPos+=30;
-				e.Graphics.DrawString(Lan.g(this,name),subHeadingFont,Brushes.Black
-					,25,yPos);
-				yPos+=22;
+				e.Graphics.DrawString(name,subHeadingFont,Brushes.Black
+					,400-e.Graphics.MeasureString(name,subHeadingFont).Width/2,yPos);
+				yPos+=30;
 				headingPrinted=true;
 			}
 			#endregion
+			#region PrintGraphics
+			if(headingPrinted && !graphicsPrinted){
+				if(Prefs.GetBool("TreatPlanShowGraphics")){
+					//prints the graphical tooth chart and legend
+					ContrTeeth cTeeth=new ContrTeeth();
+					cTeeth.SetWidth(589);//this is not very precise
+					//MessageBox.Show(cTeeth.Width.ToString());
+					cTeeth.CreateBackShadow();
+					cTeeth.ClearProcs();
+					//ProcList already refreshed
+					ArrayList procAL = new ArrayList();
+					//arrayLProc already filled
+					//first, add all completed work. C,EC,EO
+					//and Referred
+					for(int i=0;i<ProcList.Length;i++){
+						if(ProcList[i].ProcStatus==ProcStat.C
+							|| ProcList[i].ProcStatus==ProcStat.EC
+							|| ProcList[i].ProcStatus==ProcStat.EO)
+						{
+							//always show missing teeth
+							if(ProcedureCodes.GetProcCode(ProcList[i].ADACode).RemoveTooth){
+								procAL.Add(ProcList[i]);
+							}
+							else if(checkShowCompleted.Checked){
+								procAL.Add(ProcList[i]);
+							}
+						}
+						if(ProcList[i].ProcStatus==ProcStat.R){//always show all referred
+							procAL.Add(ProcList[i]);
+						}
+					}
+					//then add whatever is showing on the list
+					for(int i=0;i<arrayLProc.Count;i++){
+						procAL.Add((Procedure)arrayLProc[i]);
+					}
+					cTeeth.DrawProcs(procAL);
+					//xPos and yPos will be the upper left of this entire section.
+					//some arbitrary adjustments to alignment made here because cTeeth.Width not accurate
+					e.Graphics.DrawString(Lan.g(this,"Your Right"),bodyFont,Brushes.Black,
+						new RectangleF(400-cTeeth.Width/2-60,(float)yPos+cTeeth.Height/2-10,50,200));
+					cTeeth.PrintChart(e.Graphics,400-cTeeth.Width/2-10,yPos);
+					e.Graphics.DrawString(Lan.g(this,"Your Left"),bodyFont,Brushes.Black,
+						new RectangleF(400+cTeeth.Width/2+25,(float)yPos+cTeeth.Height/2-10,50,200));
+					yPos+=cTeeth.Height;
+					if(checkShowCompleted.Checked){
+						yPos+=15;
+						xPos=190;
+						e.Graphics.FillRectangle
+							(new SolidBrush(Defs.Short[(int)DefCat.ChartGraphicColors][3].ItemColor),
+							xPos,yPos,14,14);
+						xPos+=15;
+						e.Graphics.DrawString(Lan.g(this,"Existing"),bodyFont,Brushes.Black,xPos,yPos);
+						xPos+=(int)e.Graphics.MeasureString(Lan.g(this,"Existing"),bodyFont).Width+23;
+						//The Complete work is actually a combination of EC and C. Usually same color.
+						//But just in case they are different, this will show it.
+						e.Graphics.FillRectangle
+							(new SolidBrush(Defs.Short[(int)DefCat.ChartGraphicColors][2].ItemColor),
+							xPos,yPos,7,14);
+						xPos+=7;
+						e.Graphics.FillRectangle
+							(new SolidBrush(Defs.Short[(int)DefCat.ChartGraphicColors][1].ItemColor),
+							xPos,yPos,7,14);
+						xPos+=8;
+						e.Graphics.DrawString(Lan.g(this,"Complete"),bodyFont,Brushes.Black,xPos,yPos);
+						xPos+=(int)e.Graphics.MeasureString(Lan.g(this,"Complete"),bodyFont).Width+23;
+						e.Graphics.FillRectangle
+							(new SolidBrush(Defs.Short[(int)DefCat.ChartGraphicColors][4].ItemColor),
+							xPos,yPos,14,14);
+						xPos+=15;
+						e.Graphics.DrawString(Lan.g(this,"Referred Out"),bodyFont,Brushes.Black,xPos,yPos);
+						xPos+=(int)e.Graphics.MeasureString(Lan.g(this,"Referred Out"),bodyFont).Width+23;
+						e.Graphics.FillRectangle
+							(new SolidBrush(Defs.Short[(int)DefCat.ChartGraphicColors][0].ItemColor),
+							xPos,yPos,14,14);
+						xPos+=15;
+						e.Graphics.DrawString(Lan.g(this,"Treatment Planned"),bodyFont,Brushes.Black,xPos,yPos);
+					}
+					yPos+=40;
+					xPos=25;
+				}//if(Prefs.GetBool("TreatPlanShowGraphics"))
+				graphicsPrinted=true;
+			}
+			#endregion
 			#region DefineColumns
-			int[] colPos=new int[11];
-			HorizontalAlignment[] colAlign=new HorizontalAlignment[10];
-			string[] ColCaption=new string[10];
+			//no condition, so runs again on each page
+			int[] colPos;
+			HorizontalAlignment[] colAlign;
+			string[] ColCaption;
+			if(checkShowIns.Checked){
+				colPos=new int[11];
+				colAlign=new HorizontalAlignment[10];
+				ColCaption=new string[10];
+				ColCaption[6]=Lan.g(this,"Pri Ins");
+				ColCaption[7]=Lan.g(this,"Sec Ins");
+				ColCaption[8]=Lan.g(this,"Pat Pay");
+				ColCaption[9]=Lan.g(this,"Pre Est");
+				colPos[0]=25;   colAlign[0]=HorizontalAlignment.Left;//priority
+				colPos[1]=95;		colAlign[1]=HorizontalAlignment.Left;//tooth
+				colPos[2]=140;  colAlign[2]=HorizontalAlignment.Left;//surf
+				colPos[3]=200;  colAlign[3]=HorizontalAlignment.Left;//adacode
+				colPos[4]=270;  colAlign[4]=HorizontalAlignment.Left;//description
+				colPos[5]=485;  colAlign[5]=HorizontalAlignment.Right;//fee
+				colPos[6]=545;  colAlign[6]=HorizontalAlignment.Right;//pri ins
+				colPos[7]=595;  colAlign[7]=HorizontalAlignment.Right;//sec ins
+				colPos[8]=655;  colAlign[8]=HorizontalAlignment.Right;//pat Pay
+				colPos[9]=720;  colAlign[9]=HorizontalAlignment.Right;//pre est
+				colPos[10]=780;
+			}
+			else{//don't show ins
+				colPos=new int[7];
+				colAlign=new HorizontalAlignment[6];
+				ColCaption=new string[6];
+				colPos[0]=145;  colAlign[0]=HorizontalAlignment.Left;//priority
+				colPos[1]=215;	colAlign[1]=HorizontalAlignment.Left;//tooth
+				colPos[2]=260;  colAlign[2]=HorizontalAlignment.Left;//surf
+				colPos[3]=320;  colAlign[3]=HorizontalAlignment.Left;//adacode
+				colPos[4]=390;  colAlign[4]=HorizontalAlignment.Left;//description
+				colPos[5]=595;  colAlign[5]=HorizontalAlignment.Right;//fee
+				colPos[6]=665;
+			}
 			ColCaption[0]=Lan.g(this,"Priority");
-      ColCaption[1]=Lan.g(this,"Tooth");
-      ColCaption[2]=Lan.g(this,"Surf");
+			ColCaption[1]=Lan.g(this,"Tooth");
+			ColCaption[2]=Lan.g(this,"Surf");
 			ColCaption[3]=Lan.g(this,"ADA Code");
 			ColCaption[4]=Lan.g(this,"Description");
-      ColCaption[5]=Lan.g(this,"Fee");
-			ColCaption[6]=Lan.g(this,"Pri Ins");
-      ColCaption[7]=Lan.g(this,"Sec Ins");
-			ColCaption[8]=Lan.g(this,"Pat Pay");
-      ColCaption[9]=Lan.g(this,"Pre Est");
-			//Setting Column Lengths
-			colPos[0]=25;   colAlign[0]=HorizontalAlignment.Left;//priority
-			colPos[1]=95;		colAlign[1]=HorizontalAlignment.Left;//tooth
-			colPos[2]=140;  colAlign[2]=HorizontalAlignment.Left;//surf
-			colPos[3]=200;  colAlign[3]=HorizontalAlignment.Left;//adacode
-			colPos[4]=270;  colAlign[4]=HorizontalAlignment.Left;//description
-			colPos[5]=455;  colAlign[5]=HorizontalAlignment.Right;//fee
-			colPos[6]=515;  colAlign[6]=HorizontalAlignment.Right;//pri ins
-			colPos[7]=565;  colAlign[7]=HorizontalAlignment.Right;//sec ins
-			colPos[8]=625;  colAlign[8]=HorizontalAlignment.Right;//pat Pay
-			colPos[9]=690;  colAlign[9]=HorizontalAlignment.Right;//pre est
-			colPos[10]=750;
+			ColCaption[5]=Lan.g(this,"Fee");
 			#endregion
 			#region MainTable
-			if(!mainPrinted){
-				e.Graphics.FillRectangle(Brushes.LightGray,xPos,yPos,colPos[10]-colPos[0],18);
-				e.Graphics.DrawRectangle(new Pen(Color.Black),xPos,yPos,colPos[10]-colPos[0],18);  
-				for(int i=1;i<11;i++) 
+			if(graphicsPrinted && !mainPrinted && yPos < e.MarginBounds.Height-40){
+				//this might be starting somewhere int the middle of the table
+				e.Graphics.FillRectangle(Brushes.LightGray,colPos[0],yPos,colPos[colPos.Length-1]-colPos[0],18);
+				e.Graphics.DrawRectangle
+					(new Pen(Color.Black),colPos[0],yPos,colPos[colPos.Length-1]-colPos[0],18);  
+				for(int i=1;i<colPos.Length;i++) 
 					e.Graphics.DrawLine(new Pen(Color.Black),colPos[i],yPos,colPos[i],yPos+18);
 				//Prints the Column Titles
 				for(int i=0;i<ColCaption.Length;i++){ 
@@ -1237,8 +1395,8 @@ namespace OpenDental{
 
 				}
 				yPos+=18;
-				while(yPos < 1037-16 && linesPrinted < TPLines2.Count){
-					for(int j=0;j<10;j++){
+				while(yPos < e.MarginBounds.Height-16 && linesPrinted < TPLines2.Count){
+					for(int j=0;j<colPos.Length-1;j++){
   					if(colAlign[j]==HorizontalAlignment.Right){
 							e.Graphics.DrawString
 								(Lan.g(this,tbMain.Cell[j,linesPrinted].ToString())
@@ -1257,112 +1415,114 @@ namespace OpenDental{
 							ColTotal[j]+=(float)(PIn.PDouble(tbMain.Cell[j,linesPrinted].ToString()));
 					} 
 					//Column lines		
-
-					for(int i=0;i<11;i++){ 
+					for(int i=0;i<colPos.Length;i++){ 
 	  				e.Graphics.DrawLine(new Pen(Color.Gray),colPos[i],yPos+16,colPos[i],yPos);
 					}
 					//e.Graphics.DrawLine(new Pen(Color.Gray),colPos[0],yPos,colPos[9],yPos);
 					linesPrinted++;
 					yPos+=16;
 				}//end while 
-				e.Graphics.DrawLine(new Pen(Color.Gray),colPos[0],yPos,colPos[10],yPos);//bottom line
+				//bottom line
+				e.Graphics.DrawLine(new Pen(Color.Gray),colPos[0],yPos,colPos[colPos.Length-1],yPos);
 				if(linesPrinted==TPLines2.Count){
 					mainPrinted=true;
 			    e.Graphics.DrawString(Lan.g(this,"Total"),totalFont,Brushes.Black
 						,colPos[5]-e.Graphics.MeasureString("Total",totalFont).Width,yPos);
-          for(int i=5;i<10;i++){
+          for(int i=5;i<colPos.Length-1;i++){
 				    e.Graphics.DrawString(Lan.g(this,ColTotal[i].ToString("F")),totalFont,Brushes.Black,
 				    colPos[i+1]-e.Graphics.MeasureString(ColTotal[i].ToString("F"),totalFont).Width-1,yPos);
           }
 				}
-				yPos+=75;
-			}
+				yPos+=40;
+			}//main table
 			#endregion
 			#region printBenefits
-			if(!benefitsPrinted && yPos < 1037-16*8){
-				int[] insColX=new int[4];
-				insColX[0]=250;
-				insColX[1]=400;
-				insColX[2]=475;
-				insColX[3]=550;//right edge
-				int lineSpacing=16;
-				e.Graphics.FillRectangle(Brushes.LightGray,insColX[0],yPos,insColX[3]-insColX[0],16);
-				e.Graphics.DrawRectangle(new Pen(Color.Black),insColX[0],yPos-1,insColX[3]-insColX[0],16); 
-				string insTitle="Dental Insurance Benefits";
-				e.Graphics.DrawString(Lan.g(this,insTitle),totalFont,Brushes.Black
-						,insColX[1]-e.Graphics.MeasureString(insTitle,totalFont).Width/2,yPos);
-				yPos+=lineSpacing;
-				for(int i=0;i<4;i++) 
-					e.Graphics.DrawLine(new Pen(Color.Gray),insColX[i],yPos,insColX[i],yPos+lineSpacing*7);
-				e.Graphics.DrawLine(new Pen(Color.Gray),insColX[0],yPos+lineSpacing
-					,insColX[3],yPos+lineSpacing);
-				e.Graphics.DrawLine(new Pen(Color.Gray),insColX[0],yPos+lineSpacing*7
-					,insColX[3],yPos+lineSpacing*7);
-				Font insFont=new Font("Arial",9);
-				string insHead="";
-				string insPri="";
-				string insSec="";
-				for(int i=0;i<7;i++){
-					switch(i)  {
-            case 0:
-							insHead="";
-							insPri="Primary";
-							insSec="Secondary";
-							break;
-						case 1:
-							insHead="Annual Maximum";
-							insPri=textPriMax.Text;
-							insSec=textSecMax.Text;
-							break;
-						case 2:
-							insHead="Deductible";
-							insPri=textPriDed.Text;
-							insSec=textSecDed.Text;
-							break;
-						case 3:
-							insHead="Deductible Remaining";
-							insPri=textPriDedRem.Text;
-							insSec=textSecDedRem.Text;
-							break;
-						case 4:
-							insHead="Insurance Used";
-							insPri=textPriUsed.Text;
-							insSec=textSecUsed.Text;
-							break;
-						case 5:
-							insHead="Pending";
-							insPri=textPriPend.Text;
-							insSec=textSecPend.Text;
-							break;
-						case 6:
-							insHead="Remaining";
-							insPri=textPriRem.Text;
-							insSec=textSecRem.Text;
-    					break;
-					}//end switch
-					e.Graphics.DrawString(Lan.g(this,insHead),insFont,Brushes.Black,insColX[0]+2,yPos+1);
-					if(i==0){
-            //float xHead=(float)();
-					  e.Graphics.DrawString(Lan.g(this,insPri),insFont,Brushes.Black,insColX[2]
-							-e.Graphics.MeasureString(insPri,insFont).Width-1,yPos+1);
-            //xHead=(float)();
-						e.Graphics.DrawString(Lan.g(this,insSec),insFont,Brushes.Black,insColX[3]
-							-e.Graphics.MeasureString(insSec,insFont).Width-1,yPos+1);					
-					}
-					else{
-				    e.Graphics.DrawString(Lan.g(this,insPri),insFont,Brushes.Black,insColX[2]
-							-e.Graphics.MeasureString(insPri,insFont).Width-1,yPos+1);
-				    e.Graphics.DrawString(Lan.g(this,insSec),insFont,Brushes.Black,insColX[3]
-							-e.Graphics.MeasureString(insSec,insFont).Width-1,yPos+1);
-					}
+			if(mainPrinted && !benefitsPrinted && yPos < e.MarginBounds.Height-16*8){//1037
+				if(checkShowIns.Checked){
+					int[] insColX=new int[4];
+					insColX[0]=250;
+					insColX[1]=400;
+					insColX[2]=475;
+					insColX[3]=550;//right edge
+					int lineSpacing=16;
+					e.Graphics.FillRectangle(Brushes.LightGray,insColX[0],yPos,insColX[3]-insColX[0],16);
+					e.Graphics.DrawRectangle(new Pen(Color.Black),insColX[0],yPos-1,insColX[3]-insColX[0],16); 
+					string insTitle="Dental Insurance Benefits";
+					e.Graphics.DrawString(Lan.g(this,insTitle),totalFont,Brushes.Black
+							,insColX[1]-e.Graphics.MeasureString(insTitle,totalFont).Width/2,yPos);
 					yPos+=lineSpacing;
-				}//end for 0-7
-				yPos+=40;
+					for(int i=0;i<4;i++) 
+						e.Graphics.DrawLine(new Pen(Color.Gray),insColX[i],yPos,insColX[i],yPos+lineSpacing*7);
+					e.Graphics.DrawLine(new Pen(Color.Gray),insColX[0],yPos+lineSpacing
+						,insColX[3],yPos+lineSpacing);
+					e.Graphics.DrawLine(new Pen(Color.Gray),insColX[0],yPos+lineSpacing*7
+						,insColX[3],yPos+lineSpacing*7);
+					Font insFont=new Font("Arial",9);
+					string insHead="";
+					string insPri="";
+					string insSec="";
+					for(int i=0;i<7;i++){
+						switch(i)  {
+							case 0:
+								insHead="";
+								insPri="Primary";
+								insSec="Secondary";
+								break;
+							case 1:
+								insHead="Annual Maximum";
+								insPri=textPriMax.Text;
+								insSec=textSecMax.Text;
+								break;
+							case 2:
+								insHead="Deductible";
+								insPri=textPriDed.Text;
+								insSec=textSecDed.Text;
+								break;
+							case 3:
+								insHead="Deductible Remaining";
+								insPri=textPriDedRem.Text;
+								insSec=textSecDedRem.Text;
+								break;
+							case 4:
+								insHead="Insurance Used";
+								insPri=textPriUsed.Text;
+								insSec=textSecUsed.Text;
+								break;
+							case 5:
+								insHead="Pending";
+								insPri=textPriPend.Text;
+								insSec=textSecPend.Text;
+								break;
+							case 6:
+								insHead="Remaining";
+								insPri=textPriRem.Text;
+								insSec=textSecRem.Text;
+    						break;
+						}//end switch
+						e.Graphics.DrawString(Lan.g(this,insHead),insFont,Brushes.Black,insColX[0]+2,yPos+1);
+						if(i==0){
+							//float xHead=(float)();
+							e.Graphics.DrawString(Lan.g(this,insPri),insFont,Brushes.Black,insColX[2]
+								-e.Graphics.MeasureString(insPri,insFont).Width-1,yPos+1);
+							//xHead=(float)();
+							e.Graphics.DrawString(Lan.g(this,insSec),insFont,Brushes.Black,insColX[3]
+								-e.Graphics.MeasureString(insSec,insFont).Width-1,yPos+1);					
+						}
+						else{
+							e.Graphics.DrawString(Lan.g(this,insPri),insFont,Brushes.Black,insColX[2]
+								-e.Graphics.MeasureString(insPri,insFont).Width-1,yPos+1);
+							e.Graphics.DrawString(Lan.g(this,insSec),insFont,Brushes.Black,insColX[3]
+								-e.Graphics.MeasureString(insSec,insFont).Width-1,yPos+1);
+						}
+						yPos+=lineSpacing;
+					}//end for 0-7
+					yPos+=20;
+				}//if(checkShowIns.checked)
 				benefitsPrinted=true;	
 			}
 			#endregion
 			#region printNote
-			if(benefitsPrinted && !notePrinted && yPos < 1037-16*4){
+			if(benefitsPrinted && !notePrinted && yPos < e.MarginBounds.Height-16*4){//1037
 				e.Graphics.DrawRectangle(Pens.Gray,50,yPos,700,16*4);
 				e.Graphics.DrawString(Lan.g(this,((Pref)Prefs.HList["TreatmentPlanNote"]).ValueString),bodyFont
 					,Brushes.Black,new RectangleF(55f,yPos+5,695f,54f));
@@ -1378,33 +1538,21 @@ namespace OpenDental{
 		}
 
 		private void OnUpdate_Click() {
-		  if(MessageBox.Show(Lan.g(this,"Update all fees on this treatment plan to the current fees for this patient?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
+		  if(MessageBox.Show(Lan.g(this,"Update all fees and insurance estimates on this treatment plan to the current fees for this patient?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
         return;   
       }
-			if(Patients.Cur.PriPlanNum!=0)
+			if(Patients.Cur.PriPlanNum>0)//has primary ins
 				InsPlans.GetCur(Patients.Cur.PriPlanNum);//in preparation for the capcopay changes
-			Procedure ProcCur;
+			Procedure procCur;
+			Procedure procOld;
       for(int i=0;i<arrayLProc.Count;i++){
-				Procedures.Cur=(Procedure)arrayLProc[i];
-				Procedures.CurOld=Procedures.Cur;
-				ProcCur=Procedures.Cur;
+				procCur=(Procedure)arrayLProc[i];
+				procOld=procCur.Copy();
 				//first the fees
-				ProcCur.ProcFee = Fees.GetAmount(ProcCur.ADACode,ContrChart.GetFeeSched());
-				//then the 'Patient has insurance' checkbox
-				//and the CapCoPay
-				ProcCur.CapCoPay=-1;
-				if(Patients.Cur.PriPlanNum==0){//no ins
-					ProcCur.IsCovIns=false;
-				}
-				else{//has ins
-					ProcCur.IsCovIns=true;
-					if(InsPlans.Cur.PlanType=="c"){
-						//also handles fine if copayfeesched=0:
-						ProcCur.CapCoPay=Fees.GetAmount(Procedures.Cur.ADACode,InsPlans.Cur.CopayFeeSched);
-					}
-				}
-				Procedures.Cur=ProcCur;
-				Procedures.UpdateCur();
+				procCur.ProcFee=Fees.GetAmount(procCur.ADACode,ContrChart.GetFeeSched());
+				procCur.ComputeEstimates(Patients.Cur.PatNum,Patients.Cur.PriPlanNum
+					,Patients.Cur.SecPlanNum,ClaimProcList,false);
+				procCur.Update(procOld);
       }
       ModuleSelected();
 		}
@@ -1447,36 +1595,35 @@ namespace OpenDental{
 			Claims.InsertCur();
 			//this loop adds the claimprocs but does not add any fees
 			Procedure ProcCur;
+			Procedure ProcOld;
+			ClaimProc ClaimProcCur;
 			for(int i=0;i<tbMain.SelectedIndices.Length;i++){
-				Procedures.Cur=((Procedure)arrayLProc[tbMain.SelectedIndices[i]]);
-				ProcCur=Procedures.Cur;
-				Procedures.CurOld=Procedures.Cur;
-				if(!Procedures.Cur.IsCovIns){
-          ProcCur.IsCovIns=true;
-        }
-        ClaimProcs.Cur=new ClaimProc();
-        ClaimProcs.Cur.ClaimNum=Claims.Cur.ClaimNum;
-        ClaimProcs.Cur.PatNum=Patients.Cur.PatNum;
-        ClaimProcs.Cur.ProcNum=Procedures.Cur.ProcNum;
-				ClaimProcs.Cur.Status=ClaimProcStatus.Preauth;
-				//ClaimProcs.Cur.FeeBilled=Procedures.Cur.ProcFee;
+				ProcCur=((Procedure)arrayLProc[tbMain.SelectedIndices[i]]);
+				ProcOld=ProcCur.Copy();
+        ClaimProcCur=new ClaimProc();
+				ClaimProcCur.ProcNum=ProcCur.ProcNum;
+        ClaimProcCur.ClaimNum=Claims.Cur.ClaimNum;
+        ClaimProcCur.PatNum=Patients.Cur.PatNum;
+        ClaimProcCur.ProvNum=ProcCur.ProvNum;
+				ClaimProcCur.Status=ClaimProcStatus.Preauth;
+				ClaimProcCur.FeeBilled=ProcCur.ProcFee;
+				ClaimProcCur.PlanNum=InsPlans.Cur.PlanNum;
 				if(InsPlans.Cur.UseAltCode)
-					ClaimProcs.Cur.CodeSent=((ProcedureCode)ProcedureCodes.HList[Procedures.Cur.ADACode]).AlternateCode1;
+					ClaimProcCur.CodeSent=((ProcedureCode)ProcedureCodes.HList[ProcCur.ADACode]).AlternateCode1;
 				else{
-					ClaimProcs.Cur.CodeSent=Procedures.Cur.ADACode;
-					if(ClaimProcs.Cur.CodeSent.Length>5 && ClaimProcs.Cur.CodeSent.Substring(0,1)=="D"){
-						ClaimProcs.Cur.CodeSent=ClaimProcs.Cur.CodeSent.Substring(0,5);
+					ClaimProcCur.CodeSent=ProcCur.ADACode;
+					if(ClaimProcCur.CodeSent.Length>5 && ClaimProcCur.CodeSent.Substring(0,1)=="D"){
+						ClaimProcCur.CodeSent=ClaimProcCur.CodeSent.Substring(0,5);
 					}
 				}
-        ClaimProcs.InsertCur();
-				Procedures.Cur=ProcCur;
-				Procedures.UpdateCur();
+        ClaimProcCur.Insert();
+				ProcCur.Update(ProcOld);
 			}
-			Procedures.Refresh();
-			ClaimProcs.Refresh();
-			ClaimProcs.GetForClaim();
+			ProcList=Procedures.Refresh(Patients.Cur.PatNum);
+			ClaimProcList=ClaimProcs.Refresh(Patients.Cur.PatNum);
+			//ClaimProc[] ClaimProcsForClaim=ClaimProcs.GetForClaim(ClaimProcList,Claims.Cur.ClaimNum);
 			FormClaimEdit FormCE=new FormClaimEdit();
-			FormCE.CalculateEstimates();
+			FormCE.CalculateEstimates(ClaimProcList,ProcList);
 			FormCE.IsNew=true;//this causes it to delete the claim if cancelling.
 			FormCE.ShowDialog();
 			ModuleSelected();
@@ -1505,10 +1652,10 @@ namespace OpenDental{
 			}
 			tbMain.SetSelected(false);
       Claims.Cur=(Claim)ALPreAuth[listPreAuth.SelectedIndex];
-      ClaimProcs.GetForClaim();
+      ClaimProc[] ClaimProcsForClaim=ClaimProcs.GetForClaim(ClaimProcList,Claims.Cur.ClaimNum);
       for(int i=0;i<arrayLProc.Count;i++){
-        for(int j=0;j<ClaimProcs.ForClaim.Length;j++){
-          if(((Procedure)arrayLProc[i]).ProcNum==ClaimProcs.ForClaim[j].ProcNum){
+        for(int j=0;j<ClaimProcsForClaim.Length;j++){
+          if(((Procedure)arrayLProc[i]).ProcNum==ClaimProcsForClaim[j].ProcNum){
 						tbMain.SetSelected(i,true);
           }
         }

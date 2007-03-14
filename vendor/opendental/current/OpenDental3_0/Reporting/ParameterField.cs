@@ -205,18 +205,20 @@ namespace OpenDental.Reporting
 	public enum FieldValueType{
 		///<summary>Field takes a date value.</summary>
 		Date,
-		///<summary>Parameter takes a string value.</summary>
+		///<summary>Field takes a string value.</summary>
 		String,
-		///<summary>Parameter takes a boolean value.  If false, then the snippet will not even be included. Because of the way this is implemented, the snippet can specify a true or false value, and the user can select whether to include the snippet.  So the parameter can specify whether to include a false value among many other possibilities.  There should not be a ? in a boolean snippet.</summary>
+		///<summary>Field takes a boolean value.  For a Parameter, if false, then the snippet will not even be included. Because of the way this is implemented, the snippet can specify a true or false value, and the user can select whether to include the snippet.  So the parameter can specify whether to include a false value among many other possibilities.  There should not be a ? in a boolean snippet.</summary>
 		Boolean,
-		///<summary>Parameter takes an integer value.</summary>
+		///<summary>Field takes an integer value.</summary>
 		Integer,
-		///<summary>Parameter takes a number(double) value which can include a decimal.</summary>
+		///<summary>Field takes a number(double) value which can include a decimal.</summary>
 		Number,
-		///<summary>Parameter takes an enumeration value(s), usually in int form from a dropdown list.</summary>
+		///<summary>Field takes an enumeration value(s), usually in int form from a dropdown list.</summary>
 		Enum,
-		///<summary>Parameter takes definition.DefNum value from a def category. Presented to user as a dropdown list for that category.</summary>
-		Def
+		///<summary>Field takes definition.DefNum value from a def category. Presented to user as a dropdown list for that category.</summary>
+		Def,
+		///<summary>Only used in ReportObject. When a table comes back from the database, if the expected value is an age, then this column type should be used.  Just retreive the birthdate and the program will convert it to an age.</summary>
+		Age
 	}
 
 	

@@ -26,6 +26,7 @@ namespace OpenDental
 		private System.Windows.Forms.CheckBox checkCorrupt;
 		private System.Drawing.Printing.PrintDocument pd2;
 		private System.Windows.Forms.CheckBox checkCodes;
+		private System.Windows.Forms.TextBox textBox2;
 		//private Queries Queries2;
 		private string logData;
 
@@ -36,7 +37,18 @@ namespace OpenDental
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
-
+			Lan.C(this, new System.Windows.Forms.Control[] { //*Ann
+				this.textBox1, //*Ann
+				this.textBox2, //*Ann
+				this.checkDefaultProv, //*Ann
+				this.checkInvalidTooth, //*Ann
+				this.checkCodes, //*Ann
+				this.checkCorrupt, //*Ann
+				this.buttonCheck //*Ann
+			}); //*Ann
+			Lan.C("All", new System.Windows.Forms.Control[] { //*Ann
+				butClose, //*Ann
+			}); //*Ann
 			//
 			// TODO: Add any constructor code after InitializeComponent call
 			//
@@ -72,6 +84,7 @@ namespace OpenDental
 			this.checkCorrupt = new System.Windows.Forms.CheckBox();
 			this.pd2 = new System.Drawing.Printing.PrintDocument();
 			this.checkCodes = new System.Windows.Forms.CheckBox();
+			this.textBox2 = new System.Windows.Forms.TextBox();
 			this.SuspendLayout();
 			// 
 			// butClose
@@ -89,19 +102,21 @@ namespace OpenDental
 			// 
 			this.textBox1.BackColor = System.Drawing.SystemColors.Control;
 			this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.textBox1.Location = new System.Drawing.Point(34, 14);
+			this.textBox1.Location = new System.Drawing.Point(32, 14);
 			this.textBox1.Multiline = true;
 			this.textBox1.Name = "textBox1";
 			this.textBox1.Size = new System.Drawing.Size(707, 31);
 			this.textBox1.TabIndex = 1;
-			this.textBox1.Text = @"This tool will check the entire database for any possible corruption or improper settings.  You will generally be prompted before any changes are made to the database.  Currently, the following tests are run.   Uncheck any items that you don't want tested:";
+			this.textBox1.Text = "This tool will check the entire database for any possible corruption or improper " +
+				"settings.  You will generally be prompted before any changes are made to the dat" +
+				"abase.";
 			// 
 			// checkDefaultProv
 			// 
 			this.checkDefaultProv.Checked = true;
 			this.checkDefaultProv.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.checkDefaultProv.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkDefaultProv.Location = new System.Drawing.Point(30, 62);
+			this.checkDefaultProv.Location = new System.Drawing.Point(30, 85);
 			this.checkDefaultProv.Name = "checkDefaultProv";
 			this.checkDefaultProv.Size = new System.Drawing.Size(679, 22);
 			this.checkDefaultProv.TabIndex = 2;
@@ -113,7 +128,7 @@ namespace OpenDental
 			this.checkInvalidTooth.Checked = true;
 			this.checkInvalidTooth.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.checkInvalidTooth.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkInvalidTooth.Location = new System.Drawing.Point(30, 92);
+			this.checkInvalidTooth.Location = new System.Drawing.Point(30, 115);
 			this.checkInvalidTooth.Name = "checkInvalidTooth";
 			this.checkInvalidTooth.Size = new System.Drawing.Size(724, 31);
 			this.checkInvalidTooth.TabIndex = 3;
@@ -136,7 +151,7 @@ namespace OpenDental
 			this.checkCorrupt.Checked = true;
 			this.checkCorrupt.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.checkCorrupt.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkCorrupt.Location = new System.Drawing.Point(30, 155);
+			this.checkCorrupt.Location = new System.Drawing.Point(30, 178);
 			this.checkCorrupt.Name = "checkCorrupt";
 			this.checkCorrupt.Size = new System.Drawing.Size(709, 24);
 			this.checkCorrupt.TabIndex = 6;
@@ -147,11 +162,23 @@ namespace OpenDental
 			this.checkCodes.Checked = true;
 			this.checkCodes.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.checkCodes.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkCodes.Location = new System.Drawing.Point(30, 127);
+			this.checkCodes.Location = new System.Drawing.Point(30, 150);
 			this.checkCodes.Name = "checkCodes";
 			this.checkCodes.Size = new System.Drawing.Size(709, 24);
 			this.checkCodes.TabIndex = 8;
 			this.checkCodes.Text = "Add any missing procedure codes.";
+			// 
+			// textBox2
+			// 
+			this.textBox2.BackColor = System.Drawing.SystemColors.Control;
+			this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.textBox2.Location = new System.Drawing.Point(32, 53);
+			this.textBox2.Multiline = true;
+			this.textBox2.Name = "textBox2";
+			this.textBox2.Size = new System.Drawing.Size(707, 18);
+			this.textBox2.TabIndex = 9;
+			this.textBox2.Text = "Currently, the following tests are run.   Uncheck any items that you don\'t want t" +
+				"ested:";
 			// 
 			// FormCheckDatabase
 			// 
@@ -159,6 +186,7 @@ namespace OpenDental
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butClose;
 			this.ClientSize = new System.Drawing.Size(763, 371);
+			this.Controls.Add(this.textBox2);
 			this.Controls.Add(this.checkCodes);
 			this.Controls.Add(this.checkCorrupt);
 			this.Controls.Add(this.buttonCheck);

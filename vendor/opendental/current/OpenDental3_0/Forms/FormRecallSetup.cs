@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
+using System.Text;
 using System.Windows.Forms;
 
 namespace OpenDental{
@@ -224,14 +225,34 @@ namespace OpenDental{
 		#endregion
 
 		private void FormRecallSetup_Load(object sender, System.EventArgs e) {
-			textPattern.Text=((Pref)Prefs.HList["RecallPattern"]).ValueString;
+			//convert time pattern from 5 to current increment.
+			/*StringBuilder strBTime=new StringBuilder();
+			for(int i=0;i<Prefs.GetString("RecallPattern").Length;i++){
+				strBTime.Append(Prefs.GetString("RecallPattern").Substring(i,1));
+				i++;
+				if(Prefs.GetInt("AppointmentTimeIncrement")==15){
+					i++;
+				}
+			}*/
+			//textPattern.Text=strBTime.ToString();
+			textPattern.Text=Prefs.GetString("RecallPattern");
 			textProcs.Text=((Pref)Prefs.HList["RecallProcedures"]).ValueString;
 			textBW.Text=((Pref)Prefs.HList["RecallBW"]).ValueString;
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
+			//convert time pattern to 5 minute increment
+			/*StringBuilder savePattern=new StringBuilder();
+			for(int i=0;i<textPattern.Text.Length;i++){
+				savePattern.Append(textPattern.Text.Substring(i,1));
+				savePattern.Append(textPattern.Text.Substring(i,1));
+				if(Prefs.GetInt("AppointmentTimeIncrement")==15){
+					savePattern.Append(textPattern.Text.Substring(i,1));
+				}
+			}*/
+
 			Prefs.Cur.PrefName="RecallPattern";
-			Prefs.Cur.ValueString=textPattern.Text;
+			Prefs.Cur.ValueString=textPattern.Text;//savePattern.ToString();
 			Prefs.UpdateCur();
 
 			Prefs.Cur.PrefName="RecallProcedures";

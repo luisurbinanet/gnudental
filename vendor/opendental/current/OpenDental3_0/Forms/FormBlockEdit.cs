@@ -64,27 +64,27 @@ namespace OpenDental{
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(6, 12);
+			this.label1.Location = new System.Drawing.Point(8, 12);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(58, 16);
+			this.label1.Size = new System.Drawing.Size(98, 16);
 			this.label1.TabIndex = 0;
 			this.label1.Text = "Start Time";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(8, 36);
+			this.label2.Location = new System.Drawing.Point(6, 36);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(56, 16);
+			this.label2.Size = new System.Drawing.Size(100, 16);
 			this.label2.TabIndex = 1;
 			this.label2.Text = "Stop Time";
 			this.label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(36, 68);
+			this.label3.Location = new System.Drawing.Point(22, 68);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(28, 16);
+			this.label3.Size = new System.Drawing.Size(84, 16);
 			this.label3.TabIndex = 2;
 			this.label3.Text = "Day";
 			this.label3.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -99,21 +99,21 @@ namespace OpenDental{
 																								 "Thursday",
 																								 "Friday",
 																								 "Saturday"});
-			this.listDay.Location = new System.Drawing.Point(68, 68);
+			this.listDay.Location = new System.Drawing.Point(108, 68);
 			this.listDay.Name = "listDay";
 			this.listDay.Size = new System.Drawing.Size(102, 95);
 			this.listDay.TabIndex = 2;
 			// 
 			// textStart
 			// 
-			this.textStart.Location = new System.Drawing.Point(68, 8);
+			this.textStart.Location = new System.Drawing.Point(108, 8);
 			this.textStart.Name = "textStart";
 			this.textStart.TabIndex = 0;
 			this.textStart.Text = "";
 			// 
 			// textStop
 			// 
-			this.textStop.Location = new System.Drawing.Point(68, 34);
+			this.textStop.Location = new System.Drawing.Point(108, 34);
 			this.textStop.Name = "textStop";
 			this.textStop.TabIndex = 1;
 			this.textStop.Text = "";
@@ -121,7 +121,7 @@ namespace OpenDental{
 			// butOK
 			// 
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(96, 178);
+			this.butOK.Location = new System.Drawing.Point(136, 178);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 3;
@@ -132,7 +132,7 @@ namespace OpenDental{
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butCancel.Location = new System.Drawing.Point(96, 212);
+			this.butCancel.Location = new System.Drawing.Point(136, 212);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 5;
@@ -147,7 +147,7 @@ namespace OpenDental{
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butDelete.Location = new System.Drawing.Point(10, 212);
 			this.butDelete.Name = "butDelete";
-			this.butDelete.Size = new System.Drawing.Size(75, 26);
+			this.butDelete.Size = new System.Drawing.Size(101, 26);
 			this.butDelete.TabIndex = 7;
 			this.butDelete.Text = "&Delete";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
@@ -157,7 +157,7 @@ namespace OpenDental{
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
-			this.ClientSize = new System.Drawing.Size(180, 244);
+			this.ClientSize = new System.Drawing.Size(224, 244);
 			this.Controls.Add(this.butDelete);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);

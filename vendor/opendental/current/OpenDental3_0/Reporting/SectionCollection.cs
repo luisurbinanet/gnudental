@@ -58,6 +58,23 @@ namespace OpenDental.Reporting
 			return(List.IndexOf(value));
 		}
 
+		///<summary></summary>
+		public int IndexOf(string name){
+			foreach(Section section in List){
+				if(section.Name==name)
+					return IndexOf(section);
+			}
+			return -1;
+		}
+
+		public bool Contains(string name){
+			foreach(Section section in List){
+				if(section.Name==name)
+					return true;
+			}
+			return false;
+		}
+
 		//<summary></summary>
 		//public void Insert(int index,Section value){
 		//	List.Insert(index,value);

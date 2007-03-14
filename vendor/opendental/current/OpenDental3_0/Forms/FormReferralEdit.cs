@@ -49,11 +49,11 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label8;
 		private System.Windows.Forms.Label label9;
 		private System.Windows.Forms.TextBox textTitle;
-		private System.Windows.Forms.TextBox textNotes;
 		private System.Windows.Forms.Label label17;
 		private System.Windows.Forms.Label labelPatient;
 		private System.Windows.Forms.CheckBox checkNotPerson;
 		private System.Windows.Forms.Button butNone;
+		private OpenDental.ODtextBox textNotes;
 		private System.Windows.Forms.CheckBox checkHidden;
 
 		///<summary></summary>
@@ -143,12 +143,12 @@ namespace OpenDental{
 			this.label7 = new System.Windows.Forms.Label();
 			this.label8 = new System.Windows.Forms.Label();
 			this.label9 = new System.Windows.Forms.Label();
-			this.textNotes = new System.Windows.Forms.TextBox();
 			this.label17 = new System.Windows.Forms.Label();
 			this.checkHidden = new System.Windows.Forms.CheckBox();
 			this.labelPatient = new System.Windows.Forms.Label();
 			this.checkNotPerson = new System.Windows.Forms.CheckBox();
 			this.butNone = new System.Windows.Forms.Button();
+			this.textNotes = new OpenDental.ODtextBox();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -505,16 +505,6 @@ namespace OpenDental{
 			this.label9.Text = "Address";
 			this.label9.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
-			// textNotes
-			// 
-			this.textNotes.AcceptsReturn = true;
-			this.textNotes.Location = new System.Drawing.Point(109, 509);
-			this.textNotes.Multiline = true;
-			this.textNotes.Name = "textNotes";
-			this.textNotes.Size = new System.Drawing.Size(363, 136);
-			this.textNotes.TabIndex = 16;
-			this.textNotes.Text = "";
-			// 
 			// label17
 			// 
 			this.label17.Location = new System.Drawing.Point(4, 510);
@@ -565,17 +555,29 @@ namespace OpenDental{
 			this.butNone.Text = "&None";
 			this.butNone.Click += new System.EventHandler(this.butNone_Click);
 			// 
+			// textNotes
+			// 
+			this.textNotes.AcceptsReturn = true;
+			this.textNotes.Location = new System.Drawing.Point(109, 510);
+			this.textNotes.Multiline = true;
+			this.textNotes.Name = "textNotes";
+			this.textNotes.QuickPasteType = OpenDental.QuickPasteType.Referral;
+			this.textNotes.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.textNotes.Size = new System.Drawing.Size(412, 123);
+			this.textNotes.TabIndex = 73;
+			this.textNotes.Text = "";
+			// 
 			// FormReferralEdit
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(681, 663);
+			this.Controls.Add(this.textNotes);
 			this.Controls.Add(this.butNone);
 			this.Controls.Add(this.checkHidden);
 			this.Controls.Add(this.checkNotPerson);
 			this.Controls.Add(this.labelPatient);
-			this.Controls.Add(this.textNotes);
 			this.Controls.Add(this.textEmail);
 			this.Controls.Add(this.textOtherPhone);
 			this.Controls.Add(this.textZip);

@@ -1,7 +1,9 @@
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
+using System.Text;
 using System.Windows.Forms;
 
 namespace OpenDental{
@@ -24,25 +26,31 @@ namespace OpenDental{
 		private OpenDental.ContrAccount contrAccount3;
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.Label label6;
 		private System.Windows.Forms.Label label11;
-		private System.Windows.Forms.Label label12;
 		private System.Windows.Forms.Label label13;
 		private System.Windows.Forms.TextBox textCreditType;
-		private System.Windows.Forms.TextBox textAge;
 		private System.Windows.Forms.TextBox textPriIns;
-		private System.Windows.Forms.TextBox textDueDate;
 		private PatientNotes PatientNotes=new PatientNotes();
 		///<summary>If Pin clicked, this allows FormRecall to know about it.</summary>
 		public bool PinClicked=false;
-		///<summary></summary>
+		///<summary>Needed just in case send to pinboard to check when due for BW.</summary>
 		public DateTime DueDate;
 		private System.Windows.Forms.TextBox textBillingType;
 		private OpenDental.XPButton butPin;
 		private System.Windows.Forms.Label label14;
-		private ArrayList ALCommItems;
+		private System.Windows.Forms.ColumnHeader columnHeader1;
+		private System.Windows.Forms.ColumnHeader columnHeader2;
+		private System.Windows.Forms.ColumnHeader columnHeader3;
+		private System.Windows.Forms.ListView listFamily;
+		private System.Windows.Forms.ColumnHeader columnHeader4;
+		private System.Windows.Forms.ColumnHeader columnHeader5;
+		//private ArrayList ALCommItems;
+		private Procedure[] ProcList;
+		//public RecallItem DisplayedRecallItem;
+		public int RecallStatus;//foreign key to DefNum
+		public int PatNum;
 
-		///<summary></summary>
+		///<summary>This form causes the current patient to change.</summary>
 		public FormRecallEdit(){
 			InitializeComponent();
 			Lan.C(this, new System.Windows.Forms.Control[] {
@@ -54,9 +62,9 @@ namespace OpenDental{
 				panel1,
 				groupBox1,
 				label1,
-				label6,
+				//label6,
 				label11,
-				label12,
+				//label12,
 				label13,
 				butPin,
 				label14,
@@ -103,15 +111,17 @@ namespace OpenDental{
 			this.contrAccount3 = new OpenDental.ContrAccount();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.listFamily = new System.Windows.Forms.ListView();
+			this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
+			this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
+			this.columnHeader4 = new System.Windows.Forms.ColumnHeader();
+			this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
+			this.columnHeader5 = new System.Windows.Forms.ColumnHeader();
 			this.textBillingType = new System.Windows.Forms.TextBox();
 			this.label14 = new System.Windows.Forms.Label();
-			this.textDueDate = new System.Windows.Forms.TextBox();
-			this.label12 = new System.Windows.Forms.Label();
 			this.textPriIns = new System.Windows.Forms.TextBox();
 			this.label11 = new System.Windows.Forms.Label();
 			this.textCreditType = new System.Windows.Forms.TextBox();
-			this.textAge = new System.Windows.Forms.TextBox();
-			this.label6 = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
 			this.label13 = new System.Windows.Forms.Label();
 			this.butPin = new OpenDental.XPButton();
@@ -157,7 +167,7 @@ namespace OpenDental{
 			// textWorkPhone
 			// 
 			this.textWorkPhone.BackColor = System.Drawing.Color.White;
-			this.textWorkPhone.Location = new System.Drawing.Point(496, 33);
+			this.textWorkPhone.Location = new System.Drawing.Point(501, 33);
 			this.textWorkPhone.Name = "textWorkPhone";
 			this.textWorkPhone.ReadOnly = true;
 			this.textWorkPhone.TabIndex = 41;
@@ -166,7 +176,7 @@ namespace OpenDental{
 			// textWireless
 			// 
 			this.textWireless.BackColor = System.Drawing.Color.White;
-			this.textWireless.Location = new System.Drawing.Point(496, 53);
+			this.textWireless.Location = new System.Drawing.Point(501, 53);
 			this.textWireless.Name = "textWireless";
 			this.textWireless.ReadOnly = true;
 			this.textWireless.TabIndex = 40;
@@ -175,7 +185,7 @@ namespace OpenDental{
 			// textAddrNotes
 			// 
 			this.textAddrNotes.BackColor = System.Drawing.Color.White;
-			this.textAddrNotes.Location = new System.Drawing.Point(496, 73);
+			this.textAddrNotes.Location = new System.Drawing.Point(501, 73);
 			this.textAddrNotes.Multiline = true;
 			this.textAddrNotes.Name = "textAddrNotes";
 			this.textAddrNotes.ReadOnly = true;
@@ -186,7 +196,7 @@ namespace OpenDental{
 			// 
 			// label7
 			// 
-			this.label7.Location = new System.Drawing.Point(395, 35);
+			this.label7.Location = new System.Drawing.Point(400, 35);
 			this.label7.Name = "label7";
 			this.label7.Size = new System.Drawing.Size(100, 16);
 			this.label7.TabIndex = 38;
@@ -195,7 +205,7 @@ namespace OpenDental{
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(393, 55);
+			this.label2.Location = new System.Drawing.Point(398, 55);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(100, 16);
 			this.label2.TabIndex = 37;
@@ -205,7 +215,7 @@ namespace OpenDental{
 			// textHomePhone
 			// 
 			this.textHomePhone.BackColor = System.Drawing.Color.White;
-			this.textHomePhone.Location = new System.Drawing.Point(496, 13);
+			this.textHomePhone.Location = new System.Drawing.Point(501, 13);
 			this.textHomePhone.Name = "textHomePhone";
 			this.textHomePhone.ReadOnly = true;
 			this.textHomePhone.TabIndex = 36;
@@ -213,7 +223,7 @@ namespace OpenDental{
 			// 
 			// label5
 			// 
-			this.label5.Location = new System.Drawing.Point(417, 15);
+			this.label5.Location = new System.Drawing.Point(422, 15);
 			this.label5.Name = "label5";
 			this.label5.Size = new System.Drawing.Size(80, 16);
 			this.label5.TabIndex = 35;
@@ -222,9 +232,9 @@ namespace OpenDental{
 			// 
 			// label4
 			// 
-			this.label4.Location = new System.Drawing.Point(379, 74);
+			this.label4.Location = new System.Drawing.Point(406, 74);
 			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(118, 16);
+			this.label4.Size = new System.Drawing.Size(96, 44);
 			this.label4.TabIndex = 34;
 			this.label4.Text = "Address/Phone Notes";
 			this.label4.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -245,16 +255,13 @@ namespace OpenDental{
 			// 
 			// groupBox1
 			// 
+			this.groupBox1.Controls.Add(this.listFamily);
 			this.groupBox1.Controls.Add(this.textBillingType);
 			this.groupBox1.Controls.Add(this.label14);
-			this.groupBox1.Controls.Add(this.textDueDate);
-			this.groupBox1.Controls.Add(this.label12);
 			this.groupBox1.Controls.Add(this.textPriIns);
 			this.groupBox1.Controls.Add(this.label11);
 			this.groupBox1.Controls.Add(this.textAddrNotes);
 			this.groupBox1.Controls.Add(this.textCreditType);
-			this.groupBox1.Controls.Add(this.textAge);
-			this.groupBox1.Controls.Add(this.label6);
 			this.groupBox1.Controls.Add(this.label1);
 			this.groupBox1.Controls.Add(this.label4);
 			this.groupBox1.Controls.Add(this.textWireless);
@@ -264,17 +271,58 @@ namespace OpenDental{
 			this.groupBox1.Controls.Add(this.textWorkPhone);
 			this.groupBox1.Controls.Add(this.label7);
 			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox1.Location = new System.Drawing.Point(182, 3);
+			this.groupBox1.Location = new System.Drawing.Point(179, 3);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(749, 187);
+			this.groupBox1.Size = new System.Drawing.Size(752, 187);
 			this.groupBox1.TabIndex = 55;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Patient Information";
 			// 
+			// listFamily
+			// 
+			this.listFamily.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+																																								 this.columnHeader1,
+																																								 this.columnHeader2,
+																																								 this.columnHeader4,
+																																								 this.columnHeader3,
+																																								 this.columnHeader5});
+			this.listFamily.GridLines = true;
+			this.listFamily.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+			this.listFamily.Location = new System.Drawing.Point(7, 24);
+			this.listFamily.Name = "listFamily";
+			this.listFamily.Size = new System.Drawing.Size(384, 97);
+			this.listFamily.TabIndex = 55;
+			this.listFamily.View = System.Windows.Forms.View.Details;
+			// 
+			// columnHeader1
+			// 
+			this.columnHeader1.Text = "Family Member";
+			this.columnHeader1.Width = 120;
+			// 
+			// columnHeader2
+			// 
+			this.columnHeader2.Text = "Age";
+			this.columnHeader2.Width = 40;
+			// 
+			// columnHeader4
+			// 
+			this.columnHeader4.Text = "Gender";
+			this.columnHeader4.Width = 50;
+			// 
+			// columnHeader3
+			// 
+			this.columnHeader3.Text = "Due Date";
+			this.columnHeader3.Width = 74;
+			// 
+			// columnHeader5
+			// 
+			this.columnHeader5.Text = "Scheduled";
+			this.columnHeader5.Width = 74;
+			// 
 			// textBillingType
 			// 
 			this.textBillingType.BackColor = System.Drawing.Color.White;
-			this.textBillingType.Location = new System.Drawing.Point(496, 141);
+			this.textBillingType.Location = new System.Drawing.Point(501, 141);
 			this.textBillingType.Name = "textBillingType";
 			this.textBillingType.ReadOnly = true;
 			this.textBillingType.Size = new System.Drawing.Size(120, 20);
@@ -283,36 +331,17 @@ namespace OpenDental{
 			// 
 			// label14
 			// 
-			this.label14.Location = new System.Drawing.Point(415, 144);
+			this.label14.Location = new System.Drawing.Point(420, 144);
 			this.label14.Name = "label14";
 			this.label14.Size = new System.Drawing.Size(79, 16);
 			this.label14.TabIndex = 53;
 			this.label14.Text = "Billing Type";
 			this.label14.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
-			// textDueDate
-			// 
-			this.textDueDate.BackColor = System.Drawing.Color.White;
-			this.textDueDate.Location = new System.Drawing.Point(18, 32);
-			this.textDueDate.Name = "textDueDate";
-			this.textDueDate.ReadOnly = true;
-			this.textDueDate.Size = new System.Drawing.Size(76, 20);
-			this.textDueDate.TabIndex = 52;
-			this.textDueDate.Text = "";
-			// 
-			// label12
-			// 
-			this.label12.Location = new System.Drawing.Point(15, 18);
-			this.label12.Name = "label12";
-			this.label12.Size = new System.Drawing.Size(70, 16);
-			this.label12.TabIndex = 51;
-			this.label12.Text = "Due Date";
-			this.label12.TextAlign = System.Drawing.ContentAlignment.TopRight;
-			// 
 			// textPriIns
 			// 
 			this.textPriIns.BackColor = System.Drawing.Color.White;
-			this.textPriIns.Location = new System.Drawing.Point(496, 161);
+			this.textPriIns.Location = new System.Drawing.Point(501, 161);
 			this.textPriIns.Name = "textPriIns";
 			this.textPriIns.ReadOnly = true;
 			this.textPriIns.Size = new System.Drawing.Size(247, 20);
@@ -321,7 +350,7 @@ namespace OpenDental{
 			// 
 			// label11
 			// 
-			this.label11.Location = new System.Drawing.Point(395, 164);
+			this.label11.Location = new System.Drawing.Point(400, 164);
 			this.label11.Name = "label11";
 			this.label11.Size = new System.Drawing.Size(100, 16);
 			this.label11.TabIndex = 49;
@@ -331,35 +360,16 @@ namespace OpenDental{
 			// textCreditType
 			// 
 			this.textCreditType.BackColor = System.Drawing.Color.White;
-			this.textCreditType.Location = new System.Drawing.Point(496, 121);
+			this.textCreditType.Location = new System.Drawing.Point(501, 121);
 			this.textCreditType.Name = "textCreditType";
 			this.textCreditType.ReadOnly = true;
 			this.textCreditType.Size = new System.Drawing.Size(23, 20);
 			this.textCreditType.TabIndex = 46;
 			this.textCreditType.Text = "";
 			// 
-			// textAge
-			// 
-			this.textAge.BackColor = System.Drawing.Color.White;
-			this.textAge.Location = new System.Drawing.Point(208, 33);
-			this.textAge.Name = "textAge";
-			this.textAge.ReadOnly = true;
-			this.textAge.Size = new System.Drawing.Size(32, 20);
-			this.textAge.TabIndex = 48;
-			this.textAge.Text = "";
-			// 
-			// label6
-			// 
-			this.label6.Location = new System.Drawing.Point(197, 18);
-			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(40, 16);
-			this.label6.TabIndex = 44;
-			this.label6.Text = "Age";
-			this.label6.TextAlign = System.Drawing.ContentAlignment.TopRight;
-			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(429, 123);
+			this.label1.Location = new System.Drawing.Point(434, 123);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(65, 16);
 			this.label1.TabIndex = 42;
@@ -425,25 +435,72 @@ namespace OpenDental{
 			listStatus.SelectedIndex=0;
 			for(int i=0;i<Defs.Short[(int)DefCat.RecallUnschedStatus].Length;i++){
 				listStatus.Items.Add(Defs.Short[(int)DefCat.RecallUnschedStatus][i].ItemName);
-				if(Defs.Short[(int)DefCat.RecallUnschedStatus][i].DefNum==FormRecall.Cur.RecallStatus)
+				if(Defs.Short[(int)DefCat.RecallUnschedStatus][i].DefNum==RecallStatus)
 					listStatus.SelectedIndex=i+1;
 			}
 			Patients.PatIsLoaded=true;
 			Patient PatCur=Patients.Cur;
-			PatCur.PatNum=FormRecall.Cur.PatNum;
+			//Debug.WriteLine(DisplayedRecallItem.PatNum);
+			PatCur.PatNum=PatNum;
 			Patients.Cur=PatCur;
 			contrAccount3.ModuleSelected();//also refreshes patient,procedures,claims,adjustments,
 				//paysplits,insplans,covpats and patientnotes.
+			//MessageBox.Show(Patients.FamilyList.Length.ToString());
+			ProcList=Procedures.Refresh(Patients.Cur.PatNum);
 			Text="Recall for "+Patients.GetCurNameLF();
 			textCreditType.Text=Patients.Cur.CreditType;
 			textBillingType.Text=Defs.GetName(DefCat.BillingTypes,Patients.Cur.BillingType);
-			textAge.Text=Shared.DateToAge(Patients.Cur.Birthdate);
-			textDueDate.Text=DueDate.ToString("d");
+			//textAge.Text=Shared.DateToAge(Patients.Cur.Birthdate);
+			//textDueDate.Text=DueDate.ToString("d");
 			textPriIns.Text=InsPlans.GetDescript(Patients.Cur.PriPlanNum);
       textHomePhone.Text=Patients.Cur.HmPhone;
 			textWorkPhone.Text=Patients.Cur.WkPhone;
 			textWireless.Text=Patients.Cur.WirelessPhone;
 			textAddrNotes.Text=Patients.Cur.AddrNote;	
+			Appointment[] aptsOnePat;
+			ListViewItem item;
+			DateTime dueDate;
+			for(int i=0;i<Patients.FamilyList.Length;i++){
+				item=new ListViewItem(Patients.GetNameInFamFLI(i));
+				if(Patients.FamilyList[i].PatNum==Patients.Cur.PatNum){
+					item.BackColor=Color.Silver;
+				}
+				item.SubItems.Add(Shared.AgeToString(Patients.FamilyList[i].Age));
+				item.SubItems.Add(Patients.FamilyList[i].Gender.ToString());
+				dueDate=Patients.GetRecallDue(Patients.FamilyList[i].PatNum);
+				if(dueDate.Year<1880){
+					item.SubItems.Add("");
+				}
+				else{
+					item.SubItems.Add(dueDate.ToShortDateString());
+				}
+				if(dueDate<=DateTime.Today){
+					item.ForeColor=Color.Red;
+				}
+				aptsOnePat=Appointments.GetForPat(Patients.FamilyList[i].PatNum);
+				for(int a=0;a<aptsOnePat.Length;a++){
+					if(aptsOnePat[a].AptDateTime.Date<=DateTime.Today){
+						continue;//disregard old appts.
+					}
+					item.SubItems.Add(aptsOnePat[a].AptDateTime.ToShortDateString());
+					break;//we only want one appt
+					//could add condition here to add blank subitem if no date found
+				}
+				listFamily.Items.Add(item);
+				//if(Patients.FamilyList[i].PatNum==Patients.Cur.PatNum){
+				//	listFamily.Items[i].Selected=true;//doesn't work
+				//}
+			}
+			/*
+			ListViewItem item;
+			for(int i=0;i<Patients.FamilyList.Length;i++){
+				item=new ListViewItem(Patients.GetNameInFamFLI(i));
+				item.SubItems.Add(Patients.FamilyList[i].Age.ToString());
+				item.SubItems.Add(Patients.FamilyList[i].Gender.ToString());
+				item.SubItems.Add(Patients.GetRecallDue(Patients.FamilyList[i].PatNum).ToShortDateString());
+				item.SubItems.Add("");
+				listFamily.Items.Add(item);
+			}*/
 		}
 
 		/// <summary>Creates appointment and appropriate procedures, and places data in ContrAppt.CurInfo so it will display on pinboard.</summary>
@@ -452,7 +509,17 @@ namespace OpenDental{
 			Appointments.Cur=new Appointment();
 			Appointments.Cur.PatNum=Patients.Cur.PatNum;
 			Appointments.Cur.AptStatus=ApptStatus.Scheduled;
-			Appointments.Cur.Pattern=((Pref)Prefs.HList["RecallPattern"]).ValueString;
+			//convert time pattern to 5 minute increment
+			StringBuilder savePattern=new StringBuilder();
+			for(int i=0;i<Prefs.GetString("RecallPattern").Length;i++){
+				savePattern.Append(Prefs.GetString("RecallPattern").Substring(i,1));
+				savePattern.Append(Prefs.GetString("RecallPattern").Substring(i,1));
+				if(Prefs.GetInt("AppointmentTimeIncrement")==15){
+					savePattern.Append(Prefs.GetString("RecallPattern").Substring(i,1));
+				}
+			}
+			Appointments.Cur.Pattern=savePattern.ToString();
+				//((Pref)Prefs.HList["RecallPattern"]).ValueString;
 			Appointments.Cur.Note="";
 			if(Patients.Cur.PriProv==0)
 				Appointments.Cur.ProvNum=PIn.PInt(((Pref)Prefs.HList["PracticeDefaultProv"]).ValueString);
@@ -464,9 +531,12 @@ namespace OpenDental{
       string[] procs=((Pref)Prefs.HList["RecallProcedures"]).ValueString.Split(',');
 			if(((Pref)Prefs.HList["RecallBW"]).ValueString!=""){//BWs
 				bool dueBW=true;
-				for(int i=0;i<Procedures.List.Length;i++){
-					if(((Pref)Prefs.HList["RecallBW"]).ValueString==Procedures.List[i].ADACode
-						&& Procedures.List[i].ProcDate > DueDate.AddYears(-1)){
+				//DateTime dueDate=PIn.PDate(listFamily.Items[
+				for(int i=0;i<ProcList.Length;i++){//loop through all procedures for this pt.
+					//if any BW found within last year, then dueBW=false.
+					if(Prefs.GetString("RecallBW")==ProcList[i].ADACode
+						&& DueDate.Year>1880
+						&& ProcList[i].ProcDate > DueDate.AddYears(-1)){
 						dueBW=false;
 					}
 				}
@@ -479,6 +549,7 @@ namespace OpenDental{
 				}
 			}
 			Procedure ProcCur;
+			//ClaimProc[] claimProcs=ClaimProcs.Refresh(Patients.Cur.PatNum);
 			for(int i=0;i<procs.Length;i++){
 				ProcCur=new Procedure();//this will be an insert
 				//procnum
@@ -487,12 +558,12 @@ namespace OpenDental{
 				ProcCur.ADACode=procs[i];
 				ProcCur.ProcDate=DateTime.Now;
 				ProcCur.ProcFee=Fees.GetAmount(ProcCur.ADACode,ContrChart.GetFeeSched());
-				ProcCur.OverridePri=-1;
-				ProcCur.OverrideSec=-1;
+				//ProcCur.OverridePri=-1;
+				//ProcCur.OverrideSec=-1;
 				//surf
 				//toothnum
 				//Procedures.Cur.ToothRange="";
-				ProcCur.NoBillIns=ProcedureCodes.GetProcCode(ProcCur.ADACode).NoBillIns;
+				//ProcCur.NoBillIns=ProcedureCodes.GetProcCode(ProcCur.ADACode).NoBillIns;
 				//priority
 				ProcCur.ProcStatus=ProcStat.TP;
 				ProcCur.ProcNote="";
@@ -502,17 +573,17 @@ namespace OpenDental{
 				ProcCur.ProvNum=Patients.Cur.PriProv;
 				//Procedures.Cur.Dx=
 				//nextaptnum
-				if(Patients.Cur.PriPlanNum!=0){//if patient has insurance
-					ProcCur.IsCovIns=true;
-				}
-				Procedures.Cur=ProcCur;
-				Procedures.InsertCur();
+				ProcCur.Insert();
+				ProcCur.ComputeEstimates(Patients.Cur.PatNum,Patients.Cur.PriPlanNum
+					,Patients.Cur.SecPlanNum,new ClaimProc[0],false);
 			}
 			ContrAppt.CurInfo.MyApt=Appointments.Cur;
-			ContrAppt.CurInfo.CreditAndIns=Patients.GetCreditIns();
-			ContrAppt.CurInfo.PatientName=Patients.GetCurNameLF();
-			Procedures.GetProcsForSingle(Appointments.Cur.AptNum,false);
-			ContrAppt.CurInfo.Procs=Procedures.ProcsForSingle;
+			//ContrAppt.CurInfo.CreditAndIns=Patients.GetCreditIns();
+			//ContrAppt.CurInfo.PatientName=Patients.GetCurNameLF();
+			ProcDesc procDesc=Procedures.GetProcsForSingle(Appointments.Cur.AptNum,false);
+			ContrAppt.CurInfo.Procs=procDesc.ProcLines;
+			ContrAppt.CurInfo.Production=procDesc.Production;
+			ContrAppt.CurInfo.MyPatient=Patients.Cur;
 		}
 
 		private void SaveStatus(){
@@ -527,14 +598,14 @@ namespace OpenDental{
 			if(newStatus!=Patients.Cur.RecallStatus){
 				bool recallEntryToday=false;
 				for(int i=0;i<Commlogs.List.Length;i++){
-					if(Commlogs.List[i].CommDate==DateTime.Today
+					if(Commlogs.List[i].CommDateTime.Date==DateTime.Today
 						&& Commlogs.List[i].CommType==CommItemType.Recall){
 						recallEntryToday=true;
 					}
 				}
 				if(!recallEntryToday){
 					Commlogs.Cur=new Commlog();
-					Commlogs.Cur.CommDate=DateTime.Today;
+					Commlogs.Cur.CommDateTime=DateTime.Now;
 					Commlogs.Cur.CommType=CommItemType.Recall;
 					Commlogs.Cur.PatNum=Patients.Cur.PatNum;
 					Commlogs.Cur.Note=Lan.g(this,"Status changed to")+" ";

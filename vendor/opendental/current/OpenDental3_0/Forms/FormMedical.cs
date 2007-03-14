@@ -9,24 +9,18 @@ namespace OpenDental{
 	public class FormMedical : System.Windows.Forms.Form{
 		private System.Windows.Forms.Button butOK;
 		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.GroupBox groupBox1;
-		private System.Windows.Forms.ListBox listService;
-		private System.Windows.Forms.ListBox listMedical;
-		private System.Windows.Forms.Label label5;
-		private System.Windows.Forms.TextBox textService;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.TextBox textMedUrgNote;
 		private System.Windows.Forms.Label label4;
-		private System.Windows.Forms.TextBox textMedical;
 		private System.Windows.Forms.Label label6;
-		private System.Windows.Forms.Label label7;
-		private System.Windows.Forms.ListBox listMedicalComp;
-		private System.Windows.Forms.TextBox textMedicalComp;
 		private System.Windows.Forms.Button butAdd;
 		private System.Windows.Forms.Label label8;
 		private OpenDental.TableMedications tbMeds;
+		private OpenDental.ODtextBox textMedical;
+		private OpenDental.ODtextBox textService;
+		private OpenDental.ODtextBox textMedicalComp;
+		private OpenDental.ODtextBox textMedUrgNote;
 		private System.ComponentModel.Container components = null;// Required designer variable.
 
 		///<summary></summary>
@@ -34,13 +28,13 @@ namespace OpenDental{
 			InitializeComponent();// Required for Windows Form Designer support
 			tbMeds.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbMeds_CellDoubleClicked);
 			Lan.C(this, new System.Windows.Forms.Control[] {
-				label1,
-				label5,
+				//label1,
+				//label5,
 				label2,
 				label4,
 				label3,
 				label6,
-				label7,
+				//label7,
 				label8,
 				groupBox1,
 				this
@@ -73,24 +67,18 @@ namespace OpenDental{
 		{
 			this.butOK = new System.Windows.Forms.Button();
 			this.butCancel = new System.Windows.Forms.Button();
-			this.label1 = new System.Windows.Forms.Label();
-			this.listService = new System.Windows.Forms.ListBox();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
-			this.textService = new System.Windows.Forms.TextBox();
+			this.textMedUrgNote = new OpenDental.ODtextBox();
+			this.textService = new OpenDental.ODtextBox();
+			this.textMedical = new OpenDental.ODtextBox();
 			this.label3 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
-			this.textMedUrgNote = new System.Windows.Forms.TextBox();
 			this.label4 = new System.Windows.Forms.Label();
-			this.textMedical = new System.Windows.Forms.TextBox();
-			this.label5 = new System.Windows.Forms.Label();
-			this.listMedical = new System.Windows.Forms.ListBox();
-			this.textMedicalComp = new System.Windows.Forms.TextBox();
 			this.label6 = new System.Windows.Forms.Label();
-			this.label7 = new System.Windows.Forms.Label();
-			this.listMedicalComp = new System.Windows.Forms.ListBox();
 			this.butAdd = new System.Windows.Forms.Button();
 			this.label8 = new System.Windows.Forms.Label();
 			this.tbMeds = new OpenDental.TableMedications();
+			this.textMedicalComp = new OpenDental.ODtextBox();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -113,56 +101,63 @@ namespace OpenDental{
 			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
-			// label1
-			// 
-			this.label1.Location = new System.Drawing.Point(212, 142);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(112, 18);
-			this.label1.TabIndex = 2;
-			this.label1.Text = "Quick paste Service";
-			// 
-			// listService
-			// 
-			this.listService.Location = new System.Drawing.Point(213, 159);
-			this.listService.Name = "listService";
-			this.listService.Size = new System.Drawing.Size(120, 290);
-			this.listService.TabIndex = 1;
-			this.listService.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listService_MouseDown);
-			// 
 			// groupBox1
 			// 
+			this.groupBox1.Controls.Add(this.textMedUrgNote);
 			this.groupBox1.Controls.Add(this.textService);
+			this.groupBox1.Controls.Add(this.textMedical);
 			this.groupBox1.Controls.Add(this.label3);
 			this.groupBox1.Controls.Add(this.label2);
-			this.groupBox1.Controls.Add(this.textMedUrgNote);
 			this.groupBox1.Controls.Add(this.label4);
-			this.groupBox1.Controls.Add(this.textMedical);
-			this.groupBox1.Controls.Add(this.label5);
-			this.groupBox1.Controls.Add(this.listMedical);
-			this.groupBox1.Controls.Add(this.listService);
-			this.groupBox1.Controls.Add(this.label1);
 			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox1.Location = new System.Drawing.Point(7, 213);
+			this.groupBox1.Location = new System.Drawing.Point(7, 226);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(420, 458);
+			this.groupBox1.Size = new System.Drawing.Size(420, 142);
 			this.groupBox1.TabIndex = 2;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "View in Chart";
 			// 
+			// textMedUrgNote
+			// 
+			this.textMedUrgNote.AcceptsReturn = true;
+			this.textMedUrgNote.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.textMedUrgNote.ForeColor = System.Drawing.Color.Red;
+			this.textMedUrgNote.Location = new System.Drawing.Point(10, 37);
+			this.textMedUrgNote.Multiline = true;
+			this.textMedUrgNote.Name = "textMedUrgNote";
+			this.textMedUrgNote.QuickPasteType = OpenDental.QuickPasteType.MedicalUrgent;
+			this.textMedUrgNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.textMedUrgNote.Size = new System.Drawing.Size(202, 21);
+			this.textMedUrgNote.TabIndex = 53;
+			this.textMedUrgNote.Text = "";
+			// 
 			// textService
 			// 
 			this.textService.AcceptsReturn = true;
-			this.textService.Location = new System.Drawing.Point(212, 78);
+			this.textService.Location = new System.Drawing.Point(213, 78);
 			this.textService.Multiline = true;
 			this.textService.Name = "textService";
+			this.textService.QuickPasteType = OpenDental.QuickPasteType.ServiceNotes;
 			this.textService.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textService.Size = new System.Drawing.Size(202, 57);
-			this.textService.TabIndex = 2;
+			this.textService.TabIndex = 52;
 			this.textService.Text = "";
+			// 
+			// textMedical
+			// 
+			this.textMedical.AcceptsReturn = true;
+			this.textMedical.Location = new System.Drawing.Point(9, 78);
+			this.textMedical.Multiline = true;
+			this.textMedical.Name = "textMedical";
+			this.textMedical.QuickPasteType = OpenDental.QuickPasteType.MedicalSummary;
+			this.textMedical.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.textMedical.Size = new System.Drawing.Size(202, 57);
+			this.textMedical.TabIndex = 51;
+			this.textMedical.Text = "";
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(209, 63);
+			this.label3.Location = new System.Drawing.Point(211, 63);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(100, 16);
 			this.label3.TabIndex = 50;
@@ -176,19 +171,6 @@ namespace OpenDental{
 			this.label2.TabIndex = 49;
 			this.label2.Text = "Urgent Medical Notes";
 			// 
-			// textMedUrgNote
-			// 
-			this.textMedUrgNote.AcceptsReturn = true;
-			this.textMedUrgNote.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.textMedUrgNote.ForeColor = System.Drawing.Color.Red;
-			this.textMedUrgNote.Location = new System.Drawing.Point(9, 38);
-			this.textMedUrgNote.Multiline = true;
-			this.textMedUrgNote.Name = "textMedUrgNote";
-			this.textMedUrgNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textMedUrgNote.Size = new System.Drawing.Size(202, 20);
-			this.textMedUrgNote.TabIndex = 0;
-			this.textMedUrgNote.Text = "";
-			// 
 			// label4
 			// 
 			this.label4.Location = new System.Drawing.Point(9, 63);
@@ -197,69 +179,14 @@ namespace OpenDental{
 			this.label4.TabIndex = 47;
 			this.label4.Text = "Medical Summary";
 			// 
-			// textMedical
-			// 
-			this.textMedical.AcceptsReturn = true;
-			this.textMedical.Location = new System.Drawing.Point(9, 78);
-			this.textMedical.Multiline = true;
-			this.textMedical.Name = "textMedical";
-			this.textMedical.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textMedical.Size = new System.Drawing.Size(202, 57);
-			this.textMedical.TabIndex = 1;
-			this.textMedical.Text = "";
-			// 
-			// label5
-			// 
-			this.label5.Location = new System.Drawing.Point(8, 142);
-			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(112, 18);
-			this.label5.TabIndex = 48;
-			this.label5.Text = "Quick paste Medical";
-			// 
-			// listMedical
-			// 
-			this.listMedical.Location = new System.Drawing.Point(9, 159);
-			this.listMedical.Name = "listMedical";
-			this.listMedical.Size = new System.Drawing.Size(120, 290);
-			this.listMedical.TabIndex = 0;
-			this.listMedical.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listMedical_MouseDown);
-			// 
-			// textMedicalComp
-			// 
-			this.textMedicalComp.AcceptsReturn = true;
-			this.textMedicalComp.Location = new System.Drawing.Point(562, 231);
-			this.textMedicalComp.Multiline = true;
-			this.textMedicalComp.Name = "textMedicalComp";
-			this.textMedicalComp.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textMedicalComp.Size = new System.Drawing.Size(392, 408);
-			this.textMedicalComp.TabIndex = 5;
-			this.textMedicalComp.Text = "";
-			// 
 			// label6
 			// 
-			this.label6.Location = new System.Drawing.Point(563, 211);
+			this.label6.Location = new System.Drawing.Point(439, 212);
 			this.label6.Name = "label6";
 			this.label6.Size = new System.Drawing.Size(261, 18);
 			this.label6.TabIndex = 6;
 			this.label6.Text = "Medical History";
 			this.label6.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
-			// 
-			// label7
-			// 
-			this.label7.Location = new System.Drawing.Point(437, 211);
-			this.label7.Name = "label7";
-			this.label7.Size = new System.Drawing.Size(112, 18);
-			this.label7.TabIndex = 50;
-			this.label7.Text = "Quick paste Medical";
-			this.label7.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
-			// 
-			// listMedicalComp
-			// 
-			this.listMedicalComp.Location = new System.Drawing.Point(438, 232);
-			this.listMedicalComp.Name = "listMedicalComp";
-			this.listMedicalComp.Size = new System.Drawing.Size(120, 407);
-			this.listMedicalComp.TabIndex = 49;
-			this.listMedicalComp.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listMedicalComp_MouseDown);
 			// 
 			// butAdd
 			// 
@@ -283,11 +210,23 @@ namespace OpenDental{
 			this.tbMeds.BackColor = System.Drawing.SystemColors.Window;
 			this.tbMeds.Location = new System.Drawing.Point(3, 24);
 			this.tbMeds.Name = "tbMeds";
-			this.tbMeds.ScrollValue = 700;
+			this.tbMeds.ScrollValue = 544;
 			this.tbMeds.SelectedIndices = new int[0];
 			this.tbMeds.SelectionMode = System.Windows.Forms.SelectionMode.None;
 			this.tbMeds.Size = new System.Drawing.Size(959, 175);
 			this.tbMeds.TabIndex = 53;
+			// 
+			// textMedicalComp
+			// 
+			this.textMedicalComp.AcceptsReturn = true;
+			this.textMedicalComp.Location = new System.Drawing.Point(440, 232);
+			this.textMedicalComp.Multiline = true;
+			this.textMedicalComp.Name = "textMedicalComp";
+			this.textMedicalComp.QuickPasteType = OpenDental.QuickPasteType.MedicalHistory;
+			this.textMedicalComp.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.textMedicalComp.Size = new System.Drawing.Size(512, 409);
+			this.textMedicalComp.TabIndex = 54;
+			this.textMedicalComp.Text = "";
 			// 
 			// FormMedical
 			// 
@@ -295,12 +234,10 @@ namespace OpenDental{
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(964, 683);
+			this.Controls.Add(this.textMedicalComp);
 			this.Controls.Add(this.butAdd);
 			this.Controls.Add(this.tbMeds);
 			this.Controls.Add(this.label8);
-			this.Controls.Add(this.listMedicalComp);
-			this.Controls.Add(this.label7);
-			this.Controls.Add(this.textMedicalComp);
 			this.Controls.Add(this.label6);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.butCancel);
@@ -319,13 +256,13 @@ namespace OpenDental{
 		#endregion
 
 		private void FormMedical_Load(object sender, System.EventArgs e) {
-			for(int i=0;i<Defs.Short[(int)DefCat.MedicalNotes].Length;i++){
-				listMedical.Items.Add(Defs.Short[(int)DefCat.MedicalNotes][i].ItemName);
-				listMedicalComp.Items.Add(Defs.Short[(int)DefCat.MedicalNotes][i].ItemName);
-			}
-			for(int i=0;i<Defs.Short[(int)DefCat.ServiceNotes].Length;i++){
-				listService.Items.Add(Defs.Short[(int)DefCat.ServiceNotes][i].ItemName);
-			}
+			//for(int i=0;i<Defs.Short[(int)DefCat.MedicalNotes].Length;i++){
+			//	listMedical.Items.Add(Defs.Short[(int)DefCat.MedicalNotes][i].ItemName);
+			//	listMedicalComp.Items.Add(Defs.Short[(int)DefCat.MedicalNotes][i].ItemName);
+			//}
+			//for(int i=0;i<Defs.Short[(int)DefCat.ServiceNotes].Length;i++){
+			//	listService.Items.Add(Defs.Short[(int)DefCat.ServiceNotes][i].ItemName);
+			//}
 			textMedUrgNote.Text=Patients.Cur.MedUrgNote;
 			textMedical.Text=PatientNotes.Cur.Medical;
 			textMedicalComp.Text=PatientNotes.Cur.MedicalComp;
@@ -377,7 +314,7 @@ namespace OpenDental{
 			FillMeds();
 		}
 
-		private void listService_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
+		/*private void listService_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
 			if(listService.IndexFromPoint(e.X,e.Y)==-1){
 				return;
 			}
@@ -417,7 +354,7 @@ namespace OpenDental{
 			textMedicalComp.SelectionStart=caret+strPaste.Length;
 			textMedicalComp.SelectionLength=0;
 			listMedicalComp.SelectedIndex=-1;
-		}
+		}*/
 
 		private void butOK_Click(object sender, System.EventArgs e) {
 			Patient PatCur=Patients.Cur;

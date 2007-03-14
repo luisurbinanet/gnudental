@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+//using mshtml;
 
 namespace OpenDental{
 	///<summary></summary>
@@ -14,6 +15,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butReset;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Label label4;
+		private System.Windows.Forms.TextBox textBox1;
 		private System.ComponentModel.Container components = null;
 
 		///<summary></summary>
@@ -48,6 +50,7 @@ namespace OpenDental{
 			this.butReset = new System.Windows.Forms.Button();
 			this.label3 = new System.Windows.Forms.Label();
 			this.label4 = new System.Windows.Forms.Label();
+			this.textBox1 = new System.Windows.Forms.TextBox();
 			this.SuspendLayout();
 			// 
 			// labelVersion
@@ -112,11 +115,24 @@ namespace OpenDental{
 			this.label4.Text = "All parts of this program are licensed under the GPL, www.opensource.org/licenses" +
 				"/gpl-license.php";
 			// 
+			// textBox1
+			// 
+			this.textBox1.BackColor = System.Drawing.SystemColors.Control;
+			this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.textBox1.Location = new System.Drawing.Point(21, 167);
+			this.textBox1.Multiline = true;
+			this.textBox1.Name = "textBox1";
+			this.textBox1.Size = new System.Drawing.Size(628, 194);
+			this.textBox1.TabIndex = 8;
+			this.textBox1.Text = "We also wish to thank:\r\nDavid Adams\r\nDan Crawford\r\nLarry Dagley\r\nAnn Hellemans-De" +
+				" Hondt\r\nSamir Kothari\r\nJeff Smerdon";
+			// 
 			// FormAbout
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butClose;
-			this.ClientSize = new System.Drawing.Size(695, 415);
+			this.ClientSize = new System.Drawing.Size(709, 462);
+			this.Controls.Add(this.textBox1);
 			this.Controls.Add(this.label4);
 			this.Controls.Add(this.label3);
 			this.Controls.Add(this.butReset);
@@ -139,6 +155,8 @@ namespace OpenDental{
 
 		private void FormAbout_Load(object sender, System.EventArgs e) {
 			labelVersion.Text=Lan.g(this,"Using Version:")+" "+Application.ProductVersion;
+			//Object o=null;
+			//axBrowser.Navigate(@"http://www.open-dent.com",ref o,ref o,ref o,ref o);
 		}
 
 		private void butReset_Click(object sender, System.EventArgs e) {
@@ -150,6 +168,10 @@ namespace OpenDental{
 		private void butClose_Click(object sender, System.EventArgs e) {
 			DialogResult=DialogResult.Cancel;
 		}
+
+		//private void button1_Click(object sender, System.EventArgs e) {
+		//((HTMLDocument)axBrowser.Document).designMode="On";
+		//}
 
 	}
 }

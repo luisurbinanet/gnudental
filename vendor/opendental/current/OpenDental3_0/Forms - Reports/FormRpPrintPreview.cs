@@ -63,8 +63,6 @@ namespace OpenDental{
 			this.ClientSize = new System.Drawing.Size(842, 746);
 			this.Controls.Add(this.button1);
 			this.Controls.Add(this.printPreviewControl2);
-			this.MaximizeBox = false;
-			this.MinimizeBox = false;
 			this.Name = "FormRpPrintPreview";
 			this.ShowInTaskbar = false;
 			this.Text = "FormRxPrintPreview";

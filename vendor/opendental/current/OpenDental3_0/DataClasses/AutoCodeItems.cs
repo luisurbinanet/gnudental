@@ -95,19 +95,20 @@ namespace OpenDental{
 			}     
 		}
 
-		///<summary></summary>
-		public static string GetADA(int autoCodeNum,string toothNum,string surf,bool isAdditional){
+		///<summary>Only called from ContrChart.listProcButtons_Click.  Called once for each tooth selected and for each autocode item attached to the button.</summary>
+		public static string GetADA(int autoCodeNum,string toothNum,string surf,bool isAdditional,int patNum){
 			bool allCondsMet;
 			GetListForCode(autoCodeNum);
 			if(ListForCode.Length==0){
 				return "";
 			}
+			bool willBeMissing=Procedures.WillBeMissing(toothNum,patNum);
 			for(int i=0;i<ListForCode.Length;i++){
 				AutoCodeConds.GetListForItem(ListForCode[i].AutoCodeItemNum);
 				allCondsMet=true;
 				for(int j=0;j<AutoCodeConds.ListForItem.Length;j++){
 					if(!AutoCodeConds.ConditionIsMet
-						(AutoCodeConds.ListForItem[j].Condition,toothNum,surf,isAdditional)){
+						(AutoCodeConds.ListForItem[j].Condition,toothNum,surf,isAdditional,willBeMissing)){
 						allCondsMet=false;
 					}
 				}
@@ -118,8 +119,8 @@ namespace OpenDental{
 			return ListForCode[0].ADACode;//if couldn't find a better match
 		}
 
-		///<summary>Only called when closing the procedure edit window.</summary>
-		public static string VerifyCode(string ADACode,string toothNum,string surf,bool isAdditional){
+		///<summary>Only called when closing the procedure edit window. Usually returns the supplied adaCode, unless a better match is found.</summary>
+		public static string VerifyCode(string ADACode,string toothNum,string surf,bool isAdditional,int patNum){
 			bool allCondsMet;
 			if(!HList.ContainsKey(ADACode)){
 				return ADACode;
@@ -131,6 +132,7 @@ namespace OpenDental{
 			if(AutoCodes.Cur.LessIntrusive){
 				return ADACode;
 			}
+			bool willBeMissing=Procedures.WillBeMissing(toothNum,patNum);
 			//AutoCode verAutoCode=(AutoCode)HList[ADACode];
 			GetListForCode((int)HList[ADACode]);
 			for(int i=0;i<ListForCode.Length;i++){
@@ -138,7 +140,7 @@ namespace OpenDental{
 				allCondsMet=true;
 				for(int j=0;j<AutoCodeConds.ListForItem.Length;j++){
 					if(!AutoCodeConds.ConditionIsMet
-						(AutoCodeConds.ListForItem[j].Condition,toothNum,surf,isAdditional)){
+						(AutoCodeConds.ListForItem[j].Condition,toothNum,surf,isAdditional,willBeMissing)){
 						allCondsMet=false;
 					}
 				}

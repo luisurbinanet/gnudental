@@ -12,6 +12,8 @@ namespace OpenDental{
 		public string Description;
 		///<summary>Order to display in lists. Every view must have a unique itemorder, but it is acceptable to have some missing itemorders in the sequence.</summary>
 		public int ItemOrder;
+		///<summary>Number of rows per time increment.  Value updated to ContrApptSheet.RowsPerIncr to track current state.</summary>
+		public int RowsPerIncr;
 	}
 	
 	
@@ -33,16 +35,18 @@ namespace OpenDental{
 			for(int i=0;i<List.Length;i++){
 				List[i].ApptViewNum = PIn.PInt   (table.Rows[i][0].ToString());
 				List[i].Description = PIn.PString(table.Rows[i][1].ToString());
-				List[i].ItemOrder   = PIn.PInt   (table.Rows[i][2].ToString());	
+				List[i].ItemOrder   = PIn.PInt   (table.Rows[i][2].ToString());
+				List[i].RowsPerIncr = PIn.PInt   (table.Rows[i][3].ToString());	
 			}
 		}
 
 		///<summary></summary>
 		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO apptview (description,itemorder) "
+			cmd.CommandText = "INSERT INTO apptview (Description,ItemOrder,RowsPerIncr) "
 				+"VALUES ("
 				+"'"+POut.PString(Cur.Description)+"', "
-				+"'"+POut.PInt   (Cur.ItemOrder)+"')";
+				+"'"+POut.PInt   (Cur.ItemOrder)+"', "
+				+"'"+POut.PInt   (Cur.RowsPerIncr)+"')";
 			//MessageBox.Show(cmd.CommandText);
 			NonQ(true);
 			Cur.ApptViewNum=InsertID;
@@ -51,17 +55,18 @@ namespace OpenDental{
 		///<summary></summary>
 		public static void UpdateCur(){
 			cmd.CommandText = "UPDATE apptview SET "
-				+"description='" +POut.PString(Cur.Description)+"'"
-				+",itemorder = '"+POut.PInt   (Cur.ItemOrder)+"'"
-				+" WHERE apptviewnum = '"+POut.PInt(Cur.ApptViewNum)+"'";
-			NonQ(false);
+				+"Description='"   +POut.PString(Cur.Description)+"'"
+				+",ItemOrder = '"  +POut.PInt   (Cur.ItemOrder)+"'"
+				+",RowsPerIncr = '"+POut.PInt   (Cur.RowsPerIncr)+"'"
+				+" WHERE ApptViewNum = '"+POut.PInt(Cur.ApptViewNum)+"'";
+			NonQ();
 		}
 
 		///<summary></summary>
 		public static void DeleteCur(){
-			cmd.CommandText="DELETE from apptview WHERE apptviewnum = '"
+			cmd.CommandText="DELETE from apptview WHERE ApptViewNum = '"
 				+POut.PInt(Cur.ApptViewNum)+"'";
-			NonQ(false);
+			NonQ();
 		}
 
 		/// <summary>Used in appt module.  Can be -1 if no category selected </summary>

@@ -151,9 +151,9 @@ namespace OpenDental{
 		//	NonQ(false);
 		//}
 
-		///<summary></summary>
-		public static double GetPercent(string myADACode, PriSecTot pst){//does not return a tot?
-			double retVal=0;
+		///<summary>Only use pri or sec, not tot.  Used from ClaimProc.ComputeBaseEst. This is a low level function to get the percent to store in a claimproc.  It does not consider any percentOverride.  Always returns a number between 0 and 100.</summary>
+		public static int GetPercent(string myADACode, PriSecTot pst){
+			int retVal=0;
 			int covCatNum=0;
 			for(int i=0;i<CovSpans.List.Length;i++){
 				if(String.Compare(myADACode,CovSpans.List[i].FromCode)>=0
@@ -181,7 +181,7 @@ namespace OpenDental{
 			else{
 				retVal=secPercent;
 			}
-			return retVal/100;	
+			return retVal;	
 		}
 		
 		/*public double GetCatPercent(int myCovCatNum){

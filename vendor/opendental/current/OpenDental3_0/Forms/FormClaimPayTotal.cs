@@ -31,14 +31,27 @@ namespace OpenDental
 		private System.Windows.Forms.Label label4;
 		///<summary></summary>
 		public ClaimProc[] ClaimProcsToEdit;
+		private Procedure[] ProcList;
 
 		///<summary></summary>
-		public FormClaimPayTotal()
-		{
+		public FormClaimPayTotal(){
 			//
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
+			Lan.C(this, new System.Windows.Forms.Control[] { //*Ann
+				this, //*Ann
+				this.label1, //*Ann
+				this.label2, //*Ann
+				this.label3, //*Ann
+				this.label4, //*Ann
+				this.butDeductible, //*Ann
+				this.butWriteOff //*Ann
+			}); //*Ann
+			Lan.C("All", new System.Windows.Forms.Control[] { //*Ann
+				butOK, //*Ann
+				butCancel, //*Ann
+			}); //*Ann
 			tbProc.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbProc_CellDoubleClicked);
 			
 		}
@@ -253,6 +266,7 @@ namespace OpenDental
 		#endregion
 
 		private void FormClaimPayTotal_Load(object sender, System.EventArgs e) {
+			ProcList=Procedures.Refresh(Patients.Cur.PatNum);
 			FillGrid();
 		}
 
@@ -266,25 +280,26 @@ namespace OpenDental
 			double insPayAmt=0;
 			double writeOff=0;
 			tbProc.ResetRows(ClaimProcsToEdit.Length);
+			Procedure ProcCur;
 			for(int i=0;i<ClaimProcsToEdit.Length;i++){
 				if(ClaimProcsToEdit[i].ProcNum==0){
 					tbProc.Cell[4,i]=Lan.g(this,"Total Payment");
 				}
 				else{
-					Procedures.Cur=(Procedure)Procedures.HList[ClaimProcsToEdit[i].ProcNum];
-					Procedures.CurOld=Procedures.Cur;//may not be necessary
-					tbProc.Cell[2,i]=Procedures.Cur.ADACode;
-					tbProc.Cell[3,i]=Procedures.Cur.ToothNum;
-					tbProc.Cell[4,i]=ProcedureCodes.GetProcCode(Procedures.Cur.ADACode).Descript;
+					ProcCur=Procedures.GetProc(ProcList,ClaimProcsToEdit[i].ProcNum);
+					//Procedures.CurOld=Procedures.Cur;//may not be necessary
+					tbProc.Cell[2,i]=ProcCur.ADACode;
+					tbProc.Cell[3,i]=ProcCur.ToothNum;
+					tbProc.Cell[4,i]=ProcedureCodes.GetProcCode(ProcCur.ADACode).Descript;
 				}
-				tbProc.Cell[0,i]=ClaimProcsToEdit[i].DateCP.ToShortDateString();
+				tbProc.Cell[0,i]=ClaimProcsToEdit[i].ProcDate.ToShortDateString();
 				tbProc.Cell[1,i]=Providers.GetAbbr(ClaimProcsToEdit[i].ProvNum);
 				tbProc.Cell[5,i]=ClaimProcsToEdit[i].FeeBilled.ToString("F");
 				tbProc.Cell[6,i]=ClaimProcsToEdit[i].DedApplied.ToString("F");
 				tbProc.Cell[7,i]=ClaimProcsToEdit[i].InsPayEst.ToString("F");
 				tbProc.Cell[8,i]=ClaimProcsToEdit[i].InsPayAmt.ToString("F");
 				tbProc.Cell[9,i]=ClaimProcsToEdit[i].WriteOff.ToString("F");
-				switch(ClaimProcs.ForClaim[i].Status){
+				switch(ClaimProcsToEdit[i].Status){
 					case ClaimProcStatus.Received:
 						tbProc.Cell[10,i]="Recd";
 						break;
@@ -298,9 +313,11 @@ namespace OpenDental
 					case ClaimProcStatus.Supplemental:
 						tbProc.Cell[10,i]="Supp";
 						break;
-					case ClaimProcStatus.Capitation:
+					case ClaimProcStatus.CapClaim:
 						tbProc.Cell[10,i]="Cap";
 						break;
+					//Estimate would never show here
+					//Cap would never show here
 				}
 				if(ClaimProcsToEdit[i].ClaimPaymentNum>0)
 					tbProc.Cell[11,i]="X";
@@ -321,14 +338,12 @@ namespace OpenDental
 		}
 
 		private void tbProc_CellDoubleClicked(object sender, CellEventArgs e){
-			ClaimProcs.Cur=ClaimProcsToEdit[e.Row];
-			FormClaimProcEdit FormCPE=new FormClaimProcEdit();
-			//FormCPE.NoSave=true;
-			FormCPE.ShowDialog();
-			if(FormCPE.DialogResult!=DialogResult.OK){
+			FormClaimProc FormCP=new FormClaimProc(ClaimProcsToEdit[e.Row],null);
+			FormCP.IsInClaim=true;
+			FormCP.ShowDialog();
+			if(FormCP.DialogResult!=DialogResult.OK){
 				return;
 			}
-			ClaimProcsToEdit[e.Row]=ClaimProcs.Cur;
 			FillGrid();
 		}
 
@@ -365,8 +380,10 @@ namespace OpenDental
 			}
 			//fix later: does not take into account other payments.
 			double unpaidAmt=0;
+			Procedure[] ProcList=Procedures.Refresh(Patients.Cur.PatNum);
 			for(int i=0;i<ClaimProcsToEdit.Length;i++){
-				unpaidAmt=((Procedure)Procedures.HList[ClaimProcsToEdit[i].ProcNum]).ProcFee
+				unpaidAmt=Procedures.GetProc(ProcList,ClaimProcsToEdit[i].ProcNum).ProcFee
+					//((Procedure)Procedures.HList[ClaimProcsToEdit[i].ProcNum]).ProcFee
 					-ClaimProcsToEdit[i].DedApplied
 					-ClaimProcsToEdit[i].InsPayAmt;
 				if(unpaidAmt > 0){

@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 
-	///<summary>Converts various datatypes into strings formatted correctly for MySQL.</summary>
+	///<summary>Converts various datatypes into strings formatted correctly for MySQL. "P" was originally short for Parameter because this class was written specifically to replace parameters in the mysql queries. Using strings instead of parameters is much easier to debug.  This will later be rewritten as a System.IConvertible interface on custom mysql types.  I would rather not ever depend on the mysql connector for this so that this program remains very db independent.</summary>
 	public class POut{
 		///<summary></summary>
 		public static string PBool (bool myBool){
@@ -33,9 +33,10 @@ namespace OpenDental{
 			}
 		}
 
-		///<summary></summary>
+		///<summary>Converts a date to yyyy-MM-dd format which is the format required by MySQL.</summary>
 		public static string PDate(DateTime myDate){
 			try{
+				//the new DTFormatInfo is to prevent changes in year for Korea
 				return myDate.ToString("yyyy-MM-dd",new DateTimeFormatInfo());
 			}
 			catch{
@@ -45,8 +46,14 @@ namespace OpenDental{
 		}
 
 		///<summary></summary>
-		public static string PDouble (double myDouble){
-			return myDouble.ToString();
+		public static string PDouble(double myDouble){
+			try{
+				//because decimal is a comma in Europe, this sends it to db with period instead 
+				return myDouble.ToString("f",new NumberFormatInfo());
+			}
+			catch{
+				return "0";
+			}
 		}
 
 		///<summary></summary>

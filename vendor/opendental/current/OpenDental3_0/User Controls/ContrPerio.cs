@@ -1290,11 +1290,15 @@ namespace OpenDental
 
 		///<summary></summary>
 		protected override void OnKeyDown(KeyEventArgs e) {
+			if(selectedExam==-1){
+				MessageBox.Show(Lan.g(this,"Please add or select an exam first in the list to the left."));
+				return;
+			}
 			//MessageBox.Show("key down");
 			//e.Handled=true;
 			//base.OnKeyDown (e);
 			if(e.KeyValue>=96 && e.KeyValue<=105){//keypad 0 through 9
-				if(e.Shift){
+				if(e.Control){
 					ButtonPressed(e.KeyValue-96+10);
 				}
 				else{
@@ -1302,7 +1306,7 @@ namespace OpenDental
 				}
 			}
 			else if(e.KeyValue>=48 && e.KeyValue<=57){//0 through 9
-				if(e.Shift){
+				if(e.Control){
 					ButtonPressed(e.KeyValue-48+10);
 				}
 				else{
@@ -1396,7 +1400,7 @@ namespace OpenDental
 				EnterValue(keyValue);
 		}
 
-		///<summary>Only valid values are b,s,p, & c.</summary>
+		///<summary>Only valid values are b,s,p, and c.</summary>
 		private void EnterValue(string keyValue){
 			if(keyValue !="b" && keyValue !="s" && keyValue !="p" && keyValue !="c"){
 				MessageBox.Show("Only b,s,p, and c are allowed");//just for debugging
@@ -1579,7 +1583,7 @@ namespace OpenDental
 							else if(RowTypes[section][GetSectionRow(CurCell.Y)]==PerioSequenceType.MGJ){
 								//section 3. in reverse
 								newSection=0;
-								SetNewCell(1+16*3,GetTableRow(selectedExam,newSection,PerioSequenceType.MGJ));
+								SetNewCell(16*3,GetTableRow(selectedExam,newSection,PerioSequenceType.MGJ));
 							}
 						}
 						else{
@@ -1667,6 +1671,8 @@ namespace OpenDental
 		}
 
 		private void ClearValue(){
+			//MessageBox.Show(DataArray.GetLength(0).ToString());
+			//MessageBox.Show(DataArray.GetLength(1).ToString());
 			PerioCell cur=DataArray[CurCell.X,CurCell.Y];
 			cur.Text="";
 			DataArray[CurCell.X,CurCell.Y]=cur;

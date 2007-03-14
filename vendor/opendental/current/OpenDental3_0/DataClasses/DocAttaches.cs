@@ -27,9 +27,9 @@ namespace OpenDental{
 		///<summary></summary>
 		public static DocAttach[] List;
 
-		///<summary></summary>
+		///<summary>This should be followed by Documents.Refresh</summary>
 		public static void Refresh(){
-			cmd.CommandText="SELECT * from docattach WHERE patnum = '"
+			cmd.CommandText="SELECT * from docattach WHERE PatNum = '"
 				+Patients.Cur.PatNum+"'";			//	MessageBox.Show(cmd.CommandText);			FillTable();//find all attachments for that patient
 			List=new DocAttach[table.Rows.Count];
 			for (int i=0;i<table.Rows.Count;i++){

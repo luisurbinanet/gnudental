@@ -19,6 +19,7 @@ namespace OpenDental.UI
 		private System.Windows.Forms.Panel panelMain;
 		private System.Windows.Forms.VScrollBar vScrollBar2;
 		private System.Windows.Forms.Panel panelSlide;
+		///<summary>These are the actual input fields that get laid out on the window based on the type.</summary>
 		private Control[] inputs;
 
 		///<summary></summary>
@@ -327,7 +328,7 @@ namespace OpenDental.UI
 			panelSlide.Select();
 		}
 
-		///<summary>This is called from the parent form to retrieve the data that the user entered.  Returns an arraylist.  For most fields, the length of the arraylist will be 0 or 1.</summary>
+		///<summary>Should run AllFieldsAreValid() first. This is called from the parent form to retrieve the data that the user entered.  Returns an arraylist.  For most fields, the length of the arraylist will be 0 or 1.</summary>
 		public ArrayList GetCurrentValues(int item){
 			ArrayList retVal=new ArrayList();
 			if(multInputItems[item].ValueType==FieldValueType.Boolean){
@@ -336,12 +337,7 @@ namespace OpenDental.UI
 				}
 			}
 			else if(multInputItems[item].ValueType==FieldValueType.Date){
-				if(((ValidDate)inputs[item]).errorProvider1.GetError(inputs[item])!=""){
-					MessageBox.Show(Lan.g(this,"Please fix data entry errors first."));
-				}
-				else if(inputs[item].Text!=""){
-					retVal.Add(PIn.PDate(inputs[item].Text));
-				}
+				retVal.Add(PIn.PDate(inputs[item].Text));
 			}
 			else if(multInputItems[item].ValueType==FieldValueType.Def){
 				ComboBoxMulti comboBox=(ComboBoxMulti)inputs[item];
@@ -360,20 +356,10 @@ namespace OpenDental.UI
 				}
 			}
 			else if(multInputItems[item].ValueType==FieldValueType.Integer){
-				if(((ValidNumber)inputs[item]).errorProvider1.GetError(inputs[item])!=""){
-					MessageBox.Show(Lan.g(this,"Please fix data entry errors first."));
-				}
-				else if(inputs[item].Text!=""){
-					retVal.Add(PIn.PInt(inputs[item].Text));
-				}
+				retVal.Add(PIn.PInt(inputs[item].Text));
 			}
 			else if(multInputItems[item].ValueType==FieldValueType.Number){
-				if(((ValidDouble)inputs[item]).errorProvider1.GetError(inputs[item])!=""){
-					MessageBox.Show(Lan.g(this,"Please fix data entry errors first."));
-				}
-				else if(inputs[item].Text!=""){
-					retVal.Add(PIn.PDouble(inputs[item].Text));
-				}
+				retVal.Add(PIn.PDouble(inputs[item].Text));
 			}
 			else if(multInputItems[item].ValueType==FieldValueType.String){
 				if(inputs[item].Text!=""){
@@ -383,6 +369,28 @@ namespace OpenDental.UI
 			}
 			//MessageBox.Show(multInputItems[1].CurrentValues.Count.ToString());
 			return retVal;
+		}
+
+		///<summary>Called externally to determine whether any of the fields are displaying errors.  Typically used in the OK_Click of the parent form to prevent closing if any field entries are invalid.</summary>
+		public bool AllFieldsAreValid(){
+			for(int i=0;i<multInputItems.Count;i++){
+				if(multInputItems[i].ValueType==FieldValueType.Date){
+					 if(((ValidDate)inputs[i]).errorProvider1.GetError(inputs[i])!=""){
+							return false;
+					 }
+				}
+				if(multInputItems[i].ValueType==FieldValueType.Integer){
+					 if(((ValidNumber)inputs[i]).errorProvider1.GetError(inputs[i])!=""){
+							return false;
+					 }
+				}
+				if(multInputItems[i].ValueType==FieldValueType.Number){
+					 if(((ValidDouble)inputs[i]).errorProvider1.GetError(inputs[i])!=""){
+							return false;
+					 }
+				}
+			}
+			return true;
 		}
 
 		

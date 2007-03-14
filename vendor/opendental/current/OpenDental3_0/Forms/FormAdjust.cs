@@ -15,7 +15,6 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.Label label5;
 		private System.Windows.Forms.Label label6;
-		private System.Windows.Forms.TextBox textNote;
 		private System.Windows.Forms.Label label2;
 		private System.ComponentModel.Container components = null;// Required designer variable.
 		///<summary></summary>
@@ -30,6 +29,7 @@ namespace OpenDental{
 		private System.Windows.Forms.ListBox listTypePos;
 		private System.Windows.Forms.ListBox listTypeNeg;
 		private ArrayList PosIndex=new ArrayList();
+		private OpenDental.ODtextBox textNote;
 		private ArrayList NegIndex=new ArrayList();
 		//private DateTime OriginalDate;
 		//private double OriginalAmt;
@@ -69,7 +69,6 @@ namespace OpenDental{
 			this.label4 = new System.Windows.Forms.Label();
 			this.label5 = new System.Windows.Forms.Label();
 			this.label6 = new System.Windows.Forms.Label();
-			this.textNote = new System.Windows.Forms.TextBox();
 			this.label2 = new System.Windows.Forms.Label();
 			this.butOK = new System.Windows.Forms.Button();
 			this.butCancel = new System.Windows.Forms.Button();
@@ -80,6 +79,7 @@ namespace OpenDental{
 			this.listProvider = new System.Windows.Forms.ListBox();
 			this.listTypePos = new System.Windows.Forms.ListBox();
 			this.listTypeNeg = new System.Windows.Forms.ListBox();
+			this.textNote = new OpenDental.ODtextBox();
 			this.SuspendLayout();
 			// 
 			// label1
@@ -117,15 +117,6 @@ namespace OpenDental{
 			this.label6.TabIndex = 5;
 			this.label6.Text = "Additions";
 			this.label6.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-			// 
-			// textNote
-			// 
-			this.textNote.Location = new System.Drawing.Point(166, 338);
-			this.textNote.Multiline = true;
-			this.textNote.Name = "textNote";
-			this.textNote.Size = new System.Drawing.Size(393, 115);
-			this.textNote.TabIndex = 5;
-			this.textNote.Text = "";
 			// 
 			// label2
 			// 
@@ -211,11 +202,24 @@ namespace OpenDental{
 			this.listTypeNeg.TabIndex = 4;
 			this.listTypeNeg.SelectedIndexChanged += new System.EventHandler(this.listTypeNeg_SelectedIndexChanged);
 			// 
+			// textNote
+			// 
+			this.textNote.AcceptsReturn = true;
+			this.textNote.Location = new System.Drawing.Point(157, 344);
+			this.textNote.Multiline = true;
+			this.textNote.Name = "textNote";
+			this.textNote.QuickPasteType = OpenDental.QuickPasteType.Adjustment;
+			this.textNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.textNote.Size = new System.Drawing.Size(412, 140);
+			this.textNote.TabIndex = 0;
+			this.textNote.Text = "";
+			// 
 			// FormAdjust
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(731, 528);
+			this.Controls.Add(this.textNote);
 			this.Controls.Add(this.listTypeNeg);
 			this.Controls.Add(this.listTypePos);
 			this.Controls.Add(this.listProvider);
@@ -226,7 +230,6 @@ namespace OpenDental{
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.label2);
-			this.Controls.Add(this.textNote);
 			this.Controls.Add(this.label6);
 			this.Controls.Add(this.label5);
 			this.Controls.Add(this.label4);

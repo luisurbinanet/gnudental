@@ -128,6 +128,7 @@ Depending on the size of your database, it could take a few minutes.   The resul
 				,"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
 				return;
 			}
+			Cursor=Cursors.WaitCursor;
 			Patients.ResetAging();
 			Ledgers.GetAllGuarantors();
 			for(int i=0;i<Ledgers.AllGuarantors.Length;i++){
@@ -143,6 +144,7 @@ Depending on the size of your database, it could take a few minutes.   The resul
 			DataValid DataValid2=new DataValid();
 			DataValid2.SetInvalid();
 
+			Cursor=Cursors.Default;
 			MessageBox.Show(Lan.g(this,"Aging Complete"));
 			DialogResult=DialogResult.OK;
 		}

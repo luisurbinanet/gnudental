@@ -5,8 +5,7 @@ namespace OpenDental{
 	
 	/*=========================================================================================
 	=================================== class PIn ===========================================*/
-	///<summary>Converts strings coming in from the database into the appropriate type.</summary>
-	///<remarks>P was originally short for Parameter because it was replacing the data adapter parameters.  Using strings instead of parameters is much easier to debug.  This class will be replaced with an IConvertible interface with better naming as soon as we have time, but it is still very functional.</remarks>
+	///<summary>Converts strings coming in from the database into the appropriate type. "P" was originally short for Parameter because this class was written specifically to replace parameters in the mysql queries. Using strings instead of parameters is much easier to debug.  This will later be rewritten as a System.IConvertible interface on custom mysql types.  I would rather not ever depend on the mysql connector for this so that this program remains very db independent.</remarks>
 	public class PIn{
 		///<summary></summary>
 		public static bool PBool (string myString){
@@ -47,9 +46,9 @@ namespace OpenDental{
 			}
 		}
 
-		///<summary></summary>
+		///<summary>If blank or invalid, returns 0. Otherwise, parses.</summary>
 		public static double PDouble (string myString){
-			if (myString==""){
+			if(myString==""){
 				return 0;
 			}
 			else{

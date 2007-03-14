@@ -17,7 +17,6 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label1;
 		private System.ComponentModel.Container components = null;
 		private Patients Patients;
-		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Button butOK;
 		private System.Windows.Forms.Button butCancel;
 		private System.Windows.Forms.Button butAddPt;
@@ -64,7 +63,7 @@ namespace OpenDental{
 			Lan.C(this, new System.Windows.Forms.Control[] 
 			{
 				label1,
-				label2,
+				//label2,
 				label3,
 				label4,
 				label5,
@@ -105,16 +104,15 @@ namespace OpenDental{
 			this.textLName = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.groupAddPt = new System.Windows.Forms.GroupBox();
-			this.label2 = new System.Windows.Forms.Label();
 			this.butAddPt = new System.Windows.Forms.Button();
 			this.butOK = new System.Windows.Forms.Button();
 			this.butCancel = new System.Windows.Forms.Button();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
+			this.textChartNumber = new System.Windows.Forms.TextBox();
 			this.listBillingTypes = new System.Windows.Forms.ListBox();
 			this.textSSN = new System.Windows.Forms.TextBox();
 			this.label12 = new System.Windows.Forms.Label();
 			this.label11 = new System.Windows.Forms.Label();
-			this.textChartNumber = new System.Windows.Forms.TextBox();
 			this.label10 = new System.Windows.Forms.Label();
 			this.textPatNum = new System.Windows.Forms.TextBox();
 			this.label9 = new System.Windows.Forms.Label();
@@ -162,26 +160,15 @@ namespace OpenDental{
 			// 
 			// groupAddPt
 			// 
-			this.groupAddPt.Controls.Add(this.label2);
 			this.groupAddPt.Controls.Add(this.butAddPt);
 			this.groupAddPt.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupAddPt.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
 			this.groupAddPt.Location = new System.Drawing.Point(729, 461);
 			this.groupAddPt.Name = "groupAddPt";
-			this.groupAddPt.Size = new System.Drawing.Size(207, 117);
+			this.groupAddPt.Size = new System.Drawing.Size(207, 65);
 			this.groupAddPt.TabIndex = 1;
 			this.groupAddPt.TabStop = false;
 			this.groupAddPt.Text = "Add New Family:";
-			// 
-			// label2
-			// 
-			this.label2.Location = new System.Drawing.Point(8, 64);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(188, 40);
-			this.label2.TabIndex = 11;
-			this.label2.Text = "This creates a new family.   Please make sure they are not already in the system " +
-				"first";
-			this.label2.TextAlign = System.Drawing.ContentAlignment.TopCenter;
 			// 
 			// butAddPt
 			// 
@@ -246,6 +233,15 @@ namespace OpenDental{
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "Search by:";
 			// 
+			// textChartNumber
+			// 
+			this.textChartNumber.Location = new System.Drawing.Point(111, 203);
+			this.textChartNumber.Name = "textChartNumber";
+			this.textChartNumber.Size = new System.Drawing.Size(90, 20);
+			this.textChartNumber.TabIndex = 8;
+			this.textChartNumber.Text = "";
+			this.textChartNumber.TextChanged += new System.EventHandler(this.textChartNumber_TextChanged);
+			// 
 			// listBillingTypes
 			// 
 			this.listBillingTypes.Location = new System.Drawing.Point(63, 226);
@@ -281,15 +277,6 @@ namespace OpenDental{
 			this.label11.TabIndex = 21;
 			this.label11.Text = "Billing Types";
 			this.label11.TextAlign = System.Drawing.ContentAlignment.TopRight;
-			// 
-			// textChartNumber
-			// 
-			this.textChartNumber.Location = new System.Drawing.Point(111, 203);
-			this.textChartNumber.Name = "textChartNumber";
-			this.textChartNumber.Size = new System.Drawing.Size(90, 20);
-			this.textChartNumber.TabIndex = 8;
-			this.textChartNumber.Text = "";
-			this.textChartNumber.TextChanged += new System.EventHandler(this.textChartNumber_TextChanged);
 			// 
 			// label10
 			// 
@@ -834,9 +821,18 @@ namespace OpenDental{
 					return;
 				}
 			#endif
+			if(textLName.Text=="" && textFName.Text=="" && textChartNumber.Text==""){
+				MessageBox.Show(Lan.g(this,"Not allowed to add a new patient until you have done a search to see if that patient already exists. Hint: just type a few letters into the Last Name box above.")); 
+				return;
+			}
 			int oldPatNum=Patients.Cur.PatNum;
 			Patient PatCur=new Patient();
-			//Later: Make it dummy proof by testing for whether patient is in DB already.
+			if(textLName.Text.Length>1){//eg Sp
+				PatCur.LName=textLName.Text.Substring(0,1).ToUpper()+textLName.Text.Substring(1);
+			}
+			if(textFName.Text.Length>1){
+				PatCur.FName=textFName.Text.Substring(0,1).ToUpper()+textFName.Text.Substring(1);
+			}
 			PatCur.PatStatus=PatientStatus.Patient;
 			PatCur.RecallInterval=6;
 			Patients.Cur=PatCur;

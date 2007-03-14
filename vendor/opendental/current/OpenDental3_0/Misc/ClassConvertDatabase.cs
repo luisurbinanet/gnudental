@@ -31,17 +31,22 @@ namespace OpenDental{
 				MessageBox.Show("Cannot convert database to an older version.");
 				return false;
 			}
-			if(FromVersion < new Version("1.0.0")
-				|| FromVersion.ToString()=="2.0.1.0"
-				|| FromVersion.ToString()=="2.1.0.0"
-				|| FromVersion.ToString()=="2.1.1.0"
-				|| FromVersion.ToString()=="2.5.0.0"
-				|| FromVersion.ToString()=="2.9.0.0"){
+			if(FromVersion < new Version("2.1.2")){
+				MessageBox.Show("This database is too old to easily convert in one step. Please uninstall this version and install version 2.1 first. Run the program, and after converting to version 2.1, then install this version. We apologize for the inconvenience.");
+				return false;
+			}
+			if(//FromVersion < new Version("1.0.0")
+				//|| FromVersion.ToString()=="2.0.1.0"
+				//|| FromVersion.ToString()=="2.1.0.0"
+				//|| FromVersion.ToString()=="2.1.1.0"
+				FromVersion.ToString()=="2.5.0.0"
+				|| FromVersion.ToString()=="2.9.0.0"
+				|| FromVersion.ToString()=="3.0.0.0"){
 				MessageBox.Show("Cannot convert database version "+FromVersion.ToString()
 					+" which was only for development purposes.");
 				return false;
 			}
-			if(FromVersion < new Version("2.9.8.0")){
+			if(FromVersion < new Version("3.0.5.0")){
 				if(MessageBox.Show("Your database will now be converted from version "
 					+FromVersion.ToString()+" to version "+ToVersion.ToString()
 					+". Please be certain you have a current backup.  "
@@ -58,7 +63,7 @@ namespace OpenDental{
 				return true;//no conversion necessary
 			}
 			MakeABackup();
-			if(To1_0_1()){//begins going through the chain of conversion steps, each returning true
+			if(To2_1_5()){//begins going through the chain of conversion steps, each returning true
 				MessageBox.Show("Conversion successful");
 				Prefs.Refresh();
 				return true;
@@ -128,6 +133,7 @@ namespace OpenDental{
 			//}
 		}
 
+		/*
 		private bool To1_0_1(){//returns true if successful
 			if(FromVersion < new Version("1.0.1")){
 				try{
@@ -220,7 +226,7 @@ namespace OpenDental{
 				}
 			}//if
 			return To2_1_2();
-		}
+		}*/
 
 		/// <summary>Takes a text file with a series of SQL commands, and sends them as queries to the database.
 		/// Used in version upgrades and in the function that downloads and installs the latest translations.
@@ -269,6 +275,7 @@ namespace OpenDental{
 			return true;
 		}
 
+		/*
 		private bool To2_1_2(){
 			if(FromVersion < new Version("2.1.2")){
 				try{
@@ -561,7 +568,7 @@ namespace OpenDental{
 				}
 			}//if
 			return To2_1_5();
-		}
+		}*/
 
 		private bool To2_1_5(){
 			if(FromVersion < new Version("2.1.5")){
@@ -773,38 +780,40 @@ namespace OpenDental{
 						File.Delete(((Pref)Prefs.HList["DocPath"]).ValueString+@"\ADA2002.jpg");
 					}
 					//Get the claimformNum of the ADA2002
+					ClaimFormItems.Refresh();//I added this line much later to prevent a crash in the next line.
 					ClaimForms.Refresh();
+					ClaimForm ClaimFormCur=new ClaimForm();
 					for(int i=0;i<ClaimForms.ListLong.Length;i++){
-						if(ClaimForms.ListLong[i].UniqueID==1){
-							ClaimForms.Cur=ClaimForms.ListLong[i];
+						if(ClaimForms.ListLong[i].UniqueID=="1"){
+							ClaimFormCur=ClaimForms.ListLong[i];
 							break;
 						}
 					}
 					//get the claimformitem for the background image
 					ClaimFormItems.Refresh();
-					ClaimFormItems.GetListForForm();
-					ClaimFormItems.Cur=new ClaimFormItem();
-					for(int i=0;i<ClaimFormItems.ListForForm.Length;i++){
-						if(ClaimFormItems.ListForForm[i].ImageFileName=="ADA2002.emf"
-							|| ClaimFormItems.ListForForm[i].ImageFileName=="ADA2002.gif"
-							|| ClaimFormItems.ListForForm[i].ImageFileName=="ADA2002.jpg"){
-							ClaimFormItems.Cur=ClaimFormItems.ListForForm[i];
+					//ClaimFormItems.GetListForForm(ClaimFormCur.ClaimFormNum);
+					ClaimFormItem CFIcur=new ClaimFormItem();
+					for(int i=0;i<ClaimFormCur.Items.Length;i++){
+						if(ClaimFormCur.Items[i].ImageFileName=="ADA2002.emf"
+							|| ClaimFormCur.Items[i].ImageFileName=="ADA2002.gif"
+							|| ClaimFormCur.Items[i].ImageFileName=="ADA2002.jpg"){
+							CFIcur=ClaimFormCur.Items[i];
 						}
 					}
 					//if a match was not found, then it will start from scratch
 					//Change the background to the new gif image
-					ClaimFormItems.Cur.ClaimFormNum=ClaimForms.Cur.ClaimFormNum;
-					ClaimFormItems.Cur.ImageFileName="ADA2002.gif";
-					ClaimFormItems.Cur.XPos=9;
-					ClaimFormItems.Cur.YPos=0;
-					ClaimFormItems.Cur.Width=834;
-					ClaimFormItems.Cur.Height=1058;
+					CFIcur.ClaimFormNum=ClaimFormCur.ClaimFormNum;
+					CFIcur.ImageFileName="ADA2002.gif";
+					CFIcur.XPos=9;
+					CFIcur.YPos=0;
+					CFIcur.Width=834;
+					CFIcur.Height=1058;
 					//save the changes
-					if(ClaimFormItems.Cur.ClaimFormItemNum==0){
-						ClaimFormItems.InsertCur();
+					if(CFIcur.ClaimFormItemNum==0){
+						CFIcur.Insert();
 					}
 					else{
-						ClaimFormItems.UpdateCur();
+						CFIcur.Update();
 					}
 					//final:
 					Conversions.NonQArray=new string[]{
@@ -1097,31 +1106,31 @@ namespace OpenDental{
 					//ADA2002
 					Conversions.SelectText="SELECT ClaimFormNum FROM claimform WHERE UniqueID = '1'";
 					Conversions.SubmitSelect();
-					ClaimFormItems.Cur=new ClaimFormItem();
-					ClaimFormItems.Cur.ClaimFormNum=PIn.PInt(Conversions.TableQ.Rows[0][0].ToString());
-					ClaimFormItems.Cur.FieldName="RadiographsNumAttached";
-					ClaimFormItems.Cur.XPos=684;
-					ClaimFormItems.Cur.YPos=738;
-					ClaimFormItems.Cur.Width=27;
-					ClaimFormItems.Cur.Height=14;
-					ClaimFormItems.InsertCur();
+					ClaimFormItem ClaimFormItemCur=new ClaimFormItem();
+					ClaimFormItemCur.ClaimFormNum=PIn.PInt(Conversions.TableQ.Rows[0][0].ToString());
+					ClaimFormItemCur.FieldName="RadiographsNumAttached";
+					ClaimFormItemCur.XPos=684;
+					ClaimFormItemCur.YPos=738;
+					ClaimFormItemCur.Width=27;
+					ClaimFormItemCur.Height=14;
+					ClaimFormItemCur.Insert();
 					//Denti-Cal
 					Conversions.SelectText="SELECT ClaimFormNum FROM claimform WHERE UniqueID = '2'";
 					Conversions.SubmitSelect();
-					ClaimFormItems.Cur=new ClaimFormItem();
-					ClaimFormItems.Cur.ClaimFormNum=PIn.PInt(Conversions.TableQ.Rows[0][0].ToString());
-					ClaimFormItems.Cur.FieldName="RadiographsNumAttached";
-					ClaimFormItems.Cur.XPos=111;
-					ClaimFormItems.Cur.YPos=217;
-					ClaimFormItems.Cur.Width=30;
-					ClaimFormItems.Cur.Height=14;
-					ClaimFormItems.InsertCur();
-					ClaimFormItems.Cur=new ClaimFormItem();
-					ClaimFormItems.Cur.ClaimFormNum=PIn.PInt(Conversions.TableQ.Rows[0][0].ToString());
-					ClaimFormItems.Cur.FieldName="IsRadiographsAttached";
-					ClaimFormItems.Cur.XPos=186;
-					ClaimFormItems.Cur.YPos=187;
-					ClaimFormItems.InsertCur();
+					ClaimFormItemCur=new ClaimFormItem();
+					ClaimFormItemCur.ClaimFormNum=PIn.PInt(Conversions.TableQ.Rows[0][0].ToString());
+					ClaimFormItemCur.FieldName="RadiographsNumAttached";
+					ClaimFormItemCur.XPos=111;
+					ClaimFormItemCur.YPos=217;
+					ClaimFormItemCur.Width=30;
+					ClaimFormItemCur.Height=14;
+					ClaimFormItemCur.Insert();
+					ClaimFormItemCur=new ClaimFormItem();
+					ClaimFormItemCur.ClaimFormNum=PIn.PInt(Conversions.TableQ.Rows[0][0].ToString());
+					ClaimFormItemCur.FieldName="IsRadiographsAttached";
+					ClaimFormItemCur.XPos=186;
+					ClaimFormItemCur.YPos=187;
+					ClaimFormItemCur.Insert();
 					//final:
 					Conversions.NonQArray=new string[]{
 						"UPDATE preference SET ValueString = '2.8.0.0' WHERE PrefName = 'DataBaseVersion'"
@@ -1395,8 +1404,516 @@ namespace OpenDental{
 				//	return false;
 				//}
 			}
+			return To3_0_1();
+		}
+
+		///<summary>Used by To3_0_1. IMPORTANT: remember that this method alters TableQ.</summary>
+		private int GetPercent(int patNum,int priPlanNum,int secPlanNum,string adaCode,string priORsec){
+			//Conversions.SelectText="SELECT 
+			//get the covCatNum for this adaCode
+			Conversions.SelectText="SELECT CovCatNum FROM covspan "
+				+"WHERE '"+POut.PString(adaCode)+"' > FromCode "
+				+"AND '"+POut.PString(adaCode)+"' < ToCode";
+			Conversions.SubmitSelect();
+			if(Conversions.TableQ.Rows.Count==0){
+				return 0;//this code is not in any category, so coverage=0
+			}
+			int covCatNum=PIn.PInt(Conversions.TableQ.Rows[0][0].ToString());
+			Conversions.SelectText="SELECT PlanNum,PriPatNum,SecPatNum,Percent FROM covpat WHERE "
+				+"CovCatNum = '"+covCatNum.ToString()+"' "
+				+"AND (PlanNum = '"+priPlanNum.ToString()+"' "
+				+"OR PlanNum = '"+secPlanNum.ToString()+"' "
+				+"OR PriPatNum = '"+patNum.ToString()+"' "
+				+"OR SecPatNum = '"+patNum.ToString()+"')";
+			Conversions.SubmitSelect();
+			if(Conversions.TableQ.Rows.Count==0){
+				return 0;//no percentages have been entered for this patient or plan
+			}
+			for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
+				//first handle the patient overrides
+				if(priORsec=="pri" && PIn.PInt(Conversions.TableQ.Rows[i][1].ToString())==patNum){
+					return PIn.PInt(Conversions.TableQ.Rows[i][3].ToString());
+				}
+				if(priORsec=="sec" && PIn.PInt(Conversions.TableQ.Rows[i][2].ToString())==patNum){
+					return PIn.PInt(Conversions.TableQ.Rows[i][3].ToString());
+				}
+				//then handle the percentages attached to plans(much more common)
+				if(priORsec=="pri" && PIn.PInt(Conversions.TableQ.Rows[i][0].ToString())==priPlanNum){
+					return PIn.PInt(Conversions.TableQ.Rows[i][3].ToString());
+				}
+				if(priORsec=="sec" && PIn.PInt(Conversions.TableQ.Rows[i][0].ToString())==secPlanNum){
+					return PIn.PInt(Conversions.TableQ.Rows[i][3].ToString());
+				}
+			}
+			return 0;
+		}
+
+		private bool To3_0_1(){
+			if(FromVersion < new Version("3.0.1.0")){
+				if(!File.Exists(@"ConversionFiles\convert_3_0_1.txt")){
+					MessageBox.Show(@"ConversionFiles\convert_3_0_1.txt"+" could not be found.");
+					return false;
+				}
+				if(!ExecuteFile(@"ConversionFiles\convert_3_0_1.txt")) return false;
+				//convert appointment patterns from ten minute to five minute intervals------------------------
+				Conversions.SelectText="SELECT AptNum,Pattern FROM appointment";
+				Conversions.SubmitSelect();
+				StringBuilder sb;
+				string pattern;
+				for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
+					pattern=PIn.PString(Conversions.TableQ.Rows[i][1].ToString());
+					sb=new StringBuilder();
+					for(int j=0;j<pattern.Length;j++){
+						sb.Append(pattern.Substring(j,1));
+						sb.Append(pattern.Substring(j,1));
+					}
+					Conversions.NonQString="UPDATE appointment SET "
+						+"Pattern='"+POut.PString(sb.ToString())+"' "
+						+"WHERE AptNum='"+Conversions.TableQ.Rows[i][0].ToString()+"'";
+					Conversions.SubmitNonQString();
+				}
+				//add the default 5 Elements to each ApptView-----------------------------------------------
+				Conversions.SelectText="SELECT ApptViewNum FROM apptview";
+				Conversions.SubmitSelect();
+				for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
+					Conversions.NonQArray=new string[]
+					{
+						"INSERT INTO apptviewitem(ApptViewNum,ElementDesc,ElementOrder,ElementColor) "
+							+"VALUES('"+Conversions.TableQ.Rows[i][0].ToString()+"','PatientName','0','-16777216')"
+						,"INSERT INTO apptviewitem(ApptViewNum,ElementDesc,ElementOrder,ElementColor) "
+							+"VALUES('"+Conversions.TableQ.Rows[i][0].ToString()+"','Lab','1','-65536')"
+						,"INSERT INTO apptviewitem(ApptViewNum,ElementDesc,ElementOrder,ElementColor) "
+							+"VALUES('"+Conversions.TableQ.Rows[i][0].ToString()+"','Procs','2','-16777216')"
+						,"INSERT INTO apptviewitem(ApptViewNum,ElementDesc,ElementOrder,ElementColor) "
+							+"VALUES('"+Conversions.TableQ.Rows[i][0].ToString()+"','Note','3','-16777216')"
+						,"INSERT INTO apptviewitem(ApptViewNum,ElementDesc,ElementOrder,ElementColor) "
+							+"VALUES('"+Conversions.TableQ.Rows[i][0].ToString()+"','Production','4','-16777216')"
+					};
+					Conversions.SubmitNonQArray();
+				}				
+				//MessageBox.Show("Appointments converted.");
+				//Any claimprocs attached to claims with ins being Cap, should be CapClaim, even if paid
+				Conversions.SelectText="SELECT claimproc.ClaimProcNum FROM claimproc,insplan "
+					+"WHERE claimproc.PlanNum=insplan.PlanNum "
+					+"AND claimproc.ClaimNum != '0' "
+					+"AND insplan.PlanType='c'";
+				Conversions.SubmitSelect();
+				for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
+					Conversions.NonQString="UPDATE claimproc SET Status='5' "//CapClaim
+						+"WHERE ClaimProcNum='"+Conversions.TableQ.Rows[i][0].ToString()+"'";
+					Conversions.SubmitNonQString();
+				}
+				//edit any existing claimprocs-------------------------------------------------------------
+				//These are all associated with claims, but we are not changing the claim values,
+				//just some of the estimates.  None of these changes affect any claim or balance.
+				//Ignore any status=CapClaim since these are all duplicates just for sending the claim
+				//Add percentages etc from procedure
+				int percentage=0;
+				int planNum=0;
+				double baseEst=0;
+				double overrideAmt=0;
+				DataTable procTable;
+				Conversions.SelectText="SELECT claimproc.ClaimProcNum,patient.PriPlanNum,"//0,1
+					+"patient.SecPlanNum,patient.PatNum,claimproc.PlanNum,procedurelog.ADACode,"//2,3,4,5
+					+"procedurelog.OverridePri,procedurelog.OverrideSec,procedurelog.ProcFee "//6,7,8
+					+"FROM claimproc,procedurelog,patient "
+					//this next line ignores any claimprocs not attached to a proc. so skips adjustments.
+					+"WHERE claimproc.ProcNum=procedurelog.ProcNum "
+					+"AND patient.PatNum=procedurelog.PatNum "
+					+"AND claimproc.Status != 2 "//skips preauths
+					+"AND claimproc.Status != 4 "//skips supplemental
+					+"AND claimproc.Status != 5 ";//skips capClaim
+				Conversions.SubmitSelect();
+				procTable=Conversions.TableQ.Copy();//so that we can perform other queries
+				//MessageBox.Show("Existing claimprocs loaded into memory: "+procTable.Rows.Count.ToString());
+				for(int i=0;i<procTable.Rows.Count;i++){
+					planNum=PIn.PInt(procTable.Rows[i][4].ToString());//claimproc.PlanNum
+					//if primary
+					if(planNum==PIn.PInt(procTable.Rows[i][1].ToString())){//priPlanNum
+						//MessageBox.Show("pri");
+						percentage=GetPercent(PIn.PInt(procTable.Rows[i][3].ToString()),//patNum
+							PIn.PInt(procTable.Rows[i][1].ToString()),//priPlanNum
+							PIn.PInt(procTable.Rows[i][2].ToString()),//secPlanNum
+							PIn.PString(procTable.Rows[i][5].ToString()),//ADACode
+							"pri");
+						overrideAmt=PIn.PDouble(procTable.Rows[i][6].ToString());
+					}
+					//else if secondary
+					else if(planNum==PIn.PInt(procTable.Rows[i][2].ToString())){//priPlanNum
+						//MessageBox.Show("sec");
+						percentage=GetPercent(PIn.PInt(procTable.Rows[i][3].ToString()),//patNum
+							PIn.PInt(procTable.Rows[i][1].ToString()),//priPlanNum
+							PIn.PInt(procTable.Rows[i][2].ToString()),//secPlanNum
+							PIn.PString(procTable.Rows[i][5].ToString()),//ADACode
+							"sec");
+						overrideAmt=PIn.PDouble(procTable.Rows[i][7].ToString());
+					}
+					else{
+						//MessageBox.Show("neither");
+						//plan is neither pri or sec, so disregard
+						continue;
+					}
+					baseEst=PIn.PDouble(procTable.Rows[i][8].ToString())*(double)percentage/100;//fee x percentage
+					Conversions.NonQString="UPDATE claimproc SET "
+						//+"AllowedAmt='-1',"
+						+"Percentage='"+percentage.ToString()+"',"
+						//+"PercentOverride='-1',"
+						//+"CopayAmt='-1',"
+						+"OverrideInsEst='"+overrideAmt.ToString()+"',"
+						//+"OverAnnualMax='-1',"
+						//+"PaidOtherIns='-1',"
+						+"BaseEst='"+baseEst.ToString()+"'"
+						//+"CopayOverride='-1'"
+						+" WHERE ClaimProcNum='"+procTable.Rows[i][0].ToString()+"'";
+					//MessageBox.Show(Conversions.NonQString);
+					Conversions.SubmitNonQString();
+				}
+				//MessageBox.Show("Existing claimprocs updated.");
+				//convert all estimates into claimprocs--------------------------------------------------
+				Conversions.SelectText="SELECT procedurelog.ProcNum,procedurelog.PatNum,"//0,1
+					+"procedurelog.ProvNum,patient.PriPlanNum,patient.SecPlanNum,"//2,3,4
+					+"claimproc.ClaimProcNum,procedurelog.ADACode,procedurelog.ProcDate,"//5,6,7
+					+"procedurelog.OverridePri,procedurelog.OverrideSec,procedurelog.NoBillIns,"//8,9,10
+					+"procedurelog.CapCoPay,procedurelog.ProcStatus,procedurelog.ProcFee,"//11,12,13
+					+"insplan.PlanType "//14
+					+"FROM procedurelog,patient,insplan "
+					+"LEFT JOIN claimproc ON claimproc.ProcNum=procedurelog.ProcNum "//only interested in NULL
+					+"WHERE procedurelog.PatNum=patient.PatNum "
+					//this is to test for capitation. It also limits results to patients with insurance.
+					+"AND patient.PriPlanNum=insplan.PlanNum "
+					//+"AND patient.PriPlanNum > 0 "//only patients with insurance
+					+"AND (procedurelog.ProcStatus=1 "//status TP
+					+"OR procedurelog.ProcStatus=2) "//status C
+					+"AND (claimproc.ClaimProcNum IS NULL "//only if not already attached to a claim
+					+"OR claimproc.Status='5')";//or CapClaim
+				Conversions.SubmitSelect();
+				procTable=Conversions.TableQ.Copy();//so that we can perform other queries
+				//MessageBox.Show("existing procedures loaded into memory: "+procTable.Rows.Count.ToString());
+				int status=0;
+				double copay=0;
+				double writeoff=0;
+				for(int i=0;i<procTable.Rows.Count;i++){//loop procedures
+					//1. noBillIns
+					if(PIn.PBool(procTable.Rows[i][10].ToString())//if noBillIns
+						&& PIn.PDouble(procTable.Rows[i][11].ToString()) ==-1){//and not a cap procedure
+						//primary
+						if(PIn.PInt(procTable.Rows[i][3].ToString())!=0){//if has pri ins
+							Conversions.NonQString="INSERT INTO claimproc(ProcNum,PatNum,ProvNum,Status,PlanNum,"
+								+"DateCP,AllowedAmt,Percentage,PercentOverride,CopayAmt,OverrideInsEst,"
+								+"NoBillIns,OverAnnualMax,PaidOtherIns) "
+								+"VALUES ("
+								+"'"+procTable.Rows[i][0].ToString()+"',"//procnum
+								+"'"+procTable.Rows[i][1].ToString()+"',"//patnum
+								+"'"+procTable.Rows[i][2].ToString()+"',"//provnum
+								+"'6',"//status:Estimate
+								+"'"+procTable.Rows[i][3].ToString()+"',"//priPlanNum
+								+"'"+POut.PDate(PIn.PDate(procTable.Rows[i][7].ToString()))+"',"//dateCP
+								//these -1's are unnecessary, but I already added them, so they are here.
+								+"'-1',"//allowedamt
+								+"'-1',"//percentage
+								+"'-1',"//percentoverride
+								+"'-1',"//copayamt
+								+"'-1',"//overrideInsEst
+								+"'1',"//NoBillIns,
+								+"'-1',"//OverAnnualMax
+								+"'-1'"//PaidOtherIns
+								+")";
+							Conversions.SubmitNonQString();
+						}
+						//secondary
+						if(PIn.PInt(procTable.Rows[i][4].ToString())!=0){//if has sec ins
+							Conversions.NonQString="INSERT INTO claimproc(ProcNum,PatNum,ProvNum,Status,PlanNum,"
+								+"DateCP,AllowedAmt,Percentage,PercentOverride,CopayAmt,OverrideInsEst,"
+								+"NoBillIns,OverAnnualMax,PaidOtherIns) "
+								+"VALUES ("
+								+"'"+procTable.Rows[i][0].ToString()+"',"//procnum
+								+"'"+procTable.Rows[i][1].ToString()+"',"//patnum
+								+"'"+procTable.Rows[i][2].ToString()+"',"//provnum
+								+"'6',"//status:Estimate
+								+"'"+procTable.Rows[i][4].ToString()+"',"//secPlanNum
+								+"'"+POut.PDate(PIn.PDate(procTable.Rows[i][7].ToString()))+"',"//dateCP
+								+"'-1',"//allowedamt
+								+"'-1',"//percentage
+								+"'-1',"//percentoverride
+								+"'-1',"//copayamt
+								+"'-1',"//overrideInsEst
+								+"'1',"//NoBillIns,
+								+"'-1',"//OverAnnualMax
+								+"'-1'"//PaidOtherIns
+								+")";
+							Conversions.SubmitNonQString();
+						}
+						continue;
+					}//1. noBillIns
+					//2. capitation. Always primary. If C, then affects aging via CapComplete.
+							//Never attached to claim.
+					copay=PIn.PDouble(procTable.Rows[i][11].ToString());
+					//if CapCoPay not -1, and priIns is cap, then this is a cap proc
+					if(copay!=-1 && PIn.PString(procTable.Rows[i][14].ToString())=="c"){
+						if(PIn.PInt(procTable.Rows[i][12].ToString())==1){//proc status =tp
+							status=8;//claimProc status=CapEstimate
+						}
+						if(PIn.PInt(procTable.Rows[i][12].ToString())==2){//proc status =c
+							status=7;//claimProc status=CapComplete
+						}
+						writeoff=PIn.PDouble(procTable.Rows[i][13].ToString())//procFee
+							-copay;
+						Conversions.NonQString="INSERT INTO claimproc(ProcNum,PatNum,ProvNum,"
+							+"Status,PlanNum,DateCP,WriteOff,AllowedAmt,Percentage,PercentOverride,"
+							+"CopayAmt,OverrideInsEst,OverAnnualMax,PaidOtherIns,NoBillIns) "
+							+"VALUES ("
+							+"'"+procTable.Rows[i][0].ToString()+"',"//procnum
+							+"'"+procTable.Rows[i][1].ToString()+"',"//patnum
+							+"'"+procTable.Rows[i][2].ToString()+"',"//provnum
+							+"'"+status.ToString()+"',"//status
+							+"'"+procTable.Rows[i][3].ToString()+"',"//priPlanNum
+							+"'"+POut.PDate(PIn.PDate(procTable.Rows[i][7].ToString()))+"',"//dateCP
+							+"'"+writeoff.ToString()+"',"//writeoff
+							+"'-1',"//allowedamt
+							+"'-1',"//percentage
+							+"'-1',"//percentoverride
+							+"'"+copay.ToString()+"',"//copayamt
+							+"'-1',"//overrideInsEst
+							+"'-1',"//OverAnnualMax
+							+"'-1',"//PaidOtherIns
+							+"'"+procTable.Rows[i][10].ToString()+"'"//noBillIns is allowed for cap
+							+")";
+						Conversions.SubmitNonQString();
+						continue;
+					}
+					//3. standard primary estimate:
+					//always a primary estimate because original query excluded patients with no ins.
+					planNum=PIn.PInt(procTable.Rows[i][3].ToString());//priPlanNum
+					percentage=GetPercent(PIn.PInt(procTable.Rows[i][1].ToString()),//patNum
+						PIn.PInt(procTable.Rows[i][3].ToString()),//priPlanNum
+						PIn.PInt(procTable.Rows[i][4].ToString()),//secPlanNum
+						PIn.PString(procTable.Rows[i][6].ToString()),//ADACode
+						"pri");
+					baseEst=PIn.PDouble(procTable.Rows[i][13].ToString())*(double)percentage/100;
+					Conversions.NonQString="INSERT INTO claimproc(ProcNum,PatNum,ProvNum,"
+						+"Status,PlanNum,DateCP,WriteOff,AllowedAmt,Percentage,PercentOverride,"
+						+"CopayAmt,OverrideInsEst,NoBillIns,OverAnnualMax,PaidOtherIns,BaseEst) "
+						+"VALUES ("
+						+"'"+procTable.Rows[i][0].ToString()+"',"//procnum
+						+"'"+procTable.Rows[i][1].ToString()+"',"//patnum
+						+"'"+procTable.Rows[i][2].ToString()+"',"//provnum
+						+"'6',"//status:Estimate
+						+"'"+planNum.ToString()+"',"//plannum
+						+"'"+POut.PDate(PIn.PDate(procTable.Rows[i][7].ToString()))+"',"//dateCP
+						+"'0',"//writeoff
+						+"'-1',"//allowedamt
+						+"'"+percentage.ToString()+"',"//percentage
+						+"'-1',"//percentoverride
+						+"'-1',"//copayamt
+						+"'"+procTable.Rows[i][8].ToString()+"',"//overrideInsEst-pri
+						+"'0',"//NoBillIns,
+						+"'-1',"//OverAnnualMax
+						+"'-1',"//PaidOtherIns
+						+"'"+baseEst.ToString()+"'"//BaseEst
+						+")";
+					Conversions.SubmitNonQString();
+					//4. standard secondary estimate
+					//secondary can be in addition to primary, or not at all
+					planNum=PIn.PInt(procTable.Rows[i][4].ToString());//secPlanNum
+					if(planNum==0){
+						continue;
+					}
+					percentage=GetPercent(PIn.PInt(procTable.Rows[i][1].ToString()),//patNum
+						PIn.PInt(procTable.Rows[i][3].ToString()),//priPlanNum
+						PIn.PInt(procTable.Rows[i][4].ToString()),//secPlanNum
+						PIn.PString(procTable.Rows[i][6].ToString()),//ADACode
+						"sec");
+					baseEst=PIn.PDouble(procTable.Rows[i][13].ToString())*(double)percentage/100;
+					Conversions.NonQString="INSERT INTO claimproc(ProcNum,PatNum,ProvNum,"
+						+"Status,PlanNum,DateCP,WriteOff,AllowedAmt,Percentage,PercentOverride,"
+						+"CopayAmt,OverrideInsEst,NoBillIns,OverAnnualMax,PaidOtherIns,BaseEst) "
+						+"VALUES ("
+						+"'"+procTable.Rows[i][0].ToString()+"',"//procnum
+						+"'"+procTable.Rows[i][1].ToString()+"',"//patnum
+						+"'"+procTable.Rows[i][2].ToString()+"',"//provnum
+						+"'6',"//status:Estimate
+						+"'"+planNum.ToString()+"',"//plannum
+						+"'"+POut.PDate(PIn.PDate(procTable.Rows[i][7].ToString()))+"',"//dateCP
+						+"'0',"//writeoff
+						+"'-1',"//allowedamt
+						+"'"+percentage.ToString()+"',"//percentage
+						+"'-1',"//percentoverride
+						+"'-1',"//copayamt
+						+"'"+procTable.Rows[i][9].ToString()+"',"//overrideInsEst-pri
+						+"'0',"//NoBillIns,
+						+"'-1',"//OverAnnualMax
+						+"'-1',"//PaidOtherIns
+						+"'"+baseEst.ToString()+"'"//BaseEst
+						+")";
+					Conversions.SubmitNonQString();
+				}//loop procedures
+				Conversions.NonQString="UPDATE claimproc SET ProcDate=DateCP";//affects ALL patients
+				Conversions.SubmitNonQString();
+				//MessageBox.Show("Procedure percentages converted to claimprocs.");
+				Conversions.NonQArray=new string[]
+				{
+					"UPDATE procedurelog SET OverridePri='0',OverrideSec='0',NoBillIns='0',"
+						+"IsCovIns='0',CapCoPay='0'"
+				};
+				Conversions.SubmitNonQArray();
+				//convert medical/service notes from defs table to quickpaste notes----------------------
+				Conversions.NonQArray=new string[]
+				{
+					"INSERT INTO quickpastecat "
+						+"VALUES ('1','Medical Urgent','0','22')"
+					,"INSERT INTO quickpastecat "
+						+"VALUES ('2','Medical Summary','1','9')"
+					,"INSERT INTO quickpastecat "
+						+"VALUES ('3','Service Notes','2','10')"
+					,"INSERT INTO quickpastecat "
+						+"VALUES ('4','Medical History','3','11')"
+				};
+				Conversions.SubmitNonQArray();
+				Conversions.SelectText="SELECT * FROM definition WHERE Category='8'";//Medical Notes
+				Conversions.SubmitSelect();
+				for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
+					Conversions.NonQString="INSERT INTO quickpastenote (QuickPasteCatNum,ItemOrder,Note) "
+						+"VALUES ('1','"+i.ToString()+"','"
+						+POut.PString(Conversions.TableQ.Rows[i][3].ToString())+"')";
+					Conversions.SubmitNonQString();
+					Conversions.NonQString="INSERT INTO quickpastenote (QuickPasteCatNum,ItemOrder,Note) "
+						+"VALUES ('2','"+i.ToString()+"','"
+						+POut.PString(Conversions.TableQ.Rows[i][3].ToString())+"')";
+					Conversions.SubmitNonQString();
+					Conversions.NonQString="INSERT INTO quickpastenote (QuickPasteCatNum,ItemOrder,Note) "
+						+"VALUES ('4','"+i.ToString()+"','"
+						+POut.PString(Conversions.TableQ.Rows[i][3].ToString())+"')";
+					Conversions.SubmitNonQString();
+				}
+				Conversions.SelectText="SELECT * FROM definition WHERE Category='14'";//Service Notes
+				Conversions.SubmitSelect();
+				for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
+					Conversions.NonQString="INSERT INTO quickpastenote (QuickPasteCatNum,ItemOrder,Note) "
+						+"VALUES ('3','"+i.ToString()+"','"
+						+POut.PString(Conversions.TableQ.Rows[i][3].ToString())+"')";
+					Conversions.SubmitNonQString();
+				}
+				//add image categories to the chart module-----------------------------------------------
+				Conversions.SelectText="SELECT MAX(ItemOrder) FROM definition WHERE Category=18";
+				if(!Conversions.SubmitSelect()) return false;
+				int lastI=PIn.PInt(Conversions.TableQ.Rows[0][0].ToString());
+				Conversions.NonQArray=new string[]
+				{
+					"INSERT INTO definition(Category,ItemOrder,ItemName,ItemValue) "
+						+"VALUES(18,"+POut.PInt(lastI+1)+",'BWs','X')"
+					,"INSERT INTO definition(Category,ItemOrder,ItemName,ItemValue) "
+						+"VALUES(18,"+POut.PInt(lastI+2)+",'FMXs','X')"
+					,"INSERT INTO definition(Category,ItemOrder,ItemName,ItemValue) "
+						+"VALUES(18,"+POut.PInt(lastI+3)+",'Panos','X')"
+					,"INSERT INTO definition(Category,ItemOrder,ItemName,ItemValue) "
+						+"VALUES(18,"+POut.PInt(lastI+4)+",'Photos','X')"
+					,"UPDATE preference SET ValueString = '3.0.1.0' WHERE PrefName = 'DataBaseVersion'"
+				};
+				if(!Conversions.SubmitNonQArray()) return false;
+			}
+			return To3_0_2();
+		}
+
+		private bool To3_0_2(){
+			if(FromVersion < new Version("3.0.2.0")){
+				Conversions.NonQArray=new string[]
+				{
+					"INSERT INTO preference VALUES('TreatPlanShowGraphics','1')"
+					,"INSERT INTO preference VALUES('TreatPlanShowCompleted','1')"
+					,"INSERT INTO preference VALUES('TreatPlanShowIns','1')"
+					,"UPDATE preference SET ValueString = '3.0.2.0' WHERE PrefName = 'DataBaseVersion'"
+				};
+				if(!Conversions.SubmitNonQArray()) return false;
+			}
+			return To3_0_3();
+		}
+
+		private bool To3_0_3(){
+			if(FromVersion < new Version("3.0.3.0")){
+				Conversions.SelectText="SELECT CONCAT(LName,', ',FName) FROM payplan,patient "
+					+"WHERE patient.PatNum=payplan.PatNum";
+				Conversions.SubmitSelect();
+				if(Conversions.TableQ.Rows.Count>0){
+					string planPats="";
+					for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
+						if(i>0){
+							planPats+=",";
+						}
+						planPats+=PIn.PString(Conversions.TableQ.Rows[i][0].ToString());
+					}				
+					MessageBox.Show("You have payment plans for the following patients: "
+						+planPats+".  "
+						+"There was a bug in the way the amount due was being calculated, so you will "
+						+"want to follow these steps to correct the amounts due.  For each payment plan, "
+						+"simply open the plan from the patient account and then click OK.  This will "
+						+"reset the amount due.");
+				}
+				Conversions.NonQArray=new string[]
+				{
+					"ALTER TABLE payplan ADD TotalCost double NOT NULL"
+					,"UPDATE payplan SET TotalCost = TotalAmount"
+					,"UPDATE preference SET ValueString = '3.0.3.0' WHERE PrefName = 'DataBaseVersion'"
+				};
+				if(!Conversions.SubmitNonQArray()) return false;
+			}
+			return To3_0_4();
+		}
+
+		private bool To3_0_4(){
+			if(FromVersion < new Version("3.0.4.0")){
+				Conversions.NonQArray=new string[]
+				{
+					"ALTER TABLE procedurelog ADD HideGraphical tinyint unsigned NOT NULL"
+					,"ALTER TABLE adjustment CHANGE AdjNote AdjNote text NOT NULL"
+					,"UPDATE preference SET ValueString = '3.0.4.0' WHERE PrefName = 'DataBaseVersion'"
+				};
+				if(!Conversions.SubmitNonQArray()) return false;
+			}
+			return To3_0_5();
+		}
+
+		private bool To3_0_5(){
+			if(FromVersion < new Version("3.0.5.0")){
+				//Delete procedures for patients that have been deleted:
+				Conversions.SelectText="SELECT patient.PatNum FROM patient,procedurelog "
+					+"WHERE patient.PatNum=procedurelog.PatNum "
+					+"AND patient.PatStatus=4";
+				Conversions.SubmitSelect();
+				for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
+					Conversions.NonQString="DELETE FROM procedurelog "
+						+"WHERE PatNum="+Conversions.TableQ.Rows[i][0].ToString();
+					Conversions.SubmitNonQString();
+				}
+				//Delete extra est entries caused when patient switched plans before conversion:
+				Conversions.SelectText=@"SELECT 
+					cp1.ClaimProcNum,patient.PatNum,patient.LName,patient.FName
+					FROM claimproc cp1,claimproc cp2,patient
+					WHERE patient.PatNum=cp1.PatNum
+					AND patient.PatNum=cp2.PatNum
+					AND patient.PriPlanNum=cp1.PlanNum
+					AND patient.SecPlanNum=0
+					AND cp1.ProcNum=cp2.ProcNum
+					AND cp1.ClaimProcNum!=cp2.ClaimProcNum
+					AND cp1.Status=6";//estimate
+				Conversions.SubmitSelect();
+				for(int i=0;i<Conversions.TableQ.Rows.Count;i++){
+					Conversions.NonQString="DELETE FROM claimproc "
+						+"WHERE ClaimProcNum="+Conversions.TableQ.Rows[i][0].ToString();
+					Conversions.SubmitNonQString();
+				}
+				Conversions.NonQArray=new string[]
+				{
+					"ALTER TABLE claimform CHANGE UniqueID UniqueID varchar(255) NOT NULL"
+					,"UPDATE claimform SET UniqueID=concat('OD',UniqueID)"
+					,"UPDATE claimform SET UniqueID='' WHERE UniqueID='OD0'"
+					,"UPDATE preference SET ValueString = '3.0.5.0' WHERE PrefName = 'DataBaseVersion'"
+				};
+				if(!Conversions.SubmitNonQArray()) return false;
+			}
 			return true;
 		}
+
+
 
 
 

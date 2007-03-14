@@ -7,12 +7,9 @@ using System.Windows.Forms;
 namespace OpenDental{
 ///<summary></summary>
 	public class FormRpDepositSlip : System.Windows.Forms.Form{
-		private System.Windows.Forms.Panel panel1;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Button butOK;
 		private System.Windows.Forms.Button butCancel;
-		private System.Windows.Forms.RadioButton radioSingle;
-		private System.Windows.Forms.RadioButton radioRange;
 		private System.Windows.Forms.Label labelTO;
 		private System.Windows.Forms.ListBox listPayType;
 		private System.ComponentModel.Container components = null;
@@ -30,8 +27,8 @@ namespace OpenDental{
 				labelTO,
 				checkBoxIns,
 				butNone,
-				radioSingle,
-				radioRange,
+				//radioSingle,
+				//radioRange,
 				label2,
 			});
 			Lan.C("All", new System.Windows.Forms.Control[] {
@@ -57,9 +54,6 @@ namespace OpenDental{
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.panel1 = new System.Windows.Forms.Panel();
-			this.radioRange = new System.Windows.Forms.RadioButton();
-			this.radioSingle = new System.Windows.Forms.RadioButton();
 			this.labelTO = new System.Windows.Forms.Label();
 			this.listPayType = new System.Windows.Forms.ListBox();
 			this.label2 = new System.Windows.Forms.Label();
@@ -70,45 +64,15 @@ namespace OpenDental{
 			this.checkBoxIns = new System.Windows.Forms.CheckBox();
 			this.butNone = new System.Windows.Forms.Button();
 			this.butAll = new System.Windows.Forms.Button();
-			this.panel1.SuspendLayout();
 			this.SuspendLayout();
-			// 
-			// panel1
-			// 
-			this.panel1.Controls.Add(this.radioRange);
-			this.panel1.Controls.Add(this.radioSingle);
-			this.panel1.Location = new System.Drawing.Point(20, 16);
-			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(94, 60);
-			this.panel1.TabIndex = 0;
-			// 
-			// radioRange
-			// 
-			this.radioRange.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.radioRange.Location = new System.Drawing.Point(8, 30);
-			this.radioRange.Name = "radioRange";
-			this.radioRange.TabIndex = 1;
-			this.radioRange.Text = "Date Range";
-			// 
-			// radioSingle
-			// 
-			this.radioSingle.Checked = true;
-			this.radioSingle.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.radioSingle.Location = new System.Drawing.Point(8, 8);
-			this.radioSingle.Name = "radioSingle";
-			this.radioSingle.TabIndex = 0;
-			this.radioSingle.TabStop = true;
-			this.radioSingle.Text = "Single Date";
-			this.radioSingle.CheckedChanged += new System.EventHandler(this.radioSingle_CheckedChanged);
 			// 
 			// labelTO
 			// 
-			this.labelTO.Location = new System.Drawing.Point(242, 128);
+			this.labelTO.Location = new System.Drawing.Point(235, 111);
 			this.labelTO.Name = "labelTO";
 			this.labelTO.Size = new System.Drawing.Size(26, 23);
 			this.labelTO.TabIndex = 3;
 			this.labelTO.Text = "TO";
-			this.labelTO.Visible = false;
 			// 
 			// listPayType
 			// 
@@ -147,16 +111,15 @@ namespace OpenDental{
 			// 
 			// date1
 			// 
-			this.date1.Location = new System.Drawing.Point(30, 118);
+			this.date1.Location = new System.Drawing.Point(30, 101);
 			this.date1.Name = "date1";
 			this.date1.TabIndex = 1;
 			// 
 			// date2
 			// 
-			this.date2.Location = new System.Drawing.Point(276, 118);
+			this.date2.Location = new System.Drawing.Point(276, 101);
 			this.date2.Name = "date2";
 			this.date2.TabIndex = 2;
-			this.date2.Visible = false;
 			// 
 			// checkBoxIns
 			// 
@@ -203,7 +166,6 @@ namespace OpenDental{
 			this.Controls.Add(this.listPayType);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.labelTO);
-			this.Controls.Add(this.panel1);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "FormRpDepositSlip";
@@ -211,7 +173,6 @@ namespace OpenDental{
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Deposit Slip";
 			this.Load += new System.EventHandler(this.FormDepositSlip_Load);
-			this.panel1.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -240,119 +201,61 @@ WHERE claimproc.ClaimPaymentNum=claimpayment.ClaimPaymentNum && claimproc.PlanNu
 GROUP BY CheckDate
 ORDER BY PayDate
 */
+			if(listPayType.SelectedIndices.Count==0
+				&& !checkBoxIns.Checked)
+			{
+				MessageBox.Show("Must either select a payment type and/or include insurance checks.");
+				return;
+			}
 			Queries.CurReport=new ReportOld();
-			Queries.CurReport.Query="";
+			string cmd="";
+			//if(checkBoxIns.Checked){
+			cmd="SELECT PayDate,CONCAT(patient.LName,', ',patient.FName,' ',"
+				+"patient.MiddleI) AS plfname,'                          ',PayType,"
+				+"PayNum,CheckNum,BankBranch,PayAmt "
+				//+"CheckNum,BankBranch,PayAmt,PayNum "
+				+"FROM payment,patient WHERE ";//added plfname,paynum spk 4/14/04
+			if(listPayType.SelectedIndices.Count==0){ 
+				cmd+="1=0 ";//none
+			}
+			else{
+				cmd+="payment.PatNum = patient.PatNum AND (";
+				for(int i=0;i<listPayType.SelectedIndices.Count;i++){
+					if(i>0) cmd+=" OR "; 
+					cmd+="PayType = '"
+						+Defs.Short[(int)DefCat.PaymentTypes][listPayType.SelectedIndices[i]].DefNum+"'";
+				}
+				cmd+=
+					") AND PayDate >= '"+POut.PDate(date1.SelectionStart)+"' "
+					+"AND PayDate <= '"+POut.PDate(date2.SelectionStart)+"' ";
+      }
 			if(checkBoxIns.Checked){
-				Queries.CurReport.Query="SELECT PayDate,CONCAT(patient.LName,', ',patient.FName,' ',"
-					+"patient.MiddleI) AS plfname,PayNum,CheckNum,BankBranch,PayAmt "
-					+"FROM payment,patient ";
-				if(radioRange.Checked){//added plfname,paynum spk 4/14/04
-					if(listPayType.SelectedIndices.Count>0){
-						Queries.CurReport.Query+="WHERE "
-							+"payment.PatNum = patient.PatNum && (";
-						for(int i=0;i<listPayType.SelectedIndices.Count;i++){
-							if(i>0) Queries.CurReport.Query+=" || "; 
-							Queries.CurReport.Query+="PayType = '"
-								+Defs.Short[(int)DefCat.PaymentTypes][listPayType.SelectedIndices[i]].DefNum+"'";
-						}
-					  Queries.CurReport.Query+=
-							") && PayDate >= '"+date1.SelectionStart.ToString("yyyy-MM-dd")+"' "
-							+"AND PayDate <= '"+date2.SelectionStart.ToString("yyyy-MM-dd")+"' UNION ";
-          }
-					else{ 
-						Queries.CurReport.Query+="WHERE 1=0 UNION ";
-					}
-					Queries.CurReport.Query+="SELECT CheckDate,CarrierName,"//insplan.Carrier,"
-						+"claimpayment.ClaimPaymentNum,CheckNum,BankBranch,CheckAmt "//spk added claimpaymentnum
-						+"FROM claimpayment,claimproc,insplan,carrier "
-						+"WHERE claimproc.ClaimPaymentNum = claimpayment.ClaimPaymentNum "
-						+"&& claimproc.PlanNum = insplan.PlanNum "
-						+"&& insplan.CarrierNum = carrier.CarrierNum "
-						+"&& (claimproc.status = '1' || claimproc.status = '4') "
-						+"&& CheckDate >= '"+date1.SelectionStart.ToString("yyyy-MM-dd")+"' "
-						+"&& CheckDate <= '"+date2.SelectionStart.ToString("yyyy-MM-dd")+"' ";//added plfname, spk 4/30/04
-					Queries.CurReport.Query+="GROUP BY claimpayment.claimpaymentnum ORDER BY PayDate, plfname";
-				}
-				else{//range not checked
-          if(listPayType.SelectedIndices.Count>0){
-						Queries.CurReport.Query+="WHERE "
-							+"payment.PatNum = patient.PatNum && payment.PayAmt > 0 && (";//added payamt > 0, spk
-						for(int i=0;i<listPayType.SelectedIndices.Count;i++){
-							if(i>0) Queries.CurReport.Query+=" || "; 
-							Queries.CurReport.Query+="PayType = '"
-								+Defs.Short[(int)DefCat.PaymentTypes][listPayType.SelectedIndices[i]].DefNum+"'";
-						}
-					  Queries.CurReport.Query+=
-							") && PayDate = '"+date1.SelectionStart.ToString("yyyy-MM-dd")+"' UNION ";
-					}
-					else{ 
-						Queries.CurReport.Query+="WHERE 1=0 UNION ";
-					}//Use ClaimPaymentNum to make the record unique, added plfname, changed to Group BY claimproc.. spk 4/30/04
-					Queries.CurReport.Query+="SELECT CheckDate,CarrierName,"//insplan.Carrier,"
-						+"claimpayment.ClaimPaymentNum,CheckNum,BankBranch,CheckAmt "
-						+"FROM claimpayment,claimproc,insplan,carrier "
-						+"WHERE claimproc.ClaimPaymentNum = claimpayment.ClaimPaymentNum "
-						+"&& claimproc.PlanNum = insplan.PlanNum "
-						+"&& insplan.CarrierNum = carrier.CarrierNum "
-						+"&& (claimproc.status = '1' || claimproc.status = '4') "
-						+"&& CheckDate = '"+date1.SelectionStart.ToString("yyyy-MM-dd")+"' ";
-					Queries.CurReport.Query+="GROUP BY claimpayment.claimpaymentnum ORDER BY PayDate, plfname ";
-				}
+				cmd+="UNION SELECT CheckDate,CONCAT(patient.LName,', ',patient.FName,' ',"
+				+"patient.MiddleI) AS plfname,CarrierName,'Ins',"
+					+"claimpayment.ClaimPaymentNum,"
+					+"CheckNum,BankBranch,CheckAmt "//spk added claimpaymentnum
+					//+"claimpayment.ClaimPaymentNum "
+					+"FROM claimpayment,claimproc,insplan,carrier,patient "
+					+"WHERE claimproc.ClaimPaymentNum = claimpayment.ClaimPaymentNum "
+					+"AND claimproc.PlanNum = insplan.PlanNum "
+					+"AND claimproc.PatNum=patient.PatNum "
+					+"AND insplan.CarrierNum = carrier.CarrierNum "
+					+"AND (claimproc.status = '1' OR claimproc.status = '4') "
+					+"AND CheckDate >= '"+POut.PDate(date1.SelectionStart)+"' "
+					+"AND CheckDate <= '"+POut.PDate(date2.SelectionStart)+"' ";//added plfname, spk 4/30/04
+				cmd+="GROUP BY claimpayment.ClaimPaymentNum ";
 				//MessageBox.Show(Queries.CurReport.Query);
       }
-      else{//no insurance checks
-				if(radioRange.Checked){
-          if(listPayType.SelectedIndices.Count>0){//paynum to make record unique, spk
-						Queries.CurReport.Query="SELECT PayDate,CONCAT(patient.LName,', ',patient.FName,' ',"
-							+"patient.MiddleI),PayNum,CheckNum,BankBranch,PayAmt "
-							+"FROM payment,patient WHERE "
-							+"payment.PatNum = patient.PatNum && (";
-						for(int i=0;i<listPayType.SelectedIndices.Count;i++){
-							if(i>0) Queries.CurReport.Query+=" || "; 
-							Queries.CurReport.Query+="PayType = '"
-								+Defs.Short[(int)DefCat.PaymentTypes][listPayType.SelectedIndices[i]].DefNum+"'";
-						}
-					  Queries.CurReport.Query+=
-							") && PayDate >= '"+date1.SelectionStart.ToString("yyyy-MM-dd")+"' "
-							+"AND PayDate <= '"+date2.SelectionStart.ToString("yyyy-MM-dd")+"'";
-          }
-					else{
-						MessageBox.Show("Must either select a payment type and/or include insurance checks.");
-						return;
-					}
-				}
-				else{
-          if(listPayType.SelectedIndices.Count>0){//added plfname, paynum, payamt > 0 spk 
-						Queries.CurReport.Query="SELECT PayDate,CONCAT(patient.LName,', ',patient.FName,' ',"
-							+"patient.MiddleI) AS plfname,PayNum,CheckNum,BankBranch,PayAmt "
-							+"FROM payment,patient WHERE "
-							+"payment.PatNum = patient.PatNum && payment.PayAmt > 0 && (";
-						for(int i=0;i<listPayType.SelectedIndices.Count;i++){
-							if(i>0) Queries.CurReport.Query+=" || "; 
-							Queries.CurReport.Query+="PayType = '"
-								+Defs.Short[(int)DefCat.PaymentTypes][listPayType.SelectedIndices[i]].DefNum+"'";
-						}
-					  Queries.CurReport.Query+=
-							") && PayDate = '"+date1.SelectionStart.ToString("yyyy-MM-dd")+"'";
-          }
-					else{
-						MessageBox.Show("No check type selected.");
-						return;
-					}
-				} 			
-			}
+			cmd+="ORDER BY PayDate, plfname";
+			Queries.CurReport.Query=cmd;
 			FormQuery2=new FormQuery();
 			FormQuery2.IsReport=true;
 			FormQuery2.SubmitReportQuery();
-			Queries.CurReport.Title="DEPOSIT SLIP";
+			Queries.CurReport.Title="Deposit Slip";
 			Queries.CurReport.SubTitle=new string[3];
 			Queries.CurReport.SubTitle[0]=((Pref)Prefs.HList["PracticeTitle"]).ValueString;
-			if(radioRange.Checked){
-				Queries.CurReport.SubTitle[1]=date1.SelectionStart.ToString("d")+" - "+date2.SelectionStart.ToString("d");
-			}
-			else{
-				Queries.CurReport.SubTitle[1]=date1.SelectionStart.ToString("d");
-			}
+			Queries.CurReport.SubTitle[1]=date1.SelectionStart.ToString("d")+" - "
+				+date2.SelectionStart.ToString("d");
 			if(listPayType.SelectedIndices.Count>0)  {
 			  Queries.CurReport.SubTitle[2]="Payment Type(s): ";
 					for(int i=0;i<listPayType.SelectedIndices.Count;i++){
@@ -368,42 +271,35 @@ ORDER BY PayDate
 				 Queries.CurReport.SubTitle[2]="Payment Type: Insurance Claim Checks";
 			  }
 			}
-			Queries.CurReport.ColPos=new int[7];
-			Queries.CurReport.ColCaption=new string[6];
-			Queries.CurReport.ColAlign=new HorizontalAlignment[6];
+			Queries.CurReport.ColPos=new int[9];
+			Queries.CurReport.ColCaption=new string[8];
+			Queries.CurReport.ColAlign=new HorizontalAlignment[8];
 			Queries.CurReport.ColPos[0]=20;
 			Queries.CurReport.ColPos[1]=100;
-			Queries.CurReport.ColPos[2]=290;
-			Queries.CurReport.ColPos[3]=370;
-			Queries.CurReport.ColPos[4]=490;
-			Queries.CurReport.ColPos[5]=590;
-			Queries.CurReport.ColPos[6]=690;
-			Queries.CurReport.ColCaption[0]="DATE";
-			Queries.CurReport.ColCaption[1]="PAYER";
+			Queries.CurReport.ColPos[2]=210;
+			Queries.CurReport.ColPos[3]=320;
+			Queries.CurReport.ColPos[4]=420;
+			Queries.CurReport.ColPos[5]=480;
+			Queries.CurReport.ColPos[6]=590;
+			Queries.CurReport.ColPos[7]=680;
+			Queries.CurReport.ColPos[8]=760;
+			Queries.CurReport.ColCaption[0]="Date";
+			Queries.CurReport.ColCaption[1]="Patient";
+			Queries.CurReport.ColCaption[2]="Carrier";
+			Queries.CurReport.ColCaption[3]="Type";
 			//this column can be eliminated when the new reporting framework is complete:
-			Queries.CurReport.ColCaption[2]="PAYMENT #";
-			Queries.CurReport.ColCaption[3]="CHECK NUMBER";
-			Queries.CurReport.ColCaption[4]="BANK / BRANCH";
-			Queries.CurReport.ColCaption[5]="AMOUNT";
+			Queries.CurReport.ColCaption[4]="Pay #";
+			Queries.CurReport.ColCaption[5]="Check Number";
+			Queries.CurReport.ColCaption[6]="Bank-Branch";
+			Queries.CurReport.ColCaption[7]="Amount";
 			//Queries.CurReport.ColAlign[4]=HorizontalAlignment.Right;
-			Queries.CurReport.ColAlign[5]=HorizontalAlignment.Right;
+			Queries.CurReport.ColAlign[7]=HorizontalAlignment.Right;
 			Queries.CurReport.Summary=new string[3];
 			Queries.CurReport.Summary[0]="For Deposit to Account of "+((Pref)Prefs.HList["PracticeTitle"]).ValueString;
 			Queries.CurReport.Summary[2]="Account number: "+((Pref)Prefs.HList["PracticeBankNumber"]).ValueString;
 			FormQuery2.ShowDialog();
 
 			DialogResult=DialogResult.OK;
-		}
-
-		private void radioSingle_CheckedChanged(object sender, System.EventArgs e) {
-			if(radioSingle.Checked==true){
-				date2.Visible=false;
-				labelTO.Visible=false;
-			}
-			else{
-				date2.Visible=true;
-				labelTO.Visible=true;
-			}
 		}
 
 		private void butAll_Click(object sender, System.EventArgs e) {

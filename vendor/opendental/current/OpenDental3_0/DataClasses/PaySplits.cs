@@ -115,7 +115,14 @@ namespace OpenDental{
 			//Cur=List[Selected];
 			//PutBal(Cur.PatNum,Cur.ProcDate,-Cur.SplitAmt);
 			cmd.CommandText = "DELETE from paysplit WHERE splitNum = '"+Cur.SplitNum.ToString()+"'";
-			NonQ(false);
+			NonQ();
+		}
+
+		///<summary>Used in FormPayment to keep all dates on PaySplits synchronized with the Payment.</summary>
+		public static void SetDateInPayment(int payNum,DateTime date){
+			cmd.CommandText="UPDATE paysplit SET ProcDate='"+POut.PDate(date)
+				+"' WHERE PayNum = '"+payNum.ToString()+"'";
+			NonQ();
 		}
 
 		///<summary></summary>

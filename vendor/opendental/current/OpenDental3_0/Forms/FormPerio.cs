@@ -90,7 +90,7 @@ namespace OpenDental{
 		private System.Windows.Forms.PrintDialog printDialog2;
 		private bool TenIsDown;
 		private System.Windows.Forms.PrintPreviewDialog printPreviewDlg;
-		private int pagesPrinted;
+		//private int pagesPrinted;
 
 		///<summary></summary>
 		public FormPerio()
@@ -155,12 +155,14 @@ namespace OpenDental{
 			this.butColorBleed = new System.Windows.Forms.Button();
 			this.butColorPus = new System.Windows.Forms.Button();
 			this.butSkip = new System.Windows.Forms.Button();
-			this.butPrint = new OpenDental.XPButton();
 			this.butColorCalculus = new System.Windows.Forms.Button();
 			this.butColorPlaque = new System.Windows.Forms.Button();
 			this.butCalculus = new OpenDental.XPButton();
 			this.butPlaque = new OpenDental.XPButton();
 			this.butCalcIndex = new System.Windows.Forms.Button();
+			this.butCount = new System.Windows.Forms.Button();
+			this.checkThree = new System.Windows.Forms.CheckBox();
+			this.butPrint = new OpenDental.XPButton();
 			this.colorDialog1 = new System.Windows.Forms.ColorDialog();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
 			this.textCountMob = new System.Windows.Forms.TextBox();
@@ -189,11 +191,9 @@ namespace OpenDental{
 			this.label10 = new System.Windows.Forms.Label();
 			this.label9 = new System.Windows.Forms.Label();
 			this.label8 = new System.Windows.Forms.Label();
-			this.butCount = new System.Windows.Forms.Button();
 			this.label1 = new System.Windows.Forms.Label();
 			this.butAdd = new OpenDental.XPButton();
 			this.label6 = new System.Windows.Forms.Label();
-			this.checkThree = new System.Windows.Forms.CheckBox();
 			this.listExams = new System.Windows.Forms.ListBox();
 			this.textIndexPlaque = new System.Windows.Forms.TextBox();
 			this.textIndexSupp = new System.Windows.Forms.TextBox();
@@ -438,7 +438,7 @@ namespace OpenDental{
 			this.but10.Size = new System.Drawing.Size(32, 32);
 			this.but10.TabIndex = 40;
 			this.but10.Text = "10";
-			this.toolTip1.SetToolTip(this.but10, "Or hold down the Shift key");
+			this.toolTip1.SetToolTip(this.but10, "Or hold down the Ctrl key");
 			this.but10.Click += new System.EventHandler(this.but10_Click);
 			// 
 			// butBleed
@@ -500,20 +500,6 @@ namespace OpenDental{
 			this.toolTip1.SetToolTip(this.butSkip, "Toggle the selected teeth as skipped");
 			this.butSkip.Click += new System.EventHandler(this.butSkip_Click);
 			// 
-			// butPrint
-			// 
-			this.butPrint.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butPrint.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
-			this.butPrint.BtnStyle = OpenDental.enumType.XPStyle.Silver;
-			this.butPrint.Image = ((System.Drawing.Image)(resources.GetObject("butPrint.Image")));
-			this.butPrint.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butPrint.Location = new System.Drawing.Point(885, 609);
-			this.butPrint.Name = "butPrint";
-			this.butPrint.Size = new System.Drawing.Size(75, 26);
-			this.butPrint.TabIndex = 62;
-			this.butPrint.Text = "Print";
-			this.butPrint.Click += new System.EventHandler(this.butPrint_Click);
-			// 
 			// butColorCalculus
 			// 
 			this.butColorCalculus.BackColor = System.Drawing.Color.Green;
@@ -572,6 +558,42 @@ namespace OpenDental{
 			this.butCalcIndex.Text = "Calc Index %";
 			this.toolTip1.SetToolTip(this.butCalcIndex, "Calculate the Index for all four types");
 			this.butCalcIndex.Click += new System.EventHandler(this.butCalcIndex_Click);
+			// 
+			// butCount
+			// 
+			this.butCount.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butCount.Location = new System.Drawing.Point(92, 18);
+			this.butCount.Name = "butCount";
+			this.butCount.Size = new System.Drawing.Size(84, 23);
+			this.butCount.TabIndex = 1;
+			this.butCount.Text = "Count Teeth";
+			this.toolTip1.SetToolTip(this.butCount, "Count all six types");
+			this.butCount.Click += new System.EventHandler(this.butCount_Click);
+			// 
+			// checkThree
+			// 
+			this.checkThree.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkThree.Location = new System.Drawing.Point(765, 49);
+			this.checkThree.Name = "checkThree";
+			this.checkThree.Size = new System.Drawing.Size(146, 19);
+			this.checkThree.TabIndex = 57;
+			this.checkThree.Text = "Three at a time";
+			this.toolTip1.SetToolTip(this.checkThree, "Enter numbers three at a time");
+			this.checkThree.Click += new System.EventHandler(this.checkThree_Click);
+			// 
+			// butPrint
+			// 
+			this.butPrint.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butPrint.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butPrint.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butPrint.Image = ((System.Drawing.Image)(resources.GetObject("butPrint.Image")));
+			this.butPrint.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butPrint.Location = new System.Drawing.Point(885, 609);
+			this.butPrint.Name = "butPrint";
+			this.butPrint.Size = new System.Drawing.Size(75, 26);
+			this.butPrint.TabIndex = 62;
+			this.butPrint.Text = "Print";
+			this.butPrint.Click += new System.EventHandler(this.butPrint_Click);
 			// 
 			// groupBox2
 			// 
@@ -844,17 +866,6 @@ namespace OpenDental{
 			this.label8.Text = "Probing";
 			this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
-			// butCount
-			// 
-			this.butCount.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butCount.Location = new System.Drawing.Point(92, 18);
-			this.butCount.Name = "butCount";
-			this.butCount.Size = new System.Drawing.Size(84, 23);
-			this.butCount.TabIndex = 1;
-			this.butCount.Text = "Count Teeth";
-			this.toolTip1.SetToolTip(this.butCount, "Count all six types");
-			this.butCount.Click += new System.EventHandler(this.butCount_Click);
-			// 
 			// label1
 			// 
 			this.label1.Location = new System.Drawing.Point(5, 13);
@@ -886,17 +897,6 @@ namespace OpenDental{
 			this.label6.TabIndex = 54;
 			this.label6.Text = "(All exams are saved automatically)";
 			this.label6.TextAlign = System.Drawing.ContentAlignment.BottomRight;
-			// 
-			// checkThree
-			// 
-			this.checkThree.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkThree.Location = new System.Drawing.Point(765, 49);
-			this.checkThree.Name = "checkThree";
-			this.checkThree.Size = new System.Drawing.Size(146, 19);
-			this.checkThree.TabIndex = 57;
-			this.checkThree.Text = "Three at a time";
-			this.toolTip1.SetToolTip(this.checkThree, "Enter numbers three at a time");
-			this.checkThree.Click += new System.EventHandler(this.checkThree_Click);
 			// 
 			// listExams
 			// 
@@ -1211,6 +1211,10 @@ namespace OpenDental{
 
 		///<summary>The only valid numbers are 0 through 9</summary>
 		private void NumberClicked(int number){
+			if(gridP.SelectedExam==-1){
+				MessageBox.Show(Lan.g(this,"Please add or select an exam first in the list to the left."));
+				return;
+			}
 			if(TenIsDown){
 				gridP.ButtonPressed(10+number);
 			}

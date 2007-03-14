@@ -148,10 +148,12 @@ namespace OpenDental{
 		private void CreateCurInfo(){
 			ContrAppt.CurInfo=new InfoApt();
 			ContrAppt.CurInfo.MyApt=Appointments.Cur;
-			ContrAppt.CurInfo.CreditAndIns=Patients.GetCreditIns();
-			ContrAppt.CurInfo.PatientName=Patients.GetCurNameLF();
-			Procedures.GetProcsForSingle(Appointments.Cur.AptNum,true);
-			ContrAppt.CurInfo.Procs=Procedures.ProcsForSingle;
+			//ContrAppt.CurInfo.CreditAndIns=Patients.GetCreditIns();
+			//ContrAppt.CurInfo.PatientName=Patients.GetCurNameLF();
+			ProcDesc procDesc=Procedures.GetProcsForSingle(Appointments.Cur.AptNum,true);
+			ContrAppt.CurInfo.Procs=procDesc.ProcLines;
+			ContrAppt.CurInfo.Production=procDesc.Production;
+			ContrAppt.CurInfo.MyPatient=Patients.Cur;
 		}
 
 		private void butClose_Click(object sender, System.EventArgs e) {

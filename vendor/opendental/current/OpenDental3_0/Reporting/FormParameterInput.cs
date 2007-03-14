@@ -134,6 +134,10 @@ namespace OpenDental.Reporting{
 
 		private void butOK_Click(object sender, System.EventArgs e) {
 			//MessageBox.Show(MultInput2.MultInputItems[0].CurrentValue.ToString());
+			if(!MultInput2.AllFieldsAreValid()){
+				MessageBox.Show(Lan.g(this,"Please fix data entry errors first."));
+				return;
+			}
 			DialogResult=DialogResult.OK;
 		}
 

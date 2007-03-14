@@ -45,9 +45,9 @@ namespace OpenDental{
 			// 
 			// listAutoCodes
 			// 
-			this.listAutoCodes.Location = new System.Drawing.Point(33, 26);
+			this.listAutoCodes.Location = new System.Drawing.Point(28, 26);
 			this.listAutoCodes.Name = "listAutoCodes";
-			this.listAutoCodes.Size = new System.Drawing.Size(158, 316);
+			this.listAutoCodes.Size = new System.Drawing.Size(178, 316);
 			this.listAutoCodes.TabIndex = 0;
 			this.listAutoCodes.DoubleClick += new System.EventHandler(this.listAutoCodes_DoubleClick);
 			// 
@@ -55,9 +55,9 @@ namespace OpenDental{
 			// 
 			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butClose.Location = new System.Drawing.Point(216, 390);
+			this.butClose.Location = new System.Drawing.Point(230, 390);
 			this.butClose.Name = "butClose";
-			this.butClose.Size = new System.Drawing.Size(75, 26);
+			this.butClose.Size = new System.Drawing.Size(80, 26);
 			this.butClose.TabIndex = 3;
 			this.butClose.Text = "&Close";
 			this.butClose.Click += new System.EventHandler(this.butClose_Click);
@@ -69,9 +69,9 @@ namespace OpenDental{
 			this.butAdd.BtnStyle = OpenDental.enumType.XPStyle.Silver;
 			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
 			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAdd.Location = new System.Drawing.Point(32, 354);
+			this.butAdd.Location = new System.Drawing.Point(26, 354);
 			this.butAdd.Name = "butAdd";
-			this.butAdd.Size = new System.Drawing.Size(75, 26);
+			this.butAdd.Size = new System.Drawing.Size(90, 26);
 			this.butAdd.TabIndex = 5;
 			this.butAdd.Text = "&Add";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
@@ -85,7 +85,7 @@ namespace OpenDental{
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butDelete.Location = new System.Drawing.Point(118, 354);
 			this.butDelete.Name = "butDelete";
-			this.butDelete.Size = new System.Drawing.Size(75, 26);
+			this.butDelete.Size = new System.Drawing.Size(90, 26);
 			this.butDelete.TabIndex = 6;
 			this.butDelete.Text = "&Delete";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
@@ -94,7 +94,7 @@ namespace OpenDental{
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butClose;
-			this.ClientSize = new System.Drawing.Size(306, 430);
+			this.ClientSize = new System.Drawing.Size(338, 430);
 			this.Controls.Add(this.butDelete);
 			this.Controls.Add(this.butAdd);
 			this.Controls.Add(this.butClose);

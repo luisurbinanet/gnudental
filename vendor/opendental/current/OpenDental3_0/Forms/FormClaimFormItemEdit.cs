@@ -27,6 +27,8 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butDelete;
 		///<summary></summary>
 		public bool IsNew;
+		///<summary>This is the claimformitem that is being currently edited in this window.</summary>
+		public ClaimFormItem CFIcur;
 
 		///<summary></summary>
 		public FormClaimFormItemEdit()
@@ -35,9 +37,16 @@ namespace OpenDental{
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
+			Lan.C(this, new System.Windows.Forms.Control[] {
+				this.label2, //*Ann
+				this.labelFieldName, //*Ann
+				this.labelFormatString, //*Ann
+				this.labelImageFileName //*Ann
+			});
 			Lan.C("All", new System.Windows.Forms.Control[] {
 				butOK,
 				butCancel,
+				butDelete //*Ann
 			});
 		}
 
@@ -206,6 +215,7 @@ namespace OpenDental{
 		public void FillFieldNames(){
 			FieldNames=new string[]
 			{
+				"FixedText",
 				"IsPreAuth",
         "IsStandardClaim",
 				"IsMedicaidClaim",
@@ -485,12 +495,12 @@ namespace OpenDental{
 		}
 
 		private void FillForm(){
-			textImageFileName.Text=ClaimFormItems.Cur.ImageFileName;
-			textFormatString.Text=ClaimFormItems.Cur.FormatString;
+			textImageFileName.Text=CFIcur.ImageFileName;
+			textFormatString.Text=CFIcur.FormatString;
 			listFieldName.Items.Clear();
 			for(int i=0;i<FieldNames.Length;i++){
 				listFieldName.Items.Add(FieldNames[i]);
-				if(FieldNames[i]==ClaimFormItems.Cur.FieldName){
+				if(FieldNames[i]==CFIcur.FieldName){
 					listFieldName.SelectedIndex=i;
 				}
 			}
@@ -501,7 +511,7 @@ namespace OpenDental{
 		}
 
 		private void butDelete_Click(object sender, System.EventArgs e) {
-			ClaimFormItems.DeleteCur();
+			CFIcur.Delete();
 			DialogResult=DialogResult.OK;
 		}
 
@@ -510,18 +520,18 @@ namespace OpenDental{
 		}
 
 		private void SaveAndClose(){
-			ClaimFormItems.Cur.ImageFileName=textImageFileName.Text;
-			ClaimFormItems.Cur.FormatString=textFormatString.Text;
+			CFIcur.ImageFileName=textImageFileName.Text;
+			CFIcur.FormatString=textFormatString.Text;
 			if(listFieldName.SelectedIndex==-1){
-				ClaimFormItems.Cur.FieldName="";
+				CFIcur.FieldName="";
 			}
 			else{
-				ClaimFormItems.Cur.FieldName=FieldNames[listFieldName.SelectedIndex];
+				CFIcur.FieldName=FieldNames[listFieldName.SelectedIndex];
 			}
 			if(IsNew)
-				ClaimFormItems.InsertCur();
+				CFIcur.Insert();
 			else
-				ClaimFormItems.UpdateCur();
+				CFIcur.Update();
 			DialogResult=DialogResult.OK;
 		}
 

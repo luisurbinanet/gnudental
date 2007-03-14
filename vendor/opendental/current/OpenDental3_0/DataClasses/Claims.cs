@@ -99,23 +99,23 @@ namespace OpenDental{
 		///<summary></summary>
 		public static void RefreshByCheck(int claimPaymentNum, bool showUnattached){
 			cmd.CommandText =
-				"SELECT claim.dateservice,claim.provtreat,CONCAT(patient.lname,', ',patient.fname)"
-				+",carrier.carrierName,SUM(claimproc.feebilled),SUM(claimproc.inspayamt),claim.claimnum"
-				+",claimproc.claimpaymentnum"
+				"SELECT claim.DateService,claim.ProvTreat,CONCAT(patient.LName,', ',patient.FName)"
+				+",carrier.CarrierName,SUM(claimproc.FeeBilled),SUM(claimproc.InsPayAmt),claim.ClaimNum"
+				+",claimproc.ClaimPaymentNum"
 				+" FROM claim,patient,insplan,carrier,claimproc" // added carrier, SPK 8/04
-				+" WHERE claimproc.claimnum = claim.claimnum"
-				+" && patient.patnum = claim.patnum"
-				+" && insplan.plannum = claim.plannum"
+				+" WHERE claimproc.ClaimNum = claim.ClaimNum"
+				+" && patient.PatNum = claim.PatNum"
+				+" && insplan.PlanNum = claim.PlanNum"
 				+" && insplan.CarrierNum = carrier.CarrierNum"	// added SPK
-				+" && (claimproc.status = '1' || claimproc.status = '4')"//received or supplemental
- 				+" && (claimproc.claimpaymentnum = '"+claimPaymentNum+"'";
+				+" && (claimproc.Status = '1' || claimproc.Status = '4')"//received or supplemental
+ 				+" && (claimproc.ClaimPaymentNum = '"+claimPaymentNum+"'";
 			if(showUnattached){
-				cmd.CommandText+=" || (claimproc.inspayamt > 0 && claimproc.claimpaymentnum = '0'))"
-					+" GROUP BY claimproc.claimnum";
+				cmd.CommandText+=" || (claimproc.InsPayAmt > 0 && claimproc.ClaimPaymentNum = '0'))"
+					+" GROUP BY claimproc.ClaimNum";
 			}
 			else{//shows only items attached to this payment
 				cmd.CommandText+=")"
-					+" GROUP BY claimproc.claimnum";
+					+" GROUP BY claimproc.ClaimNum";
 			}
 			//MessageBox.Show(
 			FillTable();
@@ -318,6 +318,8 @@ namespace OpenDental{
 				+"WHERE claimnum = '"+claimNum+"'";
 			NonQ(false);
 		}
+
+	
 
 	}//end class Claims
 

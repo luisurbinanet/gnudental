@@ -221,7 +221,7 @@ namespace OpenDental{
 			whereProv="(";
 			for(int i=0;i<listProv.SelectedIndices.Count;i++){
 				if(i>0){
-					whereProv+="|| ";
+					whereProv+="OR ";
 				}
 				whereProv+="procedurelog.ProvNum = '"
 					+POut.PInt(Providers.List[listProv.SelectedIndices[i]].ProvNum)+"' ";
@@ -238,41 +238,27 @@ namespace OpenDental{
 
 		private void CreateIndividual(){
 			//added plfname for ordering purposes, spk 3/13/04
-			// added CapCoPay for Capitation, SPK 7/15/04
+			// added CapCoPay for Capitation, SPK 7/15/04 (js rewrote it on 10/4/04 due to db change)
 			// changed procedurecode.adacode to procedurelog.adacode & added Procnum to retrieve all codes
 			Queries.CurReport.Query="SELECT procedurelog.ProcDate,CONCAT"
 				+"(patient.LName,', ',patient.FName,' ',patient.MiddleI) AS plfname, procedurelog.ADACode,"
 				+"procedurelog.ToothNum,procedurecode.Descript,provider.Abbr,"
-				+"procedurelog.ProcFee,procedurelog.ProcNum  "
+				+"procedurelog.ProcFee-SUM(claimproc.WriteOff) AS $fee "// procedurelog.ProcNum  "
 				+"FROM procedurelog,patient,procedurecode,provider "
+				+"LEFT JOIN claimproc ON procedurelog.ProcNum=claimproc.ProcNum "
+				+"AND claimproc.Status='7' "//only CapComplete writeoffs are subtracted here.
 				+"WHERE procedurelog.ProcStatus = '2' "
-				+"&& procedurelog.CapCoPay = '-1' "
-				+"&& patient.PatNum=procedurelog.PatNum "
-				+"&& procedurelog.ADACode=procedurecode.ADACode "
-				+"&& provider.ProvNum=procedurelog.ProvNum "
-				+"&& "+whereProv+" "
-				+"&& procedurelog.ProcDate >= '" + date1.SelectionStart.ToString("yyyy-MM-dd")+"' "
-				+"&& procedurelog.ProcDate <= '" + date2.SelectionStart.ToString("yyyy-MM-dd")+"' "
-				// Capitation- CapCoPay - SPK 7/15/04
-				+"UNION SELECT procedurelog.ProcDate,CONCAT"
-				+"(patient.LName,', ',patient.FName,' ',patient.MiddleI) AS plfname, procedurelog.ADACode,"
-				+"procedurelog.ToothNum,procedurecode.Descript,provider.Abbr,"
-				+"procedurelog.CapCoPay,procedurelog.ProcNum  "
-				+"FROM procedurelog,patient,procedurecode,provider "
-				+"WHERE procedurelog.ProcStatus = '2' "
-				+"&& procedurelog.CapCoPay != '-1' "
-				+"&& patient.PatNum=procedurelog.PatNum "
-				+"&& procedurelog.ADACode=procedurecode.ADACode "
-				+"&& provider.ProvNum=procedurelog.ProvNum "
-				+"&& "+whereProv+" "
-				+"&& procedurelog.ProcDate >= '" + date1.SelectionStart.ToString("yyyy-MM-dd")+"' "
-				+"&& procedurelog.ProcDate <= '" + date2.SelectionStart.ToString("yyyy-MM-dd")+"' "
+				+"AND patient.PatNum=procedurelog.PatNum "
+				+"AND procedurelog.ADACode=procedurecode.ADACode "
+				+"AND provider.ProvNum=procedurelog.ProvNum "
+				+"AND "+whereProv+" "
+				+"AND procedurelog.ProcDate >= '" +POut.PDate(date1.SelectionStart)+"' "
+				+"AND procedurelog.ProcDate <= '" +POut.PDate(date2.SelectionStart)+"' "
+				+"GROUP BY procedurelog.ProcNum "
 				+"ORDER BY procedurelog.ProcDate,plfname";
-
 			FormQuery2=new FormQuery();
 			FormQuery2.IsReport=true;
 			FormQuery2.SubmitReportQuery();			
-
 			Queries.CurReport.Title="Daily Procedures";
 			Queries.CurReport.SubTitle=new string[2];
 			Queries.CurReport.SubTitle[0]=((Pref)Prefs.HList["PracticeTitle"]).ValueString;
@@ -290,7 +276,7 @@ namespace OpenDental{
 			Queries.CurReport.ColPos[5]=640;
 			Queries.CurReport.ColPos[6]=680;
 			Queries.CurReport.ColPos[7]=770;
-			//Queries.CurReport.ColPos[8]=820;		// spk
+			Queries.CurReport.ColPos[8]=820;		// spk
 			Queries.CurReport.ColCaption[0]="Date";
 			Queries.CurReport.ColCaption[1]="Patient Name";			
 			Queries.CurReport.ColCaption[2]="ADA Code";

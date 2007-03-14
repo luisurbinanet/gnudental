@@ -942,11 +942,11 @@ namespace OpenDental{
     		case "Last Visit Date":
     		case "First Visit Date":
           SetDateConditions();
-          labelHelp.Text="Type Date as dd/mm/yyyy"; 
+          labelHelp.Text="Type Date as mm/dd/yyyy"; 
  					break;
         case "Birthday":
           SetDateConditions();
-          labelHelp.Text="Type Date as dd/mm"; 
+          labelHelp.Text="Type Date as mm/dd"; 
  					break; 
    		  case "PatStatus":
           SetListBoxConditions();
@@ -1184,13 +1184,15 @@ namespace OpenDental{
         }
         else if(DropListFilter.SelectedItem.ToString()=="Birthday"){
           if(ListConditions.SelectedIndex==0){
-					  ListPrerequisites.Items.Add("MONTH(Birthdate) LIKE '%"+POut.PDate(DateTime.Parse(TextDate.Text))
-              +"%' && DAYOFMONTH(Birthdate) LIKE '%"+POut.PDate(DateTime.Parse(TextDate.Text))+"%' ");    
+						ListPrerequisites.Items.Add("MONTH(Birthdate) "
+							+"= '"
+							+DateTime.Parse(TextDate.Text).Month.ToString()+"'"); 
 					}
 					else{
-  					 ListPrerequisites.Items.Add("MONTH(Birthdate) "+ListConditions.SelectedItem.ToString()+" '"
-             +POut.PDate(DateTime.Parse(TextDate.Text))+"' && DAYOFMONTH(Birthdate) "+ListConditions.SelectedItem.ToString()+" '"
-             +POut.PDate(DateTime.Parse(TextDate.Text))+"' "); 
+  					ListPrerequisites.Items.Add("SUBSTRING(Birthdate,6,5) "
+							+ListConditions.SelectedItem.ToString()+" '"
+							+DateTime.Parse(TextDate.Text).ToString("MM")+"-"
+							+DateTime.Parse(TextDate.Text).ToString("dd")+"'");
 					}
         }
         else{  

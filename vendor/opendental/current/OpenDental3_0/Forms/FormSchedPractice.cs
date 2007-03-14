@@ -171,6 +171,7 @@ namespace OpenDental{
       GetScheduleData();
 			Graphics grfx=this.CreateGraphics();
       Calendar2.DrawDays(grfx);
+			Calendar2.Invalidate();
 			grfx.Dispose();
 		}
 

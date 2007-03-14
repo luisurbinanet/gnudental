@@ -169,7 +169,7 @@ namespace OpenDental.UI{
 				return;//don't set a hotButton
 			}
 			hotButton=button;
-			if(button.Style==ToolBarButtonStyle.DropDownButton
+			if(button.Style==ODToolBarButtonStyle.DropDownButton
 				&& HitTestDrop(button,e.X,e.Y))
 			{
 				button.State=ToolBarButtonState.DropPressed;
@@ -198,7 +198,7 @@ namespace OpenDental.UI{
 				Invalidate(hotButton.Bounds);//invalidate the old button
 				//CLICK: 
 				if(hotButton==button){//if mouse was released over the same button as it was depressed
-					if(button.Style==ToolBarButtonStyle.DropDownButton//if current button is dropdown
+					if(button.Style==ODToolBarButtonStyle.DropDownButton//if current button is dropdown
 						&& HitTestDrop(button,e.X,e.Y)//and we are in the dropdown area on the right
 						&& button.DropDownMenu!=null)//and there is a dropdown menu to display
 					{
@@ -208,12 +208,15 @@ namespace OpenDental.UI{
 						button.DropDownMenu.GetContextMenu().Show(this
 							,new Point(button.Bounds.X,button.Bounds.Y+button.Bounds.Height));
 					}
-					else if(button.Style==ToolBarButtonStyle.ToggleButton){//if current button is a toggle button
+					else if(button.Style==ODToolBarButtonStyle.ToggleButton){//if current button is a toggle button
 						if(button.Pushed)
 							button.Pushed=false;
 						else
 							button.Pushed=true;
 						OnButtonClicked(button);
+					}
+					else if(button.Style==ODToolBarButtonStyle.Label){
+						//lables do not respond with click
 					}
 					else{
 						OnButtonClicked(button);
@@ -250,7 +253,7 @@ namespace OpenDental.UI{
 				height=imageList.ImageSize.Height+6;
 			}
 			foreach(ODToolBarButton button in buttons){
-				if(button.Style==ToolBarButtonStyle.Separator){
+				if(button.Style==ODToolBarButtonStyle.Separator){
 					width=3;
 				}
 				else if(imageList==null || button.ImageIndex==-1){
@@ -262,7 +265,7 @@ namespace OpenDental.UI{
 					else
 						width=imageList.ImageSize.Width+(int)g.MeasureString(button.Text,Font).Width+12;
 				}
-				if(button.Style==ToolBarButtonStyle.DropDownButton){
+				if(button.Style==ODToolBarButtonStyle.DropDownButton){
 					width+=15;
 				}
 				button.Bounds=new Rectangle(new Point(xPos,0),new Size(width,height));
@@ -290,7 +293,7 @@ namespace OpenDental.UI{
 		}
 
 		private void DrawButton(Graphics g,ODToolBarButton button){
-			if(button.Style==ToolBarButtonStyle.Separator){
+			if(button.Style==ODToolBarButtonStyle.Separator){
 				g.DrawLine(Pens.SlateGray,button.Bounds.X+1,button.Bounds.Y+3
 					,button.Bounds.X+1,button.Bounds.Y+button.Bounds.Height-3);
 				return;
@@ -299,8 +302,11 @@ namespace OpenDental.UI{
 			if(!button.Enabled){
 				g.FillRectangle(new SolidBrush(SystemColors.Control),button.Bounds);
 			}
-			else if(button.Style==ToolBarButtonStyle.ToggleButton && button.Pushed){
+			else if(button.Style==ODToolBarButtonStyle.ToggleButton && button.Pushed){
 				g.FillRectangle(new SolidBrush(Color.FromArgb(248,248,248)),button.Bounds);
+			}
+			else if(button.Style==ODToolBarButtonStyle.Label){
+				g.FillRectangle(new SolidBrush(SystemColors.Control),button.Bounds);
 			}
 			else switch(button.State){
 				case ToolBarButtonState.Normal://Control is 224,223,227
@@ -327,7 +333,7 @@ namespace OpenDental.UI{
 			Color textColor=ForeColor;
 			Rectangle textRect;
 			int textWidth=button.Bounds.Width;
-			if(button.Style==ToolBarButtonStyle.DropDownButton){
+			if(button.Style==ODToolBarButtonStyle.DropDownButton){
 				textWidth-=15;
 			}
 			if(!button.Enabled){
@@ -352,7 +358,11 @@ namespace OpenDental.UI{
 				}
 			}
 			else{//only draw text
-				if(button.State==ToolBarButtonState.Pressed){//draw slightly down and right
+				if(button.Style==ODToolBarButtonStyle.Label){
+					textRect=new Rectangle(button.Bounds.X,button.Bounds.Y
+						,textWidth,button.Bounds.Height);
+				}
+				else if(button.State==ToolBarButtonState.Pressed){//draw slightly down and right
 					textRect=new Rectangle(button.Bounds.X+1,button.Bounds.Y+1
 						,textWidth,button.Bounds.Height);
 				}
@@ -380,9 +390,12 @@ namespace OpenDental.UI{
 			if(!button.Enabled){
 				//no outline
 			}
-			else if(button.Style==ToolBarButtonStyle.ToggleButton && button.Pushed){
+			else if(button.Style==ODToolBarButtonStyle.ToggleButton && button.Pushed){
 				g.DrawRectangle(Pens.SlateGray,new Rectangle(button.Bounds.X,button.Bounds.Y
 						,button.Bounds.Width-1,button.Bounds.Height-1));
+			}
+			else if(button.Style==ODToolBarButtonStyle.Label){
+				//no outline
 			}
 			else switch(button.State){
 				case ToolBarButtonState.Normal:
@@ -401,7 +414,7 @@ namespace OpenDental.UI{
 						,button.Bounds.Width-1,button.Bounds.Height-1));
 					break;
 			}
-			if(button.Style==ToolBarButtonStyle.DropDownButton){
+			if(button.Style==ODToolBarButtonStyle.DropDownButton){
 				Point[] triangle=new Point[3];
 				triangle[0]=new Point(button.Bounds.X+button.Bounds.Width-11
 					,button.Bounds.Y+button.Bounds.Height/2-2);

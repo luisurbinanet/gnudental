@@ -19,9 +19,11 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label4;
 		///<summary></summary>
 		public bool IsNew;
+		private ClaimProc ClaimProcCur;
 
 		///<summary></summary>
-		public FormInsAdj(){
+		public FormInsAdj(ClaimProc claimProcCur){
+			ClaimProcCur=claimProcCur;
 			InitializeComponent();
 			Lan.C(this, new System.Windows.Forms.Control[] {
 				this.label1,
@@ -167,9 +169,9 @@ namespace OpenDental{
 		#endregion
 
 		private void FormInsAdj_Load(object sender, System.EventArgs e) {
-			textDate.Text=ClaimProcs.Cur.DateCP.ToShortDateString();
-			textInsUsed.Text=ClaimProcs.Cur.InsPayAmt.ToString("F");
-			textDedUsed.Text=ClaimProcs.Cur.DedApplied.ToString("F");
+			textDate.Text=ClaimProcCur.ProcDate.ToShortDateString();
+			textInsUsed.Text=ClaimProcCur.InsPayAmt.ToString("F");
+			textDedUsed.Text=ClaimProcCur.DedApplied.ToString("F");
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
@@ -180,14 +182,14 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g("All","Please fix data entry errors first."));
 				return;
 			}
-			ClaimProcs.Cur.DateCP=PIn.PDate(textDate.Text);
-			ClaimProcs.Cur.InsPayAmt=PIn.PDouble(textInsUsed.Text);
-			ClaimProcs.Cur.DedApplied=PIn.PDouble(textDedUsed.Text);
+			ClaimProcCur.ProcDate=PIn.PDate(textDate.Text);
+			ClaimProcCur.InsPayAmt=PIn.PDouble(textInsUsed.Text);
+			ClaimProcCur.DedApplied=PIn.PDouble(textDedUsed.Text);
 			if(IsNew){
-				ClaimProcs.InsertCur();
+				ClaimProcCur.Insert();
 			}
 			else{
-				ClaimProcs.UpdateCur();
+				ClaimProcCur.Update();
 			}
 			DialogResult=DialogResult.OK;
 		}

@@ -1,12 +1,11 @@
 using System;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
 
 namespace OpenDental.Bridges{
 	///<summary>Summary description for Renaissance.</summary>
 	public class Renaissance{
-		private static ClaimFormItem[] item;
+		private static ClaimFormItem[] items;
 		private static FormClaimFormItemEdit FormCFI;
 		private static string[][] DisplayStrings;
 
@@ -20,7 +19,7 @@ namespace OpenDental.Bridges{
 			//this can be eliminated later after error checking complete:
 				FormCFI=new FormClaimFormItemEdit();
 				FormCFI.FillFieldNames();
-			item=new ClaimFormItem[241];//0 is not used 
+			items=new ClaimFormItem[241];//0 is not used 
 			Fill(1,"IsPreAuth");
 			Fill(2,"IsStandardClaim");
 			Fill(3,"IsMedicaidClaim");
@@ -270,11 +269,14 @@ namespace OpenDental.Bridges{
 			Fill(238,"TreatingDentistCity");
 			Fill(239,"TreatingDentistST");
 			Fill(240,"TreatingDentistZip");
-			ClaimFormItems.ListForForm=new ClaimFormItem[241];
-			item.CopyTo(ClaimFormItems.ListForForm,0);
+			ClaimFormItem[] listForForm=new ClaimFormItem[241];
+			//items.CopyTo(ClaimFormItems.ListForForm,0);
 			FormClaimPrint FormCP=new FormClaimPrint();
 			FormCP.ThisClaimNum=claimNum;
 			FormCP.ThisPatNum=patNum;
+			FormCP.ClaimFormCur=new ClaimForm();
+			FormCP.ClaimFormCur.Items=new ClaimFormItem[items.Length];
+			items.CopyTo(FormCP.ClaimFormCur.Items,0);
 			DisplayStrings=FormCP.FillRenaissance();
 			SaveFile();
 			return true;
@@ -292,8 +294,9 @@ namespace OpenDental.Bridges{
 					}
 				}
 			}
-			item[index].FieldName=fieldName;
-			item[index].FormatString=formatString;
+			items[index]=new ClaimFormItem();
+			items[index].FieldName=fieldName;
+			items[index].FormatString=formatString;
 		}
 
 		private static void Fill(int index,string fieldName){

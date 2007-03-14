@@ -17,7 +17,9 @@ namespace OpenDental{
 		private System.ComponentModel.Container components = null;
 		private System.Windows.Forms.Button butNo;
 		private System.Windows.Forms.Button butYes;
+		///<summary>The text to display in this dialog</summary>
 		public string mainText;
+		///<summary>The user checked the box.</summary>
 		public bool CheckedBox;
 
 		///<summary></summary>

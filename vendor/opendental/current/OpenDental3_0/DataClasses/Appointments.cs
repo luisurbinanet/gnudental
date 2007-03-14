@@ -12,7 +12,7 @@ namespace OpenDental{
 		public int PatNum;
 		///<summary>See the <see cref="ApptStatus"/> enumeration.</summary>
 		public ApptStatus AptStatus;
-		///<summary>Time pattern, X for Dr time, / for assist time.</summary>
+		///<summary>Time pattern, X for Dr time, / for assist time. Was previously in 10 minute increments, but is now in 5 minute increments.</summary>
 		public string Pattern;
 		///<summary>Foreign key to <see cref="Def.DefNum">definition.DefNum</see>.</summary>
 		///<remarks>The <see cref="Def.Category">definition.Category</see> in the definition table is <see cref="DefCat.ApptConfirmed">DefCat.ApptConfirmed</see>.</remarks>
@@ -50,14 +50,14 @@ namespace OpenDental{
 
 	///<summary>Handles database commands related to the appointment table in the db.</summary>
 	public class Appointments:DataClass{
-		///<summary>This is a temporary private list of appointments which then gets copied to one of the three public lists.</summary>
-		private static Appointment[] List;
+		//<summary>This is a temporary private list of appointments which then gets copied to one of the three public lists.</summary>
+		//private static Appointment[] List;
 		///<summary>A list of appointments for one day in the schedule, whether hidden or not.</summary>
 		public static Appointment[] ListDay;
 		///<summary>A list of appointments for use on the Unscheduled list or the Next appointment tracker.</summary>
 		public static Appointment[] ListUn;
 		///<summary>A list of appointments for use on the Other appointments list for a single patient.</summary>
-		public static Appointment[] ListOth;
+		public static Appointment[] ListOthh;
 		///<summary>Current appointment.  A single row of data.</summary>
 		public static Appointment Cur;
 		///<summary>When doing update, this Appointment is the original before any changes were made. This allows only the changed fields to be updated, minimizing concurrency issues.</summary>
@@ -70,70 +70,86 @@ namespace OpenDental{
 		///<summary>Gets the ListDay for a given date.</summary>
 		public static void Refresh(DateTime thisDay){
 			DateSelected = thisDay;
-			cmd.CommandText =
+			string command=
 				"SELECT * from appointment "
 				+"WHERE AptDateTime LIKE '"+POut.PDate(thisDay)+"%' "
 				+"&& aptstatus != '"+(int)ApptStatus.UnschedList+"' "
 				+"&& aptstatus != '"+(int)ApptStatus.Next+"'";
-			FillList();
-			ListDay=List;
-			List=null;
+			ListDay=FillList(command);
 		}
 
 		///<summary>Gets ListUn for both the unscheduled list and for next appt tracker.
 		///This is in transition, since the unscheduled list will probably eventually be phased out.</summary>
 		///<param name="doGetNext">True if getting Next appointments, false if getting Unscheduled appointments.</param>
 		public static void RefreshUnsched(bool doGetNext){
+			string command="";
 			if(doGetNext){
-				cmd.CommandText="SELECT Tnext.*,Tregular.aptnum FROM appointment AS Tnext "
+				command="SELECT Tnext.*,Tregular.aptnum FROM appointment AS Tnext "
 					+"LEFT JOIN appointment AS Tregular ON Tnext.aptnum = Tregular.nextaptnum "
 					+"WHERE Tnext.aptstatus = '"+(int)ApptStatus.Next+"' "
 					+"AND Tregular.aptnum IS NULL "
 					+"ORDER BY Tnext.UnschedStatus,Tnext.AptDateTime";
 			}
 			else{//unsched
-				cmd.CommandText="SELECT * FROM appointment "
+				command="SELECT * FROM appointment "
 					+"WHERE aptstatus = '"+(int)ApptStatus.UnschedList+"' "
 					+"ORDER BY AptDateTime";
 			}
-			FillList();
-			ListUn=List;
-			List=null;
+			ListUn=FillList(command);
 		}
 
-		///<summary>Gets the ListOth for the current patient.</summary>
-		public static void RefreshOther(){
-			cmd.CommandText =
+		///<summary>Returns all appointments for the given patient, ordered from soonest to farthest away.  Used in statements, appt cards, OtherAppts window, etc.</summary>
+		public static Appointment[] GetForPat(int patNum){
+			string command=
 				"SELECT * FROM appointment "
-				+"WHERE patnum = '"+Patients.Cur.PatNum.ToString()+"' "
+				+"WHERE patnum = '"+patNum.ToString()+"' "
 				+"ORDER BY AptDateTime";
-			FillList();
-			ListOth=List;
-			List=null;
+			return FillList(command);
 		}
 
-		private static void FillList(){
+		/*
+		///<summary>Returns all future appts for a patient, ordered from  .</summary>
+		public static Appointment[] GetFutureScheduled(int patNum){
+			string command="SELECT AptDateTime FROM appointment "
+				+"WHERE "
+				+"AptDateTime > CURDATE() AND "
+				+"PatNum="+patNum.ToString()
+				+" ORDER BY AptDateTime";
+			//MessageBox.Show(cmd.CommandText);
 			FillTable();
-			List = new Appointment[table.Rows.Count];
+			DateTime[] retVal=new DateTime[table.Rows.Count];
+			//MessageBox.Show(table.Rows.Count.ToString());
 			for(int i=0;i<table.Rows.Count;i++){
-				List[i].AptNum      =PIn.PInt   (table.Rows[i][0].ToString());
-				List[i].PatNum      =PIn.PInt   (table.Rows[i][1].ToString());
-				List[i].AptStatus   =(ApptStatus)PIn.PInt(table.Rows[i][2].ToString());
-				List[i].Pattern     =PIn.PString(table.Rows[i][3].ToString());
-				List[i].Confirmed   =PIn.PInt   (table.Rows[i][4].ToString());
-				List[i].AddTime     =PIn.PInt   (table.Rows[i][5].ToString());
-				List[i].Op          =PIn.PInt   (table.Rows[i][6].ToString());
-				List[i].Note        =PIn.PString(table.Rows[i][7].ToString());
-				List[i].ProvNum     =PIn.PInt   (table.Rows[i][8].ToString());
-				List[i].ProvHyg     =PIn.PInt   (table.Rows[i][9].ToString());
-				List[i].AptDateTime =PIn.PDateT (table.Rows[i][10].ToString());
-				List[i].NextAptNum  =PIn.PInt   (table.Rows[i][11].ToString());
-				List[i].UnschedStatus=PIn.PInt  (table.Rows[i][12].ToString());
-				List[i].Lab         =(LabCase)PIn.PInt   (table.Rows[i][13].ToString());
-				List[i].IsNewPatient=PIn.PBool  (table.Rows[i][14].ToString());
-				List[i].ProcDescript=PIn.PString(table.Rows[i][15].ToString());
-				List[i].Assistant   =PIn.PInt   (table.Rows[i][16].ToString());
+				retVal[i]=PIn.PDateT(table.Rows[i][0].ToString());
 			}
+			return retVal;
+		}*/
+
+		///<summary>Fills the specified array of Appointments using the supplied SQL command.</summary>
+		private static Appointment[] FillList(string command){
+			cmd.CommandText=command;
+			FillTable();
+			Appointment[] list=new Appointment[table.Rows.Count];
+			for(int i=0;i<table.Rows.Count;i++){
+				list[i].AptNum      =PIn.PInt   (table.Rows[i][0].ToString());
+				list[i].PatNum      =PIn.PInt   (table.Rows[i][1].ToString());
+				list[i].AptStatus   =(ApptStatus)PIn.PInt(table.Rows[i][2].ToString());
+				list[i].Pattern     =PIn.PString(table.Rows[i][3].ToString());
+				list[i].Confirmed   =PIn.PInt   (table.Rows[i][4].ToString());
+				list[i].AddTime     =PIn.PInt   (table.Rows[i][5].ToString());
+				list[i].Op          =PIn.PInt   (table.Rows[i][6].ToString());
+				list[i].Note        =PIn.PString(table.Rows[i][7].ToString());
+				list[i].ProvNum     =PIn.PInt   (table.Rows[i][8].ToString());
+				list[i].ProvHyg     =PIn.PInt   (table.Rows[i][9].ToString());
+				list[i].AptDateTime =PIn.PDateT (table.Rows[i][10].ToString());
+				list[i].NextAptNum  =PIn.PInt   (table.Rows[i][11].ToString());
+				list[i].UnschedStatus=PIn.PInt  (table.Rows[i][12].ToString());
+				list[i].Lab         =(LabCase)PIn.PInt   (table.Rows[i][13].ToString());
+				list[i].IsNewPatient=PIn.PBool  (table.Rows[i][14].ToString());
+				list[i].ProcDescript=PIn.PString(table.Rows[i][15].ToString());
+				list[i].Assistant   =PIn.PInt   (table.Rows[i][16].ToString());
+			}
+			return list;
 		}
 
 		///<summary>Also fills AptNum with the insertID.</summary>
@@ -314,6 +330,8 @@ namespace OpenDental{
 				return true;
 			}
 		}
+
+		
 
 		
 		

@@ -41,7 +41,7 @@ namespace OpenDental.Bridges{
 					return;
 				}
 				string fileName=quikLinkDir+patID+".DDE";
-				MessageBox.Show(fileName);
+				//MessageBox.Show(fileName);
 				using(StreamWriter sw=new StreamWriter(fileName,false)){
 					sw.WriteLine("\""+Patients.Cur.FName+"\","
 						+"\""+Patients.Cur.LName+"\","

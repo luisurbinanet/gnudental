@@ -124,31 +124,34 @@ namespace OpenDental{
 			DateTime DateTimeFirst=new DateTime(DateTime.Today.Year,DateTime.Today.Month,1);
 			report.AddParameter("carrier",FieldValueType.String,""
 				,"Enter a few letters of the name of the insurance carrier"
-				,"insplan.Carrier LIKE '%?%'");
+				,"carrier.CarrierName LIKE '%?%'"); // SPK 8/04
 			report.AddParameter("date1",FieldValueType.Date,DateTimeFirst
 				,"From Date"
 				,"procedurelog.ProcDate >= '?'");
 			report.AddParameter("date2",FieldValueType.Date
 				,DateTimeFirst.AddMonths(1).AddDays(-1)
 				,"To Date"
-				,"procedurelog.ProcDate <= '?'");
-			report.Query=@"SELECT insplan.Carrier,CONCAT(patSub.LName,', ',patSub.FName) 
+				,"procedurelog.ProcDate <= '?'");		// added carrierNum, SPK
+			report.Query=@"SELECT carrier.CarrierName,CONCAT(patSub.LName,', ',patSub.FName) 
 				,patSub.SSN,CONCAT(patPat.LName,', ',patPat.FName)
 				,patPat.Birthdate,procedurelog.ADACode,procedurecode.Descript
 				,procedurelog.ToothNum,procedurelog.Surf,procedurelog.ProcDate
-				,procedurelog.ProcFee,procedurelog.CapCoPay
-				FROM procedurelog,patient AS patSub,patient AS patPat,insplan,procedurecode
+				,procedurelog.ProcFee,procedurelog.ProcFee-claimproc.WriteOff
+				FROM procedurelog,patient AS patSub,patient AS patPat
+				,insplan,carrier,procedurecode,claimproc
 				WHERE procedurelog.PatNum = patPat.PatNum
-				&& patPat.PriPlanNum = insplan.PlanNum
-				&& insplan.Subscriber = patSub.PatNum
-				&& procedurelog.ADACode = procedurecode.ADACode
-				&& ?carrier
-				&& ?date1
-				&& ?date2
-				&& insplan.PlanType = 'c'
-				&& procedurelog.ProcFee > 0
-				&& procedurelog.CapCoPay != -1
-				&& procedurelog.ProcStatus = 2";
+				AND claimproc.ProcNum = procedurelog.ProcNum
+				AND claimproc.PlanNum = insplan.PlanNum
+				AND claimproc.Status = 7
+				AND claimproc.NoBillIns = 0 
+				AND insplan.Subscriber = patSub.PatNum
+				AND insplan.CarrierNum = carrier.CarrierNum	
+				AND procedurelog.ADACode = procedurecode.ADACode
+				AND ?carrier
+				AND ?date1
+				AND ?date2
+				AND insplan.PlanType = 'c'
+				AND procedurelog.ProcStatus = 2";
 			report.AddColumn("Carrier",150,FieldValueType.String);
 			report.GetLastRO(ReportObjectKind.FieldObject).SuppressIfDuplicate=true;
 			report.AddColumn("Subscriber",120,FieldValueType.String);
@@ -165,8 +168,11 @@ namespace OpenDental{
 			report.AddColumn("UCR Fee",70,FieldValueType.Number);
 			report.AddColumn("Co-Pay",70,FieldValueType.Number);
 			report.AddPageNum();
-			report.SubmitQuery();
-//todo: Add functionality for using parameter values in textObjects, probably useing inline XML:
+      if(!report.SubmitQuery()){
+				DialogResult=DialogResult.Cancel;
+				return;
+			}
+//todo: Add functionality for using parameter values in textObjects, probably using inline XML:
 			report.AddSubTitle(((DateTime)report.ParameterFields["date1"].CurrentValues[0]).ToShortDateString()+" - "+((DateTime)report.ParameterFields["date2"].CurrentValues[0]).ToShortDateString());
 //todo: Implement formulas for situations like this:
 			for(int i=0;i<report.ReportTable.Rows.Count;i++){

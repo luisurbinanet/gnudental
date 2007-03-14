@@ -23,20 +23,22 @@ namespace OpenDental
 		public float BigToothWidthA=145;
 		///<summary></summary>
 		public float BigToothHeight=715;
-		///<summary></summary>
-		public int TWidthP;//adjusted for zoom
+		///<summary>adjusted for zoom</summary>
+		public int TWidthP;
 		///<summary></summary>
 		public int TWidthA;
 		///<summary></summary>
 		public int THeight;
 		private float zoom;
-		//public bool[] SelectedTeeth;
-		private ArrayList PrimaryTeeth;//valid values are "1" to "32"
-		private ArrayList MissingTeeth;//valid values are "1" to "32", and "A" to "Z"
+		///<summary>valid values are "1" to "32"</summary>
+		private ArrayList PrimaryTeeth;
+		///<summary>valid values are "1" to "32", and "A" to "Z"</summary>
+		private ArrayList MissingTeeth;
 		private Bitmap BackShadow;
-		///<summary></summary>
-		public string[] SelectedTeeth;//valid values are "1" to "32", and "A" to "Z"
-		private ArrayList ALSelectedTeeth;//valid values are 1 to 32 (int)
+		///<summary>valid values are "1" to "32", and "A" to "Z"</summary>
+		public string[] SelectedTeeth;
+		///<summary>valid values are 1 to 32 (int)</summary>
+		private ArrayList ALSelectedTeeth;
 		private Bitmap Shadow;
 		private Color drawColor;
 		private int xPos;
@@ -45,7 +47,6 @@ namespace OpenDental
 		private int yPosPrev;
 		private Point[] poly;
 		private bool ControlIsDown;
-		//private ArrayList ALelements;
 	
 		///<summary></summary>
 		public ContrTeeth()
@@ -109,7 +110,7 @@ namespace OpenDental
 		}
 
 		//public override 
-		///<summary></summary>
+		///<summary>Sets the zoom according to the desired width.</summary>
 		public void SetWidth(int width){
 			zoom=(float)(width-17-2)/(BigToothWidthP*6+BigToothWidthA*10);
 			ResetSize();
@@ -122,8 +123,8 @@ namespace OpenDental
 		//	ClearProcs();
 		//}
 
-		///<summary></summary>
-		public void CreateBackShadow(){//only to be called once upon startup.
+		///<summary>Only to be called once upon startup.</summary>
+		public void CreateBackShadow(){//
 			BackShadow=new Bitmap(Width,Height);
 			Graphics grfx=Graphics.FromImage(BackShadow);
 			grfx.SmoothingMode=SmoothingMode.HighQuality;
@@ -266,8 +267,8 @@ namespace OpenDental
 			return GetWidthTooth(Tooth.FromInt(intTooth));
 		}
 
-		///<summary></summary>
-		public void ClearProcs(){//also clears selected. Does not DrawShadow
+		///<summary>Also clears selected. Does not DrawShadow</summary>
+		public void ClearProcs(){//
 			if(BackShadow==null)
 				return;
 			ALSelectedTeeth=new ArrayList();
@@ -288,10 +289,18 @@ namespace OpenDental
 
 		///<summary></summary>
 		public void DrawShadow(){
-			if(Shadow==null) return;
+			if(Shadow==null)
+				return;
 			Graphics grfx=this.CreateGraphics();
 			grfx.DrawImage(Shadow,0,0);
 			grfx.Dispose();
+		}
+
+		///<summary>Draws the tooth chart onto the specified graphics object at the specified location.</summary>
+		public void PrintChart(Graphics g,int x,int y){
+			if(Shadow==null)
+				return;
+			g.DrawImage(Shadow,x,y);
 		}
 
 		///<summary></summary>
@@ -480,20 +489,34 @@ namespace OpenDental
 				procOrder[i]=ProcedureCodes.GetProcCode(((Procedure)ALprocs[i]).ADACode).GTypeNum;
 			}
 			Array.Sort(procOrder,procList);
-			//missing teeth
-			for(int i=0;i<procList.Length;i++){
-				if(ProcedureCodes.GetProcCode(procList[i].ADACode).RemoveTooth && (
-					procList[i].ProcStatus==ProcStat.C
-					|| procList[i].ProcStatus==ProcStat.EC
-					|| procList[i].ProcStatus==ProcStat.EO
-					)){
-					SetMissing(procList[i].ToothNum);
-				}
-			}
 			//pri teeth
 			string[] priTeeth=Patients.Cur.PrimaryTeeth.Split(',');
 			for(int i=0;i<priTeeth.Length;i++){
 				SetPrimary(priTeeth[i]);
+			}
+			//missing teeth
+			for(int i=0;i<procList.Length;i++){
+				//if(procList[i].HideGraphical){
+				//	continue;
+				//}
+				if(ProcedureCodes.GetProcCode(procList[i].ADACode).RemoveTooth && (
+					procList[i].ProcStatus==ProcStat.C
+					|| procList[i].ProcStatus==ProcStat.EC
+					|| procList[i].ProcStatus==ProcStat.EO))
+				{
+					if(Tooth.IsPrimary(procList[i].ToothNum)){
+						if(PrimaryTeeth.Contains(Tooth.PriToPerm(procList[i].ToothNum))){
+							SetMissing(procList[i].ToothNum);
+						}
+						else{
+							MissingTeeth.Add(procList[i].ToothNum);
+							//the primary tooth will just be covered up by the permanent, so no need to draw rect
+						}
+					}
+					else{
+						SetMissing(procList[i].ToothNum);
+					}
+				}
 			}
 			Color elemColor;
 			bool doDraw;
@@ -522,12 +545,26 @@ namespace OpenDental
 						doDraw=false;
 						break;
 				}
+				if(procList[i].HideGraphical){
+					doDraw=false;
+				}
 				if(ProcedureCodes.GetProcCode(procList[i].ADACode).RemoveTooth && (
 					procList[i].ProcStatus==ProcStat.C
 					|| procList[i].ProcStatus==ProcStat.EC
 					|| procList[i].ProcStatus==ProcStat.EO
 					)){
-					doDraw=false;
+					doDraw=false;//prevents the red X. Missing teeth already handled.
+				}
+				//if a primary filling, and primary tooth not present, don't draw
+				if(Tooth.IsPrimary(procList[i].ToothNum)){
+					if(PrimaryTeeth.Contains(Tooth.PriToPerm(procList[i].ToothNum))){
+						if(MissingTeeth.Contains(procList[i].ToothNum)){
+							doDraw=false;
+						}
+					}
+					else{
+						doDraw=false;
+					}
 				}
 				gTypeNum=ProcedureCodes.GetProcCode(procList[i].ADACode).GTypeNum;
 				if(gTypeNum==0){
@@ -901,7 +938,7 @@ namespace OpenDental
 			DrawShadow();
 		}
 
-		///<summary></summary>
+		///<summary>Adds the tooth number to MissingTeeth and draws a white rectangle over that tooth.</summary>
 		public void SetMissing(string toothNum){//valid "1"-"32" and "A"-"Z"
 			MissingTeeth.Add(toothNum);
 			int intTooth=Tooth.ToInt(toothNum);
@@ -911,8 +948,8 @@ namespace OpenDental
 			grfx.Dispose();
 		}
 
-		///<summary></summary>
-		public void SetPrimary(string toothNum){//valid "1"-"32"
+		///<summary>Valid "1"-"32".  Adds the tooth to PrimaryTeeth and also draws the primary tooth.</summary>
+		public void SetPrimary(string toothNum){
 			string priToothNum=Tooth.PermToPri(toothNum);
 			int intTooth=Tooth.ToInt(toothNum);
 			PrimaryTeeth.Add(toothNum);
@@ -921,11 +958,11 @@ namespace OpenDental
 			grfx.SmoothingMode=SmoothingMode.HighQuality;
 			if(intTooth<=16){
 				grfx.FillRectangle(new SolidBrush(fillColor),GetXLoc(intTooth)-1,GetYLoc(intTooth)
-					,GetWidthTooth(intTooth)+2,THeight+19+1);
+					,GetWidthTooth(intTooth)+2,THeight+19);
 			}
 			else{
 				grfx.FillRectangle(new SolidBrush(fillColor),GetXLoc(intTooth)-1,THeight+19+4
-					,GetWidthTooth(intTooth)+2,THeight+19+2);
+					,GetWidthTooth(intTooth)+2,THeight+19+1);
 			}
 			DrawToothNum(intTooth);
 			if(priToothNum==""){

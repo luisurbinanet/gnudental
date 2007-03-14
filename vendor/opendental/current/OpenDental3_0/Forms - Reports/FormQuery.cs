@@ -5,21 +5,21 @@ using System.Drawing;
 using System.Drawing.Printing;
 using System.Collections;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Windows.Forms;
 using System.Threading;
 
 namespace OpenDental{
-///<summary></summary>
+///<summary>This is getting very outdated.  I realize it is difficult to use and will be phased out soon. The report displayed will be based on Queries.TableQ and Queries.CurReport.</summary>
 	public class FormQuery : System.Windows.Forms.Form{
 		private System.Windows.Forms.Button butClose;
 		private System.Windows.Forms.DataGrid grid2;
 		private System.Windows.Forms.Panel panelTop;
 		private System.Windows.Forms.GroupBox groupBox1;
-		///<summary></summary>
-		public  System.Windows.Forms.TextBox textQuery;
 		private System.Windows.Forms.Button butSubmit;
 		private System.Windows.Forms.RadioButton radioRaw;
 		///<summary></summary>
@@ -31,6 +31,7 @@ namespace OpenDental{
 		private System.Windows.Forms.PrintPreviewDialog printPreviewDialog2;
 		private System.Drawing.Printing.PrintDocument pd2;
 		private bool totalsPrinted;
+		private bool summaryPrinted;
 		private int linesPrinted;
 		private int pagesPrinted;
 		///<summary></summary>
@@ -60,6 +61,7 @@ namespace OpenDental{
 		private OpenDental.XPButton butBack;
 		private OpenDental.XPButton butFwd;
 		private OpenDental.XPButton butExportExcel;
+		public OpenDental.ODtextBox textQuery;
 		private int totalPages=0;
 
 		///<summary></summary>
@@ -112,6 +114,7 @@ namespace OpenDental{
 			this.butClose = new System.Windows.Forms.Button();
 			this.grid2 = new System.Windows.Forms.DataGrid();
 			this.panelTop = new System.Windows.Forms.Panel();
+			this.textQuery = new OpenDental.ODtextBox();
 			this.butExportExcel = new OpenDental.XPButton();
 			this.butPaste = new OpenDental.XPButton();
 			this.butCopy = new OpenDental.XPButton();
@@ -123,7 +126,6 @@ namespace OpenDental{
 			this.radioHuman = new System.Windows.Forms.RadioButton();
 			this.radioRaw = new System.Windows.Forms.RadioButton();
 			this.butSubmit = new System.Windows.Forms.Button();
-			this.textQuery = new System.Windows.Forms.TextBox();
 			this.pd2 = new System.Drawing.Printing.PrintDocument();
 			this.printPreviewDialog2 = new System.Windows.Forms.PrintPreviewDialog();
 			this.printPreviewControl2 = new System.Windows.Forms.PrintPreviewControl();
@@ -168,6 +170,7 @@ namespace OpenDental{
 			// 
 			// panelTop
 			// 
+			this.panelTop.Controls.Add(this.textQuery);
 			this.panelTop.Controls.Add(this.butExportExcel);
 			this.panelTop.Controls.Add(this.butPaste);
 			this.panelTop.Controls.Add(this.butCopy);
@@ -177,11 +180,23 @@ namespace OpenDental{
 			this.panelTop.Controls.Add(this.butFormulate);
 			this.panelTop.Controls.Add(this.groupBox1);
 			this.panelTop.Controls.Add(this.butSubmit);
-			this.panelTop.Controls.Add(this.textQuery);
 			this.panelTop.Location = new System.Drawing.Point(0, 0);
 			this.panelTop.Name = "panelTop";
 			this.panelTop.Size = new System.Drawing.Size(956, 104);
 			this.panelTop.TabIndex = 2;
+			// 
+			// textQuery
+			// 
+			this.textQuery.AcceptsReturn = true;
+			this.textQuery.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.textQuery.Location = new System.Drawing.Point(2, 3);
+			this.textQuery.Multiline = true;
+			this.textQuery.Name = "textQuery";
+			this.textQuery.QuickPasteType = OpenDental.QuickPasteType.Query;
+			this.textQuery.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.textQuery.Size = new System.Drawing.Size(551, 76);
+			this.textQuery.TabIndex = 16;
+			this.textQuery.Text = "";
 			// 
 			// butExportExcel
 			// 
@@ -306,17 +321,6 @@ namespace OpenDental{
 			this.butSubmit.TabIndex = 6;
 			this.butSubmit.Text = "&Submit Query";
 			this.butSubmit.Click += new System.EventHandler(this.butSubmit_Click);
-			// 
-			// textQuery
-			// 
-			this.textQuery.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.textQuery.Location = new System.Drawing.Point(4, 2);
-			this.textQuery.Multiline = true;
-			this.textQuery.Name = "textQuery";
-			this.textQuery.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textQuery.Size = new System.Drawing.Size(540, 78);
-			this.textQuery.TabIndex = 0;
-			this.textQuery.Text = "";
 			// 
 			// printPreviewDialog2
 			// 
@@ -802,7 +806,7 @@ namespace OpenDental{
 							break;
 						case "doccategory":
 							Queries.TableQ.Rows[i][j]
-								=Defs.GetName(DefCat.DocumentCats,PIn.PInt(Queries.TableQ.Rows[i][j].ToString()));
+								=Defs.GetName(DefCat.ImageCats,PIn.PInt(Queries.TableQ.Rows[i][j].ToString()));
 							break;
 						case "feesched":
 							Queries.TableQ.Rows[i][j]
@@ -1076,7 +1080,8 @@ namespace OpenDental{
 			
 		}
 		
-		private void pd2_PrintPage(object sender, PrintPageEventArgs ev){//raised for each page to be printed.
+		///<summary>raised for each page to be printed.</summary>
+		private void pd2_PrintPage(object sender, PrintPageEventArgs ev){
 			float yPos = ev.MarginBounds.Top;
 			if(!headerPrinted){
 				ev.Graphics.DrawString(Lan.g(this,Queries.CurReport.Title)
@@ -1091,15 +1096,16 @@ namespace OpenDental{
 						-ev.Graphics.MeasureString(Queries.CurReport.SubTitle[i],subtitleFont).Width/2,yPos);
 					yPos+=subtitleFont.GetHeight(ev.Graphics)+2;
 				}
+				headerPrinted=true;
 			}
 			yPos+=10;
 			ev.Graphics.DrawString(Lan.g(this,"Date: "+DateTime.Today.ToString("d"))
 				,bodyFont,Brushes.Black,ev.MarginBounds.Left,yPos);
 			//if(totalPages==0){
-				ev.Graphics.DrawString(Lan.g(this,"Page: "+(pagesPrinted+1).ToString())
-					,bodyFont,Brushes.Black
-					,ev.MarginBounds.Right
-					-ev.Graphics.MeasureString("Page: "+(pagesPrinted+1).ToString(),bodyFont).Width,yPos);
+			ev.Graphics.DrawString(Lan.g(this,"Page: "+(pagesPrinted+1).ToString())
+				,bodyFont,Brushes.Black
+				,ev.MarginBounds.Right
+				-ev.Graphics.MeasureString("Page: "+(pagesPrinted+1).ToString(),bodyFont).Width,yPos);
 			/*}
 			else{//maybe work on this later.  Need totalPages on first pass
 				ev.Graphics.DrawString("Page: "+(pagesPrinted+1).ToString()+" / "+totalPages.ToString()
@@ -1127,7 +1133,9 @@ namespace OpenDental{
 			}
 			yPos+=bodyFont.GetHeight(ev.Graphics)+5;
 			//table:
-			while(yPos<ev.MarginBounds.Top+ev.MarginBounds.Height && linesPrinted < Queries.TableQ.Rows.Count){
+			while(yPos<ev.MarginBounds.Top+ev.MarginBounds.Height 
+				&& linesPrinted < Queries.TableQ.Rows.Count)
+			{
 				for(int iCol=0;iCol<Queries.TableQ.Columns.Count;iCol++){
 					if(Queries.CurReport.ColAlign[iCol]==HorizontalAlignment.Right){
 						ev.Graphics.DrawString(Lan.g(this,grid2[linesPrinted,iCol].ToString())
@@ -1148,19 +1156,21 @@ namespace OpenDental{
 				linesPrinted++;
 				if(linesPrinted==Queries.TableQ.Rows.Count){
 					tablePrinted=true;
-
 				}
+			}
+			if(Queries.TableQ.Rows.Count==0){
+				tablePrinted=true;
 			}
 			//totals:
 			if(tablePrinted){
-				if(yPos<ev.MarginBounds.Top+ev.MarginBounds.Height){
+				if(yPos<ev.MarginBounds.Bottom){
 					ev.Graphics.DrawLine(new Pen(Color.Black),ev.MarginBounds.Left,yPos+3,ev.MarginBounds.Right,yPos+3);
 					yPos+=4;
 					for(int iCol=0;iCol<Queries.TableQ.Columns.Count;iCol++){
 						if(Queries.CurReport.ColAlign[iCol]==HorizontalAlignment.Right){
 							float textWidth=(float)(ev.Graphics.MeasureString
-								(Queries.CurReport.ColTotal[iCol].ToString("F"),subtitleFont).Width);
-							ev.Graphics.DrawString(Lan.g(this,Queries.CurReport.ColTotal[iCol].ToString("F"))
+								(Queries.CurReport.ColTotal[iCol].ToString("n"),subtitleFont).Width);
+							ev.Graphics.DrawString(Queries.CurReport.ColTotal[iCol].ToString("n")
 								,subtitleFont,Brushes.Black,new RectangleF(
 								ev.MarginBounds.Left+Queries.CurReport.ColPos[iCol+1]-textWidth+3,yPos//the 3 is arbitrary
 								,textWidth,subtitleFont.GetHeight(ev.Graphics)));
@@ -1190,9 +1200,10 @@ namespace OpenDental{
 							,subtitleFont,Brushes.Black,ev.MarginBounds.Left,yPos);
 						yPos+=subtitleFont.GetHeight(ev.Graphics);
 					}
+					summaryPrinted=true;
 				}
 			}
-			if(linesPrinted < Queries.TableQ.Rows.Count){
+			if(!summaryPrinted){//linesPrinted < Queries.TableQ.Rows.Count){
 				ev.HasMorePages = true;
 				pagesPrinted++;
 			}
@@ -1206,6 +1217,7 @@ namespace OpenDental{
 				headerPrinted=false;
 				tablePrinted=false;
 				totalsPrinted=false;
+				summaryPrinted=false;
 			}
 		}
 
@@ -1281,7 +1293,7 @@ namespace OpenDental{
 		private void butExport_Click(object sender, System.EventArgs e){
 			saveFileDialog2=new SaveFileDialog();
       saveFileDialog2.AddExtension=true;
-			saveFileDialog2.Title=Lan.g(this,"Select Folder to Save File To");
+			//saveFileDialog2.Title=Lan.g(this,"Select Folder to Save File To");
 		  if(IsReport){
 				saveFileDialog2.FileName=Queries.CurReport.Title;
 			}
@@ -1302,8 +1314,8 @@ namespace OpenDental{
 			}
 			else saveFileDialog2.InitialDirectory=((Pref)Prefs.HList["ExportPath"]).ValueString;
 			saveFileDialog2.DefaultExt="txt";
-			saveFileDialog2.Filter="txt files(*.txt)|*.txt|All files(*.*)|*.*";
-      saveFileDialog2.FilterIndex=1;
+			//saveFileDialog2.Filter="txt files(*.txt)|*.txt|All files(*.*)|*.*";
+      //saveFileDialog2.FilterIndex=1;
 		  if(saveFileDialog2.ShowDialog()!=DialogResult.OK){
 	   	  return;
 			}
@@ -1319,7 +1331,7 @@ namespace OpenDental{
 				line="";      
 				for(int i=0;i<Queries.TableQ.Rows.Count;i++){
 					for(int j=0;j<Queries.TableQ.Columns.Count;j++){
-						line+=Queries.TableQ.Rows[i][j].ToString()+"\t";
+						line+=Regex.Replace(Queries.TableQ.Rows[i][j].ToString(),"\r\n","")+"\t";
 					}
 					line+="\r\n";
 					sw.Write(line);

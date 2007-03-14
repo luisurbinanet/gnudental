@@ -194,9 +194,9 @@ namespace OpenDental{
 																											"Contact Categories",
 																											"Diagnosis",
 																											"Discount Types",
-																											"Document Categories",
 																											"Dunning Messages",
 																											"Fee Sched Names",
+																											"Image Categories",
 																											"Medical Notes",
 																											"Misc Colors",
 																											"Operatories",
@@ -361,10 +361,7 @@ namespace OpenDental{
 					break;
 				case "Medical Notes":
 					SelectedCat=8;
-					FormDefEdit.HelpText="You will always be able to"
-						+" add medical notes which are not on this list to a patient's chart."
-						+" You can freely change items on this list without"
-						+" causing any problems.  Spaces on the end of items are not saved.";
+					FormDefEdit.HelpText="This section is no longer used. Right click on text boxes instead. See Quick Add Notes.";
 					break;
 				case "Operatories":
 					SelectedCat=9;
@@ -401,10 +398,7 @@ namespace OpenDental{
 					break;
 				case "Service Notes":
 					SelectedCat=14;
-					FormDefEdit.HelpText="Service Notes are similar to Medical notes, but for"
-						+" non-medical needs.  You can always add notes which are not on this"
-						+" list to a patient's chart.  You can freely change items on this list without"
-						+" causing any problems.  Spaces on the end of items are not saved.";
+					FormDefEdit.HelpText="This section is no longer used. Right click on text boxes instead. See Quick Add Notes.";
 					break;
 				case "Discount Types":
 					SelectedCat=15;
@@ -427,17 +421,15 @@ namespace OpenDental{
 					FormDefEdit.HelpText="Changes colors of background in Appointments Module, and colors for completed"
 						+" appointments.";
 					break;
-				case "Document Categories":
+				case "Image Categories":
 					SelectedCat=18;
-					FormDefEdit.HelpText="These are the categories that will be available in the documents module."
-						+"  If you hide a category, documents in that category will be hidden, so only hide a category "
-						+"if you are certain it has never been used.  Affects all patient records.";
+					FormDefEdit.EnableValue=true;
+					FormDefEdit.ValueText="Visible in Chart module";
+					FormDefEdit.HelpText="These are the categories that will be available in the image and chart modules.  If you hide a category, images in that category will be hidden, so only hide a category if you are certain it has never been used.  If you want the category to show in the Chart module, enter an x in the second column.  Affects all patient records.";
 					break;
 				case "Appt Phone Notes":
 					SelectedCat=19;
-					FormDefEdit.HelpText="Just a simple list of quick notes to make appointment"
-						+" phone call entries quicker.  Shows in unscheduled list and recall list."
-						+" Does not affect any patient records.  Spaces on the end of items are not saved.";
+					FormDefEdit.HelpText="This section is no longer used. Right click on text boxes instead. See Quick Add Notes.";
 					break;
 				case "Treat' Plan Priorities":
 					SelectedCat=20;

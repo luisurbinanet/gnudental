@@ -84,7 +84,7 @@ namespace OpenDental.Reporting
 				font=value;
 			}
 		}
-		///<summary></summary>
+		///<summary>Horizontal alignment of the text.</summary>
 		public ContentAlignment TextAlign{
 			get{
 				return textAlign;

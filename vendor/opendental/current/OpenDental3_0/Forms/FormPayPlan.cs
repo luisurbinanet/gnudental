@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Collections;
@@ -49,7 +50,6 @@ namespace OpenDental{
 		private System.Drawing.Printing.PrintDocument pd2;
 		private System.Windows.Forms.PrintDialog printDialog2;
 		private System.Windows.Forms.Label label3;
-		private OpenDental.ValidDouble textLastPayment;
 		private System.Windows.Forms.Label label12;
 		private System.Windows.Forms.TextBox textAmtPaid;
 		/// <summary>Go to the specified patnum.  Upon dialog close, if this number is not 0, 
@@ -62,10 +62,11 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textTotalCost;
 		private System.Windows.Forms.TextBox textCurrentDue;
 		private System.Windows.Forms.TextBox textMonthsDue;
-		private System.Windows.Forms.TextBox textNote;
 		private System.Windows.Forms.Label label10;
 		private OpenDental.XPButton butDelete;
 		private System.Windows.Forms.Button butCopyTerms;
+		private OpenDental.ODtextBox textNote;
+		private OpenDental.ValidDouble textLastPayment;
 		private System.Windows.Forms.Label label14;
 
 		///<summary></summary>
@@ -143,10 +144,10 @@ namespace OpenDental{
 			this.label13 = new System.Windows.Forms.Label();
 			this.textMonthsDue = new System.Windows.Forms.TextBox();
 			this.label14 = new System.Windows.Forms.Label();
-			this.textNote = new System.Windows.Forms.TextBox();
 			this.label10 = new System.Windows.Forms.Label();
 			this.butDelete = new OpenDental.XPButton();
 			this.butCopyTerms = new System.Windows.Forms.Button();
+			this.textNote = new OpenDental.ODtextBox();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.groupBox3.SuspendLayout();
@@ -293,6 +294,7 @@ namespace OpenDental{
 			// textTerm
 			// 
 			this.textTerm.Location = new System.Drawing.Point(154, 17);
+			this.textTerm.MinVal = 0;
 			this.textTerm.Name = "textTerm";
 			this.textTerm.Size = new System.Drawing.Size(43, 20);
 			this.textTerm.TabIndex = 18;
@@ -510,15 +512,6 @@ namespace OpenDental{
 			this.label14.Text = "Months Due";
 			this.label14.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
-			// textNote
-			// 
-			this.textNote.Location = new System.Drawing.Point(23, 397);
-			this.textNote.Multiline = true;
-			this.textNote.Name = "textNote";
-			this.textNote.Size = new System.Drawing.Size(430, 108);
-			this.textNote.TabIndex = 36;
-			this.textNote.Text = "";
-			// 
 			// label10
 			// 
 			this.label10.Location = new System.Drawing.Point(23, 378);
@@ -552,16 +545,28 @@ namespace OpenDental{
 			this.butCopyTerms.Text = "Copy Terms to &Note";
 			this.butCopyTerms.Click += new System.EventHandler(this.butCopyTerms_Click);
 			// 
+			// textNote
+			// 
+			this.textNote.AcceptsReturn = true;
+			this.textNote.Location = new System.Drawing.Point(54, 384);
+			this.textNote.Multiline = true;
+			this.textNote.Name = "textNote";
+			this.textNote.QuickPasteType = OpenDental.QuickPasteType.PayPlan;
+			this.textNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.textNote.Size = new System.Drawing.Size(393, 121);
+			this.textNote.TabIndex = 40;
+			this.textNote.Text = "";
+			// 
 			// FormPayPlan
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(666, 554);
+			this.Controls.Add(this.textNote);
 			this.Controls.Add(this.butCopyTerms);
 			this.Controls.Add(this.butDelete);
 			this.Controls.Add(this.label10);
-			this.Controls.Add(this.textNote);
 			this.Controls.Add(this.textMonthsDue);
 			this.Controls.Add(this.label14);
 			this.Controls.Add(this.textCurrentDue);
@@ -613,8 +618,9 @@ namespace OpenDental{
 			textMonthlyPayment.Text=PayPlans.Cur.MonthlyPayment.ToString("n");
 			textTerm.Text=PayPlans.Cur.Term.ToString();
 			textAmtPaid.Text=PayPlans.GetAmtPaid(PayPlans.Cur.PayPlanNum).ToString("n");
-			FillCurrentDue();
 			textNote.Text=PayPlans.Cur.Note;
+			textTotalCost.Text=PayPlans.Cur.TotalCost.ToString("n");
+			FillCurrentDue();
 		}
 
 		private void butGoToPat_Click(object sender, System.EventArgs e) {
@@ -659,15 +665,19 @@ namespace OpenDental{
 			//also fills total cost.  Must be run after other blanks filled in
 			if(!DataIsValid())
 				return;
-			textMonthsDue.Text=PayPlans.GetMonthsDue().ToString();
-			textTotalCost.Text=(PayPlans.Cur.DownPayment+PayPlans.Cur.Term*PayPlans.Cur.MonthlyPayment
-				+PIn.PDouble(textLastPayment.Text)).ToString("n");
-			PayPlans.Cur.CurrentDue=PayPlans.GetAmtDue();
+			SetCurFromText();
+			//there's no database field for months due
+			textMonthsDue.Text=PayPlans.GetMonthsDue(PayPlans.Cur.DateFirstPay).ToString();
+			PayPlans.Cur.TotalCost=PayPlans.Cur.DownPayment+PayPlans.Cur.Term*PayPlans.Cur.MonthlyPayment
+				+PIn.PDouble(textLastPayment.Text);
+			textTotalCost.Text=PayPlans.Cur.TotalCost.ToString("n");
+			PayPlans.Cur.CurrentDue=PayPlans.GetAmtDue(PayPlans.Cur.DownPayment,PayPlans.Cur.MonthlyPayment,PayPlans.Cur.DateFirstPay,PayPlans.Cur.TotalCost);
 			textCurrentDue.Text=PayPlans.Cur.CurrentDue.ToString("n");
 		}
 
 		private void textAmount_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e) {
 			FillMonthlyPayment();
+			//Debug.WriteLine(textAmount.Text);
 		}
 
 		private void textDateFirstPay_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e) {
@@ -710,7 +720,7 @@ namespace OpenDental{
 			}
 			textMonthlyPayment.Text=monthlyPayment.ToString("n");
 			textLastPayment.Text="";
-			SetCurFromText();
+			//SetCurFromText();now included in FillCurrentDue
 			FillCurrentDue();
 		}
 
@@ -743,7 +753,7 @@ namespace OpenDental{
 				textLastPayment.Text=lastPayment.ToString("n");
 			}
 			textTerm.Text=(term-1).ToString();
-			SetCurFromText();
+			//SetCurFromText();now included in FillCurrentDue
 			FillCurrentDue();
 		}
 
@@ -907,6 +917,7 @@ namespace OpenDental{
 			PayPlans.Cur.MonthlyPayment=PIn.PDouble(textMonthlyPayment.Text);
 			PayPlans.Cur.Term=PIn.PInt(textTerm.Text);
 			PayPlans.Cur.Note=textNote.Text;
+			PayPlans.Cur.TotalCost=PIn.PDouble(textTotalCost.Text);
 		}
 
 		///<summary>This can only be called ONCE, so after calling, the window must close.</summary>

@@ -128,6 +128,8 @@ namespace OpenDental{
 		Sec,
 		///<summary>2</summary>
 		Tot}
+		//<summary>3</summary>
+		//Other}
 	///<summary>Procedure Status.</summary>
 	public enum ProcStat{
 		///<summary>1- Treatment Plan.</summary>
@@ -179,8 +181,8 @@ namespace OpenDental{
 		Diagnosis,
 		///<summary>17- Colors to display in the Appointments module.</summary>
 		AppointmentColors,
-		///<summary>18- Document categories.</summary>
-		DocumentCats,
+		///<summary>18- Image categories.</summary>
+		ImageCats,
 		///<summary>19- Quick add notes for the ApptPhoneNotes, which is getting phased out.</summary>
 		ApptPhoneNotes,
 		///<summary>20- Treatment plan priority names.</summary>
@@ -454,12 +456,18 @@ namespace OpenDental{
 		Preauth,
 		///<summary>3: The only place that this status is used is to make adjustments to benefits from the coverage window.  It is never attached to a claim.</summary>
 		Adjustment,
-		///<summary>4:This differs from received only slightly.  It's for additional payments on claims already received.  It might be superfluous.</summary>
+		///<summary>4:This differs from Received only slightly.  It's for additional payments on procedures already received.  Most fields are blank.</summary>
 		Supplemental,
-		///<summary>5: Capitation claimprocs do not affect the patient balance and cannot be attached to a check.</summary>
-		Capitation
+		///<summary>5: CapClaim is used when you want to send a claim to a capitation insurance company.  These are similar to Supplemental in that there will always be a duplicate claimproc for a procedure. The first claimproc tracks the copay and writeoff, has a status of CapComplete, and is never attached to a claim. The second claimproc has status of CapClaim.</summary>
+		CapClaim,
+		///<summary>6: Estimates have replaced the fields that were in the procedure table.  Once a procedure is complete, the claimprocstatus will still be Estimate.  An Estimate can be attached to a claim and status gets changed to NotReceived.</summary>
+		Estimate,
+		///<summary>7: For capitation procedures that are complete.  This replaces the old procedurelog.CapCoPay field. This stores the copay and writeoff amounts.  The copay is only there for reference, while it is the writeoff that actually affects the balance. Never attached to a claim. If procedure is TP, then status will be CapEstimate.  Only set to CapComplete if procedure is Complete.  Never attach this to a claim.</summary>
+		CapComplete,
+		///<summary>8: For capitation procedures that are still estimates rather than complete.  When procedure is completed, this can be changed to CapCompleted, but never to anything else.</summary>
+		CapEstimate
 	}
-	///<summary></summary>
+	///<summary>CommItemType of 0 is reserved for later use with user defined types.</summary>
 	public enum CommItemType{
 		///<summary>1- auto. </summary>
 		StatementSent=1,
@@ -472,7 +480,34 @@ namespace OpenDental{
 		///<summary>5- </summary>
 		Recall,
 		///<summary>6- </summary>
-		LetterSent
+		Misc//LetterSent used to be 6
+		//clinical not implemented yet.
+	}
+
+	///<summary></summary>
+	public enum CommItemMode{
+		///<summary>0- </summary>
+		None,
+		///<summary>1- </summary>
+		Email,
+		///<summary>2</summary>
+		Mail,
+		///<summary>3</summary>
+		Phone,
+		///<summary>4</summary>
+		InPerson,
+		///<summary>5</summary>
+		AutoItem
+	}
+
+	///<summary></summary>
+	public enum CommSentOrReceived{
+		///<summary>0</summary>
+		Neither,
+		///<summary>1</summary>
+		Sent,
+		///<summary>2</summary>
+		Received
 	}
 
 	///<summary></summary>
@@ -593,6 +628,70 @@ namespace OpenDental{
 		NeedsCare,
 		///<summary></summary>
 		Urgent
+	}
+
+	///<summary>The type of image for images module.</summary>
+	public enum ImageType{
+		///<summary>0- Includes scanned documents and screenshots.</summary>
+		Document,
+		///<summary>1</summary>
+		Radiograph,
+		///<summary>2</summary>
+		Photo,
+		///<summary>3- For instance a Word document or a spreadsheet. Not an image.</summary>
+		File
+	}
+
+	///<summary>Used by QuickPasteCat to determine which category to default to when opening.</summary>
+	public enum QuickPasteType{
+		///<summary>0</summary>
+		None,
+		///<summary>1</summary>
+		Procedure,
+		///<summary>2</summary>
+		Appointment,
+		///<summary>3</summary>
+		CommLog,
+		///<summary>4</summary>
+		Adjustment,
+		///<summary>5</summary>
+		Claim,
+		///<summary>6</summary>
+		Email,
+		///<summary>7</summary>
+		InsPlan,
+		///<summary>8</summary>
+		Letter,
+		///<summary>9</summary>
+		MedicalSummary,
+		///<summary>10</summary>
+		ServiceNotes,
+		///<summary>11</summary>
+		MedicalHistory,
+		///<summary>12</summary>
+		MedicationEdit,
+		///<summary>13</summary>
+		MedicationPat,
+		///<summary>14</summary>
+		PatAddressNote,
+		///<summary>15</summary>
+		Payment,
+		///<summary>16</summary>
+		PayPlan,
+		///<summary>17</summary>
+		Query,
+		///<summary>18</summary>
+		Referral,
+		///<summary>19</summary>
+		Rx,
+		///<summary>20</summary>
+		FinancialNotes,
+		///<summary>21</summary>
+		ChartTreatment,
+		///<summary>22</summary>
+    MedicalUrgent,
+		///<summary>23</summary>
+    Statement
 	}
 
 

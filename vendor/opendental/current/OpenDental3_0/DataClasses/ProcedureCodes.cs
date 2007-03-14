@@ -138,7 +138,7 @@ namespace OpenDental{
 			NonQ(false);
 		}
 
-		///<summary></summary>
+		///<summary>Returns the ProcedureCode for the supplied adaCode. If adaCode not present, then it adds it to the db.  Be very careful not to use this in the middle of a loop over a shared table, because it jumps out of the loop to refresh local data.</summary>
 		public static ProcedureCode GetProcCode(string myADA){
 			if(myADA==null){
 				MessageBox.Show(Lan.g("ProcCodes","Error. Invalid procedure code."));

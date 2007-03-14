@@ -32,7 +32,8 @@ namespace OpenDental.Reporting
 		private System.Windows.Forms.Label labelTotPages;
 		private OpenDental.XPButton butBack;
 		private OpenDental.XPButton butFwd;
-		private Section lastSectionPrinted;//this really only keeps track of whether the details section and the reportfooter have finished printing. This variable will be refined when groups are implemented.
+		///<summary>The name of the last section printed. It really only keeps track of whether the details section and the reportfooter have finished printing. This variable will be refined when groups are implemented.</summary>
+		private string lastSectionPrinted;
 		private int rowsPrinted;
 		private int totalPages;
 		private OpenDental.UI.ODToolBar ToolBarMain;
@@ -230,13 +231,13 @@ namespace OpenDental.Reporting
 		public void LayoutToolBar(){
 			ToolBarMain.Buttons.Clear();
 			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Print"),0,"","Print"));
-			ToolBarMain.Buttons.Add(new ODToolBarButton(ToolBarButtonStyle.Separator));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(ODToolBarButtonStyle.Separator));
 			ToolBarMain.Buttons.Add(new ODToolBarButton("",1,"Go Back One Page","Back"));
 			ODToolBarButton button=new ODToolBarButton("",-1,"","PageNum");
-			//button.Enabled=false;//this doesn't work because text is too light.
+			button.Style=ODToolBarButtonStyle.Label;
 			ToolBarMain.Buttons.Add(button);
 			ToolBarMain.Buttons.Add(new ODToolBarButton("",2,"Go Forward One Page","Fwd"));
-			ToolBarMain.Buttons.Add(new ODToolBarButton(ToolBarButtonStyle.Separator));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(ODToolBarButtonStyle.Separator));
 			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Close"),-1,"Close This Window","Close"));
 			//ToolBarMain.Invalidate();
 		}
@@ -250,7 +251,7 @@ namespace OpenDental.Reporting
 		private void ResetPd2(){
 			pd2=new PrintDocument();
 			pd2.PrintPage += new PrintPageEventHandler(this.pd2_PrintPage);
-			lastSectionPrinted=null;
+			lastSectionPrinted="";
 			rowsPrinted=0;
 			pagesPrinted=0;
 			if(MyReport.IsLandscape){
@@ -328,51 +329,58 @@ namespace OpenDental.Reporting
 			//for(int sectionIndex=0;sectionIndex<Report.Sections.Count;sectionIndex++){
 			while(true){//will break out if no more room on page
 				//if no sections have been printed yet, print a report header.
-				if(lastSectionPrinted==null){
-					section=MyReport.Sections["Report Header"];
-					PrintSection(grfx,section,xPos,yPos);
-					lastSectionPrinted=section;
-					yPos+=section.Height;
-					if(section.Height>printableHeight){//this can happen if the reportHeader takes up the full page
-						//if there are no other sections to print
-						if(MyReport.ReportTable==null){
-							//this will keep the second page from printing:
-							lastSectionPrinted=MyReport.Sections["Report Footer"];
+				if(lastSectionPrinted==""){
+					if(MyReport.Sections.Contains("Report Header")){
+						section=MyReport.Sections["Report Header"];
+						PrintSection(grfx,section,xPos,yPos);
+						yPos+=section.Height;
+						if(section.Height>printableHeight){//this can happen if the reportHeader takes up the full page
+							//if there are no other sections to print
+							if(MyReport.ReportTable==null){
+								//this will keep the second page from printing:
+								lastSectionPrinted="Report Footer";
+							}
+							break;
 						}
-						break;
 					}
+					else{//no report header
+						//it will still be marked as printed on the next line
+					}
+					lastSectionPrinted="Report Header";
 				}
 				//If the size of pageheader+one detail+pagefooter is taller than page, then we might later display an error. But for now, they will all still be laid out, and whatever goes off the bottom edge will just not show.  This will not be an issue for normal reports:
-				if(MyReport.Sections["Page Header"].Height
-					+MyReport.Sections["Detail"].Height
-					+MyReport.Sections["Page Footer"].Height
+				if(MyReport.GetSectionHeight("Page Header")
+					+MyReport.GetSectionHeight("Detail")
+					+MyReport.GetSectionHeight("Page Footer")
 					>printableHeight){
 					//nothing for now.
 				}
 				//If this is first page and not enough room to print reportheader+pageheader+detail+pagefooter.
 				if(pagesPrinted==0
-					&& MyReport.Sections["Report Header"].Height
-					+MyReport.Sections["Page Header"].Height
-					+MyReport.Sections["Detail"].Height
-					+MyReport.Sections["Page Footer"].Height
+					&& MyReport.GetSectionHeight("Report Header")
+					+MyReport.GetSectionHeight("Page Header")
+					+MyReport.GetSectionHeight("Detail")
+					+MyReport.GetSectionHeight("Page Footer")
 					>printableHeight)
 				{
 					break;
 				}
-				//always print a page header
-				section=MyReport.Sections["Page Header"];
-				PrintSection(grfx,section,xPos,yPos);
-				yPos+=section.Height;
+				//always print a page header if it exists
+				if(MyReport.Sections.Contains("Page Header")){
+					section=MyReport.Sections["Page Header"];
+					PrintSection(grfx,section,xPos,yPos);
+					yPos+=section.Height;
+				}
 				//calculate if there is room for all elements including the reportfooter on this page.
 				int rowsRemaining=0;
 				if(MyReport.ReportTable!=null){
 					rowsRemaining=MyReport.ReportTable.Rows.Count-rowsPrinted;
 				}
-				int totalDetailsHeight=rowsRemaining*MyReport.Sections["Detail"].Height;
+				int totalDetailsHeight=rowsRemaining*MyReport.GetSectionHeight("Detail");
 				bool isRoomForReportFooter=true;
 				if(yLimit-yPos
-					-MyReport.Sections["Report Footer"].Height
-					-MyReport.Sections["Page Footer"].Height
+					-MyReport.GetSectionHeight("Report Footer")
+					-MyReport.GetSectionHeight("Page Footer")
 					-totalDetailsHeight < 0){
 					isRoomForReportFooter=false;
 				}
@@ -381,38 +389,43 @@ namespace OpenDental.Reporting
 				section=MyReport.Sections["Detail"];
 				if(!isRoomForReportFooter){
 					int actualDetailsHeight=yLimit-yPos
-						-MyReport.Sections["Report Footer"].Height
-						-MyReport.Sections["Page Footer"].Height;
+						-MyReport.GetSectionHeight("Report Footer")
+						-MyReport.GetSectionHeight("Page Footer");
 					rowsToPrint=(int)(actualDetailsHeight
-						/MyReport.Sections["Detail"].Height);
+						/MyReport.GetSectionHeight("Detail"));
 					if(rowsToPrint<1)
 						rowsToPrint=1;//Always print at least one row.
 				}
 				//print the detail section
 				PrintDetailsSection(grfx,section,xPos,yPos,rowsToPrint);
 				if(rowsToPrint==rowsRemaining)//if all remaining rows were printed
-					lastSectionPrinted=section;//mark this section as printed.
+					lastSectionPrinted="Detail";//mark this section as printed.
 				yPos+=section.Height*rowsToPrint;
 				//print the reportfooter section if there is room
 				if(isRoomForReportFooter){
-					section=MyReport.Sections["Report Footer"];
-					PrintSection(grfx,section,xPos,yPos);
-					lastSectionPrinted=section;//mark the reportfooter as printed.  This will prevent another loop.
-					yPos+=section.Height;
+					if(MyReport.Sections.Contains("Report Footer")){
+						section=MyReport.Sections["Report Footer"];
+						PrintSection(grfx,section,xPos,yPos);
+						yPos+=section.Height;
+					}
+					//mark the reportfooter as printed. This will prevent another loop.
+					lastSectionPrinted="Report Footer";
 				}
 				//print the pagefooter
-				section=MyReport.Sections["Page Footer"];
-				if(isRoomForReportFooter){
-					//for the last page, this moves the pagefooter to the bottom of the page.
-					yPos=yLimit-section.Height;
+				if(MyReport.Sections.Contains("Page Footer")){
+					section=MyReport.Sections["Page Footer"];
+					if(isRoomForReportFooter){
+						//for the last page, this moves the pagefooter to the bottom of the page.
+						yPos=yLimit-section.Height;
+					}
+					PrintSection(grfx,section,xPos,yPos);
+					yPos+=section.Height;
 				}
-				PrintSection(grfx,section,xPos,yPos);
-				yPos+=section.Height;
 				break;
 			}//while			
 			pagesPrinted++;
 			//if the reportfooter has been printed, then there are no more pages.
-			if(lastSectionPrinted==MyReport.Sections["Report Footer"]){
+			if(lastSectionPrinted=="Report Footer"){
 				ev.HasMorePages=false;
 				totalPages=pagesPrinted;
 				ToolBarMain.Buttons["PageNum"].Text="1 / "+totalPages.ToString();
@@ -496,6 +509,7 @@ namespace OpenDental.Reporting
 			StringFormat strFormat;//used each time text is drawn to handle alignment issues
 			string rawText="";//the raw text for a given field as taken from the database
 			string displayText="";//The formatted text to print
+			string prevDisplayText="";//The formatted text of the previous row. Used to test suppress dupl.
 			//loop through each row in the table
 			for(int i=rowsPrinted;i<rowsPrinted+rowsToPrint;i++){
 				foreach(ReportObject reportObject in MyReport.ReportObjects){
@@ -522,24 +536,42 @@ namespace OpenDental.Reporting
 							rawText=MyReport.ReportTable.Rows
 								[i][MyReport.DataFields.IndexOf(fieldObject.DataField)].ToString();
 							displayText=rawText;
-							//suppress if duplicate:
-							if(i>0 && fieldObject.SuppressIfDuplicate && rawText==MyReport.ReportTable.Rows[i-1][MyReport.DataFields.IndexOf(fieldObject.DataField)].ToString()){
-								displayText="";
+							if(fieldObject.ValueType==FieldValueType.Age){
+								displayText=Shared.AgeToString(Shared.DateToAge(PIn.PDate(MyReport.ReportTable.Rows[i][MyReport.DataFields.IndexOf(fieldObject.DataField)].ToString())));//(fieldObject.FormatString);
 							}
 							else if(fieldObject.ValueType==FieldValueType.Boolean){
 								displayText=PIn.PBool(MyReport.ReportTable.Rows[i][MyReport.DataFields.IndexOf(fieldObject.DataField)].ToString()).ToString();//(fieldObject.FormatString);
+								if(i>0 && fieldObject.SuppressIfDuplicate){
+									prevDisplayText=PIn.PBool(MyReport.ReportTable.Rows[i-1][MyReport.DataFields.IndexOf(fieldObject.DataField)].ToString()).ToString();
+								}
 							}
 							else if(fieldObject.ValueType==FieldValueType.Date){
 								displayText=PIn.PDateT(MyReport.ReportTable.Rows[i][MyReport.DataFields.IndexOf(fieldObject.DataField)].ToString()).ToString(fieldObject.FormatString);
-							}
-							else if(fieldObject.ValueType==FieldValueType.Number){
-								displayText=PIn.PDouble(MyReport.ReportTable.Rows[i][MyReport.DataFields.IndexOf(fieldObject.DataField)].ToString()).ToString(fieldObject.FormatString);
+								if(i>0 && fieldObject.SuppressIfDuplicate){
+									prevDisplayText=PIn.PDateT(MyReport.ReportTable.Rows[i-1][MyReport.DataFields.IndexOf(fieldObject.DataField)].ToString()).ToString(fieldObject.FormatString);
+								}
 							}
 							else if(fieldObject.ValueType==FieldValueType.Integer){
 								displayText=PIn.PInt(MyReport.ReportTable.Rows[i][MyReport.DataFields.IndexOf(fieldObject.DataField)].ToString()).ToString(fieldObject.FormatString);
+								if(i>0 && fieldObject.SuppressIfDuplicate){
+									prevDisplayText=PIn.PInt(MyReport.ReportTable.Rows[i-1][MyReport.DataFields.IndexOf(fieldObject.DataField)].ToString()).ToString(fieldObject.FormatString);
+								}
+							}
+							else if(fieldObject.ValueType==FieldValueType.Number){
+								displayText=PIn.PDouble(MyReport.ReportTable.Rows[i][MyReport.DataFields.IndexOf(fieldObject.DataField)].ToString()).ToString(fieldObject.FormatString);
+								if(i>0 && fieldObject.SuppressIfDuplicate){
+									prevDisplayText=PIn.PDouble(MyReport.ReportTable.Rows[i-1][MyReport.DataFields.IndexOf(fieldObject.DataField)].ToString()).ToString(fieldObject.FormatString);
+								}
 							}
 							else if(fieldObject.ValueType==FieldValueType.String){
 								displayText=rawText;
+								if(i>0 && fieldObject.SuppressIfDuplicate){
+									prevDisplayText=MyReport.ReportTable.Rows[i-1][MyReport.DataFields.IndexOf(fieldObject.DataField)].ToString();
+								}
+							}
+							//suppress if duplicate:
+							if(i>0 && fieldObject.SuppressIfDuplicate && displayText==prevDisplayText){
+								displayText="";
 							}
 						}
 						else if(fieldObject.FieldKind==FieldDefKind.FormulaField){

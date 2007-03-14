@@ -26,8 +26,8 @@ namespace OpenDental{
 		private OpenDental.ValidNumber textDaysPast;
 		private OpenDental.ValidNumber textDaysFuture;
 		private Patients Patients=new Patients();
-		///<summary></summary>
-		public static RecallItem Cur;
+		//<summary></summary>
+		//private RecallItem Cur;
 		///<summary></summary>
 		public bool PinClicked=false;
 		private System.Windows.Forms.Button butReport;
@@ -322,7 +322,7 @@ namespace OpenDental{
 			for (int i=0;i<MainAL.Count;i++){
 				tbMain.Cell[0,i]=((RecallItem)MainAL[i]).DueDate.ToString("d");
 				tbMain.Cell[1,i]=((RecallItem)MainAL[i]).PatientName;
-				tbMain.Cell[2,i]=((RecallItem)MainAL[i]).Age;
+				tbMain.Cell[2,i]=Shared.AgeToString(((RecallItem)MainAL[i]).Age);
 				tbMain.Cell[3,i]=((RecallItem)MainAL[i]).RecallInterval.ToString();;
 				tbMain.Cell[4,i]=Defs.GetName(DefCat.RecallUnschedStatus,((RecallItem)MainAL[i]).RecallStatus);
 				/*
@@ -356,14 +356,15 @@ namespace OpenDental{
 			//}
 			//tbMain.SelectedRow=e.Row;
 			//tbMain.ColorRow(e.Row,Color.LightGray);
-			Cur=(RecallItem)MainAL[e.Row];
+			
 		}
 
 		private void tbMain_CellDoubleClicked(object sender, CellEventArgs e){
 			FormRecallEdit FormRE=new FormRecallEdit();
-			if(Cur.DueDate.Year>1880){
-				FormRE.DueDate=Cur.DueDate;
-			}
+			//FormRE.DisplayedRecallItem=(RecallItem)MainAL[e.Row];
+			FormRE.PatNum=((RecallItem)MainAL[e.Row]).PatNum;
+			FormRE.RecallStatus=((RecallItem)MainAL[e.Row]).RecallStatus;
+			FormRE.DueDate=((RecallItem)MainAL[e.Row]).DueDate;
 			FormRE.ShowDialog();
 			if(FormRE.PinClicked){
 				PinClicked=true;
@@ -455,7 +456,7 @@ namespace OpenDental{
 		}
 	}
 
-	///<summary></summary>
+	///<summary>Mostly used just to display the recall list.</summary>
 	public struct RecallItem{
 		///<summary></summary>
 		public DateTime DueDate;
@@ -472,6 +473,6 @@ namespace OpenDental{
 		//public int NextAptNum;
 		//public DateTime AptDateTime;
 		///<summary></summary>
-		public string Age;
+		public int Age;
 	}
 }

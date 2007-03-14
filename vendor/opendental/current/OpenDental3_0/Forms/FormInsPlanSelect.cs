@@ -15,7 +15,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public Relat PatRelat;
 		private System.Windows.Forms.Label labelRelat;
-		///<summary></summary>
+		///<summary>Set to true to view the relationship selection</summary>
 		public bool ViewRelat;
 
 		///<summary></summary>

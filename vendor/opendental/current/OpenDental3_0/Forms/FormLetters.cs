@@ -25,12 +25,12 @@ namespace OpenDental{
 		/// Required designer variable.
 		/// </summary>
 		private System.ComponentModel.Container components = null;
-		private System.Windows.Forms.TextBox textBody;
 		private bool localChanged;
 		private System.Drawing.Printing.PrintDocument pd2;
 		private System.Windows.Forms.PrintDialog printDialog2;
 		private bool bodyChanged;
 		private OpenDental.XPButton butPrint;
+		private OpenDental.ODtextBox textBody;
 		private int pagesPrinted=0;
 
 		///<summary></summary>
@@ -74,12 +74,12 @@ namespace OpenDental{
 			this.butEdit = new OpenDental.XPButton();
 			this.butAdd = new OpenDental.XPButton();
 			this.label2 = new System.Windows.Forms.Label();
-			this.textBody = new System.Windows.Forms.TextBox();
 			this.checkIncludeRet = new System.Windows.Forms.CheckBox();
 			this.butDelete = new OpenDental.XPButton();
 			this.pd2 = new System.Drawing.Printing.PrintDocument();
 			this.printDialog2 = new System.Windows.Forms.PrintDialog();
 			this.butPrint = new OpenDental.XPButton();
+			this.textBody = new OpenDental.ODtextBox();
 			this.SuspendLayout();
 			// 
 			// butCancel
@@ -148,17 +148,6 @@ namespace OpenDental{
 				"ents, export data from a report and merge it with a Word or OpenOffice template." +
 				"";
 			// 
-			// textBody
-			// 
-			this.textBody.AcceptsReturn = true;
-			this.textBody.Location = new System.Drawing.Point(206, 25);
-			this.textBody.Multiline = true;
-			this.textBody.Name = "textBody";
-			this.textBody.Size = new System.Drawing.Size(630, 597);
-			this.textBody.TabIndex = 13;
-			this.textBody.Text = "";
-			this.textBody.TextChanged += new System.EventHandler(this.textBody_TextChanged);
-			// 
 			// checkIncludeRet
 			// 
 			this.checkIncludeRet.FlatStyle = System.Windows.Forms.FlatStyle.System;
@@ -197,15 +186,27 @@ namespace OpenDental{
 			this.butPrint.Text = "&Print";
 			this.butPrint.Click += new System.EventHandler(this.butPrint_Click);
 			// 
+			// textBody
+			// 
+			this.textBody.AcceptsReturn = true;
+			this.textBody.Location = new System.Drawing.Point(206, 24);
+			this.textBody.Multiline = true;
+			this.textBody.Name = "textBody";
+			this.textBody.QuickPasteType = OpenDental.QuickPasteType.Letter;
+			this.textBody.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.textBody.Size = new System.Drawing.Size(630, 595);
+			this.textBody.TabIndex = 18;
+			this.textBody.Text = "";
+			// 
 			// FormLetters
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(858, 674);
+			this.Controls.Add(this.textBody);
 			this.Controls.Add(this.butPrint);
 			this.Controls.Add(this.butDelete);
 			this.Controls.Add(this.checkIncludeRet);
-			this.Controls.Add(this.textBody);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.butEdit);
 			this.Controls.Add(this.butAdd);
@@ -378,10 +379,10 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Printer not available"));
 			}
 			Commlogs.Cur=new Commlog();
-			Commlogs.Cur.CommDate=DateTime.Today;
-			Commlogs.Cur.CommType=CommItemType.LetterSent;
+			Commlogs.Cur.CommDateTime=DateTime.Now;
+			Commlogs.Cur.CommType=CommItemType.Misc;
 			Commlogs.Cur.PatNum=Patients.Cur.PatNum;
-			Commlogs.Cur.Note=Letters.Cur.Description+". ";
+			Commlogs.Cur.Note="Letter sent: "+Letters.Cur.Description+". ";
 			FormCommItem FormCI=new FormCommItem();
 			FormCI.IsNew=true;
 			FormCI.ShowDialog();

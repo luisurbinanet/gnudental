@@ -42,6 +42,7 @@ namespace OpenDental{
 		private OpenDental.XPButton butMovePat;
 		private System.Windows.Forms.CheckBox checkPriPending;
 		private System.Windows.Forms.CheckBox checkSecPending;
+		private System.Windows.Forms.ContextMenu menuPatient;
 		private OpenDental.TablePercent tbPercent2;
 
 		///<summary></summary>
@@ -95,6 +96,7 @@ namespace OpenDental{
 			this.butEditSecPlan = new System.Windows.Forms.Button();
 			this.checkPriPending = new System.Windows.Forms.CheckBox();
 			this.checkSecPending = new System.Windows.Forms.CheckBox();
+			this.menuPatient = new System.Windows.Forms.ContextMenu();
 			this.panelFamily.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -440,12 +442,21 @@ namespace OpenDental{
 				panelFamily.Enabled=false;
 				Patients.Cur=new Patient();
 			}
-			//butOutlook.Visible=Programs.IsEnabled("Outlook");
+			FillPatientButton();
 			FillPatientData();
 			FillFamilyData();
 			FillPlanData();
 			FillCoverageData();
 		} 
+
+		private void FillPatientButton(){
+			Patients.AddPatsToMenu(menuPatient,new EventHandler(menuPatient_Click));
+		}
+
+		private void menuPatient_Click(object sender,System.EventArgs e) {
+			Patients.ButtonSelect(menuPatient,sender);
+			ModuleSelected();
+		}
 
 		///<summary></summary>
 		public void InstantClasses(){
@@ -466,7 +477,11 @@ namespace OpenDental{
 		///<summary>Causes the toolbar to be laid out again.</summary>
 		public void LayoutToolBar(){
 			ToolBarMain.Buttons.Clear();
-			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Select Patient"),0,"","Patient"));
+			ODToolBarButton button;
+			button=new ODToolBarButton(Lan.g(this,"Select Patient"),0,"","Patient");
+			button.Style=ODToolBarButtonStyle.DropDownButton;
+			button.DropDownMenu=menuPatient;
+			ToolBarMain.Buttons.Add(button);
 			//ToolBarMain.Buttons.Add(new ODToolBarButton(ToolBarButtonStyle.Separator));
 			//ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Add Family Member"),1,"",""));
 			//ToolBarMain.Buttons.Add(new ODToolBarButton("",2,"",Lan.g(this,"Delete Family Member")));
@@ -474,7 +489,7 @@ namespace OpenDental{
 			//ToolBarMain.Buttons.Add(new ODToolBarButton("",4,"",Lan.g(this,"Move to Another Family")));
 			ArrayList toolButItems=ToolButItems.GetForToolBar(ToolBarsAvail.FamilyModule);
 			for(int i=0;i<toolButItems.Count;i++){
-				ToolBarMain.Buttons.Add(new ODToolBarButton(ToolBarButtonStyle.Separator));
+				ToolBarMain.Buttons.Add(new ODToolBarButton(ODToolBarButtonStyle.Separator));
 				ToolBarMain.Buttons.Add(new ODToolBarButton(((ToolButItem)toolButItems[i]).ButtonText
 					,-1,"",((ToolButItem)toolButItems[i]).ProgramNum));
 			}
@@ -553,7 +568,7 @@ namespace OpenDental{
 				tbPatient.Cell[1,9]="";
 			else
 				tbPatient.Cell[1,9]=Patients.Cur.Birthdate.ToString("d");
-			tbPatient.Cell[1,10]=Patients.Cur.Age;
+			tbPatient.Cell[1,10]=Shared.AgeToString(Patients.Cur.Age);
 			if(CultureInfo.CurrentCulture.Name.Substring(3)=="US"){
 				if(Patients.Cur.SSN !=null && Patients.Cur.SSN.Length==9)
 					tbPatient.Cell[1,11]=Patients.Cur.SSN.Substring(0,3)+"-"
@@ -714,7 +729,7 @@ namespace OpenDental{
 				tbFamily.Cell[1,i]=Lan.g("enum PatientPosition",Patients.FamilyList[i].Position.ToString());
 				tbFamily.Cell[2,i]=Lan.g("enum PatientGender",Patients.FamilyList[i].Gender.ToString());
 				tbFamily.Cell[3,i]=Lan.g("enum PatientStatus",Patients.FamilyList[i].PatStatus.ToString());
-				tbFamily.Cell[4,i]=Patients.FamilyList[i].Age;
+				tbFamily.Cell[4,i]=Shared.AgeToString(Patients.FamilyList[i].Age);
 				if (Patients.FamilyList[i].PatNum==Patients.Cur.PatNum){
 					tbFamily.SelectedRow=i;
 					tbFamily.ColorRow(i,Color.DarkSalmon);
@@ -769,21 +784,21 @@ namespace OpenDental{
 			//and they will never show again in the patient selection list.
 			//check for plans, appointments, procedures, etc.
 			Patient PatCur;
-			Procedures.Refresh();
+			Procedure[] procList=Procedures.Refresh(Patients.Cur.PatNum);
 			Claims.Refresh();
 			Adjustments.Refresh();
 			PaySplits.Refresh();
-			ClaimProcs.Refresh();
+			ClaimProc[] ClaimProcList=ClaimProcs.Refresh(Patients.Cur.PatNum);
 			Commlogs.Refresh();
 			PayPlans.Refresh();
 			InsPlans.Refresh();
 			CovPats.Refresh();
 			RefAttaches.Refresh();
-			bool hasProcs=Procedures.List.Length>0;
+			bool hasProcs=procList.Length>0;
 			bool hasClaims=Claims.List.Length>0;
 			bool hasAdj=Adjustments.List.Length>0;
 			bool hasPay=PaySplits.List.Length>0;
-			bool hasClaimProcs=ClaimProcs.List.Length>0;
+			bool hasClaimProcs=ClaimProcList.Length>0;
 			bool hasComm=Commlogs.List.Length>0;
 			bool hasPayPlans=PayPlans.List.Length>0;
 			bool hasInsPlans=false;
@@ -967,7 +982,7 @@ namespace OpenDental{
 				InsPlans.InsertCur();
 				FormInsPlan FormIP=new FormInsPlan();
 				FormIP.IsNew=true;
-				FormIP.ShowDialog();
+				FormIP.ShowDialog();//this updates estimates also
 				Patients.GetFamily(Patients.Cur.PatNum);
 				if(FormIP.DialogResult==DialogResult.OK
 					&& InsPlans.Cur.PlanNum!=0){
@@ -1080,6 +1095,11 @@ namespace OpenDental{
 		private void OpenCovEdit(){
 			FormInsCovEdit FormInsCovEdit2=new FormInsCovEdit();
 			FormInsCovEdit2.ShowDialog();
+			Patients.GetFamily(Patients.Cur.PatNum);
+			ClaimProc[] claimProcs=ClaimProcs.Refresh(Patients.Cur.PatNum);
+			Procedure[] procs=Procedures.Refresh(Patients.Cur.PatNum);
+			Procedures.ComputeEstimatesForAll(Patients.Cur.PatNum,Patients.Cur.PriPlanNum,
+				Patients.Cur.SecPlanNum,claimProcs,procs);
 			ModuleSelected();
 		}
 

@@ -239,13 +239,14 @@ namespace OpenDental{
 			// 
 			// label5
 			// 
-			this.label5.Location = new System.Drawing.Point(260, 104);
+			this.label5.Location = new System.Drawing.Point(260, 98);
 			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(386, 48);
+			this.label5.Size = new System.Drawing.Size(386, 54);
 			this.label5.TabIndex = 21;
-			this.label5.Text = "You would typically stop the service before restoring from a backup or renaming a" +
-				" database folder in C:\\mysql\\data\\.  You do not need to stop the service when ma" +
-				"king backups. ";
+			this.label5.Text = "You should stop the service before restoring from a backup or renaming a database" +
+				" folder in C:\\mysql\\data\\.  You do not need to stop the service when making back" +
+				"ups to a flash drive or another computer, but you may need to stop it to make a " +
+				"backup to CD.";
 			// 
 			// butStart
 			// 
@@ -355,21 +356,15 @@ namespace OpenDental{
 				string myAdd=Dns.GetHostByName(Dns.GetHostName()).AddressList[0].ToString();
 				ProcessStartInfo psi=new ProcessStartInfo();
 				psi.FileName=@"C:\WINDOWS\system32\cmd.exe";//Path for the cmd prompt
-				psi.Arguments="/c net view > C:\\tempCompNames.txt";//Arguments for the command prompt
+				psi.Arguments="/c net view > tempCompNames.txt";//Arguments for the command prompt
 				//"/c" tells it to run the following command which is "net view > tempCompNames.txt"
 				//"net view" lists all the computers on the network
 				//" > tempCompNames.txt" tells dos to put the results in a file called tempCompNames.txt
 				psi.WindowStyle=ProcessWindowStyle.Hidden;//Hide the window
 				Process.Start(psi);
 				StreamReader sr;
-				//this could be improved with compartment
-				string filename=@"C:\tempCompNames.txt";
-				int count=0;
+				string filename=Application.StartupPath+"\\tempCompNames.txt";
 				while(true){
-					count++;
-					if(count>25){//5 seconds
-						return new string[0];
-					}
 					Thread.Sleep(200);//sleep for 1/5 second
 					if(File.Exists(filename)){
 						try{
@@ -396,7 +391,7 @@ namespace OpenDental{
 					retList.Add(line.Substring(2,line.Length-2));
 				}
 				sr.Close();
-				File.Delete(filename);
+				File.Delete(Application.StartupPath+"\\tempCompNames.txt");
 				string[] retArray=new string[retList.Count];
 				retList.CopyTo(retArray);
 				return retArray;
@@ -406,7 +401,7 @@ namespace OpenDental{
 			}
 		}
 
-		///<summary>Gets a list of all databases on the selected computer.</summary>
+		///<summary>Gets a list of all computer names on the network (this is not easy)</summary>
 		private string[] GetDatabases(){
 			ComputerName=comboComputerName.Text;
 			User=textUser.Text;
@@ -495,7 +490,14 @@ namespace OpenDental{
 					sc.WaitForStatus(ServiceControllerStatus.Stopped,new TimeSpan(0,0,10));
 				}
 				myProcess.StartInfo.Arguments="--remove";
-				myProcess.Start();
+				try{
+					myProcess.Start();
+				}
+				catch{
+					MessageBox.Show("Unable to remove the service.  Try reinstalling MySQL (but don't touch the database folders).");
+					Cursor=Cursors.Default;
+					return;
+				}
 				DateTime timeStarted=DateTime.Now;
 				ServiceController[] services;
 				while(DateTime.Now<timeStarted.AddSeconds(10)){//loop for 10 seconds
@@ -529,6 +531,8 @@ namespace OpenDental{
 		}
 
 		private void butStart_Click(object sender, System.EventArgs e) {
+			//this button won't even be available unless the service is installed
+			//but the service might be present and unable to start, so must use try.
 			Cursor=Cursors.WaitCursor;
 			ServiceController sc=new ServiceController("MySql");
 			if(mysqlIsStarted){
@@ -536,15 +540,20 @@ namespace OpenDental{
 				sc.WaitForStatus(ServiceControllerStatus.Stopped,new TimeSpan(0,0,10));
 				Cursor=Cursors.Default;
 				if(sc.Status!=ServiceControllerStatus.Stopped){
-					MessageBox.Show("Unable to stop the MySQL service. Restart computer and try again.");
+					MessageBox.Show("Unable to stop the MySQL service.");
 				}
 			}
 			else{
-				sc.Start();
-				sc.WaitForStatus(ServiceControllerStatus.Running,new TimeSpan(0,0,10));
+				try{
+					sc.Start();
+					sc.WaitForStatus(ServiceControllerStatus.Running,new TimeSpan(0,0,10));
+				}
+				catch{
+					//
+				}
 				Cursor=Cursors.Default;
 				if(sc.Status!=ServiceControllerStatus.Running){
-					MessageBox.Show("Unable to start the MySQL service. Restart computer and try again.");
+					MessageBox.Show("Unable to start the MySQL service. Try removing the service using the button above.");
 				}
 			}
 			FillService();

@@ -35,6 +35,7 @@ namespace OpenDental{
 			tb2.CellClicked += new OpenDental.ContrTable.CellEventHandler(tb2_CellClicked);
 			tb2.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tb2_CellDoubleClicked);
 			Lan.C(this, new System.Windows.Forms.Control[] {
+				this, //*Ann
 				this.label1,
 				this.label2,
 				this.label3,
@@ -84,7 +85,7 @@ namespace OpenDental{
 			// 
 			// textAmount
 			// 
-			this.textAmount.Location = new System.Drawing.Point(628, 41);
+			this.textAmount.Location = new System.Drawing.Point(646, 41);
 			this.textAmount.Name = "textAmount";
 			this.textAmount.ReadOnly = true;
 			this.textAmount.Size = new System.Drawing.Size(58, 20);
@@ -94,7 +95,7 @@ namespace OpenDental{
 			// 
 			// textDate
 			// 
-			this.textDate.Location = new System.Drawing.Point(628, 21);
+			this.textDate.Location = new System.Drawing.Point(646, 21);
 			this.textDate.Name = "textDate";
 			this.textDate.Size = new System.Drawing.Size(68, 20);
 			this.textDate.TabIndex = 0;
@@ -103,7 +104,7 @@ namespace OpenDental{
 			// 
 			// textBankBranch
 			// 
-			this.textBankBranch.Location = new System.Drawing.Point(628, 81);
+			this.textBankBranch.Location = new System.Drawing.Point(646, 81);
 			this.textBankBranch.MaxLength = 25;
 			this.textBankBranch.Name = "textBankBranch";
 			this.textBankBranch.TabIndex = 2;
@@ -111,7 +112,7 @@ namespace OpenDental{
 			// 
 			// textCheckNum
 			// 
-			this.textCheckNum.Location = new System.Drawing.Point(628, 61);
+			this.textCheckNum.Location = new System.Drawing.Point(646, 61);
 			this.textCheckNum.MaxLength = 25;
 			this.textCheckNum.Name = "textCheckNum";
 			this.textCheckNum.TabIndex = 1;
@@ -129,36 +130,36 @@ namespace OpenDental{
 			// 
 			// label6
 			// 
-			this.label6.Location = new System.Drawing.Point(553, 25);
+			this.label6.Location = new System.Drawing.Point(551, 25);
 			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(76, 16);
+			this.label6.Size = new System.Drawing.Size(96, 16);
 			this.label6.TabIndex = 37;
 			this.label6.Text = "Payment Date";
 			this.label6.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label5
 			// 
-			this.label5.Location = new System.Drawing.Point(569, 45);
+			this.label5.Location = new System.Drawing.Point(550, 45);
 			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(58, 16);
+			this.label5.Size = new System.Drawing.Size(95, 16);
 			this.label5.TabIndex = 36;
 			this.label5.Text = "Amount";
 			this.label5.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label4
 			// 
-			this.label4.Location = new System.Drawing.Point(569, 63);
+			this.label4.Location = new System.Drawing.Point(553, 63);
 			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(56, 16);
+			this.label4.Size = new System.Drawing.Size(90, 16);
 			this.label4.TabIndex = 35;
 			this.label4.Text = "Check #";
 			this.label4.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(551, 83);
+			this.label3.Location = new System.Drawing.Point(554, 83);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(76, 16);
+			this.label3.Size = new System.Drawing.Size(91, 16);
 			this.label3.TabIndex = 34;
 			this.label3.Text = "Bank/Branch";
 			this.label3.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -167,7 +168,7 @@ namespace OpenDental{
 			// 
 			this.label2.Location = new System.Drawing.Point(560, 131);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(40, 16);
+			this.label2.Size = new System.Drawing.Size(132, 16);
 			this.label2.TabIndex = 33;
 			this.label2.Text = "Note";
 			// 
@@ -208,18 +209,18 @@ namespace OpenDental{
 			this.checkShowUn.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkShowUn.Location = new System.Drawing.Point(564, 373);
 			this.checkShowUn.Name = "checkShowUn";
-			this.checkShowUn.Size = new System.Drawing.Size(132, 24);
+			this.checkShowUn.Size = new System.Drawing.Size(215, 24);
 			this.checkShowUn.TabIndex = 4;
 			this.checkShowUn.Text = "Show Unattached";
 			this.checkShowUn.Click += new System.EventHandler(this.checkShowUn_Click);
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(562, 647);
+			this.label1.Location = new System.Drawing.Point(562, 632);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(108, 14);
+			this.label1.Size = new System.Drawing.Size(129, 35);
 			this.label1.TabIndex = 51;
-			this.label1.Text = "(Deletes this Check)";
+			this.label1.Text = "(Deletes this Check, but not any splits)";
 			// 
 			// butDelete
 			// 
@@ -228,7 +229,7 @@ namespace OpenDental{
 			this.butDelete.BtnStyle = OpenDental.enumType.XPStyle.Silver;
 			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDelete.Location = new System.Drawing.Point(563, 616);
+			this.butDelete.Location = new System.Drawing.Point(565, 597);
 			this.butDelete.Name = "butDelete";
 			this.butDelete.Size = new System.Drawing.Size(92, 26);
 			this.butDelete.TabIndex = 52;
@@ -382,10 +383,12 @@ namespace OpenDental{
 			for(int i=0;i<Claims.ListQueue.Length;i++){
 				Claims.CurQueue=Claims.ListQueue[i];
 				if(ALselected.Contains(i)){//row is selected
-					ClaimProcs.SetForClaim(Claims.CurQueue.ClaimNum,ClaimPayments.Cur.ClaimPaymentNum,true);
+					ClaimProcs.SetForClaim(Claims.CurQueue.ClaimNum,ClaimPayments.Cur.ClaimPaymentNum,
+						ClaimPayments.Cur.CheckDate,true);
 				}
 				else{//row not selected
-					ClaimProcs.SetForClaim(Claims.CurQueue.ClaimNum,ClaimPayments.Cur.ClaimPaymentNum,false);
+					ClaimProcs.SetForClaim(Claims.CurQueue.ClaimNum,ClaimPayments.Cur.ClaimPaymentNum,
+						ClaimPayments.Cur.CheckDate,false);
 				}
 			}
 			DialogResult=DialogResult.OK;

@@ -146,16 +146,16 @@ namespace OpenDental{
 			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Preview"),0,Lan.g(this,"Preview the Selected Claim"),"Preview"));
 			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Blank"),1,Lan.g(this,"Print a Blank Claim Form"),"Blank"));
 			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Print"),2,Lan.g(this,"Print Selected Claims"),"Print"));
-			ToolBarMain.Buttons.Add(new ODToolBarButton(ToolBarButtonStyle.Separator));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(ODToolBarButtonStyle.Separator));
 			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Generic"),-1,Lan.g(this,"Send Generic E-Claims Using Print Capture"),"Generic"));
-			ToolBarMain.Buttons.Add(new ODToolBarButton(ToolBarButtonStyle.Separator));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(ODToolBarButtonStyle.Separator));
 			ODToolBarButton button=new ODToolBarButton(Lan.g(this,"Status Sent"),3,Lan.g(this,"Changes Status of Selected Claims to Sent"),"Status");
-			button.Style=ToolBarButtonStyle.DropDownButton;
+			button.Style=ODToolBarButtonStyle.DropDownButton;
 			button.DropDownMenu=contextMenuStatus;
 			ToolBarMain.Buttons.Add(button);
 			ArrayList toolButItems=ToolButItems.GetForToolBar(ToolBarsAvail.ClaimsSend);
 			for(int i=0;i<toolButItems.Count;i++){
-				ToolBarMain.Buttons.Add(new ODToolBarButton(ToolBarButtonStyle.Separator));
+				ToolBarMain.Buttons.Add(new ODToolBarButton(ODToolBarButtonStyle.Separator));
 				ToolBarMain.Buttons.Add(new ODToolBarButton(((ToolButItem)toolButItems[i]).ButtonText
 					,-1,"",((ToolButItem)toolButItems[i]).ProgramNum));
 			}
@@ -373,7 +373,7 @@ namespace OpenDental{
 			string printerName;
 			FormClaimPrint FormCP=new FormClaimPrint();
 			FormCP.HideBackground=true;
-			FormCP.ClaimFormNum=PIn.PInt(((Pref)Prefs.HList["GenericEClaimsForm"]).ValueString);
+			FormCP.ClaimFormCur=ClaimForms.GetClaimForm(Prefs.GetInt("GenericEClaimsForm"));
 			printDialog2=new PrintDialog();
 			printDialog2.PrinterSettings=new PrinterSettings();
 			//printDialog2.PrinterSettings.PrinterName=Computers.Cur.PrinterName;

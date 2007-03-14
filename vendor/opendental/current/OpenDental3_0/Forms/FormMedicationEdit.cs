@@ -13,18 +13,27 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butOK;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.TextBox textGenericName;
-		private System.Windows.Forms.CheckBox checkIsGeneric;
-		private System.Windows.Forms.Button butChange;
 		private System.Windows.Forms.TextBox textMedName;
 		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.TextBox textNotes;
 		private System.Windows.Forms.Label label3;
 		///<summary>Required designer variable.</summary>
 		private System.ComponentModel.Container components = null;
 		///<summary></summary>
 		public bool IsNew;
+		private OpenDental.ODtextBox textNotes;
+		private OpenDental.XPButton butDelete;
+		private System.Windows.Forms.Label label4;
+		private System.Windows.Forms.ComboBox comboPatients;
 		///<summary></summary>
-		public bool GenericOnly;//does not allow changing to non generic.
+		public bool GenericOnly;
+		private System.Windows.Forms.Label labelBrands;
+		private System.Windows.Forms.GroupBox groupBox1;
+		private System.Windows.Forms.Label labelPatients;
+		private System.Windows.Forms.ComboBox comboBrands;//does not allow changing to non generic.
+		///<summary></summary>
+		private string[] PatNames;
+		///<summary></summary>
+		private string[] Brands;
 
 		///<summary></summary>
 		public FormMedicationEdit()
@@ -66,19 +75,25 @@ namespace OpenDental{
 			this.butOK = new System.Windows.Forms.Button();
 			this.label1 = new System.Windows.Forms.Label();
 			this.textGenericName = new System.Windows.Forms.TextBox();
-			this.checkIsGeneric = new System.Windows.Forms.CheckBox();
-			this.butChange = new System.Windows.Forms.Button();
 			this.textMedName = new System.Windows.Forms.TextBox();
 			this.label2 = new System.Windows.Forms.Label();
-			this.textNotes = new System.Windows.Forms.TextBox();
 			this.label3 = new System.Windows.Forms.Label();
+			this.textNotes = new OpenDental.ODtextBox();
+			this.butDelete = new OpenDental.XPButton();
+			this.label4 = new System.Windows.Forms.Label();
+			this.comboPatients = new System.Windows.Forms.ComboBox();
+			this.labelPatients = new System.Windows.Forms.Label();
+			this.labelBrands = new System.Windows.Forms.Label();
+			this.comboBrands = new System.Windows.Forms.ComboBox();
+			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// butCancel
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butCancel.Location = new System.Drawing.Point(558, 411);
+			this.butCancel.Location = new System.Drawing.Point(535, 401);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.TabIndex = 3;
 			this.butCancel.Text = "&Cancel";
@@ -87,7 +102,7 @@ namespace OpenDental{
 			// butOK
 			// 
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(558, 373);
+			this.butOK.Location = new System.Drawing.Point(535, 363);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 2;
 			this.butOK.Text = "&OK";
@@ -95,7 +110,7 @@ namespace OpenDental{
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(94, 78);
+			this.label1.Location = new System.Drawing.Point(20, 45);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(127, 17);
 			this.label1.TabIndex = 2;
@@ -104,40 +119,16 @@ namespace OpenDental{
 			// 
 			// textGenericName
 			// 
-			this.textGenericName.Location = new System.Drawing.Point(222, 75);
+			this.textGenericName.Location = new System.Drawing.Point(148, 42);
 			this.textGenericName.Name = "textGenericName";
 			this.textGenericName.ReadOnly = true;
 			this.textGenericName.Size = new System.Drawing.Size(248, 20);
 			this.textGenericName.TabIndex = 3;
 			this.textGenericName.Text = "";
 			// 
-			// checkIsGeneric
-			// 
-			this.checkIsGeneric.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.checkIsGeneric.Checked = true;
-			this.checkIsGeneric.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.checkIsGeneric.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkIsGeneric.Location = new System.Drawing.Point(20, 102);
-			this.checkIsGeneric.Name = "checkIsGeneric";
-			this.checkIsGeneric.Size = new System.Drawing.Size(216, 20);
-			this.checkIsGeneric.TabIndex = 4;
-			this.checkIsGeneric.Text = "This is the generic name";
-			this.checkIsGeneric.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.checkIsGeneric.Click += new System.EventHandler(this.checkIsGeneric_Click);
-			// 
-			// butChange
-			// 
-			this.butChange.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butChange.Location = new System.Drawing.Point(480, 74);
-			this.butChange.Name = "butChange";
-			this.butChange.Size = new System.Drawing.Size(80, 23);
-			this.butChange.TabIndex = 5;
-			this.butChange.Text = "C&hange";
-			this.butChange.Click += new System.EventHandler(this.butChange_Click);
-			// 
 			// textMedName
 			// 
-			this.textMedName.Location = new System.Drawing.Point(222, 23);
+			this.textMedName.Location = new System.Drawing.Point(148, 17);
 			this.textMedName.Name = "textMedName";
 			this.textMedName.Size = new System.Drawing.Size(248, 20);
 			this.textMedName.TabIndex = 0;
@@ -146,44 +137,119 @@ namespace OpenDental{
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(94, 26);
+			this.label2.Location = new System.Drawing.Point(20, 20);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(127, 17);
 			this.label2.TabIndex = 6;
 			this.label2.Text = "Drug name";
 			this.label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
-			// textNotes
-			// 
-			this.textNotes.AcceptsReturn = true;
-			this.textNotes.Location = new System.Drawing.Point(222, 162);
-			this.textNotes.Multiline = true;
-			this.textNotes.Name = "textNotes";
-			this.textNotes.Size = new System.Drawing.Size(409, 179);
-			this.textNotes.TabIndex = 1;
-			this.textNotes.Text = "";
-			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(93, 165);
+			this.label3.Location = new System.Drawing.Point(21, 66);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(127, 17);
 			this.label3.TabIndex = 8;
 			this.label3.Text = "Notes";
 			this.label3.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
+			// textNotes
+			// 
+			this.textNotes.AcceptsReturn = true;
+			this.textNotes.Location = new System.Drawing.Point(148, 67);
+			this.textNotes.Multiline = true;
+			this.textNotes.Name = "textNotes";
+			this.textNotes.QuickPasteType = OpenDental.QuickPasteType.MedicationEdit;
+			this.textNotes.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.textNotes.Size = new System.Drawing.Size(459, 194);
+			this.textNotes.TabIndex = 9;
+			this.textNotes.Text = "";
+			// 
+			// butDelete
+			// 
+			this.butDelete.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butDelete.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butDelete.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
+			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butDelete.Location = new System.Drawing.Point(43, 398);
+			this.butDelete.Name = "butDelete";
+			this.butDelete.Size = new System.Drawing.Size(93, 26);
+			this.butDelete.TabIndex = 32;
+			this.butDelete.Text = "&Delete";
+			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
+			// 
+			// label4
+			// 
+			this.label4.Location = new System.Drawing.Point(399, 15);
+			this.label4.Name = "label4";
+			this.label4.Size = new System.Drawing.Size(208, 47);
+			this.label4.TabIndex = 33;
+			this.label4.Text = "Make sure you spell it right, because you can\'t ever change it";
+			// 
+			// comboPatients
+			// 
+			this.comboPatients.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboPatients.Location = new System.Drawing.Point(105, 23);
+			this.comboPatients.MaxDropDownItems = 30;
+			this.comboPatients.Name = "comboPatients";
+			this.comboPatients.Size = new System.Drawing.Size(299, 21);
+			this.comboPatients.TabIndex = 34;
+			// 
+			// labelPatients
+			// 
+			this.labelPatients.Location = new System.Drawing.Point(24, 25);
+			this.labelPatients.Name = "labelPatients";
+			this.labelPatients.Size = new System.Drawing.Size(78, 17);
+			this.labelPatients.TabIndex = 35;
+			this.labelPatients.Text = "Patients";
+			this.labelPatients.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
+			// labelBrands
+			// 
+			this.labelBrands.Location = new System.Drawing.Point(27, 52);
+			this.labelBrands.Name = "labelBrands";
+			this.labelBrands.Size = new System.Drawing.Size(75, 17);
+			this.labelBrands.TabIndex = 37;
+			this.labelBrands.Text = "Brands";
+			this.labelBrands.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
+			// comboBrands
+			// 
+			this.comboBrands.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboBrands.Location = new System.Drawing.Point(105, 50);
+			this.comboBrands.MaxDropDownItems = 30;
+			this.comboBrands.Name = "comboBrands";
+			this.comboBrands.Size = new System.Drawing.Size(299, 21);
+			this.comboBrands.TabIndex = 36;
+			// 
+			// groupBox1
+			// 
+			this.groupBox1.Controls.Add(this.labelPatients);
+			this.groupBox1.Controls.Add(this.comboPatients);
+			this.groupBox1.Controls.Add(this.labelBrands);
+			this.groupBox1.Controls.Add(this.comboBrands);
+			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.groupBox1.Location = new System.Drawing.Point(43, 279);
+			this.groupBox1.Name = "groupBox1";
+			this.groupBox1.Size = new System.Drawing.Size(423, 86);
+			this.groupBox1.TabIndex = 38;
+			this.groupBox1.TabStop = false;
+			this.groupBox1.Text = "Dependencies";
+			// 
 			// FormMedicationEdit
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
-			this.ClientSize = new System.Drawing.Size(664, 455);
+			this.ClientSize = new System.Drawing.Size(653, 444);
+			this.Controls.Add(this.groupBox1);
+			this.Controls.Add(this.label4);
+			this.Controls.Add(this.butDelete);
 			this.Controls.Add(this.textNotes);
 			this.Controls.Add(this.label3);
 			this.Controls.Add(this.textMedName);
 			this.Controls.Add(this.label2);
-			this.Controls.Add(this.butChange);
-			this.Controls.Add(this.checkIsGeneric);
 			this.Controls.Add(this.textGenericName);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.butOK);
@@ -197,97 +263,79 @@ namespace OpenDental{
 			this.Text = "Edit Medication";
 			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormMedicationEdit_Closing);
 			this.Load += new System.EventHandler(this.MedicationEdit_Load);
+			this.groupBox1.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
 		#endregion
 
 		private void MedicationEdit_Load(object sender, System.EventArgs e) {
-			if(GenericOnly){
-				this.Text=Lan.g(this,"Edit Generic Medication");
-				checkIsGeneric.Visible=false;
-				butChange.Visible=false;
-			}
 			//Medications.Refresh() should have already been run.
-			if(Medications.Cur.MedicationNum==Medications.Cur.GenericNum){
-				checkIsGeneric.Checked=true;
-			}
-			else
-				checkIsGeneric.Checked=false;
 			FillForm();
 		}
 
 		private void FillForm(){
 			textMedName.Text=Medications.Cur.MedName;
-			if(checkIsGeneric.Checked){
+			if(!IsNew){
+				textMedName.ReadOnly=true;
+			}
+			if(Medications.Cur.MedicationNum==Medications.Cur.GenericNum){
 				textGenericName.Text=Medications.Cur.MedName;
 				textNotes.Text=Medications.Cur.Notes;
-				butChange.Enabled=false;
 				textNotes.ReadOnly=false;
+				Brands=Medications.GetBrands(Medications.Cur.MedicationNum);
+				comboBrands.Items.Clear();
+				comboBrands.Items.AddRange(Brands);
+				if(Brands.Length>0){
+					comboBrands.SelectedIndex=0;
+				}
 			}
 			else{
 				textGenericName.Text=((Medication)Medications.HList[Medications.Cur.GenericNum]).MedName;
 				textNotes.Text=((Medication)Medications.HList[Medications.Cur.GenericNum]).Notes;
-				butChange.Enabled=true;
 				textNotes.ReadOnly=true;
+				Brands=new string[0];
+				comboBrands.Visible=false;
+				labelBrands.Visible=false;
+			}
+			PatNames=Medications.GetPats(Medications.Cur.MedicationNum);
+			comboPatients.Items.Clear();
+			comboPatients.Items.AddRange(PatNames);
+			if(PatNames.Length>0){
+				comboPatients.SelectedIndex=0;
 			}
 		}
 
 		private void textMedName_TextChanged(object sender, System.EventArgs e) {
 			//this causes immediate display update with each keypress
-			Medications.Cur.MedName=textMedName.Text;
-			if(checkIsGeneric.Checked){
-				textGenericName.Text=Medications.Cur.MedName;
+			if(Medications.Cur.MedicationNum==Medications.Cur.GenericNum){
+				textGenericName.Text=textMedName.Text;
 			}
 		}
 
-		private void checkIsGeneric_Click(object sender, System.EventArgs e) {
-			//the state will have already changed at this point.
-			if(checkIsGeneric.Checked){
-				Medications.Cur.GenericNum=Medications.Cur.MedicationNum;
-
+		private void butDelete_Click(object sender, System.EventArgs e) {
+			if(PatNames.Length>0){
+				MessageBox.Show(Lan.g(this,"You can not delete a medication that is in use by patients."));
+				return;
 			}
-			else{//switching to not generic
-				if(MessageBox.Show(Lan.g(this,"Any notes will be lost.  Please select the generic drug from the list that will come up next")
-					,"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
-					checkIsGeneric.Checked=true;
+			if(Brands.Length>0){
+				MessageBox.Show(Lan.g(this,"You can not delete a medication that has brand names attached."));
+				return;
+			}
+			if(Brands.Length>0){
+				if(MessageBox.Show(Lan.g(this,"Delete this medication?"),"",MessageBoxButtons.OKCancel)
+					!=DialogResult.OK){
 					return;
 				}
-				int curMedNum=Medications.Cur.MedicationNum;
-				FormMedications FormM=new FormMedications();
-				FormM.SelectGenericMode=true;
-				FormM.ShowDialog();
-				if(FormM.DialogResult==DialogResult.OK){
-					Medications.Refresh();
-					Medications.Cur=(Medication)Medications.HList[curMedNum];
-					Medications.Cur.GenericNum=FormM.MedicationNum;
-				}
-				else{
-					Medications.Refresh();
-					Medications.Cur=(Medication)Medications.HList[curMedNum];
-					Medications.Cur.GenericNum=Medications.Cur.MedicationNum;
-				}
 			}
-			FillForm();
-		}
-
-		private void butChange_Click(object sender, System.EventArgs e) {
-			int curMed=Medications.Cur.MedicationNum;
-			FormMedications FormM=new FormMedications();
-			FormM.SelectGenericMode=true;
-			FormM.ShowDialog();
-			Medications.Refresh();
-			Medications.Cur=(Medication)Medications.HList[curMed];
-			if(FormM.DialogResult==DialogResult.OK){
-				Medications.Cur.GenericNum=FormM.MedicationNum;
-			}
-			FillForm();
+			Medications.DeleteCur();
+			DialogResult=DialogResult.OK;
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			//MedName already handled
 			//generic num already handled
-			if(checkIsGeneric.Checked){
+			Medications.Cur.MedName=textMedName.Text;
+			if(Medications.Cur.MedicationNum==Medications.Cur.GenericNum){
 				Medications.Cur.Notes=textNotes.Text;
 			}
 			else{
@@ -308,6 +356,8 @@ namespace OpenDental{
 				Medications.DeleteCur();
 			}
 		}
+
+		
 
 		
 

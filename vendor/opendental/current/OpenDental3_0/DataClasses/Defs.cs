@@ -98,8 +98,8 @@ namespace OpenDental{
 			return retStr;
 		}
 
-		///<summary></summary>
-		public static int GetOrder(DefCat myCat, int myDefNum){
+		///<summary>Gets the order of the def within Short or -1 if not found.</summary>
+		public static int GetOrder(DefCat myCat,int myDefNum){
 			//gets the index in the list of unhidden (the Short list).
 			for(int i=0;i<Short[(int)myCat].GetLength(0);i++){
 				if(Short[(int)myCat][i].DefNum==myDefNum){

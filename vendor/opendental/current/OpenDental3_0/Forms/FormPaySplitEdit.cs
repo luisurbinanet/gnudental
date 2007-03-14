@@ -14,10 +14,8 @@ namespace OpenDental
 		private System.Windows.Forms.Button ButCancel;
 		private System.Windows.Forms.Button butOK;
 		private System.Windows.Forms.Button butRemainder;
-		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.Label label5;
-		private OpenDental.ValidDate textDate;
 		private System.Windows.Forms.ListBox listProvider;
 		private System.Windows.Forms.ListBox listPatient;
 		private System.Windows.Forms.ListBox listType;
@@ -45,7 +43,7 @@ namespace OpenDental
 			Lan.C(this, new System.Windows.Forms.Control[] {
 				labelAuto,
 				labelRemainder,
-				label2,
+				//label2,
 				label4,
 				label5,
 				labelAmount,
@@ -74,8 +72,6 @@ namespace OpenDental
 			this.butOK = new System.Windows.Forms.Button();
 			this.butRemainder = new System.Windows.Forms.Button();
 			this.labelRemainder = new System.Windows.Forms.Label();
-			this.textDate = new OpenDental.ValidDate();
-			this.label2 = new System.Windows.Forms.Label();
 			this.labelType = new System.Windows.Forms.Label();
 			this.label4 = new System.Windows.Forms.Label();
 			this.label5 = new System.Windows.Forms.Label();
@@ -90,7 +86,6 @@ namespace OpenDental
 			// 
 			// ButCancel
 			// 
-			this.ButCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.ButCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.ButCancel.Location = new System.Drawing.Point(567, 318);
 			this.ButCancel.Name = "ButCancel";
@@ -126,23 +121,6 @@ namespace OpenDental
 			this.labelRemainder.Size = new System.Drawing.Size(176, 48);
 			this.labelRemainder.TabIndex = 5;
 			this.labelRemainder.Text = "The Remainder button will calculate the value needed to make the splits balance.";
-			// 
-			// textDate
-			// 
-			this.textDate.Location = new System.Drawing.Point(86, 32);
-			this.textDate.Name = "textDate";
-			this.textDate.Size = new System.Drawing.Size(92, 20);
-			this.textDate.TabIndex = 0;
-			this.textDate.Text = "";
-			// 
-			// label2
-			// 
-			this.label2.Location = new System.Drawing.Point(34, 34);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(50, 16);
-			this.label2.TabIndex = 7;
-			this.label2.Text = "Date";
-			this.label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// labelType
 			// 
@@ -196,7 +174,7 @@ namespace OpenDental
 			// 
 			// textAmount
 			// 
-			this.textAmount.Location = new System.Drawing.Point(86, 58);
+			this.textAmount.Location = new System.Drawing.Point(86, 47);
 			this.textAmount.Name = "textAmount";
 			this.textAmount.Size = new System.Drawing.Size(92, 20);
 			this.textAmount.TabIndex = 1;
@@ -204,7 +182,7 @@ namespace OpenDental
 			// 
 			// labelAmount
 			// 
-			this.labelAmount.Location = new System.Drawing.Point(6, 60);
+			this.labelAmount.Location = new System.Drawing.Point(6, 49);
 			this.labelAmount.Name = "labelAmount";
 			this.labelAmount.Size = new System.Drawing.Size(78, 16);
 			this.labelAmount.TabIndex = 15;
@@ -238,14 +216,12 @@ namespace OpenDental
 			this.Controls.Add(this.labelAuto);
 			this.Controls.Add(this.labelAmount);
 			this.Controls.Add(this.textAmount);
-			this.Controls.Add(this.textDate);
 			this.Controls.Add(this.listType);
 			this.Controls.Add(this.listPatient);
 			this.Controls.Add(this.listProvider);
 			this.Controls.Add(this.label5);
 			this.Controls.Add(this.label4);
 			this.Controls.Add(this.labelType);
-			this.Controls.Add(this.label2);
 			this.Controls.Add(this.labelRemainder);
 			this.Controls.Add(this.butRemainder);
 			this.Controls.Add(this.butOK);
@@ -272,14 +248,14 @@ namespace OpenDental
 					Text=Lan.g(this,"Discount");
 					labelAuto.Visible=true;
 					PaySplits.Cur.IsDiscount=true;
-					PaySplits.Cur.ProcDate=DiscountBasis.ProcDate;
+					//PaySplits.Cur.ProcDate=DiscountBasis.ProcDate;
 					PaySplits.Cur.PatNum=DiscountBasis.PatNum;
 					PaySplits.Cur.ProvNum=DiscountBasis.ProvNum;
 				}
 				else{//new paysplit
 					Text=Lan.g(this,"New Paysplit");
 					PaySplits.Cur.IsDiscount=false;
-					PaySplits.Cur.ProcDate=DateTime.Now;
+					//PaySplits.Cur.ProcDate=DateTime.Now;
 					PaySplits.Cur.ProvNum=Providers.List[0].ProvNum;
 					PaySplits.Cur.DiscountType=Defs.Short[(int)DefCat.DiscountTypes][0].DefNum;
 					PaySplits.Cur.PatNum=Patients.Cur.PatNum;
@@ -288,9 +264,9 @@ namespace OpenDental
 			else{//editing existing paysplit or discount
 				Text=Lan.g(this,"Edit Split");
 			}
-			OriginalDate=PaySplits.Cur.ProcDate;
+			//OriginalDate=PaySplits.Cur.ProcDate;
 			OriginalAmt=PaySplits.Cur.SplitAmt;
-			textDate.Text=PaySplits.Cur.ProcDate.ToString("d");
+			//textDate.Text=PaySplits.Cur.ProcDate.ToString("d");
 			textAmount.Text=PaySplits.Cur.SplitAmt.ToString("F");
 			for(int i=0;i<Providers.List.Length;i++){
 				listProvider.Items.Add(Providers.List[i].Abbr);
@@ -340,10 +316,26 @@ namespace OpenDental
 				PaySplits.Cur.PayPlanNum=0;
 			}
 		}
-		
+
+		private void listType_SelectedIndexChanged(object sender, System.EventArgs e) {
+			//hate this event
+		}
+
+		private void butRemainder_Click(object sender, System.EventArgs e) {
+			textAmount.Text=Remain.ToString("F");
+		}
+
+		private void listType_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
+			if(!IsNew) return;
+			PaySplits.Cur.SplitAmt=DiscountBasis.SplitAmt
+				*PIn.PDouble(Defs.Short[(int)DefCat.DiscountTypes][listType.SelectedIndex].ItemValue)
+				/100;
+			textAmount.Text=PaySplits.Cur.SplitAmt.ToString("F");
+		}
+
 		private void butOK_Click(object sender, System.EventArgs e) {
-			if(  textDate.errorProvider1.GetError(textDate)!=""
-				|| textAmount.errorProvider1.GetError(textAmount)!=""
+			if(  //textDate.errorProvider1.GetError(textDate)!=""
+				textAmount.errorProvider1.GetError(textAmount)!=""
 				){
 				MessageBox.Show(Lan.g(this,"Please fix data entry errors first."));
 				return;
@@ -354,7 +346,7 @@ namespace OpenDental
 			}
 			else
 				PaySplits.Cur.SplitAmt=PIn.PDouble(textAmount.Text);
-			PaySplits.Cur.ProcDate=PIn.PDate(textDate.Text);
+			//PaySplits.Cur.ProcDate=PIn.PDate(textDate.Text);
 			if(listProvider.SelectedIndex!=-1)
 				PaySplits.Cur.ProvNum=Providers.List[listProvider.SelectedIndex].ProvNum;
 			if(listType.SelectedIndex!=-1)
@@ -374,27 +366,10 @@ namespace OpenDental
 				PaySplits.UpdateCur();
 			}
 			DialogResult=DialogResult.OK;
-			Close();
-		}
-
-		private void listType_SelectedIndexChanged(object sender, System.EventArgs e) {
-			//hate this event
-		}
-
-		private void butRemainder_Click(object sender, System.EventArgs e) {
-			textAmount.Text=Remain.ToString("F");
-		}
-
-		private void listType_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
-			if(!IsNew) return;
-			PaySplits.Cur.SplitAmt=DiscountBasis.SplitAmt
-				*PIn.PDouble(Defs.Short[(int)DefCat.DiscountTypes][listType.SelectedIndex].ItemValue)
-				/100;
-			textAmount.Text=PaySplits.Cur.SplitAmt.ToString("F");
 		}
 
 		private void ButCancel_Click(object sender, System.EventArgs e) {
-		
+			DialogResult=DialogResult.Cancel;
 		}
 
 		

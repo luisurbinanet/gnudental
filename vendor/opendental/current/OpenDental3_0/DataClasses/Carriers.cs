@@ -146,6 +146,7 @@ namespace OpenDental{
 			}
 			//this could only happen if corrupted:
 			Cur=new Carrier();
+			Cur.CarrierName="";//instead of null. Helps prevent crash.
 		}
 
 		///<summary>Gets a carrierNum based on the other data in Cur.  If there is no matching carrier, then a new carrier is created.  The end result is that a valid Cur will always be set.</summary>

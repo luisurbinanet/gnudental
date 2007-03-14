@@ -138,7 +138,7 @@ namespace OpenDental.Reporting
 		
 		#endregion
 
-		///<summary>When a new Report is created, the only section that is added is the details.</summary>
+		///<summary>When a new Report is created, the only section that is added is the details. This makes the logic a little more complicated, but it will minimize calls to the database for unused sections. This also makes the act of adding groups more natural.</summary>
 		public Report(){
 			//ReportMargins=new Margins(50,50,30,30);//this should work for almost all printers.
 			sections=new SectionCollection();
@@ -374,35 +374,51 @@ namespace OpenDental.Reporting
 			parameterFields.Add(new ParameterField(myName,myValueType,myDefaultValues,myPromptingText,mySnippet,myDefCategory));
 		}
 
-		///<summary>Submits the Query to the database and fills ReportTable with the results.</summary>
-		public void SubmitQuery(){
-			//display a dialog for user to enter parameters
-			FormParameterInput FormPI=new FormParameterInput();
-			for(int i=0;i<parameterFields.Count;i++){
-				FormPI.AddInputItem(parameterFields[i].PromptingText,parameterFields[i].ValueType
-					,parameterFields[i].DefaultValues,parameterFields[i].EnumerationType
-					,parameterFields[i].DefCategory);
-			}
-			FormPI.ShowDialog();
-			for(int i=0;i<parameterFields.Count;i++){
-				parameterFields[i].CurrentValues=FormPI.GetCurrentValues(i);
-				parameterFields[i].ApplyParamValues();
-			}
-			//the outputQuery will get altered without affecting the original Query.
+		///<summary>Submits the Query to the database and fills ReportTable with the results.  Returns false if the user clicks Cancel on the Parameters dialog.</summary>
+		public bool SubmitQuery(){
+			//djc moved variable declaration from mid-function
 			string outputQuery=Query;
-			string replacement="";//the replacement value to put into the outputQuery for each match
-			//first replace all parameters with values:
-			MatchCollection mc;
-			Regex regex=new Regex(@"\?\w+");//? followed by one or more text characters
-			mc=regex.Matches(outputQuery);
-			//loop through each occurance of "?etc"
-			for(int i=0;i<mc.Count;i++){
-				replacement=parameterFields[mc[i].Value.Substring(1)].OutputValue;
-				regex=new Regex(@"\"+mc[i].Value);
-				outputQuery=regex.Replace(outputQuery,replacement);
+			//djc only display parameter dialog if parameters were specified
+			if(parameterFields.Count>0){
+				//display a dialog for user to enter parameters
+				FormParameterInput FormPI=new FormParameterInput();
+				for(int i=0;i<parameterFields.Count;i++){
+					FormPI.AddInputItem(parameterFields[i].PromptingText,parameterFields[i].ValueType
+						,parameterFields[i].DefaultValues,parameterFields[i].EnumerationType
+						,parameterFields[i].DefCategory);
+				}
+				FormPI.ShowDialog();
+				if(FormPI.DialogResult!=DialogResult.OK){
+					return false;
+				}
+				for(int i=0;i<parameterFields.Count;i++){
+					parameterFields[i].CurrentValues=FormPI.GetCurrentValues(i);
+					parameterFields[i].ApplyParamValues();
+				}
+				//the outputQuery will get altered without affecting the original Query.
+				string replacement="";//the replacement value to put into the outputQuery for each match
+				//first replace all parameters with values:
+				MatchCollection mc;
+				Regex regex=new Regex(@"\?\w+");//? followed by one or more text characters
+				mc=regex.Matches(outputQuery);
+				//loop through each occurance of "?etc"
+				for(int i=0;i<mc.Count;i++){
+					replacement=parameterFields[mc[i].Value.Substring(1)].OutputValue;
+					regex=new Regex(@"\"+mc[i].Value);
+					outputQuery=regex.Replace(outputQuery,replacement);
+				}
+				//then, submit the query
 			}
-			//then, submit the query
 			reportTable=ODReportData.SubmitQuery(outputQuery);
+			return true;
+		}
+
+		///<summary>If the specified section exists, then this returns its height. Otherwise it returns 0.</summary>
+		public int GetSectionHeight(string sectionName){
+			if(!sections.Contains(sectionName)){
+				return 0;
+			}
+			return sections[sectionName].Height;
 		}
 
 		/*

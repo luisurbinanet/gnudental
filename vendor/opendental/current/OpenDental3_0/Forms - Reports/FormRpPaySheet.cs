@@ -9,9 +9,6 @@ namespace OpenDental{
 	public class FormRpPaySheet : System.Windows.Forms.Form{
 		private System.Windows.Forms.Button butCancel;
 		private System.Windows.Forms.Button butOK;
-		private System.Windows.Forms.Panel panel1;
-		private System.Windows.Forms.RadioButton radioRange;
-		private System.Windows.Forms.RadioButton radioSingle;
 		private System.Windows.Forms.MonthCalendar date2;
 		private System.Windows.Forms.MonthCalendar date1;
 		private System.Windows.Forms.Label labelTO;
@@ -25,9 +22,6 @@ namespace OpenDental{
 		public FormRpPaySheet(){
 			InitializeComponent();
  			Lan.C(this, new System.Windows.Forms.Control[] {
-				panel1,
-				radioRange,
-				radioSingle,
 				date2,
 				date1,
 				labelTO,
@@ -57,16 +51,12 @@ namespace OpenDental{
 		{
 			this.butCancel = new System.Windows.Forms.Button();
 			this.butOK = new System.Windows.Forms.Button();
-			this.panel1 = new System.Windows.Forms.Panel();
-			this.radioRange = new System.Windows.Forms.RadioButton();
-			this.radioSingle = new System.Windows.Forms.RadioButton();
 			this.date2 = new System.Windows.Forms.MonthCalendar();
 			this.date1 = new System.Windows.Forms.MonthCalendar();
 			this.labelTO = new System.Windows.Forms.Label();
 			this.radioCheck = new System.Windows.Forms.RadioButton();
 			this.radioPatient = new System.Windows.Forms.RadioButton();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
-			this.panel1.SuspendLayout();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -90,42 +80,11 @@ namespace OpenDental{
 			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
-			// panel1
-			// 
-			this.panel1.Controls.Add(this.radioRange);
-			this.panel1.Controls.Add(this.radioSingle);
-			this.panel1.Location = new System.Drawing.Point(19, 16);
-			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(104, 60);
-			this.panel1.TabIndex = 0;
-			// 
-			// radioRange
-			// 
-			this.radioRange.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.radioRange.Location = new System.Drawing.Point(8, 33);
-			this.radioRange.Name = "radioRange";
-			this.radioRange.Size = new System.Drawing.Size(88, 19);
-			this.radioRange.TabIndex = 1;
-			this.radioRange.Text = "Date Range";
-			// 
-			// radioSingle
-			// 
-			this.radioSingle.Checked = true;
-			this.radioSingle.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.radioSingle.Location = new System.Drawing.Point(8, 12);
-			this.radioSingle.Name = "radioSingle";
-			this.radioSingle.Size = new System.Drawing.Size(88, 18);
-			this.radioSingle.TabIndex = 0;
-			this.radioSingle.TabStop = true;
-			this.radioSingle.Text = "Single Date";
-			this.radioSingle.CheckedChanged += new System.EventHandler(this.radioSingle_CheckedChanged);
-			// 
 			// date2
 			// 
 			this.date2.Location = new System.Drawing.Point(291, 112);
 			this.date2.Name = "date2";
 			this.date2.TabIndex = 2;
-			this.date2.Visible = false;
 			// 
 			// date1
 			// 
@@ -135,12 +94,11 @@ namespace OpenDental{
 			// 
 			// labelTO
 			// 
-			this.labelTO.Location = new System.Drawing.Point(251, 120);
+			this.labelTO.Location = new System.Drawing.Point(244, 120);
 			this.labelTO.Name = "labelTO";
 			this.labelTO.Size = new System.Drawing.Size(24, 23);
 			this.labelTO.TabIndex = 22;
 			this.labelTO.Text = "TO";
-			this.labelTO.Visible = false;
 			// 
 			// radioCheck
 			// 
@@ -183,7 +141,6 @@ namespace OpenDental{
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
-			this.Controls.Add(this.panel1);
 			this.Controls.Add(this.date2);
 			this.Controls.Add(this.date1);
 			this.Controls.Add(this.labelTO);
@@ -194,7 +151,6 @@ namespace OpenDental{
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Daily Payments Report";
 			this.Load += new System.EventHandler(this.FormPaymentSheet_Load);
-			this.panel1.ResumeLayout(false);
 			this.groupBox1.ResumeLayout(false);
 			this.ResumeLayout(false);
 
@@ -212,42 +168,23 @@ namespace OpenDental{
 				+"CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI) AS plfname"
 				+",'                                                 '"//this is long so union won't get trunc.
 				+",payment.PayType,payment.CheckNum,payment.PayNum,payment.PayAmt "
-				+"FROM payment,patient ";//added plfname, payment.paynum, spk
-			if(radioRange.Checked){
-				Queries.CurReport.Query+="WHERE "
-					+"payment.PatNum = patient.PatNum "
-					+"&& payment.PayAmt > 0 "//added spk 
-					+"&& payment.PayDate >= '" + date1.SelectionStart.ToString("yyyy-MM-dd")+"' "
-					+"&& paydate <= '" + date2.SelectionStart.ToString("yyyy-MM-dd")+"' "
-					+"UNION "
-					+"SELECT claimpayment.CheckDate,CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI) "
-					+"AS plfname,carrier.CarrierName,'',"
-					+"claimpayment.CheckNum,claimproc.ClaimNum,SUM(claimproc.InsPayAmt) "//spk/js
-					+"FROM claimpayment,claimproc,insplan,patient,carrier "
-					+"WHERE claimproc.ClaimPaymentNum = claimpayment.ClaimPaymentNum "
-					+"&& claimproc.PlanNum = insplan.PlanNum "
-					+"&& claimproc.PatNum = patient.PatNum "
-					+"&& carrier.CarrierNum = insplan.CarrierNum "
-					+"&& (claimproc.Status = '1' || claimproc.Status = '4') "//received or supplemental
-					+"&& claimpayment.CheckDate >= '"+date1.SelectionStart.ToString("yyyy-MM-dd")+"' "
-					+"&& claimpayment.CheckDate <= '"+date2.SelectionStart.ToString("yyyy-MM-dd")+"' ";
-			}
-			else{//single date
-				Queries.CurReport.Query+="WHERE " // to display carrier with patient name
-					+"payment.PatNum = patient.PatNum && "
-					+"payment.PayDate = '"+date1.SelectionStart.ToString("yyyy-MM-dd")+"' UNION "
-					+"SELECT claimpayment.CheckDate,"
-					+"CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI) AS plfname,"
-					+"carrier.CarrierName,'',claimpayment.CheckNum,"
-					+"claimproc.ClaimNum,SUM(claimproc.InsPayAmt) "//changed to pickup claim amount, spk/js
-					+"FROM claimpayment,claimproc,insplan,patient,carrier "
-					+"WHERE claimproc.ClaimPaymentNum = claimpayment.ClaimPaymentNum "
-					+"&& claimproc.PlanNum = insplan.PlanNum "
-					+"&& claimproc.PatNum = patient.PatNum "
-					+"&& carrier.CarrierNum = insplan.CarrierNum "
-					+"&& (claimproc.Status = '1' || claimproc.Status = '4') "
-					+"&& claimpayment.CheckDate = '"+date1.SelectionStart.ToString("yyyy-MM-dd")+"' ";
-			}
+				+"FROM payment,patient "//added plfname, payment.paynum, spk
+				+"WHERE "
+				+"payment.PatNum = patient.PatNum "
+				+"AND payment.PayDate >= '"+POut.PDate(date1.SelectionStart)+"' "
+				+"AND payment.PayDate <= '"+POut.PDate(date2.SelectionStart)+"' "
+				+"UNION "
+				+"SELECT claimpayment.CheckDate,CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI) "
+				+"AS plfname,carrier.CarrierName,'',"
+				+"claimpayment.CheckNum,claimproc.ClaimNum,SUM(claimproc.InsPayAmt) "//spk/js
+				+"FROM claimpayment,claimproc,insplan,patient,carrier "
+				+"WHERE claimproc.ClaimPaymentNum = claimpayment.ClaimPaymentNum "
+				+"AND claimproc.PlanNum = insplan.PlanNum "
+				+"AND claimproc.PatNum = patient.PatNum "
+				+"AND carrier.CarrierNum = insplan.CarrierNum "
+				+"AND (claimproc.Status=1 OR claimproc.Status=4) "//received or supplemental
+				+"AND claimpayment.CheckDate >= '"+POut.PDate(date1.SelectionStart)+"' "
+				+"AND claimpayment.CheckDate <= '"+POut.PDate(date2.SelectionStart)+"' ";
 			//this part is run after the union:
 			if(radioPatient.Checked){
 				Queries.CurReport.Query+="GROUP BY claimproc.ClaimNum ";//changed, spk
@@ -260,15 +197,10 @@ namespace OpenDental{
 			FormQuery2=new FormQuery();
 			FormQuery2.IsReport=true;
 			FormQuery2.SubmitReportQuery();			
-			Queries.CurReport.Title="DAILY PAYMENTS";
+			Queries.CurReport.Title="Daily Payments";
 			Queries.CurReport.SubTitle=new string[2];
 			Queries.CurReport.SubTitle[0]=((Pref)Prefs.HList["PracticeTitle"]).ValueString;
-			if(radioRange.Checked==true){
-				Queries.CurReport.SubTitle[1]=date1.SelectionStart.ToString("d")+" - "+date2.SelectionStart.ToString("d");
-			}
-			else{
-				Queries.CurReport.SubTitle[1]=date1.SelectionStart.ToString("d");
-			}			
+			Queries.CurReport.SubTitle[1]=date1.SelectionStart.ToString("d")+" - "+date2.SelectionStart.ToString("d");	
 			Queries.CurReport.ColPos=new int[8];
 			Queries.CurReport.ColCaption=new string[7];
 			Queries.CurReport.ColAlign=new HorizontalAlignment[7];
@@ -293,16 +225,7 @@ namespace OpenDental{
 			DialogResult=DialogResult.OK;		
 		}
 
-		private void radioSingle_CheckedChanged(object sender, System.EventArgs e) {
-			if(radioSingle.Checked==true){
-				date2.Visible=false;
-				labelTO.Visible=false;
-			}
-			else{
-				date2.Visible=true;
-				labelTO.Visible=true;
-			}			
-		}
+		
 
 	}
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
@@ -47,7 +48,7 @@ namespace OpenDental{
 		///<summary>Foreign key to patient.PatNum.  Head of household.</summary>
 		public int    Guarantor;
 		///<summary>Derived from Birthdate.  Not in the database table.</summary>
-		public string Age;
+		public int    Age;
 		///<summary>Single char. Shows at upper left corner of appointments.  Suggested use is A,B,or C to designate creditworthiness, but it can actually be used for any purpose.</summary>
 		public string CreditType;
 		///<summary></summary>
@@ -64,7 +65,7 @@ namespace OpenDental{
 		public Relat SecRelationship;
 		///<summary>Current patient balance.(not family)</summary>
 		public double EstBalance;
-		///<summary>May be 0(none) or -1(done), otherwise it is the foreign key to appointment.AptNum.  This is the appointment that will show in the Chart module and in the Next appointment tracker.  It will never show in the Appointments module.</summary>
+		///<summary>May be 0(none) or -1(done), otherwise it is the foreign key to appointment.AptNum.  This is the appointment that will show in the Chart module and in the Next appointment tracker.  It will never show in the Appointments module. In other words, it is the suggested next appoinment rather than an appointment that has already been scheduled.</summary>
 		public int NextAptNum;//
 		///<summary>Foreign key to provider.ProvNum.  The patient's primary provider.</summary>
 		public int PriProv;
@@ -160,7 +161,12 @@ namespace OpenDental{
 		//public static Patient[] PtList;
 		///<summary>This replaces the PtList for use in the Select Patient window.</summary>
 		public static DataTable PtDataTable;
+		///<summary>Use GetMultPats to fill this. Then use GetOnePat to pull a single pat from this list.</summary>
+		private static Patient[] multPats;
+		///<summary>Collection of Patients. The last five patients. Gets displayed on dropdown button.</summary>
+		private static ArrayList buttonLastFive;
 
+		///<summary>Current Patient</summary>
 		public static Patient Cur{
 			get{
 				return cur;
@@ -205,6 +211,7 @@ namespace OpenDental{
 				FamilyList[i].Position     = (PatientPosition)PIn.PInt   (table.Rows[i][7].ToString());
 				FamilyList[i].Birthdate    = PIn.PDate  (table.Rows[i][8].ToString());
 				FamilyList[i].Age=Shared.DateToAge(FamilyList[i].Birthdate);
+				//Debug.WriteLine("*"+FamilyList[i].Age+"*");
 				FamilyList[i].SSN          = PIn.PString(table.Rows[i][9].ToString());
 				FamilyList[i].Address      = PIn.PString(table.Rows[i][10].ToString());
 				FamilyList[i].Address2     = PIn.PString(table.Rows[i][11].ToString());
@@ -685,6 +692,7 @@ namespace OpenDental{
 				+"AND Address LIKE '"    +POut.PString(address)+"%' "
 				+"AND City LIKE '"       +POut.PString(city)+"%' "
 				+"AND State LIKE '"      +POut.PString(state)+"%' "
+				+"AND SSN LIKE '"        +POut.PString(ssn)+"%' "
 				+"AND PatNum LIKE '"     +POut.PString(patnum)+"%' "
 				+"AND ChartNumber LIKE '"+POut.PString(chartnumber)+"%' "
 				+billingsnippet;
@@ -722,8 +730,7 @@ namespace OpenDental{
 				r[6]=table.Rows[i][6].ToString();
 				r[7]=table.Rows[i][7].ToString();
 				r[8]=table.Rows[i][8].ToString();
-				r[9]=Lan.g("enumPatientStatus",
-					((PatientStatus)PIn.PInt(table.Rows[i][9].ToString())).ToString());
+				r[9]=((PatientStatus)PIn.PInt(table.Rows[i][9].ToString())).ToString();
 				r[10]=Defs.GetName(DefCat.BillingTypes,PIn.PInt(table.Rows[i][10].ToString()));
 				r[11]=table.Rows[i][11].ToString();
 				r[12]=table.Rows[i][12].ToString();
@@ -805,6 +812,108 @@ ORDER BY DueDate
 			Array.Sort(orderDate,RecallList);
 		}
 
+		///<summary>Used when filling appointments for an entire day. Gets a list of Pats, multPats, of all the specified patients.  Then, use GetOnePat to pull one patient from this list.  This process requires only one call to the database.</summary>
+		public static void GetMultPats(int[] patNums){
+			//MessageBox.Show(patNums.Length.ToString());
+			string strPatNums="";
+			if(patNums.Length>0){
+				for(int i=0;i<patNums.Length;i++){
+					if(i>0){
+						strPatNums+="|| ";
+					}
+					strPatNums+="PatNum='"+patNums[i].ToString()+"' ";
+				}
+				cmd.CommandText="SELECT * from patient WHERE "+strPatNums;
+				//MessageBox.Show(cmd.CommandText);
+				FillTable();
+			}
+			else{
+				table=new DataTable();
+			}
+			multPats=new Patient[table.Rows.Count];
+			for(int i=0;i<table.Rows.Count;i++){
+				multPats[i].PatNum       = PIn.PInt   (table.Rows[i][0].ToString());
+				multPats[i].LName        = PIn.PString(table.Rows[i][1].ToString());
+				multPats[i].FName        = PIn.PString(table.Rows[i][2].ToString());
+				multPats[i].MiddleI      = PIn.PString(table.Rows[i][3].ToString());
+				multPats[i].Preferred    = PIn.PString(table.Rows[i][4].ToString());
+				multPats[i].PatStatus    = (PatientStatus)PIn.PInt   (table.Rows[i][5].ToString());
+				multPats[i].Gender       = (PatientGender)PIn.PInt   (table.Rows[i][6].ToString());
+				multPats[i].Position     = (PatientPosition)PIn.PInt   (table.Rows[i][7].ToString());
+				multPats[i].Birthdate    = PIn.PDate  (table.Rows[i][8].ToString());
+				multPats[i].Age=Shared.DateToAge(multPats[i].Birthdate);
+				multPats[i].SSN          = PIn.PString(table.Rows[i][9].ToString());
+				multPats[i].Address      = PIn.PString(table.Rows[i][10].ToString());
+				multPats[i].Address2     = PIn.PString(table.Rows[i][11].ToString());
+				multPats[i].City         = PIn.PString(table.Rows[i][12].ToString());
+				multPats[i].State        = PIn.PString(table.Rows[i][13].ToString());
+				multPats[i].Zip          = PIn.PString(table.Rows[i][14].ToString());
+				multPats[i].HmPhone      = PIn.PString(table.Rows[i][15].ToString());
+				multPats[i].WkPhone      = PIn.PString(table.Rows[i][16].ToString());
+				multPats[i].WirelessPhone= PIn.PString(table.Rows[i][17].ToString());
+				multPats[i].Guarantor    = PIn.PInt   (table.Rows[i][18].ToString());
+				multPats[i].CreditType   = PIn.PString(table.Rows[i][19].ToString());
+				multPats[i].Email        = PIn.PString(table.Rows[i][20].ToString());
+				multPats[i].Salutation   = PIn.PString(table.Rows[i][21].ToString());
+				multPats[i].PriPlanNum   = PIn.PInt   (table.Rows[i][22].ToString());
+				multPats[i].PriRelationship=(Relat)PIn.PInt(table.Rows[i][23].ToString());
+				multPats[i].SecPlanNum   = PIn.PInt   (table.Rows[i][24].ToString());
+				multPats[i].SecRelationship=(Relat)PIn.PInt(table.Rows[i][25].ToString());
+				multPats[i].EstBalance   = PIn.PDouble(table.Rows[i][26].ToString());
+				multPats[i].NextAptNum   = PIn.PInt   (table.Rows[i][27].ToString());
+				multPats[i].PriProv      = PIn.PInt   (table.Rows[i][28].ToString());
+				multPats[i].SecProv      = PIn.PInt   (table.Rows[i][29].ToString());
+				multPats[i].FeeSched     = PIn.PInt   (table.Rows[i][30].ToString());
+				multPats[i].BillingType  = PIn.PInt   (table.Rows[i][31].ToString());
+				multPats[i].RecallInterval=PIn.PInt   (table.Rows[i][32].ToString());
+				multPats[i].RecallStatus = PIn.PInt   (table.Rows[i][33].ToString());
+				multPats[i].ImageFolder  = PIn.PString(table.Rows[i][34].ToString());
+				multPats[i].AddrNote     = PIn.PString(table.Rows[i][35].ToString());
+				multPats[i].FamFinUrgNote= PIn.PString(table.Rows[i][36].ToString());
+				multPats[i].MedUrgNote   = PIn.PString(table.Rows[i][37].ToString());
+				multPats[i].ApptModNote  = PIn.PString(table.Rows[i][38].ToString());
+				multPats[i].StudentStatus= PIn.PString(table.Rows[i][39].ToString());
+				multPats[i].SchoolName   = PIn.PString(table.Rows[i][40].ToString());
+				multPats[i].ChartNumber  = PIn.PString(table.Rows[i][41].ToString());
+				multPats[i].MedicaidID   = PIn.PString(table.Rows[i][42].ToString());
+				multPats[i].Bal_0_30     = PIn.PDouble(table.Rows[i][43].ToString());
+				multPats[i].Bal_31_60    = PIn.PDouble(table.Rows[i][44].ToString());
+				multPats[i].Bal_61_90    = PIn.PDouble(table.Rows[i][45].ToString());
+				multPats[i].BalOver90    = PIn.PDouble(table.Rows[i][46].ToString());
+				multPats[i].InsEst       = PIn.PDouble(table.Rows[i][47].ToString());
+				multPats[i].PrimaryTeeth = PIn.PString(table.Rows[i][48].ToString());
+				multPats[i].BalTotal     = PIn.PDouble(table.Rows[i][49].ToString());
+				multPats[i].EmployerNum  = PIn.PInt   (table.Rows[i][50].ToString());
+				multPats[i].EmploymentNote=PIn.PString(table.Rows[i][51].ToString());
+				multPats[i].Race         = (PatientRace)PIn.PInt(table.Rows[i][52].ToString());
+				multPats[i].County       = PIn.PString(table.Rows[i][53].ToString());
+				multPats[i].GradeSchool  = PIn.PString(table.Rows[i][54].ToString());
+				multPats[i].GradeLevel   = (PatientGrade)PIn.PInt(table.Rows[i][55].ToString());
+				multPats[i].Urgency      = (TreatmentUrgency)PIn.PInt(table.Rows[i][56].ToString());
+				multPats[i].DateFirstVisit=PIn.PDate  (table.Rows[i][57].ToString());
+				multPats[i].PriPending   = PIn.PBool  (table.Rows[i][58].ToString());
+				multPats[i].SecPending   = PIn.PBool  (table.Rows[i][59].ToString());
+			}
+		}
+
+		///<summary>First call GetMultPats to fill the list of multPats. Then, use this to return one patient from that list.</summary>
+		public static Patient GetOnePat(int patNum){
+			for(int i=0;i<multPats.Length;i++){
+				if(multPats[i].PatNum==patNum){
+					return multPats[i];
+				}
+			}
+			return new Patient();
+		}
+
+		///<summary>Usually used after GetOnePat to return a formatted name.</summary>
+		public static string GetNameLF(Patient pat){
+			if(pat.Preferred=="")
+				return pat.LName+", "+pat.FName+" "+pat.MiddleI;
+			else
+				return pat.LName+", '"+pat.Preferred+"' "+pat.FName+" "+pat.MiddleI;
+		}
+
 		///<summary></summary>
 		public static string GetNameInFamLF(int myPatNum){
 			string retStr="";
@@ -850,7 +959,7 @@ ORDER BY DueDate
 		}
 
 		///<summary>Gets (preferred)first middle last</summary>
-		public static string GetNameInFamFIL(int myi){
+		public static string GetNameInFamFLI(int myi){
 			string retStr="";
 			if(FamilyList[myi].Preferred==""){
 				retStr=FamilyList[myi].FName+" "+FamilyList[myi].MiddleI+" "+FamilyList[myi].LName; 
@@ -861,7 +970,7 @@ ORDER BY DueDate
 			return retStr;
 		}
 
-		/// <summary>Gets nine of the most useful fields from the db for the given patnums, saving the data
+		/// <summary>Gets nine of the most useful fields from the db for the given patnum, saving the data
 		/// in Lim and LimName.</summary>
 		/// <param name="patNum">The PatNum to use in retrieving the data.</param>
 		public static void GetLim(int patNum){
@@ -910,6 +1019,7 @@ ORDER BY DueDate
 				return cur.FName+" '"+cur.Preferred+"' "+cur.MiddleI+" "+cur.LName;
 		}
 
+		/*
 		///<summary></summary>
 		public static string GetLimCreditIns(){
 			string retStr="";
@@ -920,15 +1030,15 @@ ORDER BY DueDate
 				retStr+=" ";
 			else retStr+="I";
 			return retStr;
-		}
+		}*/
 
 		///<summary></summary>
-		public static string GetCreditIns(){
+		public static string GetCreditIns(Patient pat){
 			string retStr="";
-			if(cur.CreditType=="")
+			if(pat.CreditType=="")
 				retStr+=" ";
-			else retStr+=cur.CreditType;
-			if(cur.PriPlanNum==0)
+			else retStr+=pat.CreditType;
+			if(pat.PriPlanNum==0)
 				retStr+=" ";
 			else retStr+="I";	
 			return retStr;
@@ -1229,7 +1339,7 @@ ORDER BY DueDate
 			return PIn.PInt(((Pref)Prefs.HList["PracticeDefaultProv"]).ValueString);
 		}
 
-		///<summary>Gets the next available integer chart number.  Willl later add a where clause based on preferred format.</summary>
+		///<summary>Gets the next available integer chart number.  Will later add a where clause based on preferred format.</summary>
 		public static string GetNextChartNum(){
 			cmd.CommandText="SELECT ChartNumber from patient WHERE"
 				+" ChartNumber REGEXP '^[0-9]+$'"//matches any number of digits
@@ -1265,6 +1375,75 @@ ORDER BY DueDate
 			FillTable();
 			return PIn.PInt(table.Rows[0][0].ToString());
 		}
+
+		///<summary>Adds the current patient to the button. If no patient loaded, then does nothing. Also resets the family list on the button appropriately. Need to supply the menu to fill as well as the EventHandler to set for each item (all the same).</summary>
+		public static void AddPatsToMenu(ContextMenu menu,EventHandler onClick){
+			//add current patient
+			if(buttonLastFive==null){
+				buttonLastFive=new ArrayList();
+			}
+			if(PatIsLoaded){
+				if(buttonLastFive.Count==0
+					|| Cur.PatNum!=((Patient)buttonLastFive[0]).PatNum){//different patient selected
+					buttonLastFive.Insert(0,Cur);
+					if(buttonLastFive.Count>5){
+						buttonLastFive.RemoveAt(5);
+					}
+				}
+			}
+			//fill menu
+			menu.MenuItems.Clear();
+			for(int i=0;i<buttonLastFive.Count;i++){
+				menu.MenuItems.Add(GetNameLF((Patient)buttonLastFive[i]),onClick);
+			}
+			menu.MenuItems.Add("-");
+			menu.MenuItems.Add("FAMILY");
+			if(PatIsLoaded){
+				for(int i=0;i<FamilyList.Length;i++){
+					menu.MenuItems.Add(GetNameLF(FamilyList[i]),onClick);
+				}
+			}
+		}
+
+		///<summary>Determines which menu Item was selected from the Patient dropdown list and selectes that as the current patient. Calling class then does a ModuleSelected.</summary>
+		public static void ButtonSelect(ContextMenu menu,object sender){
+			int index=menu.MenuItems.IndexOf((MenuItem)sender);
+			if(index<buttonLastFive.Count){
+				Patients.cur.PatNum=((Patient)buttonLastFive[index]).PatNum;
+				return;
+			}
+			Patients.cur.PatNum=FamilyList[index-buttonLastFive.Count-2].PatNum;
+		}
+
+		///<summary>This is just a temporary handy way to find someone's recall due date.  It will be replaced soon by a table that stores it permanently.  It is a bit different than the main recall generator in that it only returns one date.  It always returns a date if any trigger procs.  A separate function figures out the date of any future recalls appointments scheduled.</summary>
+		public static DateTime GetRecallDue(int patNum){
+			cmd.CommandText = 
+				"SELECT MAX(procedurelog.ProcDate),"
+				//+"CONCAT(patient.lname,', ',patient.fname,' ',patient.preferred,' ',"
+				//+"patient.middlei) AS 'Patient Name', "
+				//+"patient.birthdate
+				+"patient.RecallInterval "//,patient.recallstatus,patient.patnum "
+				+"FROM procedurelog,procedurecode,patient "
+				+"WHERE procedurelog.PatNum ="+patNum.ToString()
+				+" AND patient.PatNum ="+patNum.ToString()
+				+" AND procedurecode.ADACode = procedurelog.ADACode "
+				+"AND procedurecode.SetRecall = 1 "
+				+"AND (procedurelog.ProcStatus = 2 "
+				+"OR procedurelog.ProcStatus = 3 "
+				+"OR procedurelog.ProcStatus = 4) "
+				+"AND patient.PatStatus = 0 "
+				+"GROUP BY patient.PatNum";
+			//MessageBox.Show(cmd.CommandText);
+			FillTable();
+			DateTime retVal=DateTime.MinValue;
+			if(table.Rows.Count>0){
+				retVal=(PIn.PDateT(table.Rows[0][0].ToString()))
+					.AddMonths(PIn.PInt(table.Rows[0][1].ToString()));//plus number of months
+			}
+			return retVal;
+		}
+
+
 
 	}
 

@@ -29,6 +29,9 @@ namespace OpenDental{
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
+			Lan.C(this, new System.Windows.Forms.Control[] {
+				this.label1 //*Ann
+			});
 			Lan.C("All", new System.Windows.Forms.Control[] {
 				butOK,
 				butCancel,

@@ -41,7 +41,6 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textHmPhone;
 		private System.Windows.Forms.TextBox textWkPhone;
 		private System.Windows.Forms.TextBox textWirelessPhone;
-		private System.Windows.Forms.TextBox textAddrNotes;
 		private System.Windows.Forms.Label label20;
 		private System.Windows.Forms.TextBox textAge;
 		private System.Windows.Forms.Label label21;
@@ -123,6 +122,7 @@ namespace OpenDental{
 		private OpenDental.ValidDate textDateFirstVisit;
 		private System.Windows.Forms.Label label36;
 		private bool mouseIsInListCounties;
+		private OpenDental.ODtextBox textAddrNotes;
 		///<summary>This is the object that is altered in this form, then saved to Patients.Cur just before update.</summary>
 		private Patient PatCur;
 
@@ -259,7 +259,6 @@ namespace OpenDental{
 			this.textHmPhone = new System.Windows.Forms.TextBox();
 			this.textWkPhone = new System.Windows.Forms.TextBox();
 			this.textWirelessPhone = new System.Windows.Forms.TextBox();
-			this.textAddrNotes = new System.Windows.Forms.TextBox();
 			this.butOK = new System.Windows.Forms.Button();
 			this.butCancel = new System.Windows.Forms.Button();
 			this.label20 = new System.Windows.Forms.Label();
@@ -300,6 +299,7 @@ namespace OpenDental{
 			this.checkSame = new System.Windows.Forms.CheckBox();
 			this.tbRefList = new OpenDental.TableRefList();
 			this.groupNotes = new System.Windows.Forms.GroupBox();
+			this.textAddrNotes = new OpenDental.ODtextBox();
 			this.checkNotesSame = new System.Windows.Forms.CheckBox();
 			this.butAdd = new OpenDental.XPButton();
 			this.butDelete = new OpenDental.XPButton();
@@ -610,19 +610,6 @@ namespace OpenDental{
 			this.textWirelessPhone.TabIndex = 14;
 			this.textWirelessPhone.Text = "";
 			this.textWirelessPhone.TextChanged += new System.EventHandler(this.textWirelessPhone_TextChanged);
-			// 
-			// textAddrNotes
-			// 
-			this.textAddrNotes.AcceptsReturn = true;
-			this.textAddrNotes.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.textAddrNotes.ForeColor = System.Drawing.Color.Red;
-			this.textAddrNotes.Location = new System.Drawing.Point(15, 42);
-			this.textAddrNotes.Multiline = true;
-			this.textAddrNotes.Name = "textAddrNotes";
-			this.textAddrNotes.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textAddrNotes.Size = new System.Drawing.Size(238, 58);
-			this.textAddrNotes.TabIndex = 0;
-			this.textAddrNotes.Text = "";
 			// 
 			// butOK
 			// 
@@ -1015,8 +1002,8 @@ namespace OpenDental{
 			// 
 			// groupNotes
 			// 
-			this.groupNotes.Controls.Add(this.checkNotesSame);
 			this.groupNotes.Controls.Add(this.textAddrNotes);
+			this.groupNotes.Controls.Add(this.checkNotesSame);
 			this.groupNotes.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupNotes.Location = new System.Drawing.Point(443, 556);
 			this.groupNotes.Name = "groupNotes";
@@ -1024,6 +1011,18 @@ namespace OpenDental{
 			this.groupNotes.TabIndex = 17;
 			this.groupNotes.TabStop = false;
 			this.groupNotes.Text = "Address and Phone Notes";
+			// 
+			// textAddrNotes
+			// 
+			this.textAddrNotes.AcceptsReturn = true;
+			this.textAddrNotes.Location = new System.Drawing.Point(14, 40);
+			this.textAddrNotes.Multiline = true;
+			this.textAddrNotes.Name = "textAddrNotes";
+			this.textAddrNotes.QuickPasteType = OpenDental.QuickPasteType.PatAddressNote;
+			this.textAddrNotes.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.textAddrNotes.Size = new System.Drawing.Size(237, 59);
+			this.textAddrNotes.TabIndex = 20;
+			this.textAddrNotes.Text = "";
 			// 
 			// checkNotesSame
 			// 
@@ -1482,7 +1481,7 @@ namespace OpenDental{
 				textBirthdate.Text="";
 			else
 				textBirthdate.Text=Patients.Cur.Birthdate.ToShortDateString();
-			textAge.Text=Patients.Cur.Age;
+			textAge.Text=Shared.AgeToString(Patients.Cur.Age);
 			if(CultureInfo.CurrentCulture.Name=="en-US"//if USA
 				&& Patients.Cur.SSN!=null//the null catches new patients
 				&& Patients.Cur.SSN.Length==9)//and length exactly 9 (no data gets lost in formatting)
@@ -1734,7 +1733,7 @@ namespace OpenDental{
 			if(birthdate>DateTime.Today){
 				birthdate=birthdate.AddYears(-100);
 			}
-			textAge.Text=Shared.DateToAge(birthdate);
+			textAge.Text=Shared.AgeToString(Shared.DateToAge(birthdate));
 		}
 
 		private void textZip_TextChanged(object sender, System.EventArgs e) {

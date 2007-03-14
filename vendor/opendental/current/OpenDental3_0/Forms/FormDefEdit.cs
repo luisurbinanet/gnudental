@@ -290,6 +290,11 @@ namespace OpenDental{
 						return;
 					}
 					break;
+				case DefCat.ImageCats:
+					if(textValue.Text!=""){
+						textValue.Text="X";
+					}
+					break;
 			}//end switch
 			Defs.Cur.ItemName=textName.Text;
 			if(EnableValue) Defs.Cur.ItemValue=textValue.Text;

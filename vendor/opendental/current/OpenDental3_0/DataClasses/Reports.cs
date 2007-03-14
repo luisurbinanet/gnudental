@@ -6,7 +6,7 @@ using OpenDental.Reporting;
 
 namespace OpenDental{
 	
-	///<summary>Corresponds to the Report table in the db. This ReportStruct is used because the actual Report class is too complex to be represented effectively in the database.  This is the intermediary.</summary>
+	///<summary>Not in use yet. Corresponds to the Report table in the db. This ReportStruct is used because the actual Report class is too complex to be represented effectively in the database.  This is the intermediary.</summary>
 	public struct ReportStruct{
 		///<summary>Primary key.</summary>
 		public int ReportNum;

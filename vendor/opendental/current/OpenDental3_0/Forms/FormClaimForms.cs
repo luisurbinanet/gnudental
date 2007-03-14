@@ -2,7 +2,10 @@ using System;
 using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
+using System.IO;
 using System.Windows.Forms;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace OpenDental{
 	/// <summary>
@@ -17,6 +20,11 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.ListBox listEClaim;
+		private System.Windows.Forms.Button butExport;
+		private System.Windows.Forms.Button butImport;
+		private System.Windows.Forms.GroupBox groupBox1;
+		private System.Windows.Forms.OpenFileDialog openDlg;
+		private System.Windows.Forms.SaveFileDialog saveDlg;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -29,15 +37,23 @@ namespace OpenDental{
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] {
+			Lan.C(this, new System.Windows.Forms.Control[]
+			{
 				this,
 				label1,
-				label2
+				label2,
+				groupBox1,
+				butExport,
+				butImport,
+				butCopy //*Ann
 			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
+			Lan.C("All", new System.Windows.Forms.Control[]
+			{
 				//butOK,
 				//butCancel,
-				butAdd
+				butAdd,
+				butClose, //*Ann
+				butDelete //*Ann
 			});
 		}
 
@@ -72,6 +88,12 @@ namespace OpenDental{
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
 			this.listEClaim = new System.Windows.Forms.ListBox();
+			this.butExport = new System.Windows.Forms.Button();
+			this.butImport = new System.Windows.Forms.Button();
+			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.openDlg = new System.Windows.Forms.OpenFileDialog();
+			this.saveDlg = new System.Windows.Forms.SaveFileDialog();
+			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// butClose
@@ -95,7 +117,7 @@ namespace OpenDental{
 			// butAdd
 			// 
 			this.butAdd.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butAdd.Location = new System.Drawing.Point(46, 298);
+			this.butAdd.Location = new System.Drawing.Point(15, 25);
 			this.butAdd.Name = "butAdd";
 			this.butAdd.TabIndex = 3;
 			this.butAdd.Text = "&Add";
@@ -104,7 +126,7 @@ namespace OpenDental{
 			// butCopy
 			// 
 			this.butCopy.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butCopy.Location = new System.Drawing.Point(46, 360);
+			this.butCopy.Location = new System.Drawing.Point(15, 87);
 			this.butCopy.Name = "butCopy";
 			this.butCopy.Size = new System.Drawing.Size(115, 23);
 			this.butCopy.TabIndex = 4;
@@ -114,7 +136,7 @@ namespace OpenDental{
 			// butDelete
 			// 
 			this.butDelete.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butDelete.Location = new System.Drawing.Point(46, 329);
+			this.butDelete.Location = new System.Drawing.Point(15, 56);
 			this.butDelete.Name = "butDelete";
 			this.butDelete.TabIndex = 5;
 			this.butDelete.Text = "Delete";
@@ -145,18 +167,48 @@ namespace OpenDental{
 			this.listEClaim.Size = new System.Drawing.Size(203, 251);
 			this.listEClaim.TabIndex = 7;
 			// 
+			// butExport
+			// 
+			this.butExport.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butExport.Location = new System.Drawing.Point(142, 25);
+			this.butExport.Name = "butExport";
+			this.butExport.TabIndex = 9;
+			this.butExport.Text = "Export";
+			this.butExport.Click += new System.EventHandler(this.butExport_Click);
+			// 
+			// butImport
+			// 
+			this.butImport.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butImport.Location = new System.Drawing.Point(141, 56);
+			this.butImport.Name = "butImport";
+			this.butImport.TabIndex = 10;
+			this.butImport.Text = "Import";
+			this.butImport.Click += new System.EventHandler(this.butImport_Click);
+			// 
+			// groupBox1
+			// 
+			this.groupBox1.Controls.Add(this.butCopy);
+			this.groupBox1.Controls.Add(this.butExport);
+			this.groupBox1.Controls.Add(this.butAdd);
+			this.groupBox1.Controls.Add(this.butImport);
+			this.groupBox1.Controls.Add(this.butDelete);
+			this.groupBox1.Location = new System.Drawing.Point(29, 298);
+			this.groupBox1.Name = "groupBox1";
+			this.groupBox1.Size = new System.Drawing.Size(232, 122);
+			this.groupBox1.TabIndex = 11;
+			this.groupBox1.TabStop = false;
+			this.groupBox1.Text = "Advanced Users Only";
+			// 
 			// FormClaimForms
 			// 
 			this.AcceptButton = this.butClose;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butClose;
-			this.ClientSize = new System.Drawing.Size(566, 411);
+			this.ClientSize = new System.Drawing.Size(581, 451);
+			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.listEClaim);
 			this.Controls.Add(this.label1);
-			this.Controls.Add(this.butDelete);
-			this.Controls.Add(this.butCopy);
-			this.Controls.Add(this.butAdd);
 			this.Controls.Add(this.listClaimForms);
 			this.Controls.Add(this.butClose);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -169,6 +221,7 @@ namespace OpenDental{
 			this.Text = "Claim Forms";
 			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormClaimForms_Closing);
 			this.Load += new System.EventHandler(this.FormClaimForms_Load);
+			this.groupBox1.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -178,7 +231,9 @@ namespace OpenDental{
 			FillLists();
 		}
 
+		///<summary>Refreshes ClaimForms, then fills both lists.</summary>
 		private void FillLists(){
+			//ClaimFormItems.Refresh();
 			ClaimForms.Refresh();
 			listClaimForms.Items.Clear();
 			string description;
@@ -201,16 +256,17 @@ namespace OpenDental{
 		private void listClaimForms_DoubleClick(object sender, System.EventArgs e) {
 			if(listClaimForms.SelectedIndex==-1)
 				return;
-			ClaimForms.Cur=ClaimForms.ListLong[listClaimForms.SelectedIndex];
 			FormClaimFormEdit FormCFE=new FormClaimFormEdit();
+			FormCFE.ClaimFormCur=ClaimForms.ListLong[listClaimForms.SelectedIndex];
 			FormCFE.ShowDialog();
 			FillLists();
 		}
 
 		private void butAdd_Click(object sender, System.EventArgs e) {
-			ClaimForms.Cur=new ClaimForm();
-			ClaimForms.InsertCur();
+			ClaimForm ClaimFormCur=new ClaimForm();
+			ClaimFormCur.Insert();
 			FormClaimFormEdit FormCFE=new FormClaimFormEdit();
+			FormCFE.ClaimFormCur=ClaimFormCur;
 			FormCFE.IsNew=true;
 			FormCFE.ShowDialog();
 			FillLists();
@@ -221,12 +277,12 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please select an item first."));
 				return;
 			}
-			ClaimForms.Cur=ClaimForms.ListLong[listClaimForms.SelectedIndex];
-			if(ClaimForms.Cur.UniqueID!=0){
+			//ClaimForms.Cur=ClaimForms.ListLong[listClaimForms.SelectedIndex];
+			if(ClaimForms.ListLong[listClaimForms.SelectedIndex].UniqueID!=""){
 				MessageBox.Show(Lan.g(this,"Not allowed to delete a premade claimform, but you can hide it instead."));
 				return;
 			}
-			if(!ClaimForms.DeleteCur()){
+			if(!ClaimForms.ListLong[listClaimForms.SelectedIndex].Delete()){
 				MessageBox.Show(Lan.g(this,"Claim form is already in use."));
 			}
 			ClaimFormItems.Refresh();
@@ -238,18 +294,85 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please select an item first."));
 				return;
 			}
-			ClaimForms.Cur=ClaimForms.ListLong[listClaimForms.SelectedIndex];
-			int oldClaimFormNum=ClaimForms.Cur.ClaimFormNum;
-			ClaimForms.Cur.UniqueID=0;//designates it as a user added claimform
-			ClaimForms.InsertCur();//this duplicates the original claimform, but no items.
-			int newClaimFormNum=ClaimForms.Cur.ClaimFormNum;
-			ClaimForms.Cur=ClaimForms.ListLong[listClaimForms.SelectedIndex];//switch back to old claimform
-			ClaimFormItems.GetListForForm();
-			for(int i=0;i<ClaimFormItems.ListForForm.Length;i++){
-				ClaimFormItems.Cur=ClaimFormItems.ListForForm[i];
-				ClaimFormItems.Cur.ClaimFormNum=newClaimFormNum;
-				ClaimFormItems.InsertCur();
+			ClaimForm ClaimFormCur=ClaimForms.ListLong[listClaimForms.SelectedIndex].Copy();
+			int oldClaimFormNum=ClaimFormCur.ClaimFormNum;
+			ClaimFormCur.UniqueID="";//designates it as a user added claimform
+			ClaimFormCur.Insert();//this duplicates the original claimform, but no items.
+			int newClaimFormNum=ClaimFormCur.ClaimFormNum;
+			//ClaimFormItems.GetListForForm(ClaimForms.ListLong[listClaimForms.SelectedIndex].ClaimFormNum);
+			for(int i=0;i<ClaimFormCur.Items.Length;i++){
+				//ClaimFormItems.Cur=ClaimFormItems.ListForForm[i];
+				ClaimFormCur.Items[i].ClaimFormNum=newClaimFormNum;
+				ClaimFormCur.Items[i].Insert();
 			}
+			ClaimFormItems.Refresh();
+			FillLists();
+		}
+
+		private void butExport_Click(object sender, System.EventArgs e) {
+			if(listClaimForms.SelectedIndex==-1){
+				MessageBox.Show(Lan.g(this,"Please select an item first."));
+				return;
+			}
+			ClaimForm ClaimFormCur=ClaimForms.ListLong[listClaimForms.SelectedIndex];
+			saveDlg=new SaveFileDialog();
+			string filename="ClaimForm"+ClaimFormCur.Description+".xml";
+			saveDlg.InitialDirectory=Prefs.GetString("ExportPath");
+			saveDlg.FileName=filename;
+			if(saveDlg.ShowDialog()!=DialogResult.OK){
+				return;
+			}
+			//MessageBox.Show(saveDlg.FileName);
+			XmlSerializer serializer=new XmlSerializer(typeof(ClaimForm));
+			TextWriter writer=new StreamWriter(saveDlg.FileName);
+			serializer.Serialize(writer,ClaimFormCur);
+      writer.Close();
+			MessageBox.Show("Exported");
+		}
+
+		private void butImport_Click(object sender, System.EventArgs e) {
+			openDlg=new OpenFileDialog();
+			openDlg.InitialDirectory=Prefs.GetString("ExportPath");
+			if(openDlg.ShowDialog()!=DialogResult.OK){
+				return;
+			}
+			if(!File.Exists(openDlg.FileName)){
+				MessageBox.Show("File does not exist.");
+				return;
+			}
+			XmlSerializer serializer=new XmlSerializer(typeof(ClaimForm));
+			TextReader reader=new StreamReader(openDlg.FileName);
+			ClaimForm tempClaimForm=new ClaimForm();
+			try{
+				tempClaimForm=(ClaimForm)serializer.Deserialize(reader);
+			}
+			catch{
+				MessageBox.Show("Invalid file format");
+				return;
+			}
+			bool isNew=true;
+			if(tempClaimForm.UniqueID!=""){//if it's blank, it's always inserted.
+				for(int i=0;i<ClaimForms.ListLong.Length;i++){
+					if(ClaimForms.ListLong[i].UniqueID==tempClaimForm.UniqueID){
+						isNew=false;
+					}
+				}
+			}
+			if(isNew){
+				tempClaimForm.Insert();//now we have a primary key.
+				for(int j=0;j<tempClaimForm.Items.Length;j++){
+					tempClaimForm.Items[j].ClaimFormNum=tempClaimForm.ClaimFormNum;
+					tempClaimForm.Items[j].Insert();
+				}
+			}
+			else{
+				if(MessageBox.Show(tempClaimForm.Description+" already exists.  Replace?","",
+					MessageBoxButtons.OKCancel)!=DialogResult.OK){
+					return;
+				}
+				tempClaimForm.UpdateByUniqueID();
+			}
+			MessageBox.Show("Imported");
 			ClaimFormItems.Refresh();
 			FillLists();
 		}
@@ -271,6 +394,8 @@ namespace OpenDental{
 			DataValid DataValid2=new DataValid();
 			DataValid2.SetInvalid();
 		}
+
+		
 
 		
 

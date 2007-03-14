@@ -21,13 +21,13 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textMedName;
 		private System.Windows.Forms.TextBox textGenericName;
 		private System.Windows.Forms.TextBox textMedNote;
-		private System.Windows.Forms.TextBox textPatNote;
 		private System.Windows.Forms.Button butRemove;
 		private System.Windows.Forms.Button butEdit;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
 		private System.ComponentModel.Container components = null;
+		private OpenDental.ODtextBox textPatNote;
 		///<summary></summary>
 		public bool IsNew;
 
@@ -75,13 +75,13 @@ namespace OpenDental{
 			this.label2 = new System.Windows.Forms.Label();
 			this.textMedNote = new System.Windows.Forms.TextBox();
 			this.label3 = new System.Windows.Forms.Label();
-			this.textPatNote = new System.Windows.Forms.TextBox();
 			this.label4 = new System.Windows.Forms.Label();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.label6 = new System.Windows.Forms.Label();
 			this.butEdit = new System.Windows.Forms.Button();
 			this.butRemove = new System.Windows.Forms.Button();
 			this.label5 = new System.Windows.Forms.Label();
+			this.textPatNote = new OpenDental.ODtextBox();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -161,16 +161,6 @@ namespace OpenDental{
 			this.label3.Text = "Medication Notes";
 			this.label3.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
-			// textPatNote
-			// 
-			this.textPatNote.AcceptsReturn = true;
-			this.textPatNote.Location = new System.Drawing.Point(252, 319);
-			this.textPatNote.Multiline = true;
-			this.textPatNote.Name = "textPatNote";
-			this.textPatNote.Size = new System.Drawing.Size(348, 105);
-			this.textPatNote.TabIndex = 9;
-			this.textPatNote.Text = "";
-			// 
 			// label4
 			// 
 			this.label4.Location = new System.Drawing.Point(66, 320);
@@ -235,14 +225,26 @@ namespace OpenDental{
 			this.label5.Text = "(remove this medication from this patient)";
 			this.label5.TextAlign = System.Drawing.ContentAlignment.TopCenter;
 			// 
+			// textPatNote
+			// 
+			this.textPatNote.AcceptsReturn = true;
+			this.textPatNote.Location = new System.Drawing.Point(253, 320);
+			this.textPatNote.Multiline = true;
+			this.textPatNote.Name = "textPatNote";
+			this.textPatNote.QuickPasteType = OpenDental.QuickPasteType.MedicationPat;
+			this.textPatNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.textPatNote.Size = new System.Drawing.Size(352, 129);
+			this.textPatNote.TabIndex = 11;
+			this.textPatNote.Text = "";
+			// 
 			// FormMedPat
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(685, 540);
-			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.textPatNote);
+			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.label4);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.butCancel);

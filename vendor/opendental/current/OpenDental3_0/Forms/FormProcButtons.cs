@@ -221,6 +221,7 @@ namespace OpenDental{
 			}
 			ProcButtons.Cur=ProcButtons.List[listButtons.SelectedIndex];
 			ProcButtons.DeleteCur();
+			FillList();
 		}
 
 		private void listButtons_DoubleClick(object sender, System.EventArgs e) {

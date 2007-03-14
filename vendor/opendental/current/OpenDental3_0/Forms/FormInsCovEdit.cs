@@ -623,31 +623,31 @@ namespace OpenDental{
 		}
 
     private void FillAdj(){
-			ClaimProcs.Refresh();
+			ClaimProc[] ClaimProcList=ClaimProcs.Refresh(Patients.Cur.PatNum);
 			//move selected claimprocs into ALAdj
 			ALPriAdj=new ArrayList();
 			ALSecAdj=new ArrayList();
-			for(int i=0;i<ClaimProcs.List.Length;i++){
-				if(ClaimProcs.List[i].PlanNum==Patients.Cur.PriPlanNum
-					&& ClaimProcs.List[i].Status==ClaimProcStatus.Adjustment){
-					ALPriAdj.Add(ClaimProcs.List[i]);
+			for(int i=0;i<ClaimProcList.Length;i++){
+				if(ClaimProcList[i].PlanNum==Patients.Cur.PriPlanNum
+					&& ClaimProcList[i].Status==ClaimProcStatus.Adjustment){
+					ALPriAdj.Add(ClaimProcList[i]);
 				}
-				if(ClaimProcs.List[i].PlanNum==Patients.Cur.SecPlanNum
-					&& ClaimProcs.List[i].Status==ClaimProcStatus.Adjustment){
-					ALSecAdj.Add(ClaimProcs.List[i]);
+				if(ClaimProcList[i].PlanNum==Patients.Cur.SecPlanNum
+					&& ClaimProcList[i].Status==ClaimProcStatus.Adjustment){
+					ALSecAdj.Add(ClaimProcList[i]);
 				}
 			}
 			listPriAdj.Items.Clear();
 			listSecAdj.Items.Clear();
 			string s;
 			for(int i=0;i<ALPriAdj.Count;i++){
-				s=((ClaimProc)ALPriAdj[i]).DateCP.ToShortDateString()+"       Ins Used:  "
+				s=((ClaimProc)ALPriAdj[i]).ProcDate.ToShortDateString()+"       Ins Used:  "
 					+((ClaimProc)ALPriAdj[i]).InsPayAmt.ToString("F")+"       Ded Used:  "
 					+((ClaimProc)ALPriAdj[i]).DedApplied.ToString("F");
 				listPriAdj.Items.Add(s);
 			}
 			for(int i=0;i<ALSecAdj.Count;i++){
-				s=((ClaimProc)ALSecAdj[i]).DateCP.ToShortDateString()+"       Ins Used:  "
+				s=((ClaimProc)ALSecAdj[i]).ProcDate.ToShortDateString()+"       Ins Used:  "
 					+((ClaimProc)ALSecAdj[i]).InsPayAmt.ToString("F")+"       Ded Used:  "
 					+((ClaimProc)ALSecAdj[i]).DedApplied.ToString("F");
 				listSecAdj.Items.Add(s);
@@ -947,8 +947,7 @@ namespace OpenDental{
 			if(listPriAdj.SelectedIndex==-1){
 				return;
 			}
-			ClaimProcs.Cur=((ClaimProc)ALPriAdj[listPriAdj.SelectedIndex]);
-			FormInsAdj FormIA=new FormInsAdj();
+			FormInsAdj FormIA=new FormInsAdj((ClaimProc)ALPriAdj[listPriAdj.SelectedIndex]);
 			FormIA.ShowDialog();
 			if(FormIA.DialogResult==DialogResult.OK)
 				FillAdj();
@@ -959,12 +958,12 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"No Plan selected."));
 				return;
 			}
-			ClaimProcs.Cur=new ClaimProc();
-			ClaimProcs.Cur.PatNum=Patients.Cur.PatNum;
-			ClaimProcs.Cur.DateCP=DateTime.Today;
-			ClaimProcs.Cur.Status=ClaimProcStatus.Adjustment;
-			ClaimProcs.Cur.PlanNum=Patients.Cur.PriPlanNum;
-			FormInsAdj FormIA=new FormInsAdj();
+			ClaimProc ClaimProcCur=new ClaimProc();
+			ClaimProcCur.PatNum=Patients.Cur.PatNum;
+			ClaimProcCur.ProcDate=DateTime.Today;
+			ClaimProcCur.Status=ClaimProcStatus.Adjustment;
+			ClaimProcCur.PlanNum=Patients.Cur.PriPlanNum;
+			FormInsAdj FormIA=new FormInsAdj(ClaimProcCur);
 			FormIA.IsNew=true;
 			FormIA.ShowDialog();
 			if(FormIA.DialogResult==DialogResult.OK)
@@ -976,8 +975,7 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g("All","Please select an item first."));
 				return;
 			}
-			ClaimProcs.Cur=((ClaimProc)ALPriAdj[listPriAdj.SelectedIndex]);
-			ClaimProcs.DeleteCur();
+			((ClaimProc)ALPriAdj[listPriAdj.SelectedIndex]).Delete();
 			FillAdj();
 		}
 
@@ -985,8 +983,7 @@ namespace OpenDental{
 			if(listSecAdj.SelectedIndex==-1){
 				return;
 			}
-			ClaimProcs.Cur=((ClaimProc)ALSecAdj[listSecAdj.SelectedIndex]);
-			FormInsAdj FormIA=new FormInsAdj();
+			FormInsAdj FormIA=new FormInsAdj((ClaimProc)ALSecAdj[listSecAdj.SelectedIndex]);
 			FormIA.ShowDialog();
 			if(FormIA.DialogResult==DialogResult.OK)
 				FillAdj();
@@ -997,12 +994,12 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"No Plan selected."));
 				return;
 			}
-			ClaimProcs.Cur=new ClaimProc();
-			ClaimProcs.Cur.PatNum=Patients.Cur.PatNum;
-			ClaimProcs.Cur.DateCP=DateTime.Today;
-			ClaimProcs.Cur.Status=ClaimProcStatus.Adjustment;
-			ClaimProcs.Cur.PlanNum=Patients.Cur.SecPlanNum;
-			FormInsAdj FormIA=new FormInsAdj();
+			ClaimProc ClaimProcCur=new ClaimProc();
+			ClaimProcCur.PatNum=Patients.Cur.PatNum;
+			ClaimProcCur.ProcDate=DateTime.Today;
+			ClaimProcCur.Status=ClaimProcStatus.Adjustment;
+			ClaimProcCur.PlanNum=Patients.Cur.SecPlanNum;
+			FormInsAdj FormIA=new FormInsAdj(ClaimProcCur);
 			FormIA.IsNew=true;
 			FormIA.ShowDialog();
 			if(FormIA.DialogResult==DialogResult.OK)
@@ -1014,8 +1011,7 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g("All","Please select an item first."));
 				return;
 			}
-			ClaimProcs.Cur=((ClaimProc)ALSecAdj[listSecAdj.SelectedIndex]);
-			ClaimProcs.DeleteCur();
+			((ClaimProc)ALSecAdj[listSecAdj.SelectedIndex]).Delete();
 			FillAdj();
 		}
 

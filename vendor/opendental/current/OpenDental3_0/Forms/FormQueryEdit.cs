@@ -11,11 +11,11 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.TextBox textTitle;
-		private System.Windows.Forms.TextBox textQuery;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.TextBox textFileName;
 		private System.Windows.Forms.Button butOK;
-		private System.Windows.Forms.Button butCancel;// Required designer variable.
+		private System.Windows.Forms.Button butCancel;
+		private OpenDental.ODtextBox textQuery;// Required designer variable.
 		///<summary></summary>
 		public bool IsNew;
 
@@ -48,12 +48,12 @@ namespace OpenDental{
 		private void InitializeComponent(){
 			this.label1 = new System.Windows.Forms.Label();
 			this.textTitle = new System.Windows.Forms.TextBox();
-			this.textQuery = new System.Windows.Forms.TextBox();
 			this.label2 = new System.Windows.Forms.Label();
 			this.label3 = new System.Windows.Forms.Label();
 			this.textFileName = new System.Windows.Forms.TextBox();
 			this.butOK = new System.Windows.Forms.Button();
 			this.butCancel = new System.Windows.Forms.Button();
+			this.textQuery = new OpenDental.ODtextBox();
 			this.SuspendLayout();
 			// 
 			// label1
@@ -72,16 +72,6 @@ namespace OpenDental{
 			this.textTitle.Size = new System.Drawing.Size(328, 20);
 			this.textTitle.TabIndex = 0;
 			this.textTitle.Text = "";
-			// 
-			// textQuery
-			// 
-			this.textQuery.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.textQuery.Location = new System.Drawing.Point(76, 36);
-			this.textQuery.Multiline = true;
-			this.textQuery.Name = "textQuery";
-			this.textQuery.Size = new System.Drawing.Size(624, 582);
-			this.textQuery.TabIndex = 1;
-			this.textQuery.Text = "";
 			// 
 			// label2
 			// 
@@ -130,17 +120,29 @@ namespace OpenDental{
 			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
+			// textQuery
+			// 
+			this.textQuery.AcceptsReturn = true;
+			this.textQuery.Location = new System.Drawing.Point(75, 37);
+			this.textQuery.Multiline = true;
+			this.textQuery.Name = "textQuery";
+			this.textQuery.QuickPasteType = OpenDental.QuickPasteType.Query;
+			this.textQuery.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.textQuery.Size = new System.Drawing.Size(624, 588);
+			this.textQuery.TabIndex = 5;
+			this.textQuery.Text = "";
+			// 
 			// FormQueryEdit
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(820, 670);
+			this.Controls.Add(this.textQuery);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.textFileName);
 			this.Controls.Add(this.label3);
-			this.Controls.Add(this.textQuery);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.textTitle);
 			this.Controls.Add(this.label1);

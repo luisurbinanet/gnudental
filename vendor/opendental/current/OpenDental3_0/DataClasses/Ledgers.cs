@@ -95,7 +95,7 @@ namespace OpenDental{
 				if(i>0) wherePats+=" ||";
 				wherePats+=" patnum = '"+table.Rows[i][0].ToString()+"'";
 			}
-			//PROCEDURES:
+			//REGULAR PROCEDURES:
 			cmd.CommandText="SELECT procdate,procfee,capcopay FROM procedurelog"
 				+" WHERE procstatus = '2'"//complete
 				+" && ("+wherePats+")";
@@ -103,10 +103,10 @@ namespace OpenDental{
 			pairs=new DateValuePair[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
 				pairs[i].Date=  PIn.PDate  (table.Rows[i][0].ToString());
-				if(PIn.PDouble(table.Rows[i][2].ToString())==-1)//not a capitation proc
-					pairs[i].Value= PIn.PDouble(table.Rows[i][1].ToString());
-				else//capitation proc
-					pairs[i].Value= PIn.PDouble(table.Rows[i][2].ToString());
+				//if(PIn.PDouble(table.Rows[i][2].ToString())==-1)//not a capitation proc
+				pairs[i].Value= PIn.PDouble(table.Rows[i][1].ToString());
+				//else//capitation proc
+				//	pairs[i].Value= PIn.PDouble(table.Rows[i][2].ToString());
 			}
 			for(int i=0;i<pairs.Length;i++){
 				Bal[GetAgingType(pairs[i].Date)]+=pairs[i].Value;
@@ -136,12 +136,14 @@ namespace OpenDental{
 				pairs[i].Value= -PIn.PDouble(table.Rows[i][1].ToString());
 			}
 			ComputePayments(pairs);
-			//CLAIM PAYMENTS:
-			//there are different ways to calculate the date of a claim payment
-			//for now, we are trying to keep it consistent with the layout in the account module.
-			//Using date of service.  Later will eliminate datecp?
+			//CLAIM PAYMENTS AND CAPITATION WRITEOFFS:
+			//Always use DateCP rather than ProcDate to calculate the date of a claim payment
 			cmd.CommandText="SELECT datecp,inspayamt,writeoff FROM claimproc"
-				+" WHERE (status = '1' || status = '4')"//received or supplemental
+				+" WHERE (status = '1' "//received
+				+"|| status = '4'"//or supplemental
+				+"|| status = '7'"//or CapComplete
+				+"|| status = '5'"//or CapClaim
+				+")"
 				//pending insurance is handled further down
 				//ins adjustments do not affect patient balance, but only insurance benefits
 				+" && ("+wherePats+")"

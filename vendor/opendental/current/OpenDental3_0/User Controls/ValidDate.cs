@@ -103,6 +103,71 @@ namespace OpenDental{
 				}*/
 		}
 
+		protected override void OnKeyPress(KeyPressEventArgs e) {
+			base.OnKeyPress(e);
+			if(e.KeyChar!='+' && e.KeyChar!='-'){
+				//base.OnKeyPress (e);
+				return;
+			}
+			DateTime dateDisplayed;
+			try{
+				dateDisplayed=DateTime.Parse(Text);
+			}
+			catch{
+				//base.OnKeyPress (e);
+				return;
+			}
+			int caret=SelectionStart;
+			if(e.KeyChar=='+'){
+				dateDisplayed=dateDisplayed.AddDays(1);
+			}
+			if(e.KeyChar=='-'){
+				dateDisplayed=dateDisplayed.AddDays(-1);
+			}
+			Text=dateDisplayed.ToShortDateString();
+			SelectionStart=caret;
+			e.Handled=true;
+		}
+
+		protected override void OnKeyDown(KeyEventArgs e) {
+			base.OnKeyDown (e);
+			if(e.KeyCode!=Keys.Up && e.KeyCode!=Keys.Down){
+				//base.OnKeyDown (e);
+				return;
+			}
+			DateTime dateDisplayed;
+			try{
+				dateDisplayed=DateTime.Parse(Text);
+			}
+			catch{
+				//base.OnKeyDown (e);
+				return;
+			}
+			int caret=SelectionStart;
+			if(e.KeyCode==Keys.Up){
+				dateDisplayed=dateDisplayed.AddDays(1);
+			}
+			if(e.KeyCode==Keys.Down){
+				dateDisplayed=dateDisplayed.AddDays(-1);
+			}
+			Text=dateDisplayed.ToShortDateString();
+			SelectionStart=caret;
+			e.Handled=true;
+		}
+
+		
+
+
 
 	}
 }
+
+
+
+
+
+
+
+
+
+

@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 	
-	/// <summary>Corresponds to the payplan table in the database.  Each row represents one signed agreement to make payments.</summary>
+	/// <summary>Corresponds to the payplan table in the database.  Each row represents one signed agreement to make payments. </summary>
 	public struct PayPlan{
 		/// <summary>Primary key</summary>
 		public int PayPlanNum;
@@ -31,6 +31,8 @@ namespace OpenDental{
 		public double DownPayment;
 		///<summary>Generally used to archive the terms so they don't accidently get changed.</summary>
 		public string Note;
+		///<summary>Calculated in the payment plan edit window, then stored here. Current due will never go over the total cost amount.</summary>
+		public double TotalCost;
 	}
 
 	/*=========================================================================================
@@ -71,6 +73,7 @@ namespace OpenDental{
 				List[i].DateFirstPay  = PIn.PDate  (table.Rows[i][9].ToString());
 				List[i].DownPayment   = PIn.PDouble(table.Rows[i][10].ToString());
 				List[i].Note          = PIn.PString(table.Rows[i][11].ToString());
+				List[i].TotalCost     = PIn.PDouble(table.Rows[i][12].ToString());
 			}//end for
 		}
 
@@ -93,6 +96,7 @@ namespace OpenDental{
 				+ ",datefirstpay = '"  +POut.PDate  (Cur.DateFirstPay)+"'"
 				+ ",downpayment = '"   +POut.PDouble(Cur.DownPayment)+"'"
 				+ ",note = '"          +POut.PString(Cur.Note)+"'"
+				+ ",totalcost = '"     +POut.PDouble(Cur.TotalCost)+"'"
 				+" WHERE payplanNum = '" +POut.PInt   (Cur.PayPlanNum)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			NonQ(false);
@@ -101,7 +105,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO payplan (patnum,guarantor,payplandate,totalamount,"
-				+"apr,monthlypayment,term,currentdue,datefirstpay,downpayment,note) VALUES("
+				+"apr,monthlypayment,term,currentdue,datefirstpay,downpayment,note,TotalCost) VALUES("
 				+"'"+POut.PInt   (Cur.PatNum)+"', "
 				+"'"+POut.PInt   (Cur.Guarantor)+"', "
 				+"'"+POut.PDate  (Cur.PayPlanDate)+"', "
@@ -112,7 +116,8 @@ namespace OpenDental{
 				+"'"+POut.PDouble(Cur.CurrentDue)+"', "
 				+"'"+POut.PDate  (Cur.DateFirstPay)+"', "
 				+"'"+POut.PDouble(Cur.DownPayment)+"', "
-				+"'"+POut.PString(Cur.Note)+"')";
+				+"'"+POut.PString(Cur.Note)+"', "
+				+"'"+POut.PDouble(Cur.TotalCost)+"')";
 			NonQ(false);
 		}
 
@@ -142,30 +147,39 @@ namespace OpenDental{
 				List[i].DateFirstPay  = PIn.PDate  (table.Rows[i][9].ToString());
 				List[i].DownPayment   = PIn.PDouble(table.Rows[i][10].ToString());
 				//List[i].Note          = PIn.PString(table.Rows[i][11].ToString());
+				List[i].TotalCost     = PIn.PDouble(table.Rows[i][12].ToString());
 			}//end for
 			for(int i=0;i<List.Length;i++){
-				Cur=List[i];
+				//Cur=List[i];
 				cmd.CommandText="UPDATE payplan SET CurrentDue = '"
-					+GetAmtDue().ToString()+"' WHERE PayPlanNum = '"+POut.PInt(Cur.PayPlanNum)+"'";
+					+GetAmtDue(List[i].DownPayment,List[i].MonthlyPayment,List[i].DateFirstPay,List[i].TotalCost)
+					.ToString()+"' WHERE PayPlanNum = '"+POut.PInt(Cur.PayPlanNum)+"'";
 				NonQ(false);
 			}
 		}
 
 		///<summary>Gets the amount due for the current payment plan based on today's date.  It is simply the number of months x monthly payment.  Includes interest, but does not include payments made so far.</summary>
-		public static double GetAmtDue(){
-			return Cur.DownPayment+Cur.MonthlyPayment*GetMonthsDue();
-			//return retVal;
+		public static double GetAmtDue(double downPayment,double monthlyPayment,DateTime dateFirstPay,
+			double totalCost)
+		{
+			double retVal=downPayment+monthlyPayment*GetMonthsDue(dateFirstPay);
+			if(retVal>totalCost){
+				retVal=totalCost;
+			}
+			return retVal;
 		}
 
-		/// <summary>For the Cur payment plan, gets the number of months, rounded up, between the first payment date and today's date.  This is the number of payments that are due.  Used from GetAmtDue() and from FormPayPlan.</summary>
-		public static int GetMonthsDue(){
+		/// <summary>For the Cur payment plan, gets the number of months, rounded up, between the first payment date and today's date.  This is the number of payments that are due.  Used from GetAmtDue() and from FormPayPlan. The last payment may be a partial payment.  The number of months due may actually be much larger than the number of payments that were agreed upon.  That's ok, because total cost will still be accurate.</summary>
+		public static int GetMonthsDue(DateTime dateFirstPay){
+			int retVal=0;
 			for(int i=0;i<100;i++){
 				//MessageBox.Show(Cur.DateFirstPay.AddMonths(i).ToString()+","+DateTime.Today.ToString());
-				if(Cur.DateFirstPay.AddMonths(i)>DateTime.Today){
-					return i;
+				if(dateFirstPay.AddMonths(i)>DateTime.Today){
+					retVal=i;
+					break;
 				}
 			}
-			return 0;
+			return retVal;
 		}
 
 		/// <summary>Used from PayPlan window to get the amount paid so far on one payment plan.</summary>

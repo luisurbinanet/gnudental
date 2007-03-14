@@ -235,6 +235,7 @@ namespace OpenDental{
 		#endregion
 
 		private void FormTimeCard_Load(object sender, System.EventArgs e) {
+			Text=Lan.g(this,"TimeCard for")+" "+Employees.Cur.FName+" "+Employees.Cur.LName;
 			TimeDelta=ClockEvents.GetServerTime()-DateTime.Now;
 			if(DateTime.Today.Day<16){//first half of month
 				textDateFrom.Text=new DateTime(DateTime.Today.Year,DateTime.Today.Month,1).ToShortDateString();

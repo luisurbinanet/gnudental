@@ -29,7 +29,7 @@ namespace OpenDental{
 			TableQ=table.Copy();
 		}
 
-		///<summary></summary>
+		///<summary>Runs the query and fills TableTemp with the result.</summary>
 		public static void SubmitTemp(){
 			cmd.CommandText = CurReport.Query;
 			FillTable();

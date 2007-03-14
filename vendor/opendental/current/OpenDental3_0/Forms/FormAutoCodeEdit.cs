@@ -26,9 +26,13 @@ namespace OpenDental{
 		public FormAutoCodeEdit(){
 			InitializeComponent();
       tbAutoItem.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbAutoItem_CellDoubleClicked);
-			Lan.C(this, new System.Windows.Forms.Control[] {
+			Lan.C(this, new System.Windows.Forms.Control[]
+			{
 			  this.checkHidden,
 				this.label1,
+				this.label2, //*Ann
+				this.label3,  //*Ann
+				this.checkLessIntrusive //*Ann
 			});
 			Lan.C("All", new System.Windows.Forms.Control[] {
 			  butOK,
@@ -124,11 +128,12 @@ namespace OpenDental{
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(490, 530);
+			this.label2.Location = new System.Drawing.Point(416, 496);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(172, 32);
+			this.label2.Size = new System.Drawing.Size(246, 56);
 			this.label2.TabIndex = 26;
 			this.label2.Text = "Clicking Cancel does not undo changes already made to items.";
+			this.label2.TextAlign = System.Drawing.ContentAlignment.BottomRight;
 			// 
 			// label3
 			// 
@@ -145,9 +150,9 @@ namespace OpenDental{
 			this.butDelete.BtnStyle = OpenDental.enumType.XPStyle.Silver;
 			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDelete.Location = new System.Drawing.Point(140, 478);
+			this.butDelete.Location = new System.Drawing.Point(158, 478);
 			this.butDelete.Name = "butDelete";
-			this.butDelete.Size = new System.Drawing.Size(82, 26);
+			this.butDelete.Size = new System.Drawing.Size(100, 26);
 			this.butDelete.TabIndex = 29;
 			this.butDelete.Text = "&Delete";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
@@ -161,7 +166,7 @@ namespace OpenDental{
 			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butAdd.Location = new System.Drawing.Point(36, 478);
 			this.butAdd.Name = "butAdd";
-			this.butAdd.Size = new System.Drawing.Size(80, 26);
+			this.butAdd.Size = new System.Drawing.Size(100, 26);
 			this.butAdd.TabIndex = 28;
 			this.butAdd.Text = "&Add";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);

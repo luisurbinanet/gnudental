@@ -1,3 +1,4 @@
+/* THIS IS OBSOLETE
 using System;
 using System.Drawing;
 using System.Collections;
@@ -174,7 +175,7 @@ namespace OpenDental
 			// butOK
 			// 
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(688, 460);
+			this.butOK.Location = new System.Drawing.Point(688, 565);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 0;
@@ -185,7 +186,7 @@ namespace OpenDental
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butCancel.Location = new System.Drawing.Point(688, 496);
+			this.butCancel.Location = new System.Drawing.Point(688, 601);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 1;
@@ -208,7 +209,7 @@ namespace OpenDental
 			this.butDelete.BtnStyle = OpenDental.enumType.XPStyle.Silver;
 			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDelete.Location = new System.Drawing.Point(34, 496);
+			this.butDelete.Location = new System.Drawing.Point(34, 601);
 			this.butDelete.Name = "butDelete";
 			this.butDelete.Size = new System.Drawing.Size(87, 26);
 			this.butDelete.TabIndex = 3;
@@ -250,7 +251,7 @@ namespace OpenDental
 			this.groupTotal.Controls.Add(this.label4);
 			this.groupTotal.Controls.Add(this.label1);
 			this.groupTotal.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupTotal.Location = new System.Drawing.Point(216, 361);
+			this.groupTotal.Location = new System.Drawing.Point(216, 466);
 			this.groupTotal.Name = "groupTotal";
 			this.groupTotal.Size = new System.Drawing.Size(445, 163);
 			this.groupTotal.TabIndex = 7;
@@ -446,7 +447,7 @@ namespace OpenDental
 			this.groupProcedure.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupProcedure.Location = new System.Drawing.Point(23, 66);
 			this.groupProcedure.Name = "groupProcedure";
-			this.groupProcedure.Size = new System.Drawing.Size(362, 234);
+			this.groupProcedure.Size = new System.Drawing.Size(208, 294);
 			this.groupProcedure.TabIndex = 25;
 			this.groupProcedure.TabStop = false;
 			this.groupProcedure.Text = "Procedure";
@@ -556,7 +557,7 @@ namespace OpenDental
 			this.groupBox3.Controls.Add(this.textOverrideSec);
 			this.groupBox3.Controls.Add(this.textOverridePri);
 			this.groupBox3.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox3.Location = new System.Drawing.Point(199, 80);
+			this.groupBox3.Location = new System.Drawing.Point(11, 184);
 			this.groupBox3.Name = "groupBox3";
 			this.groupBox3.Size = new System.Drawing.Size(151, 96);
 			this.groupBox3.TabIndex = 41;
@@ -604,7 +605,7 @@ namespace OpenDental
 			// labelAttached
 			// 
 			this.labelAttached.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.labelAttached.Location = new System.Drawing.Point(28, 397);
+			this.labelAttached.Location = new System.Drawing.Point(28, 502);
 			this.labelAttached.Name = "labelAttached";
 			this.labelAttached.Size = new System.Drawing.Size(156, 81);
 			this.labelAttached.TabIndex = 26;
@@ -617,7 +618,7 @@ namespace OpenDental
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
-			this.ClientSize = new System.Drawing.Size(779, 544);
+			this.ClientSize = new System.Drawing.Size(857, 654);
 			this.Controls.Add(this.labelAttached);
 			this.Controls.Add(this.groupProcedure);
 			this.Controls.Add(this.groupBox1);
@@ -878,7 +879,7 @@ namespace OpenDental
 
 	}
 }
-
+*/
 
 
 

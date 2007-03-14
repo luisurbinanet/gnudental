@@ -55,6 +55,7 @@ namespace OpenDental{
 		private OpenDental.ValidNum textOffsetX;
 		private OpenDental.ValidNum textOffsetY;
 		private string[] displayStrings;
+		public ClaimForm ClaimFormCur;
 
 		///<summary></summary>
 		public FormClaimFormEdit()
@@ -63,9 +64,22 @@ namespace OpenDental{
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
-			Lan.C("All", new System.Windows.Forms.Control[] {
+			Lan.C(this, new System.Windows.Forms.Control[] {
+				this.labelWarning,
+				this.label1,
+				this.checkIsHidden,
+				this.labelUniqueID,
+				this.checkPrintImages,
+				this.butFont,
+				this.label6,
+				this.label7
+			});
+			Lan.C("All", new System.Windows.Forms.Control[] 
+			{
 				butOK,
 				butCancel,
+				this.butPrint,
+				butAdd
 			});
 		}
 
@@ -155,7 +169,7 @@ namespace OpenDental{
 			this.panel2.Controls.Add(this.labelWarning);
 			this.panel2.Location = new System.Drawing.Point(0, 0);
 			this.panel2.Name = "panel2";
-			this.panel2.Size = new System.Drawing.Size(850, 1100);
+			this.panel2.Size = new System.Drawing.Size(850, 1200);
 			this.panel2.TabIndex = 2;
 			this.panel2.MouseUp += new System.Windows.Forms.MouseEventHandler(this.panel2_MouseUp);
 			this.panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.panel2_Paint);
@@ -327,7 +341,7 @@ namespace OpenDental{
 			this.butFont.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.butFont.Location = new System.Drawing.Point(870, 94);
 			this.butFont.Name = "butFont";
-			this.butFont.Size = new System.Drawing.Size(62, 21);
+			this.butFont.Size = new System.Drawing.Size(111, 21);
 			this.butFont.TabIndex = 20;
 			this.butFont.Text = "&Font";
 			this.butFont.Click += new System.EventHandler(this.butFont_Click);
@@ -345,21 +359,21 @@ namespace OpenDental{
 			// 
 			// labelUniqueID
 			// 
-			this.labelUniqueID.Location = new System.Drawing.Point(872, 58);
+			this.labelUniqueID.Location = new System.Drawing.Point(870, 58);
 			this.labelUniqueID.Name = "labelUniqueID";
-			this.labelUniqueID.Size = new System.Drawing.Size(58, 15);
+			this.labelUniqueID.Size = new System.Drawing.Size(59, 15);
 			this.labelUniqueID.TabIndex = 23;
 			this.labelUniqueID.Text = "UniqueID";
-			this.labelUniqueID.Visible = false;
+			this.labelUniqueID.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// textUniqueID
 			// 
 			this.textUniqueID.Location = new System.Drawing.Point(928, 55);
 			this.textUniqueID.Name = "textUniqueID";
-			this.textUniqueID.Size = new System.Drawing.Size(50, 20);
+			this.textUniqueID.Size = new System.Drawing.Size(51, 20);
 			this.textUniqueID.TabIndex = 24;
 			this.textUniqueID.Text = "";
-			this.textUniqueID.Visible = false;
+			this.textUniqueID.Validating += new System.ComponentModel.CancelEventHandler(this.textUniqueID_Validating);
 			// 
 			// checkPrintImages
 			// 
@@ -466,37 +480,34 @@ namespace OpenDental{
 		private void FormClaimFormEdit_Layout(object sender, System.Windows.Forms.LayoutEventArgs e) {
 			vScrollBar1.Height=this.ClientSize.Height;
 			vScrollBar1.Minimum=0;
-			vScrollBar1.Maximum=1100;
+			vScrollBar1.Maximum=panel2.Height;//1200;
 			vScrollBar1.LargeChange=ClientSize.Height;
 			listItems.Height=textXPos.Location.Y-listItems.Location.Y-4;
 			listItems.Width=this.ClientSize.Width-listItems.Location.X-3;
 		}
 
 		private void FillForm(){
-			#if(DEBUG)
-				labelUniqueID.Visible=true;
-				textUniqueID.Visible=true;
-			#else
+			if(ClaimFormCur.UniqueID!=""){
 				labelWarning.Visible=true;//stupid thing malfunctions if you try to display a MessageBox.
-			#endif			
-			textDescription.Text=ClaimForms.Cur.Description;
-			checkIsHidden.Checked=ClaimForms.Cur.IsHidden;
-			textUniqueID.Text=ClaimForms.Cur.UniqueID.ToString();
-			checkPrintImages.Checked=ClaimForms.Cur.PrintImages;
-			textOffsetX.Text=ClaimForms.Cur.OffsetX.ToString();
-			textOffsetY.Text=ClaimForms.Cur.OffsetY.ToString();
-			if(ClaimForms.Cur.FontName=="" || ClaimForms.Cur.FontSize==0){
-				ClaimForms.Cur.FontName="Arial";
-				ClaimForms.Cur.FontSize=8;
+			}		
+			textDescription.Text=ClaimFormCur.Description;
+			checkIsHidden.Checked=ClaimFormCur.IsHidden;
+			textUniqueID.Text=ClaimFormCur.UniqueID.ToString();
+			checkPrintImages.Checked=ClaimFormCur.PrintImages;
+			textOffsetX.Text=ClaimFormCur.OffsetX.ToString();
+			textOffsetY.Text=ClaimFormCur.OffsetY.ToString();
+			if(ClaimFormCur.FontName=="" || ClaimFormCur.FontSize==0){
+				ClaimFormCur.FontName="Arial";
+				ClaimFormCur.FontSize=8;
 			}
-			ClaimFormItems.GetListForForm();
+			ClaimFormCur.Items=ClaimFormItems.GetListForForm(ClaimFormCur.ClaimFormNum);
 			listItems.Items.Clear();
-			for(int i=0;i<ClaimFormItems.ListForForm.Length;i++){
-				if(ClaimFormItems.ListForForm[i].ImageFileName==""){//field
-					listItems.Items.Add(ClaimFormItems.ListForForm[i].FieldName);
+			for(int i=0;i<ClaimFormCur.Items.Length;i++){
+				if(ClaimFormCur.Items[i].ImageFileName==""){//field
+					listItems.Items.Add(ClaimFormCur.Items[i].FieldName);
 				}
 				else{//image
-					listItems.Items.Add(ClaimFormItems.ListForForm[i].ImageFileName);
+					listItems.Items.Add(ClaimFormCur.Items[i].ImageFileName);
 				}
 			}
 		}
@@ -509,11 +520,11 @@ namespace OpenDental{
 				textHeight.Text="";
 			}
 			else if(listItems.SelectedIndices.Count==1){
-				ClaimFormItems.Cur=ClaimFormItems.ListForForm[listItems.SelectedIndices[0]];
-				textXPos.Text=ClaimFormItems.Cur.XPos.ToString();
-				textYPos.Text=ClaimFormItems.Cur.YPos.ToString();
-				textWidth.Text=ClaimFormItems.Cur.Width.ToString();
-				textHeight.Text=ClaimFormItems.Cur.Height.ToString();
+				//ClaimFormItems.Cur=ClaimFormItems.ListForForm[listItems.SelectedIndices[0]];
+				textXPos.Text=ClaimFormCur.Items[listItems.SelectedIndices[0]].XPos.ToString();
+				textYPos.Text=ClaimFormCur.Items[listItems.SelectedIndices[0]].YPos.ToString();
+				textWidth.Text=ClaimFormCur.Items[listItems.SelectedIndices[0]].Width.ToString();
+				textHeight.Text=ClaimFormCur.Items[listItems.SelectedIndices[0]].Height.ToString();
 			}
 			else{//2 or more selected
 				//only shows a value if all are the same
@@ -522,37 +533,37 @@ namespace OpenDental{
 				bool wSame=true;
 				bool hSame=true;
 				for(int i=1;i<listItems.SelectedIndices.Count;i++){//loop starts with second items to compare
-					if(ClaimFormItems.ListForForm[listItems.SelectedIndices[i]].XPos!=
-						ClaimFormItems.ListForForm[listItems.SelectedIndices[i-1]].XPos){
+					if(ClaimFormCur.Items[listItems.SelectedIndices[i]].XPos!=
+						ClaimFormCur.Items[listItems.SelectedIndices[i-1]].XPos){
 						xSame=false;
 					}
-					if(ClaimFormItems.ListForForm[listItems.SelectedIndices[i]].YPos!=
-						ClaimFormItems.ListForForm[listItems.SelectedIndices[i-1]].YPos){
+					if(ClaimFormCur.Items[listItems.SelectedIndices[i]].YPos!=
+						ClaimFormCur.Items[listItems.SelectedIndices[i-1]].YPos){
 						ySame=false;
 					}
-					if(ClaimFormItems.ListForForm[listItems.SelectedIndices[i]].Width!=
-						ClaimFormItems.ListForForm[listItems.SelectedIndices[i-1]].Width){
+					if(ClaimFormCur.Items[listItems.SelectedIndices[i]].Width!=
+						ClaimFormCur.Items[listItems.SelectedIndices[i-1]].Width){
 						wSame=false;
 					}
-					if(ClaimFormItems.ListForForm[listItems.SelectedIndices[i]].Height!=
-						ClaimFormItems.ListForForm[listItems.SelectedIndices[i-1]].Height){
+					if(ClaimFormCur.Items[listItems.SelectedIndices[i]].Height!=
+						ClaimFormCur.Items[listItems.SelectedIndices[i-1]].Height){
 						hSame=false;
 					}
 				}
 				if(xSame)
-					textXPos.Text=ClaimFormItems.ListForForm[listItems.SelectedIndices[0]].XPos.ToString();
+					textXPos.Text=ClaimFormCur.Items[listItems.SelectedIndices[0]].XPos.ToString();
 				else
 					textXPos.Text="";
 				if(ySame)
-					textYPos.Text=ClaimFormItems.ListForForm[listItems.SelectedIndices[0]].YPos.ToString();
+					textYPos.Text=ClaimFormCur.Items[listItems.SelectedIndices[0]].YPos.ToString();
 				else
 					textYPos.Text="";
 				if(wSame)
-					textWidth.Text=ClaimFormItems.ListForForm[listItems.SelectedIndices[0]].Width.ToString();
+					textWidth.Text=ClaimFormCur.Items[listItems.SelectedIndices[0]].Width.ToString();
 				else
 					textWidth.Text="";
 				if(hSame)
-					textHeight.Text=ClaimFormItems.ListForForm[listItems.SelectedIndices[0]].Height.ToString();
+					textHeight.Text=ClaimFormCur.Items[listItems.SelectedIndices[0]].Height.ToString();
 				else
 					textHeight.Text="";
 			}
@@ -565,30 +576,30 @@ namespace OpenDental{
 			Color myColor;
 			float xPosRect;
 			float xPosText;
-			for(int i=0;i<ClaimFormItems.ListForForm.Length;i++){
-				if(ClaimFormItems.ListForForm[i].ImageFileName==""){//field
+			for(int i=0;i<ClaimFormCur.Items.Length;i++){
+				if(ClaimFormCur.Items[i].ImageFileName==""){//field
 					if(listItems.SelectedIndices.Contains(i))
 						myColor=Color.Red;
 					else myColor=Color.Blue;
-					xPosRect=ClaimFormItems.ListForForm[i].XPos;
+					xPosRect=ClaimFormCur.Items[i].XPos;
 					xPosText=xPosRect;
 					if(displayStrings[i]=="1234.00"){
-						xPosRect-=ClaimFormItems.ListForForm[i].Width;//this aligns it to the right
+						xPosRect-=ClaimFormCur.Items[i].Width;//this aligns it to the right
 						xPosText-=grfx.MeasureString("1234.00"
-							,new Font(ClaimForms.Cur.FontName,ClaimForms.Cur.FontSize)).Width;
+							,new Font(ClaimFormCur.FontName,ClaimFormCur.FontSize)).Width;
 					}
 					grfx.DrawRectangle(new Pen(myColor)
-						,xPosRect,ClaimFormItems.ListForForm[i].YPos
-						,ClaimFormItems.ListForForm[i].Width,ClaimFormItems.ListForForm[i].Height);
+						,xPosRect,ClaimFormCur.Items[i].YPos
+						,ClaimFormCur.Items[i].Width,ClaimFormCur.Items[i].Height);
 					grfx.DrawString(displayStrings[i]
-						,new Font(ClaimForms.Cur.FontName,ClaimForms.Cur.FontSize)
+						,new Font(ClaimFormCur.FontName,ClaimFormCur.FontSize)
 						,new SolidBrush(myColor)
-						,new RectangleF(xPosText,ClaimFormItems.ListForForm[i].YPos
-						,ClaimFormItems.ListForForm[i].Width,ClaimFormItems.ListForForm[i].Height));
+						,new RectangleF(xPosText,ClaimFormCur.Items[i].YPos
+						,ClaimFormCur.Items[i].Width,ClaimFormCur.Items[i].Height));
 				}
 				else{//image
 					string fileName=((Pref)Prefs.HList["DocPath"]).ValueString+@"\"
-						+ClaimFormItems.ListForForm[i].ImageFileName;
+						+ClaimFormCur.Items[i].ImageFileName;
 					if(!File.Exists(fileName)){
 						grfx.DrawString("IMAGE FILE NOT FOUND",new Font(FontFamily.GenericSansSerif,12,FontStyle.Bold)
 							,Brushes.DarkRed,0,0);
@@ -598,22 +609,22 @@ namespace OpenDental{
 					Image thisImage=Image.FromFile(fileName);
 					if(fileName.Substring(fileName.Length-3)=="jpg"){
 						grfx.DrawImage(thisImage
-							,ClaimFormItems.ListForForm[i].XPos
-							,ClaimFormItems.ListForForm[i].YPos
+							,ClaimFormCur.Items[i].XPos
+							,ClaimFormCur.Items[i].YPos
 							,(int)(thisImage.Width/thisImage.HorizontalResolution*100)
 							,(int)(thisImage.Height/thisImage.VerticalResolution*100));
 					}
 					else if(fileName.Substring(fileName.Length-3)=="gif"){
 						grfx.DrawImage(thisImage
-							,ClaimFormItems.ListForForm[i].XPos
-							,ClaimFormItems.ListForForm[i].YPos
-							,ClaimFormItems.ListForForm[i].Width
-							,ClaimFormItems.ListForForm[i].Height);
+							,ClaimFormCur.Items[i].XPos
+							,ClaimFormCur.Items[i].YPos
+							,ClaimFormCur.Items[i].Width
+							,ClaimFormCur.Items[i].Height);
 					}
 					else if(fileName.Substring(fileName.Length-3)=="emf"){
 						grfx.DrawImage(thisImage
-							,ClaimFormItems.ListForForm[i].XPos
-							,ClaimFormItems.ListForForm[i].YPos
+							,ClaimFormCur.Items[i].XPos
+							,ClaimFormCur.Items[i].YPos
 							,thisImage.Width
 							,thisImage.Height);
 					}
@@ -622,11 +633,11 @@ namespace OpenDental{
 		}
 
 		private void FillDisplayStrings(){
-			displayStrings=new string[ClaimFormItems.ListForForm.Length];
-			for(int i=0;i<ClaimFormItems.ListForForm.Length;i++){
-				switch(ClaimFormItems.ListForForm[i].FieldName){
+			displayStrings=new string[ClaimFormCur.Items.Length];
+			for(int i=0;i<ClaimFormCur.Items.Length;i++){
+				switch(ClaimFormCur.Items[i].FieldName){
 					default://image="", or most fields = name of field
-						displayStrings[i]=ClaimFormItems.ListForForm[i].FieldName;
+						displayStrings[i]=ClaimFormCur.Items[i].FieldName;
 						break;
 					//bool
 					case "IsPreAuth":
@@ -744,10 +755,10 @@ namespace OpenDental{
 					case "DatePriorProsthPlaced":
 					case "AccidentDate":
 					case "TreatingDentistSigDate":
-						if(ClaimFormItems.ListForForm[i].FormatString=="")
+						if(ClaimFormCur.Items[i].FormatString=="")
 							displayStrings[i]="";//DateTime.Today.ToShortDateString();
 						else
-							displayStrings[i]=DateTime.Today.ToString(ClaimFormItems.ListForForm[i].FormatString);
+							displayStrings[i]=DateTime.Today.ToString(ClaimFormCur.Items[i].FormatString);
 						break;
 					case "P1Fee":
 					case "P2Fee":
@@ -765,6 +776,9 @@ namespace OpenDental{
 					case "Remarks":
 						displayStrings[i]="This is a test of the remarks section of the claim form.";
 						break;
+					case "FixedText":
+						displayStrings[i]=ClaimFormCur.Items[i].FormatString;
+						break;
 				}//switch
 			}//for
 		}
@@ -773,10 +787,31 @@ namespace OpenDental{
 			panel2.Location=new Point(0,-vScrollBar1.Value);
 		}
 
+		private void textUniqueID_Validating(object sender, System.ComponentModel.CancelEventArgs e) {
+			if(ClaimFormCur.UniqueID==textUniqueID.Text){
+				return;
+			}
+			if(ClaimFormCur.UniqueID==""){
+				//this is a user-created claimform
+				MessageBox.Show(Lan.g(this,"Remember if you assign a Unique ID, that it should be your name followed by a number. For instance JoeDeveloper4. Claim forms released by us will be of the form OD#."));
+			}
+			else{
+				//they are trying to change a claimform with an existing UniqueID
+				if(MessageBox.Show(Lan.g(this,"Are you sure you want to change the Unique ID?  It might be better to make a copy of the claim form instead. If you change it, future upgrades will not be made to this form automatically. Continue anyway?")
+					,"",MessageBoxButtons.OKCancel)!=DialogResult.OK)
+				{
+					textUniqueID.Text=ClaimFormCur.UniqueID;
+					e.Cancel=true;
+					return;
+				}
+				//allow the change
+			}
+		}
+
 		private void listItems_DoubleClick(object sender, System.EventArgs e) {
 			int index=listItems.SelectedIndices[0];
-			ClaimFormItems.Cur=ClaimFormItems.ListForForm[index];
 			FormClaimFormItemEdit FormCFIE=new FormClaimFormItemEdit();
+			FormCFIE.CFIcur=ClaimFormCur.Items[index];
 			FormCFIE.ShowDialog();
 			ClaimFormItems.Refresh();
 			FillForm();
@@ -796,12 +831,11 @@ namespace OpenDental{
 			try{xPos=Convert.ToSingle(textXPos.Text);}
 			catch{xPos=0;}
 			for(int i=0;i<listItems.SelectedIndices.Count;i++){
-				ClaimFormItems.Cur=ClaimFormItems.ListForForm[listItems.SelectedIndices[i]];
-				ClaimFormItems.Cur.XPos=xPos;
-				ClaimFormItems.UpdateCur();
+				ClaimFormCur.Items[listItems.SelectedIndices[i]].XPos=xPos;
+				ClaimFormCur.Items[listItems.SelectedIndices[i]].Update();
 			}
 			ClaimFormItems.Refresh();
-			ClaimFormItems.GetListForForm();
+			ClaimFormCur.Items=ClaimFormItems.GetListForForm(ClaimFormCur.ClaimFormNum);
 			FillItem();
 			panel2.Invalidate();
 		}
@@ -815,12 +849,11 @@ namespace OpenDental{
 			try{yPos=Convert.ToSingle(textYPos.Text);}
 			catch{yPos=0;}
 			for(int i=0;i<listItems.SelectedIndices.Count;i++){
-				ClaimFormItems.Cur=ClaimFormItems.ListForForm[listItems.SelectedIndices[i]];
-				ClaimFormItems.Cur.YPos=yPos;
-				ClaimFormItems.UpdateCur();
+				ClaimFormCur.Items[listItems.SelectedIndices[i]].YPos=yPos;
+				ClaimFormCur.Items[listItems.SelectedIndices[i]].Update();
 			}
 			ClaimFormItems.Refresh();
-			ClaimFormItems.GetListForForm();
+			ClaimFormCur.Items=ClaimFormItems.GetListForForm(ClaimFormCur.ClaimFormNum);
 			FillItem();
 			panel2.Invalidate();
 		}
@@ -835,12 +868,11 @@ namespace OpenDental{
 			try{width=Convert.ToSingle(textWidth.Text);}
 			catch{width=0;}
 			for(int i=0;i<listItems.SelectedIndices.Count;i++){
-				ClaimFormItems.Cur=ClaimFormItems.ListForForm[listItems.SelectedIndices[i]];
-				ClaimFormItems.Cur.Width=width;
-				ClaimFormItems.UpdateCur();
+				ClaimFormCur.Items[listItems.SelectedIndices[i]].Width=width;
+				ClaimFormCur.Items[listItems.SelectedIndices[i]].Update();
 			}
 			ClaimFormItems.Refresh();
-			ClaimFormItems.GetListForForm();
+			ClaimFormCur.Items=ClaimFormItems.GetListForForm(ClaimFormCur.ClaimFormNum);
 			FillItem();
 			panel2.Invalidate();
 		}
@@ -854,12 +886,11 @@ namespace OpenDental{
 			try{height=Convert.ToSingle(textHeight.Text);}
 			catch{height=0;}
 			for(int i=0;i<listItems.SelectedIndices.Count;i++){
-				ClaimFormItems.Cur=ClaimFormItems.ListForForm[listItems.SelectedIndices[i]];
-				ClaimFormItems.Cur.Height=height;
-				ClaimFormItems.UpdateCur();
+				ClaimFormCur.Items[listItems.SelectedIndices[i]].Height=height;
+				ClaimFormCur.Items[listItems.SelectedIndices[i]].Update();
 			}
 			ClaimFormItems.Refresh();
-			ClaimFormItems.GetListForForm();
+			ClaimFormCur.Items=ClaimFormItems.GetListForForm(ClaimFormCur.ClaimFormNum);
 			FillItem();
 			panel2.Invalidate();
 		}
@@ -874,32 +905,33 @@ namespace OpenDental{
 		}
 
 		private void butAdd_Click(object sender, System.EventArgs e) {
-			ClaimFormItems.Cur=new ClaimFormItem();
-			ClaimFormItems.Cur.ClaimFormNum=ClaimForms.Cur.ClaimFormNum;
 			FormClaimFormItemEdit FormCFIE=new FormClaimFormItemEdit();
+			FormCFIE.CFIcur=new  ClaimFormItem();
+			FormCFIE.CFIcur.ClaimFormNum=ClaimFormCur.ClaimFormNum;
+			FormCFIE.CFIcur.YPos=540;
 			FormCFIE.IsNew=true;
 			FormCFIE.ShowDialog();
 			if(FormCFIE.DialogResult!=DialogResult.OK){
 				return;
 			}
 			//MessageBox.Show(ClaimFormItems.Cur.ClaimFormItemNum.ToString());
-			ClaimFormItems.Refresh();
-			ClaimFormItems.GetListForForm();
-			FillDisplayStrings();
+			//ClaimFormItems.Refresh();
+			//ClaimFormCur.Items=ClaimFormItems.GetListForForm(ClaimFormCur.ClaimFormNum);
+			//FillDisplayStrings();
 			//set the width and height
-			Graphics grfx=panel2.CreateGraphics();
-			if(displayStrings[ClaimFormItems.ListForForm.Length-1]!="X"){
+			//Graphics grfx=panel2.CreateGraphics();
+//yes, I know this is buggy, but it's not that important, just a little annoying.
+			/*if(displayStrings[ClaimFormItems.ListForForm.Length-1]!="X"){
 				ClaimFormItems.Cur.Width=(float)(int)grfx.MeasureString
 					(displayStrings[ClaimFormItems.ListForForm.Length-1]
-					,new Font(ClaimForms.Cur.FontName,ClaimForms.Cur.FontSize)).Width;
+					,new Font(ClaimFormCur.FontName,ClaimFormCur.FontSize)).Width;
 				ClaimFormItems.Cur.Height=(float)(int)grfx.MeasureString
 					(displayStrings[ClaimFormItems.ListForForm.Length-1]
-					,new Font(ClaimForms.Cur.FontName,ClaimForms.Cur.FontSize)).Height;
-			}
-			grfx.Dispose();
-			ClaimFormItems.Cur.YPos=540;
-			//ClaimFormItems.Cur.XPos=400;
-			ClaimFormItems.UpdateCur();
+					,new Font(ClaimFormCur.FontName,ClaimFormCur.FontSize)).Height;
+			}*/
+			//grfx.Dispose();
+			//ClaimFormItems.Cur.YPos=540;
+			//ClaimFormItems.UpdateCur();
 			ClaimFormItems.Refresh();
 			FillForm();//also gets ListForForm
 			listItems.ClearSelected();
@@ -909,7 +941,7 @@ namespace OpenDental{
 		}
 
 		private void butFont_Click(object sender, System.EventArgs e) {
-			Font myFont=new Font(ClaimForms.Cur.FontName,ClaimForms.Cur.FontSize);
+			Font myFont=new Font(ClaimFormCur.FontName,ClaimFormCur.FontSize);
 			fontDialog1.Font=myFont;
 			if(fontDialog1.ShowDialog()!=DialogResult.OK){
 				return;
@@ -917,8 +949,8 @@ namespace OpenDental{
 			if(fontDialog1.Font.Style!=FontStyle.Regular){
 				MessageBox.Show(Lan.g(this,"Only regular font style allowed."));
 			}
-			ClaimForms.Cur.FontName=fontDialog1.Font.Name;
-			ClaimForms.Cur.FontSize=fontDialog1.Font.Size;
+			ClaimFormCur.FontName=fontDialog1.Font.Name;
+			ClaimFormCur.FontSize=fontDialog1.Font.Size;
 			//MessageBox.Show(fontDialog1.Font.Size.ToString());
 			panel2.Invalidate();
 			//fontDialog1.Font
@@ -947,47 +979,48 @@ namespace OpenDental{
 				return;
 			}
 			//loop through all items selected and change them
+			ClaimFormItem curItem;
 			for(int i=0;i<listItems.SelectedIndices.Count;i++){
 				//MessageBox.Show(i.ToString());
-				ClaimFormItems.Cur=ClaimFormItems.ListForForm[listItems.SelectedIndices[i]];
+				curItem=ClaimFormCur.Items[listItems.SelectedIndices[i]];
 				switch(e.KeyCode){
 					case Keys.Up:
 						if(e.Shift)
-							ClaimFormItems.Cur.YPos-=10;
+							curItem.YPos-=10;
 						else
-							ClaimFormItems.Cur.YPos-=1;
+							curItem.YPos-=1;
 						break;
 					case Keys.Down:
 						if(e.Shift)
-							ClaimFormItems.Cur.YPos+=10;
+							curItem.YPos+=10;
 						else
-							ClaimFormItems.Cur.YPos+=1;
+							curItem.YPos+=1;
 						break;
 					case Keys.Left:
 						if(e.Shift)
-							ClaimFormItems.Cur.XPos-=10;
+							curItem.XPos-=10;
 						else
-							ClaimFormItems.Cur.XPos-=1;
+							curItem.XPos-=1;
 						break;
 					case Keys.Right:
 						if(e.Shift)
-							ClaimFormItems.Cur.XPos+=10;
+							curItem.XPos+=10;
 						else
-							ClaimFormItems.Cur.XPos+=1;
+							curItem.XPos+=1;
 						break;
 				}
-				if(ClaimFormItems.Cur.YPos<0)
-					ClaimFormItems.Cur.YPos=0;
-				if(ClaimFormItems.Cur.YPos>1100)
-					ClaimFormItems.Cur.YPos=1100;
-				if(ClaimFormItems.Cur.XPos<0)
-					ClaimFormItems.Cur.XPos=0;
-				if(ClaimFormItems.Cur.XPos>850)
-					ClaimFormItems.Cur.XPos=850;
-				ClaimFormItems.UpdateCur();
+				if(curItem.YPos<0)
+					curItem.YPos=0;
+				if(curItem.YPos>1100)
+					curItem.YPos=1100;
+				if(curItem.XPos<0)
+					curItem.XPos=0;
+				if(curItem.XPos>850)
+					curItem.XPos=850;
+				curItem.Update();
 			}
 			ClaimFormItems.Refresh();
-			ClaimFormItems.GetListForForm();
+			ClaimFormCur.Items=ClaimFormItems.GetListForForm(ClaimFormCur.ClaimFormNum);
 			FillItem();
 			panel2.Invalidate();
 		}
@@ -1005,21 +1038,21 @@ namespace OpenDental{
 			float height;
 			Graphics grfx=panel2.CreateGraphics();
 			//start at the end of the list and work backwards until match
-			for(int i=ClaimFormItems.ListForForm.Length-1;i>0;i--){
-				if(ClaimFormItems.ListForForm[i].Width==0 || ClaimFormItems.ListForForm[i].Height==0){
+			for(int i=ClaimFormCur.Items.Length-1;i>0;i--){
+				if(ClaimFormCur.Items[i].Width==0 || ClaimFormCur.Items[i].Height==0){
 					width=grfx.MeasureString(displayStrings[i]
-						,new Font(ClaimForms.Cur.FontName,ClaimForms.Cur.FontSize)).Width;
+						,new Font(ClaimFormCur.FontName,ClaimFormCur.FontSize)).Width;
 					height=grfx.MeasureString(displayStrings[i]
-						,new Font(ClaimForms.Cur.FontName,ClaimForms.Cur.FontSize)).Height;
+						,new Font(ClaimFormCur.FontName,ClaimFormCur.FontSize)).Height;
 				}
 				else{//a width and height are available, so use them
-					width=ClaimFormItems.ListForForm[i].Width;
-					height=ClaimFormItems.ListForForm[i].Height;
+					width=ClaimFormCur.Items[i].Width;
+					height=ClaimFormCur.Items[i].Height;
 				}
-				if(e.X>ClaimFormItems.ListForForm[i].XPos
-					&& e.X<ClaimFormItems.ListForForm[i].XPos+width
-					&& e.Y>ClaimFormItems.ListForForm[i].YPos
-					&& e.Y<ClaimFormItems.ListForForm[i].YPos+height)
+				if(e.X>ClaimFormCur.Items[i].XPos
+					&& e.X<ClaimFormCur.Items[i].XPos+width
+					&& e.Y>ClaimFormCur.Items[i].YPos
+					&& e.Y<ClaimFormCur.Items[i].YPos+height)
 				{
 					if(controlIsDown){
 						if(listItems.SelectedIndices.Contains(i)){//if this item already selected
@@ -1046,8 +1079,8 @@ namespace OpenDental{
 			FillItem();//also sets the oldItemLocs
 			oldItemLocs=new PointF[listItems.SelectedIndices.Count];
 			for(int i=0;i<listItems.SelectedIndices.Count;i++){//then a normal loop to set oldlocs for dragging
-				oldItemLocs[i]=new PointF((float)ClaimFormItems.ListForForm[listItems.SelectedIndices[i]].XPos
-					,(float)ClaimFormItems.ListForForm[listItems.SelectedIndices[i]].YPos);
+				oldItemLocs[i]=new PointF((float)ClaimFormCur.Items[listItems.SelectedIndices[i]].XPos
+					,(float)ClaimFormCur.Items[listItems.SelectedIndices[i]].YPos);
 			}
 			panel2.Invalidate();
 		}
@@ -1057,21 +1090,21 @@ namespace OpenDental{
 				return;
 			}
 			for(int i=0;i<listItems.SelectedIndices.Count;i++){
-				ClaimFormItems.Cur=ClaimFormItems.ListForForm[listItems.SelectedIndices[i]];
-				ClaimFormItems.Cur.XPos=oldItemLocs[i].X+e.X-mouseDownLoc.X;
-				ClaimFormItems.Cur.YPos=oldItemLocs[i].Y+e.Y-mouseDownLoc.Y;
-				if(ClaimFormItems.Cur.YPos<0)
-					ClaimFormItems.Cur.YPos=0;
-				if(ClaimFormItems.Cur.YPos>1100)
-					ClaimFormItems.Cur.YPos=1100;
-				if(ClaimFormItems.Cur.XPos<0)
-					ClaimFormItems.Cur.XPos=0;
-				if(ClaimFormItems.Cur.XPos>850)
-					ClaimFormItems.Cur.XPos=850;
-				ClaimFormItems.UpdateCur();
+				//ClaimFormItems.Cur=ClaimFormCur.Items[listItems.SelectedIndices[i]];
+				ClaimFormCur.Items[listItems.SelectedIndices[i]].XPos=oldItemLocs[i].X+e.X-mouseDownLoc.X;
+				ClaimFormCur.Items[listItems.SelectedIndices[i]].YPos=oldItemLocs[i].Y+e.Y-mouseDownLoc.Y;
+				if(ClaimFormCur.Items[listItems.SelectedIndices[i]].YPos<0)
+					ClaimFormCur.Items[listItems.SelectedIndices[i]].YPos=0;
+				if(ClaimFormCur.Items[listItems.SelectedIndices[i]].YPos>1100)
+					ClaimFormCur.Items[listItems.SelectedIndices[i]].YPos=1100;
+				if(ClaimFormCur.Items[listItems.SelectedIndices[i]].XPos<0)
+					ClaimFormCur.Items[listItems.SelectedIndices[i]].XPos=0;
+				if(ClaimFormCur.Items[listItems.SelectedIndices[i]].XPos>850)
+					ClaimFormCur.Items[listItems.SelectedIndices[i]].XPos=850;
+				ClaimFormCur.Items[listItems.SelectedIndices[i]].Update();
 			}
 			ClaimFormItems.Refresh();
-			ClaimFormItems.GetListForForm();
+			ClaimFormCur.Items=ClaimFormItems.GetListForForm(ClaimFormCur.ClaimFormNum);
 			FillItem();
 			panel2.Invalidate();
 		}
@@ -1108,31 +1141,31 @@ namespace OpenDental{
 			Color myColor;
 			float xPosRect;
 			float xPosText;
-			for(int i=0;i<ClaimFormItems.ListForForm.Length;i++){
-				if(ClaimFormItems.ListForForm[i].ImageFileName==""){//field
+			for(int i=0;i<ClaimFormCur.Items.Length;i++){
+				if(ClaimFormCur.Items[i].ImageFileName==""){//field
 					myColor=Color.Blue;
-					xPosRect=ClaimFormItems.ListForForm[i].XPos+ClaimForms.Cur.OffsetX;
+					xPosRect=ClaimFormCur.Items[i].XPos+ClaimFormCur.OffsetX;
 					xPosText=xPosRect;
 					if(displayStrings[i]=="1234.00"){
-						xPosRect-=ClaimFormItems.ListForForm[i].Width;//this aligns it to the right
+						xPosRect-=ClaimFormCur.Items[i].Width;//this aligns it to the right
 						xPosText-=grfx.MeasureString("1234.00"
-							,new Font(ClaimForms.Cur.FontName,ClaimForms.Cur.FontSize)).Width;
+							,new Font(ClaimFormCur.FontName,ClaimFormCur.FontSize)).Width;
 					}
 					grfx.DrawRectangle(new Pen(myColor)
-						,xPosRect,ClaimFormItems.ListForForm[i].YPos+ClaimForms.Cur.OffsetY
-						,ClaimFormItems.ListForForm[i].Width,ClaimFormItems.ListForForm[i].Height);
+						,xPosRect,ClaimFormCur.Items[i].YPos+ClaimFormCur.OffsetY
+						,ClaimFormCur.Items[i].Width,ClaimFormCur.Items[i].Height);
 					grfx.DrawString(displayStrings[i]
-						,new Font(ClaimForms.Cur.FontName,ClaimForms.Cur.FontSize)
+						,new Font(ClaimFormCur.FontName,ClaimFormCur.FontSize)
 						,new SolidBrush(myColor)
-						,new RectangleF(xPosText,ClaimFormItems.ListForForm[i].YPos+ClaimForms.Cur.OffsetY
-						,ClaimFormItems.ListForForm[i].Width,ClaimFormItems.ListForForm[i].Height));
+						,new RectangleF(xPosText,ClaimFormCur.Items[i].YPos+ClaimFormCur.OffsetY
+						,ClaimFormCur.Items[i].Width,ClaimFormCur.Items[i].Height));
 				}
 				else{//image
-					if(!ClaimForms.Cur.PrintImages){
+					if(!ClaimFormCur.PrintImages){
 						continue;
 					}
 					string fileName=((Pref)Prefs.HList["DocPath"]).ValueString+@"\"
-						+ClaimFormItems.ListForForm[i].ImageFileName;
+						+ClaimFormCur.Items[i].ImageFileName;
 					if(!File.Exists(fileName)){
 						MessageBox.Show("File not found.");
 						continue;
@@ -1140,22 +1173,22 @@ namespace OpenDental{
 					Image thisImage=Image.FromFile(fileName);
 					if(fileName.Substring(fileName.Length-3)=="jpg"){
 						grfx.DrawImage(thisImage
-							,ClaimFormItems.ListForForm[i].XPos+ClaimForms.Cur.OffsetX
-							,ClaimFormItems.ListForForm[i].YPos+ClaimForms.Cur.OffsetY
+							,ClaimFormCur.Items[i].XPos+ClaimFormCur.OffsetX
+							,ClaimFormCur.Items[i].YPos+ClaimFormCur.OffsetY
 							,(int)(thisImage.Width/thisImage.HorizontalResolution*100)
 							,(int)(thisImage.Height/thisImage.VerticalResolution*100));
 					}
 					else if(fileName.Substring(fileName.Length-3)=="gif"){
 						grfx.DrawImage(thisImage
-							,ClaimFormItems.ListForForm[i].XPos+ClaimForms.Cur.OffsetX
-							,ClaimFormItems.ListForForm[i].YPos+ClaimForms.Cur.OffsetY
-							,ClaimFormItems.ListForForm[i].Width
-							,ClaimFormItems.ListForForm[i].Height);
+							,ClaimFormCur.Items[i].XPos+ClaimFormCur.OffsetX
+							,ClaimFormCur.Items[i].YPos+ClaimFormCur.OffsetY
+							,ClaimFormCur.Items[i].Width
+							,ClaimFormCur.Items[i].Height);
 					}
 					else if(fileName.Substring(fileName.Length-3)=="emf"){
 						grfx.DrawImage(thisImage
-							,ClaimFormItems.ListForForm[i].XPos+ClaimForms.Cur.OffsetX
-							,ClaimFormItems.ListForForm[i].YPos+ClaimForms.Cur.OffsetY
+							,ClaimFormCur.Items[i].XPos+ClaimFormCur.OffsetX
+							,ClaimFormCur.Items[i].YPos+ClaimFormCur.OffsetY
 							,thisImage.Width
 							,thisImage.Height);
 					}
@@ -1171,13 +1204,13 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please fix data entry errors first."));
 				return false;
 			}
-			ClaimForms.Cur.Description=textDescription.Text;
-			ClaimForms.Cur.IsHidden=checkIsHidden.Checked;
-			ClaimForms.Cur.UniqueID=PIn.PInt(textUniqueID.Text);
-			ClaimForms.Cur.PrintImages=checkPrintImages.Checked;
-			ClaimForms.Cur.OffsetX=PIn.PInt(textOffsetX.Text);
-			ClaimForms.Cur.OffsetY=PIn.PInt(textOffsetY.Text);
-			ClaimForms.UpdateCur();
+			ClaimFormCur.Description=textDescription.Text;
+			ClaimFormCur.IsHidden=checkIsHidden.Checked;
+			ClaimFormCur.UniqueID=textUniqueID.Text;
+			ClaimFormCur.PrintImages=checkPrintImages.Checked;
+			ClaimFormCur.OffsetX=PIn.PInt(textOffsetX.Text);
+			ClaimFormCur.OffsetY=PIn.PInt(textOffsetY.Text);
+			ClaimFormCur.Update();
 			return true;
 		}
 
@@ -1185,7 +1218,7 @@ namespace OpenDental{
 			//MessageBox.Show(ClaimForms.Cur.ClaimFormNum.ToString());
 			if(!UpdateCur())
 				return;
-			if(ClaimForms.Cur.Description==""){
+			if(ClaimFormCur.Description==""){
 				MessageBox.Show(Lan.g(this,"You must enter a description first."));
 				return;
 			}
@@ -1200,9 +1233,11 @@ namespace OpenDental{
 			if(DialogResult==DialogResult.OK)
 				return;
 			if(IsNew){
-				ClaimForms.DeleteCur();
+				ClaimFormCur.Delete();
 			}
 		}
+
+		
 
 		
 

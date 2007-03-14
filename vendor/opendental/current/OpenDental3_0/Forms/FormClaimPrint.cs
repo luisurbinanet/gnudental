@@ -1,11 +1,12 @@
 using System;
+using System.Collections;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Printing;
-using System.Collections;
-using System.ComponentModel;
+using System.Globalization;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
 
 namespace OpenDental{
@@ -20,8 +21,8 @@ namespace OpenDental{
 		public int ThisClaimNum;
 		///<summary></summary>
 		public int ThisPatNum;
-		///<summary>This will be 0 unless the user is trying to print a batch e-claim with a predefined ClaimForm.</summary>
-		public int ClaimFormNum;
+		//<summary>This will be 0 unless the user is trying to print a batch e-claim with a predefined ClaimForm.</summary>
+		//public int ClaimFormNum;
 		///<summary></summary>
 		public bool PrintBlank;
 		private System.Windows.Forms.PrintDialog printDialog2;
@@ -38,11 +39,17 @@ namespace OpenDental{
 		private int totalPages;
 		///<summary>Set to true if using this class just to generate strings for the Renaissance link.</summary>
 		private bool IsRenaissance;
+		private ClaimProc[] ClaimProcsForClaim;
+		private Procedure[] ProcList;
+		///<summary>This is set externally for Renaissance and generic e-claims.  If it was not set ahead of time, it will set in FillDisplayStrings according to the insPlan.</summary>
+		public ClaimForm ClaimFormCur;
 
 		///<summary></summary>
 		public FormClaimPrint(){
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] {
+			Lan.C(this, new System.Windows.Forms.Control[] 
+			{
+				this
 			});
 			Lan.C("All", new System.Windows.Forms.Control[] {
 				butClose,
@@ -214,40 +221,40 @@ namespace OpenDental{
 			FillProcStrings(pagesPrinted*procLimit,procLimit);
 			Graphics grfx=ev.Graphics;
 			float xPosText;
-			for(int i=0;i<ClaimFormItems.ListForForm.Length;i++){
-				if(ClaimFormItems.ListForForm[i].ImageFileName==""){//field
-					xPosText=ClaimFormItems.ListForForm[i].XPos+ClaimForms.Cur.OffsetX;
-					if(ClaimFormItems.ListForForm[i].FieldName=="P1Fee"
-						|| ClaimFormItems.ListForForm[i].FieldName=="P2Fee"
-						|| ClaimFormItems.ListForForm[i].FieldName=="P3Fee"
-						|| ClaimFormItems.ListForForm[i].FieldName=="P4Fee"
-						|| ClaimFormItems.ListForForm[i].FieldName=="P5Fee"
-						|| ClaimFormItems.ListForForm[i].FieldName=="P6Fee"
-						|| ClaimFormItems.ListForForm[i].FieldName=="P7Fee"
-						|| ClaimFormItems.ListForForm[i].FieldName=="P8Fee"
-						|| ClaimFormItems.ListForForm[i].FieldName=="P9Fee"
-						|| ClaimFormItems.ListForForm[i].FieldName=="P10Fee"
-						|| ClaimFormItems.ListForForm[i].FieldName=="TotalFee")
+			for(int i=0;i<ClaimFormCur.Items.Length;i++){
+				if(ClaimFormCur.Items[i].ImageFileName==""){//field
+					xPosText=ClaimFormCur.Items[i].XPos+ClaimFormCur.OffsetX;
+					if(ClaimFormCur.Items[i].FieldName=="P1Fee"
+						|| ClaimFormCur.Items[i].FieldName=="P2Fee"
+						|| ClaimFormCur.Items[i].FieldName=="P3Fee"
+						|| ClaimFormCur.Items[i].FieldName=="P4Fee"
+						|| ClaimFormCur.Items[i].FieldName=="P5Fee"
+						|| ClaimFormCur.Items[i].FieldName=="P6Fee"
+						|| ClaimFormCur.Items[i].FieldName=="P7Fee"
+						|| ClaimFormCur.Items[i].FieldName=="P8Fee"
+						|| ClaimFormCur.Items[i].FieldName=="P9Fee"
+						|| ClaimFormCur.Items[i].FieldName=="P10Fee"
+						|| ClaimFormCur.Items[i].FieldName=="TotalFee")
 					{
 						//this aligns it to the right
 						xPosText-=grfx.MeasureString(displayStrings[i]
-							,new Font(ClaimForms.Cur.FontName,ClaimForms.Cur.FontSize)).Width;
+							,new Font(ClaimFormCur.FontName,ClaimFormCur.FontSize)).Width;
 					}
 					grfx.DrawString(displayStrings[i]
-						,new Font(ClaimForms.Cur.FontName,ClaimForms.Cur.FontSize)
+						,new Font(ClaimFormCur.FontName,ClaimFormCur.FontSize)
 						,new SolidBrush(Color.Black)
-						,new RectangleF(xPosText,ClaimFormItems.ListForForm[i].YPos+ClaimForms.Cur.OffsetY
-						,ClaimFormItems.ListForForm[i].Width,ClaimFormItems.ListForForm[i].Height));
+						,new RectangleF(xPosText,ClaimFormCur.Items[i].YPos+ClaimFormCur.OffsetY
+						,ClaimFormCur.Items[i].Width,ClaimFormCur.Items[i].Height));
 				}
 				else{//image
-					if(!ClaimForms.Cur.PrintImages){
+					if(!ClaimFormCur.PrintImages){
 						continue;
 					}
 					if(HideBackground){
 						continue;
 					}
 					string fileName=((Pref)Prefs.HList["DocPath"]).ValueString+@"\"
-						+ClaimFormItems.ListForForm[i].ImageFileName;
+						+ClaimFormCur.Items[i].ImageFileName;
 					if(!File.Exists(fileName)){
 						MessageBox.Show("File not found.");
 						continue;
@@ -255,22 +262,22 @@ namespace OpenDental{
 					Image thisImage=Image.FromFile(fileName);
 					if(fileName.Substring(fileName.Length-3)=="jpg"){
 						grfx.DrawImage(thisImage
-							,ClaimFormItems.ListForForm[i].XPos+ClaimForms.Cur.OffsetX
-							,ClaimFormItems.ListForForm[i].YPos+ClaimForms.Cur.OffsetY
+							,ClaimFormCur.Items[i].XPos+ClaimFormCur.OffsetX
+							,ClaimFormCur.Items[i].YPos+ClaimFormCur.OffsetY
 							,(int)(thisImage.Width/thisImage.HorizontalResolution*100)
 							,(int)(thisImage.Height/thisImage.VerticalResolution*100));
 					}
 					else if(fileName.Substring(fileName.Length-3)=="gif"){
 						grfx.DrawImage(thisImage
-							,ClaimFormItems.ListForForm[i].XPos+ClaimForms.Cur.OffsetX
-							,ClaimFormItems.ListForForm[i].YPos+ClaimForms.Cur.OffsetY
-							,ClaimFormItems.ListForForm[i].Width
-							,ClaimFormItems.ListForForm[i].Height);
+							,ClaimFormCur.Items[i].XPos+ClaimFormCur.OffsetX
+							,ClaimFormCur.Items[i].YPos+ClaimFormCur.OffsetY
+							,ClaimFormCur.Items[i].Width
+							,ClaimFormCur.Items[i].Height);
 					}
 					else if(fileName.Substring(fileName.Length-3)=="emf"){
 						grfx.DrawImage(thisImage
-							,ClaimFormItems.ListForForm[i].XPos+ClaimForms.Cur.OffsetX
-							,ClaimFormItems.ListForForm[i].YPos+ClaimForms.Cur.OffsetY
+							,ClaimFormCur.Items[i].XPos+ClaimFormCur.OffsetX
+							,ClaimFormCur.Items[i].YPos+ClaimFormCur.OffsetY
 							,thisImage.Width,thisImage.Height);
 					}
 				}
@@ -320,21 +327,17 @@ namespace OpenDental{
 				pagesPrinted=i;
 				//not sure if I also need to do FillDisplayStrings here
 				FillProcStrings(pagesPrinted*procLimit,procLimit);
-				/*StringBuilder str=new StringBuilder();
-				for(int s=0;s<displayStrings.Length;s++){
-					str.Append(displayStrings[s]);
-				}
-				MessageBox.Show(str.ToString());*/
 				retVal[i]=(string[])displayStrings.Clone();
 			}
 			return retVal;
 		}
 
+		///<summary>Gets all necessary info from db based on ThisPatNum and ThisClaimNum.  Then fills displayStrings with the actual text that will display on claim.</summary>
 		private void FillDisplayStrings(){
 			if(PrintBlank){
-				ClaimForms.SetCur(1);//hard coded to ADA claimform for now.
-				ClaimFormItems.GetListForForm();
-				displayStrings=new string[ClaimFormItems.ListForForm.Length];
+				ClaimFormCur=ClaimForms.GetClaimForm(1);//hard coded to ADA claimform for now.
+				//ClaimFormItems.GetListForForm(ClaimFormCur.ClaimFormNum);
+				displayStrings=new string[ClaimFormCur.Items.Length];
 				claimprocs=new ArrayList();
 				return;
 			}
@@ -373,42 +376,51 @@ namespace OpenDental{
 					otherSubsc=Patients.FamilyList[Patients.GetIndex(otherPlan.Subscriber)];
 				}				
 			}	
-			Procedures.Refresh();
-      ClaimProcs.Refresh();
-      ClaimProcs.GetForClaim(); 
+			ProcList=Procedures.Refresh(Patients.Cur.PatNum);
+      ClaimProc[] ClaimProcList=ClaimProcs.Refresh(Patients.Cur.PatNum);
+      ClaimProcsForClaim=ClaimProcs.GetForClaim(ClaimProcList,Claims.Cur.ClaimNum); 
 			claimprocs=new ArrayList();
 			bool includeThis;
-			for(int i=0;i<ClaimProcs.ForClaim.Length;i++){//fill the arraylist
-				if(ClaimProcs.ForClaim[i].ProcNum==0){
+			for(int i=0;i<ClaimProcsForClaim.Length;i++){//fill the arraylist
+				//Debug.WriteLine(i.ToString()+","+ClaimProcsForClaim[i].ProcNum.ToString()
+				//	+ClaimProcsForClaim[i].Status.ToString());
+				if(ClaimProcsForClaim[i].ProcNum==0){
 					continue;//skip payments
 				}
 				includeThis=true;
 				for(int j=0;j<claimprocs.Count;j++){//loop through existing claimprocs
-					if(((ClaimProc)claimprocs[j]).ProcNum==ClaimProcs.ForClaim[i].ProcNum){
+					if(((ClaimProc)claimprocs[j]).ProcNum==ClaimProcsForClaim[i].ProcNum){
 						includeThis=false;//skip duplicate procedures
 					}
 				}
 				if(includeThis)
-					claimprocs.Add(ClaimProcs.ForClaim[i]);						
+					claimprocs.Add(ClaimProcsForClaim[i]);						
 			}
 			Provider treatDent=Providers.ListLong[Providers.GetIndexLong(Claims.Cur.ProvTreat)];
-			//claimformitems will already be refreshed in local data.  A normal user will never change items.
-			if(ClaimFormNum==0){
-				ClaimForms.SetCur(InsPlans.Cur.ClaimFormNum);
+			if(ClaimFormCur==null){
+				ClaimFormCur=ClaimForms.GetClaimForm(InsPlans.Cur.ClaimFormNum);
 			}
-			else{//usually only for batch generic e-claims
-				ClaimForms.SetCur(ClaimFormNum);
-			}
-			if(!IsRenaissance){
+			//else{//usually only for batch generic e-claims and Renaissance
+			//	ClaimFormCur=ClaimForms.GetClaimForm(ClaimFormNum);
+			//}
+			//if(!IsRenaissance){
 				//for renaissance, this is skipped because the ListForForm will have already been filled.
-				ClaimFormItems.GetListForForm();
-			}
-			displayStrings=new string[ClaimFormItems.ListForForm.Length];
+			//must fix this line:
+			//	ClaimFormItems.GetListForForm(ClaimFormCur.ClaimFormNum);
+			//}
+			displayStrings=new string[ClaimFormCur.Items.Length];
 			//a value is set for every item, but not every case will have a matching claimform item.
-			for(int i=0;i<ClaimFormItems.ListForForm.Length;i++){
-				switch(ClaimFormItems.ListForForm[i].FieldName){
+			for(int i=0;i<ClaimFormCur.Items.Length;i++){
+				if(ClaimFormCur.Items[i]==null){//Renaissance does not use [0]
+					displayStrings[i]="";
+					continue;
+				}
+				switch(ClaimFormCur.Items[i].FieldName){
 					default://image. or procedure which gets filled in FillProcStrings.
 						displayStrings[i]="";
+						break;
+					case "FixedText":
+						displayStrings[i]=ClaimFormCur.Items[i].FormatString;
 						break;
 					case "IsPreAuth":
 						if(Claims.Cur.ClaimType=="PreAuth")
@@ -460,11 +472,11 @@ namespace OpenDental{
 						break;
 					case "OtherInsSubscrDOB":
 						if(otherPlan.PlanNum!=0)
-							if(ClaimFormItems.ListForForm[i].FormatString=="")
+							if(ClaimFormCur.Items[i].FormatString=="")
 								displayStrings[i]=otherSubsc.Birthdate.ToShortDateString();
 							else
 								displayStrings[i]=otherSubsc.Birthdate.ToString
-									(ClaimFormItems.ListForForm[i].FormatString);
+									(ClaimFormCur.Items[i].FormatString);
 						break;
 					case "OtherInsSubscrIsMale":
 						if(otherPlan.PlanNum!=0 && otherSubsc.Gender==PatientGender.Male)
@@ -556,10 +568,10 @@ namespace OpenDental{
 						displayStrings[i]=subsc.HmPhone;
 						break;
 					case "SubscrDOB":
-						if(ClaimFormItems.ListForForm[i].FormatString=="")
+						if(ClaimFormCur.Items[i].FormatString=="")
 							displayStrings[i]=subsc.Birthdate.ToShortDateString();//MM/dd/yyyy
 						else
-							displayStrings[i]=subsc.Birthdate.ToString(ClaimFormItems.ListForForm[i].FormatString);
+							displayStrings[i]=subsc.Birthdate.ToString(ClaimFormCur.Items[i].FormatString);
 						break;
 					case "SubscrIsMale":
 						if(subsc.Gender==PatientGender.Male)
@@ -657,11 +669,11 @@ namespace OpenDental{
 						displayStrings[i]=Patients.Cur.HmPhone;
 						break;
 					case "PatientDOB":
-						if(ClaimFormItems.ListForForm[i].FormatString=="")
+						if(ClaimFormCur.Items[i].FormatString=="")
 							displayStrings[i]=Patients.Cur.Birthdate.ToShortDateString();//MM/dd/yyyy
 						else
 							displayStrings[i]=Patients.Cur.Birthdate.ToString
-								(ClaimFormItems.ListForForm[i].FormatString);
+								(ClaimFormCur.Items[i].FormatString);
 						break;
 					case "PatientIsMale":
 						if(Patients.Cur.Gender==PatientGender.Male)
@@ -835,11 +847,11 @@ namespace OpenDental{
 						break;
 					case "PatientReleaseDate":
 						if(InsPlans.Cur.ReleaseInfo && Claims.Cur.DateSent.Year > 1860){
-							if(ClaimFormItems.ListForForm[i].FormatString=="")
+							if(ClaimFormCur.Items[i].FormatString=="")
 								displayStrings[i]=Claims.Cur.DateSent.ToShortDateString();
 							else
 								displayStrings[i]=Claims.Cur.DateSent.ToString
-									(ClaimFormItems.ListForForm[i].FormatString);
+									(ClaimFormCur.Items[i].FormatString);
 						} 
 						break;
 					case "PatientAssignment":
@@ -848,11 +860,11 @@ namespace OpenDental{
 						break;
 					case "PatientAssignmentDate":
 						if(InsPlans.Cur.AssignBen && Claims.Cur.DateSent.Year > 1860){
-							if(ClaimFormItems.ListForForm[i].FormatString=="")
+							if(ClaimFormCur.Items[i].FormatString=="")
 								displayStrings[i]=Claims.Cur.DateSent.ToShortDateString();
 							else
 								displayStrings[i]=Claims.Cur.DateSent.ToString
-									(ClaimFormItems.ListForForm[i].FormatString);
+									(ClaimFormCur.Items[i].FormatString);
 						}
 						break;
 					case "PlaceIsOffice":
@@ -923,12 +935,12 @@ namespace OpenDental{
 							displayStrings[i]="X";
 						break;
 					case "DateOrthoPlaced":
-						if(Claims.Cur.OrthoDate.Year > 1860){
-							if(ClaimFormItems.ListForForm[i].FormatString=="")
+						if(Claims.Cur.OrthoDate.Year > 1880){
+							if(ClaimFormCur.Items[i].FormatString=="")
 								displayStrings[i]=Claims.Cur.OrthoDate.ToShortDateString();
 							else
 								displayStrings[i]=Claims.Cur.OrthoDate.ToString
-									(ClaimFormItems.ListForForm[i].FormatString);
+									(ClaimFormCur.Items[i].FormatString);
 						}
 						break;
 					case "MonthsOrthoRemaining":
@@ -953,11 +965,11 @@ namespace OpenDental{
 						break;
 					case "DatePriorProsthPlaced":
 						if(Claims.Cur.PriorDate.Year > 1860){
-							if(ClaimFormItems.ListForForm[i].FormatString=="")
+							if(ClaimFormCur.Items[i].FormatString=="")
 								displayStrings[i]=Claims.Cur.PriorDate.ToShortDateString();
 							else
 								displayStrings[i]=Claims.Cur.PriorDate.ToString
-									(ClaimFormItems.ListForForm[i].FormatString);
+									(ClaimFormCur.Items[i].FormatString);
 						}
 						break;
 					case "IsOccupational":
@@ -994,11 +1006,11 @@ namespace OpenDental{
 						break;
 					case "AccidentDate":
 						if(Claims.Cur.AccidentDate.Year > 1860){
-							if(ClaimFormItems.ListForForm[i].FormatString=="")
+							if(ClaimFormCur.Items[i].FormatString=="")
 								displayStrings[i]=Claims.Cur.AccidentDate.ToShortDateString();
 							else
 								displayStrings[i]=Claims.Cur.AccidentDate.ToString
-									(ClaimFormItems.ListForForm[i].FormatString);
+									(ClaimFormCur.Items[i].FormatString);
 						}
 						break;
 					case "AccidentST":
@@ -1074,11 +1086,11 @@ namespace OpenDental{
 						break;
 					case "TreatingDentistSigDate":
 						if(treatDent.SigOnFile && Claims.Cur.DateSent.Year > 1860){
-							if(ClaimFormItems.ListForForm[i].FormatString=="")
+							if(ClaimFormCur.Items[i].FormatString=="")
 								displayStrings[i]=Claims.Cur.DateSent.ToShortDateString();
 							else
 								displayStrings[i]=Claims.Cur.DateSent.ToString
-									(ClaimFormItems.ListForForm[i].FormatString);
+									(ClaimFormCur.Items[i].FormatString);
 						}
 						break;
 					case "TreatingDentistMedicaidID":
@@ -1133,6 +1145,11 @@ namespace OpenDental{
 						displayStrings[i]=spec;
 						break;
 				}//switch
+				if(CultureInfo.CurrentCulture.Name=="nl-BE"//Dutch Belgium
+					&& displayStrings[i]=="")
+				{
+					displayStrings[i]="*   *   *";
+				}
 			}//for
 		}
 	
@@ -1172,11 +1189,14 @@ namespace OpenDental{
 		/// <param name="startProc">For page 1, this will be 0, otherwise it might be 10, 8, 20, or whatever.  It is the 0-based index of the first proc. Depends on how many procedures this claim format can display and which page we are on.</param>
 		/// <param name="totProcs">The number of procedures that can be displayed or printed per claim form.  Depends on the individual claim format. For example, 10 on the ADA2002</param>
 		private void FillProcStrings(int startProc,int totProcs){
-			for(int i=0;i<ClaimFormItems.ListForForm.Length;i++){
-				switch(ClaimFormItems.ListForForm[i].FieldName){
+			for(int i=0;i<ClaimFormCur.Items.Length;i++){
+				if(ClaimFormCur.Items[i]==null){//Renaissance does not use [0]
+					continue;
+				}
+				switch(ClaimFormCur.Items[i].FieldName){
 					//there is no default, because any non-matches will remain as ""
 					case "P1Date":
-						displayStrings[i]=GetProcInfo("Date",1+startProc,ClaimFormItems.ListForForm[i].FormatString);
+						displayStrings[i]=GetProcInfo("Date",1+startProc,ClaimFormCur.Items[i].FormatString);
 						break;
 					case "P1Area":
 						displayStrings[i]=GetProcInfo("Area",1+startProc);
@@ -1206,7 +1226,7 @@ namespace OpenDental{
 						displayStrings[i]=GetProcInfo("PlaceNumericCode",1+startProc);
 						break;
 					case "P2Date":
-						displayStrings[i]=GetProcInfo("Date",2+startProc,ClaimFormItems.ListForForm[i].FormatString);
+						displayStrings[i]=GetProcInfo("Date",2+startProc,ClaimFormCur.Items[i].FormatString);
 						break;
 					case "P2Area":
 						displayStrings[i]=GetProcInfo("Area",2+startProc);
@@ -1236,7 +1256,7 @@ namespace OpenDental{
 						displayStrings[i]=GetProcInfo("PlaceNumericCode",2+startProc);
 						break;
 					case "P3Date":
-						displayStrings[i]=GetProcInfo("Date",3+startProc,ClaimFormItems.ListForForm[i].FormatString);
+						displayStrings[i]=GetProcInfo("Date",3+startProc,ClaimFormCur.Items[i].FormatString);
 						break;
 					case "P3Area":
 						displayStrings[i]=GetProcInfo("Area",3+startProc);
@@ -1266,7 +1286,7 @@ namespace OpenDental{
 						displayStrings[i]=GetProcInfo("PlaceNumericCode",3+startProc);
 						break;
 					case "P4Date":
-						displayStrings[i]=GetProcInfo("Date",4+startProc,ClaimFormItems.ListForForm[i].FormatString);
+						displayStrings[i]=GetProcInfo("Date",4+startProc,ClaimFormCur.Items[i].FormatString);
 						break;
 					case "P4Area":
 						displayStrings[i]=GetProcInfo("Area",4+startProc);
@@ -1296,7 +1316,7 @@ namespace OpenDental{
 						displayStrings[i]=GetProcInfo("PlaceNumericCode",4+startProc);
 						break;
 					case "P5Date":
-						displayStrings[i]=GetProcInfo("Date",5+startProc,ClaimFormItems.ListForForm[i].FormatString);
+						displayStrings[i]=GetProcInfo("Date",5+startProc,ClaimFormCur.Items[i].FormatString);
 						break;
 					case "P5Area":
 						displayStrings[i]=GetProcInfo("Area",5+startProc);
@@ -1326,7 +1346,7 @@ namespace OpenDental{
 						displayStrings[i]=GetProcInfo("PlaceNumericCode",5+startProc);
 						break;
 					case "P6Date":
-						displayStrings[i]=GetProcInfo("Date",6+startProc,ClaimFormItems.ListForForm[i].FormatString);
+						displayStrings[i]=GetProcInfo("Date",6+startProc,ClaimFormCur.Items[i].FormatString);
 						break;
 					case "P6Area":
 						displayStrings[i]=GetProcInfo("Area",6+startProc);
@@ -1356,7 +1376,7 @@ namespace OpenDental{
 						displayStrings[i]=GetProcInfo("PlaceNumericCode",6+startProc);
 						break;
 					case "P7Date":
-						displayStrings[i]=GetProcInfo("Date",7+startProc,ClaimFormItems.ListForForm[i].FormatString);
+						displayStrings[i]=GetProcInfo("Date",7+startProc,ClaimFormCur.Items[i].FormatString);
 						break;
 					case "P7Area":
 						displayStrings[i]=GetProcInfo("Area",7+startProc);
@@ -1386,7 +1406,7 @@ namespace OpenDental{
 						displayStrings[i]=GetProcInfo("PlaceNumericCode",7+startProc);
 						break;
 					case "P8Date":
-						displayStrings[i]=GetProcInfo("Date",8+startProc,ClaimFormItems.ListForForm[i].FormatString);
+						displayStrings[i]=GetProcInfo("Date",8+startProc,ClaimFormCur.Items[i].FormatString);
 						break;
 					case "P8Area":
 						displayStrings[i]=GetProcInfo("Area",8+startProc);
@@ -1416,7 +1436,7 @@ namespace OpenDental{
 						displayStrings[i]=GetProcInfo("PlaceNumericCode",8+startProc);
 						break;
 					case "P9Date":
-						displayStrings[i]=GetProcInfo("Date",9+startProc,ClaimFormItems.ListForForm[i].FormatString);
+						displayStrings[i]=GetProcInfo("Date",9+startProc,ClaimFormCur.Items[i].FormatString);
 						break;
 					case "P9Area":
 						displayStrings[i]=GetProcInfo("Area",9+startProc);
@@ -1446,7 +1466,7 @@ namespace OpenDental{
 						displayStrings[i]=GetProcInfo("PlaceNumericCode",9+startProc);
 						break;
 					case "P10Date":
-						displayStrings[i]=GetProcInfo("Date",10+startProc,ClaimFormItems.ListForForm[i].FormatString);
+						displayStrings[i]=GetProcInfo("Date",10+startProc,ClaimFormCur.Items[i].FormatString);
 						break;
 					case "P10Area":
 						displayStrings[i]=GetProcInfo("Area",10+startProc);
@@ -1484,17 +1504,22 @@ namespace OpenDental{
 						displayStrings[i]=fee.ToString("F");
 						break;
 					case "DateOfService"://only for this page, Earliest proc date.
-						DateTime dateService=((ClaimProc)claimprocs[0]).DateCP;
+						DateTime dateService=((ClaimProc)claimprocs[0]).ProcDate;
 						for(int f=startProc;f<startProc+totProcs;f++){//eg f=0;f<10;f++
-							if(f < claimprocs.Count && ((ClaimProc)claimprocs[f]).DateCP < dateService)
-								dateService=((ClaimProc)claimprocs[f]).DateCP;
+							if(f < claimprocs.Count && ((ClaimProc)claimprocs[f]).ProcDate < dateService)
+								dateService=((ClaimProc)claimprocs[f]).ProcDate;
 						}
-						if(ClaimFormItems.ListForForm[i].FormatString=="")
+						if(ClaimFormCur.Items[i].FormatString=="")
 							displayStrings[i]=dateService.ToShortDateString();
 						else
-							displayStrings[i]=dateService.ToString(ClaimFormItems.ListForForm[i].FormatString);
+							displayStrings[i]=dateService.ToString(ClaimFormCur.Items[i].FormatString);
 						break;
 				}//switch
+				if(CultureInfo.CurrentCulture.Name=="nl-BE"//Dutch Belgium
+					&& displayStrings[i]=="")
+				{
+					displayStrings[i]="*   *   *";
+				}
 			}//for i
 		}
 
@@ -1504,11 +1529,23 @@ namespace OpenDental{
 			int retVal=0;
 			//loop until a match is not found.  The max of 10 is built in because of course it will never match to 11 since there is no such fieldName.
 			for(int i=0;i<15;i++){
-				for(int ii=0;ii<ClaimFormItems.ListForForm.Length;ii++){
-					if(ClaimFormItems.ListForForm[ii].FieldName=="P"+i.ToString()+"Fee"){
+				for(int ii=0;ii<ClaimFormCur.Items.Length;ii++){
+					if(ClaimFormCur.Items[ii].FieldName=="P"+i.ToString()+"Fee"){
 						retVal=i;
 					}
 				}//for ii
+			}
+			if(retVal==0){//if claimform doesn't use fees, use procedurecode
+				for(int i=0;i<15;i++){
+					for(int ii=0;ii<ClaimFormCur.Items.Length;ii++){
+						if(ClaimFormCur.Items[ii].FieldName=="P"+i.ToString()+"Code"){
+							retVal=i;
+						}
+					}//for ii
+				}
+			}
+			if(retVal==0){//if STILL zero
+				retVal=10;
 			}
 			return retVal;
 		}
@@ -1530,7 +1567,12 @@ namespace OpenDental{
 			//remember that procIndex is 1 based, not 0 based, 
 			procIndex--;//so convert to 0 based
 			if(claimprocs.Count <= procIndex){
+				//if(CultureInfo.CurrentCulture.Name=="nl-BE"){//Dutch Belgium
+				//	return"*   *   *";
+				//}
+				//else{
 				return "";
+				//}
 			}
 			if(field=="System")
 				return "JP";
@@ -1543,13 +1585,14 @@ namespace OpenDental{
 			}
 			if(field=="Desc")
 				return ProcedureCodes.GetProcCode(
-					((Procedure)Procedures.HList[((ClaimProc)claimprocs[procIndex]).ProcNum]).ADACode).Descript;
+					Procedures.GetProc(ProcList,((ClaimProc)claimprocs[procIndex]).ProcNum).ADACode).Descript;
+					//((Procedure)Procedures.HList[((ClaimProc)claimprocs[procIndex]).ProcNum]).ADACode).Descript;
 			if(field=="Date"){
 				if(Claims.Cur.ClaimType=="PreAuth")//no date on preauth procedures
 					return "";
 				if(stringFormat=="")
-					return ((ClaimProc)claimprocs[procIndex]).DateCP.ToShortDateString();
-				return ((ClaimProc)claimprocs[procIndex]).DateCP.ToString(stringFormat);
+					return ((ClaimProc)claimprocs[procIndex]).ProcDate.ToShortDateString();
+				return ((ClaimProc)claimprocs[procIndex]).ProcDate.ToString(stringFormat);
 			}
 			if(field=="TreatDentMedicaidID"){
 				if(((ClaimProc)claimprocs[procIndex]).ProvNum==0){
@@ -1561,48 +1604,49 @@ namespace OpenDental{
 			if(field=="PlaceNumericCode"){
 				return GetPlaceOfServiceNum(Claims.Cur.PlaceService);
 			}
-			Procedures.Cur=(Procedure)Procedures.HList[ClaimProcs.ForClaim[procIndex].ProcNum];
-			Procedures.CurOld=Procedures.Cur;//may not be necessary
+			Procedure ProcCur=Procedures.GetProc(ProcList,((ClaimProc)claimprocs[procIndex]).ProcNum);
+				//(Procedure)Procedures.HList[ClaimProcsForClaim[procIndex].ProcNum];
+			Procedure ProcOld=ProcCur.Copy();
 			string area="";
 			string toothNum="";
 			string surf="";
-			switch(((ProcedureCode)ProcedureCodes.HList[Procedures.Cur.ADACode]).TreatArea){
+			switch(((ProcedureCode)ProcedureCodes.HList[ProcCur.ADACode]).TreatArea){
 				case TreatmentArea.Surf:
 					//area blank
-					toothNum=Tooth.ToInternat(Procedures.Cur.ToothNum);
-					surf=Procedures.Cur.Surf;
+					toothNum=Tooth.ToInternat(ProcCur.ToothNum);
+					surf=ProcCur.Surf;
 					break;
 				case TreatmentArea.Tooth:
 					//area blank
-					toothNum=Tooth.ToInternat(Procedures.Cur.ToothNum);
+					toothNum=Tooth.ToInternat(ProcCur.ToothNum);
 					//surf blank
 					break;
 				case TreatmentArea.Quad:
-					area=Procedures.Cur.Surf;//area "UL" etc
+					area=ProcCur.Surf;//area "UL" etc
 					//num blank
 					//surf blank
 					break;
 				case TreatmentArea.Sextant:
-					area="S"+Procedures.Cur.Surf;//area
+					area="S"+ProcCur.Surf;//area
 					//num blank
 					//surf blank
 					break;
 				case TreatmentArea.Arch:
-					area=Procedures.Cur.Surf;//area "U", etc
+					area=ProcCur.Surf;//area "U", etc
 					//num blank
 					//surf blank
 					break;
 				case TreatmentArea.ToothRange:
 					//area blank
 					toothNum="";
-					for(int i=0;i<Procedures.Cur.ToothRange.Split(',').Length;i++){
-						if(!Tooth.IsValidDB(Procedures.Cur.ToothRange.Split(',')[i])){
+					for(int i=0;i<ProcCur.ToothRange.Split(',').Length;i++){
+						if(!Tooth.IsValidDB(ProcCur.ToothRange.Split(',')[i])){
 							continue;
 						}
 						if(i>0){
 							toothNum+=",";
 						}
-						toothNum+=Tooth.ToInternat(Procedures.Cur.ToothRange.Split(',')[i]);
+						toothNum+=Tooth.ToInternat(ProcCur.ToothRange.Split(',')[i]);
 					}
 					//surf blank
 					break;

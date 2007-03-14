@@ -24,20 +24,22 @@ namespace OpenDental{
 		private System.ComponentModel.Container components = null;
 		private System.Windows.Forms.PrintDialog printDialog2;
 		private System.Drawing.Printing.PrintDocument pd2;
-		private int totalPages=0;
+		private int totalPages;
 		private Font bodyFont=new Font("Arial",9);
 		private Font NameFont=new Font("Arial",10,FontStyle.Bold);
 		private Font TotalFont=new Font("Arial",9,FontStyle.Bold);
 		private Font GTotalFont=new Font("Arial",9,FontStyle.Bold);
+		///<summary></summary>
 		private int linesPrinted;
+		private bool isFirstLineOnPage;
+		private bool notePrinted;
 		private int pagesPrinted;
-    private string curPatName="";
-		private int linesCanPrint=1;
-		bool middleOfPatient=false;
-		bool middleOfPatientNewPage=false;
-		private int tempCount=0;
-		float colHeight=0;
-		private int patLines=0;
+		///<summary>Gets set externally before printing.  It has to be public for debugging</summary>
+		public bool HidePayment;
+		///<summary>Gets set externally before printing.  It has to be public for debugging</summary>
+		public string Note;
+		///<summary>2D array simply holds the table to print.  This will be improved some day.  Gets set externally before printing.  It has to be public for debugging.</summary>
+		public string[,] StatementA;
 
 		///<summary></summary>
 		public FormRpStatement(){
@@ -215,7 +217,7 @@ namespace OpenDental{
 				DialogResult=DialogResult.OK;
 			}
 			else{
-				PrintReport(false);
+				PrintReport(true);//this only happens during debugging
 				labelTotPages.Text=Lan.g(this,"/ "+totalPages.ToString());
 				printPreviewControl2.Zoom=((double)printPreviewControl2.ClientSize.Height
 					/(double)pd2.DefaultPageSettings.PaperSize.Height);
@@ -246,6 +248,8 @@ namespace OpenDental{
 					//printDialog2.Document=pd2;
 					//if(printDialog2.ShowDialog()==DialogResult.OK){
 						linesPrinted=0;
+						isFirstLineOnPage=false;
+						notePrinted=false;
 						pagesPrinted=0;
 						pd2.Print();
 					DialogResult=DialogResult.OK;
@@ -257,28 +261,22 @@ namespace OpenDental{
 			//}
 		}
 		private void pd2_PrintPage(object sender, PrintPageEventArgs ev){//raised for each page to be printed
-			//This printout logic is just a mess and needs to be entirely rewritten properly some day.
-			//should look more like the treatment plan.
+			Graphics g=ev.Graphics;
 		  float yPos = 30;
-			float labelX = 30;
-			float yTbPos=0;
-			float xTbPos=0;
-			float wTbPos=0;
-			float hTbPos=0;
-      tempCount=0;//counts rows printed on this page
+			float rowHeight=0;
+			#region Page 1 header
 			if(pagesPrinted==0){
-#region Page 1 header
-				//Print HEADING
+				//HEADING------------------------------------------------------------------------------
  				string heading = "STATEMENT";
 				Font headingFont=new Font("Arial",14,FontStyle.Bold);
-				float xHeading = (float)(425-(ev.Graphics.MeasureString(heading,headingFont).Width/2));
-				ev.Graphics.DrawString(heading,headingFont,Brushes.Black,xHeading,yPos);
-				//Print Date
+				float xHeading = (float)(425-(g.MeasureString(heading,headingFont).Width/2));
+				g.DrawString(heading,headingFont,Brushes.Black,xHeading,yPos);
+				//Date
  				string date = DateTime.Today.ToShortDateString();
 				Font dateFont=new Font("Arial",9,FontStyle.Regular);
-				float xDate = (float)(425-(ev.Graphics.MeasureString(date,dateFont).Width/2));
-				ev.Graphics.DrawString(date,dateFont,Brushes.Black,xDate,yPos+20);
-				//if first page, print Practice Address
+				float xDate = (float)(425-(g.MeasureString(date,dateFont).Width/2));
+				g.DrawString(date,dateFont,Brushes.Black,xDate,yPos+20);
+				//Practice Address----------------------------------------------------------------------
 				Font pFont=new Font("Arial",10);
 				yPos=50;
 				string pTitle=((Pref)Prefs.HList[Lan.g("Pref","PracticeTitle")]).ValueString;
@@ -290,141 +288,141 @@ namespace OpenDental{
 				string CityStateZip=pCity+", "+pState+" "+pZip;
 				string pPhone=((Pref)Prefs.HList[Lan.g("Pref","PracticePhone")]).ValueString;
 				if(pPhone.Length==10)
-					pPhone= "(" + pPhone.Substring(0,3)+")"+pPhone.Substring(3,3)+"-"+pPhone.Substring(6);
-				ev.Graphics.DrawString(pTitle,pFont,Brushes.Black,labelX,yPos);
+					pPhone="("+pPhone.Substring(0,3)+")"+pPhone.Substring(3,3)+"-"+pPhone.Substring(6);
+				float labelX=30;
+				g.DrawString(pTitle,pFont,Brushes.Black,labelX,yPos);
 				yPos+=18;
-				ev.Graphics.DrawString(pAddress,pFont,Brushes.Black,labelX,yPos);	    
+				g.DrawString(pAddress,pFont,Brushes.Black,labelX,yPos);	    
 				yPos+=18;
 				if(pAddress2!=""){
-					ev.Graphics.DrawString(pAddress2,pFont,Brushes.Black,labelX,yPos);	    
+					g.DrawString(pAddress2,pFont,Brushes.Black,labelX,yPos);	    
 					yPos+=18;
 				}
-				ev.Graphics.DrawString(CityStateZip,pFont,Brushes.Black,labelX,yPos);
+				g.DrawString(CityStateZip,pFont,Brushes.Black,labelX,yPos);
 				yPos+=18;
-				ev.Graphics.DrawString(pPhone,pFont,Brushes.Black,labelX,yPos);
+				g.DrawString(pPhone,pFont,Brushes.Black,labelX,yPos);
 				yPos+=18;
-				// Print Grand Total Headings and Lines 
-				float yTotal=(float)100;
-				float xTotal=(float)275;
-				float wTotal=300;
-				float hTotal=(float)12.5;
-				ev.Graphics.FillRectangle(Brushes.LightGray,xTotal,yTotal,wTotal,hTotal);
-				ev.Graphics.DrawRectangle(new Pen(Color.Black),xTotal,yTotal,wTotal,hTotal);  
-					for(int i=1;i<4;i++) 
-							ev.Graphics.DrawLine(new Pen(Color.Black),xTotal+(i*75),yTotal,xTotal+(i*75),yTotal+hTotal); 
-				string head1="";
-				string head2="Total";
-				string head3="- Ins Est";
-				string head4="= Amt Due";
-				Font tHeadFont=new Font("Arial",8,FontStyle.Bold);
-				float xHead1 = (float)(xTotal+75/2-(ev.Graphics.MeasureString(head1,tHeadFont).Width/2));
-				float xHead2 = (float)(xTotal+3*75/2-(ev.Graphics.MeasureString(head2,tHeadFont).Width/2));
-				float xHead3 = (float)(xTotal+5*75/2-(ev.Graphics.MeasureString(head3,tHeadFont).Width/2));
-				float xHead4 = (float)(xTotal+7*75/2-(ev.Graphics.MeasureString(head4,tHeadFont).Width/2));
-				ev.Graphics.DrawString(head1,tHeadFont,Brushes.Black,xHead1,yTotal); 
-				ev.Graphics.DrawString(head2,tHeadFont,Brushes.Black,xHead2,yTotal); 			
-				ev.Graphics.DrawString(head3,tHeadFont,Brushes.Black,xHead3,yTotal); 
-				ev.Graphics.DrawString(head4,tHeadFont,Brushes.Black,xHead4,yTotal); 
-				//Print Grand Total Data and Lines
-				for(int i=0;i<5;i++) {
-	  			ev.Graphics.DrawLine(new Pen(Color.Gray),xTotal+(i*75),(float)(yTotal+hTotal+.5),
-						xTotal+(i*75),(float)(yTotal+hTotal+.5+25));
-				} 
-				ev.Graphics.DrawLine(new Pen(Color.Gray),xTotal,yTotal+hTotal+25,xTotal+wTotal,
-					yTotal+hTotal+25);
-				//only prints totals if a GrandTotal line is present at the end of the array
-				if(ContrAccount.StatementA[11,ContrAccount.StatementA.GetLength(1)-1]=="GrandTotal"){
-					string tot1=ContrAccount.StatementA[4,ContrAccount.StatementA.GetLength(1)-1];
-					string tot2=ContrAccount.StatementA[5,ContrAccount.StatementA.GetLength(1)-1];
-					string tot3=ContrAccount.StatementA[6,ContrAccount.StatementA.GetLength(1)-1];
-					string tot4=ContrAccount.StatementA[7,ContrAccount.StatementA.GetLength(1)-1];
-					Font tTotalFont=new Font("Arial",8,FontStyle.Regular);
-					float xTotal1=(float)(xTotal+75/2-(ev.Graphics.MeasureString(tot1,bodyFont).Width/2));
-					float xTotal2=(float)(xTotal+3*75/2-(ev.Graphics.MeasureString(tot2,bodyFont).Width/2));
-					float xTotal3=(float)(xTotal+5*75/2-(ev.Graphics.MeasureString(tot3,bodyFont).Width/2));
-					float xTotal4=(float)(xTotal+7*75/2-(ev.Graphics.MeasureString(tot4,bodyFont).Width/2));
-					ev.Graphics.DrawString(tot1,bodyFont,Brushes.Black,xTotal1,yTotal+hTotal+5); 
-					ev.Graphics.DrawString(tot2,bodyFont,Brushes.Black,xTotal2,yTotal+hTotal+5); 			
-					ev.Graphics.DrawString(tot3,bodyFont,Brushes.Black,xTotal3,yTotal+hTotal+5); 
-					ev.Graphics.DrawString(tot4,bodyFont,Brushes.Black,xTotal4,yTotal+hTotal+5); 
-				}				
-				//Prints Credit Card Info
-				if(((Pref)Prefs.HList[Lan.g("Pref","StatementShowCreditCard")]).ValueString=="1"){
-					float xCredit=(float)450;
-					float yCredit=(float)175;
-					float space=30;
-					string type= "CREDIT CARD TYPE";
-					string amt=  "#";
-					string exp= "EXPIRES";
-					string approv="AMOUNT APPROVED";
-					string name=  "NAME";
-					string dis="(As it appears on card)";          
-					string sig="SIGNATURE";
-					Font creditFont=new Font("Arial",7,FontStyle.Bold);
-					Font disFont=new Font("Arial",5,FontStyle.Regular);
-					float xDis=(float)(625.5-(ev.Graphics.MeasureString(dis,disFont).Width/2)+5);
-					ev.Graphics.DrawString(type,creditFont,Brushes.Black,xCredit,yCredit);
-					ev.Graphics.DrawString(amt,creditFont,Brushes.Black,xCredit,yCredit+space); 
-					ev.Graphics.DrawString(exp,creditFont,Brushes.Black,xCredit,yCredit+space*2);	
- 					ev.Graphics.DrawString(approv,creditFont,Brushes.Black,xCredit,yCredit+space*3);	     
-					ev.Graphics.DrawString(name,creditFont,Brushes.Black,xCredit,yCredit+(space*4));
-					ev.Graphics.DrawString(dis,disFont,Brushes.Black,xDis,yCredit+space*4+13);
-					ev.Graphics.DrawString(sig,creditFont,Brushes.Black,xCredit,yCredit+(space*5)); 
-  				ev.Graphics.DrawLine(new Pen(Color.Black),xCredit+(ev.Graphics.MeasureString(type,creditFont)).Width,
-						yCredit+creditFont.GetHeight(ev.Graphics),776,yCredit+creditFont.GetHeight(ev.Graphics)); 
-  				ev.Graphics.DrawLine(new Pen(Color.Black),xCredit+(ev.Graphics.MeasureString(amt,creditFont)).Width,
-						yCredit+creditFont.GetHeight(ev.Graphics)+space,776,yCredit+creditFont.GetHeight(ev.Graphics)
-						+space); 
-  				ev.Graphics.DrawLine(new Pen(Color.Black),xCredit+(ev.Graphics.MeasureString(exp,creditFont)).Width,
-						yCredit+creditFont.GetHeight(ev.Graphics)+(space*2),776,yCredit+creditFont.GetHeight(ev.Graphics)
-						+(space*2)); 
-  				ev.Graphics.DrawLine(new Pen(Color.Black),xCredit+(ev.Graphics.MeasureString(approv,creditFont)).Width,
-						yCredit+creditFont.GetHeight(ev.Graphics)+(space*3),776,yCredit+creditFont.GetHeight(ev.Graphics)
-						+(space*3)); 
-  				ev.Graphics.DrawLine(new Pen(Color.Black),xCredit+(ev.Graphics.MeasureString(name,creditFont)).Width,
-						yCredit+creditFont.GetHeight(ev.Graphics)+(space*4),776,yCredit+creditFont.GetHeight(ev.Graphics)
-						+(space*4)); 
-					ev.Graphics.DrawLine(new Pen(Color.Black),xCredit+(ev.Graphics.MeasureString(sig,creditFont)).Width,
-						yCredit+creditFont.GetHeight(ev.Graphics)+(space*5),776,yCredit+creditFont.GetHeight(ev.Graphics)
-						+(space*5)); 
-				}
-	//Prints AMOUNT ENCLOSED
-				float yEncl=(float)100;
-				float xEncl=(float)651;
-				float wEncl=125;
-				float hEncl=(float)12.5;
-				ev.Graphics.FillRectangle(Brushes.LightGray,xEncl,yEncl,wEncl,hEncl);
-				ev.Graphics.DrawRectangle(new Pen(Color.Black),xEncl,yEncl,wEncl,hEncl);  
-	      
-				string amtEncl="Amount Enclosed";
-				Font enclFont=new Font("Arial",8,FontStyle.Bold);
-				float xamtEncl = (float)(713.5-(ev.Graphics.MeasureString(amtEncl,enclFont).Width/2));
-				ev.Graphics.DrawString(amtEncl,enclFont,Brushes.Black,xamtEncl,yEncl); 
-
-	  		ev.Graphics.DrawLine(new Pen(Color.Gray),xEncl,(float)(yEncl+hEncl+.5),
-					xEncl,(float)(yEncl+hEncl+.5+25));
- 	  		ev.Graphics.DrawLine(new Pen(Color.Gray),xEncl+125,(float)(yEncl+hEncl+.5),
-					xEncl+125,(float)(yEncl+hEncl+.5+25));      
-				ev.Graphics.DrawLine(new Pen(Color.Gray),xEncl,yEncl+hEncl+25,xEncl+wEncl,
-					yEncl+hEncl+25);
-
-				string payNow="";//"(Payment Due upon Receipt)";
-				Font payNowFont=new Font("Arial",5,FontStyle.Regular);
-				float xPayNow=(float)(713.5-(ev.Graphics.MeasureString(payNow,payNowFont).Width/2)+5);
-				ev.Graphics.DrawString(payNow,payNowFont,Brushes.Black,xPayNow,yEncl+hEncl+30); 
-	// Rectangle size of window to put in address
+				//Grand Total Headings and Lines ---------------------------------------------------------
+				if(!HidePayment){
+					float yTotal=(float)100;
+					float xTotal=(float)275;
+					float wTotal=300;
+					float hTotal=(float)12.5;
+					g.FillRectangle(Brushes.LightGray,xTotal,yTotal,wTotal,hTotal);
+					g.DrawRectangle(new Pen(Color.Black),xTotal,yTotal,wTotal,hTotal);  
+						for(int i=1;i<4;i++) 
+								g.DrawLine(new Pen(Color.Black),xTotal+(i*75),yTotal,xTotal+(i*75),yTotal+hTotal); 
+					string head1="";
+					string head2="Total";
+					string head3="- Ins Est";
+					string head4="= Amt Due";
+					Font tHeadFont=new Font("Arial",8,FontStyle.Bold);
+					float xHead1 = (float)(xTotal+75/2-(g.MeasureString(head1,tHeadFont).Width/2));
+					float xHead2 = (float)(xTotal+3*75/2-(g.MeasureString(head2,tHeadFont).Width/2));
+					float xHead3 = (float)(xTotal+5*75/2-(g.MeasureString(head3,tHeadFont).Width/2));
+					float xHead4 = (float)(xTotal+7*75/2-(g.MeasureString(head4,tHeadFont).Width/2));
+					g.DrawString(head1,tHeadFont,Brushes.Black,xHead1,yTotal); 
+					g.DrawString(head2,tHeadFont,Brushes.Black,xHead2,yTotal); 			
+					g.DrawString(head3,tHeadFont,Brushes.Black,xHead3,yTotal); 
+					g.DrawString(head4,tHeadFont,Brushes.Black,xHead4,yTotal); 
+					//Grand Total Data and Lines-------------------------------------------------------------
+					for(int i=0;i<5;i++) {
+	  				g.DrawLine(new Pen(Color.Gray),xTotal+(i*75),(float)(yTotal+hTotal+.5),
+							xTotal+(i*75),(float)(yTotal+hTotal+.5+25));
+					} 
+					g.DrawLine(new Pen(Color.Gray),xTotal,yTotal+hTotal+25,xTotal+wTotal,
+						yTotal+hTotal+25);
+					//only prints totals if a GrandTotal line is present at the end of the array
+					if(StatementA[11,StatementA.GetLength(1)-1]=="GrandTotal"){
+						string tot1=StatementA[4,StatementA.GetLength(1)-1];
+						string tot2=StatementA[5,StatementA.GetLength(1)-1];
+						string tot3=StatementA[6,StatementA.GetLength(1)-1];
+						string tot4=StatementA[7,StatementA.GetLength(1)-1];
+						Font tTotalFont=new Font("Arial",8,FontStyle.Regular);
+						float xTotal1=(float)(xTotal+75/2-(g.MeasureString(tot1,bodyFont).Width/2));
+						float xTotal2=(float)(xTotal+3*75/2-(g.MeasureString(tot2,bodyFont).Width/2));
+						float xTotal3=(float)(xTotal+5*75/2-(g.MeasureString(tot3,bodyFont).Width/2));
+						float xTotal4=(float)(xTotal+7*75/2-(g.MeasureString(tot4,bodyFont).Width/2));
+						g.DrawString(tot1,bodyFont,Brushes.Black,xTotal1,yTotal+hTotal+5); 
+						g.DrawString(tot2,bodyFont,Brushes.Black,xTotal2,yTotal+hTotal+5); 			
+						g.DrawString(tot3,bodyFont,Brushes.Black,xTotal3,yTotal+hTotal+5); 
+						g.DrawString(tot4,bodyFont,Brushes.Black,xTotal4,yTotal+hTotal+5); 
+					}				
+					//Credit Card Info-----------------------------------------------------------------------
+					if(((Pref)Prefs.HList[Lan.g("Pref","StatementShowCreditCard")]).ValueString=="1"){
+						float xCredit=(float)450;
+						float yCredit=(float)175;
+						float space=30;
+						string type= "CREDIT CARD TYPE";
+						string amt=  "#";
+						string exp= "EXPIRES";
+						string approv="AMOUNT APPROVED";
+						string name=  "NAME";
+						string dis="(As it appears on card)";          
+						string sig="SIGNATURE";
+						Font creditFont=new Font("Arial",7,FontStyle.Bold);
+						Font disFont=new Font("Arial",5,FontStyle.Regular);
+						float xDis=(float)(625.5-(g.MeasureString(dis,disFont).Width/2)+5);
+						g.DrawString(type,creditFont,Brushes.Black,xCredit,yCredit);
+						g.DrawString(amt,creditFont,Brushes.Black,xCredit,yCredit+space); 
+						g.DrawString(exp,creditFont,Brushes.Black,xCredit,yCredit+space*2);	
+ 						g.DrawString(approv,creditFont,Brushes.Black,xCredit,yCredit+space*3);	     
+						g.DrawString(name,creditFont,Brushes.Black,xCredit,yCredit+(space*4));
+						g.DrawString(dis,disFont,Brushes.Black,xDis,yCredit+space*4+13);
+						g.DrawString(sig,creditFont,Brushes.Black,xCredit,yCredit+(space*5)); 
+  					g.DrawLine(new Pen(Color.Black),xCredit+(g.MeasureString(type,creditFont)).Width,
+							yCredit+creditFont.GetHeight(g),776,yCredit+creditFont.GetHeight(g)); 
+  					g.DrawLine(new Pen(Color.Black),xCredit+(g.MeasureString(amt,creditFont)).Width,
+							yCredit+creditFont.GetHeight(g)+space,776,yCredit+creditFont.GetHeight(g)
+							+space); 
+  					g.DrawLine(new Pen(Color.Black),xCredit+(g.MeasureString(exp,creditFont)).Width,
+							yCredit+creditFont.GetHeight(g)+(space*2),776,yCredit+creditFont.GetHeight(g)
+							+(space*2)); 
+  					g.DrawLine(new Pen(Color.Black),xCredit+(g.MeasureString(approv,creditFont)).Width,
+							yCredit+creditFont.GetHeight(g)+(space*3),776,yCredit+creditFont.GetHeight(g)
+							+(space*3)); 
+  					g.DrawLine(new Pen(Color.Black),xCredit+(g.MeasureString(name,creditFont)).Width,
+							yCredit+creditFont.GetHeight(g)+(space*4),776,yCredit+creditFont.GetHeight(g)
+							+(space*4)); 
+						g.DrawLine(new Pen(Color.Black),xCredit+(g.MeasureString(sig,creditFont)).Width,
+							yCredit+creditFont.GetHeight(g)+(space*5),776,yCredit+creditFont.GetHeight(g)
+							+(space*5)); 
+					}
+					//AMOUNT ENCLOSED------------------------------------------------------------------------
+					float yEncl=(float)100;
+					float xEncl=(float)651;
+					float wEncl=125;
+					float hEncl=(float)12.5;
+					g.FillRectangle(Brushes.LightGray,xEncl,yEncl,wEncl,hEncl);
+					g.DrawRectangle(new Pen(Color.Black),xEncl,yEncl,wEncl,hEncl);
+					string amtEncl="Amount Enclosed";
+					Font enclFont=new Font("Arial",8,FontStyle.Bold);
+					float xamtEncl = (float)(713.5-(g.MeasureString(amtEncl,enclFont).Width/2));
+					g.DrawString(amtEncl,enclFont,Brushes.Black,xamtEncl,yEncl); 
+	  			g.DrawLine(new Pen(Color.Gray),xEncl,(float)(yEncl+hEncl+.5),
+						xEncl,(float)(yEncl+hEncl+.5+25));
+ 	  			g.DrawLine(new Pen(Color.Gray),xEncl+125,(float)(yEncl+hEncl+.5),
+						xEncl+125,(float)(yEncl+hEncl+.5+25));      
+					g.DrawLine(new Pen(Color.Gray),xEncl,yEncl+hEncl+25,xEncl+wEncl,
+						yEncl+hEncl+25);
+					string payNow="";//"(Payment Due upon Receipt)";
+					Font payNowFont=new Font("Arial",5,FontStyle.Regular);
+					float xPayNow=(float)(713.5-(g.MeasureString(payNow,payNowFont).Width/2)+5);
+					g.DrawString(payNow,payNowFont,Brushes.Black,xPayNow,yEncl+hEncl+30);
+				}//if(!HidePayment){
+				// Rectangle size of window to put in address. Here for debugging
 				//float x2=(float)(62.5);
 				//float y2=(float)((225)); //+10
 				//float w2=(float)(350);
 				//float h2=(float)((75));
-				//ev.Graphics.DrawRectangle(new Pen(Color.Black),x2,y2,w2,h2);
-	//Prints Grayish Rectangle to block off 
+				//g.DrawRectangle(new Pen(Color.Black),x2,y2,w2,h2);
+				//Prints Grayish Rectangle to block off 
 				//float x=25;//(float)(-12.5);  // 0 = 1/4 inch
 				//float	y=(float)((187.5));//+10
 				//float w=(float)(437.5);
 				//float h=(float)((150));
-				//ev.Graphics.DrawRectangle(new Pen(Color.Gray),x,y,w,h);
-	//Prints Patient's Billing Address	
+				//g.DrawRectangle(new Pen(Color.Gray),x,y,w,h);
+				//Patient's Billing Address--------------------------------------------------------	
 				Font addrFont=new Font("Arial",11,FontStyle.Regular);
 				yPos=225 + 1;//+10
 				labelX=(float)(62.5+12.5);
@@ -435,35 +433,42 @@ namespace OpenDental{
 				pState=Patients.Cur.State;
 				pZip=Patients.Cur.Zip;
 				CityStateZip=pCity+", "+pState+" "+pZip;
-				ev.Graphics.DrawString(pName,addrFont,Brushes.Black,labelX,yPos);
+				g.DrawString(pName,addrFont,Brushes.Black,labelX,yPos);
 				yPos+=19;
-				ev.Graphics.DrawString(pAddress,addrFont,Brushes.Black,labelX,yPos);	    
+				g.DrawString(pAddress,addrFont,Brushes.Black,labelX,yPos);	    
 				yPos+=19;
-				if (Patients.Cur.Address2!=""){
-					ev.Graphics.DrawString(Patients.Cur.Address2,addrFont,Brushes.Black,labelX,yPos);	    
+				if(Patients.Cur.Address2!=""){
+					g.DrawString(Patients.Cur.Address2,addrFont,Brushes.Black,labelX,yPos);	    
 					yPos+=19;  
 				}
-   			ev.Graphics.DrawString(CityStateZip,addrFont,Brushes.Black,labelX,yPos);				
-	//Draw perforated line
-				Pen pen2 = new Pen(Brushes.Black);
-				pen2.Width=(float).125;
-				pen2.DashStyle=DashStyle.Dot;
-				yPos=350;//3.62 inches from top
-				ev.Graphics.DrawLine(pen2,0,yPos,ev.PageBounds.Width,yPos);
-	//Prints Please Detach Statement
- 				yPos=350;  //  1/3 page down plus one line
- 				string detach = "PLEASE DETACH AND RETURN THE UPPER PORTION WITH YOUR PAYMENT";
-				Font DetachFont=new Font("Arial",6,FontStyle.Bold);
-				float xDetach = (float)(425-(ev.Graphics.MeasureString(detach,DetachFont).Width/2));
-				ev.Graphics.DrawString(detach,DetachFont,Brushes.Gray,xDetach,yPos+5);
-				yPos+=15;
-#endregion			
-				//yPos=770;  change this value to test multiple pages
-			} 
+   			g.DrawString(CityStateZip,addrFont,Brushes.Black,labelX,yPos);
+				if(!HidePayment){
+					//perforated line------------------------------------------------------------------
+					Pen pen2 = new Pen(Brushes.Black);
+					pen2.Width=(float).125;
+					pen2.DashStyle=DashStyle.Dot;
+					yPos=350;//3.62 inches from top
+					g.DrawLine(pen2,0,yPos,ev.PageBounds.Width,yPos);
+					//Please Detach Statement----------------------------------------------------
+ 					yPos=350;  //  1/3 page down plus one line
+ 					string detach = "PLEASE DETACH AND RETURN THE UPPER PORTION WITH YOUR PAYMENT";
+					Font DetachFont=new Font("Arial",6,FontStyle.Bold);
+					float xDetach = (float)(425-(g.MeasureString(detach,DetachFont).Width/2));
+					g.DrawString(detach,DetachFont,Brushes.Gray,xDetach,yPos+5);
+					yPos+=15;
+				}//if(!HidePayment){
+				else{
+					yPos=350+15;
+				}
+				//yPos=770;//change this value to test multiple pages
+			}//if(pagesPrinted==0){
 			else {
 				yPos=(float)18.75;
 			}
-//  Start of Patient Procedures etc Table
+			#endregion
+			#region Body Tables
+			//an if is not needed here because the while loop will handle it
+			//Body Tables----------------------------------------------------------------------------
 			int[] colPos=new int[12];
 			HorizontalAlignment[] colAlign=new HorizontalAlignment[11];
 			string[] ColCaption=new string[11];
@@ -490,251 +495,106 @@ namespace OpenDental{
 			colPos[9]=675;  colAlign[9]=HorizontalAlignment.Right;//paid
 			colPos[10]=725;  colAlign[10]=HorizontalAlignment.Right;//balance
 			colPos[11]=780;//+1  //col 11 is for formatting codes
+			isFirstLineOnPage=true;
 			while(yPos<ev.MarginBounds.Top+ev.MarginBounds.Height
-				&& linesPrinted<ContrAccount.StatementA.GetLength(1)
-				&& linesPrinted<300){//failsafe until I can rewrite this entire form
-        patLines=0;//resets for new page
-				//Figures out if patient info can fit on one page or must go on to next				
-				if(tempCount==linesCanPrint && middleOfPatient)  {
-				  colHeight=(float)1037.5;
-  				ev.Graphics.DrawLine(new Pen(Color.Gray),xTbPos,(float)(yTbPos+hTbPos+.5),xTbPos,colHeight);
-					for(int i=1;i<9;i++) 
-	  			  ev.Graphics.DrawLine(new Pen(Color.Gray),colPos[i]
-							,(float)(yTbPos+hTbPos+.5),colPos[i],colHeight);
-					ev.Graphics.DrawLine(new Pen(Color.Gray),xTbPos+wTbPos,(float)(yTbPos+hTbPos+.5)
-						,xTbPos+wTbPos,colHeight);
-				  middleOfPatientNewPage=true; 
-					break;
-        }
-				//Prints the Name of patient and column headers
-				if(ContrAccount.StatementA[11,linesPrinted]=="PatName"
-					|| middleOfPatientNewPage==true && tempCount==0){
-					if(!middleOfPatientNewPage)
-					  curPatName=ContrAccount.StatementA[3,linesPrinted];
-          for(int i=linesPrinted;i<ContrAccount.StatementA.GetLength(1);i++){
-						patLines++;
-					  if(ContrAccount.StatementA[11,i]=="PatTotal"){
-							break;
-						}
-          }
-					float currentY=(float)(yPos+20+NameFont.GetHeight(ev.Graphics)
-						+bodyFont.GetHeight(ev.Graphics));
-					if((currentY+(patLines*(bodyFont.GetHeight(ev.Graphics)*2)))>1025){
-						if(currentY<1025){
-              linesCanPrint=(int)((1025-currentY)/(bodyFont.GetHeight(ev.Graphics)));
-						} 
-            else{
-						  break;
-						}
-            if(linesCanPrint > 5)
-							middleOfPatient=true;
-						else
-							break;
-			    }
-			    else{
-					  middleOfPatient=false;
-						yPos+=20;
-			    }
-					if(!middleOfPatientNewPage){
-					  ev.Graphics.DrawString(Lan.g(this,ContrAccount.StatementA[3,linesPrinted])//print name
-						  ,NameFont,Brushes.Black,colPos[0],yPos);
-					  yPos+=NameFont.GetHeight(ev.Graphics);
-            linesPrinted++;
-          }
-					else  {
-						yPos+=20;
-						ev.Graphics.DrawString(Lan.g(this,curPatName),NameFont,Brushes.Black,colPos[0],yPos);//print name
-						//yPos+=20;
-					} 
-					//Prints Heading Box and Lines          
-					yPos+=10;
-          yTbPos=(float)(yPos-2.5);
-					xTbPos=colPos[0]-5;
-					wTbPos=colPos[11]-colPos[0]+5;
-					hTbPos=(float)(TotalFont.GetHeight(ev.Graphics)+5);
-					ev.Graphics.FillRectangle(Brushes.LightGray,xTbPos,yTbPos,wTbPos,hTbPos);
-					ev.Graphics.DrawRectangle(new Pen(Color.Black),xTbPos,yTbPos,wTbPos,hTbPos);  
+				&& linesPrinted<StatementA.GetLength(1))
+			{
+				if(StatementA[11,linesPrinted]=="PatName"){
+					//Patient Name-------------------------------------------------------------------------
+					//if(there is not room for at least a few rows){
+						//break
+					//}
+					g.DrawString(StatementA[3,linesPrinted],NameFont,Brushes.Black,colPos[0],yPos);
+					yPos+=NameFont.GetHeight(g)+7;
+					//Heading Box and Lines----------------------------------------------------------------       
+					rowHeight=TotalFont.GetHeight(g)+3;
+					g.FillRectangle(Brushes.LightGray,colPos[0],yPos,colPos[11]-colPos[0],rowHeight);
+					g.DrawRectangle(new Pen(Color.Black),colPos[0],yPos,colPos[11]-colPos[0],rowHeight);  
           for(int i=1;i<11;i++) 
-					  ev.Graphics.DrawLine(new Pen(Color.Black),colPos[i],yTbPos,colPos[i],yTbPos+hTbPos);
-					//Prints the Column Titles
+					  g.DrawLine(new Pen(Color.Black),colPos[i],yPos,colPos[i],yPos+rowHeight);
+					//Column Titles
 					for(int i=0;i<ColCaption.Length;i++)  { 
 					  if(colAlign[i]==HorizontalAlignment.Right){
-						  ev.Graphics.DrawString(Lan.g(this,ColCaption[i]),TotalFont,Brushes.Black,new RectangleF(
-							  colPos[i+1]-ev.Graphics.MeasureString(ColCaption[i],TotalFont).Width-1,yPos
-							  ,colPos[i+1]-colPos[i]+8,TotalFont.GetHeight(ev.Graphics)));
+						  g.DrawString(Lan.g(this,ColCaption[i]),TotalFont,Brushes.Black,new RectangleF(
+							  colPos[i+1]-g.MeasureString(ColCaption[i],TotalFont).Width-1,yPos+1
+							  ,colPos[i+1]-colPos[i]+8,TotalFont.GetHeight(g)));
 					  }
             else 
-						  ev.Graphics.DrawString(Lan.g(this,ColCaption[i]),TotalFont,Brushes.Black,colPos[i],yPos);
+						  g.DrawString(Lan.g(this,ColCaption[i]),TotalFont,Brushes.Black,colPos[i],yPos+1);
 			    }
-          yPos+=20;
-					middleOfPatientNewPage=false;
-				}//end Print name
-				//Prints out the patient info				
-				for(int iCol=0;iCol<11;iCol++){
-					if(colAlign[iCol]==HorizontalAlignment.Right){
-						ev.Graphics.DrawString(Lan.g(this,ContrAccount.StatementA[iCol,linesPrinted])
-							,bodyFont,Brushes.Black,new RectangleF(
-							colPos[iCol+1]
-							-ev.Graphics.MeasureString(ContrAccount.StatementA[iCol,linesPrinted],bodyFont).Width-1,yPos
-							,colPos[iCol+1]-colPos[iCol]+8,bodyFont.GetHeight(ev.Graphics)));
-					}
-					else{
-						ev.Graphics.DrawString(Lan.g(this,ContrAccount.StatementA[iCol,linesPrinted])
-							,bodyFont,Brushes.Black,new RectangleF(
-							colPos[iCol],yPos
-							,colPos[iCol+1]-colPos[iCol]+6,bodyFont.GetHeight(ev.Graphics)));
-					}
+          yPos+=rowHeight;
 				}
-				yPos+=bodyFont.GetHeight(ev.Graphics);
-				linesPrinted++;
-				//Prints out totals
-				if(ContrAccount.StatementA[11,linesPrinted]=="PatTotal"){
-					//  Prints Column lines					
-  				ev.Graphics.DrawLine(new Pen(Color.Gray),xTbPos,(float)(yTbPos+hTbPos+.5),xTbPos,yPos);
-					for(int i=1;i<11;i++) 
-	  			  ev.Graphics.DrawLine(new Pen(Color.Gray),colPos[i],(float)(yTbPos+hTbPos+.5),colPos[i],yPos);
-					ev.Graphics.DrawLine(new Pen(Color.Gray),xTbPos+wTbPos
-						,(float)(yTbPos+hTbPos+.5),xTbPos+wTbPos,yPos);
-				  ev.Graphics.DrawLine(new Pen(Color.Gray),xTbPos,yPos,xTbPos+wTbPos,yPos);
-					//Prints Patient Totals
+				else if(StatementA[11,linesPrinted]=="PatTotal"){
+					//Totals--------------------------------------------------------------------------------
 					for(int iCol=3;iCol<11;iCol++){
-						ev.Graphics.DrawString(Lan.g(this,ContrAccount.StatementA[iCol,linesPrinted])
+						g.DrawString(Lan.g(this,StatementA[iCol,linesPrinted])
 							,TotalFont,Brushes.Black,new RectangleF(
 							colPos[iCol+1]
-							-ev.Graphics.MeasureString(ContrAccount.StatementA[iCol,linesPrinted],TotalFont).Width-1,yPos
-							,colPos[iCol+1]-colPos[iCol]+8,TotalFont.GetHeight(ev.Graphics)));
+							-g.MeasureString(StatementA[iCol,linesPrinted],TotalFont).Width-1,yPos
+							,colPos[iCol+1]-colPos[iCol]+8,TotalFont.GetHeight(g)));
 					}
-					yPos+=TotalFont.GetHeight(ev.Graphics);
-					linesPrinted++;
-				}
-				if(linesPrinted==ContrAccount.StatementA.GetLength(1))//if we are at the end of the array
-					break;
-				if(ContrAccount.StatementA[11,linesPrinted]=="GrandTotal"){
- 					linesPrinted++;
-				}			
-        if(middleOfPatient)
-				  tempCount++;  
-			}//end while
-			#region Commented Out 
-			/*
-			if(!headerPrinted){
-				ev.Graphics.DrawString(Queries.CurReport.Title
-					,titleFont,Brushes.Black
-					,ev.MarginBounds.Width/2-ev.Graphics.MeasureString(Queries.CurReport.Title,titleFont).Width/2,yPos);
-				yPos+=titleFont.GetHeight(ev.Graphics);
-				for(int i=0;i<Queries.CurReport.SubTitle.Length;i++){
-					ev.Graphics.DrawString(Queries.CurReport.SubTitle[i]
-						,subtitleFont,Brushes.Black
-						,ev.MarginBounds.Width/2-ev.Graphics.MeasureString(Queries.CurReport.SubTitle[i],subtitleFont).Width/2,yPos);
-					yPos+=subtitleFont.GetHeight(ev.Graphics)+2;
-				}
-			}
-			yPos+=10;
-			ev.Graphics.DrawString("Date: "+DateTime.Today.ToString("d")
-				,bodyFont,Brushes.Black,ev.MarginBounds.Left,yPos);
-			//if(totalPages==0){
-				ev.Graphics.DrawString("Page: "+(pagesPrinted+1).ToString()
-					,bodyFont,Brushes.Black
-					,ev.MarginBounds.Right-ev.Graphics.MeasureString("Page: "+(pagesPrinted+1).ToString(),bodyFont).Width,yPos);
-			yPos+=bodyFont.GetHeight(ev.Graphics)+10;
-			ev.Graphics.DrawLine(new Pen(Color.Black),ev.MarginBounds.Left,yPos-5,ev.MarginBounds.Right,yPos-5);
-			//column captions:
-			for(int i=0;i<Queries.CurReport.ColCaption.Length;i++){
-				if(Queries.CurReport.ColAlign[i]==HorizontalAlignment.Right){
-					ev.Graphics.DrawString(Queries.CurReport.ColCaption[i]
-						,colCaptFont,Brushes.Black,new RectangleF(
-						ev.MarginBounds.Left+Queries.CurReport.ColPos[i+1]
-						-ev.Graphics.MeasureString(Queries.CurReport.ColCaption[i],colCaptFont).Width,yPos
-						,Queries.CurReport.ColWidth[i],colCaptFont.GetHeight(ev.Graphics)));
+					yPos+=TotalFont.GetHeight(g);
 				}
 				else{
-					ev.Graphics.DrawString(Queries.CurReport.ColCaption[i]
-						,colCaptFont,Brushes.Black,ev.MarginBounds.Left+Queries.CurReport.ColPos[i],yPos);
-				}
-			}
-			yPos+=bodyFont.GetHeight(ev.Graphics)+5;
-			//table:
-			while(yPos<ev.MarginBounds.Top+ev.MarginBounds.Height && linesPrinted < Queries.TableQ.Rows.Count){
-				for(int iCol=0;iCol<Queries.TableQ.Columns.Count;iCol++){
-					if(Queries.CurReport.ColAlign[iCol]==HorizontalAlignment.Right){
-						ev.Graphics.DrawString(grid2[linesPrinted,iCol].ToString()
-							,bodyFont,Brushes.Black,new RectangleF(
-							ev.MarginBounds.Left+Queries.CurReport.ColPos[iCol+1]
-							-ev.Graphics.MeasureString(grid2[linesPrinted,iCol].ToString(),bodyFont).Width-1,yPos
-							,Queries.CurReport.ColWidth[iCol],bodyFont.GetHeight(ev.Graphics)));
+					//Body data--------------------------------------------------------------------------------
+					if(isFirstLineOnPage){
+						//g.DrawLine(new Pen(Color.Gray),colPos[0],yPos,colPos[11],yPos);
 					}
-					else{
-						ev.Graphics.DrawString(grid2[linesPrinted,iCol].ToString()
-							,bodyFont,Brushes.Black,new RectangleF(
-							ev.MarginBounds.Left+Queries.CurReport.ColPos[iCol],yPos
-							,Queries.CurReport.ColPos[iCol+1]-Queries.CurReport.ColPos[iCol]+6,bodyFont.GetHeight(ev.Graphics)));
-					}
-				}
-				yPos+=bodyFont.GetHeight(ev.Graphics);
-				linesPrinted++;
-				if(linesPrinted==Queries.TableQ.Rows.Count){
-					tablePrinted=true;
-
-				}
-			}
-			//totals:
-			if(tablePrinted){
-				if(yPos<ev.MarginBounds.Top+ev.MarginBounds.Height){
-					ev.Graphics.DrawLine(new Pen(Color.Black),ev.MarginBounds.Left,yPos+3,ev.MarginBounds.Right,yPos+3);
-					yPos+=4;
-					for(int iCol=0;iCol<Queries.TableQ.Columns.Count;iCol++){
-						if(Queries.CurReport.ColAlign[iCol]==HorizontalAlignment.Right){
-							float textWidth=(float)(ev.Graphics.MeasureString(Queries.CurReport.ColTotal[iCol].ToString("F"),subtitleFont).Width);
-							ev.Graphics.DrawString(Queries.CurReport.ColTotal[iCol].ToString("F")
-								,subtitleFont,Brushes.Black,new RectangleF(
-								ev.MarginBounds.Left+Queries.CurReport.ColPos[iCol+1]-textWidth+3,yPos//the 3 is arbitrary
-								,textWidth,subtitleFont.GetHeight(ev.Graphics)));
+					rowHeight=bodyFont.GetHeight(g);
+					for(int i=0;i<11;i++){
+						//left line for this cell
+						g.DrawLine(new Pen(Color.Gray),colPos[i],yPos,colPos[i],yPos+rowHeight);
+						if(i==10){//if this is the right column, then also draw line for right side of cell
+							g.DrawLine(new Pen(Color.Gray),colPos[i+1],yPos,colPos[i+1],yPos+rowHeight);
 						}
-						//else{
-						//	ev.Graphics.DrawString(grid2[linesPrinted,iCol].ToString()
-						//		,bodyFont,Brushes.Black,new RectangleF(
-						//		ev.MarginBounds.Left+Queries.CurReport.ColPos[iCol],yPos
-						//		,Queries.CurReport.ColPos[iCol+1]-Queries.CurReport.ColPos[iCol],bodyFont.GetHeight(ev.Graphics)));
-						//}
+						if(colAlign[i]==HorizontalAlignment.Right){
+							g.DrawString(Lan.g(this,StatementA[i,linesPrinted])
+								,bodyFont,Brushes.Black,new RectangleF(
+								colPos[i+1]
+								-g.MeasureString(StatementA[i,linesPrinted],bodyFont).Width-1,yPos
+								,colPos[i+1]-colPos[i]+8,bodyFont.GetHeight(g)));
+						}
+						else{
+							g.DrawString(Lan.g(this,StatementA[i,linesPrinted])
+								,bodyFont,Brushes.Black,new RectangleF(
+								colPos[i],yPos
+								,colPos[i+1]-colPos[i]+6,bodyFont.GetHeight(g)));
+						}
+						if(StatementA[11,linesPrinted+1]=="PatTotal"){
+							g.DrawLine(new Pen(Color.Gray),colPos[i],yPos+rowHeight,colPos[11],yPos+rowHeight);
+						}
 					}
-					totalsPrinted=true;
-					yPos+=subtitleFont.GetHeight(ev.Graphics);
+					yPos+=rowHeight;
+				}
+				isFirstLineOnPage=false;
+				linesPrinted++;
+				if(linesPrinted<StatementA.GetLength(1)
+					&& StatementA[11,linesPrinted]=="GrandTotal")
+				{
+ 					linesPrinted++;
+				}
+			}//end while lines
+			#endregion
+			#region Note
+			//Note------------------------------------------------------------------------------------------
+			if(!notePrinted && //if note has not printed
+				linesPrinted==StatementA.GetLength(1))//and all table data already printed
+			{
+				if(Note==""){
+					notePrinted=true;
+				}
+				else{
+					float noteHeight=g.MeasureString(Note,bodyFont,colPos[11]-colPos[0]).Height;
+					if(noteHeight<ev.MarginBounds.Bottom-yPos){//if there is room
+						g.DrawString(Note,bodyFont,Brushes.Black,new RectangleF(colPos[0],yPos
+							,colPos[11]-colPos[0],noteHeight));
+						notePrinted=true;
+					}
+					//otherwise, pagesPrinted will increment and 
 				}
 			}
-			//Summary
-			if(totalsPrinted){
-				if(yPos+Queries.CurReport.Summary.Length*subtitleFont.GetHeight(ev.Graphics)
-					< ev.MarginBounds.Top+ev.MarginBounds.Height) {
-					ev.Graphics.DrawLine(new Pen(Color.Black),ev.MarginBounds.Left,yPos+2,ev.MarginBounds.Right,yPos+2);
-					yPos+=bodyFont.GetHeight(ev.Graphics);
-					for(int i=0;i<Queries.CurReport.Summary.Length;i++){
-					//while(yPos<ev.MarginBounds.Top+ev.MarginBounds.Height && linesPrinted < Queries.TableQ.Rows.Count){
-						//if(yPos>=ev.MarginBounds.Top+ev.MarginBounds.Height) break;
-						ev.Graphics.DrawString(Queries.CurReport.Summary[i]
-							,subtitleFont,Brushes.Black,ev.MarginBounds.Left,yPos);
-						yPos+=subtitleFont.GetHeight(ev.Graphics);
-					}
-				}
-			}
-			if(linesPrinted < Queries.TableQ.Rows.Count){
-				ev.HasMorePages = true;
-				pagesPrinted++;
-			}
-			else{
-				ev.HasMorePages = false;
-				//UpDownPage.Maximum=pagesPrinted+1;
-				totalPages=pagesPrinted+1;
-				labelTotPages.Text="1 / "+totalPages.ToString();
-				pagesPrinted=0;
-				linesPrinted=0;
-				headerPrinted=false;
-				tablePrinted=false;
-				totalsPrinted=false;
-			}
-	*/		
-#endregion
- 
-			if(linesPrinted<ContrAccount.StatementA.GetLength(1)){
+			#endregion
+			if(linesPrinted<StatementA.GetLength(1)){
 				ev.HasMorePages = true;
 				pagesPrinted++;
 			}

@@ -22,8 +22,23 @@ namespace OpenDental{
 		private System.ComponentModel.Container components = null;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.TextBox textDescription;
+		private System.Windows.Forms.Label label4;
+		private System.Windows.Forms.ListView listViewDisplay;
+		private System.Windows.Forms.ListView listViewAvailable;
+		private System.Windows.Forms.Label label5;
+		private OpenDental.XPButton butDown;
+		private OpenDental.XPButton butUp;
+		private OpenDental.XPButton butLeft;
+		private OpenDental.XPButton butRight;
 		///<summary></summary>
 		public bool IsNew;
+		///<summary>A collection of strings of all available element descriptions.</summary>
+		private ArrayList allElements;
+		private System.Windows.Forms.ColorDialog colorDialog1;
+		private System.Windows.Forms.Label label6;
+		private System.Windows.Forms.TextBox textRowsPerIncr;
+		///<summary>A local list of ApptViewItems which are displayed in list on left.  Not updated to db until the form is closed.</summary>
+		private ArrayList displayedElements;
 
 		///<summary></summary>
 		public FormApptViewEdit()
@@ -32,9 +47,20 @@ namespace OpenDental{
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
+			Lan.C(this, new System.Windows.Forms.Control[] {
+				this.label1, //*Ann
+				this.label2, //*Ann
+				this.label3, //*Ann
+				this.label4, //*Ann
+				this.label5, //*Ann
+				this.label6, //*Ann
+			});
 			Lan.C("All", new System.Windows.Forms.Control[] {
 				butOK,
 				butCancel,
+				butUp, //*Ann
+				butDown, //*Ann
+				butDelete //*Ann
 			});
 		}
 
@@ -61,6 +87,12 @@ namespace OpenDental{
 		private void InitializeComponent()
 		{
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormApptViewEdit));
+			System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem(new string[] {
+																																																						 "Row 1"}, -1, System.Drawing.Color.Red, System.Drawing.Color.Empty, null);
+			System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("row2");
+			System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem(new string[] {
+																																																						 "Row 1"}, -1, System.Drawing.Color.Red, System.Drawing.Color.Empty, null);
+			System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("row2");
 			this.butCancel = new System.Windows.Forms.Button();
 			this.butOK = new System.Windows.Forms.Button();
 			this.butDelete = new OpenDental.XPButton();
@@ -70,13 +102,24 @@ namespace OpenDental{
 			this.label2 = new System.Windows.Forms.Label();
 			this.label3 = new System.Windows.Forms.Label();
 			this.textDescription = new System.Windows.Forms.TextBox();
+			this.label4 = new System.Windows.Forms.Label();
+			this.listViewDisplay = new System.Windows.Forms.ListView();
+			this.listViewAvailable = new System.Windows.Forms.ListView();
+			this.label5 = new System.Windows.Forms.Label();
+			this.butDown = new OpenDental.XPButton();
+			this.butUp = new OpenDental.XPButton();
+			this.butLeft = new OpenDental.XPButton();
+			this.butRight = new OpenDental.XPButton();
+			this.colorDialog1 = new System.Windows.Forms.ColorDialog();
+			this.label6 = new System.Windows.Forms.Label();
+			this.textRowsPerIncr = new System.Windows.Forms.TextBox();
 			this.SuspendLayout();
 			// 
 			// butCancel
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butCancel.Location = new System.Drawing.Point(485, 410);
+			this.butCancel.Location = new System.Drawing.Point(556, 537);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 0;
@@ -86,7 +129,7 @@ namespace OpenDental{
 			// butOK
 			// 
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(485, 369);
+			this.butOK.Location = new System.Drawing.Point(556, 496);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 1;
@@ -100,16 +143,16 @@ namespace OpenDental{
 			this.butDelete.BtnStyle = OpenDental.enumType.XPStyle.Silver;
 			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDelete.Location = new System.Drawing.Point(31, 405);
+			this.butDelete.Location = new System.Drawing.Point(32, 543);
 			this.butDelete.Name = "butDelete";
-			this.butDelete.Size = new System.Drawing.Size(82, 26);
+			this.butDelete.Size = new System.Drawing.Size(101, 26);
 			this.butDelete.TabIndex = 38;
 			this.butDelete.Text = "&Delete";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(37, 56);
+			this.label1.Location = new System.Drawing.Point(32, 56);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(128, 23);
 			this.label1.TabIndex = 39;
@@ -118,7 +161,7 @@ namespace OpenDental{
 			// 
 			// listOps
 			// 
-			this.listOps.Location = new System.Drawing.Point(38, 84);
+			this.listOps.Location = new System.Drawing.Point(32, 84);
 			this.listOps.Name = "listOps";
 			this.listOps.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
 			this.listOps.Size = new System.Drawing.Size(120, 186);
@@ -126,15 +169,15 @@ namespace OpenDental{
 			// 
 			// listProv
 			// 
-			this.listProv.Location = new System.Drawing.Point(204, 84);
+			this.listProv.Location = new System.Drawing.Point(32, 303);
 			this.listProv.Name = "listProv";
 			this.listProv.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-			this.listProv.Size = new System.Drawing.Size(120, 186);
+			this.listProv.Size = new System.Drawing.Size(120, 212);
 			this.listProv.TabIndex = 42;
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(203, 56);
+			this.label2.Location = new System.Drawing.Point(32, 275);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(128, 23);
 			this.label2.TabIndex = 41;
@@ -143,27 +186,156 @@ namespace OpenDental{
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(35, 18);
+			this.label3.Location = new System.Drawing.Point(31, 1);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(146, 23);
+			this.label3.Size = new System.Drawing.Size(187, 18);
 			this.label3.TabIndex = 43;
 			this.label3.Text = "Description";
-			this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.label3.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// textDescription
 			// 
-			this.textDescription.Location = new System.Drawing.Point(184, 20);
+			this.textDescription.Location = new System.Drawing.Point(33, 23);
 			this.textDescription.Name = "textDescription";
 			this.textDescription.Size = new System.Drawing.Size(250, 20);
 			this.textDescription.TabIndex = 44;
 			this.textDescription.Text = "";
+			// 
+			// label4
+			// 
+			this.label4.Location = new System.Drawing.Point(215, 51);
+			this.label4.Name = "label4";
+			this.label4.Size = new System.Drawing.Size(174, 31);
+			this.label4.TabIndex = 46;
+			this.label4.Text = "Rows Displayed (double click to edit color)";
+			this.label4.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// listViewDisplay
+			// 
+			this.listViewDisplay.FullRowSelect = true;
+			this.listViewDisplay.HideSelection = false;
+			this.listViewDisplay.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
+																																										listViewItem1,
+																																										listViewItem2});
+			this.listViewDisplay.LabelWrap = false;
+			this.listViewDisplay.Location = new System.Drawing.Point(217, 88);
+			this.listViewDisplay.MultiSelect = false;
+			this.listViewDisplay.Name = "listViewDisplay";
+			this.listViewDisplay.Size = new System.Drawing.Size(175, 368);
+			this.listViewDisplay.TabIndex = 47;
+			this.listViewDisplay.View = System.Windows.Forms.View.List;
+			this.listViewDisplay.DoubleClick += new System.EventHandler(this.listViewDisplay_DoubleClick);
+			// 
+			// listViewAvailable
+			// 
+			this.listViewAvailable.FullRowSelect = true;
+			this.listViewAvailable.HideSelection = false;
+			this.listViewAvailable.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
+																																											listViewItem3,
+																																											listViewItem4});
+			this.listViewAvailable.LabelWrap = false;
+			this.listViewAvailable.Location = new System.Drawing.Point(453, 88);
+			this.listViewAvailable.MultiSelect = false;
+			this.listViewAvailable.Name = "listViewAvailable";
+			this.listViewAvailable.Size = new System.Drawing.Size(175, 368);
+			this.listViewAvailable.TabIndex = 48;
+			this.listViewAvailable.View = System.Windows.Forms.View.List;
+			// 
+			// label5
+			// 
+			this.label5.Location = new System.Drawing.Point(452, 65);
+			this.label5.Name = "label5";
+			this.label5.Size = new System.Drawing.Size(161, 17);
+			this.label5.TabIndex = 49;
+			this.label5.Text = "Available Rows";
+			this.label5.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// butDown
+			// 
+			this.butDown.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butDown.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butDown.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butDown.Image = ((System.Drawing.Image)(resources.GetObject("butDown.Image")));
+			this.butDown.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butDown.Location = new System.Drawing.Point(311, 469);
+			this.butDown.Name = "butDown";
+			this.butDown.Size = new System.Drawing.Size(82, 26);
+			this.butDown.TabIndex = 50;
+			this.butDown.Text = "&Down";
+			this.butDown.Click += new System.EventHandler(this.butDown_Click);
+			// 
+			// butUp
+			// 
+			this.butUp.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butUp.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butUp.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butUp.Image = ((System.Drawing.Image)(resources.GetObject("butUp.Image")));
+			this.butUp.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butUp.Location = new System.Drawing.Point(217, 469);
+			this.butUp.Name = "butUp";
+			this.butUp.Size = new System.Drawing.Size(82, 26);
+			this.butUp.TabIndex = 51;
+			this.butUp.Text = "&Up";
+			this.butUp.Click += new System.EventHandler(this.butUp_Click);
+			// 
+			// butLeft
+			// 
+			this.butLeft.AdjustImageLocation = new System.Drawing.Point(-1, 0);
+			this.butLeft.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butLeft.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butLeft.Image = ((System.Drawing.Image)(resources.GetObject("butLeft.Image")));
+			this.butLeft.Location = new System.Drawing.Point(404, 197);
+			this.butLeft.Name = "butLeft";
+			this.butLeft.Size = new System.Drawing.Size(35, 26);
+			this.butLeft.TabIndex = 52;
+			this.butLeft.Click += new System.EventHandler(this.butLeft_Click);
+			// 
+			// butRight
+			// 
+			this.butRight.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butRight.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butRight.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butRight.Image = ((System.Drawing.Image)(resources.GetObject("butRight.Image")));
+			this.butRight.Location = new System.Drawing.Point(404, 237);
+			this.butRight.Name = "butRight";
+			this.butRight.Size = new System.Drawing.Size(35, 26);
+			this.butRight.TabIndex = 53;
+			this.butRight.Click += new System.EventHandler(this.butRight_Click);
+			// 
+			// label6
+			// 
+			this.label6.Location = new System.Drawing.Point(336, 1);
+			this.label6.Name = "label6";
+			this.label6.Size = new System.Drawing.Size(246, 18);
+			this.label6.TabIndex = 54;
+			this.label6.Text = "Rows Per Time Increment (usually 1)";
+			this.label6.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// textRowsPerIncr
+			// 
+			this.textRowsPerIncr.Location = new System.Drawing.Point(337, 23);
+			this.textRowsPerIncr.Name = "textRowsPerIncr";
+			this.textRowsPerIncr.Size = new System.Drawing.Size(56, 20);
+			this.textRowsPerIncr.TabIndex = 55;
+			this.textRowsPerIncr.Text = "";
+			this.textRowsPerIncr.Validating += new System.ComponentModel.CancelEventHandler(this.textRowsPerIncr_Validating);
 			// 
 			// FormApptViewEdit
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
-			this.ClientSize = new System.Drawing.Size(594, 464);
+			this.ClientSize = new System.Drawing.Size(673, 592);
+			this.Controls.Add(this.textRowsPerIncr);
+			this.Controls.Add(this.label6);
+			this.Controls.Add(this.butRight);
+			this.Controls.Add(this.butLeft);
+			this.Controls.Add(this.butDown);
+			this.Controls.Add(this.butUp);
+			this.Controls.Add(this.label5);
+			this.Controls.Add(this.listViewAvailable);
+			this.Controls.Add(this.listViewDisplay);
+			this.Controls.Add(this.label4);
 			this.Controls.Add(this.textDescription);
 			this.Controls.Add(this.label3);
 			this.Controls.Add(this.listProv);
@@ -189,6 +361,10 @@ namespace OpenDental{
 
 		private void FormApptViewEdit_Load(object sender, System.EventArgs e) {
 			textDescription.Text=ApptViews.Cur.Description;
+			if(ApptViews.Cur.RowsPerIncr==0)
+				textRowsPerIncr.Text="1";
+			else
+				textRowsPerIncr.Text=ApptViews.Cur.RowsPerIncr.ToString();
 			ApptViewItems.GetForCurView();
 			for(int i=0;i<Defs.Short[(int)DefCat.Operatories].Length;i++){
 				listOps.Items.Add(Defs.Short[(int)DefCat.Operatories][i].ItemName);
@@ -203,7 +379,142 @@ namespace OpenDental{
 					listProv.SetSelected(i,true);
 				}
 			}
-			
+			allElements=new ArrayList();
+			allElements.Add("AddrNote");
+			allElements.Add("ChartNumAndName");
+			allElements.Add("ChartNumber");
+			allElements.Add("HmPhone");
+			allElements.Add("Lab");
+			allElements.Add("MedUrgNote");
+			allElements.Add("Note");
+			allElements.Add("PatientName");
+			allElements.Add("PatNum");
+			allElements.Add("PatNumAndName");
+			allElements.Add("Procs");
+			allElements.Add("ProcDescript");
+			allElements.Add("Production");
+			allElements.Add("WirelessPhone");
+			allElements.Add("WkPhone");
+			displayedElements=new ArrayList();
+			for(int i=0;i<ApptViewItems.ApptRows.Length;i++){
+				displayedElements.Add(ApptViewItems.ApptRows[i]);
+			}
+			FillElements();
+		}
+
+		///<summary>Fills the two lists based on displayedElements. No database transactions are performed here.</summary>
+		private void FillElements(){
+			ListViewItem item;
+			//Fill rows displayed
+			listViewDisplay.Items.Clear();
+			for(int i=0;i<displayedElements.Count;i++){
+				item=new ListViewItem(((ApptViewItem)displayedElements[i]).ElementDesc);
+				item.ForeColor=((ApptViewItem)displayedElements[i]).ElementColor;
+				listViewDisplay.Items.Add(item);
+			}
+			//then fill rows available
+			listViewAvailable.Items.Clear();
+			for(int i=0;i<allElements.Count;i++){
+				if(!elementIsDisplayed((string)allElements[i])){
+					item=new ListViewItem((string)allElements[i]);
+					listViewAvailable.Items.Add(item);
+				}
+			}
+		}
+
+		///<summary>Called from FillElements. Used to determine whether a given element is already displayed. If not, then it is displayed in the available rows on the right.</summary>
+		private bool elementIsDisplayed(string elementDesc){
+			for(int i=0;i<displayedElements.Count;i++){
+				if(((ApptViewItem)displayedElements[i]).ElementDesc==elementDesc){
+					return true;
+				}
+			}
+			return false;
+		}
+
+		private void butLeft_Click(object sender, System.EventArgs e) {
+			if(listViewAvailable.SelectedIndices.Count==0){
+				return;
+			}
+			//the item order is not used until saving to db.
+			ApptViewItem item=new ApptViewItem(listViewAvailable.SelectedItems[0].Text,0,Color.Black);
+			if(listViewDisplay.SelectedItems.Count==1){//insert
+				displayedElements.Insert(listViewDisplay.SelectedItems[0].Index,item);
+			}
+			else{//add to end
+				displayedElements.Add(item);
+			}
+			FillElements();
+		}
+
+		private void butRight_Click(object sender, System.EventArgs e) {
+			if(listViewDisplay.SelectedIndices.Count==0){
+				return;
+			}
+			displayedElements.RemoveAt(listViewDisplay.SelectedIndices[0]);
+			FillElements();
+		}
+
+		private void butUp_Click(object sender, System.EventArgs e) {
+			if(listViewDisplay.SelectedIndices.Count==0){
+				return;
+			}
+			int originalI=listViewDisplay.SelectedIndices[0];
+			if(originalI==0){
+				return;//can't move up any more
+			}
+			ApptViewItem item=(ApptViewItem)displayedElements[originalI];
+			displayedElements.RemoveAt(originalI);
+			displayedElements.Insert(originalI-1,item);
+			FillElements();
+			listViewDisplay.Items[originalI-1].Selected=true;
+		}
+
+		private void butDown_Click(object sender, System.EventArgs e) {
+			if(listViewDisplay.SelectedIndices.Count==0){
+				return;
+			}
+			int originalI=listViewDisplay.SelectedIndices[0];
+			if(originalI==displayedElements.Count-1){
+				return;//can't move down any more
+			}
+			ApptViewItem item=(ApptViewItem)displayedElements[originalI];
+			displayedElements.RemoveAt(originalI);
+			displayedElements.Insert(originalI+1,item);
+			FillElements();
+			listViewDisplay.Items[originalI+1].Selected=true;
+		}
+
+		private void listViewDisplay_DoubleClick(object sender, System.EventArgs e) {
+			if(listViewDisplay.SelectedIndices.Count==0){
+				return;
+			}
+			int originalI=listViewDisplay.SelectedIndices[0];
+			ApptViewItem item=(ApptViewItem)displayedElements[originalI];
+			colorDialog1=new ColorDialog();
+			colorDialog1.Color=item.ElementColor;
+			if(colorDialog1.ShowDialog()!=DialogResult.OK){
+				return;
+			}
+			item.ElementColor=colorDialog1.Color;
+			displayedElements.RemoveAt(originalI);
+			displayedElements.Insert(originalI,item);
+			FillElements();
+		}
+
+		private void textRowsPerIncr_Validating(object sender, System.ComponentModel.CancelEventArgs e) {
+			try{
+				Convert.ToInt32(textRowsPerIncr.Text);
+			}
+			catch{
+				MessageBox.Show(Lan.g(this,"Must be a number between 1 and 3."));
+				e.Cancel=true;
+				return;
+			}
+			if(PIn.PInt(textRowsPerIncr.Text)<1 || PIn.PInt(textRowsPerIncr.Text)>3){
+				MessageBox.Show(Lan.g(this,"Must be a number between 1 and 3."));
+				e.Cancel=true;
+			}
 		}
 
 		private void butDelete_Click(object sender, System.EventArgs e) {
@@ -226,6 +537,10 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"A description must be entered."));
 				return;
 			}
+			if(displayedElements.Count==0){
+				MessageBox.Show(Lan.g(this,"At least one row type must be displayed."));
+				return;
+			}
 			ApptViewItems.DeleteAllForView();//start with a clean slate
 			for(int i=0;i<Defs.Short[(int)DefCat.Operatories].Length;i++){
 				if(listOps.SelectedIndices.Contains(i)){
@@ -243,7 +558,15 @@ namespace OpenDental{
 					ApptViewItems.InsertCur();
 				}
 			}
+			for(int i=0;i<displayedElements.Count;i++){
+				ApptViewItems.Cur=(ApptViewItem)displayedElements[i];
+				ApptViewItems.Cur.ApptViewNum=ApptViews.Cur.ApptViewNum;
+				//elementDesc and elementColor already handled.
+				ApptViewItems.Cur.ElementOrder=i;
+				ApptViewItems.InsertCur();
+			}
 			ApptViews.Cur.Description=textDescription.Text;
+			ApptViews.Cur.RowsPerIncr=PIn.PInt(textRowsPerIncr.Text);
 			ApptViews.UpdateCur();//same whether isnew or not
 			DialogResult=DialogResult.OK;
 		}
@@ -260,6 +583,12 @@ namespace OpenDental{
 				ApptViews.DeleteCur();
 			}
 		}
+
+		
+
+		
+
+		
 
 
 	}

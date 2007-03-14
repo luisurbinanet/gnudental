@@ -160,6 +160,7 @@ namespace OpenDental{
 		#endregion
 
 		private void FormTranslation_Load(object sender, System.EventArgs e) {
+			//MessageBox.Show(CultureInfo.CurrentCulture.TwoLetterISOLanguageName);
 			if(CultureInfo.CurrentCulture.TwoLetterISOLanguageName=="en"){
 				MessageBox.Show
 					("You must change your language in Windows first to something other than English.");

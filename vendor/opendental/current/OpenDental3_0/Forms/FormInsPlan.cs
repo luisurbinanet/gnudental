@@ -46,7 +46,6 @@ namespace OpenDental{
 		private System.Windows.Forms.ListBox listSubscriber;
 		///<summary></summary>
 		public bool IsNew;
-		private System.Windows.Forms.TextBox textPlanNote;
 		private System.Windows.Forms.TextBox textEmployer;
 		private System.Windows.Forms.Label label16;
 		private System.Windows.Forms.Panel panel2;
@@ -90,7 +89,6 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butChangeEmp;
 		private System.Windows.Forms.GroupBox groupBox4;
 		private System.Windows.Forms.GroupBox groupBox5;
-		private System.Windows.Forms.Label labelCopayFee;
 		private System.Windows.Forms.Label labelCopayAdvice;
 		private System.Windows.Forms.Label labelOrthoMax;
 		private System.Windows.Forms.Panel panelAdvancedIns;
@@ -119,6 +117,9 @@ namespace OpenDental{
 		private bool mouseIsInListCars;
 		private System.Windows.Forms.Label labelDrop;
 		private System.Windows.Forms.Button butDrop;
+		private System.Windows.Forms.GroupBox groupCoPay;
+		private System.Windows.Forms.Label label3;
+		private OpenDental.ODtextBox textPlanNote;
 		///<summary></summary>
 		public bool DropButVisible;
 
@@ -195,7 +196,7 @@ namespace OpenDental{
 				checkAlternateCode,
 				checkClaimsUseUCR,
 				butCopayNone,
-				labelCopayFee,
+				groupCoPay,
 				butChangeEmp
 			});
 			Lan.C("All", new System.Windows.Forms.Control[] {
@@ -249,7 +250,6 @@ namespace OpenDental{
 			this.textState = new System.Windows.Forms.TextBox();
 			this.textZip = new System.Windows.Forms.TextBox();
 			this.textElectID = new System.Windows.Forms.TextBox();
-			this.textPlanNote = new System.Windows.Forms.TextBox();
 			this.butOK = new System.Windows.Forms.Button();
 			this.butCancel = new System.Windows.Forms.Button();
 			this.panel4 = new System.Windows.Forms.Panel();
@@ -289,7 +289,6 @@ namespace OpenDental{
 			this.label23 = new System.Windows.Forms.Label();
 			this.checkAlternateCode = new System.Windows.Forms.CheckBox();
 			this.checkClaimsUseUCR = new System.Windows.Forms.CheckBox();
-			this.labelCopayFee = new System.Windows.Forms.Label();
 			this.listCopay = new System.Windows.Forms.ListBox();
 			this.listPlanType = new System.Windows.Forms.ListBox();
 			this.label14 = new System.Windows.Forms.Label();
@@ -312,10 +311,13 @@ namespace OpenDental{
 			this.butChangeLink = new System.Windows.Forms.Button();
 			this.butDetach = new System.Windows.Forms.Button();
 			this.groupBox4 = new System.Windows.Forms.GroupBox();
+			this.groupCoPay = new System.Windows.Forms.GroupBox();
+			this.label3 = new System.Windows.Forms.Label();
 			this.groupBox3 = new System.Windows.Forms.GroupBox();
 			this.butEdit = new System.Windows.Forms.Button();
 			this.butChangeCarrier = new System.Windows.Forms.Button();
 			this.groupBox5 = new System.Windows.Forms.GroupBox();
+			this.textPlanNote = new OpenDental.ODtextBox();
 			this.panelAdvancedIns = new System.Windows.Forms.Panel();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this.groupBox6 = new System.Windows.Forms.GroupBox();
@@ -328,6 +330,7 @@ namespace OpenDental{
 			this.groupBox2.SuspendLayout();
 			this.groupSynch.SuspendLayout();
 			this.groupBox4.SuspendLayout();
+			this.groupCoPay.SuspendLayout();
 			this.groupBox3.SuspendLayout();
 			this.groupBox5.SuspendLayout();
 			this.panelAdvancedIns.SuspendLayout();
@@ -556,17 +559,6 @@ namespace OpenDental{
 			this.textElectID.Size = new System.Drawing.Size(54, 20);
 			this.textElectID.TabIndex = 7;
 			this.textElectID.Text = "";
-			// 
-			// textPlanNote
-			// 
-			this.textPlanNote.AcceptsReturn = true;
-			this.textPlanNote.Location = new System.Drawing.Point(109, 371);
-			this.textPlanNote.Multiline = true;
-			this.textPlanNote.Name = "textPlanNote";
-			this.textPlanNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textPlanNote.Size = new System.Drawing.Size(350, 95);
-			this.textPlanNote.TabIndex = 6;
-			this.textPlanNote.Text = "";
 			// 
 			// butOK
 			// 
@@ -931,19 +923,11 @@ namespace OpenDental{
 			this.checkClaimsUseUCR.TabIndex = 6;
 			this.checkClaimsUseUCR.Text = "Claims show UCR fee, not billed fee";
 			// 
-			// labelCopayFee
-			// 
-			this.labelCopayFee.Location = new System.Drawing.Point(126, 279);
-			this.labelCopayFee.Name = "labelCopayFee";
-			this.labelCopayFee.Size = new System.Drawing.Size(121, 17);
-			this.labelCopayFee.TabIndex = 100;
-			this.labelCopayFee.Text = "Co-pay Fee Schedule ";
-			// 
 			// listCopay
 			// 
-			this.listCopay.Location = new System.Drawing.Point(128, 297);
+			this.listCopay.Location = new System.Drawing.Point(188, 13);
 			this.listCopay.Name = "listCopay";
-			this.listCopay.Size = new System.Drawing.Size(108, 82);
+			this.listCopay.Size = new System.Drawing.Size(108, 69);
 			this.listCopay.TabIndex = 8;
 			// 
 			// listPlanType
@@ -966,7 +950,7 @@ namespace OpenDental{
 			// butCopayNone
 			// 
 			this.butCopayNone.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butCopayNone.Location = new System.Drawing.Point(129, 380);
+			this.butCopayNone.Location = new System.Drawing.Point(303, 34);
 			this.butCopayNone.Name = "butCopayNone";
 			this.butCopayNone.Size = new System.Drawing.Size(75, 24);
 			this.butCopayNone.TabIndex = 105;
@@ -975,7 +959,7 @@ namespace OpenDental{
 			// 
 			// labelCopayAdvice
 			// 
-			this.labelCopayAdvice.Location = new System.Drawing.Point(209, 380);
+			this.labelCopayAdvice.Location = new System.Drawing.Point(100, 14);
 			this.labelCopayAdvice.Name = "labelCopayAdvice";
 			this.labelCopayAdvice.Size = new System.Drawing.Size(202, 39);
 			this.labelCopayAdvice.TabIndex = 106;
@@ -1045,7 +1029,7 @@ namespace OpenDental{
 			this.butDelete.BtnStyle = OpenDental.enumType.XPStyle.Silver;
 			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDelete.Location = new System.Drawing.Point(5, 639);
+			this.butDelete.Location = new System.Drawing.Point(5, 666);
 			this.butDelete.Name = "butDelete";
 			this.butDelete.Size = new System.Drawing.Size(81, 26);
 			this.butDelete.TabIndex = 112;
@@ -1158,6 +1142,7 @@ namespace OpenDental{
 			// 
 			// groupBox4
 			// 
+			this.groupBox4.Controls.Add(this.groupCoPay);
 			this.groupBox4.Controls.Add(this.textGroupNum);
 			this.groupBox4.Controls.Add(this.groupBox3);
 			this.groupBox4.Controls.Add(this.textEmployer);
@@ -1170,20 +1155,38 @@ namespace OpenDental{
 			this.groupBox4.Controls.Add(this.listClaimForm);
 			this.groupBox4.Controls.Add(this.label23);
 			this.groupBox4.Controls.Add(this.checkClaimsUseUCR);
-			this.groupBox4.Controls.Add(this.labelCopayFee);
-			this.groupBox4.Controls.Add(this.listCopay);
 			this.groupBox4.Controls.Add(this.listPlanType);
 			this.groupBox4.Controls.Add(this.label14);
-			this.groupBox4.Controls.Add(this.butCopayNone);
-			this.groupBox4.Controls.Add(this.labelCopayAdvice);
 			this.groupBox4.Controls.Add(this.checkAlternateCode);
 			this.groupBox4.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupBox4.Location = new System.Drawing.Point(6, 145);
 			this.groupBox4.Name = "groupBox4";
-			this.groupBox4.Size = new System.Drawing.Size(413, 449);
+			this.groupBox4.Size = new System.Drawing.Size(413, 494);
 			this.groupBox4.TabIndex = 1;
 			this.groupBox4.TabStop = false;
 			this.groupBox4.Text = "Synchronized Information";
+			// 
+			// groupCoPay
+			// 
+			this.groupCoPay.Controls.Add(this.label3);
+			this.groupCoPay.Controls.Add(this.butCopayNone);
+			this.groupCoPay.Controls.Add(this.listCopay);
+			this.groupCoPay.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.groupCoPay.Location = new System.Drawing.Point(11, 389);
+			this.groupCoPay.Name = "groupCoPay";
+			this.groupCoPay.Size = new System.Drawing.Size(388, 95);
+			this.groupCoPay.TabIndex = 107;
+			this.groupCoPay.TabStop = false;
+			this.groupCoPay.Text = "Co-pay Fee Schedule";
+			// 
+			// label3
+			// 
+			this.label3.Location = new System.Drawing.Point(6, 19);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(160, 60);
+			this.label3.TabIndex = 106;
+			this.label3.Text = "Don\'t select a Co-pay Fee Schedule unless you understand how it will affect your " +
+				"estimates";
 			// 
 			// groupBox3
 			// 
@@ -1231,6 +1234,7 @@ namespace OpenDental{
 			// 
 			// groupBox5
 			// 
+			this.groupBox5.Controls.Add(this.textPlanNote);
 			this.groupBox5.Controls.Add(this.groupBox1);
 			this.groupBox5.Controls.Add(this.tbPercent1);
 			this.groupBox5.Controls.Add(this.panelAdvancedIns);
@@ -1238,7 +1242,6 @@ namespace OpenDental{
 			this.groupBox5.Controls.Add(this.textOrthoMax);
 			this.groupBox5.Controls.Add(this.textDeductible);
 			this.groupBox5.Controls.Add(this.label22);
-			this.groupBox5.Controls.Add(this.textPlanNote);
 			this.groupBox5.Controls.Add(this.label28);
 			this.groupBox5.Controls.Add(this.textRenewMonth);
 			this.groupBox5.Controls.Add(this.label17);
@@ -1252,6 +1255,18 @@ namespace OpenDental{
 			this.groupBox5.TabIndex = 2;
 			this.groupBox5.TabStop = false;
 			this.groupBox5.Text = "Coverage Information";
+			// 
+			// textPlanNote
+			// 
+			this.textPlanNote.AcceptsReturn = true;
+			this.textPlanNote.Location = new System.Drawing.Point(109, 371);
+			this.textPlanNote.Multiline = true;
+			this.textPlanNote.Name = "textPlanNote";
+			this.textPlanNote.QuickPasteType = OpenDental.QuickPasteType.InsPlan;
+			this.textPlanNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.textPlanNote.Size = new System.Drawing.Size(340, 95);
+			this.textPlanNote.TabIndex = 29;
+			this.textPlanNote.Text = "";
 			// 
 			// panelAdvancedIns
 			// 
@@ -1275,6 +1290,7 @@ namespace OpenDental{
 			this.groupBox6.Controls.Add(this.butChangeCarrier);
 			this.groupBox6.Controls.Add(this.butDetach);
 			this.groupBox6.Controls.Add(this.butChangeLink);
+			this.groupBox6.Controls.Add(this.labelCopayAdvice);
 			this.groupBox6.Location = new System.Drawing.Point(460, 587);
 			this.groupBox6.Name = "groupBox6";
 			this.groupBox6.Size = new System.Drawing.Size(266, 84);
@@ -1285,7 +1301,7 @@ namespace OpenDental{
 			// 
 			// labelDrop
 			// 
-			this.labelDrop.Location = new System.Drawing.Point(185, 615);
+			this.labelDrop.Location = new System.Drawing.Point(185, 642);
 			this.labelDrop.Name = "labelDrop";
 			this.labelDrop.Size = new System.Drawing.Size(210, 51);
 			this.labelDrop.TabIndex = 124;
@@ -1297,7 +1313,7 @@ namespace OpenDental{
 			// butDrop
 			// 
 			this.butDrop.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butDrop.Location = new System.Drawing.Point(100, 639);
+			this.butDrop.Location = new System.Drawing.Point(100, 666);
 			this.butDrop.Name = "butDrop";
 			this.butDrop.Size = new System.Drawing.Size(75, 26);
 			this.butDrop.TabIndex = 123;
@@ -1308,7 +1324,7 @@ namespace OpenDental{
 			// FormInsPlan
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(961, 682);
+			this.ClientSize = new System.Drawing.Size(961, 698);
 			this.Controls.Add(this.labelDrop);
 			this.Controls.Add(this.butDrop);
 			this.Controls.Add(this.groupBox6);
@@ -1334,6 +1350,7 @@ namespace OpenDental{
 			this.groupBox2.ResumeLayout(false);
 			this.groupSynch.ResumeLayout(false);
 			this.groupBox4.ResumeLayout(false);
+			this.groupCoPay.ResumeLayout(false);
 			this.groupBox3.ResumeLayout(false);
 			this.groupBox5.ResumeLayout(false);
 			this.panelAdvancedIns.ResumeLayout(false);
@@ -1367,7 +1384,7 @@ namespace OpenDental{
 				labelDrop.Visible=true;
 			}
 			if(((Pref)Prefs.HList["EasyHideCapitation"]).ValueString=="1"){
-				labelCopayFee.Visible=false;
+				groupCoPay.Visible=false;
 				listCopay.Visible=false;
 				butCopayNone.Visible=false;
 				labelCopayAdvice.Visible=false;
@@ -1402,7 +1419,7 @@ namespace OpenDental{
 			listPlanType.Items.Add(Lan.g(this,"Category Percentage"));
 			if(InsPlans.Cur.PlanType=="")
 				listPlanType.SelectedIndex=0;
-			listPlanType.Items.Add(Lan.g(this,"Flat Co-pay"));
+			listPlanType.Items.Add(Lan.g(this,"Medicaid or Flat Co-pay"));
 			if(InsPlans.Cur.PlanType=="f")
 				listPlanType.SelectedIndex=1;
 			if(((Pref)Prefs.HList["EasyHideCapitation"]).ValueString!="1"){
@@ -2119,10 +2136,16 @@ namespace OpenDental{
 		private void butDelete_Click(object sender, System.EventArgs e) {
 			if(MessageBox.Show(Lan.g(this,"Delete Plan?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK)
 				return;
-			if(!InsPlans.DeleteCur()){//checks dependencies first
+			Cursor=Cursors.WaitCursor;
+			int curPatNum=Patients.Cur.PatNum;
+			if(!InsPlans.DeleteCur()){//checks dependencies first.
+				//no need to reset patNum because not changed yet
+				Cursor=Cursors.Default;
 				return;
 			}
+			Patients.GetFamily(curPatNum);
 			InsPlans.Cur=new InsPlan();//this sets the PlanNum to 0
+			Cursor=Cursors.Default;
 			DialogResult=DialogResult.OK;
 		}
 
@@ -2154,6 +2177,12 @@ namespace OpenDental{
 				MessageBox.Show("Error. Current patient is not covered by this plan.");
 				return;
 			}
+			//no need to Compute estimates for any but the current patient
+			Patients.GetFamily(Patients.Cur.PatNum);//because changes were made.
+			ClaimProc[] claimProcs=ClaimProcs.Refresh(Patients.Cur.PatNum);
+			Procedure[] procs=Procedures.Refresh(Patients.Cur.PatNum);
+			Procedures.ComputeEstimatesForAll(Patients.Cur.PatNum,Patients.Cur.PriPlanNum,
+					Patients.Cur.SecPlanNum,claimProcs,procs);
 			//remember to refresh after closing this form!!!
 			DialogResult=DialogResult.OK;
 		}
@@ -2274,8 +2303,7 @@ namespace OpenDental{
 				return;
 			}
 			InsPlans.UpdateCur();//whether new or not because plan is created from outside this form
-			//FillSynchTemplate();
-			//InsTemplates.UpdateCur();//this is the only place this can be run.
+			InsPlans.ComputeEstimatesForCur();
 			DialogResult=DialogResult.OK;
 		}
 
@@ -2289,10 +2317,9 @@ namespace OpenDental{
 			//this form is designed to not accidently change the Patients.Cur.PatNum.
 			//Obviously, because of the complexity, all family info should be refreshed after closing.
 			if(IsNew){
+				Patient pat=Patients.Cur;
 				InsPlans.DeleteCur();
-				//if(comboLinked.Items.Count==1){
-				//	InsTemplates.DeleteCur();
-				//}
+				Patients.Cur=pat;
 			}
 			//remember to refresh after closing this form!!!!!
 		}

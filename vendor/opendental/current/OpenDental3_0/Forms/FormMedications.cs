@@ -12,15 +12,14 @@ namespace OpenDental{
 		private System.Windows.Forms.Button butCancel;
 		private System.Windows.Forms.Button butOK;
 		private System.Windows.Forms.ListBox listMeds;
-		private System.Windows.Forms.Button butAdd;
 		/// <summary>Required designer variable.</summary>
 		private System.ComponentModel.Container components = null;
 		///<summary></summary>
-		public bool SelectGenericMode;
-		///<summary></summary>
 		public bool SelectMode;
 		private System.Windows.Forms.Label label1;
-		///<summary>the number returned if using either of the select modes.</summary>
+		private OpenDental.XPButton butAddGeneric;
+		private OpenDental.XPButton butAddBrand;
+		///<summary>the number returned if using select mode.</summary>
 		public int MedicationNum;
 
 		///<summary></summary>
@@ -62,8 +61,9 @@ namespace OpenDental{
 			this.butCancel = new System.Windows.Forms.Button();
 			this.butOK = new System.Windows.Forms.Button();
 			this.listMeds = new System.Windows.Forms.ListBox();
-			this.butAdd = new System.Windows.Forms.Button();
 			this.label1 = new System.Windows.Forms.Label();
+			this.butAddGeneric = new OpenDental.XPButton();
+			this.butAddBrand = new OpenDental.XPButton();
 			this.SuspendLayout();
 			// 
 			// butCancel
@@ -92,19 +92,9 @@ namespace OpenDental{
 			this.listMeds.Location = new System.Drawing.Point(8, 25);
 			this.listMeds.MultiColumn = true;
 			this.listMeds.Name = "listMeds";
-			this.listMeds.Size = new System.Drawing.Size(841, 628);
+			this.listMeds.Size = new System.Drawing.Size(791, 628);
 			this.listMeds.TabIndex = 2;
 			this.listMeds.DoubleClick += new System.EventHandler(this.listMeds_DoubleClick);
-			// 
-			// butAdd
-			// 
-			this.butAdd.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butAdd.Location = new System.Drawing.Point(858, 524);
-			this.butAdd.Name = "butAdd";
-			this.butAdd.Size = new System.Drawing.Size(75, 26);
-			this.butAdd.TabIndex = 3;
-			this.butAdd.Text = "&Add";
-			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
 			// label1
 			// 
@@ -114,14 +104,45 @@ namespace OpenDental{
 			this.label1.TabIndex = 4;
 			this.label1.Text = "(medications marked with a * are missing notes)";
 			// 
+			// butAddGeneric
+			// 
+			this.butAddGeneric.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAddGeneric.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butAddGeneric.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butAddGeneric.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butAddGeneric.Image = ((System.Drawing.Image)(resources.GetObject("butAddGeneric.Image")));
+			this.butAddGeneric.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butAddGeneric.Location = new System.Drawing.Point(820, 477);
+			this.butAddGeneric.Name = "butAddGeneric";
+			this.butAddGeneric.Size = new System.Drawing.Size(113, 26);
+			this.butAddGeneric.TabIndex = 33;
+			this.butAddGeneric.Text = "Add Generic";
+			this.butAddGeneric.Click += new System.EventHandler(this.butAddGeneric_Click);
+			// 
+			// butAddBrand
+			// 
+			this.butAddBrand.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAddBrand.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butAddBrand.BtnShape = OpenDental.enumType.BtnShape.Rectangle;
+			this.butAddBrand.BtnStyle = OpenDental.enumType.XPStyle.Silver;
+			this.butAddBrand.Image = ((System.Drawing.Image)(resources.GetObject("butAddBrand.Image")));
+			this.butAddBrand.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butAddBrand.Location = new System.Drawing.Point(820, 517);
+			this.butAddBrand.Name = "butAddBrand";
+			this.butAddBrand.Size = new System.Drawing.Size(113, 26);
+			this.butAddBrand.TabIndex = 34;
+			this.butAddBrand.Text = "Add Brand";
+			this.butAddBrand.Click += new System.EventHandler(this.butAddBrand_Click);
+			// 
 			// FormMedications
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(941, 671);
+			this.Controls.Add(this.butAddBrand);
+			this.Controls.Add(this.butAddGeneric);
 			this.Controls.Add(this.label1);
-			this.Controls.Add(this.butAdd);
 			this.Controls.Add(this.listMeds);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.butCancel);
@@ -141,10 +162,10 @@ namespace OpenDental{
 		private void FormMedications_Load(object sender, System.EventArgs e) {
 			//not refreshed in localdata
 			FillMedList();
-			if(SelectGenericMode){
-				this.Text=Lan.g(this,"Select Generic Medication");
+			//if(SelectGenericMode){
+			//	this.Text=Lan.g(this,"Select Generic Medication");
 				//butAdd.Visible=false;//visible, but it ONLY lets you add a generic
-			}
+			//}
 			if(SelectMode){
 				this.Text=Lan.g(this,"Select Medication");
 			}
@@ -152,12 +173,12 @@ namespace OpenDental{
 
 		private void FillMedList(){
 			listMeds.Items.Clear();
-			if(SelectGenericMode){
-				Medications.RefreshGeneric();
-			}
-			else{//SelectMode and standard
-				Medications.Refresh();
-			}
+			//if(SelectGenericMode){
+			//	Medications.RefreshGeneric();
+			//}
+			//else{//SelectMode and standard
+			Medications.Refresh();
+			//}
 			string s;
 			for(int i=0;i<Medications.List.Length;i++){
 				s=Medications.List[i].MedName;
@@ -170,25 +191,37 @@ namespace OpenDental{
 			}
 		}
 
-		private void butAdd_Click(object sender, System.EventArgs e) {
+		private void butAddGeneric_Click(object sender, System.EventArgs e) {
 			Medications.Cur=new Medication();
 			Medications.InsertCur();//so that we will have the primary key
-			Medications.Cur.GenericNum=Medications.Cur.MedicationNum;//new meds start out as generics until changed
+			Medications.Cur.GenericNum=Medications.Cur.MedicationNum;
 			FormMedicationEdit FormME=new FormMedicationEdit();
 			FormME.IsNew=true;
-			if(SelectGenericMode){
-				FormME.GenericOnly=true;
+			FormME.ShowDialog();
+			FillMedList();
+		}
+
+		private void butAddBrand_Click(object sender, System.EventArgs e) {
+			if(listMeds.SelectedIndex==-1){
+				MessageBox.Show(Lan.g(this,"You must first highlight the generic medication from the list.  If it is not already on the list, then you must add it first."));
+				return;
 			}
+			Medication selected=Medications.List[listMeds.SelectedIndex];
+			if(selected.MedicationNum!=selected.GenericNum){
+				MessageBox.Show(Lan.g(this,"The selected medication is not generic."));
+				return;
+			}
+			Medications.Cur=new Medication();
+			Medications.InsertCur();//so that we will have the primary key
+			Medications.Cur.GenericNum=selected.MedicationNum;
+			FormMedicationEdit FormME=new FormMedicationEdit();
+			FormME.IsNew=true;
 			FormME.ShowDialog();
 			FillMedList();
 		}
 
 		private void listMeds_DoubleClick(object sender, System.EventArgs e) {
-			if(SelectGenericMode){
-				MedicationNum=Medications.List[listMeds.SelectedIndex].MedicationNum;
-				DialogResult=DialogResult.OK;
-			}
-			else if(SelectMode){
+			if(SelectMode){
 				MedicationNum=Medications.List[listMeds.SelectedIndex].MedicationNum;
 				DialogResult=DialogResult.OK;
 			}
@@ -202,14 +235,7 @@ namespace OpenDental{
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			if(SelectGenericMode){
-				if(listMeds.SelectedIndex==-1){
-					MessageBox.Show(Lan.g(this,"Please select an item first."));
-					return;
-				}
-				MedicationNum=Medications.List[listMeds.SelectedIndex].MedicationNum;
-			}
-			else if(SelectMode){
+			if(SelectMode){
 				if(listMeds.SelectedIndex==-1){
 					MessageBox.Show(Lan.g(this,"Please select an item first."));
 					return;
@@ -225,6 +251,8 @@ namespace OpenDental{
 		private void butCancel_Click(object sender, System.EventArgs e) {
 			DialogResult=DialogResult.Cancel;
 		}
+
+		
 
 		
 

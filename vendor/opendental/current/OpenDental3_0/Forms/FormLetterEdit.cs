@@ -13,12 +13,12 @@ namespace OpenDental{
 	public class FormLetterEdit : System.Windows.Forms.Form{
 		private System.Windows.Forms.Button butCancel;
 		private System.Windows.Forms.Button butOK;
-		private System.Windows.Forms.TextBox textBody;
 		/// <summary>Required designer variable.</summary>
 		private System.ComponentModel.Container components = null;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.TextBox textDescription;
 		private System.Windows.Forms.Label label7;
+		private OpenDental.ODtextBox textBody;
 		///<summary></summary>
 		public bool IsNew;
 
@@ -60,10 +60,10 @@ namespace OpenDental{
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormLetterEdit));
 			this.butCancel = new System.Windows.Forms.Button();
 			this.butOK = new System.Windows.Forms.Button();
-			this.textBody = new System.Windows.Forms.TextBox();
 			this.label2 = new System.Windows.Forms.Label();
 			this.textDescription = new System.Windows.Forms.TextBox();
 			this.label7 = new System.Windows.Forms.Label();
+			this.textBody = new OpenDental.ODtextBox();
 			this.SuspendLayout();
 			// 
 			// butCancel
@@ -86,16 +86,6 @@ namespace OpenDental{
 			this.butOK.TabIndex = 2;
 			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
-			// 
-			// textBody
-			// 
-			this.textBody.AcceptsReturn = true;
-			this.textBody.Location = new System.Drawing.Point(132, 55);
-			this.textBody.Multiline = true;
-			this.textBody.Name = "textBody";
-			this.textBody.Size = new System.Drawing.Size(677, 345);
-			this.textBody.TabIndex = 1;
-			this.textBody.Text = "";
 			// 
 			// label2
 			// 
@@ -123,14 +113,26 @@ namespace OpenDental{
 			this.label7.Text = "Body of Letter (do not include the address, greeting, or closing)";
 			this.label7.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
+			// textBody
+			// 
+			this.textBody.AcceptsReturn = true;
+			this.textBody.Location = new System.Drawing.Point(132, 56);
+			this.textBody.Multiline = true;
+			this.textBody.Name = "textBody";
+			this.textBody.QuickPasteType = OpenDental.QuickPasteType.Letter;
+			this.textBody.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.textBody.Size = new System.Drawing.Size(680, 383);
+			this.textBody.TabIndex = 8;
+			this.textBody.Text = "";
+			// 
 			// FormLetterEdit
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(844, 544);
+			this.Controls.Add(this.textBody);
 			this.Controls.Add(this.label7);
 			this.Controls.Add(this.textDescription);
-			this.Controls.Add(this.textBody);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.butCancel);

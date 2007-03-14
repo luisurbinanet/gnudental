@@ -106,7 +106,7 @@ namespace OpenDental{
 		}
 
 		///<summary></summary>
-		public static bool ConditionIsMet(AutoCondition myAutoCondition, string toothNum,string surf,bool isAdditional){//MissingTeeth is already available for given patient
+		public static bool ConditionIsMet(AutoCondition myAutoCondition, string toothNum,string surf,bool isAdditional,bool willBeMissing){//MissingTeeth is already available for given patient
 			switch(myAutoCondition){
 				case AutoCondition.Anterior:
 					return Tooth.IsAnterior(toothNum);
@@ -139,9 +139,9 @@ namespace OpenDental{
 				case AutoCondition.Permanent:
 					return !Tooth.IsPrimary(toothNum);
 				case AutoCondition.Pontic:
-					return Procedures.MissingTeeth.Contains(toothNum);
+					return willBeMissing;//Procedures.MissingTeeth.Contains(toothNum);
 				case AutoCondition.Retainer:
-					return !Procedures.MissingTeeth.Contains(toothNum);
+					return !willBeMissing;//!Procedures.MissingTeeth.Contains(toothNum);
 				default:
 					return false;
 			}//switch

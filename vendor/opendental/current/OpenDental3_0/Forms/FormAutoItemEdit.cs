@@ -56,7 +56,7 @@ namespace OpenDental{
 			// 
 			// textADA
 			// 
-			this.textADA.Location = new System.Drawing.Point(82, 54);
+			this.textADA.Location = new System.Drawing.Point(108, 54);
 			this.textADA.Name = "textADA";
 			this.textADA.ReadOnly = true;
 			this.textADA.TabIndex = 0;
@@ -64,15 +64,16 @@ namespace OpenDental{
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(20, 56);
+			this.label1.Location = new System.Drawing.Point(10, 58);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(58, 12);
+			this.label1.Size = new System.Drawing.Size(96, 12);
 			this.label1.TabIndex = 1;
 			this.label1.Text = "ADA Code";
+			this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// listConditions
 			// 
-			this.listConditions.Location = new System.Drawing.Point(306, 56);
+			this.listConditions.Location = new System.Drawing.Point(334, 56);
 			this.listConditions.Name = "listConditions";
 			this.listConditions.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
 			this.listConditions.Size = new System.Drawing.Size(166, 407);
@@ -81,7 +82,7 @@ namespace OpenDental{
 			// butChange
 			// 
 			this.butChange.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butChange.Location = new System.Drawing.Point(186, 52);
+			this.butChange.Location = new System.Drawing.Point(214, 52);
 			this.butChange.Name = "butChange";
 			this.butChange.Size = new System.Drawing.Size(94, 24);
 			this.butChange.TabIndex = 24;
@@ -92,7 +93,7 @@ namespace OpenDental{
 			// 
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butCancel.Location = new System.Drawing.Point(490, 438);
+			this.butCancel.Location = new System.Drawing.Point(530, 442);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.RightToLeft = System.Windows.Forms.RightToLeft.No;
 			this.butCancel.TabIndex = 23;
@@ -101,7 +102,7 @@ namespace OpenDental{
 			// butOK
 			// 
 			this.butOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butOK.Location = new System.Drawing.Point(490, 404);
+			this.butOK.Location = new System.Drawing.Point(530, 408);
 			this.butOK.Name = "butOK";
 			this.butOK.TabIndex = 22;
 			this.butOK.Text = "&OK";
@@ -109,18 +110,19 @@ namespace OpenDental{
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(360, 38);
+			this.label2.Location = new System.Drawing.Point(356, 40);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(58, 12);
+			this.label2.Size = new System.Drawing.Size(118, 14);
 			this.label2.TabIndex = 25;
 			this.label2.Text = "Conditions";
+			this.label2.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
 			// 
 			// FormAutoItemEdit
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
-			this.ClientSize = new System.Drawing.Size(592, 490);
+			this.ClientSize = new System.Drawing.Size(634, 490);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.butChange);
 			this.Controls.Add(this.butCancel);

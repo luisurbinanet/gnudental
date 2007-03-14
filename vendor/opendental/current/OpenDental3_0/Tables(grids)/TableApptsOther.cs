@@ -18,7 +18,8 @@ namespace OpenDental{
 			MaxCols=6;
 			ShowScroll=true;
 			FieldsArePresent=true;
-			HeadingIsPresent=false;
+			HeadingIsPresent=true;
+			Heading=Lan.g("TableApptOthers","Appointments for Patient");
 			InstantClassesPar();
 			SetRowHeight(0,19,14);
 			//Fields[0]=Lan.g("TableApptOthers","Is Next?");

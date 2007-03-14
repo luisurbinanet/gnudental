@@ -46,15 +46,23 @@ namespace OpenDental{
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
-			Lan.C(this, new System.Windows.Forms.Control[] {
+			Lan.C(this, new System.Windows.Forms.Control[]
+			{
 				this.label2,
 				this.label3,
 				this.label4,
-				this.label6
+				this.label6,
+				this.label7, //*Ann
+				this.label9, //*Ann
+				this.label11, //*Ann
+				this.groupBox1, //*Ann
+				this.checkNoSendElect //*Ann
 			});
-			Lan.C("All", new System.Windows.Forms.Control[] {
+			Lan.C("All", new System.Windows.Forms.Control[] 
+			{
 				butOK,
 				butCancel,
+				butDelete //*Ann
 			});
 		}
 
@@ -315,9 +323,9 @@ namespace OpenDental{
 			// 
 			// label11
 			// 
-			this.label11.Location = new System.Drawing.Point(80, 104);
+			this.label11.Location = new System.Drawing.Point(12, 104);
 			this.label11.Name = "label11";
-			this.label11.Size = new System.Drawing.Size(95, 15);
+			this.label11.Size = new System.Drawing.Size(163, 15);
 			this.label11.TabIndex = 95;
 			this.label11.Text = "City, ST, Zip";
 			this.label11.TextAlign = System.Drawing.ContentAlignment.TopRight;
