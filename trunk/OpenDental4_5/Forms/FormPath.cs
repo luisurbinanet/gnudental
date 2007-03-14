@@ -1,3 +1,22 @@
+// GNUdental - Linux port of Open Dental
+//
+// Open Dental: Copyright (C) 2003  Jordan Sparks, DMD
+// Changes: Copyright (C) 2007 Frederik Carlier
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
 using System;
 using System.Drawing;
 using System.Collections;
@@ -247,14 +266,14 @@ namespace OpenDental{
 		}
 
 		private void textDocPath_Leave(object sender, System.EventArgs e) {
-			//if(!textDocPath.Text.EndsWith(@"\")){
-			//	textDocPath.Text+=@"\";
+			//if(!textDocPath.Text.EndsWith(Path.DirectorySeparatorChar)){
+			//	textDocPath.Text+=Path.DirectorySeparatorChar;
 			//}
 		}
 
 		private void textExportPath_Leave(object sender, System.EventArgs e) {
-			//if(!textExportPath.Text.EndsWith(@"\")){
-			//	textExportPath.Text+=@"\";
+			//if(!textExportPath.Text.EndsWith(Path.DirectorySeparatorChar)){
+			//	textExportPath.Text+=Path.DirectorySeparatorChar;
 			//}
 		}
 
@@ -280,8 +299,7 @@ namespace OpenDental{
 			}
 			LanguageForeigns.Refresh();
 			MessageBox.Show("Done");*/
-			if(!textDocPath.Text.EndsWith(@"\")
-				&& !textDocPath.Text.EndsWith(@"/"))
+			if(!textDocPath.Text.EndsWith(Path.DirectorySeparatorChar.ToString()))
 			{
 				MessageBox.Show(Lan.g(this,"Document Path is not valid."));
 				return;
@@ -290,7 +308,7 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Document Path is not valid."));
 				return;
     	}
-			if(!Directory.Exists(textDocPath.Text+"A\\")){
+			if(!Directory.Exists(Path.Combine(textDocPath.Text, "A"))){
 				MessageBox.Show(Lan.g(this,"Document Path is not correct.  Must contain folders A-Z"));
 				return;
 			}
@@ -321,17 +339,17 @@ namespace OpenDental{
 
 		private void buBrowseDoc_Click(object sender, System.EventArgs e){
 		  fb.ShowDialog();
-      textDocPath.Text=fb.SelectedPath+@"\";
+      textDocPath.Text=fb.SelectedPath+Path.DirectorySeparatorChar;
 		}
 
 		private void butBrowseExport_Click(object sender, System.EventArgs e){
 		  fb.ShowDialog();
-      textExportPath.Text=fb.SelectedPath+@"\";		
+      textExportPath.Text=fb.SelectedPath+Path.DirectorySeparatorChar;		
 		}
 
 		private void butBrowseLetter_Click(object sender, System.EventArgs e) {
 			fb.ShowDialog();
-      textLetterMergePath.Text=fb.SelectedPath+@"\";		
+      textLetterMergePath.Text=fb.SelectedPath+Path.DirectorySeparatorChar;		
 		}
 
 		private void butCancel_Click(object sender, System.EventArgs e){

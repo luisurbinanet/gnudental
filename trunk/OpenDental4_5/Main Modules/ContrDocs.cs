@@ -2,6 +2,10 @@
 Open Dental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
 See header in FormOpenDental.cs for complete text.  Redistributions must retain this text.
 ===============================================================================================================*/
+/* 
+ * Modified by Frederik Carlier: Patch to run on Linux.
+ * Patch Copyright (c) 2007 Frederik Carlier
+ */
 //#define ISXP
 using System;
 using System.Collections;
@@ -144,7 +148,11 @@ namespace OpenDental{
 			this.label15 = new System.Windows.Forms.Label();
 			this.sigBox = new OpenDental.UI.SignatureBox();
 			this.ToolBarMain = new OpenDental.UI.ODToolBar();
+#if !MONO
 			this.sigBoxTopaz = new Topaz.SigPlusNET();
+#else
+#warning "SigPlusNET crashes Mono, removing this functionality."
+#endif
 			this.labelInvalidSig = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.PictureBox1)).BeginInit();
 			this.panelNote.SuspendLayout();
@@ -337,12 +345,16 @@ namespace OpenDental{
 			// 
 			// sigBoxTopaz
 			// 
+#if !MONO
 			this.sigBoxTopaz.Location = new System.Drawing.Point(437,15);
 			this.sigBoxTopaz.Name = "sigBoxTopaz";
 			this.sigBoxTopaz.Size = new System.Drawing.Size(394,91);
 			this.sigBoxTopaz.TabIndex = 93;
 			this.sigBoxTopaz.Text = "sigPlusNET1";
 			this.sigBoxTopaz.DoubleClick += new System.EventHandler(this.sigBoxTopaz_DoubleClick);
+#else
+#warning "SigPlusNET crashes Mono, removing this functionality."
+#endif
 			// 
 			// labelInvalidSig
 			// 
@@ -1641,6 +1653,7 @@ namespace OpenDental{
 		}
 
 		private void FillSignature(){
+#if !MONO
 			textNote.Text=DocCur.Note;
 			sigBoxTopaz.Location=sigBox.Location;//this puts both boxes in the same spot.
 			sigBoxTopaz.Visible=false;
@@ -1679,6 +1692,10 @@ namespace OpenDental{
 					sigBox.SetTabletState(0);//not accepting input.
 				}
 			}
+#else
+            MessageBox.Show("SigPlusNET is currently not supported on the Mono platform.");
+#warning "SigPlusNET crashes Mono, removing this functionality."
+#endif
 		}
 
 		private string GetHashString() {

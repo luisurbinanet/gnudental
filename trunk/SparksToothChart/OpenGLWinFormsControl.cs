@@ -44,6 +44,10 @@
  * rendering. The event arguments will give you the error code and a brief description of the
  * error that occurred.
  */
+/* 
+ * Modified by Frederik Carlier: Patch to run on Linux.
+ * Patch Copyright (c) 2007 Frederik Carlier
+ */
 
 #region Imported Namespaces
 
@@ -263,6 +267,10 @@ namespace Tao.Platform.Windows.Controls {
 		/// in accumBits, colorBits, depthBits, and stencilBits.
 		/// </summary>
 		protected virtual void CreateContexts() {
+#if MONO
+            return;
+#warning "OpenGL support is disabled."
+#endif
 			//Make sure the handle for this control has been created
 			if(this.Handle == IntPtr.Zero) {
 				throw new Exception("CreateContexts: The control's window handle has not been created.");

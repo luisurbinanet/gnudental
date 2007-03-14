@@ -2,6 +2,10 @@
 Open Dental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open-dent.com,  www.docsparks.com
 See header in FormOpenDental.cs for complete text.  Redistributions must retain this text.
 ===============================================================================================================*/
+/* 
+ * Modified by Frederik Carlier: Patch to run on Linux.
+ * Patch Copyright (c) 2007 Frederik Carlier
+ */
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections;
@@ -38,7 +42,8 @@ namespace OpenDentBusiness{
 				+";Database="+database
 				+";User ID="+user
 				+";Password="+password
-				+";CharSet=utf8";
+                // Required to work on Mono. See http://blogs.ittoolbox.com/windows/alex/archives/getting-mono-and-mysql-to-play-nice-14516
+                +";Pooling=false;Connection Timeout=10;Protocol=socket;Port=3306;CharSet=utf8";
 			con=new MySqlConnection(DataConnectionString);
 			cmd = new MySqlCommand();
 			cmd.Connection=con;
@@ -52,7 +57,7 @@ namespace OpenDentBusiness{
 					+";Database="+database
 					+";User ID="+userLow
 					+";Password="+passLow
-					+";CharSet=utf8";
+					+";Pooling=false;Connection Timeout=10;Protocol=socket;Port=3306;CharSet=utf8";
 				con=new MySqlConnection(DataConnectionString);
 				cmd = new MySqlCommand();
 				cmd.Connection=con;
@@ -81,7 +86,7 @@ namespace OpenDentBusiness{
 				+";Database="+Database
 				+";User ID="+MysqlUserLow
 				+";Password="+MysqlPassLow
-				+";CharSet=utf8";
+			    +";Pooling=false;Connection Timeout=10;Protocol=socket;Port=3306;CharSet=utf8";
 			con=new MySqlConnection(DataConnectionString);
 			//dr = null;
 			cmd = new MySqlCommand();
@@ -95,7 +100,7 @@ namespace OpenDentBusiness{
 				+";Database="+Database
 				+";User ID="+MysqlUser
 				+";Password="+MysqlPass
-				+";CharSet=utf8";
+				+";Pooling=false;Connection Timeout=10;Protocol=socket;Port=3306;CharSet=utf8";
 		  con=new MySqlConnection(DataConnectionString);
 			//dr = null;
 			cmd = new MySqlCommand();
@@ -110,7 +115,7 @@ namespace OpenDentBusiness{
 				+";Database="+database
 				+";User ID="+MysqlUser
 				+";Password="+MysqlPass
-				+";CharSet=utf8";
+				+";Pooling=false;Connection Timeout=10;Protocol=socket;Port=3306;CharSet=utf8";
 			con=new MySqlConnection(DataConnectionString);
 			//dr = null;
 			cmd = new MySqlCommand();
@@ -124,7 +129,7 @@ namespace OpenDentBusiness{
 				+";Database="+database
 				+";User ID="+mysqlUser
 				+";Password="+mysqlPass
-				+";CharSet=utf8";
+				+";Pooling=false;Connection Timeout=10;Protocol=socket;Port=3306;CharSet=utf8";
 			con=new MySqlConnection(DataConnectionString);
 			//dr = null;
 			cmd = new MySqlCommand();
