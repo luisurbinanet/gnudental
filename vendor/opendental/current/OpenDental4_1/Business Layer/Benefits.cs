@@ -16,7 +16,7 @@ namespace OpenDental {
 	/// Deductible waived on preventive: Preventive,-,Deductible,0,0,CalendarYear,None,0
 	/// 1 pano every 5 years: General(ignored),D0330,Limitations,0,0,Years,Years,5
 	/// 2 exams per year: Preventive(or Diagnostic),-,Limitations,0,0,BenefitYear,NumberOfServices,2
-	/// Fluoride limit 18yo: General(ignored),D1204,Limitations,0,0,None,AgeLimit,18 (might require a second identical entry for D1205)
+	/// Fluoride limit 18yo: General(ignored),D1204,Limitations,0,0,CalendarYear(or None),AgeLimit,18 (might require a second identical entry for D1205)
 	/// 4BW every 6 months: General(ignored),D0274,Limitations,0,0,None,Months,6.
 	///</remarks>
 	public class Benefit:IComparable {
@@ -38,7 +38,7 @@ namespace OpenDental {
 		public double MonetaryAmt;
 		///<summary>Corresponds to X12 EB06, Time Period Qualifier.  Examples: 0=None,1=ServiceYear,2=CalendarYear,3=Lifetime,4=Years. Might add Visit and Remaining.</summary>
 		public BenefitTimePeriod TimePeriod;
-		///<summary>Corresponds to X12 EB09. Not used very much. Examples: 0=None,1=NumberOfServices,2=AgeLimit,3=Visits,4=Years</summary>
+		///<summary>Corresponds to X12 EB09. Not used very much. Examples: 0=None,1=NumberOfServices,2=AgeLimit,3=Visits,4=Years,5=Months</summary>
 		public BenefitQuantity QuantityQualifier;
 		///<summary>Corresponds to X12 EB10. Qualify the quantity</summary>
 		public int Quantity;

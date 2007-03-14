@@ -1806,10 +1806,10 @@ namespace OpenDental{
 					ClaimProcsForClaim[i].Status=ClaimProcStatus.Estimate;
 					ClaimProcsForClaim[i].ClaimNum=0;
 					proc=Procedures.GetProc(ProcList,ClaimProcsForClaim[i].ProcNum);
-					if(Claims.Cur.ClaimType=="P"){
+					if(Claims.Cur.ClaimType=="P" && PatPlanList.Length>0){
 						ClaimProcsForClaim[i].ComputeBaseEst(proc,PriSecTot.Pri,PlanList,PatPlanList,benList);
 					}
-					else if(Claims.Cur.ClaimType=="S"){
+					else if(Claims.Cur.ClaimType=="S" && PatPlanList.Length>1){
 						ClaimProcsForClaim[i].ComputeBaseEst(proc,PriSecTot.Sec,PlanList,PatPlanList,benList);
 					}
 					ClaimProcsForClaim[i].Update();

@@ -667,15 +667,14 @@ namespace OpenDental{
 				BenefitList=Benefits.Refresh(PatPlanList);
 				//CovPats.Refresh(InsPlanList,PatPlanList);
 				Claims.Refresh(PatCur.PatNum);
-        Fees.Refresh();
+        //Fees.Refresh();
         ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
 			}
 		}
 
 		private void RefreshModuleScreen(){
+			ParentForm.Text=Patients.GetMainTitle(PatCur);
 			if(PatCur!=null){
-				ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString+" - "
-					+PatCur.GetNameLF();
 				gridMain.Enabled=true;
 				panelSide.Enabled=true;
 				ToolBarMain.Buttons["PreAuth"].Enabled=true;
@@ -685,7 +684,6 @@ namespace OpenDental{
         //listPreAuth.Enabled=true;
 			}
 			else{
-				ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString;
 				gridMain.Enabled=false;
 				panelSide.Enabled=false;
 				ToolBarMain.Buttons["PreAuth"].Enabled=false;
@@ -938,6 +936,9 @@ namespace OpenDental{
 					//remain=max-used-pend
 					//remain=InsPlans.GetInsRem(ClaimProcList,DateTime.Today,PatPlans.GetPlanNum(PatPlanList,1),-1,InsPlanList);
 					remain=max-used-pend;
+					if(remain<0) {
+						remain=0;
+					}
 					textPriMax.Text=max.ToString("F");
 					textPriRem.Text=remain.ToString("F");
 				}
@@ -965,6 +966,9 @@ namespace OpenDental{
 				}
 				else{
 					remain=max-used-pend;
+					if(remain<0) {
+						remain=0;
+					}
 					textSecMax.Text=max.ToString("F");
 					textSecRem.Text=remain.ToString("F");
 				}

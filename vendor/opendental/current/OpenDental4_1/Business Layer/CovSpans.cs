@@ -48,6 +48,7 @@ namespace OpenDental {
 			dcon.NonQ(command);
 		}
 
+		///<summary></summary>
 		public void InsertOrUpdate(bool IsNew){
 			if(FromCode=="" || ToCode=="") {
 				throw new ApplicationException(Lan.g("FormInsSpanEdit","Codes not allowed to be blank."));
@@ -112,6 +113,7 @@ namespace OpenDental {
 			return retVal;
 		}
 
+		///<summary></summary>
 		public static CovSpan[] GetForCat(int catNum){
 			ArrayList AL=new ArrayList();
 			for(int i=0;i<List.Length;i++){

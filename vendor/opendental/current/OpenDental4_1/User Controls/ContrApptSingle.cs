@@ -350,6 +350,9 @@ namespace OpenDental{
 				case "WkPhone":
 					g.DrawString("Wk:"+Info.MyPatient.WkPhone,baseFont,brush,xPos,yPos);
 					return 1;
+				case "Age":
+					g.DrawString("Age:"+Info.MyPatient.Age.ToString(),baseFont,brush,xPos,yPos);
+					return 1;
 			}
 			return 0;
 		}

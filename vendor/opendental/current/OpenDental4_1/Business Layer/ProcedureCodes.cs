@@ -198,23 +198,26 @@ namespace OpenDental{
 			}
 		}
 
-		///<summary>Grouped by Category</summary>
+		///<summary>Grouped by Category.  Used in Procedures window and in FormRpProcCodes.</summary>
 		public static ProcedureCode[] GetProcList(){
-			ProcedureCode[] ProcList=new ProcedureCode[tableStat.Rows.Count];
-			int i=0;
+			//ProcedureCode[] ProcList=new ProcedureCode[tableStat.Rows.Count];
+			//int i=0;
+			ProcedureCode procCode;
+			ArrayList AL=new ArrayList();
 			for(int j=0;j<Defs.Short[(int)DefCat.ProcCodeCats].Length;j++){
 				for(int k=0;k<tableStat.Rows.Count;k++){
 					if(Defs.Short[(int)DefCat.ProcCodeCats][j].DefNum==PIn.PInt(tableStat.Rows[k][4].ToString())){
-						ProcList[i]=new ProcedureCode();
-						ProcList[i].ADACode = PIn.PString(tableStat.Rows[k][0].ToString());
-						ProcList[i].Descript= PIn.PString(tableStat.Rows[k][1].ToString());
-						ProcList[i].AbbrDesc= PIn.PString(tableStat.Rows[k][2].ToString());
-						ProcList[i].ProcCat = PIn.PInt   (tableStat.Rows[k][4].ToString());
-						i++;
+						procCode=new ProcedureCode();
+						procCode.ADACode = PIn.PString(tableStat.Rows[k][0].ToString());
+						procCode.Descript= PIn.PString(tableStat.Rows[k][1].ToString());
+						procCode.AbbrDesc= PIn.PString(tableStat.Rows[k][2].ToString());
+						procCode.ProcCat = PIn.PInt   (tableStat.Rows[k][4].ToString());
+						AL.Add(procCode);
+						//i++;
 					}
 				}
 			}
-			for(int k=0;k<tableStat.Rows.Count;k++){
+			/*for(int k=0;k<tableStat.Rows.Count;k++){
 				if(PIn.PInt(tableStat.Rows[k][4].ToString())==255){
 					ProcList[i]=new ProcedureCode();
 					ProcList[i].ADACode = PIn.PString(tableStat.Rows[k][0].ToString());
@@ -223,8 +226,45 @@ namespace OpenDental{
 					ProcList[i].ProcCat = 255;
 					i++;
 				}
+			}*/
+			ProcedureCode[] retVal=new ProcedureCode[AL.Count];
+			AL.CopyTo(retVal);
+			return retVal;
+			//return ProcList;
+		}
+
+		///<summary>Gets a list of procedure codes directly fromt the database.  If categories.length==0, then we will get for all categories.  Categories are defnums.  FeeScheds are, for now, defnums.</summary>
+		public static DataTable GetProcTable(string abbr,string desc,string code,int[] categories,int feeSched){
+			string whereCat;
+			if(categories.Length==0){
+				whereCat="1";
 			}
-			return ProcList;
+			else{
+				whereCat="(";
+				for(int i=0;i<categories.Length;i++){
+					if(i>0){
+						whereCat+=" OR ";
+					}
+					whereCat+="ProcCat="+POut.PInt(categories[i]);
+				}
+				whereCat+=")";
+			}
+			string command="SELECT ProcCat,Descript,AbbrDesc,procedurecode.ADACode,"
+				+"IFNULL(fee.Amount,'-1') "
+				//+"IFNULL((SELECT fee.Amount FROM fee WHERE fee.ADACode=procedurecode.ADACode "
+				//+"AND fee.FeeSched="+POut.PInt(feeSched)+"),'-1') "
+				+"FROM procedurecode "
+				+"LEFT JOIN fee ON fee.ADACode=procedurecode.ADACode "
+				+"AND fee.FeeSched="+POut.PInt(feeSched)
+				+" WHERE "+whereCat
+				+" AND Descript LIKE '%"+POut.PString(desc)+"%' "
+				+"AND AbbrDesc LIKE '%"+POut.PString(abbr)+"%' "
+				+"AND procedurecode.ADACode LIKE '%"+POut.PString(code)+"%' "
+				+"ORDER BY ProcCat,procedurecode.ADACode";
+			//MsgBoxCopyPaste msg=new MsgBoxCopyPaste(command);
+			//msg.ShowDialog();
+			DataConnection dcon=new DataConnection();
+			return dcon.GetTable(command);
 		}
 
 	}

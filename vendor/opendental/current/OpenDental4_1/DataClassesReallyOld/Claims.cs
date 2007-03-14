@@ -102,7 +102,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public static ClaimPaySplit[] RefreshByCheck(int claimPaymentNum, bool showUnattached){
 			cmd.CommandText =
-				"SELECT claim.DateService,claim.ProvTreat,CONCAT(patient.LName,', ',patient.FName)"
+				"SELECT claim.DateService,claim.ProvTreat,CONCAT(patient.LName,', ',patient.FName) AS PatName"
 				+",carrier.CarrierName,SUM(claimproc.FeeBilled),SUM(claimproc.InsPayAmt),claim.ClaimNum"
 				+",claimproc.ClaimPaymentNum"
 				+" FROM claim,patient,insplan,carrier,claimproc" // added carrier, SPK 8/04
@@ -120,6 +120,7 @@ namespace OpenDental{
 				cmd.CommandText+=")"
 					+" GROUP BY claimproc.ClaimNum";
 			}
+			cmd.CommandText+=" ORDER BY PatName";
 			//MessageBox.Show(
 			FillTable();
 			ClaimPaySplit[] splits=new ClaimPaySplit[table.Rows.Count];

@@ -363,7 +363,7 @@ namespace OpenDental
 				,"UPDATE claimproc SET ProcDate='0001-01-01' WHERE ProcDate='0000-00-00'"
 				,"UPDATE insplan SET DateEffective='0001-01-01' WHERE DateEffective='0000-00-00'"
 				,"UPDATE insplan SET DateTerm='0001-01-01' WHERE DateTerm='0000-00-00'"
-				,"UPDATE insplan SET RenewMonth='1' WHERE RenewMonth='0'"
+				//,"UPDATE insplan SET RenewMonth='1' WHERE RenewMonth='0'"
 				,"UPDATE patient SET Birthdate='0001-01-01' WHERE Birthdate='0000-00-00'"
 				,"UPDATE patient SET DateFirstVisit='0001-01-01' WHERE DateFirstVisit='0000-00-00'"
 				,"UPDATE procedurelog SET ProcDate='0001-01-01' WHERE ProcDate='0000-00-00'"

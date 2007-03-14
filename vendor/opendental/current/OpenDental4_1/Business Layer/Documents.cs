@@ -161,6 +161,7 @@ namespace OpenDental{
 			return RefreshAndFill(command);
 		}
 
+		///<summary></summary>
 		public static Document[] GetAllWithPat(int patNum){
 			string command="SELECT * FROM document WHERE WithPat="+POut.PInt(patNum);
 			return RefreshAndFill(command);

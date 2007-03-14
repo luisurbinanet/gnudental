@@ -272,7 +272,8 @@ namespace OpenDental{
 				else{//use schedForType
 					for(int i=0;i<schedForType.Length;i++){	
 						if(schedForType[i].Status==SchedStatus.Holiday){
- 							g.FillRectangle(holidayBrush,TimeWidth+ProvWidth*ProvCount,0,ColWidth*ColCount,Height);
+ 							//g.FillRectangle(holidayBrush,TimeWidth+ProvWidth*ProvCount,0,ColWidth*ColCount,Height);
+							g.FillRectangle(holidayBrush,TimeWidth+ProvWidth*ProvCount+j*ColWidth,0,ColWidth,Height);
 						} 
 						else{
  							g.FillRectangle(openBrush

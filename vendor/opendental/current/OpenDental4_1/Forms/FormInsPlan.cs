@@ -125,14 +125,10 @@ namespace OpenDental{
 		private ArrayList AdjAL;
 		private OpenDental.ValidNumber textOrdinal;
 		private OpenDental.UI.ODGrid gridBenefits;
-		private OpenDental.UI.Button butAddBenefit;
 		private TextBox textPlanNum;
-		private OpenDental.UI.Button butClear;
 		//private CovPat[] CovListForPat;
 		///<summary>This is the current benefit list that displays on the form.  It does not get saved to the database until this form closes.</summary>
-		private ArrayList benefitList;
-		private CheckBox checkCalendarYear;
-		private OpenDental.UI.Button butAnnualMax;//each item is a Benefit
+		private ArrayList benefitList;//each item is a Benefit
 		private ArrayList benefitListOld;
 		private bool usesAnnivers;
 		private Label label17;
@@ -140,8 +136,12 @@ namespace OpenDental{
 		private CheckBox checkApplyAll;
 		private ODtextBox textPlanNote;
 		private Label label18;
+		private OpenDental.UI.Button butEditBenefits;
 		///<summary>Set to true if called from the list of insurance templates.  In this case, the planNum will be 0.  There will be no subscriber.  Benefits will be 'typical' rather than from one specific plan.  Upon saving, all similar plans will be set to be exactly the same as PlanCur.</summary>
 		public bool IsForAll;
+		private Def[] FeeSchedsStandard;
+		private Def[] FeeSchedsCopay;
+		private Def[] FeeSchedsAllowed;
 
 		///<summary>Only called from ContrFamily. Must pass in both the plan and the patPlan.  They are handled separately.</summary>
 		public FormInsPlan(InsPlan planCur,PatPlan patPlanCur){
@@ -233,9 +233,6 @@ namespace OpenDental{
 			this.label25 = new System.Windows.Forms.Label();
 			this.textSubscriberID = new System.Windows.Forms.TextBox();
 			this.label2 = new System.Windows.Forms.Label();
-			this.textDateEffect = new OpenDental.ValidDate();
-			this.textDateTerm = new OpenDental.ValidDate();
-			this.textSubscNote = new OpenDental.ODtextBox();
 			this.comboLinked = new System.Windows.Forms.ComboBox();
 			this.textLinkedNum = new System.Windows.Forms.TextBox();
 			this.label4 = new System.Windows.Forms.Label();
@@ -253,11 +250,7 @@ namespace OpenDental{
 			this.comboCopay = new System.Windows.Forms.ComboBox();
 			this.groupBox3 = new System.Windows.Forms.GroupBox();
 			this.comboElectIDdescript = new System.Windows.Forms.ComboBox();
-			this.butSearch = new OpenDental.UI.Button();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-			this.butBenefitNotes = new OpenDental.UI.Button();
-			this.butIapFind = new OpenDental.UI.Button();
-			this.butImportTrojan = new OpenDental.UI.Button();
 			this.labelDrop = new System.Windows.Forms.Label();
 			this.groupRequestBen = new System.Windows.Forms.GroupBox();
 			this.labelTrojan = new System.Windows.Forms.Label();
@@ -276,24 +269,28 @@ namespace OpenDental{
 			this.textPatID = new System.Windows.Forms.TextBox();
 			this.label36 = new System.Windows.Forms.Label();
 			this.panelPat = new System.Windows.Forms.Panel();
+			this.textPlanNum = new System.Windows.Forms.TextBox();
+			this.label17 = new System.Windows.Forms.Label();
+			this.checkApplyAll = new System.Windows.Forms.CheckBox();
+			this.label18 = new System.Windows.Forms.Label();
+			this.butEditBenefits = new OpenDental.UI.Button();
+			this.textPlanNote = new OpenDental.ODtextBox();
+			this.butOK = new OpenDental.UI.Button();
+			this.butPick = new OpenDental.UI.Button();
+			this.gridBenefits = new OpenDental.UI.ODGrid();
 			this.textOrdinal = new OpenDental.ValidNumber();
 			this.butAdjAdd = new OpenDental.UI.Button();
 			this.butDrop = new OpenDental.UI.Button();
-			this.textPlanNum = new System.Windows.Forms.TextBox();
-			this.checkCalendarYear = new System.Windows.Forms.CheckBox();
-			this.butAnnualMax = new OpenDental.UI.Button();
-			this.butClear = new OpenDental.UI.Button();
-			this.butAddBenefit = new OpenDental.UI.Button();
-			this.gridBenefits = new OpenDental.UI.ODGrid();
 			this.butLabel = new OpenDental.UI.Button();
+			this.butSearch = new OpenDental.UI.Button();
 			this.butDelete = new OpenDental.UI.Button();
 			this.butCancel = new OpenDental.UI.Button();
-			this.butOK = new OpenDental.UI.Button();
-			this.label17 = new System.Windows.Forms.Label();
-			this.butPick = new OpenDental.UI.Button();
-			this.checkApplyAll = new System.Windows.Forms.CheckBox();
-			this.textPlanNote = new OpenDental.ODtextBox();
-			this.label18 = new System.Windows.Forms.Label();
+			this.butBenefitNotes = new OpenDental.UI.Button();
+			this.butIapFind = new OpenDental.UI.Button();
+			this.butImportTrojan = new OpenDental.UI.Button();
+			this.textDateEffect = new OpenDental.ValidDate();
+			this.textDateTerm = new OpenDental.ValidDate();
+			this.textSubscNote = new OpenDental.ODtextBox();
 			this.groupSubscriber.SuspendLayout();
 			this.groupCoPay.SuspendLayout();
 			this.groupBox3.SuspendLayout();
@@ -628,33 +625,6 @@ namespace OpenDental{
 			this.label2.Text = "Subscriber ID";
 			this.label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
-			// textDateEffect
-			// 
-			this.textDateEffect.Location = new System.Drawing.Point(109,50);
-			this.textDateEffect.Name = "textDateEffect";
-			this.textDateEffect.Size = new System.Drawing.Size(72,20);
-			this.textDateEffect.TabIndex = 1;
-			// 
-			// textDateTerm
-			// 
-			this.textDateTerm.Location = new System.Drawing.Point(227,50);
-			this.textDateTerm.Name = "textDateTerm";
-			this.textDateTerm.Size = new System.Drawing.Size(72,20);
-			this.textDateTerm.TabIndex = 2;
-			// 
-			// textSubscNote
-			// 
-			this.textSubscNote.AcceptsReturn = true;
-			this.textSubscNote.Location = new System.Drawing.Point(57,71);
-			this.textSubscNote.Multiline = true;
-			this.textSubscNote.Name = "textSubscNote";
-			this.textSubscNote.QuickPasteType = OpenDental.QuickPasteType.InsPlan;
-			this.textSubscNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textSubscNote.Size = new System.Drawing.Size(485,98);
-			this.textSubscNote.TabIndex = 29;
-			this.textSubscNote.Text = "1\r\n2\r\n3 lines will show here in 46 vert.\r\n4 lines will show here in 59 vert.\r\n5 l" +
-    "ines in 72 vert\r\n6 lines in 85 vert\r\n7 lines in 98";
-			// 
 			// comboLinked
 			// 
 			this.comboLinked.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -828,62 +798,6 @@ namespace OpenDental{
 			this.comboElectIDdescript.Size = new System.Drawing.Size(237,21);
 			this.comboElectIDdescript.TabIndex = 125;
 			this.comboElectIDdescript.SelectedIndexChanged += new System.EventHandler(this.comboElectIDdescript_SelectedIndexChanged);
-			// 
-			// butSearch
-			// 
-			this.butSearch.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.butSearch.Autosize = true;
-			this.butSearch.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butSearch.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butSearch.Location = new System.Drawing.Point(73,111);
-			this.butSearch.Name = "butSearch";
-			this.butSearch.Size = new System.Drawing.Size(84,23);
-			this.butSearch.TabIndex = 124;
-			this.butSearch.Text = "Search IDs";
-			this.butSearch.Click += new System.EventHandler(this.butSearch_Click);
-			// 
-			// butBenefitNotes
-			// 
-			this.butBenefitNotes.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butBenefitNotes.Autosize = true;
-			this.butBenefitNotes.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butBenefitNotes.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butBenefitNotes.Location = new System.Drawing.Point(378,22);
-			this.butBenefitNotes.Name = "butBenefitNotes";
-			this.butBenefitNotes.Size = new System.Drawing.Size(82,21);
-			this.butBenefitNotes.TabIndex = 76;
-			this.butBenefitNotes.Text = "View Benefits";
-			this.toolTip1.SetToolTip(this.butBenefitNotes,"Edit all the similar plans at once");
-			this.butBenefitNotes.Click += new System.EventHandler(this.butBenefitNotes_Click);
-			// 
-			// butIapFind
-			// 
-			this.butIapFind.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butIapFind.Autosize = true;
-			this.butIapFind.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butIapFind.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butIapFind.Location = new System.Drawing.Point(132,33);
-			this.butIapFind.Name = "butIapFind";
-			this.butIapFind.Size = new System.Drawing.Size(82,21);
-			this.butIapFind.TabIndex = 74;
-			this.butIapFind.Text = "Find Plan";
-			this.toolTip1.SetToolTip(this.butIapFind,"Edit all the similar plans at once");
-			this.butIapFind.Click += new System.EventHandler(this.butIapFind_Click);
-			// 
-			// butImportTrojan
-			// 
-			this.butImportTrojan.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butImportTrojan.Autosize = true;
-			this.butImportTrojan.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butImportTrojan.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butImportTrojan.Location = new System.Drawing.Point(132,10);
-			this.butImportTrojan.Name = "butImportTrojan";
-			this.butImportTrojan.Size = new System.Drawing.Size(82,21);
-			this.butImportTrojan.TabIndex = 72;
-			this.butImportTrojan.Text = "Import";
-			this.toolTip1.SetToolTip(this.butImportTrojan,"Edit all the similar plans at once");
-			this.butImportTrojan.Click += new System.EventHandler(this.butImportTrojan_Click);
 			// 
 			// labelDrop
 			// 
@@ -1075,6 +989,110 @@ namespace OpenDental{
 			this.panelPat.Size = new System.Drawing.Size(982,90);
 			this.panelPat.TabIndex = 145;
 			// 
+			// textPlanNum
+			// 
+			this.textPlanNum.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.textPlanNum.Location = new System.Drawing.Point(310,676);
+			this.textPlanNum.Name = "textPlanNum";
+			this.textPlanNum.Size = new System.Drawing.Size(100,20);
+			this.textPlanNum.TabIndex = 148;
+			// 
+			// label17
+			// 
+			this.label17.Location = new System.Drawing.Point(0,136);
+			this.label17.Name = "label17";
+			this.label17.Size = new System.Drawing.Size(78,15);
+			this.label17.TabIndex = 152;
+			this.label17.Text = "Carrier";
+			this.label17.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// checkApplyAll
+			// 
+			this.checkApplyAll.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.checkApplyAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkApplyAll.Location = new System.Drawing.Point(468,679);
+			this.checkApplyAll.Name = "checkApplyAll";
+			this.checkApplyAll.Size = new System.Drawing.Size(323,21);
+			this.checkApplyAll.TabIndex = 154;
+			this.checkApplyAll.Text = "Apply changes to all identical insurance plans";
+			this.checkApplyAll.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.checkApplyAll.UseVisualStyleBackColor = true;
+			// 
+			// label18
+			// 
+			this.label18.Location = new System.Drawing.Point(11,565);
+			this.label18.Name = "label18";
+			this.label18.Size = new System.Drawing.Size(399,15);
+			this.label18.TabIndex = 156;
+			this.label18.Text = "Plan Note.  Always applies to all similar plans, not just this one.";
+			this.label18.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// butEditBenefits
+			// 
+			this.butEditBenefits.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butEditBenefits.Autosize = true;
+			this.butEditBenefits.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butEditBenefits.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butEditBenefits.Location = new System.Drawing.Point(423,651);
+			this.butEditBenefits.Name = "butEditBenefits";
+			this.butEditBenefits.Size = new System.Drawing.Size(90,24);
+			this.butEditBenefits.TabIndex = 158;
+			this.butEditBenefits.Text = "Edit Benefits";
+			this.butEditBenefits.Click += new System.EventHandler(this.butEditBenefits_Click);
+			// 
+			// textPlanNote
+			// 
+			this.textPlanNote.AcceptsReturn = true;
+			this.textPlanNote.Location = new System.Drawing.Point(14,583);
+			this.textPlanNote.Multiline = true;
+			this.textPlanNote.Name = "textPlanNote";
+			this.textPlanNote.QuickPasteType = OpenDental.QuickPasteType.InsPlan;
+			this.textPlanNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.textPlanNote.Size = new System.Drawing.Size(397,85);
+			this.textPlanNote.TabIndex = 157;
+			this.textPlanNote.Text = "1\r\n2\r\n3 lines will show here in 46 vert.\r\n4 lines will show here in 59 vert.\r\n5 l" +
+    "ines in 72 vert\r\n6 in 85";
+			// 
+			// butOK
+			// 
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butOK.Location = new System.Drawing.Point(801,671);
+			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75,26);
+			this.butOK.TabIndex = 3;
+			this.butOK.Text = "&OK";
+			this.butOK.Click += new System.EventHandler(this.butOK_Click);
+			// 
+			// butPick
+			// 
+			this.butPick.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butPick.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.butPick.Autosize = true;
+			this.butPick.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butPick.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butPick.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butPick.Location = new System.Drawing.Point(315,122);
+			this.butPick.Name = "butPick";
+			this.butPick.Size = new System.Drawing.Size(90,24);
+			this.butPick.TabIndex = 153;
+			this.butPick.Text = "Pick From List";
+			this.butPick.Click += new System.EventHandler(this.butPick_Click);
+			// 
+			// gridBenefits
+			// 
+			this.gridBenefits.HScrollVisible = false;
+			this.gridBenefits.Location = new System.Drawing.Point(423,334);
+			this.gridBenefits.Name = "gridBenefits";
+			this.gridBenefits.ScrollValue = 0;
+			this.gridBenefits.SelectionMode = System.Windows.Forms.SelectionMode.None;
+			this.gridBenefits.Size = new System.Drawing.Size(547,314);
+			this.gridBenefits.TabIndex = 146;
+			this.gridBenefits.Title = "Benefit Information";
+			this.gridBenefits.TranslationName = "TableBenefits";
+			// 
 			// textOrdinal
 			// 
 			this.textOrdinal.Location = new System.Drawing.Point(508,22);
@@ -1113,86 +1131,6 @@ namespace OpenDental{
 			this.butDrop.Text = "Drop";
 			this.butDrop.Click += new System.EventHandler(this.butDrop_Click);
 			// 
-			// textPlanNum
-			// 
-			this.textPlanNum.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.textPlanNum.Location = new System.Drawing.Point(310,676);
-			this.textPlanNum.Name = "textPlanNum";
-			this.textPlanNum.Size = new System.Drawing.Size(100,20);
-			this.textPlanNum.TabIndex = 148;
-			// 
-			// checkCalendarYear
-			// 
-			this.checkCalendarYear.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkCalendarYear.Location = new System.Drawing.Point(787,639);
-			this.checkCalendarYear.Name = "checkCalendarYear";
-			this.checkCalendarYear.Size = new System.Drawing.Size(121,21);
-			this.checkCalendarYear.TabIndex = 150;
-			this.checkCalendarYear.Text = "Calendar Year";
-			this.checkCalendarYear.ThreeState = true;
-			this.checkCalendarYear.UseVisualStyleBackColor = true;
-			this.checkCalendarYear.Click += new System.EventHandler(this.checkCalendarYear_Click);
-			// 
-			// butAnnualMax
-			// 
-			this.butAnnualMax.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butAnnualMax.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.butAnnualMax.Autosize = true;
-			this.butAnnualMax.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butAnnualMax.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butAnnualMax.Image = ((System.Drawing.Image)(resources.GetObject("butAnnualMax.Image")));
-			this.butAnnualMax.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAnnualMax.Location = new System.Drawing.Point(423,642);
-			this.butAnnualMax.Name = "butAnnualMax";
-			this.butAnnualMax.Size = new System.Drawing.Size(120,26);
-			this.butAnnualMax.TabIndex = 151;
-			this.butAnnualMax.Text = "Add Annual Max";
-			this.butAnnualMax.Click += new System.EventHandler(this.butAnnualMax_Click);
-			// 
-			// butClear
-			// 
-			this.butClear.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.butClear.Autosize = true;
-			this.butClear.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butClear.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butClear.Image = ((System.Drawing.Image)(resources.GetObject("butClear.Image")));
-			this.butClear.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butClear.Location = new System.Drawing.Point(663,642);
-			this.butClear.Name = "butClear";
-			this.butClear.Size = new System.Drawing.Size(114,26);
-			this.butClear.TabIndex = 149;
-			this.butClear.Text = "Clear Benefits";
-			this.butClear.Click += new System.EventHandler(this.butClear_Click);
-			// 
-			// butAddBenefit
-			// 
-			this.butAddBenefit.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butAddBenefit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.butAddBenefit.Autosize = true;
-			this.butAddBenefit.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butAddBenefit.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butAddBenefit.Image = ((System.Drawing.Image)(resources.GetObject("butAddBenefit.Image")));
-			this.butAddBenefit.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAddBenefit.Location = new System.Drawing.Point(554,642);
-			this.butAddBenefit.Name = "butAddBenefit";
-			this.butAddBenefit.Size = new System.Drawing.Size(90,26);
-			this.butAddBenefit.TabIndex = 147;
-			this.butAddBenefit.Text = "Add Benefit";
-			this.butAddBenefit.Click += new System.EventHandler(this.butAddBenefit_Click);
-			// 
-			// gridBenefits
-			// 
-			this.gridBenefits.HScrollVisible = false;
-			this.gridBenefits.Location = new System.Drawing.Point(423,334);
-			this.gridBenefits.Name = "gridBenefits";
-			this.gridBenefits.ScrollValue = 0;
-			this.gridBenefits.Size = new System.Drawing.Size(547,305);
-			this.gridBenefits.TabIndex = 146;
-			this.gridBenefits.Title = "Benefit Information";
-			this.gridBenefits.TranslationName = "TableBenefits";
-			this.gridBenefits.CellDoubleClick += new OpenDental.UI.ODGridClickEventHandler(this.gridBenefits_CellDoubleClick);
-			// 
 			// butLabel
 			// 
 			this.butLabel.AdjustImageLocation = new System.Drawing.Point(0,0);
@@ -1208,6 +1146,20 @@ namespace OpenDental{
 			this.butLabel.TabIndex = 125;
 			this.butLabel.Text = "Label";
 			this.butLabel.Click += new System.EventHandler(this.butLabel_Click);
+			// 
+			// butSearch
+			// 
+			this.butSearch.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.butSearch.Autosize = true;
+			this.butSearch.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butSearch.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butSearch.Location = new System.Drawing.Point(73,111);
+			this.butSearch.Name = "butSearch";
+			this.butSearch.Size = new System.Drawing.Size(84,23);
+			this.butSearch.TabIndex = 124;
+			this.butSearch.Text = "Search IDs";
+			this.butSearch.Click += new System.EventHandler(this.butSearch_Click);
 			// 
 			// butDelete
 			// 
@@ -1240,81 +1192,80 @@ namespace OpenDental{
 			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
-			// butOK
+			// butBenefitNotes
 			// 
-			this.butOK.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butOK.Autosize = true;
-			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butOK.Location = new System.Drawing.Point(801,671);
-			this.butOK.Name = "butOK";
-			this.butOK.Size = new System.Drawing.Size(75,26);
-			this.butOK.TabIndex = 3;
-			this.butOK.Text = "&OK";
-			this.butOK.Click += new System.EventHandler(this.butOK_Click);
+			this.butBenefitNotes.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butBenefitNotes.Autosize = true;
+			this.butBenefitNotes.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butBenefitNotes.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butBenefitNotes.Location = new System.Drawing.Point(378,22);
+			this.butBenefitNotes.Name = "butBenefitNotes";
+			this.butBenefitNotes.Size = new System.Drawing.Size(82,21);
+			this.butBenefitNotes.TabIndex = 76;
+			this.butBenefitNotes.Text = "View Benefits";
+			this.toolTip1.SetToolTip(this.butBenefitNotes,"Edit all the similar plans at once");
+			this.butBenefitNotes.Click += new System.EventHandler(this.butBenefitNotes_Click);
 			// 
-			// label17
+			// butIapFind
 			// 
-			this.label17.Location = new System.Drawing.Point(0,136);
-			this.label17.Name = "label17";
-			this.label17.Size = new System.Drawing.Size(78,15);
-			this.label17.TabIndex = 152;
-			this.label17.Text = "Carrier";
-			this.label17.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.butIapFind.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butIapFind.Autosize = true;
+			this.butIapFind.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butIapFind.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butIapFind.Location = new System.Drawing.Point(132,33);
+			this.butIapFind.Name = "butIapFind";
+			this.butIapFind.Size = new System.Drawing.Size(82,21);
+			this.butIapFind.TabIndex = 74;
+			this.butIapFind.Text = "Find Plan";
+			this.toolTip1.SetToolTip(this.butIapFind,"Edit all the similar plans at once");
+			this.butIapFind.Click += new System.EventHandler(this.butIapFind_Click);
 			// 
-			// butPick
+			// butImportTrojan
 			// 
-			this.butPick.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butPick.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.butPick.Autosize = true;
-			this.butPick.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butPick.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butPick.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butPick.Location = new System.Drawing.Point(315,122);
-			this.butPick.Name = "butPick";
-			this.butPick.Size = new System.Drawing.Size(90,24);
-			this.butPick.TabIndex = 153;
-			this.butPick.Text = "Pick From List";
-			this.butPick.Click += new System.EventHandler(this.butPick_Click);
+			this.butImportTrojan.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butImportTrojan.Autosize = true;
+			this.butImportTrojan.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butImportTrojan.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butImportTrojan.Location = new System.Drawing.Point(132,10);
+			this.butImportTrojan.Name = "butImportTrojan";
+			this.butImportTrojan.Size = new System.Drawing.Size(82,21);
+			this.butImportTrojan.TabIndex = 72;
+			this.butImportTrojan.Text = "Import";
+			this.toolTip1.SetToolTip(this.butImportTrojan,"Edit all the similar plans at once");
+			this.butImportTrojan.Click += new System.EventHandler(this.butImportTrojan_Click);
 			// 
-			// checkApplyAll
+			// textDateEffect
 			// 
-			this.checkApplyAll.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.checkApplyAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkApplyAll.Location = new System.Drawing.Point(468,679);
-			this.checkApplyAll.Name = "checkApplyAll";
-			this.checkApplyAll.Size = new System.Drawing.Size(323,21);
-			this.checkApplyAll.TabIndex = 154;
-			this.checkApplyAll.Text = "Apply changes to all identical insurance plans";
-			this.checkApplyAll.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.checkApplyAll.UseVisualStyleBackColor = true;
+			this.textDateEffect.Location = new System.Drawing.Point(109,50);
+			this.textDateEffect.Name = "textDateEffect";
+			this.textDateEffect.Size = new System.Drawing.Size(72,20);
+			this.textDateEffect.TabIndex = 1;
 			// 
-			// textPlanNote
+			// textDateTerm
 			// 
-			this.textPlanNote.AcceptsReturn = true;
-			this.textPlanNote.Location = new System.Drawing.Point(14,583);
-			this.textPlanNote.Multiline = true;
-			this.textPlanNote.Name = "textPlanNote";
-			this.textPlanNote.QuickPasteType = OpenDental.QuickPasteType.InsPlan;
-			this.textPlanNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textPlanNote.Size = new System.Drawing.Size(397,85);
-			this.textPlanNote.TabIndex = 157;
-			this.textPlanNote.Text = "1\r\n2\r\n3 lines will show here in 46 vert.\r\n4 lines will show here in 59 vert.\r\n5 l" +
-    "ines in 72 vert\r\n6 in 85";
+			this.textDateTerm.Location = new System.Drawing.Point(227,50);
+			this.textDateTerm.Name = "textDateTerm";
+			this.textDateTerm.Size = new System.Drawing.Size(72,20);
+			this.textDateTerm.TabIndex = 2;
 			// 
-			// label18
+			// textSubscNote
 			// 
-			this.label18.Location = new System.Drawing.Point(11,565);
-			this.label18.Name = "label18";
-			this.label18.Size = new System.Drawing.Size(399,15);
-			this.label18.TabIndex = 156;
-			this.label18.Text = "Plan Note.  Always applies to all similar plans, not just this one.";
-			this.label18.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			this.textSubscNote.AcceptsReturn = true;
+			this.textSubscNote.Location = new System.Drawing.Point(57,71);
+			this.textSubscNote.Multiline = true;
+			this.textSubscNote.Name = "textSubscNote";
+			this.textSubscNote.QuickPasteType = OpenDental.QuickPasteType.InsPlan;
+			this.textSubscNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.textSubscNote.Size = new System.Drawing.Size(485,98);
+			this.textSubscNote.TabIndex = 29;
+			this.textSubscNote.Text = "1\r\n2\r\n3 lines will show here in 46 vert.\r\n4 lines will show here in 59 vert.\r\n5 l" +
+    "ines in 72 vert\r\n6 lines in 85 vert\r\n7 lines in 98";
 			// 
 			// FormInsPlan
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
 			this.ClientSize = new System.Drawing.Size(982,700);
+			this.Controls.Add(this.butEditBenefits);
 			this.Controls.Add(this.textPlanNote);
 			this.Controls.Add(this.label18);
 			this.Controls.Add(this.panel1);
@@ -1326,17 +1277,13 @@ namespace OpenDental{
 			this.Controls.Add(this.label17);
 			this.Controls.Add(this.comboLinked);
 			this.Controls.Add(this.textLinkedNum);
-			this.Controls.Add(this.butAnnualMax);
 			this.Controls.Add(this.label4);
-			this.Controls.Add(this.checkCalendarYear);
-			this.Controls.Add(this.butClear);
 			this.Controls.Add(this.comboPlanType);
 			this.Controls.Add(this.checkIsMedical);
 			this.Controls.Add(this.textDivisionNo);
 			this.Controls.Add(this.labelDivisionDash);
 			this.Controls.Add(this.textPlanNum);
 			this.Controls.Add(this.comboClaimForm);
-			this.Controls.Add(this.butAddBenefit);
 			this.Controls.Add(this.comboFeeSched);
 			this.Controls.Add(this.gridBenefits);
 			this.Controls.Add(this.groupCoPay);
@@ -1479,6 +1426,9 @@ namespace OpenDental{
 				else
 					textDateTerm.Text=PlanCur.DateTerm.ToString("d");
 			}
+			FeeSchedsStandard=Defs.GetFeeSchedList("");
+			FeeSchedsCopay=Defs.GetFeeSchedList("C");
+			FeeSchedsAllowed=Defs.GetFeeSchedList("A");
 			FillFormWithPlanCur();
 			FillBenefits();
 			Cursor=Cursors.Default;
@@ -1509,25 +1459,25 @@ namespace OpenDental{
 			comboFeeSched.Items.Clear();
 			comboFeeSched.Items.Add(Lan.g(this,"none"));
 			comboFeeSched.SelectedIndex=0;
-			for(int i=0;i<Defs.Short[(int)DefCat.FeeSchedNames].Length;i++) {
-				comboFeeSched.Items.Add(Defs.Short[(int)DefCat.FeeSchedNames][i].ItemName);
-				if(Defs.Short[(int)DefCat.FeeSchedNames][i].DefNum==PlanCur.FeeSched)
+			for(int i=0;i<FeeSchedsStandard.Length;i++) {
+				comboFeeSched.Items.Add(FeeSchedsStandard[i].ItemName);
+				if(FeeSchedsStandard[i].DefNum==PlanCur.FeeSched)
 					comboFeeSched.SelectedIndex=i+1;
 			}
 			comboCopay.Items.Clear();
 			comboCopay.Items.Add(Lan.g(this,"none"));
 			comboCopay.SelectedIndex=0;
-			for(int i=0;i<Defs.Short[(int)DefCat.FeeSchedNames].Length;i++) {
-				comboCopay.Items.Add(Defs.Short[(int)DefCat.FeeSchedNames][i].ItemName);
-				if(Defs.Short[(int)DefCat.FeeSchedNames][i].DefNum==PlanCur.CopayFeeSched)
+			for(int i=0;i<FeeSchedsCopay.Length;i++) {
+				comboCopay.Items.Add(FeeSchedsCopay[i].ItemName);
+				if(FeeSchedsCopay[i].DefNum==PlanCur.CopayFeeSched)
 					comboCopay.SelectedIndex=i+1;
 			}
 			comboAllowedFeeSched.Items.Clear();
 			comboAllowedFeeSched.Items.Add(Lan.g(this,"none"));
 			comboAllowedFeeSched.SelectedIndex=0;
-			for(int i=0;i<Defs.Short[(int)DefCat.FeeSchedNames].Length;i++) {
-				comboAllowedFeeSched.Items.Add(Defs.Short[(int)DefCat.FeeSchedNames][i].ItemName);
-				if(Defs.Short[(int)DefCat.FeeSchedNames][i].DefNum==PlanCur.AllowedFeeSched)
+			for(int i=0;i<FeeSchedsAllowed.Length;i++) {
+				comboAllowedFeeSched.Items.Add(FeeSchedsAllowed[i].ItemName);
+				if(FeeSchedsAllowed[i].DefNum==PlanCur.AllowedFeeSched)
 					comboAllowedFeeSched.SelectedIndex=i+1;
 			}
 			comboClaimForm.Items.Clear();
@@ -2721,15 +2671,15 @@ namespace OpenDental{
 			gridBenefits.Columns.Add(col);
 			gridBenefits.Rows.Clear();
 			ODGridRow row;
-			bool allCalendarYear=true;
-			bool allServiceYear=true;
+			//bool allCalendarYear=true;
+			//bool allServiceYear=true;
 			for(int i=0;i<benefitList.Count;i++){
-				if(((Benefit)benefitList[i]).TimePeriod==BenefitTimePeriod.CalendarYear){
+				/*if(((Benefit)benefitList[i]).TimePeriod==BenefitTimePeriod.CalendarYear){
 					allServiceYear=false;
 				}
 				if(((Benefit)benefitList[i]).TimePeriod==BenefitTimePeriod.ServiceYear) {
 					allCalendarYear=false;
-				}
+				}*/
 				row=new ODGridRow();
 				if(((Benefit)benefitList[i]).PatPlanNum==0){//attached to plan
 					row.Cells.Add("");
@@ -2789,7 +2739,7 @@ namespace OpenDental{
 				gridBenefits.Rows.Add(row);
 			}
 			gridBenefits.EndUpdate();
-			if(allCalendarYear){
+			/*if(allCalendarYear){
 				checkCalendarYear.CheckState=CheckState.Checked;
 			}
 			else if(allServiceYear){
@@ -2797,100 +2747,23 @@ namespace OpenDental{
 			}
 			else{
 				checkCalendarYear.CheckState=CheckState.Indeterminate;
-			}
-		}		
+			}*/
+		}
 
-		private void gridBenefits_CellDoubleClick(object sender,OpenDental.UI.ODGridClickEventArgs e){
+		private void butEditBenefits_Click(object sender,EventArgs e) {
 			int patPlanNum=0;
 			if(PatPlanCur!=null) {
 				patPlanNum=PatPlanCur.PatPlanNum;
 			}
-			FormBenefitEdit FormB=new FormBenefitEdit(patPlanNum,PlanCur.PlanNum);
-			FormB.BenCur=(Benefit)benefitList[e.Row];
-			FormB.ShowDialog();
-			if(FormB.BenCur==null){//user deleted
-				benefitList.RemoveAt(e.Row);
+			FormInsBenefits FormI=new FormInsBenefits(PlanCur.PlanNum,patPlanNum);
+			FormI.OriginalBenList=benefitList;
+			FormI.Note=textSubscNote.Text;
+			FormI.ShowDialog();
+			if(FormI.DialogResult!=DialogResult.OK){
+				return;
 			}
 			FillBenefits();
-		}
-
-		private void checkCalendarYear_Click(object sender,EventArgs e) {
-			//checkstate will have already changed.
-			if(checkCalendarYear.CheckState==CheckState.Checked){//change all to calendarYear
-				for(int i=0;i<benefitList.Count;i++){
-					if(((Benefit)benefitList[i]).TimePeriod==BenefitTimePeriod.ServiceYear){
-						((Benefit)benefitList[i]).TimePeriod=BenefitTimePeriod.CalendarYear;
-					}
-				}
-			}
-			if(checkCalendarYear.CheckState==CheckState.Indeterminate
-				|| checkCalendarYear.CheckState==CheckState.Unchecked) {//change all to serviceYear
-				for(int i=0;i<benefitList.Count;i++) {
-					if(((Benefit)benefitList[i]).TimePeriod==BenefitTimePeriod.CalendarYear) {
-						((Benefit)benefitList[i]).TimePeriod=BenefitTimePeriod.ServiceYear;
-					}
-				}
-			}
-			FillBenefits();
-		}
-
-		private void butAnnualMax_Click(object sender,EventArgs e) {
-			Benefit ben=new Benefit();
-			ben.PlanNum=PlanCur.PlanNum;
-			if(checkCalendarYear.CheckState==CheckState.Checked){
-				ben.TimePeriod=BenefitTimePeriod.CalendarYear;
-			}
-			if(checkCalendarYear.CheckState==CheckState.Unchecked) {
-				ben.TimePeriod=BenefitTimePeriod.ServiceYear;
-			}
-			if(CovCats.ListShort.Length>0) {
-				ben.CovCatNum=CovCats.ListShort[0].CovCatNum;
-			}
-			ben.BenefitType=InsBenefitType.Limitations;
-			int patPlanNum=0;
-			if(PatPlanCur!=null) {
-				patPlanNum=PatPlanCur.PatPlanNum;
-			}
-			FormBenefitEdit FormB=new FormBenefitEdit(patPlanNum,PlanCur.PlanNum);
-			FormB.IsNew=true;
-			FormB.BenCur=ben;
-			FormB.ShowDialog();
-			if(FormB.DialogResult==DialogResult.OK) {
-				benefitList.Add(FormB.BenCur);
-			}
-			FillBenefits();
-		}
-
-		private void butAddBenefit_Click(object sender,EventArgs e) {
-			Benefit ben=new Benefit();
-			ben.PlanNum=PlanCur.PlanNum;
-			if(checkCalendarYear.CheckState==CheckState.Checked) {
-				ben.TimePeriod=BenefitTimePeriod.CalendarYear;
-			}
-			if(checkCalendarYear.CheckState==CheckState.Unchecked) {
-				ben.TimePeriod=BenefitTimePeriod.ServiceYear;
-			}
-			if(CovCats.ListShort.Length>0){
-				ben.CovCatNum=CovCats.ListShort[0].CovCatNum;
-			}
-			ben.BenefitType=InsBenefitType.Percentage;
-			int patPlanNum=0;
-			if(PatPlanCur!=null){
-				patPlanNum=PatPlanCur.PatPlanNum;
-			}
-			FormBenefitEdit FormB=new FormBenefitEdit(patPlanNum,PlanCur.PlanNum);
-			FormB.IsNew=true;
-			FormB.BenCur=ben;
-			FormB.ShowDialog();
-			if(FormB.DialogResult==DialogResult.OK){
-				benefitList.Add(FormB.BenCur);	
-			}
-			FillBenefits();
-		}
-
-		private void butClear_Click(object sender,EventArgs e) {
-			benefitList=new ArrayList();
-			FillBenefits();
+			textSubscNote.Text=FormI.Note;
 		}
 
 		///<summary>Gets an employerNum based on the name entered. Called from FillCur</summary>
@@ -2965,15 +2838,15 @@ namespace OpenDental{
 			if(comboFeeSched.SelectedIndex==0)
 				PlanCur.FeeSched=0;
 			else
-				PlanCur.FeeSched=Defs.Short[(int)DefCat.FeeSchedNames][comboFeeSched.SelectedIndex-1].DefNum;
+				PlanCur.FeeSched=FeeSchedsStandard[comboFeeSched.SelectedIndex-1].DefNum;
 			if(comboCopay.SelectedIndex==0)
 				PlanCur.CopayFeeSched=0;
 			else
-				PlanCur.CopayFeeSched=Defs.Short[(int)DefCat.FeeSchedNames][comboCopay.SelectedIndex-1].DefNum;
+				PlanCur.CopayFeeSched=FeeSchedsCopay[comboCopay.SelectedIndex-1].DefNum;
 			if(comboAllowedFeeSched.SelectedIndex==0)
 				PlanCur.AllowedFeeSched=0;
 			else
-				PlanCur.AllowedFeeSched=Defs.Short[(int)DefCat.FeeSchedNames][comboAllowedFeeSched.SelectedIndex-1].DefNum;
+				PlanCur.AllowedFeeSched=FeeSchedsAllowed[comboAllowedFeeSched.SelectedIndex-1].DefNum;
 			PlanCur.TrojanID=textTrojanID.Text;
 			PlanCur.PlanNote=textPlanNote.Text;
 			PlanCur.ReleaseInfo=checkRelease.Checked;
@@ -3102,6 +2975,8 @@ namespace OpenDental{
 				PatPlans.Delete(PatPlanCur.PatPlanNum);//no need to check dependencies.  Maintains ordinals and recomputes estimates.
 			}
 		}
+
+		
 
 		
 

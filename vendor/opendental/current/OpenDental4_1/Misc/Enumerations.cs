@@ -180,7 +180,9 @@ namespace OpenDental{
 		///<summary>24- Categories for Letter Merge.</summary>
 		LetterMergeCats,
 		///<summary>25- Types of Schedule Blockouts.</summary>
-		BlockoutTypes
+		BlockoutTypes,
+		///<summary>26- Categories of procedure buttons in Chart module</summary>
+		ProcButtonCats
 	}
 	//public enum StudentStat{None,Full,Part};
 	///<summary>Used in procedurecode setup to specify the treatment area for a procedure.  This determines what fields are available when editing an appointment.</summary>
@@ -972,36 +974,38 @@ namespace OpenDental{
 		///<summary>3- For example, copay per 1 visit.</summary>
 		Visits,
 		///<summary>4- For example, pano every 5 years.</summary>
-		Years
+		Years,
+		///<summary>5- For example, BWs every 6 months.</summary>
+		Months
 	}
 
 	///<summary>The X12 benefit categories.  Used to link the user-defined CovCats to the corresponding X12 category.</summary>
 	public enum EbenefitCategory{
 		///<summary>0- Default</summary>
 		None,
-		///<summary>1- X12: 30 and 35</summary>
+		///<summary>1- X12: 30 and 35. All ADA codes.</summary>
 		General,
-		///<summary>2- X12: 23</summary>
+		///<summary>2- X12: 23. ADA D0000-D0999</summary>
 		Diagnostic,
-		///<summary>3- X12: 24</summary>
+		///<summary>3- X12: 24. ADA D4000</summary>
 		Periodontics,
-		///<summary>4- X12: 25</summary>
+		///<summary>4- X12: 25. ADA D2000</summary>
 		Restorative,
-		///<summary>5- X12: 26</summary>
+		///<summary>5- X12: 26. ADA D3000</summary>
 		Endodontics,
-		///<summary>6- X12: 27</summary>
+		///<summary>6- X12: 27. ADA D5900-D5999</summary>
 		MaxillofacialProsth,
-		///<summary>7- X12: 36</summary>
+		///<summary>7- X12: 36. Subcategory of restorative.</summary>
 		Crowns,
-		///<summary>8- X12: 37</summary>
+		///<summary>8- X12: 37. ADA range?</summary>
 		Accident,
-		///<summary>9- X12: 38</summary>
+		///<summary>9- X12: 38. ADA D8000</summary>
 		Orthodontics,
-		///<summary>10- X12: 39</summary>
+		///<summary>10- X12: 39. ADA D5000-D5899 (removable), and D6200-D6900 (fixed)</summary>
 		Prosthodontics,
-		///<summary>11- X12: 40</summary>
+		///<summary>11- X12: 40. ADA D7000</summary>
 		OralSurgery,
-		///<summary>12- X12: 41</summary>
+		///<summary>12- X12: 41. ADA D1000</summary>
 		RoutinePreventive
 	}
 
@@ -1019,6 +1023,7 @@ namespace OpenDental{
 		Expense
 	}
 
+	
 	
 		
 	

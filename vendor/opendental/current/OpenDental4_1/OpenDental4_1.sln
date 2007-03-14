@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenDental4_0", "OpenDental4_0.csproj", "{9B9879E3-0726-4042-BCB3-ADCB604B9B42}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenDental4_1", "OpenDental4_1.csproj", "{9B9879E3-0726-4042-BCB3-ADCB604B9B42}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ODR", "ODR\ODR.csproj", "{84688345-BB6A-4F2F-8672-A82B52FD433B}"
 EndProject

@@ -57,8 +57,7 @@
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
     <DefineConstants>TRACE</DefineConstants>
-    <DocumentationFile>
-    </DocumentationFile>
+    <DocumentationFile>bin\Release\OpenDental.XML</DocumentationFile>
     <DebugSymbols>false</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
     <NoStdLib>false</NoStdLib>
@@ -130,6 +129,7 @@
     <Compile Include="Bridges\Apteryx.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Bridges\DrCeph.cs" />
     <Compile Include="Bridges\DentalEye.cs" />
     <Compile Include="Bridges\Trojan.cs" />
     <Compile Include="Bridges\TrophyEnhanced.cs" />
@@ -192,6 +192,7 @@
     <Compile Include="Business Layer\AppointmentRules.cs" />
     <Compile Include="Business Layer\Accounts.cs" />
     <Compile Include="Business Layer\AccountingAutoPays.cs" />
+    <Compile Include="Business Layer\FeeScheds.cs" />
     <Compile Include="Business Layer\Reconciles.cs" />
     <Compile Include="Business Layer\Transactions.cs" />
     <Compile Include="Business Layer\JournalEntries.cs" />
@@ -476,10 +477,10 @@
     <Compile Include="DataClassesReallyOld\Prefs.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DataClassesReallyOld\ProcButtonItems.cs">
+    <Compile Include="Business Layer\ProcButtonItems.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DataClassesReallyOld\ProcButtons.cs">
+    <Compile Include="Business Layer\ProcButtons.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DataClassesReallyOld\ProgramProperties.cs">
@@ -569,94 +570,103 @@
     <Compile Include="Eclaims\X997.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms - Reports\FormRpRouting.cs">
+    <Compile Include="Forms Reports\FormRpRouting.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms - Reports\FormQuery.cs">
+    <Compile Include="Forms Reports\FormQuery.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms - Reports\FormRpAdjSheet.cs">
+    <Compile Include="Forms Reports\FormRpAdjSheet.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms - Reports\FormRpAging.cs">
+    <Compile Include="Forms Reports\FormRpAging.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms - Reports\FormRpAppointments.cs">
+    <Compile Include="Forms Reports\FormRpAppointments.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms - Reports\FormRpBirthday.cs">
+    <Compile Include="Forms Reports\FormRpBirthday.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms - Reports\FormRpCapitation.cs">
+    <Compile Include="Forms Reports\FormRpCapitation.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms - Reports\FormRpClaimNotSent.cs">
+    <Compile Include="Forms Reports\FormRpClaimNotSent.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms - Reports\FormRpConfirm.cs">
+    <Compile Include="Forms Reports\FormRpConfirm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms - Reports\FormRpCourseGrades.cs">
+    <Compile Include="Forms Reports\FormRpCourseGrades.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms - Reports\FormRpDepositSlip.cs">
+    <Compile Include="Forms Reports\FormRpDepositSlip.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms - Reports\FormRpFinanceCharge.cs">
+    <Compile Include="Forms Reports\FormRpFinanceCharge.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms - Reports\FormRpInsCo.cs">
+    <Compile Include="Forms Reports\FormRpInsCo.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms - Reports\FormRpOutInsClaims.cs">
+    <Compile Include="Forms Reports\FormRpOutInsClaims.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms - Reports\FormRpPatients.cs">
+    <Compile Include="Forms Reports\FormRpPatients.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms - Reports\FormRpPaySheet.cs">
+    <Compile Include="Forms Reports\FormRpPaySheet.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms - Reports\FormRpPHRawPop.cs">
+    <Compile Include="Forms Reports\FormRpPHRawPop.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms - Reports\FormRpPHRawScreen.cs">
+    <Compile Include="Forms Reports\FormRpPHRawScreen.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms - Reports\FormRpPrescriptions.cs">
+    <Compile Include="Forms Reports\FormRpPrescriptions.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms - Reports\FormRpPrintPreview.cs">
+    <Compile Include="Forms Reports\FormRpPrintPreview.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms - Reports\FormRpProcCodes.cs">
+    <Compile Include="Forms Reports\FormRpProcCodes.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms - Reports\FormRpProcNotBilledIns.cs">
+    <Compile Include="Forms Reports\FormRpProcNotBilledIns.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms - Reports\FormRpProcNote.cs">
+    <Compile Include="Forms Reports\FormRpProcNote.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms - Reports\FormRpProcsCompleted.cs">
+    <Compile Include="Forms Reports\FormRpProcsCompleted.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms - Reports\FormRpProcSheet.cs">
+    <Compile Include="Forms Reports\FormRpProcSheet.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms - Reports\FormRpProdInc.cs">
+    <Compile Include="Forms Reports\FormRpProdInc.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms - Reports\FormRpRecall.cs">
+    <Compile Include="Forms Reports\FormRpRecall.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms - Reports\FormRpReferrals.cs">
+    <Compile Include="Forms Reports\FormRpReferrals.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms - Reports\FormRpStatement.cs">
+    <Compile Include="Forms Reports\FormRpStatement.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\BasicTemplate.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormProcCodes.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormPlansForFamily.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormInsBenefits.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\MsgBoxCopyPaste.cs">
@@ -1058,9 +1068,6 @@
     <Compile Include="Forms\FormProcEdit.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\FormProcedures.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Forms\FormProcSelect.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -1357,130 +1364,124 @@
     <Compile Include="Reporting\FormReport.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\ContrPanelTable.cs">
+    <Compile Include="Tables Old Grids\ContrPanelTable.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\ContrTable.cs">
+    <Compile Include="Tables Old Grids\ContrTable.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableApptProcs.cs">
+    <Compile Include="Tables Old Grids\TableApptProcs.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableApptsOther.cs">
+    <Compile Include="Tables Old Grids\TableApptsOther.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableAutoItem.cs">
+    <Compile Include="Tables Old Grids\TableAutoItem.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableCarriers.cs">
+    <Compile Include="Tables Old Grids\TableCarriers.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableClaimPay.cs">
+    <Compile Include="Tables Old Grids\TableClaimPay.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableClaimPaySplits.cs">
+    <Compile Include="Tables Old Grids\TableClaimPaySplits.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableClaimProc.cs">
+    <Compile Include="Tables Old Grids\TableClaimProc.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableClearinghouses.cs">
+    <Compile Include="Tables Old Grids\TableClearinghouses.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableCodeList.cs">
+    <Compile Include="Tables Old Grids\TableCodeList.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableCommLog.cs">
+    <Compile Include="Tables Old Grids\TableCommLog.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableContacts.cs">
+    <Compile Include="Tables Old Grids\TableContacts.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableDefs.cs">
+    <Compile Include="Tables Old Grids\TableDefs.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableElectID.cs">
+    <Compile Include="Tables Old Grids\TableElectID.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableFamily.cs">
+    <Compile Include="Tables Old Grids\TableFamily.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableInsPlans.cs">
+    <Compile Include="Tables Old Grids\TableLan.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableLan.cs">
+    <Compile Include="Tables Old Grids\TableMedications.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableMedications.cs">
+    <Compile Include="Tables Old Grids\TablePatientList.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TablePatientList.cs">
+    <Compile Include="Tables Old Grids\TablePercent.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TablePercent.cs">
+    <Compile Include="Tables Old Grids\TablePermissions.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TablePermissions.cs">
+    <Compile Include="Tables Old Grids\TableProcAdj.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableProcAdj.cs">
+    <Compile Include="Tables Old Grids\TableProcIns.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableProcFee.cs">
+    <Compile Include="Tables Old Grids\TableProcPay.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableProcIns.cs">
+    <Compile Include="Tables Old Grids\TableProcSelect.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableProcPay.cs">
+    <Compile Include="Tables Old Grids\TableProg.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableProcSelect.cs">
+    <Compile Include="Tables Old Grids\TableProvIdent.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableProg.cs">
+    <Compile Include="Tables Old Grids\TableQueue.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableProvIdent.cs">
+    <Compile Include="Tables Old Grids\TableRecall.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableQueue.cs">
+    <Compile Include="Tables Old Grids\TableRecallList.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableRecall.cs">
+    <Compile Include="Tables Old Grids\TableRefList.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableRecallList.cs">
+    <Compile Include="Tables Old Grids\TableRefSelect.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableRefList.cs">
+    <Compile Include="Tables Old Grids\TableRxSetup.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableRefSelect.cs">
+    <Compile Include="Tables Old Grids\TableTeeth.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableRxSetup.cs">
+    <Compile Include="Tables Old Grids\TableTimeBar.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableTeeth.cs">
+    <Compile Include="Tables Old Grids\TableTP.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableTimeBar.cs">
+    <Compile Include="Tables Old Grids\TableTreat.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableTP.cs">
+    <Compile Include="Tables Old Grids\TableUnsched.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableTreat.cs">
+    <Compile Include="Tables Old Grids\TableUserPermissions.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableUnsched.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableUserPermissions.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Tables %28Old Grids%29\TableZips.cs">
+    <Compile Include="Tables Old Grids\TableZips.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="UI\Button.cs">
@@ -1579,96 +1580,108 @@
     <EmbeddedResource Include="Eclaims\FormTerminal.resx">
       <DependentUpon>FormTerminal.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms - Reports\FormRpRouting.resx">
+    <EmbeddedResource Include="Forms Reports\FormRpRouting.resx">
       <DependentUpon>FormRpRouting.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms - Reports\FormQuery.resx">
+    <EmbeddedResource Include="Forms Reports\FormQuery.resx">
       <DependentUpon>FormQuery.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms - Reports\FormRpAdjSheet.resx">
+    <EmbeddedResource Include="Forms Reports\FormRpAdjSheet.resx">
       <DependentUpon>FormRpAdjSheet.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms - Reports\FormRpAging.resx">
+    <EmbeddedResource Include="Forms Reports\FormRpAging.resx">
       <DependentUpon>FormRpAging.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms - Reports\FormRpAppointments.resx">
+    <EmbeddedResource Include="Forms Reports\FormRpAppointments.resx">
       <DependentUpon>FormRpAppointments.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms - Reports\FormRpBirthday.resx">
+    <EmbeddedResource Include="Forms Reports\FormRpBirthday.resx">
       <DependentUpon>FormRpBirthday.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms - Reports\FormRpCapitation.resx">
+    <EmbeddedResource Include="Forms Reports\FormRpCapitation.resx">
       <DependentUpon>FormRpCapitation.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms - Reports\FormRpClaimNotSent.resx">
+    <EmbeddedResource Include="Forms Reports\FormRpClaimNotSent.resx">
       <DependentUpon>FormRpClaimNotSent.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms - Reports\FormRpConfirm.resx">
+    <EmbeddedResource Include="Forms Reports\FormRpConfirm.resx">
       <DependentUpon>FormRpConfirm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms - Reports\FormRpCourseGrades.resx">
+    <EmbeddedResource Include="Forms Reports\FormRpCourseGrades.resx">
       <DependentUpon>FormRpCourseGrades.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms - Reports\FormRpDepositSlip.resx">
+    <EmbeddedResource Include="Forms Reports\FormRpDepositSlip.resx">
       <DependentUpon>FormRpDepositSlip.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms - Reports\FormRpFinanceCharge.resx">
+    <EmbeddedResource Include="Forms Reports\FormRpFinanceCharge.resx">
       <DependentUpon>FormRpFinanceCharge.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms - Reports\FormRpInsCo.resx">
+    <EmbeddedResource Include="Forms Reports\FormRpInsCo.resx">
       <DependentUpon>FormRpInsCo.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms - Reports\FormRpOutInsClaims.resx">
+    <EmbeddedResource Include="Forms Reports\FormRpOutInsClaims.resx">
       <DependentUpon>FormRpOutInsClaims.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms - Reports\FormRpPatients.resx">
+    <EmbeddedResource Include="Forms Reports\FormRpPatients.resx">
       <DependentUpon>FormRpPatients.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms - Reports\FormRpPaySheet.resx">
+    <EmbeddedResource Include="Forms Reports\FormRpPaySheet.resx">
       <DependentUpon>FormRpPaySheet.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms - Reports\FormRpPHRawPop.resx">
+    <EmbeddedResource Include="Forms Reports\FormRpPHRawPop.resx">
       <DependentUpon>FormRpPHRawPop.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms - Reports\FormRpPHRawScreen.resx">
+    <EmbeddedResource Include="Forms Reports\FormRpPHRawScreen.resx">
       <DependentUpon>FormRpPHRawScreen.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms - Reports\FormRpPrescriptions.resx">
+    <EmbeddedResource Include="Forms Reports\FormRpPrescriptions.resx">
       <DependentUpon>FormRpPrescriptions.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms - Reports\FormRpPrintPreview.resx">
+    <EmbeddedResource Include="Forms Reports\FormRpPrintPreview.resx">
       <DependentUpon>FormRpPrintPreview.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms - Reports\FormRpProcCodes.resx">
+    <EmbeddedResource Include="Forms Reports\FormRpProcCodes.resx">
       <DependentUpon>FormRpProcCodes.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms - Reports\FormRpProcNotBilledIns.resx">
+    <EmbeddedResource Include="Forms Reports\FormRpProcNotBilledIns.resx">
       <DependentUpon>FormRpProcNotBilledIns.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms - Reports\FormRpProcNote.resx">
+    <EmbeddedResource Include="Forms Reports\FormRpProcNote.resx">
       <DependentUpon>FormRpProcNote.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms - Reports\FormRpProcsCompleted.resx">
+    <EmbeddedResource Include="Forms Reports\FormRpProcsCompleted.resx">
       <DependentUpon>FormRpProcsCompleted.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms - Reports\FormRpProcSheet.resx">
+    <EmbeddedResource Include="Forms Reports\FormRpProcSheet.resx">
       <DependentUpon>FormRpProcSheet.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms - Reports\FormRpProdInc.resx">
+    <EmbeddedResource Include="Forms Reports\FormRpProdInc.resx">
       <DependentUpon>FormRpProdInc.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms - Reports\FormRpRecall.resx">
+    <EmbeddedResource Include="Forms Reports\FormRpRecall.resx">
       <DependentUpon>FormRpRecall.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms - Reports\FormRpReferrals.resx">
+    <EmbeddedResource Include="Forms Reports\FormRpReferrals.resx">
       <DependentUpon>FormRpReferrals.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms - Reports\FormRpStatement.resx">
+    <EmbeddedResource Include="Forms Reports\FormRpStatement.resx">
       <DependentUpon>FormRpStatement.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\BasicTemplate.resx">
       <DependentUpon>BasicTemplate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormProcCodes.resx">
+      <DependentUpon>FormProcCodes.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormPlansForFamily.resx">
+      <DependentUpon>FormPlansForFamily.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormInsBenefits.resx">
+      <DependentUpon>FormInsBenefits.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MsgBoxCopyPaste.resx">
       <DependentUpon>MsgBoxCopyPaste.cs</DependentUpon>
@@ -2088,9 +2101,6 @@
     <EmbeddedResource Include="Forms\FormProcEdit.resx">
       <DependentUpon>FormProcEdit.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormProcedures.resx">
-      <DependentUpon>FormProcedures.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormProcSelect.resx">
       <DependentUpon>FormProcSelect.cs</DependentUpon>
     </EmbeddedResource>
@@ -2321,130 +2331,124 @@
     <EmbeddedResource Include="Reporting\FormReport.resx">
       <DependentUpon>FormReport.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\ContrPanelTable.resx">
+    <EmbeddedResource Include="Tables Old Grids\ContrPanelTable.resx">
       <DependentUpon>ContrPanelTable.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\ContrTable.resx">
+    <EmbeddedResource Include="Tables Old Grids\ContrTable.resx">
       <DependentUpon>ContrTable.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableApptProcs.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableApptProcs.resx">
       <DependentUpon>TableApptProcs.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableApptsOther.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableApptsOther.resx">
       <DependentUpon>TableApptsOther.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableAutoItem.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableAutoItem.resx">
       <DependentUpon>TableAutoItem.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableCarriers.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableCarriers.resx">
       <DependentUpon>TableCarriers.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableClaimPay.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableClaimPay.resx">
       <DependentUpon>TableClaimPay.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableClaimPaySplits.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableClaimPaySplits.resx">
       <DependentUpon>TableClaimPaySplits.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableClaimProc.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableClaimProc.resx">
       <DependentUpon>TableClaimProc.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableClearinghouses.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableClearinghouses.resx">
       <DependentUpon>TableClearinghouses.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableCodeList.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableCodeList.resx">
       <DependentUpon>TableCodeList.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableCommLog.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableCommLog.resx">
       <DependentUpon>TableCommLog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableContacts.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableContacts.resx">
       <DependentUpon>TableContacts.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableDefs.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableDefs.resx">
       <DependentUpon>TableDefs.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableElectID.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableElectID.resx">
       <DependentUpon>TableElectID.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableFamily.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableFamily.resx">
       <DependentUpon>TableFamily.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableInsPlans.resx">
-      <DependentUpon>TableInsPlans.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableLan.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableLan.resx">
       <DependentUpon>TableLan.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableMedications.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableMedications.resx">
       <DependentUpon>TableMedications.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TablePatientList.resx">
+    <EmbeddedResource Include="Tables Old Grids\TablePatientList.resx">
       <DependentUpon>TablePatientList.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TablePercent.resx">
+    <EmbeddedResource Include="Tables Old Grids\TablePercent.resx">
       <DependentUpon>TablePercent.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TablePermissions.resx">
+    <EmbeddedResource Include="Tables Old Grids\TablePermissions.resx">
       <DependentUpon>TablePermissions.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableProcAdj.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableProcAdj.resx">
       <DependentUpon>TableProcAdj.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableProcFee.resx">
-      <DependentUpon>TableProcFee.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableProcIns.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableProcIns.resx">
       <DependentUpon>TableProcIns.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableProcPay.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableProcPay.resx">
       <DependentUpon>TableProcPay.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableProcSelect.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableProcSelect.resx">
       <DependentUpon>TableProcSelect.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableProg.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableProg.resx">
       <DependentUpon>TableProg.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableProvIdent.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableProvIdent.resx">
       <DependentUpon>TableProvIdent.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableQueue.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableQueue.resx">
       <DependentUpon>TableQueue.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableRecall.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableRecall.resx">
       <DependentUpon>TableRecall.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableRecallList.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableRecallList.resx">
       <DependentUpon>TableRecallList.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableRefList.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableRefList.resx">
       <DependentUpon>TableRefList.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableRefSelect.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableRefSelect.resx">
       <DependentUpon>TableRefSelect.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableRxSetup.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableRxSetup.resx">
       <DependentUpon>TableRxSetup.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableTeeth.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableTeeth.resx">
       <DependentUpon>TableTeeth.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableTimeBar.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableTimeBar.resx">
       <DependentUpon>TableTimeBar.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableTP.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableTP.resx">
       <DependentUpon>TableTP.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableTreat.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableTreat.resx">
       <DependentUpon>TableTreat.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableUnsched.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableUnsched.resx">
       <DependentUpon>TableUnsched.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableUserPermissions.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableUserPermissions.resx">
       <DependentUpon>TableUserPermissions.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tables %28Old Grids%29\TableZips.resx">
+    <EmbeddedResource Include="Tables Old Grids\TableZips.resx">
       <DependentUpon>TableZips.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Button.resx">

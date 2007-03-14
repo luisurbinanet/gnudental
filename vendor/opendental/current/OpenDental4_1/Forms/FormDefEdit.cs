@@ -198,6 +198,9 @@ namespace OpenDental{
 			}
 			if(!CanEditName){
 				textName.ReadOnly=true;
+				if(!Defs.Cur.IsHidden){
+					checkHidden.Enabled=false;//prevent hiding these types of defs
+				}
 			}
 			labelValue.Text=ValueText;
 			if(Defs.Cur.Category==DefCat.AdjTypes
@@ -295,6 +298,15 @@ namespace OpenDental{
 					}
 					else if(textValue.Text=="X" || textValue.Text=="x"){
 						textValue.Text="X";
+					}
+					else textValue.Text="";
+					break;
+				case DefCat.FeeSchedNames:
+					if(textValue.Text=="C" || textValue.Text=="c") {
+						textValue.Text="C";
+					}
+					else if(textValue.Text=="A" || textValue.Text=="a") {
+						textValue.Text="A";
 					}
 					else textValue.Text="";
 					break;

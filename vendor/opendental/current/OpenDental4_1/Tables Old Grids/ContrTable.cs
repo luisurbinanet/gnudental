@@ -448,6 +448,8 @@ namespace OpenDental{
 					//}
 					if(panelTable.Height<panelScroll.Height){
 						vScrollBar1.Enabled=false;
+						//even though the scroll won't actually move, we need this line so that preserve scroll will work properly
+						vScrollBar1.Maximum=1;
 						vScrollBar1.Value=1;
 						panelTable.Location=new Point(0,-1);
 					}

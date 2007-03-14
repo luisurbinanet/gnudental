@@ -202,6 +202,8 @@ namespace OpenDental{
 			this.textDate = new OpenDental.ValidDate();
 			this.textProcFee = new OpenDental.ValidDouble();
 			this.panel1 = new System.Windows.Forms.Panel();
+			this.labelLabFee = new System.Windows.Forms.Label();
+			this.textLabFee = new OpenDental.ValidDouble();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.checkIsPrincDiag = new System.Windows.Forms.CheckBox();
 			this.label11 = new System.Windows.Forms.Label();
@@ -247,8 +249,6 @@ namespace OpenDental{
 			this.groupENP = new System.Windows.Forms.GroupBox();
 			this.butENPpaste = new OpenDental.UI.Button();
 			this.butENPshow = new OpenDental.UI.Button();
-			this.labelLabFee = new System.Windows.Forms.Label();
-			this.textLabFee = new OpenDental.ValidDouble();
 			this.groupStatus.SuspendLayout();
 			this.groupQuadrant.SuspendLayout();
 			this.groupArch.SuspendLayout();
@@ -462,7 +462,7 @@ namespace OpenDental{
 			this.butDelete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDelete.Location = new System.Drawing.Point(4,613);
+			this.butDelete.Location = new System.Drawing.Point(2,617);
 			this.butDelete.Name = "butDelete";
 			this.butDelete.Size = new System.Drawing.Size(83,26);
 			this.butDelete.TabIndex = 8;
@@ -729,6 +729,22 @@ namespace OpenDental{
 			this.panel1.Name = "panel1";
 			this.panel1.Size = new System.Drawing.Size(540,160);
 			this.panel1.TabIndex = 2;
+			// 
+			// labelLabFee
+			// 
+			this.labelLabFee.Location = new System.Drawing.Point(250,139);
+			this.labelLabFee.Name = "labelLabFee";
+			this.labelLabFee.Size = new System.Drawing.Size(75,16);
+			this.labelLabFee.TabIndex = 98;
+			this.labelLabFee.Text = "Lab Fee";
+			this.labelLabFee.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
+			// textLabFee
+			// 
+			this.textLabFee.Location = new System.Drawing.Point(326,136);
+			this.textLabFee.Name = "textLabFee";
+			this.textLabFee.Size = new System.Drawing.Size(66,20);
+			this.textLabFee.TabIndex = 99;
 			// 
 			// groupBox1
 			// 
@@ -1238,22 +1254,6 @@ namespace OpenDental{
 			this.butENPshow.Text = "Show";
 			this.butENPshow.Click += new System.EventHandler(this.butENPshow_Click);
 			// 
-			// labelLabFee
-			// 
-			this.labelLabFee.Location = new System.Drawing.Point(250,139);
-			this.labelLabFee.Name = "labelLabFee";
-			this.labelLabFee.Size = new System.Drawing.Size(75,16);
-			this.labelLabFee.TabIndex = 98;
-			this.labelLabFee.Text = "Lab Fee";
-			this.labelLabFee.TextAlign = System.Drawing.ContentAlignment.TopRight;
-			// 
-			// textLabFee
-			// 
-			this.textLabFee.Location = new System.Drawing.Point(326,136);
-			this.textLabFee.Name = "textLabFee";
-			this.textLabFee.Size = new System.Drawing.Size(66,20);
-			this.textLabFee.TabIndex = 99;
-			// 
 			// FormProcEdit
 			// 
 			this.AcceptButton = this.butOK;
@@ -1322,10 +1322,14 @@ namespace OpenDental{
 		}
 		#endregion
 
+
+		///<summary></summary>
 		[DllImport("user32.dll")]
 		public static extern bool PostMessage(IntPtr hWnd, uint message, uint wParam, uint lParam);
+		///<summary></summary>
 		[DllImport("user32.dll")]
 		public static extern uint RegisterWindowMessage(string lpString);
+		///<summary></summary>
 		[DllImport("user32.dll")]
 		public static extern bool SetForegroundWindow(IntPtr hWnd);
 
@@ -1496,7 +1500,8 @@ namespace OpenDental{
 			textClaimNote.Text=ProcCur.ClaimNote;
 			if(ProcCur.DateLocked.Year>1880){//if locked
 				butLock.Visible=false;
-				textNotes.ReadOnly=true;
+				//textNotes.ReadOnly=true;
+				textNotes.Enabled=false;
 				butDelete.Enabled=false;
 				groupStatus.Enabled=false;
 				butSetComplete.Enabled=false;
@@ -1882,8 +1887,8 @@ namespace OpenDental{
 		}
 
 		private void butChange_Click(object sender, System.EventArgs e) {
-			FormProcedures FormP=new FormProcedures();
-      FormP.Mode=FormProcMode.Select;
+			FormProcCodes FormP=new FormProcCodes();
+      FormP.IsSelectionMode=true;
       FormP.ShowDialog();
       if(FormP.DialogResult!=DialogResult.OK){
 				return;

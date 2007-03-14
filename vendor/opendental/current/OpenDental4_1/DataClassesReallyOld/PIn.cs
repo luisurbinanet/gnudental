@@ -1,5 +1,8 @@
 using System;
 using System.Collections;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
@@ -95,15 +98,26 @@ namespace OpenDental{
 			return myString;
 		}
 		
-		///<summary></summary>
-		public static string PTime (string myTime){
-			return DateTime.Parse(myTime).ToString("HH:mm:ss");
-		}
+		//<summary></summary>
+		//public static string PTime (string myTime){
+		//	return DateTime.Parse(myTime).ToString("HH:mm:ss");
+		//}
 
 		//<summary></summary>
 		//public static string PBytes (byte[] myBytes){
 		//	return Convert.ToBase64String(myBytes);
 		//}
+
+		///<summary></summary>
+		public static Bitmap PBitmap(string myString){
+			if(myString==""){
+				return null;
+			}
+			byte[] rawData=Convert.FromBase64String(myString);
+			MemoryStream stream=new MemoryStream(rawData);
+			Bitmap image=new Bitmap(stream);
+			return image;
+		}
 
 
 	}

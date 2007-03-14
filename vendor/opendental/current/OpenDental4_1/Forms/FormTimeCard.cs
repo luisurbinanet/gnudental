@@ -727,10 +727,10 @@ namespace OpenDental{
 			pd.PrintPage += new PrintPageEventHandler(this.pd_PrintPage);
 			pd.DefaultPageSettings.Margins=new Margins(0,0,0,0);
 			pd.OriginAtMargins=true;
-#if DEBUG
+			#if DEBUG
 			printPreview=new PrintPreview(PrintSituation.Default,pd,1);
 			printPreview.ShowDialog();
-#else
+			#else
 				try {
 					if(Printers.SetPrinter(pd,PrintSituation.Default)) {
 						pd.Print();
@@ -739,10 +739,10 @@ namespace OpenDental{
 				catch {
 					MessageBox.Show(Lan.g(this,"Printer not available"));
 				}
-#endif
+			#endif
 		}
 
-		///<summary>raised for each page to be printed.  One page per appointment.</summary>
+		///<summary>raised for each page to be printed.</summary>
 		private void pd_PrintPage(object sender,PrintPageEventArgs e) {
 			Graphics g=e.Graphics;
 			float yPos=75;

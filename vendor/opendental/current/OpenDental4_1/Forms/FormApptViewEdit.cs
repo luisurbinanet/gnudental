@@ -394,6 +394,7 @@ namespace OpenDental{
 			allElements.Add("Production");
 			allElements.Add("WirelessPhone");
 			allElements.Add("WkPhone");
+			allElements.Add("Age");
 			displayedElements=new ArrayList();
 			for(int i=0;i<ApptViewItems.ApptRows.Length;i++){
 				displayedElements.Add(ApptViewItems.ApptRows[i]);

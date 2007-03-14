@@ -198,8 +198,8 @@ namespace OpenDental{
 		}
 
 		private void butChange_Click(object sender, System.EventArgs e) {
-			FormProcedures FormP=new FormProcedures();
-      FormP.Mode=FormProcMode.Select;
+			FormProcCodes FormP=new FormProcCodes();
+      FormP.IsSelectionMode=true;
       FormP.ShowDialog();
       if(FormP.DialogResult==DialogResult.Cancel){
         textADA.Text=AutoCodeItems.Cur.ADACode; 

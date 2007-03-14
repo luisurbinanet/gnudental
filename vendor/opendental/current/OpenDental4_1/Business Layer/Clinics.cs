@@ -213,7 +213,7 @@ namespace OpenDental{
 			}
 		}
 
-		///<summary></summary>
+		///<summary>Returns null if clinic not found.</summary>
 		public static Clinic GetClinic(int clinicNum){
 			for(int i=0;i<List.Length;i++){
 				if(List[i].ClinicNum==clinicNum){

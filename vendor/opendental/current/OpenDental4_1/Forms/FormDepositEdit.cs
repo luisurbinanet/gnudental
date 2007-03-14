@@ -33,6 +33,7 @@ namespace OpenDental{
 		private OpenDental.UI.Button butPrint;
 		private OpenDental.UI.ODGrid gridPat;
 		private OpenDental.UI.ODGrid gridIns;
+		///<summary></summary>
 		public bool IsNew;
 		private ClaimPayment[] ClaimPayList;
 		private OpenDental.ValidDate textDateStart;

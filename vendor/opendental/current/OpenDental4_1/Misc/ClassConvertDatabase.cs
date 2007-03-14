@@ -50,7 +50,7 @@ namespace OpenDental{
 				MsgBox.Show(this,"Cannot convert this database version which was only for development purposes.");
 				return false;
 			}
-			if(FromVersion < new Version("4.0.13.0")){
+			if(FromVersion < new Version("4.1.2.0")){
 				if(MessageBox.Show(Lan.g(this,"Your database will now be converted")+"\r"
 					+Lan.g(this,"from version")+" "+FromVersion.ToString()+"\r"
 					+Lan.g(this,"to version")+" "+ToVersion.ToString()+"\r"
@@ -3359,8 +3359,157 @@ namespace OpenDental{
 				command="UPDATE preference SET ValueString = '4.0.13.0' WHERE PrefName = 'DataBaseVersion'";
 				dcon.NonQ(command);
 			}
-			//To4_0_?();
+			To4_1_0();
 		}
+
+		private void To4_1_0() {
+			if(FromVersion < new Version("4.1.0.0")) {
+				DataConnection dcon=new DataConnection();
+				string command;
+				if(CultureInfo.CurrentCulture.Name=="en-US"){
+					//Convert CovCats to new names and ranges----------------------------------------------------------------------
+					//General
+					command="UPDATE covcat SET EbenefitCat=1 WHERE Description='General'";
+					dcon.NonQ(command);
+					//Hide all previous covcats.
+					command="UPDATE covcat SET IsHidden=1 WHERE Description != 'General'";
+					dcon.NonQ(command);
+					//Create all the new cateories from scratch
+					int covCatNum;
+					//Diagnostic
+					command="INSERT INTO covcat (Description,DefaultPercent,EbenefitCat) VALUES('Diagnostic','100','"
+						+POut.PInt((int)EbenefitCategory.Diagnostic)+"')";
+					dcon.NonQ(command,true);
+					covCatNum=dcon.InsertID;
+					command="INSERT INTO covspan (CovCatNum,FromCode,ToCode) VALUES("+POut.PInt(covCatNum)+",'D0000','D0999')";
+					dcon.NonQ(command);
+					//RoutinePreventive
+					command="INSERT INTO covcat (Description,DefaultPercent,EbenefitCat) VALUES('Preventive','100','"
+						+POut.PInt((int)EbenefitCategory.RoutinePreventive)+"')";
+					dcon.NonQ(command,true);
+					covCatNum=dcon.InsertID;
+					command="INSERT INTO covspan (CovCatNum,FromCode,ToCode) VALUES("+POut.PInt(covCatNum)+",'D1000','D1999')";
+					dcon.NonQ(command);
+					//Restorative
+					command="INSERT INTO covcat (Description,DefaultPercent,EbenefitCat) VALUES('Restorative','80','"
+						+POut.PInt((int)EbenefitCategory.Restorative)+"')";
+					dcon.NonQ(command,true);
+					covCatNum=dcon.InsertID;
+					command="INSERT INTO covspan (CovCatNum,FromCode,ToCode) VALUES("+POut.PInt(covCatNum)+",'D2000','D2999')";
+					dcon.NonQ(command);
+					//Endo
+					command="INSERT INTO covcat (Description,DefaultPercent,EbenefitCat) VALUES('Endo','80','"
+						+POut.PInt((int)EbenefitCategory.Endodontics)+"')";
+					dcon.NonQ(command,true);
+					covCatNum=dcon.InsertID;
+					command="INSERT INTO covspan (CovCatNum,FromCode,ToCode) VALUES("+POut.PInt(covCatNum)+",'D3000','D3999')";
+					dcon.NonQ(command);
+					//Perio
+					command="INSERT INTO covcat (Description,DefaultPercent,EbenefitCat) VALUES('Perio','80','"
+						+POut.PInt((int)EbenefitCategory.Periodontics)+"')";
+					dcon.NonQ(command,true);
+					covCatNum=dcon.InsertID;
+					command="INSERT INTO covspan (CovCatNum,FromCode,ToCode) VALUES("+POut.PInt(covCatNum)+",'D4000','D4999')";
+					dcon.NonQ(command);
+					//OralSurgery
+					command="INSERT INTO covcat (Description,DefaultPercent,EbenefitCat) VALUES('Oral Surgery','80','"
+						+POut.PInt((int)EbenefitCategory.OralSurgery)+"')";
+					dcon.NonQ(command,true);
+					covCatNum=dcon.InsertID;
+					command="INSERT INTO covspan (CovCatNum,FromCode,ToCode) VALUES("+POut.PInt(covCatNum)+",'D7000','D7999')";
+					dcon.NonQ(command);
+					//Crowns
+					command="INSERT INTO covcat (Description,DefaultPercent,EbenefitCat) VALUES('Crowns','50','"
+						+POut.PInt((int)EbenefitCategory.Crowns)+"')";
+					dcon.NonQ(command,true);
+					covCatNum=dcon.InsertID;
+					command="INSERT INTO covspan (CovCatNum,FromCode,ToCode) VALUES("+POut.PInt(covCatNum)+",'D2700','D2799')";
+					dcon.NonQ(command);
+					//Prosth
+					command="INSERT INTO covcat (Description,DefaultPercent,EbenefitCat) VALUES('Prosth','50','"
+						+POut.PInt((int)EbenefitCategory.Prosthodontics)+"')";
+					dcon.NonQ(command,true);
+					covCatNum=dcon.InsertID;
+					command="INSERT INTO covspan (CovCatNum,FromCode,ToCode) VALUES("+POut.PInt(covCatNum)+",'D5000','D5899')";
+					dcon.NonQ(command);
+					command="INSERT INTO covspan (CovCatNum,FromCode,ToCode) VALUES("+POut.PInt(covCatNum)+",'D6200','D6899')";
+					dcon.NonQ(command);
+					//MaxProsth
+					command="INSERT INTO covcat (Description,DefaultPercent,EbenefitCat) VALUES('Maxillofacial Prosth','-1','"
+						+POut.PInt((int)EbenefitCategory.MaxillofacialProsth)+"')";
+					dcon.NonQ(command,true);
+					covCatNum=dcon.InsertID;
+					command="INSERT INTO covspan (CovCatNum,FromCode,ToCode) VALUES("+POut.PInt(covCatNum)+",'D5900','D5999')";
+					dcon.NonQ(command);
+					//Accident
+					command="INSERT INTO covcat (Description,DefaultPercent,EbenefitCat) VALUES('Accident','-1','"
+						+POut.PInt((int)EbenefitCategory.Accident)+"')";
+					dcon.NonQ(command,true);
+					covCatNum=dcon.InsertID;
+					//Ortho
+					command="INSERT INTO covcat (Description,DefaultPercent,EbenefitCat) VALUES('Ortho','-1','"
+						+POut.PInt((int)EbenefitCategory.Orthodontics)+"')";
+					dcon.NonQ(command,true);
+					covCatNum=dcon.InsertID;
+					command="INSERT INTO covspan (CovCatNum,FromCode,ToCode) VALUES("+POut.PInt(covCatNum)+",'D8000','D8999')";
+					dcon.NonQ(command);
+					//Then, order everything
+					command="SELECT * FROM covcat ORDER BY "
+						+"EbenefitCat != "+POut.PInt((int)EbenefitCategory.General)
+						+",EbenefitCat != "+POut.PInt((int)EbenefitCategory.Diagnostic)
+						+",EbenefitCat != "+POut.PInt((int)EbenefitCategory.RoutinePreventive)
+						+",EbenefitCat != "+POut.PInt((int)EbenefitCategory.Restorative)
+						+",EbenefitCat != "+POut.PInt((int)EbenefitCategory.Endodontics)
+						+",EbenefitCat != "+POut.PInt((int)EbenefitCategory.Periodontics)
+						+",EbenefitCat != "+POut.PInt((int)EbenefitCategory.OralSurgery)
+						+",EbenefitCat != "+POut.PInt((int)EbenefitCategory.Crowns)//subcategory of Restorative
+						+",EbenefitCat != "+POut.PInt((int)EbenefitCategory.Prosthodontics)
+						+",EbenefitCat != "+POut.PInt((int)EbenefitCategory.MaxillofacialProsth)
+						+",EbenefitCat != "+POut.PInt((int)EbenefitCategory.Accident)
+						+",EbenefitCat != "+POut.PInt((int)EbenefitCategory.Orthodontics);
+					DataTable table=dcon.GetTable(command);
+					for(int i=0;i<table.Rows.Count;i++){
+						command="UPDATE covcat SET CovOrder="+POut.PInt(i)+" WHERE CovCatNum="+table.Rows[i][0].ToString();
+						dcon.NonQ(command);
+					}
+				}
+				command="ALTER TABLE fee ADD INDEX indexADACode (ADACode)";
+				dcon.NonQ(command);
+				command="ALTER TABLE fee ADD INDEX indexFeeSched (FeeSched)";
+				dcon.NonQ(command);
+				//ProcButton categories---------------------------------------------------------------------------------
+				command="ALTER TABLE procbutton ADD Category smallint unsigned NOT NULL";
+				dcon.NonQ(command);
+				command="INSERT INTO definition (category,itemorder,itemname) VALUES(26,0,'All')";
+				dcon.NonQ(command,true);
+				int defNum=dcon.InsertID;
+				command="UPDATE procbutton SET Category="+POut.PInt(defNum);
+				dcon.NonQ(command);
+				command="ALTER TABLE procbutton ADD ButtonImage text NOT NULL";
+				dcon.NonQ(command);
+				command="UPDATE preference SET ValueString = '4.1.0.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To4_1_2();
+		}
+
+		private void To4_1_2() {
+			if(FromVersion < new Version("4.1.2.0")) {
+				DataConnection dcon=new DataConnection();
+				string command;
+				command="DELETE FROM preference WHERE PrefName= 'SkipComputeAgingInAccount'";
+				dcon.NonQ(command);
+				command="INSERT INTO preference VALUES ('StatementShowReturnAddress','1')";
+				dcon.NonQ(command);
+				command="INSERT INTO preference VALUES ('ShowIDinTitleBar','0')";
+				dcon.NonQ(command);
+				command="UPDATE preference SET ValueString = '4.1.2.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			//To4_1_?();
+		}
+
+
 		
 	}
 

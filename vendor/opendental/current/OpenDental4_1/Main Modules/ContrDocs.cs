@@ -373,8 +373,7 @@ namespace OpenDental{
 			}
 			FamCur=Patients.GetFamily(patNum);
 			PatCur=FamCur.GetPatient(patNum);
-			ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString+" - "
-				+PatCur.GetNameLF();
+			ParentForm.Text=Patients.GetMainTitle(PatCur);
 			if(PatCur.ImageFolder==""){//creates new folder for patient if none present
 				string name=PatCur.LName+PatCur.FName;
 				string folder="";

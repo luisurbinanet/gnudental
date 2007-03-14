@@ -60,11 +60,22 @@ namespace OpenDental{
   ///<summary></summary>
 	public class SecurityLogs{
 
-		///<summary>Used when viewing securityLog from the security admin window.</summary>
-		public static SecurityLog[] Refresh(DateTime dateFrom,DateTime dateTo){
+		///<summary>Used when viewing securityLog from the security admin window.  PermTypes can be length 0 to get all types.</summary>
+		public static SecurityLog[] Refresh(DateTime dateFrom,DateTime dateTo,Permissions permType,int patNum,
+			int userNum)
+		{
 			string command="SELECT * FROM securitylog "
 				+"WHERE LogDateTime >= '"+POut.PDate(dateFrom)+"' "
 				+"AND LogDateTime <= '"+POut.PDate(dateTo.AddDays(1))+"'";
+			if(patNum !=0){
+				command+=" AND PatNum= '"+POut.PInt(patNum)+"'";
+			}
+			if(permType!=Permissions.None){
+				command+=" AND PermType="+POut.PInt((int)permType);
+			}
+			if(userNum!=0){
+				command+=" AND UserNum="+POut.PInt(userNum);
+			}
 			DataConnection dcon=new DataConnection();
 			DataTable table=dcon.GetTable(command);
 			SecurityLog[] List=new SecurityLog[table.Rows.Count];

@@ -20,7 +20,6 @@ namespace OpenDental{
 		private System.ComponentModel.IContainer components;
 		private int SelectedGroupNum;
 		private TreeNode clickedPermNode;
-		private OpenDental.UI.Button butAudit;
 		private System.Windows.Forms.CheckBox checkTimecardSecurityEnabled;
 		private OpenDental.UI.Button butSetAll;
 		private bool changed;
@@ -66,7 +65,6 @@ namespace OpenDental{
 			this.labelPerm = new System.Windows.Forms.Label();
 			this.checkTimecardSecurityEnabled = new System.Windows.Forms.CheckBox();
 			this.butSetAll = new OpenDental.UI.Button();
-			this.butAudit = new OpenDental.UI.Button();
 			this.butAddUser = new OpenDental.UI.Button();
 			this.butAddGroup = new OpenDental.UI.Button();
 			this.butClose = new OpenDental.UI.Button();
@@ -148,22 +146,7 @@ namespace OpenDental{
 			this.butSetAll.Size = new System.Drawing.Size(79,25);
 			this.butSetAll.TabIndex = 58;
 			this.butSetAll.Text = "Set All";
-			this.butSetAll.Visible = false;
 			this.butSetAll.Click += new System.EventHandler(this.butSetAll_Click);
-			// 
-			// butAudit
-			// 
-			this.butAudit.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butAudit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.butAudit.Autosize = true;
-			this.butAudit.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butAudit.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butAudit.Location = new System.Drawing.Point(604,608);
-			this.butAudit.Name = "butAudit";
-			this.butAudit.Size = new System.Drawing.Size(107,25);
-			this.butAudit.TabIndex = 9;
-			this.butAudit.Text = "View Audit Trail";
-			this.butAudit.Click += new System.EventHandler(this.butAudit_Click);
 			// 
 			// butAddUser
 			// 
@@ -214,7 +197,6 @@ namespace OpenDental{
 			this.Controls.Add(this.butSetAll);
 			this.Controls.Add(this.treePermissions);
 			this.Controls.Add(this.checkTimecardSecurityEnabled);
-			this.Controls.Add(this.butAudit);
 			this.Controls.Add(this.butAddUser);
 			this.Controls.Add(this.butAddGroup);
 			this.Controls.Add(this.butClose);
@@ -564,12 +546,29 @@ namespace OpenDental{
 		}
 
 		private void butSetAll_Click(object sender,EventArgs e) {
-
-		}
-
-		private void butAudit_Click(object sender, System.EventArgs e) {
-			FormAudit FormA=new FormAudit();
-			FormA.ShowDialog();
+			GroupPermission perm;
+			for(int i=0;i<Enum.GetNames(typeof(Permissions)).Length;i++){
+				if(i==(int)Permissions.SecurityAdmin
+					|| i==(int)Permissions.StartupMultiUserOld
+					|| i==(int)Permissions.StartupSingleUserOld)
+				{
+					continue;
+				}
+				perm=GroupPermissions.GetPerm(SelectedGroupNum,(Permissions)i);
+				if(perm==null){
+					perm=new GroupPermission();
+					perm.PermType=(Permissions)i;
+					perm.UserGroupNum=SelectedGroupNum;
+					try{
+						perm.InsertOrUpdate(true);
+					}
+					catch(Exception ex){
+						MessageBox.Show(ex.Message);
+					}
+					changed=true;
+				}
+			}
+			FillTreePerm();
 		}
 
 		private void butClose_Click(object sender, System.EventArgs e) {

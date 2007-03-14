@@ -249,9 +249,13 @@ namespace OpenDental{
 
 	///<summary>Used in FormApptLists as the selection result.</summary>
 	public enum ApptListSelection{
+		///<summary></summary>
 		Recall,
+		///<summary></summary>
 		Confirm,
+		///<summary></summary>
 		Planned,
+		///<summary></summary>
 		Unsched
 	}
 

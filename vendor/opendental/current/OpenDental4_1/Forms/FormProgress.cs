@@ -15,7 +15,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Timer timer1;
 		private System.ComponentModel.IContainer components;
-		///<summary></summary>
+		//<summary></summary>
 		//public string FileName;
 		///<summary></summary>
 		public double MaxVal;

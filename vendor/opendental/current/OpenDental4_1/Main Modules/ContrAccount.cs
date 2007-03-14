@@ -840,9 +840,8 @@ namespace OpenDental {
 		}
 
 		private void RefreshModuleScreen() {
+			ParentForm.Text=Patients.GetMainTitle(PatCur);
 			if(PatCur!=null) {
-				ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString+" - "
-					+PatCur.GetNameLF();
 				gridAccount.Enabled=true;
 				ToolBarMain.Buttons["Payment"].Enabled=true;
 				ToolBarMain.Buttons["Adjustment"].Enabled=true;
@@ -856,7 +855,6 @@ namespace OpenDental {
 				//butEditFin.Enabled=true;
 			}
 			else {
-				ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString;
 				gridAccount.Enabled=false;
 				ToolBarMain.Buttons["Payment"].Enabled=false;
 				ToolBarMain.Buttons["Adjustment"].Enabled=false;
@@ -1243,7 +1241,7 @@ namespace OpenDental {
 			//5/3/05 changed this to always compute aging. Accuracy is more important than speed.
 			//if(Shared.ComputeBalances(ProcList,ClaimProcList,PatCur,PaySplitList,AdjustmentList)){
 			Shared.ComputeBalances(ProcList,ClaimProcList,PatCur,PaySplitList,AdjustmentList,PayPlanList,PayPlanChargeList);
-			if(!Prefs.GetBool("SkipComputeAgingInAccount")){
+			//if(!Prefs.GetBool("SkipComputeAgingInAccount")){
 				//then recompute aging for family. This is time consuming, about 1/2 second.
 				//Compute aging involves about 10 to 12 database calls.  (Let's reduce this then)
 				Ledgers.ComputeAging(PatCur.Guarantor,DateTime.Today);
@@ -1251,7 +1249,7 @@ namespace OpenDental {
 					,Ledgers.Bal[3],Ledgers.InsEst,Ledgers.BalTotal);
 				FamCur=Patients.GetFamily(PatCur.PatNum);
 				PatCur=FamCur.GetPatient(PatCur.PatNum);
-			}
+			//}
 			arrayProc = new Procedure[ProcList.Length];
 			arrayClaim=new Claim[Claims.List.Length];
 			arrayAdj = new Adjustment[AdjustmentList.Length];

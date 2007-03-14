@@ -185,10 +185,10 @@ namespace OpenDental{
       ALpatSelect2.Add(Lan.g(this,"FamFinUrgNote")); 
       ALpatSelect2.Add(Lan.g(this,"MedUrgNote")); 
 			ALpatSelect2.Add(Lan.g(this,"ApptModNote"));
-      ALpatSelect2.Add(Lan.g(this,"PriPlanNum"));//Primary Carrier?
-      ALpatSelect2.Add(Lan.g(this,"PriRelationship"));// ?
-			ALpatSelect2.Add(Lan.g(this,"SecPlanNum"));//Secondary Carrier? 
-			ALpatSelect2.Add(Lan.g(this,"SecRelationship"));// ?
+      //ALpatSelect2.Add(Lan.g(this,"PriPlanNum"));//Primary Carrier?
+      //ALpatSelect2.Add(Lan.g(this,"PriRelationship"));// ?
+			//ALpatSelect2.Add(Lan.g(this,"SecPlanNum"));//Secondary Carrier? 
+			//ALpatSelect2.Add(Lan.g(this,"SecRelationship"));// ?
       ALpatSelect2.Add(Lan.g(this,"RecallInterval")); 
 			ALpatSelect2.Add(Lan.g(this,"StudentStatus"));
       ALpatSelect2.Add(Lan.g(this,"SchoolName")); 

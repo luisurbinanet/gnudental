@@ -21,6 +21,8 @@ namespace OpenDental{
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.RadioButton radioGrouped;
 	  private FormQuery FormQuery2;
+		private Label label2;
+		private TextBox textADACode;
 		///<summary>The where clause for the providers.</summary>
 		private string whereProv;
 
@@ -58,82 +60,86 @@ namespace OpenDental{
 			this.radioIndividual = new System.Windows.Forms.RadioButton();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.radioGrouped = new System.Windows.Forms.RadioButton();
+			this.label2 = new System.Windows.Forms.Label();
+			this.textADACode = new System.Windows.Forms.TextBox();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// butCancel
 			// 
-			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.butCancel.Autosize = true;
 			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.Location = new System.Drawing.Point(567, 372);
+			this.butCancel.Location = new System.Drawing.Point(606,375);
 			this.butCancel.Name = "butCancel";
-			this.butCancel.Size = new System.Drawing.Size(75, 26);
+			this.butCancel.Size = new System.Drawing.Size(75,26);
 			this.butCancel.TabIndex = 4;
 			this.butCancel.Text = "&Cancel";
 			// 
 			// butOK
 			// 
-			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.butOK.Autosize = true;
 			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butOK.Location = new System.Drawing.Point(567, 336);
+			this.butOK.Location = new System.Drawing.Point(606,339);
 			this.butOK.Name = "butOK";
-			this.butOK.Size = new System.Drawing.Size(75, 26);
+			this.butOK.Size = new System.Drawing.Size(75,26);
 			this.butOK.TabIndex = 3;
 			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// date2
 			// 
-			this.date2.Location = new System.Drawing.Point(285, 118);
+			this.date2.Location = new System.Drawing.Point(284,33);
 			this.date2.Name = "date2";
 			this.date2.TabIndex = 2;
 			// 
 			// date1
 			// 
-			this.date1.Location = new System.Drawing.Point(29, 118);
+			this.date1.Location = new System.Drawing.Point(28,33);
 			this.date1.Name = "date1";
 			this.date1.TabIndex = 1;
 			// 
 			// labelTO
 			// 
-			this.labelTO.Location = new System.Drawing.Point(211, 126);
+			this.labelTO.Location = new System.Drawing.Point(210,41);
 			this.labelTO.Name = "labelTO";
-			this.labelTO.Size = new System.Drawing.Size(72, 23);
+			this.labelTO.Size = new System.Drawing.Size(72,23);
 			this.labelTO.TabIndex = 22;
 			this.labelTO.Text = "TO";
 			this.labelTO.TextAlign = System.Drawing.ContentAlignment.TopCenter;
 			// 
 			// butAll
 			// 
-			this.butAll.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAll.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butAll.Autosize = true;
 			this.butAll.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butAll.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butAll.Location = new System.Drawing.Point(520, 274);
+			this.butAll.Location = new System.Drawing.Point(519,189);
 			this.butAll.Name = "butAll";
-			this.butAll.Size = new System.Drawing.Size(75, 26);
+			this.butAll.Size = new System.Drawing.Size(75,26);
 			this.butAll.TabIndex = 34;
 			this.butAll.Text = "&All";
 			this.butAll.Click += new System.EventHandler(this.butAll_Click);
 			// 
 			// listProv
 			// 
-			this.listProv.Location = new System.Drawing.Point(519, 118);
+			this.listProv.Location = new System.Drawing.Point(518,33);
 			this.listProv.Name = "listProv";
 			this.listProv.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-			this.listProv.Size = new System.Drawing.Size(120, 147);
+			this.listProv.Size = new System.Drawing.Size(163,147);
 			this.listProv.TabIndex = 33;
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(519, 99);
+			this.label1.Location = new System.Drawing.Point(518,14);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(104, 16);
+			this.label1.Size = new System.Drawing.Size(104,16);
 			this.label1.TabIndex = 32;
 			this.label1.Text = "Providers";
 			// 
@@ -141,9 +147,9 @@ namespace OpenDental{
 			// 
 			this.radioIndividual.Checked = true;
 			this.radioIndividual.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.radioIndividual.Location = new System.Drawing.Point(11, 17);
+			this.radioIndividual.Location = new System.Drawing.Point(11,17);
 			this.radioIndividual.Name = "radioIndividual";
-			this.radioIndividual.Size = new System.Drawing.Size(207, 21);
+			this.radioIndividual.Size = new System.Drawing.Size(207,21);
 			this.radioIndividual.TabIndex = 35;
 			this.radioIndividual.TabStop = true;
 			this.radioIndividual.Text = "Individual Procedures";
@@ -153,9 +159,9 @@ namespace OpenDental{
 			this.groupBox1.Controls.Add(this.radioGrouped);
 			this.groupBox1.Controls.Add(this.radioIndividual);
 			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox1.Location = new System.Drawing.Point(29, 8);
+			this.groupBox1.Location = new System.Drawing.Point(28,229);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(239, 70);
+			this.groupBox1.Size = new System.Drawing.Size(239,70);
 			this.groupBox1.TabIndex = 36;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Type";
@@ -163,18 +169,36 @@ namespace OpenDental{
 			// radioGrouped
 			// 
 			this.radioGrouped.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.radioGrouped.Location = new System.Drawing.Point(11, 40);
+			this.radioGrouped.Location = new System.Drawing.Point(11,40);
 			this.radioGrouped.Name = "radioGrouped";
-			this.radioGrouped.Size = new System.Drawing.Size(215, 21);
+			this.radioGrouped.Size = new System.Drawing.Size(215,21);
 			this.radioGrouped.TabIndex = 36;
 			this.radioGrouped.Text = "Grouped By Procedure Code";
+			// 
+			// label2
+			// 
+			this.label2.Location = new System.Drawing.Point(26,324);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(290,20);
+			this.label2.TabIndex = 37;
+			this.label2.Text = "Only for procedure codes simiilar to:";
+			this.label2.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// textADACode
+			// 
+			this.textADACode.Location = new System.Drawing.Point(28,348);
+			this.textADACode.Name = "textADACode";
+			this.textADACode.Size = new System.Drawing.Size(100,20);
+			this.textADACode.TabIndex = 38;
 			// 
 			// FormRpProcSheet
 			// 
 			this.AcceptButton = this.butOK;
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
 			this.CancelButton = this.butCancel;
-			this.ClientSize = new System.Drawing.Size(682, 437);
+			this.ClientSize = new System.Drawing.Size(724,437);
+			this.Controls.Add(this.textADACode);
+			this.Controls.Add(this.label2);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.butAll);
 			this.Controls.Add(this.listProv);
@@ -193,6 +217,7 @@ namespace OpenDental{
 			this.Load += new System.EventHandler(this.FormDailySummary_Load);
 			this.groupBox1.ResumeLayout(false);
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 		#endregion
@@ -217,7 +242,7 @@ namespace OpenDental{
 			//MessageBox.Show("This reporting feature is incomplete.");
 			//return;
 			if(listProv.SelectedIndices.Count==0){
-				MessageBox.Show("At least one provider must be selected.");
+				MsgBox.Show(this,"At least one provider must be selected.");
 				return;
 			}
 			whereProv="(";
@@ -254,6 +279,7 @@ namespace OpenDental{
 				+"AND procedurelog.ADACode=procedurecode.ADACode "
 				+"AND provider.ProvNum=procedurelog.ProvNum "
 				+"AND "+whereProv+" "
+				+"AND procedurelog.ADACode LIKE '%"+POut.PString(textADACode.Text)+"%' "
 				+"AND procedurelog.ProcDate >= '" +POut.PDate(date1.SelectionStart)+"' "
 				+"AND procedurelog.ProcDate <= '" +POut.PDate(date2.SelectionStart)+"' "
 				+"GROUP BY procedurelog.ProcNum "
@@ -302,6 +328,7 @@ namespace OpenDental{
 				+"&& procedurelog.ADACode=procedurecode.ADACode "
 				+"&& definition.DefNum=procedurecode.ProcCat "
 				+"&& "+whereProv+" "
+				+"AND procedurelog.ADACode LIKE '%"+POut.PString(textADACode.Text)+"%' "
 				+"&& procedurelog.ProcDate >= '" + date1.SelectionStart.ToString("yyyy-MM-dd")+"' "
 				+"&& procedurelog.ProcDate <= '" + date2.SelectionStart.ToString("yyyy-MM-dd")+"' "
 				+"GROUP BY procedurelog.ADACode "

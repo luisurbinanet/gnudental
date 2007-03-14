@@ -33,7 +33,7 @@ namespace OpenDental.Bridges{
 						else{
 							sw.WriteLine("PN="+pat.ChartNumber);
 						}
-						sw.WriteLine("PN="+pat.PatNum.ToString());
+						//sw.WriteLine("PN="+pat.PatNum.ToString());
 						sw.WriteLine("LN="+pat.LName);
 						sw.WriteLine("FN="+pat.FName);
 						sw.WriteLine("BD="+pat.Birthdate.ToShortDateString());

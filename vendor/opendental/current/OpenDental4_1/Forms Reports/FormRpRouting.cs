@@ -30,6 +30,8 @@ namespace OpenDental
 		private OpenDental.UI.PrintPreview printPreview;
 		///<summary>The date that the user selected.</summary>
 		private DateTime date;
+		///<summary>If set externally beforehand, then the user will not see any choices, and only a routing slip for the one appt will print.</summary>
+		public int ApptNum;
 
 		/// <summary>
 		/// Required designer variable.
@@ -206,6 +208,21 @@ namespace OpenDental
 		#endregion
 
 		private void FormRpRouting_Load(object sender, System.EventArgs e){
+			if(ApptNum!=0){
+				Appts=new Appointment[] {Appointments.GetOneApt(ApptNum)};
+				if(Appts.Length==0 || Appts[0]==null) {
+					MsgBox.Show(this,"Appointment not found");
+					return;
+				}
+				pagesPrinted=0;
+				pd=new PrintDocument();
+				pd.PrintPage+=new PrintPageEventHandler(this.pd_PrintPage);
+				pd.OriginAtMargins=true;
+				pd.DefaultPageSettings.Margins=new Margins(0,0,0,0);
+				printPreview=new OpenDental.UI.PrintPreview(PrintSituation.Default,pd,Appts.Length);
+				printPreview.ShowDialog();
+				DialogResult=DialogResult.OK;
+			}
 			for(int i=0;i<Providers.List.Length;i++){
 				listProv.Items.Add(Providers.List[i].Abbr+" - "+Providers.List[i].LName+", "
 					+Providers.List[i].FName);
@@ -234,8 +251,7 @@ namespace OpenDental
 				MsgBox.Show(this,"Please fix data entry errors first.");
 				return;
 			}
-			if(textDate.Text.Length == 0) 
-			{
+			if(textDate.Text.Length==0){
 				MessageBox.Show(Lan.g(this,"Date is required."));
 				return;
 			}
@@ -272,6 +288,9 @@ namespace OpenDental
 
 		///<summary>raised for each page to be printed.  One page per appointment.</summary>
 		private void pd_PrintPage(object sender,PrintPageEventArgs ev) {
+			if(ApptNum!=0) {//just for one appointment
+				date=Appointments.DateSelected;
+			}
 			Graphics g=ev.Graphics;
 			float y=50;
 			float x=0;
@@ -300,6 +319,14 @@ namespace OpenDental
 			str=(Appts[pagesPrinted].Pattern.Length*5).ToString()+" "+Lan.g(this,"minutes");
 			g.DrawString(str,font,brush,x,y);
 			y+=15;
+			str=Providers.GetAbbr(Appts[pagesPrinted].ProvNum);
+			g.DrawString(str,font,brush,x,y);
+			y+=15;
+			if(Appts[pagesPrinted].ProvHyg!=0) {
+				str=Providers.GetAbbr(Appts[pagesPrinted].ProvHyg);
+				g.DrawString(str,font,brush,x,y);
+				y+=15;
+			}
 			str=Lan.g(this,"Procedures:");
 			g.DrawString(str,font,brush,x,y);
 			y+=15;

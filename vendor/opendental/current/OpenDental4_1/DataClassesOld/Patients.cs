@@ -766,6 +766,22 @@ namespace OpenDental{
 			return table;
 		}
 
+		///<summary>It is entirely acceptable to pass in a null value for PatCur.  In that case, no patient name will show.</summary>
+		public static string GetMainTitle(Patient PatCur){
+			string retVal=Prefs.GetString("MainWindowTitle");
+			if(PatCur==null){
+				return retVal;
+			}
+			retVal+=" - "+PatCur.GetNameLF();
+			//if(Prefs.GetInt("ShowIDinTitleBar")==0){//no action
+			if(Prefs.GetInt("ShowIDinTitleBar")==1){
+				retVal+=" - "+PatCur.PatNum.ToString();
+			}
+			else if(Prefs.GetInt("ShowIDinTitleBar")==2) {
+				retVal+=" - "+PatCur.ChartNumber;
+			}
+			return retVal;
+		}
 		
 
 

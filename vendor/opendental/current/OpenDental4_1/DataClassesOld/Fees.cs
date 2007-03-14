@@ -21,6 +21,7 @@ namespace OpenDental{
 		///<summary>Not used.</summary>
 		public bool UseDefaultCov;
 
+		///<summary></summary>
 		public Fee Copy(){
 			Fee f=new Fee();
 			f.FeeNum=FeeNum;
@@ -107,6 +108,35 @@ namespace OpenDental{
 				}
 			}
 		}
+
+		/*
+		///<summary>Only used in the procedurecode edit window to display fees.</summary>
+		public static DataTable GetListForCode(string adaCode) {
+			string command="SELECT * FROM fee WHERE ADACode='"+POut.PString(adaCode)+"'";
+			DataConnection dcon=new DataConnection();
+			DataTable table=dcon.GetTable(command);
+			Fee[] retVal=new Fee[table.Rows.Count]; 
+			for(int i=0;i<table.Rows.Count;i++) {
+				retVal[]=new Fee();
+				fee.FeeNum       =PIn.PInt(table.Rows[i][0].ToString());
+				fee.Amount       =PIn.PDouble(table.Rows[i][1].ToString());
+				fee.ADACode      =PIn.PString(table.Rows[i][2].ToString());
+				fee.FeeSched     =PIn.PInt(table.Rows[i][3].ToString());
+				fee.UseDefaultFee=PIn.PBool(table.Rows[i][4].ToString());
+				fee.UseDefaultCov=PIn.PBool(table.Rows[i][5].ToString());
+				if(Defs.GetOrder(DefCat.FeeSchedNames,fee.FeeSched)!=-1) {//if fee sched is visible
+					if(HList[Defs.GetOrder(DefCat.FeeSchedNames,fee.FeeSched)].ContainsKey(fee.ADACode)) {
+						//if fee was already loaded for this adacode, delete this duplicate.
+						command="DELETE FROM fee WHERE feenum = '"+fee.FeeNum+"'";
+						dcon.NonQ(command);
+					}
+					else {
+						HList[Defs.GetOrder(DefCat.FeeSchedNames,fee.FeeSched)].Add(fee.ADACode,fee);
+					}
+				}
+			}
+		}*/
+
 
 		///<summary>Used in FormProcCodeEdit,FormProcedures, and FormClaimProc to get Fees for display and for editing. Returns null if no matching fee found.</summary>
 		public static Fee GetFeeByOrder(string adacode, int order){

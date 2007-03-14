@@ -40,8 +40,6 @@ namespace OpenDental{
 		private CheckBox checkPat;
 		private int PlanNum;
 		private int PatPlanNum;
-		///<summary>This is only set upon load.</summary>
-		private bool isAnnualMax;
 
 		///<summary></summary>
 		public FormBenefitEdit(int patPlanNum,int planNum){
@@ -69,29 +67,29 @@ namespace OpenDental{
 			this.labelADACode = new System.Windows.Forms.Label();
 			this.labelAmount = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
-			this.butOK = new OpenDental.UI.Button();
-			this.butCancel = new OpenDental.UI.Button();
-			this.butDelete = new OpenDental.UI.Button();
-			this.textAmount = new OpenDental.ValidDouble();
 			this.listCategory = new System.Windows.Forms.ListBox();
 			this.checkPat = new System.Windows.Forms.CheckBox();
 			this.textADACode = new System.Windows.Forms.TextBox();
 			this.listType = new System.Windows.Forms.ListBox();
 			this.labelType = new System.Windows.Forms.Label();
 			this.labelPercent = new System.Windows.Forms.Label();
-			this.textPercent = new OpenDental.ValidNum();
 			this.listTimePeriod = new System.Windows.Forms.ListBox();
 			this.label4 = new System.Windows.Forms.Label();
-			this.textQuantity = new OpenDental.ValidNum();
 			this.listQuantityQualifier = new System.Windows.Forms.ListBox();
 			this.label8 = new System.Windows.Forms.Label();
 			this.groupQuantity = new System.Windows.Forms.GroupBox();
+			this.textQuantity = new OpenDental.ValidNum();
+			this.textPercent = new OpenDental.ValidNum();
+			this.textAmount = new OpenDental.ValidDouble();
+			this.butDelete = new OpenDental.UI.Button();
+			this.butCancel = new OpenDental.UI.Button();
+			this.butOK = new OpenDental.UI.Button();
 			this.groupQuantity.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// labelADACode
 			// 
-			this.labelADACode.Location = new System.Drawing.Point(129,181);
+			this.labelADACode.Location = new System.Drawing.Point(21,196);
 			this.labelADACode.Name = "labelADACode";
 			this.labelADACode.Size = new System.Drawing.Size(104,16);
 			this.labelADACode.TabIndex = 0;
@@ -100,7 +98,7 @@ namespace OpenDental{
 			// 
 			// labelAmount
 			// 
-			this.labelAmount.Location = new System.Drawing.Point(375,67);
+			this.labelAmount.Location = new System.Drawing.Point(267,70);
 			this.labelAmount.Name = "labelAmount";
 			this.labelAmount.Size = new System.Drawing.Size(100,16);
 			this.labelAmount.TabIndex = 4;
@@ -109,41 +107,133 @@ namespace OpenDental{
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(131,41);
+			this.label2.Location = new System.Drawing.Point(23,44);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(100,16);
 			this.label2.TabIndex = 10;
 			this.label2.Text = "Category";
 			this.label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
-			// butOK
+			// listCategory
 			// 
-			this.butOK.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butOK.Autosize = true;
-			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butOK.Location = new System.Drawing.Point(587,313);
-			this.butOK.Name = "butOK";
-			this.butOK.Size = new System.Drawing.Size(75,26);
-			this.butOK.TabIndex = 8;
-			this.butOK.Text = "&OK";
-			this.butOK.Click += new System.EventHandler(this.butOK_Click);
+			this.listCategory.Location = new System.Drawing.Point(126,44);
+			this.listCategory.Name = "listCategory";
+			this.listCategory.Size = new System.Drawing.Size(100,147);
+			this.listCategory.TabIndex = 5;
 			// 
-			// butCancel
+			// checkPat
 			// 
-			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butCancel.Autosize = true;
-			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.Location = new System.Drawing.Point(587,351);
-			this.butCancel.Name = "butCancel";
-			this.butCancel.Size = new System.Drawing.Size(75,26);
-			this.butCancel.TabIndex = 9;
-			this.butCancel.Text = "&Cancel";
-			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
+			this.checkPat.CheckAlign = System.Drawing.ContentAlignment.TopRight;
+			this.checkPat.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkPat.Location = new System.Drawing.Point(12,7);
+			this.checkPat.Name = "checkPat";
+			this.checkPat.Size = new System.Drawing.Size(493,20);
+			this.checkPat.TabIndex = 4;
+			this.checkPat.Text = "Patient Override (Rare. Usually if percentages are different for family members)";
+			this.checkPat.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			this.checkPat.UseVisualStyleBackColor = true;
+			// 
+			// textADACode
+			// 
+			this.textADACode.Location = new System.Drawing.Point(126,192);
+			this.textADACode.Name = "textADACode";
+			this.textADACode.Size = new System.Drawing.Size(100,20);
+			this.textADACode.TabIndex = 6;
+			// 
+			// listType
+			// 
+			this.listType.Location = new System.Drawing.Point(126,223);
+			this.listType.Name = "listType";
+			this.listType.Size = new System.Drawing.Size(100,82);
+			this.listType.TabIndex = 7;
+			this.listType.Click += new System.EventHandler(this.listType_Click);
+			// 
+			// labelType
+			// 
+			this.labelType.Location = new System.Drawing.Point(24,223);
+			this.labelType.Name = "labelType";
+			this.labelType.Size = new System.Drawing.Size(100,16);
+			this.labelType.TabIndex = 26;
+			this.labelType.Text = "Type";
+			this.labelType.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
+			// labelPercent
+			// 
+			this.labelPercent.Location = new System.Drawing.Point(263,48);
+			this.labelPercent.Name = "labelPercent";
+			this.labelPercent.Size = new System.Drawing.Size(104,16);
+			this.labelPercent.TabIndex = 27;
+			this.labelPercent.Text = "Percent";
+			this.labelPercent.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
+			// listTimePeriod
+			// 
+			this.listTimePeriod.Location = new System.Drawing.Point(368,90);
+			this.listTimePeriod.Name = "listTimePeriod";
+			this.listTimePeriod.Size = new System.Drawing.Size(100,69);
+			this.listTimePeriod.TabIndex = 2;
+			// 
+			// label4
+			// 
+			this.label4.Location = new System.Drawing.Point(266,90);
+			this.label4.Name = "label4";
+			this.label4.Size = new System.Drawing.Size(100,16);
+			this.label4.TabIndex = 30;
+			this.label4.Text = "Time Period";
+			this.label4.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
+			// listQuantityQualifier
+			// 
+			this.listQuantityQualifier.Location = new System.Drawing.Point(67,41);
+			this.listQuantityQualifier.Name = "listQuantityQualifier";
+			this.listQuantityQualifier.Size = new System.Drawing.Size(100,82);
+			this.listQuantityQualifier.TabIndex = 1;
+			// 
+			// label8
+			// 
+			this.label8.Location = new System.Drawing.Point(1,43);
+			this.label8.Name = "label8";
+			this.label8.Size = new System.Drawing.Size(65,38);
+			this.label8.TabIndex = 34;
+			this.label8.Text = "Qualifier";
+			this.label8.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
+			// groupQuantity
+			// 
+			this.groupQuantity.Controls.Add(this.textQuantity);
+			this.groupQuantity.Controls.Add(this.listQuantityQualifier);
+			this.groupQuantity.Controls.Add(this.label8);
+			this.groupQuantity.Location = new System.Drawing.Point(301,170);
+			this.groupQuantity.Name = "groupQuantity";
+			this.groupQuantity.Size = new System.Drawing.Size(180,135);
+			this.groupQuantity.TabIndex = 3;
+			this.groupQuantity.TabStop = false;
+			this.groupQuantity.Text = "Quantity";
+			// 
+			// textQuantity
+			// 
+			this.textQuantity.Location = new System.Drawing.Point(67,17);
+			this.textQuantity.MaxVal = 100;
+			this.textQuantity.MinVal = 0;
+			this.textQuantity.Name = "textQuantity";
+			this.textQuantity.Size = new System.Drawing.Size(68,20);
+			this.textQuantity.TabIndex = 0;
+			// 
+			// textPercent
+			// 
+			this.textPercent.Location = new System.Drawing.Point(368,44);
+			this.textPercent.MaxVal = 100;
+			this.textPercent.MinVal = 0;
+			this.textPercent.Name = "textPercent";
+			this.textPercent.Size = new System.Drawing.Size(68,20);
+			this.textPercent.TabIndex = 0;
+			// 
+			// textAmount
+			// 
+			this.textAmount.Location = new System.Drawing.Point(368,67);
+			this.textAmount.Name = "textAmount";
+			this.textAmount.Size = new System.Drawing.Size(68,20);
+			this.textAmount.TabIndex = 1;
 			// 
 			// butDelete
 			// 
@@ -161,126 +251,34 @@ namespace OpenDental{
 			this.butDelete.Text = "&Delete";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
 			// 
-			// textAmount
+			// butCancel
 			// 
-			this.textAmount.Location = new System.Drawing.Point(476,64);
-			this.textAmount.Name = "textAmount";
-			this.textAmount.Size = new System.Drawing.Size(68,20);
-			this.textAmount.TabIndex = 1;
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.Autosize = true;
+			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butCancel.Location = new System.Drawing.Point(587,351);
+			this.butCancel.Name = "butCancel";
+			this.butCancel.Size = new System.Drawing.Size(75,26);
+			this.butCancel.TabIndex = 9;
+			this.butCancel.Text = "&Cancel";
+			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
-			// listCategory
+			// butOK
 			// 
-			this.listCategory.Location = new System.Drawing.Point(234,41);
-			this.listCategory.Name = "listCategory";
-			this.listCategory.Size = new System.Drawing.Size(100,134);
-			this.listCategory.TabIndex = 5;
-			// 
-			// checkPat
-			// 
-			this.checkPat.CheckAlign = System.Drawing.ContentAlignment.TopRight;
-			this.checkPat.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkPat.Location = new System.Drawing.Point(12,7);
-			this.checkPat.Name = "checkPat";
-			this.checkPat.Size = new System.Drawing.Size(237,31);
-			this.checkPat.TabIndex = 4;
-			this.checkPat.Text = "Patient Override (Rare. Usually if percentages are different for family members)";
-			this.checkPat.TextAlign = System.Drawing.ContentAlignment.TopRight;
-			this.checkPat.UseVisualStyleBackColor = true;
-			// 
-			// textADACode
-			// 
-			this.textADACode.Location = new System.Drawing.Point(234,177);
-			this.textADACode.Name = "textADACode";
-			this.textADACode.Size = new System.Drawing.Size(100,20);
-			this.textADACode.TabIndex = 6;
-			// 
-			// listType
-			// 
-			this.listType.Location = new System.Drawing.Point(234,208);
-			this.listType.Name = "listType";
-			this.listType.Size = new System.Drawing.Size(100,82);
-			this.listType.TabIndex = 7;
-			this.listType.Click += new System.EventHandler(this.listType_Click);
-			// 
-			// labelType
-			// 
-			this.labelType.Location = new System.Drawing.Point(132,208);
-			this.labelType.Name = "labelType";
-			this.labelType.Size = new System.Drawing.Size(100,16);
-			this.labelType.TabIndex = 26;
-			this.labelType.Text = "Type";
-			this.labelType.TextAlign = System.Drawing.ContentAlignment.TopRight;
-			// 
-			// labelPercent
-			// 
-			this.labelPercent.Location = new System.Drawing.Point(371,45);
-			this.labelPercent.Name = "labelPercent";
-			this.labelPercent.Size = new System.Drawing.Size(104,16);
-			this.labelPercent.TabIndex = 27;
-			this.labelPercent.Text = "Percent";
-			this.labelPercent.TextAlign = System.Drawing.ContentAlignment.TopRight;
-			// 
-			// textPercent
-			// 
-			this.textPercent.Location = new System.Drawing.Point(476,41);
-			this.textPercent.MaxVal = 100;
-			this.textPercent.MinVal = 0;
-			this.textPercent.Name = "textPercent";
-			this.textPercent.Size = new System.Drawing.Size(68,20);
-			this.textPercent.TabIndex = 0;
-			// 
-			// listTimePeriod
-			// 
-			this.listTimePeriod.Location = new System.Drawing.Point(476,87);
-			this.listTimePeriod.Name = "listTimePeriod";
-			this.listTimePeriod.Size = new System.Drawing.Size(100,69);
-			this.listTimePeriod.TabIndex = 2;
-			// 
-			// label4
-			// 
-			this.label4.Location = new System.Drawing.Point(374,87);
-			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(100,16);
-			this.label4.TabIndex = 30;
-			this.label4.Text = "Time Period";
-			this.label4.TextAlign = System.Drawing.ContentAlignment.TopRight;
-			// 
-			// textQuantity
-			// 
-			this.textQuantity.Location = new System.Drawing.Point(67,17);
-			this.textQuantity.MaxVal = 100;
-			this.textQuantity.MinVal = 0;
-			this.textQuantity.Name = "textQuantity";
-			this.textQuantity.Size = new System.Drawing.Size(68,20);
-			this.textQuantity.TabIndex = 0;
-			// 
-			// listQuantityQualifier
-			// 
-			this.listQuantityQualifier.Location = new System.Drawing.Point(67,41);
-			this.listQuantityQualifier.Name = "listQuantityQualifier";
-			this.listQuantityQualifier.Size = new System.Drawing.Size(100,69);
-			this.listQuantityQualifier.TabIndex = 1;
-			// 
-			// label8
-			// 
-			this.label8.Location = new System.Drawing.Point(1,43);
-			this.label8.Name = "label8";
-			this.label8.Size = new System.Drawing.Size(65,38);
-			this.label8.TabIndex = 34;
-			this.label8.Text = "Qualifier";
-			this.label8.TextAlign = System.Drawing.ContentAlignment.TopRight;
-			// 
-			// groupQuantity
-			// 
-			this.groupQuantity.Controls.Add(this.textQuantity);
-			this.groupQuantity.Controls.Add(this.listQuantityQualifier);
-			this.groupQuantity.Controls.Add(this.label8);
-			this.groupQuantity.Location = new System.Drawing.Point(409,167);
-			this.groupQuantity.Name = "groupQuantity";
-			this.groupQuantity.Size = new System.Drawing.Size(180,121);
-			this.groupQuantity.TabIndex = 3;
-			this.groupQuantity.TabStop = false;
-			this.groupQuantity.Text = "Quantity";
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butOK.Location = new System.Drawing.Point(587,313);
+			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75,26);
+			this.butOK.TabIndex = 8;
+			this.butOK.Text = "&OK";
+			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// FormBenefitEdit
 			// 
@@ -364,20 +362,20 @@ namespace OpenDental{
 				}
 			}
 			//determine if this is an annual max
-			if(textADACode.Text==""
+			/*if(textADACode.Text==""
 				&& listType.SelectedIndex==(int)InsBenefitType.Limitations
 				&& (listTimePeriod.SelectedIndex==(int)BenefitTimePeriod.CalendarYear
 				|| listTimePeriod.SelectedIndex==(int)BenefitTimePeriod.ServiceYear)
 				&& listQuantityQualifier.SelectedIndex==(int)BenefitQuantity.None)
 			{
 				isAnnualMax=true;
-			}
+			}*/
 			SetVisibilities();
 		}
 
 		///<summary></summary>
 		private void SetVisibilities(){
-			if(isAnnualMax){
+			/*if(isAnnualMax){
 				Text=Lan.g(this,"Edit Annual Max");
 				listType.Visible=false;
 				labelType.Visible=false;
@@ -396,7 +394,7 @@ namespace OpenDental{
 					listTimePeriod.SelectedIndex=1;
 				}
 				return;
-			}
+			}*/
 			if(listType.SelectedIndex==(int)InsBenefitType.Percentage){
 				labelPercent.Visible=true;
 				textPercent.Visible=true;
@@ -467,7 +465,7 @@ namespace OpenDental{
 			BenCur.BenefitType=(InsBenefitType)listType.SelectedIndex;
 			BenCur.Percent=PIn.PInt(textPercent.Text);
 			BenCur.MonetaryAmt=PIn.PDouble(textAmount.Text);
-			if(isAnnualMax){
+			/*if(isAnnualMax){
 				if(listTimePeriod.SelectedIndex==0){
 					BenCur.TimePeriod=BenefitTimePeriod.ServiceYear;
 				}
@@ -475,9 +473,9 @@ namespace OpenDental{
 					BenCur.TimePeriod=BenefitTimePeriod.CalendarYear;
 				}
 			}
-			else{
-				BenCur.TimePeriod=(BenefitTimePeriod)listTimePeriod.SelectedIndex;
-			}
+			else{*/
+			BenCur.TimePeriod=(BenefitTimePeriod)listTimePeriod.SelectedIndex;
+			//}
 			BenCur.Quantity=PIn.PInt(textQuantity.Text);
 			BenCur.QuantityQualifier=(BenefitQuantity)listQuantityQualifier.SelectedIndex;
 			//if(IsNew){

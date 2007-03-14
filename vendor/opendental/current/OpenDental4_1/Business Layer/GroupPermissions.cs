@@ -93,7 +93,7 @@ namespace OpenDental{
 	=================================== class GroupPermissions==========================================*/
 	///<summary></summary>
 	public class GroupPermissions{
-		///<summary>A list of all GroupPermissions.</summary>
+		///<summary>A list of all GroupPermissions for all groups.</summary>
 		public static GroupPermission[] List;   
 
 		///<summary></summary>
@@ -144,7 +144,7 @@ namespace OpenDental{
  			dcon.NonQ(command);
 		}
 
-		///<summary>Gets a GroupPermission based on the supplied userGroupNum and permType.  If not found, then it returns null.  Used in FormSecurity when double clicking on a dated permission.</summary>
+		///<summary>Gets a GroupPermission based on the supplied userGroupNum and permType.  If not found, then it returns null.  Used in FormSecurity when double clicking on a dated permission or when clicking the all button.</summary>
 		public static GroupPermission GetPerm(int userGroupNum,Permissions permType){
 			for(int i=0;i<List.Length;i++){
 				if(List[i].UserGroupNum==userGroupNum && List[i].PermType==permType){

@@ -101,6 +101,7 @@ namespace OpenDental{
 			return List;
 		}
 
+		///<summary></summary>
 		public static string GetMessage(Dunning[] dunList, int billingType,int ageAccount,YN insIsPending){
 			//loop backwards through Dunning list and find the first dunning that matches criteria.
 			for(int i=dunList.Length-1;i>=0;i--){

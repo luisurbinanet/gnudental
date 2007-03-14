@@ -277,8 +277,8 @@ namespace OpenDental{
 
 		private void FormRepeatChargeEdit_Load(object sender, System.EventArgs e) {
 			if(IsNew){
-				FormProcedures FormP=new FormProcedures();
-				FormP.Mode=FormProcMode.Select;
+				FormProcCodes FormP=new FormProcCodes();
+				FormP.IsSelectionMode=true;
 				FormP.ShowDialog();
 				if(FormP.DialogResult!=DialogResult.OK){
 					DialogResult=DialogResult.Cancel;

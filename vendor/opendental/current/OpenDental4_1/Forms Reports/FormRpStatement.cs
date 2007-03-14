@@ -444,25 +444,48 @@ namespace OpenDental{
 				}
 				g.DrawString(text,font,brush,425-g.MeasureString(text,font).Width/2,yPos);
 				//Practice Address----------------------------------------------------------------------
-				font=new Font("Arial",10);
-				yPos=50;
-				xPos=30;
-				g.DrawString(Prefs.GetString("PracticeTitle"),font,brush,xPos,yPos);
-				yPos+=18;
-				g.DrawString(Prefs.GetString("PracticeAddress"),font,brush,xPos,yPos);	    
-				yPos+=18;
-				if(Prefs.GetString("PracticeAddress2")!=""){
-					g.DrawString(Prefs.GetString("PracticeAddress2"),font,brush,xPos,yPos);	    
+				if(Prefs.GetBool("StatementShowReturnAddress")){
+					font=new Font("Arial",10);
+					yPos=50;
+					xPos=30;
+					if(!Prefs.GetBool("EasyNoClinics") && Clinics.List.Length>0 //if using clinics
+						&& Clinics.GetClinic(PatGuar.ClinicNum)!=null)//and this patient assigned to a clinic
+					{
+						Clinic clinic=Clinics.GetClinic(PatGuar.ClinicNum);
+						g.DrawString(clinic.Description,font,brush,xPos,yPos);
+						yPos+=18;
+						g.DrawString(clinic.Address,font,brush,xPos,yPos);
+						yPos+=18;
+						if(clinic.Address2!="") {
+							g.DrawString(clinic.Address2,font,brush,xPos,yPos);
+							yPos+=18;
+						}
+						g.DrawString(clinic.City+", "+clinic.State+" "+clinic.Zip,font,brush,xPos,yPos);
+						yPos+=18;
+						text=clinic.Phone;
+						if(text.Length==10)
+							text="("+text.Substring(0,3)+")"+text.Substring(3,3)+"-"+text.Substring(6);
+						g.DrawString(text,font,brush,xPos,yPos);
+					}
+					else{
+						g.DrawString(Prefs.GetString("PracticeTitle"),font,brush,xPos,yPos);
+						yPos+=18;
+						g.DrawString(Prefs.GetString("PracticeAddress"),font,brush,xPos,yPos);	    
+						yPos+=18;
+						if(Prefs.GetString("PracticeAddress2")!=""){
+							g.DrawString(Prefs.GetString("PracticeAddress2"),font,brush,xPos,yPos);	    
+							yPos+=18;
+						}
+						g.DrawString(Prefs.GetString("PracticeCity")+", "+Prefs.GetString("PracticeST")+" "
+							+Prefs.GetString("PracticeZip"),font,brush,xPos,yPos);
+						yPos+=18;
+						text=Prefs.GetString("PracticePhone");
+						if(text.Length==10)
+							text="("+text.Substring(0,3)+")"+text.Substring(3,3)+"-"+text.Substring(6);
+						g.DrawString(text,font,brush,xPos,yPos);
+					}
 					yPos+=18;
 				}
-				g.DrawString(Prefs.GetString("PracticeCity")+", "+Prefs.GetString("PracticeST")+" "
-					+Prefs.GetString("PracticeZip"),font,brush,xPos,yPos);
-				yPos+=18;
-				text=Prefs.GetString("PracticePhone");
-				if(text.Length==10)
-					text="("+text.Substring(0,3)+")"+text.Substring(3,3)+"-"+text.Substring(6);
-				g.DrawString(text,font,brush,xPos,yPos);
-				yPos+=18;
 				//AMOUNT ENCLOSED------------------------------------------------------------------------
 				if(!HidePayment && !SubtotalsOnly){
 					yPos=110;

@@ -21,7 +21,6 @@ namespace OpenDental{
 	public class ContrFamily : System.Windows.Forms.UserControl{
 		private System.Windows.Forms.ImageList imageListToolBar;
 		private System.ComponentModel.IContainer components;
-		private OpenDental.TableInsPlans tbPlans;
 		private OpenDental.TableFamily tbFamily;
 		private OpenDental.UI.ODToolBar ToolBarMain;
 		private System.Windows.Forms.ContextMenu menuPatient;
@@ -37,12 +36,13 @@ namespace OpenDental{
 		private OpenDental.UI.ODGrid gridIns;
 		private PatPlan[] PatPlanList;
 		private ODGrid gridPat;
+		private ContextMenu menuInsurance;
+		private MenuItem menuPlansForFam;
 		private Benefit[] BenefitList;
 
 		///<summary></summary>
 		public ContrFamily(){
 			InitializeComponent();// This call is required by the Windows.Forms Form Designer.
-			tbPlans.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbPlans_CellDoubleClicked);
 			tbFamily.CellClicked += new OpenDental.ContrTable.CellEventHandler(tbFamily_CellClicked);
 		}
 
@@ -67,8 +67,9 @@ namespace OpenDental{
 			this.gridIns = new OpenDental.UI.ODGrid();
 			this.picturePat = new OpenDental.UI.PictureBox();
 			this.ToolBarMain = new OpenDental.UI.ODToolBar();
-			this.tbPlans = new OpenDental.TableInsPlans();
 			this.tbFamily = new OpenDental.TableFamily();
+			this.menuInsurance = new System.Windows.Forms.ContextMenu();
+			this.menuPlansForFam = new System.Windows.Forms.MenuItem();
 			this.SuspendLayout();
 			// 
 			// imageListToolBar
@@ -128,17 +129,6 @@ namespace OpenDental{
 			this.ToolBarMain.TabIndex = 19;
 			this.ToolBarMain.ButtonClick += new OpenDental.UI.ODToolBarButtonClickEventHandler(this.ToolBarMain_ButtonClick);
 			// 
-			// tbPlans
-			// 
-			this.tbPlans.BackColor = System.Drawing.SystemColors.Window;
-			this.tbPlans.Location = new System.Drawing.Point(1,604);
-			this.tbPlans.Name = "tbPlans";
-			this.tbPlans.ScrollValue = 1;
-			this.tbPlans.SelectedIndices = new int[0];
-			this.tbPlans.SelectionMode = System.Windows.Forms.SelectionMode.None;
-			this.tbPlans.Size = new System.Drawing.Size(459,100);
-			this.tbPlans.TabIndex = 1;
-			// 
 			// tbFamily
 			// 
 			this.tbFamily.BackColor = System.Drawing.SystemColors.Window;
@@ -150,13 +140,23 @@ namespace OpenDental{
 			this.tbFamily.Size = new System.Drawing.Size(489,100);
 			this.tbFamily.TabIndex = 7;
 			// 
+			// menuInsurance
+			// 
+			this.menuInsurance.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.menuPlansForFam});
+			// 
+			// menuPlansForFam
+			// 
+			this.menuPlansForFam.Index = 0;
+			this.menuPlansForFam.Text = "Plans for Family";
+			this.menuPlansForFam.Click += new System.EventHandler(this.menuPlansForFam_Click);
+			// 
 			// ContrFamily
 			// 
 			this.Controls.Add(this.gridPat);
 			this.Controls.Add(this.gridIns);
 			this.Controls.Add(this.picturePat);
 			this.Controls.Add(this.ToolBarMain);
-			this.Controls.Add(this.tbPlans);
 			this.Controls.Add(this.tbFamily);
 			this.Name = "ContrFamily";
 			this.Size = new System.Drawing.Size(939,708);
@@ -196,9 +196,8 @@ namespace OpenDental{
 		}
 
 		private void RefreshModuleScreen(){
+			ParentForm.Text=Patients.GetMainTitle(PatCur);
 			if(PatCur!=null){
-				ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString+" - "
-					+PatCur.GetNameLF();
 				ToolBarMain.Buttons["Recall"].Enabled=true;
 				ToolBarMain.Buttons["Add"].Enabled=true;
 				ToolBarMain.Buttons["Delete"].Enabled=true;
@@ -208,7 +207,6 @@ namespace OpenDental{
 				ToolBarMain.Invalidate();
 			}
 			else{
-				ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString;
 				ToolBarMain.Buttons["Recall"].Enabled=false;
 				ToolBarMain.Buttons["Add"].Enabled=false;
 				ToolBarMain.Buttons["Delete"].Enabled=false;
@@ -220,17 +218,14 @@ namespace OpenDental{
 			}
 			if(Prefs.GetBool("EasyHideInsurance")){
 				gridIns.Visible=false;
-				tbPlans.Visible=false;
 			}
 			else{
 				gridIns.Visible=true;
-				tbPlans.Visible=true;
 			}
 			FillPatientButton();
 			FillPatientPicture();
 			FillPatientData();
 			FillFamilyData();
-			FillPlanData();
 			FillInsData();
 		} 
 
@@ -273,7 +268,6 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public void InstantClasses(){
-			tbPlans.InstantClasses();
 			tbFamily.InstantClasses();
 			//cannot use Lan.F(this);
 			Lan.C(this,new Control[]
@@ -285,6 +279,7 @@ namespace OpenDental{
 				//butEditSecPlan
 				});
 			LayoutToolBar();
+			//gridPat.Height=this.ClientRectangle.Bottom-gridPat.Top-2;
 		}
 
 		///<summary>Causes the toolbar to be laid out again.</summary>
@@ -307,7 +302,10 @@ namespace OpenDental{
 			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Move"),5,Lan.g(this,"Move to Another Family"),"Move"));
 			if(!Prefs.GetBool("EasyHideInsurance")){
 				ToolBarMain.Buttons.Add(new ODToolBarButton(ODToolBarButtonStyle.Separator));
-				ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Add Insurance"),6,"","Ins"));
+				button=new ODToolBarButton(Lan.g(this,"Add Insurance"),6,"","Ins");
+				button.Style=ODToolBarButtonStyle.DropDownButton;
+				button.DropDownMenu=menuInsurance;
+				ToolBarMain.Buttons.Add(button);
 			}
 			ArrayList toolButItems=ToolButItems.GetForToolBar(ToolBarsAvail.FamilyModule);
 			for(int i=0;i<toolButItems.Count;i++){
@@ -319,7 +317,7 @@ namespace OpenDental{
 		}
 
 		private void ContrFamily_Layout(object sender, System.Windows.Forms.LayoutEventArgs e) {
-			tbPlans.LayoutTables();
+			
 		}		
 
 		//private void butOutlook_Click(object sender, System.EventArgs e) {
@@ -623,6 +621,7 @@ namespace OpenDental{
 
 		#endregion gridPatient 
 
+		/*
 		#region tbPlans
 		private void FillPlanData(){
 			if(PatCur==null){
@@ -662,7 +661,7 @@ namespace OpenDental{
 			ModuleSelected(PatCur.PatNum);
 		}
 
-		#endregion
+		#endregion*/
 
 		#region tbFamily
 
@@ -917,6 +916,13 @@ namespace OpenDental{
 		#endregion
 		
 		#region gridIns
+		private void menuPlansForFam_Click(object sender,EventArgs e) {
+			FormPlansForFamily FormP=new FormPlansForFamily();
+			FormP.FamCur=FamCur;
+			FormP.ShowDialog();
+			ModuleSelected(PatCur.PatNum);
+		}
+
 		private void ToolButIns_Click(){
 			DialogResult result=MessageBox.Show(Lan.g(this,"Is this patient the subscriber?"),"",MessageBoxButtons.YesNoCancel);
 			if(result==DialogResult.Cancel){
@@ -963,6 +969,7 @@ namespace OpenDental{
 				plan.SubscriberID=subscriber.SSN;
 				plan.ReleaseInfo=true;
 				plan.AssignBen=true;
+				plan.PlanType="";
 				plan.Insert();
 				Benefit ben;
 				for(int i=0;i<CovCats.ListShort.Length;i++){
@@ -988,10 +995,11 @@ namespace OpenDental{
 			patplan.Insert();
 			//Then, display insPlanEdit to user-------------------------------------------------------------------------------
 			FormInsPlan FormI=new FormInsPlan(plan,patplan);
-			FormI.IsNewPlan=true;
+			FormI.IsNewPlan=planIsNew;
 			FormI.IsNewPatPlan=true;
 			FormI.ShowDialog();//this updates estimates also.
-			//if cancel, then plan,benefits, and patplan are deleted from within that dialog.
+			//if cancel, then patplan is deleted from within that dialog.
+			//if cancel, and planIsNew, then plan and benefits are also deleted.
 			ModuleSelected(PatCur.PatNum);
 		}
 
@@ -1113,6 +1121,31 @@ namespace OpenDental{
 					{//annual max
 						desc+=Lan.g(this,"Annual Max")+" ";
 					}
+					else if(benMatrix[x,y].BenefitType==InsBenefitType.Limitations
+						&& benMatrix[x,y].CovCatNum==CovCats.GetForEbenCat(EbenefitCategory.Orthodontics).CovCatNum
+						&& benMatrix[x,y].QuantityQualifier==BenefitQuantity.None
+						&& benMatrix[x,y].TimePeriod==BenefitTimePeriod.Lifetime)
+					{
+						desc+=Lan.g(this,"Ortho Max")+" ";
+					}
+					else if(benMatrix[x,y].BenefitType==InsBenefitType.Limitations
+						&& benMatrix[x,y].CovCatNum==CovCats.GetForEbenCat(EbenefitCategory.RoutinePreventive).CovCatNum
+						&& benMatrix[x,y].Quantity !=0)
+					{
+						desc+="Exam frequency ";
+					}
+					else if(benMatrix[x,y].BenefitType==InsBenefitType.Limitations
+						&& benMatrix[x,y].ADACode=="D0274"//4BW
+						&& benMatrix[x,y].Quantity !=0)
+					{
+						desc+="BW frequency ";
+					}
+					else if(benMatrix[x,y].BenefitType==InsBenefitType.Limitations
+						&& benMatrix[x,y].ADACode=="D0330"//Pano
+						&& benMatrix[x,y].Quantity !=0)
+					{
+						desc+="Pano/FMX frequency ";
+					}
 					else if(benMatrix[x,y].ADACode!=""){//e.g. flo
 						desc+=ProcedureCodes.GetProcCode(benMatrix[x,y].ADACode).AbbrDesc+" ";
 					}
@@ -1149,6 +1182,18 @@ namespace OpenDental{
 					if(benMatrix[x,y].QuantityQualifier==BenefitQuantity.NumberOfServices){//eg 2 times per CalendarYear
 						val+=benMatrix[x,y].Quantity.ToString()+" "+Lan.g(this,"times per")+" "
 							+Lan.g("enumBenefitQuantity",benMatrix[x,y].TimePeriod.ToString())+" ";
+					}
+					else if(benMatrix[x,y].QuantityQualifier==BenefitQuantity.Months) {//eg Every 2 months
+						val+="Every "+benMatrix[x,y].Quantity.ToString()+" month";
+						if(benMatrix[x,y].Quantity>1){
+							val+="s";
+						}
+					}
+					else if(benMatrix[x,y].QuantityQualifier==BenefitQuantity.Years) {//eg Every 2 years
+						val+="Every "+benMatrix[x,y].Quantity.ToString()+" year";
+						if(benMatrix[x,y].Quantity>1) {
+							val+="s";
+						}
 					}
 					else{
 						if(benMatrix[x,y].QuantityQualifier!=BenefitQuantity.None){//e.g. flo
@@ -1208,6 +1253,8 @@ namespace OpenDental{
 		}
 
 		#endregion gridIns
+
+		
 
 	
 

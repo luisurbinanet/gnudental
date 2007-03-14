@@ -513,9 +513,10 @@ namespace OpenDental{
 			// 
 			// listConfirmed
 			// 
+			this.listConfirmed.IntegralHeight = false;
 			this.listConfirmed.Location = new System.Drawing.Point(126,2);
 			this.listConfirmed.Name = "listConfirmed";
-			this.listConfirmed.Size = new System.Drawing.Size(73,108);
+			this.listConfirmed.Size = new System.Drawing.Size(73,111);
 			this.listConfirmed.TabIndex = 75;
 			this.listConfirmed.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listConfirmed_MouseDown);
 			// 
@@ -577,11 +578,11 @@ namespace OpenDental{
 			this.butOther.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butOther.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOther.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butOther.Location = new System.Drawing.Point(712,461);
+			this.butOther.Location = new System.Drawing.Point(712,462);
 			this.butOther.Name = "butOther";
-			this.butOther.Size = new System.Drawing.Size(92,28);
+			this.butOther.Size = new System.Drawing.Size(92,26);
 			this.butOther.TabIndex = 76;
-			this.butOther.Text = "Make Appt";
+			this.butOther.Text = "Make/Find Appt";
 			this.butOther.Click += new System.EventHandler(this.butOther_Click);
 			// 
 			// imageList1
@@ -1181,13 +1182,7 @@ namespace OpenDental{
 		///<summary>Refreshes the main window title and then calls RefreshDay which gets the appointment data from the database.</summary>
 		public void RefreshModuleScreen(){
 			//MessageBox.Show("Refreshed");
-			if(PatCur!=null){
-				ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString+" - "
-					+PatCur.GetNameLF();
-			}
-			else{
-				ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString;
-			}
+			ParentForm.Text=Patients.GetMainTitle(PatCur);
 			RefreshDay(Appointments.DateSelected);
 		}
 
@@ -1268,8 +1263,8 @@ namespace OpenDental{
 			menuApt.MenuItems.Add(Lan.g(this,"Other Appointments"),new EventHandler(menuApt_Click));
 			menuApt.MenuItems.Add("-");
 			menuApt.MenuItems.Add(Lan.g(this,"Print Card"),new EventHandler(menuApt_Click));
-			menuApt.MenuItems.Add(Lan.g(this,"Print Card for Entire Family")
-				,new EventHandler(menuApt_Click));
+			menuApt.MenuItems.Add(Lan.g(this,"Print Card for Entire Family"),new EventHandler(menuApt_Click));
+			menuApt.MenuItems.Add(Lan.g(this,"Routing Slip"),new EventHandler(menuApt_Click));
 			menuBlockout.MenuItems.Clear();
 			//menuBlockout.MenuItems.Add(Lan.g(this,"BLOCKOUTS"));
 			menuBlockout.MenuItems.Add(Lan.g(this,"Edit Blockout")
@@ -1673,7 +1668,7 @@ namespace OpenDental{
 			FamCur=Patients.GetFamily(PinApptSingle.Info.MyApt.PatNum);
 			PatCur=FamCur.GetPatient(PinApptSingle.Info.MyApt.PatNum);
 			FillPatientButton();
-			ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString+" - "+PatCur.GetNameLF();
+			ParentForm.Text=Patients.GetMainTitle(PatCur);
 			FillPanelPatient();
 			PinApptSingle.CreateShadow();
 			PinApptSingle.Refresh();
@@ -2008,8 +2003,7 @@ namespace OpenDental{
 				PatCur=FamCur.GetPatient(ListDay[thisIndex].PatNum);
 				FillPatientButton();
 				OnPatientSelected(PatCur.PatNum);
-				ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString+" - "
-					+PatCur.GetNameLF();
+				ParentForm.Text=Patients.GetMainTitle(PatCur);
 				ContrApptSingle3[thisIndex].CreateShadow();
 				grfx.DrawImage(ContrApptSingle3[thisIndex].Shadow,ContrApptSingle3[thisIndex].Location.X
 					,ContrApptSingle3[thisIndex].Location.Y);
@@ -2750,6 +2744,11 @@ namespace OpenDental{
 				case 9:
 					cardPrintFamily=true;
 					PrintApptCard();
+					break;
+				case 10:
+					FormRpRouting FormR=new FormRpRouting();
+					FormR.ApptNum=AptCur.AptNum;
+					FormR.ShowDialog();
 					break;
 			}
 		}

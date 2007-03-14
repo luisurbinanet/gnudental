@@ -15,6 +15,7 @@ namespace OpenDental{
 		private System.Windows.Forms.RadioButton radioCategories;
 		private System.Windows.Forms.RadioButton radioADA;
 		private System.ComponentModel.Container components = null;
+		private Label label1;
 		private FormQuery FormQuery2;
 
 		///<summary></summary>
@@ -45,60 +46,61 @@ namespace OpenDental{
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.radioCategories = new System.Windows.Forms.RadioButton();
 			this.radioADA = new System.Windows.Forms.RadioButton();
+			this.label1 = new System.Windows.Forms.Label();
 			this.panel1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// butCancel
 			// 
-			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.butCancel.Autosize = true;
 			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.Location = new System.Drawing.Point(262, 254);
+			this.butCancel.Location = new System.Drawing.Point(337,276);
 			this.butCancel.Name = "butCancel";
-			this.butCancel.Size = new System.Drawing.Size(75, 26);
+			this.butCancel.Size = new System.Drawing.Size(75,26);
 			this.butCancel.TabIndex = 3;
 			this.butCancel.Text = "&Cancel";
 			// 
 			// butOK
 			// 
-			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.butOK.Autosize = true;
 			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butOK.Location = new System.Drawing.Point(262, 219);
+			this.butOK.Location = new System.Drawing.Point(337,241);
 			this.butOK.Name = "butOK";
-			this.butOK.Size = new System.Drawing.Size(75, 26);
+			this.butOK.Size = new System.Drawing.Size(75,26);
 			this.butOK.TabIndex = 2;
 			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// listFeeSched
 			// 
-			this.listFeeSched.Location = new System.Drawing.Point(72, 18);
+			this.listFeeSched.Location = new System.Drawing.Point(33,41);
 			this.listFeeSched.Name = "listFeeSched";
 			this.listFeeSched.ScrollAlwaysVisible = true;
-			this.listFeeSched.Size = new System.Drawing.Size(90, 173);
+			this.listFeeSched.Size = new System.Drawing.Size(129,173);
 			this.listFeeSched.TabIndex = 0;
 			// 
 			// panel1
 			// 
 			this.panel1.Controls.Add(this.radioCategories);
 			this.panel1.Controls.Add(this.radioADA);
-			this.panel1.Location = new System.Drawing.Point(206, 18);
+			this.panel1.Location = new System.Drawing.Point(206,25);
 			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(104, 60);
+			this.panel1.Size = new System.Drawing.Size(104,60);
 			this.panel1.TabIndex = 1;
 			// 
 			// radioCategories
 			// 
 			this.radioCategories.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.radioCategories.Location = new System.Drawing.Point(8, 32);
+			this.radioCategories.Location = new System.Drawing.Point(8,32);
 			this.radioCategories.Name = "radioCategories";
-			this.radioCategories.Size = new System.Drawing.Size(88, 24);
+			this.radioCategories.Size = new System.Drawing.Size(88,24);
 			this.radioCategories.TabIndex = 1;
 			this.radioCategories.Text = "Categories";
 			// 
@@ -106,19 +108,29 @@ namespace OpenDental{
 			// 
 			this.radioADA.Checked = true;
 			this.radioADA.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.radioADA.Location = new System.Drawing.Point(8, 8);
+			this.radioADA.Location = new System.Drawing.Point(8,8);
 			this.radioADA.Name = "radioADA";
-			this.radioADA.Size = new System.Drawing.Size(88, 24);
+			this.radioADA.Size = new System.Drawing.Size(88,24);
 			this.radioADA.TabIndex = 0;
 			this.radioADA.TabStop = true;
 			this.radioADA.Text = "ADA Code";
 			// 
+			// label1
+			// 
+			this.label1.Location = new System.Drawing.Point(30,17);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(132,22);
+			this.label1.TabIndex = 4;
+			this.label1.Text = "Fee Schedule";
+			this.label1.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
 			// FormRpProcCodes
 			// 
 			this.AcceptButton = this.butOK;
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
 			this.CancelButton = this.butCancel;
-			this.ClientSize = new System.Drawing.Size(348, 292);
+			this.ClientSize = new System.Drawing.Size(423,314);
+			this.Controls.Add(this.label1);
 			this.Controls.Add(this.panel1);
 			this.Controls.Add(this.listFeeSched);
 			this.Controls.Add(this.butCancel);

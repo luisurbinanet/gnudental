@@ -404,7 +404,6 @@ namespace OpenDental{
 				}				
 			}	
 			ProcList=Procedures.Refresh(PatCur.PatNum);
-			ArrayList missingTeeth=Procedures.GetMissingTeeth(ProcList);
       ClaimProc[] ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
       ClaimProcsForClaim=ClaimProcs.GetForClaim(ClaimProcList,Claims.Cur.ClaimNum); 
 			claimprocs=new ArrayList();
@@ -421,6 +420,20 @@ namespace OpenDental{
 				}
 				if(includeThis)
 					claimprocs.Add(ClaimProcsForClaim[i]);						
+			}
+			ArrayList missingTeeth=Procedures.GetMissingTeeth(ProcList);
+			Procedure proc;
+			ProcedureCode procCode;
+			for(int j=missingTeeth.Count-1;j>=0;j--) {//loop backwards to keep index accurate as items are removed
+				//if the missing tooth is missing because of an extraction being billed here, then exclude it
+				for(int p=0;p<claimprocs.Count;p++) {
+					proc=Procedures.GetProc(ProcList,((ClaimProc)claimprocs[p]).ProcNum);
+					procCode=ProcedureCodes.GetProcCode(proc.ADACode);
+					if(procCode.RemoveTooth && proc.ToothNum==(string)missingTeeth[j]) {
+						missingTeeth.RemoveAt(j);
+						break;
+					}
+				}
 			}
 			Provider treatDent=Providers.ListLong[Providers.GetIndexLong(Claims.Cur.ProvTreat)];
 			if(ClaimFormCur==null){
@@ -1189,7 +1202,9 @@ namespace OpenDental{
 						}
 						break;
 					case "TreatingDentistMedicaidID":
-						displayStrings[i]=GetProcInfo("TreatDentMedicaidID",1);
+						displayStrings[i]=treatDent.MedicaidID;
+						//I don't know why it was this way:
+							//GetProcInfo("TreatDentMedicaidID",1);
 						break;
 					//case "TreatingDentistProvID":
 					case "TreatingDentistLicense":

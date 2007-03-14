@@ -89,13 +89,15 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static string GetName(DefCat myCat, int myDefNum){
-			string retStr="";
+			//return "x";
+			//string retStr="";
 			for(int i=0;i<Long[(int)myCat].GetLength(0);i++){
 				if(Long[(int)myCat][i].DefNum==myDefNum){
-					retStr=Long[(int)myCat][i].ItemName;
+					return Long[(int)myCat][i].ItemName;
 				}
 			}
-			return retStr;
+			return "";
+			//return retStr;
 		}
 
 		///<summary>Gets the order of the def within Short or -1 if not found.</summary>
@@ -129,6 +131,16 @@ namespace OpenDental{
 				}
 			}
 			return retCol;
+		}
+
+		///<summary></summary>
+		public static bool GetHidden(DefCat myCat,int myDefNum) {
+			for(int i=0;i<Long[(int)myCat].GetLength(0);i++) {
+				if(Long[(int)myCat][i].DefNum==myDefNum) {
+					return Long[(int)myCat][i].IsHidden;
+				}
+			}
+			return false;
 		}
 
 		///<summary></summary>
@@ -224,6 +236,19 @@ namespace OpenDental{
 			temp.ItemOrder=myItemOrder;
 			Cur=temp;
 			UpdateCur();
+		}
+
+		///<summary>Allowed types are blank, C, or A</summary>
+		public static Def[] GetFeeSchedList(string type){
+			ArrayList AL=new ArrayList();
+			for(int i=0;i<Short[(int)DefCat.FeeSchedNames].Length;i++){
+				if(Short[(int)DefCat.FeeSchedNames][i].ItemValue==type){
+					AL.Add(Short[(int)DefCat.FeeSchedNames][i]);
+				}
+			}
+			Def[] retVal=new Def[AL.Count];
+			AL.CopyTo(retVal);
+			return retVal;
 		}
 
 	}

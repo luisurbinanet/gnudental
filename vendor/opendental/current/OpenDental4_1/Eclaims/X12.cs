@@ -1052,7 +1052,7 @@ namespace OpenDental.Eclaims
 						//2400 SV3: Dental Service
 						seg++;
 						sw.Write("SV3*"
-							+"AD:"+Sout(claimProcs[j].CodeSent)+"*"//SV301-1: AD=ADA CDT, SV301-2:Procedure code
+							+"AD:"+Sout(claimProcs[j].CodeSent,5)+"*"//SV301-1: AD=ADA CDT, SV301-2:Procedure code
 							+claimProcs[j].FeeBilled.ToString()+"*");//SV302: Charge Amount
 						if(proc.PlaceService==claim.PlaceService){
 							sw.Write("*");//SV303: Location Code if different from claim

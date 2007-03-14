@@ -153,6 +153,7 @@ namespace OpenDental{
 			return retVal;
 		}
 
+		///<summary></summary>
 		public static void DeleteAllInPlan(int payPlanNum){
 			string command="DELETE FROM payplancharge WHERE PayPlanNum="+payPlanNum.ToString();
 			DataConnection dcon=new DataConnection();

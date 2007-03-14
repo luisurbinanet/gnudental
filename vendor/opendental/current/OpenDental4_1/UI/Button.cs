@@ -26,6 +26,8 @@ namespace OpenDental.UI
 		private Color colorMain;
 		private Color colorLightest;
 		private Color colorDarkDefault;
+		private Color colorHoverDark;//the outline when hovering
+		private Color colorHoverLight;
 
 		///<summary></summary>
 		public enum ControlState{
@@ -56,6 +58,8 @@ namespace OpenDental.UI
 			colorLightest    =Color.FromArgb(255,255,255);
 			colorMain        =Color.FromArgb(200,202,220);
 			colorDarkDefault =Color.FromArgb(50,70,230);
+			colorHoverDark   =Color.FromArgb(255,190,100);//(255,165,0) is pure orange
+			colorHoverLight  =Color.FromArgb(255,210,130);//(255,223,163) is a fairly light orange
 		}
 
 		///<summary>Clean up any resources being used</summary>
@@ -75,8 +79,11 @@ namespace OpenDental.UI
 		#endregion
 
 		#region Properties
-		///<summary></summary>
+		///<summary>Just for compatibility</summary>
 		public enumType.BtnShape BtnShape {
+			get{
+				return enumType.BtnShape.Rectangle;
+			}
 			set {
 			}
 		}
@@ -84,9 +91,9 @@ namespace OpenDental.UI
 		///<summary></summary>
 		//[DefaultValue("Silver"),System.ComponentModel.RefreshProperties(RefreshProperties.Repaint)]
 		public enumType.XPStyle BtnStyle {
-			//get {
-			//	return enumType.XPStyle.Silver;
-			//}
+			get {
+				return enumType.XPStyle.Silver;
+			}
 			set {
 				//m_btnStyle = value;
 				//this.Invalidate();
@@ -240,8 +247,8 @@ namespace OpenDental.UI
 					}
 					break;
 				case ControlState.Hover:
-					radius=cornerRadius-1;
-					DrawBackground(g,recOutline,radius,colorDarkest,colorMain,colorLightest);
+					radius=cornerRadius;
+					DrawBackground(g,recOutline,radius,colorHoverDark,colorMain,colorHoverLight);
 					break;
 				case ControlState.Pressed:
 					radius=cornerRadius-3;
@@ -418,7 +425,7 @@ namespace OpenDental.UI
 			path.AddArc(new RectangleF(rect.Left+radius*3/8,rect.Top+radius*7/8,radius*1/4,radius*1/4),0,180);
 			path.AddArc(new RectangleF(rect.Left+radius*3/8,rect.Top+radius*3/8,radius*5/4,radius*5/4),180,90);
 			//g.DrawPath(Pens.Red,path);
-			g.FillPath(Brushes.White,path);
+			g.FillPath(new SolidBrush(clrLight),path);
 		}
 
 		///<summary>Draws the text and image</summary>
@@ -453,6 +460,14 @@ namespace OpenDental.UI
 						rc.Height=this.ClientRectangle.Height;
 						rc.X=this.Image.Width;
 						rc.Y=0;
+						break;
+					case ContentAlignment.MiddleRight:
+						rc.Width=this.ClientRectangle.Width-this.Image.Width-8;
+						rc.Height=this.ClientRectangle.Height;
+						rc.X=0;
+						rc.Y=0;
+						ImagePoint.X = rc.Width;
+						ImagePoint.Y = this.ClientRectangle.Height/2-Image.Height/2;
 						break;
 					case ContentAlignment.MiddleCenter:// no text in this alignment
 						ImagePoint.X = (this.ClientRectangle.Width-this.Image.Width)/2;
