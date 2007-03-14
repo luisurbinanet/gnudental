@@ -523,7 +523,7 @@ namespace OpenDental
 							//the primary tooth will just be covered up by the permanent, so no need to draw rect
 						}
 					}
-					else{
+					else if(Tooth.IsValidDB(procList[i].ToothNum)){
 						SetMissing(procList[i].ToothNum);
 					}
 				}
@@ -581,8 +581,7 @@ namespace OpenDental
 					doDraw=false;
 				}
 				if(doDraw){
-					if(GraphicTypes.GetSpecialType(ProcedureCodes.GetProcCode(procList[i].ADACode).GTypeNum)
-						=="bridge"){
+					if(GraphicTypes.GetSpecialType(ProcedureCodes.GetProcCode(procList[i].ADACode).GTypeNum)=="bridge"){
 						if(!Tooth.IsValidDB(procList[i].ToothNum))
 							intTooth=-1;
 						else
@@ -601,16 +600,14 @@ namespace OpenDental
 						}
 						
 					}
-					if(GraphicTypes.GetSpecialType(ProcedureCodes.GetProcCode(procList[i].ADACode).GTypeNum)
-						=="denture"){
+					if(GraphicTypes.GetSpecialType(ProcedureCodes.GetProcCode(procList[i].ADACode).GTypeNum)=="denture"){
 						string[] toothNums;
 						if(ProcedureCodes.GetProcCode(procList[i].ADACode).TreatArea==TreatmentArea.Arch){
 							if(procList[i].Surf=="U"){
 								toothNums=new string[] {"2","3","4","5","6","7","8","9","10","11","12","13","14","15"};
 							}
 							else if(procList[i].Surf=="L"){
-								toothNums=new string[] {"18","19","20","21","22","23","24"
-									,"25","26","27","28","29","30","31"};
+								toothNums=new string[] {"18","19","20","21","22","23","24","25","26","27","28","29","30","31"};
 							}
 							else{
 								toothNums=new string[0];
@@ -730,9 +727,8 @@ namespace OpenDental
 				intTooth=-1;
 			else
 				intTooth=Tooth.ToInt(toothNum);
-			int ordinalTooth=Tooth.ToOrdinal(toothNum);
-			if(!Tooth.IsPrimary(toothNum)
-				&& PrimaryTeeth.Contains(toothNum)){
+			//int ordinalTooth=Tooth.ToOrdinal(toothNum);
+			if(!Tooth.IsPrimary(toothNum) && PrimaryTeeth.Contains(toothNum)){
 				return;//don't draw permanent procedures on primary teeth
 			}
 			GraphicTypes.GetType(gTypeNum);

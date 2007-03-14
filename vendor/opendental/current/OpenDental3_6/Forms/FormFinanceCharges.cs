@@ -306,13 +306,14 @@ namespace OpenDental{
 				if(OverallBalance > 0){
 					Adjustment AdjustmentCur=new Adjustment();
 					AdjustmentCur.PatNum=AgingList[i].PatNum;
-					AdjustmentCur.AdjDate=PIn.PDate(textDate.Text);
+					//AdjustmentCur.AdjDate=PIn.PDate(textDate.Text);//automatically handled
+					AdjustmentCur.ProcDate=PIn.PDate(textDate.Text);
 					AdjustmentCur.AdjType=Defs.Short[(int)DefCat.AdjTypes]
 						[(int)ALPosIndices[listAdjType.SelectedIndex]].DefNum;
 					AdjustmentCur.AdjNote="Finance Charge";
 					AdjustmentCur.AdjAmt=Math.Round(((PIn.PDouble(textAPR.Text) * .01 / 12) * OverallBalance),2);
 					AdjustmentCur.ProvNum=AgingList[i].PriProv;
-					AdjustmentCur.Insert();
+					AdjustmentCur.InsertOrUpdate(true);
 				}
 			}
 			Prefs.Cur=(Pref)Prefs.HList["FinanceChargeAPR"];

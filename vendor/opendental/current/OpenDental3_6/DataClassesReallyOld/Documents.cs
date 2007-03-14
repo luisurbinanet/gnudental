@@ -71,10 +71,20 @@ namespace OpenDental{
 
 		///<summary>Inserts a new document into db, creates a filename based on Cur.DocNum, and then updates the db with this filename.  Also attaches the document to the current patient.</summary>
 		public static void InsertCur(Patient pat){
-			cmd.CommandText = 
-				"INSERT INTO document (Description,DateCreated,DocCategory,"
-				+"WithPat,FileName,ImgType,IsFlipped,DegreesRotated) VALUES ("
-				+"'"+POut.PString(Cur.Description)+"', "
+			if(Prefs.RandomKeys){
+				Cur.DocNum=MiscData.GetKey("document","DocNum");
+			}
+			cmd.CommandText="INSERT INTO document (";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="DocNum,";
+			}
+			cmd.CommandText+="Description,DateCreated,DocCategory,"
+				+"WithPat,FileName,ImgType,IsFlipped,DegreesRotated) VALUES(";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="'"+POut.PInt(Cur.DocNum)+"', ";
+			}
+			cmd.CommandText+=
+				 "'"+POut.PString(Cur.Description)+"', "
 				+"'"+POut.PDate  (Cur.DateCreated)+"', "
 				+"'"+POut.PInt   (Cur.DocCategory)+"', "
 				+"'"+POut.PInt   (Cur.WithPat)+"', "
@@ -85,8 +95,13 @@ namespace OpenDental{
 				/*+"'"+POut.PDate  (Cur.LastAltered)+"', "//will later be used in backups
 				  +"'"+POut.PBool  (Cur.IsDeleted)+"')";//ditto*/
 			//MessageBox.Show(cmd.CommandText);
-			NonQ(true);
-			Cur.DocNum=InsertID;
+			if(Prefs.RandomKeys){
+				NonQ();
+			}
+			else{
+ 				NonQ(true);
+				Cur.DocNum=InsertID;
+			}
 			//If the current filename is just an extension, then assign it a unique name.
 			if(Cur.FileName==Path.GetExtension(Cur.FileName)){
 				string extension=Cur.FileName;

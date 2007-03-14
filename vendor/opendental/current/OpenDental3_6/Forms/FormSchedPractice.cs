@@ -20,7 +20,7 @@ namespace OpenDental{
 		///<summary></summary>
 		private ScheduleType SchedType;
 		private int ProvNum;
-		private User user;
+		//private User user;
 
 		///<summary></summary>
 		public FormSchedPractice(ScheduleType schedType){
@@ -118,14 +118,14 @@ namespace OpenDental{
 		#endregion
 
 		private void FormSchedPractice_Load(object sender, System.EventArgs e) {
-			if(Permissions.AuthorizationRequired("Practice Schedule")){
+			/*if(PermissionsOld.AuthorizationRequired("Practice Schedule")){
 				user=Users.Authenticate("Practice Schedule");
 				if(!UserPermissions.IsAuthorized("Practice Schedule",user)){
 					MsgBox.Show(this,"You do not have permission for this feature");
 					DialogResult=DialogResult.Cancel;
 					return;
 				}	
-			}
+			}*/
 			if(SchedType==ScheduleType.Practice){
 				this.Text=Lan.g(this,"Practice Schedule");
 				labelProv.Visible=false;
@@ -233,7 +233,7 @@ namespace OpenDental{
 
 		private void FormSchedPractice_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
 			//The daily schedules is refreshed everytime the Appointment screen is refreshed. Not with LocalData
-			SecurityLogs.MakeLogEntry("Practice Schedule","Altered Practice Schedule",user);
+			//SecurityLogs.MakeLogEntry("Practice Schedule","Altered Practice Schedule",user);
 		}
 
 		

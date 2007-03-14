@@ -94,10 +94,21 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO periomeasure (PerioExamNum,SequenceType,IntTooth,ToothValue,"
+			if(Prefs.RandomKeys){
+				Cur.PerioMeasureNum=MiscData.GetKey("periomeasure","PerioMeasureNum");
+			}
+			cmd.CommandText="INSERT INTO periomeasure (";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="PerioMeasureNum,";
+			}
+			cmd.CommandText+="PerioExamNum,SequenceType,IntTooth,ToothValue,"
 				+"MBvalue,Bvalue,DBvalue,MLvalue,Lvalue,DLvalue"
-				+") VALUES("
-				+"'"+POut.PInt   (Cur.PerioExamNum)+"', "
+				+") VALUES(";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="'"+POut.PInt(Cur.PerioMeasureNum)+"', ";
+			}
+			cmd.CommandText+=
+				 "'"+POut.PInt   (Cur.PerioExamNum)+"', "
 				+"'"+POut.PInt   ((int)Cur.SequenceType)+"', "
 				+"'"+POut.PInt   (Cur.IntTooth)+"', "
 				+"'"+POut.PInt   (Cur.ToothValue)+"', "
@@ -107,9 +118,13 @@ namespace OpenDental{
 				+"'"+POut.PInt   (Cur.MLvalue)+"', "
 				+"'"+POut.PInt   (Cur.Lvalue)+"', "
 				+"'"+POut.PInt   (Cur.DLvalue)+"')";
-			//MessageBox.Show(cmd.CommandText);
-			NonQ(true);
-			Cur.PerioMeasureNum=InsertID;
+			if(Prefs.RandomKeys){
+				NonQ();
+			}
+			else{
+ 				NonQ(true);
+				Cur.PerioMeasureNum=InsertID;
+			}
 		}
 
 		///<summary></summary>

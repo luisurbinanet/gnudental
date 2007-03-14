@@ -14,12 +14,8 @@ namespace OpenDental{
 		public string FName;
 		///<summary>Middle initial or name.</summary>
 		public string MiddleI; 
-		///<summary>Password hash.</summary>
-		public string Password;
 		///<summary>If hidden, the employee will not show on the list.</summary>
 		public bool IsHidden;
-		///<summary>The user name for use in logging in and out.</summary>
-		public string UserName;
 		///<summary>This is just text used to quickly display the clockstatus.  eg Working,Break,Lunch,Home, etc.</summary>
 		public string ClockStatus;
 		//public string Abbrev;//Not in use
@@ -51,10 +47,8 @@ namespace OpenDental{
 				ListLong[i].LName =       PIn.PString(table.Rows[i][1].ToString());
 				ListLong[i].FName =       PIn.PString(table.Rows[i][2].ToString());
 				ListLong[i].MiddleI =     PIn.PString(table.Rows[i][3].ToString());
-				ListLong[i].Password =    PIn.PString(table.Rows[i][4].ToString());
-				ListLong[i].IsHidden =    PIn.PBool  (table.Rows[i][5].ToString());
-				ListLong[i].UserName =	  PIn.PString(table.Rows[i][6].ToString());
-				ListLong[i].ClockStatus =	PIn.PString(table.Rows[i][7].ToString());
+				ListLong[i].IsHidden =    PIn.PBool  (table.Rows[i][4].ToString());
+				ListLong[i].ClockStatus =	PIn.PString(table.Rows[i][5].ToString());
 				if(!ListLong[i].IsHidden){
 					tempList.Add(ListLong[i]);
 				}
@@ -71,9 +65,7 @@ namespace OpenDental{
 				+ "lname = '"       +POut.PString(Cur.LName)+"' "
 				+ ",fname = '"      +POut.PString(Cur.FName)+"' "
 				+ ",middlei = '"    +POut.PString(Cur.MiddleI)+"' "
-				+ ",password = '"   +POut.PString(Cur.Password)+"' "
 				+ ",ishidden = '"   +POut.PBool  (Cur.IsHidden)+"' "
-				+ ",username = '"   +POut.PString(Cur.UserName)+"' "
 				+ ",ClockStatus = '"+POut.PString(Cur.ClockStatus)+"' "
 				+"WHERE EmployeeNum = '"+POut.PInt(Cur.EmployeeNum)+"'";
 			//MessageBox.Show(cmd.CommandText);
@@ -82,15 +74,13 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO employee (lname,fname,middlei,password,ishidden,username"
+			cmd.CommandText = "INSERT INTO employee (lname,fname,middlei,ishidden"
 				+",ClockStatus) "
 				+"VALUES("
 				+"'"+POut.PString(Cur.LName)+"', "
 				+"'"+POut.PString(Cur.FName)+"', "
 				+"'"+POut.PString(Cur.MiddleI)+"', "
-				+"'"+POut.PString(Cur.Password)+"', "
 				+"'"+POut.PBool  (Cur.IsHidden)+"', "
-				+"'"+POut.PString(Cur.UserName)+"', "
 				+"'"+POut.PString(Cur.ClockStatus)+"')";
 			NonQ(true);
 			Cur.EmployeeNum=InsertID;

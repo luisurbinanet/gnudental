@@ -54,14 +54,29 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO medicationpat (patnum,medicationnum,patnote"
-				+") VALUES("
-				+"'"+POut.PInt   (Cur.PatNum)+"', "
+			if(Prefs.RandomKeys){
+				Cur.MedicationPatNum=MiscData.GetKey("medicationpat","MedicationPatNum");
+			}
+			cmd.CommandText="INSERT INTO medicationpat (";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="MedicationPatNum,";
+			}
+			cmd.CommandText+="patnum,medicationnum,patnote"
+				+") VALUES(";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="'"+POut.PInt(Cur.MedicationPatNum)+"', ";
+			}
+			cmd.CommandText+=
+				 "'"+POut.PInt   (Cur.PatNum)+"', "
 				+"'"+POut.PInt   (Cur.MedicationNum)+"', "
 				+"'"+POut.PString(Cur.PatNote)+"')";
-			NonQ(true);
-			Cur.MedicationPatNum=InsertID;
-			//MessageBox.Show(Cur.PayNum.ToString());
+			if(Prefs.RandomKeys){
+				NonQ();
+			}
+			else{
+ 				NonQ(true);
+				Cur.MedicationPatNum=InsertID;
+			}
 		}
 
 		///<summary></summary>

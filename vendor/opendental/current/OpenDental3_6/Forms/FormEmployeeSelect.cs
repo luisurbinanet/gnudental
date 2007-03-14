@@ -13,7 +13,7 @@ namespace OpenDental{
 		private System.ComponentModel.Container components = null;
 		private OpenDental.UI.Button butAdd;
 		private ArrayList ALemployees;
-		private User user;
+		//private User user;
 
 		///<summary></summary>
 		public FormEmployee(){
@@ -115,36 +115,6 @@ namespace OpenDental{
 		#endregion
 
 		private void FormEmployee_Load(object sender, System.EventArgs e) {
-			bool requirePass=false;
-			if(Permissions.AuthorizationRequired("Security Administration")){
-				requirePass=true;
-			}
-			if(Permissions.AuthorizationRequired("Employees")){
-				requirePass=true;
-			}
-			if(!requirePass){//allow access if no password required
-				FillList();
-				return;
-			}
-			//check password if either permission requires a password.
-			user=Users.Authenticate("Employees");
-			if(user==null){
-				DialogResult=DialogResult.Cancel;
-				return;
-			}
-			//allow access if permission for Security Admin (remember, employees not allowed Security Admin)
-			if(user.ProvNum > 0){
-				if(UserPermissions.IsAuthorized("Security Administration",user)){
-					FillList();
-					return;
-				}
-			}
-			//allow access if permission for Employees
-			if(!UserPermissions.IsAuthorized("Employees",user)){
-				MsgBox.Show(this,"You do not have permission for this feature");
-				DialogResult=DialogResult.Cancel;
-				return;
-			}	
 			FillList();
 		}
 
@@ -189,9 +159,9 @@ namespace OpenDental{
 		}
 
 		private void FormEmployee_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-			if(user!=null){
-				SecurityLogs.MakeLogEntry("Employees","Altered Employees",user);
-			}
+			//if(user!=null){
+				//SecurityLogs.MakeLogEntry("Employees","Altered Employees",user);
+			//}
 		}
 
 	}

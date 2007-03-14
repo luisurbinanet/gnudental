@@ -25,7 +25,7 @@ namespace OpenDental{
 		private System.Windows.Forms.ListBox listProv;
 		private OpenDental.UI.Button butEditTypes;
 		private ScheduleType SchedType;
-		private User user;
+		//private User user;
 
 		///<summary></summary>
 		public FormSchedDefault(ScheduleType schedType){
@@ -239,14 +239,14 @@ namespace OpenDental{
 		#endregion
 
 		private void FormSchedDefault_Load(object sender, System.EventArgs e) {
-			if(Permissions.AuthorizationRequired("Practice Default Schedule")){
+			/*if(PermissionsOld.AuthorizationRequired("Practice Default Schedule")){
 				user=Users.Authenticate("Practice Default Schedule");
 				if(!UserPermissions.IsAuthorized("Practice Default Schedule",user)){
 					MsgBox.Show(this,"You do not have permission for this feature");
 					DialogResult=DialogResult.Cancel;
 					return;
 				}	
-			}
+			}*/
 			if(SchedType==ScheduleType.Practice){
 				this.Text=Lan.g(this,"Default Practice Schedule");
 				labelProv.Visible=false;
@@ -382,7 +382,7 @@ namespace OpenDental{
 			if(changed){
 				DataValid.SetInvalid(InvalidTypes.Sched);
 			}
-			SecurityLogs.MakeLogEntry("Practice Default Schedule","Altered Schedule Defaults",user);	
+			//SecurityLogs.MakeLogEntry("Practice Default Schedule","Altered Schedule Defaults",user);	
 		}
 
 		

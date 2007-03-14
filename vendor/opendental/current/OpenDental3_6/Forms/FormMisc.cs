@@ -28,6 +28,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label2;
 		private OpenDental.ValidNumber textStatementsCalcDueDate;
 		private System.Windows.Forms.CheckBox checkEclaimsSeparateTreatProv;
+		private System.Windows.Forms.CheckBox checkRandomPrimaryKeys;
 		private System.Windows.Forms.Label label1;// Required designer variable.
 
 		///<summary></summary>
@@ -70,6 +71,7 @@ namespace OpenDental{
 			this.radioUsePatNum = new System.Windows.Forms.RadioButton();
 			this.radioUseChartNumber = new System.Windows.Forms.RadioButton();
 			this.checkEclaimsSeparateTreatProv = new System.Windows.Forms.CheckBox();
+			this.checkRandomPrimaryKeys = new System.Windows.Forms.CheckBox();
 			this.groupBox1.SuspendLayout();
 			this.groupBox5.SuspendLayout();
 			this.groupBox2.SuspendLayout();
@@ -144,7 +146,7 @@ namespace OpenDental{
 			// 
 			// textMainWindowTitle
 			// 
-			this.textMainWindowTitle.Location = new System.Drawing.Point(143, 316);
+			this.textMainWindowTitle.Location = new System.Drawing.Point(143, 337);
 			this.textMainWindowTitle.Name = "textMainWindowTitle";
 			this.textMainWindowTitle.Size = new System.Drawing.Size(333, 20);
 			this.textMainWindowTitle.TabIndex = 38;
@@ -152,7 +154,7 @@ namespace OpenDental{
 			// 
 			// label14
 			// 
-			this.label14.Location = new System.Drawing.Point(-7, 318);
+			this.label14.Location = new System.Drawing.Point(-7, 339);
 			this.label14.Name = "label14";
 			this.label14.Size = new System.Drawing.Size(149, 17);
 			this.label14.TabIndex = 39;
@@ -162,7 +164,7 @@ namespace OpenDental{
 			// checkITooth
 			// 
 			this.checkITooth.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkITooth.Location = new System.Drawing.Point(48, 358);
+			this.checkITooth.Location = new System.Drawing.Point(48, 379);
 			this.checkITooth.Name = "checkITooth";
 			this.checkITooth.Size = new System.Drawing.Size(338, 21);
 			this.checkITooth.TabIndex = 42;
@@ -289,17 +291,28 @@ namespace OpenDental{
 			// 
 			this.checkEclaimsSeparateTreatProv.CheckAlign = System.Drawing.ContentAlignment.TopLeft;
 			this.checkEclaimsSeparateTreatProv.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkEclaimsSeparateTreatProv.Location = new System.Drawing.Point(48, 340);
+			this.checkEclaimsSeparateTreatProv.Location = new System.Drawing.Point(48, 361);
 			this.checkEclaimsSeparateTreatProv.Name = "checkEclaimsSeparateTreatProv";
 			this.checkEclaimsSeparateTreatProv.Size = new System.Drawing.Size(537, 19);
 			this.checkEclaimsSeparateTreatProv.TabIndex = 53;
 			this.checkEclaimsSeparateTreatProv.Text = "On e-claims, send treating provider info for each separate procedure";
 			this.checkEclaimsSeparateTreatProv.TextAlign = System.Drawing.ContentAlignment.TopLeft;
 			// 
+			// checkRandomPrimaryKeys
+			// 
+			this.checkRandomPrimaryKeys.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkRandomPrimaryKeys.Location = new System.Drawing.Point(48, 311);
+			this.checkRandomPrimaryKeys.Name = "checkRandomPrimaryKeys";
+			this.checkRandomPrimaryKeys.Size = new System.Drawing.Size(498, 21);
+			this.checkRandomPrimaryKeys.TabIndex = 55;
+			this.checkRandomPrimaryKeys.Text = "Use Random Primary Keys (BE VERY CAREFUL.  THIS IS IRREVERSIBLE)";
+			this.checkRandomPrimaryKeys.Click += new System.EventHandler(this.checkRandomPrimaryKeys_Click);
+			// 
 			// FormMisc
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(899, 529);
+			this.Controls.Add(this.checkRandomPrimaryKeys);
 			this.Controls.Add(this.checkEclaimsSeparateTreatProv);
 			this.Controls.Add(this.groupBox5);
 			this.Controls.Add(this.checkAllowMultipleCopiesOfProgram);
@@ -342,9 +355,28 @@ namespace OpenDental{
 			}
 			checkAutoRefresh.Checked=Prefs.GetBool("AutoRefreshIsDisabled");
 			checkAllowMultipleCopiesOfProgram.Checked=Prefs.GetBool("AllowMultipleCopiesOfProgram");
+			checkRandomPrimaryKeys.Checked=Prefs.GetBool("RandomPrimaryKeys");
+			if(checkRandomPrimaryKeys.Checked){
+				//not allowed to uncheck it
+				checkRandomPrimaryKeys.Enabled=false;
+			}
 			textMainWindowTitle.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString;
 			checkEclaimsSeparateTreatProv.Checked=Prefs.GetBool("EclaimsSeparateTreatProv");
 			checkITooth.Checked=Prefs.GetBool("UseInternationalToothNumbers");
+		}
+
+		private void checkRandomPrimaryKeys_Click(object sender, System.EventArgs e) {
+			if(MessageBox.Show("Are you absolutely sure you want to enable random primary keys?\r\n"
+				+"Advantages:\r\n"
+				+"Multiple servers can stay synchronized using merge replication.\r\n"
+				+"Realtime connection between servers not required.\r\n"
+				+"Data can be entered on all servers and synchronized later.\r\n"
+				+"Disadvantages:\r\n"
+				+"Slightly slower.\r\n"
+				+"Primary keys much longer, so not as user friendly.","",MessageBoxButtons.OKCancel)==DialogResult.Cancel)
+			{
+				checkRandomPrimaryKeys.Checked=false;
+			}
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
@@ -362,6 +394,7 @@ namespace OpenDental{
 				|| Prefs.UpdateBool("StatementAccountsUseChartNumber",radioUseChartNumber.Checked)
 				|| Prefs.UpdateBool("AutoRefreshIsDisabled",checkAutoRefresh.Checked)
 				|| Prefs.UpdateBool("AllowMultipleCopiesOfProgram",checkAllowMultipleCopiesOfProgram.Checked)
+				|| Prefs.UpdateBool("RandomPrimaryKeys",checkRandomPrimaryKeys.Checked)
 				|| Prefs.UpdateString("MainWindowTitle",textMainWindowTitle.Text)
 				|| Prefs.UpdateBool("EclaimsSeparateTreatProv",checkEclaimsSeparateTreatProv.Checked)
 				|| Prefs.UpdateBool("UseInternationalToothNumbers",checkITooth.Checked))
@@ -389,6 +422,7 @@ namespace OpenDental{
 		}
 
 		
+
 	
 
 	}

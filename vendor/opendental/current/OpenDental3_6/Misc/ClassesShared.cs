@@ -28,8 +28,12 @@ namespace OpenDental{
 		public static int DateToAge(DateTime date){
 			if(date.Year<1890)
 				return 0;
-			if(date.DayOfYear < DateTime.Now.DayOfYear)
+			if(date.Month < DateTime.Now.Month){//birthday in previous month
 				return DateTime.Now.Year-date.Year;
+			}
+			if(date.Month == DateTime.Now.Month && date.Day <= DateTime.Now.Day){//birthday in this month
+				return DateTime.Now.Year-date.Year;
+			}
 			return DateTime.Now.Year-date.Year-1;
 		}
 

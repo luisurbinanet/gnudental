@@ -14,7 +14,7 @@ namespace OpenDental{
 		private OpenDental.UI.Button butAdd;
 		private System.ComponentModel.Container components = null;
 		private bool changed;
-		private User user;
+		//private User user;
 		
 		///<summary></summary>
 		public FormProviderSelect(){
@@ -144,30 +144,30 @@ namespace OpenDental{
 
 		private void FormProviderSelect_Load(object sender, System.EventArgs e) {
 			//if Security Administration permission has not been enabled, then allow access
-			if(!Permissions.AuthorizationRequired("Security Administration")){
-				FillList();
-				return;
-			}
+			//if(!PermissionsOld.AuthorizationRequired("Security Administration")){
+			//	FillList();
+			//	return;
+			//}
 			//whether or not Providers requires a password, since Security Admin has been enabled,
 			//verify password so that the security box can be hidden if no permission for that.
-			user=Users.Authenticate("Providers");
-			if(user==null){
-				DialogResult=DialogResult.Cancel;
-				return;//bad password
-			}
+			//user=Users.Authenticate("Providers");
+			//if(user==null){
+			//	DialogResult=DialogResult.Cancel;
+			//	return;//bad password
+			//}
 			//allow access if permission for Security Admin (remember, employees not allowed Security Admin)
-			if(user.ProvNum > 0){
-				if(UserPermissions.IsAuthorized("Security Administration",user)){
-					FillList();
-					return;
-				}
-			}
+			//if(user.ProvNum > 0){
+			//	if(UserPermissions.IsAuthorized("Security Administration",user)){
+			//		FillList();
+			//		return;
+			//	}
+			//}
 			//allow access if permission for Providers
-			if(!UserPermissions.IsAuthorized("Providers",user)){
+			/*if(!UserPermissions.IsAuthorized("Providers",user)){
 				MsgBox.Show(this,"You do not have permission for this feature");
 				DialogResult=DialogResult.Cancel;
 				return;
-			}	
+			}	*/
 			FillList();
 		}
 
@@ -251,7 +251,7 @@ namespace OpenDental{
 			if(changed){
 				DataValid.SetInvalid(InvalidTypes.Providers);
 			}
-			SecurityLogs.MakeLogEntry("Providers","Altered Providers",user);
+			//SecurityLogs.MakeLogEntry("Providers","Altered Providers",user);
 		}
 
 	}

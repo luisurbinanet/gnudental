@@ -52,9 +52,11 @@ namespace OpenDental{
 		private Payment PaymentCur;
 		private System.Windows.Forms.ComboBox comboClinic;
 		private System.Windows.Forms.Label labelClinic;
+		private OpenDental.ValidDate textDateEntry;
+		private System.Windows.Forms.Label label12;
 		///<summary>Set this value to a PaySplitNum if you want one of the splits highlighted when opening this form.</summary>
 		public int InitialPaySplit;
-		private User user;
+		//private User user;
 
 		///<summary>PatCur and FamCur are not for the PatCur of the payment.  They are for the patient and family from which this window was accessed.</summary>
 		public FormPayment(Patient patCur,Family famCur,Payment paymentCur){
@@ -111,6 +113,8 @@ namespace OpenDental{
 			this.label11 = new System.Windows.Forms.Label();
 			this.comboClinic = new System.Windows.Forms.ComboBox();
 			this.labelClinic = new System.Windows.Forms.Label();
+			this.textDateEntry = new OpenDental.ValidDate();
+			this.label12 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// butDeleteAll
@@ -168,7 +172,7 @@ namespace OpenDental{
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(12, 142);
+			this.label2.Location = new System.Drawing.Point(12, 162);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(92, 16);
 			this.label2.TabIndex = 8;
@@ -177,7 +181,7 @@ namespace OpenDental{
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(4, 124);
+			this.label3.Location = new System.Drawing.Point(4, 144);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(100, 16);
 			this.label3.TabIndex = 9;
@@ -186,7 +190,7 @@ namespace OpenDental{
 			// 
 			// label4
 			// 
-			this.label4.Location = new System.Drawing.Point(4, 104);
+			this.label4.Location = new System.Drawing.Point(4, 124);
 			this.label4.Name = "label4";
 			this.label4.Size = new System.Drawing.Size(100, 16);
 			this.label4.TabIndex = 10;
@@ -195,7 +199,7 @@ namespace OpenDental{
 			// 
 			// label5
 			// 
-			this.label5.Location = new System.Drawing.Point(4, 84);
+			this.label5.Location = new System.Drawing.Point(4, 104);
 			this.label5.Name = "label5";
 			this.label5.Size = new System.Drawing.Size(100, 16);
 			this.label5.TabIndex = 11;
@@ -204,7 +208,7 @@ namespace OpenDental{
 			// 
 			// label6
 			// 
-			this.label6.Location = new System.Drawing.Point(4, 64);
+			this.label6.Location = new System.Drawing.Point(4, 84);
 			this.label6.Name = "label6";
 			this.label6.Size = new System.Drawing.Size(100, 16);
 			this.label6.TabIndex = 12;
@@ -213,21 +217,21 @@ namespace OpenDental{
 			// 
 			// textCheckNum
 			// 
-			this.textCheckNum.Location = new System.Drawing.Point(106, 100);
+			this.textCheckNum.Location = new System.Drawing.Point(106, 120);
 			this.textCheckNum.Name = "textCheckNum";
 			this.textCheckNum.TabIndex = 2;
 			this.textCheckNum.Text = "";
 			// 
 			// textBankBranch
 			// 
-			this.textBankBranch.Location = new System.Drawing.Point(106, 120);
+			this.textBankBranch.Location = new System.Drawing.Point(106, 140);
 			this.textBankBranch.Name = "textBankBranch";
 			this.textBankBranch.TabIndex = 3;
 			this.textBankBranch.Text = "";
 			// 
 			// label7
 			// 
-			this.label7.Location = new System.Drawing.Point(302, 508);
+			this.label7.Location = new System.Drawing.Point(292, 472);
 			this.label7.Name = "label7";
 			this.label7.Size = new System.Drawing.Size(362, 14);
 			this.label7.TabIndex = 18;
@@ -236,7 +240,7 @@ namespace OpenDental{
 			// 
 			// textTotal
 			// 
-			this.textTotal.Location = new System.Drawing.Point(586, 482);
+			this.textTotal.Location = new System.Drawing.Point(576, 446);
 			this.textTotal.Name = "textTotal";
 			this.textTotal.ReadOnly = true;
 			this.textTotal.Size = new System.Drawing.Size(70, 20);
@@ -246,21 +250,22 @@ namespace OpenDental{
 			// 
 			// textDate
 			// 
-			this.textDate.Location = new System.Drawing.Point(106, 60);
+			this.textDate.Location = new System.Drawing.Point(106, 80);
 			this.textDate.Name = "textDate";
 			this.textDate.TabIndex = 0;
 			this.textDate.Text = "";
 			// 
 			// textAmount
 			// 
-			this.textAmount.Location = new System.Drawing.Point(106, 80);
+			this.textAmount.Location = new System.Drawing.Point(106, 100);
 			this.textAmount.Name = "textAmount";
+			this.textAmount.Size = new System.Drawing.Size(84, 20);
 			this.textAmount.TabIndex = 1;
 			this.textAmount.Text = "";
 			// 
 			// label8
 			// 
-			this.label8.Location = new System.Drawing.Point(484, 486);
+			this.label8.Location = new System.Drawing.Point(474, 450);
 			this.label8.Name = "label8";
 			this.label8.Size = new System.Drawing.Size(100, 16);
 			this.label8.TabIndex = 22;
@@ -269,7 +274,7 @@ namespace OpenDental{
 			// 
 			// listPayType
 			// 
-			this.listPayType.Location = new System.Drawing.Point(510, 38);
+			this.listPayType.Location = new System.Drawing.Point(510, 58);
 			this.listPayType.Name = "listPayType";
 			this.listPayType.Size = new System.Drawing.Size(120, 95);
 			this.listPayType.TabIndex = 4;
@@ -277,12 +282,12 @@ namespace OpenDental{
 			// tbSplits
 			// 
 			this.tbSplits.BackColor = System.Drawing.SystemColors.Window;
-			this.tbSplits.Location = new System.Drawing.Point(106, 232);
+			this.tbSplits.Location = new System.Drawing.Point(106, 252);
 			this.tbSplits.Name = "tbSplits";
 			this.tbSplits.ScrollValue = 1;
 			this.tbSplits.SelectedIndices = new int[0];
 			this.tbSplits.SelectionMode = System.Windows.Forms.SelectionMode.One;
-			this.tbSplits.Size = new System.Drawing.Size(559, 248);
+			this.tbSplits.Size = new System.Drawing.Size(559, 184);
 			this.tbSplits.TabIndex = 26;
 			// 
 			// butAdd
@@ -293,7 +298,7 @@ namespace OpenDental{
 			this.butAdd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
 			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAdd.Location = new System.Drawing.Point(106, 496);
+			this.butAdd.Location = new System.Drawing.Point(106, 460);
 			this.butAdd.Name = "butAdd";
 			this.butAdd.Size = new System.Drawing.Size(92, 26);
 			this.butAdd.TabIndex = 30;
@@ -331,7 +336,7 @@ namespace OpenDental{
 			// textNote
 			// 
 			this.textNote.AcceptsReturn = true;
-			this.textNote.Location = new System.Drawing.Point(106, 142);
+			this.textNote.Location = new System.Drawing.Point(106, 162);
 			this.textNote.MaxLength = 255;
 			this.textNote.Multiline = true;
 			this.textNote.Name = "textNote";
@@ -377,12 +382,31 @@ namespace OpenDental{
 			this.labelClinic.Text = "Clinic";
 			this.labelClinic.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
+			// textDateEntry
+			// 
+			this.textDateEntry.Location = new System.Drawing.Point(106, 60);
+			this.textDateEntry.Name = "textDateEntry";
+			this.textDateEntry.ReadOnly = true;
+			this.textDateEntry.TabIndex = 93;
+			this.textDateEntry.Text = "";
+			// 
+			// label12
+			// 
+			this.label12.Location = new System.Drawing.Point(4, 64);
+			this.label12.Name = "label12";
+			this.label12.Size = new System.Drawing.Size(100, 16);
+			this.label12.TabIndex = 94;
+			this.label12.Text = "Entry Date";
+			this.label12.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
 			// FormPayment
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(750, 682);
+			this.Controls.Add(this.textDateEntry);
+			this.Controls.Add(this.label12);
 			this.Controls.Add(this.comboClinic);
 			this.Controls.Add(this.labelClinic);
 			this.Controls.Add(this.textGuarantor);
@@ -424,7 +448,11 @@ namespace OpenDental{
 		#endregion
 
 		private void FormPayment_Load(object sender, System.EventArgs e) {
-			if(IsNew){//the only way to get here is from Account window, so many lists will be refreshed				
+			if(IsNew){//the only way to get here is from Account window, so many lists will be refreshed	
+				if(!Security.IsAuthorized(Permissions.PaymentCreate)){
+					DialogResult=DialogResult.Cancel;
+					return;
+				}
 				if(PayPlans.GetValidPlan(PatCur.PatNum)){//a valid payPlan was located
 					PaySplit PaySplitCur=AddOneSplit();//the amount and date will be updated upon closing
 					PaySplitCur.PayPlanNum=PayPlans.Cur.PayPlanNum;
@@ -432,19 +460,12 @@ namespace OpenDental{
 				}
 			}
 			else{
-				if(Permissions.AuthorizationRequired("Payment Edit",PaymentCur.PayDate)){
-					user=Users.Authenticate("Payment Edit");
-					if(user==null){
-						DialogResult=DialogResult.Cancel;
-						return;
-					}
-					if(!UserPermissions.IsAuthorized("Payment Edit",user)){
-						butOK.Enabled=false;
-						butDeleteAll.Enabled=false;
-						butAdd.Enabled=false;
-						tbSplits.Enabled=false;
-					}
-				}		
+				if(!Security.IsAuthorized(Permissions.PaymentEdit,PaymentCur.DateEntry)){
+					butOK.Enabled=false;
+					butDeleteAll.Enabled=false;
+					butAdd.Enabled=false;
+					tbSplits.Enabled=false;
+				}
 			}
 			if(Prefs.GetBool("EasyNoClinics")){
 				comboClinic.Visible=false;
@@ -465,7 +486,8 @@ namespace OpenDental{
 			else{
 				textGuarantor.Text=FamCur.GetNameInFamFL(PaymentCur.PatNum);
 			}
-			textDate.Text=PaymentCur.PayDate.ToString("d");
+			textDateEntry.Text=PaymentCur.DateEntry.ToShortDateString();
+			textDate.Text=PaymentCur.PayDate.ToShortDateString();
 			textAmount.Text=PaymentCur.PayAmt.ToString("F");
 			textCheckNum.Text=PaymentCur.CheckNum;
 			textBankBranch.Text=PaymentCur.BankBranch;
@@ -623,6 +645,9 @@ namespace OpenDental{
 				return;
 			}
 			PaymentCur.Delete();
+			SecurityLogs.MakeLogEntry(Permissions.PaymentEdit,"Delete for: "
+				+Patients.GetLim(PaymentCur.PatNum).GetNameLF()+", "
+				+PaymentCur.PayAmt.ToString("c"));
 			DialogResult=DialogResult.OK;
 		}
 
@@ -682,8 +707,15 @@ namespace OpenDental{
 				//work on reallocation schemes here later
 				return;
 			}
-			if(!IsNew){
-			  SecurityLogs.MakeLogEntry("Payment Edit","Patient Num: "+PaymentCur.PatNum.ToString(),user);
+			if(IsNew){
+				SecurityLogs.MakeLogEntry(Permissions.PaymentCreate,
+					Patients.GetLim(PaymentCur.PatNum).GetNameLF()+", "
+					+PaymentCur.PayAmt.ToString("c"));
+			}
+			else{
+			  SecurityLogs.MakeLogEntry(Permissions.PaymentEdit,
+					Patients.GetLim(PaymentCur.PatNum).GetNameLF()+", "
+					+PaymentCur.PayAmt.ToString("c"));
 			}
 			DialogResult=DialogResult.OK;
 		}

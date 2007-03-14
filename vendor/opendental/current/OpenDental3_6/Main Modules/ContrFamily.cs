@@ -843,7 +843,7 @@ namespace OpenDental{
 			Procedure[] procList=Procedures.Refresh(PatCur.PatNum);
 			Claims.Refresh(PatCur.PatNum);
 			Adjustment[] AdjustmentList=Adjustments.Refresh(PatCur.PatNum);
-			PaySplit[] PaySplitList=PaySplits.Refresh(PatCur.PatNum);
+			PaySplit[] PaySplitList=PaySplits.Refresh(PatCur.PatNum);//
 			ClaimProc[] claimProcList=ClaimProcs.Refresh(PatCur.PatNum);
 			Commlogs.Refresh(PatCur.PatNum);
 			PayPlans.Refresh(PatCur.Guarantor,PatCur.PatNum);

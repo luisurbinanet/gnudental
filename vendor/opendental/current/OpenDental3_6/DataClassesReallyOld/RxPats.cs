@@ -75,9 +75,20 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO rxpat (patnum,rxdate,drug,sig,"
-				+"disp,refills,provnum,notes) VALUES("
-				+"'"+POut.PInt   (Cur.PatNum)+"', "
+			if(Prefs.RandomKeys){
+				Cur.RxNum=MiscData.GetKey("rxpat","RxNum");
+			}
+			cmd.CommandText="INSERT INTO rxpat (";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="RxNum,";
+			}
+			cmd.CommandText+="PatNum,RxDate,Drug,Sig,"
+				+"Disp,Refills,ProvNum,Notes) VALUES(";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="'"+POut.PInt(Cur.RxNum)+"', ";
+			}
+			cmd.CommandText+=
+				 "'"+POut.PInt   (Cur.PatNum)+"', "
 				+"'"+POut.PDate  (Cur.RxDate)+"', "
 				+"'"+POut.PString(Cur.Drug)+"', "
 				+"'"+POut.PString(Cur.Sig)+"', "
@@ -85,8 +96,13 @@ namespace OpenDental{
 				+"'"+POut.PString(Cur.Refills)+"', "
 				+"'"+POut.PInt   (Cur.ProvNum)+"', "
 				+"'"+POut.PString(Cur.Notes)+"')";
-			NonQ(true);
-			Cur.RxNum=InsertID;
+			if(Prefs.RandomKeys){
+				NonQ();
+			}
+			else{
+ 				NonQ(true);
+				Cur.RxNum=InsertID;
+			}
 		}
 
 		///<summary></summary>

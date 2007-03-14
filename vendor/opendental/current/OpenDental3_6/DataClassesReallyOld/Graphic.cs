@@ -296,7 +296,7 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void GetSublistForFilling(string toothNum,string surf){
-			if(toothNum==""){
+			if(!Tooth.IsValidDB(toothNum)){//==""){
 				Sublist=new GraphicElement[0];
 				return;
 			}

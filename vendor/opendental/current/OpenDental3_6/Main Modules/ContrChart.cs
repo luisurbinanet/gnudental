@@ -83,7 +83,6 @@ namespace OpenDental{
 		private System.Windows.Forms.Label labelDx;
 		private System.Windows.Forms.Label labelNewProcHint;
 		private System.Windows.Forms.Label label4;
-		private System.Windows.Forms.ListBox listProcButtons;
 		private System.Windows.Forms.TextBox textCreditType;
 		private System.Windows.Forms.TextBox textIns;
 		private System.Windows.Forms.Panel panelABCins;
@@ -126,6 +125,7 @@ namespace OpenDental{
 		private Patient PatCur;
 		private InsPlan[] PlanList;
 		private System.Windows.Forms.GroupBox groupPlanned;
+		private System.Windows.Forms.ListBox listProcButtons;
 		///<summary></summary>
 		[Category("Data"),Description("Occurs when user changes current patient, usually by clicking on the Select Patient button.")]
 		public event PatientSelectedEventHandler PatientSelected=null;
@@ -292,7 +292,7 @@ namespace OpenDental{
 			this.butO.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butO.Location = new System.Drawing.Point(28, 43);
 			this.butO.Name = "butO";
-			this.butO.Size = new System.Drawing.Size(17, 20);
+			this.butO.Size = new System.Drawing.Size(18, 20);
 			this.butO.TabIndex = 19;
 			this.butO.Text = "O";
 			this.butO.Click += new System.EventHandler(this.butO_Click);
@@ -1492,17 +1492,14 @@ namespace OpenDental{
 		}
 
 		private void OnRx_Click(){
-			if(Permissions.AuthorizationRequired("Prescription Create")){
-				User user=Users.Authenticate("Prescription Create");
-				if(!UserPermissions.IsAuthorized("Prescription Create",user)){
-					MsgBox.Show(this,"You do not have Permission to Add Prescriptions");
-					return;
-				}	
+			if(!Security.IsAuthorized(Permissions.RxCreate)){
+				return;
 			}
 			FormRxSelect FormRS=new FormRxSelect(PatCur);
 			FormRS.ShowDialog();
 			if(FormRS.DialogResult!=DialogResult.OK) return;
 			ModuleSelected(PatCur.PatNum);
+			SecurityLogs.MakeLogEntry(Permissions.RxCreate,PatCur.GetNameLF());
 		}
 
 		private void OnPerio_Click(){
@@ -2056,6 +2053,7 @@ namespace OpenDental{
 					int thumbSize=imageListThumbnails.ImageSize.Width;//All thumbnails are square.
 					Bitmap thumbBitmap=new Bitmap(thumbSize,thumbSize);
 					Graphics g=Graphics.FromImage(thumbBitmap);
+					g.InterpolationMode=InterpolationMode.High;
 					if(File.Exists(patFolder+Documents.Cur.FileName)
 						&& (Path.GetExtension(Documents.Cur.FileName).ToLower()==".jpg"
 						|| Path.GetExtension(Documents.Cur.FileName).ToLower()==".gif"))
@@ -2336,9 +2334,17 @@ namespace OpenDental{
 			if(listDx.SelectedIndex!=-1)
 				ProcCur.Dx=Defs.Short[(int)DefCat.Diagnosis][listDx.SelectedIndex].DefNum;
 			//nextaptnum
-			ProcCur.Insert();
+			ProcCur.DateEntryC=DateTime.Now;
+			try{
+				ProcCur.InsertOrUpdate(null,true);
+			}
+			catch(Exception ex){
+				MessageBox.Show(ex.Message);
+				return;//this won't happen
+			}
+			//ProcCur.Insert();
 			ProcCur.ComputeEstimates(PatCur.PatNum,PatCur.PriPlanNum
-					,PatCur.SecPlanNum,new ClaimProc[0],true,PatCur.Copy(),PlanList);
+				,PatCur.SecPlanNum,new ClaimProc[0],true,PatCur.Copy(),PlanList);
 			FormProcEdit FormPE=new FormProcEdit(ProcCur,PatCur.Copy(),FamCur,PlanList);
 			FormPE.IsNew=true;
 			FormPE.ShowDialog();
@@ -2405,13 +2411,25 @@ namespace OpenDental{
 			//if(Procedures.Cur.ProcStatus==ProcStat.C){
 			//	Procedures.PutBal(Procedures.Cur.ProcDate,Procedures.Cur.ProcFee);
 			//}
-			ProcCur.Insert();
+			try{
+				ProcCur.InsertOrUpdate(null,true);
+			}
+			catch(Exception ex){
+				MessageBox.Show(ex.Message);
+				return;//this won't happen
+			}
+			//ProcCur.Insert();
 			Recalls.Synch(PatCur.PatNum);
 			ProcCur.ComputeEstimates(PatCur.PatNum,PatCur.PriPlanNum
 					,PatCur.SecPlanNum,new ClaimProc[0],true,PatCur.Copy(),PlanList);
 		}
 
 		private void butAddProc_Click(object sender, System.EventArgs e){
+			if(newStatus==ProcStat.C){
+				if(!Security.IsAuthorized(Permissions.ProcComplCreate)){
+					return;
+				}
+			}
 			bool isValid;
 			TreatmentArea tArea;
 			FormProcedures FormP=new FormProcedures();
@@ -2514,6 +2532,11 @@ namespace OpenDental{
 				}
 			}//for n
 			ModuleSelected(PatCur.PatNum);
+			if(newStatus==ProcStat.C){
+				SecurityLogs.MakeLogEntry(Permissions.ProcComplCreate,
+					PatCur.GetNameLF()+", "
+					+DateTime.Today.ToShortDateString());
+			}
 		}
 		
 		private void listDx_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
@@ -2540,7 +2563,6 @@ namespace OpenDental{
 				return;
 			}
 			int skipped=0;
-			int rxSkipped=0;
 			for(int i=0;i<tbProg.SelectedIndices.Length;i++){
 				switch(((ProgLine)ProgLineAL[tbProg.SelectedIndices[i]]).Type){
 					case ProgType.Proc:
@@ -2554,19 +2576,7 @@ namespace OpenDental{
 						break;
 					case ProgType.Rx:		
 						RxPats.Cur=(RxPat)RxAL[((ProgLine)ProgLineAL[tbProg.SelectedIndices[i]]).Index];
-						//this needs to be enhanced some day to only ask for a password once for entire loop
-						if(Permissions.AuthorizationRequired("Prescription Edit",RxPats.Cur.RxDate)){
-							User user=Users.Authenticate("Prescription Edit");
-							if(UserPermissions.IsAuthorized("Prescription Edit",user)){
-								RxPats.DeleteCur();
-							}
-							else{
-								rxSkipped++;
-							}
-						}
-						else{
-							RxPats.DeleteCur();
-						}
+						RxPats.DeleteCur();
 						break;
 				}//switch
 			}
@@ -2574,9 +2584,6 @@ namespace OpenDental{
 			if(skipped>0){
 				MessageBox.Show(Lan.g(this,"Not allowed to delete completed procedures from here.")+"\r"
 					+skipped.ToString()+" "+Lan.g(this,"item(s) skipped."));
-			}
-			if(rxSkipped>0){
-				MessageBox.Show(Lan.g(this,"You do not have permission to delete prescriptions."));	
 			}
 			ModuleSelected(PatCur.PatNum);
 		}
@@ -2831,6 +2838,11 @@ namespace OpenDental{
 		}*/
 
 		private void listProcButtons_Click(object sender, System.EventArgs e) {
+			if(newStatus==ProcStat.C){
+				if(!Security.IsAuthorized(Permissions.ProcComplCreate)){
+					return;
+				}
+			}
 			if(listProcButtons.SelectedIndex==-1){
 				return;
 			}
@@ -3018,6 +3030,11 @@ namespace OpenDental{
 				}//n selected teeth
 			}//for i
 			ModuleSelected(PatCur.PatNum);
+			if(newStatus==ProcStat.C){
+				SecurityLogs.MakeLogEntry(Permissions.ProcComplCreate,
+					PatCur.GetNameLF()+", "
+					+DateTime.Today.ToShortDateString());
+			}
 		}
 
 		private void butPrimary_Click(object sender, System.EventArgs e) {
@@ -3102,6 +3119,11 @@ namespace OpenDental{
 		}
 
 		private void EnterTypedCode(){
+			if(newStatus==ProcStat.C){
+				if(!Security.IsAuthorized(Permissions.ProcComplCreate)){
+					return;
+				}
+			}
 			if(!ProcedureCodes.HList.ContainsKey(textADACode.Text)){
 				MessageBox.Show(Lan.g(this,"Invalid code."));
 				//textADACode.Text="";
@@ -3195,6 +3217,11 @@ namespace OpenDental{
 			ModuleSelected(PatCur.PatNum);
 			textADACode.Text="";
 			textADACode.Select();
+			if(newStatus==ProcStat.C){
+				SecurityLogs.MakeLogEntry(Permissions.ProcComplCreate,
+					PatCur.GetNameLF()+", "
+					+DateTime.Today.ToShortDateString());
+			}
 		}
 
 		private void cTeeth_Click(object sender, System.EventArgs e) {

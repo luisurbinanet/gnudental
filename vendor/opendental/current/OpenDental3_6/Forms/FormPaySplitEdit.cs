@@ -69,6 +69,8 @@ namespace OpenDental
 		private double ProcInsEst;
 		private double ProcAdj;
 		private double ProcPrevPaid;
+		private System.Windows.Forms.Label label15;
+		private OpenDental.ValidDate textDateEntry;
 		private double ProcPaidHere;
 
 
@@ -138,6 +140,8 @@ namespace OpenDental
 			this.label2 = new System.Windows.Forms.Label();
 			this.butDetach = new OpenDental.UI.Button();
 			this.butAttach = new OpenDental.UI.Button();
+			this.textDateEntry = new OpenDental.ValidDate();
+			this.label15 = new System.Windows.Forms.Label();
 			this.groupPatient.SuspendLayout();
 			this.groupProcedure.SuspendLayout();
 			this.SuspendLayout();
@@ -176,20 +180,22 @@ namespace OpenDental
 			this.butRemainder.Autosize = true;
 			this.butRemainder.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butRemainder.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butRemainder.Location = new System.Drawing.Point(129, 110);
+			this.butRemainder.Location = new System.Drawing.Point(5, 304);
 			this.butRemainder.Name = "butRemainder";
 			this.butRemainder.Size = new System.Drawing.Size(92, 26);
 			this.butRemainder.TabIndex = 7;
 			this.butRemainder.Text = "&Remainder";
+			this.butRemainder.Visible = false;
 			this.butRemainder.Click += new System.EventHandler(this.butRemainder_Click);
 			// 
 			// labelRemainder
 			// 
-			this.labelRemainder.Location = new System.Drawing.Point(129, 142);
+			this.labelRemainder.Location = new System.Drawing.Point(5, 336);
 			this.labelRemainder.Name = "labelRemainder";
 			this.labelRemainder.Size = new System.Drawing.Size(119, 88);
 			this.labelRemainder.TabIndex = 5;
 			this.labelRemainder.Text = "The Remainder button will calculate the value needed to make the splits balance.";
+			this.labelRemainder.Visible = false;
 			// 
 			// label5
 			// 
@@ -217,16 +223,16 @@ namespace OpenDental
 			// 
 			// textAmount
 			// 
-			this.textAmount.Location = new System.Drawing.Point(129, 74);
+			this.textAmount.Location = new System.Drawing.Point(129, 94);
 			this.textAmount.Name = "textAmount";
-			this.textAmount.Size = new System.Drawing.Size(92, 20);
+			this.textAmount.Size = new System.Drawing.Size(77, 20);
 			this.textAmount.TabIndex = 1;
 			this.textAmount.Text = "";
 			this.textAmount.Validating += new System.ComponentModel.CancelEventHandler(this.textAmount_Validating);
 			// 
 			// labelAmount
 			// 
-			this.labelAmount.Location = new System.Drawing.Point(23, 76);
+			this.labelAmount.Location = new System.Drawing.Point(23, 96);
 			this.labelAmount.Name = "labelAmount";
 			this.labelAmount.Size = new System.Drawing.Size(104, 16);
 			this.labelAmount.TabIndex = 15;
@@ -261,7 +267,7 @@ namespace OpenDental
 			// 
 			// textProcDate
 			// 
-			this.textProcDate.Location = new System.Drawing.Point(129, 50);
+			this.textProcDate.Location = new System.Drawing.Point(129, 70);
 			this.textProcDate.Name = "textProcDate";
 			this.textProcDate.Size = new System.Drawing.Size(92, 20);
 			this.textProcDate.TabIndex = 25;
@@ -269,16 +275,16 @@ namespace OpenDental
 			// 
 			// label7
 			// 
-			this.label7.Location = new System.Drawing.Point(24, 52);
+			this.label7.Location = new System.Drawing.Point(24, 73);
 			this.label7.Name = "label7";
 			this.label7.Size = new System.Drawing.Size(104, 16);
 			this.label7.TabIndex = 24;
-			this.label7.Text = "Procedure Date";
+			this.label7.Text = "Split Date";
 			this.label7.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// textDatePay
 			// 
-			this.textDatePay.Location = new System.Drawing.Point(129, 26);
+			this.textDatePay.Location = new System.Drawing.Point(129, 46);
 			this.textDatePay.Name = "textDatePay";
 			this.textDatePay.ReadOnly = true;
 			this.textDatePay.Size = new System.Drawing.Size(92, 20);
@@ -287,11 +293,11 @@ namespace OpenDental
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(1, 28);
+			this.label1.Location = new System.Drawing.Point(0, 48);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(127, 16);
 			this.label1.TabIndex = 23;
-			this.label1.Text = "Entry (Payment) Date";
+			this.label1.Text = "Payment Date";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// textPatient
@@ -591,10 +597,30 @@ namespace OpenDental
 			this.butAttach.Text = "Attach";
 			this.butAttach.Click += new System.EventHandler(this.butAttach_Click);
 			// 
+			// textDateEntry
+			// 
+			this.textDateEntry.Location = new System.Drawing.Point(129, 22);
+			this.textDateEntry.Name = "textDateEntry";
+			this.textDateEntry.ReadOnly = true;
+			this.textDateEntry.Size = new System.Drawing.Size(92, 20);
+			this.textDateEntry.TabIndex = 114;
+			this.textDateEntry.Text = "";
+			// 
+			// label15
+			// 
+			this.label15.Location = new System.Drawing.Point(1, 24);
+			this.label15.Name = "label15";
+			this.label15.Size = new System.Drawing.Size(127, 16);
+			this.label15.TabIndex = 115;
+			this.label15.Text = "Entry Date";
+			this.label15.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
 			// FormPaySplitEdit
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(762, 541);
+			this.Controls.Add(this.textDateEntry);
+			this.Controls.Add(this.label15);
 			this.Controls.Add(this.groupProcedure);
 			this.Controls.Add(this.groupPatient);
 			this.Controls.Add(this.textProcDate);
@@ -629,6 +655,7 @@ namespace OpenDental
 		private void FormPaySplitEdit_Load(object sender, System.EventArgs e) {
 			//OriginalPatNum=PaySplitCur.PatNum;
 			//Location=new Point(Location.X,Location.Y+150);
+			textDateEntry.Text=PaySplitCur.DateEntry.ToShortDateString();
 			textDatePay.Text=PaySplitCur.DatePay.ToShortDateString();
 			textProcDate.Text=PaySplitCur.ProcDate.ToShortDateString();
 			textAmount.Text=PaySplitCur.SplitAmt.ToString("F");
@@ -818,7 +845,7 @@ namespace OpenDental
 
 		private void checkPayPlan_Click(object sender, System.EventArgs e) {
 			if(checkPayPlan.Checked){
-				if(checkPatOtherFam.Visible){//prevents a bug.
+				if(checkPatOtherFam.Checked){//prevents a bug.
 					checkPayPlan.Checked=false;
 					return;
 				}

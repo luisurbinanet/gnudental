@@ -105,11 +105,9 @@ namespace OpenDental{
 		private System.Windows.Forms.MenuItem menuItem8;
 		private System.Windows.Forms.MenuItem menuItemLists;
 		private System.Windows.Forms.MenuItem menuItemTools;
-		private System.Windows.Forms.MenuItem menuItemInsTemplates;
 		private System.Windows.Forms.MenuItem menuItemReferrals;
 		private System.Windows.Forms.MenuItem menuItem10;
 		private System.Windows.Forms.MenuItem menuItemExit;
-		private System.Windows.Forms.MenuItem menuItemPermissions;
 		private System.Windows.Forms.MenuItem menuItemCheckDatabase;
 		private System.Windows.Forms.MenuItem menuItemProcedureButtons;
 		private System.Windows.Forms.MenuItem menuItemZipCodes;
@@ -148,7 +146,6 @@ namespace OpenDental{
 		private Image buttonsShadow;
 		private int CurPatNum;
 		private System.Windows.Forms.MenuItem menuItemClearinghouses;
-		private System.Windows.Forms.MenuItem menuItemClinics;
 		private System.Windows.Forms.MenuItem menuItemUpdate;
 		private System.Windows.Forms.MenuItem menuItemRpProcNote;
 		private System.Windows.Forms.MenuItem menuItemHelpWindows;
@@ -164,8 +161,14 @@ namespace OpenDental{
 		private System.Windows.Forms.MenuItem menuItemSchoolCourses;
 		private System.Windows.Forms.MenuItem menuItemCourseGrades;
 		private System.Windows.Forms.MenuItem menuItemPatientImport;
+		private System.Windows.Forms.MenuItem menuItemSecurity;
+		private System.Windows.Forms.MenuItem menuItemLogOff;
 		///<summary>Will be true if this is the second instance of Open Dental running on this computer. This might happen with terminal services or fast user switching.  If true, then the message listening is disabled.  This might cause synchronisation issues if used extensively.  A timed synchronization is planned for this situation.</summary>
 		private static bool IsSecondInstance;
+		private System.Windows.Forms.MenuItem menuItemInsPlans;
+		private System.Windows.Forms.MenuItem menuItemClinics;
+		///<summary>When user logs out, this keeps track of where they were for when they log back in.</summary>
+		private int LastModule;
 
 		///<summary></summary>
 		public FormOpenDental(){
@@ -206,6 +209,7 @@ namespace OpenDental{
 			this.imageList2x6 = new System.Windows.Forms.ImageList(this.components);
 			this.timerTimeIndic = new System.Windows.Forms.Timer(this.components);
 			this.mainMenu = new System.Windows.Forms.MainMenu();
+			this.menuItemLogOff = new System.Windows.Forms.MenuItem();
 			this.menuItemFile = new System.Windows.Forms.MenuItem();
 			this.menuItemPrinter = new System.Windows.Forms.MenuItem();
 			this.menuItemScanner = new System.Windows.Forms.MenuItem();
@@ -218,7 +222,6 @@ namespace OpenDental{
 			this.menuItemAutoCodes = new System.Windows.Forms.MenuItem();
 			this.menuItemClaimForms = new System.Windows.Forms.MenuItem();
 			this.menuItemClearinghouses = new System.Windows.Forms.MenuItem();
-			this.menuItemClinics = new System.Windows.Forms.MenuItem();
 			this.menuItemComputers = new System.Windows.Forms.MenuItem();
 			this.menuItemDataPath = new System.Windows.Forms.MenuItem();
 			this.menuItemDefinitions = new System.Windows.Forms.MenuItem();
@@ -226,11 +229,11 @@ namespace OpenDental{
 			this.menuItemEmail = new System.Windows.Forms.MenuItem();
 			this.menuItemInsCats = new System.Windows.Forms.MenuItem();
 			this.menuItemMisc = new System.Windows.Forms.MenuItem();
-			this.menuItemPermissions = new System.Windows.Forms.MenuItem();
 			this.menuItemPractice = new System.Windows.Forms.MenuItem();
 			this.menuItemProcedureButtons = new System.Windows.Forms.MenuItem();
 			this.menuItemLinks = new System.Windows.Forms.MenuItem();
 			this.menuItemRecall = new System.Windows.Forms.MenuItem();
+			this.menuItemSecurity = new System.Windows.Forms.MenuItem();
 			this.menuItem10 = new System.Windows.Forms.MenuItem();
 			this.menuItemSched = new System.Windows.Forms.MenuItem();
 			this.menuItemPracDef = new System.Windows.Forms.MenuItem();
@@ -239,6 +242,7 @@ namespace OpenDental{
 			this.menuItemProvSched = new System.Windows.Forms.MenuItem();
 			this.menuItemBlockoutDefault = new System.Windows.Forms.MenuItem();
 			this.menuItemLists = new System.Windows.Forms.MenuItem();
+			this.menuItemClinics = new System.Windows.Forms.MenuItem();
 			this.menuItemContacts = new System.Windows.Forms.MenuItem();
 			this.menuItemCounties = new System.Windows.Forms.MenuItem();
 			this.menuItemSchoolClass = new System.Windows.Forms.MenuItem();
@@ -247,7 +251,7 @@ namespace OpenDental{
 			this.menuItemEmployers = new System.Windows.Forms.MenuItem();
 			this.menuItemInstructors = new System.Windows.Forms.MenuItem();
 			this.menuItemCarriers = new System.Windows.Forms.MenuItem();
-			this.menuItemInsTemplates = new System.Windows.Forms.MenuItem();
+			this.menuItemInsPlans = new System.Windows.Forms.MenuItem();
 			this.menuItemMedications = new System.Windows.Forms.MenuItem();
 			this.menuItemProviders = new System.Windows.Forms.MenuItem();
 			this.menuItemPrescriptions = new System.Windows.Forms.MenuItem();
@@ -297,6 +301,7 @@ namespace OpenDental{
 			this.menuItem1 = new System.Windows.Forms.MenuItem();
 			this.menuItemCheckDatabase = new System.Windows.Forms.MenuItem();
 			this.menuTelephone = new System.Windows.Forms.MenuItem();
+			this.menuItemPatientImport = new System.Windows.Forms.MenuItem();
 			this.menuItem9 = new System.Windows.Forms.MenuItem();
 			this.menuItemPaymentPlans = new System.Windows.Forms.MenuItem();
 			this.menuItemAging = new System.Windows.Forms.MenuItem();
@@ -313,7 +318,6 @@ namespace OpenDental{
 			this.myOutlookBar = new OpenDental.OutlookBar();
 			this.imageList32 = new System.Windows.Forms.ImageList(this.components);
 			this.ContrManage2 = new OpenDental.ContrStaff();
-			this.menuItemPatientImport = new System.Windows.Forms.MenuItem();
 			this.SuspendLayout();
 			// 
 			// imageList1
@@ -363,7 +367,7 @@ namespace OpenDental{
 			this.ContrAppt2.Name = "ContrAppt2";
 			this.ContrAppt2.Size = new System.Drawing.Size(880, 690);
 			this.ContrAppt2.TabIndex = 9;
-			this.ContrAppt2.Load += new System.EventHandler(this.ContrAppt2_Load);
+			this.ContrAppt2.Visible = false;
 			// 
 			// ContrAccount2
 			// 
@@ -394,6 +398,7 @@ namespace OpenDental{
 			// mainMenu
 			// 
 			this.mainMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+																																						 this.menuItemLogOff,
 																																						 this.menuItemFile,
 																																						 this.menuItemSettings,
 																																						 this.menuItemLists,
@@ -401,9 +406,15 @@ namespace OpenDental{
 																																						 this.menuItemTools,
 																																						 this.menuItemHelp});
 			// 
+			// menuItemLogOff
+			// 
+			this.menuItemLogOff.Index = 0;
+			this.menuItemLogOff.Text = "Log &Off";
+			this.menuItemLogOff.Click += new System.EventHandler(this.menuItemLogOff_Click);
+			// 
 			// menuItemFile
 			// 
-			this.menuItemFile.Index = 0;
+			this.menuItemFile.Index = 1;
 			this.menuItemFile.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
 																																								 this.menuItemPrinter,
 																																								 this.menuItemScanner,
@@ -451,13 +462,12 @@ namespace OpenDental{
 			// 
 			// menuItemSettings
 			// 
-			this.menuItemSettings.Index = 1;
+			this.menuItemSettings.Index = 2;
 			this.menuItemSettings.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
 																																										 this.menuItemApptViews,
 																																										 this.menuItemAutoCodes,
 																																										 this.menuItemClaimForms,
 																																										 this.menuItemClearinghouses,
-																																										 this.menuItemClinics,
 																																										 this.menuItemComputers,
 																																										 this.menuItemDataPath,
 																																										 this.menuItemDefinitions,
@@ -465,11 +475,11 @@ namespace OpenDental{
 																																										 this.menuItemEmail,
 																																										 this.menuItemInsCats,
 																																										 this.menuItemMisc,
-																																										 this.menuItemPermissions,
 																																										 this.menuItemPractice,
 																																										 this.menuItemProcedureButtons,
 																																										 this.menuItemLinks,
 																																										 this.menuItemRecall,
+																																										 this.menuItemSecurity,
 																																										 this.menuItem10,
 																																										 this.menuItemSched,
 																																										 this.menuItemPracDef,
@@ -504,128 +514,123 @@ namespace OpenDental{
 			this.menuItemClearinghouses.Text = "Clearinghouses";
 			this.menuItemClearinghouses.Click += new System.EventHandler(this.menuItemClearinghouses_Click);
 			// 
-			// menuItemClinics
-			// 
-			this.menuItemClinics.Index = 4;
-			this.menuItemClinics.Text = "Clinics";
-			this.menuItemClinics.Click += new System.EventHandler(this.menuItemClinics_Click);
-			// 
 			// menuItemComputers
 			// 
-			this.menuItemComputers.Index = 5;
+			this.menuItemComputers.Index = 4;
 			this.menuItemComputers.Text = "Computers";
 			this.menuItemComputers.Click += new System.EventHandler(this.menuItemComputers_Click);
 			// 
 			// menuItemDataPath
 			// 
-			this.menuItemDataPath.Index = 6;
+			this.menuItemDataPath.Index = 5;
 			this.menuItemDataPath.Text = "Data Paths";
 			this.menuItemDataPath.Click += new System.EventHandler(this.menuItemDataPath_Click);
 			// 
 			// menuItemDefinitions
 			// 
-			this.menuItemDefinitions.Index = 7;
+			this.menuItemDefinitions.Index = 6;
 			this.menuItemDefinitions.Text = "Definitions";
 			this.menuItemDefinitions.Click += new System.EventHandler(this.menuItemDefinitions_Click);
 			// 
 			// menuItemEasy
 			// 
-			this.menuItemEasy.Index = 8;
+			this.menuItemEasy.Index = 7;
 			this.menuItemEasy.Text = "Easy Options";
 			this.menuItemEasy.Click += new System.EventHandler(this.menuItemEasy_Click);
 			// 
 			// menuItemEmail
 			// 
-			this.menuItemEmail.Index = 9;
+			this.menuItemEmail.Index = 8;
 			this.menuItemEmail.Text = "E-mail";
 			this.menuItemEmail.Click += new System.EventHandler(this.menuItemEmail_Click);
 			// 
 			// menuItemInsCats
 			// 
-			this.menuItemInsCats.Index = 10;
+			this.menuItemInsCats.Index = 9;
 			this.menuItemInsCats.Text = "Insurance Categories";
 			this.menuItemInsCats.Click += new System.EventHandler(this.menuItemInsCats_Click);
 			// 
 			// menuItemMisc
 			// 
-			this.menuItemMisc.Index = 11;
+			this.menuItemMisc.Index = 10;
 			this.menuItemMisc.Text = "Miscellaneous";
 			this.menuItemMisc.Click += new System.EventHandler(this.menuItemMisc_Click);
 			// 
-			// menuItemPermissions
-			// 
-			this.menuItemPermissions.Index = 12;
-			this.menuItemPermissions.Text = "Permissions";
-			this.menuItemPermissions.Click += new System.EventHandler(this.menuItemPermissions_Click);
-			// 
 			// menuItemPractice
 			// 
-			this.menuItemPractice.Index = 13;
+			this.menuItemPractice.Index = 11;
 			this.menuItemPractice.Text = "Practice";
 			this.menuItemPractice.Click += new System.EventHandler(this.menuItemPractice_Click);
 			// 
 			// menuItemProcedureButtons
 			// 
-			this.menuItemProcedureButtons.Index = 14;
+			this.menuItemProcedureButtons.Index = 12;
 			this.menuItemProcedureButtons.Text = "Procedure Buttons";
 			this.menuItemProcedureButtons.Click += new System.EventHandler(this.menuItemProcedureButtons_Click);
 			// 
 			// menuItemLinks
 			// 
-			this.menuItemLinks.Index = 15;
+			this.menuItemLinks.Index = 13;
 			this.menuItemLinks.Text = "Program Links";
 			this.menuItemLinks.Click += new System.EventHandler(this.menuItemLinks_Click);
 			// 
 			// menuItemRecall
 			// 
-			this.menuItemRecall.Index = 16;
+			this.menuItemRecall.Index = 14;
 			this.menuItemRecall.Text = "Recall";
 			this.menuItemRecall.Click += new System.EventHandler(this.menuItemRecall_Click);
 			// 
+			// menuItemSecurity
+			// 
+			this.menuItemSecurity.Index = 15;
+			this.menuItemSecurity.Text = "Security";
+			this.menuItemSecurity.Click += new System.EventHandler(this.menuItemSecurity_Click);
+			// 
 			// menuItem10
 			// 
-			this.menuItem10.Index = 17;
+			this.menuItem10.Index = 16;
 			this.menuItem10.Text = "-";
 			// 
 			// menuItemSched
 			// 
-			this.menuItemSched.Index = 18;
+			this.menuItemSched.Index = 17;
 			this.menuItemSched.Text = "SCHEDULES";
 			// 
 			// menuItemPracDef
 			// 
-			this.menuItemPracDef.Index = 19;
+			this.menuItemPracDef.Index = 18;
 			this.menuItemPracDef.Text = "   Practice Default";
 			this.menuItemPracDef.Click += new System.EventHandler(this.menuItemPracDef_Click);
 			// 
 			// menuItemPracSched
 			// 
-			this.menuItemPracSched.Index = 20;
+			this.menuItemPracSched.Index = 19;
 			this.menuItemPracSched.Text = "   Practice";
 			this.menuItemPracSched.Click += new System.EventHandler(this.menuItemPracSched_Click);
 			// 
 			// menuItemProvDefault
 			// 
-			this.menuItemProvDefault.Index = 21;
+			this.menuItemProvDefault.Index = 20;
 			this.menuItemProvDefault.Text = "   Provider Default";
 			this.menuItemProvDefault.Click += new System.EventHandler(this.menuItemProvDefault_Click);
 			// 
 			// menuItemProvSched
 			// 
-			this.menuItemProvSched.Index = 22;
+			this.menuItemProvSched.Index = 21;
 			this.menuItemProvSched.Text = "   Provider";
 			this.menuItemProvSched.Click += new System.EventHandler(this.menuItemProvSched_Click);
 			// 
 			// menuItemBlockoutDefault
 			// 
-			this.menuItemBlockoutDefault.Index = 23;
+			this.menuItemBlockoutDefault.Index = 22;
 			this.menuItemBlockoutDefault.Text = "   Blockout Default";
 			this.menuItemBlockoutDefault.Click += new System.EventHandler(this.menuItemBlockoutDefault_Click);
 			// 
 			// menuItemLists
 			// 
-			this.menuItemLists.Index = 2;
+			this.menuItemLists.Index = 3;
 			this.menuItemLists.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+																																									this.menuItemClinics,
 																																									this.menuItemContacts,
 																																									this.menuItemCounties,
 																																									this.menuItemSchoolClass,
@@ -634,7 +639,7 @@ namespace OpenDental{
 																																									this.menuItemEmployers,
 																																									this.menuItemInstructors,
 																																									this.menuItemCarriers,
-																																									this.menuItemInsTemplates,
+																																									this.menuItemInsPlans,
 																																									this.menuItemMedications,
 																																									this.menuItemProviders,
 																																									this.menuItemPrescriptions,
@@ -648,123 +653,129 @@ namespace OpenDental{
 			this.menuItemLists.Shortcut = System.Windows.Forms.Shortcut.CtrlI;
 			this.menuItemLists.Text = "&Lists";
 			// 
+			// menuItemClinics
+			// 
+			this.menuItemClinics.Index = 0;
+			this.menuItemClinics.Text = "Clinics";
+			this.menuItemClinics.Click += new System.EventHandler(this.menuItemClinics_Click);
+			// 
 			// menuItemContacts
 			// 
-			this.menuItemContacts.Index = 0;
+			this.menuItemContacts.Index = 1;
 			this.menuItemContacts.Shortcut = System.Windows.Forms.Shortcut.CtrlShiftC;
 			this.menuItemContacts.Text = "&Contacts";
 			this.menuItemContacts.Click += new System.EventHandler(this.menuItemContacts_Click);
 			// 
 			// menuItemCounties
 			// 
-			this.menuItemCounties.Index = 1;
+			this.menuItemCounties.Index = 2;
 			this.menuItemCounties.Text = "Counties";
 			this.menuItemCounties.Click += new System.EventHandler(this.menuItemCounties_Click);
 			// 
 			// menuItemSchoolClass
 			// 
-			this.menuItemSchoolClass.Index = 2;
+			this.menuItemSchoolClass.Index = 3;
 			this.menuItemSchoolClass.Text = "Dental School Classes";
 			this.menuItemSchoolClass.Click += new System.EventHandler(this.menuItemSchoolClass_Click);
 			// 
 			// menuItemSchoolCourses
 			// 
-			this.menuItemSchoolCourses.Index = 3;
+			this.menuItemSchoolCourses.Index = 4;
 			this.menuItemSchoolCourses.Text = "Dental School Courses";
 			this.menuItemSchoolCourses.Click += new System.EventHandler(this.menuItemSchoolCourses_Click);
 			// 
 			// menuItemEmployees
 			// 
-			this.menuItemEmployees.Index = 4;
+			this.menuItemEmployees.Index = 5;
 			this.menuItemEmployees.Text = "&Employees";
 			this.menuItemEmployees.Click += new System.EventHandler(this.menuItemEmployees_Click);
 			// 
 			// menuItemEmployers
 			// 
-			this.menuItemEmployers.Index = 5;
+			this.menuItemEmployers.Index = 6;
 			this.menuItemEmployers.Text = "Employers";
 			this.menuItemEmployers.Click += new System.EventHandler(this.menuItemEmployers_Click);
 			// 
 			// menuItemInstructors
 			// 
-			this.menuItemInstructors.Index = 6;
+			this.menuItemInstructors.Index = 7;
 			this.menuItemInstructors.Text = "Instructors";
 			this.menuItemInstructors.Click += new System.EventHandler(this.menuItemInstructors_Click);
 			// 
 			// menuItemCarriers
 			// 
-			this.menuItemCarriers.Index = 7;
+			this.menuItemCarriers.Index = 8;
 			this.menuItemCarriers.Text = "Insurance Carriers";
 			this.menuItemCarriers.Click += new System.EventHandler(this.menuItemCarriers_Click);
 			// 
-			// menuItemInsTemplates
+			// menuItemInsPlans
 			// 
-			this.menuItemInsTemplates.Index = 8;
-			this.menuItemInsTemplates.Text = "&Insurance Plans";
-			this.menuItemInsTemplates.Click += new System.EventHandler(this.menuItemInsTemplates_Click);
+			this.menuItemInsPlans.Index = 9;
+			this.menuItemInsPlans.Text = "&Insurance Plans";
+			this.menuItemInsPlans.Click += new System.EventHandler(this.menuItemInsPlans_Click);
 			// 
 			// menuItemMedications
 			// 
-			this.menuItemMedications.Index = 9;
+			this.menuItemMedications.Index = 10;
 			this.menuItemMedications.Text = "&Medications";
 			this.menuItemMedications.Click += new System.EventHandler(this.menuItemMedications_Click);
 			// 
 			// menuItemProviders
 			// 
-			this.menuItemProviders.Index = 10;
+			this.menuItemProviders.Index = 11;
 			this.menuItemProviders.Text = "&Providers";
 			this.menuItemProviders.Click += new System.EventHandler(this.menuItemProviders_Click);
 			// 
 			// menuItemPrescriptions
 			// 
-			this.menuItemPrescriptions.Index = 11;
+			this.menuItemPrescriptions.Index = 12;
 			this.menuItemPrescriptions.Text = "Pre&scriptions";
 			this.menuItemPrescriptions.Click += new System.EventHandler(this.menuItemPrescriptions_Click);
 			// 
 			// menuItemReferrals
 			// 
-			this.menuItemReferrals.Index = 12;
+			this.menuItemReferrals.Index = 13;
 			this.menuItemReferrals.Text = "&Referrals";
 			this.menuItemReferrals.Click += new System.EventHandler(this.menuItemReferrals_Click);
 			// 
 			// menuItemSchools
 			// 
-			this.menuItemSchools.Index = 13;
+			this.menuItemSchools.Index = 14;
 			this.menuItemSchools.Text = "Sites";
 			this.menuItemSchools.Click += new System.EventHandler(this.menuItemSchools_Click);
 			// 
 			// menuItemZipCodes
 			// 
-			this.menuItemZipCodes.Index = 14;
+			this.menuItemZipCodes.Index = 15;
 			this.menuItemZipCodes.Text = "&Zip Codes";
 			this.menuItemZipCodes.Click += new System.EventHandler(this.menuItemZipCodes_Click);
 			// 
 			// menuItem5
 			// 
-			this.menuItem5.Index = 15;
+			this.menuItem5.Index = 16;
 			this.menuItem5.Text = "-";
 			// 
 			// menuItemProcCode
 			// 
-			this.menuItemProcCode.Index = 16;
+			this.menuItemProcCode.Index = 17;
 			this.menuItemProcCode.Text = "PROCEDURE CODES";
 			// 
 			// menuItemEditCode
 			// 
-			this.menuItemEditCode.Index = 17;
+			this.menuItemEditCode.Index = 18;
 			this.menuItemEditCode.Text = "   E&dit Codes";
 			this.menuItemEditCode.Click += new System.EventHandler(this.menuItemEditCode_Click);
 			// 
 			// menuItemViewCode
 			// 
-			this.menuItemViewCode.Index = 18;
+			this.menuItemViewCode.Index = 19;
 			this.menuItemViewCode.Shortcut = System.Windows.Forms.Shortcut.CtrlShiftF;
 			this.menuItemViewCode.Text = "   View &Fees";
 			this.menuItemViewCode.Click += new System.EventHandler(this.menuItemViewCode_Click);
 			// 
 			// menuItemReports
 			// 
-			this.menuItemReports.Index = 3;
+			this.menuItemReports.Index = 4;
 			this.menuItemReports.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
 																																										this.menuItemUserQuery,
 																																										this.menuItemPracticeWebReports,
@@ -995,7 +1006,7 @@ namespace OpenDental{
 			// 
 			// menuItemTools
 			// 
-			this.menuItemTools.Index = 4;
+			this.menuItemTools.Index = 5;
 			this.menuItemTools.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
 																																									this.menuItemPrintScreen,
 																																									this.menuItem1,
@@ -1035,6 +1046,12 @@ namespace OpenDental{
 			this.menuTelephone.Index = 1;
 			this.menuTelephone.Text = "Telephone Numbers";
 			this.menuTelephone.Click += new System.EventHandler(this.menuTelephone_Click);
+			// 
+			// menuItemPatientImport
+			// 
+			this.menuItemPatientImport.Index = 2;
+			this.menuItemPatientImport.Text = "Patient Import";
+			this.menuItemPatientImport.Click += new System.EventHandler(this.menuItemPatientImport_Click);
 			// 
 			// menuItem9
 			// 
@@ -1079,14 +1096,14 @@ namespace OpenDental{
 			// 
 			// menuItemHelp
 			// 
-			this.menuItemHelp.Index = 5;
+			this.menuItemHelp.Index = 6;
 			this.menuItemHelp.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
 																																								 this.menuItemHelpWindows,
 																																								 this.menuItemHelpContents,
 																																								 this.menuItemHelpIndex,
 																																								 this.menuItemRemote,
 																																								 this.menuItemUpdate});
-			this.menuItemHelp.Text = "Help";
+			this.menuItemHelp.Text = "&Help";
 			// 
 			// menuItemHelpWindows
 			// 
@@ -1143,12 +1160,6 @@ namespace OpenDental{
 			this.ContrManage2.Name = "ContrManage2";
 			this.ContrManage2.Size = new System.Drawing.Size(732, 548);
 			this.ContrManage2.TabIndex = 19;
-			// 
-			// menuItemPatientImport
-			// 
-			this.menuItemPatientImport.Index = 2;
-			this.menuItemPatientImport.Text = "Patient Import";
-			this.menuItemPatientImport.Click += new System.EventHandler(this.menuItemPatientImport_Click);
 			// 
 			// FormOpenDental
 			// 
@@ -1261,11 +1272,9 @@ namespace OpenDental{
 			ContrFamily2.InstantClasses();
 			ContrManage2.InstantClasses();
 			ContrTreat2.InitializeOnStartup();
-			ContrAppt2.Visible=true;
-			//butAppt.BackColor=Color.White;
-			//labelAppt.BackColor=Color.White;
-			this.ActiveControl=this.ContrAppt2;
-			ContrAppt2.ModuleSelected(0);
+			//ContrAppt2.Visible=true;
+			//this.ActiveControl=this.ContrAppt2;
+			//ContrAppt2.ModuleSelected(0);
 			Thread2=new Thread(new ThreadStart(Listen));
 			if(!IsSecondInstance){
 				if(!Prefs.GetBool("AutoRefreshIsDisabled"))
@@ -1282,18 +1291,6 @@ namespace OpenDental{
 			foreach(MenuItem menuItem in mainMenu.MenuItems){
 				TranslateMenuItem(menuItem);
 			}
-			//Lan.C(this, new System.Windows.Forms.Control[] {
-				//labelAccount,
-				//labelAppt,
-				//labelDocs,
-				//labelFam,
-				//labelMsg,
-        //labelTreat,
-				//labelChart,
-				//labelStaff				
-			//});
-			//CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern="MM/dd/yyyy";
-			//CultureInfo.CreateSpecificCulture(
 			if(CultureInfo.CurrentCulture.Name=="en-US"){
 				CultureInfo cInfo=(CultureInfo)CultureInfo.CurrentCulture.Clone();
 				cInfo.DateTimeFormat.ShortDatePattern="MM/dd/yyyy";
@@ -1308,21 +1305,18 @@ namespace OpenDental{
 			if(!File.Exists("remoteclient.exe")){
 				menuItemRemote.Visible=false;
 			}
-			User user=null;
-			if(Permissions.AuthorizationRequired("Start Up")){
-				user=Users.Authenticate("Start Up");
-				if(!UserPermissions.IsAuthorized("Start Up",user)){
-					MsgBox.Show(this,"You do not have permission to use this program.");
-					if(Thread2!=null){
-						Thread2.Abort();
-						this.TcpListener2.Stop();
-					}
-					Application.Exit();
-					return;
-				}	
+			FormLogOn FormL=new FormLogOn();
+			FormL.ShowDialog();
+			if(FormL.DialogResult==DialogResult.Cancel){
+				ExitApplicationNow.ExitNow();
+				return;
 			}
-			//Messages.StartTheWaitingThread();
-			SecurityLogs.MakeLogEntry("Start Up","",user);
+			myOutlookBar.SelectedIndex=Security.GetModule(0);
+			myOutlookBar.Invalidate();
+			SetModuleSelected();
+			if(myOutlookBar.SelectedIndex==-1){
+				MsgBox.Show(this,"You do not have permission to use any modules.");
+			}
 		}
 
 		///<summary>Refreshes certain rarely used data from database.  Must supply the types of data to refresh as flags.  Also performs a few other tasks that must be done when local data is changed.</summary>
@@ -1339,11 +1333,11 @@ namespace OpenDental{
 					if(!Directory.Exists(((Pref)Prefs.HList["DocPath"]).ValueString)
 						|| !Directory.Exists(((Pref)Prefs.HList["DocPath"]).ValueString+"A"))
 					{
-						Permissions.Refresh();
-						UserPermissions.Refresh();
-						Providers.Refresh();
-						Employees.Refresh();
-						Users.Refresh();//requires prov and emp first
+						//PermissionsOld.Refresh();
+						//UserPermissions.Refresh();
+						//Providers.Refresh();
+						//Employees.Refresh();
+						Users.Refresh();
 						FormPath FormP=new FormPath();
 						FormP.ShowDialog();
 						if(FormP.DialogResult!=DialogResult.OK){
@@ -1466,11 +1460,6 @@ namespace OpenDental{
 				LetterMergeFields.Refresh();
 				LetterMerges.Refresh();
 			}
-			if((itypes & InvalidTypes.Permissions)==InvalidTypes.Permissions){
-				Permissions.Refresh();
-				UserPermissions.Refresh();
-				//Users.Refresh();
-			}
 			if((itypes & InvalidTypes.ProcButtons)==InvalidTypes.ProcButtons){
 				ProcButtons.Refresh();
 				ProcButtonItems.Refresh();
@@ -1495,6 +1484,11 @@ namespace OpenDental{
 			//if((itypes & InvalidTypes)==InvalidTypes){
 			//	Reports.Refresh();
 			//}
+			if((itypes & InvalidTypes.Security)==InvalidTypes.Security){
+				Users.Refresh();
+				UserGroups.Refresh();
+				GroupPermissions.Refresh();
+			}
 			if((itypes & InvalidTypes.Sched)==InvalidTypes.Sched){
 				SchedDefaults.Refresh();//assumed to change rarely
 				//Schedules.Refresh();//Schedules are refreshed as needed.  Not here.
@@ -1709,13 +1703,57 @@ namespace OpenDental{
 		///<summary></summary>
 		protected delegate void ProcessMessageDelegate(string text);
 
-		private void myOutlookBar_ButtonClicked(object sender, OpenDental.ButtonClicked_EventArgs e) {
+		private void myOutlookBar_ButtonClicked(object sender, OpenDental.ButtonClicked_EventArgs e){
+			switch(myOutlookBar.SelectedIndex){
+				case 0:
+					if(!Security.IsAuthorized(Permissions.AppointmentsModule)){
+						e.Cancel=true;
+						return;
+					}
+					break;
+				case 1:
+					if(!Security.IsAuthorized(Permissions.FamilyModule)){
+						e.Cancel=true;
+						return;
+					}
+					break;
+				case 2:
+					if(!Security.IsAuthorized(Permissions.AccountModule)){
+						e.Cancel=true;
+						return;
+					}
+					break;
+				case 3:
+					if(!Security.IsAuthorized(Permissions.TPModule)){
+						e.Cancel=true;
+						return;
+					}
+					break;
+				case 4:
+					if(!Security.IsAuthorized(Permissions.ChartModule)){
+						e.Cancel=true;
+						return;
+					}
+					break;
+				case 5:
+					if(!Security.IsAuthorized(Permissions.ImagesModule)){
+						e.Cancel=true;
+						return;
+					}
+					break;
+				case 6:
+					if(!Security.IsAuthorized(Permissions.ManageModule)){
+						e.Cancel=true;
+						return;
+					}
+					break;
+			}
 			UnselectActive();
 			allNeutral();
 			SetModuleSelected();
 		}
 
-		///<summary>Sets the currently selected module based on the selectedIndex of the outlook bar.</summary>
+		///<summary>Sets the currently selected module based on the selectedIndex of the outlook bar. If selectedIndex is -1, which might happen if user does not have permission to any module, then this does nothing.</summary>
 		private void SetModuleSelected(){
 			switch(myOutlookBar.SelectedIndex){
 				case 0:
@@ -1871,26 +1909,60 @@ namespace OpenDental{
 		}
 
 		#region MenuEvents
+		private void menuItemLogOff_Click(object sender, System.EventArgs e) {
+			LastModule=myOutlookBar.SelectedIndex;
+			myOutlookBar.SelectedIndex=-1;
+			myOutlookBar.Invalidate();
+			UnselectActive();
+			allNeutral();
+			FormLogOn FormL=new FormLogOn();
+			FormL.ShowDialog();
+			if(FormL.DialogResult==DialogResult.Cancel){
+				ExitApplicationNow.ExitNow();
+				return;
+			}
+			myOutlookBar.SelectedIndex=Security.GetModule(LastModule);
+			myOutlookBar.Invalidate();
+			SetModuleSelected();
+			if(myOutlookBar.SelectedIndex==-1){
+				MsgBox.Show(this,"You do not have permission to use any modules.");
+			}
+		}
+
 		//File
 		private void menuItemPrinter_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormPrinterSetup FormPS=new FormPrinterSetup();
 			FormPS.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Printers");
 		}
 
 		private void menuItemScanner_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormScannerSetup FormSS=new FormScannerSetup();
 			FormSS.ShowDialog();		
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Scanner");
 		}
 
 		private void menuItemConfig_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.ChooseDatabase)){
+				return;
+			}
 			FormChooseDatabase FormC=new FormChooseDatabase();
 			FormC.ShowDialog();
-			if(FormC.DialogResult==DialogResult.OK){
-				CurPatNum=0;
-				RefreshCurrentModule();//clumsy but necessary. Sets local PatNums to null.
-				RefreshLocalData(InvalidTypes.AllLocal,true);
-				RefreshCurrentModule();
+			SecurityLogs.MakeLogEntry(Permissions.ChooseDatabase,"");
+			if(FormC.DialogResult==DialogResult.Cancel){
+				return;
 			}
+			CurPatNum=0;
+			//RefreshCurrentModule();//clumsy but necessary. Sets local PatNums to null.
+			RefreshLocalData(InvalidTypes.AllLocal,true);
+			//RefreshCurrentModule();
+			menuItemLogOff_Click(this,e);//this is a quick shortcut.
 		}
 
 		private void menuItemExit_Click(object sender, System.EventArgs e) {
@@ -1906,120 +1978,208 @@ namespace OpenDental{
 
 		//Setup
 		private void menuItemApptViews_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormApptViews FormAV=new FormApptViews();
 			FormAV.ShowDialog();
 			RefreshCurrentModule();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Appointment Views");
 		}
 
 		private void menuItemAutoCodes_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormAutoCode FormAC=new FormAutoCode();
-			FormAC.ShowDialog();		
+			FormAC.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Auto Codes");
 		}
 
 		private void menuItemClaimForms_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormClaimForms FormCF=new FormClaimForms();
 			FormCF.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Claim Forms");
 		}
 
 		private void menuItemClearinghouses_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormClearinghouses FormC=new FormClearinghouses();
 			FormC.ShowDialog();
-		}
-
-		private void menuItemClinics_Click(object sender, System.EventArgs e) {
-			FormClinics FormC=new FormClinics();
-			FormC.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Clearinghouses");
 		}
 
 		private void menuItemComputers_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormComputers FormC=new FormComputers();
 			FormC.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Computers");
 		}
 
 		private void menuItemDataPath_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormPath FormP=new FormPath();
-			FormP.ShowDialog();	
+			FormP.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Data Path");	
 		}
 
 		private void menuItemDefinitions_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormDefinitions FormD=new FormDefinitions(DefCat.AccountColors);//just the first cat.
 			FormD.ShowDialog();
 			RefreshCurrentModule();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Definitions");
 		}
 
 		private void menuItemEasy_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormEasy FormE=new FormEasy();
 			FormE.ShowDialog();
 			RefreshCurrentModule();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Easy Options");
 		}
 
 		private void menuItemEmail_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormEmailSetup FormE=new FormEmailSetup();
 			FormE.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Email");
 		}
 
 		private void menuItemInsCats_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormInsCatsSetup FormE=new FormInsCatsSetup();
-			FormE.ShowDialog();	
+			FormE.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Insurance Categories");
 		}
 
 		private void menuItemMisc_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormMisc FormM=new FormMisc();
 			FormM.ShowDialog();
-		}
-
-		private void menuItemPermissions_Click(object sender, System.EventArgs e) {
-			FormPermissionsManage FormPM=new FormPermissionsManage(); 
-			FormPM.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Misc");
 		}
 
 		private void menuItemPractice_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormPractice FormPr=new FormPractice();
-			FormPr.ShowDialog();		
+			FormPr.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Practice Info");
 		}
 
 		private void menuItemProcedureButtons_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormProcButtons FormPB=new FormProcButtons();
-			FormPB.ShowDialog();	
+			FormPB.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Procedure Buttons");	
 		}
 
 		private void menuItemLinks_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormProgramLinks FormPL=new FormProgramLinks();
-			FormPL.ShowDialog();	
+			FormPL.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Program Links");
 		}
 
 		private void menuItemRecall_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormRecallSetup FormRS=new FormRecallSetup();
-			FormRS.ShowDialog();	
+			FormRS.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Recall");	
+		}
+
+		private void menuItemSecurity_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.SecurityAdmin)){
+				return;
+			}
+			FormSecurity FormS=new FormSecurity(); 
+			FormS.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.SecurityAdmin,"");
 		}
 		
 		//Setup-Schedules
 		private void menuItemPracDef_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Schedules)){
+				return;
+			}
 			FormSchedDefault FormSD=new FormSchedDefault(ScheduleType.Practice);
-			FormSD.ShowDialog();		
+			FormSD.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Schedules,"Practice Default");
 		}
 
 		private void menuItemPracSched_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Schedules)){
+				return;
+			}
 			FormSchedPractice FormSP=new FormSchedPractice(ScheduleType.Practice);
 			FormSP.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Schedules,"Practice");
 		}
 
 		private void menuItemProvDefault_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Schedules)){
+				return;
+			}
 			FormSchedDefault FormSD=new FormSchedDefault(ScheduleType.Provider);
-			FormSD.ShowDialog();		
+			FormSD.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Schedules,"Provider Default");	
 		}
 
 		private void menuItemProvSched_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Schedules)){
+				return;
+			}
 			FormSchedPractice FormSP=new FormSchedPractice(ScheduleType.Provider);
 			FormSP.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Schedules,"Provider");
 		}
 
 		private void menuItemBlockoutDefault_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Blockouts)){
+				return;
+			}
 			FormSchedDefault FormSD=new FormSchedDefault(ScheduleType.Blockout);
-			FormSD.ShowDialog();	
+			FormSD.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Blockouts,"Default");	
 		}
 
 		//Lists
+		
+		private void menuItemClinics_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
+			FormClinics FormC=new FormClinics();
+			FormC.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Clinics");
+		}
 		
 		private void menuItemContacts_Click(object sender, System.EventArgs e) {
 			FormContacts FormC=new FormContacts();
@@ -2027,23 +2187,39 @@ namespace OpenDental{
 		}
 
 		private void menuItemCounties_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormCounties FormC=new FormCounties();
 			FormC.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Counties");
 		}
 
 		private void menuItemSchoolClass_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormSchoolClasses FormS=new FormSchoolClasses();
 			FormS.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Dental School Classes");
 		}
 
 		private void menuItemSchoolCourses_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormSchoolCourses FormS=new FormSchoolCourses();
 			FormS.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Dental School Courses");
 		}
 
 		private void menuItemEmployees_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormEmployee FormEmp=new FormEmployee();
-			FormEmp.ShowDialog();		
+			FormEmp.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Employees");	
 		}
 
 		private void menuItemEmployers_Click(object sender, System.EventArgs e) {
@@ -2052,8 +2228,12 @@ namespace OpenDental{
 		}
 
 		private void menuItemInstructors_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormInstructors FormI=new FormInstructors();
 			FormI.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Dental School Instructors");
 		}
 
 		private void menuItemCarriers_Click(object sender, System.EventArgs e) {
@@ -2062,7 +2242,7 @@ namespace OpenDental{
 			RefreshCurrentModule();
 		}
 
-		private void menuItemInsTemplates_Click(object sender, System.EventArgs e) {
+		private void menuItemInsPlans_Click(object sender, System.EventArgs e) {
 			FormInsPlans FormIP = new FormInsPlans();
 			FormIP.ShowDialog();
 			RefreshCurrentModule();
@@ -2074,13 +2254,21 @@ namespace OpenDental{
 		}
 
 		private void menuItemProviders_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormProviderSelect FormPS=new FormProviderSelect();
-			FormPS.ShowDialog();		
+			FormPS.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Providers");		
 		}
 
 		private void menuItemPrescriptions_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormRxSetup FormRxSetup2=new FormRxSetup();
-			FormRxSetup2.ShowDialog();		
+			FormRxSetup2.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Rx");		
 		}
 
 		private void menuItemReferrals_Click(object sender, System.EventArgs e) {
@@ -2089,30 +2277,33 @@ namespace OpenDental{
 		}
 
 		private void menuItemSchools_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormSchools FormS=new FormSchools();
 			FormS.ShowDialog();
 			RefreshCurrentModule();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Dental Schools");
 		}
 
 		private void menuItemZipCodes_Click(object sender, System.EventArgs e) {
+			//if(!Security.IsAuthorized(Permissions.Setup)){
+			//	return;
+			//}
 			FormZipCodes FormZ=new FormZipCodes();
 			FormZ.ShowDialog();
+			//SecurityLogs.MakeLogEntry(Permissions.Setup,"Zip Codes");
 		}
 
 		//Lists-ProcedureCodes
 		private void menuItemEditCode_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormProcedures FormProcedures = new FormProcedures();
 			FormProcedures.Mode=FormProcMode.Edit;
-			User user=null;
-			if(Permissions.AuthorizationRequired("Procedure Code Edit")){
-				user=Users.Authenticate("Procedure Code Edit");
-				if(!UserPermissions.IsAuthorized("Procedure Code Edit",user)){
-					MsgBox.Show(this,"You do not have permission for this feature");
-					return;
-				}	
-			}
 			FormProcedures.ShowDialog();
-			SecurityLogs.MakeLogEntry("Procedure Code Edit","Proc Codes Edited",user);
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Procedure Codes");
 		}
 
 		private void menuItemViewCode_Click(object sender, System.EventArgs e) {
@@ -2123,143 +2314,235 @@ namespace OpenDental{
 
 		//Reports
 		private void menuItemUserQuery_Click(object sender, System.EventArgs e) {
-			User user=null;;
-			if(Permissions.AuthorizationRequired("User Query")){
-				user=Users.Authenticate("User Query");
-				if(!UserPermissions.IsAuthorized("User Query",user)){
-					MsgBox.Show(this,"You do not have permission for this feature.");
-					return;
-				}	
+			if(!Security.IsAuthorized(Permissions.UserQuery)){
+				return;
 			}
 			FormQuery FormQuery2=new FormQuery();
-			FormQuery2.ShowDialog();	
+			FormQuery2.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.UserQuery,"");
 		}
 
 		private void menuItemPracticeWebReports_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Reports)){
+				return;
+			}
 			try{
 				Process.Start("PWReports.exe");
 			}
 			catch{
 				MessageBox.Show("PracticeWeb Reports module unavailable.");
 			}
+			SecurityLogs.MakeLogEntry(Permissions.Reports,"Practice Web");
 		}
 
 		private void menuItemRpProdInc_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Reports)){
+				return;
+			}
 			FormRpProdInc FormPI=new FormRpProdInc();
 			FormPI.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Reports,"Production and Income");
 		}
 
 		//Reports-Daily
 		private void menuItemRpAdj_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Reports)){
+				return;
+			}
 			FormRpAdjSheet FormAdjSheet=new FormRpAdjSheet();
 			FormAdjSheet.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Reports,"Adjustments");
 		}
 
 		private void menuItemRpDepSlip_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Reports)){
+				return;
+			}
 			FormRpDepositSlip FormDS=new FormRpDepositSlip();
 			FormDS.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Reports,"Deposit Slip");
 		}
 
 		private void menuItemRpPay_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Reports)){
+				return;
+			}
 			FormRpPaySheet FormPaySheet=new FormRpPaySheet();
 			FormPaySheet.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Reports,"Daily Payments");
 		}
 		
 		private void menuItemRpProc_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Reports)){
+				return;
+			}
 			FormRpProcSheet FormProcSheet=new FormRpProcSheet();
-			FormProcSheet.ShowDialog();	
+			FormProcSheet.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Reports,"Daily Procedures");	
 		}
 
 		private void menuItemRpProcNote_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Reports)){
+				return;
+			}
 			FormRpProcNote FormPN=new FormRpProcNote();
 			FormPN.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Reports,"Daily Procedure Notes");
 		}
 
 		//Reports-Monthly
 		private void menuItemRpAging_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Reports)){
+				return;
+			}
 			FormRpAging FormA=new FormRpAging();
 			FormA.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Reports,"Aging");
 		}
 
 		private void menuItemRpClaimsNotSent_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Reports)){
+				return;
+			}
 			FormRpClaimNotSent FormClaim=new FormRpClaimNotSent();
 			FormClaim.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Reports,"Claims Not Sent");
 		}
 
 		private void menuItemRpCapitation_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Reports)){
+				return;
+			}
 			FormRpCapitation FormC=new FormRpCapitation();
 			FormC.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Reports,"Capitation");
 		}
 
 		private void menuItemRpFinanceCharge_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Reports)){
+				return;
+			}
 			FormRpFinanceCharge FormRpFinance=new FormRpFinanceCharge();
 			FormRpFinance.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Reports,"Finance Charges");
 		}
 
 		private void menuItemRpOutInsClaims_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Reports)){
+				return;
+			}
 			FormRpOutInsClaims FormOut=new FormRpOutInsClaims();
-			FormOut.ShowDialog();	
+			FormOut.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Reports,"Outstanding Insurance Claims");
 		}
 
 		private void menuItemRpProcNoBilled_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Reports)){
+				return;
+			}
 			FormRpProcNotBilledIns FormProc=new FormRpProcNotBilledIns();
 			FormProc.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Reports,"Procedures not billed to insurance.");
 		}
 
 		//Reports-Lists
 		private void menuAppointments_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Reports)){
+				return;
+			}
 			FormRpAppointments FormA=new FormRpAppointments();
 			FormA.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Reports,"Appointments");
 		}
 
 		private void menuItemBirthdays_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Reports)){
+				return;
+			}
 			FormRpBirthday FormB=new FormRpBirthday();
 			FormB.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Reports,"Birthdays");
 		}
 
 		private void menuItemInsCarriers_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Reports)){
+				return;
+			}
 			FormRpInsCo FormInsCo=new FormRpInsCo();
-			FormInsCo.ShowDialog();		
+			FormInsCo.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Reports,"Insurance Carriers");	
 		}
 
 		private void menuItemPatList_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Reports)){
+				return;
+			}
 			FormRpPatients FormPatients=new FormRpPatients();
-			FormPatients.ShowDialog();				
+			FormPatients.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Reports,"Patient List");				
 		}
 
 		private void menuItemRxs_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Reports)){
+				return;
+			}
 			FormRpPrescriptions FormPrescript=new FormRpPrescriptions();
 			FormPrescript.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Reports,"Rx");
 		}
 
 		private void menuItemProcCodes_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Reports)){
+				return;
+			}
 			FormRpProcCodes FormProcCodes=new FormRpProcCodes();
-			FormProcCodes.ShowDialog();		
+			FormProcCodes.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Reports,"Procedure Codes");
 		}
 
 		private void menuItemRefs_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Reports)){
+				return;
+			}
 			FormRpReferrals FormReferral=new FormRpReferrals();
-			FormReferral.ShowDialog();		
+			FormReferral.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Reports,"Referrals");	
 		}
 
 		//Public Health
 		private void menuItemPHRawScreen_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Reports)){
+				return;
+			}
 			FormRpPHRawScreen FormPH=new FormRpPHRawScreen();
 			FormPH.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Reports,"PH Raw Screening");
 		}
 
 		private void menuItemPHRawPop_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Reports)){
+				return;
+			}
 			FormRpPHRawPop FormPH=new FormRpPHRawPop();
 			FormPH.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Reports,"PH Raw population");
 		}
 
 		private void menuItemPHScreen_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Reports)){
+				return;
+			}
 			MessageBox.Show("This report is incomplete.");
+			//SecurityLogs.MakeLogEntry(Permissions.Reports,"");
 		}
 
 		private void menuItemCourseGrades_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Reports)){
+				return;
+			}
 			FormRpCourseGrades FormR=new FormRpCourseGrades();
 			FormR.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Reports,"Dental School Grades");
 		}
 
 		//Letters
@@ -2281,92 +2564,82 @@ namespace OpenDental{
 		}
 
 		private void menuItemCheckDatabase_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormCheckDatabase FormCDB=new FormCheckDatabase();
 			FormCDB.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Check Database Integrity");
 		}
 
 		private void menuTelephone_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormTelephone FormT=new FormTelephone();
 			FormT.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Telephone");
 		}
 
 		private void menuItemPatientImport_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.SecurityAdmin)){
+				return;
+			}
 			FormImport FormI=new FormImport();
 			FormI.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.SecurityAdmin,"Patient Import Tool");
 		}
 
 		private void menuItemPaymentPlans_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormPayPlanUpdate FormPPU=new FormPayPlanUpdate();
 			FormPPU.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Payment Plan Update");
 		}
 
 		private void menuItemAging_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormAging FormAge=new FormAging();
 			FormAge.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Aging Update");
 		}
 
 		private void menuItemFinanceCharge_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormFinanceCharges FormFC=new FormFinanceCharges();
 			FormFC.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Run Finance Charges");
 		}
 
 		private void menuItemBilling_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormBillingOptions FormBO=new FormBillingOptions();
 			FormBO.ShowDialog();
 			RefreshCurrentModule();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Billing");
 		}
 
 		private void menuItemTranslation_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormTranslationCat FormTC=new FormTranslationCat();
 			FormTC.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Translations");
 		}
 
 		private void menuItemScreening_Click(object sender, System.EventArgs e) {
 			FormScreenings FormS=new FormScreenings();
 			FormS.ShowDialog();
 		}
-
-		/*private void menuItemTasks_Click(object sender, System.EventArgs e) {
-			FormTasks FormT=new FormTasks();
-			FormT.ShowDialog();
-			if(FormT.GotoType==TaskObjectType.Patient){
-				if(FormT.GotoKeyNum!=0){
-					CurPatNum=FormT.GotoKeyNum;
-					RefreshCurrentModule();
-				}
-			}
-			if(FormT.GotoType==TaskObjectType.Appointment){
-				if(FormT.GotoKeyNum!=0){
-					Appointments.RefreshCur(FormT.GotoKeyNum);
-					if(Appointments.Cur.AptStatus==ApptStatus.Planned
-						|| Appointments.Cur.AptStatus==ApptStatus.UnschedList)
-					{//I did not add feature to put planned or unsched apt on pinboard.
-						MsgBox.Show(this,"Cannot navigate to appointment.  Use the Other Appointments button.");
-					}
-					else{
-						Appointments.DateSelected=Appointments.Cur.AptDateTime;
-					}
-					ContrApptSingle.SelectedAptNum=Appointments.Cur.AptNum;
-					CurPatNum=Appointments.Cur.PatNum;
-					UnselectActive();
-					allNeutral();
-					myOutlookBar.SelectedIndex=0;
-					myOutlookBar.Invalidate();
-					ContrAppt2.Visible=true;
-					this.ActiveControl=this.ContrAppt2;
-					ContrAppt2.ModuleSelected(CurPatNum);
-					
-				}
-			}
-		}
-
-		private void menuItemClaims_Click(object sender, System.EventArgs e) {
-			Cursor=Cursors.WaitCursor;
-			FormClaimsSend FormCS=new FormClaimsSend();
-			FormCS.ShowDialog();
-			Cursor=Cursors.Default;
-			RefreshCurrentModule();
-		}*/
 
 		//Help
 		private void menuItemHelpWindows_Click(object sender, System.EventArgs e) {
@@ -2410,13 +2683,15 @@ namespace OpenDental{
 		}
 
 		private void menuItemUpdate_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormUpdate FormU = new FormUpdate();
 			FormU.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,"Update Version");
 		}
 
-		private void ContrAppt2_Load(object sender, System.EventArgs e) {
 		
-		}
 
 		
 

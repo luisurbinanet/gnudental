@@ -11,24 +11,15 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textLName;
 		private System.Windows.Forms.TextBox textFName;
 		private System.Windows.Forms.TextBox textMI;
-		private System.Windows.Forms.TextBox textPassword;
 		private System.Windows.Forms.Label label10;
-		private System.Windows.Forms.Label label9;
 		private System.Windows.Forms.Label label8;
 		private System.Windows.Forms.Label label7;
-		private System.Windows.Forms.Label label1;
 		private OpenDental.UI.Button butCancel;
 		private OpenDental.UI.Button butOK;
 		private System.ComponentModel.Container components = null;
-		private OpenDental.TableUserPermissions tbUserPerm;
-		private OpenDental.UI.Button butNone;
-		private OpenDental.UI.Button butAll;
-		private System.Windows.Forms.TextBox textUserName;
 		private System.Windows.Forms.CheckBox checkIsHidden;
-		private System.Windows.Forms.GroupBox groupSecurity;
 		///<summary></summary>
 		public bool IsNew;
-		private UserPermission[] ListForUser;
 
 		///<summary></summary>
 		public FormEmployeeEdit(){
@@ -52,21 +43,12 @@ namespace OpenDental{
 			this.textLName = new System.Windows.Forms.TextBox();
 			this.textFName = new System.Windows.Forms.TextBox();
 			this.textMI = new System.Windows.Forms.TextBox();
-			this.textPassword = new System.Windows.Forms.TextBox();
-			this.textUserName = new System.Windows.Forms.TextBox();
 			this.label10 = new System.Windows.Forms.Label();
-			this.label9 = new System.Windows.Forms.Label();
 			this.label8 = new System.Windows.Forms.Label();
 			this.label7 = new System.Windows.Forms.Label();
-			this.label1 = new System.Windows.Forms.Label();
 			this.checkIsHidden = new System.Windows.Forms.CheckBox();
 			this.butCancel = new OpenDental.UI.Button();
 			this.butOK = new OpenDental.UI.Button();
-			this.tbUserPerm = new OpenDental.TableUserPermissions();
-			this.butNone = new OpenDental.UI.Button();
-			this.butAll = new OpenDental.UI.Button();
-			this.groupSecurity = new System.Windows.Forms.GroupBox();
-			this.groupSecurity.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// textLName
@@ -96,25 +78,6 @@ namespace OpenDental{
 			this.textMI.TabIndex = 25;
 			this.textMI.Text = "";
 			// 
-			// textPassword
-			// 
-			this.textPassword.Location = new System.Drawing.Point(64, 42);
-			this.textPassword.MaxLength = 100;
-			this.textPassword.Name = "textPassword";
-			this.textPassword.PasswordChar = '*';
-			this.textPassword.Size = new System.Drawing.Size(310, 20);
-			this.textPassword.TabIndex = 26;
-			this.textPassword.Text = "";
-			// 
-			// textUserName
-			// 
-			this.textUserName.Location = new System.Drawing.Point(64, 18);
-			this.textUserName.MaxLength = 100;
-			this.textUserName.Name = "textUserName";
-			this.textUserName.Size = new System.Drawing.Size(310, 20);
-			this.textUserName.TabIndex = 22;
-			this.textUserName.Text = "";
-			// 
 			// label10
 			// 
 			this.label10.Location = new System.Drawing.Point(2, 62);
@@ -123,15 +86,6 @@ namespace OpenDental{
 			this.label10.TabIndex = 31;
 			this.label10.Text = "Last Name";
 			this.label10.TextAlign = System.Drawing.ContentAlignment.TopRight;
-			// 
-			// label9
-			// 
-			this.label9.Location = new System.Drawing.Point(4, 44);
-			this.label9.Name = "label9";
-			this.label9.Size = new System.Drawing.Size(60, 14);
-			this.label9.TabIndex = 30;
-			this.label9.Text = "Password";
-			this.label9.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label8
 			// 
@@ -151,15 +105,6 @@ namespace OpenDental{
 			this.label7.Text = "MI";
 			this.label7.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
-			// label1
-			// 
-			this.label1.Location = new System.Drawing.Point(4, 20);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(60, 14);
-			this.label1.TabIndex = 27;
-			this.label1.Text = "UserName";
-			this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
-			// 
 			// checkIsHidden
 			// 
 			this.checkIsHidden.FlatStyle = System.Windows.Forms.FlatStyle.System;
@@ -177,7 +122,7 @@ namespace OpenDental{
 			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.Location = new System.Drawing.Point(720, 550);
+			this.butCancel.Location = new System.Drawing.Point(406, 208);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 25);
 			this.butCancel.TabIndex = 35;
@@ -191,75 +136,19 @@ namespace OpenDental{
 			this.butOK.Autosize = true;
 			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butOK.Location = new System.Drawing.Point(720, 518);
+			this.butOK.Location = new System.Drawing.Point(406, 176);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 25);
 			this.butOK.TabIndex = 34;
 			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
-			// tbUserPerm
-			// 
-			this.tbUserPerm.BackColor = System.Drawing.SystemColors.Window;
-			this.tbUserPerm.Location = new System.Drawing.Point(8, 78);
-			this.tbUserPerm.Name = "tbUserPerm";
-			this.tbUserPerm.ScrollValue = 1;
-			this.tbUserPerm.SelectedIndices = new int[0];
-			this.tbUserPerm.SelectionMode = System.Windows.Forms.SelectionMode.None;
-			this.tbUserPerm.Size = new System.Drawing.Size(369, 356);
-			this.tbUserPerm.TabIndex = 36;
-			this.tbUserPerm.CellClicked += new OpenDental.ContrTable.CellEventHandler(this.tbUserPerm_CellClicked);
-			// 
-			// butNone
-			// 
-			this.butNone.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butNone.Autosize = true;
-			this.butNone.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butNone.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butNone.Location = new System.Drawing.Point(102, 439);
-			this.butNone.Name = "butNone";
-			this.butNone.Size = new System.Drawing.Size(75, 25);
-			this.butNone.TabIndex = 38;
-			this.butNone.Text = "&None";
-			this.butNone.Click += new System.EventHandler(this.butNone_Click);
-			// 
-			// butAll
-			// 
-			this.butAll.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butAll.Autosize = true;
-			this.butAll.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butAll.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butAll.Location = new System.Drawing.Point(10, 439);
-			this.butAll.Name = "butAll";
-			this.butAll.Size = new System.Drawing.Size(75, 25);
-			this.butAll.TabIndex = 37;
-			this.butAll.Text = "&All";
-			this.butAll.Click += new System.EventHandler(this.butAll_Click);
-			// 
-			// groupSecurity
-			// 
-			this.groupSecurity.Controls.Add(this.tbUserPerm);
-			this.groupSecurity.Controls.Add(this.textUserName);
-			this.groupSecurity.Controls.Add(this.label1);
-			this.groupSecurity.Controls.Add(this.textPassword);
-			this.groupSecurity.Controls.Add(this.label9);
-			this.groupSecurity.Controls.Add(this.butAll);
-			this.groupSecurity.Controls.Add(this.butNone);
-			this.groupSecurity.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupSecurity.Location = new System.Drawing.Point(406, 32);
-			this.groupSecurity.Name = "groupSecurity";
-			this.groupSecurity.Size = new System.Drawing.Size(390, 470);
-			this.groupSecurity.TabIndex = 39;
-			this.groupSecurity.TabStop = false;
-			this.groupSecurity.Text = "Security";
-			// 
 			// FormEmployeeEdit
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
-			this.ClientSize = new System.Drawing.Size(814, 592);
-			this.Controls.Add(this.groupSecurity);
+			this.ClientSize = new System.Drawing.Size(500, 250);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.checkIsHidden);
@@ -278,154 +167,28 @@ namespace OpenDental{
 			this.Text = "Employee Edit";
 			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormEmployeeEdit_Closing);
 			this.Load += new System.EventHandler(this.FormEmployeeEdit_Load);
-			this.groupSecurity.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
 		#endregion
 
 		private void FormEmployeeEdit_Load(object sender, System.EventArgs e) {
-			if(Permissions.AuthorizationRequired("Security Administration")){
-				User user=Users.Authenticate("Security Administration");
-				if(user!=null && UserPermissions.IsAuthorized("Security Administration",user)){
-					groupSecurity.Visible=true;
-				}
-				else{
-					groupSecurity.Visible=false;
-				}
-			}
-			else{
-				groupSecurity.Visible=true;
-			}
 			if(IsNew){
 				Employees.Cur=new Employee();
 				Employees.Cur.IsHidden=false;
 				Employees.InsertCur();
 			}
-			textUserName.Text=Employees.Cur.UserName;
-			if(Employees.Cur.UserName!=""){
-				textPassword.Text="*****";
-			}
 			textLName.Text=Employees.Cur.LName;
 			textFName.Text=Employees.Cur.FName;
 			textMI.Text=Employees.Cur.MiddleI;
 			checkIsHidden.Checked=Employees.Cur.IsHidden;
-			FillSecurity();
 		}
-
-		private void FillSecurity(){
-			UserPermissions.Refresh();
-			tbUserPerm.ResetRows(Permissions.List.Length);
-			tbUserPerm.SetGridColor(Color.Gray);
-			ListForUser=UserPermissions.GetListForEmp(Employees.Cur.EmployeeNum);
-			for(int i=0;i<Permissions.List.Length;i++){
-				tbUserPerm.Cell[0,i]=Permissions.List[i].Name;
-				for(int j=0;j<ListForUser.Length;j++){
-					if(ListForUser[j].PermissionNum==Permissions.List[i].PermissionNum){
-						tbUserPerm.Cell[1,i]="X";
-						if(ListForUser[j].IsLogged){
-							tbUserPerm.Cell[2,i]="X";
-						}
-					}
-				}//j
-			}//i
-			tbUserPerm.LayoutTables();
-		}
-
-		private void butAll_Click(object sender, System.EventArgs e) {
-			User user=Users.GetUserEmp(Employees.Cur.EmployeeNum);
-			UserPermission userPermission;
-			for(int i=0;i<Permissions.List.Length;i++){
-				if(Permissions.List[i].Name=="Security Administration"){
-					continue;
-				}
-				if(!UserPermissions.IsAuthorized(Permissions.List[i].Name,user)){
-					userPermission=new UserPermission();
-					userPermission.EmployeeNum=Employees.Cur.EmployeeNum;
-					userPermission.PermissionNum=Permissions.List[i].PermissionNum;
-					userPermission.IsLogged=true;
-					userPermission.Insert();
-				}
-			}
-			FillSecurity();
-		}
-
-		private void butNone_Click(object sender, System.EventArgs e) {
-			UserPermissions.DeleteAllForEmp(Employees.Cur.EmployeeNum);
-			FillSecurity();
-		}
-
-		private void tbUserPerm_CellClicked(object sender, OpenDental.CellEventArgs e) {
-			UserPermission userPermission;
-			if(e.Col==1){//permission
-				if(tbUserPerm.Cell[1,e.Row]!="X"){//add X
-					if(Permissions.List[e.Row].Name=="Security Administration"){
-						MsgBox.Show(this,"Employees cannot have Security Administration.");
-						return;
-					}
-					userPermission=new UserPermission();
-					userPermission.EmployeeNum=Employees.Cur.EmployeeNum;
-					userPermission.PermissionNum=Permissions.List[e.Row].PermissionNum;
-					userPermission.Insert();
-				}
-				else{//remove X
-					for(int i=0;i<ListForUser.Length;i++){
-						if(ListForUser[i].PermissionNum==Permissions.List[e.Row].PermissionNum){
-							ListForUser[i].Delete();
-						}	
-					}//i
-				}
-				FillSecurity();
-			}//e.Col==1
-			else if(e.Col==2){//logging
-				if(tbUserPerm.Cell[2,e.Row]!="X" && tbUserPerm.Cell[1,e.Row]!="X"){//add X
-					userPermission=new UserPermission();
-					userPermission.EmployeeNum=Employees.Cur.EmployeeNum;
-					userPermission.PermissionNum=Permissions.List[e.Row].PermissionNum;
-					userPermission.IsLogged=true;
-					userPermission.Insert();
-				}
-				else if(tbUserPerm.Cell[2,e.Row]!="X" && tbUserPerm.Cell[1,e.Row]=="X"){
-					for(int i=0;i<ListForUser.Length;i++){
-						if(ListForUser[i].PermissionNum==Permissions.List[e.Row].PermissionNum){
-							userPermission=ListForUser[i];
-							userPermission.IsLogged=true;
-							userPermission.Update();
-						}	
-					}//end for
-				}
-				else{//remove X
-					for(int i=0;i<ListForUser.Length;i++){
-						if(ListForUser[i].PermissionNum==Permissions.List[e.Row].PermissionNum){
-							userPermission=ListForUser[i];
-							userPermission.IsLogged=false;
-							userPermission.Update();
-						}	
-					}//end for
-				}
-				FillSecurity();
-			}//e.Col==2
-			//if e.Col isn't 1 or 2 nothing needs to be done
-		}
-
 
 		private void butOK_Click(object sender, System.EventArgs e) {
 			Employees.Cur.LName=textLName.Text;
 			Employees.Cur.FName=textFName.Text;
 			Employees.Cur.MiddleI=textMI.Text;
 			Employees.Cur.IsHidden=checkIsHidden.Checked;
-			if(textUserName.Text==""){
-				if(ListForUser.Length>0){
-					if(!MsgBox.Show(this,true,"UserName is blank.  Are you sure you want to delete this user's permissions?")){
-						return;
-					}
-					UserPermissions.DeleteAllForEmp(Employees.Cur.EmployeeNum);
-				}
-			}
-			Employees.Cur.UserName=textUserName.Text;//if this is blank, then no 'user' exists
-			if(textPassword.Text!="*****"){
-				Employees.Cur.Password=Passwords.EncryptPassword(textPassword.Text);		
-			}
 			Employees.UpdateCur();
 			DialogResult=DialogResult.OK;
 		}
@@ -438,7 +201,7 @@ namespace OpenDental{
 			if(DialogResult==DialogResult.OK)
 				return;
 			if(IsNew){
-				UserPermissions.DeleteAllForEmp(Employees.Cur.EmployeeNum);
+				//UserPermissions.DeleteAllForEmp(Employees.Cur.EmployeeNum);
 				Employees.DeleteCur();
 			}
 		}

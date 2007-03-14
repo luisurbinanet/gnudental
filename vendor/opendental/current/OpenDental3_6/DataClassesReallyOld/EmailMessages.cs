@@ -69,16 +69,32 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO emailmessage(PatNum,ToAddress,FromAddress,Subject,BodyText,"
-				+"MsgDateTime) VALUES("
-				+"'"+POut.PInt   (Cur.PatNum)+"', "
+			if(Prefs.RandomKeys){
+				Cur.EmailMessageNum=MiscData.GetKey("emailmessage","EmailMessageNum");
+			}
+			cmd.CommandText="INSERT INTO emailmessage (";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="EmailMessageNum,";
+			}
+			cmd.CommandText+="PatNum,ToAddress,FromAddress,Subject,BodyText,"
+				+"MsgDateTime) VALUES(";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="'"+POut.PInt(Cur.EmailMessageNum)+"', ";
+			}
+			cmd.CommandText+=
+				 "'"+POut.PInt   (Cur.PatNum)+"', "
 				+"'"+POut.PString(Cur.ToAddress)+"', "
 				+"'"+POut.PString(Cur.FromAddress)+"', "
 				+"'"+POut.PString(Cur.Subject)+"', "
 				+"'"+POut.PString(Cur.BodyText)+"', "
 				+"'"+POut.PDateT (Cur.MsgDateTime)+"')";
-			NonQ(true);
-			Cur.EmailMessageNum=InsertID;
+			if(Prefs.RandomKeys){
+				NonQ();
+			}
+			else{
+ 				NonQ(true);
+				Cur.EmailMessageNum=InsertID;
+			}
 		}
 
 		///<summary></summary>

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
@@ -103,19 +104,20 @@ namespace OpenDental{
 		private void FormRP_Load(object sender, System.EventArgs e) {
 			//it does not compromise security to include the hash to the master password in the code
 			//because the user must still enter the password, not the hash.
-			masterHash="1251671001032231238111186944262869879186";
+			masterHash="78sfTin/RP0rI84zv2Xc8Q==";
+				//version 3.5: "1251671001032231238111186944262869879186";
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			//MessageBox.Show(Passwords.EncryptPassword(textMasterPass.Text));
+			Debug.WriteLine(Passwords.EncryptPassword(textMasterPass.Text));
 			if(!Passwords.CheckPassword(textMasterPass.Text,masterHash)){
 				MessageBox.Show(Lan.g(this,"Master password incorrect."));
 				return;
 			}
-			Permissions.DisableSecurity();
-			Permissions.Refresh();
-			MessageBox.Show(Lan.g(this,"Security Administration permission has been reset."));
-			DialogResult=DialogResult.OK;
+			Security.ResetPassword();
+			//PermissionsOld.Refresh();
+			//MessageBox.Show(Lan.g(this,"Security Administration permission has been reset."));
+			//DialogResult=DialogResult.OK;
 		}
 
 		private void butCancel_Click(object sender, System.EventArgs e) {
@@ -127,3 +129,11 @@ namespace OpenDental{
 
 	}
 }
+
+
+
+
+
+
+
+

@@ -23,7 +23,7 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textLetterMergePath;
 		private System.Windows.Forms.FolderBrowserDialog fb;
     //private bool IsBackup=false;
-		private User user;
+		//private User user;
 
 		///<summary></summary>
 		public FormPath(){
@@ -229,7 +229,7 @@ namespace OpenDental{
 		#endregion
 
 		private void FormPath_Load(object sender, System.EventArgs e){
-			if(Permissions.AuthorizationRequired("Data Paths")){
+			/*if(PermissionsOld.AuthorizationRequired("Data Paths")){
 				user=Users.Authenticate("Data Paths");
 				if(user==null){
 					DialogResult=DialogResult.Cancel;
@@ -240,7 +240,7 @@ namespace OpenDental{
 					DialogResult=DialogResult.Cancel;
 					return;
 				}	
-			}
+			}*/
 			textDocPath.Text=((Pref)Prefs.HList["DocPath"]).ValueString;
 			textExportPath.Text=((Pref)Prefs.HList["ExportPath"]).ValueString;
 			textLetterMergePath.Text=((Pref)Prefs.HList["LetterMergePath"]).ValueString;
@@ -310,7 +310,7 @@ namespace OpenDental{
 			Prefs.Cur.ValueString=textLetterMergePath.Text;
 			Prefs.UpdateCur();
 			DataValid.SetInvalid(InvalidTypes.Prefs);
-			SecurityLogs.MakeLogEntry("Form Path","Altered Path",user);
+			//SecurityLogs.MakeLogEntry("Form Path","Altered Path",user);
 			DialogResult=DialogResult.OK;
 		}
 

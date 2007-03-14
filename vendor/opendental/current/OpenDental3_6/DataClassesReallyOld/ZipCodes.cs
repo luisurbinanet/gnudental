@@ -55,15 +55,29 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO zipcode (zipcodedigits,city,state,isfrequent) "
-				+"VALUES ("
-				+"'"+POut.PString(Cur.ZipCodeDigits)+"', "
+			if(Prefs.RandomKeys){
+				Cur.ZipCodeNum=MiscData.GetKey("zipcode","ZipCodeNum");
+			}
+			cmd.CommandText="INSERT INTO zipcode (";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="ZipCodeNum,";
+			}
+			cmd.CommandText+="zipcodedigits,city,state,isfrequent) VALUES(";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="'"+POut.PInt(Cur.ZipCodeNum)+"', ";
+			}
+			cmd.CommandText+=
+				 "'"+POut.PString(Cur.ZipCodeDigits)+"', "
 				+"'"+POut.PString(Cur.City)+"', "
 				+"'"+POut.PString(Cur.State)+"', "
 				+"'"+POut.PBool  (Cur.IsFrequent)+"')";
-			//MessageBox.Show(cmd.CommandText);
-			NonQ(false);
-			//Cur.ZipCodeNum=InsertID;
+			if(Prefs.RandomKeys){
+				NonQ();
+			}
+			else{
+ 				NonQ(true);
+				Cur.ZipCodeNum=InsertID;
+			}
 		}
 
 		///<summary></summary>

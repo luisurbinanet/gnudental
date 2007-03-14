@@ -98,12 +98,22 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO screen (ScreenDate,GradeSchool,County,PlaceService,"
+			if(Prefs.RandomKeys){
+				Cur.ScreenNum=MiscData.GetKey("screen","ScreenNum");
+			}
+			cmd.CommandText="INSERT INTO screen (";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="ScreenNum,";
+			}
+			cmd.CommandText+="ScreenDate,GradeSchool,County,PlaceService,"
 				+"ProvNum,ProvName,Gender,Race,GradeLevel,Age,Urgency,HasCaries,NeedsSealants,"
 				+"CariesExperience,EarlyChildCaries,ExistingSealants,MissingAllTeeth,Birthdate,"
-				+"ScreenGroupNum,ScreenGroupOrder,Comments) "
-				+"VALUES ("
-				+"'"+POut.PDate  (Cur.ScreenDate)+"', "
+				+"ScreenGroupNum,ScreenGroupOrder,Comments) VALUES(";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="'"+POut.PInt(Cur.ScreenNum)+"', ";
+			}
+			cmd.CommandText+=
+				 "'"+POut.PDate  (Cur.ScreenDate)+"', "
 				+"'"+POut.PString(Cur.GradeSchool)+"', "
 				+"'"+POut.PString(Cur.County)+"', "
 				+"'"+POut.PInt   ((int)Cur.PlaceService)+"', "
@@ -124,9 +134,13 @@ namespace OpenDental{
 				+"'"+POut.PInt   (Cur.ScreenGroupNum)+"', "
 				+"'"+POut.PInt   (Cur.ScreenGroupOrder)+"', "
 				+"'"+POut.PString(Cur.Comments)+"')";
-			//MessageBox.Show(cmd.CommandText);
-			NonQ();
-			//Cur.ZipCodeNum=InsertID;
+			if(Prefs.RandomKeys){
+				NonQ();
+			}
+			else{
+ 				NonQ(true);
+				Cur.ScreenNum=InsertID;
+			}
 		}
 
 		///<summary></summary>

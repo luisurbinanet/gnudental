@@ -210,8 +210,11 @@ namespace OpenDental{
 	
 		///<summary>ONLY for new patients. Set includePatNum to true for use the patnum from the import function.  Otherwise, uses InsertID to fill PatNum.</summary>
 		public void Insert(bool includePatNum){
+			if(!includePatNum && Prefs.RandomKeys){
+				PatNum=MiscData.GetKey("patient","PatNum");
+			}
 			string command= "INSERT INTO patient (";
-			if(includePatNum){
+			if(includePatNum || Prefs.RandomKeys){
 				command+="PatNum,";
 			}
 			command+="lname,fname,middlei,preferred,patstatus,gender,"
@@ -223,7 +226,7 @@ namespace OpenDental{
 				+",Bal_0_30,Bal_31_60,Bal_61_90,BalOver90,insest,primaryteeth,BalTotal"
 				+",EmployerNum,EmploymentNote,Race,County,GradeSchool,GradeLevel,Urgency,DateFirstVisit"
 				+",PriPending,SecPending,ClinicNum,PriPatID,SecPatID) VALUES(";
-			if(includePatNum){
+			if(includePatNum || Prefs.RandomKeys){
 				command+="'"+POut.PInt(PatNum)+"', ";
 			}
 			command+="'"+POut.PString(LName)+"', "
@@ -290,8 +293,13 @@ namespace OpenDental{
 				+"'"+POut.PString(SecPatID)+"')";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command,true);
-			PatNum=dcon.InsertID;
+			if(Prefs.RandomKeys){
+				dcon.NonQ(command);
+			}
+			else{
+ 				dcon.NonQ(command,true);
+				PatNum=dcon.InsertID;
+			}
 		}
 
 		///<summary>Updates only the changed columns and returns the number of rows affected.  Supply the old Patient object to compare for changes.</summary>

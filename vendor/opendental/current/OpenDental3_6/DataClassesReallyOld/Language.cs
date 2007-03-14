@@ -200,6 +200,13 @@ namespace OpenDental{
 		///<summary></summary>
 		public static void C(System.Windows.Forms.Control sender, System.Windows.Forms.Control[] contr){
 			for(int i=0;i<contr.Length;i++){
+				if(contr[i].GetType()==typeof(UI.ODGrid)){
+					((UI.ODGrid)contr[i]).Title=ConvertString(((UI.ODGrid)contr[i]).TranslationName,((UI.ODGrid)contr[i]).Title);
+					foreach(UI.ODGridColumn col in ((UI.ODGrid)contr[i]).Columns){
+						col.Heading=ConvertString(((UI.ODGrid)contr[i]).TranslationName,col.Heading);
+					}
+					continue;
+				}
 				contr[i].Text=ConvertString(sender.GetType().Name,contr[i].Text);
 			}
 			if(itemInserted)
@@ -230,7 +237,14 @@ namespace OpenDental{
 		///<summary>Called from F and also recursively. Translates all children of the given control except those in the exclusions list.</summary>
 		private static void Fchildren(Form sender,Control parent,Control[] exclusions){
 			foreach(Control contr in parent.Controls){
-				//first any controls with children of their own.
+				if(contr.GetType()==typeof(UI.ODGrid)){
+					((UI.ODGrid)contr).Title=ConvertString(((UI.ODGrid)contr).TranslationName,((UI.ODGrid)contr).Title);
+					foreach(UI.ODGridColumn col in ((UI.ODGrid)contr).Columns){
+						col.Heading=ConvertString(((UI.ODGrid)contr).TranslationName,col.Heading);
+					}
+					continue;
+				}
+				//any controls with children of their own.
 				if(contr.HasChildren){
 					Fchildren(sender,contr,exclusions);
 				}

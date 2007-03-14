@@ -11,22 +11,37 @@ namespace OpenDental{
 		public int QuickPasteCatNum;
 		///<summary>Foreign key. Keeps track of which category this note is in.</summary>
 		public string Description;
-		///<summary>The order of this note within it's category. 0-based.</summary>
+		///<summary>The order of this note within its category. 0-based.</summary>
 		public int ItemOrder;
 		///<summary>Each Category can be set to be the default category for multiple types of notes. Stored as integers separated by commas.</summary>
 		public string DefaultForTypes;
 
 		///<summary></summary>
 		public void Insert(){
-			string command="INSERT INTO quickpastecat (Description,ItemOrder,DefaultForTypes) "
-				+"VALUES ("
-				+"'"+POut.PString(Description)+"', "
+			if(Prefs.RandomKeys){
+				QuickPasteCatNum=MiscData.GetKey("quickpastecat","QuickPasteCatNum");
+			}
+			string command= "INSERT INTO quickpastecat (";
+			if(Prefs.RandomKeys){
+				command+="QuickPasteCatNum,";
+			}
+			command+="Description,ItemOrder,DefaultForTypes) VALUES(";
+			if(Prefs.RandomKeys){
+				command+="'"+POut.PInt(QuickPasteCatNum)+"', ";
+			}
+			command+=
+				 "'"+POut.PString(Description)+"', "
 				+"'"+POut.PInt   (ItemOrder)+"', "
 				+"'"+POut.PString(DefaultForTypes)+"')";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command,true);
-			QuickPasteCatNum=dcon.InsertID;
+ 			if(Prefs.RandomKeys){
+				dcon.NonQ(command);
+			}
+			else{
+ 				dcon.NonQ(command,true);
+				QuickPasteCatNum=dcon.InsertID;
+			}
 		}
 
 		///<summary></summary>

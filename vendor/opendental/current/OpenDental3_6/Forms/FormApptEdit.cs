@@ -1137,6 +1137,12 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please fix data entry errors first."));
 				return;
 			}
+			if(Appointments.Cur.AptStatus==ApptStatus.Complete){
+				//added procedures would be marked complete when form closes. We'll just stop it here.
+				if(!Security.IsAuthorized(Permissions.ProcComplCreate)){
+					return;
+				}
+			}
 			procsHaveChanged=true;
 			Procedure ProcCur=arrayProc[ApptProc2[e.Row].Index];
 			Procedure ProcOld=ProcCur.Copy();
@@ -1157,7 +1163,14 @@ namespace OpenDental{
 				}
 			}
 			//changing the AptNum of a proc does not affect the recall synch, so no synch here.
-			ProcCur.Update(ProcOld);
+			try{
+				ProcCur.InsertOrUpdate(ProcOld,false);
+			}
+			catch(Exception ex){
+				MessageBox.Show(ex.Message);
+				//return;//this won't happen. Just changing aptNum.
+			}
+			//ProcCur.Update(ProcOld);
 			FillProcedures();
 			CalculateTime();
 			FillTime();
@@ -1393,6 +1406,12 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please fix data entry errors first."));
 				return;
 			}
+			if(Appointments.Cur.AptStatus==ApptStatus.Complete){
+				//added procedures would be marked complete when form closes. We'll just stop it here.
+				if(!Security.IsAuthorized(Permissions.ProcComplCreate)){
+					return;
+				}
+			}
 			Procedures.SetDateFirstVisit(Appointments.Cur.AptDateTime.Date,1,pat);
 			string[] codes=Defs.Short[(int)DefCat.ApptProcsQuickAdd]
 				[listQuickAdd.IndexFromPoint(e.X,e.Y)].ItemValue.Split(',');
@@ -1416,7 +1435,14 @@ namespace OpenDental{
 				//Dx
 				if(Appointments.Cur.AptStatus==ApptStatus.Planned)
           ProcCur.NextAptNum=Appointments.Cur.AptNum;
-				ProcCur.Insert();//recall synch not required
+				try{
+					ProcCur.InsertOrUpdate(null,true);//recall synch not required
+				}
+				catch(Exception ex){
+					MessageBox.Show(ex.Message);
+					continue;
+				}
+				//ProcCur.Insert();
 				ProcCur.ComputeEstimates(pat.PatNum,pat.PriPlanNum
 					,pat.SecPlanNum,ClaimProcList,false,pat,PlanList);
 			}
@@ -1491,7 +1517,11 @@ namespace OpenDental{
 					}
 				}
 				if(!allProcsComplete){
+					if(!Security.IsAuthorized(Permissions.ProcComplCreate)){
+						return false;
+					}
 					Procedures.SetCompleteInAppt(Appointments.Cur,pat,PlanList);
+					SecurityLogs.MakeLogEntry(Permissions.ProcComplCreate,pat.GetNameLF()+" "+Appointments.Cur.AptDateTime.ToShortDateString());
 				}
 			}
 			//convert from current increment into 5 minute increment

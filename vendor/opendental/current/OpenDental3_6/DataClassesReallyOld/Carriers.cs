@@ -82,9 +82,20 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO carrier(CarrierName,Address,Address2,City,State,Zip,Phone"
-				+",ElectID,NoSendElect) VALUES("
-				+"'"+POut.PString(Cur.CarrierName)+"', "
+			if(Prefs.RandomKeys){
+				Cur.CarrierNum=MiscData.GetKey("carrier","CarrierNum");
+			}
+			cmd.CommandText="INSERT INTO carrier (";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="CarrierNum,";
+			}
+			cmd.CommandText+="CarrierName,Address,Address2,City,State,Zip,Phone"
+				+",ElectID,NoSendElect) VALUES(";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="'"+POut.PInt(Cur.CarrierNum)+"', ";
+			}
+			cmd.CommandText+=
+				 "'"+POut.PString(Cur.CarrierName)+"', "
 				+"'"+POut.PString(Cur.Address)+"', "
 				+"'"+POut.PString(Cur.Address2)+"', "
 				+"'"+POut.PString(Cur.City)+"', "
@@ -93,8 +104,14 @@ namespace OpenDental{
 				+"'"+POut.PString(Cur.Phone)+"', "
 				+"'"+POut.PString(Cur.ElectID)+"', "
 				+"'"+POut.PBool  (Cur.NoSendElect)+"')";
-			NonQ(true);//id used in the conversion process for 2.8
-			Cur.CarrierNum=InsertID;
+			if(Prefs.RandomKeys){
+				NonQ();
+			}
+			else{
+ 				NonQ(true);
+				Cur.CarrierNum=InsertID;
+			}
+			//id used in the conversion process for 2.8
 		}
 
 		///<summary>There MUST not be any dependencies before calling this or there will be invalid foreign keys.  This is only called from FormCarrierEdit after proper validation.</summary>

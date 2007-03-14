@@ -21,12 +21,14 @@ namespace OpenDental{
 		public string BankBranch;
 		///<summary></summary>
 		public string PayNote;
-		///<summary>Set to true to indicate that a payment is split between patients.  Just makes a few functions easier.  Might be eliminated.</summary>
+		///<summary>Set to true to indicate that a payment is split.  Just makes a few functions easier.  Might be eliminated.</summary>
 		public bool IsSplit;
 		///<summary>Foreign Key to patient.PatNum.  The patient where the payment entry will show.  But only the splits affect accounts.</summary>
 		public int PatNum;
 		///<summary>Foreign Key to clinic.ClinicNum.  Can be 0. Copied from patient.ClinicNum when creating payment, but user can override.</summary>
 		public int ClinicNum;
+		///<summary>The date that this payment was entered.  Not user editable.</summary>
+		public DateTime DateEntry;
 
 
 		///<summary>Updates this payment.  Also updates the datePay of all attached paysplits so that they are always in synch.  Updates IsSplit.  DatePay and IsSplit are also updated whenever a paysplit is added or removed, so no need to run this again.</summary>
@@ -41,6 +43,7 @@ namespace OpenDental{
 				+ ",issplit = '"     +POut.PBool  (IsSplit)+"'"
 				+ ",patnum = '"      +POut.PInt   (PatNum)+"'"
 				+ ",ClinicNum = '"   +POut.PInt   (ClinicNum)+"'"
+				//DateEntry not allowed to change
 				+" WHERE payNum = '" +POut.PInt   (PayNum)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
@@ -62,9 +65,20 @@ namespace OpenDental{
 
 		///<summary></summary>
 		private void Insert(){
-			string command= "INSERT INTO payment (paytype,paydate,payamt, "
-				+"checknum,bankbranch,paynote,issplit,patnum,ClinicNum) VALUES("
-				+"'"+POut.PInt   (PayType)+"', "
+			if(Prefs.RandomKeys){
+				PayNum=MiscData.GetKey("payment","PayNum");
+			}
+			string command= "INSERT INTO payment (";
+			if(Prefs.RandomKeys){
+				command+="PayNum,";
+			}
+			command+="PayType,PayDate,PayAmt, "
+				+"CheckNum,BankBranch,PayNote,IsSplit,PatNum,ClinicNum,DateEntry) VALUES(";
+			if(Prefs.RandomKeys){
+				command+="'"+POut.PInt(PayNum)+"', ";
+			}
+			command+=
+				 "'"+POut.PInt   (PayType)+"', "
 				+"'"+POut.PDate  (PayDate)+"', "
 				+"'"+POut.PDouble(PayAmt)+"', "
 				+"'"+POut.PString(CheckNum)+"', "
@@ -72,11 +86,16 @@ namespace OpenDental{
 				+"'"+POut.PString(PayNote)+"', "
 				+"'"+POut.PBool  (IsSplit)+"', "
 				+"'"+POut.PInt   (PatNum)+"', "
-				+"'"+POut.PInt   (ClinicNum)+"')";
+				+"'"+POut.PInt   (ClinicNum)+"', "
+				+"NOW())";//DateEntry
 			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command,true);
-			PayNum=dcon.InsertID;
-			//MessageBox.Show(PayNum.ToString());
+ 			if(Prefs.RandomKeys){
+				dcon.NonQ(command);
+			}
+			else{
+ 				dcon.NonQ(command,true);
+				PayNum=dcon.InsertID;
+			}
 		}
 
 		///<summary></summary>
@@ -233,6 +252,7 @@ namespace OpenDental{
 				List[i].IsSplit   =PIn.PBool  (table.Rows[i][7].ToString());
 				List[i].PatNum    =PIn.PInt   (table.Rows[i][8].ToString());
 				List[i].ClinicNum =PIn.PInt   (table.Rows[i][9].ToString());
+				List[i].DateEntry =PIn.PDate  (table.Rows[i][10].ToString());
 			}
 			return List;
 		}

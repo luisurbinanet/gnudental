@@ -65,6 +65,8 @@ namespace OpenDental{
 		public double CopayOverride;
 		///<summary>Date of the procedure.  Currently only used for tracking annual insurance benefits remaining. Important in Adjustments to benefits.  For total claim payments, MUST be the date of the procedures to correctly figure benefits.  Will eventually transition to use this field to actually calculate aging.  See the note under Ledgers.ComputePayments.</summary>
 		public DateTime ProcDate;
+		///<summary>Date that it was changed to status received or supplemental.  It is usually attached to a claimPayment at that point, but not if user forgets.  This is still the date that it becomes important financial data.  Only applies if Received or Supplemental.  Otherwise, the date is disregarded.  User may never edit. Important in audit trail.</summary>
+		public DateTime DateEntry;
 
 		///<summary>Returns a copy of this ClaimProc.</summary>
 		public ClaimProc Copy(){
@@ -97,17 +99,29 @@ namespace OpenDental{
 			cp.BaseEst=BaseEst;
 			cp.CopayOverride=CopayOverride;
 			cp.ProcDate=ProcDate;
+			cp.DateEntry=DateEntry;
 			return cp;
 		}
 
 		///<summary></summary>
 		public void Insert(){
-			string command= "INSERT INTO claimproc (ProcNum,ClaimNum,PatNum,ProvNum"
+			if(Prefs.RandomKeys){
+				ClaimProcNum=MiscData.GetKey("claimproc","ClaimProcNum");
+			}
+			string command= "INSERT INTO claimproc (";
+			if(Prefs.RandomKeys){
+				command+="ClaimProcNum,";
+			}
+			command+="ProcNum,ClaimNum,PatNum,ProvNum"
 				+",FeeBilled,InsPayEst,DedApplied,Status,InsPayAmt,Remarks,ClaimPaymentNum"
 				+",PlanNum,DateCP,WriteOff,CodeSent,AllowedAmt,Percentage,PercentOverride"
 				+",CopayAmt,OverrideInsEst,NoBillIns,DedBeforePerc,OverAnnualMax"
-				+",PaidOtherIns,BaseEst,CopayOverride,ProcDate) VALUES ("
-				+"'"+POut.PInt   (ProcNum)+"', "
+				+",PaidOtherIns,BaseEst,CopayOverride,ProcDate,DateEntry) VALUES(";
+			if(Prefs.RandomKeys){
+				command+="'"+POut.PInt(ClaimProcNum)+"', ";
+			}
+			command+=
+				 "'"+POut.PInt   (ProcNum)+"', "
 				+"'"+POut.PInt   (ClaimNum)+"', "
 				+"'"+POut.PInt   (PatNum)+"', "
 				+"'"+POut.PInt   (ProvNum)+"', "
@@ -133,11 +147,17 @@ namespace OpenDental{
 				+"'"+POut.PDouble(PaidOtherIns)+"', "
 				+"'"+POut.PDouble(BaseEst)+"', "
 				+"'"+POut.PDouble(CopayOverride)+"', "
-				+"'"+POut.PDate  (ProcDate)+"')";
+				+"'"+POut.PDate  (ProcDate)+"', "
+				+"NOW())";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command,true);
-			ClaimProcNum=dcon.InsertID;
+ 			if(Prefs.RandomKeys){
+				dcon.NonQ(command);
+			}
+			else{
+ 				dcon.NonQ(command,true);
+				ClaimProcNum=dcon.InsertID;
+			}
 		}
 
 		///<summary></summary>
@@ -170,6 +190,7 @@ namespace OpenDental{
 				+",BaseEst= '"        +POut.PDouble(BaseEst)+"'"
 				+",CopayOverride= '"  +POut.PDouble(CopayOverride)+"'"
 				+",ProcDate= '"       +POut.PDate  (ProcDate)+"'"
+				+",DateEntry= '"      +POut.PDate  (DateEntry)+"'"
 				+" WHERE claimprocnum = '"+POut.PInt (ClaimProcNum)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();

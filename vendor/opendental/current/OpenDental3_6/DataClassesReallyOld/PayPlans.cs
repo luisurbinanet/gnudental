@@ -101,17 +101,28 @@ namespace OpenDental{
 				+ ",note = '"          +POut.PString(Cur.Note)+"'"
 				+ ",totalcost = '"     +POut.PDouble(Cur.TotalCost)+"'"
 				+ ",LastPayment = '"   +POut.PDouble(Cur.LastPayment)+"'"
-				+" WHERE payplanNum = '" +POut.PInt   (Cur.PayPlanNum)+"'";
+				+" WHERE PayPlanNum = '" +POut.PInt   (Cur.PayPlanNum)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			NonQ(false);
 		}
 
 		///<summary></summary>
 		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO payplan (patnum,guarantor,payplandate,totalamount,"
-				+"apr,monthlypayment,term,currentdue,datefirstpay,downpayment,note,TotalCost,"
-				+"LastPayment) VALUES("
-				+"'"+POut.PInt   (Cur.PatNum)+"', "
+			if(Prefs.RandomKeys){
+				Cur.PayPlanNum=MiscData.GetKey("payplan","PayPlanNum");
+			}
+			cmd.CommandText="INSERT INTO payplan (";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="PayPlanNum,";
+			}
+			cmd.CommandText+="PatNum,Guarantor,PayPlanDate,TotalAmount,"
+				+"APR,MonthlyPayment,Term,CurrentDue,DateFirstPay,DownPayment,Note,TotalCost,"
+				+"LastPayment) VALUES(";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="'"+POut.PInt(Cur.PayPlanNum)+"', ";
+			}
+			cmd.CommandText+=
+				 "'"+POut.PInt   (Cur.PatNum)+"', "
 				+"'"+POut.PInt   (Cur.Guarantor)+"', "
 				+"'"+POut.PDate  (Cur.PayPlanDate)+"', "
 				+"'"+POut.PDouble(Cur.TotalAmount)+"', "
@@ -124,7 +135,13 @@ namespace OpenDental{
 				+"'"+POut.PString(Cur.Note)+"', "
 				+"'"+POut.PDouble(Cur.TotalCost)+"', "
 				+"'"+POut.PDouble(Cur.LastPayment)+"')";
-			NonQ(false);
+			if(Prefs.RandomKeys){
+				NonQ();
+			}
+			else{
+ 				NonQ(true);
+				Cur.PayPlanNum=InsertID;
+			}
 		}
 
 		///<summary>Must have already verified that there are no paysplits attached.  Called from FormPayPlan.</summary>
@@ -160,7 +177,7 @@ namespace OpenDental{
 				//Cur=List[i];
 				cmd.CommandText="UPDATE payplan SET CurrentDue = '"
 					+GetAmtDue(List[i].DownPayment,List[i].MonthlyPayment,List[i].DateFirstPay,List[i].TotalCost)
-					.ToString()+"' WHERE PayPlanNum = '"+POut.PInt(Cur.PayPlanNum)+"'";
+					.ToString()+"' WHERE PayPlanNum = '"+POut.PInt(List[i].PayPlanNum)+"'";
 				NonQ(false);
 			}
 		}

@@ -74,7 +74,9 @@ namespace OpenDental{
 			StringBuilder strBuild=new StringBuilder();
 			for(int i=0;i<myString.Length;i++){
 				switch(myString.Substring(i,1)){
+					//note. When using binary data, must escape ',",\, and nul(? haven't done nul)
 					case "'": strBuild.Append(@"\'");	break;// ' replaced by \'
+					case "\"": strBuild.Append("\\\"");	break;// " replaced by \"
 					case @"\": strBuild.Append(@"\\"); break;//single \ replaced by \\
 					case "\r": strBuild.Append(@"\r"); break;//carriage return(usually followed by new line)
 					case "\n": strBuild.Append(@"\n"); break;//new line

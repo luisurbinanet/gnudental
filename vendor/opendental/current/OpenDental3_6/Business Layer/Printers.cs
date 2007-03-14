@@ -73,16 +73,32 @@ namespace OpenDental{
 
 		///<summary></summary>
 		private static void Insert(Printer cur){
-			string command="INSERT INTO printer (ComputerNum,PrintSit,PrinterName,"
-				+"DisplayPrompt) VALUES("
-				+"'"+POut.PInt   (cur.ComputerNum)+"', "
+			if(Prefs.RandomKeys){
+				cur.PrinterNum=MiscData.GetKey("printer","PrinterNum");
+			}
+			string command= "INSERT INTO printer (";
+			if(Prefs.RandomKeys){
+				command+="PrinterNum,";
+			}
+			command+="ComputerNum,PrintSit,PrinterName,"
+				+"DisplayPrompt) VALUES(";
+			if(Prefs.RandomKeys){
+				command+="'"+POut.PInt(cur.PrinterNum)+"', ";
+			}
+			command+=
+				 "'"+POut.PInt   (cur.ComputerNum)+"', "
 				+"'"+POut.PInt   ((int)cur.PrintSit)+"', "
 				+"'"+POut.PString(cur.PrinterName)+"', "
 				+"'"+POut.PBool  (cur.DisplayPrompt)+"')";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command,true);
-			cur.PrinterNum=dcon.InsertID;
+ 			if(Prefs.RandomKeys){
+				dcon.NonQ(command);
+			}
+			else{
+ 				dcon.NonQ(command,true);
+				cur.PrinterNum=dcon.InsertID;
+			}
 		}
 
 		///<summary></summary>

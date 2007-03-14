@@ -131,6 +131,17 @@ namespace OpenDental{
 			return rowsChanged;
 		}
 
+		///<summary>Use this for queries that always return only one value, like count(*).  Uses datareader instead of datatable, so faster.</summary>
+		public string GetOneValue(string command){
+			cmd.CommandText=command;
+			con.Open();
+			dr=(MySqlDataReader)cmd.ExecuteReader();
+			dr.Read();
+			string retVal=dr[0].ToString();
+			con.Close();
+			return retVal;
+		}
+
 
 
 	}

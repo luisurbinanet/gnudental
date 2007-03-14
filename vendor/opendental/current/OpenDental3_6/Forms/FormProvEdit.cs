@@ -38,14 +38,6 @@ namespace OpenDental{
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.RadioButton radioSSN;
 		private System.Windows.Forms.RadioButton radioTIN;
-		private OpenDental.TableUserPermissions tbUserPerm;
-		private System.Windows.Forms.TextBox textUserName;
-		private System.Windows.Forms.Label label4;
-		private System.Windows.Forms.TextBox textPassword;
-		private System.Windows.Forms.Label label12;
-		private OpenDental.UI.Button butAll;
-		private OpenDental.UI.Button butNone;
-		private System.Windows.Forms.GroupBox groupSecurity;
 		private System.Windows.Forms.Label label13;
 		private System.Windows.Forms.TextBox textMedicaidID;
 		private System.Windows.Forms.GroupBox groupBox2;
@@ -61,7 +53,6 @@ namespace OpenDental{
 		private System.Windows.Forms.Label labelSchoolClass;
 		///<summary>Provider Identifiers showing in the list for this provider.</summary>
 		private ProviderIdent[] ListProvIdent;
-		private UserPermission[] ListForUser;
 
 		///<summary></summary>
 		public FormProvEdit(){
@@ -113,14 +104,6 @@ namespace OpenDental{
 			this.radioTIN = new System.Windows.Forms.RadioButton();
 			this.radioSSN = new System.Windows.Forms.RadioButton();
 			this.checkSigOnFile = new System.Windows.Forms.CheckBox();
-			this.groupSecurity = new System.Windows.Forms.GroupBox();
-			this.tbUserPerm = new OpenDental.TableUserPermissions();
-			this.textUserName = new System.Windows.Forms.TextBox();
-			this.label4 = new System.Windows.Forms.Label();
-			this.textPassword = new System.Windows.Forms.TextBox();
-			this.label12 = new System.Windows.Forms.Label();
-			this.butAll = new OpenDental.UI.Button();
-			this.butNone = new OpenDental.UI.Button();
 			this.textMedicaidID = new System.Windows.Forms.TextBox();
 			this.label13 = new System.Windows.Forms.Label();
 			this.tbProvIdent = new OpenDental.TableProvIdent();
@@ -133,7 +116,6 @@ namespace OpenDental{
 			this.comboSchoolClass = new System.Windows.Forms.ComboBox();
 			this.labelSchoolClass = new System.Windows.Forms.Label();
 			this.groupBox1.SuspendLayout();
-			this.groupSecurity.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -426,98 +408,6 @@ namespace OpenDental{
 			this.checkSigOnFile.TabIndex = 10;
 			this.checkSigOnFile.Text = "Signature on File";
 			// 
-			// groupSecurity
-			// 
-			this.groupSecurity.Controls.Add(this.tbUserPerm);
-			this.groupSecurity.Controls.Add(this.textUserName);
-			this.groupSecurity.Controls.Add(this.label4);
-			this.groupSecurity.Controls.Add(this.textPassword);
-			this.groupSecurity.Controls.Add(this.label12);
-			this.groupSecurity.Controls.Add(this.butAll);
-			this.groupSecurity.Controls.Add(this.butNone);
-			this.groupSecurity.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupSecurity.Location = new System.Drawing.Point(459, 10);
-			this.groupSecurity.Name = "groupSecurity";
-			this.groupSecurity.Size = new System.Drawing.Size(418, 483);
-			this.groupSecurity.TabIndex = 40;
-			this.groupSecurity.TabStop = false;
-			this.groupSecurity.Text = "Security";
-			// 
-			// tbUserPerm
-			// 
-			this.tbUserPerm.BackColor = System.Drawing.SystemColors.Window;
-			this.tbUserPerm.Location = new System.Drawing.Point(40, 84);
-			this.tbUserPerm.Name = "tbUserPerm";
-			this.tbUserPerm.ScrollValue = 1;
-			this.tbUserPerm.SelectedIndices = new int[0];
-			this.tbUserPerm.SelectionMode = System.Windows.Forms.SelectionMode.None;
-			this.tbUserPerm.Size = new System.Drawing.Size(369, 356);
-			this.tbUserPerm.TabIndex = 36;
-			this.tbUserPerm.CellClicked += new OpenDental.ContrTable.CellEventHandler(this.tbUserPerm_CellClicked);
-			// 
-			// textUserName
-			// 
-			this.textUserName.Location = new System.Drawing.Point(124, 22);
-			this.textUserName.MaxLength = 100;
-			this.textUserName.Name = "textUserName";
-			this.textUserName.Size = new System.Drawing.Size(282, 20);
-			this.textUserName.TabIndex = 22;
-			this.textUserName.Text = "";
-			// 
-			// label4
-			// 
-			this.label4.Location = new System.Drawing.Point(6, 26);
-			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(116, 16);
-			this.label4.TabIndex = 27;
-			this.label4.Text = "UserName";
-			this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			// 
-			// textPassword
-			// 
-			this.textPassword.Location = new System.Drawing.Point(124, 46);
-			this.textPassword.MaxLength = 100;
-			this.textPassword.Name = "textPassword";
-			this.textPassword.PasswordChar = '*';
-			this.textPassword.Size = new System.Drawing.Size(282, 20);
-			this.textPassword.TabIndex = 26;
-			this.textPassword.Text = "";
-			// 
-			// label12
-			// 
-			this.label12.Location = new System.Drawing.Point(8, 48);
-			this.label12.Name = "label12";
-			this.label12.Size = new System.Drawing.Size(114, 16);
-			this.label12.TabIndex = 30;
-			this.label12.Text = "Password";
-			this.label12.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			// 
-			// butAll
-			// 
-			this.butAll.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butAll.Autosize = true;
-			this.butAll.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butAll.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butAll.Location = new System.Drawing.Point(42, 448);
-			this.butAll.Name = "butAll";
-			this.butAll.Size = new System.Drawing.Size(75, 26);
-			this.butAll.TabIndex = 37;
-			this.butAll.Text = "&All";
-			this.butAll.Click += new System.EventHandler(this.butAll_Click);
-			// 
-			// butNone
-			// 
-			this.butNone.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butNone.Autosize = true;
-			this.butNone.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butNone.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butNone.Location = new System.Drawing.Point(132, 448);
-			this.butNone.Name = "butNone";
-			this.butNone.Size = new System.Drawing.Size(75, 26);
-			this.butNone.TabIndex = 38;
-			this.butNone.Text = "&None";
-			this.butNone.Click += new System.EventHandler(this.butNone_Click);
-			// 
 			// textMedicaidID
 			// 
 			this.textMedicaidID.Location = new System.Drawing.Point(136, 268);
@@ -658,7 +548,6 @@ namespace OpenDental{
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.label13);
-			this.Controls.Add(this.groupSecurity);
 			this.Controls.Add(this.checkSigOnFile);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.listSpecialty);
@@ -686,7 +575,6 @@ namespace OpenDental{
 			this.Closing += new System.ComponentModel.CancelEventHandler(this.FormProvEdit_Closing);
 			this.Load += new System.EventHandler(this.FormProvEdit_Load);
 			this.groupBox1.ResumeLayout(false);
-			this.groupSecurity.ResumeLayout(false);
 			this.groupBox2.ResumeLayout(false);
 			this.ResumeLayout(false);
 
@@ -694,18 +582,6 @@ namespace OpenDental{
 		#endregion
 
 		private void FormProvEdit_Load(object sender, System.EventArgs e) {
-			if(Permissions.AuthorizationRequired("Security Administration")){
-				User user=Users.Authenticate("Security Administration");
-				if(user!=null && UserPermissions.IsAuthorized("Security Administration",user)){
-					groupSecurity.Visible=true;
-				}
-				else{
-					groupSecurity.Visible=false;
-				}
-			}
-			else{
-				groupSecurity.Visible=true;
-			}
 			if(IsNew){
 				Providers.Cur.SigOnFile=true;
 				Providers.InsertCur();
@@ -721,10 +597,6 @@ namespace OpenDental{
 			textMI.Text=Providers.Cur.MI;
 			textSuffix.Text=Providers.Cur.Suffix;
 			textSSN.Text=Providers.Cur.SSN;
-			textUserName.Text=Providers.Cur.UserName;
-			if(Providers.Cur.UserName!=""){
-				textPassword.Text="*****";
-			}
 			if(Providers.Cur.UsingTIN){
 				radioTIN.Checked=true;
 			}
@@ -761,27 +633,7 @@ namespace OpenDental{
 				listSpecialty.Items.Add(Lan.g("enumDentalSpecialty",Enum.GetNames(typeof(DentalSpecialty))[i]));
 			}
 			listSpecialty.SelectedIndex=(int)Providers.Cur.Specialty;
-			FillSecurity();
 			FillProvIdent();
-		}
-
-		private void FillSecurity(){
-			UserPermissions.Refresh();
-			tbUserPerm.ResetRows(Permissions.List.Length);
-			tbUserPerm.SetGridColor(Color.Gray);
-			ListForUser=UserPermissions.GetListForProv(Providers.Cur.ProvNum);//emp not allowed security permission
-			for(int i=0;i<Permissions.List.Length;i++){
-				tbUserPerm.Cell[0,i]=Permissions.List[i].Name;
-				for(int j=0;j<ListForUser.Length;j++){
-					if(ListForUser[j].PermissionNum==Permissions.List[i].PermissionNum){
-						tbUserPerm.Cell[1,i]="X";
-						if(ListForUser[j].IsLogged){
-							tbUserPerm.Cell[2,i]="X";
-						}
-					}
-				}//j
-			}//i
-			tbUserPerm.LayoutTables();
 		}
 
 		private void butColor_Click(object sender, System.EventArgs e) {
@@ -802,99 +654,6 @@ namespace OpenDental{
 
 		private void radioTIN_Click(object sender, System.EventArgs e) {
 			Providers.Cur.UsingTIN=true;
-		}
-
-		private void butAll_Click(object sender, System.EventArgs e) {
-			User user=Users.GetUserProv(Providers.Cur.ProvNum);
-			UserPermission userPermission;
-			for(int i=0;i<Permissions.List.Length;i++){
-				if(Permissions.List[i].Name=="Security Administration"){
-					continue;
-				}
-				if(!UserPermissions.IsAuthorized(Permissions.List[i].Name,user)){
-					userPermission=new UserPermission();
-					userPermission.ProvNum=Providers.Cur.ProvNum;
-					userPermission.PermissionNum=Permissions.List[i].PermissionNum;
-					userPermission.IsLogged=true;
-					userPermission.Insert();
-				}
-			}
-			FillSecurity();
-		}
-
-		private void butNone_Click(object sender, System.EventArgs e) {
-			/*UserPermissions.GetListForProv(Providers.Cur.ProvNum);
-			for(int i=0;i<UserPermissions.ListForUser.Length;i++){
-				Permissions.GetCur(UserPermissions.ListForUser[i].PermissionNum);
-				if(Permissions.Cur.Name!="Security Administration"){
-					UserPermissions.Cur=UserPermissions.ListForUser[i];
-					UserPermissions.DeleteCur();
-				}
-			}*/
-			UserPermissions.DeleteAllForProv(Providers.Cur.ProvNum);
-			FillSecurity();
-		}
-
-		private void tbUserPerm_CellClicked(object sender, OpenDental.CellEventArgs e) {
-			UserPermission userPermission;
-			if(e.Col==1){//permission
-				if(tbUserPerm.Cell[1,e.Row]!="X"){//add X
-					userPermission=new UserPermission();
-					userPermission.ProvNum=Providers.Cur.ProvNum;
-					userPermission.PermissionNum=Permissions.List[e.Row].PermissionNum;
-					userPermission.Insert();
-				}
-				else{//remove X
-					if(Permissions.List[e.Row].Name=="Security Administration"){
-						if(UserPermissions.AdministratorCount()==1){
-							if(MessageBox.Show(Lan.g(this,"This is the only provider with Security Administration permission.  Are you sure you really want to remove this permission?"),""
-								,MessageBoxButtons.OKCancel)!=DialogResult.OK){
-								return;
-							}
-						}
-					}
-					for(int i=0;i<ListForUser.Length;i++){
-						if(ListForUser[i].PermissionNum==Permissions.List[e.Row].PermissionNum){
-							ListForUser[i].Delete();
-						}	
-					}//i
-				}
-				FillSecurity();
-				return;
-			}//e.Col==1	
-			else if(e.Col==2){//logging
-				if(tbUserPerm.Cell[2,e.Row]!="X" && tbUserPerm.Cell[1,e.Row]!="X"){//add X
-					userPermission=new UserPermission();
-					userPermission.ProvNum=Providers.Cur.ProvNum;
-					userPermission.PermissionNum=Permissions.List[e.Row].PermissionNum;
-					userPermission.IsLogged=true;
-					userPermission.Insert();
-				}
-				else if(tbUserPerm.Cell[2,e.Row]!="X" && tbUserPerm.Cell[1,e.Row]=="X"){
-					for(int i=0;i<ListForUser.Length;i++){
-						if(ListForUser[i].PermissionNum==Permissions.List[e.Row].PermissionNum){
-							userPermission=ListForUser[i];
-							userPermission.IsLogged=true;
-							userPermission.Update();
-						}	
-					}
-				}
-
-				else{//remove X
-					for(int i=0;i<ListForUser.Length;i++){
-						if(ListForUser[i].PermissionNum==Permissions.List[e.Row].PermissionNum){
-							userPermission=ListForUser[i];
-							userPermission.IsLogged=false;
-							userPermission.Update();
-						}	
-					}
-				}
-				FillSecurity();
-				return;
-			}//end else if(e.Col==2)
-			else{
-				return;//if e.Col isn't 1 or 2 nothing needs to be done
-			}		
 		}
 
 		private void FillProvIdent(){
@@ -964,33 +723,6 @@ namespace OpenDental{
 				Providers.Cur.SchoolClassNum=0;
 			else
 				Providers.Cur.SchoolClassNum=SchoolClasses.List[comboSchoolClass.SelectedIndex-1].SchoolClassNum;
-			if(textUserName.Text==""){
-				if(ListForUser.Length>0){
-					if(MessageBox.Show(Lan.g(this,
-						"UserName is blank.  Are you sure you want to delete this user's permissions?"),"",
-						MessageBoxButtons.OKCancel)!=DialogResult.OK){
-						return;
-					}
-					UserPermissions.DeleteAllForProv(Providers.Cur.ProvNum);
-					if(UserPermissions.AdministratorCount()==0){
-						if(MessageBox.Show(Lan.g(this,"There will be no users with Security Administration permission.  Do you wish to continue anyway?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
-							FillSecurity();
-							return;
-						}
-						Permissions.DisableSecurity();
-					}
-				}
-			}
-			if(textUserName.Text!="" && UserPermissions.AdministratorCount()==0){
-				if(MessageBox.Show(Lan.g(this,
-					"It is strongly recommended to have at least one provider with Security Administration permission.  Do you wish to continue anyway?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
-					return;
-				}
-				Permissions.DisableSecurity();
-			}
-			Providers.Cur.UserName=textUserName.Text;//if this is blank, then no 'user' exists
-			if(textPassword.Text!="*****")
-				Providers.Cur.Password=Passwords.EncryptPassword(textPassword.Text);
 			if(listFeeSched.SelectedIndex!=-1)
 				Providers.Cur.FeeSched=Defs.Short[(int)DefCat.FeeSchedNames][listFeeSched.SelectedIndex].DefNum;
 			Providers.Cur.Specialty=(DentalSpecialty)listSpecialty.SelectedIndex;
@@ -1006,7 +738,7 @@ namespace OpenDental{
 			if(DialogResult==DialogResult.OK)
 				return;
 			if(IsNew){
-				UserPermissions.DeleteAllForProv(Providers.Cur.ProvNum);
+				//UserPermissions.DeleteAllForProv(Providers.Cur.ProvNum);
 				ProviderIdents.DeleteAllForProv(Providers.Cur.ProvNum);
 				Providers.DeleteCur();
 			}

@@ -42,11 +42,7 @@ namespace OpenDental{
 		///<summary>No longer used since each state assigns a different ID.  Use the providerident instead which allows you to assign a different BCBS ID for each Payor ID.</summary>
 		public string BlueCrossIDOld;
 		///<summary>Signature on file</summary>
-		public bool SigOnFile;//
-		///<summary></summary>
-		public string Password;
-		///<summary></summary>
-		public string UserName;
+		public bool SigOnFile;
 		///<summary></summary>
 		public string MedicaidID;
 		///<summary>Color that shows in appointments as outline when highlighted.</summary>
@@ -97,11 +93,9 @@ namespace OpenDental{
 				ListLong[i].UsingTIN      = PIn.PBool  (table.Rows[i][15].ToString());
 				//ListLong[i].BlueCrossID = PIn.PString(table.Rows[i][16].ToString());
 				ListLong[i].SigOnFile     = PIn.PBool  (table.Rows[i][17].ToString());
-				ListLong[i].Password      = PIn.PString(table.Rows[i][18].ToString());
-				ListLong[i].UserName      = PIn.PString(table.Rows[i][19].ToString());
-				ListLong[i].MedicaidID    = PIn.PString(table.Rows[i][20].ToString());
-				ListLong[i].OutlineColor  = Color.FromArgb(PIn.PInt(table.Rows[i][21].ToString()));
-				ListLong[i].SchoolClassNum= PIn.PInt   (table.Rows[i][22].ToString());
+				ListLong[i].MedicaidID    = PIn.PString(table.Rows[i][18].ToString());
+				ListLong[i].OutlineColor  = Color.FromArgb(PIn.PInt(table.Rows[i][19].ToString()));
+				ListLong[i].SchoolClassNum= PIn.PInt   (table.Rows[i][20].ToString());
 				if(!ListLong[i].IsHidden) AL.Add(ListLong[i]);	
 			}
 			List=new Provider[AL.Count];
@@ -128,8 +122,6 @@ namespace OpenDental{
 				+",usingtin = '"      +POut.PBool  (Cur.UsingTIN)+"'"
 				//+",bluecrossid = '" +POut.PString(Cur.BlueCrossID)+"'"
 				+",sigonfile = '"     +POut.PBool  (Cur.SigOnFile)+"'"
-				+",password = '"      +POut.PString(Cur.Password)+"'"
-				+",username = '"      +POut.PString(Cur.UserName)+"'"
 				+",medicaidid = '"    +POut.PString(Cur.MedicaidID)+"'"
 				+",OutlineColor = '"  +POut.PInt   (Cur.OutlineColor.ToArgb())+"'"
 				+",SchoolClassNum = '"+POut.PInt   (Cur.SchoolClassNum)+"'"
@@ -141,7 +133,7 @@ namespace OpenDental{
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO provider (abbr,itemorder,lname,fname,mi,suffix,"
 				+"feesched,specialty,ssn,statelicense,deanum,issecondary,"
-				+"provcolor,ishidden,usingtin,sigonfile,password,username"
+				+"provcolor,ishidden,usingtin,sigonfile"
 				+",medicaidid,OutlineColor,SchoolClassNum) VALUES("
 				+"'"+POut.PString(Cur.Abbr)+"', "
 				+"'"+POut.PInt   (Cur.ItemOrder)+"', "
@@ -160,8 +152,6 @@ namespace OpenDental{
 				+"'"+POut.PBool  (Cur.UsingTIN)+"', "
 				//+"'"+POut.PString(Cur.BlueCrossID)+"', "
 				+"'"+POut.PBool  (Cur.SigOnFile)+"', "
-				+"'"+POut.PString(Cur.Password)+"', "			  
-				+"'"+POut.PString(Cur.UserName)+"', "
 				+"'"+POut.PString(Cur.MedicaidID)+"', "
 				+"'"+POut.PInt   (Cur.OutlineColor.ToArgb())+"', "
 				+"'"+POut.PInt   (Cur.SchoolClassNum)+"')";

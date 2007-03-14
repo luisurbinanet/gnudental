@@ -56,14 +56,29 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO perioexam (PatNum,ExamDate,ProvNum"
-				+") VALUES("
-				+"'"+POut.PInt   (Cur.PatNum)+"', "
+			if(Prefs.RandomKeys){
+				Cur.PerioExamNum=MiscData.GetKey("perioexam","PerioExamNum");
+			}
+			cmd.CommandText="INSERT INTO perioexam (";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="PerioExamNum,";
+			}
+			cmd.CommandText+="PatNum,ExamDate,ProvNum"
+				+") VALUES(";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="'"+POut.PInt(Cur.PerioExamNum)+"', ";
+			}
+			cmd.CommandText+=
+				 "'"+POut.PInt   (Cur.PatNum)+"', "
 				+"'"+POut.PDate  (Cur.ExamDate)+"', "
 				+"'"+POut.PInt   (Cur.ProvNum)+"')";
-			//MessageBox.Show(cmd.CommandText);
-			NonQ(true);
-			Cur.PerioExamNum=InsertID;
+			if(Prefs.RandomKeys){
+				NonQ();
+			}
+			else{
+ 				NonQ(true);
+				Cur.PerioExamNum=InsertID;
+			}
 		}
 
 		///<summary></summary>

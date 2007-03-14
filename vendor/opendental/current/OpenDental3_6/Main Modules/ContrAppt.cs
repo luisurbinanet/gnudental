@@ -534,9 +534,9 @@ namespace OpenDental{
 			this.butOther.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butOther.Location = new System.Drawing.Point(680, 478);
 			this.butOther.Name = "butOther";
-			this.butOther.Size = new System.Drawing.Size(118, 28);
+			this.butOther.Size = new System.Drawing.Size(92, 28);
 			this.butOther.TabIndex = 76;
-			this.butOther.Text = "Other Appts";
+			this.butOther.Text = "Make Appt";
 			this.butOther.Click += new System.EventHandler(this.butOther_Click);
 			// 
 			// panelCalendar
@@ -1529,7 +1529,14 @@ namespace OpenDental{
 							ProcCur=ProcList[i];
 							ProcOld=ProcCur.Copy();
 							ProcCur.AptNum=Appointments.Cur.AptNum;
-							ProcCur.Update(ProcOld);//recall synch not required.
+							try{
+								ProcCur.InsertOrUpdate(ProcOld,false);//recall synch not required.
+							}
+							catch(Exception ex){
+								MessageBox.Show(ex.Message);
+								return;//this won't happen. Just changing the apt num.
+							}
+							//ProcCur.Update(ProcOld);
 						}
 					}
 				}
@@ -2402,6 +2409,7 @@ namespace OpenDental{
 			RefreshModuleScreen();
 			SetInvalid();
 			Adjustment AdjustmentCur=new Adjustment();
+			AdjustmentCur.DateEntry=DateTime.Today;
 			AdjustmentCur.AdjDate=DateTime.Today;
 			AdjustmentCur.ProcDate=DateTime.Today;
 			AdjustmentCur.ProvNum=Appointments.Cur.ProvNum;
@@ -2412,6 +2420,9 @@ namespace OpenDental{
 		}
 
 		private void OnComplete_Click(){
+			if(!Security.IsAuthorized(Permissions.ProcComplCreate)){
+				return;
+			}
 			int thisIndex=GetIndex(ContrApptSingle.SelectedAptNum);
 			Appointments.Cur.AptStatus=ApptStatus.Complete;
 			//Procedures.SetDateFirstVisit(Appointments.Cur.AptDateTime.Date);//done when making appt instead
@@ -2419,6 +2430,7 @@ namespace OpenDental{
 			Appointments.UpdateCur();
 			RefreshModuleScreen();
 			SetInvalid();
+			SecurityLogs.MakeLogEntry(Permissions.ProcComplCreate,PatCur.GetNameLF()+" "+Appointments.Cur.AptDateTime.ToShortDateString());
 			//ContrApptSingle3[thisIndex].Info.MyApt.AptStatus=ApptStatus.Complete;
 			//ContrApptSingle3[thisIndex].Refresh();
 		}
@@ -2438,6 +2450,9 @@ namespace OpenDental{
 		}		
 
 		private void OnBlockEdit_Click(){
+			if(!Security.IsAuthorized(Permissions.Blockouts)){
+				return;
+			}
 			//not even visible if not right click on a blockout
 			Schedules.ConvertFromDefault(Appointments.DateSelected,ScheduleType.Blockout,0);
 			SchedListDay=Schedules.RefreshDay(Appointments.DateSelected);
@@ -2466,6 +2481,9 @@ namespace OpenDental{
 		}
 
 		private void OnBlockAdd_Click(){
+			if(!Security.IsAuthorized(Permissions.Blockouts)){
+				return;
+			}
 			Schedules.ConvertFromDefault(Appointments.DateSelected,ScheduleType.Blockout,0);
       Schedule SchedCur=new Schedule();
       SchedCur.SchedDate=Appointments.DateSelected;
@@ -2477,12 +2495,18 @@ namespace OpenDental{
 		}
 
 		private void OnBlockDefault_Click(){
+			if(!Security.IsAuthorized(Permissions.Blockouts)){
+				return;
+			}
 			Schedules.SetAllDefault(Appointments.DateSelected,ScheduleType.Blockout,0);
 			RefreshModuleScreen();
 			MsgBox.Show(this,"All blockouts for this date have been set to default values.");
 		}
 
 		private void OnBlockTypes_Click(){
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormDefinitions FormD=new FormDefinitions(DefCat.BlockoutTypes);
 			FormD.ShowDialog();
 			RefreshModuleScreen();
@@ -2543,7 +2567,7 @@ namespace OpenDental{
 			pd2.PrintPage+=new PrintPageEventHandler(this.pd2_PrintApptCard);
 			pd2.DefaultPageSettings.Margins=new Margins(0,0,0,0);
 			pd2.OriginAtMargins=true;//forces origin to upper left of actual page
-			if(Printers.SetPrinter(pd2,PrintSituation.Default)){
+			if(Printers.SetPrinter(pd2,PrintSituation.Postcard)){
 				pd2.Print();
 			}
 		}

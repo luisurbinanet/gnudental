@@ -1320,7 +1320,7 @@ ORDER BY adjdate DESC
 			if(  textDateFrom.errorProvider1.GetError(textDateFrom)!=""
 				|| textDateTo.errorProvider1.GetError(textDateTo)!=""
 				){
-				MessageBox.Show(Lan.g(this,"Please fix data entry errors first."));
+				MsgBox.Show(this,"Please fix data entry errors first.");
 				return;
 			}
 			if(listProv.SelectedIndices.Count==0){

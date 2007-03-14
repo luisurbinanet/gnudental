@@ -37,18 +37,33 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public void Insert(){
-			string command="INSERT INTO claimpayment (checkdate,checkamt,checknum,"
-				+"bankbranch,note,ClinicNum) VALUES("
-				+"'"+POut.PDate  (CheckDate)+"', "
+			if(Prefs.RandomKeys){
+				ClaimPaymentNum=MiscData.GetKey("claimpayment","ClaimPaymentNum");
+			}
+			string command= "INSERT INTO claimpayment (";
+			if(Prefs.RandomKeys){
+				command+="ClaimPaymentNum,";
+			}
+			command+="CheckDate,CheckAmt,CheckNum,"
+				+"BankBranch,Note,ClinicNum) VALUES(";
+			if(Prefs.RandomKeys){
+				command+="'"+POut.PInt(ClaimPaymentNum)+"', ";
+			}
+			command+=
+				 "'"+POut.PDate  (CheckDate)+"', "
 				+"'"+POut.PDouble(CheckAmt)+"', "
 				+"'"+POut.PString(CheckNum)+"', "
 				+"'"+POut.PString(BankBranch)+"', "
 				+"'"+POut.PString(Note)+"', "
 				+"'"+POut.PInt   (ClinicNum)+"')";
-			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command,true);
-			ClaimPaymentNum=dcon.InsertID;
+			if(Prefs.RandomKeys){
+				dcon.NonQ(command);
+			}
+			else{
+ 				dcon.NonQ(command,true);
+				ClaimPaymentNum=dcon.InsertID;
+			}
 		}
 
 		///<summary></summary>

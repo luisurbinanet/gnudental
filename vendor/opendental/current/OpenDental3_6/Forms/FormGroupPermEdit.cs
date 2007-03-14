@@ -6,23 +6,25 @@ using System.Windows.Forms;
 
 namespace OpenDental{
 ///<summary></summary>
-	public class FormPermissionEdit : System.Windows.Forms.Form{
+	public class FormGroupPermEdit : System.Windows.Forms.Form{
 		private OpenDental.UI.Button butCancel;
 		private OpenDental.UI.Button butOK;
 		private System.Windows.Forms.TextBox textName;
 		private System.Windows.Forms.Label label10;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.CheckBox checkRequire;
 		private OpenDental.ValidDate textDate;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.TextBox textDays;
-		private Permission Cur;
+		private GroupPermission Cur;
+		private System.Windows.Forms.GroupBox groupBox1;
+		///<summary></summary>
+		public bool IsNew;
 
 		private System.ComponentModel.Container components = null;
 
 		///<summary></summary>
-		public FormPermissionEdit(Permission cur){
+		public FormGroupPermEdit(GroupPermission cur){
 			InitializeComponent();
 			Lan.F(this);
 			Cur=cur.Copy();
@@ -45,12 +47,13 @@ namespace OpenDental{
 			this.butOK = new OpenDental.UI.Button();
 			this.textName = new System.Windows.Forms.TextBox();
 			this.label10 = new System.Windows.Forms.Label();
-			this.checkRequire = new System.Windows.Forms.CheckBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
 			this.textDate = new OpenDental.ValidDate();
 			this.label3 = new System.Windows.Forms.Label();
 			this.textDays = new System.Windows.Forms.TextBox();
+			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// butCancel
@@ -61,7 +64,7 @@ namespace OpenDental{
 			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.Location = new System.Drawing.Point(464, 218);
+			this.butCancel.Location = new System.Drawing.Point(510, 214);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 37;
@@ -75,7 +78,7 @@ namespace OpenDental{
 			this.butOK.Autosize = true;
 			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butOK.Location = new System.Drawing.Point(464, 186);
+			this.butOK.Location = new System.Drawing.Point(510, 182);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 36;
@@ -84,7 +87,7 @@ namespace OpenDental{
 			// 
 			// textName
 			// 
-			this.textName.Location = new System.Drawing.Point(102, 12);
+			this.textName.Location = new System.Drawing.Point(151, 12);
 			this.textName.MaxLength = 100;
 			this.textName.Name = "textName";
 			this.textName.ReadOnly = true;
@@ -94,120 +97,113 @@ namespace OpenDental{
 			// 
 			// label10
 			// 
-			this.label10.Location = new System.Drawing.Point(62, 14);
+			this.label10.Location = new System.Drawing.Point(54, 15);
 			this.label10.Name = "label10";
-			this.label10.Size = new System.Drawing.Size(38, 14);
+			this.label10.Size = new System.Drawing.Size(95, 14);
 			this.label10.TabIndex = 43;
-			this.label10.Text = "Name";
+			this.label10.Text = "Type";
 			this.label10.TextAlign = System.Drawing.ContentAlignment.TopRight;
-			// 
-			// checkRequire
-			// 
-			this.checkRequire.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkRequire.Location = new System.Drawing.Point(0, 46);
-			this.checkRequire.Name = "checkRequire";
-			this.checkRequire.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-			this.checkRequire.Size = new System.Drawing.Size(116, 18);
-			this.checkRequire.TabIndex = 44;
-			this.checkRequire.Text = "Require Password";
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(38, 80);
+			this.label1.Location = new System.Drawing.Point(7, 19);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(64, 23);
+			this.label1.Size = new System.Drawing.Size(121, 18);
 			this.label1.TabIndex = 46;
-			this.label1.Text = "Before Date";
+			this.label1.Text = "Date";
+			this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(36, 112);
+			this.label2.Location = new System.Drawing.Point(3, 46);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(66, 16);
+			this.label2.Size = new System.Drawing.Size(126, 16);
 			this.label2.TabIndex = 47;
-			this.label2.Text = "Before Days";
+			this.label2.Text = "Days";
+			this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// textDate
 			// 
-			this.textDate.Location = new System.Drawing.Point(102, 78);
+			this.textDate.Location = new System.Drawing.Point(130, 19);
 			this.textDate.Name = "textDate";
 			this.textDate.TabIndex = 50;
 			this.textDate.Text = "";
+			this.textDate.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textDate_KeyDown);
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(104, 138);
+			this.label3.Location = new System.Drawing.Point(87, 77);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(320, 76);
+			this.label3.Size = new System.Drawing.Size(320, 40);
 			this.label3.TabIndex = 52;
-			this.label3.Text = "(Set to 0 to always check password.  If you only want to take date into considera" +
-				"tion, then Days should be very large.  Perhaps 1000)";
+			this.label3.Text = "For instance, if you set days to 1, then user will only have permission if the da" +
+				"te of the item is today";
 			// 
 			// textDays
 			// 
-			this.textDays.Location = new System.Drawing.Point(102, 109);
+			this.textDays.Location = new System.Drawing.Point(130, 45);
 			this.textDays.Name = "textDays";
 			this.textDays.Size = new System.Drawing.Size(46, 20);
 			this.textDays.TabIndex = 0;
 			this.textDays.Text = "";
-			this.textDays.Validating += new System.ComponentModel.CancelEventHandler(this.textDays_Validating);
+			this.textDays.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textDays_KeyDown);
 			// 
-			// FormPermissionEdit
+			// groupBox1
+			// 
+			this.groupBox1.Controls.Add(this.textDate);
+			this.groupBox1.Controls.Add(this.textDays);
+			this.groupBox1.Controls.Add(this.label1);
+			this.groupBox1.Controls.Add(this.label2);
+			this.groupBox1.Controls.Add(this.label3);
+			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.groupBox1.Location = new System.Drawing.Point(21, 45);
+			this.groupBox1.Name = "groupBox1";
+			this.groupBox1.Size = new System.Drawing.Size(443, 126);
+			this.groupBox1.TabIndex = 53;
+			this.groupBox1.TabStop = false;
+			this.groupBox1.Text = "Only if newer than";
+			// 
+			// FormGroupPermEdit
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
-			this.ClientSize = new System.Drawing.Size(554, 254);
-			this.Controls.Add(this.textDays);
-			this.Controls.Add(this.label3);
-			this.Controls.Add(this.textDate);
+			this.ClientSize = new System.Drawing.Size(600, 250);
+			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.textName);
-			this.Controls.Add(this.label2);
-			this.Controls.Add(this.label1);
-			this.Controls.Add(this.checkRequire);
 			this.Controls.Add(this.label10);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
-			this.Name = "FormPermissionEdit";
+			this.Name = "FormGroupPermEdit";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "Edit Permission";
-			this.Load += new System.EventHandler(this.FormPermissionEdit_Load);
+			this.Text = "Edit Group Permission";
+			this.Load += new System.EventHandler(this.FormGroupPermEdit_Load);
+			this.groupBox1.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
 		#endregion
 
-		private void FormPermissionEdit_Load(object sender, System.EventArgs e) {
-			switch(Cur.Name){
-				default:
-					textDate.Enabled=false;
-					textDays.Enabled=false;
-					break;
-				case "Procedure Completed Edit":
-				case "Prescription Edit":
-				case "Claims Sent Edit":
-				case "Adjustment Edit":
-				case "Payment Edit":
-					textDate.Enabled=true;
-					textDays.Enabled=true;
-					break;
-			}
-			textName.Text=Cur.Name;
-			if(Cur.BeforeDate.Date.Year < 1890){
+		private void FormGroupPermEdit_Load(object sender, System.EventArgs e) {
+			textName.Text=GroupPermissions.GetDesc(Cur.PermType);
+			if(Cur.NewerDate.Year<1880){
 				textDate.Text="";
 			}
 			else{
-				textDate.Text=Cur.BeforeDate.ToShortDateString();
+				textDate.Text=Cur.NewerDate.ToShortDateString();
 			}
-			textDays.Text=Cur.BeforeDays.ToString();//defaults to zero: always check.
-			//If you only want to take date into consideration, days should be very large. This is consistent.
-			checkRequire.Checked=Cur.RequiresPassword;
+			if(Cur.NewerDays==0){
+				textDays.Text="";
+			}
+			else{
+				textDays.Text=Cur.NewerDays.ToString();
+			}
 		}
 
-		private void textDays_Validating(object sender, System.ComponentModel.CancelEventArgs e) {
+		/*private void textDays_Validating(object sender, System.ComponentModel.CancelEventArgs e) {
 			if(textDays.Text==""){
 				textDays.Text="0";
 				return;
@@ -224,25 +220,40 @@ namespace OpenDental{
 				e.Cancel=true;
 				return;
 			}
+		}*/
+
+		private void textDate_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e) {
+			textDays.Text="";
+		}
+
+		private void textDays_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e) {
+			textDate.Text="";
+			textDate.errorProvider1.SetError(textDate,"");
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			if(//textDays.errorProvider1.GetError(textDays)!=""
-				textDate.errorProvider1.GetError(textDate)!=""
+			if(textDate.errorProvider1.GetError(textDate)!=""
 				){
-				MessageBox.Show(Lan.g(this,"Please fix data entry errors first."));
+				MsgBox.Show(this,"Please fix data entry errors first.");
 				return;
 			}
-			Cur.BeforeDays=PIn.PInt(textDays.Text);
-			Cur.RequiresPassword=checkRequire.Checked;
-			Cur.BeforeDate=PIn.PDate(textDate.Text);
-			Cur.Update();
+			Cur.NewerDays=PIn.PInt (textDays.Text);
+			Cur.NewerDate=PIn.PDate(textDate.Text);
+			try{
+				Cur.InsertOrUpdate(IsNew);
+			}
+			catch(Exception ex){
+				MessageBox.Show(ex.Message);
+				return;
+			}
 			DialogResult=DialogResult.OK;
 		}
 
 		private void butCancel_Click(object sender, System.EventArgs e) {
 			DialogResult=DialogResult.Cancel;
 		}
+
+		
 
 		
 

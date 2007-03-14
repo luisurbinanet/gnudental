@@ -26,7 +26,7 @@ namespace OpenDental{
 		private bool changed;
 		///<summary>Gives the DefCat for each item in the list.</summary>
 		private DefCat[] lookupCat;
-		private User user;
+		//private User user;
 
 		///<summary></summary>
 		public FormDefinitions(DefCat selectedCat){
@@ -256,14 +256,14 @@ namespace OpenDental{
 		#endregion
 
 		private void FormDefinitions_Load(object sender, System.EventArgs e) {
-			if(Permissions.AuthorizationRequired("Definitions")){
+			/*if(PermissionsOld.AuthorizationRequired("Definitions")){
 				user=Users.Authenticate("Definitions");
 				if(!UserPermissions.IsAuthorized("Definitions",user)){
 					MsgBox.Show(this,"You do not have permission for this feature");
 					DialogResult=DialogResult.Cancel;
 					return;
 				}	
-			}
+			}*/
 			lookupCat=new DefCat[listCategory.Items.Count];
 			lookupCat[0]=DefCat.AccountColors;
 			lookupCat[1]=DefCat.AdjTypes;
@@ -593,9 +593,9 @@ namespace OpenDental{
 				DataValid.SetInvalid(InvalidTypes.Defs);
 			}
 			Defs.IsSelected=false;
-			if(user!=null){
-				SecurityLogs.MakeLogEntry("Definitions","Altered Definitions",user);
-			}
+			//if(user!=null){
+				//SecurityLogs.MakeLogEntry("Definitions","Altered Definitions",user);
+			//}
 		}
 
 

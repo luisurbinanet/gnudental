@@ -21,16 +21,31 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public void Insert(){
-			string command="INSERT INTO quickpastenote (QuickPasteCatNum,ItemOrder,Note,Abbreviation) "
-				+"VALUES ("
-				+"'"+POut.PInt   (QuickPasteCatNum)+"', "
+			if(Prefs.RandomKeys){
+				QuickPasteNoteNum=MiscData.GetKey("quickpastenote","QuickPasteNoteNum");
+			}
+			string command= "INSERT INTO quickpastenote (";
+			if(Prefs.RandomKeys){
+				command+="QuickPasteNoteNum,";
+			}
+			command+="QuickPasteCatNum,ItemOrder,Note,Abbreviation) VALUES(";
+			if(Prefs.RandomKeys){
+				command+="'"+POut.PInt(QuickPasteNoteNum)+"', ";
+			}
+			command+=
+				 "'"+POut.PInt   (QuickPasteCatNum)+"', "
 				+"'"+POut.PInt   (ItemOrder)+"', "
 				+"'"+POut.PString(Note)+"', "
 				+"'"+POut.PString(Abbreviation)+"')";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command,true);
-			QuickPasteNoteNum=dcon.InsertID;
+ 			if(Prefs.RandomKeys){
+				dcon.NonQ(command);
+			}
+			else{
+ 				dcon.NonQ(command,true);
+				QuickPasteNoteNum=dcon.InsertID;
+			}
 		}
 
 		///<summary></summary>

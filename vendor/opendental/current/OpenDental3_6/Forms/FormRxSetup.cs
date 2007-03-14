@@ -13,7 +13,7 @@ namespace OpenDental{
 		private OpenDental.UI.Button butAdd;
 		private OpenDental.UI.Button butAdd2;
 		private OpenDental.UI.Button butClose;// Required designer variable.
-		private User user;
+		//private User user;
 
 		///<summary></summary>
 		public FormRxSetup(){
@@ -143,7 +143,7 @@ namespace OpenDental{
 		#endregion
 
 		private void FormRxSetup_Load(object sender, System.EventArgs e) {
-			if(Permissions.AuthorizationRequired("Prescription Setup")){
+			/*if(PermissionsOld.AuthorizationRequired("Prescription Setup")){
 				user=Users.Authenticate("Prescription Setup");
 				if(user==null){
 					DialogResult=DialogResult.Cancel;
@@ -154,7 +154,7 @@ namespace OpenDental{
 					DialogResult=DialogResult.Cancel;
 					return;
 				}	
-			}
+			}*/
 			FillMain();
 		}
 
@@ -226,7 +226,7 @@ namespace OpenDental{
 		}
 
 		private void FormRxSetup_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-			SecurityLogs.MakeLogEntry("Prescription Setup","Altered Prescription Setup",user);
+			//SecurityLogs.MakeLogEntry("Prescription Setup","Altered Prescription Setup",user);
 		}
 
 	}

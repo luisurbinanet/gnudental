@@ -162,13 +162,24 @@ namespace OpenDental{
 			return list;
 		}
 
-		///<summary>Also fills AptNum with the insertID.</summary>
+		///<summary></summary>
 		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO appointment (patnum,aptstatus, "
+			if(Prefs.RandomKeys){
+				Cur.AptNum=MiscData.GetKey("appointment","AptNum");
+			}
+			cmd.CommandText="INSERT INTO appointment (";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="AptNum,";
+			}
+			cmd.CommandText+="patnum,aptstatus, "
 				+"pattern,confirmed,addtime,op,note,provnum,"
 				+"provhyg,aptdatetime,nextaptnum,unschedstatus,lab,isnewpatient,procdescript,"
-				+"Assistant,InstructorNum,SchoolClassNum,SchoolCourseNum,GradePoint) VALUES("
-				+"'"+POut.PInt   (Cur.PatNum)+"', "
+				+"Assistant,InstructorNum,SchoolClassNum,SchoolCourseNum,GradePoint) VALUES(";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="'"+POut.PInt(Cur.AptNum)+"', ";
+			}
+			cmd.CommandText+=
+				 "'"+POut.PInt   (Cur.PatNum)+"', "
 				+"'"+POut.PInt   ((int)Cur.AptStatus)+"', "
 				+"'"+POut.PString(Cur.Pattern)+"', "
 				+"'"+POut.PInt   (Cur.Confirmed)+"', "
@@ -188,9 +199,13 @@ namespace OpenDental{
 				+"'"+POut.PInt   (Cur.SchoolClassNum)+"', "
 				+"'"+POut.PInt   (Cur.SchoolCourseNum)+"', "
 				+"'"+POut.PFloat (Cur.GradePoint)+"')";
-			NonQ(true);
-			Cur.AptNum=InsertID;
-			//MessageBox.Show(Cur.AptNum.ToString());
+			if(Prefs.RandomKeys){
+				NonQ();
+			}
+			else{
+ 				NonQ(true);
+				Cur.AptNum=InsertID;
+			}
 		}
 
 		///<summary>Updates only the changed columns and returns the number of rows affected.</summary>

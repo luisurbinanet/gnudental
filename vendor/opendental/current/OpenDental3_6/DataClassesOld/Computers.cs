@@ -18,13 +18,29 @@ namespace OpenDental{
 
 			///<summary>ONLY use this if compname is not already present</summary>
 		public void Insert(){
-			string command= "INSERT INTO computer (compname"
-				+") VALUES("
-				+"'"+POut.PString(CompName)+"')";
+			if(Prefs.RandomKeys){
+				ComputerNum=MiscData.GetKey("computer","ComputerNum");
+			}
+			string command= "INSERT INTO computer (";
+			if(Prefs.RandomKeys){
+				command+="ComputerNum,";
+			}
+			command+="CompName"
+				+") VALUES(";
+			if(Prefs.RandomKeys){
+				command+="'"+POut.PInt(ComputerNum)+"', ";
+			}
+			command+=
+				"'"+POut.PString(CompName)+"')";
 				//+"'"+POut.PString(PrinterName)+"')";
 			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command,true);
-			ComputerNum=dcon.InsertID;
+			if(Prefs.RandomKeys){
+				dcon.NonQ(command);
+			}
+			else{
+ 				dcon.NonQ(command,true);
+				ComputerNum=dcon.InsertID;
+			}
 		}
 
 		///<summary></summary>

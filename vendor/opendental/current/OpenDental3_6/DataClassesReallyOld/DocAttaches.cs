@@ -42,12 +42,27 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO docattach (PatNum, DocNum) VALUES ("
-				+"'"+POut.PInt   (Cur.PatNum)+"', "
+			if(Prefs.RandomKeys){
+				Cur.DocAttachNum=MiscData.GetKey("docattach","DocAttachNum");
+			}
+			cmd.CommandText="INSERT INTO docattach (";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="DocAttachNum,";
+			}
+			cmd.CommandText+="PatNum, DocNum) VALUES(";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="'"+POut.PInt(Cur.DocAttachNum)+"', ";
+			}
+			cmd.CommandText+=
+				 "'"+POut.PInt   (Cur.PatNum)+"', "
 				+"'"+POut.PInt   (Cur.DocNum)+"')";
-			//MessageBox.Show(cmd.CommandText);
-			NonQ();
-			//Cur.DocAttachNum=InsertID;
+			if(Prefs.RandomKeys){
+				NonQ();
+			}
+			else{
+ 				NonQ(true);
+				Cur.DocAttachNum=InsertID;
+			}
 		}
 
 		///<summary></summary>

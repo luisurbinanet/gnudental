@@ -125,15 +125,26 @@ namespace OpenDental{
 
 		///<summary>Also fills PlanNum from db.</summary>
 		public void Insert(){
-			string command= "INSERT INTO insplan (subscriber, carrier, "
-				+"dateeffective,dateterm,phone,groupname,groupnum,address,address2,city,state,zip,"
-				+"nosendelect,electid,employer,annualmax,renewmonth,deductible,"
-				+"deductwaivprev,orthomax,"
-				+"flotoage,plannote,misstoothexcl,majorwait,feesched,"
-				+"releaseinfo,assignben,plantype,claimformnum,usealtcode,"
-				+"claimsuseucr,iswrittenoff,copayfeesched,subscriberid,"
-				+"EmployerNum,CarrierNum,AllowedFeeSched,TrojanID) VALUES("
-				+"'"+POut.PInt   (Subscriber)+"', "
+			if(Prefs.RandomKeys){
+				PlanNum=MiscData.GetKey("insplan","PlanNum");
+			}
+			string command= "INSERT INTO insplan (";
+			if(Prefs.RandomKeys){
+				command+="PlanNum,";
+			}
+			command+="Subscriber,Carrier,"
+				+"DateEffective,DateTerm,Phone,GroupName,GroupNum,Address,Address2,City,State,Zip,"
+				+"NoSendElect,ElectID,Employer,AnnualMax,RenewMonth,Deductible,"
+				+"DeductWaivPrev,OrthoMax,"
+				+"FlotoAge,PlanNote,MissToothExcl,MajorWait,FeeSched,"
+				+"ReleaseInfo,AssignBen,PlanType,ClaimFormNum,UseAltCode,"
+				+"ClaimsUseUCR,IsWrittenOff,CopayFeeSched,SubscriberID,"
+				+"EmployerNum,CarrierNum,AllowedFeeSched,TrojanID) VALUES(";
+			if(Prefs.RandomKeys){
+				command+="'"+POut.PInt(PlanNum)+"', ";
+			}
+			command+=
+				 "'"+POut.PInt   (Subscriber)+"', "
 				+"'"+POut.PString(Carrier)+"', "
 				+"'"+POut.PDate  (DateEffective)+"', "
 				+"'"+POut.PDate  (DateTerm)+"', "
@@ -172,8 +183,13 @@ namespace OpenDental{
 				+"'"+POut.PInt   (AllowedFeeSched)+"', "
 				+"'"+POut.PString(TrojanID)+"')";
 			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command,true);
-			PlanNum=dcon.InsertID;
+			if(Prefs.RandomKeys){
+				dcon.NonQ(command);
+			}
+			else{
+ 				dcon.NonQ(command,true);
+				PlanNum=dcon.InsertID;
+			}
 		}
 
 		///<summary></summary>

@@ -12,20 +12,44 @@ namespace OpenDental{
 		public int ClinicNum;
 		///<summary></summary>
 		public string Description;
+		///<summary></summary>
+		public string Address;
+		///<summary>Second line of address.</summary>
+		public string Address2;
+		///<summary></summary>
+		public string City;
+		///<summary>2 char in the US.</summary>
+		public string State;
+		///<summary></summary>
+		public string Zip;
+		///<summary>Includes any punctuation.</summary>
+		public string Phone;
 
-		//<summary>Returns a copy of this InsPlan.</summary>
-		//public InsPlan Copy(){
-		//	InsPlan p=new InsPlan();
-		//	p.PlanNum=PlanNum;
-		//	p.Subscriber=Subscriber;
-		//	return p;
-		//}
+		///<summary>Returns a copy of this Clinic.</summary>
+		public Clinic Copy(){
+			Clinic c=new Clinic();
+			c.ClinicNum=ClinicNum;
+			c.Description=Description;
+			c.Address=Address;
+			c.Address2=Address2;
+			c.City=City;
+			c.State=State;
+			c.Zip=Zip;
+			c.Phone=Phone;
+			return c;
+		}
 
 		///<summary></summary>
 		public void Insert(){
-			string command= "INSERT INTO clinic (description"
+			string command= "INSERT INTO clinic (Description,Address,Address2,City,State,Zip,Phone"
 				+") VALUES("
-				+"'"+POut.PString(Description)+"')";
+				+"'"+POut.PString(Description)+"', "
+				+"'"+POut.PString(Address)+"', "
+				+"'"+POut.PString(Address2)+"', "
+				+"'"+POut.PString(City)+"', "
+				+"'"+POut.PString(State)+"', "
+				+"'"+POut.PString(Zip)+"', "
+				+"'"+POut.PString(Phone)+"')";
 			DataConnection dcon=new DataConnection();
  			dcon.NonQ(command,true);
 			ClinicNum=dcon.InsertID;
@@ -34,7 +58,13 @@ namespace OpenDental{
 		///<summary></summary>
 		public void Update(){
 			string command= "UPDATE clinic SET " 
-				+ "Description = '"     +POut.PString(Description)+"'"
+				+ "Description = '"+POut.PString(Description)+"'"
+				+ ",Address = '"    +POut.PString(Address)+"'"
+				+ ",Address2 = '"   +POut.PString(Address2)+"'"
+				+ ",City = '"       +POut.PString(City)+"'"
+				+ ",State = '"      +POut.PString(State)+"'"
+				+ ",Zip = '"        +POut.PString(Zip)+"'"
+				+ ",Phone = '"      +POut.PString(Phone)+"'"
 				+" WHERE ClinicNum = '" +POut.PInt(ClinicNum)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();

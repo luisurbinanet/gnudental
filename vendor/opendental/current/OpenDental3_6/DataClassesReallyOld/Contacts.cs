@@ -53,15 +53,32 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO contact (lname,fname,wkphone,fax,category,"
-				+"notes) VALUES("
-				+"'"+POut.PString(Cur.LName)+"', "
+			if(Prefs.RandomKeys){
+				Cur.ContactNum=MiscData.GetKey("contact","ContactNum");
+			}
+			cmd.CommandText="INSERT INTO contact (";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="ContactNum,";
+			}
+			cmd.CommandText+="LName,FName,WkPhone,Fax,Category,"
+				+"Notes) VALUES(";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="'"+POut.PInt(Cur.ContactNum)+"', ";
+			}
+			cmd.CommandText+=
+				 "'"+POut.PString(Cur.LName)+"', "
 				+"'"+POut.PString(Cur.FName)+"', "
 				+"'"+POut.PString(Cur.WkPhone)+"', "
 				+"'"+POut.PString(Cur.Fax)+"', "
 				+"'"+POut.PInt   (Cur.Category)+"', "
 				+"'"+POut.PString(Cur.Notes)+"')";
-			NonQ(false);
+			if(Prefs.RandomKeys){
+				NonQ();
+			}
+			else{
+ 				NonQ(true);
+				Cur.ContactNum=InsertID;
+			}
 		}
 
 		///<summary></summary>

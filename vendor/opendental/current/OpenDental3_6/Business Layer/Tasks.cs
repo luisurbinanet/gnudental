@@ -64,9 +64,20 @@ namespace OpenDental{
 
 		///<summary></summary>
 		private void Insert(){
-			string command= "INSERT INTO task (TaskListNum,DateTask,KeyNum,Descript,TaskStatus,"
-				+"IsRepeating,DateType,FromNum,ObjectType) VALUES("
-				+"'"+POut.PInt   (TaskListNum)+"', "
+			if(Prefs.RandomKeys){
+				TaskNum=MiscData.GetKey("task","TaskNum");
+			}
+			string command= "INSERT INTO task (";
+			if(Prefs.RandomKeys){
+				command+="TaskNum,";
+			}
+			command+="TaskListNum,DateTask,KeyNum,Descript,TaskStatus,"
+				+"IsRepeating,DateType,FromNum,ObjectType) VALUES(";
+			if(Prefs.RandomKeys){
+				command+="'"+POut.PInt(TaskNum)+"', ";
+			}
+			command+=
+				 "'"+POut.PInt   (TaskListNum)+"', "
 				+"'"+POut.PDate  (DateTask)+"', "
 				+"'"+POut.PInt   (KeyNum)+"', "
 				+"'"+POut.PString(Descript)+"', "
@@ -76,8 +87,13 @@ namespace OpenDental{
 				+"'"+POut.PInt   (FromNum)+"', "
 				+"'"+POut.PInt   ((int)ObjectType)+"')";
 			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command,true);
-			TaskNum=dcon.InsertID;
+ 			if(Prefs.RandomKeys){
+				dcon.NonQ(command);
+			}
+			else{
+ 				dcon.NonQ(command,true);
+				TaskNum=dcon.InsertID;
+			}
 		}
 
 		///<summary></summary>

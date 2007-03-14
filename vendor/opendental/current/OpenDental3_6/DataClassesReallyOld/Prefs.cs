@@ -26,6 +26,13 @@ namespace OpenDental{
 		public static Pref Cur;
 		//private string DataBaseVersion=Application.ProductVersion;//was "1.0.0";
 
+		///<summary>This property is just a shortcut to this pref to make typing faster.  This pref is used a lot.</summary>
+		public static bool RandomKeys{
+			get{
+				return GetBool("RandomPrimaryKeys");
+			}
+		}
+
 		///<summary>This ONLY runs when first opening the program.  Gets run early in the sequence. Returns false if the program should exit.</summary>
 		public static bool CheckMySqlVersion(){
 			string command="SELECT @@version";
@@ -129,8 +136,13 @@ namespace OpenDental{
 			}
 			if(storedVersion>currentVersion){
 				if(File.Exists(GetString("DocPath")+"Setup.exe")){
-					if(MessageBox.Show("A newer version has been installed on at least one computer.  The setup program will now be launched.","",MessageBoxButtons.OKCancel)
-						==DialogResult.Cancel)
+					if(MessageBox.Show("You are attempting to run version "+currentVersion.ToString(3)+",\r\n"
+						+"But the database "+FormChooseDatabase.Database+"\r\n"
+						+"is already using version "+storedVersion.ToString(3)+".\r\n"
+						+"A newer version must have already been installed on at least one computer.\r\n"  
+						+"The setup program stored in your A to Z folder will now be launched.\r\n"
+						+"Or, if you hit Cancel, then you will have the option to download again."
+						,"",MessageBoxButtons.OKCancel)==DialogResult.Cancel)
 					{
 						if(MessageBox.Show("Download again?","",MessageBoxButtons.OKCancel)
 							==DialogResult.OK)

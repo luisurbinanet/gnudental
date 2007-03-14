@@ -640,7 +640,13 @@ namespace OpenDental{
 				ProcCur.ProvNum=PatCur.PriProv;
 				//Procedures.Cur.Dx=
 				//nextaptnum
-				ProcCur.Insert();//no recall synch required
+				try{
+					ProcCur.InsertOrUpdate(null,true);//no recall synch required
+				}
+				catch(Exception ex){
+					MessageBox.Show(ex.Message);
+					return;//this won't happen. Just treatment planning
+				}
 				ProcCur.ComputeEstimates(PatCur.PatNum,PatCur.PriPlanNum
 					,PatCur.SecPlanNum,new ClaimProc[0],false,PatCur,PlanList);
 			}

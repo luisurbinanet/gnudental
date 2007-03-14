@@ -455,7 +455,7 @@ namespace OpenDental{
 						vScrollBar1.Enabled=true;
 						vScrollBar1.Minimum=1;
 						vScrollBar1.Maximum=panelTable.Height+2;
-							vScrollBar1.LargeChange=panelScroll.Height;
+						vScrollBar1.LargeChange=panelScroll.Height;
 						vScrollBar1.SmallChange=3*14;//(3 rows)
 						if(panelTable.Height==0)//vScrollBar.Value cannot=0
 							vScrollBar1.Value=1;
@@ -772,10 +772,12 @@ namespace OpenDental{
 			int myCol=0;
 			int myRow=0;
 			for (int i=0;i<this.MaxCols;i++){
-				if (mouseDownPosition.X>this.colPos[i]) myCol=i;
+				if(mouseDownPosition.X>this.colPos[i])
+					myCol=i;
 			}
 			for (int i=0;i<this.MaxRows;i++){
-				if (mouseDownPosition.Y>this.rowPos[i]) myRow=i;
+				if (mouseDownPosition.Y>this.rowPos[i]) 
+					myRow=i;
 			}
 			switch(selectionMode){
 				case SelectionMode.None:

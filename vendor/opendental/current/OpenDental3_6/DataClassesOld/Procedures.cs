@@ -66,6 +66,7 @@ namespace OpenDental{
 				List[i].DateOriginalProsth= PIn.PDate(table.Rows[i][23].ToString());
 				List[i].ClaimNote		    = PIn.PString(table.Rows[i][24].ToString());
 				List[i].DateLocked	    = PIn.PDate  (table.Rows[i][25].ToString());
+				List[i].DateEntryC      = PIn.PDate  (table.Rows[i][26].ToString());
 			}
 			return List;
 		}
@@ -288,7 +289,7 @@ namespace OpenDental{
  			dcon.NonQ(command);
 		}
 
-		///<summary>Loops through each proc. Does not add notes to a procedure that already has notes.</summary>
+		///<summary>Loops through each proc. Does not add notes to a procedure that already has notes. Used twice, security checked in both places before calling this.</summary>
 		public static void SetCompleteInAppt(Appointment apt,Patient pat,InsPlan[] PlanList){
 			Procedure[] ProcList=Procedures.Refresh(pat.PatNum);
 			ClaimProc[] ClaimProcList=ClaimProcs.Refresh(pat.PatNum);
@@ -311,6 +312,9 @@ namespace OpenDental{
 				}
 				ProcList[i].ProcStatus=ProcStat.C;
 				ProcList[i].ProcDate=apt.AptDateTime.Date;
+				if(oldProc.ProcStatus!=ProcStat.C){
+					ProcList[i].DateEntryC=DateTime.Now;//this triggers it to set to server time NOW().
+				}
 				ProcList[i].PlaceService=(PlaceOfService)Prefs.GetInt("DefaultProcedurePlaceService");
 				//if a note already exists, then don't add more. This was by special request.
 				if(ProcList[i].ProcNote==""){
@@ -327,7 +331,13 @@ namespace OpenDental{
 				else{//same provider for every procedure
 					ProcList[i].ProvNum=apt.ProvNum;
 				}
-				ProcList[i].Update(oldProc);
+				try{
+					ProcList[i].InsertOrUpdate(oldProc,false);
+				}
+				catch(Exception ex){
+					MessageBox.Show(ex.Message);
+					continue;
+				}
 				ProcList[i].ComputeEstimates(pat.PatNum,pat.PriPlanNum
 					,pat.SecPlanNum,ClaimProcList,false,pat,PlanList);
 			}

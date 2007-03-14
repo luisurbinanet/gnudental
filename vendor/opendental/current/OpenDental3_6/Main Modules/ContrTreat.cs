@@ -1197,7 +1197,14 @@ namespace OpenDental{
 					ProcCur.Priority=0;
 				else
 					ProcCur.Priority=Defs.Short[(int)DefCat.TxPriorities][clickedRow-1].DefNum;
-				ProcCur.Update(ProcOld);//no recall synch required
+				try{
+					ProcCur.InsertOrUpdate(ProcOld,false);//no recall synch required
+				}
+				catch(Exception ex){
+					MessageBox.Show(ex.Message);
+					continue;
+				}
+				//ProcCur.Update(ProcOld);
 			}
 			ModuleSelected(PatCur.PatNum);
 		}
@@ -1603,7 +1610,14 @@ namespace OpenDental{
 				procCur.ProcFee=Fees.GetAmount0(procCur.ADACode,Fees.GetFeeSched(PatCur,PlanList));
 				procCur.ComputeEstimates(PatCur.PatNum,PatCur.PriPlanNum
 					,PatCur.SecPlanNum,ClaimProcList,false,PatCur,PlanList);
-				procCur.Update(procOld);//no recall synch required 
+				try{
+					procCur.InsertOrUpdate(procOld,false);//no recall synch required 
+				}
+				catch(Exception ex){
+					MessageBox.Show(ex.Message);
+					continue;
+				}
+				//procCur.Update(procOld);
       }
       ModuleSelected(PatCur.PatNum);
 		}

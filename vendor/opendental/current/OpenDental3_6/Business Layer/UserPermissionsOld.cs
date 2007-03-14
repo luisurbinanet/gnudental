@@ -1,4 +1,4 @@
-using System;
+/*using System;
 using System.Collections;
 using System.Data;
 using System.Windows.Forms;
@@ -54,18 +54,14 @@ namespace OpenDental{
 		}
 
 
-	}
+	}*/
 
 	/*=========================================================================================
 	=================================== class UserPermissions ==========================================*/
-  ///<summary></summary>
+  /*///<summary></summary>
 	public class UserPermissions:DataClass{
-		//<summary></summary>
-		//public static UserPermission Cur;
 		///<summary>All user permissions for all users.</summary>
 		private static UserPermission[] List;
-		//<summary>user permissions for a single user</summary>
-		//public static UserPermission[] ListForUser;
 
 		///<summary>Gets all userpermissions for all users</summary>
 		public static void Refresh(){
@@ -141,31 +137,6 @@ namespace OpenDental{
 			return table.Rows.Count;
 		}
 
-		/*public static void ResetPassword(){
-			Permissions.GetCur("Security Administration");
-			cmd.CommandText="DELETE from userpermission where permissionnum = '"
-				+Permissions.Cur.PermissionNum+"'";
-			NonQ(false);
-		}*/
-
-		/*
-		///<summary>used when selecting all permissions in form prov or emp.  Also used whenever we have already displayed a dialog and just want to check permission for a user</summary>
-		public static bool CheckHasPermission(string permissionName,int num,bool isEmployee){
-			Permission permission=Permissions.GetPermission(permissionName);
-			UserPermission[] listForUser;
-			if(isEmployee)
-				listForUser=GetListForEmp(num);
-			else
-				listForUser=GetListForProv(num);
-			for(int i=0;i<listForUser.Length;i++){
-				if(listForUser[i].PermissionNum==permission.PermissionNum){
-					//Cur=ListForUser[i];
-					return true;
-				}
-			}
-			return false;
-		}*/
-
 		///<summary>Ok to pass null user.  Authorization will come back false.</summary>
 		public static bool IsAuthorized(string permissionName,User user){
 			if(user==null){
@@ -183,18 +154,18 @@ namespace OpenDental{
 				if(listForUser[i].PermissionNum==permission.PermissionNum){
 					return true;
 				}
-			}		
+			}
 			return false;
 		}
 
 		//public static void GetAdminProvider(){
-			/*Providers.Cur=new Provider();
+			Providers.Cur=new Provider();
 			for(int i=0;i<Providers.List.Length;i++){
 				if(CheckHasPermission("Administer Passwords",Providers.List[i].ProvNum,false)){
 					Providers.Cur=Providers.List[i];
 					MessageBox.Show(Lan.g("Permissions","Found"));
 				}
-			}*/
+			}
 		//}
 
 	}//end class UserPermissions
@@ -202,7 +173,7 @@ namespace OpenDental{
 	
 
 	
-}
+}*/
 
 
 

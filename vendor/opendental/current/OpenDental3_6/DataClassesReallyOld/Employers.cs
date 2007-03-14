@@ -89,17 +89,32 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO employer(EmpName,Address,Address2,City,State,Zip,Phone) "
-				+"VALUES("
-				+"'"+POut.PString(Cur.EmpName)+"', "
+			if(Prefs.RandomKeys){
+				Cur.EmployerNum=MiscData.GetKey("employer","EmployerNum");
+			}
+			cmd.CommandText="INSERT INTO employer (";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="EmployerNum,";
+			}
+			cmd.CommandText+="EmpName,Address,Address2,City,State,Zip,Phone) VALUES(";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="'"+POut.PInt(Cur.EmployerNum)+"', ";
+			}
+			cmd.CommandText+=
+				 "'"+POut.PString(Cur.EmpName)+"', "
 				+"'"+POut.PString(Cur.Address)+"', "
 				+"'"+POut.PString(Cur.Address2)+"', "
 				+"'"+POut.PString(Cur.City)+"', "
 				+"'"+POut.PString(Cur.State)+"', "
 				+"'"+POut.PString(Cur.Zip)+"', "
 				+"'"+POut.PString(Cur.Phone)+"')";
-			NonQ(true);
-			Cur.EmployerNum=InsertID;
+			if(Prefs.RandomKeys){
+				NonQ();
+			}
+			else{
+ 				NonQ(true);
+				Cur.EmployerNum=InsertID;
+			}
 		}
 
 		///<summary>There MUST not be any dependencies before calling this or there will be invalid foreign keys.  This is only called from FormEmployers after proper validation.</summary>

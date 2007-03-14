@@ -49,7 +49,7 @@ namespace OpenDental{
 				MsgBox.Show(this,"Cannot convert this database version which was only for development purposes.");
 				return false;
 			}
-			if(FromVersion < new Version("3.5.6.0")){
+			if(FromVersion < new Version("3.6.5.0")){
 				if(MessageBox.Show(Lan.g(this,"Your database will now be converted")+"\r"
 					+Lan.g(this,"from version")+" "+FromVersion.ToString()+"\r"
 					+Lan.g(this,"to version")+" "+ToVersion.ToString()+"\r"
@@ -2038,11 +2038,42 @@ namespace OpenDental{
 					"UPDATE preference SET ValueString = '3.5.3.0' WHERE PrefName = 'DataBaseVersion'";
 				dcon.NonQ(command);
 			}
-			To3_5_6();
+			To3_6_0();
 		}
 
-		private void To3_5_6(){
-			if(FromVersion < new Version("3.5.6.0")){
+		private void To3_6_0(){
+			if(FromVersion < new Version("3.6.0.0")){
+				ExecuteFile(@"ConversionFiles\convert_3_6_0.txt");//Might throw an exception which we handle.
+				DataConnection dcon=new DataConnection();
+				string command;
+				command=
+					"UPDATE preference SET ValueString = '3.6.0.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To3_6_1();
+		}
+
+		private void To3_6_1(){
+			if(FromVersion < new Version("3.6.1.0")){
+				DataConnection dcon=new DataConnection();
+				string command;
+				//Not sure how some of the dates got out of synch:
+				command="UPDATE payment,paysplit SET paysplit.DatePay=payment.PayDate WHERE paysplit.PayNum=payment.PayNum";
+				dcon.NonQ(command);
+				//or how procedures can accidently get attached to appointments for different patients:
+				command="UPDATE procedurelog,appointment SET procedurelog.AptNum=0 "
+					+"WHERE procedurelog.AptNum=appointment.AptNum AND appointment.PatNum!=procedurelog.PatNum";
+				dcon.NonQ(command);
+				command=
+					"UPDATE preference SET ValueString = '3.6.1.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To3_6_4();
+		}
+
+		private void To3_6_4(){
+			//duplicate of To3_5_6 because we needed to fix for users who had already upgraded to 3.6
+			if(FromVersion < new Version("3.6.4.0")){
 				DataConnection dcon=new DataConnection();
 				string[] commands=new string[]
 					{
@@ -2070,17 +2101,49 @@ namespace OpenDental{
 					+@"'C:\\Program Files\\AOS\\','7','C:\\Program Files\\AOS\\AOSCommunicator\\AOSCommunicator.exe')"
  				};
 				dcon.NonQ(commands);
-				string command="UPDATE preference SET ValueString = '3.5.6.0' WHERE PrefName = 'DataBaseVersion'";
+				string command="UPDATE preference SET ValueString = '3.6.4.0' WHERE PrefName = 'DataBaseVersion'";
 				dcon.NonQ(command);
 			}
-			//To3_5_??();
+			To3_6_5();
 		}
 
-
+		private void To3_6_5(){
+			if(FromVersion < new Version("3.6.5.0")){
+				DataConnection dcon=new DataConnection();
+				string command="SELECT adjustment.AdjNum,procedurelog.ProcNum FROM adjustment "
+					+"LEFT JOIN procedurelog ON procedurelog.ProcNum=adjustment.ProcNum "
+					+"WHERE adjustment.ProcNum !=0 "
+					+"AND procedurelog.ProcNum IS NULL";
+				DataTable table=dcon.GetTable(command);
+				for(int i=0;i<table.Rows.Count;i++){
+					command="DELETE FROM adjustment WHERE AdjNum="+table.Rows[i][0].ToString();
+					dcon.NonQ(command);
+				}
+				command="UPDATE preference SET ValueString = '3.6.5.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			//To3_6_??();
+		}
 
 	}
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

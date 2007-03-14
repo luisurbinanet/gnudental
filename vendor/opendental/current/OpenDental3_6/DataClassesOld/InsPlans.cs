@@ -123,7 +123,7 @@ namespace OpenDental{
 				PlanList[i].ClaimFormNum   = PIn.PInt    (table.Rows[i][29].ToString());
 				PlanList[i].UseAltCode     = PIn.PBool   (table.Rows[i][30].ToString());
 				PlanList[i].ClaimsUseUCR   = PIn.PBool   (table.Rows[i][31].ToString());
-				//PlanList[i].IsWrittenOff   = PIn.PBool   (table.Rows[i][32].ToString());
+				PlanList[i].IsWrittenOff   = PIn.PBool   (table.Rows[i][32].ToString());
 				PlanList[i].CopayFeeSched  = PIn.PInt    (table.Rows[i][33].ToString());
 				PlanList[i].SubscriberID   = PIn.PString (table.Rows[i][34].ToString());
 				PlanList[i].EmployerNum    = PIn.PInt    (table.Rows[i][35].ToString());

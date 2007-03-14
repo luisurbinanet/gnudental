@@ -24,14 +24,30 @@ namespace OpenDental{
 
 		///<summary>Inserts this lettermergefield into database.</summary>
 		public void Insert(){
-			string command="INSERT INTO lettermergefield (LetterMergeNum,FieldName"
-				+") VALUES("
-				+"'"+POut.PInt   (LetterMergeNum)+"', "
+			if(Prefs.RandomKeys){
+				FieldNum=MiscData.GetKey("lettermergefield","FieldNum");
+			}
+			string command= "INSERT INTO lettermergefield (";
+			if(Prefs.RandomKeys){
+				command+="FieldNum,";
+			}
+			command+="LetterMergeNum,FieldName"
+				+") VALUES(";
+			if(Prefs.RandomKeys){
+				command+="'"+POut.PInt(FieldNum)+"', ";
+			}
+			command+=
+				 "'"+POut.PInt   (LetterMergeNum)+"', "
 				+"'"+POut.PString(FieldName)+"')";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command);
-			//LetterMergeNum=dcon.InsertID;
+ 			if(Prefs.RandomKeys){
+				dcon.NonQ(command);
+			}
+			else{
+ 				dcon.NonQ(command,true);
+				FieldNum=dcon.InsertID;
+			}
 		}
 
 		/*

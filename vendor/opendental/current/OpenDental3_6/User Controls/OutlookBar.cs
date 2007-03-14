@@ -17,12 +17,14 @@ namespace OpenDental{
 		public OutlookButton[] Buttons;
 		private ImageList imageList;
 		///<summary></summary>
-		public int SelectedIndex=0;
+		public int SelectedIndex=-1;
 		private int currentHot=-1;
 		private Font textFont=new Font("Arial",8);
 		///<summary></summary>
 		[Category("Action"),Description("Occurs when a button is clicked.")]
 		public event ButtonClickedEventHandler ButtonClicked = null;
+		///<summary>Used when click event is cancelled.</summary>
+		private int previousSelected;
 
 		///<summary></summary>
 		public OutlookBar(){
@@ -297,20 +299,26 @@ namespace OpenDental{
 			if(selectedBut==-1)
 				return;
 			int oldSelected=SelectedIndex;
+			this.previousSelected=SelectedIndex;
 			SelectedIndex=selectedBut;
-			if(SelectedIndex!=oldSelected){
+			if(SelectedIndex!=oldSelected && oldSelected!=-1){
 				//undraw old selected
 				DrawButton(Buttons[oldSelected],false,false,false);
 			}
 			DrawButton(Buttons[SelectedIndex],true,false,true);	
-			OnButtonClicked(Buttons[SelectedIndex]);
+			OnButtonClicked(Buttons[SelectedIndex],false);
 		}
 
 		///<summary></summary>
-		protected void OnButtonClicked(OutlookButton myButton){
+		protected void OnButtonClicked(OutlookButton myButton,bool myCancel){
 			if(this.ButtonClicked != null){
-				ButtonClicked_EventArgs oArgs = new ButtonClicked_EventArgs(myButton);
+				//previousSelected=SelectedIndex;
+				ButtonClicked_EventArgs oArgs = new ButtonClicked_EventArgs(myButton,myCancel);
 				this.ButtonClicked(this,oArgs);
+				if(oArgs.Cancel){
+					SelectedIndex=previousSelected;
+					Invalidate();
+				}
 			}
 		}
 
@@ -341,21 +349,30 @@ namespace OpenDental{
 	}
 
 	///<summary></summary>
-	public class ButtonClicked_EventArgs
-	{
-		//private OutlookButton outlookButton = null;//this is how to do it if a class instead of struct
+	public class ButtonClicked_EventArgs{
 		private OutlookButton outlookButton;
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="myButton"></param>
-		public ButtonClicked_EventArgs(OutlookButton myButton){
+		private bool cancel;
+
+		///<summary></summary>
+		public ButtonClicked_EventArgs(OutlookButton myButton,bool myCancel){
 			outlookButton=myButton;
 		}
 
 		///<summary></summary>
 		public OutlookButton OutlookButton{
-			get{ return outlookButton; }
+			get{
+				return outlookButton;
+			}
+		}
+
+		///<summary>Set true to cancel the event.</summary>
+		public bool Cancel{
+			get{
+				return cancel;
+			}
+			set{
+				cancel=value;
+			}
 		}
 
 	}

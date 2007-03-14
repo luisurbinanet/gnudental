@@ -99,7 +99,8 @@ namespace OpenDental{
 		private InsPlan[] PlanList;
 		private OpenDental.ValidDate textDateService;
 		private ClaimPayment[] ClaimPaymentList;
-		private User user;
+		//private User user;
+		private bool notAuthorized;
 
 		///<summary></summary>
 		public FormClaimEdit(Patient patCur,Family famCur){
@@ -357,12 +358,12 @@ namespace OpenDental{
 			// tbProc
 			// 
 			this.tbProc.BackColor = System.Drawing.SystemColors.Window;
-			this.tbProc.Location = new System.Drawing.Point(2, 166);
+			this.tbProc.Location = new System.Drawing.Point(2, 164);
 			this.tbProc.Name = "tbProc";
 			this.tbProc.ScrollValue = 111;
 			this.tbProc.SelectedIndices = new int[0];
 			this.tbProc.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-			this.tbProc.Size = new System.Drawing.Size(939, 204);
+			this.tbProc.Size = new System.Drawing.Size(939, 206);
 			this.tbProc.TabIndex = 25;
 			this.tbProc.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(this.tbProc_CellDoubleClicked);
 			// 
@@ -439,11 +440,11 @@ namespace OpenDental{
 			// 
 			// label4
 			// 
-			this.label4.Location = new System.Drawing.Point(734, 395);
+			this.label4.Location = new System.Drawing.Point(734, 398);
 			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(190, 36);
+			this.label4.Size = new System.Drawing.Size(145, 36);
 			this.label4.TabIndex = 55;
-			this.label4.Text = "Reasons underpaid:  (will show on patient bill in a future version)";
+			this.label4.Text = "Reasons underpaid:  (shows on patient bill)";
 			this.label4.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// textDedApplied
@@ -985,7 +986,18 @@ namespace OpenDental{
 				//butPayWizard.Enabled=false;
 			}
 			else if(Claims.Cur.ClaimStatus=="S" || Claims.Cur.ClaimStatus=="R"){//sent or received
-				if(Permissions.AuthorizationRequired("Claims Sent Edit",Claims.Cur.DateSent)){
+				if(!Security.IsAuthorized(Permissions.ClaimsSentEdit)){
+					butOK.Enabled=false;
+					butDelete.Enabled=false;
+					//butPrint.Enabled=false;
+					notAuthorized=true;
+					groupEnterPayment.Enabled=false;
+					tbPay.Enabled=false;
+					tbProc.Enabled=false;
+					listClaimStatus.Enabled=false;
+					butCheckAdd.Enabled=false;
+				}
+				/*if(PermissionsOld.AuthorizationRequired("Claims Sent Edit",Claims.Cur.DateSent)){
 					user=Users.Authenticate("Claims Sent Edit");
 					if(user==null){
 						DialogResult=DialogResult.Cancel;
@@ -1001,7 +1013,7 @@ namespace OpenDental{
 						listClaimStatus.Enabled=false;
 						butCheckAdd.Enabled=false;
 					}
-				}		
+				}*/	
 			}
 			if(Claims.Cur.ClaimType=="PreAuth"){
 				labelPreAuthNum.Visible=false;
@@ -1400,6 +1412,7 @@ namespace OpenDental{
 			ClaimProcCur.PlanNum=Claims.Cur.PlanNum;
 			ClaimProcCur.DateCP=DateTime.Today;
 			ClaimProcCur.ProcDate=Claims.Cur.DateService;
+			ClaimProcCur.DateEntry=DateTime.Now;//will get set anyway
 			ClaimProcCur.Insert();
 			FormClaimProc FormCP=new FormClaimProc(ClaimProcCur,null,FamCur,PlanList);
 			FormCP.IsInClaim=true;
@@ -1418,6 +1431,7 @@ namespace OpenDental{
 						ClaimProcsForClaim[i].InsPayEst+=ClaimProcsForClaim[i].DedApplied;
 						ClaimProcsForClaim[i].DedApplied=0;//because ded will show as part of payment now.
 					}
+					ClaimProcsForClaim[i].DateEntry=DateTime.Now;//the date is was switched to rec'd
 					ClaimProcsForClaim[i].Update();
 				}
 			}
@@ -1473,11 +1487,12 @@ namespace OpenDental{
 				if(Claims.Cur.ClaimType=="PreAuth"){
 					FormCPT.ClaimProcsToEdit[i].Status=ClaimProcStatus.Preauth;
 				}
-				if(Claims.Cur.ClaimType=="Cap"){
+				else if(Claims.Cur.ClaimType=="Cap"){
 					;//do nothing.  The claimprocstatus will remain Capitation.
 				}
 				else{
 					FormCPT.ClaimProcsToEdit[i].Status=ClaimProcStatus.Received;
+					FormCPT.ClaimProcsToEdit[i].DateEntry=DateTime.Now;//date is was set rec'd
 				}
 				FormCPT.ClaimProcsToEdit[i].InsPayAmt=FormCPT.ClaimProcsToEdit[i].InsPayEst;
 			}
@@ -1487,9 +1502,7 @@ namespace OpenDental{
 			}
 			//save changes now
 			for(int i=0;i<FormCPT.ClaimProcsToEdit.Length;i++){
-				//ClaimProcs.Cur=
 				FormCPT.ClaimProcsToEdit[i].Update();
-				//ClaimProcs.UpdateCur();
 			}
 			listClaimStatus.SelectedIndex=5;//Received
 			if(textDateRec.Text==""){
@@ -1708,6 +1721,7 @@ namespace OpenDental{
 						if(ClaimProcsForClaim[i].Status==ClaimProcStatus.NotReceived){
 							//ClaimProcs.Cur=(ClaimProc)ClaimProcs.ForClaim[i];
 							ClaimProcsForClaim[i].Status=ClaimProcStatus.Received;
+							ClaimProcsForClaim[i].DateEntry=DateTime.Now;//date it was set rec'd
 							ClaimProcsForClaim[i].Update();
 						}
 					}
@@ -1742,6 +1756,9 @@ namespace OpenDental{
 		}
 
 		private void UpdateClaim(){
+			if(notAuthorized){
+				return;
+			}
 			//patnum
 			Claims.Cur.DateService=PIn.PDate(textDateService.Text);
 			if(textDateSent.Text=="")
@@ -1790,7 +1807,7 @@ namespace OpenDental{
 			Claims.Cur.Radiographs=PIn.PInt(textRadiographs.Text);
 			Claims.UpdateCur();
 			if(Claims.Cur.ClaimStatus=="S"){
-				SecurityLogs.MakeLogEntry("Claims Sent Edit",Claims.cmd.CommandText,user);
+				//SecurityLogs.MakeLogEntry("Claims Sent Edit",Claims.cmd.CommandText,user);
 			}
 		}
 

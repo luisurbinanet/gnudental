@@ -26,14 +26,30 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public void Insert(){
-			string command= "INSERT INTO emailtemplate(Subject,BodyText"
-				+") VALUES("
-				+"'"+POut.PString(Subject)+"', "
+			if(Prefs.RandomKeys){
+				EmailTemplateNum=MiscData.GetKey("emailtemplate","EmailTemplateNum");
+			}
+			string command= "INSERT INTO emailtemplate (";
+			if(Prefs.RandomKeys){
+				command+="EmailTemplateNum,";
+			}
+			command+="Subject,BodyText"
+				+") VALUES(";
+			if(Prefs.RandomKeys){
+				command+="'"+POut.PInt(EmailTemplateNum)+"', ";
+			}
+			command+=
+				 "'"+POut.PString(Subject)+"', "
 				+"'"+POut.PString(BodyText)+"')";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command,true);
-			EmailTemplateNum=dcon.InsertID;
+			if(Prefs.RandomKeys){
+				dcon.NonQ(command);
+			}
+			else{
+ 				dcon.NonQ(command,true);
+				EmailTemplateNum=dcon.InsertID;
+			}
 		}
 
 		///<summary></summary>

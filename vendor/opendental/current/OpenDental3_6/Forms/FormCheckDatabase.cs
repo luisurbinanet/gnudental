@@ -334,6 +334,7 @@ namespace OpenDental
 			string[] commands=new string[]
 			{
 				"UPDATE adjustment SET AdjDate='0001-01-01' WHERE AdjDate='0000-00-00'"
+				,"UPDATE adjustment SET DateEntry='1980-01-01' WHERE DateEntry<'1980'"
 				,"UPDATE appointment SET AptDateTime='0001-01-01 00:00:00' "
 					+"WHERE AptDateTime LIKE '0000-00-00%'"
 				,"UPDATE claim SET DateService='0001-01-01' WHERE DateService='0000-00-00'"

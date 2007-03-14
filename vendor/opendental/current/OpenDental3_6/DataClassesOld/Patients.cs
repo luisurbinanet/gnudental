@@ -9,7 +9,7 @@ namespace OpenDental{
 	
 	///<summary></summary>
 	public class Patients{
-		///<summary>A list of all patient names. Key=patNum, value=formatted name.  Fill with GetHList.</summary>
+		///<summary>A list of all patient names. Key=patNum, value=formatted name.  Fill with GetHList.  Used in FormQuery, FormTrackNext, and FormUnsched.</summary>
 		public static Hashtable HList;
 		///<summary>Collection of Patients. The last five patients. Gets displayed on dropdown button.</summary>
 		private static ArrayList buttonLastFive;
@@ -419,7 +419,7 @@ namespace OpenDental{
 			dcon.NonQ(command);
 		}
 
-		///<summary>Gets names for all patients.</summary>
+		///<summary>Gets names for all patients.  Used mostly to show paysplit info.  Also used for reports, FormTrackNext, and FormUnsched.</summary>
 		public static void GetHList(){
 			string command="SELECT patnum,lname,fname,middlei,preferred "
 				+"FROM patient";

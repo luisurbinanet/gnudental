@@ -57,10 +57,21 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public void Insert(){
-			string command= "INSERT INTO recall (PatNum,DateDueCalc,DateDue,DatePrevious,"
+			if(Prefs.RandomKeys){
+				RecallNum=MiscData.GetKey("recall","RecallNum");
+			}
+			string command= "INSERT INTO recall (";
+			if(Prefs.RandomKeys){
+				command+="RecallNum,";
+			}
+			command+="PatNum,DateDueCalc,DateDue,DatePrevious,"
 				+"RecallInterval,RecallStatus,Note,IsDisabled"
-				+") VALUES ("
-				+"'"+POut.PInt   (PatNum)+"', "
+				+") VALUES(";
+			if(Prefs.RandomKeys){
+				command+="'"+POut.PInt(RecallNum)+"', ";
+			}
+			command+=
+				 "'"+POut.PInt   (PatNum)+"', "
 				+"'"+POut.PDate  (DateDueCalc)+"', "
 				+"'"+POut.PDate  (DateDue)+"', "
 				+"'"+POut.PDate  (DatePrevious)+"', "
@@ -70,8 +81,13 @@ namespace OpenDental{
 				+"'"+POut.PBool  (IsDisabled)+"')";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command,true);
-			RecallNum=dcon.InsertID;
+ 			if(Prefs.RandomKeys){
+				dcon.NonQ(command);
+			}
+			else{
+ 				dcon.NonQ(command,true);
+				RecallNum=dcon.InsertID;
+			}
 		}
 
 		///<summary></summary>

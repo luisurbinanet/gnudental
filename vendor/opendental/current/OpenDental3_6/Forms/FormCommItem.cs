@@ -92,7 +92,7 @@ namespace OpenDental{
 			this.butOK.Autosize = true;
 			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butOK.Location = new System.Drawing.Point(541, 356);
+			this.butOK.Location = new System.Drawing.Point(591, 430);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 25);
 			this.butOK.TabIndex = 6;
@@ -107,7 +107,7 @@ namespace OpenDental{
 			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.Location = new System.Drawing.Point(541, 389);
+			this.butCancel.Location = new System.Drawing.Point(591, 463);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 25);
 			this.butCancel.TabIndex = 7;
@@ -120,7 +120,7 @@ namespace OpenDental{
 			this.butDelete.Autosize = true;
 			this.butDelete.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butDelete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butDelete.Location = new System.Drawing.Point(32, 388);
+			this.butDelete.Location = new System.Drawing.Point(23, 462);
 			this.butDelete.Name = "butDelete";
 			this.butDelete.Size = new System.Drawing.Size(75, 25);
 			this.butDelete.TabIndex = 17;
@@ -189,7 +189,7 @@ namespace OpenDental{
 			this.butEmail.Autosize = true;
 			this.butEmail.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butEmail.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butEmail.Location = new System.Drawing.Point(108, 296);
+			this.butEmail.Location = new System.Drawing.Point(106, 404);
 			this.butEmail.Name = "butEmail";
 			this.butEmail.Size = new System.Drawing.Size(88, 25);
 			this.butEmail.TabIndex = 26;
@@ -204,7 +204,7 @@ namespace OpenDental{
 			this.textNote.Name = "textNote";
 			this.textNote.QuickPasteType = OpenDental.QuickPasteType.CommLog;
 			this.textNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textNote.Size = new System.Drawing.Size(512, 103);
+			this.textNote.Size = new System.Drawing.Size(557, 209);
 			this.textNote.TabIndex = 27;
 			this.textNote.Text = "";
 			// 
@@ -212,7 +212,7 @@ namespace OpenDental{
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
-			this.ClientSize = new System.Drawing.Size(652, 434);
+			this.ClientSize = new System.Drawing.Size(702, 508);
 			this.Controls.Add(this.textNote);
 			this.Controls.Add(this.butEmail);
 			this.Controls.Add(this.listSentOrReceived);

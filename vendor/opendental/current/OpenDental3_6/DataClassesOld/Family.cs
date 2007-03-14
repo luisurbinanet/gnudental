@@ -34,20 +34,14 @@ namespace OpenDental
 			return retStr;
 		}
 
-		///<summary></summary>
+		///<summary>Gets a formatted name from the family list.  If the patient is not in the family list, then it gets that info from the database.</summary>
 		public string GetNameInFamFL(int myPatNum){
-			string retStr="";
 			for(int i=0;i<List.Length;i++){
 				if(List[i].PatNum==myPatNum){
-					if(List[i].Preferred==""){
-						retStr=List[i].FName+" "+List[i].MiddleI+" "+List[i].LName; 
-					}
-					else{
-						retStr="'"+List[i].Preferred+"' "+List[i].FName+" "+List[i].MiddleI+" "+List[i].LName;
-					}
+					return List[i].GetNameFL();
 				}
 			}
-			return retStr;
+			return Patients.GetLim(myPatNum).GetNameFL();
 		}
 
 		///<summary>Gets (preferred)first middle last</summary>

@@ -69,15 +69,32 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO clockevent (EmployeeNum,TimeEntered,TimeDisplayed,ClockIn"
-				+",ClockStatus,Note) VALUES("
-				+"'"+POut.PInt   (Cur.EmployeeNum)+"', "
+			if(Prefs.RandomKeys){
+				Cur.ClockEventNum=MiscData.GetKey("clockevent","ClockEventNum");
+			}
+			cmd.CommandText="INSERT INTO clockevent (";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="ClockEventNum,";
+			}
+			cmd.CommandText+="EmployeeNum,TimeEntered,TimeDisplayed,ClockIn"
+				+",ClockStatus,Note) VALUES(";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="'"+POut.PInt(Cur.ClockEventNum)+"', ";
+			}
+			cmd.CommandText+=
+				 "'"+POut.PInt   (Cur.EmployeeNum)+"', "
 				+"'"+POut.PDateT (Cur.TimeEntered)+"', "
 				+"'"+POut.PDateT (Cur.TimeDisplayed)+"', "
 				+"'"+POut.PBool  (Cur.ClockIn)+"', "
 				+"'"+POut.PInt   ((int)Cur.ClockStatus)+"', "
 				+"'"+POut.PString(Cur.Note)+"')";
-			NonQ();
+			if(Prefs.RandomKeys){
+				NonQ();
+			}
+			else{
+ 				NonQ(true);
+				Cur.ClockEventNum=InsertID;
+			}
 		}
 
 		///<summary></summary>

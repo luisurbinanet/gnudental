@@ -2089,7 +2089,7 @@ namespace OpenDental{
 			if(FormIPE.DialogResult!=DialogResult.OK){
 				return;
 			}
-			//InsPlans.Refresh(curPlanNum);
+			PlanCur=InsPlans.GetPlan(PlanCur.PlanNum,new InsPlan[] {});
 			FillFormData();
 		}
 

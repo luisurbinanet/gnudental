@@ -3,7 +3,7 @@
         ProjectType = "Local"
         ProductVersion = "7.10.3077"
         SchemaVersion = "2.0"
-        ProjectGuid = "{12762D5A-8855-49C3-91D2-B8701FBA3FE4}"
+        ProjectGuid = "{731F6256-4CEB-41EF-BC5E-A80228B6B509}"
     >
         <Build>
             <Settings
@@ -40,7 +40,7 @@
                     RegisterForComInterop = "false"
                     RemoveIntegerChecks = "false"
                     TreatWarningsAsErrors = "false"
-                    WarningLevel = "3"
+                    WarningLevel = "4"
                 />
                 <Config
                     Name = "Release"
@@ -49,7 +49,7 @@
                     CheckForOverflowUnderflow = "false"
                     ConfigurationOverrideFile = ""
                     DefineConstants = "TRACE"
-                    DocumentationFile = "OpenDental.xml"
+                    DocumentationFile = ""
                     DebugSymbols = "false"
                     FileAlignment = "4096"
                     IncrementalBuild = "false"
@@ -86,48 +86,13 @@
                 />
                 <Reference
                     Name = "System.XML"
-                    AssemblyName = "System.Xml"
+                    AssemblyName = "System.XML"
                     HintPath = "..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.XML.dll"
-                />
-                <Reference
-                    Name = "System.ServiceProcess"
-                    AssemblyName = "System.ServiceProcess"
-                    HintPath = "..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.ServiceProcess.dll"
-                />
-                <Reference
-                    Name = "System.Configuration.Install"
-                    AssemblyName = "System.Configuration.Install"
-                    HintPath = "..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Configuration.Install.dll"
-                />
-                <Reference
-                    Name = "System.Web.Services"
-                    AssemblyName = "System.Web.Services"
-                    HintPath = "..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Web.Services.dll"
-                />
-                <Reference
-                    Name = "System.Web"
-                    AssemblyName = "System.Web"
-                    HintPath = "..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Web.dll"
-                />
-                <Reference
-                    Name = "Indy.Sockets"
-                    AssemblyName = "Indy.Sockets"
-                    HintPath = "Required dlls\Indy.Sockets.dll"
                 />
                 <Reference
                     Name = "MySql.Data"
                     AssemblyName = "MySql.Data"
                     HintPath = "Required dlls\MySql.Data.dll"
-                />
-                <Reference
-                    Name = "Interop.Microsoft.Office.Core"
-                    AssemblyName = "Interop.Microsoft.Office.Core"
-                    HintPath = "Required dlls\Interop.Microsoft.Office.Core.dll"
-                />
-                <Reference
-                    Name = "Interop.VBIDE"
-                    AssemblyName = "Interop.VBIDE"
-                    HintPath = "Required dlls\Interop.VBIDE.dll"
                 />
                 <Reference
                     Name = "Interop.Word"
@@ -140,9 +105,19 @@
                     HintPath = "Required dlls\RS232.dll"
                 />
                 <Reference
-                    Name = "stdole"
-                    AssemblyName = "stdole"
-                    HintPath = "Required dlls\stdole.dll"
+                    Name = "System.ServiceProcess"
+                    AssemblyName = "System.ServiceProcess"
+                    HintPath = "..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.ServiceProcess.dll"
+                />
+                <Reference
+                    Name = "Indy.Sockets"
+                    AssemblyName = "Indy.Sockets"
+                    HintPath = "Required dlls\Indy.Sockets.dll"
+                />
+                <Reference
+                    Name = "System.Design"
+                    AssemblyName = "System.Design"
+                    HintPath = "..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Design.dll"
                 />
             </References>
         </Build>
@@ -209,12 +184,27 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Business Layer\Adjustments.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Business Layer\GroupPermissions.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Business Layer\Instructors.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Business Layer\Permissions.cs"
+                    RelPath = "Business Layer\MiscData.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Business Layer\PermissionsOld.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -244,6 +234,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Business Layer\Security.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Business Layer\SecurityLogs.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -259,17 +254,17 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Business Layer\UserPermissions.cs"
+                    RelPath = "Business Layer\UserGroups.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Business Layer\UserPermissionsOld.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Business Layer\Users.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "DataClassesOld\Adjustments.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -809,6 +804,14 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "Forms\Component1.resx"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Forms\Copy of FormMessageText.resx"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "Forms\FormAbout.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
@@ -876,6 +879,16 @@
                 <File
                     RelPath = "Forms\FormApptViews.resx"
                     DependentUpon = "FormApptViews.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Forms\FormAudit.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\FormAudit.resx"
+                    DependentUpon = "FormAudit.cs"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
@@ -1359,6 +1372,16 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "Forms\FormGroupPermEdit.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\FormGroupPermEdit.resx"
+                    DependentUpon = "FormGroupPermEdit.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "Forms\FormImageViewer.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
@@ -1479,6 +1502,10 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "Forms\FormInsTemplatesEdit.resx.old"
+                    BuildAction = "None"
+                />
+                <File
                     RelPath = "Forms\FormInstructorEdit.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
@@ -1549,6 +1576,16 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "Forms\FormLogOn.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\FormLogOn.resx"
+                    DependentUpon = "FormLogOn.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "Forms\FormMedical.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
@@ -1616,16 +1653,6 @@
                 <File
                     RelPath = "Forms\FormNoteApptMod.resx"
                     DependentUpon = "FormNoteApptMod.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "Forms\FormPassword.cs"
-                    SubType = "Form"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Forms\FormPassword.resx"
-                    DependentUpon = "FormPassword.cs"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
@@ -1746,26 +1773,6 @@
                 <File
                     RelPath = "Forms\FormPerioEdit.resx"
                     DependentUpon = "FormPerioEdit.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "Forms\FormPermissionEdit.cs"
-                    SubType = "Form"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Forms\FormPermissionEdit.resx"
-                    DependentUpon = "FormPermissionEdit.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "Forms\FormPermissionsManage.cs"
-                    SubType = "Form"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Forms\FormPermissionsManage.resx"
-                    DependentUpon = "FormPermissionsManage.cs"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
@@ -2249,6 +2256,16 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "Forms\FormSecurity.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\FormSecurity.resx"
+                    DependentUpon = "FormSecurity.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "Forms\FormStatementOptions.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
@@ -2376,6 +2393,36 @@
                 <File
                     RelPath = "Forms\FormUpdate.resx"
                     DependentUpon = "FormUpdate.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Forms\FormUserEdit.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\FormUserEdit.resx"
+                    DependentUpon = "FormUserEdit.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Forms\FormUserGroupEdit.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\FormUserGroupEdit.resx"
+                    DependentUpon = "FormUserGroupEdit.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Forms\FormUserPassword.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\FormUserPassword.resx"
+                    DependentUpon = "FormUserPassword.cs"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
@@ -2922,26 +2969,6 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
-                    RelPath = "Tables(grids)\TableAccount.cs"
-                    SubType = "UserControl"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Tables(grids)\TableAccount.resx"
-                    DependentUpon = "TableAccount.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "Tables(grids)\TableAccountPat.cs"
-                    SubType = "UserControl"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Tables(grids)\TableAccountPat.resx"
-                    DependentUpon = "TableAccountPat.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "Tables(grids)\TableApptProcs.cs"
                     SubType = "UserControl"
                     BuildAction = "Compile"
@@ -3049,16 +3076,6 @@
                 <File
                     RelPath = "Tables(grids)\TableCommLog.resx"
                     DependentUpon = "TableCommLog.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "Tables(grids)\TableCommLogAccount.cs"
-                    SubType = "UserControl"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Tables(grids)\TableCommLogAccount.resx"
-                    DependentUpon = "TableCommLogAccount.cs"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
@@ -3462,7 +3479,67 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "UI\GridColumnTypeConverter.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "UI\MsgBox.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "UI\ODGrid.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "UI\ODGrid.resx"
+                    DependentUpon = "ODGrid.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UI\ODGridCell.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "UI\ODGridCell.resx"
+                    DependentUpon = "ODGridCell.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UI\ODGridCellCollection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "UI\ODGridColumn.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "UI\ODGridColumn.resx"
+                    DependentUpon = "ODGridColumn.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UI\ODGridColumnCollection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "UI\ODGridRow.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "UI\ODGridRow.resx"
+                    DependentUpon = "ODGridRow.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UI\ODGridRowCollection.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -3628,9 +3705,6 @@
                 />
             </Include>
         </Files>
-        <StartupServices>
-            <Service ID = "{CF845C55-C321-4742-B673-E6212D061ED9}" />
-        </StartupServices>
     </CSHARP>
 </VisualStudioProject>
 

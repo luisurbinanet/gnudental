@@ -54,6 +54,7 @@ namespace OpenDental{
 				List[i].BaseEst        = PIn.PDouble(table.Rows[i][25].ToString());
 				List[i].CopayOverride  = PIn.PDouble(table.Rows[i][26].ToString());
 				List[i].ProcDate       = PIn.PDate  (table.Rows[i][27].ToString());
+				List[i].DateEntry      = PIn.PDate  (table.Rows[i][28].ToString());
 			}
 			return List;
 		}

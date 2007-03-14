@@ -241,7 +241,7 @@ namespace OpenDental{
 		///<summary>65536</summary>
 		QuickPaste=65536,
 		///<summary>131072</summary>
-		Permissions=131072,
+		Security=131072,
 		///<summary>262144</summary>
 		Programs=262144,
 		///<summary>524288</summary>
@@ -841,6 +841,60 @@ namespace OpenDental{
 		SchoolClass,
 		///<summary>The schoolcourse table in the database. Used for dental schools.</summary>
 		SchoolCourse
+	}
+
+	///<summary>A hard-coded list of permission which may be granted to usergroups.</summary>
+	public enum Permissions{
+		///<summary>0</summary>
+		None,
+		///<summary>1</summary>
+		AppointmentsModule,
+		///<summary>2</summary>
+		FamilyModule,
+		///<summary>3</summary>
+		AccountModule,
+		///<summary>4</summary>
+		TPModule,
+		///<summary>5</summary>
+		ChartModule,
+		///<summary>6</summary>
+		ImagesModule,
+		///<summary>7</summary>
+		ManageModule,
+		///<summary>8. Currently covers a wide variety of setup functions.</summary>
+		Setup,
+		///<summary>9</summary>
+		RxCreate,
+		///<summary>10</summary>
+		ProcComplEdit,
+		///<summary>11</summary>
+		ChooseDatabase,
+		///<summary>12</summary>
+		Schedules,
+		///<summary>13</summary>
+		Blockouts,
+		///<summary>14</summary>
+		ClaimsSentEdit,
+		///<summary>15</summary>
+		PaymentCreate,
+		///<summary>16</summary>
+		PaymentEdit,
+		///<summary>17</summary>
+		AdjustmentCreate,
+		///<summary>18</summary>
+		AdjustmentEdit,
+		///<summary>19</summary>
+		UserQuery,
+		///<summary>20. Everyone has permission for this. Not used anymore.</summary>
+		StartupSingleUser,
+		///<summary>21 Not used anymore</summary>
+		StartupMultiUserOld,
+		///<summary>22</summary>
+		Reports,
+		///<summary>23. Includes setting procedures complete.</summary>
+		ProcComplCreate,
+		///<summary>24. At least one user must have this permission.</summary>
+		SecurityAdmin
 	}
 
 

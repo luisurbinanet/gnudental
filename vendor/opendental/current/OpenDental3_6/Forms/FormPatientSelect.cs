@@ -795,7 +795,7 @@ namespace OpenDental{
 			#if(TRIALONLY)
 				MsgBox.Show(this,"Trial version.  Maximum 30 patients");
 				if(Patients.GetNumberPatients()>30){
-					MsgBox.Show(this,"Maximum reached");
+					MsgBox.Show("Maximum reached");
 					return;
 				}
 			#endif

@@ -117,14 +117,31 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO covpat (covcatnum,plannum,pripatnum,"
-				+"secpatnum,percent) VALUES("
-				+"'"+POut.PInt   (Cur.CovCatNum)+"', "
+			if(Prefs.RandomKeys){
+				Cur.CovPatNum=MiscData.GetKey("covpat","CovPatNum");
+			}
+			cmd.CommandText="INSERT INTO covpat (";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="CovPatNum,";
+			}
+			cmd.CommandText+="CovCatNum,PlanNum,PriPatNum,"
+				+"SecPatNum,Percent) VALUES(";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="'"+POut.PInt(Cur.CovPatNum)+"', ";
+			}
+			cmd.CommandText+=
+				 "'"+POut.PInt   (Cur.CovCatNum)+"', "
 				+"'"+POut.PInt   (Cur.PlanNum)+"', "
 				+"'"+POut.PInt   (Cur.PriPatNum)+"', "
 				+"'"+POut.PInt   (Cur.SecPatNum)+"', "
 				+"'"+POut.PInt   (Cur.Percent)+"')";
-			NonQ(false);
+			if(Prefs.RandomKeys){
+				NonQ();
+			}
+			else{
+ 				NonQ(true);
+				Cur.CovPatNum=InsertID;
+			}
 		}
 
 		///<summary></summary>

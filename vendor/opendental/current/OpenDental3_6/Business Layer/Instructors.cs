@@ -43,13 +43,29 @@ namespace OpenDental{
 
 		///<summary></summary>
 		private void Insert(){
-			string command= "INSERT INTO instructor (LName,FName,Suffix) VALUES("
-				+"'"+POut.PString(LName)+"', "
+			if(Prefs.RandomKeys){
+				InstructorNum=MiscData.GetKey("instructor","InstructorNum");
+			}
+			string command= "INSERT INTO instructor (";
+			if(Prefs.RandomKeys){
+				command+="InstructorNum,";
+			}
+			command+="LName,FName,Suffix) VALUES(";
+			if(Prefs.RandomKeys){
+				command+="'"+POut.PInt(InstructorNum)+"', ";
+			}
+			command+=
+				 "'"+POut.PString(LName)+"', "
 				+"'"+POut.PString(FName)+"', "
 				+"'"+POut.PString(Suffix)+"')";
 			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command,true);
-			InstructorNum=dcon.InsertID;
+ 			if(Prefs.RandomKeys){
+				dcon.NonQ(command);
+			}
+			else{
+ 				dcon.NonQ(command,true);
+				InstructorNum=dcon.InsertID;
+			}
 		}
 
 		///<summary></summary>

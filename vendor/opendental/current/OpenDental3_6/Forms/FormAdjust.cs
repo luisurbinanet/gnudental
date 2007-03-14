@@ -35,7 +35,12 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label7;
 		private OpenDental.ValidDate textAdjDate;
 		private Adjustment AdjustmentCur;
-		private User user;
+		private OpenDental.ValidDate textDateEntry;
+		private System.Windows.Forms.Label label8;
+		///<summary></summary>
+		private DateTime dateLimit=DateTime.MinValue;
+		//<summary>Keeps track of current server time so that user cannot bypass security by altering workstation clock.  Sometimes we compare to nowDate, but sometimes, we're just interested in the date of the adjustment.</summary>
+		//private DateTime nowDate;
 
 		///<summary></summary>
 		public FormAdjust(Patient patCur,Adjustment adjustmentCur){
@@ -75,15 +80,17 @@ namespace OpenDental{
 			this.textNote = new OpenDental.ODtextBox();
 			this.textProcDate = new OpenDental.ValidDate();
 			this.label7 = new System.Windows.Forms.Label();
+			this.textDateEntry = new OpenDental.ValidDate();
+			this.label8 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(7, 38);
+			this.label1.Location = new System.Drawing.Point(7, 54);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(104, 16);
 			this.label1.TabIndex = 0;
-			this.label1.Text = "Entry Date";
+			this.label1.Text = "Adjustment Date";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label4
@@ -97,7 +104,7 @@ namespace OpenDental{
 			// 
 			// label5
 			// 
-			this.label5.Location = new System.Drawing.Point(11, 86);
+			this.label5.Location = new System.Drawing.Point(11, 102);
 			this.label5.Name = "label5";
 			this.label5.Size = new System.Drawing.Size(100, 16);
 			this.label5.TabIndex = 4;
@@ -115,7 +122,7 @@ namespace OpenDental{
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(10, 110);
+			this.label2.Location = new System.Drawing.Point(10, 126);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(100, 16);
 			this.label2.TabIndex = 10;
@@ -153,7 +160,7 @@ namespace OpenDental{
 			// 
 			// textAdjDate
 			// 
-			this.textAdjDate.Location = new System.Drawing.Point(112, 36);
+			this.textAdjDate.Location = new System.Drawing.Point(112, 52);
 			this.textAdjDate.Name = "textAdjDate";
 			this.textAdjDate.Size = new System.Drawing.Size(80, 20);
 			this.textAdjDate.TabIndex = 0;
@@ -183,15 +190,15 @@ namespace OpenDental{
 			// 
 			// textAmount
 			// 
-			this.textAmount.Location = new System.Drawing.Point(112, 84);
+			this.textAmount.Location = new System.Drawing.Point(112, 100);
 			this.textAmount.Name = "textAmount";
-			this.textAmount.Size = new System.Drawing.Size(80, 20);
+			this.textAmount.Size = new System.Drawing.Size(68, 20);
 			this.textAmount.TabIndex = 1;
 			this.textAmount.Text = "";
 			// 
 			// listProvider
 			// 
-			this.listProvider.Location = new System.Drawing.Point(112, 108);
+			this.listProvider.Location = new System.Drawing.Point(112, 124);
 			this.listProvider.Name = "listProvider";
 			this.listProvider.Size = new System.Drawing.Size(100, 95);
 			this.listProvider.TabIndex = 2;
@@ -226,7 +233,7 @@ namespace OpenDental{
 			// 
 			// textProcDate
 			// 
-			this.textProcDate.Location = new System.Drawing.Point(112, 60);
+			this.textProcDate.Location = new System.Drawing.Point(112, 76);
 			this.textProcDate.Name = "textProcDate";
 			this.textProcDate.Size = new System.Drawing.Size(80, 20);
 			this.textProcDate.TabIndex = 19;
@@ -234,18 +241,38 @@ namespace OpenDental{
 			// 
 			// label7
 			// 
-			this.label7.Location = new System.Drawing.Point(7, 62);
+			this.label7.Location = new System.Drawing.Point(7, 78);
 			this.label7.Name = "label7";
 			this.label7.Size = new System.Drawing.Size(104, 16);
 			this.label7.TabIndex = 18;
 			this.label7.Text = "Procedure Date";
 			this.label7.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
+			// textDateEntry
+			// 
+			this.textDateEntry.Location = new System.Drawing.Point(112, 28);
+			this.textDateEntry.Name = "textDateEntry";
+			this.textDateEntry.ReadOnly = true;
+			this.textDateEntry.Size = new System.Drawing.Size(80, 20);
+			this.textDateEntry.TabIndex = 21;
+			this.textDateEntry.Text = "";
+			// 
+			// label8
+			// 
+			this.label8.Location = new System.Drawing.Point(7, 30);
+			this.label8.Name = "label8";
+			this.label8.Size = new System.Drawing.Size(104, 16);
+			this.label8.TabIndex = 20;
+			this.label8.Text = "Entry Date";
+			this.label8.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
 			// FormAdjust
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(731, 528);
+			this.Controls.Add(this.textDateEntry);
+			this.Controls.Add(this.label8);
 			this.Controls.Add(this.textProcDate);
 			this.Controls.Add(this.label7);
 			this.Controls.Add(this.textNote);
@@ -276,15 +303,19 @@ namespace OpenDental{
 		#endregion
 
 		private void FormAdjust_Load(object sender, System.EventArgs e) {
-			if(!IsNew){		
-				if(Permissions.AuthorizationRequired("Adjustment Edit",AdjustmentCur.AdjDate)){
-					user=Users.Authenticate("Adjustment Edit");
-					if(!UserPermissions.IsAuthorized("Adjustment Edit",user)){
-						butOK.Enabled=false;
-						butDelete.Enabled=false;
-					}
+			if(IsNew){
+				if(!Security.IsAuthorized(Permissions.AdjustmentCreate)){
+					DialogResult=DialogResult.Cancel;
+					return;
 				}
 			}
+			else{
+				if(!Security.IsAuthorized(Permissions.AdjustmentEdit,AdjustmentCur.DateEntry)){
+					butOK.Enabled=false;
+					butDelete.Enabled=false;
+				}
+			}
+			textDateEntry.Text=AdjustmentCur.DateEntry.ToShortDateString();
 			textAdjDate.Text=AdjustmentCur.AdjDate.ToShortDateString();
 			textProcDate.Text=AdjustmentCur.ProcDate.ToShortDateString();
 			if(Defs.GetValue(DefCat.AdjTypes,AdjustmentCur.AdjType)=="+"){//pos
@@ -325,7 +356,7 @@ namespace OpenDental{
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			if(  textAdjDate.errorProvider1.GetError(textAdjDate)!=""
+			if( textAdjDate.errorProvider1.GetError(textAdjDate)!=""
 				|| textProcDate.errorProvider1.GetError(textProcDate)!=""
 				|| textAmount.errorProvider1.GetError(textAmount)!=""
 				){
@@ -340,6 +371,7 @@ namespace OpenDental{
 				MsgBox.Show(this,"Please select a type first.");
 				return;
 			}
+			//DateEntry not allowed to change
 			AdjustmentCur.AdjDate=PIn.PDate(textAdjDate.Text);
 			AdjustmentCur.ProcDate=PIn.PDate(textProcDate.Text);
 			if(listProvider.SelectedIndex==-1)
@@ -354,10 +386,6 @@ namespace OpenDental{
 				AdjustmentCur.AdjType
 					=Defs.Short[(int)DefCat.AdjTypes][(int)NegIndex[listTypeNeg.SelectedIndex]].DefNum;
 			}
-			//no longer allowed to click OK if neither selected
-			//if(listTypeNeg.SelectedIndex==-1 && listTypePos.SelectedIndex==-1){
-			//	AdjustmentCur.AdjType=Defs.Short[(int)DefCat.AdjTypes][0].DefNum;
-			//}
 			if(Defs.GetValue(DefCat.AdjTypes,AdjustmentCur.AdjType)=="+"){//pos
 				AdjustmentCur.AdjAmt=PIn.PDouble(textAmount.Text);
 			}
@@ -365,12 +393,22 @@ namespace OpenDental{
 				AdjustmentCur.AdjAmt=-PIn.PDouble(textAmount.Text);
 			}
 			AdjustmentCur.AdjNote=textNote.Text;
+			try{
+				AdjustmentCur.InsertOrUpdate(IsNew);
+			}
+			catch(Exception ex){//even though it doesn't currently throw any exceptions
+				MessageBox.Show(ex.Message);
+				return;
+			}
 			if(IsNew){
-				AdjustmentCur.Insert();
+				SecurityLogs.MakeLogEntry(Permissions.AdjustmentCreate,
+					Patients.GetLim(AdjustmentCur.PatNum).GetNameLF()+", "
+					+AdjustmentCur.AdjAmt.ToString("c"));
 			}
 			else{
-				AdjustmentCur.Update();
-		  	SecurityLogs.MakeLogEntry("Adjustment Edit","Adjustment edited for patient "+AdjustmentCur.PatNum.ToString(),user);
+				SecurityLogs.MakeLogEntry(Permissions.AdjustmentEdit,
+					Patients.GetLim(AdjustmentCur.PatNum).GetNameLF()+", "
+					+AdjustmentCur.AdjAmt.ToString("c"));
 			}
 			DialogResult=DialogResult.OK;
 		}
@@ -380,7 +418,9 @@ namespace OpenDental{
 				DialogResult=DialogResult.Cancel;
 			}
 			else{
-				SecurityLogs.MakeLogEntry("Adjustment Edit","Delete. patNum: "+AdjustmentCur.PatNum.ToString(),user);
+				SecurityLogs.MakeLogEntry(Permissions.AdjustmentEdit,"Delete for patient: "
+					+Patients.GetLim(AdjustmentCur.PatNum).GetNameLF()+", "
+					+AdjustmentCur.AdjAmt.ToString("c"));
 				AdjustmentCur.Delete();
 				DialogResult=DialogResult.OK;
 			}

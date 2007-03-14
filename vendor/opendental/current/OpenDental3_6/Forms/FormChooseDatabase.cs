@@ -53,8 +53,8 @@ namespace OpenDental{
 		private System.Windows.Forms.ComboBox comboComputerName;
 		private System.Windows.Forms.ComboBox comboDatabase;
 		private bool mysqlIsStarted;
-		///<summary>user lowercase is for internal OD security.  this.DbUser capital is for the MySQL user.  Don't get them confused.</summary>
-		private User user;
+		//<summary>user lowercase is for internal OD security.  this.DbUser capital is for the MySQL user.  Don't get them confused.</summary>
+		//private User user;
 
 		///<summary></summary>
 		public FormChooseDatabase(){
@@ -350,8 +350,8 @@ namespace OpenDental{
 		#endregion
 
 		private void FormConfig_Load(object sender, System.EventArgs e) {
-			if(!IsInStartup){
-				if(Permissions.AuthorizationRequired("MySQL Config")){
+			/*if(!IsInStartup){
+				if(PermissionsOld.AuthorizationRequired("MySQL Config")){
 					user=Users.Authenticate("MySQL Config");
 					if(user==null){
 						DialogResult=DialogResult.Cancel;
@@ -363,7 +363,7 @@ namespace OpenDental{
 						return;
 					}	
 				}
-			}
+			}*/
 			originalComputerName=ComputerName;
 			originalDatabase=Database;
 			originalUser=DbUser;
@@ -750,7 +750,7 @@ namespace OpenDental{
 			xmlwriter.Close();
 			if(!IsInStartup){
 				//MessageBox.Show(Lan.g(this,"You must close Open Dental now, and reopen it."));
-				SecurityLogs.MakeLogEntry("MySQL Config","FreeDentalConfig.xml has been changed",user);
+				//SecurityLogs.MakeLogEntry("MySQL Config","FreeDentalConfig.xml has been changed",user);
 			}
 			if(changing && !IsInStartup){
 				//MessageBox.Show(Lan.g(this,"Settings have been changed."));

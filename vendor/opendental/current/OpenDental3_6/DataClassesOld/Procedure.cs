@@ -57,8 +57,10 @@ namespace OpenDental{
 		public DateTime DateOriginalProsth;
 		///<summary>This note will go on e-claim. For By Report, prep dates, or initial endo date.</summary>
 		public string ClaimNote;
-		///<summary>The date that the note was locked.  If no date entered, then note is not locked.  If date entered, also prevents deletion and changing status.</summary>
+		///<summary>The date that the note was locked.  If no date entered, then note is not locked.  If date entered, also prevents deletion and changing status.  This will be eliminated as soon as secure invalidation is in place.</summary>
 		public DateTime DateLocked;
+		///<summary>This is the date this procedure was entered or set complete.  If not status C, then the value is ignored, so it might be minValue 0001-01-01 or any other date.  It gets updated when set complete.  User never allowed to edit.  This will be enhanced later.</summary>
+		public DateTime DateEntryC;
 
 
 		///<summary>Returns a copy of the procedure.</summary>
@@ -85,21 +87,44 @@ namespace OpenDental{
 			proc.DateOriginalProsth=DateOriginalProsth;
 			proc.ClaimNote=ClaimNote;
 			proc.DateLocked=DateLocked;
+			proc.DateEntryC=DateEntryC;
 			return proc;
 		}
 
+		///<summary>If IsNew, just supply null for oldProc.</summary>
+		public void InsertOrUpdate(Procedure oldProc,bool IsNew){
+			//if(){
+				//throw new Exception(Lan.g(this,""));
+			//}
+			if(IsNew){
+				insert();
+			}
+			else{
+				Update(oldProc);
+			}
+		}
+
 		///<summary>Inserts to db, and also sets the ProcNum.</summary>
-		public void Insert(){
-			string command= "INSERT INTO procedurelog " 
-				+"(PatNum, AptNum, ADACode, ProcDate,"
+		private void insert(){
+			if(Prefs.RandomKeys){
+				ProcNum=MiscData.GetKey("procedurelog","ProcNum");
+			}
+			string command= "INSERT INTO procedurelog (";
+			if(Prefs.RandomKeys){
+				command+="ProcNum,";
+			}
+			command+="PatNum, AptNum, ADACode, ProcDate,"
 				+"ProcFee,"
 				+"Surf,"
 				+"ToothNum,ToothRange,Priority, "
 				+"ProcStatus, ProcNote, ProvNum,"
 				+"Dx,NextAptNum,PlaceService,HideGraphical,Prosthesis,DateOriginalProsth,ClaimNote,"
-				+"DateLocked) "
-				+"VALUES ("
-				+"'"+POut.PInt   (PatNum)+"', "
+				+"DateLocked,DateEntryC) VALUES(";
+			if(Prefs.RandomKeys){
+				command+="'"+POut.PInt(ProcNum)+"', ";
+			}
+			command+=
+				 "'"+POut.PInt   (PatNum)+"', "
 				+"'"+POut.PInt   (AptNum)+"', "
 				+"'"+POut.PString(ADACode)+"', "
 				+"'"+POut.PDate  (ProcDate)+"', "
@@ -123,15 +148,21 @@ namespace OpenDental{
 				+"'"+POut.PString(Prosthesis)+"', "
 				+"'"+POut.PDate  (DateOriginalProsth)+"', "
 				+"'"+POut.PString(ClaimNote)+"', "
-				+"'"+POut.PDate  (DateLocked)+"')";
+				+"'"+POut.PDate  (DateLocked)+"', "
+				+"NOW())";//DateEntryC
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command,true);
-			ProcNum=dcon.InsertID;
+ 			if(Prefs.RandomKeys){
+				dcon.NonQ(command);
+			}
+			else{
+ 				dcon.NonQ(command,true);
+				ProcNum=dcon.InsertID;
+			}
 		}
 
 		///<summary>Updates only the changed columns and returns the number of rows affected.</summary>
-		public int Update(Procedure oldProc){
+		private int Update(Procedure oldProc){
 			bool comma=false;
 			string c = "UPDATE procedurelog SET ";
 			if(PatNum!=oldProc.PatNum){
@@ -231,6 +262,11 @@ namespace OpenDental{
 			if(DateLocked!=oldProc.DateLocked){
 				if(comma) c+=",";
 				c+="DateLocked = '"+POut.PDate (DateLocked)+"'";
+				comma=true;
+			}
+			if(DateEntryC!=oldProc.DateEntryC){
+				if(comma) c+=",";
+				c+="DateEntryC = NOW()";
 				comma=true;
 			}
 			if(!comma)

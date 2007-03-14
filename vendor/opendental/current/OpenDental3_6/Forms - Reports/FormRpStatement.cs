@@ -695,25 +695,34 @@ namespace OpenDental{
 					if(isFirstLineOnPage){
 						//g.DrawLine(new Pen(Color.Gray),colPos[0],yPos,colPos[11],yPos);
 					}
-					rowHeight=bodyFont.GetHeight(g);
+					//description column determines height of row
+					rowHeight=g.MeasureString(StatementA[famsPrinted][3,linesPrinted],bodyFont,colPos[3+1]-colPos[3]+6).Height;
+						//bodyFont.GetHeight(g);
 					for(int i=0;i<11;i++){
 						//left line for this cell
 						g.DrawLine(new Pen(Color.Gray),colPos[i],yPos,colPos[i],yPos+rowHeight);
 						if(i==10){//if this is the right column, then also draw line for right side of cell
 							g.DrawLine(new Pen(Color.Gray),colPos[i+1],yPos,colPos[i+1],yPos+rowHeight);
 						}
+						//bottom line for this cell
+						g.DrawLine(new Pen(Color.LightGray),colPos[i],yPos+rowHeight,colPos[i+1],yPos+rowHeight);
+						//if new date, then print dark line above
+						if(linesPrinted>0 && StatementA[famsPrinted][0,linesPrinted] != StatementA[famsPrinted][0,linesPrinted-1]){
+							g.DrawLine(new Pen(Color.Black,1.5f),colPos[i],yPos,colPos[i+1],yPos);
+						}
 						if(colAlign[i]==HorizontalAlignment.Right){
 							g.DrawString(StatementA[famsPrinted][i,linesPrinted]
 								,bodyFont,Brushes.Black,new RectangleF(
-								colPos[i+1]
-								-g.MeasureString(StatementA[famsPrinted][i,linesPrinted],bodyFont).Width-1,yPos
-								,colPos[i+1]-colPos[i]+8,bodyFont.GetHeight(g)));
+								colPos[i+1]-g.MeasureString(StatementA[famsPrinted][i,linesPrinted],bodyFont).Width+1,//x
+								yPos,//y
+								colPos[i+1]-colPos[i]+8,//w
+								rowHeight));//h
 						}
 						else{
 							g.DrawString(StatementA[famsPrinted][i,linesPrinted]
 								,bodyFont,Brushes.Black,new RectangleF(
 								colPos[i],yPos
-								,colPos[i+1]-colPos[i]+6,bodyFont.GetHeight(g)));
+								,colPos[i+1]-colPos[i]+6,rowHeight));
 						}
 						if(StatementA[famsPrinted][11,linesPrinted+1]=="PatTotal"){
 							g.DrawLine(new Pen(Color.Gray),colPos[i],yPos+rowHeight,colPos[11],yPos+rowHeight);

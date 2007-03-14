@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
@@ -74,7 +75,6 @@ namespace OpenDental{
 		private System.Windows.Forms.ComboBox comboTableName;
 		private System.Windows.Forms.GroupBox groupBox2;
 		private System.Windows.Forms.Label label16;
-		private System.Windows.Forms.ComboBox comboColSubst;
 		private System.Windows.Forms.ComboBox comboColMove;
 		private System.Windows.Forms.ComboBox comboColMoveAfter;
 		private System.Windows.Forms.ComboBox comboColCombine1;
@@ -104,18 +104,55 @@ namespace OpenDental{
 		private System.Windows.Forms.RadioButton radioPatients;
 		private System.Windows.Forms.RadioButton radioCarriers;
 		private System.Windows.Forms.Label label25;
-		private System.Windows.Forms.ComboBox comboColAdd;
 		private System.Windows.Forms.TabPage tabQuery;
 		private System.Windows.Forms.Button butQuerySubmit;
 		private System.Windows.Forms.TextBox textQuery;
 		private System.Windows.Forms.GroupBox groupBox9;
-		private System.Windows.Forms.ComboBox comboColClear;
-		private System.Windows.Forms.Label label26;
 		private System.Windows.Forms.Button butColClear;
 		private System.Windows.Forms.TextBox textDateNewFormat;
 		private System.Windows.Forms.Label label27;
 		private System.Windows.Forms.CheckBox checkDontUsePK;
 		private System.Windows.Forms.Label label28;
+		private System.Windows.Forms.ComboBox comboColAdd;
+		private System.Windows.Forms.GroupBox groupBox10;
+		private System.Windows.Forms.Button butColCap;
+		private System.Windows.Forms.GroupBox groupBox11;
+		private System.Windows.Forms.TextBox textPadChar;
+		private System.Windows.Forms.Label label31;
+		private System.Windows.Forms.TextBox textPadLength;
+		private System.Windows.Forms.Label label32;
+		private System.Windows.Forms.Button butColPad;
+		private System.Windows.Forms.GroupBox groupBox12;
+		private System.Windows.Forms.ComboBox comboColCopyFrom;
+		private System.Windows.Forms.Label label34;
+		private System.Windows.Forms.ComboBox comboColEdit;
+		private System.Windows.Forms.Button butColCopy;
+		private System.Windows.Forms.GroupBox groupBox13;
+		private System.Windows.Forms.ComboBox comboColDateTo;
+		private System.Windows.Forms.Label label29;
+		private System.Windows.Forms.Label label30;
+		private System.Windows.Forms.Button butConvertDate;
+		private System.Windows.Forms.TextBox textDateBase;
+		private System.Windows.Forms.Label label33;
+		private System.Windows.Forms.Label label35;
+		private System.Windows.Forms.ComboBox comboColDateFrom;
+		private System.Windows.Forms.Label label26;
+		private System.Windows.Forms.Label label36;
+		private System.Windows.Forms.Button butColCapAll;
+		private System.Windows.Forms.GroupBox groupBox14;
+		private System.Windows.Forms.Button butColsDelete;
+		private System.Windows.Forms.Label label37;
+		private System.Windows.Forms.TextBox textColsDelete;
+		private System.Windows.Forms.GroupBox groupBox15;
+		private System.Windows.Forms.Label label39;
+		private System.Windows.Forms.Button butGuarantor;
+		private System.Windows.Forms.TextBox textBox2;
+		private System.Windows.Forms.Label label38;
+		private System.Windows.Forms.TextBox textBox3;
+		private System.Windows.Forms.Label label40;
+		private System.Windows.Forms.TextBox textBox4;
+		private System.Windows.Forms.Label label41;
+		private System.Windows.Forms.Label label42;
 		private string[] AllowedColNames;
 
 		///<summary></summary>
@@ -161,7 +198,7 @@ namespace OpenDental{
 			this.textSubstOld = new System.Windows.Forms.TextBox();
 			this.label4 = new System.Windows.Forms.Label();
 			this.label3 = new System.Windows.Forms.Label();
-			this.comboColSubst = new System.Windows.Forms.ComboBox();
+			this.comboColEdit = new System.Windows.Forms.ComboBox();
 			this.groupBox3 = new System.Windows.Forms.GroupBox();
 			this.textDateNewFormat = new System.Windows.Forms.TextBox();
 			this.label27 = new System.Windows.Forms.Label();
@@ -211,6 +248,7 @@ namespace OpenDental{
 			this.label19 = new System.Windows.Forms.Label();
 			this.label18 = new System.Windows.Forms.Label();
 			this.tabPK = new System.Windows.Forms.TabPage();
+			this.checkDontUsePK = new System.Windows.Forms.CheckBox();
 			this.label25 = new System.Windows.Forms.Label();
 			this.groupBox7 = new System.Windows.Forms.GroupBox();
 			this.radioPatients = new System.Windows.Forms.RadioButton();
@@ -220,6 +258,10 @@ namespace OpenDental{
 			this.label1 = new System.Windows.Forms.Label();
 			this.butSetPK = new System.Windows.Forms.Button();
 			this.tabColumns = new System.Windows.Forms.TabPage();
+			this.groupBox14 = new System.Windows.Forms.GroupBox();
+			this.textColsDelete = new System.Windows.Forms.TextBox();
+			this.butColsDelete = new System.Windows.Forms.Button();
+			this.label37 = new System.Windows.Forms.Label();
 			this.groupBox8 = new System.Windows.Forms.GroupBox();
 			this.comboColAdd = new System.Windows.Forms.ComboBox();
 			this.butAddCol = new System.Windows.Forms.Button();
@@ -228,25 +270,56 @@ namespace OpenDental{
 			this.comboColDelete = new System.Windows.Forms.ComboBox();
 			this.butDeleteCol = new System.Windows.Forms.Button();
 			this.label16 = new System.Windows.Forms.Label();
+			this.tabQuery = new System.Windows.Forms.TabPage();
+			this.label28 = new System.Windows.Forms.Label();
+			this.butQuerySubmit = new System.Windows.Forms.Button();
+			this.textQuery = new System.Windows.Forms.TextBox();
 			this.tabRows = new System.Windows.Forms.TabPage();
 			this.label23 = new System.Windows.Forms.Label();
 			this.textRows = new System.Windows.Forms.TextBox();
 			this.label12 = new System.Windows.Forms.Label();
 			this.butDeleteRows = new System.Windows.Forms.Button();
 			this.tabEdit = new System.Windows.Forms.TabPage();
-			this.groupBox9 = new System.Windows.Forms.GroupBox();
-			this.comboColClear = new System.Windows.Forms.ComboBox();
-			this.butColClear = new System.Windows.Forms.Button();
+			this.groupBox12 = new System.Windows.Forms.GroupBox();
+			this.comboColCopyFrom = new System.Windows.Forms.ComboBox();
+			this.butColCopy = new System.Windows.Forms.Button();
+			this.label34 = new System.Windows.Forms.Label();
+			this.groupBox11 = new System.Windows.Forms.GroupBox();
+			this.textPadLength = new System.Windows.Forms.TextBox();
+			this.label32 = new System.Windows.Forms.Label();
+			this.textPadChar = new System.Windows.Forms.TextBox();
+			this.label31 = new System.Windows.Forms.Label();
+			this.butColPad = new System.Windows.Forms.Button();
+			this.groupBox10 = new System.Windows.Forms.GroupBox();
+			this.label36 = new System.Windows.Forms.Label();
+			this.butColCapAll = new System.Windows.Forms.Button();
 			this.label26 = new System.Windows.Forms.Label();
+			this.butColCap = new System.Windows.Forms.Button();
+			this.groupBox9 = new System.Windows.Forms.GroupBox();
+			this.butColClear = new System.Windows.Forms.Button();
 			this.tabSpecialtyF = new System.Windows.Forms.TabPage();
-			this.tabQuery = new System.Windows.Forms.TabPage();
-			this.butQuerySubmit = new System.Windows.Forms.Button();
-			this.textQuery = new System.Windows.Forms.TextBox();
+			this.groupBox15 = new System.Windows.Forms.GroupBox();
+			this.textBox4 = new System.Windows.Forms.TextBox();
+			this.label41 = new System.Windows.Forms.Label();
+			this.textBox3 = new System.Windows.Forms.TextBox();
+			this.label40 = new System.Windows.Forms.Label();
+			this.textBox2 = new System.Windows.Forms.TextBox();
+			this.label38 = new System.Windows.Forms.Label();
+			this.label39 = new System.Windows.Forms.Label();
+			this.butGuarantor = new System.Windows.Forms.Button();
+			this.groupBox13 = new System.Windows.Forms.GroupBox();
+			this.comboColDateTo = new System.Windows.Forms.ComboBox();
+			this.label29 = new System.Windows.Forms.Label();
+			this.label30 = new System.Windows.Forms.Label();
+			this.butConvertDate = new System.Windows.Forms.Button();
+			this.textDateBase = new System.Windows.Forms.TextBox();
+			this.label33 = new System.Windows.Forms.Label();
+			this.label35 = new System.Windows.Forms.Label();
+			this.comboColDateFrom = new System.Windows.Forms.ComboBox();
 			this.tabFinalImport = new System.Windows.Forms.TabPage();
 			this.radioUpdate = new System.Windows.Forms.RadioButton();
 			this.radioInsert = new System.Windows.Forms.RadioButton();
-			this.checkDontUsePK = new System.Windows.Forms.CheckBox();
-			this.label28 = new System.Windows.Forms.Label();
+			this.label42 = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
 			this.groupBox1.SuspendLayout();
 			this.groupBox3.SuspendLayout();
@@ -258,13 +331,19 @@ namespace OpenDental{
 			this.tabPK.SuspendLayout();
 			this.groupBox7.SuspendLayout();
 			this.tabColumns.SuspendLayout();
+			this.groupBox14.SuspendLayout();
 			this.groupBox8.SuspendLayout();
 			this.groupBox2.SuspendLayout();
+			this.tabQuery.SuspendLayout();
 			this.tabRows.SuspendLayout();
 			this.tabEdit.SuspendLayout();
+			this.groupBox12.SuspendLayout();
+			this.groupBox11.SuspendLayout();
+			this.groupBox10.SuspendLayout();
 			this.groupBox9.SuspendLayout();
 			this.tabSpecialtyF.SuspendLayout();
-			this.tabQuery.SuspendLayout();
+			this.groupBox15.SuspendLayout();
+			this.groupBox13.SuspendLayout();
 			this.tabFinalImport.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -303,12 +382,10 @@ namespace OpenDental{
 			this.groupBox1.Controls.Add(this.label5);
 			this.groupBox1.Controls.Add(this.textSubstOld);
 			this.groupBox1.Controls.Add(this.label4);
-			this.groupBox1.Controls.Add(this.label3);
-			this.groupBox1.Controls.Add(this.comboColSubst);
 			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox1.Location = new System.Drawing.Point(7, 7);
+			this.groupBox1.Location = new System.Drawing.Point(8, 39);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(250, 128);
+			this.groupBox1.Size = new System.Drawing.Size(245, 91);
 			this.groupBox1.TabIndex = 7;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Substitution";
@@ -316,7 +393,7 @@ namespace OpenDental{
 			// butSubstitute
 			// 
 			this.butSubstitute.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butSubstitute.Location = new System.Drawing.Point(165, 95);
+			this.butSubstitute.Location = new System.Drawing.Point(162, 62);
 			this.butSubstitute.Name = "butSubstitute";
 			this.butSubstitute.TabIndex = 9;
 			this.butSubstitute.Text = "Substitute";
@@ -324,7 +401,7 @@ namespace OpenDental{
 			// 
 			// textSubstNew
 			// 
-			this.textSubstNew.Location = new System.Drawing.Point(116, 68);
+			this.textSubstNew.Location = new System.Drawing.Point(114, 37);
 			this.textSubstNew.Name = "textSubstNew";
 			this.textSubstNew.Size = new System.Drawing.Size(123, 20);
 			this.textSubstNew.TabIndex = 8;
@@ -332,7 +409,7 @@ namespace OpenDental{
 			// 
 			// label5
 			// 
-			this.label5.Location = new System.Drawing.Point(10, 69);
+			this.label5.Location = new System.Drawing.Point(8, 38);
 			this.label5.Name = "label5";
 			this.label5.Size = new System.Drawing.Size(100, 16);
 			this.label5.TabIndex = 7;
@@ -341,7 +418,7 @@ namespace OpenDental{
 			// 
 			// textSubstOld
 			// 
-			this.textSubstOld.Location = new System.Drawing.Point(116, 44);
+			this.textSubstOld.Location = new System.Drawing.Point(114, 13);
 			this.textSubstOld.Name = "textSubstOld";
 			this.textSubstOld.Size = new System.Drawing.Size(123, 20);
 			this.textSubstOld.TabIndex = 6;
@@ -349,7 +426,7 @@ namespace OpenDental{
 			// 
 			// label4
 			// 
-			this.label4.Location = new System.Drawing.Point(11, 46);
+			this.label4.Location = new System.Drawing.Point(9, 15);
 			this.label4.Name = "label4";
 			this.label4.Size = new System.Drawing.Size(100, 16);
 			this.label4.TabIndex = 5;
@@ -358,21 +435,22 @@ namespace OpenDental{
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(10, 23);
+			this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.label3.Location = new System.Drawing.Point(9, 7);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(100, 16);
+			this.label3.Size = new System.Drawing.Size(92, 16);
 			this.label3.TabIndex = 3;
 			this.label3.Text = "Column";
 			this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
-			// comboColSubst
+			// comboColEdit
 			// 
-			this.comboColSubst.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboColSubst.Location = new System.Drawing.Point(116, 19);
-			this.comboColSubst.MaxDropDownItems = 100;
-			this.comboColSubst.Name = "comboColSubst";
-			this.comboColSubst.Size = new System.Drawing.Size(124, 21);
-			this.comboColSubst.TabIndex = 8;
+			this.comboColEdit.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboColEdit.Location = new System.Drawing.Point(105, 5);
+			this.comboColEdit.MaxDropDownItems = 100;
+			this.comboColEdit.Name = "comboColEdit";
+			this.comboColEdit.Size = new System.Drawing.Size(142, 21);
+			this.comboColEdit.TabIndex = 8;
 			// 
 			// groupBox3
 			// 
@@ -387,7 +465,7 @@ namespace OpenDental{
 			this.groupBox3.Controls.Add(this.label8);
 			this.groupBox3.Controls.Add(this.comboColDateSource);
 			this.groupBox3.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox3.Location = new System.Drawing.Point(8, 8);
+			this.groupBox3.Location = new System.Drawing.Point(322, 9);
 			this.groupBox3.Name = "groupBox3";
 			this.groupBox3.Size = new System.Drawing.Size(302, 189);
 			this.groupBox3.TabIndex = 9;
@@ -396,7 +474,7 @@ namespace OpenDental{
 			// 
 			// textDateNewFormat
 			// 
-			this.textDateNewFormat.Location = new System.Drawing.Point(121, 122);
+			this.textDateNewFormat.Location = new System.Drawing.Point(121, 130);
 			this.textDateNewFormat.Name = "textDateNewFormat";
 			this.textDateNewFormat.Size = new System.Drawing.Size(170, 20);
 			this.textDateNewFormat.TabIndex = 18;
@@ -404,7 +482,7 @@ namespace OpenDental{
 			// 
 			// label27
 			// 
-			this.label27.Location = new System.Drawing.Point(4, 124);
+			this.label27.Location = new System.Drawing.Point(4, 132);
 			this.label27.Name = "label27";
 			this.label27.Size = new System.Drawing.Size(115, 16);
 			this.label27.TabIndex = 17;
@@ -414,7 +492,7 @@ namespace OpenDental{
 			// comboColDateDest
 			// 
 			this.comboColDateDest.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboColDateDest.Location = new System.Drawing.Point(121, 76);
+			this.comboColDateDest.Location = new System.Drawing.Point(121, 84);
 			this.comboColDateDest.MaxDropDownItems = 100;
 			this.comboColDateDest.Name = "comboColDateDest";
 			this.comboColDateDest.Size = new System.Drawing.Size(170, 21);
@@ -422,15 +500,16 @@ namespace OpenDental{
 			// 
 			// label17
 			// 
-			this.label17.Location = new System.Drawing.Point(14, 20);
+			this.label17.Location = new System.Drawing.Point(14, 15);
 			this.label17.Name = "label17";
-			this.label17.Size = new System.Drawing.Size(275, 30);
+			this.label17.Size = new System.Drawing.Size(275, 41);
 			this.label17.TabIndex = 12;
-			this.label17.Text = "Very rarely used.  Might be used if month and day are switched in source file";
+			this.label17.Text = "Rarely used.  Might be used if month and day are switched in source file or if da" +
+				"te is in non-standard format, like yyyyMMdd";
 			// 
 			// label6
 			// 
-			this.label6.Location = new System.Drawing.Point(16, 80);
+			this.label6.Location = new System.Drawing.Point(16, 88);
 			this.label6.Name = "label6";
 			this.label6.Size = new System.Drawing.Size(100, 16);
 			this.label6.TabIndex = 10;
@@ -440,7 +519,7 @@ namespace OpenDental{
 			// butFixDates
 			// 
 			this.butFixDates.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butFixDates.Location = new System.Drawing.Point(218, 150);
+			this.butFixDates.Location = new System.Drawing.Point(218, 158);
 			this.butFixDates.Name = "butFixDates";
 			this.butFixDates.TabIndex = 9;
 			this.butFixDates.Text = "Fix";
@@ -448,7 +527,7 @@ namespace OpenDental{
 			// 
 			// textDateOldFormats
 			// 
-			this.textDateOldFormats.Location = new System.Drawing.Point(121, 100);
+			this.textDateOldFormats.Location = new System.Drawing.Point(121, 108);
 			this.textDateOldFormats.Name = "textDateOldFormats";
 			this.textDateOldFormats.Size = new System.Drawing.Size(170, 20);
 			this.textDateOldFormats.TabIndex = 6;
@@ -456,7 +535,7 @@ namespace OpenDental{
 			// 
 			// label7
 			// 
-			this.label7.Location = new System.Drawing.Point(4, 102);
+			this.label7.Location = new System.Drawing.Point(4, 110);
 			this.label7.Name = "label7";
 			this.label7.Size = new System.Drawing.Size(115, 16);
 			this.label7.TabIndex = 5;
@@ -465,7 +544,7 @@ namespace OpenDental{
 			// 
 			// label8
 			// 
-			this.label8.Location = new System.Drawing.Point(16, 57);
+			this.label8.Location = new System.Drawing.Point(16, 65);
 			this.label8.Name = "label8";
 			this.label8.Size = new System.Drawing.Size(100, 16);
 			this.label8.TabIndex = 3;
@@ -475,7 +554,7 @@ namespace OpenDental{
 			// comboColDateSource
 			// 
 			this.comboColDateSource.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboColDateSource.Location = new System.Drawing.Point(121, 52);
+			this.comboColDateSource.Location = new System.Drawing.Point(121, 60);
 			this.comboColDateSource.MaxDropDownItems = 100;
 			this.comboColDateSource.Name = "comboColDateSource";
 			this.comboColDateSource.Size = new System.Drawing.Size(170, 21);
@@ -719,8 +798,8 @@ namespace OpenDental{
 			// 
 			this.tabContr.Controls.Add(this.tabLoadData);
 			this.tabContr.Controls.Add(this.tabPK);
-			this.tabContr.Controls.Add(this.tabQuery);
 			this.tabContr.Controls.Add(this.tabColumns);
+			this.tabContr.Controls.Add(this.tabQuery);
 			this.tabContr.Controls.Add(this.tabRows);
 			this.tabContr.Controls.Add(this.tabEdit);
 			this.tabContr.Controls.Add(this.tabSpecialtyF);
@@ -728,11 +807,12 @@ namespace OpenDental{
 			this.tabContr.Location = new System.Drawing.Point(0, 0);
 			this.tabContr.Name = "tabContr";
 			this.tabContr.SelectedIndex = 0;
-			this.tabContr.Size = new System.Drawing.Size(871, 243);
+			this.tabContr.Size = new System.Drawing.Size(1054, 243);
 			this.tabContr.TabIndex = 14;
 			// 
 			// tabLoadData
 			// 
+			this.tabLoadData.Controls.Add(this.label42);
 			this.tabLoadData.Controls.Add(this.comboTableName);
 			this.tabLoadData.Controls.Add(this.butDeleteTable);
 			this.tabLoadData.Controls.Add(this.label22);
@@ -749,7 +829,7 @@ namespace OpenDental{
 			this.tabLoadData.Controls.Add(this.label2);
 			this.tabLoadData.Location = new System.Drawing.Point(4, 22);
 			this.tabLoadData.Name = "tabLoadData";
-			this.tabLoadData.Size = new System.Drawing.Size(863, 217);
+			this.tabLoadData.Size = new System.Drawing.Size(1046, 217);
 			this.tabLoadData.TabIndex = 0;
 			this.tabLoadData.Text = "Load Data";
 			// 
@@ -876,9 +956,18 @@ namespace OpenDental{
 			this.tabPK.Controls.Add(this.butSetPK);
 			this.tabPK.Location = new System.Drawing.Point(4, 22);
 			this.tabPK.Name = "tabPK";
-			this.tabPK.Size = new System.Drawing.Size(863, 217);
+			this.tabPK.Size = new System.Drawing.Size(1046, 217);
 			this.tabPK.TabIndex = 6;
 			this.tabPK.Text = "Primary Key";
+			// 
+			// checkDontUsePK
+			// 
+			this.checkDontUsePK.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkDontUsePK.Location = new System.Drawing.Point(234, 14);
+			this.checkDontUsePK.Name = "checkDontUsePK";
+			this.checkDontUsePK.Size = new System.Drawing.Size(375, 19);
+			this.checkDontUsePK.TabIndex = 31;
+			this.checkDontUsePK.Text = "Do not use the primary key values in the final import";
 			// 
 			// label25
 			// 
@@ -963,6 +1052,7 @@ namespace OpenDental{
 			// 
 			// tabColumns
 			// 
+			this.tabColumns.Controls.Add(this.groupBox14);
 			this.tabColumns.Controls.Add(this.groupBox8);
 			this.tabColumns.Controls.Add(this.groupBox2);
 			this.tabColumns.Controls.Add(this.groupBox6);
@@ -970,9 +1060,48 @@ namespace OpenDental{
 			this.tabColumns.Controls.Add(this.groupBox5);
 			this.tabColumns.Location = new System.Drawing.Point(4, 22);
 			this.tabColumns.Name = "tabColumns";
-			this.tabColumns.Size = new System.Drawing.Size(863, 217);
+			this.tabColumns.Size = new System.Drawing.Size(1046, 217);
 			this.tabColumns.TabIndex = 1;
 			this.tabColumns.Text = "Columns";
+			// 
+			// groupBox14
+			// 
+			this.groupBox14.Controls.Add(this.textColsDelete);
+			this.groupBox14.Controls.Add(this.butColsDelete);
+			this.groupBox14.Controls.Add(this.label37);
+			this.groupBox14.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.groupBox14.Location = new System.Drawing.Point(262, 136);
+			this.groupBox14.Name = "groupBox14";
+			this.groupBox14.Size = new System.Drawing.Size(250, 77);
+			this.groupBox14.TabIndex = 15;
+			this.groupBox14.TabStop = false;
+			this.groupBox14.Text = "Delete Multiple Columns From the End";
+			// 
+			// textColsDelete
+			// 
+			this.textColsDelete.Location = new System.Drawing.Point(198, 18);
+			this.textColsDelete.Name = "textColsDelete";
+			this.textColsDelete.Size = new System.Drawing.Size(42, 20);
+			this.textColsDelete.TabIndex = 10;
+			this.textColsDelete.Text = "";
+			// 
+			// butColsDelete
+			// 
+			this.butColsDelete.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butColsDelete.Location = new System.Drawing.Point(166, 47);
+			this.butColsDelete.Name = "butColsDelete";
+			this.butColsDelete.TabIndex = 9;
+			this.butColsDelete.Text = "Delete";
+			this.butColsDelete.Click += new System.EventHandler(this.butColsDelete_Click);
+			// 
+			// label37
+			// 
+			this.label37.Location = new System.Drawing.Point(15, 21);
+			this.label37.Name = "label37";
+			this.label37.Size = new System.Drawing.Size(176, 16);
+			this.label37.TabIndex = 3;
+			this.label37.Text = "Number of Columns";
+			this.label37.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// groupBox8
 			// 
@@ -980,7 +1109,7 @@ namespace OpenDental{
 			this.groupBox8.Controls.Add(this.butAddCol);
 			this.groupBox8.Controls.Add(this.label24);
 			this.groupBox8.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox8.Location = new System.Drawing.Point(280, 136);
+			this.groupBox8.Location = new System.Drawing.Point(549, 136);
 			this.groupBox8.Name = "groupBox8";
 			this.groupBox8.Size = new System.Drawing.Size(250, 77);
 			this.groupBox8.TabIndex = 14;
@@ -1053,6 +1182,44 @@ namespace OpenDental{
 			this.label16.Text = "Column";
 			this.label16.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
+			// tabQuery
+			// 
+			this.tabQuery.Controls.Add(this.label28);
+			this.tabQuery.Controls.Add(this.butQuerySubmit);
+			this.tabQuery.Controls.Add(this.textQuery);
+			this.tabQuery.Location = new System.Drawing.Point(4, 22);
+			this.tabQuery.Name = "tabQuery";
+			this.tabQuery.Size = new System.Drawing.Size(1046, 217);
+			this.tabQuery.TabIndex = 7;
+			this.tabQuery.Text = "Query";
+			// 
+			// label28
+			// 
+			this.label28.Location = new System.Drawing.Point(545, 8);
+			this.label28.Name = "label28";
+			this.label28.Size = new System.Drawing.Size(182, 30);
+			this.label28.TabIndex = 11;
+			this.label28.Text = "Should be a command, not a query to retrieve a table";
+			// 
+			// butQuerySubmit
+			// 
+			this.butQuerySubmit.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butQuerySubmit.Location = new System.Drawing.Point(545, 169);
+			this.butQuerySubmit.Name = "butQuerySubmit";
+			this.butQuerySubmit.TabIndex = 10;
+			this.butQuerySubmit.Text = "Submit";
+			this.butQuerySubmit.Click += new System.EventHandler(this.butQuerySubmit_Click);
+			// 
+			// textQuery
+			// 
+			this.textQuery.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.textQuery.Location = new System.Drawing.Point(1, 2);
+			this.textQuery.Multiline = true;
+			this.textQuery.Name = "textQuery";
+			this.textQuery.Size = new System.Drawing.Size(537, 190);
+			this.textQuery.TabIndex = 0;
+			this.textQuery.Text = "";
+			// 
 			// tabRows
 			// 
 			this.tabRows.Controls.Add(this.label23);
@@ -1061,7 +1228,7 @@ namespace OpenDental{
 			this.tabRows.Controls.Add(this.butDeleteRows);
 			this.tabRows.Location = new System.Drawing.Point(4, 22);
 			this.tabRows.Name = "tabRows";
-			this.tabRows.Size = new System.Drawing.Size(863, 217);
+			this.tabRows.Size = new System.Drawing.Size(1046, 217);
 			this.tabRows.TabIndex = 5;
 			this.tabRows.Text = "Rows";
 			// 
@@ -1104,92 +1271,375 @@ namespace OpenDental{
 			// 
 			// tabEdit
 			// 
+			this.tabEdit.Controls.Add(this.groupBox12);
+			this.tabEdit.Controls.Add(this.groupBox11);
+			this.tabEdit.Controls.Add(this.groupBox10);
 			this.tabEdit.Controls.Add(this.groupBox9);
 			this.tabEdit.Controls.Add(this.groupBox1);
+			this.tabEdit.Controls.Add(this.label3);
+			this.tabEdit.Controls.Add(this.comboColEdit);
 			this.tabEdit.Location = new System.Drawing.Point(4, 22);
 			this.tabEdit.Name = "tabEdit";
-			this.tabEdit.Size = new System.Drawing.Size(863, 217);
+			this.tabEdit.Size = new System.Drawing.Size(1046, 217);
 			this.tabEdit.TabIndex = 2;
 			this.tabEdit.Text = "Edit";
 			// 
+			// groupBox12
+			// 
+			this.groupBox12.Controls.Add(this.comboColCopyFrom);
+			this.groupBox12.Controls.Add(this.butColCopy);
+			this.groupBox12.Controls.Add(this.label34);
+			this.groupBox12.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.groupBox12.Location = new System.Drawing.Point(7, 135);
+			this.groupBox12.Name = "groupBox12";
+			this.groupBox12.Size = new System.Drawing.Size(246, 68);
+			this.groupBox12.TabIndex = 19;
+			this.groupBox12.TabStop = false;
+			this.groupBox12.Text = "Copy Column";
+			// 
+			// comboColCopyFrom
+			// 
+			this.comboColCopyFrom.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboColCopyFrom.Location = new System.Drawing.Point(116, 13);
+			this.comboColCopyFrom.MaxDropDownItems = 100;
+			this.comboColCopyFrom.Name = "comboColCopyFrom";
+			this.comboColCopyFrom.Size = new System.Drawing.Size(123, 21);
+			this.comboColCopyFrom.TabIndex = 16;
+			// 
+			// butColCopy
+			// 
+			this.butColCopy.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butColCopy.Location = new System.Drawing.Point(163, 38);
+			this.butColCopy.Name = "butColCopy";
+			this.butColCopy.TabIndex = 9;
+			this.butColCopy.Text = "Copy";
+			this.butColCopy.Click += new System.EventHandler(this.butColCopy_Click);
+			// 
+			// label34
+			// 
+			this.label34.Location = new System.Drawing.Point(10, 16);
+			this.label34.Name = "label34";
+			this.label34.Size = new System.Drawing.Size(100, 16);
+			this.label34.TabIndex = 3;
+			this.label34.Text = "From Column";
+			this.label34.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// groupBox11
+			// 
+			this.groupBox11.Controls.Add(this.textPadLength);
+			this.groupBox11.Controls.Add(this.label32);
+			this.groupBox11.Controls.Add(this.textPadChar);
+			this.groupBox11.Controls.Add(this.label31);
+			this.groupBox11.Controls.Add(this.butColPad);
+			this.groupBox11.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.groupBox11.Location = new System.Drawing.Point(298, 6);
+			this.groupBox11.Name = "groupBox11";
+			this.groupBox11.Size = new System.Drawing.Size(188, 90);
+			this.groupBox11.TabIndex = 18;
+			this.groupBox11.TabStop = false;
+			this.groupBox11.Text = "Pad Left (Add characters on left)";
+			// 
+			// textPadLength
+			// 
+			this.textPadLength.Location = new System.Drawing.Point(148, 37);
+			this.textPadLength.Name = "textPadLength";
+			this.textPadLength.Size = new System.Drawing.Size(31, 20);
+			this.textPadLength.TabIndex = 22;
+			this.textPadLength.Text = "";
+			// 
+			// label32
+			// 
+			this.label32.Location = new System.Drawing.Point(43, 39);
+			this.label32.Name = "label32";
+			this.label32.Size = new System.Drawing.Size(100, 16);
+			this.label32.TabIndex = 21;
+			this.label32.Text = "Final Length";
+			this.label32.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// textPadChar
+			// 
+			this.textPadChar.Location = new System.Drawing.Point(148, 16);
+			this.textPadChar.MaxLength = 1;
+			this.textPadChar.Name = "textPadChar";
+			this.textPadChar.Size = new System.Drawing.Size(31, 20);
+			this.textPadChar.TabIndex = 20;
+			this.textPadChar.Text = "";
+			// 
+			// label31
+			// 
+			this.label31.Location = new System.Drawing.Point(43, 18);
+			this.label31.Name = "label31";
+			this.label31.Size = new System.Drawing.Size(100, 16);
+			this.label31.TabIndex = 19;
+			this.label31.Text = "Pad Character";
+			this.label31.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// butColPad
+			// 
+			this.butColPad.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butColPad.Location = new System.Drawing.Point(105, 62);
+			this.butColPad.Name = "butColPad";
+			this.butColPad.TabIndex = 9;
+			this.butColPad.Text = "Pad";
+			this.butColPad.Click += new System.EventHandler(this.butColPad_Click);
+			// 
+			// groupBox10
+			// 
+			this.groupBox10.Controls.Add(this.label36);
+			this.groupBox10.Controls.Add(this.butColCapAll);
+			this.groupBox10.Controls.Add(this.label26);
+			this.groupBox10.Controls.Add(this.butColCap);
+			this.groupBox10.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.groupBox10.Location = new System.Drawing.Point(498, 10);
+			this.groupBox10.Name = "groupBox10";
+			this.groupBox10.Size = new System.Drawing.Size(244, 95);
+			this.groupBox10.TabIndex = 17;
+			this.groupBox10.TabStop = false;
+			this.groupBox10.Text = "Capitalize first letter of each word";
+			// 
+			// label36
+			// 
+			this.label36.Location = new System.Drawing.Point(5, 47);
+			this.label36.Name = "label36";
+			this.label36.Size = new System.Drawing.Size(155, 40);
+			this.label36.TabIndex = 22;
+			this.label36.Text = "Fixes LName, FName, Address, Address2, and City";
+			this.label36.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
+			// butColCapAll
+			// 
+			this.butColCapAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butColCapAll.Location = new System.Drawing.Point(163, 49);
+			this.butColCapAll.Name = "butColCapAll";
+			this.butColCapAll.TabIndex = 21;
+			this.butColCapAll.Text = "Capitalize";
+			this.butColCapAll.Click += new System.EventHandler(this.butColCapAll_Click);
+			// 
+			// label26
+			// 
+			this.label26.Location = new System.Drawing.Point(4, 20);
+			this.label26.Name = "label26";
+			this.label26.Size = new System.Drawing.Size(155, 16);
+			this.label26.TabIndex = 20;
+			this.label26.Text = "Selected Column Only";
+			this.label26.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// butColCap
+			// 
+			this.butColCap.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butColCap.Location = new System.Drawing.Point(163, 16);
+			this.butColCap.Name = "butColCap";
+			this.butColCap.TabIndex = 9;
+			this.butColCap.Text = "Capitalize";
+			this.butColCap.Click += new System.EventHandler(this.butColCap_Click);
+			// 
 			// groupBox9
 			// 
-			this.groupBox9.Controls.Add(this.comboColClear);
 			this.groupBox9.Controls.Add(this.butColClear);
-			this.groupBox9.Controls.Add(this.label26);
 			this.groupBox9.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox9.Location = new System.Drawing.Point(269, 7);
+			this.groupBox9.Location = new System.Drawing.Point(298, 159);
 			this.groupBox9.Name = "groupBox9";
-			this.groupBox9.Size = new System.Drawing.Size(250, 77);
+			this.groupBox9.Size = new System.Drawing.Size(188, 48);
 			this.groupBox9.TabIndex = 16;
 			this.groupBox9.TabStop = false;
 			this.groupBox9.Text = "Clear all values";
 			// 
-			// comboColClear
-			// 
-			this.comboColClear.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboColClear.Location = new System.Drawing.Point(119, 18);
-			this.comboColClear.MaxDropDownItems = 100;
-			this.comboColClear.Name = "comboColClear";
-			this.comboColClear.Size = new System.Drawing.Size(123, 21);
-			this.comboColClear.TabIndex = 18;
-			// 
 			// butColClear
 			// 
 			this.butColClear.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butColClear.Location = new System.Drawing.Point(166, 47);
+			this.butColClear.Location = new System.Drawing.Point(105, 17);
 			this.butColClear.Name = "butColClear";
 			this.butColClear.TabIndex = 9;
 			this.butColClear.Text = "Clear";
 			this.butColClear.Click += new System.EventHandler(this.butColClear_Click);
 			// 
-			// label26
-			// 
-			this.label26.Location = new System.Drawing.Point(10, 21);
-			this.label26.Name = "label26";
-			this.label26.Size = new System.Drawing.Size(100, 16);
-			this.label26.TabIndex = 3;
-			this.label26.Text = "Column Name";
-			this.label26.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			// 
 			// tabSpecialtyF
 			// 
+			this.tabSpecialtyF.Controls.Add(this.groupBox15);
+			this.tabSpecialtyF.Controls.Add(this.groupBox13);
 			this.tabSpecialtyF.Controls.Add(this.groupBox3);
 			this.tabSpecialtyF.Location = new System.Drawing.Point(4, 22);
 			this.tabSpecialtyF.Name = "tabSpecialtyF";
-			this.tabSpecialtyF.Size = new System.Drawing.Size(863, 217);
+			this.tabSpecialtyF.Size = new System.Drawing.Size(1046, 217);
 			this.tabSpecialtyF.TabIndex = 3;
 			this.tabSpecialtyF.Text = "Specialty Functions";
 			// 
-			// tabQuery
+			// groupBox15
 			// 
-			this.tabQuery.Controls.Add(this.label28);
-			this.tabQuery.Controls.Add(this.butQuerySubmit);
-			this.tabQuery.Controls.Add(this.textQuery);
-			this.tabQuery.Location = new System.Drawing.Point(4, 22);
-			this.tabQuery.Name = "tabQuery";
-			this.tabQuery.Size = new System.Drawing.Size(863, 217);
-			this.tabQuery.TabIndex = 7;
-			this.tabQuery.Text = "Query";
+			this.groupBox15.Controls.Add(this.textBox4);
+			this.groupBox15.Controls.Add(this.label41);
+			this.groupBox15.Controls.Add(this.textBox3);
+			this.groupBox15.Controls.Add(this.label40);
+			this.groupBox15.Controls.Add(this.textBox2);
+			this.groupBox15.Controls.Add(this.label38);
+			this.groupBox15.Controls.Add(this.label39);
+			this.groupBox15.Controls.Add(this.butGuarantor);
+			this.groupBox15.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.groupBox15.Location = new System.Drawing.Point(634, 9);
+			this.groupBox15.Name = "groupBox15";
+			this.groupBox15.Size = new System.Drawing.Size(302, 189);
+			this.groupBox15.TabIndex = 11;
+			this.groupBox15.TabStop = false;
+			this.groupBox15.Text = "Fill Guarantor";
 			// 
-			// butQuerySubmit
+			// textBox4
 			// 
-			this.butQuerySubmit.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butQuerySubmit.Location = new System.Drawing.Point(545, 169);
-			this.butQuerySubmit.Name = "butQuerySubmit";
-			this.butQuerySubmit.TabIndex = 10;
-			this.butQuerySubmit.Text = "Submit";
-			this.butQuerySubmit.Click += new System.EventHandler(this.butQuerySubmit_Click);
+			this.textBox4.Location = new System.Drawing.Point(121, 32);
+			this.textBox4.Name = "textBox4";
+			this.textBox4.ReadOnly = true;
+			this.textBox4.Size = new System.Drawing.Size(167, 20);
+			this.textBox4.TabIndex = 21;
+			this.textBox4.Text = "ChartNumber";
 			// 
-			// textQuery
+			// label41
 			// 
-			this.textQuery.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.textQuery.Location = new System.Drawing.Point(1, 2);
-			this.textQuery.Multiline = true;
-			this.textQuery.Name = "textQuery";
-			this.textQuery.Size = new System.Drawing.Size(537, 190);
-			this.textQuery.TabIndex = 0;
-			this.textQuery.Text = "";
+			this.label41.Location = new System.Drawing.Point(4, 34);
+			this.label41.Name = "label41";
+			this.label41.Size = new System.Drawing.Size(115, 16);
+			this.label41.TabIndex = 20;
+			this.label41.Text = "Key Column";
+			this.label41.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// textBox3
+			// 
+			this.textBox3.Location = new System.Drawing.Point(121, 74);
+			this.textBox3.Name = "textBox3";
+			this.textBox3.ReadOnly = true;
+			this.textBox3.Size = new System.Drawing.Size(167, 20);
+			this.textBox3.TabIndex = 19;
+			this.textBox3.Text = "Guarantor";
+			// 
+			// label40
+			// 
+			this.label40.Location = new System.Drawing.Point(4, 76);
+			this.label40.Name = "label40";
+			this.label40.Size = new System.Drawing.Size(115, 16);
+			this.label40.TabIndex = 18;
+			this.label40.Text = "Destination Column";
+			this.label40.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// textBox2
+			// 
+			this.textBox2.Location = new System.Drawing.Point(121, 53);
+			this.textBox2.Name = "textBox2";
+			this.textBox2.ReadOnly = true;
+			this.textBox2.Size = new System.Drawing.Size(167, 20);
+			this.textBox2.TabIndex = 17;
+			this.textBox2.Text = "tempGuarantor";
+			// 
+			// label38
+			// 
+			this.label38.Location = new System.Drawing.Point(4, 55);
+			this.label38.Name = "label38";
+			this.label38.Size = new System.Drawing.Size(115, 16);
+			this.label38.TabIndex = 16;
+			this.label38.Text = "Reference Column";
+			this.label38.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// label39
+			// 
+			this.label39.Location = new System.Drawing.Point(14, 15);
+			this.label39.Name = "label39";
+			this.label39.Size = new System.Drawing.Size(275, 20);
+			this.label39.TabIndex = 12;
+			this.label39.Text = "Used when the guarantor is not in PatNum format.";
+			// 
+			// butGuarantor
+			// 
+			this.butGuarantor.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butGuarantor.Location = new System.Drawing.Point(215, 106);
+			this.butGuarantor.Name = "butGuarantor";
+			this.butGuarantor.TabIndex = 9;
+			this.butGuarantor.Text = "Fill";
+			this.butGuarantor.Click += new System.EventHandler(this.butGuarantor_Click);
+			// 
+			// groupBox13
+			// 
+			this.groupBox13.Controls.Add(this.comboColDateTo);
+			this.groupBox13.Controls.Add(this.label29);
+			this.groupBox13.Controls.Add(this.label30);
+			this.groupBox13.Controls.Add(this.butConvertDate);
+			this.groupBox13.Controls.Add(this.textDateBase);
+			this.groupBox13.Controls.Add(this.label33);
+			this.groupBox13.Controls.Add(this.label35);
+			this.groupBox13.Controls.Add(this.comboColDateFrom);
+			this.groupBox13.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.groupBox13.Location = new System.Drawing.Point(7, 9);
+			this.groupBox13.Name = "groupBox13";
+			this.groupBox13.Size = new System.Drawing.Size(302, 189);
+			this.groupBox13.TabIndex = 10;
+			this.groupBox13.TabStop = false;
+			this.groupBox13.Text = "Convert numbers to dates";
+			// 
+			// comboColDateTo
+			// 
+			this.comboColDateTo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboColDateTo.Location = new System.Drawing.Point(121, 76);
+			this.comboColDateTo.MaxDropDownItems = 100;
+			this.comboColDateTo.Name = "comboColDateTo";
+			this.comboColDateTo.Size = new System.Drawing.Size(170, 21);
+			this.comboColDateTo.TabIndex = 16;
+			// 
+			// label29
+			// 
+			this.label29.Location = new System.Drawing.Point(14, 20);
+			this.label29.Name = "label29";
+			this.label29.Size = new System.Drawing.Size(275, 30);
+			this.label29.TabIndex = 12;
+			this.label29.Text = "The number of days since a given date";
+			// 
+			// label30
+			// 
+			this.label30.Location = new System.Drawing.Point(16, 80);
+			this.label30.Name = "label30";
+			this.label30.Size = new System.Drawing.Size(100, 16);
+			this.label30.TabIndex = 10;
+			this.label30.Text = "Destination Col";
+			this.label30.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// butConvertDate
+			// 
+			this.butConvertDate.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.butConvertDate.Location = new System.Drawing.Point(218, 150);
+			this.butConvertDate.Name = "butConvertDate";
+			this.butConvertDate.TabIndex = 9;
+			this.butConvertDate.Text = "Convert";
+			this.butConvertDate.Click += new System.EventHandler(this.butConvertDate_Click);
+			// 
+			// textDateBase
+			// 
+			this.textDateBase.Location = new System.Drawing.Point(121, 100);
+			this.textDateBase.Name = "textDateBase";
+			this.textDateBase.Size = new System.Drawing.Size(96, 20);
+			this.textDateBase.TabIndex = 6;
+			this.textDateBase.Text = "";
+			// 
+			// label33
+			// 
+			this.label33.Location = new System.Drawing.Point(4, 102);
+			this.label33.Name = "label33";
+			this.label33.Size = new System.Drawing.Size(115, 16);
+			this.label33.TabIndex = 5;
+			this.label33.Text = "Base date";
+			this.label33.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// label35
+			// 
+			this.label35.Location = new System.Drawing.Point(16, 57);
+			this.label35.Name = "label35";
+			this.label35.Size = new System.Drawing.Size(100, 16);
+			this.label35.TabIndex = 3;
+			this.label35.Text = "Source Column";
+			this.label35.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// comboColDateFrom
+			// 
+			this.comboColDateFrom.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboColDateFrom.Location = new System.Drawing.Point(121, 52);
+			this.comboColDateFrom.MaxDropDownItems = 100;
+			this.comboColDateFrom.Name = "comboColDateFrom";
+			this.comboColDateFrom.Size = new System.Drawing.Size(170, 21);
+			this.comboColDateFrom.TabIndex = 15;
 			// 
 			// tabFinalImport
 			// 
@@ -1199,7 +1649,7 @@ namespace OpenDental{
 			this.tabFinalImport.Controls.Add(this.butValidate);
 			this.tabFinalImport.Location = new System.Drawing.Point(4, 22);
 			this.tabFinalImport.Name = "tabFinalImport";
-			this.tabFinalImport.Size = new System.Drawing.Size(863, 217);
+			this.tabFinalImport.Size = new System.Drawing.Size(1046, 217);
 			this.tabFinalImport.TabIndex = 4;
 			this.tabFinalImport.Text = "Final Import";
 			// 
@@ -1223,22 +1673,15 @@ namespace OpenDental{
 			this.radioInsert.TabStop = true;
 			this.radioInsert.Text = "Insert new rows";
 			// 
-			// checkDontUsePK
+			// label42
 			// 
-			this.checkDontUsePK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkDontUsePK.Location = new System.Drawing.Point(234, 14);
-			this.checkDontUsePK.Name = "checkDontUsePK";
-			this.checkDontUsePK.Size = new System.Drawing.Size(375, 19);
-			this.checkDontUsePK.TabIndex = 31;
-			this.checkDontUsePK.Text = "Do not use the primary key values in the final import";
-			// 
-			// label28
-			// 
-			this.label28.Location = new System.Drawing.Point(545, 8);
-			this.label28.Name = "label28";
-			this.label28.Size = new System.Drawing.Size(182, 30);
-			this.label28.TabIndex = 11;
-			this.label28.Text = "Should be a command, not a query to retrieve a table";
+			this.label42.Location = new System.Drawing.Point(193, 75);
+			this.label42.Name = "label42";
+			this.label42.Size = new System.Drawing.Size(836, 18);
+			this.label42.TabIndex = 19;
+			this.label42.Text = "If you get an error loading,  consider the possibility that your A-Z folder is no" +
+				"t accessible from both the server and the workstation";
+			this.label42.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// FormImport
 			// 
@@ -1263,31 +1706,58 @@ namespace OpenDental{
 			this.tabPK.ResumeLayout(false);
 			this.groupBox7.ResumeLayout(false);
 			this.tabColumns.ResumeLayout(false);
+			this.groupBox14.ResumeLayout(false);
 			this.groupBox8.ResumeLayout(false);
 			this.groupBox2.ResumeLayout(false);
+			this.tabQuery.ResumeLayout(false);
 			this.tabRows.ResumeLayout(false);
 			this.tabEdit.ResumeLayout(false);
+			this.groupBox12.ResumeLayout(false);
+			this.groupBox11.ResumeLayout(false);
+			this.groupBox10.ResumeLayout(false);
 			this.groupBox9.ResumeLayout(false);
 			this.tabSpecialtyF.ResumeLayout(false);
-			this.tabQuery.ResumeLayout(false);
+			this.groupBox15.ResumeLayout(false);
+			this.groupBox13.ResumeLayout(false);
 			this.tabFinalImport.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
 		#endregion
 
-		private void FormImport_Load(object sender, System.EventArgs e) {
+		private void FormImport_Load(object sender, System.EventArgs e){
 			grid.Width=ClientSize.Width-3;
 			grid.Height=ClientSize.Height-grid.Top-2;
 			tabContr.Width=ClientSize.Width-3;
 			FillTableNames();
+			if(!Regex.IsMatch(FormChooseDatabase.Database,@"^[a-z0-9]+$")){
+				MsgBox.Show(this,"Name of database is invalid for use with this tool.  Must be all lowercase, numbers optional, but with no other characters.  Use the format lnamefname of the dentist.");
+				DialogResult=DialogResult.Cancel;
+				return;
+			}
+			if(Application.CurrentCulture.Name=="en-US" && ProcedureCodes.List.Length<500){
+				MsgBox.Show(this,"This database was not derived from the standard usa database.  You must use a blank usa database.");
+				DialogResult=DialogResult.Cancel;
+				return;
+			}
+			string command="SELECT COUNT(*) FROM patient";
+			DataConnection dcon=new DataConnection();
+			if(dcon.GetOneValue(command)!="0"){
+				if(!MsgBox.Show(this,true,"Warning! This database already has at least one patient.  It is typically recommended to start with a blank database.  Continue anyway?"))
+				{
+					DialogResult=DialogResult.Cancel;
+					return;
+				}
+			}
 			if(comboTableName.Items.Count>0){
 				comboTableName.SelectedIndex=0;//this triggers a fillgrid
 				//FillGrid();
 				GetPK();
 			}
+			else{
+				MsgBox.Show(this,"Warning.  This feature is only intended for advanced users doing data conversions from other software.  It is not yet easy enough for beginners to use.");
+			}
 			GetAllowedCols();
-			MsgBox.Show(this,"Warning.  This feature is only intended for advanced users doing data conversions from other software.  It is not yet easy enough for beginners to use.");
 		}
 
 		///<summary>Depending on whether this is patients, carriers, or..., this sets a few of the comboboxes and also enables proper validation when doing the final export.</summary>
@@ -1300,6 +1770,7 @@ namespace OpenDental{
 					"AddrNote",
 					"Balance",
 					"Birthdate",
+					"ChartNumber",
 					"City",
 					"DateFirstVisit",
 					"FName",
@@ -1307,10 +1778,12 @@ namespace OpenDental{
 					"Guarantor",
 					"HmPhone",
 					"LName",
+					"MedUrgNote",
 					"MiddleI",
 					"PatNum",
 					"Position",
 					"Preferred",
+					"PriProv",
 					"SSN",
 					"State",
 					"WkPhone",
@@ -1381,21 +1854,41 @@ namespace OpenDental{
 				MessageBox.Show(ex.Message);
 				return;
 			}
+			if(line.Length==0){
+				MsgBox.Show(this,"First line is blank.");
+				return;
+			}
 			line=line.Replace("\"","");
 			string[] colNames=line.Split(new char[] {'\t'});
+			//ArrayList ALcolNames=new ArrayList();
+			//ALcolNames.AddRange(colNames);
 			command="CREATE TABLE "+newTable+"(";
 			for(int i=0;i<colNames.Length;i++){
 				colNames[i]=Regex.Replace(colNames[i],"[^a-zA-Z0-9]","");//gets rid of any character that's not a letter or number.
-				command+=colNames[i]+" text NOT NULL";
-				if(i<colNames.Length-1){
-					command+=",";
+				//strip a trailing tab on first line
+				if(colNames[i]=="" && i==colNames.Length-1){
+					command=command.Substring(0,command.Length-1);//remove the last comma
+				}
+				else{
+					//missing feature: check for duplicate column names
+					command+=colNames[i]+" text NOT NULL";
+					if(i<colNames.Length-1){
+						command+=",";
+					}
 				}
 			}
 			command+=")";
 			dcon.NonQ(command);
-			command="LOAD DATA INFILE '"+POut.PString(textFileName.Text)+"' INTO TABLE "+newTable
-				+@" FIELDS TERMINATED BY '\t' ESCAPED BY '\\' LINES TERMINATED BY '\r\n'";
+			//we might not be on the server, so make a copy of the file in the A-Z folder before loading
+			string newPath=Prefs.GetString("DocPath")//includes trailing \
+				+Path.GetFileName(textFileName.Text);
+			File.Copy(textFileName.Text,newPath);
+			command="LOAD DATA INFILE '"+POut.PString(newPath)+"' INTO TABLE "+newTable
+				+@" FIELDS TERMINATED BY '\t' "
+				+"OPTIONALLY ENCLOSED BY '"+POut.PString("\"")
+				+@"' ESCAPED BY '\\' LINES TERMINATED BY '\r\n'";
 			dcon.NonQ(command);
+			File.Delete(newPath);
 			FillTableNames();
 			comboTableName.SelectedItem=newTable;
 			FillGrid();
@@ -1415,38 +1908,44 @@ namespace OpenDental{
 		}
 
 		private void FillGrid(){
+			//missing feature: check for no table selected
 			string command="SELECT * FROM "+POut.PString(comboTableName.SelectedItem.ToString());
 			DataConnection dcon=new DataConnection();
  			table=dcon.GetTable(command);
-			comboColSubst.Items.Clear();
+			comboColEdit.Items.Clear();
 			comboColMove.Items.Clear();
 			comboColMoveAfter.Items.Clear();
 			comboColCombine1.Items.Clear();
 			comboColCombine2.Items.Clear();
 			comboColRename.Items.Clear();
 			comboColDelete.Items.Clear();
+			comboColDateFrom.Items.Clear();
+			comboColDateTo.Items.Clear();
 			comboColDateSource.Items.Clear();
 			comboColDateDest.Items.Clear();
 			comboColPK.Items.Clear();
-			comboColClear.Items.Clear();
+			comboColCopyFrom.Items.Clear();
 			for(int i=0;i<table.Columns.Count;i++){
-				comboColSubst.Items.Add(table.Columns[i].ColumnName);
+				comboColEdit.Items.Add(table.Columns[i].ColumnName);
 				comboColMove.Items.Add(table.Columns[i].ColumnName);
 				comboColMoveAfter.Items.Add(table.Columns[i].ColumnName);
 				comboColCombine1.Items.Add(table.Columns[i].ColumnName);
 				comboColCombine2.Items.Add(table.Columns[i].ColumnName);
 				comboColRename.Items.Add(table.Columns[i].ColumnName);
 				comboColDelete.Items.Add(table.Columns[i].ColumnName);
+				comboColDateFrom.Items.Add(table.Columns[i].ColumnName);
+				comboColDateTo.Items.Add(table.Columns[i].ColumnName);
 				comboColDateSource.Items.Add(table.Columns[i].ColumnName);
 				comboColDateDest.Items.Add(table.Columns[i].ColumnName);
 				comboColPK.Items.Add(table.Columns[i].ColumnName);
-				comboColClear.Items.Add(table.Columns[i].ColumnName);
+				comboColCopyFrom.Items.Add(table.Columns[i].ColumnName);
 			}
 			grid.SetDataBinding(table,"");
 			textRows.Text=table.Rows.Count.ToString();
 		}
 
 		private void GetPK(){
+			//missing feature: check for no table selected
 			string command="SHOW INDEX FROM "+POut.PString(comboTableName.SelectedItem.ToString());
 			DataConnection dcon=new DataConnection();
 			DataTable tempT=dcon.GetTable(command);
@@ -1524,9 +2023,16 @@ namespace OpenDental{
 
 		private void comboTableName_SelectedIndexChanged(object sender, System.EventArgs e) {
 			FillGrid();
+			GetPK();
 		}
 
 		private void butRefresh_Click(object sender, System.EventArgs e) {
+			if(comboTableName.SelectedIndex==-1){
+				table=new DataTable();
+				grid.SetDataBinding(table,"");
+				textRows.Text=table.Rows.Count.ToString();
+				return;
+			}
 			FillGrid();
 			GetPK();
 		}
@@ -1546,6 +2052,15 @@ namespace OpenDental{
 			if(comboTableName.Items.Count>0){
 				comboTableName.SelectedIndex=0;
 			}
+			//clear existing grid
+			if(comboTableName.SelectedIndex==-1){
+				table=new DataTable();
+				grid.SetDataBinding(table,"");
+				textRows.Text=table.Rows.Count.ToString();
+				return;
+			}
+			FillGrid();
+			GetPK();
 		}
 
 		private void butSubstitute_Click(object sender, System.EventArgs e) {
@@ -1553,12 +2068,16 @@ namespace OpenDental{
 				MsgBox.Show(this,"Please set a primary key first.");
 				return;
 			}
-			if(comboColSubst.SelectedIndex==-1){
+			if(comboColEdit.SelectedIndex==-1){
 				MsgBox.Show(this,"Please select a column first.");
 				return;
 			}
+			if(textSubstOld.Text.Length==0){
+				MsgBox.Show(this,"Please enter an old value first.");
+				return;
+			}
 			Cursor=Cursors.WaitCursor;
-			string colName=comboColSubst.SelectedItem.ToString();
+			string colName=comboColEdit.SelectedItem.ToString();
 			int count=0;
 			string newVal;
 			string command;
@@ -1572,23 +2091,247 @@ namespace OpenDental{
 					dcon.NonQ(command);
 				}
 			}
+			//textSubstOld.Text="";
+			//textSubstNew.Text="";
+			int selectedCol=comboColEdit.SelectedIndex;
 			FillGrid();
+			comboColEdit.SelectedIndex=selectedCol;
 			Cursor=Cursors.Default;
 			MessageBox.Show(count.ToString()+" "+Lan.g(this,"rows changed"));
 		}
 
 		private void butColClear_Click(object sender, System.EventArgs e) {
-			if(comboColClear.SelectedIndex==-1){
+			if(comboColEdit.SelectedIndex==-1){
 				MsgBox.Show(this,"Please select a column first.");
 				return;
 			}
 			Cursor=Cursors.WaitCursor;
-			string colName=comboColClear.SelectedItem.ToString();
+			string colName=comboColEdit.SelectedItem.ToString();
 			string command="UPDATE "+comboTableName.SelectedItem.ToString()+" SET "+colName+"=''";
 			DataConnection dcon=new DataConnection();
 			dcon.NonQ(command);
+			comboColEdit.SelectedIndex=-1;
 			FillGrid();
 			Cursor=Cursors.Default;
+		}
+
+		private void butColCap_Click(object sender, System.EventArgs e) {
+			if(pkCol==""){
+				MsgBox.Show(this,"Please set a primary key first.");
+				return;
+			}
+			if(comboColEdit.SelectedIndex==-1){
+				MsgBox.Show(this,"Please select a column first.");
+				return;
+			}
+			Cursor=Cursors.WaitCursor;
+			string colName=comboColEdit.SelectedItem.ToString();
+			string oldVal;
+			StringBuilder strBuild;
+			string command;
+			DataConnection dcon=new DataConnection();
+			for(int i=0;i<table.Rows.Count;i++){
+				oldVal=table.Rows[i][colName].ToString();
+				if(oldVal==""){
+					continue;
+				}
+				strBuild=new StringBuilder();
+				for(int s=0;s<oldVal.Length;s++){
+					if(s==0 || oldVal.Substring(s-1,1)==" " || oldVal.Substring(s-1,1)=="." || oldVal.Substring(s-1,1)=="-"
+						|| (s==2 && strBuild[0]=='M' && strBuild[1]=='c')){
+						strBuild.Append(oldVal.Substring(s,1).ToUpper());
+					}
+					else{
+						strBuild.Append(oldVal.Substring(s,1).ToLower());
+					}
+				}
+				command="UPDATE "+POut.PString(comboTableName.SelectedItem.ToString())
+					+" SET "+colName+"='"+POut.PString(strBuild.ToString())+"' "
+					+"WHERE "+pkCol+"='"+table.Rows[i][pkCol].ToString()+"'";
+				dcon.NonQ(command);
+			}
+			comboColEdit.SelectedIndex=-1;
+			FillGrid();
+			Cursor=Cursors.Default;
+			MessageBox.Show("done");
+		}
+
+		private void butColCapAll_Click(object sender, System.EventArgs e) {
+			if(pkCol==""){
+				MsgBox.Show(this,"Please set a primary key first.");
+				return;
+			}
+			Cursor=Cursors.WaitCursor;
+			string colName;
+			string oldVal;
+			StringBuilder strBuild;
+			string command;
+			DataConnection dcon=new DataConnection();
+			for(int j=0;j<table.Columns.Count;j++){
+				colName=table.Columns[j].ColumnName;
+				if(radioPatients.Checked){
+					if(colName!="Address" && colName!="Address2" && colName!="City" && colName!="FName"
+						&& colName!="LName" && colName!="Preferred")
+					{
+						continue;
+					}
+				}
+				else if(radioCarriers.Checked){
+					if(colName!="Address" && colName!="Address2" && colName!="CarrierName" && colName!="City"){
+						continue;
+					}
+				}
+				for(int i=0;i<table.Rows.Count;i++){
+					oldVal=table.Rows[i][colName].ToString();
+					if(oldVal==""){
+						continue;
+					}
+					strBuild=new StringBuilder();
+					for(int s=0;s<oldVal.Length;s++){
+						if(s==0 || oldVal.Substring(s-1,1)==" " || oldVal.Substring(s-1,1)=="." || oldVal.Substring(s-1,1)=="-"
+							|| (s==2 && strBuild[0]=='M' && strBuild[1]=='c')){
+							strBuild.Append(oldVal.Substring(s,1).ToUpper());
+						}
+						else{
+							strBuild.Append(oldVal.Substring(s,1).ToLower());
+						}
+					}
+					command="UPDATE "+POut.PString(comboTableName.SelectedItem.ToString())
+						+" SET "+colName+"='"+POut.PString(strBuild.ToString())+"' "
+						+"WHERE "+pkCol+"='"+table.Rows[i][pkCol].ToString()+"'";
+					dcon.NonQ(command);
+				}//for rows
+			}//for columns
+			FillGrid();
+			Cursor=Cursors.Default;
+			MessageBox.Show("done");
+		}
+
+		private void butColPad_Click(object sender, System.EventArgs e) {
+			if(pkCol==""){
+				MsgBox.Show(this,"Please set a primary key first.");
+				return;
+			}
+			if(comboColEdit.SelectedIndex==-1){
+				MsgBox.Show(this,"Please select a column first.");
+				return;
+			}
+			int padWidth=0;
+			try{
+				padWidth=Convert.ToInt32(textPadLength.Text);
+			}
+			catch{
+				MsgBox.Show(this,"Please enter a valid final length first.");
+				return;
+			}
+			if(textPadChar.Text.Length!=1){
+				MsgBox.Show(this,"Please enter a pad character first.");
+				return;
+			}
+			char padChar;
+			try{
+				padChar=Convert.ToChar(textPadChar.Text);
+			}
+			catch{
+				MsgBox.Show(this,"Please enter a valid pad character first.");
+				return;
+			}
+			Cursor=Cursors.WaitCursor;
+			string colName=comboColEdit.SelectedItem.ToString();
+			string oldVal;
+			string newVal;
+			string command;
+			DataConnection dcon=new DataConnection();
+			for(int i=0;i<table.Rows.Count;i++){
+				oldVal=table.Rows[i][colName].ToString();
+				//if(oldVal==""){
+				//	continue;
+				//}
+				newVal=oldVal.PadLeft(padWidth,padChar);
+				command="UPDATE "+POut.PString(comboTableName.SelectedItem.ToString())
+					+" SET "+colName+"='"+POut.PString(newVal)+"' "
+					+"WHERE "+pkCol+"='"+table.Rows[i][pkCol].ToString()+"'";
+				dcon.NonQ(command);
+			}
+			comboColEdit.SelectedIndex=-1;
+			FillGrid();
+			Cursor=Cursors.Default;
+			MessageBox.Show("done");
+		}
+
+		private void butColCopy_Click(object sender, System.EventArgs e) {
+			if(pkCol==""){
+				MsgBox.Show(this,"Please set a primary key first.");
+				return;
+			}
+			if(comboColEdit.SelectedIndex==-1){
+				MsgBox.Show(this,"Please select a column first.");
+				return;
+			}
+			if(comboColCopyFrom.SelectedIndex==-1){
+				MsgBox.Show(this,"Please select columns first.");
+				return;
+			}
+			Cursor=Cursors.WaitCursor;
+			string colName=comboColEdit.SelectedItem.ToString();
+			string colFrom=comboColCopyFrom.SelectedItem.ToString();
+			string command="UPDATE "+POut.PString(comboTableName.SelectedItem.ToString())
+				+" SET "+colName+"="+colFrom;
+			DataConnection dcon=new DataConnection();
+			dcon.NonQ(command);
+			comboColEdit.SelectedIndex=-1;
+			comboColCopyFrom.SelectedIndex=-1;
+			FillGrid();
+			Cursor=Cursors.Default;
+			MessageBox.Show("done");
+		}
+
+		private void butConvertDate_Click(object sender, System.EventArgs e) {
+			if(pkCol==""){
+				MsgBox.Show(this,"Please set a primary key first.");
+				return;
+			}
+			if(comboColDateFrom.SelectedIndex==-1 || comboColDateTo.SelectedIndex==-1){
+				MsgBox.Show(this,"Please select columns first.");
+				return;
+			}
+			DateTime baseDate=DateTime.MinValue;
+			try{
+				baseDate=DateTime.Parse(textDateBase.Text);
+			}
+			catch{
+				MsgBox.Show(this,"Please enter valid base date first.");
+				return;
+			}
+			Cursor=Cursors.WaitCursor;
+			string colFrom=comboColDateFrom.SelectedItem.ToString();
+			string colTo=comboColDateTo.SelectedItem.ToString();
+			DateTime newDate;
+			string command;
+			DataConnection dcon=new DataConnection();
+			for(int i=0;i<table.Rows.Count;i++){
+				if(table.Rows[i][colFrom].ToString()==""){
+					newDate=DateTime.MinValue;
+				}
+				else{
+					try{
+						newDate=baseDate.AddDays(PIn.PDouble(table.Rows[i][colFrom].ToString()));
+					}
+					catch{
+						MessageBox.Show("Value out of range: "+table.Rows[i][colFrom].ToString());
+						break;
+					}
+				}
+				command="UPDATE "+POut.PString(comboTableName.SelectedItem.ToString())+" SET "+colTo+"='"
+					+POut.PDate(newDate)+"' "
+					+"WHERE "+POut.PString(pkCol)+"='"+table.Rows[i][pkCol].ToString()+"'";
+				dcon.NonQ(command);
+			}
+			//comboColDateFrom.Text="";
+			//comboColDateTo.Text="";
+			FillGrid();
+			Cursor=Cursors.Default;
+			MessageBox.Show("done");
 		}
 
 		private void butFixDates_Click(object sender, System.EventArgs e) {
@@ -1627,19 +2370,115 @@ namespace OpenDental{
 					+"WHERE "+POut.PString(pkCol)+"='"+table.Rows[i][pkCol].ToString()+"'";
 				dcon.NonQ(command);
 			}
+			//comboColDateSource.Text="";
+			//comboColDateDest.Text="";
 			FillGrid();
 			Cursor=Cursors.Default;
 			MessageBox.Show("done");
 		}
 
-		private void butDeleteRow_Click(object sender, System.EventArgs e) {
-			MessageBox.Show("Not functional yet.");
-			return;
+		private void butGuarantor_Click(object sender, System.EventArgs e) {
+			if(!radioPatients.Checked){
+				MsgBox.Show(this,"Must be set to patient table type in the primary key tab.");
+				return;
+			}
+			if(checkDontUsePK.Checked){
+				MsgBox.Show(this,"You must first uncheck the box in the Primary Keys tab called 'Do not use the primary key values in the final import'.");
+				return;
+			}
+			if(!radioInsert.Checked){
+				MsgBox.Show(this,"You must first check the box in the Final Import tab called 'Insert new rows'.");
+				return;
+			}
+			if(table.Columns["ChartNumber"]==null){
+				MsgBox.Show(this,"You must first create a column called ChartNumber, and fill it with unique values.");
+				return;
+			}
+			//Make sure every ChartNumber is filled and is unique
+			ArrayList chartNumList=new ArrayList();//strings
+			for(int r=0;r<table.Rows.Count;r++){
+				if(table.Rows[r]["ChartNumber"].ToString()==""){
+					MsgBox.Show(this,"The ChartNumber column cannot have blank values.");
+					return;
+				}
+				if(chartNumList.Contains(table.Rows[r]["ChartNumber"].ToString())){
+					MessageBox.Show(Lan.g(this,"The ChartNumber column contains a duplicate value: ")+table.Rows[r]["ChartNumber"].ToString());
+					return;
+				}
+				else{
+					chartNumList.Add(table.Rows[r]["ChartNumber"].ToString());
+				}
+			}
+			if(table.Columns["tempGuarantor"]==null){
+				MsgBox.Show(this,"You must first create a column called tempGuarantor, and fill it with references to the guarantors.");
+				return;
+			}
+			if(table.Columns["Guarantor"]==null){
+				MsgBox.Show(this,"You must first create an empty column called Guarantor.");
+				return;
+			}
+			if(table.Columns["PatNum"]==null){
+				MsgBox.Show(this,"You must first create a column called PatNum and make it the primary key.");
+				return;
+			}
+			if(pkCol!="PatNum"){
+				MsgBox.Show(this,"Please make PatNum the primary key first.");
+				return;
+			}
+			//check for valid numbers in PatNum column
+			for(int r=0;r<table.Rows.Count;r++){
+				if(!Regex.IsMatch(table.Rows[r]["PatNum"].ToString(),@"^\d+$")){
+					MessageBox.Show(Lan.g(this,"Invalid value in column")+" PatNum: "
+						+table.Rows[r]["PatNum"].ToString()+". "+Lan.g(this,"Must contain only digits."));
+					return;
+				}
+			}
+			//Make sure none of the patnums already exists
+			string command="SELECT PatNum FROM patient";
+			DataConnection dcon=new DataConnection();
+			DataTable tempT=dcon.GetTable(command);
+			for(int j=0;j<table.Rows.Count;j++){
+				for(int i=0;i<tempT.Rows.Count;i++){
+					if(tempT.Rows[i][0].ToString()==table.Rows[j]["PatNum"].ToString()){
+						MessageBox.Show("Duplicate PatNum. "+table.Rows[j]["PatNum"].ToString()+" already exists.");
+					}
+				}
+			}
+			//Make sure every every reference in tempGuarantor refers to a valid ChartNumber
+			string invalidGuars="";
+			for(int r=0;r<table.Rows.Count;r++){
+				if(table.Rows[r]["tempGuarantor"].ToString()==""){
+					MsgBox.Show(this,"tempGuarantor cannot have any blank values.");
+					return;
+				}
+				if(chartNumList.Contains(table.Rows[r]["tempGuarantor"].ToString())){
+					continue;
+				}
+				invalidGuars+=table.Rows[r]["tempGuarantor"].ToString()+"\r\n";
+			}
+			if(invalidGuars!=""){
+				if(MessageBox.Show(Lan.g(this,"All values in tempGuarantor should refer to valid values in ChartNumber. CONTINUE ANYWAY ??")+"\r\n"
+					+Lan.g(this,"(invalid references found:")+"\r\n"
+					+invalidGuars,"",MessageBoxButtons.OKCancel)==DialogResult.Cancel){
+						return;
+				}
+			}
+			Cursor=Cursors.WaitCursor;
+			command="UPDATE "+comboTableName.SelectedItem.ToString()+" AS t1, "//t1 is the key
+				+comboTableName.SelectedItem.ToString()+" AS t2 "//t2 is the target
+				+"SET t2.Guarantor=t1.PatNum "
+				+"WHERE t1.ChartNumber=t2.tempGuarantor";
+			dcon.NonQ(command);
+			command="UPDATE "+comboTableName.SelectedItem.ToString()
+				+" SET Guarantor=PatNum WHERE Guarantor=''";
+			dcon.NonQ(command);
+			FillGrid();
+			Cursor=Cursors.Default;
 		}
 
 		private void butCombine_Click(object sender, System.EventArgs e) {
 			if(pkCol==""){
-				MessageBox.Show("Please set a primary key first.");
+				MsgBox.Show(this,"Please set a primary key first.");
 				return;
 			}
 			if(comboColCombine1.SelectedIndex==-1 || comboColCombine1.SelectedIndex==-1){
@@ -1700,10 +2539,10 @@ namespace OpenDental{
 		}
 
 		private void butMoveCol_Click(object sender, System.EventArgs e) {
-			if(pkCol==""){
-				MessageBox.Show("Please set a primary key first.");
-				return;
-			}
+			//if(pkCol==""){
+			//	MessageBox.Show("Please set a primary key first.");
+			//	return;
+			//}
 			if(comboColMove.SelectedIndex==-1){
 				MsgBox.Show(this,"Please select a column first.");
 				return;
@@ -1741,10 +2580,10 @@ namespace OpenDental{
 		}
 
 		private void butDeleteCol_Click(object sender, System.EventArgs e) {
-			if(pkCol==""){
-				MessageBox.Show("Please set a primary key first.");
-				return;
-			}
+			//if(pkCol==""){
+			//	MessageBox.Show("Please set a primary key first.");
+			//	return;
+			//}
 			if(comboColDelete.SelectedIndex==-1){
 				MsgBox.Show(this,"Please select a column first.");
 				return;
@@ -1754,6 +2593,33 @@ namespace OpenDental{
 			string command="ALTER TABLE "+comboTableName.SelectedItem.ToString()+" DROP "+col;
 			DataConnection dcon=new DataConnection();
 			dcon.NonQ(command);
+			FillGrid();
+			Cursor=Cursors.Default;
+			//MessageBox.Show("done");
+		}
+
+		private void butColsDelete_Click(object sender, System.EventArgs e) {
+			int numCols=0;
+			try{
+				numCols=Convert.ToInt32(textColsDelete.Text);
+			}
+			catch{
+				MsgBox.Show(this,"Please enter a valid number of columns first.");
+				return;
+			}
+			if(numCols>table.Columns.Count-1){
+				MsgBox.Show(this,"Number of columns is too high.");
+				return;
+			}
+			Cursor=Cursors.WaitCursor;
+			string col;
+			string command;
+			DataConnection dcon=new DataConnection();
+			for(int i=0;i<numCols;i++){
+				col=table.Columns[table.Columns.Count-1-i].ColumnName;
+				command="ALTER TABLE "+comboTableName.SelectedItem.ToString()+" DROP "+col;
+				dcon.NonQ(command);
+			}
 			FillGrid();
 			Cursor=Cursors.Default;
 			//MessageBox.Show("done");
@@ -1770,8 +2636,8 @@ namespace OpenDental{
 				MsgBox.Show(this,"Name must be only upper and lowercase letters and numbers with no other symbols.");
 				return;
 			}
-			for(int i=0;i<comboColAdd.Items.Count;i++){//go through the list of existing col names
-				if(newName==comboColAdd.Items[i].ToString()){
+			for(int i=0;i<comboColMove.Items.Count;i++){//go through the list of existing col names
+				if(newName==comboColMove.Items[i].ToString()){
 					MsgBox.Show(this,"The new column name duplicates an existing column name.");
 					return;
 				}
@@ -1781,6 +2647,7 @@ namespace OpenDental{
 			DataConnection dcon=new DataConnection();
 			dcon.NonQ(command);
 			FillGrid();
+			comboColAdd.Text="";
 			Cursor=Cursors.Default;
 		}
 
@@ -1853,21 +2720,16 @@ namespace OpenDental{
 				MessageBox.Show(ex.Message);
 				return;
 			}
-			int prov=Prefs.GetInt("PracticeDefaultProv");
+			//int defaultProvNum=Prefs.GetInt("PracticeDefaultProv");
+			int provNum;
 			int billType=Prefs.GetInt("PracticeDefaultBillType");
 			Patient pat;
 			Adjustment adj;
 			int adjType=189;
-			int balanceCol=ColumnIndex("Balance");
-			//Need to get the adjustment type for Balance entries
 			Patient patOld=new Patient();
 			for(int i=0;i<table.Rows.Count;i++){
 				pat=new Patient();
 				Carriers.Cur=new Carrier();
-				if(radioInsert.Checked){
-					pat.PriProv=prov;
-					pat.BillingType=billType;
-				}
 				for(int j=0;j<table.Columns.Count;j++){
 					if(radioPatients.Checked){
 						switch(table.Columns[j].ColumnName){
@@ -1884,6 +2746,9 @@ namespace OpenDental{
 							case "Birthdate":
 								pat.Birthdate=PIn.PDate(table.Rows[i][j].ToString());//handles "" ok
 								break;
+							case "ChartNumber":
+								pat.ChartNumber=PIn.PString(table.Rows[i][j].ToString());
+								break;
 							case "City":
 								pat.City=PIn.PString(table.Rows[i][j].ToString());
 								break;
@@ -1896,8 +2761,10 @@ namespace OpenDental{
 							case "Gender":
 								if(table.Rows[i][j].ToString()=="M")
 									pat.Gender=PatientGender.Male;
-								else//F
+								else if(table.Rows[i][j].ToString()=="F")
 									pat.Gender=PatientGender.Female;
+								else if(table.Rows[i][j].ToString()=="U")
+									pat.Gender=PatientGender.Unknown;
 								break;
 							case "Guarantor":
 								pat.Guarantor=PIn.PInt(table.Rows[i][j].ToString());
@@ -1908,6 +2775,9 @@ namespace OpenDental{
 							case "LName":
 								pat.LName=PIn.PString(table.Rows[i][j].ToString());
 								break;
+							case "MedUrgNote":
+								pat.MedUrgNote=PIn.PString(table.Rows[i][j].ToString());
+								break;
 							case "MiddleI":
 								pat.MiddleI=PIn.PString(table.Rows[i][j].ToString());
 								break;
@@ -1917,11 +2787,16 @@ namespace OpenDental{
 							case "Position":
 								if(table.Rows[i][j].ToString()=="M")
 									pat.Position=PatientPosition.Married;
-								else//S
+								else if(table.Rows[i][j].ToString()=="S")
 									pat.Position=PatientPosition.Single;
+								else if(table.Rows[i][j].ToString()=="W")
+									pat.Position=PatientPosition.Widowed;
 								break;
 							case "Preferred":
 								pat.Preferred=PIn.PString(table.Rows[i][j].ToString());
+								break;
+							case "PriProv":
+//								pat.PriProv=PIn.PString(table.Rows[i][j].ToString());
 								break;
 							case "SSN":
 								pat.SSN=PIn.PString(table.Rows[i][j].ToString());
@@ -1963,8 +2838,47 @@ namespace OpenDental{
 								break;
 						}
 					}
-				}//columns					
+				}//columns
 				if(radioPatients.Checked){
+					if(radioInsert.Checked){
+						pat.BillingType=billType;
+					}
+					if(table.Columns["Guarantor"]==null){//no guarantor column
+						pat.Guarantor=pat.PatNum;
+					}
+					if(table.Columns["PriProv"]==null){//no prov column
+						if(radioInsert.Checked){//must supply a prov anyway
+							pat.PriProv=Prefs.GetInt("PracticeDefaultProv");
+						}
+					}
+					else{//prov column
+						if(table.Rows[i][table.Columns["PriProv"].Ordinal].ToString()==""){
+							pat.PriProv=Prefs.GetInt("PracticeDefaultProv");
+						}
+						else{
+							provNum=0;
+							for(int p=0;p<Providers.ListLong.Length;p++){
+								if(Providers.ListLong[p].LName==table.Rows[i][table.Columns["PriProv"].Ordinal].ToString()){
+									provNum=Providers.ListLong[p].ProvNum;
+								}
+							}
+							if(provNum==0){
+								Providers.Cur=new Provider();
+								Providers.Cur.ItemOrder=Providers.ListLong[Providers.ListLong.Length-1].ItemOrder+1;
+								Providers.Cur.LName=table.Rows[i][table.Columns["PriProv"].Ordinal].ToString();
+								Providers.Cur.Abbr=Providers.Cur.LName;
+								Providers.Cur.FeeSched=Defs.Short[(int)DefCat.FeeSchedNames][0].DefNum;
+								Providers.Cur.ProvColor=Color.White;
+								Providers.Cur.SigOnFile=true;
+								Providers.Cur.OutlineColor=Color.Gray;
+								Providers.InsertCur();
+								Providers.Refresh();//this is because SetInvalid might be too slow
+								DataValid.SetInvalid(InvalidTypes.Providers);//also refreshes local
+								provNum=Providers.Cur.ProvNum;
+							}
+							pat.PriProv=provNum;
+						}
+					}
 					if(radioInsert.Checked){
 						if(checkDontUsePK.Checked){
 							pat.Insert(false);
@@ -1986,21 +2900,30 @@ namespace OpenDental{
 					}
 				}
 				//if the balance column exists. Needs to come AFTER initial insert in case we don't have primary key to work with
-				if(radioPatients.Checked && balanceCol!=-1){
+				if(radioPatients.Checked && table.Columns["Balance"]!=null){
 					adj=new Adjustment();
 					adj.PatNum=PIn.PInt(table.Rows[i][pkCol].ToString());
-					adj.AdjAmt=PIn.PDouble(table.Rows[i][balanceCol].ToString());
+					adj.AdjAmt=PIn.PDouble(table.Rows[i][table.Columns["Balance"].Ordinal].ToString());
 					adj.AdjType=adjType;
-					adj.AdjDate=DateTime.Today;
+					//adj.AdjDate=DateTime.Today;//automatically handled
 					adj.ProcDate=DateTime.Today;
-					adj.ProvNum=prov;
-					adj.Insert();
+					adj.ProvNum=pat.PriProv;
+					adj.InsertOrUpdate(true);
 				}
 			}//rows
 			Cursor=Cursors.Default;
-			MessageBox.Show("done");
+			MessageBox.Show("Done.  Don't forget to run the telephone number utility now.");
 		}
 
+		/*
+		if(table.Columns["PriProv"]==null){
+				MessageBox.Show("null");
+			}
+			else{
+				MessageBox.Show(table.Columns["PriProv"].Ordinal.ToString());
+			}
+		*/
+		/*
 		///<summary>Used in various places to search through the column names for a specific match.  Returns either the index of the column, or -1 if not found.</summary>
 		private int ColumnIndex(string colName){
 			for(int i=0;i<table.Columns.Count;i++){
@@ -2009,7 +2932,7 @@ namespace OpenDental{
 				}
 			}
 			return -1;
-		}
+		}*/
 
 		///<summary></summary>
 		private void ValidateData(){
@@ -2026,6 +2949,7 @@ namespace OpenDental{
 					throw new Exception(Lan.g(this,"CarrierNum must be set as primary key first."));
 				}
 			}
+			//column names-----------------------------------------------------------------------------------------------------
 			string colNamesAll="";
 			for(int i=0;i<AllowedColNames.Length;i++){
 				if(i>0){
@@ -2035,6 +2959,9 @@ namespace OpenDental{
 			}
 			bool valid;
 			for(int i=0;i<table.Columns.Count;i++){
+				if(table.Columns[i].ColumnName.Length>4 && table.Columns[i].ColumnName.StartsWith("temp")){
+					continue;
+				}
 				valid=false;
 				for(int j=0;j<AllowedColNames.Length;j++){
 					if(AllowedColNames[j]==table.Columns[i].ColumnName){
@@ -2043,57 +2970,211 @@ namespace OpenDental{
 					}
 				}
 				if(!valid){
-					throw new Exception(table.Columns[i].ColumnName+Lan.g(this," is not a valid column name.  Acceptable column names are: ")
+					throw new Exception(table.Columns[i].ColumnName+Lan.g(this," is not a valid column name.  Column name must start with 'temp' or must be one of the following: ")
 						+colNamesAll);
 				}
 			}
+			string warnings="";
+			bool allCaps;
+			int invalidValues;
 			for(int i=0;i<table.Columns.Count;i++){
-				for(int r=0;r<table.Rows.Count;r++){	
+				//Warnings---------------------------------------------------------------------------------------------------------
+				if(radioPatients.Checked){
 					switch(table.Columns[i].ColumnName){
-						case "PatNum":
-						case "Guarantor":
-							if(!Regex.IsMatch(table.Rows[r][i].ToString(),@"^\d+$")){
-								throw new Exception(Lan.g(this,"Invalid value in column")+" "+table.Columns[i].ColumnName+": "
-									+table.Rows[r][i].ToString()+". "+Lan.g(this,"Must contain only digits."));
+						case "Address":
+							allCaps=false;
+							for(int r=0;r<3;r++){//only check the first 4 rows
+								if(!Regex.IsMatch(table.Rows[r][i].ToString(),"[a-z]")){//if no lowercase letters are present
+									allCaps=true;
+								}
+							}
+							if(allCaps){
+								warnings+="Address: Fix capitalization.\r\n";
 							}
 							break;
-						case "Gender":
-							if(table.Rows[r][i].ToString()!="M"
-								&& table.Rows[r][i].ToString()!="F")
-							{
-								throw new Exception("Column Gender, invalid value: "+table.Rows[r][i].ToString()+".  Only valid values are M or F.");
+						case "ChartNumber":
+							int duplicates=0;
+							ArrayList numList=new ArrayList();//strings
+							for(int r=0;r<table.Rows.Count;r++){
+								if(table.Rows[r][i].ToString()==""){
+									continue;
+								}
+								if(numList.Contains(table.Rows[r][i].ToString())){
+									duplicates++;
+								}
+								else{
+									numList.Add(table.Rows[r][i].ToString());
+								}
+							}
+							if(duplicates>0){
+								warnings+="ChartNumber: Duplicates found: "+duplicates.ToString()+".\r\n";
 							}
 							break;
-						case "Position":
-							if(table.Rows[r][i].ToString()!="M"//married
-								&& table.Rows[r][i].ToString()!="S")//single
-							{
-								throw new Exception("Column Position, invalid value: "+table.Rows[r][i].ToString()+".  Only valid values are M or S.");
+						case "City":
+							allCaps=false;
+							for(int r=0;r<3;r++){//only check the first 4 rows
+								if(!Regex.IsMatch(table.Rows[r][i].ToString(),"[a-z]")){//if no lowercase letters are present
+									allCaps=true;
+								}
+							}
+							if(allCaps){
+								warnings+="City: Fix capitalization.\r\n";
 							}
 							break;
-						case "Birthdate":
-						case "DateFirstVisit":
-							if(table.Rows[r][i].ToString()==""){
-								continue;
+						case "FName":
+							allCaps=false;
+							for(int r=0;r<3;r++){//only check the first 4 rows
+								if(!Regex.IsMatch(table.Rows[r][i].ToString(),"[a-z]")){//if no lowercase letters are present
+									allCaps=true;
+								}
 							}
-							try{
-								DateTime.Parse(table.Rows[r][i].ToString());
-							}
-							catch{
-								throw new Exception("Column Birthdate, unrecognizable date: "+table.Rows[r][i].ToString());
-							}
-							break;
-						case "SSN":
-							if(table.Rows[r][i].ToString()==""){
-								continue;
-							}
-							if(!Regex.IsMatch(table.Rows[r][i].ToString(),@"^\d{9}")){
-								throw new Exception("Column SSN, invalid value: "+table.Rows[r][i].ToString()+". Must be 9 digits.");
+							if(allCaps){
+								warnings+="FName: Fix capitalization.\r\n";
 							}
 							break;
-					}//switch colName
+						case "LName":
+							allCaps=false;
+							for(int r=0;r<3;r++){//only check the first 4 rows
+								if(!Regex.IsMatch(table.Rows[r][i].ToString(),"[a-z]")){//if no lowercase letters are present
+									allCaps=true;
+								}
+							}
+							if(allCaps){
+								warnings+="LName: Fix capitalization.\r\n";
+							}
+							break;
+						case "PriProv":
+							invalidValues=0;
+							for(int r=0;r<table.Rows.Count;r++){
+								if(table.Rows[r][i].ToString()==""){
+									continue;
+								}
+								if(Regex.IsMatch(table.Rows[r][i].ToString(),@"[,\(\) ]")){//, or ( or ) or space
+									invalidValues++;
+								}
+							}
+							if(invalidValues>0){
+								warnings+="Column PriProv: Should only be Last Name or number of provider.  "
+									+"Number of invalid values: "+invalidValues.ToString()+".\r\n";
+							}
+							break;
+						case "Zip":
+							invalidValues=0;
+							for(int r=0;r<table.Rows.Count;r++){
+								if(table.Rows[r][i].ToString().Length!=0
+									&& table.Rows[r][i].ToString().Length!=5
+									&& table.Rows[r][i].ToString().Length!=10)
+								{
+									string str=table.Rows[r][i].ToString();
+									invalidValues++;
+								}
+							}
+							if(invalidValues>0){
+								warnings+="Zip: Number of possible invalid values found: "+invalidValues.ToString()+".\r\n";
+							}
+							break;
+					}
+				}
+				//Errors-----------------------------------------------------------------------------------------------------------
+				for(int r=0;r<table.Rows.Count;r++){
+					if(radioPatients.Checked){
+						switch(table.Columns[i].ColumnName){
+							case "Address":
+								break;
+							case "Address2":
+								break;
+							case "AddrNote":
+								break;
+							//Balance
+							case "Birthdate":
+								if(table.Rows[r][i].ToString()==""){
+									continue;
+								}
+								try{
+									DateTime.Parse(table.Rows[r][i].ToString());
+								}
+								catch{
+									throw new Exception("Column Birthdate, unrecognizable date: "+table.Rows[r][i].ToString());
+								}
+								break;
+							case "ChartNumber":
+								break;
+							case "City":
+								break;
+							case "DateFirstVisit":
+								if(table.Rows[r][i].ToString()==""){
+									continue;
+								}
+								try{
+									DateTime.Parse(table.Rows[r][i].ToString());
+								}
+								catch{
+									throw new Exception("Column DateFirstVisit, unrecognizable date: "+table.Rows[r][i].ToString());
+								}
+								break;
+							case "FName":
+								//handled in warnings
+								break;
+							case "Gender":
+								if(table.Rows[r][i].ToString()!="M" && table.Rows[r][i].ToString()!="F" && table.Rows[r][i].ToString()!="U"){
+									throw new Exception(Lan.g(this,"Column Gender, invalid value: ")+table.Rows[r][i].ToString()
+										+".  Only valid values are M,F, or U.");
+								}
+								break;
+							case "Guarantor":
+								if(!Regex.IsMatch(table.Rows[r][i].ToString(),@"^\d+$")){
+									throw new Exception(Lan.g(this,"Invalid value in column Guarantor: ")
+										+table.Rows[r][i].ToString()+". "+Lan.g(this,"Must contain only digits."));
+								}
+								break;
+							case "HmPhone":
+								break;
+							case "LName":
+								break;
+							case "MedUrgNote":
+								break;
+							case "MiddleI":
+								break;
+							case "PatNum":
+								if(!Regex.IsMatch(table.Rows[r][i].ToString(),@"^\d+$")){
+									throw new Exception(Lan.g(this,"Invalid value in column")+" PatNum: "
+										+table.Rows[r][i].ToString()+". "+Lan.g(this,"Must contain only digits."));
+								}
+								break;
+							case "Position":
+								if(table.Rows[r][i].ToString()!="M"//married
+									&& table.Rows[r][i].ToString()!="S"//single
+									&& table.Rows[r][i].ToString()!="W")//widowed
+								{
+									throw new Exception("Column Position, invalid value: "+table.Rows[r][i].ToString()+".  Only valid values are M,S,or W.");
+								}
+								break;
+							case "Preferred":
+								break;
+							case "SSN":
+								if(Regex.IsMatch(table.Rows[r][i].ToString(),"-")){
+									throw new Exception(Lan.g(this,"Invalid value in column SSN: ")
+										+table.Rows[r][i].ToString()+". "+Lan.g(this,"Cannot contain dashes."));
+								}
+								break;
+							case "State":
+								break;
+							case "WkPhone":
+								break;
+							case "Zip":
+								break;								
+						}//switch colName
+					}//if patients
 				}//r rows
 			}//i columns
+			if(warnings!=""){
+				if(MessageBox.Show("WARNINGS:\r\n"
+					+warnings
+					+"\r\nYou should CANCEL and fix before continuing.","",MessageBoxButtons.OKCancel)==DialogResult.Cancel)
+				{
+					throw new Exception("Cancelled");
+				}
+			}
 //need to make sure all guarantor fk entries exist
 			if(checkDontUsePK.Checked){
 				return;
@@ -2134,6 +3215,21 @@ namespace OpenDental{
 			}
 			
 		}
+
+		
+
+		
+
+		
+
+		
+
+		
+
+		
+
+
+		
 
 		
 

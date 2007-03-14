@@ -211,14 +211,25 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO claim (patnum,dateservice,datesent,claimstatus,datereceived"
+			if(Prefs.RandomKeys){
+				Cur.ClaimNum=MiscData.GetKey("claim","ClaimNum");
+			}
+			cmd.CommandText="INSERT INTO claim (";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="ClaimNum,";
+			}
+			cmd.CommandText+="patnum,dateservice,datesent,claimstatus,datereceived"
 				+",plannum,provtreat,claimfee,inspayest,inspayamt,dedapplied"
 				+",preauthstring,isprosthesis,priordate,reasonunderpaid,claimnote"
 				+",claimtype,provbill,referringprov"
 				+",refnumstring,placeservice,accidentrelated,accidentdate,accidentst"
 				+",employrelated,isortho,orthoremainm,orthodate,patrelat,plannum2"
-				+",patrelat2,writeoff,Radiographs) VALUES("
-				+"'"+POut.PInt   (Cur.PatNum)+"', "
+				+",patrelat2,writeoff,Radiographs) VALUES(";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="'"+POut.PInt(Cur.ClaimNum)+"', ";
+			}
+			cmd.CommandText+=
+				 "'"+POut.PInt   (Cur.PatNum)+"', "
 				+"'"+POut.PDate  (Cur.DateService)+"', "
 				+"'"+POut.PDate  (Cur.DateSent)+"', "
 				+"'"+POut.PString(Cur.ClaimStatus)+"', "
@@ -251,8 +262,13 @@ namespace OpenDental{
 				+"'"+POut.PInt   ((int)Cur.PatRelat2)+"', "
 				+"'"+POut.PDouble(Cur.WriteOff)+"', "
 				+"'"+POut.PInt   (Cur.Radiographs)+"')";
-			NonQ(true);
-			Cur.ClaimNum=InsertID;
+			if(Prefs.RandomKeys){
+				NonQ();
+			}
+			else{
+ 				NonQ(true);
+				Cur.ClaimNum=InsertID;
+			}
 		}
 
 		///<summary></summary>

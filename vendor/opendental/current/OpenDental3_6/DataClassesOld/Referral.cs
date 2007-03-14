@@ -103,10 +103,20 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public void Insert(){
-			string command="INSERT INTO referral (LName,FName,MName,SSN,UsingTIN,Specialty,ST,"
-				+"Telephone,Address,Address2,City,Zip,Note,Phone2,IsHidden,NotPerson,Title,Email,PatNum)"
-				+" VALUES("
-				+"'"+POut.PString(LName)+"', "
+			if(Prefs.RandomKeys){
+				ReferralNum=MiscData.GetKey("referral","ReferralNum");
+			}
+			string command= "INSERT INTO referral (";
+			if(Prefs.RandomKeys){
+				command+="ReferralNum,";
+			}
+			command+="LName,FName,MName,SSN,UsingTIN,Specialty,ST,"
+				+"Telephone,Address,Address2,City,Zip,Note,Phone2,IsHidden,NotPerson,Title,Email,PatNum) VALUES(";
+			if(Prefs.RandomKeys){
+				command+="'"+POut.PInt(ReferralNum)+"', ";
+			}
+			command+=
+				 "'"+POut.PString(LName)+"', "
 				+"'"+POut.PString(FName)+"', "
 				+"'"+POut.PString(MName)+"', "
 				+"'"+POut.PString(SSN)+"', "
@@ -126,8 +136,13 @@ namespace OpenDental{
 				+"'"+POut.PString(EMail)+"', "
 				+"'"+POut.PInt   (PatNum)+"')";
 			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command,true);
-			ReferralNum=dcon.InsertID;
+ 			if(Prefs.RandomKeys){
+				dcon.NonQ(command);
+			}
+			else{
+ 				dcon.NonQ(command,true);
+				ReferralNum=dcon.InsertID;
+			}
 		}
 
 		///<summary></summary>

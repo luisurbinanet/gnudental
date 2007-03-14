@@ -218,7 +218,7 @@ namespace OpenDental.Eclaims
 						seg++;
 						sw.WriteLine("N4*"+Sout(Prefs.GetString("PracticeCity"),30)+"*"//N401: City
 							+Sout(Prefs.GetString("PracticeST"),2)+"*"//N402: State
-							+Sout(Prefs.GetString("PracticeZip"),15)+"~");//N403: Zip
+							+Sout(Prefs.GetString("PracticeZip").Replace("-",""),15)+"~");//N403: Zip
 						//2010AA REF: Office phone number. Required by WebMD.
 						if(clearhouse.ReceiverID=="0135WCH00"){//if WebMD
 							seg++;
@@ -379,7 +379,7 @@ namespace OpenDental.Eclaims
 						sw.WriteLine("N4*"
 							+Sout(carrier.City,30,2)+"*"//N401: City
 							+Sout(carrier.State,2,2)+"*"//N402: State
-							+Sout(carrier.Zip.Replace("-",""),15,3)+"~");//N403: Zip , SPK
+							+Sout(carrier.Zip,15,3)+"~");//N403: Zip
 						parentSubsc=HLcount;
 						HLcount++;
 					}
@@ -1320,6 +1320,30 @@ namespace OpenDental.Eclaims
 					retVal+=",";
 				retVal+="Carrier Zip";
 			}
+			if(claim.PlanNum2>0){
+				InsPlan insPlan2=InsPlans.GetPlan(claim.PlanNum2,new InsPlan[] {});
+				Carrier carrier2=Carriers.GetCarrier(insPlan2.CarrierNum);
+				if(carrier2.Address==""){
+					if(retVal!="")
+						retVal+=",";
+					retVal+="Secondary Carrier Address";
+				}
+				if(carrier2.City.Length<2){
+					if(retVal!="")
+						retVal+=",";
+					retVal+="Secondary Carrier City";
+				}
+				if(carrier2.State.Length!=2){
+					if(retVal!="")
+						retVal+=",";
+					retVal+="Secondary Carrier State(2 char)";
+				}
+				if(carrier2.Zip.Length<3){
+					if(retVal!="")
+						retVal+=",";
+					retVal+="Secondary Carrier Zip";
+				}
+			}
 			//Provider Idents:
 			ProviderSupplementalID[] providerIdents=ElectIDs.GetRequiredIdents(carrier.ElectID);
 			for(int i=0;i<providerIdents.Length;i++){
@@ -1456,6 +1480,11 @@ namespace OpenDental.Eclaims
 					if(retVal!="")
 						retVal+=",";
 					retVal+="Treating Prov SSN";
+				}
+				if(treatProv.StateLicense==""){
+					if(retVal!="")
+						retVal+=",";
+					retVal+="Treating Prov Lic #";
 				}
 				//will add any other checks as needed. Can't think of any others at the moment.
 			}//for int i claimProcs

@@ -110,7 +110,8 @@ namespace OpenDental{
 		private void FormPayPlanSelect_Load(object sender, System.EventArgs e) {
 			for(int i=0;i<ValidPlans.Length;i++){
 				listPayPlans.Items.Add(ValidPlans[i].PayPlanDate.ToShortDateString()
-					+"  "+ValidPlans[i].TotalAmount.ToString("F"));
+					+"  "+ValidPlans[i].TotalAmount.ToString("F")
+					+"  "+Patients.GetPat(ValidPlans[i].PatNum).GetNameFL());
 			}
 		}
 
@@ -127,6 +128,7 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please select a payment plan first."));
 				return;
 			}
+			IndexSelected=listPayPlans.SelectedIndex;
 			DialogResult=DialogResult.OK;
 		}
 
@@ -141,6 +143,9 @@ namespace OpenDental{
 
 	}
 }
+
+
+
 
 
 

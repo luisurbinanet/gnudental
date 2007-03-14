@@ -59,17 +59,33 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO commlog (PatNum"
-				+",CommDateTime,CommType,Note,Mode,SentOrReceived,EmailMessageNum) VALUES("
-				+"'"+POut.PInt   (Cur.PatNum)+"', "
+			if(Prefs.RandomKeys){
+				Cur.CommlogNum=MiscData.GetKey("commlog","CommlogNum");
+			}
+			cmd.CommandText="INSERT INTO commlog (";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="CommlogNum,";
+			}
+			cmd.CommandText+="PatNum"
+				+",CommDateTime,CommType,Note,Mode,SentOrReceived,EmailMessageNum) VALUES(";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="'"+POut.PInt(Cur.CommlogNum)+"', ";
+			}
+			cmd.CommandText+=
+				 "'"+POut.PInt   (Cur.PatNum)+"', "
 				+"'"+POut.PDateT (Cur.CommDateTime)+"', "
 				+"'"+POut.PInt   ((int)Cur.CommType)+"', "
 				+"'"+POut.PString(Cur.Note)+"', "
 				+"'"+POut.PInt   ((int)Cur.Mode)+"', "
 				+"'"+POut.PInt   ((int)Cur.SentOrReceived)+"', "
 				+"'"+POut.PInt   (Cur.EmailMessageNum)+"')";
-				
-			NonQ();
+			if(Prefs.RandomKeys){
+				NonQ();
+			}
+			else{
+ 				NonQ(true);
+				Cur.CommlogNum=InsertID;
+			}
 		}
 
 		///<summary></summary>
@@ -101,6 +117,14 @@ namespace OpenDental{
 
 
 }
+
+
+
+
+
+
+
+
 
 
 

@@ -9,7 +9,7 @@ namespace OpenDental{
 	public class Adjustment{
 		///<summary>Primary key.</summary>
 		public int AdjNum;
-		///<summary>AKA Entry Date.  This date is used for reports on adjustments made.</summary>
+		///<summary>The date that the adjustment shows in the patient account.</summary>
 		public DateTime AdjDate;
 		///<summary>Amount of adjustment.</summary>
 		public double AdjAmt;
@@ -25,6 +25,8 @@ namespace OpenDental{
 		public DateTime ProcDate;
 		///<summary>If attached to a procedure,this is the foreign key to procedurelog.ProcNum.</summary>
 		public int ProcNum;
+		///<summary>Timestamp automatically generated and user not allowed to change.  The actual date of entry.</summary>
+		public DateTime DateEntry;
 
 		/*///<summary>Returns a copy of this Adjustment.</summary>
 		public Adjustment Copy(){
@@ -35,7 +37,7 @@ namespace OpenDental{
 		}*/
 
 		///<summary></summary>
-		public void Update(){
+		private void Update(){
 			string command="UPDATE adjustment SET " 
 				+ "adjdate = '"      +POut.PDate  (AdjDate)+"'"
 				+ ",adjamt = '"      +POut.PDouble(AdjAmt)+"'"
@@ -45,6 +47,7 @@ namespace OpenDental{
 				+ ",adjnote = '"     +POut.PString(AdjNote)+"'"
 				+ ",ProcDate = '"    +POut.PDate  (ProcDate)+"'"
 				+ ",ProcNum = '"     +POut.PInt   (ProcNum)+"'"
+				//DateEntry not allowed to change
 				+" WHERE adjNum = '" +POut.PInt   (AdjNum)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
@@ -52,22 +55,53 @@ namespace OpenDental{
 		}
 
 		///<summary></summary>
-		public void Insert(){
-			string command="INSERT INTO adjustment (adjdate,adjamt,patnum, "
-				+"adjtype,provnum,adjnote,ProcDate,ProcNum) VALUES("
-				+"'"+POut.PDate  (AdjDate)+"', "
+		private void Insert(){
+			if(Prefs.RandomKeys){
+				AdjNum=MiscData.GetKey("adjustment","AdjNum");
+			}
+			string command= "INSERT INTO adjustment (";
+			if(Prefs.RandomKeys){
+				command+="AdjNum,";
+			}
+			command+="AdjDate,AdjAmt,PatNum, "
+				+"AdjType,ProvNum,AdjNote,ProcDate,ProcNum,DateEntry) VALUES(";
+			if(Prefs.RandomKeys){
+				command+="'"+POut.PInt(AdjNum)+"', ";
+			}
+			command+=
+				 "'"+POut.PDate  (AdjDate)+"', "
 				+"'"+POut.PDouble(AdjAmt)+"', "
 				+"'"+POut.PInt   (PatNum)+"', "
 				+"'"+POut.PInt   (AdjType)+"', "
 				+"'"+POut.PInt   (ProvNum)+"', "
 				+"'"+POut.PString(AdjNote)+"', "
 				+"'"+POut.PDate  (ProcDate)+"', "
-				+"'"+POut.PInt   (ProcNum)+"')";
+				+"'"+POut.PInt   (ProcNum)+"', "
+				+"NOW())";//DateEntry set to server date
 			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command);
+			if(Prefs.RandomKeys){
+				dcon.NonQ(command);
+			}
+			else{
+ 				dcon.NonQ(command,true);
+				AdjNum=dcon.InsertID;
+			}
 		}
 
 		///<summary></summary>
+		public void InsertOrUpdate(bool IsNew){
+			//if(){
+				//throw new Exception(Lan.g(this,""));
+			//}
+			if(IsNew){
+				Insert();
+			}
+			else{
+				Update();
+			}
+		}
+
+		///<summary>This will soon be eliminated or changed to only allow deleting on same day as EntryDate.</summary>
 		public void Delete(){
 			string command="DELETE FROM adjustment "
 				+"WHERE AdjNum = '"+AdjNum.ToString()+"'";
@@ -93,15 +127,16 @@ namespace OpenDental{
 			Adjustment[] List=new Adjustment[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
 				List[i]=new Adjustment();
-				List[i].AdjNum  = PIn.PInt   (table.Rows[i][0].ToString());
-				List[i].AdjDate = PIn.PDate  (table.Rows[i][1].ToString());
-				List[i].AdjAmt  = PIn.PDouble(table.Rows[i][2].ToString());
-				List[i].PatNum  = PIn.PInt   (table.Rows[i][3].ToString());
-				List[i].AdjType = PIn.PInt   (table.Rows[i][4].ToString());
-				List[i].ProvNum = PIn.PInt   (table.Rows[i][5].ToString());
-				List[i].AdjNote = PIn.PString(table.Rows[i][6].ToString());
-				List[i].ProcDate= PIn.PDate  (table.Rows[i][7].ToString());
-				List[i].ProcNum = PIn.PInt   (table.Rows[i][8].ToString());
+				List[i].AdjNum   = PIn.PInt   (table.Rows[i][0].ToString());
+				List[i].AdjDate  = PIn.PDate  (table.Rows[i][1].ToString());
+				List[i].AdjAmt   = PIn.PDouble(table.Rows[i][2].ToString());
+				List[i].PatNum   = PIn.PInt   (table.Rows[i][3].ToString());
+				List[i].AdjType  = PIn.PInt   (table.Rows[i][4].ToString());
+				List[i].ProvNum  = PIn.PInt   (table.Rows[i][5].ToString());
+				List[i].AdjNote  = PIn.PString(table.Rows[i][6].ToString());
+				List[i].ProcDate = PIn.PDate  (table.Rows[i][7].ToString());
+				List[i].ProcNum  = PIn.PInt   (table.Rows[i][8].ToString());
+				List[i].DateEntry= PIn.PDate  (table.Rows[i][9].ToString());
 			}
 			return List;
 		}

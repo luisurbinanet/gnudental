@@ -311,6 +311,9 @@ namespace OpenDental{
 		}
 
 		private void butEditCats_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			FormDefinitions FormD=new FormDefinitions(DefCat.LetterMergeCats);
 			FormD.ShowDialog();
 			FillCats();

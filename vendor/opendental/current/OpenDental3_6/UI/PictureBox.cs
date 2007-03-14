@@ -3,6 +3,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Data;
 using System.Windows.Forms;
 
@@ -81,6 +82,7 @@ namespace OpenDental.UI
 		protected override void OnPaint(PaintEventArgs e) {
 			base.OnPaint (e);
 			Graphics g=e.Graphics;
+			g.InterpolationMode=InterpolationMode.High;
 			g.DrawRectangle(Pens.Black,0,0,Width-1,Height-1);
 			if(image==null){
 				StringFormat format=new StringFormat();

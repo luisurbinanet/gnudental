@@ -472,7 +472,7 @@ namespace OpenDental{
 				"BillingDentistST",
 				"BillingDentistZip",
 				"BillingDentistMedicaidID",
-				//"BillingDentistProvID",
+				"BillingDentistProviderID",
 				"BillingDentistLicenseNum",
 				"BillingDentistSSNorTIN",
 				"BillingDentistNumIsSSN",

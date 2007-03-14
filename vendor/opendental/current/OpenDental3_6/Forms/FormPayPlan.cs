@@ -511,7 +511,7 @@ namespace OpenDental{
 			this.label13.Name = "label13";
 			this.label13.Size = new System.Drawing.Size(148, 17);
 			this.label13.TabIndex = 32;
-			this.label13.Text = "Current Due";
+			this.label13.Text = "Accumulated Due";
 			this.label13.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// textMonthsDue

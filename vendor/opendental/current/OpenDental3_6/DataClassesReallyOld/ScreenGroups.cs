@@ -53,14 +53,27 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO screengroup (Description,SGDate"
-				+") "
-				+"VALUES ("
-				+"'"+POut.PString(Cur.Description)+"', "
+			if(Prefs.RandomKeys){
+				Cur.ScreenGroupNum=MiscData.GetKey("screengroup","ScreenGroupNum");
+			}
+			cmd.CommandText="INSERT INTO screengroup (";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="ScreenGroupNum,";
+			}
+			cmd.CommandText+="Description,SGDate) VALUES(";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="'"+POut.PInt(Cur.ScreenGroupNum)+"', ";
+			}
+			cmd.CommandText+=
+				 "'"+POut.PString(Cur.Description)+"', "
 				+"'"+POut.PDate  (Cur.SGDate)+"')";
-			//MessageBox.Show(cmd.CommandText);
-			NonQ(true);
-			Cur.ScreenGroupNum=InsertID;
+			if(Prefs.RandomKeys){
+				NonQ();
+			}
+			else{
+ 				NonQ(true);
+				Cur.ScreenGroupNum=InsertID;
+			}
 		}
 
 		///<summary></summary>

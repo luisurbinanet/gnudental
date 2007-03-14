@@ -1,4 +1,4 @@
-using System;
+/*using System;
 using System.Collections;
 using System.Data;
 using System.Windows.Forms;
@@ -29,7 +29,7 @@ namespace OpenDental{
 			return p;
 		}
 
-		/*
+		
 		///<summary></summary>
 		public static void InsertCur(){
 			cmd.CommandText = "INSERT INTO permission (Name,RequiresPassword,BeforeDate,BeforeDays) "
@@ -41,13 +41,13 @@ namespace OpenDental{
 			//MessageBox.Show(cmd.CommandText);
 			NonQ(true);
 			Cur.PermissionNum=InsertID;
-		}*/
+		}
 
 		///<summary></summary>
 		public void Update(){
 			string command="UPDATE permission SET "
 				//+"name ='"              +POut.PString(Name)+"'"//name not allowed to change
-				+"RequiresPassword ='" +POut.PBool  (RequiresPassword)+"'"
+				+",RequiresPassword ='" +POut.PBool  (RequiresPassword)+"'"
 				+",BeforeDate='"        +POut.PDate  (BeforeDate)+"'"
 				+",BeforeDays ='"       +POut.PInt   (BeforeDays)+"'"
 				+" WHERE PermissionNum = '"+POut.PInt(PermissionNum)+"'";
@@ -56,13 +56,13 @@ namespace OpenDental{
 		}
 
 
-	}
+	}*/
 	
 	/*=========================================================================================
 	=================================== class Permissions ==========================================*/
-  
+  /*
 	///<summary></summary>
-	public class Permissions{
+	public class PermissionsOld{
 		//<summary></summary>
 		//public static Permission Cur;
 		///<summary>A list of all permissions.  These have nothing to do with individual users.  They are all hardcoded.</summary>
@@ -85,8 +85,7 @@ namespace OpenDental{
 		}
 
 		///<summary></summary>
-		public static Permission GetPermission(string permissionName){
-			//used in Security log entry and UserPermissions.CheckUserPassword
+		private static Permission GetPermission(string permissionName){
 			for(int i=0;i<List.Length;i++){
 				if(List[i].Name==permissionName){
 					return List[i].Copy();
@@ -95,7 +94,7 @@ namespace OpenDental{
 			return null;//will never happen
 		}
 
-		/*public static bool GetCur(int permissionNum){
+		public static bool GetCur(int permissionNum){
 			for(int i=0;i<List.Length;i++){
 				if(List[i].PermissionNum==permissionNum){
 					Cur=List[i];
@@ -105,7 +104,7 @@ namespace OpenDental{
 				//	MessageBox.Show("error. unexpected permissionnum: "+permissionNum.ToString());
 			}
 			return false;
-		}*/
+		}
 
 		///<summary>Need to perform refresh after this.</summary>
 		public static void DisableSecurity(){
@@ -131,10 +130,10 @@ namespace OpenDental{
 
 		///<summary>Tests to see if this permission requires a password.  If so, the calling class would usually display a user/password dialog.</summary>
 		public static bool AuthorizationRequired(string permissionName){
-			Permission permission=GetPermission(permissionName);
-			if(permission.RequiresPassword){
-				return true;
-			}
+			//Permission permission=GetPermission(permissionName);
+			//if(permission.RequiresPassword){
+			//	return true;
+			//}
 			return false;
 		}
 
@@ -162,7 +161,7 @@ namespace OpenDental{
 
 
 }
-
+*/
 
 
 

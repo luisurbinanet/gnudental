@@ -52,12 +52,27 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO letter(Description,BodyText"
-				+") VALUES("
-				+"'"+POut.PString(Cur.Description)+"', "
+			if(Prefs.RandomKeys){
+				Cur.LetterNum=MiscData.GetKey("letter","LetterNum");
+			}
+			cmd.CommandText="INSERT INTO letter (";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="LetterNum,";
+			}
+			cmd.CommandText+="Description,BodyText) VALUES(";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="'"+POut.PInt(Cur.LetterNum)+"', ";
+			}
+			cmd.CommandText+=
+				 "'"+POut.PString(Cur.Description)+"', "
 				+"'"+POut.PString(Cur.BodyText)+"')";
-			NonQ();//(true);
-			//Cur.LetterNum=InsertID;
+			if(Prefs.RandomKeys){
+				NonQ();
+			}
+			else{
+ 				NonQ(true);
+				Cur.LetterNum=InsertID;
+			}
 		}
 
 		///<summary></summary>

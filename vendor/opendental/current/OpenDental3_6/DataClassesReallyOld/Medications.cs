@@ -68,14 +68,29 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO medication (medname,genericnum,notes"
-				+") VALUES("
-				+"'"+POut.PString(Cur.MedName)+"', "
+			if(Prefs.RandomKeys){
+				Cur.MedicationNum=MiscData.GetKey("medication","MedicationNum");
+			}
+			cmd.CommandText="INSERT INTO medication (";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="MedicationNum,";
+			}
+			cmd.CommandText+="medname,genericnum,notes"
+				+") VALUES(";
+			if(Prefs.RandomKeys){
+				cmd.CommandText+="'"+POut.PInt(Cur.MedicationNum)+"', ";
+			}
+			cmd.CommandText+=
+				 "'"+POut.PString(Cur.MedName)+"', "
 				+"'"+POut.PInt   (Cur.GenericNum)+"', "
 				+"'"+POut.PString(Cur.Notes)+"')";
-			NonQ(true);
-			Cur.MedicationNum=InsertID;
-			//MessageBox.Show(Cur.PayNum.ToString());
+			if(Prefs.RandomKeys){
+				NonQ();
+			}
+			else{
+ 				NonQ(true);
+				Cur.MedicationNum=InsertID;
+			}
 		}
 
 		///<summary>Dependent brands and patients will already be checked.</summary>

@@ -332,6 +332,9 @@ namespace OpenDental{
 		}
 
 		private void butEdit_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.Setup)){
+				return;
+			}
 			int selectedSched=Defs.Short[(int)DefCat.FeeSchedNames][listFeeSched.SelectedIndex].DefNum;
 			FormDefinitions FormD=new FormDefinitions(DefCat.FeeSchedNames);
 			FormD.ShowDialog();

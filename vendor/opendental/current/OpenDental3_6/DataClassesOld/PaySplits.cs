@@ -25,10 +25,12 @@ namespace OpenDental{
 		public int ProvNum;
 		///<summary>Foreign key to payplan.PayPlanNum.  0 if not attached to a payplan.</summary>
 		public int PayPlanNum;
-		///<summary>AKA Entry date.  Date always in perfect synch with Payment date.  Used in all reports of payments.</summary>
+		///<summary>Date always in perfect synch with Payment date.</summary>
 		public DateTime DatePay;
 		/// <summary></summary>
 		public int ProcNum;
+		///<summary>Date this paysplit was created.  User not allowed to edit.</summary>
+		public DateTime DateEntry;
 
 		/*///<summary>Returns a copy of this PaySplit.</summary>
 		public PaySplit Copy(){
@@ -49,6 +51,7 @@ namespace OpenDental{
 				+ ",PayPlanNum = '"  +POut.PInt   (PayPlanNum)+"'"
 				+ ",DatePay = '"     +POut.PDate  (DatePay)+"'"
 				+ ",ProcNum = '"     +POut.PInt   (ProcNum)+"'"
+				//+ ",DateEntry = '"   +POut.PDate  (DateEntry)+"'"//not allowed to change
 				+" WHERE splitNum = '" +POut.PInt (SplitNum)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
@@ -57,18 +60,36 @@ namespace OpenDental{
 
 		///<summary>Inserts a </summary>
 		private void Insert(){
-			string command="INSERT INTO paysplit (splitamt,patnum,procdate, "
-				+"paynum,provnum,payplannum,DatePay,ProcNum) VALUES("
-				+"'"+POut.PDouble(SplitAmt)+"', "
+			if(Prefs.RandomKeys){
+				SplitNum=MiscData.GetKey("paysplit","SplitNum");
+			}
+			string command= "INSERT INTO paysplit (";
+			if(Prefs.RandomKeys){
+				command+="SplitNum,";
+			}
+			command+="SplitAmt,PatNum,ProcDate, "
+				+"PayNum,ProvNum,PayPlanNum,DatePay,ProcNum,DateEntry) VALUES(";
+			if(Prefs.RandomKeys){
+				command+="'"+POut.PInt(SplitNum)+"', ";
+			}
+			command+=
+				 "'"+POut.PDouble(SplitAmt)+"', "
 				+"'"+POut.PInt   (PatNum)+"', "
 				+"'"+POut.PDate  (ProcDate)+"', "
 				+"'"+POut.PInt   (PayNum)+"', "
 				+"'"+POut.PInt   (ProvNum)+"', "
 				+"'"+POut.PInt   (PayPlanNum)+"', "
 				+"'"+POut.PDate  (DatePay)+"', "
-				+"'"+POut.PInt   (ProcNum)+"')";
+				+"'"+POut.PInt   (ProcNum)+"', "
+				+"NOW())";//DateEntry: date of server
 			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command,true);
+ 			if(Prefs.RandomKeys){
+				dcon.NonQ(command);
+			}
+			else{
+ 				dcon.NonQ(command,true);
+				SplitNum=dcon.InsertID;
+			}
 			SplitNum=dcon.InsertID;
 			SetSplit();
 		}
@@ -126,11 +147,14 @@ namespace OpenDental{
 	///<summary></summary>
 	public class PaySplits{
 
-		///<summary>Returns all paySplits for the given patNum, organized by procDate.</summary>
+		///<summary>Returns all paySplits for the given patNum, organized by procDate.  WARNING! Also includes related paysplits that aren't actually attached to patient.  Includes any split where payment is for this patient.</summary>
 		public static PaySplit[] Refresh(int patNum){
 			string command=
-				"SELECT * FROM paysplit"
-				+" WHERE PatNum = '"+patNum+"' ORDER BY ProcDate";
+				"SELECT paysplit.* FROM paysplit,payment "
+				+"WHERE paysplit.PayNum=payment.PayNum "
+				+"AND (paysplit.PatNum = '"+POut.PInt(patNum)+"' OR payment.PatNum = '"+POut.PInt(patNum)+"') "
+				+"GROUP BY paysplit.SplitNum "
+				+"ORDER BY ProcDate";
 			DataConnection dcon=new DataConnection();
  			DataTable table=dcon.GetTable(command);
 			PaySplit[] List=new PaySplit[table.Rows.Count];
@@ -147,6 +171,7 @@ namespace OpenDental{
 				List[i].PayPlanNum  = PIn.PInt   (table.Rows[i][8].ToString());
 				List[i].DatePay     = PIn.PDate  (table.Rows[i][9].ToString());
 				List[i].ProcNum     = PIn.PInt   (table.Rows[i][10].ToString());
+				List[i].DateEntry   = PIn.PDate  (table.Rows[i][11].ToString());
 			}
 			return List;
 		}
@@ -172,6 +197,7 @@ namespace OpenDental{
 				PaymentList[i].PayPlanNum  = PIn.PInt   (table.Rows[i][8].ToString());
 				PaymentList[i].DatePay     = PIn.PDate  (table.Rows[i][9].ToString());
 				PaymentList[i].ProcNum     = PIn.PInt   (table.Rows[i][10].ToString());
+				PaymentList[i].DateEntry   = PIn.PDate  (table.Rows[i][11].ToString());
 			}
 			return PaymentList;
 		}
@@ -187,7 +213,7 @@ namespace OpenDental{
 			return retVal;
 		}
 
-		///<summary>Used from ContrAccount and ProcEdit to display and calculate payments attached to procs.</summary>
+		///<summary>Used from ContrAccount and ProcEdit to display and calculate payments attached to procs. Used once in FormProcEdit</summary>
 		public static double GetTotForProc(int procNum,PaySplit[] List){
 			double retVal=0;
 			for(int i=0;i<List.Length;i++){
@@ -212,15 +238,56 @@ namespace OpenDental{
 			return retVal;
 		}
 
-		///<summary>Used twice in ContrAccount.  Returns all paySplits for the given payment, but an incomplete list of PaySplits can be supplied here, so only a partial list of attached PaySplits will be returned.</summary>
+		///<summary>Used once in ContrAccount.  WARNING!  The returned list of 'paysplits' are not real paysplits.  They are actually grouped by patient and date.  Only the ProcDate, SplitAmt, PatNum, and ProcNum(one of many) are filled. Must supply a list which would include all paysplits for this payment.</summary>
 		public static ArrayList GetForPayment(int payNum,PaySplit[] List){
 			ArrayList retVal=new ArrayList();
+			int matchI;
 			for(int i=0;i<List.Length;i++){
 				if(List[i].PayNum==payNum){
-					retVal.Add(List[i]);
+					//find a 'paysplit' with matching procdate and patnum
+					matchI=-1;
+					for(int j=0;j<retVal.Count;j++){
+						if(((PaySplit)retVal[j]).ProcDate==List[i].ProcDate && ((PaySplit)retVal[j]).PatNum==List[i].PatNum){
+							matchI=j;
+							break;
+						}
+					}
+					if(matchI==-1){
+						retVal.Add(new PaySplit());
+						matchI=retVal.Count-1;
+						((PaySplit)retVal[matchI]).ProcDate=List[i].ProcDate;
+						((PaySplit)retVal[matchI]).PatNum=List[i].PatNum;
+					}
+					if(((PaySplit)retVal[matchI]).ProcNum==0 && List[i].ProcNum!=0){
+						((PaySplit)retVal[matchI]).ProcNum=List[i].ProcNum;
+					}
+					((PaySplit)retVal[matchI]).SplitAmt+=List[i].SplitAmt;
 				}
 			}
 			return retVal;
+		}
+
+		///<summary>Used once in ContrAccount to just get the splits for a single patient.  The supplied list also contains splits that are not necessarily for this one patient.</summary>
+		public static PaySplit[] GetForPatient(int patNum,PaySplit[] List){
+			ArrayList retVal=new ArrayList();
+			for(int i=0;i<List.Length;i++){
+				if(List[i].PatNum==patNum){
+					retVal.Add(List[i]);
+				}
+			}
+			PaySplit[] retList=new PaySplit[retVal.Count];
+			retVal.CopyTo(retList);
+			return retList;
+		}
+
+		///<summary>Used once in ContrAccount.  Usually returns 0 unless there is a payplan for this payment and patient.</summary>
+		public static int GetPayPlanNum(int payNum,int patNum,PaySplit[] List){
+			for(int i=0;i<List.Length;i++){
+				if(List[i].PayNum==payNum && List[i].PatNum==patNum && List[i].PayPlanNum!=0){
+					return List[i].PayPlanNum;
+				}
+			}
+			return 0;
 		}
 
 		///<summary>Used in ComputeBalances to compute balance for a single patient. Supply a list of all paysplits for the patient.</summary>

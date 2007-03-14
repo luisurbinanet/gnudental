@@ -30,16 +30,32 @@ namespace OpenDental{
 
 		///<summary>Inserts this lettermerge into database.</summary>
 		public void Insert(){
-			string command="INSERT INTO lettermerge (Description,TemplateName,DataFileName,"
-				+"Category) VALUES("
-				+"'"+POut.PString(Description)+"', "
+			if(Prefs.RandomKeys){
+				LetterMergeNum=MiscData.GetKey("lettermerge","LetterMergeNum");
+			}
+			string command= "INSERT INTO lettermerge (";
+			if(Prefs.RandomKeys){
+				command+="LetterMergeNum,";
+			}
+			command+="Description,TemplateName,DataFileName,"
+				+"Category) VALUES(";
+			if(Prefs.RandomKeys){
+				command+="'"+POut.PInt(LetterMergeNum)+"', ";
+			}
+			command+=
+				 "'"+POut.PString(Description)+"', "
 				+"'"+POut.PString(TemplateName)+"', "
 				+"'"+POut.PString(DataFileName)+"', "
 				+"'"+POut.PInt   (Category)+"')";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command,true);
-			LetterMergeNum=dcon.InsertID;
+ 			if(Prefs.RandomKeys){
+				dcon.NonQ(command);
+			}
+			else{
+ 				dcon.NonQ(command,true);
+				LetterMergeNum=dcon.InsertID;
+			}
 		}
 
 		///<summary></summary>
