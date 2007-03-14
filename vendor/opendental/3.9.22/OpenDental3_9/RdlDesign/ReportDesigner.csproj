@@ -1,0 +1,673 @@
+<VisualStudioProject>
+    <CSHARP
+        ProjectType = "Local"
+        ProductVersion = "7.10.3077"
+        SchemaVersion = "2.0"
+        ProjectGuid = "{3E1D2C49-44A2-46A0-B107-9E8A87AE78A7}"
+    >
+        <Build>
+            <Settings
+                ApplicationIcon = "App.ico"
+                AssemblyKeyContainerName = ""
+                AssemblyName = "RdlDesigner"
+                AssemblyOriginatorKeyFile = ""
+                DefaultClientScript = "JScript"
+                DefaultHTMLPageLayout = "Grid"
+                DefaultTargetSchema = "IE50"
+                DelaySign = "false"
+                OutputType = "WinExe"
+                PreBuildEvent = ""
+                PostBuildEvent = ""
+                RootNamespace = "fyiReporting.RdlDesign"
+                RunPostBuildEvent = "OnBuildSuccess"
+                StartupObject = "fyiReporting.RdlDesign.RdlDesigner"
+            >
+                <Config
+                    Name = "Debug"
+                    AllowUnsafeBlocks = "false"
+                    BaseAddress = "285212672"
+                    CheckForOverflowUnderflow = "false"
+                    ConfigurationOverrideFile = ""
+                    DefineConstants = "DEBUG;TRACE"
+                    DocumentationFile = ""
+                    DebugSymbols = "true"
+                    FileAlignment = "4096"
+                    IncrementalBuild = "false"
+                    NoStdLib = "false"
+                    NoWarn = ""
+                    Optimize = "false"
+                    OutputPath = "bin\Debug\"
+                    RegisterForComInterop = "false"
+                    RemoveIntegerChecks = "false"
+                    TreatWarningsAsErrors = "false"
+                    WarningLevel = "4"
+                />
+                <Config
+                    Name = "Release"
+                    AllowUnsafeBlocks = "false"
+                    BaseAddress = "285212672"
+                    CheckForOverflowUnderflow = "false"
+                    ConfigurationOverrideFile = ""
+                    DefineConstants = "TRACE"
+                    DocumentationFile = ""
+                    DebugSymbols = "false"
+                    FileAlignment = "4096"
+                    IncrementalBuild = "false"
+                    NoStdLib = "false"
+                    NoWarn = ""
+                    Optimize = "true"
+                    OutputPath = "bin\Release\"
+                    RegisterForComInterop = "false"
+                    RemoveIntegerChecks = "false"
+                    TreatWarningsAsErrors = "false"
+                    WarningLevel = "4"
+                />
+            </Settings>
+            <References>
+                <Reference
+                    Name = "System"
+                    AssemblyName = "System"
+                    HintPath = "..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.dll"
+                />
+                <Reference
+                    Name = "System.Data"
+                    AssemblyName = "System.Data"
+                    HintPath = "..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Data.dll"
+                />
+                <Reference
+                    Name = "System.Drawing"
+                    AssemblyName = "System.Drawing"
+                    HintPath = "..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Drawing.dll"
+                />
+                <Reference
+                    Name = "System.Windows.Forms"
+                    AssemblyName = "System.Windows.Forms"
+                    HintPath = "..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Windows.Forms.dll"
+                />
+                <Reference
+                    Name = "System.XML"
+                    AssemblyName = "System.Xml"
+                    HintPath = "..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.XML.dll"
+                />
+                <Reference
+                    Name = "RdlEngine"
+                    AssemblyName = "RdlEngine"
+                    HintPath = "..\RdlEngine\bin\Debug\RdlEngine.dll"
+                />
+                <Reference
+                    Name = "RdlViewer"
+                    AssemblyName = "RdlViewer"
+                    HintPath = "..\RdlViewer\bin\Debug\RdlViewer.dll"
+                />
+                <Reference
+                    Name = "MySql.Data"
+                    AssemblyName = "MySql.Data"
+                    HintPath = "..\Required dlls\MySql.Data.dll"
+                />
+            </References>
+        </Build>
+        <Files>
+            <Include>
+                <File
+                    RelPath = "App.ico"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "AssemblyInfo.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "BodyCtl.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "BodyCtl.resx"
+                    DependentUpon = "BodyCtl.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "chart.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "ChartAxisCtl.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ChartAxisCtl.resx"
+                    DependentUpon = "ChartAxisCtl.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "ChartCtl.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ChartCtl.resx"
+                    DependentUpon = "ChartCtl.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "ChartLegendCtl.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ChartLegendCtl.resx"
+                    DependentUpon = "ChartLegendCtl.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "copy.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "cut.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "DataSetRowsCtl.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataSetRowsCtl.resx"
+                    DependentUpon = "DataSetRowsCtl.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "DataSetsCtl.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DataSetsCtl.resx"
+                    DependentUpon = "DataSetsCtl.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "DesignCtl.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DesignCtl.resx"
+                    DependentUpon = "DesignCtl.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "DesignerUtility.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DesignerUtility.resx"
+                    DependentUpon = "DesignerUtility.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "DesignXmlDraw.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DesignXmlDraw.resx"
+                    DependentUpon = "DesignXmlDraw.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "DGCBColumn.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DialogAbout.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DialogAbout.resx"
+                    DependentUpon = "DialogAbout.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "DialogDatabase.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DialogDatabase.resx"
+                    DependentUpon = "DialogDatabase.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "DialogDataSourceRef.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DialogDataSourceRef.resx"
+                    DependentUpon = "DialogDataSourceRef.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "DialogDataSources.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DialogDataSources.resx"
+                    DependentUpon = "DialogDataSources.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "DialogEmbeddedImages.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DialogEmbeddedImages.resx"
+                    DependentUpon = "DialogEmbeddedImages.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "DialogListOfStrings.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DialogListOfStrings.resx"
+                    DependentUpon = "DialogListOfStrings.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "DialogNew.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DialogNew.resx"
+                    DependentUpon = "DialogNew.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "DialogNewChart.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DialogNewChart.resx"
+                    DependentUpon = "DialogNewChart.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "DialogNewMatrix.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DialogNewMatrix.resx"
+                    DependentUpon = "DialogNewMatrix.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "DialogNewTable.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DialogNewTable.resx"
+                    DependentUpon = "DialogNewTable.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "DialogValidValues.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DialogValidValues.resx"
+                    DependentUpon = "DialogValidValues.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "DrillParametersDialog.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "DrillParametersDialog.resx"
+                    DependentUpon = "DrillParametersDialog.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "FiltersCtl.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "FiltersCtl.resx"
+                    DependentUpon = "FiltersCtl.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "FindTab.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "FindTab.resx"
+                    DependentUpon = "FindTab.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "GroupingCtl.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "GroupingCtl.resx"
+                    DependentUpon = "GroupingCtl.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "image.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "ImageCtl.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ImageCtl.resx"
+                    DependentUpon = "ImageCtl.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "InteractivityCtl.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "InteractivityCtl.resx"
+                    DependentUpon = "InteractivityCtl.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "line.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "list.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "ListCtl.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ListCtl.resx"
+                    DependentUpon = "ListCtl.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "matrix.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "MatrixCtl.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "MatrixCtl.resx"
+                    DependentUpon = "MatrixCtl.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "MatrixView.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "MDIChild.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "MDIChild.resx"
+                    DependentUpon = "MDIChild.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "new.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "open.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "paste.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "PositionCtl.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "PositionCtl.resx"
+                    DependentUpon = "PositionCtl.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "print.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "PropertyDialog.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "PropertyDialog.resx"
+                    DependentUpon = "PropertyDialog.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "QueryParametersCtl.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QueryParametersCtl.resx"
+                    DependentUpon = "QueryParametersCtl.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "RdlDesigner.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "RdlDesigner.resx"
+                    DependentUpon = "RdlDesigner.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "RdlEditPreview.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "RdlEditPreview.resx"
+                    DependentUpon = "RdlEditPreview.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "rectangle.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "ReportCtl.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ReportCtl.resx"
+                    DependentUpon = "ReportCtl.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "ReportNames.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ReportParameterCtl.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ReportParameterCtl.resx"
+                    DependentUpon = "ReportParameterCtl.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "ReportXmlCtl.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ReportXmlCtl.resx"
+                    DependentUpon = "ReportXmlCtl.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "save.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "SimpleButton.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SimpleButton.resx"
+                    DependentUpon = "SimpleButton.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "SimpleToggle.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SimpleToggle.resx"
+                    DependentUpon = "SimpleToggle.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "SingleCtlDialog.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SingleCtlDialog.resx"
+                    DependentUpon = "SingleCtlDialog.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "SortingCtl.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SortingCtl.resx"
+                    DependentUpon = "SortingCtl.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "SQLCtl.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SQLCtl.resx"
+                    DependentUpon = "SQLCtl.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "StyleBorderCtl.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "StyleBorderCtl.resx"
+                    DependentUpon = "StyleBorderCtl.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "StyleCtl.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "StyleCtl.resx"
+                    DependentUpon = "StyleCtl.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "StyleTextCtl.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "StyleTextCtl.resx"
+                    DependentUpon = "StyleTextCtl.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "subreport.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "SubreportCtl.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SubreportCtl.resx"
+                    DependentUpon = "SubreportCtl.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "table.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "TableCtl.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TableCtl.resx"
+                    DependentUpon = "TableCtl.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "text.gif"
+                    BuildAction = "Content"
+                />
+            </Include>
+        </Files>
+    </CSHARP>
+</VisualStudioProject>
+
