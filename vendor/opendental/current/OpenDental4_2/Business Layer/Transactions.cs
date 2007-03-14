@@ -94,7 +94,7 @@ namespace OpenDental{
 			return RefreshAndFill(command);
 		}
 
-		///<summary>For now, all transactions are retrieved singly.  Might return null if db is inconsistent.</summary>
+		///<summary>For now, all transactions are retrieved singly.  Returns null if no match found.</summary>
 		private static Transaction RefreshAndFill(string command){
 			DataConnection dcon=new DataConnection();
 			DataTable table=dcon.GetTable(command);

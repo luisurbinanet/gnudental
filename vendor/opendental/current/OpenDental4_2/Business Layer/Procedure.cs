@@ -49,7 +49,7 @@ namespace OpenDental{
 		public double CapCoPayOLD;
 		///<summary>Only used in Public Health. See the PlaceOfService enum. Zero(Office) until procedure set complete. Then it's set to the value of the DefaultProcedurePlaceService preference.</summary>
 		public PlaceOfService PlaceService;
-		///<summary>Set true to hide this procedure on the graphical tooth chart.  Typically set after a tooth is extracted.</summary>
+		///<summary>Not used anymore because of the new 3D tooth chart.  Will be enhanced later to a 3 state option: Always show graphics, Never show graphics, or Show if tooth is present.</summary>
 		public bool HideGraphical;
 		///<summary>Single char. Blank=no, or Initial, or Replacement.</summary>
 		public string Prosthesis;

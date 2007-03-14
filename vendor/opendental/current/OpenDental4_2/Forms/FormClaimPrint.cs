@@ -404,6 +404,7 @@ namespace OpenDental{
 				}				
 			}	
 			ProcList=Procedures.Refresh(PatCur.PatNum);
+			ToothInitial[] initialList=ToothInitials.Refresh(PatCur.PatNum);
       ClaimProc[] ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
       ClaimProcsForClaim=ClaimProcs.GetForClaim(ClaimProcList,Claims.Cur.ClaimNum); 
 			claimprocs=new ArrayList();
@@ -421,7 +422,7 @@ namespace OpenDental{
 				if(includeThis)
 					claimprocs.Add(ClaimProcsForClaim[i]);						
 			}
-			ArrayList missingTeeth=Procedures.GetMissingTeeth(ProcList);
+			ArrayList missingTeeth=ToothInitials.GetMissingOrHiddenTeeth(initialList);
 			Procedure proc;
 			ProcedureCode procCode;
 			for(int j=missingTeeth.Count-1;j>=0;j--) {//loop backwards to keep index accurate as items are removed
@@ -429,7 +430,7 @@ namespace OpenDental{
 				for(int p=0;p<claimprocs.Count;p++) {
 					proc=Procedures.GetProc(ProcList,((ClaimProc)claimprocs[p]).ProcNum);
 					procCode=ProcedureCodes.GetProcCode(proc.ADACode);
-					if(procCode.RemoveTooth && proc.ToothNum==(string)missingTeeth[j]) {
+					if(procCode.PaintType==ToothPaintingType.Extraction && proc.ToothNum==(string)missingTeeth[j]) {
 						missingTeeth.RemoveAt(j);
 						break;
 					}
@@ -1848,7 +1849,7 @@ namespace OpenDental{
 				case TreatmentArea.Surf:
 					//area blank
 					toothNum=Tooth.ToInternat(ProcCur.ToothNum);
-					surf=ProcCur.Surf;
+					surf=Tooth.SurfTidy(ProcCur.Surf,ProcCur.ToothNum,true);
 					break;
 				case TreatmentArea.Tooth:
 					//area blank

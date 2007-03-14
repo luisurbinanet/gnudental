@@ -162,8 +162,8 @@ namespace OpenDental {
 
 	}
 
-	/*=========================================================================================
-	=================================== class Benefits ==========================================*/
+	/*================================================================================================================
+	==================================================== class Benefits =============================================*/
 
 	///<summary></summary>
 	public class Benefits {
@@ -623,34 +623,6 @@ namespace OpenDental {
 			return retVal;
 		}
 
-		/*--------------------------------------------------------------------------------------------------------------*/
-		///<summary></summary>
-		public class BenefitArraySorter:IComparer {
-			///<summary></summary>
-			int IComparer.Compare(Object x,Object y) {
-				Benefit[] array1=(Benefit[])x;
-				Benefit ben1=null;
-				for(int i=0;i<array1.Length;i++){
-					if(array1[i]==null){
-						continue;
-					}
-					ben1=array1[i].Copy();
-					break;
-				}
-				Benefit[] array2=(Benefit[])y;
-				Benefit ben2=null;
-				for(int i=0;i<array2.Length;i++) {
-					if(array2[i]==null) {
-						continue;
-					}
-					ben2=array2[i].Copy();
-					break;
-				}
-				return(ben1.CompareTo(ben2));
-			}
-
-		}
-
 		///<summary>Deletes all benefits for a plan from the database.  Only used in FormInsPlan when picking a plan from the list.  Need to clear out benefits so that they won't be picked up when choosing benefits for all.</summary>
 		public static void DeleteForPlan(int planNum){
 			string command="DELETE FROM benefit WHERE PlanNum="+POut.PInt(planNum);
@@ -658,11 +630,43 @@ namespace OpenDental {
 			dcon.NonQ(command);
 		}
 
+	}
+
+	/*================================================================================================================
+	=========================================== class BenefitArraySorter =============================================*/
+	///<summary></summary>
+	public class BenefitArraySorter:IComparer {
+		///<summary></summary>
+		int IComparer.Compare(Object x,Object y) {
+			Benefit[] array1=(Benefit[])x;
+			Benefit ben1=null;
+			for(int i=0;i<array1.Length;i++){
+				if(array1[i]==null){
+					continue;
+				}
+				ben1=array1[i].Copy();
+				break;
+			}
+			Benefit[] array2=(Benefit[])y;
+			Benefit ben2=null;
+			for(int i=0;i<array2.Length;i++) {
+				if(array2[i]==null) {
+					continue;
+				}
+				ben2=array2[i].Copy();
+				break;
+			}
+			return(ben1.CompareTo(ben2));
+		}
+
+	}
+
+		
 
 
 
 		
-	}
+	
 
 	
 

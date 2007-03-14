@@ -73,23 +73,6 @@ namespace OpenDental{
 			return List;
 		}
 
-		
-
-		///<summary>Gets a list of missing teeth as strings. Includes "1"-"32", and "A"-"Z".</summary>
-		public static ArrayList GetMissingTeeth(Procedure[] procs){
-			ArrayList missing=new ArrayList();
-			for(int i=0;i<procs.Length;i++){
-				if(ProcedureCodes.GetProcCode(procs[i].ADACode).RemoveTooth
-					&& Tooth.IsValidDB(procs[i].ToothNum)
-					&& !Tooth.IsSuperNum(procs[i].ToothNum)
-					&& (procs[i].ProcStatus==ProcStat.C	|| procs[i].ProcStatus==ProcStat.EC	|| procs[i].ProcStatus==ProcStat.EO))
-				{
-					missing.Add(procs[i].ToothNum);
-				}  
-			}
-			return missing;
-		}
-
 		///<summary>Returns a ProcDesc(AptNum,ProcLines,Production) struct for a single appointment directly from the database</summary>
 		public static Procedure[] GetProcsForSingle(int aptNum, bool isNext){
 			string command;
@@ -230,8 +213,9 @@ namespace OpenDental{
 				}
 				oldProc=ProcList[i].Copy();
 				procCode=ProcedureCodes.GetProcCode(ProcList[i].ADACode);
-				if(procCode.RemoveTooth){//if an extraction, then mark previous procs hidden
-					ProcList[i].SetHideGraphical();
+				if(procCode.PaintType==ToothPaintingType.Extraction){//if an extraction, then mark previous procs hidden
+					ProcList[i].SetHideGraphical();//might not matter anymore
+					ToothInitials.SetValue(apt.PatNum,ProcList[i].ToothNum,ToothInitialType.Missing);
 				}
 				ProcList[i].ProcStatus=ProcStat.C;
 				ProcList[i].ProcDate=apt.AptDateTime.Date;
@@ -365,25 +349,25 @@ namespace OpenDental{
 
 		///<summary>Called from AutoCodeItems.  Makes a call to the database to determine whether the specified tooth has been extracted or will be extracted. This could then trigger a pontic code.</summary>
 		public static bool WillBeMissing(string toothNum,int patNum){
-			string command="SELECT COUNT(*) FROM procedurelog,procedurecode "
+			//first, check for missing teeth
+			string command="SELECT COUNT(*) FROM toothinitial "
+				+"WHERE ToothNum='"+toothNum+"' "
+				+"AND PatNum="+POut.PInt(patNum)
+				+" AND InitialType=0";//missing
+			DataConnection dcon=new DataConnection();
+			if(dcon.GetCount(command)!="0"){
+				return true;
+			}
+			//then, check for a planned extraction
+			command="SELECT COUNT(*) FROM procedurelog,procedurecode "
 				+"WHERE procedurelog.ADACode=procedurecode.ADACode "
 				+"AND procedurelog.ToothNum='"+toothNum+"' "
 				+"AND procedurelog.PatNum="+patNum.ToString()
-				+" AND procedurecode.RemoveTooth=1";
-			DataConnection dcon=new DataConnection();
-			DataTable table=dcon.GetTable(command);
-			if(PIn.PInt(table.Rows[0][0].ToString())==0){
-				return false;
+				+" AND procedurecode.PaintType=1";//extraction
+			if(dcon.GetCount(command)!="0") {
+				return true;
 			}
-			else return true;
-			/*for(int i=0;i<procList.Length;i++){
-				if(procList[i].ToothNum==toothNum
-					&& ProcedureCodes.GetProcCode(procList[i].ADACode).RemoveTooth)
-				{
-					return true;
-				}
-			}
-			return false;*/
+			return false;
 		}
 
 		///<summary>Used from TP to get a list of all TP procs, ordered by priority, toothnum.</summary>

@@ -19,7 +19,7 @@ namespace OpenDental{
 		///<summary>This field can be used to store extra info about the item.</summary>
 		public string ItemValue;
 		///<summary>Some categories include a color option.</summary>
-		public Color ItemColor;//
+		public Color ItemColor;
 		///<summary>If hidden, the item will not show on any list, but can still be referenced.</summary>
 		public bool IsHidden;
 	}

@@ -703,51 +703,70 @@ namespace OpenDental{
 
 		private void OnImport_Click() {
 			OpenFileDialog openFileDialog=new OpenFileDialog();
-  		//openFileDialog2.InitialDirectory=
-      //openFileDialog2.Filter="jpg files(*.jpg)|*.jpg|gif files(*.gif)|*.gif|All files(*.*)|*.*";
-      //openFileDialog2.FilterIndex=1;
-			if(openFileDialog.ShowDialog()!=DialogResult.OK){
+
+
+			openFileDialog.Multiselect = true;
+			if(openFileDialog.ShowDialog()!=DialogResult.OK) {
 				return;
 			}
-			if((myStream=openFileDialog.OpenFile())==null){
-				return;
-			}
-			//Documents.Cur.Description=Path.GetFileName(openFileDialog2.FileName);
-			try{				WebRequest request = WebRequest.Create(openFileDialog.FileName); 				WebResponse response = request.GetResponse();				if(Path.GetExtension(openFileDialog.FileName)==".jpg"					|| Path.GetExtension(openFileDialog.FileName)==".gif"){					ImageCurrent = (Bitmap)System.Drawing.Bitmap.FromStream(response.GetResponseStream());				}				else{					ImageCurrent=null;//may not be necessary				}				response.Close();			}			catch(System.Exception exception){				MessageBox.Show(exception.Message);// + " Selected File Not Image."));				myStream.Close();				return;			}
-			RecZoom.Width=0;
-			DisplayImage(true,false);
-			DocCur=new Document();
-			//Document.Insert will use this extension when naming:
-			DocCur.FileName=Path.GetExtension(openFileDialog.FileName);
-			DocCur.DateCreated=DateTime.Today;
-			DocCur.WithPat=PatCur.PatNum;
-			DocCur.Insert(PatCur);//this assigns a filename and saves to db
-			FormDocInfo FormD=new FormDocInfo(PatCur,DocCur);
-			FormD.ShowDialog();//some of the fields might get changed, but not the filename
-		  if(FormD.DialogResult==DialogResult.OK){
-				try{
-					//MessageBox.Show(Path.GetDirectoryName(openFileDialog2.FileName)+"\\"+","+patFolder);
-					//if(Path.GetDirectoryName(openFileDialog2.FileName)==patFolder
-					File.Copy(openFileDialog.FileName,patFolder+DocCur.FileName);
-				}
-				catch{
-					MessageBox.Show(Lan.g(this,"Unable to copy file.  May be in use."));
-					DocCur.Delete();
-					ImageCurrent=null;
-				}
-			}
-			else{
-				ImageCurrent=null;
-				DocCur.Delete();
-			}
-			myStream.Close();
-			//MessageBox.Show("check 2");
-			if(ImageCurrent==null){
+			string[] fileNames = openFileDialog.FileNames;
+			for(int i=0;i<fileNames.Length;i++) {
+				openFileDialog.FileName=fileNames[i];
+				if((myStream=openFileDialog.OpenFile())!=null){//Says I'm using the file don't touch it to other programs
+					//Documents.Cur.Description=Path.GetFileName(openFileDialog2.FileName);
+					try {
+						WebRequest request=WebRequest.Create(openFileDialog.FileName);
+						WebResponse response=request.GetResponse();
+						if(Path.GetExtension(openFileDialog.FileName).ToUpper()==".JPG"
+							|| Path.GetExtension(openFileDialog.FileName).ToUpper()==".GIF")
+						{
+							ImageCurrent=(Bitmap)System.Drawing.Bitmap.FromStream(response.GetResponseStream());
+						}
+						else {
+							ImageCurrent=null;//may not be necessary
+						}
+						response.Close();
+					}
+					catch(System.Exception exception) {
+						MessageBox.Show(exception.Message);// + " Selected File Not Image."));
+						myStream.Close();
+						return;
+					}
+					RecZoom.Width = 0;
+					DisplayImage(true,false);
+					DocCur=new Document();
+					//Document.Insert will use this extension when naming:
+					DocCur.FileName=Path.GetExtension(openFileDialog.FileName);
+					DocCur.DateCreated=DateTime.Today;
+					DocCur.WithPat=PatCur.PatNum;
+					DocCur.Insert(PatCur);//this assigns a filename and saves to db
+					FormDocInfo FormD=new FormDocInfo(PatCur,DocCur);
+					FormD.ShowDialog();//some of the fields might get changed, but not the filename
+					if(FormD.DialogResult==DialogResult.OK) {
+						try {
+							//MessageBox.Show(Path.GetDirectoryName(openFileDialog2.FileName)+"\\"+","+patFolder);
+							//if(Path.GetDirectoryName(openFileDialog2.FileName)==patFolder
+							File.Copy(openFileDialog.FileName,patFolder + DocCur.FileName);
+						}
+						catch {
+							MessageBox.Show(Lan.g(this,"Unable to copy file.  May be in use."));
+							DocCur.Delete();
+							ImageCurrent = null;
+						}
+					}
+					else {
+						ImageCurrent = null;
+						DocCur.Delete();
+					}
+					myStream.Close();
+				} // end if ((myStream = openFileDialog.OpenFile()) != null)
+			}//end for i
+			if(ImageCurrent==null) {
 				FillDocList(false);
 			}
-			else{
-				FillDocList(true);	
-			}	
+			else {
+				FillDocList(true);
+			}
 			DisplayImage(true,true);
 		}
 

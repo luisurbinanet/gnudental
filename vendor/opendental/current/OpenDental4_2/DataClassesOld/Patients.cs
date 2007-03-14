@@ -90,7 +90,7 @@ namespace OpenDental{
 				retVal[i].Bal_61_90    = PIn.PDouble(table.Rows[i][39].ToString());
 				retVal[i].BalOver90    = PIn.PDouble(table.Rows[i][40].ToString());
 				retVal[i].InsEst       = PIn.PDouble(table.Rows[i][41].ToString());
-				retVal[i].PrimaryTeeth = PIn.PString(table.Rows[i][42].ToString());
+				//retVal[i].PrimaryTeeth = PIn.PString(table.Rows[i][42].ToString());
 				retVal[i].BalTotal     = PIn.PDouble(table.Rows[i][43].ToString());
 				retVal[i].EmployerNum  = PIn.PInt   (table.Rows[i][44].ToString());
 				retVal[i].EmploymentNote=PIn.PString(table.Rows[i][45].ToString());
@@ -266,7 +266,7 @@ namespace OpenDental{
 				multPats[i].Bal_61_90    = PIn.PDouble(table.Rows[i][39].ToString());
 				multPats[i].BalOver90    = PIn.PDouble(table.Rows[i][40].ToString());
 				multPats[i].InsEst       = PIn.PDouble(table.Rows[i][41].ToString());
-				multPats[i].PrimaryTeeth = PIn.PString(table.Rows[i][42].ToString());
+				//multPats[i].PrimaryTeeth = PIn.PString(table.Rows[i][42].ToString());
 				multPats[i].BalTotal     = PIn.PDouble(table.Rows[i][43].ToString());
 				multPats[i].EmployerNum  = PIn.PInt   (table.Rows[i][44].ToString());
 				multPats[i].EmploymentNote=PIn.PString(table.Rows[i][45].ToString());

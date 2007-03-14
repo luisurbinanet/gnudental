@@ -207,9 +207,20 @@ namespace OpenDental{
 				DentalEye.SendData(pat);
 				return;
 			}
+			else if(Cur.ProgName=="FloridaProbe") {
+				FloridaProbe.SendData(pat);
+				return;
+			}
+			else if(Cur.ProgName=="DrCeph") {
+				DrCeph.SendData(pat);
+				return;
+			}
 			//all remaining programs:
 			try{
-				Process.Start(Cur.Path,Cur.CommandLine);
+				string cmdline=Cur.CommandLine;
+				cmdline.Replace("[PatNum]",pat.PatNum.ToString());
+				cmdline.Replace("[ChartNumber]",pat.ChartNumber);
+				Process.Start(Cur.Path,cmdline);
 			}
 			catch{
 				MessageBox.Show(Cur.ProgDesc+" is not available.");

@@ -124,11 +124,24 @@
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
     </Reference>
+    <Reference Include="Tao.OpenGl, Version=0.0.0.0, Culture=neutral, PublicKeyToken=1ca010269a4501ef">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Required dlls\Tao.OpenGl.dll</HintPath>
+    </Reference>
+    <Reference Include="Tao.Platform.Windows, Version=1.0.0.3, Culture=neutral, PublicKeyToken=701104b2da67a104">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Required dlls\Tao.Platform.Windows.dll</HintPath>
+    </Reference>
+    <Reference Include="VBbridges, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Required dlls\VBbridges.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bridges\Apteryx.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Bridges\FloridaProbe.cs" />
     <Compile Include="Bridges\DrCeph.cs" />
     <Compile Include="Bridges\DentalEye.cs" />
     <Compile Include="Bridges\Trojan.cs" />
@@ -192,6 +205,7 @@
     <Compile Include="Business Layer\AppointmentRules.cs" />
     <Compile Include="Business Layer\Accounts.cs" />
     <Compile Include="Business Layer\AccountingAutoPays.cs" />
+    <Compile Include="Business Layer\ToothInitials.cs" />
     <Compile Include="Business Layer\FeeScheds.cs" />
     <Compile Include="Business Layer\Reconciles.cs" />
     <Compile Include="Business Layer\Transactions.cs" />
@@ -507,7 +521,7 @@
     <Compile Include="DataClassesReallyOld\RxDefs.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DataClassesReallyOld\RxPats.cs">
+    <Compile Include="Business Layer\RxPats.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DataClassesReallyOld\Schools.cs">
@@ -660,6 +674,9 @@
     <Compile Include="Forms\BasicTemplate.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\FormToothChartBig.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\FormProcCodes.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -786,7 +803,7 @@
     <Compile Include="Forms\FormCarriers.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\FormCheckDatabase.cs">
+    <Compile Include="Forms\FormDatabaseMaintenance.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\FormChooseDatabase.cs">
@@ -1302,6 +1319,7 @@
     <Compile Include="Misc\LabelSingle.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Misc\ObjectDateComparer.cs" />
     <Compile Include="Misc\Pop3.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -1671,6 +1689,10 @@
     <EmbeddedResource Include="Forms\BasicTemplate.resx">
       <DependentUpon>BasicTemplate.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormToothChartBig.resx">
+      <DependentUpon>FormToothChartBig.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormProcCodes.resx">
       <DependentUpon>FormProcCodes.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -1819,8 +1841,9 @@
     <EmbeddedResource Include="Forms\FormCarriers.resx">
       <DependentUpon>FormCarriers.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormCheckDatabase.resx">
-      <DependentUpon>FormCheckDatabase.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\FormDatabaseMaintenance.resx">
+      <DependentUpon>FormDatabaseMaintenance.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormChooseDatabase.resx">
       <DependentUpon>FormChooseDatabase.cs</DependentUpon>
@@ -2519,6 +2542,12 @@
       <DependentUpon>ValidNumber.cs</DependentUpon>
     </EmbeddedResource>
     <Content Include="Misc\App.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="SparksToothChart\SparksToothChart.csproj">
+      <Project>{033B77F4-2E98-49A7-901F-5F388DEDF83E}</Project>
+      <Name>SparksToothChart</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

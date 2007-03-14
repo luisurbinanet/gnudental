@@ -664,6 +664,15 @@ namespace OpenDental{
 			return "";
 		}
 
+		public static GraphicType GetByType(int gTypeNum) {
+			for(int i=0;i<List.Length;i++) {
+				if(List[i].GTypeNum==gTypeNum) {
+					return List[i];
+				}
+			}
+			return new GraphicType();//should never happen
+		}
+
 	}
 
 	///<summary>Corresponds to the graphictype table in the database.</summary>

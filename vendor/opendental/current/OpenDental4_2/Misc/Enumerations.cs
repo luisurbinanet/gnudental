@@ -1023,6 +1023,59 @@ namespace OpenDental{
 		Expense
 	}
 
+	///<summary>Replaces the graphic type table in the database for the new 3D tooth chart.  We cannot yet do veneers.</summary>
+	public enum ToothPaintingType{
+		///<summary>0</summary>
+		None,
+		///<summary>1</summary>
+		Extraction,
+		///<summary>2</summary>
+		Implant,
+		///<summary>3</summary>
+		RCT,
+		///<summary>4</summary>
+		PostBU,
+		///<summary>5</summary>
+		FillingDark,
+		///<summary>6</summary>
+		FillingLight,
+		///<summary>7</summary>
+		CrownDark,
+		///<summary>8</summary>
+		CrownLight,
+		///<summary>9</summary>
+		BridgeDark,
+		///<summary>10</summary>
+		BridgeLight,
+		///<summary>11</summary>
+		DentureDark,
+		///<summary>12</summary>
+		DentureLight,
+		///<summary>13</summary>
+		Sealant
+	}
+
+	///<summary></summary>
+	public enum ToothInitialType{
+		///<summary>0</summary>
+		Missing,
+		///<summary>1</summary>
+		Hidden,
+		///<summary>2</summary>
+		Primary,
+		///<summary>3</summary>
+		ShiftM,
+		///<summary>4</summary>
+		ShiftO,
+		///<summary>5</summary>
+		ShiftB,
+		///<summary>6</summary>
+		Rotate,
+		///<summary>7</summary>
+		TipM,
+		///<summary>8</summary>
+		TipB
+	}
 	
 	
 		

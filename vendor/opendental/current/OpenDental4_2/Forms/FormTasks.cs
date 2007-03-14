@@ -495,7 +495,7 @@ namespace OpenDental{
 				if(changeMade){
 					RefreshMainLists(parent,date);
 				}
-			}
+			}//if main trunk on dated group
 			listMain.Items.Clear();
 			ListViewItem item;
 			string dateStr="";
@@ -522,17 +522,20 @@ namespace OpenDental{
 			for(int i=0;i<TasksList.Length;i++){
 				//checked=1, unchecked=2
 				dateStr="";
-				if(TasksList[i].DateTask.Year>1880
-					&& tabContr.SelectedIndex==0)//main
-				{
-					if(TasksList[i].DateType==TaskDateType.Day){
-						dateStr=TasksList[i].DateTask.ToShortDateString()+" - ";
+				if(tabContr.SelectedIndex==0){//main
+					if(TasksList[i].DateTask.Year>1880){
+						if(TasksList[i].DateType==TaskDateType.Day){
+							dateStr=TasksList[i].DateTask.ToShortDateString()+" - ";
+						}
+						else if(TasksList[i].DateType==TaskDateType.Week){
+							dateStr=Lan.g(this,"Week of")+" "+TasksList[i].DateTask.ToShortDateString()+" - ";
+						}
+						else if(TasksList[i].DateType==TaskDateType.Month){
+							dateStr=TasksList[i].DateTask.ToString("MMMM")+" - ";
+						}
 					}
-					else if(TasksList[i].DateType==TaskDateType.Week){
-						dateStr=Lan.g(this,"Week of")+" "+TasksList[i].DateTask.ToShortDateString()+" - ";
-					}
-					else if(TasksList[i].DateType==TaskDateType.Month){
-						dateStr=TasksList[i].DateTask.ToString("MMMM")+" - ";
+					else if(TasksList[i].DateTimeEntry.Year>1880){
+						dateStr=TasksList[i].DateTimeEntry.ToShortDateString()+" - ";
 					}
 				}
 				objDesc="";

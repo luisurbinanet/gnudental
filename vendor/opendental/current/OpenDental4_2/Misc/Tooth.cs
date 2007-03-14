@@ -417,46 +417,84 @@ namespace OpenDental{
 			return false;
 		}
 
-		///<summary></summary>
-		public static string SurfTidy(string surf,string toothNum){
+		///<summary>Setting forClaims to true converts V surfaces to either F or B.  toothNum might be empty, and a tidy should still be attempted.  Otherwise, toothNum must be valid.</summary>
+		public static string SurfTidy(string surf,string toothNum,bool forClaims){
 			//yes... this might be a little more elegant with a regex
 			if(surf==null){
 				//MessageBox.Show("null");
 				surf="";
 			}
       string surfTidy="";
-			bool isPosterior=false;
-			if(toothNum=="" || !IsAnterior(toothNum))
-				isPosterior=true;
-			bool isAnterior=false;
-			if(toothNum=="" || !IsPosterior(toothNum))
-				isAnterior=true;
+			//bool isPosterior=false;
+			//if(toothNum=="" || !IsAnterior(toothNum))
+			//	isPosterior=true;
+			//bool isAnterior=false;
+			//if(toothNum=="" || !IsPosterior(toothNum))
+			//	isAnterior=true;
       ArrayList al=new ArrayList();
       for(int i=0;i<surf.Length;i++){
         al.Add(surf.Substring(i,1).ToUpper());
       }
-      if(al.Contains((string)"M")){
+			//M----------------------------------------
+      if(al.Contains("M")){
         surfTidy+="M";
-      } 
-			if(isPosterior
-				&& al.Contains((string)"O")){
-        surfTidy+="O";
-      } 
-      if(isAnterior
-				&& al.Contains((string)"I")){
-        surfTidy+="I";
-      } 
+      }
+			//O-------------------------------------------
+			if(toothNum=="" || IsPosterior(toothNum)){
+				if(al.Contains("O")){
+					surfTidy+="O";
+				}
+			}
+			//I---------------------------------
+			if(toothNum=="" || IsAnterior(toothNum)){
+				if(al.Contains("I")) {
+					surfTidy+="I";
+				}
+			}
+      //D---------------------------------------
       if(al.Contains((string)"D")){
         surfTidy+="D";
-      } 
-      if(isPosterior
-				&& al.Contains((string)"B")){
-        surfTidy+="B";
-      } 
-      if(isAnterior
-				&& al.Contains((string)"F")){
-        surfTidy+="F";
-      } 
+      }
+			//B/F/V------------------------------------------------
+			if(toothNum==""){
+				if(al.Contains("B")) {
+					surfTidy+="B";
+				}
+				if(al.Contains("F")) {
+					surfTidy+="F";
+				}
+				if(al.Contains("V")) {
+					surfTidy+="V";
+				}
+			}				
+			else if(forClaims){
+				if(IsPosterior(toothNum)){
+					if(al.Contains("B") || al.Contains("V")) {
+						surfTidy+="B";
+					}
+				}
+				if(IsAnterior(toothNum)){
+					if(al.Contains("F") || al.Contains("V")) {
+						surfTidy+="F";
+					}
+				}
+			}
+			else{
+				if(al.Contains("V")) {
+					surfTidy+="V";
+				}
+				if(IsPosterior(toothNum)) {
+					if(al.Contains("B")) {
+						surfTidy+="B";
+					}
+				}
+				if(IsAnterior(toothNum)) {
+					if(al.Contains("F")) {
+						surfTidy+="F";
+					}
+				}
+			}
+			//L-----------------------------------------
       if(al.Contains((string)"L")){
         surfTidy+="L";
       }

@@ -169,6 +169,7 @@ namespace OpenDental.Eclaims
 			ClaimProc[] claimProcList;//all claimProcs for a patient.
 			ClaimProc[] claimProcs;
 			Procedure[] procList;
+			ToothInitial[] initialList;
 			Procedure proc;
 			ProcedureCode procCode;
 			Provider provTreat;//might be different for each proc
@@ -401,6 +402,7 @@ namespace OpenDental.Eclaims
 				claimProcList=ClaimProcs.Refresh(patient.PatNum);
 				claimProcs=ClaimProcs.GetForSendClaim(claimProcList,claim.ClaimNum);
 				procList=Procedures.Refresh(claim.PatNum);
+				initialList=ToothInitials.Refresh(claim.PatNum);
 				#region Subscriber
 				//if(i==0 || claimAr[2,i].ToString() != claimAr[2,i-1].ToString()){//if subscriber changed
 				if(i==0 || claimAr[3,i].ToString() != claimAr[3,i-1].ToString()){//if patient changed
@@ -710,15 +712,16 @@ namespace OpenDental.Eclaims
 							+claim.OrthoRemainM.ToString()+"~");
 					}
 					//2300 DN2: Missing teeth
-					ArrayList missingTeeth=Procedures.GetMissingTeeth(procList);
+					ArrayList missingTeeth=ToothInitials.GetMissingOrHiddenTeeth(initialList);
 					bool doSkip;
 					for(int j=0;j<missingTeeth.Count;j++){
 						//if the missing tooth is missing because of an extraction being billed here, then exclude it
+						//still needed, even though missing teeth are not based on procedures any longer
 						doSkip=false;
 						for(int p=0;p<claimProcs.Length;p++){
 							proc=Procedures.GetProc(procList,claimProcs[p].ProcNum);
 							procCode=ProcedureCodes.GetProcCode(proc.ADACode);
-							if(procCode.RemoveTooth && proc.ToothNum==(string)missingTeeth[j]){
+							if(procCode.PaintType==ToothPaintingType.Extraction && proc.ToothNum==(string)missingTeeth[j]){
 								doSkip=true;
 								break;
 							}
@@ -1073,7 +1076,7 @@ namespace OpenDental.Eclaims
 							seg++;
 							sw.Write("TOO*JP*"//TOO01: JP=National tooth numbering
 								+proc.ToothNum+"*");//TOO02: Tooth number
-							string validSurfaces=Tooth.SurfTidy(proc.Surf,proc.ToothNum);
+							string validSurfaces=Tooth.SurfTidy(proc.Surf,proc.ToothNum,true);
 							for(int k=0;k<validSurfaces.Length;k++){
 								if(k>0){
 									sw.Write(":");
@@ -1838,6 +1841,12 @@ namespace OpenDental.Eclaims
 					if(retVal!="")
 						retVal+=",";
 					retVal+=procCode.AbbrDesc+" tooth range";
+				}
+				if((procCode.TreatArea==TreatmentArea.Tooth || procCode.TreatArea==TreatmentArea.Surf)
+					&& !Tooth.IsValidDB(proc.ToothNum)) {
+					if(retVal!="")
+						retVal+=",";
+					retVal+=procCode.AbbrDesc+" tooth number";
 				}
 				if(procCode.IsProsth){
 					if(proc.Prosthesis==""){//they didn't enter whether Initial or Replacement

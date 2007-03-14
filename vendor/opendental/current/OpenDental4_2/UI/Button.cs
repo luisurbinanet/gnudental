@@ -18,7 +18,7 @@ namespace OpenDental.UI
 		private bool bCanClick = false;
 		private Point adjustImageLocation;
 		private bool autosize=true;
-		private const float cornerRadius=5;
+		private const float cornerRadius=4;
 		private Color colorBorder;
 		private Color colorDisabledFore;
 		private Color colorShadow;
@@ -51,10 +51,10 @@ namespace OpenDental.UI
 			InitializeComponent();
 			this.SetStyle(ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint |
 				ControlStyles.DoubleBuffer, true);
-			colorBorder      =Color.FromArgb(150,190,210);
+			colorBorder      =Color.FromArgb(28,81,128);//150,190,210);
 			colorDisabledFore=Color.FromArgb(161,161,146);
 			colorShadow      =Color.FromArgb(180,180,180);
-			colorDarkest     =Color.FromArgb(50,70,150);
+			colorDarkest     =Color.FromArgb(157,164,196);//125,136,184);//87,102,166);//50,70,150);
 			colorLightest    =Color.FromArgb(255,255,255);
 			colorMain        =Color.FromArgb(200,202,220);
 			colorDarkDefault =Color.FromArgb(50,70,230);
@@ -287,7 +287,7 @@ namespace OpenDental.UI
 			//length90(unitvectorx*unitvector90y-unitvector90x*unitvectory)=unitvectorx*recOutline.Height;
 			float length90=unitvectorx*recOutline.Height/(unitvectorx*unitvector90y-unitvector90x*unitvectory);
 			//g.DrawEllipse(Pens.Red,unitvector90x*length90-1,unitvector90y*length90-1,2,2);
-			LinearGradientBrush brush=new LinearGradientBrush(new PointF(recOutline.X,recOutline.Y),
+			/*LinearGradientBrush brush=new LinearGradientBrush(new PointF(recOutline.X,recOutline.Y),
 				new PointF(unitvector90x*length90*2,unitvector90y*length90*2),
 				colorBorder,colorDarkest);
 			if(IsDefault){
@@ -295,7 +295,8 @@ namespace OpenDental.UI
 			}
 			else{
 				DrawRoundedRectangle(g,new Pen(brush),recOutline,radius);
-			}
+			}*/
+			DrawRoundedRectangle(g,new Pen(colorBorder),recOutline,radius);
 			DrawTextAndImage(g);
 			DrawReflection(g,recOutline,radius);
 		}

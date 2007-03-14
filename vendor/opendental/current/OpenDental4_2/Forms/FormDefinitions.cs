@@ -592,7 +592,7 @@ namespace OpenDental{
 
 		private void FormDefinitions_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
 			if(changed){
-				DataValid.SetInvalid(InvalidTypes.Defs);
+				DataValid.SetInvalid(InvalidTypes.Defs | InvalidTypes.Fees);
 			}
 			Defs.IsSelected=false;
 			//if(user!=null){

@@ -1580,7 +1580,7 @@ namespace OpenDental
 			FormFE.ShowDialog();
 			if(FormFE.DialogResult==DialogResult.OK){
 				Fees.Refresh();
-//update to other computers
+				DataValid.SetInvalid(InvalidTypes.Fees);
 			}
 			FillAllowed();
 		}

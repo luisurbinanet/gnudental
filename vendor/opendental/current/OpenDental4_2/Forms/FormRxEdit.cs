@@ -38,11 +38,13 @@ namespace OpenDental{
     public FormRpPrintPreview pView = new FormRpPrintPreview();
 		private Patient PatCur;
 		//private User user;
+		private RxPat RxPatCur;
 
 		///<summary></summary>
-		public FormRxEdit(Patient patCur){//RxPat rxPatCur){
+		public FormRxEdit(Patient patCur,RxPat rxPatCur){
+			//){//
 			InitializeComponent();
-			//RxPatCur=rxPatCur;
+			RxPatCur=rxPatCur;
 			PatCur=patCur;
 			Lan.F(this);
 		}
@@ -313,18 +315,18 @@ namespace OpenDental{
 			//security is handled on the Rx button click in the Chart module
 			for(int i=0;i<Providers.List.Length;i++){
 				this.listProv.Items.Add(Providers.List[i].Abbr);
-				if(Providers.List[i].ProvNum==RxPats.Cur.ProvNum)
+				if(Providers.List[i].ProvNum==RxPatCur.ProvNum)
 					listProv.SelectedIndex=i;
 			}
 			if(listProv.SelectedIndex==-1){
 				listProv.SelectedIndex=0;
 			}
-			textDate.Text=RxPats.Cur.RxDate.ToString("d");
-			textDrug.Text=RxPats.Cur.Drug;
-			textSig.Text=RxPats.Cur.Sig;
-			textDisp.Text=RxPats.Cur.Disp;
-			textRefills.Text=RxPats.Cur.Refills;
-			textNotes.Text=RxPats.Cur.Notes;
+			textDate.Text=RxPatCur.RxDate.ToString("d");
+			textDrug.Text=RxPatCur.Drug;
+			textSig.Text=RxPatCur.Sig;
+			textDisp.Text=RxPatCur.Disp;
+			textRefills.Text=RxPatCur.Refills;
+			textNotes.Text=RxPatCur.Notes;
 		}
 
 		private bool SaveRx(){
@@ -335,19 +337,19 @@ namespace OpenDental{
 				return false;
 			}
 			if(listProv.SelectedIndex!=-1)
-				RxPats.Cur.ProvNum=Providers.List[listProv.SelectedIndex].ProvNum;
-			RxPats.Cur.RxDate=PIn.PDate(textDate.Text);
-			RxPats.Cur.Drug=textDrug.Text;
-			RxPats.Cur.Sig=textSig.Text;
-			RxPats.Cur.Disp=textDisp.Text;
-			RxPats.Cur.Refills=textRefills.Text;
-			RxPats.Cur.Notes=textNotes.Text;
+				RxPatCur.ProvNum=Providers.List[listProv.SelectedIndex].ProvNum;
+			RxPatCur.RxDate=PIn.PDate(textDate.Text);
+			RxPatCur.Drug=textDrug.Text;
+			RxPatCur.Sig=textSig.Text;
+			RxPatCur.Disp=textDisp.Text;
+			RxPatCur.Refills=textRefills.Text;
+			RxPatCur.Notes=textNotes.Text;
 			if(IsNew){
-				RxPats.InsertCur();
+				RxPatCur.Insert();
 				//SecurityLogs.MakeLogEntry("Prescription Create",RxPats.cmd.CommandText,user);
 			}
 			else{
-				RxPats.UpdateCur();
+				RxPatCur.Update();
 				//SecurityLogs.MakeLogEntry("Prescription Edit",RxPats.cmd.CommandText,user);
 			}
 			return true;
@@ -418,7 +420,7 @@ namespace OpenDental{
 			//Right Side
       Provider curProv=new Provider();
 			for(int i=0;i<Providers.ListLong.Length;i++){
-        if(RxPats.Cur.ProvNum==Providers.ListLong[i].ProvNum)
+        if(RxPatCur.ProvNum==Providers.ListLong[i].ProvNum)
 					curProv=Providers.ListLong[i];
 		  }
 			string presName="";
@@ -476,7 +478,7 @@ namespace OpenDental{
 			//Phone and date
 			string patPhone=PatCur.HmPhone;
 			string patDOB=PatCur.Birthdate.ToShortDateString();
-			string rxDate=RxPats.Cur.RxDate.ToShortDateString();
+			string rxDate=RxPatCur.RxDate.ToShortDateString();
 			xPos=280;
 			yPos=120;
       e.Graphics.DrawString(Lan.g(this,"TELEPHONE:"),bodyFont,Brushes.Black,xPos,yPos);
@@ -499,14 +501,14 @@ namespace OpenDental{
 			e.Graphics.DrawString(Lan.g(this,"Rx"),RxFont,Brushes.Black,xPos,yPos);
 			yPos=205;
 			xPos=100;
-	    e.Graphics.DrawString(RxPats.Cur.Drug,bodyFont,Brushes.Black,xPos,yPos);
+	    e.Graphics.DrawString(RxPatCur.Drug,bodyFont,Brushes.Black,xPos,yPos);
       yPos+=(int)(fontH*1.5);
-	    e.Graphics.DrawString(Lan.g(this,"Disp:")+"  "+RxPats.Cur.Disp,bodyFont,Brushes.Black,xPos,yPos);
+	    e.Graphics.DrawString(Lan.g(this,"Disp:")+"  "+RxPatCur.Disp,bodyFont,Brushes.Black,xPos,yPos);
       yPos+=(int)(fontH*1.5);
-		  e.Graphics.DrawString(Lan.g(this,"Sig:")+"  "+RxPats.Cur.Sig,bodyFont,Brushes.Black
+		  e.Graphics.DrawString(Lan.g(this,"Sig:")+"  "+RxPatCur.Sig,bodyFont,Brushes.Black
 				,new RectangleF(xPos,yPos,512-xPos-5,fontH*2));
       yPos+=(int)(fontH*2.5);
-	    e.Graphics.DrawString(Lan.g(this,"Refills:")+"  "+RxPats.Cur.Refills,bodyFont,Brushes.Black,xPos,yPos);
+	    e.Graphics.DrawString(Lan.g(this,"Refills:")+"  "+RxPatCur.Refills,bodyFont,Brushes.Black,xPos,yPos);
 			//Print Check Boxes
       xPos=25;
 			yPos=400-62;
@@ -543,7 +545,7 @@ namespace OpenDental{
 				!=DialogResult.OK){
 				return;
 			}
-			RxPats.DeleteCur();
+			RxPatCur.Delete();
 			DialogResult=DialogResult.OK;	
 		}
 

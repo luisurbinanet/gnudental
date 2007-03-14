@@ -13,7 +13,7 @@ namespace OpenDental
 	/// <summary>
 	/// Summary description for FormCheckDatabase.
 	/// </summary>
-	public class FormCheckDatabase : System.Windows.Forms.Form
+	public class FormDatabaseMaintenance : System.Windows.Forms.Form
 	{
 		private OpenDental.UI.Button butClose;
 		private System.Windows.Forms.TextBox textBox1;
@@ -35,7 +35,7 @@ namespace OpenDental
 		private string logData;
 
 		///<summary></summary>
-		public FormCheckDatabase()
+		public FormDatabaseMaintenance()
 		{
 			//
 			// Required for Windows Form Designer support
@@ -70,6 +70,7 @@ namespace OpenDental
 		/// </summary>
 		private void InitializeComponent()
 		{
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormDatabaseMaintenance));
 			this.butClose = new OpenDental.UI.Button();
 			this.textBox1 = new System.Windows.Forms.TextBox();
 			this.checkDefaultProv = new System.Windows.Forms.CheckBox();
@@ -86,15 +87,15 @@ namespace OpenDental
 			// 
 			// butClose
 			// 
-			this.butClose.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butClose.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.butClose.Autosize = true;
 			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butClose.Location = new System.Drawing.Point(655, 389);
+			this.butClose.Location = new System.Drawing.Point(655,389);
 			this.butClose.Name = "butClose";
-			this.butClose.Size = new System.Drawing.Size(87, 26);
+			this.butClose.Size = new System.Drawing.Size(87,26);
 			this.butClose.TabIndex = 0;
 			this.butClose.Text = "&Close";
 			this.butClose.Click += new System.EventHandler(this.butClose_Click);
@@ -103,46 +104,44 @@ namespace OpenDental
 			// 
 			this.textBox1.BackColor = System.Drawing.SystemColors.Control;
 			this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.textBox1.Location = new System.Drawing.Point(32, 14);
+			this.textBox1.Location = new System.Drawing.Point(32,14);
 			this.textBox1.Multiline = true;
 			this.textBox1.Name = "textBox1";
-			this.textBox1.Size = new System.Drawing.Size(707, 31);
+			this.textBox1.Size = new System.Drawing.Size(707,31);
 			this.textBox1.TabIndex = 1;
 			this.textBox1.Text = "This tool will check the entire database for any possible corruption or improper " +
-				"settings.  You will generally be prompted before any changes are made to the dat" +
-				"abase.";
+    "settings.  You will generally be prompted before any changes are made to the dat" +
+    "abase.";
 			// 
 			// checkDefaultProv
 			// 
 			this.checkDefaultProv.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkDefaultProv.Location = new System.Drawing.Point(30, 85);
+			this.checkDefaultProv.Location = new System.Drawing.Point(30,85);
 			this.checkDefaultProv.Name = "checkDefaultProv";
-			this.checkDefaultProv.Size = new System.Drawing.Size(679, 22);
+			this.checkDefaultProv.Size = new System.Drawing.Size(679,22);
 			this.checkDefaultProv.TabIndex = 2;
 			this.checkDefaultProv.Text = "Verify that a Default Provider and Billing Type have been selected in Practice se" +
-				"tup.";
+    "tup.";
 			// 
 			// checkInvalidTooth
 			// 
 			this.checkInvalidTooth.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkInvalidTooth.Location = new System.Drawing.Point(30, 107);
+			this.checkInvalidTooth.Location = new System.Drawing.Point(30,107);
 			this.checkInvalidTooth.Name = "checkInvalidTooth";
-			this.checkInvalidTooth.Size = new System.Drawing.Size(724, 31);
+			this.checkInvalidTooth.Size = new System.Drawing.Size(724,31);
 			this.checkInvalidTooth.TabIndex = 3;
-			this.checkInvalidTooth.Text = "Check for invalid tooth numbers and fix them.  Lowercase primary tooth numbers wi" +
-				"ll be changed to uppercase.  If any other invalid tooth numbers are located, you" +
-				" will be prompted before any changes are made.";
+			this.checkInvalidTooth.Text = resources.GetString("checkInvalidTooth.Text");
 			// 
 			// buttonCheck
 			// 
-			this.buttonCheck.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.buttonCheck.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.buttonCheck.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.buttonCheck.Autosize = true;
 			this.buttonCheck.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.buttonCheck.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.buttonCheck.Location = new System.Drawing.Point(655, 350);
+			this.buttonCheck.Location = new System.Drawing.Point(655,350);
 			this.buttonCheck.Name = "buttonCheck";
-			this.buttonCheck.Size = new System.Drawing.Size(87, 26);
+			this.buttonCheck.Size = new System.Drawing.Size(87,26);
 			this.buttonCheck.TabIndex = 5;
 			this.buttonCheck.Text = "C&heck Now";
 			this.buttonCheck.Click += new System.EventHandler(this.buttonCheck_Click);
@@ -152,18 +151,18 @@ namespace OpenDental
 			this.checkCorrupt.Checked = true;
 			this.checkCorrupt.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.checkCorrupt.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkCorrupt.Location = new System.Drawing.Point(30, 234);
+			this.checkCorrupt.Location = new System.Drawing.Point(30,234);
 			this.checkCorrupt.Name = "checkCorrupt";
-			this.checkCorrupt.Size = new System.Drawing.Size(709, 24);
+			this.checkCorrupt.Size = new System.Drawing.Size(709,24);
 			this.checkCorrupt.TabIndex = 6;
 			this.checkCorrupt.Text = "Check all tables for file or index corruption.";
 			// 
 			// checkCodes
 			// 
 			this.checkCodes.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkCodes.Location = new System.Drawing.Point(30, 162);
+			this.checkCodes.Location = new System.Drawing.Point(30,162);
 			this.checkCodes.Name = "checkCodes";
-			this.checkCodes.Size = new System.Drawing.Size(709, 24);
+			this.checkCodes.Size = new System.Drawing.Size(709,24);
 			this.checkCodes.TabIndex = 8;
 			this.checkCodes.Text = "Add any missing procedure codes.";
 			// 
@@ -171,48 +170,47 @@ namespace OpenDental
 			// 
 			this.textBox2.BackColor = System.Drawing.SystemColors.Control;
 			this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.textBox2.Location = new System.Drawing.Point(32, 53);
+			this.textBox2.Location = new System.Drawing.Point(32,53);
 			this.textBox2.Multiline = true;
 			this.textBox2.Name = "textBox2";
-			this.textBox2.Size = new System.Drawing.Size(707, 18);
+			this.textBox2.Size = new System.Drawing.Size(707,18);
 			this.textBox2.TabIndex = 9;
-			this.textBox2.Text = "Currently, the following tests are run.   Uncheck any items that you don\'t want t" +
-				"ested:";
+			this.textBox2.Text = "Currently, the following tests are run.   Check any items that you want tested:";
 			// 
 			// checkDates
 			// 
 			this.checkDates.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkDates.Location = new System.Drawing.Point(30, 138);
+			this.checkDates.Location = new System.Drawing.Point(30,138);
 			this.checkDates.Name = "checkDates";
-			this.checkDates.Size = new System.Drawing.Size(709, 24);
+			this.checkDates.Size = new System.Drawing.Size(709,24);
 			this.checkDates.TabIndex = 10;
 			this.checkDates.Text = "Fix any invalid dates.  This will speed up the program after converting from anot" +
-				"her dental software.";
+    "her dental software.";
 			// 
 			// checkInsPlans
 			// 
 			this.checkInsPlans.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkInsPlans.Location = new System.Drawing.Point(30, 186);
+			this.checkInsPlans.Location = new System.Drawing.Point(30,186);
 			this.checkInsPlans.Name = "checkInsPlans";
-			this.checkInsPlans.Size = new System.Drawing.Size(709, 24);
+			this.checkInsPlans.Size = new System.Drawing.Size(709,24);
 			this.checkInsPlans.TabIndex = 11;
 			this.checkInsPlans.Text = "Look for insurance plans that no longer exist.";
 			// 
 			// checkSchedules
 			// 
 			this.checkSchedules.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkSchedules.Location = new System.Drawing.Point(30, 210);
+			this.checkSchedules.Location = new System.Drawing.Point(30,210);
 			this.checkSchedules.Name = "checkSchedules";
-			this.checkSchedules.Size = new System.Drawing.Size(709, 24);
+			this.checkSchedules.Size = new System.Drawing.Size(709,24);
 			this.checkSchedules.TabIndex = 12;
 			this.checkSchedules.Text = "Fix default and regular schedules.";
 			// 
-			// FormCheckDatabase
+			// FormDatabaseMaintenance
 			// 
 			this.AcceptButton = this.buttonCheck;
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
 			this.CancelButton = this.butClose;
-			this.ClientSize = new System.Drawing.Size(763, 443);
+			this.ClientSize = new System.Drawing.Size(763,443);
 			this.Controls.Add(this.checkSchedules);
 			this.Controls.Add(this.checkInsPlans);
 			this.Controls.Add(this.checkDates);
@@ -226,12 +224,13 @@ namespace OpenDental
 			this.Controls.Add(this.butClose);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
-			this.Name = "FormCheckDatabase";
+			this.Name = "FormDatabaseMaintenance";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "Check Database Integrity";
-			this.Load += new System.EventHandler(this.FormCheckDatabase_Load);
+			this.Text = "Database Maintenance";
+			this.Load += new System.EventHandler(this.FormDatabaseMaintenance_Load);
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 		#endregion
@@ -240,7 +239,7 @@ namespace OpenDental
 			Close();
 		}
 
-		private void FormCheckDatabase_Load(object sender, System.EventArgs e) {
+		private void FormDatabaseMaintenance_Load(object sender, System.EventArgs e) {
 			//Queries2=new Queries();
 			Queries.CurReport=new ReportOld();
 		}

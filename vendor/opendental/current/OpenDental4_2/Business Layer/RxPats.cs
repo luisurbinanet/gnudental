@@ -1,11 +1,12 @@
 using System;
 using System.Collections;
+using System.Data;
 using System.Windows.Forms;
 
 namespace OpenDental{
 
 	///<summary>Corresponds to the rxpat table in the database.  One Rx for one patient. Copied from rxdef rather than linked to it.</summary>
-	public struct RxPat{
+	public class RxPat{
 		///<summary>Primary key.</summary>
 		public int RxNum;
 		///<summary>Foreign key to patient.PatNum.</summary>
@@ -24,27 +25,100 @@ namespace OpenDental{
 		public int ProvNum;
 		///<summary>Notes specific to this Rx.</summary>
 		public string Notes;
+
+		///<summary></summary>
+		public RxPat Copy() {
+			RxPat r=new RxPat();
+			r.RxNum=RxNum;
+			r.PatNum=PatNum;
+			r.RxDate=RxDate;
+			r.Drug=Drug;
+			r.Sig=Sig;
+			r.Disp=Disp;
+			r.Refills=Refills;
+			r.ProvNum=ProvNum;
+			r.Notes=Notes;
+			return r;
+		}
+
+		///<summary></summary>
+		public void Update() {
+			string command= "UPDATE rxpat SET " 
+				+ "PatNum = '"      +POut.PInt   (PatNum)+"'"
+				+ ",RxDate = '"     +POut.PDate  (RxDate)+"'"
+				+ ",Drug = '"       +POut.PString(Drug)+"'"
+				+ ",Sig = '"        +POut.PString(Sig)+"'"
+				+ ",Disp = '"       +POut.PString(Disp)+"'"
+				+ ",Refills = '"    +POut.PString(Refills)+"'"
+				+ ",ProvNum = '"    +POut.PInt   (ProvNum)+"'"
+				+ ",Notes = '"      +POut.PString(Notes)+"'"
+				+" WHERE RxNum = '" +POut.PInt   (RxNum)+"'";
+			DataConnection dcon=new DataConnection();
+			dcon.NonQ(command);
+		}
+
+		///<summary></summary>
+		public void Insert() {
+			if(Prefs.RandomKeys) {
+				RxNum=MiscData.GetKey("rxpat","RxNum");
+			}
+			string command="INSERT INTO rxpat (";
+			if(Prefs.RandomKeys) {
+				command+="RxNum,";
+			}
+			command+="PatNum,RxDate,Drug,Sig,Disp,Refills,ProvNum,Notes) VALUES(";
+			if(Prefs.RandomKeys) {
+				command+="'"+POut.PInt(RxNum)+"', ";
+			}
+			command+=
+				 "'"+POut.PInt   (PatNum)+"', "
+				+"'"+POut.PDate  (RxDate)+"', "
+				+"'"+POut.PString(Drug)+"', "
+				+"'"+POut.PString(Sig)+"', "
+				+"'"+POut.PString(Disp)+"', "
+				+"'"+POut.PString(Refills)+"', "
+				+"'"+POut.PInt   (ProvNum)+"', "
+				+"'"+POut.PString(Notes)+"')";
+			DataConnection dcon=new DataConnection();
+			if(Prefs.RandomKeys) {
+				dcon.NonQ(command);
+			}
+			else{
+				dcon.NonQ(command,true);
+				RxNum=dcon.InsertID;
+			}
+		}
+
+		///<summary></summary>
+		public void Delete() {
+			string command= "DELETE from rxpat WHERE RxNum = '"+POut.PInt(RxNum)+"'";
+			DataConnection dcon=new DataConnection();
+			dcon.NonQ(command);
+		}
+
+
+
 	}
 
 	/*=========================================================================================
 	=================================== class RxPats ==========================================*/
 ///<summary></summary>
-	public class RxPats:DataClass{
-		///<summary></summary>
-		public static RxPat[] List;
-		///<summary></summary>
-		public static RxPat Cur;
+	public class RxPats{
+		//<summary></summary>
+		//public static RxPat[] List;
+		//<summary></summary>
+		//public static RxPat Cur;
 
 		///<summary></summary>
-		public static void Refresh(int patNum){
-			cmd.CommandText =
-				"SELECT * from rxpat"
-				+" WHERE patnum = '"+POut.PInt(patNum)+"'"
-				+" ORDER BY rxdate";
-			//MessageBox.Show(cmd.CommandText);
-			FillTable();
-			List=new RxPat[table.Rows.Count];
+		public static RxPat[] Refresh(int patNum){
+			string command="SELECT * FROM rxpat"
+				+" WHERE PatNum = '"+POut.PInt(patNum)+"'"
+				+" ORDER BY RxDate";
+			DataConnection dcon=new DataConnection();
+			DataTable table=dcon.GetTable(command);
+			RxPat[] List=new RxPat[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
+				List[i]=new RxPat();
 				List[i].RxNum      = PIn.PInt   (table.Rows[i][0].ToString());
 				List[i].PatNum     = PIn.PInt   (table.Rows[i][1].ToString());
 				List[i].RxDate     = PIn.PDate  (table.Rows[i][2].ToString());
@@ -55,61 +129,10 @@ namespace OpenDental{
 				List[i].ProvNum    = PIn.PInt   (table.Rows[i][7].ToString());
 				List[i].Notes      = PIn.PString(table.Rows[i][8].ToString());
 			}
+			return List;
 		}
 
-		///<summary></summary>
-		public static void UpdateCur(){
-			cmd.CommandText = "UPDATE rxpat SET " 
-				+ "patnum = '"      +POut.PInt   (Cur.PatNum)+"'"
-				+ ",rxdate = '"     +POut.PDate  (Cur.RxDate)+"'"
-				+ ",drug = '"       +POut.PString(Cur.Drug)+"'"
-				+ ",sig = '"        +POut.PString(Cur.Sig)+"'"
-				+ ",disp = '"       +POut.PString(Cur.Disp)+"'"
-				+ ",refills = '"    +POut.PString(Cur.Refills)+"'"
-				+ ",provnum = '"    +POut.PInt   (Cur.ProvNum)+"'"
-				+ ",notes = '"      +POut.PString(Cur.Notes)+"'"
-				+" WHERE RxNum = '" +POut.PInt (Cur.RxNum)+"'";
-			//MessageBox.Show(cmd.CommandText);
-			NonQ(false);
-		}
-
-		///<summary></summary>
-		public static void InsertCur(){
-			if(Prefs.RandomKeys){
-				Cur.RxNum=MiscData.GetKey("rxpat","RxNum");
-			}
-			cmd.CommandText="INSERT INTO rxpat (";
-			if(Prefs.RandomKeys){
-				cmd.CommandText+="RxNum,";
-			}
-			cmd.CommandText+="PatNum,RxDate,Drug,Sig,"
-				+"Disp,Refills,ProvNum,Notes) VALUES(";
-			if(Prefs.RandomKeys){
-				cmd.CommandText+="'"+POut.PInt(Cur.RxNum)+"', ";
-			}
-			cmd.CommandText+=
-				 "'"+POut.PInt   (Cur.PatNum)+"', "
-				+"'"+POut.PDate  (Cur.RxDate)+"', "
-				+"'"+POut.PString(Cur.Drug)+"', "
-				+"'"+POut.PString(Cur.Sig)+"', "
-				+"'"+POut.PString(Cur.Disp)+"', "
-				+"'"+POut.PString(Cur.Refills)+"', "
-				+"'"+POut.PInt   (Cur.ProvNum)+"', "
-				+"'"+POut.PString(Cur.Notes)+"')";
-			if(Prefs.RandomKeys){
-				NonQ();
-			}
-			else{
- 				NonQ(true);
-				Cur.RxNum=InsertID;
-			}
-		}
-
-		///<summary></summary>
-		public static void DeleteCur(){
-			cmd.CommandText = "DELETE from rxpat WHERE RxNum = '"+POut.PInt(Cur.RxNum)+"'";
-			NonQ();
-		}
+		
 	}
 
 	

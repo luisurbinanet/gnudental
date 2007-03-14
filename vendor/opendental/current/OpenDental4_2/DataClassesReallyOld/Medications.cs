@@ -26,7 +26,7 @@ namespace OpenDental{
 		///<summary>All medications.</summary>
 		public static Medication[] List;
 		///<summary></summary>
-		public static Hashtable HList;
+		private static Hashtable HList;
 
 		///<summary></summary>
 		public static void Refresh(){
@@ -127,7 +127,15 @@ namespace OpenDental{
 			return retVal;
 		}
 
+		///<summary></summary>
+		public static Medication GetMedication(int medNum){
+			return (Medication)HList[medNum];
+		}
 
+		///<summary>Gets the generic medication for the specified medication Num.</summary>
+		public static Medication GetGeneric(int medNum) {
+			return (Medication)HList[((Medication)HList[medNum]).GenericNum];
+		}
 
 
 		

@@ -117,7 +117,7 @@ namespace OpenDental{
 
 		private void InitializeComponent(){
 			this.components = new System.ComponentModel.Container();
-			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(ContrTreat));
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ContrTreat));
 			this.label1 = new System.Windows.Forms.Label();
 			this.listSetPr = new System.Windows.Forms.ListBox();
 			this.panelSide = new System.Windows.Forms.Panel();
@@ -148,32 +148,32 @@ namespace OpenDental{
 			this.textSecDedRem = new System.Windows.Forms.TextBox();
 			this.label3 = new System.Windows.Forms.Label();
 			this.textNote = new System.Windows.Forms.TextBox();
-			this.ToolBarMain = new OpenDental.UI.ODToolBar();
-			this.menuPatient = new System.Windows.Forms.ContextMenu();
-			this.gridMain = new OpenDental.UI.ODGrid();
-			this.gridPlans = new OpenDental.UI.ODGrid();
-			this.gridPreAuth = new OpenDental.UI.ODGrid();
 			this.imageListMain = new System.Windows.Forms.ImageList(this.components);
+			this.menuPatient = new System.Windows.Forms.ContextMenu();
+			this.gridPreAuth = new OpenDental.UI.ODGrid();
+			this.gridPlans = new OpenDental.UI.ODGrid();
+			this.gridMain = new OpenDental.UI.ODGrid();
+			this.ToolBarMain = new OpenDental.UI.ODToolBar();
 			this.panelSide.SuspendLayout();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// label1
 			// 
-			this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.label1.Location = new System.Drawing.Point(22, 3);
+			this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif",8F,System.Drawing.FontStyle.Regular,System.Drawing.GraphicsUnit.Point,((byte)(0)));
+			this.label1.Location = new System.Drawing.Point(22,3);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(97, 15);
+			this.label1.Size = new System.Drawing.Size(97,15);
 			this.label1.TabIndex = 4;
 			this.label1.Text = "Set Priority";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// listSetPr
 			// 
-			this.listSetPr.Location = new System.Drawing.Point(24, 20);
+			this.listSetPr.Location = new System.Drawing.Point(24,20);
 			this.listSetPr.Name = "listSetPr";
 			this.listSetPr.SelectionMode = System.Windows.Forms.SelectionMode.None;
-			this.listSetPr.Size = new System.Drawing.Size(70, 225);
+			this.listSetPr.Size = new System.Drawing.Size(70,225);
 			this.listSetPr.TabIndex = 5;
 			this.listSetPr.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listSetPr_MouseDown);
 			// 
@@ -182,9 +182,9 @@ namespace OpenDental{
 			this.panelSide.Controls.Add(this.listSetPr);
 			this.panelSide.Controls.Add(this.label1);
 			this.panelSide.Controls.Add(this.groupBox1);
-			this.panelSide.Location = new System.Drawing.Point(711, 153);
+			this.panelSide.Location = new System.Drawing.Point(711,153);
 			this.panelSide.Name = "panelSide";
-			this.panelSide.Size = new System.Drawing.Size(190, 337);
+			this.panelSide.Size = new System.Drawing.Size(190,337);
 			this.panelSide.TabIndex = 29;
 			// 
 			// groupBox1
@@ -193,9 +193,9 @@ namespace OpenDental{
 			this.groupBox1.Controls.Add(this.checkShowIns);
 			this.groupBox1.Controls.Add(this.checkShowCompleted);
 			this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox1.Location = new System.Drawing.Point(10, 256);
+			this.groupBox1.Location = new System.Drawing.Point(10,256);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(173, 74);
+			this.groupBox1.Size = new System.Drawing.Size(173,74);
 			this.groupBox1.TabIndex = 59;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Show on printout";
@@ -205,9 +205,9 @@ namespace OpenDental{
 			this.checkShowFees.Checked = true;
 			this.checkShowFees.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.checkShowFees.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkShowFees.Location = new System.Drawing.Point(15, 33);
+			this.checkShowFees.Location = new System.Drawing.Point(15,33);
 			this.checkShowFees.Name = "checkShowFees";
-			this.checkShowFees.Size = new System.Drawing.Size(146, 17);
+			this.checkShowFees.Size = new System.Drawing.Size(146,17);
 			this.checkShowFees.TabIndex = 20;
 			this.checkShowFees.Text = "Fees";
 			// 
@@ -216,9 +216,9 @@ namespace OpenDental{
 			this.checkShowIns.Checked = true;
 			this.checkShowIns.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.checkShowIns.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkShowIns.Location = new System.Drawing.Point(15, 50);
+			this.checkShowIns.Location = new System.Drawing.Point(15,50);
 			this.checkShowIns.Name = "checkShowIns";
-			this.checkShowIns.Size = new System.Drawing.Size(148, 17);
+			this.checkShowIns.Size = new System.Drawing.Size(148,17);
 			this.checkShowIns.TabIndex = 19;
 			this.checkShowIns.Text = "Insurance Estimates";
 			// 
@@ -227,71 +227,71 @@ namespace OpenDental{
 			this.checkShowCompleted.Checked = true;
 			this.checkShowCompleted.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.checkShowCompleted.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkShowCompleted.Location = new System.Drawing.Point(15, 16);
+			this.checkShowCompleted.Location = new System.Drawing.Point(15,16);
 			this.checkShowCompleted.Name = "checkShowCompleted";
-			this.checkShowCompleted.Size = new System.Drawing.Size(154, 17);
+			this.checkShowCompleted.Size = new System.Drawing.Size(154,17);
 			this.checkShowCompleted.TabIndex = 18;
 			this.checkShowCompleted.Text = "Completed Treatment";
 			// 
 			// label10
 			// 
-			this.label10.Location = new System.Drawing.Point(806, 513);
+			this.label10.Location = new System.Drawing.Point(806,513);
 			this.label10.Name = "label10";
-			this.label10.Size = new System.Drawing.Size(60, 15);
+			this.label10.Size = new System.Drawing.Size(60,15);
 			this.label10.TabIndex = 31;
 			this.label10.Text = "Primary";
 			this.label10.TextAlign = System.Drawing.ContentAlignment.TopCenter;
 			// 
 			// label11
 			// 
-			this.label11.Location = new System.Drawing.Point(725, 534);
+			this.label11.Location = new System.Drawing.Point(725,534);
 			this.label11.Name = "label11";
-			this.label11.Size = new System.Drawing.Size(78, 15);
+			this.label11.Size = new System.Drawing.Size(78,15);
 			this.label11.TabIndex = 32;
 			this.label11.Text = "Annual Max";
 			this.label11.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label12
 			// 
-			this.label12.Location = new System.Drawing.Point(724, 555);
+			this.label12.Location = new System.Drawing.Point(724,555);
 			this.label12.Name = "label12";
-			this.label12.Size = new System.Drawing.Size(79, 15);
+			this.label12.Size = new System.Drawing.Size(79,15);
 			this.label12.TabIndex = 33;
 			this.label12.Text = "Deductible";
 			this.label12.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label13
 			// 
-			this.label13.Location = new System.Drawing.Point(724, 597);
+			this.label13.Location = new System.Drawing.Point(724,597);
 			this.label13.Name = "label13";
-			this.label13.Size = new System.Drawing.Size(79, 13);
+			this.label13.Size = new System.Drawing.Size(79,13);
 			this.label13.TabIndex = 34;
 			this.label13.Text = "Ins Used";
 			this.label13.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label14
 			// 
-			this.label14.Location = new System.Drawing.Point(725, 635);
+			this.label14.Location = new System.Drawing.Point(725,635);
 			this.label14.Name = "label14";
-			this.label14.Size = new System.Drawing.Size(79, 14);
+			this.label14.Size = new System.Drawing.Size(79,14);
 			this.label14.TabIndex = 35;
 			this.label14.Text = "Remaining";
 			this.label14.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label15
 			// 
-			this.label15.Location = new System.Drawing.Point(723, 615);
+			this.label15.Location = new System.Drawing.Point(723,615);
 			this.label15.Name = "label15";
-			this.label15.Size = new System.Drawing.Size(81, 14);
+			this.label15.Size = new System.Drawing.Size(81,14);
 			this.label15.TabIndex = 36;
 			this.label15.Text = "Pending";
 			this.label15.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label16
 			// 
-			this.label16.Location = new System.Drawing.Point(874, 513);
+			this.label16.Location = new System.Drawing.Point(874,513);
 			this.label16.Name = "label16";
-			this.label16.Size = new System.Drawing.Size(60, 14);
+			this.label16.Size = new System.Drawing.Size(60,14);
 			this.label16.TabIndex = 37;
 			this.label16.Text = "Secondary";
 			this.label16.TextAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -299,111 +299,101 @@ namespace OpenDental{
 			// textPriMax
 			// 
 			this.textPriMax.BackColor = System.Drawing.Color.White;
-			this.textPriMax.Location = new System.Drawing.Point(806, 532);
+			this.textPriMax.Location = new System.Drawing.Point(806,532);
 			this.textPriMax.Name = "textPriMax";
 			this.textPriMax.ReadOnly = true;
-			this.textPriMax.Size = new System.Drawing.Size(60, 20);
+			this.textPriMax.Size = new System.Drawing.Size(60,20);
 			this.textPriMax.TabIndex = 38;
-			this.textPriMax.Text = "";
 			this.textPriMax.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			// 
 			// textSecUsed
 			// 
 			this.textSecUsed.BackColor = System.Drawing.Color.White;
-			this.textSecUsed.Location = new System.Drawing.Point(874, 592);
+			this.textSecUsed.Location = new System.Drawing.Point(874,592);
 			this.textSecUsed.Name = "textSecUsed";
 			this.textSecUsed.ReadOnly = true;
-			this.textSecUsed.Size = new System.Drawing.Size(60, 20);
+			this.textSecUsed.Size = new System.Drawing.Size(60,20);
 			this.textSecUsed.TabIndex = 39;
-			this.textSecUsed.Text = "";
 			this.textSecUsed.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			// 
 			// textSecDed
 			// 
 			this.textSecDed.BackColor = System.Drawing.Color.White;
-			this.textSecDed.Location = new System.Drawing.Point(874, 552);
+			this.textSecDed.Location = new System.Drawing.Point(874,552);
 			this.textSecDed.Name = "textSecDed";
 			this.textSecDed.ReadOnly = true;
-			this.textSecDed.Size = new System.Drawing.Size(60, 20);
+			this.textSecDed.Size = new System.Drawing.Size(60,20);
 			this.textSecDed.TabIndex = 40;
-			this.textSecDed.Text = "";
 			this.textSecDed.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			// 
 			// textSecMax
 			// 
 			this.textSecMax.BackColor = System.Drawing.Color.White;
-			this.textSecMax.Location = new System.Drawing.Point(874, 532);
+			this.textSecMax.Location = new System.Drawing.Point(874,532);
 			this.textSecMax.Name = "textSecMax";
 			this.textSecMax.ReadOnly = true;
-			this.textSecMax.Size = new System.Drawing.Size(60, 20);
+			this.textSecMax.Size = new System.Drawing.Size(60,20);
 			this.textSecMax.TabIndex = 41;
-			this.textSecMax.Text = "";
 			this.textSecMax.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			// 
 			// textPriRem
 			// 
 			this.textPriRem.BackColor = System.Drawing.Color.White;
-			this.textPriRem.Location = new System.Drawing.Point(806, 632);
+			this.textPriRem.Location = new System.Drawing.Point(806,632);
 			this.textPriRem.Name = "textPriRem";
 			this.textPriRem.ReadOnly = true;
-			this.textPriRem.Size = new System.Drawing.Size(60, 20);
+			this.textPriRem.Size = new System.Drawing.Size(60,20);
 			this.textPriRem.TabIndex = 42;
-			this.textPriRem.Text = "";
 			this.textPriRem.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			// 
 			// textPriPend
 			// 
 			this.textPriPend.BackColor = System.Drawing.Color.White;
-			this.textPriPend.Location = new System.Drawing.Point(806, 612);
+			this.textPriPend.Location = new System.Drawing.Point(806,612);
 			this.textPriPend.Name = "textPriPend";
 			this.textPriPend.ReadOnly = true;
-			this.textPriPend.Size = new System.Drawing.Size(60, 20);
+			this.textPriPend.Size = new System.Drawing.Size(60,20);
 			this.textPriPend.TabIndex = 43;
-			this.textPriPend.Text = "";
 			this.textPriPend.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			// 
 			// textPriUsed
 			// 
 			this.textPriUsed.BackColor = System.Drawing.Color.White;
-			this.textPriUsed.Location = new System.Drawing.Point(806, 592);
+			this.textPriUsed.Location = new System.Drawing.Point(806,592);
 			this.textPriUsed.Name = "textPriUsed";
 			this.textPriUsed.ReadOnly = true;
-			this.textPriUsed.Size = new System.Drawing.Size(60, 20);
+			this.textPriUsed.Size = new System.Drawing.Size(60,20);
 			this.textPriUsed.TabIndex = 44;
-			this.textPriUsed.Text = "";
 			this.textPriUsed.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			// 
 			// textPriDed
 			// 
 			this.textPriDed.BackColor = System.Drawing.Color.White;
-			this.textPriDed.Location = new System.Drawing.Point(806, 552);
+			this.textPriDed.Location = new System.Drawing.Point(806,552);
 			this.textPriDed.Name = "textPriDed";
 			this.textPriDed.ReadOnly = true;
-			this.textPriDed.Size = new System.Drawing.Size(60, 20);
+			this.textPriDed.Size = new System.Drawing.Size(60,20);
 			this.textPriDed.TabIndex = 45;
-			this.textPriDed.Text = "";
 			this.textPriDed.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			// 
 			// textSecRem
 			// 
 			this.textSecRem.BackColor = System.Drawing.Color.White;
-			this.textSecRem.Location = new System.Drawing.Point(874, 632);
+			this.textSecRem.Location = new System.Drawing.Point(874,632);
 			this.textSecRem.Name = "textSecRem";
 			this.textSecRem.ReadOnly = true;
-			this.textSecRem.Size = new System.Drawing.Size(60, 20);
+			this.textSecRem.Size = new System.Drawing.Size(60,20);
 			this.textSecRem.TabIndex = 46;
-			this.textSecRem.Text = "";
 			this.textSecRem.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			// 
 			// textSecPend
 			// 
 			this.textSecPend.BackColor = System.Drawing.Color.White;
-			this.textSecPend.Location = new System.Drawing.Point(874, 612);
+			this.textSecPend.Location = new System.Drawing.Point(874,612);
 			this.textSecPend.Name = "textSecPend";
 			this.textSecPend.ReadOnly = true;
-			this.textSecPend.Size = new System.Drawing.Size(60, 20);
+			this.textSecPend.Size = new System.Drawing.Size(60,20);
 			this.textSecPend.TabIndex = 47;
-			this.textSecPend.Text = "";
 			this.textSecPend.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			// 
 			// pd2
@@ -413,19 +403,18 @@ namespace OpenDental{
 			// textPriDedRem
 			// 
 			this.textPriDedRem.BackColor = System.Drawing.Color.White;
-			this.textPriDedRem.Location = new System.Drawing.Point(806, 572);
+			this.textPriDedRem.Location = new System.Drawing.Point(806,572);
 			this.textPriDedRem.Name = "textPriDedRem";
 			this.textPriDedRem.ReadOnly = true;
-			this.textPriDedRem.Size = new System.Drawing.Size(60, 20);
+			this.textPriDedRem.Size = new System.Drawing.Size(60,20);
 			this.textPriDedRem.TabIndex = 51;
-			this.textPriDedRem.Text = "";
 			this.textPriDedRem.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			// 
 			// label18
 			// 
-			this.label18.Location = new System.Drawing.Point(709, 576);
+			this.label18.Location = new System.Drawing.Point(709,576);
 			this.label18.Name = "label18";
-			this.label18.Size = new System.Drawing.Size(96, 15);
+			this.label18.Size = new System.Drawing.Size(96,15);
 			this.label18.TabIndex = 50;
 			this.label18.Text = "Deduct Remain";
 			this.label18.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -433,19 +422,18 @@ namespace OpenDental{
 			// textSecDedRem
 			// 
 			this.textSecDedRem.BackColor = System.Drawing.Color.White;
-			this.textSecDedRem.Location = new System.Drawing.Point(874, 572);
+			this.textSecDedRem.Location = new System.Drawing.Point(874,572);
 			this.textSecDedRem.Name = "textSecDedRem";
 			this.textSecDedRem.ReadOnly = true;
-			this.textSecDedRem.Size = new System.Drawing.Size(60, 20);
+			this.textSecDedRem.Size = new System.Drawing.Size(60,20);
 			this.textSecDedRem.TabIndex = 52;
-			this.textSecDedRem.Text = "";
 			this.textSecDedRem.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(820, 498);
+			this.label3.Location = new System.Drawing.Point(820,498);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(100, 12);
+			this.label3.Size = new System.Drawing.Size(100,12);
 			this.label3.TabIndex = 53;
 			this.label3.Text = "Insurance";
 			this.label3.TextAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -453,89 +441,71 @@ namespace OpenDental{
 			// textNote
 			// 
 			this.textNote.BackColor = System.Drawing.Color.White;
-			this.textNote.Location = new System.Drawing.Point(0, 587);
+			this.textNote.Location = new System.Drawing.Point(0,587);
 			this.textNote.Multiline = true;
 			this.textNote.Name = "textNote";
 			this.textNote.ReadOnly = true;
-			this.textNote.Size = new System.Drawing.Size(707, 52);
+			this.textNote.Size = new System.Drawing.Size(707,52);
 			this.textNote.TabIndex = 54;
-			this.textNote.Text = "";
 			// 
-			// ToolBarMain
+			// imageListMain
 			// 
-			this.ToolBarMain.Dock = System.Windows.Forms.DockStyle.Top;
-			this.ToolBarMain.ImageList = this.imageListMain;
-			this.ToolBarMain.Location = new System.Drawing.Point(0, 0);
-			this.ToolBarMain.Name = "ToolBarMain";
-			this.ToolBarMain.Size = new System.Drawing.Size(939, 29);
-			this.ToolBarMain.TabIndex = 58;
-			this.ToolBarMain.ButtonClick += new OpenDental.UI.ODToolBarButtonClickEventHandler(this.ToolBarMain_ButtonClick);
+			this.imageListMain.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListMain.ImageStream")));
+			this.imageListMain.TransparentColor = System.Drawing.Color.Transparent;
+			this.imageListMain.Images.SetKeyName(0,"");
+			this.imageListMain.Images.SetKeyName(1,"");
+			this.imageListMain.Images.SetKeyName(2,"");
+			this.imageListMain.Images.SetKeyName(3,"");
+			// 
+			// gridPreAuth
+			// 
+			this.gridPreAuth.HScrollVisible = false;
+			this.gridPreAuth.Location = new System.Drawing.Point(676,33);
+			this.gridPreAuth.Name = "gridPreAuth";
+			this.gridPreAuth.ScrollValue = 0;
+			this.gridPreAuth.Size = new System.Drawing.Size(252,119);
+			this.gridPreAuth.TabIndex = 62;
+			this.gridPreAuth.Title = "Pre Authorizations";
+			this.gridPreAuth.TranslationName = "TablePreAuth";
+			this.gridPreAuth.CellClick += new OpenDental.UI.ODGridClickEventHandler(this.gridPreAuth_CellClick);
+			this.gridPreAuth.CellDoubleClick += new OpenDental.UI.ODGridClickEventHandler(this.gridPreAuth_CellDoubleClick);
+			// 
+			// gridPlans
+			// 
+			this.gridPlans.HScrollVisible = false;
+			this.gridPlans.Location = new System.Drawing.Point(0,33);
+			this.gridPlans.Name = "gridPlans";
+			this.gridPlans.ScrollValue = 0;
+			this.gridPlans.Size = new System.Drawing.Size(658,134);
+			this.gridPlans.TabIndex = 60;
+			this.gridPlans.Title = "Treatment Plans";
+			this.gridPlans.TranslationName = "TableTPList";
+			this.gridPlans.CellClick += new OpenDental.UI.ODGridClickEventHandler(this.gridPlans_CellClick);
+			this.gridPlans.CellDoubleClick += new OpenDental.UI.ODGridClickEventHandler(this.gridPlans_CellDoubleClick);
 			// 
 			// gridMain
 			// 
-			this.gridMain.Columns.Add(new OpenDental.UI.ODGridColumn("Priority", 55, System.Windows.Forms.HorizontalAlignment.Left));
-			this.gridMain.Columns.Add(new OpenDental.UI.ODGridColumn("Tth", 40, System.Windows.Forms.HorizontalAlignment.Left));
-			this.gridMain.Columns.Add(new OpenDental.UI.ODGridColumn("Surf", 40, System.Windows.Forms.HorizontalAlignment.Left));
-			this.gridMain.Columns.Add(new OpenDental.UI.ODGridColumn("Code", 50, System.Windows.Forms.HorizontalAlignment.Left));
-			this.gridMain.Columns.Add(new OpenDental.UI.ODGridColumn("Description", 250, System.Windows.Forms.HorizontalAlignment.Left));
-			this.gridMain.Columns.Add(new OpenDental.UI.ODGridColumn("Fee", 50, System.Windows.Forms.HorizontalAlignment.Right));
-			this.gridMain.Columns.Add(new OpenDental.UI.ODGridColumn("Pri Ins", 50, System.Windows.Forms.HorizontalAlignment.Right));
-			this.gridMain.Columns.Add(new OpenDental.UI.ODGridColumn("Sec Ins", 50, System.Windows.Forms.HorizontalAlignment.Right));
-			this.gridMain.Columns.Add(new OpenDental.UI.ODGridColumn("Pat", 50, System.Windows.Forms.HorizontalAlignment.Right));
-			this.gridMain.Columns.Add(new OpenDental.UI.ODGridColumn("Current", 45, System.Windows.Forms.HorizontalAlignment.Center));
 			this.gridMain.HScrollVisible = false;
-			this.gridMain.Location = new System.Drawing.Point(0, 173);
+			this.gridMain.Location = new System.Drawing.Point(0,173);
 			this.gridMain.Name = "gridMain";
 			this.gridMain.ScrollValue = 0;
 			this.gridMain.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-			this.gridMain.Size = new System.Drawing.Size(698, 411);
+			this.gridMain.Size = new System.Drawing.Size(698,411);
 			this.gridMain.TabIndex = 59;
 			this.gridMain.Title = "Procedures";
 			this.gridMain.TranslationName = "TableTP";
 			this.gridMain.CellClick += new OpenDental.UI.ODGridClickEventHandler(this.gridMain_CellClick);
 			this.gridMain.CellDoubleClick += new OpenDental.UI.ODGridClickEventHandler(this.gridMain_CellDoubleClick);
 			// 
-			// gridPlans
+			// ToolBarMain
 			// 
-			this.gridPlans.Columns.Add(new OpenDental.UI.ODGridColumn("Date", 80, System.Windows.Forms.HorizontalAlignment.Left));
-			this.gridPlans.Columns.Add(new OpenDental.UI.ODGridColumn("Heading", 360, System.Windows.Forms.HorizontalAlignment.Left));
-			this.gridPlans.Columns.Add(new OpenDental.UI.ODGridColumn("Fee", 50, System.Windows.Forms.HorizontalAlignment.Left));
-			this.gridPlans.Columns.Add(new OpenDental.UI.ODGridColumn("Pri Ins", 50, System.Windows.Forms.HorizontalAlignment.Left));
-			this.gridPlans.Columns.Add(new OpenDental.UI.ODGridColumn("Sec Ins", 50, System.Windows.Forms.HorizontalAlignment.Left));
-			this.gridPlans.Columns.Add(new OpenDental.UI.ODGridColumn("Pat", 50, System.Windows.Forms.HorizontalAlignment.Left));
-			this.gridPlans.HScrollVisible = false;
-			this.gridPlans.Location = new System.Drawing.Point(0, 33);
-			this.gridPlans.Name = "gridPlans";
-			this.gridPlans.ScrollValue = 0;
-			this.gridPlans.Size = new System.Drawing.Size(658, 134);
-			this.gridPlans.TabIndex = 60;
-			this.gridPlans.Title = "Treatment Plans";
-			this.gridPlans.TranslationName = null;
-			this.gridPlans.CellClick += new OpenDental.UI.ODGridClickEventHandler(this.gridPlans_CellClick);
-			this.gridPlans.CellDoubleClick += new OpenDental.UI.ODGridClickEventHandler(this.gridPlans_CellDoubleClick);
-			// 
-			// gridPreAuth
-			// 
-			this.gridPreAuth.Columns.Add(new OpenDental.UI.ODGridColumn("Date Sent", 80, System.Windows.Forms.HorizontalAlignment.Left));
-			this.gridPreAuth.Columns.Add(new OpenDental.UI.ODGridColumn("Carrier", 100, System.Windows.Forms.HorizontalAlignment.Left));
-			this.gridPreAuth.Columns.Add(new OpenDental.UI.ODGridColumn("Status", 54, System.Windows.Forms.HorizontalAlignment.Left));
-			this.gridPreAuth.HScrollVisible = false;
-			this.gridPreAuth.Location = new System.Drawing.Point(676, 33);
-			this.gridPreAuth.Name = "gridPreAuth";
-			this.gridPreAuth.ScrollValue = 0;
-			this.gridPreAuth.Size = new System.Drawing.Size(252, 119);
-			this.gridPreAuth.TabIndex = 62;
-			this.gridPreAuth.Title = "Pre Authorizations";
-			this.gridPreAuth.TranslationName = null;
-			this.gridPreAuth.CellClick += new OpenDental.UI.ODGridClickEventHandler(this.gridPreAuth_CellClick);
-			this.gridPreAuth.CellDoubleClick += new OpenDental.UI.ODGridClickEventHandler(this.gridPreAuth_CellDoubleClick);
-			// 
-			// imageListMain
-			// 
-			this.imageListMain.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
-			this.imageListMain.ImageSize = new System.Drawing.Size(22, 22);
-			this.imageListMain.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListMain.ImageStream")));
-			this.imageListMain.TransparentColor = System.Drawing.Color.Transparent;
+			this.ToolBarMain.Dock = System.Windows.Forms.DockStyle.Top;
+			this.ToolBarMain.ImageList = this.imageListMain;
+			this.ToolBarMain.Location = new System.Drawing.Point(0,0);
+			this.ToolBarMain.Name = "ToolBarMain";
+			this.ToolBarMain.Size = new System.Drawing.Size(939,29);
+			this.ToolBarMain.TabIndex = 58;
+			this.ToolBarMain.ButtonClick += new OpenDental.UI.ODToolBarButtonClickEventHandler(this.ToolBarMain_ButtonClick);
 			// 
 			// ContrTreat
 			// 
@@ -567,10 +537,11 @@ namespace OpenDental{
 			this.Controls.Add(this.label10);
 			this.Controls.Add(this.panelSide);
 			this.Name = "ContrTreat";
-			this.Size = new System.Drawing.Size(939, 708);
+			this.Size = new System.Drawing.Size(939,708);
 			this.panelSide.ResumeLayout(false);
 			this.groupBox1.ResumeLayout(false);
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 		#endregion
@@ -626,7 +597,7 @@ namespace OpenDental{
 			ToolBarMain.Buttons.Add(new ODToolBarButton(ODToolBarButtonStyle.Separator));
 			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"PreAuthorization"),-1,"","PreAuth"));
 			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Update Fees"),1,"","Update"));
-			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Create TP"),3,"","Create"));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Save TP"),3,"","Create"));
 			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Print TP"),2,"","Print"));
 			ArrayList toolButItems=ToolButItems.GetForToolBar(ToolBarsAvail.TreatmentPlanModule);
 			for(int i=0;i<toolButItems.Count;i++){
@@ -754,6 +725,19 @@ namespace OpenDental{
 
 		private void FillPlans(){
 			gridPlans.BeginUpdate();
+			gridPlans.Columns.Clear();
+			ODGridColumn col=new ODGridColumn(Lan.g("TableTPList","Date"),80);
+			gridPlans.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableTPList","Heading"),360);
+			gridPlans.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableTPList","Fee"),50,HorizontalAlignment.Right);
+			gridPlans.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableTPList","Pri Ins"),50,HorizontalAlignment.Right);
+			gridPlans.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableTPList","Sec Ins"),50,HorizontalAlignment.Right);
+			gridPlans.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableTPList","Pat"),50,HorizontalAlignment.Right);
+			gridPlans.Columns.Add(col);
 			gridPlans.Rows.Clear();
 			if(PatCur==null){
 				gridPlans.EndUpdate();
@@ -787,7 +771,7 @@ namespace OpenDental{
 			OpenDental.UI.ODGridRow row;
 			row=new ODGridRow();
 			row.Cells.Add("");//date empty
-			row.Cells.Add(Lan.g(this,"current"));
+			row.Cells.Add(Lan.g(this,"Default"));
 			row.Cells.Add(totFee.ToString("F"));
 			row.Cells.Add(totPriIns.ToString("F"));
 			row.Cells.Add(totSecIns.ToString("F"));
@@ -822,6 +806,27 @@ namespace OpenDental{
 
 		private void FillMain(){
 			gridMain.BeginUpdate();
+			gridMain.Columns.Clear();
+			ODGridColumn col=new ODGridColumn(Lan.g("TableTP","Priority"),50);
+			gridMain.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableTP","Tth"),40);
+			gridMain.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableTP","Surf"),40);
+			gridMain.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableTP","Code"),50);
+			gridMain.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableTP","Description"),250);
+			gridMain.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableTP","Fee"),50,HorizontalAlignment.Right);
+			gridMain.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableTP","Pri Ins"),50,HorizontalAlignment.Right);
+			gridMain.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableTP","Sec Ins"),50,HorizontalAlignment.Right);
+			gridMain.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableTP","Pat"),50,HorizontalAlignment.Right);
+			gridMain.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableTP","Done"),50,HorizontalAlignment.Center);
+			gridMain.Columns.Add(col);
 			gridMain.Rows.Clear();
 			if(PatCur==null){
 				gridMain.EndUpdate();
@@ -850,7 +855,7 @@ namespace OpenDental{
 					row.Cells.Add(priIns.ToString("F"));
 					row.Cells.Add(secIns.ToString("F"));
 					row.Cells.Add(pat.ToString("F"));
-					row.Cells.Add("X");
+					row.Cells.Add("");
 					row.ColorText=Defs.GetColor(DefCat.TxPriorities,ProcListTP[i].Priority);
 					if(row.ColorText==Color.White){
 						row.ColorText=Color.Black;
@@ -861,7 +866,7 @@ namespace OpenDental{
 			}
 			else{//any except current tp selected
 				ProcTPSelectList=ProcTPs.GetListForTP(PlanList[gridPlans.SelectedIndices[0]-1].TreatPlanNum,ProcTPList);
-				bool isCurrent;
+				bool isDone;
 				for(int i=0;i<ProcTPSelectList.Length;i++){
 					row=new ODGridRow();
 					row.Cells.Add(Defs.GetName(DefCat.TxPriorities,ProcTPSelectList[i].Priority));
@@ -873,13 +878,13 @@ namespace OpenDental{
 					row.Cells.Add(ProcTPSelectList[i].PriInsAmt.ToString("F"));
 					row.Cells.Add(ProcTPSelectList[i].SecInsAmt.ToString("F"));
 					row.Cells.Add(ProcTPSelectList[i].PatAmt.ToString("F"));
-					isCurrent=false;
+					isDone=true;
 					for(int j=0;j<ProcListTP.Length;j++){
 						if(ProcListTP[j].ProcNum==ProcTPSelectList[i].ProcNumOrig){
-							isCurrent=true;
+							isDone=false;
 						}
 					}
-					if(isCurrent){
+					if(isDone){
 						row.Cells.Add("X");
 					}
 					else{
@@ -921,6 +926,7 @@ namespace OpenDental{
 			InsPlan PlanCur;//=new InsPlan();
 			if(PatPlanList.Length>0){
 				PlanCur=InsPlans.GetPlan(PatPlanList[0].PlanNum,InsPlanList);
+				//MessageBox.Show("mark0");
 				pend=InsPlans.GetPending
 					(ClaimProcList,DateTime.Today,PatPlanList[0].PlanNum,PatPlanList[0].PatPlanNum,InsPlanList,BenefitList);
 				textPriPend.Text=pend.ToString("F");
@@ -936,7 +942,7 @@ namespace OpenDental{
 					//remain=max-used-pend
 					//remain=InsPlans.GetInsRem(ClaimProcList,DateTime.Today,PatPlans.GetPlanNum(PatPlanList,1),-1,InsPlanList);
 					remain=max-used-pend;
-					if(remain<0) {
+					if(remain<0){
 						remain=0;
 					}
 					textPriMax.Text=max.ToString("F");
@@ -984,6 +990,13 @@ namespace OpenDental{
 
     private void FillPreAuth(){
 			gridPreAuth.BeginUpdate();
+			gridPreAuth.Columns.Clear();
+			ODGridColumn col=new ODGridColumn(Lan.g("TablePreAuth","Date Sent"),80);
+			gridPreAuth.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TablePreAuth","Carrier"),100);
+			gridPreAuth.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TablePreAuth","Status"),53);
+			gridPreAuth.Columns.Add(col);
 			gridPreAuth.Rows.Clear();
       if(PatCur==null){
 				gridPreAuth.EndUpdate();
@@ -1200,7 +1213,7 @@ namespace OpenDental{
 							|| ProcList[i].ProcStatus==ProcStat.EO)
 						{
 							//always show missing teeth
-							if(ProcedureCodes.GetProcCode(ProcList[i].ADACode).RemoveTooth){
+							if(ProcedureCodes.GetProcCode(ProcList[i].ADACode).PaintType==ToothPaintingType.Extraction){
 								procAL.Add(ProcList[i]);
 							}
 							else if(checkShowCompleted.Checked){
@@ -1544,7 +1557,7 @@ namespace OpenDental{
 
 		private void OnCreate_Click(){
 			if(gridPlans.SelectedIndices[0]!=0){
-				MsgBox.Show(this,"The current TP must be selected before creating a TP.");
+				MsgBox.Show(this,"The default TP must be selected before saving a TP.  You can highlight some procedures in the default TP to save a TP with only those procedures in it.");
 				return;
 			}
 			if(gridMain.SelectedIndices.Length==0){
@@ -1701,6 +1714,9 @@ namespace OpenDental{
 				}
 			}
 		}
+
+		
+	
 
 		
 

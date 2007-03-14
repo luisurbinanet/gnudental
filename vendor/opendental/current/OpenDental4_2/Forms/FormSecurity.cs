@@ -467,7 +467,7 @@ namespace OpenDental{
 			if(clickedPermNode==null){
 				return;
 			}
-			treePermissions.BeginUpdate();
+			//treePermissions.BeginUpdate();
 			if(clickedPermNode.Parent==null){//level 1
 				if(e.X<5 || e.X>17){
 					return;

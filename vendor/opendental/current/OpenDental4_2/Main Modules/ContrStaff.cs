@@ -648,9 +648,6 @@ namespace OpenDental{
 				return;
 			}
 			FormTimeCard FormTC=new FormTimeCard();
-			//if(ClockEvents.GetLastStatus(Employees.Cur.EmployeeNum)==TimeClockStatus.Break){
-			//	FormTC.IsBreaks=true;
-			//}
 			FormTC.ShowDialog();
 			ModuleSelected();
 		}
@@ -661,9 +658,7 @@ namespace OpenDental{
 				return;
 			}
 			FormTimeCard FormTC=new FormTimeCard();
-			//if(ClockEvents.GetLastStatus(Employees.Cur.EmployeeNum)==TimeClockStatus.Break) {
-				FormTC.IsBreaks=true;
-			//}
+			FormTC.IsBreaks=true;
 			FormTC.ShowDialog();
 			ModuleSelected();
 		}

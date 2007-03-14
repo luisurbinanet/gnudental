@@ -164,15 +164,15 @@ namespace OpenDental{
 		}
 
 		private void RxSelected(){
-			RxPats.Cur=new RxPat();
-			RxPats.Cur.RxDate=DateTime.Today;
-			RxPats.Cur.PatNum=PatCur.PatNum;
-			RxPats.Cur.Drug=RxDefs.Cur.Drug;
-			RxPats.Cur.Sig=RxDefs.Cur.Sig;
-			RxPats.Cur.Disp=RxDefs.Cur.Disp;
-			RxPats.Cur.Refills=RxDefs.Cur.Refills;
+			RxPat RxPatCur=new RxPat();
+			RxPatCur.RxDate=DateTime.Today;
+			RxPatCur.PatNum=PatCur.PatNum;
+			RxPatCur.Drug=RxDefs.Cur.Drug;
+			RxPatCur.Sig=RxDefs.Cur.Sig;
+			RxPatCur.Disp=RxDefs.Cur.Disp;
+			RxPatCur.Refills=RxDefs.Cur.Refills;
 			//RxPats.Cur.Notes=RxDefs.Cur.Notes;//we don't want these kinds of notes cluttering things
-			FormRxEdit FormE=new FormRxEdit(PatCur);
+			FormRxEdit FormE=new FormRxEdit(PatCur,RxPatCur);
 			FormE.IsNew=true;
 			FormE.ShowDialog();
 			if(FormE.DialogResult!=DialogResult.OK){

@@ -46,6 +46,9 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public void Insert() {
+			if(DebitAmt<0 || CreditAmt<0){
+				throw new ApplicationException(Lan.g(this,"Error. Credit and debit must both be positive."));
+			}
 			if(Prefs.RandomKeys) {
 				JournalEntryNum=MiscData.GetKey("journalentry","JournalEntryNum");
 			}
@@ -80,6 +83,9 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public void Update() {
+			if(DebitAmt<0 || CreditAmt<0) {
+				throw new ApplicationException(Lan.g(this,"Error. Credit and debit must both be positive."));
+			}
 			string command= "UPDATE journalentry SET "
 				+"TransactionNum = '"+POut.PInt   (TransactionNum)+"' "
 				+",AccountNum = '"   +POut.PInt   (AccountNum)+"' "
@@ -168,8 +174,13 @@ namespace OpenDental{
 			return List;
 		}
 
-		///<summary>Used in FormTransactionEdit to sych database with changes user made to the journalEntry list for a transaction.  Must supply an old list for comparison.  Only the differences are saved.</summary>
+		///<summary>Used in FormTransactionEdit to synch database with changes user made to the journalEntry list for a transaction.  Must supply an old list for comparison.  Only the differences are saved.  Surround with try/catch, because it will thrown an exception if any entries are negative.</summary>
 		public static void UpdateList(ArrayList oldJournalList,ArrayList newJournalList) {
+			for(int i=0;i<newJournalList.Count;i++){
+				if(((JournalEntry)newJournalList[i]).DebitAmt<0 || ((JournalEntry)newJournalList[i]).CreditAmt<0){
+					throw new ApplicationException(Lan.g("JournalEntries","Error. Credit and debit must both be positive."));
+				}
+			}
 			JournalEntry newJournalEntry;
 			for(int i=0;i<oldJournalList.Count;i++) {//loop through the old list
 				newJournalEntry=null;

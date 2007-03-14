@@ -280,16 +280,14 @@ namespace OpenDental{
 		}
 
 		private void FillForm(){
-			textMedName.Text=((Medication)Medications.HList[MedicationPats.Cur.MedicationNum]).MedName;
-			textGenericName.Text=((Medication)Medications.HList[
-					((Medication)Medications.HList[MedicationPats.Cur.MedicationNum]).GenericNum]).MedName;
-			textMedNote.Text=((Medication)Medications.HList[
-					((Medication)Medications.HList[MedicationPats.Cur.MedicationNum]).GenericNum]).Notes;
+			textMedName.Text=Medications.GetMedication(MedicationPats.Cur.MedicationNum).MedName;
+			textGenericName.Text=Medications.GetGeneric(MedicationPats.Cur.MedicationNum).MedName;
+			textMedNote.Text=Medications.GetGeneric(MedicationPats.Cur.MedicationNum).Notes;
 			textPatNote.Text=MedicationPats.Cur.PatNote;
 		}
 
 		private void butEdit_Click(object sender, System.EventArgs e) {
-			Medications.Cur=(Medication)Medications.HList[MedicationPats.Cur.MedicationNum];
+			Medications.Cur=Medications.GetMedication(MedicationPats.Cur.MedicationNum);
 			FormMedicationEdit FormME=new FormMedicationEdit();
 			FormME.ShowDialog();
 			if(FormME.DialogResult!=DialogResult.OK){

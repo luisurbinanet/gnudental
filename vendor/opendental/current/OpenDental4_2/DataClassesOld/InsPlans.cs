@@ -254,8 +254,8 @@ namespace OpenDental {
 			DateTime renewDate=Benefits.GetRenewDate(benList,planNum,patPlanNum,curPlan.DateEffective);
 			DateTime startDate;//for benefit year
 			DateTime stopDate;
-			//if renew date is earlier this year (assuming typical situation of date being today)
-			if(renewDate.Month <= date.Month && renewDate.Day < date.Day) {
+			//if renew date is earlier this year or is today(assuming typical situation of date being today)
+			if(renewDate.Month <= date.Month && renewDate.Day <= date.Day) {
 				startDate=new DateTime(date.Year,renewDate.Month,renewDate.Day);
 				stopDate=new DateTime(date.Year+1,renewDate.Month,renewDate.Day);
 			}
@@ -324,11 +324,17 @@ namespace OpenDental {
 				return 0;
 			}
 			//get the most recent renew date, possibly including today:
+			//MessageBox.Show("mark1");
 			DateTime renewDate=Benefits.GetRenewDate(benList,planNum,patPlanNum,curPlan.DateEffective);
+			//MessageBox.Show("mark2");
 			DateTime startDate;//for benefit year
 			DateTime stopDate;
-			//if renew date is earlier this year (assuming typical situation of date being today)
-			if(renewDate.Month <= date.Month && renewDate.Day < date.Day) {
+			//if renew date is earlier this year or is today(assuming typical situation of date being today)
+			//Debug.WriteLine(renewDate.Month);
+			//Debug.WriteLine(date.Month);
+			//MessageBox.Show((renewDate.Month <= date.Month).ToString());
+			//MessageBox.Show((renewDate.Day <= date.Day).ToString());
+			if(renewDate.Month <= date.Month && renewDate.Day <= date.Day) {
 				startDate=new DateTime(date.Year,renewDate.Month,renewDate.Day);
 				stopDate=new DateTime(date.Year+1,renewDate.Month,renewDate.Day);
 			}

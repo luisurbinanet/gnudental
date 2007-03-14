@@ -106,7 +106,7 @@ namespace OpenDental{
 		}
 
 		///<summary></summary>
-		public static bool ConditionIsMet(AutoCondition myAutoCondition, string toothNum,string surf,bool isAdditional,bool willBeMissing, int age){
+		public static bool ConditionIsMet(AutoCondition myAutoCondition, string toothNum,string surf,bool isAdditional,bool willBeMissing,int age){
 			switch(myAutoCondition){
 				case AutoCondition.Anterior:
 					return Tooth.IsAnterior(toothNum);

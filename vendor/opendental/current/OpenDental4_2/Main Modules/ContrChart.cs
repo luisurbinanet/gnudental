@@ -10,21 +10,24 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Printing;
 using System.Data;
+using System.Globalization;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using OpenDental.UI;
+using Tao.Platform.Windows;
+using SparksToothChart;
 
 namespace OpenDental{
 ///<summary></summary>
 	public class ContrChart : System.Windows.Forms.UserControl	{
 		private OpenDental.UI.Button butAddProc;
 		private OpenDental.UI.Button butM;
-		private OpenDental.UI.Button butO;
+		private OpenDental.UI.Button butOI;
 		private OpenDental.UI.Button butD;
-		private OpenDental.UI.Button butB;
+		private OpenDental.UI.Button butBF;
 		private OpenDental.UI.Button butL;
-		private OpenDental.UI.Button butI;
-		private OpenDental.UI.Button butF;
+		private OpenDental.UI.Button butV;
 		private System.Windows.Forms.TextBox textSurf;
 		private System.Windows.Forms.GroupBox groupBox2;
 		private System.Windows.Forms.RadioButton radioEntryTP;
@@ -38,29 +41,16 @@ namespace OpenDental{
 		private ArrayList ProcAL;
 		//private TPChartLines[] TPChartLines2;
 		private System.Windows.Forms.RadioButton radioEntryC;
-		private ArrayList ProgLineAL;
-		private OpenDental.TableProg tbProg;
+		//private ArrayList ProgLineAL;
 		private bool dataValid=false;
-		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.Label label3;
-		private OpenDental.UI.Button butMedicalService;
 		private System.Windows.Forms.ListBox listDx;
 		private int[] hiLightedRows=new int[1];
 		private ContrApptSingle ApptPlanned;
 		private System.Windows.Forms.CheckBox checkDone;
 		private System.Windows.Forms.Label labelMinutes;
-		private System.Windows.Forms.Button butEnterTx;
-		private System.Windows.Forms.ImageList imageListUpDown;
-		private System.Windows.Forms.Panel panelMedical;
-		private System.Windows.Forms.Panel panelEnterTx;
-		private ArrayList RxAL;
+		//private ArrayList RxAL;
 		private System.Windows.Forms.RadioButton radioEntryR;
-		private System.Windows.Forms.TextBox textService;
-		private System.Windows.Forms.TextBox textMedUrgNote;
-		private System.Windows.Forms.TextBox textMedical;
 		private System.Windows.Forms.Label label13;
-		private OpenDental.ContrTeeth cTeeth;
 		private System.Windows.Forms.CheckBox checkNotes;
 		private System.Windows.Forms.CheckBox checkShowR;
 		private OpenDental.UI.Button butShowNone;
@@ -71,10 +61,6 @@ namespace OpenDental{
 		private System.Windows.Forms.CheckBox checkRx;
 		private System.Windows.Forms.GroupBox groupShow;
 		private System.Windows.Forms.ImageList imageListMain;
-		private System.Windows.Forms.ContextMenu menuPrimary;
-		private System.Windows.Forms.MenuItem menuPrimaryToggle;
-		private System.Windows.Forms.MenuItem menuPrimaryAll;
-		private System.Windows.Forms.MenuItem menuPrimaryNone;
 		private System.Windows.Forms.TextBox textADACode;
 		private System.Windows.Forms.Label label14;
 		private OpenDental.UI.Button butOK;
@@ -82,14 +68,7 @@ namespace OpenDental{
 		private OpenDental.UI.Button butClear;
 		private OpenDental.UI.ODToolBar ToolBarMain;
 		private System.Windows.Forms.Label labelDx;
-		private System.Windows.Forms.Label labelNewProcHint;
 		private System.Windows.Forms.Label label4;
-		private System.Windows.Forms.TextBox textCreditType;
-		private System.Windows.Forms.TextBox textIns;
-		private System.Windows.Forms.Panel panelABCins;
-		private System.Windows.Forms.TextBox textReferral;
-		private System.Windows.Forms.TextBox textBillingType;
-		private System.Windows.Forms.TextBox textDateFirstVisit;
 		private System.Windows.Forms.ToolTip toolTip1;
 		private System.Windows.Forms.ComboBox comboPriority;
 		private System.Windows.Forms.ContextMenu menuProgRight;
@@ -132,12 +111,12 @@ namespace OpenDental{
 		///<summary>For one patient. Allows highlighting rows.</summary>
 		private Appointment[] ApptList;
 		private System.Drawing.Printing.PrintDocument pd2;
-		private int linesPrinted;
+		private int pagesPrinted;
 		private System.Windows.Forms.CheckBox checkShowTeeth;//used in printing progress notes
 		private bool headingPrinted;
+		private int headingPrintH;
 		private Document[] DocumentList;
 		private PatPlan[] PatPlanList;
-		private MenuItem menuPrimaryMixed;
 		private MenuItem menuItemSetComplete;
 		private MenuItem menuItemEditSelected;
 		private OpenDental.UI.Button butPin;
@@ -146,12 +125,67 @@ namespace OpenDental{
 		private Benefit[] BenefitList;
 		private ImageList imageListProcButtons;
 		private ColumnHeader columnHeader1;
+		private SparksToothChart.GraphicalToothChart toothChart;
+		private TabControl tabProc;
+		private TabPage tabEnterTx;
+		private TabPage tabMissing;
 		private ProcButton[] ProcButtonList;
+		private TabPage tabPrimary;
+		private TabPage tabMovements;
+		private GroupBox groupBox1;
+		private OpenDental.UI.Button butUnhide;
+		private Label label5;
+		private ListBox listHidden;
+		private OpenDental.UI.Button butEdentulous;
+		private Label label7;
+		private OpenDental.UI.Button butNotMissing;
+		private OpenDental.UI.Button butMissing;
+		private OpenDental.UI.Button butHidden;
+		private GroupBox groupBox3;
+		private Label label8;
+		private GroupBox groupBox4;
+		private ValidDouble textTipB;
+		private Label label11;
+		private ValidDouble textTipM;
+		private Label label12;
+		private ValidDouble textRotate;
+		private Label label15;
+		private ValidDouble textShiftB;
+		private Label label10;
+		private ValidDouble textShiftO;
+		private Label label9;
+		private ValidDouble textShiftM;
+		private OpenDental.UI.Button butRotatePlus;
+		private OpenDental.UI.Button butMixed;
+		private OpenDental.UI.Button butAllPrimary;
+		private OpenDental.UI.Button butAllPerm;
+		private GroupBox groupBox5;
+		private OpenDental.UI.Button butPerm;
+		private OpenDental.UI.Button butPrimary;
+		private int SelectedProcTab;
+		private OpenDental.UI.Button butBig;
+		private OpenDental.UI.Button butTipBplus;
+		private OpenDental.UI.Button butTipMplus;
+		private OpenDental.UI.Button butShiftBplus;
+		private OpenDental.UI.Button butShiftOplus;
+		private OpenDental.UI.Button butShiftMplus;
+		private Label label16;
+		private OpenDental.UI.Button butApplyMovements;
+		private OpenDental.UI.Button butTipBminus;
+		private OpenDental.UI.Button butTipMminus;
+		private OpenDental.UI.Button butRotateMinus;
+		private OpenDental.UI.Button butShiftBminus;
+		private OpenDental.UI.Button butShiftOminus;
+		private OpenDental.UI.Button butShiftMminus;
+		private ODGrid gridProg;
+		private ODGrid gridPtInfo;
+		private CheckBox checkComm;
+		private ToothInitial[] ToothInitialList;
 			
 		///<summary></summary>
 		public ContrChart(){
 			InitializeComponent();// This call is required by the Windows.Forms Form Designer.
-			tbProg.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbProg_CellDoubleClicked);
+			//tbProg.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbProg_CellDoubleClicked);
 			//listProcButtons.Click += new System.EventHandler(this.listProcButtons_Click);
 			//VQLink=new VisiQuick(Handle);		// TJE
 			tabControlImages.DrawItem += new DrawItemEventHandler(OnDrawItem);
@@ -186,14 +220,6 @@ namespace OpenDental{
 			this.radioEntryEO = new System.Windows.Forms.RadioButton();
 			this.radioEntryEC = new System.Windows.Forms.RadioButton();
 			this.radioEntryTP = new System.Windows.Forms.RadioButton();
-			this.panelMedical = new System.Windows.Forms.Panel();
-			this.butMedicalService = new OpenDental.UI.Button();
-			this.textMedUrgNote = new System.Windows.Forms.TextBox();
-			this.textService = new System.Windows.Forms.TextBox();
-			this.label3 = new System.Windows.Forms.Label();
-			this.label2 = new System.Windows.Forms.Label();
-			this.label1 = new System.Windows.Forms.Label();
-			this.textMedical = new System.Windows.Forms.TextBox();
 			this.listDx = new System.Windows.Forms.ListBox();
 			this.labelDx = new System.Windows.Forms.Label();
 			this.groupPlanned = new System.Windows.Forms.GroupBox();
@@ -202,30 +228,18 @@ namespace OpenDental{
 			this.butNew = new OpenDental.UI.Button();
 			this.labelMinutes = new System.Windows.Forms.Label();
 			this.checkDone = new System.Windows.Forms.CheckBox();
-			this.panelEnterTx = new System.Windows.Forms.Panel();
 			this.listViewButtons = new System.Windows.Forms.ListView();
 			this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
 			this.imageListProcButtons = new System.Windows.Forms.ImageList(this.components);
 			this.listButtonCats = new System.Windows.Forms.ListBox();
 			this.comboPriority = new System.Windows.Forms.ComboBox();
-			this.textDate = new OpenDental.ValidDate();
 			this.checkToday = new System.Windows.Forms.CheckBox();
 			this.label6 = new System.Windows.Forms.Label();
-			this.butOK = new OpenDental.UI.Button();
-			this.butAddProc = new OpenDental.UI.Button();
 			this.textADACode = new System.Windows.Forms.TextBox();
 			this.label14 = new System.Windows.Forms.Label();
 			this.label13 = new System.Windows.Forms.Label();
-			this.butO = new OpenDental.UI.Button();
-			this.butF = new OpenDental.UI.Button();
-			this.butI = new OpenDental.UI.Button();
-			this.butM = new OpenDental.UI.Button();
-			this.butL = new OpenDental.UI.Button();
-			this.butB = new OpenDental.UI.Button();
-			this.butD = new OpenDental.UI.Button();
-			this.butEnterTx = new System.Windows.Forms.Button();
-			this.imageListUpDown = new System.Windows.Forms.ImageList(this.components);
 			this.groupShow = new System.Windows.Forms.GroupBox();
+			this.checkComm = new System.Windows.Forms.CheckBox();
 			this.checkShowTeeth = new System.Windows.Forms.CheckBox();
 			this.checkNotes = new System.Windows.Forms.CheckBox();
 			this.checkRx = new System.Windows.Forms.CheckBox();
@@ -235,20 +249,8 @@ namespace OpenDental{
 			this.checkShowE = new System.Windows.Forms.CheckBox();
 			this.checkShowC = new System.Windows.Forms.CheckBox();
 			this.checkShowTP = new System.Windows.Forms.CheckBox();
-			this.menuPrimary = new System.Windows.Forms.ContextMenu();
-			this.menuPrimaryToggle = new System.Windows.Forms.MenuItem();
-			this.menuPrimaryMixed = new System.Windows.Forms.MenuItem();
-			this.menuPrimaryAll = new System.Windows.Forms.MenuItem();
-			this.menuPrimaryNone = new System.Windows.Forms.MenuItem();
 			this.imageListMain = new System.Windows.Forms.ImageList(this.components);
-			this.labelNewProcHint = new System.Windows.Forms.Label();
 			this.label4 = new System.Windows.Forms.Label();
-			this.textCreditType = new System.Windows.Forms.TextBox();
-			this.textIns = new System.Windows.Forms.TextBox();
-			this.panelABCins = new System.Windows.Forms.Panel();
-			this.textReferral = new System.Windows.Forms.TextBox();
-			this.textBillingType = new System.Windows.Forms.TextBox();
-			this.textDateFirstVisit = new System.Windows.Forms.TextBox();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this.menuProgRight = new System.Windows.Forms.ContextMenu();
 			this.menuItemPrintProg = new System.Windows.Forms.MenuItem();
@@ -263,24 +265,90 @@ namespace OpenDental{
 			this.imageListThumbnails = new System.Windows.Forms.ImageList(this.components);
 			this.menuPatient = new System.Windows.Forms.ContextMenu();
 			this.pd2 = new System.Drawing.Printing.PrintDocument();
-			this.tbProg = new OpenDental.TableProg();
+			this.tabProc = new System.Windows.Forms.TabControl();
+			this.tabEnterTx = new System.Windows.Forms.TabPage();
+			this.butD = new OpenDental.UI.Button();
+			this.textDate = new OpenDental.ValidDate();
+			this.butBF = new OpenDental.UI.Button();
+			this.butL = new OpenDental.UI.Button();
+			this.butM = new OpenDental.UI.Button();
+			this.butOK = new OpenDental.UI.Button();
+			this.butAddProc = new OpenDental.UI.Button();
+			this.butV = new OpenDental.UI.Button();
+			this.butOI = new OpenDental.UI.Button();
+			this.tabMissing = new System.Windows.Forms.TabPage();
+			this.butUnhide = new OpenDental.UI.Button();
+			this.label5 = new System.Windows.Forms.Label();
+			this.listHidden = new System.Windows.Forms.ListBox();
+			this.butEdentulous = new OpenDental.UI.Button();
+			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.label7 = new System.Windows.Forms.Label();
+			this.butNotMissing = new OpenDental.UI.Button();
+			this.butMissing = new OpenDental.UI.Button();
+			this.butHidden = new OpenDental.UI.Button();
+			this.tabMovements = new System.Windows.Forms.TabPage();
+			this.label16 = new System.Windows.Forms.Label();
+			this.butApplyMovements = new OpenDental.UI.Button();
+			this.groupBox4 = new System.Windows.Forms.GroupBox();
+			this.butTipBplus = new OpenDental.UI.Button();
+			this.butTipBminus = new OpenDental.UI.Button();
+			this.butTipMplus = new OpenDental.UI.Button();
+			this.butTipMminus = new OpenDental.UI.Button();
+			this.butRotatePlus = new OpenDental.UI.Button();
+			this.butRotateMinus = new OpenDental.UI.Button();
+			this.textTipB = new OpenDental.ValidDouble();
+			this.label11 = new System.Windows.Forms.Label();
+			this.textTipM = new OpenDental.ValidDouble();
+			this.label12 = new System.Windows.Forms.Label();
+			this.textRotate = new OpenDental.ValidDouble();
+			this.label15 = new System.Windows.Forms.Label();
+			this.groupBox3 = new System.Windows.Forms.GroupBox();
+			this.butShiftBplus = new OpenDental.UI.Button();
+			this.butShiftBminus = new OpenDental.UI.Button();
+			this.butShiftOplus = new OpenDental.UI.Button();
+			this.butShiftOminus = new OpenDental.UI.Button();
+			this.butShiftMplus = new OpenDental.UI.Button();
+			this.butShiftMminus = new OpenDental.UI.Button();
+			this.textShiftB = new OpenDental.ValidDouble();
+			this.label10 = new System.Windows.Forms.Label();
+			this.textShiftO = new OpenDental.ValidDouble();
+			this.label9 = new System.Windows.Forms.Label();
+			this.textShiftM = new OpenDental.ValidDouble();
+			this.label8 = new System.Windows.Forms.Label();
+			this.tabPrimary = new System.Windows.Forms.TabPage();
+			this.groupBox5 = new System.Windows.Forms.GroupBox();
+			this.butPerm = new OpenDental.UI.Button();
+			this.butPrimary = new OpenDental.UI.Button();
+			this.butMixed = new OpenDental.UI.Button();
+			this.butAllPrimary = new OpenDental.UI.Button();
+			this.butAllPerm = new OpenDental.UI.Button();
+			this.toothChart = new SparksToothChart.GraphicalToothChart();
+			this.gridProg = new OpenDental.UI.ODGrid();
+			this.butBig = new OpenDental.UI.Button();
 			this.ToolBarMain = new OpenDental.UI.ODToolBar();
-			this.cTeeth = new OpenDental.ContrTeeth();
 			this.button1 = new OpenDental.UI.Button();
 			this.textTreatmentNotes = new OpenDental.ODtextBox();
+			this.gridPtInfo = new OpenDental.UI.ODGrid();
 			this.groupBox2.SuspendLayout();
-			this.panelMedical.SuspendLayout();
 			this.groupPlanned.SuspendLayout();
-			this.panelEnterTx.SuspendLayout();
 			this.groupShow.SuspendLayout();
-			this.panelABCins.SuspendLayout();
 			this.tabControlImages.SuspendLayout();
 			this.panelImages.SuspendLayout();
+			this.tabProc.SuspendLayout();
+			this.tabEnterTx.SuspendLayout();
+			this.tabMissing.SuspendLayout();
+			this.groupBox1.SuspendLayout();
+			this.tabMovements.SuspendLayout();
+			this.groupBox4.SuspendLayout();
+			this.groupBox3.SuspendLayout();
+			this.tabPrimary.SuspendLayout();
+			this.groupBox5.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// textSurf
 			// 
-			this.textSurf.Location = new System.Drawing.Point(9,2);
+			this.textSurf.BackColor = System.Drawing.SystemColors.Window;
+			this.textSurf.Location = new System.Drawing.Point(8,2);
 			this.textSurf.Name = "textSurf";
 			this.textSurf.ReadOnly = true;
 			this.textSurf.Size = new System.Drawing.Size(72,20);
@@ -288,13 +356,14 @@ namespace OpenDental{
 			// 
 			// groupBox2
 			// 
+			this.groupBox2.BackColor = System.Drawing.SystemColors.Window;
 			this.groupBox2.Controls.Add(this.radioEntryR);
 			this.groupBox2.Controls.Add(this.radioEntryC);
 			this.groupBox2.Controls.Add(this.radioEntryEO);
 			this.groupBox2.Controls.Add(this.radioEntryEC);
 			this.groupBox2.Controls.Add(this.radioEntryTP);
 			this.groupBox2.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox2.Location = new System.Drawing.Point(2,87);
+			this.groupBox2.Location = new System.Drawing.Point(1,87);
 			this.groupBox2.Name = "groupBox2";
 			this.groupBox2.Size = new System.Drawing.Size(88,96);
 			this.groupBox2.TabIndex = 35;
@@ -353,98 +422,9 @@ namespace OpenDental{
 			this.radioEntryTP.Text = "TP";
 			this.radioEntryTP.CheckedChanged += new System.EventHandler(this.radioEntryTP_CheckedChanged);
 			// 
-			// panelMedical
-			// 
-			this.panelMedical.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))),((int)(((byte)(192)))),((int)(((byte)(192)))));
-			this.panelMedical.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.panelMedical.Controls.Add(this.butMedicalService);
-			this.panelMedical.Controls.Add(this.textMedUrgNote);
-			this.panelMedical.Controls.Add(this.textService);
-			this.panelMedical.Controls.Add(this.label3);
-			this.panelMedical.Controls.Add(this.label2);
-			this.panelMedical.Controls.Add(this.label1);
-			this.panelMedical.Controls.Add(this.textMedical);
-			this.panelMedical.Location = new System.Drawing.Point(1,572);
-			this.panelMedical.Name = "panelMedical";
-			this.panelMedical.Size = new System.Drawing.Size(411,97);
-			this.panelMedical.TabIndex = 39;
-			// 
-			// butMedicalService
-			// 
-			this.butMedicalService.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butMedicalService.Autosize = true;
-			this.butMedicalService.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butMedicalService.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butMedicalService.Location = new System.Drawing.Point(279,1);
-			this.butMedicalService.Name = "butMedicalService";
-			this.butMedicalService.Size = new System.Drawing.Size(128,23);
-			this.butMedicalService.TabIndex = 43;
-			this.butMedicalService.Text = "Edit Medical/Service";
-			this.butMedicalService.Click += new System.EventHandler(this.butMedicalService_Click);
-			// 
-			// textMedUrgNote
-			// 
-			this.textMedUrgNote.BackColor = System.Drawing.Color.White;
-			this.textMedUrgNote.Font = new System.Drawing.Font("Microsoft Sans Serif",8.25F,System.Drawing.FontStyle.Bold,System.Drawing.GraphicsUnit.Point,((byte)(0)));
-			this.textMedUrgNote.ForeColor = System.Drawing.Color.Red;
-			this.textMedUrgNote.Location = new System.Drawing.Point(66,1);
-			this.textMedUrgNote.Multiline = true;
-			this.textMedUrgNote.Name = "textMedUrgNote";
-			this.textMedUrgNote.ReadOnly = true;
-			this.textMedUrgNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textMedUrgNote.Size = new System.Drawing.Size(202,20);
-			this.textMedUrgNote.TabIndex = 41;
-			// 
-			// textService
-			// 
-			this.textService.BackColor = System.Drawing.Color.White;
-			this.textService.Location = new System.Drawing.Point(205,37);
-			this.textService.Multiline = true;
-			this.textService.Name = "textService";
-			this.textService.ReadOnly = true;
-			this.textService.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textService.Size = new System.Drawing.Size(202,57);
-			this.textService.TabIndex = 45;
-			// 
-			// label3
-			// 
-			this.label3.Location = new System.Drawing.Point(203,23);
-			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(100,16);
-			this.label3.TabIndex = 44;
-			this.label3.Text = "Service Notes";
-			// 
-			// label2
-			// 
-			this.label2.Location = new System.Drawing.Point(3,4);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(63,14);
-			this.label2.TabIndex = 42;
-			this.label2.Text = "Med Urgent";
-			this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			// 
-			// label1
-			// 
-			this.label1.Location = new System.Drawing.Point(2,22);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(182,13);
-			this.label1.TabIndex = 40;
-			this.label1.Text = "Medical Summary";
-			// 
-			// textMedical
-			// 
-			this.textMedical.BackColor = System.Drawing.Color.White;
-			this.textMedical.Location = new System.Drawing.Point(2,37);
-			this.textMedical.Multiline = true;
-			this.textMedical.Name = "textMedical";
-			this.textMedical.ReadOnly = true;
-			this.textMedical.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textMedical.Size = new System.Drawing.Size(202,57);
-			this.textMedical.TabIndex = 39;
-			// 
 			// listDx
 			// 
-			this.listDx.Location = new System.Drawing.Point(92,16);
+			this.listDx.Location = new System.Drawing.Point(91,16);
 			this.listDx.Name = "listDx";
 			this.listDx.Size = new System.Drawing.Size(94,173);
 			this.listDx.TabIndex = 46;
@@ -452,7 +432,7 @@ namespace OpenDental{
 			// 
 			// labelDx
 			// 
-			this.labelDx.Location = new System.Drawing.Point(90,-2);
+			this.labelDx.Location = new System.Drawing.Point(89,-2);
 			this.labelDx.Name = "labelDx";
 			this.labelDx.Size = new System.Drawing.Size(100,18);
 			this.labelDx.TabIndex = 47;
@@ -483,7 +463,7 @@ namespace OpenDental{
 			this.butPin.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butPin.Location = new System.Drawing.Point(117,84);
 			this.butPin.Name = "butPin";
-			this.butPin.Size = new System.Drawing.Size(75,26);
+			this.butPin.Size = new System.Drawing.Size(75,23);
 			this.butPin.TabIndex = 6;
 			this.butPin.Text = "Pin Board";
 			this.butPin.Click += new System.EventHandler(this.butPin_Click);
@@ -497,7 +477,7 @@ namespace OpenDental{
 			this.butClear.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butClear.Location = new System.Drawing.Point(117,57);
 			this.butClear.Name = "butClear";
-			this.butClear.Size = new System.Drawing.Size(75,26);
+			this.butClear.Size = new System.Drawing.Size(75,23);
 			this.butClear.TabIndex = 5;
 			this.butClear.Text = "Clear";
 			this.butClear.Click += new System.EventHandler(this.butClear_Click);
@@ -511,7 +491,7 @@ namespace OpenDental{
 			this.butNew.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butNew.Location = new System.Drawing.Point(117,30);
 			this.butNew.Name = "butNew";
-			this.butNew.Size = new System.Drawing.Size(75,26);
+			this.butNew.Size = new System.Drawing.Size(75,23);
 			this.butNew.TabIndex = 4;
 			this.butNew.Text = "New";
 			this.butNew.Click += new System.EventHandler(this.butNew_Click);
@@ -533,38 +513,6 @@ namespace OpenDental{
 			this.checkDone.Text = "Done";
 			this.checkDone.Click += new System.EventHandler(this.checkDone_Click);
 			// 
-			// panelEnterTx
-			// 
-			this.panelEnterTx.BackColor = System.Drawing.SystemColors.Control;
-			this.panelEnterTx.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.panelEnterTx.Controls.Add(this.listDx);
-			this.panelEnterTx.Controls.Add(this.listViewButtons);
-			this.panelEnterTx.Controls.Add(this.listButtonCats);
-			this.panelEnterTx.Controls.Add(this.comboPriority);
-			this.panelEnterTx.Controls.Add(this.textDate);
-			this.panelEnterTx.Controls.Add(this.checkToday);
-			this.panelEnterTx.Controls.Add(this.label6);
-			this.panelEnterTx.Controls.Add(this.butOK);
-			this.panelEnterTx.Controls.Add(this.butAddProc);
-			this.panelEnterTx.Controls.Add(this.textADACode);
-			this.panelEnterTx.Controls.Add(this.label14);
-			this.panelEnterTx.Controls.Add(this.label13);
-			this.panelEnterTx.Controls.Add(this.labelDx);
-			this.panelEnterTx.Controls.Add(this.butO);
-			this.panelEnterTx.Controls.Add(this.butF);
-			this.panelEnterTx.Controls.Add(this.butI);
-			this.panelEnterTx.Controls.Add(this.butM);
-			this.panelEnterTx.Controls.Add(this.butL);
-			this.panelEnterTx.Controls.Add(this.butB);
-			this.panelEnterTx.Controls.Add(this.textSurf);
-			this.panelEnterTx.Controls.Add(this.butD);
-			this.panelEnterTx.Controls.Add(this.groupBox2);
-			this.panelEnterTx.Location = new System.Drawing.Point(416,51);
-			this.panelEnterTx.Name = "panelEnterTx";
-			this.panelEnterTx.Size = new System.Drawing.Size(496,229);
-			this.panelEnterTx.TabIndex = 44;
-			this.panelEnterTx.Visible = false;
-			// 
 			// listViewButtons
 			// 
 			this.listViewButtons.Activation = System.Windows.Forms.ItemActivation.OneClick;
@@ -572,10 +520,10 @@ namespace OpenDental{
 			this.listViewButtons.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1});
 			this.listViewButtons.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-			this.listViewButtons.Location = new System.Drawing.Point(312,40);
+			this.listViewButtons.Location = new System.Drawing.Point(311,40);
 			this.listViewButtons.MultiSelect = false;
 			this.listViewButtons.Name = "listViewButtons";
-			this.listViewButtons.Size = new System.Drawing.Size(180,186);
+			this.listViewButtons.Size = new System.Drawing.Size(178,186);
 			this.listViewButtons.SmallImageList = this.imageListProcButtons;
 			this.listViewButtons.TabIndex = 188;
 			this.listViewButtons.UseCompatibleStateImageBehavior = false;
@@ -594,7 +542,7 @@ namespace OpenDental{
 			// 
 			// listButtonCats
 			// 
-			this.listButtonCats.Location = new System.Drawing.Point(188,40);
+			this.listButtonCats.Location = new System.Drawing.Point(187,40);
 			this.listButtonCats.MultiColumn = true;
 			this.listButtonCats.Name = "listButtonCats";
 			this.listButtonCats.Size = new System.Drawing.Size(122,186);
@@ -604,25 +552,18 @@ namespace OpenDental{
 			// comboPriority
 			// 
 			this.comboPriority.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboPriority.Location = new System.Drawing.Point(92,205);
+			this.comboPriority.Location = new System.Drawing.Point(91,205);
 			this.comboPriority.MaxDropDownItems = 40;
 			this.comboPriority.Name = "comboPriority";
 			this.comboPriority.Size = new System.Drawing.Size(96,21);
 			this.comboPriority.TabIndex = 54;
-			// 
-			// textDate
-			// 
-			this.textDate.Location = new System.Drawing.Point(1,205);
-			this.textDate.Name = "textDate";
-			this.textDate.Size = new System.Drawing.Size(89,20);
-			this.textDate.TabIndex = 55;
 			// 
 			// checkToday
 			// 
 			this.checkToday.Checked = true;
 			this.checkToday.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.checkToday.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkToday.Location = new System.Drawing.Point(2,188);
+			this.checkToday.Location = new System.Drawing.Point(1,188);
 			this.checkToday.Name = "checkToday";
 			this.checkToday.Size = new System.Drawing.Size(80,18);
 			this.checkToday.TabIndex = 58;
@@ -631,44 +572,16 @@ namespace OpenDental{
 			// 
 			// label6
 			// 
-			this.label6.Location = new System.Drawing.Point(90,188);
+			this.label6.Location = new System.Drawing.Point(89,188);
 			this.label6.Name = "label6";
 			this.label6.Size = new System.Drawing.Size(79,17);
 			this.label6.TabIndex = 57;
 			this.label6.Text = "Priority";
 			this.label6.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
-			// butOK
-			// 
-			this.butOK.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butOK.Autosize = true;
-			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butOK.Location = new System.Drawing.Point(447,1);
-			this.butOK.Name = "butOK";
-			this.butOK.Size = new System.Drawing.Size(44,23);
-			this.butOK.TabIndex = 52;
-			this.butOK.Text = "OK";
-			this.butOK.Click += new System.EventHandler(this.butOK_Click);
-			// 
-			// butAddProc
-			// 
-			this.butAddProc.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butAddProc.Autosize = true;
-			this.butAddProc.BackColor = System.Drawing.SystemColors.Control;
-			this.butAddProc.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butAddProc.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butAddProc.Location = new System.Drawing.Point(192,1);
-			this.butAddProc.Name = "butAddProc";
-			this.butAddProc.Size = new System.Drawing.Size(89,23);
-			this.butAddProc.TabIndex = 17;
-			this.butAddProc.Text = "Procedure List";
-			this.butAddProc.UseVisualStyleBackColor = false;
-			this.butAddProc.Click += new System.EventHandler(this.butAddProc_Click);
-			// 
 			// textADACode
 			// 
-			this.textADACode.Location = new System.Drawing.Point(337,3);
+			this.textADACode.Location = new System.Drawing.Point(330,3);
 			this.textADACode.Name = "textADACode";
 			this.textADACode.Size = new System.Drawing.Size(108,20);
 			this.textADACode.TabIndex = 50;
@@ -679,149 +592,25 @@ namespace OpenDental{
 			// 
 			// label14
 			// 
-			this.label14.Location = new System.Drawing.Point(284,6);
+			this.label14.Location = new System.Drawing.Point(283,6);
 			this.label14.Name = "label14";
-			this.label14.Size = new System.Drawing.Size(51,17);
+			this.label14.Size = new System.Drawing.Size(47,17);
 			this.label14.TabIndex = 51;
 			this.label14.Text = "Or";
 			this.label14.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// label13
 			// 
-			this.label13.Location = new System.Drawing.Point(309,21);
+			this.label13.Location = new System.Drawing.Point(308,21);
 			this.label13.Name = "label13";
 			this.label13.Size = new System.Drawing.Size(128,18);
 			this.label13.TabIndex = 49;
 			this.label13.Text = "Or Single Click:";
 			this.label13.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
-			// butO
-			// 
-			this.butO.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butO.Autosize = true;
-			this.butO.BackColor = System.Drawing.SystemColors.Control;
-			this.butO.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butO.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butO.Location = new System.Drawing.Point(28,43);
-			this.butO.Name = "butO";
-			this.butO.Size = new System.Drawing.Size(18,20);
-			this.butO.TabIndex = 19;
-			this.butO.Text = "O";
-			this.butO.UseVisualStyleBackColor = false;
-			this.butO.Click += new System.EventHandler(this.butO_Click);
-			// 
-			// butF
-			// 
-			this.butF.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butF.Autosize = true;
-			this.butF.BackColor = System.Drawing.SystemColors.Control;
-			this.butF.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butF.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butF.Location = new System.Drawing.Point(45,23);
-			this.butF.Name = "butF";
-			this.butF.Size = new System.Drawing.Size(17,20);
-			this.butF.TabIndex = 24;
-			this.butF.Text = "F";
-			this.butF.UseVisualStyleBackColor = false;
-			this.butF.Click += new System.EventHandler(this.butF_Click);
-			// 
-			// butI
-			// 
-			this.butI.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butI.Autosize = true;
-			this.butI.BackColor = System.Drawing.SystemColors.Control;
-			this.butI.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butI.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butI.Location = new System.Drawing.Point(45,43);
-			this.butI.Name = "butI";
-			this.butI.Size = new System.Drawing.Size(17,20);
-			this.butI.TabIndex = 23;
-			this.butI.Text = "I";
-			this.butI.UseVisualStyleBackColor = false;
-			this.butI.Click += new System.EventHandler(this.butI_Click);
-			// 
-			// butM
-			// 
-			this.butM.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butM.Autosize = true;
-			this.butM.BackColor = System.Drawing.SystemColors.Control;
-			this.butM.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butM.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butM.Location = new System.Drawing.Point(4,43);
-			this.butM.Name = "butM";
-			this.butM.Size = new System.Drawing.Size(24,20);
-			this.butM.TabIndex = 18;
-			this.butM.Text = "M";
-			this.butM.UseVisualStyleBackColor = false;
-			this.butM.Click += new System.EventHandler(this.butM_Click);
-			// 
-			// butL
-			// 
-			this.butL.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butL.Autosize = true;
-			this.butL.BackColor = System.Drawing.SystemColors.Control;
-			this.butL.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butL.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butL.Location = new System.Drawing.Point(33,63);
-			this.butL.Name = "butL";
-			this.butL.Size = new System.Drawing.Size(24,20);
-			this.butL.TabIndex = 22;
-			this.butL.Text = "L";
-			this.butL.UseVisualStyleBackColor = false;
-			this.butL.Click += new System.EventHandler(this.butL_Click);
-			// 
-			// butB
-			// 
-			this.butB.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butB.Autosize = true;
-			this.butB.BackColor = System.Drawing.SystemColors.Control;
-			this.butB.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butB.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butB.Location = new System.Drawing.Point(28,23);
-			this.butB.Name = "butB";
-			this.butB.Size = new System.Drawing.Size(17,20);
-			this.butB.TabIndex = 21;
-			this.butB.Text = "B";
-			this.butB.UseVisualStyleBackColor = false;
-			this.butB.Click += new System.EventHandler(this.butB_Click);
-			// 
-			// butD
-			// 
-			this.butD.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butD.Autosize = true;
-			this.butD.BackColor = System.Drawing.SystemColors.Control;
-			this.butD.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butD.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butD.Location = new System.Drawing.Point(62,43);
-			this.butD.Name = "butD";
-			this.butD.Size = new System.Drawing.Size(24,20);
-			this.butD.TabIndex = 20;
-			this.butD.Text = "D";
-			this.butD.UseVisualStyleBackColor = false;
-			this.butD.Click += new System.EventHandler(this.butD_Click);
-			// 
-			// butEnterTx
-			// 
-			this.butEnterTx.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.butEnterTx.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.butEnterTx.ImageList = this.imageListUpDown;
-			this.butEnterTx.Location = new System.Drawing.Point(416,32);
-			this.butEnterTx.Name = "butEnterTx";
-			this.butEnterTx.Size = new System.Drawing.Size(79,20);
-			this.butEnterTx.TabIndex = 40;
-			this.butEnterTx.Text = "Enter Tx";
-			this.butEnterTx.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butEnterTx.Click += new System.EventHandler(this.butEnterTx_Click);
-			// 
-			// imageListUpDown
-			// 
-			this.imageListUpDown.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListUpDown.ImageStream")));
-			this.imageListUpDown.TransparentColor = System.Drawing.Color.Transparent;
-			this.imageListUpDown.Images.SetKeyName(0,"");
-			this.imageListUpDown.Images.SetKeyName(1,"");
-			// 
 			// groupShow
 			// 
+			this.groupShow.Controls.Add(this.checkComm);
 			this.groupShow.Controls.Add(this.checkShowTeeth);
 			this.groupShow.Controls.Add(this.checkNotes);
 			this.groupShow.Controls.Add(this.checkRx);
@@ -839,10 +628,22 @@ namespace OpenDental{
 			this.groupShow.TabStop = false;
 			this.groupShow.Text = "Show:";
 			// 
+			// checkComm
+			// 
+			this.checkComm.Checked = true;
+			this.checkComm.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.checkComm.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkComm.Location = new System.Drawing.Point(104,32);
+			this.checkComm.Name = "checkComm";
+			this.checkComm.Size = new System.Drawing.Size(95,13);
+			this.checkComm.TabIndex = 16;
+			this.checkComm.Text = "Comm Log";
+			this.checkComm.Click += new System.EventHandler(this.checkComm_Click);
+			// 
 			// checkShowTeeth
 			// 
 			this.checkShowTeeth.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkShowTeeth.Location = new System.Drawing.Point(104,48);
+			this.checkShowTeeth.Location = new System.Drawing.Point(104,62);
 			this.checkShowTeeth.Name = "checkShowTeeth";
 			this.checkShowTeeth.Size = new System.Drawing.Size(104,13);
 			this.checkShowTeeth.TabIndex = 15;
@@ -855,7 +656,7 @@ namespace OpenDental{
 			this.checkNotes.Checked = true;
 			this.checkNotes.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.checkNotes.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkNotes.Location = new System.Drawing.Point(104,32);
+			this.checkNotes.Location = new System.Drawing.Point(104,47);
 			this.checkNotes.Name = "checkNotes";
 			this.checkNotes.Size = new System.Drawing.Size(102,13);
 			this.checkNotes.TabIndex = 11;
@@ -948,38 +749,6 @@ namespace OpenDental{
 			this.checkShowTP.Text = "Treat Plan";
 			this.checkShowTP.Click += new System.EventHandler(this.checkShowTP_Click);
 			// 
-			// menuPrimary
-			// 
-			this.menuPrimary.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.menuPrimaryToggle,
-            this.menuPrimaryMixed,
-            this.menuPrimaryAll,
-            this.menuPrimaryNone});
-			// 
-			// menuPrimaryToggle
-			// 
-			this.menuPrimaryToggle.Index = 0;
-			this.menuPrimaryToggle.Text = "Toggle Selected";
-			this.menuPrimaryToggle.Click += new System.EventHandler(this.menuPrimaryToggle_Click);
-			// 
-			// menuPrimaryMixed
-			// 
-			this.menuPrimaryMixed.Index = 1;
-			this.menuPrimaryMixed.Text = "Set Mixed Dentition";
-			this.menuPrimaryMixed.Click += new System.EventHandler(this.menuPrimaryMixed_Click);
-			// 
-			// menuPrimaryAll
-			// 
-			this.menuPrimaryAll.Index = 2;
-			this.menuPrimaryAll.Text = "Set All Primary";
-			this.menuPrimaryAll.Click += new System.EventHandler(this.menuPrimaryAll_Click);
-			// 
-			// menuPrimaryNone
-			// 
-			this.menuPrimaryNone.Index = 3;
-			this.menuPrimaryNone.Text = "Set All Permanent";
-			this.menuPrimaryNone.Click += new System.EventHandler(this.menuPrimaryNone_Click);
-			// 
 			// imageListMain
 			// 
 			this.imageListMain.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListMain.ImageStream")));
@@ -988,15 +757,6 @@ namespace OpenDental{
 			this.imageListMain.Images.SetKeyName(1,"");
 			this.imageListMain.Images.SetKeyName(2,"");
 			// 
-			// labelNewProcHint
-			// 
-			this.labelNewProcHint.Font = new System.Drawing.Font("Microsoft Sans Serif",8.25F,System.Drawing.FontStyle.Bold,System.Drawing.GraphicsUnit.Point,((byte)(0)));
-			this.labelNewProcHint.Location = new System.Drawing.Point(608,32);
-			this.labelNewProcHint.Name = "labelNewProcHint";
-			this.labelNewProcHint.Size = new System.Drawing.Size(294,16);
-			this.labelNewProcHint.TabIndex = 178;
-			this.labelNewProcHint.Text = "Enter New Procedures Here:";
-			// 
 			// label4
 			// 
 			this.label4.Location = new System.Drawing.Point(1,411);
@@ -1004,68 +764,6 @@ namespace OpenDental{
 			this.label4.Size = new System.Drawing.Size(384,18);
 			this.label4.TabIndex = 180;
 			this.label4.Text = "Treatment Notes (for items that do not display above)";
-			// 
-			// textCreditType
-			// 
-			this.textCreditType.Location = new System.Drawing.Point(0,0);
-			this.textCreditType.Name = "textCreditType";
-			this.textCreditType.ReadOnly = true;
-			this.textCreditType.Size = new System.Drawing.Size(22,20);
-			this.textCreditType.TabIndex = 181;
-			this.textCreditType.Text = "A";
-			this.toolTip1.SetToolTip(this.textCreditType,"Credit Type");
-			// 
-			// textIns
-			// 
-			this.textIns.Location = new System.Drawing.Point(69,20);
-			this.textIns.Name = "textIns";
-			this.textIns.ReadOnly = true;
-			this.textIns.Size = new System.Drawing.Size(342,20);
-			this.textIns.TabIndex = 182;
-			this.textIns.Text = "Ins";
-			this.toolTip1.SetToolTip(this.textIns,"Insurance");
-			// 
-			// panelABCins
-			// 
-			this.panelABCins.Controls.Add(this.textReferral);
-			this.panelABCins.Controls.Add(this.textCreditType);
-			this.panelABCins.Controls.Add(this.textIns);
-			this.panelABCins.Controls.Add(this.textBillingType);
-			this.panelABCins.Controls.Add(this.textDateFirstVisit);
-			this.panelABCins.Location = new System.Drawing.Point(0,528);
-			this.panelABCins.Name = "panelABCins";
-			this.panelABCins.Size = new System.Drawing.Size(429,40);
-			this.panelABCins.TabIndex = 183;
-			// 
-			// textReferral
-			// 
-			this.textReferral.Location = new System.Drawing.Point(208,0);
-			this.textReferral.Name = "textReferral";
-			this.textReferral.ReadOnly = true;
-			this.textReferral.Size = new System.Drawing.Size(202,20);
-			this.textReferral.TabIndex = 183;
-			this.textReferral.Text = "Referral";
-			this.toolTip1.SetToolTip(this.textReferral,"Referral");
-			// 
-			// textBillingType
-			// 
-			this.textBillingType.Location = new System.Drawing.Point(22,0);
-			this.textBillingType.Name = "textBillingType";
-			this.textBillingType.ReadOnly = true;
-			this.textBillingType.Size = new System.Drawing.Size(186,20);
-			this.textBillingType.TabIndex = 184;
-			this.textBillingType.Text = "Billing Type";
-			this.toolTip1.SetToolTip(this.textBillingType,"BillingType");
-			// 
-			// textDateFirstVisit
-			// 
-			this.textDateFirstVisit.Location = new System.Drawing.Point(0,20);
-			this.textDateFirstVisit.Name = "textDateFirstVisit";
-			this.textDateFirstVisit.ReadOnly = true;
-			this.textDateFirstVisit.Size = new System.Drawing.Size(69,20);
-			this.textDateFirstVisit.TabIndex = 184;
-			this.textDateFirstVisit.Text = "Date";
-			this.toolTip1.SetToolTip(this.textDateFirstVisit,"Date of First Visit");
 			// 
 			// menuProgRight
 			// 
@@ -1102,7 +800,7 @@ namespace OpenDental{
 			this.tabControlImages.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.tabControlImages.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
 			this.tabControlImages.ItemSize = new System.Drawing.Size(42,22);
-			this.tabControlImages.Location = new System.Drawing.Point(0,681);
+			this.tabControlImages.Location = new System.Drawing.Point(0,728);
 			this.tabControlImages.Name = "tabControlImages";
 			this.tabControlImages.SelectedIndex = 0;
 			this.tabControlImages.Size = new System.Drawing.Size(939,27);
@@ -1139,10 +837,10 @@ namespace OpenDental{
 			this.panelImages.Controls.Add(this.listViewImages);
 			this.panelImages.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.panelImages.ForeColor = System.Drawing.SystemColors.ControlText;
-			this.panelImages.Location = new System.Drawing.Point(0,441);
+			this.panelImages.Location = new System.Drawing.Point(0,673);
 			this.panelImages.Name = "panelImages";
 			this.panelImages.Padding = new System.Windows.Forms.Padding(0,4,0,0);
-			this.panelImages.Size = new System.Drawing.Size(939,240);
+			this.panelImages.Size = new System.Drawing.Size(939,55);
 			this.panelImages.TabIndex = 186;
 			this.panelImages.Visible = false;
 			this.panelImages.MouseLeave += new System.EventHandler(this.panelImages_MouseLeave);
@@ -1159,7 +857,7 @@ namespace OpenDental{
 			this.listViewImages.Location = new System.Drawing.Point(0,4);
 			this.listViewImages.MultiSelect = false;
 			this.listViewImages.Name = "listViewImages";
-			this.listViewImages.Size = new System.Drawing.Size(937,234);
+			this.listViewImages.Size = new System.Drawing.Size(937,49);
 			this.listViewImages.TabIndex = 0;
 			this.listViewImages.UseCompatibleStateImageBehavior = false;
 			this.listViewImages.DoubleClick += new System.EventHandler(this.listViewImages_DoubleClick);
@@ -1174,18 +872,776 @@ namespace OpenDental{
 			// 
 			this.pd2.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.pd2_PrintPage);
 			// 
-			// tbProg
+			// tabProc
 			// 
-			this.tbProg.BackColor = System.Drawing.SystemColors.Window;
-			this.tbProg.Location = new System.Drawing.Point(415,281);
-			this.tbProg.Name = "tbProg";
-			this.tbProg.ScrollValue = 1;
-			this.tbProg.SelectedIndices = new int[0];
-			this.tbProg.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-			this.tbProg.Size = new System.Drawing.Size(498,386);
-			this.tbProg.TabIndex = 40;
-			this.tbProg.MouseUp += new System.Windows.Forms.MouseEventHandler(this.tbProg_MouseUp);
-			this.tbProg.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tbProg_KeyDown);
+			this.tabProc.Controls.Add(this.tabEnterTx);
+			this.tabProc.Controls.Add(this.tabMissing);
+			this.tabProc.Controls.Add(this.tabMovements);
+			this.tabProc.Controls.Add(this.tabPrimary);
+			this.tabProc.Location = new System.Drawing.Point(415,32);
+			this.tabProc.Name = "tabProc";
+			this.tabProc.SelectedIndex = 0;
+			this.tabProc.Size = new System.Drawing.Size(497,261);
+			this.tabProc.TabIndex = 190;
+			this.tabProc.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tabProc_MouseDown);
+			// 
+			// tabEnterTx
+			// 
+			this.tabEnterTx.Controls.Add(this.listDx);
+			this.tabEnterTx.Controls.Add(this.listViewButtons);
+			this.tabEnterTx.Controls.Add(this.groupBox2);
+			this.tabEnterTx.Controls.Add(this.listButtonCats);
+			this.tabEnterTx.Controls.Add(this.butD);
+			this.tabEnterTx.Controls.Add(this.comboPriority);
+			this.tabEnterTx.Controls.Add(this.textSurf);
+			this.tabEnterTx.Controls.Add(this.textDate);
+			this.tabEnterTx.Controls.Add(this.butBF);
+			this.tabEnterTx.Controls.Add(this.checkToday);
+			this.tabEnterTx.Controls.Add(this.butL);
+			this.tabEnterTx.Controls.Add(this.label6);
+			this.tabEnterTx.Controls.Add(this.butM);
+			this.tabEnterTx.Controls.Add(this.butOK);
+			this.tabEnterTx.Controls.Add(this.butAddProc);
+			this.tabEnterTx.Controls.Add(this.butV);
+			this.tabEnterTx.Controls.Add(this.textADACode);
+			this.tabEnterTx.Controls.Add(this.butOI);
+			this.tabEnterTx.Controls.Add(this.label14);
+			this.tabEnterTx.Controls.Add(this.labelDx);
+			this.tabEnterTx.Controls.Add(this.label13);
+			this.tabEnterTx.Location = new System.Drawing.Point(4,22);
+			this.tabEnterTx.Name = "tabEnterTx";
+			this.tabEnterTx.Padding = new System.Windows.Forms.Padding(3);
+			this.tabEnterTx.Size = new System.Drawing.Size(489,235);
+			this.tabEnterTx.TabIndex = 0;
+			this.tabEnterTx.Text = "Enter Treatment";
+			this.tabEnterTx.UseVisualStyleBackColor = true;
+			// 
+			// butD
+			// 
+			this.butD.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butD.Autosize = true;
+			this.butD.BackColor = System.Drawing.SystemColors.Control;
+			this.butD.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butD.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butD.Location = new System.Drawing.Point(61,43);
+			this.butD.Name = "butD";
+			this.butD.Size = new System.Drawing.Size(24,20);
+			this.butD.TabIndex = 20;
+			this.butD.Text = "D";
+			this.butD.UseVisualStyleBackColor = false;
+			this.butD.Click += new System.EventHandler(this.butD_Click);
+			// 
+			// textDate
+			// 
+			this.textDate.Location = new System.Drawing.Point(0,205);
+			this.textDate.Name = "textDate";
+			this.textDate.Size = new System.Drawing.Size(89,20);
+			this.textDate.TabIndex = 55;
+			// 
+			// butBF
+			// 
+			this.butBF.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butBF.Autosize = true;
+			this.butBF.BackColor = System.Drawing.SystemColors.Control;
+			this.butBF.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butBF.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butBF.Location = new System.Drawing.Point(22,23);
+			this.butBF.Name = "butBF";
+			this.butBF.Size = new System.Drawing.Size(28,20);
+			this.butBF.TabIndex = 21;
+			this.butBF.Text = "B/F";
+			this.butBF.UseVisualStyleBackColor = false;
+			this.butBF.Click += new System.EventHandler(this.butBF_Click);
+			// 
+			// butL
+			// 
+			this.butL.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butL.Autosize = true;
+			this.butL.BackColor = System.Drawing.SystemColors.Control;
+			this.butL.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butL.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butL.Location = new System.Drawing.Point(32,63);
+			this.butL.Name = "butL";
+			this.butL.Size = new System.Drawing.Size(24,20);
+			this.butL.TabIndex = 22;
+			this.butL.Text = "L";
+			this.butL.UseVisualStyleBackColor = false;
+			this.butL.Click += new System.EventHandler(this.butL_Click);
+			// 
+			// butM
+			// 
+			this.butM.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butM.Autosize = true;
+			this.butM.BackColor = System.Drawing.SystemColors.Control;
+			this.butM.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butM.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butM.Location = new System.Drawing.Point(3,43);
+			this.butM.Name = "butM";
+			this.butM.Size = new System.Drawing.Size(24,20);
+			this.butM.TabIndex = 18;
+			this.butM.Text = "M";
+			this.butM.UseVisualStyleBackColor = false;
+			this.butM.Click += new System.EventHandler(this.butM_Click);
+			// 
+			// butOK
+			// 
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butOK.Location = new System.Drawing.Point(442,1);
+			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(44,23);
+			this.butOK.TabIndex = 52;
+			this.butOK.Text = "OK";
+			this.butOK.Click += new System.EventHandler(this.butOK_Click);
+			// 
+			// butAddProc
+			// 
+			this.butAddProc.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butAddProc.Autosize = true;
+			this.butAddProc.BackColor = System.Drawing.SystemColors.Control;
+			this.butAddProc.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAddProc.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butAddProc.Location = new System.Drawing.Point(191,1);
+			this.butAddProc.Name = "butAddProc";
+			this.butAddProc.Size = new System.Drawing.Size(89,23);
+			this.butAddProc.TabIndex = 17;
+			this.butAddProc.Text = "Procedure List";
+			this.butAddProc.UseVisualStyleBackColor = false;
+			this.butAddProc.Click += new System.EventHandler(this.butAddProc_Click);
+			// 
+			// butV
+			// 
+			this.butV.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butV.Autosize = true;
+			this.butV.BackColor = System.Drawing.SystemColors.Control;
+			this.butV.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butV.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butV.Location = new System.Drawing.Point(50,23);
+			this.butV.Name = "butV";
+			this.butV.Size = new System.Drawing.Size(17,20);
+			this.butV.TabIndex = 24;
+			this.butV.Text = "V";
+			this.butV.UseVisualStyleBackColor = false;
+			this.butV.Click += new System.EventHandler(this.butV_Click);
+			// 
+			// butOI
+			// 
+			this.butOI.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butOI.Autosize = true;
+			this.butOI.BackColor = System.Drawing.SystemColors.Control;
+			this.butOI.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOI.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butOI.Location = new System.Drawing.Point(27,43);
+			this.butOI.Name = "butOI";
+			this.butOI.Size = new System.Drawing.Size(34,20);
+			this.butOI.TabIndex = 19;
+			this.butOI.Text = "O/I";
+			this.butOI.UseVisualStyleBackColor = false;
+			this.butOI.Click += new System.EventHandler(this.butOI_Click);
+			// 
+			// tabMissing
+			// 
+			this.tabMissing.Controls.Add(this.butUnhide);
+			this.tabMissing.Controls.Add(this.label5);
+			this.tabMissing.Controls.Add(this.listHidden);
+			this.tabMissing.Controls.Add(this.butEdentulous);
+			this.tabMissing.Controls.Add(this.groupBox1);
+			this.tabMissing.Location = new System.Drawing.Point(4,22);
+			this.tabMissing.Name = "tabMissing";
+			this.tabMissing.Padding = new System.Windows.Forms.Padding(3);
+			this.tabMissing.Size = new System.Drawing.Size(489,235);
+			this.tabMissing.TabIndex = 1;
+			this.tabMissing.Text = "Missing Teeth";
+			this.tabMissing.UseVisualStyleBackColor = true;
+			// 
+			// butUnhide
+			// 
+			this.butUnhide.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butUnhide.Autosize = true;
+			this.butUnhide.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butUnhide.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butUnhide.Location = new System.Drawing.Point(307,113);
+			this.butUnhide.Name = "butUnhide";
+			this.butUnhide.Size = new System.Drawing.Size(71,23);
+			this.butUnhide.TabIndex = 20;
+			this.butUnhide.Text = "Unhide";
+			this.butUnhide.Click += new System.EventHandler(this.butUnhide_Click);
+			// 
+			// label5
+			// 
+			this.label5.Location = new System.Drawing.Point(304,12);
+			this.label5.Name = "label5";
+			this.label5.Size = new System.Drawing.Size(147,17);
+			this.label5.TabIndex = 19;
+			this.label5.Text = "Hidden Teeth";
+			this.label5.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// listHidden
+			// 
+			this.listHidden.FormattingEnabled = true;
+			this.listHidden.Location = new System.Drawing.Point(307,33);
+			this.listHidden.Name = "listHidden";
+			this.listHidden.Size = new System.Drawing.Size(94,69);
+			this.listHidden.TabIndex = 18;
+			// 
+			// butEdentulous
+			// 
+			this.butEdentulous.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butEdentulous.Autosize = true;
+			this.butEdentulous.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butEdentulous.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butEdentulous.Location = new System.Drawing.Point(31,113);
+			this.butEdentulous.Name = "butEdentulous";
+			this.butEdentulous.Size = new System.Drawing.Size(82,23);
+			this.butEdentulous.TabIndex = 16;
+			this.butEdentulous.Text = "Edentulous";
+			this.butEdentulous.Click += new System.EventHandler(this.butEdentulous_Click);
+			// 
+			// groupBox1
+			// 
+			this.groupBox1.Controls.Add(this.label7);
+			this.groupBox1.Controls.Add(this.butNotMissing);
+			this.groupBox1.Controls.Add(this.butMissing);
+			this.groupBox1.Controls.Add(this.butHidden);
+			this.groupBox1.Location = new System.Drawing.Point(20,12);
+			this.groupBox1.Name = "groupBox1";
+			this.groupBox1.Size = new System.Drawing.Size(267,90);
+			this.groupBox1.TabIndex = 0;
+			this.groupBox1.TabStop = false;
+			this.groupBox1.Text = "Set Selected Teeth";
+			// 
+			// label7
+			// 
+			this.label7.Location = new System.Drawing.Point(115,46);
+			this.label7.Name = "label7";
+			this.label7.Size = new System.Drawing.Size(146,17);
+			this.label7.TabIndex = 20;
+			this.label7.Text = "(including numbers)";
+			this.label7.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
+			// butNotMissing
+			// 
+			this.butNotMissing.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butNotMissing.Autosize = true;
+			this.butNotMissing.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butNotMissing.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butNotMissing.Location = new System.Drawing.Point(11,53);
+			this.butNotMissing.Name = "butNotMissing";
+			this.butNotMissing.Size = new System.Drawing.Size(82,23);
+			this.butNotMissing.TabIndex = 15;
+			this.butNotMissing.Text = "Not Missing";
+			this.butNotMissing.Click += new System.EventHandler(this.butNotMissing_Click);
+			// 
+			// butMissing
+			// 
+			this.butMissing.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butMissing.Autosize = true;
+			this.butMissing.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butMissing.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butMissing.Location = new System.Drawing.Point(11,21);
+			this.butMissing.Name = "butMissing";
+			this.butMissing.Size = new System.Drawing.Size(82,23);
+			this.butMissing.TabIndex = 14;
+			this.butMissing.Text = "Missing";
+			this.butMissing.Click += new System.EventHandler(this.butMissing_Click);
+			// 
+			// butHidden
+			// 
+			this.butHidden.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butHidden.Autosize = true;
+			this.butHidden.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butHidden.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butHidden.Location = new System.Drawing.Point(172,21);
+			this.butHidden.Name = "butHidden";
+			this.butHidden.Size = new System.Drawing.Size(82,23);
+			this.butHidden.TabIndex = 17;
+			this.butHidden.Text = "Hidden";
+			this.butHidden.Click += new System.EventHandler(this.butHidden_Click);
+			// 
+			// tabMovements
+			// 
+			this.tabMovements.Controls.Add(this.label16);
+			this.tabMovements.Controls.Add(this.butApplyMovements);
+			this.tabMovements.Controls.Add(this.groupBox4);
+			this.tabMovements.Controls.Add(this.groupBox3);
+			this.tabMovements.Location = new System.Drawing.Point(4,22);
+			this.tabMovements.Name = "tabMovements";
+			this.tabMovements.Size = new System.Drawing.Size(489,235);
+			this.tabMovements.TabIndex = 3;
+			this.tabMovements.Text = "Movements";
+			this.tabMovements.UseVisualStyleBackColor = true;
+			// 
+			// label16
+			// 
+			this.label16.Location = new System.Drawing.Point(180,183);
+			this.label16.Name = "label16";
+			this.label16.Size = new System.Drawing.Size(267,18);
+			this.label16.TabIndex = 29;
+			this.label16.Text = "(if you typed in changes)";
+			this.label16.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
+			// butApplyMovements
+			// 
+			this.butApplyMovements.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butApplyMovements.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.butApplyMovements.Autosize = true;
+			this.butApplyMovements.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butApplyMovements.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butApplyMovements.Location = new System.Drawing.Point(377,154);
+			this.butApplyMovements.Name = "butApplyMovements";
+			this.butApplyMovements.Size = new System.Drawing.Size(68,23);
+			this.butApplyMovements.TabIndex = 16;
+			this.butApplyMovements.Text = "Apply";
+			this.butApplyMovements.Click += new System.EventHandler(this.butApplyMovements_Click);
+			// 
+			// groupBox4
+			// 
+			this.groupBox4.Controls.Add(this.butTipBplus);
+			this.groupBox4.Controls.Add(this.butTipBminus);
+			this.groupBox4.Controls.Add(this.butTipMplus);
+			this.groupBox4.Controls.Add(this.butTipMminus);
+			this.groupBox4.Controls.Add(this.butRotatePlus);
+			this.groupBox4.Controls.Add(this.butRotateMinus);
+			this.groupBox4.Controls.Add(this.textTipB);
+			this.groupBox4.Controls.Add(this.label11);
+			this.groupBox4.Controls.Add(this.textTipM);
+			this.groupBox4.Controls.Add(this.label12);
+			this.groupBox4.Controls.Add(this.textRotate);
+			this.groupBox4.Controls.Add(this.label15);
+			this.groupBox4.Location = new System.Drawing.Point(255,12);
+			this.groupBox4.Name = "groupBox4";
+			this.groupBox4.Size = new System.Drawing.Size(207,109);
+			this.groupBox4.TabIndex = 15;
+			this.groupBox4.TabStop = false;
+			this.groupBox4.Text = "Rotate/Tip degrees";
+			// 
+			// butTipBplus
+			// 
+			this.butTipBplus.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butTipBplus.Autosize = true;
+			this.butTipBplus.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butTipBplus.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butTipBplus.Font = new System.Drawing.Font("Microsoft Sans Serif",12F,System.Drawing.FontStyle.Bold,System.Drawing.GraphicsUnit.Point,((byte)(0)));
+			this.butTipBplus.Location = new System.Drawing.Point(159,76);
+			this.butTipBplus.Name = "butTipBplus";
+			this.butTipBplus.Size = new System.Drawing.Size(31,23);
+			this.butTipBplus.TabIndex = 34;
+			this.butTipBplus.Text = "+";
+			this.butTipBplus.Click += new System.EventHandler(this.butTipBplus_Click);
+			// 
+			// butTipBminus
+			// 
+			this.butTipBminus.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butTipBminus.Autosize = true;
+			this.butTipBminus.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butTipBminus.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butTipBminus.Font = new System.Drawing.Font("Microsoft Sans Serif",15F,System.Drawing.FontStyle.Bold,System.Drawing.GraphicsUnit.Point,((byte)(0)));
+			this.butTipBminus.Location = new System.Drawing.Point(122,76);
+			this.butTipBminus.Name = "butTipBminus";
+			this.butTipBminus.Size = new System.Drawing.Size(31,23);
+			this.butTipBminus.TabIndex = 35;
+			this.butTipBminus.Text = "-";
+			this.butTipBminus.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+			this.butTipBminus.Click += new System.EventHandler(this.butTipBminus_Click);
+			// 
+			// butTipMplus
+			// 
+			this.butTipMplus.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butTipMplus.Autosize = true;
+			this.butTipMplus.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butTipMplus.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butTipMplus.Font = new System.Drawing.Font("Microsoft Sans Serif",12F,System.Drawing.FontStyle.Bold,System.Drawing.GraphicsUnit.Point,((byte)(0)));
+			this.butTipMplus.Location = new System.Drawing.Point(159,47);
+			this.butTipMplus.Name = "butTipMplus";
+			this.butTipMplus.Size = new System.Drawing.Size(31,23);
+			this.butTipMplus.TabIndex = 32;
+			this.butTipMplus.Text = "+";
+			this.butTipMplus.Click += new System.EventHandler(this.butTipMplus_Click);
+			// 
+			// butTipMminus
+			// 
+			this.butTipMminus.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butTipMminus.Autosize = true;
+			this.butTipMminus.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butTipMminus.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butTipMminus.Font = new System.Drawing.Font("Microsoft Sans Serif",15F,System.Drawing.FontStyle.Bold,System.Drawing.GraphicsUnit.Point,((byte)(0)));
+			this.butTipMminus.Location = new System.Drawing.Point(122,47);
+			this.butTipMminus.Name = "butTipMminus";
+			this.butTipMminus.Size = new System.Drawing.Size(31,23);
+			this.butTipMminus.TabIndex = 33;
+			this.butTipMminus.Text = "-";
+			this.butTipMminus.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+			this.butTipMminus.Click += new System.EventHandler(this.butTipMminus_Click);
+			// 
+			// butRotatePlus
+			// 
+			this.butRotatePlus.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butRotatePlus.Autosize = true;
+			this.butRotatePlus.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butRotatePlus.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butRotatePlus.Font = new System.Drawing.Font("Microsoft Sans Serif",12F,System.Drawing.FontStyle.Bold,System.Drawing.GraphicsUnit.Point,((byte)(0)));
+			this.butRotatePlus.Location = new System.Drawing.Point(159,18);
+			this.butRotatePlus.Name = "butRotatePlus";
+			this.butRotatePlus.Size = new System.Drawing.Size(31,23);
+			this.butRotatePlus.TabIndex = 30;
+			this.butRotatePlus.Text = "+";
+			this.butRotatePlus.Click += new System.EventHandler(this.butRotatePlus_Click);
+			// 
+			// butRotateMinus
+			// 
+			this.butRotateMinus.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butRotateMinus.Autosize = true;
+			this.butRotateMinus.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butRotateMinus.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butRotateMinus.Font = new System.Drawing.Font("Microsoft Sans Serif",15F,System.Drawing.FontStyle.Bold,System.Drawing.GraphicsUnit.Point,((byte)(0)));
+			this.butRotateMinus.Location = new System.Drawing.Point(122,18);
+			this.butRotateMinus.Name = "butRotateMinus";
+			this.butRotateMinus.Size = new System.Drawing.Size(31,23);
+			this.butRotateMinus.TabIndex = 31;
+			this.butRotateMinus.Text = "-";
+			this.butRotateMinus.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+			this.butRotateMinus.Click += new System.EventHandler(this.butRotateMinus_Click);
+			// 
+			// textTipB
+			// 
+			this.textTipB.Location = new System.Drawing.Point(72,77);
+			this.textTipB.Name = "textTipB";
+			this.textTipB.Size = new System.Drawing.Size(38,20);
+			this.textTipB.TabIndex = 29;
+			// 
+			// label11
+			// 
+			this.label11.Location = new System.Drawing.Point(3,77);
+			this.label11.Name = "label11";
+			this.label11.Size = new System.Drawing.Size(68,18);
+			this.label11.TabIndex = 28;
+			this.label11.Text = "Labial Tip";
+			this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// textTipM
+			// 
+			this.textTipM.Location = new System.Drawing.Point(72,49);
+			this.textTipM.Name = "textTipM";
+			this.textTipM.Size = new System.Drawing.Size(38,20);
+			this.textTipM.TabIndex = 25;
+			// 
+			// label12
+			// 
+			this.label12.Location = new System.Drawing.Point(3,49);
+			this.label12.Name = "label12";
+			this.label12.Size = new System.Drawing.Size(68,18);
+			this.label12.TabIndex = 24;
+			this.label12.Text = "Mesial Tip";
+			this.label12.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// textRotate
+			// 
+			this.textRotate.Location = new System.Drawing.Point(72,20);
+			this.textRotate.Name = "textRotate";
+			this.textRotate.Size = new System.Drawing.Size(38,20);
+			this.textRotate.TabIndex = 21;
+			// 
+			// label15
+			// 
+			this.label15.Location = new System.Drawing.Point(3,20);
+			this.label15.Name = "label15";
+			this.label15.Size = new System.Drawing.Size(68,18);
+			this.label15.TabIndex = 20;
+			this.label15.Text = "Rotate";
+			this.label15.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// groupBox3
+			// 
+			this.groupBox3.Controls.Add(this.butShiftBplus);
+			this.groupBox3.Controls.Add(this.butShiftBminus);
+			this.groupBox3.Controls.Add(this.butShiftOplus);
+			this.groupBox3.Controls.Add(this.butShiftOminus);
+			this.groupBox3.Controls.Add(this.butShiftMplus);
+			this.groupBox3.Controls.Add(this.butShiftMminus);
+			this.groupBox3.Controls.Add(this.textShiftB);
+			this.groupBox3.Controls.Add(this.label10);
+			this.groupBox3.Controls.Add(this.textShiftO);
+			this.groupBox3.Controls.Add(this.label9);
+			this.groupBox3.Controls.Add(this.textShiftM);
+			this.groupBox3.Controls.Add(this.label8);
+			this.groupBox3.Location = new System.Drawing.Point(20,12);
+			this.groupBox3.Name = "groupBox3";
+			this.groupBox3.Size = new System.Drawing.Size(207,109);
+			this.groupBox3.TabIndex = 0;
+			this.groupBox3.TabStop = false;
+			this.groupBox3.Text = "Shift millimeters";
+			// 
+			// butShiftBplus
+			// 
+			this.butShiftBplus.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butShiftBplus.Autosize = true;
+			this.butShiftBplus.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butShiftBplus.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butShiftBplus.Font = new System.Drawing.Font("Microsoft Sans Serif",12F,System.Drawing.FontStyle.Bold,System.Drawing.GraphicsUnit.Point,((byte)(0)));
+			this.butShiftBplus.Location = new System.Drawing.Point(158,76);
+			this.butShiftBplus.Name = "butShiftBplus";
+			this.butShiftBplus.Size = new System.Drawing.Size(31,23);
+			this.butShiftBplus.TabIndex = 40;
+			this.butShiftBplus.Text = "+";
+			this.butShiftBplus.Click += new System.EventHandler(this.butShiftBplus_Click);
+			// 
+			// butShiftBminus
+			// 
+			this.butShiftBminus.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butShiftBminus.Autosize = true;
+			this.butShiftBminus.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butShiftBminus.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butShiftBminus.Font = new System.Drawing.Font("Microsoft Sans Serif",15F,System.Drawing.FontStyle.Bold,System.Drawing.GraphicsUnit.Point,((byte)(0)));
+			this.butShiftBminus.Location = new System.Drawing.Point(121,76);
+			this.butShiftBminus.Name = "butShiftBminus";
+			this.butShiftBminus.Size = new System.Drawing.Size(31,23);
+			this.butShiftBminus.TabIndex = 41;
+			this.butShiftBminus.Text = "-";
+			this.butShiftBminus.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+			this.butShiftBminus.Click += new System.EventHandler(this.butShiftBminus_Click);
+			// 
+			// butShiftOplus
+			// 
+			this.butShiftOplus.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butShiftOplus.Autosize = true;
+			this.butShiftOplus.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butShiftOplus.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butShiftOplus.Font = new System.Drawing.Font("Microsoft Sans Serif",12F,System.Drawing.FontStyle.Bold,System.Drawing.GraphicsUnit.Point,((byte)(0)));
+			this.butShiftOplus.Location = new System.Drawing.Point(158,47);
+			this.butShiftOplus.Name = "butShiftOplus";
+			this.butShiftOplus.Size = new System.Drawing.Size(31,23);
+			this.butShiftOplus.TabIndex = 38;
+			this.butShiftOplus.Text = "+";
+			this.butShiftOplus.Click += new System.EventHandler(this.butShiftOplus_Click);
+			// 
+			// butShiftOminus
+			// 
+			this.butShiftOminus.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butShiftOminus.Autosize = true;
+			this.butShiftOminus.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butShiftOminus.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butShiftOminus.Font = new System.Drawing.Font("Microsoft Sans Serif",15F,System.Drawing.FontStyle.Bold,System.Drawing.GraphicsUnit.Point,((byte)(0)));
+			this.butShiftOminus.Location = new System.Drawing.Point(121,47);
+			this.butShiftOminus.Name = "butShiftOminus";
+			this.butShiftOminus.Size = new System.Drawing.Size(31,23);
+			this.butShiftOminus.TabIndex = 39;
+			this.butShiftOminus.Text = "-";
+			this.butShiftOminus.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+			this.butShiftOminus.Click += new System.EventHandler(this.butShiftOminus_Click);
+			// 
+			// butShiftMplus
+			// 
+			this.butShiftMplus.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butShiftMplus.Autosize = true;
+			this.butShiftMplus.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butShiftMplus.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butShiftMplus.Font = new System.Drawing.Font("Microsoft Sans Serif",12F,System.Drawing.FontStyle.Bold,System.Drawing.GraphicsUnit.Point,((byte)(0)));
+			this.butShiftMplus.Location = new System.Drawing.Point(158,18);
+			this.butShiftMplus.Name = "butShiftMplus";
+			this.butShiftMplus.Size = new System.Drawing.Size(31,23);
+			this.butShiftMplus.TabIndex = 36;
+			this.butShiftMplus.Text = "+";
+			this.butShiftMplus.Click += new System.EventHandler(this.butShiftMplus_Click);
+			// 
+			// butShiftMminus
+			// 
+			this.butShiftMminus.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butShiftMminus.Autosize = true;
+			this.butShiftMminus.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butShiftMminus.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butShiftMminus.Font = new System.Drawing.Font("Microsoft Sans Serif",15F,System.Drawing.FontStyle.Bold,System.Drawing.GraphicsUnit.Point,((byte)(0)));
+			this.butShiftMminus.Location = new System.Drawing.Point(121,18);
+			this.butShiftMminus.Name = "butShiftMminus";
+			this.butShiftMminus.Size = new System.Drawing.Size(31,23);
+			this.butShiftMminus.TabIndex = 37;
+			this.butShiftMminus.Text = "-";
+			this.butShiftMminus.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+			this.butShiftMminus.Click += new System.EventHandler(this.butShiftMminus_Click);
+			// 
+			// textShiftB
+			// 
+			this.textShiftB.Location = new System.Drawing.Point(72,77);
+			this.textShiftB.Name = "textShiftB";
+			this.textShiftB.Size = new System.Drawing.Size(38,20);
+			this.textShiftB.TabIndex = 29;
+			// 
+			// label10
+			// 
+			this.label10.Location = new System.Drawing.Point(3,77);
+			this.label10.Name = "label10";
+			this.label10.Size = new System.Drawing.Size(68,18);
+			this.label10.TabIndex = 28;
+			this.label10.Text = "Labial";
+			this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// textShiftO
+			// 
+			this.textShiftO.Location = new System.Drawing.Point(72,49);
+			this.textShiftO.Name = "textShiftO";
+			this.textShiftO.Size = new System.Drawing.Size(38,20);
+			this.textShiftO.TabIndex = 25;
+			// 
+			// label9
+			// 
+			this.label9.Location = new System.Drawing.Point(3,49);
+			this.label9.Name = "label9";
+			this.label9.Size = new System.Drawing.Size(68,18);
+			this.label9.TabIndex = 24;
+			this.label9.Text = "Occlusal";
+			this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// textShiftM
+			// 
+			this.textShiftM.Location = new System.Drawing.Point(72,20);
+			this.textShiftM.Name = "textShiftM";
+			this.textShiftM.Size = new System.Drawing.Size(38,20);
+			this.textShiftM.TabIndex = 21;
+			// 
+			// label8
+			// 
+			this.label8.Location = new System.Drawing.Point(3,20);
+			this.label8.Name = "label8";
+			this.label8.Size = new System.Drawing.Size(68,18);
+			this.label8.TabIndex = 20;
+			this.label8.Text = "Mesial";
+			this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// tabPrimary
+			// 
+			this.tabPrimary.Controls.Add(this.groupBox5);
+			this.tabPrimary.Controls.Add(this.butMixed);
+			this.tabPrimary.Controls.Add(this.butAllPrimary);
+			this.tabPrimary.Controls.Add(this.butAllPerm);
+			this.tabPrimary.Location = new System.Drawing.Point(4,22);
+			this.tabPrimary.Name = "tabPrimary";
+			this.tabPrimary.Size = new System.Drawing.Size(489,235);
+			this.tabPrimary.TabIndex = 2;
+			this.tabPrimary.Text = "Primary";
+			this.tabPrimary.UseVisualStyleBackColor = true;
+			// 
+			// groupBox5
+			// 
+			this.groupBox5.Controls.Add(this.butPerm);
+			this.groupBox5.Controls.Add(this.butPrimary);
+			this.groupBox5.Location = new System.Drawing.Point(20,12);
+			this.groupBox5.Name = "groupBox5";
+			this.groupBox5.Size = new System.Drawing.Size(153,90);
+			this.groupBox5.TabIndex = 21;
+			this.groupBox5.TabStop = false;
+			this.groupBox5.Text = "Set Selected Teeth";
+			// 
+			// butPerm
+			// 
+			this.butPerm.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butPerm.Autosize = true;
+			this.butPerm.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butPerm.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butPerm.Location = new System.Drawing.Point(11,53);
+			this.butPerm.Name = "butPerm";
+			this.butPerm.Size = new System.Drawing.Size(82,23);
+			this.butPerm.TabIndex = 15;
+			this.butPerm.Text = "Permanent";
+			this.butPerm.Click += new System.EventHandler(this.butPerm_Click);
+			// 
+			// butPrimary
+			// 
+			this.butPrimary.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butPrimary.Autosize = true;
+			this.butPrimary.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butPrimary.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butPrimary.Location = new System.Drawing.Point(11,21);
+			this.butPrimary.Name = "butPrimary";
+			this.butPrimary.Size = new System.Drawing.Size(82,23);
+			this.butPrimary.TabIndex = 14;
+			this.butPrimary.Text = "Primary";
+			this.butPrimary.Click += new System.EventHandler(this.butPrimary_Click);
+			// 
+			// butMixed
+			// 
+			this.butMixed.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butMixed.Autosize = true;
+			this.butMixed.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butMixed.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butMixed.Location = new System.Drawing.Point(334,33);
+			this.butMixed.Name = "butMixed";
+			this.butMixed.Size = new System.Drawing.Size(107,23);
+			this.butMixed.TabIndex = 20;
+			this.butMixed.Text = "Set Mixed Dentition";
+			this.butMixed.Click += new System.EventHandler(this.butMixed_Click);
+			// 
+			// butAllPrimary
+			// 
+			this.butAllPrimary.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butAllPrimary.Autosize = true;
+			this.butAllPrimary.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAllPrimary.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butAllPrimary.Location = new System.Drawing.Point(201,33);
+			this.butAllPrimary.Name = "butAllPrimary";
+			this.butAllPrimary.Size = new System.Drawing.Size(107,23);
+			this.butAllPrimary.TabIndex = 19;
+			this.butAllPrimary.Text = "Set All Primary";
+			this.butAllPrimary.Click += new System.EventHandler(this.butAllPrimary_Click);
+			// 
+			// butAllPerm
+			// 
+			this.butAllPerm.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butAllPerm.Autosize = true;
+			this.butAllPerm.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAllPerm.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butAllPerm.Location = new System.Drawing.Point(201,65);
+			this.butAllPerm.Name = "butAllPerm";
+			this.butAllPerm.Size = new System.Drawing.Size(107,23);
+			this.butAllPerm.TabIndex = 18;
+			this.butAllPerm.Text = "Set All Permament";
+			this.butAllPerm.Click += new System.EventHandler(this.butAllPerm_Click);
+			// 
+			// toothChart
+			// 
+			this.toothChart.AccumBits = ((byte)(0));
+			this.toothChart.AutoCheckErrors = false;
+			this.toothChart.AutoFinish = false;
+			this.toothChart.AutoMakeCurrent = true;
+			this.toothChart.AutoSwapBuffers = true;
+			this.toothChart.BackColor = System.Drawing.Color.Black;
+			this.toothChart.ColorBits = ((byte)(32));
+			this.toothChart.DepthBits = ((byte)(16));
+			this.toothChart.Location = new System.Drawing.Point(0,146);
+			this.toothChart.Name = "toothChart";
+			this.toothChart.Size = new System.Drawing.Size(410,307);
+			this.toothChart.StencilBits = ((byte)(0));
+			this.toothChart.TabIndex = 188;
+			this.toothChart.UseInternational = false;
+			this.toothChart.Click += new System.EventHandler(this.toothChart_Click);
+			// 
+			// gridProg
+			// 
+			this.gridProg.HScrollVisible = true;
+			this.gridProg.Location = new System.Drawing.Point(415,295);
+			this.gridProg.Name = "gridProg";
+			this.gridProg.ScrollValue = 0;
+			this.gridProg.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+			this.gridProg.Size = new System.Drawing.Size(524,227);
+			this.gridProg.TabIndex = 192;
+			this.gridProg.Title = "Progress Notes";
+			this.gridProg.TranslationName = "TableProg";
+			this.gridProg.CellDoubleClick += new OpenDental.UI.ODGridClickEventHandler(this.gridProg_CellDoubleClick);
+			this.gridProg.MouseUp += new System.Windows.Forms.MouseEventHandler(this.gridProg_MouseUp);
+			this.gridProg.KeyDown += new System.Windows.Forms.KeyEventHandler(this.gridProg_KeyDown);
+			// 
+			// butBig
+			// 
+			this.butBig.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butBig.Autosize = true;
+			this.butBig.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butBig.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butBig.Location = new System.Drawing.Point(375,146);
+			this.butBig.Name = "butBig";
+			this.butBig.Size = new System.Drawing.Size(35,23);
+			this.butBig.TabIndex = 191;
+			this.butBig.Text = "Big";
+			this.butBig.Click += new System.EventHandler(this.butBig_Click);
 			// 
 			// ToolBarMain
 			// 
@@ -1196,16 +1652,6 @@ namespace OpenDental{
 			this.ToolBarMain.Size = new System.Drawing.Size(939,29);
 			this.ToolBarMain.TabIndex = 177;
 			this.ToolBarMain.ButtonClick += new OpenDental.UI.ODToolBarButtonClickEventHandler(this.ToolBarMain_ButtonClick);
-			// 
-			// cTeeth
-			// 
-			this.cTeeth.BackColor = System.Drawing.Color.White;
-			this.cTeeth.Location = new System.Drawing.Point(0,146);
-			this.cTeeth.Name = "cTeeth";
-			this.cTeeth.Size = new System.Drawing.Size(410,259);
-			this.cTeeth.TabIndex = 171;
-			this.cTeeth.Zoom = 0.15F;
-			this.cTeeth.Click += new System.EventHandler(this.cTeeth_Click);
 			// 
 			// button1
 			// 
@@ -1224,48 +1670,65 @@ namespace OpenDental{
 			// textTreatmentNotes
 			// 
 			this.textTreatmentNotes.AcceptsReturn = true;
-			this.textTreatmentNotes.Location = new System.Drawing.Point(0,425);
+			this.textTreatmentNotes.Location = new System.Drawing.Point(0,456);
 			this.textTreatmentNotes.Multiline = true;
 			this.textTreatmentNotes.Name = "textTreatmentNotes";
 			this.textTreatmentNotes.QuickPasteType = OpenDental.QuickPasteType.ChartTreatment;
 			this.textTreatmentNotes.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textTreatmentNotes.Size = new System.Drawing.Size(411,102);
+			this.textTreatmentNotes.Size = new System.Drawing.Size(411,71);
 			this.textTreatmentNotes.TabIndex = 187;
 			this.textTreatmentNotes.Leave += new System.EventHandler(this.textTreatmentNotes_Leave);
 			this.textTreatmentNotes.TextChanged += new System.EventHandler(this.textTreatmentNotes_TextChanged);
 			// 
+			// gridPtInfo
+			// 
+			this.gridPtInfo.HScrollVisible = false;
+			this.gridPtInfo.Location = new System.Drawing.Point(0,528);
+			this.gridPtInfo.Name = "gridPtInfo";
+			this.gridPtInfo.ScrollValue = 0;
+			this.gridPtInfo.SelectionMode = System.Windows.Forms.SelectionMode.None;
+			this.gridPtInfo.Size = new System.Drawing.Size(411,212);
+			this.gridPtInfo.TabIndex = 193;
+			this.gridPtInfo.Title = "Patient Info";
+			this.gridPtInfo.TranslationName = "TableChartPtInfo";
+			this.gridPtInfo.CellDoubleClick += new OpenDental.UI.ODGridClickEventHandler(this.gridPtInfo_CellDoubleClick);
+			// 
 			// ContrChart
 			// 
-			this.Controls.Add(this.panelEnterTx);
+			this.Controls.Add(this.gridProg);
+			this.Controls.Add(this.butBig);
+			this.Controls.Add(this.tabProc);
+			this.Controls.Add(this.toothChart);
 			this.Controls.Add(this.panelImages);
 			this.Controls.Add(this.tabControlImages);
-			this.Controls.Add(this.tbProg);
-			this.Controls.Add(this.panelABCins);
-			this.Controls.Add(this.labelNewProcHint);
 			this.Controls.Add(this.ToolBarMain);
-			this.Controls.Add(this.cTeeth);
-			this.Controls.Add(this.panelMedical);
 			this.Controls.Add(this.groupPlanned);
-			this.Controls.Add(this.butEnterTx);
 			this.Controls.Add(this.groupShow);
 			this.Controls.Add(this.button1);
 			this.Controls.Add(this.textTreatmentNotes);
 			this.Controls.Add(this.label4);
+			this.Controls.Add(this.gridPtInfo);
 			this.Name = "ContrChart";
-			this.Size = new System.Drawing.Size(939,708);
+			this.Size = new System.Drawing.Size(939,755);
 			this.Layout += new System.Windows.Forms.LayoutEventHandler(this.ContrChart_Layout);
 			this.Resize += new System.EventHandler(this.ContrChart_Resize);
 			this.groupBox2.ResumeLayout(false);
-			this.panelMedical.ResumeLayout(false);
-			this.panelMedical.PerformLayout();
 			this.groupPlanned.ResumeLayout(false);
-			this.panelEnterTx.ResumeLayout(false);
-			this.panelEnterTx.PerformLayout();
 			this.groupShow.ResumeLayout(false);
-			this.panelABCins.ResumeLayout(false);
-			this.panelABCins.PerformLayout();
 			this.tabControlImages.ResumeLayout(false);
 			this.panelImages.ResumeLayout(false);
+			this.tabProc.ResumeLayout(false);
+			this.tabEnterTx.ResumeLayout(false);
+			this.tabEnterTx.PerformLayout();
+			this.tabMissing.ResumeLayout(false);
+			this.groupBox1.ResumeLayout(false);
+			this.tabMovements.ResumeLayout(false);
+			this.groupBox4.ResumeLayout(false);
+			this.groupBox4.PerformLayout();
+			this.groupBox3.ResumeLayout(false);
+			this.groupBox3.PerformLayout();
+			this.tabPrimary.ResumeLayout(false);
+			this.groupBox5.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -1283,15 +1746,33 @@ namespace OpenDental{
     }
 
 		private void ContrChart_Layout(object sender, System.Windows.Forms.LayoutEventArgs e){
-			tbProg.Height=ClientSize.Height-tabControlImages.Height-tbProg.Location.Y+1;
+			gridProg.Height=ClientSize.Height-tabControlImages.Height-gridProg.Location.Y+1;
 			if(panelImages.Visible){
-				tbProg.Height-=(panelImages.Height+2);
+				gridProg.Height-=(panelImages.Height+2);
 			}
 		}
 
-		private void ContrChart_Resize(object sender, System.EventArgs e) {
-			tbProg.LayoutTables();
+		private void ContrChart_Resize(object sender,EventArgs e) {
+			if(gridProg.Columns !=null && gridProg.Columns.Count>0){
+				int gridW=0;
+				for(int i=0;i<gridProg.Columns.Count;i++){
+					gridW+=gridProg.Columns[i].ColWidth;
+				}
+				if(gridProg.Location.X+gridW+20 < ClientSize.Width){//if space is big enough to allow full width
+					gridProg.Width=gridW+20;
+				}
+				else{
+					if(ClientSize.Width>gridProg.Location.X){//prevents an error
+						gridProg.Width=ClientSize.Width-gridProg.Location.X-1;
+					}
+				}
+			}
+			gridPtInfo.Height=tabControlImages.Top-gridPtInfo.Top;
 		}
+
+		//private void ContrChart_Resize(object sender, System.EventArgs e) {
+		//	tbProg.LayoutTables();
+		//}
 
 		///<summary></summary>
 		public void InstantClasses(){
@@ -1302,13 +1783,10 @@ namespace OpenDental{
 			ApptPlanned.Visible=false;
 			groupPlanned.Controls.Add(ApptPlanned);
 			ApptPlanned.DoubleClick += new System.EventHandler(ApptPlanned_DoubleClick);
-			panelEnterTx.Visible=false;
-			butEnterTx.ImageIndex=1;//down arrow
-			tbProg.Location=panelEnterTx.Location;
-			//MessageBox.Show((panelEnterTx.Location.X+5).ToString());
-			cTeeth.SetWidth(421);//if I had time, I would perfect this
-			cTeeth.CreateBackShadow(true);
-			tbProg.Height=this.ClientSize.Height-tbProg.Location.Y-2;
+			tabProc.SelectedIndex=0;
+			tabProc.Height=253;
+			gridProg.Location=new Point(tabProc.Left,tabProc.Bottom+2);
+			gridProg.Height=this.ClientSize.Height-gridProg.Location.Y-2;
 			//can't use Lan.F
 			Lan.C(this,new Control[]
 				{
@@ -1322,16 +1800,13 @@ namespace OpenDental{
 				checkShowR,
 				checkRx,
 				checkNotes,
-				butEnterTx,
-				labelNewProcHint,
 				labelDx,
 				butM,
-				butO,
+				butOI,
 				butD,
 				butL,
-				butB,
-				butI,
-				butF,
+				butBF,
+				butV,
 				groupBox2,
 				radioEntryTP,
 				radioEntryC,
@@ -1346,19 +1821,15 @@ namespace OpenDental{
 				//textADACode is handled in ClearButtons()
 				butOK,
 				label13,
-				label4,
-				label2,
-				label1,
-				label3,
-				butMedicalService
-				});
-			Lan.C(this,menuPrimary.MenuItems[0]);
-			Lan.C(this,menuPrimary.MenuItems[1]);
-			Lan.C(this,menuPrimary.MenuItems[2]);
+				label4
+			});
+			//Lan.C(this,menuPrimary.MenuItems[0]);
+			//Lan.C(this,menuPrimary.MenuItems[1]);
+			//Lan.C(this,menuPrimary.MenuItems[2]);
 			LayoutToolBar();
 		}
 
-		///<summary>Causes the toolbar to be laid out again.</summary>
+		///<summary>Causes the toolbars to be laid out again.</summary>
 		public void LayoutToolBar(){
 			ToolBarMain.Buttons.Clear();
 			ODToolBarButton button;
@@ -1369,12 +1840,12 @@ namespace OpenDental{
 			ToolBarMain.Buttons.Add(new ODToolBarButton(ODToolBarButtonStyle.Separator));
 			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"New Rx"),1,"","Rx"));
 			ToolBarMain.Buttons.Add(new ODToolBarButton(ODToolBarButtonStyle.Separator));
-			button=new ODToolBarButton(Lan.g(this,"Primary"),-1
-				,Lan.g(this,"Change the Primary/Permanent status of teeth"),"Primary");
-			button.Style=ODToolBarButtonStyle.DropDownButton;
-			button.DropDownMenu=menuPrimary;
-			ToolBarMain.Buttons.Add(button);
-			ToolBarMain.Buttons.Add(new ODToolBarButton(ODToolBarButtonStyle.Separator));
+			//button=new ODToolBarButton(Lan.g(this,"Primary"),-1
+			//	,Lan.g(this,"Change the Primary/Permanent status of teeth"),"Primary");
+			//button.Style=ODToolBarButtonStyle.DropDownButton;
+			//button.DropDownMenu=menuPrimary;
+			//ToolBarMain.Buttons.Add(button);
+			//ToolBarMain.Buttons.Add(new ODToolBarButton(ODToolBarButtonStyle.Separator));
 			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Perio Chart"),2,"","Perio"));
 			ArrayList toolButItems=ToolButItems.GetForToolBar(ToolBarsAvail.ChartModule);
 			for(int i=0;i<toolButItems.Count;i++){
@@ -1383,6 +1854,13 @@ namespace OpenDental{
 					,-1,"",((ToolButItem)toolButItems[i]).ProgramNum));
 			}
 			ToolBarMain.Invalidate();
+			/*toolBarProcs.Buttons.Clear();
+			button=new ODToolBarButton(Lan.g(this,"EnterTx"),-1,"","EnterTx");
+			button.Style=ODToolBarButtonStyle.ToggleButton;
+			toolBarProcs.Buttons.Add(button);
+			button=new ODToolBarButton(Lan.g(this,"Initial"),-1,"","Initial");
+			button.Style=ODToolBarButtonStyle.ToggleButton;
+			toolBarProcs.Buttons.Add(button);*/
 		}
 
 		///<summary></summary>
@@ -1408,7 +1886,7 @@ namespace OpenDental{
 			ProcList=null;
 			//Procedures.HList=null;
 			//Procedures.MissingTeeth=null;
-			RxPats.List=null;
+			//RxPats.List=null;
 			//RefAttaches.List=null;
 		}
 
@@ -1432,6 +1910,7 @@ namespace OpenDental{
 			DocumentList=Documents.Refresh(DocAttaches.List);
 			//Procs get refreshed in FillProgNotes
 			ApptList=Appointments.GetForPat(patNum);
+			ToothInitialList=ToothInitials.Refresh(patNum);
 		}
 
 		private void GetImageFolder(){
@@ -1484,34 +1963,35 @@ namespace OpenDental{
 			ParentForm.Text=Patients.GetMainTitle(PatCur);
 			if(PatCur!=null){
 				groupShow.Enabled=true;
-				panelMedical.Enabled=true;
+				gridPtInfo.Enabled=true;
 				groupPlanned.Enabled=true;
-				cTeeth.Enabled=true;
-				tbProg.Enabled=true;
+				toothChart.Enabled=true;
+				gridProg.Enabled=true;
+				butBig.Enabled=true;
 				ToolBarMain.Buttons["Rx"].Enabled=true;
-				ToolBarMain.Buttons["Primary"].Enabled=true;
 				ToolBarMain.Buttons["Perio"].Enabled=true;
-				panelEnterTx.Enabled=true;//?
+				tabProc.Enabled=true;
 			}
 			else{
 				groupShow.Enabled=false;
-				panelMedical.Enabled=false;
+				gridPtInfo.Enabled=false;
 				groupPlanned.Enabled=false;
-				cTeeth.Enabled=false;
-				tbProg.Enabled=false;
+				toothChart.Enabled=false;
+				gridProg.Enabled=false;
+				butBig.Enabled=false;
 				ToolBarMain.Buttons["Rx"].Enabled=false;
-				ToolBarMain.Buttons["Primary"].Enabled=false;
 				ToolBarMain.Buttons["Perio"].Enabled=false;
-				panelEnterTx.Enabled=false;//?
+				tabProc.Enabled=false;
 			}
 			FillPatientButton();
 			ToolBarMain.Invalidate();
 			ClearButtons();
 			FillProgNotes();
 			FillPlanned();
-			FillMedical();
+			FillPtInfo();
       FillDxProcImage();
 			FillImages();
+			
 		}
 
 		private void FillPatientButton(){
@@ -1526,38 +2006,35 @@ namespace OpenDental{
 
 		private void EasyHideClinicalData(){
 			if(((Pref)Prefs.HList["EasyHideClinical"]).ValueString=="1"){
-				panelMedical.Visible=false;
+				gridPtInfo.Visible=false;
 				checkShowE.Visible=false;
 				checkShowR.Visible=false;
 				checkRx.Visible=false;
+				checkComm.Visible=false;
 				checkNotes.Visible=false;
 				butShowNone.Visible=false;
 				butShowAll.Visible=false;
-				butEnterTx.Visible=false;
-				panelEnterTx.Visible=false;//next line changes it, though
-				OnClickEnterTx();
+				//panelEnterTx.Visible=false;//next line changes it, though
 				radioEntryEC.Visible=false;
 				radioEntryEO.Visible=false;
 				radioEntryR.Visible=false;
 				labelDx.Visible=false;
 				listDx.Visible=false;
-				labelNewProcHint.Visible=true;
 			}
 			else{
-				panelMedical.Visible=true;
+				gridPtInfo.Visible=true;
 				checkShowE.Visible=true;
 				checkShowR.Visible=true;
 				checkRx.Visible=true;
+				checkComm.Visible=true;
 				checkNotes.Visible=true;
 				butShowNone.Visible=true;
 				butShowAll.Visible=true;
-				butEnterTx.Visible=true;
 				radioEntryEC.Visible=true;
 				radioEntryEO.Visible=true;
 				radioEntryR.Visible=true;
 				labelDx.Visible=true;
 				listDx.Visible=true;
-				labelNewProcHint.Visible=false;
 			}
 		}
 
@@ -1669,71 +2146,141 @@ namespace OpenDental{
 			//ContrApptSingle.ApptIsSelected=false;
 		}
 
-		private void FillMedical(){
-			panelMedical.BackColor=Defs.Long[(int)DefCat.MiscColors][3].ItemColor;
+		private void FillPtInfo(){
+			gridPtInfo.Height=tabControlImages.Top-gridPtInfo.Top;
+			textTreatmentNotes.Text="";
+			if(PatCur!=null){
+				textTreatmentNotes.Text=PatientNotes.Cur.Treatment;
+				textTreatmentNotes.Enabled=true;
+				textTreatmentNotes.Select(textTreatmentNotes.Text.Length+2,1);
+				textTreatmentNotes.ScrollToCaret();
+				TreatmentNoteChanged=false;
+			}
+			gridPtInfo.BeginUpdate();
+			gridPtInfo.Columns.Clear();
+			ODGridColumn col=new ODGridColumn("",100);//Lan.g("TableChartPtInfo",""),);
+			gridPtInfo.Columns.Add(col);
+			col=new ODGridColumn("",300);
+			gridPtInfo.Columns.Add(col);
+			gridPtInfo.Rows.Clear();
 			if(PatCur==null){
-				textMedUrgNote.Text="";
-				textMedical.Text="";
-				textService.Text="";
-				textTreatmentNotes.Text="";
-				textTreatmentNotes.Enabled=false;
-				panelABCins.Enabled=false;
-				textCreditType.Text="";
-				textBillingType.Text="";
-				textReferral.Text="";
-				textDateFirstVisit.Text="";
-				textIns.Text="";
+				gridPtInfo.EndUpdate();
 				return;
 			}
-			textMedUrgNote.Text=PatCur.MedUrgNote;
-			textMedical.Text=PatientNotes.Cur.Medical;
-			textService.Text=PatientNotes.Cur.Service;
-			textTreatmentNotes.Text=PatientNotes.Cur.Treatment;
-			textTreatmentNotes.Enabled=true;
-			textTreatmentNotes.Select(textTreatmentNotes.Text.Length+2,1);
-			textTreatmentNotes.ScrollToCaret();
-			TreatmentNoteChanged=false;
-			panelABCins.Enabled=true;
-			textCreditType.Text=PatCur.CreditType;
-			textBillingType.Text=Defs.GetName(DefCat.BillingTypes,PatCur.BillingType);
-			textReferral.Text="";
+			ODGridRow row;
+			//Credit type
+			row=new ODGridRow();
+			row.Cells.Add(Lan.g("TableChartPtInfo","ABC0"));
+			row.Cells.Add(PatCur.CreditType);
+			gridPtInfo.Rows.Add(row);
+			//Billing type
+			row=new ODGridRow();
+			row.Cells.Add(Lan.g("TableChartPtInfo","Billing Type"));
+			row.Cells.Add(Defs.GetName(DefCat.BillingTypes,PatCur.BillingType));
+			gridPtInfo.Rows.Add(row);
+			//Referral
 			RefAttach[] RefAttachList=RefAttaches.Refresh(PatCur.PatNum);
-			for(int i=0;i<RefAttachList.Length;i++){
-				if(RefAttachList[i].IsFrom){
-					textReferral.Text=Referrals.GetReferral(RefAttachList[i].ReferralNum).GetName();
+			string referral="";
+			for(int i=0;i<RefAttachList.Length;i++) {
+				if(RefAttachList[i].IsFrom) {
+					referral=Referrals.GetReferral(RefAttachList[i].ReferralNum).GetName();
 					break;
-				}				
+				}
 			}
-			if(textReferral.Text==""){
-				textReferral.Text="referral ??";
+			if(referral=="") {
+				referral="??";
 			}
+			row=new ODGridRow();
+			row.Cells.Add(Lan.g("TableChartPtInfo","Referred From"));
+			row.Cells.Add(referral);
+			gridPtInfo.Rows.Add(row);
+			//Date First Visit
+			row=new ODGridRow();
+			row.Cells.Add(Lan.g("TableChartPtInfo","Date First Visit"));
 			if(PatCur.DateFirstVisit.Year<1880)
-				textDateFirstVisit.Text="date ??";
+				row.Cells.Add("??");
 			else if(PatCur.DateFirstVisit==DateTime.Today)
-				textDateFirstVisit.Text="NEW PAT";
+				row.Cells.Add(Lan.g("TableChartPtInfo","NEW PAT"));
 			else
-				textDateFirstVisit.Text=PatCur.DateFirstVisit.ToShortDateString();
-			textIns.Text="";
-			string name="";
-			if(PatPlanList.Length>0){
+				row.Cells.Add(PatCur.DateFirstVisit.ToShortDateString());
+			gridPtInfo.Rows.Add(row);
+			//PriIns
+			row=new ODGridRow();
+			row.Cells.Add(Lan.g("TableChartPtInfo","Pri Ins"));
+			string name;
+			if(PatPlanList.Length>0) {
 				name=InsPlans.GetCarrierName(PatPlans.GetPlanNum(PatPlanList,1),PlanList);
-				if(name.Length>20)
-					name=name.Substring(0,20)+"...";
-				textIns.Text+=name+" ";
 				if(PatPlanList[0].IsPending)
-					textIns.Text+="(pending) ";
+					name+=Lan.g("TableChartPtInfo"," (pending)");
+				row.Cells.Add(name);
 			}
-			name="";
-			if(PatPlanList.Length>1){
+			else{
+				row.Cells.Add("");
+			}
+			gridPtInfo.Rows.Add(row);
+			//SecIns
+			row=new ODGridRow();
+			row.Cells.Add(Lan.g("TableChartPtInfo","Sec Ins"));
+			if(PatPlanList.Length>1) {
 				name=InsPlans.GetCarrierName(PatPlans.GetPlanNum(PatPlanList,2),PlanList);
-				if(name.Length>20)
-					name=name.Substring(0,20)+"...";
-				textIns.Text+=name+" ";
 				if(PatPlanList[1].IsPending)
-					textIns.Text+="(pending)";
+					name+=Lan.g("TableChartPtInfo"," (pending)");
+				row.Cells.Add(name);
 			}
-			if(textIns.Text=="  ")
-				textIns.Text=Lan.g(this,"No Insurance");
+			else {
+				row.Cells.Add("");
+			}
+			gridPtInfo.Rows.Add(row);
+			//MedUrgNote. Row 6
+			row=new ODGridRow();
+			row.Cells.Add(Lan.g("TableChartPtInfo","Med Urgent"));
+			ODGridCell cell=new ODGridCell();
+			cell.Text=PatCur.MedUrgNote;
+			cell.ColorText=Color.Red;
+			cell.Bold=YN.Yes;
+			row.Cells.Add(cell);
+			row.ColorBackG=Defs.Long[(int)DefCat.MiscColors][3].ItemColor;
+			gridPtInfo.Rows.Add(row);
+			//Medical
+			row=new ODGridRow();
+			row.Cells.Add(Lan.g("TableChartPtInfo","Medical Summary"));
+			row.Cells.Add(PatientNotes.Cur.Medical);
+			row.ColorBackG=Defs.Long[(int)DefCat.MiscColors][3].ItemColor;
+			gridPtInfo.Rows.Add(row);
+			//Service
+			row=new ODGridRow();
+			row.Cells.Add(Lan.g("TableChartPtInfo","Service Notes"));
+			row.Cells.Add(PatientNotes.Cur.Service);
+			row.ColorBackG=Defs.Long[(int)DefCat.MiscColors][3].ItemColor;
+			gridPtInfo.Rows.Add(row);
+			//medications
+			Medications.Refresh();
+			MedicationPats.Refresh(PatCur.PatNum);
+			row=new ODGridRow();
+			row.Cells.Add(Lan.g("TableChartPtInfo","Medications"));
+			if(MedicationPats.List.Length>0) {
+				row.Cells.Add("");
+			}
+			else{
+				row.Cells.Add(Lan.g("TableChartPtInfo","none"));
+			}
+			gridPtInfo.Rows.Add(row);
+			string text;
+			Medication med;
+			for(int i=0;i<MedicationPats.List.Length;i++) {
+				row=new ODGridRow();
+				med=Medications.GetMedication(MedicationPats.List[i].MedicationNum);
+				text=med.MedName;
+				if(med.MedicationNum != med.GenericNum){
+					text+="("+Medications.GetMedication(med.GenericNum).MedName+")";
+				}
+				row.Cells.Add(text);
+				text=MedicationPats.List[i].PatNote
+					+"("+Medications.GetGeneric(MedicationPats.List[i].MedicationNum).Notes+")";
+				row.Cells.Add(text);
+				gridPtInfo.Rows.Add(row);
+			}
+			gridPtInfo.EndUpdate();
 		}
 
 		private void textTreatmentNotes_TextChanged(object sender, System.EventArgs e) {
@@ -1751,53 +2298,35 @@ namespace OpenDental{
 			}
 		}
 
-		private void FillProgNotes(){
-			//remember which teeth were selected
-			ArrayList selectedTeeth=new ArrayList();//integers 1-32
-			for(int i=0;i<cTeeth.SelectedTeeth.Length;i++){
-				selectedTeeth.Add(Tooth.ToInt(cTeeth.SelectedTeeth[i]));
-			}
-			cTeeth.ClearProcs();
+		private void ComputeProcAL(){
+			ProcAL = new ArrayList();//this AL is also used when user clicks on a row
 			if(PatCur==null){
-				tbProg.ResetRows(0);
-				tbProg.LayoutTables();
-				cTeeth.DrawShadow();
 				return;
 			}
-			if(checkShowTeeth.Checked){
-				for(int i=0;i<selectedTeeth.Count;i++){
-					cTeeth.SetSelected((int)selectedTeeth[i],true);
-				}
-			}
-			tbProg.SelectedRows=new int[0];
-			ProcList=Procedures.Refresh(PatCur.PatNum);
-			RxPats.Refresh(PatCur.PatNum);
-			ProcAL = new ArrayList();
-			RxAL = new ArrayList();
 			bool showProc;
-			//step through all procedures for patient and move selected ones to
-			//ProcAL and RxAL arrays as intermediate, each ordered by date.
-			//Pull from both into ProgLineAL array for display,
-			//and draw teeth graphics by sending Procedure array directly to cTeeth.
-			//Every ProgLineAL entry contains type and index to access original array.
-			for(int i=0;i<ProcList.Length;i++){
-				//always show missing teeth if C,EC,or EO
-				if(ProcedureCodes.GetProcCode(ProcList[i].ADACode).RemoveTooth
+			ArrayList selectedTeeth=new ArrayList();//integers 1-32
+			for(int i=0;i<toothChart.SelectedTeeth.Length;i++) {
+				selectedTeeth.Add(Tooth.ToInt(toothChart.SelectedTeeth[i]));
+			}
+			ProcList=Procedures.Refresh(PatCur.PatNum);
+			for(int i=0;i<ProcList.Length;i++) {
+				//always show missing teeth if C,EC,or EO... Not anymore.  Missing teeth handled by different table now.
+				/*if(ProcedureCodes.GetProcCode(ProcList[i].ADACode).RemoveTooth
 					&& (ProcList[i].ProcStatus==ProcStat.C || ProcList[i].ProcStatus==ProcStat.EC || ProcList[i].ProcStatus==ProcStat.EO)
-					){
+					) {
 					ProcAL.Add(ProcList[i]);
 					continue;
-				}
+				}*/
 				//if showing only selected teeth, then skip all other teeth
-				if(checkShowTeeth.Checked){
+				if(checkShowTeeth.Checked) {
 					showProc=false;
-					switch(ProcedureCodes.GetProcCode(ProcList[i].ADACode).TreatArea){
-					  case TreatmentArea.Arch:
-							for(int s=0;s<selectedTeeth.Count;s++){
-								if(ProcList[i].Surf=="U" && (int)selectedTeeth[s]<17){
+					switch(ProcedureCodes.GetProcCode(ProcList[i].ADACode).TreatArea) {
+						case TreatmentArea.Arch:
+							for(int s=0;s<selectedTeeth.Count;s++) {
+								if(ProcList[i].Surf=="U" && (int)selectedTeeth[s]<17) {
 									showProc=true;
 								}
-								else if(ProcList[i].Surf=="L" && (int)selectedTeeth[s]>16){
+								else if(ProcList[i].Surf=="L" && (int)selectedTeeth[s]>16) {
 									showProc=true;
 								}
 							}
@@ -1808,296 +2337,419 @@ namespace OpenDental{
 							showProc=false;
 							break;
 						case TreatmentArea.Quad:
-							for(int s=0;s<selectedTeeth.Count;s++){
-								if(ProcList[i].Surf=="UR" && (int)selectedTeeth[s]<=8){
+							for(int s=0;s<selectedTeeth.Count;s++) {
+								if(ProcList[i].Surf=="UR" && (int)selectedTeeth[s]<=8) {
 									showProc=true;
 								}
-								else if(ProcList[i].Surf=="UL" && (int)selectedTeeth[s]>=9 && (int)selectedTeeth[s]<=16){
+								else if(ProcList[i].Surf=="UL" && (int)selectedTeeth[s]>=9 && (int)selectedTeeth[s]<=16) {
 									showProc=true;
 								}
-								else if(ProcList[i].Surf=="LL" && (int)selectedTeeth[s]>=17 && (int)selectedTeeth[s]<=24){
+								else if(ProcList[i].Surf=="LL" && (int)selectedTeeth[s]>=17 && (int)selectedTeeth[s]<=24) {
 									showProc=true;
 								}
-								else if(ProcList[i].Surf=="LR" && (int)selectedTeeth[s]>=25 && (int)selectedTeeth[s]<=32){
+								else if(ProcList[i].Surf=="LR" && (int)selectedTeeth[s]>=25 && (int)selectedTeeth[s]<=32) {
 									showProc=true;
 								}
 							}
 							break;
 						case TreatmentArea.Surf:
 						case TreatmentArea.Tooth:
-							for(int s=0;s<selectedTeeth.Count;s++){
-								if(Tooth.ToInt(ProcList[i].ToothNum)==(int)selectedTeeth[s]){
+							for(int s=0;s<selectedTeeth.Count;s++) {
+								if(Tooth.ToInt(ProcList[i].ToothNum)==(int)selectedTeeth[s]) {
 									showProc=true;
 								}
 							}
 							break;
 						case TreatmentArea.ToothRange:
 							string[] range=ProcList[i].ToothRange.Split(',');
-							for(int s=0;s<selectedTeeth.Count;s++){
-								for(int r=0;r<range.Length;r++){
-									if(Tooth.ToInt(range[r])==(int)selectedTeeth[s]){
+							for(int s=0;s<selectedTeeth.Count;s++) {
+								for(int r=0;r<range.Length;r++) {
+									if(Tooth.ToInt(range[r])==(int)selectedTeeth[s]) {
 										showProc=true;
 									}
 								}
 							}
 							break;
 					}
-					if(!showProc){
+					if(!showProc) {
 						continue;
 					}
 				}
-				switch(ProcList[i].ProcStatus){
-					case ProcStat.TP :
-						if (checkShowTP.Checked){
+				switch(ProcList[i].ProcStatus) {
+					case ProcStat.TP:
+						if(checkShowTP.Checked) {
 							ProcAL.Add(ProcList[i]);
 						}
 						break;
-					case ProcStat.C :
-						if (checkShowC.Checked){
+					case ProcStat.C:
+						if(checkShowC.Checked) {
 							ProcAL.Add(ProcList[i]);
 						}
 						break;
-					case ProcStat.EC :
-						if (checkShowE.Checked){
+					case ProcStat.EC:
+						if(checkShowE.Checked) {
 							ProcAL.Add(ProcList[i]);
 						}
 						break;
-					case ProcStat.EO :
-						if (checkShowE.Checked){
+					case ProcStat.EO:
+						if(checkShowE.Checked) {
 							ProcAL.Add(ProcList[i]);
 						}
 						break;
-					case ProcStat.R :
-						if (checkShowR.Checked){
+					case ProcStat.R:
+						if(checkShowR.Checked) {
 							ProcAL.Add(ProcList[i]);
 						}
 						break;
 				}
 			}//for i
-			cTeeth.PatCur=PatCur;
-			cTeeth.DrawProcs(ProcAL);
-			cTeeth.DrawShadow();
-			for(int i=0;i<RxPats.List.Length;i++){
-				if(checkRx.Checked){
-					RxAL.Add(RxPats.List[i]);
+		}
+
+		private void FillProgNotes(){
+			ArrayList mergedAL=new ArrayList(); 
+			ComputeProcAL();
+			mergedAL.AddRange(ProcAL);
+			if(PatCur!=null && checkRx.Checked){
+				mergedAL.AddRange(RxPats.Refresh(PatCur.PatNum));
+			}
+			if(PatCur!=null && checkComm.Checked) {
+				Commlog[] coms=Commlogs.Refresh(PatCur.PatNum);
+				for(int i=0;i<coms.Length;i++){
+					if(coms[i].CommType!=CommItemType.StatementSent){
+						mergedAL.Add(coms[i]);
+					}
 				}
 			}
-			//This is where to convert ProcAL, RxAL to ProgLineAL:
-			int tempCountProc=0;
-			int tempCountRx=0;
-			ProgLineAL = new ArrayList();
-			DateTime lineDate=DateTime.MinValue;
-			ProgLine tempProgLine;
-			int j=0;//using while instead of for because length of notes is unknown
-			//j always == sum(tempCount..)
-			//MessageBox.Show(ProcAL.Count+","+RxAL.Count);
-			while(j<(ProcAL.Count+RxAL.Count)){
-				//set lineDate to the value of the first array that is not maxed out:
-				if(tempCountProc < ProcAL.Count)
-					lineDate=((Procedure)ProcAL[tempCountProc]).ProcDate;
-				else if(tempCountRx < RxAL.Count)
-					lineDate=((RxPat)RxAL[tempCountRx]).RxDate;
-				//find next date
-				if(tempCountProc<ProcAL.Count 
-					&& DateTime.Compare(((Procedure)ProcAL[tempCountProc]).ProcDate,lineDate)<=0)
-					lineDate=((Procedure)ProcAL[tempCountProc]).ProcDate;
-				if(tempCountRx<RxAL.Count && DateTime.Compare(((RxPat)RxAL[tempCountRx]).RxDate,lineDate)<0)
-					lineDate=((RxPat)RxAL[tempCountRx]).RxDate;	
-				//1.Procedure:
-				if(tempCountProc<ProcAL.Count 
-					&& DateTime.Compare(((Procedure)ProcAL[tempCountProc]).ProcDate,lineDate)==0){
-					//always give procedure line:
-					tempProgLine=new ProgLine();
-					tempProgLine.Type=ProgType.Proc;
-					tempProgLine.IsNote=false;
-					tempProgLine.Index=tempCountProc;
-					tempProgLine.Date=((Procedure)ProcAL[tempCountProc]).ProcDate.ToString("d");
-					tempProgLine.Th=Tooth.ToInternat(((Procedure)ProcAL[tempCountProc]).ToothNum);
-					tempProgLine.Surf=((Procedure)ProcAL[tempCountProc]).Surf;
-					tempProgLine.Dx=Defs.GetValue(DefCat.Diagnosis,((Procedure)ProcAL[tempCountProc]).Dx);
-					tempProgLine.Description
-						=ProcedureCodes.GetProcCode(((Procedure)ProcAL[tempCountProc]).ADACode).Descript;
-					switch (((Procedure)ProcAL[tempCountProc]).ProcStatus){
-						case ProcStat.TP :
-							tempProgLine.Stat=Lan.g("enumProcStat","TP");
-							tempProgLine.LineColor=Defs.Long[(int)DefCat.ProgNoteColors][0].ItemColor;
-							break;
-						case ProcStat.C :
-							tempProgLine.Stat=Lan.g("enumProcStat","C");
-							tempProgLine.LineColor=Defs.Long[(int)DefCat.ProgNoteColors][1].ItemColor;
-							break;
-						case ProcStat.EC :
-							tempProgLine.Stat=Lan.g("enumProcStat","EC");
-							tempProgLine.LineColor=Defs.Long[(int)DefCat.ProgNoteColors][2].ItemColor;
-							break;
-						case ProcStat.EO :
-							tempProgLine.Stat=Lan.g("enumProcStat","EO");
-							tempProgLine.LineColor=Defs.Long[(int)DefCat.ProgNoteColors][3].ItemColor;
-							break;
-						case ProcStat.R :
-							tempProgLine.Stat=Lan.g("enumProcStat","R");
-							tempProgLine.LineColor=Defs.Long[(int)DefCat.ProgNoteColors][4].ItemColor;
-							break;
-					}//end switch ProcStatus
-					tempProgLine.Prov=Providers.GetAbbr(((Procedure)ProcAL[tempCountProc]).ProvNum);
-					tempProgLine.Amount=((Procedure)ProcAL[tempCountProc]).ProcFee.ToString("F");
-					ProgLineAL.Add(tempProgLine);
-					//Next section is for the procedure note only/////////////
-					tempProgLine=new ProgLine();
-					Graphics grfx=this.CreateGraphics();
-					int iChars=0;
-					int iLines=0;
-					Font myFont=new Font("Microsoft Sans Serif",8.5f);
-					RectangleF rectf = new Rectangle(0,0,(int)tbProg.NoteWidth,(int)myFont.GetHeight(grfx));
-					if (checkNotes.Checked 
-						&& tempCountProc<ProcAL.Count && ((Procedure)ProcAL[tempCountProc]).ProcNote!=""){
-						string remainNote=((Procedure)ProcAL[tempCountProc]).ProcNote;
-						int overrunstop=0;//this handles unanticipated characters from conversions
-						while(remainNote.Length>0 && overrunstop<20){
-							overrunstop++;
-							tempProgLine.IsNote=true;
-							tempProgLine.Type=ProgType.Proc;
-							tempProgLine.Index=tempCountProc;
-							tempProgLine.LineColor=((ProgLine)ProgLineAL[ProgLineAL.Count-1]).LineColor;
-							grfx.MeasureString(remainNote,myFont,rectf.Size,new StringFormat(),out iChars, out iLines);
-							if(iChars!=remainNote.Length)
-								while(iChars!=0 && remainNote.Substring(iChars-1,1)!=" "//last char not space 
-									&& remainNote.Substring(iChars-1,1)!="\r" ){//last char not return
-									iChars=iChars-1;
-								}
-							if(iChars==0){//this will wrap even if no spaces at all, whether short or very long
-								grfx.MeasureString
-									(remainNote,myFont,rectf.Size,new StringFormat(),out iChars, out iLines);
-							}
-							tempProgLine.Note=remainNote.Substring(0,iChars);
-							//at this point, the last character will generally be a space or a return
-							if(tempProgLine.Note.Substring(iChars-1,1)=="\r"){
-								try{
-									tempProgLine.Note=tempProgLine.Note.Remove(iChars-1,1);
-									//seems to need this to prevent extra cr's
-									remainNote=remainNote.Substring(iChars+1);
-								} 
-								catch{
-								}
-							}
-							else{
-								remainNote=remainNote.Substring(iChars);//does not include the trailing space or return
-							}
-							ProgLineAL.Add(tempProgLine);
-						}//end while
-					}//end if checkNotes.checked
-					grfx.Dispose();
-					if(tempCountProc<ProcAL.Count){
-						tempCountProc++;
-						j++;
+			IComparer myComparer = new ObjectDateComparer();
+			mergedAL.Sort(myComparer);
+			gridProg.BeginUpdate();
+			gridProg.Columns.Clear();
+			ODGridColumn col=new ODGridColumn(Lan.g("TableProg","Date"),67);
+			gridProg.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableProg","Th"),27);
+			gridProg.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableProg","Surf"),40);
+			gridProg.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableProg","Dx"),28);
+			gridProg.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableProg","Description"),218);
+			gridProg.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableProg","Stat"),25);
+			gridProg.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableProg","Prov"),42);
+			gridProg.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableProg","Amount"),48,HorizontalAlignment.Right);
+			gridProg.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableProg","ADA Code"),62,HorizontalAlignment.Right);
+			gridProg.Columns.Add(col);
+			gridProg.NoteSpanStart=2;
+			gridProg.NoteSpanStop=7;
+			gridProg.Rows.Clear();
+			ODGridRow row;
+			Type type;
+			for(int i=0;i<mergedAL.Count;i++){
+				row=new ODGridRow();
+				type=mergedAL[i].GetType();
+				row.ColorLborder=Color.Black;//Color.FromArgb(128,128,128);
+				row.Tag=mergedAL[i];
+				if(type==typeof(Procedure)){
+					row.Cells.Add(((Procedure)mergedAL[i]).ProcDate.ToShortDateString());
+					row.Cells.Add(Tooth.ToInternat(((Procedure)mergedAL[i]).ToothNum));
+					row.Cells.Add(((Procedure)mergedAL[i]).Surf);
+					row.Cells.Add(Defs.GetValue(DefCat.Diagnosis,((Procedure)mergedAL[i]).Dx));
+					row.Cells.Add(ProcedureCodes.GetProcCode(((Procedure)mergedAL[i]).ADACode).Descript);
+					row.Cells.Add(Lan.g("enumProcStat",((Procedure)mergedAL[i]).ProcStatus.ToString()));
+					row.Cells.Add(Providers.GetAbbr(((Procedure)mergedAL[i]).ProvNum));
+					row.Cells.Add(((Procedure)mergedAL[i]).ProcFee.ToString("F"));
+					row.Cells.Add(((Procedure)mergedAL[i]).ADACode);
+					if(checkNotes.Checked){
+						row.Note=((Procedure)mergedAL[i]).ProcNote;
 					}
-				}//end if (for Procedures)
-				//2. Rx:
-				else if(j<=tempCountRx+tempCountProc 
-					&& tempCountRx<RxAL.Count 
-					&& DateTime.Compare(((RxPat)RxAL[tempCountRx]).RxDate,lineDate)==0){
-					tempProgLine=new ProgLine();
-					tempProgLine.Type=ProgType.Rx;
-					tempProgLine.IsNote=false;
-					tempProgLine.Index=tempCountRx;
-					tempProgLine.Date=((RxPat)RxAL[tempCountRx]).RxDate.ToString("d");
-					tempProgLine.Th="";
-					tempProgLine.Surf="";
-					tempProgLine.Dx="";
-					tempProgLine.Description="Rx - "
-						+((RxPat)RxAL[tempCountRx]).Drug+" - #"
-						+((RxPat)RxAL[tempCountRx]).Disp;
-					tempProgLine.Stat="";
-					tempProgLine.LineColor=Defs.Long[(int)DefCat.ProgNoteColors][5].ItemColor;
-					tempProgLine.Prov=Providers.GetAbbr(((RxPat)RxAL[tempCountRx]).ProvNum);
-					tempProgLine.Amount="";
-					ProgLineAL.Add(tempProgLine);
-					//Next section is for the rx note only/////////////
-					tempProgLine=new ProgLine();
-					Graphics grfx=this.CreateGraphics();
-					int iChars=0;
-					int iLines=0;
-					Font myFont=new Font("Microsoft Sans Serif",8.5f);
-					RectangleF rectf = new Rectangle(0,0,(int)tbProg.NoteWidth,(int)myFont.GetHeight(grfx));
-					if(checkNotes.Checked 
-						&& tempCountRx<RxAL.Count && ((RxPat)RxAL[tempCountRx]).Notes!=""){
-						string remainNote=((RxPat)RxAL[tempCountRx]).Notes;
-						while(remainNote.Length>0){
-							tempProgLine.IsNote=true;
-							tempProgLine.Type=ProgType.Rx;
-							tempProgLine.Index=tempCountRx;
-							tempProgLine.LineColor=((ProgLine)ProgLineAL[ProgLineAL.Count-1]).LineColor;
-							grfx.MeasureString(remainNote,myFont,rectf.Size,new StringFormat(),out iChars, out iLines);
-							if(iChars!=remainNote.Length)
-								while(iChars!=0 && remainNote.Substring(iChars-1,1)!=" "//last char not space 
-									&& remainNote.Substring(iChars-1,1)!="\r" ){//last char not return
-									iChars=iChars-1;
-								}
-							if(iChars==0){//this will wrap even if no spaces at all, whether short or very long
-								grfx.MeasureString
-									(remainNote,myFont,rectf.Size,new StringFormat(),out iChars, out iLines);
-							}
-							tempProgLine.Note=remainNote.Substring(0,iChars);
-							//at this point, the last character will generally be a space or a return
-							if(tempProgLine.Note.Substring(iChars-1,1)=="\r"){
-								try{
-									tempProgLine.Note=tempProgLine.Note.Remove(iChars-1,1);
-									//seems to need this to prevent extra cr's
-									remainNote=remainNote.Substring(iChars+1);
-								} 
-								catch{
-								}
-							}
-							else{
-								remainNote=remainNote.Substring(iChars);//does not include the trailing space or return
-							}
-							ProgLineAL.Add(tempProgLine);
-						}//end while
-					}//end if checkNotes.checked
-					grfx.Dispose();
-					if(tempCountRx<RxAL.Count){
-						tempCountRx++;
-						j++;
+					switch(((Procedure)mergedAL[i]).ProcStatus) {
+						case ProcStat.TP:
+							row.ColorText=Defs.Long[(int)DefCat.ProgNoteColors][0].ItemColor;
+							break;
+						case ProcStat.C:
+							row.ColorText=Defs.Long[(int)DefCat.ProgNoteColors][1].ItemColor;
+							break;
+						case ProcStat.EC:
+							row.ColorText=Defs.Long[(int)DefCat.ProgNoteColors][2].ItemColor;
+							break;
+						case ProcStat.EO:
+							row.ColorText=Defs.Long[(int)DefCat.ProgNoteColors][3].ItemColor;
+							break;
+						case ProcStat.R:
+							row.ColorText=Defs.Long[(int)DefCat.ProgNoteColors][4].ItemColor;
+							break;
+					}
+					if(Appointments.ProcIsToday(ApptList,(Procedure)mergedAL[i])) {
+						row.ColorBackG=Defs.Long[(int)DefCat.MiscColors][6].ItemColor;
 					}
 				}
-				//MessageBox.Show(j.ToString());
-				//else j++;
-			}//end for
+				else if(type==typeof(RxPat)){
+					row.Cells.Add(((RxPat)mergedAL[i]).RxDate.ToShortDateString());
+					row.Cells.Add("");
+					row.Cells.Add("");
+					row.Cells.Add("");
+					row.Cells.Add(Lan.g(this,"Rx - ")+((RxPat)mergedAL[i]).Drug+" - #"+((RxPat)mergedAL[i]).Disp);
+					row.Cells.Add("");
+					row.Cells.Add(Providers.GetAbbr(((RxPat)mergedAL[i]).ProvNum));
+					row.Cells.Add("");
+					row.Cells.Add("");
+					if(checkNotes.Checked){
+						row.Note=((RxPat)mergedAL[i]).Notes;
+					}
+					row.ColorText=Defs.Long[(int)DefCat.ProgNoteColors][5].ItemColor;
+				}
+				else if(type==typeof(Commlog)) {
+					row.Cells.Add(((Commlog)mergedAL[i]).CommDateTime.ToShortDateString());
+					row.Cells.Add("");//Tth
+					row.Cells.Add("");//Surf
+					row.Cells.Add("");//Dx
+					row.Cells.Add(Lan.g(this,"Comm - ")+((Commlog)mergedAL[i]).CommType.ToString());
+					row.Cells.Add("");//procStat
+					row.Cells.Add("");//prov
+					row.Cells.Add("");//fee
+					row.Cells.Add("");//adacode
+					if(checkNotes.Checked) {
+						row.Note=((Commlog)mergedAL[i]).Note;
+					}
+					row.ColorText=Defs.Long[(int)DefCat.ProgNoteColors][6].ItemColor;
+				}
+				gridProg.Rows.Add(row);
+			}
+			if(gridProg.Columns !=null && gridProg.Columns.Count>0) {
+				int gridW=0;
+				for(int i=0;i<gridProg.Columns.Count;i++) {
+					gridW+=gridProg.Columns[i].ColWidth;
+				}
+				if(gridProg.Location.X+gridW+20 < ClientSize.Width) {//if space is big enough to allow full width
+					gridProg.Width=gridW+20;
+				}
+				else {
+					gridProg.Width=ClientSize.Width-gridProg.Location.X-1;
+				}
+			}
 			
-			//Then, fill tbProg from ProgLineAL:
-				tbProg.ResetRows(ProgLineAL.Count);
-				for(int i=0;i<ProgLineAL.Count;i++){
-					if(!((ProgLine)ProgLineAL[i]).IsNote){
-						tbProg.SetProcRow(i);
-						tbProg.Cell[0,i]=((ProgLine)ProgLineAL[i]).Date;
-						tbProg.Cell[1,i]=((ProgLine)ProgLineAL[i]).Th;
-						tbProg.Cell[2,i]=((ProgLine)ProgLineAL[i]).Surf;
-						tbProg.Cell[3,i]=((ProgLine)ProgLineAL[i]).Dx;
-						tbProg.Cell[4,i]=((ProgLine)ProgLineAL[i]).Description;
-						tbProg.Cell[5,i]=((ProgLine)ProgLineAL[i]).Stat;
-						tbProg.Cell[6,i]=((ProgLine)ProgLineAL[i]).Prov;
-						tbProg.Cell[7,i]=((ProgLine)ProgLineAL[i]).Amount;
+			gridProg.EndUpdate();
+			gridProg.ScrollToEnd();
+			FillToothChart(false);
+		}
+
+		///<summary>This is, of course, called when module refreshed.  But it's also called when user sets missing teeth or tooth movements.  In that case, the Progress notes are not refreshed, so it's a little faster.  This also fills in the movement amounts.</summary>
+		private void FillToothChart(bool retainSelection){
+			Cursor=Cursors.WaitCursor;
+			toothChart.SuspendLayout();
+			toothChart.UseInternational=Prefs.GetBool("UseInternationalToothNumbers");
+			//remember which teeth were selected
+			ArrayList selectedTeeth=new ArrayList();//integers 1-32
+			for(int i=0;i<toothChart.SelectedTeeth.Length;i++) {
+				selectedTeeth.Add(Tooth.ToInt(toothChart.SelectedTeeth[i]));
+			}
+			toothChart.ResetTeeth();
+			if(PatCur==null) {
+				toothChart.ResumeLayout();
+				FillMovementsAndHidden();
+				Cursor=Cursors.Default;
+				return;
+			}
+			if(checkShowTeeth.Checked || retainSelection) {
+				for(int i=0;i<selectedTeeth.Count;i++) {
+					toothChart.SetSelected((int)selectedTeeth[i],true);
+				}
+			}
+			//first, primary.  That way, you can still set a primary tooth missing afterwards.
+			for(int i=0;i<ToothInitialList.Length;i++){
+				if(ToothInitialList[i].InitialType==ToothInitialType.Primary){
+					toothChart.SetToPrimary(ToothInitialList[i].ToothNum);
+				}
+			}
+			for(int i=0;i<ToothInitialList.Length;i++){
+				switch(ToothInitialList[i].InitialType){
+					case ToothInitialType.Missing:
+						toothChart.SetInvisible(ToothInitialList[i].ToothNum);
+						break;
+					case ToothInitialType.Hidden:
+						toothChart.HideTooth(ToothInitialList[i].ToothNum);
+						break;
+					//case ToothInitialType.Primary:
+					//	break;
+					case ToothInitialType.Rotate:
+						toothChart.MoveTooth(ToothInitialList[i].ToothNum,ToothInitialList[i].Movement,0,0,0,0,0);
+						break;
+					case ToothInitialType.TipM:
+						toothChart.MoveTooth(ToothInitialList[i].ToothNum,0,ToothInitialList[i].Movement,0,0,0,0);
+						break;
+					case ToothInitialType.TipB:
+						toothChart.MoveTooth(ToothInitialList[i].ToothNum,0,0,ToothInitialList[i].Movement,0,0,0);
+						break;
+					case ToothInitialType.ShiftM:
+						toothChart.MoveTooth(ToothInitialList[i].ToothNum,0,0,0,ToothInitialList[i].Movement,0,0);
+						break;
+					case ToothInitialType.ShiftO:
+						toothChart.MoveTooth(ToothInitialList[i].ToothNum,0,0,0,0,ToothInitialList[i].Movement,0);
+						break;
+					case ToothInitialType.ShiftB:
+						toothChart.MoveTooth(ToothInitialList[i].ToothNum,0,0,0,0,0,ToothInitialList[i].Movement);
+						break;
+				}
+			}
+			DrawProcsOfStatus(ProcStat.EO);
+			DrawProcsOfStatus(ProcStat.EC);
+			DrawProcsOfStatus(ProcStat.C);
+			DrawProcsOfStatus(ProcStat.R);
+			DrawProcsOfStatus(ProcStat.TP);
+			toothChart.ResumeLayout();
+			FillMovementsAndHidden();
+			Cursor=Cursors.Default;
+		}
+
+		private void DrawProcsOfStatus(ProcStat procStat){
+			Procedure proc;
+			string[] teeth;
+			Color cLight=Color.White;
+			Color cDark=Color.White;
+			for(int i=0;i<ProcAL.Count;i++) {
+				proc=(Procedure)ProcAL[i];
+				if(proc.ProcStatus!=procStat) {
+					continue;
+				}
+				if(proc.HideGraphical) {
+					//We don't care about HideGraphical anymore.  It will be enhanced later to a 3-state.
+					//continue;
+				}
+				if(ProcedureCodes.GetProcCode(proc.ADACode).PaintType==ToothPaintingType.Extraction && (
+					proc.ProcStatus==ProcStat.C
+					|| proc.ProcStatus==ProcStat.EC
+					|| proc.ProcStatus==ProcStat.EO
+					)) {
+					continue;//prevents the red X. Missing teeth already handled.
+				}
+				if(ProcedureCodes.GetProcCode(proc.ADACode).GraphicColor==Color.FromArgb(0)){
+					switch(proc.ProcStatus) {
+						case ProcStat.C:
+							cDark=Defs.Short[(int)DefCat.ChartGraphicColors][1].ItemColor;
+							cLight=Defs.Short[(int)DefCat.ChartGraphicColors][6].ItemColor;
+							break;
+						case ProcStat.TP:
+							cDark=Defs.Short[(int)DefCat.ChartGraphicColors][0].ItemColor;
+							cLight=Defs.Short[(int)DefCat.ChartGraphicColors][5].ItemColor;
+							break;
+						case ProcStat.EC:
+							cDark=Defs.Short[(int)DefCat.ChartGraphicColors][2].ItemColor;
+							cLight=Defs.Short[(int)DefCat.ChartGraphicColors][7].ItemColor;
+							break;
+						case ProcStat.EO:
+							cDark=Defs.Short[(int)DefCat.ChartGraphicColors][3].ItemColor;
+							cLight=Defs.Short[(int)DefCat.ChartGraphicColors][8].ItemColor;
+							break;
+						case ProcStat.R:
+							cDark=Defs.Short[(int)DefCat.ChartGraphicColors][4].ItemColor;
+							cLight=Defs.Short[(int)DefCat.ChartGraphicColors][9].ItemColor;
+							break;
 					}
-					else{//else note
-						if(!((ProgLine)ProgLineAL[i-1]).IsNote)
-							tbProg.SetFirstNoteRow(i);
-						else
-							tbProg.SetNoteRow(i);
-						tbProg.Cell[2,i]=((ProgLine)ProgLineAL[i]).Note;
-					}
-					tbProg.SetTextColorRow(i,((ProgLine)ProgLineAL[i]).LineColor);
-					//proc could still be highlighted if date not today because TP date.
-					//only requirement is that it's attached to a procedure for today
-					if(((ProgLine)ProgLineAL[i]).Type==ProgType.Proc){
-						if(Appointments.ProcIsToday(ApptList,
-							(Procedure)ProcAL[((ProgLine)ProgLineAL[i]).Index]))
-						{
-							tbProg.SetBackColorRow(i,Defs.Long[(int)DefCat.MiscColors][6].ItemColor);
+				}
+				else{
+					cDark=ProcedureCodes.GetProcCode(proc.ADACode).GraphicColor;
+					cLight=ProcedureCodes.GetProcCode(proc.ADACode).GraphicColor;
+				}
+				switch(ProcedureCodes.GetProcCode(proc.ADACode).PaintType){
+					case ToothPaintingType.BridgeDark:
+						if(ToothInitials.ToothIsMissingOrHidden(ToothInitialList,proc.ToothNum)){
+							toothChart.SetPontic(proc.ToothNum,cDark);
 						}
-					}
-				}//end for
-				tbProg.LayoutTables();
-		}//end FillProgNotes
+						else{
+							toothChart.SetCrown(proc.ToothNum,cDark);
+						}
+						break;
+					case ToothPaintingType.BridgeLight:
+						if(ToothInitials.ToothIsMissingOrHidden(ToothInitialList,proc.ToothNum)) {
+							toothChart.SetPontic(proc.ToothNum,cLight);
+						}
+						else {
+							toothChart.SetCrown(proc.ToothNum,cLight);
+						}
+						break;
+					case ToothPaintingType.CrownDark:
+						toothChart.SetCrown(proc.ToothNum,cDark);
+						break;
+					case ToothPaintingType.CrownLight:
+						toothChart.SetCrown(proc.ToothNum,cLight);
+						break;
+					case ToothPaintingType.DentureDark:
+						if(proc.Surf=="U"){
+							teeth=new string[14];
+							for(int t=0;t<14;t++){
+								teeth[t]=(t+2).ToString();
+							}
+						}
+						else if(proc.Surf=="L") {
+							teeth=new string[14];
+							for(int t=0;t<14;t++) {
+								teeth[t]=(t+18).ToString();
+							}
+						}
+						else{
+							teeth=proc.ToothRange.Split(new char[] {','});
+						}
+						for(int t=0;t<teeth.Length;t++){
+							if(ToothInitials.ToothIsMissingOrHidden(ToothInitialList,teeth[t])) {
+								toothChart.SetPontic(teeth[t],cDark);
+							}
+							else {
+								toothChart.SetCrown(teeth[t],cDark);
+							}
+						}
+						break;
+					case ToothPaintingType.DentureLight:
+						if(proc.Surf=="U") {
+							teeth=new string[14];
+							for(int t=0;t<14;t++) {
+								teeth[t]=(t+2).ToString();
+							}
+						}
+						else if(proc.Surf=="L") {
+							teeth=new string[14];
+							for(int t=0;t<14;t++) {
+								teeth[t]=(t+18).ToString();
+							}
+						}
+						else {
+							teeth=proc.ToothRange.Split(new char[] { ',' });
+						}
+						for(int t=0;t<teeth.Length;t++) {
+							if(ToothInitials.ToothIsMissingOrHidden(ToothInitialList,teeth[t])) {
+								toothChart.SetPontic(teeth[t],cLight);
+							}
+							else {
+								toothChart.SetCrown(teeth[t],cLight);
+							}
+						}
+						break;
+					case ToothPaintingType.Extraction:
+						toothChart.SetBigX(proc.ToothNum,cDark);
+						break;
+					case ToothPaintingType.FillingDark:
+						toothChart.SetSurfaceColors(proc.ToothNum,proc.Surf,cDark);
+						break;
+				  case ToothPaintingType.FillingLight:
+						toothChart.SetSurfaceColors(proc.ToothNum,proc.Surf,cLight);
+						break;
+					case ToothPaintingType.Implant:
+						toothChart.SetImplant(proc.ToothNum,cDark);
+						break;
+					case ToothPaintingType.PostBU:
+						toothChart.SetBU(proc.ToothNum,cDark);
+						break;
+					case ToothPaintingType.RCT:
+						toothChart.SetRCT(proc.ToothNum,cDark);
+						break;
+					case ToothPaintingType.Sealant:
+						toothChart.SetSealant(proc.ToothNum,cDark);
+						break;
+				}
+			}
+		}
 
 		private void checkToday_CheckedChanged(object sender, System.EventArgs e) {
 			if(checkToday.Checked){
@@ -2348,39 +3000,79 @@ namespace OpenDental{
 			
 		}
 
-		private void UpdateSurf (){
+		#region EnterTx
+		private void ClearButtons() {
+			//unfortuantely, these colors no longer show since the XP button style was introduced.
+			butM.BackColor=Color.FromName("Control"); ;
+			butOI.BackColor=Color.FromName("Control");
+			butD.BackColor=Color.FromName("Control");
+			butL.BackColor=Color.FromName("Control");
+			butBF.BackColor=Color.FromName("Control");
+			butV.BackColor=Color.FromName("Control");
 			textSurf.Text="";
-			if (butM.BackColor==Color.White) textSurf.AppendText("M");
-			if (butO.BackColor==Color.White) textSurf.AppendText("O");
-			if (butI.BackColor==Color.White) textSurf.AppendText("I");
-			if (butD.BackColor==Color.White) textSurf.AppendText("D");
-			if (butF.BackColor==Color.White) textSurf.AppendText("F");
-			if (butB.BackColor==Color.White) textSurf.AppendText("B");
-			if (butL.BackColor==Color.White) textSurf.AppendText("L");
+			listDx.SelectedIndex=-1;
+			//listProcButtons.SelectedIndex=-1;
+			listViewButtons.SelectedIndices.Clear();
+			textADACode.Text=Lan.g(this,"Type ADA Code");
 		}
 
-		private void butB_Click(object sender, System.EventArgs e){
-			if (butB.BackColor==Color.White){
-				butB.BackColor=SystemColors.Control;
+		private void UpdateSurf (){
+			textSurf.Text="";
+			if(toothChart.SelectedTeeth.Length==0){
+				return;
+			}
+			if(butM.BackColor==Color.White){
+				textSurf.AppendText("M");
+			}
+			if(butOI.BackColor==Color.White){
+				if(ToothGraphic.IsAnterior(toothChart.SelectedTeeth[0])){
+					textSurf.AppendText("I");
+				}
+				else{	
+					textSurf.AppendText("O");
+				}
+			}
+			if(butD.BackColor==Color.White){
+				textSurf.AppendText("D");
+			}
+			if(butV.BackColor==Color.White){
+				textSurf.AppendText("V");
+			}
+			if(butBF.BackColor==Color.White){
+				if(ToothGraphic.IsAnterior(toothChart.SelectedTeeth[0])) {
+					textSurf.AppendText("F");
+				}
+				else {
+					textSurf.AppendText("B");
+				}
+			}
+			if(butL.BackColor==Color.White){
+				textSurf.AppendText("L");
+			}
+		}
+
+		private void butBF_Click(object sender, System.EventArgs e){
+			if(butBF.BackColor==Color.White){
+				butBF.BackColor=SystemColors.Control;
 			}
 			else{
-				butB.BackColor=Color.White;
+				butBF.BackColor=Color.White;
 			}
 			UpdateSurf();
 		}
 
-		private void butF_Click(object sender, System.EventArgs e){
-			if (butF.BackColor==Color.White){
-				butF.BackColor=SystemColors.Control;
+		private void butV_Click(object sender, System.EventArgs e){
+			if(butV.BackColor==Color.White){
+				butV.BackColor=SystemColors.Control;
 			}
 			else{
-				butF.BackColor=Color.White;
+				butV.BackColor=Color.White;
 			}
 			UpdateSurf();
 		}
 
 		private void butM_Click(object sender, System.EventArgs e){
-			if (butM.BackColor==Color.White){
+			if(butM.BackColor==Color.White){
 				butM.BackColor=SystemColors.Control;
 			}
 			else{
@@ -2389,28 +3081,18 @@ namespace OpenDental{
 			UpdateSurf();
 		}
 
-		private void butO_Click(object sender, System.EventArgs e){
-			if (butO.BackColor==Color.White){
-				butO.BackColor=SystemColors.Control;
+		private void butOI_Click(object sender, System.EventArgs e){
+			if(butOI.BackColor==Color.White){
+				butOI.BackColor=SystemColors.Control;
 			}
 			else{
-				butO.BackColor=Color.White;
-			}
-			UpdateSurf();
-		}
-
-		private void butI_Click(object sender, System.EventArgs e){
-			if (butI.BackColor==Color.White){
-				butI.BackColor=SystemColors.Control;
-			}
-			else{
-				butI.BackColor=Color.White;
+				butOI.BackColor=Color.White;
 			}
 			UpdateSurf();
 		}
 
 		private void butD_Click(object sender, System.EventArgs e){
-			if (butD.BackColor==Color.White){
+			if(butD.BackColor==Color.White){
 				butD.BackColor=SystemColors.Control;
 			}
 			else{
@@ -2420,7 +3102,7 @@ namespace OpenDental{
 		}
 
 		private void butL_Click(object sender, System.EventArgs e){
-			if (butL.BackColor==Color.White){
+			if(butL.BackColor==Color.White){
 				butL.BackColor=SystemColors.Control;
 			}
 			else{
@@ -2429,55 +3111,32 @@ namespace OpenDental{
 			UpdateSurf();
 		}
 
-		private void tbProg_CellDoubleClicked(object sender, CellEventArgs e){
-			switch(((ProgLine)ProgLineAL[e.Row]).Type){
-				case ProgType.Proc:
-					Procedure ProcCur=((Procedure)ProcAL[((ProgLine)ProgLineAL[e.Row]).Index]).Copy();
-					FormProcEdit FormPE=new FormProcEdit(ProcCur,PatCur.Copy(),FamCur,PlanList);
-					FormPE.ShowDialog();
-					if(FormPE.DialogResult!=DialogResult.OK)
-						return;
-					break;
-				case ProgType.Rx:
-					//MessageBox.Show(((ProgLine)ProgLineAL[e.Row]).Index.ToString());
-					RxPats.Cur=((RxPat)RxAL[((ProgLine)ProgLineAL[e.Row]).Index]);
-					FormRxEdit FormRxE = new FormRxEdit(PatCur);
-					FormRxE.IsNew=false;
-					FormRxE.ShowDialog();
-					if(FormRxE.DialogResult!=DialogResult.OK) return;
-					break;
+		private void gridProg_CellDoubleClick(object sender,ODGridClickEventArgs e) {
+			Type type=gridProg.Rows[e.Row].Tag.GetType();
+			if(type==typeof(Procedure)){
+				//Procedure ProcCur=
+				//	((Procedure)ProcAL[((ProgLine)ProgLineAL[e.Row]).Index]).Copy();
+				FormProcEdit FormPE=new FormProcEdit((Procedure)gridProg.Rows[e.Row].Tag,PatCur.Copy(),FamCur,PlanList);
+				FormPE.ShowDialog();
+				if(FormPE.DialogResult!=DialogResult.OK)
+					return;
+			}
+			else if(type==typeof(RxPat)){
+				//RxPat RxPatCur=((RxPat)RxAL[((ProgLine)ProgLineAL[e.Row]).Index]);
+				FormRxEdit FormRxE=new FormRxEdit(PatCur,(RxPat)gridProg.Rows[e.Row].Tag);
+				FormRxE.IsNew=false;
+				FormRxE.ShowDialog();
+				if(FormRxE.DialogResult!=DialogResult.OK)
+					return;
+			}
+			else if(type==typeof(Commlog)) {
+				FormCommItem FormC=new FormCommItem((Commlog)gridProg.Rows[e.Row].Tag);
+				FormC.IsNew=false;
+				FormC.ShowDialog();
+				if(FormC.DialogResult!=DialogResult.OK)
+					return;
 			}
 			ModuleSelected(PatCur.PatNum);
-			//MessageBox.Show(e.Col.ToString()+","+e.Row.ToString()+" Double Clicked");
-		}
-
-		//private void RefreshForm(){
-		//	ClearButtons();
-		//	FillProgNotes();
-		//}
-
-		private void ClearButtons(){
-			//unfortuantely, these colors no longer show since the XP button style was introduced.
-			butM.BackColor=Color.FromName("Control");;
-			butO.BackColor=Color.FromName("Control");
-			butI.BackColor=Color.FromName("Control");
-			butD.BackColor=Color.FromName("Control");
-			butL.BackColor=Color.FromName("Control");
-			butB.BackColor=Color.FromName("Control");
-			butF.BackColor=Color.FromName("Control");
-			textSurf.Text="";
-			butB.Text="B";
-			butO.Text="O";
-			butB.Enabled=true;
-			butO.Enabled=true;
-			butF.Text="F";
-			butI.Text="I";
-			butF.Enabled=true;
-			butI.Enabled=true;
-			listDx.SelectedIndex=-1;
-			//listProcButtons.SelectedIndex=-1;
-			listViewButtons.SelectedIndices.Clear();
-			textADACode.Text=Lan.g(this,"Type ADA Code");
 		}
 
 		///<summary>Sets many fields for a new procedure, then displays it for editing before inserting it into the db.  No need to worry about ProcOld because it's an insert, not an update.</summary>
@@ -2510,7 +3169,12 @@ namespace OpenDental{
 			else
 				ProcCur.Priority=Defs.Short[(int)DefCat.TxPriorities][comboPriority.SelectedIndex-1].DefNum;
 			ProcCur.ProcStatus=newStatus;
-			ProcCur.ProcNote="";
+			if(newStatus==ProcStat.C){
+				ProcCur.ProcNote=ProcedureCodes.GetProcCode(ProcCur.ADACode).DefaultNote;
+			}
+			else{
+				ProcCur.ProcNote="";
+			}
 			if(ProcedureCodes.GetProcCode(ProcCur.ADACode).IsHygiene
 				&& PatCur.SecProv != 0){
 				ProcCur.ProvNum=PatCur.SecProv;
@@ -2525,6 +3189,12 @@ namespace OpenDental{
 			ProcCur.DateEntryC=DateTime.Now;
 			ProcCur.MedicalCode=ProcedureCodes.GetProcCode(ProcCur.ADACode).MedicalCode;
 			ProcCur.Insert();
+			if((ProcCur.ProcStatus==ProcStat.C || ProcCur.ProcStatus==ProcStat.EC || ProcCur.ProcStatus==ProcStat.EO)
+				&& ProcedureCodes.GetProcCode(ProcCur.ADACode).PaintType==ToothPaintingType.Extraction) {
+				//if an extraction, then mark previous procs hidden
+				ProcCur.SetHideGraphical();//might not matter anymore
+				ToothInitials.SetValue(PatCur.PatNum,ProcCur.ToothNum,ToothInitialType.Missing);
+			}
 			ProcCur.ComputeEstimates(PatCur.PatNum,new ClaimProc[0],true,PlanList,PatPlanList,BenefitList);
 			FormProcEdit FormPE=new FormProcEdit(ProcCur,PatCur.Copy(),FamCur,PlanList);
 			FormPE.IsNew=true;
@@ -2567,7 +3237,12 @@ namespace OpenDental{
 			else
 				ProcCur.Priority=Defs.Short[(int)DefCat.TxPriorities][comboPriority.SelectedIndex-1].DefNum;
 			ProcCur.ProcStatus=newStatus;
-			ProcCur.ProcNote="";
+			if(newStatus==ProcStat.C) {
+				ProcCur.ProcNote=ProcedureCodes.GetProcCode(ProcCur.ADACode).DefaultNote;
+			}
+			else {
+				ProcCur.ProcNote="";
+			}
 			if(ProcedureCodes.GetProcCode(ProcCur.ADACode).IsHygiene
 				&& PatCur.SecProv != 0){
 				ProcCur.ProvNum=PatCur.SecProv;
@@ -2595,6 +3270,12 @@ namespace OpenDental{
 			//	Procedures.PutBal(Procedures.Cur.ProcDate,Procedures.Cur.ProcFee);
 			//}
 			ProcCur.Insert();
+			if((ProcCur.ProcStatus==ProcStat.C || ProcCur.ProcStatus==ProcStat.EC || ProcCur.ProcStatus==ProcStat.EO)
+				&& ProcedureCodes.GetProcCode(ProcCur.ADACode).PaintType==ToothPaintingType.Extraction) {
+				//if an extraction, then mark previous procs hidden
+				ProcCur.SetHideGraphical();//might not matter anymore
+				ToothInitials.SetValue(PatCur.PatNum,ProcCur.ToothNum,ToothInitialType.Missing);
+			}
 			Recalls.Synch(PatCur.PatNum);
 			ProcCur.ComputeEstimates(PatCur.PatNum,new ClaimProc[0],true,PlanList,PatPlanList,BenefitList);
 		}
@@ -2613,7 +3294,7 @@ namespace OpenDental{
 			if(FormP.DialogResult!=DialogResult.OK) return;
 			Procedures.SetDateFirstVisit(DateTime.Today,1,PatCur);
 			Procedure ProcCur;
-			for(int n=0;n==0 || n<cTeeth.SelectedTeeth.Length;n++){
+			for(int n=0;n==0 || n<toothChart.SelectedTeeth.Length;n++){
 				isValid=true;
 				ProcCur=new Procedure();//going to be an insert, so no need to set Procedures.CurOld
 				//Procedure
@@ -2646,10 +3327,10 @@ namespace OpenDental{
 						isValid=false;
 					else
 						ProcCur.Surf=textSurf.Text;
-					if(cTeeth.SelectedTeeth.Length==0)
+					if(toothChart.SelectedTeeth.Length==0)
 						isValid=false;
 					else
-						ProcCur.ToothNum=cTeeth.SelectedTeeth[n];
+						ProcCur.ToothNum=toothChart.SelectedTeeth[n];
 					//Procedures.Cur=ProcCur;
 					if(isValid)
 						AddQuick(ProcCur);
@@ -2657,38 +3338,38 @@ namespace OpenDental{
 						AddProcedure(ProcCur);
 				}
 				else if(tArea==TreatmentArea.Tooth){
-					if(cTeeth.SelectedTeeth.Length==0){
+					if(toothChart.SelectedTeeth.Length==0){
 						//Procedures.Cur=ProcCur;
 						AddProcedure(ProcCur);
 					}
 					else{
-						ProcCur.ToothNum=cTeeth.SelectedTeeth[n];
+						ProcCur.ToothNum=toothChart.SelectedTeeth[n];
 						//Procedures.Cur=ProcCur;
 						AddQuick(ProcCur);
 					}
 				}
 				else if(tArea==TreatmentArea.ToothRange){
-					if(cTeeth.SelectedTeeth.Length==0){
+					if(toothChart.SelectedTeeth.Length==0){
 						//Procedures.Cur=ProcCur;
 						AddProcedure(ProcCur);
 					}
 					else{
 						ProcCur.ToothRange="";
-						for(int b=0;b<cTeeth.SelectedTeeth.Length;b++){
+						for(int b=0;b<toothChart.SelectedTeeth.Length;b++){
 							if(b!=0) ProcCur.ToothRange+=",";
-							ProcCur.ToothRange+=cTeeth.SelectedTeeth[b];
+							ProcCur.ToothRange+=toothChart.SelectedTeeth[b];
 						}
 						//Procedures.Cur=ProcCur;
 						AddProcedure(ProcCur);//it's nice to see the procedure to verify the range
 					}
 				}
 				else if(tArea==TreatmentArea.Arch){
-					if(cTeeth.SelectedTeeth.Length==0){
+					if(toothChart.SelectedTeeth.Length==0){
 						//Procedures.Cur=ProcCur;
 						AddProcedure(ProcCur);
 						continue;
 					}
-					if(Tooth.IsMaxillary(cTeeth.SelectedTeeth[0])){
+					if(Tooth.IsMaxillary(toothChart.SelectedTeeth[0])){
 						ProcCur.Surf="U";
 					}
 					else{
@@ -2718,18 +3399,24 @@ namespace OpenDental{
 			//newDx=Defs.Defns[(int)DefCat.Diagnosis][listDx.IndexFromPoint(e.X,e.Y)].DefNum;
 		}
 
-		private void tbProg_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e) {
+		/*private void tbProg_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e) {
 			if(e.KeyCode==Keys.Delete || e.KeyCode==Keys.Back){
+				DeleteRows();
+			}
+		}*/
+
+		private void gridProg_KeyDown(object sender,KeyEventArgs e) {
+			if(e.KeyCode==Keys.Delete || e.KeyCode==Keys.Back) {
 				DeleteRows();
 			}
 		}
 
-		private void butDel_Click(object sender, System.EventArgs e) {
-			DeleteRows();
-		}
+		//private void butDel_Click(object sender, System.EventArgs e) {
+		//	DeleteRows();
+		//}
 
 		private void DeleteRows(){
-			if(tbProg.SelectedIndices.Length==0){
+			if(gridProg.SelectedIndices.Length==0){
 				MessageBox.Show(Lan.g(this,"Please select an item first."));
 				return;
 			}
@@ -2738,22 +3425,23 @@ namespace OpenDental{
 				return;
 			}
 			int skipped=0;
-			for(int i=0;i<tbProg.SelectedIndices.Length;i++){
-				switch(((ProgLine)ProgLineAL[tbProg.SelectedIndices[i]]).Type){
-					case ProgType.Proc:
-						if(((Procedure)ProcAL[((ProgLine)ProgLineAL[tbProg.SelectedIndices[i]]).Index]).ProcStatus==ProcStat.C){
-							skipped++;
-						}
-						else{
-							//also deletes the claimprocs:
-							((Procedure)ProcAL[((ProgLine)ProgLineAL[tbProg.SelectedIndices[i]]).Index]).Delete();
-						}
-						break;
-					case ProgType.Rx:		
-						RxPats.Cur=(RxPat)RxAL[((ProgLine)ProgLineAL[tbProg.SelectedIndices[i]]).Index];
-						RxPats.DeleteCur();
-						break;
-				}//switch
+			Type type;
+			for(int i=0;i<gridProg.SelectedIndices.Length;i++){
+				type=gridProg.Rows[gridProg.SelectedIndices[i]].Tag.GetType();
+				if(type==typeof(Procedure)){
+					if(((Procedure)gridProg.Rows[gridProg.SelectedIndices[i]].Tag).ProcStatus==ProcStat.C){
+						skipped++;
+					}
+					else{
+						//also deletes the claimprocs:
+						((Procedure)gridProg.Rows[gridProg.SelectedIndices[i]].Tag).Delete();
+					}
+				}
+				else if(type==typeof(RxPat)){
+					((RxPat)gridProg.Rows[gridProg.SelectedIndices[i]].Tag).Delete();
+					//RxPat RxPatCur=(RxPat)RxAL[((ProgLine)ProgLineAL[gridProg.SelectedIndices[i]]).Index];
+					//RxPatCur.Delete();
+				}
 			}
 			Recalls.Synch(PatCur.PatNum);
 			if(skipped>0){
@@ -2762,6 +3450,754 @@ namespace OpenDental{
 			}
 			ModuleSelected(PatCur.PatNum);
 		}
+
+		private void radioEntryEO_CheckedChanged(object sender,System.EventArgs e) {
+			newStatus=ProcStat.EO;
+		}
+
+		private void radioEntryEC_CheckedChanged(object sender,System.EventArgs e) {
+			newStatus=ProcStat.EC;
+		}
+
+		private void radioEntryTP_CheckedChanged(object sender,System.EventArgs e) {
+			newStatus=ProcStat.TP;
+		}
+
+		private void radioEntryC_CheckedChanged(object sender,System.EventArgs e) {
+			newStatus=ProcStat.C;
+		}
+
+		private void radioEntryR_CheckedChanged(object sender,System.EventArgs e) {
+			newStatus=ProcStat.R;
+		}
+
+		private void listButtonCats_Click(object sender,EventArgs e) {
+			FillProcButtons();
+		}
+
+		/*private void listProcButtons_Click(object sender, System.EventArgs e) {
+			if(newStatus==ProcStat.C){
+				if(!Security.IsAuthorized(Permissions.ProcComplCreate)){
+					return;
+				}
+			}
+			if(listProcButtons.SelectedIndex==-1){
+				return;
+			}
+		  ProcButton ProcButtonCur=ProcButtons.List[listProcButtons.SelectedIndex];
+			ProcButtonClicked(ProcButtonCur.ProcButtonNum);
+		}*/
+
+		private void listViewButtons_Click(object sender,EventArgs e) {
+			if(newStatus==ProcStat.C) {
+				if(!Security.IsAuthorized(Permissions.ProcComplCreate)) {
+					return;
+				}
+			}
+			if(listViewButtons.SelectedIndices.Count==0) {
+				return;
+			}
+			ProcButton ProcButtonCur=ProcButtonList[listViewButtons.SelectedIndices[0]];
+			ProcButtonClicked(ProcButtonCur.ProcButtonNum);
+		}
+
+		private void ProcButtonClicked(int procButtonNum){
+			Procedures.SetDateFirstVisit(DateTime.Today,1,PatCur);
+			bool isValid;
+			TreatmentArea tArea;
+			int quadCount=0;//automates quadrant codes.
+			string[] adaCodeList=ProcButtonItems.GetADAListForButton(procButtonNum);
+			int[] autoCodeList=ProcButtonItems.GetAutoListForButton(procButtonNum);
+			
+			Procedure ProcCur;
+			for(int i=0;i<adaCodeList.Length;i++){
+				//needs to loop at least once, regardless of whether any teeth are selected.	
+				for(int n=0;n==0 || n<toothChart.SelectedTeeth.Length;n++){
+					isValid=true;
+					ProcCur=new Procedure();//insert, so no need to set CurOld
+					ProcCur.ADACode=adaCodeList[i];
+					tArea=ProcedureCodes.GetProcCode(ProcCur.ADACode).TreatArea;
+					if((tArea==TreatmentArea.Arch
+						|| tArea==TreatmentArea.Mouth
+						|| tArea==TreatmentArea.Quad
+						|| tArea==TreatmentArea.Sextant
+						|| tArea==TreatmentArea.ToothRange)
+						&& n>0){//the only two left are tooth and surf
+						continue;//only entered if n=0, so they don't get entered more than once.
+					}
+					else if(tArea==TreatmentArea.Quad){
+						switch(quadCount){
+							case 0: ProcCur.Surf="UR"; break;
+							case 1: ProcCur.Surf="UL"; break;
+							case 2: ProcCur.Surf="LL"; break;
+							case 3: ProcCur.Surf="LR"; break;
+							default: ProcCur.Surf="UR"; break;//this could happen.
+						}
+						quadCount++;
+						AddQuick(ProcCur);
+					}
+					else if(tArea==TreatmentArea.Surf){
+						if(textSurf.Text=="")
+							isValid=false;
+						else
+							ProcCur.Surf=textSurf.Text;
+						if(toothChart.SelectedTeeth.Length==0)
+							isValid=false;
+						else
+							ProcCur.ToothNum=toothChart.SelectedTeeth[n];
+						if(isValid)
+							AddQuick(ProcCur);
+						else
+							AddProcedure(ProcCur);
+					}
+					else if(tArea==TreatmentArea.Tooth){
+						if(toothChart.SelectedTeeth.Length==0){
+							AddProcedure(ProcCur);
+						}
+						else{
+							ProcCur.ToothNum=toothChart.SelectedTeeth[n];
+							AddQuick(ProcCur);
+						}
+					}
+					else if(tArea==TreatmentArea.ToothRange){
+						if(toothChart.SelectedTeeth.Length==0){
+							AddProcedure(ProcCur);
+						}
+						else{
+							ProcCur.ToothRange="";
+							for(int b=0;b<toothChart.SelectedTeeth.Length;b++){
+								if(b!=0) ProcCur.ToothRange+=",";
+								ProcCur.ToothRange+=toothChart.SelectedTeeth[b];
+							}
+							AddQuick(ProcCur);
+						}
+					}
+					else if(tArea==TreatmentArea.Arch){
+						if(toothChart.SelectedTeeth.Length==0){
+							AddProcedure(ProcCur);
+							continue;
+						}
+						if(Tooth.IsMaxillary(toothChart.SelectedTeeth[0])){
+							ProcCur.Surf="U";
+						}
+						else{
+							ProcCur.Surf="L";
+						}
+						AddQuick(ProcCur);
+					}
+					else if(tArea==TreatmentArea.Sextant){
+						AddProcedure(ProcCur);
+					}
+					else{//mouth
+						AddQuick(ProcCur);
+					}
+				}//n selected teeth
+			}//end Part 1 checking for AdaCodes, now will check for AutoCodes
+			string toothNum;
+			string surf;
+			bool isAdditional;
+			for(int i=0;i<autoCodeList.Length;i++){
+				for(int n=0;n==0 || n<toothChart.SelectedTeeth.Length;n++){
+					isValid=true;
+					if(toothChart.SelectedTeeth.Length!=0)
+						toothNum=toothChart.SelectedTeeth[n];
+					else
+						toothNum="";
+					surf=textSurf.Text;
+					isAdditional= n!=0;
+					ProcCur=new Procedure();//this will be an insert, so no need to set CurOld
+					ProcCur.ADACode=AutoCodeItems.GetADA(autoCodeList[i],toothNum,surf,isAdditional,PatCur.PatNum,PatCur.Age);
+					tArea=ProcedureCodes.GetProcCode(ProcCur.ADACode).TreatArea;
+					if((tArea==TreatmentArea.Arch
+						|| tArea==TreatmentArea.Mouth
+						|| tArea==TreatmentArea.Quad
+						|| tArea==TreatmentArea.Sextant
+						|| tArea==TreatmentArea.ToothRange)
+						&& n>0){//the only two left are tooth and surf
+						continue;//only entered if n=0, so they don't get entered more than once.
+					}
+					else if(tArea==TreatmentArea.Quad){
+						switch(quadCount){
+							case 0: ProcCur.Surf="UR"; break;
+							case 1: ProcCur.Surf="UL"; break;
+							case 2: ProcCur.Surf="LL"; break;
+							case 3: ProcCur.Surf="LR"; break;
+							default: ProcCur.Surf="UR"; break;//this could happen.
+						}
+						quadCount++;
+						AddQuick(ProcCur);
+					}
+					else if(tArea==TreatmentArea.Surf){
+						if(textSurf.Text=="")
+							isValid=false;
+						else
+							ProcCur.Surf=textSurf.Text;
+						if(toothChart.SelectedTeeth.Length==0)
+							isValid=false;
+						else
+							ProcCur.ToothNum=toothChart.SelectedTeeth[n];
+						if(isValid)
+							AddQuick(ProcCur);
+						else
+							AddProcedure(ProcCur);
+					}
+					else if(tArea==TreatmentArea.Tooth){
+						if(toothChart.SelectedTeeth.Length==0){
+							AddProcedure(ProcCur);
+						}
+						else{
+							ProcCur.ToothNum=toothChart.SelectedTeeth[n];
+							AddQuick(ProcCur);
+						}
+					}
+					else if(tArea==TreatmentArea.ToothRange){
+						if(toothChart.SelectedTeeth.Length==0){
+							AddProcedure(ProcCur);
+						}
+						else{
+							ProcCur.ToothRange="";
+							for(int b=0;b<toothChart.SelectedTeeth.Length;b++){
+								if(b!=0) ProcCur.ToothRange+=",";
+								ProcCur.ToothRange+=toothChart.SelectedTeeth[b];
+							}
+							AddQuick(ProcCur);
+						}
+					}
+					else if(tArea==TreatmentArea.Arch){
+						if(toothChart.SelectedTeeth.Length==0){
+							AddProcedure(ProcCur);
+							continue;
+						}
+						if(Tooth.IsMaxillary(toothChart.SelectedTeeth[0])){
+							ProcCur.Surf="U";
+						}
+						else{
+							ProcCur.Surf="L";
+						}
+						AddQuick(ProcCur);
+					}
+					else if(tArea==TreatmentArea.Sextant){
+						AddProcedure(ProcCur);
+					}
+					else{//mouth
+						AddQuick(ProcCur);
+					}
+				}//n selected teeth
+			}//for i
+			ModuleSelected(PatCur.PatNum);
+			if(newStatus==ProcStat.C){
+				SecurityLogs.MakeLogEntry(Permissions.ProcComplCreate,PatCur.PatNum,
+					PatCur.GetNameLF()+", "
+					+DateTime.Today.ToShortDateString());
+			}
+		}
+		
+		private void textADACode_Enter(object sender,System.EventArgs e) {
+			if(textADACode.Text==Lan.g(this,"Type ADA Code")) {
+				textADACode.Text="";
+			}
+		}
+
+		private void textADACode_KeyDown(object sender,System.Windows.Forms.KeyEventArgs e) {
+			if(e.KeyCode==Keys.Return) {
+				EnterTypedCode();
+			}
+		}
+
+		private void textADACode_TextChanged(object sender,System.EventArgs e) {
+			if(textADACode.Text=="d") {
+				textADACode.Text="D";
+				textADACode.SelectionStart=1;
+			}
+		}
+
+		private void butOK_Click(object sender,System.EventArgs e) {
+			EnterTypedCode();
+		}
+
+		private void EnterTypedCode() {
+			if(newStatus==ProcStat.C) {
+				if(!Security.IsAuthorized(Permissions.ProcComplCreate)) {
+					return;
+				}
+			}
+			if(CultureInfo.CurrentCulture.Name=="en-US"
+				&& Regex.IsMatch(textADACode.Text,@"^\d{4}$")//if exactly 4 digits
+				&& !ProcedureCodes.HList.ContainsKey(textADACode.Text))//and the 4 digit code is not found
+			{
+				textADACode.Text="D"+textADACode.Text;
+			}
+			if(!ProcedureCodes.HList.ContainsKey(textADACode.Text)) {
+				MessageBox.Show(Lan.g(this,"Invalid code."));
+				//textADACode.Text="";
+				textADACode.SelectionStart=textADACode.Text.Length;
+				return;
+			}
+			Procedures.SetDateFirstVisit(DateTime.Today,1,PatCur);
+			TreatmentArea tArea;
+			Procedure ProcCur;
+			int quadCount=0;//automates quadrant codes.
+			for(int n=0;n==0 || n<toothChart.SelectedTeeth.Length;n++) {//always loops at least once.
+				ProcCur=new Procedure();//this will be an insert, so no need to set CurOld
+				ProcCur.ADACode=textADACode.Text;
+				bool isValid=true;
+				tArea=ProcedureCodes.GetProcCode(ProcCur.ADACode).TreatArea;
+				if((tArea==TreatmentArea.Arch
+					|| tArea==TreatmentArea.Mouth
+					|| tArea==TreatmentArea.Quad
+					|| tArea==TreatmentArea.Sextant
+					|| tArea==TreatmentArea.ToothRange)
+					&& n>0) {//the only two left are tooth and surf
+					continue;//only entered if n=0, so they don't get entered more than once.
+				}
+				else if(tArea==TreatmentArea.Quad) {
+					switch(quadCount) {
+						case 0: ProcCur.Surf="UR"; break;
+						case 1: ProcCur.Surf="UL"; break;
+						case 2: ProcCur.Surf="LL"; break;
+						case 3: ProcCur.Surf="LR"; break;
+						default: ProcCur.Surf="UR"; break;//this could happen.
+					}
+					quadCount++;
+					AddQuick(ProcCur);
+				}
+				else if(tArea==TreatmentArea.Surf) {
+					if(textSurf.Text=="")
+						isValid=false;
+					else
+						ProcCur.Surf=textSurf.Text;
+					if(toothChart.SelectedTeeth.Length==0)
+						isValid=false;
+					else
+						ProcCur.ToothNum=toothChart.SelectedTeeth[n];
+					if(isValid)
+						AddQuick(ProcCur);
+					else
+						AddProcedure(ProcCur);
+				}
+				else if(tArea==TreatmentArea.Tooth) {
+					if(toothChart.SelectedTeeth.Length==0) {
+						AddProcedure(ProcCur);
+					}
+					else {
+						ProcCur.ToothNum=toothChart.SelectedTeeth[n];
+						AddQuick(ProcCur);
+					}
+				}
+				else if(tArea==TreatmentArea.ToothRange) {
+					if(toothChart.SelectedTeeth.Length==0) {
+						AddProcedure(ProcCur);
+					}
+					else {
+						ProcCur.ToothRange="";
+						for(int b=0;b<toothChart.SelectedTeeth.Length;b++) {
+							if(b!=0) ProcCur.ToothRange+=",";
+							ProcCur.ToothRange+=toothChart.SelectedTeeth[b];
+						}
+						AddQuick(ProcCur);
+					}
+				}
+				else if(tArea==TreatmentArea.Arch) {
+					if(toothChart.SelectedTeeth.Length==0) {
+						AddProcedure(ProcCur);
+						continue;
+					}
+					if(Tooth.IsMaxillary(toothChart.SelectedTeeth[0])) {
+						ProcCur.Surf="U";
+					}
+					else {
+						ProcCur.Surf="L";
+					}
+					AddQuick(ProcCur);
+				}
+				else if(tArea==TreatmentArea.Sextant) {
+					AddProcedure(ProcCur);
+				}
+				else {//mouth
+					AddQuick(ProcCur);
+				}
+			}//n selected teeth
+			ModuleSelected(PatCur.PatNum);
+			textADACode.Text="";
+			textADACode.Select();
+			if(newStatus==ProcStat.C) {
+				SecurityLogs.MakeLogEntry(Permissions.ProcComplCreate,PatCur.PatNum,
+					PatCur.GetNameLF()+", "
+					+DateTime.Today.ToShortDateString());
+			}
+		}
+		#endregion EnterTx
+
+		#region MissingTeeth
+		private void butMissing_Click(object sender,EventArgs e) {
+			if(toothChart.SelectedTeeth.Length==0){
+				MsgBox.Show(this,"Please select teeth first.");
+				return;
+			}
+			for(int i=0;i<toothChart.SelectedTeeth.Length;i++){
+				ToothInitials.SetValue(PatCur.PatNum,toothChart.SelectedTeeth[i],ToothInitialType.Missing);
+			}
+			ToothInitialList=ToothInitials.Refresh(PatCur.PatNum);
+			FillToothChart(false);
+		}
+
+		private void butNotMissing_Click(object sender,EventArgs e) {
+			if(toothChart.SelectedTeeth.Length==0) {
+				MsgBox.Show(this,"Please select teeth first.");
+				return;
+			}
+			for(int i=0;i<toothChart.SelectedTeeth.Length;i++) {
+				ToothInitials.ClearValue(PatCur.PatNum,toothChart.SelectedTeeth[i],ToothInitialType.Missing);
+			}
+			ToothInitialList=ToothInitials.Refresh(PatCur.PatNum);
+			FillToothChart(false);
+		}
+
+		private void butEdentulous_Click(object sender,EventArgs e) {
+			ToothInitials.ClearAllValuesForType(PatCur.PatNum,ToothInitialType.Missing);
+			for(int i=1;i<=32;i++){
+				ToothInitials.SetValueQuick(PatCur.PatNum,i.ToString(),ToothInitialType.Missing,0);
+			}
+			ToothInitialList=ToothInitials.Refresh(PatCur.PatNum);
+			FillToothChart(false);
+		}
+
+		private void butHidden_Click(object sender,EventArgs e) {
+			if(toothChart.SelectedTeeth.Length==0) {
+				MsgBox.Show(this,"Please select teeth first.");
+				return;
+			}
+			for(int i=0;i<toothChart.SelectedTeeth.Length;i++) {
+				ToothInitials.SetValue(PatCur.PatNum,toothChart.SelectedTeeth[i],ToothInitialType.Hidden);
+			}
+			ToothInitialList=ToothInitials.Refresh(PatCur.PatNum);
+			FillToothChart(false);
+		}
+
+		private void butUnhide_Click(object sender,EventArgs e) {
+			if(listHidden.SelectedIndex==-1) {
+				MsgBox.Show(this,"Please select an item from the list first.");
+				return;
+			}
+			ToothInitials.ClearValue(PatCur.PatNum,(string)listHidden.SelectedItem,ToothInitialType.Hidden);
+			ToothInitialList=ToothInitials.Refresh(PatCur.PatNum);
+			FillToothChart(false);
+		}
+		#endregion MissingTeeth
+
+		#region Movements
+		private void FillMovementsAndHidden(){
+			if(tabProc.Height<50){//skip if the tab control is short(not visible){
+				return;
+			}
+			if(tabProc.SelectedIndex==2)//movements tab
+			{
+				if(toothChart.SelectedTeeth.Length==0) {
+					textShiftM.Text="";
+					textShiftO.Text="";
+					textShiftB.Text="";
+					textRotate.Text="";
+					textTipM.Text="";
+					textTipB.Text="";
+					return;
+				}
+				textShiftM.Text=
+					ToothInitials.GetMovement(ToothInitialList,toothChart.SelectedTeeth[0],ToothInitialType.ShiftM).ToString();  
+				textShiftO.Text=
+					ToothInitials.GetMovement(ToothInitialList,toothChart.SelectedTeeth[0],ToothInitialType.ShiftO).ToString();
+				textShiftB.Text=
+					ToothInitials.GetMovement(ToothInitialList,toothChart.SelectedTeeth[0],ToothInitialType.ShiftB).ToString();
+				textRotate.Text=
+					ToothInitials.GetMovement(ToothInitialList,toothChart.SelectedTeeth[0],ToothInitialType.Rotate).ToString();
+				textTipM.Text=
+					ToothInitials.GetMovement(ToothInitialList,toothChart.SelectedTeeth[0],ToothInitialType.TipM).ToString();
+				textTipB.Text=
+					ToothInitials.GetMovement(ToothInitialList,toothChart.SelectedTeeth[0],ToothInitialType.TipB).ToString();
+				//At this point, all 6 blanks have either a number or 0.
+				//As we go through this loop, none of the values will change.
+				//The only thing that will happen is that some of them will become blank.
+				string move;
+				for(int i=1;i<toothChart.SelectedTeeth.Length;i++){
+					move=ToothInitials.GetMovement(ToothInitialList,toothChart.SelectedTeeth[i],ToothInitialType.ShiftM).ToString();
+					if(textShiftM.Text != move){
+						textShiftM.Text="";
+					}
+					move=ToothInitials.GetMovement(ToothInitialList,toothChart.SelectedTeeth[i],ToothInitialType.ShiftO).ToString();
+					if(textShiftO.Text != move) {
+						textShiftO.Text="";
+					}
+					move=ToothInitials.GetMovement(ToothInitialList,toothChart.SelectedTeeth[i],ToothInitialType.ShiftB).ToString();
+					if(textShiftB.Text != move) {
+						textShiftB.Text="";
+					}
+					move=ToothInitials.GetMovement(ToothInitialList,toothChart.SelectedTeeth[i],ToothInitialType.Rotate).ToString();
+					if(textRotate.Text != move) {
+						textRotate.Text="";
+					}
+					move=ToothInitials.GetMovement(ToothInitialList,toothChart.SelectedTeeth[i],ToothInitialType.TipM).ToString();
+					if(textTipM.Text != move) {
+						textTipM.Text="";
+					}
+					move=ToothInitials.GetMovement(ToothInitialList,toothChart.SelectedTeeth[i],ToothInitialType.TipB).ToString();
+					if(textTipB.Text != move) {
+						textTipB.Text="";
+					}
+				}
+			}//if movements tab
+			if(tabProc.SelectedIndex==1)//missing teeth
+			{
+				listHidden.Items.Clear();
+				ArrayList hidden=ToothInitials.GetHiddenTeeth(ToothInitialList);
+				for(int i=0;i<hidden.Count;i++){
+					listHidden.Items.Add(hidden[i]);
+				}
+			}
+		}
+
+		private void butShiftMminus_Click(object sender,EventArgs e) {
+			if(toothChart.SelectedTeeth.Length==0) {
+				MsgBox.Show(this,"Please select teeth first.");
+				return;
+			}
+			for(int i=0;i<toothChart.SelectedTeeth.Length;i++) {
+				ToothInitials.AddMovement(ToothInitialList,PatCur.PatNum,toothChart.SelectedTeeth[i],ToothInitialType.ShiftM,-2);
+			}
+			ToothInitialList=ToothInitials.Refresh(PatCur.PatNum);
+			FillToothChart(true);
+		}
+
+		private void butShiftMplus_Click(object sender,EventArgs e) {
+			if(toothChart.SelectedTeeth.Length==0) {
+				MsgBox.Show(this,"Please select teeth first.");
+				return;
+			}
+			for(int i=0;i<toothChart.SelectedTeeth.Length;i++) {
+				ToothInitials.AddMovement(ToothInitialList,PatCur.PatNum,toothChart.SelectedTeeth[i],ToothInitialType.ShiftM,2);
+			}
+			ToothInitialList=ToothInitials.Refresh(PatCur.PatNum);
+			FillToothChart(true);
+		}
+
+		private void butShiftOminus_Click(object sender,EventArgs e) {
+			if(toothChart.SelectedTeeth.Length==0) {
+				MsgBox.Show(this,"Please select teeth first.");
+				return;
+			}
+			for(int i=0;i<toothChart.SelectedTeeth.Length;i++) {
+				ToothInitials.AddMovement(ToothInitialList,PatCur.PatNum,toothChart.SelectedTeeth[i],ToothInitialType.ShiftO,-2);
+			}
+			ToothInitialList=ToothInitials.Refresh(PatCur.PatNum);
+			FillToothChart(true);
+		}
+
+		private void butShiftOplus_Click(object sender,EventArgs e) {
+			if(toothChart.SelectedTeeth.Length==0) {
+				MsgBox.Show(this,"Please select teeth first.");
+				return;
+			}
+			for(int i=0;i<toothChart.SelectedTeeth.Length;i++) {
+				ToothInitials.AddMovement(ToothInitialList,PatCur.PatNum,toothChart.SelectedTeeth[i],ToothInitialType.ShiftO,2);
+			}
+			ToothInitialList=ToothInitials.Refresh(PatCur.PatNum);
+			FillToothChart(true);
+		}
+
+		private void butShiftBminus_Click(object sender,EventArgs e) {
+			if(toothChart.SelectedTeeth.Length==0) {
+				MsgBox.Show(this,"Please select teeth first.");
+				return;
+			}
+			for(int i=0;i<toothChart.SelectedTeeth.Length;i++) {
+				ToothInitials.AddMovement(ToothInitialList,PatCur.PatNum,toothChart.SelectedTeeth[i],ToothInitialType.ShiftB,-2);
+			}
+			ToothInitialList=ToothInitials.Refresh(PatCur.PatNum);
+			FillToothChart(true);
+		}
+
+		private void butShiftBplus_Click(object sender,EventArgs e) {
+			if(toothChart.SelectedTeeth.Length==0) {
+				MsgBox.Show(this,"Please select teeth first.");
+				return;
+			}
+			for(int i=0;i<toothChart.SelectedTeeth.Length;i++) {
+				ToothInitials.AddMovement(ToothInitialList,PatCur.PatNum,toothChart.SelectedTeeth[i],ToothInitialType.ShiftB,2);
+			}
+			ToothInitialList=ToothInitials.Refresh(PatCur.PatNum);
+			FillToothChart(true);
+		}
+
+		private void butRotateMinus_Click(object sender,EventArgs e) {
+			if(toothChart.SelectedTeeth.Length==0) {
+				MsgBox.Show(this,"Please select teeth first.");
+				return;
+			}
+			for(int i=0;i<toothChart.SelectedTeeth.Length;i++) {
+				ToothInitials.AddMovement(ToothInitialList,PatCur.PatNum,toothChart.SelectedTeeth[i],ToothInitialType.Rotate,-20);
+			}
+			ToothInitialList=ToothInitials.Refresh(PatCur.PatNum);
+			FillToothChart(true);
+		}
+
+		private void butRotatePlus_Click(object sender,EventArgs e) {
+			if(toothChart.SelectedTeeth.Length==0) {
+				MsgBox.Show(this,"Please select teeth first.");
+				return;
+			}
+			for(int i=0;i<toothChart.SelectedTeeth.Length;i++) {
+				ToothInitials.AddMovement(ToothInitialList,PatCur.PatNum,toothChart.SelectedTeeth[i],ToothInitialType.Rotate,20);
+			}
+			ToothInitialList=ToothInitials.Refresh(PatCur.PatNum);
+			FillToothChart(true);
+		}
+
+		private void butTipMminus_Click(object sender,EventArgs e) {
+			if(toothChart.SelectedTeeth.Length==0) {
+				MsgBox.Show(this,"Please select teeth first.");
+				return;
+			}
+			for(int i=0;i<toothChart.SelectedTeeth.Length;i++) {
+				ToothInitials.AddMovement(ToothInitialList,PatCur.PatNum,toothChart.SelectedTeeth[i],ToothInitialType.TipM,-10);
+			}
+			ToothInitialList=ToothInitials.Refresh(PatCur.PatNum);
+			FillToothChart(true);
+		}
+
+		private void butTipMplus_Click(object sender,EventArgs e) {
+			if(toothChart.SelectedTeeth.Length==0) {
+				MsgBox.Show(this,"Please select teeth first.");
+				return;
+			}
+			for(int i=0;i<toothChart.SelectedTeeth.Length;i++) {
+				ToothInitials.AddMovement(ToothInitialList,PatCur.PatNum,toothChart.SelectedTeeth[i],ToothInitialType.TipM,10);
+			}
+			ToothInitialList=ToothInitials.Refresh(PatCur.PatNum);
+			FillToothChart(true);
+		}
+
+		private void butTipBminus_Click(object sender,EventArgs e) {
+			if(toothChart.SelectedTeeth.Length==0) {
+				MsgBox.Show(this,"Please select teeth first.");
+				return;
+			}
+			for(int i=0;i<toothChart.SelectedTeeth.Length;i++) {
+				ToothInitials.AddMovement(ToothInitialList,PatCur.PatNum,toothChart.SelectedTeeth[i],ToothInitialType.TipB,-10);
+			}
+			ToothInitialList=ToothInitials.Refresh(PatCur.PatNum);
+			FillToothChart(true);
+		}
+
+		private void butTipBplus_Click(object sender,EventArgs e) {
+			if(toothChart.SelectedTeeth.Length==0) {
+				MsgBox.Show(this,"Please select teeth first.");
+				return;
+			}
+			for(int i=0;i<toothChart.SelectedTeeth.Length;i++) {
+				ToothInitials.AddMovement(ToothInitialList,PatCur.PatNum,toothChart.SelectedTeeth[i],ToothInitialType.TipB,10);
+			}
+			ToothInitialList=ToothInitials.Refresh(PatCur.PatNum);
+			FillToothChart(true);
+		}
+
+		private void butApplyMovements_Click(object sender,EventArgs e) {
+			if(textShiftM.errorProvider1.GetError(textShiftM)!=""
+				|| textShiftO.errorProvider1.GetError(textShiftO)!=""
+				|| textShiftB.errorProvider1.GetError(textShiftB)!=""
+				|| textRotate.errorProvider1.GetError(textRotate)!=""
+				|| textTipM.errorProvider1.GetError(textTipM)!=""
+				|| textTipB.errorProvider1.GetError(textTipB)!="")
+			{
+				MsgBox.Show(this,"Please fix errors first.");
+				return;
+			}
+			for(int i=0;i<toothChart.SelectedTeeth.Length;i++){
+				if(textShiftM.Text!=""){
+					ToothInitials.SetValue(PatCur.PatNum,toothChart.SelectedTeeth[i],
+						ToothInitialType.ShiftM,PIn.PFloat(textShiftM.Text));
+				}
+				if(textShiftO.Text!="") {
+					ToothInitials.SetValue(PatCur.PatNum,toothChart.SelectedTeeth[i],
+						ToothInitialType.ShiftO,PIn.PFloat(textShiftO.Text));
+				}
+				if(textShiftB.Text!="") {
+					ToothInitials.SetValue(PatCur.PatNum,toothChart.SelectedTeeth[i],
+						ToothInitialType.ShiftB,PIn.PFloat(textShiftB.Text));
+				}
+				if(textRotate.Text!="") {
+					ToothInitials.SetValue(PatCur.PatNum,toothChart.SelectedTeeth[i],
+						ToothInitialType.Rotate,PIn.PFloat(textRotate.Text));
+				}
+				if(textTipM.Text!="") {
+					ToothInitials.SetValue(PatCur.PatNum,toothChart.SelectedTeeth[i],
+						ToothInitialType.TipM,PIn.PFloat(textTipM.Text));
+				}
+				if(textTipB.Text!="") {
+					ToothInitials.SetValue(PatCur.PatNum,toothChart.SelectedTeeth[i],
+						ToothInitialType.TipB,PIn.PFloat(textTipB.Text));
+				}
+			}
+			ToothInitialList=ToothInitials.Refresh(PatCur.PatNum);
+			FillToothChart(true);
+		}
+		#endregion Movements
+
+		#region Primary
+		private void butPrimary_Click(object sender,EventArgs e) {
+			if(toothChart.SelectedTeeth.Length==0) {
+				MsgBox.Show(this,"Please select teeth first.");
+				return;
+			}
+			for(int i=0;i<toothChart.SelectedTeeth.Length;i++) {
+				ToothInitials.SetValue(PatCur.PatNum,toothChart.SelectedTeeth[i],ToothInitialType.Primary);
+			}
+			ToothInitialList=ToothInitials.Refresh(PatCur.PatNum);
+			FillToothChart(false);
+		}
+
+		private void butPerm_Click(object sender,EventArgs e) {
+			if(toothChart.SelectedTeeth.Length==0) {
+				MsgBox.Show(this,"Please select teeth first.");
+				return;
+			}
+			for(int i=0;i<toothChart.SelectedTeeth.Length;i++) {
+				if(ToothGraphic.IsPrimary(toothChart.SelectedTeeth[i])){
+					ToothInitials.ClearValue(PatCur.PatNum,ToothGraphic.PriToPerm(toothChart.SelectedTeeth[i])
+						,ToothInitialType.Primary);
+				}
+				else{
+					ToothInitials.ClearValue(PatCur.PatNum,toothChart.SelectedTeeth[i]
+						,ToothInitialType.Primary);
+				}
+			}
+			ToothInitialList=ToothInitials.Refresh(PatCur.PatNum);
+			FillToothChart(false);
+		}
+
+		private void butAllPrimary_Click(object sender,EventArgs e) {
+			ToothInitials.ClearAllValuesForType(PatCur.PatNum,ToothInitialType.Primary);
+			for(int i=1;i<=32;i++){
+				ToothInitials.SetValueQuick(PatCur.PatNum,i.ToString(),ToothInitialType.Primary,0);
+			}
+			ToothInitialList=ToothInitials.Refresh(PatCur.PatNum);
+			FillToothChart(false);
+		}
+
+		private void butAllPerm_Click(object sender,EventArgs e) {
+			ToothInitials.ClearAllValuesForType(PatCur.PatNum,ToothInitialType.Primary);
+			ToothInitialList=ToothInitials.Refresh(PatCur.PatNum);
+			FillToothChart(false);
+		}
+
+		private void butMixed_Click(object sender,EventArgs e) {
+			ToothInitials.ClearAllValuesForType(PatCur.PatNum,ToothInitialType.Primary);
+			string[] priTeeth=new string[] 
+				{"1","2","4","5","6","11","12","13","15","16","17","18","20","21","22","27","28","29","31","32"};
+			for(int i=0;i<priTeeth.Length;i++) {
+				ToothInitials.SetValueQuick(PatCur.PatNum,priTeeth[i],ToothInitialType.Primary,0);
+			}
+			ToothInitialList=ToothInitials.Refresh(PatCur.PatNum);
+			FillToothChart(false);
+		}
+		#endregion Primary
 
 		private void button1_Click(object sender, System.EventArgs e) {
 			//sometimes used for testing purposes
@@ -2803,6 +4239,10 @@ namespace OpenDental{
 			FillProgNotes();
 		}
 
+		private void checkComm_Click(object sender,EventArgs e) {
+			FillProgNotes();
+		}
+
 		private void checkShowTeeth_Click(object sender, System.EventArgs e) {
 			FillProgNotes();
 		}
@@ -2814,6 +4254,7 @@ namespace OpenDental{
 			checkShowR.Checked=true;
 			checkNotes.Checked=true;
 			checkRx.Checked=true;
+			checkComm.Checked=true;
 			checkShowTeeth.Checked=false;
 			FillProgNotes();
 		}
@@ -2825,35 +4266,17 @@ namespace OpenDental{
 			checkShowR.Checked=false;
 			checkNotes.Checked=false;
 			checkRx.Checked=false;
+			checkComm.Checked=false;
 			checkShowTeeth.Checked=false;
 			FillProgNotes();
 		}
 
-		private void radioEntryEO_CheckedChanged(object sender, System.EventArgs e) {
-			newStatus=ProcStat.EO;
-		}
-
-		private void radioEntryEC_CheckedChanged(object sender, System.EventArgs e) {
-			newStatus=ProcStat.EC;
-		}
-
-		private void radioEntryTP_CheckedChanged(object sender, System.EventArgs e) {
-			newStatus=ProcStat.TP;
-		}
-
-		private void radioEntryC_CheckedChanged(object sender, System.EventArgs e) {
-			newStatus=ProcStat.C;
-		}
-
-		private void radioEntryR_CheckedChanged(object sender, System.EventArgs e) {
-			newStatus=ProcStat.R;
-		}
-
-		private void butMedicalService_Click(object sender, System.EventArgs e) {
-			FormMedical FormMedical2=new FormMedical(PatCur);
-			FormMedical2.ShowDialog();
-			ModuleSelected(PatCur.PatNum);
-			//FillMedical();
+		private void gridPtInfo_CellDoubleClick(object sender,ODGridClickEventArgs e) {
+			if(e.Row>=6){// && e.Row<=8){
+				FormMedical FormM=new FormMedical(PatCur);
+				FormM.ShowDialog();
+				ModuleSelected(PatCur.PatNum);
+			}
 		}
 
 		private void checkDone_Click(object sender, System.EventArgs e) {
@@ -2955,484 +4378,51 @@ namespace OpenDental{
 			ModuleSelected(PatCur.PatNum);//if procs were added in appt, then this will display them
 		}
 
-		private void butEnterTx_Click(object sender, System.EventArgs e) {
-			OnClickEnterTx();
-		}
-
-		private void OnClickEnterTx(){
-			if(panelEnterTx.Visible){
-				panelEnterTx.Visible=false;
-				tbProg.Location=panelEnterTx.Location;
-				tbProg.Height=this.ClientSize.Height-tbProg.Location.Y-2;
-				tbProg.LayoutTables();
-				butEnterTx.ImageIndex=1;//down arrow
-			}
-			else{
-				panelEnterTx.Visible=true;
-				tbProg.Location=new Point(panelEnterTx.Location.X,panelEnterTx.Location.Y+panelEnterTx.Height+2);
-				tbProg.Height=this.ClientSize.Height-tbProg.Location.Y-2;
-				tbProg.LayoutTables();
-				butEnterTx.ImageIndex=0;//up arrow
-			}
-		}
-
-		private void listButtonCats_Click(object sender,EventArgs e) {
-			FillProcButtons();
-		}
-
-		/*private void listProcButtons_Click(object sender, System.EventArgs e) {
-			if(newStatus==ProcStat.C){
-				if(!Security.IsAuthorized(Permissions.ProcComplCreate)){
-					return;
-				}
-			}
-			if(listProcButtons.SelectedIndex==-1){
-				return;
-			}
-		  ProcButton ProcButtonCur=ProcButtons.List[listProcButtons.SelectedIndex];
-			ProcButtonClicked(ProcButtonCur.ProcButtonNum);
-		}*/
-
-		private void listViewButtons_Click(object sender,EventArgs e) {
-			if(newStatus==ProcStat.C) {
-				if(!Security.IsAuthorized(Permissions.ProcComplCreate)) {
-					return;
-				}
-			}
-			if(listViewButtons.SelectedIndices.Count==0) {
-				return;
-			}
-			ProcButton ProcButtonCur=ProcButtonList[listViewButtons.SelectedIndices[0]];
-			ProcButtonClicked(ProcButtonCur.ProcButtonNum);
-		}
-
-		private void ProcButtonClicked(int procButtonNum){
-			Procedures.SetDateFirstVisit(DateTime.Today,1,PatCur);
-			bool isValid;
-			TreatmentArea tArea;
-			int quadCount=0;//automates quadrant codes.
-			string[] adaCodeList=ProcButtonItems.GetADAListForButton(procButtonNum);
-			int[] autoCodeList=ProcButtonItems.GetAutoListForButton(procButtonNum);
-			
-			Procedure ProcCur;
-			for(int i=0;i<adaCodeList.Length;i++){
-				//needs to loop at least once, regardless of whether any teeth are selected.	
-				for(int n=0;n==0 || n<cTeeth.SelectedTeeth.Length;n++){
-					isValid=true;
-					ProcCur=new Procedure();//insert, so no need to set CurOld
-					ProcCur.ADACode=adaCodeList[i];
-					tArea=ProcedureCodes.GetProcCode(ProcCur.ADACode).TreatArea;
-					if((tArea==TreatmentArea.Arch
-						|| tArea==TreatmentArea.Mouth
-						|| tArea==TreatmentArea.Quad
-						|| tArea==TreatmentArea.Sextant
-						|| tArea==TreatmentArea.ToothRange)
-						&& n>0){//the only two left are tooth and surf
-						continue;//only entered if n=0, so they don't get entered more than once.
-					}
-					else if(tArea==TreatmentArea.Quad){
-						switch(quadCount){
-							case 0: ProcCur.Surf="UR"; break;
-							case 1: ProcCur.Surf="UL"; break;
-							case 2: ProcCur.Surf="LL"; break;
-							case 3: ProcCur.Surf="LR"; break;
-							default: ProcCur.Surf="UR"; break;//this could happen.
-						}
-						quadCount++;
-						AddQuick(ProcCur);
-					}
-					else if(tArea==TreatmentArea.Surf){
-						if(textSurf.Text=="")
-							isValid=false;
-						else
-							ProcCur.Surf=textSurf.Text;
-						if(cTeeth.SelectedTeeth.Length==0)
-							isValid=false;
-						else
-							ProcCur.ToothNum=cTeeth.SelectedTeeth[n];
-						if(isValid)
-							AddQuick(ProcCur);
-						else
-							AddProcedure(ProcCur);
-					}
-					else if(tArea==TreatmentArea.Tooth){
-						if(cTeeth.SelectedTeeth.Length==0){
-							AddProcedure(ProcCur);
-						}
-						else{
-							ProcCur.ToothNum=cTeeth.SelectedTeeth[n];
-							AddQuick(ProcCur);
-						}
-					}
-					else if(tArea==TreatmentArea.ToothRange){
-						if(cTeeth.SelectedTeeth.Length==0){
-							AddProcedure(ProcCur);
-						}
-						else{
-							ProcCur.ToothRange="";
-							for(int b=0;b<cTeeth.SelectedTeeth.Length;b++){
-								if(b!=0) ProcCur.ToothRange+=",";
-								ProcCur.ToothRange+=cTeeth.SelectedTeeth[b];
-							}
-							AddQuick(ProcCur);
-						}
-					}
-					else if(tArea==TreatmentArea.Arch){
-						if(cTeeth.SelectedTeeth.Length==0){
-							AddProcedure(ProcCur);
-							continue;
-						}
-						if(Tooth.IsMaxillary(cTeeth.SelectedTeeth[0])){
-							ProcCur.Surf="U";
-						}
-						else{
-							ProcCur.Surf="L";
-						}
-						AddQuick(ProcCur);
-					}
-					else if(tArea==TreatmentArea.Sextant){
-						AddProcedure(ProcCur);
-					}
-					else{//mouth
-						AddQuick(ProcCur);
-					}
-				}//n selected teeth
-			}//end Part 1 checking for AdaCodes, now will check for AutoCodes
-			string toothNum;
-			string surf;
-			bool isAdditional;
-			for(int i=0;i<autoCodeList.Length;i++){
-				for(int n=0;n==0 || n<cTeeth.SelectedTeeth.Length;n++){
-					isValid=true;
-					if(cTeeth.SelectedTeeth.Length!=0)
-						toothNum=cTeeth.SelectedTeeth[n];
-					else
-						toothNum="";
-					surf=textSurf.Text;
-					isAdditional= n!=0;
-					ProcCur=new Procedure();//this will be an insert, so no need to set CurOld
-					ProcCur.ADACode=AutoCodeItems.GetADA(autoCodeList[i],toothNum,surf,isAdditional,PatCur.PatNum,PatCur.Age);
-					tArea=ProcedureCodes.GetProcCode(ProcCur.ADACode).TreatArea;
-					if((tArea==TreatmentArea.Arch
-						|| tArea==TreatmentArea.Mouth
-						|| tArea==TreatmentArea.Quad
-						|| tArea==TreatmentArea.Sextant
-						|| tArea==TreatmentArea.ToothRange)
-						&& n>0){//the only two left are tooth and surf
-						continue;//only entered if n=0, so they don't get entered more than once.
-					}
-					else if(tArea==TreatmentArea.Quad){
-						switch(quadCount){
-							case 0: ProcCur.Surf="UR"; break;
-							case 1: ProcCur.Surf="UL"; break;
-							case 2: ProcCur.Surf="LL"; break;
-							case 3: ProcCur.Surf="LR"; break;
-							default: ProcCur.Surf="UR"; break;//this could happen.
-						}
-						quadCount++;
-						AddQuick(ProcCur);
-					}
-					else if(tArea==TreatmentArea.Surf){
-						if(textSurf.Text=="")
-							isValid=false;
-						else
-							ProcCur.Surf=textSurf.Text;
-						if(cTeeth.SelectedTeeth.Length==0)
-							isValid=false;
-						else
-							ProcCur.ToothNum=cTeeth.SelectedTeeth[n];
-						if(isValid)
-							AddQuick(ProcCur);
-						else
-							AddProcedure(ProcCur);
-					}
-					else if(tArea==TreatmentArea.Tooth){
-						if(cTeeth.SelectedTeeth.Length==0){
-							AddProcedure(ProcCur);
-						}
-						else{
-							ProcCur.ToothNum=cTeeth.SelectedTeeth[n];
-							AddQuick(ProcCur);
-						}
-					}
-					else if(tArea==TreatmentArea.ToothRange){
-						if(cTeeth.SelectedTeeth.Length==0){
-							AddProcedure(ProcCur);
-						}
-						else{
-							ProcCur.ToothRange="";
-							for(int b=0;b<cTeeth.SelectedTeeth.Length;b++){
-								if(b!=0) ProcCur.ToothRange+=",";
-								ProcCur.ToothRange+=cTeeth.SelectedTeeth[b];
-							}
-							AddQuick(ProcCur);
-						}
-					}
-					else if(tArea==TreatmentArea.Arch){
-						if(cTeeth.SelectedTeeth.Length==0){
-							AddProcedure(ProcCur);
-							continue;
-						}
-						if(Tooth.IsMaxillary(cTeeth.SelectedTeeth[0])){
-							ProcCur.Surf="U";
-						}
-						else{
-							ProcCur.Surf="L";
-						}
-						AddQuick(ProcCur);
-					}
-					else if(tArea==TreatmentArea.Sextant){
-						AddProcedure(ProcCur);
-					}
-					else{//mouth
-						AddQuick(ProcCur);
-					}
-				}//n selected teeth
-			}//for i
-			ModuleSelected(PatCur.PatNum);
-			if(newStatus==ProcStat.C){
-				SecurityLogs.MakeLogEntry(Permissions.ProcComplCreate,PatCur.PatNum,
-					PatCur.GetNameLF()+", "
-					+DateTime.Today.ToShortDateString());
-			}
-		}
-
-		private void butPrimary_Click(object sender, System.EventArgs e) {
-			//contextMenu1.Show(butPrimary,new Point(0,30));
-		}
-
-		private void menuPrimaryMixed_Click(object sender,EventArgs e) {
-			Patient patOld=PatCur.Copy();
-			PatCur.PrimaryTeeth="1,2,4,5,6,11,12,13,15,16,17,18,20,21,22,27,28,29,31,32";
-			PatCur.Update(patOld);
-			ModuleSelected(PatCur.PatNum);
-		}
-
-		private void menuPrimaryAll_Click(object sender, System.EventArgs e) {
-			Patient patOld=PatCur.Copy();
-			PatCur.PrimaryTeeth="";
-			for(int i=1;i<=32;i++){
-				if(i>1){
-					PatCur.PrimaryTeeth+=",";
-				}
-				PatCur.PrimaryTeeth+=i.ToString();
-			}
-			PatCur.Update(patOld);
-			ModuleSelected(PatCur.PatNum);
-		}
-
-		private void menuPrimaryNone_Click(object sender, System.EventArgs e) {
-			Patient patOld=PatCur.Copy();
-			PatCur.PrimaryTeeth="";
-			PatCur.Update(patOld);
-			ModuleSelected(PatCur.PatNum);
-		}
-
-		private void menuPrimaryToggle_Click(object sender, System.EventArgs e) {
-			if(cTeeth.SelectedTeeth.Length==0){
-				return;
-			}
-			string[] oldPriTeeth=PatCur.PrimaryTeeth.Split(',');
-			ArrayList ALpri=new ArrayList();
-			for(int i=0;i<oldPriTeeth.Length;i++){
-				if(Tooth.IsValidDB(oldPriTeeth[i])
-					&& !Tooth.IsPrimary(oldPriTeeth[i])
-					&& !ALpri.Contains(oldPriTeeth[i])){
-					ALpri.Add(oldPriTeeth[i]);
-				}
-			}
-			for(int i=0;i<cTeeth.SelectedTeeth.Length;i++){
-				int toothInt=Tooth.ToInt(cTeeth.SelectedTeeth[i]);
-				if(ALpri.Contains(toothInt.ToString())){
-					ALpri.Remove(toothInt.ToString());
-				}
-				else{
-					ALpri.Add(toothInt.ToString());
-				}
-			}
-			Patient patOld=PatCur.Copy();
-			PatCur.PrimaryTeeth="";
-			for(int i=0;i<ALpri.Count;i++){
-				if(i>0){
-					PatCur.PrimaryTeeth+=",";
-				}
-				PatCur.PrimaryTeeth+=ALpri[i];
-			}
-			PatCur.Update(patOld);
-			ModuleSelected(PatCur.PatNum);
-		}
-
-		private void textADACode_Enter(object sender, System.EventArgs e) {
-			if(textADACode.Text==Lan.g(this,"Type ADA Code")){
-				textADACode.Text="";
-			}
-		}
-
-		private void textADACode_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e) {
-			if(e.KeyCode==Keys.Return){
-				EnterTypedCode();
-			}
-		}
-
-		private void textADACode_TextChanged(object sender, System.EventArgs e) {
-			if(textADACode.Text=="d"){
-				textADACode.Text="D";
-				textADACode.SelectionStart=1;
-			}
-		}
-
-		private void butOK_Click(object sender, System.EventArgs e) {
-			EnterTypedCode();
-		}
-
-		private void EnterTypedCode(){
-			if(newStatus==ProcStat.C){
-				if(!Security.IsAuthorized(Permissions.ProcComplCreate)){
-					return;
-				}
-			}
-			if(!ProcedureCodes.HList.ContainsKey(textADACode.Text)){
-				MessageBox.Show(Lan.g(this,"Invalid code."));
-				//textADACode.Text="";
-				textADACode.SelectionStart=textADACode.Text.Length;
-				return;
-			}
-			Procedures.SetDateFirstVisit(DateTime.Today,1,PatCur);
-			TreatmentArea tArea;
-			Procedure ProcCur;
-			int quadCount=0;//automates quadrant codes.
-			for(int n=0;n==0 || n<cTeeth.SelectedTeeth.Length;n++){//always loops at least once.
-				ProcCur=new Procedure();//this will be an insert, so no need to set CurOld
-				ProcCur.ADACode=textADACode.Text;
-				bool isValid=true;
-				tArea=ProcedureCodes.GetProcCode(ProcCur.ADACode).TreatArea;
-				if((tArea==TreatmentArea.Arch
-					|| tArea==TreatmentArea.Mouth
-					|| tArea==TreatmentArea.Quad
-					|| tArea==TreatmentArea.Sextant
-					|| tArea==TreatmentArea.ToothRange)
-					&& n>0){//the only two left are tooth and surf
-					continue;//only entered if n=0, so they don't get entered more than once.
-				}
-				else if(tArea==TreatmentArea.Quad){
-					switch(quadCount){
-						case 0: ProcCur.Surf="UR"; break;
-						case 1: ProcCur.Surf="UL"; break;
-						case 2: ProcCur.Surf="LL"; break;
-						case 3: ProcCur.Surf="LR"; break;
-						default: ProcCur.Surf="UR"; break;//this could happen.
-					}
-					quadCount++;
-					AddQuick(ProcCur);
-				}
-				else if(tArea==TreatmentArea.Surf){
-					if(textSurf.Text=="")
-						isValid=false;
-					else
-						ProcCur.Surf=textSurf.Text;
-					if(cTeeth.SelectedTeeth.Length==0)
-						isValid=false;
-					else
-						ProcCur.ToothNum=cTeeth.SelectedTeeth[n];
-					if(isValid)
-						AddQuick(ProcCur);
-					else
-						AddProcedure(ProcCur);
-				}
-				else if(tArea==TreatmentArea.Tooth){
-					if(cTeeth.SelectedTeeth.Length==0){
-						AddProcedure(ProcCur);
-					}
-					else{
-						ProcCur.ToothNum=cTeeth.SelectedTeeth[n];
-						AddQuick(ProcCur);
-					}
-				}
-				else if(tArea==TreatmentArea.ToothRange){
-					if(cTeeth.SelectedTeeth.Length==0){
-						AddProcedure(ProcCur);
-					}
-					else{
-						ProcCur.ToothRange="";
-						for(int b=0;b<cTeeth.SelectedTeeth.Length;b++){
-							if(b!=0) ProcCur.ToothRange+=",";
-							ProcCur.ToothRange+=cTeeth.SelectedTeeth[b];
-						}
-						AddQuick(ProcCur);
-					}
-				}
-				else if(tArea==TreatmentArea.Arch){
-					if(cTeeth.SelectedTeeth.Length==0){
-						AddProcedure(ProcCur);
-						continue;
-					}
-					if(Tooth.IsMaxillary(cTeeth.SelectedTeeth[0])){
-						ProcCur.Surf="U";
-					}
-					else{
-						ProcCur.Surf="L";
-					}
-					AddQuick(ProcCur);
-				}
-				else if(tArea==TreatmentArea.Sextant){
-					AddProcedure(ProcCur);
-				}
-				else{//mouth
-					AddQuick(ProcCur);
-				}
-			}//n selected teeth
-			ModuleSelected(PatCur.PatNum);
-			textADACode.Text="";
-			textADACode.Select();
-			if(newStatus==ProcStat.C){
-				SecurityLogs.MakeLogEntry(Permissions.ProcComplCreate,PatCur.PatNum,
-					PatCur.GetNameLF()+", "
-					+DateTime.Today.ToShortDateString());
-			}
-		}
-
-		private void cTeeth_Click(object sender, System.EventArgs e) {
-			if(cTeeth.SelectedTeeth.Length==1){
-				butO.BackColor=SystemColors.Control;
-				butI.BackColor=SystemColors.Control;
-				butL.BackColor=SystemColors.Control;
-				butB.BackColor=SystemColors.Control;
-				butF.BackColor=SystemColors.Control;
-				textSurf.Text="";
-				if(Tooth.IsAnterior(cTeeth.SelectedTeeth[0])){
-					butB.Text="";
-					butO.Text="";
-					butB.Enabled=false;
-					butO.Enabled=false;
-					butF.Text="F";
-					butI.Text="I";
-					butF.Enabled=true;
-					butI.Enabled=true;
-				}
-				else{
-					butB.Text="B";
-					butO.Text="O";
-					butB.Enabled=true;
-					butO.Enabled=true;
-					butF.Text="";
-					butI.Text="";
-					butF.Enabled=false;
-					butI.Enabled=false;
-				}
-			}
-			if(checkShowTeeth.Checked){
+		private void toothChart_Click(object sender,EventArgs e) {
+			textSurf.Text="";
+			//if(toothChart.SelectedTeeth.Length==1) {
+				//butO.BackColor=SystemColors.Control;
+				//butB.BackColor=SystemColors.Control;
+				//butF.BackColor=SystemColors.Control;
+				//if(Tooth.IsAnterior(toothChart.SelectedTeeth[0])) {
+					//butB.Text="";
+					//butO.Text="";
+					//butB.Enabled=false;
+					//butO.Enabled=false;
+					//butF.Text="F";
+					//butI.Text="I";
+					//butF.Enabled=true;
+					//butI.Enabled=true;
+				//}
+				//else {
+					//butB.Text="B";
+					//butO.Text="O";
+					//butB.Enabled=true;
+					//butO.Enabled=true;
+					//butF.Text="";
+					//butI.Text="";
+					//butF.Enabled=false;
+					//butI.Enabled=false;
+				//}
+			//}
+			if(checkShowTeeth.Checked) {
 				FillProgNotes();
 			}
+			FillMovementsAndHidden();
 		}
 
-		private void tbProg_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e) {
-			if(e.Button==MouseButtons.Right){
-				menuProgRight.Show(tbProg,new Point(e.X,e.Y));
+		//private void tbProg_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e) {
+			
+		//}
+
+		private void gridProg_MouseUp(object sender,MouseEventArgs e) {
+			if(e.Button==MouseButtons.Right) {
+				menuProgRight.Show(gridProg,new Point(e.X,e.Y));
 			}
 		}
 
 		private void menuItemPrintProg_Click(object sender, System.EventArgs e) {
-			linesPrinted=0;
+			pagesPrinted=0;
 			headingPrinted=false;
 			#if DEBUG
 				PrintReport(true);
@@ -3445,7 +4435,7 @@ namespace OpenDental{
 			if(!Security.IsAuthorized(Permissions.ProcComplCreate)) {
 				return;
 			}
-			if(tbProg.SelectedIndices.Length==0) {
+			if(gridProg.SelectedIndices.Length==0) {
 				MessageBox.Show(Lan.g(this,"Please select an item first."));
 				return;
 			}
@@ -3455,16 +4445,14 @@ namespace OpenDental{
 			ProcedureCode procCode;
 			Appointment apt;
 			ClaimProc[] ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
-			for(int i=0;i<tbProg.SelectedIndices.Length;i++) {
-				if(((ProgLine)ProgLineAL[tbProg.SelectedIndices[i]]).Type==ProgType.Rx){
-					//skippedMsgs+=Lan.g(this,"Rx.");
-					continue;
-				}
-				if(((ProgLine)ProgLineAL[tbProg.SelectedIndices[i]]).IsNote){
+			Type type;
+			for(int i=0;i<gridProg.SelectedIndices.Length;i++) {
+				type=gridProg.Rows[gridProg.SelectedIndices[i]].Tag.GetType();
+				if(type==typeof(RxPat)){
 					continue;
 				}
 				apt=null;
-				procCur=((Procedure)ProcAL[((ProgLine)ProgLineAL[tbProg.SelectedIndices[i]]).Index]).Copy();
+				procCur=((Procedure)gridProg.Rows[gridProg.SelectedIndices[i]].Tag).Copy();
 				procOld=procCur.Copy();
 				procCode=ProcedureCodes.GetProcCode(procCur.ADACode);
 				if(procCur.DateLocked.Year>1880){//if note is locked, don't change it.
@@ -3474,7 +4462,7 @@ namespace OpenDental{
 				else{
 					if(procOld.ProcStatus!=ProcStat.C) {
 						//if procedure was already complete, then don't add more notes.
-						procCur.ProcNote+=procCode.DefaultNote;//note note locked and it wasn't complete, so add notes
+						procCur.ProcNote+=procCode.DefaultNote;//note not locked and it wasn't complete, so add notes
 					}
 				}
 				procCur.DateEntryC=DateTime.Now;
@@ -3489,8 +4477,9 @@ namespace OpenDental{
 					procCur.PlaceService=(PlaceOfService)Prefs.GetInt("DefaultProcedurePlaceService");
 				}
 				Procedures.SetDateFirstVisit(procCur.ProcDate,2,PatCur);
-				if(procCode.RemoveTooth) {//if an extraction, then mark previous procs hidden
-					procCur.SetHideGraphical();
+				if(procCode.PaintType==ToothPaintingType.Extraction){//if an extraction, then mark previous procs hidden
+					procCur.SetHideGraphical();//might not matter anymore
+					ToothInitials.SetValue(PatCur.PatNum,procCur.ToothNum,ToothInitialType.Missing);
 				}
 				procCur.ProcStatus=ProcStat.C;
 				procCur.Update(procOld);
@@ -3512,7 +4501,7 @@ namespace OpenDental{
 		public void PrintReport(bool justPreview){
 			pd2=new PrintDocument();
 			pd2.PrintPage += new PrintPageEventHandler(this.pd2_PrintPage);
-			pd2.DefaultPageSettings.Margins=new Margins(50,50,40,25);
+			//pd2.DefaultPageSettings.Margins=new Margins(50,50,40,25);
 			try{
 				if(justPreview){
 					FormRpPrintPreview pView = new FormRpPrintPreview();
@@ -3531,16 +4520,12 @@ namespace OpenDental{
 		}
 
 		private void pd2_PrintPage(object sender, System.Drawing.Printing.PrintPageEventArgs e) {
-			//printable area is w=800.
-			//Height is 1035 for standard paper.  Some printers can handle up to 1042.
+			Rectangle bounds=new Rectangle(50,40,800,1035);//Some printers can handle up to 1042
 			Graphics g=e.Graphics;
 			string text;
 			Font headingFont=new Font("Arial",13,FontStyle.Bold);
 			Font subHeadingFont=new Font("Arial",10,FontStyle.Bold);
-			Font bodyFont=new Font("Arial",9);
-			Font totalFont=new Font("Arial",9,FontStyle.Bold);
-			int yPos=44;
-			//int xPos=50;
+			int yPos=bounds.Top;
 			#region printHeading
 			if(!headingPrinted){
 				text="Chart Progress Notes";
@@ -3553,8 +4538,13 @@ namespace OpenDental{
 				g.DrawString(text,subHeadingFont,Brushes.Black,400-g.MeasureString(text,subHeadingFont).Width/2,yPos);
 				yPos+=30;
 				headingPrinted=true;
+				headingPrintH=yPos;
 			}
 			#endregion
+			int totalPages=gridProg.GetNumberOfPages(bounds,headingPrintH);
+			yPos+=gridProg.PrintPage(g,pagesPrinted,bounds,headingPrintH);
+			#region OldCode
+			/*
 			#region ColDefs
 			//always defines and always prints on each page
 			int rowH=(int)g.MeasureString("anything",bodyFont).Height;
@@ -3604,8 +4594,9 @@ namespace OpenDental{
 			yPos+=16;
 			#endregion
 			#region printBody
-			while(linesPrinted < ProgLineAL.Count 
-				&& yPos+g.MeasureString(((ProgLine)ProgLineAL[linesPrinted]).Note,bodyFont,colPos[5]-colPos[4]).Height < e.MarginBounds.Height)
+			while(linesPrinted < gridProg.Rows.Count 
+				&& yPos//+g.MeasureString(((ProgLine)ProgLineAL[linesPrinted]).Note,bodyFont,colPos[5]-colPos[4]).Height 
+				< e.MarginBounds.Height)
 			{
 				if(((ProgLine)ProgLineAL[linesPrinted]).IsNote){
 					text=((ProgLine)ProgLineAL[linesPrinted]).Note;
@@ -3628,6 +4619,7 @@ namespace OpenDental{
 					continue;
 				}
 				for(int i=0;i<colPos.Length-1;i++){
+					text=gridProg.Rows[linesPrinted].Cells[i].Text;
 					switch(i){
 						case 0:
 							text=((ProgLine)ProgLineAL[linesPrinted]).Date;
@@ -3674,7 +4666,10 @@ namespace OpenDental{
 				linesPrinted++;
 			}
 			#endregion
-			if(linesPrinted < ProgLineAL.Count){
+			*/
+			#endregion OldCode
+			pagesPrinted++;
+			if(pagesPrinted < totalPages){
 				e.HasMorePages=true;
 			}
 			else{
@@ -3733,8 +4728,8 @@ namespace OpenDental{
 				-(ImageSplitterOriginalY+(panelImages.Top+e.Y)-OriginalImageMousePos);//-top
 			if(panelNewH<10)//cTeeth.Bottom)
 				panelNewH=10;//cTeeth.Bottom;//keeps it from going too low
-			if(panelNewH>panelImages.Bottom-cTeeth.Bottom)
-				panelNewH=panelImages.Bottom-cTeeth.Bottom;//keeps it from going too high
+			if(panelNewH>panelImages.Bottom-toothChart.Bottom)
+				panelNewH=panelImages.Bottom-toothChart.Bottom;//keeps it from going too high
 			panelImages.Height=panelNewH;
 			//tbProg.LayoutTables();//too much flicker
 		}
@@ -3745,7 +4740,29 @@ namespace OpenDental{
 			}
 			MouseIsDownOnImageSplitter=false;
 			//tbProg.Height=ClientSize.Height-panelImages.Top-tbProg.Location.Y-2;
-			tbProg.LayoutTables();
+			//tbProg.LayoutTables();
+		}
+
+		private void tabProc_MouseDown(object sender,MouseEventArgs e) {
+			//selected tab will have changed, so we need to test the original selected tab:
+			Rectangle rect=tabProc.GetTabRect(SelectedProcTab);
+			if(rect.Contains(e.X,e.Y) && tabProc.Height>27){//clicked on the already selected tab which was maximized
+				tabProc.Height=27;
+				tabProc.Refresh();
+				gridProg.Location=new Point(tabProc.Left,tabProc.Bottom+1);
+				gridProg.Height=this.ClientSize.Height-gridProg.Location.Y-2;
+			}
+			else if(tabProc.Height==27){//clicked on a minimized tab
+				tabProc.Height=254;
+				tabProc.Refresh();
+				gridProg.Location=new Point(tabProc.Left,tabProc.Bottom+1);
+				gridProg.Height=this.ClientSize.Height-gridProg.Location.Y-2;
+			}
+			else{//clicked on a new tab
+				//height will have already been set, so do nothing
+			}
+			SelectedProcTab=tabProc.SelectedIndex;
+			FillMovementsAndHidden();
 		}
 
 		private void tabControlImages_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
@@ -3761,12 +4778,12 @@ namespace OpenDental{
 				else{
 					panelImages.Visible=true;
 				}
-				tbProg.LayoutTables();
+				//tbProg.LayoutTables();
 			}
 			else{//clicked on a new tab
 				if(!panelImages.Visible){
 					panelImages.Visible=true;
-					tbProg.LayoutTables();
+					//tbProg.LayoutTables();
 				}
 			}
 			selectedImageTab=tabControlImages.SelectedIndex;
@@ -3801,14 +4818,10 @@ namespace OpenDental{
 				+DocCur.DateCreated.ToShortDateString()+": "+DocCur.Description);
 		}
 
-		
-
-		
-
-		
-		
-
-		
+		private void butBig_Click(object sender,EventArgs e) {
+			FormToothChartingBig FormT=new FormToothChartingBig(checkShowTeeth.Checked,ToothInitialList,ProcAL);
+			FormT.Show();
+		}
 
 		
 
@@ -3816,10 +4829,15 @@ namespace OpenDental{
 
 		
 
+		
+
 
 		
 
+
+
 		
+
 
 		
 
@@ -3974,52 +4992,10 @@ namespace OpenDental{
 		#endregion
 	}//end class
 
-	///<summary></summary>
-	public struct TPChartLines{
-		//public string Pr;
-		///<summary></summary>
-		public string Surf;
-		///<summary></summary>
-		public string Dx;
-		///<summary></summary>
-		public string Tx;
-		///<summary></summary>
-		public string Complete;
-	}//end struct TPChartLines
-
-	///<summary></summary>
-	public struct ProgLine{
-		///<summary></summary>
-		public ProgType Type;
-		///<summary></summary>
-		public Color LineColor;
-		///<summary></summary>
-		public bool IsNote;
-		///<summary></summary>
-		public int Index;
-		///<summary></summary>
-		public string Date;
-		///<summary></summary>
-		public string Th;
-		///<summary></summary>
-		public string Surf;
-		///<summary></summary>
-		public string Dx;
-		///<summary></summary>
-		public string Description;
-		///<summary></summary>
-		public string Stat;
-		///<summary></summary>
-		public string Prov;
-		///<summary></summary>
-		public string Amount;
-		///<summary></summary>
-		public string Note;
-	}//end struct ProgLines
+	
+	
 
 
 
 
-
-
-}//end namespace
+}

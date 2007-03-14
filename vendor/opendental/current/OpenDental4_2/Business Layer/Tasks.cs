@@ -90,7 +90,8 @@ namespace OpenDental{
 				+"'"+POut.PInt   ((int)DateType)+"', "
 				+"'"+POut.PInt   (FromNum)+"', "
 				+"'"+POut.PInt   ((int)ObjectType)+"', "
-				+"NOW())";//DateTimeEntry set to current server time
+				+"'"+POut.PDateT (DateTimeEntry)+"')";
+				//+"NOW())";//DateTimeEntry set to current server time
 			DataConnection dcon=new DataConnection();
  			if(Prefs.RandomKeys){
 				dcon.NonQ(command);

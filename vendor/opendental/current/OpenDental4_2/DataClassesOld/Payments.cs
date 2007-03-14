@@ -33,7 +33,7 @@ namespace OpenDental{
 		public int DepositNum;
 
 
-		///<summary>Updates this payment.  Must make sure to updates the datePay of all attached paysplits so that they are always in synch.  Also need to manually set IsSplit before here.  Will throw an exception if bad date, so surround by try-catch.</summary>
+		///<summary>Updates this payment.  Must make sure to update the datePay of all attached paysplits so that they are always in synch.  Also need to manually set IsSplit before here.  Will throw an exception if bad date, so surround by try-catch.</summary>
 		public void Update(){
 			if(PayDate.Date>DateTime.Today) {
 				throw new ApplicationException(Lan.g(this,"Date must not be a future date."));
@@ -215,7 +215,89 @@ namespace OpenDental{
 			return retVal;
 		}
 
-		
+		///<summary>Called from FormPayment when trying to change an amount on payment that's already linked to the Accounting section.  This automates updating the Accounting section.  Surround with try-catch, because it with throw an exception if not able to alter the link.</summary>
+		public void AlterLinkedEntries(Double newAmt){
+			bool amtChanged=false;
+			//bool typeChanged=false;
+			if(PayAmt!=newAmt){
+				amtChanged=true;	
+			}
+			//if(PayType!=newPayType){
+			//	typeChanged=true;
+			//}
+			if(!amtChanged){// && !typeChanged){
+				return;//no changes being made to amount, so skip the rest.
+			}
+			Transaction trans=Transactions.GetAttachedToPayment(PayNum);
+			if(trans==null) {
+				return;//not linked to any accounting entry.
+			}
+			//If payment is attached to a transaction which is more than 48 hours old, then not allowed to change.
+			if(amtChanged && trans.DateTimeEntry < MiscData.GetNowDateTime().AddDays(-2)) {
+				throw new ApplicationException(Lan.g(this,"Not allowed to change amount that is more than 48 hours old.  This payment is already attached to an accounting transaction.  You will need to detach it from within the accounting section of the program."));
+			}
+			if(amtChanged && Transactions.IsReconciled(trans)) {
+				throw new ApplicationException(Lan.g(this,"Not allowed to change amount.  This payment is attached to an accounting transaction that has been reconciled.  You will need to detach it from within the accounting section of the program."));
+			}
+			ArrayList jeAL=JournalEntries.GetForTrans(trans.TransactionNum);
+			if(jeAL.Count!=2){
+				throw new ApplicationException(Lan.g(this,"Not able to automatically change the amount in the accounting section to match the change made here.  You will need to detach it from within the accounting section."));
+			}
+			JournalEntry jeDebit=null;
+			JournalEntry jeCredit=null;
+			bool signChanged=false;
+			double absOld=PayAmt;//the absolute value of the old amount
+			if(PayAmt<0){
+				absOld=-PayAmt;
+			}
+			double absNew=newAmt;//absolute value of the new amount
+			if(newAmt<0){
+				absNew=-newAmt;
+			}
+			if(PayAmt<0 && newAmt>0){
+				signChanged=true;
+			}
+			if(PayAmt>0 && newAmt<0){
+				signChanged=true;
+			}
+			for(int i=0;i<2;i++){
+				//first the old debit entry
+				if(((JournalEntry)jeAL[i]).DebitAmt==absOld){
+					jeDebit=(JournalEntry)jeAL[i];
+				}
+				//then, the old credit entry
+				if(((JournalEntry)jeAL[i]).CreditAmt==absOld){
+					jeCredit=(JournalEntry)jeAL[i];
+				}
+
+			}
+			if(jeCredit==null || jeDebit==null){
+				throw new ApplicationException(Lan.g(this,"Not able to automatically make changes in the accounting section to match the change made here.  You will need to detach it from within the accounting section."));
+			}
+			if(amtChanged){
+				if(signChanged) {
+					jeDebit.DebitAmt=0;
+					jeDebit.CreditAmt=absNew;
+					jeDebit.Update();
+					jeCredit.DebitAmt=absNew;
+					jeCredit.CreditAmt=0;
+					jeCredit.Update();
+				}
+				else {
+					jeDebit.DebitAmt=absNew;
+					jeDebit.Update();
+					jeCredit.CreditAmt=absNew;
+					jeCredit.Update();
+				}
+			}
+			//if(!typeChanged){
+			//	return;
+			//}
+			//From here on down, we are just altering the type
+			//jeAL=JournalEntries.GetForTrans(trans.TransactionNum);
+			//JournalEntry jeDebit=null;
+			//JournalEntry jeCredit=null;
+		}		
 
 	}
 

@@ -170,7 +170,7 @@ namespace OpenDental{
 			return PIn.PDateT(table.Rows[0][0].ToString());
 		}
 
-		///<summary>Used in the timecard to track hours worked per week when the week started in a previous time period.  This gets all the hours of the first week before the date listed.</summary>
+		///<summary>Used in the timecard to track hours worked per week when the week started in a previous time period.  This gets all the hours of the first week before the date listed.  Also adds in any adjustments for that week.</summary>
 		public static TimeSpan GetWeekTotal(int empNum,DateTime date){
 			ClockEvent[] events=Refresh(empNum,date.AddDays(-6),date.AddDays(-1),false,false);
 			//eg, if this is Thursday, then we are getting last Friday through this Wed.
@@ -182,6 +182,14 @@ namespace OpenDental{
 				if(i>0 && !events[i].ClockIn){
 					retVal+=events[i].TimeDisplayed-events[i-1].TimeDisplayed;
 				}
+			}
+			//now, adjustments
+			TimeAdjust[] TimeAdjustList=TimeAdjusts.Refresh(empNum,date.AddDays(-6),date.AddDays(-1));
+			for(int i=0;i<TimeAdjustList.Length;i++) {
+				if(TimeAdjustList[i].TimeEntry.DayOfWeek > date.DayOfWeek) {//eg, Friday > Thursday, so ignore
+					continue;
+				}
+				retVal+=TimeAdjustList[i].RegHours;
 			}
 			return retVal;
 		}

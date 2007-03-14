@@ -50,7 +50,7 @@ namespace OpenDental{
 				MsgBox.Show(this,"Cannot convert this database version which was only for development purposes.");
 				return false;
 			}
-			if(FromVersion < new Version("4.1.2.0")){
+			if(FromVersion < new Version("4.2.10.0")){
 				if(MessageBox.Show(Lan.g(this,"Your database will now be converted")+"\r"
 					+Lan.g(this,"from version")+" "+FromVersion.ToString()+"\r"
 					+Lan.g(this,"to version")+" "+ToVersion.ToString()+"\r"
@@ -3506,11 +3506,204 @@ namespace OpenDental{
 				command="UPDATE preference SET ValueString = '4.1.2.0' WHERE PrefName = 'DataBaseVersion'";
 				dcon.NonQ(command);
 			}
-			//To4_1_?();
+			To4_2_0();
+		}
+
+		private void To4_2_0() {
+			if(FromVersion < new Version("4.2.0.0")) {
+				DataConnection dcon=new DataConnection();
+				string command;
+				//string[] commands;//=new string[] {
+				command="ALTER TABLE procedurecode ADD PaintType tinyint NOT NULL";
+				dcon.NonQ(command);
+				command="SELECT * FROM definition WHERE Category=22 ORDER BY ItemOrder";
+				DataTable table=dcon.GetTable(command);
+				Color cDark;
+				Color cLight;
+				for(int i=0;i<table.Rows.Count;i++){
+					cDark=Color.FromArgb(PIn.PInt(table.Rows[i][5].ToString()));
+					cLight=Color.FromArgb((cDark.R+255)/2,(cDark.G+255)/2,(cDark.B+255)/2);
+					command="INSERT INTO definition (Category,ItemOrder,ItemName,ItemColor) VALUES(22,"
+						+POut.PInt(i+5)+",'"+POut.PString(PIn.PString(table.Rows[i][3].ToString())+" (light)")
+						+"','" +POut.PInt(cLight.ToArgb())+"')";
+					dcon.NonQ(command);
+				}
+				//Conversions to painting type are listed in order previously displayed.
+				command="UPDATE procedurecode SET PaintType="+POut.PInt((int)ToothPaintingType.Extraction)+" WHERE GTypeNum=1";
+				dcon.NonQ(command);
+				command="UPDATE procedurecode SET PaintType="+POut.PInt((int)ToothPaintingType.Implant)+" WHERE GTypeNum=10";
+				dcon.NonQ(command);
+				command="UPDATE procedurecode SET PaintType="+POut.PInt((int)ToothPaintingType.RCT)+" WHERE GTypeNum=4";
+				dcon.NonQ(command);
+				command="UPDATE procedurecode SET PaintType="+POut.PInt((int)ToothPaintingType.PostBU)+" WHERE GTypeNum=5";
+				dcon.NonQ(command);
+				command="UPDATE procedurecode SET PaintType="+POut.PInt((int)ToothPaintingType.FillingDark)+" WHERE GTypeNum=2";
+				dcon.NonQ(command);
+				command="UPDATE procedurecode SET PaintType="+POut.PInt((int)ToothPaintingType.FillingLight)+" WHERE GTypeNum=3";
+				dcon.NonQ(command);
+				command="UPDATE procedurecode SET PaintType="+POut.PInt((int)ToothPaintingType.FillingLight)+" WHERE GTypeNum=19";
+				dcon.NonQ(command);
+				command="UPDATE procedurecode SET PaintType="+POut.PInt((int)ToothPaintingType.FillingLight)+" WHERE GTypeNum=11";
+				dcon.NonQ(command);
+				command="UPDATE procedurecode SET PaintType="+POut.PInt((int)ToothPaintingType.CrownDark)+" WHERE GTypeNum=6";
+				dcon.NonQ(command);
+				command="UPDATE procedurecode SET PaintType="+POut.PInt((int)ToothPaintingType.CrownLight)+" WHERE GTypeNum=7";
+				dcon.NonQ(command);
+				command="UPDATE procedurecode SET PaintType="+POut.PInt((int)ToothPaintingType.CrownLight)+" WHERE GTypeNum=20";
+				dcon.NonQ(command);
+				command="UPDATE procedurecode SET PaintType="+POut.PInt((int)ToothPaintingType.CrownLight)+" WHERE GTypeNum=9";
+				dcon.NonQ(command);
+				command="UPDATE procedurecode SET PaintType="+POut.PInt((int)ToothPaintingType.BridgeDark)+" WHERE GTypeNum=12";
+				dcon.NonQ(command);
+				command="UPDATE procedurecode SET PaintType="+POut.PInt((int)ToothPaintingType.BridgeLight)+" WHERE GTypeNum=13";
+				dcon.NonQ(command);
+				command="UPDATE procedurecode SET PaintType="+POut.PInt((int)ToothPaintingType.BridgeLight)+" WHERE GTypeNum=21";
+				dcon.NonQ(command);
+				command="UPDATE procedurecode SET PaintType="+POut.PInt((int)ToothPaintingType.BridgeLight)+" WHERE GTypeNum=14";
+				dcon.NonQ(command);
+				//veneer not painted
+				command="UPDATE procedurecode SET PaintType="+POut.PInt((int)ToothPaintingType.DentureDark)+" WHERE GTypeNum=24";
+				dcon.NonQ(command);
+				command="UPDATE procedurecode SET PaintType="+POut.PInt((int)ToothPaintingType.DentureLight)+" WHERE GTypeNum=25";
+				dcon.NonQ(command);
+				command="UPDATE procedurecode SET PaintType="+POut.PInt((int)ToothPaintingType.DentureLight)+" WHERE GTypeNum=26";
+				dcon.NonQ(command);
+				command="UPDATE procedurecode SET PaintType="+POut.PInt((int)ToothPaintingType.DentureLight)+" WHERE GTypeNum=27";
+				dcon.NonQ(command);
+				command=@"CREATE TABLE toothinitial(
+					ToothInitialNum mediumint unsigned NOT NULL auto_increment,
+					PatNum mediumint unsigned NOT NULL,
+					ToothNum varchar(2) NOT NULL,
+					InitialType tinyint unsigned NOT NULL,
+          Movement float NOT NULL,
+					PRIMARY KEY (ToothInitialNum)
+					) DEFAULT CHARSET=utf8";
+				dcon.NonQ(command);
+				//convert all previous extractions to missing teeth.
+				command="SELECT PatNum,ToothNum FROM procedurelog,procedurecode "
+					+"WHERE procedurelog.ADACode=procedurecode.ADACode "
+					+"AND procedurecode.RemoveTooth=1 "
+					+"AND (procedurelog.ProcStatus=2 OR procedurelog.ProcStatus=3 OR procedurelog.ProcStatus=4)";
+				table=dcon.GetTable(command);
+				for(int i=0;i<table.Rows.Count;i++) {
+					command="INSERT INTO toothinitial(PatNum,ToothNum,InitialType) VALUES("
+						+table.Rows[i][0].ToString()+",'"
+						+POut.PString(PIn.PString(table.Rows[i][1].ToString()))
+						+"',0)";
+					dcon.NonQ(command);
+				}
+				command="UPDATE preference SET ValueString = '4.2.0.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To4_2_1();
+		}
+
+		private void To4_2_1() {
+			if(FromVersion < new Version("4.2.1.0")) {
+				DataConnection dcon=new DataConnection();
+				string command="SELECT PatNum,PrimaryTeeth FROM patient WHERE PrimaryTeeth != ''";
+				DataTable table=dcon.GetTable(command);
+				string[] priTeeth;
+				for(int i=0;i<table.Rows.Count;i++){
+					priTeeth=(PIn.PString(table.Rows[i][1].ToString())).Split(new char[] {','});
+					for(int t=0;t<priTeeth.Length;t++){
+						if(priTeeth[t]==""){
+							continue;
+						}
+						command="INSERT INTO toothinitial (PatNum,ToothNum,InitialType) VALUES("
+							+table.Rows[i][0].ToString()
+							+",'"+POut.PString(priTeeth[t])+"',2)";
+						dcon.NonQ(command);
+					}
+				}
+				command="UPDATE preference SET ValueString = '4.2.1.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To4_2_8();
+		}
+
+		private void To4_2_8() {
+			if(FromVersion < new Version("4.2.8.0")) {
+				DataConnection dcon=new DataConnection();
+				string command="UPDATE procedurecode SET PaintType=13, TreatArea=2 WHERE ADACode='D1351'";
+				dcon.NonQ(command);
+				command="UPDATE preference SET ValueString = '4.2.8.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To4_2_9();
+		}
+
+		private void To4_2_9() {
+			if(FromVersion < new Version("4.2.9.0")) {
+				DataConnection dcon=new DataConnection();
+				string command;
+				//Add Florida probe bridge----------------------------------------------------------------------------------------
+				command="INSERT INTO program (ProgName,ProgDesc,Enabled,Path,CommandLine,Note"
+					+") VALUES("
+					+"'FloridaProbe', "
+					+"'Florida Probe from www.floridaprobe.com', "
+					+"'0', "
+					+"'"+POut.PString(@"fp32")+"', "
+					+"'', "
+					+"'No command line is needed.')";
+				dcon.NonQ(command,true);
+				int programNum=dcon.InsertID;//we now have a ProgramNum to work with
+				command="INSERT INTO programproperty (ProgramNum,PropertyDesc,PropertyValue"
+					+") VALUES("
+					+"'"+programNum.ToString()+"', "
+					+"'Enter 0 to use PatientNum, or 1 to use ChartNum', "
+					+"'0')";
+				dcon.NonQ(command);
+				command="INSERT INTO toolbutitem (ProgramNum,ToolBar,ButtonText) "
+					+"VALUES ("
+					+"'"+programNum.ToString()+"', "
+					+"'"+((int)ToolBarsAvail.ChartModule).ToString()+"', "
+					+"'Florida Probe')";
+				dcon.NonQ(command);
+				//Add Dr Ceph bridge----------------------------------------------------------------------------------------
+				command="INSERT INTO program (ProgName,ProgDesc,Enabled,Path,CommandLine,Note"
+					+") VALUES("
+					+"'DrCeph', "
+					+"'Dr. Ceph from www.fyitek.com', "
+					+"'0', "
+					+"'', "
+					+"'', "
+					+"'No path or command line is needed.')";
+				dcon.NonQ(command,true);
+				programNum=dcon.InsertID;//we now have a ProgramNum to work with
+				command="INSERT INTO programproperty (ProgramNum,PropertyDesc,PropertyValue"
+					+") VALUES("
+					+"'"+programNum.ToString()+"', "
+					+"'Enter 0 to use PatientNum, or 1 to use ChartNum', "
+					+"'0')";
+				dcon.NonQ(command);
+				command="INSERT INTO toolbutitem (ProgramNum,ToolBar,ButtonText) "
+					+"VALUES ("
+					+"'"+programNum.ToString()+"', "
+					+"'"+((int)ToolBarsAvail.ChartModule).ToString()+"', "
+					+"'Dr Ceph')";
+				dcon.NonQ(command);
+				command="UPDATE preference SET ValueString = '4.2.9.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To4_2_10();
+		}
+
+		private void To4_2_10() {
+			if(FromVersion < new Version("4.2.10.0")) {
+				DataConnection dcon=new DataConnection();
+				string command="ALTER TABLE procedurecode ADD GraphicColor int NOT NULL";
+				dcon.NonQ(command);
+				command="INSERT INTO definition (Category,ItemOrder,ItemName,ItemColor) VALUES(12,6,"
+						+"'CommLog',-65536)";
+				dcon.NonQ(command);
+				command="UPDATE preference SET ValueString = '4.2.10.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			//To4_2_?();
 		}
 
 
-		
 	}
 
 }

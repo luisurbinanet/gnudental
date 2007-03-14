@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
-//using System.Drawing;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace OpenDental{
@@ -20,8 +20,8 @@ namespace OpenDental{
 		public int ProcCat;
 		///<summary>See the TreatmentArea enumeration.</summary>
 		public TreatmentArea TreatArea;
-		///<summary>True for extractions so teeth will show as missing if complete or existing.</summary>
-		public bool RemoveTooth;
+		///<summary>No longer used. Extraction paint type is used instead to show missing teeth.</summary>
+		public bool RemoveToothOld;
 		///<summary>Triggers recall in 6 months.</summary>
 		public bool SetRecall;
 		///<summary>If true, do not usually bill this procedure to insurance.</summary>
@@ -32,7 +32,7 @@ namespace OpenDental{
 		public string DefaultNote;
 		///<summary>Identifies hygiene procedures so that the correct provider can be selected.</summary>
 		public bool IsHygiene;
-		///<summary>Foreign key to GraphicType</summary>
+		///<summary>No longer used.  Foreign key to GraphicType</summary>
 		public int GTypeNum;
 		///<summary>For Medicaid.  There may be more later.</summary>
 		public string AlternateCode1;
@@ -40,6 +40,10 @@ namespace OpenDental{
 		public string MedicalCode;
 		///<summary>Not used yet. No user interface built yet.  SalesTaxPercentage has been added to the preference table to store the amount of sales tax to apply as an adjustment attached to a procedurelog entry.</summary>
 		public bool IsTaxed;
+		///<summary></summary>
+		public ToothPaintingType PaintType;
+		///<summary>If set to anything but 0, then this will override the graphic color for all procedures of this code, regardless of the status.</summary>
+		public Color GraphicColor;
 
 		///<summary>Returns a copy of this Procedurecode.</summary>
 		public ProcedureCode Copy(){
@@ -50,7 +54,7 @@ namespace OpenDental{
 			p.ProcTime=ProcTime;
 			p.ProcCat=ProcCat;
 			p.TreatArea=TreatArea;
-			p.RemoveTooth=RemoveTooth;
+			//p.RemoveTooth=RemoveTooth;
 			p.SetRecall=SetRecall;
 			p.NoBillIns=NoBillIns;
 			p.IsProsth=IsProsth;
@@ -60,6 +64,8 @@ namespace OpenDental{
 			p.AlternateCode1=AlternateCode1;
 			p.MedicalCode=MedicalCode;
 			p.IsTaxed=IsTaxed;
+			p.PaintType=PaintType;
+			p.GraphicColor=GraphicColor;
 			return p;
 		}
 
@@ -67,15 +73,16 @@ namespace OpenDental{
 		public void Insert(){
 			//must have already checked ADACode for nonduplicate.
 			string command="INSERT INTO procedurecode (adacode,descript,abbrdesc,"
-				+"proctime,proccat,treatarea,removetooth,setrecall,"
-				+"nobillins,isprosth,defaultnote,ishygiene,gtypenum,alternatecode1,MedicalCode,IsTaxed) VALUES("
+				+"proctime,proccat,treatarea,setrecall,"
+				+"nobillins,isprosth,defaultnote,ishygiene,gtypenum,alternatecode1,MedicalCode,IsTaxed,"
+				+"PaintType,GraphicColor) VALUES("
 				+"'"+POut.PString(ADACode)+"', "
 				+"'"+POut.PString(Descript)+"', "
 				+"'"+POut.PString(AbbrDesc)+"', "
 				+"'"+POut.PString(ProcTime)+"', "
 				+"'"+POut.PInt   (ProcCat)+"', "
 				+"'"+POut.PInt   ((int)TreatArea)+"', "
-				+"'"+POut.PBool  (RemoveTooth)+"', "
+				//+"'"+POut.PBool  (RemoveTooth)+"', "
 				+"'"+POut.PBool  (SetRecall)+"', "
 				+"'"+POut.PBool  (NoBillIns)+"', "
 				+"'"+POut.PBool  (IsProsth)+"', "
@@ -84,7 +91,9 @@ namespace OpenDental{
 				+"'"+POut.PInt   (GTypeNum)+"', "
 				+"'"+POut.PString(AlternateCode1)+"', "
 				+"'"+POut.PString(MedicalCode)+"', "
-				+"'"+POut.PBool  (IsTaxed)+"')";
+				+"'"+POut.PBool  (IsTaxed)+"', "
+				+"'"+POut.PInt   ((int)PaintType)+"', "
+				+"'"+POut.PInt   (GraphicColor.ToArgb())+"')";
 			DataConnection dcon=new DataConnection();
 			dcon.NonQ(command);
 			ProcedureCodes.Refresh();
@@ -101,7 +110,7 @@ namespace OpenDental{
 				+ ",proctime = '"      +POut.PString(ProcTime)+"'"
 				+ ",proccat = '"       +POut.PInt   (ProcCat)+"'"
 				+ ",treatarea = '"     +POut.PInt   ((int)TreatArea)+"'"
-				+ ",removetooth = '"   +POut.PBool  (RemoveTooth)+"'"
+				//+ ",removetooth = '"   +POut.PBool  (RemoveTooth)+"'"
 				+ ",setrecall = '"     +POut.PBool  (SetRecall)+"'"
 				+ ",nobillins = '"     +POut.PBool  (NoBillIns)+"'"
 				+ ",isprosth = '"      +POut.PBool  (IsProsth)+"'"
@@ -111,6 +120,8 @@ namespace OpenDental{
 				+ ",alternatecode1 = '"+POut.PString(AlternateCode1)+"'"
 				+ ",MedicalCode = '"   +POut.PString(MedicalCode)+"'"
 				+ ",IsTaxed = '"       +POut.PBool  (IsTaxed)+"'"
+				+ ",PaintType = '"     +POut.PInt   ((int)PaintType)+"'"
+				+ ",GraphicColor = '"  +POut.PInt   (GraphicColor.ToArgb())+"'"
 				+" WHERE adacode = '"+POut.PString(ADACode)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
@@ -152,8 +163,8 @@ namespace OpenDental{
 				tempCode.AbbrDesc      =PIn.PString(tableStat.Rows[i][2].ToString());
 				tempCode.ProcTime      =PIn.PString(tableStat.Rows[i][3].ToString());
 				tempCode.ProcCat       =PIn.PInt   (tableStat.Rows[i][4].ToString());
-				tempCode.TreatArea     =(TreatmentArea)PIn.PInt   (tableStat.Rows[i][5].ToString());
-				tempCode.RemoveTooth   =PIn.PBool  (tableStat.Rows[i][6].ToString());
+				tempCode.TreatArea     =(TreatmentArea)PIn.PInt(tableStat.Rows[i][5].ToString());
+				//tempCode.RemoveTooth   =PIn.PBool  (tableStat.Rows[i][6].ToString());
 				tempCode.SetRecall     =PIn.PBool  (tableStat.Rows[i][7].ToString());
 				tempCode.NoBillIns     =PIn.PBool  (tableStat.Rows[i][8].ToString());
 				tempCode.IsProsth      =PIn.PBool  (tableStat.Rows[i][9].ToString());
@@ -163,6 +174,8 @@ namespace OpenDental{
 				tempCode.AlternateCode1=PIn.PString(tableStat.Rows[i][13].ToString());
 				tempCode.MedicalCode   =PIn.PString(tableStat.Rows[i][14].ToString());
 				tempCode.IsTaxed       =PIn.PBool  (tableStat.Rows[i][15].ToString());
+				tempCode.PaintType     =(ToothPaintingType)PIn.PInt(tableStat.Rows[i][16].ToString());
+				tempCode.GraphicColor  =Color.FromArgb(PIn.PInt(tableStat.Rows[i][17].ToString()));
 				HList.Add(tempCode.ADACode,tempCode.Copy());
 				List[i]=tempCode.Copy();
 				if(tempCode.SetRecall){

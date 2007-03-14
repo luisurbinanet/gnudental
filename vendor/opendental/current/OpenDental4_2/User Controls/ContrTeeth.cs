@@ -507,32 +507,25 @@ namespace OpenDental
 			}
 			Array.Sort(procOrder,procList);
 			//pri teeth
-			string[] priTeeth=PatCur.PrimaryTeeth.Split(',');
-			for(int i=0;i<priTeeth.Length;i++){
-				SetPrimary(priTeeth[i]);
+			ToothInitial[] initialList=ToothInitials.Refresh(PatCur.PatNum);
+			ArrayList priTeeth=ToothInitials.GetPriTeeth(initialList);
+			for(int i=0;i<priTeeth.Count;i++){
+				SetPrimary((string)priTeeth[i]);
 			}
 			//missing teeth
-			for(int i=0;i<procList.Length;i++){
-				//if(procList[i].HideGraphical){
-				//	continue;
-				//}
-				if(ProcedureCodes.GetProcCode(procList[i].ADACode).RemoveTooth && (
-					procList[i].ProcStatus==ProcStat.C
-					|| procList[i].ProcStatus==ProcStat.EC
-					|| procList[i].ProcStatus==ProcStat.EO))
-				{
-					if(Tooth.IsPrimary(procList[i].ToothNum)){
-						if(PrimaryTeeth.Contains(Tooth.PriToPerm(procList[i].ToothNum))){
-							SetMissing(procList[i].ToothNum);
-						}
-						else{
-							MissingTeeth.Add(procList[i].ToothNum);
-							//the primary tooth will just be covered up by the permanent, so no need to draw rect
-						}
+			ArrayList missing=ToothInitials.GetMissingOrHiddenTeeth(initialList);
+			for(int i=0;i<missing.Count;i++) {
+				if(Tooth.IsPrimary((string)missing[i])) {
+					if(PrimaryTeeth.Contains(Tooth.PriToPerm((string)missing[i]))) {
+						SetMissing((string)missing[i]);
 					}
-					else if(Tooth.IsValidDB(procList[i].ToothNum)){
-						SetMissing(procList[i].ToothNum);
+					else {
+						MissingTeeth.Add(missing[i]);
+						//the primary tooth will just be covered up by the permanent, so no need to draw rect
 					}
+				}
+				else if(Tooth.IsValidDB((string)missing[i])) {
+					SetMissing((string)missing[i]);
 				}
 			}
 			DrawProcsOfStatus(procList,ProcStat.EO);
@@ -576,7 +569,7 @@ namespace OpenDental
 				if(procList[i].HideGraphical){
 					doDraw=false;
 				}
-				if(ProcedureCodes.GetProcCode(procList[i].ADACode).RemoveTooth && (
+				if(ProcedureCodes.GetProcCode(procList[i].ADACode).PaintType==ToothPaintingType.Extraction && (
 					procList[i].ProcStatus==ProcStat.C
 					|| procList[i].ProcStatus==ProcStat.EC
 					|| procList[i].ProcStatus==ProcStat.EO

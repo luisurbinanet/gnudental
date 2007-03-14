@@ -1043,8 +1043,9 @@ namespace OpenDental{
 			textRedCAL.Text =((Pref)Prefs.HList["PerioRedCAL"] ).ValueString;
 			textRedFurc.Text=((Pref)Prefs.HList["PerioRedFurc"]).ValueString;
 			textRedMob.Text =((Pref)Prefs.HList["PerioRedMob"] ).ValueString;
-			Procedure[] procList=Procedures.Refresh(PatCur.PatNum);
-			MissingTeeth=Procedures.GetMissingTeeth(procList);
+			//Procedure[] procList=Procedures.Refresh(PatCur.PatNum);
+			ToothInitial[] initialList=ToothInitials.Refresh(PatCur.PatNum);
+			MissingTeeth=ToothInitials.GetMissingOrHiddenTeeth(initialList);
 			RefreshListExams();
 			listExams.SelectedIndex=PerioExams.List.Length-1;//this works even if no items.
 			FillGrid();

@@ -1,4 +1,4 @@
-//We now use Indy for all networking functions.
+//We now use Indy for all email functions.
 /*using System;
 using System.Collections;
 using System.Net.Sockets;

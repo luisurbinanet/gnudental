@@ -1448,7 +1448,7 @@ namespace OpenDental{
 			comboPlanType.Items.Add(Lan.g(this,"Medicaid or Flat Co-pay"));
 			if(PlanCur.PlanType=="f")
 				comboPlanType.SelectedIndex=1;
-			if(Prefs.GetBool("EasyHideCapitation")) {
+			if(!Prefs.GetBool("EasyHideCapitation")) {
 				comboPlanType.Items.Add(Lan.g(this,"Capitation"));
 				if(PlanCur.PlanType=="c")
 					comboPlanType.SelectedIndex=2;

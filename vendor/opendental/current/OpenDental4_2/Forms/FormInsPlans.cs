@@ -293,11 +293,11 @@ namespace OpenDental{
 				row.Cells.Add(carrier.Zip);
 				row.Cells.Add(ListAll[i].GroupNum);
 				row.Cells.Add(ListAll[i].GroupName);
-				if(Carriers.Cur.NoSendElect)
+				if(carrier.NoSendElect)
 					row.Cells.Add("X");
 				else
 					row.Cells.Add("");
-				row.Cells.Add(Carriers.Cur.ElectID);
+				row.Cells.Add(carrier.ElectID);
 				row.Cells.Add(ListAll[i].NumberPlans.ToString());
 				gridMain.Rows.Add(row);
 			}

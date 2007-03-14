@@ -63,6 +63,7 @@ namespace OpenDental{
 		private OpenDental.UI.ODGrid gridMain;
 		private TextBox textDepositAccount;
 		private ArrayList SplitListOld;
+		private OpenDental.UI.Button butEditAccounting;
 		private int[] DepositAccounts;
 
 		///<summary>PatCur and FamCur are not for the PatCur of the payment.  They are for the patient and family from which this window was accessed.</summary>
@@ -124,6 +125,7 @@ namespace OpenDental{
 			this.butOK = new OpenDental.UI.Button();
 			this.butDeleteAll = new OpenDental.UI.Button();
 			this.butAdd = new OpenDental.UI.Button();
+			this.butEditAccounting = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
 			// label1
@@ -435,10 +437,25 @@ namespace OpenDental{
 			this.butAdd.Text = "&Add Split";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
+			// butEditAccounting
+			// 
+			this.butEditAccounting.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butEditAccounting.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butEditAccounting.Autosize = true;
+			this.butEditAccounting.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butEditAccounting.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butEditAccounting.Location = new System.Drawing.Point(671,161);
+			this.butEditAccounting.Name = "butEditAccounting";
+			this.butEditAccounting.Size = new System.Drawing.Size(75,26);
+			this.butEditAccounting.TabIndex = 117;
+			this.butEditAccounting.Text = "Edit";
+			this.butEditAccounting.Click += new System.EventHandler(this.butEditAccounting_Click);
+			// 
 			// FormPayment
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
 			this.ClientSize = new System.Drawing.Size(840,588);
+			this.Controls.Add(this.butEditAccounting);
 			this.Controls.Add(this.gridMain);
 			this.Controls.Add(this.textDepositAccount);
 			this.Controls.Add(this.labelDepositAccount);
@@ -552,6 +569,7 @@ namespace OpenDental{
 			}
 			if(IsNew) {
 				textDepositAccount.Visible=false;//this is never visible for new. It's a description if already attached.
+				butEditAccounting.Visible=false;//there's no transaction to edit since not attached yet.
 				if(Accounts.PaymentsLinked()) {
 					AccountingAutoPay autoPay=AccountingAutoPays.GetForPayType(
 						Defs.Short[(int)DefCat.PaymentTypes][listPayType.SelectedIndex].DefNum);
@@ -573,12 +591,11 @@ namespace OpenDental{
 				}
 			}
 			else {
-				//we never again let user change the accounting linking again from here.
-				//They need to detach it from within the transaction or delete this payment
-				//Might be enhanced later to allow, but that's very complex.
+				//User will have to use the edit button.  Not allowed to pick from list like when new.
 				Transaction trans=Transactions.GetAttachedToPayment(PaymentCur.PayNum);
 				if(trans==null) {
 					labelDepositAccount.Visible=false;
+					butEditAccounting.Visible=false;
 					comboDepositAccount.Visible=false;
 					textDepositAccount.Visible=false;
 				}
@@ -590,8 +607,13 @@ namespace OpenDental{
 						if(Accounts.GetAccount(((JournalEntry)jeAL[i]).AccountNum).AcctType==AccountType.Asset) {
 							comboDepositAccount.Items.Add(Accounts.GetDescript(((JournalEntry)jeAL[i]).AccountNum));
 							comboDepositAccount.SelectedIndex=0;
-							textDepositAccount.Text=((JournalEntry)jeAL[i]).DateDisplayed.ToShortDateString()
-								+" "+((JournalEntry)jeAL[i]).DebitAmt.ToString("c");
+							textDepositAccount.Text=((JournalEntry)jeAL[i]).DateDisplayed.ToShortDateString();
+							if(((JournalEntry)jeAL[i]).DebitAmt>0){
+								textDepositAccount.Text+=" "+((JournalEntry)jeAL[i]).DebitAmt.ToString("c");
+							}
+							else{//negative
+								textDepositAccount.Text+=" "+(-((JournalEntry)jeAL[i]).CreditAmt).ToString("c");
+							}
 							break;
 						}
 					}
@@ -743,7 +765,31 @@ namespace OpenDental{
 				}
 				comboDepositAccount.SelectedIndex=0;
 			}
-			
+		}
+
+		private void butEditAccounting_Click(object sender,EventArgs e){
+			Transaction trans=Transactions.GetAttachedToPayment(PaymentCur.PayNum);
+			if(trans==null) {//this should never happen.  But just in case...
+				MsgBox.Show(this,"No transaction to edit.");
+				return;
+			}
+			if(!Security.IsAuthorized(Permissions.AccountingEdit,trans.DateTimeEntry)){
+				return;
+			}
+			FormTransactionEdit FormT=new FormTransactionEdit(trans.TransactionNum,0);
+			FormT.ShowDialog();
+			//labelDepositAccount.Text=Lan.g(this,"Payed into Account");
+			ArrayList jeAL=JournalEntries.GetForTrans(trans.TransactionNum);
+			comboDepositAccount.Items.Clear();
+			for(int i=0;i<jeAL.Count;i++) {
+				if(Accounts.GetAccount(((JournalEntry)jeAL[i]).AccountNum).AcctType==AccountType.Asset) {
+					comboDepositAccount.Items.Add(Accounts.GetDescript(((JournalEntry)jeAL[i]).AccountNum));
+					comboDepositAccount.SelectedIndex=0;
+					textDepositAccount.Text=((JournalEntry)jeAL[i]).DateDisplayed.ToShortDateString()
+								+" "+((JournalEntry)jeAL[i]).DebitAmt.ToString("c");
+					break;
+				}
+			}
 		}
 
 		private void butDeleteAll_Click(object sender, System.EventArgs e) {
@@ -753,7 +799,6 @@ namespace OpenDental{
 			//If payment is attached to a transaction which is more than 48 hours old, then not allowed to delete.
 			//This is hard coded.  User would have to delete or detach from within transaction rather than here.
 			Transaction trans=Transactions.GetAttachedToPayment(PaymentCur.PayNum);
-				//.GetAttachedToDeposit(DepositCur.DepositNum);
 			if(trans != null) {
 				if(trans.DateTimeEntry < MiscData.GetNowDateTime().AddDays(-2)) {
 					MsgBox.Show(this,"Not allowed to delete.  This payment is already attached to an accounting transaction.  You will need to detach it from within the accounting section of the program.");
@@ -795,6 +840,21 @@ namespace OpenDental{
 			if(textAmount.Text==""){
 				MessageBox.Show(Lan.g(this,"Please enter an amount."));	
 				return;
+			}
+			if(PIn.PDouble(textAmount.Text)==0) {
+				MessageBox.Show(Lan.g(this,"Amount must not be zero."));
+				return;
+			}
+			//If user is trying to change the amount of an entry that was already copied and linked to accounting section
+			//(category can only be changed by clicking the edit button.)
+			if(!IsNew){
+				try{
+					PaymentCur.AlterLinkedEntries(PIn.PDouble(textAmount.Text));
+				}
+				catch(ApplicationException ex){
+					MessageBox.Show(ex.Message);//not able to alter, so must not allow user to continue.
+					return;
+				}
 			}
 			PaymentCur.PayAmt=PIn.PDouble(textAmount.Text);
 			PaymentCur.PayDate=PIn.PDate(textDate.Text);
@@ -839,7 +899,7 @@ namespace OpenDental{
 			try{
 				PaymentCur.Update();
 			}
-			catch(ApplicationException ex){//this catches bad dates, and also prevents changing amount if attached to deposit.
+			catch(ApplicationException ex){//this catches bad dates.
 				MessageBox.Show(ex.Message);
 				return;
 			}
@@ -859,6 +919,7 @@ namespace OpenDental{
 				je.AccountNum=DepositAccounts[comboDepositAccount.SelectedIndex];
 				je.CheckNumber=Lan.g(this,"DEP");
 				je.DateDisplayed=PaymentCur.PayDate;//it would be nice to add security here.
+				
 				je.DebitAmt=PaymentCur.PayAmt;
 				je.Memo=Lan.g(this,"Payment -")+" "+FamCur.GetNameInFamFL(PaymentCur.PatNum);
 				je.Splits=Accounts.GetDescript(Prefs.GetInt("AccountingCashIncomeAccount"));
@@ -904,6 +965,8 @@ namespace OpenDental{
 			//	return;
 			//}	
 		}
+
+		
 
 		
 

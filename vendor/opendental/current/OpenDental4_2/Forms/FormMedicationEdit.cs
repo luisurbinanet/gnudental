@@ -299,8 +299,8 @@ namespace OpenDental{
 				}
 			}
 			else{
-				textGenericName.Text=((Medication)Medications.HList[Medications.Cur.GenericNum]).MedName;
-				textNotes.Text=((Medication)Medications.HList[Medications.Cur.GenericNum]).Notes;
+				textGenericName.Text=Medications.GetMedication(Medications.Cur.GenericNum).MedName;
+				textNotes.Text=Medications.GetMedication(Medications.Cur.GenericNum).Notes;
 				textNotes.ReadOnly=true;
 				Brands=new string[0];
 				comboBrands.Visible=false;

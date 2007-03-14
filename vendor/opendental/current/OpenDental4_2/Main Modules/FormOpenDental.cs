@@ -1,6 +1,6 @@
 /*=============================================================================================================
 Open Dental is a dental practice management program.
-Copyright (C) 2003-2004  Jordan Sparks, DMD.  http://www.open-dent.com,  http://www.docsparks.com
+Copyright (C) 2003,2004,2005,2006  Jordan Sparks, DMD.  http://www.open-dent.com,  http://www.docsparks.com
 
 This program is free software; you can redistribute it and/or modify it under the terms of the
 GNU General Public License as published by the Free Software Foundation; either version 2 of the License,
@@ -103,7 +103,7 @@ namespace OpenDental{
 		private System.Windows.Forms.MenuItem menuItemReferrals;
 		private System.Windows.Forms.MenuItem menuItem10;
 		private System.Windows.Forms.MenuItem menuItemExit;
-		private System.Windows.Forms.MenuItem menuItemCheckDatabase;
+		private System.Windows.Forms.MenuItem menuItemDatabaseMaintenance;
 		private System.Windows.Forms.MenuItem menuItemProcedureButtons;
 		private System.Windows.Forms.MenuItem menuItemZipCodes;
 		private System.Windows.Forms.MenuItem menuItem1;
@@ -302,7 +302,7 @@ namespace OpenDental{
 			this.menuItemTools = new System.Windows.Forms.MenuItem();
 			this.menuItemPrintScreen = new System.Windows.Forms.MenuItem();
 			this.menuItem1 = new System.Windows.Forms.MenuItem();
-			this.menuItemCheckDatabase = new System.Windows.Forms.MenuItem();
+			this.menuItemDatabaseMaintenance = new System.Windows.Forms.MenuItem();
 			this.menuTelephone = new System.Windows.Forms.MenuItem();
 			this.menuItemPatientImport = new System.Windows.Forms.MenuItem();
 			this.menuItem9 = new System.Windows.Forms.MenuItem();
@@ -1014,16 +1014,16 @@ namespace OpenDental{
 			// 
 			this.menuItem1.Index = 1;
 			this.menuItem1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.menuItemCheckDatabase,
+            this.menuItemDatabaseMaintenance,
             this.menuTelephone,
             this.menuItemPatientImport});
 			this.menuItem1.Text = "Misc Tools";
 			// 
-			// menuItemCheckDatabase
+			// menuItemDatabaseMaintenance
 			// 
-			this.menuItemCheckDatabase.Index = 0;
-			this.menuItemCheckDatabase.Text = "Check Database Integrity";
-			this.menuItemCheckDatabase.Click += new System.EventHandler(this.menuItemCheckDatabase_Click);
+			this.menuItemDatabaseMaintenance.Index = 0;
+			this.menuItemDatabaseMaintenance.Text = "Database Maintenance";
+			this.menuItemDatabaseMaintenance.Click += new System.EventHandler(this.menuItemDatabaseMaintenance_Click);
 			// 
 			// menuTelephone
 			// 
@@ -2625,13 +2625,13 @@ namespace OpenDental{
 			FormPS.ShowDialog();
 		}
 
-		private void menuItemCheckDatabase_Click(object sender, System.EventArgs e) {
+		private void menuItemDatabaseMaintenance_Click(object sender, System.EventArgs e) {
 			if(!Security.IsAuthorized(Permissions.Setup)){
 				return;
 			}
-			FormCheckDatabase FormCDB=new FormCheckDatabase();
-			FormCDB.ShowDialog();
-			SecurityLogs.MakeLogEntry(Permissions.Setup,0,"Check Database Integrity");
+			FormDatabaseMaintenance FormDM=new FormDatabaseMaintenance();
+			FormDM.ShowDialog();
+			SecurityLogs.MakeLogEntry(Permissions.Setup,0,"Database Maintenance");
 		}
 
 		private void menuTelephone_Click(object sender, System.EventArgs e) {

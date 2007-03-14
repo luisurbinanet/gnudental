@@ -95,8 +95,8 @@ namespace OpenDental{
 		public double BalOver90;
 		///<summary>Insurance Estimate for entire family.</summary>
 		public double InsEst;
-		///<summary>Teeth to display in chart as primary. eg: "1,2,3,4,5,12,13"</summary>
-		public string PrimaryTeeth;
+		///<summary>No longer used.  See toothinital table instead.  Teeth to display in chart as primary. eg: "1,2,3,4,5,12,13"</summary>
+		public string PrimaryTeethOld;
 		///<summary>Total balance for entire family before insurance estimate.  Not the same as the sum of the 4 aging balances because this can be negative.  Only stored with guarantor.</summary>
 		public double BalTotal;
 		///<summary>Foreign key to employer.EmployerNum.</summary>
@@ -172,7 +172,7 @@ namespace OpenDental{
 			p.Bal_61_90=Bal_61_90;
 			p.BalOver90=BalOver90;
 			p.InsEst=InsEst;
-			p.PrimaryTeeth=PrimaryTeeth;
+			//p.PrimaryTeeth=PrimaryTeeth;
 			p.BalTotal=BalTotal;
 			p.EmployerNum=EmployerNum;
 			p.EmploymentNote=EmploymentNote;
@@ -204,7 +204,7 @@ namespace OpenDental{
 				+"estbalance,nextaptnum,priprov,secprov,feesched,billingtype,"
 				+"imagefolder,addrnote,famfinurgnote,medurgnote,apptmodnote,"
 				+"studentstatus,schoolname,chartnumber,medicaidid"
-				+",Bal_0_30,Bal_31_60,Bal_61_90,BalOver90,insest,primaryteeth,BalTotal"
+				+",Bal_0_30,Bal_31_60,Bal_61_90,BalOver90,insest,BalTotal"
 				+",EmployerNum,EmploymentNote,Race,County,GradeSchool,GradeLevel,Urgency,DateFirstVisit"
 				+",ClinicNum,HasIns,TrophyFolder,PlannedIsDone) VALUES(";
 			if(includePatNum || Prefs.RandomKeys){
@@ -251,7 +251,7 @@ namespace OpenDental{
 				+"'"+POut.PDouble(Bal_61_90)+"', "
 				+"'"+POut.PDouble(BalOver90)+"', "
 				+"'"+POut.PDouble(InsEst)+"', "
-				+"'"+POut.PString(PrimaryTeeth)+"', "
+				//+"'"+POut.PString(PrimaryTeeth)+"', "
 				+"'"+POut.PDouble(BalTotal)+"', "
 				+"'"+POut.PInt   (EmployerNum)+"', "
 				+"'"+POut.PString(EmploymentNote)+"', "
@@ -484,11 +484,11 @@ namespace OpenDental{
 				c+="InsEst    = '"      +POut.PDouble(InsEst)+"'";
 				comma=true;
 			}
-			if(PrimaryTeeth!=CurOld.PrimaryTeeth){
-				if(comma) c+=",";
-				c+="PrimaryTeeth = '"   +POut.PString(PrimaryTeeth)+"'";
-				comma=true;
-			}
+			//if(PrimaryTeeth!=CurOld.PrimaryTeeth){
+			//	if(comma) c+=",";
+			//	c+="PrimaryTeeth = '"   +POut.PString(PrimaryTeeth)+"'";
+			//	comma=true;
+			//}
 			if(BalTotal!=CurOld.BalTotal){
 				if(comma) c+=",";
 				c+="BalTotal = '"       +POut.PDouble(BalTotal)+"'";

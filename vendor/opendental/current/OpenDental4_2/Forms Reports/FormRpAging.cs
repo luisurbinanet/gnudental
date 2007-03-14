@@ -388,13 +388,13 @@ namespace OpenDental{
 
 			Queries.CurReport.ColPos[0]=20;
 			Queries.CurReport.ColPos[1]=180;
-			Queries.CurReport.ColPos[2]=250;
-			Queries.CurReport.ColPos[3]=320;
-			Queries.CurReport.ColPos[4]=390;
-			Queries.CurReport.ColPos[5]=460;
-			Queries.CurReport.ColPos[6]=530;
-			Queries.CurReport.ColPos[7]=600;
-			Queries.CurReport.ColPos[8]=670;
+			Queries.CurReport.ColPos[2]=260;
+			Queries.CurReport.ColPos[3]=340;
+			Queries.CurReport.ColPos[4]=420;
+			Queries.CurReport.ColPos[5]=500;
+			Queries.CurReport.ColPos[6]=580;
+			Queries.CurReport.ColPos[7]=660;
+			Queries.CurReport.ColPos[8]=740;
 
 			Queries.CurReport.ColCaption[0]="GUARANTOR";
 			Queries.CurReport.ColCaption[1]="0-30 DAYS";

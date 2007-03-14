@@ -526,7 +526,12 @@ namespace OpenDental{
 			else {
 				textDate.Text=DateTime.Today.ToShortDateString();
 			}
-			if(JournalEntries.AttachedToReconcile(JournalList)){
+			if(AccountOfOrigin==null){//if accessed from within a payment screen instead of through accounting
+				checkSimple.Checked=false;
+				checkSimple.Visible=false;//don't allow user to switch back to simple view
+				FillCompound();
+			}
+			else if(JournalEntries.AttachedToReconcile(JournalList)){
 				checkSimple.Checked=false;
 				checkSimple.Visible=false;//don't allow user to switch back to simple view
 				FillCompound();
@@ -579,20 +584,24 @@ namespace OpenDental{
 			ODGridColumn col=new ODGridColumn(Lan.g("TableTransSplits","Account"),150);
 			gridMain.Columns.Add(col);
 			string str=Lan.g("TableTransSplits","Debit");
-			if(Accounts.DebitIsPos(AccountOfOrigin.AcctType)){
-				str+=Lan.g(this,"(+)");
-			}
-			else{
-				str+=Lan.g(this,"(-)");
+			if(AccountOfOrigin!=null){
+				if(Accounts.DebitIsPos(AccountOfOrigin.AcctType)) {
+					str+=Lan.g(this,"(+)");
+				}
+				else {
+					str+=Lan.g(this,"(-)");
+				}
 			}
 			col=new ODGridColumn(str,70,HorizontalAlignment.Right);
 			gridMain.Columns.Add(col);
 			str=Lan.g("TableTransSplits","Credit");
-			if(Accounts.DebitIsPos(AccountOfOrigin.AcctType)) {
-				str+=Lan.g(this,"(-)");
-			}
-			else {
-				str+=Lan.g(this,"(+)");
+			if(AccountOfOrigin!=null){
+				if(Accounts.DebitIsPos(AccountOfOrigin.AcctType)) {
+					str+=Lan.g(this,"(-)");
+				}
+				else {
+					str+=Lan.g(this,"(+)");
+				}
 			}
 			col=new ODGridColumn(str,70,HorizontalAlignment.Right);
 			gridMain.Columns.Add(col);
@@ -1042,8 +1051,12 @@ namespace OpenDental{
 					date.ToShortDateString()+" "+AccountOfOrigin.Description+" "+tot.ToString("c"));
 			}
 			else {
-				SecurityLogs.MakeLogEntry(Permissions.AdjustmentEdit,0,
-					date.ToShortDateString()+" "+AccountOfOrigin.Description+" "+tot.ToString("c"));
+				string txt=date.ToShortDateString();
+				if(AccountOfOrigin!=null){
+					txt+=" "+AccountOfOrigin.Description;
+				}
+				txt+=" "+tot.ToString("c");
+				SecurityLogs.MakeLogEntry(Permissions.AdjustmentEdit,0,txt);
 			}
 			DialogResult=DialogResult.OK;
 		}

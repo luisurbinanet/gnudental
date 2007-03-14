@@ -1039,6 +1039,7 @@ namespace OpenDental{
 			this.checkHideGraphical.Size = new System.Drawing.Size(139,14);
 			this.checkHideGraphical.TabIndex = 8;
 			this.checkHideGraphical.Text = "Hide Graphics";
+			this.checkHideGraphical.Visible = false;
 			// 
 			// groupProsth
 			// 
@@ -1530,12 +1531,12 @@ namespace OpenDental{
 					if(Tooth.IsValidDB(ProcCur.ToothNum)){
 						errorProvider2.SetError(textTooth,"");
 						textTooth.Text=Tooth.ToInternat(ProcCur.ToothNum);
-						textSurfaces.Text=Tooth.SurfTidy(ProcCur.Surf,ProcCur.ToothNum);
+						textSurfaces.Text=Tooth.SurfTidy(ProcCur.Surf,ProcCur.ToothNum,false);
 					}
 					else{
 						errorProvider2.SetError(textTooth,Lan.g(this,"Invalid tooth number."));
 						textTooth.Text=ProcCur.ToothNum;
-						textSurfaces.Text=Tooth.SurfTidy(ProcCur.Surf,"");//only valid toothnums allowed
+						//textSurfaces.Text=Tooth.SurfTidy(ProcCur.Surf,"");//only valid toothnums allowed
 					}
 					if(textSurfaces.Text=="")
 						errorProvider2.SetError(textSurfaces,"No surfaces selected.");
@@ -1867,10 +1868,10 @@ namespace OpenDental{
 
 		private void textSurfaces_Validating(object sender, System.ComponentModel.CancelEventArgs e) {
 			if(Tooth.IsValidEntry(textTooth.Text)){
-				textSurfaces.Text=Tooth.SurfTidy(textSurfaces.Text,Tooth.FromInternat(textTooth.Text));
+				textSurfaces.Text=Tooth.SurfTidy(textSurfaces.Text,Tooth.FromInternat(textTooth.Text),false);
 			}
 			else{
-				textSurfaces.Text=Tooth.SurfTidy(textSurfaces.Text,"");
+				textSurfaces.Text=Tooth.SurfTidy(textSurfaces.Text,"",false);
 			}
 			if(textSurfaces.Text=="")
 				errorProvider2.SetError(textSurfaces,"No surfaces selected.");
@@ -1965,8 +1966,9 @@ namespace OpenDental{
 			else{
 				textDate.Text=DateTime.Today.ToShortDateString();
 			}
-			if(ProcedureCode2.RemoveTooth){//if an extraction, then mark previous procs hidden
-				ProcCur.SetHideGraphical();
+			if(ProcedureCode2.PaintType==ToothPaintingType.Extraction){//if an extraction, then mark previous procs hidden
+				ProcCur.SetHideGraphical();//might not matter anymore
+				ToothInitials.SetValue(ProcCur.PatNum,ProcCur.ToothNum,ToothInitialType.Missing);
 			}
 			textNotes.Text+=ProcedureCode2.DefaultNote;
 			radioStatusC.Checked=true;
@@ -2371,6 +2373,12 @@ namespace OpenDental{
 						PatCur.GetNameLF()+", "+ProcCur.ADACode+", "
 						+ProcCur.ProcFee.ToString("c"));
 				}
+			}
+			if((ProcCur.ProcStatus==ProcStat.C || ProcCur.ProcStatus==ProcStat.EC || ProcCur.ProcStatus==ProcStat.EO)
+				&& ProcedureCodes.GetProcCode(ProcCur.ADACode).PaintType==ToothPaintingType.Extraction) {
+				//if an extraction, then mark previous procs hidden
+				ProcCur.SetHideGraphical();//might not matter anymore
+				ToothInitials.SetValue(ProcCur.PatNum,ProcCur.ToothNum,ToothInitialType.Missing);
 			}
 			ProcOld=ProcCur.Copy();//in case we now make more changes.
 			//these areas have no autocodes

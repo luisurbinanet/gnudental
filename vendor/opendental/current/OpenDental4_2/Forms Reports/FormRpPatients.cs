@@ -47,7 +47,7 @@ namespace OpenDental{
 		private ArrayList ALpatSelect;
     private ArrayList ALrefToSelect;
     private ArrayList ALrefFromSelect;
-    private ArrayList UsingInsPlans;
+    private ArrayList UsingInsPlans;//this is outdated.
     private ArrayList UsingProcLogFirst;
     private ArrayList UsingProcLogLast;
     private ArrayList UsingRefDent;
@@ -464,10 +464,10 @@ namespace OpenDental{
       ALpatSelect.Add("ImageFolder");
       ALpatSelect.Add("MedUrgNote"); 
       ALpatSelect.Add("NextAptNum"); 
-      ALpatSelect.Add("PriPlanNum");//Primary Carrier?
-      ALpatSelect.Add("PriRelationship");// ?
-			ALpatSelect.Add("SecPlanNum");//Secondary Carrier? 
-      ALpatSelect.Add("SecRelationship");// ?
+      //ALpatSelect.Add("PriPlanNum");//Primary Carrier?
+      //ALpatSelect.Add("PriRelationship");// ?
+			//ALpatSelect.Add("SecPlanNum");//Secondary Carrier? 
+      //ALpatSelect.Add("SecRelationship");// ?
 			//ALpatSelect.Add("RecallInterval")); 
       ALpatSelect.Add("RecallStatus");  
       ALpatSelect.Add("SchoolName"); 
@@ -478,7 +478,7 @@ namespace OpenDental{
 			ALpatSelect.Add("Bal_61_90");
 			ALpatSelect.Add("BalOver90");
 			ALpatSelect.Add("InsEst");
-			ALpatSelect.Add("PrimaryTeeth");
+			//ALpatSelect.Add("PrimaryTeeth");
 			ALpatSelect.Add("BalTotal");
 			ALpatSelect.Add("EmployerNum");
 			//EmploymentNote
@@ -568,9 +568,9 @@ namespace OpenDental{
       ALpatFilter.Add("PatStatus"); 
       ALpatFilter.Add("Position");  
       ALpatFilter.Add("Preferred"); 
-      ALpatFilter.Add("Primary Carrier"); 
-      ALpatFilter.Add("PriProv"); 
-      ALpatFilter.Add("PriRelationship"); 
+      //ALpatFilter.Add("Primary Carrier"); 
+      //ALpatFilter.Add("PriProv"); 
+      //ALpatFilter.Add("PriRelationship"); 
       //ALpatFilter.Add("RecallInterval"); 
       //ALpatFilter.Add("RecallStatus");
 			ALpatFilter.Add("Referred From Dentist");//new, need to add functionality
