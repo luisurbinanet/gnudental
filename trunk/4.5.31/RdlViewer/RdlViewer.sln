@@ -1,0 +1,29 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RdlViewer", "RdlViewer.csproj", "{D99145B1-CB6C-41F5-BA86-723325145FB5}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RdlReader", "RdlReader\RdlReader.csproj", "{2412E381-D3D9-4AB7-A2FA-02D9786260F0}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{D99145B1-CB6C-41F5-BA86-723325145FB5}.Debug.ActiveCfg = Debug|.NET
+		{D99145B1-CB6C-41F5-BA86-723325145FB5}.Debug.Build.0 = Debug|.NET
+		{D99145B1-CB6C-41F5-BA86-723325145FB5}.Release.ActiveCfg = Release|.NET
+		{D99145B1-CB6C-41F5-BA86-723325145FB5}.Release.Build.0 = Release|.NET
+		{2412E381-D3D9-4AB7-A2FA-02D9786260F0}.Debug.ActiveCfg = Debug|.NET
+		{2412E381-D3D9-4AB7-A2FA-02D9786260F0}.Debug.Build.0 = Debug|.NET
+		{2412E381-D3D9-4AB7-A2FA-02D9786260F0}.Release.ActiveCfg = Release|.NET
+		{2412E381-D3D9-4AB7-A2FA-02D9786260F0}.Release.Build.0 = Release|.NET
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal
