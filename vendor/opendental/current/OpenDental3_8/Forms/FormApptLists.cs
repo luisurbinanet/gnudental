@@ -24,7 +24,7 @@ namespace OpenDental{
 		/// </summary>
 		private System.ComponentModel.Container components = null;
 		///<summary>After this window closes, if dialog result is OK, this will contain which list was selected.</summary>
-		public ApptListSelection selectionResult;
+		public ApptListSelection SelectionResult;
 
 		///<summary></summary>
 		public FormApptLists()
@@ -100,8 +100,8 @@ namespace OpenDental{
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(458, 44);
 			this.label2.TabIndex = 3;
-			this.label2.Text = "A list of scheduled appointments.  These patients need to be remined about their " +
-				"appointments.";
+			this.label2.Text = "A list of scheduled appointments.  These patients need to be reminded about their" +
+				" appointments.";
 			// 
 			// label3
 			// 
@@ -129,8 +129,8 @@ namespace OpenDental{
 			this.label6.Name = "label6";
 			this.label6.Size = new System.Drawing.Size(519, 31);
 			this.label6.TabIndex = 7;
-			this.label6.Text = "These lists may be used for calling patients, sending postcards, email, etc..  Ma" +
-				"ke sure to make good Comm Log entries for everything.";
+			this.label6.Text = "These lists may be used for calling patients, sending postcards, running reports," +
+				" etc..  Make sure to make good Comm Log entries for everything.";
 			this.label6.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// butRecall
@@ -213,27 +213,26 @@ namespace OpenDental{
 		#endregion
 
 		private void FormApptLists_Load(object sender, System.EventArgs e) {
-			selectionResult=ApptListSelection.Recall;
-			DialogResult=DialogResult.OK;
+			
 		}
 
 		private void butRecall_Click(object sender, System.EventArgs e) {
-			selectionResult=ApptListSelection.Recall;
+			SelectionResult=ApptListSelection.Recall;
 			DialogResult=DialogResult.OK;
 		}
 
 		private void butConfirm_Click(object sender, System.EventArgs e) {
-			selectionResult=ApptListSelection.Confirm;
+			SelectionResult=ApptListSelection.Confirm;
 			DialogResult=DialogResult.OK;
 		}
 
 		private void butPlanned_Click(object sender, System.EventArgs e) {
-			selectionResult=ApptListSelection.Planned;
+			SelectionResult=ApptListSelection.Planned;
 			DialogResult=DialogResult.OK;
 		}
 
 		private void butUnsched_Click(object sender, System.EventArgs e) {
-			selectionResult=ApptListSelection.Unsched;
+			SelectionResult=ApptListSelection.Unsched;
 			DialogResult=DialogResult.OK;
 		}
 

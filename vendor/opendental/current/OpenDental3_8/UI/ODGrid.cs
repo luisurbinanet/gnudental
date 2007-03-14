@@ -478,7 +478,7 @@ namespace OpenDental.UI{
 			Invalidate();
 		}
 
-		///<summary>Call this before adding any rows.</summary>
+		///<summary>Call this before adding any rows.  You would typically call Rows.Clear after this.</summary>
 		public void BeginUpdate(){
 			IsUpdating=true;
 		}

@@ -127,8 +127,9 @@ namespace OpenDental{
 			// textBankNumber
 			// 
 			this.textBankNumber.Location = new System.Drawing.Point(144, 255);
+			this.textBankNumber.Multiline = true;
 			this.textBankNumber.Name = "textBankNumber";
-			this.textBankNumber.Size = new System.Drawing.Size(212, 20);
+			this.textBankNumber.Size = new System.Drawing.Size(264, 49);
 			this.textBankNumber.TabIndex = 2;
 			this.textBankNumber.Text = "";
 			// 
@@ -136,10 +137,10 @@ namespace OpenDental{
 			// 
 			this.label4.Location = new System.Drawing.Point(3, 254);
 			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(140, 23);
+			this.label4.Size = new System.Drawing.Size(140, 31);
 			this.label4.TabIndex = 22;
-			this.label4.Text = "Bank Deposit Acct Number";
-			this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.label4.Text = "Bank Deposit Acct Number and Info";
+			this.label4.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// groupBox2
 			// 

@@ -573,85 +573,8 @@ namespace OpenDental{
 		/// <summary>Creates appointment and appropriate procedures, and places data in ContrAppt.CurInfo so it will display on pinboard.</summary>
 		private void CreateCurInfo(){
 			ContrAppt.CurInfo=new InfoApt();
-			Appointment AptCur=new Appointment();
-			AptCur.PatNum=PatCur.PatNum;
-			AptCur.AptStatus=ApptStatus.Scheduled;
-			//convert time pattern to 5 minute increment
-			StringBuilder savePattern=new StringBuilder();
-			for(int i=0;i<Prefs.GetString("RecallPattern").Length;i++){
-				savePattern.Append(Prefs.GetString("RecallPattern").Substring(i,1));
-				savePattern.Append(Prefs.GetString("RecallPattern").Substring(i,1));
-				if(Prefs.GetInt("AppointmentTimeIncrement")==15){
-					savePattern.Append(Prefs.GetString("RecallPattern").Substring(i,1));
-				}
-			}
-			AptCur.Pattern=savePattern.ToString();
-			if(PatCur.PriProv==0)
-				AptCur.ProvNum=Prefs.GetInt("PracticeDefaultProv");
-			else
-				AptCur.ProvNum=PatCur.PriProv;
-			AptCur.ProvHyg=PatCur.SecProv;
-			AptCur.ClinicNum=PatCur.ClinicNum;
-			AptCur.InsertOrUpdate(null,true);
-      string[] procs=Prefs.GetString("RecallProcedures").Split(',');
-			if(((Pref)Prefs.HList["RecallBW"]).ValueString!=""){//BWs
-				bool dueBW=true;
-				//DateTime dueDate=PIn.PDate(listFamily.Items[
-				for(int i=0;i<ProcList.Length;i++){//loop through all procedures for this pt.
-					//if any BW found within last year, then dueBW=false.
-					if(Prefs.GetString("RecallBW")==ProcList[i].ADACode
-						&& RecallCur.DateDue.Year>1880
-						&& ProcList[i].ProcDate > RecallCur.DateDue.AddYears(-1)){
-						dueBW=false;
-					}
-				}
-				if(dueBW){
-					string[] procs2=new string[procs.Length+1];
-					procs.CopyTo(procs2,0);
-					procs2[procs2.Length-1]=((Pref)Prefs.HList["RecallBW"]).ValueString;
-					procs=new string[procs2.Length];
-					procs2.CopyTo(procs,0);
-				}
-			}
-			Procedure ProcCur;
-			//ClaimProc[] claimProcs=ClaimProcs.Refresh(Patients.Cur.PatNum);
-			for(int i=0;i<procs.Length;i++){
-				ProcCur=new Procedure();//this will be an insert
-				//procnum
-				ProcCur.PatNum=PatCur.PatNum;
-				ProcCur.AptNum=AptCur.AptNum;
-				ProcCur.ADACode=procs[i];
-				ProcCur.ProcDate=DateTime.Now;
-				ProcCur.ProcFee=Fees.GetAmount0(ProcCur.ADACode,Fees.GetFeeSched(PatCur,PlanList));
-				//ProcCur.OverridePri=-1;
-				//ProcCur.OverrideSec=-1;
-				//surf
-				//toothnum
-				//Procedures.Cur.ToothRange="";
-				//ProcCur.NoBillIns=ProcedureCodes.GetProcCode(ProcCur.ADACode).NoBillIns;
-				//priority
-				ProcCur.ProcStatus=ProcStat.TP;
-				ProcCur.ProcNote="";
-				//Procedures.Cur.PriEstim=
-				//Procedures.Cur.SecEstim=
-				//claimnum
-				ProcCur.ProvNum=PatCur.PriProv;
-				//Procedures.Cur.Dx=
-				ProcCur.ClinicNum=PatCur.ClinicNum;
-				//nextaptnum
-				try{
-					ProcCur.InsertOrUpdate(null,true);//no recall synch required
-				}
-				catch(Exception ex){
-					MessageBox.Show(ex.Message);
-					return;//this won't happen. Just treatment planning
-				}
-				ProcCur.ComputeEstimates(PatCur.PatNum,PatCur.PriPlanNum
-					,PatCur.SecPlanNum,new ClaimProc[0],false,PatCur,PlanList);
-			}
+			Appointment AptCur=Appointments.CreateRecallApt(PatCur,ProcList,RecallCur,PlanList);
 			ContrAppt.CurInfo.MyApt=AptCur.Copy();
-			//ContrAppt.CurInfo.CreditAndIns=Patients.GetCreditIns();
-			//ContrAppt.CurInfo.PatientName=Patients.GetCurNameLF();
 			ProcDesc procDesc=Procedures.GetProcsForSingle(AptCur.AptNum,false);
 			ContrAppt.CurInfo.Procs=procDesc.ProcLines;
 			ContrAppt.CurInfo.Production=procDesc.Production;

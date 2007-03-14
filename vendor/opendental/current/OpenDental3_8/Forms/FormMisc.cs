@@ -12,7 +12,6 @@ namespace OpenDental{
 		private System.ComponentModel.Container components = null;
 		private System.Windows.Forms.TextBox textTreatNote;
 		private System.Windows.Forms.CheckBox checkShowCC;
-		private System.Windows.Forms.CheckBox checkAutoRefresh;
 		private System.Windows.Forms.TextBox textMainWindowTitle;
 		private System.Windows.Forms.Label label14;
 		private System.Windows.Forms.CheckBox checkITooth;
@@ -20,7 +19,6 @@ namespace OpenDental{
 		private System.Windows.Forms.CheckBox checkTreatPlanShowCompleted;
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.CheckBox checkTreatPlanShowIns;
-		private System.Windows.Forms.CheckBox checkAllowMultipleCopiesOfProgram;
 		private System.Windows.Forms.GroupBox groupBox5;
 		private System.Windows.Forms.GroupBox groupBox2;
 		private System.Windows.Forms.RadioButton radioUsePatNum;
@@ -30,6 +28,8 @@ namespace OpenDental{
 		private System.Windows.Forms.CheckBox checkEclaimsSeparateTreatProv;
 		private System.Windows.Forms.CheckBox checkRandomPrimaryKeys;
 		private System.Windows.Forms.CheckBox checkBalancesDontSubtractIns;
+		private System.Windows.Forms.Label label3;
+		private OpenDental.ValidNumber textSigInterval;
 		private System.Windows.Forms.Label label1;// Required designer variable.
 
 		///<summary></summary>
@@ -56,7 +56,6 @@ namespace OpenDental{
 			this.textTreatNote = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.checkShowCC = new System.Windows.Forms.CheckBox();
-			this.checkAutoRefresh = new System.Windows.Forms.CheckBox();
 			this.textMainWindowTitle = new System.Windows.Forms.TextBox();
 			this.label14 = new System.Windows.Forms.Label();
 			this.checkITooth = new System.Windows.Forms.CheckBox();
@@ -64,7 +63,6 @@ namespace OpenDental{
 			this.checkTreatPlanShowCompleted = new System.Windows.Forms.CheckBox();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.checkTreatPlanShowIns = new System.Windows.Forms.CheckBox();
-			this.checkAllowMultipleCopiesOfProgram = new System.Windows.Forms.CheckBox();
 			this.groupBox5 = new System.Windows.Forms.GroupBox();
 			this.checkBalancesDontSubtractIns = new System.Windows.Forms.CheckBox();
 			this.textStatementsCalcDueDate = new OpenDental.ValidNumber();
@@ -74,6 +72,8 @@ namespace OpenDental{
 			this.radioUseChartNumber = new System.Windows.Forms.RadioButton();
 			this.checkEclaimsSeparateTreatProv = new System.Windows.Forms.CheckBox();
 			this.checkRandomPrimaryKeys = new System.Windows.Forms.CheckBox();
+			this.label3 = new System.Windows.Forms.Label();
+			this.textSigInterval = new OpenDental.ValidNumber();
 			this.groupBox1.SuspendLayout();
 			this.groupBox5.SuspendLayout();
 			this.groupBox2.SuspendLayout();
@@ -124,7 +124,7 @@ namespace OpenDental{
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(268, 15);
 			this.label1.TabIndex = 35;
-			this.label1.Text = "Note";
+			this.label1.Text = "Default Note";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// checkShowCC
@@ -136,19 +136,9 @@ namespace OpenDental{
 			this.checkShowCC.TabIndex = 36;
 			this.checkShowCC.Text = "Show Credit Card Info";
 			// 
-			// checkAutoRefresh
-			// 
-			this.checkAutoRefresh.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkAutoRefresh.Location = new System.Drawing.Point(48, 271);
-			this.checkAutoRefresh.Name = "checkAutoRefresh";
-			this.checkAutoRefresh.Size = new System.Drawing.Size(603, 19);
-			this.checkAutoRefresh.TabIndex = 37;
-			this.checkAutoRefresh.Text = "Disable AutoRefresh.  Warning!  You would not normally do this except for testing" +
-				".";
-			// 
 			// textMainWindowTitle
 			// 
-			this.textMainWindowTitle.Location = new System.Drawing.Point(143, 337);
+			this.textMainWindowTitle.Location = new System.Drawing.Point(144, 337);
 			this.textMainWindowTitle.Name = "textMainWindowTitle";
 			this.textMainWindowTitle.Size = new System.Drawing.Size(333, 20);
 			this.textMainWindowTitle.TabIndex = 38;
@@ -213,15 +203,6 @@ namespace OpenDental{
 			this.checkTreatPlanShowIns.Size = new System.Drawing.Size(334, 17);
 			this.checkTreatPlanShowIns.TabIndex = 48;
 			this.checkTreatPlanShowIns.Text = "Show Insurance Estimates";
-			// 
-			// checkAllowMultipleCopiesOfProgram
-			// 
-			this.checkAllowMultipleCopiesOfProgram.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkAllowMultipleCopiesOfProgram.Location = new System.Drawing.Point(48, 293);
-			this.checkAllowMultipleCopiesOfProgram.Name = "checkAllowMultipleCopiesOfProgram";
-			this.checkAllowMultipleCopiesOfProgram.Size = new System.Drawing.Size(603, 16);
-			this.checkAllowMultipleCopiesOfProgram.TabIndex = 49;
-			this.checkAllowMultipleCopiesOfProgram.Text = "Allow multiple copies of program to run on one computer";
 			// 
 			// groupBox5
 			// 
@@ -320,21 +301,41 @@ namespace OpenDental{
 			this.checkRandomPrimaryKeys.Text = "Use Random Primary Keys (BE VERY CAREFUL.  THIS IS IRREVERSIBLE)";
 			this.checkRandomPrimaryKeys.Click += new System.EventHandler(this.checkRandomPrimaryKeys_Click);
 			// 
+			// label3
+			// 
+			this.label3.Location = new System.Drawing.Point(46, 265);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(696, 17);
+			this.label3.TabIndex = 56;
+			this.label3.Text = "Process Signal Interval in seconds.  Usually every 6 to 20 seconds.  Leave blank " +
+				"to disable autorefresh.";
+			this.label3.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// textSigInterval
+			// 
+			this.textSigInterval.Location = new System.Drawing.Point(47, 286);
+			this.textSigInterval.MaxVal = 1000000;
+			this.textSigInterval.MinVal = 1;
+			this.textSigInterval.Name = "textSigInterval";
+			this.textSigInterval.Size = new System.Drawing.Size(74, 20);
+			this.textSigInterval.TabIndex = 57;
+			this.textSigInterval.Text = "";
+			// 
 			// FormMisc
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(783, 430);
-			this.Controls.Add(this.checkRandomPrimaryKeys);
-			this.Controls.Add(this.checkEclaimsSeparateTreatProv);
-			this.Controls.Add(this.groupBox5);
-			this.Controls.Add(this.checkAllowMultipleCopiesOfProgram);
-			this.Controls.Add(this.groupBox1);
-			this.Controls.Add(this.checkITooth);
-			this.Controls.Add(this.label14);
+			this.Controls.Add(this.textSigInterval);
 			this.Controls.Add(this.textMainWindowTitle);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
-			this.Controls.Add(this.checkAutoRefresh);
+			this.Controls.Add(this.label3);
+			this.Controls.Add(this.checkRandomPrimaryKeys);
+			this.Controls.Add(this.checkEclaimsSeparateTreatProv);
+			this.Controls.Add(this.groupBox5);
+			this.Controls.Add(this.groupBox1);
+			this.Controls.Add(this.checkITooth);
+			this.Controls.Add(this.label14);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "FormMisc";
@@ -366,8 +367,12 @@ namespace OpenDental{
 				textStatementsCalcDueDate.Text=Prefs.GetInt("StatementsCalcDueDate").ToString();
 			}
 			checkBalancesDontSubtractIns.Checked=Prefs.GetBool("BalancesDontSubtractIns");
-			checkAutoRefresh.Checked=Prefs.GetBool("AutoRefreshIsDisabled");
-			checkAllowMultipleCopiesOfProgram.Checked=Prefs.GetBool("AllowMultipleCopiesOfProgram");
+			if(Prefs.GetInt("ProcessSigsIntervalInSecs")==0){
+				textSigInterval.Text="";
+			}
+			else{
+				textSigInterval.Text=Prefs.GetInt("ProcessSigsIntervalInSecs").ToString();
+			}
 			checkRandomPrimaryKeys.Checked=Prefs.GetBool("RandomPrimaryKeys");
 			if(checkRandomPrimaryKeys.Checked){
 				//not allowed to uncheck it
@@ -406,8 +411,6 @@ namespace OpenDental{
 				|| Prefs.UpdateBool("StatementShowCreditCard",checkShowCC.Checked)
 				|| Prefs.UpdateBool("StatementAccountsUseChartNumber",radioUseChartNumber.Checked)
 				|| Prefs.UpdateBool("BalancesDontSubtractIns",checkBalancesDontSubtractIns.Checked)
-				|| Prefs.UpdateBool("AutoRefreshIsDisabled",checkAutoRefresh.Checked)
-				|| Prefs.UpdateBool("AllowMultipleCopiesOfProgram",checkAllowMultipleCopiesOfProgram.Checked)
 				|| Prefs.UpdateBool("RandomPrimaryKeys",checkRandomPrimaryKeys.Checked)
 				|| Prefs.UpdateString("MainWindowTitle",textMainWindowTitle.Text)
 				|| Prefs.UpdateBool("EclaimsSeparateTreatProv",checkEclaimsSeparateTreatProv.Checked)
@@ -422,6 +425,16 @@ namespace OpenDental{
 			}
 			else{
 				if(Prefs.UpdateInt("StatementsCalcDueDate",PIn.PInt(textStatementsCalcDueDate.Text))){
+					changed=true;
+				}
+			}
+			if(textSigInterval.Text==""){
+				if(Prefs.UpdateInt("ProcessSigsIntervalInSecs",0)){
+					changed=true;
+				}
+			}
+			else{
+				if(Prefs.UpdateInt("ProcessSigsIntervalInSecs",PIn.PInt(textSigInterval.Text))){
 					changed=true;
 				}
 			}

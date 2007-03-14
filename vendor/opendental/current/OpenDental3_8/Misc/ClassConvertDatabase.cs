@@ -49,7 +49,7 @@ namespace OpenDental{
 				MsgBox.Show(this,"Cannot convert this database version which was only for development purposes.");
 				return false;
 			}
-			if(FromVersion < new Version("3.7.6.0")){
+			if(FromVersion < new Version("3.8.5.0")){
 				if(MessageBox.Show(Lan.g(this,"Your database will now be converted")+"\r"
 					+Lan.g(this,"from version")+" "+FromVersion.ToString()+"\r"
 					+Lan.g(this,"to version")+" "+ToVersion.ToString()+"\r"
@@ -2381,14 +2381,91 @@ namespace OpenDental{
 				command="UPDATE preference SET ValueString = '3.7.6.0' WHERE PrefName = 'DataBaseVersion'";
 				dcon.NonQ(command);
 			}
-			//To3_7_4();
+			To3_8_0();
 		}
 
+		private void To3_8_0(){
+			if(FromVersion < new Version("3.8.0.0")){
+				ExecuteFile(@"ConversionFiles\convert_3_8_0.txt");//Might throw an exception which we handle.
+				//add deposit slip permission to each group
+				DataConnection dcon=new DataConnection();
+				string command="SELECT UserGroupNum FROM usergroup";
+				DataTable table=dcon.GetTable(command);
+				int groupNum;
+				for(int i=0;i<table.Rows.Count;i++){
+					groupNum=PIn.PInt(table.Rows[i][0].ToString());
+					command="INSERT INTO grouppermission (UserGroupNum,PermType) VALUES("+POut.PInt(groupNum)+",30)";
+					dcon.NonQ(command);
+				}
+				//Populate the new column: claimpayment.CarrierName
+				command="SELECT claimpayment.ClaimPaymentNum,carrier.CarrierName "
+					+"FROM claimpayment,claimproc,insplan,carrier "
+					+"WHERE claimproc.ClaimPaymentNum = claimpayment.ClaimPaymentNum "
+					+"AND claimproc.PlanNum = insplan.PlanNum "
+					+"AND insplan.CarrierNum = carrier.CarrierNum "
+					+"GROUP BY claimpayment.ClaimPaymentNum";
+				table=dcon.GetTable(command);
+				for(int i=0;i<table.Rows.Count;i++){
+					command="UPDATE claimpayment SET CarrierName='"+POut.PString(PIn.PString(table.Rows[i][1].ToString()))+"' "
+						+"WHERE ClaimPaymentNum="+table.Rows[i][0].ToString();
+					dcon.NonQ(command);
+				}
+				command="UPDATE preference SET ValueString = '3.8.0.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			To3_8_5();
+		}
+
+		private void To3_8_5(){
+			if(FromVersion < new Version("3.8.5.0")){
+				//Make a few changes to the paths in the ENP bridge
+				string command;//="SELECT ProgramNum FROM program WHERE ProgName='EasyNotesPro'";
+				DataConnection dcon=new DataConnection();
+				//DataTable table=dcon.GetTable(command);
+				//if(table.Rows.Count>0){//otherwise user might have deleted the bridge
+					//int programNum=PIn.PInt(table.Rows[0][0].ToString());
+				command="UPDATE program SET "
+					+"CommandLine='"+POut.PString("\""+@"C:\Program Files\EasyNotesPro\DefaultDentalToolbar.etb"+"\""+" standalone true")+"' "
+					+"WHERE ProgName='EasyNotesPro'";//+POut.PInt(programNum);
+				dcon.NonQ(command);
+				//}
+				command="UPDATE preference SET ValueString = '3.8.5.0' WHERE PrefName = 'DataBaseVersion'";
+				dcon.NonQ(command);
+			}
+			//To3_8_?();
+		}
 
 		
 	}
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

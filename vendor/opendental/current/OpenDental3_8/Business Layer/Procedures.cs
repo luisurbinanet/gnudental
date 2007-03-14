@@ -295,7 +295,7 @@ namespace OpenDental{
 			Procedure[] ProcList=Procedures.Refresh(pat.PatNum);
 			ClaimProc[] ClaimProcList=ClaimProcs.Refresh(pat.PatNum);
 			CovPats.Refresh(pat,PlanList);
-			bool doResetRecallStatus=false;
+			//bool doResetRecallStatus=false;
 			ProcedureCode procCode;
 			Procedure oldProc;
 			for(int i=0;i<ProcList.Length;i++){
@@ -308,9 +308,9 @@ namespace OpenDental{
 					ProcList[i].SetHideGraphical();
 				}
 				//if is a recall proc
-				if(procCode.SetRecall){
-					doResetRecallStatus=true;
-				}
+				//if(procCode.SetRecall){
+				//doResetRecallStatus=true;
+				//}
 				ProcList[i].ProcStatus=ProcStat.C;
 				ProcList[i].ProcDate=apt.AptDateTime.Date;
 				if(oldProc.ProcStatus!=ProcStat.C){
@@ -344,9 +344,10 @@ namespace OpenDental{
 				ProcList[i].ComputeEstimates(pat.PatNum,pat.PriPlanNum
 					,pat.SecPlanNum,ClaimProcList,false,pat,PlanList);
 			}
-			if(doResetRecallStatus){
-				Recalls.Reset(pat.PatNum);//this also synchs recall
-			}
+			//if(doResetRecallStatus){
+			//	Recalls.Reset(pat.PatNum);//this also synchs recall
+			//}
+			Recalls.Synch(pat.PatNum);
 		}
 
 		///<summary>Does not make any calls to db.</summary>
@@ -470,6 +471,53 @@ namespace OpenDental{
 				}
 			}
 			return false;*/
+		}
+
+		///<summary>Used from TP to get a list of all TP procs, ordered by priority, toothnum.</summary>
+		public static Procedure[] GetListTP(Procedure[] procList){
+			ArrayList AL=new ArrayList();
+			int iPriority;
+			int oPriority;
+			int iToothInt;
+			int oToothInt;
+			for(int i=0;i<procList.Length;i++){
+				if(procList[i].ProcStatus!=ProcStat.TP){
+					continue;
+				}
+				if(AL.Count==0)//first procedure simple add
+					AL.Add(procList[i]);
+				else{//after that, figure out where to place the procedure to order things properly
+					iPriority=Defs.GetOrder(DefCat.TxPriorities,procList[i].Priority);
+					if(Tooth.IsValidDB(procList[i].ToothNum))
+						iToothInt=Tooth.ToInt(procList[i].ToothNum);
+					else
+						iToothInt=0;
+					for(int o=0;o<AL.Count;o++){
+						oPriority=Defs.GetOrder(DefCat.TxPriorities,((Procedure)AL[o]).Priority);
+						if(Tooth.IsValidDB(((Procedure)AL[o]).ToothNum))
+							oToothInt=Tooth.ToInt(((Procedure)AL[o]).ToothNum);
+						else
+							oToothInt=0;
+						if(iPriority==oPriority){
+							if(iToothInt < oToothInt){
+								AL.Insert(o,procList[i]);
+								break;
+							}
+						}
+						if(iPriority < oPriority){
+							AL.Insert(o,procList[i]);
+							break;
+						}
+						if(o==AL.Count-1){
+							AL.Add(procList[i]);
+							break;
+						}
+					}//for o
+				}//else
+			}//for i
+			Procedure[] retVal=new Procedure[AL.Count];
+			AL.CopyTo(retVal);
+			return retVal;
 		}
 
 		

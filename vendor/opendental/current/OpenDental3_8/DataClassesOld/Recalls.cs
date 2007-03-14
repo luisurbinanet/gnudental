@@ -8,7 +8,7 @@ namespace OpenDental{
 	///<summary></summary>
 	public class Recalls{
 
-		///<summary>Gets all recalls for the supplied patients, usually a family or single pat.</summary>
+		///<summary>Gets all recalls for the supplied patients, usually a family or single pat.  Result might have a length of zero.</summary>
 		public static Recall[] GetList(int[] patNums){
 			string wherePats="";
 			for(int i=0;i<patNums.Length;i++){
@@ -125,9 +125,18 @@ namespace OpenDental{
 			return RecallList;*/
 		}
 
-		///<summary>Synchronizes all recall for one patient. Sets dateDueCalc and DatePrevious.  Also updates dateDue to match dateDueCalc if not disabled.  The supplied recall can be null if patient has no existing recall. Deletes or creates any recalls as necessary.</summary>
+		///<summary>Synchronizes all recall for one patient. If datePrevious has changed, then it completely deletes the old recall information and sets a new dateDueCalc and DatePrevious.  Also updates dateDue to match dateDueCalc if not disabled.  The supplied recall can be null if patient has no existing recall. Deletes or creates any recalls as necessary.</summary>
 		public static void Synch(int patNum,Recall recall){
 			DateTime previousDate=GetPreviousDate(patNum);
+			if(recall!=null 
+				&& !recall.IsDisabled
+				&& previousDate.Year>1880//this protects recalls that were manually added as part of a conversion
+				&& previousDate != recall.DatePrevious)//if datePrevious has changed, reset
+			{
+				recall.RecallStatus=0;
+				recall.Note="";
+				recall.DateDue=recall.DateDueCalc;//now it is allowed to be changed in the steps below
+			}
 			if(previousDate.Year<1880){//if no previous date
 				if(recall==null){//no recall present
 					//do nothing.
@@ -203,23 +212,7 @@ namespace OpenDental{
 			return PIn.PDate(table.Rows[0][0].ToString());
 		}
 
-		///<summary>Resets the status,note, and DateDue unless disabled.  Also always does a synchronization. Only used when setting appointment complete. It might be nice to include a few more scenarios where this could be used.</summary>
-		public static void Reset(int patNum){
-			Recall[] recallList=GetList(new int[] {patNum});
-			Recall recall=null;
-			if(recallList.Length!=0){//if a recall exists
-				recall=recallList[0];
-				if(!recall.IsDisabled){
-					recall.RecallStatus=0;
-					recall.Note="";
-					recall.DateDue=recall.DateDueCalc;//now it can be changed in Synch
-					recall.Update();
-				}
-			}
-			Synch(patNum,recall);
-		}
-
-		///<summary>Only called when editing certain procedurecodes, but only very rarely as needed.</summary>
+		///<summary>Only called when editing certain procedurecodes, but only very rarely as needed. For power users, this is a good little trick to use to synch recall for all patients.</summary>
 		public static void SynchAllPatients(){
 			//get all active patients
 			string command="SELECT PatNum "

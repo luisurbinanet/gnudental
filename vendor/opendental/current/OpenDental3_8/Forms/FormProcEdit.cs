@@ -7,7 +7,9 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using Microsoft.Win32;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -106,10 +108,17 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label12;
 		private System.Windows.Forms.ComboBox comboClinic;
 		private System.Windows.Forms.Label labelClinic;
-		private OpenDental.UI.Button butENP;
+		private OpenDental.UI.Button butENPlaunch;
+		private OpenDental.UI.Button butENPshow;
+		private OpenDental.UI.Button butENPpaste;
+		private System.Windows.Forms.GroupBox groupENP;
 		///<summary>List of all payments (not paysplits) that this procedure is attached to.</summary>
 		private Payment[] PaymentsForProc;
 		//private User user;
+		private uint m_autoAPIMsg;//ENP
+		private const string APPBAR_AUTOMATION_API_MESSAGE = "EZNotes.AppBarStandalone.Auto.API.Message"; 
+		private const uint MSG_RESTORE=2;//ENP
+		private const uint MSG_GETLASTNOTE=3;//ENP
 
 		///<summary>Inserts are no longer done within this dialog, but must be done ahead of time from outside.You must specify a procedure to edit, and only the changes that are made in this dialog get saved.  Only used when double click in Account, Chart, TP, and in ContrChart.AddProcedure().  The procedure may be deleted if new and user hits Cancel.</summary>
 		public FormProcEdit(Procedure proc,Patient patCur,Family famCur,InsPlan[] planList){
@@ -120,6 +129,7 @@ namespace OpenDental{
 			PlanList=planList;
 			InitializeComponent();
 			Lan.F(this);
+			
 		}
 
 		///<summary></summary>
@@ -215,13 +225,17 @@ namespace OpenDental{
 			this.labelIncomplete = new System.Windows.Forms.Label();
 			this.comboClinic = new System.Windows.Forms.ComboBox();
 			this.labelClinic = new System.Windows.Forms.Label();
-			this.butENP = new OpenDental.UI.Button();
+			this.butENPlaunch = new OpenDental.UI.Button();
+			this.groupENP = new System.Windows.Forms.GroupBox();
+			this.butENPshow = new OpenDental.UI.Button();
+			this.butENPpaste = new OpenDental.UI.Button();
 			this.groupStatus.SuspendLayout();
 			this.groupQuadrant.SuspendLayout();
 			this.groupArch.SuspendLayout();
 			this.groupSextant.SuspendLayout();
 			this.panel1.SuspendLayout();
 			this.groupProsth.SuspendLayout();
+			this.groupENP.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// label1
@@ -1102,18 +1116,56 @@ namespace OpenDental{
 			this.labelClinic.TabIndex = 75;
 			this.labelClinic.Text = "Clinic";
 			// 
-			// butENP
+			// butENPlaunch
 			// 
-			this.butENP.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butENP.Autosize = true;
-			this.butENP.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butENP.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butENP.Location = new System.Drawing.Point(573, 154);
-			this.butENP.Name = "butENP";
-			this.butENP.Size = new System.Drawing.Size(48, 25);
-			this.butENP.TabIndex = 76;
-			this.butENP.Text = "ENP";
-			this.butENP.Click += new System.EventHandler(this.butENP_Click);
+			this.butENPlaunch.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butENPlaunch.Autosize = true;
+			this.butENPlaunch.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butENPlaunch.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butENPlaunch.Location = new System.Drawing.Point(7, 29);
+			this.butENPlaunch.Name = "butENPlaunch";
+			this.butENPlaunch.Size = new System.Drawing.Size(62, 21);
+			this.butENPlaunch.TabIndex = 76;
+			this.butENPlaunch.Text = "Launch";
+			this.butENPlaunch.Click += new System.EventHandler(this.butENPlaunch_Click);
+			// 
+			// groupENP
+			// 
+			this.groupENP.Controls.Add(this.butENPpaste);
+			this.groupENP.Controls.Add(this.butENPshow);
+			this.groupENP.Controls.Add(this.butENPlaunch);
+			this.groupENP.Location = new System.Drawing.Point(551, 79);
+			this.groupENP.Name = "groupENP";
+			this.groupENP.Size = new System.Drawing.Size(77, 98);
+			this.groupENP.TabIndex = 77;
+			this.groupENP.TabStop = false;
+			this.groupENP.Text = "Easy Notes Pro";
+			// 
+			// butENPshow
+			// 
+			this.butENPshow.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butENPshow.Autosize = true;
+			this.butENPshow.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butENPshow.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butENPshow.Location = new System.Drawing.Point(7, 50);
+			this.butENPshow.Name = "butENPshow";
+			this.butENPshow.Size = new System.Drawing.Size(62, 21);
+			this.butENPshow.TabIndex = 77;
+			this.butENPshow.Text = "Show";
+			this.butENPshow.Click += new System.EventHandler(this.butENPshow_Click);
+			// 
+			// butENPpaste
+			// 
+			this.butENPpaste.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butENPpaste.Autosize = true;
+			this.butENPpaste.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butENPpaste.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butENPpaste.Location = new System.Drawing.Point(7, 71);
+			this.butENPpaste.Name = "butENPpaste";
+			this.butENPpaste.Size = new System.Drawing.Size(62, 21);
+			this.butENPpaste.TabIndex = 78;
+			this.butENPpaste.Text = "Paste";
+			this.butENPpaste.Click += new System.EventHandler(this.butENPpaste_Click);
 			// 
 			// FormProcEdit
 			// 
@@ -1121,7 +1173,7 @@ namespace OpenDental{
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(962, 649);
-			this.Controls.Add(this.butENP);
+			this.Controls.Add(this.groupENP);
 			this.Controls.Add(this.comboClinic);
 			this.Controls.Add(this.labelClinic);
 			this.Controls.Add(this.labelIncomplete);
@@ -1172,10 +1224,18 @@ namespace OpenDental{
 			this.groupSextant.ResumeLayout(false);
 			this.panel1.ResumeLayout(false);
 			this.groupProsth.ResumeLayout(false);
+			this.groupENP.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
 		#endregion
+
+		[DllImport("user32.dll")]
+		public static extern bool PostMessage(IntPtr hWnd, uint message, uint wParam, uint lParam);
+		[DllImport("user32.dll")]
+		public static extern uint RegisterWindowMessage(string lpString);
+		[DllImport("user32.dll")]
+		public static extern bool SetForegroundWindow(IntPtr hWnd);
 
 		private void FormProcInfo_Load(object sender, System.EventArgs e){
 			//richTextBox1.Text="This is a test of the functions of a rich text box.";
@@ -1195,7 +1255,7 @@ namespace OpenDental{
 				listBoxTeeth2.Items.AddRange(new string[] {"48","47","46","45","44","43","42","41","31","32","33","34","35","36","37","38"});
 			}
 			if(!Programs.IsEnabled("EasyNotesPro")){
-				butENP.Visible=false;
+				groupENP.Visible=false;
 			}
 			Claims.Refresh(PatCur.PatNum);
 			ProcedureCode2=ProcedureCodes.GetProcCode(ProcCur.ADACode);
@@ -1858,32 +1918,105 @@ namespace OpenDental{
 			ProcCur.Surf="6";
 		}
 
-		private void butENP_Click(object sender, System.EventArgs e) {
+		private void butENPlaunch_Click(object sender, System.EventArgs e) {
 			Programs.GetCur("EasyNotesPro");
 			if(Programs.Cur.ProgramNum==0){
 				MsgBox.Show(this,"Link not found.");
 				return;
 			}
-			Cursor=Cursors.WaitCursor;
-			Process process=new Process();
-			process.StartInfo=new ProcessStartInfo(Programs.Cur.Path,Programs.Cur.CommandLine);
+			RegistryKey regKey=Registry.CurrentUser.OpenSubKey(@"Software\EasyNotesPro");
+			if(regKey==null){
+				MessageBox.Show("ENP not installed.");
+				return;
+			}
+			object obj=regKey.GetValue("StandaloneWindowHandle");
+			if(obj!=null){//toolbar already running
+				MessageBox.Show("Toolbar is already running.  Use the Show button to bring it to the front.  Leave it running when you are done.");
+				return;
+			}
 			try{
+				//Example:
+				//AppBarProcess.exe "C:\Documents and Settings\Admin\My Documents\My Toolbars\ActionTest5.etb" standalone true 
+				Process process=new Process();
+				process.StartInfo=new ProcessStartInfo(Programs.Cur.Path,Programs.Cur.CommandLine);
+				//process.StartInfo.FileName=@"C:\Program Files\EasyNotesPro\AppBarProcess.exe";
+				//process.StartInfo.Arguments="\""+@"C:\Program Files\EasyNotesPro\DefaultDentalToolbar.etb"+"\" standalone true";
 				process.Start();
-				process.WaitForExit();
 			}
-			catch{
-				Cursor=Cursors.Default;
-				MessageBox.Show(Programs.Cur.Path+" not found, or error with command line.");
+			catch(Exception ex){
+				MessageBox.Show(ex.Message+".  Error launching ENP. Is your toolbar path correct?");
+			}
+		}
+
+		private void butENPshow_Click(object sender, System.EventArgs e) {
+			Programs.GetCur("EasyNotesPro");
+			if(Programs.Cur.ProgramNum==0){
+				MsgBox.Show(this,"Link not found.");
 				return;
 			}
-			IDataObject iData=Clipboard.GetDataObject();
-			if(!iData.GetDataPresent(DataFormats.Text)){
-				Cursor=Cursors.Default;
-				MsgBox.Show(this,"No text present.");
+			RegistryKey regKey=Registry.CurrentUser.OpenSubKey(@"Software\EasyNotesPro");
+			if(regKey==null){
+				MessageBox.Show("ENP not installed.");
 				return;
 			}
-			textNotes.Text+=(String)iData.GetData(DataFormats.Text);
-			Cursor=Cursors.Default;
+			object obj=regKey.GetValue("StandaloneWindowHandle");
+			if(obj==null){//toolbar not running
+				MessageBox.Show("Toolbar is not running.  Please click the Launch button first, then click this button again.  Leave the toolbar running when you are done with it.");
+				return;
+			}
+			m_autoAPIMsg=RegisterWindowMessage(APPBAR_AUTOMATION_API_MESSAGE);
+			if(m_autoAPIMsg==0) {
+				throw new ApplicationException("Failed to register a windows message.");
+			}
+			try{
+				IntPtr hwnd=new IntPtr(int.Parse((string)obj));
+				PostMessage(hwnd, m_autoAPIMsg, MSG_RESTORE, 0);
+				System.Threading.Thread.Sleep(200);
+				SetForegroundWindow(hwnd);
+			} 
+			catch(Exception ex){
+				MessageBox.Show(ex.Message);
+			}
+		}
+
+		private int GetTargetWindow() {
+			//return Int32.Parse(this.textBox2.Text, System.Globalization.NumberStyles.HexNumber);
+			RegistryKey regKey = Registry.CurrentUser.OpenSubKey(@"Software\EasyNotesPro");
+			if (regKey != null) {
+				object obj = regKey.GetValue("StandaloneWindowHandle");
+				if (obj == null) {
+					throw new Exception("ENP Toolbar is not running.");
+				} else {
+					return int.Parse((string)obj);
+				}
+			}
+			throw new Exception("Failed to get the Window Handle of the ENP toolbar");
+		}
+
+		private void butENPpaste_Click(object sender, System.EventArgs e) {
+			Programs.GetCur("EasyNotesPro");
+			if(Programs.Cur.ProgramNum==0){
+				MsgBox.Show(this,"Link not found.");
+				return;
+			}
+			RegistryKey regKey=Registry.CurrentUser.OpenSubKey(@"Software\EasyNotesPro");
+			if(regKey==null){
+				MessageBox.Show("ENP not installed.");
+				return;
+			}
+			object obj=regKey.GetValue("StandaloneWindowHandle");
+			if(obj==null){//toolbar not running
+				MessageBox.Show("Toolbar is not running.  Please click the Launch button, then the Show button.  Then, create a note in ENP before attempting to paste.");
+				return;
+			}
+			try{
+				IntPtr hwnd=new IntPtr(GetTargetWindow());
+				PostMessage(hwnd, m_autoAPIMsg, MSG_GETLASTNOTE, 0);
+				textNotes.Text+=(string)Clipboard.GetDataObject().GetData(typeof(string));
+			}
+			catch(Exception ex){
+				MessageBox.Show(ex.Message);
+			}
 		}
 
 		private void butLock_Click(object sender, System.EventArgs e) {
@@ -1894,7 +2027,7 @@ namespace OpenDental{
 			butLock.Visible=false;
 			labelLocked.Visible=true;
 			textDateLocked.Visible=true;
-			ProcCur.DateLocked=MiscData.GetNowDate();
+			ProcCur.DateLocked=MiscData.GetNowDateTime().Date;
 			textDateLocked.Text=ProcCur.DateLocked.ToShortDateString();
 			//textNotes.ReadOnly=true;//can still edit until the next time you open
 		}

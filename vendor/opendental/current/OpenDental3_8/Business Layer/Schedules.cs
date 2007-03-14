@@ -151,28 +151,14 @@ namespace OpenDental{
 		///<summary>Used in the schedule setup window</summary>
 		public static Schedule[] RefreshMonth(DateTime CurDate,ScheduleType schedType,int provNum){
 			string command=
+				//"SELECT * FROM schedule WHERE SchedDate > '"+POut.PDate(startDate.AddDays(-1))+"' "
+				//+"AND SchedDate < '"+POut.PDate(stopDate.AddDays(1))+"' "
 				"SELECT * FROM schedule WHERE MONTH(SchedDate)='"+CurDate.Month.ToString()
 				+"' AND YEAR(SchedDate)='"+CurDate.Year.ToString()+"' "
 				+"AND SchedType="+POut.PInt((int)schedType)
 				+" AND ProvNum="+POut.PInt(provNum)
 				+" ORDER BY starttime";
-			DataConnection dcon=new DataConnection();
- 			DataTable table=dcon.GetTable(command);
-			Schedule[] ListMonth=new Schedule[table.Rows.Count];
-			for(int i=0;i<table.Rows.Count;i++){
-				ListMonth[i]=new Schedule();
-				ListMonth[i].ScheduleNum    = PIn.PInt   (table.Rows[i][0].ToString());
-				ListMonth[i].SchedDate      = PIn.PDate  (table.Rows[i][1].ToString());
-				ListMonth[i].StartTime      = PIn.PDateT (table.Rows[i][2].ToString());
-				ListMonth[i].StopTime       = PIn.PDateT (table.Rows[i][3].ToString());
-				ListMonth[i].SchedType      = (ScheduleType)PIn.PInt (table.Rows[i][4].ToString());
-				ListMonth[i].ProvNum        = PIn.PInt   (table.Rows[i][5].ToString());
-				ListMonth[i].BlockoutType   = PIn.PInt   (table.Rows[i][6].ToString());
-				ListMonth[i].Note           = PIn.PString(table.Rows[i][7].ToString());
-				ListMonth[i].Status         = (SchedStatus)PIn.PInt(table.Rows[i][8].ToString());
-				ListMonth[i].Op             = PIn.PInt   (table.Rows[i][9].ToString());
-			}
-			return ListMonth;
+			return RefreshAndFill(command);
 		}
 
 		///<summary>Called every time the day is refreshed or changed in Appointments module.  Gets the data directly from the database.</summary>
@@ -180,23 +166,33 @@ namespace OpenDental{
 			string command=
 				"SELECT * FROM schedule WHERE SchedDate='"+POut.PDate(thisDay)+"'"
 				+" ORDER BY starttime";
+			return RefreshAndFill(command);
+		}
+
+		///<summary>Used in the check database integrity tool.</summary>
+		public static Schedule[] RefreshAll(){
+			string command="SELECT * FROM schedule";
+			return RefreshAndFill(command);
+		}
+
+		private static Schedule[] RefreshAndFill(string command){
 			DataConnection dcon=new DataConnection();
  			DataTable table=dcon.GetTable(command);
-			Schedule[] ListDay=new Schedule[table.Rows.Count];
+			Schedule[] List=new Schedule[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
-				ListDay[i]=new Schedule();
-				ListDay[i].ScheduleNum    = PIn.PInt   (table.Rows[i][0].ToString());
-				ListDay[i].SchedDate      = PIn.PDate  (table.Rows[i][1].ToString());
-				ListDay[i].StartTime      = PIn.PDateT (table.Rows[i][2].ToString());
-				ListDay[i].StopTime       = PIn.PDateT (table.Rows[i][3].ToString());
-				ListDay[i].SchedType      = (ScheduleType)PIn.PInt (table.Rows[i][4].ToString());
-				ListDay[i].ProvNum        = PIn.PInt   (table.Rows[i][5].ToString());
-				ListDay[i].BlockoutType   = PIn.PInt   (table.Rows[i][6].ToString());
-				ListDay[i].Note           = PIn.PString(table.Rows[i][7].ToString());
-				ListDay[i].Status         = (SchedStatus)PIn.PInt(table.Rows[i][8].ToString());
-        ListDay[i].Op             = PIn.PInt   (table.Rows[i][9].ToString());
+				List[i]=new Schedule();
+				List[i].ScheduleNum    = PIn.PInt   (table.Rows[i][0].ToString());
+				List[i].SchedDate      = PIn.PDate  (table.Rows[i][1].ToString());
+				List[i].StartTime      = PIn.PDateT (table.Rows[i][2].ToString());
+				List[i].StopTime       = PIn.PDateT (table.Rows[i][3].ToString());
+				List[i].SchedType      = (ScheduleType)PIn.PInt (table.Rows[i][4].ToString());
+				List[i].ProvNum        = PIn.PInt   (table.Rows[i][5].ToString());
+				List[i].BlockoutType   = PIn.PInt   (table.Rows[i][6].ToString());
+				List[i].Note           = PIn.PString(table.Rows[i][7].ToString());
+				List[i].Status         = (SchedStatus)PIn.PInt(table.Rows[i][8].ToString());
+				List[i].Op             = PIn.PInt   (table.Rows[i][9].ToString());
 			}
-			return ListDay;
+			return List;
 		}
 
 		///<summary>Supply a list of all Schedule for one day. Then, this filters out for one type.</summary>

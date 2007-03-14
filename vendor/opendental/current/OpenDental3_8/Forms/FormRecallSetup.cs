@@ -29,6 +29,8 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label9;
 		private System.Windows.Forms.CheckBox checkReturnAdd;
+		private System.Windows.Forms.Label label10;
+		private System.Windows.Forms.TextBox textConfirmPostcardMessage;
 		private System.ComponentModel.Container components = null;
 
 		///<summary></summary>
@@ -79,6 +81,8 @@ namespace OpenDental{
 			this.label1 = new System.Windows.Forms.Label();
 			this.label9 = new System.Windows.Forms.Label();
 			this.checkReturnAdd = new System.Windows.Forms.CheckBox();
+			this.textConfirmPostcardMessage = new System.Windows.Forms.TextBox();
+			this.label10 = new System.Windows.Forms.Label();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -90,7 +94,7 @@ namespace OpenDental{
 			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.Location = new System.Drawing.Point(678, 484);
+			this.butCancel.Location = new System.Drawing.Point(678, 514);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 26);
 			this.butCancel.TabIndex = 4;
@@ -104,7 +108,7 @@ namespace OpenDental{
 			this.butOK.Autosize = true;
 			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butOK.Location = new System.Drawing.Point(678, 442);
+			this.butOK.Location = new System.Drawing.Point(678, 476);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 26);
 			this.butOK.TabIndex = 3;
@@ -143,22 +147,23 @@ namespace OpenDental{
 			this.textPostcardMessage.MaxLength = 255;
 			this.textPostcardMessage.Multiline = true;
 			this.textPostcardMessage.Name = "textPostcardMessage";
-			this.textPostcardMessage.Size = new System.Drawing.Size(466, 118);
+			this.textPostcardMessage.Size = new System.Drawing.Size(466, 70);
 			this.textPostcardMessage.TabIndex = 16;
 			this.textPostcardMessage.Text = "";
 			// 
 			// label7
 			// 
-			this.label7.Location = new System.Drawing.Point(44, 215);
+			this.label7.Location = new System.Drawing.Point(8, 215);
 			this.label7.Name = "label7";
-			this.label7.Size = new System.Drawing.Size(132, 90);
+			this.label7.Size = new System.Drawing.Size(167, 61);
 			this.label7.TabIndex = 17;
-			this.label7.Text = "Postcard message.  Use ?DateDue wherever you want the date due to be inserted.";
+			this.label7.Text = "Recall Postcard message.  Use ?DateDue wherever you want the date due to be inser" +
+				"ted.";
 			this.label7.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// textPostcardsPerSheet
 			// 
-			this.textPostcardsPerSheet.Location = new System.Drawing.Point(176, 333);
+			this.textPostcardsPerSheet.Location = new System.Drawing.Point(176, 363);
 			this.textPostcardsPerSheet.Name = "textPostcardsPerSheet";
 			this.textPostcardsPerSheet.Size = new System.Drawing.Size(34, 20);
 			this.textPostcardsPerSheet.TabIndex = 18;
@@ -166,7 +171,7 @@ namespace OpenDental{
 			// 
 			// label8
 			// 
-			this.label8.Location = new System.Drawing.Point(49, 336);
+			this.label8.Location = new System.Drawing.Point(49, 366);
 			this.label8.Name = "label8";
 			this.label8.Size = new System.Drawing.Size(127, 31);
 			this.label8.TabIndex = 19;
@@ -176,7 +181,7 @@ namespace OpenDental{
 			// listProcs
 			// 
 			this.listProcs.BackColor = System.Drawing.SystemColors.Control;
-			this.listProcs.Location = new System.Drawing.Point(176, 390);
+			this.listProcs.Location = new System.Drawing.Point(176, 420);
 			this.listProcs.Name = "listProcs";
 			this.listProcs.SelectionMode = System.Windows.Forms.SelectionMode.None;
 			this.listProcs.Size = new System.Drawing.Size(130, 121);
@@ -279,7 +284,7 @@ namespace OpenDental{
 			// 
 			// label9
 			// 
-			this.label9.Location = new System.Drawing.Point(20, 389);
+			this.label9.Location = new System.Drawing.Point(20, 419);
 			this.label9.Name = "label9";
 			this.label9.Size = new System.Drawing.Size(151, 88);
 			this.label9.TabIndex = 22;
@@ -290,17 +295,40 @@ namespace OpenDental{
 			// 
 			this.checkReturnAdd.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.checkReturnAdd.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkReturnAdd.Location = new System.Drawing.Point(6, 366);
+			this.checkReturnAdd.Location = new System.Drawing.Point(6, 396);
 			this.checkReturnAdd.Name = "checkReturnAdd";
 			this.checkReturnAdd.Size = new System.Drawing.Size(184, 19);
 			this.checkReturnAdd.TabIndex = 43;
 			this.checkReturnAdd.Text = "Show return address";
 			this.checkReturnAdd.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
+			// textConfirmPostcardMessage
+			// 
+			this.textConfirmPostcardMessage.AcceptsReturn = true;
+			this.textConfirmPostcardMessage.Location = new System.Drawing.Point(176, 287);
+			this.textConfirmPostcardMessage.MaxLength = 255;
+			this.textConfirmPostcardMessage.Multiline = true;
+			this.textConfirmPostcardMessage.Name = "textConfirmPostcardMessage";
+			this.textConfirmPostcardMessage.Size = new System.Drawing.Size(466, 70);
+			this.textConfirmPostcardMessage.TabIndex = 44;
+			this.textConfirmPostcardMessage.Text = "";
+			// 
+			// label10
+			// 
+			this.label10.Location = new System.Drawing.Point(4, 290);
+			this.label10.Name = "label10";
+			this.label10.Size = new System.Drawing.Size(170, 61);
+			this.label10.TabIndex = 45;
+			this.label10.Text = "Confirmation Postcard message.  Use ?date  and ?time where you want those values " +
+				"to be inserted";
+			this.label10.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
 			// FormRecallSetup
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(777, 525);
+			this.ClientSize = new System.Drawing.Size(777, 555);
+			this.Controls.Add(this.textConfirmPostcardMessage);
+			this.Controls.Add(this.label10);
 			this.Controls.Add(this.checkReturnAdd);
 			this.Controls.Add(this.label9);
 			this.Controls.Add(this.groupBox1);
@@ -316,7 +344,7 @@ namespace OpenDental{
 			this.Name = "FormRecallSetup";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "Setup Recall";
+			this.Text = "Setup Recall and Confirmation";
 			this.Load += new System.EventHandler(this.FormRecallSetup_Load);
 			this.groupBox1.ResumeLayout(false);
 			this.ResumeLayout(false);
@@ -338,7 +366,8 @@ namespace OpenDental{
 			textPattern.Text=Prefs.GetString("RecallPattern");
 			textProcs.Text=((Pref)Prefs.HList["RecallProcedures"]).ValueString;
 			textBW.Text=((Pref)Prefs.HList["RecallBW"]).ValueString;
-			textPostcardMessage.Text=((Pref)Prefs.HList["RecallPostcardMessage"]).ValueString;
+			textPostcardMessage.Text=Prefs.GetString("RecallPostcardMessage");
+			textConfirmPostcardMessage.Text=Prefs.GetString("ConfirmPostcardMessage");
 			textPostcardsPerSheet.Text=Prefs.GetInt("RecallPostcardsPerSheet").ToString();
 			checkReturnAdd.Checked=Prefs.GetBool("RecallCardsShowReturnAdd");
 			listProcs.Items.Clear();
@@ -380,6 +409,8 @@ namespace OpenDental{
 			Prefs.Cur.PrefName="RecallPostcardMessage";
 			Prefs.Cur.ValueString=textPostcardMessage.Text;
 			Prefs.UpdateCur();
+
+			Prefs.UpdateString("ConfirmPostcardMessage",textConfirmPostcardMessage.Text);
 
 			Prefs.Cur.PrefName="RecallPostcardsPerSheet";
 			Prefs.Cur.ValueString=textPostcardsPerSheet.Text;

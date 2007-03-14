@@ -146,16 +146,16 @@ namespace OpenDental{
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(11, 50);
+			this.label1.Location = new System.Drawing.Point(8, 50);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(114, 14);
 			this.label1.TabIndex = 11;
-			this.label1.Text = "Current through";
+			this.label1.Text = "Last Updated";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// textDate
 			// 
-			this.textDate.Location = new System.Drawing.Point(124, 48);
+			this.textDate.Location = new System.Drawing.Point(126, 48);
 			this.textDate.Name = "textDate";
 			this.textDate.ReadOnly = true;
 			this.textDate.Size = new System.Drawing.Size(78, 20);
@@ -242,13 +242,13 @@ namespace OpenDental{
 			this.Controls.Add(this.checkExcludeInactive);
 			this.Controls.Add(this.groupBox2);
 			this.Controls.Add(this.butAll);
-			this.Controls.Add(this.label2);
-			this.Controls.Add(this.listBillType);
 			this.Controls.Add(this.textDate);
-			this.Controls.Add(this.label1);
-			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.butOK);
+			this.Controls.Add(this.label2);
+			this.Controls.Add(this.listBillType);
+			this.Controls.Add(this.label1);
+			this.Controls.Add(this.groupBox1);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "FormRpAging";
@@ -264,15 +264,13 @@ namespace OpenDental{
 		#endregion
 
 		private void FormAging_Load(object sender, System.EventArgs e) {
-			textDate.Text=(PIn.PDate(((Pref)Prefs.HList["DateLastAging"]).ValueString)).ToShortDateString();
-			if(PIn.PDate(((Pref)Prefs.HList["DateLastAging"]).ValueString) 
-				< Ledgers.GetClosestFirst(DateTime.Today)){
-				if(MessageBox.Show(Lan.g(this,"Update aging first?"),"",MessageBoxButtons.OKCancel)
-					==DialogResult.OK){
+			textDate.Text=(PIn.PDate(Prefs.GetString("DateLastAging"))).ToShortDateString();
+			if(PIn.PDate(Prefs.GetString("DateLastAging")) < DateTime.Today){
+				if(MsgBox.Show(this,true,"Update aging first?")){
 					FormAging FormA=new FormAging();
 					FormA.ShowDialog();
 					if(FormA.DialogResult==DialogResult.OK){
-						textDate.Text=Ledgers.GetClosestFirst(DateTime.Today).ToShortDateString();
+						textDate.Text=DateTime.Today.ToShortDateString();
 					}
 				}
 			}

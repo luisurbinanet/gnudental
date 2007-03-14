@@ -473,17 +473,23 @@ namespace OpenDental{
 		}		
 
 		///<summary>This is only used in the Billing dialog</summary>
-		public static PatAging[] GetAgingList(string age,int[] billingIndices,bool excludeAddr
+		public static PatAging[] GetAgingList(string age,DateTime lastStatement,int[] billingIndices,bool excludeAddr
 			,bool excludeNeg,double excludeLessThan,bool excludeInactive){
 			string command=
-				"SELECT patnum,Bal_0_30,Bal_31_60,Bal_61_90,BalOver90,BalTotal,InsEst,LName,FName,MiddleI "
-				+"FROM patient WHERE ";//actually only gets guarantors since others are 0.
+				"SELECT patient.PatNum,Bal_0_30,Bal_31_60,Bal_61_90,BalOver90,BalTotal,InsEst,LName,FName,MiddleI, "
+				+"IFNULL(MAX(commlog.CommDateTime),'0001-01-01') "
+				+"FROM patient "//actually only gets guarantors since others are 0.
+				+"LEFT JOIN commlog ON patient.PatNum=commlog.PatNum "
+				+"AND CommType='1' "
+				//+"WHERE LastStatement < '"+POut.PDate(lastStatement.AddDays(1))+"' "//>midnight of lastStatement date
+				//there does not appear to be a way to filter out lastStatement date.  MAX is not allowed in WHERE clause.
+				+"WHERE ";
 			if(excludeInactive){
-				command+="(patstatus != '2') && ";
+				command+="(patstatus != '2') AND ";
 			}
 			command+="(BalTotal - InsEst > '"+excludeLessThan.ToString()+"'";
 			if(!excludeNeg){
-				command+=" || BalTotal - InsEst < '0')";
+				command+=" OR BalTotal - InsEst < '0')";
 			}
 			else{
 				command+=")";
@@ -491,50 +497,60 @@ namespace OpenDental{
 			switch(age){
 				//where is age 0. Is it missing because no restriction
 				case "30":
-					command+=" && (Bal_31_60 > '0' || Bal_61_90 > '0' || BalOver90 > '0')";
+					command+=" AND (Bal_31_60 > '0' OR Bal_61_90 > '0' OR BalOver90 > '0')";
 					break;
 				case "60":
-					command+=" && (Bal_61_90 > '0' || BalOver90 > '0')";
+					command+=" AND (Bal_61_90 > '0' OR BalOver90 > '0')";
 					break;
 				case "90":
-					command+=" && (BalOver90 > '0')";
+					command+=" AND (BalOver90 > '0')";
 					break;
 			}
 			for(int i=0;i<billingIndices.Length;i++){
 				if(i==0){
-					command+=" && (billingtype = '";
+					command+=" AND (billingtype = '";
 				}
 				else{
-					command+=" || billingtype = '";
+					command+=" OR billingtype = '";
 				}
 				command+=
 					Defs.Short[(int)DefCat.BillingTypes][billingIndices[i]].DefNum.ToString()+"'";
 			}
 			command+=")";
 			if(excludeAddr){
-				command+=" && (zip !='')";
+				command+=" AND (zip !='')";
 			}	
-			command+=" ORDER BY LName,FName";
+			command+=" GROUP BY patient.PatNum "
+				+"ORDER BY LName,FName";
+			//Debug.WriteLine(command);
 			DataConnection dcon=new DataConnection();
 			DataTable table=dcon.GetTable(command);
-			PatAging[] AgingList=new PatAging[table.Rows.Count];
+			ArrayList AL=new ArrayList();
+			PatAging patAging;
 			for(int i=0;i<table.Rows.Count;i++){
-				AgingList[i]=new PatAging();
-				AgingList[i].PatNum   = PIn.PInt   (table.Rows[i][0].ToString());
-				AgingList[i].Bal_0_30 = PIn.PDouble(table.Rows[i][1].ToString());
-				AgingList[i].Bal_31_60= PIn.PDouble(table.Rows[i][2].ToString());
-				AgingList[i].Bal_61_90= PIn.PDouble(table.Rows[i][3].ToString());
-				AgingList[i].BalOver90= PIn.PDouble(table.Rows[i][4].ToString());
-				AgingList[i].BalTotal = PIn.PDouble(table.Rows[i][5].ToString());
-				AgingList[i].InsEst   = PIn.PDouble(table.Rows[i][6].ToString());
-				AgingList[i].PatName=PIn.PString(table.Rows[i][7].ToString())
+				if(PIn.PDate(table.Rows[i][10].ToString())>lastStatement.AddDays(1)){//>midnight of lastStatement date
+					continue;
+				}
+				patAging=new PatAging();
+				patAging.PatNum   = PIn.PInt   (table.Rows[i][0].ToString());
+				patAging.Bal_0_30 = PIn.PDouble(table.Rows[i][1].ToString());
+				patAging.Bal_31_60= PIn.PDouble(table.Rows[i][2].ToString());
+				patAging.Bal_61_90= PIn.PDouble(table.Rows[i][3].ToString());
+				patAging.BalOver90= PIn.PDouble(table.Rows[i][4].ToString());
+				patAging.BalTotal = PIn.PDouble(table.Rows[i][5].ToString());
+				patAging.InsEst   = PIn.PDouble(table.Rows[i][6].ToString());
+				patAging.PatName=PIn.PString(table.Rows[i][7].ToString())
 					+", "+PIn.PString(table.Rows[i][8].ToString())
-					+" "+PIn.PString(table.Rows[i][9].ToString());;
+					+" "+PIn.PString(table.Rows[i][9].ToString());
 				//AgingList[i].Balance=AgingList[i].Bal_0_30+AgingList[i].Bal_31_60
 				//	+AgingList[i].Bal_61_90+AgingList[i].BalOver90;
-				AgingList[i].AmountDue=AgingList[i].BalTotal-AgingList[i].InsEst;
+				patAging.AmountDue=patAging.BalTotal-patAging.InsEst;
+				patAging.DateLastStatement=PIn.PDate(table.Rows[i][10].ToString());
+				AL.Add(patAging);
 			}
-			return AgingList;
+			PatAging[] retVal=new PatAging[AL.Count];
+			AL.CopyTo(retVal);
+			return retVal;
 		}
 
 		///<summary>Used only to run finance charges, so it ignores negative balances.</summary>
@@ -567,10 +583,9 @@ namespace OpenDental{
 			return AgingList;
 		}
 
-		///<summary></summary>
-		public static void ResetAging(){//for entire database
-			//need to zero everything out first because the update aging only inserts non-zero values
-			string command="Update patient SET "
+		///<summary>For entire database.  Need to zero everything out first because the update aging only inserts non-zero values.</summary>
+		public static void ResetAging(){
+			string command="UPDATE patient SET "
 				+"Bal_0_30   = '0'"
 				+",Bal_31_60 = '0'"
 				+",Bal_61_90 = '0'"
@@ -719,6 +734,8 @@ namespace OpenDental{
 		public double AmountDue;
 		///<summary>The patient priprov to assign the finance charge to.</summary>
 		public int PriProv;
+		///<summary>The date of the last statement.</summary>
+		public DateTime DateLastStatement;
 	}
 
 	///<summary></summary>

@@ -32,6 +32,8 @@ namespace OpenDental{
 		private ClaimPaySplit[] splits;
 		private System.Windows.Forms.ComboBox comboClinic;
 		private System.Windows.Forms.Label labelClinic;
+		private System.Windows.Forms.TextBox textCarrierName;
+		private System.Windows.Forms.Label label7;
 		private ClaimPayment ClaimPaymentCur;
 
 		///<summary></summary>
@@ -75,11 +77,13 @@ namespace OpenDental{
 			this.butDelete = new OpenDental.UI.Button();
 			this.comboClinic = new System.Windows.Forms.ComboBox();
 			this.labelClinic = new System.Windows.Forms.Label();
+			this.textCarrierName = new System.Windows.Forms.TextBox();
+			this.label7 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// textAmount
 			// 
-			this.textAmount.Location = new System.Drawing.Point(651, 56);
+			this.textAmount.Location = new System.Drawing.Point(668, 56);
 			this.textAmount.Name = "textAmount";
 			this.textAmount.ReadOnly = true;
 			this.textAmount.Size = new System.Drawing.Size(58, 20);
@@ -89,7 +93,7 @@ namespace OpenDental{
 			// 
 			// textDate
 			// 
-			this.textDate.Location = new System.Drawing.Point(651, 36);
+			this.textDate.Location = new System.Drawing.Point(668, 36);
 			this.textDate.Name = "textDate";
 			this.textDate.Size = new System.Drawing.Size(68, 20);
 			this.textDate.TabIndex = 0;
@@ -98,7 +102,7 @@ namespace OpenDental{
 			// 
 			// textBankBranch
 			// 
-			this.textBankBranch.Location = new System.Drawing.Point(651, 96);
+			this.textBankBranch.Location = new System.Drawing.Point(668, 96);
 			this.textBankBranch.MaxLength = 25;
 			this.textBankBranch.Name = "textBankBranch";
 			this.textBankBranch.TabIndex = 2;
@@ -106,7 +110,7 @@ namespace OpenDental{
 			// 
 			// textCheckNum
 			// 
-			this.textCheckNum.Location = new System.Drawing.Point(651, 76);
+			this.textCheckNum.Location = new System.Drawing.Point(668, 76);
 			this.textCheckNum.MaxLength = 25;
 			this.textCheckNum.Name = "textCheckNum";
 			this.textCheckNum.TabIndex = 1;
@@ -114,7 +118,7 @@ namespace OpenDental{
 			// 
 			// textNote
 			// 
-			this.textNote.Location = new System.Drawing.Point(558, 151);
+			this.textNote.Location = new System.Drawing.Point(558, 174);
 			this.textNote.MaxLength = 255;
 			this.textNote.Multiline = true;
 			this.textNote.Name = "textNote";
@@ -124,7 +128,7 @@ namespace OpenDental{
 			// 
 			// label6
 			// 
-			this.label6.Location = new System.Drawing.Point(553, 40);
+			this.label6.Location = new System.Drawing.Point(570, 40);
 			this.label6.Name = "label6";
 			this.label6.Size = new System.Drawing.Size(96, 16);
 			this.label6.TabIndex = 37;
@@ -133,7 +137,7 @@ namespace OpenDental{
 			// 
 			// label5
 			// 
-			this.label5.Location = new System.Drawing.Point(554, 60);
+			this.label5.Location = new System.Drawing.Point(571, 60);
 			this.label5.Name = "label5";
 			this.label5.Size = new System.Drawing.Size(95, 16);
 			this.label5.TabIndex = 36;
@@ -142,7 +146,7 @@ namespace OpenDental{
 			// 
 			// label4
 			// 
-			this.label4.Location = new System.Drawing.Point(558, 78);
+			this.label4.Location = new System.Drawing.Point(575, 78);
 			this.label4.Name = "label4";
 			this.label4.Size = new System.Drawing.Size(90, 16);
 			this.label4.TabIndex = 35;
@@ -151,7 +155,7 @@ namespace OpenDental{
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(559, 98);
+			this.label3.Location = new System.Drawing.Point(576, 99);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(91, 16);
 			this.label3.TabIndex = 34;
@@ -160,7 +164,7 @@ namespace OpenDental{
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(560, 131);
+			this.label2.Location = new System.Drawing.Point(560, 154);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(132, 16);
 			this.label2.TabIndex = 33;
@@ -241,20 +245,38 @@ namespace OpenDental{
 			// comboClinic
 			// 
 			this.comboClinic.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboClinic.Location = new System.Drawing.Point(651, 14);
+			this.comboClinic.Location = new System.Drawing.Point(668, 14);
 			this.comboClinic.MaxDropDownItems = 30;
 			this.comboClinic.Name = "comboClinic";
-			this.comboClinic.Size = new System.Drawing.Size(198, 21);
+			this.comboClinic.Size = new System.Drawing.Size(209, 21);
 			this.comboClinic.TabIndex = 92;
 			// 
 			// labelClinic
 			// 
-			this.labelClinic.Location = new System.Drawing.Point(562, 18);
+			this.labelClinic.Location = new System.Drawing.Point(579, 18);
 			this.labelClinic.Name = "labelClinic";
 			this.labelClinic.Size = new System.Drawing.Size(86, 14);
 			this.labelClinic.TabIndex = 91;
 			this.labelClinic.Text = "Clinic";
 			this.labelClinic.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
+			// textCarrierName
+			// 
+			this.textCarrierName.Location = new System.Drawing.Point(668, 116);
+			this.textCarrierName.MaxLength = 25;
+			this.textCarrierName.Name = "textCarrierName";
+			this.textCarrierName.Size = new System.Drawing.Size(212, 20);
+			this.textCarrierName.TabIndex = 93;
+			this.textCarrierName.Text = "";
+			// 
+			// label7
+			// 
+			this.label7.Location = new System.Drawing.Point(558, 119);
+			this.label7.Name = "label7";
+			this.label7.Size = new System.Drawing.Size(109, 16);
+			this.label7.TabIndex = 94;
+			this.label7.Text = "Carrier Name";
+			this.label7.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// FormClaimPayEdit
 			// 
@@ -262,6 +284,8 @@ namespace OpenDental{
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(902, 676);
+			this.Controls.Add(this.textCarrierName);
+			this.Controls.Add(this.label7);
 			this.Controls.Add(this.comboClinic);
 			this.Controls.Add(this.labelClinic);
 			this.Controls.Add(this.butDelete);
@@ -320,6 +344,7 @@ namespace OpenDental{
 			//textAmount is handled in FillTable
 			textCheckNum.Text=ClaimPaymentCur.CheckNum;
 			textBankBranch.Text=ClaimPaymentCur.BankBranch;
+			textCarrierName.Text=ClaimPaymentCur.CarrierName;
 			textNote.Text=ClaimPaymentCur.Note;
 			FillTable();
 			if(IsNew){
@@ -377,16 +402,20 @@ namespace OpenDental{
 		private void butDelete_Click(object sender, System.EventArgs e) {
 			if(IsNew){
 				DialogResult=DialogResult.Cancel;
+				return;
 			}
-			else{
-				if(MessageBox.Show(Lan.g(this,"Delete this insurance check?"),"",MessageBoxButtons.OKCancel)
-					!=DialogResult.OK){
-					return;
-				}
-				ClaimProcs.DetachAllFromCheck(ClaimPaymentCur.ClaimPaymentNum);
+			if(MessageBox.Show(Lan.g(this,"Delete this insurance check?"),"",MessageBoxButtons.OKCancel)
+				!=DialogResult.OK){
+				return;
+			}
+			try{
 				ClaimPaymentCur.Delete();
-				DialogResult=DialogResult.OK;
 			}
+			catch(ApplicationException ex){
+				MessageBox.Show(ex.Message);
+				return;
+			}
+			DialogResult=DialogResult.OK;
 		}
 
 		private void butCancel_Click(object sender, System.EventArgs e) {
@@ -413,10 +442,18 @@ namespace OpenDental{
 			ClaimPaymentCur.CheckDate=PIn.PDate(textDate.Text);
 			ClaimPaymentCur.CheckNum=textCheckNum.Text;
 			ClaimPaymentCur.BankBranch=textBankBranch.Text;
+			ClaimPaymentCur.CarrierName=textCarrierName.Text;
 			ClaimPaymentCur.Note=textNote.Text;
-			ClaimPaymentCur.Update();
+			try{
+				ClaimPaymentCur.Update();//error thrown if trying to change amount and already attached to a deposit.
+			}
+			catch(ApplicationException ex){
+				MessageBox.Show(ex.Message);
+				return;
+			}
 			//this could be optimized to only save changes.
 			//Would require a starting AL to compare to.
+			//But this isn't bad, since changes all saved at the very end
 			ArrayList ALselected=new ArrayList();
 			for(int i=0;i<tb2.SelectedIndices.Length;i++){
 				ALselected.Add(tb2.SelectedIndices[i]);
@@ -437,7 +474,7 @@ namespace OpenDental{
 		private void FormClaimPayEdit_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
 			if(DialogResult==DialogResult.OK)
 				return;
-			if(IsNew){
+			if(IsNew){//cancel
 				//ClaimProcs never saved in the first place
 				ClaimPaymentCur.Delete();
 			}

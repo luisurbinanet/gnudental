@@ -29,6 +29,8 @@ namespace OpenDental{
 		public int ClinicNum;
 		///<summary>The date that this payment was entered.  Not user editable.</summary>
 		public DateTime DateEntry;
+		///<summary>Foreign key to deposit.DepositNum.  0 if not attached to any deposits.</summary>
+		public int DepositNum;
 
 
 		///<summary>Updates this payment.  Also updates the datePay of all attached paysplits so that they are always in synch.  Updates IsSplit.  DatePay and IsSplit are also updated whenever a paysplit is added or removed, so no need to run this again.</summary>
@@ -44,6 +46,7 @@ namespace OpenDental{
 				+ ",patnum = '"      +POut.PInt   (PatNum)+"'"
 				+ ",ClinicNum = '"   +POut.PInt   (ClinicNum)+"'"
 				//DateEntry not allowed to change
+				+ ",DepositNum = '"  +POut.PInt   (DepositNum)+"'"
 				+" WHERE payNum = '" +POut.PInt   (PayNum)+"'";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
@@ -73,7 +76,7 @@ namespace OpenDental{
 				command+="PayNum,";
 			}
 			command+="PayType,PayDate,PayAmt, "
-				+"CheckNum,BankBranch,PayNote,IsSplit,PatNum,ClinicNum,DateEntry) VALUES(";
+				+"CheckNum,BankBranch,PayNote,IsSplit,PatNum,ClinicNum,DateEntry,DepositNum) VALUES(";
 			if(Prefs.RandomKeys){
 				command+="'"+POut.PInt(PayNum)+"', ";
 			}
@@ -87,7 +90,8 @@ namespace OpenDental{
 				+"'"+POut.PBool  (IsSplit)+"', "
 				+"'"+POut.PInt   (PatNum)+"', "
 				+"'"+POut.PInt   (ClinicNum)+"', "
-				+"NOW())";//DateEntry
+				+"NOW(), "//DateEntry
+				+"'"+POut.PInt   (DepositNum)+"')";
 			DataConnection dcon=new DataConnection();
  			if(Prefs.RandomKeys){
 				dcon.NonQ(command);
@@ -98,13 +102,26 @@ namespace OpenDental{
 			}
 		}
 
-		///<summary></summary>
+		///<summary>If trying to change the amount and already attached to a deposit, it will throw an error, so surround with try catch.  </summary>
 		public void InsertOrUpdate(bool isNew){
 			if(PayDate.Date>DateTime.Today){
-				throw new Exception(Lan.g(this,"Date must not be a future date."));
+				throw new ApplicationException(Lan.g(this,"Date must not be a future date."));
 			}
 			if(PayDate.Year<1880){
-				throw new Exception(Lan.g(this,"Invalid date"));
+				throw new ApplicationException(Lan.g(this,"Invalid date"));
+			}
+			if(!isNew){//only for updates
+				string command="SELECT DepositNum,PayAmt FROM payment "
+					+"WHERE PayNum="+POut.PInt(PayNum);
+				DataConnection dcon=new DataConnection();
+				DataTable table=dcon.GetTable(command);
+				if(table.Rows.Count==0){
+					return;
+				}
+				if(table.Rows[0][0].ToString()!="0"//if payment is already attached to a deposit
+					&& PIn.PDouble(table.Rows[0][1].ToString())!=PayAmt) {//and PayAmt changes
+					throw new ApplicationException(Lan.g("Payments","Not allowed to change the amount on payments attached to deposits."));
+				}
 			}
 			if(isNew){
 				Insert();
@@ -114,10 +131,19 @@ namespace OpenDental{
 			}
 		}
 
-		///<summary>Deletes the payment as well as all splits.  Also updates all necessary EstBals</summary>
+		///<summary>Deletes the payment as well as all splits.  Also updates all necessary EstBals.  Surround by try catch, because it will throw an exception if trying to delete a claimpayment attached to a deposit.</summary>
 		public void Delete(){
-			string command= "DELETE from payment WHERE payNum = '"+PayNum.ToString()+"'";
+			string command="SELECT DepositNum FROM payment "
+				+"WHERE PayNum="+POut.PInt(PayNum);
 			DataConnection dcon=new DataConnection();
+			DataTable table=dcon.GetTable(command);
+			if(table.Rows.Count==0){
+				return;
+			}
+			if(table.Rows[0][0].ToString()!="0"){//if payment is already attached to a deposit
+				throw new ApplicationException(Lan.g("Payments","Not allowed to delete a payment attached to a deposit."));
+			}
+			command= "DELETE from payment WHERE payNum = '"+PayNum.ToString()+"'";
  			dcon.NonQ(command);
 			PaySplit[] splitList=PaySplits.RefreshPaymentList(PayNum);
 			for(int i=0;i<splitList.Length;i++){
@@ -236,6 +262,36 @@ namespace OpenDental{
 			return RefreshAndFill(command);
 		}
 
+		///<summary>Gets all payments attached to a single deposit.</summary>
+		public static Payment[] GetForDeposit(int depositNum){
+			string command=
+				"SELECT * from payment"
+				+" WHERE DepositNum = "+POut.PInt(depositNum);
+			return RefreshAndFill(command);
+		}
+
+		///<summary>Gets all unattached payments for a new deposit slip.  Excludes payments before dateStart.  There is a chance payTypes might be of length 1 or even 0.</summary>
+		public static Payment[] GetForDeposit(DateTime dateStart,int clinicNum,int[] payTypes){
+			string command=
+				"SELECT * FROM payment "
+				+"WHERE DepositNum = 0 "
+				+"AND PayDate >= '"+POut.PDate(dateStart)+"' "
+				+"AND ClinicNum="+POut.PInt(clinicNum);
+			for(int i=0;i<payTypes.Length;i++){
+				if(i==0){
+					command+=" AND (";
+				}
+				else{
+					command+=" OR ";
+				}
+				command+="PayType="+POut.PInt(payTypes[i]);
+				if(i==payTypes.Length-1){
+					command+=")";
+				}
+			}
+			return RefreshAndFill(command);
+		}
+
 		private static Payment[] RefreshAndFill(string command){
 			DataConnection dcon=new DataConnection();
  			DataTable table=dcon.GetTable(command);
@@ -253,6 +309,7 @@ namespace OpenDental{
 				List[i].PatNum    =PIn.PInt   (table.Rows[i][8].ToString());
 				List[i].ClinicNum =PIn.PInt   (table.Rows[i][9].ToString());
 				List[i].DateEntry =PIn.PDate  (table.Rows[i][10].ToString());
+				List[i].DepositNum=PIn.PInt   (table.Rows[i][11].ToString());
 			}
 			return List;
 		}

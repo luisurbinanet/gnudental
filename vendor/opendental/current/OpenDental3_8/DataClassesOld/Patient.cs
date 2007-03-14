@@ -119,7 +119,7 @@ namespace OpenDental{
 		public PatientRace Race;
 		///<summary>Foreign key to county.CountyName, although it will not crash if key absent.</summary>
 		public string County;
-		///<summary>Site.  Name of gradeschool or highschool. Foreign key to school.SchoolName, although it will not crash if key absent.</summary>
+		///<summary>Name of gradeschool or highschool. Foreign key to school.SchoolName, although it will not crash if key absent.</summary>
 		public string GradeSchool;
 		///<summary>See the PatientGrade enumeration.</summary>
 		public PatientGrade GradeLevel;

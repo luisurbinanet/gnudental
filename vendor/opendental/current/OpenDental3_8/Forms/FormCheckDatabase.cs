@@ -30,6 +30,7 @@ namespace OpenDental
 		private System.Windows.Forms.TextBox textBox2;
 		private System.Windows.Forms.CheckBox checkDates;
 		private System.Windows.Forms.CheckBox checkInsPlans;
+		private System.Windows.Forms.CheckBox checkSchedules;
 		//private Queries Queries2;
 		private string logData;
 
@@ -80,6 +81,7 @@ namespace OpenDental
 			this.textBox2 = new System.Windows.Forms.TextBox();
 			this.checkDates = new System.Windows.Forms.CheckBox();
 			this.checkInsPlans = new System.Windows.Forms.CheckBox();
+			this.checkSchedules = new System.Windows.Forms.CheckBox();
 			this.SuspendLayout();
 			// 
 			// butClose
@@ -90,7 +92,7 @@ namespace OpenDental
 			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butClose.Location = new System.Drawing.Point(655, 317);
+			this.butClose.Location = new System.Drawing.Point(655, 389);
 			this.butClose.Name = "butClose";
 			this.butClose.Size = new System.Drawing.Size(87, 26);
 			this.butClose.TabIndex = 0;
@@ -123,7 +125,7 @@ namespace OpenDental
 			// checkInvalidTooth
 			// 
 			this.checkInvalidTooth.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkInvalidTooth.Location = new System.Drawing.Point(30, 110);
+			this.checkInvalidTooth.Location = new System.Drawing.Point(30, 107);
 			this.checkInvalidTooth.Name = "checkInvalidTooth";
 			this.checkInvalidTooth.Size = new System.Drawing.Size(724, 31);
 			this.checkInvalidTooth.TabIndex = 3;
@@ -138,7 +140,7 @@ namespace OpenDental
 			this.buttonCheck.Autosize = true;
 			this.buttonCheck.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.buttonCheck.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.buttonCheck.Location = new System.Drawing.Point(655, 278);
+			this.buttonCheck.Location = new System.Drawing.Point(655, 350);
 			this.buttonCheck.Name = "buttonCheck";
 			this.buttonCheck.Size = new System.Drawing.Size(87, 26);
 			this.buttonCheck.TabIndex = 5;
@@ -150,7 +152,7 @@ namespace OpenDental
 			this.checkCorrupt.Checked = true;
 			this.checkCorrupt.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.checkCorrupt.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkCorrupt.Location = new System.Drawing.Point(30, 225);
+			this.checkCorrupt.Location = new System.Drawing.Point(30, 234);
 			this.checkCorrupt.Name = "checkCorrupt";
 			this.checkCorrupt.Size = new System.Drawing.Size(709, 24);
 			this.checkCorrupt.TabIndex = 6;
@@ -159,7 +161,7 @@ namespace OpenDental
 			// checkCodes
 			// 
 			this.checkCodes.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkCodes.Location = new System.Drawing.Point(30, 171);
+			this.checkCodes.Location = new System.Drawing.Point(30, 162);
 			this.checkCodes.Name = "checkCodes";
 			this.checkCodes.Size = new System.Drawing.Size(709, 24);
 			this.checkCodes.TabIndex = 8;
@@ -180,7 +182,7 @@ namespace OpenDental
 			// checkDates
 			// 
 			this.checkDates.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkDates.Location = new System.Drawing.Point(30, 144);
+			this.checkDates.Location = new System.Drawing.Point(30, 138);
 			this.checkDates.Name = "checkDates";
 			this.checkDates.Size = new System.Drawing.Size(709, 24);
 			this.checkDates.TabIndex = 10;
@@ -190,18 +192,28 @@ namespace OpenDental
 			// checkInsPlans
 			// 
 			this.checkInsPlans.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkInsPlans.Location = new System.Drawing.Point(30, 198);
+			this.checkInsPlans.Location = new System.Drawing.Point(30, 186);
 			this.checkInsPlans.Name = "checkInsPlans";
 			this.checkInsPlans.Size = new System.Drawing.Size(709, 24);
 			this.checkInsPlans.TabIndex = 11;
 			this.checkInsPlans.Text = "Look for insurance plans that no longer exist.";
+			// 
+			// checkSchedules
+			// 
+			this.checkSchedules.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkSchedules.Location = new System.Drawing.Point(30, 210);
+			this.checkSchedules.Name = "checkSchedules";
+			this.checkSchedules.Size = new System.Drawing.Size(709, 24);
+			this.checkSchedules.TabIndex = 12;
+			this.checkSchedules.Text = "Fix default and regular schedules.";
 			// 
 			// FormCheckDatabase
 			// 
 			this.AcceptButton = this.buttonCheck;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butClose;
-			this.ClientSize = new System.Drawing.Size(763, 371);
+			this.ClientSize = new System.Drawing.Size(763, 443);
+			this.Controls.Add(this.checkSchedules);
 			this.Controls.Add(this.checkInsPlans);
 			this.Controls.Add(this.checkDates);
 			this.Controls.Add(this.textBox2);
@@ -248,6 +260,9 @@ namespace OpenDental
 			}
 			if(checkInsPlans.Checked){
 				VerifyInsPlans();
+			}
+			if(checkSchedules.Checked){
+				VerifySchedules();
 			}
 			if(checkCorrupt.Checked){
 				VerifyTables();
@@ -419,6 +434,39 @@ namespace OpenDental
 				dcon.NonQ(command);
 			}
 			MessageBox.Show("Missing plans fixed.");
+		}
+
+		private void VerifySchedules(){
+			//sched default first
+			int schedsFixed=0;
+			for(int i=0;i<SchedDefaults.List.Length;i++){
+				if(SchedDefaults.List[i].StopTime.TimeOfDay-SchedDefaults.List[i].StartTime.TimeOfDay<new TimeSpan(0,5,0)){
+					SchedDefaults.List[i].Delete();
+					schedsFixed++;
+				}
+			}
+			if(schedsFixed>0){
+				MessageBox.Show(schedsFixed.ToString()+" default schedule blocks fixed.");
+				DataValid.SetInvalid(InvalidTypes.Sched);
+			}
+			//Now, schedules
+			schedsFixed=0;
+			Schedule[] schedList=Schedules.RefreshAll();
+			for(int i=0;i<schedList.Length;i++){
+				if(schedList[i].Status!=SchedStatus.Open){
+					continue;//closed and holiday statuses do not use starttime and stoptime
+				}
+				if(schedList[i].StopTime.TimeOfDay-schedList[i].StartTime.TimeOfDay<new TimeSpan(0,5,0)){
+					//MessageBox.Show(schedList[i].StartTime.ToShortTimeString()+" - "+schedList[i].StopTime.ToShortTimeString());
+					schedList[i].Delete();
+					schedsFixed++;
+				}
+			}
+			if(schedsFixed>0){
+				MessageBox.Show(schedsFixed.ToString()+" schedule blocks fixed.");
+				DataValid.SetInvalid(InvalidTypes.Sched);
+			}
+			MessageBox.Show("Schedules fixed.");
 		}
 
 		private void VerifyTables(){

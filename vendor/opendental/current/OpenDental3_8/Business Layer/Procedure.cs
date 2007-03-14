@@ -25,7 +25,7 @@ namespace OpenDental{
 		public double OverrideSecOLD;
 		///<summary>Surfaces, or use "UL" etc for quadrant, "2" etc for sextant, "U","L" for arches.</summary>
 		public string Surf;
-		///<summary>May be blank, otherwise 1-32 or A-T, 1 or 2 char.</summary>
+		///<summary>May be blank, otherwise 1-32, 51-82, A-T, or AS-TS, 1 or 2 char.</summary>
 		public string ToothNum;
 		///<summary>May be blank, otherwise is series of toothnumbers separated by commas.</summary>
 		public string ToothRange;

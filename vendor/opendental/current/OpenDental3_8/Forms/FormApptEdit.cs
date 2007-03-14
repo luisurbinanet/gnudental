@@ -1721,7 +1721,7 @@ namespace OpenDental{
 				AptCur.InsertOrUpdate(this.AptOld,false);
 				AptOld=AptCur.Copy();
 			}
-			catch(Exception ex){
+			catch(ApplicationException ex){
 				MessageBox.Show(ex.Message);
 				return false;
 			}

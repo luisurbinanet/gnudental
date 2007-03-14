@@ -3,7 +3,7 @@
         ProjectType = "Local"
         ProductVersion = "7.10.3077"
         SchemaVersion = "2.0"
-        ProjectGuid = "{12FD98F8-7291-4072-8EE2-DA5B1DD68931}"
+        ProjectGuid = "{9B9879E3-0726-4042-BCB3-ADCB604B9B42}"
     >
         <Build>
             <Settings
@@ -40,7 +40,7 @@
                     RegisterForComInterop = "false"
                     RemoveIntegerChecks = "false"
                     TreatWarningsAsErrors = "false"
-                    WarningLevel = "4"
+                    WarningLevel = "3"
                 />
                 <Config
                     Name = "Release"
@@ -105,14 +105,14 @@
                     HintPath = "Required dlls\RS232.dll"
                 />
                 <Reference
-                    Name = "System.ServiceProcess"
-                    AssemblyName = "System.ServiceProcess"
-                    HintPath = "..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.ServiceProcess.dll"
-                />
-                <Reference
                     Name = "Indy.Sockets"
                     AssemblyName = "Indy.Sockets"
                     HintPath = "Required dlls\Indy.Sockets.dll"
+                />
+                <Reference
+                    Name = "System.ServiceProcess"
+                    AssemblyName = "System.ServiceProcess"
+                    HintPath = "..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.ServiceProcess.dll"
                 />
                 <Reference
                     Name = "System.Drawing.Design"
@@ -219,6 +219,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Business Layer\Deposits.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Business Layer\Dunning.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Business Layer\GroupPermissions.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -269,6 +279,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Business Layer\ProcTPs.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Business Layer\Providers.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -304,12 +319,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Business Layer\Signals.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Business Layer\TaskLists.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Business Layer\Tasks.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Business Layer\TreatPlans.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -749,77 +774,77 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "EClaims\AOS.cs"
+                    RelPath = "Eclaims\AOS.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "EClaims\BCBSGA.cs"
+                    RelPath = "Eclaims\BCBSGA.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "EClaims\Eclaims.cs"
+                    RelPath = "Eclaims\Eclaims.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "EClaims\FormTerminal.cs"
+                    RelPath = "Eclaims\FormTerminal.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "EClaims\FormTerminal.resx"
+                    RelPath = "Eclaims\FormTerminal.resx"
                     DependentUpon = "FormTerminal.cs"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
-                    RelPath = "EClaims\Inmediata.cs"
+                    RelPath = "Eclaims\Inmediata.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "EClaims\RECS.cs"
+                    RelPath = "Eclaims\RECS.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "EClaims\Renaissance.cs"
+                    RelPath = "Eclaims\Renaissance.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "EClaims\Rs232.cs"
+                    RelPath = "Eclaims\Rs232.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "EClaims\WebClaim.cs"
+                    RelPath = "Eclaims\WebClaim.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "EClaims\WebMD.cs"
+                    RelPath = "Eclaims\WebMD.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "EClaims\X12.cs"
+                    RelPath = "Eclaims\X12.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "EClaims\X12object.cs"
+                    RelPath = "Eclaims\X12object.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "EClaims\X277U.cs"
+                    RelPath = "Eclaims\X277U.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "EClaims\X997.cs"
+                    RelPath = "Eclaims\X997.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1234,6 +1259,16 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "Forms\FormConfirmList.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\FormConfirmList.resx"
+                    DependentUpon = "FormConfirmList.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "Forms\FormContactEdit.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
@@ -1294,6 +1329,26 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "Forms\FormDepositEdit.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\FormDepositEdit.resx"
+                    DependentUpon = "FormDepositEdit.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Forms\FormDeposits.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\FormDeposits.resx"
+                    DependentUpon = "FormDeposits.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "Forms\FormDocInfo.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
@@ -1301,6 +1356,16 @@
                 <File
                     RelPath = "Forms\FormDocInfo.resx"
                     DependentUpon = "FormDocInfo.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Forms\FormDunningEdit.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\FormDunningEdit.resx"
+                    DependentUpon = "FormDunningEdit.cs"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
@@ -1562,6 +1627,10 @@
                     RelPath = "Forms\FormInsTemplateCombine.resx"
                     DependentUpon = "FormInsTemplateCombine.cs"
                     BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Forms\FormInsTemplatesEdit.resx.old"
+                    BuildAction = "None"
                 />
                 <File
                     RelPath = "Forms\FormInstructorEdit.cs"
@@ -1951,6 +2020,16 @@
                 <File
                     RelPath = "Forms\FormProcSelect.resx"
                     DependentUpon = "FormProcSelect.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Forms\FormProcTPEdit.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\FormProcTPEdit.resx"
+                    DependentUpon = "FormProcTPEdit.cs"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
@@ -2454,6 +2533,16 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "Forms\FormTreatPlanEdit.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms\FormTreatPlanEdit.resx"
+                    DependentUpon = "FormTreatPlanEdit.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "Forms\FormUnsched.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
@@ -2601,6 +2690,16 @@
                 <File
                     RelPath = "Forms - Reports\FormRpClaimNotSent.resx"
                     DependentUpon = "FormRpClaimNotSent.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Forms - Reports\FormRpConfirm.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Forms - Reports\FormRpConfirm.resx"
+                    DependentUpon = "FormRpConfirm.cs"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
@@ -2884,10 +2983,6 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
-                    RelPath = "Misc\app.config"
-                    BuildAction = "None"
-                />
-                <File
                     RelPath = "Misc\App.ico"
                     BuildAction = "Content"
                 />
@@ -3074,16 +3169,6 @@
                 <File
                     RelPath = "Tables(grids)\TableAutoItem.resx"
                     DependentUpon = "TableAutoItem.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "Tables(grids)\TableBilling.cs"
-                    SubType = "UserControl"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Tables(grids)\TableBilling.resx"
-                    DependentUpon = "TableBilling.cs"
                     BuildAction = "EmbeddedResource"
                 />
                 <File

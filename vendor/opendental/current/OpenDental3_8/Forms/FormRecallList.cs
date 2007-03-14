@@ -107,7 +107,7 @@ namespace OpenDental{
 			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butClose.Location = new System.Drawing.Point(873, 702);
+			this.butClose.Location = new System.Drawing.Point(873, 645);
 			this.butClose.Name = "butClose";
 			this.butClose.Size = new System.Drawing.Size(75, 26);
 			this.butClose.TabIndex = 2;
@@ -225,7 +225,7 @@ namespace OpenDental{
 			this.butReport.Autosize = true;
 			this.butReport.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butReport.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butReport.Location = new System.Drawing.Point(861, 628);
+			this.butReport.Location = new System.Drawing.Point(861, 571);
 			this.butReport.Name = "butReport";
 			this.butReport.Size = new System.Drawing.Size(87, 26);
 			this.butReport.TabIndex = 13;
@@ -241,7 +241,7 @@ namespace OpenDental{
 			this.butLabels.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butLabels.Image = ((System.Drawing.Image)(resources.GetObject("butLabels.Image")));
 			this.butLabels.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butLabels.Location = new System.Drawing.Point(861, 592);
+			this.butLabels.Location = new System.Drawing.Point(861, 535);
 			this.butLabels.Name = "butLabels";
 			this.butLabels.Size = new System.Drawing.Size(87, 26);
 			this.butLabels.TabIndex = 14;
@@ -339,7 +339,7 @@ namespace OpenDental{
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butClose;
-			this.ClientSize = new System.Drawing.Size(975, 748);
+			this.ClientSize = new System.Drawing.Size(975, 691);
 			this.Controls.Add(this.groupBox4);
 			this.Controls.Add(this.groupBox3);
 			this.Controls.Add(this.butLabels);

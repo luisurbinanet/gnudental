@@ -76,7 +76,7 @@ namespace OpenDental.Eclaims{
 			Fill(41,"OtherInsSubscrDOB","MM/dd/yyyy");
 			Fill(42,"OtherInsSubscrIsMale");
 			Fill(43,"OtherInsSubscrIsFemale");
-			Fill(44,"");//Other Plan/Program name
+			Fill(44,"OtherInsCarrierName");//Other Plan/Program name
 			Fill(45,"SubscrCity");
 			Fill(46,"SubscrST");
 			Fill(47,"SubscrZip");

@@ -133,7 +133,8 @@ namespace OpenDental{
 		///<summary>For one patient. Allows highlighting rows.</summary>
 		private Appointment[] ApptList;
 		private System.Drawing.Printing.PrintDocument pd2;
-		private int linesPrinted;//used in printing progress notes
+		private int linesPrinted;
+		private System.Windows.Forms.CheckBox checkShowTeeth;//used in printing progress notes
 		private bool headingPrinted;
 			
 		///<summary></summary>
@@ -215,6 +216,7 @@ namespace OpenDental{
 			this.imageListUpDown = new System.Windows.Forms.ImageList(this.components);
 			this.cTeeth = new OpenDental.ContrTeeth();
 			this.groupShow = new System.Windows.Forms.GroupBox();
+			this.checkShowTeeth = new System.Windows.Forms.CheckBox();
 			this.checkNotes = new System.Windows.Forms.CheckBox();
 			this.checkRx = new System.Windows.Forms.CheckBox();
 			this.checkShowR = new System.Windows.Forms.CheckBox();
@@ -603,7 +605,6 @@ namespace OpenDental{
 			this.butClear.Autosize = true;
 			this.butClear.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butClear.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butClear.Image = ((System.Drawing.Image)(resources.GetObject("butClear.Image")));
 			this.butClear.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butClear.Location = new System.Drawing.Point(117, 58);
 			this.butClear.Name = "butClear";
@@ -618,7 +619,6 @@ namespace OpenDental{
 			this.butNew.Autosize = true;
 			this.butNew.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butNew.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butNew.Image = ((System.Drawing.Image)(resources.GetObject("butNew.Image")));
 			this.butNew.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butNew.Location = new System.Drawing.Point(117, 30);
 			this.butNew.Name = "butNew";
@@ -767,7 +767,6 @@ namespace OpenDental{
 			// 
 			this.butEnterTx.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.butEnterTx.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.butEnterTx.ImageIndex = 1;
 			this.butEnterTx.ImageList = this.imageListUpDown;
 			this.butEnterTx.Location = new System.Drawing.Point(416, 32);
 			this.butEnterTx.Name = "butEnterTx";
@@ -796,6 +795,7 @@ namespace OpenDental{
 			// 
 			// groupShow
 			// 
+			this.groupShow.Controls.Add(this.checkShowTeeth);
 			this.groupShow.Controls.Add(this.checkNotes);
 			this.groupShow.Controls.Add(this.checkRx);
 			this.groupShow.Controls.Add(this.checkShowR);
@@ -812,15 +812,25 @@ namespace OpenDental{
 			this.groupShow.TabStop = false;
 			this.groupShow.Text = "Show:";
 			// 
+			// checkShowTeeth
+			// 
+			this.checkShowTeeth.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkShowTeeth.Location = new System.Drawing.Point(104, 48);
+			this.checkShowTeeth.Name = "checkShowTeeth";
+			this.checkShowTeeth.Size = new System.Drawing.Size(104, 13);
+			this.checkShowTeeth.TabIndex = 15;
+			this.checkShowTeeth.Text = "Selected Teeth";
+			this.checkShowTeeth.Click += new System.EventHandler(this.checkShowTeeth_Click);
+			// 
 			// checkNotes
 			// 
 			this.checkNotes.AllowDrop = true;
 			this.checkNotes.Checked = true;
 			this.checkNotes.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.checkNotes.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkNotes.Location = new System.Drawing.Point(104, 30);
+			this.checkNotes.Location = new System.Drawing.Point(104, 32);
 			this.checkNotes.Name = "checkNotes";
-			this.checkNotes.Size = new System.Drawing.Size(102, 16);
+			this.checkNotes.Size = new System.Drawing.Size(102, 13);
 			this.checkNotes.TabIndex = 11;
 			this.checkNotes.Text = "Proc Notes";
 			this.checkNotes.Click += new System.EventHandler(this.checkNotes_Click);
@@ -830,9 +840,9 @@ namespace OpenDental{
 			this.checkRx.Checked = true;
 			this.checkRx.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.checkRx.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkRx.Location = new System.Drawing.Point(104, 15);
+			this.checkRx.Location = new System.Drawing.Point(104, 16);
 			this.checkRx.Name = "checkRx";
-			this.checkRx.Size = new System.Drawing.Size(95, 16);
+			this.checkRx.Size = new System.Drawing.Size(95, 13);
 			this.checkRx.TabIndex = 8;
 			this.checkRx.Text = "Rx";
 			this.checkRx.Click += new System.EventHandler(this.checkRx_Click);
@@ -844,7 +854,7 @@ namespace OpenDental{
 			this.checkShowR.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkShowR.Location = new System.Drawing.Point(4, 60);
 			this.checkShowR.Name = "checkShowR";
-			this.checkShowR.Size = new System.Drawing.Size(104, 16);
+			this.checkShowR.Size = new System.Drawing.Size(98, 16);
 			this.checkShowR.TabIndex = 14;
 			this.checkShowR.Text = "Referred";
 			this.checkShowR.Click += new System.EventHandler(this.checkShowR_Click);
@@ -904,9 +914,9 @@ namespace OpenDental{
 			this.checkShowTP.Checked = true;
 			this.checkShowTP.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.checkShowTP.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkShowTP.Location = new System.Drawing.Point(4, 15);
+			this.checkShowTP.Location = new System.Drawing.Point(4, 16);
 			this.checkShowTP.Name = "checkShowTP";
-			this.checkShowTP.Size = new System.Drawing.Size(101, 16);
+			this.checkShowTP.Size = new System.Drawing.Size(101, 13);
 			this.checkShowTP.TabIndex = 8;
 			this.checkShowTP.Text = "Treat Plan";
 			this.checkShowTP.Click += new System.EventHandler(this.checkShowTP_Click);
@@ -1644,6 +1654,11 @@ namespace OpenDental{
 		}
 
 		private void FillProgNotes(){
+			//remember which teeth were selected
+			ArrayList selectedTeeth=new ArrayList();//integers 1-32
+			for(int i=0;i<cTeeth.SelectedTeeth.Length;i++){
+				selectedTeeth.Add(Tooth.ToInt(cTeeth.SelectedTeeth[i]));
+			}
 			cTeeth.ClearProcs();
 			if(PatCur==null){
 				tbProg.ResetRows(0);
@@ -1651,17 +1666,88 @@ namespace OpenDental{
 				cTeeth.DrawShadow();
 				return;
 			}
+			if(checkShowTeeth.Checked){
+				for(int i=0;i<selectedTeeth.Count;i++){
+					cTeeth.SetSelected((int)selectedTeeth[i],true);
+				}
+			}
 			tbProg.SelectedRows=new int[0];
 			ProcList=Procedures.Refresh(PatCur.PatNum);
 			RxPats.Refresh(PatCur.PatNum);
 			ProcAL = new ArrayList();
 			RxAL = new ArrayList();
+			bool showProc;
 			//step through all procedures for patient and move selected ones to
 			//ProcAL and RxAL arrays as intermediate, each ordered by date.
 			//Pull from both into ProgLineAL array for display,
 			//and draw teeth graphics by sending Procedure array directly to cTeeth.
 			//Every ProgLineAL entry contains type and index to access original array.
 			for(int i=0;i<ProcList.Length;i++){
+				//always show missing teeth if C,EC,or EO
+				if(ProcedureCodes.GetProcCode(ProcList[i].ADACode).RemoveTooth
+					&& (ProcList[i].ProcStatus==ProcStat.C || ProcList[i].ProcStatus==ProcStat.EC || ProcList[i].ProcStatus==ProcStat.EO)
+					){
+					ProcAL.Add(ProcList[i]);
+					continue;
+				}
+				//if showing only selected teeth, then skip all other teeth
+				if(checkShowTeeth.Checked){
+					showProc=false;
+					switch(ProcedureCodes.GetProcCode(ProcList[i].ADACode).TreatArea){
+					  case TreatmentArea.Arch:
+							for(int s=0;s<selectedTeeth.Count;s++){
+								if(ProcList[i].Surf=="U" && (int)selectedTeeth[s]<17){
+									showProc=true;
+								}
+								else if(ProcList[i].Surf=="L" && (int)selectedTeeth[s]>16){
+									showProc=true;
+								}
+							}
+							break;
+						case TreatmentArea.Mouth:
+						case TreatmentArea.None:
+						case TreatmentArea.Sextant://nobody will miss it
+							showProc=false;
+							break;
+						case TreatmentArea.Quad:
+							for(int s=0;s<selectedTeeth.Count;s++){
+								if(ProcList[i].Surf=="UR" && (int)selectedTeeth[s]<=8){
+									showProc=true;
+								}
+								else if(ProcList[i].Surf=="UL" && (int)selectedTeeth[s]>=9 && (int)selectedTeeth[s]<=16){
+									showProc=true;
+								}
+								else if(ProcList[i].Surf=="LL" && (int)selectedTeeth[s]>=17 && (int)selectedTeeth[s]<=24){
+									showProc=true;
+								}
+								else if(ProcList[i].Surf=="LR" && (int)selectedTeeth[s]>=25 && (int)selectedTeeth[s]<=32){
+									showProc=true;
+								}
+							}
+							break;
+						case TreatmentArea.Surf:
+						case TreatmentArea.Tooth:
+							for(int s=0;s<selectedTeeth.Count;s++){
+								if(Tooth.ToInt(ProcList[i].ToothNum)==(int)selectedTeeth[s]){
+									showProc=true;
+								}
+							}
+							break;
+						case TreatmentArea.ToothRange:
+							string[] range=ProcList[i].ToothRange.Split(',');
+							for(int s=0;s<selectedTeeth.Count;s++){
+								for(int r=0;r<range.Length;r++){
+									if(Tooth.ToInt(range[r])==(int)selectedTeeth[s]){
+										showProc=true;
+									}
+								}
+							}
+							break;
+					}
+					if(!showProc){
+						continue;
+					}
+				}
 				switch(ProcList[i].ProcStatus){
 					case ProcStat.TP :
 						if (checkShowTP.Checked){
@@ -2599,6 +2685,10 @@ namespace OpenDental{
 			FillProgNotes();
 		}
 
+		private void checkShowTeeth_Click(object sender, System.EventArgs e) {
+			FillProgNotes();
+		}
+
 		private void butShowAll_Click(object sender, System.EventArgs e) {
 			checkShowTP.Checked=true;
 			checkShowC.Checked=true;
@@ -2606,6 +2696,7 @@ namespace OpenDental{
 			checkShowR.Checked=true;
 			checkNotes.Checked=true;
 			checkRx.Checked=true;
+			checkShowTeeth.Checked=false;
 			FillProgNotes();
 		}
 
@@ -2616,6 +2707,7 @@ namespace OpenDental{
 			checkShowR.Checked=false;
 			checkNotes.Checked=false;
 			checkRx.Checked=false;
+			checkShowTeeth.Checked=false;
 			FillProgNotes();
 		}
 
@@ -3142,33 +3234,36 @@ namespace OpenDental{
 		}
 
 		private void cTeeth_Click(object sender, System.EventArgs e) {
-			if(cTeeth.SelectedTeeth.Length!=1)
-				return;
-			butO.BackColor=SystemColors.Control;
-			butI.BackColor=SystemColors.Control;
-			butL.BackColor=SystemColors.Control;
-			butB.BackColor=SystemColors.Control;
-			butF.BackColor=SystemColors.Control;
-			textSurf.Text="";
-			if(Tooth.IsAnterior(cTeeth.SelectedTeeth[0])){
-				butB.Text="";
-				butO.Text="";
-				butB.Enabled=false;
-				butO.Enabled=false;
-				butF.Text="F";
-				butI.Text="I";
-				butF.Enabled=true;
-				butI.Enabled=true;
+			if(cTeeth.SelectedTeeth.Length==1){
+				butO.BackColor=SystemColors.Control;
+				butI.BackColor=SystemColors.Control;
+				butL.BackColor=SystemColors.Control;
+				butB.BackColor=SystemColors.Control;
+				butF.BackColor=SystemColors.Control;
+				textSurf.Text="";
+				if(Tooth.IsAnterior(cTeeth.SelectedTeeth[0])){
+					butB.Text="";
+					butO.Text="";
+					butB.Enabled=false;
+					butO.Enabled=false;
+					butF.Text="F";
+					butI.Text="I";
+					butF.Enabled=true;
+					butI.Enabled=true;
+				}
+				else{
+					butB.Text="B";
+					butO.Text="O";
+					butB.Enabled=true;
+					butO.Enabled=true;
+					butF.Text="";
+					butI.Text="";
+					butF.Enabled=false;
+					butI.Enabled=false;
+				}
 			}
-			else{
-				butB.Text="B";
-				butO.Text="O";
-				butB.Enabled=true;
-				butO.Enabled=true;
-				butF.Text="";
-				butI.Text="";
-				butF.Enabled=false;
-				butI.Enabled=false;
+			if(checkShowTeeth.Checked){
+				FillProgNotes();
 			}
 		}
 
@@ -3480,6 +3575,8 @@ namespace OpenDental{
 			formImageViewer.SetImage(Documents.Cur,PatCur.GetNameLF()+" - "
 				+Documents.Cur.DateCreated.ToShortDateString()+": "+Documents.Cur.Description);
 		}
+
+		
 
 		
 

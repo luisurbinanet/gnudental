@@ -137,7 +137,7 @@ namespace OpenDental{
 
 	///<summary></summary>
 	public class SchedDefaults{
-		///<summary></summary>
+		///<summary>All sched defaults</summary>
 		public static SchedDefault[] List;
 		//<summary></summary>
 		//public static SchedDefault Cur;

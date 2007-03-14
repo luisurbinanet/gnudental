@@ -162,7 +162,8 @@ namespace OpenDental{
 			if(SchedType==ScheduleType.Provider){
 				ProvNum=Providers.List[listProv.SelectedIndex].ProvNum;
 			}
-      SchedListMonth=Schedules.RefreshMonth(cal.SelectedDate,SchedType,ProvNum);
+      SchedListMonth=Schedules.RefreshMonth(cal.SelectedDate
+				,SchedType,ProvNum);
 			//Schedules.RefreshDay(cal.SelectedDate);//?
 			SchedDefault[] schedDefForType=SchedDefaults.GetForType(SchedType,ProvNum);
 			//if(SchedType==SchedType.

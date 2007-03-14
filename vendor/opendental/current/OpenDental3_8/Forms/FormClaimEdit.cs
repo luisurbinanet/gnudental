@@ -1666,6 +1666,7 @@ namespace OpenDental{
 			ClaimPayment ClaimPaymentCur=new ClaimPayment();
 			ClaimPaymentCur.CheckDate=DateTime.Today;
 			ClaimPaymentCur.ClinicNum=PatCur.ClinicNum;
+			ClaimPaymentCur.CarrierName=Carriers.GetName(InsPlans.GetPlan(Claims.Cur.PlanNum,PlanList).CarrierNum);
 			ClaimPaymentCur.Insert();
 			FormClaimPayEdit FormCPE=new FormClaimPayEdit(ClaimPaymentCur);
 			FormCPE.IsNew=true;

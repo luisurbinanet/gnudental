@@ -195,15 +195,16 @@ namespace OpenDental{
 			return retVal;
 		}
 
+		/*
 		///<summary></summary>
-		public static void DetachAllFromCheck(int claimPaymentNum){
+		public static void DetachAllFromCheckk(int claimPaymentNum){
 			string command= "UPDATE claimproc SET "
 				+"ClaimPaymentNum = '0' "
 				+"WHERE claimpaymentNum = '"+claimPaymentNum+"'";
 			//MessageBox.Show(cmd.CommandText);
 			DataConnection dcon=new DataConnection();
  			dcon.NonQ(command);
-		}
+		}*/
 
 		///<summary>Attaches or detaches claimprocs from the specified claimPayment. Updates all claimprocs on a claim with one query.  It also updates their DateCP's to match the claimpayment date.</summary>
 		public static void SetForClaim(int claimNum,int claimPaymentNum,DateTime date,bool setAttached){

@@ -48,7 +48,7 @@ namespace OpenDental{
 		}
 
 		private static DateTime GetDateLimit(Permissions permType,int userGroupNum){
-			DateTime nowDate=MiscData.GetNowDate();
+			DateTime nowDate=MiscData.GetNowDateTime().Date;
 			DateTime retVal=DateTime.MinValue;
 			for(int i=0;i<GroupPermissions.List.Length;i++){
 				if(GroupPermissions.List[i].UserGroupNum!=userGroupNum || GroupPermissions.List[i].PermType!=permType){

@@ -220,7 +220,7 @@ namespace OpenDental{
 			// 
 			// imageListTree
 			// 
-			this.imageListTree.ColorDepth = System.Windows.Forms.ColorDepth.Depth24Bit;
+			this.imageListTree.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
 			this.imageListTree.ImageSize = new System.Drawing.Size(16, 16);
 			this.imageListTree.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListTree.ImageStream")));
 			this.imageListTree.TransparentColor = System.Drawing.Color.Transparent;

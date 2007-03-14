@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Diagnostics;
+using System.Text;
 using System.Windows.Forms;
 
 namespace OpenDental{
@@ -95,7 +97,7 @@ namespace OpenDental{
 			}
 			else{
 				if(oldApt==null){
-					throw new Exception("oldApt cannot be null if updating.");
+					throw new ApplicationException("oldApt cannot be null if updating.");
 				}
 				Update(oldApt);
 			}
@@ -410,6 +412,314 @@ namespace OpenDental{
 				}
 			}
 			return false;
+		}
+
+		///<summary>Used in FormConfirmList</summary>
+		public static DataTable GetConfirmList(DateTime dateFrom,DateTime dateTo){
+			string command="SELECT patient.PatNum,"//0
+				+"patient.LName,"//1-LName
+				+"CONCAT(patient.FName,' ',patient.Preferred,' ',patient.MiddleI) AS 'Patient Name', "//2-FName
+				+"Guarantor,AptDateTime,Birthdate,HmPhone,"//3-6
+				+"WkPhone,WirelessPhone,ProcDescript,Confirmed,Note,"//7-11
+				+"AddrNote,AptNum "//12-13
+				+"FROM patient,appointment "
+				+"WHERE patient.PatNum=appointment.PatNum "
+				+"AND AptDateTime > '"+POut.PDate(dateFrom)+"' "
+				+"AND AptDateTime < '"+POut.PDate(dateTo.AddDays(1))+"' "
+				+"AND (AptStatus=1 "//scheduled
+				+"OR AptStatus=4) "//ASAP
+				+"ORDER BY AptDateTime";
+			DataConnection dcon=new DataConnection();
+			return dcon.GetTable(command);
+		}
+
+		///<summary>Used in Confirm list to just get addresses.</summary>
+		public static DataTable GetAddrTable(int[] aptNums){
+			string command="SELECT patient.LName,patient.FName,patient.MiddleI,patient.Preferred,"
+				+"patient.Address,patient.Address2,patient.City,patient.State,patient.Zip,appointment.AptDateTime "
+				+"FROM patient,appointment "
+				+"WHERE patient.PatNum=appointment.PatNum "
+				+"AND (";
+			for(int i=0;i<aptNums.Length;i++){
+				if(i>0){
+					command+=" OR ";
+				}
+				command+="appointment.AptNum="+aptNums[i].ToString();
+			}
+			command+=") ORDER BY patient.LName,patient.FName";
+			DataConnection dcon=new DataConnection();
+			return dcon.GetTable(command);
+		}
+
+		///<summary>Used by appt search function.  Returns the next available time for the appointment.  Starts searching on lastSlot, which can be tonight at midnight for the first search.  Then, each subsequent search will start at the time of the previous search plus the length of the appointment.  Provider array cannot be length 0.</summary>
+		public static DateTime[] GetSearchResults(Appointment apt,DateTime afterDate,int[] providers,int resultCount){//TimeSpan beforeTime,TimeSpan afterTime
+			DateTime dayEvaluating=afterDate.AddDays(1);
+			Appointment[] aptList;//list of appointments for one day
+			ArrayList ALresults=new ArrayList();//result Date/Times
+			TimeSpan timeFound;
+			int hourFound;
+			int[][] provBar=new int[providers.Length][];//dim 1 is for each provider.  Dim 2is the 10min increment
+			bool[][] provBarSched=new bool[providers.Length][];//keeps track of the schedule of each provider. True means open, false is closed.
+			int aptProv;
+			string pattern;
+			int startIndex;
+			int provIndex;//the index of a provider within providers
+			Schedule[] schedDay;//all schedule items for a given day.
+			bool provHandled;
+			bool aptIsMatch=false;
+			//int afterIndex=0;//GetProvBarIndex(afterTime);
+			//int beforeIndex=0;//GetProvBarIndex(beforeTime);
+			while(ALresults.Count<resultCount){//stops when the specified number of results are retrieved
+				for(int i=0;i<providers.Length;i++){
+					provBar[i]=new int[24*ContrApptSheet.RowsPerHr];//[144]; or 24*6
+					provBarSched[i]=new bool[24*ContrApptSheet.RowsPerHr];
+				}
+				//get appointments for one day
+				aptList=Refresh(dayEvaluating);
+				//fill provBar
+				for(int i=0;i<aptList.Length;i++){
+					if(aptList[i].IsHygiene){
+						aptProv=aptList[i].ProvHyg;
+					}
+					else{
+						aptProv=aptList[i].ProvNum;
+					}
+					provIndex=-1;
+					for(int p=0;p<providers.Length;p++){
+						if(providers[p]==aptProv){
+							provIndex=p;
+							break;
+						}
+					}
+					if(provIndex==-1){
+						continue;
+					}
+					pattern=ContrApptSingle.GetPatternShowing(aptList[i].Pattern);
+					startIndex=(int)(((double)aptList[i].AptDateTime.Hour*(double)60/(double)Prefs.GetInt("AppointmentTimeIncrement")
+						+(double)aptList[i].AptDateTime.Minute/(double)Prefs.GetInt("AppointmentTimeIncrement"))
+						*(double)ContrApptSheet.Lh*ContrApptSheet.RowsPerIncr)
+						/ContrApptSheet.Lh;//rounds down
+					for(int k=0;k<pattern.Length;k++){
+						if(pattern.Substring(k,1)=="X"){
+							provBar[provIndex][startIndex+k]++;
+						}
+					}
+				}
+				//for(int i=0;i<provBar[0].Length;i++){
+				//	Debug.Write(provBar[0][i].ToString());
+				//}
+				//Debug.WriteLine("");
+				//handle all schedules by setting element of provBarSched to true if provider schedule shows open.
+				schedDay=Schedules.RefreshDay(dayEvaluating);
+				for(int p=0;p<providers.Length;p++){
+					provHandled=false;
+					//schedule for prov
+					for(int i=0;i<schedDay.Length;i++){
+						if(schedDay[i].SchedType!=ScheduleType.Provider){
+							continue;
+						}
+						if(providers[p]!=schedDay[i].ProvNum){
+							continue;
+						}
+						if(schedDay[i].Status==SchedStatus.Closed || schedDay[i].Status==SchedStatus.Holiday){
+							provHandled=true;//all elements remain false.
+							break;
+						}
+						SetProvBarSched(ref provBarSched[p],schedDay[i].StartTime,schedDay[i].StopTime);
+						provHandled=true;
+					}
+					if(provHandled){
+						continue;
+					}
+					//schedDefault for prov
+					for(int i=0;i<SchedDefaults.List.Length;i++){
+						if(SchedDefaults.List[i].DayOfWeek!=(int)dayEvaluating.DayOfWeek){
+							continue;
+						}
+						if(SchedDefaults.List[i].SchedType!=ScheduleType.Provider){
+							continue;
+						}
+						if(providers[p]!=SchedDefaults.List[i].ProvNum){
+							continue;
+						}
+						SetProvBarSched(ref provBarSched[p],SchedDefaults.List[i].StartTime,SchedDefaults.List[i].StopTime);
+						provHandled=true;
+					}
+					if(provHandled){
+						continue;
+					}
+					//schedule for practice
+					for(int i=0;i<schedDay.Length;i++){
+						if(schedDay[i].SchedType!=ScheduleType.Practice){
+							continue;
+						}
+						if(schedDay[i].Status==SchedStatus.Closed || schedDay[i].Status==SchedStatus.Holiday){
+							provHandled=true;//all elements remain false.
+							break;
+						}
+						SetProvBarSched(ref provBarSched[p],schedDay[i].StartTime,schedDay[i].StopTime);
+						provHandled=true;
+					}
+					if(provHandled){
+						continue;
+					}
+					//SchedDefault for practice
+					for(int i=0;i<SchedDefaults.List.Length;i++){
+						if(SchedDefaults.List[i].DayOfWeek!=(int)dayEvaluating.DayOfWeek){
+							continue;
+						}
+						if(SchedDefaults.List[i].SchedType!=ScheduleType.Practice){
+							continue;
+						}
+						SetProvBarSched(ref provBarSched[p],SchedDefaults.List[i].StartTime,SchedDefaults.List[i].StopTime);
+					}
+				}
+				//step through day, one increment at a time, looking for a slot
+				pattern=ContrApptSingle.GetPatternShowing(apt.Pattern);
+				timeFound=new TimeSpan(0);
+				for(int i=0;i<provBar[0].Length;i++){//144 if using 10 minute increments
+					for(int p=0;p<providers.Length;p++){
+						//assume apt will be placed here
+						aptIsMatch=true;
+						//test all apt increments for prov closed. If any found, continue
+						for(int a=0;a<pattern.Length;a++){
+							if(provBarSched[p].Length<i+a+1 || !provBarSched[p][i+a]){
+								aptIsMatch=false;
+								break;
+							}
+						}
+						if(!aptIsMatch){
+							continue;
+						}
+						//test all apt increments with an X for not scheduled. If scheduled, continue.
+						for(int a=0;a<pattern.Length;a++){
+							if(pattern.Substring(a,1)=="X" && (provBar[p].Length<i+a+1 || provBar[p][i+a]>0)){
+								aptIsMatch=false;
+								break;
+							}
+						}
+						if(!aptIsMatch){
+							continue;
+						}
+						//make sure it's after the time restricted
+						//Debug.WriteLine(apt.AptDateTime.TimeOfDay+"  "+afterTime.ToString());
+						//if(afterTime!=TimeSpan.Zero && <afterTime){
+						//	aptIsMatch=false;
+						//	continue;
+						//}
+						//match found, so convert this slot to a valid time
+						hourFound=(int)((double)(i)/60*Prefs.GetInt("AppointmentTimeIncrement"));
+						timeFound=new TimeSpan(
+							hourFound,
+							//minutes. eg. (13-(2*60/10))*10
+							(int)((i-((double)hourFound*60/(double)Prefs.GetInt("AppointmentTimeIncrement")))
+								*Prefs.GetInt("AppointmentTimeIncrement")),
+							0);
+						ALresults.Add(dayEvaluating+timeFound);
+					}//for p	
+					if(aptIsMatch){
+						break;
+					}
+				}
+				dayEvaluating=dayEvaluating.AddDays(1);//move to the next day
+			}
+			DateTime[] retVal=new DateTime[ALresults.Count];
+			ALresults.CopyTo(retVal);
+			return retVal;
+		}
+
+		///<summary>Only used in GetSearchResults.  All times between start and stop get set to true in provBarSched.</summary>
+		private static void SetProvBarSched(ref bool[] provBarSched,DateTime timeStart,DateTime timeStop){
+			int startI=GetProvBarIndex(timeStart);
+			int stopI=GetProvBarIndex(timeStop);
+			for(int i=startI;i<=stopI;i++){
+				provBarSched[i]=true;
+			}
+		}
+
+		private static int GetProvBarIndex(DateTime time){
+			return (int)(((double)time.Hour*(double)60/(double)Prefs.GetInt("AppointmentTimeIncrement")//aptTimeIncr=minutesPerIncr
+				+(double)time.Minute/(double)Prefs.GetInt("AppointmentTimeIncrement"))
+				*(double)ContrApptSheet.Lh*ContrApptSheet.RowsPerIncr)
+				/ContrApptSheet.Lh;//rounds down
+		}
+ 
+		///<summary>Used by UI when it needs a recall appointment placed on the pinboard ready to schedule.  This method creates the appointment and attaches all appropriate procedures.  It's up to the calling class to then place the appointment on the pinboard.  If the appointment doesn't get scheduled, it's important to delete it.</summary>
+		public static Appointment CreateRecallApt(Patient patCur,Procedure[] procList,Recall recallCur,InsPlan[] planList){
+			Appointment AptCur=new Appointment();
+			AptCur.PatNum=patCur.PatNum;
+			AptCur.AptStatus=ApptStatus.Scheduled;
+			//convert time pattern to 5 minute increment
+			StringBuilder savePattern=new StringBuilder();
+			for(int i=0;i<Prefs.GetString("RecallPattern").Length;i++){
+				savePattern.Append(Prefs.GetString("RecallPattern").Substring(i,1));
+				savePattern.Append(Prefs.GetString("RecallPattern").Substring(i,1));
+				if(Prefs.GetInt("AppointmentTimeIncrement")==15){
+					savePattern.Append(Prefs.GetString("RecallPattern").Substring(i,1));
+				}
+			}
+			AptCur.Pattern=savePattern.ToString();
+			if(patCur.PriProv==0)
+				AptCur.ProvNum=Prefs.GetInt("PracticeDefaultProv");
+			else
+				AptCur.ProvNum=patCur.PriProv;
+			AptCur.ProvHyg=patCur.SecProv;
+			if(AptCur.ProvHyg!=0){
+				AptCur.IsHygiene=true;
+			}
+			AptCur.ClinicNum=patCur.ClinicNum;
+			AptCur.InsertOrUpdate(null,true);
+			string[] procs=Prefs.GetString("RecallProcedures").Split(',');
+			if(Prefs.GetString("RecallBW")!=""){//BWs
+				bool dueBW=true;
+				//DateTime dueDate=PIn.PDate(listFamily.Items[
+				for(int i=0;i<procList.Length;i++){//loop through all procedures for this pt.
+					//if any BW found within last year, then dueBW=false.
+					if(Prefs.GetString("RecallBW")==procList[i].ADACode
+						&& recallCur.DateDue.Year>1880
+						&& procList[i].ProcDate > recallCur.DateDue.AddYears(-1)){
+						dueBW=false;
+					}
+				}
+				if(dueBW){
+					string[] procs2=new string[procs.Length+1];
+					procs.CopyTo(procs2,0);
+					procs2[procs2.Length-1]=Prefs.GetString("RecallBW");
+					procs=new string[procs2.Length];
+					procs2.CopyTo(procs,0);
+				}
+			}
+			Procedure ProcCur;
+			//ClaimProc[] claimProcs=ClaimProcs.Refresh(Patients.Cur.PatNum);
+			for(int i=0;i<procs.Length;i++){
+				ProcCur=new Procedure();//this will be an insert
+				//procnum
+				ProcCur.PatNum=patCur.PatNum;
+				ProcCur.AptNum=AptCur.AptNum;
+				ProcCur.ADACode=procs[i];
+				ProcCur.ProcDate=DateTime.Now;
+				ProcCur.ProcFee=Fees.GetAmount0(ProcCur.ADACode,Fees.GetFeeSched(patCur,planList));
+				//ProcCur.OverridePri=-1;
+				//ProcCur.OverrideSec=-1;
+				//surf
+				//toothnum
+				//Procedures.Cur.ToothRange="";
+				//ProcCur.NoBillIns=ProcedureCodes.GetProcCode(ProcCur.ADACode).NoBillIns;
+				//priority
+				ProcCur.ProcStatus=ProcStat.TP;
+				ProcCur.ProcNote="";
+				//Procedures.Cur.PriEstim=
+				//Procedures.Cur.SecEstim=
+				//claimnum
+				ProcCur.ProvNum=patCur.PriProv;
+				//Procedures.Cur.Dx=
+				ProcCur.ClinicNum=patCur.ClinicNum;
+				//nextaptnum
+				ProcCur.InsertOrUpdate(null,true);//no recall synch required
+				ProcCur.ComputeEstimates(patCur.PatNum,patCur.PriPlanNum
+					,patCur.SecPlanNum,new ClaimProc[0],false,patCur,planList);
+			}
+			return AptCur;
 		}
 
 		

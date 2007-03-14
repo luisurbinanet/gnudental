@@ -19,8 +19,6 @@ namespace OpenDental{
 		public static double BalTotal;//for one guarantor
 		private static DateTime AsOfDate;
 		///<summary></summary>
-		public static int[] AllGuarantors;
-		///<summary></summary>
 		public struct DateValuePair{
 			///<summary></summary>
 			public DateTime Date;
@@ -29,17 +27,17 @@ namespace OpenDental{
 		}
 
 		///<summary></summary>
-		public static void GetAllGuarantors(){
+		public static int[] GetAllGuarantors(){
 			cmd.CommandText="SELECT DISTINCT guarantor FROM patient";
-			//MessageBox.Show(cmd.CommandText);
 			FillTable();
-			//MessageBox.Show(table.Rows.Count.ToString());
-			AllGuarantors=new int[table.Rows.Count];
+			int[] AllGuarantors=new int[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
 				AllGuarantors[i]=PIn.PInt(table.Rows[i][0].ToString());
 			}
+			return AllGuarantors;
 		}
 
+		/*
 		///<summary></summary>
 		public static DateTime GetClosestFirst(DateTime date){ 
 			if(date.Day > 15){
@@ -53,8 +51,9 @@ namespace OpenDental{
 			else{
 				return new DateTime(date.Year,date.Month,1);
 			}
-		}
+		}*/
 
+		/*
 		///<summary></summary>
 		public static void ComputeAging(int guarantor){
 			DateTime asOfDate;
@@ -72,7 +71,7 @@ namespace OpenDental{
 			ComputeAging(guarantor,asOfDate);
 			Patients.ResetAging(guarantor);
 			Patients.UpdateAging(guarantor,Bal[0],Bal[1],Bal[2],Bal[3],InsEst,BalTotal);
-		}
+		}*/
 
 		///<summary></summary>
 		public static void ComputeAging(int guarantor,DateTime asOfDate){
@@ -334,16 +333,11 @@ namespace OpenDental{
 			return retVal;
 		}
 
-			//Patients.UpdateAging(PIn.PInt(row[0].ToString()),PIn.PDouble(row[4].ToString()),PIn.PDouble(row[3].ToString()),
-			//	PIn.PDouble(row[2].ToString()),PIn.PDouble(row[1].ToString()),PIn.PDouble(row[5].ToString()));
-			//Prefs.Cur=(Pref)Prefs.HList["DateLastAging"];
-			//Prefs.Cur.ValueString=POut.PDate(DateTime.Today);
-			//Prefs.UpdateCur();
 	
 	}
 
 
-}//end namespace
+}
 
 
 

@@ -11,7 +11,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public System.Windows.Forms.ErrorProvider errorProvider1;
 		private System.ComponentModel.Container components = null;// Required designer variable.
-		///<summary>This number is really big for other countries with different currency.</summary>
+		///<summary></summary>
 		public Double MaxVal=100000000;
 		///<summary></summary>
 		public Double MinVal=-100000000;

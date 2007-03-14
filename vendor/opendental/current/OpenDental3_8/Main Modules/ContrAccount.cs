@@ -1134,7 +1134,9 @@ namespace OpenDental{
 			Shared.ComputeBalances(ProcList,ClaimProcList,PatCur,PaySplitList,AdjustmentList,PayPlanList,PayPlanChargeList);
 				//then recompute aging for family. This is time consuming, about 1/2 second.
 				//Compute aging involves about 10 to 12 database calls.  (Let's reduce this then)
-				Ledgers.ComputeAging(PatCur.Guarantor);
+				Ledgers.ComputeAging(PatCur.Guarantor,DateTime.Today);
+				Patients.UpdateAging(PatCur.Guarantor,Ledgers.Bal[0],Ledgers.Bal[1],Ledgers.Bal[2]
+					,Ledgers.Bal[3],Ledgers.InsEst,Ledgers.BalTotal);
 				FamCur=Patients.GetFamily(PatCur.PatNum);
 				PatCur=FamCur.GetPatient(PatCur.PatNum);
 			//}
@@ -1860,7 +1862,7 @@ namespace OpenDental{
 			try{
 				PaymentCur.InsertOrUpdate(true);
 			}
-			catch(Exception e){
+			catch(ApplicationException e){
 				MessageBox.Show(e.Message);
 				return;
 			}
@@ -2367,7 +2369,7 @@ namespace OpenDental{
 			for(int i=0;i<famPatNums.Length;i++){
 				patNums[0][i]=famPatNums[i];
 			}
-			FormST.PrintStatements(patNums,fromDate,toDate,includeClaims,subtotalsOnly,hidePayment,nextAppt,note);
+			FormST.PrintStatements(patNums,fromDate,toDate,includeClaims,subtotalsOnly,hidePayment,nextAppt,new string[] {note});
 			#if DEBUG
 				FormST.ShowDialog();
 			#endif

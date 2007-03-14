@@ -8,12 +8,12 @@ namespace OpenDental{
 	///<summary>Miscellaneous database functions.</summary>
 	public class MiscData{
 		
-		///<summary>Gets the current date direcly from the server.  Mostly used to prevent uesr from altering the workstation date to bypass security.</summary>
-		public static DateTime GetNowDate(){
+		///<summary>Gets the current date/Time direcly from the server.  Mostly used to prevent uesr from altering the workstation date to bypass security.</summary>
+		public static DateTime GetNowDateTime(){
 			string command="SELECT NOW()";
 			DataConnection dcon=new DataConnection();
 			DataTable table=dcon.GetTable(command);
-			return PIn.PDate(table.Rows[0][0].ToString()).Date;
+			return PIn.PDateT(table.Rows[0][0].ToString());
 		}
 
 		///<summary>Generates a random primary key.  Tests to see if that key already exists before returning it for use.  Currently, the range of returned values is greater than 0, and less than or equal to 16777215, the limit for mysql medium int.  This will eventually change to a max of 18446744073709551615.  Then, the return value would have to be a ulong and the mysql type would have to be bigint.</summary>

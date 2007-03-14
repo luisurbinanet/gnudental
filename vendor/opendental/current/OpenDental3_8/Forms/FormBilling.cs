@@ -11,14 +11,16 @@ namespace OpenDental{
 		private OpenDental.ContrAccount contrAccount1;
 		private OpenDental.UI.Button butAll;
 		private OpenDental.UI.Button butNone;
-		private OpenDental.TableBilling tbBill;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label label1;
 		private OpenDental.UI.Button butPrint;
 		private System.ComponentModel.Container components = null;
 		private System.Windows.Forms.Label label3;
+		private OpenDental.UI.ODGrid gridBill;
 		///<summary>Set this list externally before openning the billing window.</summary>
 		public PatAging[] AgingList;
+		///<summary></summary>
+		public string GeneralNote;
 
 		///<summary></summary>
 		public FormBilling(){
@@ -44,10 +46,10 @@ namespace OpenDental{
 			this.contrAccount1 = new OpenDental.ContrAccount();
 			this.butNone = new OpenDental.UI.Button();
 			this.butAll = new OpenDental.UI.Button();
-			this.tbBill = new OpenDental.TableBilling();
 			this.label2 = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
 			this.label3 = new System.Windows.Forms.Label();
+			this.gridBill = new OpenDental.UI.ODGrid();
 			this.SuspendLayout();
 			// 
 			// butCancel
@@ -58,7 +60,7 @@ namespace OpenDental{
 			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.Location = new System.Drawing.Point(586, 658);
+			this.butCancel.Location = new System.Drawing.Point(672, 658);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75, 25);
 			this.butCancel.TabIndex = 1;
@@ -72,7 +74,7 @@ namespace OpenDental{
 			this.butPrint.BackColor = System.Drawing.SystemColors.Control;
 			this.butPrint.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butPrint.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butPrint.Location = new System.Drawing.Point(586, 624);
+			this.butPrint.Location = new System.Drawing.Point(672, 624);
 			this.butPrint.Name = "butPrint";
 			this.butPrint.Size = new System.Drawing.Size(75, 25);
 			this.butPrint.TabIndex = 0;
@@ -113,17 +115,6 @@ namespace OpenDental{
 			this.butAll.Text = "&All";
 			this.butAll.Click += new System.EventHandler(this.butAll_Click);
 			// 
-			// tbBill
-			// 
-			this.tbBill.BackColor = System.Drawing.SystemColors.Window;
-			this.tbBill.Location = new System.Drawing.Point(42, 46);
-			this.tbBill.Name = "tbBill";
-			this.tbBill.ScrollValue = 113;
-			this.tbBill.SelectedIndices = new int[0];
-			this.tbBill.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-			this.tbBill.Size = new System.Drawing.Size(499, 606);
-			this.tbBill.TabIndex = 24;
-			// 
 			// label2
 			// 
 			this.label2.Location = new System.Drawing.Point(42, 28);
@@ -149,16 +140,33 @@ namespace OpenDental{
 			this.label3.Text = "This will immediately print all selected bills";
 			this.label3.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
+			// gridBill
+			// 
+			this.gridBill.Columns.Add(new OpenDental.UI.ODGridColumn("Name", 180, System.Windows.Forms.HorizontalAlignment.Left));
+			this.gridBill.Columns.Add(new OpenDental.UI.ODGridColumn("Total", 100, System.Windows.Forms.HorizontalAlignment.Right));
+			this.gridBill.Columns.Add(new OpenDental.UI.ODGridColumn("-Insurance Est", 100, System.Windows.Forms.HorizontalAlignment.Right));
+			this.gridBill.Columns.Add(new OpenDental.UI.ODGridColumn("=Amount", 100, System.Windows.Forms.HorizontalAlignment.Right));
+			this.gridBill.Columns.Add(new OpenDental.UI.ODGridColumn("Last Statement", 111, System.Windows.Forms.HorizontalAlignment.Left));
+			this.gridBill.HScrollVisible = false;
+			this.gridBill.Location = new System.Drawing.Point(42, 46);
+			this.gridBill.Name = "gridBill";
+			this.gridBill.ScrollValue = 0;
+			this.gridBill.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+			this.gridBill.Size = new System.Drawing.Size(610, 602);
+			this.gridBill.TabIndex = 28;
+			this.gridBill.Title = "Billing";
+			this.gridBill.TranslationName = "TableBilling";
+			// 
 			// FormBilling
 			// 
 			this.AcceptButton = this.butPrint;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
-			this.ClientSize = new System.Drawing.Size(672, 692);
+			this.ClientSize = new System.Drawing.Size(758, 692);
+			this.Controls.Add(this.gridBill);
 			this.Controls.Add(this.label3);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.label2);
-			this.Controls.Add(this.tbBill);
 			this.Controls.Add(this.butNone);
 			this.Controls.Add(this.butAll);
 			this.Controls.Add(this.contrAccount1);
@@ -181,32 +189,40 @@ namespace OpenDental{
 			//textDate.Text=Ledgers.GetClosestFirst(DateTime.Today).ToShortDateString();
 			//Patients.GetAgingList();
 			FillTable();
-			tbBill.SetSelected(true);	
+			gridBill.SetSelected(true);	
 		}
 
 		private void FillTable(){
-			tbBill.ResetRows(AgingList.Length);
-			tbBill.SetGridColor(Color.Gray);
-			tbBill.SetBackGColor(Color.White);  
+			gridBill.BeginUpdate();
+			gridBill.Rows.Clear();
+			OpenDental.UI.ODGridRow row;
 			for(int i=0;i<AgingList.Length;i++){
-				tbBill.Cell[0,i]=AgingList[i].PatName;
-				tbBill.Cell[1,i]=AgingList[i].BalTotal.ToString("F");
-				tbBill.Cell[2,i]=AgingList[i].InsEst.ToString("F");
-				tbBill.Cell[3,i]=AgingList[i].AmountDue.ToString("F");
+				row=new OpenDental.UI.ODGridRow();
+				row.Cells.Add(AgingList[i].PatName);
+				row.Cells.Add(AgingList[i].BalTotal.ToString("F"));
+				row.Cells.Add(AgingList[i].InsEst.ToString("F"));
+				row.Cells.Add(AgingList[i].AmountDue.ToString("F"));
+				if(AgingList[i].DateLastStatement.Year<1880){
+					row.Cells.Add("");
+				}
+				else{
+					row.Cells.Add(AgingList[i].DateLastStatement.ToShortDateString());
+				}
+				gridBill.Rows.Add(row);
 			}
-			tbBill.LayoutTables();
+			gridBill.EndUpdate();
 		}
 
 		private void butAll_Click(object sender, System.EventArgs e) {
-			tbBill.SetSelected(true);
+			gridBill.SetSelected(true);
 		}
 
 		private void butNone_Click(object sender, System.EventArgs e) {	
-			tbBill.SetSelected(false);
+			gridBill.SetSelected(false);
 		}
 
 		private void butPrint_Click(object sender, System.EventArgs e) {
-			if(tbBill.SelectedIndices.Length==0){
+			if(gridBill.SelectedIndices.Length==0){
 				MessageBox.Show(Lan.g(this,"Please select items first."));
 				return;
 			}
@@ -214,12 +230,12 @@ namespace OpenDental{
 				return;
 			}
 			Cursor=Cursors.WaitCursor;
-			int[] guarNums=new int[tbBill.SelectedIndices.Length];
-			for(int i=0;i<tbBill.SelectedIndices.Length;i++){
-				guarNums[i]=AgingList[tbBill.SelectedIndices[i]].PatNum;
+			int[] guarNums=new int[gridBill.SelectedIndices.Length];
+			for(int i=0;i<gridBill.SelectedIndices.Length;i++){
+				guarNums[i]=AgingList[gridBill.SelectedIndices[i]].PatNum;
 			}
 			FormRpStatement FormS=new FormRpStatement();
-			FormS.LoadAndPrint(guarNums);
+			FormS.LoadAndPrint(guarNums,GeneralNote);
 			Cursor=Cursors.Default;
 			#if DEBUG
 				FormS.ShowDialog();
@@ -232,3 +248,20 @@ namespace OpenDental{
 
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

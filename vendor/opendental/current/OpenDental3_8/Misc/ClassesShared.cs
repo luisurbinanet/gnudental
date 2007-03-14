@@ -45,6 +45,11 @@ namespace OpenDental{
 				return age.ToString();
 		}
 
+		///<summary>Converts a date to an age.  Blank if over 115.</summary>
+		public static string DateToAgeString(DateTime date){
+			return AgeToString(DateToAge(date));
+		}
+
 		///<summary>Computes balance for a single patient. Returns true if a refresh is needed.</summary>
 		public static bool ComputeBalances(Procedure[] procList,ClaimProc[] claimProcList,Patient PatCur,PaySplit[] paySplitList,Adjustment[] AdjustmentList,PayPlan[] payPlanList,PayPlanCharge[] payPlanChargeList){
 			//must have refreshed all 5 first
@@ -66,7 +71,7 @@ namespace OpenDental{
 	}//end class shared
 
 	/*=================================Class Messages=========================================
-===========================================================================================*/
+===========================================================================================
 
 	///<summary>Handles sending messages between computers for buttons and for invalidating appointment screen and locally stored data. David Adams from Adivad Technologies was very helpful in providing the threading logic.</summary>
 	public class Messages{
@@ -153,7 +158,7 @@ namespace OpenDental{
 		public ODMessage(){
 
 		}
-	}
+	}*/
 
 
 /*=================================Class DataValid=========================================

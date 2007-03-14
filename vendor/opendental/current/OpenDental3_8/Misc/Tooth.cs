@@ -242,10 +242,8 @@ namespace OpenDental{
 			return false;
 		}
 
-		///<summary></summary>
+		///<summary>The toothNum should be validated before coming here, but it won't crash if invalid.  Primary or perm are ok.  Empty and null are also ok.</summary>
 		public static int ToInt(string toothNum){
-			//the toothNum must be validated before coming here.
-			//Primary or perm are ok.  Empty and null are also ok.
 			if(toothNum==null || toothNum=="")
 				return -1;
 			try{

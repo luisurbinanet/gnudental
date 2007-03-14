@@ -44,9 +44,14 @@ namespace OpenDental
 		private int yPosPrev;
 		private Point[] poly;
 		private System.Windows.Forms.PictureBox pictureBox1;
-		private bool ControlIsDown;
+		//private bool ControlIsDown;
 		///<summary></summary>
 		public Patient PatCur;
+		///<summary>Mouse move causes this variable to be updated with the current tooth that the mouse is hovering over.</summary>
+		private int hotTooth;
+		///<summary>The previous hotTooth.  If this is different than hotTooth, then mouse has just now moved to a new tooth.  Can be 0 to represent no previous.</summary>
+		private int hotToothOld;
+		private bool MouseIsDown;
 	
 		///<summary></summary>
 		public ContrTeeth()
@@ -99,10 +104,10 @@ namespace OpenDental
 			this.Controls.Add(this.pictureBox1);
 			this.Name = "ContrTeeth";
 			this.Size = new System.Drawing.Size(533, 323);
+			this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.ContrTeeth_MouseUp);
 			this.Paint += new System.Windows.Forms.PaintEventHandler(this.ContrTeeth_Paint);
 			this.MouseHover += new System.EventHandler(this.ContrTeeth_MouseHover);
-			this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.ContrTeeth_KeyUp);
-			this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ContrTeeth_KeyDown);
+			this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.ContrTeeth_MouseMove);
 			this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ContrTeeth_MouseDown);
 			this.ResumeLayout(false);
 
@@ -213,6 +218,7 @@ namespace OpenDental
 			grfx.Dispose();
 		}
 
+		///<summary>Draws the number of the tooth, not the actual tooth itself.</summary>
 		private void DrawToothNum(int intTooth){
 			string toothNum=Tooth.FromInt(intTooth);
 			if(PrimaryTeeth.Contains(toothNum)){
@@ -235,6 +241,7 @@ namespace OpenDental
 			grfx.Dispose();
 		}
 
+		///<summary>Draws or removes the red rectangle and hightlight bar for the specified tooth.</summary>
 		private void DrawSelected(int intTooth, bool isSelected){
 			if(Shadow==null)
 				return;
@@ -581,59 +588,63 @@ namespace OpenDental
 					doDraw=false;
 				}
 				if(doDraw){
-					if(GraphicTypes.GetSpecialType(ProcedureCodes.GetProcCode(procList[i].ADACode).GTypeNum)
-						=="bridge"){
-						if(!Tooth.IsValidDB(procList[i].ToothNum))
-							intTooth=-1;
-						else
-							intTooth=Tooth.ToInt(procList[i].ToothNum);
-						for(int j=0;j<procList.Length;j++){
-							if(GetMesial(procList[i].ToothNum)==procList[j].ToothNum
-								&& GraphicTypes.GetSpecialType
-									(ProcedureCodes.GetProcCode(procList[j].ADACode).GTypeNum)=="bridge"){
-								DrawConnector(true,intTooth,elemColor);
+					try{
+						if(GraphicTypes.GetSpecialType(ProcedureCodes.GetProcCode(procList[i].ADACode).GTypeNum)=="bridge"){
+							if(!Tooth.IsValidDB(procList[i].ToothNum))
+								intTooth=-1;
+							else
+								intTooth=Tooth.ToInt(procList[i].ToothNum);
+							for(int j=0;j<procList.Length;j++){
+								if(GetMesial(procList[i].ToothNum)==procList[j].ToothNum
+									&& GraphicTypes.GetSpecialType
+										(ProcedureCodes.GetProcCode(procList[j].ADACode).GTypeNum)=="bridge"){
+									DrawConnector(true,intTooth,elemColor);
+								}
+								if(GetDistal(procList[i].ToothNum)==procList[j].ToothNum
+									&& GraphicTypes.GetSpecialType
+										(ProcedureCodes.GetProcCode(procList[j].ADACode).GTypeNum)=="bridge"){
+									DrawConnector(false,intTooth,elemColor);
+								}
 							}
-							if(GetDistal(procList[i].ToothNum)==procList[j].ToothNum
-								&& GraphicTypes.GetSpecialType
-									(ProcedureCodes.GetProcCode(procList[j].ADACode).GTypeNum)=="bridge"){
-								DrawConnector(false,intTooth,elemColor);
-							}
+							
 						}
-						
-					}
-					if(GraphicTypes.GetSpecialType(ProcedureCodes.GetProcCode(procList[i].ADACode).GTypeNum)
-						=="denture"){
-						string[] toothNums;
-						if(ProcedureCodes.GetProcCode(procList[i].ADACode).TreatArea==TreatmentArea.Arch){
-							if(procList[i].Surf=="U"){
-								toothNums=new string[] {"2","3","4","5","6","7","8","9","10","11","12","13","14","15"};
+						if(GraphicTypes.GetSpecialType(ProcedureCodes.GetProcCode(procList[i].ADACode).GTypeNum)=="denture"){
+							string[] toothNums;
+							if(ProcedureCodes.GetProcCode(procList[i].ADACode).TreatArea==TreatmentArea.Arch){
+								if(procList[i].Surf=="U"){
+									toothNums=new string[] {"2","3","4","5","6","7","8","9","10","11","12","13","14","15"};
+								}
+								else if(procList[i].Surf=="L"){
+									toothNums=new string[] {"18","19","20","21","22","23","24"
+										,"25","26","27","28","29","30","31"};
+								}
+								else{
+									toothNums=new string[0];
+								}
 							}
-							else if(procList[i].Surf=="L"){
-								toothNums=new string[] {"18","19","20","21","22","23","24"
-									,"25","26","27","28","29","30","31"};
+							else if(ProcedureCodes.GetProcCode(procList[i].ADACode).TreatArea==TreatmentArea.ToothRange){
+								toothNums=procList[i].ToothRange.Split(',');
 							}
 							else{
 								toothNums=new string[0];
 							}
-						}
-						else if(ProcedureCodes.GetProcCode(procList[i].ADACode).TreatArea==TreatmentArea.ToothRange){
-							toothNums=procList[i].ToothRange.Split(',');
+							for(int j=0;j<toothNums.Length;j++){
+								DrawElement(toothNums[j]
+									,gTypeNum
+									,elemColor
+									,"");
+							}
 						}
 						else{
-							toothNums=new string[0];
-						}
-						for(int j=0;j<toothNums.Length;j++){
-							DrawElement(toothNums[j]
+							DrawElement(procList[i].ToothNum
 								,gTypeNum
 								,elemColor
-								,"");
+								,procList[i].Surf);
 						}
 					}
-					else{
-						DrawElement(procList[i].ToothNum
-							,gTypeNum
-							,elemColor
-							,procList[i].Surf);
+					catch{
+						;//if trouble drawing it, then don't do anything.
+						//maybe add an error log to the database at some point to track errors without user's awareness
 					}
 				}
 			}//for proclist
@@ -892,47 +903,30 @@ namespace OpenDental
 		}
 
 		private void ContrTeeth_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
-			int toothClicked=1;
-			if(e.Y < THeight+19+4){//max
-				if(e.X < TWidthP*3+4){
-					toothClicked=(int)((e.X-1)/(TWidthP+1))+1;
-				}
-				else if(e.X < TWidthP*3+4 + TWidthA*10+10){
-					//SelectedTeeth[0]=Tooth.FromInt((int)((e.X-TWidthP*3-4)/(TWidthA+1))+4);
-					toothClicked=(int)((e.X-TWidthP*3-4)/(TWidthA+1))+4;
-				}
-				else{
-					toothClicked=(int)((e.X-TWidthP*3-TWidthA*10-14)/(TWidthP+1))+14;
-				}
+			MouseIsDown=true;
+			int toothClicked=GetToothAtPoint(e.X,e.Y);
+			if(ALSelectedTeeth.Contains(toothClicked)){
+				SetSelected(toothClicked,false);
 			}
-			else{//mand
-				if(e.X < TWidthP*3+4){
-					toothClicked=32-(int)(e.X-1)/(TWidthP+1);
-				}
-				else if(e.X < TWidthP*3+4 + TWidthA*10+10){
-					toothClicked=29-(int)(e.X-TWidthP*3-4)/(TWidthA+1);
-				}
-				else{
-					toothClicked=19-(int)(e.X-TWidthP*3-TWidthA*10-14)/(TWidthP+1);
-				}
+			else{
+				SetSelected(toothClicked,true);
 			}
-			if(ControlIsDown){
-				if(ALSelectedTeeth.Contains(toothClicked)){
-					ALSelectedTeeth.Remove(toothClicked);
-					DrawSelected(toothClicked,false);
-				}
-				else{
-					ALSelectedTeeth.Add(toothClicked);
-					DrawSelected(toothClicked,true);
-				}
+			DrawShadow();
+		}
+
+		private void ContrTeeth_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e) {
+			MouseIsDown=false;
+		}
+
+		///<summary>Used by mousedown and mouse move to set teeth selected or unselected.  Also used externally to set teeth selected.  Draws the changes, but need to DrawShadow to see the effect.</summary>
+		public void SetSelected(int intTooth,bool setValue){
+			if(setValue){
+				ALSelectedTeeth.Add(intTooth);
+				DrawSelected(intTooth,true);
 			}
-			else{//control not down
-				for(int i=0;i<ALSelectedTeeth.Count;i++){
-					DrawSelected((int)ALSelectedTeeth[i],false);
-				}
-				ALSelectedTeeth.Clear();
-				ALSelectedTeeth.Add(toothClicked);
-				DrawSelected(toothClicked,true);
+			else{
+				ALSelectedTeeth.Remove(intTooth);
+				DrawSelected(intTooth,false);
 			}
 			if(ALSelectedTeeth.Count==0){
 				SelectedTeeth=new string[0];
@@ -941,14 +935,58 @@ namespace OpenDental
 				SelectedTeeth=new string[ALSelectedTeeth.Count];
 				for(int i=0;i<ALSelectedTeeth.Count;i++){
 					SelectedTeeth[i]=Tooth.FromInt((int)ALSelectedTeeth[i]);
-					DrawSelected((int)ALSelectedTeeth[i],true);//redraws
-					if(PrimaryTeeth.Contains(SelectedTeeth[i])
-						&& Tooth.PermToPri(toothClicked)!=""){
+					DrawSelected((int)ALSelectedTeeth[i],true);//redraws red outline because of shared borders.
+					if(PrimaryTeeth.Contains(SelectedTeeth[i])//if the selected tooth is primary
+						&& Tooth.PermToPri(SelectedTeeth[i])!="")//not really necessary
+					{
 						SelectedTeeth[i]=Tooth.PermToPri(SelectedTeeth[i]);
 					}
 				}
 			}
-			DrawShadow();
+		}
+
+		///<summary>Always returns a number between 1 and 32.</summary>
+		private int GetToothAtPoint(int x,int y){
+			if(y < THeight+19+4){//max
+				if(x < TWidthP*3+4){
+					return (int)((x-1)/(TWidthP+1))+1;
+				}
+				else if(x < TWidthP*3+4 + TWidthA*10+10){
+					return (int)((x-TWidthP*3-4)/(TWidthA+1))+4;
+				}
+				else{
+					return (int)((x-TWidthP*3-TWidthA*10-14)/(TWidthP+1))+14;
+				}
+			}
+			else{//mand
+				if(x < TWidthP*3+4){
+					return 32-(int)(x-1)/(TWidthP+1);
+				}
+				else if(x < TWidthP*3+4 + TWidthA*10+10){
+					return 29-(int)(x-TWidthP*3-4)/(TWidthA+1);
+				}
+				else{
+					return 19-(int)(x-TWidthP*3-TWidthA*10-14)/(TWidthP+1);
+				}
+			}
+			//return 1;
+		}
+
+		private void ContrTeeth_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e) {
+			hotTooth=GetToothAtPoint(e.X,e.Y);
+			if(hotTooth==hotToothOld){//mouse has not moved to another tooth
+				return;	
+			}
+			hotToothOld=hotTooth;
+			if(MouseIsDown){//drag action
+				if(ALSelectedTeeth.Contains(hotTooth)){
+					SetSelected(hotTooth,false);
+				}
+				else{
+					SetSelected(hotTooth,true);
+				}
+				DrawShadow();
+			}
 		}
 
 		///<summary>Adds the tooth number to MissingTeeth and draws a white rectangle over that tooth.</summary>
@@ -1039,6 +1077,11 @@ namespace OpenDental
 			grfx.Dispose();
 		}
 
+		
+
+		
+
+		/*
 		///<summary></summary>
 		public void ContrTeeth_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e) {
 			//this.OnKeyDown(e);
@@ -1053,7 +1096,7 @@ namespace OpenDental
 			if(e.KeyCode==Keys.ControlKey){
 				ControlIsDown=false;
 			}
-		}
+		}*/
 
 
 	}

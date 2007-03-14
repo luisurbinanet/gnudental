@@ -37,12 +37,12 @@ namespace OpenDental{
 		///<summary>For one family</summary>
 		private int pagesPrinted;
 		private bool HidePayment;
-		private string Note;
+		private string[] Notes;
 		///<summary>Simply holds the table to print.  This will be improved some day.  The first dimension is of the family.  The other two dimensions represent a table for that family.</summary>
 		private string[][,] StatementA;
 		//private Family FamCur;
 		private bool SubtotalsOnly;
-		///<summary>Rirst dim is for the family. Second dim is family members</summary>
+		///<summary>First dim is for the family. Second dim is family members</summary>
 		private int[][] PatNums;
 		///<summary>The guarantor for the statement that is currently printing.</summary>
 		private Patient PatGuar;
@@ -240,25 +240,61 @@ namespace OpenDental{
 		}
 
 		///<summary>Used from FormBilling to print all statements for all the supplied patNums.</summary>
-		public void LoadAndPrint(int[] guarNums){
-			//this will be moved later. Right now, it's functional, but inefficient:
+		public void LoadAndPrint(int[] guarNums,string generalNote){
+			//this will be moved later when we make each statement an actual object. Right now, it's functional, but inefficient:
 			int[][] patNums=new int[guarNums.Length][];
 			Family famCur;
+			ArrayList numsFam;
+			string[] notes=new string[guarNums.Length];
+			Dunning[] dunList=Dunnings.Refresh();
+			int ageAccount=0;
+			YN insIsPending=YN.Unknown;
 			for(int i=0;i<guarNums.Length;i++){//loop through each family
 				famCur=Patients.GetFamily(guarNums[i]);
-				patNums[i]=new int[famCur.List.Length];
+				numsFam=new ArrayList();
 				for(int j=0;j<famCur.List.Length;j++){
-					patNums[i][j]=famCur.List[j].PatNum;
+					if(j==0//because a non-patient might be the guarantor
+						|| famCur.List[j].PatStatus==PatientStatus.Patient)
+					{
+						numsFam.Add(famCur.List[j].PatNum);
+					}
 				}
+				patNums[i]=new int[numsFam.Count];
+				for(int j=0;j<numsFam.Count;j++){
+					patNums[i][j]=(int)numsFam[j]; 
+				}
+				if(famCur.List[0].BalOver90>0){
+					ageAccount=90;
+				}
+				else if(famCur.List[0].Bal_61_90>0){
+					ageAccount=60;
+				}
+				else if(famCur.List[0].Bal_31_60>0){
+					ageAccount=30;
+				}
+				else{
+					ageAccount=0;
+				}
+				if(famCur.List[0].InsEst>0){
+					insIsPending=YN.Yes;
+				}
+				else{
+					insIsPending=YN.No;
+				}
+				notes[i]=Dunnings.GetMessage(dunList,famCur.List[0].BillingType,ageAccount,insIsPending);
+				if(notes[i]!="" && generalNote!=""){
+					notes[i]+="\r\n\r\n";//Space two lines apart
+				}
+				notes[i]+=generalNote;
 			}
-			PrintStatements(patNums,DateTime.Today.AddDays(-45),DateTime.Today,true,false,false,false,"");
+			PrintStatements(patNums,DateTime.Today.AddDays(-45),DateTime.Today,true,false,false,false,notes);
 		}
 
-		///<summary>This is called from ContrAccount about 3 times and also from FormRpStatement as part of the billing process.  This is what you call to print statements, either one or many.  For the patNum parameter, the first dim is for the family. Second dim is family members.</summary>
-		public void PrintStatements(int[][] patNums,DateTime fromDate,DateTime toDate,bool includeClaims, bool subtotalsOnly,bool hidePayment,bool nextAppt,string note){
+		///<summary>This is called from ContrAccount about 3 times and also from FormRpStatement as part of the billing process.  This is what you call to print statements, either one or many.  For the patNum parameter, the first dim is for the family. Second dim is family members. The note array must have one element for every statement, so same number as dim one of patNums</summary>
+		public void PrintStatements(int[][] patNums,DateTime fromDate,DateTime toDate,bool includeClaims, bool subtotalsOnly,bool hidePayment,bool nextAppt,string[] notes){
 			//these 4 variables are needed by the printing logic. The rest are not.
 			PatNums=(int[][])patNums.Clone();
-			Note=note;
+			Notes=(string[])notes.Clone();
 			SubtotalsOnly=subtotalsOnly;
 			HidePayment=hidePayment;
 			PrintDocument pd=new PrintDocument();
@@ -758,13 +794,13 @@ namespace OpenDental{
 			if(!notePrinted && //if note has not printed
 				linesPrinted==StatementA[famsPrinted].GetLength(1))//and all table data already printed
 			{
-				if(Note==""){
+				if(Notes[famsPrinted]==""){
 					notePrinted=true;
 				}
 				else{
-					float noteHeight=g.MeasureString(Note,bodyFont,colPos[11]-colPos[0]).Height;
+					float noteHeight=g.MeasureString(Notes[famsPrinted],bodyFont,colPos[11]-colPos[0]).Height;
 					if(noteHeight<ev.MarginBounds.Bottom-yPos){//if there is room
-						g.DrawString(Note,bodyFont,Brushes.Black,new RectangleF(colPos[0],yPos
+						g.DrawString(Notes[famsPrinted],bodyFont,Brushes.Black,new RectangleF(colPos[0],yPos
 							,colPos[11]-colPos[0],noteHeight));
 						notePrinted=true;
 					}
@@ -780,6 +816,7 @@ namespace OpenDental{
 			else{//family is done printing
 				pagesPrinted=0;
 				linesPrinted=0;
+				notePrinted=false;
 				totalPages++;
 				famsPrinted++;
 				if(famsPrinted<StatementA.GetLength(0)){//if more families to print

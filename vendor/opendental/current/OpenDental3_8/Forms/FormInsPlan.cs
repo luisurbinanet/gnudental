@@ -163,7 +163,8 @@ namespace OpenDental{
 			listCars=new ListBox();
 			listCars.Location=new Point(groupBox4.Left+groupBox3.Left+textCarrier.Left
 				,groupBox4.Top+groupBox3.Top+textCarrier.Bottom);
-			listCars.Size=new Size(291,100);
+			listCars.Size=new Size(700,100);
+			listCars.HorizontalScrollbar=true;
 			listCars.Visible=false;
 			listCars.Click += new System.EventHandler(listCars_Click);
 			listCars.DoubleClick += new System.EventHandler(listCars_DoubleClick);
@@ -1517,14 +1518,14 @@ namespace OpenDental{
 				labelDivisionDash.Visible=false;
 				textDivisionNo.Visible=false;
 			}
-			FillFormData();
+			FillAllFormData();
 			if(PlanCur.BenefitNotes==""){
 				butBenefitNotes.Enabled=false;
 			}
 		}
 
 		///<summary>Fills the form based on the data in PlanCur.  Includes calls to FillSubscriber, FillCarrier, FillPercentages, and	LayoutSynch.</summary>
-		private void FillFormData(){
+		private void FillAllFormData(){
 			FillSubscriber();
 			textSubscriberID.Text=PlanCur.SubscriberID;
 			if(PlanCur.DateEffective.Year < 1880)
@@ -1535,6 +1536,55 @@ namespace OpenDental{
 				textDateTerm.Text="";
 			else
 				textDateTerm.Text=PlanCur.DateTerm.ToString("d");
+			FillSynchFormData();
+			textAnnualMax.MaxVal=50000;
+			if(PlanCur.AnnualMax==-1)
+				textAnnualMax.Text="";
+			else
+				textAnnualMax.Text=PlanCur.AnnualMax.ToString();
+			textOrthoMax.MaxVal=50000;
+			if(PlanCur.OrthoMax==-1)
+				textOrthoMax.Text="";
+			else
+				textOrthoMax.Text=PlanCur.OrthoMax.ToString();
+			textRenewMonth.MaxVal=12;
+			if(PlanCur.RenewMonth==-1)
+				textRenewMonth.Text="";
+			else
+				textRenewMonth.Text=PlanCur.RenewMonth.ToString();
+			textDeductible.MaxVal=10000;
+			if(PlanCur.Deductible==-1)
+				textDeductible.Text="";
+			else
+				textDeductible.Text=PlanCur.Deductible.ToString();
+			switch (PlanCur.DeductWaivPrev){
+				case YN.Unknown:radioDedUnkn.Checked=true;break;
+				case YN.Yes:radioDedYes.Checked=true;break;
+				case YN.No:radioDedNo.Checked=true;break;
+			}
+			textFloToAge.MaxVal=100;
+			if(PlanCur.FloToAge==-1)
+				textFloToAge.Text="";
+			else
+				textFloToAge.Text=PlanCur.FloToAge.ToString();
+			
+			switch (PlanCur.MissToothExcl){
+				case YN.Unknown:radioMissUnkn.Checked=true;break;
+				case YN.Yes:radioMissYes.Checked=true;break;
+				case YN.No:radioMissNo.Checked=true;break;
+			}
+			switch (PlanCur.MajorWait){
+				case YN.Unknown:radioWaitUnkn.Checked=true;break;
+				case YN.Yes:radioWaitYes.Checked=true;break;
+				case YN.No:radioWaitNo.Checked=true;break;
+			}
+			checkRelease.Checked=PlanCur.ReleaseInfo;
+			checkAssign.Checked=PlanCur.AssignBen;
+			textPlanNote.Text=PlanCur.PlanNote;
+			FillPercentages();
+		}
+
+		private void FillSynchFormData(){
 			textEmployer.Text=Employers.GetName(PlanCur.EmployerNum);
 			textGroupName.Text=PlanCur.GroupName;
 			textGroupNum.Text=PlanCur.GroupNum;
@@ -1587,52 +1637,19 @@ namespace OpenDental{
 			if(comboClaimForm.Items.Count>0 && comboClaimForm.SelectedIndex==-1){
 				comboClaimForm.SelectedIndex=0;//this will let the user rearrange the default later
 			}
-			textAnnualMax.MaxVal=50000;
-			if(PlanCur.AnnualMax==-1)
-				textAnnualMax.Text="";
-			else
-				textAnnualMax.Text=PlanCur.AnnualMax.ToString();
-			textOrthoMax.MaxVal=50000;
-			if(PlanCur.OrthoMax==-1)
-				textOrthoMax.Text="";
-			else
-				textOrthoMax.Text=PlanCur.OrthoMax.ToString();
-			textRenewMonth.MaxVal=12;
-			if(PlanCur.RenewMonth==-1)
-				textRenewMonth.Text="";
-			else
-				textRenewMonth.Text=PlanCur.RenewMonth.ToString();
-			textDeductible.MaxVal=10000;
-			if(PlanCur.Deductible==-1)
-				textDeductible.Text="";
-			else
-				textDeductible.Text=PlanCur.Deductible.ToString();
-			switch (PlanCur.DeductWaivPrev){
-				case YN.Unknown:radioDedUnkn.Checked=true;break;
-				case YN.Yes:radioDedYes.Checked=true;break;
-				case YN.No:radioDedNo.Checked=true;break;
-			}
-			textFloToAge.MaxVal=100;
-			if(PlanCur.FloToAge==-1)
-				textFloToAge.Text="";
-			else
-				textFloToAge.Text=PlanCur.FloToAge.ToString();
-			textPlanNote.Text=PlanCur.PlanNote;
-			switch (PlanCur.MissToothExcl){
-				case YN.Unknown:radioMissUnkn.Checked=true;break;
-				case YN.Yes:radioMissYes.Checked=true;break;
-				case YN.No:radioMissNo.Checked=true;break;
-			}
-			switch (PlanCur.MajorWait){
-				case YN.Unknown:radioWaitUnkn.Checked=true;break;
-				case YN.Yes:radioWaitYes.Checked=true;break;
-				case YN.No:radioWaitNo.Checked=true;break;
-			}
-			checkRelease.Checked=PlanCur.ReleaseInfo;
-			checkAssign.Checked=PlanCur.AssignBen;
 			FillCarrier();
-			FillPercentages();
 			LayoutSynch();
+		}
+
+		private void LayoutSynch(){
+			string[] samePlans=PlanCur.SamePlans();
+			textLinkedNum.Text=samePlans.Length.ToString();
+			comboLinked.Items.Clear();
+			for(int i=0;i<samePlans.Length;i++){
+				comboLinked.Items.Add(samePlans[i]);
+			}
+			if(samePlans.Length>0)
+				comboLinked.SelectedIndex=0;
 		}
 
 		///<summary>Fills the carrier fields on the form based on CarrierCur.</summary>
@@ -1683,7 +1700,9 @@ namespace OpenDental{
 				tbPercent1.Cell[1,i]="";
 			}
 			for(int i=0;i<CovPats.ListForPlan.Length;i++){
-				tbPercent1.Cell[1,CovCats.GetOrderShort(CovPats.ListForPlan[i].CovCatNum)]=CovPats.ListForPlan[i].Percent.ToString();
+				if(CovCats.GetOrderShort(CovPats.ListForPlan[i].CovCatNum)!=-1){
+					tbPercent1.Cell[1,CovCats.GetOrderShort(CovPats.ListForPlan[i].CovCatNum)]=CovPats.ListForPlan[i].Percent.ToString();
+				}
 			}
 			tbPercent1.LayoutTables();
 		}
@@ -1974,7 +1993,7 @@ namespace OpenDental{
 				}
 				if(listCars.SelectedIndex==-1){
 					listCars.SelectedIndex=0;
-					textCarrier.Text=listCars.SelectedItem.ToString();
+					textCarrier.Text=((Carrier)similarCars[listCars.SelectedIndex]).CarrierName;
 				}
 				else if(listCars.SelectedIndex==listCars.Items.Count-1){
 					listCars.SelectedIndex=-1;
@@ -1982,7 +2001,7 @@ namespace OpenDental{
 				}
 				else{
 					listCars.SelectedIndex++;
-					textCarrier.Text=listCars.SelectedItem.ToString();
+					textCarrier.Text=((Carrier)similarCars[listCars.SelectedIndex]).CarrierName;
 				}
 				textCarrier.SelectionStart=textCarrier.Text.Length;
 				return;
@@ -1993,7 +2012,7 @@ namespace OpenDental{
 				}
 				if(listCars.SelectedIndex==-1){
 					listCars.SelectedIndex=listCars.Items.Count-1;
-					textCarrier.Text=listCars.SelectedItem.ToString();
+					textCarrier.Text=((Carrier)similarCars[listCars.SelectedIndex]).CarrierName;
 				}
 				else if(listCars.SelectedIndex==0){
 					listCars.SelectedIndex=-1;
@@ -2001,7 +2020,7 @@ namespace OpenDental{
 				}
 				else{
 					listCars.SelectedIndex--;
-					textCarrier.Text=listCars.SelectedItem.ToString();
+					textCarrier.Text=((Carrier)similarCars[listCars.SelectedIndex]).CarrierName;
 				}
 				textCarrier.SelectionStart=textCarrier.Text.Length;
 				return;
@@ -2014,12 +2033,18 @@ namespace OpenDental{
 			listCars.Items.Clear();
 			similarCars=Carriers.GetSimilarNames(textCarrier.Text);
 			for(int i=0;i<similarCars.Count;i++){
-				listCars.Items.Add(((Carrier)similarCars[i]).CarrierName);
+				listCars.Items.Add(((Carrier)similarCars[i]).CarrierName+", "
+					+((Carrier)similarCars[i]).Phone+", "
+					+((Carrier)similarCars[i]).Address+", "
+					+((Carrier)similarCars[i]).Address2+", "
+					+((Carrier)similarCars[i]).City+", "
+					+((Carrier)similarCars[i]).State+", "
+					+((Carrier)similarCars[i]).Zip);
 			}
 			int h=13*similarCars.Count+5;
 			if(h > ClientSize.Height-listCars.Top)
 				h=ClientSize.Height-listCars.Top;
-			listCars.Size=new Size(291,h);
+			listCars.Size=new Size(listCars.Width,h);
 			listCars.Visible=true;
 		}
 
@@ -2061,17 +2086,6 @@ namespace OpenDental{
 
 		private void listCars_MouseLeave(object sender, System.EventArgs e){
 			mouseIsInListCars=false;
-		}
-
-		private void LayoutSynch(){
-			string[] samePlans=PlanCur.SamePlans();
-			textLinkedNum.Text=samePlans.Length.ToString();
-			comboLinked.Items.Clear();
-			for(int i=0;i<samePlans.Length;i++){
-				comboLinked.Items.Add(samePlans[i]);
-			}
-			if(samePlans.Length>0)
-				comboLinked.SelectedIndex=0;
 		}
 
 		private void textPhone_TextChanged(object sender, System.EventArgs e) {
@@ -2149,8 +2163,11 @@ namespace OpenDental{
 		}
 
 		private void butSelect_Click(object sender, System.EventArgs e) {
-			if(!FillCur())
-				return;
+			//no longer need to save entered info into PlanCur because we will only fill synch data, leaving the rest alone
+			//if(textSubscriberID.Text!="" && textCarrier.Text!=""){
+			//	if(!FillCur())
+			//		return;
+			//}
 			FormInsPlans FormIP=new FormInsPlans();
 			FormIP.IsSelectMode=true;
 			FormIP.ShowDialog();
@@ -2170,7 +2187,7 @@ namespace OpenDental{
 			PlanCur.ClaimFormNum   =FormIP.SelectedPlan.ClaimFormNum;
 			PlanCur.AllowedFeeSched=FormIP.SelectedPlan.AllowedFeeSched;
 			PlanCur.Update();//updates to the db so that the synch info will show correctly
-			FillFormData();
+			FillSynchFormData();
 		}
 
 		private void butEditAll_Click(object sender, System.EventArgs e) {
@@ -2182,7 +2199,7 @@ namespace OpenDental{
 				return;
 			}
 			PlanCur=InsPlans.GetPlan(PlanCur.PlanNum,new InsPlan[] {});
-			FillFormData();
+			FillSynchFormData();
 		}
 
 		private void butImportTrojan_Click(object sender, System.EventArgs e) {

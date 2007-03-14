@@ -224,6 +224,8 @@ namespace OpenDental{
 					return Lan.g("enumPermissions","Choose Database");
 				case Permissions.ClaimsSentEdit:
 					return Lan.g("enumPermissions","Claims Sent Edit");
+				case Permissions.DepositSlips:
+					return Lan.g("enumPermissions","Deposit Slips");
 				case Permissions.FamilyModule:
 					return Lan.g("enumPermissions","Family Module");
 				case Permissions.ImagesModule:

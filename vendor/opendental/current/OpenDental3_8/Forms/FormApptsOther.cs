@@ -34,8 +34,11 @@ namespace OpenDental{
 		private Family FamCur;
 		///<summary>Almost always false.  Only set to true from TaskList to allow selecting one appointment for a patient.</summary>
 		public bool SelectOnly;
+		private OpenDental.UI.Button butRecall;
 		///<summary>This will contain a selected appointment upon closing of the form in some situations.  Used when picking an appointment for task lists.  Also used if the GoTo or Create new buttons are clicked.</summary>
 		public Appointment SelectedAppt;
+		///<summary>If oResult=PinboardAndSearch, then when closing this form, this will contain the date to jump to when beginning the search.</summary>
+		public string DateJumpToString;
 
 		///<summary></summary>
 		public FormApptsOther(Patient pat,Family fam){
@@ -79,6 +82,7 @@ namespace OpenDental{
 			this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
 			this.columnHeader5 = new System.Windows.Forms.ColumnHeader();
 			this.butOK = new OpenDental.UI.Button();
+			this.butRecall = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
 			// checkDone
@@ -111,6 +115,7 @@ namespace OpenDental{
 			this.butCancel.Autosize = true;
 			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.butCancel.ImeMode = System.Windows.Forms.ImeMode.NoControl;
 			this.butCancel.Location = new System.Drawing.Point(834, 618);
 			this.butCancel.Name = "butCancel";
@@ -151,7 +156,7 @@ namespace OpenDental{
 			this.butGoTo.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butGoTo.Image = ((System.Drawing.Image)(resources.GetObject("butGoTo.Image")));
 			this.butGoTo.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butGoTo.Location = new System.Drawing.Point(311, 618);
+			this.butGoTo.Location = new System.Drawing.Point(171, 618);
 			this.butGoTo.Name = "butGoTo";
 			this.butGoTo.Size = new System.Drawing.Size(106, 26);
 			this.butGoTo.TabIndex = 46;
@@ -166,7 +171,7 @@ namespace OpenDental{
 			this.butPin.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butPin.Image = ((System.Drawing.Image)(resources.GetObject("butPin.Image")));
 			this.butPin.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butPin.Location = new System.Drawing.Point(432, 618);
+			this.butPin.Location = new System.Drawing.Point(292, 618);
 			this.butPin.Name = "butPin";
 			this.butPin.Size = new System.Drawing.Size(134, 26);
 			this.butPin.TabIndex = 47;
@@ -255,11 +260,27 @@ namespace OpenDental{
 			this.butOK.Text = "OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
+			// butRecall
+			// 
+			this.butRecall.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butRecall.Autosize = true;
+			this.butRecall.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butRecall.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butRecall.Image = ((System.Drawing.Image)(resources.GetObject("butRecall.Image")));
+			this.butRecall.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butRecall.Location = new System.Drawing.Point(441, 618);
+			this.butRecall.Name = "butRecall";
+			this.butRecall.Size = new System.Drawing.Size(125, 26);
+			this.butRecall.TabIndex = 60;
+			this.butRecall.Text = "Schedule Recall";
+			this.butRecall.Click += new System.EventHandler(this.butRecall_Click);
+			// 
 			// FormApptsOther
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(924, 658);
+			this.Controls.Add(this.butRecall);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.listFamily);
 			this.Controls.Add(this.label2);
@@ -380,6 +401,57 @@ namespace OpenDental{
 			tbApts.LayoutTables();
 		}
 
+		private void listFamily_DoubleClick(object sender, System.EventArgs e) {
+			if(listFamily.SelectedIndices.Count==0){
+				return;
+			}
+			int originalPatNum=PatCur.PatNum;
+			Recall recallCur=null;
+			for(int i=0;i<RecallList.Length;i++){
+				if(RecallList[i].PatNum==FamCur.List[listFamily.SelectedIndices[0]].PatNum){
+					recallCur=RecallList[i];
+				}
+			}
+			if(recallCur==null){
+				recallCur=new Recall();
+				recallCur.PatNum=FamCur.List[listFamily.SelectedIndices[0]].PatNum;
+				recallCur.RecallInterval=new Interval(0,0,6,0);
+			}
+			FormRecallListEdit FormRLE=new FormRecallListEdit(recallCur);
+			FormRLE.ShowDialog();
+			if(FormRLE.PinClicked){
+				oResult=OtherResult.CopyToPinBoard;
+				//already created curInfo in FormRE.
+				DialogResult=DialogResult.OK;
+			}
+			else{
+				FamCur=Patients.GetFamily(originalPatNum);
+				PatCur=FamCur.GetPatient(originalPatNum);
+				Filltb();
+			}
+		}
+
+		private void butRecall_Click(object sender, System.EventArgs e) {
+			Procedure[] procList=Procedures.Refresh(PatCur.PatNum);
+			Recall[] recallList=Recalls.GetList(new int[] {PatCur.PatNum});//get the recall for this pt
+			if(recallList.Length==0){
+				MsgBox.Show(this,"This patient does not have any recall due.");
+				return;
+			}
+			Recall recallCur=recallList[0];
+			InsPlan[] planList=InsPlans.Refresh(FamCur);
+			Appointment AptCur=Appointments.CreateRecallApt(PatCur,procList,recallCur,planList);
+			CreateCurInfo(AptCur);
+			oResult=OtherResult.PinboardAndSearch;
+			if(recallCur.DateDue<DateTime.Today){
+				DateJumpToString=DateTime.Today.ToShortDateString();//they are overdue
+			}
+			else{
+				DateJumpToString=recallCur.DateDue.ToShortDateString();
+			}
+			DialogResult=DialogResult.OK;
+		}
+
 		private void butNew_Click(object sender, System.EventArgs e) {
 			Appointment AptCur=new Appointment();
 			AptCur.PatNum=PatCur.PatNum;
@@ -412,7 +484,7 @@ namespace OpenDental{
 			try{
 				AptCur.InsertOrUpdate(null,true);
 			}
-			catch(Exception ex){
+			catch(ApplicationException ex){
 				MessageBox.Show(ex.Message);
 				return;
 			}
@@ -554,35 +626,7 @@ namespace OpenDental{
 			oResult=OtherResult.Cancel;
 		}
 
-		private void listFamily_DoubleClick(object sender, System.EventArgs e) {
-			if(listFamily.SelectedIndices.Count==0){
-				return;
-			}
-			int originalPatNum=PatCur.PatNum;
-			Recall recallCur=null;
-			for(int i=0;i<RecallList.Length;i++){
-				if(RecallList[i].PatNum==FamCur.List[listFamily.SelectedIndices[0]].PatNum){
-					recallCur=RecallList[i];
-				}
-			}
-			if(recallCur==null){
-				recallCur=new Recall();
-				recallCur.PatNum=FamCur.List[listFamily.SelectedIndices[0]].PatNum;
-				recallCur.RecallInterval=new Interval(0,0,6,0);
-			}
-			FormRecallListEdit FormRLE=new FormRecallListEdit(recallCur);
-			FormRLE.ShowDialog();
-			if(FormRLE.PinClicked){
-				oResult=OtherResult.CopyToPinBoard;
-				//already created curInfo in FormRE.
-				DialogResult=DialogResult.OK;
-			}
-			else{
-				FamCur=Patients.GetFamily(originalPatNum);
-				PatCur=FamCur.GetPatient(originalPatNum);
-				Filltb();
-			}
-		}
+		
 
 		
 

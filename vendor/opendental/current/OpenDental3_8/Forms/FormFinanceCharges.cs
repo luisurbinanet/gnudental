@@ -235,9 +235,7 @@ namespace OpenDental{
 		#endregion
 
 		private void FormFinanceCharges_Load(object sender, System.EventArgs e) {
-			if(PIn.PDate(((Pref)Prefs.HList["DateLastAging"]).ValueString) 
-				< Ledgers.GetClosestFirst(DateTime.Today))
-			{
+			if(PIn.PDate(Prefs.GetString("DateLastAging")) < DateTime.Today){
 				if(MsgBox.Show(this,true,"You must update aging first.")){//OK
 					FormAging FormA=new FormAging();
 					FormA.ShowDialog();
@@ -247,9 +245,7 @@ namespace OpenDental{
 					return;
 				}
 			}
-			if(PIn.PDate(((Pref)Prefs.HList["FinanceChargeLastRun"]).ValueString)
-				==Ledgers.GetClosestFirst(DateTime.Today))
-			{
+			if(PIn.PDate(Prefs.GetString("FinanceChargeLastRun")).AddDays(25)>DateTime.Today){
 				MessageBox.Show(Lan.g(this,"You cannot run finance charges again this month."));
 				DialogResult=DialogResult.Cancel;
 				return;
@@ -257,12 +253,12 @@ namespace OpenDental{
 			textAPR.MaxVal=100;
 			textAPR.MinVal=0;
 			FillList();
-			textAPR.Text=((Pref)Prefs.HList["FinanceChargeAPR"]).ValueString;
-			textDate.Text=Ledgers.GetClosestFirst(DateTime.Today).ToShortDateString();		
+			textAPR.Text=Prefs.GetString("FinanceChargeAPR");
+			textDate.Text=DateTime.Today.ToShortDateString();		
 		}
 
 		private void FillList(){
-			adjType=PIn.PInt(((Pref)Prefs.HList["FinanceChargeAdjustmentType"]).ValueString);
+			adjType=Prefs.GetInt("FinanceChargeAdjustmentType");
 			ALPosIndices=new ArrayList();
 			listAdjType.Items.Clear();
 			for(int i=0;i<Defs.Short[(int)DefCat.AdjTypes].Length;i++){
@@ -283,6 +279,7 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please fix data entry errors first."));
 				return;
 			}
+
 			if(PIn.PInt(textAPR.Text) < 2){
 				if(MessageBox.Show(Lan.g(this,"The APR is much lower than normal. Do you wish to proceed?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
 					return;   
@@ -306,7 +303,8 @@ namespace OpenDental{
 				if(OverallBalance > 0){
 					Adjustment AdjustmentCur=new Adjustment();
 					AdjustmentCur.PatNum=AgingList[i].PatNum;
-					//AdjustmentCur.AdjDate=PIn.PDate(textDate.Text);//automatically handled
+					//AdjustmentCur.DateEntry=PIn.PDate(textDate.Text);//automatically handled
+					AdjustmentCur.AdjDate=PIn.PDate(textDate.Text);
 					AdjustmentCur.ProcDate=PIn.PDate(textDate.Text);
 					AdjustmentCur.AdjType=Defs.Short[(int)DefCat.AdjTypes]
 						[(int)ALPosIndices[listAdjType.SelectedIndex]].DefNum;
@@ -324,7 +322,7 @@ namespace OpenDental{
 				[(int)ALPosIndices[listAdjType.SelectedIndex]].DefNum.ToString();
 			Prefs.UpdateCur();
 			Prefs.Cur=(Pref)Prefs.HList["FinanceChargeLastRun"];
-			Prefs.Cur.ValueString=POut.PDate(Ledgers.GetClosestFirst(DateTime.Today));
+			Prefs.Cur.ValueString=POut.PDate(DateTime.Today);
 			Prefs.UpdateCur();
 			DataValid.SetInvalid(InvalidTypes.Prefs);
 			MessageBox.Show(Lan.g(this,"Finance Charges Added."));

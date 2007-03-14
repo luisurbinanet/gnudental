@@ -293,6 +293,8 @@ namespace OpenDental{
 			node=SetNode(Permissions.ImagesModule);
 				treePermissions.Nodes.Add(node);
 			node=SetNode(Permissions.ManageModule);
+				node2=SetNode(Permissions.DepositSlips);
+					node.Nodes.Add(node2);
 				node2=SetNode(Permissions.Backup);
 					node.Nodes.Add(node2);
 				node2=SetNode(Permissions.TimecardsEditAll);

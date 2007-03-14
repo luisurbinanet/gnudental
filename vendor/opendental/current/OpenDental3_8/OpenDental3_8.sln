@@ -1,5 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 8.00
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "RS232", "RS232.vbproj", "{77F53596-7DF2-4969-8AAB-BF82A7111557}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenDental3_8", "OpenDental3_8.csproj", "{9B9879E3-0726-4042-BCB3-ADCB604B9B42}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
@@ -9,10 +9,10 @@ Global
 		Release = Release
 	EndGlobalSection
 	GlobalSection(ProjectConfiguration) = postSolution
-		{77F53596-7DF2-4969-8AAB-BF82A7111557}.Debug.ActiveCfg = Debug|.NET
-		{77F53596-7DF2-4969-8AAB-BF82A7111557}.Debug.Build.0 = Debug|.NET
-		{77F53596-7DF2-4969-8AAB-BF82A7111557}.Release.ActiveCfg = Release|.NET
-		{77F53596-7DF2-4969-8AAB-BF82A7111557}.Release.Build.0 = Release|.NET
+		{9B9879E3-0726-4042-BCB3-ADCB604B9B42}.Debug.ActiveCfg = Debug|.NET
+		{9B9879E3-0726-4042-BCB3-ADCB604B9B42}.Debug.Build.0 = Debug|.NET
+		{9B9879E3-0726-4042-BCB3-ADCB604B9B42}.Release.ActiveCfg = Release|.NET
+		{9B9879E3-0726-4042-BCB3-ADCB604B9B42}.Release.Build.0 = Release|.NET
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

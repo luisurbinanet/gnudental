@@ -135,7 +135,7 @@ namespace OpenDental{
 			return retStr;
 		}
 
-		///<summary>Gets the name of a carrier based on the employerNum.  This also refreshes the list if necessary, so it will work even if the list has not been refreshed recently.</summary>
+		///<summary>Gets the name of a carrier based on the carrierNum.  This also refreshes the list if necessary, so it will work even if the list has not been refreshed recently.</summary>
 		public static string GetName(int carrierNum){
 			if(HList.ContainsKey(carrierNum)){
 				return ((Carrier)HList[carrierNum]).CarrierName;

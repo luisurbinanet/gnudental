@@ -44,7 +44,7 @@ namespace OpenDental{
 		///<summary></summary>
 		ToolBarsAvail
 	}
-	///<summary>Yes,No or Unknown.</summary>
+	///<summary>Unknown,Yes, or No.</summary>
 	public enum YN{
 		///<summary>0</summary>
 		Unknown,
@@ -201,7 +201,7 @@ namespace OpenDental{
 		Arch,
 		///<summary>7</summary>
 		ToothRange}
-	///<summary>When the autorefresh message is sent to the other computers, this is the type.</summary>
+	///<summary>When the autorefresh message is sent to the other computers, this is the type.  Keep in mind that this is a default Int32 type,so the max is 2,147,483,647 unless we change the type.</summary>
 	[Flags]
 	public enum InvalidTypes{
 		///<summary>0</summary>
@@ -406,7 +406,9 @@ namespace OpenDental{
 		///<summary></summary>
 		CopyToPinBoard,
 		///<summary></summary>
-		NewToPinBoard
+		NewToPinBoard,
+		///<summary>Currently only used when scheduling a recall.  Puts it on the pinboard, and then launches a search, jumping to a new date in the process.</summary>
+		PinboardAndSearch
 	}
 	//public enum SearchPatType{Lname,Fname,HmPhone,Address}
 	///<summary></summary>
@@ -906,9 +908,20 @@ namespace OpenDental{
 		///<summary>28</summary>
 		Backup,
 		///<summary>29</summary>
-		TimecardsEditAll
+		TimecardsEditAll,
+		///<summary>30</summary>
+		DepositSlips
 	}
 
+	///<summary>The type of signal being sent.</summary>
+	public enum SignalType{
+		///<summary>0</summary>
+		Button,
+		///<summary>1</summary>
+		Text,
+		///<summary>2</summary>
+		Invalid
+	}
 
 	
 		

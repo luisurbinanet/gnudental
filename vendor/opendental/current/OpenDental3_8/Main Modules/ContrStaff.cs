@@ -27,6 +27,8 @@ namespace OpenDental{
 		private OpenDental.UI.Button butTasks;
 		private OpenDental.UI.Button butBackup;
 		private OpenDental.UI.ODGrid gridEmp;
+		private System.Windows.Forms.GroupBox groupBox3;
+		private OpenDental.UI.Button butDeposit;
 		///<summary>Server time minus local computer time, usually +/- 1 or 2 minutes</summary>
 		private TimeSpan TimeDelta;
 		///<summary></summary>
@@ -71,8 +73,11 @@ namespace OpenDental{
 			this.butSendClaims = new OpenDental.UI.Button();
 			this.butTasks = new OpenDental.UI.Button();
 			this.butBackup = new OpenDental.UI.Button();
+			this.groupBox3 = new System.Windows.Forms.GroupBox();
+			this.butDeposit = new OpenDental.UI.Button();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
+			this.groupBox3.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// butClockIn
@@ -242,7 +247,7 @@ namespace OpenDental{
 			this.butSendClaims.Autosize = true;
 			this.butSendClaims.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butSendClaims.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butSendClaims.Location = new System.Drawing.Point(99, 41);
+			this.butSendClaims.Location = new System.Drawing.Point(16, 19);
 			this.butSendClaims.Name = "butSendClaims";
 			this.butSendClaims.Size = new System.Drawing.Size(104, 26);
 			this.butSendClaims.TabIndex = 20;
@@ -257,7 +262,7 @@ namespace OpenDental{
 			this.butTasks.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butTasks.Image = ((System.Drawing.Image)(resources.GetObject("butTasks.Image")));
 			this.butTasks.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butTasks.Location = new System.Drawing.Point(347, 41);
+			this.butTasks.Location = new System.Drawing.Point(198, 19);
 			this.butTasks.Name = "butTasks";
 			this.butTasks.Size = new System.Drawing.Size(104, 26);
 			this.butTasks.TabIndex = 21;
@@ -270,18 +275,43 @@ namespace OpenDental{
 			this.butBackup.Autosize = true;
 			this.butBackup.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butBackup.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butBackup.Location = new System.Drawing.Point(223, 41);
+			this.butBackup.Location = new System.Drawing.Point(198, 56);
 			this.butBackup.Name = "butBackup";
 			this.butBackup.Size = new System.Drawing.Size(104, 26);
 			this.butBackup.TabIndex = 22;
 			this.butBackup.Text = "Backup";
 			this.butBackup.Click += new System.EventHandler(this.butBackup_Click);
 			// 
+			// groupBox3
+			// 
+			this.groupBox3.Controls.Add(this.butDeposit);
+			this.groupBox3.Controls.Add(this.butSendClaims);
+			this.groupBox3.Controls.Add(this.butBackup);
+			this.groupBox3.Controls.Add(this.butTasks);
+			this.groupBox3.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.groupBox3.Location = new System.Drawing.Point(103, 23);
+			this.groupBox3.Name = "groupBox3";
+			this.groupBox3.Size = new System.Drawing.Size(328, 99);
+			this.groupBox3.TabIndex = 23;
+			this.groupBox3.TabStop = false;
+			this.groupBox3.Text = "Daily";
+			// 
+			// butDeposit
+			// 
+			this.butDeposit.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butDeposit.Autosize = true;
+			this.butDeposit.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butDeposit.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butDeposit.Location = new System.Drawing.Point(16, 56);
+			this.butDeposit.Name = "butDeposit";
+			this.butDeposit.Size = new System.Drawing.Size(104, 26);
+			this.butDeposit.TabIndex = 23;
+			this.butDeposit.Text = "Deposit Slips";
+			this.butDeposit.Click += new System.EventHandler(this.butDeposit_Click);
+			// 
 			// ContrStaff
 			// 
-			this.Controls.Add(this.butBackup);
-			this.Controls.Add(this.butTasks);
-			this.Controls.Add(this.butSendClaims);
+			this.Controls.Add(this.groupBox3);
 			this.Controls.Add(this.groupBox2);
 			this.Controls.Add(this.groupBox1);
 			this.Name = "ContrStaff";
@@ -289,6 +319,7 @@ namespace OpenDental{
 			this.Load += new System.EventHandler(this.ContrStaff_Load);
 			this.groupBox1.ResumeLayout(false);
 			this.groupBox2.ResumeLayout(false);
+			this.groupBox3.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -350,6 +381,14 @@ namespace OpenDental{
 			Cursor=Cursors.Default;
 		}
 
+		private void butDeposit_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(Permissions.DepositSlips)){
+				return;
+			}
+			FormDeposits FormD=new FormDeposits();
+			FormD.ShowDialog();
+		}
+
 		private void butBackup_Click(object sender, System.EventArgs e) {
 			if(!Security.IsAuthorized(Permissions.Backup)){
 				return;
@@ -392,9 +431,12 @@ namespace OpenDental{
 			}
 		}
 
-		private void butSend_Click(object sender, System.EventArgs e) {
-			ODMessage msg=new ODMessage(InvalidTypes.None,DateTime.MinValue,"Text",textMessage.Text,0,0,false);
-			Messages.SendMessage(msg);
+		private void butSend_Click(object sender, System.EventArgs e){
+			Signal sig=new Signal();
+			sig.SigType=SignalType.Text;
+			sig.SigText=textMessage.Text;
+			sig.FromUser=Security.CurUser.UserNum;
+			sig.Insert();
 		}
 
 		///<summary></summary>
@@ -520,6 +562,8 @@ namespace OpenDental{
 			FormTC.ShowDialog();
 			ModuleSelected();
 		}
+
+		
 
 		
 

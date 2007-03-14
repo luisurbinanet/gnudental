@@ -641,10 +641,16 @@ namespace OpenDental{
 		}
 
 		private void butDeleteAll_Click(object sender, System.EventArgs e) {
-			if(MessageBox.Show(Lan.g(this,"This will delete the entire payment and all splits."),"",MessageBoxButtons.OKCancel)==DialogResult.Cancel){
+			if(!MsgBox.Show(this,true,"This will delete the entire payment and all splits.")){
 				return;
 			}
-			PaymentCur.Delete();
+			try{
+				PaymentCur.Delete();
+			}
+			catch(ApplicationException ex){//error if attached to deposit slip
+				MessageBox.Show(ex.Message);
+				return;
+			}
 			SecurityLogs.MakeLogEntry(Permissions.PaymentEdit,PaymentCur.PatNum,
 				"Delete for: "
 				+Patients.GetLim(PaymentCur.PatNum).GetNameLF()+", "
@@ -679,7 +685,7 @@ namespace OpenDental{
 			try{
 				PaymentCur.InsertOrUpdate(false);//IsSplit handled here. Also updates all paysplit.DatePay
 			}
-			catch(Exception ex){
+			catch(ApplicationException ex){
 				MessageBox.Show(ex.Message);
 				return;
 			}

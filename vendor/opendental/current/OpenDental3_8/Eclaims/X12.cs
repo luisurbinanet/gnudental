@@ -473,7 +473,7 @@ namespace OpenDental.Eclaims
 							sw.WriteLine(Sout(patient.MiddleI,25)+"*"//NM105: Mid name (whether or not empty)
 							+"**"//NM106: prefix not used. NM107: No suffix field in Open Dental
 							+"MI*"//NM108: MI=Member ID
-							+Sout(patient.SSN,80)+"~");//NM109: Patient ID
+							+Sout(patID,80)+"~");//NM109: Patient ID
 						}
 						//2010CA N3: Patient address
 						seg++;

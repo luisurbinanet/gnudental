@@ -253,7 +253,7 @@ namespace OpenDental{
 			StreamWriter sr=File.CreateText(fileName);
 			sr.WriteLine("\"LastName\",\"FirstName\",\"PatientNumber\",\"HomePhone\",\"WorkNumber\","
 				+"\"EmailAddress\",\"SendEmail\",\"Address\",\"Address2\",\"City\",\"State\",\"Zip\","
-				+"\"ApptDate\",\"ApptTime\",\"ApptReason\",\"DoctorNumber\",\"DoctorName\"");
+				+"\"ApptDate\",\"ApptTime\",\"ApptReason\",\"DoctorNumber\",\"DoctorName\",\"IsNewPatient\"");
 			//now, the query--------------------------------------------------------------------------
 			//Appointment Reminder Fields- numbers are as they come back from db-----------------------
 			//0-LastName
@@ -273,12 +273,14 @@ namespace OpenDental{
 			//14-ApptReason (procedures descriptions-user can't edit)
 			//15-DoctorNumber (for the Doctor, we currently use the patient primary provider. Otherwise, we would run into trouble with appointments assigned to a specific hygienist.)
 			//15-DoctorName
+			//16-IsNewPatient
 			string command=@"SELECT patient.LName,patient.FName,patient.Preferred
 				,patient.PatNum,patient.ChartNumber,patient.HmPhone,patient.WkPhone
 				,patient.Email,patient.Address,patient.Address2,patient.City,patient.State
 				,patient.Zip
 				,appointment.AptDateTime,appointment.ProcDescript
 				,patient.PriProv
+				,appointment.IsNewPatient
 				FROM patient,appointment 
 				WHERE patient.PatNum=appointment.PatNum "
 				+"AND (appointment.AptStatus=1 OR appointment.AptStatus=4) "//sched or ASAP
@@ -325,10 +327,14 @@ namespace OpenDental{
 				sr.Write("\""+aptDT.ToString("hh:mm tt")+"\",");//13-ApptTime eg 01:30 PM
 				sr.Write("\""+Dequote(PIn.PString(table.Rows[i][14].ToString()))+"\",");//14-ApptReason
 				sr.Write("\""+table.Rows[i][15].ToString()+"\",");//15-DoctorNumber. might possibly be 0
-				//15-DoctorName. It can handle 0 without any problem.
-				sr.WriteLine("\""
-					+Dequote(Providers.GetLName(PIn.PInt(table.Rows[i][15].ToString())))
-					+"\"");
+				//15-DoctorName. Can handle 0 without any problem.
+				sr.Write("\""+Dequote(Providers.GetLName(PIn.PInt(table.Rows[i][15].ToString())))+"\",");
+				if(table.Rows[i][16].ToString()=="1"){//16-IsNewPatient
+					sr.WriteLine("\"T\"");//SendEmail
+				}
+				else{
+					sr.WriteLine("\"F\"");
+				}
 			}
 			sr.Close();
 			MessageBox.Show("Done");
