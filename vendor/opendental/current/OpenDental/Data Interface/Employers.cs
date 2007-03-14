@@ -99,7 +99,7 @@ namespace OpenDental{
 
 		///<summary>Returns a list of patients that are dependent on the Cur employer. The list includes carriage returns for easy display.  Used before deleting an employer to make sure employer is not in use.</summary>
 		public static string DependentPatients(Employer Cur){
-			string command="SELECT CONCAT(LName,', ',FName) FROM patient" 
+			string command="SELECT CONCAT(CONCAT(LName,', '),FName) FROM patient" 
 				+" WHERE EmployerNum = '"+POut.PInt(Cur.EmployerNum)+"'";
 			DataTable table=General.GetTable(command);
 			string retStr="";
@@ -116,7 +116,7 @@ namespace OpenDental{
 		public static string DependentInsPlans(Employer Cur){
 			string command="SELECT insplan.Carrier,CONCAT(patient.LName,patient.FName) FROM insplan,patient" 
 				+" WHERE insplan.Subscriber=patient.PatNum"
-				+" && insplan.EmployerNum = '"+POut.PInt(Cur.EmployerNum)+"'";
+				+" AND insplan.EmployerNum = '"+POut.PInt(Cur.EmployerNum)+"'";
 			DataTable table=General.GetTable(command);
 			string retStr="";
 			for(int i=0;i<table.Rows.Count;i++){

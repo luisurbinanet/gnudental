@@ -26,10 +26,10 @@ namespace OpenDental{
 		private System.Windows.Forms.ListBox listEmployee;
 		private System.Windows.Forms.Label label2;
 		///<summary></summary>
-		public User UserCur;
+		public Userod UserCur;
 
 		///<summary></summary>
-		public FormUserEdit(User userCur)
+		public FormUserEdit(Userod userCur)
 		{
 			//
 			// Required for Windows Form Designer support
@@ -261,7 +261,7 @@ namespace OpenDental{
 				UserCur.EmployeeNum=Employees.ListShort[listEmployee.SelectedIndex-1].EmployeeNum;
 			}
 			try{
-				Users.InsertOrUpdate(IsNew,UserCur);
+				Userods.InsertOrUpdate(IsNew,UserCur);
 			}
 			catch(Exception ex){
 				MessageBox.Show(ex.Message);

@@ -35,8 +35,8 @@ namespace OpenDental{
 				+"PatNum = '"    +POut.PInt   (charge.PatNum)+"'"
 				+",ADACode = '"  +POut.PString(charge.ADACode)+"'"
 				+",ChargeAmt = '"+POut.PDouble(charge.ChargeAmt)+"'"
-				+",DateStart = '"+POut.PDate  (charge.DateStart)+"'"
-				+",DateStop = '" +POut.PDate  (charge.DateStop)+"'"
+				+",DateStart = "+POut.PDate  (charge.DateStart)
+				+",DateStop = " +POut.PDate  (charge.DateStop)
 				+",Note = '"     +POut.PString(charge.Note)+"'"
 				+" WHERE RepeatChargeNum = '" +POut.PInt(charge.RepeatChargeNum)+"'";
  			General.NonQ(command);
@@ -59,8 +59,8 @@ namespace OpenDental{
 				 "'"+POut.PInt   (charge.PatNum)+"', "
 				+"'"+POut.PString(charge.ADACode)+"', "
 				+"'"+POut.PDouble(charge.ChargeAmt)+"', "
-				+"'"+POut.PDate  (charge.DateStart)+"', "
-				+"'"+POut.PDate  (charge.DateStop)+"', "
+				+POut.PDate  (charge.DateStart)+", "
+				+POut.PDate  (charge.DateStop)+", "
 				+"'"+POut.PString(charge.Note)+"')";
 			if(PrefB.RandomKeys){
 				General.NonQ(command);

@@ -377,7 +377,7 @@ namespace OpenDental{
 		}
 
 		private void butPrint_Click(object sender, System.EventArgs e) {
-			if(textBody.Text==""){
+			if(textBody.Text=="") {
 				MsgBox.Show(this,"Letter not allowed to be blank.");
 				return;
 			}
@@ -398,7 +398,7 @@ namespace OpenDental{
 			CommlogCur.CommType=CommItemType.Misc;
 			CommlogCur.PatNum=PatCur.PatNum;
 			CommlogCur.Note="Letter sent";
-			if(LetterCur!=null){
+			if(LetterCur!=null) {
 				CommlogCur.Note+=": "+LetterCur.Description+". ";
 			}
 			FormCommItem FormCI=new FormCommItem(CommlogCur);

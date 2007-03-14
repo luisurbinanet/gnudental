@@ -34,7 +34,7 @@ namespace OpenDental{
 				+ "referralnum = '" +POut.PInt   (attach.ReferralNum)+"'"
 				+ ",patnum = '"     +POut.PInt   (attach.PatNum)+"'"
 				+ ",itemorder = '"  +POut.PInt   (attach.ItemOrder)+"'"
-				+ ",refdate = '"    +POut.PDate  (attach.RefDate)+"'"
+				+ ",refdate = "    +POut.PDate  (attach.RefDate)
 				+ ",isfrom = '"     +POut.PBool  (attach.IsFrom)+"'"
 				+" WHERE RefAttachNum = '" +POut.PInt(attach.RefAttachNum)+"'";
  			General.NonQ(command);
@@ -47,7 +47,7 @@ namespace OpenDental{
 				+"'"+POut.PInt   (attach.ReferralNum)+"', "
 				+"'"+POut.PInt   (attach.PatNum)+"', "
 				+"'"+POut.PInt   (attach.ItemOrder)+"', "
-				+"'"+POut.PDate  (attach.RefDate)+"', "
+				+POut.PDate  (attach.RefDate)+", "
 				+"'"+POut.PBool  (attach.IsFrom)+"')";
  			attach.RefAttachNum=General.NonQ(command,true);
 		}
@@ -77,7 +77,7 @@ namespace OpenDental{
 
 		///<summary>Returns a list of patient names that are attached to this referral. Used to display in the referral edit window.</summary>
 		public static string[] GetPats(int refNum,bool IsFrom){
-			string command="SELECT CONCAT(patient.LName,', ',patient.FName) "
+			string command="SELECT CONCAT(CONCAT(patient.LName,', '),patient.FName) "
 				+"FROM patient,refattach,referral " 
 				+"WHERE patient.PatNum=refattach.PatNum "
 				+"AND refattach.ReferralNum=referral.ReferralNum "

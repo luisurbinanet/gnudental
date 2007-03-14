@@ -131,6 +131,7 @@ namespace OpenDental{
 		//private Appointment AptOld;
 		private DateTime[] SearchResults;
 		private PatPlan[] PatPlanList;
+		private OpenDental.UI.Button butRefresh;
 		///<summary>During RefreshDay, this is filled with all procedures for all appointments for the day.  The list is then used for various display purposes.</summary>
 		private Procedure[] procsMultApts;
 
@@ -210,6 +211,7 @@ namespace OpenDental{
 			this.menuPatient = new System.Windows.Forms.ContextMenu();
 			this.menuBlockout = new System.Windows.Forms.ContextMenu();
 			this.groupSearch = new System.Windows.Forms.GroupBox();
+			this.butRefresh = new OpenDental.UI.Button();
 			this.listSearchResults = new System.Windows.Forms.ListBox();
 			this.listProviders = new System.Windows.Forms.ListBox();
 			this.butSearchClose = new OpenDental.UI.Button();
@@ -507,9 +509,9 @@ namespace OpenDental{
 			this.panelAptInfo.Controls.Add(this.butUnsched);
 			this.panelAptInfo.Controls.Add(this.butDelete);
 			this.panelAptInfo.Controls.Add(this.butBreak);
-			this.panelAptInfo.Location = new System.Drawing.Point(680,376);
+			this.panelAptInfo.Location = new System.Drawing.Point(665,376);
 			this.panelAptInfo.Name = "panelAptInfo";
-			this.panelAptInfo.Size = new System.Drawing.Size(204,116);
+			this.panelAptInfo.Size = new System.Drawing.Size(219,116);
 			this.panelAptInfo.TabIndex = 45;
 			// 
 			// listConfirmed
@@ -579,7 +581,7 @@ namespace OpenDental{
 			this.butOther.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butOther.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butOther.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butOther.Location = new System.Drawing.Point(712,462);
+			this.butOther.Location = new System.Drawing.Point(697,462);
 			this.butOther.Name = "butOther";
 			this.butOther.Size = new System.Drawing.Size(92,26);
 			this.butOther.TabIndex = 76;
@@ -594,6 +596,7 @@ namespace OpenDental{
 			// 
 			// panelCalendar
 			// 
+			this.panelCalendar.Controls.Add(this.panelPinBoard);
 			this.panelCalendar.Controls.Add(this.butSearch);
 			this.panelCalendar.Controls.Add(this.textProduction);
 			this.panelCalendar.Controls.Add(this.label7);
@@ -605,11 +608,10 @@ namespace OpenDental{
 			this.panelCalendar.Controls.Add(this.Calendar2);
 			this.panelCalendar.Controls.Add(this.labelDate);
 			this.panelCalendar.Controls.Add(this.labelDate2);
-			this.panelCalendar.Controls.Add(this.panelPinBoard);
 			this.panelCalendar.Controls.Add(this.panelArrows);
-			this.panelCalendar.Location = new System.Drawing.Point(680,28);
+			this.panelCalendar.Location = new System.Drawing.Point(665,28);
 			this.panelCalendar.Name = "panelCalendar";
-			this.panelCalendar.Size = new System.Drawing.Size(204,346);
+			this.panelCalendar.Size = new System.Drawing.Size(219,346);
 			this.panelCalendar.TabIndex = 46;
 			// 
 			// butSearch
@@ -736,9 +738,9 @@ namespace OpenDental{
 			this.panelNotes.Controls.Add(this.label5);
 			this.panelNotes.Controls.Add(this.label6);
 			this.panelNotes.Controls.Add(this.label4);
-			this.panelNotes.Location = new System.Drawing.Point(680,494);
+			this.panelNotes.Location = new System.Drawing.Point(665,494);
 			this.panelNotes.Name = "panelNotes";
-			this.panelNotes.Size = new System.Drawing.Size(204,188);
+			this.panelNotes.Size = new System.Drawing.Size(219,188);
 			this.panelNotes.TabIndex = 50;
 			// 
 			// textPhone
@@ -786,6 +788,7 @@ namespace OpenDental{
 			// 
 			// groupSearch
 			// 
+			this.groupSearch.Controls.Add(this.butRefresh);
 			this.groupSearch.Controls.Add(this.listSearchResults);
 			this.groupSearch.Controls.Add(this.listProviders);
 			this.groupSearch.Controls.Add(this.butSearchClose);
@@ -796,11 +799,26 @@ namespace OpenDental{
 			this.groupSearch.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupSearch.Location = new System.Drawing.Point(380,309);
 			this.groupSearch.Name = "groupSearch";
-			this.groupSearch.Size = new System.Drawing.Size(204,397);
+			this.groupSearch.Size = new System.Drawing.Size(219,397);
 			this.groupSearch.TabIndex = 74;
 			this.groupSearch.TabStop = false;
 			this.groupSearch.Text = "Search For Opening";
 			this.groupSearch.Visible = false;
+			// 
+			// butRefresh
+			// 
+			this.butRefresh.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.butRefresh.Autosize = true;
+			this.butRefresh.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butRefresh.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butRefresh.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butRefresh.Location = new System.Drawing.Point(6,374);
+			this.butRefresh.Name = "butRefresh";
+			this.butRefresh.Size = new System.Drawing.Size(62,22);
+			this.butRefresh.TabIndex = 88;
+			this.butRefresh.Text = "Refresh";
+			this.butRefresh.Click += new System.EventHandler(this.butRefresh_Click);
 			// 
 			// listSearchResults
 			// 
@@ -829,7 +847,7 @@ namespace OpenDental{
 			this.butSearchClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butSearchClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butSearchClose.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butSearchClose.Location = new System.Drawing.Point(146,374);
+			this.butSearchClose.Location = new System.Drawing.Point(161,374);
 			this.butSearchClose.Name = "butSearchClose";
 			this.butSearchClose.Size = new System.Drawing.Size(54,22);
 			this.butSearchClose.TabIndex = 85;
@@ -861,7 +879,6 @@ namespace OpenDental{
 			this.textAfter.Name = "textAfter";
 			this.textAfter.Size = new System.Drawing.Size(44,20);
 			this.textAfter.TabIndex = 88;
-			this.textAfter.Visible = false;
 			// 
 			// label11
 			// 
@@ -871,7 +888,6 @@ namespace OpenDental{
 			this.label11.TabIndex = 87;
 			this.label11.Text = "After";
 			this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.label11.Visible = false;
 			// 
 			// radioBeforePM
 			// 
@@ -881,7 +897,6 @@ namespace OpenDental{
 			this.radioBeforePM.Size = new System.Drawing.Size(37,15);
 			this.radioBeforePM.TabIndex = 86;
 			this.radioBeforePM.Text = "pm";
-			this.radioBeforePM.Visible = false;
 			// 
 			// radioBeforeAM
 			// 
@@ -893,7 +908,6 @@ namespace OpenDental{
 			this.radioBeforeAM.TabIndex = 85;
 			this.radioBeforeAM.TabStop = true;
 			this.radioBeforeAM.Text = "am";
-			this.radioBeforeAM.Visible = false;
 			// 
 			// textBefore
 			// 
@@ -901,7 +915,6 @@ namespace OpenDental{
 			this.textBefore.Name = "textBefore";
 			this.textBefore.Size = new System.Drawing.Size(44,20);
 			this.textBefore.TabIndex = 84;
-			this.textBefore.Visible = false;
 			// 
 			// label10
 			// 
@@ -911,7 +924,6 @@ namespace OpenDental{
 			this.label10.TabIndex = 83;
 			this.label10.Text = "Before";
 			this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.label10.Visible = false;
 			// 
 			// panel1
 			// 
@@ -921,7 +933,6 @@ namespace OpenDental{
 			this.panel1.Name = "panel1";
 			this.panel1.Size = new System.Drawing.Size(84,20);
 			this.panel1.TabIndex = 86;
-			this.panel1.Visible = false;
 			// 
 			// radioAfterAM
 			// 
@@ -1068,7 +1079,7 @@ namespace OpenDental{
 			CurToPinBoard();
 			RefreshModuleScreen();
 		}
-		
+
 		///<summary></summary>
 		public void ModuleSelected(int patNum){
 			//the scrollbar logic cannot be moved to someplace where it will be activated while working in apptbook
@@ -1137,8 +1148,8 @@ namespace OpenDental{
 			}
 			this.ResumeLayout();
 			listConfirmed.Items.Clear();
-			for(int i=0;i<Defs.Short[(int)DefCat.ApptConfirmed].Length;i++){
-				this.listConfirmed.Items.Add(Defs.Short[(int)DefCat.ApptConfirmed][i].ItemValue);
+			for(int i=0;i<DefB.Short[(int)DefCat.ApptConfirmed].Length;i++){
+				this.listConfirmed.Items.Add(DefB.Short[(int)DefCat.ApptConfirmed][i].ItemValue);
 				//if(Defs.Defns[(int)DefCat.ApptConfirmed][i].DefNum==Appointments.Cur.Confirmed)
 				//	listConfirmed.SelectedIndex=i;
 			}
@@ -1157,7 +1168,7 @@ namespace OpenDental{
 			ContrApptSheet2.Shadow=null;
 			if(ContrApptSingle3!=null){//too complex?
 				for(int i=0;i<ContrApptSingle3.Length;i++){
-					if(ContrApptSingle3[i]!=null){
+					if(ContrApptSingle3[i]!=null) {
 						ContrApptSingle3[i].Dispose();
 					}
 					ContrApptSingle3[i]=null;
@@ -1224,7 +1235,7 @@ namespace OpenDental{
 
 		///<summary>Also refreshes some other display values. Needs to be called when switching databases.</summary>
 		private void RefreshVisops(){
-			if(Defs.Short!=null){
+			if(DefB.Short!=null){
 				//ApptViews.SetCur();
 				ApptViewItems.GetForCurView(comboView.SelectedIndex-1);//refreshes visops,etc
 				ContrApptSheet2.ComputeColWidth(panelSheet.Width-vScrollBar1.Width);
@@ -1272,6 +1283,7 @@ namespace OpenDental{
 			menuBlockout.MenuItems.Clear();
 			//menuBlockout.MenuItems.Add(Lan.g(this,"BLOCKOUTS"));
 			menuBlockout.MenuItems.Add(Lan.g(this,"Edit Blockout"),new EventHandler(menuBlockout_Click));
+			menuBlockout.MenuItems.Add(Lan.g(this,"Delete Blockout"),new EventHandler(menuBlockout_Click));
 			menuBlockout.MenuItems.Add(Lan.g(this,"Add Blockout"),new EventHandler(menuBlockout_Click));
 			menuBlockout.MenuItems.Add(Lan.g(this,"Set Blockouts for Day to Default"),new EventHandler(menuBlockout_Click));
 			menuBlockout.MenuItems.Add(Lan.g(this,"Clear All Blockouts for Day"),new EventHandler(menuBlockout_Click));
@@ -1457,7 +1469,7 @@ namespace OpenDental{
 				textPhone.Text="";
 			}
 			if(panelAptInfo.Enabled){
-				listConfirmed.SelectedIndex=Defs.GetOrder(DefCat.ApptConfirmed,AptCur.Confirmed);
+				listConfirmed.SelectedIndex=DefB.GetOrder(DefCat.ApptConfirmed,AptCur.Confirmed);
 			}
 			else{
 				listConfirmed.SelectedIndex=-1;
@@ -1535,13 +1547,13 @@ namespace OpenDental{
 				ContrApptSingle3[i].Info.MyPatient=Patients.GetOnePat(multPats,ListDay[i].PatNum);
 				//copy time pattern to provBar[]:
 				indexProv=-1;
-				if(ListDay[i].IsHygiene) {
+				if(ListDay[i].IsHygiene){
 					indexProv=ApptViewItems.GetIndexProv(ListDay[i].ProvHyg);
 				}
-				else {
+				else{
 					indexProv=ApptViewItems.GetIndexProv(ListDay[i].ProvNum);
 				}
-				if(indexProv!=-1 && ListDay[i].AptStatus!=ApptStatus.Broken) {
+				if(indexProv!=-1 && ListDay[i].AptStatus!=ApptStatus.Broken){
 					string pattern=ContrApptSingle.GetPatternShowing(ListDay[i].Pattern);
 					int startIndex=ContrApptSingle3[i].ConvertToY()/ContrApptSheet.Lh;//rounds down
 					for(int k=0;k<pattern.Length;k++){
@@ -1767,10 +1779,10 @@ namespace OpenDental{
 			aptCur.Op=curOp.OperatoryNum;
 			if(DoesOverlap(aptCur)){
 				int startingOp=ApptViewItems.GetIndexOp(aptCur.Op);
-					//Defs.GetOrder(DefCat.Operatories,Appointments.Cur.Op);
+					//DefB.GetOrder(DefCat.Operatories,Appointments.Cur.Op);
 				bool stillOverlaps=true;
 				for(int i=startingOp;i<ApptViewItems.VisOps.Length;i++){
-					//Defs.Short[(int)DefCat.Operatories].Length
+					//DefB.Short[(int)DefCat.Operatories].Length
 					aptCur.Op=Operatories.ListShort[ApptViewItems.VisOps[i]].OperatoryNum;
 					if(!DoesOverlap(aptCur)){
 						stillOverlaps=false;
@@ -1903,8 +1915,6 @@ namespace OpenDental{
 					&& aptCur.AptDateTime.TimeOfDay.Add(TimeSpan.FromMinutes(aptCur.Pattern.Length*5))
 					<= ListDay[i].AptDateTime.TimeOfDay.Add(TimeSpan.FromMinutes(ListDay[i].Pattern.Length*5)))
 				{
-		//Debug.WriteLine(aptCur.AptDateTime.TimeOfDay.ToString());
-		//Debug.WriteLine(ListDay[i].AptDateTime.TimeOfDay.ToString());
 					return true;
 				}
 				//tests engulf
@@ -2092,9 +2102,11 @@ namespace OpenDental{
 					}
 					if(clickedOnBlock){
 						menuBlockout.MenuItems[0].Visible=true;//Edit
+						menuBlockout.MenuItems[1].Visible=true;//Delete
 					}
 					else{
 						menuBlockout.MenuItems[0].Visible=false;
+						menuBlockout.MenuItems[1].Visible=false;
 					}
 					menuBlockout.Show(ContrApptSheet2,new Point(e.X,e.Y));
 				}
@@ -2215,7 +2227,7 @@ namespace OpenDental{
 				int startingOp=ApptViewItems.GetIndexOp(AptCur.Op);
 				bool stillOverlaps=true;
 				for(int i=startingOp;i<ApptViewItems.VisOps.Length;i++){
-					//Defs.Short[(int)DefCat.Operatories]
+					//DefB.Short[(int)DefCat.Operatories]
 					AptCur.Op=Operatories.ListShort[ApptViewItems.VisOps[i]].OperatoryNum;
 					if(!DoesOverlap(AptCur)){
 						stillOverlaps=false;
@@ -2290,7 +2302,7 @@ namespace OpenDental{
 				if(FormAE.DialogResult==DialogResult.OK){
 					//Caution.  AptCur is not properly updated, so:
 					AptCur=Appointments.GetOneApt(AptCur.AptNum);
-					if(AptCur!=null && DoesOverlap(AptCur)) {
+					if(AptCur!=null && DoesOverlap(AptCur)){
 						Appointment aptOld=AptCur.Copy();
 						MsgBox.Show(this,"Appointment is too long and would overlap another appointment.  Automatically shortened to fit.");
 						while(DoesOverlap(AptCur)){
@@ -2475,10 +2487,10 @@ namespace OpenDental{
 			FormConfirmList FormC=new FormConfirmList();
 			FormC.ShowDialog();
 			Cursor=Cursors.Default;
-			/*if(FormRL.SelectedPatNum!=0){
-				OnPatientSelected(FormRL.SelectedPatNum);
-				ModuleSelected(FormRL.SelectedPatNum);
-			}*/
+			if(FormC.SelectedPatNum!=0){
+				OnPatientSelected(FormC.SelectedPatNum);
+				ModuleSelected(FormC.SelectedPatNum);
+			}
 		}
 
 		private void OnTrack_Click() {
@@ -2773,15 +2785,18 @@ namespace OpenDental{
 					OnBlockEdit_Click();
 					break;
 				case 1:
-					OnBlockAdd_Click();
+					OnBlockDelete_Click();
 					break;
 				case 2:
-					OnBlockDefault_Click();
+					OnBlockAdd_Click();
 					break;
 				case 3:
-					OnClearBlockouts_Click();
+					OnBlockDefault_Click();
 					break;
 				case 4:
+					OnClearBlockouts_Click();
+					break;
+				case 5:
 					OnBlockTypes_Click();
 					break;
 			}
@@ -2924,6 +2939,17 @@ namespace OpenDental{
 				return;
 			}
 			//not even visible if not right click on a blockout
+			Schedule SchedCur=GetClickedBlockout();
+			if(SchedCur==null){
+				MessageBox.Show("Blockout not found.");
+				return;//should never happen
+			}
+			FormScheduleBlockEdit FormSB=new FormScheduleBlockEdit(SchedCur);
+      FormSB.ShowDialog();
+			RefreshModuleScreen();
+		}
+
+		private Schedule GetClickedBlockout(){
 			Schedules.ConvertFromDefault(Appointments.DateSelected,ScheduleType.Blockout,0);
 			SchedListDay=Schedules.RefreshDay(Appointments.DateSelected);
 			Schedule[] ListForType=Schedules.GetForType(SchedListDay,ScheduleType.Blockout,0);
@@ -2931,22 +2957,35 @@ namespace OpenDental{
 			Schedule SchedCur=null;
 			//date is irrelevant. This is just for the time:
 			DateTime SheetClickedonTime=new DateTime(2000,1,1,SheetClickedonHour,SheetClickedonMin,0);
-			for(int i=0;i<ListForType.Length;i++){
+			for(int i=0;i<ListForType.Length;i++) {
 				//skip if op doesn't match
-				if(ListForType[i].Op!=0){//if op is zero, it doesn't matter which op.
-					if(ListForType[i].Op != SheetClickedonOp){
+				if(ListForType[i].Op!=0) {//if op is zero, it doesn't matter which op.
+					if(ListForType[i].Op != SheetClickedonOp) {
 						continue;
 					}
 				}
 				if(ListForType[i].StartTime.TimeOfDay <= SheetClickedonTime.TimeOfDay
-					&& SheetClickedonTime.TimeOfDay < ListForType[i].StopTime.TimeOfDay)
-				{
+					&& SheetClickedonTime.TimeOfDay < ListForType[i].StopTime.TimeOfDay) {
 					SchedCur=ListForType[i];
 					break;
 				}
 			}
-			FormScheduleBlockEdit FormSB=new FormScheduleBlockEdit(SchedCur);
-      FormSB.ShowDialog();
+			return SchedCur;//might be null;
+		}
+
+		private void OnBlockDelete_Click(){
+			if(!Security.IsAuthorized(Permissions.Blockouts)){
+				return;
+			}
+			Schedule SchedCur=GetClickedBlockout();
+			if(SchedCur==null) {
+				MessageBox.Show("Blockout not found.");
+				return;//should never happen
+			}
+			//if(!MsgBox.Show(this,true,"Delete blockout?")){
+			//	return;
+			//}
+			Schedules.Delete(SchedCur);
 			RefreshModuleScreen();
 		}
 
@@ -3036,7 +3075,7 @@ namespace OpenDental{
 			}
 			Appointment aptOld=AptCur.Copy();
 			AptCur.Confirmed
-				=Defs.Short[(int)DefCat.ApptConfirmed][listConfirmed.IndexFromPoint(e.X,e.Y)].DefNum;
+				=DefB.Short[(int)DefCat.ApptConfirmed][listConfirmed.IndexFromPoint(e.X,e.Y)].DefNum;
 			try{
 				Appointments.InsertOrUpdate(AptCur,aptOld,false);
 			}
@@ -3107,9 +3146,9 @@ namespace OpenDental{
 			TimeSpan beforeTime=new TimeSpan(0);
 			if(textBefore.Text!=""){
 				try{
-					beforeTime=TimeSpan.Parse(textBefore.Text);
+					beforeTime=TimeSpan.FromHours(PIn.PDouble(textBefore.Text));
 					if(radioBeforePM.Checked && beforeTime.Hours<12){
-						beforeTime=beforeTime+new TimeSpan(12,0,0);
+						beforeTime=beforeTime+TimeSpan.FromHours(12);
 					}
 				}
 				catch{
@@ -3121,9 +3160,9 @@ namespace OpenDental{
 			TimeSpan afterTime=new TimeSpan(0);
 			if(textAfter.Text!=""){
 				try{
-					afterTime=TimeSpan.Parse(textAfter.Text);
+					afterTime=TimeSpan.FromHours(PIn.PDouble(textAfter.Text));
 					if(radioAfterPM.Checked && afterTime.Hours<12){
-						afterTime=afterTime+new TimeSpan(12,0,0);
+						afterTime=afterTime+TimeSpan.FromHours(12);
 					}
 				}
 				catch{
@@ -3142,7 +3181,7 @@ namespace OpenDental{
 				providers[i]=Providers.List[listProviders.SelectedIndices[i]].ProvNum;
 			}
 			//the result set is never empty
-			SearchResults=Appointments.GetSearchResults(PinApptSingle.Info.MyApt,afterDate,providers,10);
+			SearchResults=Appointments.GetSearchResults(PinApptSingle.Info.MyApt,afterDate,providers,10,beforeTime,afterTime);
 			listSearchResults.Items.Clear();
 			for(int i=0;i<SearchResults.Length;i++){
 				listSearchResults.Items.Add(
@@ -3166,6 +3205,10 @@ namespace OpenDental{
 				return;
 			}
 			RefreshDay(SearchResults[clickedI]);
+		}
+
+		private void butRefresh_Click(object sender,EventArgs e) {
+			DoSearch();
 		}
 
 		private void butSearchCloseX_Click(object sender, System.EventArgs e) {
@@ -3278,6 +3321,8 @@ namespace OpenDental{
 			Commlogs.Insert(CommlogCur);
 			ev.HasMorePages = false;
 		}
+
+		
 
 		
 

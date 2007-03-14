@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -34,6 +34,7 @@ namespace fyiReporting.RDL
 	[Serializable]
 	internal class Chart : DataRegion
 	{
+		static readonly ImageFormat IMAGEFORMAT = ImageFormat.Jpeg;
 		ChartTypeEnum _Type;	// Generic Type of the chart Default: Column
 		ChartSubTypeEnum _Subtype;	// Available subtypes (and default subtype) depends on Type
 		SeriesGroupings _SeriesGroupings;	// Set of series groupings for the chart
@@ -55,10 +56,8 @@ namespace fyiReporting.RDL
 									// containing the chart data points should
 									// appear in a data rendering.  Default: Output
 		Matrix _ChartMatrix;		// Pseudo matrix to calculate chart data
-		// Runtime data
-		[NonSerialized] Rows _Data;	// Runtime data; either original query if no groups
-									// or sorting or a copied version that is grouped/sorted
-		internal Chart(Report r, ReportLink p, XmlNode xNode):base(r, p, xNode)
+
+		internal Chart(ReportDefn r, ReportLink p, XmlNode xNode):base(r, p, xNode)
 		{
 			_Type=ChartTypeEnum.Column;
 			_Subtype=ChartSubTypeEnum.Plain;
@@ -177,8 +176,11 @@ namespace fyiReporting.RDL
 
 		override internal void Run(IPresent ip, Row row)
 		{
-			_ChartMatrix.RunReset();
-			_Data = GetFilteredData(row);
+			Report rpt = ip.Report();
+
+			_ChartMatrix.RunReset(rpt);
+			Rows _Data = GetFilteredData(ip.Report(), row);
+			SetMyData(ip.Report(), _Data);
 
 			if (!AnyRows(ip, _Data))		// if no rows, return
 				return;
@@ -187,13 +189,13 @@ namespace fyiReporting.RDL
 			ChartBase cb=null;
 			try
 			{
-				cb = RunChartBuild();
+				cb = RunChartBuild(rpt, row);
 
 				ip.Chart(this, row, cb);
 			}
 			catch (Exception ex)
 			{
-				OwnerReport.rl.LogError(8, string.Format("Exception in Chart handling.\n{0}\n{1}", ex.Message, ex.StackTrace));
+				rpt.rl.LogError(8, string.Format("Exception in Chart handling.\n{0}\n{1}", ex.Message, ex.StackTrace));
 			}
 			finally
 			{
@@ -205,11 +207,14 @@ namespace fyiReporting.RDL
 
 		override internal void RunPage(Pages pgs, Row row)
 		{
-			if (IsHidden(row))
+			Report rpt = pgs.Report;
+
+			if (IsHidden(pgs.Report, row))
 				return;
 
-			_ChartMatrix.RunReset();
-			_Data = GetFilteredData(row);
+			_ChartMatrix.RunReset(rpt);
+			Rows _Data = GetFilteredData(rpt, row);
+			SetMyData(rpt, _Data);
 
 			SetPagePositionBegin(pgs);
 
@@ -221,21 +226,21 @@ namespace fyiReporting.RDL
 			ChartBase cb=null;
 			try
 			{
-				cb = RunChartBuild();				// Build the chart
-				System.Drawing.Image im = cb.Image;	// Grab the image
-				int height = im.Height;				// save height and width
+				cb = RunChartBuild(rpt, row);					// Build the chart
+				System.Drawing.Image im = cb.Image(rpt);	// Grab the image
+				int height = im.Height;							// save height and width
 				int width = im.Width;
 
 				MemoryStream ostrm = new MemoryStream();
-				im.Save(ostrm, ImageFormat.Jpeg);	// generate a jpeg   TODO: get png to work with pdf
+				im.Save(ostrm, IMAGEFORMAT);	// generate a jpeg   TODO: get png to work with pdf
 
 				byte[] ba = ostrm.ToArray();
 				ostrm.Close();
-				PageImage pi = new PageImage(ImageFormat.Jpeg, ba, width, height);	// Create an image
+				PageImage pi = new PageImage(IMAGEFORMAT, ba, width, height);	// Create an image
 				
 				RunPageRegionBegin(pgs);
 
-				SetPagePositionAndStyle(pi, row);
+				SetPagePositionAndStyle(rpt, pi, row);
 				pi.SI.BackgroundImage = null;	// chart already has the background image
 
 				if (pgs.CurrentPage.YOffset + pi.Y + pi.H >= pgs.BottomOfPage && !pgs.CurrentPage.IsEmpty())
@@ -252,15 +257,16 @@ namespace fyiReporting.RDL
 
 				RunPageRegionEnd(pgs);
 
-				if (!this.PageBreakAtEnd && this.TC == null)
+				if (!this.PageBreakAtEnd && !IsTableOrMatrixCell(rpt))
 				{
 					float newY = pi.Y + pi.H;
 					p.YOffset += newY;	// bump the y location
 				}
-			}
+                SetPagePositionEnd(pgs, pi.Y + pi.H);
+            }
 			catch (Exception ex)
 			{
-				OwnerReport.rl.LogError(8, string.Format("Exception in Chart handling.\n{0}\n{1}", ex.Message, ex.StackTrace));
+				rpt.rl.LogError(8, string.Format("Exception in Chart handling.\n{0}\n{1}", ex.Message, ex.StackTrace));
 			}
 			finally
 			{
@@ -268,42 +274,41 @@ namespace fyiReporting.RDL
 					cb.Dispose();
 			}
 
-			SetPagePositionEnd(pgs, pgs.CurrentPage.YOffset);
-			return;
+            return;
 		}
 
-		ChartBase RunChartBuild()
+		ChartBase RunChartBuild(Report rpt, Row row)
 		{
 			// Get the matrix that defines the data; 
 			//   some graph types don't require this (XY(scatter), Bubble, Stock
-			_ChartMatrix.Data = _Data;	// set the data in the matrix
+			_ChartMatrix.SetMyData(rpt, GetMyData(rpt));	// set the data in the matrix
 			int maxColumns;
 			int maxRows;
-			MatrixCellEntry[,] matrix = _ChartMatrix.RunBuild(out maxRows, out maxColumns);
+			MatrixCellEntry[,] matrix = _ChartMatrix.RunBuild(rpt, out maxRows, out maxColumns);
 
 			// Build the Chart bitmap, along with data regions
 			ChartBase cb=null;
 			switch (_Type)
 			{
 				case ChartTypeEnum.Column:
-					cb = new ChartColumn(this, matrix);
+					cb = new ChartColumn(rpt, row, this, matrix);
 					break;
 				case ChartTypeEnum.Line:
 				case ChartTypeEnum.Area:			// handled by line
-					cb = new ChartLine(this, matrix);
+					cb = new ChartLine(rpt, row, this, matrix);
 					break;
 				case ChartTypeEnum.Bar:
-					cb = new ChartBar(this, matrix);
+					cb = new ChartBar(rpt, row, this, matrix);
 					break;
 				case ChartTypeEnum.Pie:
 				case ChartTypeEnum.Doughnut:		// handled by pie
-					cb = new ChartPie(this, matrix);
+					cb = new ChartPie(rpt, row, this, matrix);
 					break;
 				case ChartTypeEnum.Scatter:
 				case ChartTypeEnum.Bubble:
 				case ChartTypeEnum.Stock:
 				default:
-					cb = new ChartColumn(this, matrix);
+					cb = new ChartColumn(rpt, row, this, matrix);
 					break;
 			}
 
@@ -366,7 +371,7 @@ namespace fyiReporting.RDL
 						dvv.InnerText = dv.Value.Source;
 						mcri.AppendChild(dvv);
 						XmlElement dvl = mDoc.CreateElement("DataPoint");
-						dvl.InnerText = this.OwnerReport.CreateRuntimeName(dp);
+						dvl.InnerText = this.OwnerReport.CreateDynamicName(dp);
 						mcri.AppendChild(dvl);
 					}
 				}
@@ -585,6 +590,21 @@ namespace fyiReporting.RDL
 		internal Matrix ChartMatrix
 		{
 			get { return _ChartMatrix; }
+		}
+
+		// Runtime data; either original query if no groups
+		// or sorting or a copied version that is grouped/sorted
+		private Rows GetMyData(Report rpt)
+		{
+			return rpt.Cache.Get(this, "data") as Rows;
+		}
+
+		private void SetMyData(Report rpt, Rows data)
+		{
+			if (data == null)
+				rpt.Cache.Remove(this, "data");
+			else
+				rpt.Cache.AddReplace(this, "data", data);
 		}
 	}
 }

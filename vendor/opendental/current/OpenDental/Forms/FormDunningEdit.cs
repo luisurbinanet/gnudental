@@ -292,9 +292,9 @@ namespace OpenDental{
 		private void FormDunningEdit_Load(object sender, System.EventArgs e) {
 			listBillType.Items.Add(Lan.g(this,"all"));
 			listBillType.SetSelected(0,true);
-			for(int i=0;i<Defs.Short[(int)DefCat.BillingTypes].Length;i++){
-				listBillType.Items.Add(Defs.Short[(int)DefCat.BillingTypes][i].ItemName);
-				if(DunningCur.BillingType==Defs.Short[(int)DefCat.BillingTypes][i].DefNum){
+			for(int i=0;i<DefB.Short[(int)DefCat.BillingTypes].Length;i++){
+				listBillType.Items.Add(DefB.Short[(int)DefCat.BillingTypes][i].ItemName);
+				if(DunningCur.BillingType==DefB.Short[(int)DefCat.BillingTypes][i].DefNum){
 					listBillType.SetSelected(i+1,true);
 				}
 			}
@@ -345,7 +345,7 @@ namespace OpenDental{
 				DunningCur.BillingType=0;
 			}
 			else{
-				DunningCur.BillingType=Defs.Short[(int)DefCat.BillingTypes][listBillType.SelectedIndex-1].DefNum;
+				DunningCur.BillingType=DefB.Short[(int)DefCat.BillingTypes][listBillType.SelectedIndex-1].DefNum;
 			}
 			if(radioAny.Checked){
 				DunningCur.AgeAccount=0;

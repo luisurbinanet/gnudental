@@ -270,8 +270,8 @@ namespace OpenDental{
 				listProv.Items.Add(Providers.List[i].Abbr+" - "+Providers.List[i].LName+", "+Providers.List[i].FName);
 				listProv.SetSelected(i,true);
 			}
-			for(int i=0;i<Defs.Short[(int)DefCat.PaymentTypes].Length;i++) {
-				listPayType.Items.Add(Defs.Short[(int)DefCat.PaymentTypes][i].ItemName);
+			for(int i=0;i<DefB.Short[(int)DefCat.PaymentTypes].Length;i++) {
+				listPayType.Items.Add(DefB.Short[(int)DefCat.PaymentTypes][i].ItemName);
 				listPayType.SetSelected(i,true);
 			}
 			checkIncludeIns.Checked=true;
@@ -317,18 +317,18 @@ namespace OpenDental{
 					whereType+="OR ";
 				}
 				whereType+="payment.PayType = '"
-					+POut.PInt(Defs.Short[(int)DefCat.PaymentTypes][listPayType.SelectedIndices[i]].DefNum)+"' ";
+					+POut.PInt(DefB.Short[(int)DefCat.PaymentTypes][listPayType.SelectedIndices[i]].DefNum)+"' ";
 			}
 			whereType+=")";
 			Queries.CurReport=new ReportOld();
 			Queries.CurReport.Query="(SELECT "
 				+"paysplit.DatePay AS mydate,"//0. Date
-				+"CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI) AS plfname,"//1. name
+				+"CONCAT(CONCAT(CONCAT(CONCAT(patient.LName,', '),patient.FName),' '),patient.MiddleI) AS plfname,"//1. name
 				+"'                                                 ',"//2. Carrier. this is long so union won't get trunc.
 				+"payment.PayType,"//3. paytype
 				+"provider.Abbr,"//4. Prov
 				+"payment.CheckNum,"//5. CheckNum
-				+"SUM(paysplit.SplitAmt) AS $amt, "//6. amt
+				+"SUM(paysplit.SplitAmt) $amt, "//6. amt
 				+"payment.PayNum "//7. PayNum. Not visible
 				+"FROM payment,patient,provider,paysplit "
 				+"WHERE ";
@@ -342,8 +342,8 @@ namespace OpenDental{
 					+"AND provider.ProvNum=paysplit.ProvNum "
 					+"AND "+whereProv+" "
 					+"AND "+whereType+" "
-					+"AND paysplit.DatePay >= '"+POut.PDate(date1.SelectionStart)+"' "
-					+"AND paysplit.DatePay <= '"+POut.PDate(date2.SelectionStart)+"' ";
+					+"AND paysplit.DatePay >= "+POut.PDate(date1.SelectionStart)+" "
+					+"AND paysplit.DatePay <= "+POut.PDate(date2.SelectionStart)+" ";
 			}
 			Queries.CurReport.Query+="GROUP BY payment.PayNum,patient.PatNum,provider.ProvNum)";
 			if(checkIncludeIns.Checked){
@@ -359,7 +359,7 @@ namespace OpenDental{
 				Queries.CurReport.Query+=
 					" UNION ("
 					+"SELECT claimproc.DateCP AS mydate,"//0. Date
-					+"CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI) AS plfname,"//1. Name
+					+"CONCAT(CONCAT(CONCAT(CONCAT(patient.LName,', '),patient.FName),' '),patient.MiddleI) AS plfname,"//1. Name
 					+"carrier.CarrierName,"//2. Carrier
 					+"'',"//3. PayType
 					+"provider.Abbr,"//4. Prov
@@ -374,8 +374,8 @@ namespace OpenDental{
 					+"AND carrier.CarrierNum = insplan.CarrierNum "
 					+"AND "+whereProv+" "
 					+"AND (claimproc.Status=1 OR claimproc.Status=4) "//received or supplemental
-					+"AND claimpayment.CheckDate >= '"+POut.PDate(date1.SelectionStart)+"' "
-					+"AND claimpayment.CheckDate <= '"+POut.PDate(date2.SelectionStart)+"' ";
+					+"AND claimpayment.CheckDate >= "+POut.PDate(date1.SelectionStart)+" "
+					+"AND claimpayment.CheckDate <= "+POut.PDate(date2.SelectionStart)+" ";
 				if(radioPatient.Checked){//by patient
 					Queries.CurReport.Query+="GROUP BY claimproc.ClaimNum,patient.PatNum,provider.ProvNum ";
 				}
@@ -386,7 +386,8 @@ namespace OpenDental{
 					")";//end of union
 			}//insurance section
 			Queries.CurReport.Query+=
-				" ORDER BY mydate,PayType,plfname";
+				//" ORDER BY mydate,PayType,plfname";//FIXME:UNION-ORDER-BY
+				" ORDER BY 1,4,2";
 			FormQuery2=new FormQuery();
 			FormQuery2.IsReport=true;
 			FormQuery2.SubmitReportQuery();			
@@ -407,7 +408,7 @@ namespace OpenDental{
 						Queries.CurReport.SubTitle[2]+=", ";
 					}
 					Queries.CurReport.SubTitle[2]
-						+=Defs.Short[(int)DefCat.PaymentTypes][listPayType.SelectedIndices[i]].ItemName;
+						+=DefB.Short[(int)DefCat.PaymentTypes][listPayType.SelectedIndices[i]].ItemName;
 				}
 			}
 			Queries.CurReport.SubTitle[3]=Lan.g(this,"Insurance Payments: ");

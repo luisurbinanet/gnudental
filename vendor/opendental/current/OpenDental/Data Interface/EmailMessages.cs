@@ -9,8 +9,8 @@ using OpenDentBusiness;
 namespace OpenDental{
 	///<summary>An email message is always attached to a patient.</summary>
 	public class EmailMessages{
-		///<summary>Loads the specified emailMessage into cur.</summary>
-		public static EmailMessage Refresh(int msgNum){
+		///<summary>Gets one email message from the database.</summary>
+		public static EmailMessage GetOne(int msgNum){
 			string commands="SELECT * FROM emailmessage WHERE EmailMessageNum = "+POut.PInt(msgNum)
 				+";SELECT * FROM emailattach WHERE EmailMessageNum = "+POut.PInt(msgNum);
 			DataSet ds=null;
@@ -39,6 +39,7 @@ namespace OpenDental{
 			Cur.Subject        =PIn.PString(table.Rows[0][4].ToString());
 			Cur.BodyText       =PIn.PString(table.Rows[0][5].ToString());
 			Cur.MsgDateTime    =PIn.PDateT (table.Rows[0][6].ToString());
+			Cur.SentOrReceived =(CommSentOrReceived)PIn.PInt(table.Rows[0][7].ToString());
 			table=ds.Tables[1];
 			Cur.Attachments=new List<EmailAttach>();
 			EmailAttach attach;
@@ -123,8 +124,8 @@ namespace OpenDental{
 			if(message.EmailMessageNum==0){
 				return;//this prevents deletion of all commlog entries of something goes wrong.
 			}
-			string command="DELETE FROM emailmessage WHERE EmailMessageNum="+POut.PInt(message.EmailMessageNum)+";"
-				+"DELETE FROM commlog WHERE EmailMessageNum="+POut.PInt(message.EmailMessageNum);
+			string command="DELETE FROM emailmessage WHERE EmailMessageNum="+POut.PInt(message.EmailMessageNum);//+";"
+				//+"DELETE FROM commlog WHERE EmailMessageNum="+POut.PInt(message.EmailMessageNum);
 			try {
 				if(RemotingClient.OpenDentBusinessIsLocal) {
 					GeneralB.NonQ(command);

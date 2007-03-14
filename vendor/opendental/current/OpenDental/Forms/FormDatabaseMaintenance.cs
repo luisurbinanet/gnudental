@@ -242,6 +242,11 @@ namespace OpenDental
 				return;
 			}
 			Application.DoEvents();
+			if(!OracleSequences()) {
+				Cursor=Cursors.Default;
+				return;
+			}
+			Application.DoEvents();
 			if(checkInitial.Checked){
 				VerifyProv();
 				Application.DoEvents();
@@ -314,11 +319,10 @@ namespace OpenDental
 			Application.DoEvents();
 			WriteOffsNegativeAndSum();
 			Application.DoEvents();
-
-
-
-
-
+			PatientsAllHavePriProv();
+			Application.DoEvents();
+			FixDecimalValues();
+			Application.DoEvents();
 
 
 
@@ -329,6 +333,9 @@ namespace OpenDental
 		}
 
 		private bool VerifyTables() {
+			if(FormChooseDatabase.DBtype!=DatabaseType.MySql){
+				return true;
+			}
 			command="SHOW TABLES";
 			table=General.GetTable(command);
 			string[] tableNames=new string[table.Rows.Count];
@@ -384,6 +391,210 @@ namespace OpenDental
 			return true;
 		}
 
+		private bool OracleSequences(){
+			if(FormChooseDatabase.DBtype!=DatabaseType.Oracle) {
+				return true;
+			}
+			bool changesWereMade=false;
+			
+			//Strings are grouped in pairs as tablename, then auto-incrementColumnName.
+			string[] autoIncCols={
+				"account","AccountNum",
+				"accountingautopay","AccountingAutoPayNum",
+				"adjustment","AdjNum",
+				"appointment","AptNum",
+				"appointmentrule","AppointmentRuleNum",
+				"apptview","ApptViewNum",
+				"apptviewitem","ApptViewItemNum",
+				"autocode","AutoCodeNum",
+				"autocodecond","AutoCodeCondNum",
+				"autocodeitem","AutoCodeItemNum",
+				"benefit","BenefitNum",
+				//canadianclaim: no autoinc cols.
+				"canadianextract","CanadianExtractNum",
+				"canadiannetwork","CanadianNetworkNum",
+				"carrier","CarrierNum",
+				"claim","ClaimNum",
+				"claimform","ClaimFormNum",
+				"claimformitem","ClaimFormItemNum",
+				"claimpayment","ClaimPaymentNum",
+				"claimproc","ClaimProcNum",
+				"clearinghouse","ClearinghouseNum",
+				"clinic","ClinicNum",
+				"clockevent","ClockEventNum",
+				"commlog","CommlogNum",
+				"computer","ComputerNum",
+				"contact","ContactNum",
+				//county: has no auto-inc cols.
+				"covcat","CovCatNum",
+				"covspan","CovSpanNum",
+				"definition","DefNum",
+				"deposit","DepositNum",
+				"disease","DiseaseNum",
+				"diseasedef","DiseaseDefNum",
+				"docattach","DocAttachNum",
+				"document","DocNum",
+				"dunning","DunningNum",
+				"electid","ElectIDNum",
+				"emailattach","EmailAttachNum",
+				"emailmessage","EmailMessageNum",
+				"emailtemplate","EmailTemplateNum",
+				"employee","EmployeeNum",
+				"employer","EmployerNum",
+				"etrans","EtransNum",
+				"fee","FeeNum",
+				"formpat","FormPatNum",
+				//graphicassembly is obsolete
+				//graphicelement is obsolete
+				//graphicpoint is obsolete.
+				//graphicshape is obsolete.
+				//graphictype is obsolete.
+				"grouppermission","GroupPermNum",
+				"insplan","PlanNum",
+				"instructor","InstructorNum",
+				"journalentry","JournalEntryNum",
+				//language: has no auto-inc col.
+				//languageforeign: has no auto-inc col.
+				"letter","LetterNum",
+				"lettermerge","LetterMergeNum",
+				"lettermergefield","FieldNum",
+				"medication","MedicationNum",
+				"medicationpat","MedicationPatNum",
+				"operatory","OperatoryNum",
+				"patfield","PatFieldNum",
+				"patfielddef","PatFieldDefNum",
+				"patient","PatNum",
+				//patientnote: has no auto-inc col.
+				"patplan","PatPlanNum",
+				"payment","PayNum",
+				"payperiod","PayPeriodNum",
+				"payplan","PayPlanNum",
+				"payplancharge","PayPlanChargeNum",
+				"paysplit","SplitNum",
+				"perioexam","PerioExamNum",
+				"periomeasure","PerioMeasureNum",
+				//preference: has no auto-inc col.
+				"printer","PrinterNum",
+				"procbutton","ProcButtonNum",
+				"procbuttonitem","ProcButtonItemNum",
+				//procedurecode: has no auto-inc col.
+				"procedurelog","ProcNum",
+				"procnote","ProcNoteNum",
+				"proctp","ProcTPNum",
+				"program","ProgramNum",
+				"programproperty","ProgramPropertyNum",
+				"provider","ProvNum",
+				"providerident","ProviderIdentNum",
+				"question","QuestionNum",
+				"questiondef","QuestionDefNum",
+				"quickpastecat","QuickPasteCatNum",
+				"quickpastenote","QuickPasteNoteNum",
+				"recall","RecallNum",
+				"reconcile","ReconcileNum",
+				"refattach","RefAttachNum",
+				"referral","ReferralNum",
+				"repeatcharge","RepeatChargeNum",
+				"rxalert","RxAlertNum",
+				"rxdef","RxDefNum",
+				"rxpat","RxNum",
+				"scheddefault","SchedDefaultNum",
+				"schedule","ScheduleNum",
+				//school: has no auto-inc col.
+				"schoolclass","SchoolClassNum",
+				"schoolcourse","SchoolCourseNum",
+				"screen","ScreenNum",
+				"screengroup","ScreenGroupNum",
+				"securitylog","SecurityLogNum",
+				"sigbutdef","SigButDefNum",
+				"sigbutdefelement","ElementNum",
+				"sigelement","SigElementNum",
+				"sigelementdef","SigElementDefNum",
+				"signal","SignalNum",
+				"task","TaskNum",
+				"tasklist","TaskListNum",
+				"terminalactive","TerminalActiveNum",
+				"timeadjust","TimeAdjustNum",
+				"toolbutitem","ToolButItemNum",
+				"toothinitial","ToothInitialNum",
+				"transaction","TransactionNum",
+				"treatplan","TreatPlanNum",
+				"usergroup","UserGroupNum",
+				"userod","UserNum",
+				"userquery","QueryNum",
+				"zipcode","ZipCodeNum",
+			};
+
+			for(int i=0;i<autoIncCols.Length;i+=2){
+				string tablename=autoIncCols[i];
+				string autoIncColName=autoIncCols[i+1];
+				//Calculate the next available primary key value after the last available record.
+				string command="SELECT "+autoIncColName+" FROM "+tablename+" ORDER BY "+autoIncColName+" DESC";
+				DataTable table;
+				try{
+					table=General.GetTable(command);
+				}catch{
+					textLog.Text+="FAILED to lookup primary key '"+autoIncColName+"' from table '"+tablename+"'"+"\r\n";
+					return false;
+				}
+				int nextPrimaryKey=1;
+				if(table.Rows.Count>0){
+					nextPrimaryKey=PIn.PInt(table.Rows[0][0].ToString())+1;
+				}
+				string sequenceName=(autoIncColName+"Sequence").ToUpper();//Always stored as upper case by Oracle.
+				string triggerName=(autoIncColName+"Trigger").ToUpper();
+				//Verify the sequence.
+				command="SELECT LAST_NUMBER FROM user_sequences WHERE SEQUENCE_NAME='"+sequenceName+"'";
+				try{
+					table=General.GetTable(command);
+				}catch{
+					textLog.Text+="FAILED to lookup existing sequence: '"+sequenceName+"'\r\n";
+				}
+				int last_number=0;
+				if(table.Rows.Count>0){//The sequence already exists.
+					last_number=PIn.PInt(table.Rows[0][0].ToString());
+					command="DROP SEQUENCE "+sequenceName;
+					try{
+						General.NonQ(command);
+					}catch{
+						textLog.Text+="FAILED to drop sequence "+sequenceName+"\r\n";
+						return false;
+					}
+				}
+				changesWereMade|=(last_number<nextPrimaryKey);
+				command="CREATE SEQUENCE "+sequenceName+" START WITH "+nextPrimaryKey.ToString()+" INCREMENT BY 1 NOMAXVALUE";
+				try{
+					General.NonQ(command);
+				}catch{
+					textLog.Text+="FAILED to create sequence "+sequenceName+"\r\n";
+					return false;
+				}
+				//Always just recreate the trigger so that it matches the sequence. This command wipes out the old trigger or adds a new
+				//trigger if one did not previously exist. This will not count as a change.
+				DataConnection.splitStrings=false;
+				command="CREATE OR REPLACE TRIGGER "+triggerName+" BEFORE INSERT ON "+tablename+" FOR EACH ROW BEGIN IF "
+					+"(:new."+autoIncColName+" IS NULL) THEN SELECT "+sequenceName+".nextval INTO :new."+autoIncColName
+					+" FROM dual; END IF; UPDATE preference Set ValueString=:new."+autoIncColName
+					+" WHERE PrefName='OracleInsertId'; END;";
+				try{
+					General.NonQ(command);
+					DataConnection.splitStrings=true;//Must turn split strings back on after command is over
+				}catch{
+					textLog.Text+="FAILED to setup trigger "+triggerName+"\r\n";
+					DataConnection.splitStrings=true;//Must turn split strings back on after command is over, even in failure.
+					return false;
+				}
+			}
+			if(!changesWereMade) {
+				if(checkShow.Checked) {
+					textLog.Text+=Lan.g(this,"Oracle sequences and triggers run.  No changes made.")+"\r\n";
+				}
+			}
+			else {
+				textLog.Text+=Lan.g(this,"Oracle sequences and triggers finished successfully.")+"\r\n";
+			}
+			return true;
+		}
+
 		private void VerifyProv(){
 			command="SELECT valuestring FROM preference WHERE prefname = 'PracticeDefaultProv'";
 			table=General.GetTable(command);
@@ -400,7 +611,12 @@ namespace OpenDental
 					return;
 				}
 			}
-			command="SELECT provnum FROM provider WHERE IsHidden=0 ORDER BY itemorder LIMIT 1";
+			command="SELECT provnum FROM provider WHERE IsHidden=0 ORDER BY itemorder ";
+			if(FormChooseDatabase.DBtype==DatabaseType.Oracle){
+				command="SELECT * FROM ("+command+") WHERE ROWNUM<=1";
+			}else{//Assume MySQL
+				command+="LIMIT 1";
+			}
 			table=General.GetTable(command);
 			command="UPDATE preference SET valuestring = '"+table.Rows[0][0].ToString()+"' WHERE prefname = 'PracticeDefaultProv'";
 			General.NonQ(command);
@@ -423,7 +639,12 @@ namespace OpenDental
 					return;
 				}
 			}
-			command="SELECT defnum FROM definition WHERE category = 4 AND ishidden = 0 ORDER BY itemorder LIMIT 1";
+			command="SELECT defnum FROM definition WHERE category = 4 AND ishidden = 0 ORDER BY itemorder ";
+			if(FormChooseDatabase.DBtype==DatabaseType.Oracle){
+				command="SELECT * FROM ("+command+") WHERE ROWNUM<=1";
+			}else{//Assume MySQL
+				command+="LIMIT 1";
+			}
 			table=General.GetTable(command);
 			command="UPDATE preference SET valuestring='"+table.Rows[0][0].ToString()+"' WHERE prefname='PracticeDefaultBillType'";
 			General.NonQ(command);
@@ -503,6 +724,10 @@ namespace OpenDental
 		}
 
 		private void VerifyDates(){
+			if(FormChooseDatabase.DBtype==DatabaseType.Oracle){
+				return;//This check is not valid for Oracle, because each of the following fields are defined as non-null,
+								//and 0000-00-00 is not a valid Oracle date.
+			}
 			if(checkPrompt.Checked){
 				if(!MsgBox.Show(this,true,"Change all dates in 23 different fields that are 0000-00-00 to 0001-01-01?")){
 					return;
@@ -543,7 +768,8 @@ namespace OpenDental
 			command=@"SELECT DISTINCT procedurelog.ADACode
 				FROM procedurelog
 				LEFT JOIN procedurecode ON procedurelog.ADACode=procedurecode.ADACode
-				WHERE procedurecode.ADACode IS NULL";
+				WHERE procedurecode.ADACode IS NULL
+				AND procedurelog.ADACode !=''";
 			table=General.GetTable(command);
 			if(table.Rows.Count==0) {
 				if(checkShow.Checked) {
@@ -571,7 +797,7 @@ namespace OpenDental
 				procCode.Descript=myADA;
 				procCode.AbbrDesc=myADA;
 				procCode.ProcTime="/X/";
-				procCode.ProcCat=Defs.Short[(int)DefCat.ProcCodeCats][0].DefNum;
+				procCode.ProcCat=DefB.Short[(int)DefCat.ProcCodeCats][0].DefNum;
 				procCode.TreatArea=TreatmentArea.Mouth;
 				ProcedureCodes.Insert(procCode);
 				textLog.Text+=Lan.g(this,"Procedure code added: ")+myADA+"\r\n";
@@ -714,8 +940,8 @@ namespace OpenDental
 			//If the program locks up when trying to create a deposit slip, it's because someone removed the start date from the deposit edit window. Run this query to get back in.
 			DateTime date=PrefB.GetDate("DateDepositsStarted");
 			if(date<DateTime.Now.AddMonths(-1)){
-				command="UPDATE preference SET ValueString='"+POut.PDate(DateTime.Today.AddDays(-21))
-					+"' WHERE PrefName='DateDepositsStarted'";
+				command="UPDATE preference SET ValueString="+POut.PDate(DateTime.Today.AddDays(-21))
+					+" WHERE PrefName='DateDepositsStarted'";
 				General.NonQ(command);
 				DataValid.SetInvalid(InvalidTypes.Prefs);
 				textLog.Text+=Lan.g(this,"Deposit start date reset.")+"\r\n";
@@ -786,9 +1012,8 @@ namespace OpenDental
 		}
 
 		private void DeletedPatsWithBalance(){
-			command="SELECT PatNum,BalTotal FROM patient	WHERE PatStatus=4 "
+			command="SELECT PatNum FROM patient	WHERE PatStatus=4 "
 				+"AND (Bal_0_30 !=0	OR Bal_31_60 !=0 OR Bal_61_90 !=0	OR BalOver90 !=0 OR InsEst !=0 OR BalTotal !=0)";
-				//+"AND BalTotal !=0";//use this when doing adjustments
 			table=General.GetTable(command);
 			if(table.Rows.Count==0 && checkShow.Checked) {
 				textLog.Text+=Lan.g(this,"No balances found for deleted patients.")+"\r\n";
@@ -796,20 +1021,7 @@ namespace OpenDental
 			}
 			Patient pat;
 			Patient old;
-			//Adjustment adj;
 			for(int i=0;i<table.Rows.Count;i++) {
-				//This code will create adjustments to zero out balances.
-				/*adj=new Adjustment();
-				adj.AdjAmt=-PIn.PDouble(table.Rows[i]["BalTotal"].ToString());
-				adj.PatNum=PIn.PInt(table.Rows[i]["PatNum"].ToString());
-				adj.AdjDate=DateTime.Today;
-				adj.AdjNote="Clearing out balance to delete patient.";
-				adj.AdjType=Defs.Short[(int)DefCat.AdjTypes][0].DefNum;
-				adj.DateEntry=DateTime.Now;
-				adj.ProcDate=DateTime.Today;
-				adj.ProvNum=3;
-				Adjustments.InsertOrUpdate(adj,true);
-				textLog.Text+="Adjustment added: "+adj.AdjAmt.ToString("c")+"\r\n";*/
 				pat=Patients.GetPat(PIn.PInt(table.Rows[i][0].ToString()));
 				old=pat.Copy();
 				pat.LName=pat.LName+Lan.g(this,"DELETED");
@@ -817,11 +1029,14 @@ namespace OpenDental
 				Patients.Update(pat,old);
 				textLog.Text+=Lan.g(this,"Warning!  Patient:")+" "+old.GetNameFL()+" "
 					+Lan.g(this,"was previously marked as deleted, but was found to have a balance. Patient has been changed to Archive status.  The account will need to be cleared, and the patient deleted again.")+"\r\n";
-				Application.DoEvents();
 			}
 		}
 
 		private void ProceduresAttachedToWrongAppts(){
+			//FIXME:UPDATE-MULTIPLE-TABLES
+			if(FormChooseDatabase.DBtype==DatabaseType.Oracle){
+				return;
+			}
 			command="UPDATE appointment,procedurelog SET procedurelog.AptNum=0 "
 				+"WHERE procedurelog.AptNum=appointment.AptNum AND procedurelog.PatNum != appointment.PatNum";
 			int numberFixed=General.NonQ(command);
@@ -838,7 +1053,7 @@ namespace OpenDental
 			}
 		}
 
-		private void DuplicateRecalls() {
+		private void DuplicateRecalls(){
 			//command="SELECT COUNT(*) AS repetitions,PatNum FROM recall GROUP BY PatNum HAVING repetitions >1";
 			command="SELECT COUNT(*),PatNum FROM recall GROUP BY PatNum HAVING COUNT(*) >1";
 			table=General.GetTable(command);
@@ -894,8 +1109,8 @@ namespace OpenDental
 		}
 
 		private void PatPlanOrdinalsTwoToOne(){
-			command="SELECT PatPlanNum FROM patplan AS patplan1 WHERE Ordinal=2 AND NOT EXISTS("
-				+"SELECT * FROM patplan AS patplan2 WHERE patplan1.PatNum=patplan2.PatNum AND patplan2.Ordinal=1)";
+			command="SELECT PatPlanNum FROM patplan patplan1 WHERE Ordinal=2 AND NOT EXISTS("
+				+"SELECT * FROM patplan patplan2 WHERE patplan1.PatNum=patplan2.PatNum AND patplan2.Ordinal=1)";
 			table=General.GetTable(command);
 			for(int i=0;i<table.Rows.Count;i++){
 				command="UPDATE patplan SET Ordinal=1 WHERE PatPlanNum="+table.Rows[i][0].ToString();
@@ -925,6 +1140,10 @@ namespace OpenDental
 		}
 
 		private void PayPlanChargeGuarantorMatch() {
+			//FIXME:UPDATE-MULTIPLE-TABLES
+			if(FormChooseDatabase.DBtype==DatabaseType.Oracle) {
+				return;
+			}
 			int numberFixed=0;
 			command="UPDATE payplancharge,payplan SET payplancharge.Guarantor=payplan.Guarantor "
 				+"WHERE payplan.PayPlanNum=payplancharge.PayPlanNum "
@@ -943,7 +1162,7 @@ namespace OpenDental
 			command="SELECT DocNum FROM document WHERE DocCategory=0";
 			table=General.GetTable(command);
 			for(int i=0;i<table.Rows.Count;i++) {
-				command="UPDATE document SET DocCategory="+POut.PInt(Defs.Short[(int)DefCat.ImageCats][0].DefNum)
+				command="UPDATE document SET DocCategory="+POut.PInt(DefB.Short[(int)DefCat.ImageCats][0].DefNum)
 					+" WHERE DocNum="+table.Rows[i][0].ToString();
 				General.NonQ(command);
 			}
@@ -964,6 +1183,10 @@ namespace OpenDental
 
 		private void TimeCardEntriesInFuture() {
 			command=@"UPDATE clockevent SET TimeDisplayed=TimeEntered WHERE TimeDisplayed > NOW()";
+			if(FormChooseDatabase.DBtype==DatabaseType.Oracle) {
+				command=@"UPDATE clockevent SET TimeDisplayed=TimeEntered WHERE TimeDisplayed > "
+					+POut.PDateT(MiscData.GetNowDateTime());
+			}
 			int numberFixed=General.NonQ(command);
 			if(numberFixed>0 || checkShow.Checked) {
 				textLog.Text+=Lan.g(this,"Timecard entries fixed: ")+numberFixed.ToString()+"\r\n";
@@ -972,14 +1195,22 @@ namespace OpenDental
 
 		private void SignalEntriesInFuture() {
 			command=@"DELETE FROM signal WHERE SigDateTime > NOW() OR AckTime > NOW()";
+			if(FormChooseDatabase.DBtype==DatabaseType.Oracle) {
+				string nowDateTime=POut.PDateT(MiscData.GetNowDateTime());
+				command=@"DELETE FROM signal WHERE SigDateTime > "+nowDateTime+" OR AckTime > "+nowDateTime;
+			}
 			int numberFixed=General.NonQ(command);
 			if(numberFixed>0 || checkShow.Checked) {
 				textLog.Text+=Lan.g(this,"Signal entries deleted: ")+numberFixed.ToString()+"\r\n";
 			}
 		}
 
-		private void ProceduresDeletedButAttachedToClaim(){
-			command=@"UPDATE procedurelog,claimproc
+		private void ProceduresDeletedButAttachedToClaim() {
+			//FIXME:UPDATE-MULTIPLE-TABLES
+			if(FormChooseDatabase.DBtype==DatabaseType.Oracle) {
+				return;
+			}
+			command=@"UPDATE procedurelog,claimproc         
 				SET procedurelog.ProcStatus=2
 				WHERE procedurelog.ProcNum=claimproc.ProcNum
 				AND procedurelog.ProcStatus=6
@@ -990,7 +1221,7 @@ namespace OpenDental
 			}
 		}
 
-		private void WriteOffsNegativeAndSum(){
+		private void WriteOffsNegativeAndSum() {
 			command=@"UPDATE claimproc SET WriteOff = -WriteOff WHERE WriteOff < 0";
 			int numberFixed=General.NonQ(command);
 			if(numberFixed>0 || checkShow.Checked) {
@@ -1015,11 +1246,51 @@ namespace OpenDental
 			}
 		}
 
+		private void PatientsAllHavePriProv() {
+			//previous versions of the program just dealt gracefully with missing provnum.
+			//From now on, we can assum priprov is not missing, making coding easier.
+			command=@"UPDATE patient SET PriProv="+PrefB.GetString("PracticeDefaultProv")+" WHERE PriProv=0";
+			int numberFixed=General.NonQ(command);
+			if(numberFixed>0 || checkShow.Checked) {
+				textLog.Text+=Lan.g(this,"Patient pri provs fixed: ")+numberFixed.ToString()+"\r\n";
+			}
+		}
+
+		private bool FixDecimalValues() {
+			//Holds columns to be checked. Strings are in pairs in the following order: table-name,column-name
+			string[] decimalCols=new string[] {
+				"patient","EstBalance"
+			};
+
+			int decimalPlacessToRoundTo=8;
+			int changes=0;
+
+			for(int i=0;i<decimalCols.Length;i+=2) {
+				string tablename=decimalCols[i];
+				string colname=decimalCols[i+1];
+				string command="UPDATE "+tablename+" SET "+colname+"=ROUND("+colname+","+decimalPlacessToRoundTo
+					+") WHERE "+colname+"!=ROUND("+colname+","+decimalPlacessToRoundTo+")";
+				try {
+					changes+=General.NonQ(command);
+				}
+				catch {
+					textLog.Text+="FAILED to update Oracle decimal values.\r\n";
+				}
+			}
+			if(changes<1) {
+				if(checkShow.Checked) {
+					textLog.Text+=Lan.g(this,"Decimal values checked. No changes made.")+"\r\n";
+				}
+			}
+			else {
+				textLog.Text+=Lan.g(this,"Decimal value check finished successfully. Number of changes: ")+changes+"\r\n";
+			}
+			return true;
+		}
+
+
+
 		
-
-
-
-
 
 
 

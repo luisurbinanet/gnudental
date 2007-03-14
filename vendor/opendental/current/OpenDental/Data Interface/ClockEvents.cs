@@ -12,9 +12,9 @@ namespace OpenDental{
 			string command=
 				"SELECT * from clockevent WHERE"
 				+" EmployeeNum = '"+POut.PInt(empNum)+"'"
-				+" && TimeDisplayed >= '"+POut.PDate(fromDate)+"'"
+				+" AND TimeDisplayed >= "+POut.PDate(fromDate)
 				//adding a day takes it to midnight of the specified toDate
-				+" && TimeDisplayed <= '"+POut.PDate(toDate.AddDays(1))+"'";
+				+" AND TimeDisplayed <= "+POut.PDate(toDate.AddDays(1));
 			if(!getAll) {
 				if(isBreaks)
 					command+=" AND ClockStatus = '2'";
@@ -53,8 +53,8 @@ namespace OpenDental{
 			}
 			command+=
 				 "'"+POut.PInt   (ce.EmployeeNum)+"', "
-				+"'"+POut.PDateT (ce.TimeEntered)+"', "
-				+"'"+POut.PDateT (ce.TimeDisplayed)+"', "
+				+POut.PDateT (ce.TimeEntered)+", "
+				+POut.PDateT (ce.TimeDisplayed)+", "
 				+"'"+POut.PBool  (ce.ClockIn)+"', "
 				+"'"+POut.PInt   ((int)ce.ClockStatus)+"', "
 				+"'"+POut.PString(ce.Note)+"')";
@@ -70,8 +70,8 @@ namespace OpenDental{
 		public static void Update(ClockEvent ce) {
 			string command= "UPDATE clockevent SET "
 				+"EmployeeNum = '"    +POut.PInt   (ce.EmployeeNum)+"' "
-				+",TimeEntered = '"   +POut.PDateT (ce.TimeEntered)+"' "
-				+",TimeDisplayed = '" +POut.PDateT (ce.TimeDisplayed)+"' "
+				+",TimeEntered = "   +POut.PDateT (ce.TimeEntered)+" "
+				+",TimeDisplayed = " +POut.PDateT (ce.TimeDisplayed)+" "
 				+",ClockIn = '"       +POut.PBool  (ce.ClockIn)+"' "
 				+",ClockStatus = '"   +POut.PInt   ((int)ce.ClockStatus)+"' "
 				+",Note = '"          +POut.PString(ce.Note)+"' "
@@ -88,7 +88,12 @@ namespace OpenDental{
 		///<summary>Gets directly from the database.  Returns true if the last time clock entry for this employee was a clockin.</summary>
 		public static bool IsClockedIn(int employeeNum){
 			string command="SELECT ClockIn FROM clockevent WHERE EmployeeNum="+POut.PInt(employeeNum)
-				+" ORDER BY TimeDisplayed DESC LIMIT 1";
+				+" ORDER BY TimeDisplayed DESC ";
+			if(FormChooseDatabase.DBtype==DatabaseType.Oracle){
+				command="SELECT * FROM ("+command+") WHERE ROWNUM<=1";
+			}else{//Assume MySQL
+				command+=" LIMIT 1";
+			}
 			DataTable table=General.GetTable(command);
 			if(table.Rows.Count==0)//if this employee has never clocked in or out.
 				return false;
@@ -101,7 +106,12 @@ namespace OpenDental{
 		///<summary>Gets info directly from database.  If the employee is clocked out, this gets the status for clockin is based on how they last clocked out.  Also used to determine how to initially display timecard.</summary>
 		public static TimeClockStatus GetLastStatus(int employeeNum){
 			string command="SELECT ClockStatus FROM clockevent WHERE EmployeeNum="+POut.PInt(employeeNum)
-				+" ORDER BY TimeDisplayed DESC LIMIT 1";
+				+" ORDER BY TimeDisplayed DESC ";
+			if(FormChooseDatabase.DBtype==DatabaseType.Oracle){
+				command="SELECT * FROM ("+command+") WHERE ROWNUM<=1";
+			}else{//Assum MySQL
+				command+="LIMIT 1";
+			}
 			DataTable table=General.GetTable(command);
 			if(table.Rows.Count==0)//if this employee has never clocked in or out.
 				return TimeClockStatus.Home;
@@ -110,9 +120,7 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static DateTime GetServerTime(){
-			string command="SELECT NOW()";
-			DataTable table=General.GetTable(command);
-			return PIn.PDateT(table.Rows[0][0].ToString());
+			return MiscData.GetNowDateTime();
 		}
 
 		///<summary>Used in the timecard to track hours worked per week when the week started in a previous time period.  This gets all the hours of the first week before the date listed.  Also adds in any adjustments for that week.</summary>

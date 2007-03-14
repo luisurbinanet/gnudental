@@ -39,9 +39,8 @@ namespace OpenDental{
 				List[i].CommDateTime   = PIn.PDate(table.Rows[i][2].ToString());
 				List[i].CommType       = (CommItemType)PIn.PInt(table.Rows[i][3].ToString());
 				List[i].Note           = PIn.PString(table.Rows[i][4].ToString());
-				List[i].Mode           = (CommItemMode)PIn.PInt(table.Rows[i][5].ToString());
+				List[i].Mode_          = (CommItemMode)PIn.PInt(table.Rows[i][5].ToString());
 				List[i].SentOrReceived = (CommSentOrReceived)PIn.PInt(table.Rows[i][6].ToString());
-				List[i].EmailMessageNum= PIn.PInt(table.Rows[i][7].ToString());
 			}
 			return List;
 		}
@@ -55,18 +54,17 @@ namespace OpenDental{
 			if(PrefB.RandomKeys) {
 				command+="CommlogNum,";
 			}
-			command+="PatNum,CommDateTime,CommType,Note,Mode,SentOrReceived,EmailMessageNum) VALUES(";
+			command+="PatNum,CommDateTime,CommType,Note,Mode_,SentOrReceived) VALUES(";
 			if(PrefB.RandomKeys) {
 				command+="'"+POut.PInt(comm.CommlogNum)+"', ";
 			}
 			command+=
 				 "'"+POut.PInt   (comm.PatNum)+"', "
-				+"'"+POut.PDateT (comm.CommDateTime)+"', "
+				+POut.PDateT (comm.CommDateTime)+", "
 				+"'"+POut.PInt   ((int)comm.CommType)+"', "
 				+"'"+POut.PString(comm.Note)+"', "
-				+"'"+POut.PInt   ((int)comm.Mode)+"', "
-				+"'"+POut.PInt   ((int)comm.SentOrReceived)+"', "
-				+"'"+POut.PInt   (comm.EmailMessageNum)+"')";
+				+"'"+POut.PInt   ((int)comm.Mode_)+"', "
+				+"'"+POut.PInt   ((int)comm.SentOrReceived)+"')";
 			if(PrefB.RandomKeys) {
 				General.NonQ(command);
 			}
@@ -79,12 +77,11 @@ namespace OpenDental{
 		public static void Update(Commlog comm) {
 			string command= "UPDATE commlog SET "
 				+"PatNum = '"         +POut.PInt   (comm.PatNum)+"', "
-				+"CommDateTime= '"    +POut.PDateT (comm.CommDateTime)+"', "
+				+"CommDateTime= "    +POut.PDateT (comm.CommDateTime)+", "
 				+"CommType = '"       +POut.PInt   ((int)comm.CommType)+"', "
-				+"Mode = '"           +POut.PInt   ((int)comm.Mode)+"', "
-				+"SentOrReceived = '" +POut.PInt   ((int)comm.SentOrReceived)+"', "
-				+"EmailMessageNum = '"+POut.PInt   ((int)comm.EmailMessageNum)+"', "
-				+"Note = '"           +POut.PString(comm.Note)+"' "
+				+"Note = '"           +POut.PString(comm.Note)+"', "
+				+"Mode_ = '"          +POut.PInt   ((int)comm.Mode_)+"', "
+				+"SentOrReceived = '" +POut.PInt   ((int)comm.SentOrReceived)+"' "
 				+"WHERE commlognum = '"+POut.PInt(comm.CommlogNum)+"'";
 			General.NonQ(command);
 		}
@@ -97,7 +94,7 @@ namespace OpenDental{
 	
 		///<summary></summary>
 		public static int UndoStatements(DateTime date){
-			string command="DELETE FROM commlog WHERE CommDateTime LIKE '"+POut.PDate(date)+"%' "
+			string command="DELETE FROM commlog WHERE CommDateTime LIKE '"+POut.PDate(date,false)+"%' "
 				+"AND CommType=1";
 			int rowsAffected=General.NonQ(command);
 			return rowsAffected;
@@ -105,8 +102,13 @@ namespace OpenDental{
 
 		///<summary>Used when printing recall cards to make a commlog entry for everyone at once.</summary>
 		public static void InsertForRecallPostcard(int patNum){
-			string command="SELECT COUNT(*) FROM  commlog WHERE DATE(CommDateTime) = CURDATE() AND PatNum="+POut.PInt(patNum)
-				+" AND CommType=5 AND Mode=2 AND SentOrReceived=1";
+			string command="SELECT COUNT(*) FROM  commlog WHERE ";
+			if(FormChooseDatabase.DBtype==DatabaseType.Oracle){
+				command+="TO_DATE(CommDateTime) = "+POut.PDate(MiscData.GetNowDateTime());
+			}else{//Assume MySQL
+				command+="DATE(CommDateTime) = CURDATE()";
+			}
+			command+=" AND PatNum="+POut.PInt(patNum)+" AND CommType=5 AND Mode_=2 AND SentOrReceived=1";
 			if(General.GetCount(command)!="0"){
 				return;
 			}
@@ -114,7 +116,7 @@ namespace OpenDental{
 			com.PatNum=patNum;
 			com.CommDateTime=DateTime.Now;
 			com.CommType=CommItemType.Recall;
-			com.Mode=CommItemMode.Mail;
+			com.Mode_=CommItemMode.Mail;
 			com.SentOrReceived=CommSentOrReceived.Sent;
 			com.Note=Lan.g("FormRecallList","Sent recall postcard");
 			Insert(com);

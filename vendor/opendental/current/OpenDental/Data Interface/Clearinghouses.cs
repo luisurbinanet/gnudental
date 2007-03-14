@@ -49,20 +49,20 @@ namespace OpenDental{
 		///<summary>Inserts this clearinghouse into database.</summary>
 		public static void Insert(Clearinghouse clearhouse){
 			string command="INSERT INTO clearinghouse (Description,ExportPath,IsDefault,Payors"
-				+",Eformat,ReceiverID,Password,ResponsePath,CommBridge,ClientProgram,"
-				+"ModemPort,LoginID) VALUES("
+				+",Eformat,ReceiverID,SenderID,Password,ResponsePath,CommBridge,ClientProgram,"
+				+"LastBatchNumber,ModemPort,LoginID) VALUES("
 				+"'"+POut.PString(clearhouse.Description)+"', "
 				+"'"+POut.PString(clearhouse.ExportPath)+"', "
 				+"'"+POut.PBool  (clearhouse.IsDefault)+"', "
 				+"'"+POut.PString(clearhouse.Payors)+"', "
 				+"'"+POut.PInt   ((int)clearhouse.Eformat)+"', "
 				+"'"+POut.PString(clearhouse.ReceiverID)+"', "
-				//+"'"+POut.PString(SenderID)+"', "
+				+"'', " //SenderID
 				+"'"+POut.PString(clearhouse.Password)+"', "
 				+"'"+POut.PString(clearhouse.ResponsePath)+"', "
 				+"'"+POut.PInt   ((int)clearhouse.CommBridge)+"', "
 				+"'"+POut.PString(clearhouse.ClientProgram)+"', "
-				//LastBatchNumber
+				+"'0', "//LastBatchNumber
 				+"'"+POut.PInt   (clearhouse.ModemPort)+"', "
 				+"'"+POut.PString(clearhouse.LoginID)+"')";
  			General.NonQ(command);
@@ -104,10 +104,18 @@ namespace OpenDental{
  			DataTable table=General.GetTable(command);
 			int batchNum=PIn.PInt(table.Rows[0][0].ToString());
 			//and increment it by one
-			if(batchNum==999)
-				batchNum=1;
-			else
-				batchNum++;
+			if(clearhouse.Eformat==ElectronicClaimFormat.Canadian){
+				if(batchNum==999999)
+					batchNum=1;
+				else
+					batchNum++;
+			}
+			else{
+				if(batchNum==999)
+					batchNum=1;
+				else
+					batchNum++;
+			}
 			//save the new batch number. Even if user cancels, it will have incremented.
 			command="UPDATE clearinghouse SET LastBatchNumber="+batchNum.ToString()
 				+" WHERE ClearinghouseNum = "+POut.PInt(clearhouse.ClearinghouseNum);

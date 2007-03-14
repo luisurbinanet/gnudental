@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
+using System.Globalization;
 using System.Text;
 using System.Windows.Forms;
 using OpenDental.UI;
@@ -56,6 +57,7 @@ namespace OpenDental{
 		private OpenDental.UI.Button butColorClear;
 		private TextBox textLaymanTerm;
 		private Label label2;
+		private CheckBox checkIsCanadianLab;
 		private ProcedureCode ProcCode;
 
 		///<summary>The procedure code must have already been insterted into the database.</summary>
@@ -118,6 +120,7 @@ namespace OpenDental{
 			this.butColorClear = new OpenDental.UI.Button();
 			this.textLaymanTerm = new System.Windows.Forms.TextBox();
 			this.label2 = new System.Windows.Forms.Label();
+			this.checkIsCanadianLab = new System.Windows.Forms.CheckBox();
 			this.SuspendLayout();
 			// 
 			// label1
@@ -254,9 +257,9 @@ namespace OpenDental{
 			// checkSetRecall
 			// 
 			this.checkSetRecall.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkSetRecall.Location = new System.Drawing.Point(56,254);
+			this.checkSetRecall.Location = new System.Drawing.Point(56,256);
 			this.checkSetRecall.Name = "checkSetRecall";
-			this.checkSetRecall.Size = new System.Drawing.Size(217,16);
+			this.checkSetRecall.Size = new System.Drawing.Size(284,18);
 			this.checkSetRecall.TabIndex = 5;
 			this.checkSetRecall.Text = "Triggers Recall";
 			// 
@@ -265,7 +268,7 @@ namespace OpenDental{
 			this.checkNoBillIns.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.checkNoBillIns.Location = new System.Drawing.Point(56,279);
 			this.checkNoBillIns.Name = "checkNoBillIns";
-			this.checkNoBillIns.Size = new System.Drawing.Size(274,16);
+			this.checkNoBillIns.Size = new System.Drawing.Size(284,18);
 			this.checkNoBillIns.TabIndex = 6;
 			this.checkNoBillIns.Text = "Do not usually bill to insurance";
 			// 
@@ -335,7 +338,7 @@ namespace OpenDental{
 			// checkIsHygiene
 			// 
 			this.checkIsHygiene.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkIsHygiene.Location = new System.Drawing.Point(56,304);
+			this.checkIsHygiene.Location = new System.Drawing.Point(56,302);
 			this.checkIsHygiene.Name = "checkIsHygiene";
 			this.checkIsHygiene.Size = new System.Drawing.Size(284,18);
 			this.checkIsHygiene.TabIndex = 7;
@@ -380,9 +383,9 @@ namespace OpenDental{
 			// checkIsProsth
 			// 
 			this.checkIsProsth.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkIsProsth.Location = new System.Drawing.Point(56,331);
+			this.checkIsProsth.Location = new System.Drawing.Point(56,325);
 			this.checkIsProsth.Name = "checkIsProsth";
-			this.checkIsProsth.Size = new System.Drawing.Size(307,18);
+			this.checkIsProsth.Size = new System.Drawing.Size(284,18);
 			this.checkIsProsth.TabIndex = 41;
 			this.checkIsProsth.Text = "Is Prosthesis (Crown,Bridge,Denture,RPD)";
 			// 
@@ -480,12 +483,22 @@ namespace OpenDental{
 			this.label2.Text = "Layman\'s Term";
 			this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
+			// checkIsCanadianLab
+			// 
+			this.checkIsCanadianLab.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkIsCanadianLab.Location = new System.Drawing.Point(56,348);
+			this.checkIsCanadianLab.Name = "checkIsCanadianLab";
+			this.checkIsCanadianLab.Size = new System.Drawing.Size(284,18);
+			this.checkIsCanadianLab.TabIndex = 52;
+			this.checkIsCanadianLab.Text = "Is Lab Fee";
+			// 
 			// FormProcCodeEdit
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(941,707);
+			this.Controls.Add(this.checkIsCanadianLab);
 			this.Controls.Add(this.textLaymanTerm);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.butColorClear);
@@ -549,8 +562,12 @@ namespace OpenDental{
 			butColor.BackColor=ProcCode.GraphicColor;
 			checkSetRecall.Checked=ProcCode.SetRecall;
 			checkNoBillIns.Checked=ProcCode.NoBillIns;
-			checkIsProsth.Checked=ProcCode.IsProsth;
 			checkIsHygiene.Checked=ProcCode.IsHygiene;
+			checkIsProsth.Checked=ProcCode.IsProsth;
+			if(CultureInfo.CurrentCulture.Name.Substring(3)!="CA"){//Canada
+				checkIsCanadianLab.Visible=false;
+			}
+			checkIsCanadianLab.Checked=ProcCode.IsCanadianLab;
 			textNote.Text=ProcCode.DefaultNote;
 			listTreatArea.Items.Clear();
 			for(int i=1;i<Enum.GetNames(typeof(TreatmentArea)).Length;i++){
@@ -564,9 +581,9 @@ namespace OpenDental{
 					listPaintType.SelectedIndex=i;
 				}
 			}
-			for(int i=0;i<Defs.Short[(int)DefCat.ProcCodeCats].Length;i++){
-				listCategory.Items.Add(Defs.Short[(int)DefCat.ProcCodeCats][i].ItemName);
-				if(Defs.Short[(int)DefCat.ProcCodeCats][i].DefNum==ProcCode.ProcCat)
+			for(int i=0;i<DefB.Short[(int)DefCat.ProcCodeCats].Length;i++){
+				listCategory.Items.Add(DefB.Short[(int)DefCat.ProcCodeCats][i].ItemName);
+				if(DefB.Short[(int)DefCat.ProcCodeCats][i].DefNum==ProcCode.ProcCat)
 					listCategory.SelectedIndex=i;
 			}
 			if(listCategory.SelectedIndex==-1)
@@ -602,10 +619,10 @@ namespace OpenDental{
 			gridFees.Rows.Clear();
 			ODGridRow row;
 			Fee fee;
-			for(int i=0;i<Defs.Short[(int)DefCat.FeeSchedNames].Length;i++){
+			for(int i=0;i<DefB.Short[(int)DefCat.FeeSchedNames].Length;i++){
 				fee=Fees.GetFeeByOrder(ProcCode.ADACode,i);
 				row=new ODGridRow();
-				row.Cells.Add(Defs.Short[(int)DefCat.FeeSchedNames][i].ItemName);
+				row.Cells.Add(DefB.Short[(int)DefCat.FeeSchedNames][i].ItemName);
 				if(fee==null){
 					row.Cells.Add("");
 				}
@@ -625,7 +642,7 @@ namespace OpenDental{
 			if(FeeCur==null) {
 				FeeCur=new Fee();
 				FeeCur.ADACode=ProcCode.ADACode;
-				FeeCur.FeeSched=Defs.Short[(int)DefCat.FeeSchedNames][e.Row].DefNum;
+				FeeCur.FeeSched=DefB.Short[(int)DefCat.FeeSchedNames][e.Row].DefNum;
 				Fees.Insert(FeeCur);
 				FormFE.IsNew=true;
 			}
@@ -720,11 +737,12 @@ namespace OpenDental{
 			ProcCode.NoBillIns=checkNoBillIns.Checked;
 			ProcCode.IsProsth=checkIsProsth.Checked;
 			ProcCode.IsHygiene=checkIsHygiene.Checked;
+			ProcCode.IsCanadianLab=checkIsCanadianLab.Checked;
 			ProcCode.DefaultNote=textNote.Text;
 			ProcCode.PaintType=(ToothPaintingType)listPaintType.SelectedIndex;
 			ProcCode.TreatArea=(TreatmentArea)listTreatArea.SelectedIndex+1;
 			if(listCategory.SelectedIndex!=-1)
-				ProcCode.ProcCat=Defs.Short[(int)DefCat.ProcCodeCats][listCategory.SelectedIndex].DefNum;
+				ProcCode.ProcCat=DefB.Short[(int)DefCat.ProcCodeCats][listCategory.SelectedIndex].DefNum;
 			ProcedureCodes.Update(ProcCode);//whether new or not.
 			if(DoSynchRecall){
 				Cursor=Cursors.WaitCursor;

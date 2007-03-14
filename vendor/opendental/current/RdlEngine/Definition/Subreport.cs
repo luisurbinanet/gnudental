@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -33,7 +33,7 @@ namespace fyiReporting.RDL
 	/// The definition of a Subreport (report name, parameters, ...).
 	///</summary>
 	[Serializable]
-	internal class Subreport : ReportItem, ICacheData
+	internal class Subreport : ReportItem
 	{
 		string _ReportName;		// The full path (e.g. “/salesreports/orderdetails”) or
 								// relative path (e.g. “orderdetails”) to a subreport.
@@ -54,15 +54,11 @@ namespace fyiReporting.RDL
 		bool _MergeTransactions;	// Indicates that transactions in the subreport should
 								//be merged with transactions in the parent report
 								//(into a single transaction for the entire report) if the
-								//data sources use the same connection.		
-		// Runtime variable
-		[NonSerialized] Report _Report;			// loaded report
-		[NonSerialized] Page _FirstPage;		// first page for the loaded report
-		[NonSerialized] IList _ReportErrors;	// reported errors
-		[NonSerialized] bool _LoadFailed;		// set to true if load of report has failed
-		[NonSerialized] bool _BeenRun;			// when true we don't need to rerun report; just render it
+								//data sources use the same connection.	
+	
+		ReportDefn _ReportDefn;	// loaded report definition
 
-		internal Subreport(Report r, ReportLink p, XmlNode xNode) :base(r, p, xNode)
+		internal Subreport(ReportDefn r, ReportLink p, XmlNode xNode) :base(r, p, xNode)
 		{
 			_ReportName=null;
 			_Parameters=null;
@@ -99,6 +95,8 @@ namespace fyiReporting.RDL
 		
 			if (_ReportName == null)
 				OwnerReport.rl.LogError(8, "Subreport requires the ReportName element.");
+			
+			OwnerReport.ContainsSubreport = true;	// owner report contains a subreport
 		}
 
 		// Handle parsing of function in final pass
@@ -115,129 +113,95 @@ namespace fyiReporting.RDL
 			if (_NoRows != null)
 				_NoRows.FinalPass();
 
-			OwnerReport.DataCache.Add(this);
+			_ReportDefn = GetReport(OwnerReport.ParseFolder);
+            if (_ReportDefn != null)    // only null in error case (e.g. subreport not found)
+			    _ReportDefn.Subreport = this;
 			return;
 		}
 
 		override internal void Run(IPresent ip, Row row)
 		{
+			Report r = ip.Report();
 			base.Run(ip, row);
 
-			if (_LoadFailed)
-				return;
+			// need to save the owner report and nest in this defintion
+			ReportDefn saveReport = r.ReportDefinition;
+			r.SetReportDefinition(_ReportDefn);
+			r.Folder = _ReportDefn.ParseFolder;		// folder needs to get set since the id of the report is used by the cache
+			DataSourcesDefn saveDS = r.ParentConnections;
+			if (this.MergeTransactions)
+				r.ParentConnections = saveReport.DataSourcesDefn;
+			else
+				r.ParentConnections = null;
 
-			if (_Report == null)
-			{
-				_Report = GetReport();
-				if (_Report == null)		// todo handle the error messages
+			if (_Parameters == null)
+			{	// When no parameters we only retrieve data once
+				if (r.Cache.Get(this, "report") == null)
 				{
-					_LoadFailed = true;		// mark it so we don't keep trying and trying
-					if (_ReportErrors != null)
-					{
-						ip.Subreport(this, row);	// let the renderer report the error
-						_ReportErrors = null;
-					}
-					return;
+					r.RunGetData(null);
+					r.Cache.Add(this, "report", this);
 				}
-				_Report.Subreport = this;
 			}
-
-			if (_Parameters != null)
-				SetSubreportParameters(row);
-
-			if (!_BeenRun)
+			else
 			{
-				_Report.RunGetData(null);	// we've already set the parameters
-				if (_Parameters == null)	// if no parameters 
-					_BeenRun = true;		//    we don't need to obtain data ever again
+				SetSubreportParameters(r, row);
+				r.RunGetData(null);
 			}
 
-			_ReportErrors = null;			// we don't have any serious errors to report via render
 			ip.Subreport(this, row);
-			if (_Report.ErrorItems != null)
-			{
-				OwnerReport.rl.LogError(4, _Report.ErrorItems);
-				_Report.ErrorReset();
-			}
+
+			r.SetReportDefinition(saveReport);			// restore the current report
+			r.ParentConnections = saveDS;				// restore the data connnections
 		}
 
 		override internal void RunPage(Pages pgs, Row row)
 		{
-			if (IsHidden(row))
+			Report r = pgs.Report;
+			if (IsHidden(r, row))
 				return;
 
 			base.RunPage(pgs, row);
 
-			if (_LoadFailed)				// if we fail hard (e.g. can't load report) don't keep trying and failing
-				return;
+			// need to save the owner report and nest in this defintion
+			ReportDefn saveReport = r.ReportDefinition;
+			r.SetReportDefinition(_ReportDefn);
+			r.Folder = _ReportDefn.ParseFolder;		// folder needs to get set since the id of the report is used by the cache
+			DataSourcesDefn saveDS = r.ParentConnections;
+			if (this.MergeTransactions)
+				r.ParentConnections = saveReport.DataSourcesDefn;
+			else
+			    r.ParentConnections = null;
 
-			if (_Report == null)			// First time we won't have loaded the report yet
-			{
-				_Report = GetReport();
-				if (_Report == null)		// todo handle the error messages
+			if (_Parameters == null)
+			{	// When no parameters we only retrieve data once
+				if (r.Cache.Get(this, "report") == null)
 				{
-					_LoadFailed = true;		// mark it so we don't keep trying and trying
-					if (_ReportErrors != null)
-					{
-						RunPageError(pgs, row);	// output the errors
-						_ReportErrors = null;
-					}
-					return;
+					r.RunGetData(null);
+					r.Cache.Add(this, "report", this);	// just put something in cache to remember
 				}
-				_Report.Subreport = this;	// we got the report; mark it as being a subreport
-				SetPageLeft();				// Set the Left attribute since this will be the margin for this report
 			}
-
-			// Apply the parameters
-			if (_Parameters != null)
-				SetSubreportParameters(row);
-
-			// Obtain the data for the subreport;  don't need to repeat if no parameters on subreport
-			if (!_BeenRun)
+			else
 			{
-				_Report.RunGetData(null);	// we've already set the parameters
-				if (_Parameters == null)	// if no parameters 
-					_BeenRun = true;		//    we don't need to obtain data ever again
+				SetSubreportParameters(r, row);		// apply the parameters
+				r.RunGetData(null);
 			}
 
-			_ReportErrors = null;			// we don't have any serious errors to report via render
-			
+			SetPageLeft(r);				// Set the Left attribute since this will be the margin for this report
+
 			SetPagePositionBegin(pgs);
-			_FirstPage = pgs.CurrentPage;
 
 			//
 			// Run the subreport -- this is the major effort in creating the display objects in the page
 			//
-			_Report.Body.RunPage(pgs);		// create a the subreport items
+			r.ReportDefinition.Body.RunPage(pgs);		// create a the subreport items
+
+			r.SetReportDefinition(saveReport);			// restore the current report
+			r.ParentConnections = saveDS;				// restore the data connnections
 
 			SetPagePositionEnd(pgs, pgs.CurrentPage.YOffset);
-
-			// Save any runtime errors that might have occured in the subreport
-			if (_Report.ErrorItems != null)
-			{
-				OwnerReport.rl.LogError(4, _Report.ErrorItems);
-				_Report.ErrorReset();
-			}
 		}
 
-		private void RunPageError(Pages pgs, Row row)
-		{
-			if (_ReportErrors == null)
-				return;
-			StringBuilder sb = new StringBuilder();
-			foreach (string msg in _ReportErrors)
-			{
-				sb.Append(msg);
-				sb.Append("\r\n");
-			}
-			PageText pt = new PageText(sb.ToString());
-			SetPagePositionAndStyle(pt, row);
-
-			Page p = pgs.CurrentPage;
-			p.AddObject(pt);
-		}
-
-		private Report GetReport()
+		private ReportDefn GetReport(string folder)
 		{
 			string prog;
 			string name;
@@ -246,44 +210,43 @@ namespace fyiReporting.RDL
 				_ReportName[0] == Path.AltDirectorySeparatorChar)
 				name = _ReportName;
 			else 
-				name = OwnerReport.Folder + Path.DirectorySeparatorChar + _ReportName;
+				name = folder + Path.DirectorySeparatorChar + _ReportName;
 
 			name = name + ".rdl";			// TODO: shouldn't necessarily require this extension
 
 			// Load and Compile the report
 			RDLParser rdlp;
 			Report r;
+			ReportDefn rdefn=null;
 			try
 			{
 				prog = GetRdlSource(name);
 				rdlp =  new RDLParser(prog);
-				r = rdlp.Parse();
+				rdlp.Folder = folder;
+				r = rdlp.Parse(OwnerReport.GetObjectNumber());
+				OwnerReport.SetObjectNumber(r.ReportDefinition.GetObjectNumber());
 				if (r.ErrorMaxSeverity > 0) 
 				{
-					int severity = r.ErrorMaxSeverity;
-					r.ErrorReset();
-					if (severity > 4)
-					{
-						this._ReportErrors = r.ErrorItems;
-						r = null;			// don't return when severe errors
-					}
+					string err;
+					if (r.ErrorMaxSeverity > 4)
+						err = string.Format("Subreport {0} failed to compile with the following errors.", this._ReportName);
+					else
+						err = string.Format("Subreport {0} compiled with the following warnings.", this._ReportName);
+					OwnerReport.rl.LogError(r.ErrorMaxSeverity, err);
+					OwnerReport.rl.LogError(r.rl);	// log all these errors
+					OwnerReport.rl.LogError(0, "End of Subreport errors");
 				}
 				// If we've loaded the report; we should tell it where it got loaded from
-				if (r != null)
-				{	// Don't care much if this fails; and don't want to null out report if it does
-					try {r.Folder = Path.GetDirectoryName(name);}
-					catch {}
+				if (r.ErrorMaxSeverity <= 4) 
+				{	
+					rdefn = r.ReportDefinition;
 				}
 			}
 			catch (Exception ex)
 			{
-				if (_ReportErrors == null)
-					_ReportErrors = new ArrayList();
-
-				_ReportErrors.Add(string.Format("Subreport {0} failed with exception. {1}", this._ReportName, ex.Message));
-				r = null;
+				OwnerReport.rl.LogError(8, string.Format("Subreport {0} failed with exception. {1}", this._ReportName, ex.Message));
 			}
-			return r;
+			return rdefn;
 		}
 
 		private string GetRdlSource(string name)
@@ -306,13 +269,13 @@ namespace fyiReporting.RDL
 			return prog;
 		}
 
-		private void SetSubreportParameters(Row row)
+		private void SetSubreportParameters(Report rpt, Row row)
 		{
 			UserReportParameter userp;
 			foreach (SubreportParameter srp in _Parameters.Items)
 			{
 				userp=null;						
-				foreach (UserReportParameter urp in _Report.UserReportParameters)
+				foreach (UserReportParameter urp in rpt.UserReportParameters)
 				{
 					if (urp.Name == srp.Name.Nm)
 					{
@@ -325,14 +288,9 @@ namespace fyiReporting.RDL
 					throw new Exception(
 						string.Format("Subreport {0} doesn't define parameter {1}.", _ReportName, srp.Name.Nm));
 				}
-				object v = srp.Value.Evaluate(row);
+				object v = srp.Value.Evaluate(rpt, row);
 				userp.Value = v;
 			}
-		}
-
-		internal Page FirstPage
-		{
-			get { return  _FirstPage; }
 		}
 
 		internal string ReportName
@@ -341,14 +299,9 @@ namespace fyiReporting.RDL
 			set {  _ReportName = value; }
 		}
 
-		internal Report Report
+		internal ReportDefn ReportDefn
 		{
-			get { return _Report; }
-		}
-
-		internal IList ReportErrors
-		{
-			get { return _ReportErrors; }
+			get { return _ReportDefn; }
 		}
 
 		internal SubReportParameters Parameters
@@ -368,13 +321,5 @@ namespace fyiReporting.RDL
 			get { return  _MergeTransactions; }
 			set {  _MergeTransactions = value; }
 		}
-		#region ICacheData Members
-
-		public void ClearCache()
-		{
-			_BeenRun = false;
-		}
-
-		#endregion
 	}
 }

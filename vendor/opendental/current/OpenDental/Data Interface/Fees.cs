@@ -12,7 +12,7 @@ namespace OpenDental{
 
 		///<summary>Refreshes all fees and loads them into HList array.  </summary>
 		public static void Refresh() {
-			HList=new Hashtable[Defs.Short[(int)DefCat.FeeSchedNames].Length];
+			HList=new Hashtable[DefB.Short[(int)DefCat.FeeSchedNames].Length];
 			for(int i=0;i<HList.Length;i++) {
 				HList[i]=new Hashtable();
 			}
@@ -28,14 +28,14 @@ namespace OpenDental{
 				fee.FeeSched     =PIn.PInt(table.Rows[i][3].ToString());
 				fee.UseDefaultFee=PIn.PBool(table.Rows[i][4].ToString());
 				fee.UseDefaultCov=PIn.PBool(table.Rows[i][5].ToString());
-				if(Defs.GetOrder(DefCat.FeeSchedNames,fee.FeeSched)!=-1) {//if fee sched is visible
-					if(HList[Defs.GetOrder(DefCat.FeeSchedNames,fee.FeeSched)].ContainsKey(fee.ADACode)) {
+				if(DefB.GetOrder(DefCat.FeeSchedNames,fee.FeeSched)!=-1) {//if fee sched is visible
+					if(HList[DefB.GetOrder(DefCat.FeeSchedNames,fee.FeeSched)].ContainsKey(fee.ADACode)) {
 						//if fee was already loaded for this adacode, delete this duplicate.
 						command="DELETE FROM fee WHERE feenum = '"+fee.FeeNum+"'";
 						General.NonQ(command);
 					}
 					else {
-						HList[Defs.GetOrder(DefCat.FeeSchedNames,fee.FeeSched)].Add(fee.ADACode,fee);
+						HList[DefB.GetOrder(DefCat.FeeSchedNames,fee.FeeSched)].Add(fee.ADACode,fee);
 					}
 				}
 			}
@@ -91,7 +91,7 @@ namespace OpenDental{
 				return -1;
 			if(feeSched==0)
 				return -1;
-			int i=Defs.GetOrder(DefCat.FeeSchedNames,feeSched);
+			int i=DefB.GetOrder(DefCat.FeeSchedNames,feeSched);
 			if(i==-1){
 				return -1;//you cannot obtain fees for hidden fee schedules
 			}
@@ -140,6 +140,17 @@ namespace OpenDental{
 			return retVal;
 		}
 
+		///<summary>A simpler version of the same function above.  The required numbers can be obtained in a fairly simple query.  Might return a 0 if the primary provider does not have a fee schedule set.</summary>
+		public static int GetFeeSched(int priPlanFeeSched, int patFeeSched, int patPriProvNum){
+			if(priPlanFeeSched!=0){
+				return priPlanFeeSched;
+			}
+			if(patFeeSched!=0){
+				return patFeeSched;
+			}
+			return Providers.ListLong[Providers.GetIndexLong(patPriProvNum)].FeeSched;
+		}
+
 		///<summary>Clears all fees from one fee schedule.  Supply the DefNum of the feeSchedule.</summary>
 		public static void ClearFeeSched(int schedNum){
 			string command="DELETE FROM fee WHERE FeeSched="+schedNum;
@@ -172,6 +183,24 @@ namespace OpenDental{
 				Fees.Update(feeArray[i]);
 			}
 		}
+
+		///<summary>schedI is the currently displayed index of the fee schedule to save to.  Empty fees never even make it this far and should be skipped earlier in the process.</summary>
+		public static void Import(string adaCode,double amt,int schedI){
+			if(!ProcedureCodes.IsValidCode(adaCode)){
+				return;//skip for now. Possibly insert adaCode in a future version.
+			}
+			Fee fee=GetFeeByOrder(adaCode,schedI);
+			if(fee!=null){
+				Delete(fee);
+			}
+			fee=new Fee();
+			fee.ADACode=adaCode;
+			fee.Amount=amt;
+			fee.FeeSched=DefB.Short[(int)DefCat.FeeSchedNames][schedI].DefNum;
+			Insert(fee);
+		}
+
+
 
 
 	}

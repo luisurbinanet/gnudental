@@ -7,122 +7,28 @@ using System.Windows.Forms;
 using OpenDentBusiness;
 
 namespace OpenDental{
-	///<summary>Handles database commands related to the definition table in the db.  This class is referenced frequently from many different areas of the program.  It stores data from the definition table in a couple of two dimensional arrays for immediate retrieval.  </summary>\
+	///<summary>Handles database commands related to the definition table in the db.  The related DefB class is referenced frequently from many different areas of the program.</summary>\
 	public class Defs{
-		///<summary>Stores all defs in a 2D array except the hidden ones.  The first dimension is the category, in int format.  The second dimension is the index of the definition in this category.  This is dependent on how it was refreshed, and not on what is in the database.  If you need to reference a specific def, then the DefNum is more effective.</summary>
-		public static Def[][] Short;
-		///<summary>Stores all defs in a 2D array.</summary>
-		public static Def[][] Long;
-
 		///<summary></summary>
 		public static void Refresh(){
+			DataSet ds=null;
 			try {
 				if(RemotingClient.OpenDentBusinessIsLocal) {
-					DefB.Refresh();
+					ds=DefB.Refresh();
 				}
 				else {
 					DtoDefRefresh dto=new DtoDefRefresh();
-					DataSet ds=RemotingClient.ProcessQuery(dto);
-					DefB.RawData=ds.Tables[0];
+					ds=RemotingClient.ProcessQuery(dto);
 				}
 			}
 			catch(Exception e) {
 				MessageBox.Show(e.Message);
 				return;
 			}
-			Long=new Def[Enum.GetValues(typeof(DefCat)).Length][];
-			for(int j=0;j<Enum.GetValues(typeof(DefCat)).Length;j++){
-				Long[j]=GetForCategory(j,true,DefB.RawData);
-			}
-			Short=new Def[Enum.GetValues(typeof(DefCat)).Length][];
-			for(int j=0;j<Enum.GetValues(typeof(DefCat)).Length;j++){
-				Short[j]=GetForCategory(j,false,DefB.RawData);
-			}
+			DefB.FillArrays(ds.Tables[0]);//now, we have an arrays on both the client and the server.
 		}
 
-		///<summary>Used by the refresh method above.</summary>
-		private static Def[] GetForCategory(int catIndex, bool includeHidden, DataTable table){
-			List<Def> list=new List<Def>();
-			Def def;
-			for(int i=0;i<table.Rows.Count;i++) {
-				if(PIn.PInt(table.Rows[i][1].ToString())!=catIndex){
-					continue;
-				}
-				if(PIn.PBool(table.Rows[i][6].ToString())//if is hidden
-					&& !includeHidden)//and we don't want to include hidden
-				{
-					continue;
-				}
-				def=new Def();
-				def.DefNum    = PIn.PInt   (table.Rows[i][0].ToString());
-				def.Category  = (DefCat)PIn.PInt(table.Rows[i][1].ToString());
-				def.ItemOrder = PIn.PInt   (table.Rows[i][2].ToString());
-				def.ItemName  = PIn.PString(table.Rows[i][3].ToString());
-				def.ItemValue = PIn.PString(table.Rows[i][4].ToString());
-				def.ItemColor = Color.FromArgb(PIn.PInt(table.Rows[i][5].ToString()));
-				def.IsHidden  = PIn.PBool  (table.Rows[i][6].ToString());
-				list.Add(def);
-			}
-			return list.ToArray();
-		}
-
-		///<summary></summary>
-		public static string GetName(DefCat myCat, int myDefNum){
-			//return "x";
-			//string retStr="";
-			for(int i=0;i<Long[(int)myCat].GetLength(0);i++){
-				if(Long[(int)myCat][i].DefNum==myDefNum){
-					return Long[(int)myCat][i].ItemName;
-				}
-			}
-			return "";
-			//return retStr;
-		}
-
-		///<summary>Gets the order of the def within Short or -1 if not found.</summary>
-		public static int GetOrder(DefCat myCat,int myDefNum){
-			//gets the index in the list of unhidden (the Short list).
-			for(int i=0;i<Short[(int)myCat].GetLength(0);i++){
-				if(Short[(int)myCat][i].DefNum==myDefNum){
-					return i;
-				}
-			}
-			return -1;
-		}
-
-		///<summary></summary>
-		public static string GetValue(DefCat myCat, int myDefNum){
-			string retStr="";
-			for(int i=0;i<Long[(int)myCat].GetLength(0);i++){
-				if(Long[(int)myCat][i].DefNum==myDefNum){
-					retStr=Long[(int)myCat][i].ItemValue;
-				}
-			}
-			return retStr;
-		}
-
-		///<summary></summary>
-		public static Color GetColor(DefCat myCat, int myDefNum){
-			Color retCol=Color.White;
-			for(int i=0;i<Long[(int)myCat].GetLength(0);i++){
-				if(Long[(int)myCat][i].DefNum==myDefNum){
-					retCol=Long[(int)myCat][i].ItemColor;
-				}
-			}
-			return retCol;
-		}
-
-		///<summary></summary>
-		public static bool GetHidden(DefCat myCat,int myDefNum) {
-			for(int i=0;i<Long[(int)myCat].GetLength(0);i++) {
-				if(Long[(int)myCat][i].DefNum==myDefNum) {
-					return Long[(int)myCat][i].IsHidden;
-				}
-			}
-			return false;
-		}
-
-		///<summary></summary>
+		///<summary>Only used in FormDefinitions</summary>
 		public static Def[] GetCatList(int myCat){
 			string command=
 				"SELECT * from definition"
@@ -239,18 +145,7 @@ namespace OpenDental{
 			Update(def);
 		}
 
-		///<summary>Allowed types are blank, C, or A</summary>
-		public static Def[] GetFeeSchedList(string type){
-			ArrayList AL=new ArrayList();
-			for(int i=0;i<Short[(int)DefCat.FeeSchedNames].Length;i++){
-				if(Short[(int)DefCat.FeeSchedNames][i].ItemValue==type){
-					AL.Add(Short[(int)DefCat.FeeSchedNames][i]);
-				}
-			}
-			Def[] retVal=new Def[AL.Count];
-			AL.CopyTo(retVal);
-			return retVal;
-		}
+		
 
 	}
 

@@ -37,7 +37,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label7;
 		private ClaimPayment ClaimPaymentCur;
 		///<summary>Set this externally.</summary>
-		public Claim OriginatingClaim;
+		public int OriginatingClaimNum;
 
 		///<summary></summary>
 		public FormClaimPayEdit(ClaimPayment claimPaymentCur){
@@ -376,7 +376,7 @@ namespace OpenDental{
 					tb2.SetSelected(i,true);
 					splitTot+=splits[i].InsPayAmt;
 				}
-				if(splits[i].ClaimNum==OriginatingClaim.ClaimNum){
+				if(splits[i].ClaimNum==OriginatingClaimNum){
 					for(int j=0;j<tb2.MaxCols;j++){
 						tb2.FontBold[j,i]=true;
 					}

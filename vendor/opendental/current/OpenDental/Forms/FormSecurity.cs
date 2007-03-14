@@ -323,15 +323,15 @@ namespace OpenDental{
 
 		private void FillTreeUsers(){
 			UserGroups.Refresh();
-			Users.Refresh();
+			Userods.Refresh();
 			treeUsers.Nodes.Clear();
-			List<User> usersForGroup;
+			List<Userod> usersForGroup;
 			TreeNode groupNode;
 			TreeNode userNode;
 			for(int i=0;i<UserGroups.List.Length;i++){
 				groupNode=new TreeNode(UserGroups.List[i].Description);
 				groupNode.Tag=UserGroups.List[i].UserGroupNum;
-				usersForGroup=Users.GetForGroup(UserGroups.List[i].UserGroupNum);
+				usersForGroup=Userods.GetForGroup(UserGroups.List[i].UserGroupNum);
 				for(int j=0;j<usersForGroup.Count;j++){
 					userNode=new TreeNode(usersForGroup[j].UserName);
 					userNode.Tag=usersForGroup[j].UserNum;
@@ -358,7 +358,7 @@ namespace OpenDental{
 		}
 
 		private void butAddUser_Click(object sender, System.EventArgs e) {
-			User user=new User();
+			Userod user=new Userod();
 			user.UserGroupNum=SelectedGroupNum;
 			FormUserEdit FormU=new FormUserEdit(user);
 			FormU.IsNew=true;
@@ -381,7 +381,7 @@ namespace OpenDental{
 				SelectedGroupNum=(int)clickedNode.Tag;
 			}
 			else{//user
-				SelectedGroupNum=UserB.GetUser((int)clickedNode.Tag).UserGroupNum;
+				SelectedGroupNum=UserodB.GetUser((int)clickedNode.Tag).UserGroupNum;
 			}
 			FillTreePerm();
 		}
@@ -408,7 +408,7 @@ namespace OpenDental{
 				}
 			}
 			else{//user
-				User user=UserB.GetUser((int)treeUsers.SelectedNode.Tag);
+				Userod user=UserodB.GetUser((int)treeUsers.SelectedNode.Tag);
 				FormUserEdit FormU=new FormUserEdit(user);
 				FormU.ShowDialog();
 				if(FormU.DialogResult==DialogResult.Cancel){

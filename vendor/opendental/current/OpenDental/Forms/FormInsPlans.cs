@@ -3,6 +3,7 @@ Open Dental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open
 See header in FormOpenDental.cs for complete text.  Redistributions must retain this text.
 ===============================================================================================================*/
 using System;
+using System.Data;
 using System.Drawing;
 using System.Collections;
 using System.Collections.Generic;
@@ -33,7 +34,7 @@ namespace OpenDental{
 		private TextBox textCarrier;
 		private Label label2;
 		private OpenDental.UI.ODGrid gridMain;
-		private InsPlan[] ListAll;
+		//private InsPlan[] ListAll;
 		///<summary>Supply a string here to start off the search with filtered employers.</summary>
 		public string empText;
 		private TextBox textGroupNum;
@@ -43,6 +44,7 @@ namespace OpenDental{
 		private OpenDental.UI.Button butMerge;
 		///<summary>Supply a string here to start off the search with filtered carriers.</summary>
 		public string carrierText;
+		private DataTable table;
 
 		///<summary></summary>
 		public FormInsPlans(){
@@ -300,7 +302,7 @@ namespace OpenDental{
 
 		private void FillGrid(){
 			Cursor=Cursors.WaitCursor;
-			ListAll=InsPlans.GetBigList(radioOrderEmp.Checked,textEmployer.Text,textCarrier.Text,
+			table=InsPlans.GetBigList(radioOrderEmp.Checked,textEmployer.Text,textCarrier.Text,
 				textGroupName.Text,textGroupNum.Text);
 			if(IsSelectMode){
 				butBlank.Visible=true;
@@ -341,25 +343,21 @@ namespace OpenDental{
 			//TrojanID and PlanNote not shown
 			gridMain.Rows.Clear();
 			ODGridRow row;
-			Carrier carrier;
-			for(int i=0;i<ListAll.Length;i++) {
+			//Carrier carrier;
+			for(int i=0;i<table.Rows.Count;i++) {
 				row=new ODGridRow();
-				row.Cells.Add(Employers.GetName(ListAll[i].EmployerNum));
-				carrier=Carriers.GetCarrier(ListAll[i].CarrierNum);
-				row.Cells.Add(carrier.CarrierName);
-				row.Cells.Add(carrier.Phone);
-				row.Cells.Add(carrier.Address);
-				row.Cells.Add(carrier.City);
-				row.Cells.Add(carrier.State);
-				row.Cells.Add(carrier.Zip);
-				row.Cells.Add(ListAll[i].GroupNum);
-				row.Cells.Add(ListAll[i].GroupName);
-				if(carrier.NoSendElect)
-					row.Cells.Add("X");
-				else
-					row.Cells.Add("");
-				row.Cells.Add(carrier.ElectID);
-				row.Cells.Add(ListAll[i].NumberPlans.ToString());
+				row.Cells.Add(table.Rows[i]["EmpName"].ToString());
+				row.Cells.Add(table.Rows[i]["CarrierName"].ToString());
+				row.Cells.Add(table.Rows[i]["Phone"].ToString());
+				row.Cells.Add(table.Rows[i]["Address"].ToString());
+				row.Cells.Add(table.Rows[i]["City"].ToString());
+				row.Cells.Add(table.Rows[i]["State"].ToString());
+				row.Cells.Add(table.Rows[i]["Zip"].ToString());
+				row.Cells.Add(table.Rows[i]["GroupNum"].ToString());
+				row.Cells.Add(table.Rows[i]["GroupName"].ToString());
+				row.Cells.Add(table.Rows[i]["noSendElect"].ToString());
+				row.Cells.Add(table.Rows[i]["ElectID"].ToString());
+				row.Cells.Add(table.Rows[i]["plans"].ToString());
 				gridMain.Rows.Add(row);
 			}
 			gridMain.EndUpdate();
@@ -368,13 +366,13 @@ namespace OpenDental{
 		}
 
 		private void gridMain_CellDoubleClick(object sender,ODGridClickEventArgs e){
+			InsPlan plan=InsPlans.GetPlan(PIn.PInt(table.Rows[e.Row]["PlanNum"].ToString()),null);
 			if(IsSelectMode) {
-				SelectedPlan=ListAll[e.Row].Copy();
+				SelectedPlan=plan.Copy();
 				DialogResult=DialogResult.OK;
 				return;
 			}
-			InsPlan PlanCur=ListAll[e.Row].Copy();
-			FormInsPlan FormIP=new FormInsPlan(PlanCur,null);
+			FormInsPlan FormIP=new FormInsPlan(plan,null);
 			FormIP.IsForAll=true;
 			FormIP.ShowDialog();
 			if(FormIP.DialogResult!=DialogResult.OK)
@@ -413,7 +411,7 @@ namespace OpenDental{
 			}
 			InsPlan[] listSelected=new InsPlan[gridMain.SelectedIndices.Length];
 			for(int i=0;i<listSelected.Length;i++){
-				listSelected[i]=ListAll[gridMain.SelectedIndices[i]].Copy();
+				listSelected[i]=InsPlans.GetPlan(PIn.PInt(table.Rows[gridMain.SelectedIndices[i]]["PlanNum"].ToString()),null);
 			}
 			FormInsPlansMerge FormI=new FormInsPlansMerge();
 			FormI.ListAll=listSelected;
@@ -422,13 +420,13 @@ namespace OpenDental{
 				return;
 			}
 			//Do the merge.
-			InsPlan mergedPlan=FormI.MergedPlan.Copy();
-			List<Benefit> benList=Benefits.RefreshForAll(mergedPlan);
+			InsPlan planToMergeTo=FormI.PlanToMergeTo.Copy();
+			List<Benefit> benList=Benefits.RefreshForAll(planToMergeTo);
 			Cursor=Cursors.WaitCursor;
 			List<int> planNums;
 			for(int i=0;i<listSelected.Length;i++){//loop through each selected plan group
-				//skip the merged plan, because it's already correct
-				if(mergedPlan.CompareTo(listSelected[i])==0){
+				//skip the planToMergeTo, because it's already correct
+				if(planToMergeTo.PlanNum==listSelected[i].PlanNum){
 					continue;
 				}
 				planNums=new List<int>(InsPlans.GetPlanNumsOfSamePlans(Employers.GetName(listSelected[i].EmployerNum),
@@ -436,20 +434,22 @@ namespace OpenDental{
 					Carriers.GetName(listSelected[i].CarrierNum),
 					listSelected[i].IsMedical,listSelected[i].PlanNum,false));//remember that planNum=0
 				//First plan info
-				InsPlans.UpdateForLike(listSelected[i],mergedPlan);
+				InsPlans.UpdateForLike(listSelected[i],planToMergeTo);
 				for(int j=0;j<planNums.Count;j++) {
 					InsPlans.ComputeEstimatesForPlan(planNums[j]);
 				}
 				//then benefits
 				Benefits.UpdateListForIdentical(new List<Benefit>(),benList,planNums);//there will always be changes
 				//Then PlanNote.  This is much simpler than the usual synch, because user has seen all versions of note.
-				InsPlans.UpdateNoteForPlans(planNums,mergedPlan.PlanNote);
+				InsPlans.UpdateNoteForPlans(planNums,planToMergeTo.PlanNote);
 			}
 			FillGrid();
 			//highlight the merged plan
-			for(int i=0;i<ListAll.Length;i++){
-				if(ListAll[i].CompareTo(mergedPlan)==0){
-					gridMain.SetSelected(i,true);
+			for(int i=0;i<table.Rows.Count;i++){
+				for(int j=0;j<listSelected.Length;j++){
+					if(table.Rows[i]["PlanNum"].ToString()==listSelected[j].PlanNum.ToString()){
+						gridMain.SetSelected(i,true);
+					}
 				}
 			}
 			Cursor=Cursors.Default;
@@ -470,7 +470,7 @@ namespace OpenDental{
 					MessageBox.Show(Lan.g(this,"Please select only one item first."));
 					return;
 				}
-				SelectedPlan=ListAll[gridMain.SelectedIndices[0]].Copy();
+				SelectedPlan=InsPlans.GetPlan(PIn.PInt(table.Rows[gridMain.SelectedIndices[0]]["PlanNum"].ToString()),null).Copy();
 				DialogResult=DialogResult.OK;
 			}
 			else{//just editing the list from the main menu

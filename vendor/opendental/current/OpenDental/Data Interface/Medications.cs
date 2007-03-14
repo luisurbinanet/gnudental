@@ -88,7 +88,7 @@ namespace OpenDental{
 		///<summary>Returns a list of all patients using this medication.</summary>
 		public static string[] GetPats(int medicationNum){
 			string command =
-				"SELECT CONCAT(LName,', ',FName,' ',Preferred) FROM medicationpat,patient "
+				"SELECT CONCAT(CONCAT(CONCAT(CONCAT(LName,', '),FName),' '),Preferred) FROM medicationpat,patient "
 				+"WHERE medicationpat.PatNum=patient.PatNum "
 				+"AND medicationpat.MedicationNum="+medicationNum.ToString();
 			DataTable table=General.GetTable(command);

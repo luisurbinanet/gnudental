@@ -15,7 +15,7 @@ namespace OpenDentBusiness {
 				command+="EmailMessageNum,";
 			}
 			command+="PatNum,ToAddress,FromAddress,Subject,BodyText,"
-				+"MsgDateTime) VALUES(";
+				+"MsgDateTime,SentOrReceived) VALUES(";
 			if(PrefB.RandomKeys) {
 				command+="'"+POut.PInt(message.EmailMessageNum)+"', ";
 			}
@@ -25,7 +25,8 @@ namespace OpenDentBusiness {
 				+"'"+POut.PString(message.FromAddress)+"', "
 				+"'"+POut.PString(message.Subject)+"', "
 				+"'"+POut.PString(message.BodyText)+"', "
-				+"'"+POut.PDateT(message.MsgDateTime)+"')";
+				+POut.PDateT(message.MsgDateTime)+", "
+				+"'"+POut.PInt((int)message.SentOrReceived)+"')";
 			DataConnection dcon=new DataConnection();
 			if(PrefB.RandomKeys) {
 				dcon.NonQ(command);
@@ -50,7 +51,8 @@ namespace OpenDentBusiness {
 				+ ",FromAddress = '"+POut.PString(message.FromAddress)+"' "
 				+ ",Subject = '"    +POut.PString(message.Subject)+"' "
 				+ ",BodyText = '"   +POut.PString(message.BodyText)+"' "
-				+ ",MsgDateTime = '"+POut.PDateT(message.MsgDateTime)+"' "
+				+ ",MsgDateTime = "+POut.PDateT (message.MsgDateTime)+" "
+				+ ",SentOrReceived = '"+POut.PInt((int)message.SentOrReceived)+"' "
 				+"WHERE EmailMessageNum = "+POut.PInt(message.EmailMessageNum);
 			DataConnection dcon=new DataConnection();
 			dcon.NonQ(command);

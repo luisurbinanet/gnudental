@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -28,6 +28,7 @@ using System.Data.SqlClient;
 using System.Data.SqlTypes;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Text;
 using System.Globalization;
 using System.Reflection;
@@ -41,7 +42,7 @@ namespace fyiReporting.RDL
 	internal class Query : ReportLink
 	{
 		string _DataSourceName;		// Name of the data source to execute the query against
-		DataSource _DataSource;		//  the data source object the DataSourceName references.
+		DataSourceDefn _DataSourceDefn;	//  the data source object the DataSourceName references.
 		QueryCommandTypeEnum _QueryCommandType;	// Indicates what type of query is contained in the CommandText
 		Expression _CommandText;	//	(string) The query to execute to obtain the data for the report
 		QueryParameters _QueryParameters;	// A list of parameters that are passed to the data
@@ -51,10 +52,8 @@ namespace fyiReporting.RDL
 		int _RowLimit;				// Number of rows to retrieve before stopping retrieval; 0 means no limit
 
 		IDictionary _Columns;		// QueryColumn (when SQL)
-		[NonSerialized] Rows _Data;					// Runtime data
-		[NonSerialized] Rows _UserData;				// Runtime data (set by user)
 
-		internal Query(Report r, ReportLink p, XmlNode xNode) : base(r, p)
+		internal Query(ReportDefn r, ReportLink p, XmlNode xNode) : base(r, p)
 		{
 			_DataSourceName=null;
 			_QueryCommandType=QueryCommandTypeEnum.Text;
@@ -73,7 +72,7 @@ namespace fyiReporting.RDL
 					case "DataSourceName":
 						_DataSourceName = xNodeLoop.InnerText;
 						break;
-					case "QueryCommandType":
+					case "CommandType":
 						_QueryCommandType = fyiReporting.RDL.QueryCommandType.GetStyle(xNodeLoop.InnerText, OwnerReport.rl);
 						break;
 					case "CommandText":
@@ -112,39 +111,43 @@ namespace fyiReporting.RDL
 				_QueryParameters.FinalPass();
 
 			// verify the data source
-			DataSource ds=null;
-			if (OwnerReport.DataSources != null &&
-				OwnerReport.DataSources.Items != null)
+			DataSourceDefn ds=null;
+			if (OwnerReport.DataSourcesDefn != null &&
+				OwnerReport.DataSourcesDefn.Items != null)
 			{
-				ds = OwnerReport.DataSources[_DataSourceName];
+				ds = OwnerReport.DataSourcesDefn[_DataSourceName];
 			}
 			if (ds == null)
 			{
 				OwnerReport.rl.LogError(8, "Query references unknown data source '" + _DataSourceName + "'");
 				return;
 			}
-			_DataSource = ds;
+			_DataSourceDefn = ds;
 
-			if (ds.SqlConnect == null || _CommandText == null)
+			IDbConnection cnSQL = ds.SqlConnect(null);
+			if (cnSQL == null || _CommandText == null)
 				return;
 
 			// Treat this as a SQL statement
-			String sql = _CommandText.EvaluateString(null);
+			String sql = _CommandText.EvaluateString(null, null);
 			IDbCommand cmSQL=null;
 			IDataReader dr=null;
-			try
+			try 
 			{
-				cmSQL = ds.SqlConnect.CreateCommand();		
-				cmSQL.CommandText = AddParametersAsLiterals(sql, false);
-				AddParameters(cmSQL, false);
+				cmSQL = cnSQL.CreateCommand();		
+				cmSQL.CommandText = AddParametersAsLiterals(null, cnSQL, sql, false);
+                if (this._QueryCommandType == QueryCommandTypeEnum.StoredProcedure)
+                    cmSQL.CommandType = CommandType.StoredProcedure;
+
+				AddParameters(null, cnSQL, cmSQL, false);
 				dr = cmSQL.ExecuteReader(CommandBehavior.SchemaOnly);
 				if (dr.FieldCount < 10)
 					_Columns = new ListDictionary();	// Hashtable is overkill for small lists
 				else
-					_Columns = new Hashtable();
+					_Columns = new Hashtable(dr.FieldCount);
 
 				for (int i=0; i < dr.FieldCount; i++)
-				{
+				{ 
 					QueryColumn qc = new QueryColumn(i, dr.GetName(i), Type.GetTypeCode(dr.GetFieldType(i)) );
 
 					try { _Columns.Add(qc.colName, qc); }
@@ -159,7 +162,7 @@ namespace fyiReporting.RDL
 			}
 			catch (Exception e)
 			{
-				OwnerReport.rl.LogError(8, "SQL Exception: " + e.Message + "\r\nSQL: " + sql);
+				OwnerReport.rl.LogError(4, "SQL Exception during report compilation: " + e.Message + "\r\nSQL: " + sql);
 			}
 			finally
 			{
@@ -174,57 +177,66 @@ namespace fyiReporting.RDL
 			return;
 		}
 
-		// Handle parsing of function in final pass
-		internal void GetData(Fields flds, Filters f)
+		internal void GetData(Report rpt, Fields flds, Filters f)
 		{
-			if (_UserData != null) 
+			Rows uData = this.GetMyUserData(rpt);
+			if (uData != null)
 			{
-				_Data = _UserData;
+				this.SetMyData(rpt, uData);
 				return;
 			}
-			
-			DataSource ds = _DataSource;
 
 			// Treat this as a SQL statement
-			if (ds == null || ds.SqlConnect == null || _CommandText == null) 
+			DataSourceDefn ds = _DataSourceDefn;
+			if (ds == null || _CommandText == null)
 			{
-				_Data = null;
+				this.SetMyData(rpt, null);
 				return;
 			}
 
-			_Data = new Rows(null,null,null);		// no sorting and grouping at base data
-			String sql = _CommandText.EvaluateString(null);
+			IDbConnection cnSQL = ds.SqlConnect(rpt);
+			if (cnSQL == null)
+			{
+				this.SetMyData(rpt, null);
+				return;
+			}
+
+			Rows _Data = new Rows(rpt, null,null,null);		// no sorting and grouping at base data
+			String sql = _CommandText.EvaluateString(rpt, null);
 			IDbCommand cmSQL=null;
 			IDataReader dr=null;
-			try
+			try 
 			{
-				cmSQL = ds.SqlConnect.CreateCommand();		
-				cmSQL.CommandText = AddParametersAsLiterals(sql, true);
-				//if (this._Timeout > 0)
-				//	cmSQL.CommandTimeout = this._Timeout;
+				cmSQL = cnSQL.CreateCommand();		
+				cmSQL.CommandText = AddParametersAsLiterals(rpt, cnSQL, sql, true);
+                if (this._QueryCommandType == QueryCommandTypeEnum.StoredProcedure)
+                    cmSQL.CommandType = CommandType.StoredProcedure;
+                if (this._Timeout > 0)
+					//cmSQL.CommandTimeout = this._Timeout;
 				
-				AddParameters(cmSQL, true);
+				AddParameters(rpt, cnSQL, cmSQL, true);
 				dr = cmSQL.ExecuteReader(CommandBehavior.SingleResult);
 
-				ArrayList ar = new ArrayList();
+                List<Row> ar = new List<Row>();
 				_Data.Data = ar;
 				int rowCount=0;
 				int maxRows = _RowLimit > 0? _RowLimit: int.MaxValue;
 				int fieldCount = flds.Items.Count;
 
 				// Determine the query column number for each field
+				int[] qcn = new int[flds.Items.Count];
 				foreach (Field fld in flds)
 				{
-					fld.QueryColumnNumber = -1;
+					qcn[fld.ColumnNumber] = -1;
 					if (fld.Value != null)
 						continue;
 					try
 					{
-						fld.QueryColumnNumber = dr.GetOrdinal(fld.DataField);
+						qcn[fld.ColumnNumber] = dr.GetOrdinal(fld.DataField);
 					}
-					catch
+					catch 
 					{
-						fld.QueryColumnNumber = -1;
+						qcn[fld.ColumnNumber] = -1;
 					}
 				}
 
@@ -234,14 +246,14 @@ namespace fyiReporting.RDL
 
 					foreach (Field fld in flds)
 					{
-						if (fld.QueryColumnNumber != -1)
+						if (qcn[fld.ColumnNumber] != -1)
 						{
-							or.Data[fld.ColumnNumber] = dr.GetValue(fld.QueryColumnNumber);
+							or.Data[fld.ColumnNumber] = dr.GetValue(qcn[fld.ColumnNumber]);
 						}
 					}
 
 					// Apply the filters
-					if (f == null || f.Apply(or))
+					if (f == null || f.Apply(rpt, or))
 					{
 						or.RowNumber = rowCount;	// 
 						rowCount++;
@@ -250,16 +262,16 @@ namespace fyiReporting.RDL
 					if (--maxRows <= 0)				// don't retrieve more than max
 						break;
 				}
-				ar.TrimToSize();		// free up any extraneous space; can be sizeable for large # rows
+                ar.TrimExcess();		// free up any extraneous space; can be sizeable for large # rows
 				if (f != null)
-					f.ApplyFinalFilters(_Data, false);
+					f.ApplyFinalFilters(rpt, _Data, false);	
 //#if DEBUG
-//				OwnerReport.rl.LogError(4, "Rows Read:" + ar.Count.ToString() + " SQL:" + sql );
+//				rpt.rl.LogError(4, "Rows Read:" + ar.Count.ToString() + " SQL:" + sql );
 //#endif
 			}
 			catch (Exception e)
 			{
-				OwnerReport.rl.LogError(8, "SQL Exception" + e.Message + "\r\n" + e.StackTrace);
+				rpt.rl.LogError(8, "SQL Exception" + e.Message + "\r\n" + e.StackTrace);
 			}
 			finally
 			{
@@ -270,14 +282,16 @@ namespace fyiReporting.RDL
 						dr.Close();
 				}
 			}
+			this.SetMyData(rpt, _Data);
 		}
 
 		// Obtain the data from the XML
-		internal void GetData(string xmlData, Fields flds, Filters f)
+		internal void GetData(Report rpt, string xmlData, Fields flds, Filters f)
 		{
-			if (_UserData != null)
+			Rows uData = this.GetMyUserData(rpt);
+			if (uData != null)
 			{
-				_Data = _UserData;
+				this.SetMyData(rpt, uData);
 				return;
 			}
 
@@ -289,13 +303,13 @@ namespace fyiReporting.RDL
 
 			XmlNode xNode;
 			xNode = doc.LastChild;
-			if (xNode == null || xNode.Name != "Rows")
+			if (xNode == null || !(xNode.Name == "Rows" || xNode.Name == "fyi:Rows"))
 			{
 				throw new Exception("Error: XML Data must contain top level rows.");
 			}
 
-			_Data = new Rows(null,null,null);		
-			ArrayList ar = new ArrayList();
+			Rows _Data = new Rows(rpt, null,null,null);
+            List<Row> ar = new List<Row>();
 			_Data.Data = ar;
 
 			int rowCount=0;
@@ -331,29 +345,32 @@ namespace fyiReporting.RDL
 					}
 				}
 				// Apply the filters 
-				if (f == null || f.Apply(or))
+				if (f == null || f.Apply(rpt, or))
 				{
 					or.RowNumber = rowCount;	// 
 					rowCount++;
 					ar.Add(or);
 				}
 			}
-					
-			ar.TrimToSize();		// free up any extraneous space; can be sizeable for large # rows
+
+            ar.TrimExcess();		// free up any extraneous space; can be sizeable for large # rows
 			if (f != null)
-				f.ApplyFinalFilters(_Data, false);
+				f.ApplyFinalFilters(rpt, _Data, false);
+
+			SetMyData(rpt, _Data);
 		}
-		internal void SetData(IEnumerable ie, Fields flds, Filters f)
+
+		internal void SetData(Report rpt, IEnumerable ie, Fields flds, Filters f)
 		{
 			if (ie == null)			// Does user want to remove user data?
 			{	
-				_UserData = null;
+				SetMyUserData(rpt, null);
 				return;
 			}
 
-			Rows rows = new Rows(null,null,null);		// no sorting and grouping at base data
+			Rows rows = new Rows(rpt, null,null,null);		// no sorting and grouping at base data
 
-			ArrayList ar = new ArrayList();
+            List<Row> ar = new List<Row>();
 			rows.Data = ar;
 			int rowCount=0;
 			int maxRows = _RowLimit > 0? _RowLimit: int.MaxValue;
@@ -378,7 +395,7 @@ namespace fyiReporting.RDL
 				}
 
 				// Apply the filters 
-				if (f == null || f.Apply(or))
+				if (f == null || f.Apply(rpt, or))
 				{
 					or.RowNumber = rowCount;	// 
 					rowCount++;
@@ -387,24 +404,24 @@ namespace fyiReporting.RDL
 				if (--maxRows <= 0)				// don't retrieve more than max
 					break;
 			}
-			ar.TrimToSize();		// free up any extraneous space; can be sizeable for large # rows
+            ar.TrimExcess();		// free up any extraneous space; can be sizeable for large # rows
 			if (f != null)
-				f.ApplyFinalFilters(_Data, false);
+				f.ApplyFinalFilters(rpt, rows, false);
 
-			_UserData = rows;
+			SetMyUserData(rpt, rows);
 		}
 
-		internal void SetData(IDataReader dr, Fields flds, Filters f)
+		internal void SetData(Report rpt, IDataReader dr, Fields flds, Filters f)
 		{
 			if (dr == null)			// Does user want to remove user data?
 			{	
-				_UserData = null;
+				SetMyUserData(rpt, null);
 				return;
 			}
 
-			Rows rows = new Rows(null,null,null);		// no sorting and grouping at base data
+			Rows rows = new Rows(rpt,null,null,null);		// no sorting and grouping at base data
 
-			ArrayList ar = new ArrayList();
+            List<Row> ar = new List<Row>();
 			rows.Data = ar;
 			int rowCount=0;
 			int maxRows = _RowLimit > 0? _RowLimit: int.MaxValue;
@@ -413,7 +430,7 @@ namespace fyiReporting.RDL
 				Row or = new Row(rows, dr.FieldCount);
 				dr.GetValues(or.Data);
 				// Apply the filters 
-				if (f == null || f.Apply(or))
+				if (f == null || f.Apply(rpt, or))
 				{
 					or.RowNumber = rowCount;	// 
 					rowCount++;
@@ -422,24 +439,24 @@ namespace fyiReporting.RDL
 				if (--maxRows <= 0)				// don't retrieve more than max
 					break;
 			}
-			ar.TrimToSize();		// free up any extraneous space; can be sizeable for large # rows
+            ar.TrimExcess();		// free up any extraneous space; can be sizeable for large # rows
 			if (f != null)
-				f.ApplyFinalFilters(_Data, false);
+				f.ApplyFinalFilters(rpt, rows, false);
 
-			_UserData = rows;
+			SetMyUserData(rpt, rows);
 		}
 
-		internal void SetData(DataTable dt, Fields flds, Filters f)
+		internal void SetData(Report rpt, DataTable dt, Fields flds, Filters f)
 		{
 			if (dt == null)			// Does user want to remove user data?
 			{	
-				_UserData = null;
+				SetMyUserData(rpt, null);
 				return;
 			}
 
-			Rows rows = new Rows(null,null,null);		// no sorting and grouping at base data
+			Rows rows = new Rows(rpt,null,null,null);		// no sorting and grouping at base data
 
-			ArrayList ar = new ArrayList();
+            List<Row> ar = new List<Row>();
 			rows.Data = ar;
 			int rowCount=0;
 			int maxRows = _RowLimit > 0? _RowLimit: int.MaxValue;
@@ -454,7 +471,7 @@ namespace fyiReporting.RDL
 					or.Data[fld.ColumnNumber] = dr[fld.DataField];
 				}
 				// Apply the filters 
-				if (f == null || f.Apply(or))
+				if (f == null || f.Apply(rpt, or))
 				{
 					or.RowNumber = rowCount;	// 
 					rowCount++;
@@ -463,31 +480,31 @@ namespace fyiReporting.RDL
 				if (--maxRows <= 0)				// don't retrieve more than max
 					break;
 			}
-			ar.TrimToSize();		// free up any extraneous space; can be sizeable for large # rows
+            ar.TrimExcess();		// free up any extraneous space; can be sizeable for large # rows
 			if (f != null)
-				f.ApplyFinalFilters(_Data, false);
+				f.ApplyFinalFilters(rpt, rows, false);
 
-			_UserData = rows;
+			SetMyUserData(rpt, rows);
 		}
 
-		internal void SetData(XmlDocument xmlDoc, Fields flds, Filters f)
+		internal void SetData(Report rpt, XmlDocument xmlDoc, Fields flds, Filters f)
 		{
 			if (xmlDoc == null)			// Does user want to remove user data?
 			{	
-				_UserData = null;
+				SetMyUserData(rpt, null);
 				return;
 			}
 
-			Rows rows = new Rows(null,null,null);		// no sorting and grouping at base data
+			Rows rows = new Rows(rpt,null,null,null);		// no sorting and grouping at base data
 			
 			XmlNode xNode;
 			xNode = xmlDoc.LastChild;
-			if (xNode == null || xNode.Name != "Rows")
+			if (xNode == null || !(xNode.Name == "Rows" || xNode.Name == "fyi:Rows"))
 			{
 				throw new Exception("XML Data must contain top level element Rows.");
 			}
 
-			ArrayList ar = new ArrayList();
+            List<Row> ar = new List<Row>();
 			rows.Data = ar;
 
 			int rowCount=0;
@@ -522,54 +539,59 @@ namespace fyiReporting.RDL
 					}
 				}
 				// Apply the filters 
-				if (f == null || f.Apply(or))
+				if (f == null || f.Apply(rpt, or))
 				{
 					or.RowNumber = rowCount;	// 
 					rowCount++;
 					ar.Add(or);
 				}
 			}
-					
-			ar.TrimToSize();		// free up any extraneous space; can be sizeable for large # rows
-			if (f != null)
-				f.ApplyFinalFilters(rows, false);
 
-			_UserData = rows;
+            ar.TrimExcess();		// free up any extraneous space; can be sizeable for large # rows
+			if (f != null)
+				f.ApplyFinalFilters(rpt, rows, false);
+
+			SetMyUserData(rpt, rows);
 		}
 
-		private void AddParameters(IDbCommand cmSQL, bool bValue)
+		private void AddParameters(Report rpt, IDbConnection cn, IDbCommand cmSQL, bool bValue)
 		{
 			// any parameters to substitute
 			if (this._QueryParameters == null ||
 				this._QueryParameters.Items == null ||
-				this._QueryParameters.Items.Count == 0)
+				this._QueryParameters.Items.Count == 0 ||
+                this._QueryParameters.ContainsArray)            // arrays get handled by AddParametersAsLiterals
 				return;
 
-			// Don't want to do this for ODBC datasources - AddParametersAsLiterals handles it
-			/*if (this._DataSource != null &&
-				this._DataSource.ConnectionProperties != null &&
-				this._DataSource.ConnectionProperties.DataProvider.ToLower() == "odbc")
-				return;*/
+			// AddParametersAsLiterals handles it when there is replacement
+			if (RdlEngineConfig.DoParameterReplacement(Provider, cn))
+				return;
 
 			foreach(QueryParameter qp in this._QueryParameters.Items)
 			{
 				string paramName;
 
 				// force the name to start with @
-				if (qp.Name.Nm[0] == '@')
-					paramName = qp.Name.Nm;
-				else
-					paramName = "@" + qp.Name.Nm;
-				object pvalue= bValue? qp.Value.Evaluate(null): null;
-
+                if (qp.Name.Nm[0] == '@')
+				    paramName = qp.Name.Nm;
+			    else
+				    paramName = "@" + qp.Name.Nm;
+			    object pvalue= bValue? qp.Value.Evaluate(rpt, null): null;
 				IDbDataParameter dp = cmSQL.CreateParameter();
+
 				dp.ParameterName = paramName;
-				dp.Value = pvalue;
+                if (pvalue is ArrayList)    // Probably a MultiValue Report parameter result
+                {
+                    ArrayList ar = (ArrayList) pvalue;
+                    dp.Value = ar.ToArray(ar[0].GetType());
+                }
+                else
+			        dp.Value = pvalue;
 				cmSQL.Parameters.Add(dp);
 			}
 		}
 
-		private string AddParametersAsLiterals(string sql, bool bValue)
+		private string AddParametersAsLiterals(Report rpt, IDbConnection cn, string sql, bool bValue)
 		{
 			// No parameters means nothing to do
 			if (this._QueryParameters == null ||
@@ -578,19 +600,20 @@ namespace fyiReporting.RDL
 				return sql;
 
 			// Only do this for ODBC datasources - AddParameters handles it in other cases
-			/*if (this._DataSource == null ||
-				this._DataSource.ConnectionProperties == null ||
-				this._DataSource.ConnectionProperties.DataProvider.ToLower() != "odbc")
-				return sql;*/
+            if (!RdlEngineConfig.DoParameterReplacement(Provider, cn))
+            {
+                if (!_QueryParameters.ContainsArray)    // when array we do substitution
+                    return sql;
+            }
 
 			StringBuilder sb = new StringBuilder(sql);
-			ArrayList qlist;
+            List<QueryParameter> qlist;
 			if (_QueryParameters.Items.Count <= 1)
 				qlist = _QueryParameters.Items;
 			else
 			{	// need to sort the list so that longer items are first in the list
-				// otherwise substitution could be don't incorrectly
-				qlist = new ArrayList(_QueryParameters.Items);
+				// otherwise substitution could be done incorrectly
+                qlist = new List<QueryParameter>(_QueryParameters.Items);
 				qlist.Sort();
 			}
 
@@ -608,19 +631,7 @@ namespace fyiReporting.RDL
 				string svalue;
 				if (bValue)
 				{	// use the value provided
-					svalue = qp.Value.EvaluateString(null);
-					if (svalue == null)
-						svalue = "null";
-					else switch (qp.Value.Expr.GetTypeCode())
-					{
-						case TypeCode.Char:
-						case TypeCode.DateTime:
-						case TypeCode.String:
-							// need to double up on "'" and then surround by '
-							svalue = svalue.Replace("'", "''");
-							svalue = "'" + svalue + "'";
-							break;
-					}
+                    svalue = this.ParameterValue(rpt, qp);
 				}
 				else
 				{	// just need a place holder value that will pass parsing
@@ -635,6 +646,7 @@ namespace fyiReporting.RDL
 						case TypeCode.Decimal:
 						case TypeCode.Double:
 						case TypeCode.Int32:
+						case TypeCode.Int64:
 							svalue = "0";
 							break;
 						case TypeCode.Boolean:
@@ -651,14 +663,80 @@ namespace fyiReporting.RDL
 			return sb.ToString();
 		}
 
+        private string ParameterValue(Report rpt, QueryParameter qp)
+        {
+            if (!qp.IsArray)
+            {
+                // handle non-array
+                string svalue = qp.Value.EvaluateString(rpt, null);
+                if (svalue == null)
+                    svalue = "null";
+                else switch (qp.Value.Expr.GetTypeCode())
+                    {
+                        case TypeCode.Char:
+                        case TypeCode.DateTime:
+                        case TypeCode.String:
+                            // need to double up on "'" and then surround by '
+                            svalue = svalue.Replace("'", "''");
+                            svalue = "'" + svalue + "'";
+                            break;
+                    }
+                return svalue;
+            }
+
+            StringBuilder sb = new StringBuilder();
+            ArrayList ar = qp.Value.Evaluate(rpt, null) as ArrayList;
+
+            if (ar == null)
+                return null;
+
+            bool bFirst = true;
+            foreach (object v in ar)
+            {
+                if (!bFirst)
+                    sb.Append(", ");
+                if (v == null)
+                {
+                    sb.Append("null");
+                }
+                else
+                {
+                    string sv = v.ToString();
+                    if (v is string || v is char || v is DateTime)
+                    {
+                        // need to double up on "'" and then surround by '
+                        sv = sv.Replace("'", "''");
+                        sb.Append("'");
+                        sb.Append(sv);
+                        sb.Append("'");
+                    }
+                    else
+                        sb.Append(sv);
+                }
+                bFirst = false;
+            }
+            return sb.ToString();
+        }
+
+		private string Provider
+		{
+			get
+			{
+				if (this.DataSourceDefn == null ||
+					this.DataSourceDefn.ConnectionProperties == null)
+					return "";
+				return this.DataSourceDefn.ConnectionProperties.DataProvider;
+			}
+		}
+
 		internal string DataSourceName
 		{
 			get { return  _DataSourceName; }
 		}
 
-		internal DataSource DataSource
+		internal DataSourceDefn DataSourceDefn
 		{
-			get { return  _DataSource; }
+			get { return  _DataSourceDefn; }
 		}
 
 		internal QueryCommandTypeEnum QueryCommandType
@@ -690,10 +768,32 @@ namespace fyiReporting.RDL
 			get { return  _Columns; }
 		}
 
-		internal Rows Data
+		// Runtime data
+		internal Rows GetMyData(Report rpt)
 		{
-			get { return  _Data; }
-			set {  _Data = value; }
+			return rpt.Cache.Get(this, "data") as Rows;
 		}
+
+		private void SetMyData(Report rpt, Rows data)
+		{
+			if (data == null)
+				rpt.Cache.Remove(this, "data");
+			else
+				rpt.Cache.AddReplace(this, "data", data);
+		}
+
+		private Rows GetMyUserData(Report rpt)
+		{
+			return rpt.Cache.Get(this, "userdata") as Rows;
+		}
+
+		private void SetMyUserData(Report rpt, Rows data)
+		{
+			if (data == null)
+				rpt.Cache.Remove(this, "userdata");
+			else
+				rpt.Cache.AddReplace(this, "userdata", data);
+		}
+
 	}
 }

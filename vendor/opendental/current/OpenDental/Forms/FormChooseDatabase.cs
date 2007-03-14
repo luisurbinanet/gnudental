@@ -49,6 +49,11 @@ namespace OpenDental{
 		private ValidNumber textPort;
 		//<summary></summary>
 		public bool NoShow;
+		private Label label7;
+		private ListBox listType;
+		private Label label8;
+		private TextBox textConnectionString;
+		public static DatabaseType DBtype;
 
 		///<summary></summary>
 		public FormChooseDatabase(){
@@ -88,7 +93,6 @@ namespace OpenDental{
 			this.checkNoShow = new System.Windows.Forms.CheckBox();
 			this.comboComputerName = new System.Windows.Forms.ComboBox();
 			this.groupServer = new System.Windows.Forms.GroupBox();
-			this.textPort = new OpenDental.ValidNumber();
 			this.label5 = new System.Windows.Forms.Label();
 			this.comboDatabase2 = new System.Windows.Forms.ComboBox();
 			this.label12 = new System.Windows.Forms.Label();
@@ -100,6 +104,11 @@ namespace OpenDental{
 			this.label9 = new System.Windows.Forms.Label();
 			this.label6 = new System.Windows.Forms.Label();
 			this.checkConnectServer = new System.Windows.Forms.CheckBox();
+			this.label7 = new System.Windows.Forms.Label();
+			this.listType = new System.Windows.Forms.ListBox();
+			this.label8 = new System.Windows.Forms.Label();
+			this.textConnectionString = new System.Windows.Forms.TextBox();
+			this.textPort = new OpenDental.ValidNumber();
 			this.butCancel = new OpenDental.UI.Button();
 			this.butOK = new OpenDental.UI.Button();
 			this.groupDirect.SuspendLayout();
@@ -128,7 +137,7 @@ namespace OpenDental{
 			// 
 			this.label2.Location = new System.Drawing.Point(19,162);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(588,18);
+			this.label2.Size = new System.Drawing.Size(509,18);
 			this.label2.TabIndex = 2;
 			this.label2.Text = "Password: For new installations, the password will be blank.  You probably don\'t " +
     "need to change this.";
@@ -145,7 +154,7 @@ namespace OpenDental{
 			// 
 			this.label3.Location = new System.Drawing.Point(19,121);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(592,18);
+			this.label3.Size = new System.Drawing.Size(480,18);
 			this.label3.TabIndex = 4;
 			this.label3.Text = "User: When MySQL is first installed, the user is root.  You probably don\'t need t" +
     "o change this.";
@@ -174,7 +183,7 @@ namespace OpenDental{
 			this.groupDirect.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.groupDirect.Location = new System.Drawing.Point(16,16);
 			this.groupDirect.Name = "groupDirect";
-			this.groupDirect.Size = new System.Drawing.Size(660,249);
+			this.groupDirect.Size = new System.Drawing.Size(660,244);
 			this.groupDirect.TabIndex = 0;
 			this.groupDirect.TabStop = false;
 			this.groupDirect.Text = "Connection Settings - These values will only be used on this computer.  They have" +
@@ -190,10 +199,9 @@ namespace OpenDental{
 			// 
 			// checkNoShow
 			// 
-			this.checkNoShow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.checkNoShow.AutoSize = true;
 			this.checkNoShow.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkNoShow.Location = new System.Drawing.Point(21,219);
+			this.checkNoShow.Location = new System.Drawing.Point(21,211);
 			this.checkNoShow.Name = "checkNoShow";
 			this.checkNoShow.Size = new System.Drawing.Size(294,18);
 			this.checkNoShow.TabIndex = 2;
@@ -225,19 +233,10 @@ namespace OpenDental{
 			this.groupServer.Controls.Add(this.label6);
 			this.groupServer.Location = new System.Drawing.Point(16,305);
 			this.groupServer.Name = "groupServer";
-			this.groupServer.Size = new System.Drawing.Size(660,279);
+			this.groupServer.Size = new System.Drawing.Size(376,273);
 			this.groupServer.TabIndex = 2;
 			this.groupServer.TabStop = false;
 			this.groupServer.Text = "Connect to Server Component - Only for advanced users";
-			// 
-			// textPort
-			// 
-			this.textPort.Location = new System.Drawing.Point(22,112);
-			this.textPort.MaxVal = 999999;
-			this.textPort.MinVal = 0;
-			this.textPort.Name = "textPort";
-			this.textPort.Size = new System.Drawing.Size(100,20);
-			this.textPort.TabIndex = 0;
 			// 
 			// label5
 			// 
@@ -258,9 +257,9 @@ namespace OpenDental{
 			// 
 			// label12
 			// 
-			this.label12.Location = new System.Drawing.Point(19,134);
+			this.label12.Location = new System.Drawing.Point(19,133);
 			this.label12.Name = "label12";
-			this.label12.Size = new System.Drawing.Size(582,18);
+			this.label12.Size = new System.Drawing.Size(296,18);
 			this.label12.TabIndex = 15;
 			this.label12.Text = "DataBase";
 			this.label12.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
@@ -285,7 +284,7 @@ namespace OpenDental{
 			// 
 			this.label10.Location = new System.Drawing.Point(20,217);
 			this.label10.Name = "label10";
-			this.label10.Size = new System.Drawing.Size(588,18);
+			this.label10.Size = new System.Drawing.Size(281,18);
 			this.label10.TabIndex = 11;
 			this.label10.Text = "Password";
 			this.label10.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
@@ -294,7 +293,7 @@ namespace OpenDental{
 			// 
 			this.label11.Location = new System.Drawing.Point(20,176);
 			this.label11.Name = "label11";
-			this.label11.Size = new System.Drawing.Size(592,18);
+			this.label11.Size = new System.Drawing.Size(295,18);
 			this.label11.TabIndex = 14;
 			this.label11.Text = "Open Dental User (not MySQL user)";
 			this.label11.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
@@ -309,9 +308,9 @@ namespace OpenDental{
 			// 
 			// label9
 			// 
-			this.label9.Location = new System.Drawing.Point(20,51);
+			this.label9.Location = new System.Drawing.Point(20,50);
 			this.label9.Name = "label9";
-			this.label9.Size = new System.Drawing.Size(582,18);
+			this.label9.Size = new System.Drawing.Size(310,18);
 			this.label9.TabIndex = 9;
 			this.label9.Text = "Server Name";
 			this.label9.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
@@ -320,7 +319,7 @@ namespace OpenDental{
 			// 
 			this.label6.Location = new System.Drawing.Point(19,23);
 			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(629,32);
+			this.label6.Size = new System.Drawing.Size(311,32);
 			this.label6.TabIndex = 0;
 			this.label6.Text = "Read the manual to learn how to install the server component.";
 			// 
@@ -336,6 +335,50 @@ namespace OpenDental{
 			this.checkConnectServer.UseVisualStyleBackColor = true;
 			this.checkConnectServer.Click += new System.EventHandler(this.checkConnectServer_Click);
 			// 
+			// label7
+			// 
+			this.label7.Location = new System.Drawing.Point(411,289);
+			this.label7.Name = "label7";
+			this.label7.Size = new System.Drawing.Size(223,18);
+			this.label7.TabIndex = 19;
+			this.label7.Text = "Database Type";
+			this.label7.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// listType
+			// 
+			this.listType.FormattingEnabled = true;
+			this.listType.Location = new System.Drawing.Point(414,311);
+			this.listType.Name = "listType";
+			this.listType.Size = new System.Drawing.Size(99,30);
+			this.listType.TabIndex = 20;
+			// 
+			// label8
+			// 
+			this.label8.AutoSize = true;
+			this.label8.Location = new System.Drawing.Point(412,357);
+			this.label8.Name = "label8";
+			this.label8.Size = new System.Drawing.Size(165,13);
+			this.label8.TabIndex = 21;
+			this.label8.Text = "Advanced: Use connection string";
+			// 
+			// textConnectionString
+			// 
+			this.textConnectionString.Location = new System.Drawing.Point(414,375);
+			this.textConnectionString.Multiline = true;
+			this.textConnectionString.Name = "textConnectionString";
+			this.textConnectionString.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.textConnectionString.Size = new System.Drawing.Size(262,202);
+			this.textConnectionString.TabIndex = 22;
+			// 
+			// textPort
+			// 
+			this.textPort.Location = new System.Drawing.Point(22,112);
+			this.textPort.MaxVal = 999999;
+			this.textPort.MinVal = 0;
+			this.textPort.Name = "textPort";
+			this.textPort.Size = new System.Drawing.Size(100,20);
+			this.textPort.TabIndex = 0;
+			// 
 			// butCancel
 			// 
 			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0,0);
@@ -344,7 +387,7 @@ namespace OpenDental{
 			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.Location = new System.Drawing.Point(602,623);
+			this.butCancel.Location = new System.Drawing.Point(602,632);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75,25);
 			this.butCancel.TabIndex = 6;
@@ -358,7 +401,7 @@ namespace OpenDental{
 			this.butOK.Autosize = true;
 			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butOK.Location = new System.Drawing.Point(509,623);
+			this.butOK.Location = new System.Drawing.Point(509,632);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75,25);
 			this.butOK.TabIndex = 3;
@@ -368,7 +411,11 @@ namespace OpenDental{
 			// FormChooseDatabase
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
-			this.ClientSize = new System.Drawing.Size(733,663);
+			this.ClientSize = new System.Drawing.Size(733,672);
+			this.Controls.Add(this.textConnectionString);
+			this.Controls.Add(this.label8);
+			this.Controls.Add(this.listType);
+			this.Controls.Add(this.label7);
 			this.Controls.Add(this.checkConnectServer);
 			this.Controls.Add(this.groupServer);
 			this.Controls.Add(this.groupDirect);
@@ -393,6 +440,8 @@ namespace OpenDental{
 		#endregion
 
 		private void FormConfig_Load(object sender, System.EventArgs e) {
+			listType.Items.Add("MySql");
+			listType.Items.Add("Oracle");
 			GetConfig();
 			FillCombosComputerNames();
 			FillComboDatabases();
@@ -456,14 +505,19 @@ namespace OpenDental{
 			if(comboComputerName.Text==""){
 				return new string[0];
 			}
+			if(listType.SelectedIndex!=0){
+				return new string[0];//because SHOW DATABASES won't work
+			}
 			try{
 				OpenDentBusiness.DataConnection dcon;
 				//use the one table that we know exists
 				if(textUser.Text==""){
-					dcon=new OpenDentBusiness.DataConnection(comboComputerName.Text,"mysql","root",textPassword.Text);
+					dcon=new OpenDentBusiness.DataConnection(comboComputerName.Text,"mysql","root",textPassword.Text,
+						DatabaseType.MySql);
 				}
 				else{
-					dcon=new OpenDentBusiness.DataConnection(comboComputerName.Text,"mysql",textUser.Text,textPassword.Text);
+					dcon=new OpenDentBusiness.DataConnection(comboComputerName.Text,"mysql",textUser.Text,textPassword.Text,
+						DatabaseType.MySql);
 				}
 				string command="SHOW DATABASES";
 				//if this next step fails, table will simply have 0 rows
@@ -531,6 +585,14 @@ namespace OpenDental{
 				document.Load("FreeDentalConfig.xml");
 				XPathNavigator Navigator=document.CreateNavigator();
 				XPathNavigator nav;
+				//Database type
+				nav=Navigator.SelectSingleNode("//DatabaseType");
+				listType.SelectedIndex=0;
+				DBtype=DatabaseType.MySql;
+				if(nav!=null && nav.Value=="Oracle"){
+					listType.SelectedIndex=1;
+					DBtype=DatabaseType.Oracle;
+				}
 				//See if there's a DatabaseConnection
 				nav=Navigator.SelectSingleNode("//DatabaseConnection");
 				if(nav!=null) {
@@ -540,6 +602,14 @@ namespace OpenDental{
 					comboDatabase.Text=nav.SelectSingleNode("Database").Value;
 					textUser.Text=nav.SelectSingleNode("User").Value;
 					textPassword.Text=nav.SelectSingleNode("Password").Value;
+					/*XPathNavigator oraclenav=nav.SelectSingleNode("IsOracle");
+					if(oraclenav!=null) {
+						string soracle=oraclenav.Value;
+						if(soracle=="True") {
+							IsOracle=true;
+							checkOracle.Checked=true;
+						}
+					}*/
 					XPathNavigator noshownav=nav.SelectSingleNode("NoShowOnStartup");
 					if(noshownav!=null){
 						string noshow=noshownav.Value;
@@ -574,6 +644,8 @@ namespace OpenDental{
 			checkConnectServer.Checked=false;
 			groupDirect.Enabled=true;
 			groupServer.Enabled=false;
+			//listType.SelectedIndex=0;
+			DBtype=DatabaseType.MySql;
 		}
 
 		///<summary>Only called at startup if this dialog is not supposed to be shown.  Must call GetConfig first.</summary>
@@ -581,7 +653,11 @@ namespace OpenDental{
 			OpenDentBusiness.DataConnection dcon=new OpenDentBusiness.DataConnection();
 			//Try to connect to the database directly
 			try {
-				dcon.SetDb(comboComputerName.Text,comboDatabase.Text,textUser.Text,textPassword.Text,"","");
+				if(textConnectionString.Text.Length>0){
+						dcon.SetDb(textConnectionString.Text,"",DBtype);
+				}else{
+					dcon.SetDb(comboComputerName.Text,comboDatabase.Text,textUser.Text,textPassword.Text,"","",DBtype);
+				}
 				//a direct connection does not utilize lower privileges.
 				RemotingClient.OpenDentBusinessIsLocal=true;
 				return true;
@@ -604,7 +680,7 @@ namespace OpenDental{
 				DtoLogin dto=new DtoLogin();
 				dto.Database=comboDatabase2.Text;
 				dto.OdUser=textUser2.Text;
-				dto.OdPassHash=UserB.EncryptPassword(textPassword2.Text);
+				dto.OdPassHash=UserodB.EncryptPassword(textPassword2.Text);
 				try{
 					RemotingClient.ProcessCommand(dto);
 					RemotingClient.OpenDentBusinessIsLocal=false;
@@ -617,10 +693,19 @@ namespace OpenDental{
 				}
 			}
 			else{
-				OpenDentBusiness.DataConnection dcon=new OpenDentBusiness.DataConnection();
+				OpenDentBusiness.DataConnection dcon;
 				//Try to connect to the database directly
 				try {
-					dcon.SetDb(comboComputerName.Text,comboDatabase.Text,textUser.Text,textPassword.Text,"","");
+					DBtype=DatabaseType.MySql;
+					if(listType.SelectedIndex==1) {
+						DBtype=DatabaseType.Oracle;
+					}
+					dcon=new OpenDentBusiness.DataConnection(DBtype);
+					if(textConnectionString.Text.Length>0){
+						dcon.SetDb(textConnectionString.Text,"",DBtype);
+					}else{
+						dcon.SetDb(comboComputerName.Text,comboDatabase.Text,textUser.Text,textPassword.Text,"","",DBtype);
+					}
 					//a direct connection does not utilize lower privileges.
 				}
 				catch{//(Exception ex){
@@ -650,10 +735,10 @@ namespace OpenDental{
 					writer.WriteString(textPassword.Text);
 					writer.WriteEndElement();
 					writer.WriteStartElement("NoShowOnStartup");
-					if(checkNoShow.Checked){
+					if(checkNoShow.Checked) {
 						writer.WriteString("True");
 					}
-					else{
+					else {
 						writer.WriteString("False");
 					}
 					writer.WriteEndElement();
@@ -672,6 +757,14 @@ namespace OpenDental{
 					writer.WriteEndElement();
 					writer.WriteEndElement();
 				}
+				writer.WriteStartElement("DatabaseType");
+				if(listType.SelectedIndex==0){
+					writer.WriteString("MySql");
+				}
+				else{
+					writer.WriteString("Oracle");
+				}
+				writer.WriteEndElement();
 				writer.WriteEndElement();
 				writer.Flush();
 			}//using writer

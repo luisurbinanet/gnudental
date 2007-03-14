@@ -16,7 +16,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public static ClaimPaySplit[] RefreshByCheck(int claimPaymentNum, bool showUnattached){
 			string command=
-				"SELECT claim.DateService,claim.ProvTreat,CONCAT(patient.LName,', ',patient.FName) AS PatName"
+				"SELECT claim.DateService,claim.ProvTreat,CONCAT(CONCAT(patient.LName,', '),patient.FName) AS PatName"
 				+",carrier.CarrierName,SUM(claimproc.FeeBilled),SUM(claimproc.InsPayAmt),claim.ClaimNum"
 				+",claimproc.ClaimPaymentNum"
 				+" FROM claim,patient,insplan,carrier,claimproc" // added carrier, SPK 8/04
@@ -27,7 +27,7 @@ namespace OpenDental{
 				+" AND (claimproc.Status = '1' OR claimproc.Status = '4')"//received or supplemental
  				+" AND (claimproc.ClaimPaymentNum = '"+POut.PInt(claimPaymentNum)+"'";
 			if(showUnattached){
-				command+=" OR (claimproc.InsPayAmt != 0 && claimproc.ClaimPaymentNum = '0'))"
+				command+=" OR (claimproc.InsPayAmt != 0 AND claimproc.ClaimPaymentNum = '0'))"
 					+" GROUP BY claimproc.ClaimNum";
 			}
 			else{//shows only items attached to this payment
@@ -146,10 +146,10 @@ namespace OpenDental{
 			}
 			command+=
 				 "'"+POut.PInt   (Cur.PatNum)+"', "
-				+"'"+POut.PDate  (Cur.DateService)+"', "
-				+"'"+POut.PDate  (Cur.DateSent)+"', "
+				+POut.PDate  (Cur.DateService)+", "
+				+POut.PDate  (Cur.DateSent)+", "
 				+"'"+POut.PString(Cur.ClaimStatus)+"', "
-				+"'"+POut.PDate  (Cur.DateReceived)+"', "
+				+POut.PDate  (Cur.DateReceived)+", "
 				+"'"+POut.PInt   (Cur.PlanNum)+"', "
 				+"'"+POut.PInt   (Cur.ProvTreat)+"', "
 				+"'"+POut.PDouble(Cur.ClaimFee)+"', "
@@ -158,7 +158,7 @@ namespace OpenDental{
 				+"'"+POut.PDouble(Cur.DedApplied)+"', "
 				+"'"+POut.PString(Cur.PreAuthString)+"', "
 				+"'"+POut.PString(Cur.IsProsthesis)+"', "
-				+"'"+POut.PDate  (Cur.PriorDate)+"', "
+				+POut.PDate  (Cur.PriorDate)+", "
 				+"'"+POut.PString(Cur.ReasonUnderPaid)+"', "
 				+"'"+POut.PString(Cur.ClaimNote)+"', "
 				+"'"+POut.PString(Cur.ClaimType)+"', "
@@ -167,12 +167,12 @@ namespace OpenDental{
 				+"'"+POut.PString(Cur.RefNumString)+"', "
 				+"'"+POut.PInt   ((int)Cur.PlaceService)+"', "
 				+"'"+POut.PString(Cur.AccidentRelated)+"', "
-				+"'"+POut.PDate  (Cur.AccidentDate)+"', "
+				+POut.PDate  (Cur.AccidentDate)+", "
 				+"'"+POut.PString(Cur.AccidentST)+"', "
 				+"'"+POut.PInt   ((int)Cur.EmployRelated)+"', "
 				+"'"+POut.PBool  (Cur.IsOrtho)+"', "
 				+"'"+POut.PInt   (Cur.OrthoRemainM)+"', "
-				+"'"+POut.PDate  (Cur.OrthoDate)+"', "
+				+POut.PDate  (Cur.OrthoDate)+", "
 				+"'"+POut.PInt   ((int)Cur.PatRelat)+"', "
 				+"'"+POut.PInt   (Cur.PlanNum2)+"', "
 				+"'"+POut.PInt   ((int)Cur.PatRelat2)+"', "
@@ -191,10 +191,10 @@ namespace OpenDental{
 		public static void Update(Claim Cur){
 			string command= "UPDATE claim SET "
 				+"patnum = '"          +POut.PInt   (Cur.PatNum)+"' "
-				+",dateservice = '"    +POut.PDate  (Cur.DateService)+"' "
-				+",datesent = '"       +POut.PDate  (Cur.DateSent)+"' "
+				+",dateservice = "    +POut.PDate  (Cur.DateService)+" "
+				+",datesent = "       +POut.PDate  (Cur.DateSent)+" "
 				+",claimstatus = '"    +POut.PString(Cur.ClaimStatus)+"' "
-				+",datereceived = '"   +POut.PDate  (Cur.DateReceived)+"' "
+				+",datereceived = "   +POut.PDate  (Cur.DateReceived)+" "
 				+",plannum = '"        +POut.PInt   (Cur.PlanNum)+"' "
 				+",provtreat = '"      +POut.PInt   (Cur.ProvTreat)+"' "
 				+",claimfee = '"       +POut.PDouble(Cur.ClaimFee)+"' "
@@ -203,7 +203,7 @@ namespace OpenDental{
 				+",dedapplied = '"   +  POut.PDouble(Cur.DedApplied)+"' "
 				+",preauthstring = '"+	POut.PString(Cur.PreAuthString)+"' "
 				+",isprosthesis = '" +	POut.PString(Cur.IsProsthesis)+"' "
-				+",priordate = '"    +	POut.PDate  (Cur.PriorDate)+"' "
+				+",priordate = "    +	POut.PDate  (Cur.PriorDate)+" "
 				+",reasonunderpaid = '"+POut.PString(Cur.ReasonUnderPaid)+"' "
 				+",claimnote = '"    +	POut.PString(Cur.ClaimNote)+"' "
 				+",claimtype='"      +	POut.PString(Cur.ClaimType)+"' "
@@ -212,12 +212,12 @@ namespace OpenDental{
 				+",refnumstring = '" +	POut.PString(Cur.RefNumString)+"' "
 				+",placeservice = '" +	POut.PInt   ((int)Cur.PlaceService)+"' "
 				+",accidentrelated = '"+POut.PString(Cur.AccidentRelated)+"' "
-				+",accidentdate = '" +	POut.PDate  (Cur.AccidentDate)+"' "
+				+",accidentdate = " +	POut.PDate  (Cur.AccidentDate)+" "
 				+",accidentst = '"   +	POut.PString(Cur.AccidentST)+"' "
 				+",employrelated = '"+	POut.PInt   ((int)Cur.EmployRelated)+"' "
 				+",isortho = '"      +	POut.PBool  (Cur.IsOrtho)+"' "
 				+",orthoremainm = '" +	POut.PInt   (Cur.OrthoRemainM)+"' "
-				+",orthodate = '"    +	POut.PDate  (Cur.OrthoDate)+"' "
+				+",orthodate = "    +	POut.PDate  (Cur.OrthoDate)+" "
 				+",patrelat = '"     +	POut.PInt   ((int)Cur.PatRelat)+"' "
 				+",plannum2 = '"     +	POut.PInt   (Cur.PlanNum2)+"' "
 				+",patrelat2 = '"    +	POut.PInt   ((int)Cur.PatRelat2)+"' "
@@ -230,9 +230,11 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void Delete(Claim Cur){
-			string command = "DELETE FROM claim "
-				+"WHERE claimnum = '"+POut.PInt(Cur.ClaimNum)+"'";
-			//MessageBox.Show(string command);
+			string command = "DELETE FROM claim WHERE ClaimNum = '"+POut.PInt(Cur.ClaimNum)+"'";
+			General.NonQ(command);
+			command = "DELETE FROM canadianclaim WHERE ClaimNum = '"+POut.PInt(Cur.ClaimNum)+"'";
+			General.NonQ(command);
+			command = "DELETE FROM canadianextract WHERE ClaimNum = '"+POut.PInt(Cur.ClaimNum)+"'";
 			General.NonQ(command);
 		}
 
@@ -249,13 +251,13 @@ namespace OpenDental{
 		public static ClaimSendQueueItem[] GetQueueList(){
 			string command=
 				"SELECT claim.ClaimNum,carrier.NoSendElect"
-				+",concat(patient.LName,', ',patient.FName,' ',patient.MiddleI)"
+				+",CONCAT(CONCAT(CONCAT(concat(patient.LName,', '),patient.FName),' '),patient.MiddleI)"
 				+",claim.ClaimStatus,carrier.CarrierName,patient.PatNum,carrier.ElectID,insplan.IsMedical "
 				+"FROM claim "
 				+"Left join insplan on claim.PlanNum = insplan.PlanNum "
 				+"Left join carrier on insplan.CarrierNum = carrier.CarrierNum "
 				+"Left join patient on patient.PatNum = claim.PatNum "
-				+"WHERE claim.ClaimStatus = 'W' || claim.ClaimStatus = 'P' "
+				+"WHERE claim.ClaimStatus = 'W' OR claim.ClaimStatus = 'P' "
 				+"ORDER BY insplan.IsMedical";//this puts the medical claims at the end, helping with the looping in X12.
 			//MessageBox.Show(string command);
 			DataTable table=General.GetTable(command);
@@ -274,14 +276,6 @@ namespace OpenDental{
 			return listQueue;
 		}
 
-		///<summary></summary>
-		public static void UpdateStatus(int claimNum,string newStatus){
-			string command= "UPDATE claim SET "
-				+"claimstatus = '"+newStatus+"' "
-				+"WHERE claimnum = '"+claimNum+"'";
-			General.NonQ(command);
-		}
-
 		///<summary>Supply an arrayList of type ClaimSendQueueItem. Called from X12 to begin the sorting process on claims going to one clearinghouse. Returns an array with Carrier,ProvBill,Subscriber,PatNum,ClaimNum, all in the correct order. Carrier is a string, the rest are int.</summary>
 		public static object[,] GetX12TransactionInfo(ArrayList queueItems){
 			StringBuilder str=new StringBuilder();
@@ -291,13 +285,26 @@ namespace OpenDental{
 				}
 				str.Append(" claim.ClaimNum="+((ClaimSendQueueItem)queueItems[i]).ClaimNum.ToString());
 			}
-			string command="SELECT carrier.ElectID,claim.ProvBill,insplan.Subscriber,"
+			string command;
+			if(FormChooseDatabase.DBtype==DatabaseType.Oracle){//FIXME:ORDER-BY. Probably Fixed.  ??
+				command="SELECT carrier.ElectID,claim.ProvBill,insplan.Subscriber,"
+				+"claim.PatNum,claim.ClaimNum, "
+				+"CASE WHEN claim.PatNum=insplan.Subscriber THEN 0 ELSE 1 END AS issubscriber "
+				+"FROM claim,insplan,carrier "
+				+"WHERE claim.PlanNum=insplan.PlanNum "
+				+"AND carrier.CarrierNum=insplan.CarrierNum "
+				+"AND ("+str.ToString()+") "
+				+"ORDER BY carrier.ElectID,claim.ProvBill,insplan.Subscriber,6,claim.PatNum";
+			}
+			else{
+				command="SELECT carrier.ElectID,claim.ProvBill,insplan.Subscriber,"
 				+"claim.PatNum,claim.ClaimNum "
 				+"FROM claim,insplan,carrier "
 				+"WHERE claim.PlanNum=insplan.PlanNum "
 				+"AND carrier.CarrierNum=insplan.CarrierNum "
 				+"AND ("+str.ToString()+") "
 				+"ORDER BY carrier.ElectID,claim.ProvBill,insplan.Subscriber,insplan.Subscriber!=claim.PatNum,claim.PatNum";
+			}
 			DataTable table=General.GetTable(command);
 			object[,] myA=new object[5,table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){

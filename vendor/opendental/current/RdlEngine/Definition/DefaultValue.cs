@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -37,9 +37,7 @@ namespace fyiReporting.RDL
 									// The default is the first value of the ValueField.
 		Values _Values;		// The default values for the parameter
 
-		[NonSerialized] object[] _DataValues;		//  data values for a DataSetReference
-	
-		internal DefaultValue(Report r, ReportLink p, XmlNode xNode) : base(r, p)
+		internal DefaultValue(ReportDefn r, ReportLink p, XmlNode xNode) : base(r, p)
 		{
 			_DataSetReference=null;
 			_Values=null;
@@ -78,21 +76,20 @@ namespace fyiReporting.RDL
 			set {  _DataSetReference = value; }
 		}
 
-		internal object[] Value
+		internal object[] GetValue(Report rpt)
 		{
-			get
-			{
-				if (_Values != null)
-					return ValuesCalc();
-				if (_DataValues != null)
-					return _DataValues;
+			if (_Values != null)
+				return ValuesCalc(rpt);
+			object[] dValues = this.GetDataValues(rpt);
+			if (dValues != null)
+				return dValues;
 
-				string[] displayValues;
-				if (_DataSetReference != null)
-					_DataSetReference.SupplyValues(out displayValues, out _DataValues);
+			string[] dsValues;
+			if (_DataSetReference != null)
+				_DataSetReference.SupplyValues(rpt, out dsValues, out dValues);
 
-				return _DataValues;
-			}
+			this.SetDataValues(rpt, dValues);
+			return dValues;
 		}
 
 		internal Values Values
@@ -101,7 +98,7 @@ namespace fyiReporting.RDL
 			set {  _Values = value; }
 		}
 
-		internal object[] ValuesCalc()
+		internal object[] ValuesCalc(Report rpt)
 		{
 			if (_Values == null)
 				return null;
@@ -109,9 +106,22 @@ namespace fyiReporting.RDL
 			int index=0;
 			foreach (Expression v in _Values)
 			{
-				result[index++] = v.Evaluate(null);
+				result[index++] = v.Evaluate(rpt, null);
 			}
 			return result;
+		}
+
+		private object[] GetDataValues(Report rpt)
+		{
+			return rpt.Cache.Get(this, "datavalues") as object[];
+		}
+
+		private void SetDataValues(Report rpt, object[] vs)
+		{
+			if (vs == null)
+				rpt.Cache.Remove(this, "datavalues");
+			else
+				rpt.Cache.AddReplace(this, "datavalues", vs);
 		}
 	}
 }

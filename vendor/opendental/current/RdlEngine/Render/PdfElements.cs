@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -50,6 +50,11 @@ namespace fyiReporting.RDL
 			pSize=pageSize;
 			elements = new StringBuilder();
 		}
+
+        internal PdfPageSize PageSize
+        {
+            get { return pSize; }
+        }
 
 		/// <summary>
 		/// Page line element at the X Y to X2 Y2 position
@@ -123,7 +128,7 @@ namespace fyiReporting.RDL
 		/// <returns>string Image name</returns>
 		internal string AddImage(PdfImages images, string name, int contentRef, StyleInfo si,
 			ImageFormat imf, float x,float y, float width, float height, 
-			byte[] im, int samplesW, int samplesH)
+			byte[] im, int samplesW, int samplesH, string url)
 		{
 			string imgname = images.GetPdfImage(this.p, name, contentRef, imf, im, samplesW, samplesH);
 			
@@ -133,7 +138,13 @@ namespace fyiReporting.RDL
 
 			elements.AppendFormat(NumberFormatInfo.InvariantInfo, "\t/{0} Do\tQ\t", imgname);	// do the image then pop graphics state
 
-			AddBorder(si, x, y, height, width);			// add any required border
+			if (url != null)
+				p.AddHyperlink(x, pSize.yHeight-y, height, width, url);
+
+            // Border goes around the image padding
+			AddBorder(si, x-si.PaddingLeft, y-si.PaddingTop, 
+                height + si.PaddingTop+ si.PaddingBottom, 
+                width + si.PaddingLeft + si.PaddingRight);			// add any required border
 
 			return imgname;
 		}
@@ -142,7 +153,7 @@ namespace fyiReporting.RDL
 		/// Page Rectangle element at the X Y position
 		/// </summary>
 		/// <returns></returns>
-		internal void AddRectangle(float x, float y, float height, float width, StyleInfo si)
+		internal void AddRectangle(float x, float y, float height, float width, StyleInfo si, string url)
 		{
 			// Draw background rectangle if needed
 			if (!si.BackgroundColor.IsEmpty && height > 0 && width > 0)
@@ -151,6 +162,9 @@ namespace fyiReporting.RDL
 			}
 
 			AddBorder(si, x, y, height, width);			// add any required border
+
+			if (url != null)
+				p.AddHyperlink(x, pSize.yHeight-y, height, width, url);
 		
 			return;
 		}
@@ -159,7 +173,8 @@ namespace fyiReporting.RDL
 		/// Page Text element at the X Y position; multiple lines handled
 		/// </summary>
 		/// <returns></returns>
-		internal void AddText(float x, float y, float height, float width, string[] sa, StyleInfo si, PdfFonts fonts, float[] tw, bool bWrap)
+		internal void AddText(float x, float y, float height, float width, string[] sa, 
+			StyleInfo si, PdfFonts fonts, float[] tw, bool bWrap, string url, bool bNoClip)
 		{
 			// Calculate the RGB colors e.g. RGB(255, 0, 0) = red = 1 0 0 rg
 			double r = si.Color.R; 
@@ -238,9 +253,17 @@ namespace fyiReporting.RDL
 
 				// Set the clipping path
 				if (height > 0 && width > 0)
-					elements.AppendFormat(NumberFormatInfo.InvariantInfo,
-						"\r\nq\t{0} {1} {2} {3} re W n",
-						x, pSize.yHeight-y-height, width, height);
+				{
+					if (bNoClip)	// no clipping but we still want URL checking
+						elements.Append("\r\nq\t");
+					else
+						elements.AppendFormat(NumberFormatInfo.InvariantInfo,
+							"\r\nq\t{0} {1} {2} {3} re W n",
+							x, pSize.yHeight-y-height, width, height);
+					if (url != null)
+						p.AddHyperlink(x, pSize.yHeight-y, height, width, url);
+
+				}
 				else
 					elements.Append("\r\nq\t");
 

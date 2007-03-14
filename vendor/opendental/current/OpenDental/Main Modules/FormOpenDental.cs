@@ -36,6 +36,7 @@ using System.Threading;
 using System.Text;
 using System.Windows.Forms;
 using OpenDentBusiness;
+using CodeBase;
 
 namespace OpenDental{
 	///<summary></summary>
@@ -182,6 +183,7 @@ namespace OpenDental{
 		private MenuItem menuItemMessagingButs;
 		///<summary>This is not the actual date/time last refreshed.  It is really the date/time of the last item in the database retrieved on previous refreshes.  That way, the local workstation time is irrelevant.</summary>
 		private DateTime signalLastRefreshed;
+		private FormSplash Splash;//SPK/AAD 1/10/07
 		private Bitmap bitmapIcon;
 		private MenuItem menuItemRpWriteoff;
 		///<summary>A list of button definitions for this computer.</summary>
@@ -189,6 +191,10 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public FormOpenDental(){
+			Logger.openlog.level=Logger.Severity.DEBUG;//Allow logging of all messages. Only use in-house, or on a particular customer.
+			//Logger.openlog.level=Logger.Severity.INFO;//Allow logging of all messages, except debug messages.
+			Splash=new FormSplash();//SPK/AAD 1/10/07
+			Splash.Show();//SPK/AAD 1/10/07
 			InitializeComponent();
 			ContrAppt2.PatientSelected+=new PatientSelectedEventHandler(Contr_PatientSelected);
 			ContrFamily2.PatientSelected+=new PatientSelectedEventHandler(Contr_PatientSelected);
@@ -1219,7 +1225,7 @@ namespace OpenDental{
 			this.myOutlookBar.ImageList = this.imageList32;
 			this.myOutlookBar.Location = new System.Drawing.Point(0,0);
 			this.myOutlookBar.Name = "myOutlookBar";
-			this.myOutlookBar.Size = new System.Drawing.Size(51,621);
+			this.myOutlookBar.Size = new System.Drawing.Size(51,684);
 			this.myOutlookBar.TabIndex = 18;
 			this.myOutlookBar.Text = "outlookBar1";
 			this.myOutlookBar.ButtonClicked += new OpenDental.ButtonClickedEventHandler(this.myOutlookBar_ButtonClicked);
@@ -1282,7 +1288,7 @@ namespace OpenDental{
 			// 
 			// FormOpenDental
 			// 
-			this.ClientSize = new System.Drawing.Size(982,621);
+			this.ClientSize = new System.Drawing.Size(982,684);
 			this.Controls.Add(this.lightSignalGrid1);
 			this.Controls.Add(this.myOutlookBar);
 			this.Controls.Add(this.ContrAppt2);
@@ -1310,12 +1316,19 @@ namespace OpenDental{
 	
 		[STAThread]
 		static void Main() {
-			Application.EnableVisualStyles();//changes appearance to XP
-			Application.DoEvents();//workaround for a known MS bug in the line above
-			Application.Run(new FormOpenDental());
+			//try{
+			//	dummy();
+				Application.EnableVisualStyles();//changes appearance to XP
+				Application.DoEvents();//workaround for a known MS bug in the line above
+				Application.Run(new FormOpenDental());
+			//}catch(Exception e){
+			//	MessageBox.Show("dummy failed");
+			
+			//}
 		}
 
 		private void FormOpenDental_Load(object sender, System.EventArgs e){
+			Splash.Dispose();//SPK/AAD 1/10/07
 			allNeutral();
 			FormChooseDatabase formChooseDb=new FormChooseDatabase();
 			formChooseDb.GetConfig();
@@ -1389,7 +1402,7 @@ namespace OpenDental{
 			if(!File.Exists("remoteclient.exe")){
 				menuItemRemote.Visible=false;
 			}
-			User adminUser=Users.GetAdminUser();
+			Userod adminUser=Userods.GetAdminUser();
 			if(adminUser.Password=="") {
 				Security.CurUser=adminUser.Copy();
 			}
@@ -1428,7 +1441,7 @@ namespace OpenDental{
 						//UserPermissions.Refresh();
 						//Providers.Refresh();
 						//Employees.Refresh();
-						Users.Refresh();
+						Userods.Refresh();
 						FormPath FormP=new FormPath();
 						FormP.ShowDialog();
 						if(FormP.DialogResult!=DialogResult.OK){
@@ -1610,7 +1623,7 @@ namespace OpenDental{
 			//	Reports.Refresh();
 			//}
 			if((itypes & InvalidTypes.Security)==InvalidTypes.Security){
-				Users.Refresh();
+				Userods.Refresh();
 				UserGroups.Refresh();
 				GroupPermissions.Refresh();
 			}
@@ -2696,7 +2709,7 @@ namespace OpenDental{
 			}
 			FormRpWriteoffSheet FormW=new FormRpWriteoffSheet();
 			FormW.ShowDialog();
-			SecurityLogs.MakeLogEntry(Permissions.Reports,0,"Daily Writeoffs");
+			SecurityLogs.MakeLogEntry(Permissions.Reports,0,"Daily Writeoffs");	
 		}
 
 		private void menuItemRpProcNote_Click(object sender, System.EventArgs e) {
@@ -3053,6 +3066,10 @@ namespace OpenDental{
 			FormU.ShowDialog();
 			SecurityLogs.MakeLogEntry(Permissions.Setup,0,"Update Version");
 		}
+
+		
+
+		
 
 		
 

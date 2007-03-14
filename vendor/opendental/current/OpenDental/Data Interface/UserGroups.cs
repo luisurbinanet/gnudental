@@ -52,13 +52,13 @@ namespace OpenDental{
 
 		///<summary>Checks for dependencies first</summary>
 		public static void Delete(UserGroup group){
-			string command="SELECT COUNT(*) FROM user WHERE UserGroupNum='"
+			string command="SELECT COUNT(*) FROM userod WHERE UserGroupNum='"
 				+POut.PInt(group.UserGroupNum)+"'";
 			DataTable table=General.GetTable(command);
 			if(table.Rows[0][0].ToString()!="0"){
 				throw new Exception(Lan.g("UserGroups","Must move users to another group first."));
 			}
-			command= "DELETE from usergroup WHERE UserGroupNum='"
+			command= "DELETE FROM usergroup WHERE UserGroupNum='"
 				+POut.PInt(group.UserGroupNum)+"'";
  			General.NonQ(command);
 		}

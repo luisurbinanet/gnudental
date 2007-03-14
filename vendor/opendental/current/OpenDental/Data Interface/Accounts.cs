@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Diagnostics;
@@ -172,7 +173,7 @@ namespace OpenDental{
 					return true;
 				case AccountType.Liability:
 				case AccountType.Equity://because liabilities and equity are treated the same
-				case AccountType.Revenue:
+				case AccountType.Income:
 					return false;
 			}
 			return true;//will never happen
@@ -243,6 +244,128 @@ namespace OpenDental{
 			int[] retVal=new int[depAL.Count];
 			depAL.CopyTo(retVal);
 			return retVal;
+		}
+
+		///<summary>Gets the full list to display in the Chart of Accounts, including balances.</summary>
+		public static DataTable GetFullList(DateTime asOfDate, bool showInactive){
+			DataTable table=new DataTable("Accounts");
+			DataRow row;
+			//columns that start with lowercase are altered for display rather than being raw data.
+			table.Columns.Add("type");
+			table.Columns.Add("Description");
+			table.Columns.Add("balance");
+			table.Columns.Add("BankNumber");
+			table.Columns.Add("inactive");
+			table.Columns.Add("color");
+			table.Columns.Add("AccountNum");
+			//but we won't actually fill this table with rows until the very end.  It's more useful to use a List<> for now.
+			List<DataRow> rows=new List<DataRow>();
+			//first, the entire history for the asset, liability, and equity accounts (except Retained Earnings)-----------
+			string command="SELECT account.AcctType, account.Description, account.AccountNum, "
+				+"SUM(DebitAmt) AS SumDebit, SUM(CreditAmt) AS SumCredit, account.BankNumber, account.Inactive, account.AccountColor "
+				+"FROM account "
+				+"LEFT JOIN journalentry ON journalentry.AccountNum=account.AccountNum AND "
+				+"DateDisplayed <= "+POut.PDate(asOfDate)+" WHERE AcctType<=2 ";
+			if(!showInactive){
+				command+="AND Inactive=0 ";
+			}
+			command+="GROUP BY account.AccountNum, account.AcctType, account.Description, account.BankNumber,"
+				+"account.Inactive, account.AccountColor ORDER BY AcctType, Description";
+			DataTable rawTable=General.GetTable(command);
+			AccountType aType;
+			double debit=0;
+			double credit=0;
+			for(int i=0;i<rawTable.Rows.Count;i++){
+				row=table.NewRow();
+				aType=(AccountType)PIn.PInt(rawTable.Rows[i]["AcctType"].ToString());
+				row["type"]=Lan.g("enumAccountType",aType.ToString());
+				row["Description"]=rawTable.Rows[i]["Description"].ToString();
+				debit=PIn.PDouble(rawTable.Rows[i]["SumDebit"].ToString());
+				credit=PIn.PDouble(rawTable.Rows[i]["SumCredit"].ToString());
+				if(DebitIsPos(aType)) {
+					row["balance"]=(debit-credit).ToString("N");
+				}
+				else {
+					row["balance"]=(credit-debit).ToString("N");
+				}
+				row["BankNumber"]=rawTable.Rows[i]["BankNumber"].ToString();
+				if(rawTable.Rows[i]["Inactive"].ToString()=="0"){
+					row["inactive"]="";
+				}
+				else{
+					row["inactive"]="X";
+				}
+				row["color"]=rawTable.Rows[i]["AccountColor"].ToString();//it will be an unsigned int at this point.
+				row["AccountNum"]=rawTable.Rows[i]["AccountNum"].ToString();
+				rows.Add(row);
+			}
+			//now, the Retained Earnings (auto) account-----------------------------------------------------------------
+			DateTime firstofYear=new DateTime(asOfDate.Year,1,1);
+			command="SELECT AcctType, SUM(DebitAmt) AS SumDebit, SUM(CreditAmt) AS SumCredit "
+				+"FROM account,journalentry "
+				+"WHERE journalentry.AccountNum=account.AccountNum "
+				+"AND DateDisplayed < "+POut.PDate(firstofYear)//all from previous years
+				+" AND (AcctType=3 OR AcctType=4) "//income or expenses
+				+"GROUP BY AcctType ORDER BY AcctType";//income first, but could return zero rows.
+			rawTable=General.GetTable(command);
+			double balance=0;
+			for(int i=0;i<rawTable.Rows.Count;i++){
+				aType=(AccountType)PIn.PInt(rawTable.Rows[i]["AcctType"].ToString());
+				debit=PIn.PDouble(rawTable.Rows[i]["SumDebit"].ToString());
+				credit=PIn.PDouble(rawTable.Rows[i]["SumCredit"].ToString());
+				//this works for both income and expenses, because we are subracting expenses, so signs cancel
+				balance+=credit-debit;
+			}
+			row=table.NewRow();
+			row["type"]=Lan.g("enumAccountType",AccountType.Equity.ToString());
+			row["Description"]=Lan.g("Accounts","Retained Earnings (auto)");
+			row["balance"]=balance.ToString("N");
+			row["BankNumber"]="";
+			row["color"]=Color.White.ToArgb();
+			row["AccountNum"]="0";
+			rows.Add(row);
+			//finally, income and expenses------------------------------------------------------------------------------
+			command="SELECT account.AcctType, account.Description, account.AccountNum, "
+				+"SUM(DebitAmt) AS SumDebit, SUM(CreditAmt) AS SumCredit, account.BankNumber, account.Inactive, account.AccountColor "
+				+"FROM account "
+				+"LEFT JOIN journalentry ON journalentry.AccountNum=account.AccountNum "
+				+"AND DateDisplayed <= "+POut.PDate(asOfDate)
+				+" AND DateDisplayed >= "+POut.PDate(firstofYear)//only for this year
+				+" WHERE (AcctType=3 OR AcctType=4) ";
+			if(!showInactive) {
+				command+="AND Inactive=0 ";
+			}
+			command+="GROUP BY account.AccountNum, account.AcctType, account.Description, account.BankNumber,"
+				+"account.Inactive, account.AccountColor ORDER BY AcctType, Description";
+			rawTable=General.GetTable(command);
+			for(int i=0;i<rawTable.Rows.Count;i++) {
+				row=table.NewRow();
+				aType=(AccountType)PIn.PInt(rawTable.Rows[i]["AcctType"].ToString());
+				row["type"]=Lan.g("enumAccountType",aType.ToString());
+				row["Description"]=rawTable.Rows[i]["Description"].ToString();
+				debit=PIn.PDouble(rawTable.Rows[i]["SumDebit"].ToString());
+				credit=PIn.PDouble(rawTable.Rows[i]["SumCredit"].ToString());
+				if(DebitIsPos(aType)) {
+					row["balance"]=(debit-credit).ToString("N");
+				}
+				else {
+					row["balance"]=(credit-debit).ToString("N");
+				}
+				row["BankNumber"]=rawTable.Rows[i]["BankNumber"].ToString();
+				if(rawTable.Rows[i]["Inactive"].ToString()=="0") {
+					row["inactive"]="";
+				}
+				else {
+					row["inactive"]="X";
+				}
+				row["color"]=rawTable.Rows[i]["AccountColor"].ToString();//it will be an unsigned int at this point.
+				row["AccountNum"]=rawTable.Rows[i]["AccountNum"].ToString();
+				rows.Add(row);
+			}
+			for(int i=0;i<rows.Count;i++) {
+				table.Rows.Add(rows[i]);
+			}
+			return table;
 		}
 
 	}

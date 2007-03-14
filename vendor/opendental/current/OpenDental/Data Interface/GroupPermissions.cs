@@ -28,7 +28,7 @@ namespace OpenDental{
 		///<summary></summary>
 		private static void Update(GroupPermission gp){
 			string command= "UPDATE grouppermission SET " 
-				+"NewerDate = '"   +POut.PDate  (gp.NewerDate)+"'"
+				+"NewerDate = "   +POut.PDate  (gp.NewerDate)
 				+",NewerDays = '"   +POut.PInt   (gp.NewerDays)+"'"
 				+",UserGroupNum = '"+POut.PInt   (gp.UserGroupNum)+"'"
 				+",PermType = '"    +POut.PInt   ((int)gp.PermType)+"'"
@@ -40,7 +40,7 @@ namespace OpenDental{
 		private static void Insert(GroupPermission gp){
 			string command= "INSERT INTO grouppermission (NewerDate,NewerDays,UserGroupNum,PermType) "
 				+"VALUES("
-				+"'"+POut.PDate  (gp.NewerDate)+"', "
+				+POut.PDate  (gp.NewerDate)+", "
 				+"'"+POut.PInt   (gp.NewerDays)+"', "
 				+"'"+POut.PInt   (gp.UserGroupNum)+"', "
 				+"'"+POut.PInt   ((int)gp.PermType)+"')";

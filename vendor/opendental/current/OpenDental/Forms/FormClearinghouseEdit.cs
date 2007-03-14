@@ -323,6 +323,7 @@ namespace OpenDental{
 			// 
 			this.comboCommBridge.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.comboCommBridge.Location = new System.Drawing.Point(177,189);
+			this.comboCommBridge.MaxDropDownItems = 20;
 			this.comboCommBridge.Name = "comboCommBridge";
 			this.comboCommBridge.Size = new System.Drawing.Size(145,21);
 			this.comboCommBridge.TabIndex = 7;

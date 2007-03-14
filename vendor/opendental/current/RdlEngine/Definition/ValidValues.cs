@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -36,10 +36,7 @@ namespace fyiReporting.RDL
 											// possible values for the parameter.
 		ParameterValues _ParameterValues;	// Hardcoded values for the parameter	
 
-		[NonSerialized] string[] _DisplayValues;	// runtime display values
-		[NonSerialized] object[] _DataValues;		//  cooresponding data values
-	
-		internal ValidValues(Report r, ReportLink p, XmlNode xNode) : base(r, p)
+		internal ValidValues(ReportDefn r, ReportLink p, XmlNode xNode) : base(r, p)
 		{
 			_DataSetReference=null;
 			_ParameterValues=null;
@@ -96,30 +93,65 @@ namespace fyiReporting.RDL
 			set {  _ParameterValues = value; }
 		}
 
-		internal string[] DisplayValues()
+		internal string[] DisplayValues(Report rpt)
 		{
-			if (_DisplayValues != null)
-				return _DisplayValues;
+			lock (this)
+			{
+				string[] dsplValues = rpt.Cache.Get(this, "displayvalues") as string[];
+				object[] dataValues;
 
-			if (_DataSetReference != null)
-				_DataSetReference.SupplyValues(out _DisplayValues, out _DataValues);
-			else
-				_ParameterValues.SupplyValues(out _DisplayValues, out _DataValues);
+				if (dsplValues != null)
+					return dsplValues;
 
-			return _DisplayValues;
+				if (_DataSetReference != null)
+					_DataSetReference.SupplyValues(rpt, out dsplValues, out dataValues);
+				else
+					_ParameterValues.SupplyValues(rpt, out dsplValues, out dataValues);
+
+				// there shouldn't be a problem; but if there is it doesn't matter as values can be recreated
+				try {rpt.Cache.Add(this, "datavalues", dataValues);} 
+				catch (Exception e1)
+				{
+					rpt.rl.LogError(4, "Error caching data values.  " + e1.Message);
+				}
+				try {rpt.Cache.Add(this, "displayvalues", dsplValues);} 
+				catch (Exception e2)
+				{
+					rpt.rl.LogError(4, "Error caching display values.  " + e2.Message);
+				}
+
+				return dsplValues;
+			}
 		}
 
-		internal object[] DataValues()
+		internal object[] DataValues(Report rpt)
 		{
-			if (_DataValues != null)
-				return _DataValues;
+			lock (this)
+			{
+				string[] dsplValues;
+				object[] dataValues = rpt.Cache.Get(this, "datavalues") as object[];
 
-			if (_DataSetReference != null)
-				_DataSetReference.SupplyValues(out _DisplayValues, out _DataValues);
-			else
-				_ParameterValues.SupplyValues(out _DisplayValues, out _DataValues);
+				if (dataValues != null)
+					return dataValues;
 
-			return _DataValues;
+				if (_DataSetReference != null)
+					_DataSetReference.SupplyValues(rpt, out dsplValues, out dataValues);
+				else
+					_ParameterValues.SupplyValues(rpt, out dsplValues, out dataValues);
+
+				// there shouldn't be a problem; but if there is it doesn't matter as values can be recreated
+				try {rpt.Cache.Add(this, "datavalues", dataValues);} 
+				catch (Exception e1)
+				{
+					rpt.rl.LogError(4, "Error caching data values.  " + e1.Message);
+				}
+				try {rpt.Cache.Add(this, "displayvalues", dsplValues);} 
+				catch (Exception e2)
+				{
+					rpt.rl.LogError(4, "Error caching display values.  " + e2.Message);
+				}
+				return dataValues;
+			}
 		}
 	}
 }

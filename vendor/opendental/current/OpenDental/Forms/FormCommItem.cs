@@ -223,14 +223,14 @@ namespace OpenDental{
 		#endregion
 
 		private void FormCommItem_Load(object sender, System.EventArgs e) {
-			if(CommlogCur.EmailMessageNum!=0){
+			/*if(CommlogCur.EmailMessageNum!=0){
 				EmailMessage message=EmailMessages.Refresh(CommlogCur.EmailMessageNum);
 				//If a date is entered, user will not be able to click Send
 				FormEmailMessageEdit FormE=new FormEmailMessageEdit(message);
 				FormE.ShowDialog();
 				DialogResult=DialogResult.OK;
 				return;
-			}
+			}*/
 			/*{				
 				if(!UserPermissions.CheckUserPassword("Adjustment Edit",Adjustments.Cur.AdjDate)){
 					//MessageBox.Show(Lan.g(this,"You only have permission to view the Adjustment. No changes will be saved."));
@@ -248,7 +248,7 @@ namespace OpenDental{
 			for(int i=0;i<Enum.GetNames(typeof(CommItemMode)).Length;i++){
 				listMode.Items.Add(Lan.g("enumCommItemMode",Enum.GetNames(typeof(CommItemMode))[i]));
 			}
-			listMode.SelectedIndex=(int)CommlogCur.Mode;
+			listMode.SelectedIndex=(int)CommlogCur.Mode_;
 			for(int i=0;i<Enum.GetNames(typeof(CommSentOrReceived)).Length;i++){
 				listSentOrReceived.Items.Add
 					(Lan.g("enumCommSentOrReceived",Enum.GetNames(typeof(CommSentOrReceived))[i]));
@@ -293,7 +293,7 @@ namespace OpenDental{
 			CommlogCur.CommDateTime=PIn.PDateT(textDateTime.Text);
 			//there will always be a commtype selected.
 			CommlogCur.CommType=(CommItemType)(listType.SelectedIndex+1);
-			CommlogCur.Mode=(CommItemMode)listMode.SelectedIndex;
+			CommlogCur.Mode_=(CommItemMode)listMode.SelectedIndex;
 			CommlogCur.SentOrReceived=(CommSentOrReceived)listSentOrReceived.SelectedIndex;
 			CommlogCur.Note=textNote.Text;
 			if(IsNew){

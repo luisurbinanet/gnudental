@@ -169,19 +169,19 @@ namespace OpenDental{
 			Queries.CurReport=new ReportOld();
 			// replaced insplan.carrier by carrier.carrierName, SPK 7/15/04
 			Queries.CurReport.Query="SELECT claim.dateservice,claim.claimnum,claim.claimtype,claim.claimstatus,"
-				+"CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI),carrier.CarrierName,claim.claimfee "
+				+"CONCAT(CONCAT(CONCAT(CONCAT(patient.LName,', '),patient.FName),' '),patient.MiddleI),carrier.CarrierName,claim.claimfee "
 				+"FROM patient,claim,insplan,carrier "
-				+"WHERE patient.patnum=claim.patnum && insplan.plannum=claim.plannum "
-				+"&& insplan.CarrierNum=carrier.CarrierNum "	// added SPK 
-				+"&& (claim.claimstatus = 'U' || claim.claimstatus = 'H' ||  claim.claimstatus = 'W')";
+				+"WHERE patient.patnum=claim.patnum AND insplan.plannum=claim.plannum "
+				+"AND insplan.CarrierNum=carrier.CarrierNum "	// added SPK 
+				+"AND (claim.claimstatus = 'U' OR claim.claimstatus = 'H' OR  claim.claimstatus = 'W')";
 			if(radioRange.Checked==true){			// added 'W', SPK 7/15/04
 				Queries.CurReport.Query
-					+=" && claim.dateservice >= '" + date1.SelectionStart.ToString("yyyy-MM-dd")+"' "
-					+"&& claim.dateservice <= '" + date2.SelectionStart.ToString("yyyy-MM-dd")+"'";
+					+=" AND claim.dateservice >= '" + date1.SelectionStart.ToString("yyyy-MM-dd")+"' "
+					+"AND claim.dateservice <= '" + date2.SelectionStart.ToString("yyyy-MM-dd")+"'";
 			}
 			else{
 				Queries.CurReport.Query
-					+=" && claim.dateservice = '" + date1.SelectionStart.ToString("yyyy-MM-dd")+"'";
+					+=" AND claim.dateservice = '" + date1.SelectionStart.ToString("yyyy-MM-dd")+"'";
 			}
 			FormQuery2=new FormQuery();
 			FormQuery2.IsReport=true;

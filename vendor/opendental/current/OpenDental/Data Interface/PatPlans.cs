@@ -96,6 +96,15 @@ namespace OpenDental{
 			return Relat.Self;
 		}
 
+		public static string GetPatID(PatPlan[] patPlans,int planNum) {
+			for(int p=0;p<patPlans.Length;p++) {
+				if(patPlans[p].PlanNum==planNum) {
+					return patPlans[p].PatID;
+				}
+			}
+			return "";
+		}
+
 		///<summary>Deletes the patplan with the specified patPlanNum.  Rearranges the other patplans for the patient to keep the ordinal sequence contiguous.  Then, recomputes all estimates for this patient because their coverage is now different.  Also sets patient.HasIns to the correct value.</summary>
 		public static void Delete(int patPlanNum){
 			string command="SELECT PatNum FROM patplan WHERE PatPlanNum="+POut.PInt(patPlanNum);
@@ -186,8 +195,7 @@ namespace OpenDental{
 			return 0;
 		}
 
-
-
+		
 		
 	}
 

@@ -305,8 +305,8 @@ namespace OpenDental
 			report.AddSubTitle(dateFrom.ToShortDateString()+" - "+dateTo.ToShortDateString());
 			//setup query
 			report.Query=@"SELECT appointment.AptDateTime, 
-				trim(concat(patient.LName,', ',case when length(patient.Preferred) > 0 
-				then concat('(',patient.Preferred,') ') else '' end,patient.fname, ' ',patient.middlei))
+				trim(CONCAT(CONCAT(CONCAT(CONCAT(concat(patient.LName,', '),case when length(patient.Preferred) > 0 
+				then CONCAT(concat('(',patient.Preferred),') ') else '' end),patient.fname), ' '),patient.middlei))
 				AS PatName,
 				patient.Birthdate,
 				appointment.AptDateTime,
@@ -314,8 +314,8 @@ namespace OpenDental
 				appointment.ProcDescript,
 				patient.HmPhone, patient.WkPhone, patient.WirelessPhone
 				FROM appointment INNER JOIN patient ON appointment.PatNum = patient.PatNum
-				WHERE appointment.AptDateTime between '" + POut.PDate(dateFrom) + "' AND '"
-				+POut.PDate(dateTo.AddDays(1)) + "' AND " +
+				WHERE appointment.AptDateTime between " + POut.PDate(dateFrom) + " AND "
+				+POut.PDate(dateTo.AddDays(1)) + " AND " +
 				"AptStatus != '" + (int)ApptStatus.UnschedList + "' AND " +
 				"AptStatus != '" + (int)ApptStatus.Planned + "' AND " +
 				whereProv + " " +

@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -32,7 +32,6 @@ namespace fyiReporting.RDL
 	///<summary>
 	/// Base class of all charts.
 	///</summary>
-	[Serializable]
 	internal abstract class ChartBase : IDisposable
 	{
 		Chart _ChartDefn;
@@ -42,40 +41,39 @@ namespace fyiReporting.RDL
 		Brush[] _SeriesBrush;
 		ChartMarkerEnum[] _SeriesMarker;
 		protected int _LastCategoryWidth=0;
+		protected Row _row;					// row chart created on
 
-		internal ChartBase(Chart c, MatrixCellEntry[,] m)
+		internal ChartBase(Report r, Row row, Chart c, MatrixCellEntry[,] m)
 		{
 			_ChartDefn = c;
+			_row = row;
 			_DataDefn = m;
 			_bm = null;
-			int width = _ChartDefn.WidthCalc(null);
+			int width = _ChartDefn.WidthCalc(r, null);
 			int height = RSize.PixelsFromPoints(_ChartDefn.HeightOrOwnerHeight);
 			Layout = new ChartLayout(width, height);
 			_SeriesBrush = null;
 			_SeriesMarker = null;
 		}
 
-		internal virtual void Draw()
+		internal virtual void Draw(Report rpt)
 		{
 		}
 
-		internal void Save(System.IO.Stream stream, ImageFormat im)
+		internal void Save(Report rpt, System.IO.Stream stream, ImageFormat im)
 		{
 			if (_bm == null)
-				Draw();
+				Draw(rpt);
 			
 			_bm.Save(stream, im);
 		}
 
-		internal System.Drawing.Image Image
+		internal System.Drawing.Image Image(Report rpt)
 		{
-			get 
-			{
-				if (_bm == null)
-					Draw();
-			
-				return _bm;
-			}
+			if (_bm == null)
+				Draw(rpt);
+
+			return _bm;
 		}
 
 		protected Bitmap CreateSizedBitmap()
@@ -139,7 +137,7 @@ namespace fyiReporting.RDL
 			get{return (_DataDefn.GetLength(1) - 1);}
 		}
 
-		protected void DrawChartStyle(Graphics g)
+		protected void DrawChartStyle(Report rpt, Graphics g)
 		{
 			System.Drawing.Rectangle rect = new  System.Drawing.Rectangle(0, 0, Layout.Width, Layout.Height);
 			if (_ChartDefn.Style == null)
@@ -148,16 +146,16 @@ namespace fyiReporting.RDL
 			}
 			else
 			{
-				Row r = FirstChartRow();
-				_ChartDefn.Style.DrawBorder(g, r, rect);
-				_ChartDefn.Style.DrawBackground(g, r, rect);
+				Row r = FirstChartRow(rpt);
+				_ChartDefn.Style.DrawBorder(rpt, g, r, rect);
+				_ChartDefn.Style.DrawBackground(rpt, g, r, rect);
 			}
 
 			return;
 		}
 
 		// Draws the Legend and then returns the rectangle it drew in
-		protected System.Drawing.Rectangle DrawLegend(Graphics g, bool bMarker, bool bBeforePlotDrawn)
+		protected System.Drawing.Rectangle DrawLegend(Report rpt, Graphics g, bool bMarker, bool bBeforePlotDrawn)
 		{
 			Legend l = _ChartDefn.Legend;
 			if (l == null)
@@ -192,15 +190,16 @@ namespace fyiReporting.RDL
 				}
 				else
 				{
-					drawFont = 	s.GetFont(null);
-					drawBrush = s.GetBrush(null);
-					drawFormat = s.GetStringFormat(null);
+					drawFont = 	s.GetFont(rpt, null);
+					drawBrush = s.GetBrush(rpt, null);
+					drawFormat = s.GetStringFormat(rpt, null);
 				}
 
 				int x, y, h;
 				int maxTextWidth, maxTextHeight;
 				drawFormat.FormatFlags |= StringFormatFlags.NoWrap;
-				Size[] sizes = DrawLegendMeasure(g, drawFont, drawFormat, new SizeF(Layout.Width, Layout.Height), out maxTextWidth, out maxTextHeight);
+				Size[] sizes = DrawLegendMeasure(rpt, g, drawFont, drawFormat, 
+					new SizeF(Layout.Width, Layout.Height), out maxTextWidth, out maxTextHeight);
 				int boxSize = (int) (maxTextHeight * .8);
 				int totalItemWidth = 0;			// width of a legend item
 				int totalWidth, totalHeight;	// final height and width of legend
@@ -319,13 +318,13 @@ namespace fyiReporting.RDL
 				rRect = new System.Drawing.Rectangle(x-1, y-1, totalWidth+2, totalHeight+2);
 				if (s != null)
 				{
-					s.DrawBackground(g, null, rRect);	// draw (or not draw) background 
-					s.DrawBorder(g, null, rRect);		// draw (or not draw) border depending on style
+					s.DrawBackground(rpt, g, null, rRect);	// draw (or not draw) background 
+					s.DrawBorder(rpt, g, null, rRect);		// draw (or not draw) border depending on style
 				}
 
 				for (int iCol=1; iCol <= SeriesCount; iCol++)
 				{
-					string c = GetSeriesValue(iCol);
+					string c = GetSeriesValue(rpt, iCol);
 					System.Drawing.Rectangle rect;
 					switch (l.Layout)
 					{
@@ -360,7 +359,7 @@ namespace fyiReporting.RDL
 					drawFormat.Dispose();
 			}
 			if (s != null)
-				rRect = s.PaddingAdjust(null, rRect, true);
+				rRect = s.PaddingAdjust(rpt, null, rRect, true);
 			return rRect;
 		}
 
@@ -434,14 +433,14 @@ namespace fyiReporting.RDL
 		}
 
 		// Measures the Legend and then returns the rectangle it drew in
-		protected Size[] DrawLegendMeasure(Graphics g, Font f, StringFormat sf, SizeF maxSize, out int maxWidth, out int maxHeight)
+		protected Size[] DrawLegendMeasure(Report rpt, Graphics g, Font f, StringFormat sf, SizeF maxSize, out int maxWidth, out int maxHeight)
 		{
 			Size[] sizes = new Size[SeriesCount];
 			maxWidth = maxHeight = 0;
 
 			for (int iCol=1; iCol <= SeriesCount; iCol++)
 			{
-				string c = GetSeriesValue(iCol);
+				string c = GetSeriesValue(rpt, iCol);
 				SizeF ms = g.MeasureString(c, f, maxSize, sf);
 				sizes[iCol-1] = new Size((int) Math.Ceiling(ms.Width), 
 										 (int) Math.Ceiling(ms.Height));
@@ -453,14 +452,14 @@ namespace fyiReporting.RDL
 			return sizes;
 		}
 
-		protected void DrawPlotAreaStyle(Graphics g, System.Drawing.Rectangle crect)
+		protected void DrawPlotAreaStyle(Report rpt, Graphics g, System.Drawing.Rectangle crect)
 		{
 			if (_ChartDefn.PlotArea == null || _ChartDefn.PlotArea.Style == null)
 				return;
 			System.Drawing.Rectangle rect = Layout.PlotArea;
 			Style s = _ChartDefn.PlotArea.Style;
 
-            Row r = FirstChartRow();
+            Row r = FirstChartRow(rpt);
 
 			if (rect.IntersectsWith(crect))
 			{
@@ -473,7 +472,7 @@ namespace fyiReporting.RDL
 	//				rg.Complement(crect);
 	//				Region saver = g.Clip;
 	//				g.Clip = rg;
-					s.DrawBackground(g, r, rect);
+					s.DrawBackground(rpt, g, r, rect);
 	//				g.Clip = saver;
 				}
 				finally
@@ -483,12 +482,12 @@ namespace fyiReporting.RDL
 				}
 			}
 			else
-				s.DrawBackground(g, r, rect);
+				s.DrawBackground(rpt, g, r, rect);
 			
 			return;
 		}
 
-		protected void DrawTitle(Graphics g, Title t, System.Drawing.Rectangle rect)
+		protected void DrawTitle(Report rpt, Graphics g, Title t, System.Drawing.Rectangle rect)
 		{
 			if (t == null)
 				return;
@@ -496,12 +495,12 @@ namespace fyiReporting.RDL
 			if (t.Caption == null)
 				return;
 
-			Row r = FirstChartRow();
-			object title = t.Caption.Evaluate(r);
+			Row r = FirstChartRow(rpt);
+			object title = t.Caption.Evaluate(rpt, r);
 			if (t.Style != null)
 			{
-				t.Style.DrawString(g, title, t.Caption.GetTypeCode(), r, rect);
-				t.Style.DrawBorder(g, r, rect);
+				t.Style.DrawString(rpt, g, title, t.Caption.GetTypeCode(), r, rect);
+				t.Style.DrawBorder(rpt, g, r, rect);
 			}
 			else
 				Style.DrawStringDefaults(g, title, rect);
@@ -509,24 +508,24 @@ namespace fyiReporting.RDL
 			return;
 		}
 
-		protected Size DrawTitleMeasure(Graphics g, Title t)
+		protected Size DrawTitleMeasure(Report rpt, Graphics g, Title t)
 		{
 			Size size=Size.Empty;
 
 			if (t == null || t.Caption == null)
 				return size;
 
-			Row r = FirstChartRow();
-			object title = t.Caption.Evaluate(r);
+			Row r = FirstChartRow(rpt);
+			object title = t.Caption.Evaluate(rpt, r);
 			if (t.Style != null)
-				size = t.Style.MeasureString(g, title, t.Caption.GetTypeCode(), r, int.MaxValue);
+				size = t.Style.MeasureString(rpt, g, title, t.Caption.GetTypeCode(), r, int.MaxValue);
 			else
-				size = Style.MeasureStringDefaults(g, title, t.Caption.GetTypeCode(), r, int.MaxValue);
+				size = Style.MeasureStringDefaults(rpt, g, title, t.Caption.GetTypeCode(), r, int.MaxValue);
 			
 			return size;
 		}
 
-		protected object GetCategoryValue(int row, out TypeCode tc)
+		protected object GetCategoryValue(Report rpt, int row, out TypeCode tc)
 		{
 			MatrixCellEntry mce = _DataDefn[row, 0];
 			if (mce == null)
@@ -536,19 +535,19 @@ namespace fyiReporting.RDL
 			}
 
 			Row lrow;
-			this._ChartDefn.ChartMatrix.Data = mce.Data;		// Must set this for evaluation
+			this._ChartDefn.ChartMatrix.SetMyData(rpt, mce.Data);		// Must set this for evaluation
 			if (mce.Data.Data.Count > 0)
-				lrow = (Row) (mce.Data.Data[0]);
+				lrow = mce.Data.Data[0];
 			else
 				lrow = null;
 			ChartExpression ce = (ChartExpression) (mce.DisplayItem);
 
-			object v = ce.Value.Evaluate(lrow);
+			object v = ce.Value.Evaluate(rpt, lrow);
 			tc = ce.Value.GetTypeCode();
 			return v;
 		}
 
-		protected double GetDataValue(int row, int col)
+		protected double GetDataValue(Report rpt, int row, int col)
 		{
 			MatrixCellEntry mce = _DataDefn[row, col];
 			if (mce == null)
@@ -560,29 +559,29 @@ namespace fyiReporting.RDL
 			//   due to the common use of aggregate values.  We need to
 			//   go thru the data more than once if we have to auto scale.
 			Row lrow;
-			this._ChartDefn.ChartMatrix.Data = mce.Data;		// Must set this for evaluation
+			this._ChartDefn.ChartMatrix.SetMyData(rpt, mce.Data);		// Must set this for evaluation
 			if (mce.Data.Data.Count > 0)
-				lrow = (Row) (mce.Data.Data[0]);
+				lrow = mce.Data.Data[0];
 			else
 				lrow = null;
 			ChartExpression ce = (ChartExpression) (mce.DisplayItem);
 
-			double v = ce.Value.EvaluateDouble(lrow);
+			double v = ce.Value.EvaluateDouble(rpt, lrow);
 			mce.Value = v;					// cache so we don't need to calculate again
 			return v;
 		}
 
-		protected void DrawDataPoint(Graphics g, Point p, int row, int col)
+		protected void DrawDataPoint(Report rpt, Graphics g, Point p, int row, int col)
 		{
-			DrawDataPoint(g, p, System.Drawing.Rectangle.Empty, row, col);
+			DrawDataPoint(rpt, g, p, System.Drawing.Rectangle.Empty, row, col);
 		}
 
-		protected void DrawDataPoint(Graphics g, System.Drawing.Rectangle rect, int row, int col)
+		protected void DrawDataPoint(Report rpt, Graphics g, System.Drawing.Rectangle rect, int row, int col)
 		{
-			DrawDataPoint(g, Point.Empty, rect, row, col);
+			DrawDataPoint(rpt, g, Point.Empty, rect, row, col);
 		}
 
-		void DrawDataPoint(Graphics g, Point p, System.Drawing.Rectangle rect, int row, int col)
+		void DrawDataPoint(Report rpt, Graphics g, Point p, System.Drawing.Rectangle rect, int row, int col)
 		{
 			MatrixCellEntry mce = _DataDefn[row, col];
 			if (mce == null)
@@ -597,9 +596,9 @@ namespace fyiReporting.RDL
 			// Calculate the DataPoint value; usually a fairly expensive operation
 			//   due to the common use of aggregate values.  
 			Row lrow;
-			this._ChartDefn.ChartMatrix.Data = mce.Data;		// Must set this for evaluation
+			this._ChartDefn.ChartMatrix.SetMyData(rpt, mce.Data);		// Must set this for evaluation
 			if (mce.Data.Data.Count > 0)
-				lrow = (Row) (mce.Data.Data[0]);
+				lrow = mce.Data.Data[0];
 			else
 				lrow = null;
 
@@ -607,12 +606,12 @@ namespace fyiReporting.RDL
 			TypeCode tc;
 			if (dp.DataLabel.Value == null)
 			{		// No DataLabel value specified so we use the actual value
-				v = ce.Value.EvaluateDouble(lrow);
+				v = ce.Value.EvaluateDouble(rpt, lrow);
 				tc = TypeCode.Double;
 			}
 			else
 			{		// Evaluate the DataLable value for the display
-				v = dp.DataLabel.Value.Evaluate(lrow);
+				v = dp.DataLabel.Value.Evaluate(rpt, lrow);
 				tc = dp.DataLabel.Value.GetTypeCode();
 			}
 
@@ -620,7 +619,7 @@ namespace fyiReporting.RDL
 			{
 				if (rect == System.Drawing.Rectangle.Empty)
 				{
-					Size size = Style.MeasureStringDefaults(g, v, tc, lrow, int.MaxValue);
+					Size size = Style.MeasureStringDefaults(rpt, g, v, tc, lrow, int.MaxValue);
 					rect = new System.Drawing.Rectangle(p, size);
 				}
 				Style.DrawStringDefaults(g, v, rect);
@@ -629,34 +628,34 @@ namespace fyiReporting.RDL
 			{
 				if (rect == System.Drawing.Rectangle.Empty)
 				{
-					Size size = dp.DataLabel.Style.MeasureString(g, v, tc, lrow, int.MaxValue);
+					Size size = dp.DataLabel.Style.MeasureString(rpt, g, v, tc, lrow, int.MaxValue);
 					rect = new System.Drawing.Rectangle(p, size);
 				}
-				dp.DataLabel.Style.DrawString(g, v, tc, lrow, rect);
+				dp.DataLabel.Style.DrawString(rpt, g, v, tc, lrow, rect);
 			}
 
 			return;
 		}
 
-		protected string GetSeriesValue(int iCol)
+		protected string GetSeriesValue(Report rpt, int iCol)
 		{
 			MatrixCellEntry mce = _DataDefn[0, iCol];
 			Row lrow;
 			if (mce.Data.Data.Count > 0)
-				lrow = (Row) (mce.Data.Data[0]);
+				lrow = mce.Data.Data[0];
 			else
 				lrow = null;
 			ChartExpression ce = (ChartExpression) (mce.DisplayItem);
 
-			string v = ce.Value.EvaluateString(lrow);
+			string v = ce.Value.EvaluateString(rpt, lrow);
 			return v;
 		}
 
-		protected void GetMaxMinDataValue(out double max, out double min)
+		protected void GetMaxMinDataValue(Report rpt, out double max, out double min)
 		{
 			if (_ChartDefn.Subtype == ChartSubTypeEnum.Stacked)
 			{
-				GetMaxMinDataValueStacked(out max, out min);
+				GetMaxMinDataValueStacked(rpt, out max, out min);
 				return;
 			}
 			min = double.MaxValue;
@@ -667,7 +666,7 @@ namespace fyiReporting.RDL
 			{
 				for (int iCol = 1; iCol <= SeriesCount; iCol++)
 				{
-					v = GetDataValue(iRow, iCol);
+					v = GetDataValue(rpt, iRow, iCol);
 					if (v < min)
 						min = v;
 					if (v > max)
@@ -676,7 +675,7 @@ namespace fyiReporting.RDL
 			}
 		}
 
-		void GetMaxMinDataValueStacked(out double max, out double min)
+		void GetMaxMinDataValueStacked(Report rpt, out double max, out double min)
 		{
 			min = double.MaxValue;
 			max = double.MinValue;
@@ -687,7 +686,7 @@ namespace fyiReporting.RDL
 				v=0;
 				for (int iCol = 1; iCol <= SeriesCount; iCol++)
 				{
-					v += GetDataValue(iRow, iCol);
+					v += GetDataValue(rpt, iRow, iCol);
 				}
 				if (v < min)
 					min = v;
@@ -862,7 +861,7 @@ namespace fyiReporting.RDL
 			return m;
 		}
 
-		protected void GetValueMaxMin(ref double max, ref double min)
+		protected void GetValueMaxMin(Report rpt, ref double max, ref double min)
 		{
 
 			if (_ChartDefn.Subtype == ChartSubTypeEnum.PercentStacked)
@@ -876,8 +875,8 @@ namespace fyiReporting.RDL
 			if (_ChartDefn.ValueAxis != null &&
 				_ChartDefn.ValueAxis.Axis != null)
 			{
-				valueAxisMax = _ChartDefn.ValueAxis.Axis.Max;
-				valueAxisMin = _ChartDefn.ValueAxis.Axis.Min;
+				valueAxisMax = _ChartDefn.ValueAxis.Axis.MaxEval(rpt, _row);
+				valueAxisMin = _ChartDefn.ValueAxis.Axis.MinEval(rpt, _row);
 			}
 			else
 			{
@@ -894,7 +893,7 @@ namespace fyiReporting.RDL
 			}
 
 			// OK We have to work for it;  Calculate min/max of data
-			GetMaxMinDataValue(out max, out min);	
+			GetMaxMinDataValue(rpt, out max, out min);	
 			
 			if (valueAxisMax != int.MinValue)
 				max = valueAxisMax;
@@ -1060,11 +1059,12 @@ namespace fyiReporting.RDL
 			return rc;
 		}
 
-		private Row FirstChartRow()
+		private Row FirstChartRow(Report rpt)
 		{
-			if (_ChartDefn.ChartMatrix.Data != null &&
-				_ChartDefn.ChartMatrix.Data.Data.Count > 0)
-				return (Row) (_ChartDefn.ChartMatrix.Data.Data[0]);
+			Rows _Data = _ChartDefn.ChartMatrix.GetMyData(rpt);
+			if (_Data != null &&
+				_Data.Data.Count > 0)
+				return _Data.Data[0];
 			else
 				return null;
 

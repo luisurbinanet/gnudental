@@ -79,7 +79,7 @@ namespace OpenDental {
 
 		///<summary>Used in the Plan edit window to get a typical list of benefits for all identical plans.  If the supplied plan has a planNum, then that planNum will be excluded from result list.  patPlanNum can be 0.</summary>
 		public static List<Benefit> RefreshForAll(InsPlan like) {
-			if(like.CarrierNum==0) {
+			if(like.CarrierNum==0){
 				return new List<Benefit>();
 			}
 			//Get planNums for all identical plans
@@ -99,23 +99,26 @@ namespace OpenDental {
 				}
 				planNums+=" PlanNum="+table.Rows[i][0].ToString();
 			}
-			//Get all benefits for all those plans
-			command="SELECT * FROM benefit WHERE"+planNums;
-			table=General.GetTable(command);
-			Benefit[] benList=new Benefit[table.Rows.Count];
-			for(int i=0;i<table.Rows.Count;i++) {
-				benList[i]=new Benefit();
-				benList[i].BenefitNum       = PIn.PInt(table.Rows[i][0].ToString());
-				benList[i].PlanNum          = PIn.PInt(table.Rows[i][1].ToString());
-				benList[i].PatPlanNum       = PIn.PInt(table.Rows[i][2].ToString());
-				benList[i].CovCatNum        = PIn.PInt(table.Rows[i][3].ToString());
-				benList[i].ADACode          = PIn.PString(table.Rows[i][4].ToString());
-				benList[i].BenefitType      = (InsBenefitType)PIn.PInt(table.Rows[i][5].ToString());
-				benList[i].Percent          = PIn.PInt(table.Rows[i][6].ToString());
-				benList[i].MonetaryAmt      = PIn.PDouble(table.Rows[i][7].ToString());
-				benList[i].TimePeriod       = (BenefitTimePeriod)PIn.PInt(table.Rows[i][8].ToString());
-				benList[i].QuantityQualifier= (BenefitQuantity)PIn.PInt(table.Rows[i][9].ToString());
-				benList[i].Quantity         = PIn.PInt(table.Rows[i][10].ToString());
+			Benefit[] benList=new Benefit[0];
+			if(table.Rows.Count>0) {
+				//Get all benefits for all those plans
+				command="SELECT * FROM benefit WHERE"+planNums;
+				table=General.GetTable(command);
+				benList=new Benefit[table.Rows.Count];
+				for(int i=0;i<table.Rows.Count;i++) {
+					benList[i]=new Benefit();
+					benList[i].BenefitNum       = PIn.PInt(table.Rows[i][0].ToString());
+					benList[i].PlanNum          = PIn.PInt(table.Rows[i][1].ToString());
+					benList[i].PatPlanNum       = PIn.PInt(table.Rows[i][2].ToString());
+					benList[i].CovCatNum        = PIn.PInt(table.Rows[i][3].ToString());
+					benList[i].ADACode          = PIn.PString(table.Rows[i][4].ToString());
+					benList[i].BenefitType      = (InsBenefitType)PIn.PInt(table.Rows[i][5].ToString());
+					benList[i].Percent          = PIn.PInt(table.Rows[i][6].ToString());
+					benList[i].MonetaryAmt      = PIn.PDouble(table.Rows[i][7].ToString());
+					benList[i].TimePeriod       = (BenefitTimePeriod)PIn.PInt(table.Rows[i][8].ToString());
+					benList[i].QuantityQualifier= (BenefitQuantity)PIn.PInt(table.Rows[i][9].ToString());
+					benList[i].Quantity         = PIn.PInt(table.Rows[i][10].ToString());
+				}
 			}
 			List<Benefit> retVal=new List<Benefit>();
 			//Loop through all benefits
@@ -276,8 +279,8 @@ namespace OpenDental {
 			return 0;
 		}
 
-		///<summary>Gets the renewal date for annual benefits from the supplied list of benefits.  Looks for a general limitation dollar amount.  Ignores benefits that do not match either the planNum or the patPlanNum.  Because it starts at the top of the benefit list, it will get the most general limitation first.  Because there is one renew date each year, the date returned will be today's date or earlier; the most recent renewal date.</summary>
-		public static DateTime GetRenewDate(Benefit[] list,int planNum,int patPlanNum,DateTime insStartDate) {
+		///<summary>Gets the renewal date for annual benefits from the supplied list of benefits.  Looks for a general limitation dollar amount.  Ignores benefits that do not match either the planNum or the patPlanNum.  Because it starts at the top of the benefit list, it will get the most general limitation first.  Because there is one renew date each year, the date returned will be the asofDate or earlier; the most recent renewal date.</summary>
+		public static DateTime GetRenewDate(Benefit[] list,int planNum,int patPlanNum,DateTime insStartDate,DateTime asofDate) {
 			for(int i=0;i<list.Length;i++) {
 				if(list[i].PlanNum==0 && list[i].PatPlanNum!=patPlanNum) {
 					continue;
@@ -294,8 +297,11 @@ namespace OpenDental {
 				if(list[i].TimePeriod!=BenefitTimePeriod.CalendarYear && list[i].TimePeriod!=BenefitTimePeriod.ServiceYear) {
 					continue;
 				}
+				bool isCalendarYear=list[i].TimePeriod==BenefitTimePeriod.CalendarYear;
+				return OpenDentBusiness.BenefitB.ComputeRenewDate(asofDate,isCalendarYear,insStartDate);
+				/*
 				if(list[i].TimePeriod==BenefitTimePeriod.CalendarYear){
-					return new DateTime(DateTime.Now.Year,1,1);
+					return new DateTime(asofDate.Year,1,1);
 				}
 				//now, for benefit year not beginning on Jan 1.
 				if(insStartDate.Year<1880){//if no start date was entered.
@@ -306,6 +312,7 @@ namespace OpenDental {
 				}
 				//late last year
 				return new DateTime(DateTime.Today.Year-1,insStartDate.Month,insStartDate.Day);
+				*/
 			}
 			return new DateTime(DateTime.Now.Year,1,1);
 		}

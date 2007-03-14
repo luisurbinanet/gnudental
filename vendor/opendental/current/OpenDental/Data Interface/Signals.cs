@@ -11,8 +11,8 @@ namespace OpenDental{
 		///<summary>Gets all Signals and Acks Since a given DateTime.  If it can't connect to the database, then it no longer throws an error, but instead returns a list of length 0.  Remeber that the supplied dateTime is server time.  This has to be accounted for.</summary>
 		public static Signal[] RefreshTimed(DateTime sinceDateT) {
 			string command="SELECT * FROM signal "
-				+"WHERE SigDateTime>'"+POut.PDateT(sinceDateT)+"' "
-				+"OR AckTime>'"+POut.PDateT(sinceDateT)+"' "
+				+"WHERE SigDateTime>"+POut.PDateT(sinceDateT)+" "
+				+"OR AckTime>"+POut.PDateT(sinceDateT)+" "
 				+"ORDER BY SigDateTime";
 			//note: this might return an occasional row that has both times newer.
 			Signal[] sigList=RefreshAndFill(command);
@@ -26,8 +26,8 @@ namespace OpenDental{
 		///<summary>This excludes all Invalids.  It is only concerned with text and button messages.  It includes all messages, whether acked or not.  It's up to the UI to filter out acked if necessary.  Also includes all unacked messages regardless of date.</summary>
 		public static ArrayList RefreshFullText(DateTime sinceDateT) {
 			string command="SELECT * FROM signal "
-				+"WHERE (SigDateTime>'"+POut.PDateT(sinceDateT)+"' "
-				+"OR AckTime>'"+POut.PDateT(sinceDateT)+"' "
+				+"WHERE (SigDateTime>"+POut.PDateT(sinceDateT)+" "
+				+"OR AckTime>"+POut.PDateT(sinceDateT)+" "
 				+"OR AckTime<'1880-01-01') "//always include all unacked.
 				+"AND SigType="+POut.PInt((int)SignalType.Button)
 				+" ORDER BY SigDateTime";
@@ -94,12 +94,12 @@ namespace OpenDental{
 			string command= "UPDATE signal SET " 
 				+"FromUser = '"    +POut.PString(sig.FromUser)+"'"
 				+",ITypes = '"     +POut.PInt   ((int)sig.ITypes)+"'"
-				+",DateViewing = '"+POut.PDate  (sig.DateViewing)+"'"
+				+",DateViewing = "+POut.PDate  (sig.DateViewing)
 				+",SigType = '"    +POut.PInt   ((int)sig.SigType)+"'"
 				+",SigText = '"    +POut.PString(sig.SigText)+"'"
 				//+",SigDateTime = '"+POut.PDateT (SigDateTime)+"'"//we don't want to ever update this
 				+",ToUser = '"     +POut.PString(sig.ToUser)+"'"
-				+",AckTime = '"    +POut.PDateT (sig.AckTime)+"'"
+				+",AckTime = "    +POut.PDateT (sig.AckTime)
 				+" WHERE SignalNum = '"+POut.PInt(sig.SignalNum)+"'";
 			General.NonQ(command);
 		}
@@ -124,13 +124,18 @@ namespace OpenDental{
 			command+=
 				 "'"+POut.PString(sig.FromUser)+"', "
 				+"'"+POut.PInt   ((int)sig.ITypes)+"', "
-				+"'"+POut.PDate  (sig.DateViewing)+"', "
+				+POut.PDate  (sig.DateViewing)+", "
 				+"'"+POut.PInt   ((int)sig.SigType)+"', "
-				+"'"+POut.PString(sig.SigText)+"', "
+				+"'"+POut.PString(sig.SigText)+"', ";
 				//+"'"+POut.PDateT (now)+"', "
-				+"NOW(), "
+			if(FormChooseDatabase.DBtype==DatabaseType.Oracle) {
+				command+=POut.PDateT(MiscData.GetNowDateTime());
+			}else{//Assume MySQL
+				command+="NOW()";
+			}
+			command+=", "
 				+"'"+POut.PString(sig.ToUser)+"', "
-				+"'"+POut.PDateT (sig.AckTime)+"')";
+				+POut.PDateT (sig.AckTime)+")";
  			if(PrefB.RandomKeys){
 				General.NonQ(command);
 			}
@@ -189,13 +194,47 @@ namespace OpenDental{
 		///<summary>When user clicks on a colored light, they intend to ack it to turn it off.  This acks all signals with the specified index.  This is in case multiple signals have been created from different workstations.  This acks them all in one shot.  Must specify a time because you only want to ack signals earlier than the last time this workstation was refreshed.  A newer signal would not get acked.
 		///If this seems slow, then I will need to check to make sure all these tables are properly indexed.</summary>
 		public static void AckButton(int buttonIndex,DateTime time){
-			string command= "UPDATE signal,sigelement,sigelementdef "
-				+"SET signal.AckTime = NOW() "
+			//FIXME:UPDATE-MULTIPLE-TABLES
+			/*string command= "UPDATE signal,sigelement,sigelementdef "
+				+"SET signal.AckTime = ";
+				if(FormChooseDatabase.DBtype==DatabaseType.Oracle) {
+					command+="(SELECT CURRENT_TIMESTAMP FROM DUAL)";
+				}else{//Assume MySQL
+					command+="NOW()";
+				}
+				command+=" "
 				+"WHERE signal.AckTime < '1880-01-01' "
 				+"AND SigDateTime <= '"+POut.PDateT(time)+"' "
 				+"AND signal.SignalNum=sigelement.SignalNum "
 				+"AND sigelement.SigElementDefNum=sigelementdef.SigElementDefNum "
 				+"AND sigelementdef.LightRow="+POut.PInt(buttonIndex);
+			General.NonQ(command);*/
+
+			//Rewritten so that the SQL is compatible with both Oracle and MySQL.
+
+			string command= "SELECT signal.SignalNum FROM signal,sigelement,sigelementdef "
+				+"WHERE signal.AckTime < '1880-01-01' "
+				+"AND SigDateTime <= "+POut.PDateT(time)+" "
+				+"AND signal.SignalNum=sigelement.SignalNum "
+				+"AND sigelement.SigElementDefNum=sigelementdef.SigElementDefNum "
+				+"AND sigelementdef.LightRow="+POut.PInt(buttonIndex);
+			DataTable table=General.GetTable(command);
+			if(table.Rows.Count==0){
+				return;
+			}
+			command="UPDATE signal SET AckTime = ";
+			if(FormChooseDatabase.DBtype==DatabaseType.Oracle){
+				command+=POut.PDateT(MiscData.GetNowDateTime());
+			}else {//Assume MySQL
+				command+="NOW()";
+			}
+			command+=" WHERE ";
+			for(int i=0;i<table.Rows.Count;i++){
+				command+="SignalNum="+table.Rows[i][0].ToString();
+				if(i<table.Rows.Count-1){
+					command+=" OR ";
+				}
+			}
 			General.NonQ(command);
 		}
 

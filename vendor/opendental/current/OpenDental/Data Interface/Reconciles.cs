@@ -55,7 +55,7 @@ namespace OpenDental{
 				 "'"+POut.PInt   (reconcile.AccountNum)+"', "
 				+"'"+POut.PDouble(reconcile.StartingBal)+"', "
 				+"'"+POut.PDouble(reconcile.EndingBal)+"', "
-				+"'"+POut.PDate  (reconcile.DateReconcile)+"', "
+				+POut.PDate  (reconcile.DateReconcile)+", "
 				+"'"+POut.PBool  (reconcile.IsLocked)+"')";
 			if(PrefB.RandomKeys) {
 				General.NonQ(command);
@@ -71,7 +71,7 @@ namespace OpenDental{
 				+"AccountNum = '"    +POut.PInt   (reconcile.AccountNum)+"' "
 				+",StartingBal= '"   +POut.PDouble(reconcile.StartingBal)+"' "
 				+",EndingBal = '"    +POut.PDouble(reconcile.EndingBal)+"' "
-				+",DateReconcile = '"+POut.PDate  (reconcile.DateReconcile)+"' "
+				+",DateReconcile = "+POut.PDate  (reconcile.DateReconcile)+" "
 				+",IsLocked = '"     +POut.PBool  (reconcile.IsLocked)+"' "
 				+"WHERE ReconcileNum = '"+POut.PInt(reconcile.ReconcileNum)+"'";
 			General.NonQ(command);

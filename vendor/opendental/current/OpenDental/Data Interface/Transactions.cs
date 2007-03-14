@@ -60,8 +60,14 @@ namespace OpenDental{
 			if(PrefB.RandomKeys) {
 				command+="'"+POut.PInt(trans.TransactionNum)+"', ";
 			}
+			if(FormChooseDatabase.DBtype==DatabaseType.Oracle) {
+				command+=POut.PDateT(MiscData.GetNowDateTime());
+			}
+			else {//Assume MySQL
+				command+="NOW()";
+			}
 			command+=
-				 "NOW(), "//DateTimeEntry set to current server time
+				 ", "//DateTimeEntry set to current server time
 				+"'"+POut.PInt   (trans.UserNum)+"', "
 				+"'"+POut.PInt   (trans.DepositNum)+"', "
 				+"'"+POut.PInt   (trans.PayNum)+"')";
@@ -76,7 +82,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public static void Update(Transaction trans) {
 			string command= "UPDATE transaction SET "
-				+"DateTimeEntry = '" +POut.PDateT (trans.DateTimeEntry)+"' "
+				+"DateTimeEntry = " +POut.PDateT (trans.DateTimeEntry)+" "
 				+",UserNum = '"      +POut.PInt   (trans.UserNum)+"' "
 				+",DepositNum = '"   +POut.PInt   (trans.DepositNum)+"' "
 				+",PayNum = '"       +POut.PInt   (trans.PayNum)+"' "

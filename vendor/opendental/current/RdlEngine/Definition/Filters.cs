@@ -1,27 +1,28 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
 */
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Xml;
 
 namespace fyiReporting.RDL
@@ -32,12 +33,12 @@ namespace fyiReporting.RDL
 	[Serializable]
 	internal class Filters : ReportLink
 	{
-		ArrayList _Items;			// list of report items
+        List<Filter> _Items;			// list of Filter
 
-		internal Filters(Report r, ReportLink p, XmlNode xNode) : base(r, p)
+		internal Filters(ReportDefn r, ReportLink p, XmlNode xNode) : base(r, p)
 		{
 			Filter f;
-			_Items = new ArrayList();
+            _Items = new List<Filter>();
 			// Loop thru all the child nodes
 			foreach(XmlNode xNodeLoop in xNode.ChildNodes)
 			{
@@ -58,7 +59,9 @@ namespace fyiReporting.RDL
 					_Items.Add(f);
 			}
 			if (_Items.Count == 0)
-				OwnerReport.rl.LogError(8, "For Filters at least one Filter is required.");
+				OwnerReport.rl.LogError(8, "Filters require at least one Filter be defined.");
+			else
+				_Items.TrimExcess();
 		}
 		
 		override internal void FinalPass()
@@ -70,19 +73,19 @@ namespace fyiReporting.RDL
 			return;
 		}
 
-		internal bool Apply(Row datarow)
+		internal bool Apply(Report rpt, Row datarow)
 		{
 			foreach (Filter f in _Items)
 			{
 				if (!f.FilterOperatorSingleRow)		// have to handle Top/Bottom in ApplyFinalFilters
 					return true;
-				if (!f.Apply(datarow))
+				if (!f.Apply(rpt, datarow))
 					return false;
 			}
 			return true;
 		}
 
-		internal void ApplyFinalFilters(Rows data, bool makeCopy)
+		internal void ApplyFinalFilters(Report rpt, Rows data, bool makeCopy)
 		{
 			// Need to apply the Top/Bottom and then the rest of the data
 			
@@ -101,7 +104,7 @@ namespace fyiReporting.RDL
 			// make copy of data if necessary
 			if (makeCopy)
 			{
-				ArrayList ar = new ArrayList(data.Data);	// Make a copy of the data!
+				List<Row> ar = new List<Row>(data.Data);	// Make a copy of the data!
 				data.Data = ar;
 			}
 
@@ -109,11 +112,11 @@ namespace fyiReporting.RDL
 			for (; iFilter < _Items.Count && data.Data.Count > 0; iFilter++)
 			{
 				Filter f = (Filter) _Items[iFilter];
-				f.Apply(data);
+				f.Apply(rpt, data);
 			}
 			
 			// trim the space
-			data.Data.TrimToSize();
+            data.Data.TrimExcess();
 			
 			// reset the row numbers
 			int rowCount=0;
@@ -123,7 +126,7 @@ namespace fyiReporting.RDL
 			return;
 		}
 
-		internal ArrayList Items
+		internal List<Filter> Items
 		{
 			get { return  _Items; }
 		}

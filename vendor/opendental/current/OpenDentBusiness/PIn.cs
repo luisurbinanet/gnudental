@@ -93,7 +93,7 @@ namespace OpenDentBusiness{
 			//}
 		}
 
-		///<summary></summary>
+		///<summary>Currently does nothing.</summary>
 		public static string PString (string myString){
 			return myString;
 		}
@@ -122,7 +122,7 @@ namespace OpenDentBusiness{
 
 		///<summary></summary>
 		public static Bitmap PBitmap(string myString) {
-			if(myString=="") {
+			if(myString==null || myString.Length<0x32) {//Bitmaps require a minimum length for header info.
 				return null;
 			}
 			byte[] rawData=Convert.FromBase64String(myString);

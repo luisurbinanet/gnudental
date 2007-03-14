@@ -16,8 +16,8 @@ namespace OpenDental{
 		private System.ComponentModel.Container components = null;// Required designer variable.
 		private OpenDental.UI.Button butCancel;
 		private OpenDental.UI.Button butOK;
-		///<summary>After closing this form, if OK, then this will contain the Plan that the others were merged into.  This will help to rehighlight the row of the new merged plan.</summary>
-		public InsPlan MergedPlan;
+		///<summary>After closing this form, if OK, then this will contain the Plan that the others will be merged into.</summary>
+		public InsPlan PlanToMergeTo;
 		private OpenDental.UI.ODGrid gridMain;
 		///<summary>This list must be set before loading the form.  All of the PlanNums will be 0.</summary>
 		public InsPlan[] ListAll;
@@ -191,7 +191,7 @@ namespace OpenDental{
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			MergedPlan=ListAll[gridMain.GetSelectedIndex()].Copy();
+			PlanToMergeTo=ListAll[gridMain.GetSelectedIndex()].Copy();
 			DialogResult=DialogResult.OK;
 		}
 

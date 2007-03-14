@@ -278,7 +278,7 @@ namespace OpenDental{
 				contrGrid.ProvNum=Providers.List[listProv.SelectedIndex].ProvNum;
 			}
 			//contrGrid.ArrayBlocks=SchedDefaults.List;
-			contrGrid.BackColor=Defs.Long[(int)DefCat.AppointmentColors][1].ItemColor;
+			contrGrid.BackColor=DefB.Long[(int)DefCat.AppointmentColors][1].ItemColor;
 			contrGrid.Refresh();
 		}
 

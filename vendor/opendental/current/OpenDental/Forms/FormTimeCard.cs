@@ -665,41 +665,41 @@ namespace OpenDental{
 						row.Cells.Add(curDate.DayOfWeek.ToString());
 					}
 					//altered--------------------------------------
-					row.Cells.Add("");
+					row.Cells.Add("");//2
 					//status--------------------------------------
-					row.Cells.Add(Lan.g(this,"Adjust"));
+					row.Cells.Add(Lan.g(this,"Adjust"));//3
 					row.ColorText=Color.Red;
 					//in/out------------------------------------------
-					row.Cells.Add("");
+					row.Cells.Add("");//4
 					//time-----------------------------
-					row.Cells.Add(adjust.TimeEntry.ToShortTimeString());
+					row.Cells.Add(adjust.TimeEntry.ToShortTimeString());//5
 					//minutes or hours-------------------------------
 					if(adjust.RegHours.TotalHours==0){
-						row.Cells.Add("");
+						row.Cells.Add("");//6
 					}
 					else{
 						daySpan+=adjust.RegHours;//might be negative
 						weekSpan+=adjust.RegHours;
 						periodSpan+=adjust.RegHours;
-						row.Cells.Add(adjust.RegHours.TotalHours.ToString("n"));
+						row.Cells.Add(adjust.RegHours.TotalHours.ToString("n"));//6
 					}
 					//Overtime------------------------------
 					if(adjust.OTimeHours.TotalHours!=0){
 						otspan+=adjust.OTimeHours;
-						row.Cells.Add(adjust.OTimeHours.TotalHours.ToString("n"));
+						row.Cells.Add(adjust.OTimeHours.TotalHours.ToString("n"));//7
 					}
 					else{
-						row.Cells.Add("");
+						row.Cells.Add("");//7
 					}
 					//Daily-----------------------------------
 					//if this is the last entry for a given date
 					if(i==mergedAL.Count-1//if this is the last row
 						|| GetDateForRow(i+1) != curDate)//or the next row is a different date
 					{
-						row.Cells.Add(daySpan.TotalHours.ToString("n"));
+						row.Cells.Add(daySpan.TotalHours.ToString("n"));//8
 						daySpan=new TimeSpan(0);
 					}
-					else {
+					else{
 						row.Cells.Add("");
 					}
 					//Weekly-------------------------------------

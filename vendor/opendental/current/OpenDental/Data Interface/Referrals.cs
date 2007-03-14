@@ -135,6 +135,20 @@ namespace OpenDental{
 			}
 			return retVal;
 		}
+
+		///<summary></summary>
+		public static string GetPhone(int referralNum) {
+			if(referralNum==0)
+				return "";
+			if(!HList.ContainsKey(referralNum)) {
+				return "";
+			}
+			Referral refer=(Referral)HList[referralNum];
+			if(refer.Telephone.Length==10){
+				return refer.Telephone.Substring(0,3)+"-"+refer.Telephone.Substring(3,3)+"-"+refer.Telephone.Substring(6);
+			}
+			return refer.Telephone;
+		}
 	
 		///<summary>Gets Referral info from memory (HList). Does not make a call to the database.</summary>
 		public static Referral GetReferral(int referralNum){

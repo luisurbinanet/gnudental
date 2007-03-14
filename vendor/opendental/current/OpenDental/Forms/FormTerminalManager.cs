@@ -311,10 +311,10 @@ namespace OpenDental{
 				return;
 			}
 			//See if the selected patient already has questions attached
-			if(Questions.PatHasQuest(patNum)){
+			/*if(Questions.PatHasQuest(patNum)){
 				MsgBox.Show(this,"This patient already has questions attached.  This function is only intended for new patients.  Patient cannot be loaded.");
 				return;
-			}
+			}*/
 			terminal.PatNum=patNum;
 			terminal.TerminalStatus=TerminalStatusEnum.PatientInfo;
 			TerminalActives.Update(terminal);
@@ -402,10 +402,10 @@ namespace OpenDental{
 				return;
 			}
 			//See if the selected patient already has questions attached
-			if(Questions.PatHasQuest(terminal.PatNum)) {
+			/*if(Questions.PatHasQuest(terminal.PatNum)) {
 				MsgBox.Show(this,"This patient already has questions attached.  This function is only intended for new patients.  Patient cannot be loaded.");
 				return;
-			}
+			}*/
 			if(!MsgBox.Show(this,true,"A patient is currently using the terminal.  If you continue, they will lose the information that is on their screen.  Continue anyway?")) {
 				return;
 			}

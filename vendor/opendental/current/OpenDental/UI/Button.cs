@@ -112,12 +112,8 @@ namespace OpenDental.UI
 
 		///<summary></summary>
 		public bool Autosize{
-			get{
-				return autosize;
-			}
-			set{
-				autosize=value;
-			}
+			get{return autosize;}
+			set{autosize=value;}
 		}
 
 		///<summary></summary>

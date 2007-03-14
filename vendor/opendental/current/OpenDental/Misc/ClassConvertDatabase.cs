@@ -16,6 +16,7 @@ using System.Resources;
 using System.Text; 
 using System.Windows.Forms;
 using OpenDentBusiness;
+using CodeBase;
 
 namespace OpenDental{
 
@@ -46,7 +47,7 @@ namespace OpenDental{
 				MsgBox.Show(this,"Cannot convert this database version which was only for development purposes.");
 				return false;
 			}
-			if(FromVersion < new Version("4.5.21.0")){
+			if(FromVersion < new Version("4.6.19.0")){
 				if(MessageBox.Show(Lan.g(this,"Your database will now be converted")+"\r"
 					+Lan.g(this,"from version")+" "+FromVersion.ToString()+"\r"
 					+Lan.g(this,"to version")+" "+ToVersion.ToString()+"\r"
@@ -61,19 +62,24 @@ namespace OpenDental{
 				return true;//no conversion necessary
 			}
 #if !DEBUG
-				try{
-					MiscData.MakeABackup();
+			if(FormChooseDatabase.DBtype!=DatabaseType.MySql
+				&& !MsgBox.Show(this,true,"If you have not made a backup, please Cancel and backup before continuing.  Continue?"))
+			{
+				return false;
+			}
+			try{
+				MiscData.MakeABackup();
+			}
+			catch(Exception e){
+				if(e.Message!=""){
+					MessageBox.Show(e.Message);
 				}
-				catch(Exception e){
-					if(e.Message!=""){
-						MessageBox.Show(e.Message);
-					}
-					MsgBox.Show(this,"Backup failed. Your database has not been altered.");
-					return false;
-				}
+				MsgBox.Show(this,"Backup failed. Your database has not been altered.");
+				return false;
+			}
 			try{
 #endif
-				if(FromVersion>=new Version("3.4.0")){
+			if(FromVersion>=new Version("3.4.0")){
 					Prefs.UpdateBool("CorruptedDatabase",true);
 				}
 				To2_8_2();//begins going through the chain of conversion steps
@@ -111,62 +117,6 @@ namespace OpenDental{
 			}
 #endif
 		}
-
-		/*
-		///<summary>Used in MakeABackup to ensure a unique backup database name.</summary>
-		private bool Contains(string[] arrayToSearch,string valueToTest) {
-			string compare;
-			for(int i=0;i<arrayToSearch.Length;i++) {
-				compare=arrayToSearch[i];
-				if(arrayToSearch[i]==valueToTest) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-		///<summary>Backs up the database to the same directory as the original just in case the user did not have sense enough to do a backup first.</summary>
-		public void MakeABackup() {
-			string command="SELECT database()";
-			DataTable table=General.GetTableEx(command);
-			string oldDb=PIn.PString(table.Rows[0][0].ToString());
-			string newDb=oldDb+"backup_"+DateTime.Today.ToString("MM_dd_yyyy");
-			command="SHOW DATABASES";
-			table=General.GetTableEx(command);
-			string[] databases=new string[table.Rows.Count];
-			for(int i=0;i<table.Rows.Count;i++) {
-				databases[i]=table.Rows[i][0].ToString();
-			}
-			if(Contains(databases,newDb)) {//if the new database name already exists
-				//find a unique one
-				int uniqueID=1;
-				string originalNewDb=newDb;
-				do {
-					newDb=originalNewDb+"_"+uniqueID.ToString();
-					uniqueID++;
-				}
-				while(Contains(databases,newDb));
-			}
-			command="CREATE DATABASE "+newDb+" CHARACTER SET utf8";
-			General.NonQEx(command);
-			command="SHOW TABLES";
-			table=General.GetTableEx(command);
-			string[] tableName=new string[table.Rows.Count];
-			for(int i=0;i<table.Rows.Count;i++) {
-				tableName[i]=table.Rows[i][0].ToString();
-			}
-			//switch to using the new database
-			DataConnection dcon=new DataConnection(newDb);
-			for(int i=0;i<tableName.Length;i++) {
-				command="SHOW CREATE TABLE "+oldDb+"."+tableName[i];
-				table=General.GetTableEx(command);
-				command=table.Rows[0][1].ToString();
-				dcon.NonQ(command);//this has to be run using connection with new database
-				command="INSERT INTO "+newDb+"."+tableName[i]
-					+" SELECT * FROM "+oldDb+"."+tableName[i];
-				General.NonQEx(command);
-			}
-		}*/
 
 		/// <summary>Takes a text file with a series of SQL commands, and sends them as queries to the database.  Used in version upgrades and in the function that downloads and installs the latest translations.  The filename is always relative to the application directory.  Throws an exception if it fails.</summary>
 		public void ExecuteFile(string fileName) {
@@ -670,7 +620,7 @@ namespace OpenDental{
 								+"'"+procTable.Rows[i][2].ToString()+"',"//provnum
 								+"'6',"//status:Estimate
 								+"'"+procTable.Rows[i][3].ToString()+"',"//priPlanNum
-								+"'"+POut.PDate(PIn.PDate(procTable.Rows[i][7].ToString()))+"',"//dateCP
+								+POut.PDate(PIn.PDate(procTable.Rows[i][7].ToString()))+","//dateCP
 								//these -1's are unnecessary, but I already added them, so they are here.
 								+"'-1',"//allowedamt
 								+"'-1',"//percentage
@@ -694,7 +644,7 @@ namespace OpenDental{
 								+"'"+procTable.Rows[i][2].ToString()+"',"//provnum
 								+"'6',"//status:Estimate
 								+"'"+procTable.Rows[i][4].ToString()+"',"//secPlanNum
-								+"'"+POut.PDate(PIn.PDate(procTable.Rows[i][7].ToString()))+"',"//dateCP
+								+POut.PDate(PIn.PDate(procTable.Rows[i][7].ToString()))+","//dateCP
 								+"'-1',"//allowedamt
 								+"'-1',"//percentage
 								+"'-1',"//percentoverride
@@ -730,7 +680,7 @@ namespace OpenDental{
 							+"'"+procTable.Rows[i][2].ToString()+"',"//provnum
 							+"'"+status.ToString()+"',"//status
 							+"'"+procTable.Rows[i][3].ToString()+"',"//priPlanNum
-							+"'"+POut.PDate(PIn.PDate(procTable.Rows[i][7].ToString()))+"',"//dateCP
+							+POut.PDate(PIn.PDate(procTable.Rows[i][7].ToString()))+","//dateCP
 							+"'"+writeoff.ToString()+"',"//writeoff
 							+"'-1',"//allowedamt
 							+"'-1',"//percentage
@@ -762,7 +712,7 @@ namespace OpenDental{
 						+"'"+procTable.Rows[i][2].ToString()+"',"//provnum
 						+"'6',"//status:Estimate
 						+"'"+planNum.ToString()+"',"//plannum
-						+"'"+POut.PDate(PIn.PDate(procTable.Rows[i][7].ToString()))+"',"//dateCP
+						+POut.PDate(PIn.PDate(procTable.Rows[i][7].ToString()))+","//dateCP
 						+"'0',"//writeoff
 						+"'-1',"//allowedamt
 						+"'"+percentage.ToString()+"',"//percentage
@@ -796,7 +746,7 @@ namespace OpenDental{
 						+"'"+procTable.Rows[i][2].ToString()+"',"//provnum
 						+"'6',"//status:Estimate
 						+"'"+planNum.ToString()+"',"//plannum
-						+"'"+POut.PDate(PIn.PDate(procTable.Rows[i][7].ToString()))+"',"//dateCP
+						+POut.PDate(PIn.PDate(procTable.Rows[i][7].ToString()))+","//dateCP
 						+"'0',"//writeoff
 						+"'-1',"//allowedamt
 						+"'"+percentage.ToString()+"',"//percentage
@@ -893,7 +843,7 @@ namespace OpenDental{
 
 		private void To3_0_3() {
 			if(FromVersion < new Version("3.0.3.0")) {
-				string command="SELECT CONCAT(LName,', ',FName) FROM payplan,patient "
+				string command="SELECT CONCAT(CONCAT(LName,', '),FName) FROM payplan,patient "
 					+"WHERE patient.PatNum=payplan.PatNum";
 				DataTable table=General.GetTableEx(command);
 				if(table.Rows.Count>0) {
@@ -1060,9 +1010,9 @@ namespace OpenDental{
 						+"RecallInterval,RecallStatus"
 						+") VALUES ("
 						+"'"+POut.PInt(patNum)+"', "
-						+"'"+POut.PDate(dueDate)+"', "
-						+"'"+POut.PDate(dueDate)+"', "
-						+"'"+POut.PDate(previousDate)+"', "
+						+POut.PDate(dueDate)+", "
+						+POut.PDate(dueDate)+", "
+						+POut.PDate(previousDate)+", "
 						+"'"+POut.PInt(newInterval.ToInt())+"', "
 						+"'"+POut.PInt(status)+"')";
 					General.NonQEx(command);
@@ -1233,7 +1183,7 @@ namespace OpenDental{
 				DataTable table=General.GetTableEx(command);
 				for(int i=0;i<table.Rows.Count;i++) {
 					command="UPDATE paysplit SET "
-						+"DatePay='"+POut.PDate(PIn.PDate(table.Rows[i][1].ToString()))+"' "
+						+"DatePay="+POut.PDate(PIn.PDate(table.Rows[i][1].ToString()))+" "
 						+"WHERE SplitNum="+table.Rows[i][0].ToString();
 					General.NonQEx(command);
 				}
@@ -1267,12 +1217,12 @@ namespace OpenDental{
 					command="INSERT INTO adjustment (AdjDate,AdjAmt,PatNum, "
 					+"AdjType,ProvNum,ProcDate) "//AdjNote
 					+"VALUES("
-					+"'"+POut.PDate(PIn.PDate(table.Rows[i][9].ToString()))+"', "//entryDate
+					+POut.PDate(PIn.PDate(table.Rows[i][9].ToString()))+", "//entryDate
 					+"'"+POut.PDouble(-PIn.PDouble(table.Rows[i][1].ToString()))+"', "//amt
 					+"'"+POut.PInt(PIn.PInt(table.Rows[i][2].ToString()))+"', "//patNum
 					+"'"+POut.PInt((int)HDiscToAdj[PIn.PInt(table.Rows[i][6].ToString())])+"', "//type
 					+"'"+POut.PInt(PIn.PInt(table.Rows[i][7].ToString()))+"', "//provNum
-					+"'"+POut.PDate(PIn.PDate(table.Rows[i][3].ToString()))+"')";//procDate
+					+POut.PDate(PIn.PDate(table.Rows[i][3].ToString()))+")";//procDate
 					//note
 					General.NonQEx(command);
 				}
@@ -1689,7 +1639,7 @@ namespace OpenDental{
 							+"'"+POut.PInt(payPlanNum)+"', "
 							+"'"+POut.PInt(guarantor)+"', "
 							+"'"+POut.PInt(patNum)+"', "
-							+"'"+POut.PDate(chargeDate)+"', "
+							+POut.PDate(chargeDate)+", "
 							+"'"+POut.PDouble(principal)+"', "
 							+"'"+POut.PDouble(interest)+"', "
 							+"'Downpayment')";
@@ -1728,7 +1678,7 @@ namespace OpenDental{
 							+"'"+POut.PInt(payPlanNum)+"', "
 							+"'"+POut.PInt(guarantor)+"', "
 							+"'"+POut.PInt(patNum)+"', "
-							+"'"+POut.PDate(chargeDate)+"', "
+							+POut.PDate(chargeDate)+", "
 							+"'"+POut.PDouble(principal)+"', "
 							+"'"+POut.PDouble(interest)+"')";
 						General.NonQEx(command);
@@ -1747,7 +1697,7 @@ namespace OpenDental{
 							+"'"+POut.PInt(payPlanNum)+"', "
 							+"'"+POut.PInt(guarantor)+"', "
 							+"'"+POut.PInt(patNum)+"', "
-							+"'"+POut.PDate(chargeDate)+"', "
+							+POut.PDate(chargeDate)+", "
 							+"'"+POut.PDouble(principal)+"', "
 							+"'"+POut.PDouble(interest)+"')";
 						General.NonQEx(command);
@@ -3451,22 +3401,627 @@ namespace OpenDental{
 		private void To4_5_21() {
 			if(FromVersion<new Version("4.5.21.0")) {
 				//All 4 of these fields added on 12/21/06:
-				string command="ALTER TABLE patient ADD PreferConfirmMethod tinyint unsigned NOT NULL";
+				string command="ALTER TABLE patient ADD PreferConfirmMethod tinyint unsigned NOT NULL AFTER Ward";
 				General.NonQEx(command);
-				command="ALTER TABLE patient ADD SchedBeforeTime time";
+				command="ALTER TABLE patient ADD SchedBeforeTime time AFTER PreferConfirmMethod";
 				General.NonQEx(command);
-				command="ALTER TABLE patient ADD SchedAfterTime time";
+				command="ALTER TABLE patient ADD SchedAfterTime time AFTER SchedBeforeTime";
 				General.NonQEx(command);
-				command="ALTER TABLE patient ADD SchedDayOfWeek tinyint unsigned NOT NULL";
+				command="ALTER TABLE patient ADD SchedDayOfWeek tinyint unsigned NOT NULL AFTER SchedAfterTime";
 				General.NonQEx(command);
 				command="UPDATE preference SET ValueString = '4.5.21.0' WHERE PrefName = 'DataBaseVersion'";
 				General.NonQEx(command);
 			}
-			//To4_6_0();
+			To4_6_0();
 		}
 
+		private void To4_6_0() {
+			if(FromVersion<new Version("4.6.0.0")) {
+				string command;
+				command=@"CREATE TABLE formpat(
+					FormPatNum mediumint unsigned NOT NULL auto_increment,
+					PatNum mediumint unsigned NOT NULL,
+					FormDateTime datetime NOT NULL default '0001-01-01',
+					PRIMARY KEY (FormPatNum),
+					INDEX (PatNum)
+					) DEFAULT CHARSET=utf8";
+				General.NonQEx(command);
+				command="ALTER TABLE emailmessage ADD SentOrReceived tinyint unsigned NOT NULL";
+				General.NonQEx(command);
+				command="UPDATE emailmessage SET SentOrReceived = 1 WHERE YEAR(MsgDateTime) > '1900'";
+				General.NonQEx(command);
+				command="UPDATE emailmessage SET MsgDateTime = NOW() WHERE YEAR(MsgDateTime) < '1900'";
+				General.NonQEx(command);
+				command="DELETE FROM commlog WHERE EmailMessageNum > 0";
+				General.NonQEx(command);
+				command="ALTER TABLE commlog DROP EmailMessageNum";
+				General.NonQEx(command);
+				command="ALTER TABLE question ADD FormPatNum mediumint unsigned NOT NULL";
+				General.NonQEx(command);
+				command="SELECT DISTINCT PatNum FROM question";
+				DataTable table=General.GetTableEx(command);
+				int formPatNum;
+				for(int i=0;i<table.Rows.Count;i++){
+					command="INSERT INTO formpat (PatNum,FormDateTime) VALUES("
+						+"'"+table.Rows[i][0].ToString()+"', NOW())";
+					formPatNum=General.NonQEx(command,true);
+					command="UPDATE question SET FormPatNum="+POut.PInt(formPatNum)+" WHERE PatNum="+table.Rows[i][0].ToString();
+					General.NonQEx(command);
+				}
+				command=@"CREATE TABLE etrans(
+					EtransNum mediumint unsigned NOT NULL auto_increment,
+					DateTimeTrans datetime NOT NULL default '0001-01-01',
+					ClearinghouseNum mediumint unsigned NOT NULL,
+					Etype tinyint unsigned NOT NULL,
+					ClaimNum mediumint unsigned NOT NULL,
+					OfficeSequenceNumber mediumint unsigned NOT NULL,
+					CarrierTransCounter mediumint unsigned NOT NULL,
+					CarrierTransCounter2 mediumint unsigned NOT NULL,
+					CarrierNum mediumint unsigned NOT NULL,
+					CarrierNum2 mediumint unsigned NOT NULL,
+					PatNum mediumint unsigned NOT NULL,
+					PRIMARY KEY (EtransNum),
+					INDEX (ClaimNum),
+					INDEX (CarrierNum),
+					INDEX (CarrierNum2)
+					) DEFAULT CHARSET=utf8";
+				General.NonQEx(command);
+				command=@"CREATE TABLE canadianclaim(
+					ClaimNum mediumint unsigned NOT NULL,
+					MaterialsForwarded char(5) NOT NULL,
+					ReferralProviderNum char(10) NOT NULL,
+					ReferralReason tinyint unsigned NOT NULL,
+					SecondaryCoverage char(1) NOT NULL,
+					IsInitialLower char(1) NOT NULL,
+					DateInitialLower date NOT NULL default '0001-01-01',
+					MandProsthMaterial tinyint unsigned NOT NULL,
+					IsInitialUpper char(1) NOT NULL,
+					DateInitialUpper date NOT NULL default '0001-01-01',
+					MaxProsthMaterial tinyint unsigned NOT NULL,
+					EligibilityCode tinyint unsigned NOT NULL,
+					SchoolName varchar(25) NOT NULL,
+					PayeeCode tinyint unsigned NOT NULL,
+					PRIMARY KEY (ClaimNum)
+					) DEFAULT CHARSET=utf8";
+				General.NonQEx(command);
+				command="ALTER TABLE carrier ADD IsCDA tinyint unsigned NOT NULL";
+				General.NonQEx(command);
+				command="ALTER TABLE carrier ADD IsPMP tinyint unsigned NOT NULL";
+				General.NonQEx(command);
+				command="ALTER TABLE provider ADD CanadianOfficeNum varchar(100) NOT NULL";
+				General.NonQEx(command);
+				command="INSERT INTO preference VALUES ('LanguagesUsedByPatients','')";
+				General.NonQEx(command);
+				command="ALTER TABLE patient ADD Language varchar(100) NOT NULL";
+				General.NonQEx(command);
+				command=@"CREATE TABLE canadianextract(
+					CanadianExtractNum mediumint unsigned NOT NULL auto_increment,
+					ClaimNum mediumint unsigned NOT NULL,
+					ToothNum varchar(10) NOT NULL,
+					DateExtraction date NOT NULL default '0001-01-01',
+					PRIMARY KEY (CanadianExtractNum),
+					INDEX (ClaimNum)
+					) DEFAULT CHARSET=utf8";
+				General.NonQEx(command);
+				command="ALTER TABLE insplan ADD DentaideCardSequence tinyint unsigned NOT NULL";
+				General.NonQEx(command);
+				//added 11/30/06 after r42.
+				command="ALTER TABLE etrans ADD MessageText text NOT NULL";
+				General.NonQEx(command);
+				//added 12/2/06 after r46:
+				command="ALTER TABLE procedurelog DROP LabFee";
+				General.NonQEx(command);
+				command="ALTER TABLE procedurelog ADD ProcNumLab mediumint unsigned NOT NULL";
+				General.NonQEx(command);
+				//added 12/8/06 after r57:
+				command="ALTER TABLE procedurecode ADD IsCanadianLab tinyint unsigned NOT NULL";
+				General.NonQEx(command);
+				//added 12/21/06 after r71:
+				//Also, see the previous method at line 3450, where 4 more fields were added.
+				command="ALTER TABLE claimproc ADD LineNumber tinyint unsigned NOT NULL";
+				General.NonQEx(command);
+				//added 12/22/06 after r72:
+				command=@"CREATE TABLE canadiannetwork(
+					CanadianNetworkNum mediumint unsigned NOT NULL auto_increment,
+					Abbrev varchar(20) NOT NULL,
+					Descript varchar(255) NOT NULL,
+					PRIMARY KEY (CanadianNetworkNum)
+					) DEFAULT CHARSET=utf8";
+				General.NonQEx(command);
+				string[] commands=new string[]
+				{
+					"INSERT INTO canadiannetwork VALUES (1,'AHI','BC Emergis (formerly Assure Health Inc)')",
+					"INSERT INTO canadiannetwork VALUES (2,'NDC','National Data Corporation')",
+					"INSERT INTO canadiannetwork VALUES (3,'CD','Centre Dentaide')",
+					"INSERT INTO canadiannetwork VALUES (4,'ABC','Alberta Blue Cross')",
+					"INSERT INTO canadiannetwork VALUES (5,'MBC','Manitoba Blue Cross')",
+					"INSERT INTO canadiannetwork VALUES (6,'PBC','Pacific Blue Cross')"					
+				};
+				General.NonQEx(commands);
+				command="UPDATE preference SET ValueString = '4.6.0.0' WHERE PrefName = 'DataBaseVersion'";
+				General.NonQEx(command);
+			}
+			To4_6_2();
+		}
+
+		private void To4_6_2() {
+			if(FromVersion<new Version("4.6.2.0")) {
+				string command;
+				command="ALTER TABLE carrier ADD CDAnetVersion varchar(100) NOT NULL";
+				General.NonQEx(command);
+				command="ALTER TABLE carrier ADD CanadianNetworkNum mediumint unsigned NOT NULL";
+				General.NonQEx(command);
+				//CDAnet clearinghouse------------------------------------------------------------------------------------
+				command="INSERT INTO clearinghouse(Description,ExportPath,IsDefault,Payors,Eformat,ReceiverID,"
+					+"SenderID,Password,ResponsePath,CommBridge,ClientProgram) "
+					+@"VALUES('CDAnet','C:\\CCD\\','0','','3','','','',"
+					+@"'','9','C:\\CCD\\CCD32.exe')";
+				General.NonQEx(command);
 
 
+				command="UPDATE preference SET ValueString = '4.6.2.0' WHERE PrefName = 'DataBaseVersion'";
+				General.NonQEx(command);
+			}
+			To4_6_6();
+		}
+
+		private void To4_6_6() {
+			if(FromVersion<new Version("4.6.6.0")) {
+				string command="ALTER TABLE user RENAME TO userod";
+				General.NonQEx(command);
+				command="UPDATE preference SET ValueString = '4.6.6.0' WHERE PrefName = 'DataBaseVersion'";
+				General.NonQEx(command);
+			}
+			To4_6_9();
+		}
+
+		///<summary> The following string is used to upgrade MySQL databases into a compatible format for conversion to Oracle. A similar table will also used for the database maintinence tool in order to ensure that the columns below do not contain null data. The array below is composed of groups of 3 strings, following the format: tablename columnname type.</summary>
+		private static string[] removeNotNullFieldCommands=new string[] {
+			"account","Description","varchar(255)",
+			"account","BankNumber","varchar(255)",
+			"accountingautopay","PickList","varchar(255)",
+			"adjustment","AdjNote","text",
+			"appointment","Pattern","varchar(255)",
+			"appointment","Note","text",
+			"appointment","ProcDescript","varchar(255)",
+			"appointmentrule","RuleDesc","varchar(255)",
+			"appointmentrule","ADACodeStart","varchar(15) character set utf8 collate utf8_bin",
+			"appointmentrule","ADACodeEnd","varchar(15) character set utf8 collate utf8_bin",
+			"apptview","Description","varchar(255)",
+			"apptviewitem","ElementDesc","varchar(255)",
+			"autocode","Description","varchar(255)",
+			"autocodeitem","ADACode","varchar(15) character set utf8 collate utf8_bin",
+			"benefit","ADACode","varchar(15) character set utf8 collate utf8_bin",
+			"canadianclaim","MaterialsForwarded","char(5)",
+			"canadianclaim","ReferralProviderNum","char(10)",
+			"canadianclaim","SecondaryCoverage","char(1)",
+			"canadianclaim","IsInitialLower","char(1)",
+			"canadianclaim","IsInitialUpper","char(1)",
+			"canadianclaim","SchoolName","varchar(25)",
+			"canadianextract","ToothNum","varchar(10)",
+			"canadiannetwork","Abbrev","varchar(20)",
+			"canadiannetwork","Descript","varchar(255)",
+			"carrier","CarrierName","varchar(255)",
+			"carrier","Address","varchar(255)",
+			"carrier","Address2","varchar(255)",
+			"carrier","City","varchar(255)",
+			"carrier","State","varchar(255)",
+			"carrier","Zip","varchar(255)",
+			"carrier","Phone","varchar(255)",
+			"carrier","ElectID","varchar(255)",
+			"carrier","CDAnetVersion","varchar(100)",
+			"claim","ClaimStatus","char(1)",
+			"claim","PreAuthString","varchar(40)",
+			"claim","IsProsthesis","char(1)",
+			"claim","ReasonUnderPaid","varchar(255)",
+			"claim","ClaimNote","varchar(255)",
+			"claim","ClaimType","varchar(255)",
+			"claim","RefNumString","varchar(40)",
+			"claim","AccidentRelated","char(1)",
+			"claim","AccidentST","varchar(2)",
+			"claimform","Description","varchar(50)",
+			"claimform","FontName","varchar(255)",
+			"claimform","UniqueID","varchar(255)",
+			"claimformitem","ImageFileName","varchar(255)",
+			"claimformitem","FieldName","varchar(255)",
+			"claimformitem","FormatString","varchar(255)",
+			"claimpayment","CheckNum","varchar(25)",
+			"claimpayment","BankBranch","varchar(25)",
+			"claimpayment","Note","varchar(255)",
+			"claimpayment","CarrierName","varchar(255)",
+			"claimproc","Remarks","varchar(255)",
+			"claimproc","CodeSent","varchar(15)",
+			"clearinghouse","Description","varchar(255)",
+			"clearinghouse","ExportPath","text",
+			"clearinghouse","Payors","text",
+			"clearinghouse","ReceiverID","varchar(255)",
+			"clearinghouse","SenderID","varchar(255)",
+			"clearinghouse","Password","varchar(255)",
+			"clearinghouse","ResponsePath","varchar(255)",
+			"clearinghouse","ClientProgram","varchar(255)",
+			"clearinghouse","LoginID","varchar(255)",
+			"clinic","Description","varchar(255)",
+			"clinic","Address","varchar(255)",
+			"clinic","Address2","varchar(255)",
+			"clinic","City","varchar(255)",
+			"clinic","State","varchar(255)",
+			"clinic","Zip","varchar(255)",
+			"clinic","Phone","varchar(255)",
+			"clinic","BankNumber","varchar(255)",
+			"clockevent","Note","text",
+			"commlog","Note","text",
+			"computer","CompName","varchar(100)",
+			"computer","PrinterName","varchar(255)",
+			"contact","LName","varchar(255)",
+			"contact","FName","varchar(255)",
+			"contact","WkPhone","varchar(255)",
+			"contact","Fax","varchar(255)",
+			"contact","Notes","text",
+			"county","CountyName","varchar(255)",
+			"county","CountyCode","varchar(255)",
+			"covcat","Description","varchar(50)",
+			"covspan","FromCode","varchar(15) character set utf8 collate utf8_bin",
+			"covspan","ToCode","varchar(15) character set utf8 collate utf8_bin",
+			"definition","ItemName","varchar(255)",
+			"definition","ItemValue","varchar(255)",
+			"deposit","BankAccountInfo","text",
+			"disease","PatNote","text",
+			"diseasedef","DiseaseName","varchar(255)",
+			"document","Description","varchar(255)",
+			"document","FileName","varchar(255)",
+			"document","ToothNumbers","varchar(255)",
+			"document","Note","text",
+			"document","Signature","text",
+			"dunning","DunMessage","text",
+			"electid","PayorID","varchar(255)",
+			"electid","CarrierName","varchar(255)",
+			"electid","ProviderTypes","varchar(255)",
+			"electid","Comments","text",
+			"emailattach","DisplayedFileName","varchar(255)",
+			"emailattach","ActualFileName","varchar(255)",
+			"emailmessage","ToAddress","text",
+			"emailmessage","FromAddress","text",
+			"emailmessage","Subject","text",
+			"emailmessage","BodyText","text",
+			"emailtemplate","Subject","text",
+			"emailtemplate","BodyText","text",
+			"employee","LName","varchar(255)",
+			"employee","FName","varchar(255)",
+			"employee","MiddleI","varchar(255)",
+			"employee","ClockStatus","varchar(255)",
+			"employer","EmpName","varchar(255)",
+			"employer","Address","varchar(255)",
+			"employer","Address2","varchar(255)",
+			"employer","City","varchar(255)",
+			"employer","State","varchar(255)",
+			"employer","Zip","varchar(255)",
+			"employer","Phone","varchar(255)",
+			"etrans","MessageText","text",
+			"fee","ADACode","varchar(15) character set utf8 collate utf8_bin",
+			"graphicelement","ToothNum","varchar(2)",
+			"graphicelement","Description","varchar(100)",
+			"graphicelement","Surface","varchar(5)",
+			"graphicshape","ShapeType","char(1)",
+			"graphicshape","Description","varchar(100)",
+			"graphictype","Description","varchar(100)",
+			"graphictype","BrushType","varchar(100)",
+			"graphictype","SpecialType","varchar(100)",
+			"insplan","GroupName","varchar(50)",
+			"insplan","GroupNum","varchar(20)",
+			"insplan","PlanNote","text",
+			"insplan","PlanType","char(1)",
+			"insplan","SubscriberID","varchar(40)",
+			"insplan","TrojanID","varchar(100)",
+			"insplan","DivisionNo","varchar(255)",
+			"insplan","BenefitNotes","text",
+			"insplan","SubscNote","text",
+			"instructor","LName","varchar(255)",
+			"instructor","FName","varchar(255)",
+			"instructor","Suffix","varchar(100)",
+			"journalentry","Memo","text",
+			"journalentry","Splits","text",
+			"journalentry","CheckNumber","varchar(255)",
+			"language","EnglishComments","text",
+			"language","ClassType","text",
+			"language","English","text",
+			"languageforeign","ClassType","text",
+			"languageforeign","English","text",
+			"languageforeign","Culture","varchar(255)",
+			"languageforeign","Translation","text",
+			"languageforeign","Comments","text",
+			"letter","Description","varchar(255)",
+			"letter","BodyText","text",
+			"lettermerge","Description","varchar(255)",
+			"lettermerge","TemplateName","varchar(255)",
+			"lettermerge","DataFileName","varchar(255)",
+			"lettermergefield","FieldName","varchar(255)",
+			"medication","MedName","varchar(255)",
+			"medication","Notes","text",
+			"medicationpat","PatNote","text",
+			"operatory","OpName","varchar(255)",
+			"operatory","Abbrev","varchar(255)",
+			"patfield","FieldName","varchar(255)",
+			"patfield","FieldValue","text",
+			"patfielddef","FieldName","varchar(255)",
+			"patient","LName","varchar(100)",
+			"patient","FName","varchar(100)",
+			"patient","MiddleI","varchar(100)",
+			"patient","Preferred","varchar(100)",
+			"patient","SSN","varchar(100)",
+			"patient","Address","varchar(100)",
+			"patient","Address2","varchar(100)",
+			"patient","City","varchar(100)",
+			"patient","State","varchar(100)",
+			"patient","Zip","varchar(100)",
+			"patient","HmPhone","varchar(30)",
+			"patient","WkPhone","varchar(30)",
+			"patient","WirelessPhone","varchar(30)",
+			"patient","CreditType","char(1)",
+			"patient","Email","varchar(100)",
+			"patient","Salutation","varchar(100)",
+			"patient","ImageFolder","varchar(100)",
+			"patient","AddrNote","text",
+			"patient","FamFinUrgNote","text",
+			"patient","MedUrgNote","varchar(255)",
+			"patient","ApptModNote","varchar(255)",
+			"patient","StudentStatus","char(1)",
+			"patient","SchoolName","varchar(30)",
+			"patient","ChartNumber","varchar(20)",
+			"patient","MedicaidID","varchar(20)",
+			"patient","PrimaryTeeth","varchar(255)",
+			"patient","EmploymentNote","varchar(255)",
+			"patient","County","varchar(255)",
+			"patient","GradeSchool","varchar(255)",
+			"patient","HasIns","varchar(255)",
+			"patient","TrophyFolder","varchar(255)",
+			"patient","Ward","varchar(255)",
+			"patient","Language","varchar(100)",
+			"patientnote","FamFinancial","text",
+			"patientnote","ApptPhone","text",
+			"patientnote","Medical","text",
+			"patientnote","Service","text",
+			"patientnote","MedicalComp","text",
+			"patientnote","Treatment","text",
+			"patplan","PatID","varchar(100)",
+			"payment","CheckNum","varchar(25)",
+			"payment","BankBranch","varchar(25)",
+			"payment","PayNote","varchar(255)",
+			"payplan","Note","text",
+			"payplancharge","Note","text",
+			"preference","PrefName","varchar(255)",
+			"preference","ValueString","text",
+			"printer","PrinterName","varchar(255)",
+			"procbutton","Description","varchar(255)",
+			"procbutton","ButtonImage","text",
+			"procbuttonitem","ADACode","varchar(15) character set utf8 collate utf8_bin",
+			"procedurecode","ADACode","varchar(15) character set utf8 collate utf8_bin",
+			"procedurecode","Descript","varchar(255)",
+			"procedurecode","AbbrDesc","varchar(50)",
+			"procedurecode","ProcTime","varchar(24)",
+			"procedurecode","DefaultNote","text",
+			"procedurecode","AlternateCode1","varchar(15)",
+			"procedurecode","MedicalCode","varchar(15) character set utf8 collate utf8_bin",
+			"procedurecode","LaymanTerm","varchar(255)",
+			"procedurelog","ADACode","varchar(15) character set utf8 collate utf8_bin",
+			"procedurelog","Surf","varchar(10)",
+			"procedurelog","ToothNum","varchar(2)",
+			"procedurelog","ToothRange","varchar(100)",
+			"procedurelog","Prosthesis","char(1)",
+			"procedurelog","ClaimNote","varchar(80)",
+			"procedurelog","MedicalCode","varchar(15) character set utf8 collate utf8_bin",
+			"procedurelog","DiagnosticCode","varchar(255)",
+			"procnote","Note","text",
+			"procnote","Signature","text",
+			"proctp","ToothNumTP","varchar(255)",
+			"proctp","Surf","varchar(255)",
+			"proctp","ADACode","varchar(255)",
+			"proctp","Descript","varchar(255)",
+			"program","ProgName","varchar(100)",
+			"program","ProgDesc","varchar(100)",
+			"program","Path","varchar(255)",
+			"program","CommandLine","varchar(255)",
+			"program","Note","text",
+			"programproperty","PropertyDesc","varchar(255)",
+			"programproperty","PropertyValue","varchar(255)",
+			"provider","Abbr","varchar(5)",
+			"provider","LName","varchar(100)",
+			"provider","FName","varchar(100)",
+			"provider","MI","varchar(100)",
+			"provider","Suffix","varchar(100)",
+			"provider","SSN","varchar(12)",
+			"provider","StateLicense","varchar(15)",
+			"provider","DEANum","varchar(15)",
+			"provider","BlueCrossID","varchar(25)",
+			"provider","MedicaidID","varchar(20)",
+			"provider","NationalProvID","varchar(255)",
+			"provider","CanadianOfficeNum","varchar(100)",
+			"providerident","PayorID","varchar(255)",
+			"providerident","IDNumber","varchar(255)",
+			"question","Description","text",
+			"question","Answer","text",
+			"questiondef","Description","text",
+			"quickpastecat","Description","varchar(255)",
+			"quickpastecat","DefaultForTypes","text",
+			"quickpastenote","Note","text",
+			"quickpastenote","Abbreviation","varchar(255)",
+			"recall","Note","text",
+			"referral","LName","varchar(100)",
+			"referral","FName","varchar(100)",
+			"referral","MName","varchar(100)",
+			"referral","SSN","varchar(9)",
+			"referral","ST","varchar(2)",
+			"referral","Telephone","varchar(10)",
+			"referral","Address","varchar(100)",
+			"referral","Address2","varchar(100)",
+			"referral","City","varchar(100)",
+			"referral","Zip","varchar(10)",
+			"referral","Note","text",
+			"referral","Phone2","varchar(30)",
+			"referral","Title","varchar(255)",
+			"referral","EMail","varchar(255)",
+			"repeatcharge","ADACode","varchar(15) character set utf8 collate utf8_bin",
+			"repeatcharge","Note","text",
+			"rxdef","Drug","varchar(255)",
+			"rxdef","Sig","varchar(255)",
+			"rxdef","Disp","varchar(255)",
+			"rxdef","Refills","varchar(30)",
+			"rxdef","Notes","varchar(255)",
+			"rxpat","Drug","varchar(255)",
+			"rxpat","Sig","varchar(255)",
+			"rxpat","Disp","varchar(255)",
+			"rxpat","Refills","varchar(30)",
+			"rxpat","Notes","varchar(255)",
+			"schedule","Note","text",
+			"school","SchoolName","varchar(255)",
+			"school","SchoolCode","varchar(255)",
+			"schoolclass","Descript","varchar(255)",
+			"schoolcourse","CourseID","varchar(255)",
+			"schoolcourse","Descript","varchar(255)",
+			"screen","GradeSchool","varchar(255)",
+			"screen","County","varchar(255)",
+			"screen","ProvName","varchar(255)",
+			"screengroup","Description","varchar(255)",
+			"securitylog","LogText","text",
+			"sigbutdef","ButtonText","varchar(255)",
+			"sigbutdef","ComputerName","varchar(255)",
+			"sigelementdef","SigText","varchar(255)",
+			"sigelementdef","Sound","text",
+			"signal","FromUser","varchar(255)",
+			"signal","SigText","text",
+			"signal","ToUser","varchar(255)",
+			"task","Descript","text",
+			"tasklist","Descript","varchar(255)",
+			"terminalactive","ComputerName","varchar(255)",
+			"timeadjust","Note","text",
+			"toolbutitem","ButtonText","varchar(255)",
+			"toothinitial","ToothNum","varchar(2)",
+			"treatplan","Heading","varchar(255)",
+			"treatplan","Note","text",
+			"usergroup","Description","varchar(255)",
+			"userod","UserName","varchar(255)",
+			"userod","Password","varchar(255)",
+			"userquery","Description","varchar(255)",
+			"userquery","FileName","varchar(255)",
+			"userquery","QueryText","text",
+			"zipcode","ZipCodeDigits","varchar(20)",
+			"zipcode","City","varchar(100)",
+			"zipcode","State","varchar(20)",
+		};
+
+		private void To4_6_9() {
+			if(FromVersion<new Version("4.6.9.0")) {
+				string command="ALTER TABLE commlog CHANGE Mode Mode_ tinyint(3) unsigned NOT NULL default '0'";
+				General.NonQEx(command);
+				command="ALTER TABLE patient ADD PreferContactMethod tinyint unsigned NOT NULL AFTER PreferConfirmMethod";
+				General.NonQEx(command);
+				command="ALTER TABLE patient ADD PreferRecallMethod tinyint unsigned NOT NULL AFTER PreferContactMethod";
+				General.NonQEx(command);
+				command="UPDATE preference SET ValueString = '4.6.9.0' WHERE PrefName = 'DataBaseVersion'";
+				General.NonQEx(command);
+			}
+			To4_6_11();
+		}
+
+		private void To4_6_11() {
+			if(FromVersion<new Version("4.6.11.0")) {
+				string command="INSERT INTO preference VALUES ('OracleInsertId','')";
+				General.NonQEx(command);
+				command="UPDATE preference SET ValueString = '4.6.11.0' WHERE PrefName = 'DataBaseVersion'";
+				General.NonQEx(command);
+			}
+			To4_6_12();
+		}
+
+		///<summary>The following changes are to remove the NOT NULL from string fields for all tables in the database in order to become compatible with Oracle, since in Oracle null is the same as the empty string.</summary>
+		private void To4_6_12() {
+			if(FromVersion<new Version("4.6.12.0")) {
+				string command="";
+				for(int i=0;i<removeNotNullFieldCommands.Length;i+=3) {
+					command="ALTER TABLE "+removeNotNullFieldCommands[i]+" MODIFY "+//table name
+							removeNotNullFieldCommands[i+1]+" "+removeNotNullFieldCommands[i+2];	//column name then type
+					if(removeNotNullFieldCommands[i+2].ToUpper()!="TEXT") {//For all fields which are not of text type, define default.
+						command+=" default ''";
+					}
+					General.NonQEx(command);
+				}
+				//added after r49
+				command="INSERT INTO preference VALUES ('DefaultClaimForm','1')";
+				General.NonQEx(command);
+				command="ALTER TABLE patient ADD AdmitDate date NOT NULL default '0001-01-01'";
+				General.NonQEx(command);
+				command="UPDATE preference SET ValueString = '4.6.12.0' WHERE PrefName = 'DataBaseVersion'";
+				General.NonQEx(command);
+			}
+			To4_6_13();
+		}
+
+		///<summary></summary>
+		private void To4_6_13() {
+			if(FromVersion<new Version("4.6.13.0")) {
+				string command="";
+				command="INSERT INTO preference VALUES ('RegistrationNumberClaim','')";
+				General.NonQEx(command);
+				command="UPDATE preference SET ValueString = '4.6.13.0' WHERE PrefName = 'DataBaseVersion'";
+				General.NonQEx(command);
+			}
+			To4_6_19();
+		}
+
+		///<summary></summary>
+		private void To4_6_19() {
+			if(FromVersion<new Version("4.6.19.0")) {
+				//Owandy X-ray Bridge created by SPK 10/06, added 2/22/07-----------------------------------------------------------
+				string command = "INSERT INTO program (ProgName,ProgDesc,Enabled,Path,CommandLine,Note"
+					+ ") VALUES("
+					+ "'Owandy', "
+					+ "'QuickVision from owandy.com', "
+					+ "'0', "
+					+ "'" + POut.PString(@"\Juliew\mj32.exe") + "', "
+					+ "' C /ALINK', "
+					+ "'" + POut.PString(@"Typical file path with parameters is C:\Juliew\mj32.exe C /ALINK.  Use C /LINK for QV version < 3.15. Letter C refers to drive.") + "')";
+				int programNum =General.NonQEx(command,true);//we now have a ProgramNum to work with
+				command = "INSERT INTO toolbutitem (ProgramNum,ToolBar,ButtonText) "
+					+ "VALUES ("
+					+ "'" + POut.PInt(programNum) + "', "
+					+ "'" + POut.PInt((int)ToolBarsAvail.ChartModule) + "', "
+					+ "'Owandy')";
+				General.NonQEx(command);
+				//Vipersoft bridge:
+				command="INSERT INTO program (ProgName,ProgDesc,Enabled,Path,CommandLine,Note"
+					+") VALUES("
+					+"'Vipersoft', "
+					+"'Vipersoft aka Clarity', "
+					+"'0', "
+					+"'"+POut.PString(@"C:\Program Files\Vipersoft\Vipersoft.exe")+"', "
+					+"'', "
+					+"'')";
+				programNum=General.NonQEx(command,true);//we now have a ProgramNum to work with
+				command="INSERT INTO programproperty (ProgramNum,PropertyDesc,PropertyValue"
+					+") VALUES("
+					+"'"+programNum.ToString()+"', "
+					+"'Enter 0 to use PatientNum, or 1 to use ChartNum', "
+					+"'0')";
+				General.NonQEx(command);
+				command="INSERT INTO toolbutitem (ProgramNum,ToolBar,ButtonText) "
+					+"VALUES ("
+					+"'"+programNum.ToString()+"', "
+					+"'"+((int)ToolBarsAvail.ChartModule).ToString()+"', "
+					+"'Vipersoft')";
+				General.NonQEx(command);
+				if(FormChooseDatabase.DBtype==DatabaseType.MySql) {
+					command="ALTER TABLE userod ADD ClinicNum mediumint NOT NULL";
+					General.NonQEx(command);
+				}
+				else {
+					command="ALTER TABLE userod ADD ClinicNum int";
+					General.NonQEx(command);
+				}
+				command="UPDATE preference SET ValueString = '4.6.19.0' WHERE PrefName = 'DataBaseVersion'";
+				General.NonQEx(command);
+			}
+			//To4_7_0();
+		}
+	
 
 	}
 

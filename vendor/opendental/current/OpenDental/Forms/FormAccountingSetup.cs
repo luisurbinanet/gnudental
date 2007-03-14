@@ -364,7 +364,7 @@ namespace OpenDental{
 			ODGridRow row;
 			for(int i=0;i<payAL.Count;i++){
 				row=new ODGridRow();
-				row.Cells.Add(Defs.GetName(DefCat.PaymentTypes,((AccountingAutoPay)payAL[i]).PayType));
+				row.Cells.Add(DefB.GetName(DefCat.PaymentTypes,((AccountingAutoPay)payAL[i]).PayType));
 				row.Cells.Add(AccountingAutoPays.GetPickListDesc((AccountingAutoPay)payAL[i]));
 				gridMain.Rows.Add(row);
 			}

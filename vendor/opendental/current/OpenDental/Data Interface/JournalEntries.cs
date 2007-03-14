@@ -85,7 +85,7 @@ namespace OpenDental{
 			command+=
 				 "'"+POut.PInt   (je.TransactionNum)+"', "
 				+"'"+POut.PInt   (je.AccountNum)+"', "
-				+"'"+POut.PDate  (je.DateDisplayed)+"', "
+				+POut.PDate  (je.DateDisplayed)+", "
 				+"'"+POut.PDouble(je.DebitAmt)+"', "
 				+"'"+POut.PDouble(je.CreditAmt)+"', "
 				+"'"+POut.PString(je.Memo)+"', "
@@ -108,7 +108,7 @@ namespace OpenDental{
 			string command= "UPDATE journalentry SET "
 				+"TransactionNum = '"+POut.PInt   (je.TransactionNum)+"' "
 				+",AccountNum = '"   +POut.PInt   (je.AccountNum)+"' "
-				+",DateDisplayed = '"+POut.PDate  (je.DateDisplayed)+"' "
+				+",DateDisplayed = "+POut.PDate  (je.DateDisplayed)+" "
 				+",DebitAmt = '"     +POut.PDouble(je.DebitAmt)+"' "
 				+",CreditAmt = '"    +POut.PDouble(je.CreditAmt)+"' "
 				+",Memo = '"         +POut.PString(je.Memo)+"' "

@@ -12,9 +12,19 @@ namespace OpenDental{
 			string command=
 				//"SELECT * FROM schedule WHERE SchedDate > '"+POut.PDate(startDate.AddDays(-1))+"' "
 				//+"AND SchedDate < '"+POut.PDate(stopDate.AddDays(1))+"' "
-				"SELECT * FROM schedule WHERE MONTH(SchedDate)='"+CurDate.Month.ToString()
+				/*"SELECT * FROM schedule WHERE MONTH(SchedDate)='"+CurDate.Month.ToString()
 				+"' AND YEAR(SchedDate)='"+CurDate.Year.ToString()+"' "
 				+"AND SchedType="+POut.PInt((int)schedType)
+				+" AND ProvNum="+POut.PInt(provNum)
+				+" ORDER BY starttime";*/
+				"SELECT * FROM schedule WHERE ";
+			if(FormChooseDatabase.DBtype==DatabaseType.Oracle){
+				command+="TO_CHAR(SchedDate,'MM')='"+CurDate.Month.ToString()+"' AND TO_CHAR(SchedDate,'YYYY')";
+			}else{//Assume MySQL
+				command+="MONTH(SchedDate)='"+CurDate.Month.ToString()+"' AND YEAR(SchedDate)";
+			}
+			command+="='"+CurDate.Year.ToString()+"'"
+				+" AND SchedType="+POut.PInt((int)schedType)
 				+" AND ProvNum="+POut.PInt(provNum)
 				+" ORDER BY starttime";
 			return RefreshAndFill(command);
@@ -23,7 +33,7 @@ namespace OpenDental{
 		///<summary>Called every time the day is refreshed or changed in Appointments module.  Gets the data directly from the database.</summary>
 		public static Schedule[] RefreshDay(DateTime thisDay) {
 			string command=
-				"SELECT * FROM schedule WHERE SchedDate='"+POut.PDate(thisDay)+"'"
+				"SELECT * FROM schedule WHERE SchedDate="+POut.PDate(thisDay)
 				+" ORDER BY starttime";
 			return RefreshAndFill(command);
 		}
@@ -56,9 +66,9 @@ namespace OpenDental{
 		///<summary></summary>
 		private static void Update(Schedule sched){
 			string command= "UPDATE schedule SET " 
-				+ "scheddate = '"    +POut.PDate  (sched.SchedDate)+"'"
-				+ ",starttime = '"   +POut.PDateT (sched.StartTime)+"'"
-				+ ",stoptime = '"    +POut.PDateT (sched.StopTime)+"'"
+				+ "scheddate = "    +POut.PDate  (sched.SchedDate)
+				+ ",starttime = "   +POut.PDateT (sched.StartTime)
+				+ ",stoptime = "    +POut.PDateT (sched.StopTime)
 				+ ",SchedType = '"   +POut.PInt   ((int)sched.SchedType)+"'"
 				+ ",ProvNum = '"     +POut.PInt   (sched.ProvNum)+"'"
 				+ ",BlockoutType = '"+POut.PInt   (sched.BlockoutType)+"'"
@@ -84,9 +94,9 @@ namespace OpenDental{
 				command+="'"+POut.PInt(sched.ScheduleNum)+"', ";
 			}
 			command+=
-				 "'"+POut.PDate  (sched.SchedDate)+"', "
-				+"'"+POut.PDateT (sched.StartTime)+"', "
-				+"'"+POut.PDateT (sched.StopTime)+"', "
+				 POut.PDate  (sched.SchedDate)+", "
+				+POut.PDateT (sched.StartTime)+", "
+				+POut.PDateT (sched.StopTime)+", "
 				+"'"+POut.PInt   ((int)sched.SchedType)+"', "
 				+"'"+POut.PInt   (sched.ProvNum)+"', "
 				+"'"+POut.PInt   (sched.BlockoutType)+"', "
@@ -158,7 +168,8 @@ namespace OpenDental{
 		}
 
 		///<summary>Also automatically handles situation where the last blockout for the day gets deleted.  In that case, it adds a "closed" blockout to signify an override of default blockouts.</summary>
-		public static void Delete(Schedule sched){
+		public static void 
+			Delete(Schedule sched){
 			string command= "DELETE from schedule WHERE schedulenum = '"+POut.PInt(sched.ScheduleNum)+"'";
  			General.NonQ(command);
 			//if this was the last blockout for a day, then create a blockout for 'closed'
@@ -213,7 +224,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public static void SetAllDefault(DateTime forDate,ScheduleType schedType,int provNum){
 			string command="DELETE from schedule WHERE "
-				+"SchedDate='"    +POut.PDate (forDate)+"' "
+				+"SchedDate="    +POut.PDate (forDate)+" "
 				+"AND SchedType='"+POut.PInt((int)schedType)+"' "
 				+"AND ProvNum='"  +POut.PInt(provNum)+"'";
  			General.NonQ(command);
@@ -228,7 +239,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public static void CheckIfDeletedLastBlockout(DateTime schedDate){
 			string command="SELECT COUNT(*) FROM schedule WHERE SchedType='"+POut.PInt((int)ScheduleType.Blockout)+"' "
-					+"AND SchedDate='"+POut.PDate(schedDate)+"'";
+					+"AND SchedDate="+POut.PDate(schedDate);
 			DataTable table=General.GetTable(command);
 			if(table.Rows[0][0].ToString()=="0") {
 				Schedule sched=new Schedule();

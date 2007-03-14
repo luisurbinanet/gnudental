@@ -1,12 +1,13 @@
 using System;
 using System.Windows.Forms;
 using OpenDentBusiness;
+using System.Data;
 
 namespace OpenDental{
 	///<summary></summary>
 	public class Security{
 		///<summary>The current user.  Might be null when first starting the program.  Otherwise, must contain valid user.</summary>
-		public static User CurUser;
+		public static Userod CurUser;
 
 		///<summary></summary>
 		public Security(){
@@ -104,10 +105,24 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void ResetPassword(){
-			string command="UPDATE user,grouppermissions SET user.Password='' "
-				+"WHERE grouppermissions.UserGroupNum=user.UserGroupNum "
+			//FIXME:UPDATE-MULTIPLE-TABLES
+			/*string command="UPDATE userod,grouppermissions SET userod.Password='' "
+				+"WHERE grouppermissions.UserGroupNum=userod.UserGroupNum "
 				+"AND grouppermissions.PermType=24";
  			General.NonQ(command);
+			 */
+
+			//Code updated to be compatible with Oracle as well as MySQL.
+
+			string command="SELECT userod.UserNum FROM userod,grouppermissions "
+				+"WHERE grouppermissions.UserGroupNum=userod.UserGroupNum "
+				+"AND grouppermissions.PermType=24";
+			DataTable table=General.GetTable(command); 
+			if(table.Rows.Count==0){
+				throw new ApplicationException("No admin exists.");
+			}
+			command="UPDATE userod SET Password='' WHERE UserNum="+POut.PString(table.Rows[0][0].ToString());
+			General.NonQ(command);
 		}
 
 	}

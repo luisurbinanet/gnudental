@@ -304,7 +304,7 @@ namespace OpenDental{
 			command="SELECT PatNum FROM patient WHERE "
 				+"LName='"+POut.PString(pat.LName)+"' "
 				+"AND FName='"+POut.PString(pat.FName)+"' "
-				+"AND Birthdate='"+POut.PDate(pat.Birthdate)+"' "
+				+"AND Birthdate="+POut.PDate(pat.Birthdate)+" "
 				+"AND PatStatus!=4";//not deleted
 			table=General.GetTable(command);
 			Patient existingPat=null;
@@ -382,7 +382,7 @@ namespace OpenDental{
 					command="SELECT PatNum FROM patient WHERE "
 						+"LName='"+POut.PString(guar.LName)+"' "
 						+"AND FName='"+POut.PString(guar.FName)+"' "
-						+"AND Birthdate='"+POut.PDate(guar.Birthdate)+"' "
+						+"AND Birthdate="+POut.PDate(guar.Birthdate)+" "
 						+"AND PatStatus!=4";//not deleted
 					table=General.GetTable(command);
 					if(table.Rows.Count>0){//a guar already exists, so simply attach. Make no other changes
@@ -423,7 +423,7 @@ namespace OpenDental{
 				command="SELECT PatNum FROM patient WHERE "
 					+"LName='"+POut.PString(subsc.LName)+"' "
 					+"AND FName='"+POut.PString(subsc.FName)+"' "
-					+"AND Birthdate='"+POut.PDate(subsc.Birthdate)+"' "
+					+"AND Birthdate="+POut.PDate(subsc.Birthdate)+" "
 					+"AND PatStatus!=4";//not deleted
 				table=General.GetTable(command);
 				if(table.Rows.Count>0){//a subsc already exists, so simply attach. Make no other changes

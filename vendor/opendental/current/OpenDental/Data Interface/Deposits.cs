@@ -46,7 +46,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public static void Update(Deposit dep){
 			string command= "UPDATE deposit SET "
-				+"DateDeposit = '"     +POut.PDate  (dep.DateDeposit)+"'"
+				+"DateDeposit = "     +POut.PDate  (dep.DateDeposit)
 				+",BankAccountInfo = '"+POut.PString(dep.BankAccountInfo)+"'"
 				+",Amount = '"         +POut.PDouble(dep.Amount)+"'"
 				+" WHERE DepositNum ='"+POut.PInt   (dep.DepositNum)+"'";
@@ -68,7 +68,7 @@ namespace OpenDental{
 				command+="'"+POut.PInt(dep.DepositNum)+"', ";
 			}
 			command+=
-				 "'"+POut.PDate  (dep.DateDeposit)+"', "
+				 POut.PDate  (dep.DateDeposit)+", "
 				+"'"+POut.PString(dep.BankAccountInfo)+"', "
 				+"'"+POut.PDouble(dep.Amount)+"')";
  			if(PrefB.RandomKeys){

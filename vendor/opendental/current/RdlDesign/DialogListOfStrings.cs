@@ -1,5 +1,5 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
@@ -23,6 +23,7 @@
 using System;
 using System.Drawing;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 
@@ -42,7 +43,7 @@ namespace fyiReporting.RdlDesign
 		/// </summary>
 		private System.ComponentModel.Container components = null;
 
-		public DialogListOfStrings(ArrayList list)
+		public DialogListOfStrings(List<string> list)
 		{
 			//
 			// Required for Windows Form Designer support
@@ -64,13 +65,13 @@ namespace fyiReporting.RdlDesign
 			return;
 		}
 
-		public ArrayList ListOfStrings
+		public List<string> ListOfStrings
 		{
 			get
 			{
 				if (this.tbStrings.Text.Length == 0)
 					return null;
-				ArrayList l = new ArrayList();
+				List<string> l = new List<string>();
 				foreach (string v in tbStrings.Lines)
 				{
 					if (v.Length > 0)

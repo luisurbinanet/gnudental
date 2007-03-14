@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 using OpenDentBusiness;
@@ -48,15 +49,28 @@ namespace OpenDental{
 		}
 
 		///<summary>Only used in FormRecallList to get a list of patients with recall.  Supply a date range, using min(-1 day) and max values if user left blank.</summary>
-		public static RecallItem[] GetRecallList(DateTime fromDate,DateTime toDate,bool groupByFamilies){
+		public static DataTable GetRecallList(DateTime fromDate,DateTime toDate,bool groupByFamilies){
+			DataTable table=new DataTable();
+			DataRow row;
+			//columns that start with lowercase are altered for display rather than being raw data.
+			table.Columns.Add("age");
+			table.Columns.Add("contactMethod");
+			table.Columns.Add("dueDate");
+			table.Columns.Add("Guarantor");
+			table.Columns.Add("Note");
+			table.Columns.Add("patientName");
+			table.Columns.Add("PatNum");
+			table.Columns.Add("PreferRecallMethod");
+			table.Columns.Add("recallInterval");
+			table.Columns.Add("RecallNum");
+			table.Columns.Add("status");
+			List<DataRow> rows=new List<DataRow>();
 			string command=
 				"SELECT recall.RecallNum,recall.PatNum,recall.DateDue,"
 				+"recall.RecallInterval,recall.RecallStatus,recall.Note,"
-				+"CONCAT(patient.LName,', ',patient.FName,' ',patient.Preferred,' ',"
-				+"patient.MiddleI) AS 'Patient Name', "
-				+"IF(YEAR(patient.Birthdate)>1880,"
-				+"YEAR(CURDATE()) - YEAR(patient.Birthdate) - (RIGHT(CURDATE(),5)<RIGHT(patient.Birthdate,5)),'') AS Age, "
-				+"patient.Guarantor "
+				+"patient.LName,patient.FName,patient.Preferred,patient.Birthdate, "
+				+"patient.HmPhone,patient.WkPhone,patient.WirelessPhone,patient.Email, "
+				+"patient.Guarantor, patient.PreferRecallMethod "
 				+"FROM recall,patient "
 				+"WHERE recall.PatNum=patient.PatNum "
 				+"AND NOT EXISTS("//test for future appt.
@@ -65,71 +79,68 @@ namespace OpenDental{
 				+"AND appointment.PatNum = recall.PatNum "
 				+"AND procedurelog.ADACode = procedurecode.ADACode "
 				+"AND procedurelog.AptNum = appointment.AptNum "
-				+"AND appointment.AptDateTime >= CURDATE() "//'"+DateTime.Today.ToString("yyyy-MM-dd")+"' "
-				+"AND procedurecode.SetRecall = '1') "//end of NOT EXISTS
-				+"AND recall.DateDue >= '"+POut.PDate(fromDate)+"' "
-				+"AND recall.DateDue <= '"+POut.PDate(toDate)+"' "
+				+"AND appointment.AptDateTime >= ";//'"+DateTime.Today.ToString("yyyy-MM-dd")+"' "
+				if(FormChooseDatabase.DBtype==DatabaseType.Oracle){
+					command+=POut.PDate(MiscData.GetNowDateTime());
+				}else{//Assume MySQL
+					command+="CURDATE()";
+				}
+				command+=" AND procedurecode.SetRecall = '1') "//end of NOT EXISTS
+				+"AND recall.DateDue >= "+POut.PDate(fromDate)+" "
+				+"AND recall.DateDue <= "+POut.PDate(toDate)+" "
 				+"AND patient.patstatus=0 "
 				+"ORDER BY ";
 			if(groupByFamilies){
 				command+="patient.Guarantor, ";
 			}
 			command+="recall.DateDue";
-				//ordering will be done down below
- 			DataTable table=General.GetTable(command);
-			RecallItem[] RecallList = new RecallItem[table.Rows.Count];
-			//DateTime[] orderDate=new DateTime[table.Rows.Count];
-			for(int i=0;i<table.Rows.Count;i++){
-				RecallList[i]=new RecallItem();
-				RecallList[i].DueDate       = PIn.PDate  (table.Rows[i][2].ToString());
-				RecallList[i].PatientName   = PIn.PString(table.Rows[i][6].ToString());
-				RecallList[i].RecallInterval= new Interval(PIn.PInt(table.Rows[i][3].ToString()));
-				RecallList[i].RecallStatus  = PIn.PInt   (table.Rows[i][4].ToString());
-				RecallList[i].PatNum        = PIn.PInt   (table.Rows[i][1].ToString());
-				RecallList[i].Age           = PIn.PString(table.Rows[i][7].ToString());
-				RecallList[i].Note          = PIn.PString(table.Rows[i][5].ToString());
-				RecallList[i].RecallNum     = PIn.PInt   (table.Rows[i][0].ToString());
-				RecallList[i].Guarantor     = PIn.PInt   (table.Rows[i][8].ToString());
-				//orderDate[i]=RecallList[i].DueDate;
+ 			DataTable rawtable=General.GetTable(command);
+			DateTime date;
+			Interval interv;
+			Patient pat;
+			ContactMethod contmeth;
+			for(int i=0;i<rawtable.Rows.Count;i++){
+				row=table.NewRow();
+				row["age"]=Shared.DateToAge(PIn.PDate(rawtable.Rows[i]["Birthdate"].ToString())).ToString();//we don't care about m/y.
+				contmeth=(ContactMethod)PIn.PInt(rawtable.Rows[i]["PreferRecallMethod"].ToString());
+				if(contmeth==ContactMethod.None || contmeth==ContactMethod.HmPhone){
+					row["contactMethod"]=Lan.g("FormRecallList","Hm:")+rawtable.Rows[i]["HmPhone"].ToString();
+				}
+				if(contmeth==ContactMethod.WkPhone) {
+					row["contactMethod"]=Lan.g("FormRecallList","Wk:")+rawtable.Rows[i]["WkPhone"].ToString();
+				}
+				if(contmeth==ContactMethod.WirelessPh) {
+					row["contactMethod"]=Lan.g("FormRecallList","Cell:")+rawtable.Rows[i]["WirelessPhone"].ToString();
+				}
+				if(contmeth==ContactMethod.Email) {
+					row["contactMethod"]=rawtable.Rows[i]["Email"].ToString();
+				}
+				if(contmeth==ContactMethod.DoNotCall || contmeth==ContactMethod.SeeNotes) {
+					row["contactMethod"]=Lan.g("enumContactMethod",contmeth.ToString());
+				}
+				date=PIn.PDate(rawtable.Rows[i]["DateDue"].ToString());
+				row["dueDate"]=date.ToShortDateString();
+				row["Guarantor"]=rawtable.Rows[i]["Guarantor"].ToString();
+				row["Note"]=rawtable.Rows[i]["Note"].ToString();
+				pat=new Patient();
+				pat.LName=rawtable.Rows[i]["LName"].ToString();
+				pat.FName=rawtable.Rows[i]["FName"].ToString();
+				pat.Preferred=rawtable.Rows[i]["Preferred"].ToString();
+				row["patientName"]=pat.GetNameLF();
+				row["PatNum"]=rawtable.Rows[i]["PatNum"].ToString();
+				row["PreferRecallMethod"]=rawtable.Rows[i]["PreferRecallMethod"].ToString();//not used yet, but might be.
+				interv=new Interval(PIn.PInt(rawtable.Rows[i]["RecallInterval"].ToString()));
+				row["recallInterval"]=interv.ToString();
+				row["RecallNum"]=rawtable.Rows[i]["RecallNum"].ToString();
+				row["status"]=DefB.GetName(DefCat.RecallUnschedStatus,PIn.PInt(rawtable.Rows[i]["RecallStatus"].ToString()));
+				rows.Add(row);
 			}
 			//Array.Sort(orderDate,RecallList);
-			return RecallList;
-
-			 
-			/*	"SELECT MAX(procedurelog.procdate) AS 'LastDate', "
-				//+ INTERVAL patient.recallinterval MONTH AS 'DueDate', "
-				+"CONCAT(patient.lname,', ',patient.fname,' ',patient.preferred,' ',"
-				+"patient.middlei) AS 'Patient Name', "
-				+"patient.birthdate,patient.recallinterval,patient.recallstatus,patient.patnum "
-				//+"patient.nextaptnum,appointment.aptdatetime "
-				+"FROM patient,procedurelog,procedurecode "
-				//+"LEFT JOIN appointment ON appointment.nextaptnum = patient.nextaptnum "
-				+"WHERE patient.patnum = procedurelog.patnum "
-				+"AND procedurecode.adacode = procedurelog.adacode "
-				+"AND procedurecode.setrecall = 1 "
-				+"AND (procedurelog.procstatus = 2 "
-				+"OR procedurelog.procstatus = 3 "
-				+"OR procedurelog.procstatus = 4) "
-				+"AND patient.patstatus = 0 "
-				+"GROUP BY patient.patnum "
-				+"ORDER BY LastDate";
-			DataConnection dcon=new DataConnection();
- 			DataTable table=dcon.GetTable(command);
-			RecallItem[] RecallList = new RecallItem[table.Rows.Count];
-			DateTime[] orderDate=new DateTime[table.Rows.Count];
-			for (int i=0;i<table.Rows.Count;i++){
-				RecallList[i].DueDate = (PIn.PDate  (table.Rows[i][0].ToString()))//last date
-					.AddMonths(PIn.PInt(table.Rows[i][3].ToString()));//plus number of months
-				RecallList[i].PatientName   = PIn.PString(table.Rows[i][1].ToString());
-				RecallList[i].BirthDate     = PIn.PDate  (table.Rows[i][2].ToString());
-				RecallList[i].RecallInterval= PIn.PInt   (table.Rows[i][3].ToString());
-				RecallList[i].RecallStatus  = PIn.PInt   (table.Rows[i][4].ToString());
-				RecallList[i].PatNum        = PIn.PInt   (table.Rows[i][5].ToString());
-				RecallList[i].Age=Shared.DateToAge(RecallList[i].BirthDate);
-				orderDate[i]=RecallList[i].DueDate;
+			//return RecallList;
+			for(int i=0;i<rows.Count;i++) {
+				table.Rows.Add(rows[i]);
 			}
-			Array.Sort(orderDate,RecallList);
-			return RecallList;*/
+			return table;
 		}
 
 		///<summary></summary>
@@ -149,9 +160,9 @@ namespace OpenDental{
 			}
 			command+=
 				 "'"+POut.PInt(recall.PatNum)+"', "
-				+"'"+POut.PDate(recall.DateDueCalc)+"', "
-				+"'"+POut.PDate(recall.DateDue)+"', "
-				+"'"+POut.PDate(recall.DatePrevious)+"', "
+				+POut.PDate(recall.DateDueCalc)+", "
+				+POut.PDate(recall.DateDue)+", "
+				+POut.PDate(recall.DatePrevious)+", "
 				+"'"+POut.PInt(recall.RecallInterval.ToInt())+"', "
 				+"'"+POut.PInt(recall.RecallStatus)+"', "
 				+"'"+POut.PString(recall.Note)+"', "
@@ -168,9 +179,9 @@ namespace OpenDental{
 		public static void Update(Recall recall) {
 			string command= "UPDATE recall SET "
 				+"PatNum = '"          +POut.PInt(recall.PatNum)+"'"
-				+",DateDueCalc = '"    +POut.PDate(recall.DateDueCalc)+"' "
-				+",DateDue = '"        +POut.PDate(recall.DateDue)+"' "
-				+",DatePrevious = '"   +POut.PDate(recall.DatePrevious)+"' "
+				+",DateDueCalc = "    +POut.PDate(recall.DateDueCalc)+" "
+				+",DateDue = "        +POut.PDate(recall.DateDue)+" "
+				+",DatePrevious = "   +POut.PDate(recall.DatePrevious)+" "
 				+",RecallInterval = '" +POut.PInt(recall.RecallInterval.ToInt())+"' "
 				+",RecallStatus= '"    +POut.PInt(recall.RecallStatus)+"' "
 				+",Note = '"           +POut.PString(recall.Note)+"' "
@@ -299,8 +310,11 @@ namespace OpenDental{
 			string command="SELECT patient.LName,patient.FName,patient.MiddleI,patient.Preferred,"//0-3
 				+"patient.Address,patient.Address2,patient.City,patient.State,patient.Zip,recall.DateDue, "//4-9
 				+"patient.Guarantor,"//10
-				+"'' AS FamList "//placeholder column: 11 for patient names and dates. If empty, then only single patient will print
-				+"FROM patient,recall "
+				+"'' FamList ";//placeholder column: 11 for patient names and dates. If empty, then only single patient will print
+			if(FormChooseDatabase.DBtype==DatabaseType.Oracle){
+				command+=",CASE WHEN patient.PatNum=patient.Guarantor THEN 1 ELSE 0 END AS isguarantor ";
+			}
+			command+="FROM patient,recall "
 				+"WHERE patient.PatNum=recall.PatNum "
 				+"AND (";
       for(int i=0;i<patNums.Length;i++){
@@ -311,7 +325,13 @@ namespace OpenDental{
       }
 			command+=") ";
 			if(groupByFamily){
-				command+="ORDER BY patient.Guarantor,patient.PatNum = patient.Guarantor";//guarantor needs to be last
+				command+="ORDER BY patient.Guarantor,";
+				if(FormChooseDatabase.DBtype==DatabaseType.Oracle){
+					command+="13";//isguarantor column
+				}
+				else{
+					command+="patient.PatNum = patient.Guarantor";//guarantor needs to be last //FIXME:ORDER-BY. probably fixed??
+				}
 			}
 			else{
 				command+="ORDER BY patient.LName,patient.FName";

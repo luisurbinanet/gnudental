@@ -38,6 +38,8 @@ namespace OpenDental{
 		private RadioButton radioShowIDpatNum;
 		private RadioButton radioShowIDchartNum;
 		private RadioButton radioShowIDnone;
+		private OpenDental.UI.Button butLanguages;
+		private Label label4;
 		private System.Windows.Forms.Label label1;// Required designer variable.
 
 		///<summary></summary>
@@ -70,7 +72,9 @@ namespace OpenDental{
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.checkTreatPlanShowIns = new System.Windows.Forms.CheckBox();
 			this.groupBox5 = new System.Windows.Forms.GroupBox();
+			this.checkStatementShowReturnAddress = new System.Windows.Forms.CheckBox();
 			this.checkBalancesDontSubtractIns = new System.Windows.Forms.CheckBox();
+			this.textStatementsCalcDueDate = new OpenDental.ValidNumber();
 			this.label2 = new System.Windows.Forms.Label();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
 			this.radioUsePatNum = new System.Windows.Forms.RadioButton();
@@ -80,15 +84,15 @@ namespace OpenDental{
 			this.label3 = new System.Windows.Forms.Label();
 			this.checkInsurancePlansShared = new System.Windows.Forms.CheckBox();
 			this.checkMedicalEclaimsEnabled = new System.Windows.Forms.CheckBox();
-			this.checkStatementShowReturnAddress = new System.Windows.Forms.CheckBox();
 			this.textSigInterval = new OpenDental.ValidNumber();
 			this.butCancel = new OpenDental.UI.Button();
 			this.butOK = new OpenDental.UI.Button();
-			this.textStatementsCalcDueDate = new OpenDental.ValidNumber();
 			this.groupBox3 = new System.Windows.Forms.GroupBox();
+			this.radioShowIDnone = new System.Windows.Forms.RadioButton();
 			this.radioShowIDpatNum = new System.Windows.Forms.RadioButton();
 			this.radioShowIDchartNum = new System.Windows.Forms.RadioButton();
-			this.radioShowIDnone = new System.Windows.Forms.RadioButton();
+			this.butLanguages = new OpenDental.UI.Button();
+			this.label4 = new System.Windows.Forms.Label();
 			this.groupBox1.SuspendLayout();
 			this.groupBox5.SuspendLayout();
 			this.groupBox2.SuspendLayout();
@@ -205,6 +209,15 @@ namespace OpenDental{
 			this.groupBox5.TabStop = false;
 			this.groupBox5.Text = "Statements";
 			// 
+			// checkStatementShowReturnAddress
+			// 
+			this.checkStatementShowReturnAddress.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkStatementShowReturnAddress.Location = new System.Drawing.Point(19,22);
+			this.checkStatementShowReturnAddress.Name = "checkStatementShowReturnAddress";
+			this.checkStatementShowReturnAddress.Size = new System.Drawing.Size(216,17);
+			this.checkStatementShowReturnAddress.TabIndex = 56;
+			this.checkStatementShowReturnAddress.Text = "Show return address";
+			// 
 			// checkBalancesDontSubtractIns
 			// 
 			this.checkBalancesDontSubtractIns.FlatStyle = System.Windows.Forms.FlatStyle.System;
@@ -213,6 +226,15 @@ namespace OpenDental{
 			this.checkBalancesDontSubtractIns.Size = new System.Drawing.Size(288,17);
 			this.checkBalancesDontSubtractIns.TabIndex = 55;
 			this.checkBalancesDontSubtractIns.Text = "Balances Don\'t Subtract Insurance Estimate";
+			// 
+			// textStatementsCalcDueDate
+			// 
+			this.textStatementsCalcDueDate.Location = new System.Drawing.Point(235,146);
+			this.textStatementsCalcDueDate.MaxVal = 255;
+			this.textStatementsCalcDueDate.MinVal = 0;
+			this.textStatementsCalcDueDate.Name = "textStatementsCalcDueDate";
+			this.textStatementsCalcDueDate.Size = new System.Drawing.Size(60,20);
+			this.textStatementsCalcDueDate.TabIndex = 54;
 			// 
 			// label2
 			// 
@@ -308,15 +330,6 @@ namespace OpenDental{
 			this.checkMedicalEclaimsEnabled.Text = "Enable medical e-claims";
 			this.checkMedicalEclaimsEnabled.TextAlign = System.Drawing.ContentAlignment.TopLeft;
 			// 
-			// checkStatementShowReturnAddress
-			// 
-			this.checkStatementShowReturnAddress.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkStatementShowReturnAddress.Location = new System.Drawing.Point(19,22);
-			this.checkStatementShowReturnAddress.Name = "checkStatementShowReturnAddress";
-			this.checkStatementShowReturnAddress.Size = new System.Drawing.Size(216,17);
-			this.checkStatementShowReturnAddress.TabIndex = 56;
-			this.checkStatementShowReturnAddress.Text = "Show return address";
-			// 
 			// textSigInterval
 			// 
 			this.textSigInterval.Location = new System.Drawing.Point(47,286);
@@ -334,7 +347,7 @@ namespace OpenDental{
 			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.Location = new System.Drawing.Point(676,469);
+			this.butCancel.Location = new System.Drawing.Point(676,492);
 			this.butCancel.Name = "butCancel";
 			this.butCancel.Size = new System.Drawing.Size(75,26);
 			this.butCancel.TabIndex = 8;
@@ -348,21 +361,12 @@ namespace OpenDental{
 			this.butOK.Autosize = true;
 			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butOK.Location = new System.Drawing.Point(676,431);
+			this.butOK.Location = new System.Drawing.Point(676,454);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75,26);
 			this.butOK.TabIndex = 7;
 			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
-			// 
-			// textStatementsCalcDueDate
-			// 
-			this.textStatementsCalcDueDate.Location = new System.Drawing.Point(235,146);
-			this.textStatementsCalcDueDate.MaxVal = 255;
-			this.textStatementsCalcDueDate.MinVal = 0;
-			this.textStatementsCalcDueDate.Name = "textStatementsCalcDueDate";
-			this.textStatementsCalcDueDate.Size = new System.Drawing.Size(60,20);
-			this.textStatementsCalcDueDate.TabIndex = 54;
 			// 
 			// groupBox3
 			// 
@@ -376,6 +380,17 @@ namespace OpenDental{
 			this.groupBox3.TabIndex = 62;
 			this.groupBox3.TabStop = false;
 			this.groupBox3.Text = "Show ID in title bar";
+			// 
+			// radioShowIDnone
+			// 
+			this.radioShowIDnone.Checked = true;
+			this.radioShowIDnone.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.radioShowIDnone.Location = new System.Drawing.Point(9,16);
+			this.radioShowIDnone.Name = "radioShowIDnone";
+			this.radioShowIDnone.Size = new System.Drawing.Size(144,19);
+			this.radioShowIDnone.TabIndex = 2;
+			this.radioShowIDnone.TabStop = true;
+			this.radioShowIDnone.Text = "None";
 			// 
 			// radioShowIDpatNum
 			// 
@@ -395,21 +410,33 @@ namespace OpenDental{
 			this.radioShowIDchartNum.TabIndex = 0;
 			this.radioShowIDchartNum.Text = "Chart Number";
 			// 
-			// radioShowIDnone
+			// butLanguages
 			// 
-			this.radioShowIDnone.Checked = true;
-			this.radioShowIDnone.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.radioShowIDnone.Location = new System.Drawing.Point(9,16);
-			this.radioShowIDnone.Name = "radioShowIDnone";
-			this.radioShowIDnone.Size = new System.Drawing.Size(144,19);
-			this.radioShowIDnone.TabIndex = 2;
-			this.radioShowIDnone.TabStop = true;
-			this.radioShowIDnone.Text = "None";
+			this.butLanguages.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butLanguages.Autosize = true;
+			this.butLanguages.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butLanguages.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butLanguages.Location = new System.Drawing.Point(48,465);
+			this.butLanguages.Name = "butLanguages";
+			this.butLanguages.Size = new System.Drawing.Size(88,26);
+			this.butLanguages.TabIndex = 63;
+			this.butLanguages.Text = "Edit Languages";
+			this.butLanguages.Click += new System.EventHandler(this.butLanguages_Click);
+			// 
+			// label4
+			// 
+			this.label4.Location = new System.Drawing.Point(142,472);
+			this.label4.Name = "label4";
+			this.label4.Size = new System.Drawing.Size(298,17);
+			this.label4.TabIndex = 64;
+			this.label4.Text = "Languages used by patients.";
 			// 
 			// FormMisc
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
-			this.ClientSize = new System.Drawing.Size(797,515);
+			this.ClientSize = new System.Drawing.Size(797,538);
+			this.Controls.Add(this.label4);
+			this.Controls.Add(this.butLanguages);
 			this.Controls.Add(this.groupBox3);
 			this.Controls.Add(this.checkMedicalEclaimsEnabled);
 			this.Controls.Add(this.checkInsurancePlansShared);
@@ -502,6 +529,14 @@ namespace OpenDental{
 			}
 		}
 
+		private void butLanguages_Click(object sender,EventArgs e) {
+			FormLanguagesUsed FormL=new FormLanguagesUsed();
+			FormL.ShowDialog();
+			if(FormL.DialogResult==DialogResult.OK){
+				DataValid.SetInvalid(InvalidTypes.Prefs);
+			}
+		}
+
 		private void butOK_Click(object sender, System.EventArgs e) {
 			if(textStatementsCalcDueDate.errorProvider1.GetError(textStatementsCalcDueDate)!="")
 			{
@@ -571,6 +606,8 @@ namespace OpenDental{
 		private void butCancel_Click(object sender, System.EventArgs e) {
 			DialogResult=DialogResult.Cancel;
 		}
+
+		
 
 		
 

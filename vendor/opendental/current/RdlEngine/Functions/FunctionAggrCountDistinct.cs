@@ -1,29 +1,31 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General public License for more details.
+    GNU Lesser General public License for more details.
 
-    You should have received a copy of the GNU General public License
+    You should have received a copy of the GNU Lesser General public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
 */
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 
 
 using fyiReporting.RDL;
@@ -32,22 +34,22 @@ using fyiReporting.RDL;
 namespace fyiReporting.RDL
 {
 	/// <summary>
-	/// <p>Aggregate function: CountDistinct
-	/// <p>
-	///	
+	/// Aggregate function: CountDistinct
 	/// </summary>
 	[Serializable]
 	internal class FunctionAggrCountDistinct : FunctionAggr, IExpr, ICacheData
 	{
-		[NonSerialized] private int _value;		// when scope is dataset we can cache the result
+		string _key;			// key used for caching value
 		/// <summary>
 		/// Aggregate function: CountDistinct
 		/// 
 		///	Return type is double
 		/// </summary>
-		public FunctionAggrCountDistinct(ArrayList dataCache, IExpr e, object scp):base(e, scp) 
+        public FunctionAggrCountDistinct(List<ICacheData> dataCache, IExpr e, object scp)
+            : base(e, scp) 
 		{
-			_value = -1;
+			_key = "countdistinct" + Interlocked.Increment(ref Parser.Counter).ToString();
+
 			dataCache.Add(this);
 		}
 
@@ -57,25 +59,27 @@ namespace fyiReporting.RDL
 		}
 
 		// Evaluate is for interpretation  (and is relatively slow)
-		public object Evaluate(Row row)
+		public object Evaluate(Report rpt, Row row)
 		{
-			return (object) EvaluateDouble(row);
+			return (object) EvaluateDouble(rpt, row);
 		}
 		
-		public double EvaluateDouble(Row row)
+		public double EvaluateDouble(Report rpt, Row row)
 		{
 			bool bSave=true;
-			IEnumerable re = this.GetDataScope(row, out bSave);
+			RowEnumerable re = this.GetDataScope(rpt, row, out bSave);
 			if (re == null)
 				return 0;
 
-			if (_value < 0)
+			int v = GetValue(rpt);
+			if (v < 0)
 			{
 				object temp;
-				Hashtable ht = new Hashtable();
+				int count = Math.Max(2, re.LastRow - re.FirstRow);
+				Hashtable ht = new Hashtable(count);
 				foreach (Row r in re)
 				{
-					temp = _Expr.Evaluate(r);
+					temp = _Expr.Evaluate(rpt, r);
 					if (temp != null)
 					{
 						object o = ht[temp];	// search for it
@@ -85,37 +89,48 @@ namespace fyiReporting.RDL
 						}
 					}
 				}
+				v = ht.Count;
 				if (bSave)
-					_value = ht.Count;
-				else
-					return ht.Count;
+					SetValue(rpt, v);
 			}
-			return (double) _value;
+			return (double) v;
 		}
 		
-		public decimal EvaluateDecimal(Row row)
+		public decimal EvaluateDecimal(Report rpt, Row row)
 		{
-			double d = EvaluateDouble(row);
+			double d = EvaluateDouble(rpt, row);
 
 			return Convert.ToDecimal(d);
 		}
 
-		public string EvaluateString(Row row)
+		public string EvaluateString(Report rpt, Row row)
 		{
-			double result = EvaluateDouble(row);
+			double result = EvaluateDouble(rpt, row);
 			return Convert.ToString(result);
 		}
 
-		public DateTime EvaluateDateTime(Row row)
+		public DateTime EvaluateDateTime(Report rpt, Row row)
 		{
-			object result = Evaluate(row);
+			object result = Evaluate(rpt, row);
 			return Convert.ToDateTime(result);
 		}
+
+		private int GetValue(Report rpt)
+		{
+			OInt oi = rpt.Cache.Get(_key) as OInt;
+			return oi == null? -1: oi.i;
+		}
+
+		private void SetValue(Report rpt, int i)
+		{
+			rpt.Cache.AddReplace(_key, new OInt(i));
+		}
+
 		#region ICacheData Members
 
-		public void ClearCache()
+		public void ClearCache(Report rpt)
 		{
-			_value = -1;
+			rpt.Cache.Remove(_key);
 		}
 
 		#endregion

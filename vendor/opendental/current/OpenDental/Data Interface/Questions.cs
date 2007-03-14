@@ -21,6 +21,7 @@ namespace OpenDental {
 				List[i].ItemOrder  = PIn.PInt(table.Rows[i][2].ToString());
 				List[i].Description= PIn.PString(table.Rows[i][3].ToString());
 				List[i].Answer     = PIn.PString(table.Rows[i][4].ToString());
+				List[i].FormPatNum = PIn.PInt   (table.Rows[i][5].ToString());
 			}
 			return List;
 		}	
@@ -32,6 +33,7 @@ namespace OpenDental {
 				+",ItemOrder = '"  +POut.PInt   (quest.ItemOrder)+"'"
 				+",Description = '"+POut.PString(quest.Description)+"'"
 				+",Answer = '"     +POut.PString(quest.Answer)+"'"
+				+",FormPatNum = '" +POut.PInt   (quest.FormPatNum)+"'"
 				+" WHERE QuestionNum  ='"+POut.PInt   (quest.QuestionNum)+"'";
 			General.NonQ(command);
 		}
@@ -45,7 +47,7 @@ namespace OpenDental {
 			if(PrefB.RandomKeys) {
 				command+="QuestionNum,";
 			}
-			command+="PatNum,ItemOrder,Description,Answer) VALUES(";
+			command+="PatNum,ItemOrder,Description,Answer,FormPatNum) VALUES(";
 			if(PrefB.RandomKeys) {
 				command+="'"+POut.PInt(quest.QuestionNum)+"', ";
 			}
@@ -53,7 +55,8 @@ namespace OpenDental {
 				 "'"+POut.PInt   (quest.PatNum)+"', "
 				+"'"+POut.PInt   (quest.ItemOrder)+"', "
 				+"'"+POut.PString(quest.Description)+"', "
-				+"'"+POut.PString(quest.Answer)+"')";
+				+"'"+POut.PString(quest.Answer)+"', "
+				+"'"+POut.PInt   (quest.FormPatNum)+"')";
 			if(PrefB.RandomKeys) {
 				General.NonQ(command);
 			}
@@ -71,7 +74,7 @@ namespace OpenDental {
 
 	
 	
-
+		/*
 		///<summary>Checks the database to see if the specified patient has previously answered a questionnaire.</summary>
 		public static bool PatHasQuest(int patNum){
 			string command="SELECT COUNT(*) FROM question WHERE PatNum="+POut.PInt(patNum);
@@ -86,7 +89,7 @@ namespace OpenDental {
 			string command="DELETE FROM question WHERE PatNum ="+POut.PInt(patNum);
 			General.NonQ(command);
 		}
-	
+	*/
 		
 		
 	}

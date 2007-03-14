@@ -335,9 +335,9 @@ namespace OpenDental{
 		private void FormProcTPEdit_Load(object sender, System.EventArgs e){
 			comboPriority.Items.Add(Lan.g(this,"none"));
 			comboPriority.SelectedIndex=0;
-			for(int i=0;i<Defs.Short[(int)DefCat.TxPriorities].Length;i++){
-				comboPriority.Items.Add(Defs.Short[(int)DefCat.TxPriorities][i].ItemName);
-				if(ProcCur.Priority==Defs.Short[(int)DefCat.TxPriorities][i].DefNum){
+			for(int i=0;i<DefB.Short[(int)DefCat.TxPriorities].Length;i++){
+				comboPriority.Items.Add(DefB.Short[(int)DefCat.TxPriorities][i].ItemName);
+				if(ProcCur.Priority==DefB.Short[(int)DefCat.TxPriorities][i].DefNum){
 					comboPriority.SelectedIndex=i+1;
 				}
 			}
@@ -369,7 +369,7 @@ namespace OpenDental{
 				ProcCur.Priority=0;
 			}
 			else{
-				ProcCur.Priority=Defs.Short[(int)DefCat.TxPriorities][comboPriority.SelectedIndex-1].DefNum;
+				ProcCur.Priority=DefB.Short[(int)DefCat.TxPriorities][comboPriority.SelectedIndex-1].DefNum;
 			}
 			ProcCur.ToothNumTP=textToothNumTP.Text;
 			ProcCur.Surf=textSurf.Text;

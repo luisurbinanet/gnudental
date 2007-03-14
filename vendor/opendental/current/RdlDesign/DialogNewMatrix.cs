@@ -83,6 +83,12 @@ namespace fyiReporting.RdlDesign
 				matrix.AppendFormat("<DataSetName>{0}</DataSetName>", this.cbDataSets.Text);
 				matrix.Append("<NoRows>Query returned no rows!</NoRows><Style>"+
 					"<BorderStyle><Default>Solid</Default></BorderStyle></Style>");
+
+				matrix.Append("<Corner><ReportItems><Textbox Name=\"Corner\"><Value>Corner</Value>" +
+              "<Style><BorderStyle><Default>Solid</Default></BorderStyle><BorderWidth>"+
+                  "<Left>1pt</Left><Right>1pt</Right><Top>1pt</Top><Bottom>1pt</Bottom>"+
+                "</BorderWidth><FontWeight>bold</FontWeight></Style>"+
+				"</Textbox></ReportItems></Corner>");
 				// do the column groupings
 				matrix.Append("<ColumnGroupings>");
 				foreach (string cname in this.lbMatrixColumns.Items)
@@ -94,14 +100,14 @@ namespace fyiReporting.RdlDesign
 						"</GroupExpressions></Grouping>", cname);
 					matrix.AppendFormat("<ReportItems><Textbox>"+
 						"<Value>=Fields!{0}.Value</Value>"+
-						"<Style><BorderStyle><Default>Solid</Default></BorderStyle>></Style>"+
+						"<Style><BorderStyle><Default>Solid</Default></BorderStyle></Style>"+
 						"</Textbox></ReportItems>", cname);
 					int iChecked = this.lbMatrixColumns.CheckedItems.IndexOf(cname);
 					if (iChecked >= 0)
 					{
 						matrix.AppendFormat("<Subtotal><ReportItems><Textbox>"+
 							"<Value>{0} Subtotal</Value>"+
-							"<Style><BorderStyle><Default>Solid</Default></BorderStyle>></Style>"+
+							"<Style><BorderStyle><Default>Solid</Default></BorderStyle></Style>"+
 							"</Textbox></ReportItems></Subtotal>", cname);
 					}
 
@@ -120,14 +126,14 @@ namespace fyiReporting.RdlDesign
 						"</GroupExpressions></Grouping>", rname);
 					matrix.AppendFormat("<ReportItems><Textbox>"+
 						"<Value>=Fields!{0}.Value</Value>"+
-						"<Style><BorderStyle><Default>Solid</Default></BorderStyle>></Style>"+
+						"<Style><BorderStyle><Default>Solid</Default></BorderStyle></Style>"+
 						"</Textbox></ReportItems>", rname);
 					int iChecked = this.lbMatrixRows.CheckedItems.IndexOf(rname);
 					if (iChecked >= 0)
 					{
 						matrix.AppendFormat("<Subtotal><ReportItems><Textbox>"+
 							"<Value>{0} Subtotal</Value>"+
-							"<Style><BorderStyle><Default>Solid</Default></BorderStyle>></Style>"+
+							"<Style><BorderStyle><Default>Solid</Default></BorderStyle></Style>"+
 							"</Textbox></ReportItems></Subtotal>", rname);
 					}
 
@@ -141,7 +147,7 @@ namespace fyiReporting.RdlDesign
 				matrix.AppendFormat("<MatrixRows><MatrixRow><Height>12pt</Height>"+
 					"<MatrixCells><MatrixCell><ReportItems>"+
 					"<Textbox><Value>{0}</Value>"+
-					"<Style><BorderStyle><Default>Solid</Default></BorderStyle>></Style></Textbox>"+
+					"<Style><BorderStyle><Default>Solid</Default></BorderStyle></Style></Textbox>"+
 					"</ReportItems></MatrixCell></MatrixCells>"+
 					"</MatrixRow></MatrixRows>", this.cbMatrixCell.Text);
 				// end of matrix defintion

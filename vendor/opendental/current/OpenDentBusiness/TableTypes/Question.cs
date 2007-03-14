@@ -15,6 +15,8 @@ namespace OpenDentBusiness {
 		public string Description;
 		///<summary>The answer to the question in text form.</summary>
 		public string Answer;
+		///<summary>FK to formpat.FormPatNum</summary>
+		public int FormPatNum;
 
 		///<summary></summary>
 		public Question Copy() {
@@ -24,6 +26,7 @@ namespace OpenDentBusiness {
 			q.ItemOrder=ItemOrder;
 			q.Description=Description;
 			q.Answer=Answer;
+			q.FormPatNum=FormPatNum;
 			return q;
 		}
 

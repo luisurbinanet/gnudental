@@ -47,6 +47,7 @@ namespace OpenDental{
 				tempCode.PaintType     =(ToothPaintingType)PIn.PInt(tableStat.Rows[i][16].ToString());
 				tempCode.GraphicColor  =Color.FromArgb(PIn.PInt(tableStat.Rows[i][17].ToString()));
 				tempCode.LaymanTerm    =PIn.PString(tableStat.Rows[i][18].ToString());
+				tempCode.IsCanadianLab =PIn.PBool  (tableStat.Rows[i][19].ToString());
 				HList.Add(tempCode.ADACode,tempCode.Copy());
 				List[i]=tempCode.Copy();
 				if(tempCode.SetRecall) {
@@ -59,16 +60,17 @@ namespace OpenDental{
 		public static void Insert(ProcedureCode code){
 			//must have already checked ADACode for nonduplicate.
 			string command="INSERT INTO procedurecode (adacode,descript,abbrdesc,"
-				+"proctime,proccat,treatarea,setrecall,"
+				+"proctime,proccat,treatarea,RemoveTooth,setrecall,"
 				+"nobillins,isprosth,defaultnote,ishygiene,gtypenum,alternatecode1,MedicalCode,IsTaxed,"
-				+"PaintType,GraphicColor,LaymanTerm) VALUES("
+				+"PaintType,GraphicColor,LaymanTerm,IsCanadianLab) VALUES("
 				+"'"+POut.PString(code.ADACode)+"', "
 				+"'"+POut.PString(code.Descript)+"', "
 				+"'"+POut.PString(code.AbbrDesc)+"', "
 				+"'"+POut.PString(code.ProcTime)+"', "
 				+"'"+POut.PInt   (code.ProcCat)+"', "
 				+"'"+POut.PInt   ((int)code.TreatArea)+"', "
-				//+"'"+POut.PBool  (RemoveTooth)+"', "
+				+"'0', " //No longer used, but remains part of the table so that ordinal values are not upset.
+									//The value is set to 0 here, so that conversion to extraction paint type is not necessary.
 				+"'"+POut.PBool  (code.SetRecall)+"', "
 				+"'"+POut.PBool  (code.NoBillIns)+"', "
 				+"'"+POut.PBool  (code.IsProsth)+"', "
@@ -80,7 +82,8 @@ namespace OpenDental{
 				+"'"+POut.PBool  (code.IsTaxed)+"', "
 				+"'"+POut.PInt   ((int)code.PaintType)+"', "
 				+"'"+POut.PInt   (code.GraphicColor.ToArgb())+"', "
-				+"'"+POut.PString(code.LaymanTerm)+"')";
+				+"'"+POut.PString(code.LaymanTerm)+"', "
+				+"'"+POut.PBool  (code.IsCanadianLab)+"')";
 			General.NonQ(command);
 			ProcedureCodes.Refresh();
 			//Cur already set
@@ -109,6 +112,7 @@ namespace OpenDental{
 				+ ",PaintType = '"     +POut.PInt   ((int)code.PaintType)+"'"
 				+ ",GraphicColor = '"  +POut.PInt   (code.GraphicColor.ToArgb())+"'"
 				+ ",LaymanTerm = '"    +POut.PString(code.LaymanTerm)+"'"
+				+ ",IsCanadianLab = '" +POut.PBool  (code.IsCanadianLab)+"'"
 				+" WHERE adacode = '"+POut.PString(code.ADACode)+"'";
 			General.NonQ(command);
 		}
@@ -146,9 +150,9 @@ namespace OpenDental{
 			//int i=0;
 			ProcedureCode procCode;
 			ArrayList AL=new ArrayList();
-			for(int j=0;j<Defs.Short[(int)DefCat.ProcCodeCats].Length;j++){
+			for(int j=0;j<DefB.Short[(int)DefCat.ProcCodeCats].Length;j++){
 				for(int k=0;k<tableStat.Rows.Count;k++){
-					if(Defs.Short[(int)DefCat.ProcCodeCats][j].DefNum==PIn.PInt(tableStat.Rows[k][4].ToString())){
+					if(DefB.Short[(int)DefCat.ProcCodeCats][j].DefNum==PIn.PInt(tableStat.Rows[k][4].ToString())){
 						procCode=new ProcedureCode();
 						procCode.ADACode = PIn.PString(tableStat.Rows[k][0].ToString());
 						procCode.Descript= PIn.PString(tableStat.Rows[k][1].ToString());
@@ -176,7 +180,8 @@ namespace OpenDental{
 		}
 
 		///<summary>Gets a list of procedure codes directly fromt the database.  If categories.length==0, then we will get for all categories.  Categories are defnums.  FeeScheds are, for now, defnums.</summary>
-		public static DataTable GetProcTable(string abbr,string desc,string code,int[] categories,int feeSched){
+		public static DataTable GetProcTable(string abbr,string desc,string code,int[] categories,int feeSched,
+			int feeSchedComp1,int feeSchedComp2){
 			string whereCat;
 			if(categories.Length==0){
 				whereCat="1";
@@ -191,13 +196,35 @@ namespace OpenDental{
 				}
 				whereCat+=")";
 			}
-			string command="SELECT ProcCat,Descript,AbbrDesc,procedurecode.ADACode,"
-				+"IFNULL(fee.Amount,'-1') "
-				//+"IFNULL((SELECT fee.Amount FROM fee WHERE fee.ADACode=procedurecode.ADACode "
-				//+"AND fee.FeeSched="+POut.PInt(feeSched)+"),'-1') "
+/*			string command="SELECT ProcCat,Descript,AbbrDesc,procedurecode.ADACode,"
+				+"IFNULL(fee1.Amount,'-1') AS FeeAmt1, "
+				+"IFNULL(fee2.Amount,'-1') AS FeeAmt2, "
+				+"IFNULL(fee3.Amount,'-1') AS FeeAmt3 "
 				+"FROM procedurecode "
-				+"LEFT JOIN fee ON fee.ADACode=procedurecode.ADACode "
-				+"AND fee.FeeSched="+POut.PInt(feeSched)
+				+"LEFT JOIN fee AS fee1 ON fee1.ADACode=procedurecode.ADACode "
+				+"AND fee1.FeeSched="+POut.PInt(feeSched)
+				+" LEFT JOIN fee AS fee2 ON fee2.ADACode=procedurecode.ADACode "
+				+"AND fee2.FeeSched="+POut.PInt(feeSchedComp1)
+				+" LEFT JOIN fee AS fee3 ON fee3.ADACode=procedurecode.ADACode "
+				+"AND fee3.FeeSched="+POut.PInt(feeSchedComp2)
+				+" WHERE "+whereCat
+				+" AND Descript LIKE '%"+POut.PString(desc)+"%' "
+				+"AND AbbrDesc LIKE '%"+POut.PString(abbr)+"%' "
+				+"AND procedurecode.ADACode LIKE '%"+POut.PString(code)+"%' "
+				+"ORDER BY ProcCat,procedurecode.ADACode";*/
+
+			//Query changed to be compatible with both MySQL and Oracle.
+			string command="SELECT ProcCat,Descript,AbbrDesc,procedurecode.ADACode,"
+				+"CASE WHEN (fee1.Amount IS NULL) THEN -1 ELSE fee1.Amount END AS FeeAmt1,"
+				+"CASE WHEN (fee2.Amount IS NULL) THEN -1 ELSE fee2.Amount END AS FeeAmt2,"
+				+"CASE WHEN (fee3.Amount IS NULL) THEN -1 ELSE fee3.Amount END AS FeeAmt3 "
+				+"FROM procedurecode "
+				+"LEFT JOIN fee fee1 ON fee1.ADACode=procedurecode.ADACode "
+				+"AND fee1.FeeSched="+POut.PInt(feeSched)
+				+" LEFT JOIN fee fee2 ON fee2.ADACode=procedurecode.ADACode "
+				+"AND fee2.FeeSched="+POut.PInt(feeSchedComp1)
+				+" LEFT JOIN fee fee3 ON fee3.ADACode=procedurecode.ADACode "
+				+"AND fee3.FeeSched="+POut.PInt(feeSchedComp2)
 				+" WHERE "+whereCat
 				+" AND Descript LIKE '%"+POut.PString(desc)+"%' "
 				+"AND AbbrDesc LIKE '%"+POut.PString(abbr)+"%' "
@@ -224,6 +251,45 @@ namespace OpenDental{
 				return "";
 			}
 		}
+
+		///<summary>Used by FormUpdate to check whether codes starting with T exist and are in a visible category.  If so, it moves them to the Obsolete category.</summary>
+		public static void TcodesMove(){
+			string command=@"SELECT DISTINCT ProcCat FROM procedurecode,definition 
+				WHERE procedurecode.ADACode LIKE 'T%'
+				AND definition.IsHidden=0
+				AND procedurecode.ProcCat=definition.DefNum";
+			DataTable table=General.GetTable(command);
+			if(table.Rows.Count==0){
+				return;
+			}
+			int catNum=DefB.GetByExactName(DefCat.ProcCodeCats,"Obsolete");//check to make sure an Obsolete category exists.
+			if(catNum==0){
+				Def def=new Def();
+				def.Category=DefCat.ProcCodeCats;
+				def.ItemName="Obsolete";
+				def.ItemOrder=DefB.Long[(int)DefCat.ProcCodeCats].Length;
+				Defs.Insert(def);
+				catNum=def.DefNum;
+			}
+			for(int i=0;i<table.Rows.Count;i++){
+				command="UPDATE procedurecode SET ProcCat="+POut.PInt(catNum)
+					+" WHERE ProcCat="+table.Rows[i][0].ToString();
+				General.NonQ(command);
+			}			
+		}	
+
+		///<summary>Used by FormUpdate when converting from T codes to D codes.  It's not converting the actual codes.  It's converting the autocodes and procbuttons from T to D.</summary>
+		public static void TcodesAlter(){
+			string command="UPDATE autocodeitem SET ADACode = REPLACE(ADACode,'T','D') WHERE ADACode LIKE 'T%'";
+			General.NonQ(command);
+			command="UPDATE preference SET ValueString = REPLACE(ValueString,'T','D') "
+				+"WHERE PrefName ='RecallProcedures' OR PrefName='RecallBW'";
+			General.NonQ(command);
+			command="UPDATE procbuttonitem SET ADACode = REPLACE(ADACode,'T','D') WHERE ADACode LIKE 'T%'";
+			General.NonQ(command);
+		}
+
+		
 
 	}
 

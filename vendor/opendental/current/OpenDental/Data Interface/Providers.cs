@@ -19,7 +19,7 @@ namespace OpenDental{
 		///<summary>Refreshes List with all providers.</summary>
 		public static void Refresh(){
 			ArrayList AL=new ArrayList();
-			string command="SELECT * from provider ORDER BY itemorder";
+			string command="SELECT * FROM provider ORDER BY ItemOrder";
 			DataTable table=General.GetTable(command);
 			ListLong=new Provider[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
@@ -46,6 +46,7 @@ namespace OpenDental{
 				ListLong[i].OutlineColor  = Color.FromArgb(PIn.PInt(table.Rows[i][19].ToString()));
 				ListLong[i].SchoolClassNum= PIn.PInt   (table.Rows[i][20].ToString());
 				ListLong[i].NationalProvID= PIn.PString(table.Rows[i][21].ToString());
+				ListLong[i].CanadianOfficeNum= PIn.PString(table.Rows[i][22].ToString());
 				if(!ListLong[i].IsHidden) AL.Add(ListLong[i]);	
 			}
 			List=new Provider[AL.Count];
@@ -76,6 +77,7 @@ namespace OpenDental{
 				+",OutlineColor = '"  +POut.PInt   (prov.OutlineColor.ToArgb())+"'"
 				+",SchoolClassNum = '"+POut.PInt   (prov.SchoolClassNum)+"'"
 				+",NationalProvID = '"+POut.PString(prov.NationalProvID)+"'"
+				+",CanadianOfficeNum = '"+POut.PString(prov.CanadianOfficeNum)+"'"
 				+" WHERE provnum = '" +POut.PInt(prov.ProvNum)+"'";
  			General.NonQ(command);
 		}
@@ -83,9 +85,9 @@ namespace OpenDental{
 		///<summary></summary>
 		public static void Insert(Provider prov){
 			string command= "INSERT INTO provider (Abbr,ItemOrder,LName,FName,MI,Suffix,"
-				+"FeeSched,Specialty,SSN,StateLicense,DEANum,IsSecondary,"
-				+"ProvColor,IsHidden,UsingTIN,SigOnFile"
-				+",MedicaidID,OutlineColor,SchoolClassNum,NationalProvID) VALUES("
+				+"FeeSched,Specialty,SSN,StateLicense,DEANum,IsSecondary,ProvColor,IsHidden,"
+				+"UsingTIN,SigOnFile,MedicaidID,OutlineColor,SchoolClassNum,"
+				+"NationalProvID,CanadianOfficeNum) VALUES("
 				+"'"+POut.PString(prov.Abbr)+"', "
 				+"'"+POut.PInt   (prov.ItemOrder)+"', "
 				+"'"+POut.PString(prov.LName)+"', "
@@ -106,7 +108,8 @@ namespace OpenDental{
 				+"'"+POut.PString(prov.MedicaidID)+"', "
 				+"'"+POut.PInt   (prov.OutlineColor.ToArgb())+"', "
 				+"'"+POut.PInt   (prov.SchoolClassNum)+"', "
-				+"'"+POut.PString(prov.NationalProvID)+"')";
+				+"'"+POut.PString(prov.NationalProvID)+"', "
+				+"'"+POut.PString(prov.CanadianOfficeNum)+"')";
 			//MessageBox.Show(string command);
  			prov.ProvNum=General.NonQ(command,true);
 		}
@@ -195,7 +198,7 @@ namespace OpenDental{
 			return retVal;
 		}
 
-		///<summary></summary>
+		///<summary>If provnum is not valid, then it returns null.</summary>
 		public static Provider GetProv(int provNum) {
 			for(int i=0;i<ListLong.Length;i++) {
 				if(ListLong[i].ProvNum==provNum) {
@@ -226,41 +229,20 @@ namespace OpenDental{
 			return -1;
 		}
 
-		/*
-		///<summary></summary>
-		public static void MoveUp(){
-			if(Selected<0){
-				MessageBox.Show(Lan.g("Providers","Please select a provider first."));
-				return;
+		///<summary>There are three different choices for getting the billing provider.  One of the three is to use the treating provider, so supply that as an argument.  It will return a valid provNum unless the supplied treatProv was invalid.</summary>
+		public static int GetBillingProvNum(int treatProv){
+			if(PrefB.GetInt("InsBillingProv")==0) {//default=0
+				return PrefB.GetInt("PracticeDefaultProv");
 			}
-			if(Selected==0){
-				return;
+			else if(PrefB.GetInt("InsBillingProv")==-1) {//treat=-1
+				return treatProv;
 			}
-			SetOrder(Selected-1,ListLong[Selected].ItemOrder);
-			SetOrder(Selected,ListLong[Selected].ItemOrder-1);
-			Selected-=1;
+			else {
+				return PrefB.GetInt("InsBillingProv");
+			}
 		}
 
-		///<summary></summary>
-		public static void MoveDown(){
-			if(Selected<0){
-				MessageBox.Show(Lan.g("Providers","Please select a provider first."));
-				return;
-			}
-			if(Selected==ListLong.Length-1){
-				return;
-			}
-			SetOrder(Selected+1,ListLong[Selected].ItemOrder);
-			SetOrder(Selected,ListLong[Selected].ItemOrder+1);
-			Selected+=1;
-		}
 
-		///<summary>Used by MoveUp and MoveDown.</summary>
-		private static void SetOrder(int mySelNum, int myItemOrder){
-			Provider temp=ListLong[mySelNum];
-			temp.ItemOrder=myItemOrder;
-			InsertOrUpdate(temp,false);
-		}*/
 	}
 	
 	

@@ -1,5 +1,5 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
@@ -22,6 +22,7 @@
 */
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Data;
@@ -36,6 +37,7 @@ namespace fyiReporting.RdlDesign
 	/// </summary>
 	internal class DataSetsCtl : System.Windows.Forms.UserControl, IProperty
 	{
+		private bool _UseTypenameQualified=false;
 		private DesignXmlDraw _Draw;
 		private XmlNode _dsNode;
 		private DataSetValues _dsv;
@@ -80,11 +82,13 @@ namespace fyiReporting.RdlDesign
 			DataGridTextBoxColumn dgtbName = new DataGridTextBoxColumn();
 			DataGridTextBoxColumn dgtbQueryName = new DataGridTextBoxColumn();
 			DataGridTextBoxColumn dgtbValue = new DataGridTextBoxColumn();
+			DataGridTextBoxColumn dgtbTypeName = new DataGridTextBoxColumn();
 
 			this.dataGridTableStyle1.GridColumnStyles.AddRange(new DataGridColumnStyle[] {
 																					  dgtbName,
 																					  dgtbQueryName,
-																					  dgtbValue});
+																					  dgtbValue,
+																					  dgtbTypeName});
 			// dgtbName
 			dgtbName.Format = "";
 			dgtbName.FormatInfo = null;
@@ -106,6 +110,13 @@ namespace fyiReporting.RdlDesign
 			dgtbValue.HeaderText = "Value";
 			dgtbValue.MappingName = "Value";
 			dgtbValue.Width = 175;
+
+			// dgtbTypeName
+			dgtbTypeName.Format = "";
+			dgtbTypeName.FormatInfo = null;
+			dgtbTypeName.HeaderText = "TypeName";
+			dgtbTypeName.MappingName = "TypeName";
+			dgtbTypeName.Width = 150;
 
 			// cbDataSource
 			cbDataSource.Items.AddRange(_Draw.DataSourceNames);
@@ -161,11 +172,12 @@ namespace fyiReporting.RdlDesign
 			_dsv.Fields.Columns.Add(new DataColumn("Name", typeof(string)));
 			_dsv.Fields.Columns.Add(new DataColumn("QueryName", typeof(string)));
 			_dsv.Fields.Columns.Add(new DataColumn("Value", typeof(string)));
+			_dsv.Fields.Columns.Add(new DataColumn("TypeName", typeof(string)));
 
 			XmlNode fsNode = _Draw.GetNamedChildNode(dNode, "Fields");
 			if (fsNode != null)
 			{
-				string[] rowValues = new string[3];
+				string[] rowValues = new string[4];
 				foreach (XmlNode fNode in fsNode.ChildNodes)
 				{
 					if (fNode.Name != "Field")
@@ -176,6 +188,16 @@ namespace fyiReporting.RdlDesign
 					rowValues[0] = xAttr.Value;
 					rowValues[1] = _Draw.GetElementValue(fNode, "DataField", "");
 					rowValues[2] = _Draw.GetElementValue(fNode, "Value", "");
+					string typename=null;
+					typename = _Draw.GetElementValue(fNode, "TypeName", null);
+					if (typename == null)
+					{
+						typename = _Draw.GetElementValue(fNode, "rd:TypeName", null);
+						if (typename != null)
+							_UseTypenameQualified = true;	// we got it qualified so we'll generate qualified
+					}
+					rowValues[3] = typename==null?"":typename;
+
 					_dsv.Fields.Rows.Add(rowValues);
 				}
 			}
@@ -228,137 +250,128 @@ namespace fyiReporting.RdlDesign
 			// cbDataSource
 			// 
 			this.cbDataSource.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.cbDataSource.Location = new System.Drawing.Point(296,8);
+			this.cbDataSource.Location = new System.Drawing.Point(296, 8);
 			this.cbDataSource.Name = "cbDataSource";
-			this.cbDataSource.Size = new System.Drawing.Size(144,21);
+			this.cbDataSource.Size = new System.Drawing.Size(144, 21);
 			this.cbDataSource.TabIndex = 1;
 			this.cbDataSource.SelectedIndexChanged += new System.EventHandler(this.cbDataSource_SelectedIndexChanged);
 			// 
 			// lDataSource
 			// 
-			this.lDataSource.Location = new System.Drawing.Point(224,8);
+			this.lDataSource.Location = new System.Drawing.Point(224, 8);
 			this.lDataSource.Name = "lDataSource";
-			this.lDataSource.Size = new System.Drawing.Size(72,23);
+			this.lDataSource.Size = new System.Drawing.Size(72, 23);
 			this.lDataSource.TabIndex = 21;
 			this.lDataSource.Text = "Data Source";
 			this.lDataSource.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// tbDSName
 			// 
-			this.tbDSName.Location = new System.Drawing.Point(64,8);
+			this.tbDSName.Location = new System.Drawing.Point(64, 8);
 			this.tbDSName.Name = "tbDSName";
-			this.tbDSName.Size = new System.Drawing.Size(144,20);
+			this.tbDSName.Size = new System.Drawing.Size(144, 20);
 			this.tbDSName.TabIndex = 0;
+			this.tbDSName.Text = "";
 			this.tbDSName.TextChanged += new System.EventHandler(this.tbDSName_TextChanged);
 			// 
 			// lDataSetName
 			// 
-			this.lDataSetName.Location = new System.Drawing.Point(8,8);
+			this.lDataSetName.Location = new System.Drawing.Point(8, 8);
 			this.lDataSetName.Name = "lDataSetName";
-			this.lDataSetName.Size = new System.Drawing.Size(48,16);
+			this.lDataSetName.Size = new System.Drawing.Size(48, 16);
 			this.lDataSetName.TabIndex = 19;
 			this.lDataSetName.Text = "Name";
 			this.lDataSetName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(8,40);
+			this.label1.Location = new System.Drawing.Point(8, 40);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(100,16);
+			this.label1.Size = new System.Drawing.Size(100, 16);
 			this.label1.TabIndex = 23;
 			this.label1.Text = "SQL Select";
 			// 
 			// tbSQL
 			// 
-			this.tbSQL.AcceptsReturn = true;
-			this.tbSQL.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.tbSQL.Location = new System.Drawing.Point(8,56);
+			this.tbSQL.Location = new System.Drawing.Point(8, 56);
 			this.tbSQL.Multiline = true;
 			this.tbSQL.Name = "tbSQL";
-			this.tbSQL.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.tbSQL.Size = new System.Drawing.Size(376,110);
+			this.tbSQL.Size = new System.Drawing.Size(376, 80);
 			this.tbSQL.TabIndex = 5;
 			this.tbSQL.Text = "textBox1";
 			this.tbSQL.TextChanged += new System.EventHandler(this.tbSQL_TextChanged);
 			// 
 			// label2
 			// 
-			this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.label2.Location = new System.Drawing.Point(8,173);
+			this.label2.Location = new System.Drawing.Point(8, 136);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(100,16);
+			this.label2.Size = new System.Drawing.Size(100, 16);
 			this.label2.TabIndex = 25;
 			this.label2.Text = "Fields";
 			// 
 			// dgFields
 			// 
-			this.dgFields.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
 			this.dgFields.CaptionVisible = false;
 			this.dgFields.DataMember = "";
 			this.dgFields.HeaderForeColor = System.Drawing.SystemColors.ControlText;
-			this.dgFields.Location = new System.Drawing.Point(8,189);
+			this.dgFields.Location = new System.Drawing.Point(8, 152);
 			this.dgFields.Name = "dgFields";
-			this.dgFields.Size = new System.Drawing.Size(376,104);
+			this.dgFields.Size = new System.Drawing.Size(376, 104);
 			this.dgFields.TabIndex = 8;
 			this.dgFields.TableStyles.AddRange(new System.Windows.Forms.DataGridTableStyle[] {
-            this.dataGridTableStyle1});
+																								 this.dataGridTableStyle1});
 			// 
 			// dataGridTableStyle1
 			// 
 			this.dataGridTableStyle1.DataGrid = this.dgFields;
 			this.dataGridTableStyle1.HeaderForeColor = System.Drawing.SystemColors.ControlText;
+			this.dataGridTableStyle1.MappingName = "";
 			// 
 			// bDeleteField
 			// 
-			this.bDeleteField.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.bDeleteField.Location = new System.Drawing.Point(392,205);
+			this.bDeleteField.Location = new System.Drawing.Point(392, 168);
 			this.bDeleteField.Name = "bDeleteField";
-			this.bDeleteField.Size = new System.Drawing.Size(48,23);
+			this.bDeleteField.Size = new System.Drawing.Size(48, 23);
 			this.bDeleteField.TabIndex = 9;
 			this.bDeleteField.Text = "Delete";
 			this.bDeleteField.Click += new System.EventHandler(this.bDeleteField_Click);
 			// 
 			// bEditSQL
 			// 
-			this.bEditSQL.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.bEditSQL.Location = new System.Drawing.Point(392,64);
+			this.bEditSQL.Location = new System.Drawing.Point(392, 64);
 			this.bEditSQL.Name = "bEditSQL";
-			this.bEditSQL.Size = new System.Drawing.Size(48,23);
+			this.bEditSQL.Size = new System.Drawing.Size(48, 23);
 			this.bEditSQL.TabIndex = 6;
 			this.bEditSQL.Text = "SQL...";
 			this.bEditSQL.Click += new System.EventHandler(this.bEditSQL_Click);
 			// 
 			// bRefresh
 			// 
-			this.bRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.bRefresh.Location = new System.Drawing.Point(392,96);
+			this.bRefresh.Location = new System.Drawing.Point(392, 96);
 			this.bRefresh.Name = "bRefresh";
-			this.bRefresh.Size = new System.Drawing.Size(52,32);
+			this.bRefresh.Size = new System.Drawing.Size(52, 32);
 			this.bRefresh.TabIndex = 7;
 			this.bRefresh.Text = "Refresh Fields";
 			this.bRefresh.Click += new System.EventHandler(this.bRefresh_Click);
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(224,40);
+			this.label3.Location = new System.Drawing.Point(224, 40);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(56,16);
+			this.label3.Size = new System.Drawing.Size(56, 16);
 			this.label3.TabIndex = 27;
 			this.label3.Text = "Timeout";
 			// 
 			// tbTimeout
 			// 
-			this.tbTimeout.Location = new System.Drawing.Point(296,32);
-			this.tbTimeout.Maximum = new decimal(new int[] {
-            2147483647,
-            0,
-            0,
-            0});
+			this.tbTimeout.Location = new System.Drawing.Point(296, 32);
+			this.tbTimeout.Maximum = new System.Decimal(new int[] {
+																	  2147483647,
+																	  0,
+																	  0,
+																	  0});
 			this.tbTimeout.Name = "tbTimeout";
-			this.tbTimeout.Size = new System.Drawing.Size(104,20);
+			this.tbTimeout.Size = new System.Drawing.Size(104, 20);
 			this.tbTimeout.TabIndex = 2;
 			this.tbTimeout.ThousandsSeparator = true;
 			this.tbTimeout.ValueChanged += new System.EventHandler(this.tbTimeout_ValueChanged);
@@ -379,11 +392,10 @@ namespace fyiReporting.RdlDesign
 			this.Controls.Add(this.tbDSName);
 			this.Controls.Add(this.lDataSetName);
 			this.Name = "DataSetsCtl";
-			this.Size = new System.Drawing.Size(448,304);
+			this.Size = new System.Drawing.Size(448, 304);
 			((System.ComponentModel.ISupportInitialize)(this.dgFields)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.tbTimeout)).EndInit();
 			this.ResumeLayout(false);
-			this.PerformLayout();
 
 		}
 		#endregion
@@ -454,6 +466,14 @@ namespace fyiReporting.RdlDesign
 					_Draw.SetElement(fNode, "Value", (string) dr[2]);
 				else
 					_Draw.SetElement(fNode, "DataField", (string) dr[0]);	// make datafield same as name
+
+				// Handle typename if any
+				if (dr[3] != DBNull.Value && 
+					dr[3] is string &&
+					(string) dr[3] != string.Empty)
+				{
+					_Draw.SetElement(fNode, _UseTypenameQualified? "rd:TypeName":"TypeName", (string) dr[3]);
+				}
 			}
 		}
 
@@ -481,7 +501,7 @@ namespace fyiReporting.RdlDesign
 		{
 			// Need to clear all the fields and then replace with the columns 
 			//   of the SQL statement
-			ArrayList cols = DesignerUtility.GetSqlColumns(_Draw, cbDataSource.Text, tbSQL.Text);
+			List<SqlColumn> cols = DesignerUtility.GetSqlColumns(_Draw, cbDataSource.Text, tbSQL.Text);
 			if (cols == null || cols.Count <= 0)
 				return;				// something didn't work right
 			

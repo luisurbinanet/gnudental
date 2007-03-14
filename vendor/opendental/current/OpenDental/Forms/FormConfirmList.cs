@@ -34,18 +34,18 @@ namespace OpenDental{
 		private System.Windows.Forms.ComboBox comboStatus;
 		private OpenDental.UI.Button butLabels;
 		private OpenDental.UI.Button butPostcards;
-		private System.Windows.Forms.GroupBox groupBox4;
-		private System.Windows.Forms.TextBox textPostcardMessage;
-		private System.Windows.Forms.Label label4;
 		private OpenDental.ValidDate textDateFrom;
 		private OpenDental.ValidDate textDateTo;
 		private OpenDental.UI.ODGrid grid;
-		//<summary>When this form closes, this will be the patNum of the last patient viewed.  The calling form should then make use of this to refresh to that patient.  If 0, then calling form should not refresh.</summary>
-		//public int SelectedPatNum;
+		///<summary>When this form closes, this will be the patNum of the last patient viewed.  The calling form should then make use of this to refresh to that patient.  If 0, then calling form should not refresh.</summary>
+		public int SelectedPatNum;
 		///<summary>This list of appointments displayed</summary>
 		private DataTable table;
 		private PrintDocument pd;
+		private OpenDental.UI.Button butPrint;
 		private OpenDental.UI.PrintPreview printPreview;
+		private bool headingPrinted;
+		private int headingPrintH;
 
 		///<summary></summary>
 		public FormConfirmList(){
@@ -81,13 +81,10 @@ namespace OpenDental{
 			this.groupBox3 = new System.Windows.Forms.GroupBox();
 			this.comboStatus = new System.Windows.Forms.ComboBox();
 			this.butPostcards = new OpenDental.UI.Button();
-			this.groupBox4 = new System.Windows.Forms.GroupBox();
-			this.label4 = new System.Windows.Forms.Label();
-			this.textPostcardMessage = new System.Windows.Forms.TextBox();
 			this.grid = new OpenDental.UI.ODGrid();
+			this.butPrint = new OpenDental.UI.Button();
 			this.groupBox1.SuspendLayout();
 			this.groupBox3.SuspendLayout();
-			this.groupBox4.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// butClose
@@ -170,10 +167,11 @@ namespace OpenDental{
 			// butReport
 			// 
 			this.butReport.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butReport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.butReport.Autosize = true;
 			this.butReport.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butReport.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butReport.Location = new System.Drawing.Point(860,53);
+			this.butReport.Location = new System.Drawing.Point(876,40);
 			this.butReport.Name = "butReport";
 			this.butReport.Size = new System.Drawing.Size(87,26);
 			this.butReport.TabIndex = 13;
@@ -183,16 +181,17 @@ namespace OpenDental{
 			// butLabels
 			// 
 			this.butLabels.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butLabels.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.butLabels.Autosize = true;
 			this.butLabels.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butLabels.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butLabels.Image = ((System.Drawing.Image)(resources.GetObject("butLabels.Image")));
 			this.butLabels.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butLabels.Location = new System.Drawing.Point(860,17);
+			this.butLabels.Location = new System.Drawing.Point(756,40);
 			this.butLabels.Name = "butLabels";
-			this.butLabels.Size = new System.Drawing.Size(87,26);
+			this.butLabels.Size = new System.Drawing.Size(102,26);
 			this.butLabels.TabIndex = 14;
-			this.butLabels.Text = "Labels";
+			this.butLabels.Text = "Label Preview";
 			this.butLabels.Click += new System.EventHandler(this.butLabels_Click);
 			// 
 			// printDialog2
@@ -224,49 +223,18 @@ namespace OpenDental{
 			// butPostcards
 			// 
 			this.butPostcards.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butPostcards.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.butPostcards.Autosize = true;
 			this.butPostcards.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butPostcards.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butPostcards.Image = ((System.Drawing.Image)(resources.GetObject("butPostcards.Image")));
 			this.butPostcards.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butPostcards.Location = new System.Drawing.Point(184,62);
+			this.butPostcards.Location = new System.Drawing.Point(739,8);
 			this.butPostcards.Name = "butPostcards";
-			this.butPostcards.Size = new System.Drawing.Size(87,26);
+			this.butPostcards.Size = new System.Drawing.Size(119,26);
 			this.butPostcards.TabIndex = 16;
-			this.butPostcards.Text = "Preview";
+			this.butPostcards.Text = "Postcard Preview";
 			this.butPostcards.Click += new System.EventHandler(this.butPostcards_Click);
-			// 
-			// groupBox4
-			// 
-			this.groupBox4.Controls.Add(this.label4);
-			this.groupBox4.Controls.Add(this.textPostcardMessage);
-			this.groupBox4.Controls.Add(this.butPostcards);
-			this.groupBox4.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox4.Location = new System.Drawing.Point(356,4);
-			this.groupBox4.Name = "groupBox4";
-			this.groupBox4.Size = new System.Drawing.Size(279,93);
-			this.groupBox4.TabIndex = 17;
-			this.groupBox4.TabStop = false;
-			this.groupBox4.Text = "Postcards";
-			// 
-			// label4
-			// 
-			this.label4.Location = new System.Drawing.Point(7,12);
-			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(158,17);
-			this.label4.TabIndex = 18;
-			this.label4.Text = "Message";
-			this.label4.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
-			// 
-			// textPostcardMessage
-			// 
-			this.textPostcardMessage.AcceptsReturn = true;
-			this.textPostcardMessage.Location = new System.Drawing.Point(10,30);
-			this.textPostcardMessage.Multiline = true;
-			this.textPostcardMessage.Name = "textPostcardMessage";
-			this.textPostcardMessage.Size = new System.Drawing.Size(168,58);
-			this.textPostcardMessage.TabIndex = 17;
-			this.textPostcardMessage.Text = "We would like to confirm your appointment on ?date at ?time";
 			// 
 			// grid
 			// 
@@ -280,15 +248,33 @@ namespace OpenDental{
 			this.grid.Title = "Confirmation List";
 			this.grid.TranslationName = "TableConfirmList";
 			this.grid.CellClick += new OpenDental.UI.ODGridClickEventHandler(this.grid_CellClick);
+			this.grid.Click += new System.EventHandler(this.grid_Click);
 			this.grid.CellDoubleClick += new OpenDental.UI.ODGridClickEventHandler(this.grid_CellDoubleClick);
+			// 
+			// butPrint
+			// 
+			this.butPrint.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butPrint.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butPrint.Autosize = true;
+			this.butPrint.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butPrint.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butPrint.Image = ((System.Drawing.Image)(resources.GetObject("butPrint.Image")));
+			this.butPrint.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butPrint.Location = new System.Drawing.Point(876,8);
+			this.butPrint.Name = "butPrint";
+			this.butPrint.Size = new System.Drawing.Size(87,26);
+			this.butPrint.TabIndex = 20;
+			this.butPrint.Text = "Print List";
+			this.butPrint.Click += new System.EventHandler(this.butPrint_Click);
 			// 
 			// FormConfirmList
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
 			this.CancelButton = this.butClose;
 			this.ClientSize = new System.Drawing.Size(975,688);
+			this.Controls.Add(this.butPrint);
+			this.Controls.Add(this.butPostcards);
 			this.Controls.Add(this.grid);
-			this.Controls.Add(this.groupBox4);
 			this.Controls.Add(this.groupBox3);
 			this.Controls.Add(this.butLabels);
 			this.Controls.Add(this.butReport);
@@ -304,8 +290,6 @@ namespace OpenDental{
 			this.groupBox1.ResumeLayout(false);
 			this.groupBox1.PerformLayout();
 			this.groupBox3.ResumeLayout(false);
-			this.groupBox4.ResumeLayout(false);
-			this.groupBox4.PerformLayout();
 			this.ResumeLayout(false);
 
 		}
@@ -314,10 +298,10 @@ namespace OpenDental{
 		private void FormConfirmList_Load(object sender, System.EventArgs e) {
 			textDateFrom.Text=AddWorkDays(1,DateTime.Today).ToShortDateString();
 			textDateTo.Text=AddWorkDays(2,DateTime.Today).ToShortDateString();
-			textPostcardMessage.Text=PrefB.GetString("ConfirmPostcardMessage");
+			//textPostcardMessage.Text=PrefB.GetString("ConfirmPostcardMessage");
 			comboStatus.Items.Clear();
-			for(int i=0;i<Defs.Short[(int)DefCat.ApptConfirmed].Length;i++){
-				comboStatus.Items.Add(Defs.Short[(int)DefCat.ApptConfirmed][i].ItemName);
+			for(int i=0;i<DefB.Short[(int)DefCat.ApptConfirmed].Length;i++){
+				comboStatus.Items.Add(DefB.Short[(int)DefCat.ApptConfirmed][i].ItemName);
 			}
 			FillMain();
 		}
@@ -342,48 +326,42 @@ namespace OpenDental{
 			int scrollVal=grid.ScrollValue;
 			grid.BeginUpdate();
 			grid.Columns.Clear();
-			ODGridColumn col=new ODGridColumn("Date Time",70);
+			ODGridColumn col=new ODGridColumn(Lan.g("TableConfirmList","Date Time"),70);
 			grid.Columns.Add(col);
-			col=new ODGridColumn("Patient",80);
+			col=new ODGridColumn(Lan.g("TableConfirmList","Patient"),80);
 			grid.Columns.Add(col);
-			col=new ODGridColumn("Age",30);
+			col=new ODGridColumn(Lan.g("TableConfirmList","Age"),30);
 			grid.Columns.Add(col);
-			col=new ODGridColumn("Hm Phone",85);
+			col=new ODGridColumn(Lan.g("TableConfirmList","Contact"),150);
 			grid.Columns.Add(col);
-			col=new ODGridColumn("Wk Phone",85);
+			col=new ODGridColumn(Lan.g("TableConfirmList","Addr/Ph Note"),100);
 			grid.Columns.Add(col);
-			col=new ODGridColumn("Wireless",85);
+			col=new ODGridColumn(Lan.g("TableConfirmList","Status"),80);//confirmed
 			grid.Columns.Add(col);
-			col=new ODGridColumn("Addr/Ph Note",100);
+			col=new ODGridColumn(Lan.g("TableConfirmList","Procs"),110);
 			grid.Columns.Add(col);
-			col=new ODGridColumn("Status",80);
+			col=new ODGridColumn(Lan.g("TableConfirmList","Medical"),80);
 			grid.Columns.Add(col);
-			col=new ODGridColumn("Procs",110);
-			grid.Columns.Add(col);
-			col=new ODGridColumn("Medical",80);
-			grid.Columns.Add(col);
-			col=new ODGridColumn("Appt Note",204);
+			col=new ODGridColumn(Lan.g("TableConfirmList","Appt Note"),204);
 			grid.Columns.Add(col);
 			grid.Rows.Clear();
 			ODGridRow row;
-			DateTime aptDateTime;
 			ODGridCell cell;
 			for(int i=0;i<table.Rows.Count;i++){
 				row=new ODGridRow();
-				aptDateTime=PIn.PDateT(table.Rows[i][4].ToString());
-				row.Cells.Add(aptDateTime.ToShortDateString()+"\r\n"+aptDateTime.ToShortTimeString());
-				row.Cells.Add(PIn.PString(table.Rows[i][1].ToString())+",\r\n"+PIn.PString(table.Rows[i][2].ToString()));//patient
-				row.Cells.Add(Shared.DateToAgeString(PIn.PDate(table.Rows[i][5].ToString())));//age
-				row.Cells.Add(PIn.PString(table.Rows[i][6].ToString()));//Hm
-				row.Cells.Add(PIn.PString(table.Rows[i][7].ToString()));//Wk
-				row.Cells.Add(PIn.PString(table.Rows[i][8].ToString()));//Wireless
-				row.Cells.Add(PIn.PString(table.Rows[i][12].ToString()));//AddrNote
-				row.Cells.Add(Defs.GetName(DefCat.ApptConfirmed,PIn.PInt(table.Rows[i][10].ToString())));//status	
-				row.Cells.Add(PIn.PString(table.Rows[i][9].ToString()));//procs
-				cell=new ODGridCell(PIn.PString(table.Rows[i][14].ToString()));
+				//aptDateTime=PIn.PDateT(table.Rows[i][4].ToString());
+				row.Cells.Add(table.Rows[i]["aptDateTime"].ToString());
+				//aptDateTime.ToShortDateString()+"\r\n"+aptDateTime.ToShortTimeString());
+				row.Cells.Add(table.Rows[i]["patientName"].ToString());
+				row.Cells.Add(table.Rows[i]["age"].ToString());
+				row.Cells.Add(table.Rows[i]["contactMethod"].ToString());
+				row.Cells.Add(table.Rows[i]["AddrNote"].ToString());
+				row.Cells.Add(table.Rows[i]["confirmed"].ToString());
+				row.Cells.Add(table.Rows[i]["ProcDescript"].ToString());
+				cell=new ODGridCell(table.Rows[i]["medNotes"].ToString());
 				cell.ColorText=Color.Red;
-				row.Cells.Add(cell);//med note
-				row.Cells.Add(PIn.PString(table.Rows[i][11].ToString()));//note
+				row.Cells.Add(cell);
+				row.Cells.Add(table.Rows[i]["Note"].ToString());
 				grid.Rows.Add(row);
 			}
 			grid.EndUpdate();
@@ -392,6 +370,7 @@ namespace OpenDental{
 
 		private void grid_CellClick(object sender, OpenDental.UI.ODGridClickEventArgs e) {
 			//row selected before this event triggered
+			SelectedPatNum=PIn.PInt(table.Rows[e.Row]["PatNum"].ToString());
 			SetFamilyColors();
 			comboStatus.SelectedIndex=-1;
 		}
@@ -404,10 +383,10 @@ namespace OpenDental{
 				grid.Invalidate();
 				return;
 			}
-			int guar=PIn.PInt(table.Rows[grid.SelectedIndices[0]][3].ToString());
+			int guar=PIn.PInt(table.Rows[grid.SelectedIndices[0]]["Guarantor"].ToString());
 			int famCount=0;
 			for(int i=0;i<grid.Rows.Count;i++){
-				if(PIn.PInt(table.Rows[i][3].ToString())==guar){
+				if(PIn.PInt(table.Rows[i]["Guarantor"].ToString())==guar){
 					famCount++;
 					grid.Rows[i].ColorText=Color.Red;
 				}
@@ -421,9 +400,13 @@ namespace OpenDental{
 			grid.Invalidate();
 		}
 
+		private void grid_Click(object sender,EventArgs e) {
+			
+		}
+
 		private void grid_CellDoubleClick(object sender, OpenDental.UI.ODGridClickEventArgs e) {
 			Cursor=Cursors.WaitCursor;
-			int selectedApt=PIn.PInt(table.Rows[e.Row][13].ToString());
+			int selectedApt=PIn.PInt(table.Rows[e.Row]["AptNum"].ToString());
 			Appointment apt=Appointments.GetOneApt(selectedApt);
 			FormApptEdit FormA=new FormApptEdit(apt);
 			FormA.ShowDialog();
@@ -431,7 +414,7 @@ namespace OpenDental{
 			//	Cursor=Cursors.Default;
 			FillMain();
 			for(int i=0;i<table.Rows.Count;i++){
-				if(PIn.PInt(table.Rows[i][13].ToString())==selectedApt){
+				if(PIn.PInt(table.Rows[i]["AptNum"].ToString())==selectedApt){
 					grid.SetSelected(i,true);
 				}
 			}
@@ -447,13 +430,13 @@ namespace OpenDental{
 			Cursor=Cursors.WaitCursor;
 			int[] selectedApts=new int[grid.SelectedIndices.Length];
 			for(int i=0;i<grid.SelectedIndices.Length;i++){
-				selectedApts[i]=PIn.PInt(table.Rows[grid.SelectedIndices[i]][13].ToString());//aptNum
+				selectedApts[i]=PIn.PInt(table.Rows[grid.SelectedIndices[i]]["AptNum"].ToString());
 			}
 			for(int i=0;i<grid.SelectedIndices.Length;i++){
-				apt=Appointments.GetOneApt(PIn.PInt(table.Rows[grid.SelectedIndices[i]][13].ToString()));
+				apt=Appointments.GetOneApt(PIn.PInt(table.Rows[grid.SelectedIndices[i]]["AptNum"].ToString()));
 				Appointment aptOld=apt.Copy();
 				int selectedI=comboStatus.SelectedIndex;
-				apt.Confirmed=Defs.Short[(int)DefCat.ApptConfirmed][selectedI].DefNum;
+				apt.Confirmed=DefB.Short[(int)DefCat.ApptConfirmed][selectedI].DefNum;
 				try{
 					Appointments.InsertOrUpdate(apt,aptOld,false);
 				}
@@ -467,7 +450,7 @@ namespace OpenDental{
 			//reselect all the apts
 			for(int i=0;i<table.Rows.Count;i++){
 				for(int j=0;j<selectedApts.Length;j++){
-					if(PIn.PInt(table.Rows[i][13].ToString())==selectedApts[j]){
+					if(PIn.PInt(table.Rows[i]["AptNum"].ToString())==selectedApts[j]){
 						grid.SetSelected(i,true);
 					}
 				}
@@ -490,13 +473,13 @@ namespace OpenDental{
       if(grid.SelectedIndices.Length==0){
         aptNums=new int[table.Rows.Count];
         for(int i=0;i<aptNums.Length;i++){
-          aptNums[i]=PIn.PInt(table.Rows[i][13].ToString());
+          aptNums[i]=PIn.PInt(table.Rows[i]["AptNum"].ToString());
         }
       }
       else{
         aptNums=new int[grid.SelectedIndices.Length];
         for(int i=0;i<aptNums.Length;i++){
-          aptNums[i]=PIn.PInt(table.Rows[grid.SelectedIndices[i]][13].ToString());
+          aptNums[i]=PIn.PInt(table.Rows[grid.SelectedIndices[i]]["AptNum"].ToString());
         }
       }
       FormRpConfirm FormC=new FormRpConfirm(aptNums);
@@ -515,7 +498,7 @@ namespace OpenDental{
 			}
       int[] aptNums=new int[grid.SelectedIndices.Length];
       for(int i=0;i<aptNums.Length;i++){
-        aptNums[i]=PIn.PInt(table.Rows[grid.SelectedIndices[i]][13].ToString());
+        aptNums[i]=PIn.PInt(table.Rows[grid.SelectedIndices[i]]["AptNum"].ToString());
       }
 			AddrTable=Appointments.GetAddrTable(aptNums);
 			pagesPrinted=0;
@@ -541,7 +524,7 @@ namespace OpenDental{
 			}
       int[] aptNums=new int[grid.SelectedIndices.Length];
       for(int i=0;i<aptNums.Length;i++){
-        aptNums[i]=PIn.PInt(table.Rows[grid.SelectedIndices[i]][13].ToString());
+        aptNums[i]=PIn.PInt(table.Rows[grid.SelectedIndices[i]]["AptNum"].ToString());
       }
 			AddrTable=Appointments.GetAddrTable(aptNums);
 			pagesPrinted=0;
@@ -631,7 +614,8 @@ namespace OpenDental{
 					g.DrawString(str,new Font(FontFamily.GenericSansSerif,8),Brushes.Black,xPos+45,yPos+75);
 				}
 				//Body text-------------------------------------------------------------------------------
-				str=textPostcardMessage.Text;
+				str=PrefB.GetString("ConfirmPostcardMessage");
+					//textPostcardMessage.Text;
 				str=str.Replace("?date",PIn.PDate(AddrTable.Rows[patientsPrinted]["AptDateTime"].ToString()).ToShortDateString());
 				str=str.Replace("?time",PIn.PDate(AddrTable.Rows[patientsPrinted]["AptDateTime"].ToString()).ToShortTimeString());
 				g.DrawString(str,new Font(FontFamily.GenericSansSerif,10),Brushes.Black,new RectangleF(xPos+45,yPos+180,250,190));
@@ -686,7 +670,7 @@ namespace OpenDental{
 				originalRecalls[i]=((RecallItem)MainAL[tbMain.SelectedIndices[i]]).RecallNum;
 				Recalls.UpdateStatus(
 					((RecallItem)MainAL[tbMain.SelectedIndices[i]]).RecallNum,
-					Defs.Short[(int)DefCat.RecallUnschedStatus][comboStatus.SelectedIndex].DefNum);
+					DefB.Short[(int)DefCat.RecallUnschedStatus][comboStatus.SelectedIndex].DefNum);
 				//((RecallItem)MainAL[tbMain.SelectedIndices[i]]).up
 			}
 			FillMain();
@@ -715,9 +699,72 @@ namespace OpenDental{
 			DataValid.SetInvalid(InvalidTypes.Prefs);*/
 		}
 
+		private void butPrint_Click(object sender,EventArgs e) {
+			pagesPrinted=0;
+			pd=new PrintDocument();
+			pd.PrintPage += new PrintPageEventHandler(this.pd_PrintPage);
+			pd.DefaultPageSettings.Margins=new Margins(25,25,40,40);
+			pd.DefaultPageSettings.Landscape=true;
+			//pd.OriginAtMargins=true;
+			if(pd.DefaultPageSettings.PaperSize.Height==0) {
+				pd.DefaultPageSettings.PaperSize=new PaperSize("default",850,1100);
+			}
+			headingPrinted=false;
+			try {
+				#if DEBUG
+				FormRpPrintPreview pView = new FormRpPrintPreview();
+				pView.printPreviewControl2.Document=pd;
+				pView.ShowDialog();
+				#else
+					if(Printers.SetPrinter(pd,PrintSituation.Default)) {
+						pd.Print();
+					}
+				#endif
+			}
+			catch {
+				MessageBox.Show(Lan.g(this,"Printer not available"));
+			}
+		}
+
+		private void pd_PrintPage(object sender,System.Drawing.Printing.PrintPageEventArgs e) {
+			Rectangle bounds=e.MarginBounds;
+			//new Rectangle(50,40,800,1035);//Some printers can handle up to 1042
+			Graphics g=e.Graphics;
+			string text;
+			Font headingFont=new Font("Arial",13,FontStyle.Bold);
+			Font subHeadingFont=new Font("Arial",10,FontStyle.Bold);
+			int yPos=bounds.Top;
+			int center=bounds.X+bounds.Width/2;
+			#region printHeading
+			if(!headingPrinted) {
+				text=Lan.g(this,"Confirmation List");
+				g.DrawString(text,headingFont,Brushes.Black,center-g.MeasureString(text,headingFont).Width/2,yPos);
+				yPos+=(int)g.MeasureString(text,headingFont).Height;
+				text=textDateFrom.Text+" "+Lan.g(this,"to")+" "+textDateTo.Text;
+				g.DrawString(text,subHeadingFont,Brushes.Black,center-g.MeasureString(text,subHeadingFont).Width/2,yPos);
+				yPos+=20;
+				headingPrinted=true;
+				headingPrintH=yPos;
+			}
+			#endregion
+			int totalPages=grid.GetNumberOfPages(bounds,headingPrintH);
+			yPos=grid.PrintPage(g,pagesPrinted,bounds,headingPrintH);
+			pagesPrinted++;
+			if(pagesPrinted < totalPages) {
+				e.HasMorePages=true;
+			}
+			else {
+				e.HasMorePages=false;
+			}
+		}
+
 		private void butClose_Click(object sender, System.EventArgs e) {
 			Close();
 		}
+
+	
+
+		
 
 	
 

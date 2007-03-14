@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Runtime.Serialization;
@@ -135,22 +136,16 @@ namespace OpenDental{
 			}
 		}
 
-		///<summary>Gets all procedures for a single patient, including the most recent note for each procedure.  Does not include deleted procedures.</summary>
+		///<summary>Gets all procedures for a single patient, without notes.  Does not include deleted procedures.</summary>
 		public static Procedure[] Refresh(int patNum){
-			return Refresh(patNum,false);
-		}
-		
-		///<summary>Gets all procedures for a single patient, including the most recent note.  If "includeDeletedAndNotes", then the note contains a readable concat of all note history.  Also, deleted procs will be included.</summary>
-		public static Procedure[] Refresh(int patNum,bool includeDeletedAndNotes){
 			DataSet ds=null;
 			try {
 				if(RemotingClient.OpenDentBusinessIsLocal) {
-					ds=ProcedureB.Refresh(patNum,includeDeletedAndNotes);
+					ds=ProcedureB.Refresh(patNum);
 				}
 				else {
 					DtoProcedureRefresh dto=new DtoProcedureRefresh();
 					dto.PatNum=patNum;
-					dto.IncludeDeletedAndNotes=includeDeletedAndNotes;
 					ds=RemotingClient.ProcessQuery(dto);
 				}
 			}
@@ -162,8 +157,8 @@ namespace OpenDental{
 			return procList;
 		}
 
-		///<summary>Gets one procedure directly from the db.  Does not currently include the note.</summary>
-		public static Procedure GetOneProc(int procNum){
+		///<summary>Gets one procedure directly from the db.  Option to include the note.</summary>
+		public static Procedure GetOneProc(int procNum,bool includeNote){
 			string command=
 				"SELECT * FROM procedurelog "
 				+"WHERE ProcNum="+procNum.ToString();
@@ -172,7 +167,25 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g("Procedures","Error. Procedure not found")+": "+procNum.ToString());
 				return new Procedure();
 			}
-			return List[0];
+			Procedure proc=List[0];
+			if(!includeNote){
+				return proc;
+			}
+			command="SELECT * FROM procnote WHERE ProcNum="+POut.PInt(procNum)+" ORDER BY EntryDateTime DESC ";
+			if(FormChooseDatabase.DBtype==DatabaseType.Oracle){
+				command="SELECT * FROM ("+command+") WHERE ROWNUM<=1";
+			}else{//Assume MySQL
+				command+="LIMIT 1";
+			}
+			DataTable table=General.GetTable(command);
+			if(table.Rows.Count==0){
+				return proc;
+			}
+			proc.UserNum   =PIn.PInt   (table.Rows[0]["UserNum"].ToString());
+			proc.Note      =PIn.PString(table.Rows[0]["Note"].ToString());
+			proc.SigIsTopaz=PIn.PBool  (table.Rows[0]["SigIsTopaz"].ToString());
+			proc.Signature =PIn.PString(table.Rows[0]["Signature"].ToString());
+			return proc;
 		}
 
 		private static Procedure[] RefreshAndFill(string command){
@@ -222,15 +235,14 @@ namespace OpenDental{
 				List[i].MedicalCode     = PIn.PString(table.Rows[i][20].ToString());
 				List[i].DiagnosticCode  = PIn.PString(table.Rows[i][21].ToString());
 				List[i].IsPrincDiag     = PIn.PBool  (table.Rows[i][22].ToString());
-				List[i].LabFee          = PIn.PDouble(table.Rows[i][23].ToString());
-				//List[i].NoteList=new List<string>();
+				List[i].ProcNumLab      = PIn.PInt   (table.Rows[i][23].ToString());
 				//only used sometimes:
-				if(table.Columns.Count>24){
+				/*if(table.Columns.Count>24){
 					List[i].UserNum       = PIn.PInt   (table.Rows[i][24].ToString());
 					List[i].Note          = PIn.PString(table.Rows[i][25].ToString());
 					List[i].SigIsTopaz    = PIn.PBool  (table.Rows[i][26].ToString());
 					List[i].Signature     = PIn.PString(table.Rows[i][27].ToString());
-				}
+				}*/
 			}
 			return List;
 		}
@@ -487,7 +499,7 @@ namespace OpenDental{
 			}
 			string command="SELECT Count(*) from procedurelog WHERE "
 				+"PatNum = '"+POut.PInt(pat.PatNum)+"' "
-				+"&& ProcStatus = '2'";
+				+"AND ProcStatus = '2'";
  			DataTable table=General.GetTable(command);
 			if(PIn.PInt(table.Rows[0][0].ToString())>0){
 				return;//there are already completed procs (for all situations)
@@ -501,8 +513,8 @@ namespace OpenDental{
 					+POut.PInt(pat.PatNum)+"'";
 			}
 			else{
-				command="UPDATE patient SET DateFirstVisit ='"
-					+POut.PDate(visitDate)+"' WHERE PatNum ='"
+				command="UPDATE patient SET DateFirstVisit ="
+					+POut.PDate(visitDate)+" WHERE PatNum ='"
 					+POut.PInt(pat.PatNum)+"'";
 			}
 			//MessageBox.Show(cmd.CommandText);
@@ -668,6 +680,38 @@ namespace OpenDental{
 			Procedure[] retVal=new Procedure[AL.Count];
 			AL.CopyTo(retVal);
 			return retVal;
+		}
+
+		///<summary>Gets a list of procedures representing extracted teeth.  Status of C,EC,orEO. Includes procs with toothNum "1"-"32".  Will not include procs with unreasonable dates.  Used for Canadian e-claims instead of the usual ToothInitials.GetMissingOrHiddenTeeth, because Canada requires dates on the extracted teeth.  Supply all procedures for the patient.</summary>
+		public static List<Procedure> GetExtractedTeeth(Procedure[] procList) {
+			List<Procedure> extracted=new List<Procedure>();
+			ProcedureCode procCode;
+			for(int i=0;i<procList.Length;i++) {
+				if(procList[i].ProcStatus!=ProcStat.C && procList[i].ProcStatus!=ProcStat.EC && procList[i].ProcStatus!=ProcStat.EO){
+					continue;
+				}
+				if(!Tooth.IsValidDB(procList[i].ToothNum)){
+					continue;
+				}
+				if(Tooth.IsSuperNum(procList[i].ToothNum)){
+					continue;
+				}
+				if(Tooth.IsPrimary(procList[i].ToothNum)){
+					continue;
+				}
+				if(procList[i].ProcDate.Year<1880 || procList[i].ProcDate>DateTime.Today){
+					continue;
+				}
+				procCode=ProcedureCodes.GetProcCode(procList[i].ADACode);
+				if(procCode.TreatArea!=TreatmentArea.Tooth){
+					continue;
+				}
+				if(procCode.PaintType!=ToothPaintingType.Extraction){
+					continue;
+				}
+				extracted.Add(procList[i].Copy());
+			}
+			return extracted;
 		}
 
 
@@ -1031,8 +1075,50 @@ namespace OpenDental{
 			return null;
 		}
 
-		
-
+		///<summary>Only fees, not estimates.  Returns number of fees changed.</summary>
+		public static int GlobalUpdateFees(){
+			string command=@"SELECT procedurelog.ADACode,ProcNum,patient.PatNum,procedurelog.PatNum,
+				insplan.FeeSched AS PlanFeeSched,patient.FeeSched AS PatFeeSched,patient.PriProv,
+				procedurelog.ProcFee
+				FROM procedurelog
+				LEFT JOIN patient ON patient.PatNum=procedurelog.PatNum
+				LEFT JOIN patplan ON patplan.PatNum=procedurelog.PatNum
+				AND patplan.Ordinal=1
+				LEFT JOIN insplan ON insplan.PlanNum=patplan.PlanNum
+				WHERE procedurelog.ProcStatus=1";
+/*@"SELECT procedurelog.ADACode,insplan.FeeSched AS PlanFeeSched,patient.FeeSched AS PatFeeSched,
+				patient.PriProv,ProcNum
+				FROM procedurelog,patient
+				LEFT JOIN patplan ON patplan.PatNum=procedurelog.PatNum
+				AND patplan.Ordinal=1
+				LEFT JOIN insplan ON insplan.PlanNum=patplan.PlanNum
+				WHERE procedurelog.ProcStatus=1
+				AND patient.PatNum=procedurelog.PatNum
+			";*/
+			DataTable table=General.GetTable(command);
+			int priPlanFeeSched;
+			int feeSchedNum;
+			int patFeeSched;
+			int patProv;
+			double newFee;
+			double oldFee;
+			int rowsChanged=0;
+			for(int i=0;i<table.Rows.Count;i++){
+				priPlanFeeSched=PIn.PInt(table.Rows[i]["PlanFeeSched"].ToString());
+				patFeeSched=PIn.PInt(table.Rows[i]["PatFeeSched"].ToString());
+				patProv=PIn.PInt(table.Rows[i]["PriProv"].ToString());
+				feeSchedNum=Fees.GetFeeSched(priPlanFeeSched,patFeeSched,patProv);
+				newFee=Fees.GetAmount0(PIn.PString(table.Rows[i]["ADACode"].ToString()),feeSchedNum);
+				oldFee=PIn.PDouble(table.Rows[i]["ProcFee"].ToString());
+				if(newFee==oldFee){
+					continue;
+				}
+				command="UPDATE procedurelog SET ProcFee='"+POut.PDouble(newFee)+"' "
+					+"WHERE ProcNum="+table.Rows[i]["ProcNum"].ToString();
+				rowsChanged+=General.NonQ(command);
+			}
+			return rowsChanged;
+		}
 
 		
 
@@ -1042,7 +1128,7 @@ namespace OpenDental{
 	/*================================================================================================================
 	=========================================== class ProcedureComparer =============================================*/
 
-	///<summary>This sorts procedures based on priority, then tooth number, then adaCode.  It does not care about dates or status.  Currently used in TP module and Chart module sorting.</summary>
+	///<summary>This sorts procedures based on priority, then tooth number, then adaCode (but if Canadian lab code, uses proc adaCode here instead of lab adaCode).  Finally, if comparing a proc and its Canadian lab code, it puts the lab code after the proc.  It does not care about dates or status.  Currently used in TP module and Chart module sorting.</summary>
 	public class ProcedureComparer:IComparer {
 		///<summary>This sorts procedures based on priority, then tooth number.  It does not care about dates or status.  Currently used in TP module and Chart module sorting.</summary>
 		int IComparer.Compare(Object objx,Object objy) {
@@ -1056,7 +1142,7 @@ namespace OpenDental{
 				if(y.Priority==0){
 					return -1;//x is less than y. Priorities always come first.
 				}
-				return Defs.GetOrder(DefCat.TxPriorities,x.Priority).CompareTo(Defs.GetOrder(DefCat.TxPriorities,y.Priority));
+				return DefB.GetOrder(DefCat.TxPriorities,x.Priority).CompareTo(DefB.GetOrder(DefCat.TxPriorities,y.Priority));
 			}
 			//priorities are the same, so sort by toothrange
 			if(x.ToothRange != y.ToothRange){
@@ -1069,6 +1155,12 @@ namespace OpenDental{
 				return Tooth.ToInt(x.ToothNum).CompareTo(Tooth.ToInt(y.ToothNum));
 			}
 			//priority and toothnums are the same, so sort by adacode.
+			/*string adaX=x.ADACode;
+			if(x.ProcNumLab !=0){//if x is a Canadian lab proc
+				//then use the adaCode of the procedure instead of the lab code
+				adaX=Procedures.GetOneProc(
+			}
+			string adaY=y.ADACode;*/
 			return x.ADACode.CompareTo(y.ADACode);
 			//return 0;//priority, tooth number, and adacode are all the same
 		}

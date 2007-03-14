@@ -1,5 +1,5 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
@@ -22,6 +22,7 @@
 */
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Data;
@@ -56,7 +57,7 @@ namespace fyiReporting.RdlDesign
 		/// </summary>
 		private System.ComponentModel.Container components = null;
 
-		internal DrillParametersDialog(string report, ArrayList parameters)
+        internal DrillParametersDialog(string report, List<DrillParameter> parameters)
 		{
 			_DrillReport = report;
 			
@@ -67,7 +68,7 @@ namespace fyiReporting.RdlDesign
 			InitValues(parameters);
 		}
 
-		private void InitValues(ArrayList parameters)
+        private void InitValues(List<DrillParameter> parameters)
 		{
 			this.tbReportFile.Text = _DrillReport;
 
@@ -269,11 +270,11 @@ namespace fyiReporting.RdlDesign
 			get {return this._DrillReport;}
 		}
 
-		public ArrayList DrillParameters
+        public List<DrillParameter> DrillParameters
 		{
 			get 
 			{
-				ArrayList parms = new ArrayList();
+                List<DrillParameter> parms = new List<DrillParameter>();
 
 				// Loop thru and add all the filters
 				foreach (DataRow dr in _DataTable.Rows)
@@ -282,7 +283,7 @@ namespace fyiReporting.RdlDesign
 						continue;
 					string name = (string) dr[0];
 					string val = (string) dr[1];
-					string omit = dr[2] == DBNull.Value? "False": (string) dr[2];
+					string omit = dr[2] == DBNull.Value? "false": (string) dr[2];
 					if (name.Length <= 0 || val.Length <= 0)
 						continue;
 					DrillParameter dp = new DrillParameter(name, val, omit);
@@ -343,7 +344,7 @@ namespace fyiReporting.RdlDesign
 				{
 					rowValues[0] = rp.Name;
 					rowValues[1] = "";
-					rowValues[2] = "False";
+					rowValues[2] = "false";
 
 					_DataTable.Rows.Add(rowValues);
 				}

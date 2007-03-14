@@ -242,7 +242,7 @@ namespace OpenDental.UI {
 				if(y>buttonH*(i+1)){
 					continue;
 				}
-				if(i>sigButStates.Length-1) {//button not visible
+				if(i>sigButStates.Length-1){//button not visible
 					return -1;
 				}
 				return i;

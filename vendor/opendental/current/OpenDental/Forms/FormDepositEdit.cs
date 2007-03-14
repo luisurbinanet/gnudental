@@ -416,8 +416,8 @@ namespace OpenDental{
 				for(int i=0;i<Clinics.List.Length;i++){
 					comboClinic.Items.Add(Clinics.List[i].Description);
 				}
-				for(int i=0;i<Defs.Short[(int)DefCat.PaymentTypes].Length;i++){
-					listPayType.Items.Add(Defs.Short[(int)DefCat.PaymentTypes][i].ItemName);
+				for(int i=0;i<DefB.Short[(int)DefCat.PaymentTypes].Length;i++){
+					listPayType.Items.Add(DefB.Short[(int)DefCat.PaymentTypes][i].ItemName);
 					listPayType.SetSelected(i,true);
 				}
 				textDepositAccount.Visible=false;//this is never visible for new. It's a description if already attached.
@@ -482,7 +482,7 @@ namespace OpenDental{
 				}
 				int[] payTypes=new int[listPayType.SelectedIndices.Count];
 				for(int i=0;i<payTypes.Length;i++){
-					payTypes[i]=Defs.Short[(int)DefCat.PaymentTypes][listPayType.SelectedIndices[i]].DefNum;
+					payTypes[i]=DefB.Short[(int)DefCat.PaymentTypes][listPayType.SelectedIndices[i]].DefNum;
 				}
 				PatPayList=Payments.GetForDeposit(dateStart,clinicNum,payTypes);
 				ClaimPayList=ClaimPayments.GetForDeposit(dateStart,clinicNum);
@@ -519,7 +519,7 @@ namespace OpenDental{
 				row=new OpenDental.UI.ODGridRow();
 				row.Cells.Add(PatPayList[i].PayDate.ToShortDateString());
 				row.Cells.Add(Patients.GetOnePat(pats,PatPayList[i].PatNum).GetNameLF());
-				row.Cells.Add(Defs.GetName(DefCat.PaymentTypes,PatPayList[i].PayType));
+				row.Cells.Add(DefB.GetName(DefCat.PaymentTypes,PatPayList[i].PayType));
 				row.Cells.Add(PatPayList[i].CheckNum);
 				row.Cells.Add(PatPayList[i].BankBranch);
 				row.Cells.Add(PatPayList[i].PayAmt.ToString("F"));
@@ -592,7 +592,7 @@ namespace OpenDental{
 			else{
 				textBankAccountInfo.Text=Clinics.List[comboClinic.SelectedIndex-1].BankNumber;
 			}
-			if(Prefs.UpdateString("DateDepositsStarted",POut.PDate(PIn.PDate(textDateStart.Text)))){
+			if(Prefs.UpdateString("DateDepositsStarted",POut.PDate(PIn.PDate(textDateStart.Text),false))){
 				changed=true;
 			}
 		}
@@ -621,6 +621,9 @@ namespace OpenDental{
 					MessageBox.Show(ex.Message);
 					return;
 				}
+			}
+			if(!MsgBox.Show(this,true,"Delete?")){
+				return;
 			}
 			Deposits.Delete(DepositCur);
 			DialogResult=DialogResult.OK;

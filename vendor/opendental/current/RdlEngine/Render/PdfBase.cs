@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -23,6 +23,7 @@
 using System;
 using System.Text;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace fyiReporting.RDL
 {
@@ -55,27 +56,19 @@ namespace fyiReporting.RDL
 		/// Convert the unicode string 16 bits to unicode bytes. 
 		/// This is written to the file to create Pdf 
 		/// </summary>
-		/// <param name="str"></param>
 		/// <returns></returns>
 		internal byte[] GetUTF8Bytes(string str,long filePos,out int size)
 		{
 			ObjectList objList=new ObjectList(objectNum,filePos);
 			byte []abuf;
-			try
-			{
-				byte[] ubuf = Encoding.Unicode.GetBytes(str);
-				Encoding enc = Encoding.GetEncoding(1252);
-				abuf = Encoding.Convert(Encoding.Unicode, enc, ubuf);
-				size=abuf.Length;
-				xref.offsets.Add(objList);
-			}
-			catch(Exception e)
-			{
-				string str1=string.Format("{0},In PdfBases.GetBytes()",objectNum);
-				Exception error=new Exception(e.Message+str1);
-				throw error;
-			}
-			return abuf;
+
+            byte[] ubuf = Encoding.Unicode.GetBytes(str);
+			Encoding enc = Encoding.GetEncoding(1252);
+			abuf = Encoding.Convert(Encoding.Unicode, enc, ubuf);
+			size=abuf.Length;
+			xref.offsets.Add(objList);
+
+            return abuf;
 		}
 
 	}
@@ -85,13 +78,15 @@ namespace fyiReporting.RDL
 	/// </summary>
 	internal class PdfAnchor
 	{
-		internal ArrayList offsets;
+        internal List<ObjectList> offsets;
 		internal int current;
+		internal bool CanCompress;
 		
-		internal PdfAnchor()
+		internal PdfAnchor(bool bCompress)
 		{
-			offsets=new ArrayList();
+            offsets = new List<ObjectList>();
 			current=0;
+			CanCompress = bCompress;
 		}
 
 		internal void Reset()

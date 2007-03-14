@@ -126,7 +126,7 @@ namespace OpenDental{
 		private void butOK_Click(object sender, System.EventArgs e) {
 			Queries.CurReport=new ReportOld();
 			//if(radioRange.Checked){
-			Queries.CurReport.Query="SELECT CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI),"
+			Queries.CurReport.Query="SELECT CONCAT(CONCAT(CONCAT(CONCAT(patient.LName,', '),patient.FName),' '),patient.MiddleI),"
 				+"procedurelog.ProcDate,procedurecode.Descript,procedurelog.ProcFee "
 				+"FROM patient,procedurecode,procedurelog,claimproc "
 				+"WHERE claimproc.procnum=procedurelog.procnum "
@@ -136,8 +136,8 @@ namespace OpenDental{
 				+"AND procedurelog.ProcFee>0 "
 				+"AND claimproc.Status=6 "//estimate
 				+"AND procedurelog.procstatus=2 "
-				+"AND procedurelog.ProcDate >= '"+POut.PDate(date1.SelectionStart)+"' "
-				+"AND procedurelog.ProcDate <= '"+POut.PDate(date2.SelectionStart)+"' "
+				+"AND procedurelog.ProcDate >= "+POut.PDate(date1.SelectionStart)+" "
+				+"AND procedurelog.ProcDate <= "+POut.PDate(date2.SelectionStart)+" "
 				+"GROUP BY procedurelog.ProcNum";
 			/*}
 			else{

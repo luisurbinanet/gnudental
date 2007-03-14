@@ -1035,10 +1035,10 @@ namespace OpenDental{
 		#endregion
 
 		private void FormPerio_Load(object sender, System.EventArgs e) {
-			butColorBleed.BackColor=Defs.Short[(int)DefCat.MiscColors][1].ItemColor;
-			butColorPus.BackColor=Defs.Short[(int)DefCat.MiscColors][2].ItemColor;
-			butColorPlaque.BackColor=Defs.Short[(int)DefCat.MiscColors][4].ItemColor;
-			butColorCalculus.BackColor=Defs.Short[(int)DefCat.MiscColors][5].ItemColor;
+			butColorBleed.BackColor=DefB.Short[(int)DefCat.MiscColors][1].ItemColor;
+			butColorPus.BackColor=DefB.Short[(int)DefCat.MiscColors][2].ItemColor;
+			butColorPlaque.BackColor=DefB.Short[(int)DefCat.MiscColors][4].ItemColor;
+			butColorCalculus.BackColor=DefB.Short[(int)DefCat.MiscColors][5].ItemColor;
 			textRedProb.Text=((Pref)PrefB.HList["PerioRedProb"]).ValueString;
 			textRedMGJ.Text =((Pref)PrefB.HList["PerioRedMGJ"] ).ValueString;
 			textRedGing.Text=((Pref)PrefB.HList["PerioRedGing"]).ValueString;
@@ -1279,7 +1279,7 @@ namespace OpenDental{
 				return;
 			}
 			butColorBleed.BackColor=colorDialog1.Color;
-			Def DefCur=Defs.Short[(int)DefCat.MiscColors][1].Copy();
+			Def DefCur=DefB.Short[(int)DefCat.MiscColors][1].Copy();
 			DefCur.ItemColor=colorDialog1.Color;
 			Defs.Update(DefCur);
 			Defs.Refresh();
@@ -1295,7 +1295,7 @@ namespace OpenDental{
 				return;
 			}
 			butColorPus.BackColor=colorDialog1.Color;
-			Def DefCur=Defs.Short[(int)DefCat.MiscColors][2].Copy();
+			Def DefCur=DefB.Short[(int)DefCat.MiscColors][2].Copy();
 			DefCur.ItemColor=colorDialog1.Color;
 			Defs.Update(DefCur);
 			Defs.Refresh();
@@ -1311,7 +1311,7 @@ namespace OpenDental{
 				return;
 			}
 			butColorPlaque.BackColor=colorDialog1.Color;
-			Def DefCur=Defs.Short[(int)DefCat.MiscColors][4].Copy();
+			Def DefCur=DefB.Short[(int)DefCat.MiscColors][4].Copy();
 			DefCur.ItemColor=colorDialog1.Color;
 			Defs.Update(DefCur);
 			Defs.Refresh();
@@ -1327,7 +1327,7 @@ namespace OpenDental{
 				return;
 			}
 			butColorCalculus.BackColor=colorDialog1.Color;
-			Def DefCur=Defs.Short[(int)DefCat.MiscColors][5].Copy();
+			Def DefCur=DefB.Short[(int)DefCat.MiscColors][5].Copy();
 			DefCur.ItemColor=colorDialog1.Color;
 			Defs.Update(DefCur);
 			Defs.Refresh();

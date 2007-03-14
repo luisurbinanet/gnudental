@@ -1,5 +1,5 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
@@ -24,6 +24,7 @@ using System;
 using System.Xml;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.OleDb;
 using System.Data.Odbc;
@@ -32,7 +33,8 @@ using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
-using MySql.Data.MySqlClient;
+using Microsoft.Win32;
+using fyiReporting.RDL;
 
 
 namespace fyiReporting.RdlDesign
@@ -53,6 +55,57 @@ namespace fyiReporting.RdlDesign
 			{	// Probably should report this error
 			}
 			return c;
+		}
+		/// <summary>
+		/// Read the registry to find out the ODBC names
+		/// </summary>
+		static internal void FillOdbcNames(ComboBox cbOdbcNames)
+		{
+			if (cbOdbcNames.Items.Count > 0)
+				return;
+
+			// System names						   
+			RegistryKey rk = (Registry.LocalMachine).OpenSubKey("Software");
+			if (rk == null)
+				return;
+			rk = rk.OpenSubKey("ODBC");
+			if (rk == null)
+				return;
+			rk = rk.OpenSubKey("ODBC.INI");
+			
+			string[] nms = rk.GetSubKeyNames();
+			if (nms != null)
+			{
+				foreach (string name in nms)
+				{
+					if (name == "ODBC Data Sources" ||
+						name == "ODBC File DSN" || name == "ODBC")
+						continue;
+					cbOdbcNames.Items.Add(name);
+				}
+			}
+			// User names
+			rk = (Registry.CurrentUser).OpenSubKey("Software");
+			if (rk == null)
+				return;
+			rk = rk.OpenSubKey("ODBC");
+			if (rk == null)
+				return;
+			rk = rk.OpenSubKey("ODBC.INI");
+			nms = rk.GetSubKeyNames();
+			if (nms != null)
+			{
+				foreach (string name in nms)
+				{
+					if (name == "ODBC Data Sources" ||
+						name == "ODBC File DSN" || name == "ODBC")
+						continue;
+					cbOdbcNames.Items.Add(name);
+				}
+			}
+
+			return;
+
 		}
 
 		static internal string FormatXml(string sDoc)
@@ -81,29 +134,14 @@ namespace fyiReporting.RdlDesign
 			Cursor.Current = Cursors.WaitCursor;
 			try
 			{
-				/*switch (dataProvider)
-				{
-					case "SQL":
-						cnSQL = new SqlConnection(connection);
-						cnSQL.Open();
-						cmSQL = new SqlCommand(sql, (SqlConnection) cnSQL);
-						break;
-					case "ODBC":
-						cnSQL = new OdbcConnection(connection);
-						cnSQL.Open();
-						cmSQL = new OdbcCommand(sql, (OdbcConnection)cnSQL);
-						break;
-					case "OLEDB":
-						cnSQL = new OleDbConnection(connection);
-						cnSQL.Open();
-						cmSQL = new OleDbCommand(sql, (OleDbConnection)cnSQL);
-						break;
-					default:
-						throw new Exception(string.Format("Unknown data provider '{0}'.", dataProvider ));
-				}*/
-				cnSQL = new MySqlConnection(GetOpenDentalConnStr());
+				// Open up a connection
+				cnSQL =RdlEngineConfig.GetConnection(dataProvider, connection);
+				if (cnSQL == null)
+					return;
+
 				cnSQL.Open();
-				cmSQL = new MySqlCommand(sql, (MySqlConnection) cnSQL);
+				cmSQL = cnSQL.CreateCommand();
+				cmSQL.CommandText = sql;
 				AddParameters(cmSQL, parameters);
 				dr = cmSQL.ExecuteReader(CommandBehavior.SingleResult);
 
@@ -137,7 +175,7 @@ namespace fyiReporting.RdlDesign
 			return;
 		}
 
-		static internal ArrayList GetSqlColumns(DesignXmlDraw d, string ds, string sql)
+        static internal List<SqlColumn> GetSqlColumns(DesignXmlDraw d, string ds, string sql)
 		{
 			XmlNode dsNode = d.DataSourceName(ds);
 			if (dsNode == null)
@@ -157,9 +195,9 @@ namespace fyiReporting.RdlDesign
 			return GetSqlColumns(dataProvider, connection, sql, parameters);
 		}
 
-		static internal ArrayList GetSqlColumns(string dataProvider, string connection, string sql, IList parameters)
+        static internal List<SqlColumn> GetSqlColumns(string dataProvider, string connection, string sql, IList parameters)
 		{
-			ArrayList cols = new ArrayList();
+            List<SqlColumn> cols = new List<SqlColumn>();
 			IDbConnection cnSQL=null;
 			IDbCommand cmSQL=null;
 			IDataReader dr=null;	   
@@ -167,29 +205,14 @@ namespace fyiReporting.RdlDesign
 			Cursor.Current = Cursors.WaitCursor;
 			try
 			{
-				/*switch (dataProvider)
-				{
-					case "SQL":
-						cnSQL = new SqlConnection(connection);
-						cnSQL.Open();
-						cmSQL = new SqlCommand(sql, (SqlConnection) cnSQL);
-						break;
-					case "ODBC":
-						cnSQL = new OdbcConnection(connection);
-						cnSQL.Open();
-						cmSQL = new OdbcCommand(sql, (OdbcConnection)cnSQL);
-						break;
-					case "OLEDB":
-						cnSQL = new OleDbConnection(connection);
-						cnSQL.Open();
-						cmSQL = new OleDbCommand(sql, (OleDbConnection)cnSQL);
-						break;
-					default:
-						throw new Exception(string.Format("Unknown data provider '{0}'.", dataProvider ));
-				}*/
-				cnSQL = new MySqlConnection(GetOpenDentalConnStr());
+				// Open up a connection
+				cnSQL = RdlEngineConfig.GetConnection(dataProvider, connection);
+				if (cnSQL == null)
+					return cols;
+
 				cnSQL.Open();
-				cmSQL = new MySqlCommand(sql, (MySqlConnection) cnSQL);
+				cmSQL = cnSQL.CreateCommand();
+				cmSQL.CommandText = sql;
 				AddParameters(cmSQL, parameters);
 				dr = cmSQL.ExecuteReader(CommandBehavior.SchemaOnly);
 				for (int i=0; i < dr.FieldCount; i++)
@@ -206,27 +229,27 @@ namespace fyiReporting.RdlDesign
 			}
 			catch (Exception e)
 			{
-				MessageBox.Show(e.Message, "Error");
+				MessageBox.Show(e.InnerException == null? e.Message:e.InnerException.Message, "Error");
 			}
 			finally
 			{
 				if (cnSQL != null)
 				{
-					cnSQL.Close();
-					cnSQL.Dispose();
 					if (cmSQL != null)
 					{
 						cmSQL.Dispose();
 						if (dr != null)
 							dr.Close();
 					}
+					cnSQL.Close();
+					cnSQL.Dispose();
 				}
 				Cursor.Current=saveCursor;
 			}
 			return cols;
 		}
 
-		static internal ArrayList GetSchemaInfo(DesignXmlDraw d, string ds)
+        static internal List<SqlSchemaInfo> GetSchemaInfo(DesignXmlDraw d, string ds)
 		{
 			XmlNode dsNode = d.DataSourceName(ds);
 			if (dsNode == null)
@@ -245,9 +268,9 @@ namespace fyiReporting.RdlDesign
 			return GetSchemaInfo(dataProvider, connection);
 		}
 
-		static internal ArrayList GetSchemaInfo(string dataProvider, string connection)
+        static internal List<SqlSchemaInfo> GetSchemaInfo(string dataProvider, string connection)
 		{
-			ArrayList schemaList = new ArrayList();
+            List<SqlSchemaInfo> schemaList = new List<SqlSchemaInfo>();
 			IDbConnection cnSQL = null;
 			IDbCommand cmSQL = null;
 			IDataReader dr = null;
@@ -259,42 +282,42 @@ namespace fyiReporting.RdlDesign
 			{
 				int ID_TABLE = 0;
 				int ID_TYPE = 1;
-				string sql = "SHOW TABLES";
-					//"SELECT TABLE_NAME, TABLE_TYPE FROM INFORMATION_SCHEMA.TABLES ORDER BY 2, 1";
-				/*switch (dataProvider)
+
+				// Open up a connection
+				cnSQL = RdlEngineConfig.GetConnection(dataProvider, connection);
+				if (cnSQL == null)
 				{
-					case "SQL":
-						cnSQL = new SqlConnection(connection);
-						cnSQL.Open();
-						cmSQL = new SqlCommand(sql, (SqlConnection) cnSQL);
-						break;
-					case "ODBC":
-						ID_TYPE = -1;
-						cnSQL = new OdbcConnection(connection);
-						cnSQL.Open();
-						OdbcConnection oc = cnSQL as OdbcConnection;
-						if (oc.Driver.ToLower().IndexOf("my") >= 0)	// not a good way but ...
-							sql = "show tables";					// mysql syntax is non-standard
-						
-						cmSQL = new OdbcCommand(sql, (OdbcConnection)cnSQL);
-						break;
-					case "OLEDB":
-						cnSQL = new OleDbConnection(connection);
-						cnSQL.Open();
-						cmSQL = new OleDbCommand(sql, (OleDbConnection)cnSQL);
-						break;
-				}*/
-				ID_TYPE = -1;
-				cnSQL = new MySqlConnection(GetOpenDentalConnStr());
+					MessageBox.Show(string.Format("Unable to connect using dataProvider '{0}'",dataProvider), "SQL Error");
+					return schemaList;
+				}
 				cnSQL.Open();
-				cmSQL = new MySqlCommand(sql, (MySqlConnection) cnSQL);
+
+                // Take advantage of .Net metadata if available
+                if (cnSQL is System.Data.SqlClient.SqlConnection)
+                    return GetSchemaInfo((System.Data.SqlClient.SqlConnection) cnSQL, schemaList);
+                if (cnSQL is System.Data.Odbc.OdbcConnection)
+                    return GetSchemaInfo((System.Data.Odbc.OdbcConnection)cnSQL, schemaList);
+                if (cnSQL is System.Data.OleDb.OleDbConnection)
+                    return GetSchemaInfo((System.Data.OleDb.OleDbConnection)cnSQL, schemaList);
+
+				// Obtain the query needed to get table/view list
+				string sql = RdlEngineConfig.GetTableSelect(dataProvider, cnSQL);
+				if (sql == null || sql.Length == 0)		// when no query string; no meta information available
+					return schemaList;
+
+				// Obtain the query needed to get table/view list
+				cmSQL = cnSQL.CreateCommand();
+				cmSQL.CommandText = sql;
+
 				dr = cmSQL.ExecuteReader();
 				string type = "TABLE";
 				while (dr.Read())
 				{
 					SqlSchemaInfo ssi = new SqlSchemaInfo();
 
-					if (ID_TYPE >= 0 && (string) dr[ID_TYPE] == "VIEW")
+					if (ID_TYPE >= 0 && 
+						dr.FieldCount < ID_TYPE &&
+						(string) dr[ID_TYPE] == "VIEW")
 						type = "VIEW";
 
 					ssi.Type = type;
@@ -308,7 +331,7 @@ namespace fyiReporting.RdlDesign
 			}
 			catch (Exception e)
 			{
-				MessageBox.Show(e.Message, "Error");
+				MessageBox.Show(e.InnerException == null? e.Message: e.InnerException.Message, "Error");
 			}
 			finally
 			{
@@ -327,53 +350,92 @@ namespace fyiReporting.RdlDesign
 			return schemaList;
 		}
 
-		///<summary></summary>
-		private static string GetOpenDentalConnStr(){
-			XmlDocument document=new XmlDocument();
-			string path=Application.StartupPath+"\\"+"FreeDentalConfig.xml";
-			if(!File.Exists(path)){
-				return "";
-			}
-			string computerName="";
-			string database="";
-			string user="";
-			string password="";
-			try{
-				document.Load(path);
-				XmlNodeReader reader=new XmlNodeReader(document);
-				string currentElement="";
-				while(reader.Read()){
-					if(reader.NodeType==XmlNodeType.Element){
-						currentElement=reader.Name;
-					}
-					else if(reader.NodeType==XmlNodeType.Text){
-						switch(currentElement){
-							case "ComputerName":
-								computerName=reader.Value;
-								break;
-							case "Database":
-								database=reader.Value;
-								break;
-							case "User":
-								user=reader.Value;
-								break;
-							case "Password":
-								password=reader.Value;
-								break;
-						}
-					}
-				}
-				reader.Close();
-			}
-			catch{
-				return "";
-			}
-			return "Server="+computerName
-				+";Database="+database
-				+";User ID="+user
-				+";Password="+password
-				+";CharSet=utf8";
-		}
+        static internal List<SqlSchemaInfo> GetSchemaInfo(System.Data.SqlClient.SqlConnection con, List<SqlSchemaInfo> schemaList)
+        {
+            try
+            { 
+                DataTable tbl = con.GetSchema(System.Data.SqlClient.SqlClientMetaDataCollectionNames.Tables); 
+                foreach (DataRow row in tbl.Rows) 
+                {
+                    SqlSchemaInfo ssi = new SqlSchemaInfo();
+
+                    ssi.Type = "TABLE";
+                    ssi.Name = (string)row["table_name"];
+                    schemaList.Add(ssi);
+                }
+                tbl = con.GetSchema(System.Data.SqlClient.SqlClientMetaDataCollectionNames.Views);
+                foreach (DataRow row in tbl.Rows)
+                {
+                    SqlSchemaInfo ssi = new SqlSchemaInfo();
+
+                    ssi.Type = "VIEW";
+                    ssi.Name = (string)row["table_name"];
+                    schemaList.Add(ssi);
+                }
+            }
+            catch
+            { 
+            }
+            return schemaList;
+        }
+
+        static internal List<SqlSchemaInfo> GetSchemaInfo(System.Data.OleDb.OleDbConnection con, List<SqlSchemaInfo> schemaList)
+        {
+            try
+            {
+                DataTable tbl = con.GetSchema(System.Data.OleDb.OleDbMetaDataCollectionNames.Tables);
+                foreach (DataRow row in tbl.Rows)
+                {
+                    SqlSchemaInfo ssi = new SqlSchemaInfo();
+
+                    ssi.Type = "TABLE";
+                    ssi.Name = (string)row["table_name"];
+                    schemaList.Add(ssi);
+                }
+                tbl = con.GetSchema(System.Data.OleDb.OleDbMetaDataCollectionNames.Views);
+                foreach (DataRow row in tbl.Rows)
+                {
+                    SqlSchemaInfo ssi = new SqlSchemaInfo();
+
+                    ssi.Type = "VIEW";
+                    ssi.Name = (string)row["table_name"];
+                    schemaList.Add(ssi);
+                }
+            }
+            catch
+            {
+            }
+            return schemaList;
+        }
+
+        static internal List<SqlSchemaInfo> GetSchemaInfo(System.Data.Odbc.OdbcConnection con, List<SqlSchemaInfo> schemaList)
+        {
+            try
+            {
+                DataTable tbl = con.GetSchema(System.Data.Odbc.OdbcMetaDataCollectionNames.Tables);
+                foreach (DataRow row in tbl.Rows)
+                {
+                    SqlSchemaInfo ssi = new SqlSchemaInfo();
+
+                    ssi.Type = "TABLE";
+                    ssi.Name = (string)row["table_name"];
+                    schemaList.Add(ssi);
+                }
+                tbl = con.GetSchema(System.Data.Odbc.OdbcMetaDataCollectionNames.Views);
+                foreach (DataRow row in tbl.Rows)
+                {
+                    SqlSchemaInfo ssi = new SqlSchemaInfo();
+
+                    ssi.Type = "VIEW";
+                    ssi.Name = (string)row["table_name"];
+                    schemaList.Add(ssi);
+                }
+            }
+            catch
+            {
+            }
+            return schemaList;
+        }
 
 		static internal bool TestConnection(string dataProvider, string connection)
 		{
@@ -381,28 +443,13 @@ namespace fyiReporting.RdlDesign
 			bool bResult = false;
 			try
 			{
-				/*switch (dataProvider)
-				{
-					case "SQL":
-						cnSQL = new SqlConnection(connection);
-						cnSQL.Open();
-						break;
-					case "ODBC":
-						cnSQL = new OdbcConnection(connection);
-						cnSQL.Open();
-						break;
-					case "OLEDB":
-						cnSQL = new OleDbConnection(connection);
-						cnSQL.Open();
-						break;
-				}*/
-				cnSQL = new MySqlConnection(GetOpenDentalConnStr());
+				cnSQL = RdlEngineConfig.GetConnection(dataProvider, connection);
 				cnSQL.Open();
 				bResult = true;			// we opened the connection
 			}
 			catch (Exception e)
 			{
-				MessageBox.Show(e.Message, "Unable to open connection");
+				MessageBox.Show(e.InnerException == null? e.Message: e.InnerException.Message, "Unable to open connection");
 			}
 			finally
 			{
@@ -422,6 +469,7 @@ namespace fyiReporting.RdlDesign
 			{
 				case "System.Int16":
 				case "System.Int32":
+				case "System.Int64":
 				case "System.Single":
 				case "System.Double":
 				case "System.Decimal":
@@ -628,17 +676,18 @@ namespace fyiReporting.RdlDesign
 		string _DataType;
 		
 		bool   _bDefault=true;				// use default value if true otherwise DataSetName
-		ArrayList _DefaultValue;			// list of strings
+        List<string> _DefaultValue;			// list of strings
 		string _DefaultDSRDataSetName;		// DefaultValues DataSetReference DataSetName
 		string _DefaultDSRValueField;		// DefaultValues DataSetReference ValueField
 
 		bool   _bValid=true;				// use valid value if true otherwise DataSetName
-		ArrayList _ValidValues;				// list of ParameterValueItem
+        List<ParameterValueItem> _ValidValues;	// list of ParameterValueItem
 		string _ValidValuesDSRDataSetName;		// ValidValues DataSetReference DataSetName
 		string _ValidValuesDSRValueField;		// ValidValues DataSetReference ValueField
 		string _ValidValuesDSRLabelField;		// ValidValues DataSetReference LabelField
 		bool _AllowNull;
 		bool _AllowBlank;
+        bool _MultiValue;
 
 		internal ReportParm(string name)
 		{
@@ -670,7 +719,7 @@ namespace fyiReporting.RdlDesign
 			set {_bValid = value;}
 		}
 
-		internal ArrayList ValidValues
+        internal List<ParameterValueItem> ValidValues
 		{
 			get {return _ValidValues;}
 			set {_ValidValues = value;}
@@ -705,7 +754,7 @@ namespace fyiReporting.RdlDesign
 			set {_bDefault = value;}
 		}
 
-		internal ArrayList DefaultValue
+		internal List<string> DefaultValue
 		{
 			get {return _DefaultValue;}
 			set {_DefaultValue = value;}
@@ -741,7 +790,13 @@ namespace fyiReporting.RdlDesign
 			get {return _AllowBlank;}
 			set {_AllowBlank = value;}
 		}
-		internal string DefaultDSRDataSetName
+
+        internal bool MultiValue
+        {
+            get { return _MultiValue; }
+            set { _MultiValue = value; }
+        }
+        internal string DefaultDSRDataSetName
 		{
 			get {return _DefaultDSRDataSetName;}
 			set {_DefaultDSRDataSetName=value;}
@@ -841,7 +896,8 @@ namespace fyiReporting.RdlDesign
 										"Greenyellow",
 										"Honeydew",
 										"Hotpink",
-										"Indianred Indigo",
+										"Indianred", 
+                                        "Indigo",
 										"Ivory",
 										"Khaki",
 										"Lavender",
@@ -933,7 +989,45 @@ namespace fyiReporting.RdlDesign
 																	  "=Globals!TotalPages.Value",
 																	  "=Globals!ExecutionTime.Value",
 																	  "=Globals!ReportFolder.Value",
-																	  "=Globals!ReportName.Value"};
+		                                                              "=Globals!ReportName.Value"};
+		static public readonly string[] OperatorList = new string[] {	" & ", " + "," - "," * "," / "," mod ", 
+								" and ", " or ", 
+								" = ", " != ", " > ", " >= ", " < ", " <= "	};
+
+		/// <summary>
+		/// Names of functions with pseudo arguments
+		/// </summary>
+		static public readonly string[] FunctionList = new string[] {	"Iif(boolean, trueExpr, falseExpr)",
+																		"Choose(number, choice1 [,choice2]...)",
+																		"Switch(boolean1, value1[, boolean2, value2]...[elseValue])",
+																		"Format(expr, formatExpr)"};
+
+		static public readonly string[] AggrFunctionList = new string[] {"Sum(number [, scope])",
+																		"Avg(number [, scope])",
+																		"Min(expr [, scope])",
+																		"Max(expr [, scope])",
+																		"First(expr [, scope])",
+																		"Last(expr [, scope])",
+																		"Next(expr [, scope])",
+																		"Previous(expr [, scope])",
+																		"Level([scope])",
+																		"Count(expr [, scope])",
+																		"Countrows(expr [, scope])",
+																		"Countdistinct(expr [, scope])",
+																		"RowNumber()",
+																		"Runningvalue(expr, sum [, scope])",
+																		"Runningvalue(expr, avg [, scope])",
+																		"Runningvalue(expr, count [, scope])",
+																		"Runningvalue(expr, max [, scope])",
+																		"Runningvalue(expr, min [, scope])",
+																		"Runningvalue(expr, stdev [, scope])",
+																		"Runningvalue(expr, stdevp [, scope])",
+																		"Runningvalue(expr, var [, scope])",
+																		"Runningvalue(expr, varp [, scope])",
+																		"Stdev(expr [, scope])",
+																		"Stdevp(expr [, scope])",
+																		"Var(expr [, scope])",
+																		"Varp(expr [, scope])"};
 		/// <summary>
 		/// Zoom values
 		/// </summary>

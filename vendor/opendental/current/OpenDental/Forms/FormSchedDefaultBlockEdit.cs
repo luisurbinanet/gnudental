@@ -226,9 +226,9 @@ namespace OpenDental{
 			listDay.SelectedIndex=SchedDefaultCur.DayOfWeek;
 			if(SchedDefaultCur.SchedType==ScheduleType.Blockout){
 				listType.Items.Clear();
-				for(int i=0;i<Defs.Short[(int)DefCat.BlockoutTypes].Length;i++){
-					listType.Items.Add(Defs.Short[(int)DefCat.BlockoutTypes][i].ItemName);
-					if(SchedDefaultCur.BlockoutType==Defs.Short[(int)DefCat.BlockoutTypes][i].DefNum){
+				for(int i=0;i<DefB.Short[(int)DefCat.BlockoutTypes].Length;i++){
+					listType.Items.Add(DefB.Short[(int)DefCat.BlockoutTypes][i].ItemName);
+					if(SchedDefaultCur.BlockoutType==DefB.Short[(int)DefCat.BlockoutTypes][i].DefNum){
 						listType.SelectedIndex=i;
 					}
 				}
@@ -283,7 +283,7 @@ namespace OpenDental{
 			SchedDefaultCur.DayOfWeek=listDay.SelectedIndex;
 			if(SchedDefaultCur.SchedType==ScheduleType.Blockout){
 				SchedDefaultCur.BlockoutType
-					=Defs.Short[(int)DefCat.BlockoutTypes][listType.SelectedIndex].DefNum;
+					=DefB.Short[(int)DefCat.BlockoutTypes][listType.SelectedIndex].DefNum;
 				if(listOp.SelectedIndex==0){
 					SchedDefaultCur.Op=0;
 				}

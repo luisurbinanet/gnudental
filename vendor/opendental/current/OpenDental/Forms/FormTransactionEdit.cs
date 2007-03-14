@@ -313,6 +313,7 @@ namespace OpenDental{
 			this.butAdd.Autosize = true;
 			this.butAdd.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butAdd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butAdd.Image = global::OpenDental.Properties.Resources.Add;
 			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butAdd.Location = new System.Drawing.Point(3,216);
 			this.butAdd.Name = "butAdd";
@@ -418,6 +419,7 @@ namespace OpenDental{
 			this.butDelete.Autosize = true;
 			this.butDelete.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butDelete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butDelete.Image = global::OpenDental.Properties.Resources.deleteX;
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butDelete.Location = new System.Drawing.Point(31,396);
 			this.butDelete.Name = "butDelete";
@@ -845,20 +847,6 @@ namespace OpenDental{
 			}
 		}
 
-		private void butDelete_Click(object sender,EventArgs e) {
-			if(!MsgBox.Show(this,true,"Delete this entire transaction?")){
-				return;
-			}
-			try{
-				Transactions.Delete(TransCur);
-			}
-			catch(ApplicationException ex){
-				MessageBox.Show(ex.Message);
-				return;
-			}			
-			DialogResult=DialogResult.OK;
-		}
-
 		/*//<summary>If the journalList is 0 or 1 in length, then this function creates either 1 or 2 entries so that the simple view can display properly.</summary>
 		private void CreateTwoEntries() {
 			JournalEntry entry;
@@ -960,6 +948,40 @@ namespace OpenDental{
 			JournalList.Add(entry);
 		}
 
+		private void butDelete_Click(object sender,EventArgs e) {
+			if(!MsgBox.Show(this,true,"Delete this entire transaction?")) {
+				return;
+			}
+			string securityentry="";
+			if(!IsNew){
+				//we need this data before it's gone
+				JournalList=JournalEntries.GetForTrans(TransCur.TransactionNum);//because they were cleared when laying out
+				securityentry=Lan.g(this,"Deleted: ")
+					+((JournalEntry)JournalList[0]).DateDisplayed.ToShortDateString()+" ";
+				double tot=0;
+				for(int i=0;i<JournalList.Count;i++) {
+					tot+=((JournalEntry)JournalList[i]).DebitAmt;
+					if(i>0){
+						securityentry+=", ";
+					}
+					securityentry+=Accounts.GetDescript(((JournalEntry)JournalList[i]).AccountNum);
+				}
+				securityentry+=". "+tot.ToString("c");
+				JournalList=new ArrayList();//in case it fails, we don't want to leave this list around.
+			}
+			try {
+				Transactions.Delete(TransCur);
+			}
+			catch(ApplicationException ex) {
+				MessageBox.Show(ex.Message);
+				return;
+			}
+			if(!IsNew){
+				SecurityLogs.MakeLogEntry(Permissions.AccountingEdit,0,securityentry);
+			}
+			DialogResult=DialogResult.OK;
+		}
+
 		private void butOK_Click(object sender, System.EventArgs e) {
 			if(textDate.errorProvider1.GetError(textDate) !="") {
 				MsgBox.Show(this,"Please fix data entry errors first.");
@@ -1053,7 +1075,7 @@ namespace OpenDental{
 					txt+=" "+AccountOfOrigin.Description;
 				}
 				txt+=" "+tot.ToString("c");
-				SecurityLogs.MakeLogEntry(Permissions.AdjustmentEdit,0,txt);
+				SecurityLogs.MakeLogEntry(Permissions.AccountingEdit,0,txt);
 			}
 			DialogResult=DialogResult.OK;
 		}

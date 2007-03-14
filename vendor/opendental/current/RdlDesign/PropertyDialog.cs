@@ -1,5 +1,5 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
@@ -23,6 +23,7 @@
 using System;
 using System.Drawing;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Xml;
@@ -50,11 +51,13 @@ namespace fyiReporting.RdlDesign
 	internal class PropertyDialog : System.Windows.Forms.Form
 	{
 		private DesignXmlDraw _Draw;		// design draw 
-		private ArrayList _Nodes;			// selected nodes
+        private List<XmlNode> _Nodes;			// selected nodes
 		private PropertyTypeEnum _Type;	
 		private bool _Changed=false;
 		private bool _Delete=false;
-		private ArrayList _TabPanels=new ArrayList();		// list of IProperty controls
+		private XmlNode _TableColumn=null;	// when table this is the current table column
+		private XmlNode _TableRow=null;		// when table this is the current table row
+        private List<UserControl> _TabPanels = new List<UserControl>();		// list of IProperty controls
 		private System.Windows.Forms.Panel panel1;
 		private System.Windows.Forms.Button bCancel;
 		private System.Windows.Forms.Button bOK;
@@ -66,11 +69,16 @@ namespace fyiReporting.RdlDesign
 		/// </summary>
 		private System.ComponentModel.Container components = null;
 
-		internal PropertyDialog(DesignXmlDraw dxDraw, ArrayList sNodes, PropertyTypeEnum type)
+        internal PropertyDialog(DesignXmlDraw dxDraw, List<XmlNode> sNodes, PropertyTypeEnum type)
+            : this(dxDraw, sNodes, type, null, null) {}
+
+		internal PropertyDialog(DesignXmlDraw dxDraw, List<XmlNode> sNodes, PropertyTypeEnum type, XmlNode tcNode, XmlNode trNode)
 		{
 			this._Draw = dxDraw;
 			this._Nodes = sNodes;
 			this._Type = type;
+			_TableColumn = tcNode;
+			_TableRow = trNode;
 			//
 			// Required for Windows Form Designer support
 			//
@@ -132,6 +140,12 @@ namespace fyiReporting.RdlDesign
 
 			BodyCtl bc = new BodyCtl(_Draw);
 			AddTab("Body", bc);
+
+			CodeCtl cc = new CodeCtl(_Draw);
+			AddTab("Code", cc);
+
+			ModulesClassesCtl mc = new ModulesClassesCtl(_Draw);
+			AddTab("Modules/Classes", mc);
 			return;
 		}
 
@@ -143,27 +157,27 @@ namespace fyiReporting.RdlDesign
 
 			XmlNode aNode;
 			if (_Nodes != null && _Nodes.Count > 0)
-				aNode = (XmlNode) _Nodes[0];
+				aNode = _Nodes[0];
 			else
 				aNode = null;
 
 			DataSetsCtl dsc = new DataSetsCtl(_Draw, aNode);
 			AddTab("DataSet", dsc);
 
-			//QueryParametersCtl qp = new QueryParametersCtl(_Draw, dsc.DSV);
-			//AddTab("Query Parameters", qp);
+			QueryParametersCtl qp = new QueryParametersCtl(_Draw, dsc.DSV);
+			AddTab("Query Parameters", qp);
 
-			//FiltersCtl fc = new FiltersCtl(_Draw, aNode);
-			//AddTab("Filters", fc);
+			FiltersCtl fc = new FiltersCtl(_Draw, aNode);
+			AddTab("Filters", fc);
 
-			//DataSetRowsCtl dsrc = new DataSetRowsCtl(_Draw, aNode, dsc.DSV);
-			//AddTab("Data", dsrc);
+			DataSetRowsCtl dsrc = new DataSetRowsCtl(_Draw, aNode, dsc.DSV);
+			AddTab("Data", dsrc);
 			return;
 		}
 
 		private void BuildGroupingTabs()
 		{
-			XmlNode aNode = (XmlNode) _Nodes[0];
+			XmlNode aNode = _Nodes[0];
 			if (aNode.Name == "DynamicSeries")
 			{
 				this.Text = "Series Grouping";
@@ -193,13 +207,29 @@ namespace fyiReporting.RdlDesign
 
 		private void BuildReportItemTabs()
 		{
-			XmlNode aNode = (XmlNode) _Nodes[0];
+			XmlNode aNode = _Nodes[0];
 
 			// Determine if all nodes are the same type
 			string type = aNode.Name;
+            if (type == "CustomReportItem")
+            {
+                // For customReportItems we use the type that is a parameter
+                string t = _Draw.GetElementValue(aNode, "Type", "");
+                if (t.Length > 0)
+                    type = t;
+            }
+
 			foreach (XmlNode pNode in this._Nodes)
 			{
-				if (pNode.Name != type)
+                // For customReportItems we use the type that is a parameter
+                string t = pNode.Name;
+                if (t == "CustomReportItem")
+                {
+                    t = _Draw.GetElementValue(aNode, "Type", "");
+                    if (t.Length == 0)       // Shouldn't happen
+                        t = pNode.Name;
+                }
+                if (t != type)
 					type = "";			// Not all nodes have the same type
 			}
 
@@ -225,8 +255,11 @@ namespace fyiReporting.RdlDesign
 				AddTab("List", lc);
 				if (_Nodes.Count == 1)
 				{
-					FiltersCtl fc = new FiltersCtl(_Draw, (XmlNode) _Nodes[0]);
+					XmlNode l = _Nodes[0];
+					FiltersCtl fc = new FiltersCtl(_Draw, l);
 					AddTab("Filters", fc);
+					SortingCtl srtc = new SortingCtl(_Draw, l);
+					AddTab("Sorting", srtc);
 				}
 			}
 			else if (type == "Chart")
@@ -235,7 +268,7 @@ namespace fyiReporting.RdlDesign
 				AddTab("Chart", cc);
 				if (_Nodes.Count == 1)
 				{
-					FiltersCtl fc = new FiltersCtl(_Draw, (XmlNode) _Nodes[0]);
+					FiltersCtl fc = new FiltersCtl(_Draw, _Nodes[0]);
 					AddTab("Filters", fc);
 				}
 			}
@@ -246,7 +279,7 @@ namespace fyiReporting.RdlDesign
 			}
 			else if (type == "Table")
 			{
-				XmlNode table = (XmlNode) _Nodes[0];
+				XmlNode table = _Nodes[0];
 				TableCtl tc = new TableCtl(_Draw, this._Nodes);
 				AddTab("Table", tc);
 				FiltersCtl fc = new FiltersCtl(_Draw, table);
@@ -259,10 +292,20 @@ namespace fyiReporting.RdlDesign
 					SortingCtl srtc = new SortingCtl(_Draw, details);
 					AddTab("Sorting", srtc);
 				}
+				if (_TableColumn != null)
+				{
+					TableColumnCtl tcc = new TableColumnCtl(_Draw, _TableColumn);
+					AddTab("Table Column", tcc);
+				}
+				if (_TableRow != null)
+				{
+					TableRowCtl trc = new TableRowCtl(_Draw, _TableRow);
+					AddTab("Table Row", trc);
+				}
 			}
 			else if (type == "Matrix")
 			{
-				XmlNode matrix = (XmlNode) _Nodes[0];
+				XmlNode matrix = _Nodes[0];
 				MatrixCtl mc = new MatrixCtl(_Draw, this._Nodes);
 				AddTab("Matrix", mc);
 				FiltersCtl fc = new FiltersCtl(_Draw, matrix);
@@ -270,10 +313,16 @@ namespace fyiReporting.RdlDesign
 			}
 			else if (type == "Subreport" && _Nodes.Count == 1)
 			{
-				XmlNode subreport = (XmlNode) _Nodes[0];
+				XmlNode subreport = _Nodes[0];
 				SubreportCtl src = new SubreportCtl(_Draw, subreport);
 				AddTab("Subreport", src);
 			}
+            else if (aNode.Name == "CustomReportItem")
+            {
+                XmlNode cri = _Nodes[0];
+                CustomReportItemCtl cric = new CustomReportItemCtl(_Draw, _Nodes);
+                AddTab(type, cric);
+            }
 
 			// Position tab
 			PositionCtl pc = new PositionCtl(_Draw, this._Nodes);
@@ -309,12 +358,12 @@ namespace fyiReporting.RdlDesign
 				propName = "ValueAxis";
 			}
 
-			XmlNode cNode = (XmlNode) _Nodes[0];
+			XmlNode cNode = _Nodes[0];
 			XmlNode aNode = _Draw.GetCreateNamedChildNode(cNode, propName);
 			XmlNode axNode = _Draw.GetCreateNamedChildNode(aNode, "Axis");
 
 			// Now we replace the node array with a new one containing only the legend
-			_Nodes = new ArrayList();
+            _Nodes = new List<XmlNode>();
 			_Nodes.Add(axNode);
 
 			EnsureStyle();	// Make sure we have Style nodes
@@ -340,11 +389,11 @@ namespace fyiReporting.RdlDesign
 		{
 			this.Text = "Chart Legend Properties";
 
-			XmlNode cNode = (XmlNode) _Nodes[0];
+			XmlNode cNode = _Nodes[0];
 			XmlNode lNode = _Draw.GetCreateNamedChildNode(cNode, "Legend");
 
 			// Now we replace the node array with a new one containing only the legend
-			_Nodes = new ArrayList();
+            _Nodes = new List<XmlNode>();
 			_Nodes.Add(lNode);
 
 			EnsureStyle();	// Make sure we have Style nodes
@@ -368,8 +417,8 @@ namespace fyiReporting.RdlDesign
 
 		private void BuildTitle(PropertyTypeEnum type)
 		{
-			XmlNode cNode = (XmlNode) _Nodes[0];
-			_Nodes = new ArrayList();		// replace with a new one
+			XmlNode cNode = _Nodes[0];
+            _Nodes = new List<XmlNode>();		// replace with a new one
 			if (type == PropertyTypeEnum.ChartTitle)
 			{
 				this.Text = "Chart Title";
@@ -480,16 +529,15 @@ namespace fyiReporting.RdlDesign
 			this.panel1.Controls.Add(this.bOK);
 			this.panel1.Controls.Add(this.bCancel);
 			this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panel1.Location = new System.Drawing.Point(0,593);
+			this.panel1.Location = new System.Drawing.Point(0, 326);
 			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(911,56);
+			this.panel1.Size = new System.Drawing.Size(458, 40);
 			this.panel1.TabIndex = 1;
 			// 
 			// bDelete
 			// 
-			this.bDelete.Location = new System.Drawing.Point(8,16);
+			this.bDelete.Location = new System.Drawing.Point(8, 8);
 			this.bDelete.Name = "bDelete";
-			this.bDelete.Size = new System.Drawing.Size(75,23);
 			this.bDelete.TabIndex = 3;
 			this.bDelete.Text = "Delete";
 			this.bDelete.Visible = false;
@@ -497,50 +545,46 @@ namespace fyiReporting.RdlDesign
 			// 
 			// bApply
 			// 
-			this.bApply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.bApply.Location = new System.Drawing.Point(805,16);
+			this.bApply.Location = new System.Drawing.Point(376, 8);
 			this.bApply.Name = "bApply";
-			this.bApply.Size = new System.Drawing.Size(75,23);
 			this.bApply.TabIndex = 2;
 			this.bApply.Text = "Apply";
 			this.bApply.Click += new System.EventHandler(this.bApply_Click);
 			// 
 			// bOK
 			// 
-			this.bOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.bOK.Location = new System.Drawing.Point(629,16);
+			this.bOK.Location = new System.Drawing.Point(216, 8);
 			this.bOK.Name = "bOK";
-			this.bOK.Size = new System.Drawing.Size(75,23);
 			this.bOK.TabIndex = 0;
 			this.bOK.Text = "OK";
 			this.bOK.Click += new System.EventHandler(this.bOK_Click);
 			// 
 			// bCancel
 			// 
-			this.bCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.bCancel.CausesValidation = false;
 			this.bCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.bCancel.Location = new System.Drawing.Point(717,16);
+			this.bCancel.Location = new System.Drawing.Point(296, 8);
 			this.bCancel.Name = "bCancel";
-			this.bCancel.Size = new System.Drawing.Size(75,23);
 			this.bCancel.TabIndex = 1;
 			this.bCancel.Text = "Cancel";
 			// 
 			// tcProps
 			// 
 			this.tcProps.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.tcProps.Location = new System.Drawing.Point(0,0);
+			this.tcProps.Location = new System.Drawing.Point(0, 0);
+			this.tcProps.Multiline = true;
 			this.tcProps.Name = "tcProps";
 			this.tcProps.SelectedIndex = 0;
-			this.tcProps.Size = new System.Drawing.Size(911,593);
+			this.tcProps.Size = new System.Drawing.Size(458, 326);
 			this.tcProps.TabIndex = 0;
 			// 
 			// PropertyDialog
 			// 
 			this.AcceptButton = this.bOK;
-			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
+			this.AutoScaleMode = AutoScaleMode.None;
+			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.bCancel;
-			this.ClientSize = new System.Drawing.Size(911,649);
+			this.ClientSize = new System.Drawing.Size(458, 366);
 			this.Controls.Add(this.tcProps);
 			this.Controls.Add(this.panel1);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -598,7 +642,7 @@ namespace fyiReporting.RdlDesign
 		{
 			if (_Type == PropertyTypeEnum.Grouping)
 			{	// Need to check if grouping value is still required
-				XmlNode aNode = (XmlNode) _Nodes[0];
+				XmlNode aNode = _Nodes[0];
 
 				// We have to create a grouping here but will need to kill it if no definition follows it
 				XmlNode gNode = _Draw.GetNamedChildNode(aNode, "Grouping");   

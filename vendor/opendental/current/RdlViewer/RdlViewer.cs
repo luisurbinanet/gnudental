@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
+    This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -23,6 +23,7 @@
 using System;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -207,13 +208,38 @@ namespace fyiReporting.RdlViewer
 		}
 
 		/// <summary>
-		/// Returns the page currently showing
+		/// Sets/Returns the page currently showing
 		/// </summary>
 		public int PageCurrent
 		{
 			get 
 			{
-				return _vScroll.Value + 1;
+                if (_pgs == null)
+                    return 0;
+				int pc = (int) (_pgs.PageCount * (long) _vScroll.Value / (double) _vScroll.Maximum)+1; 
+				if (pc > _pgs.PageCount)
+					pc = _pgs.PageCount;
+				return pc;
+			}
+			set 
+			{
+                if (_pgs == null)
+                    return;
+				// Contributed by Henrique (h2a) 07/14/2006
+				if(value <= _pgs.PageCount && value >= 1) 
+				{ 
+					_vScroll.Value = (int)(_vScroll.Maximum / _pgs.PageCount * (value -1)); 
+
+					string tt = string.Format("Page {0} of {1}", 
+						(int) (_pgs.PageCount * (long) _vScroll.Value / (double) _vScroll.Maximum)+1, 
+						_pgs.PageCount); 
+
+					_vScrollToolTip.SetToolTip(_vScroll, tt); 
+
+					_DrawPanel.Invalidate(); 
+				}
+				else
+					throw new ArgumentOutOfRangeException("PageCurrent", value, String.Format("Value must be between 1 and {0}.", _pgs.PageCount));
 			}
 		}
 
@@ -472,7 +498,7 @@ namespace fyiReporting.RdlViewer
 		/// Save the file.  The extension determines the type of file to save.
 		/// </summary>
 		/// <param name="FileName">Name of the file to be saved to.</param>
-		/// <param name="ext">Type of file to save.  Should be "pdf", "xml", "html".</param>
+		/// <param name="ext">Type of file to save.  Should be "pdf", "xml", "html", "mhtml".</param>
 		public void SaveAs(string FileName, string type)
 		{
 			LoadPageIfNeeded();
@@ -491,6 +517,9 @@ namespace fyiReporting.RdlViewer
 						break;																  
 					case "html": case "htm":
 						_Report.RunRender(sg, OutputPresentationType.HTML);
+						break;
+					case "mhtml": case "mht":
+						_Report.RunRender(sg, OutputPresentationType.MHTML);
 						break;
 					default:
 						throw new Exception("Unsupported file extension for SaveAs");
@@ -560,14 +589,16 @@ namespace fyiReporting.RdlViewer
 			return y * 72f / DpiY;
 		}
 
+		private float POINTSIZEF = 72.27f;
+
 		private int PixelsX(float x)		// points to pixels
 		{
-			return (int) (x * DpiX / 72.0f);
+			return (int) (x * DpiX / POINTSIZEF);
 		}
 
 		private int PixelsY(float y)
 		{
-			return (int) (y * DpiY / 72.0f);
+			return (int) (y * DpiY / POINTSIZEF);
 		}
 
 		private void CalcZoom()
@@ -694,7 +725,7 @@ namespace fyiReporting.RdlViewer
 			catch (Exception ex)
 			{
 				_loadFailed=true;
-				_errorMsgs = new ArrayList();		// create new error list
+				_errorMsgs = new List<string>();		// create new error list
 				_errorMsgs.Add(ex.Message);			// put the message in it
 				_errorMsgs.Add(ex.StackTrace);		//   and the stack trace
 				r = null;
@@ -948,6 +979,7 @@ namespace fyiReporting.RdlViewer
 
 				// Create a control
 				Control v;
+				int width = 90;
 				if (rp.DisplayValues == null)
 				{
 					TextBox tb = new TextBox();
@@ -958,13 +990,31 @@ namespace fyiReporting.RdlViewer
 				else
 				{
 					ComboBox cb = new ComboBox();
+					// create a label to auto
+					Label l = new Label();
+					l.AutoSize = true;
+					l.Visible = false;
+
 					cb.Leave += new EventHandler(ParametersLeave);
 					v = cb;
+					width = 0;
 					foreach (string s in rp.DisplayValues)
+					{
+						l.Text = s;
+						if (width < l.Width)
+							width = l.Width;
 						cb.Items.Add(s);
+					}																	   
+					if (width > 0)
+					{						   
+						l.Text = "XX";
+						width += l.Width;		// give some extra room for the drop down arrow
+					}
+					else
+						width = 90;				// just force the default
 				}
 				v.Parent = _ParameterPanel;
-				v.Width = 90;
+				v.Width = width;
 				v.Location = new Point(label.Location.X+label.Width+5, yPos);
 				if (rp.DefaultValue != null)
 				{
@@ -1100,10 +1150,11 @@ namespace fyiReporting.RdlViewer
 				_vScroll.SmallChange = _vScroll.LargeChange / 5;
 			}
 			_vScroll.Enabled = true;
-			_vScrollToolTip.SetToolTip(_vScroll, 
-				string.Format("Page {0} of {1}", 
-					(int) (_pgs.PageCount * _vScroll.Value / (float) _vScroll.Maximum)+1, 
-					_pgs.PageCount));
+			string tt = string.Format("Page {0} of {1}", 
+					(int) (_pgs.PageCount * (long) _vScroll.Value / (double) _vScroll.Maximum)+1, 
+					_pgs.PageCount);
+
+			_vScrollToolTip.SetToolTip(_vScroll, tt);
 //			switch (_ScrollMode)
 //			{
 //				case ScrollModeEnum.SinglePage:
@@ -1152,10 +1203,11 @@ namespace fyiReporting.RdlViewer
 			if (e.NewValue == _vScroll.Value)	// don't need to scroll if already there
 				return;
 
-			_vScrollToolTip.SetToolTip(_vScroll, 
-				string.Format("Page {0} of {1}", 
-				(int) (_pgs.PageCount * _vScroll.Value / (float) _vScroll.Maximum)+1, 
-				_pgs.PageCount));
+			string tt = string.Format("Page {0} of {1}", 
+				(int) (_pgs.PageCount * (long) _vScroll.Value / (double) _vScroll.Maximum)+1, 
+				_pgs.PageCount);
+			
+			_vScrollToolTip.SetToolTip(_vScroll, tt);
 
 			_DrawPanel.Invalidate();   
 		}
@@ -1169,7 +1221,7 @@ namespace fyiReporting.RdlViewer
 				{
 					wvalue = _vScroll.Value + _vScroll.SmallChange;
 
-					_vScroll.Value = Math.Min(_vScroll.Maximum, wvalue);
+					_vScroll.Value = Math.Min(_vScroll.Maximum - _DrawPanel.Height, wvalue);
 					_DrawPanel.Refresh();
 				}
 			}

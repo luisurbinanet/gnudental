@@ -123,11 +123,11 @@ namespace OpenDental{
 			//}
 			Queries.CurReport=new ReportOld();
 			Queries.CurReport.Query=
-				"SELECT CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI),adjamt "
+				"SELECT CONCAT(CONCAT(CONCAT(CONCAT(patient.LName,', '),patient.FName),' '),patient.MiddleI),adjamt "
 				+"FROM patient,adjustment "
 				+"WHERE patient.patnum=adjustment.patnum "
-				+"&& adjustment.adjdate = '"+((Pref)PrefB.HList["FinanceChargeLastRun"]).ValueString+"'"
-				+"&& adjustment.adjtype = '"+((Pref)PrefB.HList["FinanceChargeAdjustmentType"]).ValueString+"'";
+				+"AND adjustment.adjdate = '"+((Pref)PrefB.HList["FinanceChargeLastRun"]).ValueString+"'"
+				+"AND adjustment.adjtype = '"+((Pref)PrefB.HList["FinanceChargeAdjustmentType"]).ValueString+"'";
 			FormQuery2=new FormQuery();
 			FormQuery2.IsReport=true;
 			FormQuery2.SubmitReportQuery();		

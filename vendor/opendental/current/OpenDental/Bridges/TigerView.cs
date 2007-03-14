@@ -59,23 +59,30 @@ namespace OpenDental.Bridges{
 				WriteValue("AddrCity",pat.City);
 				WriteValue("AddrState",pat.State);
 				WriteValue("AddrZip",pat.Zip);
-				WriteValue("PhHome",pat.HmPhone);
-				WriteValue("PhWork",pat.WkPhone);
-				try{
+				WriteValue("PhHome",LimitLength(pat.HmPhone,13));
+				WriteValue("PhWork",LimitLength(pat.WkPhone,13));
+				try {
 					Process.Start(ProgramCur.Path,ProgramCur.CommandLine);
 				}
-				catch{
+				catch {
 					MessageBox.Show(ProgramCur.Path+" is not available.");
 				}
 			}//if patient is loaded
-			else{
-				try{
+			else {
+				try {
 					Process.Start(ProgramCur.Path);//should start TigerView without bringing up a pt.
 				}
-				catch{
+				catch {
 					MessageBox.Show(ProgramCur.Path+" is not available.");
 				}
 			}
+		}
+
+		private static string LimitLength(string str,int length) {
+			if(str.Length<length+1) {
+				return str;
+			}
+			return str.Substring(0,length);
 		}
 
 	}

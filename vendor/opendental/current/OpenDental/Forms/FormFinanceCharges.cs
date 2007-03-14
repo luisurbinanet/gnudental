@@ -262,11 +262,11 @@ namespace OpenDental{
 			adjType=PrefB.GetInt("FinanceChargeAdjustmentType");
 			ALPosIndices=new ArrayList();
 			listAdjType.Items.Clear();
-			for(int i=0;i<Defs.Short[(int)DefCat.AdjTypes].Length;i++){
-				if(Defs.Short[(int)DefCat.AdjTypes][i].ItemValue=="+"){
+			for(int i=0;i<DefB.Short[(int)DefCat.AdjTypes].Length;i++){
+				if(DefB.Short[(int)DefCat.AdjTypes][i].ItemValue=="+"){
 					ALPosIndices.Add(i);
-					listAdjType.Items.Add(Defs.Short[(int)DefCat.AdjTypes][i].ItemName);
-					if(Defs.Short[(int)DefCat.AdjTypes][i].DefNum==adjType)
+					listAdjType.Items.Add(DefB.Short[(int)DefCat.AdjTypes][i].ItemName);
+					if(DefB.Short[(int)DefCat.AdjTypes][i].DefNum==adjType)
 						listAdjType.SelectedIndex=ALPosIndices.Count-1;
 				}
 			}
@@ -307,7 +307,7 @@ namespace OpenDental{
 					//AdjustmentCur.DateEntry=PIn.PDate(textDate.Text);//automatically handled
 					AdjustmentCur.AdjDate=PIn.PDate(textDate.Text);
 					AdjustmentCur.ProcDate=PIn.PDate(textDate.Text);
-					AdjustmentCur.AdjType=Defs.Short[(int)DefCat.AdjTypes]
+					AdjustmentCur.AdjType=DefB.Short[(int)DefCat.AdjTypes]
 						[(int)ALPosIndices[listAdjType.SelectedIndex]].DefNum;
 					AdjustmentCur.AdjNote="Finance Charge";
 					AdjustmentCur.AdjAmt=Math.Round(((PIn.PDouble(textAPR.Text) * .01 / 12) * OverallBalance),2);
@@ -317,8 +317,8 @@ namespace OpenDental{
 			}
 			Prefs.UpdateString("FinanceChargeAPR",textAPR.Text);
 			Prefs.UpdateInt("FinanceChargeAdjustmentType",
-				Defs.Short[(int)DefCat.AdjTypes][(int)ALPosIndices[listAdjType.SelectedIndex]].DefNum);
-			Prefs.UpdateString("FinanceChargeLastRun",POut.PDate(DateTime.Today));
+				DefB.Short[(int)DefCat.AdjTypes][(int)ALPosIndices[listAdjType.SelectedIndex]].DefNum);
+			Prefs.UpdateString("FinanceChargeLastRun",POut.PDate(DateTime.Today,false));
 			DataValid.SetInvalid(InvalidTypes.Prefs);
 			MessageBox.Show(Lan.g(this,"Finance Charges Added."));
 			DialogResult=DialogResult.OK;

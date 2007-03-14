@@ -7,15 +7,16 @@ namespace OpenDentBusiness{
 
 	///<summary>Miscellaneous database functions.</summary>
 	public class MiscDataB{
-		
-		/*
+
 		///<summary>Gets the current date/Time direcly from the server.  Mostly used to prevent uesr from altering the workstation date to bypass security.</summary>
-		public static DateTime GetNowDateTime(){
+		public static DateTime GetNowDateTime() {
 			string command="SELECT NOW()";
-			DataConnection dcon=new DataConnection();
-			DataTable table=dcon.GetTable(command);
-			return PIn.PDateT(table.Rows[0][0].ToString());
-		}*/
+			if(DataConnection.DBtype==DatabaseType.Oracle) {
+				command="SELECT CURRENT_TIMESTAMP FROM DUAL";
+			}
+			DataSet table=GeneralB.GetTable(command);
+			return PIn.PDateT(table.Tables[0].Rows[0][0].ToString());
+		}
 
 		///<summary>Generates a random primary key.  Tests to see if that key already exists before returning it for use.  Currently, the range of returned values is greater than 0, and less than or equal to 16777215, the limit for mysql medium int.  This will eventually change to a max of 18446744073709551615.  Then, the return value would have to be a ulong and the mysql type would have to be bigint.</summary>
 		public static int GetKey(string tablename,string field){
@@ -50,6 +51,8 @@ namespace OpenDentBusiness{
 
 		///<summary>Backs up the database to the same directory as the original just in case the user did not have sense enough to do a backup first.</summary>
 		public static int MakeABackup() {
+			//only used in two places: upgrading version, and upgrading mysql version.
+			//Both places check first to make sure user is using mysql.
 			//we have to be careful to throw an exception if the backup is failing.
 			DataConnection dcon=new DataConnection();
 			string command="SELECT database()";
@@ -93,8 +96,6 @@ namespace OpenDentBusiness{
 			}
 			return 0;
 		}
-
-
 		
 
 	}

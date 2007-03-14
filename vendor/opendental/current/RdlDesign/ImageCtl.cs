@@ -1,5 +1,5 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
@@ -22,6 +22,7 @@
 */
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Data;
@@ -35,7 +36,7 @@ namespace fyiReporting.RdlDesign
 	/// </summary>
 	internal class ImageCtl : System.Windows.Forms.UserControl, IProperty
 	{
-		private ArrayList _ReportItems;
+        private List<XmlNode> _ReportItems;
 		private DesignXmlDraw _Draw;
 		bool fSource, fValue, fSizing, fMIMEType;
 		private System.Windows.Forms.GroupBox groupBox1;
@@ -50,12 +51,16 @@ namespace fyiReporting.RdlDesign
 		private System.Windows.Forms.Button bExternal;
 		private System.Windows.Forms.RadioButton rbEmbedded;
 		private System.Windows.Forms.Button bEmbedded;
+		private System.Windows.Forms.Button bDatabaseExpr;
+		private System.Windows.Forms.Button bMimeExpr;
+		private System.Windows.Forms.Button bEmbeddedExpr;
+		private System.Windows.Forms.Button bExternalExpr;
 		/// <summary> 
 		/// Required designer variable.
 		/// </summary>
 		private System.ComponentModel.Container components = null;
 
-		internal ImageCtl(DesignXmlDraw dxDraw, ArrayList ris)
+        internal ImageCtl(DesignXmlDraw dxDraw, List<XmlNode> ris)
 		{
 			_ReportItems = ris;
 			_Draw = dxDraw;
@@ -68,7 +73,7 @@ namespace fyiReporting.RdlDesign
 
 		private void InitValues()
 		{
-			XmlNode iNode = (XmlNode) _ReportItems[0];
+			XmlNode iNode =  _ReportItems[0];
 
 			// Populate the EmbeddedImage names
 			cbValueEmbedded.Items.AddRange(_Draw.ReportNames.EmbeddedImageNames);
@@ -123,6 +128,7 @@ namespace fyiReporting.RdlDesign
 		private void InitializeComponent()
 		{
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.bEmbedded = new System.Windows.Forms.Button();
 			this.bExternal = new System.Windows.Forms.Button();
 			this.tbValueExternal = new System.Windows.Forms.TextBox();
 			this.cbValueDatabase = new System.Windows.Forms.ComboBox();
@@ -133,12 +139,19 @@ namespace fyiReporting.RdlDesign
 			this.rbExternal = new System.Windows.Forms.RadioButton();
 			this.label1 = new System.Windows.Forms.Label();
 			this.cbSizing = new System.Windows.Forms.ComboBox();
-			this.bEmbedded = new System.Windows.Forms.Button();
+			this.bDatabaseExpr = new System.Windows.Forms.Button();
+			this.bMimeExpr = new System.Windows.Forms.Button();
+			this.bEmbeddedExpr = new System.Windows.Forms.Button();
+			this.bExternalExpr = new System.Windows.Forms.Button();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// groupBox1
 			// 
+			this.groupBox1.Controls.Add(this.bExternalExpr);
+			this.groupBox1.Controls.Add(this.bEmbeddedExpr);
+			this.groupBox1.Controls.Add(this.bMimeExpr);
+			this.groupBox1.Controls.Add(this.bDatabaseExpr);
 			this.groupBox1.Controls.Add(this.bEmbedded);
 			this.groupBox1.Controls.Add(this.bExternal);
 			this.groupBox1.Controls.Add(this.tbValueExternal);
@@ -155,11 +168,20 @@ namespace fyiReporting.RdlDesign
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Source";
 			// 
+			// bEmbedded
+			// 
+			this.bEmbedded.Location = new System.Drawing.Point(378, 58);
+			this.bEmbedded.Name = "bEmbedded";
+			this.bEmbedded.Size = new System.Drawing.Size(22, 16);
+			this.bEmbedded.TabIndex = 8;
+			this.bEmbedded.Text = "...";
+			this.bEmbedded.Click += new System.EventHandler(this.bEmbedded_Click);
+			// 
 			// bExternal
 			// 
-			this.bExternal.Location = new System.Drawing.Point(360, 24);
+			this.bExternal.Location = new System.Drawing.Point(378, 26);
 			this.bExternal.Name = "bExternal";
-			this.bExternal.Size = new System.Drawing.Size(24, 23);
+			this.bExternal.Size = new System.Drawing.Size(22, 16);
 			this.bExternal.TabIndex = 7;
 			this.bExternal.Text = "...";
 			this.bExternal.Click += new System.EventHandler(this.bExternal_Click);
@@ -177,7 +199,7 @@ namespace fyiReporting.RdlDesign
 			// 
 			this.cbValueDatabase.Location = new System.Drawing.Point(88, 120);
 			this.cbValueDatabase.Name = "cbValueDatabase";
-			this.cbValueDatabase.Size = new System.Drawing.Size(296, 21);
+			this.cbValueDatabase.Size = new System.Drawing.Size(256, 21);
 			this.cbValueDatabase.TabIndex = 5;
 			this.cbValueDatabase.TextChanged += new System.EventHandler(this.Value_TextChanged);
 			// 
@@ -253,14 +275,53 @@ namespace fyiReporting.RdlDesign
 			this.cbSizing.TabIndex = 2;
 			this.cbSizing.SelectedIndexChanged += new System.EventHandler(this.cbSizing_SelectedIndexChanged);
 			// 
-			// bEmbedded
+			// bDatabaseExpr
 			// 
-			this.bEmbedded.Location = new System.Drawing.Point(360, 56);
-			this.bEmbedded.Name = "bEmbedded";
-			this.bEmbedded.Size = new System.Drawing.Size(24, 23);
-			this.bEmbedded.TabIndex = 8;
-			this.bEmbedded.Text = "...";
-			this.bEmbedded.Click += new System.EventHandler(this.bEmbedded_Click);
+			this.bDatabaseExpr.Font = new System.Drawing.Font("Arial", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.bDatabaseExpr.Location = new System.Drawing.Point(352, 122);
+			this.bDatabaseExpr.Name = "bDatabaseExpr";
+			this.bDatabaseExpr.Size = new System.Drawing.Size(22, 16);
+			this.bDatabaseExpr.TabIndex = 9;
+			this.bDatabaseExpr.Tag = "database";
+			this.bDatabaseExpr.Text = "fx";
+			this.bDatabaseExpr.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.bDatabaseExpr.Click += new System.EventHandler(this.bExpr_Click);
+			// 
+			// bMimeExpr
+			// 
+			this.bMimeExpr.Font = new System.Drawing.Font("Arial", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.bMimeExpr.Location = new System.Drawing.Point(184, 90);
+			this.bMimeExpr.Name = "bMimeExpr";
+			this.bMimeExpr.Size = new System.Drawing.Size(22, 16);
+			this.bMimeExpr.TabIndex = 10;
+			this.bMimeExpr.Tag = "mime";
+			this.bMimeExpr.Text = "fx";
+			this.bMimeExpr.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.bMimeExpr.Click += new System.EventHandler(this.bExpr_Click);
+			// 
+			// bEmbeddedExpr
+			// 
+			this.bEmbeddedExpr.Font = new System.Drawing.Font("Arial", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.bEmbeddedExpr.Location = new System.Drawing.Point(352, 58);
+			this.bEmbeddedExpr.Name = "bEmbeddedExpr";
+			this.bEmbeddedExpr.Size = new System.Drawing.Size(22, 16);
+			this.bEmbeddedExpr.TabIndex = 11;
+			this.bEmbeddedExpr.Tag = "embedded";
+			this.bEmbeddedExpr.Text = "fx";
+			this.bEmbeddedExpr.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.bEmbeddedExpr.Click += new System.EventHandler(this.bExpr_Click);
+			// 
+			// bExternalExpr
+			// 
+			this.bExternalExpr.Font = new System.Drawing.Font("Arial", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.bExternalExpr.Location = new System.Drawing.Point(352, 26);
+			this.bExternalExpr.Name = "bExternalExpr";
+			this.bExternalExpr.Size = new System.Drawing.Size(22, 16);
+			this.bExternalExpr.TabIndex = 12;
+			this.bExternalExpr.Tag = "external";
+			this.bExternalExpr.Text = "fx";
+			this.bExternalExpr.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.bExternalExpr.Click += new System.EventHandler(this.bExpr_Click);
 			// 
 			// ImageCtl
 			// 
@@ -336,9 +397,12 @@ namespace fyiReporting.RdlDesign
 		private void rbSource_CheckedChanged(object sender, System.EventArgs e)
 		{
 			fSource = true;
-			this.cbValueDatabase.Enabled = this.cbMIMEType.Enabled = this.rbDatabase.Checked;
-			this.cbValueEmbedded.Enabled = this.rbEmbedded.Checked;
-			this.tbValueExternal.Enabled = this.rbExternal.Checked;
+			this.cbValueDatabase.Enabled = this.cbMIMEType.Enabled = 
+				this.bDatabaseExpr.Enabled = this.rbDatabase.Checked;
+			this.cbValueEmbedded.Enabled = this.bEmbeddedExpr.Enabled = 
+				this.bEmbedded.Enabled = this.rbEmbedded.Checked;
+			this.tbValueExternal.Enabled = this.bExternalExpr.Enabled = 
+				this.bExternal.Enabled = this.rbExternal.Checked;
 		}
 
 		private void cbSizing_SelectedIndexChanged(object sender, System.EventArgs e)
@@ -377,5 +441,39 @@ namespace fyiReporting.RdlDesign
 			cbValueEmbedded.Items.AddRange(_Draw.ReportNames.EmbeddedImageNames);
 
 		}
+		private void bExpr_Click(object sender, System.EventArgs e)
+		{
+			Button b = sender as Button;
+			if (b == null)
+				return;
+			Control c = null;
+			switch (b.Tag as string)
+			{
+				case "external":
+					c = tbValueExternal;
+					break;
+				case "embedded":
+					c = cbValueEmbedded;
+					break;
+				case "mime":
+					c = cbMIMEType;
+					break;
+				case "database":
+					c = cbValueDatabase;
+					break;
+			}
+
+			if (c == null)
+				return;
+
+			XmlNode sNode = _ReportItems[0];
+
+			DialogExprEditor ee = new DialogExprEditor(_Draw, c.Text, sNode);
+			DialogResult dr = ee.ShowDialog();
+			if (dr == DialogResult.OK)
+				c.Text = ee.Expression;
+			return;
+		}
+
 	}
 }

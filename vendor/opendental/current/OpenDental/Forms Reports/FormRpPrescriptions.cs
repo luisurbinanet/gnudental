@@ -148,18 +148,19 @@ rxpat.drug,rxpat.sig,rxpat.disp,provider.abbr FROM patient,rxpat,provider
 WHERE patient.patnum=rxpat.patnum && provider.provnum=rxpat.provnum		
 */
 			Queries.CurReport=new ReportOld();
-			Queries.CurReport.Query="SELECT CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI),rxpat.rxdate,"
+			Queries.CurReport.Query="SELECT CONCAT(CONCAT(CONCAT(CONCAT(patient.LName,', '),patient.FName),"+
+				"' '),patient.MiddleI),rxpat.rxdate,"
 				+"rxpat.drug,rxpat.sig,rxpat.disp,provider.abbr FROM patient,rxpat,provider "
-				+"WHERE patient.patnum=rxpat.patnum && provider.provnum=rxpat.provnum";
+				+"WHERE patient.patnum=rxpat.patnum AND provider.provnum=rxpat.provnum";
 
 			if(radioPatient.Checked==true){
 				Queries.CurReport.Query
-					+="&& patient.lname like '"+textBoxInput.Text+"%'"
+					+="AND patient.lname like '"+textBoxInput.Text+"%'"
 	        +" ORDER BY patient.lname,patient.fname,rxpat.rxdate";		
 			}
 			else{
 				Queries.CurReport.Query
-					+="&& rxpat.drug like '"+textBoxInput.Text+"%'"
+					+="AND rxpat.drug like '"+textBoxInput.Text+"%'"
 			    +" ORDER BY patient.lname,rxpat.drug,rxpat.rxdate";
 			}
 

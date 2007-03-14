@@ -104,9 +104,13 @@ namespace OpenDental{
 		public static bool CheckProgramVersion() {
 			Version storedVersion=new Version(PrefB.GetString("ProgramVersion"));
 			Version currentVersion=new Version(Application.ProductVersion);
-			string command="SELECT database()";
-			DataTable table=General.GetTable(command);
-			string database=PIn.PString(table.Rows[0][0].ToString());
+			string database="";
+			string command="";
+			if(FormChooseDatabase.DBtype==DatabaseType.MySql){
+				command="SELECT database()";
+				DataTable table=General.GetTable(command);
+				database=PIn.PString(table.Rows[0][0].ToString());
+			}
 			if(storedVersion<currentVersion) {
 				UpdateString("ProgramVersion",currentVersion.ToString());
 				Prefs.Refresh();
@@ -163,6 +167,9 @@ namespace OpenDental{
 
 		///<summary>This ONLY runs when first opening the program.  Gets run early in the sequence. Returns false if the program should exit.</summary>
 		public static bool CheckMySqlVersion41() {
+			if(FormChooseDatabase.DBtype!=DatabaseType.MySql){
+				return true;
+			}
 			string command="SELECT @@version";
 			DataTable table=General.GetTable(command);
 			string thisVersion=PIn.PString(table.Rows[0][0].ToString());
@@ -170,7 +177,9 @@ namespace OpenDental{
 			//do nothing
 			//}
 			if(thisVersion.Substring(0,3)=="4.1"
-				|| thisVersion.Substring(0,3)=="5.0") {
+				|| thisVersion.Substring(0,3)=="5.0"
+				|| thisVersion.Substring(0,3)=="5.1")
+			{
 				if(PrefB.HList.ContainsKey("DatabaseConvertedForMySql41"))
 				//&& GetBool("DatabaseConvertedForMySql41"))
 				{

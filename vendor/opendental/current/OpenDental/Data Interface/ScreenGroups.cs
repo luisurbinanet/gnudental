@@ -14,8 +14,8 @@ namespace OpenDental{
 		public static void Refresh(DateTime fromDate,DateTime toDate){
 			string command =
 				"SELECT * from screengroup "
-				+"WHERE SGDate >= '"+POut.PDateT(fromDate)+"' "
-				+"&& SGDate <= '"+POut.PDateT(toDate.AddDays(1))+"' "
+				+"WHERE SGDate >= "+POut.PDateT(fromDate)+" "
+				+"AND SGDate <= "+POut.PDateT(toDate.AddDays(1))+" "
 				//added one day since it's calculated based on midnight.
 				+"ORDER BY SGDate,ScreenGroupNum";
 			DataTable table=General.GetTable(command);;
@@ -43,7 +43,7 @@ namespace OpenDental{
 			}
 			command+=
 				 "'"+POut.PString(Cur.Description)+"', "
-				+"'"+POut.PDate  (Cur.SGDate)+"')";
+				+POut.PDate  (Cur.SGDate)+")";
 			if(PrefB.RandomKeys){
 				General.NonQ(command);
 			}
@@ -56,7 +56,7 @@ namespace OpenDental{
 		public static void Update(ScreenGroup Cur){
 			string command = "UPDATE screengroup SET "
 				+"Description ='"  +POut.PString(Cur.Description)+"'"
-				+",SGDate ='"      +POut.PDate  (Cur.SGDate)+"'"
+				+",SGDate ="      +POut.PDate  (Cur.SGDate)
 				+" WHERE ScreenGroupNum = '" +POut.PInt(Cur.ScreenGroupNum)+"'";
 			General.NonQ(command);
 		}

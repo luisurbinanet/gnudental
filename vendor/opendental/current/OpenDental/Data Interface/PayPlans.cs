@@ -45,7 +45,7 @@ namespace OpenDental{
 			string command="UPDATE payplan SET " 
 				+"PatNum = '"         +POut.PInt   (plan.PatNum)+"'"
 				+",Guarantor = '"     +POut.PInt   (plan.Guarantor)+"'"
-				+",PayPlanDate = '"   +POut.PDate  (plan.PayPlanDate)+"'"
+				+",PayPlanDate = "   +POut.PDate  (plan.PayPlanDate)
 				+",APR = '"           +POut.PDouble(plan.APR)+"'"
 				+",Note = '"          +POut.PString(plan.Note)+"'"
 				+",PlanNum = '"       +POut.PInt   (plan.PlanNum)+"'"
@@ -69,7 +69,7 @@ namespace OpenDental{
 			command+=
 				 "'"+POut.PInt   (plan.PatNum)+"', "
 				+"'"+POut.PInt   (plan.Guarantor)+"', "
-				+"'"+POut.PDate  (plan.PayPlanDate)+"', "
+				+POut.PDate  (plan.PayPlanDate)+", "
 				+"'"+POut.PDouble(plan.APR)+"', "
 				+"'"+POut.PString(plan.Note)+"', "
 				+"'"+POut.PInt   (plan.PlanNum)+"')";

@@ -37,7 +37,7 @@ namespace OpenDental{
 				+",PayPlanNum = '"     +POut.PInt   (charge.PayPlanNum)+"'"
 				+",Guarantor = '"      +POut.PInt   (charge.Guarantor)+"'"
 				+",PatNum = '"         +POut.PInt   (charge.PatNum)+"'"
-				+",ChargeDate = '"     +POut.PDate  (charge.ChargeDate)+"'"
+				+",ChargeDate = "     +POut.PDate  (charge.ChargeDate)
 				+",Principal = '"      +POut.PDouble(charge.Principal)+"'"
 				+",Interest = '"       +POut.PDouble(charge.Interest)+"'"
 				+",Note = '"           +POut.PString(charge.Note)+"'"
@@ -62,7 +62,7 @@ namespace OpenDental{
 				 "'"+POut.PInt   (charge.PayPlanNum)+"', "
 				+"'"+POut.PInt   (charge.Guarantor)+"', "
 				+"'"+POut.PInt   (charge.PatNum)+"', "
-				+"'"+POut.PDate  (charge.ChargeDate)+"', "
+				+POut.PDate  (charge.ChargeDate)+", "
 				+"'"+POut.PDouble(charge.Principal)+"', "
 				+"'"+POut.PDouble(charge.Interest)+"', "
 				+"'"+POut.PString(charge.Note)+"')";

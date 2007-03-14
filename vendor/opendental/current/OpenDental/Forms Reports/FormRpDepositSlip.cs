@@ -223,8 +223,8 @@ namespace OpenDental{
 			monthCal2.SelectionStart=DateTime.Today;
 			//textDateFrom.Text=DateTime.Today.ToShortDateString();
 			//textDateTo.Text=DateTime.Today.ToShortDateString();
-			for(int i=0;i<Defs.Short[(int)DefCat.PaymentTypes].Length;i++){
-				this.listPayType.Items.Add(Defs.Short[(int)DefCat.PaymentTypes][i].ItemName);
+			for(int i=0;i<DefB.Short[(int)DefCat.PaymentTypes].Length;i++){
+				this.listPayType.Items.Add(DefB.Short[(int)DefCat.PaymentTypes][i].ItemName);
 				listPayType.SetSelected(i,true);
 			}
 			checkBoxIns.Checked=true;
@@ -305,7 +305,7 @@ ORDER BY PayDate, plfname
 			Queries.CurReport=new ReportOld();
 			string cmd="";
 			//if(checkBoxIns.Checked){
-			cmd="SELECT PayDate,CONCAT(patient.LName,', ',patient.FName,' ',"
+			cmd="SELECT PayDate,CONCAT(CONCAT(CONCAT(CONCAT(patient.LName,', '),patient.FName),' '),"
 				+"patient.MiddleI) AS plfname,'                          ',PayType,"
 				+"PayNum,CheckNum,BankBranch,PayAmt "
 				+"FROM payment,patient WHERE ";//added plfname,paynum spk 4/14/04
@@ -317,11 +317,11 @@ ORDER BY PayDate, plfname
 				for(int i=0;i<listPayType.SelectedIndices.Count;i++){
 					if(i>0) cmd+=" OR "; 
 					cmd+="PayType = '"
-						+Defs.Short[(int)DefCat.PaymentTypes][listPayType.SelectedIndices[i]].DefNum+"'";
+						+DefB.Short[(int)DefCat.PaymentTypes][listPayType.SelectedIndices[i]].DefNum+"'";
 				}
 				cmd+=
-					") AND PayDate >= '"+POut.PDate(monthCal1.SelectionStart)+"' "
-					+"AND PayDate <= '"+POut.PDate(monthCal2.SelectionStart)+"' ";
+					") AND PayDate >= "+POut.PDate(monthCal1.SelectionStart)+" "
+					+"AND PayDate <= "+POut.PDate(monthCal2.SelectionStart)+" ";
 				if(!PrefB.GetBool("EasyNoClinics")){
 					if(comboClinic.SelectedIndex==0){
 						cmd+="AND payment.ClinicNum=0 ";
@@ -333,7 +333,7 @@ ORDER BY PayDate, plfname
 				}
       }
 			if(checkBoxIns.Checked){
-				cmd+="UNION SELECT CheckDate,CONCAT(patient.LName,', ',patient.FName,' ',"
+				cmd+="UNION SELECT CheckDate,CONCAT(CONCAT(CONCAT(CONCAT(patient.LName,', '),patient.FName),' '),"
 					+"patient.MiddleI) AS plfname,CarrierName,'Ins',"
 					+"claimpayment.ClaimPaymentNum,"
 					+"CheckNum,BankBranch,CheckAmt "//spk added claimpaymentnum
@@ -344,8 +344,8 @@ ORDER BY PayDate, plfname
 					+"AND claimproc.PatNum=patient.PatNum "
 					+"AND insplan.CarrierNum = carrier.CarrierNum "
 					+"AND (claimproc.status = '1' OR claimproc.status = '4') "
-					+"AND CheckDate >= '"+POut.PDate(monthCal1.SelectionStart)+"' "
-					+"AND CheckDate <= '"+POut.PDate(monthCal2.SelectionStart)+"' ";//added plfname,spk 4/30/04
+					+"AND CheckDate >= "+POut.PDate(monthCal1.SelectionStart)+" "
+					+"AND CheckDate <= "+POut.PDate(monthCal2.SelectionStart)+" ";//added plfname,spk 4/30/04
 				if(!PrefB.GetBool("EasyNoClinics")){
 					if(comboClinic.SelectedIndex==0){
 						cmd+="AND claimpayment.ClinicNum=0 ";
@@ -358,7 +358,8 @@ ORDER BY PayDate, plfname
 				cmd+="GROUP BY claimpayment.ClaimPaymentNum ";
 				//MessageBox.Show(Queries.CurReport.Query);
       }
-			cmd+="ORDER BY PayDate, plfname";
+			//cmd+="ORDER BY PayDate, plfname";//FIXME:UNION-ORDER-BY
+			cmd+="ORDER BY 1, 2";
 			Queries.CurReport.Query=cmd;
 			FormQuery2=new FormQuery();
 			FormQuery2.IsReport=true;
@@ -383,7 +384,7 @@ ORDER BY PayDate, plfname
 					for(int i=0;i<listPayType.SelectedIndices.Count;i++){
 						if(i>0) Queries.CurReport.SubTitle[2]+=", ";
 						Queries.CurReport.SubTitle[2]
-							+=Defs.Short[(int)DefCat.PaymentTypes][listPayType.SelectedIndices[i]].ItemName;
+							+=DefB.Short[(int)DefCat.PaymentTypes][listPayType.SelectedIndices[i]].ItemName;
 					}
 				if(checkBoxIns.Checked)
 					Queries.CurReport.SubTitle[2]+=" Insurance Claim Checks";

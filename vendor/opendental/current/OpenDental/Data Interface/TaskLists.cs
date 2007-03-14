@@ -29,8 +29,8 @@ namespace OpenDental{
 					dateFrom=new DateTime(date.Year,date.Month,1);
 					dateTo=dateFrom.AddMonths(1).AddDays(-1);
 				}
-				where="DateTL >= '"+POut.PDate(dateFrom)
-					+"' AND DateTL <= '"+POut.PDate(dateTo)+"' "
+				where="DateTL >= "+POut.PDate(dateFrom)
+					+" AND DateTL <= "+POut.PDate(dateTo)+" "
 					+"AND DateType="+POut.PInt((int)dateType)+" ";
 			}
 			else {//no date supplied.
@@ -97,12 +97,12 @@ namespace OpenDental{
 			string command= "UPDATE tasklist SET " 
 				+"Descript = '"       +POut.PString(tlist.Descript)+"'"
 				+",Parent = '"        +POut.PInt   (tlist.Parent)+"'"
-				+",DateTL = '"        +POut.PDate  (tlist.DateTL)+"'"
+				+",DateTL = "        +POut.PDate  (tlist.DateTL)
 				+",IsRepeating = '"   +POut.PBool  (tlist.IsRepeating)+"'"
 				+",DateType = '"      +POut.PInt   ((int)tlist.DateType)+"'"
 				+",FromNum = '"       +POut.PInt   (tlist.FromNum)+"'"
 				+",ObjectType = '"    +POut.PInt   ((int)tlist.ObjectType)+"'"
-				+",DateTimeEntry = '" +POut.PDateT (tlist.DateTimeEntry)+"'"
+				+",DateTimeEntry = " +POut.PDateT (tlist.DateTimeEntry)
 				+" WHERE TaskListNum = '" +POut.PInt (tlist.TaskListNum)+"'";
  			General.NonQ(command);
 		}
@@ -124,12 +124,18 @@ namespace OpenDental{
 			command+=
 				 "'"+POut.PString(tlist.Descript)+"', "
 				+"'"+POut.PInt   (tlist.Parent)+"', "
-				+"'"+POut.PDate  (tlist.DateTL)+"', "
+				+POut.PDate  (tlist.DateTL)+", "
 				+"'"+POut.PBool  (tlist.IsRepeating)+"', "
 				+"'"+POut.PInt   ((int)tlist.DateType)+"', "
 				+"'"+POut.PInt   (tlist.FromNum)+"', "
-				+"'"+POut.PInt   ((int)tlist.ObjectType)+"', "
-				+"NOW())";//DateTimeEntry set to current server time
+				+"'"+POut.PInt   ((int)tlist.ObjectType)+"', ";
+			if(FormChooseDatabase.DBtype==DatabaseType.Oracle) {
+				command+=POut.PDateT(MiscData.GetNowDateTime());
+			}
+			else {//Assume MySQL
+				command+="NOW()";
+			}
+			command+=")";//DateTimeEntry set to current server time
  			if(PrefB.RandomKeys){
 				General.NonQ(command);
 			}

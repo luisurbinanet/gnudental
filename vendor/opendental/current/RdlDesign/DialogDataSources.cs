@@ -34,6 +34,7 @@ namespace fyiReporting.RdlDesign
 		private System.Windows.Forms.Label lConnectionString;
 		private System.Windows.Forms.Label lPrompt;
 		private System.Windows.Forms.TextBox tbDSName;
+		private System.Windows.Forms.Button bExprConnect;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -52,6 +53,11 @@ namespace fyiReporting.RdlDesign
 
 		private void InitValues()
 		{
+			// Populate the DataProviders
+			cbDataProvider.Items.Clear();
+			string[] items = RdlEngineConfig.GetProviders();
+			cbDataProvider.Items.AddRange(items);
+
 			//
 			// Obtain the existing DataSets info
 			//
@@ -141,6 +147,7 @@ namespace fyiReporting.RdlDesign
 			this.chkSharedDataSource = new System.Windows.Forms.CheckBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.tbDSName = new System.Windows.Forms.TextBox();
+			this.bExprConnect = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// tbFilename
@@ -178,7 +185,7 @@ namespace fyiReporting.RdlDesign
 																"OLEDB"});
 			this.cbDataProvider.Location = new System.Drawing.Point(96, 152);
 			this.cbDataProvider.Name = "cbDataProvider";
-			this.cbDataProvider.Size = new System.Drawing.Size(88, 21);
+			this.cbDataProvider.Size = new System.Drawing.Size(144, 21);
 			this.cbDataProvider.TabIndex = 4;
 			this.cbDataProvider.SelectedIndexChanged += new System.EventHandler(this.cbDataProvider_SelectedIndexChanged);
 			// 
@@ -305,12 +312,25 @@ namespace fyiReporting.RdlDesign
 			this.tbDSName.Validating += new System.ComponentModel.CancelEventHandler(this.tbDSName_Validating);
 			this.tbDSName.TextChanged += new System.EventHandler(this.tbDSName_TextChanged);
 			// 
+			// bExprConnect
+			// 
+			this.bExprConnect.Font = new System.Drawing.Font("Arial", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.bExprConnect.Location = new System.Drawing.Point(416, 192);
+			this.bExprConnect.Name = "bExprConnect";
+			this.bExprConnect.Size = new System.Drawing.Size(22, 16);
+			this.bExprConnect.TabIndex = 23;
+			this.bExprConnect.Tag = "pright";
+			this.bExprConnect.Text = "fx";
+			this.bExprConnect.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.bExprConnect.Click += new System.EventHandler(this.bExprConnect_Click);
+			// 
 			// DialogDataSources
 			// 
 			this.AcceptButton = this.bOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.bCancel;
 			this.ClientSize = new System.Drawing.Size(456, 374);
+			this.Controls.Add(this.bExprConnect);
 			this.Controls.Add(this.tbDSName);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.chkSharedDataSource);
@@ -603,6 +623,15 @@ namespace fyiReporting.RdlDesign
 				return;
 
 			dsv.IntegratedSecurity = ckbIntSecurity.Checked;
+		}
+
+		private void bExprConnect_Click(object sender, System.EventArgs e)
+		{
+			DialogExprEditor ee = new DialogExprEditor(_Draw, this.tbConnection.Text, null, false);
+
+			DialogResult dr = ee.ShowDialog();
+			if (dr == DialogResult.OK)
+				tbConnection.Text = ee.Expression;
 		}
 	}
 

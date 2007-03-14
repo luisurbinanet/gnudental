@@ -12,8 +12,8 @@ namespace OpenDental{
 		public static SecurityLog[] Refresh(DateTime dateFrom,DateTime dateTo,Permissions permType,int patNum,
 			int userNum) {
 			string command="SELECT * FROM securitylog "
-				+"WHERE LogDateTime >= '"+POut.PDate(dateFrom)+"' "
-				+"AND LogDateTime <= '"+POut.PDate(dateTo.AddDays(1))+"'";
+				+"WHERE LogDateTime >= "+POut.PDate(dateFrom)+" "
+				+"AND LogDateTime <= "+POut.PDate(dateTo.AddDays(1));
 			if(patNum !=0) {
 				command+=" AND PatNum= '"+POut.PInt(patNum)+"'";
 			}
@@ -52,8 +52,13 @@ namespace OpenDental{
 			}
 			command+=
 				 "'"+POut.PInt   ((int)log.PermType)+"', "
-				+"'"+POut.PInt   (log.UserNum)+"', "
-				+"NOW(), "//LogDateTime set to current server time
+				+"'"+POut.PInt   (log.UserNum)+"', ";
+			if(FormChooseDatabase.DBtype==DatabaseType.Oracle) {
+				command+=POut.PDateT(MiscData.GetNowDateTime());
+			}else{//Assume MySQL
+				command+="NOW()";
+			}
+			command+=", "//LogDateTime set to current server time
 				+"'"+POut.PString(log.LogText)+"', "
 				+"'"+POut.PInt   (log.PatNum)+"')";
  			if(PrefB.RandomKeys){

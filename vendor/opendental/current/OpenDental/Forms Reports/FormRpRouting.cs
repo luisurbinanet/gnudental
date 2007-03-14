@@ -367,7 +367,7 @@ namespace OpenDental
 			}
 			g.DrawString(str,font,brush,x,y);
 			y+=15;
-			str=Lan.g(this,"Billing Type:")+" "+Defs.GetName(DefCat.BillingTypes,pat.BillingType);
+			str=Lan.g(this,"Billing Type:")+" "+DefB.GetName(DefCat.BillingTypes,pat.BillingType);
 			g.DrawString(str,font,brush,x,y);
 			y+=15;
 			Recall[] recallList=Recalls.GetList(new int[] {pat.PatNum});

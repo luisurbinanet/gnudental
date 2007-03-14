@@ -413,15 +413,15 @@ namespace OpenDental{
 					FormA.ShowDialog();
 				}
 			}
-			for(int i=0;i<Defs.Short[(int)DefCat.BillingTypes].Length;i++){
-				listBillType.Items.Add(Defs.Short[(int)DefCat.BillingTypes][i].ItemName);
+			for(int i=0;i<DefB.Short[(int)DefCat.BillingTypes].Length;i++){
+				listBillType.Items.Add(DefB.Short[(int)DefCat.BillingTypes][i].ItemName);
 			}
 			textLastStatement.Text=DateTime.Today.AddMonths(-1).ToShortDateString();
 			checkIncludeChanged.Checked=PrefB.GetBool("BillingIncludeChanged");
 			string[] selectedBillTypes=((Pref)PrefB.HList["BillingSelectBillingTypes"]).ValueString.Split(',');
 			for(int i=0;i<selectedBillTypes.Length;i++){
 				try{
-					int order=Defs.GetOrder(DefCat.BillingTypes,Convert.ToInt32(selectedBillTypes[i]));
+					int order=DefB.GetOrder(DefCat.BillingTypes,Convert.ToInt32(selectedBillTypes[i]));
 					if(order!=-1){
 						listBillType.SetSelected(order,true);
 					}
@@ -476,7 +476,7 @@ namespace OpenDental{
 			for(int i=0;i<listBillType.SelectedIndices.Count;i++){//will always be at least 1
 				if(i>0)
 					prefVal+=",";
-				prefVal+=Defs.Short[(int)DefCat.BillingTypes][listBillType.SelectedIndices[i]].DefNum.ToString();
+				prefVal+=DefB.Short[(int)DefCat.BillingTypes][listBillType.SelectedIndices[i]].DefNum.ToString();
 			}
 			Prefs.UpdateString("BillingSelectBillingTypes",prefVal);
 
@@ -527,7 +527,7 @@ namespace OpenDental{
 					row.Cells.Add(Lan.g(this,"all"));
 				}
 				else{
-					row.Cells.Add(Defs.GetName(DefCat.BillingTypes,dunningList[i].BillingType));
+					row.Cells.Add(DefB.GetName(DefCat.BillingTypes,dunningList[i].BillingType));
 				}
 				if(dunningList[i].AgeAccount==0){
 					row.Cells.Add(Lan.g(this,"any"));

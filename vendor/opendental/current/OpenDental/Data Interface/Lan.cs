@@ -39,11 +39,16 @@ namespace OpenDental{
 
 		///<summary>Tries to insert, but ignores the insert if this row already exists. This prevents the previous frequent crashes.</summary>
 		public static void Insert(Language Cur){
-			string command = "INSERT IGNORE INTO language (ClassType,English) "
+			//In Oracle, one must specify logging options for logging to occur, otherwise logging is not used.
+			string ignoreClause="";
+			if(DataConnection.DBtype==DatabaseType.MySql){
+				ignoreClause="IGNORE";
+			}
+			string command = "INSERT "+ignoreClause+" INTO language (ClassType,English,EnglishComments,IsObsolete) "
 				+"VALUES("
 				+"'"+POut.PString(Cur.ClassType)+"', "
-				+"'"+POut.PString(Cur.English)+"')";
-			//MessageBox.Show(string command);
+				+"'"+POut.PString(Cur.English)+"','',0)";
+			//MessageBox.Show(command);
 			General.NonQ(command);
 		}
 

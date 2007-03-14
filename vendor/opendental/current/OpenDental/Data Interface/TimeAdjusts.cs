@@ -13,9 +13,9 @@ namespace OpenDental{
 			string command=
 				"SELECT * from timeadjust WHERE"
 				+" EmployeeNum = '"+POut.PInt(empNum)+"'"
-				+" && TimeEntry >= '"+POut.PDate(fromDate)+"'"
+				+" AND TimeEntry >= "+POut.PDate(fromDate)
 				//adding a day takes it to midnight of the specified toDate
-				+" && TimeEntry <= '"+POut.PDate(toDate.AddDays(1))+"'";
+				+" AND TimeEntry <= "+POut.PDate(toDate.AddDays(1));
 			command+=" ORDER BY TimeEntry";
 			DataTable table=General.GetTable(command);
 			TimeAdjust[] List=new TimeAdjust[table.Rows.Count];
@@ -46,7 +46,7 @@ namespace OpenDental{
 			}
 			command+=
 				 "'"+POut.PInt   (adj.EmployeeNum)+"', "
-				+"'"+POut.PDateT (adj.TimeEntry)+"', "
+				+POut.PDateT (adj.TimeEntry)+", "
 				+"'"+POut.PDouble(adj.RegHours.TotalHours)+"', "
 				+"'"+POut.PDouble(adj.OTimeHours.TotalHours)+"', "
 				+"'"+POut.PString(adj.Note)+"')";
@@ -62,7 +62,7 @@ namespace OpenDental{
 		public static void Update(TimeAdjust adj) {
 			string command= "UPDATE timeadjust SET "
 				+"EmployeeNum = '"+POut.PInt   (adj.EmployeeNum)+"' "
-				+",TimeEntry = '" +POut.PDateT (adj.TimeEntry)+"' "
+				+",TimeEntry = " +POut.PDateT (adj.TimeEntry)+" "
 				+",RegHours = '"  +POut.PDouble(adj.RegHours.TotalHours)+"' "
 				+",OTimeHours = '"+POut.PDouble(adj.OTimeHours.TotalHours)+"' "
 				+",Note = '"      +POut.PString(adj.Note)+"' "

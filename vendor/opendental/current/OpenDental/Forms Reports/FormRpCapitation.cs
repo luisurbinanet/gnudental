@@ -133,8 +133,8 @@ namespace OpenDental{
 				,DateTimeFirst.AddMonths(1).AddDays(-1)
 				,"To Date"
 				,"procedurelog.ProcDate <= '?'");		// added carrierNum, SPK
-			report.Query=@"SELECT carrier.CarrierName,CONCAT(patSub.LName,', ',patSub.FName) 
-				,patSub.SSN,CONCAT(patPat.LName,', ',patPat.FName)
+			report.Query=@"SELECT carrier.CarrierName,CONCAT(CONCAT(patSub.LName,', '),patSub.FName) 
+				,patSub.SSN,CONCAT(CONCAT(patPat.LName,', '),patPat.FName)
 				,patPat.Birthdate,procedurelog.ADACode,procedurecode.Descript
 				,procedurelog.ToothNum,procedurelog.Surf,procedurelog.ProcDate
 				,procedurelog.ProcFee,procedurelog.ProcFee-claimproc.WriteOff

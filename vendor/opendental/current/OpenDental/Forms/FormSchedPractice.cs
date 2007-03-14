@@ -140,9 +140,9 @@ namespace OpenDental{
 				listProv.SelectedIndex=0;
 			}
       SchedDefaults.Refresh();
-			OpenColor=Defs.Long[(int)DefCat.AppointmentColors][0].ItemColor;
-			ClosedColor=Defs.Long[(int)DefCat.AppointmentColors][1].ItemColor;
-			HolidayColor=Defs.Long[(int)DefCat.AppointmentColors][4].ItemColor;
+			OpenColor=DefB.Long[(int)DefCat.AppointmentColors][0].ItemColor;
+			ClosedColor=DefB.Long[(int)DefCat.AppointmentColors][1].ItemColor;
+			HolidayColor=DefB.Long[(int)DefCat.AppointmentColors][4].ItemColor;
 			cal.SelectedDate=DateTime.Today;
       GetScheduleData();
 			cal.Invalidate();

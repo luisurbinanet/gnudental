@@ -480,7 +480,9 @@ namespace OpenDental{
 			textST.Text=PrefB.GetString("PracticeST");
 			textZip.Text=PrefB.GetString("PracticeZip");
 			string phone=PrefB.GetString("PracticePhone");
-			if(phone.Length==10 && Application.CurrentCulture.Name=="en-US"){
+			if(phone.Length==10 
+				&& (CultureInfo.CurrentCulture.Name=="en-US" || CultureInfo.CurrentCulture.Name.Substring(3)=="CA"))
+			{
 				textPhone.Text="("+phone.Substring(0,3)+")"+phone.Substring(3,3)+"-"+phone.Substring(6);
 			}
 			else{
@@ -502,9 +504,9 @@ namespace OpenDental{
 				}
 			}
 			listBillType.Items.Clear();
-			for(int i=0;i<Defs.Short[(int)DefCat.BillingTypes].Length;i++){
-				listBillType.Items.Add(Defs.Short[(int)DefCat.BillingTypes][i].ItemName);
-				if(Defs.Short[(int)DefCat.BillingTypes][i].DefNum==PrefB.GetInt("PracticeDefaultBillType"))
+			for(int i=0;i<DefB.Short[(int)DefCat.BillingTypes].Length;i++){
+				listBillType.Items.Add(DefB.Short[(int)DefCat.BillingTypes][i].ItemName);
+				if(DefB.Short[(int)DefCat.BillingTypes][i].DefNum==PrefB.GetInt("PracticeDefaultBillType"))
 					listBillType.SelectedIndex=i;
 			}
 			if(PrefB.GetBool("EasyHidePublicHealth")){
@@ -547,7 +549,9 @@ namespace OpenDental{
 
 		private void butOK_Click(object sender, System.EventArgs e) {
 			string phone=textPhone.Text;
-			if(Application.CurrentCulture.Name=="en-US"){
+			if(Application.CurrentCulture.Name=="en-US"
+				|| CultureInfo.CurrentCulture.Name.Substring(3)=="CA")
+			{
 				phone=phone.Replace("(","");
 				phone=phone.Replace(")","");
 				phone=phone.Replace(" ","");
@@ -592,7 +596,7 @@ namespace OpenDental{
 			}
 			if(listBillType.SelectedIndex!=-1){
 				if(Prefs.UpdateInt("PracticeDefaultBillType"
-					,Defs.Short[(int)DefCat.BillingTypes][listBillType.SelectedIndex].DefNum))
+					,DefB.Short[(int)DefCat.BillingTypes][listBillType.SelectedIndex].DefNum))
 				{
 					changed=true;
 				}

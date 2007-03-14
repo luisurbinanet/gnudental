@@ -1253,7 +1253,7 @@ namespace OpenDental
 			//}
 			textInsPlan.Text=InsPlans.GetDescript(ClaimProcCur.PlanNum,FamCur,PlanList);
 			checkNoBillIns.Checked=ClaimProcCur.NoBillIns;
-			if(ClaimProcCur.ClaimPaymentNum>0) {//attached to ins check
+			if(ClaimProcCur.ClaimPaymentNum>0){//attached to ins check
 				textDateCP.ReadOnly=true;//DateCP always the same as the payment date.
 			}//otherwise, we do need to allow editing so that Writeoff dates can be changed.
 			if(ClaimProcCur.ProcNum==0){//total payment for a claim
@@ -1532,7 +1532,7 @@ namespace OpenDental
 				MsgBox.Show(this,"Allowed fee schedule has not been set for this insurance plan");
 				return;
 			}
-			int feeOrder=Defs.GetOrder(DefCat.FeeSchedNames,plan.AllowedFeeSched);
+			int feeOrder=DefB.GetOrder(DefCat.FeeSchedNames,plan.AllowedFeeSched);
 			if(feeOrder==-1){
 				MsgBox.Show(this,"Allowed fee schedule is hidden, so no changes can be made.");
 				return;
@@ -2012,7 +2012,7 @@ namespace OpenDental
 				ClaimProcCur.ProvNum=Providers.List[listProv.SelectedIndex].ProvNum;
 			}
 			ClaimProcCur.ProcDate=PIn.PDate(textProcDate.Text);
-			if(!textDateCP.ReadOnly) {
+			if(!textDateCP.ReadOnly){
 				ClaimProcCur.DateCP=PIn.PDate(textDateCP.Text);
 			}
 			ClaimProcCur.CodeSent=textCodeSent.Text;

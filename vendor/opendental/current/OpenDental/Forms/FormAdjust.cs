@@ -319,7 +319,7 @@ namespace OpenDental{
 			textDateEntry.Text=AdjustmentCur.DateEntry.ToShortDateString();
 			textAdjDate.Text=AdjustmentCur.AdjDate.ToShortDateString();
 			textProcDate.Text=AdjustmentCur.ProcDate.ToShortDateString();
-			if(Defs.GetValue(DefCat.AdjTypes,AdjustmentCur.AdjType)=="+"){//pos
+			if(DefB.GetValue(DefCat.AdjTypes,AdjustmentCur.AdjType)=="+"){//pos
 				textAmount.Text=AdjustmentCur.AdjAmt.ToString("F");
 			}
 			else{//neg
@@ -330,17 +330,17 @@ namespace OpenDental{
 				if(Providers.List[i].ProvNum==AdjustmentCur.ProvNum)
 					listProvider.SelectedIndex=i;
 			}				
-			for(int i=0;i<Defs.Short[1].Length;i++){//temp.AdjType
-				if(Defs.Short[1][i].ItemValue=="+"){
+			for(int i=0;i<DefB.Short[1].Length;i++){//temp.AdjType
+				if(DefB.Short[1][i].ItemValue=="+"){
 					PosIndex.Add(i);
-					listTypePos.Items.Add(Defs.Short[1][i].ItemName);
-					if(Defs.Short[1][i].DefNum==AdjustmentCur.AdjType)
+					listTypePos.Items.Add(DefB.Short[1][i].ItemName);
+					if(DefB.Short[1][i].DefNum==AdjustmentCur.AdjType)
 						listTypePos.SelectedIndex=PosIndex.Count-1;
 				}
-				else if(Defs.Short[1][i].ItemValue=="-"){
+				else if(DefB.Short[1][i].ItemValue=="-"){
 					NegIndex.Add(i);
-					listTypeNeg.Items.Add(Defs.Short[1][i].ItemName);
-					if(Defs.Short[1][i].DefNum==AdjustmentCur.AdjType)
+					listTypeNeg.Items.Add(DefB.Short[1][i].ItemName);
+					if(DefB.Short[1][i].DefNum==AdjustmentCur.AdjType)
 						listTypeNeg.SelectedIndex=NegIndex.Count-1;
 				}
 			}
@@ -381,13 +381,13 @@ namespace OpenDental{
 				AdjustmentCur.ProvNum=Providers.List[this.listProvider.SelectedIndex].ProvNum;
 			if(listTypePos.SelectedIndex!=-1){
 				AdjustmentCur.AdjType
-					=Defs.Short[(int)DefCat.AdjTypes][(int)PosIndex[listTypePos.SelectedIndex]].DefNum;
+					=DefB.Short[(int)DefCat.AdjTypes][(int)PosIndex[listTypePos.SelectedIndex]].DefNum;
 			}
 			if(listTypeNeg.SelectedIndex!=-1){
 				AdjustmentCur.AdjType
-					=Defs.Short[(int)DefCat.AdjTypes][(int)NegIndex[listTypeNeg.SelectedIndex]].DefNum;
+					=DefB.Short[(int)DefCat.AdjTypes][(int)NegIndex[listTypeNeg.SelectedIndex]].DefNum;
 			}
-			if(Defs.GetValue(DefCat.AdjTypes,AdjustmentCur.AdjType)=="+"){//pos
+			if(DefB.GetValue(DefCat.AdjTypes,AdjustmentCur.AdjType)=="+"){//pos
 				AdjustmentCur.AdjAmt=PIn.PDouble(textAmount.Text);
 			}
 			else{//neg

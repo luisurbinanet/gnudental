@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml;
+using OpenDentBusiness;
 
 namespace ODR{
 
@@ -76,6 +77,58 @@ namespace ODR{
 			catch {
 				return "";
 			}
+			//example:
+			//Server=localhost;Database=opendental;User ID=root;Password=;CharSet=utf8
+			return "Server="+computerName
+				+";Database="+database
+				+";User ID="+user
+				+";Password="+password
+				+";CharSet=utf8";
+		}
+
+		///<summary></summary>
+		public static string GetODConnStr() {
+			XmlDocument document=new XmlDocument();
+			string path=Application.StartupPath+"\\"+"FreeDentalConfig.xml";
+			if(!File.Exists(path)) {
+				return "";
+			}
+			string computerName="";
+			string database="";
+			string user="";
+			string password="";
+			try {
+				document.Load(path);
+				XmlNodeReader reader=new XmlNodeReader(document);
+				string currentElement="";
+				while(reader.Read()) {
+					if(reader.NodeType==XmlNodeType.Element) {
+						currentElement=reader.Name;
+					}
+					else if(reader.NodeType==XmlNodeType.Text) {
+						switch(currentElement) {
+							case "ComputerName":
+								computerName=reader.Value;
+								break;
+							case "Database":
+								database=reader.Value;
+								break;
+							case "User":
+								user=reader.Value;
+								break;
+							case "Password":
+								password=reader.Value;
+								break;
+						}
+					}
+				}
+				reader.Close();
+			}
+			catch {
+				return "";
+			}
+			//example:
+			//Server=localhost;Database=opendental;User ID=root;Password=;CharSet=utf8
 			return "Server="+computerName
 				+";Database="+database
 				+";User ID="+user

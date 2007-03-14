@@ -13,7 +13,7 @@ namespace OpenDental{
 		public static ClaimProc[] Refresh(int patNum){
 			string command=
 				"SELECT * from claimproc "
-				+"WHERE PatNum = '"+patNum.ToString()+"' ";
+				+"WHERE PatNum = '"+patNum.ToString()+"' ORDER BY LineNumber";
  			DataTable table=General.GetTable(command);
 			ClaimProc[] List=new ClaimProc[table.Rows.Count];
 			for(int i=0;i<List.Length;i++){
@@ -47,6 +47,7 @@ namespace OpenDental{
 				List[i].CopayOverride  = PIn.PDouble(table.Rows[i][26].ToString());
 				List[i].ProcDate       = PIn.PDate  (table.Rows[i][27].ToString());
 				List[i].DateEntry      = PIn.PDate  (table.Rows[i][28].ToString());
+				List[i].LineNumber     = PIn.PInt   (table.Rows[i][29].ToString());
 			}
 			return List;
 		}
@@ -64,7 +65,7 @@ namespace OpenDental{
 				+",FeeBilled,InsPayEst,DedApplied,Status,InsPayAmt,Remarks,ClaimPaymentNum"
 				+",PlanNum,DateCP,WriteOff,CodeSent,AllowedAmt,Percentage,PercentOverride"
 				+",CopayAmt,OverrideInsEst,NoBillIns,DedBeforePerc,OverAnnualMax"
-				+",PaidOtherIns,BaseEst,CopayOverride,ProcDate,DateEntry) VALUES(";
+				+",PaidOtherIns,BaseEst,CopayOverride,ProcDate,DateEntry,LineNumber) VALUES(";
 			if(PrefB.RandomKeys) {
 				command+="'"+POut.PInt(cp.ClaimProcNum)+"', ";
 			}
@@ -81,7 +82,7 @@ namespace OpenDental{
 				+"'"+POut.PString(cp.Remarks)+"', "
 				+"'"+POut.PInt(cp.ClaimPaymentNum)+"', "
 				+"'"+POut.PInt(cp.PlanNum)+"', "
-				+"'"+POut.PDate(cp.DateCP)+"', "
+				+POut.PDate(cp.DateCP)+", "
 				+"'"+POut.PDouble(cp.WriteOff)+"', "
 				+"'"+POut.PString(cp.CodeSent)+"', "
 				+"'"+POut.PDouble(cp.AllowedAmt)+"', "
@@ -95,8 +96,13 @@ namespace OpenDental{
 				+"'"+POut.PDouble(cp.PaidOtherIns)+"', "
 				+"'"+POut.PDouble(cp.BaseEst)+"', "
 				+"'"+POut.PDouble(cp.CopayOverride)+"', "
-				+"'"+POut.PDate(cp.ProcDate)+"', "
-				+"NOW())";
+				+POut.PDate(cp.ProcDate)+", ";
+			if(FormChooseDatabase.DBtype==DatabaseType.Oracle) {
+				command+=POut.PDateT(MiscData.GetNowDateTime());
+			}else{//Assume MySQL
+				command+="NOW()";
+			}
+			command+=", '"+POut.PInt(cp.LineNumber)+"')";
 			//MessageBox.Show(string command);
 			if(PrefB.RandomKeys) {
 				General.NonQ(command);
@@ -121,7 +127,7 @@ namespace OpenDental{
 				+",Remarks = '"       +POut.PString(cp.Remarks)+"'"
 				+",ClaimPaymentNum= '"+POut.PInt(cp.ClaimPaymentNum)+"'"
 				+",PlanNum= '"        +POut.PInt(cp.PlanNum)+"'"
-				+",DateCP= '"         +POut.PDate(cp.DateCP)+"'"
+				+",DateCP= "         +POut.PDate(cp.DateCP)
 				+",WriteOff= '"       +POut.PDouble(cp.WriteOff)+"'"
 				+",CodeSent= '"       +POut.PString(cp.CodeSent)+"'"
 				+",AllowedAmt= '"     +POut.PDouble(cp.AllowedAmt)+"'"
@@ -135,8 +141,9 @@ namespace OpenDental{
 				+",PaidOtherIns= '"   +POut.PDouble(cp.PaidOtherIns)+"'"
 				+",BaseEst= '"        +POut.PDouble(cp.BaseEst)+"'"
 				+",CopayOverride= '"  +POut.PDouble(cp.CopayOverride)+"'"
-				+",ProcDate= '"       +POut.PDate(cp.ProcDate)+"'"
-				+",DateEntry= '"      +POut.PDate(cp.DateEntry)+"'"
+				+",ProcDate= "       +POut.PDate(cp.ProcDate)
+				+",DateEntry= "      +POut.PDate(cp.DateEntry)
+				+",LineNumber= '"     +POut.PInt(cp.LineNumber)+"'"
 				+" WHERE claimprocnum = '"+POut.PInt(cp.ClaimProcNum)+"'";
 			//MessageBox.Show(string command);
 			General.NonQ(command);
@@ -467,7 +474,7 @@ namespace OpenDental{
 			else{
 				command+="'0' ";
 			}
-			command+=",DateCP='"+POut.PDate(date)+"' "
+			command+=",DateCP="+POut.PDate(date)+" "
 				+"WHERE claimnum = '"+claimNum+"' AND "
 				+"inspayamt != 0 AND ("
 				+"claimpaymentNum = '"+claimPaymentNum+"' OR claimpaymentNum = '0')";

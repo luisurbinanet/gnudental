@@ -257,9 +257,9 @@ namespace OpenDental{
 			}
       if(SchedCur.SchedType==ScheduleType.Blockout){
 				listType.Items.Clear();
-				for(int i=0;i<Defs.Short[(int)DefCat.BlockoutTypes].Length;i++){
-					listType.Items.Add(Defs.Short[(int)DefCat.BlockoutTypes][i].ItemName);
-					if(SchedCur.BlockoutType==Defs.Short[(int)DefCat.BlockoutTypes][i].DefNum){
+				for(int i=0;i<DefB.Short[(int)DefCat.BlockoutTypes].Length;i++){
+					listType.Items.Add(DefB.Short[(int)DefCat.BlockoutTypes][i].ItemName);
+					if(SchedCur.BlockoutType==DefB.Short[(int)DefCat.BlockoutTypes][i].DefNum){
 						listType.SelectedIndex=i;
 					}
 				}
@@ -336,7 +336,7 @@ namespace OpenDental{
 			}
       SchedCur.Note=textNote.Text;
 			if(SchedCur.SchedType==ScheduleType.Blockout){
-				SchedCur.BlockoutType=Defs.Short[(int)DefCat.BlockoutTypes][listType.SelectedIndex].DefNum;
+				SchedCur.BlockoutType=DefB.Short[(int)DefCat.BlockoutTypes][listType.SelectedIndex].DefNum;
 				if(listOp.SelectedIndex==0){
 					SchedCur.Op=0;
 				}

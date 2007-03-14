@@ -167,9 +167,9 @@ namespace OpenDental{
 		public static string GetPatPict(int patNum){
 			//first establish which category pat pics are in
 			int defNumPicts=0;
-			for(int i=0;i<Defs.Short[(int)DefCat.ImageCats].Length;i++){
-				if(Defs.Short[(int)DefCat.ImageCats][i].ItemValue=="P"){
-					defNumPicts=Defs.Short[(int)DefCat.ImageCats][i].DefNum;
+			for(int i=0;i<DefB.Short[(int)DefCat.ImageCats].Length;i++){
+				if(DefB.Short[(int)DefCat.ImageCats][i].ItemValue=="P"){
+					defNumPicts=DefB.Short[(int)DefCat.ImageCats][i].DefNum;
 					break;
 				}
 			}
@@ -181,7 +181,13 @@ namespace OpenDental{
 				+"WHERE document.DocNum=docattach.DocNum "
 				+"AND docattach.PatNum="+POut.PInt(patNum)
 				+" AND document.DocCategory="+POut.PInt(defNumPicts)
-				+" ORDER BY DateCreated DESC LIMIT 1";//gets the most recent
+				+" ORDER BY DateCreated DESC ";
+			//gets the most recent
+			if(FormChooseDatabase.DBtype==DatabaseType.Oracle){
+				command="SELECT * FROM ("+command+") WHERE ROWNUM<=1";
+			}else{//Assume MySQL
+				command+="LIMIT 1";
+			}
 			DataTable table=General.GetTable(command);
 			if(table.Rows.Count==0){//no pictures
 				return "";

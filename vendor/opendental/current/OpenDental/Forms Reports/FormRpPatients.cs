@@ -703,10 +703,10 @@ namespace OpenDental{
 				ListReferredToSelect.SelectedItems.CopyTo(RefToFieldsSelected,0);
 				for(int i=0;i<RefToFieldsSelected.Length;i++){
 					if(i!=RefToFieldsSelected.Length-1){
-						SQLselect+="referral."+RefToFieldsSelected[i].ToString()+" as "+RefToFieldsSelected[i].ToString()+"_1,";
+						SQLselect+="referral."+RefToFieldsSelected[i].ToString()+" "+RefToFieldsSelected[i].ToString()+"_1,";
           }
 					else{
-						SQLselect+="referral."+RefToFieldsSelected[i].ToString()+" as "+RefToFieldsSelected[i].ToString()+"_1 ";
+						SQLselect+="referral."+RefToFieldsSelected[i].ToString()+" "+RefToFieldsSelected[i].ToString()+"_1 ";
           }
 				}
 				butOK.Enabled=true;
@@ -722,10 +722,10 @@ namespace OpenDental{
 				ListReferredFromSelect.SelectedItems.CopyTo(RefFromFieldsSelected,0);
 				for(int i=0;i<RefFromFieldsSelected.Length;i++){
 					if(i!=RefFromFieldsSelected.Length-1){
-						SQLselect+="referral."+RefFromFieldsSelected[i].ToString()+" as "+RefFromFieldsSelected[i].ToString()+"_2,";
+						SQLselect+="referral."+RefFromFieldsSelected[i].ToString()+" "+RefFromFieldsSelected[i].ToString()+"_2,";
           }
 					else{
-						SQLselect+="referral."+RefFromFieldsSelected[i].ToString()+" as "+RefFromFieldsSelected[i].ToString()+"_2 ";
+						SQLselect+="referral."+RefFromFieldsSelected[i].ToString()+" "+RefFromFieldsSelected[i].ToString()+"_2 ";
           }
 				}
 				butOK.Enabled=true;
@@ -762,22 +762,22 @@ namespace OpenDental{
       
       if(RefToSel || RefFromSel){
         if(RefToSel){
-          SQLwhereRelation+="patient.patnum=refattach.patnum && referral.referralnum=refattach.referralnum && refattach.isfrom='0' ";
+          SQLwhereRelation+="patient.patnum=refattach.patnum AND referral.referralnum=refattach.referralnum AND refattach.isfrom='0' ";
         }
         else{
-          SQLwhereRelation+="patient.patnum=refattach.patnum && referral.referralnum=refattach.referralnum && refattach.isfrom='1' ";
+          SQLwhereRelation+="patient.patnum=refattach.patnum AND referral.referralnum=refattach.referralnum AND refattach.isfrom='1' ";
         }
         needAnd=true;
       }
 			if(NeedRefPat || NeedRefDent){
   		  if(!RefToSel && !RefFromSel){
-          SQLwhereRelation+="patient.patnum=refattach.patnum && refattach.referralnum=referral.referralnum ";
+          SQLwhereRelation+="patient.patnum=refattach.patnum AND refattach.referralnum=referral.referralnum ";
         }        
         needAnd=true;
       }
       if(NeedInsPlan){
         if(needAnd){
-          SQLwhereRelation+="&& (patient.priplannum=insplan.plannum OR patient.secplannum=insplan.plannum) ";
+          SQLwhereRelation+="AND (patient.priplannum=insplan.plannum OR patient.secplannum=insplan.plannum) ";
         }
         else{
           SQLwhereRelation+="(patient.priplannum=insplan.plannum OR patient.secplannum=insplan.plannum) ";
@@ -786,7 +786,7 @@ namespace OpenDental{
       }
       if(NeedProcLogFirst || NeedProcLogLast){
         if(needAnd){
-				  SQLwhereRelation+="&& procedurelog.patnum=patient.patnum ";
+				  SQLwhereRelation+="AND procedurelog.patnum=patient.patnum ";
         }
         else{
           SQLwhereRelation+="procedurelog.patnum=patient.patnum "; 
@@ -995,9 +995,9 @@ namespace OpenDental{
    		  case "FeeSched":
           SetListBoxConditions();
 					ComboBox.Items.Clear();
-          for(int i=0;i<Defs.Long[(int)DefCat.FeeSchedNames].Length;i++){
-						sItem=Defs.Long[(int)DefCat.FeeSchedNames][i].ItemName.ToString();
-						if(Defs.Long[(int)DefCat.FeeSchedNames][i].IsHidden)
+          for(int i=0;i<DefB.Long[(int)DefCat.FeeSchedNames].Length;i++){
+						sItem=DefB.Long[(int)DefCat.FeeSchedNames][i].ItemName.ToString();
+						if(DefB.Long[(int)DefCat.FeeSchedNames][i].IsHidden)
 							sItem+="(hidden)";
             ComboBox.Items.Add(sItem);
 					}
@@ -1005,9 +1005,9 @@ namespace OpenDental{
    		  case "BillingType":
           SetListBoxConditions();
 					ComboBox.Items.Clear();
-          for(int i=0;i<Defs.Long[(int)DefCat.BillingTypes].Length;i++){
-						sItem=Defs.Long[(int)DefCat.BillingTypes][i].ItemName.ToString();
-						if(Defs.Long[(int)DefCat.BillingTypes][i].IsHidden)
+          for(int i=0;i<DefB.Long[(int)DefCat.BillingTypes].Length;i++){
+						sItem=DefB.Long[(int)DefCat.BillingTypes][i].ItemName.ToString();
+						if(DefB.Long[(int)DefCat.BillingTypes][i].IsHidden)
 							sItem+="(hidden)";
             ComboBox.Items.Add(sItem);
 					}
@@ -1015,9 +1015,9 @@ namespace OpenDental{
    		  /*case "RecallStatus":
           SetListBoxConditions();
 					ComboBox.Items.Clear();
-          for(int i=0;i<Defs.Long[(int)DefCat.RecallUnschedStatus	].Length;i++){
-						sItem=Defs.Long[(int)DefCat.RecallUnschedStatus][i].ItemName.ToString();
-						if(Defs.Long[(int)DefCat.RecallUnschedStatus][i].IsHidden)
+          for(int i=0;i<DefB.Long[(int)DefCat.RecallUnschedStatus	].Length;i++){
+						sItem=DefB.Long[(int)DefCat.RecallUnschedStatus][i].ItemName.ToString();
+						if(DefB.Long[(int)DefCat.RecallUnschedStatus][i].IsHidden)
 							sItem+="(hidden)";
             ComboBox.Items.Add(sItem);
 					}
@@ -1119,20 +1119,20 @@ namespace OpenDental{
 				}//	end	else if(DropListFilter.SelectedItem.ToString()=="Secondary Carrier"){
 				else if(DropListFilter.SelectedItem.ToString()=="Referred From Dentist"){
 					if(ListConditions.SelectedIndex==0){
-					  ListPrerequisites.Items.Add("referral.patnum=0 && referral.LName LIKE '%" +TextBox.Text+"%'");    
+					  ListPrerequisites.Items.Add("referral.patnum=0 AND referral.LName LIKE '%" +TextBox.Text+"%'");    
 					}
 					else{
-  					 ListPrerequisites.Items.Add("referral.patnum=0 && referral.LName "+ListConditions.SelectedItem.ToString()
+  					 ListPrerequisites.Items.Add("referral.patnum=0 AND referral.LName "+ListConditions.SelectedItem.ToString()
               +" '"+TextBox.Text+"'"); 
 					}
           UsingRefDent[UsingInsPlans.Count-1]=true;
         }
         else if(DropListFilter.SelectedItem.ToString()=="Referred From Patient"){
 					if(ListConditions.SelectedIndex==0){
-					  ListPrerequisites.Items.Add("referral.patnum > '0' && referral.LName LIKE '%" +TextBox.Text+"%'");    
+					  ListPrerequisites.Items.Add("referral.patnum > '0' AND referral.LName LIKE '%" +TextBox.Text+"%'");    
 					}
 					else{
-  					 ListPrerequisites.Items.Add("referral.patnum > '0' && referral.LName "+ListConditions.SelectedItem.ToString()
+  					 ListPrerequisites.Items.Add("referral.patnum > '0' AND referral.LName "+ListConditions.SelectedItem.ToString()
               +" '"+TextBox.Text+"'"); 
 					}
           UsingRefPat[UsingInsPlans.Count-1]=true;
@@ -1177,27 +1177,27 @@ namespace OpenDental{
  			else if(IsDate){
         if(DropListFilter.SelectedItem.ToString()=="First Visit Date"){
  					if(ListConditions.SelectedIndex==0){
-					  ListPrerequisites.Items.Add("*HAVING MIN(procdate) LIKE '%"+POut.PDate(DateTime.Parse(TextDate.Text))+"%'");   
-            ProcLogFirstDate="MIN(procdate) LIKE '%"+POut.PDate(DateTime.Parse(TextDate.Text))+"%'";
+					  ListPrerequisites.Items.Add("*HAVING MIN(procdate) LIKE '%"+POut.PDate(DateTime.Parse(TextDate.Text),false)+"%'");   
+            ProcLogFirstDate="MIN(procdate) LIKE '%"+POut.PDate(DateTime.Parse(TextDate.Text),false)+"%'";
 					}
 					else{
   					ListPrerequisites.Items.Add("*HAVING MIN(procdate) "+ListConditions.SelectedItem.ToString()
-              +" '"+POut.PDate(DateTime.Parse(TextDate.Text))+"'"); 
+              +" "+POut.PDate(DateTime.Parse(TextDate.Text))); 
             ProcLogFirstDate="MIN(procdate) "+ListConditions.SelectedItem.ToString()
-              +" '"+POut.PDate(DateTime.Parse(TextDate.Text))+"'";
+              +" "+POut.PDate(DateTime.Parse(TextDate.Text));
 					}          
           UsingProcLogFirst[UsingInsPlans.Count-1]=true;
         }
         else if(DropListFilter.SelectedItem.ToString()=="Last Visit Date"){
           if(ListConditions.SelectedIndex==0){
-					  ListPrerequisites.Items.Add("*HAVING MAX(procdate) LIKE '%"+POut.PDate(DateTime.Parse(TextDate.Text))+"%'"); 
-            ProcLogLastDate="MAX(procdate) LIKE '%"+POut.PDate(DateTime.Parse(TextDate.Text))+"%'";
+					  ListPrerequisites.Items.Add("*HAVING MAX(procdate) LIKE '%"+POut.PDate(DateTime.Parse(TextDate.Text),false)+"%'"); 
+            ProcLogLastDate="MAX(procdate) LIKE '%"+POut.PDate(DateTime.Parse(TextDate.Text),false)+"%'";
 					}
 					else{
   					 ListPrerequisites.Items.Add("*HAVING MAX(procdate) "+ListConditions.SelectedItem.ToString()
-               +" '"+POut.PDate(DateTime.Parse(TextDate.Text))+"'"); 
+               +" "+POut.PDate(DateTime.Parse(TextDate.Text))); 
              ProcLogLastDate="MAX(procdate) "+ListConditions.SelectedItem.ToString()
-               +" '"+POut.PDate(DateTime.Parse(TextDate.Text))+"'"; 
+               +" "+POut.PDate(DateTime.Parse(TextDate.Text)); 
 					}
           UsingProcLogLast[UsingInsPlans.Count-1]=true;
         }
@@ -1217,11 +1217,11 @@ namespace OpenDental{
         else{  
 					if(ListConditions.SelectedIndex==0){
 					ListPrerequisites.Items.Add(DropListFilter.SelectedItem.ToString()
-						+" Like '%"+POut.PDate(DateTime.Parse(TextDate.Text))+"%'"); 
+						+" Like '%"+POut.PDate(DateTime.Parse(TextDate.Text),false)+"%'"); 
 					}
 					else{
 						ListPrerequisites.Items.Add(DropListFilter.SelectedItem.ToString()+" "
-							+ListConditions.SelectedItem.ToString()+" '"+POut.PDate(DateTime.Parse(TextDate.Text))+"'");      
+							+ListConditions.SelectedItem.ToString()+" "+POut.PDate(DateTime.Parse(TextDate.Text)));      
 				  }
         }
 			}//end else if(isDate)
@@ -1236,7 +1236,7 @@ namespace OpenDental{
               sItem="OR ";
             }  
 						sItem+="patient.FeeSched "+ListConditions.SelectedItem.ToString()+" '"
-							+Defs.Long[(int)DefCat.FeeSchedNames][ComboBox.SelectedIndices[i]].DefNum.ToString()+"'"; 
+							+DefB.Long[(int)DefCat.FeeSchedNames][ComboBox.SelectedIndices[i]].DefNum.ToString()+"'"; 
 						if(i==ComboBox.SelectedIndices.Count-1){
 							sItem+=")";
             }  
@@ -1253,7 +1253,7 @@ namespace OpenDental{
               sItem="OR ";
             }
 						sItem+="patient.BillingType "+ListConditions.SelectedItem.ToString()+" '"
-							+Defs.Long[(int)DefCat.BillingTypes][ComboBox.SelectedIndices[i]].DefNum.ToString()+"'"; 
+							+DefB.Long[(int)DefCat.BillingTypes][ComboBox.SelectedIndices[i]].DefNum.ToString()+"'"; 
 						if(i==ComboBox.SelectedIndices.Count-1){
 							sItem+=")";
             }
@@ -1270,7 +1270,7 @@ namespace OpenDental{
               sItem="OR ";
             }
 						sItem+="patient.RecallStatus "+ListConditions.SelectedItem.ToString()+" '"
-							+Defs.Long[(int)DefCat.RecallUnschedStatus][ComboBox.SelectedIndices[i]]
+							+DefB.Long[(int)DefCat.RecallUnschedStatus][ComboBox.SelectedIndices[i]]
 							.DefNum.ToString()+"'"; 
 						if(i==ComboBox.SelectedIndices.Count-1){
 							sItem+=")";

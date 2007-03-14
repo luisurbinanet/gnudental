@@ -1824,6 +1824,11 @@ namespace OpenDental{
 		#endregion
 
 		private void FormImport_Load(object sender, System.EventArgs e){
+			if(FormChooseDatabase.DBtype!=DatabaseType.MySql) {
+				MessageBox.Show("This tool only works with MySQL.");
+				DialogResult=DialogResult.Cancel;
+				return;
+			}
 			grid.Width=ClientSize.Width-3;
 			grid.Height=ClientSize.Height-grid.Top-2;
 			tabContr.Width=ClientSize.Width-3;
@@ -2407,8 +2412,8 @@ namespace OpenDental{
 						break;
 					}
 				}
-				command="UPDATE "+POut.PString(comboTableName.SelectedItem.ToString())+" SET "+colTo+"='"
-					+POut.PDate(newDate)+"' "
+				command="UPDATE "+POut.PString(comboTableName.SelectedItem.ToString())+" SET "+colTo+"="
+					+POut.PDate(newDate)+" "
 					+"WHERE "+POut.PString(pkCol)+"='"+table.Rows[i][pkCol].ToString()+"'";
 				General.NonQ(command);
 			}
@@ -2462,6 +2467,10 @@ namespace OpenDental{
 		}
 
 		private void butGuarantor_Click(object sender, System.EventArgs e) {
+			if(FormChooseDatabase.DBtype==DatabaseType.Oracle){
+				MessageBox.Show("Does not work with Oracle.");
+				return;
+			}
 			if(!radioPatients.Checked){
 				MsgBox.Show(this,"Must be set to patient table type in the primary key tab.");
 				return;
@@ -2547,7 +2556,7 @@ namespace OpenDental{
 				}
 			}
 			Cursor=Cursors.WaitCursor;
-			command="UPDATE "+comboTableName.SelectedItem.ToString()+" AS t1, "//t1 is the key
+			command="UPDATE "+comboTableName.SelectedItem.ToString()+" AS t1, "//t1 is the key  //FIXME:UPDATE-MULTIPLE-TABLES
 				+comboTableName.SelectedItem.ToString()+" AS t2 "//t2 is the target
 				+"SET t2.Guarantor=t1.PatNum "
 				+"WHERE t1.ChartNumber=t2.tempGuarantor";
@@ -3042,7 +3051,7 @@ namespace OpenDental{
 								ProvCur.ItemOrder=Providers.ListLong[Providers.ListLong.Length-1].ItemOrder+1;
 								ProvCur.LName=table.Rows[i][table.Columns["PriProv"].Ordinal].ToString();
 								ProvCur.Abbr=ProvCur.LName;
-								ProvCur.FeeSched=Defs.Short[(int)DefCat.FeeSchedNames][0].DefNum;
+								ProvCur.FeeSched=DefB.Short[(int)DefCat.FeeSchedNames][0].DefNum;
 								ProvCur.ProvColor=Color.White;
 								ProvCur.SigOnFile=true;
 								ProvCur.OutlineColor=Color.Gray;

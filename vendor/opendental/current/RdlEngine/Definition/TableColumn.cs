@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -35,10 +35,9 @@ namespace fyiReporting.RDL
 	{
 		RSize _Width;		// Width of the column
 		Visibility _Visibility;	// Indicates if the column should be hidden	
-		float _XPosition;	// Set at runtime by Page processing; potentially dynamic at runtime
-							//  since visibility is an expression
+		bool _FixedHeader=false;	// Header of this column should be display even when scrolled
 	
-		internal TableColumn(Report r, ReportLink p, XmlNode xNode) : base(r, p)
+		internal TableColumn(ReportDefn r, ReportLink p, XmlNode xNode) : base(r, p)
 		{
 			_Width=null;
 			_Visibility=null;
@@ -56,7 +55,12 @@ namespace fyiReporting.RDL
 					case "Visibility":
 						_Visibility = new Visibility(r, this, xNodeLoop);
 						break;
+					case "FixedHeader":
+						_FixedHeader = XmlUtil.Boolean(xNodeLoop.InnerText, OwnerReport.rl);
+						break;
 					default:
+						// don't know this element - log it
+						OwnerReport.rl.LogError(4, "Unknown TableColumn element '" + xNodeLoop.Name + "' ignored.");
 						break;
 				}
 			}
@@ -81,10 +85,16 @@ namespace fyiReporting.RDL
 			set {  _Width = value; }
 		}
 
-		internal float XPosition
+		internal float GetXPosition(Report rpt)
 		{
-			get { return _XPosition; }
-			set { _XPosition = value; }
+			WorkClass wc = GetWC(rpt);
+			return wc.XPosition;
+		}
+
+		internal void SetXPosition(Report rpt, float xp)
+		{
+			WorkClass wc = GetWC(rpt);
+			wc.XPosition = xp;
 		}
 
 		internal Visibility Visibility
@@ -93,11 +103,40 @@ namespace fyiReporting.RDL
 			set {  _Visibility = value; }
 		}
 
-		internal bool IsHidden(Row r)
+		internal bool IsHidden(Report rpt, Row r)
 		{
 			if (_Visibility == null)
 				return false;
-			return _Visibility.IsHidden(r);
+			return _Visibility.IsHidden(rpt, r);
+		}
+
+		private WorkClass GetWC(Report rpt)
+		{
+			if (rpt == null)	
+				return new WorkClass();
+
+			WorkClass wc = rpt.Cache.Get(this, "wc") as WorkClass;
+			if (wc == null)
+			{
+				wc = new WorkClass();
+				rpt.Cache.Add(this, "wc", wc);
+			}
+			return wc;
+		}
+
+		private void RemoveWC(Report rpt)
+		{
+			rpt.Cache.Remove(this, "wc");
+		}
+
+		class WorkClass
+		{
+			internal float XPosition;	// Set at runtime by Page processing; potentially dynamic at runtime
+			//  since visibility is an expression
+			internal WorkClass()
+			{
+				XPosition=0;
+			}
 		}
 	}
 }

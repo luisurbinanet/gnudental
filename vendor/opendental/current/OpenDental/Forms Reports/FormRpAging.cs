@@ -275,8 +275,8 @@ namespace OpenDental{
 					}
 				}
 			}
-			for(int i=0;i<Defs.Short[(int)DefCat.BillingTypes].Length;i++){
-				listBillType.Items.Add(Defs.Short[(int)DefCat.BillingTypes][i].ItemName);
+			for(int i=0;i<DefB.Short[(int)DefCat.BillingTypes].Length;i++){
+				listBillType.Items.Add(DefB.Short[(int)DefCat.BillingTypes][i].ItemName);
 			}
 			listBillType.SelectedIndex=0;
 		}
@@ -305,7 +305,7 @@ namespace OpenDental{
 				return;
 			}
 			Queries.CurReport=new ReportOld();
-			Queries.CurReport.Query="SELECT CONCAT(LName,', ',FName,' ',MiddleI)"
+			Queries.CurReport.Query="SELECT CONCAT(CONCAT(CONCAT(CONCAT(LName,', '),FName),' '),MiddleI)"
 				+",Bal_0_30,Bal_31_60,Bal_61_90,BalOver90"
 				+",BalTotal "
 				+",InsEst"
@@ -317,38 +317,38 @@ namespace OpenDental{
 			else{
 				Queries.CurReport.Query+="WHERE ";
 				if(checkExcludeInactive.Checked){
-					Queries.CurReport.Query+="(patstatus != 2) && ";
+					Queries.CurReport.Query+="(patstatus != 2) AND ";
 				}
 				if(radioAny.Checked){
 					Queries.CurReport.Query+=
-						"(Bal_0_30 > '.005' || Bal_31_60 > '.005' || Bal_61_90 > '.005' || BalOver90 > '.005'";
+						"(Bal_0_30 > '.005' OR Bal_31_60 > '.005' OR Bal_61_90 > '.005' OR BalOver90 > '.005'";
 				}
 				else if(radio30.Checked){
 					Queries.CurReport.Query+=
-						"(Bal_31_60 > '.005' || Bal_61_90 > '.005' || BalOver90 > '.005'";
+						"(Bal_31_60 > '.005' OR Bal_61_90 > '.005' OR BalOver90 > '.005'";
 				}
 				else if(radio60.Checked){
 					Queries.CurReport.Query+=
-						"(Bal_61_90 > '.005' || BalOver90 > '.005'";
+						"(Bal_61_90 > '.005' OR BalOver90 > '.005'";
 				}
 				else if(radio90.Checked){
 					Queries.CurReport.Query+=
 						"(BalOver90 > '.005'";
 				}
 				if(checkIncludeNeg.Checked){
-					Queries.CurReport.Query+=" || BalTotal < '-.005'";
+					Queries.CurReport.Query+=" OR BalTotal < '-.005'";
 				}
 				Queries.CurReport.Query+=") ";
 			}
 			for(int i=0;i<listBillType.SelectedIndices.Count;i++){
 				if(i==0){
-					Queries.CurReport.Query+=" && (billingtype = '";
+					Queries.CurReport.Query+=" AND (billingtype = '";
 				}
 				else{
-					Queries.CurReport.Query+=" || billingtype = '";
+					Queries.CurReport.Query+=" OR billingtype = '";
 				}
 				Queries.CurReport.Query+=
-					Defs.Short[(int)DefCat.BillingTypes][listBillType.SelectedIndices[i]].DefNum.ToString()+"'";
+					DefB.Short[(int)DefCat.BillingTypes][listBillType.SelectedIndices[i]].DefNum.ToString()+"'";
 			}
 			Queries.CurReport.Query+=") ";
 			
@@ -374,13 +374,13 @@ namespace OpenDental{
 			if(radio90.Checked){
 				Queries.CurReport.SubTitle[2]="Over 90 Days";
 			}
-			if(listBillType.SelectedIndices.Count==Defs.Short[(int)DefCat.BillingTypes].Length){
+			if(listBillType.SelectedIndices.Count==DefB.Short[(int)DefCat.BillingTypes].Length){
 				Queries.CurReport.SubTitle[3]="All Billing Types";
 			}
 			else{
-				Queries.CurReport.SubTitle[3]=Defs.Short[(int)DefCat.BillingTypes][listBillType.SelectedIndices[0]].ItemName;
+				Queries.CurReport.SubTitle[3]=DefB.Short[(int)DefCat.BillingTypes][listBillType.SelectedIndices[0]].ItemName;
 				for(int i=1;i<listBillType.SelectedIndices.Count;i++){
-					Queries.CurReport.SubTitle[3]+=", "+Defs.Short[(int)DefCat.BillingTypes][listBillType.SelectedIndices[i]].ItemName;
+					Queries.CurReport.SubTitle[3]+=", "+DefB.Short[(int)DefCat.BillingTypes][listBillType.SelectedIndices[i]].ItemName;
 				}
 			}
 			Queries.CurReport.ColPos=new int[9];

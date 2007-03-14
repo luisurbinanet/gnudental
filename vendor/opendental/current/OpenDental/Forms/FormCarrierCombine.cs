@@ -1,8 +1,10 @@
 using System;
 using System.Drawing;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -17,10 +19,11 @@ namespace OpenDental{
 		/// Required designer variable.
 		/// </summary>
 		private System.ComponentModel.Container components = null;
-		///<summary>After this window closes, this will be the index within the main List of the selected carrier.</summary>
-		public int UsingIndex;
-		///<summary>Before opening this Form, set the indices of the main List to show.</summary>
-		public int[] ShowingIndices;
+		///<summary>After this window closes, this will be the carrierNum of the selected carrier.</summary>
+		public int PickedCarrierNum;
+		///<summary>Before opening this Form, set the carrierNums to show.</summary>
+		public int[] CarrierNums;
+		private List<Carrier> carrierList;
 
 		///<summary></summary>
 		public FormCarrierCombine()
@@ -30,6 +33,7 @@ namespace OpenDental{
 			//
 			InitializeComponent();
 			Lan.F(this);
+
 		}
 
 		/// <summary>
@@ -137,24 +141,25 @@ namespace OpenDental{
 		}
 
 		private void FillGrid(){
-			tbCarriers.ResetRows(ShowingIndices.Length);
+			carrierList=Carriers.GetCarriers(CarrierNums);
+			tbCarriers.ResetRows(carrierList.Count);
 			tbCarriers.SetGridColor(Color.Gray);
 			tbCarriers.SetBackGColor(Color.White);
-			for(int i=0;i<ShowingIndices.Length;i++){
-				tbCarriers.Cell[0,i]=Carriers.List[ShowingIndices[i]].CarrierName;
-				tbCarriers.Cell[1,i]=Carriers.List[ShowingIndices[i]].Phone;
-				tbCarriers.Cell[2,i]=Carriers.List[ShowingIndices[i]].Address;
-				tbCarriers.Cell[3,i]=Carriers.List[ShowingIndices[i]].Address2;
-				tbCarriers.Cell[4,i]=Carriers.List[ShowingIndices[i]].City;
-				tbCarriers.Cell[5,i]=Carriers.List[ShowingIndices[i]].State;
-				tbCarriers.Cell[6,i]=Carriers.List[ShowingIndices[i]].Zip;
-				tbCarriers.Cell[7,i]=Carriers.List[ShowingIndices[i]].ElectID;
+			for(int i=0;i<carrierList.Count;i++){
+				tbCarriers.Cell[0,i]=carrierList[i].CarrierName;
+				tbCarriers.Cell[1,i]=carrierList[i].Phone;
+				tbCarriers.Cell[2,i]=carrierList[i].Address;
+				tbCarriers.Cell[3,i]=carrierList[i].Address2;
+				tbCarriers.Cell[4,i]=carrierList[i].City;
+				tbCarriers.Cell[5,i]=carrierList[i].State;
+				tbCarriers.Cell[6,i]=carrierList[i].Zip;
+				tbCarriers.Cell[7,i]=carrierList[i].ElectID;
 			}
 			tbCarriers.LayoutTables();
 		}
 
 		private void tbCarriers_CellDoubleClicked(object sender, OpenDental.CellEventArgs e) {
-			UsingIndex=e.Row;
+			PickedCarrierNum=carrierList[e.Row].CarrierNum;
 			DialogResult=DialogResult.OK;
 		}
 
@@ -163,7 +168,7 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please select an item first."));
 				return;
 			}
-			UsingIndex=tbCarriers.SelectedRow;
+			PickedCarrierNum=carrierList[tbCarriers.SelectedRow].CarrierNum;
 			DialogResult=DialogResult.OK;
 		}
 

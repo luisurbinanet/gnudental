@@ -70,9 +70,6 @@ namespace OpenDental{
 			General.NonQ(command);
 		}
 		
-
-	
-
 		///<summary>Sets teeth missing, or sets primary, or sets movement values.  It first clears the value from the database, then adds a new row to represent that value.  Movements require an amount.  If movement amt is 0, then no row gets added.</summary>
 		public static void SetValue(int patNum,string tooth_id,ToothInitialType initialType) {
 			SetValue(patNum,tooth_id,initialType,0);
@@ -141,7 +138,7 @@ namespace OpenDental{
 		public static ArrayList GetMissingOrHiddenTeeth(ToothInitial[] initialList) {
 			ArrayList missing=new ArrayList();
 			for(int i=0;i<initialList.Length;i++) {
-				if(initialList[i].InitialType==ToothInitialType.Missing
+				if((initialList[i].InitialType==ToothInitialType.Missing || initialList[i].InitialType==ToothInitialType.Hidden)
 					&& Tooth.IsValidDB(initialList[i].ToothNum)
 					&& !Tooth.IsSuperNum(initialList[i].ToothNum))
 				{

@@ -10,10 +10,9 @@ namespace OpenDental{
 		///<summary>Returns all paySplits for the given patNum, organized by procDate.  WARNING! Also includes related paysplits that aren't actually attached to patient.  Includes any split where payment is for this patient.</summary>
 		public static PaySplit[] Refresh(int patNum) {
 			string command=
-				"SELECT paysplit.* FROM paysplit,payment "
+				"SELECT DISTINCT paysplit.* FROM paysplit,payment "
 				+"WHERE paysplit.PayNum=payment.PayNum "
 				+"AND (paysplit.PatNum = '"+POut.PInt(patNum)+"' OR payment.PatNum = '"+POut.PInt(patNum)+"') "
-				+"GROUP BY paysplit.SplitNum "
 				+"ORDER BY ProcDate";
 			return RefreshAndFill(command);
 		}
@@ -57,11 +56,11 @@ namespace OpenDental{
 			string command="UPDATE paysplit SET " 
 				+ "SplitAmt = '"     +POut.PDouble(split.SplitAmt)+"'"
 				+ ",PatNum = '"      +POut.PInt   (split.PatNum)+"'"
-				+ ",ProcDate = '"    +POut.PDate  (split.ProcDate)+"'"
+				+ ",ProcDate = "    +POut.PDate  (split.ProcDate)
 				+ ",PayNum = '"      +POut.PInt   (split.PayNum)+"'"
 				+ ",ProvNum = '"     +POut.PInt   (split.ProvNum)+"'"
 				+ ",PayPlanNum = '"  +POut.PInt   (split.PayPlanNum)+"'"
-				+ ",DatePay = '"     +POut.PDate  (split.DatePay)+"'"
+				+ ",DatePay = "     +POut.PDate  (split.DatePay)
 				+ ",ProcNum = '"     +POut.PInt   (split.ProcNum)+"'"
 				//+ ",DateEntry = '"   +POut.PDate  (DateEntry)+"'"//not allowed to change
 				+" WHERE splitNum = '" +POut.PInt (split.SplitNum)+"'";
@@ -78,20 +77,27 @@ namespace OpenDental{
 				command+="SplitNum,";
 			}
 			command+="SplitAmt,PatNum,ProcDate, "
-				+"PayNum,ProvNum,PayPlanNum,DatePay,ProcNum,DateEntry) VALUES(";
+				+"PayNum,IsDiscount,DiscountType,ProvNum,PayPlanNum,DatePay,ProcNum,DateEntry) VALUES(";
 			if(PrefB.RandomKeys){
 				command+="'"+POut.PInt(split.SplitNum)+"', ";
 			}
 			command+=
 				 "'"+POut.PDouble(split.SplitAmt)+"', "
 				+"'"+POut.PInt   (split.PatNum)+"', "
-				+"'"+POut.PDate  (split.ProcDate)+"', "
+				+POut.PDate  (split.ProcDate)+", "
 				+"'"+POut.PInt   (split.PayNum)+"', "
+				+"'0', "//IsDiscount
+				+"'0', "//DiscountType
 				+"'"+POut.PInt   (split.ProvNum)+"', "
 				+"'"+POut.PInt   (split.PayPlanNum)+"', "
-				+"'"+POut.PDate  (split.DatePay)+"', "
-				+"'"+POut.PInt   (split.ProcNum)+"', "
-				+"NOW())";//DateEntry: date of server
+				+POut.PDate  (split.DatePay)+", "
+				+"'"+POut.PInt   (split.ProcNum)+"', ";
+			if(FormChooseDatabase.DBtype==DatabaseType.Oracle) {
+				command+=POut.PDateT(MiscData.GetNowDateTime());
+			}else{//Assume MySQL
+				command+="NOW()";
+			}
+			command+=")";//DateEntry: date of server
  			if(PrefB.RandomKeys){
 				General.NonQ(command);
 			}

@@ -10,8 +10,7 @@
     <AssemblyKeyContainerName>
     </AssemblyKeyContainerName>
     <AssemblyName>RdlDesigner</AssemblyName>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\mykey.snk</AssemblyOriginatorKeyFile>
     <DefaultClientScript>JScript</DefaultClientScript>
     <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
     <DefaultTargetSchema>IE50</DefaultTargetSchema>
@@ -24,6 +23,7 @@
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>bin\Debug\</OutputPath>
@@ -72,16 +72,12 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MySql.Data">
-      <Name>MySql.Data</Name>
-      <HintPath>..\Required dlls\MySql.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="RdlEngine">
-      <Name>RdlEngine</Name>
+    <Reference Include="RdlEngine, Version=2.9.2.0, Culture=neutral, PublicKeyToken=98d963a3ed6bf418, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\RdlEngine\bin\Debug\RdlEngine.dll</HintPath>
     </Reference>
-    <Reference Include="RdlViewer">
-      <Name>RdlViewer</Name>
+    <Reference Include="RdlViewer, Version=2.9.1.0, Culture=neutral, PublicKeyToken=98d963a3ed6bf418, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\RdlViewer\bin\Debug\RdlViewer.dll</HintPath>
     </Reference>
     <Reference Include="System">
@@ -105,19 +101,24 @@
     <Content Include="chart.gif" />
     <Content Include="copy.gif" />
     <Content Include="cut.gif" />
+    <Content Include="html.gif" />
     <Content Include="image.gif" />
     <Content Include="line.gif" />
     <Content Include="list.gif" />
     <Content Include="matrix.gif" />
+    <Content Include="mht.gif" />
     <Content Include="new.gif" />
     <Content Include="open.gif" />
     <Content Include="paste.gif" />
+    <Content Include="pdf.gif" />
     <Content Include="print.gif" />
     <Content Include="rectangle.gif" />
     <Content Include="save.gif" />
     <Content Include="subreport.gif" />
     <Content Include="table.gif" />
     <Content Include="text.gif" />
+    <Content Include="undo.gif" />
+    <Content Include="xml.gif" />
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -131,6 +132,15 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="ChartLegendCtl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CodeCtl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CustomReportItemCtl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DesignEditLines.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="DataSetRowsCtl.cs">
@@ -166,6 +176,12 @@
     <Compile Include="DialogEmbeddedImages.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="DialogExprEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DialogFilterOperator.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="DialogListOfStrings.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -179,6 +195,12 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="DialogNewTable.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DialogToolOptions.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DialogValidateRdl.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="DialogValidValues.cs">
@@ -213,6 +235,9 @@
     </Compile>
     <Compile Include="MDIChild.cs">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ModulesClassesCtl.cs">
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="PositionCtl.cs">
       <SubType>UserControl</SubType>
@@ -268,8 +293,17 @@
     <Compile Include="SubreportCtl.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="TableColumnCtl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="TableCtl.cs">
       <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="TableRowCtl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Undo.cs">
+      <SubType>Code</SubType>
     </Compile>
     <EmbeddedResource Include="BodyCtl.resx">
       <DependentUpon>BodyCtl.cs</DependentUpon>
@@ -285,6 +319,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ChartLegendCtl.resx">
       <DependentUpon>ChartLegendCtl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CodeCtl.resx">
+      <DependentUpon>CodeCtl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CustomReportItemCtl.resx">
+      <DependentUpon>CustomReportItemCtl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DesignEditLines.resx">
+      <DependentUpon>DesignEditLines.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="DataSetRowsCtl.resx">
@@ -323,6 +369,14 @@
       <DependentUpon>DialogEmbeddedImages.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="DialogExprEditor.resx">
+      <DependentUpon>DialogExprEditor.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DialogFilterOperator.resx">
+      <DependentUpon>DialogFilterOperator.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="DialogListOfStrings.resx">
       <DependentUpon>DialogListOfStrings.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -341,6 +395,14 @@
     </EmbeddedResource>
     <EmbeddedResource Include="DialogNewTable.resx">
       <DependentUpon>DialogNewTable.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DialogToolOptions.resx">
+      <DependentUpon>DialogToolOptions.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DialogValidateRdl.resx">
+      <DependentUpon>DialogValidateRdl.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="DialogValidValues.resx">
@@ -381,6 +443,10 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MDIChild.resx">
       <DependentUpon>MDIChild.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ModulesClassesCtl.resx">
+      <DependentUpon>ModulesClassesCtl.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="PositionCtl.resx">
@@ -451,8 +517,16 @@
       <DependentUpon>SubreportCtl.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="TableColumnCtl.resx">
+      <DependentUpon>TableColumnCtl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="TableCtl.resx">
       <DependentUpon>TableCtl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TableRowCtl.resx">
+      <DependentUpon>TableRowCtl.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>

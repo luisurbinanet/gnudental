@@ -211,9 +211,9 @@ namespace OpenDental{
 			g.FillRectangle(new SolidBrush(Color.LightGray),0,0,TimeWidth,Height);//L time bar
 			g.FillRectangle(new SolidBrush(Color.LightGray),TimeWidth+ColWidth*ColCount+ProvWidth*ProvCount,0,TimeWidth,Height);//R time bar
 			try{
-				openBrush=new SolidBrush(Defs.Long[(int)DefCat.AppointmentColors][0].ItemColor);
-				closedBrush=new SolidBrush(Defs.Long[(int)DefCat.AppointmentColors][1].ItemColor);
-        holidayBrush=new SolidBrush(Defs.Long[(int)DefCat.AppointmentColors][4].ItemColor);  
+				openBrush=new SolidBrush(DefB.Long[(int)DefCat.AppointmentColors][0].ItemColor);
+				closedBrush=new SolidBrush(DefB.Long[(int)DefCat.AppointmentColors][1].ItemColor);
+        holidayBrush=new SolidBrush(DefB.Long[(int)DefCat.AppointmentColors][4].ItemColor);  
 			}
 			catch{//this is just for design-time
 				openBrush=new SolidBrush(Color.White);
@@ -304,8 +304,8 @@ namespace OpenDental{
 				schedDefs=SchedDefaults.GetForType(ScheduleType.Blockout,0);
 				for(int i=0;i<schedDefs.Length;i++){
 					if(schedDefs[i].DayOfWeek==(int)Appointments.DateSelected.DayOfWeek){
-						blockBrush=new SolidBrush(Defs.GetColor(DefCat.BlockoutTypes,schedDefs[i].BlockoutType));
-						blockText=Defs.GetName(DefCat.BlockoutTypes,schedDefs[i].BlockoutType);
+						blockBrush=new SolidBrush(DefB.GetColor(DefCat.BlockoutTypes,schedDefs[i].BlockoutType));
+						blockText=DefB.GetName(DefCat.BlockoutTypes,schedDefs[i].BlockoutType);
 						if(schedDefs[i].Op==0){//all ops
 							rect=new RectangleF(
 								TimeWidth+ProvWidth*ProvCount+1
@@ -333,14 +333,14 @@ namespace OpenDental{
 						g.FillRectangle(blockBrush,rect);
 						g.DrawRectangle(blockOutlinePen,rect.X+1,rect.Y+2,rect.Width-2,rect.Height-4);
 						g.DrawString(blockText,blockFont
-							,new SolidBrush(Defs.Short[(int)DefCat.AppointmentColors][5].ItemColor),rect);
+							,new SolidBrush(DefB.Short[(int)DefCat.AppointmentColors][5].ItemColor),rect);
 					}
 				}
 			}
 			else{//use schedForType
 				for(int i=0;i<schedForType.Length;i++){	
-					blockBrush=new SolidBrush(Defs.GetColor(DefCat.BlockoutTypes,schedForType[i].BlockoutType));
-					blockText=Defs.GetName(DefCat.BlockoutTypes,schedForType[i].BlockoutType)+"\r\n"
+					blockBrush=new SolidBrush(DefB.GetColor(DefCat.BlockoutTypes,schedForType[i].BlockoutType));
+					blockText=DefB.GetName(DefCat.BlockoutTypes,schedForType[i].BlockoutType)+"\r\n"
 						+schedForType[i].Note;
 					if(schedForType[i].Op==0){//all ops
 						rect=new RectangleF(
@@ -368,7 +368,7 @@ namespace OpenDental{
 					//g.DrawRectangle(blockOutlinePen,rect.X,rect.Y+1,rect.Width-1,rect.Height-3);
 					g.DrawLine(blockOutlinePen,rect.X,rect.Y+1,rect.Right-1,rect.Y+1);
 					g.DrawString(blockText,blockFont
-						,new SolidBrush(Defs.Short[(int)DefCat.AppointmentColors][5].ItemColor),rect);
+						,new SolidBrush(DefB.Short[(int)DefCat.AppointmentColors][5].ItemColor),rect);
 				}         
       }
 		}

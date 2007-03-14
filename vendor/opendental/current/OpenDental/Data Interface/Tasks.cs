@@ -34,8 +34,8 @@ namespace OpenDental{
 					dateFrom=new DateTime(date.Year,date.Month,1);
 					dateTo=dateFrom.AddMonths(1).AddDays(-1);
 				}
-				where="DateTask >= '"+POut.PDate(dateFrom)
-					+"' AND DateTask <= '"+POut.PDate(dateTo)+"' "
+				where="DateTask >= "+POut.PDate(dateFrom)
+					+" AND DateTask <= "+POut.PDate(dateTo)+" "
 					+"AND DateType="+POut.PInt((int)dateType)+" ";
 			}
 			else {//no date supplied.
@@ -81,7 +81,7 @@ namespace OpenDental{
 		private static void Update(Task task){
 			string command= "UPDATE task SET " 
 				+"TaskListNum = '"    +POut.PInt   (task.TaskListNum)+"'"
-				+",DateTask = '"      +POut.PDate  (task.DateTask)+"'"
+				+",DateTask = "      +POut.PDate  (task.DateTask)
 				+",KeyNum = '"        +POut.PInt   (task.KeyNum)+"'"
 				+",Descript = '"      +POut.PString(task.Descript)+"'"
 				+",TaskStatus = '"    +POut.PBool  (task.TaskStatus)+"'"
@@ -89,7 +89,7 @@ namespace OpenDental{
 				+",DateType = '"      +POut.PInt   ((int)task.DateType)+"'"
 				+",FromNum = '"       +POut.PInt   (task.FromNum)+"'"
 				+",ObjectType = '"    +POut.PInt   ((int)task.ObjectType)+"'"
-				+",DateTimeEntry = '" +POut.PDateT (task.DateTimeEntry)+"'"
+				+",DateTimeEntry = " +POut.PDateT (task.DateTimeEntry)
 				+" WHERE TaskNum = '"+POut.PInt(task.TaskNum)+"'";
  			General.NonQ(command);
 		}
@@ -110,7 +110,7 @@ namespace OpenDental{
 			}
 			command+=
 				 "'"+POut.PInt   (task.TaskListNum)+"', "
-				+"'"+POut.PDate  (task.DateTask)+"', "
+				+POut.PDate  (task.DateTask)+", "
 				+"'"+POut.PInt   (task.KeyNum)+"', "
 				+"'"+POut.PString(task.Descript)+"', "
 				+"'"+POut.PBool  (task.TaskStatus)+"', "
@@ -118,7 +118,7 @@ namespace OpenDental{
 				+"'"+POut.PInt   ((int)task.DateType)+"', "
 				+"'"+POut.PInt   (task.FromNum)+"', "
 				+"'"+POut.PInt   ((int)task.ObjectType)+"', "
-				+"'"+POut.PDateT (task.DateTimeEntry)+"')";
+				+POut.PDateT (task.DateTimeEntry)+")";
 				//+"NOW())";//DateTimeEntry set to current server time
  			if(PrefB.RandomKeys){
 				General.NonQ(command);

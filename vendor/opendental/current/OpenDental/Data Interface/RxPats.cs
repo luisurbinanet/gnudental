@@ -30,10 +30,28 @@ namespace OpenDental{
 		}
 
 		///<summary></summary>
+		public static RxPat GetRx(int rxNum) {
+			string command="SELECT * FROM rxpat"
+				+" WHERE RxNum = "+POut.PInt(rxNum);
+			DataTable table=General.GetTable(command);
+			RxPat rx=new RxPat();
+			rx.RxNum      = PIn.PInt(table.Rows[0][0].ToString());
+			rx.PatNum     = PIn.PInt(table.Rows[0][1].ToString());
+			rx.RxDate     = PIn.PDate(table.Rows[0][2].ToString());
+			rx.Drug       = PIn.PString(table.Rows[0][3].ToString());
+			rx.Sig        = PIn.PString(table.Rows[0][4].ToString());
+			rx.Disp       = PIn.PString(table.Rows[0][5].ToString());
+			rx.Refills    = PIn.PString(table.Rows[0][6].ToString());
+			rx.ProvNum    = PIn.PInt(table.Rows[0][7].ToString());
+			rx.Notes      = PIn.PString(table.Rows[0][8].ToString());
+			return rx;
+		}
+
+		///<summary></summary>
 		public static void Update(RxPat rx) {
 			string command= "UPDATE rxpat SET " 
 				+ "PatNum = '"      +POut.PInt   (rx.PatNum)+"'"
-				+ ",RxDate = '"     +POut.PDate  (rx.RxDate)+"'"
+				+ ",RxDate = "     +POut.PDate  (rx.RxDate)
 				+ ",Drug = '"       +POut.PString(rx.Drug)+"'"
 				+ ",Sig = '"        +POut.PString(rx.Sig)+"'"
 				+ ",Disp = '"       +POut.PString(rx.Disp)+"'"
@@ -59,7 +77,7 @@ namespace OpenDental{
 			}
 			command+=
 				 "'"+POut.PInt   (rx.PatNum)+"', "
-				+"'"+POut.PDate  (rx.RxDate)+"', "
+				+POut.PDate  (rx.RxDate)+", "
 				+"'"+POut.PString(rx.Drug)+"', "
 				+"'"+POut.PString(rx.Sig)+"', "
 				+"'"+POut.PString(rx.Disp)+"', "
@@ -75,8 +93,8 @@ namespace OpenDental{
 		}
 
 		///<summary></summary>
-		public static void Delete(RxPat rx) {
-			string command= "DELETE from rxpat WHERE RxNum = '"+POut.PInt(rx.RxNum)+"'";
+		public static void Delete(int rxNum) {
+			string command= "DELETE from rxpat WHERE RxNum = '"+POut.PInt(rxNum)+"'";
 			General.NonQ(command);
 		}
 

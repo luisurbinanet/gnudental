@@ -30,7 +30,7 @@ namespace OpenDental{
 		private static void Update(TreatPlan tp){
 			string command= "UPDATE treatplan SET "
 				+"PatNum = '"   +POut.PInt   (tp.PatNum)+"'"
-				+",DateTP = '"  +POut.PDate  (tp.DateTP)+"'"
+				+",DateTP = "  +POut.PDate  (tp.DateTP)
 				+",Heading = '" +POut.PString(tp.Heading)+"'"
 				+",Note = '"    +POut.PString(tp.Note)+"'"
 				+" WHERE TreatPlanNum = '"+POut.PInt(tp.TreatPlanNum)+"'";
@@ -52,7 +52,7 @@ namespace OpenDental{
 			}
 			command+=
 				 "'"+POut.PInt   (tp.PatNum)+"', "
-				+"'"+POut.PDate  (tp.DateTP)+"', "
+				+POut.PDate  (tp.DateTP)+", "
 				+"'"+POut.PString(tp.Heading)+"', "
 				+"'"+POut.PString(tp.Note)+"')";
  			if(PrefB.RandomKeys){

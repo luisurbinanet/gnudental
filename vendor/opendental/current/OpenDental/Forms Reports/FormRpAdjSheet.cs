@@ -197,8 +197,8 @@ namespace OpenDental{
 				listProv.Items.Add(Providers.List[i].Abbr+" - "+Providers.List[i].LName+", "+Providers.List[i].FName);
 				listProv.SetSelected(i,true);
 			}
-			for(int i=0;i<Defs.Short[(int)DefCat.AdjTypes].Length;i++) {
-				listType.Items.Add(Defs.Short[(int)DefCat.AdjTypes][i].ItemName);
+			for(int i=0;i<DefB.Short[(int)DefCat.AdjTypes].Length;i++) {
+				listType.Items.Add(DefB.Short[(int)DefCat.AdjTypes][i].ItemName);
 				listType.SetSelected(i,true);
 			}
 		}
@@ -239,19 +239,19 @@ namespace OpenDental{
 					whereType+="OR ";
 				}
 				whereType+="adjustment.AdjType = '"
-					+POut.PInt(Defs.Short[(int)DefCat.AdjTypes][listType.SelectedIndices[i]].DefNum)+"' ";
+					+POut.PInt(DefB.Short[(int)DefCat.AdjTypes][listType.SelectedIndices[i]].DefNum)+"' ";
 			}
 			whereType+=")";
 			Queries.CurReport=new ReportOld();
 			Queries.CurReport.Query="SELECT adjustment.AdjDate,"
-				+"CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI),"
+				+"CONCAT(CONCAT(CONCAT(CONCAT(patient.LName,', '),patient.FName),' '),patient.MiddleI),"
 				+"definition.ItemName,adjustment.AdjNote,adjustment.AdjAmt FROM "
 				+"adjustment,patient,definition WHERE adjustment.AdjType=definition.DefNum "
 			  +"AND patient.PatNum=adjustment.PatNum "
 				+"AND "+whereProv+" "
 				+"AND "+whereType+" "
-				+"AND adjustment.AdjDate >= '"+POut.PDate(date1.SelectionStart)+"' "
-				+"AND adjustment.AdjDate <= '"+POut.PDate(date2.SelectionStart)+"'";
+				+"AND adjustment.AdjDate >= "+POut.PDate(date1.SelectionStart)+" "
+				+"AND adjustment.AdjDate <= "+POut.PDate(date2.SelectionStart);
 			Queries.CurReport.Query += " ORDER BY adjustment.AdjDate";
 			FormQuery2=new FormQuery();
 			FormQuery2.IsReport=true;

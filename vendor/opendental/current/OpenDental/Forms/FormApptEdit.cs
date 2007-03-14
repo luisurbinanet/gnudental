@@ -1015,7 +1015,7 @@ namespace OpenDental{
 				//AptCur=new Appointment();//handled  previously
 				//Appointments.SaveApt();
 				if(AptCur.Confirmed==0)
-					AptCur.Confirmed=Defs.Short[(int)DefCat.ApptConfirmed][0].DefNum;
+					AptCur.Confirmed=DefB.Short[(int)DefCat.ApptConfirmed][0].DefNum;
 				if(AptCur.ProvNum==0)
 					AptCur.ProvNum=Providers.List[0].ProvNum;
 			}
@@ -1033,14 +1033,14 @@ namespace OpenDental{
 			}
 			comboUnschedStatus.Items.Add(Lan.g(this,"none"));
 			comboUnschedStatus.SelectedIndex=0;
-			for(int i=0;i<Defs.Short[(int)DefCat.RecallUnschedStatus].Length;i++){
-				comboUnschedStatus.Items.Add(Defs.Short[(int)DefCat.RecallUnschedStatus][i].ItemName);
-				if(Defs.Short[(int)DefCat.RecallUnschedStatus][i].DefNum==AptCur.UnschedStatus)
+			for(int i=0;i<DefB.Short[(int)DefCat.RecallUnschedStatus].Length;i++){
+				comboUnschedStatus.Items.Add(DefB.Short[(int)DefCat.RecallUnschedStatus][i].ItemName);
+				if(DefB.Short[(int)DefCat.RecallUnschedStatus][i].DefNum==AptCur.UnschedStatus)
 					comboUnschedStatus.SelectedIndex=i+1;
 			}
-			for(int i=0;i<Defs.Short[(int)DefCat.ApptConfirmed].Length;i++){
-				comboConfirmed.Items.Add(Defs.Short[(int)DefCat.ApptConfirmed][i].ItemName);
-				if(Defs.Short[(int)DefCat.ApptConfirmed][i].DefNum==AptCur.Confirmed)
+			for(int i=0;i<DefB.Short[(int)DefCat.ApptConfirmed].Length;i++){
+				comboConfirmed.Items.Add(DefB.Short[(int)DefCat.ApptConfirmed][i].ItemName);
+				if(DefB.Short[(int)DefCat.ApptConfirmed][i].DefNum==AptCur.Confirmed)
 					comboConfirmed.SelectedIndex=i;
 			}
 			textAddTime.MinVal=-1200;
@@ -1048,8 +1048,8 @@ namespace OpenDental{
 			textAddTime.Text=POut.PInt(AptCur.AddTime*
 				PIn.PInt(((Pref)PrefB.HList["AppointmentTimeIncrement"]).ValueString));
 			textNote.Text=AptCur.Note;
-			for(int i=0;i<Defs.Short[(int)DefCat.ApptProcsQuickAdd].Length;i++){
-				listQuickAdd.Items.Add(Defs.Short[(int)DefCat.ApptProcsQuickAdd][i].ItemName);
+			for(int i=0;i<DefB.Short[(int)DefCat.ApptProcsQuickAdd].Length;i++){
+				listQuickAdd.Items.Add(DefB.Short[(int)DefCat.ApptProcsQuickAdd][i].ItemName);
 			}
 			//SchoolClassNum must be filled before provider
 			comboSchoolClass.Items.Add(Lan.g(this,"none"));
@@ -1116,7 +1116,7 @@ namespace OpenDental{
 			textWirelessPhone.Text=pat.WirelessPhone;
 			textAddrNote.Text=pat.AddrNote;
 			textCreditType.Text=pat.CreditType;
-			textBillingType.Text=Defs.GetName(DefCat.BillingTypes,pat.BillingType);
+			textBillingType.Text=DefB.GetName(DefCat.BillingTypes,pat.BillingType);
 			textBalance.Text=pat.EstBalance.ToString("F");
 			textFamilyBal.Text=fam.List[0].BalTotal.ToString("F");
 			if(ContrApptSheet.MinPerIncr==10){
@@ -1195,7 +1195,7 @@ namespace OpenDental{
 					case ProcStat.EO: ApptProc2[i].Status="EO"; break;
 					case ProcStat.R: ApptProc2[i].Status="R"; break;
 				}
-				ApptProc2[i].Priority=Defs.GetName(DefCat.TxPriorities,arrayProc[i].Priority);
+				ApptProc2[i].Priority=DefB.GetName(DefCat.TxPriorities,arrayProc[i].Priority);
 				ApptProc2[i].ToothNum=arrayProc[i].ToothNum;
 				ApptProc2[i].Surf    =arrayProc[i].Surf;
 				ApptProc2[i].AbbrDesc=ProcedureCodes.GetProcCode(arrayProc[i].ADACode).Descript;;
@@ -1228,7 +1228,7 @@ namespace OpenDental{
 			}
 			tbProc.LayoutTables();
 			textFeeTotal.Text=feeTotal.ToString("F");
-		}//end FillProcedures
+		}
 
 		private void tbProc_CellClicked(object sender, CellEventArgs e){
 			if(textAddTime.errorProvider1.GetError(textAddTime)!=""
@@ -1480,8 +1480,8 @@ namespace OpenDental{
 				tbCommlog.Cell[0,i]=((Commlog)ALCommItems[i]).CommDateTime.ToShortDateString();
 				tbCommlog.Cell[1,i]=((Commlog)ALCommItems[i]).Note;
 				if(((Commlog)ALCommItems[i]).CommType==CommItemType.ApptRelated){
-					tbCommlog.BackGColor[0,i]=Defs.Long[(int)DefCat.MiscColors][7].ItemColor;
-					tbCommlog.BackGColor[1,i]=Defs.Long[(int)DefCat.MiscColors][7].ItemColor;
+					tbCommlog.BackGColor[0,i]=DefB.Long[(int)DefCat.MiscColors][7].ItemColor;
+					tbCommlog.BackGColor[1,i]=DefB.Long[(int)DefCat.MiscColors][7].ItemColor;
 				}
 			}
 			tbCommlog.SetGridColor(Color.Gray);
@@ -1511,7 +1511,7 @@ namespace OpenDental{
 			}
 			Procedures.SetDateFirstVisit(AptCur.AptDateTime.Date,1,pat);
 			Benefit[] benefitList=Benefits.Refresh(PatPlanList);
-			string[] codes=Defs.Short[(int)DefCat.ApptProcsQuickAdd]
+			string[] codes=DefB.Short[(int)DefCat.ApptProcsQuickAdd]
 				[listQuickAdd.IndexFromPoint(e.X,e.Y)].ItemValue.Split(',');
 			for(int i=0;i<codes.Length;i++){
 				Procedure ProcCur=new Procedure();
@@ -1650,10 +1650,10 @@ namespace OpenDental{
 				AptCur.UnschedStatus=0;
 			else
 				AptCur.UnschedStatus
-					=Defs.Short[(int)DefCat.RecallUnschedStatus][comboUnschedStatus.SelectedIndex-1].DefNum;
+					=DefB.Short[(int)DefCat.RecallUnschedStatus][comboUnschedStatus.SelectedIndex-1].DefNum;
 			if(comboConfirmed.SelectedIndex!=-1)
 				AptCur.Confirmed
-					=Defs.Short[(int)DefCat.ApptConfirmed][comboConfirmed.SelectedIndex].DefNum;
+					=DefB.Short[(int)DefCat.ApptConfirmed][comboConfirmed.SelectedIndex].DefNum;
 			AptCur.AddTime=(int)(PIn.PInt(textAddTime.Text)/
 				PIn.PInt(((Pref)PrefB.HList["AppointmentTimeIncrement"]).ValueString));
 			AptCur.Note=textNote.Text;

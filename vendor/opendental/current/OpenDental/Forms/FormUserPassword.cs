@@ -139,7 +139,7 @@ namespace OpenDental{
 				hashedResult="";
 			}
 			else{
-				hashedResult=UserB.EncryptPassword(textPassword.Text);
+				hashedResult=UserodB.EncryptPassword(textPassword.Text);
 			}
 			//MessageBox.Show(hashedResult);
 			DialogResult=DialogResult.OK;

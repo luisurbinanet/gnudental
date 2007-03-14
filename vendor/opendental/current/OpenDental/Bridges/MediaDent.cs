@@ -20,14 +20,14 @@ namespace OpenDental.Bridges{
 		public static void SendData(Program ProgramCur, Patient pat){
 			//Usage: mediadent.exe /P<Patient Name> /D<Practitioner> /L<Language> /F<Image folder> /B<Birthdate>
 			//Example: mediadent.exe /PJan Met De Pet /DOtté Gunter /L1 /Fc:\Mediadent\patients\1011 /B27071973
-			ArrayList ForProgram=ProgramProperties.GetForProgram(ProgramCur.ProgramNum);
+			ArrayList ForProgram=ProgramProperties.GetForProgram(ProgramCur.ProgramNum);;
 			if(pat==null){
 				return;
 			}
 			string info="/P"+Cleanup(pat.FName+" "+pat.LName);
 			Provider prov=Providers.GetProv(Patients.GetProvNum(pat));
 			info+=" /D"+prov.FName+" "+prov.LName
-				+" /L1 /F";
+				+" /L1 F/";
 			ProgramProperty PPCur=ProgramProperties.GetCur(ForProgram, "Image Folder");
 			info+=PPCur.PropertyValue;
 			PPCur=ProgramProperties.GetCur(ForProgram, "Enter 0 to use PatientNum, or 1 to use ChartNum");;
@@ -39,12 +39,7 @@ namespace OpenDental.Bridges{
 			}
 			info+=" /B"+pat.Birthdate.ToString("ddMMyyyy");
 			//MessageBox.Show(info);
-			//not used yet: /inputfile "path to file"??? wrong bridge??
-			Process[] processes=Process.GetProcessesByName("Mediadent");
-			if(processes.Length!=0) {
-				processes[0].Close();
-				processes[0].WaitForExit(3000);//wait a max of 3 seconds
-			}
+			//not used yet: /inputfile "path to file"
 			try{
 				Process.Start(ProgramCur.Path,info);
 			}

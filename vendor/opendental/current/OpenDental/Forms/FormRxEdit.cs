@@ -550,7 +550,7 @@ namespace OpenDental{
 				!=DialogResult.OK){
 				return;
 			}
-			RxPats.Delete(RxPatCur);
+			RxPats.Delete(RxPatCur.RxNum);
 			DialogResult=DialogResult.OK;	
 		}
 

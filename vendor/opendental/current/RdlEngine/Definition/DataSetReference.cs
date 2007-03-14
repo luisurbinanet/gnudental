@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -33,7 +33,7 @@ namespace fyiReporting.RDL
 	internal class DataSetReference : ReportLink
 	{
 		string _DataSetName;	//Name of the data set to use.
-		DataSet _ds;			// DataSet that matches the name
+		DataSetDefn _ds;		// DataSet that matches the name
 		string _ValueField;		//Name of the field to use for the values/defaults for the parameter
 		string _LabelField;		//Name of the field to use for the value to display to the		
 								// user for the selection.  If not supplied or the returned
@@ -41,7 +41,7 @@ namespace fyiReporting.RDL
 								//  not used for DefaultValue.
 		Field _vField;			// resolved value name
 		Field _lField;			// resolved label name
-		internal DataSetReference(Report r, ReportLink p, XmlNode xNode) : base(r, p)
+		internal DataSetReference(ReportDefn r, ReportLink p, XmlNode xNode) : base(r, p)
 		{
 			_DataSetName=null;
 			_ValueField=null;
@@ -77,7 +77,7 @@ namespace fyiReporting.RDL
 		
 		override internal void FinalPass()
 		{
-			_ds = OwnerReport.DataSets[this._DataSetName];
+			_ds = OwnerReport.DataSetsDefn[this._DataSetName];
 			if (_ds == null)
 				OwnerReport.rl.LogError(8, "DataSetReference refers to unknown data set '" + _DataSetName + "'");
 			else
@@ -119,26 +119,26 @@ namespace fyiReporting.RDL
 			set {  _LabelField = value; }
 		}
 
-		internal void SupplyValues(out string[] displayValues, out object[] dataValues)
+		internal void SupplyValues(Report rpt, out string[] displayValues, out object[] dataValues)
 		{
 			displayValues = null;
 			dataValues = null;
-			if (_ds.Query.Data == null)		// do we already have data?
+			Rows rows = _ds.Query.GetMyData(rpt);
+			if (rows == null)		// do we already have data?
 			{
 				// TODO:  this is wasteful;  likely to reretrieve the data again when report run with parameters
 				//   should mark a dataset as only having one retrieval???
-				bool lConnect = _ds.Query.DataSource.IsConnected;
+				bool lConnect = _ds.Query.DataSourceDefn.IsConnected(rpt);
 				if (!lConnect)
-					_ds.Query.DataSource.ConnectDataSource();	// connect; since not already connected
-				_ds.GetData();									// get the data
-				if (!lConnect)									// if we connected; then
-					_ds.Query.DataSource.CleanUp();				//   we cleanup
+					_ds.Query.DataSourceDefn.ConnectDataSource(rpt);	// connect; since not already connected
+				_ds.GetData(rpt);									// get the data
+				if (!lConnect)										// if we connected; then
+					_ds.Query.DataSourceDefn.CleanUp(rpt);				//   we cleanup
+				rows = _ds.Query.GetMyData(rpt);
+				if (rows == null)			// any data now?
+					return;					// no out of luck
 			}
 
-			if (_ds.Query.Data == null)		// have data now?
-				return;						// no out of luck
-
-			Rows rows = _ds.Query.Data;
 			displayValues = new string[rows.Data.Count];
 			dataValues = new object[displayValues.Length];
 			int index=0;

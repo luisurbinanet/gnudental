@@ -189,7 +189,7 @@ namespace OpenDental{
 			gridMain.EndUpdate();
 			for(int i=0;i<Providers.ListLong.Length;i++){
 				if(Providers.ListLong[i].ProvNum==selectedProvNum){
-					gridMain.SetSelected(1,true);
+					gridMain.SetSelected(i,true);
 					break;
 				}
 			}

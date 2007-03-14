@@ -21,7 +21,7 @@ namespace OpenDental.Eclaims
 		}
 
 		///<summary>Gets the filename for this batch. Used when saving or when rolling back.</summary>
-		public static string GetFileName(Clearinghouse clearhouse,int interchangeNum){
+		private static string GetFileName(Clearinghouse clearhouse,int interchangeNum){
 			string saveFolder=clearhouse.ExportPath;
 			if(!Directory.Exists(saveFolder)){
 				MessageBox.Show(saveFolder+" not found.");
@@ -1848,6 +1848,12 @@ namespace OpenDental.Eclaims
 						retVal+=",";
 					retVal+="Secondary Carrier Zip";
 				}
+				if(claim.PatNum != insPlan2.Subscriber//if patient is not subscriber
+					&& claim.PatRelat2==Relat.Self) {//and relat is self
+					if(retVal!="")
+						retVal+=",";
+					retVal+="Secondary Relationship";
+				}
 			}
 			//Provider Idents:
 			ProviderSupplementalID[] providerIdents=ElectIDs.GetRequiredIdents(carrier.ElectID);
@@ -1869,7 +1875,7 @@ namespace OpenDental.Eclaims
 				&& claim.PatRelat==Relat.Self){//and relat is self
 				if(retVal!="")
 					retVal+=",";
-				retVal+="Relationship";
+				retVal+="Claim Relationship";
 			}
 			if(patient.Address==""){
 				if(retVal!="")

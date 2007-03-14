@@ -149,21 +149,21 @@ namespace OpenDental{
 		}
 		#endregion
 		private void FormRpProcCodes_Load(object sender, System.EventArgs e) {
-			for(int i=0;i<Defs.Short[(int)DefCat.FeeSchedNames].Length;i++){
-				listFeeSched.Items.Add(Defs.Short[(int)DefCat.FeeSchedNames][i].ItemName);
+			for(int i=0;i<DefB.Short[(int)DefCat.FeeSchedNames].Length;i++){
+				listFeeSched.Items.Add(DefB.Short[(int)DefCat.FeeSchedNames][i].ItemName);
 			}		
 			listFeeSched.SelectedIndex=0;
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			int feeSched=Defs.Short[(int)DefCat.FeeSchedNames][listFeeSched.SelectedIndex].DefNum;	
+			int feeSched=DefB.Short[(int)DefCat.FeeSchedNames][listFeeSched.SelectedIndex].DefNum;	
       string catName="";  //string to hold current category name
 			Fees fee=new Fees();
 			Queries.CurReport=new ReportOld();
 			
-			Queries.CurReport.Query= "SELECT procedurecode.adacode,procedurecode.descript,"
-			  +"procedurecode.abbrdesc,fee.amount FROM procedurecode,fee "
-				+"WHERE procedurecode.adacode=fee.adacode && fee.feesched='"+feeSched.ToString()
+			Queries.CurReport.Query= "SELECT procedurecode.adacode,fee.amount,'     ',procedurecode.descript,"
+			  +"procedurecode.abbrdesc FROM procedurecode,fee "
+				+"WHERE procedurecode.adacode=fee.adacode AND fee.feesched='"+feeSched.ToString()
          +"' ORDER BY procedurecode.adacode";
 			FormQuery2=new FormQuery();
 			FormQuery2.IsReport=true;
@@ -173,21 +173,23 @@ namespace OpenDental{
 				Queries.CurReport.Title="Procedure Codes";
 				Queries.CurReport.SubTitle=new string[2];
 				Queries.CurReport.SubTitle[0]=((Pref)PrefB.HList["PracticeTitle"]).ValueString;
-				Queries.CurReport.SubTitle[1]=Defs.GetName(DefCat.FeeSchedNames,feeSched);
-				Queries.CurReport.ColPos=new int[5];
-				Queries.CurReport.ColCaption=new string[4];
-				Queries.CurReport.ColAlign=new HorizontalAlignment[4];
-				Queries.CurReport.ColPos[0]=20;
-				Queries.CurReport.ColPos[1]=170;
-				Queries.CurReport.ColPos[2]=395;
-				Queries.CurReport.ColPos[3]=595;
-				Queries.CurReport.ColPos[4]=720;
+				Queries.CurReport.SubTitle[1]=DefB.GetName(DefCat.FeeSchedNames,feeSched);
+				Queries.CurReport.ColPos=new int[6];
+				Queries.CurReport.ColCaption=new string[5];
+				Queries.CurReport.ColAlign=new HorizontalAlignment[5];
+				Queries.CurReport.ColPos[0]=60;
+				Queries.CurReport.ColPos[1]=130;
+				Queries.CurReport.ColPos[2]=200;
+				Queries.CurReport.ColPos[3]=220;
+				Queries.CurReport.ColPos[4]=420;
+				Queries.CurReport.ColPos[5]=620;
 				Queries.CurReport.ColCaption[0]="ADA Code";
-				Queries.CurReport.ColCaption[1]="Description";
-				Queries.CurReport.ColCaption[2]="Abbr Description";
-				Queries.CurReport.ColCaption[3]="Fee Amount";
-
-				Queries.CurReport.ColAlign[3]=HorizontalAlignment.Right;
+				Queries.CurReport.ColCaption[1]="Fee Amount";
+				Queries.CurReport.ColCaption[2]=" ";//otherwise, the amount gets bunched up next to the description.
+				Queries.CurReport.ColCaption[3]="Description";
+				Queries.CurReport.ColCaption[4]="Abbr Description";
+				//Queries.CurReport.ColCaption[3]="Fee Amount";
+				Queries.CurReport.ColAlign[1]=HorizontalAlignment.Right;
 				Queries.CurReport.Summary=new string[0];
 				FormQuery2.ShowDialog();
 				DialogResult=DialogResult.OK;		
@@ -201,7 +203,7 @@ namespace OpenDental{
 			  }
 				Queries.CurReport.ColTotal=new double[Queries.TableQ.Columns.Count];
         DataRow row=Queries.TableQ.NewRow();//add first row by hand to get value for temp
-				row[0]=Defs.GetName(DefCat.ProcCodeCats,ProcList[0].ProcCat);
+				row[0]=DefB.GetName(DefCat.ProcCodeCats,ProcList[0].ProcCat);
 				catName=row[0].ToString();
 				row[1]=ProcList[0].ADACode;
 				row[2]=ProcList[0].Descript;
@@ -211,7 +213,7 @@ namespace OpenDental{
 				Queries.TableQ.Rows.Add(row);
 				for(int i=1;i<ProcList.Length;i++){//loop through data rows
 					row=Queries.TableQ.NewRow();//create new row called 'row' based on structure of TableQ
-					row[0]=Defs.GetName(DefCat.ProcCodeCats,ProcList[i].ProcCat);
+					row[0]=DefB.GetName(DefCat.ProcCodeCats,ProcList[i].ProcCat);
 					if(catName==row[0].ToString()){
             row[0]=""; 
 					}
@@ -235,7 +237,7 @@ namespace OpenDental{
 				Queries.CurReport.Title="Procedure Codes";
 				Queries.CurReport.SubTitle=new string[5];
 				Queries.CurReport.SubTitle[0]=((Pref)PrefB.HList["PracticeTitle"]).ValueString;
-				Queries.CurReport.SubTitle[1]=Defs.GetName(DefCat.FeeSchedNames,feeSched);
+				Queries.CurReport.SubTitle[1]=DefB.GetName(DefCat.FeeSchedNames,feeSched);
 				Queries.CurReport.ColPos[0]=20;
 				Queries.CurReport.ColPos[1]=120;
 				Queries.CurReport.ColPos[2]=270;

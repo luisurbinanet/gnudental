@@ -39,16 +39,16 @@ namespace OpenDental{
 		}
 
 		///<summary>Converts a date to an age. If age is over 115, then returns 0.</summary>
-		public static int DateToAge(DateTime date,DateTime asofDate) {
-			if(date.Year<1880)
+		public static int DateToAge(DateTime birthdate,DateTime asofDate) {
+			if(birthdate.Year<1880)
 				return 0;
-			if(date.Month < asofDate.Month) {//birthday in previous month
-				return asofDate.Year-date.Year;
+			if(birthdate.Month < asofDate.Month) {//birthday in previous month
+				return asofDate.Year-birthdate.Year;
 			}
-			if(date.Month == asofDate.Month && date.Day <= asofDate.Day) {//birthday in this month
-				return asofDate.Year-date.Year;
+			if(birthdate.Month == asofDate.Month && birthdate.Day <= asofDate.Day) {//birthday in this month
+				return asofDate.Year-birthdate.Year;
 			}
-			return asofDate.Year-date.Year-1;
+			return asofDate.Year-birthdate.Year-1;
 		}
 
 		///<summary></summary>
@@ -318,7 +318,7 @@ namespace OpenDental{
 
 		///<summary>Used in the tool that loops through the database fixing telephone numbers.  Also used in the patient import from XML tool.</summary>
 		public static string ReFormat(string phoneNum){
-			if(CultureInfo.CurrentCulture.Name!="en-US" && CultureInfo.CurrentCulture.Name!="en-CA"){
+			if(CultureInfo.CurrentCulture.Name!="en-US" && CultureInfo.CurrentCulture.Name.Substring(3)!="CA"){
 				return phoneNum;
 			}
 			Regex regex;
@@ -360,7 +360,7 @@ namespace OpenDental{
 
 		///<summary>reformats initial entry with each keystroke</summary>
 		public static string AutoFormat(string phoneNum){
-			if(CultureInfo.CurrentCulture.Name!="en-US"){
+			if(CultureInfo.CurrentCulture.Name!="en-US"	&& CultureInfo.CurrentCulture.Name.Substring(3)!="CA"){
 				return phoneNum;
 			}
 			if(Regex.IsMatch(phoneNum,@"^[2-9]$")){

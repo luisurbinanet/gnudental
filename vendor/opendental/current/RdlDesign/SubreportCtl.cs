@@ -1,5 +1,5 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
@@ -72,7 +72,7 @@ namespace fyiReporting.RdlDesign
 		{
 			this.tbReportFile.Text = _Draw.GetElementValue(_Subreport, "ReportName", "");
 			this.tbNoRows.Text = _Draw.GetElementValue(_Subreport, "NoRows", "");
-			this.chkMergeTrans.Checked = _Draw.GetElementValue(_Subreport, "MergeTransactions", "False").ToLower() == "true";
+			this.chkMergeTrans.Checked = _Draw.GetElementValue(_Subreport, "MergeTransactions", "false").ToLower() == "true";
 
 			// Initialize the DataGrid columns
 			dgtbName = new DataGridTextBoxColumn();
@@ -278,7 +278,7 @@ namespace fyiReporting.RdlDesign
 			else
 				_Draw.SetElement(_Subreport, "NoRows", tbNoRows.Text);
 
-			_Draw.SetElement(_Subreport, "MergeTransactions", this.chkMergeTrans.Checked? "True": "False");
+			_Draw.SetElement(_Subreport, "MergeTransactions", this.chkMergeTrans.Checked? "true": "false");
 
 			// Remove the old filters
 			XmlNode parms = _Draw.GetCreateNamedChildNode(_Subreport, "Parameters");

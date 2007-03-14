@@ -547,19 +547,19 @@ namespace OpenDental
 				doDraw=true;
 				switch(procList[i].ProcStatus){
 					case ProcStat.C:
-						elemColor=Defs.Short[(int)DefCat.ChartGraphicColors][1].ItemColor;
+						elemColor=DefB.Short[(int)DefCat.ChartGraphicColors][1].ItemColor;
 						break;
 					case ProcStat.TP:
-						elemColor=Defs.Short[(int)DefCat.ChartGraphicColors][0].ItemColor;
+						elemColor=DefB.Short[(int)DefCat.ChartGraphicColors][0].ItemColor;
 						break;
 					case ProcStat.EC:
-						elemColor=Defs.Short[(int)DefCat.ChartGraphicColors][2].ItemColor;
+						elemColor=DefB.Short[(int)DefCat.ChartGraphicColors][2].ItemColor;
 						break;
 					case ProcStat.EO:
-						elemColor=Defs.Short[(int)DefCat.ChartGraphicColors][3].ItemColor;
+						elemColor=DefB.Short[(int)DefCat.ChartGraphicColors][3].ItemColor;
 						break;
 					case ProcStat.R:
-						elemColor=Defs.Short[(int)DefCat.ChartGraphicColors][4].ItemColor;
+						elemColor=DefB.Short[(int)DefCat.ChartGraphicColors][4].ItemColor;
 						break;
 					default:
 						elemColor=Color.Transparent;

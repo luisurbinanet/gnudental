@@ -397,9 +397,9 @@ namespace OpenDental{
 			textDays.Text=RecallCur.RecallInterval.Days.ToString();
 			comboStatus.Items.Add(Lan.g(this,"None"));
 			comboStatus.SelectedIndex=0;
-			for(int i=0;i<Defs.Short[(int)DefCat.RecallUnschedStatus].Length;i++){
-				comboStatus.Items.Add(Defs.Short[(int)DefCat.RecallUnschedStatus][i].ItemName);
-				if(Defs.Short[(int)DefCat.RecallUnschedStatus][i].DefNum==RecallCur.RecallStatus)
+			for(int i=0;i<DefB.Short[(int)DefCat.RecallUnschedStatus].Length;i++){
+				comboStatus.Items.Add(DefB.Short[(int)DefCat.RecallUnschedStatus][i].ItemName);
+				if(DefB.Short[(int)DefCat.RecallUnschedStatus][i].DefNum==RecallCur.RecallStatus)
 					comboStatus.SelectedIndex=i+1;
 			}
 			textNote.Text=RecallCur.Note;
@@ -455,7 +455,7 @@ namespace OpenDental{
 			}
 			else{
 				RecallCur.RecallStatus
-					=Defs.Short[(int)DefCat.RecallUnschedStatus][comboStatus.SelectedIndex-1].DefNum;
+					=DefB.Short[(int)DefCat.RecallUnschedStatus][comboStatus.SelectedIndex-1].DefNum;
 			}
 			RecallCur.Note=textNote.Text;
 			if(IsNew){

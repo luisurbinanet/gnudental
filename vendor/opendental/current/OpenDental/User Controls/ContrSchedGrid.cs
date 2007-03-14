@@ -91,17 +91,17 @@ namespace OpenDental{
 						}
 					}
 					if(SchedDefaults.List[i].SchedType==ScheduleType.Practice){//open block color
-						blockBrush=new SolidBrush(Defs.Long[(int)DefCat.AppointmentColors][0].ItemColor);
+						blockBrush=new SolidBrush(DefB.Long[(int)DefCat.AppointmentColors][0].ItemColor);
 						blockW=ColW;
 						opOffset=0;
 					}
 					if(SchedDefaults.List[i].SchedType==ScheduleType.Provider){//open block color
-						blockBrush=new SolidBrush(Defs.Long[(int)DefCat.AppointmentColors][0].ItemColor);
+						blockBrush=new SolidBrush(DefB.Long[(int)DefCat.AppointmentColors][0].ItemColor);
 						blockW=ColW;
 						opOffset=0;
 					}
 					if(SchedDefaults.List[i].SchedType==ScheduleType.Blockout){
-						blockBrush=new SolidBrush(Defs.GetColor(DefCat.BlockoutTypes
+						blockBrush=new SolidBrush(DefB.GetColor(DefCat.BlockoutTypes
 							,SchedDefaults.List[i].BlockoutType));
 						if(SchedDefaults.List[i].Op==0){
 							blockW=ColW;
@@ -165,7 +165,7 @@ namespace OpenDental{
 							opOffset=opOffset*opW;
 						}
 						e.Graphics.DrawString(
-							Defs.GetName(DefCat.BlockoutTypes,SchedDefaults.List[i].BlockoutType)
+							DefB.GetName(DefCat.BlockoutTypes,SchedDefaults.List[i].BlockoutType)
 							,blockFont,Brushes.Black
 							,new RectangleF(
 							NumW+SchedDefaults.List[i].DayOfWeek*ColW

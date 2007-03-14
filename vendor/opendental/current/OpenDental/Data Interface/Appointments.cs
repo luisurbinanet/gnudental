@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Text;
@@ -19,7 +20,7 @@ namespace OpenDental{
 			DateSelected = thisDay;
 			string command=
 				"SELECT * from appointment "
-				+"WHERE AptDateTime LIKE '"+POut.PDate(thisDay)+"%' "
+				+"WHERE AptDateTime LIKE '"+POut.PDate(thisDay,false)+"%' "
 				+"AND aptstatus != '"+(int)ApptStatus.UnschedList+"' "
 				+"AND aptstatus != '"+(int)ApptStatus.Planned+"'";
 			return FillList(command);
@@ -29,8 +30,8 @@ namespace OpenDental{
 		public static Appointment[] RefreshUnsched(bool doGetPlanned) {
 			string command="";
 			if(doGetPlanned) {
-				command="SELECT Tplanned.*,Tregular.aptnum FROM appointment AS Tplanned "
-					+"LEFT JOIN appointment AS Tregular ON Tplanned.aptnum = Tregular.nextaptnum "
+				command="SELECT Tplanned.*,Tregular.aptnum FROM appointment Tplanned "
+					+"LEFT JOIN appointment Tregular ON Tplanned.aptnum = Tregular.nextaptnum "
 					+"WHERE Tplanned.aptstatus = '"+(int)ApptStatus.Planned+"' "
 					+"AND Tregular.aptnum IS NULL "
 					+"ORDER BY Tplanned.UnschedStatus,Tplanned.AptDateTime";
@@ -70,7 +71,7 @@ namespace OpenDental{
 		public static Appointment[] GetRouting(DateTime date,int[] provNums) {
 			string command=
 				"SELECT * FROM appointment "
-				+"WHERE AptDateTime LIKE '"+POut.PDate(date)+"%' "
+				+"WHERE AptDateTime LIKE '"+POut.PDate(date,false)+"%' "
 				+"AND aptstatus != '"+(int)ApptStatus.UnschedList+"' "
 				+"AND aptstatus != '"+(int)ApptStatus.Planned+"' "
 				+"AND (";
@@ -160,7 +161,7 @@ namespace OpenDental{
 				+"'"+POut.PString(appt.Note)+"', "
 				+"'"+POut.PInt   (appt.ProvNum)+"', "
 				+"'"+POut.PInt   (appt.ProvHyg)+"', "
-				+"'"+POut.PDateT (appt.AptDateTime)+"', "
+				+POut.PDateT (appt.AptDateTime)+", "
 				+"'"+POut.PInt   (appt.NextAptNum)+"', "
 				+"'"+POut.PInt   (appt.UnschedStatus)+"', "
 				+"'"+POut.PInt   ((int)appt.Lab)+"', "
@@ -231,7 +232,7 @@ namespace OpenDental{
 			}
 			if(appt.AptDateTime!=oldApt.AptDateTime){
 				if(comma) c+=",";
-				c+="AptDateTime = '" +POut.PDateT (appt.AptDateTime)+"'";
+				c+="AptDateTime = " +POut.PDateT (appt.AptDateTime)+"";
 				comma=true;
 			}
 			if(appt.NextAptNum!=oldApt.NextAptNum){
@@ -331,20 +332,97 @@ namespace OpenDental{
 
 		///<summary>Used in FormConfirmList</summary>
 		public static DataTable GetConfirmList(DateTime dateFrom,DateTime dateTo){
+			DataTable table=new DataTable();
+			DataRow row;
+			//columns that start with lowercase are altered for display rather than being raw data.
+			table.Columns.Add("AddrNote");
+			table.Columns.Add("AptNum");
+			table.Columns.Add("age");
+			table.Columns.Add("aptDateTime");
+			table.Columns.Add("confirmed");
+			table.Columns.Add("contactMethod");
+			table.Columns.Add("Guarantor");
+			table.Columns.Add("medNotes");
+			table.Columns.Add("Note");
+			table.Columns.Add("patientName");
+			table.Columns.Add("PatNum");
+			table.Columns.Add("ProcDescript");
+			List<DataRow> rows=new List<DataRow>();
 			string command="SELECT patient.PatNum,"//0
 				+"patient.LName,"//1-LName
-				+"CONCAT(patient.FName,' ',patient.Preferred,' ',patient.MiddleI) AS 'Patient Name', "//2-FName
+				+"patient.FName,patient.Preferred,patient.LName, "//2-patientName
 				+"Guarantor,AptDateTime,Birthdate,HmPhone,"//3-6
 				+"WkPhone,WirelessPhone,ProcDescript,Confirmed,Note,"//7-11
-				+"AddrNote,AptNum,MedUrgNote "//12-14
+				+"AddrNote,AptNum,MedUrgNote,PreferConfirmMethod,Email,Premed "//12-14
 				+"FROM patient,appointment "
 				+"WHERE patient.PatNum=appointment.PatNum "
-				+"AND AptDateTime > '"+POut.PDate(dateFrom)+"' "
-				+"AND AptDateTime < '"+POut.PDate(dateTo.AddDays(1))+"' "
+				+"AND AptDateTime > "+POut.PDate(dateFrom)+" "
+				+"AND AptDateTime < "+POut.PDate(dateTo.AddDays(1))+" "
 				+"AND (AptStatus=1 "//scheduled
 				+"OR AptStatus=4) "//ASAP
 				+"ORDER BY AptDateTime";
-			return General.GetTable(command);
+			DataTable rawtable=General.GetTable(command);
+			DateTime dateT;
+			Patient pat;
+			ContactMethod contmeth;
+			for(int i=0;i<rawtable.Rows.Count;i++) {
+				row=table.NewRow();
+				row["AddrNote"]=rawtable.Rows[i]["AddrNote"].ToString();
+				row["AptNum"]=rawtable.Rows[i]["AptNum"].ToString();
+				row["age"]=Shared.DateToAge(PIn.PDate(rawtable.Rows[i]["Birthdate"].ToString())).ToString();//we don't care about m/y.
+				dateT=PIn.PDateT(rawtable.Rows[i]["AptDateTime"].ToString());
+				row["aptDateTime"]=dateT.ToShortDateString()+"\r\n"+dateT.ToShortTimeString();
+				row["confirmed"]=DefB.GetName(DefCat.ApptConfirmed,PIn.PInt(rawtable.Rows[i]["Confirmed"].ToString()));
+				contmeth=(ContactMethod)PIn.PInt(rawtable.Rows[i]["PreferConfirmMethod"].ToString());
+				if(contmeth==ContactMethod.None || contmeth==ContactMethod.HmPhone) {
+					row["contactMethod"]=Lan.g("FormConfirmList","Hm:")+rawtable.Rows[i]["HmPhone"].ToString();
+				}
+				if(contmeth==ContactMethod.WkPhone) {
+					row["contactMethod"]=Lan.g("FormConfirmList","Wk:")+rawtable.Rows[i]["WkPhone"].ToString();
+				}
+				if(contmeth==ContactMethod.WirelessPh) {
+					row["contactMethod"]=Lan.g("FormConfirmList","Cell:")+rawtable.Rows[i]["WirelessPhone"].ToString();
+				}
+				if(contmeth==ContactMethod.Email) {
+					row["contactMethod"]=rawtable.Rows[i]["Email"].ToString();
+				}
+				if(contmeth==ContactMethod.DoNotCall || contmeth==ContactMethod.SeeNotes) {
+					row["contactMethod"]=Lan.g("enumContactMethod",contmeth.ToString());
+				}
+				row["Guarantor"]=rawtable.Rows[i]["Guarantor"].ToString();
+				row["medNotes"]="";
+				if(rawtable.Rows[i]["Premed"].ToString()=="1"){
+					row["medNotes"]=Lan.g("FormConfirmList","Premedicate");
+				}
+				if(rawtable.Rows[i]["MedUrgNote"].ToString()!=""){
+					if(row["medNotes"].ToString()!="") {
+						row["medNotes"]+="\r\n";
+					}
+					row["medNotes"]+=rawtable.Rows[i]["MedUrgNote"].ToString();
+				}
+				row["Note"]=rawtable.Rows[i]["Note"].ToString();
+				pat=new Patient();
+				pat.LName=rawtable.Rows[i]["LName"].ToString();
+				pat.FName=rawtable.Rows[i]["FName"].ToString();
+				pat.Preferred=rawtable.Rows[i]["Preferred"].ToString();
+				row["patientName"]=pat.LName+"\r\n";
+				if(pat.Preferred!=""){
+					row["patientName"]+="'"+pat.Preferred+"'";
+				}
+				else{
+					row["patientName"]+=pat.FName;
+				}
+					//pat.GetNameLF();
+				row["PatNum"]=rawtable.Rows[i]["PatNum"].ToString();
+				row["ProcDescript"]=rawtable.Rows[i]["ProcDescript"].ToString();
+				rows.Add(row);
+			}
+			//Array.Sort(orderDate,RecallList);
+			//return RecallList;
+			for(int i=0;i<rows.Count;i++) {
+				table.Rows.Add(rows[i]);
+			}
+			return table;
 		}
 
 		///<summary>Used in Confirm list to just get addresses.</summary>
@@ -364,8 +442,10 @@ namespace OpenDental{
 			return General.GetTable(command);
 		}
 
-		///<summary>Used by appt search function.  Returns the next available time for the appointment.  Starts searching on lastSlot, which can be tonight at midnight for the first search.  Then, each subsequent search will start at the time of the previous search plus the length of the appointment.  Provider array cannot be length 0.</summary>
-		public static DateTime[] GetSearchResults(Appointment apt,DateTime afterDate,int[] providers,int resultCount){//TimeSpan beforeTime,TimeSpan afterTime
+		///<summary>Used by appt search function.  Returns the next available time for the appointment.  Starts searching on lastSlot, which can be tonight at midnight for the first search.  Then, each subsequent search will start at the time of the previous search plus the length of the appointment.  Provider array cannot be length 0.  Might return array of 0 if it goes more than 1 year into the future.</summary>
+		public static DateTime[] GetSearchResults(Appointment apt,DateTime afterDate,int[] providers,int resultCount,
+			TimeSpan beforeTime,TimeSpan afterTime)
+		{
 			DateTime dayEvaluating=afterDate.AddDays(1);
 			Appointment[] aptList;//list of appointments for one day
 			ArrayList ALresults=new ArrayList();//result Date/Times
@@ -382,7 +462,9 @@ namespace OpenDental{
 			bool aptIsMatch=false;
 			//int afterIndex=0;//GetProvBarIndex(afterTime);
 			//int beforeIndex=0;//GetProvBarIndex(beforeTime);
-			while(ALresults.Count<resultCount){//stops when the specified number of results are retrieved
+			while(ALresults.Count<resultCount//stops when the specified number of results are retrieved
+				&& dayEvaluating<afterDate.AddYears(1))
+			{
 				for(int i=0;i<providers.Length;i++){
 					provBar[i]=new int[24*ContrApptSheet.RowsPerHr];//[144]; or 24*6
 					provBarSched[i]=new bool[24*ContrApptSheet.RowsPerHr];
@@ -514,13 +596,7 @@ namespace OpenDental{
 						if(!aptIsMatch){
 							continue;
 						}
-						//make sure it's after the time restricted
-						//Debug.WriteLine(apt.AptDateTime.TimeOfDay+"  "+afterTime.ToString());
-						//if(afterTime!=TimeSpan.Zero && <afterTime){
-						//	aptIsMatch=false;
-						//	continue;
-						//}
-						//match found, so convert this slot to a valid time
+						//convert to valid time
 						hourFound=(int)((double)(i)/60*PrefB.GetInt("AppointmentTimeIncrement"));
 						timeFound=new TimeSpan(
 							hourFound,
@@ -528,6 +604,18 @@ namespace OpenDental{
 							(int)((i-((double)hourFound*60/(double)PrefB.GetInt("AppointmentTimeIncrement")))
 								*PrefB.GetInt("AppointmentTimeIncrement")),
 							0);
+						//make sure it's after the time restricted
+						//Debug.WriteLine(timeFound.ToString()+"  "+afterTime.ToString());
+							//apt.AptDateTime.TimeOfDay+"  "+afterTime.ToString());
+						if(afterTime!=TimeSpan.Zero && timeFound<afterTime){
+							aptIsMatch=false;
+							continue;
+						}
+						if(beforeTime!=TimeSpan.Zero && timeFound>beforeTime) {
+							aptIsMatch=false;
+							continue;
+						}
+						//match found
 						ALresults.Add(dayEvaluating+timeFound);
 					}//for p	
 					if(aptIsMatch){

@@ -611,11 +611,12 @@ namespace OpenDental.UI{
 			IsUpdating=true;
 		}
 
-		///<summary>Must be called after adding rows.  This computes the columns, computes the rows, lays out the scrollbars, clears SelectedIndices, and invalidates.</summary>
+		///<summary>Must be called after adding rows.  This computes the columns, computes the rows, lays out the scrollbars, clears SelectedIndices, and invalidates.  Does not zero out scrollVal.  Sometimes, it seems like scrollVal needs to be reset somehow because it's an inappropriate number, and when you first grab the scrollbar, it jumps.  No time to investigate.  Have spent a lot of time on this issue, but don't want to introduce bugs right now.</summary>
 		public void EndUpdate(){
 			ComputeColumns();
 			ComputeRows();
 			LayoutScrollBars();
+			//ScrollValue=0;
 			selectedIndices=new ArrayList();
 			IsUpdating=false;
 			Invalidate();
@@ -635,7 +636,6 @@ namespace OpenDental.UI{
 					noteW+=columns[i].ColWidth;
 				}
 			}
-			
 			for(int i=0;i<rows.Count;i++){
 				RowHeights[i]=0;//rowHeight;
 				if(wrapText){
@@ -701,6 +701,7 @@ namespace OpenDental.UI{
 				vScroll.LargeChange=vScroll.Height;//it used to crash right here as it tried to assign a negative number.
 				vScroll.SmallChange=(int)(14*3.4);//it's not an even number so that it is obvious to user that rows moved
 			}
+			//vScroll.Value=0;
 		}
 
 		///<summary></summary>
@@ -1115,7 +1116,7 @@ namespace OpenDental.UI{
 			//because mouse might have moved faster than computer could keep up, we have to loop through all rows between
 			if(MouseDownRow<curRow){//dragging down
 				for(int i=MouseDownRow;i<=curRow;i++){
-					if(i==-1){
+					if(i==-1) {
 						continue;
 					}
 					if(!selectedIndices.Contains(i)){

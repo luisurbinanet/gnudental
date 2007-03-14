@@ -164,9 +164,9 @@ namespace OpenDental{
 		#endregion
 
 		private void FormLogOn_Load(object sender, System.EventArgs e) {
-			for(int i=0;i<Users.Listt.Count;i++){
-				listUser.Items.Add(Users.Listt[i].UserName);
-				if(Security.CurUser!=null && Users.Listt[i].UserNum==Security.CurUser.UserNum){
+			for(int i=0;i<Userods.Listt.Count;i++){
+				listUser.Items.Add(Userods.Listt[i].UserName);
+				if(Security.CurUser!=null && Userods.Listt[i].UserNum==Security.CurUser.UserNum){
 					listUser.SelectedIndex=i;
 				}
 			}
@@ -185,13 +185,13 @@ namespace OpenDental{
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			if(Users.Listt[listUser.SelectedIndex].Password!=""){
-				if(!UserB.CheckPassword(textPassword.Text,Users.Listt[listUser.SelectedIndex].Password)){
+			if(Userods.Listt[listUser.SelectedIndex].Password!=""){
+				if(!UserodB.CheckPassword(textPassword.Text,Userods.Listt[listUser.SelectedIndex].Password)){
 					MsgBox.Show(this,"Incorrect password");
 					return;
 				}
 			}
-			Security.CurUser=Users.Listt[listUser.SelectedIndex].Copy();
+			Security.CurUser=Userods.Listt[listUser.SelectedIndex].Copy();
 			//SecurityLogs.MakeLogEntry(Permissions.StartupSingleUser,"");
 			DialogResult=DialogResult.OK;
 		}

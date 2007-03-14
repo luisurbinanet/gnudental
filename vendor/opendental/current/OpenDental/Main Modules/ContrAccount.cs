@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Data;
+using System.Globalization;
 using System.Windows.Forms;
 using OpenDental.UI;
 using OpenDentBusiness;
@@ -80,7 +81,7 @@ namespace OpenDental {
 		private System.Windows.Forms.ContextMenu menuPatient;
 		private Procedure[] ProcList;
 		///<summary>Indices of the items within CommLogs.List of items to actually show in the commlog list on this page. Right now, does not include Statement Sent entries.</summary>
-		private ArrayList CommIndices;
+		//private ArrayList CommIndices;
 		private Family FamCur;
 		///<summary>Public because used by FormRpStatement</summary>
 		public Patient PatCur;
@@ -112,6 +113,9 @@ namespace OpenDental {
 		private Benefit[] BenefitList;
 		private Commlog[] CommlogList;
 		private PatientNote PatientNoteCur;
+		private OpenDental.UI.Button butQuest;
+		///<summary>This will eventually hold all data needed for display.  It will be retrieved in one call to the database.</summary>
+		private DataSet DataSetMain;
 
 		///<summary></summary>
 		public ContrAccount() {
@@ -181,6 +185,7 @@ namespace OpenDental {
 			this.contextMenuRepeat = new System.Windows.Forms.ContextMenu();
 			this.menuItemRepeatStand = new System.Windows.Forms.MenuItem();
 			this.menuItemRepeatEmail = new System.Windows.Forms.MenuItem();
+			this.butQuest = new OpenDental.UI.Button();
 			this.panelTotal.SuspendLayout();
 			this.panelCommButs.SuspendLayout();
 			this.groupBox1.SuspendLayout();
@@ -469,6 +474,7 @@ namespace OpenDental {
 			// 
 			// panelCommButs
 			// 
+			this.panelCommButs.Controls.Add(this.butQuest);
 			this.panelCommButs.Controls.Add(this.butTask);
 			this.panelCommButs.Controls.Add(this.butLabel);
 			this.panelCommButs.Controls.Add(this.groupBox1);
@@ -486,7 +492,7 @@ namespace OpenDental {
 			this.butTask.Autosize = true;
 			this.butTask.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butTask.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butTask.Location = new System.Drawing.Point(0,159);
+			this.butTask.Location = new System.Drawing.Point(0,186);
 			this.butTask.Name = "butTask";
 			this.butTask.Size = new System.Drawing.Size(90,25);
 			this.butTask.TabIndex = 84;
@@ -501,7 +507,7 @@ namespace OpenDental {
 			this.butLabel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butLabel.Image = ((System.Drawing.Image)(resources.GetObject("butLabel.Image")));
 			this.butLabel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butLabel.Location = new System.Drawing.Point(0,105);
+			this.butLabel.Location = new System.Drawing.Point(0,132);
 			this.butLabel.Name = "butLabel";
 			this.butLabel.Size = new System.Drawing.Size(90,25);
 			this.butLabel.TabIndex = 71;
@@ -538,7 +544,7 @@ namespace OpenDental {
 			this.butEmail.Autosize = true;
 			this.butEmail.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butEmail.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butEmail.Location = new System.Drawing.Point(0,132);
+			this.butEmail.Location = new System.Drawing.Point(0,159);
 			this.butEmail.Name = "butEmail";
 			this.butEmail.Size = new System.Drawing.Size(90,25);
 			this.butEmail.TabIndex = 69;
@@ -644,6 +650,19 @@ namespace OpenDental {
 			this.menuItemRepeatEmail.Index = 1;
 			this.menuItemRepeatEmail.Text = "Email Monthly";
 			this.menuItemRepeatEmail.Click += new System.EventHandler(this.MenuItemRepeatEmail_Click);
+			// 
+			// butQuest
+			// 
+			this.butQuest.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butQuest.Autosize = true;
+			this.butQuest.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butQuest.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butQuest.Location = new System.Drawing.Point(0,105);
+			this.butQuest.Name = "butQuest";
+			this.butQuest.Size = new System.Drawing.Size(90,25);
+			this.butQuest.TabIndex = 85;
+			this.butQuest.Text = "Questionnaire";
+			this.butQuest.Click += new System.EventHandler(this.butQuest_Click);
 			// 
 			// ContrAccount
 			// 
@@ -825,11 +844,12 @@ namespace OpenDental {
 			RepeatChargeList=null;
 		}
 
-		///<summary>Public because used by FormRpStatement</summary>
+		///<summary>Public because used by FormRpStatement(which will definitely change)</summary>
 		public void RefreshModuleData(int patNum) {
 			if(patNum==0) {
 				PatCur=null;
 				FamCur=null;
+				DataSetMain=null;
 				return;
 			}
 			FamCur=Patients.GetFamily(patNum);
@@ -840,6 +860,7 @@ namespace OpenDental {
 			//CovPats.Refresh(PlanList,PatPlanList);
 			PatientNoteCur=PatientNotes.Refresh(PatCur.PatNum,PatCur.Guarantor);
 			//other tables are refreshed in FillAcctLineAL
+			DataSetMain=AccountModule.GetAll(patNum);
 		}
 
 		private void RefreshModuleScreen() {
@@ -1031,9 +1052,9 @@ namespace OpenDental {
 			gridRepeat.EndUpdate();
 		}
 
-		/// <summary>Fills the commlog table on this form.</summary>
+		/// <summary>Fills the commlog grid on this form.  It does not refresh the data from the database.</summary>
 		private void FillComm() {
-			if(PatCur==null){
+			if(DataSetMain==null){
 				gridComm.BeginUpdate();
 				gridComm.Rows.Clear();
 				gridComm.EndUpdate();
@@ -1047,33 +1068,28 @@ namespace OpenDental {
 			else{
 				butEmail.Enabled=true;
 			}
-			//Commlogs.Refresh();//already done in FillMain().
-			CommIndices=new ArrayList();
-			for(int i=0;i<CommlogList.Length;i++){
-				if(CommlogList[i].CommType==CommItemType.StatementSent){
-					continue;
-				}
-				CommIndices.Add(i);
-			}
 			gridComm.BeginUpdate();
 			gridComm.Columns.Clear();
 			ODGridColumn col=new ODGridColumn(Lan.g("TableCommLogAccount","Date"),70);
 			gridComm.Columns.Add(col);
-			col=new ODGridColumn(Lan.g("TableCommLogAccount","Type"),85);
+			col=new ODGridColumn(Lan.g("TableCommLogAccount","Type"),80);
 			gridComm.Columns.Add(col);
-			col=new ODGridColumn(Lan.g("TableCommLogAccount","Mode"),80);
+			col=new ODGridColumn(Lan.g("TableCommLogAccount","Mode"),70);
 			gridComm.Columns.Add(col);
-			col=new ODGridColumn(Lan.g("TableCommLogAccount","Note"),515);
+			col=new ODGridColumn(Lan.g("TableCommLogAccount","Sent/Recd"),75);
+			gridComm.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableCommLogAccount","Note"),455);
 			gridComm.Columns.Add(col);
 			gridComm.Rows.Clear();
 			OpenDental.UI.ODGridRow row;
-			for(int i=0;i<CommIndices.Count;i++){
+			DataTable table=DataSetMain.Tables["Commlog"];
+			for(int i=0;i<table.Rows.Count;i++) {
 				row=new ODGridRow();
-				row.Cells.Add(CommlogList[(int)CommIndices[i]].CommDateTime.ToShortDateString());
-				row.Cells.Add(CommlogList[(int)CommIndices[i]].CommType.ToString());
-				row.Cells.Add(CommlogList[(int)CommIndices[i]].Mode.ToString());
-				//When we move to the new business layer, the note needs to contain more accurate email info:
-				row.Cells.Add(CommlogList[(int)CommIndices[i]].Note);
+				row.Cells.Add(table.Rows[i]["commDate"].ToString());
+				row.Cells.Add(table.Rows[i]["commType"].ToString());
+				row.Cells.Add(table.Rows[i]["mode"].ToString());
+				row.Cells.Add(table.Rows[i]["sentOrReceived"].ToString());
+				row.Cells.Add(table.Rows[i]["Note"].ToString());
 				gridComm.Rows.Add(row);
 			}
 			gridComm.EndUpdate();
@@ -1112,7 +1128,11 @@ namespace OpenDental {
 				payInfo=new PayInfo();
 				payInfo.Type=PayInfoType.Payment;
 				payInfo.Date=PaymentList[i].PayDate;
-				payInfo.Description=Defs.GetName(DefCat.PaymentTypes,PaymentList[i].PayType)+" "+PaymentList[i].PayAmt.ToString("c");
+				payInfo.Description=DefB.GetName(DefCat.PaymentTypes,PaymentList[i].PayType)+" ";
+				if(PaymentList[i].CheckNum!="") {
+					payInfo.Description+="#"+PaymentList[i].CheckNum+" ";
+				}
+				payInfo.Description+=PaymentList[i].PayAmt.ToString("c");
 				//if(PaymentList[i].IsSplit){
 				//	payInfo.Description+=" "+Lan.g(this,"(split)");
 				//}
@@ -1500,7 +1520,7 @@ namespace OpenDental {
 					tempAcctLine.Provider=Providers.GetAbbr(arrayAdj[tempCountAdj].ProvNum);
 					tempAcctLine.Code="Adjust";
 					tempAcctLine.Tooth="";
-					tempAcctLine.Description=Defs.GetName(DefCat.AdjTypes,arrayAdj[tempCountAdj].AdjType);
+					tempAcctLine.Description=DefB.GetName(DefCat.AdjTypes,arrayAdj[tempCountAdj].AdjType);
 					tempAcctLine.Fee="";
 					tempAcctLine.InsEst="";
 					tempAcctLine.InsPay="";
@@ -1554,8 +1574,8 @@ namespace OpenDental {
 					tempAcctLine.Type=AcctModType.Comm;
 					tempAcctLine.Code="Comm";
 					tempAcctLine.Description=Lan.g(this,"Sent Statement");
-					if(arrayComm[tempCountComm].Mode!=CommItemMode.None){
-						tempAcctLine.Description+="-"+Lan.g("enumCommItemMode",arrayComm[tempCountComm].Mode.ToString());
+					if(arrayComm[tempCountComm].Mode_!=CommItemMode.None){
+						tempAcctLine.Description+="-"+Lan.g("enumCommItemMode",arrayComm[tempCountComm].Mode_.ToString());
 					}
 					tempAcctLine.Index=tempCountComm;
 					tempAcctLine.Date=arrayComm[tempCountComm].CommDateTime.ToShortDateString();
@@ -1699,26 +1719,26 @@ namespace OpenDental {
 				//}//end if
 				switch(((AcctLine)AcctLineAL[i]).Type){
 					default:
-						row.ColorText=Defs.Long[(int)DefCat.AccountColors][0].ItemColor;
+						row.ColorText=DefB.Long[(int)DefCat.AccountColors][0].ItemColor;
 						break;
 					case AcctModType.Claim:
-						row.ColorText=Defs.Long[(int)DefCat.AccountColors][4].ItemColor;
+						row.ColorText=DefB.Long[(int)DefCat.AccountColors][4].ItemColor;
 						break;
 					case AcctModType.Adj:
-						row.ColorText=Defs.Long[(int)DefCat.AccountColors][1].ItemColor;
+						row.ColorText=DefB.Long[(int)DefCat.AccountColors][1].ItemColor;
 						break;
 					//case AcctType.Disc:
 					//	tbAccount.SetTextColorRow
-					//		(i,Defs.Long[(int)DefCat.AccountColors][2].ItemColor);
+					//		(i,DefB.Long[(int)DefCat.AccountColors][2].ItemColor);
 					//	break;
 					case AcctModType.Pay:
-						row.ColorText=Defs.Long[(int)DefCat.AccountColors][3].ItemColor;
+						row.ColorText=DefB.Long[(int)DefCat.AccountColors][3].ItemColor;
 						break;
 					case AcctModType.Comm:
-						row.ColorText=Defs.Long[(int)DefCat.AccountColors][5].ItemColor;
+						row.ColorText=DefB.Long[(int)DefCat.AccountColors][5].ItemColor;
 						break;
 					case AcctModType.PayPlan:
-						row.ColorText=Defs.Long[(int)DefCat.AccountColors][6].ItemColor;
+						row.ColorText=DefB.Long[(int)DefCat.AccountColors][6].ItemColor;
 						break;
 				}
 				gridAccount.Rows.Add(row);
@@ -1852,7 +1872,7 @@ namespace OpenDental {
 			if(ViewingInRecall) return;
 			switch (((AcctLine)AcctLineAL[e.Row]).Type){
 				default:
-					Procedure ProcCur=arrayProc[((AcctLine)AcctLineAL[e.Row]).Index];
+					Procedure ProcCur=Procedures.GetOneProc(arrayProc[((AcctLine)AcctLineAL[e.Row]).Index].ProcNum,true);
 					FormProcEdit FormPE=new FormProcEdit(ProcCur,PatCur,FamCur,PlanList);
 					FormPE.ShowDialog();
 					break;
@@ -2025,6 +2045,8 @@ namespace OpenDental {
 				MsgBox.Show(this,"Patient does not have insurance.");
 				return;
 			}
+			int countSelected=0;
+			bool countIsOverMax=false;
 			if(gridAccount.SelectedIndices.Length==0){
 				//autoselect procedures
 				for(int i=0;i<AcctLineAL.Count;i++){//loop through every line showing on screen
@@ -2035,6 +2057,11 @@ namespace OpenDental {
 						continue;//ignore zero fee procedures, but user can explicitly select them
 					}
 					if(Procedures.NeedsSent(arrayProc[((AcctLine)AcctLineAL[i]).Index],ClaimProcList,PatPlans.GetPlanNum(PatPlanList,1))){
+						if(CultureInfo.CurrentCulture.Name.Substring(3)=="CA" && countSelected==7){//en-CA or fr-CA
+							countIsOverMax=true;
+							continue;//only send 7.
+						}
+						countSelected++;
 						gridAccount.SetSelected(i,true);
 					}
 				}
@@ -2052,6 +2079,9 @@ namespace OpenDental {
 			if(!allAreProcedures){
 				MsgBox.Show(this,"You can only select procedures.");
 				return;
+			}
+			if(countIsOverMax){
+				MsgBox.Show(this,"Only the first 7 procedures will be selected.  You will need to also create a second claim.");
 			}
 			Claim ClaimCur=CreateClaim("P");
 			if(ClaimCur.ClaimNum==0){
@@ -2222,15 +2252,7 @@ namespace OpenDental {
 			//ClaimCur.DedApplied=0;//calcs in ClaimEdit.
 			//preauthstring, etc, etc
 			ClaimCur.IsProsthesis="N";
-			if(PrefB.GetInt("InsBillingProv")==0){//default=0
-				ClaimCur.ProvBill=PrefB.GetInt("PracticeDefaultProv");
-			}
-			else if(PrefB.GetInt("InsBillingProv")==-1){//treat=-1
-				ClaimCur.ProvBill=ClaimCur.ProvTreat;//OK if zero, because it will get fixed in claim
-			}
-			else{
-				ClaimCur.ProvBill=PrefB.GetInt("InsBillingProv");
-			}
+			ClaimCur.ProvBill=Providers.GetBillingProvNum(ClaimCur.ProvTreat);//OK if zero, because it will get fixed in claim
 			ClaimCur.EmployRelated=YN.No;
 			//attach procedures
 			Procedure ProcCur;
@@ -2267,6 +2289,7 @@ namespace OpenDental {
 						claimProcs[i].CodeSent=claimProcs[i].CodeSent.Substring(0,5);
 					}
 				}
+				claimProcs[i].LineNumber=i+1;
 				ClaimProcs.Update(claimProcs[i]);
 			}//for claimProc
 			return ClaimCur;
@@ -2626,22 +2649,33 @@ namespace OpenDental {
 			FormCommItem FormCI=new FormCommItem(CommlogCur);
 			FormCI.IsNew=true;
 			FormCI.ShowDialog();
-			CommlogList=Commlogs.Refresh(PatCur.PatNum);
-			FillComm();
+			//CommlogList=Commlogs.Refresh(PatCur.PatNum);
+			ModuleSelected(PatCur.PatNum);
 		}
 
 		private void butLetterSimple_Click(object sender, System.EventArgs e) {
 			FormLetters FormL=new FormLetters(PatCur);
 			FormL.ShowDialog();
 			CommlogList=Commlogs.Refresh(PatCur.PatNum);
-			FillComm();
+			ModuleSelected(PatCur.PatNum);
 		}
 
 		private void butLetterMerge_Click(object sender, System.EventArgs e) {
 			FormLetterMerges FormL=new FormLetterMerges(PatCur);
 			FormL.ShowDialog();
 			CommlogList=Commlogs.Refresh(PatCur.PatNum);
-			FillComm();
+			ModuleSelected(PatCur.PatNum);
+		}
+
+		private void butQuest_Click(object sender,EventArgs e) {
+			FormPat form=new FormPat();
+			form.PatNum=PatCur.PatNum;
+			form.FormDateTime=DateTime.Now;
+			FormFormPatEdit FormP=new FormFormPatEdit();
+			FormP.FormPatCur=form;
+			FormP.IsNew=true;
+			FormP.ShowDialog();
+			ModuleSelected(PatCur.PatNum);
 		}
 
 		private void butLabel_Click(object sender, System.EventArgs e) {
@@ -2657,8 +2691,11 @@ namespace OpenDental {
 			FormEmailMessageEdit FormE=new FormEmailMessageEdit(message);
 			FormE.IsNew=true;
 			FormE.ShowDialog();
-			CommlogList=Commlogs.Refresh(PatCur.PatNum);
-			FillComm();
+			if(FormE.DialogResult==DialogResult.OK) {
+				ModuleSelected(PatCur.PatNum);
+			}
+			//CommlogList=Commlogs.Refresh(PatCur.PatNum);
+			//FillComm();
 		}
 
 		private void butTask_Click(object sender, System.EventArgs e) {
@@ -2666,20 +2703,43 @@ namespace OpenDental {
 			FormT.ShowDialog();
 		}
 
-		private void tbComm_CellDoubleClicked(object sender, OpenDental.CellEventArgs e) {
+		/*private void tbComm_CellDoubleClicked(object sender, OpenDental.CellEventArgs e) {
 			Commlog CommlogCur=CommlogList[(int)CommIndices[e.Row]].Copy();
 			FormCommItem FormCI=new FormCommItem(CommlogCur);
 			FormCI.ShowDialog();
 			CommlogList=Commlogs.Refresh(PatCur.PatNum);
 			FillComm();
-		}
+		}*/
 
 		private void gridComm_CellDoubleClick(object sender, OpenDental.UI.ODGridClickEventArgs e) {
-			Commlog CommlogCur=CommlogList[(int)CommIndices[e.Row]].Copy();
-			FormCommItem FormCI=new FormCommItem(CommlogCur);
-			FormCI.ShowDialog();
-			CommlogList=Commlogs.Refresh(PatCur.PatNum);
-			FillComm();
+			//string commlognum=DataSetMain.Tables["Commlog"].Rows[e.Row]["CommlogNum"].ToString();
+			if(DataSetMain.Tables["Commlog"].Rows[e.Row]["CommlogNum"].ToString()!="0"){
+				Commlog CommlogCur=
+					Commlogs.GetOne(PIn.PInt(DataSetMain.Tables["Commlog"].Rows[e.Row]["CommlogNum"].ToString()));
+				FormCommItem FormCI=new FormCommItem(CommlogCur);
+				FormCI.ShowDialog();
+				if(FormCI.DialogResult==DialogResult.OK) {
+					ModuleSelected(PatCur.PatNum);
+				}
+			}
+			else if(DataSetMain.Tables["Commlog"].Rows[e.Row]["EmailMessageNum"].ToString()!="0") {
+				EmailMessage email=
+					EmailMessages.GetOne(PIn.PInt(DataSetMain.Tables["Commlog"].Rows[e.Row]["EmailMessageNum"].ToString()));
+				FormEmailMessageEdit FormE=new FormEmailMessageEdit(email);
+				FormE.ShowDialog();
+				if(FormE.DialogResult==DialogResult.OK) {
+					ModuleSelected(PatCur.PatNum);
+				}
+			}
+			else if(DataSetMain.Tables["Commlog"].Rows[e.Row]["FormPatNum"].ToString()!="0") {
+				FormPat form=FormPats.GetOne(PIn.PInt(DataSetMain.Tables["Commlog"].Rows[e.Row]["FormPatNum"].ToString()));
+				FormFormPatEdit FormP=new FormFormPatEdit();
+				FormP.FormPatCur=form;
+				FormP.ShowDialog();
+				if(FormP.DialogResult==DialogResult.OK) {
+					ModuleSelected(PatCur.PatNum);
+				}
+			}
 		}
 
 		private void Parent_MouseWheel(Object sender,MouseEventArgs e){
@@ -2693,6 +2753,8 @@ namespace OpenDental {
 			FormR.ShowDialog();
 			ModuleSelected(PatCur.PatNum);
 		}
+
+		
 
 		
 
@@ -2738,7 +2800,7 @@ namespace OpenDental {
 
 	}//end class
 
-	///<summary>A single line of data in ContrAccount.  Might change this to a class soon.  Actually, just need to get rid of it altogether and store objects in the tag on each line.</summary>
+	///<summary>A single line of data in ContrAccount.  This will soon be replaced by a DataSetMain.</summary>
 	public struct AcctLine{
 		///<summary></summary>
 		public AcctModType Type;

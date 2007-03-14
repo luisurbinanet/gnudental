@@ -142,8 +142,8 @@ namespace OpenDental{
 			//will start out 1st through 30th of previous month
 			date1.SelectionStart=new DateTime(today.Year,today.Month,1).AddMonths(-1);
 			date2.SelectionStart=new DateTime(today.Year,today.Month,1).AddDays(-1);
-			for(int i=0;i<Defs.Short[(int)DefCat.AdjTypes].Length;i++){
-				listAdjType.Items.Add(Defs.Short[(int)DefCat.AdjTypes][i].ItemName);
+			for(int i=0;i<DefB.Short[(int)DefCat.AdjTypes].Length;i++){
+				listAdjType.Items.Add(DefB.Short[(int)DefCat.AdjTypes][i].ItemName);
 			}
 		}
 
@@ -159,10 +159,10 @@ namespace OpenDental{
 					types+="(";
 				}
 				else{
-					types+="|| ";
+					types+="OR ";
 				}
 				types+="AdjType='"
-					+Defs.Short[(int)DefCat.AdjTypes][listAdjType.SelectedIndices[i]].DefNum.ToString()
+					+DefB.Short[(int)DefCat.AdjTypes][listAdjType.SelectedIndices[i]].DefNum.ToString()
 					+"' ";
 			}
 			types+=")";
@@ -174,11 +174,11 @@ namespace OpenDental{
 				);
 				INSERT INTO tempbroken SELECT PatNum,COUNT(*)
 				FROM adjustment WHERE "+types
-				+"&& AdjDate >= '"+POut.PDate(date1.SelectionStart)+"' "
-				+"&& AdjDate <= '" +POut.PDate(date2.SelectionStart)+"' "
+				+"AND AdjDate >= "+POut.PDate(date1.SelectionStart)+" "
+				+"AND AdjDate <= " +POut.PDate(date2.SelectionStart)+" "
 				+@"GROUP BY PatNum;
 				SELECT patient.PatNum,MIN(procedurelog.ProcDate) AS ProcDate,
-				CONCAT(provider.LName,', ',provider.FName) as ProvName,
+				CONCAT(CONCAT(provider.LName,', '),provider.FName) as ProvName,
 				County,county.CountyCode,
 				GradeSchool,school.SchoolCode,GradeLevel,Birthdate,Race,Gender,Urgency,BillingType,
 				patient.NextAptNum='-1' AS Done,tempbroken.NumberBroken
@@ -188,10 +188,10 @@ namespace OpenDental{
 				LEFT JOIN county ON patient.County=county.CountyName
 				LEFT JOIN tempbroken ON tempbroken.PatNum=patient.PatNum
 				WHERE	(procedurelog.ProcStatus='2'
-				&& procedurelog.ProvNum=provider.ProvNum
-				&& procedurelog.ProcDate >= '"+POut.PDate(date1.SelectionStart)+"' "
-				+"&& procedurelog.ProcDate <= '" +POut.PDate(date2.SelectionStart)+"' )"
-				+"|| tempbroken.NumberBroken>0 "
+				AND procedurelog.ProvNum=provider.ProvNum
+				AND procedurelog.ProcDate >= "+POut.PDate(date1.SelectionStart)+" "
+				+"AND procedurelog.ProcDate <= " +POut.PDate(date2.SelectionStart)+" )"
+				+"OR tempbroken.NumberBroken>0 "
 				+@"GROUP BY patient.PatNum
 				ORDER By ProcDate;
 				DROP TABLE tempbroken;";

@@ -110,8 +110,8 @@ namespace OpenDental{
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			Debug.WriteLine(UserB.EncryptPassword(textMasterPass.Text));
-			if(!UserB.CheckPassword(textMasterPass.Text,masterHash)){
+			Debug.WriteLine(UserodB.EncryptPassword(textMasterPass.Text));
+			if(!UserodB.CheckPassword(textMasterPass.Text,masterHash)){
 				MessageBox.Show(Lan.g(this,"Master password incorrect."));
 				return;
 			}

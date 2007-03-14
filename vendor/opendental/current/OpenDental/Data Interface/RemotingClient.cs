@@ -59,10 +59,10 @@ namespace OpenDental {
 
 		private static byte[] SendAndReceive(DataTransferObject dto){
 			byte[] data=dto.Serialize();
-			#if DEBUG
-				string xmlString=Encoding.UTF8.GetString(data);
-				Debug.WriteLine("Client Sent: "+xmlString);
-			#endif
+			//#if DEBUG
+			//	string xmlString=Encoding.UTF8.GetString(data);
+			//	Debug.WriteLine("Client Sent: "+xmlString);
+			//#endif
 			if(client==null){
 				try{
 					client = new TcpClient(ServerName,ServerPort);

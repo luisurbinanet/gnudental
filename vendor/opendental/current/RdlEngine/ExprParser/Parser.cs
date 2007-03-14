@@ -1,27 +1,28 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
 */
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Globalization;
 using System.Xml;
@@ -34,7 +35,7 @@ namespace fyiReporting.RDL
 	/// <summary>
 	/// <p>Language parser.   Recursive descent parser.  Precedence of operators
 	/// is handled by starting with lowest precedence and calling down recursively
-	/// to the highest.
+	/// to the highest.</p>
 	/// AND/OR
 	/// NOT
 	/// relational operators, eq, ne, lt, lte, gt, gte
@@ -60,20 +61,21 @@ namespace fyiReporting.RDL
 	/// </summary>
 	internal class Parser
 	{
+		static internal long Counter;			// counter used for unique expression count
 		private TokenList tokens;
 		private Stack operandStack = new Stack();
 		private Stack operatorStack = new Stack();
 		private Token curToken=null;
 		private NameLookup idLookup=null;
-		private ArrayList _DataCache;
+        private List<ICacheData> _DataCache;
 		private bool _InAggregate;
-		private ArrayList _FieldResolve;
+        private List<FunctionField> _FieldResolve;
 		private bool _NoAggregate=false;
 
 		/// <summary>
 		/// Parse an expression.
 		/// </summary>
-		internal Parser(ArrayList c) 
+        internal Parser(List<ICacheData> c) 
 		{
 			_DataCache = c;
 		}
@@ -81,6 +83,7 @@ namespace fyiReporting.RDL
 		/// <summary>
 		/// Returns a parsed Expression
 		/// </summary>
+		/// <param name="lu">The NameLookUp class used to resolve names.</param>
 		/// <param name="expr">The expression to be parsed.</param>
 		/// <returns>An expression that can be run after validation and binding.</returns>
 		internal IExpr Parse(NameLookup lu, string expr)
@@ -432,7 +435,7 @@ namespace fyiReporting.RDL
 			else
 				thirdPart = null;
 
-			switch (firstPart)
+			if (curToken.Type != TokenTypes.LPAREN) switch (firstPart)
 			{
 				case "Fields":
 					Field f = idLookup.LookupField(method);
@@ -442,8 +445,9 @@ namespace fyiReporting.RDL
 					{
 						if (f == null)
 						{
-							result = new FunctionField(method);
-							this._FieldResolve.Add(result);
+                            FunctionField ff;
+                            result = ff = new FunctionField(method);
+							this._FieldResolve.Add(ff);
 						}
 						else
 							result = new FunctionField(f);	
@@ -452,8 +456,9 @@ namespace fyiReporting.RDL
 					{
 						if (f == null)
 						{
-							result = new FunctionFieldIsMissing(method);
-							this._FieldResolve.Add(result);
+                            FunctionField ff;
+							result = ff = new FunctionFieldIsMissing(method);
+							this._FieldResolve.Add(ff);
 						}
 						else
 							result = new FunctionFieldIsMissing(f);
@@ -461,24 +466,32 @@ namespace fyiReporting.RDL
 					else
 						throw new ParserException("Field '" + method + "'  only supports 'Value' and 'IsMissing' properties.");
 					return true;
-				case "Parameters":
+                case "Parameters":  // see ResolveParametersMethod for resolution of MultiValue parameter function reference
 					ReportParameter p = idLookup.LookupParameter(method);
 					if (p == null)
 						throw new ParserException("Report parameter '" + method + "'  not found.");
+                    int ci = thirdPart == null? -1: thirdPart.IndexOf(".Count");
+                    if (ci > 0)
+                        thirdPart = thirdPart.Substring(0, ci);
+                    FunctionReportParameter r;                    
 					if (thirdPart == null || thirdPart == "Value")
-						result = new FunctionReportParameter(p);
+						r = new FunctionReportParameter(p);
 					else if (thirdPart == "Label")
-						result = new FunctionReportParameterLabel(p);
+						r = new FunctionReportParameterLabel(p);
 					else
 						throw new ParserException("Parameter '" + method + "'  only supports 'Value' and 'Label' properties.");
-					return true;
+                    if (ci > 0)
+                        r.SetParameterMethod("Count", null);
+                    
+                    result = r;
+                    return true;
 				case "ReportItems":
 					Textbox t = idLookup.LookupReportItem(method);
 					if (t == null)
 						throw new ParserException("ReportItem '" + method + "'  not found.");
 					if (thirdPart != null && thirdPart != "Value")
 						throw new ParserException("ReportItem '" + method + "'  only supports 'Value' property.");
-					result = new FunctionTextbox(t);	
+					result = new FunctionTextbox(t, idLookup.ExpressionName);	
 					return true;
 				case "Globals":
 					e = idLookup.LookupGlobal(method);
@@ -499,25 +512,21 @@ namespace fyiReporting.RDL
 					result = new IdentifierKey(IdentifierKeyEnum.Simple);
 					return true;
 				default:
-					if (curToken.Type != TokenTypes.LPAREN)
-					{
-						if (!bOnePart)
-							throw new ParserException(string.Format("'{0}' is an unknown identifer.", fullname));
+					if (!bOnePart)
+						throw new ParserException(string.Format("'{0}' is an unknown identifer.", fullname));
 
-						switch (method.ToLower())		// lexer should probably mark these
-						{
-							case "true":
-							case "false":
-								result = new ConstantBoolean(method.ToLower());
-								break;
-							default:
-								// usually this is enum that will be used in an aggregate 
-								result = new Identifier(method);
-								break;
-						}
-						return true;
+					switch (method.ToLower())		// lexer should probably mark these
+					{
+						case "true":
+						case "false":
+							result = new ConstantBoolean(method.ToLower());
+							break;
+						default:
+							// usually this is enum that will be used in an aggregate 
+							result = new Identifier(method);
+							break;
 					}
-					break;  // Should be a function reference
+					return true;
 			}
 
 			// We've got an function reference
@@ -533,9 +542,9 @@ namespace fyiReporting.RDL
 				throw new ParserException("Aggregate function '" + method + "' cannot be nested in another aggregate function.");
 			_InAggregate = isAggregate;
 			if (_InAggregate)
-				_FieldResolve = new ArrayList();
+				_FieldResolve = new List<FunctionField>();
 
-			ArrayList largs = new ArrayList();
+            List<IExpr> largs = new List<IExpr>();
 			while(true)
 			{
 				if (curToken.Type == TokenTypes.RPAREN)
@@ -568,16 +577,16 @@ namespace fyiReporting.RDL
 				_InAggregate = false;
 			}
 
-			IExpr[] args = new IExpr[argCount];
-			for (int i = 0; i < argCount; i++)
-			{
-				args[i] = (IExpr) largs[i];
-			}
+            IExpr[] args = largs.ToArray();
 
 			object scope;
 			bool bSimple;
 			if (!bOnePart)				
-				result = ResolveMethodCall(fullname, args);	// throw exception when fails
+            {
+                result = (firstPart == "Parameters")?
+                    ResolveParametersMethod(method, thirdPart, args):
+                    ResolveMethodCall(fullname, args);	// throw exception when fails
+            }
 			else switch(method.ToLower())
 			{
 				case "iif":
@@ -631,6 +640,32 @@ namespace fyiReporting.RDL
 						result = new FunctionFormat(args[0], args[1]);
 					}
 					break;
+
+				case "fields":
+					if (args.Length != 1)
+						throw new ParserException("Fields collection requires exactly 1 argument." + "  At column " + Convert.ToString(curToken.StartCol));
+					result = new FunctionFieldCollection(idLookup.Fields, args[0]);
+					break;
+				case "parameters":
+					if (args.Length != 1)
+						throw new ParserException("Parameters collection requires exactly 1 argument." + "  At column " + Convert.ToString(curToken.StartCol));
+					result = new FunctionParameterCollection(idLookup.Parameters, args[0]);
+					break;
+				case "reportitems":
+					if (args.Length != 1)
+						throw new ParserException("ReportItems collection requires exactly 1 argument." + "  At column " + Convert.ToString(curToken.StartCol));
+					result = new FunctionReportItemCollection(idLookup.ReportItems, args[0]);
+					break;
+				case "globals":
+					if (args.Length != 1)
+						throw new ParserException("Globals collection requires exactly 1 argument." + "  At column " + Convert.ToString(curToken.StartCol));
+					result = new FunctionGlobalCollection(idLookup.Globals, args[0]);
+					break;
+				case "user":
+					if (args.Length != 1)
+						throw new ParserException("User collection requires exactly 1 argument." + "  At column " + Convert.ToString(curToken.StartCol));
+					result = new FunctionUserCollection(idLookup.User, args[0]);
+					break;
 				case "sum":
 					scope = ResolveAggrScope(args, 2, out bSimple);
 					FunctionAggrSum aggrFS = new FunctionAggrSum(_DataCache, args[0], scope);
@@ -663,6 +698,14 @@ namespace fyiReporting.RDL
 					scope = ResolveAggrScope(args, 2, out bSimple);
 					result = new FunctionAggrLast(_DataCache, args[0], scope);
 					break;
+				case "next":
+					scope = ResolveAggrScope(args, 2, out bSimple);
+					result = new FunctionAggrNext(_DataCache, args[0], scope);
+					break;
+				case "previous":
+				    scope = ResolveAggrScope(args, 2, out bSimple);
+					result = new FunctionAggrPrevious(_DataCache, args[0], scope);
+					break;
 				case "level":
 					scope = ResolveAggrScope(args, 1, out bSimple);
 					result = new FunctionAggrLevel(scope);
@@ -688,12 +731,12 @@ namespace fyiReporting.RDL
 				case "rownumber":
 					scope = ResolveAggrScope(args, 1, out bSimple);
 					IExpr texpr = new ConstantDouble("0");
-					result = new FunctionAggrRvCount(texpr, scope);
+					result = new FunctionAggrRvCount(_DataCache, texpr, scope);
 					break;
 				case "runningvalue":
 					if (args.Length < 2 || args.Length > 3)
 						throw new ParserException("RunningValue takes 2 or 3 arguments." + "  At column " + Convert.ToString(curToken.StartCol));
-					string aggrFunc = args[1].EvaluateString(null);
+					string aggrFunc = args[1].EvaluateString(null, null);
 					if (aggrFunc == null)
 						throw new ParserException("RunningValue 'Function' argument is invalid." + "  At column " + Convert.ToString(curToken.StartCol));
 					scope = ResolveAggrScope(args, 3, out bSimple);
@@ -706,7 +749,7 @@ namespace fyiReporting.RDL
 							result = new FunctionAggrRvAvg(_DataCache, args[0], scope);
 							break;
 						case "count":
-							result = new FunctionAggrRvCount(args[0], scope);
+							result = new FunctionAggrRvCount(_DataCache, args[0], scope);
 							break;
 						case "max":
 							result = new FunctionAggrRvMax(_DataCache, args[0], scope);
@@ -715,16 +758,16 @@ namespace fyiReporting.RDL
 							result = new FunctionAggrRvMin(_DataCache, args[0], scope);
 							break;
 						case "stdev":
-							result = new FunctionAggrRvStdev(args[0], scope);
+							result = new FunctionAggrRvStdev(_DataCache, args[0], scope);
 							break;
 						case "stdevp":
-							result = new FunctionAggrRvStdevp(args[0], scope);
+							result = new FunctionAggrRvStdevp(_DataCache, args[0], scope);
 							break;
 						case "var":
-							result = new FunctionAggrRvVar(args[0], scope);
+							result = new FunctionAggrRvVar(_DataCache, args[0], scope);
 							break;
 						case "varp":
-							result = new FunctionAggrRvVarp(args[0], scope);
+							result = new FunctionAggrRvVarp(_DataCache, args[0], scope);
 							break;
 						default:
 							throw new ParserException("RunningValue function '" + aggrFunc + "' is not supported.  At column " + Convert.ToString(curToken.StartCol));
@@ -775,6 +818,8 @@ namespace fyiReporting.RDL
 				case "max":
 				case "first":
 				case "last":
+				case "next":
+				case "previous":
 				case "count":
 				case "countrows":
 				case "countdistinct":
@@ -793,20 +838,20 @@ namespace fyiReporting.RDL
 			return rc;
 		}
 
-		private void ResolveFields(string aggr, ArrayList fargs, ArrayList args)
+		private void ResolveFields(string aggr, List<FunctionField> fargs, List<IExpr> args)
 		{
 			if (fargs == null || fargs.Count == 0)
 				return;
 
 			// get the scope argument offset 
 			int argOffset = aggr.ToLower() == "countrows"? 1: 2;
-			DataSet ds;
+			DataSetDefn ds;
 			if (args.Count == argOffset)
 			{
 				string dsname=null;
-				IExpr e = (IExpr) args[argOffset-1];
+				IExpr e = args[argOffset-1];
 				if (e is ConstantString)
-					dsname = e.EvaluateString(null);
+					dsname = e.EvaluateString(null, null);
 
 				if (dsname == null)
 					throw new ParserException(string.Format("{0} function's scope must be a constant.", aggr));
@@ -843,11 +888,15 @@ namespace fyiReporting.RDL
 
 			if (args.Length >= indexOfScope)
 			{
-				string n = args[indexOfScope-1].EvaluateString(null);
+				string n = args[indexOfScope-1].EvaluateString(null, null);
+				if (idLookup.IsPageScope)
+					throw new ParserException(string.Format("Scope '{0}' can't be specified in a Page Header or Footer expression.",n));
+
 				scope = idLookup.LookupScope(n);
 				if (scope == null)
 				{
-					if (n.ToLower() != "nothing")	// allow null to be used
+					Identifier ie = args[indexOfScope-1] as Identifier;
+					if (ie == null || ie.IsNothing == false)	// check for "nothing" identifier
 						throw new ParserException(string.Format("Scope '{0}' is not a known Grouping, DataSet or DataRegion name.",n));
 				}
 
@@ -859,6 +908,10 @@ namespace fyiReporting.RDL
 					if (k.Value == IdentifierKeyEnum.Recursive)
 						bSimple = false;
 				}
+			}
+			else if (idLookup.IsPageScope)
+			{
+				scope = "pghf";	// indicates page header or footer
 			}
 			else
 			{
@@ -873,6 +926,36 @@ namespace fyiReporting.RDL
 
 			return scope;
 		}
+
+        private IExpr ResolveParametersMethod(string pname, string vf, IExpr[] args)
+        {
+            FunctionReportParameter result;
+
+            ReportParameter p = idLookup.LookupParameter(pname);
+            if (p == null)
+                throw new ParserException("Report parameter '" + pname + "'  not found.");
+
+            string arrayMethod;
+            int posBreak = vf.IndexOf('.');
+            if (posBreak > 0)
+            {
+                arrayMethod = vf.Substring(posBreak + 1);	// rest of expression
+                vf = vf.Substring(0, posBreak);
+            }
+            else
+                arrayMethod = null;
+
+            if (vf == null || vf == "Value")
+                result = new FunctionReportParameter(p);
+            else if (vf == "Label")
+                result = new FunctionReportParameterLabel(p);
+            else
+                throw new ParserException("Parameter '" + pname + "'  only supports 'Value' and 'Label' properties.");
+
+            result.SetParameterMethod(arrayMethod, args);
+
+            return result;
+        }
 
 		private IExpr ResolveMethodCall(string fullname, IExpr[] args)
 		{
@@ -893,72 +976,39 @@ namespace fyiReporting.RDL
 			Type[] argTypes = new Type[args.Length];
 			for (int i=0; i < args.Length; i++)
 			{
-				switch (args[i].GetTypeCode())
-				{
-					case TypeCode.Boolean:
-						argTypes[i] = Type.GetType("System.Boolean");
-						break;
-					case TypeCode.Byte:
-						argTypes[i] = Type.GetType("System.Byte");
-						break;
-					case TypeCode.Char:
-						argTypes[i] = Type.GetType("System.Char");
-						break;
-					case TypeCode.DateTime:
-						argTypes[i] = Type.GetType("System.DateTime");
-						break;
-					case TypeCode.Decimal:
-						argTypes[i] = Type.GetType("System.Decimal");
-						break;
-					case TypeCode.Double:
-						argTypes[i] = Type.GetType("System.Double");
-						break;
-					case TypeCode.Int16:
-						argTypes[i] = Type.GetType("System.Int16");
-						break;
-					case TypeCode.Int32:
-						argTypes[i] = Type.GetType("System.Int32");
-						break;
-					case TypeCode.Int64:
-						argTypes[i] = Type.GetType("System.Int64");
-						break;
-					case TypeCode.Object:
-						argTypes[i] = Type.GetType("System.Object");
-						break;
-					case TypeCode.SByte:
-						argTypes[i] = Type.GetType("System.SByte");
-						break;
-					case TypeCode.Single:
-						argTypes[i] = Type.GetType("System.Single");
-						break;
-					case TypeCode.String:
-						argTypes[i] = Type.GetType("System.String");
-						break;
-					case TypeCode.UInt16:
-						argTypes[i] = Type.GetType("System.UInt16");
-						break;
-					case TypeCode.UInt32:
-						argTypes[i] = Type.GetType("System.UInt32");
-						break;
-					case TypeCode.UInt64:
-						argTypes[i] = Type.GetType("System.UInt64");
-						break;
-					default:
-						argTypes[i] = Type.GetType("Object");
-						break;
-				}
+				argTypes[i] = XmlUtil.GetTypeFromTypeCode(args[i].GetTypeCode());
 			}
-			ReportClass rc = idLookup.LookupInstance(cls);	// is this an instance variable name?
+			// See if this is a function within the Code element
 			Type cType=null;
-			if (rc == null)
+			bool bCodeFunction = false;
+			if (cls == "" || cls.ToLower() == "code")
 			{
-				cType=idLookup.LookupType(cls);				// no, must be a static class reference
-			}
-			else
-			{
-				cType= idLookup.LookupType(rc.ClassName);	// yes, use the classname of the ReportClass
+				cType = idLookup.CodeClassType;					// get the code class type
+				if (cType != null)
+				{
+					if (cType.GetMethod(method, argTypes) == null)
+						cType = null;		// try for the method in the instance
+					else 
+						bCodeFunction = true;
+				}
+				if (cls != "" && !bCodeFunction)
+					throw new ParserException(string.Format("{0} is not a Code method.  Verify the name of the method and its arguments match an existing code function.", method));
 			}
 
+			// See if this is a function within the instance classes
+			ReportClass rc=null;
+			if (cType == null)
+			{
+				rc = idLookup.LookupInstance(cls);	// is this an instance variable name?
+				if (rc == null)
+				{
+					cType=idLookup.LookupType(cls);				// no, must be a static class reference
+				}
+				else
+				{
+					cType= idLookup.LookupType(rc.ClassName);	// yes, use the classname of the ReportClass
+				}
+			}
 			string syscls=null;
 
 			if (cType == null)
@@ -1015,7 +1065,9 @@ namespace fyiReporting.RDL
 			}
 
 			TypeCode tc = Type.GetTypeCode(mInfo.ReturnType);
-			if (syscls != null)
+			if (bCodeFunction)
+				result = new FunctionCode(method, args, tc);
+			else if (syscls != null)
 				result = new FunctionSystem(syscls, method, args, tc);
 			else if (rc == null)
 				result = new FunctionCustomStatic(idLookup.CMS, cls, method, args, tc);

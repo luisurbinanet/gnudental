@@ -33,7 +33,7 @@ namespace OpenDentBusiness{
 		public string City;
 		///<summary>2 Char in USA</summary>
 		public string State;
-		///<summary>Postal code.</summary>
+		///<summary>Postal code.  For Canadian claims, it must be ANANAN.  No validation gets done except there.</summary>
 		public string Zip;
 		///<summary>Home phone. Includes any punctuation</summary>
 		public string HmPhone;
@@ -55,7 +55,7 @@ namespace OpenDentBusiness{
 		public double EstBalance;
 		///<summary>May be 0. Also see the PlannedIsDone field. Otherwise it is the foreign key to appointment.AptNum.  This is the appointment that will show in the Chart module and in the Planned appointment tracker.  It will never show in the Appointments module. In other words, it is the suggested next appoinment rather than an appointment that has already been scheduled.</summary>
 		public int NextAptNum;
-		///<summary>FK to provider.ProvNum.  The patient's primary provider.  Required, although the program is robust enough to handle a missing provNum, and will use the practice default instead.</summary>
+		///<summary>FK to provider.ProvNum.  The patient's primary provider.  Required.  The database maintenance tool ensures that every patient always has this number set, so the program no longer has to handle 0.</summary>
 		public int PriProv;
 		///<summary>FK to provider.ProvNum.  Secondary provider (hygienist). Optional.</summary>
 		public int SecProv;//
@@ -123,14 +123,23 @@ namespace OpenDentBusiness{
 		public bool Premed;
 		///<summary>Only used in hospitals.</summary>
 		public string Ward;
-		///<summary>Enum:ContactMethod The same enum will probably also be used later for PreferContactMethod and PreferRecallMethod.</summary>
+		///<summary>Enum:ContactMethod</summary>
 		public ContactMethod PreferConfirmMethod;
+		///<summary>Enum:ContactMethod</summary>
+		public ContactMethod PreferContactMethod;
+		///<summary>Enum:ContactMethod</summary>
+		public ContactMethod PreferRecallMethod;
 		///<summary>Only the time portion of the DateTime is used.</summary>
 		public DateTime SchedBeforeTime;
 		///<summary></summary>
 		public DateTime SchedAfterTime;
 		///<summary>We do not use this, but some users do, so here it is. 0=none. Otherwise, 1-7 for day.</summary>
 		public int SchedDayOfWeek;
+		///<summary>The primary language of the patient.  Typically en, fr, es, or similar.  We might later also allow cultures and user-defined languages.</summary>
+		public string Language;
+		///<summary>Used in hospitals.  It can be before the first visit date.  It typically gets set automatically by the hospital system.</summary>
+		public DateTime AdmitDate;
+
 		//<summary>Decided not to add since this data is already available and synchronizing would take too much time.  Will add later.  Not editable. If the patient happens to have a future appointment, this will contain the date of that appointment.  Once appointment is set complete, this date is deleted.  If there is more than one appointment scheduled, this will only contain the earliest one.  Used mostly to exclude patients from recall lists.  If you want all future appointments, use Appointments.GetForPat() instead. You can loop through that list and exclude appointments with dates earlier than today.</summary>
 		//public DateTime DateScheduled;
 
@@ -197,9 +206,13 @@ namespace OpenDentBusiness{
 			p.Premed=Premed;
 			p.Ward=Ward;
 			p.PreferConfirmMethod=PreferConfirmMethod;
+			p.PreferContactMethod=PreferContactMethod;
+			p.PreferRecallMethod=PreferRecallMethod;
 			p.SchedBeforeTime=SchedBeforeTime;
 			p.SchedAfterTime=SchedAfterTime;
 			p.SchedDayOfWeek=SchedDayOfWeek;
+			p.Language=Language;
+			p.AdmitDate=AdmitDate;
 			return p;
 		}
 
@@ -217,6 +230,11 @@ namespace OpenDentBusiness{
 				return FName+" "+MiddleI+" "+LName;
 			else
 				return FName+" '"+Preferred+"' "+MiddleI+" "+LName;
+		}
+
+		///<summary></summary>
+		public string GetNameFLFormal() {
+			return FName+" "+MiddleI+" "+LName;
 		}
 
 		///<summary></summary>

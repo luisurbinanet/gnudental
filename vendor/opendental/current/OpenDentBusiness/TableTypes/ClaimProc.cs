@@ -63,6 +63,8 @@ namespace OpenDentBusiness{
 		public DateTime ProcDate;
 		///<summary>Date that it was changed to status received or supplemental.  It is usually attached to a claimPayment at that point, but not if user forgets.  This is still the date that it becomes important financial data.  Only applies if Received or Supplemental.  Otherwise, the date is disregarded.  User may never edit. Important in audit trail.</summary>
 		public DateTime DateEntry;
+		///<summary>Assigned when claim is created as a way to order the procs showing on a claim.  Really only used in Canadian claims for now as F07.</summary>
+		public int LineNumber;
 
 		///<summary>Returns a copy of this ClaimProc.</summary>
 		public ClaimProc Copy(){
@@ -96,6 +98,7 @@ namespace OpenDentBusiness{
 			cp.CopayOverride=CopayOverride;
 			cp.ProcDate=ProcDate;
 			cp.DateEntry=DateEntry;
+			cp.LineNumber=LineNumber;
 			return cp;
 		}
 

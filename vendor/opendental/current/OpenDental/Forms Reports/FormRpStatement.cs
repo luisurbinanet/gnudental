@@ -324,10 +324,10 @@ namespace OpenDental{
 				commlog.CommType=CommItemType.StatementSent;
 				commlog.SentOrReceived=CommSentOrReceived.Sent;
 				if(isBill){
-					commlog.Mode=CommItemMode.Mail;
+					commlog.Mode_=CommItemMode.Mail;
 				}
 				else{
-					commlog.Mode=CommItemMode.InPerson;
+					commlog.Mode_=CommItemMode.InPerson;
 				}
 				commlog.PatNum=patNums[i][0];//uaually the guarantor
 				//there is no dialog here because it is just a simple entry
@@ -792,7 +792,7 @@ namespace OpenDental{
 				else if(StatementA[famsPrinted][11,linesPrinted]=="PatTotal"){
 					//Totals--------------------------------------------------------------------------------
 					for(int iCol=3;iCol<11;iCol++){
-						g.DrawString(Lan.g(this,StatementA[famsPrinted][iCol,linesPrinted])
+						g.DrawString(StatementA[famsPrinted][iCol,linesPrinted]
 							,TotalFont,Brushes.Black,new RectangleF(
 							colPos[iCol+1]
 							-g.MeasureString(StatementA[famsPrinted][iCol,linesPrinted],TotalFont).Width-1,yPos

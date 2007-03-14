@@ -1,5 +1,5 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
@@ -23,6 +23,7 @@
 using System;
 using System.Xml;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text.RegularExpressions;
 
@@ -35,9 +36,9 @@ namespace fyiReporting.RdlDesign
 	internal class ReportNames
 	{
 		XmlDocument _doc;
-		ArrayList _ReportNodes;		// array of report nodes; used for tabbing around the nodes
-		Hashtable _ReportItems;		// name/xmlnode pairs of report items
-		Hashtable _Groupings;		// name/xmlnode pairs of grouping names
+		List<XmlNode> _ReportNodes;		// array of report nodes; used for tabbing around the nodes
+		Dictionary<string, XmlNode> _ReportItems;		// name/xmlnode pairs of report items
+        Dictionary<string, XmlNode> _Groupings;		// name/xmlnode pairs of grouping names
 		internal ReportNames(XmlDocument rDoc)
 		{
 			_doc = rDoc;
@@ -46,9 +47,9 @@ namespace fyiReporting.RdlDesign
 
 		private void BuildNames()
 		{
-			_ReportItems = new Hashtable();
-			_Groupings = new Hashtable();
-			_ReportNodes = new ArrayList();
+			_ReportItems = new Dictionary<string, XmlNode>();
+			_Groupings = new Dictionary<string, XmlNode>();
+			_ReportNodes = new List<XmlNode>();
 			BuildNamesLoop(_doc.LastChild);
 		}
 
@@ -126,7 +127,8 @@ namespace fyiReporting.RdlDesign
 
 		internal bool ChangeName(XmlNode xNode, string newName)
 		{
-			XmlNode fNode = (XmlNode) _ReportItems[newName];
+			XmlNode fNode;
+            _ReportItems.TryGetValue(newName, out fNode);
 			if (fNode != null)
 			{
 				if (fNode != xNode)
@@ -151,7 +153,8 @@ namespace fyiReporting.RdlDesign
 
 		internal bool ChangeGroupName(XmlNode xNode, string newName)
 		{
-			XmlNode fNode = (XmlNode) _Groupings[newName];
+			XmlNode fNode;
+            _Groupings.TryGetValue(newName, out fNode);
 			if (fNode != null)
 			{
 				if (fNode != xNode)
@@ -179,7 +182,7 @@ namespace fyiReporting.RdlDesign
 			if (_ReportNodes.Count <= 0)
 				return null;
 			if (xNode == null)
-				return (XmlNode) _ReportNodes[0];
+				return _ReportNodes[0];
 			bool bNext = false;
 			foreach (XmlNode nNode in _ReportNodes)
 			{
@@ -188,7 +191,7 @@ namespace fyiReporting.RdlDesign
 				if (nNode == xNode)
 					bNext = true;
 			}
-			return (XmlNode) _ReportNodes[0];
+			return _ReportNodes[0];
 		}
 		
 		internal XmlNode FindPrior(XmlNode xNode)
@@ -196,7 +199,7 @@ namespace fyiReporting.RdlDesign
 			if (_ReportItems.Count <= 0)
 				return null;
 			if (xNode == null)
-				return (XmlNode) _ReportNodes[0];
+				return _ReportNodes[0];
 			
 			XmlNode previous=null;
 			foreach (XmlNode nNode in _ReportNodes)
@@ -204,13 +207,13 @@ namespace fyiReporting.RdlDesign
 				if (nNode == xNode)
 				{
 					if (previous == null)
-						return (XmlNode) _ReportNodes[_ReportNodes.Count-1];
+						return _ReportNodes[_ReportNodes.Count-1];
 					else
 						return previous;
 				}
 				previous = nNode;
 			}
-			return (XmlNode) _ReportNodes[_ReportNodes.Count-1];
+			return _ReportNodes[_ReportNodes.Count-1];
 		}
 
 		internal ICollection ReportItemNames
@@ -234,6 +237,8 @@ namespace fyiReporting.RdlDesign
 			XmlAttribute xAttr = xNode.Attributes["Name"];
 			if (xAttr == null)
 				GenerateName(xNode);	// when no name; we generate one
+			else if (_ReportItems.ContainsKey(xAttr.Value))
+				GenerateName(xNode);	// when duplicate name; we generate another; this can be a problem but...
 			else
 			{
 				this._ReportItems.Add(xAttr.Value, xNode);
@@ -255,7 +260,7 @@ namespace fyiReporting.RdlDesign
 			while (true)
 			{
 				name = basename + index.ToString();
-				if (_ReportItems[name] == null)
+				if (!_ReportItems.ContainsKey(name))
 				{
 					SetElementAttribute(xNode, "Name", name);
 					break;
@@ -272,13 +277,13 @@ namespace fyiReporting.RdlDesign
 			string basename=xNode.ParentNode.Name + "Group";
 			string name;
 			int index=1;
-			ArrayList dsets = new ArrayList(this.DataSetNames);
+			List<string> dsets = new List<string>(this.DataSetNames);
 			while (true)
 			{
 				name = basename + index.ToString();
-				if (_Groupings[name] == null && 
+				if (_Groupings.ContainsKey(name) == false && 
 					dsets.IndexOf(name) < 0 &&
-					_ReportItems[name] == null)
+					_ReportItems.ContainsKey(name) == false)
 				{
 					SetElementAttribute(xNode, "Name", name);
 					break;
@@ -296,7 +301,8 @@ namespace fyiReporting.RdlDesign
 			if (!IsNameValid(name))
 				return "Invalid characters in name.";
 
-			XmlNode fNode = (XmlNode) _ReportItems[name];
+            XmlNode fNode;
+            _ReportItems.TryGetValue(name, out fNode);
 			if (fNode == xNode)
 				return null;
 
@@ -306,10 +312,10 @@ namespace fyiReporting.RdlDesign
 			// Grouping; also restrict to not being same name as any group or dataset
 			if (xNode.Name == "Grouping")
 			{
-				fNode = (XmlNode) _Groupings[name];
+				_Groupings.TryGetValue(name, out fNode);
 				if (fNode != null)
 					return "Duplicate name.";
-				ArrayList dsets = new ArrayList(this.DataSetNames);
+                List<string> dsets = new List<string>(this.DataSetNames);
 				if (dsets.IndexOf(name) >= 0)
 					return "Duplicate name.";
 			}
@@ -325,10 +331,11 @@ namespace fyiReporting.RdlDesign
 				return "Invalid characters in name.";
 
 			// Grouping; also restrict to not being same name as any group or dataset
-			XmlNode fNode = (XmlNode) _Groupings[name];
+			XmlNode fNode;
+            _Groupings.TryGetValue(name, out fNode);
 			if (fNode != null && fNode != xNode)
 				return "Duplicate name.";
-			ArrayList dsets = new ArrayList(this.DataSetNames);
+            List<string> dsets = new List<string>(this.DataSetNames);
 			if (dsets.IndexOf(name) >= 0)
 				return "Duplicate name.";
 
@@ -425,16 +432,16 @@ namespace fyiReporting.RdlDesign
 		/// <summary>
 		/// Returns a collection of the GroupingNames
 		/// </summary>
-		internal object[] GroupingNames
+		internal string[] GroupingNames
 		{
 			get
 			{
 				if (_Groupings == null ||
 					_Groupings.Count == 0)
 					return null;
-				object[] gn = new object[_Groupings.Count];
+				string[] gn = new string[_Groupings.Count];
 				int i=0;
-				foreach (object o in _Groupings.Keys)
+				foreach (string o in _Groupings.Keys)
 					gn[i++] = o;
 				return gn;
 			}
@@ -443,11 +450,11 @@ namespace fyiReporting.RdlDesign
 		/// <summary>
 		/// Returns a collection of the DataSetNames
 		/// </summary>
-		internal object[] DataSetNames
+		internal string[] DataSetNames
 		{
 			get 
 			{
-				ArrayList ds = new ArrayList();
+				List<string> ds = new List<string>();
 				XmlNode rNode = _doc.LastChild;
 				XmlNode node = DesignXmlDraw.FindNextInHierarchy(rNode, "DataSets");
 				if (node == null)
@@ -486,11 +493,11 @@ namespace fyiReporting.RdlDesign
 		/// <summary>
 		/// Returns a collection of the DataSourceNames
 		/// </summary>
-		internal object[] DataSourceNames
+		internal string[] DataSourceNames
 		{
 			get 
 			{
-				ArrayList ds = new ArrayList();
+                List<string> ds = new List<string>();
 				XmlNode rNode = _doc.LastChild;
 				XmlNode node = DesignXmlDraw.FindNextInHierarchy(rNode, "DataSources");
 				if (node == null)
@@ -512,11 +519,11 @@ namespace fyiReporting.RdlDesign
 		/// <summary>
 		/// Returns a collection of the EmbeddedImage names
 		/// </summary>
-		internal object[] EmbeddedImageNames
+		internal string[] EmbeddedImageNames
 		{
 			get 
 			{
-				ArrayList ds = new ArrayList();
+                List<string> ds = new List<string>();
 				XmlNode rNode = _doc.LastChild;
 				XmlNode node = DesignXmlDraw.FindNextInHierarchy(rNode, "EmbeddedImages");
 				if (node == null)

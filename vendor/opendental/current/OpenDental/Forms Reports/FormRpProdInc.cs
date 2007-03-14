@@ -453,14 +453,14 @@ namespace OpenDental{
 			//Procedures------------------------------------------------------------------------------
 			Queries.CurReport.Query="(SELECT "
 				+"procedurelog.ProcDate AS procdate,"
-				+"CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI) AS namelf,"
+				+"CONCAT(CONCAT(CONCAT(CONCAT(patient.LName,', '),patient.FName),' '),patient.MiddleI) AS namelf,"
 				+"procedurecode.Descript,"
 				+"provider.Abbr,"
-				+"procedurelog.ProcFee-IFNULL(SUM(claimproc.WriteOff),0) AS $fee,"//if no writeoff, then subtract 0
-				+"'0000000000000' AS $Adj,"
-				+"'0000000000000' AS $InsW,"
-				+"'0000000000000' AS $PtInc,"
-				+"'0000000000000' AS $InsInc,"
+				+"procedurelog.ProcFee-IFNULL(SUM(claimproc.WriteOff),0) $fee,"//if no writeoff, then subtract 0
+				+"'0000000000000' $Adj,"
+				+"'0000000000000' $InsW,"
+				+"'0000000000000' $PtInc,"
+				+"'0000000000000' $InsInc,"
 				+"procedurelog.ProcNum "
 				+"FROM patient,procedurecode,provider,procedurelog "
 				+"LEFT JOIN claimproc ON procedurelog.ProcNum=claimproc.ProcNum "
@@ -470,8 +470,8 @@ namespace OpenDental{
 				+"AND procedurelog.ADACode=procedurecode.ADACode "
 				+"AND provider.ProvNum=procedurelog.ProvNum "
 				+"AND "+whereProv+" "
-				+"AND procedurelog.ProcDate >= '" +POut.PDate(dateFrom)+"' "
-				+"AND procedurelog.ProcDate <= '" +POut.PDate(dateTo)+"' "
+				+"AND procedurelog.ProcDate >= " +POut.PDate(dateFrom)+" "
+				+"AND procedurelog.ProcDate <= " +POut.PDate(dateTo)+" "
 				+"GROUP BY procedurelog.ProcNum "
 				+") UNION (";
 			//Adjustments-----------------------------------------------------------------------------
@@ -486,7 +486,7 @@ namespace OpenDental{
 			whereProv+=")";
 			Queries.CurReport.Query+="SELECT "
 				+"adjustment.AdjDate,"
-				+"CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI),"
+				+"CONCAT(CONCAT(CONCAT(CONCAT(patient.LName,', '),patient.FName),' '),patient.MiddleI),"
 				+"definition.ItemName,"
 				+"provider.Abbr,"
 				+"'0',"
@@ -500,8 +500,8 @@ namespace OpenDental{
 				+"AND provider.ProvNum=adjustment.ProvNum "
 			  +"AND patient.PatNum=adjustment.PatNum "
 				+"AND "+whereProv+" "
-				+"AND adjustment.AdjDate >= '"+POut.PDate(dateFrom)+"' "
-				+"AND adjustment.AdjDate <= '"+POut.PDate(dateTo)+"'"
+				+"AND adjustment.AdjDate >= "+POut.PDate(dateFrom)+" "
+				+"AND adjustment.AdjDate <= "+POut.PDate(dateTo)
 				+") UNION (";
 			//Insurance Writeoff---added spk 5/19/05--------------------------------------
 			whereProv="(";
@@ -515,7 +515,7 @@ namespace OpenDental{
 			whereProv+=")";
 			Queries.CurReport.Query+="SELECT "
 				+"claimproc.DateCP,"
-				+"CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI),"
+				+"CONCAT(CONCAT(CONCAT(CONCAT(patient.LName,', '),patient.FName),' '),patient.MiddleI),"
 				+"carrier.CarrierName,"
 				+"provider.Abbr,"
 				+"'0',"
@@ -533,8 +533,8 @@ namespace OpenDental{
 				+"AND carrier.CarrierNum = insplan.CarrierNum "
 				+"AND "+whereProv+" "
 				+"AND (claimproc.Status=1 OR claimproc.Status=4) "//received or supplemental
-				+"AND claimproc.DateCP >= '"+POut.PDate(dateFrom)+"' "
-				+"AND claimproc.DateCP <= '"+POut.PDate(dateTo)+"' "
+				+"AND claimproc.DateCP >= "+POut.PDate(dateFrom)+" "
+				+"AND claimproc.DateCP <= "+POut.PDate(dateTo)+" "
 				+"GROUP BY claimproc.ClaimNum"
 				+") UNION (";
 			//Patient Income------------------------------------------------------------------------------
@@ -549,7 +549,7 @@ namespace OpenDental{
 			whereProv+=")";
 			Queries.CurReport.Query+="SELECT "
 				+"paysplit.DatePay,"
-				+"CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI),"
+				+"CONCAT(CONCAT(CONCAT(CONCAT(patient.LName,', '),patient.FName),' '),patient.MiddleI),"
 				+"definition.ItemName,"
 				+"provider.Abbr,"
 				+"'0',"
@@ -565,8 +565,8 @@ namespace OpenDental{
 				+"AND provider.ProvNum=paysplit.ProvNum "
 				+"AND payment.PayType=definition.DefNum "
 				+"AND "+whereProv+" "
-				+"AND payment.PayDate >= '"+POut.PDate(dateFrom)+"' "
-				+"AND payment.PayDate <= '"+POut.PDate(dateTo)+"' "
+				+"AND payment.PayDate >= "+POut.PDate(dateFrom)+" "
+				+"AND payment.PayDate <= "+POut.PDate(dateTo)+" "
 				+"GROUP BY payment.PayNum"
 				+") UNION (";
 			//Insurance Income----------------------------------------------------------------------------
@@ -581,7 +581,7 @@ namespace OpenDental{
 			whereProv+=")";
 			Queries.CurReport.Query+="SELECT "
 				+"claimpayment.CheckDate,"
-				+"CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI),"
+				+"CONCAT(CONCAT(CONCAT(CONCAT(patient.LName,', '),patient.FName),' '),patient.MiddleI),"
 				+"carrier.CarrierName,"
 				+"provider.Abbr,"
 				+"'0',"
@@ -599,10 +599,11 @@ namespace OpenDental{
 				+"AND carrier.CarrierNum = insplan.CarrierNum "
 				+"AND "+whereProv+" "
 				+"AND (claimproc.Status=1 OR claimproc.Status=4) "//received or supplemental
-				+"AND claimpayment.CheckDate >= '"+POut.PDate(dateFrom)+"' "
-				+"AND claimpayment.CheckDate <= '"+POut.PDate(dateTo)+"' "
+				+"AND claimpayment.CheckDate >= "+POut.PDate(dateFrom)+" "
+				+"AND claimpayment.CheckDate <= "+POut.PDate(dateTo)+" "
 				+"GROUP BY claimproc.ClaimNum"
-				+") ORDER BY procdate,namelf";
+				//+") ORDER BY procdate,namelf";//FIXME:UNION-ORDER-BY
+				+") ORDER BY 1,2";
 			//MessageBox.Show(Queries.CurReport.Query);
 			FormQuery2=new FormQuery();
 			FormQuery2.IsReport=true;
@@ -614,11 +615,11 @@ namespace OpenDental{
 				+" - "+dateTo.ToString("d");	
 			Queries.CurReport.ColPos=new int[11];
 			Queries.CurReport.ColCaption=new string[10];
-			Queries.CurReport.ColAlign=new HorizontalAlignment[10];			
+			Queries.CurReport.ColAlign=new HorizontalAlignment[10];
 			Queries.CurReport.ColPos[0]=10;
 			Queries.CurReport.ColPos[1]=90;
 			Queries.CurReport.ColPos[2]=220;
-			Queries.CurReport.ColPos[3]=385;   
+			Queries.CurReport.ColPos[3]=385;
 			Queries.CurReport.ColPos[4]=440;
 			Queries.CurReport.ColPos[5]=505;
 			Queries.CurReport.ColPos[6]=575;
@@ -696,8 +697,8 @@ Group By procdate Order by procdate desc
 			Queries.CurReport.Query="SELECT procedurelog.ProcDate, "
 				+"SUM(procedurelog.ProcFee) "
 				+"FROM procedurelog "
-				+"WHERE procedurelog.ProcDate >= '"+POut.PDate(dateFrom)+"' "
-				+"AND procedurelog.ProcDate <= '"+POut.PDate(dateTo)+"' "
+				+"WHERE procedurelog.ProcDate >= "+POut.PDate(dateFrom)+" "
+				+"AND procedurelog.ProcDate <= "+POut.PDate(dateTo)+" "
 				+"AND procedurelog.ProcStatus = '2' "//complete
 				+whereProv
 				+" GROUP BY procedurelog.ProcDate "
@@ -721,8 +722,8 @@ GROUP BY DateCP Order by DateCP
 			}
 			whereProv+=")";
 			Queries.CurReport.Query="SELECT DateCP, SUM(WriteOff) FROM claimproc WHERE "
-				+"DateCP >= '"+POut.PDate(dateFrom)+"' "
-				+"AND DateCP <= '"+POut.PDate(dateTo)+"' "
+				+"DateCP >= "+POut.PDate(dateFrom)+" "
+				+"AND DateCP <= "+POut.PDate(dateTo)+" "
 				+"AND Status = '7' "//CapComplete
 				+whereProv
 				+" GROUP BY DateCP "
@@ -746,8 +747,8 @@ GROUP BY DateCP Order by DateCP
 			}
 			whereProv+=")";
 			Queries.CurReport.Query="SELECT DateCP, SUM(WriteOff) FROM claimproc WHERE "
-				+"DateCP >= '"+POut.PDate(dateFrom)+"' "
-				+"AND DateCP <= '"+POut.PDate(dateTo)+"' "
+				+"DateCP >= "+POut.PDate(dateFrom)+" "
+				+"AND DateCP <= "+POut.PDate(dateTo)+" "
 				+"AND (Status = '1' OR Status = 4) "//Recieved or supplemental. Otherwise, it's only an estimate.
 				+whereProv
 				+" GROUP BY DateCP "
@@ -773,15 +774,15 @@ GROUP BY SchedDate
 					+POut.PInt(Providers.List[listProv.SelectedIndices[i]].ProvNum)+"'";
 			}
 			whereProv+=")";
-			Queries.CurReport.Query= "SELECT FROM_DAYS(TO_DAYS(appointment.AptDateTime)) AS "//gets rid of time
+			Queries.CurReport.Query= "SELECT FROM_DAYS(TO_DAYS(appointment.AptDateTime)) "//gets rid of time
 			  +"SchedDate,SUM(procedurelog.ProcFee) FROM appointment,procedurelog WHERE "
         +"appointment.AptNum = procedurelog.AptNum "
 				+"AND (appointment.AptStatus = 1 OR "//stat=scheduled
         +"appointment.AptStatus = 4) "//or stat=ASAP
-				+"AND FROM_DAYS(TO_DAYS(appointment.AptDateTime)) >= '"
-				+POut.PDate(dateFrom)+"' "
-				+"AND FROM_DAYS(TO_DAYS(appointment.AptDateTime)) <= '"
-				+POut.PDate(dateTo)+"' "
+				+"AND FROM_DAYS(TO_DAYS(appointment.AptDateTime)) >= "
+				+POut.PDate(dateFrom)+" "
+				+"AND FROM_DAYS(TO_DAYS(appointment.AptDateTime)) <= "
+				+POut.PDate(dateTo)+" "
 				+whereProv
 				+" GROUP BY SchedDate "
 				+"ORDER BY SchedDate"; 
@@ -811,8 +812,8 @@ group by claimpayment.checkdate order by procdate
 			whereProv+=")";
 			Queries.CurReport.Query= "SELECT paysplit.DatePay,SUM(paysplit.splitamt) FROM paysplit "
 				+"WHERE paysplit.IsDiscount = '0' "
-				+"AND paysplit.DatePay >= '"+POut.PDate(dateFrom)+"' "
-				+"AND paysplit.DatePay <= '"+POut.PDate(dateTo)+"' "
+				+"AND paysplit.DatePay >= "+POut.PDate(dateFrom)+" "
+				+"AND paysplit.DatePay <= "+POut.PDate(dateTo)+" "
 				+whereProv
 				+" GROUP BY paysplit.DatePay ORDER BY DatePay";
 			Queries.SubmitTemp(); //create TableTemp
@@ -838,8 +839,8 @@ group by claimpayment.checkdate order by procdate
 			Queries.CurReport.Query= "SELECT claimpayment.CheckDate,SUM(claimproc.InsPayamt) "
 				+"FROM claimpayment,claimproc WHERE "
 				+"claimproc.ClaimPaymentNum = claimpayment.ClaimPaymentNum "
-				+"AND claimpayment.CheckDate >= '" + POut.PDate(dateFrom)+"' "
-				+"AND claimpayment.CheckDate <= '" + POut.PDate(dateTo)+"' "
+				+"AND claimpayment.CheckDate >= " + POut.PDate(dateFrom)+" "
+				+"AND claimpayment.CheckDate <= " + POut.PDate(dateTo)+" "
 				+whereProv
 				+" GROUP BY claimpayment.CheckDate ORDER BY checkdate";			
 			Queries.SubmitTemp(); //create TableIns
@@ -865,8 +866,8 @@ ORDER BY adjdate DESC
 			}
 			whereProv+=")";
 			Queries.CurReport.Query="SELECT adjdate, SUM(adjamt) FROM adjustment WHERE "
-				+"adjdate >= '"+POut.PDate(dateFrom)+"' "
-				+"AND adjdate <= '"+POut.PDate(dateTo)+"' "
+				+"adjdate >= "+POut.PDate(dateFrom)+" "
+				+"AND adjdate <= "+POut.PDate(dateTo)+" "
 				+whereProv
 				+" GROUP BY adjdate ORDER BY adjdate"; 
 			Queries.SubmitTemp(); //create TableTemp
@@ -1075,8 +1076,8 @@ ORDER BY adjdate DESC
 				+"AND claimproc.Status='7' "//only CapComplete writeoffs are subtracted here.
 				+"WHERE procedurelog.ProcStatus = '2' "
 				+"AND "+whereProv+" "
-				+"AND procedurelog.ProcDate >= '" +POut.PDate(dateFrom)+"' "
-				+"AND procedurelog.ProcDate <= '" +POut.PDate(dateTo)+"' "
+				+"AND procedurelog.ProcDate >= " +POut.PDate(dateFrom)+" "
+				+"AND procedurelog.ProcDate <= " +POut.PDate(dateTo)+" "
 				+"GROUP BY MONTH(procedurelog.ProcDate)";
 			//MessageBox.Show(Queries.CurReport.Query);
 			Queries.SubmitTemp(); //create TableTemp
@@ -1097,8 +1098,8 @@ ORDER BY adjdate DESC
 				+"FROM adjustment "
 				+"WHERE "
 				+whereProv+" "
-				+"AND adjustment.AdjDate >= '"+POut.PDate(dateFrom)+"' "
-				+"AND adjustment.AdjDate <= '"+POut.PDate(dateTo)+"'"
+				+"AND adjustment.AdjDate >= "+POut.PDate(dateFrom)+" "
+				+"AND adjustment.AdjDate <= "+POut.PDate(dateTo)
 				+"GROUP BY MONTH(adjustment.AdjDate)";
 			Queries.SubmitTemp();
       TableAdj=Queries.TableTemp.Copy();
@@ -1118,8 +1119,8 @@ ORDER BY adjdate DESC
 				+"FROM claimproc "
 				+"WHERE "
 				+whereProv+" "
-				+"AND claimproc.DateCP >= '"+POut.PDate(dateFrom)+"' "
-				+"AND claimproc.DateCP <= '"+POut.PDate(dateTo)+"' "
+				+"AND claimproc.DateCP >= "+POut.PDate(dateFrom)+" "
+				+"AND claimproc.DateCP <= "+POut.PDate(dateTo)+" "
 				+"AND claimproc.Status = '1' "//Received. 
 				+"GROUP BY MONTH(claimproc.DateCP)";
 			Queries.SubmitTemp(); //create TableTemp
@@ -1140,8 +1141,8 @@ ORDER BY adjdate DESC
 				+"FROM paysplit "
 				+"WHERE paysplit.IsDiscount=0 AND "//paysplit.PayNum=payment.PayNum "
 				+whereProv+" "
-				+"AND paysplit.DatePay >= '"+POut.PDate(dateFrom)+"' "
-				+"AND paysplit.DatePay <= '"+POut.PDate(dateTo)+"' "
+				+"AND paysplit.DatePay >= "+POut.PDate(dateFrom)+" "
+				+"AND paysplit.DatePay <= "+POut.PDate(dateTo)+" "
 				+"GROUP BY MONTH(paysplit.DatePay)";
 			Queries.SubmitTemp();
       TablePay=Queries.TableTemp.Copy(); 
@@ -1158,8 +1159,8 @@ ORDER BY adjdate DESC
 			Queries.CurReport.Query= "SELECT claimpayment.CheckDate,SUM(claimproc.InsPayamt) "
 				+"FROM claimpayment,claimproc WHERE "
 				+"claimproc.ClaimPaymentNum = claimpayment.ClaimPaymentNum "
-				+"AND claimpayment.CheckDate >= '" + POut.PDate(dateFrom)+"' "
-				+"AND claimpayment.CheckDate <= '" + POut.PDate(dateTo)+"' "
+				+"AND claimpayment.CheckDate >= " + POut.PDate(dateFrom)+" "
+				+"AND claimpayment.CheckDate <= " + POut.PDate(dateTo)+" "
 				+whereProv
 				+" GROUP BY claimpayment.CheckDate ORDER BY checkdate";	
 			Queries.SubmitTemp();

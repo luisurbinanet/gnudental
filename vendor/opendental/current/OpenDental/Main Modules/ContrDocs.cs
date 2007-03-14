@@ -25,6 +25,8 @@ using System.Windows.Forms;
 //using WIALib;
 using OpenDental.UI;
 using OpenDentBusiness;
+using Tao.OpenGl;
+using CodeBase;
 
 namespace OpenDental{
 
@@ -139,13 +141,13 @@ namespace OpenDental{
 			this.menuPrefs = new System.Windows.Forms.MenuItem();
 			this.menuPatient = new System.Windows.Forms.ContextMenu();
 			this.panelNote = new System.Windows.Forms.Panel();
-			this.textNote = new System.Windows.Forms.TextBox();
-			this.label1 = new System.Windows.Forms.Label();
-			this.label15 = new System.Windows.Forms.Label();
-			this.sigBox = new OpenDental.UI.SignatureBox();
-			this.ToolBarMain = new OpenDental.UI.ODToolBar();
-			this.sigBoxTopaz = new Topaz.SigPlusNET();
 			this.labelInvalidSig = new System.Windows.Forms.Label();
+			this.sigBoxTopaz = new Topaz.SigPlusNET();
+			this.sigBox = new OpenDental.UI.SignatureBox();
+			this.label15 = new System.Windows.Forms.Label();
+			this.label1 = new System.Windows.Forms.Label();
+			this.textNote = new System.Windows.Forms.TextBox();
+			this.ToolBarMain = new OpenDental.UI.ODToolBar();
 			((System.ComponentModel.ISupportInitialize)(this.PictureBox1)).BeginInit();
 			this.panelNote.SuspendLayout();
 			this.SuspendLayout();
@@ -286,64 +288,6 @@ namespace OpenDental{
 			this.panelNote.TabIndex = 11;
 			this.panelNote.DoubleClick += new System.EventHandler(this.panelNote_DoubleClick);
 			// 
-			// textNote
-			// 
-			this.textNote.BackColor = System.Drawing.SystemColors.Window;
-			this.textNote.Location = new System.Drawing.Point(0,20);
-			this.textNote.Multiline = true;
-			this.textNote.Name = "textNote";
-			this.textNote.ReadOnly = true;
-			this.textNote.Size = new System.Drawing.Size(302,91);
-			this.textNote.TabIndex = 0;
-			this.textNote.DoubleClick += new System.EventHandler(this.textNote_DoubleClick);
-			// 
-			// label1
-			// 
-			this.label1.Location = new System.Drawing.Point(0,0);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(100,18);
-			this.label1.TabIndex = 1;
-			this.label1.Text = "Note";
-			this.label1.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
-			this.label1.DoubleClick += new System.EventHandler(this.label1_DoubleClick);
-			// 
-			// label15
-			// 
-			this.label15.Location = new System.Drawing.Point(305,0);
-			this.label15.Name = "label15";
-			this.label15.Size = new System.Drawing.Size(126,18);
-			this.label15.TabIndex = 87;
-			this.label15.Text = "Signature";
-			this.label15.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
-			this.label15.DoubleClick += new System.EventHandler(this.label15_DoubleClick);
-			// 
-			// sigBox
-			// 
-			this.sigBox.Location = new System.Drawing.Point(308,20);
-			this.sigBox.Name = "sigBox";
-			this.sigBox.Size = new System.Drawing.Size(394,91);
-			this.sigBox.TabIndex = 90;
-			this.sigBox.DoubleClick += new System.EventHandler(this.sigBox_DoubleClick);
-			// 
-			// ToolBarMain
-			// 
-			this.ToolBarMain.Dock = System.Windows.Forms.DockStyle.Top;
-			this.ToolBarMain.ImageList = this.imageListTools2;
-			this.ToolBarMain.Location = new System.Drawing.Point(0,0);
-			this.ToolBarMain.Name = "ToolBarMain";
-			this.ToolBarMain.Size = new System.Drawing.Size(939,29);
-			this.ToolBarMain.TabIndex = 10;
-			this.ToolBarMain.ButtonClick += new OpenDental.UI.ODToolBarButtonClickEventHandler(this.ToolBarMain_ButtonClick);
-			// 
-			// sigBoxTopaz
-			// 
-			this.sigBoxTopaz.Location = new System.Drawing.Point(437,15);
-			this.sigBoxTopaz.Name = "sigBoxTopaz";
-			this.sigBoxTopaz.Size = new System.Drawing.Size(394,91);
-			this.sigBoxTopaz.TabIndex = 93;
-			this.sigBoxTopaz.Text = "sigPlusNET1";
-			this.sigBoxTopaz.DoubleClick += new System.EventHandler(this.sigBoxTopaz_DoubleClick);
-			// 
 			// labelInvalidSig
 			// 
 			this.labelInvalidSig.BackColor = System.Drawing.SystemColors.Window;
@@ -355,6 +299,64 @@ namespace OpenDental{
 			this.labelInvalidSig.Text = "Invalid Signature -  Document or note has changed since it was signed.";
 			this.labelInvalidSig.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			this.labelInvalidSig.DoubleClick += new System.EventHandler(this.labelInvalidSig_DoubleClick);
+			// 
+			// sigBoxTopaz
+			// 
+			this.sigBoxTopaz.Location = new System.Drawing.Point(437,15);
+			this.sigBoxTopaz.Name = "sigBoxTopaz";
+			this.sigBoxTopaz.Size = new System.Drawing.Size(394,91);
+			this.sigBoxTopaz.TabIndex = 93;
+			this.sigBoxTopaz.Text = "sigPlusNET1";
+			this.sigBoxTopaz.DoubleClick += new System.EventHandler(this.sigBoxTopaz_DoubleClick);
+			// 
+			// sigBox
+			// 
+			this.sigBox.Location = new System.Drawing.Point(308,20);
+			this.sigBox.Name = "sigBox";
+			this.sigBox.Size = new System.Drawing.Size(394,91);
+			this.sigBox.TabIndex = 90;
+			this.sigBox.DoubleClick += new System.EventHandler(this.sigBox_DoubleClick);
+			// 
+			// label15
+			// 
+			this.label15.Location = new System.Drawing.Point(305,0);
+			this.label15.Name = "label15";
+			this.label15.Size = new System.Drawing.Size(126,18);
+			this.label15.TabIndex = 87;
+			this.label15.Text = "Signature";
+			this.label15.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			this.label15.DoubleClick += new System.EventHandler(this.label15_DoubleClick);
+			// 
+			// label1
+			// 
+			this.label1.Location = new System.Drawing.Point(0,0);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(100,18);
+			this.label1.TabIndex = 1;
+			this.label1.Text = "Note";
+			this.label1.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			this.label1.DoubleClick += new System.EventHandler(this.label1_DoubleClick);
+			// 
+			// textNote
+			// 
+			this.textNote.BackColor = System.Drawing.SystemColors.Window;
+			this.textNote.Location = new System.Drawing.Point(0,20);
+			this.textNote.Multiline = true;
+			this.textNote.Name = "textNote";
+			this.textNote.ReadOnly = true;
+			this.textNote.Size = new System.Drawing.Size(302,91);
+			this.textNote.TabIndex = 0;
+			this.textNote.DoubleClick += new System.EventHandler(this.textNote_DoubleClick);
+			// 
+			// ToolBarMain
+			// 
+			this.ToolBarMain.Dock = System.Windows.Forms.DockStyle.Top;
+			this.ToolBarMain.ImageList = this.imageListTools2;
+			this.ToolBarMain.Location = new System.Drawing.Point(0,0);
+			this.ToolBarMain.Name = "ToolBarMain";
+			this.ToolBarMain.Size = new System.Drawing.Size(939,29);
+			this.ToolBarMain.TabIndex = 10;
+			this.ToolBarMain.ButtonClick += new OpenDental.UI.ODToolBarButtonClickEventHandler(this.ToolBarMain_ButtonClick);
 			// 
 			// ContrDocs
 			// 
@@ -554,7 +556,7 @@ namespace OpenDental{
 					Document doc=new Document();
 					doc.DateCreated=DateTime.Today;
 					doc.Description=fiList[i].Name;
-					doc.DocCategory=Defs.Short[(int)DefCat.ImageCats][0].DefNum;
+					doc.DocCategory=DefB.Short[(int)DefCat.ImageCats][0].DefNum;
 					doc.FileName=fiList[i].Name;
 					doc.WithPat=PatCur.PatNum;
 					Documents.Insert(doc,PatCur);
@@ -657,8 +659,8 @@ namespace OpenDental{
 			for(int i=0;i<TreeDocuments.Nodes.Count;i++) 
 				TreeDocuments.Nodes[i].Nodes.Clear();
 			TreeDocuments.Nodes.Clear();
-			for(int i=0;i<Defs.Short[(int)DefCat.ImageCats].Length;i++){
-				sNewNode=Defs.Short[(int)DefCat.ImageCats][i].ItemName;
+			for(int i=0;i<DefB.Short[(int)DefCat.ImageCats].Length;i++){
+				sNewNode=DefB.Short[(int)DefCat.ImageCats][i].ItemName;
 				TreeDocuments.Nodes.Add(new TreeNode(sNewNode));
 				TreeDocuments.Nodes[i].SelectedImageIndex=1;  
 				TreeDocuments.Nodes[i].ImageIndex=1;          
@@ -673,20 +675,20 @@ namespace OpenDental{
 					indexImageList=4;
 				else//document
 					indexImageList=2;
-				if(Defs.GetOrder(DefCat.ImageCats,DocumentList[i].DocCategory)==-1){//if cat hidden
+				if(DefB.GetOrder(DefCat.ImageCats,DocumentList[i].DocCategory)==-1){//if cat hidden
 					MessageBox.Show(Lan.g(this,"There is a document in a hidden category: "
-						+Defs.GetName(DefCat.ImageCats,DocumentList[i].DocCategory)
+						+DefB.GetName(DefCat.ImageCats,DocumentList[i].DocCategory)
 						+". You can unhide this category in Definitions section."));
 				}
 				else{
-					TreeDocuments.Nodes[Defs.GetOrder(DefCat.ImageCats,DocumentList[i].DocCategory)]
+					TreeDocuments.Nodes[DefB.GetOrder(DefCat.ImageCats,DocumentList[i].DocCategory)]
 						.Nodes.Add(new TreeNode(sNewNode));
 					//store docnum in tag of node:
-					TreeDocuments.Nodes[Defs.GetOrder(DefCat.ImageCats,DocumentList[i].DocCategory)]
+					TreeDocuments.Nodes[DefB.GetOrder(DefCat.ImageCats,DocumentList[i].DocCategory)]
 						.LastNode.Tag=DocumentList[i].DocNum;
-					TreeDocuments.Nodes[Defs.GetOrder(DefCat.ImageCats,DocumentList[i].DocCategory)]
+					TreeDocuments.Nodes[DefB.GetOrder(DefCat.ImageCats,DocumentList[i].DocCategory)]
 						.LastNode.ImageIndex=indexImageList;
-					TreeDocuments.Nodes[Defs.GetOrder(DefCat.ImageCats,DocumentList[i].DocCategory)]
+					TreeDocuments.Nodes[DefB.GetOrder(DefCat.ImageCats,DocumentList[i].DocCategory)]
 						.LastNode.SelectedImageIndex=indexImageList;
 				}
 			}
@@ -695,8 +697,8 @@ namespace OpenDental{
 			if(keepDoc){
 				DocCur=Documents.GetDocument(DocCur.DocNum.ToString(),DocumentList);
 				//MessageBox.Show(Docs.Cur.DocNum.ToString());
-				if(Defs.GetOrder(DefCat.ImageCats,DocCur.DocCategory)!=-1){
-					foreach(TreeNode n in TreeDocuments.Nodes[Defs.GetOrder(DefCat.ImageCats,DocCur.DocCategory)].Nodes){	
+				if(DefB.GetOrder(DefCat.ImageCats,DocCur.DocCategory)!=-1){
+					foreach(TreeNode n in TreeDocuments.Nodes[DefB.GetOrder(DefCat.ImageCats,DocCur.DocCategory)].Nodes){	
 						if(n.Tag.ToString()==DocCur.DocNum.ToString()){
 							TreeDocuments.SelectedNode=n;
 						}
@@ -2118,62 +2120,62 @@ namespace OpenDental{
 				Rectangle sourceRect=new Rectangle();//in image coordinates.
 				//sourceRect has positive width
 				float ratio=1;
-				if(DocCur.DegreesRotated==0 || DocCur.DegreesRotated==180) {
+				if(DocCur.DegreesRotated==0 || DocCur.DegreesRotated==180){
 					ratio=(float)Math.Abs(RecZoom.Width)/(float)PictureBox1.ClientRectangle.Width;
 				}
-				else {
+				else{
 					ratio=(float)RecZoom.Height/(float)PictureBox1.ClientRectangle.Width;
 				}
-				if(DocCur.DegreesRotated==0) {
-					if(DocCur.IsFlipped) {
+				if(DocCur.DegreesRotated==0){
+					if(DocCur.IsFlipped){
 						sourceRect.X     = RecZoom.Left  -(int)(ratio*(float)RecCrop.Right);
 						sourceRect.Y     = RecZoom.Top   +(int)(ratio*(float)RecCrop.Top);
 						sourceRect.Width = (int)((float)RecCrop.Width *ratio);
 						sourceRect.Height= (int)((float)RecCrop.Height*ratio);
 					}
-					else {
+					else{
 						sourceRect.X     = RecZoom.Left  +(int)(ratio*(float)RecCrop.Left);
 						sourceRect.Y     = RecZoom.Top   +(int)(ratio*(float)RecCrop.Top);
 						sourceRect.Width = (int)((float)RecCrop.Width *ratio);
 						sourceRect.Height= (int)((float)RecCrop.Height*ratio);
 					}
 				}
-				else if(DocCur.DegreesRotated==90) {
-					if(DocCur.IsFlipped) {
+				else if(DocCur.DegreesRotated==90){
+					if(DocCur.IsFlipped){
 						sourceRect.X     = RecZoom.Left -(int)(ratio*(float)RecCrop.Bottom);
 						sourceRect.Y     = RecZoom.Bottom-(int)(ratio*(float)RecCrop.Right);
 						sourceRect.Width = (int)((float)RecCrop.Height*ratio);
 						sourceRect.Height= (int)((float)RecCrop.Width*ratio);
 					}
-					else {
+					else{
 						sourceRect.X     = RecZoom.Left  +(int)(ratio*(float)RecCrop.Top);
 						sourceRect.Y     = RecZoom.Bottom-(int)(ratio*(float)RecCrop.Right);
 						sourceRect.Width = (int)((float)RecCrop.Height*ratio);
 						sourceRect.Height= (int)((float)RecCrop.Width*ratio);
 					}
 				}
-				else if(DocCur.DegreesRotated==180) {
-					if(DocCur.IsFlipped) {
+				else if(DocCur.DegreesRotated==180){
+					if(DocCur.IsFlipped){
 						sourceRect.X     = RecZoom.Right  +(int)(ratio*(float)RecCrop.Left);
 						sourceRect.Y     = RecZoom.Bottom-(int)(ratio*(float)RecCrop.Bottom);
 						sourceRect.Width = (int)((float)RecCrop.Width*ratio);
 						sourceRect.Height= (int)((float)RecCrop.Height*ratio);
 					}
-					else {
+					else{
 						sourceRect.X     = RecZoom.Right -(int)(ratio*(float)RecCrop.Right);
 						sourceRect.Y     = RecZoom.Bottom-(int)(ratio*(float)RecCrop.Bottom);
 						sourceRect.Width = (int)((float)RecCrop.Width*ratio);
 						sourceRect.Height= (int)((float)RecCrop.Height*ratio);
 					}
 				}
-				else if(DocCur.DegreesRotated==270) {
-					if(DocCur.IsFlipped) {
+				else if(DocCur.DegreesRotated==270){
+					if(DocCur.IsFlipped){
 						sourceRect.X     = RecZoom.Right  +(int)(ratio*(float)RecCrop.Top);
 						sourceRect.Y     = RecZoom.Top   +(int)(ratio*(float)RecCrop.Left);
 						sourceRect.Width = (int)((float)RecCrop.Height*ratio);
 						sourceRect.Height= (int)((float)RecCrop.Width*ratio);
 					}
-					else {
+					else{
 						sourceRect.X     = RecZoom.Right -(int)(ratio*(float)RecCrop.Bottom);
 						sourceRect.Y     = RecZoom.Top   +(int)(ratio*(float)RecCrop.Left);
 						sourceRect.Width = (int)((float)RecCrop.Height*ratio);
@@ -2187,13 +2189,13 @@ namespace OpenDental{
 				Graphics gTemp=Graphics.FromImage(bitmapTemp);//we're going to draw on bitmapTemp
 				gTemp.DrawImage(ImageCurrent,0,0,sourceRect,GraphicsUnit.Pixel);
 				gTemp.Dispose();
-				ImageCurrent=(Bitmap)bitmapTemp.Clone();
+ 				ImageCurrent=(Bitmap)bitmapTemp.Clone();
 				RecZoom.Width=0;//DisplayImage will then recreate RecZoom
 				DisplayImage(true,true);
 				//the cropped image will stay in the same orientation as the original
 				ImageCurrent.Save(patFolder+DocCur.FileName,ImageFormat.Jpeg);
-				//Documents.Cur.LastAltered=DateTime.Today;
-				//Documents.UpdateCur();
+        //Documents.Cur.LastAltered=DateTime.Today;
+        //Documents.UpdateCur();
 				FillDocList(true);
 				DisplayImage(true,true);
 			}
@@ -2291,14 +2293,14 @@ namespace OpenDental{
 				int oldCategory=DocCur.DocCategory;
 				int newCategory=0;
 				if(upNode.Parent==null){//category node
-					newCategory=Defs.Short[(int)DefCat.ImageCats][upNode.Index].DefNum;
+					newCategory=DefB.Short[(int)DefCat.ImageCats][upNode.Index].DefNum;
 				}
 				else{
 					newCategory=Documents.GetCategory(upNode.Tag.ToString(),DocumentList);
 				}
 				if(oldCategory!=newCategory){
 					if(upNode.Parent==null){//category node
-						DocCur.DocCategory=Defs.Short[(int)DefCat.ImageCats][upNode.Index].DefNum;
+						DocCur.DocCategory=DefB.Short[(int)DefCat.ImageCats][upNode.Index].DefNum;
 					}
 					else{
 						DocCur.DocCategory=Documents.GetCategory(upNode.Tag.ToString(),DocumentList);
@@ -2409,9 +2411,55 @@ namespace OpenDental{
 			OnSign_Click();
 		}
 
-		
-		
 
+
+
+		//NEW CODE THAT IS NOT YET BEING USED.
+
+		uint curImage=0;
+
+		private void SetPrimaryImage(Document doc){
+			if(curImage!=0){//This image will be loaded to replace an existing image on-screen.
+				ContextGl.glDeleteTextures(1,ref curImage);//Remove the old image and free its reference number.
+				curImage=0;//Just in case glGenTextures fails.
+				ContextGl.glGenTextures(1,out curImage);//Get a new image reference number for the new image.
+				ContextGl.glBindTexture(Gl.GL_TEXTURE_2D,curImage);//Set the loaded image as the current working texture.
+				//Texture filter modes for zoom-in/zoom-out. 
+				ContextGl.glTexParameteri(Gl.GL_TEXTURE_2D,Gl.GL_TEXTURE_MIN_FILTER,Gl.GL_LINEAR_MIPMAP_LINEAR);//TODO:Overkill?
+				ContextGl.glTexParameteri(Gl.GL_TEXTURE_2D,Gl.GL_TEXTURE_MAG_FILTER,Gl.GL_LINEAR_MIPMAP_LINEAR);//TODO:Overkill?
+
+
+				//Image image=Image.FromFile();
+				//image.
+				//ImageFormat format=image.RawFormat();
+				//ContextGl.glTexImage2D();
+
+			}
+		}
+
+		private void Render(Document doc){
+			if(doc.ImgType==ImageType.File){
+				throw new Exception("Attempt to render an unsupported document type.");
+			}
+			Logger.openlog.curSev=Logger.Severity.ERROR;
+			try{			
+				ContextGl.glBindTexture(Gl.GL_TEXTURE_2D,curImage);//Set the loaded image as the current working texture.
+				
+			}catch(Exception e){
+				Logger.openlog.LogMB("Failed to load image from file: "+doc.FileName);
+				Logger.openlog.Log("Additional info of image load error: "+e.ToString());
+				return;
+			}
+			try{
+				//Render the image.
+				ContextGl.glMatrixMode(Gl.GL_MODELVIEW);
+				ContextGl.glLoadIdentity();
+				ContextGl.glRotatef(doc.DegreesRotated,0,1,0);
+
+			}catch(Exception e){
+				Logger.openlog.Log(e.ToString());
+			}		
+		}
 		
 	}
 }

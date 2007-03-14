@@ -62,7 +62,7 @@ namespace OpenDental{
 				command+="'"+POut.PInt(Cur.ScreenNum)+"', ";
 			}
 			command+=
-				 "'"+POut.PDate  (Cur.ScreenDate)+"', "
+				 POut.PDate  (Cur.ScreenDate)+", "
 				+"'"+POut.PString(Cur.GradeSchool)+"', "
 				+"'"+POut.PString(Cur.County)+"', "
 				+"'"+POut.PInt   ((int)Cur.PlaceService)+"', "
@@ -79,7 +79,7 @@ namespace OpenDental{
 				+"'"+POut.PInt   ((int)Cur.EarlyChildCaries)+"', "
 				+"'"+POut.PInt   ((int)Cur.ExistingSealants)+"', "
 				+"'"+POut.PInt   ((int)Cur.MissingAllTeeth)+"', "
-				+"'"+POut.PDate  (Cur.Birthdate)+"', "
+				+POut.PDate  (Cur.Birthdate)+", "
 				+"'"+POut.PInt   (Cur.ScreenGroupNum)+"', "
 				+"'"+POut.PInt   (Cur.ScreenGroupOrder)+"', "
 				+"'"+POut.PString(Cur.Comments)+"')";
@@ -94,7 +94,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public static void Update(OpenDentBusiness.Screen Cur){
 			string command = "UPDATE screen SET "
-				+"ScreenDate     ='"    +POut.PDate  (Cur.ScreenDate)+"'"
+				+"ScreenDate     ="    +POut.PDate  (Cur.ScreenDate)
 				+",GradeSchool ='"      +POut.PString(Cur.GradeSchool)+"'"
 				+",County ='"           +POut.PString(Cur.County)+"'"
 				+",PlaceService ='"     +POut.PInt   ((int)Cur.PlaceService)+"'"
@@ -111,7 +111,7 @@ namespace OpenDental{
 				+",EarlyChildCaries ='" +POut.PInt   ((int)Cur.EarlyChildCaries)+"'"
 				+",ExistingSealants ='" +POut.PInt   ((int)Cur.ExistingSealants)+"'"
 				+",MissingAllTeeth ='"  +POut.PInt   ((int)Cur.MissingAllTeeth)+"'"
-				+",Birthdate ='"        +POut.PDate  (Cur.Birthdate)+"'"
+				+",Birthdate ="        +POut.PDate  (Cur.Birthdate)
 				+",ScreenGroupNum ='"   +POut.PInt   (Cur.ScreenGroupNum)+"'"
 				+",ScreenGroupOrder ='" +POut.PInt   (Cur.ScreenGroupOrder)+"'"
 				+",Comments ='"         +POut.PString(Cur.Comments)+"'"
@@ -122,7 +122,7 @@ namespace OpenDental{
 		///<summary>Updates all screens for a group with the date,prov, and location info of the current group.</summary>
 		public static void UpdateForGroup(ScreenGroup ScreenGroupCur){
 			string command = "UPDATE screen SET "
-				+"ScreenDate     ='"    +POut.PDate  (ScreenGroupCur.SGDate)+"'"
+				+"ScreenDate     ="    +POut.PDate  (ScreenGroupCur.SGDate)
 				+",GradeSchool ='"      +POut.PString(ScreenGroupCur.GradeSchool)+"'"
 				+",County ='"           +POut.PString(ScreenGroupCur.County)+"'"
 				+",PlaceService ='"     +POut.PInt   ((int)ScreenGroupCur.PlaceService)+"'"

@@ -789,31 +789,31 @@ namespace OpenDental{
 						//definitions:
 						case "adjtype":
 							tableOut.Rows[i][j]
-								=Defs.GetName(DefCat.AdjTypes,PIn.PInt(tableOut.Rows[i][j].ToString()));
+								=DefB.GetName(DefCat.AdjTypes,PIn.PInt(tableOut.Rows[i][j].ToString()));
 							break;
 						case "confirmed":
 							tableOut.Rows[i][j]
-								=Defs.GetValue(DefCat.ApptConfirmed,PIn.PInt(tableOut.Rows[i][j].ToString()));
+								=DefB.GetValue(DefCat.ApptConfirmed,PIn.PInt(tableOut.Rows[i][j].ToString()));
 							break;
 						//case "claimformat":
 						//	tableOut.Rows[i][j]
-						//		=Defs.GetName(DefCat.ClaimFormats,PIn.PInt(tableOut.Rows[i][j].ToString()));
+						//		=DefB.GetName(DefCat.ClaimFormats,PIn.PInt(tableOut.Rows[i][j].ToString()));
 						//	break;
 						case "dx":
 							tableOut.Rows[i][j]
-								=Defs.GetName(DefCat.Diagnosis,PIn.PInt(tableOut.Rows[i][j].ToString()));
+								=DefB.GetName(DefCat.Diagnosis,PIn.PInt(tableOut.Rows[i][j].ToString()));
 							break;
 						case "discounttype":
 							tableOut.Rows[i][j]
-								=Defs.GetName(DefCat.DiscountTypes,PIn.PInt(tableOut.Rows[i][j].ToString()));
+								=DefB.GetName(DefCat.DiscountTypes,PIn.PInt(tableOut.Rows[i][j].ToString()));
 							break;
 						case "doccategory":
 							tableOut.Rows[i][j]
-								=Defs.GetName(DefCat.ImageCats,PIn.PInt(tableOut.Rows[i][j].ToString()));
+								=DefB.GetName(DefCat.ImageCats,PIn.PInt(tableOut.Rows[i][j].ToString()));
 							break;
 						case "feesched":
 							tableOut.Rows[i][j]
-								=Defs.GetName(DefCat.FeeSchedNames,PIn.PInt(tableOut.Rows[i][j].ToString()));
+								=DefB.GetName(DefCat.FeeSchedNames,PIn.PInt(tableOut.Rows[i][j].ToString()));
 							break;
 						case "op":
 							tableOut.Rows[i][j]
@@ -821,20 +821,20 @@ namespace OpenDental{
 							break;
 						case "paytype":
 							tableOut.Rows[i][j]
-								=Defs.GetName(DefCat.PaymentTypes,PIn.PInt(tableOut.Rows[i][j].ToString()));
+								=DefB.GetName(DefCat.PaymentTypes,PIn.PInt(tableOut.Rows[i][j].ToString()));
 							break;
 						case "proccat":
 							tableOut.Rows[i][j]
-								=Defs.GetName(DefCat.ProcCodeCats,PIn.PInt(tableOut.Rows[i][j].ToString()));
+								=DefB.GetName(DefCat.ProcCodeCats,PIn.PInt(tableOut.Rows[i][j].ToString()));
 							break;
 						case "unschedstatus":
 						case "recallstatus":
 							tableOut.Rows[i][j]
-								=Defs.GetName(DefCat.RecallUnschedStatus,PIn.PInt(tableOut.Rows[i][j].ToString()));
+								=DefB.GetName(DefCat.RecallUnschedStatus,PIn.PInt(tableOut.Rows[i][j].ToString()));
 							break;
 						case "billingtype":
 							tableOut.Rows[i][j]
-								=Defs.GetName(DefCat.BillingTypes,PIn.PInt(tableOut.Rows[i][j].ToString()));
+								=DefB.GetName(DefCat.BillingTypes,PIn.PInt(tableOut.Rows[i][j].ToString()));
 							break;
 						//patnums:
 						case "patnum":

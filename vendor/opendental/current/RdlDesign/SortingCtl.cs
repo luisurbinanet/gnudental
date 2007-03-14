@@ -1,5 +1,5 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
@@ -47,6 +47,7 @@ namespace fyiReporting.RdlDesign
 		private System.Windows.Forms.Button bUp;
 		private System.Windows.Forms.Button bDown;
 		private System.Windows.Forms.DataGrid dgSorting;
+		private System.Windows.Forms.Button bValueExpr;
 		/// <summary> 
 		/// Required designer variable.
 		/// </summary>
@@ -150,6 +151,7 @@ namespace fyiReporting.RdlDesign
 			this.bDelete = new System.Windows.Forms.Button();
 			this.bUp = new System.Windows.Forms.Button();
 			this.bDown = new System.Windows.Forms.Button();
+			this.bValueExpr = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.dgSorting)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -161,7 +163,7 @@ namespace fyiReporting.RdlDesign
 			this.dgSorting.Location = new System.Drawing.Point(8, 8);
 			this.dgSorting.Name = "dgSorting";
 			this.dgSorting.Size = new System.Drawing.Size(376, 264);
-			this.dgSorting.TabIndex = 2;
+			this.dgSorting.TabIndex = 0;
 			this.dgSorting.TableStyles.AddRange(new System.Windows.Forms.DataGridTableStyle[] {
 																								  this.dgTableStyle});
 			// 
@@ -174,16 +176,16 @@ namespace fyiReporting.RdlDesign
 			// 
 			// bDelete
 			// 
-			this.bDelete.Location = new System.Drawing.Point(392, 16);
+			this.bDelete.Location = new System.Drawing.Point(392, 40);
 			this.bDelete.Name = "bDelete";
 			this.bDelete.Size = new System.Drawing.Size(48, 23);
-			this.bDelete.TabIndex = 1;
+			this.bDelete.TabIndex = 2;
 			this.bDelete.Text = "Delete";
 			this.bDelete.Click += new System.EventHandler(this.bDelete_Click);
 			// 
 			// bUp
 			// 
-			this.bUp.Location = new System.Drawing.Point(392, 48);
+			this.bUp.Location = new System.Drawing.Point(392, 72);
 			this.bUp.Name = "bUp";
 			this.bUp.Size = new System.Drawing.Size(48, 23);
 			this.bUp.TabIndex = 3;
@@ -192,15 +194,28 @@ namespace fyiReporting.RdlDesign
 			// 
 			// bDown
 			// 
-			this.bDown.Location = new System.Drawing.Point(392, 80);
+			this.bDown.Location = new System.Drawing.Point(392, 104);
 			this.bDown.Name = "bDown";
 			this.bDown.Size = new System.Drawing.Size(48, 23);
 			this.bDown.TabIndex = 4;
 			this.bDown.Text = "Down";
 			this.bDown.Click += new System.EventHandler(this.bDown_Click);
 			// 
+			// bValueExpr
+			// 
+			this.bValueExpr.Font = new System.Drawing.Font("Arial", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.bValueExpr.Location = new System.Drawing.Point(392, 16);
+			this.bValueExpr.Name = "bValueExpr";
+			this.bValueExpr.Size = new System.Drawing.Size(22, 16);
+			this.bValueExpr.TabIndex = 1;
+			this.bValueExpr.Tag = "value";
+			this.bValueExpr.Text = "fx";
+			this.bValueExpr.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.bValueExpr.Click += new System.EventHandler(this.bValueExpr_Click);
+			// 
 			// SortingCtl
 			// 
+			this.Controls.Add(this.bValueExpr);
 			this.Controls.Add(this.bDown);
 			this.Controls.Add(this.bUp);
 			this.Controls.Add(this.bDelete);
@@ -221,27 +236,26 @@ namespace fyiReporting.RdlDesign
 		public void Apply()
 		{
 			// Remove the old filters
-			XmlNode sorts = _Draw.GetCreateNamedChildNode(_SortingParent, "Sorting");
-			while (sorts.FirstChild != null)
-			{
-				sorts.RemoveChild(sorts.FirstChild);
-			}
+			XmlNode sorts = null;
+			_Draw.RemoveElement(_SortingParent, "Sorting");
 			// Loop thru and add all the filters
 			foreach (DataRow dr in _DataTable.Rows)
 			{
-				if (dr[0] == DBNull.Value || dr[1] == DBNull.Value)
+				if (dr[0] == DBNull.Value)
 					continue;
 				string expr = (string) dr[0];
-				bool dir = (bool) dr[1];
+				bool dir = dr[1] == DBNull.Value? true: (bool) dr[1];
+				
 				if (expr.Length <= 0)
 					continue;
+
+				if (sorts == null)
+					sorts = _Draw.CreateElement(_SortingParent, "Sorting", null);
 
 				XmlNode sNode = _Draw.CreateElement(sorts, "SortBy", null);
 				_Draw.CreateElement(sNode, "SortExpression", expr);
 				_Draw.CreateElement(sNode, "Direction", dir?"Ascending":"Descending");
 			}
-			if (!sorts.HasChildNodes)
-				_SortingParent.RemoveChild(sorts);
 		}
 
 		private void bDelete_Click(object sender, System.EventArgs e)
@@ -286,6 +300,29 @@ namespace fyiReporting.RdlDesign
 			tdr[2] = fdr[2];
 			fdr[2] = save;
 			return;
+		}
+
+		private void bValueExpr_Click(object sender, System.EventArgs e)
+		{
+			int cr = dgSorting.CurrentRowIndex;
+			if (cr < 0)
+			{	// No rows yet; create one
+				string[] rowValues = new string[2];
+				rowValues[0] = null;
+				rowValues[1] = null;
+
+				_DataTable.Rows.Add(rowValues);
+				cr = 0;
+			}
+			int cc = 0;
+			DataRow dr = _DataTable.Rows[cr];
+			string cv = dr[cc] as string;
+
+			DialogExprEditor ee = new DialogExprEditor(_Draw, cv, _SortingParent, false);
+			DialogResult dlgr = ee.ShowDialog();
+			if (dlgr == DialogResult.OK)
+				dr[cc] = ee.Expression;
+
 		}
 	}
 }

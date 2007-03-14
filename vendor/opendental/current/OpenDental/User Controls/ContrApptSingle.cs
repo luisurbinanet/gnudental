@@ -158,8 +158,8 @@ namespace OpenDental{
 			Color backColor;
 			Color timeColor;
 			if(Info.MyApt.AptStatus==ApptStatus.Complete){
-				backColor=Defs.Long[(int)DefCat.AppointmentColors][3].ItemColor;
-				timeColor=Defs.Long[(int)DefCat.AppointmentColors][2].ItemColor;
+				backColor=DefB.Long[(int)DefCat.AppointmentColors][3].ItemColor;
+				timeColor=DefB.Long[(int)DefCat.AppointmentColors][2].ItemColor;
 				if(Info.MyApt.ProvNum!=0 && !Info.MyApt.IsHygiene){//dentist
 					penO=new Pen(Providers.GetOutlineColor(Info.MyApt.ProvNum));
 				}
@@ -183,7 +183,7 @@ namespace OpenDental{
 					backColor=Color.White;
 					penO=new Pen(Color.Black);
 				}
-				timeColor=Defs.GetColor(DefCat.ApptConfirmed,Info.MyApt.Confirmed);
+				timeColor=DefB.GetColor(DefCat.ApptConfirmed,Info.MyApt.Confirmed);
 			}
 			g.FillRectangle(new SolidBrush(backColor),7,0,Width-7,Height);
 			g.FillRectangle(new SolidBrush(timeColor),0,0,7,Height);
@@ -352,6 +352,14 @@ namespace OpenDental{
 					return 1;
 				case "Production":
 					g.DrawString(Info.Production.ToString("c"),baseFont,brush,xPos,yPos);
+					return 1;
+				case "Provider":
+					if(Info.MyApt.IsHygiene && Providers.GetProv(Info.MyApt.ProvHyg)!=null){
+						g.DrawString(Providers.GetNameLF(Info.MyApt.ProvHyg),baseFont,brush,xPos,yPos);
+					}
+					else{
+						g.DrawString(Providers.GetNameLF(Info.MyApt.ProvNum),baseFont,brush,xPos,yPos);
+					}
 					return 1;
 				case "WirelessPhone":
 					g.DrawString("Cell:"+Info.MyPatient.WirelessPhone,baseFont,brush,xPos,yPos);

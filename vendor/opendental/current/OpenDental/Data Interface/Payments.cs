@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 using OpenDentBusiness;
@@ -53,7 +54,7 @@ namespace OpenDental{
 			string command=
 				"SELECT * FROM payment "
 				+"WHERE DepositNum = 0 "
-				+"AND PayDate >= '"+POut.PDate(dateStart)+"' "
+				+"AND PayDate >= "+POut.PDate(dateStart)+" "
 				+"AND ClinicNum="+POut.PInt(clinicNum);
 			for(int i=0;i<payTypes.Length;i++) {
 				if(i==0) {
@@ -114,7 +115,7 @@ namespace OpenDental{
 			}*/
 			string command="UPDATE payment SET " 
 				+ "paytype = '"      +POut.PInt   (pay.PayType)+"'"
-				+ ",paydate = '"     +POut.PDate  (pay.PayDate)+"'"
+				+ ",paydate = "     +POut.PDate  (pay.PayDate)
 				+ ",payamt = '"      +POut.PDouble(pay.PayAmt)+"'"
 				+ ",checknum = '"    +POut.PString(pay.CheckNum)+"'"
 				+ ",bankbranch = '"  +POut.PString(pay.BankBranch)+"'"
@@ -159,16 +160,20 @@ namespace OpenDental{
 			}
 			command+=
 				 "'"+POut.PInt   (pay.PayType)+"', "
-				+"'"+POut.PDate  (pay.PayDate)+"', "
+				+POut.PDate  (pay.PayDate)+", "
 				+"'"+POut.PDouble(pay.PayAmt)+"', "
 				+"'"+POut.PString(pay.CheckNum)+"', "
 				+"'"+POut.PString(pay.BankBranch)+"', "
 				+"'"+POut.PString(pay.PayNote)+"', "
 				+"'"+POut.PBool  (pay.IsSplit)+"', "
 				+"'"+POut.PInt   (pay.PatNum)+"', "
-				+"'"+POut.PInt   (pay.ClinicNum)+"', "
-				+"NOW(), "//DateEntry
-				+"'"+POut.PInt   (pay.DepositNum)+"')";
+				+"'"+POut.PInt   (pay.ClinicNum)+"', ";
+			if(FormChooseDatabase.DBtype==DatabaseType.Oracle) {
+				command+=POut.PDateT(MiscData.GetNowDateTime());
+			}else{//Assume MySQL
+				command+="NOW()";
+			}
+			command+=", '"+POut.PInt   (pay.DepositNum)+"')";
  			if(PrefB.RandomKeys){
 				General.NonQ(command);
 			}
@@ -198,6 +203,17 @@ namespace OpenDental{
 			//}
 		}
 
+		///<Summary>Called just before Allocate in FormPayment.butOK click.  If true, then it will prompt the user before allocating.</Summary>
+		public static bool AllocationRequired(double payAmt, int patNum){
+			string command="SELECT EstBalance FROM patient "
+				+"WHERE PatNum = "+POut.PInt(patNum);
+			double estBal=PIn.PDouble(General.GetCount(command));
+			if(payAmt>estBal){
+				return true;
+			}
+			return false;
+		}
+
 		/// <summary>Returns an array list of PaySplits.  Only Called only from FormPayment.butOK click.  Only called if the user did not enter any splits.  Usually just adds one split for the current patient.  But if that would take the balance negative, then it loops through all other family members and creates splits for them.  It might still take the current patient negative once all other family members are zeroed out.</summary>
 		public static ArrayList Allocate(Payment pay){//double amtTot,int patNum,Payment payNum){
 			string command= 
@@ -209,21 +225,37 @@ namespace OpenDental{
 			}
 			command= 
 				"SELECT PatNum,EstBalance,PriProv FROM patient "
-				+"WHERE Guarantor = "+table.Rows[0][0].ToString()
-				+" ORDER BY PatNum!="+POut.PInt(pay.PatNum);//puts current patient in position 0
+				+"WHERE Guarantor = "+table.Rows[0][0].ToString();
+				//+" ORDER BY PatNum!="+POut.PInt(pay.PatNum);//puts current patient in position 0 //Oracle does not allow
  			table=General.GetTable(command);
-			Patient[] pats=new Patient[table.Rows.Count];
+			List<Patient> pats=new List<Patient>();
+			Patient pat;
+			//first, put the current patient at position 0.
+			for(int i=0;i<table.Rows.Count;i++) {
+				if(table.Rows[i]["PatNum"].ToString()==pay.PatNum.ToString()){
+					pat=new Patient();
+					pat.PatNum    = PIn.PInt(table.Rows[i][0].ToString());
+					pat.EstBalance= PIn.PDouble(table.Rows[i][1].ToString());
+					pat.PriProv   = PIn.PInt(table.Rows[i][2].ToString());
+					pats.Add(pat.Copy());
+				}
+			}
+			//then, do all the rest of the patients.
 			for(int i=0;i<table.Rows.Count;i++){
-				pats[i]=new Patient();
-				pats[i].PatNum    = PIn.PInt   (table.Rows[i][0].ToString());
-				pats[i].EstBalance= PIn.PDouble(table.Rows[i][1].ToString());
-				pats[i].PriProv   = PIn.PInt   (table.Rows[i][2].ToString());
+				if(table.Rows[i]["PatNum"].ToString()==pay.PatNum.ToString()){
+					continue;
+				}
+				pat=new Patient();
+				pat.PatNum    = PIn.PInt   (table.Rows[i][0].ToString());
+				pat.EstBalance= PIn.PDouble(table.Rows[i][1].ToString());
+				pat.PriProv   = PIn.PInt   (table.Rows[i][2].ToString());
+				pats.Add(pat.Copy());
 			}
 			//first calculate all the amounts
 			double amtRemain=pay.PayAmt;//start off with the full amount
-			double[] amtSplits=new double[pats.Length];
+			double[] amtSplits=new double[pats.Count];
 			//loop through each family member, starting with current
-			for(int i=0;i<pats.Length;i++){
+			for(int i=0;i<pats.Count;i++){
 				if(pats[i].EstBalance==0 || pats[i].EstBalance<0){
 					continue;//don't apply paysplits to anyone with a negative balance
 				}
@@ -242,7 +274,7 @@ namespace OpenDental{
 			//now create a split for each non-zero amount
 			PaySplit PaySplitCur;
 			ArrayList retVal=new ArrayList();
-			for(int i=0;i<pats.Length;i++){
+			for(int i=0;i<pats.Count;i++){
 				if(amtSplits[i]==0){
 					continue;
 				}
@@ -370,7 +402,7 @@ namespace OpenDental{
 		public static string GetInfo(int payNum){
 			string retStr;
 			Payment Cur=GetPayment(payNum);
-			retStr=Defs.GetName(DefCat.PaymentTypes,Cur.PayType);
+			retStr=DefB.GetName(DefCat.PaymentTypes,Cur.PayType);
 			if(Cur.IsSplit) retStr=retStr
 				+"  "+Cur.PayAmt.ToString("c")
 				+"  "+Cur.PayDate.ToString("d")

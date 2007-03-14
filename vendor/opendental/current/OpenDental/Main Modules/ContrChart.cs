@@ -6,11 +6,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Printing;
-using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -36,21 +36,15 @@ namespace OpenDental{
 		private System.Windows.Forms.RadioButton radioEntryEO;
 		private System.ComponentModel.IContainer components;
 		private System.Windows.Forms.RadioButton radioEntryEC;
-		//private string[] newToothNum2= new string[1];
 		private ProcStat newStatus;
-		//private bool ControlDown=false;
 		private OpenDental.UI.Button button1;
-		private ArrayList ProcAL;
-		//private TPChartLines[] TPChartLines2;
 		private System.Windows.Forms.RadioButton radioEntryC;
-		//private ArrayList ProgLineAL;
 		private bool dataValid=false;
 		private System.Windows.Forms.ListBox listDx;
 		private int[] hiLightedRows=new int[1];
 		private ContrApptSingle ApptPlanned;
 		private System.Windows.Forms.CheckBox checkDone;
 		private System.Windows.Forms.Label labelMinutes;
-		//private ArrayList RxAL;
 		private System.Windows.Forms.RadioButton radioEntryR;
 		private System.Windows.Forms.Label label13;
 		private System.Windows.Forms.CheckBox checkNotes;
@@ -80,8 +74,6 @@ namespace OpenDental{
 		private System.Windows.Forms.TabPage tabPage4;
 		private System.Windows.Forms.TabControl tabControlImages;
 		private System.Windows.Forms.Panel panelImages;
-//fix: use AL for tbProg.SelectedRowsAL
-		//public	VisiQuick VQLink;  // TJE
 		private bool TreatmentNoteChanged;
 		///<summary>Keeps track of which tab is selected. It's the index of the selected tab.</summary>
 		private int selectedImageTab=0;
@@ -102,7 +94,6 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label6;
 		private System.Windows.Forms.CheckBox checkToday;
 		private FormImageViewer formImageViewer;
-		private Procedure[] ProcList;
 		private Family FamCur;
 		private Patient PatCur;
 		private InsPlan[] PlanList;
@@ -127,7 +118,6 @@ namespace OpenDental{
 		private Benefit[] BenefitList;
 		private ImageList imageListProcButtons;
 		private ColumnHeader columnHeader1;
-		//private SparksToothChart.GraphicalToothChart toothChart;
 		private TabControl tabProc;
 		private TabPage tabEnterTx;
 		private TabPage tabMissing;
@@ -192,6 +182,12 @@ namespace OpenDental{
 		private List<DocAttach> DocAttachList;
 		private GraphicalToothChart toothChart;
 		private PatientNote PatientNoteCur;
+		private DataSet DataSetMain;
+		private MenuItem menuItemLabFee;
+		private MenuItem menuItemLabFeeDetach;
+		private MenuItem menuItemDelete;
+		///<summary>A subset of DataSetMain.  The procedures that need to be drawn in the graphical tooth chart.</summary>
+		List<DataRow> ProcList;
 			
 		///<summary></summary>
 		public ContrChart(){
@@ -203,6 +199,10 @@ namespace OpenDental{
 			//EventHandler onClick=new EventHandler(menuItem_Click);
 			toothChart.TaoRenderEnabled=true;
 			toothChart.TaoInitializeContexts();
+			if(CultureInfo.CurrentCulture.Name.Substring(3)!="CA"){//Canada
+				menuItemLabFee.Visible=false;
+				menuItemLabFeeDetach.Visible=false;
+			}
 		}
 
 		///<summary></summary>
@@ -270,6 +270,8 @@ namespace OpenDental{
 			this.menuItemPrintDay = new System.Windows.Forms.MenuItem();
 			this.menuItemSetComplete = new System.Windows.Forms.MenuItem();
 			this.menuItemEditSelected = new System.Windows.Forms.MenuItem();
+			this.menuItemLabFeeDetach = new System.Windows.Forms.MenuItem();
+			this.menuItemLabFee = new System.Windows.Forms.MenuItem();
 			this.tabControlImages = new System.Windows.Forms.TabControl();
 			this.tabPage1 = new System.Windows.Forms.TabPage();
 			this.tabPage2 = new System.Windows.Forms.TabPage();
@@ -343,6 +345,7 @@ namespace OpenDental{
 			this.textTreatmentNotes = new OpenDental.ODtextBox();
 			this.gridPtInfo = new OpenDental.UI.ODGrid();
 			this.toothChart = new SparksToothChart.GraphicalToothChart();
+			this.menuItemDelete = new System.Windows.Forms.MenuItem();
 			this.groupBox2.SuspendLayout();
 			this.groupPlanned.SuspendLayout();
 			this.groupShow.SuspendLayout();
@@ -793,35 +796,50 @@ namespace OpenDental{
 			// menuProgRight
 			// 
 			this.menuProgRight.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.menuItemDelete,
+            this.menuItemSetComplete,
+            this.menuItemEditSelected,
             this.menuItemPrintProg,
             this.menuItemPrintDay,
-            this.menuItemSetComplete,
-            this.menuItemEditSelected});
+            this.menuItemLabFeeDetach,
+            this.menuItemLabFee});
 			// 
 			// menuItemPrintProg
 			// 
-			this.menuItemPrintProg.Index = 0;
+			this.menuItemPrintProg.Index = 3;
 			this.menuItemPrintProg.Text = "Print Progress Notes ...";
 			this.menuItemPrintProg.Click += new System.EventHandler(this.menuItemPrintProg_Click);
 			// 
 			// menuItemPrintDay
 			// 
-			this.menuItemPrintDay.Index = 1;
+			this.menuItemPrintDay.Index = 4;
 			this.menuItemPrintDay.Text = "Print Day for Hospital";
 			this.menuItemPrintDay.Click += new System.EventHandler(this.menuItemPrintDay_Click);
 			// 
 			// menuItemSetComplete
 			// 
-			this.menuItemSetComplete.Index = 2;
+			this.menuItemSetComplete.Index = 1;
 			this.menuItemSetComplete.Text = "Set Complete";
 			this.menuItemSetComplete.Click += new System.EventHandler(this.menuItemSetComplete_Click);
 			// 
 			// menuItemEditSelected
 			// 
-			this.menuItemEditSelected.Index = 3;
-			this.menuItemEditSelected.Text = "Edit Selected";
+			this.menuItemEditSelected.Index = 2;
+			this.menuItemEditSelected.Text = "Edit";
 			this.menuItemEditSelected.Visible = false;
 			this.menuItemEditSelected.Click += new System.EventHandler(this.menuItemEditSelected_Click);
+			// 
+			// menuItemLabFeeDetach
+			// 
+			this.menuItemLabFeeDetach.Index = 5;
+			this.menuItemLabFeeDetach.Text = "Detach Lab Fee";
+			this.menuItemLabFeeDetach.Click += new System.EventHandler(this.menuItemLabFeeDetach_Click);
+			// 
+			// menuItemLabFee
+			// 
+			this.menuItemLabFee.Index = 6;
+			this.menuItemLabFee.Text = "Attach Lab Fee";
+			this.menuItemLabFee.Click += new System.EventHandler(this.menuItemLabFee_Click);
 			// 
 			// tabControlImages
 			// 
@@ -1718,6 +1736,12 @@ namespace OpenDental{
 			this.toothChart.Text = "graphicalToothChart1";
 			this.toothChart.UseInternational = false;
 			// 
+			// menuItemDelete
+			// 
+			this.menuItemDelete.Index = 0;
+			this.menuItemDelete.Text = "Delete";
+			this.menuItemDelete.Click += new System.EventHandler(this.menuItemDelete_Click);
+			// 
 			// ContrChart
 			// 
 			this.Controls.Add(this.gridProg);
@@ -1910,7 +1934,7 @@ namespace OpenDental{
 			PatCur=null;
 			PlanList=null;
 			//from FillProgNotes:
-			ProcList=null;
+			//ProcList=null;
 			//Procedures.HList=null;
 			//Procedures.MissingTeeth=null;
 			//RxPats.List=null;
@@ -1988,18 +2012,7 @@ namespace OpenDental{
 
 		private void RefreshModuleScreen(){
 			ParentForm.Text=Patients.GetMainTitle(PatCur);
-			if(PatCur!=null){
-				groupShow.Enabled=true;
-				gridPtInfo.Enabled=true;
-				groupPlanned.Enabled=true;
-				toothChart.Enabled=true;
-				gridProg.Enabled=true;
-				butBig.Enabled=true;
-				ToolBarMain.Buttons["Rx"].Enabled=true;
-				ToolBarMain.Buttons["Perio"].Enabled=true;
-				tabProc.Enabled=true;
-			}
-			else{
+			if(PatCur==null){
 				groupShow.Enabled=false;
 				gridPtInfo.Enabled=false;
 				groupPlanned.Enabled=false;
@@ -2010,6 +2023,17 @@ namespace OpenDental{
 				ToolBarMain.Buttons["Perio"].Enabled=false;
 				tabProc.Enabled=false;
 			}
+			else {
+				groupShow.Enabled=true;
+				gridPtInfo.Enabled=true;
+				groupPlanned.Enabled=true;
+				toothChart.Enabled=true;
+				gridProg.Enabled=true;
+				butBig.Enabled=true;
+				ToolBarMain.Buttons["Rx"].Enabled=true;
+				ToolBarMain.Buttons["Perio"].Enabled=true;
+				tabProc.Enabled=true;
+			}
 			FillPatientButton();
 			ToolBarMain.Invalidate();
 			ClearButtons();
@@ -2018,7 +2042,6 @@ namespace OpenDental{
 			FillPtInfo();
       FillDxProcImage();
 			FillImages();
-			
 		}
 
 		private void FillPatientButton(){
@@ -2203,7 +2226,7 @@ namespace OpenDental{
 			//Billing type
 			row=new ODGridRow();
 			row.Cells.Add(Lan.g("TableChartPtInfo","Billing Type"));
-			row.Cells.Add(Defs.GetName(DefCat.BillingTypes,PatCur.BillingType));
+			row.Cells.Add(DefB.GetName(DefCat.BillingTypes,PatCur.BillingType));
 			gridPtInfo.Rows.Add(row);
 			//Referral
 			RefAttach[] RefAttachList=RefAttaches.Refresh(PatCur.PatNum);
@@ -2268,7 +2291,7 @@ namespace OpenDental{
 				cell.ColorText=Color.Red;
 				cell.Bold=YN.Yes;
 				row.Cells.Add(cell);
-				row.ColorBackG=Defs.Long[(int)DefCat.MiscColors][3].ItemColor;
+				row.ColorBackG=DefB.Long[(int)DefCat.MiscColors][3].ItemColor;
 				gridPtInfo.Rows.Add(row);
 			}
 			//diseases
@@ -2283,7 +2306,7 @@ namespace OpenDental{
 			else {
 				row.Cells.Add(Lan.g("TableChartPtInfo","none"));
 			}
-			row.ColorBackG=Defs.Long[(int)DefCat.MiscColors][3].ItemColor;
+			row.ColorBackG=DefB.Long[(int)DefCat.MiscColors][3].ItemColor;
 			gridPtInfo.Rows.Add(row);
 			for(int i=0;i<DiseaseList.Length;i++) {
 				row=new ODGridRow();
@@ -2292,7 +2315,7 @@ namespace OpenDental{
 				cell.Bold=YN.Yes;
 				row.Cells.Add(cell);
 				row.Cells.Add(DiseaseList[i].PatNote);
-				row.ColorBackG=Defs.Long[(int)DefCat.MiscColors][3].ItemColor;
+				row.ColorBackG=DefB.Long[(int)DefCat.MiscColors][3].ItemColor;
 				gridPtInfo.Rows.Add(row);
 			}
 			//MedUrgNote 
@@ -2303,19 +2326,19 @@ namespace OpenDental{
 			cell.ColorText=Color.Red;
 			cell.Bold=YN.Yes;
 			row.Cells.Add(cell);
-			row.ColorBackG=Defs.Long[(int)DefCat.MiscColors][3].ItemColor;
+			row.ColorBackG=DefB.Long[(int)DefCat.MiscColors][3].ItemColor;
 			gridPtInfo.Rows.Add(row);
 			//Medical
 			row=new ODGridRow();
 			row.Cells.Add(Lan.g("TableChartPtInfo","Medical Summary"));
 			row.Cells.Add(PatientNoteCur.Medical);
-			row.ColorBackG=Defs.Long[(int)DefCat.MiscColors][3].ItemColor;
+			row.ColorBackG=DefB.Long[(int)DefCat.MiscColors][3].ItemColor;
 			gridPtInfo.Rows.Add(row);
 			//Service
 			row=new ODGridRow();
 			row.Cells.Add(Lan.g("TableChartPtInfo","Service Notes"));
 			row.Cells.Add(PatientNoteCur.Service);
-			row.ColorBackG=Defs.Long[(int)DefCat.MiscColors][3].ItemColor;
+			row.ColorBackG=DefB.Long[(int)DefCat.MiscColors][3].ItemColor;
 			gridPtInfo.Rows.Add(row);
 			//medications
 			Medications.Refresh();
@@ -2330,7 +2353,7 @@ namespace OpenDental{
 			else{
 				row.Cells.Add(Lan.g("TableChartPtInfo","none"));
 			}
-			row.ColorBackG=Defs.Long[(int)DefCat.MiscColors][3].ItemColor;
+			row.ColorBackG=DefB.Long[(int)DefCat.MiscColors][3].ItemColor;
 			gridPtInfo.Rows.Add(row);
 			string text;
 			Medication med;
@@ -2345,7 +2368,7 @@ namespace OpenDental{
 				text=MedicationPats.List[i].PatNote
 					+"("+Medications.GetGeneric(MedicationPats.List[i].MedicationNum).Notes+")";
 				row.Cells.Add(text);
-				row.ColorBackG=Defs.Long[(int)DefCat.MiscColors][3].ItemColor;
+				row.ColorBackG=DefB.Long[(int)DefCat.MiscColors][3].ItemColor;
 				gridPtInfo.Rows.Add(row);
 			}
 			
@@ -2367,144 +2390,122 @@ namespace OpenDental{
 			}
 		}
 
-		private void ComputeProcAL(){
-			ProcAL = new ArrayList();
-			if(PatCur==null){
-				return;
+		///<summary>The supplied procedure row must include these columns: ProcDate,ProcStatus,ADACode,Surf,ToothNum, and ToothRange, all in raw database format.</summary>
+		private bool ShouldDisplayProc(DataRow row){
+			//if printing for hospital
+			if(hospitalDate.Year>1880) {
+				if(hospitalDate!=PIn.PDateT(row["ProcDate"].ToString()).Date) {
+					return false;
+				}
+				if(row["ProcStatus"].ToString()!=((int)ProcStat.C).ToString()) {
+					return false;
+				}
 			}
-			bool showProc;
+			if(checkShowTeeth.Checked) {
+				bool showProc=false;
+				ArrayList selectedTeeth=new ArrayList();//integers 1-32
+				for(int i=0;i<toothChart.SelectedTeeth.Length;i++) {
+					selectedTeeth.Add(Tooth.ToInt(toothChart.SelectedTeeth[i]));
+				}
+				switch(ProcedureCodes.GetProcCode(row["ADACode"].ToString()).TreatArea) {
+					case TreatmentArea.Arch:
+						for(int s=0;s<selectedTeeth.Count;s++) {
+							if(row["Surf"].ToString()=="U" && (int)selectedTeeth[s]<17) {
+								showProc=true;
+							}
+							else if(row["Surf"].ToString()=="L" && (int)selectedTeeth[s]>16) {
+								showProc=true;
+							}
+						}
+						break;
+					case TreatmentArea.Mouth:
+					case TreatmentArea.None:
+					case TreatmentArea.Sextant://nobody will miss it
+						showProc=false;
+						break;
+					case TreatmentArea.Quad:
+						for(int s=0;s<selectedTeeth.Count;s++) {
+							if(row["Surf"].ToString()=="UR" && (int)selectedTeeth[s]<=8) {
+								showProc=true;
+							}
+							else if(row["Surf"].ToString()=="UL" && (int)selectedTeeth[s]>=9 && (int)selectedTeeth[s]<=16) {
+								showProc=true;
+							}
+							else if(row["Surf"].ToString()=="LL" && (int)selectedTeeth[s]>=17 && (int)selectedTeeth[s]<=24) {
+								showProc=true;
+							}
+							else if(row["Surf"].ToString()=="LR" && (int)selectedTeeth[s]>=25 && (int)selectedTeeth[s]<=32) {
+								showProc=true;
+							}
+						}
+						break;
+					case TreatmentArea.Surf:
+					case TreatmentArea.Tooth:
+						for(int s=0;s<selectedTeeth.Count;s++) {
+							if(Tooth.ToInt(row["ToothNum"].ToString())==(int)selectedTeeth[s]) {
+								showProc=true;
+							}
+						}
+						break;
+					case TreatmentArea.ToothRange:
+						string[] range=row["ToothRange"].ToString().Split(',');
+						for(int s=0;s<selectedTeeth.Count;s++) {
+							for(int r=0;r<range.Length;r++) {
+								if(Tooth.ToInt(range[r])==(int)selectedTeeth[s]) {
+									showProc=true;
+								}
+							}
+						}
+						break;
+				}
+				if(!showProc) {
+					return false;
+				}
+			}
+			switch((ProcStat)PIn.PInt(row["ProcStatus"].ToString())) {
+				case ProcStat.TP:
+					if(checkShowTP.Checked) {
+						return true;
+					}
+					break;
+				case ProcStat.C:
+					if(checkShowC.Checked) {
+						return true;
+					}
+					break;
+				case ProcStat.EC:
+					if(checkShowE.Checked) {
+						return true;
+					}
+					break;
+				case ProcStat.EO:
+					if(checkShowE.Checked) {
+						return true;
+					}
+					break;
+				case ProcStat.R:
+					if(checkShowR.Checked) {
+						return true;
+					}
+					break;
+				case ProcStat.D:
+					if(checkAudit.Checked) {
+						return true;
+					}
+					break;
+			}
+			return false;
+		}
+
+		private void FillProgNotes(){
 			ArrayList selectedTeeth=new ArrayList();//integers 1-32
 			for(int i=0;i<toothChart.SelectedTeeth.Length;i++) {
 				selectedTeeth.Add(Tooth.ToInt(toothChart.SelectedTeeth[i]));
 			}
-			ProcList=Procedures.Refresh(PatCur.PatNum,checkAudit.Checked);
-			for(int i=0;i<ProcList.Length;i++) {
-				//always show missing teeth if C,EC,or EO... Not anymore.  Missing teeth handled by different table now.
-				/*if(ProcedureCodes.GetProcCode(ProcList[i].ADACode).RemoveTooth
-					&& (ProcList[i].ProcStatus==ProcStat.C || ProcList[i].ProcStatus==ProcStat.EC || ProcList[i].ProcStatus==ProcStat.EO)
-					) {
-					ProcAL.Add(ProcList[i]);
-					continue;
-				}*/
-				//if print
-				if(hospitalDate.Year>1880){
-					if(hospitalDate!=ProcList[i].ProcDate){
-						continue;
-					}
-					if(ProcList[i].ProcStatus!=ProcStat.C){
-						continue;
-					}
-				}
-				//if showing only selected teeth, then skip all other teeth
-				if(checkShowTeeth.Checked) {
-					showProc=false;
-					switch(ProcedureCodes.GetProcCode(ProcList[i].ADACode).TreatArea) {
-						case TreatmentArea.Arch:
-							for(int s=0;s<selectedTeeth.Count;s++) {
-								if(ProcList[i].Surf=="U" && (int)selectedTeeth[s]<17) {
-									showProc=true;
-								}
-								else if(ProcList[i].Surf=="L" && (int)selectedTeeth[s]>16) {
-									showProc=true;
-								}
-							}
-							break;
-						case TreatmentArea.Mouth:
-						case TreatmentArea.None:
-						case TreatmentArea.Sextant://nobody will miss it
-							showProc=false;
-							break;
-						case TreatmentArea.Quad:
-							for(int s=0;s<selectedTeeth.Count;s++) {
-								if(ProcList[i].Surf=="UR" && (int)selectedTeeth[s]<=8) {
-									showProc=true;
-								}
-								else if(ProcList[i].Surf=="UL" && (int)selectedTeeth[s]>=9 && (int)selectedTeeth[s]<=16) {
-									showProc=true;
-								}
-								else if(ProcList[i].Surf=="LL" && (int)selectedTeeth[s]>=17 && (int)selectedTeeth[s]<=24) {
-									showProc=true;
-								}
-								else if(ProcList[i].Surf=="LR" && (int)selectedTeeth[s]>=25 && (int)selectedTeeth[s]<=32) {
-									showProc=true;
-								}
-							}
-							break;
-						case TreatmentArea.Surf:
-						case TreatmentArea.Tooth:
-							for(int s=0;s<selectedTeeth.Count;s++) {
-								if(Tooth.ToInt(ProcList[i].ToothNum)==(int)selectedTeeth[s]) {
-									showProc=true;
-								}
-							}
-							break;
-						case TreatmentArea.ToothRange:
-							string[] range=ProcList[i].ToothRange.Split(',');
-							for(int s=0;s<selectedTeeth.Count;s++) {
-								for(int r=0;r<range.Length;r++) {
-									if(Tooth.ToInt(range[r])==(int)selectedTeeth[s]) {
-										showProc=true;
-									}
-								}
-							}
-							break;
-					}
-					if(!showProc) {
-						continue;
-					}
-				}
-				switch(ProcList[i].ProcStatus) {
-					case ProcStat.TP:
-						if(checkShowTP.Checked) {
-							ProcAL.Add(ProcList[i]);
-						}
-						break;
-					case ProcStat.C:
-						if(checkShowC.Checked) {
-							ProcAL.Add(ProcList[i]);
-						}
-						break;
-					case ProcStat.EC:
-						if(checkShowE.Checked) {
-							ProcAL.Add(ProcList[i]);
-						}
-						break;
-					case ProcStat.EO:
-						if(checkShowE.Checked) {
-							ProcAL.Add(ProcList[i]);
-						}
-						break;
-					case ProcStat.R:
-						if(checkShowR.Checked) {
-							ProcAL.Add(ProcList[i]);
-						}
-						break;
-					case ProcStat.D:
-						if(checkAudit.Checked) {
-							ProcAL.Add(ProcList[i]);
-						}
-						break;
-				}
-			}//for i
-		}
-
-		private void FillProgNotes(){
-			ArrayList mergedAL=new ArrayList(); 
-			ComputeProcAL();
-			mergedAL.AddRange(ProcAL);
-			if(PatCur!=null && checkRx.Checked){
-				mergedAL.AddRange(RxPats.Refresh(PatCur.PatNum));
+			DataSetMain=null;
+			if(PatCur!=null){
+				DataSetMain=ChartModule.GetAll(PatCur.PatNum,checkAudit.Checked);
 			}
-			if(PatCur!=null && checkComm.Checked) {
-				Commlog[] coms=Commlogs.Refresh(PatCur.PatNum);
-				for(int i=0;i<coms.Length;i++){
-					if(coms[i].CommType!=CommItemType.StatementSent){
-						mergedAL.Add(coms[i]);
-					}
-				}
-			}
-			IComparer myComparer = new ChartObjectComparer();
-			mergedAL.Sort(myComparer);
 			gridProg.BeginUpdate();
 			gridProg.Columns.Clear();
 			ODGridColumn col=new ODGridColumn(Lan.g("TableProg","Date"),67);
@@ -2533,90 +2534,54 @@ namespace OpenDental{
 			gridProg.NoteSpanStop=7;
 			gridProg.Rows.Clear();
 			ODGridRow row;
-			Type type;
-			for(int i=0;i<mergedAL.Count;i++){
-				row=new ODGridRow();
-				type=mergedAL[i].GetType();
-				row.ColorLborder=Color.Black;//Color.FromArgb(128,128,128);
-				row.Tag=mergedAL[i];
-				if(type==typeof(Procedure)){
-					row.Cells.Add(((Procedure)mergedAL[i]).ProcDate.ToShortDateString());
-					row.Cells.Add(Tooth.ToInternat(((Procedure)mergedAL[i]).ToothNum));
-					row.Cells.Add(((Procedure)mergedAL[i]).Surf);
-					row.Cells.Add(Defs.GetValue(DefCat.Diagnosis,((Procedure)mergedAL[i]).Dx));
-					row.Cells.Add(ProcedureCodes.GetProcCode(((Procedure)mergedAL[i]).ADACode).Descript);
-					row.Cells.Add(Lan.g("enumProcStat",((Procedure)mergedAL[i]).ProcStatus.ToString()));
-					row.Cells.Add(Providers.GetAbbr(((Procedure)mergedAL[i]).ProvNum));
-					row.Cells.Add(((Procedure)mergedAL[i]).ProcFee.ToString("F"));
-					row.Cells.Add(((Procedure)mergedAL[i]).ADACode);
-					row.Cells.Add(UserB.GetName(((Procedure)mergedAL[i]).UserNum));
-					if(((Procedure)mergedAL[i]).Signature==""){
-						row.Cells.Add("");
+			//Type type;
+			if(DataSetMain==null) {
+				gridProg.EndUpdate();
+				FillToothChart(false);//?
+				return;
+			}
+			DataTable table=DataSetMain.Tables["ProgNotes"];
+			ProcList=new List<DataRow>();
+			for(int i=0;i<table.Rows.Count;i++){
+				if(table.Rows[i]["ProcNum"].ToString()!="0"){//if this is a procedure
+					if(ShouldDisplayProc(table.Rows[i])){
+						ProcList.Add(table.Rows[i]);//show it in the graphical tooth chart
+						//and add it to the grid below.
 					}
 					else{
-						row.Cells.Add(Lan.g("TableProg","Signed"));
-					}
-					if(checkNotes.Checked){
-						row.Note=((Procedure)mergedAL[i]).Note;
-					}
-					switch(((Procedure)mergedAL[i]).ProcStatus) {
-						case ProcStat.TP:
-							row.ColorText=Defs.Long[(int)DefCat.ProgNoteColors][0].ItemColor;
-							break;
-						case ProcStat.C:
-							row.ColorText=Defs.Long[(int)DefCat.ProgNoteColors][1].ItemColor;
-							break;
-						case ProcStat.EC:
-							row.ColorText=Defs.Long[(int)DefCat.ProgNoteColors][2].ItemColor;
-							break;
-						case ProcStat.EO:
-							row.ColorText=Defs.Long[(int)DefCat.ProgNoteColors][3].ItemColor;
-							break;
-						case ProcStat.R:
-							row.ColorText=Defs.Long[(int)DefCat.ProgNoteColors][4].ItemColor;
-							break;
-						case ProcStat.D:
-							row.ColorText=Color.Black;
-							break;
-					}
-					if(Appointments.ProcIsToday(ApptList,(Procedure)mergedAL[i])) {
-						row.ColorBackG=Defs.Long[(int)DefCat.MiscColors][6].ItemColor;
+						continue;
 					}
 				}
-				else if(type==typeof(RxPat)){
-					row.Cells.Add(((RxPat)mergedAL[i]).RxDate.ToShortDateString());
-					row.Cells.Add("");
-					row.Cells.Add("");
-					row.Cells.Add("");
-					row.Cells.Add(Lan.g(this,"Rx - ")+((RxPat)mergedAL[i]).Drug+" - #"+((RxPat)mergedAL[i]).Disp);
-					row.Cells.Add("");
-					row.Cells.Add(Providers.GetAbbr(((RxPat)mergedAL[i]).ProvNum));
-					row.Cells.Add("");
-					row.Cells.Add("");
-					row.Cells.Add("");//user
-					row.Cells.Add("");//sig
-					if(checkNotes.Checked){
-						row.Note=((RxPat)mergedAL[i]).Notes;
+				else if(table.Rows[i]["CommlogNum"].ToString()!="0"){//if this is a commlog
+					if(!checkComm.Checked) {
+						continue;
 					}
-					row.ColorText=Defs.Long[(int)DefCat.ProgNoteColors][5].ItemColor;
 				}
-				else if(type==typeof(Commlog)) {
-					row.Cells.Add(((Commlog)mergedAL[i]).CommDateTime.ToShortDateString());
-					row.Cells.Add("");//Tth
-					row.Cells.Add("");//Surf
-					row.Cells.Add("");//Dx
-					row.Cells.Add(Lan.g(this,"Comm - ")+((Commlog)mergedAL[i]).CommType.ToString());
-					row.Cells.Add("");//procStat
-					row.Cells.Add("");//prov
-					row.Cells.Add("");//fee
-					row.Cells.Add("");//adacode
-					row.Cells.Add("");//user
-					row.Cells.Add("");//sig
-					if(checkNotes.Checked) {
-						row.Note=((Commlog)mergedAL[i]).Note;
+				else if(table.Rows[i]["RxNum"].ToString()!="0") {//if this is an Rx
+					if(!checkRx.Checked){
+						continue;
 					}
-					row.ColorText=Defs.Long[(int)DefCat.ProgNoteColors][6].ItemColor;
 				}
+				row=new ODGridRow();
+				row.ColorLborder=Color.Black;
+				//remember that columns that start with lowercase are already altered for display rather than being raw data.
+				row.Cells.Add(table.Rows[i]["procDate"].ToString());
+				row.Cells.Add(table.Rows[i]["toothNum"].ToString());
+				row.Cells.Add(table.Rows[i]["Surf"].ToString());
+				row.Cells.Add(table.Rows[i]["dx"].ToString());
+				row.Cells.Add(table.Rows[i]["description"].ToString());
+				row.Cells.Add(table.Rows[i]["procStatus"].ToString());
+				row.Cells.Add(table.Rows[i]["prov"].ToString());
+				row.Cells.Add(table.Rows[i]["procFee"].ToString());
+				row.Cells.Add(table.Rows[i]["ADACode"].ToString());
+				row.Cells.Add(table.Rows[i]["user"].ToString());
+				row.Cells.Add(table.Rows[i]["signature"].ToString());
+				if(checkNotes.Checked){
+					row.Note=table.Rows[i]["note"].ToString();
+				}
+				row.ColorText=Color.FromArgb(PIn.PInt(table.Rows[i]["colorText"].ToString()));
+				row.ColorBackG=Color.FromArgb(PIn.PInt(table.Rows[i]["colorBackG"].ToString()));
+				row.Tag=table.Rows[i];
 				gridProg.Rows.Add(row);
 			}
 			if(gridProg.Columns !=null && gridProg.Columns.Count>0) {
@@ -2631,7 +2596,6 @@ namespace OpenDental{
 					gridProg.Width=ClientSize.Width-gridProg.Location.X-1;
 				}
 			}
-			
 			gridProg.EndUpdate();
 			gridProg.ScrollToEnd();
 			FillToothChart(false);
@@ -2642,10 +2606,10 @@ namespace OpenDental{
 			Cursor=Cursors.WaitCursor;
 			toothChart.SuspendLayout();
 			toothChart.UseInternational=PrefB.GetBool("UseInternationalToothNumbers");
-			toothChart.ColorBackground=Defs.Long[(int)DefCat.ChartGraphicColors][10].ItemColor;
-			toothChart.ColorText=Defs.Long[(int)DefCat.ChartGraphicColors][11].ItemColor;
-			toothChart.ColorTextHighlight=Defs.Long[(int)DefCat.ChartGraphicColors][12].ItemColor;
-			toothChart.ColorBackHighlight=Defs.Long[(int)DefCat.ChartGraphicColors][13].ItemColor;
+			toothChart.ColorBackground=DefB.Long[(int)DefCat.ChartGraphicColors][10].ItemColor;
+			toothChart.ColorText=DefB.Long[(int)DefCat.ChartGraphicColors][11].ItemColor;
+			toothChart.ColorTextHighlight=DefB.Long[(int)DefCat.ChartGraphicColors][12].ItemColor;
+			toothChart.ColorBackHighlight=DefB.Long[(int)DefCat.ChartGraphicColors][13].ItemColor;
 			//remember which teeth were selected
 			ArrayList selectedTeeth=new ArrayList();//integers 1-32
 			for(int i=0;i<toothChart.SelectedTeeth.Length;i++) {
@@ -2710,92 +2674,87 @@ namespace OpenDental{
 		}
 
 		private void DrawProcsOfStatus(ProcStat procStat){
-			Procedure proc;
+			//this requires: ProcStatus, ADACode, ToothNum, Surf, and ToothRange.  All need to be raw database values.
 			string[] teeth;
 			Color cLight=Color.White;
 			Color cDark=Color.White;
-			for(int i=0;i<ProcAL.Count;i++) {
-				proc=(Procedure)ProcAL[i];
-				if(proc.ProcStatus!=procStat) {
+			for(int i=0;i<ProcList.Count;i++) {
+				if(PIn.PInt(ProcList[i]["ProcStatus"].ToString())!=(int)procStat) {
 					continue;
 				}
-				//if(proc.HideGraphical) {
-					//We don't care about HideGraphical anymore.  It will be enhanced later to a 3-state.
-					//continue;
-				//}
-				if(ProcedureCodes.GetProcCode(proc.ADACode).PaintType==ToothPaintingType.Extraction && (
-					proc.ProcStatus==ProcStat.C
-					|| proc.ProcStatus==ProcStat.EC
-					|| proc.ProcStatus==ProcStat.EO
+				if(ProcedureCodes.GetProcCode(ProcList[i]["ADACode"].ToString()).PaintType==ToothPaintingType.Extraction && (
+					PIn.PInt(ProcList[i]["ProcStatus"].ToString())==(int)ProcStat.C
+					|| PIn.PInt(ProcList[i]["ProcStatus"].ToString())==(int)ProcStat.EC
+					|| PIn.PInt(ProcList[i]["ProcStatus"].ToString())==(int)ProcStat.EO
 					)) {
 					continue;//prevents the red X. Missing teeth already handled.
 				}
-				if(ProcedureCodes.GetProcCode(proc.ADACode).GraphicColor==Color.FromArgb(0)){
-					switch(proc.ProcStatus) {
+				if(ProcedureCodes.GetProcCode(ProcList[i]["ADACode"].ToString()).GraphicColor==Color.FromArgb(0)){
+					switch((ProcStat)PIn.PInt(ProcList[i]["ProcStatus"].ToString())) {
 						case ProcStat.C:
-							cDark=Defs.Short[(int)DefCat.ChartGraphicColors][1].ItemColor;
-							cLight=Defs.Short[(int)DefCat.ChartGraphicColors][6].ItemColor;
+							cDark=DefB.Short[(int)DefCat.ChartGraphicColors][1].ItemColor;
+							cLight=DefB.Short[(int)DefCat.ChartGraphicColors][6].ItemColor;
 							break;
 						case ProcStat.TP:
-							cDark=Defs.Short[(int)DefCat.ChartGraphicColors][0].ItemColor;
-							cLight=Defs.Short[(int)DefCat.ChartGraphicColors][5].ItemColor;
+							cDark=DefB.Short[(int)DefCat.ChartGraphicColors][0].ItemColor;
+							cLight=DefB.Short[(int)DefCat.ChartGraphicColors][5].ItemColor;
 							break;
 						case ProcStat.EC:
-							cDark=Defs.Short[(int)DefCat.ChartGraphicColors][2].ItemColor;
-							cLight=Defs.Short[(int)DefCat.ChartGraphicColors][7].ItemColor;
+							cDark=DefB.Short[(int)DefCat.ChartGraphicColors][2].ItemColor;
+							cLight=DefB.Short[(int)DefCat.ChartGraphicColors][7].ItemColor;
 							break;
 						case ProcStat.EO:
-							cDark=Defs.Short[(int)DefCat.ChartGraphicColors][3].ItemColor;
-							cLight=Defs.Short[(int)DefCat.ChartGraphicColors][8].ItemColor;
+							cDark=DefB.Short[(int)DefCat.ChartGraphicColors][3].ItemColor;
+							cLight=DefB.Short[(int)DefCat.ChartGraphicColors][8].ItemColor;
 							break;
 						case ProcStat.R:
-							cDark=Defs.Short[(int)DefCat.ChartGraphicColors][4].ItemColor;
-							cLight=Defs.Short[(int)DefCat.ChartGraphicColors][9].ItemColor;
+							cDark=DefB.Short[(int)DefCat.ChartGraphicColors][4].ItemColor;
+							cLight=DefB.Short[(int)DefCat.ChartGraphicColors][9].ItemColor;
 							break;
 					}
 				}
 				else{
-					cDark=ProcedureCodes.GetProcCode(proc.ADACode).GraphicColor;
-					cLight=ProcedureCodes.GetProcCode(proc.ADACode).GraphicColor;
+					cDark=ProcedureCodes.GetProcCode(ProcList[i]["ADACode"].ToString()).GraphicColor;
+					cLight=ProcedureCodes.GetProcCode(ProcList[i]["ADACode"].ToString()).GraphicColor;
 				}
-				switch(ProcedureCodes.GetProcCode(proc.ADACode).PaintType){
+				switch(ProcedureCodes.GetProcCode(ProcList[i]["ADACode"].ToString()).PaintType){
 					case ToothPaintingType.BridgeDark:
-						if(ToothInitials.ToothIsMissingOrHidden(ToothInitialList,proc.ToothNum)){
-							toothChart.SetPontic(proc.ToothNum,cDark);
+						if(ToothInitials.ToothIsMissingOrHidden(ToothInitialList,ProcList[i]["ToothNum"].ToString())){
+							toothChart.SetPontic(ProcList[i]["ToothNum"].ToString(),cDark);
 						}
 						else{
-							toothChart.SetCrown(proc.ToothNum,cDark);
+							toothChart.SetCrown(ProcList[i]["ToothNum"].ToString(),cDark);
 						}
 						break;
 					case ToothPaintingType.BridgeLight:
-						if(ToothInitials.ToothIsMissingOrHidden(ToothInitialList,proc.ToothNum)) {
-							toothChart.SetPontic(proc.ToothNum,cLight);
+						if(ToothInitials.ToothIsMissingOrHidden(ToothInitialList,ProcList[i]["ToothNum"].ToString())) {
+							toothChart.SetPontic(ProcList[i]["ToothNum"].ToString(),cLight);
 						}
 						else {
-							toothChart.SetCrown(proc.ToothNum,cLight);
+							toothChart.SetCrown(ProcList[i]["ToothNum"].ToString(),cLight);
 						}
 						break;
 					case ToothPaintingType.CrownDark:
-						toothChart.SetCrown(proc.ToothNum,cDark);
+						toothChart.SetCrown(ProcList[i]["ToothNum"].ToString(),cDark);
 						break;
 					case ToothPaintingType.CrownLight:
-						toothChart.SetCrown(proc.ToothNum,cLight);
+						toothChart.SetCrown(ProcList[i]["ToothNum"].ToString(),cLight);
 						break;
 					case ToothPaintingType.DentureDark:
-						if(proc.Surf=="U"){
+						if(ProcList[i]["Surf"].ToString()=="U"){
 							teeth=new string[14];
 							for(int t=0;t<14;t++){
 								teeth[t]=(t+2).ToString();
 							}
 						}
-						else if(proc.Surf=="L") {
+						else if(ProcList[i]["Surf"].ToString()=="L") {
 							teeth=new string[14];
 							for(int t=0;t<14;t++) {
 								teeth[t]=(t+18).ToString();
 							}
 						}
 						else{
-							teeth=proc.ToothRange.Split(new char[] {','});
+							teeth=ProcList[i]["ToothRange"].ToString().Split(new char[] {','});
 						}
 						for(int t=0;t<teeth.Length;t++){
 							if(ToothInitials.ToothIsMissingOrHidden(ToothInitialList,teeth[t])) {
@@ -2807,20 +2766,20 @@ namespace OpenDental{
 						}
 						break;
 					case ToothPaintingType.DentureLight:
-						if(proc.Surf=="U") {
+						if(ProcList[i]["Surf"].ToString()=="U") {
 							teeth=new string[14];
 							for(int t=0;t<14;t++) {
 								teeth[t]=(t+2).ToString();
 							}
 						}
-						else if(proc.Surf=="L") {
+						else if(ProcList[i]["Surf"].ToString()=="L") {
 							teeth=new string[14];
 							for(int t=0;t<14;t++) {
 								teeth[t]=(t+18).ToString();
 							}
 						}
 						else {
-							teeth=proc.ToothRange.Split(new char[] { ',' });
+							teeth=ProcList[i]["ToothRange"].ToString().Split(new char[] { ',' });
 						}
 						for(int t=0;t<teeth.Length;t++) {
 							if(ToothInitials.ToothIsMissingOrHidden(ToothInitialList,teeth[t])) {
@@ -2832,25 +2791,25 @@ namespace OpenDental{
 						}
 						break;
 					case ToothPaintingType.Extraction:
-						toothChart.SetBigX(proc.ToothNum,cDark);
+						toothChart.SetBigX(ProcList[i]["ToothNum"].ToString(),cDark);
 						break;
 					case ToothPaintingType.FillingDark:
-						toothChart.SetSurfaceColors(proc.ToothNum,proc.Surf,cDark);
+						toothChart.SetSurfaceColors(ProcList[i]["ToothNum"].ToString(),ProcList[i]["Surf"].ToString(),cDark);
 						break;
 				  case ToothPaintingType.FillingLight:
-						toothChart.SetSurfaceColors(proc.ToothNum,proc.Surf,cLight);
+						toothChart.SetSurfaceColors(ProcList[i]["ToothNum"].ToString(),ProcList[i]["Surf"].ToString(),cLight);
 						break;
 					case ToothPaintingType.Implant:
-						toothChart.SetImplant(proc.ToothNum,cDark);
+						toothChart.SetImplant(ProcList[i]["ToothNum"].ToString(),cDark);
 						break;
 					case ToothPaintingType.PostBU:
-						toothChart.SetBU(proc.ToothNum,cDark);
+						toothChart.SetBU(ProcList[i]["ToothNum"].ToString(),cDark);
 						break;
 					case ToothPaintingType.RCT:
-						toothChart.SetRCT(proc.ToothNum,cDark);
+						toothChart.SetRCT(ProcList[i]["ToothNum"].ToString(),cDark);
 						break;
 					case ToothPaintingType.Sealant:
-						toothChart.SetSealant(proc.ToothNum,cDark);
+						toothChart.SetSealant(ProcList[i]["ToothNum"].ToString(),cDark);
 						break;
 				}
 			}
@@ -2873,14 +2832,14 @@ namespace OpenDental{
 			}
 			//}
 			listDx.Items.Clear();
-			for(int i=0;i<Defs.Short[(int)DefCat.Diagnosis].Length;i++){//move to instantClasses?
-				this.listDx.Items.Add(Defs.Short[(int)DefCat.Diagnosis][i].ItemName);
+			for(int i=0;i<DefB.Short[(int)DefCat.Diagnosis].Length;i++){//move to instantClasses?
+				this.listDx.Items.Add(DefB.Short[(int)DefCat.Diagnosis][i].ItemName);
 			}
 			int selectedPriority=comboPriority.SelectedIndex;//retain current selection
 			comboPriority.Items.Clear();
 			comboPriority.Items.Add(Lan.g(this,"no priority"));
-			for(int i=0;i<Defs.Short[(int)DefCat.TxPriorities].Length;i++){
-				this.comboPriority.Items.Add(Defs.Short[(int)DefCat.TxPriorities][i].ItemName);
+			for(int i=0;i<DefB.Short[(int)DefCat.TxPriorities].Length;i++){
+				this.comboPriority.Items.Add(DefB.Short[(int)DefCat.TxPriorities][i].ItemName);
 			}
 			if(selectedPriority>0 && selectedPriority<comboPriority.Items.Count)
 				//set the selected to what it was before.
@@ -2895,8 +2854,8 @@ namespace OpenDental{
 			//ListView is replacing the old button list:---------------------------------------------------------
 			int selectedButtonCat=listButtonCats.SelectedIndex;
 			listButtonCats.Items.Clear();
-			for(int i=0;i<Defs.Short[(int)DefCat.ProcButtonCats].Length;i++){
-				listButtonCats.Items.Add(Defs.Short[(int)DefCat.ProcButtonCats][i].ItemName);
+			for(int i=0;i<DefB.Short[(int)DefCat.ProcButtonCats].Length;i++){
+				listButtonCats.Items.Add(DefB.Short[(int)DefCat.ProcButtonCats][i].ItemName);
 			}
 			if(selectedButtonCat < listButtonCats.Items.Count){
 				listButtonCats.SelectedIndex=selectedButtonCat;
@@ -2912,11 +2871,11 @@ namespace OpenDental{
 			page.Text=Lan.g(this,"All");
 			tabControlImages.TabPages.Add(page);
 			visImageCats=new ArrayList();
-			for(int i=0;i<Defs.Short[(int)DefCat.ImageCats].Length;i++){
-				if(Defs.Short[(int)DefCat.ImageCats][i].ItemValue=="X"){//tagged to show in Chart
+			for(int i=0;i<DefB.Short[(int)DefCat.ImageCats].Length;i++){
+				if(DefB.Short[(int)DefCat.ImageCats][i].ItemValue=="X"){//tagged to show in Chart
 					visImageCats.Add(i);
 					page=new TabPage();
-					page.Text=Defs.Short[(int)DefCat.ImageCats][i].ItemName;
+					page.Text=DefB.Short[(int)DefCat.ImageCats][i].ItemName;
 					tabControlImages.TabPages.Add(page);
 				}
 			}
@@ -2933,7 +2892,7 @@ namespace OpenDental{
 				return;
 			}
 			ProcButtons.Refresh();
-			ProcButtonList=ProcButtons.GetForCat(Defs.Short[(int)DefCat.ProcButtonCats][listButtonCats.SelectedIndex].DefNum);
+			ProcButtonList=ProcButtons.GetForCat(DefB.Short[(int)DefCat.ProcButtonCats][listButtonCats.SelectedIndex].DefNum);
 			ListViewItem item;
 			for(int i=0;i<ProcButtonList.Length;i++){
 				if(ProcButtonList[i].ButtonImage!=null) {
@@ -2973,11 +2932,11 @@ namespace OpenDental{
 			notAvailFormat.Alignment=StringAlignment.Center;
 			notAvailFormat.LineAlignment=StringAlignment.Center;
 			for(int i=0;i<DocumentList.Length;i++){
-				if(!visImageCats.Contains(Defs.GetOrder(DefCat.ImageCats,DocumentList[i].DocCategory))){
+				if(!visImageCats.Contains(DefB.GetOrder(DefCat.ImageCats,DocumentList[i].DocCategory))){
 					continue;//if category not visible, continue
 				}
 				if(tabControlImages.SelectedIndex>0){//any category except 'all'
-					if(DocumentList[i].DocCategory!=Defs.Short[(int)DefCat.ImageCats]
+					if(DocumentList[i].DocCategory!=DefB.Short[(int)DefCat.ImageCats]
 						[(int)visImageCats[tabControlImages.SelectedIndex-1]].DefNum)
 					{
 						continue;//if not in category, continue
@@ -3217,33 +3176,34 @@ namespace OpenDental{
 		}
 
 		private void gridProg_CellDoubleClick(object sender,ODGridClickEventArgs e) {
-			Type type=gridProg.Rows[e.Row].Tag.GetType();
-			if(type==typeof(Procedure)){
+			DataRow row=(DataRow)gridProg.Rows[e.Row].Tag;
+			if(row["ProcNum"].ToString()!="0"){
 				if(checkAudit.Checked){
 					MsgBox.Show(this,"Not allowed to edit procedures when in audit mode.");
 					return;
 				}
-				//Procedure ProcCur=
-				//	((Procedure)ProcAL[((ProgLine)ProgLineAL[e.Row]).Index]).Copy();
-				FormProcEdit FormPE=new FormProcEdit((Procedure)gridProg.Rows[e.Row].Tag,PatCur.Copy(),FamCur,PlanList);
-				FormPE.ShowDialog();
-				if(FormPE.DialogResult!=DialogResult.OK)
+				Procedure proc=Procedures.GetOneProc(PIn.PInt(row["ProcNum"].ToString()),true);
+				FormProcEdit FormP=new FormProcEdit(proc,PatCur,FamCur,PlanList);
+				FormP.ShowDialog();
+				if(FormP.DialogResult!=DialogResult.OK) {
 					return;
+				}
 			}
-			else if(type==typeof(RxPat)){
-				//RxPat RxPatCur=((RxPat)RxAL[((ProgLine)ProgLineAL[e.Row]).Index]);
-				FormRxEdit FormRxE=new FormRxEdit(PatCur,(RxPat)gridProg.Rows[e.Row].Tag);
-				FormRxE.IsNew=false;
-				FormRxE.ShowDialog();
-				if(FormRxE.DialogResult!=DialogResult.OK)
-					return;
-			}
-			else if(type==typeof(Commlog)) {
-				FormCommItem FormC=new FormCommItem((Commlog)gridProg.Rows[e.Row].Tag);
-				FormC.IsNew=false;
+			else if(row["CommlogNum"].ToString()!="0"){
+				Commlog comm=Commlogs.GetOne(PIn.PInt(row["CommlogNum"].ToString()));
+				FormCommItem FormC=new FormCommItem(comm);
 				FormC.ShowDialog();
-				if(FormC.DialogResult!=DialogResult.OK)
+				if(FormC.DialogResult!=DialogResult.OK){
 					return;
+				}
+			}
+			else if(row["RxNum"].ToString()!="0") {
+				RxPat rx=RxPats.GetRx(PIn.PInt(row["RxNum"].ToString()));
+				FormRxEdit FormRxE=new FormRxEdit(PatCur,rx);
+				FormRxE.ShowDialog();
+				if(FormRxE.DialogResult!=DialogResult.OK){
+					return;
+				}
 			}
 			ModuleSelected(PatCur.PatNum);
 		}
@@ -3276,7 +3236,7 @@ namespace OpenDental{
 			if(comboPriority.SelectedIndex==0)
 				ProcCur.Priority=0;
 			else
-				ProcCur.Priority=Defs.Short[(int)DefCat.TxPriorities][comboPriority.SelectedIndex-1].DefNum;
+				ProcCur.Priority=DefB.Short[(int)DefCat.TxPriorities][comboPriority.SelectedIndex-1].DefNum;
 			ProcCur.ProcStatus=newStatus;
 			if(newStatus==ProcStat.C){
 				ProcCur.Note=ProcedureCodes.GetProcCode(ProcCur.ADACode).DefaultNote;
@@ -3293,7 +3253,7 @@ namespace OpenDental{
 			}
 			ProcCur.ClinicNum=PatCur.ClinicNum;
 			if(listDx.SelectedIndex!=-1)
-				ProcCur.Dx=Defs.Short[(int)DefCat.Diagnosis][listDx.SelectedIndex].DefNum;
+				ProcCur.Dx=DefB.Short[(int)DefCat.Diagnosis][listDx.SelectedIndex].DefNum;
 			//nextaptnum
 			ProcCur.DateEntryC=DateTime.Now;
 			ProcCur.MedicalCode=ProcedureCodes.GetProcCode(ProcCur.ADACode).MedicalCode;
@@ -3344,7 +3304,7 @@ namespace OpenDental{
 			if(comboPriority.SelectedIndex==0)
 				ProcCur.Priority=0;
 			else
-				ProcCur.Priority=Defs.Short[(int)DefCat.TxPriorities][comboPriority.SelectedIndex-1].DefNum;
+				ProcCur.Priority=DefB.Short[(int)DefCat.TxPriorities][comboPriority.SelectedIndex-1].DefNum;
 			ProcCur.ProcStatus=newStatus;
 			if(newStatus==ProcStat.C) {
 				ProcCur.Note=ProcedureCodes.GetProcCode(ProcCur.ADACode).DefaultNote;
@@ -3361,7 +3321,7 @@ namespace OpenDental{
 			}
 			ProcCur.ClinicNum=PatCur.ClinicNum;
 			if(listDx.SelectedIndex!=-1)
-				ProcCur.Dx=Defs.Short[(int)DefCat.Diagnosis][listDx.SelectedIndex].DefNum;
+				ProcCur.Dx=DefB.Short[(int)DefCat.Diagnosis][listDx.SelectedIndex].DefNum;
 			ProcCur.MedicalCode=ProcedureCodes.GetProcCode(ProcCur.ADACode).MedicalCode;
 			//nextaptnum
 			//ProcCur.CapCoPay=-1;
@@ -3533,29 +3493,34 @@ namespace OpenDental{
 				!=DialogResult.OK){
 				return;
 			}
-			int skipped=0;
-			Type type;
+			int skippedC=0;
+			int skippedComlog=0;
+			DataRow row;
 			for(int i=0;i<gridProg.SelectedIndices.Length;i++){
-				type=gridProg.Rows[gridProg.SelectedIndices[i]].Tag.GetType();
-				if(type==typeof(Procedure)){
-					if(((Procedure)gridProg.Rows[gridProg.SelectedIndices[i]].Tag).ProcStatus==ProcStat.C){
-						skipped++;
+				row=(DataRow)gridProg.Rows[gridProg.SelectedIndices[i]].Tag;
+				if(row["ProcNum"].ToString()!="0"){
+					if(PIn.PInt(row["ProcStatus"].ToString())==(int)ProcStat.C){
+						skippedC++;
 					}
 					else{
-						//also deletes the claimprocs:
-						Procedures.Delete(((Procedure)gridProg.Rows[gridProg.SelectedIndices[i]].Tag).ProcNum);
+						Procedures.Delete(PIn.PInt(row["ProcNum"].ToString()));//also deletes the claimprocs
 					}
 				}
-				else if(type==typeof(RxPat)){
-					RxPats.Delete((RxPat)gridProg.Rows[gridProg.SelectedIndices[i]].Tag);
-					//RxPat RxPatCur=(RxPat)RxAL[((ProgLine)ProgLineAL[gridProg.SelectedIndices[i]]).Index];
-					//RxPatCur.Delete();
+				else if(row["RxNum"].ToString()!="0"){
+					RxPats.Delete(PIn.PInt(row["RxNum"].ToString()));
+				}
+				else if(row["CommlogNum"].ToString()!="0"){
+					skippedComlog++;
 				}
 			}
 			Recalls.Synch(PatCur.PatNum);
-			if(skipped>0){
+			if(skippedC>0){
 				MessageBox.Show(Lan.g(this,"Not allowed to delete completed procedures from here.")+"\r"
-					+skipped.ToString()+" "+Lan.g(this,"item(s) skipped."));
+					+skippedC.ToString()+" "+Lan.g(this,"item(s) skipped."));
+			}
+			if(skippedComlog>0) {
+				MessageBox.Show(Lan.g(this,"Not allowed to delete commlog entries from here.")+"\r"
+					+skippedComlog.ToString()+" "+Lan.g(this,"item(s) skipped."));
 			}
 			ModuleSelected(PatCur.PatNum);
 		}
@@ -4311,18 +4276,6 @@ namespace OpenDental{
 			//sometimes used for testing purposes
 		}
 
-		/*private void tbProg_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e) {
-			if (e.KeyCode==Keys.ControlKey){
-				ControlDown=true;
-			}
-		}
-
-		private void tbProg_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e) {
-			if (e.KeyCode==Keys.ControlKey){
-				ControlDown=false;
-			}
-		}*/
-
 		private void checkShowTP_Click(object sender, System.EventArgs e) {
 			FillProgNotes();
 		}
@@ -4439,12 +4392,12 @@ namespace OpenDental{
 				FillPlanned();
 				return;
 			}
-			ProcList=Procedures.Refresh(PatCur.PatNum);
+			Procedure[] myProcList=Procedures.Refresh(PatCur.PatNum);
 			bool allProcsHyg=true;
-			for(int i=0;i<ProcList.Length;i++){
-				if(ProcList[i].PlannedAptNum!=AptCur.AptNum)
+			for(int i=0;i<myProcList.Length;i++){
+				if(myProcList[i].PlannedAptNum!=AptCur.AptNum)
 					continue;//only concerned with procs on this nextApt
-				if(!ProcedureCodes.GetProcCode(ProcList[i].ADACode).IsHygiene){
+				if(!ProcedureCodes.GetProcCode(myProcList[i].ADACode).IsHygiene){
 					allProcsHyg=false;
 					break;
 				}
@@ -4587,43 +4540,46 @@ namespace OpenDental{
 			FillProgNotes();
 		}
 
+		private void menuItemDelete_Click(object sender,EventArgs e) {
+			DeleteRows();
+		}
+
 		private void menuItemSetComplete_Click(object sender,EventArgs e) {
 			if(!Security.IsAuthorized(Permissions.ProcComplCreate)) {
 				return;
 			}
 			if(gridProg.SelectedIndices.Length==0) {
-				MessageBox.Show(Lan.g(this,"Please select an item first."));
+				MsgBox.Show(this,"Please select an item first.");
 				return;
 			}
-			//ArrayList skippedMsgs;
+			if(checkAudit.Checked) {
+				MsgBox.Show(this,"Not allowed in audit mode.");
+				return;
+			}
 			Procedure procCur;
 			Procedure procOld;
 			ProcedureCode procCode;
 			Appointment apt;
 			ClaimProc[] ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
-			Type type;
 			for(int i=0;i<gridProg.SelectedIndices.Length;i++) {
-				type=gridProg.Rows[gridProg.SelectedIndices[i]].Tag.GetType();
-				if(type==typeof(RxPat)){
-					continue;
+				if(DataSetMain.Tables["ProgNotes"].Rows[gridProg.SelectedIndices[i]]["ProcNum"].ToString()=="0"){
+					continue;//not a procedure
 				}
 				apt=null;
-				procCur=((Procedure)gridProg.Rows[gridProg.SelectedIndices[i]].Tag).Copy();
-				if(procCur.ProcStatus==ProcStat.C) {//don't allow setting a procedure complete again.
-					continue;
-				}
+				procCur=Procedures.GetOneProc(
+					PIn.PInt(DataSetMain.Tables["ProgNotes"].Rows[gridProg.SelectedIndices[i]]["ProcNum"].ToString()),true);
+				//The next few lines were removed at a user's request.  I couldn't remember why we added them in the first place.
+				//He wanted them removed so that he could update the date of multiple procedures at once.  But this only makes sense
+				//to him because he does not attach procs to appointments.
+				//if(procCur.ProcStatus==ProcStat.C) {//don't allow setting a procedure complete again.
+				//	continue;
+				//}
 				procOld=procCur.Copy();
 				procCode=ProcedureCodes.GetProcCode(procCur.ADACode);
-				//if(procCur.DateLocked.Year>1880){//if note is locked, don't change it.
-					//skippedMsgs+=Lan.g(this,"Note locked.");
-					//continue;
-				//}
-				//else{
 				if(procOld.ProcStatus!=ProcStat.C) {
 					//if procedure was already complete, then don't add more notes.
 					procCur.Note+=procCode.DefaultNote;//note wasn't complete, so add notes
 				}
-				//}
 				procCur.DateEntryC=DateTime.Now;
 				if(procCur.AptNum!=0) {//if attached to an appointment
 					apt=Appointments.GetOneApt(procCur.AptNum);
@@ -4657,6 +4613,60 @@ namespace OpenDental{
 
 		private void menuItemEditSelected_Click(object sender,EventArgs e) {
 			//not functional yet
+		}
+
+		private void menuItemLabFee_Click(object sender,EventArgs e) {
+			if(gridProg.SelectedIndices.Length!=2){
+				MsgBox.Show(this,"Please select exactly two procedures, one regular and one lab.");
+				return;
+			}
+			DataRow row1=DataSetMain.Tables["ProgNotes"].Rows[gridProg.SelectedIndices[0]];
+			DataRow row2=DataSetMain.Tables["ProgNotes"].Rows[gridProg.SelectedIndices[1]];
+			if(row1["ProcNum"].ToString()=="0" || row2["ProcNum"].ToString()=="0"){
+				MsgBox.Show(this,"Both selected items must be procedures.");
+				return;
+			}
+			bool isLab1=ProcedureCodes.GetProcCode(row1["ADACode"].ToString()).IsCanadianLab;
+			bool isLab2=ProcedureCodes.GetProcCode(row2["ADACode"].ToString()).IsCanadianLab;
+			if((isLab1 && isLab2) || (!isLab1 && !isLab2)) {
+				MsgBox.Show(this,"One of the procedures must be a lab procedure as defined in Procedure Codes.");
+				return;
+			}
+			Procedure procLab;
+			Procedure procOld;
+			if(isLab1){
+				procLab=Procedures.GetOneProc(PIn.PInt(row1["ProcNum"].ToString()),false);
+				procOld=procLab.Copy();
+				procLab.ProcNumLab=PIn.PInt(row2["ProcNum"].ToString());
+			}
+			else{
+				procLab=Procedures.GetOneProc(PIn.PInt(row2["ProcNum"].ToString()),false);
+				procOld=procLab.Copy();
+				procLab.ProcNumLab=PIn.PInt(row1["ProcNum"].ToString());
+			}
+			Procedures.Update(procLab,procOld);
+			ModuleSelected(PatCur.PatNum);
+		}
+
+		private void menuItemLabFeeDetach_Click(object sender,EventArgs e) {
+			if(gridProg.SelectedIndices.Length!=1) {
+				MsgBox.Show(this,"Please select exactly one lab procedure first.");
+				return;
+			}
+			DataRow row=DataSetMain.Tables["ProgNotes"].Rows[gridProg.SelectedIndices[0]];
+			if(row["ProcNum"].ToString()=="0") {
+				MsgBox.Show(this,"Please select a lab procedure first.");
+				return;
+			}
+			if(row["ProcNumLab"].ToString()=="0") {
+				MsgBox.Show(this,"The selected procedure is not attached as a lab procedure.");
+				return;
+			}
+			Procedure procLab=Procedures.GetOneProc(PIn.PInt(row["ProcNum"].ToString()),false);
+			Procedure procOld=procLab.Copy();
+			procLab.ProcNumLab=0;
+			Procedures.Update(procLab,procOld);
+			ModuleSelected(PatCur.PatNum);
 		}
 
 		///<summary>Preview is only used for debugging.</summary>
@@ -5102,9 +5112,15 @@ namespace OpenDental{
 		}
 
 		private void butBig_Click(object sender,EventArgs e) {
-			FormToothChartingBig FormT=new FormToothChartingBig(checkShowTeeth.Checked,ToothInitialList,ProcAL);
+			FormToothChartingBig FormT=new FormToothChartingBig(checkShowTeeth.Checked,ToothInitialList,ProcList);
 			FormT.Show();
 		}
+
+		
+
+		
+
+		
 
 		
 
@@ -5260,24 +5276,7 @@ namespace OpenDental{
 	}//end class
 
 
-
-	///<summary>This sorts all objects in Chart module based on their dates, times, priority, and toothnum.</summary>
-	public class ChartObjectComparer:IComparer {
-		///<summary>This sorts all objects in Chart module based on their dates, times, priority, and toothnum.</summary>
-		int IComparer.Compare(Object x,Object y) {
-			if(x.GetType()==typeof(Procedure) && y.GetType()==typeof(Procedure)){//if both are procedures
-				if(((Procedure)x).ProcDate==((Procedure)y).ProcDate){//and the dates are the same
-					IComparer procComparer=new ProcedureComparer();
-					return procComparer.Compare(x,y);//sort by priority, toothnum
-				}
-			}
-			//In all other situations, all we care about is the dates.
-			IComparer myComparer = new ObjectDateComparer();
-			return myComparer.Compare(x,y);
-		}
-
-	}
-
+	
 
 
 }

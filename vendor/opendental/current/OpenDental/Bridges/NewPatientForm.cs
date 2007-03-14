@@ -136,12 +136,12 @@ namespace OpenDental.Bridges
 
                         //Find the category, hopefully 'Patient Information'
                         //otherwise, just default to first one
-                        int iCategory = iCategory = Defs.Short[(int)DefCat.ImageCats][0].DefNum; ;
-                        for (int i = 0; i < Defs.Short[(int)DefCat.ImageCats].Length; i++)
+                        int iCategory = iCategory = DefB.Short[(int)DefCat.ImageCats][0].DefNum; ;
+                        for (int i = 0; i < DefB.Short[(int)DefCat.ImageCats].Length; i++)
                         {
-                            if (Defs.Short[(int)DefCat.ImageCats][i].ItemName == "Patient Information")
+                            if (DefB.Short[(int)DefCat.ImageCats][i].ItemName == "Patient Information")
                             {
-                                iCategory = Defs.Short[(int)DefCat.ImageCats][i].DefNum;
+                                iCategory = DefB.Short[(int)DefCat.ImageCats][i].DefNum;
                             }
 
                         }

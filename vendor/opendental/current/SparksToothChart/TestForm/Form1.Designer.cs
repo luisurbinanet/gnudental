@@ -72,18 +72,8 @@ namespace TestForm {
 			// 
 			// chart
 			// 
-			this.chart.AccumBits = ((byte)(0));
-			this.chart.AutoCheckErrors = false;
-			this.chart.AutoFinish = false;
-			this.chart.AutoMakeCurrent = true;
-			this.chart.AutoSwapBuffers = true;
-			this.chart.BackColor = System.Drawing.Color.Black;
-			this.chart.ColorBits = ((byte)(32));
-			this.chart.DepthBits = ((byte)(16));
 			this.chart.Location = new System.Drawing.Point(186,105);
 			this.chart.Name = "chart";
-			this.chart.Size = new System.Drawing.Size(693,606);
-			this.chart.StencilBits = ((byte)(0));
 			this.chart.TabIndex = 5;
 			// 
 			// Form1

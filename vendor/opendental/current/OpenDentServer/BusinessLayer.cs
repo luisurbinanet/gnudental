@@ -17,6 +17,12 @@ namespace OpenDentServer {
 			else if(dto.GetType()==typeof(DtoGeneralGetDataSet)) {
 				return GeneralB.GetDataSet(((DtoGeneralGetDataSet)dto).Commands);
 			}
+			else if(dto.GetType()==typeof(DtoAccountModuleGetAll)) {
+				return AccountModuleB.GetAll(((DtoAccountModuleGetAll)dto).PatNum);
+			}
+			else if(dto.GetType()==typeof(DtoChartModuleGetAll)) {
+				return ChartModuleB.GetAll(((DtoChartModuleGetAll)dto).PatNum,((DtoChartModuleGetAll)dto).IsAuditMode);
+			}
 			else if(dto.GetType()==typeof(DtoCovCatRefresh)) {
 				return CovCatB.Refresh();
 			}
@@ -27,10 +33,10 @@ namespace OpenDentServer {
 				return PrefB.Refresh();
 			}
 			else if(dto.GetType()==typeof(DtoProcedureRefresh)) {
-				return ProcedureB.Refresh(((DtoProcedureRefresh)dto).PatNum,((DtoProcedureRefresh)dto).IncludeDeletedAndNotes);
+				return ProcedureB.Refresh(((DtoProcedureRefresh)dto).PatNum);
 			}
-			else if(dto.GetType()==typeof(DtoUserRefresh)) {
-				return UserB.Refresh();
+			else if(dto.GetType()==typeof(DtoUserodRefresh)) {
+				return UserodB.Refresh();
 			}
 
 

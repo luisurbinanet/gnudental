@@ -283,8 +283,8 @@ namespace OpenDental{
 
 		private void FillCats(){
 			listCategories.Items.Clear();
-			for(int i=0;i<Defs.Short[(int)DefCat.LetterMergeCats].Length;i++){
-				listCategories.Items.Add(Defs.Short[(int)DefCat.LetterMergeCats][i].ItemName);
+			for(int i=0;i<DefB.Short[(int)DefCat.LetterMergeCats].Length;i++){
+				listCategories.Items.Add(DefB.Short[(int)DefCat.LetterMergeCats][i].ItemName);
 			}
 		}
 
@@ -340,7 +340,7 @@ namespace OpenDental{
 				return;
 			}
 			LetterMerge letter=new LetterMerge();
-			letter.Category=Defs.Short[(int)DefCat.LetterMergeCats][listCategories.SelectedIndex].DefNum;
+			letter.Category=DefB.Short[(int)DefCat.LetterMergeCats][listCategories.SelectedIndex].DefNum;
 			letter.Fields=new ArrayList();
 			FormLetterMergeEdit FormL=new FormLetterMergeEdit(letter);
 			FormL.IsNew=true;
@@ -480,7 +480,7 @@ namespace OpenDental{
 			Commlog CommlogCur=new Commlog();
 			CommlogCur.CommDateTime=DateTime.Now;
 			CommlogCur.CommType=CommItemType.Misc;
-			CommlogCur.Mode=CommItemMode.Mail;
+			CommlogCur.Mode_=CommItemMode.Mail;
 			CommlogCur.SentOrReceived=CommSentOrReceived.Sent;
 			CommlogCur.PatNum=PatCur.PatNum;
 			CommlogCur.Note="Letter sent: "+letterCur.Description+". ";
@@ -539,7 +539,7 @@ namespace OpenDental{
 			Commlog CommlogCur=new Commlog();
 			CommlogCur.CommDateTime=DateTime.Now;
 			CommlogCur.CommType=CommItemType.Misc;
-			CommlogCur.Mode=CommItemMode.Mail;
+			CommlogCur.Mode_=CommItemMode.Mail;
 			CommlogCur.SentOrReceived=CommSentOrReceived.Sent;
 			CommlogCur.PatNum=PatCur.PatNum;
 			CommlogCur.Note="Letter sent: "+letterCur.Description+". ";

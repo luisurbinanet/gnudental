@@ -1,21 +1,21 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
-    The RDL project is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2.1 of the License, or
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU Lesser General Public License
     along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
     For additional information, email info@fyireporting.com or visit
     the website www.fyiReporting.com.
@@ -28,7 +28,8 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Collections;
 using System.Collections.Specialized;
-
+using System.Threading;
+using System.Net;
 
 namespace fyiReporting.RDL
 {
@@ -50,17 +51,14 @@ namespace fyiReporting.RDL
 		ImageSizingEnum _Sizing;	// Defines the behavior if the image does not fit within the specified size.
 	
 		bool _ConstantImage;	// true if Image is a constant at runtime
-		[NonSerialized] PageImage _pgImage;	// When ConstantImage is true this will save the PageImage for reuse
-		[NonSerialized] ListDictionary _mimes;
 
-		internal Image(Report r, ReportLink p, XmlNode xNode):base(r,p,xNode)
+		internal Image(ReportDefn r, ReportLink p, XmlNode xNode):base(r,p,xNode)
 		{
 			_ImageSource=ImageSourceEnum.Unknown;
 			_Value=null;
 			_MIMEType=null;
 			_Sizing=ImageSizingEnum.AutoSize;
 			_ConstantImage = false;
-			_pgImage = null;
 
 			// Loop thru all the child nodes
 			foreach(XmlNode xNodeLoop in xNode.ChildNodes)
@@ -117,8 +115,9 @@ namespace fyiReporting.RDL
 			{
 				if (_MIMEType == null || _MIMEType.IsConstant())
 				{
-					if (this.Style == null || this.Style.ConstantStyle)
-						return true;
+//					if (this.Style == null || this.Style.ConstantStyle)
+//						return true;
+					return true;	// ok if style changes
 				}
 			}
 			return false;
@@ -132,7 +131,7 @@ namespace fyiReporting.RDL
 			Stream strm=null;
 			try 
 			{
-				strm = GetImageStream(row, out mtype);
+				strm = GetImageStream(ip.Report(), row, out mtype);
 
 				ip.Image(this, row, mtype, strm);
 			}
@@ -150,29 +149,31 @@ namespace fyiReporting.RDL
 
 		override internal void RunPage(Pages pgs, Row row)
 		{
-			if (IsHidden(row))
+			Report r = pgs.Report;
+			if (IsHidden(r, row))
 				return;
 
+			WorkClass wc = GetWC(r);
 			string mtype=null; 
 			Stream strm=null;
 			System.Drawing.Image im=null;
 
 			SetPagePositionBegin(pgs);
-			if (this._pgImage != null)
+			if (wc.PgImage != null)
 			{	// have we already generated this one
 				// reuse most of the work; only position will likely change
-				PageImage pi = new PageImage(_pgImage.ImgFormat, _pgImage.ImageData, _pgImage.SamplesW, _pgImage.SamplesH);
-				pi.Name = _pgImage.Name;				// this is name it will be shared under
+				PageImage pi = new PageImage(wc.PgImage.ImgFormat, wc.PgImage.ImageData, wc.PgImage.SamplesW, wc.PgImage.SamplesH);
+				pi.Name = wc.PgImage.Name;				// this is name it will be shared under
 				pi.Sizing = this._Sizing;
-				this.SetPagePositionAndStyle(pi, row);
+				this.SetPagePositionAndStyle(r, pi, row);
 				pgs.CurrentPage.AddObject(pi);
-				SetPagePositionEnd(pgs, pgs.CurrentPage.YOffset);
+                SetPagePositionEnd(pgs, pi.Y + pi.H);
 				return;
 			}
 
 			try 
 			{
-				strm = GetImageStream(row, out mtype); 
+				strm = GetImageStream(r, row, out mtype); 
 				im = System.Drawing.Image.FromStream(strm);
 				int height = im.Height;
 				int width = im.Width;
@@ -187,19 +188,22 @@ namespace fyiReporting.RDL
 				ostrm.Close();
 				PageImage pi = new PageImage(imf, ba, width, height);
 				pi.Sizing = this._Sizing;
-				this.SetPagePositionAndStyle(pi, row);
+				this.SetPagePositionAndStyle(r, pi, row);
 
 				pgs.CurrentPage.AddObject(pi);
 				if (_ConstantImage)
 				{
-					this._pgImage = pi;
-					pi.Name = OwnerReport.CreateRuntimeName(this);
+					wc.PgImage = pi;
+					// create unique name; PDF generation uses this to optimize the saving of the image only once
+					pi.Name = "pi" + Interlocked.Increment(ref Parser.Counter).ToString();	// create unique name
 				}
-			}
+
+                SetPagePositionEnd(pgs, pi.Y + pi.H);
+            }
 			catch (Exception e)
 			{	
 				// image failed to load, continue processing
-				this.OwnerReport.rl.LogError(4, "Image load failed.  " + e.Message);
+				r.rl.LogError(4, "Image load failed.  " + e.Message);
 			}
 			finally
 			{
@@ -208,11 +212,10 @@ namespace fyiReporting.RDL
 				if (im != null)
 					im.Dispose();
 			}
-			SetPagePositionEnd(pgs, pgs.CurrentPage.YOffset);
 			return;
 		}
 
-		Stream GetImageStream(Row row, out string mtype)
+		Stream GetImageStream(Report rpt, Row row, out string mtype)
 		{
 			mtype=null; 
 			Stream strm=null;
@@ -223,33 +226,43 @@ namespace fyiReporting.RDL
 					case ImageSourceEnum.Database:
 						if (_MIMEType == null)
 							return null;
-						mtype = _MIMEType.EvaluateString(row);
-						object o = _Value.Evaluate(row);
+						mtype = _MIMEType.EvaluateString(rpt, row);
+						object o = _Value.Evaluate(rpt, row);
 						strm = new MemoryStream((byte[]) o);
 						break;
 					case ImageSourceEnum.Embedded:
-						string name = _Value.EvaluateString(row);
+						string name = _Value.EvaluateString(rpt, row);
 						EmbeddedImage ei = (EmbeddedImage) OwnerReport.LUEmbeddedImages[name];
 						mtype = ei.MIMEType;
 						byte[] ba = Convert.FromBase64String(ei.ImageData);
 						strm = new MemoryStream(ba);
 						break;
 					case ImageSourceEnum.External:
-						string fname = _Value.EvaluateString(row);
+						string fname = _Value.EvaluateString(rpt, row);
 						mtype = GetMimeType(fname);
-						strm = new FileStream(fname, System.IO.FileMode.Open, FileAccess.Read);		
+						if (fname.StartsWith("http:") ||
+							fname.StartsWith("file:") ||
+							fname.StartsWith("https:"))
+						{
+							WebRequest wreq = WebRequest.Create(fname);
+							WebResponse wres = wreq.GetResponse();
+							strm = wres.GetResponseStream();
+						}
+						else
+							strm = new FileStream(fname, System.IO.FileMode.Open, FileAccess.Read);		
 						break;
 					default:
 						return null;
 				}
 			}
-			catch
+			catch (Exception e)
 			{
 				if (strm != null)
 				{
 					strm.Close();
 					strm = null;
 				}
+				rpt.rl.LogError(4, string.Format("Unable to load image. {0}", e.Message));
 			}
 
 			return strm;
@@ -286,25 +299,56 @@ namespace fyiReporting.RDL
 
 		private string GetMimeType(string file)
 		{
-			String mimeType;
 			String fileExt;
 			
 			int startPos = file.LastIndexOf(".") + 1;
 
 			fileExt = file.Substring(startPos).ToLower();
 
-			if (_mimes == null)
+			switch (fileExt)
 			{
-				_mimes = new ListDictionary();
-				_mimes.Add("bmp", "image/bmp");
-				_mimes.Add("jpeg", "image/jpeg");
-				_mimes.Add("gif", "image/gif");
-				_mimes.Add("png", "image/png");
+				case "bmp":
+					return "image/bmp";
+				case "jpeg":
+				case "jpe":
+				case "jpg":
+				case "jfif":
+					return "image/jpeg";
+				case "gif":
+					return "image/gif";
+				case "png":
+					return "image/png";
+				case "tif":
+				case "tiff":
+					return "image/tiff";
+				default:
+					return null;
 			}
+		}
 
-			mimeType = (string) (_mimes[fileExt]);
+		private WorkClass GetWC(Report rpt)
+		{
+			WorkClass wc = rpt.Cache.Get(this, "wc") as WorkClass;
+			if (wc == null)
+			{
+				wc = new WorkClass();
+				rpt.Cache.Add(this, "wc", wc);
+			}
+			return wc;
+		}
 
-			return mimeType; 
+		private void RemoveWC(Report rpt)
+		{
+			rpt.Cache.Remove(this, "wc");
+		}
+
+		class WorkClass
+		{
+			internal PageImage PgImage;	// When ConstantImage is true this will save the PageImage for reuse
+			internal WorkClass()
+			{
+				PgImage=null;
+			}
 		}
 
 	}

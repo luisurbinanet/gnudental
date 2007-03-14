@@ -284,8 +284,8 @@ namespace OpenDental{
 				FROM patient,appointment 
 				WHERE patient.PatNum=appointment.PatNum "
 				+"AND (appointment.AptStatus=1 OR appointment.AptStatus=4) "//sched or ASAP
-				+"AND appointment.AptDateTime > '"+POut.PDate(FromDate)//> midnight
-				+"' AND appointment.AptDateTime < '"+POut.PDate(ToDate.AddDays(1))+"'";//< midnight
+				+"AND appointment.AptDateTime > "+POut.PDate(FromDate)//> midnight
+				+" AND appointment.AptDateTime < "+POut.PDate(ToDate.AddDays(1));//< midnight
  			DataTable table=General.GetTable(command);
 			bool usePatNum=false;
 			PPCur=ProgramProperties.GetCur(ForProgram, "Enter 0 to use PatientNum, or 1 to use ChartNum");;

@@ -22,14 +22,15 @@ namespace OpenDental {
 				+"DateEffective,DateTerm,GroupName,GroupNum,PlanNote,"
 				+"FeeSched,ReleaseInfo,AssignBen,PlanType,ClaimFormNum,UseAltCode,"
 				+"ClaimsUseUCR,CopayFeeSched,SubscriberID,"
-				+"EmployerNum,CarrierNum,AllowedFeeSched,TrojanID,DivisionNo,BenefitNotes,IsMedical,SubscNote,FilingCode) VALUES(";
+				+"EmployerNum,CarrierNum,AllowedFeeSched,TrojanID,DivisionNo,BenefitNotes,IsMedical,SubscNote,FilingCode,"
+				+"DentaideCardSequence) VALUES(";
 			if(PrefB.RandomKeys) {
 				command+="'"+POut.PInt(plan.PlanNum)+"', ";
 			}
 			command+=
 				 "'"+POut.PInt(plan.Subscriber)+"', "
-				+"'"+POut.PDate(plan.DateEffective)+"', "
-				+"'"+POut.PDate(plan.DateTerm)+"', "
+				+POut.PDate(plan.DateEffective)+", "
+				+POut.PDate(plan.DateTerm)+", "
 				+"'"+POut.PString(plan.GroupName)+"', "
 				+"'"+POut.PString(plan.GroupNum)+"', "
 				+"'"+POut.PString(plan.PlanNote)+"', "
@@ -50,7 +51,8 @@ namespace OpenDental {
 				+"'"+POut.PString(plan.BenefitNotes)+"', "
 				+"'"+POut.PBool(plan.IsMedical)+"', "
 				+"'"+POut.PString(plan.SubscNote)+"', "
-				+"'"+POut.PInt   ((int)plan.FilingCode)+"')";
+				+"'"+POut.PInt((int)plan.FilingCode)+"', "
+				+"'"+POut.PInt((int)plan.DentaideCardSequence)+"')";
 			if(PrefB.RandomKeys) {
 				General.NonQ(command);
 			}
@@ -63,7 +65,12 @@ namespace OpenDental {
 		public static void Delete(InsPlan plan) {
 			//first, check claims
 			string command="SELECT PatNum FROM claim "
-				+"WHERE plannum = '"+plan.PlanNum.ToString()+"' LIMIT 1";
+				+"WHERE plannum = '"+plan.PlanNum.ToString()+"' ";
+			if(FormChooseDatabase.DBtype==DatabaseType.Oracle){
+				command+="AND ROWNUM<=1";
+			}else{//Assume MySQL
+				command+="LIMIT 1";
+			}
 			DataTable table=General.GetTable(command);
 			if(table.Rows.Count!=0) {
 				throw new ApplicationException(Lan.g("FormInsPlan","Not allowed to delete a plan with existing claims."));
@@ -71,8 +78,12 @@ namespace OpenDental {
 			//then, check claimprocs
 			command="SELECT PatNum FROM claimproc "
 				+"WHERE PlanNum = "+POut.PInt(plan.PlanNum)
-				+" AND Status != 6 "//ignore estimates
-				+"LIMIT 1";
+				+" AND Status != 6 ";//ignore estimates
+			if(FormChooseDatabase.DBtype==DatabaseType.Oracle){
+				command+="AND ROWNUM<=1";
+			}else{//Assume MySQL
+				command+="LIMIT 1";
+			}
 			table=General.GetTable(command);
 			if(table.Rows.Count!=0) {
 				throw new ApplicationException(Lan.g("FormInsPlan","Not allowed to delete a plan attached to procedures."));
@@ -98,8 +109,8 @@ namespace OpenDental {
 		public static void Update(InsPlan plan) {
 			string command="UPDATE insplan SET "
 				+"Subscriber = '"    +POut.PInt   (plan.Subscriber)+"'"
-				+",DateEffective = '"+POut.PDate  (plan.DateEffective)+"'"
-				+",DateTerm = '"     +POut.PDate  (plan.DateTerm)+"'"
+				+",DateEffective = "+POut.PDate  (plan.DateEffective)
+				+",DateTerm = "     +POut.PDate  (plan.DateTerm)
 				+",GroupName = '"    +POut.PString(plan.GroupName)+"'"
 				+",GroupNum = '"     +POut.PString(plan.GroupNum)+"'"
 				+",PlanNote = '"     +POut.PString(plan.PlanNote)+"'"
@@ -120,7 +131,8 @@ namespace OpenDental {
 				+",BenefitNotes='"   +POut.PString(plan.BenefitNotes)+"'"
 				+",IsMedical='"      +POut.PBool  (plan.IsMedical)+"'"
 				+",SubscNote='"      +POut.PString(plan.SubscNote)+"'"
-				+",FilingCode='"     +POut.PInt   ((int)plan.FilingCode)+"'"
+				+",FilingCode='"     +POut.PInt((int)plan.FilingCode)+"'"
+				+",DentaideCardSequence='" +POut.PInt(plan.DentaideCardSequence)+"'"
 				+" WHERE PlanNum = '"+POut.PInt   (plan.PlanNum)+"'";
 			General.NonQ(command);
 		}
@@ -159,6 +171,9 @@ namespace OpenDental {
 			if(planNum==0) {
 				return null;
 			}
+			if(planList==null) {
+				planList=new InsPlan[0];
+			}
 			bool found=false;
 			for(int i=0;i<planList.Length;i++) {
 				if(planList[i].PlanNum==planNum) {
@@ -192,7 +207,7 @@ namespace OpenDental {
 			string command="SELECT * FROM insplan WHERE plannum = '"+planNum+"'";
 			InsPlan[] PlanList=RefreshFill(command);
 			if(PlanList.Length>0) {
-				return PlanList[0];
+				return PlanList[0].Copy();
 			}
 			else {
 				return null;
@@ -219,7 +234,8 @@ namespace OpenDental {
 				}
 				command+=" patplan.PatNum="+POut.PInt(Fam.List[i].PatNum);
 			}
-			command+=")) ORDER BY DateEffective";
+			//command+=")) ORDER BY DateEffective";//FIXME:UNION-ORDER-BY
+			command+=")) ORDER BY 3";//***ORACLE ORDINAL
 			//Debug.WriteLine(command);
 			return RefreshFill(command);
 		}
@@ -253,7 +269,8 @@ namespace OpenDental {
 				PlanList[i].BenefitNotes   = PIn.PString(table.Rows[i][21].ToString());
 				PlanList[i].IsMedical      = PIn.PBool  (table.Rows[i][22].ToString());
 				PlanList[i].SubscNote      = PIn.PString(table.Rows[i][23].ToString());
-				PlanList[i].FilingCode     = (InsFilingCode)PIn.PInt   (table.Rows[i][24].ToString());
+				PlanList[i].FilingCode     = (InsFilingCode)PIn.PInt(table.Rows[i][24].ToString());
+				PlanList[i].DentaideCardSequence= PIn.PInt(table.Rows[i][25].ToString());
 			}
 			return PlanList;
 		}
@@ -318,16 +335,17 @@ namespace OpenDental {
 			return annualMax-insUsed-insPending;
 		}
 
-		/// <summary>Get insurance benefits used for one benefit year.  Returns actual insurance used based on ClaimProc data. Must supply all claimprocs for the patient.  Must supply all benefits for patient so that we know if it's a service year or a calendar year.  Date used to determine which benefit year to calc.  Usually today's date.  The insplan.PlanNum is the plan to get value for.  ExcludeClaim is the ClaimNum to exclude, or enter -1 to include all.</summary>
-		public static double GetInsUsed(ClaimProc[] ClaimProcList,DateTime date,int planNum,int patPlanNum,int excludeClaim,InsPlan[] PlanList,Benefit[] benList) {
+		/// <summary>Get insurance benefits used for one benefit year.  Returns actual insurance used based on ClaimProc data. Must supply all claimprocs for the patient.  Must supply all benefits for patient so that we know if it's a service year or a calendar year.  asofDate is used to determine which benefit year to calc.  Usually date of service for a claim.  The insplan.PlanNum is the plan to get value for.  ExcludeClaim is the ClaimNum to exclude, or enter -1 to include all.</summary>
+		public static double GetInsUsed(ClaimProc[] ClaimProcList,DateTime asofDate,int planNum,int patPlanNum,int excludeClaim,InsPlan[] PlanList,Benefit[] benList) {
 			InsPlan curPlan=GetPlan(planNum,PlanList);
 			if(curPlan==null) {
 				return 0;
 			}
 			//get the most recent renew date, possibly including today:
-			DateTime renewDate=Benefits.GetRenewDate(benList,planNum,patPlanNum,curPlan.DateEffective);
-			DateTime startDate;//for benefit year
-			DateTime stopDate;
+			DateTime renewDate=Benefits.GetRenewDate(benList,planNum,patPlanNum,curPlan.DateEffective,asofDate);
+			//DateTime startDate;//for benefit year
+			DateTime stopDate=renewDate.AddYears(1);
+			/*
 			//if renew date is earlier this year or is today(assuming typical situation of date being today)
 			if(renewDate.Month <= date.Month && renewDate.Day <= date.Day) {
 				startDate=new DateTime(date.Year,renewDate.Month,renewDate.Day);
@@ -336,13 +354,13 @@ namespace OpenDental {
 			else {//otherwise, renew date must be late last year
 				startDate=new DateTime(date.Year-1,renewDate.Month,renewDate.Day);
 				stopDate=new DateTime(date.Year,renewDate.Month,renewDate.Day);
-			}
+			}*/
 			double retVal=0;
 			for(int i=0;i<ClaimProcList.Length;i++) {
 				if(ClaimProcList[i].PlanNum==planNum
 					&& ClaimProcList[i].ClaimNum != excludeClaim
 					&& ClaimProcList[i].ProcDate < stopDate
-					&& ClaimProcList[i].ProcDate >= startDate
+					&& ClaimProcList[i].ProcDate >= renewDate
 					//enum ClaimProcStatus{NotReceived,Received,Preauth,Adjustment,Supplemental}
 					&& ClaimProcList[i].Status!=ClaimProcStatus.Preauth) {
 					if(ClaimProcList[i].Status==ClaimProcStatus.Received 
@@ -358,31 +376,30 @@ namespace OpenDental {
 			return retVal;
 		}
 
-		///<summary>Get insurance deductible used for one benefit year.  Must supply all claimprocs for the patient.  Must supply all benefits for patient so that we know if it's a service year or a calendar year.  Date used to determine which benefit year to calc.  Usually today's date.  The insplan.PlanNum is the plan to get value for.  ExcludeClaim is the ClaimNum to exclude, or enter -1 to include all.</summary>
-		public static double GetDedUsed(ClaimProc[] ClaimProcList,DateTime date,int planNum,int patPlanNum,int excludeClaim,InsPlan[] PlanList,Benefit[] benList) {
+		///<summary>Get insurance deductible used for one benefit year.  Must supply all claimprocs for the patient.  Must supply all benefits for patient so that we know if it's a service year or a calendar year.  asofDate is used to determine which benefit year to calc.  Usually date of service for a claim.  The insplan.PlanNum is the plan to get value for.  ExcludeClaim is the ClaimNum to exclude, or enter -1 to include all.</summary>
+		public static double GetDedUsed(ClaimProc[] ClaimProcList,DateTime asofDate,int planNum,int patPlanNum,int excludeClaim,InsPlan[] PlanList,Benefit[] benList) {
 			InsPlan curPlan=GetPlan(planNum,PlanList);
 			if(curPlan==null) {
 				return 0;
 			}
 			//get the most recent renew date, possibly including today. Date based on annual max.
-			DateTime renewDate=Benefits.GetRenewDate(benList,planNum,patPlanNum,curPlan.DateEffective);
-			DateTime startDate;//for benefit year
-			DateTime stopDate;
-			//if renew date is earlier this year (assuming typical situation of date being today)
-			if(renewDate.Month <= date.Month && renewDate.Day <= date.Day) {
+			DateTime renewDate=Benefits.GetRenewDate(benList,planNum,patPlanNum,curPlan.DateEffective,asofDate);
+			//DateTime startDate;//for benefit year
+			DateTime stopDate=renewDate.AddYears(1);
+			/*if(renewDate.Month <= date.Month && renewDate.Day <= date.Day) {
 				startDate=new DateTime(date.Year,renewDate.Month,renewDate.Day);
 				stopDate=new DateTime(date.Year+1,renewDate.Month,renewDate.Day);
 			}
 			else {//otherwise, renew date must be late last year
 				startDate=new DateTime(date.Year-1,renewDate.Month,renewDate.Day);
 				stopDate=new DateTime(date.Year,renewDate.Month,renewDate.Day);
-			}
+			}*/
 			double retVal=0;
 			for(int i=0;i<ClaimProcList.Length;i++) {
 				if(ClaimProcList[i].PlanNum==planNum
 					&& ClaimProcList[i].ClaimNum != excludeClaim
 					&& ClaimProcList[i].ProcDate < stopDate
-					&& ClaimProcList[i].ProcDate >= startDate
+					&& ClaimProcList[i].ProcDate >= renewDate
 					//enum ClaimProcStatus{NotReceived,Received,Preauth,Adjustment,Supplemental}
 					&& (ClaimProcList[i].Status==ClaimProcStatus.Adjustment
 					|| ClaimProcList[i].Status==ClaimProcStatus.NotReceived
@@ -396,37 +413,37 @@ namespace OpenDental {
 			return retVal;
 		}
 
-		///<summary>Get pending insurance for a given plan for one benefit year. Include a ClaimProcList which is all claimProcs for the patient.  Must supply all benefits for patient so that we know if it's a service year or a calendar year.  Date used to determine which benefit year to calc.  Usually today's date.  The insplan.PlanNum is the plan to get value for.</summary>
-		public static double GetPending(ClaimProc[] ClaimProcList,DateTime date,int planNum,int patPlanNum,int excludeClaim,InsPlan[] PlanList,Benefit[] benList) {
+		///<summary>Get pending insurance for a given plan for one benefit year. Include a ClaimProcList which is all claimProcs for the patient.  Must supply all benefits for patient so that we know if it's a service year or a calendar year.  asofDate used to determine which benefit year to calc.  Usually the date of service for a claim.  The insplan.PlanNum is the plan to get value for.</summary>
+		public static double GetPending(ClaimProc[] ClaimProcList,DateTime asofDate,int planNum,int patPlanNum,int excludeClaim,InsPlan[] PlanList,Benefit[] benList) {
 			InsPlan curPlan=GetPlan(planNum,PlanList);
 			if(curPlan==null) {
 				return 0;
 			}
 			//get the most recent renew date, possibly including today:
 			//MessageBox.Show("mark1");
-			DateTime renewDate=Benefits.GetRenewDate(benList,planNum,patPlanNum,curPlan.DateEffective);
+			DateTime renewDate=Benefits.GetRenewDate(benList,planNum,patPlanNum,curPlan.DateEffective,asofDate);
 			//MessageBox.Show("mark2");
-			DateTime startDate;//for benefit year
-			DateTime stopDate;
+			//DateTime startDate;//for benefit year
+			DateTime stopDate=renewDate.AddYears(1);
 			//if renew date is earlier this year or is today(assuming typical situation of date being today)
 			//Debug.WriteLine(renewDate.Month);
 			//Debug.WriteLine(date.Month);
 			//MessageBox.Show((renewDate.Month <= date.Month).ToString());
 			//MessageBox.Show((renewDate.Day <= date.Day).ToString());
-			if(renewDate.Month <= date.Month && renewDate.Day <= date.Day) {
+			/*if(renewDate.Month <= date.Month && renewDate.Day <= date.Day) {
 				startDate=new DateTime(date.Year,renewDate.Month,renewDate.Day);
 				stopDate=new DateTime(date.Year+1,renewDate.Month,renewDate.Day);
 			}
 			else {//otherwise, renew date must be late last year
 				startDate=new DateTime(date.Year-1,renewDate.Month,renewDate.Day);
 				stopDate=new DateTime(date.Year,renewDate.Month,renewDate.Day);
-			}
+			}*/
 			double retVal=0;
 			for(int i=0;i<ClaimProcList.Length;i++) {
 				if(ClaimProcList[i].PlanNum==planNum
 					&& ClaimProcList[i].ClaimNum != excludeClaim
 					&& ClaimProcList[i].ProcDate < stopDate
-					&& ClaimProcList[i].ProcDate >= startDate
+					&& ClaimProcList[i].ProcDate >= renewDate
 					//enum ClaimProcStatus{NotReceived,Received,Preauth,Adjustment,Supplemental}
 					&& ClaimProcList[i].Status==ClaimProcStatus.NotReceived)
 				//Status Adjustment has no insPayEst, so can ignore it here.
@@ -559,7 +576,12 @@ namespace OpenDental {
 				}
 				s+=" PlanNum="+POut.PInt(planNums[i]);
 			}
-			string command="SELECT BenefitNotes FROM insplan WHERE BenefitNotes != '' AND ("+s+") LIMIT 1";
+			string command="SELECT BenefitNotes FROM insplan WHERE BenefitNotes != '' AND ("+s+") ";
+			if(FormChooseDatabase.DBtype==DatabaseType.Oracle){
+				command+="AND ROWNUM<=1";
+			}else{//Assume MySQL
+				command+="LIMIT 1";
+			}
 			DataTable table=General.GetTable(command);
 			//string[] retVal=new string[];
 			if(table.Rows.Count==0){
@@ -572,7 +594,7 @@ namespace OpenDental {
 		public static string[] GetSubscribersForSamePlans(string employerName, string groupName, string groupNum,
 				string divisionNo, string carrierName, bool isMedical, int excludePlan)
 		{
-			string command="SELECT CONCAT(LName,', ',FName) FROM patient,insplan "
+			string command="SELECT CONCAT(CONCAT(LName,', '),FName) FROM patient,insplan "
 				+"LEFT JOIN employer ON employer.EmployerNum = insplan.EmployerNum "
 				+"LEFT JOIN carrier ON carrier.CarrierNum = insplan.CarrierNum "
 				+"WHERE patient.PatNum=insplan.Subscriber "
@@ -622,62 +644,143 @@ namespace OpenDental {
 		}
 
 		///<summary>Used from FormInsPlans to get a big list of many plans, organized by carrier name or by employer.  Identical plans are grouped as one row.</summary>
-		public static InsPlan[] GetBigList(bool byEmployer,string empName,string carrierName,
-				string groupName,string groupNum) {
-			string command=
-				"SELECT insplan.EmployerNum,insplan.GroupName,insplan.GroupNum,insplan.CarrierNum"
-				+",insplan.PlanType,insplan.UseAltCode"
-				+",insplan.ClaimsUseUCR,insplan.FeeSched,insplan.CopayFeeSched,insplan.ClaimFormNum"
-				+",insplan.AllowedFeeSched,insplan.DivisionNo,insplan.IsMedical,insplan.TrojanID,PlanNote,FilingCode,"
-				+"COUNT(*),employer.EmpName,carrier.CarrierName "//the last two are for ordering
+		public static DataTable GetBigList(bool byEmployer,string empName,string carrierName,string groupName,string groupNum) {
+			DataTable table=new DataTable();
+			DataRow row;
+			table.Columns.Add("Address");
+			table.Columns.Add("City");
+			table.Columns.Add("CarrierName");
+			table.Columns.Add("ElectID");
+			table.Columns.Add("EmpName");
+			table.Columns.Add("GroupName");
+			table.Columns.Add("GroupNum");
+			table.Columns.Add("noSendElect");
+			table.Columns.Add("Phone");
+			table.Columns.Add("PlanNum");
+			table.Columns.Add("plans");
+			table.Columns.Add("State");
+			table.Columns.Add("Zip");
+			List<DataRow> rows=new List<DataRow>();
+			string command="SELECT carrier.Address,carrier.City,CarrierName,ElectID,EmpName,GroupName,GroupNum,NoSendElect,"
+				+"carrier.Phone,MAX(PlanNum) onePlanNum,"//for Oracle
+				+"COUNT(*) plans,carrier.State,carrier.Zip, "
+				+"CASE WHEN (EmpName IS NULL) THEN 1 ELSE 0 END as haveName "//for Oracle
 				+"FROM insplan "
 				+"LEFT JOIN employer ON employer.EmployerNum = insplan.EmployerNum "
 				+"LEFT JOIN carrier ON carrier.CarrierNum = insplan.CarrierNum "
-				+"WHERE carrier.CarrierName LIKE '%"+POut.PString(carrierName)+"%' ";
+				+"WHERE CarrierName LIKE '%"+POut.PString(carrierName)+"%' ";
 			if(empName!="") {
-				command+="AND employer.EmpName LIKE '%"+POut.PString(empName)+"%' ";
+				command+="AND EmpName LIKE '%"+POut.PString(empName)+"%' ";
 			}
 			if(groupName!="") {
-				command+="AND insplan.GroupName LIKE '%"+POut.PString(groupName)+"%' ";
+				command+="AND GroupName LIKE '%"+POut.PString(groupName)+"%' ";
 			}
 			if(groupNum!="") {
-				command+="AND insplan.GroupNum LIKE '%"+POut.PString(groupNum)+"%' ";
+				command+="AND GroupNum LIKE '%"+POut.PString(groupNum)+"%' ";
 			}
-			command+="GROUP BY insplan.EmployerNum,insplan.GroupName,insplan.GroupNum,insplan.DivisionNo,"
+			command+="GROUP BY insplan.EmployerNum,GroupName,GroupNum,DivisionNo,"
 				+"insplan.CarrierNum,insplan.IsMedical ";
+			if(FormChooseDatabase.DBtype==DatabaseType.Oracle){
+				command+=",carrier.Address,carrier.City,CarrierName,ElectID,EmpName,NoSendElect,carrier.Phone,carrier.State,carrier.Zip ";
+			}
 			if(byEmployer) {
-				command+="ORDER BY employer.EmpName IS NULL,employer.EmpName,carrier.CarrierName ASC";
+				command+="ORDER BY haveName,EmpName,CarrierName";
 			}
 			else {//not by employer
-				command+="ORDER BY carrier.CarrierName ASC";
+				command+="ORDER BY CarrierName";
 			}
-			Debug.WriteLine(command);
-			DataTable table=General.GetTable(command);
-			InsPlan[] ListAll=new InsPlan[table.Rows.Count];
-			for(int i=0;i<table.Rows.Count;i++) {
-				ListAll[i]=new InsPlan();
-				ListAll[i].EmployerNum=PIn.PInt(table.Rows[i][0].ToString());
-				ListAll[i].GroupName=PIn.PString(table.Rows[i][1].ToString());
-				ListAll[i].GroupNum=PIn.PString(table.Rows[i][2].ToString());
-				ListAll[i].CarrierNum=PIn.PInt(table.Rows[i][3].ToString());
-				ListAll[i].PlanType=PIn.PString(table.Rows[i][4].ToString());
-				ListAll[i].UseAltCode=PIn.PBool(table.Rows[i][5].ToString());
-				ListAll[i].ClaimsUseUCR=PIn.PBool(table.Rows[i][6].ToString());
-				ListAll[i].FeeSched=PIn.PInt(table.Rows[i][7].ToString());
-				ListAll[i].CopayFeeSched=PIn.PInt(table.Rows[i][8].ToString());
-				ListAll[i].ClaimFormNum=PIn.PInt(table.Rows[i][9].ToString());
-				ListAll[i].AllowedFeeSched=PIn.PInt(table.Rows[i][10].ToString());
-				ListAll[i].DivisionNo=PIn.PString(table.Rows[i][11].ToString());
-				ListAll[i].IsMedical=PIn.PBool(table.Rows[i][12].ToString());
-				ListAll[i].TrojanID=PIn.PString(table.Rows[i][13].ToString());
-				ListAll[i].PlanNote=PIn.PString(table.Rows[i][14].ToString());
-				ListAll[i].FilingCode=(InsFilingCode)PIn.PInt(table.Rows[i][15].ToString());
-				ListAll[i].NumberPlans=PIn.PInt(table.Rows[i][16].ToString());
+			DataTable rawT=General.GetTable(command);
+			for(int i=0;i<rawT.Rows.Count;i++) {
+				row=table.NewRow();
+				row["Address"]=rawT.Rows[i]["Address"].ToString();
+				row["City"]=rawT.Rows[i]["City"].ToString();
+				row["CarrierName"]=rawT.Rows[i]["CarrierName"].ToString();
+				row["ElectID"]=rawT.Rows[i]["ElectID"].ToString();
+				row["EmpName"]=rawT.Rows[i]["EmpName"].ToString();
+				row["GroupName"]=rawT.Rows[i]["GroupName"].ToString();
+				row["GroupNum"]=rawT.Rows[i]["GroupNum"].ToString();
+				if(rawT.Rows[i]["NoSendElect"].ToString()=="0"){
+					row["noSendElect"]="";
+				}	else{
+					row["noSendElect"]="X";
+				}
+				row["Phone"]=rawT.Rows[i]["Phone"].ToString();
+				row["PlanNum"]=rawT.Rows[i]["onePlanNum"].ToString();
+				row["plans"]=rawT.Rows[i]["plans"].ToString();
+				row["State"]=rawT.Rows[i]["State"].ToString();
+				row["Zip"]=rawT.Rows[i]["Zip"].ToString();
+				rows.Add(row);
 			}
-			return ListAll;
+			for(int i=0;i<rows.Count;i++) {
+				table.Rows.Add(rows[i]);
+			}
+			return table;
 		}
 
+		///<summary>Used in FormFeesForIns</summary>
+		public static DataTable GetListFeeCheck(string carrierName,string carrierNameNot,int feeSchedWithout,int feeSchedWith){
+			string command=
+				"SELECT insplan.GroupName,insplan.GroupNum,insplan.FeeSched,COUNT(*) AS Plans,employer.EmpName,carrier.CarrierName, "
+				+"insplan.EmployerNum,insplan.CarrierNum,definition.ItemName AS FeeSchedName "
+				+"FROM insplan "
+				+"LEFT JOIN employer ON employer.EmployerNum = insplan.EmployerNum "
+				+"LEFT JOIN carrier ON carrier.CarrierNum = insplan.CarrierNum "
+				+"LEFT JOIN definition ON definition.DefNum = insplan.FeeSched "
+				+"WHERE carrier.CarrierName LIKE '%"+POut.PString(carrierName)+"%' ";
+			if(carrierNameNot!=""){
+				command+="AND carrier.CarrierName NOT LIKE '%"+POut.PString(carrierNameNot)+"%' ";
+			}
+			if(feeSchedWithout!=0){
+				command+="AND insplan.FeeSched !="+POut.PInt(feeSchedWithout)+" ";
+			}
+			if(feeSchedWith!=0) {
+				command+="AND insplan.FeeSched ="+POut.PInt(feeSchedWith)+" ";
+			}
+			command+="GROUP BY insplan.EmployerNum,insplan.GroupName,insplan.GroupNum,carrier.CarrierName,insplan.FeeSched "
+				+"ORDER BY carrier.CarrierName,employer.EmpName,insplan.GroupNum";
+			return General.GetTable(command);
+		}
 
+		///<summary>Based on the four supplied parameters, it updates all similar plans.  Used in a specific tool: FormFeesForIns.</summary>
+		public static int SetFeeSched(int employerNum,string carrierName,string groupNum,string groupName,int feeSchedNum){
+			//FIXME:UPDATE-MULTIPLE-TABLES
+			/*string command="UPDATE insplan,carrier SET insplan.FeeSched="+POut.PInt(feeSchedNum)
+				+" WHERE carrier.CarrierNum = insplan.CarrierNum "//employer.EmployerNum = insplan.EmployerNum "
+				+"AND insplan.EmployerNum='"+POut.PInt(employerNum)+"' "
+				+"AND carrier.CarrierName='"+POut.PString(carrierName)+"' "
+				+"AND insplan.GroupNum='"+POut.PString(groupNum)+"' "
+				+"AND insplan.GroupName='"+POut.PString(groupName)+"'";
+			 return General.NonQ(command);
+			 */
+
+			//Code rewritten so that it is not only MySQL compatible, but Oracle compatible as well.
+
+			string command="SELECT insplan.PlanNum FROM insplan,carrier "
+				+"WHERE carrier.CarrierNum = insplan.CarrierNum "//employer.EmployerNum = insplan.EmployerNum "
+				+"AND insplan.EmployerNum='"+POut.PInt(employerNum)+"' "
+				+"AND carrier.CarrierName='"+POut.PString(carrierName)+"' "
+				+"AND insplan.GroupNum='"+POut.PString(groupNum)+"' "
+				+"AND insplan.GroupName='"+POut.PString(groupName)+"'";
+			DataTable table=General.GetTable(command);
+			if(table.Rows.Count==0){
+				return 0;
+			}
+			command="UPDATE insplan SET insplan.FeeSched="+POut.PInt(feeSchedNum)+" WHERE ";
+			for(int i=0;i<table.Rows.Count;i++){
+				command+="PlanNum="+table.Rows[i][0].ToString();
+				if(i<table.Rows.Count-1){
+					command+=" OR ";
+				}
+			}
+			return General.NonQ(command);
+		}
+
+		///<Summary>Returns number of rows affected.</Summary>
+		public static int ConvertToNewClaimform(int oldClaimFormNum, int newClaimFormNum){
+			string command="UPDATE insplan SET ClaimFormNum="+POut.PInt(newClaimFormNum)
+				+" WHERE ClaimFormNum="+POut.PInt(oldClaimFormNum);
+			return General.NonQ(command);
+		}
 
 	}
 

@@ -383,6 +383,7 @@ namespace OpenDental{
 			}
 			allElements=new ArrayList();
 			allElements.Add("AddrNote");
+			allElements.Add("Age");
 			allElements.Add("ChartNumAndName");
 			allElements.Add("ChartNumber");
 			allElements.Add("HmPhone");
@@ -396,9 +397,9 @@ namespace OpenDental{
 			allElements.Add("Procs");
 			allElements.Add("ProcDescript");
 			allElements.Add("Production");
+			allElements.Add("Provider");
 			allElements.Add("WirelessPhone");
 			allElements.Add("WkPhone");
-			allElements.Add("Age");
 			displayedElements=new ArrayList();
 			for(int i=0;i<ApptViewItems.ApptRows.Length;i++){
 				displayedElements.Add(ApptViewItems.ApptRows[i]);

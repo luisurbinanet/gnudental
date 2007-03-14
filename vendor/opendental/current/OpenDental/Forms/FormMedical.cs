@@ -26,7 +26,6 @@ namespace OpenDental{
 		private OpenDental.UI.ODGrid gridMeds;
 		private OpenDental.UI.ODGrid gridDiseases;
 		private CheckBox checkPremed;
-		private OpenDental.UI.Button butQuestions;
 		private Disease[] DiseaseList;
 		private PatientNote PatientNoteCur;
 
@@ -74,7 +73,6 @@ namespace OpenDental{
 			this.gridMeds = new OpenDental.UI.ODGrid();
 			this.gridDiseases = new OpenDental.UI.ODGrid();
 			this.checkPremed = new System.Windows.Forms.CheckBox();
-			this.butQuestions = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
 			// butOK
@@ -114,7 +112,7 @@ namespace OpenDental{
 			this.textMedUrgNote.Location = new System.Drawing.Point(156,447);
 			this.textMedUrgNote.Multiline = true;
 			this.textMedUrgNote.Name = "textMedUrgNote";
-			this.textMedUrgNote.QuickPasteType = QuickPasteType.MedicalUrgent;
+			this.textMedUrgNote.QuickPasteType = OpenDentBusiness.QuickPasteType.MedicalUrgent;
 			this.textMedUrgNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textMedUrgNote.Size = new System.Drawing.Size(252,33);
 			this.textMedUrgNote.TabIndex = 53;
@@ -125,7 +123,7 @@ namespace OpenDental{
 			this.textService.Location = new System.Drawing.Point(156,558);
 			this.textService.Multiline = true;
 			this.textService.Name = "textService";
-			this.textService.QuickPasteType = QuickPasteType.ServiceNotes;
+			this.textService.QuickPasteType = OpenDentBusiness.QuickPasteType.ServiceNotes;
 			this.textService.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textService.Size = new System.Drawing.Size(252,83);
 			this.textService.TabIndex = 52;
@@ -136,7 +134,7 @@ namespace OpenDental{
 			this.textMedical.Location = new System.Drawing.Point(156,482);
 			this.textMedical.Multiline = true;
 			this.textMedical.Name = "textMedical";
-			this.textMedical.QuickPasteType = QuickPasteType.MedicalSummary;
+			this.textMedical.QuickPasteType = OpenDentBusiness.QuickPasteType.MedicalSummary;
 			this.textMedical.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textMedical.Size = new System.Drawing.Size(252,74);
 			this.textMedical.TabIndex = 51;
@@ -198,7 +196,7 @@ namespace OpenDental{
 			this.textMedicalComp.Location = new System.Drawing.Point(422,232);
 			this.textMedicalComp.Multiline = true;
 			this.textMedicalComp.Name = "textMedicalComp";
-			this.textMedicalComp.QuickPasteType = QuickPasteType.MedicalHistory;
+			this.textMedicalComp.QuickPasteType = OpenDentBusiness.QuickPasteType.MedicalHistory;
 			this.textMedicalComp.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textMedicalComp.Size = new System.Drawing.Size(530,409);
 			this.textMedicalComp.TabIndex = 54;
@@ -253,27 +251,12 @@ namespace OpenDental{
 			this.checkPremed.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.checkPremed.UseVisualStyleBackColor = true;
 			// 
-			// butQuestions
-			// 
-			this.butQuestions.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butQuestions.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butQuestions.Autosize = true;
-			this.butQuestions.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butQuestions.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butQuestions.Location = new System.Drawing.Point(328,650);
-			this.butQuestions.Name = "butQuestions";
-			this.butQuestions.Size = new System.Drawing.Size(80,25);
-			this.butQuestions.TabIndex = 62;
-			this.butQuestions.Text = "Questionnaire";
-			this.butQuestions.Click += new System.EventHandler(this.butQuestions_Click);
-			// 
 			// FormMedical
 			// 
 			this.AcceptButton = this.butOK;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
 			this.CancelButton = this.butCancel;
 			this.ClientSize = new System.Drawing.Size(964,683);
-			this.Controls.Add(this.butQuestions);
 			this.Controls.Add(this.checkPremed);
 			this.Controls.Add(this.gridDiseases);
 			this.Controls.Add(this.gridMeds);
@@ -310,12 +293,12 @@ namespace OpenDental{
 			textService.Text=PatientNoteCur.Service;
 			FillMeds();
 			FillDiseases();
-			if(Questions.PatHasQuest(PatCur.PatNum)){
+			/*if(Questions.PatHasQuest(PatCur.PatNum)){
 				butQuestions.Text=Lan.g(this,"Edit Questionnaire");
 			}
 			else{
 				butQuestions.Text=Lan.g(this,"New Questionnaire");
-			}
+			}*/
 		}
 
 		private void FillMeds(){
@@ -406,6 +389,7 @@ namespace OpenDental{
 			FillDiseases();
 		}
 
+		/*
 		private void butQuestions_Click(object sender,EventArgs e) {
 			FormQuestionnaire FormQ=new FormQuestionnaire(PatCur.PatNum);
 			FormQ.ShowDialog();
@@ -415,7 +399,7 @@ namespace OpenDental{
 			else {
 				butQuestions.Text=Lan.g(this,"New Questionnaire");
 			}
-		}
+		}*/
 
 		private void butOK_Click(object sender, System.EventArgs e) {
 			Patient PatOld=PatCur.Copy();

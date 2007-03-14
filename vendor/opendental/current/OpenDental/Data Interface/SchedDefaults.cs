@@ -35,8 +35,8 @@ namespace OpenDental{
 		private static void Update(SchedDefault sd){
 			string command= "UPDATE scheddefault SET " 
 				+"DayOfWeek = '"    +POut.PInt   (sd.DayOfWeek)+"'"
-				+",StartTime = '"   +POut.PDateT (sd.StartTime)+"'"
-				+",StopTime = '"    +POut.PDateT (sd.StopTime)+"'"
+				+",StartTime = "   +POut.PDateT (sd.StartTime)
+				+",StopTime = "    +POut.PDateT (sd.StopTime)
 				+",SchedType = '"   +POut.PInt   ((int)sd.SchedType)+"'"
 				+",ProvNum = '"     +POut.PInt   (sd.ProvNum)+"'"
 				+",BlockoutType = '"+POut.PInt   (sd.BlockoutType)+"'"
@@ -50,8 +50,8 @@ namespace OpenDental{
 			string command= "INSERT INTO scheddefault (DayOfWeek,StartTime,StopTime,SchedType,"
 				+"ProvNum,BlockoutType,Op) VALUES("
 				+"'"+POut.PInt   (sd.DayOfWeek)+"', "
-				+"'"+POut.PDateT (sd.StartTime)+"', "
-				+"'"+POut.PDateT (sd.StopTime)+"', "
+				+POut.PDateT (sd.StartTime)+", "
+				+POut.PDateT (sd.StopTime)+", "
 				+"'"+POut.PInt   ((int)sd.SchedType)+"', "
 				+"'"+POut.PInt   (sd.ProvNum)+"', "
 				+"'"+POut.PInt   (sd.BlockoutType)+"', "

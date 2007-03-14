@@ -93,11 +93,11 @@ namespace OpenDental{
 			General.NonQ(command);
 		}
 
-		///<summary>Supply the index of the cat within Defs.Short.</summary>
+		///<summary>Supply the index of the cat within DefB.Short.</summary>
 		public static LetterMerge[] GetListForCat(int catIndex){
 			ArrayList AL=new ArrayList();
 			for(int i=0;i<List.Length;i++){
-				if(List[i].Category==Defs.Short[(int)DefCat.LetterMergeCats][catIndex].DefNum){
+				if(List[i].Category==DefB.Short[(int)DefCat.LetterMergeCats][catIndex].DefNum){
 					AL.Add(List[i]);
 				}
 			}

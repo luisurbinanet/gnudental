@@ -25,8 +25,10 @@ namespace OpenDental{
 		private System.Windows.Forms.MenuItem menuItemFacing;
 		private System.Windows.Forms.MenuItem menuItemSinglePage;
 		private System.ComponentModel.IContainer components;
-		///<summary>This should be set before opening the form.</summary>
+		///<summary>Either this or SourceRdlString should be set before opening the form.</summary>
 		public string SourceFilePath;
+		///<summary>Either this or SourceRdlString should be set before opening the form.</summary>
+		public string SourceRdlString;
 
 		///<summary></summary>
 		public FormReport()
@@ -35,6 +37,8 @@ namespace OpenDental{
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
+			SourceFilePath=null;
+			SourceRdlString=null;
 			Lan.F(this);
 		}
 
@@ -78,6 +82,7 @@ namespace OpenDental{
 			this.viewer.Folder = null;
 			this.viewer.Location = new System.Drawing.Point(45,56);
 			this.viewer.Name = "viewer";
+			this.viewer.PageCurrent = 1;
 			this.viewer.Parameters = null;
 			this.viewer.ReportName = null;
 			this.viewer.ScrollMode = fyiReporting.RdlViewer.ScrollModeEnum.Continuous;
@@ -87,8 +92,8 @@ namespace OpenDental{
 			this.viewer.SourceRdl = null;
 			this.viewer.TabIndex = 2;
 			this.viewer.Text = "rdlViewer1";
-			this.viewer.Zoom = 0.9956487F;
-			this.viewer.ZoomMode = fyiReporting.RdlViewer.ZoomEnum.FitWidth;
+			this.viewer.Zoom = 0.3662712F;
+			this.viewer.ZoomMode = fyiReporting.RdlViewer.ZoomEnum.FitPage;
 			// 
 			// ToolBarMain
 			// 
@@ -165,7 +170,12 @@ namespace OpenDental{
 
 		private void FormRDLreport_Load(object sender, System.EventArgs e) {
 			LayoutToolBar();
-			viewer.SourceFile=SourceFilePath;
+			if(SourceFilePath!=null){
+				viewer.SourceFile=SourceFilePath;
+			}
+			if(SourceRdlString!=null){
+				viewer.SourceRdl=SourceRdlString;
+			}
 				//PrefB.GetString("DocPath")+"Reports\\test.rdl";
 		}
 
@@ -187,7 +197,7 @@ namespace OpenDental{
 			//button.Style=ODToolBarButtonStyle.Label;
 			//ToolBarMain.Buttons.Add(button);
 			//ToolBarMain.Buttons.Add(new ODToolBarButton("",2,"Go Forward One Page","Fwd"));
-			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Zoom Out"),6,"","Zoom"));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Zoom In"),6,"","Zoom"));
 			//ODToolBarButton button=new ODToolBarButton("Scroll Mode",-1,"","");
 			//button.Style=ODToolBarButtonStyle.DropDownButton;
 			//button.DropDownMenu=menuScrollMode;

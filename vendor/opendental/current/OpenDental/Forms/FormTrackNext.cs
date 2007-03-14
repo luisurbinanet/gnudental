@@ -111,7 +111,7 @@ namespace OpenDental{
 					tbApts.Cell[1,i]="";
 				else 
 					tbApts.Cell[1,i]=ListUn[i].AptDateTime.ToShortDateString();
-				tbApts.Cell[2,i]=Defs.GetName(DefCat.RecallUnschedStatus,ListUn[i].UnschedStatus);
+				tbApts.Cell[2,i]=DefB.GetName(DefCat.RecallUnschedStatus,ListUn[i].UnschedStatus);
 				tbApts.Cell[3,i]=Providers.GetAbbr(ListUn[i].ProvNum);
 				tbApts.Cell[4,i]=ListUn[i].ProcDescript;
 				tbApts.Cell[5,i]=ListUn[i].Note;

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 using OpenDentBusiness;
@@ -9,17 +10,39 @@ namespace OpenDental{
 	public class ClaimPayments {
 
 		///<summary></summary>
-		public static ClaimPayment[] GetForClaim(int ClaimNum) {
-			string command=
-				"SELECT claimpayment.claimpaymentnum,claimpayment.checkdate,SUM(claimproc.inspayamt)"
-				//warning.  The payAmt is not the actual amount of the check, but only of a portion of it
-				+",claimpayment.checknum,claimpayment.bankbranch,claimpayment.note"
-				+",claimpayment.ClinicNum,DepositNum,CarrierName"
-				+" FROM claimpayment,claimproc"
-				+" WHERE claimpayment.claimpaymentnum = claimproc.claimpaymentnum"
-				+" && claimproc.claimnum = '"+POut.PInt(ClaimNum)+"'"
-				+" GROUP BY claimpayment.claimpaymentnum,claimproc.claimnum";
-			return RefreshAndFill(command);
+		public static DataTable GetForClaim(int claimNum) {
+			DataTable table=new DataTable();
+			DataRow row;
+			table.Columns.Add("amount");
+			table.Columns.Add("BankBranch");
+			table.Columns.Add("ClaimPaymentNum");
+			table.Columns.Add("checkDate");
+			table.Columns.Add("CheckNum");
+			table.Columns.Add("Note");
+			List<DataRow> rows=new List<DataRow>();
+			string command="SELECT BankBranch,claimpayment.ClaimPaymentNum,CheckNum,CheckDate,"
+				+"SUM(claimproc.InsPayAmt) amount,Note "
+				+"FROM claimpayment,claimproc "
+				+"WHERE claimpayment.ClaimPaymentNum = claimproc.ClaimPaymentNum "
+				+"AND claimproc.ClaimNum = '"+POut.PInt(claimNum)+"' "
+				+"GROUP BY claimpayment.ClaimPaymentNum, BankBranch, CheckDate, CheckNum, Note";//required by Oracle
+			DataTable rawT=General.GetTable(command);
+			DateTime date;
+			for(int i=0;i<rawT.Rows.Count;i++) {
+				row=table.NewRow();
+				row["amount"]=PIn.PDouble(rawT.Rows[i]["amount"].ToString()).ToString("F");
+				row["BankBranch"]=rawT.Rows[i]["BankBranch"].ToString();
+				row["ClaimPaymentNum"]=rawT.Rows[i]["ClaimPaymentNum"].ToString();
+				date=PIn.PDate(rawT.Rows[i]["CheckDate"].ToString());
+				row["checkDate"]=date.ToShortDateString();
+				row["CheckNum"]=rawT.Rows[i]["CheckNum"].ToString();
+				row["Note"]=rawT.Rows[i]["Note"].ToString();
+				rows.Add(row);
+			}
+			for(int i=0;i<rows.Count;i++) {
+				table.Rows.Add(rows[i]);
+			}
+			return table;
 		}
 
 		///<summary>Gets all unattached claimpayments for display in a new deposit.  Excludes payments before dateStart.</summary>
@@ -30,7 +53,7 @@ namespace OpenDental{
 				+"ClinicNum,DepositNum,CarrierName "
 				+"FROM claimpayment "
 				+"WHERE DepositNum = 0 "
-				+"AND CheckDate >= '"+POut.PDate(dateStart)+"' "
+				+"AND CheckDate >= "+POut.PDate(dateStart)+" "
 				+"AND ClinicNum="+POut.PInt(clinicNum);
 			return RefreshAndFill(command);
 		}
@@ -44,6 +67,14 @@ namespace OpenDental{
 				+"FROM claimpayment "
 				+"WHERE DepositNum = "+POut.PInt(depositNum);
 			return RefreshAndFill(command);
+		}
+
+		///<summary>Gets one claimpayment directly from database.</summary>
+		public static ClaimPayment GetOne(int claimPaymentNum) {
+			string command=
+				"SELECT * FROM claimpayment "
+				+"WHERE ClaimPaymentNum = "+POut.PInt(claimPaymentNum);
+			return RefreshAndFill(command)[0];
 		}
 
 		private static ClaimPayment[] RefreshAndFill(string command) {
@@ -80,7 +111,7 @@ namespace OpenDental{
 				command+="'"+POut.PInt(cp.ClaimPaymentNum)+"', ";
 			}
 			command+=
-				 "'"+POut.PDate  (cp.CheckDate)+"', "
+				 POut.PDate  (cp.CheckDate)+", "
 				+"'"+POut.PDouble(cp.CheckAmt)+"', "
 				+"'"+POut.PString(cp.CheckNum)+"', "
 				+"'"+POut.PString(cp.BankBranch)+"', "
@@ -110,7 +141,7 @@ namespace OpenDental{
 				throw new ApplicationException(Lan.g("ClaimPayments","Not allowed to change the amount on checks attached to deposits."));
 			}
 			command="UPDATE claimpayment SET "
-				+"checkdate = '"   +POut.PDate  (cp.CheckDate)+"' "
+				+"checkdate = "   +POut.PDate  (cp.CheckDate)+" "
 				+",checkamt = '"   +POut.PDouble(cp.CheckAmt)+"' "
 				+",checknum = '"   +POut.PString(cp.CheckNum)+"' "
 				+",bankbranch = '" +POut.PString(cp.BankBranch)+"' "

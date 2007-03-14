@@ -1,5 +1,5 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
@@ -44,8 +44,12 @@ namespace fyiReporting.RdlDesign
 		public event RdlChangeHandler OnSelectionMoved;
 		public event RdlChangeHandler OnReportItemInserted;
 		public event RdlChangeHandler OnDesignTabChanged;
+		public event DesignCtl.OpenSubreportEventHandler OnOpenSubreport;
+        public event DesignCtl.HeightEventHandler OnHeightChanged;
+
 		private fyiReporting.RdlDesign.RdlEditPreview rdlDesigner;
 		string _SourceFile;
+        TabPage _Tab;               // TabPage for this MDI Child
 
 		public MDIChild(int width, int height)
 		{
@@ -61,10 +65,13 @@ namespace fyiReporting.RdlDesign
 			this.rdlDesigner.TabIndex = 0;
 			// register event for RDL changed.
 			rdlDesigner.OnRdlChanged += new RdlEditPreview.RdlChangeHandler(rdlDesigner_RdlChanged);
-			rdlDesigner.OnSelectionChanged += new RdlEditPreview.RdlChangeHandler(rdlDesigner_SelectionChanged);
+            rdlDesigner.OnHeightChanged += new DesignCtl.HeightEventHandler(rdlDesigner_HeightChanged);
+            rdlDesigner.OnSelectionChanged += new RdlEditPreview.RdlChangeHandler(rdlDesigner_SelectionChanged);
 			rdlDesigner.OnSelectionMoved += new RdlEditPreview.RdlChangeHandler(rdlDesigner_SelectionMoved);
 			rdlDesigner.OnReportItemInserted += new RdlEditPreview.RdlChangeHandler(rdlDesigner_ReportItemInserted);
 			rdlDesigner.OnDesignTabChanged += new RdlEditPreview.RdlChangeHandler(rdlDesigner_DesignTabChanged);
+			rdlDesigner.OnOpenSubreport += new DesignCtl.OpenSubreportEventHandler(rdlDesigner_OpenSubreport);
+
 			// 
 			// MDIChild
 			// 
@@ -78,6 +85,12 @@ namespace fyiReporting.RdlDesign
 			this.ResumeLayout(false);
 		}
 
+        internal TabPage Tab
+        {
+            get { return _Tab; }
+            set { _Tab = value; }
+        }
+
 		public RdlEditPreview Editor
 		{
 			get
@@ -85,6 +98,25 @@ namespace fyiReporting.RdlDesign
 				return rdlDesigner.CanEdit? rdlDesigner: null;	// only return when it can edit
 			}
 		}
+
+		public RdlEditPreview RdlEditor
+		{
+			get
+			{
+				return rdlDesigner;			// always return
+			}
+		}
+
+        public void ShowEditLines(bool bShow)
+        {
+            rdlDesigner.ShowEditLines(bShow);
+        }
+
+        internal bool ShowReportItemOutline
+        {
+            get { return rdlDesigner.ShowReportItemOutline; }
+            set { rdlDesigner.ShowReportItemOutline = value; }
+        }
 
 		public string CurrentInsert
 		{
@@ -95,9 +127,20 @@ namespace fyiReporting.RdlDesign
 			}
 		}
 
+		public int CurrentLine
+		{
+			get {return rdlDesigner.CurrentLine; }
+		}
+
+		public int CurrentCh
+		{
+			get {return rdlDesigner.CurrentCh; }
+		}
+
 		internal string DesignTab
 		{
 			get {return rdlDesigner.DesignTab;}
+			set { rdlDesigner.DesignTab = value; }
 		}
 
 		internal DesignXmlDraw DrawCtl
@@ -128,6 +171,11 @@ namespace fyiReporting.RdlDesign
 		public PointF SelectionPosition
 		{
 			get {return rdlDesigner.SelectionPosition;}
+		}
+
+		public SizeF SelectionSize
+		{
+			get {return rdlDesigner.SelectionSize;}
 		}
 		
 		public void ApplyStyleToSelected(string name, string v)
@@ -174,15 +222,57 @@ namespace fyiReporting.RdlDesign
 				this.Modified=false;
 			return bOK;
 		}
-		
+
+		public bool Export(string type)
+		{
+			SaveFileDialog sfd = new SaveFileDialog();
+			sfd.Title = "Export to " + type.ToUpper();
+			switch (type.ToLower())
+			{
+				case "xml":
+					sfd.Filter = "XML file (*.xml)|*.xml|All files (*.*)|*.*";
+					break;
+				case "pdf":
+					sfd.Filter = "PDF file (*.pdf)|*.pdf|All files (*.*)|*.*";
+					break;
+				case "html":
+				case "htm":
+					sfd.Filter = "Web Page (*.html, *.htm)|*.html;*.htm|All files (*.*)|*.*";
+					break;
+				case "mhtml":
+				case "mht":
+					sfd.Filter = "MHT (*.mht)|*.mhtml;*.mht|All files (*.*)|*.*";
+					break;
+				default:
+					throw new Exception("Only HTML, MHT, XML and PDF are allowed as Export types.");
+			}
+			sfd.FilterIndex = 1;
+
+			if (SourceFile != null)
+				sfd.FileName = Path.GetFileNameWithoutExtension(SourceFile) + "." + type;
+			else
+				sfd.FileName = "*." + type;
+
+			if (sfd.ShowDialog(this) != DialogResult.OK)
+				return false;
+
+			// save the report in the requested rendered format 
+			bool rc=true;
+			try {SaveAs(sfd.FileName, type);}
+			catch (Exception ex)
+			{
+				MessageBox.Show(this, 
+					ex.Message, "Export Error", 
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+				rc = false;
+			}
+			return rc;
+		}
+
 		public bool FileSaveAs()
 		{
 			SaveFileDialog sfd = new SaveFileDialog();
-			sfd.Filter = 
-				"RDL files (*.rdl)|*.rdl|" +
-				"PDF files (*.pdf)|*.pdf|" +
-				"XML files (*.xml)|*.xml|" +
-				"HTML files (*.html)|*.html";
+			sfd.Filter = "RDL files (*.rdl)|*.rdl|All files (*.*)|*.*";
 			sfd.FilterIndex = 1;
 
 			string file = SourceFile;
@@ -192,45 +282,17 @@ namespace fyiReporting.RdlDesign
 			if (sfd.ShowDialog(this) != DialogResult.OK)
 				return false;
 
-			// save the report in a rendered format 
-			string ext=null;
-			int i = sfd.FileName.LastIndexOf('.');
-			if (i < 1)
-				ext = "";
-			else
-				ext = sfd.FileName.Substring(i+1).ToLower();
-
-			bool rc=true;
-			switch(ext)
-			{
-				case "pdf":	case "xml": case "html": case "htm":
-					try {SaveAs(sfd.FileName, ext);}
-					catch (Exception ex)
-					{
-						MessageBox.Show(this, 
-							ex.Message, "Save As Error", 
-							MessageBoxButtons.OK, MessageBoxIcon.Error);
-						rc = false;
-					}
-					break;
-				case "rdl":
-					string rdl = GetRdlText();
-					if (FileSave(sfd.FileName, rdl))
-					{	// Save was successful
-						Text = sfd.FileName;
-						_SourceFile = sfd.FileName;	
-					}
-					else
-						rc = false;
-					break;
-				default:
-					MessageBox.Show(this, 
-						String.Format("{0} is not a valid file type.  File extension must be RDL, PDF, XML, or HTML.", sfd.FileName), "Save As Error", 
-						MessageBoxButtons.OK, MessageBoxIcon.Error);
-					rc = false;
-					break;
+			// User wants to save!
+			string rdl = GetRdlText();
+			if (FileSave(sfd.FileName, rdl))
+			{	// Save was successful
+				Text = sfd.FileName;
+                Tab.Text = Path.GetFileName(sfd.FileName); 
+				_SourceFile = sfd.FileName;
+                Tab.ToolTipText = sfd.FileName;
+				return true;
 			}
-			return rc;
+			return false;
 		}
  
 		public string GetRdlText()
@@ -351,8 +413,19 @@ namespace fyiReporting.RdlDesign
 
 		private void MDIChild_Closing(object sender, System.ComponentModel.CancelEventArgs e)
 		{
-			if (!OkToClose())
-				e.Cancel = true;
+            if (!OkToClose())
+            {
+                e.Cancel = true;
+                return;
+            }
+
+            if (Tab == null)
+                return;
+
+            Control ctl = Tab.Parent;
+            ctl.Controls.Remove(Tab);
+            Tab.Tag = null;             // this is the Tab reference to this
+            Tab = null;
 		}
 
 		public bool OkToClose()
@@ -383,6 +456,12 @@ namespace fyiReporting.RdlDesign
 			SetTitle();
 		}
 
+        private void rdlDesigner_HeightChanged(object sender, HeightEventArgs e)
+        {
+            if (OnHeightChanged != null)
+                OnHeightChanged(this, e);
+        }
+
 		private void rdlDesigner_SelectionChanged(object sender, System.EventArgs e)
 		{
 			if (OnSelectionChanged != null)
@@ -407,13 +486,22 @@ namespace fyiReporting.RdlDesign
 				OnSelectionMoved(this, e);
 		}
 
+		private void rdlDesigner_OpenSubreport(object sender, SubReportEventArgs e)
+		{
+			if (OnOpenSubreport != null)
+			{
+				OnOpenSubreport(this, e);
+			}
+		}
+
 		private void InitializeComponent()
 		{
 			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(MDIChild));
 			// 
 			// MDIChild
 			// 
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+            this.AutoScaleMode = AutoScaleMode.None;
+            this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(292, 266);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "MDIChild";

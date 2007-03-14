@@ -3,6 +3,7 @@ Open Dental GPL license Copyright (C) 2003  Jordan Sparks, DMD.  http://www.open
 See header in FormOpenDental.cs for complete text.  Redistributions must retain this text.
 ===============================================================================================================*/
 using System;
+using System.Data;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Collections;
@@ -13,10 +14,12 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using System.Xml;
 using Microsoft.Win32;
 using OpenDental.Bridges;
 using OpenDental.UI;
 using OpenDentBusiness;
+using CodeBase;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -26,7 +29,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label6;
 		private System.Windows.Forms.Label label7;
 		private System.Windows.Forms.Label label8;
-		private System.Windows.Forms.Label label9;
+		private System.Windows.Forms.Label labelGroupNum;
 		private System.Windows.Forms.Label label10;
 		private System.Windows.Forms.Label label28;
 		private System.Windows.Forms.TextBox textPhone;
@@ -73,7 +76,6 @@ namespace OpenDental{
 		private ArrayList similarCars;
 		private string carOriginal;
 		private System.Windows.Forms.ListBox listCars;
-		private System.Windows.Forms.GroupBox groupBox3;
 		private System.Windows.Forms.Label labelCitySTZip;
 		private bool mouseIsInListCars;
 		private System.Windows.Forms.Label labelDrop;
@@ -146,20 +148,28 @@ namespace OpenDental{
 		private Def[] FeeSchedsCopay;
 		private GroupBox groupPlan;
 		private Def[] FeeSchedsAllowed;
-		private Panel panel2;
+		private Panel panelPlan;
 		private Label label13;
 		private ComboBox comboFilingCode;
+		private GroupBox groupCarrier;
+		private Label labelDentaide;
+		private ValidNumber textDentaide;
+		private OpenDental.UI.Button butCanadaEligibility;
+		private Label labelCanadaEligibility;
+		private OpenDental.UI.Button butEligibility;
+		private Label labelViewRequestDocument;
 		///<summary>This is a field that is accessed only by clicking on the button because there's not room for it otherwise.  This variable should be treated just as if it was a visible textBox.</summary>
 		private string BenefitNotes;
 
-		///<summary>Only called from ContrFamily. Must pass in both the plan and the patPlan.  They are handled separately.</summary>
+		///<summary>Called from ContrFamily and FormInsPlans. Must pass in both the plan and the patPlan, although patPlan can be null.  They are handled separately.</summary>
 		public FormInsPlan(InsPlan planCur,PatPlan patPlanCur){
 			Cursor=Cursors.WaitCursor;
 			InitializeComponent();
 			PlanCur=planCur;
 			PatPlanCur=patPlanCur;
 			listEmps=new ListBox();
-			listEmps.Location=new Point(groupPlan.Left+textEmployer.Left,groupPlan.Top+textEmployer.Bottom);
+			listEmps.Location=new Point(panelPlan.Left+groupPlan.Left+textEmployer.Left,
+				panelPlan.Top+groupPlan.Top+textEmployer.Bottom);
 			listEmps.Size=new Size(231,100);
 			listEmps.Visible=false;
 			listEmps.Click += new System.EventHandler(listEmps_Click);
@@ -169,7 +179,8 @@ namespace OpenDental{
 			Controls.Add(listEmps);
 			listEmps.BringToFront();
 			listCars=new ListBox();
-			listCars.Location=new Point(groupPlan.Left+textCarrier.Left,groupPlan.Top+textCarrier.Bottom);
+			listCars.Location=new Point(panelPlan.Left+groupPlan.Left+groupCarrier.Left+textCarrier.Left,
+				panelPlan.Top+groupPlan.Top+groupCarrier.Top+textCarrier.Bottom);
 			listCars.Size=new Size(700,100);
 			listCars.HorizontalScrollbar=true;
 			listCars.Visible=false;
@@ -183,13 +194,29 @@ namespace OpenDental{
 			//tbPercentPat.CellClicked += new OpenDental.ContrTable.CellEventHandler(tbPercentPat_CellClicked);
 			Lan.F(this);
 			if(CultureInfo.CurrentCulture.Name.Substring(3)=="CA"){//en-CA or fr-CA
-				labelCitySTZip.Text="City,Prov,Post";   //Postal Code";
+				labelCitySTZip.Text=Lan.g(this,"City,Prov,Post");   //Postal Code";
+				butSearch.Visible=false;
+				labelElectronicID.Text="EDI Code";
+				comboElectIDdescript.Visible=false;
+				labelGroupNum.Text=Lan.g(this,"Plan Num-Div");
+			}
+			else{
+				labelDivisionDash.Visible=false;
+				textDivisionNo.Visible=false;
+				labelDentaide.Visible=false;
+				textDentaide.Visible=false;
+				labelCanadaEligibility.Visible=false;
+				butCanadaEligibility.Visible=false;
 			}
 			if(CultureInfo.CurrentCulture.Name.Substring(3)=="GB"){//en-GB
-				labelCitySTZip.Text="City,Postcode";//Postcode";
+				labelCitySTZip.Text=Lan.g(this,"City,Postcode");
 			}
-			panelPat.BackColor=Defs.Long[(int)DefCat.MiscColors][0].ItemColor;
-			
+			panelPat.BackColor=DefB.Long[(int)DefCat.MiscColors][0].ItemColor;
+			labelViewRequestDocument.Text="         ";
+			if(!PrefB.GetBool("CustomizedForPracticeWeb")) {
+				butEligibility.Visible=false;
+				labelViewRequestDocument.Visible=false;
+			}
 			Cursor=Cursors.Default;
 		}
 
@@ -212,7 +239,7 @@ namespace OpenDental{
 			this.label6 = new System.Windows.Forms.Label();
 			this.label7 = new System.Windows.Forms.Label();
 			this.label8 = new System.Windows.Forms.Label();
-			this.label9 = new System.Windows.Forms.Label();
+			this.labelGroupNum = new System.Windows.Forms.Label();
 			this.label10 = new System.Windows.Forms.Label();
 			this.labelCitySTZip = new System.Windows.Forms.Label();
 			this.labelElectronicID = new System.Windows.Forms.Label();
@@ -243,9 +270,6 @@ namespace OpenDental{
 			this.label25 = new System.Windows.Forms.Label();
 			this.textSubscriberID = new System.Windows.Forms.TextBox();
 			this.label2 = new System.Windows.Forms.Label();
-			this.textDateEffect = new OpenDental.ValidDate();
-			this.textDateTerm = new OpenDental.ValidDate();
-			this.textSubscNote = new OpenDental.ODtextBox();
 			this.comboLinked = new System.Windows.Forms.ComboBox();
 			this.textLinkedNum = new System.Windows.Forms.TextBox();
 			this.label4 = new System.Windows.Forms.Label();
@@ -261,15 +285,11 @@ namespace OpenDental{
 			this.label11 = new System.Windows.Forms.Label();
 			this.label3 = new System.Windows.Forms.Label();
 			this.comboCopay = new System.Windows.Forms.ComboBox();
-			this.groupBox3 = new System.Windows.Forms.GroupBox();
 			this.comboElectIDdescript = new System.Windows.Forms.ComboBox();
-			this.butSearch = new OpenDental.UI.Button();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-			this.butBenefitNotes = new OpenDental.UI.Button();
-			this.butIapFind = new OpenDental.UI.Button();
-			this.butImportTrojan = new OpenDental.UI.Button();
 			this.labelDrop = new System.Windows.Forms.Label();
 			this.groupRequestBen = new System.Windows.Forms.GroupBox();
+			this.labelCanadaEligibility = new System.Windows.Forms.Label();
 			this.labelTrojan = new System.Windows.Forms.Label();
 			this.labelIAP = new System.Windows.Forms.Label();
 			this.labelTrojanID = new System.Windows.Forms.Label();
@@ -286,32 +306,45 @@ namespace OpenDental{
 			this.textPatID = new System.Windows.Forms.TextBox();
 			this.label36 = new System.Windows.Forms.Label();
 			this.panelPat = new System.Windows.Forms.Panel();
-			this.textOrdinal = new OpenDental.ValidNumber();
-			this.butAdjAdd = new OpenDental.UI.Button();
-			this.butDrop = new OpenDental.UI.Button();
 			this.textPlanNum = new System.Windows.Forms.TextBox();
 			this.label17 = new System.Windows.Forms.Label();
 			this.checkApplyAll = new System.Windows.Forms.CheckBox();
 			this.label18 = new System.Windows.Forms.Label();
+			this.groupPlan = new System.Windows.Forms.GroupBox();
+			this.groupCarrier = new System.Windows.Forms.GroupBox();
+			this.panelPlan = new System.Windows.Forms.Panel();
+			this.labelDentaide = new System.Windows.Forms.Label();
+			this.comboFilingCode = new System.Windows.Forms.ComboBox();
+			this.label13 = new System.Windows.Forms.Label();
+			this.labelViewRequestDocument = new System.Windows.Forms.Label();
+			this.textDentaide = new OpenDental.ValidNumber();
+			this.butSearch = new OpenDental.UI.Button();
+			this.butPick = new OpenDental.UI.Button();
 			this.butEditBenefits = new OpenDental.UI.Button();
 			this.textPlanNote = new OpenDental.ODtextBox();
 			this.butOK = new OpenDental.UI.Button();
-			this.butPick = new OpenDental.UI.Button();
 			this.gridBenefits = new OpenDental.UI.ODGrid();
+			this.textOrdinal = new OpenDental.ValidNumber();
+			this.butAdjAdd = new OpenDental.UI.Button();
+			this.butDrop = new OpenDental.UI.Button();
 			this.butLabel = new OpenDental.UI.Button();
 			this.butDelete = new OpenDental.UI.Button();
 			this.butCancel = new OpenDental.UI.Button();
-			this.groupPlan = new System.Windows.Forms.GroupBox();
-			this.panel2 = new System.Windows.Forms.Panel();
-			this.label13 = new System.Windows.Forms.Label();
-			this.comboFilingCode = new System.Windows.Forms.ComboBox();
+			this.butCanadaEligibility = new OpenDental.UI.Button();
+			this.butBenefitNotes = new OpenDental.UI.Button();
+			this.butIapFind = new OpenDental.UI.Button();
+			this.butImportTrojan = new OpenDental.UI.Button();
+			this.butEligibility = new OpenDental.UI.Button();
+			this.textDateEffect = new OpenDental.ValidDate();
+			this.textDateTerm = new OpenDental.ValidDate();
+			this.textSubscNote = new OpenDental.ODtextBox();
 			this.groupSubscriber.SuspendLayout();
 			this.groupCoPay.SuspendLayout();
-			this.groupBox3.SuspendLayout();
 			this.groupRequestBen.SuspendLayout();
 			this.panelPat.SuspendLayout();
 			this.groupPlan.SuspendLayout();
-			this.panel2.SuspendLayout();
+			this.groupCarrier.SuspendLayout();
+			this.panelPlan.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// label5
@@ -334,7 +367,7 @@ namespace OpenDental{
 			// 
 			// label7
 			// 
-			this.label7.Location = new System.Drawing.Point(13,13);
+			this.label7.Location = new System.Drawing.Point(5,34);
 			this.label7.Name = "label7";
 			this.label7.Size = new System.Drawing.Size(95,15);
 			this.label7.TabIndex = 7;
@@ -343,25 +376,25 @@ namespace OpenDental{
 			// 
 			// label8
 			// 
-			this.label8.Location = new System.Drawing.Point(14,67);
+			this.label8.Location = new System.Drawing.Point(16,203);
 			this.label8.Name = "label8";
 			this.label8.Size = new System.Drawing.Size(95,15);
 			this.label8.TabIndex = 8;
 			this.label8.Text = "Group Name";
 			this.label8.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
-			// label9
+			// labelGroupNum
 			// 
-			this.label9.Location = new System.Drawing.Point(14,87);
-			this.label9.Name = "label9";
-			this.label9.Size = new System.Drawing.Size(95,15);
-			this.label9.TabIndex = 9;
-			this.label9.Text = "Group Num";
-			this.label9.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			this.labelGroupNum.Location = new System.Drawing.Point(16,223);
+			this.labelGroupNum.Name = "labelGroupNum";
+			this.labelGroupNum.Size = new System.Drawing.Size(95,15);
+			this.labelGroupNum.TabIndex = 9;
+			this.labelGroupNum.Text = "Group Num";
+			this.labelGroupNum.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label10
 			// 
-			this.label10.Location = new System.Drawing.Point(13,32);
+			this.label10.Location = new System.Drawing.Point(5,53);
 			this.label10.Name = "label10";
 			this.label10.Size = new System.Drawing.Size(95,15);
 			this.label10.TabIndex = 10;
@@ -370,7 +403,7 @@ namespace OpenDental{
 			// 
 			// labelCitySTZip
 			// 
-			this.labelCitySTZip.Location = new System.Drawing.Point(13,72);
+			this.labelCitySTZip.Location = new System.Drawing.Point(5,93);
 			this.labelCitySTZip.Name = "labelCitySTZip";
 			this.labelCitySTZip.Size = new System.Drawing.Size(95,15);
 			this.labelCitySTZip.TabIndex = 11;
@@ -379,7 +412,7 @@ namespace OpenDental{
 			// 
 			// labelElectronicID
 			// 
-			this.labelElectronicID.Location = new System.Drawing.Point(12,92);
+			this.labelElectronicID.Location = new System.Drawing.Point(4,113);
 			this.labelElectronicID.Name = "labelElectronicID";
 			this.labelElectronicID.Size = new System.Drawing.Size(95,15);
 			this.labelElectronicID.TabIndex = 15;
@@ -398,7 +431,7 @@ namespace OpenDental{
 			// textCarrier
 			// 
 			this.textCarrier.Font = new System.Drawing.Font("Microsoft Sans Serif",9F,System.Drawing.FontStyle.Bold,System.Drawing.GraphicsUnit.Point,((byte)(0)));
-			this.textCarrier.Location = new System.Drawing.Point(110,44);
+			this.textCarrier.Location = new System.Drawing.Point(102,11);
 			this.textCarrier.MaxLength = 50;
 			this.textCarrier.Multiline = true;
 			this.textCarrier.Name = "textCarrier";
@@ -409,7 +442,7 @@ namespace OpenDental{
 			// 
 			// textPhone
 			// 
-			this.textPhone.Location = new System.Drawing.Point(110,10);
+			this.textPhone.Location = new System.Drawing.Point(102,31);
 			this.textPhone.MaxLength = 30;
 			this.textPhone.Name = "textPhone";
 			this.textPhone.Size = new System.Drawing.Size(157,20);
@@ -418,7 +451,7 @@ namespace OpenDental{
 			// 
 			// textGroupName
 			// 
-			this.textGroupName.Location = new System.Drawing.Point(110,64);
+			this.textGroupName.Location = new System.Drawing.Point(112,200);
 			this.textGroupName.MaxLength = 50;
 			this.textGroupName.Name = "textGroupName";
 			this.textGroupName.Size = new System.Drawing.Size(193,20);
@@ -426,7 +459,7 @@ namespace OpenDental{
 			// 
 			// textGroupNum
 			// 
-			this.textGroupNum.Location = new System.Drawing.Point(110,84);
+			this.textGroupNum.Location = new System.Drawing.Point(112,220);
 			this.textGroupNum.MaxLength = 20;
 			this.textGroupNum.Name = "textGroupNum";
 			this.textGroupNum.Size = new System.Drawing.Size(129,20);
@@ -434,7 +467,7 @@ namespace OpenDental{
 			// 
 			// textAddress
 			// 
-			this.textAddress.Location = new System.Drawing.Point(110,30);
+			this.textAddress.Location = new System.Drawing.Point(102,51);
 			this.textAddress.MaxLength = 60;
 			this.textAddress.Name = "textAddress";
 			this.textAddress.Size = new System.Drawing.Size(291,20);
@@ -443,7 +476,7 @@ namespace OpenDental{
 			// 
 			// textCity
 			// 
-			this.textCity.Location = new System.Drawing.Point(110,70);
+			this.textCity.Location = new System.Drawing.Point(102,91);
 			this.textCity.MaxLength = 40;
 			this.textCity.Name = "textCity";
 			this.textCity.Size = new System.Drawing.Size(155,20);
@@ -452,7 +485,7 @@ namespace OpenDental{
 			// 
 			// textState
 			// 
-			this.textState.Location = new System.Drawing.Point(265,70);
+			this.textState.Location = new System.Drawing.Point(257,91);
 			this.textState.MaxLength = 2;
 			this.textState.Name = "textState";
 			this.textState.Size = new System.Drawing.Size(65,20);
@@ -461,7 +494,7 @@ namespace OpenDental{
 			// 
 			// textZip
 			// 
-			this.textZip.Location = new System.Drawing.Point(330,70);
+			this.textZip.Location = new System.Drawing.Point(322,91);
 			this.textZip.MaxLength = 10;
 			this.textZip.Name = "textZip";
 			this.textZip.Size = new System.Drawing.Size(71,20);
@@ -469,8 +502,8 @@ namespace OpenDental{
 			// 
 			// textElectID
 			// 
-			this.textElectID.Location = new System.Drawing.Point(110,90);
-			this.textElectID.MaxLength = 5;
+			this.textElectID.Location = new System.Drawing.Point(102,111);
+			this.textElectID.MaxLength = 20;
 			this.textElectID.Name = "textElectID";
 			this.textElectID.Size = new System.Drawing.Size(54,20);
 			this.textElectID.TabIndex = 7;
@@ -478,7 +511,7 @@ namespace OpenDental{
 			// 
 			// textEmployer
 			// 
-			this.textEmployer.Location = new System.Drawing.Point(110,24);
+			this.textEmployer.Location = new System.Drawing.Point(112,26);
 			this.textEmployer.MaxLength = 40;
 			this.textEmployer.Name = "textEmployer";
 			this.textEmployer.Size = new System.Drawing.Size(291,20);
@@ -488,7 +521,7 @@ namespace OpenDental{
 			// 
 			// label16
 			// 
-			this.label16.Location = new System.Drawing.Point(31,26);
+			this.label16.Location = new System.Drawing.Point(33,28);
 			this.label16.Name = "label16";
 			this.label16.Size = new System.Drawing.Size(78,15);
 			this.label16.TabIndex = 73;
@@ -497,7 +530,7 @@ namespace OpenDental{
 			// 
 			// textAddress2
 			// 
-			this.textAddress2.Location = new System.Drawing.Point(110,50);
+			this.textAddress2.Location = new System.Drawing.Point(102,71);
 			this.textAddress2.MaxLength = 60;
 			this.textAddress2.Name = "textAddress2";
 			this.textAddress2.Size = new System.Drawing.Size(291,20);
@@ -506,7 +539,7 @@ namespace OpenDental{
 			// 
 			// label21
 			// 
-			this.label21.Location = new System.Drawing.Point(13,53);
+			this.label21.Location = new System.Drawing.Point(5,74);
 			this.label21.Name = "label21";
 			this.label21.Size = new System.Drawing.Size(95,15);
 			this.label21.TabIndex = 79;
@@ -515,9 +548,9 @@ namespace OpenDental{
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(13,55);
+			this.label1.Location = new System.Drawing.Point(15,323);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(96,15);
+			this.label1.Size = new System.Drawing.Size(96,16);
 			this.label1.TabIndex = 91;
 			this.label1.Text = "Fee Schedule";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -525,25 +558,25 @@ namespace OpenDental{
 			// checkAssign
 			// 
 			this.checkAssign.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkAssign.Location = new System.Drawing.Point(340,50);
+			this.checkAssign.Location = new System.Drawing.Point(320,50);
 			this.checkAssign.Name = "checkAssign";
-			this.checkAssign.Size = new System.Drawing.Size(198,20);
+			this.checkAssign.Size = new System.Drawing.Size(177,20);
 			this.checkAssign.TabIndex = 4;
 			this.checkAssign.Text = "Assignment of Benefits";
 			// 
 			// checkRelease
 			// 
 			this.checkRelease.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkRelease.Location = new System.Drawing.Point(340,32);
+			this.checkRelease.Location = new System.Drawing.Point(320,32);
 			this.checkRelease.Name = "checkRelease";
-			this.checkRelease.Size = new System.Drawing.Size(198,20);
+			this.checkRelease.Size = new System.Drawing.Size(177,20);
 			this.checkRelease.TabIndex = 3;
 			this.checkRelease.Text = "Release of Information";
 			// 
 			// checkNoSendElect
 			// 
 			this.checkNoSendElect.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkNoSendElect.Location = new System.Drawing.Point(186,112);
+			this.checkNoSendElect.Location = new System.Drawing.Point(178,133);
 			this.checkNoSendElect.Name = "checkNoSendElect";
 			this.checkNoSendElect.Size = new System.Drawing.Size(213,17);
 			this.checkNoSendElect.TabIndex = 8;
@@ -551,9 +584,9 @@ namespace OpenDental{
 			// 
 			// label23
 			// 
-			this.label23.Location = new System.Drawing.Point(12,79);
+			this.label23.Location = new System.Drawing.Point(14,347);
 			this.label23.Name = "label23";
-			this.label23.Size = new System.Drawing.Size(95,14);
+			this.label23.Size = new System.Drawing.Size(95,15);
 			this.label23.TabIndex = 96;
 			this.label23.Text = "Claim Form";
 			this.label23.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -561,26 +594,26 @@ namespace OpenDental{
 			// checkAlternateCode
 			// 
 			this.checkAlternateCode.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkAlternateCode.Location = new System.Drawing.Point(110,23);
+			this.checkAlternateCode.Location = new System.Drawing.Point(112,290);
 			this.checkAlternateCode.Name = "checkAlternateCode";
-			this.checkAlternateCode.Size = new System.Drawing.Size(275,17);
+			this.checkAlternateCode.Size = new System.Drawing.Size(275,18);
 			this.checkAlternateCode.TabIndex = 3;
 			this.checkAlternateCode.Text = "Use Alternate Code (for some Medicaid plans)";
 			// 
 			// checkClaimsUseUCR
 			// 
 			this.checkClaimsUseUCR.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkClaimsUseUCR.Location = new System.Drawing.Point(110,38);
+			this.checkClaimsUseUCR.Location = new System.Drawing.Point(112,306);
 			this.checkClaimsUseUCR.Name = "checkClaimsUseUCR";
-			this.checkClaimsUseUCR.Size = new System.Drawing.Size(275,17);
+			this.checkClaimsUseUCR.Size = new System.Drawing.Size(275,18);
 			this.checkClaimsUseUCR.TabIndex = 4;
 			this.checkClaimsUseUCR.Text = "Claims show UCR fee, not billed fee";
 			// 
 			// label14
 			// 
-			this.label14.Location = new System.Drawing.Point(15,4);
+			this.label14.Location = new System.Drawing.Point(17,271);
 			this.label14.Name = "label14";
-			this.label14.Size = new System.Drawing.Size(95,15);
+			this.label14.Size = new System.Drawing.Size(95,16);
 			this.label14.TabIndex = 104;
 			this.label14.Text = "Plan Type";
 			this.label14.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -595,6 +628,8 @@ namespace OpenDental{
 			// 
 			// groupSubscriber
 			// 
+			this.groupSubscriber.Controls.Add(this.labelViewRequestDocument);
+			this.groupSubscriber.Controls.Add(this.butEligibility);
 			this.groupSubscriber.Controls.Add(this.checkAssign);
 			this.groupSubscriber.Controls.Add(this.label25);
 			this.groupSubscriber.Controls.Add(this.checkRelease);
@@ -608,9 +643,9 @@ namespace OpenDental{
 			this.groupSubscriber.Controls.Add(this.textSubscNote);
 			this.groupSubscriber.Controls.Add(this.label28);
 			this.groupSubscriber.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupSubscriber.Location = new System.Drawing.Point(423,93);
+			this.groupSubscriber.Location = new System.Drawing.Point(468,93);
 			this.groupSubscriber.Name = "groupSubscriber";
-			this.groupSubscriber.Size = new System.Drawing.Size(547,175);
+			this.groupSubscriber.Size = new System.Drawing.Size(502,175);
 			this.groupSubscriber.TabIndex = 9;
 			this.groupSubscriber.TabStop = false;
 			this.groupSubscriber.Text = "Subscriber";
@@ -641,37 +676,10 @@ namespace OpenDental{
 			this.label2.Text = "Subscriber ID";
 			this.label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
-			// textDateEffect
-			// 
-			this.textDateEffect.Location = new System.Drawing.Point(109,50);
-			this.textDateEffect.Name = "textDateEffect";
-			this.textDateEffect.Size = new System.Drawing.Size(72,20);
-			this.textDateEffect.TabIndex = 1;
-			// 
-			// textDateTerm
-			// 
-			this.textDateTerm.Location = new System.Drawing.Point(227,50);
-			this.textDateTerm.Name = "textDateTerm";
-			this.textDateTerm.Size = new System.Drawing.Size(72,20);
-			this.textDateTerm.TabIndex = 2;
-			// 
-			// textSubscNote
-			// 
-			this.textSubscNote.AcceptsReturn = true;
-			this.textSubscNote.Location = new System.Drawing.Point(57,71);
-			this.textSubscNote.Multiline = true;
-			this.textSubscNote.Name = "textSubscNote";
-			this.textSubscNote.QuickPasteType = OpenDentBusiness.QuickPasteType.InsPlan;
-			this.textSubscNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textSubscNote.Size = new System.Drawing.Size(485,98);
-			this.textSubscNote.TabIndex = 5;
-			this.textSubscNote.Text = "1\r\n2\r\n3 lines will show here in 46 vert.\r\n4 lines will show here in 59 vert.\r\n5 l" +
-    "ines in 72 vert\r\n6 lines in 85 vert\r\n7 lines in 98";
-			// 
 			// comboLinked
 			// 
 			this.comboLinked.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboLinked.Location = new System.Drawing.Point(148,104);
+			this.comboLinked.Location = new System.Drawing.Point(150,240);
 			this.comboLinked.MaxDropDownItems = 30;
 			this.comboLinked.Name = "comboLinked";
 			this.comboLinked.Size = new System.Drawing.Size(253,21);
@@ -680,7 +688,7 @@ namespace OpenDental{
 			// textLinkedNum
 			// 
 			this.textLinkedNum.BackColor = System.Drawing.Color.White;
-			this.textLinkedNum.Location = new System.Drawing.Point(110,104);
+			this.textLinkedNum.Location = new System.Drawing.Point(112,240);
 			this.textLinkedNum.Multiline = true;
 			this.textLinkedNum.Name = "textLinkedNum";
 			this.textLinkedNum.ReadOnly = true;
@@ -689,7 +697,7 @@ namespace OpenDental{
 			// 
 			// label4
 			// 
-			this.label4.Location = new System.Drawing.Point(4,106);
+			this.label4.Location = new System.Drawing.Point(6,242);
 			this.label4.Name = "label4";
 			this.label4.Size = new System.Drawing.Size(104,17);
 			this.label4.TabIndex = 66;
@@ -699,7 +707,7 @@ namespace OpenDental{
 			// comboPlanType
 			// 
 			this.comboPlanType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboPlanType.Location = new System.Drawing.Point(110,3);
+			this.comboPlanType.Location = new System.Drawing.Point(112,270);
 			this.comboPlanType.Name = "comboPlanType";
 			this.comboPlanType.Size = new System.Drawing.Size(212,21);
 			this.comboPlanType.TabIndex = 2;
@@ -708,7 +716,7 @@ namespace OpenDental{
 			// checkIsMedical
 			// 
 			this.checkIsMedical.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkIsMedical.Location = new System.Drawing.Point(110,7);
+			this.checkIsMedical.Location = new System.Drawing.Point(112,9);
 			this.checkIsMedical.Name = "checkIsMedical";
 			this.checkIsMedical.Size = new System.Drawing.Size(202,17);
 			this.checkIsMedical.TabIndex = 113;
@@ -716,7 +724,7 @@ namespace OpenDental{
 			// 
 			// textDivisionNo
 			// 
-			this.textDivisionNo.Location = new System.Drawing.Point(257,84);
+			this.textDivisionNo.Location = new System.Drawing.Point(259,220);
 			this.textDivisionNo.MaxLength = 20;
 			this.textDivisionNo.Name = "textDivisionNo";
 			this.textDivisionNo.Size = new System.Drawing.Size(107,20);
@@ -724,7 +732,7 @@ namespace OpenDental{
 			// 
 			// labelDivisionDash
 			// 
-			this.labelDivisionDash.Location = new System.Drawing.Point(242,88);
+			this.labelDivisionDash.Location = new System.Drawing.Point(244,224);
 			this.labelDivisionDash.Name = "labelDivisionDash";
 			this.labelDivisionDash.Size = new System.Drawing.Size(31,16);
 			this.labelDivisionDash.TabIndex = 111;
@@ -733,7 +741,7 @@ namespace OpenDental{
 			// comboClaimForm
 			// 
 			this.comboClaimForm.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboClaimForm.Location = new System.Drawing.Point(110,76);
+			this.comboClaimForm.Location = new System.Drawing.Point(112,344);
 			this.comboClaimForm.MaxDropDownItems = 30;
 			this.comboClaimForm.Name = "comboClaimForm";
 			this.comboClaimForm.Size = new System.Drawing.Size(212,21);
@@ -742,7 +750,7 @@ namespace OpenDental{
 			// comboFeeSched
 			// 
 			this.comboFeeSched.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboFeeSched.Location = new System.Drawing.Point(110,54);
+			this.comboFeeSched.Location = new System.Drawing.Point(112,322);
 			this.comboFeeSched.MaxDropDownItems = 30;
 			this.comboFeeSched.Name = "comboFeeSched";
 			this.comboFeeSched.Size = new System.Drawing.Size(212,21);
@@ -756,9 +764,9 @@ namespace OpenDental{
 			this.groupCoPay.Controls.Add(this.label3);
 			this.groupCoPay.Controls.Add(this.comboCopay);
 			this.groupCoPay.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupCoPay.Location = new System.Drawing.Point(3,99);
+			this.groupCoPay.Location = new System.Drawing.Point(5,367);
 			this.groupCoPay.Name = "groupCoPay";
-			this.groupCoPay.Size = new System.Drawing.Size(388,98);
+			this.groupCoPay.Size = new System.Drawing.Size(404,99);
 			this.groupCoPay.TabIndex = 7;
 			this.groupCoPay.TabStop = false;
 			this.groupCoPay.Text = "Other Fee Schedules";
@@ -807,96 +815,15 @@ namespace OpenDental{
 			this.comboCopay.Size = new System.Drawing.Size(212,21);
 			this.comboCopay.TabIndex = 0;
 			// 
-			// groupBox3
-			// 
-			this.groupBox3.Controls.Add(this.comboElectIDdescript);
-			this.groupBox3.Controls.Add(this.textAddress);
-			this.groupBox3.Controls.Add(this.textCity);
-			this.groupBox3.Controls.Add(this.textState);
-			this.groupBox3.Controls.Add(this.label21);
-			this.groupBox3.Controls.Add(this.label10);
-			this.groupBox3.Controls.Add(this.textAddress2);
-			this.groupBox3.Controls.Add(this.textElectID);
-			this.groupBox3.Controls.Add(this.textZip);
-			this.groupBox3.Controls.Add(this.label7);
-			this.groupBox3.Controls.Add(this.labelCitySTZip);
-			this.groupBox3.Controls.Add(this.labelElectronicID);
-			this.groupBox3.Controls.Add(this.checkNoSendElect);
-			this.groupBox3.Controls.Add(this.textPhone);
-			this.groupBox3.Controls.Add(this.butSearch);
-			this.groupBox3.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox3.Location = new System.Drawing.Point(8,241);
-			this.groupBox3.Name = "groupBox3";
-			this.groupBox3.Size = new System.Drawing.Size(409,133);
-			this.groupBox3.TabIndex = 1;
-			this.groupBox3.TabStop = false;
-			this.groupBox3.Text = "Carrier Info";
-			// 
 			// comboElectIDdescript
 			// 
 			this.comboElectIDdescript.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboElectIDdescript.Location = new System.Drawing.Point(164,90);
+			this.comboElectIDdescript.Location = new System.Drawing.Point(156,111);
 			this.comboElectIDdescript.MaxDropDownItems = 30;
 			this.comboElectIDdescript.Name = "comboElectIDdescript";
 			this.comboElectIDdescript.Size = new System.Drawing.Size(237,21);
 			this.comboElectIDdescript.TabIndex = 125;
 			this.comboElectIDdescript.SelectedIndexChanged += new System.EventHandler(this.comboElectIDdescript_SelectedIndexChanged);
-			// 
-			// butSearch
-			// 
-			this.butSearch.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.butSearch.Autosize = true;
-			this.butSearch.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butSearch.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butSearch.Location = new System.Drawing.Point(95,111);
-			this.butSearch.Name = "butSearch";
-			this.butSearch.Size = new System.Drawing.Size(84,20);
-			this.butSearch.TabIndex = 124;
-			this.butSearch.Text = "Search IDs";
-			this.butSearch.Click += new System.EventHandler(this.butSearch_Click);
-			// 
-			// butBenefitNotes
-			// 
-			this.butBenefitNotes.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butBenefitNotes.Autosize = true;
-			this.butBenefitNotes.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butBenefitNotes.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butBenefitNotes.Location = new System.Drawing.Point(378,22);
-			this.butBenefitNotes.Name = "butBenefitNotes";
-			this.butBenefitNotes.Size = new System.Drawing.Size(82,21);
-			this.butBenefitNotes.TabIndex = 2;
-			this.butBenefitNotes.Text = "View Benefits";
-			this.toolTip1.SetToolTip(this.butBenefitNotes,"Edit all the similar plans at once");
-			this.butBenefitNotes.Click += new System.EventHandler(this.butBenefitNotes_Click);
-			// 
-			// butIapFind
-			// 
-			this.butIapFind.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butIapFind.Autosize = true;
-			this.butIapFind.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butIapFind.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butIapFind.Location = new System.Drawing.Point(132,33);
-			this.butIapFind.Name = "butIapFind";
-			this.butIapFind.Size = new System.Drawing.Size(82,21);
-			this.butIapFind.TabIndex = 1;
-			this.butIapFind.Text = "Find Plan";
-			this.toolTip1.SetToolTip(this.butIapFind,"Edit all the similar plans at once");
-			this.butIapFind.Click += new System.EventHandler(this.butIapFind_Click);
-			// 
-			// butImportTrojan
-			// 
-			this.butImportTrojan.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butImportTrojan.Autosize = true;
-			this.butImportTrojan.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butImportTrojan.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butImportTrojan.Location = new System.Drawing.Point(132,10);
-			this.butImportTrojan.Name = "butImportTrojan";
-			this.butImportTrojan.Size = new System.Drawing.Size(82,21);
-			this.butImportTrojan.TabIndex = 0;
-			this.butImportTrojan.Text = "Import";
-			this.toolTip1.SetToolTip(this.butImportTrojan,"Edit all the similar plans at once");
-			this.butImportTrojan.Click += new System.EventHandler(this.butImportTrojan_Click);
 			// 
 			// labelDrop
 			// 
@@ -911,6 +838,8 @@ namespace OpenDental{
 			// 
 			// groupRequestBen
 			// 
+			this.groupRequestBen.Controls.Add(this.labelCanadaEligibility);
+			this.groupRequestBen.Controls.Add(this.butCanadaEligibility);
 			this.groupRequestBen.Controls.Add(this.butBenefitNotes);
 			this.groupRequestBen.Controls.Add(this.labelTrojan);
 			this.groupRequestBen.Controls.Add(this.butIapFind);
@@ -919,12 +848,21 @@ namespace OpenDental{
 			this.groupRequestBen.Controls.Add(this.labelTrojanID);
 			this.groupRequestBen.Controls.Add(this.textTrojanID);
 			this.groupRequestBen.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupRequestBen.Location = new System.Drawing.Point(423,271);
+			this.groupRequestBen.Location = new System.Drawing.Point(468,271);
 			this.groupRequestBen.Name = "groupRequestBen";
-			this.groupRequestBen.Size = new System.Drawing.Size(547,59);
+			this.groupRequestBen.Size = new System.Drawing.Size(502,59);
 			this.groupRequestBen.TabIndex = 10;
 			this.groupRequestBen.TabStop = false;
 			this.groupRequestBen.Text = "Request Benefits";
+			// 
+			// labelCanadaEligibility
+			// 
+			this.labelCanadaEligibility.Location = new System.Drawing.Point(225,38);
+			this.labelCanadaEligibility.Name = "labelCanadaEligibility";
+			this.labelCanadaEligibility.Size = new System.Drawing.Size(45,15);
+			this.labelCanadaEligibility.TabIndex = 77;
+			this.labelCanadaEligibility.Text = "CDAnet";
+			this.labelCanadaEligibility.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// labelTrojan
 			// 
@@ -1088,6 +1026,239 @@ namespace OpenDental{
 			this.panelPat.Size = new System.Drawing.Size(982,90);
 			this.panelPat.TabIndex = 15;
 			// 
+			// textPlanNum
+			// 
+			this.textPlanNum.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.textPlanNum.Location = new System.Drawing.Point(310,676);
+			this.textPlanNum.Name = "textPlanNum";
+			this.textPlanNum.Size = new System.Drawing.Size(100,20);
+			this.textPlanNum.TabIndex = 148;
+			// 
+			// label17
+			// 
+			this.label17.Location = new System.Drawing.Point(7,13);
+			this.label17.Name = "label17";
+			this.label17.Size = new System.Drawing.Size(94,15);
+			this.label17.TabIndex = 152;
+			this.label17.Text = "Carrier";
+			this.label17.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// checkApplyAll
+			// 
+			this.checkApplyAll.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.checkApplyAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkApplyAll.Location = new System.Drawing.Point(468,679);
+			this.checkApplyAll.Name = "checkApplyAll";
+			this.checkApplyAll.Size = new System.Drawing.Size(323,21);
+			this.checkApplyAll.TabIndex = 12;
+			this.checkApplyAll.Text = "Apply changes to all identical insurance plans";
+			this.checkApplyAll.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.checkApplyAll.UseVisualStyleBackColor = true;
+			// 
+			// label18
+			// 
+			this.label18.Location = new System.Drawing.Point(5,563);
+			this.label18.Name = "label18";
+			this.label18.Size = new System.Drawing.Size(399,15);
+			this.label18.TabIndex = 156;
+			this.label18.Text = "Plan Note.  Always applies to all similar plans, not just this one.";
+			this.label18.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// groupPlan
+			// 
+			this.groupPlan.Controls.Add(this.textEmployer);
+			this.groupPlan.Controls.Add(this.groupCarrier);
+			this.groupPlan.Controls.Add(this.textDivisionNo);
+			this.groupPlan.Controls.Add(this.checkIsMedical);
+			this.groupPlan.Controls.Add(this.textGroupNum);
+			this.groupPlan.Controls.Add(this.labelGroupNum);
+			this.groupPlan.Controls.Add(this.label8);
+			this.groupPlan.Controls.Add(this.textGroupName);
+			this.groupPlan.Controls.Add(this.comboLinked);
+			this.groupPlan.Controls.Add(this.textLinkedNum);
+			this.groupPlan.Controls.Add(this.label16);
+			this.groupPlan.Controls.Add(this.label4);
+			this.groupPlan.Controls.Add(this.labelDivisionDash);
+			this.groupPlan.Location = new System.Drawing.Point(0,2);
+			this.groupPlan.Name = "groupPlan";
+			this.groupPlan.Size = new System.Drawing.Size(425,264);
+			this.groupPlan.TabIndex = 0;
+			this.groupPlan.TabStop = false;
+			this.groupPlan.Text = "Plan";
+			// 
+			// groupCarrier
+			// 
+			this.groupCarrier.Controls.Add(this.textPhone);
+			this.groupCarrier.Controls.Add(this.textAddress);
+			this.groupCarrier.Controls.Add(this.comboElectIDdescript);
+			this.groupCarrier.Controls.Add(this.textElectID);
+			this.groupCarrier.Controls.Add(this.butSearch);
+			this.groupCarrier.Controls.Add(this.textAddress2);
+			this.groupCarrier.Controls.Add(this.textZip);
+			this.groupCarrier.Controls.Add(this.checkNoSendElect);
+			this.groupCarrier.Controls.Add(this.label10);
+			this.groupCarrier.Controls.Add(this.textCity);
+			this.groupCarrier.Controls.Add(this.label7);
+			this.groupCarrier.Controls.Add(this.textCarrier);
+			this.groupCarrier.Controls.Add(this.labelElectronicID);
+			this.groupCarrier.Controls.Add(this.label21);
+			this.groupCarrier.Controls.Add(this.label17);
+			this.groupCarrier.Controls.Add(this.textState);
+			this.groupCarrier.Controls.Add(this.labelCitySTZip);
+			this.groupCarrier.Location = new System.Drawing.Point(10,44);
+			this.groupCarrier.Name = "groupCarrier";
+			this.groupCarrier.Size = new System.Drawing.Size(399,155);
+			this.groupCarrier.TabIndex = 154;
+			this.groupCarrier.TabStop = false;
+			this.groupCarrier.Text = "Carrier";
+			// 
+			// panelPlan
+			// 
+			this.panelPlan.AutoScroll = true;
+			this.panelPlan.AutoScrollMargin = new System.Drawing.Size(0,10);
+			this.panelPlan.BackColor = System.Drawing.SystemColors.Control;
+			this.panelPlan.Controls.Add(this.textDentaide);
+			this.panelPlan.Controls.Add(this.labelDentaide);
+			this.panelPlan.Controls.Add(this.comboFeeSched);
+			this.panelPlan.Controls.Add(this.groupPlan);
+			this.panelPlan.Controls.Add(this.comboFilingCode);
+			this.panelPlan.Controls.Add(this.groupCoPay);
+			this.panelPlan.Controls.Add(this.comboPlanType);
+			this.panelPlan.Controls.Add(this.label13);
+			this.panelPlan.Controls.Add(this.comboClaimForm);
+			this.panelPlan.Controls.Add(this.label1);
+			this.panelPlan.Controls.Add(this.label14);
+			this.panelPlan.Controls.Add(this.label23);
+			this.panelPlan.Controls.Add(this.checkAlternateCode);
+			this.panelPlan.Controls.Add(this.checkClaimsUseUCR);
+			this.panelPlan.Location = new System.Drawing.Point(8,116);
+			this.panelPlan.Name = "panelPlan";
+			this.panelPlan.Size = new System.Drawing.Size(454,438);
+			this.panelPlan.TabIndex = 157;
+			// 
+			// labelDentaide
+			// 
+			this.labelDentaide.Location = new System.Drawing.Point(12,496);
+			this.labelDentaide.Name = "labelDentaide";
+			this.labelDentaide.Size = new System.Drawing.Size(140,19);
+			this.labelDentaide.TabIndex = 160;
+			this.labelDentaide.Text = "Dentaide Card Sequence";
+			this.labelDentaide.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
+			// comboFilingCode
+			// 
+			this.comboFilingCode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboFilingCode.Location = new System.Drawing.Point(112,469);
+			this.comboFilingCode.MaxDropDownItems = 30;
+			this.comboFilingCode.Name = "comboFilingCode";
+			this.comboFilingCode.Size = new System.Drawing.Size(212,21);
+			this.comboFilingCode.TabIndex = 159;
+			// 
+			// label13
+			// 
+			this.label13.Location = new System.Drawing.Point(10,471);
+			this.label13.Name = "label13";
+			this.label13.Size = new System.Drawing.Size(100,19);
+			this.label13.TabIndex = 158;
+			this.label13.Text = "Filing Code";
+			this.label13.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
+			// labelViewRequestDocument
+			// 
+			this.labelViewRequestDocument.Location = new System.Drawing.Point(483,11);
+			this.labelViewRequestDocument.Name = "labelViewRequestDocument";
+			this.labelViewRequestDocument.Size = new System.Drawing.Size(18,23);
+			this.labelViewRequestDocument.TabIndex = 117;
+			this.labelViewRequestDocument.Text = "labelViewRequestDocument";
+			this.labelViewRequestDocument.Click += new System.EventHandler(this.labelViewRequestDocument_Click);
+			// 
+			// textDentaide
+			// 
+			this.textDentaide.Location = new System.Drawing.Point(158,493);
+			this.textDentaide.MaxVal = 255;
+			this.textDentaide.MinVal = 0;
+			this.textDentaide.Name = "textDentaide";
+			this.textDentaide.Size = new System.Drawing.Size(55,20);
+			this.textDentaide.TabIndex = 161;
+			// 
+			// butSearch
+			// 
+			this.butSearch.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butSearch.Autosize = true;
+			this.butSearch.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butSearch.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butSearch.Location = new System.Drawing.Point(86,132);
+			this.butSearch.Name = "butSearch";
+			this.butSearch.Size = new System.Drawing.Size(84,20);
+			this.butSearch.TabIndex = 124;
+			this.butSearch.Text = "Search IDs";
+			this.butSearch.Click += new System.EventHandler(this.butSearch_Click);
+			// 
+			// butPick
+			// 
+			this.butPick.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butPick.Autosize = true;
+			this.butPick.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butPick.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butPick.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butPick.Location = new System.Drawing.Point(327,93);
+			this.butPick.Name = "butPick";
+			this.butPick.Size = new System.Drawing.Size(90,23);
+			this.butPick.TabIndex = 153;
+			this.butPick.Text = "Pick From List";
+			this.butPick.Click += new System.EventHandler(this.butPick_Click);
+			// 
+			// butEditBenefits
+			// 
+			this.butEditBenefits.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butEditBenefits.Autosize = true;
+			this.butEditBenefits.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butEditBenefits.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butEditBenefits.Location = new System.Drawing.Point(468,649);
+			this.butEditBenefits.Name = "butEditBenefits";
+			this.butEditBenefits.Size = new System.Drawing.Size(90,24);
+			this.butEditBenefits.TabIndex = 11;
+			this.butEditBenefits.Text = "Edit Benefits";
+			this.butEditBenefits.Click += new System.EventHandler(this.butEditBenefits_Click);
+			// 
+			// textPlanNote
+			// 
+			this.textPlanNote.AcceptsReturn = true;
+			this.textPlanNote.Location = new System.Drawing.Point(14,581);
+			this.textPlanNote.Multiline = true;
+			this.textPlanNote.Name = "textPlanNote";
+			this.textPlanNote.QuickPasteType = OpenDentBusiness.QuickPasteType.InsPlan;
+			this.textPlanNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.textPlanNote.Size = new System.Drawing.Size(395,85);
+			this.textPlanNote.TabIndex = 8;
+			this.textPlanNote.Text = "1\r\n2\r\n3 lines will show here in 46 vert.\r\n4 lines will show here in 59 vert.\r\n5 l" +
+    "ines in 72 vert\r\n6 in 85";
+			// 
+			// butOK
+			// 
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butOK.Autosize = true;
+			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butOK.Location = new System.Drawing.Point(801,671);
+			this.butOK.Name = "butOK";
+			this.butOK.Size = new System.Drawing.Size(75,26);
+			this.butOK.TabIndex = 13;
+			this.butOK.Text = "&OK";
+			this.butOK.Click += new System.EventHandler(this.butOK_Click);
+			// 
+			// gridBenefits
+			// 
+			this.gridBenefits.HScrollVisible = false;
+			this.gridBenefits.Location = new System.Drawing.Point(468,334);
+			this.gridBenefits.Name = "gridBenefits";
+			this.gridBenefits.ScrollValue = 0;
+			this.gridBenefits.SelectionMode = System.Windows.Forms.SelectionMode.None;
+			this.gridBenefits.Size = new System.Drawing.Size(502,314);
+			this.gridBenefits.TabIndex = 146;
+			this.gridBenefits.Title = "Benefit Information";
+			this.gridBenefits.TranslationName = "TableBenefits";
+			// 
 			// textOrdinal
 			// 
 			this.textOrdinal.Location = new System.Drawing.Point(508,22);
@@ -1125,109 +1296,6 @@ namespace OpenDental{
 			this.butDrop.TabIndex = 5;
 			this.butDrop.Text = "Drop";
 			this.butDrop.Click += new System.EventHandler(this.butDrop_Click);
-			// 
-			// textPlanNum
-			// 
-			this.textPlanNum.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.textPlanNum.Location = new System.Drawing.Point(310,676);
-			this.textPlanNum.Name = "textPlanNum";
-			this.textPlanNum.Size = new System.Drawing.Size(100,20);
-			this.textPlanNum.TabIndex = 148;
-			// 
-			// label17
-			// 
-			this.label17.Location = new System.Drawing.Point(15,46);
-			this.label17.Name = "label17";
-			this.label17.Size = new System.Drawing.Size(94,15);
-			this.label17.TabIndex = 152;
-			this.label17.Text = "Carrier";
-			this.label17.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			// 
-			// checkApplyAll
-			// 
-			this.checkApplyAll.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.checkApplyAll.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkApplyAll.Location = new System.Drawing.Point(468,679);
-			this.checkApplyAll.Name = "checkApplyAll";
-			this.checkApplyAll.Size = new System.Drawing.Size(323,21);
-			this.checkApplyAll.TabIndex = 12;
-			this.checkApplyAll.Text = "Apply changes to all identical insurance plans";
-			this.checkApplyAll.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.checkApplyAll.UseVisualStyleBackColor = true;
-			// 
-			// label18
-			// 
-			this.label18.Location = new System.Drawing.Point(5,563);
-			this.label18.Name = "label18";
-			this.label18.Size = new System.Drawing.Size(399,15);
-			this.label18.TabIndex = 156;
-			this.label18.Text = "Plan Note.  Always applies to all similar plans, not just this one.";
-			this.label18.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
-			// 
-			// butEditBenefits
-			// 
-			this.butEditBenefits.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butEditBenefits.Autosize = true;
-			this.butEditBenefits.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butEditBenefits.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butEditBenefits.Location = new System.Drawing.Point(423,651);
-			this.butEditBenefits.Name = "butEditBenefits";
-			this.butEditBenefits.Size = new System.Drawing.Size(90,24);
-			this.butEditBenefits.TabIndex = 11;
-			this.butEditBenefits.Text = "Edit Benefits";
-			this.butEditBenefits.Click += new System.EventHandler(this.butEditBenefits_Click);
-			// 
-			// textPlanNote
-			// 
-			this.textPlanNote.AcceptsReturn = true;
-			this.textPlanNote.Location = new System.Drawing.Point(14,581);
-			this.textPlanNote.Multiline = true;
-			this.textPlanNote.Name = "textPlanNote";
-			this.textPlanNote.QuickPasteType = OpenDentBusiness.QuickPasteType.InsPlan;
-			this.textPlanNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textPlanNote.Size = new System.Drawing.Size(395,85);
-			this.textPlanNote.TabIndex = 8;
-			this.textPlanNote.Text = "1\r\n2\r\n3 lines will show here in 46 vert.\r\n4 lines will show here in 59 vert.\r\n5 l" +
-    "ines in 72 vert\r\n6 in 85";
-			// 
-			// butOK
-			// 
-			this.butOK.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butOK.Autosize = true;
-			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butOK.Location = new System.Drawing.Point(801,671);
-			this.butOK.Name = "butOK";
-			this.butOK.Size = new System.Drawing.Size(75,26);
-			this.butOK.TabIndex = 13;
-			this.butOK.Text = "&OK";
-			this.butOK.Click += new System.EventHandler(this.butOK_Click);
-			// 
-			// butPick
-			// 
-			this.butPick.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butPick.Autosize = true;
-			this.butPick.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butPick.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butPick.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butPick.Location = new System.Drawing.Point(327,93);
-			this.butPick.Name = "butPick";
-			this.butPick.Size = new System.Drawing.Size(90,23);
-			this.butPick.TabIndex = 153;
-			this.butPick.Text = "Pick From List";
-			this.butPick.Click += new System.EventHandler(this.butPick_Click);
-			// 
-			// gridBenefits
-			// 
-			this.gridBenefits.HScrollVisible = false;
-			this.gridBenefits.Location = new System.Drawing.Point(423,334);
-			this.gridBenefits.Name = "gridBenefits";
-			this.gridBenefits.ScrollValue = 0;
-			this.gridBenefits.SelectionMode = System.Windows.Forms.SelectionMode.None;
-			this.gridBenefits.Size = new System.Drawing.Size(547,314);
-			this.gridBenefits.TabIndex = 146;
-			this.gridBenefits.Title = "Benefit Information";
-			this.gridBenefits.TranslationName = "TableBenefits";
 			// 
 			// butLabel
 			// 
@@ -1276,75 +1344,109 @@ namespace OpenDental{
 			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
-			// groupPlan
+			// butCanadaEligibility
 			// 
-			this.groupPlan.Controls.Add(this.textDivisionNo);
-			this.groupPlan.Controls.Add(this.checkIsMedical);
-			this.groupPlan.Controls.Add(this.textGroupNum);
-			this.groupPlan.Controls.Add(this.label9);
-			this.groupPlan.Controls.Add(this.label8);
-			this.groupPlan.Controls.Add(this.textGroupName);
-			this.groupPlan.Controls.Add(this.comboLinked);
-			this.groupPlan.Controls.Add(this.textLinkedNum);
-			this.groupPlan.Controls.Add(this.label16);
-			this.groupPlan.Controls.Add(this.label4);
-			this.groupPlan.Controls.Add(this.textCarrier);
-			this.groupPlan.Controls.Add(this.labelDivisionDash);
-			this.groupPlan.Controls.Add(this.textEmployer);
-			this.groupPlan.Controls.Add(this.label17);
-			this.groupPlan.Location = new System.Drawing.Point(8,111);
-			this.groupPlan.Name = "groupPlan";
-			this.groupPlan.Size = new System.Drawing.Size(409,128);
-			this.groupPlan.TabIndex = 0;
-			this.groupPlan.TabStop = false;
-			this.groupPlan.Text = "Plan";
+			this.butCanadaEligibility.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butCanadaEligibility.Autosize = true;
+			this.butCanadaEligibility.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butCanadaEligibility.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butCanadaEligibility.Location = new System.Drawing.Point(271,33);
+			this.butCanadaEligibility.Name = "butCanadaEligibility";
+			this.butCanadaEligibility.Size = new System.Drawing.Size(79,21);
+			this.butCanadaEligibility.TabIndex = 76;
+			this.butCanadaEligibility.Text = "Eligibility";
+			this.toolTip1.SetToolTip(this.butCanadaEligibility,"Edit all the similar plans at once");
+			this.butCanadaEligibility.Click += new System.EventHandler(this.butCanadaEligibility_Click);
 			// 
-			// panel2
+			// butBenefitNotes
 			// 
-			this.panel2.AutoScroll = true;
-			this.panel2.AutoScrollMargin = new System.Drawing.Size(0,10);
-			this.panel2.BackColor = System.Drawing.SystemColors.Control;
-			this.panel2.Controls.Add(this.comboFilingCode);
-			this.panel2.Controls.Add(this.label13);
-			this.panel2.Controls.Add(this.comboFeeSched);
-			this.panel2.Controls.Add(this.comboPlanType);
-			this.panel2.Controls.Add(this.label14);
-			this.panel2.Controls.Add(this.comboClaimForm);
-			this.panel2.Controls.Add(this.checkAlternateCode);
-			this.panel2.Controls.Add(this.checkClaimsUseUCR);
-			this.panel2.Controls.Add(this.label23);
-			this.panel2.Controls.Add(this.label1);
-			this.panel2.Controls.Add(this.groupCoPay);
-			this.panel2.Location = new System.Drawing.Point(8,380);
-			this.panel2.Name = "panel2";
-			this.panel2.Size = new System.Drawing.Size(409,174);
-			this.panel2.TabIndex = 157;
+			this.butBenefitNotes.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butBenefitNotes.Autosize = true;
+			this.butBenefitNotes.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butBenefitNotes.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butBenefitNotes.Location = new System.Drawing.Point(378,22);
+			this.butBenefitNotes.Name = "butBenefitNotes";
+			this.butBenefitNotes.Size = new System.Drawing.Size(82,21);
+			this.butBenefitNotes.TabIndex = 2;
+			this.butBenefitNotes.Text = "View Benefits";
+			this.toolTip1.SetToolTip(this.butBenefitNotes,"Edit all the similar plans at once");
+			this.butBenefitNotes.Click += new System.EventHandler(this.butBenefitNotes_Click);
 			// 
-			// label13
+			// butIapFind
 			// 
-			this.label13.Location = new System.Drawing.Point(8,203);
-			this.label13.Name = "label13";
-			this.label13.Size = new System.Drawing.Size(100,18);
-			this.label13.TabIndex = 158;
-			this.label13.Text = "Filing Code";
-			this.label13.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			this.butIapFind.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butIapFind.Autosize = true;
+			this.butIapFind.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butIapFind.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butIapFind.Location = new System.Drawing.Point(132,33);
+			this.butIapFind.Name = "butIapFind";
+			this.butIapFind.Size = new System.Drawing.Size(82,21);
+			this.butIapFind.TabIndex = 1;
+			this.butIapFind.Text = "Find Plan";
+			this.toolTip1.SetToolTip(this.butIapFind,"Edit all the similar plans at once");
+			this.butIapFind.Click += new System.EventHandler(this.butIapFind_Click);
 			// 
-			// comboFilingCode
+			// butImportTrojan
 			// 
-			this.comboFilingCode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboFilingCode.Location = new System.Drawing.Point(110,201);
-			this.comboFilingCode.MaxDropDownItems = 30;
-			this.comboFilingCode.Name = "comboFilingCode";
-			this.comboFilingCode.Size = new System.Drawing.Size(212,21);
-			this.comboFilingCode.TabIndex = 159;
+			this.butImportTrojan.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butImportTrojan.Autosize = true;
+			this.butImportTrojan.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butImportTrojan.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butImportTrojan.Location = new System.Drawing.Point(132,10);
+			this.butImportTrojan.Name = "butImportTrojan";
+			this.butImportTrojan.Size = new System.Drawing.Size(82,21);
+			this.butImportTrojan.TabIndex = 0;
+			this.butImportTrojan.Text = "Import";
+			this.toolTip1.SetToolTip(this.butImportTrojan,"Edit all the similar plans at once");
+			this.butImportTrojan.Click += new System.EventHandler(this.butImportTrojan_Click);
+			// 
+			// butEligibility
+			// 
+			this.butEligibility.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butEligibility.Autosize = true;
+			this.butEligibility.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butEligibility.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butEligibility.Location = new System.Drawing.Point(393,10);
+			this.butEligibility.Name = "butEligibility";
+			this.butEligibility.Size = new System.Drawing.Size(89,21);
+			this.butEligibility.TabIndex = 116;
+			this.butEligibility.Text = "Check Eligibility";
+			this.toolTip1.SetToolTip(this.butEligibility,"Edit all the similar plans at once");
+			this.butEligibility.Click += new System.EventHandler(this.butEligibility_Click);
+			// 
+			// textDateEffect
+			// 
+			this.textDateEffect.Location = new System.Drawing.Point(109,50);
+			this.textDateEffect.Name = "textDateEffect";
+			this.textDateEffect.Size = new System.Drawing.Size(72,20);
+			this.textDateEffect.TabIndex = 1;
+			// 
+			// textDateTerm
+			// 
+			this.textDateTerm.Location = new System.Drawing.Point(227,50);
+			this.textDateTerm.Name = "textDateTerm";
+			this.textDateTerm.Size = new System.Drawing.Size(72,20);
+			this.textDateTerm.TabIndex = 2;
+			// 
+			// textSubscNote
+			// 
+			this.textSubscNote.AcceptsReturn = true;
+			this.textSubscNote.Location = new System.Drawing.Point(57,71);
+			this.textSubscNote.Multiline = true;
+			this.textSubscNote.Name = "textSubscNote";
+			this.textSubscNote.QuickPasteType = OpenDentBusiness.QuickPasteType.InsPlan;
+			this.textSubscNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.textSubscNote.Size = new System.Drawing.Size(439,98);
+			this.textSubscNote.TabIndex = 5;
+			this.textSubscNote.Text = "1\r\n2\r\n3 lines will show here in 46 vert.\r\n4 lines will show here in 59 vert.\r\n5 l" +
+    "ines in 72 vert\r\n6 lines in 85 vert\r\n7 lines in 98";
 			// 
 			// FormInsPlan
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
 			this.ClientSize = new System.Drawing.Size(982,700);
-			this.Controls.Add(this.panel2);
+			this.Controls.Add(this.panelPlan);
 			this.Controls.Add(this.butPick);
-			this.Controls.Add(this.groupPlan);
 			this.Controls.Add(this.butEditBenefits);
 			this.Controls.Add(this.textPlanNote);
 			this.Controls.Add(this.label18);
@@ -1355,7 +1457,6 @@ namespace OpenDental{
 			this.Controls.Add(this.gridBenefits);
 			this.Controls.Add(this.panelPat);
 			this.Controls.Add(this.butLabel);
-			this.Controls.Add(this.groupBox3);
 			this.Controls.Add(this.butDelete);
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.label32);
@@ -1372,15 +1473,16 @@ namespace OpenDental{
 			this.groupSubscriber.ResumeLayout(false);
 			this.groupSubscriber.PerformLayout();
 			this.groupCoPay.ResumeLayout(false);
-			this.groupBox3.ResumeLayout(false);
-			this.groupBox3.PerformLayout();
 			this.groupRequestBen.ResumeLayout(false);
 			this.groupRequestBen.PerformLayout();
 			this.panelPat.ResumeLayout(false);
 			this.panelPat.PerformLayout();
 			this.groupPlan.ResumeLayout(false);
 			this.groupPlan.PerformLayout();
-			this.panel2.ResumeLayout(false);
+			this.groupCarrier.ResumeLayout(false);
+			this.groupCarrier.PerformLayout();
+			this.panelPlan.ResumeLayout(false);
+			this.panelPlan.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -1435,14 +1537,6 @@ namespace OpenDental{
 				checkApplyAll.Checked=false;
 				checkApplyAll.Visible=false;//because it wouldn't make sense to apply anything to "all"
 			}
-			if(CultureInfo.CurrentCulture.Name.Substring(3)=="CA") {//en-CA or fr-CA
-				labelCitySTZip.Text="City,Prov,Post";
-				labelElectronicID.Text="EDI Code";
-			}
-			else {
-				labelDivisionDash.Visible=false;
-				textDivisionNo.Visible=false;
-			}
 			Program ProgramCur=Programs.GetCur("Trojan");
 			if(ProgramCur.Enabled) {
 				textTrojanID.Text=PlanCur.TrojanID;
@@ -1490,9 +1584,9 @@ namespace OpenDental{
 				else
 					textDateTerm.Text=PlanCur.DateTerm.ToString("d");
 			}
-			FeeSchedsStandard=Defs.GetFeeSchedList("");
-			FeeSchedsCopay=Defs.GetFeeSchedList("C");
-			FeeSchedsAllowed=Defs.GetFeeSchedList("A");
+			FeeSchedsStandard=DefB.GetFeeSchedList("");
+			FeeSchedsCopay=DefB.GetFeeSchedList("C");
+			FeeSchedsAllowed=DefB.GetFeeSchedList("A");
 			FillFormWithPlanCur();
 			FillBenefits();
 			Cursor=Cursors.Default;
@@ -1552,7 +1646,11 @@ namespace OpenDental{
 				}
 			}
 			if(comboClaimForm.Items.Count>0 && comboClaimForm.SelectedIndex==-1) {
-				comboClaimForm.SelectedIndex=0;//this will let the user rearrange the default later
+				for(int i=0;i<ClaimForms.ListShort.Length;i++) {
+					if(ClaimForms.ListShort[i].ClaimFormNum==PrefB.GetInt("DefaultClaimForm")) {
+						comboClaimForm.SelectedIndex=i;
+					}
+				}
 			}
 			comboFilingCode.Items.Clear();
 			for(int i=0;i<Enum.GetNames(typeof(InsFilingCode)).Length;i++) {
@@ -1563,7 +1661,7 @@ namespace OpenDental{
 			}
 			FillCarrier(PlanCur.CarrierNum);
 			int excludePlan=-1;
-			if(!IsForAll) {
+			if(!IsForAll){
 				excludePlan=PlanCur.PlanNum;
 			}
 			string[] samePlans=InsPlans.GetSubscribersForSamePlans(textEmployer.Text,textGroupName.Text,textGroupNum.Text,
@@ -1579,6 +1677,12 @@ namespace OpenDental{
 			checkAssign.Checked=PlanCur.AssignBen;
 			textPlanNote.Text=PlanCur.PlanNote;
 			textSubscNote.Text=PlanCur.SubscNote;
+			if(PlanCur.DentaideCardSequence==0){
+				textDentaide.Text="";
+			}
+			else{
+				textDentaide.Text=PlanCur.DentaideCardSequence.ToString();
+			}
 			//if(PlanCur.BenefitNotes==""){
 			//	butBenefitNotes.Enabled=false;
 			//}
@@ -1999,15 +2103,26 @@ namespace OpenDental{
 			if(textElectID.Text=="") {
 				return;
 			}
+			if(CultureInfo.CurrentCulture.Name.Substring(3)=="CA"){//en-CA or fr-CA
+				if(!Regex.IsMatch(textElectID.Text,@"^[0-9]{6}$")) {
+					if(!MsgBox.Show(this,true,"Carrier ID should be six digits long.  Continue anyway?")){
+						e.Cancel=true;
+						return;
+					}
+				}
+			}
+			//else{//anyplace including Canada
 			string[] electIDs=ElectIDs.GetDescripts(textElectID.Text);
-			if(electIDs.Length==0) {
-				if(MessageBox.Show(Lan.g(this,"Electronic ID not found. Continue anyway?"),"",
-					MessageBoxButtons.OKCancel)!=DialogResult.OK) {
-					e.Cancel=true;
-					return;
+			if(electIDs.Length==0) {//if none found in the predefined list
+				if(!Carriers.ElectIdInUse(textElectID.Text)){
+					if(!MsgBox.Show(this,true,"Electronic ID not found. Continue anyway?")) {
+						e.Cancel=true;
+						return;
+					}
 				}
 			}
 			FillPayor();
+			//}
 		}
 
 		private void butSearch_Click(object sender,System.EventArgs e) {
@@ -2660,6 +2775,26 @@ namespace OpenDental{
 			FillBenefits();
 		}
 
+		///<summary>Only visible if Computer set to Canada.</summary>
+		private void butCanadaEligibility_Click(object sender,EventArgs e) {
+			if(textDentaide.errorProvider1.GetError(textDentaide)!="") {
+				MsgBox.Show(this,"Please fix data entry errors first.");
+				return;
+			}
+			string result="";
+			try{
+				result=Eclaims.CanadianOutput.SendElegibility(textElectID.Text,PatPlanCur.PatNum,textGroupNum.Text,textDivisionNo.Text,
+					textSubscriberID.Text,textPatID.Text,(Relat)comboRelationship.SelectedIndex,PlanCur.Subscriber,textDentaide.Text);
+				//printout will happen in the line above.
+			}
+			catch(ApplicationException ex){
+				MessageBox.Show(ex.Message);
+				return;
+			}
+			PlanCur.BenefitNotes+=result;
+			butBenefitNotes.Enabled=true;
+		}
+
 		///<summary>This button is always active.</summary>
 		private void butBenefitNotes_Click(object sender,System.EventArgs e) {
 			string otherBenNote="";
@@ -2739,13 +2874,13 @@ namespace OpenDental{
 			gridBenefits.Columns.Clear();
 			ODGridColumn col=new ODGridColumn("Pat",35);
 			gridBenefits.Columns.Add(col);
-			col=new ODGridColumn("Type",90);
+			col=new ODGridColumn("Type",80);
 			gridBenefits.Columns.Add(col);
-			col=new ODGridColumn("Category",90);
+			col=new ODGridColumn("Category",80);
 			gridBenefits.Columns.Add(col);
 			col=new ODGridColumn("%",40);//,HorizontalAlignment.Right);
 			gridBenefits.Columns.Add(col);
-			col=new ODGridColumn("Amt",60);//,HorizontalAlignment.Right);
+			col=new ODGridColumn("Amt",50);//,HorizontalAlignment.Right);
 			gridBenefits.Columns.Add(col);
 			col=new ODGridColumn("Time Period",80);
 			gridBenefits.Columns.Add(col);
@@ -2881,9 +3016,480 @@ namespace OpenDental{
 		//private bool FillPatPlanCur(){
 		//}
 
+		//Added SPK/AAD 10/06 for eligibility check.-------------------------------------------------------------------------
+		#region EligibilityCheck
+		//PraciceWeb seems to have a partnership agreement with this clearinghouse, but we do not yet.
+		private void butEligibility_Click(object sender,EventArgs e) {
+			Cursor = Cursors.WaitCursor;
+			OpenDental.com.dentalxchange.webservices.WebServiceService DCIService 
+				= new OpenDental.com.dentalxchange.webservices.WebServiceService();
+			OpenDental.com.dentalxchange.webservices.Credentials DCICredential 
+				= new OpenDental.com.dentalxchange.webservices.Credentials();
+			OpenDental.com.dentalxchange.webservices.Request DCIRequest = new OpenDental.com.dentalxchange.webservices.Request();
+			OpenDental.com.dentalxchange.webservices.Response DCIResponse = new OpenDental.com.dentalxchange.webservices.Response();
+			DataTable table;
+			string loginID;
+			string passWord;
+			string command;
+			// Get Login / Password
+			command = @"select loginid,password from clearinghouse where isDefault=1";
+			table =General.GetTable(command);
+			if(table.Rows.Count != 0) {
+				loginID = PIn.PString(table.Rows[0][0].ToString());
+				passWord = PIn.PString(table.Rows[0][1].ToString());
+			}
+			else {
+				loginID = "";
+				passWord = "";
+			}
+
+			if(loginID == "") {
+				MessageBox.Show("ClaimConnect login ID and password are required to check eligibility.");
+				Cursor = Cursors.Default;
+				return;
+			}
+
+			// Set Credentials
+			DCICredential.serviceID = "DCI Web Service ID: 001513";
+			DCICredential.username = loginID;   // ABCuser
+			DCICredential.password = passWord;  // testing1
+			DCICredential.client = "Practice-Web";
+			DCICredential.version = "1";
+			// Set Request Document
+			//textAddress.Text = PrepareEligibilityRequest();
+			DCIRequest.content = PrepareEligibilityRequest(loginID,passWord);
+			try {
+				DCIResponse = DCIService.lookupEligibility(DCICredential,DCIRequest);
+				//DisplayEligibilityStatus();
+				ProcessResponse(DCIResponse.content.ToString());
+			}
+			catch(Exception ex) {
+
+				MessageBox.Show("Error : " + ex.Message);
+			}
+			Cursor = Cursors.Default;
+		}
+
+		private string PrepareEligibilityRequest(string loginID,string passWord) {
+			string command;
+			DataTable table;
+			string infoReceiverLastName;
+			string infoReceiverFirstName;
+			string practiceAddress1;
+			string practiceAddress2;
+			string practicePhone;
+			string practiceCity;
+			string practiceState;
+			string practiceZip;
+			string renderingProviderLastName;
+			string renderingProviderFirstName;
+			string GenderCode;
+			string TaxoCode;
+			string RelationShip;
+
+			XmlDocument doc = new XmlDocument();
+
+			XmlNode EligNode = doc.CreateNode(XmlNodeType.Element,"EligRequest","");
+			doc.AppendChild(EligNode);
+			// Prepare Namespace Attribute
+			XmlAttribute nameSpaceAttribute = doc.CreateAttribute("xmlns","xsi","http://www.w3.org/2000/xmlns/");
+			nameSpaceAttribute.Value = "http://www.w3.org/2001/XMLSchema-instance";
+			doc.DocumentElement.SetAttributeNode(nameSpaceAttribute);
+
+			// Prepare noNamespace Schema Location Attribute
+			XmlAttribute noNameSpaceSchemaLocation = doc.CreateAttribute("xsi","noNamespaceSchemaLocation","http://www.w3.org/2001/XMLSchema-instance");
+			noNameSpaceSchemaLocation.Value = @"D:\eligreq.xsd";
+			doc.DocumentElement.SetAttributeNode(noNameSpaceSchemaLocation);
+
+			//  Prepare AuthInfo Node
+			XmlNode AuthInfoNode = doc.CreateNode(XmlNodeType.Element,"AuthInfo","");
+			//  Create UserName / Password ChildNode for AuthInfoNode
+			XmlNode UserName = doc.CreateNode(XmlNodeType.Element,"UserName","");
+			XmlNode Password = doc.CreateNode(XmlNodeType.Element,"Password","");
+			//  Set Value of UserID / Password
+			UserName.InnerText = loginID;
+			Password.InnerText = passWord;
+			//  Append UserName / Password to AuthInfoNode
+			AuthInfoNode.AppendChild(UserName);
+			AuthInfoNode.AppendChild(Password);
+
+			//  Append AuthInfoNode To EligNode
+			EligNode.AppendChild(AuthInfoNode);
+
+			//  Prepare Information Receiver Node
+			XmlNode InfoReceiver = doc.CreateNode(XmlNodeType.Element,"InformationReceiver","");
+			XmlNode InfoAddress = doc.CreateNode(XmlNodeType.Element,"Address","");
+			XmlNode InfoAddressName = doc.CreateNode(XmlNodeType.Element,"Name","");
+			XmlNode InfoAddressFirstName = doc.CreateNode(XmlNodeType.Element,"FirstName","");
+			XmlNode InfoAddressLastName = doc.CreateNode(XmlNodeType.Element,"LastName","");
+
+			// Get Provider Information
+			command = @"SELECT FName,LName,Specialty FROM provider WHERE provnum=" + Convert.ToInt32(((Pref)PrefB.HList["PracticeDefaultProv"]).ValueString);
+			table =General.GetTable(command);
+
+			if(table.Rows.Count != 0) {
+				infoReceiverFirstName = PIn.PString(table.Rows[0][0].ToString());
+				infoReceiverLastName = PIn.PString(table.Rows[0][1].ToString());
+				// Case statment for TaxoCode
+				switch(PIn.PInt(table.Rows[0][2].ToString())) {
+					case 1:
+						TaxoCode = "124Q00000X";
+						break;
+					case 2:
+						TaxoCode = "1223D0001X";
+						break;
+					case 3:
+						TaxoCode = "1223E0200X";
+						break;
+					case 4:
+						TaxoCode = "1223P0106X";
+						break;
+					case 5:
+						TaxoCode = "1223D0008X";
+						break;
+					case 6:
+						TaxoCode = "1223S0112X";
+						break;
+					case 7:
+						TaxoCode = "1223X0400X";
+						break;
+					case 8:
+						TaxoCode = "1223P0221X";
+						break;
+					case 9:
+						TaxoCode = "1223P0300X";
+						break;
+					case 10:
+						TaxoCode = "1223P0700X";
+						break;
+					default:
+						TaxoCode = "1223G0001X";
+						break;
+				}
+
+			}
+			else {
+				infoReceiverFirstName = "Unknown";
+				infoReceiverLastName = "Unknown";
+				TaxoCode = "Unknown";
+			};
+
+			InfoAddressFirstName.InnerText = infoReceiverLastName;
+			InfoAddressLastName.InnerText = infoReceiverFirstName;
+			InfoAddressName.AppendChild(InfoAddressFirstName);
+			InfoAddressName.AppendChild(InfoAddressLastName);
+
+			XmlNode InfoAddressLine1 = doc.CreateNode(XmlNodeType.Element,"AddressLine1","");
+			XmlNode InfoAddressLine2 = doc.CreateNode(XmlNodeType.Element,"AddressLine2","");
+			XmlNode InfoPhone = doc.CreateNode(XmlNodeType.Element,"Phone","");
+			XmlNode InfoCity = doc.CreateNode(XmlNodeType.Element,"City","");
+			XmlNode InfoState = doc.CreateNode(XmlNodeType.Element,"State","");
+			XmlNode InfoZip = doc.CreateNode(XmlNodeType.Element,"Zip","");
+
+			//  Populate Practioner demographic from hash table
+			practiceAddress1 = ((Pref)PrefB.HList["PracticeAddress"]).ValueString;
+			practiceAddress2 = ((Pref)PrefB.HList["PracticeAddress2"]).ValueString;
+			// Format Phone
+			if(((Pref)PrefB.HList["PracticePhone"]).ValueString.Length == 10) {
+				practicePhone = ((Pref)PrefB.HList["PracticePhone"]).ValueString.Substring(0,3)
+                                    + "-" + ((Pref)PrefB.HList["PracticePhone"]).ValueString.Substring(3,3)
+                                    + "-" + ((Pref)PrefB.HList["PracticePhone"]).ValueString.Substring(6);
+			}
+			else {
+				practicePhone = ((Pref)PrefB.HList["PracticePhone"]).ValueString;
+			}
+
+			practiceCity = ((Pref)PrefB.HList["PracticeCity"]).ValueString;
+			practiceState = ((Pref)PrefB.HList["PracticeST"]).ValueString;
+			practiceZip = ((Pref)PrefB.HList["PracticeZip"]).ValueString;
+
+			InfoAddressLine1.InnerText = practiceAddress1;
+			InfoAddressLine2.InnerText = practiceAddress2;
+			InfoPhone.InnerText = practicePhone;
+			InfoCity.InnerText = practiceCity;
+			InfoState.InnerText = practiceState;
+			InfoZip.InnerText = practiceZip;
+
+			InfoAddress.AppendChild(InfoAddressName);
+			InfoAddress.AppendChild(InfoAddressLine1);
+			InfoAddress.AppendChild(InfoAddressLine2);
+			InfoAddress.AppendChild(InfoPhone);
+			InfoAddress.AppendChild(InfoCity);
+			InfoAddress.AppendChild(InfoState);
+			InfoAddress.AppendChild(InfoZip);
+			InfoReceiver.AppendChild(InfoAddress);
+
+
+			XmlNode InfoCredential = doc.CreateNode(XmlNodeType.Element,"Credential","");
+			XmlNode InfoCredentialType = doc.CreateNode(XmlNodeType.Element,"Type","");
+			XmlNode InfoCredentialValue = doc.CreateNode(XmlNodeType.Element,"Value","");
+			InfoCredentialType.InnerText = "TJ";
+			InfoCredentialValue.InnerText = "123456789";
+			InfoCredential.AppendChild(InfoCredentialType);
+			InfoCredential.AppendChild(InfoCredentialValue);
+
+			InfoReceiver.AppendChild(InfoCredential);
+
+			XmlNode InfoTaxonomyCode = doc.CreateNode(XmlNodeType.Element,"TaxonomyCode","");
+			InfoTaxonomyCode.InnerText = TaxoCode;
+			InfoReceiver.AppendChild(InfoTaxonomyCode);
+
+			//  Append InfoReceiver To EligNode
+			EligNode.AppendChild(InfoReceiver);
+
+			//  Payer Info
+			XmlNode InfoPayer = doc.CreateNode(XmlNodeType.Element,"Payer","");
+			XmlNode InfoPayerNEIC = doc.CreateNode(XmlNodeType.Element,"PayerNEIC","");
+			InfoPayerNEIC.InnerText = textElectID.Text;
+			InfoPayer.AppendChild(InfoPayerNEIC);
+			EligNode.AppendChild(InfoPayer);
+
+			//  Patient
+			XmlNode Patient = doc.CreateNode(XmlNodeType.Element,"Patient","");
+			XmlNode PatientName = doc.CreateNode(XmlNodeType.Element,"Name","");
+			XmlNode PatientFirstName = doc.CreateNode(XmlNodeType.Element,"FirstName","");
+			XmlNode PatientLastName = doc.CreateNode(XmlNodeType.Element,"LastName","");
+			XmlNode PatientDOB = doc.CreateNode(XmlNodeType.Element,"DOB","");
+			XmlNode PatientSubscriber = doc.CreateNode(XmlNodeType.Element,"SubscriberID","");
+			XmlNode PatientRelationship = doc.CreateNode(XmlNodeType.Element,"RelationshipCode","");
+			XmlNode PatientGender = doc.CreateNode(XmlNodeType.Element,"Gender","");
+
+			// Read Patient FName,LName,DOB, and Gender from Patient Table
+			command = @"SELECT FName,LName,date_format(birthdate,'%m/%d/%Y') as BirthDate,Gender
+				FROM patient WHERE patient.PatNum=" + PatPlanCur.PatNum;
+			table = General.GetTable(command);
+
+			if(table.Rows.Count != 0) {
+				PatientFirstName.InnerText = PIn.PString(table.Rows[0][0].ToString());
+				PatientLastName.InnerText = PIn.PString(table.Rows[0][1].ToString());
+				PatientDOB.InnerText = PIn.PString(table.Rows[0][2].ToString());
+				switch(comboRelationship.Text) {
+					case "Self":
+						RelationShip = "18";
+						break;
+					case "Spouse":
+						RelationShip = "01";
+						break;
+					case "Child":
+						RelationShip = "19";
+						break;
+					default:
+						RelationShip = "34";
+						break;
+
+				}
+
+				switch(PIn.PString(table.Rows[0][3].ToString())) {
+					case "1":
+						GenderCode = "F";
+						break;
+					default:
+						GenderCode = "M";
+						break;
+				}
+
+			}
+			else {
+				PatientFirstName.InnerText = "Unknown";
+				PatientLastName.InnerText = "Unknown";
+				PatientDOB.InnerText = "99/99/9999";
+				RelationShip = "??";
+				GenderCode = "?";
+			}
+
+			PatientName.AppendChild(PatientFirstName);
+			PatientName.AppendChild(PatientLastName);
+			PatientSubscriber.InnerText = textSubscriberID.Text;
+
+			PatientRelationship.InnerText = RelationShip;
+			PatientGender.InnerText = GenderCode;
+			Patient.AppendChild(PatientName);
+			Patient.AppendChild(PatientDOB);
+			Patient.AppendChild(PatientSubscriber);
+			Patient.AppendChild(PatientRelationship);
+			Patient.AppendChild(PatientGender);
+			EligNode.AppendChild(Patient);
+
+			//  Subscriber
+			XmlNode Subscriber = doc.CreateNode(XmlNodeType.Element,"Subscriber","");
+			XmlNode SubscriberName = doc.CreateNode(XmlNodeType.Element,"Name","");
+			XmlNode SubscriberFirstName = doc.CreateNode(XmlNodeType.Element,"FirstName","");
+			XmlNode SubscriberLastName = doc.CreateNode(XmlNodeType.Element,"LastName","");
+			XmlNode SubscriberDOB = doc.CreateNode(XmlNodeType.Element,"DOB","");
+			XmlNode SubscriberSubscriber = doc.CreateNode(XmlNodeType.Element,"SubscriberID","");
+			XmlNode SubscriberRelationship = doc.CreateNode(XmlNodeType.Element,"RelationshipCode","");
+			XmlNode SubscriberGender = doc.CreateNode(XmlNodeType.Element,"Gender","");
+
+			// Read Subscriber FName,LName,DOB, and Gender from Patient Table
+			command = @"SELECT FName,LName,date_format(birthdate,'%m/%d/%Y') as BirthDate,Gender
+				        FROM PATIENT WHERE PatNum In (SELECT Guarantor FROM 
+                            PATIENT WHERE patnum = " + PatPlanCur.PatNum + ")";
+			table = General.GetTable(command);
+
+			if(table.Rows.Count != 0) {
+				SubscriberFirstName.InnerText = PIn.PString(table.Rows[0][0].ToString());
+				SubscriberLastName.InnerText = PIn.PString(table.Rows[0][1].ToString());
+				SubscriberDOB.InnerText = PIn.PString(table.Rows[0][2].ToString());
+				switch(PIn.PString(table.Rows[0][3].ToString())) {
+					case "1":
+						GenderCode = "F";
+						break;
+					default:
+						GenderCode = "M";
+						break;
+				}
+			}
+			else {
+				SubscriberFirstName.InnerText = "Unknown";
+				SubscriberLastName.InnerText = "Unknown";
+				SubscriberDOB.InnerText = "99/99/9999";
+				GenderCode = "?";
+			}
+
+			SubscriberName.AppendChild(SubscriberFirstName);
+			SubscriberName.AppendChild(SubscriberLastName);
+
+			SubscriberSubscriber.InnerText = textSubscriberID.Text;
+
+			SubscriberRelationship.InnerText = RelationShip;
+			SubscriberGender.InnerText = GenderCode;
+			Subscriber.AppendChild(SubscriberName);
+			Subscriber.AppendChild(SubscriberDOB);
+			Subscriber.AppendChild(SubscriberSubscriber);
+			Subscriber.AppendChild(SubscriberRelationship);
+			Subscriber.AppendChild(SubscriberGender);
+			EligNode.AppendChild(Subscriber);
+
+			//  Prepare Information Receiver Node
+			XmlNode RenderingProvider = doc.CreateNode(XmlNodeType.Element,"RenderingProvider","");
+			XmlNode RenderingAddress = doc.CreateNode(XmlNodeType.Element,"Address","");
+			XmlNode RenderingAddressName = doc.CreateNode(XmlNodeType.Element,"Name","");
+			XmlNode RenderingAddressFirstName = doc.CreateNode(XmlNodeType.Element,"FirstName","");
+			XmlNode RenderingAddressLastName = doc.CreateNode(XmlNodeType.Element,"LastName","");
+
+			// Get Rendering Provider first and lastname
+
+			// Read Patient FName,LName,DOB, and Gender from Patient Table
+			command = @"SELECT Fname,Lname from provider
+                        WHERE provnum in (select priprov from 
+                        patient where patnum = " + PatPlanCur.PatNum + ")";
+			table = General.GetTable(command);
+
+			if(table.Rows.Count != 0) {
+				renderingProviderFirstName = PIn.PString(table.Rows[0][0].ToString());
+				renderingProviderLastName = PIn.PString(table.Rows[0][1].ToString());
+
+			}
+			else {
+				renderingProviderFirstName = infoReceiverFirstName;
+				renderingProviderLastName = infoReceiverLastName;
+			};
+			RenderingAddressFirstName.InnerText = renderingProviderFirstName;
+			RenderingAddressLastName.InnerText = renderingProviderLastName;
+
+			RenderingAddressName.AppendChild(RenderingAddressFirstName);
+			RenderingAddressName.AppendChild(RenderingAddressLastName);
+
+
+			XmlNode RenderingAddressLine1 = doc.CreateNode(XmlNodeType.Element,"AddressLine1","");
+			XmlNode RenderingAddressLine2 = doc.CreateNode(XmlNodeType.Element,"AddressLine2","");
+			XmlNode RenderingPhone = doc.CreateNode(XmlNodeType.Element,"Phone","");
+			XmlNode RenderingCity = doc.CreateNode(XmlNodeType.Element,"City","");
+			XmlNode RenderingState = doc.CreateNode(XmlNodeType.Element,"State","");
+			XmlNode RenderingZip = doc.CreateNode(XmlNodeType.Element,"Zip","");
+
+			RenderingAddressLine1.InnerText = practiceAddress1;
+			RenderingAddressLine2.InnerText = practiceAddress2;
+			RenderingPhone.InnerText = practicePhone;
+			RenderingCity.InnerText = practiceCity;
+			RenderingState.InnerText = practiceState;
+			RenderingZip.InnerText = practiceZip;
+
+
+			RenderingAddress.AppendChild(RenderingAddressName);
+			RenderingAddress.AppendChild(RenderingAddressLine1);
+			RenderingAddress.AppendChild(RenderingAddressLine2);
+			RenderingAddress.AppendChild(RenderingPhone);
+			RenderingAddress.AppendChild(RenderingCity);
+			RenderingAddress.AppendChild(RenderingState);
+			RenderingAddress.AppendChild(RenderingZip);
+
+			XmlNode RenderingCredential = doc.CreateNode(XmlNodeType.Element,"Credential","");
+			XmlNode RenderingCredentialType = doc.CreateNode(XmlNodeType.Element,"Type","");
+			XmlNode RenderingCredentialValue = doc.CreateNode(XmlNodeType.Element,"Value","");
+			RenderingCredentialType.InnerText = "TJ";
+			RenderingCredentialValue.InnerText = "123456789";
+			RenderingCredential.AppendChild(RenderingCredentialType);
+			RenderingCredential.AppendChild(RenderingCredentialValue);
+
+			XmlNode RenderingTaxonomyCode = doc.CreateNode(XmlNodeType.Element,"TaxonomyCode","");
+			RenderingTaxonomyCode.InnerText = TaxoCode;
+			RenderingProvider.AppendChild(RenderingAddress);
+			RenderingProvider.AppendChild(RenderingCredential);
+			RenderingProvider.AppendChild(RenderingTaxonomyCode);
+
+			//  Append RenderingProvider To EligNode
+			EligNode.AppendChild(RenderingProvider);
+			return doc.OuterXml;
+		}
+
+		private void ProcessResponse(string DCIResponse) {
+			XmlDocument doc = new XmlDocument();
+			XmlNode IsEligibleNode;
+			string IsEligibleStatus;
+			doc.LoadXml(DCIResponse);
+			IsEligibleNode = doc.SelectSingleNode("EligBenefitResponse/isEligible");
+			switch(IsEligibleNode.InnerText) {
+				case "0": // SPK
+					IsEligibleStatus = textSubscriber.Text + " is Eligible";
+					XmlNode GroupNum;
+					GroupNum = doc.SelectSingleNode("EligBenefitResponse/Subscriber/Plan/GroupNum");
+					textGroupNum.Text = GroupNum.InnerText;
+					break;
+				case "1": // SPK
+					// Process Error code and Message Node AAD
+					XmlNode ErrorCode;
+					XmlNode ErrorMessage;
+					ErrorCode = doc.SelectSingleNode("EligBenefitResponse/Response/ErrorCode");
+					ErrorMessage = doc.SelectSingleNode("EligBenefitResponse/Response/ErrorMsg");
+					IsEligibleStatus = textSubscriber.Text + " is Not Eligible. Error Code:";
+					IsEligibleStatus += ErrorCode.InnerText + " Error Description:" + ErrorMessage.InnerText;
+					break;
+				default:
+					IsEligibleStatus = textSubscriber.Text + " Eligibility status is Unknown";
+					break;
+			};
+			MessageBox.Show(IsEligibleStatus);
+		}
+
+		private void labelViewRequestDocument_Click(object sender,EventArgs e) {
+			DataTable table;
+			string loginID;
+			string passWord;
+			string command;
+
+			// Get Login / Password
+			command = @"select loginid,password from clearinghouse where isDefault=1";
+			table = General.GetTable(command);
+
+			if(table.Rows.Count != 0) {
+				loginID = PIn.PString(table.Rows[0][0].ToString());
+				passWord = PIn.PString(table.Rows[0][1].ToString());
+			}
+			else {
+				loginID = "";
+				passWord = "";
+			}
+
+			MsgBoxCopyPaste MB = new MsgBoxCopyPaste(PrepareEligibilityRequest(loginID,passWord));
+			MB.ShowDialog();
+		}
+		#endregion
+
 		private void butOK_Click(object sender,System.EventArgs e) {
 			if(textDateEffect.errorProvider1.GetError(textDateEffect)!=""
 				||textDateTerm.errorProvider1.GetError(textDateTerm)!=""
+				||textDentaide.errorProvider1.GetError(textDentaide)!=""
 				) {
 				MsgBox.Show(this,"Please fix data entry errors first.");
 				return;
@@ -2908,19 +3514,25 @@ namespace OpenDental{
 			PlanCur.GroupName=textGroupName.Text;
 			PlanCur.GroupNum=textGroupNum.Text;
 			PlanCur.DivisionNo=textDivisionNo.Text;//only visible in Canada
-			//carrier:
-				CarrierCur=new Carrier();
-				CarrierCur.CarrierName=textCarrier.Text;
-				CarrierCur.Phone=textPhone.Text;
-				CarrierCur.Address=textAddress.Text;
-				CarrierCur.Address2=textAddress2.Text;
-				CarrierCur.City=textCity.Text;
-				CarrierCur.State=textState.Text;
-				CarrierCur.Zip=textZip.Text;
-				CarrierCur.ElectID=textElectID.Text;
-				CarrierCur.NoSendElect=checkNoSendElect.Checked;
+			//carrier-----------------------------------------------------------------------------------------------------
+			CarrierCur=new Carrier();
+			CarrierCur.CarrierName=textCarrier.Text;
+			CarrierCur.Phone=textPhone.Text;
+			CarrierCur.Address=textAddress.Text;
+			CarrierCur.Address2=textAddress2.Text;
+			CarrierCur.City=textCity.Text;
+			CarrierCur.State=textState.Text;
+			CarrierCur.Zip=textZip.Text;
+			CarrierCur.ElectID=textElectID.Text;
+			CarrierCur.NoSendElect=checkNoSendElect.Checked;
+			try{
 				Carriers.GetCurSame(CarrierCur);
-				PlanCur.CarrierNum=CarrierCur.CarrierNum;
+			}
+			catch(ApplicationException ex){
+				//the catch is just to display a message to the user.  It doesn't affect the success of the function.
+				MessageBox.Show(ex.Message);
+			}	
+			PlanCur.CarrierNum=CarrierCur.CarrierNum;
 			//plantype already handled.
 			if(comboClaimForm.SelectedIndex!=-1)
 				PlanCur.ClaimFormNum=ClaimForms.ListShort[comboClaimForm.SelectedIndex].ClaimFormNum;
@@ -2940,6 +3552,7 @@ namespace OpenDental{
 			else
 				PlanCur.AllowedFeeSched=FeeSchedsAllowed[comboAllowedFeeSched.SelectedIndex-1].DefNum;
 			PlanCur.FilingCode=(InsFilingCode)comboFilingCode.SelectedIndex;
+			PlanCur.DentaideCardSequence=PIn.PInt(textDentaide.Text);
 			PlanCur.TrojanID=textTrojanID.Text;
 			PlanCur.PlanNote=textPlanNote.Text;
 			PlanCur.ReleaseInfo=checkRelease.Checked;
@@ -3058,6 +3671,8 @@ namespace OpenDental{
 				PatPlans.Delete(PatPlanCur.PatPlanNum);//no need to check dependencies.  Maintains ordinals and recomputes estimates.
 			}
 		}
+
+		
 
 		
 

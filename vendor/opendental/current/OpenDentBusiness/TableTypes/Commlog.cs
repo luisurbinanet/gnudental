@@ -16,11 +16,11 @@ namespace OpenDentBusiness{
 		///<summary>Note for this commlog entry.</summary>
 		public string Note;
 		///<summary>Enum:CommItemMode Phone, email, etc.</summary>
-		public CommItemMode Mode;
+		public CommItemMode Mode_;
 		///<summary>Enum:CommSentOrReceived Neither=0,Sent=1,Received=2.</summary>
 		public CommSentOrReceived SentOrReceived;
-		///<summary>FK to emailmessage.EmailMessageNum, if there is an associated email. Otherwise 0.</summary>
-		public int EmailMessageNum;
+		//<summary>FK to emailmessage.EmailMessageNum, if there is an associated email. Otherwise 0.</summary>
+		//public int EmailMessageNum;
 
 		///<summary></summary>
 		public Commlog Copy(){
@@ -30,9 +30,8 @@ namespace OpenDentBusiness{
 			c.CommDateTime=CommDateTime;
 			c.CommType=CommType;
 			c.Note=Note;
-			c.Mode=Mode;
+			c.Mode_=Mode_;
 			c.SentOrReceived=SentOrReceived;
-			c.EmailMessageNum=EmailMessageNum;
 			return c;
 		}
 

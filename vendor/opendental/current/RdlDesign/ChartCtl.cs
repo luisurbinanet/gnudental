@@ -1,5 +1,5 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
@@ -22,6 +22,7 @@
 */
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Data;
@@ -35,7 +36,7 @@ namespace fyiReporting.RdlDesign
 	/// </summary>
 	internal class ChartCtl : System.Windows.Forms.UserControl, IProperty
 	{
-		private ArrayList _ReportItems;
+        private List<XmlNode> _ReportItems;
 		private DesignXmlDraw _Draw;
 		bool fChartType, fSubtype, fPalette, fRenderElement, fPercentWidth;
 		bool fNoRows, fDataSet, fPageBreakStart, fPageBreakEnd;
@@ -63,7 +64,7 @@ namespace fyiReporting.RdlDesign
 		/// </summary>
 		private System.ComponentModel.Container components = null;
 
-		internal ChartCtl(DesignXmlDraw dxDraw, ArrayList ris)
+        internal ChartCtl(DesignXmlDraw dxDraw, List<XmlNode> ris)
 		{
 			_ReportItems = ris;
 			_Draw = dxDraw;
@@ -76,7 +77,7 @@ namespace fyiReporting.RdlDesign
 
 		private void InitValues()
 		{
-			XmlNode node = (XmlNode) _ReportItems[0];
+			XmlNode node = _ReportItems[0];
 
 			this.cbChartType.Text = _Draw.GetElementValue(node, "Type", "Column");
 			this.cbSubType.Text = _Draw.GetElementValue(node, "Subtype", "Plain");
@@ -96,8 +97,8 @@ namespace fyiReporting.RdlDesign
 			if (_Draw.GetReportItemDataRegionContainer(node) != null)
 				cbDataSet.Enabled = false;
 			// page breaks
-			this.chkPageBreakStart.Checked = _Draw.GetElementValue(node, "PageBreakAtStart", "False").ToLower() == "true"? true: false;
-			this.chkPageBreakEnd.Checked = _Draw.GetElementValue(node, "PageBreakAtEnd", "False").ToLower() == "true"? true: false;
+			this.chkPageBreakStart.Checked = _Draw.GetElementValue(node, "PageBreakAtStart", "false").ToLower() == "true"? true: false;
+			this.chkPageBreakEnd.Checked = _Draw.GetElementValue(node, "PageBreakAtEnd", "false").ToLower() == "true"? true: false;
 
 			// Chart data-- this is a simplification of what is possible (TODO) 
 			string cdata="";
@@ -421,11 +422,11 @@ namespace fyiReporting.RdlDesign
 			}
 			if (fPageBreakStart)
 			{
-				_Draw.SetElement(node, "PageBreakAtStart", this.chkPageBreakStart.Checked? "True": "False");
+				_Draw.SetElement(node, "PageBreakAtStart", this.chkPageBreakStart.Checked? "true": "false");
 			}
 			if (fPageBreakEnd)
 			{
-				_Draw.SetElement(node, "PageBreakAtEnd", this.chkPageBreakEnd.Checked? "True": "False");
+				_Draw.SetElement(node, "PageBreakAtEnd", this.chkPageBreakEnd.Checked? "true": "false");
 			}
 			if (fChartData)
 			{

@@ -412,7 +412,7 @@ namespace OpenDental{
 		#endregion
 
 		private void FormEmailMessageEdit_Load(object sender, System.EventArgs e) {
-			if(MessageCur.MsgDateTime.Year<1880){//not sent
+			if(MessageCur.SentOrReceived==CommSentOrReceived.Neither){
 				labelSent.Visible=false;
 				textMsgDateTime.Text=Lan.g(this,"Unsent");
 				textMsgDateTime.ForeColor=Color.Red;
@@ -668,9 +668,11 @@ namespace OpenDental{
 			MessageCur.ToAddress=textToAddress.Text;
 			MessageCur.Subject=textSubject.Text;
 			MessageCur.BodyText=textBodyText.Text;
+			MessageCur.MsgDateTime=DateTime.Now;
+			//Notice that SentOrReceived does not change here.
 			if(IsNew) {
 				EmailMessages.Insert(MessageCur);
-				Commlog CommlogCur=new Commlog();
+				/*Commlog CommlogCur=new Commlog();
 				CommlogCur.PatNum=MessageCur.PatNum;
 				CommlogCur.CommDateTime=DateTime.Now;
 				CommlogCur.CommType=CommItemType.Misc;
@@ -678,7 +680,7 @@ namespace OpenDental{
 				CommlogCur.Mode=CommItemMode.Email;
 				CommlogCur.SentOrReceived=CommSentOrReceived.Sent;
 				CommlogCur.Note=MessageCur.Subject;
-				Commlogs.Insert(CommlogCur);
+				Commlogs.Insert(CommlogCur);*/
 			}
 			else {
 				EmailMessages.Update(MessageCur);
@@ -727,7 +729,8 @@ namespace OpenDental{
 			}
 			MsgBox.Show(this,"Sent");
 			Cursor=Cursors.Default;
-			MessageCur.MsgDateTime=DateTime.Now;
+			//MessageCur.MsgDateTime=DateTime.Now;
+			MessageCur.SentOrReceived=CommSentOrReceived.Sent;
 			SaveMsg();
 			DialogResult=DialogResult.OK;
 		}

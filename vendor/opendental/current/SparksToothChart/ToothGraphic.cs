@@ -7,6 +7,7 @@ using System.IO;
 using System.Resources;
 using System.Text;
 using System.Text.RegularExpressions;
+using OpenDentBusiness;
 
 namespace SparksToothChart {
 	public class ToothGraphic {
@@ -60,7 +61,7 @@ namespace SparksToothChart {
 		///<summary>If sealant, then this will contain the color.</summary>
 		public Color colorSealant;
 
-		///<summary>Constructor requires passing in the toothID.  Exception will be thrown if not one of the following: 1-32 or A-T.  Loads graphics data from local resources.</summary>
+		///<summary>Only called from GraphicalToothChart.ResetTeeth when program first loads.  Constructor requires passing in the toothID.  Exception will be thrown if not one of the following: 1-32 or A-T.  Loads graphics data from local resources.</summary>
 		public ToothGraphic(string tooth_id) {
 			if(tooth_id!="implant" && !IsValidToothID(tooth_id)) {
 				///<summary>This will only happen if bugs in program</summary>
@@ -199,6 +200,24 @@ namespace SparksToothChart {
 				}
 				((ToothGroup)Groups[i]).Visible=setVisible;
 			}
+		}
+
+		///<summary>This is only used once for the initial fill of display lists.</summary>
+		public ToothGroup GetGroupForDisplayList(int index){
+			ToothGroupType groupType=(ToothGroupType)index;//this can be enhanced later, but this is simple for now.
+			for(int i=0;i<Groups.Count;i++) {
+				if(((ToothGroup)Groups[i]).GroupType==groupType) {
+					return (ToothGroup)Groups[i];
+				}
+			}
+			return null;
+		}
+
+		///<summary>This is used when calling display lists.</summary>
+		public int GetIndexForDisplayList(ToothGroup group) {
+			int toothInt=Tooth.ToOrdinal(toothID);
+			//this can be enhanced later, but it's very simple for now.
+			return (toothInt*10)+(int)group.GroupType;
 		}
 
 		#endregion Public Methods

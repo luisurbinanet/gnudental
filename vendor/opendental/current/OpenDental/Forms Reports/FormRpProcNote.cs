@@ -127,7 +127,7 @@ namespace OpenDental{
 			report.AddTitle("INCOMPLETE PROCEDURE NOTES");
 			report.AddSubTitle(((Pref)PrefB.HList["PracticeTitle"]).ValueString);
 			report.Query=@"SELECT procedurelog.ProcDate,
-				CONCAT(patient.LName,', ',patient.FName),
+				CONCAT(CONCAT(patient.LName,', '),patient.FName),
 				procedurelog.ADACode,procedurecode.Descript,
 				procedurelog.ToothNum,procedurelog.Surf
 				FROM procedurelog,patient,procedurecode,procnote n1
@@ -147,7 +147,7 @@ namespace OpenDental{
 			report.AddColumn("Tth",30,FieldValueType.String);
 			report.AddColumn("Surf",40,FieldValueType.String);
 			report.AddPageNum();
-			if(!report.SubmitQuery()) {
+      if(!report.SubmitQuery()){
 				DialogResult=DialogResult.Cancel;
 				return;
 			}

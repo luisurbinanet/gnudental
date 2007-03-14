@@ -17,7 +17,7 @@ namespace OpenDental{
 				"SELECT periomeasure.*,perioexam.ExamDate"
 				+" FROM periomeasure,perioexam"
 				+" WHERE periomeasure.PerioExamNum = perioexam.PerioExamNum"
-				+" && perioexam.PatNum = '"+patNum.ToString()+"'"
+				+" AND perioexam.PatNum = '"+patNum.ToString()+"'"
 				+" ORDER BY perioexam.ExamDate";
 			DataTable table=General.GetTable(command);
 			List=new PerioMeasure[PerioExams.List.Length,Enum.GetNames(typeof(PerioSequenceType)).Length,33];
@@ -113,7 +113,7 @@ namespace OpenDental{
 			//first, delete all skipped teeth for this exam
 			string command = "DELETE from periomeasure WHERE "
 				+"PerioExamNum = '"+perioExamNum.ToString()+"' "
-				+"&& SequenceType = '"+POut.PInt((int)PerioSequenceType.SkipTooth)+"'";
+				+"AND SequenceType = '"+POut.PInt((int)PerioSequenceType.SkipTooth)+"'";
 			General.NonQ(command);
 			//then add the new ones in one at a time.
 			PerioMeasure Cur;
@@ -137,8 +137,8 @@ namespace OpenDental{
 		public static ArrayList GetSkipped(int perioExamNum){
 			string command = "SELECT IntTooth FROM periomeasure WHERE "
 				+"SequenceType = '"+POut.PInt((int)PerioSequenceType.SkipTooth)+"' "
-				+"&& PerioExamNum = '"+perioExamNum.ToString()+"' "
-				+"&& ToothValue = '1'";
+				+"AND PerioExamNum = '"+perioExamNum.ToString()+"' "
+				+"AND ToothValue = '1'";
 			DataTable table=General.GetTable(command);
 			ArrayList retList=new ArrayList();
 			for(int i=0;i<table.Rows.Count;i++){

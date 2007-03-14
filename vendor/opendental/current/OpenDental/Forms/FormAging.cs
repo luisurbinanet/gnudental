@@ -177,7 +177,7 @@ The results can be viewed in various reports.  Be aware that if you later open a
 				Patients.UpdateAging(allGuarantors[i],Ledgers.Bal[0],Ledgers.Bal[1],Ledgers.Bal[2]
 					,Ledgers.Bal[3],Ledgers.InsEst,Ledgers.BalTotal);
 			}
-			if(Prefs.UpdateString("DateLastAging",POut.PDate(DateTime.Today))){
+			if(Prefs.UpdateString("DateLastAging",POut.PDate(DateTime.Today,false))){
 				DataValid.SetInvalid(InvalidTypes.Prefs);
 			}
 			Cursor=Cursors.Default;

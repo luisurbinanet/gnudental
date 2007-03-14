@@ -46,6 +46,13 @@ namespace OpenDental.Eclaims
 				else if(Clearinghouses.List[i].Eformat==ElectronicClaimFormat.Renaissance){
 					result=Renaissance.SendBatch(claimsByCHouse[i],batchNum);
 				}
+				else if(Clearinghouses.List[i].Eformat==ElectronicClaimFormat.Canadian) {
+					//Canadian is a little different because we need the sequence numbers.
+					//So all programs are launched and statuses changed from within Canadian.SendBatch()
+					//We don't care what the result is.
+					Canadian.SendBatch(claimsByCHouse[i],batchNum);
+					continue;
+				}
 				else{
 					result=false;//(ElectronicClaimFormat.None does not get sent)
 				}
@@ -104,9 +111,17 @@ namespace OpenDental.Eclaims
 					//}
 				}
 				//----------------------------------------------------------------------------------------
-				//finally, change the claim statuses to Probably sent.
-				for(int j=0;j<claimsByCHouse[i].Count;j++){
-					Claims.UpdateStatus(((ClaimSendQueueItem)claimsByCHouse[i][j]).ClaimNum,"P");
+				//finally, mark the claims sent. (only if not Canadian)
+				EtransType etype=EtransType.ClaimSent;
+				if(Clearinghouses.List[i].Eformat==ElectronicClaimFormat.Renaissance){
+					etype=EtransType.Claim_Ren;
+				}
+				if(Clearinghouses.List[i].Eformat!=ElectronicClaimFormat.Canadian){
+					for(int j=0;j<claimsByCHouse[i].Count;j++){
+						Etranss.SetClaimSentOrPrinted(((ClaimSendQueueItem)claimsByCHouse[i][j]).ClaimNum,
+							((ClaimSendQueueItem)claimsByCHouse[i][j]).PatNum,
+							Clearinghouses.List[i].ClearinghouseNum,etype);
+					}
 				}
 			}//for(int i=0;i<claimsByCHouse.Length;i++){
 		}
@@ -136,6 +151,9 @@ namespace OpenDental.Eclaims
 			}
 			else if(clearhouse.Eformat==ElectronicClaimFormat.Renaissance){
 				return Renaissance.GetMissingData(queueItem);
+			}
+			else if(clearhouse.Eformat==ElectronicClaimFormat.Canadian) {
+				return Canadian.GetMissingData(queueItem);
 			}
 			return "";
 		}

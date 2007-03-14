@@ -1,5 +1,5 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
@@ -450,12 +450,12 @@ namespace fyiReporting.RdlDesign
 				_Draw.RemoveElement(rNode, "TopMargin");
 			// Page header settings
 			XmlNode phNode = _Draw.GetCreateNamedChildNode(rNode, "PageHeader");
-			_Draw.SetElement(phNode, "PrintOnFirstPage", this.chkPHFirst.Checked?"True":"False");
-			_Draw.SetElement(phNode, "PrintOnLastPage", this.chkPHLast.Checked?"True":"False");
+			_Draw.SetElement(phNode, "PrintOnFirstPage", this.chkPHFirst.Checked?"true":"false");
+			_Draw.SetElement(phNode, "PrintOnLastPage", this.chkPHLast.Checked?"true":"false");
 			// Page footer settings
 			XmlNode pfNode = _Draw.GetCreateNamedChildNode(rNode, "PageFooter");
-			_Draw.SetElement(pfNode, "PrintOnFirstPage", this.chkPFFirst.Checked?"True":"False");
-			_Draw.SetElement(pfNode, "PrintOnLastPage", this.chkPFLast.Checked?"True":"False");
+			_Draw.SetElement(pfNode, "PrintOnFirstPage", this.chkPFFirst.Checked?"true":"false");
+			_Draw.SetElement(pfNode, "PrintOnLastPage", this.chkPFLast.Checked?"true":"false");
 
 		}
 

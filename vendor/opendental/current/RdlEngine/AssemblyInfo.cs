@@ -11,7 +11,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("fyiReporting Software, LLC")]
 [assembly: AssemblyProduct("RDL Project")]
-[assembly: AssemblyCopyright("Copyright (C) 2004-2005  fyiReporting Software, LLC")]
+[assembly: AssemblyCopyright("Copyright (C) 2004-2006  fyiReporting Software, LLC")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]		
 
@@ -26,7 +26,7 @@ using System.Runtime.CompilerServices;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 
-[assembly: AssemblyVersion("4.0.10")]
+[assembly: AssemblyVersion("2.9.3")]
 
 //
 // In order to sign your assembly you must specify a key to use. Refer to the 
@@ -53,6 +53,5 @@ using System.Runtime.CompilerServices;
 //   (*) Delay Signing is an advanced option - see the Microsoft .NET Framework
 //       documentation for more information on this.
 //
-[assembly: AssemblyDelaySign(false)]
-//[assembly: AssemblyKeyFile("..\\..\\..\\mykey.snk")]
-[assembly: AssemblyKeyName("")]
+//[assembly: AssemblyDelaySign(false)]
+//[assembly: AssemblyKeyName("")]

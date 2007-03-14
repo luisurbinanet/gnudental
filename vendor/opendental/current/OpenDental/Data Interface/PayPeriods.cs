@@ -38,9 +38,9 @@ namespace OpenDental{
 				command+="'"+POut.PInt(pp.PayPeriodNum)+"', ";
 			}
 			command+=
-				 "'"+POut.PDate  (pp.DateStart)+"', "
-				+"'"+POut.PDate  (pp.DateStop)+"', "
-				+"'"+POut.PDate  (pp.DatePaycheck)+"')";
+				 POut.PDate  (pp.DateStart)+", "
+				+POut.PDate  (pp.DateStop)+", "
+				+POut.PDate  (pp.DatePaycheck)+")";
 			if(PrefB.RandomKeys) {
 				General.NonQ(command);
 			}
@@ -52,9 +52,9 @@ namespace OpenDental{
 		///<summary></summary>
 		public static void Update(PayPeriod pp) {
 			string command= "UPDATE payperiod SET "
-				+"DateStart = '"    +POut.PDate  (pp.DateStart)+"' "
-				+",DateStop = '"    +POut.PDate  (pp.DateStop)+"' "
-				+",DatePaycheck = '"+POut.PDate  (pp.DatePaycheck)+"' "
+				+"DateStart = "    +POut.PDate  (pp.DateStart)+" "
+				+",DateStop = "    +POut.PDate  (pp.DateStop)+" "
+				+",DatePaycheck = "+POut.PDate  (pp.DatePaycheck)+" "
 				+"WHERE PayPeriodNum = '"+POut.PInt(pp.PayPeriodNum)+"'";
 			General.NonQ(command);
 		}

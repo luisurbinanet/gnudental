@@ -134,13 +134,13 @@ namespace OpenDental{
 			DateTime startQDate = DateTime.Today.AddDays(-daysOld);
 			Queries.CurReport.Query = "SELECT carrier.CarrierName,claim.ClaimNum"
 				+",claim.ClaimType,claim.DateService,"
-				+"CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI), claim.DateSent"
+				+"CONCAT(CONCAT(CONCAT(CONCAT(patient.LName,', '),patient.FName),' '),patient.MiddleI), claim.DateSent"
 				+",claim.ClaimFee,carrier.Phone "
 				+"FROM claim,insplan,patient,carrier "
 				+"WHERE claim.PlanNum = insplan.PlanNum "
-				+"&& claim.PatNum = patient.PatNum "
-				+"&& carrier.CarrierNum = insplan.CarrierNum "
-				+"&& claim.ClaimStatus='S' && claim.DateSent < '"+POut.PDate(startQDate)+"' "
+				+"AND claim.PatNum = patient.PatNum "
+				+"AND carrier.CarrierNum = insplan.CarrierNum "
+				+"AND claim.ClaimStatus='S' && claim.DateSent < "+POut.PDate(startQDate)+" "
 				+"ORDER BY carrier.Phone,insplan.PlanNum";
 			FormQuery2=new FormQuery();
 			FormQuery2.IsReport=true;

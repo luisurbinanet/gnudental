@@ -11,13 +11,13 @@ namespace OpenDental{
 		///<summary></summary>
 		private static void Update(Adjustment adj){
 			string command="UPDATE adjustment SET " 
-				+ "adjdate = '"      +POut.PDate  (adj.AdjDate)+"'"
+				+ "adjdate = "      +POut.PDate  (adj.AdjDate)
 				+ ",adjamt = '"      +POut.PDouble(adj.AdjAmt)+"'"
 				+ ",patnum = '"      +POut.PInt   (adj.PatNum)+"'"
 				+ ",adjtype = '"     +POut.PInt   (adj.AdjType)+"'"
 				+ ",provnum = '"     +POut.PInt   (adj.ProvNum)+"'"
 				+ ",adjnote = '"     +POut.PString(adj.AdjNote)+"'"
-				+ ",ProcDate = '"    +POut.PDate  (adj.ProcDate)+"'"
+				+ ",ProcDate = "    +POut.PDate  (adj.ProcDate)
 				+ ",ProcNum = '"     +POut.PInt   (adj.ProcNum)+"'"
 				//DateEntry not allowed to change
 				+" WHERE adjNum = '" +POut.PInt   (adj.AdjNum)+"'";
@@ -40,15 +40,20 @@ namespace OpenDental{
 				command+="'"+POut.PInt(adj.AdjNum)+"', ";
 			}
 			command+=
-				 "'"+POut.PDate  (adj.AdjDate)+"', "
+				 POut.PDate  (adj.AdjDate)+", "
 				+"'"+POut.PDouble(adj.AdjAmt)+"', "
 				+"'"+POut.PInt   (adj.PatNum)+"', "
 				+"'"+POut.PInt   (adj.AdjType)+"', "
 				+"'"+POut.PInt   (adj.ProvNum)+"', "
 				+"'"+POut.PString(adj.AdjNote)+"', "
-				+"'"+POut.PDate  (adj.ProcDate)+"', "
-				+"'"+POut.PInt   (adj.ProcNum)+"', "
-				+"NOW())";//DateEntry set to server date
+				+POut.PDate  (adj.ProcDate)+", "
+				+"'"+POut.PInt   (adj.ProcNum)+"', ";
+			if(FormChooseDatabase.DBtype==DatabaseType.Oracle) {
+				command+=POut.PDateT(MiscData.GetNowDateTime());
+			}else{//Assume MySQL
+				command+="NOW()";//DateEntry set to server date
+			}
+			command+=")";
 			if(PrefB.RandomKeys){
 				General.NonQ(command);
 			}

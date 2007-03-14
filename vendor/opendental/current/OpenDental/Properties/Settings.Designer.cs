@@ -22,5 +22,15 @@ namespace OpenDental.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://webservices.dentalxchange.com/dws/services/dciservice.svl")]
+        public string OpenDental_com_dentalxchange_webservices_WebServiceService {
+            get {
+                return ((string)(this["OpenDental_com_dentalxchange_webservices_WebServiceService"]));
+            }
+        }
     }
 }

@@ -15,7 +15,7 @@ namespace OpenDentBusiness{
 		public DateTime DateService;//
 		///<summary>Usually the date it was created.  It might be sent a few days later if you don't send your e-claims every day.</summary>
 		public DateTime DateSent;
-		///<summary>Single char: U,H,W,P,S,or R.  U=Unsent, H=Hold until pri received, W=Waiting in queue, P=Probably sent, S=Sent, R=Received.  A(adj) is no longer used.</summary>
+		///<summary>Single char: U,H,W,P,S,or R.  U=Unsent, H=Hold until pri received, W=Waiting in queue, S=Sent, R=Received.  A(adj) is no longer used.  P(prob sent) is no longer used.</summary>
 		public string ClaimStatus;
 		///<summary>Date the claim was received.</summary>
 		public DateTime DateReceived;

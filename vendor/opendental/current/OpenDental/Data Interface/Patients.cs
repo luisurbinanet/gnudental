@@ -24,13 +24,38 @@ namespace OpenDental{
 			if(table.Rows.Count==0){
 				return null;
 			}
-			command= 
-				"SELECT * "
-				+"FROM patient "
-				+"WHERE Guarantor = '"+table.Rows[0][0].ToString()+"'"
-				+" ORDER BY (PatNum!=Guarantor), Birthdate";
+			if(FormChooseDatabase.DBtype==DatabaseType.MySql){
+				command= 
+					"SELECT patient.* "
+					+"FROM patient "
+					+"WHERE Guarantor = '"+table.Rows[0][0].ToString()+"'"
+					+" ORDER BY Guarantor!=PatNum,Birthdate";
+			}
+			else if(FormChooseDatabase.DBtype==DatabaseType.Oracle){
+				command= 
+					"SELECT patient.*,CASE WHEN PatNum=Guarantor THEN 0 ELSE 1 END AS isguarantor "
+					+"FROM patient "
+					+"WHERE Guarantor = '"+table.Rows[0][0].ToString()+"'"
+					+" ORDER BY 67,Birthdate";//just asking for bugs
+			}
 			Family fam=new Family();
+			//MessageBox.Show(command);
 			fam.List=SubmitAndFill(command);
+			//sort the list. This is required due to limitations in Oracle.
+			/*for(int i=0;i<fam.List.Length;i++){
+				if(i==0){
+					continue;
+				}
+				if(fam.List[i].PatNum==fam.List[i].Guarantor){
+					Patient guarantor=fam.List[i].Copy();
+					//move all the other patients down.  Work from the bottom up.
+					for(int j=i-1;j>=0;j--){
+						fam.List[j+1]=fam.List[j].Copy();
+					}
+					//then put the guar on top
+					fam.List[0]=guarantor.Copy();
+				}
+			}*/
 			return fam;
 		}
 
@@ -106,9 +131,14 @@ namespace OpenDental{
 				retVal[i].Premed       = PIn.PBool  (table.Rows[i][56].ToString());
 				retVal[i].Ward         = PIn.PString(table.Rows[i][57].ToString());
 				retVal[i].PreferConfirmMethod=(ContactMethod)PIn.PInt(table.Rows[i][58].ToString());
-				retVal[i].SchedBeforeTime= PIn.PDateT(table.Rows[i][59].ToString());
-				retVal[i].SchedAfterTime= PIn.PDateT(table.Rows[i][60].ToString());
-				retVal[i].SchedDayOfWeek= PIn.PInt(table.Rows[i][61].ToString());
+				retVal[i].PreferContactMethod=(ContactMethod)PIn.PInt(table.Rows[i][59].ToString());
+				retVal[i].PreferRecallMethod=(ContactMethod)PIn.PInt(table.Rows[i][60].ToString());
+				retVal[i].SchedBeforeTime= PIn.PDateT(table.Rows[i][61].ToString());
+				retVal[i].SchedAfterTime= PIn.PDateT(table.Rows[i][62].ToString());
+				retVal[i].SchedDayOfWeek= PIn.PInt(table.Rows[i][63].ToString());
+				retVal[i].Language     = PIn.PString(table.Rows[i][64].ToString());
+				retVal[i].AdmitDate    = PIn.PDate  (table.Rows[i][65].ToString());
+				//WARNING.  If you add any rows, you MUST change the number in GetFamily()
 			}
 			return retVal;
 		}
@@ -130,8 +160,9 @@ namespace OpenDental{
 				+"studentstatus,schoolname,chartnumber,medicaidid"
 				+",Bal_0_30,Bal_31_60,Bal_61_90,BalOver90,insest,BalTotal"
 				+",EmployerNum,EmploymentNote,Race,County,GradeSchool,GradeLevel,Urgency,DateFirstVisit"
-				+",ClinicNum,HasIns,TrophyFolder,PlannedIsDone,Premed,Ward,PreferConfirmMethod,SchedBeforeTime,SchedAfterTime"
-				+",SchedDayOfWeek) VALUES(";
+				+",ClinicNum,HasIns,TrophyFolder,PlannedIsDone,Premed,Ward,PreferConfirmMethod,PreferContactMethod,PreferRecallMethod"
+				+",SchedBeforeTime,SchedAfterTime"
+				+",SchedDayOfWeek,Language,AdmitDate) VALUES(";
 			if(includePatNum || PrefB.RandomKeys) {
 				command+="'"+POut.PInt(pat.PatNum)+"', ";
 			}
@@ -142,7 +173,7 @@ namespace OpenDental{
 				+"'"+POut.PInt((int)pat.PatStatus)+"', "
 				+"'"+POut.PInt((int)pat.Gender)+"', "
 				+"'"+POut.PInt((int)pat.Position)+"', "
-				+"'"+POut.PDate(pat.Birthdate)+"', "
+				+POut.PDate(pat.Birthdate)+", "
 				+"'"+POut.PString(pat.SSN)+"', "
 				+"'"+POut.PString(pat.Address)+"', "
 				+"'"+POut.PString(pat.Address2)+"', "
@@ -184,7 +215,7 @@ namespace OpenDental{
 				+"'"+POut.PString(pat.GradeSchool)+"', "
 				+"'"+POut.PInt((int)pat.GradeLevel)+"', "
 				+"'"+POut.PInt((int)pat.Urgency)+"', "
-				+"'"+POut.PDate(pat.DateFirstVisit)+"', "
+				+POut.PDate(pat.DateFirstVisit)+", "
 				+"'"+POut.PInt(pat.ClinicNum)+"', "
 				+"'"+POut.PString(pat.HasIns)+"', "
 				+"'"+POut.PString(pat.TrophyFolder)+"', "
@@ -192,9 +223,13 @@ namespace OpenDental{
 				+"'"+POut.PBool(pat.Premed)+"', "
 				+"'"+POut.PString(pat.Ward)+"', "
 				+"'"+POut.PInt((int)pat.PreferConfirmMethod)+"', "
-				+"'"+POut.PDateT(pat.SchedBeforeTime)+"', "
-				+"'"+POut.PDateT(pat.SchedAfterTime)+"', "
-				+"'"+POut.PInt(pat.SchedDayOfWeek)+"')";
+				+"'"+POut.PInt((int)pat.PreferContactMethod)+"', "
+				+"'"+POut.PInt((int)pat.PreferRecallMethod)+"', "
+				+POut.PDateT(pat.SchedBeforeTime)+", "
+				+POut.PDateT(pat.SchedAfterTime)+", "
+				+"'"+POut.PInt(pat.SchedDayOfWeek)+"', "
+				+"'"+POut.PString(pat.Language)+"', "
+				+POut.PDate(pat.AdmitDate)+")";
 			if(PrefB.RandomKeys) {
 				General.NonQ(command);
 			}
@@ -250,7 +285,7 @@ namespace OpenDental{
 			if(pat.Birthdate!=CurOld.Birthdate) {
 				if(comma)
 					c+=",";
-				c+="Birthdate = '" +POut.PDate(pat.Birthdate)+"'";
+				c+="Birthdate = " +POut.PDate(pat.Birthdate);
 				comma=true;
 			}
 			if(pat.SSN!=CurOld.SSN) {
@@ -502,7 +537,7 @@ namespace OpenDental{
 			if(pat.DateFirstVisit!=CurOld.DateFirstVisit) {
 				if(comma)
 					c+=",";
-				c+="DateFirstVisit = '" +POut.PDate(pat.DateFirstVisit)+"'";
+				c+="DateFirstVisit = " +POut.PDate(pat.DateFirstVisit);
 				comma=true;
 			}
 			if(pat.ClinicNum!=CurOld.ClinicNum) {
@@ -547,22 +582,46 @@ namespace OpenDental{
 				c+="PreferConfirmMethod = '"     +POut.PInt((int)pat.PreferConfirmMethod)+"'";
 				comma=true;
 			}
+			if(pat.PreferContactMethod!=CurOld.PreferContactMethod) {
+				if(comma)
+					c+=",";
+				c+="PreferContactMethod = '"     +POut.PInt((int)pat.PreferContactMethod)+"'";
+				comma=true;
+			}
+			if(pat.PreferRecallMethod!=CurOld.PreferRecallMethod) {
+				if(comma)
+					c+=",";
+				c+="PreferRecallMethod = '"     +POut.PInt((int)pat.PreferRecallMethod)+"'";
+				comma=true;
+			}
 			if(pat.SchedBeforeTime!=CurOld.SchedBeforeTime) {
 				if(comma)
 					c+=",";
-				c+="SchedBeforeTime = '"     +POut.PDateT(pat.SchedBeforeTime)+"'";
+				c+="SchedBeforeTime = "     +POut.PDateT(pat.SchedBeforeTime);
 				comma=true;
 			}
 			if(pat.SchedAfterTime!=CurOld.SchedAfterTime) {
 				if(comma)
 					c+=",";
-				c+="SchedAfterTime = '"     +POut.PDateT(pat.SchedAfterTime)+"'";
+				c+="SchedAfterTime = "     +POut.PDateT(pat.SchedAfterTime);
 				comma=true;
 			}
 			if(pat.SchedDayOfWeek!=CurOld.SchedDayOfWeek) {
 				if(comma)
 					c+=",";
 				c+="SchedDayOfWeek = '"     +POut.PInt(pat.SchedDayOfWeek)+"'";
+				comma=true;
+			}
+			if(pat.Language!=CurOld.Language) {
+				if(comma)
+					c+=",";
+				c+="Language = '"     +POut.PString(pat.Language)+"'";
+				comma=true;
+			}
+			if(pat.AdmitDate!=CurOld.AdmitDate) {
+				if(comma)
+					c+=",";
+				c+="AdmitDate = "     +POut.PDate(pat.AdmitDate);
 				comma=true;
 			}
 			if(!comma)
@@ -578,7 +637,10 @@ namespace OpenDental{
 		}
 
  		///<summary>Only used for the Select Patient dialog</summary>
-		public static DataTable GetPtDataTable(bool limit,string lname,string fname,string hmphone,string wkphone,string address,bool hideInactive,string city,string state,string ssn,string patnum,string chartnumber,int[] billingtypes,bool guarOnly){
+		public static DataTable GetPtDataTable(bool limit,string lname,string fname,string phone,//string wkphone,
+			string address,bool hideInactive,string city,string state,string ssn,string patnum,string chartnumber,
+			int[] billingtypes,bool guarOnly,bool showArchived)
+		{
 			//bool retval=false;
 			string billingsnippet="";
 			for(int i=0;i<billingtypes.Length;i++){
@@ -586,12 +648,25 @@ namespace OpenDental{
 					billingsnippet+="AND (";
 				}
 				else{
-					billingsnippet+="|| ";
+					billingsnippet+="OR ";
 				}
 				billingsnippet+="BillingType ='"+billingtypes[i].ToString()+"' ";
 				if(i==billingtypes.Length-1){//if there is only one row, this will also be triggered.
 					billingsnippet+=") ";
 				}
+			}
+			string phonedigits="";
+			for(int i=0;i<phone.Length;i++){
+				if(Regex.IsMatch(phone[i].ToString(),"[0-9]")){
+					phonedigits=phonedigits+phone[i];
+				}
+			}
+			string regexp="";
+			for(int i=0;i<phonedigits.Length;i++){
+				if(i!=0){
+					regexp+="[^0-9]*";//zero or more intervening digits that are not numbers
+				}
+				regexp+=phonedigits[i];
 			}
 			string command= 
 				"SELECT PatNum,LName,FName,MiddleI,Preferred,Birthdate,SSN,HmPhone,WkPhone,Address,PatStatus"
@@ -599,10 +674,14 @@ namespace OpenDental{
 				+"FROM patient "
 				+"WHERE PatStatus != '4' "//not status 'deleted'
 				+"AND LName LIKE '"      +POut.PString(lname)+"%' "
-				+"AND FName LIKE '"      +POut.PString(fname)+"%' "
-				+"AND HmPhone LIKE '"    +POut.PString(hmphone)+"%' "
-				+"AND WkPhone LIKE '"    +POut.PString(wkphone)+"%' "
-				+"AND Address LIKE '"    +POut.PString(address)+"%' "
+				+"AND FName LIKE '"      +POut.PString(fname)+"%' ";
+			if(regexp!=""){
+				command+="AND (HmPhone REGEXP '"+POut.PString(regexp)+"' "
+					+"OR WkPhone REGEXP '"+POut.PString(regexp)+"' "
+					+"OR WirelessPhone REGEXP '"+POut.PString(regexp)+"') ";
+			}
+			command+=
+				"AND Address LIKE '"    +POut.PString(address)+"%' "
 				+"AND City LIKE '"       +POut.PString(city)+"%' "
 				+"AND State LIKE '"      +POut.PString(state)+"%' "
 				+"AND SSN LIKE '"        +POut.PString(ssn)+"%' "
@@ -610,15 +689,24 @@ namespace OpenDental{
 				+"AND ChartNumber LIKE '"+POut.PString(chartnumber)+"%' "
 				+billingsnippet;
 			if(hideInactive){
-				command+="AND PatStatus = '0' ";
+				command+="AND PatStatus != '2' ";
+			}
+			if(!showArchived) {
+				command+="AND PatStatus != '3' AND PatStatus != '5' ";
 			}
 			if(guarOnly){
 				command+="AND PatNum = Guarantor ";
 			}
-			command+="ORDER BY LName,FName";
-			if(limit)
-				command+=" LIMIT 36";//only need 35, but the extra will help indicate more rows
-			//MessageBox.Show(string command);
+			command+="ORDER BY LName,FName ";
+			if(limit){
+				if(FormChooseDatabase.DBtype==DatabaseType.Oracle){
+					command="SELECT * FROM ("+command+") WHERE ROWNUM<=";
+				}else{//Assume MySQL
+					command+="LIMIT ";
+				}
+				command+="36";//only need 35, but the extra will help indicate more rows
+			}
+			//MessageBox.Show(command);
  			DataTable table=General.GetTable(command);
 			DataTable PtDataTable=table.Clone();//does not copy any data
 			for(int i=0;i<PtDataTable.Columns.Count;i++){
@@ -643,7 +731,7 @@ namespace OpenDental{
 				r[8]=table.Rows[i][8].ToString();//WkPhone
 				r[9]=table.Rows[i][9].ToString();//Address
 				r[10]=((PatientStatus)PIn.PInt(table.Rows[i][10].ToString())).ToString();//PatStatus
-				r[11]=Defs.GetName(DefCat.BillingTypes,PIn.PInt(table.Rows[i][11].ToString()));//BillingType
+				r[11]=DefB.GetName(DefCat.BillingTypes,PIn.PInt(table.Rows[i][11].ToString()));//BillingType
 				r[12]=table.Rows[i][12].ToString();//ChartNumber
 				r[13]=table.Rows[i][13].ToString();//City
 				r[14]=table.Rows[i][14].ToString();//State
@@ -677,7 +765,7 @@ namespace OpenDental{
 			if(patNums.Length>0){
 				for(int i=0;i<patNums.Length;i++){
 					if(i>0){
-						strPatNums+="|| ";
+						strPatNums+="OR ";
 					}
 					strPatNums+="PatNum='"+patNums[i].ToString()+"' ";
 				}
@@ -751,9 +839,13 @@ namespace OpenDental{
 				multPats[i].Premed       = PIn.PBool  (table.Rows[i][56].ToString());
 				multPats[i].Ward         = PIn.PString(table.Rows[i][57].ToString());
 				multPats[i].PreferConfirmMethod=(ContactMethod)PIn.PInt(table.Rows[i][58].ToString());
-				multPats[i].SchedBeforeTime= PIn.PDateT(table.Rows[i][59].ToString());
-				multPats[i].SchedAfterTime= PIn.PDateT(table.Rows[i][60].ToString());
-				multPats[i].SchedDayOfWeek= PIn.PInt(table.Rows[i][61].ToString());
+				multPats[i].PreferContactMethod=(ContactMethod)PIn.PInt(table.Rows[i][59].ToString());
+				multPats[i].PreferRecallMethod=(ContactMethod)PIn.PInt(table.Rows[i][60].ToString());
+				multPats[i].SchedBeforeTime= PIn.PDateT(table.Rows[i][61].ToString());
+				multPats[i].SchedAfterTime= PIn.PDateT(table.Rows[i][62].ToString());
+				multPats[i].SchedDayOfWeek= PIn.PInt(table.Rows[i][63].ToString());
+				multPats[i].Language     = PIn.PString(table.Rows[i][64].ToString());
+				multPats[i].AdmitDate    = PIn.PDate  (table.Rows[i][65].ToString());
 			}
 			return multPats;
 		}
@@ -908,7 +1000,7 @@ namespace OpenDental{
 			General.NonQ(command);
 		}
 
-		///<summary>Used in new patient terminal.  Synchs less fields the the normal synch.</summary>
+		///<summary>Used in new patient terminal.  Synchs less fields than the normal synch.</summary>
 		public static void UpdateAddressForFamTerminal(Patient pat) {
 			string command= "UPDATE patient SET " 
 				+"Address = '"    +POut.PString(pat.Address)+"'"
@@ -927,7 +1019,41 @@ namespace OpenDental{
 				+"addrnote = '"   +POut.PString(pat.AddrNote)+"'"
 				+" WHERE guarantor = '"+POut.PDouble(pat.Guarantor)+"'";
 			DataTable table=General.GetTable(command);
-		}		
+		}
+
+		///<summary>Only used from FormRecallListEdit.  Updates two fields for family if they are already the same for the entire family.  If they start out different for different family members, then it only changes the two fields for the single patient.</summary>
+		public static void UpdatePhoneAndNoteIfNeeded(string newphone, string newnote, int patNum){
+			string command="SELECT Guarantor,HmPhone,AddrNote FROM patient WHERE Guarantor="
+				+"(SELECT Guarantor FROM patient WHERE PatNum="+POut.PInt(patNum)+")";
+			DataTable table=General.GetTable(command);
+			bool phoneIsSame=true;
+			bool noteIsSame=true;
+			int guar=PIn.PInt(table.Rows[0]["Guarantor"].ToString());
+			for(int i=0;i<table.Rows.Count;i++){
+				if(table.Rows[i]["HmPhone"].ToString()!=table.Rows[0]["HmPhone"].ToString()){
+					phoneIsSame=false;
+				}
+				if(table.Rows[i]["AddrNote"].ToString()!=table.Rows[0]["AddrNote"].ToString()) {
+					noteIsSame=false;
+				}
+			}
+			command="UPDATE patient SET HmPhone='"+POut.PString(newphone)+"' WHERE ";
+			if(phoneIsSame){
+				command+="Guarantor="+POut.PInt(guar);
+			}
+			else{
+				command+="PatNum="+POut.PInt(patNum);
+			}
+			General.NonQ(command);
+			command="UPDATE patient SET AddrNote='"+POut.PString(newnote)+"' WHERE ";
+			if(noteIsSame) {
+				command+="Guarantor="+POut.PInt(guar);
+			}
+			else {
+				command+="PatNum="+POut.PInt(patNum);
+			}
+			General.NonQ(command);
+		}
 
 		///<summary>This is only used in the Billing dialog</summary>
 		public static PatAging[] GetAgingList(string age,DateTime lastStatement,int[] billingIndices,bool excludeAddr
@@ -1005,7 +1131,7 @@ namespace OpenDental{
 					command+=" OR billingtype = '";
 				}
 				command+=
-					Defs.Short[(int)DefCat.BillingTypes][billingIndices[i]].DefNum.ToString()+"'";
+					DefB.Short[(int)DefCat.BillingTypes][billingIndices[i]].DefNum.ToString()+"'";
 			}
 			command+=")";
 			if(excludeAddr){
@@ -1013,12 +1139,12 @@ namespace OpenDental{
 			}	
 			command+=" GROUP BY patient.PatNum ";
 			if(includeChanged){
-				command+="HAVING LastStatement < '"+POut.PDate(lastStatement.AddDays(1))+"' "//<midnight of lastStatement date
+				command+="HAVING LastStatement < "+POut.PDate(lastStatement.AddDays(1))+" "//<midnight of lastStatement date
 					+"OR LastChange > LastStatement "//eg '2005-10-25' > '2005-10-24 15:00:00'
 					+"OR LastPayment > LastStatement ";
 			}
 			else{
-				command+="HAVING LastStatement < '"+POut.PDate(lastStatement.AddDays(1))+"' ";//<midnight of lastStatement date
+				command+="HAVING LastStatement < "+POut.PDate(lastStatement.AddDays(1))+" ";//<midnight of lastStatement date
 			}
 			command+="ORDER BY LName,FName";
 			//Debug.WriteLine(command);
@@ -1121,7 +1247,12 @@ namespace OpenDental{
 		public static string GetNextChartNum(){
 			string command="SELECT ChartNumber from patient WHERE"
 				+" ChartNumber REGEXP '^[0-9]+$'"//matches any number of digits
-				+" ORDER BY (chartnumber+0) DESC LIMIT 1";//1/13/05 by Keyush Shaw-added 0.
+				+" ORDER BY (chartnumber+0) DESC ";//1/13/05 by Keyush Shaw-added 0.
+			if(FormChooseDatabase.DBtype==DatabaseType.Oracle){
+				command="SELECT * FROM ("+command+") WHERE ROWNUM<=1";
+			}else{//Assume MySQL
+				command+="LIMIT 1";
+			}
 			DataTable table=General.GetTable(command);
 			if(table.Rows.Count==0){//no existing chart numbers
 				return "1";
@@ -1138,7 +1269,7 @@ namespace OpenDental{
 		public static string ChartNumUsedBy(string chartNum,int excludePatNum){
 			string command="SELECT LName,FName from patient WHERE "
 				+"ChartNumber = '"+chartNum
-				+"' && PatNum != '"+excludePatNum.ToString()+"'";
+				+"' AND PatNum != '"+excludePatNum.ToString()+"'";
 			DataTable table=General.GetTable(command);
 			string retVal="";
 			if(table.Rows.Count!=0){//found duplicate chart number
@@ -1198,7 +1329,7 @@ namespace OpenDental{
 			string command="SELECT patient.HasIns,COUNT(patplan.PatNum) FROM patient "
 				+"LEFT JOIN patplan ON patplan.PatNum=patient.PatNum"
 				+" WHERE patient.PatNum="+POut.PInt(patNum)
-				+" GROUP BY patplan.PatNum";
+				+" GROUP BY patplan.PatNum,patient.HasIns";
 			DataTable table=General.GetTable(command);
 			string newVal="";
 			if(table.Rows[0][1].ToString()!="0"){

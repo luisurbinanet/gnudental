@@ -1,5 +1,5 @@
 /* ====================================================================
-    Copyright (C) 2004-2005  fyiReporting Software, LLC
+    Copyright (C) 2004-2006  fyiReporting Software, LLC
 
     This file is part of the fyiReporting RDL project.
 	
@@ -22,6 +22,7 @@
 */
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Data;
@@ -35,7 +36,7 @@ namespace fyiReporting.RdlDesign
 	/// </summary>
 	internal class PositionCtl : System.Windows.Forms.UserControl, IProperty
 	{
-		private ArrayList _ReportItems;
+        private List<XmlNode> _ReportItems;
 		private DesignXmlDraw _Draw;
 		bool fName, fLeft, fTop, fWidth, fHeight, fZIndex, fColSpan;
 		bool fCanGrow, fCanShrink, fHideDuplicates, fToggleImage, fDataElementStyle;
@@ -68,7 +69,7 @@ namespace fyiReporting.RdlDesign
 		/// </summary>
 		private System.ComponentModel.Container components = null;
 
-		internal PositionCtl(DesignXmlDraw dxDraw, ArrayList ris)
+        internal PositionCtl(DesignXmlDraw dxDraw, List<XmlNode> ris)
 		{
 			_ReportItems = ris;
 			_Draw = dxDraw;
@@ -81,7 +82,7 @@ namespace fyiReporting.RdlDesign
 
 		private void InitValues()
 		{
-			XmlNode riNode = (XmlNode) _ReportItems[0];
+			XmlNode riNode = _ReportItems[0];
 			XmlNode tcell = null;
 
 			if (_ReportItems.Count > 1)
@@ -129,8 +130,8 @@ namespace fyiReporting.RdlDesign
 				if (grps != null)
 					cbHideDuplicates.Items.AddRange(grps);
 				this.cbHideDuplicates.Text = _Draw.GetElementValue(riNode, "HideDuplicates", "");
-				this.chkCanGrow.Checked = _Draw.GetElementValue(riNode, "CanGrow", "False").ToLower() == "true";
-				this.chkCanShrink.Checked = _Draw.GetElementValue(riNode, "CanShrink", "False").ToLower() == "true";
+				this.chkCanGrow.Checked = _Draw.GetElementValue(riNode, "CanGrow", "false").ToLower() == "true";
+				this.chkCanShrink.Checked = _Draw.GetElementValue(riNode, "CanShrink", "false").ToLower() == "true";
 				XmlNode initstate = DesignXmlDraw.FindNextInHierarchy(riNode, "ToggleImage", "InitialState");
 				this.cbToggleImage.Text = initstate == null? "": initstate.InnerText;
 			}
@@ -368,8 +369,8 @@ namespace fyiReporting.RdlDesign
 			// 
 			this.cbToggleImage.Items.AddRange(new object[] {
 															   "",
-															   "True",
-															   "False"});
+															   "true",
+															   "false"});
 			this.cbToggleImage.Location = new System.Drawing.Point(120, 80);
 			this.cbToggleImage.Name = "cbToggleImage";
 			this.cbToggleImage.Size = new System.Drawing.Size(256, 21);
@@ -564,9 +565,9 @@ namespace fyiReporting.RdlDesign
 			if (fHideDuplicates)
 				_Draw.SetElement(node, "HideDuplicates", this.cbHideDuplicates.Text);
 			if (fCanGrow)
-				_Draw.SetElement(node, "CanGrow", this.chkCanGrow.Checked? "True": "False");
+				_Draw.SetElement(node, "CanGrow", this.chkCanGrow.Checked? "true": "false");
 			if (fCanShrink)
-				_Draw.SetElement(node, "CanShrink", this.chkCanShrink.Checked? "True": "False");
+				_Draw.SetElement(node, "CanShrink", this.chkCanShrink.Checked? "true": "false");
 			if (fDataElementStyle)
 				_Draw.SetElement(node, "DataElementStyle", this.cbDataElementStyle.Text);
 			if (fToggleImage)
@@ -615,7 +616,7 @@ namespace fyiReporting.RdlDesign
 
 		private void tbName_Validating(object sender, System.ComponentModel.CancelEventArgs e)
 		{
-			XmlNode xNode = (XmlNode) this._ReportItems[0];
+			XmlNode xNode = this._ReportItems[0];
 
 			string err = _Draw.NameError(xNode, tbName.Text.Trim());
 			if (err != null)

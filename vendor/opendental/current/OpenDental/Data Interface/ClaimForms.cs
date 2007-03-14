@@ -78,7 +78,12 @@ namespace OpenDental{
 		public static bool Delete(ClaimForm cf){
 			//first, do dependency testing
 			string command="SELECT * FROM insplan WHERE claimformnum = '"
-				+cf.ClaimFormNum.ToString()+"' LIMIT 1";
+				+cf.ClaimFormNum.ToString()+"' ";
+			if(FormChooseDatabase.DBtype==DatabaseType.Oracle){
+				command+="AND ROWNUM <= 1";
+			}else{//Assume MySQL
+				command+="LIMIT 1";
+			}
  			DataTable table=General.GetTable(command);
 			if(table.Rows.Count==1){
 				return false;

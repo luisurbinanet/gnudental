@@ -1,9 +1,7 @@
-//This class is incomplete and is mostly in preparation for version 2.0
-
-using System;
+/*using System;
 using System.Collections;
+using System.Globalization;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
 using OpenDentBusiness;
 
 namespace OpenDental{
@@ -101,7 +99,7 @@ namespace OpenDental{
 			if(((Pref)PrefB.HList["UseInternationalToothNumbers"]).ValueString=="0"){
 				return toothNum;
 			}
-			if(toothNum=="")
+			if(toothNum==null || toothNum=="")
 				return "";
 			int intToothI=0;//the international tooth number we will find
 			int intTooth=0;
@@ -142,7 +140,7 @@ namespace OpenDental{
 			return intToothI.ToString();
 		}
 
-		///<summary>MUST be validated by IsValidEntry before coming here.  All user entered toothnumbers are run through this method which automatically checks to see if using international toothnumbers.  So the procedure struct will always contain the american toothnum.</summary>
+		///<summary>MUST be validated by IsValidEntry before coming here.  All user entered toothnumbers are run through this method which automatically checks to see if using international toothnumbers.  So the procedurelog class will always contain the american toothnum.</summary>
 		public static string FromInternat(string toothNum){
 			//if not using international tooth numbers, no change.
 			if(((Pref)PrefB.HList["UseInternationalToothNumbers"]).ValueString=="0"){
@@ -421,6 +419,8 @@ namespace OpenDental{
 		///<summary>Setting forClaims to true converts V surfaces to either F or B.  toothNum might be empty, and a tidy should still be attempted.  Otherwise, toothNum must be valid.</summary>
 		public static string SurfTidy(string surf,string toothNum,bool forClaims){
 			//yes... this might be a little more elegant with a regex
+			bool isCanadian=CultureInfo.CurrentCulture.Name.Substring(3)=="CA";//en-CA or fr-CA
+			//Canadian valid=MOIDBLV
 			if(surf==null){
 				//MessageBox.Show("null");
 				surf="";
@@ -469,14 +469,28 @@ namespace OpenDental{
 				}
 			}				
 			else if(forClaims){
-				if(IsPosterior(toothNum)){
-					if(al.Contains("B") || al.Contains("V")) {
-						surfTidy+="B";
+				if(isCanadian){
+					if(IsPosterior(toothNum)) {
+						if(al.Contains("B") || al.Contains("V")) {
+							surfTidy+="B";
+						}
+					}
+					if(IsAnterior(toothNum)) {
+						if(al.Contains("F") || al.Contains("V")) {
+							surfTidy+="V";//vestibular
+						}
 					}
 				}
-				if(IsAnterior(toothNum)){
-					if(al.Contains("F") || al.Contains("V")) {
-						surfTidy+="F";
+				else{//not Canadian
+					if(IsPosterior(toothNum)){
+						if(al.Contains("B") || al.Contains("V")) {
+							surfTidy+="B";
+						}
+					}
+					if(IsAnterior(toothNum)){
+						if(al.Contains("F") || al.Contains("V")) {
+							surfTidy+="F";
+						}
 					}
 				}
 			}
@@ -505,3 +519,4 @@ namespace OpenDental{
 
 	}
 }
+*/

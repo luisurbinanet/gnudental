@@ -74,17 +74,24 @@ namespace OpenDentServer {
 			string mysqlPassword=navConn.SelectSingleNode("Password").Value;
 			string mysqlUserLow=navConn.SelectSingleNode("UserLow").Value;
 			string mysqlPasswordLow=navConn.SelectSingleNode("PasswordLow").Value;
+			XPathNavigator dbTypeNav=navConn.SelectSingleNode("DatabaseType");
+			DatabaseType dbtype=DatabaseType.MySql;
+			if(dbTypeNav!=null){
+				if(dbTypeNav.Value=="Oracle"){
+					dbtype=DatabaseType.Oracle;
+				}
+			}
 			DataConnection dcon=new DataConnection();
 			//Try to connect to the database
 			try {
-				dcon.SetDb(server,database,mysqlUser,mysqlPassword,mysqlUserLow,mysqlPasswordLow);
+				dcon.SetDb(server,database,mysqlUser,mysqlPassword,mysqlUserLow,mysqlPasswordLow,dbtype);
 				Console.WriteLine(oduser);
 			}
 			catch {
 				throw new Exception(@"Connection to database failed.  Check the values in the config file on the server, usually at C:\Program Files\Open Dental Server\OpenDentServerConfig.xml");
 			}
 			//Then, check username and password
-			if(!UserB.CheckUserAndPassword(oduser,odpasshash)) {
+			if(!UserodB.CheckUserAndPassword(oduser,odpasshash)) {
 				throw new Exception("Invalid username or password.");
 			}
 			return 0;//meaningless

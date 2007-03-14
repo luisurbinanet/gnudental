@@ -117,35 +117,86 @@ namespace OpenDental{
 				MessageBox.Show("Error, program entry not found in database.");
 				return;
 			}
-			if(Cur.ProgName=="TigerView"){
-				TigerView.SendData(Cur,pat);
-				return;
-			}
-			else if(Cur.ProgName=="Apteryx"){
+			if(Cur.ProgName=="Apteryx") {
 				Apteryx.SendData(Cur,pat);
 				return;
 			}
-			else if(Cur.ProgName=="Schick"){
-				Schick.SendData(Cur,pat);
+			else if(Cur.ProgName=="DBSWin") {
+				DBSWin.SendData(Cur,pat);
 				return;
 			}
-			else if(Cur.ProgName=="Dexis"){
+			else if(Cur.ProgName=="DentalEye") {
+				DentalEye.SendData(Cur,pat);
+				return;
+			}
+			else if(Cur.ProgName=="DentForms") {
+				DentForms.SendData(Cur,pat);
+				return;
+			}
+			else if(Cur.ProgName=="DentX") {
+				DentX.SendData(Cur,pat);
+				return;
+			}
+			else if(Cur.ProgName=="Dexis") {
 				Dexis.SendData(Cur,pat);
 				return;
 			}
-			else if(Cur.ProgName=="XDR") {
-				Dexis.SendData(Cur,pat);//XDR uses the Dexis protocol
+			else if(Cur.ProgName=="DrCeph") {
+				DrCeph.SendData(Cur,pat);
 				return;
 			}
-			else if(Cur.ProgName=="VixWinOld") {
-				VixWinOld.SendData(Cur,pat);
+			else if(Cur.ProgName=="FloridaProbe") {
+				FloridaProbe.SendData(Cur,pat);
 				return;
 			}
-			else if(Cur.ProgName=="VixWin"){
-				VixWin.SendData(Cur,pat);
+			else if(Cur.ProgName=="HouseCalls") {
+				FormHouseCalls FormHC=new FormHouseCalls();
+				FormHC.ProgramCur=Cur;
+				FormHC.ShowDialog();
 				return;
 			}
-			else if(Cur.ProgName=="Trophy"){
+			else if(Cur.ProgName=="ImageFX") {
+				ImageFX.SendData(Cur,pat);
+				return;
+			}
+			else if(Cur.ProgName=="Lightyear") {
+				Lightyear.SendData(Cur,pat);
+				return;
+			}
+			else if(Cur.ProgName=="MediaDent") {
+				MediaDent.SendData(Cur,pat);
+				return;
+			}
+			else if(Cur.ProgName=="NewPatientForm.com") {
+				NewPatientForm npf=new NewPatientForm();
+				npf.ShowDownload(Cur.Path);//NewPatientForm.com
+				return;
+			}
+			else if(Cur.ProgName=="Owandy") {
+				Owandy.SendData(Cur,pat);
+				return;
+			}
+			else if(Cur.ProgName=="PerioPal") {
+				PerioPal.SendData(Cur,pat);
+				return;
+			}
+			else if(Cur.ProgName=="Planmeca") {
+				Planmeca.SendData(Cur,pat);
+				return;
+			}
+			else if(Cur.ProgName=="Schick") {
+				Schick.SendData(Cur,pat);
+				return;
+			}
+			else if(Cur.ProgName=="Sirona") {
+				Sirona.SendData(Cur,pat);
+				return;
+			}
+			else if(Cur.ProgName=="TigerView") {
+				TigerView.SendData(Cur,pat);
+				return;
+			}
+			else if(Cur.ProgName=="Trophy") {
 				Trophy.SendData(Cur,pat);
 				return;
 			}
@@ -153,63 +204,20 @@ namespace OpenDental{
 				TrophyEnhanced.SendData(Cur,pat);
 				return;
 			}
-			else if(Cur.ProgName=="Sirona"){
-				Sirona.SendData(Cur,pat);
+			else if(Cur.ProgName=="Vipersoft") {
+				Vipersoft.SendData(Cur,pat);
 				return;
 			}
-			else if(Cur.ProgName=="HouseCalls"){
-				FormHouseCalls FormHC=new FormHouseCalls();
-				FormHC.ProgramCur=Cur;
-				FormHC.ShowDialog();
+			else if(Cur.ProgName=="VixWin") {
+				VixWin.SendData(Cur,pat);
 				return;
 			}
-			else if(Cur.ProgName=="Planmeca"){
-				Planmeca.SendData(Cur,pat);
+			else if(Cur.ProgName=="VixWinOld") {
+				VixWinOld.SendData(Cur,pat);
 				return;
 			}
-			else if(Cur.ProgName=="ImageFX"){
-				ImageFX.SendData(Cur,pat);
-				return;
-			}
-			else if(Cur.ProgName=="DentForms"){
-				DentForms.SendData(Cur,pat);
-				return;
-			}
-			else if(Cur.ProgName=="DBSWin"){
-				DBSWin.SendData(Cur,pat);
-				return;
-			}
-			else if(Cur.ProgName=="DentX"){
-				DentX.SendData(Cur,pat);
-				return;
-			}
-			else if(Cur.ProgName=="Lightyear"){
-				Lightyear.SendData(Cur,pat);
-				return;
-			}
-			else if(Cur.ProgName=="DentalEye") {
-				DentalEye.SendData(Cur,pat);
-				return;
-			}
-			else if(Cur.ProgName=="FloridaProbe") {
-				FloridaProbe.SendData(Cur,pat);
-				return;
-			}
-			else if(Cur.ProgName=="DrCeph") {
-				DrCeph.SendData(Cur,pat);
-				return;
-			}
-			else if(Cur.ProgName=="MediaDent") {
-				MediaDent.SendData(Cur,pat);
-				return;
-			}
-			else if(Cur.ProgName=="PerioPal") {
-				PerioPal.SendData(Cur,pat);
-				return;
-			}
-			else if(Cur.ProgName=="NewPatientForm.com") {
-				NewPatientForm npf=new NewPatientForm();
-				npf.ShowDownload(Cur.Path);//NewPatientForm.com
+			else if(Cur.ProgName=="XDR") {
+				Dexis.SendData(Cur,pat);//XDR uses the Dexis protocol
 				return;
 			}
 			//all remaining programs:

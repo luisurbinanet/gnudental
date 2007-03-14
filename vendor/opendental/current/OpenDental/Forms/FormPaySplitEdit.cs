@@ -756,7 +756,7 @@ namespace OpenDental
 				//ComputeProcTotals();
 				return;
 			}
-			Procedure ProcCur=Procedures.GetOneProc(PaySplitCur.ProcNum);
+			Procedure ProcCur=Procedures.GetOneProc(PaySplitCur.ProcNum,false);
 			ClaimProc[] ClaimProcList=ClaimProcs.Refresh(ProcCur.PatNum);
 			Adjustment[] AdjustmentList=Adjustments.Refresh(ProcCur.PatNum);
 			PaySplit[] PaySplitList=PaySplits.Refresh(ProcCur.PatNum);

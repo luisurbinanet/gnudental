@@ -118,7 +118,7 @@ Order By patient.lname,patient.fname
 
 */
 			Queries.CurReport.Query= "SELECT carrier.CarrierName"
-				+",CONCAT(patient.LName,', ',patient.FName,' ',patient.MiddleI),carrier.Phone,"
+				+",CONCAT(CONCAT(CONCAT(CONCAT(patient.LName,', '),patient.FName),' '),patient.MiddleI),carrier.Phone,"
 				+"insplan.Groupname "
 				+"FROM insplan,patient,carrier,patplan "
 				+"WHERE insplan.Subscriber=patient.PatNum "

@@ -198,7 +198,7 @@ namespace OpenDental.ReportingOld2
 					}
 				}
 				else if(valueType==FieldValueType.Date){
-					outputValue+=" "+Regex.Replace(snippet,@"\?",POut.PDate((DateTime)currentValues[i]));
+					outputValue+=" "+Regex.Replace(snippet,@"\?",POut.PDate((DateTime)currentValues[i],false));
 				}
 				else if(valueType==FieldValueType.Def){
 					outputValue+=" "+Regex.Replace(snippet,@"\?",POut.PInt((int)currentValues[i]));

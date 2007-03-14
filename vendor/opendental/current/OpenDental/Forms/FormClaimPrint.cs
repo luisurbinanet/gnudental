@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -30,7 +31,8 @@ namespace OpenDental{
 		///<summary></summary>
 		public bool PrintImmediately;
     private string[] displayStrings;
-		private ArrayList claimprocs;
+		///<summary>The claimprocs for this claim, not including payments and duplicates.</summary>
+		private List<ClaimProc> claimprocs;
 		///<summary>For batch generic e-claims, this just prints the data and not the background.</summary>
 		public bool HideBackground;
 		private System.Windows.Forms.Label labelTotPages;
@@ -41,11 +43,14 @@ namespace OpenDental{
 		//<summary>Set to true if using this class just to generate strings for the Renaissance link.</summary>
 		//private bool IsRenaissance;
 		private ClaimProc[] ClaimProcsForClaim;
+		///<summary>All procedures for the patient.</summary>
 		private Procedure[] ProcList;
 		///<summary>This is set externally for Renaissance and generic e-claims.  If it was not set ahead of time, it will set in FillDisplayStrings according to the insPlan.</summary>
 		public ClaimForm ClaimFormCur;
 		private InsPlan[] PlanList;
 		private Claim ClaimCur;
+		///<summary>Always length of 4.</summary>
+		private string[] diagnoses;
 
 		///<summary></summary>
 		public FormClaimPrint(){
@@ -188,7 +193,7 @@ namespace OpenDental{
 			//butPrint.Location=new Point(ClientRectangle.Width-100,ClientRectangle.Height-140);
 		}
 		private void FormClaimPrint_Load(object sender, System.EventArgs e) {
-			if(PrinterSettings.InstalledPrinters.Count==0){
+			if(PrinterSettings.InstalledPrinters.Count==0) {
 				MessageBox.Show(Lan.g(this,"No printer installed"));
 				return;
 			}
@@ -288,7 +293,7 @@ namespace OpenDental{
 					string fileName=((Pref)PrefB.HList["DocPath"]).ValueString+@"\"
 						+ClaimFormCur.Items[i].ImageFileName;
 					if(!File.Exists(fileName)){
-						MessageBox.Show("File not found.");
+						//MessageBox.Show("File not found.");
 						continue;
 					}
 					Image thisImage=Image.FromFile(fileName);
@@ -368,7 +373,7 @@ namespace OpenDental{
 				ClaimFormCur=ClaimForms.GetClaimForm(1);//hard coded to ADA claimform for now.
 				//ClaimFormItems.GetListForForm(ClaimFormCur.ClaimFormNum);
 				displayStrings=new string[ClaimFormCur.Items.Length];
-				claimprocs=new ArrayList();
+				claimprocs=new List<ClaimProc>();
 				return;
 			}
 			Family FamCur=Patients.GetFamily(ThisPatNum);
@@ -415,7 +420,7 @@ namespace OpenDental{
 			ToothInitial[] initialList=ToothInitials.Refresh(PatCur.PatNum);
       ClaimProc[] ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
       ClaimProcsForClaim=ClaimProcs.GetForClaim(ClaimProcList,ClaimCur.ClaimNum); 
-			claimprocs=new ArrayList();
+			claimprocs=new List<ClaimProc>();
 			bool includeThis;
 			for(int i=0;i<ClaimProcsForClaim.Length;i++){//fill the arraylist
 				if(ClaimProcsForClaim[i].ProcNum==0){
@@ -423,12 +428,13 @@ namespace OpenDental{
 				}
 				includeThis=true;
 				for(int j=0;j<claimprocs.Count;j++){//loop through existing claimprocs
-					if(((ClaimProc)claimprocs[j]).ProcNum==ClaimProcsForClaim[i].ProcNum){
+					if(claimprocs[j].ProcNum==ClaimProcsForClaim[i].ProcNum){
 						includeThis=false;//skip duplicate procedures
 					}
 				}
-				if(includeThis)
-					claimprocs.Add(ClaimProcsForClaim[i]);						
+				if(includeThis){
+					claimprocs.Add(ClaimProcsForClaim[i]);	
+				}
 			}
 			ArrayList missingTeeth=ToothInitials.GetMissingOrHiddenTeeth(initialList);
 			Procedure proc;
@@ -436,13 +442,34 @@ namespace OpenDental{
 			for(int j=missingTeeth.Count-1;j>=0;j--) {//loop backwards to keep index accurate as items are removed
 				//if the missing tooth is missing because of an extraction being billed here, then exclude it
 				for(int p=0;p<claimprocs.Count;p++) {
-					proc=Procedures.GetProc(ProcList,((ClaimProc)claimprocs[p]).ProcNum);
+					proc=Procedures.GetProc(ProcList,claimprocs[p].ProcNum);
 					procCode=ProcedureCodes.GetProcCode(proc.ADACode);
 					if(procCode.PaintType==ToothPaintingType.Extraction && proc.ToothNum==(string)missingTeeth[j]) {
 						missingTeeth.RemoveAt(j);
 						break;
 					}
 				}
+			}
+			//diagnoses---------------------------------------------------------------------------------------
+			diagnoses=new string[4];
+			for(int i=0;i<4;i++){
+				diagnoses[i]="";
+			}
+			for(int i=0;i<claimprocs.Count;i++){
+				proc=Procedures.GetProc(ProcList,claimprocs[i].ProcNum);
+				if(proc.DiagnosticCode==""){
+					continue;
+				}
+				for(int d=0;d<4;d++){
+					if(diagnoses[d]==proc.DiagnosticCode){
+						break;//if it's already been added
+					}
+					if(diagnoses[d]==""){//we're at the end of the list of existing diagnoses, and no match
+						diagnoses[d]=proc.DiagnosticCode;//so add it.
+						break;
+					}
+				}
+				//There's still a chance that the diagnosis didn't get added, if there were more than 4.
 			}
 			Provider treatDent=Providers.ListLong[Providers.GetIndexLong(ClaimCur.ProvTreat)];
 			if(ClaimFormCur==null){
@@ -771,6 +798,18 @@ namespace OpenDental{
 							displayStrings[i]=PatCur.MedicaidID;
 						else
 							displayStrings[i]=PatCur.SSN;
+						break;
+					case "Diagnosis1":
+						displayStrings[i]=diagnoses[0];
+						break;
+					case "Diagnosis2":
+						displayStrings[i]=diagnoses[1];
+						break;
+					case "Diagnosis3":
+						displayStrings[i]=diagnoses[2];
+						break;
+					case "Diagnosis4":
+						displayStrings[i]=diagnoses[3];
 						break;
 			//this is where the procedures used to be
 					case "Miss1":
@@ -1117,11 +1156,13 @@ namespace OpenDental{
 						displayStrings[i]=Providers.ListLong[Providers.GetIndexLong(ClaimCur.ProvBill)].MedicaidID;
 						break;
 					case "BillingDentistProviderID":
-						ProviderIdent[] provIdents=ProviderIdents.GetForPayor
-							(Providers.ListLong[Providers.GetIndexLong(ClaimCur.ProvBill)].ProvNum,carrier.ElectID);
+						ProviderIdent[] provIdents=ProviderIdents.GetForPayor(ClaimCur.ProvBill,carrier.ElectID);
 						if(provIdents.Length>0){
 							displayStrings[i]=provIdents[0].IDNumber;//just use the first one we find
 						}
+						break;
+					case "BillingDentistNPI":
+						displayStrings[i]=Providers.ListLong[Providers.GetIndexLong(ClaimCur.ProvBill)].NationalProvID;
 						break;
 					case "BillingDentistLicenseNum":
 						displayStrings[i]=Providers.ListLong[Providers.GetIndexLong(ClaimCur.ProvBill)].StateLicense;
@@ -1198,7 +1239,7 @@ namespace OpenDental{
 					case "TreatingDentistSignature":
 						if(treatDent.SigOnFile){
 							displayStrings[i]=treatDent.FName+" "+treatDent.MI+" "+treatDent.LName+" "
-								+treatDent.Suffix;
+								+treatDent.Suffix+" SOF";
 						}
 						break;
 					case "TreatingDentistSigDate":
@@ -1212,10 +1253,16 @@ namespace OpenDental{
 						break;
 					case "TreatingDentistMedicaidID":
 						displayStrings[i]=treatDent.MedicaidID;
-						//I don't know why it was this way:
-							//GetProcInfo("TreatDentMedicaidID",1);
 						break;
-					//case "TreatingDentistProvID":
+					case "TreatingDentistProviderID":
+						provIdents=ProviderIdents.GetForPayor(ClaimCur.ProvTreat,carrier.ElectID);
+						if(provIdents.Length>0) {
+							displayStrings[i]=provIdents[0].IDNumber;//just use the first one we find
+						}
+						break;
+					case "TreatingDentistNPI":
+						displayStrings[i]=treatDent.NationalProvID;
+						break;
 					case "TreatingDentistLicense":
 						displayStrings[i]=treatDent.StateLicense;
 						break;
@@ -1376,6 +1423,9 @@ namespace OpenDental{
 					case "P1ToothNumOrArea":
 						displayStrings[i]=GetProcInfo("ToothNumOrArea",1+startProc);
 						break;
+					case "P1TreatProvNPI":
+						displayStrings[i]=GetProcInfo("TreatProvNPI",1+startProc);
+						break;
 					case "P2Date":
 						displayStrings[i]=GetProcInfo("Date",2+startProc,ClaimFormCur.Items[i].FormatString);
 						break;
@@ -1417,6 +1467,9 @@ namespace OpenDental{
 						break;
 					case "P2ToothNumOrArea":
 						displayStrings[i]=GetProcInfo("ToothNumOrArea",2+startProc);
+						break;
+					case "P2TreatProvNPI":
+						displayStrings[i]=GetProcInfo("TreatProvNPI",2+startProc);
 						break;
 					case "P3Date":
 						displayStrings[i]=GetProcInfo("Date",3+startProc,ClaimFormCur.Items[i].FormatString);
@@ -1460,6 +1513,9 @@ namespace OpenDental{
 					case "P3ToothNumOrArea":
 						displayStrings[i]=GetProcInfo("ToothNumOrArea",3+startProc);
 						break;
+					case "P3TreatProvNPI":
+						displayStrings[i]=GetProcInfo("TreatProvNPI",3+startProc);
+						break;
 					case "P4Date":
 						displayStrings[i]=GetProcInfo("Date",4+startProc,ClaimFormCur.Items[i].FormatString);
 						break;
@@ -1501,6 +1557,9 @@ namespace OpenDental{
 						break;
 					case "P4ToothNumOrArea":
 						displayStrings[i]=GetProcInfo("ToothNumOrArea",4+startProc);
+						break;
+					case "P4TreatProvNPI":
+						displayStrings[i]=GetProcInfo("TreatProvNPI",4+startProc);
 						break;
 					case "P5Date":
 						displayStrings[i]=GetProcInfo("Date",5+startProc,ClaimFormCur.Items[i].FormatString);
@@ -1544,6 +1603,9 @@ namespace OpenDental{
 					case "P5ToothNumOrArea":
 						displayStrings[i]=GetProcInfo("ToothNumOrArea",5+startProc);
 						break;
+					case "P5TreatProvNPI":
+						displayStrings[i]=GetProcInfo("TreatProvNPI",5+startProc);
+						break;
 					case "P6Date":
 						displayStrings[i]=GetProcInfo("Date",6+startProc,ClaimFormCur.Items[i].FormatString);
 						break;
@@ -1585,6 +1647,9 @@ namespace OpenDental{
 						break;
 					case "P6ToothNumOrArea":
 						displayStrings[i]=GetProcInfo("ToothNumOrArea",6+startProc);
+						break;
+					case "P6TreatProvNPI":
+						displayStrings[i]=GetProcInfo("TreatProvNPI",6+startProc);
 						break;
 					case "P7Date":
 						displayStrings[i]=GetProcInfo("Date",7+startProc,ClaimFormCur.Items[i].FormatString);
@@ -1836,13 +1901,13 @@ namespace OpenDental{
 			if(field=="System")
 				return "JP";
 			if(field=="Code")
-				return ((ClaimProc)claimprocs[procIndex]).CodeSent;
+				return claimprocs[procIndex].CodeSent;
 			if(field=="System")
 				return "JP";
 			if(field=="Fee"){
-				return ((ClaimProc)claimprocs[procIndex]).FeeBilled.ToString("F");
+				return claimprocs[procIndex].FeeBilled.ToString("F");
 			}
-			Procedure ProcCur=Procedures.GetProc(ProcList,((ClaimProc)claimprocs[procIndex]).ProcNum);
+			Procedure ProcCur=Procedures.GetProc(ProcList,claimprocs[procIndex].ProcNum);
 			ProcedureCode procCode=ProcedureCodes.GetProcCode(ProcCur.ADACode);
 			if(field=="Desc")
 				if(procCode.TreatArea==TreatmentArea.Quad){
@@ -1855,30 +1920,44 @@ namespace OpenDental{
 				if(ClaimCur.ClaimType=="PreAuth")//no date on preauth procedures
 					return "";
 				if(stringFormat=="")
-					return ((ClaimProc)claimprocs[procIndex]).ProcDate.ToShortDateString();
-				return ((ClaimProc)claimprocs[procIndex]).ProcDate.ToString(stringFormat);
+					return claimprocs[procIndex].ProcDate.ToShortDateString();
+				return claimprocs[procIndex].ProcDate.ToString(stringFormat);
 			}
 			if(field=="TreatDentMedicaidID"){
-				if(((ClaimProc)claimprocs[procIndex]).ProvNum==0){
+				if(claimprocs[procIndex].ProvNum==0){
 					return "";
 				}
-				else return
-					Providers.ListLong[Providers.GetIndexLong(((ClaimProc)claimprocs[procIndex]).ProvNum)].MedicaidID;
+				else return Providers.ListLong[Providers.GetIndexLong(claimprocs[procIndex].ProvNum)].MedicaidID;
+			}
+			if(field=="TreatProvNPI"){
+				if(claimprocs[procIndex].ProvNum==0) {
+					return "";
+				}
+				else
+					return Providers.ListLong[Providers.GetIndexLong(claimprocs[procIndex].ProvNum)].NationalProvID;
 			}
 			if(field=="PlaceNumericCode"){
 				return GetPlaceOfServiceNum(ClaimCur.PlaceService);
 			}
-			
-				//(Procedure)Procedures.HList[ClaimProcsForClaim[procIndex].ProcNum];
+			//(Procedure)Procedures.HList[ClaimProcsForClaim[procIndex].ProcNum];
 			//Procedure ProcOld=ProcCur.Copy();
 			if(field=="Diagnosis"){
+				if(ProcCur.DiagnosticCode==""){
+					return "";
+				}
+				//string diagstr="";//would concat them together, but OD only allows one diagnosis per code anyway.
+				for(int d=0;d<diagnoses.Length;d++){
+					if(diagnoses[d]==ProcCur.DiagnosticCode){
+						return (d+1).ToString();
+					}
+				}
 				return ProcCur.DiagnosticCode;
 			}
-			if(field=="Lab" && ProcCur.LabFee>0) {
-				return ProcCur.LabFee.ToString("n");
+			if(field=="Lab"){// && ProcCur.LabFee>0) {
+				return "";//ProcCur.LabFee.ToString("n");
 			}
 			if(field=="FeeMinusLab") {
-				return (((ClaimProc)claimprocs[procIndex]).FeeBilled-ProcCur.LabFee).ToString("n");
+				return "";//(((ClaimProc)claimprocs[procIndex]).FeeBilled-ProcCur.LabFee).ToString("n");
 			}
 			string area="";
 			string toothNum="";
@@ -1981,7 +2060,8 @@ namespace OpenDental{
 
 		private void butPrint_Click(object sender, System.EventArgs e){
 			if(PrintClaim()){
-				Claims.UpdateStatus(ThisClaimNum,"P");
+				Etranss.SetClaimSentOrPrinted(ThisClaimNum,ClaimCur.PatNum,0,EtransType.ClaimPrinted);
+				//Claims.UpdateStatus(ThisClaimNum,"P");
 				DialogResult=DialogResult.OK;
 			}
 			else{

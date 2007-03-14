@@ -596,27 +596,48 @@ namespace OpenDental{
 			gridPat.Rows.Add(row);
 			//Hm Phone
 			row=new ODGridRow();
-			cell=new ODGridCell(Lan.g("TablePatient","Hm Phone"));
-			//cell.Bold=YN.Yes;
-			row.Cells.Add(cell);
+			row.Cells.Add(Lan.g("TablePatient","Hm Phone"));
 			row.Cells.Add(PatCur.HmPhone);
-			row.Bold=true;
+			if(PatCur.PreferContactMethod==ContactMethod.HmPhone
+				|| PatCur.PreferContactMethod==ContactMethod.None)
+			{
+				row.Bold=true;
+			}
 			gridPat.Rows.Add(row);
 			//Wk Phone
 			row=new ODGridRow();
 			row.Cells.Add(Lan.g("TablePatient","Wk Phone"));
 			row.Cells.Add(PatCur.WkPhone);
+			if(PatCur.PreferContactMethod==ContactMethod.WkPhone) {
+				row.Bold=true;
+			}
 			gridPat.Rows.Add(row);
 			//Wireless Ph
 			row=new ODGridRow();
 			row.Cells.Add(Lan.g("TablePatient","Wireless Ph"));
 			row.Cells.Add(PatCur.WirelessPhone);
+			if(PatCur.PreferContactMethod==ContactMethod.WirelessPh) {
+				row.Bold=true;
+			}
 			gridPat.Rows.Add(row);
 			//E-mail
 			row=new ODGridRow();
 			row.Cells.Add(Lan.g("TablePatient","E-mail"));
 			row.Cells.Add(PatCur.Email);
+			if(PatCur.PreferContactMethod==ContactMethod.Email) {
+				row.Bold=true;
+			}
 			gridPat.Rows.Add(row);
+			//Contact Method
+			if(PatCur.PreferContactMethod==ContactMethod.DoNotCall
+				|| PatCur.PreferContactMethod==ContactMethod.SeeNotes)
+			{
+				row=new ODGridRow();
+				row.Cells.Add(Lan.g("TablePatient","Contact Method"));
+				row.Cells.Add(Lan.g("enumContactMethod",((ContactMethod)PatCur.PreferContactMethod).ToString()));
+				row.Bold=true;
+				gridPat.Rows.Add(row);
+			}
 			//Credit Type
 			row=new ODGridRow();
 			row.Cells.Add(Lan.g("TablePatient","ABC0"));
@@ -630,7 +651,7 @@ namespace OpenDental{
 			//Billing Type
 			row=new ODGridRow();
 			row.Cells.Add(Lan.g("TablePatient","Billing Type"));
-			row.Cells.Add(Defs.GetName(DefCat.BillingTypes,PatCur.BillingType));
+			row.Cells.Add(DefB.GetName(DefCat.BillingTypes,PatCur.BillingType));
 			gridPat.Rows.Add(row);
 			//Ward
 			if(!PrefB.GetBool("EasyHideHospitals")){
@@ -638,12 +659,24 @@ namespace OpenDental{
 				row.Cells.Add(Lan.g("TablePatient","Ward"));
 				row.Cells.Add(PatCur.Ward);
 				gridPat.Rows.Add(row);
+				//AdmitDate
+				row=new ODGridRow();
+				row.Cells.Add(Lan.g("TablePatient","AdmitDate"));
+				row.Cells.Add(PatCur.AdmitDate.ToShortDateString());
+				gridPat.Rows.Add(row);
 			}
 			//Primary provider (very useful in dental schools)
 			row=new ODGridRow();
 			row.Cells.Add(Lan.g("TablePatient","Primary Provider"));
 			row.Cells.Add(Providers.GetNameLF(Patients.GetProvNum(PatCur)));
 			gridPat.Rows.Add(row);
+			//Language
+			if(PatCur.Language!=""){
+				row=new ODGridRow();
+				row.Cells.Add(Lan.g("TablePatient","Language"));
+				row.Cells.Add(CultureInfo.GetCultureInfo(PatCur.Language).DisplayName);
+				gridPat.Rows.Add(row);
+			}
 			//Referrals
 			RefAttach[] RefList=RefAttaches.Refresh(PatCur.PatNum);
 			for(int i=0;i<RefList.Length;i++) {
@@ -655,10 +688,11 @@ namespace OpenDental{
 					row.Cells.Add(Lan.g("TablePatient","Referred To"));
 				}
 				try{
-					row.Cells.Add(Referrals.GetName(RefList[i].ReferralNum));
+					row.Cells.Add(Referrals.GetName(RefList[i].ReferralNum)+"\r\n"
+						+Referrals.GetPhone(RefList[i].ReferralNum));
 				}
 				catch{
-					row.Cells.Add("");//if referral is null because using randome keys and had bug.
+					row.Cells.Add("");//if referral is null because using random keys and had bug.
 				}
 				gridPat.Rows.Add(row);
 			}
@@ -1078,7 +1112,7 @@ namespace OpenDental{
 			for(int i=0;i<PatPlanList.Length;i++){
 				row.Cells.Add(FamCur.GetNameInFamFL(planArray[i].Subscriber));
 			}
-			row.ColorBackG=Defs.Long[(int)DefCat.MiscColors][0].ItemColor;
+			row.ColorBackG=DefB.Long[(int)DefCat.MiscColors][0].ItemColor;
 			gridIns.Rows.Add(row);
 			//subscriber ID
 			row=new ODGridRow();
@@ -1086,7 +1120,7 @@ namespace OpenDental{
 			for(int i=0;i<PatPlanList.Length;i++) {
 				row.Cells.Add(planArray[i].SubscriberID);
 			}
-			row.ColorBackG=Defs.Long[(int)DefCat.MiscColors][0].ItemColor;
+			row.ColorBackG=DefB.Long[(int)DefCat.MiscColors][0].ItemColor;
 			gridIns.Rows.Add(row);
 			//relationship
 			row=new ODGridRow();
@@ -1094,7 +1128,7 @@ namespace OpenDental{
 			for(int i=0;i<PatPlanList.Length;i++){
 				row.Cells.Add(Lan.g("enumRelat",PatPlanList[i].Relationship.ToString()));
 			}
-			row.ColorBackG=Defs.Long[(int)DefCat.MiscColors][0].ItemColor;
+			row.ColorBackG=DefB.Long[(int)DefCat.MiscColors][0].ItemColor;
 			gridIns.Rows.Add(row);
 			//patient ID
 			row=new ODGridRow();
@@ -1102,7 +1136,7 @@ namespace OpenDental{
 			for(int i=0;i<PatPlanList.Length;i++){
 				row.Cells.Add(PatPlanList[i].PatID);
 			}
-			row.ColorBackG=Defs.Long[(int)DefCat.MiscColors][0].ItemColor;
+			row.ColorBackG=DefB.Long[(int)DefCat.MiscColors][0].ItemColor;
 			gridIns.Rows.Add(row);
 			//pending
 			row=new ODGridRow();
@@ -1115,7 +1149,7 @@ namespace OpenDental{
 					row.Cells.Add("");
 				}
 			}
-			row.ColorBackG=Defs.Long[(int)DefCat.MiscColors][0].ItemColor;
+			row.ColorBackG=DefB.Long[(int)DefCat.MiscColors][0].ItemColor;
 			row.ColorLborder=Color.Black;
 			gridIns.Rows.Add(row);
 			//employer

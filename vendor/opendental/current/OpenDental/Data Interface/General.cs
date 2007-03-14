@@ -118,8 +118,8 @@ namespace OpenDental {
 		}
 
 		///<summary>We need to get away from this due to poor support from databases.  For now, each command will be sent entirely separately.  This never returns number of rows affected.</summary>
-		public static int NonQ(string[] commands){
-			try{
+		public static int NonQ(string[] commands) {
+			try {
 				for(int i=0;i<commands.Length;i++) {
 					if(RemotingClient.OpenDentBusinessIsLocal) {
 						GeneralB.NonQ(commands[i],false);
@@ -138,7 +138,7 @@ namespace OpenDental {
 			return 0;
 		}
 
-		///<summary>Same as NonQ, but will throw exception if query fails instead of displaying message.  Used in ClassConvertDatabase and any place where we want to be able to suppress the exception message or handle it differently.</summary>
+			///<summary>Same as NonQ, but will throw exception if query fails instead of displaying message.  Used in ClassConvertDatabase and any place where we want to be able to suppress the exception message or handle it differently.</summary>
 		public static int NonQEx(string command,bool getInsertID) {
 			if(RemotingClient.OpenDentBusinessIsLocal) {
 				return GeneralB.NonQ(command,getInsertID);
@@ -171,7 +171,7 @@ namespace OpenDental {
 			return 0;
 		}
 
-		///<summary>Use this for count(*) queries.  They are always guaranteed to return one and only one value.  Not any faster, just handier.  Can also be used when retrieving prefs manually, since they will also return exactly one value.</summary>
+		///<summary>Use this for count(*) queries.  They are always guaranteed to return one and only one value.  Not any faster, just handier.  Can also be used when retrieving prefs manually, since they will also return exactly one value</summary>
 		public static string GetCount(string command){
 			try {
 				if(RemotingClient.OpenDentBusinessIsLocal) {

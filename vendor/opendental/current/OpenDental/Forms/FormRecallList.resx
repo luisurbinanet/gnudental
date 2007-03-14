@@ -134,6 +134,13 @@
         /FGHxsg2Zimbz2hKAgA7
 </value>
   </data>
+  <data name="butPrint.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        R0lGODlhFgAWAPIAAAAAAP//AIaGhrnQ+uDf4////wAAAAAAACH5BAEAAAMALAAAAAAWABYAAANMOLrc
+        /jDKSWsDOGcKiv8ewBVaJ04d+J2SqZEblKokAdhPWdo2u9yEoFB4Kzp0yKBPARwKnkrccRgMWJWYHHK3
+        /FGHxsg2Zimbz2hKAgA7
+</value>
+  </data>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>55</value>
   </metadata>

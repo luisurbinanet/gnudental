@@ -56,6 +56,7 @@ namespace OpenDental{
 		/// </summary>
 		private void InitializeComponent()
 		{
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormClaimSupplemental));
 			this.butCancel = new OpenDental.UI.Button();
 			this.butOK = new OpenDental.UI.Button();
 			this.listRef = new System.Windows.Forms.ListBox();
@@ -80,110 +81,75 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
-			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0,0);
+			resources.ApplyResources(this.butCancel,"butCancel");
 			this.butCancel.Autosize = true;
 			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butCancel.Location = new System.Drawing.Point(660, 371);
 			this.butCancel.Name = "butCancel";
-			this.butCancel.RightToLeft = System.Windows.Forms.RightToLeft.No;
-			this.butCancel.Size = new System.Drawing.Size(75, 25);
-			this.butCancel.TabIndex = 3;
-			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// butOK
 			// 
-			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
-			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0,0);
+			resources.ApplyResources(this.butOK,"butOK");
 			this.butOK.Autosize = true;
 			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butOK.Location = new System.Drawing.Point(660, 331);
 			this.butOK.Name = "butOK";
-			this.butOK.Size = new System.Drawing.Size(75, 25);
-			this.butOK.TabIndex = 2;
-			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// listRef
 			// 
-			this.listRef.Location = new System.Drawing.Point(34, 54);
+			resources.ApplyResources(this.listRef,"listRef");
 			this.listRef.Name = "listRef";
-			this.listRef.Size = new System.Drawing.Size(150, 303);
-			this.listRef.TabIndex = 0;
 			this.listRef.DoubleClick += new System.EventHandler(this.listRef_DoubleClick);
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(32, 34);
+			resources.ApplyResources(this.label1,"label1");
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(100, 16);
-			this.label1.TabIndex = 5;
-			this.label1.Text = "Referring Provider";
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(257, 83);
+			resources.ApplyResources(this.label2,"label2");
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(123, 14);
-			this.label2.TabIndex = 7;
-			this.label2.Text = "Referral Number";
-			this.label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// textRefNum
 			// 
-			this.textRefNum.Location = new System.Drawing.Point(381, 81);
+			resources.ApplyResources(this.textRefNum,"textRefNum");
 			this.textRefNum.Name = "textRefNum";
-			this.textRefNum.Size = new System.Drawing.Size(150, 20);
-			this.textRefNum.TabIndex = 1;
-			this.textRefNum.Text = "";
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(276, 34);
+			resources.ApplyResources(this.label3,"label3");
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(244, 36);
-			this.label3.TabIndex = 8;
-			this.label3.Text = "Only enter referring provider and referral number if required by your insurance c" +
-				"arrier.";
 			// 
 			// butNone
 			// 
-			this.butNone.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butNone.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butNone.Autosize = true;
 			this.butNone.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butNone.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butNone.Location = new System.Drawing.Point(34, 370);
+			resources.ApplyResources(this.butNone,"butNone");
 			this.butNone.Name = "butNone";
-			this.butNone.Size = new System.Drawing.Size(68, 25);
-			this.butNone.TabIndex = 9;
-			this.butNone.Text = "&None";
 			this.butNone.Click += new System.EventHandler(this.butNone_Click);
 			// 
 			// butAdd
 			// 
-			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butAdd.Autosize = true;
 			this.butAdd.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butAdd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butAdd.Location = new System.Drawing.Point(114, 370);
+			resources.ApplyResources(this.butAdd,"butAdd");
 			this.butAdd.Name = "butAdd";
-			this.butAdd.Size = new System.Drawing.Size(70, 25);
-			this.butAdd.TabIndex = 10;
-			this.butAdd.Text = "&Add";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
 			// label25
 			// 
-			this.label25.Location = new System.Drawing.Point(210, 221);
+			resources.ApplyResources(this.label25,"label25");
 			this.label25.Name = "label25";
-			this.label25.Size = new System.Drawing.Size(170, 17);
-			this.label25.TabIndex = 101;
-			this.label25.Text = "Employment Related";
-			this.label25.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// groupBox2
 			// 
@@ -193,83 +159,55 @@ namespace OpenDental{
 			this.groupBox2.Controls.Add(this.label23);
 			this.groupBox2.Controls.Add(this.listAccident);
 			this.groupBox2.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox2.Location = new System.Drawing.Point(373, 270);
+			resources.ApplyResources(this.groupBox2,"groupBox2");
 			this.groupBox2.Name = "groupBox2";
-			this.groupBox2.Size = new System.Drawing.Size(235, 87);
-			this.groupBox2.TabIndex = 2;
 			this.groupBox2.TabStop = false;
-			this.groupBox2.Text = "Accident Related";
 			// 
 			// label24
 			// 
-			this.label24.Location = new System.Drawing.Point(93, 47);
+			resources.ApplyResources(this.label24,"label24");
 			this.label24.Name = "label24";
-			this.label24.Size = new System.Drawing.Size(53, 17);
-			this.label24.TabIndex = 8;
-			this.label24.Text = "State";
-			this.label24.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// textAccidentST
 			// 
-			this.textAccidentST.Location = new System.Drawing.Point(148, 43);
+			resources.ApplyResources(this.textAccidentST,"textAccidentST");
 			this.textAccidentST.Name = "textAccidentST";
-			this.textAccidentST.Size = new System.Drawing.Size(30, 20);
-			this.textAccidentST.TabIndex = 2;
-			this.textAccidentST.Text = "";
 			// 
 			// textAccidentDate
 			// 
-			this.textAccidentDate.Location = new System.Drawing.Point(148, 20);
+			resources.ApplyResources(this.textAccidentDate,"textAccidentDate");
 			this.textAccidentDate.Name = "textAccidentDate";
-			this.textAccidentDate.Size = new System.Drawing.Size(75, 20);
-			this.textAccidentDate.TabIndex = 1;
-			this.textAccidentDate.Text = "";
 			// 
 			// label23
 			// 
-			this.label23.Location = new System.Drawing.Point(92, 24);
+			resources.ApplyResources(this.label23,"label23");
 			this.label23.Name = "label23";
-			this.label23.Size = new System.Drawing.Size(53, 17);
-			this.label23.TabIndex = 5;
-			this.label23.Text = "Date";
-			this.label23.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// listAccident
 			// 
-			this.listAccident.Location = new System.Drawing.Point(8, 20);
+			resources.ApplyResources(this.listAccident,"listAccident");
 			this.listAccident.Name = "listAccident";
-			this.listAccident.Size = new System.Drawing.Size(77, 56);
-			this.listAccident.TabIndex = 104;
 			// 
 			// label10
 			// 
-			this.label10.Location = new System.Drawing.Point(237, 114);
+			resources.ApplyResources(this.label10,"label10");
 			this.label10.Name = "label10";
-			this.label10.Size = new System.Drawing.Size(141, 17);
-			this.label10.TabIndex = 97;
-			this.label10.Text = "Place of Service";
-			this.label10.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// listPlaceService
 			// 
-			this.listPlaceService.Location = new System.Drawing.Point(381, 112);
+			resources.ApplyResources(this.listPlaceService,"listPlaceService");
 			this.listPlaceService.Name = "listPlaceService";
-			this.listPlaceService.Size = new System.Drawing.Size(120, 95);
-			this.listPlaceService.TabIndex = 102;
 			// 
 			// listEmployRelated
 			// 
-			this.listEmployRelated.Location = new System.Drawing.Point(381, 220);
+			resources.ApplyResources(this.listEmployRelated,"listEmployRelated");
 			this.listEmployRelated.Name = "listEmployRelated";
-			this.listEmployRelated.Size = new System.Drawing.Size(120, 43);
-			this.listEmployRelated.TabIndex = 103;
 			// 
 			// FormClaimSupplemental
 			// 
 			this.AcceptButton = this.butOK;
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			resources.ApplyResources(this,"$this");
 			this.CancelButton = this.butCancel;
-			this.ClientSize = new System.Drawing.Size(770, 427);
 			this.Controls.Add(this.listEmployRelated);
 			this.Controls.Add(this.listPlaceService);
 			this.Controls.Add(this.butAdd);
@@ -288,11 +226,11 @@ namespace OpenDental{
 			this.MinimizeBox = false;
 			this.Name = "FormClaimSupplemental";
 			this.ShowInTaskbar = false;
-			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "Supplemental Info";
 			this.Load += new System.EventHandler(this.FormClaimSupplemental_Load);
 			this.groupBox2.ResumeLayout(false);
+			this.groupBox2.PerformLayout();
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 		#endregion

@@ -540,9 +540,9 @@ namespace OpenDental{
 			textAmount.Text=PaymentCur.PayAmt.ToString("F");
 			textCheckNum.Text=PaymentCur.CheckNum;
 			textBankBranch.Text=PaymentCur.BankBranch;
-			for(int i=0;i<Defs.Short[(int)DefCat.PaymentTypes].Length;i++){
-				listPayType.Items.Add(Defs.Short[(int)DefCat.PaymentTypes][i].ItemName);
-				if(Defs.Short[(int)DefCat.PaymentTypes][i].DefNum==PaymentCur.PayType)
+			for(int i=0;i<DefB.Short[(int)DefCat.PaymentTypes].Length;i++){
+				listPayType.Items.Add(DefB.Short[(int)DefCat.PaymentTypes][i].ItemName);
+				if(DefB.Short[(int)DefCat.PaymentTypes][i].DefNum==PaymentCur.PayType)
 					listPayType.SelectedIndex=i;
 			}
 			if(listPayType.SelectedIndex==-1)
@@ -573,7 +573,7 @@ namespace OpenDental{
 				butEditAccounting.Visible=false;//there's no transaction to edit since not attached yet.
 				if(Accounts.PaymentsLinked()) {
 					AccountingAutoPay autoPay=AccountingAutoPays.GetForPayType(
-						Defs.Short[(int)DefCat.PaymentTypes][listPayType.SelectedIndex].DefNum);
+						DefB.Short[(int)DefCat.PaymentTypes][listPayType.SelectedIndex].DefNum);
 					if(autoPay==null){
 						labelDepositAccount.Visible=false;
 						comboDepositAccount.Visible=false;
@@ -622,7 +622,7 @@ namespace OpenDental{
 			}
 		}
 
-		///<summary>This does not make any calls to db.  Simply refreshes screen for SplitList.</summary>
+		///<summary>This does not make any calls to db (except one tiny one).  Simply refreshes screen for SplitList.</summary>
 		private void FillTable(){
 			gridMain.BeginUpdate();
 			gridMain.Columns.Clear();
@@ -648,7 +648,7 @@ namespace OpenDental{
 				row.Cells.Add(Providers.GetAbbr(((PaySplit)SplitList[i]).ProvNum));
 				row.Cells.Add(FamCur.GetNameInFamLF(((PaySplit)SplitList[i]).PatNum));
 				if(((PaySplit)SplitList[i]).ProcNum>0){
-					proc=Procedures.GetOneProc(((PaySplit)SplitList[i]).ProcNum);
+					proc=Procedures.GetOneProc(((PaySplit)SplitList[i]).ProcNum,false);
 					row.Cells.Add(Tooth.ToInternat(proc.ToothNum));
 					row.Cells.Add(ProcedureCodes.GetProcCode(proc.ADACode).Descript);
 				}
@@ -751,7 +751,7 @@ namespace OpenDental{
 				return;
 			}
 			AccountingAutoPay autoPay=AccountingAutoPays.GetForPayType(
-				Defs.Short[(int)DefCat.PaymentTypes][listPayType.SelectedIndex].DefNum);
+				DefB.Short[(int)DefCat.PaymentTypes][listPayType.SelectedIndex].DefNum);
 			if(autoPay==null) {
 				labelDepositAccount.Visible=false;
 				comboDepositAccount.Visible=false;
@@ -862,7 +862,7 @@ namespace OpenDental{
 			PaymentCur.CheckNum=textCheckNum.Text;
 			PaymentCur.BankBranch=textBankBranch.Text;
 			PaymentCur.PayNote=textNote.Text;
-			PaymentCur.PayType=Defs.Short[(int)DefCat.PaymentTypes][listPayType.SelectedIndex].DefNum;
+			PaymentCur.PayType=DefB.Short[(int)DefCat.PaymentTypes][listPayType.SelectedIndex].DefNum;
 			PaymentCur.PatNum=PatCur.PatNum;
 			if(!comboClinic.Visible || Clinics.List.Length==0 || comboClinic.SelectedIndex==0) {
 				PaymentCur.ClinicNum=0;
@@ -871,7 +871,21 @@ namespace OpenDental{
 				PaymentCur.ClinicNum=Clinics.List[comboClinic.SelectedIndex-1].ClinicNum;
 			}
 			if(SplitList.Count==0) {
-				SplitList=Payments.Allocate(PaymentCur);//PayAmt needs to be set first
+				if(Payments.AllocationRequired(PaymentCur.PayAmt,PaymentCur.PatNum)
+					&& MsgBox.Show(this,true,"Apply part of payment to other family members?"))
+				{
+					SplitList=Payments.Allocate(PaymentCur);//PayAmt needs to be set first
+				}
+				else{//Either no allocation required, or user does not want to allocate.  Just add one split.
+					PaySplit split=new PaySplit();
+					split.PatNum=PaymentCur.PatNum;
+					split.PayNum=PaymentCur.PayNum;
+					split.ProcDate=PaymentCur.PayDate;
+					split.DatePay=PaymentCur.PayDate;
+					split.ProvNum=Patients.GetProvNum(PatCur);
+					split.SplitAmt=PaymentCur.PayAmt;
+					SplitList.Add(split);
+				}
 			}
 			else if(SplitList.Count==1//if one split
 				&& PIn.PDouble(textAmount.Text) != ((PaySplit)SplitList[0]).SplitAmt)//and amount doesn't match payment

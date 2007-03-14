@@ -32,6 +32,8 @@ namespace OpenDental{
 		private OpenDental.UI.Button butDropTo;
 		private MonthCalendar calendarTo;
 		private bool isPrinting;
+		//set this externally so that the ending balances will match what's showing in the Chart of Accounts.
+		public DateTime InitialAsOfDate;
 
 		///<summary></summary>
 		public FormJournal(Account accountCur)
@@ -236,8 +238,14 @@ namespace OpenDental{
 		#endregion
 
 		private void FormJournal_Load(object sender,EventArgs e) {
+			DateTime firstofYear=new DateTime(InitialAsOfDate.Year,1,1);
+			textDateTo.Text=InitialAsOfDate.ToShortDateString();
+			if(AccountCur.AcctType==AccountType.Income || AccountCur.AcctType==AccountType.Expense){
+				textDateFrom.Text=firstofYear.ToShortDateString();
+			}
 			LayoutToolBar();
 			FillGrid();
+			gridMain.ScrollToEnd();
 		}
 
 		///<summary>Causes the toolbar to be laid out again.</summary>
@@ -290,6 +298,7 @@ namespace OpenDental{
 				dateTo=PIn.PDate(textDateTo.Text);
 			}
 			JournalList=JournalEntries.GetForAccount(AccountCur.AccountNum);
+			int scroll=gridMain.ScrollValue;
 			gridMain.BeginUpdate();
 			gridMain.Title=AccountCur.Description+" ("+Lan.g("enumAccountType",AccountCur.AcctType.ToString())+")";
 			gridMain.Columns.Clear();
@@ -341,6 +350,14 @@ namespace OpenDental{
 				if(JournalList[i].DateDisplayed > dateTo) {
 					break;
 				}
+				if(AccountCur.AcctType==AccountType.Income
+					|| AccountCur.AcctType==AccountType.Expense)
+				{
+					if(JournalList[i].DateDisplayed < dateFrom) {
+						continue;
+						//for income and expense accounts, previous balances are not included. Only the current timespan.
+					}
+				}
 				if(JournalList[i].DebitAmt!=0) {
 					if(Accounts.DebitIsPos(AccountCur.AcctType)) {//this one is used for checking account
 						bal+=JournalList[i].DebitAmt;
@@ -357,8 +374,14 @@ namespace OpenDental{
 						bal+=JournalList[i].CreditAmt;
 					}
 				}
-				if(JournalList[i].DateDisplayed < dateFrom){
-					continue;
+				if(AccountCur.AcctType==AccountType.Asset
+					|| AccountCur.AcctType==AccountType.Liability
+					|| AccountCur.AcctType==AccountType.Equity)
+				{
+					if(JournalList[i].DateDisplayed < dateFrom) {
+						continue;
+						//for asset, liability, and equity accounts, older entries do affect the current balance.
+					}
 				}
 				row=new ODGridRow();
 				row.Cells.Add(JournalList[i].CheckNumber);
@@ -384,10 +407,11 @@ namespace OpenDental{
 				else{
 					row.Cells.Add("X");
 				}
+				row.Tag=JournalList[i].Copy();
 				gridMain.Rows.Add(row);
 			}
 			gridMain.EndUpdate();
-			gridMain.ScrollToEnd();
+			gridMain.ScrollValue=scroll;
 		}
 
 		private void Add_Click(){
@@ -482,12 +506,15 @@ namespace OpenDental{
 		}
 
 		private void gridMain_CellDoubleClick(object sender,ODGridClickEventArgs e) {
-			FormTransactionEdit FormT=new FormTransactionEdit(JournalList[e.Row].TransactionNum,AccountCur.AccountNum);
+			int selectedRow=e.Row;
+			FormTransactionEdit FormT=new FormTransactionEdit(
+				((JournalEntry)gridMain.Rows[e.Row].Tag).TransactionNum,AccountCur.AccountNum);
 			FormT.ShowDialog();
 			if(FormT.DialogResult==DialogResult.Cancel) {
 				return;
 			}
 			FillGrid();
+			gridMain.SetSelected(selectedRow,true);
 		}
 
 		private void butDropFrom_Click(object sender,EventArgs e) {

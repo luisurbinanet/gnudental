@@ -111,8 +111,6 @@ namespace OpenDental{
 		private const uint MSG_GETLASTNOTE=3;
 		private System.Windows.Forms.CheckBox checkIsPrincDiag;//ENP
 		private PatPlan[] PatPlanList;
-		private Label labelLabFee;
-		private ValidDouble textLabFee;
 		private ListBox listProcStatus;
 		private Label label14;
 		private Label label15;
@@ -130,7 +128,7 @@ namespace OpenDental{
 		///<summary>This keeps the noteChanged event from erasing the signature when first loading.</summary>
 		private bool IsStartingUp;
 
-		///<summary>Inserts are no longer done within this dialog, but must be done ahead of time from outside.You must specify a procedure to edit, and only the changes that are made in this dialog get saved.  Only used when double click in Account, Chart, TP, and in ContrChart.AddProcedure().  The procedure may be deleted if new and user hits Cancel.</summary>
+		///<summary>Inserts are no longer done within this dialog, but must be done ahead of time from outside.You must specify a procedure to edit, and only the changes that are made in this dialog get saved.  Only used when double click in Account, Chart, TP, and in ContrChart.AddProcedure().  The procedure may be deleted if new, and user hits Cancel.</summary>
 		public FormProcEdit(Procedure proc,Patient patCur,Family famCur,InsPlan[] planList){
 			ProcCur=proc;
 			ProcOld=proc.Copy();
@@ -195,8 +193,6 @@ namespace OpenDental{
 			this.textDate = new OpenDental.ValidDate();
 			this.textProcFee = new OpenDental.ValidDouble();
 			this.panel1 = new System.Windows.Forms.Panel();
-			this.labelLabFee = new System.Windows.Forms.Label();
-			this.textLabFee = new OpenDental.ValidDouble();
 			this.listBoxTeeth = new System.Windows.Forms.ListBox();
 			this.textDateEntry = new OpenDental.ValidDate();
 			this.label12 = new System.Windows.Forms.Label();
@@ -618,8 +614,6 @@ namespace OpenDental{
 			// panel1
 			// 
 			this.panel1.AllowDrop = true;
-			this.panel1.Controls.Add(this.labelLabFee);
-			this.panel1.Controls.Add(this.textLabFee);
 			this.panel1.Controls.Add(this.listBoxTeeth);
 			this.panel1.Controls.Add(this.textDesc);
 			this.panel1.Controls.Add(this.textDateEntry);
@@ -646,22 +640,6 @@ namespace OpenDental{
 			this.panel1.Name = "panel1";
 			this.panel1.Size = new System.Drawing.Size(383,179);
 			this.panel1.TabIndex = 2;
-			// 
-			// labelLabFee
-			// 
-			this.labelLabFee.Location = new System.Drawing.Point(30,160);
-			this.labelLabFee.Name = "labelLabFee";
-			this.labelLabFee.Size = new System.Drawing.Size(75,16);
-			this.labelLabFee.TabIndex = 98;
-			this.labelLabFee.Text = "Lab Fee";
-			this.labelLabFee.TextAlign = System.Drawing.ContentAlignment.TopRight;
-			// 
-			// textLabFee
-			// 
-			this.textLabFee.Location = new System.Drawing.Point(106,157);
-			this.textLabFee.Name = "textLabFee";
-			this.textLabFee.Size = new System.Drawing.Size(68,20);
-			this.textLabFee.TabIndex = 99;
 			// 
 			// listBoxTeeth
 			// 
@@ -1321,13 +1299,16 @@ namespace OpenDental{
 				comboClinic.Visible=false;
 				labelClinic.Visible=false;
 			}
-			if(CultureInfo.CurrentCulture.Name.Substring(3)=="CA"){//en-CA or fr-CA
+			/*if(CultureInfo.CurrentCulture.Name.Substring(3)=="CA"){//en-CA or fr-CA
 				textLabFee.Text=ProcCur.LabFee.ToString("n");
+				textLabCode.Text=ProcCur.LabProcCode;
 			}
 			else{
 				labelLabFee.Visible=false;
 				textLabFee.Visible=false;
-			}
+				labelLabCode.Visible=false;
+				textLabCode.Visible=false;
+			}*/
 			IsStartingUp=true;
 			FillControls();
 			SetControls();
@@ -1384,9 +1365,9 @@ namespace OpenDental{
 			}
 			//if clinical is hidden, then there's a chance that no item is selected at this point.
 			comboDx.Items.Clear();
-			for(int i=0;i<Defs.Short[(int)DefCat.Diagnosis].Length;i++){
-				comboDx.Items.Add(Defs.Short[(int)DefCat.Diagnosis][i].ItemName);
-				if(Defs.Short[(int)DefCat.Diagnosis][i].DefNum==ProcCur.Dx)
+			for(int i=0;i<DefB.Short[(int)DefCat.Diagnosis].Length;i++){
+				comboDx.Items.Add(DefB.Short[(int)DefCat.Diagnosis][i].ItemName);
+				if(DefB.Short[(int)DefCat.Diagnosis][i].DefNum==ProcCur.Dx)
 					comboDx.SelectedIndex=i;
 			}
 			comboProvNum.Items.Clear();
@@ -1398,9 +1379,9 @@ namespace OpenDental{
 			comboPriority.Items.Clear();
 			comboPriority.Items.Add(Lan.g(this,"no priority"));
 			comboPriority.SelectedIndex=0;
-			for(int i=0;i<Defs.Short[(int)DefCat.TxPriorities].Length;i++){
-				comboPriority.Items.Add(Defs.Short[(int)DefCat.TxPriorities][i].ItemName);
-				if(Defs.Short[(int)DefCat.TxPriorities][i].DefNum==ProcCur.Priority)
+			for(int i=0;i<DefB.Short[(int)DefCat.TxPriorities].Length;i++){
+				comboPriority.Items.Add(DefB.Short[(int)DefCat.TxPriorities][i].ItemName);
+				if(DefB.Short[(int)DefCat.TxPriorities][i].DefNum==ProcCur.Priority)
 					comboPriority.SelectedIndex=i+1;
 			}
 			textNotes.Text=ProcCur.Note;
@@ -1442,7 +1423,7 @@ namespace OpenDental{
 				groupProsth.Visible=false;
 			}
 			textClaimNote.Text=ProcCur.ClaimNote;
-			textUser.Text=UserB.GetName(ProcCur.UserNum);//might be blank. Will change automatically if user changes note or alters sig.
+			textUser.Text=UserodB.GetName(ProcCur.UserNum);//might be blank. Will change automatically if user changes note or alters sig.
 			if(ProcCur.SigIsTopaz){
 				if(ProcCur.Signature!=""){
 					sigBoxTopaz.Visible=true;
@@ -1781,7 +1762,7 @@ namespace OpenDental{
 				tbAdj.Cell[0,i]=((Adjustment)AdjustmentsForProc[i]).AdjDate.ToShortDateString();
 				tbAdj.Cell[1,i]=((Adjustment)AdjustmentsForProc[i]).AdjAmt.ToString("F");
 				tbAdj.FontBold[1,i]=true;
-				tbAdj.Cell[2,i]=Defs.GetName(DefCat.AdjTypes,((Adjustment)AdjustmentsForProc[i]).AdjType);
+				tbAdj.Cell[2,i]=DefB.GetName(DefCat.AdjTypes,((Adjustment)AdjustmentsForProc[i]).AdjType);
 				tbAdj.Cell[3,i]=((Adjustment)AdjustmentsForProc[i]).AdjNote;
 			}
 			tbAdj.SetGridColor(Color.LightGray);
@@ -2077,7 +2058,7 @@ namespace OpenDental{
 				sigBox.SetTabletState(1);//on-screen box is now accepting input.
 				SigChanged=true;
 				ProcCur.UserNum=Security.CurUser.UserNum;
-				textUser.Text=UserB.GetName(ProcCur.UserNum);
+				textUser.Text=UserodB.GetName(ProcCur.UserNum);
 			}
 		}
 
@@ -2098,7 +2079,7 @@ namespace OpenDental{
 			sigBox.SetTabletState(1);//on-screen box is now accepting input.
 			SigChanged=true;
 			ProcCur.UserNum=Security.CurUser.UserNum;
-			textUser.Text=UserB.GetName(ProcCur.UserNum);
+			textUser.Text=UserodB.GetName(ProcCur.UserNum);
 		}
 
 		private void butTopazSign_Click(object sender,EventArgs e) {
@@ -2106,7 +2087,7 @@ namespace OpenDental{
 			sigBoxTopaz.SetTabletState(1);
 			SigChanged=true;
 			ProcCur.UserNum=Security.CurUser.UserNum;
-			textUser.Text=UserB.GetName(ProcCur.UserNum);
+			textUser.Text=UserodB.GetName(ProcCur.UserNum);
 		}
 
 		//private void butTopazStop_Click(object sender,EventArgs e) {
@@ -2125,7 +2106,7 @@ namespace OpenDental{
 				//sigBox handles its own pen input.
 				SigChanged=true;
 				ProcCur.UserNum=Security.CurUser.UserNum;
-				textUser.Text=UserB.GetName(ProcCur.UserNum);
+				textUser.Text=UserodB.GetName(ProcCur.UserNum);
 			}
 		}
 
@@ -2157,7 +2138,7 @@ namespace OpenDental{
 		private bool EntriesAreValid(){
 			if(  textDate.errorProvider1.GetError(textDate)!=""
 				|| textProcFee.errorProvider1.GetError(textProcFee)!=""
-				|| textLabFee.errorProvider1.GetError(textLabFee)!=""
+				//|| textLabFee.errorProvider1.GetError(textLabFee)!=""
 				|| textDateOriginalProsth.errorProvider1.GetError(textDateOriginalProsth)!=""
 				){
 				MessageBox.Show(Lan.g(this,"Please fix data entry errors first."));
@@ -2173,6 +2154,16 @@ namespace OpenDental{
 				MsgBox.Show(this,"Invalid medical code.  It must refer to an existing procedure code.");
 				return false;
 			}
+			/*if(CultureInfo.CurrentCulture.Name.Substring(3)=="CA"){//en-CA or fr-CA
+				if(textLabCode.Text!="" && !ProcedureCodes.HList.Contains(textLabCode.Text)) {
+					MsgBox.Show(this,"Invalid lab code.  It must refer to an existing procedure code.");
+					return false;
+				}
+				if(PIn.PDouble(textLabFee.Text) >0 && textLabCode.Text=="") {
+					MsgBox.Show(this,"Must enter a lab code if a lab fee is entered.");
+					return false;
+				}
+			}*/
 			if(ProcedureCode2.IsProsth){
 				if(listProsth.SelectedIndex==0
 					|| (listProsth.SelectedIndex==2 && textDateOriginalProsth.Text==""))
@@ -2202,7 +2193,8 @@ namespace OpenDental{
 			}
 			ProcCur.ProcDate=PIn.PDate(this.textDate.Text);
 			ProcCur.ProcFee=PIn.PDouble(textProcFee.Text);
-			ProcCur.LabFee=PIn.PDouble(textLabFee.Text);
+			//ProcCur.LabFee=PIn.PDouble(textLabFee.Text);
+			//ProcCur.LabProcCode=textLabCode.Text;
 			//MessageBox.Show(ProcCur.ProcFee.ToString());
 			//Dx taken care of when radio pushed
 			switch(ProcedureCode2.TreatArea){
@@ -2258,11 +2250,11 @@ namespace OpenDental{
 			if(comboProvNum.SelectedIndex!=-1)
 				ProcCur.ProvNum=Providers.List[comboProvNum.SelectedIndex].ProvNum;
 			if(comboDx.SelectedIndex!=-1)
-				ProcCur.Dx=Defs.Short[(int)DefCat.Diagnosis][comboDx.SelectedIndex].DefNum;
+				ProcCur.Dx=DefB.Short[(int)DefCat.Diagnosis][comboDx.SelectedIndex].DefNum;
 			if(comboPriority.SelectedIndex==0)
 				ProcCur.Priority=0;
 			else
-				ProcCur.Priority=Defs.Short[(int)DefCat.TxPriorities][comboPriority.SelectedIndex-1].DefNum;
+				ProcCur.Priority=DefB.Short[(int)DefCat.TxPriorities][comboPriority.SelectedIndex-1].DefNum;
 			ProcCur.PlaceService=(PlaceOfService)comboPlaceService.SelectedIndex;
 			if(comboClinic.SelectedIndex==0){
 				ProcCur.ClinicNum=0;

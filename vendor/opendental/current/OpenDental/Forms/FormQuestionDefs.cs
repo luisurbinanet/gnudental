@@ -69,9 +69,9 @@ namespace OpenDental{
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(709,50);
 			this.label1.TabIndex = 8;
-			this.label1.Text = "These are the questions that will show on the new patient questionnaire.  You can" +
-    " safely move or delete any questions without harming previously completed questi" +
-    "onnaires.";
+			this.label1.Text = "These are the questions that will show on the patient questionnaire.  You can saf" +
+    "ely move or delete any questions without harming previously completed questionna" +
+    "ires.";
 			// 
 			// butClose
 			// 
