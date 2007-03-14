@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -39,6 +40,8 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textRowsPerIncr;
 		///<summary>A local list of ApptViewItems which are displayed in list on left.  Not updated to db until the form is closed.</summary>
 		private ArrayList displayedElements;
+		///<summary>Set this value before opening the form.</summary>
+		public ApptView ApptViewCur;
 
 		///<summary></summary>
 		public FormApptViewEdit()
@@ -359,12 +362,12 @@ namespace OpenDental{
 		#endregion
 
 		private void FormApptViewEdit_Load(object sender, System.EventArgs e) {
-			textDescription.Text=ApptViews.Cur.Description;
-			if(ApptViews.Cur.RowsPerIncr==0)
+			textDescription.Text=ApptViewCur.Description;
+			if(ApptViewCur.RowsPerIncr==0)
 				textRowsPerIncr.Text="1";
 			else
-				textRowsPerIncr.Text=ApptViews.Cur.RowsPerIncr.ToString();
-			ApptViewItems.GetForCurView();
+				textRowsPerIncr.Text=ApptViewCur.RowsPerIncr.ToString();
+			ApptViewItems.GetForCurView(ApptViewCur);
 			for(int i=0;i<Operatories.ListShort.Length;i++){
 				listOps.Items.Add(Operatories.ListShort[i].OpName);
 				if(ApptViewItems.OpIsInView(Operatories.ListShort[i].OperatoryNum)){
@@ -524,8 +527,8 @@ namespace OpenDental{
 				!=DialogResult.OK){
 				return;
 			}
-			ApptViewItems.DeleteAllForView();
-			ApptViews.DeleteCur();
+			ApptViewItems.DeleteAllForView(ApptViewCur);
+			ApptViews.Delete(ApptViewCur);
 			DialogResult=DialogResult.OK;
 		}
 
@@ -542,33 +545,33 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"At least one row type must be displayed."));
 				return;
 			}
-			ApptViewItems.DeleteAllForView();//start with a clean slate
+			ApptViewItems.DeleteAllForView(ApptViewCur);//start with a clean slate
 			for(int i=0;i<Operatories.ListShort.Length;i++){
 				if(listOps.SelectedIndices.Contains(i)){
-					ApptViewItems.Cur=new ApptViewItem();
-					ApptViewItems.Cur.ApptViewNum=ApptViews.Cur.ApptViewNum;
-					ApptViewItems.Cur.OpNum=Operatories.ListShort[i].OperatoryNum;
-					ApptViewItems.InsertCur();
+					ApptViewItem ApptViewItemCur=new ApptViewItem();
+					ApptViewItemCur.ApptViewNum=ApptViewCur.ApptViewNum;
+					ApptViewItemCur.OpNum=Operatories.ListShort[i].OperatoryNum;
+					ApptViewItems.Insert(ApptViewItemCur);
 				}
 			}
 			for(int i=0;i<Providers.List.Length;i++){
 				if(listProv.SelectedIndices.Contains(i)){
-					ApptViewItems.Cur=new ApptViewItem();
-					ApptViewItems.Cur.ApptViewNum=ApptViews.Cur.ApptViewNum;
-					ApptViewItems.Cur.ProvNum=Providers.List[i].ProvNum;
-					ApptViewItems.InsertCur();
+					ApptViewItem ApptViewItemCur=new ApptViewItem();
+					ApptViewItemCur.ApptViewNum=ApptViewCur.ApptViewNum;
+					ApptViewItemCur.ProvNum=Providers.List[i].ProvNum;
+					ApptViewItems.Insert(ApptViewItemCur);
 				}
 			}
 			for(int i=0;i<displayedElements.Count;i++){
-				ApptViewItems.Cur=(ApptViewItem)displayedElements[i];
-				ApptViewItems.Cur.ApptViewNum=ApptViews.Cur.ApptViewNum;
+				ApptViewItem ApptViewItemCur=(ApptViewItem)displayedElements[i];
+				ApptViewItemCur.ApptViewNum=ApptViewCur.ApptViewNum;
 				//elementDesc and elementColor already handled.
-				ApptViewItems.Cur.ElementOrder=i;
-				ApptViewItems.InsertCur();
+				ApptViewItemCur.ElementOrder=i;
+				ApptViewItems.Insert(ApptViewItemCur);
 			}
-			ApptViews.Cur.Description=textDescription.Text;
-			ApptViews.Cur.RowsPerIncr=PIn.PInt(textRowsPerIncr.Text);
-			ApptViews.UpdateCur();//same whether isnew or not
+			ApptViewCur.Description=textDescription.Text;
+			ApptViewCur.RowsPerIncr=PIn.PInt(textRowsPerIncr.Text);
+			ApptViews.Update(ApptViewCur);//same whether isnew or not
 			DialogResult=DialogResult.OK;
 		}
 
@@ -580,8 +583,8 @@ namespace OpenDental{
 			if(DialogResult==DialogResult.OK)
 				return;
 			if(IsNew){
-				ApptViewItems.DeleteAllForView();
-				ApptViews.DeleteCur();
+				ApptViewItems.DeleteAllForView(ApptViewCur);
+				ApptViews.Delete(ApptViewCur);
 			}
 		}
 

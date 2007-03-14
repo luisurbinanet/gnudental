@@ -7,6 +7,7 @@ using System.Drawing.Imaging;
 using System.Drawing.Text;
 using System.Data;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental
 {
@@ -84,6 +85,7 @@ namespace OpenDental
 		public event EventHandler DirectionChangedLeft = null;
 		///<summary>Causes each data entry to be entered three times. Also, if the data is a bleeding flag entry, then it changes the behavior by causing it to advance also.</summary>
 		public bool ThreeAtATime;
+		//public PerioExam PerioExamCur;
 
 		///<summary>The index in PerioExams.List of the currently selected exam.</summary>
 		public int SelectedExam{
@@ -617,22 +619,22 @@ namespace OpenDental
 				//test for red
 				switch(RowTypes[GetSection(row)][GetSectionRow(row)]){
 					case PerioSequenceType.Probing:
-						redThresh=PIn.PInt(((Pref)Prefs.HList["PerioRedProb"]).ValueString);
+						redThresh=PIn.PInt(((Pref)PrefB.HList["PerioRedProb"]).ValueString);
 						break;
 					case PerioSequenceType.MGJ:
-						redThresh=PIn.PInt(((Pref)Prefs.HList["PerioRedMGJ"]).ValueString);
+						redThresh=PIn.PInt(((Pref)PrefB.HList["PerioRedMGJ"]).ValueString);
 						break;
 					case PerioSequenceType.GingMargin:
-						redThresh=PIn.PInt(((Pref)Prefs.HList["PerioRedGing"]).ValueString);
+						redThresh=PIn.PInt(((Pref)PrefB.HList["PerioRedGing"]).ValueString);
 						break;
 					case PerioSequenceType.CAL:
-						redThresh=PIn.PInt(((Pref)Prefs.HList["PerioRedCAL"]).ValueString);
+						redThresh=PIn.PInt(((Pref)PrefB.HList["PerioRedCAL"]).ValueString);
 						break;
 					case PerioSequenceType.Furcation:
-						redThresh=PIn.PInt(((Pref)Prefs.HList["PerioRedFurc"]).ValueString);
+						redThresh=PIn.PInt(((Pref)PrefB.HList["PerioRedFurc"]).ValueString);
 						break;
 					case PerioSequenceType.Mobility:
-						redThresh=PIn.PInt(((Pref)Prefs.HList["PerioRedMob"]).ValueString);
+						redThresh=PIn.PInt(((Pref)PrefB.HList["PerioRedMob"]).ValueString);
 						break;
 				}
 				if((RowTypes[GetSection(row)][GetSectionRow(row)]
@@ -779,7 +781,7 @@ namespace OpenDental
 			for(int examI=0;examI<=selectedExam;examI++){//exams, earliest through current
 				for(int seqI=0;seqI<PerioMeasures.List.GetLength(1);seqI++){//sequences
 					for(int toothI=1;toothI<PerioMeasures.List.GetLength(2);toothI++){//measurements
-						if(PerioMeasures.List[examI,seqI,toothI].PerioMeasureNum==0)
+						if(PerioMeasures.List[examI,seqI,toothI]==null)//.PerioMeasureNum==0)
 							continue;//no measurement for this seq and tooth
 						for(int surfI=0;surfI<Enum.GetNames(typeof(PerioSurf)).Length;surfI++){//surfaces(6or7)
 							if(seqI==(int)PerioSequenceType.SkipTooth){
@@ -955,7 +957,8 @@ namespace OpenDental
 		}
 
 		///<summary>Saves the cur exam measurements to the db by looping through each tooth and deciding whether the data for that tooth has changed.  If so, it either updates or inserts a measurement.  It won't delete a measurement if all values for that tooth are cleared, but just sets that measurement to all -1's.</summary>
-		public void SaveCurExam(){
+		public void SaveCurExam(int perioExamNum){
+			PerioMeasure PerioMeasureCur;
 			for(int seqI=0;seqI<PerioMeasures.List.GetLength(1);seqI++){
 				for(int toothI=1;toothI<PerioMeasures.List.GetLength(2);toothI++){
 					if(
@@ -966,28 +969,28 @@ namespace OpenDental
 						|| HasChanged[seqI,toothI])
 					{
 						//new measurement
-						if(PerioMeasures.List[selectedExam,seqI,toothI].PerioMeasureNum==0){
+						if(PerioMeasures.List[selectedExam,seqI,toothI]==null){//.PerioMeasureNum==0){
 							//MessageBox.Show(toothI.ToString());
-							PerioMeasures.Cur=new PerioMeasure();
-							PerioMeasures.Cur.PerioExamNum=PerioExams.Cur.PerioExamNum;
-							PerioMeasures.Cur.SequenceType=(PerioSequenceType)seqI;
-							PerioMeasures.Cur.IntTooth=toothI;
+							PerioMeasureCur=new PerioMeasure();
+							PerioMeasureCur.PerioExamNum=perioExamNum;
+							PerioMeasureCur.SequenceType=(PerioSequenceType)seqI;
+							PerioMeasureCur.IntTooth=toothI;
 						}
 						else{
-							PerioMeasures.Cur=PerioMeasures.List[selectedExam,seqI,toothI];
+							PerioMeasureCur=PerioMeasures.List[selectedExam,seqI,toothI];
 							//PerioExam
 							//Sequence
 							//tooth
 						}
 						if(seqI==(int)PerioSequenceType.Mobility || seqI==(int)PerioSequenceType.SkipTooth){
-							PerioMeasures.Cur.MBvalue=-1;
-							PerioMeasures.Cur.Bvalue=-1;
-							PerioMeasures.Cur.DBvalue=-1;
-							PerioMeasures.Cur.MLvalue=-1;
-							PerioMeasures.Cur.Lvalue=-1;
-							PerioMeasures.Cur.DLvalue=-1;
+							PerioMeasureCur.MBvalue=-1;
+							PerioMeasureCur.Bvalue=-1;
+							PerioMeasureCur.DBvalue=-1;
+							PerioMeasureCur.MLvalue=-1;
+							PerioMeasureCur.Lvalue=-1;
+							PerioMeasureCur.DLvalue=-1;
 							if(seqI==(int)PerioSequenceType.Mobility){
-								PerioMeasures.Cur.ToothValue
+								PerioMeasureCur.ToothValue
 									=GetCellValue(selectedExam,(PerioSequenceType)seqI,toothI,PerioSurf.B);
 							}
 							else{//skiptooth
@@ -995,41 +998,41 @@ namespace OpenDental
 							}
 						}
 						else if(seqI==(int)PerioSequenceType.Bleeding){
-							PerioMeasures.Cur.ToothValue=-1;
-							PerioMeasures.Cur.MBvalue
+							PerioMeasureCur.ToothValue=-1;
+							PerioMeasureCur.MBvalue
 								=GetCellBleedValue(selectedExam,toothI,PerioSurf.MB);
-							PerioMeasures.Cur.Bvalue
+							PerioMeasureCur.Bvalue
 								=GetCellBleedValue(selectedExam,toothI,PerioSurf.B);
-							PerioMeasures.Cur.DBvalue
+							PerioMeasureCur.DBvalue
 								=GetCellBleedValue(selectedExam,toothI,PerioSurf.DB);
-							PerioMeasures.Cur.MLvalue
+							PerioMeasureCur.MLvalue
 								=GetCellBleedValue(selectedExam,toothI,PerioSurf.ML);
-							PerioMeasures.Cur.Lvalue
+							PerioMeasureCur.Lvalue
 								=GetCellBleedValue(selectedExam,toothI,PerioSurf.L);
-							PerioMeasures.Cur.DLvalue
+							PerioMeasureCur.DLvalue
 								=GetCellBleedValue(selectedExam,toothI,PerioSurf.DL);
 						}
 						else{
-							PerioMeasures.Cur.ToothValue=-1;
-							PerioMeasures.Cur.MBvalue
+							PerioMeasureCur.ToothValue=-1;
+							PerioMeasureCur.MBvalue
 								=GetCellValue(selectedExam,(PerioSequenceType)seqI,toothI,PerioSurf.MB);
-							PerioMeasures.Cur.Bvalue
+							PerioMeasureCur.Bvalue
 								=GetCellValue(selectedExam,(PerioSequenceType)seqI,toothI,PerioSurf.B);
-							PerioMeasures.Cur.DBvalue
+							PerioMeasureCur.DBvalue
 								=GetCellValue(selectedExam,(PerioSequenceType)seqI,toothI,PerioSurf.DB);
-							PerioMeasures.Cur.MLvalue
+							PerioMeasureCur.MLvalue
 								=GetCellValue(selectedExam,(PerioSequenceType)seqI,toothI,PerioSurf.ML);
-							PerioMeasures.Cur.Lvalue
+							PerioMeasureCur.Lvalue
 								=GetCellValue(selectedExam,(PerioSequenceType)seqI,toothI,PerioSurf.L);
-							PerioMeasures.Cur.DLvalue
+							PerioMeasureCur.DLvalue
 								=GetCellValue(selectedExam,(PerioSequenceType)seqI,toothI,PerioSurf.DL);
 						}
 						//then to the database
-						if(PerioMeasures.List[selectedExam,seqI,toothI].PerioMeasureNum==0){
-							PerioMeasures.InsertCur();
+						if(PerioMeasures.List[selectedExam,seqI,toothI]==null){
+							PerioMeasures.Insert(PerioMeasureCur);
 						}
 						else{
-							PerioMeasures.UpdateCur();
+							PerioMeasures.Update(PerioMeasureCur);
 						}
 					}//if haschanged
 				}//for toothI
@@ -1688,7 +1691,7 @@ namespace OpenDental
 		}
 
 		///<summary></summary>
-		public void ToggleSkip(){
+		public void ToggleSkip(int perioExamNum){
 			if(selectedTeeth.Count==0){
 				MessageBox.Show(Lan.g(this,"Please select teeth first."));
 				return;
@@ -1701,7 +1704,7 @@ namespace OpenDental
 					skippedTeeth.Add(selectedTeeth[i]);
 				}
 			}
-			PerioMeasures.SetSkipped(skippedTeeth);
+			PerioMeasures.SetSkipped(perioExamNum,skippedTeeth);
 			selectedTeeth=new ArrayList();
 			Invalidate();
 		}
@@ -1747,24 +1750,25 @@ namespace OpenDental
 			if(selectedExam==-1){
 				return new ArrayList();
 			}
+			int prefVal=0;
 			switch(seqType){
 				case PerioSequenceType.Probing:
-					Prefs.Cur=(Pref)Prefs.HList["PerioRedProb"];
+					prefVal=PrefB.GetInt("PerioRedProb");
 					break;
 				case PerioSequenceType.MGJ:
-					Prefs.Cur=(Pref)Prefs.HList["PerioRedMGJ"];
+					prefVal=PrefB.GetInt("PerioRedMGJ");
 					break;
 				case PerioSequenceType.GingMargin:
-					Prefs.Cur=(Pref)Prefs.HList["PerioRedGing"];
+					prefVal=PrefB.GetInt("PerioRedGing");
 					break;
 				case PerioSequenceType.CAL:
-					Prefs.Cur=(Pref)Prefs.HList["PerioRedCAL"];
+					prefVal=PrefB.GetInt("PerioRedCAL");
 					break;
 				case PerioSequenceType.Furcation:
-					Prefs.Cur=(Pref)Prefs.HList["PerioRedFurc"];
+					prefVal=PrefB.GetInt("PerioRedFurc");
 					break;
 				case PerioSequenceType.Mobility:
-					Prefs.Cur=(Pref)Prefs.HList["PerioRedMob"];
+					prefVal=PrefB.GetInt("PerioRedMob");
 					break;
 			}
 			ArrayList retList=new ArrayList();
@@ -1780,8 +1784,8 @@ namespace OpenDental
 					if(cellText==null || cellText==""){
 						continue;
 					}
-					if((seqType==PerioSequenceType.MGJ && PIn.PInt(cellText)<=PIn.PInt(Prefs.Cur.ValueString))
-						|| (seqType!=PerioSequenceType.MGJ && PIn.PInt(cellText)>=PIn.PInt(Prefs.Cur.ValueString))){
+					if((seqType==PerioSequenceType.MGJ && PIn.PInt(cellText)<=prefVal)
+						|| (seqType!=PerioSequenceType.MGJ && PIn.PInt(cellText)>=prefVal)){
 						intTooth=(int)Math.Ceiling((double)x/3);
 						if(section==2 || section==3){//if mand
 							intTooth=33-intTooth;

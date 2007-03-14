@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	///<summary></summary>
@@ -17,6 +18,8 @@ namespace OpenDental{
 		private OpenDental.UI.Button butChange;
 		///<summary></summary>
     public bool IsNew;
+		///<summary>Set this value externally before opening this form, even if IsNew.</summary>
+		public AutoCodeItem AutoCodeItemCur;
 
 		///<summary></summary>
 		public FormAutoItemEdit(){
@@ -150,13 +153,11 @@ namespace OpenDental{
  		private void FormAutoItemEdit_Load(object sender, System.EventArgs e) { 
       AutoCodeConds.Refresh();    
 			if(IsNew){
-        AutoCodeItems.Cur=new AutoCodeItem();
-        AutoCodeItems.Cur.AutoCodeNum=AutoCodes.Cur.AutoCodeNum;
 				this.Text=Lan.g(this,"Add Auto Code Item");  
 			}
 			else{ 
 				this.Text=Lan.g(this,"Edit Auto Code Item");
-				textADA.Text=AutoCodeItems.Cur.ADACode;    
+				textADA.Text=AutoCodeItemCur.ADACode;    
 			}
 			FillList();
 		}
@@ -167,7 +168,7 @@ namespace OpenDental{
          listConditions.Items.Add(Lan.g("enumAutoConditions",s));
       }  
 			for(int i=0;i<AutoCodeConds.List.Length;i++){
-        if(AutoCodeConds.List[i].AutoCodeItemNum==AutoCodeItems.Cur.AutoCodeItemNum){
+        if(AutoCodeConds.List[i].AutoCodeItemNum==AutoCodeItemCur.AutoCodeItemNum){
           listConditions.SetSelected((int)AutoCodeConds.List[i].Cond,true);
         }   
       }
@@ -180,19 +181,19 @@ namespace OpenDental{
 				FillList();
 				return;
       }
-      AutoCodeItems.Cur.ADACode=textADA.Text;
+      AutoCodeItemCur.ADACode=textADA.Text;
       if(IsNew){
-        AutoCodeItems.InsertCur();
+        AutoCodeItems.Insert(AutoCodeItemCur);
       }
       else{
-        AutoCodeItems.UpdateCur();
+        AutoCodeItems.Update(AutoCodeItemCur);
       } 
-      AutoCodeConds.DeleteForItemNum(AutoCodeItems.Cur.AutoCodeItemNum);
+      AutoCodeConds.DeleteForItemNum(AutoCodeItemCur.AutoCodeItemNum);
       for(int i=0;i<listConditions.SelectedIndices.Count;i++){
-        AutoCodeConds.Cur=new AutoCodeCond();
-        AutoCodeConds.Cur.AutoCodeItemNum=AutoCodeItems.Cur.AutoCodeItemNum;
-        AutoCodeConds.Cur.Cond=(AutoCondition)listConditions.SelectedIndices[i];
-        AutoCodeConds.InsertCur(); 
+        AutoCodeCond AutoCodeCondCur=new AutoCodeCond();
+        AutoCodeCondCur.AutoCodeItemNum=AutoCodeItemCur.AutoCodeItemNum;
+        AutoCodeCondCur.Cond=(AutoCondition)listConditions.SelectedIndices[i];
+        AutoCodeConds.Insert(AutoCodeCondCur); 
       }
       DialogResult=DialogResult.OK;
 		}
@@ -202,11 +203,11 @@ namespace OpenDental{
       FormP.IsSelectionMode=true;
       FormP.ShowDialog();
       if(FormP.DialogResult==DialogResult.Cancel){
-        textADA.Text=AutoCodeItems.Cur.ADACode; 
+        textADA.Text=AutoCodeItemCur.ADACode; 
       }
       else{
 				if(AutoCodeItems.HList.ContainsKey(FormP.SelectedADA)
-					&& (int)AutoCodeItems.HList[FormP.SelectedADA] != AutoCodes.Cur.AutoCodeNum)
+					&& (int)AutoCodeItems.HList[FormP.SelectedADA] != AutoCodeItemCur.AutoCodeNum)
 				{
 					//This section is a fix for an old bug that did not cause items to get deleted properly
 					if(!AutoCodes.HList.ContainsKey((int)AutoCodeItems.HList[FormP.SelectedADA])){
@@ -215,7 +216,7 @@ namespace OpenDental{
 					}
 					else{
 						MessageBox.Show(Lan.g(this,"That ADA code is already in use in a different Auto Code.  Not allowed to use it here."));
-						textADA.Text=AutoCodeItems.Cur.ADACode;
+						textADA.Text=AutoCodeItemCur.ADACode;
 					}
 				}
 				else{

@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -330,7 +331,7 @@ namespace OpenDental{
 				DialogResult=DialogResult.Cancel;
 			}
 			else{
-				DunningCur.Delete();
+				Dunnings.Delete(DunningCur);
 				DialogResult=DialogResult.OK;
 			}
 		}
@@ -368,7 +369,7 @@ namespace OpenDental{
 				DunningCur.InsIsPending=YN.No;
 			}
 			DunningCur.DunMessage=textDunMessage.Text;
-			DunningCur.InsertOrUpdate(IsNew);
+			Dunnings.InsertOrUpdate(DunningCur,IsNew);
 			DialogResult=DialogResult.OK;
 		}
 

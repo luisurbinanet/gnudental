@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using OpenDental.UI;
 using OpenDental.ReportingOld2;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -204,7 +205,7 @@ namespace OpenDental{
 			input.ShowDialog();
 			if(input.DialogResult==DialogResult.OK){
 				QuestionList[e.Row].Answer=input.textResult.Text;
-				QuestionList[e.Row].Update();
+				Questions.Update(QuestionList[e.Row]);
 			}
 			FillGrid();
 		}
@@ -237,7 +238,7 @@ namespace OpenDental{
 				else if(QuestionDefList[i].QuestType==QuestionType.YesNoUnknown){
 					quest.Answer=Lan.g("enumYN",multInput.GetCurrentValues(i)[0].ToString());
 				}
-				quest.Insert();
+				Questions.Insert(quest);
 			}
 			DialogResult=DialogResult.OK;
 		}

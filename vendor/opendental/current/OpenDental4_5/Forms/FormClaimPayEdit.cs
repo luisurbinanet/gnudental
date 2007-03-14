@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -35,6 +36,8 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textCarrierName;
 		private System.Windows.Forms.Label label7;
 		private ClaimPayment ClaimPaymentCur;
+		///<summary>Set this externally.</summary>
+		public Claim OriginatingClaim;
 
 		///<summary></summary>
 		public FormClaimPayEdit(ClaimPayment claimPaymentCur){
@@ -323,7 +326,7 @@ namespace OpenDental{
 				//ClaimPayments.InsertCur();//assigns a ClaimPaymentNum for use below
 				checkShowUn.Checked=true;
 			}
-			if(Prefs.GetBool("EasyNoClinics")){
+			if(PrefB.GetBool("EasyNoClinics")){
 				comboClinic.Visible=false;
 				labelClinic.Visible=false;
 			}
@@ -373,7 +376,7 @@ namespace OpenDental{
 					tb2.SetSelected(i,true);
 					splitTot+=splits[i].InsPayAmt;
 				}
-				if(splits[i].ClaimNum==Claims.Cur.ClaimNum){
+				if(splits[i].ClaimNum==OriginatingClaim.ClaimNum){
 					for(int j=0;j<tb2.MaxCols;j++){
 						tb2.FontBold[j,i]=true;
 					}
@@ -409,7 +412,7 @@ namespace OpenDental{
 				return;
 			}
 			try{
-				ClaimPaymentCur.Delete();
+				ClaimPayments.Delete(ClaimPaymentCur);
 			}
 			catch(ApplicationException ex){
 				MessageBox.Show(ex.Message);
@@ -445,7 +448,7 @@ namespace OpenDental{
 			ClaimPaymentCur.CarrierName=textCarrierName.Text;
 			ClaimPaymentCur.Note=textNote.Text;
 			try{
-				ClaimPaymentCur.Update();//error thrown if trying to change amount and already attached to a deposit.
+				ClaimPayments.Update(ClaimPaymentCur);//error thrown if trying to change amount and already attached to a deposit.
 			}
 			catch(ApplicationException ex){
 				MessageBox.Show(ex.Message);
@@ -476,7 +479,7 @@ namespace OpenDental{
 				return;
 			if(IsNew){//cancel
 				//ClaimProcs never saved in the first place
-				ClaimPaymentCur.Delete();
+				ClaimPayments.Delete(ClaimPaymentCur);
 			}
 		}
 

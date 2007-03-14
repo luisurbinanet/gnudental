@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Data;
 using System.Globalization;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 

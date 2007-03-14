@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -282,7 +283,7 @@ namespace OpenDental{
       if(!MsgBox.Show(this,true,"Delete Referral?")){
         return;   
       }
-      RefCur.Delete();
+      Referrals.Delete(RefCur);
       tbRefSelect.SelectedRow=-1;
       FillTable();
     }

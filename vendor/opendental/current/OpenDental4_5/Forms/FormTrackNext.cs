@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>The Next appoinment tracking tool.</summary>
@@ -46,21 +47,20 @@ namespace OpenDental{
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormTrackNext));
 			this.butClose = new OpenDental.UI.Button();
 			this.tbApts = new OpenDental.TableUnsched();
 			this.SuspendLayout();
 			// 
 			// butClose
 			// 
-			this.butClose.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butClose.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butClose.Autosize = true;
 			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butClose.Location = new System.Drawing.Point(872, 642);
+			this.butClose.Location = new System.Drawing.Point(872,642);
 			this.butClose.Name = "butClose";
-			this.butClose.Size = new System.Drawing.Size(75, 26);
+			this.butClose.Size = new System.Drawing.Size(75,26);
 			this.butClose.TabIndex = 0;
 			this.butClose.Text = "&Close";
 			this.butClose.Click += new System.EventHandler(this.butClose_Click);
@@ -68,22 +68,21 @@ namespace OpenDental{
 			// tbApts
 			// 
 			this.tbApts.BackColor = System.Drawing.SystemColors.Window;
-			this.tbApts.Location = new System.Drawing.Point(13, 12);
+			this.tbApts.Location = new System.Drawing.Point(13,12);
 			this.tbApts.Name = "tbApts";
 			this.tbApts.ScrollValue = 1;
 			this.tbApts.SelectedIndices = new int[0];
 			this.tbApts.SelectionMode = System.Windows.Forms.SelectionMode.One;
-			this.tbApts.Size = new System.Drawing.Size(734, 656);
+			this.tbApts.Size = new System.Drawing.Size(734,656);
 			this.tbApts.TabIndex = 1;
 			// 
 			// FormTrackNext
 			// 
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
 			this.CancelButton = this.butClose;
-			this.ClientSize = new System.Drawing.Size(971, 684);
+			this.ClientSize = new System.Drawing.Size(971,684);
 			this.Controls.Add(this.tbApts);
 			this.Controls.Add(this.butClose);
-			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "FormTrackNext";

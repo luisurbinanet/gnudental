@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	///<summary></summary>
@@ -18,6 +19,7 @@ namespace OpenDental{
 		private OpenDental.ODtextBox textQuery;// Required designer variable.
 		///<summary></summary>
 		public bool IsNew;
+		public UserQuery UserQueryCur;
 
 		///<summary></summary>
 		public FormQueryEdit(){
@@ -124,7 +126,7 @@ namespace OpenDental{
 			this.textQuery.Location = new System.Drawing.Point(108, 38);
 			this.textQuery.Multiline = true;
 			this.textQuery.Name = "textQuery";
-			this.textQuery.QuickPasteType = OpenDental.QuickPasteType.Query;
+			this.textQuery.QuickPasteType = OpenDentBusiness.QuickPasteType.Query;
 			this.textQuery.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textQuery.Size = new System.Drawing.Size(624, 588);
 			this.textQuery.TabIndex = 5;
@@ -157,9 +159,9 @@ namespace OpenDental{
 		#endregion
 
 		private void FormQueryEdit_Load(object sender, System.EventArgs e) {
-			textTitle.Text=UserQueries.Cur.Description;
-			textQuery.Text=UserQueries.Cur.QueryText;
-			textFileName.Text=UserQueries.Cur.FileName;
+			textTitle.Text=UserQueryCur.Description;
+			textQuery.Text=UserQueryCur.QueryText;
+			textFileName.Text=UserQueryCur.FileName;
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
@@ -167,14 +169,14 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please enter a title first."));
 				return;
 			}
-			UserQueries.Cur.Description=textTitle.Text;
-			UserQueries.Cur.QueryText=textQuery.Text;
-			UserQueries.Cur.FileName=textFileName.Text;
+			UserQueryCur.Description=textTitle.Text;
+			UserQueryCur.QueryText=textQuery.Text;
+			UserQueryCur.FileName=textFileName.Text;
 			if(IsNew){
-				UserQueries.InsertCur();
+				UserQueries.Insert(UserQueryCur);
 			}
 			else{
-				UserQueries.UpdateCur();
+				UserQueries.Update(UserQueryCur);
 			}
 			DialogResult=DialogResult.OK;
 		}

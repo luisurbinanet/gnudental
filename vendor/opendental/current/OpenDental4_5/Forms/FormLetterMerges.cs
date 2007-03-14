@@ -10,7 +10,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-//using OpenDental.Reporting;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -270,7 +270,7 @@ namespace OpenDental{
 
 		
 		private void FormLetterMerges_Load(object sender, System.EventArgs e) {
-			mergePath=Prefs.GetString("LetterMergePath");
+			mergePath=PrefB.GetString("LetterMergePath");
 			FillCats();
 			if(listCategories.Items.Count>0){
 				listCategories.SelectedIndex=0;
@@ -370,9 +370,7 @@ namespace OpenDental{
 				+"WHERE patient.PatNum="+POut.PInt(PatCur.PatNum)
 				+" GROUP BY patient.PatNum "
 				+"ORDER BY refattach.ItemOrder";
-			//MessageBox.Show(command);
-			DataConnection dcon=new DataConnection();
- 			DataTable table=dcon.GetTable(command);
+ 			DataTable table=General.GetTable(command);
 			table=FormQuery.MakeReadable(table);
 			try{
 			  using(StreamWriter sw=new StreamWriter(fileName,false)){
@@ -422,8 +420,8 @@ namespace OpenDental{
 				return;
 			}
 			LetterMerge letterCur=ListForCat[listLetters.SelectedIndex];
-			string dataFile=Prefs.GetString("LetterMergePath")+letterCur.DataFileName;
-			if(!Directory.Exists(Prefs.GetString("LetterMergePath"))){
+			string dataFile=PrefB.GetString("LetterMergePath")+letterCur.DataFileName;
+			if(!Directory.Exists(PrefB.GetString("LetterMergePath"))){
 				MsgBox.Show(this,"Letter merge path not valid.");
 				return;
 			}
@@ -442,8 +440,8 @@ namespace OpenDental{
 				return;
 			}
 			LetterMerge letterCur=ListForCat[listLetters.SelectedIndex];
-			string templateFile=Prefs.GetString("LetterMergePath")+letterCur.TemplateName;
-			string dataFile=Prefs.GetString("LetterMergePath")+letterCur.DataFileName;
+			string templateFile=PrefB.GetString("LetterMergePath")+letterCur.TemplateName;
+			string dataFile=PrefB.GetString("LetterMergePath")+letterCur.DataFileName;
 			if(!File.Exists(templateFile)){
 				MsgBox.Show(this,"Template file does not exist.");
 				return;
@@ -486,7 +484,7 @@ namespace OpenDental{
 			CommlogCur.SentOrReceived=CommSentOrReceived.Sent;
 			CommlogCur.PatNum=PatCur.PatNum;
 			CommlogCur.Note="Letter sent: "+letterCur.Description+". ";
-			CommlogCur.Insert();
+			Commlogs.Insert(CommlogCur);
 			DialogResult=DialogResult.OK;
 		}
 
@@ -496,8 +494,8 @@ namespace OpenDental{
 				return;
 			}
 			LetterMerge letterCur=ListForCat[listLetters.SelectedIndex];
-			string templateFile=Prefs.GetString("LetterMergePath")+letterCur.TemplateName;
-			string dataFile=Prefs.GetString("LetterMergePath")+letterCur.DataFileName;
+			string templateFile=PrefB.GetString("LetterMergePath")+letterCur.TemplateName;
+			string dataFile=PrefB.GetString("LetterMergePath")+letterCur.DataFileName;
 			if(!File.Exists(templateFile)){
 				MsgBox.Show(this,"Template file does not exist.");
 				return;
@@ -545,7 +543,7 @@ namespace OpenDental{
 			CommlogCur.SentOrReceived=CommSentOrReceived.Sent;
 			CommlogCur.PatNum=PatCur.PatNum;
 			CommlogCur.Note="Letter sent: "+letterCur.Description+". ";
-			CommlogCur.Insert();
+			Commlogs.Insert(CommlogCur);
 			//this window now closes regardless of whether the user saved the comm item.
 			DialogResult=DialogResult.OK;
 		}
@@ -556,8 +554,8 @@ namespace OpenDental{
 				return;
 			}
 			LetterMerge letterCur=ListForCat[listLetters.SelectedIndex];
-			string templateFile=Prefs.GetString("LetterMergePath")+letterCur.TemplateName;
-			string dataFile=Prefs.GetString("LetterMergePath")+letterCur.DataFileName;
+			string templateFile=PrefB.GetString("LetterMergePath")+letterCur.TemplateName;
+			string dataFile=PrefB.GetString("LetterMergePath")+letterCur.DataFileName;
 			if(!File.Exists(templateFile)){
 				MessageBox.Show(Lan.g(this,"Template file does not exist:")+"  "+templateFile);
 				return;

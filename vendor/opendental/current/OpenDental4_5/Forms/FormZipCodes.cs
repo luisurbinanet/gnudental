@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -133,8 +134,8 @@ namespace OpenDental{
 			if(tbZips.SelectedRow==-1){
 				return;
 			}
-			ZipCodes.Cur=ZipCodes.List[tbZips.SelectedRow];
       FormZipCodeEdit FormZCE=new FormZipCodeEdit();
+			FormZCE.ZipCodeCur=ZipCodes.List[tbZips.SelectedRow];
 			FormZCE.ShowDialog();
 			if(FormZCE.DialogResult!=DialogResult.OK){
 				return;
@@ -148,18 +149,18 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please select an item first."));
 				return;
 			}	
-			ZipCodes.Cur=ZipCodes.List[tbZips.SelectedRow];		
+			ZipCode ZipCur=ZipCodes.List[tbZips.SelectedRow];		
 			if(MessageBox.Show(Lan.g(this,"Delete Zipcode?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
 				return;   
 			}
 			changed=true;
-			ZipCodes.DeleteCur();
+			ZipCodes.Delete(ZipCur);
 			FillTable();
 		}
 
 		private void butAdd_Click(object sender, System.EventArgs e) {
-			ZipCodes.Cur=new ZipCode();
 			FormZipCodeEdit FormZCE=new FormZipCodeEdit();
+			FormZCE.ZipCodeCur=new ZipCode();
 			FormZCE.IsNew=true;
 			FormZCE.ShowDialog();
 			if(FormZCE.DialogResult!=DialogResult.OK){

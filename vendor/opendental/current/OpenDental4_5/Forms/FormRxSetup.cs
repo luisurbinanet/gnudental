@@ -4,6 +4,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using OpenDental.UI;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -184,7 +185,7 @@ namespace OpenDental{
 
 		private void butAdd_Click(object sender, System.EventArgs e) {
 			RxDef RxDefCur=new RxDef();
-			RxDefCur.Insert();//It gets deleted if user clicks cancel
+			RxDefs.Insert(RxDefCur);//It gets deleted if user clicks cancel
 			FormRxDefEdit FormE=new FormRxDefEdit(RxDefCur);
 			FormE.IsNew=true;
 			FormE.ShowDialog();
@@ -197,7 +198,7 @@ namespace OpenDental{
 				return;
 			}
 			RxDef RxDefCur=RxDefList[gridMain.GetSelectedIndex()].Copy();
-			RxDefCur.Insert();//Now it has a new id.  It gets deleted if user clicks cancel. Alerts not copied.
+			RxDefs.Insert(RxDefCur);//Now it has a new id.  It gets deleted if user clicks cancel. Alerts not copied.
 			FormRxDefEdit FormE=new FormRxDefEdit(RxDefCur);
 			FormE.IsNew=true;
 			FormE.ShowDialog();

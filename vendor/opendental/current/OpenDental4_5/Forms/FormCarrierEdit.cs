@@ -4,6 +4,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Globalization;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -38,6 +39,8 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label11;
 		///<summary></summary>
 		public bool IsNew;
+		///<summary>Make sure to set this before calling the form.</summary>
+		public Carrier CarrierCur;
 
 		///<summary></summary>
 		public FormCarrierEdit()
@@ -360,16 +363,16 @@ namespace OpenDental{
 		#endregion
 
 		private void FormCarrierEdit_Load(object sender, System.EventArgs e) {
-			textCarrierName.Text=Carriers.Cur.CarrierName;
-			textPhone.Text=Carriers.Cur.Phone;
-			textAddress.Text=Carriers.Cur.Address;
-			textAddress2.Text=Carriers.Cur.Address2;
-			textCity.Text=Carriers.Cur.City;
-			textState.Text=Carriers.Cur.State;
-			textZip.Text=Carriers.Cur.Zip;
-			textElectID.Text=Carriers.Cur.ElectID;
-			checkNoSendElect.Checked=Carriers.Cur.NoSendElect;
-			string[] dependentPlans=Carriers.DependentPlans();
+			textCarrierName.Text=CarrierCur.CarrierName;
+			textPhone.Text=CarrierCur.Phone;
+			textAddress.Text=CarrierCur.Address;
+			textAddress2.Text=CarrierCur.Address2;
+			textCity.Text=CarrierCur.City;
+			textState.Text=CarrierCur.State;
+			textZip.Text=CarrierCur.Zip;
+			textElectID.Text=CarrierCur.ElectID;
+			checkNoSendElect.Checked=CarrierCur.NoSendElect;
+			string[] dependentPlans=Carriers.DependentPlans(CarrierCur);
 			textPlans.Text=dependentPlans.Length.ToString();
 			comboPlans.Items.Clear();
 			for(int i=0;i<dependentPlans.Length;i++){
@@ -436,7 +439,7 @@ namespace OpenDental{
 		}
 
 		private void butDelete_Click(object sender, System.EventArgs e) {
-			if(Carriers.DependentPlans().Length>0){
+			if(Carriers.DependentPlans(CarrierCur).Length>0){
 				MessageBox.Show(Lan.g(this,"Not allowed to delete carrier because it is in use.  Try combining carriers instead."));
 				return;
 			}
@@ -444,7 +447,7 @@ namespace OpenDental{
 				!=DialogResult.OK){
 				return;
 			}
-			Carriers.DeleteCur();
+			Carriers.Delete(CarrierCur);
 			DialogResult=DialogResult.OK;
 		}
 
@@ -453,20 +456,20 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Carrier Name cannot be blank."));
 				return;
 			}
-			Carriers.Cur.CarrierName=textCarrierName.Text;
-			Carriers.Cur.Phone=textPhone.Text;
-			Carriers.Cur.Address=textAddress.Text;
-			Carriers.Cur.Address2=textAddress2.Text;
-			Carriers.Cur.City=textCity.Text;
-			Carriers.Cur.State=textState.Text;
-			Carriers.Cur.Zip=textZip.Text;
-			Carriers.Cur.ElectID=textElectID.Text;
-			Carriers.Cur.NoSendElect=checkNoSendElect.Checked;
+			CarrierCur.CarrierName=textCarrierName.Text;
+			CarrierCur.Phone=textPhone.Text;
+			CarrierCur.Address=textAddress.Text;
+			CarrierCur.Address2=textAddress2.Text;
+			CarrierCur.City=textCity.Text;
+			CarrierCur.State=textState.Text;
+			CarrierCur.Zip=textZip.Text;
+			CarrierCur.ElectID=textElectID.Text;
+			CarrierCur.NoSendElect=checkNoSendElect.Checked;
 			if(IsNew){
-				Carriers.InsertCur();
+				Carriers.Insert(CarrierCur);
 			}
 			else{
-				Carriers.UpdateCur();
+				Carriers.Update(CarrierCur);
 			}
 			DialogResult=DialogResult.OK;
 		}

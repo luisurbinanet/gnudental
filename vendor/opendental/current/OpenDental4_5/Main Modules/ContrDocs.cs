@@ -5,6 +5,7 @@ See header in FormOpenDental.cs for complete text.  Redistributions must retain 
 //#define ISXP
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
@@ -18,10 +19,12 @@ using System.IO;
 using System.Net;
 using System.Resources;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text; 
 using System.Windows.Forms;
 //using WIALib;
 using OpenDental.UI;
+using OpenDentBusiness;
 
 namespace OpenDental{
 
@@ -63,6 +66,13 @@ namespace OpenDental{
 		private System.Windows.Forms.MenuItem menuItem4;
 		private Point TreeOriginalMouse;
 		private System.Windows.Forms.ContextMenu menuPatient;
+		private Panel panelNote;
+		private Label label1;
+		private TextBox textNote;
+		private SignatureBox sigBox;
+		private Label label15;
+		private Topaz.SigPlusNET sigBoxTopaz;
+		private Label labelInvalidSig;
 		///<summary>Set when DisplayImage is run. It is false if no Documents.Cur.</summary>
 		private bool Enhanced;
 		///<summary></summary>
@@ -89,6 +99,9 @@ namespace OpenDental{
 		private Family FamCur;
 		private Document[] DocumentList;
 		private Document DocCur;
+		private ContextMenu menuForms;
+		private List<DocAttach> DocAttachList;
+		private bool ShowNote;
 
 		///<summary></summary>
 		public ContrDocs(){
@@ -124,9 +137,17 @@ namespace OpenDental{
 			this.menuItem1 = new System.Windows.Forms.MenuItem();
 			this.menuExit = new System.Windows.Forms.MenuItem();
 			this.menuPrefs = new System.Windows.Forms.MenuItem();
-			this.ToolBarMain = new OpenDental.UI.ODToolBar();
 			this.menuPatient = new System.Windows.Forms.ContextMenu();
+			this.panelNote = new System.Windows.Forms.Panel();
+			this.textNote = new System.Windows.Forms.TextBox();
+			this.label1 = new System.Windows.Forms.Label();
+			this.label15 = new System.Windows.Forms.Label();
+			this.sigBox = new OpenDental.UI.SignatureBox();
+			this.ToolBarMain = new OpenDental.UI.ODToolBar();
+			this.sigBoxTopaz = new Topaz.SigPlusNET();
+			this.labelInvalidSig = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.PictureBox1)).BeginInit();
+			this.panelNote.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// TreeDocuments
@@ -251,6 +272,59 @@ namespace OpenDental{
 			this.menuPrefs.Index = 1;
 			this.menuPrefs.Text = "Preferences";
 			// 
+			// panelNote
+			// 
+			this.panelNote.Controls.Add(this.labelInvalidSig);
+			this.panelNote.Controls.Add(this.sigBoxTopaz);
+			this.panelNote.Controls.Add(this.sigBox);
+			this.panelNote.Controls.Add(this.label15);
+			this.panelNote.Controls.Add(this.label1);
+			this.panelNote.Controls.Add(this.textNote);
+			this.panelNote.Location = new System.Drawing.Point(234,439);
+			this.panelNote.Name = "panelNote";
+			this.panelNote.Size = new System.Drawing.Size(705,114);
+			this.panelNote.TabIndex = 11;
+			this.panelNote.DoubleClick += new System.EventHandler(this.panelNote_DoubleClick);
+			// 
+			// textNote
+			// 
+			this.textNote.BackColor = System.Drawing.SystemColors.Window;
+			this.textNote.Location = new System.Drawing.Point(0,20);
+			this.textNote.Multiline = true;
+			this.textNote.Name = "textNote";
+			this.textNote.ReadOnly = true;
+			this.textNote.Size = new System.Drawing.Size(302,91);
+			this.textNote.TabIndex = 0;
+			this.textNote.DoubleClick += new System.EventHandler(this.textNote_DoubleClick);
+			// 
+			// label1
+			// 
+			this.label1.Location = new System.Drawing.Point(0,0);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(100,18);
+			this.label1.TabIndex = 1;
+			this.label1.Text = "Note";
+			this.label1.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			this.label1.DoubleClick += new System.EventHandler(this.label1_DoubleClick);
+			// 
+			// label15
+			// 
+			this.label15.Location = new System.Drawing.Point(305,0);
+			this.label15.Name = "label15";
+			this.label15.Size = new System.Drawing.Size(126,18);
+			this.label15.TabIndex = 87;
+			this.label15.Text = "Signature";
+			this.label15.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			this.label15.DoubleClick += new System.EventHandler(this.label15_DoubleClick);
+			// 
+			// sigBox
+			// 
+			this.sigBox.Location = new System.Drawing.Point(308,20);
+			this.sigBox.Name = "sigBox";
+			this.sigBox.Size = new System.Drawing.Size(394,91);
+			this.sigBox.TabIndex = 90;
+			this.sigBox.DoubleClick += new System.EventHandler(this.sigBox_DoubleClick);
+			// 
 			// ToolBarMain
 			// 
 			this.ToolBarMain.Dock = System.Windows.Forms.DockStyle.Top;
@@ -261,8 +335,30 @@ namespace OpenDental{
 			this.ToolBarMain.TabIndex = 10;
 			this.ToolBarMain.ButtonClick += new OpenDental.UI.ODToolBarButtonClickEventHandler(this.ToolBarMain_ButtonClick);
 			// 
+			// sigBoxTopaz
+			// 
+			this.sigBoxTopaz.Location = new System.Drawing.Point(437,15);
+			this.sigBoxTopaz.Name = "sigBoxTopaz";
+			this.sigBoxTopaz.Size = new System.Drawing.Size(394,91);
+			this.sigBoxTopaz.TabIndex = 93;
+			this.sigBoxTopaz.Text = "sigPlusNET1";
+			this.sigBoxTopaz.DoubleClick += new System.EventHandler(this.sigBoxTopaz_DoubleClick);
+			// 
+			// labelInvalidSig
+			// 
+			this.labelInvalidSig.BackColor = System.Drawing.SystemColors.Window;
+			this.labelInvalidSig.Font = new System.Drawing.Font("Microsoft Sans Serif",8.25F,System.Drawing.FontStyle.Regular,System.Drawing.GraphicsUnit.Point,((byte)(0)));
+			this.labelInvalidSig.Location = new System.Drawing.Point(414,35);
+			this.labelInvalidSig.Name = "labelInvalidSig";
+			this.labelInvalidSig.Size = new System.Drawing.Size(196,59);
+			this.labelInvalidSig.TabIndex = 94;
+			this.labelInvalidSig.Text = "Invalid Signature -  Document or note has changed since it was signed.";
+			this.labelInvalidSig.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.labelInvalidSig.DoubleClick += new System.EventHandler(this.labelInvalidSig_DoubleClick);
+			// 
 			// ContrDocs
 			// 
+			this.Controls.Add(this.panelNote);
 			this.Controls.Add(this.ToolBarMain);
 			this.Controls.Add(this.PictureBox1);
 			this.Controls.Add(this.TreeDocuments);
@@ -270,16 +366,27 @@ namespace OpenDental{
 			this.Size = new System.Drawing.Size(939,606);
 			this.Layout += new System.Windows.Forms.LayoutEventHandler(this.ContrDocs_Layout);
 			this.Load += new System.EventHandler(this.ContrDocs_Load);
+			this.Resize += new System.EventHandler(this.ContrDocs_Resize);
 			((System.ComponentModel.ISupportInitialize)(this.PictureBox1)).EndInit();
+			this.panelNote.ResumeLayout(false);
+			this.panelNote.PerformLayout();
 			this.ResumeLayout(false);
 
 		}
 		#endregion
 
 		private void ContrDocs_Layout(object sender, System.Windows.Forms.LayoutEventArgs e){
-      TreeDocuments.Height= Height-TreeDocuments.Location.Y-2;
-      PictureBox1.Height=Height-PictureBox1.Location.Y-2;
+			//the problem is that this event fires way too often to be useful.
+      //so everything has been moved into Resize
+		}
+
+		private void ContrDocs_Resize(object sender,EventArgs e) {
+			TreeDocuments.Height= Height-TreeDocuments.Location.Y-2;
 		  PictureBox1.Width=Width-PictureBox1.Location.X-2;
+			PictureBox1.Height=Height-PictureBox1.Location.Y-2;
+			panelNote.Location=new Point(PictureBox1.Left,PictureBox1.Bottom-panelNote.Height); 
+			panelNote.Width=PictureBox1.Width;
+			//now, the panelNote is in just the right position.  It just has to be made visible, and the picturebox shortened.
 			//Debug.WriteLine(PictureBox1.ClientSize);
 			RecZoom.Width=0;
 			DisplayImage(true,Enhanced);
@@ -310,6 +417,7 @@ namespace OpenDental{
 			ToolBarMain.Buttons.Add(new ODToolBarButton("",1,Lan.g(this,"Print"),"Print"));
 			ToolBarMain.Buttons.Add(new ODToolBarButton("",2,Lan.g(this,"Delete"),"Delete"));
 			ToolBarMain.Buttons.Add(new ODToolBarButton("",3,Lan.g(this,"Item Info"),"Info"));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Sign"),-1,Lan.g(this,"Sign this document"),"Sign"));
 			ToolBarMain.Buttons.Add(new ODToolBarButton(ODToolBarButtonStyle.Separator));
 			button=new ODToolBarButton(Lan.g(this,"Scan:"),-1,"","");
 			button.Style=ODToolBarButtonStyle.Label;
@@ -321,6 +429,18 @@ namespace OpenDental{
 			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Import"),5,Lan.g(this,"Import From File"),"Import"));
 			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Copy"),17,Lan.g(this,"Copy displayed image to clipboard"),"Copy"));
 			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Paste"),6,Lan.g(this,"Paste From Clipboard"),"Paste"));
+			button=new ODToolBarButton(Lan.g(this,"Forms"),-1,"","Forms");
+			button.Style=ODToolBarButtonStyle.DropDownButton;
+			menuForms=new ContextMenu();
+			if(Directory.Exists(PrefB.GetString("DocPath")+"Forms")){
+				DirectoryInfo dirInfo=new DirectoryInfo(PrefB.GetString("DocPath")+"Forms");
+				FileInfo[] fileInfos=dirInfo.GetFiles();
+				for(int i=0;i<fileInfos.Length;i++){
+					menuForms.MenuItems.Add(fileInfos[i].Name,new System.EventHandler(menuForms_Click));
+				}
+			}
+			button.DropDownMenu=menuForms;
+			ToolBarMain.Buttons.Add(button);
 			ToolBarMain.Buttons.Add(new ODToolBarButton(ODToolBarButtonStyle.Separator));
 			button=new ODToolBarButton("",7,Lan.g(this,"Crop Tool"),"Crop");
 			button.Style=ODToolBarButtonStyle.ToggleButton;
@@ -362,7 +482,7 @@ namespace OpenDental{
 			FamCur=null;
 			PatCur=null;
 			//from FillDocList:
-			DocAttaches.List=null;
+			DocAttachList=null;
 			DocumentList=null;
 		}
 
@@ -390,11 +510,11 @@ namespace OpenDental{
 				try{
 					Patient PatOld=PatCur.Copy();
 					PatCur.ImageFolder=folder;
-					patFolder=((Pref)Prefs.HList["DocPath"]).ValueString
+					patFolder=((Pref)PrefB.HList["DocPath"]).ValueString
 						+PatCur.ImageFolder.Substring(0,1)+@"\"
 						+PatCur.ImageFolder+@"\";
 					Directory.CreateDirectory(patFolder);
-					PatCur.Update(PatOld);
+					Patients.Update(PatCur,PatOld);
 				}
 				catch{
 					MessageBox.Show(Lan.g(this,"Error.  Could not create folder for patient. "));
@@ -402,7 +522,7 @@ namespace OpenDental{
 				}
 			}
 			else{//patient folder already created once
-				patFolder=((Pref)Prefs.HList["DocPath"]).ValueString
+				patFolder=PrefB.GetString("DocPath")
 					+PatCur.ImageFolder.Substring(0,1)+@"\"
 					+PatCur.ImageFolder+@"\";
 			}
@@ -417,13 +537,17 @@ namespace OpenDental{
 				}
 			}
 			//now find all files in the patient folder that are not in the db and add them
-			DocAttaches.Refresh(PatCur.PatNum);
-			DocumentList=Documents.Refresh(DocAttaches.List);
+			DocAttachList=DocAttaches.Refresh(PatCur.PatNum);
+			DocumentList=Documents.Refresh(DocAttachList);
 			DirectoryInfo di=new DirectoryInfo(patFolder);
 			FileInfo[] fiList=di.GetFiles();
 			int countAdded=0;
+			string[] usedNames=new string[DocumentList.Length];
+			for(int i=0;i<DocumentList.Length;i++) {
+				usedNames[i]=DocumentList[i].FileName;
+			}
 			for(int i=0;i<fiList.Length;i++){
-				if(!Documents.IsFileNameInList(fiList[i].Name,DocumentList)
+				if(!DocumentB.IsFileNameInList(fiList[i].Name,usedNames)
 					&& fiList[i].Name!="Thumbs.db")//Thumbs.db is a hidden Windows file unrelated to OD.
 				{
 					//MessageBox.Show(fiList[i].Name);
@@ -433,7 +557,8 @@ namespace OpenDental{
 					doc.DocCategory=Defs.Short[(int)DefCat.ImageCats][0].DefNum;
 					doc.FileName=fiList[i].Name;
 					doc.WithPat=PatCur.PatNum;
-					doc.Insert(PatCur);
+					Documents.Insert(doc,PatCur);
+					//doc.Insert(PatCur);
 					countAdded++;
 				}
 			}
@@ -445,7 +570,7 @@ namespace OpenDental{
 
 		private void RefreshModuleScreen(){
 			if(PatCur!=null){
-				ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString+" - "
+				ParentForm.Text=((Pref)PrefB.HList["MainWindowTitle"]).ValueString+" - "
 					+PatCur.GetNameLF();
 				ToolBarMain.Buttons["Print"].Enabled=true;
 				ToolBarMain.Buttons["Delete"].Enabled=true;
@@ -456,6 +581,7 @@ namespace OpenDental{
 				ToolBarMain.Buttons["ScanPhoto"].Enabled=true;
 				ToolBarMain.Buttons["Copy"].Enabled=true;
 				ToolBarMain.Buttons["Paste"].Enabled=true;
+				ToolBarMain.Buttons["Forms"].Enabled=true;
 				ToolBarMain.Buttons["Crop"].Enabled=true;
 				ToolBarMain.Buttons["Hand"].Enabled=true;
 				ToolBarMain.Buttons["ZoomIn"].Enabled=true;
@@ -465,7 +591,7 @@ namespace OpenDental{
 				ToolBarMain.Buttons["RotateL"].Enabled=true;
 			}
 			else{
-				ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString;
+				ParentForm.Text=((Pref)PrefB.HList["MainWindowTitle"]).ValueString;
 				//PatCur=new Patient();
 				ToolBarMain.Buttons["Print"].Enabled=false;
 				ToolBarMain.Buttons["Delete"].Enabled=false;
@@ -476,6 +602,7 @@ namespace OpenDental{
 				ToolBarMain.Buttons["ScanPhoto"].Enabled=false;
 				ToolBarMain.Buttons["Copy"].Enabled=false;
 				ToolBarMain.Buttons["Paste"].Enabled=false;
+				ToolBarMain.Buttons["Forms"].Enabled=false;
 				ToolBarMain.Buttons["Crop"].Enabled=false;
 				ToolBarMain.Buttons["Hand"].Enabled=false;
 				ToolBarMain.Buttons["ZoomIn"].Enabled=false;
@@ -525,8 +652,8 @@ namespace OpenDental{
 				ImageCurrent=null;
 				mygraphics.FillRectangle(Brushes.White,0,0,PictureBox1.ClientRectangle.Width,PictureBox1.ClientRectangle.Height);
 			}
-			DocAttaches.Refresh(PatCur.PatNum);
-			DocumentList=Documents.Refresh(DocAttaches.List);
+			DocAttachList=DocAttaches.Refresh(PatCur.PatNum);
+			DocumentList=Documents.Refresh(DocAttachList);
 			for(int i=0;i<TreeDocuments.Nodes.Count;i++) 
 				TreeDocuments.Nodes[i].Nodes.Clear();
 			TreeDocuments.Nodes.Clear();
@@ -612,6 +739,9 @@ namespace OpenDental{
 					case "Info":
 						OnInfo_Click();
 						break;
+					case "Sign":
+						OnSign_Click();
+						break;
 					case "ScanDoc":
 						OnScan_Click("doc");
 						break;
@@ -629,6 +759,9 @@ namespace OpenDental{
 						break;
 					case "Paste":
 						OnPaste_Click();
+						break;
+					case "Forms":
+						MsgBox.Show(this,"Use the dropdown list.  Add forms to the list by copying image files into your A-Z folder, Forms.  Restart the program to see newly added forms.");
 						break;
 					case "Crop":
 						OnCrop_Click();
@@ -698,7 +831,8 @@ namespace OpenDental{
 				return;
 			}
 			DeleteThumbnail();
-			DocCur.Delete();
+			Documents.Delete(DocCur);
+			//DocCur.Delete();
 			FillDocList(false);
 		}
 
@@ -716,14 +850,30 @@ namespace OpenDental{
 			DisplayImage(false,true);//because the category may have changed
 		}
 
+		private void OnSign_Click(){
+			for(int i=0;i<TreeDocuments.Nodes.Count;i++) {
+				if(TreeDocuments.SelectedNode.Equals(TreeDocuments.Nodes[i]))
+					return;//a document is not selected.
+			}
+			if(DocCur.IsFlipped || DocCur.DegreesRotated!=0){
+				MsgBox.Show(this,"Not allowed to sign an image that has been flipped or rotated.  This restriction will be lifted in a later version.");
+				return;
+			}
+			ShowNote=true;
+			DisplayImage(true,true);
+			FormDocSign FormD=new FormDocSign(DocCur,patFolder);
+			FormD.Location=PointToScreen(new Point(20,panelNote.Top));
+			FormD.ShowDialog();
+			ShowNote=false;
+			DisplayImage(true,true);
+		}
+
 		private void OnScan_Click(string scanType) {
 			ScanImage(scanType);
 		}
 
 		private void OnImport_Click() {
 			OpenFileDialog openFileDialog=new OpenFileDialog();
-
-
 			openFileDialog.Multiselect = true;
 			if(openFileDialog.ShowDialog()!=DialogResult.OK) {
 				return;
@@ -758,7 +908,8 @@ namespace OpenDental{
 					DocCur.FileName=Path.GetExtension(openFileDialog.FileName);
 					DocCur.DateCreated=DateTime.Today;
 					DocCur.WithPat=PatCur.PatNum;
-					DocCur.Insert(PatCur);//this assigns a filename and saves to db
+					Documents.Insert(DocCur,PatCur);//this assigns a filename and saves to db
+					//DocCur.Insert(PatCur);
 					FormDocInfo FormD=new FormDocInfo(PatCur,DocCur);
 					FormD.ShowDialog();//some of the fields might get changed, but not the filename
 					if(FormD.DialogResult==DialogResult.OK) {
@@ -769,13 +920,13 @@ namespace OpenDental{
 						}
 						catch {
 							MessageBox.Show(Lan.g(this,"Unable to copy file.  May be in use."));
-							DocCur.Delete();
+							Documents.Delete(DocCur);
 							ImageCurrent = null;
 						}
 					}
 					else {
 						ImageCurrent = null;
-						DocCur.Delete();
+						Documents.Delete(DocCur);
 					}
 					myStream.Close();
 				} // end if ((myStream = openFileDialog.OpenFile()) != null)
@@ -806,11 +957,11 @@ namespace OpenDental{
 			DocCur.FileName=".jpg";
 			DocCur.DateCreated=DateTime.Today;
 			DocCur.WithPat=PatCur.PatNum;
-			DocCur.Insert(PatCur);//this assigns a filename and saves to db
+			Documents.Insert(DocCur,PatCur);//this assigns a filename and saves to db
 			FormDocInfo formD=new FormDocInfo(PatCur,DocCur);
 			formD.ShowDialog();
 			if(formD.DialogResult!=DialogResult.OK){
-				DocCur.Delete();
+				Documents.Delete(DocCur);
 				return;
 			}
 			try{
@@ -820,7 +971,7 @@ namespace OpenDental{
 			}
 			catch{
 				MessageBox.Show(Lan.g(this,"Error saving document."));
-				DocCur.Delete();
+				Documents.Delete(DocCur);
 			}
 			FillDocList(true);
 			DisplayImage(false,true);
@@ -1040,7 +1191,7 @@ namespace OpenDental{
 					DocCur.DegreesRotated-=360;
 				}
 			}		
-			DocCur.Update();
+			Documents.Update(DocCur);
 			FillDocList(true);
 			DisplayImage(true,true);
 			DeleteThumbnail();
@@ -1054,7 +1205,7 @@ namespace OpenDental{
 			if(DocCur.DegreesRotated<0){
 				DocCur.DegreesRotated+=360;
 			}
-			DocCur.Update();
+			Documents.Update(DocCur);
 			FillDocList(true);
 			DisplayImage(true,true);
 			DeleteThumbnail();
@@ -1068,7 +1219,7 @@ namespace OpenDental{
 			if(DocCur.DegreesRotated>=360){
 				DocCur.DegreesRotated-=360;
 			}
-			DocCur.Update();
+			Documents.Update(DocCur);
 			FillDocList(true);
 			DisplayImage(true,true);
 			DeleteThumbnail();
@@ -1090,7 +1241,7 @@ namespace OpenDental{
 			float edgeDarkness=.94f;  //threshold for brightness. 1 is white.
 			float deltaStart;
 			try{
-				deltaStart=Convert.ToSingle(((Pref)Prefs.HList["CropDelta"]).ValueString);
+				deltaStart=Convert.ToSingle(((Pref)PrefB.HList["CropDelta"]).ValueString);
 			}
 			catch{
 				deltaStart=.035f;//.035f is good.  change in brightness
@@ -1266,11 +1417,11 @@ namespace OpenDental{
 			DocCur.FileName=".jpg";
 			DocCur.DateCreated=DateTime.Today;
 			DocCur.WithPat=PatCur.PatNum;
-			DocCur.Insert(PatCur);//creates filename and saves to db
+			Documents.Insert(DocCur,PatCur);//creates filename and saves to db
 			FormDocInfo formDocInfo=new FormDocInfo(PatCur,DocCur);
 			formDocInfo.ShowDialog();
 			if(formDocInfo.DialogResult!=DialogResult.OK){
-				DocCur.Delete();
+				Documents.Delete(DocCur);
 				return;
 			}
 			try{
@@ -1287,13 +1438,13 @@ namespace OpenDental{
 				long qualityL=0;
 				if(scanType=="doc"){
 					//Possible values 0-100?
-					qualityL=(long)Convert.ToInt32(((Pref)Prefs.HList["ScannerCompression"]).ValueString);
+					qualityL=(long)Convert.ToInt32(((Pref)PrefB.HList["ScannerCompression"]).ValueString);
 				}
 				else if(scanType=="xray"){
-					qualityL=Convert.ToInt64(((Pref)Prefs.HList["ScannerCompressionRadiographs"]).ValueString);
+					qualityL=Convert.ToInt64(((Pref)PrefB.HList["ScannerCompressionRadiographs"]).ValueString);
 				}
 				else if(scanType=="photo"){
-					qualityL=Convert.ToInt64(((Pref)Prefs.HList["ScannerCompressionPhotos"]).ValueString);
+					qualityL=Convert.ToInt64(((Pref)PrefB.HList["ScannerCompressionPhotos"]).ValueString);
 				}
 				EncoderParameter myEncoderParameter=new EncoderParameter(myEncoder,qualityL);
 				myEncoderParameters.Param[0]=myEncoderParameter;
@@ -1303,7 +1454,7 @@ namespace OpenDental{
 			}
 			catch{
 				MessageBox.Show(Lan.g(this,"Unable to save document."));
-				DocCur.Delete();
+				Documents.Delete(DocCur);
 			}
 			//}
 			//catch(Exception ex){
@@ -1355,6 +1506,9 @@ namespace OpenDental{
 		}
 
 		private void ShowBlank(){
+			ShowNote=false;
+			panelNote.Visible=false;
+			PictureBox1.Height=panelNote.Bottom-PictureBox1.Top;
 			Graphics g=PictureBox1.CreateGraphics();
 			g.FillRectangle(Brushes.White,0,0,PictureBox1.ClientRectangle.Width
 				,PictureBox1.ClientRectangle.Height);
@@ -1407,9 +1561,37 @@ namespace OpenDental{
 			//this.Close();
 		}
 
-		///<summary>Make sure to set enhanced to false if no Documents.Cur</summary>
+		///<summary>Make sure to set enhanced to false if no DocCur</summary>
 		private void DisplayImage(bool clearFirst,bool enhanced){
 			Enhanced=enhanced;
+			//make room for the note and signature at the bottom
+			if(DocCur!=null && (ShowNote
+				|| (DocCur.Note!=null && DocCur.Note!="")
+				|| (DocCur.Signature!=null && DocCur.Signature!="")))
+			{
+				panelNote.Visible=true;
+				PictureBox1.Height=panelNote.Top-PictureBox1.Top-2;
+				FillSignature();
+			}
+			else{//no reason to show note
+				panelNote.Visible=false;
+				PictureBox1.Height=panelNote.Bottom-PictureBox1.Top;
+			}
+			if(DocCur!=null && DocCur.Signature!=""){//if signed
+				ToolBarMain.Buttons["Crop"].Enabled=false;
+				ToolBarMain.Buttons["Flip"].Enabled=false;
+				ToolBarMain.Buttons["RotateR"].Enabled=false;
+				ToolBarMain.Buttons["RotateL"].Enabled=false;
+				ToolBarMain.Invalidate();
+			}
+			if(DocCur!=null && DocCur.Signature==""){//if not signed
+				ToolBarMain.Buttons["Crop"].Enabled=true;
+				ToolBarMain.Buttons["Flip"].Enabled=true;
+				ToolBarMain.Buttons["RotateR"].Enabled=true;
+				ToolBarMain.Buttons["RotateL"].Enabled=true;
+				ToolBarMain.Invalidate();
+			}
+			//now, draw the image
 			Graphics g=PictureBox1.CreateGraphics();
 			if(clearFirst)
 				g.FillRectangle(Brushes.White,0,0,PictureBox1.ClientRectangle.Width
@@ -1456,6 +1638,71 @@ namespace OpenDental{
 					,RecZoom,GraphicsUnit.Pixel);
 			}
 			g.Dispose();
+		}
+
+		private void FillSignature(){
+			textNote.Text=DocCur.Note;
+			sigBoxTopaz.Location=sigBox.Location;//this puts both boxes in the same spot.
+			sigBoxTopaz.Visible=false;
+			sigBox.SetTabletState(0);//never accepts input here
+			sigBoxTopaz.SetTabletState(0);
+			labelInvalidSig.Visible=false;
+			if(DocCur.SigIsTopaz) {
+				if(DocCur.Signature!=null && DocCur.Signature!="") {
+					sigBoxTopaz.Visible=true;
+					sigBoxTopaz.ClearTablet();
+					sigBoxTopaz.SetSigCompressionMode(0);
+					sigBoxTopaz.SetEncryptionMode(0);
+					sigBoxTopaz.SetKeyString(GetHashString());//"0000000000000000");
+					//sigBoxTopaz.SetAutoKeyData(ProcCur.Note+ProcCur.UserNum.ToString());
+					sigBoxTopaz.SetEncryptionMode(2);//high encryption
+					sigBoxTopaz.SetSigCompressionMode(2);//high compression
+					sigBoxTopaz.SetSigString(DocCur.Signature);
+					if(sigBoxTopaz.NumberOfTabletPoints()==0){
+						labelInvalidSig.Visible=true;
+					}
+				}
+			}
+			else {
+				sigBox.ClearTablet();
+				if(DocCur.Signature!=null && DocCur.Signature!="") {
+					//sigBox.SetSigCompressionMode(0);
+					//sigBox.SetEncryptionMode(0);
+					sigBox.SetKeyString(GetHashString());//"0000000000000000");
+					//sigBox.SetAutoKeyData(ProcCur.Note+ProcCur.UserNum.ToString());
+					//sigBox.SetEncryptionMode(2);//high encryption
+					//sigBox.SetSigCompressionMode(2);//high compression
+					sigBox.SetSigString(DocCur.Signature);
+					if(sigBox.NumberOfTabletPoints()==0){
+						labelInvalidSig.Visible=true;
+					}
+					sigBox.SetTabletState(0);//not accepting input.
+				}
+			}
+		}
+
+		private string GetHashString() {
+			//the key data is the bytes of the file, concatenated with the bytes of the note.
+			byte[] textbytes;
+			if(DocCur.Note==null){
+				textbytes=Encoding.UTF8.GetBytes("");
+			}
+			else{
+				textbytes=Encoding.UTF8.GetBytes(DocCur.Note);
+			}
+			string path=patFolder+DocCur.FileName;
+			if(!File.Exists(path)) {
+				return "";
+			}
+			FileStream fs=new FileStream(path,FileMode.Open,FileAccess.Read,FileShare.Read);
+			int fileLength=(int)fs.Length;
+			byte[] buffer=new byte[fileLength+textbytes.Length];
+			fs.Read(buffer,0,fileLength);
+			fs.Close();
+			Array.Copy(textbytes,0,buffer,fileLength,textbytes.Length);
+			HashAlgorithm algorithm=MD5.Create();
+			byte[] hash=algorithm.ComputeHash(buffer);//always results in length of 16.
+			return Encoding.ASCII.GetString(hash);
 		}
 
 		///<summary>Gets the original source rectangle representing the portion of ImageCurrent to display.  Always bigger than ImageCurrent and in proportions of PictureBox client area.  Always white space on one side which depends on the rotation, flip, and proportions.  Used to set initial RecZoom as well as to test when zooming out and dragging to make sure it stays within allowed bounds.</summary>
@@ -1868,86 +2115,85 @@ namespace OpenDental{
 				if(MessageBox.Show(Lan.g(this,"Crop to Rectangle?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK)
 					return;
 				//math to convert RecCrop from client coord to image coords:
-				RectangleF sourceRect=new RectangleF();//in image coordinates.
+				Rectangle sourceRect=new Rectangle();//in image coordinates.
 				//sourceRect has positive width
 				float ratio=1;
-				if(DocCur.DegreesRotated==0 || DocCur.DegreesRotated==180){
-					ratio=Math.Abs(RecZoom.Width)/(float)PictureBox1.ClientRectangle.Width;
+				if(DocCur.DegreesRotated==0 || DocCur.DegreesRotated==180) {
+					ratio=(float)Math.Abs(RecZoom.Width)/(float)PictureBox1.ClientRectangle.Width;
 				}
-				else{
-					ratio=RecZoom.Height/(float)PictureBox1.ClientRectangle.Width;
+				else {
+					ratio=(float)RecZoom.Height/(float)PictureBox1.ClientRectangle.Width;
 				}
-				
-				if(DocCur.DegreesRotated==0){
-					if(DocCur.IsFlipped){
-						sourceRect.X     = RecZoom.Left  -(ratio*RecCrop.Right);
-						sourceRect.Y     = RecZoom.Top   +(ratio*RecCrop.Top);
-						sourceRect.Width = RecCrop.Width *ratio;
-						sourceRect.Height= RecCrop.Height*ratio;
+				if(DocCur.DegreesRotated==0) {
+					if(DocCur.IsFlipped) {
+						sourceRect.X     = RecZoom.Left  -(int)(ratio*(float)RecCrop.Right);
+						sourceRect.Y     = RecZoom.Top   +(int)(ratio*(float)RecCrop.Top);
+						sourceRect.Width = (int)((float)RecCrop.Width *ratio);
+						sourceRect.Height= (int)((float)RecCrop.Height*ratio);
 					}
-					else{
-						sourceRect.X     = RecZoom.Left  +(ratio*RecCrop.Left);
-						sourceRect.Y     = RecZoom.Top   +(ratio*RecCrop.Top);
-						sourceRect.Width = RecCrop.Width *ratio;
-						sourceRect.Height= RecCrop.Height*ratio;
-					}
-				}
-				else if(DocCur.DegreesRotated==90){
-					if(DocCur.IsFlipped){
-						sourceRect.X     = RecZoom.Left -(ratio*RecCrop.Bottom);
-						sourceRect.Y     = RecZoom.Bottom-(ratio*RecCrop.Right);
-						sourceRect.Width = RecCrop.Height*ratio;
-						sourceRect.Height= RecCrop.Width*ratio;
-					}
-					else{
-						sourceRect.X     = RecZoom.Left  +(ratio*RecCrop.Top);
-						sourceRect.Y     = RecZoom.Bottom-(ratio*RecCrop.Right);
-						sourceRect.Width = RecCrop.Height*ratio;
-						sourceRect.Height= RecCrop.Width*ratio;
+					else {
+						sourceRect.X     = RecZoom.Left  +(int)(ratio*(float)RecCrop.Left);
+						sourceRect.Y     = RecZoom.Top   +(int)(ratio*(float)RecCrop.Top);
+						sourceRect.Width = (int)((float)RecCrop.Width *ratio);
+						sourceRect.Height= (int)((float)RecCrop.Height*ratio);
 					}
 				}
-				else if(DocCur.DegreesRotated==180){
-					if(DocCur.IsFlipped){
-						sourceRect.X     = RecZoom.Right  +(ratio*RecCrop.Left);
-						sourceRect.Y     = RecZoom.Bottom-(ratio*RecCrop.Bottom);
-						sourceRect.Width = RecCrop.Width*ratio;
-						sourceRect.Height= RecCrop.Height*ratio;
+				else if(DocCur.DegreesRotated==90) {
+					if(DocCur.IsFlipped) {
+						sourceRect.X     = RecZoom.Left -(int)(ratio*(float)RecCrop.Bottom);
+						sourceRect.Y     = RecZoom.Bottom-(int)(ratio*(float)RecCrop.Right);
+						sourceRect.Width = (int)((float)RecCrop.Height*ratio);
+						sourceRect.Height= (int)((float)RecCrop.Width*ratio);
 					}
-					else{
-						sourceRect.X     = RecZoom.Right -(ratio*RecCrop.Right);
-						sourceRect.Y     = RecZoom.Bottom-(ratio*RecCrop.Bottom);
-						sourceRect.Width = RecCrop.Width*ratio;
-						sourceRect.Height= RecCrop.Height*ratio;
+					else {
+						sourceRect.X     = RecZoom.Left  +(int)(ratio*(float)RecCrop.Top);
+						sourceRect.Y     = RecZoom.Bottom-(int)(ratio*(float)RecCrop.Right);
+						sourceRect.Width = (int)((float)RecCrop.Height*ratio);
+						sourceRect.Height= (int)((float)RecCrop.Width*ratio);
 					}
 				}
-				else if(DocCur.DegreesRotated==270){
-					if(DocCur.IsFlipped){
-						sourceRect.X     = RecZoom.Right  +(ratio*RecCrop.Top);
-						sourceRect.Y     = RecZoom.Top   +(ratio*RecCrop.Left);
-						sourceRect.Width = RecCrop.Height*ratio;
-						sourceRect.Height= RecCrop.Width*ratio;
+				else if(DocCur.DegreesRotated==180) {
+					if(DocCur.IsFlipped) {
+						sourceRect.X     = RecZoom.Right  +(int)(ratio*(float)RecCrop.Left);
+						sourceRect.Y     = RecZoom.Bottom-(int)(ratio*(float)RecCrop.Bottom);
+						sourceRect.Width = (int)((float)RecCrop.Width*ratio);
+						sourceRect.Height= (int)((float)RecCrop.Height*ratio);
 					}
-					else{
-						sourceRect.X     = RecZoom.Right -(ratio*RecCrop.Bottom);
-						sourceRect.Y     = RecZoom.Top   +(ratio*RecCrop.Left);
-						sourceRect.Width = RecCrop.Height*ratio;
-						sourceRect.Height= RecCrop.Width*ratio;
+					else {
+						sourceRect.X     = RecZoom.Right -(int)(ratio*(float)RecCrop.Right);
+						sourceRect.Y     = RecZoom.Bottom-(int)(ratio*(float)RecCrop.Bottom);
+						sourceRect.Width = (int)((float)RecCrop.Width*ratio);
+						sourceRect.Height= (int)((float)RecCrop.Height*ratio);
+					}
+				}
+				else if(DocCur.DegreesRotated==270) {
+					if(DocCur.IsFlipped) {
+						sourceRect.X     = RecZoom.Right  +(int)(ratio*(float)RecCrop.Top);
+						sourceRect.Y     = RecZoom.Top   +(int)(ratio*(float)RecCrop.Left);
+						sourceRect.Width = (int)((float)RecCrop.Height*ratio);
+						sourceRect.Height= (int)((float)RecCrop.Width*ratio);
+					}
+					else {
+						sourceRect.X     = RecZoom.Right -(int)(ratio*(float)RecCrop.Bottom);
+						sourceRect.Y     = RecZoom.Top   +(int)(ratio*(float)RecCrop.Left);
+						sourceRect.Width = (int)((float)RecCrop.Height*ratio);
+						sourceRect.Height= (int)((float)RecCrop.Width*ratio);
 					}
 				}
 				Bitmap bitmapTemp=new Bitmap(1,1);//just to get the horizontal res
 				float ratio2=(float)bitmapTemp.HorizontalResolution
-					/(float)ImageCurrent.HorizontalResolution;// 96/150
-				bitmapTemp=new Bitmap((int)(sourceRect.Width*ratio2),(int)(sourceRect.Height*ratio2));
+					/(float)ImageCurrent.HorizontalResolution;// 96/150 or 96/96
+				bitmapTemp=new Bitmap((int)((float)sourceRect.Width*ratio2),(int)((float)sourceRect.Height*ratio2));
 				Graphics gTemp=Graphics.FromImage(bitmapTemp);//we're going to draw on bitmapTemp
 				gTemp.DrawImage(ImageCurrent,0,0,sourceRect,GraphicsUnit.Pixel);
 				gTemp.Dispose();
- 				ImageCurrent=(Bitmap)bitmapTemp.Clone();
+				ImageCurrent=(Bitmap)bitmapTemp.Clone();
 				RecZoom.Width=0;//DisplayImage will then recreate RecZoom
 				DisplayImage(true,true);
 				//the cropped image will stay in the same orientation as the original
 				ImageCurrent.Save(patFolder+DocCur.FileName,ImageFormat.Jpeg);
-        //Documents.Cur.LastAltered=DateTime.Today;
-        //Documents.UpdateCur();
+				//Documents.Cur.LastAltered=DateTime.Today;
+				//Documents.UpdateCur();
 				FillDocList(true);
 				DisplayImage(true,true);
 			}
@@ -1967,6 +2213,7 @@ namespace OpenDental{
 			if(selectedNode.Parent==null){//category node
 				TreeDocuments.SelectedNode=selectedNode;
 				TreeDocuments.ContextMenu=null;
+				ImageCurrent=null;
 				ShowBlank();
 				return;//no dragging
 	    }
@@ -2056,7 +2303,7 @@ namespace OpenDental{
 					else{
 						DocCur.DocCategory=Documents.GetCategory(upNode.Tag.ToString(),DocumentList);
 					}
-					DocCur.Update();
+					Documents.Update(DocCur);
 					FillDocList(true);
 				}
 			}
@@ -2076,8 +2323,93 @@ namespace OpenDental{
 			}
 		}
 
-		
+		private void menuForms_Click(object sender, System.EventArgs e) {
+			string fileName=PrefB.GetString("DocPath")+@"Forms\"+((MenuItem)sender).Text;
+			if(!File.Exists(fileName)){
+				MessageBox.Show(Lan.g(this,"Could not find file: ")+fileName);
+				return;
+			}
 
+			try {
+				WebRequest request=WebRequest.Create(fileName);
+				WebResponse response=request.GetResponse();
+				if(Path.GetExtension(fileName).ToUpper()==".JPG"
+							|| Path.GetExtension(fileName).ToUpper()==".GIF") {
+					ImageCurrent=(Bitmap)System.Drawing.Bitmap.FromStream(response.GetResponseStream());
+				}
+				else {
+					ImageCurrent=null;//may not be necessary
+				}
+				response.Close();
+			}
+			catch(System.Exception exception) {
+				MessageBox.Show(exception.Message);// + " Selected File Not Image."));
+				return;
+			}
+			RecZoom.Width = 0;
+			DisplayImage(true,false);
+			DocCur=new Document();
+			//Document.Insert will use this extension when naming:
+			DocCur.FileName=Path.GetExtension(fileName);
+			DocCur.DateCreated=DateTime.Today;
+			DocCur.WithPat=PatCur.PatNum;
+			Documents.Insert(DocCur,PatCur);//this assigns a filename and saves to db
+			FormDocInfo FormD=new FormDocInfo(PatCur,DocCur);
+			FormD.ShowDialog();//some of the fields might get changed, but not the filename
+			if(FormD.DialogResult==DialogResult.OK) {
+				try {
+					//MessageBox.Show(Path.GetDirectoryName(openFileDialog2.FileName)+"\\"+","+patFolder);
+					//if(Path.GetDirectoryName(openFileDialog2.FileName)==patFolder
+					File.Copy(fileName,patFolder + DocCur.FileName);
+				}
+				catch {
+					MessageBox.Show(Lan.g(this,"Unable to copy file.  May be in use."));
+					Documents.Delete(DocCur);
+					ImageCurrent = null;
+				}
+			}
+			else {
+				ImageCurrent = null;
+				Documents.Delete(DocCur);
+			}
+			if(ImageCurrent==null) {
+				FillDocList(false);
+			}
+			else {
+				FillDocList(true);
+			}
+			DisplayImage(true,true);
+		}
+
+		private void textNote_DoubleClick(object sender,EventArgs e) {
+			OnSign_Click();
+		}
+
+		private void label1_DoubleClick(object sender,EventArgs e) {
+			OnSign_Click();
+		}
+
+		private void label15_DoubleClick(object sender,EventArgs e) {
+			OnSign_Click();
+		}
+
+		private void sigBox_DoubleClick(object sender,EventArgs e) {
+			OnSign_Click();
+		}
+
+		private void sigBoxTopaz_DoubleClick(object sender,EventArgs e) {
+			OnSign_Click();
+		}
+
+		private void labelInvalidSig_DoubleClick(object sender,EventArgs e) {
+			OnSign_Click();
+		}
+
+		private void panelNote_DoubleClick(object sender,EventArgs e) {
+			OnSign_Click();
+		}
+
+		
 		
 
 		

@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -438,10 +439,10 @@ namespace OpenDental{
 			ProcButtonCur.ButtonImage=(Bitmap)pictureBox.Image;
       if(IsNew){
         ProcButtonCur.ItemOrder=ProcButtons.List.Length;        
-        ProcButtonCur.Insert();
+        ProcButtons.Insert(ProcButtonCur);
       }
       else{
-        ProcButtonCur.Update();
+        ProcButtons.Update(ProcButtonCur);
       }
       ProcButtonItems.DeleteAllForButton(ProcButtonCur.ProcButtonNum);
 			ProcButtonItem item;
@@ -449,13 +450,13 @@ namespace OpenDental{
         item=new ProcButtonItem();
         item.ProcButtonNum=ProcButtonCur.ProcButtonNum;
         item.ADACode=listADA.Items[i].ToString();    
-        item.Insert();
+        ProcButtonItems.Insert(item);
       }
       for(int i=0;i<listAutoCodes.SelectedIndices.Count;i++){
         item=new ProcButtonItem();
         item.ProcButtonNum=ProcButtonCur.ProcButtonNum;
         item.AutoCodeNum=AutoCodes.ListShort[listAutoCodes.SelectedIndices[i]].AutoCodeNum;
-        item.Insert();
+        ProcButtonItems.Insert(item);
       }
       DialogResult=DialogResult.OK;    
 		}

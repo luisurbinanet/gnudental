@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Windows.Forms;
 using OpenDental.UI;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -49,6 +50,7 @@ namespace OpenDental{
 		private ArrayList mergedAL;
 		///<summary>The running weekly total, whether it gets displayed or not.</summary>
 		private TimeSpan[] WeeklyTotals;
+		public Employee EmployeeCur;
 
 		///<summary></summary>
 		public FormTimeCard()
@@ -104,8 +106,8 @@ namespace OpenDental{
 			this.butClose = new OpenDental.UI.Button();
 			this.butPrint = new OpenDental.UI.Button();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
-			this.radioTimeCard = new System.Windows.Forms.RadioButton();
 			this.radioBreaks = new System.Windows.Forms.RadioButton();
+			this.radioTimeCard = new System.Windows.Forms.RadioButton();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.SuspendLayout();
@@ -272,7 +274,6 @@ namespace OpenDental{
 			this.butAdj.Autosize = true;
 			this.butAdj.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butAdj.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butAdj.Image = ((System.Drawing.Image)(resources.GetObject("butAdj.Image")));
 			this.butAdj.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butAdj.Location = new System.Drawing.Point(18,650);
 			this.butAdj.Name = "butAdj";
@@ -314,7 +315,6 @@ namespace OpenDental{
 			this.butPrint.Autosize = true;
 			this.butPrint.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butPrint.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butPrint.Image = ((System.Drawing.Image)(resources.GetObject("butPrint.Image")));
 			this.butPrint.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butPrint.Location = new System.Drawing.Point(691,650);
 			this.butPrint.Name = "butPrint";
@@ -333,6 +333,16 @@ namespace OpenDental{
 			this.groupBox2.TabIndex = 20;
 			this.groupBox2.TabStop = false;
 			// 
+			// radioBreaks
+			// 
+			this.radioBreaks.Location = new System.Drawing.Point(14,27);
+			this.radioBreaks.Name = "radioBreaks";
+			this.radioBreaks.Size = new System.Drawing.Size(97,19);
+			this.radioBreaks.TabIndex = 1;
+			this.radioBreaks.Text = "Breaks";
+			this.radioBreaks.UseVisualStyleBackColor = true;
+			this.radioBreaks.Click += new System.EventHandler(this.radioBreaks_Click);
+			// 
 			// radioTimeCard
 			// 
 			this.radioTimeCard.Checked = true;
@@ -344,16 +354,6 @@ namespace OpenDental{
 			this.radioTimeCard.Text = "Timecard";
 			this.radioTimeCard.UseVisualStyleBackColor = true;
 			this.radioTimeCard.Click += new System.EventHandler(this.radioTimeCard_Click);
-			// 
-			// radioBreaks
-			// 
-			this.radioBreaks.Location = new System.Drawing.Point(14,27);
-			this.radioBreaks.Name = "radioBreaks";
-			this.radioBreaks.Size = new System.Drawing.Size(97,19);
-			this.radioBreaks.TabIndex = 1;
-			this.radioBreaks.Text = "Breaks";
-			this.radioBreaks.UseVisualStyleBackColor = true;
-			this.radioBreaks.Click += new System.EventHandler(this.radioBreaks_Click);
 			// 
 			// FormTimeCard
 			// 
@@ -370,7 +370,6 @@ namespace OpenDental{
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.textTotal);
 			this.Controls.Add(this.butClose);
-			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "FormTimeCard";
@@ -388,7 +387,7 @@ namespace OpenDental{
 		#endregion
 
 		private void FormTimeCard_Load(object sender, System.EventArgs e) {
-			Text=Lan.g(this,"TimeCard for")+" "+Employees.Cur.FName+" "+Employees.Cur.LName;
+			Text=Lan.g(this,"TimeCard for")+" "+EmployeeCur.FName+" "+EmployeeCur.LName;
 			TimeDelta=ClockEvents.GetServerTime()-DateTime.Now;
 			SelectedPayPeriod=PayPeriods.GetForDate(DateTime.Today);
 			if(IsBreaks){
@@ -462,13 +461,13 @@ namespace OpenDental{
 		///<summary>fromDB is set to false when it is refreshing every second so that there will be no extra network traffic.</summary>
 		private void FillMain(bool fromDB){
 			if(fromDB){
-				ClockEventList=ClockEvents.Refresh(Employees.Cur.EmployeeNum,PIn.PDate(textDateStart.Text),
+				ClockEventList=ClockEvents.Refresh(EmployeeCur.EmployeeNum,PIn.PDate(textDateStart.Text),
 					PIn.PDate(textDateStop.Text),false,IsBreaks);
 				if(IsBreaks){
 					TimeAdjustList=new TimeAdjust[0];
 				}
 				else{
-					TimeAdjustList=TimeAdjusts.Refresh(Employees.Cur.EmployeeNum,PIn.PDate(textDateStart.Text),
+					TimeAdjustList=TimeAdjusts.Refresh(EmployeeCur.EmployeeNum,PIn.PDate(textDateStart.Text),
 						PIn.PDate(textDateStop.Text));
 				}
 			}
@@ -520,7 +519,7 @@ namespace OpenDental{
 			TimeSpan daySpan=new TimeSpan(0);//used for daily totals.
 			TimeSpan weekSpan=new TimeSpan(0);//used for weekly totals.
 			if(mergedAL.Count>0){
-				weekSpan=ClockEvents.GetWeekTotal(Employees.Cur.EmployeeNum,GetDateForRow(0));
+				weekSpan=ClockEvents.GetWeekTotal(EmployeeCur.EmployeeNum,GetDateForRow(0));
 			}
 			//MessageBox.Show(weekSpan.TotalHours.ToString());
 			TimeSpan periodSpan=new TimeSpan(0);//used to add up totals for entire page.
@@ -700,6 +699,9 @@ namespace OpenDental{
 						row.Cells.Add(daySpan.TotalHours.ToString("n"));
 						daySpan=new TimeSpan(0);
 					}
+					else {
+						row.Cells.Add("");
+					}
 					//Weekly-------------------------------------
 					WeeklyTotals[i]=weekSpan;
 					if(IsBreaks){
@@ -758,7 +760,7 @@ namespace OpenDental{
 				return;
 			}
 			TimeAdjust adjust=new TimeAdjust();
-			adjust.EmployeeNum=Employees.Cur.EmployeeNum;
+			adjust.EmployeeNum=EmployeeCur.EmployeeNum;
 			DateTime dateStop=PIn.PDate(textDateStop.Text);
 			if(DateTime.Today<=dateStop && DateTime.Today>=PIn.PDate(textDateStart.Text)) {
 				adjust.TimeEntry=DateTime.Now;
@@ -783,7 +785,7 @@ namespace OpenDental{
 			//first, delete all existing overtime entries
 			for(int i=0;i<TimeAdjustList.Length;i++) {
 				if(TimeAdjustList[i].OTimeHours.TotalHours!=0) {
-					TimeAdjustList[i].Delete();
+					TimeAdjusts.Delete(TimeAdjustList[i]);
 				}
 			}
 			//then, fill grid
@@ -805,11 +807,11 @@ namespace OpenDental{
 				}
 				//found a weekly total over 40 hours
 				TimeAdjust adjust=new TimeAdjust();
-				adjust.EmployeeNum=Employees.Cur.EmployeeNum;
+				adjust.EmployeeNum=EmployeeCur.EmployeeNum;
 				adjust.TimeEntry=GetDateForRow(i).AddHours(20);//puts it at 8pm on the same day.
 				adjust.OTimeHours=WeeklyTotals[i]-TimeSpan.FromHours(40);
 				adjust.RegHours=-adjust.OTimeHours;
-				adjust.Insert();
+				TimeAdjusts.Insert(adjust);
 			}
 			FillMain(true);
 		}
@@ -819,9 +821,6 @@ namespace OpenDental{
 			pd=new PrintDocument();
 			pd.PrintPage += new PrintPageEventHandler(this.pd_PrintPage);
 			pd.DefaultPageSettings.Margins=new Margins(0,0,0,0);
-			if(pd.DefaultPageSettings.PaperSize.Height==0) {
-				pd.DefaultPageSettings.PaperSize=new PaperSize("default",850,1100);
-			}
 			pd.OriginAtMargins=true;
 			#if DEBUG
 			printPreview=new PrintPreview(PrintSituation.Default,pd,1);
@@ -850,7 +849,7 @@ namespace OpenDental{
 			SolidBrush brush=new SolidBrush(Color.Black);
 			Pen pen=new Pen(Color.Black);
 			//Title
-			str=Employees.Cur.FName+" "+Employees.Cur.LName;
+			str=EmployeeCur.FName+" "+EmployeeCur.LName;
 			g.DrawString(str,fontTitle,brush,xPos,yPos);
 			yPos+=30;
 			//define columns

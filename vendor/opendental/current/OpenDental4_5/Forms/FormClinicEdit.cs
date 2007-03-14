@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -362,7 +363,7 @@ namespace OpenDental{
 			}
 			else{
 				try{
-					ClinicCur.Delete();
+					Clinics.Delete(ClinicCur);
 					DialogResult=DialogResult.OK;
 				}
 				catch(Exception ex){
@@ -397,7 +398,7 @@ namespace OpenDental{
 			ClinicCur.BankNumber=textBankNumber.Text;
 			ClinicCur.DefaultPlaceService=(PlaceOfService)comboPlaceService.SelectedIndex;
 			try{
-				ClinicCur.InsertOrUpdate(IsNew);
+				Clinics.InsertOrUpdate(ClinicCur,IsNew);
 			}
 			catch(Exception ex){
 				MessageBox.Show(ex.Message);

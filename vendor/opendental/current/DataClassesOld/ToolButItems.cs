@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
+using System.Data;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 
@@ -21,7 +23,7 @@ namespace OpenDental{
 	/*=========================================================================================
 		=================================== class ToolButItems ===========================================*/
   ///<summary></summary>
-	public class ToolButItems:DataClass{
+	public class ToolButItems{
 		///<summary></summary>
 		public static ToolButItem Cur;
 		///<summary></summary>
@@ -31,9 +33,9 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void Refresh(){
-			cmd.CommandText =
+			string command =
 				"SELECT * from toolbutitem";
-			FillTable();
+			DataTable table=General.GetTable(command);
 			List=new ToolButItem[table.Rows.Count];
 			for(int i=0;i<List.Length;i++){
 				List[i].ToolButItemNum  =PIn.PInt   (table.Rows[i][0].ToString());
@@ -45,48 +47,49 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO toolbutitem (ProgramNum,ToolBar,ButtonText) "
+			string command = "INSERT INTO toolbutitem (ProgramNum,ToolBar,ButtonText) "
 				+"VALUES ("
 				+"'"+POut.PInt   (Cur.ProgramNum)+"', "
 				+"'"+POut.PInt   ((int)Cur.ToolBar)+"', "
 				+"'"+POut.PString(Cur.ButtonText)+"')";
-			//MessageBox.Show(cmd.CommandText);
-			NonQ();
+			//MessageBox.Show(command);
+			General.NonQ(command);
 			//Cur.=InsertID;
 		}
 
 		///<summary>This in not currently being used.</summary>
 		public static void UpdateCur(){
-			cmd.CommandText = "UPDATE toolbutitem SET "
+			string command = "UPDATE toolbutitem SET "
 				+"ProgramNum ='" +POut.PInt   (Cur.ProgramNum)+"'"
 				+",ToolBar ='"   +POut.PInt   ((int)Cur.ToolBar)+"'"
 				+",ButtonText ='"+POut.PString(Cur.ButtonText)+"'"
 				+" WHERE ToolButItemNum = '"+POut.PInt(Cur.ToolButItemNum)+"'";
-			NonQ();
+			General.NonQ(command);
 		}
 
 		///<summary>This is not currently being used.</summary>
 		public static void DeleteCur(){
-			cmd.CommandText = "DELETE from toolbutitem WHERE ToolButItemNum = '"
+			string command = "DELETE from toolbutitem WHERE ToolButItemNum = '"
 				+POut.PInt(Cur.ToolButItemNum)+"'";
-			NonQ();
+			General.NonQ(command);
 		}
 
 		///<summary>Deletes all ToolButItems for the Programs.Cur.  This is used regularly when saving a Program link because of the way the user interface works.</summary>
-		public static void DeleteAllForProgram(){
-			cmd.CommandText = "DELETE from toolbutitem WHERE ProgramNum = '"
-				+POut.PInt(Programs.Cur.ProgramNum)+"'";
-			NonQ();
+		public static void DeleteAllForProgram(int programNum){
+			string command = "DELETE from toolbutitem WHERE ProgramNum = '"
+				+POut.PInt(programNum)+"'";
+			General.NonQ(command);
 		}
 
 		///<summary>Fills ForProgram with toolbutitems attached to the Programs.Cur</summary>
-		public static void GetForProgram(){
+		public static void GetForProgram(int programNum){
 			ForProgram=new ArrayList();
 			for(int i=0;i<List.Length;i++){
-				if(List[i].ProgramNum==Programs.Cur.ProgramNum){
+				if(List[i].ProgramNum==programNum){
 					ForProgram.Add(List[i]);
 				}
 			}
+
 		}
 
 		///<summary>Returns a list of toolbutitems for the specified toolbar. Used when laying out toolbars.</summary>

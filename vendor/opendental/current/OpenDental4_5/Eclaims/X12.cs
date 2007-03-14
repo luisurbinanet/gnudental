@@ -6,6 +6,7 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental.Eclaims
 {
@@ -294,18 +295,18 @@ namespace OpenDental.Eclaims
 					//2010AA N3: Billing provider address
 					seg++;
 					if(clinic==null){
-						sw.Write("N3*"+Sout(Prefs.GetString("PracticeAddress"),55));//N301: Address
+						sw.Write("N3*"+Sout(PrefB.GetString("PracticeAddress"),55));//N301: Address
 					}
 					else{
 						sw.Write("N3*"+Sout(clinic.Address,55));//N301: Address
 					}
 					if(clinic==null){
-						if(Prefs.GetString("PracticeAddress2")==""){
+						if(PrefB.GetString("PracticeAddress2")==""){
 							sw.WriteLine("~");
 						}
 						else{
 							//N302: Address2. Optional.
-							sw.WriteLine("*"+Sout(Prefs.GetString("PracticeAddress2"),55)+"~");
+							sw.WriteLine("*"+Sout(PrefB.GetString("PracticeAddress2"),55)+"~");
 						}
 					}
 					else{
@@ -320,9 +321,9 @@ namespace OpenDental.Eclaims
 					//2010AA N4: Billing prov City,State,Zip
 					seg++;
 					if(clinic==null){
-						sw.WriteLine("N4*"+Sout(Prefs.GetString("PracticeCity"),30)+"*"//N401: City
-							+Sout(Prefs.GetString("PracticeST"),2)+"*"//N402: State
-							+Sout(Prefs.GetString("PracticeZip").Replace("-",""),15)+"~");//N403: Zip
+						sw.WriteLine("N4*"+Sout(PrefB.GetString("PracticeCity"),30)+"*"//N401: City
+							+Sout(PrefB.GetString("PracticeST"),2)+"*"//N402: State
+							+Sout(PrefB.GetString("PracticeZip").Replace("-",""),15)+"~");//N403: Zip
 					}
 					else{
 						sw.WriteLine("N4*"+Sout(clinic.City,30)+"*"//N401: City
@@ -341,7 +342,7 @@ namespace OpenDental.Eclaims
 							seg++;
 							if(clinic==null){
 								sw.WriteLine("REF*LU*"
-									+Prefs.GetString("PracticePhone")+"~");
+									+PrefB.GetString("PracticePhone")+"~");
 							}
 							else{
 								sw.WriteLine("REF*LU*"
@@ -373,13 +374,13 @@ namespace OpenDental.Eclaims
 						seg++;
 						if(clinic==null){
 							sw.WriteLine("PER*IC*"//PER01: IC=Information Contact
-								+Sout(Prefs.GetString("PracticeTitle"),60,1)+"*"//PER02:Name. Practice title
+								+Sout(PrefB.GetString("PracticeTitle"),60,1)+"*"//PER02:Name. Practice title
 								+"TE*"//PER03:Comm Number Qualifier: TE=Telephone
-								+Sout(Prefs.GetString("PracticePhone"),256,1)+"~");//PER04:Comm Number. aka telephone number
+								+Sout(PrefB.GetString("PracticePhone"),256,1)+"~");//PER04:Comm Number. aka telephone number
 						}
 						else{
 							sw.WriteLine("PER*IC*"//PER01: IC=Information Contact
-								+Sout(Prefs.GetString("PracticeTitle"),60,1)+"*"//PER02:Name. Practice title
+								+Sout(PrefB.GetString("PracticeTitle"),60,1)+"*"//PER02:Name. Practice title
 								+"TE*"//PER03:Comm Number Qualifier: TE=Telephone
 								+Sout(clinic.Phone,256,1)+"~");//PER04:Comm Number. aka telephone number
 						}
@@ -453,10 +454,9 @@ namespace OpenDental.Eclaims
 						}
 					}
 					sw.Write("**");//SBR07 & 08 not used.
-					sw.WriteLine("CI~");//SBR09: 12=PPO,17=DMO,BL=BCBS,CI=CommercialIns,FI=FEP,HM=HMO
-							//,MC=Medicaid,SA=self-administered, etc. There are too many. I'm just going 
-							//to use CI for everyone. I don't think anyone will care.
-							//Anyway, SBR09 will not be used once PlanID is mandated.
+					sw.WriteLine(GetFilingCode(insPlan)+"~");//"CI~");//SBR09: 12=PPO,17=DMO,BL=BCBS,CI=CommercialIns,FI=FEP,HM=HMO
+							//,MC=Medicaid,SA=self-administered, etc. 
+							//SBR09 will not be used once PlanID is mandated.
 					//if(isMedical){
 						//2000B PAT. Required when patient is subscriber and one of the fields is needed.
 						//We will never need these fields: deceased date, weight, or pregnancy
@@ -870,11 +870,11 @@ namespace OpenDental.Eclaims
 				//or 2310D (medical)NM1: Service facility location. Required if different from 2010AA. Not supported.
 				//2310D (medical)N3,N4,REF,PER: not supported.
 				if(!isMedical && claim.PlaceService!=PlaceOfService.Office){
-					Provider provFac=Providers.List[Providers.GetIndex(Prefs.GetInt("PracticeDefaultProv"))];
+					Provider provFac=Providers.List[Providers.GetIndex(PrefB.GetInt("PracticeDefaultProv"))];
 					seg++;
 					sw.Write("NM1*FA*"//FA=Facility
 						+"2*"//NM102: 2=non-person
-						+Sout(Prefs.GetString("PracticeTitle"),35)+"*"//NM103:Submitter Name
+						+Sout(PrefB.GetString("PracticeTitle"),35)+"*"//NM103:Submitter Name
 						+"*"//NM104: not used
 						+"*"//NM105: not used
 						+"*"//NM106: not used
@@ -1155,7 +1155,7 @@ namespace OpenDental.Eclaims
 					//2410 LIN,CTP,REF: (medical) Not supported
 					//2420A NM1: Rendering provider name. Only if different from the claim.
 					if(claim.ProvTreat!=proc.ProvNum
-						&& Prefs.GetBool("EclaimsSeparateTreatProv"))
+						&& PrefB.GetBool("EclaimsSeparateTreatProv"))
 					{
 						provTreat=Providers.ListLong[Providers.GetIndexLong(proc.ProvNum)];
 						seg++;
@@ -1245,7 +1245,7 @@ namespace OpenDental.Eclaims
 		///<summary>Usually Jordan Sparks's TIN, but sometimes the clinic's TIN.</summary>
 		private static string GetISA06(Clearinghouse clearhouse){
 			if(clearhouse.ReceiverID=="660610220" || clearhouse.ReceiverID=="AOS"){//Inmediata or AOS, SPK 7/13/05
-				Provider defProv=Providers.ListLong[Providers.GetIndexLong(Prefs.GetInt("PracticeDefaultProv"))];
+				Provider defProv=Providers.ListLong[Providers.GetIndexLong(PrefB.GetInt("PracticeDefaultProv"))];
 				return Sout(defProv.SSN,15,15);//TIN or SSN of default provider.  This field should be later added to clearhouse
 			}
 			else{
@@ -1269,7 +1269,7 @@ namespace OpenDental.Eclaims
 		/// <summary>Usually Jordan Sparks's TIN, but sometimes the clinic's TIN.</summary>
 		private static string GetGS02(Clearinghouse clearhouse){
 			if(clearhouse.ReceiverID=="660610220" || clearhouse.ReceiverID=="AOS"){//Inmediata or AOS, SPK 7/13/05
-				Provider defProv=Providers.ListLong[Providers.GetIndexLong(Prefs.GetInt("PracticeDefaultProv"))];
+				Provider defProv=Providers.ListLong[Providers.GetIndexLong(PrefB.GetInt("PracticeDefaultProv"))];
 				return Sout(defProv.SSN,15,2);//TIN or SSN of default provider.  This field should be later added to clearhouse
 			}
 			else{
@@ -1289,16 +1289,16 @@ namespace OpenDental.Eclaims
 		///<summary>Usually writes the name information for Open Dental. But for inmediata/AOS clearinghouses, it writes practice info.</summary>
 		private static void Write1000A_NM1(StreamWriter sw,Clearinghouse clearhouse){
 			if(clearhouse.ReceiverID=="660610220"){//Inmediata
-				Provider defProv=Providers.ListLong[Providers.GetIndexLong(Prefs.GetInt("PracticeDefaultProv"))];
+				Provider defProv=Providers.ListLong[Providers.GetIndexLong(PrefB.GetInt("PracticeDefaultProv"))];
 				//TIN or SSN of default provider.  This field should be later added to clearhouse
 				sw.WriteLine("NM1*41*"//NM101: 41=submitter
 					+"2*"//NM102: 2=nonperson??
-					+Sout(Prefs.GetString("PracticeTitle"),35,1)+"*"//NM103:Submitter Name
+					+Sout(PrefB.GetString("PracticeTitle"),35,1)+"*"//NM103:Submitter Name
 					+"****46*"//NM108: 46 indicates ETIN
 					+Sout(defProv.SSN,80,2)+"~");//NM109: ID Code. aka ETIN#.
 			}
 			else if(clearhouse.ReceiverID=="AOS"){ // AOS added SPK 7/13/05
-				Provider defProv=Providers.ListLong[Providers.GetIndexLong(Prefs.GetInt("PracticeDefaultProv"))];
+				Provider defProv=Providers.ListLong[Providers.GetIndexLong(PrefB.GetInt("PracticeDefaultProv"))];
 				//TIN or SSN of default provider.  This field should be later added to clearhouse
 				sw.WriteLine("NM1*41*"//NM101: 41=submitter
 					+"1*"//NM102: 1=person
@@ -1329,9 +1329,9 @@ namespace OpenDental.Eclaims
 				|| clearhouse.ReceiverID=="AOS")//AOS added SPK 7/13/05
 			{
 				sw.WriteLine("PER*IC*"//PER01:Function code: IC=Information Contact
-					+Sout(Prefs.GetString("PracticeTitle"),60,1)+"*"//PER02:Name. Practice title
+					+Sout(PrefB.GetString("PracticeTitle"),60,1)+"*"//PER02:Name. Practice title
 					+"TE*"//PER03:Comm Number Qualifier: TE=Telephone
-					+Sout(Prefs.GetString("PracticePhone"),80,1)+"~");//PER04:Comm Number. aka telephone number
+					+Sout(PrefB.GetString("PracticePhone"),80,1)+"~");//PER04:Comm Number. aka telephone number
 			}
 			else{
 				sw.WriteLine("PER*IC*"//PER01:Function code: IC=Information Contact
@@ -1507,6 +1507,60 @@ namespace OpenDental.Eclaims
 			}
 		}
 
+		///<summary>Until recently, we always just used CI for commercial ins.  But due to demand from customers, we had to add this even though it will become obsolete soon.</summary>
+		private static string GetFilingCode(InsPlan plan){
+			switch(plan.FilingCode){
+				case InsFilingCode.SelfPay:
+					return "09";
+				case InsFilingCode.OtherNonFed:
+					return "11";
+				case InsFilingCode.PPO:
+					return "12";
+				case InsFilingCode.POS:
+					return "13";
+				case InsFilingCode.EPO:
+					return "14";
+				case InsFilingCode.Indemnity:
+					return "15";
+				case InsFilingCode.HMO_MedicareRisk:
+					return "16";
+				case InsFilingCode.DMO:
+					return "17";
+				case InsFilingCode.BCBS:
+					return "BL";
+				case InsFilingCode.Champus:
+					return "CH";
+				case InsFilingCode.Commercial_Insurance:
+					return "CI";
+				case InsFilingCode.Disability:
+					return "DS";
+				case InsFilingCode.FEP:
+					return "FI";
+				case InsFilingCode.HMO:
+					return "HM";
+				case InsFilingCode.LiabilityMedical:
+					return "LM";
+				case InsFilingCode.MedicarePartB:
+					return "MB";
+				case InsFilingCode.Medicaid:
+					return "MC";
+				case InsFilingCode.ManagedCare_NonHMO:
+					return "MH";
+				case InsFilingCode.OtherFederalProgram:
+					return "OF";
+				case InsFilingCode.SelfAdministered:
+					return "SA";
+				case InsFilingCode.Veterans:
+					return "VA";
+				case InsFilingCode.WorkersComp:
+					return "WC";
+				case InsFilingCode.MutuallyDefined:
+					return "ZZ";
+				default:
+					return "CI";
+			}
+		}
+
 		private static string GetArea(Procedure proc,ProcedureCode procCode){
 			if(procCode.TreatArea==TreatmentArea.Arch){
 				if(proc.Surf=="U"){
@@ -1600,14 +1654,14 @@ namespace OpenDental.Eclaims
 					retVal+=",";
 				retVal+="Clearinghouse ID";
 			}
-			if(Prefs.GetString("PracticeTitle")==""){//1000A NM103 min length=1
+			if(PrefB.GetString("PracticeTitle")==""){//1000A NM103 min length=1
 				if(retVal!="")
 					retVal+=",";
 				retVal+="Practice Title";
 			}
 			//1000A NM109 min length=2
 			if(Providers.ListLong
-				[Providers.GetIndexLong(Prefs.GetInt("PracticeDefaultProv"))].SSN.Length<2)
+				[Providers.GetIndexLong(PrefB.GetInt("PracticeDefaultProv"))].SSN.Length<2)
 			{
 				if(retVal!="")
 					retVal+=",";
@@ -1616,7 +1670,7 @@ namespace OpenDental.Eclaims
 			Claim claim=Claims.GetClaim(queueItem.ClaimNum);
 			Clinic clinic=Clinics.GetClinic(claim.ClinicNum);
 			if(clinic==null){
-				if(Prefs.GetString("PracticePhone").Length!=10){//1000A PER04 min length=1.
+				if(PrefB.GetString("PracticePhone").Length!=10){//1000A PER04 min length=1.
 					//But 10 digit phone is required by WebMD and is universally assumed 
 					if(retVal!="")
 						retVal+=",";
@@ -1643,7 +1697,7 @@ namespace OpenDental.Eclaims
 			Provider billProv=Providers.ListLong[Providers.GetIndexLong((int)claimAr[1,0])];
 			Provider treatProv=Providers.ListLong[Providers.GetIndexLong(claim.ProvTreat)];
 			InsPlan insPlan=InsPlans.GetPlan(claim.PlanNum,new InsPlan[] {});
-			if(insPlan.IsMedical && !Prefs.GetBool("MedicalEclaimsEnabled")) {
+			if(insPlan.IsMedical && !PrefB.GetBool("MedicalEclaimsEnabled")) {
 				return "Medical e-claims not allowed";
 			}
 			//billProv
@@ -1696,22 +1750,22 @@ namespace OpenDental.Eclaims
 				}
 			}
 			if(clinic==null){
-				if(Prefs.GetString("PracticeAddress")==""){
+				if(PrefB.GetString("PracticeAddress")==""){
 					if(retVal!="")
 						retVal+=",";
 					retVal+="Practice Address";
 				}
-				if(Prefs.GetString("PracticeCity").Length<2){
+				if(PrefB.GetString("PracticeCity").Length<2){
 					if(retVal!="")
 						retVal+=",";
 					retVal+="Practice City";
 				}
-				if(Prefs.GetString("PracticeST").Length!=2){
+				if(PrefB.GetString("PracticeST").Length!=2){
 					if(retVal!="")
 						retVal+=",";
 					retVal+="Practice State(2 char)";
 				}
-				if(Prefs.GetString("PracticeZip").Length<3){
+				if(PrefB.GetString("PracticeZip").Length<3){
 					if(retVal!="")
 						retVal+=",";
 					retVal+="Practice Zip";

@@ -1,123 +1,27 @@
-
 using System;
 using System.Collections;
 using System.Data;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
-	
-	///<summary>There is one entry in this table for each fee for a single procedurecode.  So if there are 5 different fees stored for one procedurecode, then there will be five entries here.</summary>
-	public class Fee{
-		///<summary>Primary key.</summary>
-		public int FeeNum;
-		///<summary>The amount usually charged.  If an amount is unknown, then the entire Fee entry is deleted from the database.  The absence of a fee is sometimes shown in the user interface as a blank entry, and sometimes as 0.00.</summary>
-		public double Amount;
-		///<summary>FK to procedurelog.ADACode.</summary>
-		public string ADACode;
-		///<summary>FK to definition.DefNum.</summary>
-		public int FeeSched;
-		///<summary>Not used.</summary>
-		public bool UseDefaultFee;
-		///<summary>Not used.</summary>
-		public bool UseDefaultCov;
-
-		///<summary></summary>
-		public Fee Copy(){
-			Fee f=new Fee();
-			f.FeeNum=FeeNum;
-			f.Amount=Amount;
-			f.ADACode=ADACode;
-			f.FeeSched=FeeSched;
-			return f;
-		}
-
-		///<summary></summary>
-		public void Update(){
-			string command= "UPDATE fee SET " 
-				+ "amount = '"        +POut.PDouble(Amount)+"'"
-				+ ",adacode = '"      +POut.PString(ADACode)+"'"
-				+ ",feesched = '"     +POut.PInt   (FeeSched)+"'"
-				+ ",usedefaultfee = '"+POut.PBool  (UseDefaultFee)+"'"
-				+ ",usedefaultcov = '"+POut.PBool  (UseDefaultCov)+"'"
-				+" WHERE feenum = '"  +POut.PInt   (FeeNum)+"'";
-			//MessageBox.Show(cmd.CommandText);
-			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command);
-		}
-
-		///<summary></summary>
-		public void Insert(){
-			string command= "INSERT INTO fee (amount,adacode,"
-				+"feesched,usedefaultfee,usedefaultcov) VALUES("
-				+"'"+POut.PDouble(Amount)+"', "
-				+"'"+POut.PString(ADACode)+"', "
-				+"'"+POut.PInt   (FeeSched)+"', "
-				+"'"+POut.PBool  (UseDefaultFee)+"', "
-				+"'"+POut.PBool  (UseDefaultCov)+"')";
-			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command,true);
-			FeeNum=dcon.InsertID;
-		}
-
-		///<summary></summary>
-		public void Delete(){
-			string command="DELETE FROM fee WHERE FeeNum="+FeeNum;
-			DataConnection dcon=new DataConnection();
-			dcon.NonQ(command);
-		}
-
-	}
-	
-	/*=========================================================================================
-		=================================== class Fees ===========================================*/
 	///<summary></summary>
-	public class Fees{
-		//<summary></summary>
-		//public static Fee Cur;
+	public class Fees {
 		///<summary>An array of hashtables, one for each non-hidden fee schedule.  For each hashtable, key is adacode, value is Fee object.</summary>
 		private static Hashtable[] HList;
-		
+
 		///<summary>Refreshes all fees and loads them into HList array.  </summary>
-		public static void Refresh(){
+		public static void Refresh() {
 			HList=new Hashtable[Defs.Short[(int)DefCat.FeeSchedNames].Length];
-			for(int i=0;i<HList.Length;i++){
+			for(int i=0;i<HList.Length;i++) {
 				HList[i]=new Hashtable();
 			}
 			Fee fee;
 			string command= 
 				"SELECT * from fee";
-			DataConnection dcon=new DataConnection();
- 			DataTable table=dcon.GetTable(command);
-			for(int i=0;i<table.Rows.Count;i++){
-				fee=new Fee();
-				fee.FeeNum       =PIn.PInt   (table.Rows[i][0].ToString());
-				fee.Amount       =PIn.PDouble(table.Rows[i][1].ToString());
-				fee.ADACode      =PIn.PString(table.Rows[i][2].ToString());
-				fee.FeeSched     =PIn.PInt   (table.Rows[i][3].ToString());
-				fee.UseDefaultFee=PIn.PBool  (table.Rows[i][4].ToString());
-				fee.UseDefaultCov=PIn.PBool  (table.Rows[i][5].ToString());
-				if(Defs.GetOrder(DefCat.FeeSchedNames,fee.FeeSched)!=-1){//if fee sched is visible
-					if(HList[Defs.GetOrder(DefCat.FeeSchedNames,fee.FeeSched)].ContainsKey(fee.ADACode)){
-						//if fee was already loaded for this adacode, delete this duplicate.
-						command="DELETE FROM fee WHERE feenum = '"+fee.FeeNum+"'";
-						dcon.NonQ(command);
-					}
-					else{
-						HList[Defs.GetOrder(DefCat.FeeSchedNames,fee.FeeSched)].Add(fee.ADACode,fee);
-					}
-				}
-			}
-		}
-
-		/*
-		///<summary>Only used in the procedurecode edit window to display fees.</summary>
-		public static DataTable GetListForCode(string adaCode) {
-			string command="SELECT * FROM fee WHERE ADACode='"+POut.PString(adaCode)+"'";
-			DataConnection dcon=new DataConnection();
-			DataTable table=dcon.GetTable(command);
-			Fee[] retVal=new Fee[table.Rows.Count]; 
+			DataTable table=General.GetTable(command);
 			for(int i=0;i<table.Rows.Count;i++) {
-				retVal[]=new Fee();
+				fee=new Fee();
 				fee.FeeNum       =PIn.PInt(table.Rows[i][0].ToString());
 				fee.Amount       =PIn.PDouble(table.Rows[i][1].ToString());
 				fee.ADACode      =PIn.PString(table.Rows[i][2].ToString());
@@ -128,15 +32,44 @@ namespace OpenDental{
 					if(HList[Defs.GetOrder(DefCat.FeeSchedNames,fee.FeeSched)].ContainsKey(fee.ADACode)) {
 						//if fee was already loaded for this adacode, delete this duplicate.
 						command="DELETE FROM fee WHERE feenum = '"+fee.FeeNum+"'";
-						dcon.NonQ(command);
+						General.NonQ(command);
 					}
 					else {
 						HList[Defs.GetOrder(DefCat.FeeSchedNames,fee.FeeSched)].Add(fee.ADACode,fee);
 					}
 				}
 			}
-		}*/
+		}
 
+		///<summary></summary>
+		public static void Update(Fee fee){
+			string command= "UPDATE fee SET " 
+				+ "amount = '"        +POut.PDouble(fee.Amount)+"'"
+				+ ",adacode = '"      +POut.PString(fee.ADACode)+"'"
+				+ ",feesched = '"     +POut.PInt   (fee.FeeSched)+"'"
+				+ ",usedefaultfee = '"+POut.PBool  (fee.UseDefaultFee)+"'"
+				+ ",usedefaultcov = '"+POut.PBool  (fee.UseDefaultCov)+"'"
+				+" WHERE feenum = '"  +POut.PInt   (fee.FeeNum)+"'";
+ 			General.NonQ(command);
+		}
+
+		///<summary></summary>
+		public static void Insert(Fee fee){
+			string command= "INSERT INTO fee (amount,adacode,"
+				+"feesched,usedefaultfee,usedefaultcov) VALUES("
+				+"'"+POut.PDouble(fee.Amount)+"', "
+				+"'"+POut.PString(fee.ADACode)+"', "
+				+"'"+POut.PInt   (fee.FeeSched)+"', "
+				+"'"+POut.PBool  (fee.UseDefaultFee)+"', "
+				+"'"+POut.PBool  (fee.UseDefaultCov)+"')";
+ 			fee.FeeNum=General.NonQ(command,true);
+		}
+
+		///<summary></summary>
+		public static void Delete(Fee fee){
+			string command="DELETE FROM fee WHERE FeeNum="+fee.FeeNum;
+			General.NonQ(command);
+		}
 
 		///<summary>Used in FormProcCodeEdit,FormProcedures, and FormClaimProc to get Fees for display and for editing. Returns null if no matching fee found.</summary>
 		public static Fee GetFeeByOrder(string adacode, int order){
@@ -210,8 +143,7 @@ namespace OpenDental{
 		///<summary>Clears all fees from one fee schedule.  Supply the DefNum of the feeSchedule.</summary>
 		public static void ClearFeeSched(int schedNum){
 			string command="DELETE FROM fee WHERE FeeSched="+schedNum;
-			DataConnection dcon=new DataConnection();
-			dcon.NonQ(command);
+			General.NonQ(command);
 		}
 
 		///<summary>Copies any fee objects over to the new fee schedule.  Usually run ClearFeeSched first.  Be careful exactly which int's you supply.</summary>
@@ -222,7 +154,7 @@ namespace OpenDental{
 			for(int i=0;i<feeArray.Length;i++){
 				//fee=((Fee)HList[fromSchedI].Values  [i]).Copy();
 				feeArray[i].FeeSched=toSchedNum;
-				feeArray[i].Insert();
+				Fees.Insert(feeArray[i]);
 			}
 		}
 
@@ -237,7 +169,7 @@ namespace OpenDental{
 				}
 				newVal=(double)feeArray[i].Amount*(1+(double)percent/100);
 				feeArray[i].Amount=Math.Round(newVal,round);
-				feeArray[i].Update();
+				Fees.Update(feeArray[i]);
 			}
 		}
 

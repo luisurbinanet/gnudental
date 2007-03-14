@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Text;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental.Eclaims
 {

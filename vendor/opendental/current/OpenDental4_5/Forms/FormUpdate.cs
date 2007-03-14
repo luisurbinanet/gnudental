@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -409,8 +410,8 @@ namespace OpenDental{
 		private void FormUpdate_Load(object sender, System.EventArgs e) {
 			Height=butLicense.Bottom+50;
 			labelVersion.Text=Lan.g(this,"Using Version:")+" "+Application.ProductVersion;
-			textRegistrationNumber.Text=Prefs.GetString("RegistrationNumber");
-			textWebsitePath.Text=Prefs.GetString("UpdateWebsitePath");//should include trailing /
+			textRegistrationNumber.Text=PrefB.GetString("RegistrationNumber");
+			textWebsitePath.Text=PrefB.GetString("UpdateWebsitePath");//should include trailing /
 			butDownload.Enabled=false;
 			if(!Security.IsAuthorized(Permissions.Setup)) {
 				butCheck.Enabled=false;
@@ -519,7 +520,7 @@ namespace OpenDental{
 			}
 			MsgBox.Show(this,"Download succeeded.  Setup program will now begin.  When done, restart the program on this computer, then on the other computers.");
 			try{
-				Process.Start(Prefs.GetString("DocPath")+"Setup.exe");
+				Process.Start(PrefB.GetString("DocPath")+"Setup.exe");
 				Application.Exit();
 			}
 			catch{
@@ -529,13 +530,13 @@ namespace OpenDental{
 
 		///<summary>This is the function that the worker thread uses to actually perform the download.</summary>
 		private void InstanceMethod(){
-			File.Delete(Prefs.GetString("DocPath")+"Setup.exe");//fixes a minor bug
+			File.Delete(PrefB.GetString("DocPath")+"Setup.exe");//fixes a minor bug
 			int chunk=10;//KB
 			byte[] buffer;
 			int i=0;
 			Stream readStream=myWebClient.OpenRead(myStringWebResource);
 			BinaryReader br=new BinaryReader(readStream);
-			FileStream writeStream=new FileStream(Prefs.GetString("DocPath")+"Setup.exe",FileMode.Create);
+			FileStream writeStream=new FileStream(PrefB.GetString("DocPath")+"Setup.exe",FileMode.Create);
 			BinaryWriter bw=new BinaryWriter(writeStream);
 			try{
 				while(true){
@@ -552,13 +553,13 @@ namespace OpenDental{
 			catch{//for instance, if abort.
 				br.Close();
 				bw.Close();
-				File.Delete(Prefs.GetString("DocPath")+"Setup.exe");
+				File.Delete(PrefB.GetString("DocPath")+"Setup.exe");
 			}
 			finally{
 				br.Close();
 				bw.Close();
 			}
-			//myWebClient.DownloadFile(myStringWebResource,Prefs.GetString("DocPath")+"Setup.exe");
+			//myWebClient.DownloadFile(myStringWebResource,PrefB.GetString("DocPath")+"Setup.exe");
 		}
 
 		///<summary>This function gets invoked from the worker thread.</summary>

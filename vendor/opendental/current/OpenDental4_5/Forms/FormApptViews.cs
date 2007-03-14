@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -242,7 +243,7 @@ namespace OpenDental{
 
 		private void FormApptViews_Load(object sender, System.EventArgs e) {
 			FillViewList();
-			if(Prefs.GetInt("AppointmentTimeIncrement")==10){
+			if(PrefB.GetInt("AppointmentTimeIncrement")==10){
 				radioTen.Checked=true;
 			}
 			else{
@@ -265,10 +266,11 @@ namespace OpenDental{
 		}
 		
 		private void butAdd_Click(object sender, System.EventArgs e) {
-			ApptViews.Cur=new ApptView();
-			ApptViews.Cur.ItemOrder=ApptViews.List.Length;
-			ApptViews.InsertCur();//this also gets the primary key
+			ApptView ApptViewCur=new ApptView();
+			ApptViewCur.ItemOrder=ApptViews.List.Length;
+			ApptViews.Insert(ApptViewCur);//this also gets the primary key
 			FormApptViewEdit FormAVE=new FormApptViewEdit();
+			FormAVE.ApptViewCur=ApptViewCur;
 			FormAVE.IsNew=true;
 			FormAVE.ShowDialog();
 			if(FormAVE.DialogResult!=DialogResult.OK){
@@ -284,8 +286,9 @@ namespace OpenDental{
 				return;
 			}
 			int selected=listViews.SelectedIndex;
-			ApptViews.Cur=ApptViews.List[listViews.SelectedIndex];
+			ApptView ApptViewCur=ApptViews.List[listViews.SelectedIndex];
 			FormApptViewEdit FormAVE=new FormApptViewEdit();
+			FormAVE.ApptViewCur=ApptViewCur;
 			FormAVE.ShowDialog();
 			if(FormAVE.DialogResult!=DialogResult.OK){
 				return;
@@ -307,13 +310,13 @@ namespace OpenDental{
 			}
 			int selected=listViews.SelectedIndex;
 			//it will flip flop with the one above it
-			ApptViews.Cur=ApptViews.List[listViews.SelectedIndex];
-			ApptViews.Cur.ItemOrder=ApptViews.Cur.ItemOrder-1;
-			ApptViews.UpdateCur();
+			ApptView ApptViewCur=ApptViews.List[listViews.SelectedIndex];
+			ApptViewCur.ItemOrder=ApptViewCur.ItemOrder-1;
+			ApptViews.Update(ApptViewCur);
 			//now the other
-			ApptViews.Cur=ApptViews.List[listViews.SelectedIndex-1];
-			ApptViews.Cur.ItemOrder=ApptViews.Cur.ItemOrder+1;
-			ApptViews.UpdateCur();
+			ApptViewCur=ApptViews.List[listViews.SelectedIndex-1];
+			ApptViewCur.ItemOrder=ApptViewCur.ItemOrder+1;
+			ApptViews.Update(ApptViewCur);
 			viewChanged=true;
 			FillViewList();
 			listViews.SelectedIndex=selected-1;
@@ -329,26 +332,26 @@ namespace OpenDental{
 			}
 			int selected=listViews.SelectedIndex;
 			//it will flip flop with the one below it
-			ApptViews.Cur=ApptViews.List[listViews.SelectedIndex];
-			ApptViews.Cur.ItemOrder=ApptViews.Cur.ItemOrder+1;
-			ApptViews.UpdateCur();
+			ApptView ApptViewCur=ApptViews.List[listViews.SelectedIndex];
+			ApptViewCur.ItemOrder=ApptViewCur.ItemOrder+1;
+			ApptViews.Update(ApptViewCur);
 			//now the other
-			ApptViews.Cur=ApptViews.List[listViews.SelectedIndex+1];
-			ApptViews.Cur.ItemOrder=ApptViews.Cur.ItemOrder-1;
-			ApptViews.UpdateCur();
+			ApptViewCur=ApptViews.List[listViews.SelectedIndex+1];
+			ApptViewCur.ItemOrder=ApptViewCur.ItemOrder-1;
+			ApptViews.Update(ApptViewCur);
 			viewChanged=true;
 			FillViewList();
 			listViews.SelectedIndex=selected+1;
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			if(Prefs.GetInt("AppointmentTimeIncrement")==15
+			if(PrefB.GetInt("AppointmentTimeIncrement")==15
 				&& radioTen.Checked)
 			{
 				Prefs.UpdateInt("AppointmentTimeIncrement",10);
 				DataValid.SetInvalid(InvalidTypes.Prefs);
 			}
-			if(Prefs.GetInt("AppointmentTimeIncrement")==10
+			if(PrefB.GetInt("AppointmentTimeIncrement")==10
 				&& radioFifteen.Checked)
 			{
 				Prefs.UpdateInt("AppointmentTimeIncrement",15);

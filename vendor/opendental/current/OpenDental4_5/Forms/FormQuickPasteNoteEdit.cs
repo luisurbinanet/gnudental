@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -192,7 +193,7 @@ namespace OpenDental{
 			if(MessageBox.Show(Lan.g(this,"Delete note?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
 				return;
 			}
-			QuickNote.Delete();
+			QuickPasteNotes.Delete(QuickNote);
 			QuickNote.QuickPasteNoteNum=0;//triggers an action in the calling form
 			DialogResult=DialogResult.OK;
 		}
@@ -204,17 +205,17 @@ namespace OpenDental{
 			}
 			QuickNote.Abbreviation=textAbbreviation.Text;
 			if(QuickNote.Abbreviation!=""){
-				if(QuickNote.AbbrAlreadyInUse()){
+				if(QuickPasteNotes.AbbrAlreadyInUse(QuickNote)){
 					MessageBox.Show(Lan.g(this,"Abbreviation is already in use."));
 					return;
 				}
 			}
 			QuickNote.Note=textNote.Text;
 			if(IsNew){
-				QuickNote.Insert();
+				QuickPasteNotes.Insert(QuickNote);
 			}
 			else{
-				QuickNote.Update();
+				QuickPasteNotes.Update(QuickNote);
 			}
 			DialogResult=DialogResult.OK;
 		}
@@ -228,7 +229,7 @@ namespace OpenDental{
 				return;
 			}
 			if(IsNew){
-				QuickNote.Delete();
+				QuickPasteNotes.Delete(QuickNote);
 				DialogResult=DialogResult.Cancel;
 			}
 		}

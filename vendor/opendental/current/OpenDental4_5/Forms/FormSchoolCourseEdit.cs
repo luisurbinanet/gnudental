@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -183,7 +184,7 @@ namespace OpenDental{
 					return;
 				}
 				try{
-					CourseCur.Delete();
+					SchoolCourses.Delete(CourseCur);
 				}
 				catch(Exception ex){
 					MessageBox.Show(ex.Message);
@@ -196,7 +197,7 @@ namespace OpenDental{
 		private void butOK_Click(object sender, System.EventArgs e) {
 			CourseCur.CourseID=textCourseID.Text;
 			CourseCur.Descript=textDescript.Text;
-			CourseCur.InsertOrUpdate(IsNew);
+			SchoolCourses.InsertOrUpdate(CourseCur,IsNew);
 			DialogResult=DialogResult.OK;
 		}
 

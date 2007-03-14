@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -234,7 +235,7 @@ namespace OpenDental{
 				//fix the itemOrder of every Operatory following this one
 				for(int i=gridMain.SelectedIndices[0];i<Operatories.List.Length;i++){
 					Operatories.List[i].ItemOrder++;
-					Operatories.List[i].InsertOrUpdate(false);
+					Operatories.InsertOrUpdate(Operatories.List[i],false);
 				}
 			}
 			FillGrid();
@@ -252,10 +253,10 @@ namespace OpenDental{
 			}
 			//move selected item up
 			Operatories.List[selected].ItemOrder--;
-			Operatories.List[selected].InsertOrUpdate(false);
+			Operatories.InsertOrUpdate(Operatories.List[selected],false);
 			//move the one above it down
 			Operatories.List[selected-1].ItemOrder++;
-			Operatories.List[selected-1].InsertOrUpdate(false);
+			Operatories.InsertOrUpdate(Operatories.List[selected-1],false);
 			FillGrid();
 			gridMain.SetSelected(selected-1,true);
 			changed=true;
@@ -272,10 +273,10 @@ namespace OpenDental{
 			}
 			//move selected item down
 			Operatories.List[selected].ItemOrder++;
-			Operatories.List[selected].InsertOrUpdate(false);
+			Operatories.InsertOrUpdate(Operatories.List[selected],false);
 			//move the one below it up
 			Operatories.List[selected+1].ItemOrder--;
-			Operatories.List[selected+1].InsertOrUpdate(false);
+			Operatories.InsertOrUpdate(Operatories.List[selected+1],false);
 			FillGrid();
 			gridMain.SetSelected(selected+1,true);
 			changed=true;

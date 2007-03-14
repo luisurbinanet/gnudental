@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -337,7 +338,7 @@ namespace OpenDental{
 			this.textNote.Location = new System.Drawing.Point(184, 271);
 			this.textNote.Multiline = true;
 			this.textNote.Name = "textNote";
-			this.textNote.QuickPasteType = OpenDental.QuickPasteType.Recall;
+			this.textNote.QuickPasteType = OpenDentBusiness.QuickPasteType.Recall;
 			this.textNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textNote.Size = new System.Drawing.Size(350, 112);
 			this.textNote.TabIndex = 15;
@@ -424,7 +425,7 @@ namespace OpenDental{
 					if(!MsgBox.Show(this,true,"Delete this recall?")){
 						return;
 					}
-					RecallCur.Delete();
+					Recalls.Delete(RecallCur);
 					DialogResult=DialogResult.OK;
 				}
 			}
@@ -458,18 +459,18 @@ namespace OpenDental{
 			}
 			RecallCur.Note=textNote.Text;
 			if(IsNew){
-				if(!RecallCur.IsAllDefault()){//only save if something meaningful
-					RecallCur.Insert();
+				if(!Recalls.IsAllDefault(RecallCur)){//only save if something meaningful
+					Recalls.Insert(RecallCur);
 				}
 			}
 			else{
-				if(RecallCur.IsAllDefault()){
-					RecallCur.Delete();
+				if(Recalls.IsAllDefault(RecallCur)){
+					Recalls.Delete(RecallCur);
 					DialogResult=DialogResult.OK;
 					return;
 				}
 				else{
-					RecallCur.Update();
+					Recalls.Update(RecallCur);
 				}
 			}
 			Recalls.Synch(PatCur.PatNum,RecallCur);

@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -170,7 +171,7 @@ namespace OpenDental{
 			CovSpanCur.FromCode=textFrom.Text;
 			CovSpanCur.ToCode=textTo.Text;
 			try{
-				CovSpanCur.InsertOrUpdate(IsNew);
+				CovSpans.InsertOrUpdate(CovSpanCur,IsNew);
 			}
 			catch(ApplicationException ex){
 				MessageBox.Show(ex.Message);
@@ -184,7 +185,7 @@ namespace OpenDental{
 				DialogResult=DialogResult.Cancel;
 			}
 			else{
-				CovSpanCur.Delete();
+				CovSpans.Delete(CovSpanCur);
 				DialogResult=DialogResult.OK;
 			}
 		}

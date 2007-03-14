@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -15,8 +16,8 @@ namespace OpenDental{
 		private System.Windows.Forms.ToolTip toolTip1;
 		private OpenDental.UI.Button butCombine;
 		private OpenDental.Forms.TableCarriers tbCarriers;
-		///<summary>Set to true if using this dialog to select a carrier.</summary>
-		public bool IsSelectMode;
+		//No longer used. <summary>Set to true if using this dialog to select a carrier.</summary>
+		//public bool IsSelectMode;
 		private OpenDental.UI.Button butCancel;
 		private OpenDental.UI.Button butOK;
 		private bool changed;//keeps track of whether an update is necessary.
@@ -193,9 +194,6 @@ namespace OpenDental{
 				tbCarriers.Cell[5,i]=Carriers.List[i].State;
 				tbCarriers.Cell[6,i]=Carriers.List[i].Zip;
 				tbCarriers.Cell[7,i]=Carriers.List[i].ElectID;
-				if(IsSelectMode && Carriers.Cur.CarrierNum==Carriers.List[i].CarrierNum){
-					tbCarriers.SetSelected(i,true);
-				}
 			}
 			tbCarriers.LayoutTables();
 			if(tbCarriers.SelectedIndices.Length>0){
@@ -204,13 +202,8 @@ namespace OpenDental{
 		}
 
 		private void tbCarriers_CellDoubleClicked(object sender, OpenDental.CellEventArgs e) {
-		//private void listEmp_DoubleClick(object sender, System.EventArgs e) {
-			Carriers.Cur=Carriers.List[e.Row];
-			if(IsSelectMode){
-				DialogResult=DialogResult.OK;
-				return;
-			}
 			FormCarrierEdit FormCE=new FormCarrierEdit();
+			FormCE.CarrierCur=Carriers.List[e.Row];
 			FormCE.ShowDialog();
 			if(FormCE.DialogResult!=DialogResult.OK)
 				return;
@@ -219,8 +212,8 @@ namespace OpenDental{
 		}
 
 		private void butAdd_Click(object sender, System.EventArgs e) {
-			Carriers.Cur=new Carrier();
 			FormCarrierEdit FormCE=new FormCarrierEdit();
+			FormCE.CarrierCur=new Carrier();
 			FormCE.IsNew=true;
 			FormCE.ShowDialog();
 			if(FormCE.DialogResult!=DialogResult.OK)
@@ -234,8 +227,8 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please select one item first."));
 				return;
 			}
-			Carriers.Cur=Carriers.List[tbCarriers.SelectedIndices[0]];
 			FormCarrierEdit FormCE=new FormCarrierEdit();
+			FormCE.CarrierCur=Carriers.List[tbCarriers.SelectedIndices[0]];
 			FormCE.ShowDialog();
 			if(FormCE.DialogResult!=DialogResult.OK)
 				return;
@@ -270,14 +263,14 @@ namespace OpenDental{
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			if(IsSelectMode){
+			/*if(IsSelectMode){
 				if(tbCarriers.SelectedIndices.Length!=1){
 					//Employers.Cur=new Employer();
 					MessageBox.Show(Lan.g(this,"Please select one item first."));
 					return;
 				}
 				Carriers.Cur=Carriers.List[tbCarriers.SelectedIndices[0]];
-			}
+			}*/
 			DialogResult=DialogResult.OK;
 		}
 

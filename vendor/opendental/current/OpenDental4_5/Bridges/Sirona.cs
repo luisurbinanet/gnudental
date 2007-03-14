@@ -5,6 +5,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental.Bridges{
 	/// <summary></summary>
@@ -31,11 +32,11 @@ namespace OpenDental.Bridges{
 			}
 
 		///<summary>Sends data for Patient to a mailbox file and launches the program.</summary>
-		public static void SendData(Patient pat){
-			ProgramProperties.GetForProgram();
+		public static void SendData(Program ProgramCur, Patient pat){
+			ArrayList ForProgram=ProgramProperties.GetForProgram(ProgramCur.ProgramNum);
 			if(pat!=null){
 				//read file C:\sidexis\sifiledb.ini
-				iniFile=Path.GetDirectoryName(Programs.Cur.Path)+"\\sifiledb.ini";
+				iniFile=Path.GetDirectoryName(ProgramCur.Path)+"\\sifiledb.ini";
 				if(!File.Exists(iniFile)){
 					MessageBox.Show(iniFile+" could not be found. Is Sidexis installed properly?");
 					return;
@@ -73,8 +74,8 @@ namespace OpenDental.Bridges{
 					line.Append(pat.Birthdate.ToString("dd.MM.yyyy"));
 					line.Append(nTerm);
 					//Patient id:
-					ProgramProperties.GetCur("Enter 0 to use PatientNum, or 1 to use ChartNum");
-					if(ProgramProperties.Cur.PropertyValue=="0"){
+					ProgramProperty PPCur=ProgramProperties.GetCur(ForProgram, "Enter 0 to use PatientNum, or 1 to use ChartNum");;
+					if(PPCur.PropertyValue=="0"){
 						line.Append(pat.PatNum.ToString());
 					}
 					else{
@@ -86,7 +87,7 @@ namespace OpenDental.Bridges{
 					else
 						line.Append("M");
 					line.Append(nTerm);
-					line.Append(Providers.GetAbbr(pat.GetProvNum()));
+					line.Append(Providers.GetAbbr(Patients.GetProvNum(pat)));
 					line.Append(nTerm);
 					line.Append("OpenDental");
 					line.Append(nTerm);
@@ -108,7 +109,7 @@ namespace OpenDental.Bridges{
 					line.Append(pat.Birthdate.ToString("dd.MM.yyyy"));
 					line.Append(nTerm);
 					//Patient id:
-					if(ProgramProperties.Cur.PropertyValue=="0"){
+					if(PPCur.PropertyValue=="0"){
 						line.Append(pat.PatNum.ToString());
 					}
 					else{
@@ -120,7 +121,7 @@ namespace OpenDental.Bridges{
 					else
 						line.Append("M");
 					line.Append(nTerm);
-					line.Append(Providers.GetAbbr(pat.GetProvNum()));
+					line.Append(Providers.GetAbbr(Patients.GetProvNum(pat)));
 					line.Append(nTerm);
 					line.Append("OpenDental");
 					line.Append(nTerm);
@@ -140,7 +141,7 @@ namespace OpenDental.Bridges{
 					line.Append(nTerm);
 					line.Append(pat.Birthdate.ToString("dd.MM.yyyy"));
 					line.Append(nTerm);
-					if(ProgramProperties.Cur.PropertyValue=="0"){
+					if(PPCur.PropertyValue=="0"){
 						line.Append(pat.PatNum.ToString());
 					}
 					else{
@@ -167,10 +168,10 @@ namespace OpenDental.Bridges{
 			}//if patient is loaded
 			//Start Sidexis.exe whether patient loaded or not.
 			try{
-				Process.Start(Programs.Cur.Path);
+				Process.Start(ProgramCur.Path);
 			}
 			catch{
-				MessageBox.Show(Programs.Cur.Path+" is not available.");
+				MessageBox.Show(ProgramCur.Path+" is not available.");
 			}
 		}
 

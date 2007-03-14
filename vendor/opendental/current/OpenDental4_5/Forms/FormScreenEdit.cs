@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -42,6 +43,8 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.TextBox textScreenGroupOrder;
 		private System.Windows.Forms.ListBox listRace;
+		public OpenDentBusiness.Screen ScreenCur;
+		public ScreenGroup ScreenGroupCur;
 
 		///<summary></summary>
 		public FormScreenEdit()
@@ -437,8 +440,8 @@ namespace OpenDental{
 				but1.Visible=false;
 				but5.Visible=false;
 			}
-			textScreenGroupOrder.Text=Screens.Cur.ScreenGroupOrder.ToString();
-			switch(Screens.Cur.Gender){
+			textScreenGroupOrder.Text=ScreenCur.ScreenGroupOrder.ToString();
+			switch(ScreenCur.Gender){
 				case PatientGender.Unknown:
 					radioUnknown.Checked=true;
 					break;
@@ -450,27 +453,27 @@ namespace OpenDental{
 					break;
 			}
 			listRace.Items.AddRange(Enum.GetNames(typeof(PatientRace)));
-			listRace.SelectedIndex=(int)Screens.Cur.Race;
+			listRace.SelectedIndex=(int)ScreenCur.Race;
 			comboGradeLevel.Items.AddRange(Enum.GetNames(typeof(PatientGrade)));
-			comboGradeLevel.SelectedIndex=(int)Screens.Cur.GradeLevel;
+			comboGradeLevel.SelectedIndex=(int)ScreenCur.GradeLevel;
 			ArrayList items=new ArrayList();
-			if(Screens.Cur.Age==0)
+			if(ScreenCur.Age==0)
 				textAge.Text="";
 			else
-				textAge.Text=Screens.Cur.Age.ToString();
+				textAge.Text=ScreenCur.Age.ToString();
 			listUrgency.Items.AddRange(Enum.GetNames(typeof(TreatmentUrgency)));
-			listUrgency.SelectedIndex=(int)Screens.Cur.Urgency;
-			SetCheckState(checkHasCaries,Screens.Cur.HasCaries);
-			SetCheckState(checkNeedsSealants,Screens.Cur.NeedsSealants);
-			SetCheckState(checkCariesExperience,Screens.Cur.CariesExperience);
-			SetCheckState(checkEarlyChildCaries,Screens.Cur.EarlyChildCaries);
-			SetCheckState(checkExistingSealants,Screens.Cur.ExistingSealants);
-			SetCheckState(checkMissingAllTeeth,Screens.Cur.MissingAllTeeth);
-			if(Screens.Cur.Birthdate.Year<1880)
+			listUrgency.SelectedIndex=(int)ScreenCur.Urgency;
+			SetCheckState(checkHasCaries,ScreenCur.HasCaries);
+			SetCheckState(checkNeedsSealants,ScreenCur.NeedsSealants);
+			SetCheckState(checkCariesExperience,ScreenCur.CariesExperience);
+			SetCheckState(checkEarlyChildCaries,ScreenCur.EarlyChildCaries);
+			SetCheckState(checkExistingSealants,ScreenCur.ExistingSealants);
+			SetCheckState(checkMissingAllTeeth,ScreenCur.MissingAllTeeth);
+			if(ScreenCur.Birthdate.Year<1880)
 				textBirthdate.Text="";
 			else
-				textBirthdate.Text=Screens.Cur.Birthdate.ToShortDateString();
-			textComments.Text=Screens.Cur.Comments;
+				textBirthdate.Text=ScreenCur.Birthdate.ToShortDateString();
+			textComments.Text=ScreenCur.Comments;
 		}
 
 		private void SetCheckState(CheckBox checkBox,YN state){
@@ -586,40 +589,40 @@ namespace OpenDental{
 		private void AddSome(int numberToAdd){
 			FillCur();
 			for(int i=0;i<numberToAdd;i++){
-				Screens.InsertCur();
-				Screens.Cur.ScreenGroupOrder=Screens.Cur.ScreenGroupOrder+1;//increments for next
+				Screens.Insert(ScreenCur);
+				ScreenCur.ScreenGroupOrder=ScreenCur.ScreenGroupOrder+1;//increments for next
 			}
 			DialogResult=DialogResult.OK;//this triggers window to come back up again.
 		}
 
 		private void FillCur(){
 			//the first 6 fields are handled when the ScreenGroup is saved.
-			Screens.Cur.ScreenGroupOrder=PIn.PInt(textScreenGroupOrder.Text);
-			Screens.Cur.ScreenGroupNum=ScreenGroups.Cur.ScreenGroupNum;
+			ScreenCur.ScreenGroupOrder=PIn.PInt(textScreenGroupOrder.Text);
+			ScreenCur.ScreenGroupNum=ScreenGroupCur.ScreenGroupNum;
 			if(radioUnknown.Checked)
-        Screens.Cur.Gender=PatientGender.Unknown;
+        ScreenCur.Gender=PatientGender.Unknown;
 			else if(radioM.Checked)
-        Screens.Cur.Gender=PatientGender.Male;
+        ScreenCur.Gender=PatientGender.Male;
 			else if(radioF.Checked)
-        Screens.Cur.Gender=PatientGender.Female;
-			Screens.Cur.Race=(PatientRace)listRace.SelectedIndex;
-			Screens.Cur.GradeLevel=(PatientGrade)comboGradeLevel.SelectedIndex;
-			Screens.Cur.Age=PIn.PInt(textAge.Text);//"" is OK
-			Screens.Cur.Urgency=(TreatmentUrgency)listUrgency.SelectedIndex;
-			Screens.Cur.HasCaries=GetCheckState(checkHasCaries);
-			Screens.Cur.NeedsSealants=GetCheckState(checkNeedsSealants);
-			Screens.Cur.CariesExperience=GetCheckState(checkCariesExperience);
-			Screens.Cur.EarlyChildCaries=GetCheckState(checkEarlyChildCaries);
-			Screens.Cur.ExistingSealants=GetCheckState(checkExistingSealants);
-			Screens.Cur.MissingAllTeeth=GetCheckState(checkMissingAllTeeth);
-			Screens.Cur.Birthdate=PIn.PDate(textBirthdate.Text);//"" is OK
-			Screens.Cur.Comments=textComments.Text;
+        ScreenCur.Gender=PatientGender.Female;
+			ScreenCur.Race=(PatientRace)listRace.SelectedIndex;
+			ScreenCur.GradeLevel=(PatientGrade)comboGradeLevel.SelectedIndex;
+			ScreenCur.Age=PIn.PInt(textAge.Text);//"" is OK
+			ScreenCur.Urgency=(TreatmentUrgency)listUrgency.SelectedIndex;
+			ScreenCur.HasCaries=GetCheckState(checkHasCaries);
+			ScreenCur.NeedsSealants=GetCheckState(checkNeedsSealants);
+			ScreenCur.CariesExperience=GetCheckState(checkCariesExperience);
+			ScreenCur.EarlyChildCaries=GetCheckState(checkEarlyChildCaries);
+			ScreenCur.ExistingSealants=GetCheckState(checkExistingSealants);
+			ScreenCur.MissingAllTeeth=GetCheckState(checkMissingAllTeeth);
+			ScreenCur.Birthdate=PIn.PDate(textBirthdate.Text);//"" is OK
+			ScreenCur.Comments=textComments.Text;
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
 			//can only get to here if not IsNew
 			FillCur();
-			Screens.UpdateCur();
+			Screens.Update(ScreenCur);
 			DialogResult=DialogResult.OK;
 		}
 

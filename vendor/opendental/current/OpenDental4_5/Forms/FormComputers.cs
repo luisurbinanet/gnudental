@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -13,7 +14,7 @@ namespace OpenDental{
 		private System.Windows.Forms.ListBox listComputer;
 		private OpenDental.UI.Button butDelete;
 		private System.Windows.Forms.Label label2;// Required designer variable.
-		private Programs Programs=new Programs();
+		//private Programs Programs=new Programs();
 		private bool changed;
 
 		///<summary></summary>
@@ -137,7 +138,7 @@ namespace OpenDental{
 		private void butDelete_Click(object sender, System.EventArgs e) {
 			if(listComputer.SelectedIndex==-1)
 				return;
-			Computers.List[listComputer.SelectedIndex].Delete();
+			Computers.Delete(Computers.List[listComputer.SelectedIndex]);
 			changed=true;
 			FillList();
 		}

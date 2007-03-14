@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental.UI {
 	///<summary></summary>
@@ -240,6 +241,9 @@ namespace OpenDental.UI {
 				}
 				if(y>buttonH*(i+1)){
 					continue;
+				}
+				if(i>sigButStates.Length-1) {//button not visible
+					return -1;
 				}
 				return i;
 			}

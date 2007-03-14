@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -278,7 +279,7 @@ namespace OpenDental{
 			textOpName.Text=OpCur.OpName;
 			textAbbrev.Text=OpCur.Abbrev;
 			checkIsHidden.Checked=OpCur.IsHidden;
-			if(Prefs.GetBool("EasyNoClinics")){
+			if(PrefB.GetBool("EasyNoClinics")){
 				labelClinic.Visible=false;
 				comboClinic.Visible=false;
 			}
@@ -328,7 +329,7 @@ namespace OpenDental{
 				OpCur.ProvHygienist=Providers.List[comboProvHygienist.SelectedIndex-1].ProvNum;
 			OpCur.IsHygiene=checkIsHygiene.Checked;
 			try{
-				OpCur.InsertOrUpdate(IsNew);
+				Operatories.InsertOrUpdate(OpCur,IsNew);
 			}
 			catch(ApplicationException ex){
 				MessageBox.Show(ex.Message);

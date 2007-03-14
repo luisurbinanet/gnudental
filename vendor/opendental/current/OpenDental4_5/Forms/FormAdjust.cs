@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	///<summary></summary>
@@ -225,7 +226,7 @@ namespace OpenDental{
 			this.textNote.Location = new System.Drawing.Point(176, 354);
 			this.textNote.Multiline = true;
 			this.textNote.Name = "textNote";
-			this.textNote.QuickPasteType = OpenDental.QuickPasteType.Adjustment;
+			this.textNote.QuickPasteType = QuickPasteType.Adjustment;
 			this.textNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textNote.Size = new System.Drawing.Size(355, 140);
 			this.textNote.TabIndex = 0;
@@ -394,7 +395,7 @@ namespace OpenDental{
 			}
 			AdjustmentCur.AdjNote=textNote.Text;
 			try{
-				AdjustmentCur.InsertOrUpdate(IsNew);
+				Adjustments.InsertOrUpdate(AdjustmentCur,IsNew);
 			}
 			catch(Exception ex){//even though it doesn't currently throw any exceptions
 				MessageBox.Show(ex.Message);
@@ -422,7 +423,7 @@ namespace OpenDental{
 					"Delete for patient: "
 					+Patients.GetLim(AdjustmentCur.PatNum).GetNameLF()+", "
 					+AdjustmentCur.AdjAmt.ToString("c"));
-				AdjustmentCur.Delete();
+				Adjustments.Delete(AdjustmentCur);
 				DialogResult=DialogResult.OK;
 			}
 		}

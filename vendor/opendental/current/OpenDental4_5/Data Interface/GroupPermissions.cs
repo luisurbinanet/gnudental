@@ -2,146 +2,83 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
-
-	///<summary>Every user group has certain permissions.  This defines a permission for a group.  The absense of permission would cause that row to be deleted from this table.</summary>
-	public class GroupPermission{
-		///<summary>Primary key.</summary>
-		public int GroupPermNum;
-		///<summary>Only granted permission if newer than this date.  Can be Minimum (01-01-0001) to always grant permission.</summary>
-		public DateTime NewerDate;
-		///<summary>Can be 0 to always grant permission.  Otherwise, only granted permission if item is newer than the given number of days.  1 would mean only if entered today.</summary>
-		public int NewerDays;
-		///<summary>FK to usergroup.UserGroupNum.  The user group for which this permission is granted.  If not authorized, then this groupPermission will have been deleted.</summary>
-		public int UserGroupNum;
-		///<summary>Enum:Permissions</summary>
-		public Permissions PermType;
+	///<summary></summary>
+	public class GroupPermissions {
+		///<summary>A list of all GroupPermissions for all groups.</summary>
+		public static GroupPermission[] List;
 
 		///<summary></summary>
-		public GroupPermission Copy(){
-			GroupPermission g=new GroupPermission();
-			g.GroupPermNum=GroupPermNum;
-			g.NewerDate=NewerDate;
-			g.NewerDays=NewerDays;
-			g.UserGroupNum=UserGroupNum;
-			g.PermType=PermType;
-			return g;
+		public static void Refresh() {
+			string command="SELECT * from grouppermission";
+			DataTable table=General.GetTable(command);
+			List=new GroupPermission[table.Rows.Count];
+			for(int i=0;i<List.Length;i++) {
+				List[i]=new GroupPermission();
+				List[i].GroupPermNum  = PIn.PInt(table.Rows[i][0].ToString());
+				List[i].NewerDate     = PIn.PDate(table.Rows[i][1].ToString());
+				List[i].NewerDays     = PIn.PInt(table.Rows[i][2].ToString());
+				List[i].UserGroupNum  = PIn.PInt(table.Rows[i][3].ToString());
+				List[i].PermType      =(Permissions)PIn.PInt(table.Rows[i][4].ToString());
+			}
 		}
 
 		///<summary></summary>
-		private void Update(){
+		private static void Update(GroupPermission gp){
 			string command= "UPDATE grouppermission SET " 
-				+"NewerDate = '"   +POut.PDate  (NewerDate)+"'"
-				+",NewerDays = '"   +POut.PInt   (NewerDays)+"'"
-				+",UserGroupNum = '"+POut.PInt   (UserGroupNum)+"'"
-				+",PermType = '"    +POut.PInt   ((int)PermType)+"'"
-				+" WHERE GroupPermNum = '"+POut.PInt(GroupPermNum)+"'";
-			//MessageBox.Show(cmd.CommandText);
-			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command);
+				+"NewerDate = '"   +POut.PDate  (gp.NewerDate)+"'"
+				+",NewerDays = '"   +POut.PInt   (gp.NewerDays)+"'"
+				+",UserGroupNum = '"+POut.PInt   (gp.UserGroupNum)+"'"
+				+",PermType = '"    +POut.PInt   ((int)gp.PermType)+"'"
+				+" WHERE GroupPermNum = '"+POut.PInt(gp.GroupPermNum)+"'";
+ 			General.NonQ(command);
 		}
 
 		///<summary></summary>
-		private void Insert(){
+		private static void Insert(GroupPermission gp){
 			string command= "INSERT INTO grouppermission (NewerDate,NewerDays,UserGroupNum,PermType) "
 				+"VALUES("
-				+"'"+POut.PDate  (NewerDate)+"', "
-				+"'"+POut.PInt   (NewerDays)+"', "
-				+"'"+POut.PInt   (UserGroupNum)+"', "
-				+"'"+POut.PInt   ((int)PermType)+"')";
-			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command);
+				+"'"+POut.PDate  (gp.NewerDate)+"', "
+				+"'"+POut.PInt   (gp.NewerDays)+"', "
+				+"'"+POut.PInt   (gp.UserGroupNum)+"', "
+				+"'"+POut.PInt   ((int)gp.PermType)+"')";
+ 			General.NonQ(command);
 		}
 
 		///<summary></summary>
-		public void InsertOrUpdate(bool isNew){
-			if(NewerDate.Year>1880 && NewerDays>0){
-				throw new Exception(Lan.g(this,"Date or days can be set, but not both."));
+		public static void InsertOrUpdate(GroupPermission gp, bool isNew){
+			if(gp.NewerDate.Year>1880 && gp.NewerDays>0){
+				throw new Exception(Lan.g("GroupPermissions","Date or days can be set, but not both."));
 			}
-			if(!GroupPermissions.PermTakesDates(PermType)){
-				if(NewerDate.Year>1880 || NewerDays>0){
-					throw new Exception(Lan.g(this,"This type of permission may not have a date or days set."));
+			if(!GroupPermissions.PermTakesDates(gp.PermType)){
+				if(gp.NewerDate.Year>1880 || gp.NewerDays>0){
+					throw new Exception(Lan.g("GroupPermissions","This type of permission may not have a date or days set."));
 				}
 			}
 			if(isNew){
-				Insert();
+				Insert(gp);
 			}
 			else{
-				Update();
+				Update(gp);
 			}
 		}
-
-		/*
-		///<summary>Checks for dependencies first</summary>
-		public void Delete(){
-			//string command="SELECT COUNT(*) FROM user WHERE GroupPermissionNum='"
-			//	+POut.PInt(GroupPermissionNum)+"'";
-			DataConnection dcon=new DataConnection();
-			//DataTable table=dcon.GetTable(command);
-			//if(PIn.PInt(table.Rows[0][0].ToString())>0){
-			//	throw new Exception(Lan.g(this,"Must move users to another group first."));
-			//}
-			string command= "DELETE from grouppermission WHERE GroupPermNum='"
-				+POut.PInt(GroupPermNum)+"'";
- 			dcon.NonQ(command);
-		}*/
-
-	}
-
-	/*=========================================================================================
-	=================================== class GroupPermissions==========================================*/
-	///<summary></summary>
-	public class GroupPermissions{
-		///<summary>A list of all GroupPermissions for all groups.</summary>
-		public static GroupPermission[] List;   
-
-		///<summary></summary>
-		public static void Refresh(){
-			string command="SELECT * from grouppermission";
-			DataConnection dcon=new DataConnection();
- 			DataTable table=dcon.GetTable(command);
-			List=new GroupPermission[table.Rows.Count];
-			for(int i=0;i<List.Length;i++){
-				List[i]=new GroupPermission();
-				List[i].GroupPermNum  = PIn.PInt   (table.Rows[i][0].ToString());
-				List[i].NewerDate     = PIn.PDate  (table.Rows[i][1].ToString());
-				List[i].NewerDays     = PIn.PInt   (table.Rows[i][2].ToString());
-				List[i].UserGroupNum  = PIn.PInt   (table.Rows[i][3].ToString());
-				List[i].PermType      =(Permissions) PIn.PInt   (table.Rows[i][4].ToString());
-			}
-		}
-
-		/*
-		///<summary></summary>
-		public static void SetPermission(int groupNum,Permissions permType){
-			string command= "INSERT INTO grouppermission (NewerDate,NewerDays,UserGroupNum,PermType) "
-				+"VALUES("
-				+"'"+POut.PDate  (NewerDate)+"', "
-				+"'"+POut.PInt   (NewerDays)+"', "
-				+"'"+POut.PInt   (UserGroupNum)+"', "
-				+"'"+POut.PInt   ((int)permType)+"')";
-			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command,true);
-			GroupPermNum=dcon.InsertID;
-			
-		}*/
 
 		///<summary></summary>
 		public static void RemovePermission(int groupNum,Permissions permType){
-			DataConnection dcon=new DataConnection();
 			string command;
 			if(permType==Permissions.SecurityAdmin){
 				//need to make sure that at least one other user has this permission
 				command="SELECT COUNT(*) FROM grouppermission WHERE PermType='"+POut.PInt((int)permType)+"'";
-				DataTable table=dcon.GetTable(command);
+				DataTable table=General.GetTable(command);
 				if(table.Rows[0][0].ToString()=="1"){//only one, so this would delete the last one.
 					throw new Exception(Lan.g("FormSecurity","At least one group must have Security Admin permission."));
 				}
 			}
 			command="DELETE from grouppermission WHERE UserGroupNum='"+POut.PInt(groupNum)+"' "
 				+"AND PermType='"+POut.PInt((int)permType)+"'";
- 			dcon.NonQ(command);
+ 			General.NonQ(command);
 		}
 
 		///<summary>Gets a GroupPermission based on the supplied userGroupNum and permType.  If not found, then it returns null.  Used in FormSecurity when double clicking on a dated permission or when clicking the all button.</summary>

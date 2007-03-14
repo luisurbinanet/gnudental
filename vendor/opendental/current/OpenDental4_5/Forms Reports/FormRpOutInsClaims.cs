@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -182,7 +183,7 @@ namespace OpenDental{
 			FormQuery2.ResetGrid();//this is a method in FormQuery2;
 			Queries.CurReport.Title="OUTSTANDING INSURANCE CLAIMS";
 			Queries.CurReport.SubTitle=new string[3];
-			Queries.CurReport.SubTitle[0]=((Pref)Prefs.HList["PracticeTitle"]).ValueString;
+			Queries.CurReport.SubTitle[0]=((Pref)PrefB.HList["PracticeTitle"]).ValueString;
 			Queries.CurReport.SubTitle[1]="Days Outstanding: " + daysOld;			
 			Queries.CurReport.ColPos[0]=20;
 			Queries.CurReport.ColPos[1]=210;

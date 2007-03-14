@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -171,15 +172,15 @@ namespace OpenDental{
 					DialogResult=DialogResult.Cancel;
 					return;
 				}
-				Field.Delete();
+				PatFields.Delete(Field);
 				DialogResult=DialogResult.OK;
 				return;
 			}
 			if(IsNew){
-				Field.Insert();
+				PatFields.Insert(Field);
 			}
 			else{
-				Field.Update();
+				PatFields.Update(Field);
 			}
 			DialogResult=DialogResult.OK;
 		}
@@ -193,7 +194,7 @@ namespace OpenDental{
 				return;
 			}
 			if(IsNew) {
-				Field.Delete();
+				PatFields.Delete(Field);
 			}
 		}
 

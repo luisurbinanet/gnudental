@@ -150,14 +150,14 @@ namespace fyiReporting.RdlDesign
 			DataSetsCtl dsc = new DataSetsCtl(_Draw, aNode);
 			AddTab("DataSet", dsc);
 
-			QueryParametersCtl qp = new QueryParametersCtl(_Draw, dsc.DSV);
-			AddTab("Query Parameters", qp);
+			//QueryParametersCtl qp = new QueryParametersCtl(_Draw, dsc.DSV);
+			//AddTab("Query Parameters", qp);
 
-			FiltersCtl fc = new FiltersCtl(_Draw, aNode);
-			AddTab("Filters", fc);
+			//FiltersCtl fc = new FiltersCtl(_Draw, aNode);
+			//AddTab("Filters", fc);
 
-			DataSetRowsCtl dsrc = new DataSetRowsCtl(_Draw, aNode, dsc.DSV);
-			AddTab("Data", dsrc);
+			//DataSetRowsCtl dsrc = new DataSetRowsCtl(_Draw, aNode, dsc.DSV);
+			//AddTab("Data", dsrc);
 			return;
 		}
 
@@ -464,11 +464,11 @@ namespace fyiReporting.RdlDesign
 		private void InitializeComponent()
 		{
 			this.panel1 = new System.Windows.Forms.Panel();
+			this.bDelete = new System.Windows.Forms.Button();
 			this.bApply = new System.Windows.Forms.Button();
 			this.bOK = new System.Windows.Forms.Button();
 			this.bCancel = new System.Windows.Forms.Button();
 			this.tcProps = new System.Windows.Forms.TabControl();
-			this.bDelete = new System.Windows.Forms.Button();
 			this.panel1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -480,60 +480,67 @@ namespace fyiReporting.RdlDesign
 			this.panel1.Controls.Add(this.bOK);
 			this.panel1.Controls.Add(this.bCancel);
 			this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panel1.Location = new System.Drawing.Point(0, 310);
+			this.panel1.Location = new System.Drawing.Point(0,593);
 			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(458, 56);
+			this.panel1.Size = new System.Drawing.Size(911,56);
 			this.panel1.TabIndex = 1;
+			// 
+			// bDelete
+			// 
+			this.bDelete.Location = new System.Drawing.Point(8,16);
+			this.bDelete.Name = "bDelete";
+			this.bDelete.Size = new System.Drawing.Size(75,23);
+			this.bDelete.TabIndex = 3;
+			this.bDelete.Text = "Delete";
+			this.bDelete.Visible = false;
+			this.bDelete.Click += new System.EventHandler(this.bDelete_Click);
 			// 
 			// bApply
 			// 
-			this.bApply.Location = new System.Drawing.Point(376, 16);
+			this.bApply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.bApply.Location = new System.Drawing.Point(805,16);
 			this.bApply.Name = "bApply";
+			this.bApply.Size = new System.Drawing.Size(75,23);
 			this.bApply.TabIndex = 2;
 			this.bApply.Text = "Apply";
 			this.bApply.Click += new System.EventHandler(this.bApply_Click);
 			// 
 			// bOK
 			// 
-			this.bOK.Location = new System.Drawing.Point(200, 17);
+			this.bOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.bOK.Location = new System.Drawing.Point(629,16);
 			this.bOK.Name = "bOK";
+			this.bOK.Size = new System.Drawing.Size(75,23);
 			this.bOK.TabIndex = 0;
 			this.bOK.Text = "OK";
 			this.bOK.Click += new System.EventHandler(this.bOK_Click);
 			// 
 			// bCancel
 			// 
+			this.bCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.bCancel.CausesValidation = false;
 			this.bCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.bCancel.Location = new System.Drawing.Point(288, 16);
+			this.bCancel.Location = new System.Drawing.Point(717,16);
 			this.bCancel.Name = "bCancel";
+			this.bCancel.Size = new System.Drawing.Size(75,23);
 			this.bCancel.TabIndex = 1;
 			this.bCancel.Text = "Cancel";
 			// 
 			// tcProps
 			// 
 			this.tcProps.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.tcProps.Location = new System.Drawing.Point(0, 0);
+			this.tcProps.Location = new System.Drawing.Point(0,0);
 			this.tcProps.Name = "tcProps";
 			this.tcProps.SelectedIndex = 0;
-			this.tcProps.Size = new System.Drawing.Size(458, 310);
+			this.tcProps.Size = new System.Drawing.Size(911,593);
 			this.tcProps.TabIndex = 0;
-			// 
-			// bDelete
-			// 
-			this.bDelete.Location = new System.Drawing.Point(8, 16);
-			this.bDelete.Name = "bDelete";
-			this.bDelete.TabIndex = 3;
-			this.bDelete.Text = "Delete";
-			this.bDelete.Visible = false;
-			this.bDelete.Click += new System.EventHandler(this.bDelete_Click);
 			// 
 			// PropertyDialog
 			// 
 			this.AcceptButton = this.bOK;
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
 			this.CancelButton = this.bCancel;
-			this.ClientSize = new System.Drawing.Size(458, 366);
+			this.ClientSize = new System.Drawing.Size(911,649);
 			this.Controls.Add(this.tcProps);
 			this.Controls.Add(this.panel1);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;

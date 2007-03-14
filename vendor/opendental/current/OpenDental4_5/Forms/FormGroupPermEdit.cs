@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -240,7 +241,7 @@ namespace OpenDental{
 			Cur.NewerDays=PIn.PInt (textDays.Text);
 			Cur.NewerDate=PIn.PDate(textDate.Text);
 			try{
-				Cur.InsertOrUpdate(IsNew);
+				GroupPermissions.InsertOrUpdate(Cur,IsNew);
 			}
 			catch(Exception ex){
 				MessageBox.Show(ex.Message);

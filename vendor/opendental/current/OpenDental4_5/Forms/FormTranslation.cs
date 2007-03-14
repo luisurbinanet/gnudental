@@ -6,6 +6,8 @@ using System.Windows.Forms;
 using System.Data;
 using System.Globalization;
 using System.IO;
+using OpenDentBusiness;
+using OpenDental.UI;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -21,9 +23,7 @@ namespace OpenDental{
 		public FormTranslation(string classType){
 			InitializeComponent();
 			gridLan.Title=classType+" Words";
-			gridLan.Columns[1].Heading=CultureInfo.CurrentCulture.DisplayName;
-			gridLan.Columns[2].Heading="Other "+CultureInfo.CurrentCulture.Parent.DisplayName+" Translation";
-			gridLan.Columns[3].Heading=CultureInfo.CurrentCulture.DisplayName+" Comments";
+			
 			//tbLan.Fields[2]=CultureInfo.CurrentCulture.Parent.DisplayName;
 			//tbLan.Fields[3]=CultureInfo.CurrentCulture.Parent.DisplayName + " Comments";
 			//no need to translate much here
@@ -52,28 +52,25 @@ namespace OpenDental{
 			// 
 			// butClose
 			// 
-			this.butClose.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butClose.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butClose.Autosize = true;
 			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butClose.Location = new System.Drawing.Point(847, 671);
+			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.butClose.Location = new System.Drawing.Point(847,671);
 			this.butClose.Name = "butClose";
-			this.butClose.Size = new System.Drawing.Size(75, 26);
+			this.butClose.Size = new System.Drawing.Size(75,26);
 			this.butClose.TabIndex = 3;
 			this.butClose.Text = "&Close";
 			this.butClose.Click += new System.EventHandler(this.butClose_Click);
 			// 
 			// gridLan
 			// 
-			this.gridLan.Columns.Add(new OpenDental.UI.ODGridColumn("English", 220, System.Windows.Forms.HorizontalAlignment.Left));
-			this.gridLan.Columns.Add(new OpenDental.UI.ODGridColumn("Culture", 220, System.Windows.Forms.HorizontalAlignment.Left));
-			this.gridLan.Columns.Add(new OpenDental.UI.ODGridColumn("Other Translation", 220, System.Windows.Forms.HorizontalAlignment.Left));
-			this.gridLan.Columns.Add(new OpenDental.UI.ODGridColumn("Language Comments", 226, System.Windows.Forms.HorizontalAlignment.Left));
 			this.gridLan.HScrollVisible = false;
-			this.gridLan.Location = new System.Drawing.Point(18, 12);
+			this.gridLan.Location = new System.Drawing.Point(18,12);
 			this.gridLan.Name = "gridLan";
 			this.gridLan.ScrollValue = 0;
-			this.gridLan.Size = new System.Drawing.Size(905, 643);
+			this.gridLan.Size = new System.Drawing.Size(905,643);
 			this.gridLan.TabIndex = 7;
 			this.gridLan.Title = "Translations";
 			this.gridLan.TranslationName = "TableLan";
@@ -81,9 +78,9 @@ namespace OpenDental{
 			// 
 			// FormTranslation
 			// 
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
 			this.CancelButton = this.butClose;
-			this.ClientSize = new System.Drawing.Size(958, 708);
+			this.ClientSize = new System.Drawing.Size(958,708);
 			this.Controls.Add(this.gridLan);
 			this.Controls.Add(this.butClose);
 			this.MaximizeBox = false;
@@ -108,6 +105,18 @@ namespace OpenDental{
 			ListForType=LanguageForeigns.GetListForType(ClassType);
 			LanguageForeigns.Refresh(CultureInfo.CurrentCulture);
 			gridLan.BeginUpdate();
+			gridLan.Columns.Clear();
+			ODGridColumn column=new ODGridColumn("English",220);
+			gridLan.Columns.Add(column);
+			column=new ODGridColumn(CultureInfo.CurrentCulture.DisplayName,220);
+			gridLan.Columns.Add(column);
+			column=new ODGridColumn("Other "+CultureInfo.CurrentCulture.Parent.DisplayName+" Translation",220);
+			gridLan.Columns.Add(column);
+			column=new ODGridColumn(CultureInfo.CurrentCulture.DisplayName+" Comments",220);
+			gridLan.Columns.Add(column);
+			//gridLan.Columns[1].Heading=;
+			//gridLan.Columns[2].Heading="Other "+CultureInfo.CurrentCulture.Parent.DisplayName+" Translation";
+			//gridLan.Columns[3].Heading=CultureInfo.CurrentCulture.DisplayName+" Comments";
 			gridLan.Rows.Clear();
 			UI.ODGridRow row;
 			LanguageForeign lanForeign;

@@ -4,6 +4,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Text;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -512,19 +513,19 @@ namespace OpenDental{
 		#endregion
 
 		private void FormRecallSetup_Load(object sender, System.EventArgs e) {
-			textPattern.Text=Prefs.GetString("RecallPattern");
-			textProcs.Text=((Pref)Prefs.HList["RecallProcedures"]).ValueString;
-			textBW.Text=((Pref)Prefs.HList["RecallBW"]).ValueString;
-			textPostcardMessage.Text=Prefs.GetString("RecallPostcardMessage");
-			textPostcardFamMsg.Text=Prefs.GetString("RecallPostcardFamMsg");
-			textConfirmPostcardMessage.Text=Prefs.GetString("ConfirmPostcardMessage");
-			textPostcardsPerSheet.Text=Prefs.GetInt("RecallPostcardsPerSheet").ToString();
-			checkReturnAdd.Checked=Prefs.GetBool("RecallCardsShowReturnAdd");
-			checkGroupFamilies.Checked=Prefs.GetBool("RecallGroupByFamily");
-			textDaysPast.Text=Prefs.GetInt("RecallDaysPast").ToString();
-			textDaysFuture.Text=Prefs.GetInt("RecallDaysFuture").ToString();
-			textRight.Text=Prefs.GetDouble("RecallAdjustRight").ToString();
-			textDown.Text=Prefs.GetDouble("RecallAdjustDown").ToString();
+			textPattern.Text=PrefB.GetString("RecallPattern");
+			textProcs.Text=((Pref)PrefB.HList["RecallProcedures"]).ValueString;
+			textBW.Text=((Pref)PrefB.HList["RecallBW"]).ValueString;
+			textPostcardMessage.Text=PrefB.GetString("RecallPostcardMessage");
+			textPostcardFamMsg.Text=PrefB.GetString("RecallPostcardFamMsg");
+			textConfirmPostcardMessage.Text=PrefB.GetString("ConfirmPostcardMessage");
+			textPostcardsPerSheet.Text=PrefB.GetInt("RecallPostcardsPerSheet").ToString();
+			checkReturnAdd.Checked=PrefB.GetBool("RecallCardsShowReturnAdd");
+			checkGroupFamilies.Checked=PrefB.GetBool("RecallGroupByFamily");
+			textDaysPast.Text=PrefB.GetInt("RecallDaysPast").ToString();
+			textDaysFuture.Text=PrefB.GetInt("RecallDaysFuture").ToString();
+			textRight.Text=PrefB.GetDouble("RecallAdjustRight").ToString();
+			textDown.Text=PrefB.GetDouble("RecallAdjustDown").ToString();
 			listProcs.Items.Clear();
 			for(int i=0;i<ProcedureCodes.RecallAL.Count;i++){
 				listProcs.Items.Add(((ProcedureCode)ProcedureCodes.RecallAL[i]).Descript);
@@ -548,29 +549,19 @@ namespace OpenDental{
 				return;
 			}
 
-			Prefs.Cur.PrefName="RecallPattern";
-			Prefs.Cur.ValueString=textPattern.Text;//savePattern.ToString();
-			Prefs.UpdateCur();
+			Prefs.UpdateString("RecallPattern",textPattern.Text);
+			
+			Prefs.UpdateString("RecallProcedures",textProcs.Text);
 
-			Prefs.Cur.PrefName="RecallProcedures";
-			Prefs.Cur.ValueString=textProcs.Text;
-			Prefs.UpdateCur();
+			Prefs.UpdateString("RecallBW",textBW.Text);
 
-			Prefs.Cur.PrefName="RecallBW";
-			Prefs.Cur.ValueString=textBW.Text;
-			Prefs.UpdateCur();
-
-			Prefs.Cur.PrefName="RecallPostcardMessage";
-			Prefs.Cur.ValueString=textPostcardMessage.Text;
-			Prefs.UpdateCur();
-
+			Prefs.UpdateString("RecallPostcardMessage",textPostcardMessage.Text);
+			
 			Prefs.UpdateString("RecallPostcardFamMsg",textPostcardFamMsg.Text);
 
 			Prefs.UpdateString("ConfirmPostcardMessage",textConfirmPostcardMessage.Text);
 
-			Prefs.Cur.PrefName="RecallPostcardsPerSheet";
-			Prefs.Cur.ValueString=textPostcardsPerSheet.Text;
-			Prefs.UpdateCur();
+			Prefs.UpdateString("RecallPostcardsPerSheet",textPostcardsPerSheet.Text);
 
 			Prefs.UpdateBool("RecallCardsShowReturnAdd",checkReturnAdd.Checked);
 

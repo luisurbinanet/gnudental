@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -19,6 +20,7 @@ namespace OpenDental{
 		/// Required designer variable.
 		/// </summary>
 		private System.ComponentModel.Container components = null;
+		public PerioExam PerioExamCur;
 
 		///<summary></summary>
 		public FormPerioEdit()
@@ -138,11 +140,11 @@ namespace OpenDental{
 		#endregion
 
 		private void FormPerioEdit_Load(object sender, System.EventArgs e) {
-			textDate.Text=PerioExams.Cur.ExamDate.ToShortDateString();
+			textDate.Text=PerioExamCur.ExamDate.ToShortDateString();
 			listProv.Items.Clear();
 			for(int i=0;i<Providers.List.Length;i++){
 				listProv.Items.Add(Providers.List[i].Abbr);
-				if(Providers.List[i].ProvNum==PerioExams.Cur.ProvNum){
+				if(Providers.List[i].ProvNum==PerioExamCur.ProvNum){
 					listProv.SelectedIndex=i;
 				}
 			}
@@ -156,9 +158,9 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please fix data entry errors first."));
 				return;
 			}
-			PerioExams.Cur.ExamDate=PIn.PDate(textDate.Text);
-			PerioExams.Cur.ProvNum=Providers.List[listProv.SelectedIndex].ProvNum;
-			PerioExams.UpdateCur();
+			PerioExamCur.ExamDate=PIn.PDate(textDate.Text);
+			PerioExamCur.ProvNum=Providers.List[listProv.SelectedIndex].ProvNum;
+			PerioExams.Update(PerioExamCur);
 			DialogResult=DialogResult.OK;
 		}
 

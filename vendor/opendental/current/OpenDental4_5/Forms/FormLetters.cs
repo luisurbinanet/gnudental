@@ -7,7 +7,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Text;
 using System.Windows.Forms;
-//using OpenDental.Reporting;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -33,6 +33,7 @@ namespace OpenDental{
 		private OpenDental.ODtextBox textBody;
 		private int pagesPrinted=0;
 		private Patient PatCur;
+		private Letter LetterCur;
 
 
 		///<summary></summary>
@@ -197,7 +198,7 @@ namespace OpenDental{
 			this.textBody.Location = new System.Drawing.Point(206, 24);
 			this.textBody.Multiline = true;
 			this.textBody.Name = "textBody";
-			this.textBody.QuickPasteType = OpenDental.QuickPasteType.Letter;
+			this.textBody.QuickPasteType = QuickPasteType.Letter;
 			this.textBody.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textBody.Size = new System.Drawing.Size(630, 595);
 			this.textBody.TabIndex = 18;
@@ -233,7 +234,7 @@ namespace OpenDental{
 		#endregion
 
 		private void FormLetterSetup_Load(object sender, System.EventArgs e) {
-			if(((Pref)Prefs.HList["LettersIncludeReturnAddress"]).ValueString=="1")
+			if(((Pref)PrefB.HList["LettersIncludeReturnAddress"]).ValueString=="1")
 				checkIncludeRet.Checked=true;
 			FillList();
 		}
@@ -253,17 +254,17 @@ namespace OpenDental{
 			}
 			if(!WarnOK())
 				return;
-			Letters.Cur=Letters.List[listLetters.SelectedIndex];
+			LetterCur=Letters.List[listLetters.SelectedIndex];
 			StringBuilder str=new StringBuilder();
 			//return address
 			if(checkIncludeRet.Checked){
-				str.Append(((Pref)Prefs.HList["PracticeTitle"]).ValueString+"\r\n");
-				str.Append(((Pref)Prefs.HList["PracticeAddress"]).ValueString+"\r\n");
-				if(((Pref)Prefs.HList["PracticeAddress2"]).ValueString!="")
-					str.Append(((Pref)Prefs.HList["PracticeAddress2"]).ValueString+"\r\n");
-				str.Append(((Pref)Prefs.HList["PracticeCity"]).ValueString+", ");
-				str.Append(((Pref)Prefs.HList["PracticeST"]).ValueString+"  ");
-				str.Append(((Pref)Prefs.HList["PracticeZip"]).ValueString+"\r\n");
+				str.Append(((Pref)PrefB.HList["PracticeTitle"]).ValueString+"\r\n");
+				str.Append(((Pref)PrefB.HList["PracticeAddress"]).ValueString+"\r\n");
+				if(((Pref)PrefB.HList["PracticeAddress2"]).ValueString!="")
+					str.Append(((Pref)PrefB.HList["PracticeAddress2"]).ValueString+"\r\n");
+				str.Append(((Pref)PrefB.HList["PracticeCity"]).ValueString+", ");
+				str.Append(((Pref)PrefB.HList["PracticeST"]).ValueString+"  ");
+				str.Append(((Pref)PrefB.HList["PracticeZip"]).ValueString+"\r\n");
 			}
 			else{
 				str.Append("\r\n\r\n\r\n\r\n");
@@ -302,7 +303,7 @@ namespace OpenDental{
 			}
 			str.Append(",\r\n\r\n");
 			//body text
-			str.Append(Letters.Cur.BodyText);
+			str.Append(LetterCur.BodyText);
 			//closing
 			if(CultureInfo.CurrentCulture.Name=="en-GB"){
 				str.Append("\r\n\r\nYours sincerely,\r\n\r\n\r\n\r\n");
@@ -310,7 +311,7 @@ namespace OpenDental{
 			else{
 				str.Append("\r\n\r\nSincerely,\r\n\r\n\r\n\r\n");
 			}
-			str.Append(((Pref)Prefs.HList["PracticeTitle"]).ValueString);
+			str.Append(((Pref)PrefB.HList["PracticeTitle"]).ValueString);
 			textBody.Text=str.ToString();
 			bodyChanged=false;
 		}
@@ -318,8 +319,8 @@ namespace OpenDental{
 		private void butAdd_Click(object sender, System.EventArgs e) {
 			if(!WarnOK())
 				return;
-			Letters.Cur=new Letter();
 			FormLetterEdit FormLE=new FormLetterEdit();
+			FormLE.LetterCur=new Letter();
 			FormLE.IsNew=true;
 			FormLE.ShowDialog();
 			FillList();
@@ -332,8 +333,8 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please select an item first."));
 				return;
 			}
-			Letters.Cur=Letters.List[listLetters.SelectedIndex];//just in case
       FormLetterEdit FormLE=new FormLetterEdit();
+			FormLE.LetterCur=Letters.List[listLetters.SelectedIndex];//just in case
 			FormLE.ShowDialog();
 			FillList();
 		}
@@ -347,18 +348,12 @@ namespace OpenDental{
 				!=DialogResult.OK){
 				return;
 			}
-			Letters.Cur=Letters.List[listLetters.SelectedIndex];
-			Letters.DeleteCur();
+			Letters.Delete(Letters.List[listLetters.SelectedIndex]);
 			FillList();
 		}
 
 		private void checkIncludeRet_Click(object sender, System.EventArgs e) {	
-			Prefs.Cur=(Pref)Prefs.HList["LettersIncludeReturnAddress"];
-			if(checkIncludeRet.Checked)
-				Prefs.Cur.ValueString="1";
-			else
-				Prefs.Cur.ValueString="0";
-			Prefs.UpdateCur();
+			Prefs.UpdateBool("LettersIncludeReturnAddress",checkIncludeRet.Checked);
 			localChanged=true;
 			Prefs.Refresh();
 		}
@@ -382,6 +377,10 @@ namespace OpenDental{
 		}
 
 		private void butPrint_Click(object sender, System.EventArgs e) {
+			if(textBody.Text==""){
+				MsgBox.Show(this,"Letter not allowed to be blank.");
+				return;
+			}
 			pd2=new PrintDocument();
 			pd2.PrintPage+=new PrintPageEventHandler(this.pd2_PrintPage);
 			pd2.OriginAtMargins=true;
@@ -398,7 +397,10 @@ namespace OpenDental{
 			CommlogCur.CommDateTime=DateTime.Now;
 			CommlogCur.CommType=CommItemType.Misc;
 			CommlogCur.PatNum=PatCur.PatNum;
-			CommlogCur.Note="Letter sent: "+Letters.Cur.Description+". ";
+			CommlogCur.Note="Letter sent";
+			if(LetterCur!=null){
+				CommlogCur.Note+=": "+LetterCur.Description+". ";
+			}
 			FormCommItem FormCI=new FormCommItem(CommlogCur);
 			FormCI.IsNew=true;
 			FormCI.ShowDialog();

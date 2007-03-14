@@ -5,13 +5,14 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using Microsoft.Win32;
+using OpenDentBusiness;
 
 namespace OpenDental.Bridges {
 	class Trojan {
 
 		public static void StartupCheck(){
-			Programs.GetCur("Trojan");
-			if(!Programs.Cur.Enabled){
+			Program ProgramCur=Programs.GetCur("Trojan");
+			if(!ProgramCur.Enabled){
 				return;
 			}
 			RegistryKey regKey=Registry.LocalMachine.OpenSubKey("Software\\TROJAN BENEFIT SERVICE");
@@ -55,7 +56,7 @@ namespace OpenDental.Bridges {
 			int percent;
 			string[] splitField;//if a field is a sentence with more than one word, we can split it for analysis
 			InsPlan plan=new InsPlan();//many fields will be absent.  This is a conglomerate.
-			Carrier carrier=new Carrier();//again, not a real carrier yet.
+			Carrier carrier=new Carrier();
 			ArrayList benefitList=new ArrayList();
 			bool usesAnnivers=false;
 			Benefit ben;
@@ -126,7 +127,7 @@ namespace OpenDental.Bridges {
 							break;
 						fields[2]=fields[2].Remove(0,1);
 						fields[2]=fields[2].Split(new char[] { ' ' })[0];
-						if(CovCats.ListShort.Length>0) {
+						if(CovCatB.ListShort.Length>0) {
 							ben=new Benefit();
 							ben.BenefitType=InsBenefitType.Limitations;
 							ben.CovCatNum=CovCats.GetForEbenCat(EbenefitCategory.General).CovCatNum;
@@ -228,8 +229,8 @@ namespace OpenDental.Bridges {
 				//if, for some reason, carrier is absent from the file, we can't do a thing with it.
 				return 0;
 			}
-			Carriers.Cur=carrier;
-			Carriers.GetCurSame();
+			//Carriers.Cur=carrier;
+			Carriers.GetCurSame(carrier);
 			//set calendar vs serviceyear
 			if(usesAnnivers){
 				for(int i=0;i<benefitList.Count;i++) {
@@ -237,10 +238,9 @@ namespace OpenDental.Bridges {
 				}
 			}
 			//plan
-			plan.CarrierNum=Carriers.Cur.CarrierNum;
+			plan.CarrierNum=carrier.CarrierNum;
 			string command="SELECT PlanNum FROM insplan WHERE TrojanID='"+POut.PString(plan.TrojanID)+"'";
-			DataConnection dcon=new DataConnection();
-			DataTable table=dcon.GetTable(command);
+			DataTable table=General.GetTable(command);
 			int planNum;
 			for(int i=0;i<table.Rows.Count;i++){
 				planNum=PIn.PInt(table.Rows[i][0].ToString());
@@ -252,14 +252,14 @@ namespace OpenDental.Bridges {
 					+"CarrierNum='" +POut.PInt   (plan.CarrierNum)+"', "
 					+"BenefitNotes='"+POut.PString(plan.BenefitNotes)+"' "
 					+"WHERE PlanNum="+POut.PInt(planNum);
-				dcon.NonQ(command);
+				General.NonQ(command);
 				//clear benefits
 				command="DELETE FROM benefit WHERE PlanNum="+POut.PInt(planNum);
-				dcon.NonQ(command);
+				General.NonQ(command);
 				//benefitList
 				for(int j=0;j<benefitList.Count;j++) {
 					((Benefit)benefitList[j]).PlanNum=planNum;
-					((Benefit)benefitList[j]).Insert();
+					Benefits.Insert((Benefit)benefitList[j]);
 				}
 				InsPlans.ComputeEstimatesForPlan(planNum);
 			}

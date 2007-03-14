@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -275,7 +276,7 @@ namespace OpenDental{
 			for(int i=0;i<ButtonList.Length;i++) {
 				if(ButtonList[i].ItemOrder!=i) {
 					ButtonList[i].ItemOrder=i;
-					ButtonList[i].Update();
+					ProcButtons.Update(ButtonList[i]);
 				}
 			}
 			ListViewItem item;
@@ -326,11 +327,11 @@ namespace OpenDental{
       else{
         ProcButton but=ButtonList[listViewButtons.SelectedIndices[0]].Copy();
         but.ItemOrder++;
-        but.Update();
+        ProcButtons.Update(but);
         selected=but.ItemOrder;
         but=ButtonList[listViewButtons.SelectedIndices[0]+1].Copy();
         but.ItemOrder--;
-        but.Update();
+        ProcButtons.Update(but);
       }		
       FillButtons();
 			changed=true;
@@ -349,11 +350,11 @@ namespace OpenDental{
       else{
         ProcButton but=ButtonList[listViewButtons.SelectedIndices[0]].Copy();
         but.ItemOrder--;
-        but.Update();
+        ProcButtons.Update(but);
         selected=but.ItemOrder;
         but=ButtonList[listViewButtons.SelectedIndices[0]-1].Copy();
         but.ItemOrder++;
-        but.Update();
+        ProcButtons.Update(but);
       }	
       FillButtons();	
 			changed=true;
@@ -380,7 +381,7 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please select an item first."));
 				return;
 			}
-			ButtonList[listViewButtons.SelectedIndices[0]].Delete();
+			ProcButtons.Delete(ButtonList[listViewButtons.SelectedIndices[0]]);
 			changed=true;
 			FillButtons();
 		}

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Data;
 using System.Windows.Forms;
 
 namespace OpenDental{
@@ -19,7 +20,7 @@ namespace OpenDental{
 	/*=========================================================================================
 		=================================== class UserQueries ==========================================*/
 ///<summary></summary>
-	public class UserQueries:DataClass{
+	public class UserQueries{
 		///<summary></summary>
 		public static UserQuery[] List;
 		///<summary></summary>
@@ -29,12 +30,12 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void Refresh(){
-			cmd.CommandText =
+			string command =
 				"SELECT querynum,description,filename,querytext"
 				+" FROM userquery"
 				//+" WHERE hidden != '1'";
 				+" ORDER BY description";
-			FillTable();
+			DataTable table=General.GetTable(command);
 			List=new UserQuery[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
 				List[i].QueryNum    = PIn.PInt   (table.Rows[i][0].ToString());
@@ -46,28 +47,28 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void InsertCur(){
-			cmd.CommandText="INSERT INTO userquery (description,filename,querytext) VALUES("
+			string command="INSERT INTO userquery (description,filename,querytext) VALUES("
 				+"'"+POut.PString(Cur.Description)+"', "
 				+"'"+POut.PString(Cur.FileName)+"', "
 				+"'"+POut.PString(Cur.QueryText)+"')";
-			//MessageBox.Show(cmd.CommandText);
-			NonQ(false);
+			//MessageBox.Show(command);
+			General.NonQ(command);
 		}
 		
 		///<summary></summary>
 		public static void DeleteCur(){
-			cmd.CommandText = "DELETE from userquery WHERE querynum = '"+POut.PInt(Cur.QueryNum)+"'";
-			NonQ(false);
+			string command = "DELETE from userquery WHERE querynum = '"+POut.PInt(Cur.QueryNum)+"'";
+			General.NonQ(command);
 		}
 
 		///<summary></summary>
 		public static void UpdateCur(){
-			cmd.CommandText = "UPDATE userquery SET "
+			string command = "UPDATE userquery SET "
 				+ "description = '" +POut.PString(Cur.Description)+"'"
 				+ ",filename = '"    +POut.PString(Cur.FileName)+"'"
 				+",querytext = '"   +POut.PString(Cur.QueryText)+"'"
 				+" WHERE querynum = '"+POut.PInt(Cur.QueryNum)+"'";
-			NonQ(false);
+			General.NonQ(command);
 		}
 	}
 

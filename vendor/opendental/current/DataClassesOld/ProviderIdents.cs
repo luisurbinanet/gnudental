@@ -3,6 +3,7 @@ using System.Collections;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	
@@ -27,8 +28,7 @@ namespace OpenDental{
 				+",SuppIDType = '"+POut.PInt   ((int)SuppIDType)+"'"
 				+",IDNumber = '"  +POut.PString(IDNumber)+"'"
 				+" WHERE ProviderIdentNum = '"+POut.PInt(ProviderIdentNum)+"'";
-			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command);
+ 			General.NonQ(command);
 		}
 
 		///<summary></summary>
@@ -39,18 +39,15 @@ namespace OpenDental{
 				+"'"+POut.PString(PayorID)+"', "
 				+"'"+POut.PInt   ((int)SuppIDType)+"', "
 				+"'"+POut.PString(IDNumber)+"')";
-			//MessageBox.Show(cmd.CommandText);
-			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command);
-			//ClaimProcNum=dcon.InsertID;
+			//MessageBox.Show(command);
+ 			General.NonQ(command);
 		}
 
 		///<summary></summary>
 		public void Delete(){
 			string command= "DELETE FROM providerident "
 				+"WHERE ProviderIdentNum = "+POut.PInt(ProviderIdentNum);
-			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command);
+ 			General.NonQ(command);
 		}
 
 
@@ -67,8 +64,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public static void Refresh(){
 			string command="SELECT * from providerident";
-			DataConnection dcon=new DataConnection();
- 			DataTable table=dcon.GetTable(command);
+ 			DataTable table=General.GetTable(command);
 			List=new ProviderIdent[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
 				List[i]=new ProviderIdent();
@@ -115,8 +111,7 @@ namespace OpenDental{
 		///<summary>Called from FormProvEdit if cancel on a new provider.</summary>
 		public static void DeleteAllForProv(int provNum){
 			string command= "DELETE from providerident WHERE provnum = '"+POut.PInt(provNum)+"'";
-			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command);
+ 			General.NonQ(command);
 		}
 
 		/// <summary></summary>

@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -277,15 +278,15 @@ namespace OpenDental{
 			SigElementDef element=FormS.ElementCur.Copy();
 			if(element.SigElementType==SignalElementType.User){
 				element.ItemOrder=ListUser.Length;
-				element.Update();
+				SigElementDefs.Update(element);
 			}
 			else if(element.SigElementType==SignalElementType.Extra) {
 				element.ItemOrder=ListExtras.Length;
-				element.Update();
+				SigElementDefs.Update(element);
 			}
 			else if(element.SigElementType==SignalElementType.Message) {
 				element.ItemOrder=ListMessages.Length;
-				element.Update();
+				SigElementDefs.Update(element);
 			}
 			FillLists();
 			//Select the item

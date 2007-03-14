@@ -6,6 +6,7 @@ using System.Drawing.Printing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -599,7 +600,7 @@ namespace OpenDental{
 						,ClaimFormCur.Items[i].Width,ClaimFormCur.Items[i].Height));
 				}
 				else{//image
-					string fileName=((Pref)Prefs.HList["DocPath"]).ValueString+@"\"
+					string fileName=((Pref)PrefB.HList["DocPath"]).ValueString+@"\"
 						+ClaimFormCur.Items[i].ImageFileName;
 					if(!File.Exists(fileName)){
 						grfx.DrawString("IMAGE FILE NOT FOUND",new Font(FontFamily.GenericSansSerif,12,FontStyle.Bold)
@@ -853,7 +854,7 @@ namespace OpenDental{
 			catch{xPos=0;}
 			for(int i=0;i<listItems.SelectedIndices.Count;i++){
 				ClaimFormCur.Items[listItems.SelectedIndices[i]].XPos=xPos;
-				ClaimFormCur.Items[listItems.SelectedIndices[i]].Update();
+				ClaimFormItems.Update(ClaimFormCur.Items[listItems.SelectedIndices[i]]);
 			}
 			ClaimFormItems.Refresh();
 			ClaimFormCur.Items=ClaimFormItems.GetListForForm(ClaimFormCur.ClaimFormNum);
@@ -871,7 +872,7 @@ namespace OpenDental{
 			catch{yPos=0;}
 			for(int i=0;i<listItems.SelectedIndices.Count;i++){
 				ClaimFormCur.Items[listItems.SelectedIndices[i]].YPos=yPos;
-				ClaimFormCur.Items[listItems.SelectedIndices[i]].Update();
+				ClaimFormItems.Update(ClaimFormCur.Items[listItems.SelectedIndices[i]]);
 			}
 			ClaimFormItems.Refresh();
 			ClaimFormCur.Items=ClaimFormItems.GetListForForm(ClaimFormCur.ClaimFormNum);
@@ -890,7 +891,7 @@ namespace OpenDental{
 			catch{width=0;}
 			for(int i=0;i<listItems.SelectedIndices.Count;i++){
 				ClaimFormCur.Items[listItems.SelectedIndices[i]].Width=width;
-				ClaimFormCur.Items[listItems.SelectedIndices[i]].Update();
+				ClaimFormItems.Update(ClaimFormCur.Items[listItems.SelectedIndices[i]]);
 			}
 			ClaimFormItems.Refresh();
 			ClaimFormCur.Items=ClaimFormItems.GetListForForm(ClaimFormCur.ClaimFormNum);
@@ -908,7 +909,7 @@ namespace OpenDental{
 			catch{height=0;}
 			for(int i=0;i<listItems.SelectedIndices.Count;i++){
 				ClaimFormCur.Items[listItems.SelectedIndices[i]].Height=height;
-				ClaimFormCur.Items[listItems.SelectedIndices[i]].Update();
+				ClaimFormItems.Update(ClaimFormCur.Items[listItems.SelectedIndices[i]]);
 			}
 			ClaimFormItems.Refresh();
 			ClaimFormCur.Items=ClaimFormItems.GetListForForm(ClaimFormCur.ClaimFormNum);
@@ -1038,7 +1039,7 @@ namespace OpenDental{
 					curItem.XPos=0;
 				if(curItem.XPos>850)
 					curItem.XPos=850;
-				curItem.Update();
+				ClaimFormItems.Update(curItem);
 			}
 			ClaimFormItems.Refresh();
 			ClaimFormCur.Items=ClaimFormItems.GetListForForm(ClaimFormCur.ClaimFormNum);
@@ -1122,7 +1123,7 @@ namespace OpenDental{
 					ClaimFormCur.Items[listItems.SelectedIndices[i]].XPos=0;
 				if(ClaimFormCur.Items[listItems.SelectedIndices[i]].XPos>850)
 					ClaimFormCur.Items[listItems.SelectedIndices[i]].XPos=850;
-				ClaimFormCur.Items[listItems.SelectedIndices[i]].Update();
+				ClaimFormItems.Update(ClaimFormCur.Items[listItems.SelectedIndices[i]]);
 			}
 			ClaimFormItems.Refresh();
 			ClaimFormCur.Items=ClaimFormItems.GetListForForm(ClaimFormCur.ClaimFormNum);
@@ -1180,7 +1181,7 @@ namespace OpenDental{
 					if(!ClaimFormCur.PrintImages){
 						continue;
 					}
-					string fileName=((Pref)Prefs.HList["DocPath"]).ValueString+@"\"
+					string fileName=((Pref)PrefB.HList["DocPath"]).ValueString+@"\"
 						+ClaimFormCur.Items[i].ImageFileName;
 					if(!File.Exists(fileName)){
 						MessageBox.Show("File not found.");
@@ -1226,7 +1227,7 @@ namespace OpenDental{
 			ClaimFormCur.PrintImages=checkPrintImages.Checked;
 			ClaimFormCur.OffsetX=PIn.PInt(textOffsetX.Text);
 			ClaimFormCur.OffsetY=PIn.PInt(textOffsetY.Text);
-			ClaimFormCur.Update();
+			ClaimForms.Update(ClaimFormCur);
 			return true;
 		}
 
@@ -1249,7 +1250,7 @@ namespace OpenDental{
 			if(DialogResult==DialogResult.OK)
 				return;
 			if(IsNew){
-				ClaimFormCur.Delete();
+				ClaimForms.Delete(ClaimFormCur);
 			}
 		}
 

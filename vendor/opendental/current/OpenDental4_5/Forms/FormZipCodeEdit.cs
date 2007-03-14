@@ -4,6 +4,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Globalization;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -20,6 +21,7 @@ namespace OpenDental{
 		private System.ComponentModel.Container components = null;
 		///<summary></summary>
 		public bool IsNew;
+		public ZipCode ZipCodeCur;
 
 		///<summary></summary>
 		public FormZipCodeEdit(){
@@ -177,10 +179,10 @@ namespace OpenDental{
 			else{
 				this.Text=Lan.g(this,"Edit Zip Code");
 			}
-			textZip.Text=ZipCodes.Cur.ZipCodeDigits;
-			textCity.Text=ZipCodes.Cur.City;
-			textState.Text=ZipCodes.Cur.State;
-			checkIsFrequent.Checked=ZipCodes.Cur.IsFrequent;
+			textZip.Text=ZipCodeCur.ZipCodeDigits;
+			textCity.Text=ZipCodeCur.City;
+			textState.Text=ZipCodeCur.State;
+			checkIsFrequent.Checked=ZipCodeCur.IsFrequent;
 		}
 
 		private void textCity_TextChanged(object sender, System.EventArgs e) {
@@ -211,15 +213,15 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"City,State, or Zip Cannot be left blank"));
 				return;
 			}
-      ZipCodes.Cur.City=textCity.Text;
-			ZipCodes.Cur.State=textState.Text;
-			ZipCodes.Cur.ZipCodeDigits=textZip.Text;
-			ZipCodes.Cur.IsFrequent=checkIsFrequent.Checked;
+      ZipCodeCur.City=textCity.Text;
+			ZipCodeCur.State=textState.Text;
+			ZipCodeCur.ZipCodeDigits=textZip.Text;
+			ZipCodeCur.IsFrequent=checkIsFrequent.Checked;
 			if(IsNew){
-				ZipCodes.InsertCur();
+				ZipCodes.Insert(ZipCodeCur);
 			}
 			else{
-				ZipCodes.UpdateCur();
+				ZipCodes.Update(ZipCodeCur);
 			}
 			DialogResult=DialogResult.OK;
 		}

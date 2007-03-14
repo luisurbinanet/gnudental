@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -373,7 +374,7 @@ namespace OpenDental{
 			else{
 				quickCat.ItemOrder=listCat.SelectedIndex;
 			}
-			quickCat.Insert();
+			QuickPasteCats.Insert(quickCat);
       FormQuickPasteCat FormQ=new FormQuickPasteCat(quickCat);
 			FormQ.ShowDialog();
 			if(FormQ.DialogResult==DialogResult.OK){
@@ -381,13 +382,13 @@ namespace OpenDental{
 					//move other items down in list to make room for new one.
 					for(int i=listCat.SelectedIndex;i<QuickPasteCats.List.Length;i++){
 						QuickPasteCats.List[i].ItemOrder++;
-						QuickPasteCats.List[i].Update();
+						QuickPasteCats.Update(QuickPasteCats.List[i]);
 					}
 				}
 				localChanged=true;
 			}
 			else{
-				quickCat.Delete();
+				QuickPasteCats.Delete(quickCat);
 			}
 			QuickPasteCats.Refresh();
 			FillCats();
@@ -403,13 +404,13 @@ namespace OpenDental{
 				return;
 			}
 			for(int i=0;i<notesForCat.Length;i++){
-				notesForCat[i].Delete();
+				QuickPasteNotes.Delete(notesForCat[i]);
 			}
-			QuickPasteCats.List[listCat.SelectedIndex].Delete();
+			QuickPasteCats.Delete(QuickPasteCats.List[listCat.SelectedIndex]);
 			for(int i=listCat.SelectedIndex;i<QuickPasteCats.List.Length;i++){
 				//yes, the first update won't work because already deleted
 				QuickPasteCats.List[i].ItemOrder--;
-				QuickPasteCats.List[i].Update();
+				QuickPasteCats.Update(QuickPasteCats.List[i]);
 			}
 			QuickPasteNotes.Refresh();
 			QuickPasteCats.Refresh();
@@ -427,9 +428,9 @@ namespace OpenDental{
 				return;//can't go up any more
 			}
 			QuickPasteCats.List[listCat.SelectedIndex].ItemOrder--;
-			QuickPasteCats.List[listCat.SelectedIndex].Update();
+			QuickPasteCats.Update(QuickPasteCats.List[listCat.SelectedIndex]);
 			QuickPasteCats.List[listCat.SelectedIndex-1].ItemOrder++;
-			QuickPasteCats.List[listCat.SelectedIndex-1].Update();
+			QuickPasteCats.Update(QuickPasteCats.List[listCat.SelectedIndex-1]);
 			listCat.SelectedIndex--;
 			QuickPasteCats.Refresh();
 			FillCats();
@@ -446,9 +447,9 @@ namespace OpenDental{
 				return;//can't go down any more
 			}
 			QuickPasteCats.List[listCat.SelectedIndex].ItemOrder++;
-			QuickPasteCats.List[listCat.SelectedIndex].Update();
+			QuickPasteCats.Update(QuickPasteCats.List[listCat.SelectedIndex]);
 			QuickPasteCats.List[listCat.SelectedIndex+1].ItemOrder--;
-			QuickPasteCats.List[listCat.SelectedIndex+1].Update();
+			QuickPasteCats.Update(QuickPasteCats.List[listCat.SelectedIndex+1]);
 			listCat.SelectedIndex++;
 			QuickPasteCats.Refresh();
 			FillCats();
@@ -496,7 +497,7 @@ namespace OpenDental{
 					//move other items down in list to make room for new one.
 					for(int i=quickNote.ItemOrder;i<notesForCat.Length;i++){
 						notesForCat[i].ItemOrder++;
-						notesForCat[i].Update();
+						QuickPasteNotes.Update(notesForCat[i]);
 					}
 				}
 				localChanged=true;
@@ -515,7 +516,7 @@ namespace OpenDental{
 			if(notesForCat[listNote.SelectedIndex].QuickPasteNoteNum==0){//deleted
 				for(int i=listNote.SelectedIndex;i<notesForCat.Length;i++){
 					notesForCat[i].ItemOrder--;
-					notesForCat[i].Update();
+					QuickPasteNotes.Update(notesForCat[i]);
 				}
 			}
 			QuickPasteNotes.Refresh();
@@ -532,9 +533,9 @@ namespace OpenDental{
 				return;//can't go up any more
 			}
 			notesForCat[listNote.SelectedIndex].ItemOrder--;
-			notesForCat[listNote.SelectedIndex].Update();
+			QuickPasteNotes.Update(notesForCat[listNote.SelectedIndex]);
 			notesForCat[listNote.SelectedIndex-1].ItemOrder++;
-			notesForCat[listNote.SelectedIndex-1].Update();
+			QuickPasteNotes.Update(notesForCat[listNote.SelectedIndex-1]);
 			listNote.SelectedIndex--;
 			QuickPasteNotes.Refresh();
 			FillNotes();
@@ -550,9 +551,9 @@ namespace OpenDental{
 				return;//can't go down any more
 			}
 			notesForCat[listNote.SelectedIndex].ItemOrder++;
-			notesForCat[listNote.SelectedIndex].Update();
+			QuickPasteNotes.Update(notesForCat[listNote.SelectedIndex]);
 			notesForCat[listNote.SelectedIndex+1].ItemOrder--;
-			notesForCat[listNote.SelectedIndex+1].Update();
+			QuickPasteNotes.Update(notesForCat[listNote.SelectedIndex+1]);
 			listNote.SelectedIndex++;
 			QuickPasteNotes.Refresh();
 			FillNotes();

@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -199,10 +200,11 @@ namespace OpenDental{
 		}
 
 		private void butAddGeneric_Click(object sender, System.EventArgs e) {
-			Medications.Cur=new Medication();
-			Medications.InsertCur();//so that we will have the primary key
-			Medications.Cur.GenericNum=Medications.Cur.MedicationNum;
+			Medication MedicationCur=new Medication();
+			Medications.Insert(MedicationCur);//so that we will have the primary key
+			MedicationCur.GenericNum=MedicationCur.MedicationNum;
 			FormMedicationEdit FormME=new FormMedicationEdit();
+			FormME.MedicationCur=MedicationCur;
 			FormME.IsNew=true;
 			FormME.ShowDialog();
 			FillMedList();
@@ -218,10 +220,11 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"The selected medication is not generic."));
 				return;
 			}
-			Medications.Cur=new Medication();
-			Medications.InsertCur();//so that we will have the primary key
-			Medications.Cur.GenericNum=selected.MedicationNum;
+			Medication MedicationCur=new Medication();
+			Medications.Insert(MedicationCur);//so that we will have the primary key
+			MedicationCur.GenericNum=selected.MedicationNum;
 			FormMedicationEdit FormME=new FormMedicationEdit();
+			FormME.MedicationCur=MedicationCur;
 			FormME.IsNew=true;
 			FormME.ShowDialog();
 			FillMedList();
@@ -234,8 +237,8 @@ namespace OpenDental{
 			}
 			else{//normal mode from main menu
 				//edit
-				Medications.Cur=Medications.List[listMeds.SelectedIndex];
 				FormMedicationEdit FormME=new FormMedicationEdit();
+				FormME.MedicationCur=Medications.List[listMeds.SelectedIndex];
 				FormME.ShowDialog();
 				FillMedList();
 			}

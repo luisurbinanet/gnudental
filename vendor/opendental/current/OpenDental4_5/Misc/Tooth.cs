@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary></summary>
@@ -97,7 +98,7 @@ namespace OpenDental{
 		///<summary>Sometimes validated by IsValidDB before coming here, otherwise an invalid toothnum .  This should be run on all displayed tooth numbers. It will handle checking for whether user is using international tooth numbers.  All tooth numbers are passed in american values until the very last moment.  Just before display, the string is converted using this method.</summary>
 		public static string ToInternat(string toothNum){
 			//if not using international tooth numbers, no change.
-			if(((Pref)Prefs.HList["UseInternationalToothNumbers"]).ValueString=="0"){
+			if(((Pref)PrefB.HList["UseInternationalToothNumbers"]).ValueString=="0"){
 				return toothNum;
 			}
 			if(toothNum=="")
@@ -144,7 +145,7 @@ namespace OpenDental{
 		///<summary>MUST be validated by IsValidEntry before coming here.  All user entered toothnumbers are run through this method which automatically checks to see if using international toothnumbers.  So the procedure struct will always contain the american toothnum.</summary>
 		public static string FromInternat(string toothNum){
 			//if not using international tooth numbers, no change.
-			if(((Pref)Prefs.HList["UseInternationalToothNumbers"]).ValueString=="0"){
+			if(((Pref)PrefB.HList["UseInternationalToothNumbers"]).ValueString=="0"){
 				return toothNum;
 			}
 			int intTooth=0;
@@ -217,7 +218,7 @@ namespace OpenDental{
 		///<summary>Used every time user enters toothNum in procedure box. Must be followed with FromInternat. These are the *ONLY* methods that are designed to accept user input.  Can also handle international toothnum</summary>
 		public static bool IsValidEntry(string toothNum){
 			//international
-			if(Prefs.GetBool("UseInternationalToothNumbers")){
+			if(PrefB.GetBool("UseInternationalToothNumbers")){
 				if(toothNum==null || toothNum=="")
 					return false;
 				Regex regex=new Regex("^[1-4][1-8]$");//perm teeth: matches firt digit 1-4 and second digit 1-8,9 would be supernumerary?

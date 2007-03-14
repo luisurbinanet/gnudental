@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Drawing.Printing;
 using System.IO;
 using System.Windows.Forms;
-//using OpenDental.Reporting;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -361,7 +361,7 @@ namespace OpenDental{
 
 		private void FormLetterMergeEdit_Load(object sender, System.EventArgs e) {
 			textDescription.Text=LetterMergeCur.Description;
-			mergePath=Prefs.GetString("LetterMergePath");
+			mergePath=PrefB.GetString("LetterMergePath");
 			textPath.Text=mergePath;
 			textTemplateName.Text=LetterMergeCur.TemplateName;
 			textDataFileName.Text=LetterMergeCur.DataFileName;
@@ -411,7 +411,7 @@ namespace OpenDental{
       listPatSelect.Items.Add("ImageFolder");
       listPatSelect.Items.Add("MedUrgNote"); 
       listPatSelect.Items.Add("NextAptNum"); 
-			//listPatSelect.Items.Add("PriPlanNum");//Primary Carrier?
+      //listPatSelect.Items.Add("PriPlanNum");//Primary Carrier?
       //listPatSelect.Items.Add("PriRelationship");// ?
 			//listPatSelect.Items.Add("SecPlanNum");//Secondary Carrier? 
       //listPatSelect.Items.Add("SecRelationship");// ?
@@ -480,16 +480,16 @@ namespace OpenDental{
 		private void butEditPaths_Click(object sender, System.EventArgs e) {
 			FormPath FormP=new FormPath();
 			FormP.ShowDialog();
-			mergePath=Prefs.GetString("LetterMergePath");
+			mergePath=PrefB.GetString("LetterMergePath");
 			textPath.Text=mergePath;
 		}
 
 		private void butBrowse_Click(object sender, System.EventArgs e) {
-			if(!Directory.Exists(Prefs.GetString("LetterMergePath"))){
+			if(!Directory.Exists(PrefB.GetString("LetterMergePath"))){
 				MsgBox.Show(this,"Letter merge path invalid");
 				return;
 			}
-			openFileDlg.InitialDirectory=Prefs.GetString("LetterMergePath");
+			openFileDlg.InitialDirectory=PrefB.GetString("LetterMergePath");
 			if(openFileDlg.ShowDialog() !=DialogResult.OK){
 				return;
 			}
@@ -497,7 +497,7 @@ namespace OpenDental{
 		}
 
 		private void butNew_Click(object sender, System.EventArgs e) {
-			if(!Directory.Exists(Prefs.GetString("LetterMergePath"))){
+			if(!Directory.Exists(PrefB.GetString("LetterMergePath"))){
 				MsgBox.Show(this,"Letter merge path invalid");
 				return;
 			}
@@ -505,7 +505,7 @@ namespace OpenDental{
 				MsgBox.Show(this,"Please enter a template file name first.");
 				return;
 			}
-			string templateFile=Prefs.GetString("LetterMergePath")+textTemplateName.Text;
+			string templateFile=PrefB.GetString("LetterMergePath")+textTemplateName.Text;
 			if(File.Exists(templateFile)){
 				MsgBox.Show(this,"A file with that name already exists.  Choose a different name, or close this window to edit the template.");
 				return;
@@ -540,7 +540,7 @@ namespace OpenDental{
 			if(!MsgBox.Show(this,true,"Delete?")){
 				return;
 			}
-			LetterMergeCur.Delete();
+			LetterMerges.Delete(LetterMergeCur);
 			DialogResult=DialogResult.OK;
 		}
 
@@ -572,10 +572,10 @@ namespace OpenDental{
 			LetterMergeCur.Category
 				=Defs.Short[(int)DefCat.LetterMergeCats][comboCategory.SelectedIndex].DefNum;
 			if(IsNew){
-				LetterMergeCur.Insert();
+				LetterMerges.Insert(LetterMergeCur);
 			}
 			else{
-				LetterMergeCur.Update();
+				LetterMerges.Update(LetterMergeCur);
 			}
 			LetterMergeFields.DeleteForLetter(LetterMergeCur.LetterMergeNum);
 			LetterMergeField field;
@@ -584,13 +584,13 @@ namespace OpenDental{
 				field.LetterMergeNum=LetterMergeCur.LetterMergeNum;
 				field.FieldName=(string)listPatSelect.SelectedItems[i];
 					//(string)listPatSelect.Items[listPatSelect.SelectedIndices[i]];
-				field.Insert();
+				LetterMergeFields.Insert(field);
 			}
 			for(int i=0;i<listReferral.SelectedItems.Count;i++){
 				field=new LetterMergeField();
 				field.LetterMergeNum=LetterMergeCur.LetterMergeNum;
 				field.FieldName="referral."+(string)listReferral.SelectedItems[i];
-				field.Insert();
+				LetterMergeFields.Insert(field);
 			}
 			Cursor.Current=Cursors.Default;
 			DialogResult=DialogResult.OK;

@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -19,6 +20,7 @@ namespace OpenDental{
 		/// Required designer variable.
 		/// </summary>
 		private System.ComponentModel.Container components = null;
+		public ProgramProperty ProgramPropertyCur;
 
 		///<summary></summary>
 		public FormProgramProperty()
@@ -142,13 +144,13 @@ namespace OpenDental{
 		#endregion
 
 		private void FormProgramProperty_Load(object sender, System.EventArgs e) {
-			textProperty.Text=ProgramProperties.Cur.PropertyDesc;
-			textValue.Text=ProgramProperties.Cur.PropertyValue;
+			textProperty.Text=ProgramPropertyCur.PropertyDesc;
+			textValue.Text=ProgramPropertyCur.PropertyValue;
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			ProgramProperties.Cur.PropertyValue=textValue.Text;
-			ProgramProperties.UpdateCur();
+			ProgramPropertyCur.PropertyValue=textValue.Text;
+			ProgramProperties.Update(ProgramPropertyCur);
 			DialogResult=DialogResult.OK;
 		}
 

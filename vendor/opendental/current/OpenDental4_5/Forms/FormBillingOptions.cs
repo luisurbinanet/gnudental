@@ -5,6 +5,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using OpenDental.UI;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	///<summary></summary>
@@ -356,7 +357,7 @@ namespace OpenDental{
 			this.textNote.Location = new System.Drawing.Point(299,518);
 			this.textNote.Multiline = true;
 			this.textNote.Name = "textNote";
-			this.textNote.QuickPasteType = OpenDental.QuickPasteType.Statement;
+			this.textNote.QuickPasteType = QuickPasteType.Statement;
 			this.textNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textNote.Size = new System.Drawing.Size(584,102);
 			this.textNote.TabIndex = 28;
@@ -406,7 +407,7 @@ namespace OpenDental{
 		#endregion
 
 		private void FormBillingOptions_Load(object sender, System.EventArgs e) {
-			if(PIn.PDate(Prefs.GetString("DateLastAging")) < DateTime.Today){
+			if(PIn.PDate(PrefB.GetString("DateLastAging")) < DateTime.Today){
 				if(MessageBox.Show(Lan.g(this,"Update aging first?"),"",MessageBoxButtons.YesNo)==DialogResult.Yes){
 					FormAging FormA=new FormAging();
 					FormA.ShowDialog();
@@ -416,19 +417,20 @@ namespace OpenDental{
 				listBillType.Items.Add(Defs.Short[(int)DefCat.BillingTypes][i].ItemName);
 			}
 			textLastStatement.Text=DateTime.Today.AddMonths(-1).ToShortDateString();
-			checkIncludeChanged.Checked=Prefs.GetBool("BillingIncludeChanged");
-			string[] selectedBillTypes=((Pref)Prefs.HList["BillingSelectBillingTypes"]).ValueString.Split(',');
+			checkIncludeChanged.Checked=PrefB.GetBool("BillingIncludeChanged");
+			string[] selectedBillTypes=((Pref)PrefB.HList["BillingSelectBillingTypes"]).ValueString.Split(',');
 			for(int i=0;i<selectedBillTypes.Length;i++){
 				try{
-					if(Convert.ToInt32(selectedBillTypes[i])<listBillType.Items.Count){
-						listBillType.SetSelected(Convert.ToInt32(selectedBillTypes[i]),true);
+					int order=Defs.GetOrder(DefCat.BillingTypes,Convert.ToInt32(selectedBillTypes[i]));
+					if(order!=-1){
+						listBillType.SetSelected(order,true);
 					}
 				}
 				catch{}
 			}
 			if(listBillType.SelectedIndices.Count==0)
 				listBillType.SelectedIndex=0;
-			switch(((Pref)Prefs.HList["BillingAgeOfAccount"]).ValueString){
+			switch(((Pref)PrefB.HList["BillingAgeOfAccount"]).ValueString){
 				default:
 					radioAny.Checked=true;
 					break;
@@ -442,16 +444,16 @@ namespace OpenDental{
 					radio90.Checked=true;
 					break;
 			}
-			if(((Pref)Prefs.HList["BillingExcludeBadAddresses"]).ValueString=="1"){
+			if(((Pref)PrefB.HList["BillingExcludeBadAddresses"]).ValueString=="1"){
 				checkBadAddress.Checked=true;
 			}
-			if(((Pref)Prefs.HList["BillingExcludeInactive"]).ValueString=="1"){
+			if(((Pref)PrefB.HList["BillingExcludeInactive"]).ValueString=="1"){
 				checkExcludeInactive.Checked=true;
 			}
-			if(((Pref)Prefs.HList["BillingExcludeNegative"]).ValueString=="1"){
+			if(((Pref)PrefB.HList["BillingExcludeNegative"]).ValueString=="1"){
 				checkExcludeNegative.Checked=true;
 			}
-			textExcludeLessThan.Text=((Pref)Prefs.HList["BillingExcludeLessThan"]).ValueString;
+			textExcludeLessThan.Text=((Pref)PrefB.HList["BillingExcludeLessThan"]).ValueString;
 			//blank is allowed
 			FillDunning();
 		}
@@ -470,49 +472,36 @@ namespace OpenDental{
 				return;
 			}
 			Prefs.UpdateBool("BillingIncludeChanged",checkIncludeChanged.Checked);
-
-			Prefs.Cur.PrefName="BillingSelectBillingTypes";
-			Prefs.Cur.ValueString="";
+			string prefVal="";
 			for(int i=0;i<listBillType.SelectedIndices.Count;i++){//will always be at least 1
 				if(i>0)
-					Prefs.Cur.ValueString+=",";
-				Prefs.Cur.ValueString+=listBillType.SelectedIndices[i].ToString();
+					prefVal+=",";
+				prefVal+=Defs.Short[(int)DefCat.BillingTypes][listBillType.SelectedIndices[i]].DefNum.ToString();
 			}
-			Prefs.UpdateCur();
+			Prefs.UpdateString("BillingSelectBillingTypes",prefVal);
 
-			Prefs.Cur.PrefName="BillingAgeOfAccount";
+			//aging:
 			if(radioAny.Checked){
-				Prefs.Cur.ValueString="";//the default
+				prefVal="";//the default
 			}
 			else if(radio30.Checked){
-				Prefs.Cur.ValueString="30";
+				prefVal="30";
 			}
 			else if(radio60.Checked){
-				Prefs.Cur.ValueString="60";
+				prefVal="60";
 			}
 			else if(radio90.Checked){
-				Prefs.Cur.ValueString="90";
+				prefVal="90";
 			}
-			Prefs.UpdateCur();
+			Prefs.UpdateString("BillingAgeOfAccount",prefVal);
 
-			Prefs.Cur.PrefName="BillingExcludeBadAddresses";
-			if(checkBadAddress.Checked) Prefs.Cur.ValueString="1";
-			else Prefs.Cur.ValueString="0";
-			Prefs.UpdateCur();
+			Prefs.UpdateBool("BillingExcludeBadAddresses",checkBadAddress.Checked);
 
-			Prefs.Cur.PrefName="BillingExcludeInactive";
-			if(checkExcludeInactive.Checked) Prefs.Cur.ValueString="1";
-			else Prefs.Cur.ValueString="0";
-			Prefs.UpdateCur();
+			Prefs.UpdateBool("BillingExcludeInactive",checkExcludeInactive.Checked);
 	
-			Prefs.Cur.PrefName="BillingExcludeNegative";
-			if(checkExcludeNegative.Checked) Prefs.Cur.ValueString="1";
-			else Prefs.Cur.ValueString="0";
-			Prefs.UpdateCur();
-
-			Prefs.Cur.PrefName="BillingExcludeLessThan";
-			Prefs.Cur.ValueString=textExcludeLessThan.Text;
-			Prefs.UpdateCur();
+			Prefs.UpdateBool("BillingExcludeNegative",checkExcludeNegative.Checked);
+			
+			Prefs.UpdateString("BillingExcludeLessThan",textExcludeLessThan.Text);
 
 			DataValid.SetInvalid(InvalidTypes.Prefs);
 		}

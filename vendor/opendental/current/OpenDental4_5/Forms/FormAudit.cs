@@ -2,9 +2,11 @@ using System;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using OpenDental.UI;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -308,8 +310,8 @@ namespace OpenDental{
 			comboPermission.SelectedIndex=0;
 			comboUser.Items.Add(Lan.g(this,"All"));
 			comboUser.SelectedIndex=0;
-			for(int i=0;i<Users.List.Length;i++){
-				comboUser.Items.Add(Users.List[i].UserName);
+			for(int i=0;i<Users.Listt.Count;i++){
+				comboUser.Items.Add(Users.Listt[i].UserName);
 			}
 			PatNum=0;
 			FillGrid();
@@ -354,7 +356,7 @@ namespace OpenDental{
 		private void FillGrid(){
 			int userNum=0;
 			if(comboUser.SelectedIndex>0){
-				userNum=Users.List[comboUser.SelectedIndex-1].UserNum;
+				userNum=Users.Listt[comboUser.SelectedIndex-1].UserNum;
 			}
 			SecurityLog[] logList=SecurityLogs.Refresh(PIn.PDate(textDateFrom.Text),PIn.PDate(textDateTo.Text),
 				(Permissions)comboPermission.SelectedIndex,PatNum,userNum);
@@ -373,7 +375,7 @@ namespace OpenDental{
 			for(int i=0;i<logList.Length;i++){
 				row=new ODGridRow();
 				row.Cells.Add(logList[i].LogDateTime.ToShortDateString()+" "+logList[i].LogDateTime.ToShortTimeString());
-				row.Cells.Add(Users.GetUser(logList[i].UserNum).UserName);
+				row.Cells.Add(UserB.GetUser(logList[i].UserNum).UserName);
 				row.Cells.Add(logList[i].PermType.ToString());
 				row.Cells.Add(logList[i].LogText);
 				grid.Rows.Add(row);

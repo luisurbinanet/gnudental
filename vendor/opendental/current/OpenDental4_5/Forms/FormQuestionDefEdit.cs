@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary></summary>
@@ -184,7 +185,7 @@ namespace OpenDental{
 				DialogResult=DialogResult.Cancel;
 				return;
 			}
-			QuestionDefCur.Delete();
+			QuestionDefs.Delete(QuestionDefCur);
 			DialogResult=DialogResult.OK;
 		}
 
@@ -192,10 +193,10 @@ namespace OpenDental{
 			QuestionDefCur.QuestType=(QuestionType)listType.SelectedIndex;
 			QuestionDefCur.Description=textQuestion.Text;
 			if(IsNew){
-				QuestionDefCur.Insert();
+				QuestionDefs.Insert(QuestionDefCur);
 			}
 			else{
-				QuestionDefCur.Update();
+				QuestionDefs.Update(QuestionDefCur);
 			}
 			DialogResult=DialogResult.OK;
 		}

@@ -2,99 +2,67 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
-
-	///<summary>Used to view employee timecards.  Timecard entries are not linked to a pay period.  Instead, payperiods are setup, and the user can only view specific pay periods.  So it feels like they are linked, but it's date based.</summary>
-	public class PayPeriod{
-		///<summary>Primary key.</summary>
-		public int PayPeriodNum;
-		///<summary>The first day of the payperiod</summary>
-		public DateTime DateStart;
-		///<summary>The last day of the payperiod.</summary>
-		public DateTime DateStop;
-		///<summary>The date that paychecks will be dated.  A few days after the dateStop.  Optional.</summary>
-		public DateTime DatePaycheck;
-
-		///<summary></summary>
-		public PayPeriod Copy() {
-			PayPeriod p=new PayPeriod();
-			p.PayPeriodNum=PayPeriodNum;
-			p.DateStart=DateStart;
-			p.DateStop=DateStop;
-			p.DatePaycheck=DatePaycheck;
-			return p;
-		}
-
-		///<summary></summary>
-		public void Insert() {
-			if(Prefs.RandomKeys) {
-				PayPeriodNum=MiscData.GetKey("payperiod","PayPeriodNum");
-			}
-			string command="INSERT INTO payperiod (";
-			if(Prefs.RandomKeys) {
-				command+="PayPeriodNum,";
-			}
-			command+="DateStart,DateStop,DatePaycheck) VALUES(";
-			if(Prefs.RandomKeys) {
-				command+="'"+POut.PInt(PayPeriodNum)+"', ";
-			}
-			command+=
-				 "'"+POut.PDate  (DateStart)+"', "
-				+"'"+POut.PDate  (DateStop)+"', "
-				+"'"+POut.PDate  (DatePaycheck)+"')";
-			DataConnection dcon=new DataConnection();
-			if(Prefs.RandomKeys) {
-				dcon.NonQ(command);
-			}
-			else {
-				dcon.NonQ(command,true);
-				PayPeriodNum=dcon.InsertID;
-			}
-		}
-
-		///<summary></summary>
-		public void Update() {
-			string command= "UPDATE payperiod SET "
-				+"DateStart = '"    +POut.PDate  (DateStart)+"' "
-				+",DateStop = '"    +POut.PDate  (DateStop)+"' "
-				+",DatePaycheck = '"+POut.PDate  (DatePaycheck)+"' "
-				+"WHERE PayPeriodNum = '"+POut.PInt(PayPeriodNum)+"'";
-			DataConnection dcon=new DataConnection();
-			dcon.NonQ(command);
-		}
-
-		///<summary></summary>
-		public void Delete() {
-			string command= "DELETE FROM payperiod WHERE PayPeriodNum = "+POut.PInt(PayPeriodNum);
-			DataConnection dcon=new DataConnection();
-			dcon.NonQ(command);
-		}
-
-	}
-
-	/*=========================================================================================
-		=================================== class PayPeriods ==========================================*/
-
 	///<summary></summary>
-	public class PayPeriods{
+	public class PayPeriods {
 		///<summary>A list of all payperiods.</summary>
 		public static PayPeriod[] List;
 
 		///<summary>Fills List with all payperiods, ordered by startdate.</summary>
-		public static void Refresh(){
-			string command=
-				"SELECT * from payperiod ORDER BY DateStart";
-			DataConnection dcon=new DataConnection();
-			DataTable table=dcon.GetTable(command);
+		public static void Refresh() {
+			string command="SELECT * from payperiod ORDER BY DateStart";
+			DataTable table=General.GetTable(command);
 			List=new PayPeriod[table.Rows.Count];
-			for(int i=0;i<List.Length;i++){
+			for(int i=0;i<List.Length;i++) {
 				List[i]=new PayPeriod();
-				List[i].PayPeriodNum = PIn.PInt   (table.Rows[i][0].ToString());
-				List[i].DateStart    = PIn.PDate  (table.Rows[i][1].ToString());
-				List[i].DateStop     = PIn.PDate  (table.Rows[i][2].ToString());
-				List[i].DatePaycheck = PIn.PDate  (table.Rows[i][3].ToString());
+				List[i].PayPeriodNum = PIn.PInt(table.Rows[i][0].ToString());
+				List[i].DateStart    = PIn.PDate(table.Rows[i][1].ToString());
+				List[i].DateStop     = PIn.PDate(table.Rows[i][2].ToString());
+				List[i].DatePaycheck = PIn.PDate(table.Rows[i][3].ToString());
 			}
+		}
+
+		///<summary></summary>
+		public static void Insert(PayPeriod pp) {
+			if(PrefB.RandomKeys) {
+				pp.PayPeriodNum=MiscData.GetKey("payperiod","PayPeriodNum");
+			}
+			string command="INSERT INTO payperiod (";
+			if(PrefB.RandomKeys) {
+				command+="PayPeriodNum,";
+			}
+			command+="DateStart,DateStop,DatePaycheck) VALUES(";
+			if(PrefB.RandomKeys) {
+				command+="'"+POut.PInt(pp.PayPeriodNum)+"', ";
+			}
+			command+=
+				 "'"+POut.PDate  (pp.DateStart)+"', "
+				+"'"+POut.PDate  (pp.DateStop)+"', "
+				+"'"+POut.PDate  (pp.DatePaycheck)+"')";
+			if(PrefB.RandomKeys) {
+				General.NonQ(command);
+			}
+			else {
+				pp.PayPeriodNum=General.NonQ(command,true);
+			}
+		}
+
+		///<summary></summary>
+		public static void Update(PayPeriod pp) {
+			string command= "UPDATE payperiod SET "
+				+"DateStart = '"    +POut.PDate  (pp.DateStart)+"' "
+				+",DateStop = '"    +POut.PDate  (pp.DateStop)+"' "
+				+",DatePaycheck = '"+POut.PDate  (pp.DatePaycheck)+"' "
+				+"WHERE PayPeriodNum = '"+POut.PInt(pp.PayPeriodNum)+"'";
+			General.NonQ(command);
+		}
+
+		///<summary></summary>
+		public static void Delete(PayPeriod pp) {
+			string command= "DELETE FROM payperiod WHERE PayPeriodNum = "+POut.PInt(pp.PayPeriodNum);
+			General.NonQ(command);
 		}
 
 		///<summary></summary>

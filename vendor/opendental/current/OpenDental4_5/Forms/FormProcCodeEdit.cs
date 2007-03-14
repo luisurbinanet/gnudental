@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Text;
 using System.Windows.Forms;
 using OpenDental.UI;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -371,7 +372,7 @@ namespace OpenDental{
 			this.textNote.Location = new System.Drawing.Point(55,395);
 			this.textNote.Multiline = true;
 			this.textNote.Name = "textNote";
-			this.textNote.QuickPasteType = OpenDental.QuickPasteType.Procedure;
+			this.textNote.QuickPasteType = OpenDentBusiness.QuickPasteType.Procedure;
 			this.textNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textNote.Size = new System.Drawing.Size(540,213);
 			this.textNote.TabIndex = 40;
@@ -625,7 +626,7 @@ namespace OpenDental{
 				FeeCur=new Fee();
 				FeeCur.ADACode=ProcCode.ADACode;
 				FeeCur.FeeSched=Defs.Short[(int)DefCat.FeeSchedNames][e.Row].DefNum;
-				FeeCur.Insert();
+				Fees.Insert(FeeCur);
 				FormFE.IsNew=true;
 			}
 			FormFE.FeeCur=FeeCur;
@@ -724,7 +725,7 @@ namespace OpenDental{
 			ProcCode.TreatArea=(TreatmentArea)listTreatArea.SelectedIndex+1;
 			if(listCategory.SelectedIndex!=-1)
 				ProcCode.ProcCat=Defs.Short[(int)DefCat.ProcCodeCats][listCategory.SelectedIndex].DefNum;
-			ProcCode.Update();//whether new or not.
+			ProcedureCodes.Update(ProcCode);//whether new or not.
 			if(DoSynchRecall){
 				Cursor=Cursors.WaitCursor;
 				Recalls.SynchAllPatients();

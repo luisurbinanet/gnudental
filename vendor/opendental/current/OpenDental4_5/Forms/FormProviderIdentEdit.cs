@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -187,10 +188,10 @@ namespace OpenDental{
 			ProvIdentCur.SuppIDType=(ProviderSupplementalID)listType.SelectedIndex;
 			ProvIdentCur.IDNumber=textIDNumber.Text;
 			if(IsNew){
-				ProvIdentCur.Insert();
+				ProviderIdents.Insert(ProvIdentCur);
 			}
 			else{
-				ProvIdentCur.Update();
+				ProviderIdents.Update(ProvIdentCur);
 			}
 			DialogResult=DialogResult.OK;
 		}

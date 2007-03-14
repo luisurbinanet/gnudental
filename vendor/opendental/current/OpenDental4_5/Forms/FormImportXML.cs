@@ -8,6 +8,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Xml;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -149,14 +150,14 @@ namespace OpenDental{
 				return;
 			}
 			pat=new Patient();
-			pat.PriProv=Prefs.GetInt("PracticeDefaultProv");
-			pat.BillingType=Prefs.GetInt("PracticeDefaultBillType");
+			pat.PriProv=PrefB.GetInt("PracticeDefaultProv");
+			pat.BillingType=PrefB.GetInt("PracticeDefaultBillType");
 			guar=new Patient();
-			guar.PriProv=Prefs.GetInt("PracticeDefaultProv");
-			guar.BillingType=Prefs.GetInt("PracticeDefaultBillType");
+			guar.PriProv=PrefB.GetInt("PracticeDefaultProv");
+			guar.BillingType=PrefB.GetInt("PracticeDefaultBillType");
 			subsc=new Patient();
-			subsc.PriProv=Prefs.GetInt("PracticeDefaultProv");
-			subsc.BillingType=Prefs.GetInt("PracticeDefaultBillType");
+			subsc.PriProv=PrefB.GetInt("PracticeDefaultProv");
+			subsc.BillingType=PrefB.GetInt("PracticeDefaultBillType");
 			plan=new InsPlan();
 			plan.ReleaseInfo=true;
 			plan.AssignBen=true;
@@ -299,14 +300,13 @@ namespace OpenDental{
 			
 			//Patient-------------------------------------------------------------------------------------
 			string command;
-			DataConnection dcon=new DataConnection();
 			DataTable table;
 			command="SELECT PatNum FROM patient WHERE "
 				+"LName='"+POut.PString(pat.LName)+"' "
 				+"AND FName='"+POut.PString(pat.FName)+"' "
 				+"AND Birthdate='"+POut.PDate(pat.Birthdate)+"' "
 				+"AND PatStatus!=4";//not deleted
-			table=dcon.GetTable(command);
+			table=General.GetTable(command);
 			Patient existingPat=null;
 			existingPatOld=null;//we will need this to do an update.
 			if(table.Rows.Count>0){//a patient already exists, so only add missing fields
@@ -352,20 +352,20 @@ namespace OpenDental{
 					existingPat.SSN=pat.SSN;
 				}
 				existingPat.AddrNote+=pat.AddrNote;//concat
-				existingPat.Update(existingPatOld);
-				PatientNotes.Refresh(existingPat.PatNum,existingPat.Guarantor);
-				PatientNotes.Cur.MedicalComp+=NoteMedicalComp;
-				PatientNotes.UpdateCur(existingPat.Guarantor);
+				Patients.Update(existingPat,existingPatOld);
+				PatientNote PatientNoteCur=PatientNotes.Refresh(existingPat.PatNum,existingPat.Guarantor);
+				PatientNoteCur.MedicalComp+=NoteMedicalComp;
+				PatientNotes.Update(PatientNoteCur,existingPat.Guarantor);
 				//guarantor will not be altered in any way
 			}//if patient already exists
 			else{//patient is new, so insert
-				pat.Insert(false);
+				Patients.Insert(pat,false);
 				existingPatOld=pat.Copy();
 				pat.Guarantor=pat.PatNum;//this can be changed later.
-				pat.Update(existingPatOld);
-				PatientNotes.Refresh(pat.PatNum,pat.Guarantor);
-				PatientNotes.Cur.MedicalComp+=NoteMedicalComp;
-				PatientNotes.UpdateCur(pat.Guarantor);
+				Patients.Update(pat,existingPatOld);
+				PatientNote PatientNoteCur=PatientNotes.Refresh(pat.PatNum,pat.Guarantor);
+				PatientNoteCur.MedicalComp+=NoteMedicalComp;
+				PatientNotes.Update(PatientNoteCur,pat.Guarantor);
 			}
 			//guar-----------------------------------------------------------------------------------------------------
 			if(existingPat==null){//only add or alter guarantor for new patients
@@ -374,7 +374,7 @@ namespace OpenDental{
 					//ignore all guar fields except EmployerName
 					existingPatOld=pat.Copy();
 					pat.EmployerNum=Employers.GetEmployerNum(GuarEmp);
-					pat.Update(existingPatOld);
+					Patients.Update(pat,existingPatOld);
 				}
 				else{
 					//if guarRelat is not self, and name and birthdate not supplied, a warning was issued, and relat was changed to self.
@@ -384,29 +384,29 @@ namespace OpenDental{
 						+"AND FName='"+POut.PString(guar.FName)+"' "
 						+"AND Birthdate='"+POut.PDate(guar.Birthdate)+"' "
 						+"AND PatStatus!=4";//not deleted
-					table=dcon.GetTable(command);
+					table=General.GetTable(command);
 					if(table.Rows.Count>0){//a guar already exists, so simply attach. Make no other changes
 						existingPatOld=pat.Copy();
 						pat.Guarantor=PIn.PInt(table.Rows[0][0].ToString());
 						if(guarRelat=="parent"){
 							pat.Position=PatientPosition.Child;
 						}
-						pat.Update(existingPatOld);
+						Patients.Update(pat,existingPatOld);
 					}
 					else{//we need to completely create guar, then attach
-						guar.Insert(false);
+						Patients.Insert(guar,false);
 						//set guar for guar
 						existingPatOld=guar.Copy();
 						guar.Guarantor=guar.PatNum;
 						guar.EmployerNum=Employers.GetEmployerNum(GuarEmp);
-						guar.Update(existingPatOld);
+						Patients.Update(guar,existingPatOld);
 						//set guar for pat
 						existingPatOld=pat.Copy();
 						pat.Guarantor=guar.PatNum;
 						if(guarRelat=="parent"){
 							pat.Position=PatientPosition.Child;
 						}
-						pat.Update(existingPatOld);
+						Patients.Update(pat,existingPatOld);
 					}
 				}
 			}
@@ -425,26 +425,26 @@ namespace OpenDental{
 					+"AND FName='"+POut.PString(subsc.FName)+"' "
 					+"AND Birthdate='"+POut.PDate(subsc.Birthdate)+"' "
 					+"AND PatStatus!=4";//not deleted
-				table=dcon.GetTable(command);
+				table=General.GetTable(command);
 				if(table.Rows.Count>0){//a subsc already exists, so simply attach. Make no other changes
 					plan.Subscriber=PIn.PInt(table.Rows[0][0].ToString());
 				}
 				else{//need to create and attach a subscriber
-					subsc.Insert(false);
+					Patients.Insert(subsc,false);
 					//set guar to same guar as patient
 					existingPatOld=subsc.Copy();
 					subsc.Guarantor=pat.Guarantor;
-					subsc.Update(existingPatOld);
+					Patients.Update(subsc,existingPatOld);
 					plan.Subscriber=subsc.PatNum;
 				}
 			}
 			//carrier-------------------------------------------------------------------------------------------------
-			Carriers.Cur=carrier;
-			Carriers.GetCurSame();//this automatically finds or creates a carrier
+			//Carriers.Cur=carrier;
+			Carriers.GetCurSame(carrier);//this automatically finds or creates a carrier
 			//plan------------------------------------------------------------------------------------------------------			
 			plan.EmployerNum=Employers.GetEmployerNum(InsEmp);
-			plan.CarrierNum=Carriers.Cur.CarrierNum;
-			plan.Insert();
+			plan.CarrierNum=carrier.CarrierNum;
+			InsPlans.Insert(plan);
 			//Then attach plan
 			PatPlan[] PatPlanList=PatPlans.Refresh(pat.PatNum);
 			PatPlan patplan=new PatPlan();
@@ -465,25 +465,25 @@ namespace OpenDental{
 					patplan.Relationship=Relat.Dependent;
 					break;
 			}
-			patplan.Insert();
+			PatPlans.Insert(patplan);
 			//benefits
-			if(annualMax!=-1 && CovCats.ListShort.Length>0){
+			if(annualMax!=-1 && CovCatB.ListShort.Length>0){
 				Benefit ben=new Benefit();
 				ben.BenefitType=InsBenefitType.Limitations;
-				ben.CovCatNum=CovCats.ListShort[0].CovCatNum;
+				ben.CovCatNum=CovCatB.ListShort[0].CovCatNum;
 				ben.MonetaryAmt=annualMax;
 				ben.PlanNum=plan.PlanNum;
 				ben.TimePeriod=BenefitTimePeriod.CalendarYear;
-				ben.Insert();
+				Benefits.Insert(ben);
 			}
-			if(deductible!=-1 && CovCats.ListShort.Length>0) {
+			if(deductible!=-1 && CovCatB.ListShort.Length>0) {
 				Benefit ben=new Benefit();
 				ben.BenefitType=InsBenefitType.Deductible;
-				ben.CovCatNum=CovCats.ListShort[0].CovCatNum;
+				ben.CovCatNum=CovCatB.ListShort[0].CovCatNum;
 				ben.MonetaryAmt=deductible;
 				ben.PlanNum=plan.PlanNum;
 				ben.TimePeriod=BenefitTimePeriod.CalendarYear;
-				ben.Insert();
+				Benefits.Insert(ben);
 			}
 			MsgBox.Show(this,"Done");
 			DialogResult=DialogResult.OK;

@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -235,7 +236,7 @@ namespace OpenDental{
 		#endregion
 
 		private void FormFinanceCharges_Load(object sender, System.EventArgs e) {
-			if(PIn.PDate(Prefs.GetString("DateLastAging")) < DateTime.Today){
+			if(PIn.PDate(PrefB.GetString("DateLastAging")) < DateTime.Today){
 				if(MsgBox.Show(this,true,"You must update aging first.")){//OK
 					FormAging FormA=new FormAging();
 					FormA.ShowDialog();
@@ -245,7 +246,7 @@ namespace OpenDental{
 					return;
 				}
 			}
-			if(PIn.PDate(Prefs.GetString("FinanceChargeLastRun")).AddDays(25)>DateTime.Today){
+			if(PIn.PDate(PrefB.GetString("FinanceChargeLastRun")).AddDays(25)>DateTime.Today){
 				MessageBox.Show(Lan.g(this,"You cannot run finance charges again this month."));
 				DialogResult=DialogResult.Cancel;
 				return;
@@ -253,12 +254,12 @@ namespace OpenDental{
 			textAPR.MaxVal=100;
 			textAPR.MinVal=0;
 			FillList();
-			textAPR.Text=Prefs.GetString("FinanceChargeAPR");
+			textAPR.Text=PrefB.GetString("FinanceChargeAPR");
 			textDate.Text=DateTime.Today.ToShortDateString();		
 		}
 
 		private void FillList(){
-			adjType=Prefs.GetInt("FinanceChargeAdjustmentType");
+			adjType=PrefB.GetInt("FinanceChargeAdjustmentType");
 			ALPosIndices=new ArrayList();
 			listAdjType.Items.Clear();
 			for(int i=0;i<Defs.Short[(int)DefCat.AdjTypes].Length;i++){
@@ -311,19 +312,13 @@ namespace OpenDental{
 					AdjustmentCur.AdjNote="Finance Charge";
 					AdjustmentCur.AdjAmt=Math.Round(((PIn.PDouble(textAPR.Text) * .01 / 12) * OverallBalance),2);
 					AdjustmentCur.ProvNum=AgingList[i].PriProv;
-					AdjustmentCur.InsertOrUpdate(true);
+					Adjustments.InsertOrUpdate(AdjustmentCur,true);
 				}
 			}
-			Prefs.Cur=(Pref)Prefs.HList["FinanceChargeAPR"];
-			Prefs.Cur.ValueString=textAPR.Text;
-			Prefs.UpdateCur();
-			Prefs.Cur=(Pref)Prefs.HList["FinanceChargeAdjustmentType"];
-			Prefs.Cur.ValueString=Defs.Short[(int)DefCat.AdjTypes]
-				[(int)ALPosIndices[listAdjType.SelectedIndex]].DefNum.ToString();
-			Prefs.UpdateCur();
-			Prefs.Cur=(Pref)Prefs.HList["FinanceChargeLastRun"];
-			Prefs.Cur.ValueString=POut.PDate(DateTime.Today);
-			Prefs.UpdateCur();
+			Prefs.UpdateString("FinanceChargeAPR",textAPR.Text);
+			Prefs.UpdateInt("FinanceChargeAdjustmentType",
+				Defs.Short[(int)DefCat.AdjTypes][(int)ALPosIndices[listAdjType.SelectedIndex]].DefNum);
+			Prefs.UpdateString("FinanceChargeLastRun",POut.PDate(DateTime.Today));
 			DataValid.SetInvalid(InvalidTypes.Prefs);
 			MessageBox.Show(Lan.g(this,"Finance Charges Added."));
 			DialogResult=DialogResult.OK;

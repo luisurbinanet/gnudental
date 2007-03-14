@@ -4,6 +4,7 @@ See header in FormOpenDental.cs for complete text.  Redistributions must retain 
 ===============================================================================================================*/
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -17,6 +18,7 @@ using System.Windows.Forms;
 using OpenDental.UI;
 using Tao.Platform.Windows;
 using SparksToothChart;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -125,7 +127,7 @@ namespace OpenDental{
 		private Benefit[] BenefitList;
 		private ImageList imageListProcButtons;
 		private ColumnHeader columnHeader1;
-		private SparksToothChart.GraphicalToothChart toothChart;
+		//private SparksToothChart.GraphicalToothChart toothChart;
 		private TabControl tabProc;
 		private TabPage tabEnterTx;
 		private TabPage tabMissing;
@@ -184,8 +186,12 @@ namespace OpenDental{
 		private MenuItem menuItemPrintDay;
 		///<summary>a list of the hidden teeth as strings. Includes "1"-"32", and "A"-"Z"</summary>
 		private ArrayList HiddenTeeth;
+		private CheckBox checkAudit;
 		///<summary>This date will usually have minVal except while the hospital print function is running.</summary>
 		private DateTime hospitalDate;
+		private List<DocAttach> DocAttachList;
+		private GraphicalToothChart toothChart;
+		private PatientNote PatientNoteCur;
 			
 		///<summary></summary>
 		public ContrChart(){
@@ -195,7 +201,8 @@ namespace OpenDental{
 			//VQLink=new VisiQuick(Handle);		// TJE
 			tabControlImages.DrawItem += new DrawItemEventHandler(OnDrawItem);
 			//EventHandler onClick=new EventHandler(menuItem_Click);
-			
+			toothChart.TaoRenderEnabled=true;
+			toothChart.TaoInitializeContexts();
 		}
 
 		///<summary></summary>
@@ -244,6 +251,7 @@ namespace OpenDental{
 			this.label14 = new System.Windows.Forms.Label();
 			this.label13 = new System.Windows.Forms.Label();
 			this.groupShow = new System.Windows.Forms.GroupBox();
+			this.checkAudit = new System.Windows.Forms.CheckBox();
 			this.checkComm = new System.Windows.Forms.CheckBox();
 			this.checkShowTeeth = new System.Windows.Forms.CheckBox();
 			this.checkNotes = new System.Windows.Forms.CheckBox();
@@ -259,6 +267,7 @@ namespace OpenDental{
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this.menuProgRight = new System.Windows.Forms.ContextMenu();
 			this.menuItemPrintProg = new System.Windows.Forms.MenuItem();
+			this.menuItemPrintDay = new System.Windows.Forms.MenuItem();
 			this.menuItemSetComplete = new System.Windows.Forms.MenuItem();
 			this.menuItemEditSelected = new System.Windows.Forms.MenuItem();
 			this.tabControlImages = new System.Windows.Forms.TabControl();
@@ -327,14 +336,13 @@ namespace OpenDental{
 			this.butMixed = new OpenDental.UI.Button();
 			this.butAllPrimary = new OpenDental.UI.Button();
 			this.butAllPerm = new OpenDental.UI.Button();
-			this.toothChart = new SparksToothChart.GraphicalToothChart();
 			this.gridProg = new OpenDental.UI.ODGrid();
 			this.butBig = new OpenDental.UI.Button();
 			this.ToolBarMain = new OpenDental.UI.ODToolBar();
 			this.button1 = new OpenDental.UI.Button();
 			this.textTreatmentNotes = new OpenDental.ODtextBox();
 			this.gridPtInfo = new OpenDental.UI.ODGrid();
-			this.menuItemPrintDay = new System.Windows.Forms.MenuItem();
+			this.toothChart = new SparksToothChart.GraphicalToothChart();
 			this.groupBox2.SuspendLayout();
 			this.groupPlanned.SuspendLayout();
 			this.groupShow.SuspendLayout();
@@ -616,6 +624,7 @@ namespace OpenDental{
 			// 
 			// groupShow
 			// 
+			this.groupShow.Controls.Add(this.checkAudit);
 			this.groupShow.Controls.Add(this.checkComm);
 			this.groupShow.Controls.Add(this.checkShowTeeth);
 			this.groupShow.Controls.Add(this.checkNotes);
@@ -633,6 +642,16 @@ namespace OpenDental{
 			this.groupShow.TabIndex = 38;
 			this.groupShow.TabStop = false;
 			this.groupShow.Text = "Show:";
+			// 
+			// checkAudit
+			// 
+			this.checkAudit.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.checkAudit.Location = new System.Drawing.Point(137,89);
+			this.checkAudit.Name = "checkAudit";
+			this.checkAudit.Size = new System.Drawing.Size(73,13);
+			this.checkAudit.TabIndex = 17;
+			this.checkAudit.Text = "Audit";
+			this.checkAudit.Click += new System.EventHandler(this.checkAudit_Click);
 			// 
 			// checkComm
 			// 
@@ -784,6 +803,12 @@ namespace OpenDental{
 			this.menuItemPrintProg.Index = 0;
 			this.menuItemPrintProg.Text = "Print Progress Notes ...";
 			this.menuItemPrintProg.Click += new System.EventHandler(this.menuItemPrintProg_Click);
+			// 
+			// menuItemPrintDay
+			// 
+			this.menuItemPrintDay.Index = 1;
+			this.menuItemPrintDay.Text = "Print Day for Hospital";
+			this.menuItemPrintDay.Click += new System.EventHandler(this.menuItemPrintDay_Click);
 			// 
 			// menuItemSetComplete
 			// 
@@ -1604,25 +1629,6 @@ namespace OpenDental{
 			this.butAllPerm.Text = "Set All Permament";
 			this.butAllPerm.Click += new System.EventHandler(this.butAllPerm_Click);
 			// 
-			// toothChart
-			// 
-			this.toothChart.AccumBits = ((byte)(0));
-			this.toothChart.AutoCheckErrors = false;
-			this.toothChart.AutoFinish = false;
-			this.toothChart.AutoMakeCurrent = true;
-			this.toothChart.AutoSwapBuffers = true;
-			this.toothChart.BackColor = System.Drawing.Color.Black;
-			this.toothChart.ColorBackground = System.Drawing.Color.FromArgb(((int)(((byte)(95)))),((int)(((byte)(95)))),((int)(((byte)(130)))));
-			this.toothChart.ColorBits = ((byte)(32));
-			this.toothChart.DepthBits = ((byte)(16));
-			this.toothChart.Location = new System.Drawing.Point(0,146);
-			this.toothChart.Name = "toothChart";
-			this.toothChart.Size = new System.Drawing.Size(410,307);
-			this.toothChart.StencilBits = ((byte)(0));
-			this.toothChart.TabIndex = 188;
-			this.toothChart.UseInternational = false;
-			this.toothChart.Click += new System.EventHandler(this.toothChart_Click);
-			// 
 			// gridProg
 			// 
 			this.gridProg.HScrollVisible = true;
@@ -1681,7 +1687,7 @@ namespace OpenDental{
 			this.textTreatmentNotes.Location = new System.Drawing.Point(0,456);
 			this.textTreatmentNotes.Multiline = true;
 			this.textTreatmentNotes.Name = "textTreatmentNotes";
-			this.textTreatmentNotes.QuickPasteType = OpenDental.QuickPasteType.ChartTreatment;
+			this.textTreatmentNotes.QuickPasteType = OpenDentBusiness.QuickPasteType.ChartTreatment;
 			this.textTreatmentNotes.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textTreatmentNotes.Size = new System.Drawing.Size(411,71);
 			this.textTreatmentNotes.TabIndex = 187;
@@ -1701,18 +1707,22 @@ namespace OpenDental{
 			this.gridPtInfo.TranslationName = "TableChartPtInfo";
 			this.gridPtInfo.CellDoubleClick += new OpenDental.UI.ODGridClickEventHandler(this.gridPtInfo_CellDoubleClick);
 			// 
-			// menuItemPrintDay
+			// toothChart
 			// 
-			this.menuItemPrintDay.Index = 1;
-			this.menuItemPrintDay.Text = "Print Day for Hospital";
-			this.menuItemPrintDay.Click += new System.EventHandler(this.menuItemPrintDay_Click);
+			this.toothChart.ColorBackground = System.Drawing.Color.FromArgb(((int)(((byte)(95)))),((int)(((byte)(95)))),((int)(((byte)(130)))));
+			this.toothChart.Location = new System.Drawing.Point(0,146);
+			this.toothChart.Name = "toothChart";
+			this.toothChart.Size = new System.Drawing.Size(410,307);
+			this.toothChart.TabIndex = 194;
+			this.toothChart.TaoRenderEnabled = false;
+			this.toothChart.Text = "graphicalToothChart1";
+			this.toothChart.UseInternational = false;
 			// 
 			// ContrChart
 			// 
 			this.Controls.Add(this.gridProg);
 			this.Controls.Add(this.butBig);
 			this.Controls.Add(this.tabProc);
-			this.Controls.Add(this.toothChart);
 			this.Controls.Add(this.panelImages);
 			this.Controls.Add(this.tabControlImages);
 			this.Controls.Add(this.ToolBarMain);
@@ -1720,8 +1730,9 @@ namespace OpenDental{
 			this.Controls.Add(this.groupShow);
 			this.Controls.Add(this.button1);
 			this.Controls.Add(this.textTreatmentNotes);
-			this.Controls.Add(this.label4);
 			this.Controls.Add(this.gridPtInfo);
+			this.Controls.Add(this.toothChart);
+			this.Controls.Add(this.label4);
 			this.Name = "ContrChart";
 			this.Size = new System.Drawing.Size(939,755);
 			this.Layout += new System.Windows.Forms.LayoutEventHandler(this.ContrChart_Layout);
@@ -1891,8 +1902,8 @@ namespace OpenDental{
 			if(FamCur==null)
 				return;
 			if(TreatmentNoteChanged){
-				PatientNotes.Cur.Treatment=textTreatmentNotes.Text;
-				PatientNotes.UpdateCur(PatCur.Guarantor);
+				PatientNoteCur.Treatment=textTreatmentNotes.Text;
+				PatientNotes.Update(PatientNoteCur, PatCur.Guarantor);
 				TreatmentNoteChanged=false;
 			}
 			FamCur=null;
@@ -1918,12 +1929,12 @@ namespace OpenDental{
 			PatPlanList=PatPlans.Refresh(patNum);
 			BenefitList=Benefits.Refresh(PatPlanList);
 			//CovPats.Refresh(PlanList,PatPlanList);
-			PatientNotes.Refresh(patNum,PatCur.Guarantor);
+			PatientNoteCur=PatientNotes.Refresh(patNum,PatCur.Guarantor);
       //ClaimProcs.Refresh();
 			//RefAttaches.Refresh();
 			GetImageFolder();
-			DocAttaches.Refresh(patNum);
-			DocumentList=Documents.Refresh(DocAttaches.List);
+			DocAttachList=DocAttaches.Refresh(patNum);
+			DocumentList=Documents.Refresh(DocAttachList);
 			//Procs get refreshed in FillProgNotes
 			ApptList=Appointments.GetForPat(patNum);
 			ToothInitialList=ToothInitials.Refresh(patNum);
@@ -1943,11 +1954,11 @@ namespace OpenDental{
 				folder+=PatCur.PatNum.ToString();//ensures unique name
 				try{
 					PatCur.ImageFolder=folder;
-					patFolder=((Pref)Prefs.HList["DocPath"]).ValueString
+					patFolder=((Pref)PrefB.HList["DocPath"]).ValueString
 						+PatCur.ImageFolder.Substring(0,1)+@"\"
 						+PatCur.ImageFolder+@"\";
 					Directory.CreateDirectory(patFolder);
-					PatCur.Update(patOld);
+					Patients.Update(PatCur,patOld);
 					//ModuleSelected(PatCur.PatNum);
 				}
 				catch(Exception ex){
@@ -1958,7 +1969,7 @@ namespace OpenDental{
 				}
 			}
 			else{//patient folder already created once
-				patFolder=((Pref)Prefs.HList["DocPath"]).ValueString
+				patFolder=((Pref)PrefB.HList["DocPath"]).ValueString
 					+PatCur.ImageFolder.Substring(0,1)+@"\"
 					+PatCur.ImageFolder+@"\";
 			}
@@ -2021,7 +2032,7 @@ namespace OpenDental{
 		}
 
 		private void EasyHideClinicalData(){
-			if(((Pref)Prefs.HList["EasyHideClinical"]).ValueString=="1"){
+			if(((Pref)PrefB.HList["EasyHideClinical"]).ValueString=="1"){
 				gridPtInfo.Visible=false;
 				checkShowE.Visible=false;
 				checkShowR.Visible=false;
@@ -2137,7 +2148,7 @@ namespace OpenDental{
 			if(apt==null){//next appointment not found
 				Patient patOld=PatCur.Copy();
 				PatCur.NextAptNum=0;
-				PatCur.Update(patOld);
+				Patients.Update(PatCur,patOld);
 				FamCur=Patients.GetFamily(PatCur.PatNum);//might be overkill
 				ApptPlanned.Visible=false;
 				checkDone.Checked=false;
@@ -2166,7 +2177,7 @@ namespace OpenDental{
 			gridPtInfo.Height=tabControlImages.Top-gridPtInfo.Top;
 			textTreatmentNotes.Text="";
 			if(PatCur!=null){
-				textTreatmentNotes.Text=PatientNotes.Cur.Treatment;
+				textTreatmentNotes.Text=PatientNoteCur.Treatment;
 				textTreatmentNotes.Enabled=true;
 				textTreatmentNotes.Select(textTreatmentNotes.Text.Length+2,1);
 				textTreatmentNotes.ScrollToCaret();
@@ -2199,7 +2210,7 @@ namespace OpenDental{
 			string referral="";
 			for(int i=0;i<RefAttachList.Length;i++) {
 				if(RefAttachList[i].IsFrom) {
-					referral=Referrals.GetReferral(RefAttachList[i].ReferralNum).GetName();
+					referral=Referrals.GetName(RefAttachList[i].ReferralNum);
 					break;
 				}
 			}
@@ -2297,13 +2308,13 @@ namespace OpenDental{
 			//Medical
 			row=new ODGridRow();
 			row.Cells.Add(Lan.g("TableChartPtInfo","Medical Summary"));
-			row.Cells.Add(PatientNotes.Cur.Medical);
+			row.Cells.Add(PatientNoteCur.Medical);
 			row.ColorBackG=Defs.Long[(int)DefCat.MiscColors][3].ItemColor;
 			gridPtInfo.Rows.Add(row);
 			//Service
 			row=new ODGridRow();
 			row.Cells.Add(Lan.g("TableChartPtInfo","Service Notes"));
-			row.Cells.Add(PatientNotes.Cur.Service);
+			row.Cells.Add(PatientNoteCur.Service);
 			row.ColorBackG=Defs.Long[(int)DefCat.MiscColors][3].ItemColor;
 			gridPtInfo.Rows.Add(row);
 			//medications
@@ -2350,8 +2361,8 @@ namespace OpenDental{
 			if(FamCur==null)
 				return;
 			if(TreatmentNoteChanged){
-				PatientNotes.Cur.Treatment=textTreatmentNotes.Text;
-				PatientNotes.UpdateCur(PatCur.Guarantor);
+				PatientNoteCur.Treatment=textTreatmentNotes.Text;
+				PatientNotes.Update(PatientNoteCur,PatCur.Guarantor);
 				TreatmentNoteChanged=false;
 			}
 		}
@@ -2366,7 +2377,7 @@ namespace OpenDental{
 			for(int i=0;i<toothChart.SelectedTeeth.Length;i++) {
 				selectedTeeth.Add(Tooth.ToInt(toothChart.SelectedTeeth[i]));
 			}
-			ProcList=Procedures.Refresh(PatCur.PatNum);
+			ProcList=Procedures.Refresh(PatCur.PatNum,checkAudit.Checked);
 			for(int i=0;i<ProcList.Length;i++) {
 				//always show missing teeth if C,EC,or EO... Not anymore.  Missing teeth handled by different table now.
 				/*if(ProcedureCodes.GetProcCode(ProcList[i].ADACode).RemoveTooth
@@ -2468,6 +2479,11 @@ namespace OpenDental{
 							ProcAL.Add(ProcList[i]);
 						}
 						break;
+					case ProcStat.D:
+						if(checkAudit.Checked) {
+							ProcAL.Add(ProcList[i]);
+						}
+						break;
 				}
 			}//for i
 		}
@@ -2507,7 +2523,11 @@ namespace OpenDental{
 			gridProg.Columns.Add(col);
 			col=new ODGridColumn(Lan.g("TableProg","Amount"),48,HorizontalAlignment.Right);
 			gridProg.Columns.Add(col);
-			col=new ODGridColumn(Lan.g("TableProg","ADA Code"),62,HorizontalAlignment.Right);
+			col=new ODGridColumn(Lan.g("TableProg","ADA Code"),62,HorizontalAlignment.Center);
+			gridProg.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableProg","User"),62,HorizontalAlignment.Center);
+			gridProg.Columns.Add(col);
+			col=new ODGridColumn(Lan.g("TableProg","Signed"),55,HorizontalAlignment.Center);
 			gridProg.Columns.Add(col);
 			gridProg.NoteSpanStart=2;
 			gridProg.NoteSpanStop=7;
@@ -2529,8 +2549,15 @@ namespace OpenDental{
 					row.Cells.Add(Providers.GetAbbr(((Procedure)mergedAL[i]).ProvNum));
 					row.Cells.Add(((Procedure)mergedAL[i]).ProcFee.ToString("F"));
 					row.Cells.Add(((Procedure)mergedAL[i]).ADACode);
+					row.Cells.Add(UserB.GetName(((Procedure)mergedAL[i]).UserNum));
+					if(((Procedure)mergedAL[i]).Signature==""){
+						row.Cells.Add("");
+					}
+					else{
+						row.Cells.Add(Lan.g("TableProg","Signed"));
+					}
 					if(checkNotes.Checked){
-						row.Note=((Procedure)mergedAL[i]).ProcNote;
+						row.Note=((Procedure)mergedAL[i]).Note;
 					}
 					switch(((Procedure)mergedAL[i]).ProcStatus) {
 						case ProcStat.TP:
@@ -2548,6 +2575,9 @@ namespace OpenDental{
 						case ProcStat.R:
 							row.ColorText=Defs.Long[(int)DefCat.ProgNoteColors][4].ItemColor;
 							break;
+						case ProcStat.D:
+							row.ColorText=Color.Black;
+							break;
 					}
 					if(Appointments.ProcIsToday(ApptList,(Procedure)mergedAL[i])) {
 						row.ColorBackG=Defs.Long[(int)DefCat.MiscColors][6].ItemColor;
@@ -2563,6 +2593,8 @@ namespace OpenDental{
 					row.Cells.Add(Providers.GetAbbr(((RxPat)mergedAL[i]).ProvNum));
 					row.Cells.Add("");
 					row.Cells.Add("");
+					row.Cells.Add("");//user
+					row.Cells.Add("");//sig
 					if(checkNotes.Checked){
 						row.Note=((RxPat)mergedAL[i]).Notes;
 					}
@@ -2578,6 +2610,8 @@ namespace OpenDental{
 					row.Cells.Add("");//prov
 					row.Cells.Add("");//fee
 					row.Cells.Add("");//adacode
+					row.Cells.Add("");//user
+					row.Cells.Add("");//sig
 					if(checkNotes.Checked) {
 						row.Note=((Commlog)mergedAL[i]).Note;
 					}
@@ -2607,7 +2641,7 @@ namespace OpenDental{
 		private void FillToothChart(bool retainSelection){
 			Cursor=Cursors.WaitCursor;
 			toothChart.SuspendLayout();
-			toothChart.UseInternational=Prefs.GetBool("UseInternationalToothNumbers");
+			toothChart.UseInternational=PrefB.GetBool("UseInternationalToothNumbers");
 			toothChart.ColorBackground=Defs.Long[(int)DefCat.ChartGraphicColors][10].ItemColor;
 			toothChart.ColorText=Defs.Long[(int)DefCat.ChartGraphicColors][11].ItemColor;
 			toothChart.ColorTextHighlight=Defs.Long[(int)DefCat.ChartGraphicColors][12].ItemColor;
@@ -2685,10 +2719,10 @@ namespace OpenDental{
 				if(proc.ProcStatus!=procStat) {
 					continue;
 				}
-				if(proc.HideGraphical) {
+				//if(proc.HideGraphical) {
 					//We don't care about HideGraphical anymore.  It will be enhanced later to a 3-state.
 					//continue;
-				}
+				//}
 				if(ProcedureCodes.GetProcCode(proc.ADACode).PaintType==ToothPaintingType.Extraction && (
 					proc.ProcStatus==ProcStat.C
 					|| proc.ProcStatus==ProcStat.EC
@@ -3185,6 +3219,10 @@ namespace OpenDental{
 		private void gridProg_CellDoubleClick(object sender,ODGridClickEventArgs e) {
 			Type type=gridProg.Rows[e.Row].Tag.GetType();
 			if(type==typeof(Procedure)){
+				if(checkAudit.Checked){
+					MsgBox.Show(this,"Not allowed to edit procedures when in audit mode.");
+					return;
+				}
 				//Procedure ProcCur=
 				//	((Procedure)ProcAL[((ProgLine)ProgLineAL[e.Row]).Index]).Copy();
 				FormProcEdit FormPE=new FormProcEdit((Procedure)gridProg.Rows[e.Row].Tag,PatCur.Copy(),FamCur,PlanList);
@@ -3241,10 +3279,10 @@ namespace OpenDental{
 				ProcCur.Priority=Defs.Short[(int)DefCat.TxPriorities][comboPriority.SelectedIndex-1].DefNum;
 			ProcCur.ProcStatus=newStatus;
 			if(newStatus==ProcStat.C){
-				ProcCur.ProcNote=ProcedureCodes.GetProcCode(ProcCur.ADACode).DefaultNote;
+				ProcCur.Note=ProcedureCodes.GetProcCode(ProcCur.ADACode).DefaultNote;
 			}
 			else{
-				ProcCur.ProcNote="";
+				ProcCur.Note="";
 			}
 			if(ProcedureCodes.GetProcCode(ProcCur.ADACode).IsHygiene
 				&& PatCur.SecProv != 0){
@@ -3259,20 +3297,20 @@ namespace OpenDental{
 			//nextaptnum
 			ProcCur.DateEntryC=DateTime.Now;
 			ProcCur.MedicalCode=ProcedureCodes.GetProcCode(ProcCur.ADACode).MedicalCode;
-			ProcCur.Insert();
+			Procedures.Insert(ProcCur);
 			if((ProcCur.ProcStatus==ProcStat.C || ProcCur.ProcStatus==ProcStat.EC || ProcCur.ProcStatus==ProcStat.EO)
 				&& ProcedureCodes.GetProcCode(ProcCur.ADACode).PaintType==ToothPaintingType.Extraction) {
 				//if an extraction, then mark previous procs hidden
-				ProcCur.SetHideGraphical();//might not matter anymore
+				//Procedures.SetHideGraphical(ProcCur);//might not matter anymore
 				ToothInitials.SetValue(PatCur.PatNum,ProcCur.ToothNum,ToothInitialType.Missing);
 			}
-			ProcCur.ComputeEstimates(PatCur.PatNum,new ClaimProc[0],true,PlanList,PatPlanList,BenefitList);
+			Procedures.ComputeEstimates(ProcCur,PatCur.PatNum,new ClaimProc[0],true,PlanList,PatPlanList,BenefitList);
 			FormProcEdit FormPE=new FormProcEdit(ProcCur,PatCur.Copy(),FamCur,PlanList);
 			FormPE.IsNew=true;
 			FormPE.ShowDialog();
 			if(FormPE.DialogResult==DialogResult.Cancel){
 				//any created claimprocs are automatically deleted from within procEdit window.
-				ProcCur.Delete();//also deletes the claimprocs
+				Procedures.Delete(ProcCur.ProcNum);//also deletes the claimprocs
 			}
 			else{
 				Recalls.Synch(PatCur.PatNum);
@@ -3309,10 +3347,10 @@ namespace OpenDental{
 				ProcCur.Priority=Defs.Short[(int)DefCat.TxPriorities][comboPriority.SelectedIndex-1].DefNum;
 			ProcCur.ProcStatus=newStatus;
 			if(newStatus==ProcStat.C) {
-				ProcCur.ProcNote=ProcedureCodes.GetProcCode(ProcCur.ADACode).DefaultNote;
+				ProcCur.Note=ProcedureCodes.GetProcCode(ProcCur.ADACode).DefaultNote;
 			}
 			else {
-				ProcCur.ProcNote="";
+				ProcCur.Note="";
 			}
 			if(ProcedureCodes.GetProcCode(ProcCur.ADACode).IsHygiene
 				&& PatCur.SecProv != 0){
@@ -3340,15 +3378,15 @@ namespace OpenDental{
 			//if(Procedures.Cur.ProcStatus==ProcStat.C){
 			//	Procedures.PutBal(Procedures.Cur.ProcDate,Procedures.Cur.ProcFee);
 			//}
-			ProcCur.Insert();
+			Procedures.Insert(ProcCur);
 			if((ProcCur.ProcStatus==ProcStat.C || ProcCur.ProcStatus==ProcStat.EC || ProcCur.ProcStatus==ProcStat.EO)
 				&& ProcedureCodes.GetProcCode(ProcCur.ADACode).PaintType==ToothPaintingType.Extraction) {
 				//if an extraction, then mark previous procs hidden
-				ProcCur.SetHideGraphical();//might not matter anymore
+				//Procedures.SetHideGraphical(ProcCur);//might not matter anymore
 				ToothInitials.SetValue(PatCur.PatNum,ProcCur.ToothNum,ToothInitialType.Missing);
 			}
 			Recalls.Synch(PatCur.PatNum);
-			ProcCur.ComputeEstimates(PatCur.PatNum,new ClaimProc[0],true,PlanList,PatPlanList,BenefitList);
+			Procedures.ComputeEstimates(ProcCur,PatCur.PatNum,new ClaimProc[0],true,PlanList,PatPlanList,BenefitList);
 		}
 
 		private void butAddProc_Click(object sender, System.EventArgs e){
@@ -3505,11 +3543,11 @@ namespace OpenDental{
 					}
 					else{
 						//also deletes the claimprocs:
-						((Procedure)gridProg.Rows[gridProg.SelectedIndices[i]].Tag).Delete();
+						Procedures.Delete(((Procedure)gridProg.Rows[gridProg.SelectedIndices[i]].Tag).ProcNum);
 					}
 				}
 				else if(type==typeof(RxPat)){
-					((RxPat)gridProg.Rows[gridProg.SelectedIndices[i]].Tag).Delete();
+					RxPats.Delete((RxPat)gridProg.Rows[gridProg.SelectedIndices[i]].Tag);
 					//RxPat RxPatCur=(RxPat)RxAL[((ProgLine)ProgLineAL[gridProg.SelectedIndices[i]]).Index];
 					//RxPatCur.Delete();
 				}
@@ -4317,6 +4355,10 @@ namespace OpenDental{
 			FillProgNotes();
 		}
 
+		private void checkAudit_Click(object sender,EventArgs e) {
+			FillProgNotes();
+		}
+
 		private void butShowAll_Click(object sender, System.EventArgs e) {
 			checkShowTP.Checked=true;
 			checkShowC.Checked=true;
@@ -4343,7 +4385,7 @@ namespace OpenDental{
 
 		private void gridPtInfo_CellDoubleClick(object sender,ODGridClickEventArgs e) {
 			if(e.Row>=6){// && e.Row<=8){
-				FormMedical FormM=new FormMedical(PatCur);
+				FormMedical FormM=new FormMedical(PatientNoteCur,PatCur);
 				FormM.ShowDialog();
 				ModuleSelected(PatCur.PatNum);
 			}
@@ -4358,16 +4400,16 @@ namespace OpenDental{
 						return; 
 					}
 					Procedures.UnattachProcsInPlannedAppt(ApptPlanned.Info.MyApt.AptNum);
-					ApptPlanned.Info.MyApt.Delete();
+					Appointments.Delete(ApptPlanned.Info.MyApt);
 				}
 				PatCur.NextAptNum=0;//-1;
 				PatCur.PlannedIsDone=true;
-				PatCur.Update(oldPat);
+				Patients.Update(PatCur,oldPat);
 			}
 			else{
 				PatCur.NextAptNum=0;
 				PatCur.PlannedIsDone=false;
-				PatCur.Update(oldPat);
+				Patients.Update(PatCur,oldPat);
 			}
 			ModuleSelected(PatCur.PatNum);
 		}
@@ -4378,7 +4420,7 @@ namespace OpenDental{
 					,"",MessageBoxButtons.OKCancel)!=DialogResult.OK)
 					return;
 				Procedures.UnattachProcsInPlannedAppt(ApptPlanned.Info.MyApt.AptNum);
-				ApptPlanned.Info.MyApt.Delete();
+				Appointments.Delete(ApptPlanned.Info.MyApt);
 			}
 			Appointment AptCur=new Appointment();
 			AptCur.PatNum=PatCur.PatNum;
@@ -4387,7 +4429,7 @@ namespace OpenDental{
 			AptCur.AptStatus=ApptStatus.Planned;
 			AptCur.AptDateTime=DateTime.Today;
 			AptCur.Pattern="/X/";
-			AptCur.InsertOrUpdate(null,true);
+			Appointments.InsertOrUpdate(AptCur,null,true);
 			FormApptEdit FormApptEdit2=new FormApptEdit(AptCur);
 			FormApptEdit2.IsNew=true;
 			FormApptEdit2.ShowDialog();
@@ -4400,7 +4442,7 @@ namespace OpenDental{
 			ProcList=Procedures.Refresh(PatCur.PatNum);
 			bool allProcsHyg=true;
 			for(int i=0;i<ProcList.Length;i++){
-				if(ProcList[i].NextAptNum!=AptCur.AptNum)
+				if(ProcList[i].PlannedAptNum!=AptCur.AptNum)
 					continue;//only concerned with procs on this nextApt
 				if(!ProcedureCodes.GetProcCode(ProcList[i].ADACode).IsHygiene){
 					allProcsHyg=false;
@@ -4410,12 +4452,12 @@ namespace OpenDental{
 			if(allProcsHyg && PatCur.SecProv!=0){
 				Appointment aptOld=AptCur.Copy();
 				AptCur.ProvNum=PatCur.SecProv;
-				AptCur.InsertOrUpdate(aptOld,false);
+				Appointments.InsertOrUpdate(AptCur,aptOld,false);
 			}
 			Patient patOld=PatCur.Copy();
 			PatCur.NextAptNum=AptCur.AptNum;
 			PatCur.PlannedIsDone=false;
-			PatCur.Update(patOld);
+			Patients.Update(PatCur,patOld);
 			ModuleSelected(PatCur.PatNum);//if procs were added in appt, then this will display them
 		}
 
@@ -4428,10 +4470,10 @@ namespace OpenDental{
 			if(MessageBox.Show(Lan.g(this,"Delete planned appointment?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK)
 				return;
 			Procedures.UnattachProcsInPlannedAppt(ApptPlanned.Info.MyApt.AptNum);
-			ApptPlanned.Info.MyApt.Delete();
+			Appointments.Delete(ApptPlanned.Info.MyApt);
 			Patient patOld=PatCur.Copy();
 			PatCur.NextAptNum=0;
-			PatCur.Update(patOld);
+			Patients.Update(PatCur,patOld);
 			ModuleSelected(PatCur.PatNum);
 			//FillNext();
 		}
@@ -4487,7 +4529,7 @@ namespace OpenDental{
 
 		private void gridProg_MouseUp(object sender,MouseEventArgs e) {
 			if(e.Button==MouseButtons.Right) {
-				if(Prefs.GetBool("EasyHideHospitals")){
+				if(PrefB.GetBool("EasyHideHospitals")){
 					menuItemPrintDay.Visible=false;
 				}
 				else{
@@ -4572,16 +4614,16 @@ namespace OpenDental{
 				}
 				procOld=procCur.Copy();
 				procCode=ProcedureCodes.GetProcCode(procCur.ADACode);
-				if(procCur.DateLocked.Year>1880){//if note is locked, don't change it.
+				//if(procCur.DateLocked.Year>1880){//if note is locked, don't change it.
 					//skippedMsgs+=Lan.g(this,"Note locked.");
 					//continue;
+				//}
+				//else{
+				if(procOld.ProcStatus!=ProcStat.C) {
+					//if procedure was already complete, then don't add more notes.
+					procCur.Note+=procCode.DefaultNote;//note wasn't complete, so add notes
 				}
-				else{
-					if(procOld.ProcStatus!=ProcStat.C) {
-						//if procedure was already complete, then don't add more notes.
-						procCur.ProcNote+=procCode.DefaultNote;//note not locked and it wasn't complete, so add notes
-					}
-				}
+				//}
 				procCur.DateEntryC=DateTime.Now;
 				if(procCur.AptNum!=0) {//if attached to an appointment
 					apt=Appointments.GetOneApt(procCur.AptNum);
@@ -4591,16 +4633,19 @@ namespace OpenDental{
 				}
 				else {
 					procCur.ProcDate=PIn.PDate(textDate.Text);
-					procCur.PlaceService=(PlaceOfService)Prefs.GetInt("DefaultProcedurePlaceService");
+					procCur.PlaceService=(PlaceOfService)PrefB.GetInt("DefaultProcedurePlaceService");
 				}
 				Procedures.SetDateFirstVisit(procCur.ProcDate,2,PatCur);
 				if(procCode.PaintType==ToothPaintingType.Extraction){//if an extraction, then mark previous procs hidden
-					procCur.SetHideGraphical();//might not matter anymore
+					//Procedures.SetHideGraphical(procCur);//might not matter anymore
 					ToothInitials.SetValue(PatCur.PatNum,procCur.ToothNum,ToothInitialType.Missing);
 				}
 				procCur.ProcStatus=ProcStat.C;
-				procCur.Update(procOld);
-				procCur.ComputeEstimates(procCur.PatNum,ClaimProcList,false,PlanList,PatPlanList,BenefitList);
+				Procedures.Update(procCur,procOld);
+				//Tried to move it to the business layer, but too complex for now.
+				//Procedures.SetComplete(
+				//	((Procedure)gridProg.Rows[gridProg.SelectedIndices[i]].Tag).ProcNum,PIn.PDate(textDate.Text));
+				Procedures.ComputeEstimates(procCur,procCur.PatNum,ClaimProcList,false,PlanList,PatPlanList,BenefitList);
 			}
 			Recalls.Synch(PatCur.PatNum);
 			//if(skipped>0){
@@ -4802,10 +4847,10 @@ namespace OpenDental{
 			pd2=new PrintDocument();
 			pd2.PrintPage += new PrintPageEventHandler(this.pd2_PrintPageDay);
 			pd2.DefaultPageSettings.Margins=new Margins(0,0,0,0);
+			pd2.OriginAtMargins=true;
 			if(pd2.DefaultPageSettings.PaperSize.Height==0) {
 				pd2.DefaultPageSettings.PaperSize=new PaperSize("default",850,1100);
 			}
-			pd2.OriginAtMargins=true;
 			try {
 				if(justPreview) {
 					FormRpPrintPreview pView = new FormRpPrintPreview();
@@ -4851,7 +4896,7 @@ namespace OpenDental{
 				string fileName=Documents.GetPatPict(PatCur.PatNum);
 				if(fileName!="") {
 					Image picturePat=null;
-					string fullName=Prefs.GetString("DocPath")
+					string fullName=PrefB.GetString("DocPath")
 						+PatCur.ImageFolder.Substring(0,1)+@"\"
 						+PatCur.ImageFolder+@"\"
 						+fileName;
@@ -5060,6 +5105,8 @@ namespace OpenDental{
 			FormToothChartingBig FormT=new FormToothChartingBig(checkShowTeeth.Checked,ToothInitialList,ProcAL);
 			FormT.Show();
 		}
+
+		
 
 		
 

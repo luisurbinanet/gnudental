@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Windows.Forms;
 using OpenDental.ReportingOld2;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -579,7 +580,7 @@ namespace OpenDental{
 			this.textNote.Location = new System.Drawing.Point(22, 445);
 			this.textNote.Multiline = true;
 			this.textNote.Name = "textNote";
-			this.textNote.QuickPasteType = OpenDental.QuickPasteType.PayPlan;
+			this.textNote.QuickPasteType = OpenDentBusiness.QuickPasteType.PayPlan;
 			this.textNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textNote.Size = new System.Drawing.Size(392, 121);
 			this.textNote.TabIndex = 40;
@@ -1038,7 +1039,7 @@ namespace OpenDental{
 				ppCharge.Principal=downpayment;
 				ppCharge.Note=Lan.g(this,"Downpayment");
 				try{
-					ppCharge.InsertOrUpdate(true);
+					PayPlanCharges.InsertOrUpdate(ppCharge,true);
 				}
 				catch(ApplicationException ex){
 					MessageBox.Show(ex.Message);
@@ -1098,7 +1099,7 @@ namespace OpenDental{
 					ppCharge=ChargeList[ChargeList.Length-1].Copy();
 					ppCharge.Principal+=tempP;
 					try{
-						ppCharge.InsertOrUpdate(false);
+						PayPlanCharges.InsertOrUpdate(ppCharge,false);
 					}
 					catch(ApplicationException ex){
 						MessageBox.Show(ex.Message);
@@ -1116,7 +1117,7 @@ namespace OpenDental{
 					tempP=0;//this will prevent another loop
 				}
 				try{
-					ppCharge.InsertOrUpdate(true);
+					PayPlanCharges.InsertOrUpdate(ppCharge,true);
 				}
 				catch(ApplicationException ex){
 					MessageBox.Show(ex.Message);
@@ -1169,7 +1170,7 @@ namespace OpenDental{
 			}
 			ReportOld2 report=new ReportOld2();
 			report.AddTitle("Payment Plan Terms");
-			report.AddSubTitle(Prefs.GetString("PracticeTitle"));
+			report.AddSubTitle(PrefB.GetString("PracticeTitle"));
 			report.AddSubTitle(DateTime.Today.ToShortDateString());
 			string sectName="Report Header";
 			Section section=report.Sections["Report Header"];
@@ -1269,7 +1270,7 @@ namespace OpenDental{
 			PayPlanCur.Note=textNote.Text;
 			//PlanNum set already
 			try{
-				PayPlanCur.InsertOrUpdate(false);//always saved to db before opening this form
+				PayPlans.InsertOrUpdate(PayPlanCur,false);//always saved to db before opening this form
 			}
 			catch(Exception ex){
 				MessageBox.Show(ex.Message);
@@ -1284,7 +1285,7 @@ namespace OpenDental{
 			}
 			//later improvement if needed: possibly prevent deletion of some charges like older ones.
 			try{
-				PayPlanCur.Delete();
+				PayPlans.Delete(PayPlanCur);
 			}
 			catch(ApplicationException ex){
 				MessageBox.Show(ex.Message);
@@ -1314,7 +1315,7 @@ namespace OpenDental{
 			}
 			if(IsNew){
 				try{
-					PayPlanCur.Delete();
+					PayPlans.Delete(PayPlanCur);
 				}
 				catch(Exception ex){
 					MessageBox.Show(ex.Message);

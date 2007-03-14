@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Windows.Forms;
 using System.Threading;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary>This is getting very outdated.  I realize it is difficult to use and will be phased out soon. The report displayed will be based on Queries.TableQ and Queries.CurReport.</summary>
@@ -64,6 +65,7 @@ namespace OpenDental{
 		public OpenDental.ODtextBox textQuery;
 		private int totalPages=0;
 		private static Hashtable hListPlans;
+		private UserQuery UserQueryCur;
 
 		///<summary></summary>
 		public FormQuery(){
@@ -176,7 +178,7 @@ namespace OpenDental{
 			this.textQuery.Location = new System.Drawing.Point(2, 3);
 			this.textQuery.Multiline = true;
 			this.textQuery.Name = "textQuery";
-			this.textQuery.QuickPasteType = OpenDental.QuickPasteType.Query;
+			this.textQuery.QuickPasteType = QuickPasteType.Query;
 			this.textQuery.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textQuery.Size = new System.Drawing.Size(551, 76);
 			this.textQuery.TabIndex = 16;
@@ -603,7 +605,7 @@ namespace OpenDental{
 				}*/
 				Queries.CurReport.Title=textTitle.Text;
 				Queries.CurReport.SubTitle=new string[1];
-				Queries.CurReport.SubTitle[0]=((Pref)Prefs.HList["PracticeTitle"]).ValueString;
+				Queries.CurReport.SubTitle[0]=((Pref)PrefB.HList["PracticeTitle"]).ValueString;
 				for(int iCol=0;iCol<Queries.TableQ.Columns.Count;iCol++){
 					Queries.CurReport.ColCaption[iCol]=Queries.TableQ.Columns[iCol].Caption;//myGridTS.GridColumnStyles[iCol].HeaderText;
 					myGridTS.GridColumnStyles[iCol].Alignment=Queries.CurReport.ColAlign[iCol];
@@ -983,11 +985,12 @@ namespace OpenDental{
 
 		private void butFormulate_Click(object sender, System.EventArgs e) {//is now the 'Favorites' button
 			FormQueryFormulate FormQF=new FormQueryFormulate();
+			FormQF.UserQueryCur=UserQueryCur;
 			FormQF.ShowDialog();
 			if(FormQF.DialogResult==DialogResult.OK){
-				textQuery.Text=UserQueries.Cur.QueryText;
+				textQuery.Text=FormQF.UserQueryCur.QueryText;
 				//grid2.CaptionText=UserQueries.Cur.Description;
-				textTitle.Text=UserQueries.Cur.Description;
+				textTitle.Text=FormQF.UserQueryCur.Description;
 				SubmitQuery();
 				//this.butSaveChanges.Enabled=true;
 			}
@@ -997,14 +1000,14 @@ namespace OpenDental{
 		}
 
 		private void butAdd_Click(object sender, System.EventArgs e) {
-			UserQueries.Cur=new UserQuery();
-			UserQueries.Cur.QueryText=textQuery.Text;
 			FormQueryEdit FormQE=new FormQueryEdit();
+			FormQE.UserQueryCur=new UserQuery();
+			FormQE.UserQueryCur.QueryText=textQuery.Text;
 			FormQE.IsNew=true;
 			FormQE.ShowDialog();
 			if(FormQE.DialogResult==DialogResult.OK){
-				textQuery.Text=UserQueries.Cur.QueryText;
-				grid2.CaptionText=UserQueries.Cur.Description;
+				textQuery.Text=FormQE.UserQueryCur.QueryText;
+				grid2.CaptionText=FormQE.UserQueryCur.Description;
 			}
 		}
 
@@ -1057,7 +1060,7 @@ namespace OpenDental{
 			pd2=new PrintDocument();
 			pd2.PrintPage += new PrintPageEventHandler(this.pd2_PrintPage);
 			pd2.DefaultPageSettings.Margins=new Margins(10,50,50,60);
-			if(pd2.DefaultPageSettings.PaperSize.Height==0) {
+			if(pd2.DefaultPageSettings.PaperSize.Height==0){
 				pd2.DefaultPageSettings.PaperSize=new PaperSize("default",850,1100);
 			}
 			pagesPrinted=0;
@@ -1077,17 +1080,18 @@ namespace OpenDental{
 		
 		///<summary>raised for each page to be printed.</summary>
 		private void pd2_PrintPage(object sender, PrintPageEventArgs ev){
-			float yPos = ev.MarginBounds.Top;
+			Rectangle bounds=ev.MarginBounds;
+			float yPos = bounds.Top;
 			if(!headerPrinted){
 				ev.Graphics.DrawString(Queries.CurReport.Title
 					,titleFont,Brushes.Black
-					,ev.MarginBounds.Width/2
+					,bounds.Width/2
 					-ev.Graphics.MeasureString(Queries.CurReport.Title,titleFont).Width/2,yPos);
 				yPos+=titleFont.GetHeight(ev.Graphics);
 				for(int i=0;i<Queries.CurReport.SubTitle.Length;i++){
 					ev.Graphics.DrawString(Queries.CurReport.SubTitle[i]
 						,subtitleFont,Brushes.Black
-						,ev.MarginBounds.Width/2
+						,bounds.Width/2
 						-ev.Graphics.MeasureString(Queries.CurReport.SubTitle[i],subtitleFont).Width/2,yPos);
 					yPos+=subtitleFont.GetHeight(ev.Graphics)+2;
 				}
@@ -1095,55 +1099,55 @@ namespace OpenDental{
 			}
 			yPos+=10;
 			ev.Graphics.DrawString(Lan.g(this,"Date:")+" "+DateTime.Today.ToString("d")
-				,bodyFont,Brushes.Black,ev.MarginBounds.Left,yPos);
+				,bodyFont,Brushes.Black,bounds.Left,yPos);
 			//if(totalPages==0){
 			ev.Graphics.DrawString(Lan.g(this,"Page:")+" "+(pagesPrinted+1).ToString()
 				,bodyFont,Brushes.Black
-				,ev.MarginBounds.Right
+				,bounds.Right
 				-ev.Graphics.MeasureString(Lan.g(this,"Page:")+" "+(pagesPrinted+1).ToString()
 				,bodyFont).Width,yPos);
 			/*}
 			else{//maybe work on this later.  Need totalPages on first pass
 				ev.Graphics.DrawString("Page: "+(pagesPrinted+1).ToString()+" / "+totalPages.ToString()
 					,bodyFont,Brushes.Black
-					,ev.MarginBounds.Right
+					,bounds.Right
 					-ev.Graphics.MeasureString("Page: "+(pagesPrinted+1).ToString()+" / "
 					+totalPages.ToString(),bodyFont).Width
 					,yPos);
 			}*/
 			yPos+=bodyFont.GetHeight(ev.Graphics)+10;
-			ev.Graphics.DrawLine(new Pen(Color.Black),ev.MarginBounds.Left,yPos-5,ev.MarginBounds.Right,yPos-5);
+			ev.Graphics.DrawLine(new Pen(Color.Black),bounds.Left,yPos-5,bounds.Right,yPos-5);
 			//column captions:
 			for(int i=0;i<Queries.CurReport.ColCaption.Length;i++){
 				if(Queries.CurReport.ColAlign[i]==HorizontalAlignment.Right){
 					ev.Graphics.DrawString(Queries.CurReport.ColCaption[i]
 						,colCaptFont,Brushes.Black,new RectangleF(
-						ev.MarginBounds.Left+Queries.CurReport.ColPos[i+1]
+						bounds.Left+Queries.CurReport.ColPos[i+1]
 						-ev.Graphics.MeasureString(Queries.CurReport.ColCaption[i],colCaptFont).Width,yPos
 						,Queries.CurReport.ColWidth[i],colCaptFont.GetHeight(ev.Graphics)));
 				}
 				else{
 					ev.Graphics.DrawString(Queries.CurReport.ColCaption[i]
-						,colCaptFont,Brushes.Black,ev.MarginBounds.Left+Queries.CurReport.ColPos[i],yPos);
+						,colCaptFont,Brushes.Black,bounds.Left+Queries.CurReport.ColPos[i],yPos);
 				}
 			}
 			yPos+=bodyFont.GetHeight(ev.Graphics)+5;
 			//table:
-			while(yPos<ev.MarginBounds.Top+ev.MarginBounds.Height-18//The 18 is allowance for the line about to print. 
+			while(yPos<bounds.Top+bounds.Height-18//The 18 is allowance for the line about to print. 
 				&& linesPrinted < Queries.TableQ.Rows.Count)
 			{
 				for(int iCol=0;iCol<Queries.TableQ.Columns.Count;iCol++){
 					if(Queries.CurReport.ColAlign[iCol]==HorizontalAlignment.Right){
 						ev.Graphics.DrawString(grid2[linesPrinted,iCol].ToString()
 							,bodyFont,Brushes.Black,new RectangleF(
-							ev.MarginBounds.Left+Queries.CurReport.ColPos[iCol+1]
+							bounds.Left+Queries.CurReport.ColPos[iCol+1]
 							-ev.Graphics.MeasureString(grid2[linesPrinted,iCol].ToString(),bodyFont).Width-1,yPos
 							,Queries.CurReport.ColWidth[iCol],bodyFont.GetHeight(ev.Graphics)));
 					}
 					else{
 						ev.Graphics.DrawString(grid2[linesPrinted,iCol].ToString()
 							,bodyFont,Brushes.Black,new RectangleF(
-							ev.MarginBounds.Left+Queries.CurReport.ColPos[iCol],yPos
+							bounds.Left+Queries.CurReport.ColPos[iCol],yPos
 							,Queries.CurReport.ColPos[iCol+1]-Queries.CurReport.ColPos[iCol]+6
 							,bodyFont.GetHeight(ev.Graphics)));
 					}
@@ -1159,8 +1163,8 @@ namespace OpenDental{
 			}
 			//totals:
 			if(tablePrinted){
-				if(yPos<ev.MarginBounds.Bottom){
-					ev.Graphics.DrawLine(new Pen(Color.Black),ev.MarginBounds.Left,yPos+3,ev.MarginBounds.Right,yPos+3);
+				if(yPos<bounds.Bottom){
+					ev.Graphics.DrawLine(new Pen(Color.Black),bounds.Left,yPos+3,bounds.Right,yPos+3);
 					yPos+=4;
 					for(int iCol=0;iCol<Queries.TableQ.Columns.Count;iCol++){
 						if(Queries.CurReport.ColAlign[iCol]==HorizontalAlignment.Right){
@@ -1168,13 +1172,13 @@ namespace OpenDental{
 								(Queries.CurReport.ColTotal[iCol].ToString("n"),subtitleFont).Width);
 							ev.Graphics.DrawString(Queries.CurReport.ColTotal[iCol].ToString("n")
 								,subtitleFont,Brushes.Black,new RectangleF(
-								ev.MarginBounds.Left+Queries.CurReport.ColPos[iCol+1]-textWidth+3,yPos//the 3 is arbitrary
+								bounds.Left+Queries.CurReport.ColPos[iCol+1]-textWidth+3,yPos//the 3 is arbitrary
 								,textWidth,subtitleFont.GetHeight(ev.Graphics)));
 						}
 						//else{
 						//	ev.Graphics.DrawString(grid2[linesPrinted,iCol].ToString()
 						//		,bodyFont,Brushes.Black,new RectangleF(
-						//		ev.MarginBounds.Left+Queries.CurReport.ColPos[iCol],yPos
+						//		bounds.Left+Queries.CurReport.ColPos[iCol],yPos
 						//		,Queries.CurReport.ColPos[iCol+1]-Queries.CurReport.ColPos[iCol]
 						//,bodyFont.GetHeight(ev.Graphics)));
 						//}
@@ -1186,14 +1190,14 @@ namespace OpenDental{
 			//Summary
 			if(totalsPrinted){
 				if(yPos+Queries.CurReport.Summary.Length*subtitleFont.GetHeight(ev.Graphics)
-					< ev.MarginBounds.Top+ev.MarginBounds.Height){
-					ev.Graphics.DrawLine(new Pen(Color.Black),ev.MarginBounds.Left,yPos+2,ev.MarginBounds.Right,yPos+2);
+					< bounds.Top+bounds.Height){
+					ev.Graphics.DrawLine(new Pen(Color.Black),bounds.Left,yPos+2,bounds.Right,yPos+2);
 					yPos+=bodyFont.GetHeight(ev.Graphics);
 					for(int i=0;i<Queries.CurReport.Summary.Length;i++){
-					//while(yPos<ev.MarginBounds.Top+ev.MarginBounds.Height && linesPrinted<Queries.TableQ.Rows.Count){
-						//if(yPos>=ev.MarginBounds.Top+ev.MarginBounds.Height) break;
+					//while(yPos<bounds.Top+bounds.Height && linesPrinted<Queries.TableQ.Rows.Count){
+						//if(yPos>=bounds.Top+bounds.Height) break;
 						ev.Graphics.DrawString(Queries.CurReport.Summary[i]
-							,subtitleFont,Brushes.Black,ev.MarginBounds.Left,yPos);
+							,subtitleFont,Brushes.Black,bounds.Left,yPos);
 						yPos+=subtitleFont.GetHeight(ev.Graphics);
 					}
 					summaryPrinted=true;
@@ -1255,16 +1259,16 @@ namespace OpenDental{
       else{
         saveFileDialog2.FileName=UserQueries.Cur.FileName;
 			}
-			if(!Directory.Exists( ((Pref)Prefs.HList["ExportPath"]).ValueString )){
+			if(!Directory.Exists( ((Pref)PrefB.HList["ExportPath"]).ValueString )){
 				try{
-					Directory.CreateDirectory( ((Pref)Prefs.HList["ExportPath"]).ValueString );
-					saveFileDialog2.InitialDirectory=((Pref)Prefs.HList["ExportPath"]).ValueString;
+					Directory.CreateDirectory( ((Pref)PrefB.HList["ExportPath"]).ValueString );
+					saveFileDialog2.InitialDirectory=((Pref)PrefB.HList["ExportPath"]).ValueString;
 				}
 				catch{
 					//initialDirectory will be blank
 				}
 			}
-			else saveFileDialog2.InitialDirectory=((Pref)Prefs.HList["ExportPath"]).ValueString;
+			else saveFileDialog2.InitialDirectory=((Pref)PrefB.HList["ExportPath"]).ValueString;
 			//saveFileDialog2.DefaultExt="xls";
 			//saveFileDialog2.Filter="txt files(*.txt)|*.txt|All files(*.*)|*.*";
       //saveFileDialog2.FilterIndex=1;
@@ -1294,21 +1298,21 @@ namespace OpenDental{
 				saveFileDialog2.FileName=Queries.CurReport.Title;
 			}
       else{
-				if(UserQueries.Cur.FileName==null)
+				if(UserQueryCur==null || UserQueryCur.FileName==null || UserQueryCur.FileName=="")//.FileName==null)
 					saveFileDialog2.FileName=Queries.CurReport.Title;
 				else
-					saveFileDialog2.FileName=UserQueries.Cur.FileName;
+					saveFileDialog2.FileName=UserQueryCur.FileName;
 			}
-			if(!Directory.Exists( ((Pref)Prefs.HList["ExportPath"]).ValueString )){
+			if(!Directory.Exists( ((Pref)PrefB.HList["ExportPath"]).ValueString )){
 				try{
-					Directory.CreateDirectory( ((Pref)Prefs.HList["ExportPath"]).ValueString );
-					saveFileDialog2.InitialDirectory=((Pref)Prefs.HList["ExportPath"]).ValueString;
+					Directory.CreateDirectory( ((Pref)PrefB.HList["ExportPath"]).ValueString );
+					saveFileDialog2.InitialDirectory=((Pref)PrefB.HList["ExportPath"]).ValueString;
 				}
 				catch{
 					//initialDirectory will be blank
 				}
 			}
-			else saveFileDialog2.InitialDirectory=((Pref)Prefs.HList["ExportPath"]).ValueString;
+			else saveFileDialog2.InitialDirectory=((Pref)PrefB.HList["ExportPath"]).ValueString;
 			//saveFileDialog2.DefaultExt="txt";
 			saveFileDialog2.Filter="Text files(*.txt)|*.txt|Excel Files(*.xls)|*.xls|All files(*.*)|*.*";
       saveFileDialog2.FilterIndex=0;

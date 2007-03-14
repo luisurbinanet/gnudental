@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -178,7 +179,7 @@ namespace OpenDental{
 				}
 				QuickCat.DefaultForTypes+=listType.SelectedIndices[i].ToString();
 			}
-			QuickCat.Update();
+			QuickPasteCats.Update(QuickCat);
 			DialogResult=DialogResult.OK;
 		}
 

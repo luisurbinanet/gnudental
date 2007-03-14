@@ -5,6 +5,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using OpenDental.UI;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -404,8 +405,8 @@ namespace OpenDental{
 				}
 			}
 			if(IsNew){
-				textDateStart.Text=PIn.PDate(Prefs.GetString("DateDepositsStarted")).ToShortDateString();
-				if(Prefs.GetBool("EasyNoClinics")){
+				textDateStart.Text=PIn.PDate(PrefB.GetString("DateDepositsStarted")).ToShortDateString();
+				if(PrefB.GetBool("EasyNoClinics")){
 					comboClinic.Visible=false;
 					labelClinic.Visible=false;
 				}
@@ -586,7 +587,7 @@ namespace OpenDental{
 			gridIns.SetSelected(true);
 			ComputeAmt();
 			if(comboClinic.SelectedIndex==0){
-				textBankAccountInfo.Text=Prefs.GetString("PracticeBankNumber");
+				textBankAccountInfo.Text=PrefB.GetString("PracticeBankNumber");
 			}
 			else{
 				textBankAccountInfo.Text=Clinics.List[comboClinic.SelectedIndex-1].BankNumber;
@@ -614,14 +615,14 @@ namespace OpenDental{
 					return;
 				}
 				try{
-					trans.Delete();
+					Transactions.Delete(trans);
 				}
 				catch(ApplicationException ex){
 					MessageBox.Show(ex.Message);
 					return;
 				}
 			}
-			DepositCur.Delete();
+			Deposits.Delete(DepositCur);
 			DialogResult=DialogResult.OK;
 		}
 
@@ -695,7 +696,7 @@ namespace OpenDental{
 			FormQuery2.ResetGrid();//necessary won't work without
 			Queries.CurReport.Title="Deposit Slip";
 			Queries.CurReport.SubTitle=new string[2];
-			Queries.CurReport.SubTitle[0]=((Pref)Prefs.HList["PracticeTitle"]).ValueString;
+			Queries.CurReport.SubTitle[0]=((Pref)PrefB.HList["PracticeTitle"]).ValueString;
 			Queries.CurReport.SubTitle[1]=DepositCur.DateDeposit.ToShortDateString();
 			Queries.CurReport.Summary=new string[1];
 			Queries.CurReport.Summary[0]=DepositCur.BankAccountInfo;
@@ -738,13 +739,13 @@ namespace OpenDental{
 			//amount already handled.
 			DepositCur.BankAccountInfo=PIn.PString(textBankAccountInfo.Text);
 			if(IsNew){
-				DepositCur.Insert();
+				Deposits.Insert(DepositCur);
 				if(Accounts.DepositsLinked() && DepositCur.Amount>0){
 					//create a transaction here
 					Transaction trans=new Transaction();
 					trans.DepositNum=DepositCur.DepositNum;
 					trans.UserNum=Security.CurUser.UserNum;
-					trans.Insert();
+					Transactions.Insert(trans);
 					//first the deposit entry
 					JournalEntry je=new JournalEntry();
 					je.AccountNum=DepositAccounts[comboDepositAccount.SelectedIndex];
@@ -752,32 +753,32 @@ namespace OpenDental{
 					je.DateDisplayed=DepositCur.DateDeposit;//it would be nice to add security here.
 					je.DebitAmt=DepositCur.Amount;
 					je.Memo=Lan.g(this,"Deposit");
-					je.Splits=Accounts.GetDescript(Prefs.GetInt("AccountingIncomeAccount"));
+					je.Splits=Accounts.GetDescript(PrefB.GetInt("AccountingIncomeAccount"));
 					je.TransactionNum=trans.TransactionNum;
-					je.Insert();
+					JournalEntries.Insert(je);
 					//then, the income entry
 					je=new JournalEntry();
-					je.AccountNum=Prefs.GetInt("AccountingIncomeAccount");
+					je.AccountNum=PrefB.GetInt("AccountingIncomeAccount");
 					//je.CheckNumber=;
 					je.DateDisplayed=DepositCur.DateDeposit;//it would be nice to add security here.
 					je.CreditAmt=DepositCur.Amount;
 					je.Memo=Lan.g(this,"Deposit");
 					je.Splits=Accounts.GetDescript(DepositAccounts[comboDepositAccount.SelectedIndex]);
 					je.TransactionNum=trans.TransactionNum;
-					je.Insert();
+					JournalEntries.Insert(je);
 				}
 			}
 			else{
-				DepositCur.Update();
+				Deposits.Update(DepositCur);
 			}
 			if(IsNew){//never allowed to change or attach more checks after initial creation of deposit slip
 				for(int i=0;i<gridPat.SelectedIndices.Length;i++){
 					PatPayList[gridPat.SelectedIndices[i]].DepositNum=DepositCur.DepositNum;
-					PatPayList[gridPat.SelectedIndices[i]].Update();
+					Payments.Update(PatPayList[gridPat.SelectedIndices[i]]);
 				}
 				for(int i=0;i<gridIns.SelectedIndices.Length;i++){
 					ClaimPayList[gridIns.SelectedIndices[i]].DepositNum=DepositCur.DepositNum;
-					ClaimPayList[gridIns.SelectedIndices[i]].Update();
+					ClaimPayments.Update(ClaimPayList[gridIns.SelectedIndices[i]]);
 				}
 			}
 			if(IsNew) {
@@ -801,7 +802,7 @@ namespace OpenDental{
 		private void butCancel_Click(object sender, System.EventArgs e) {
 			if(IsNew){
 				//no need to worry about deposit links, since none made yet.
-				DepositCur.Delete();
+				Deposits.Delete(DepositCur);
 			}
 			DialogResult=DialogResult.Cancel;
 		}

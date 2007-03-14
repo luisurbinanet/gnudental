@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -252,18 +253,18 @@ namespace OpenDental{
 		#endregion
 
 		private void FormRxSetupPrinting_Load(object sender,EventArgs e) {
-			if(Prefs.GetBool("RxOrientVert")) {
+			if(PrefB.GetBool("RxOrientVert")) {
 				radioVertical.Checked=true;
 			}
 			else {
 				radioHorizontal.Checked=true;
 			}
-			textRight.Text=Prefs.GetDouble("RxAdjustRight").ToString();
-			textDown.Text=Prefs.GetDouble("RxAdjustDown").ToString();
-			if(Prefs.GetInt("RxGeneric")==0) {
+			textRight.Text=PrefB.GetDouble("RxAdjustRight").ToString();
+			textDown.Text=PrefB.GetDouble("RxAdjustDown").ToString();
+			if(PrefB.GetInt("RxGeneric")==0) {
 				radioGeneric.Checked=true;
 			}
-			else if(Prefs.GetInt("RxGeneric")==1){
+			else if(PrefB.GetInt("RxGeneric")==1){
 				radioNeither.Checked=true;
 			}
 			else{

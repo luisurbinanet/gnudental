@@ -6,6 +6,7 @@ using System.Drawing.Drawing2D;
 using System.Data;
 using System.Windows.Forms;
 using OpenDental.UI;
+using OpenDentBusiness;
 
 namespace OpenDental{
 
@@ -61,6 +62,7 @@ namespace OpenDental{
 		private ErrorProvider errorProvider1;
 		private OpenDental.UI.Button butAck;
 		private SigElementDef[] sigElementDefMessages;
+		private Employee EmployeeCur;
 
 		///<summary></summary>
 		public ContrStaff(){
@@ -688,7 +690,7 @@ namespace OpenDental{
 			}
 			//ok signifies that a database was restored
 			OnPatientSelected(0);
-			ParentForm.Text=Prefs.GetString("MainWindowTitle");
+			ParentForm.Text=PrefB.GetString("MainWindowTitle");
 			DataValid.SetInvalid(true);
 			ModuleSelected();
 		}
@@ -773,8 +775,8 @@ namespace OpenDental{
 				return;
 			}
 			gridEmp.SetSelected(index,true);
-			Employees.Cur=Employees.ListShort[index];
-			if(ClockEvents.IsClockedIn(Employees.Cur.EmployeeNum)){
+			EmployeeCur=Employees.ListShort[index];
+			if(ClockEvents.IsClockedIn(EmployeeCur.EmployeeNum)){
 				butClockIn.Enabled=false;
 				butClockOut.Enabled=true;
 				butTimeCard.Enabled=true;
@@ -786,13 +788,13 @@ namespace OpenDental{
 				butClockOut.Enabled=false;
 				butTimeCard.Enabled=true;
 				butBreaks.Enabled=true;
-				listStatus.SelectedIndex=(int)ClockEvents.GetLastStatus(Employees.Cur.EmployeeNum);
+				listStatus.SelectedIndex=(int)ClockEvents.GetLastStatus(EmployeeCur.EmployeeNum);
 				listStatus.Enabled=false;
 			}
 		}
 
 		private void gridEmp_CellClick(object sender, OpenDental.UI.ODGridClickEventArgs e) {
-			if(Prefs.GetBool("TimecardSecurityEnabled")){
+			if(PrefB.GetBool("TimecardSecurityEnabled")){
 				if(Security.CurUser.EmployeeNum!=Employees.ListShort[e.Row].EmployeeNum){
 					if(!Security.IsAuthorized(Permissions.TimecardsEditAll)){
 						SelectEmpI(-1);
@@ -809,14 +811,14 @@ namespace OpenDental{
 
 		private void butClockIn_Click(object sender, System.EventArgs e) {
 			ClockEvent ce=new ClockEvent();
-			ce.EmployeeNum=Employees.Cur.EmployeeNum;
+			ce.EmployeeNum=EmployeeCur.EmployeeNum;
 			ce.TimeEntered=DateTime.Now+TimeDelta;
 			ce.TimeDisplayed=DateTime.Now+TimeDelta;
 			ce.ClockIn=true;
 			ce.ClockStatus=(TimeClockStatus)listStatus.SelectedIndex;
-			ce.Insert();
-			Employees.Cur.ClockStatus=Lan.g(this,"Working");;
-			Employees.UpdateCur();
+			ClockEvents.Insert(ce);
+			EmployeeCur.ClockStatus=Lan.g(this,"Working");;
+			Employees.Update(EmployeeCur);
 			ModuleSelected();
 		}
 
@@ -826,14 +828,14 @@ namespace OpenDental{
 				return;
 			}
 			ClockEvent ce=new ClockEvent();
-			ce.EmployeeNum=Employees.Cur.EmployeeNum;
+			ce.EmployeeNum=EmployeeCur.EmployeeNum;
 			ce.TimeEntered=DateTime.Now+TimeDelta;
 			ce.TimeDisplayed=DateTime.Now+TimeDelta;
 			ce.ClockIn=false;
 			ce.ClockStatus=(TimeClockStatus)listStatus.SelectedIndex;
-			ce.Insert();
-			Employees.Cur.ClockStatus=Lan.g("enumTimeClockStatus",ce.ClockStatus.ToString());
-			Employees.UpdateCur();
+			ClockEvents.Insert(ce);
+			EmployeeCur.ClockStatus=Lan.g("enumTimeClockStatus",ce.ClockStatus.ToString());
+			Employees.Update(EmployeeCur);
 			ModuleSelected();
 		}
 
@@ -850,6 +852,7 @@ namespace OpenDental{
 				return;
 			}
 			FormTimeCard FormTC=new FormTimeCard();
+			FormTC.EmployeeCur=EmployeeCur;
 			FormTC.ShowDialog();
 			ModuleSelected();
 		}
@@ -860,6 +863,7 @@ namespace OpenDental{
 				return;
 			}
 			FormTimeCard FormTC=new FormTimeCard();
+			FormTC.EmployeeCur=EmployeeCur;
 			FormTC.IsBreaks=true;
 			FormTC.ShowDialog();
 			ModuleSelected();
@@ -1006,13 +1010,13 @@ namespace OpenDental{
 			if(listFrom.SelectedIndex!=-1){
 				sig.FromUser=sigElementDefUser[listFrom.SelectedIndex].SigText;
 			}
-			sig.Insert();
+			Signals.Insert(sig);
 			SigElement element;
 			if(listTo.SelectedIndex!=-1) {
 				element=new SigElement();
 				element.SigElementDefNum=sigElementDefUser[listTo.SelectedIndex].SigElementDefNum;
 				element.SignalNum=sig.SignalNum;
-				element.Insert();
+				SigElements.Insert(element);
 			}
 			textMessage.Text="";
 			listFrom.SelectedIndex=-1;
@@ -1038,25 +1042,25 @@ namespace OpenDental{
 			}
 			//need to do this all as a transaction, so need to do a writelock on the signal table first.
 			//alternatively, we could just make sure not to retrieve any signals that were less the 300ms old.
-			sig.Insert();
+			Signals.Insert(sig);
 			SigElement element;
 			if(listTo.SelectedIndex!=-1) {
 				element=new SigElement();
 				element.SigElementDefNum=sigElementDefUser[listTo.SelectedIndex].SigElementDefNum;
 				element.SignalNum=sig.SignalNum;
-				element.Insert();
+				SigElements.Insert(element);
 			}
 			//We do not insert an element for From
 			if(listExtras.SelectedIndex!=-1) {
 				element=new SigElement();
 				element.SigElementDefNum=sigElementDefExtras[listExtras.SelectedIndex].SigElementDefNum;
 				element.SignalNum=sig.SignalNum;
-				element.Insert();
+				SigElements.Insert(element);
 			}
 			element=new SigElement();
 			element.SigElementDefNum=sigElementDefMessages[listMessages.SelectedIndex].SigElementDefNum;
 			element.SignalNum=sig.SignalNum;
-			element.Insert();
+			SigElements.Insert(element);
 			//reset the controls
 			textMessage.Text="";
 			listFrom.SelectedIndex=-1;
@@ -1100,7 +1104,7 @@ namespace OpenDental{
 					continue;//totally ignore if trying to ack a previously acked signal
 				}
 				sig.AckTime=DateTime.Now+TimeDelta;
-				sig.Update();
+				Signals.Update(sig);
 				//change the grid temporarily until the next timer event.  This makes it feel more responsive.
 				if(checkIncludeAck.Checked){
 					gridMessages.Rows[gridMessages.SelectedIndices[i]].Cells[3].Text=sig.AckTime.ToShortTimeString();					

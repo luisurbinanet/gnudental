@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 
@@ -41,9 +42,8 @@ namespace OpenDental{
 				+ ",refdate = '"    +POut.PDate  (RefDate)+"'"
 				+ ",isfrom = '"     +POut.PBool  (IsFrom)+"'"
 				+" WHERE RefAttachNum = '" +POut.PInt(RefAttachNum)+"'";
-			//MessageBox.Show(cmd.CommandText);
-			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command);
+			//MessageBox.Show(command);
+ 			General.NonQ(command);
 		}
 
 		///<summary></summary>
@@ -55,17 +55,14 @@ namespace OpenDental{
 				+"'"+POut.PInt   (ItemOrder)+"', "
 				+"'"+POut.PDate  (RefDate)+"', "
 				+"'"+POut.PBool  (IsFrom)+"')";
-			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command,true);
-			RefAttachNum=dcon.InsertID;
+ 			RefAttachNum=General.NonQ(command,true);
 		}
 
 		///<summary></summary>
 		public void Delete(){
 			string command= "DELETE FROM refattach "
 				+"WHERE refattachnum = '"+RefAttachNum+"'";
-			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command);
+ 			General.NonQ(command);
 		}
 
 		
@@ -76,7 +73,7 @@ namespace OpenDental{
 	/*================================================================================================
 		=================================== class RefAttaches ==========================================*/
 ///<summary></summary>
-	public class RefAttaches:DataClass{
+	public class RefAttaches{
 		//<summary>for this patient only</summary>
 		//public static RefAttach[] List;
 		//<summary></summary>
@@ -90,8 +87,7 @@ namespace OpenDental{
 				"SELECT * FROM refattach"
 				+" WHERE patnum = "+patNum.ToString()
 				+" ORDER BY itemorder";
-			DataConnection dcon=new DataConnection();
- 			DataTable table=dcon.GetTable(command);
+ 			DataTable table=General.GetTable(command);
 			RefAttach[] List=new RefAttach[table.Rows.Count];
 			//HList=new Hashtable();
 			for(int i=0;i<table.Rows.Count;i++){
@@ -112,8 +108,7 @@ namespace OpenDental{
 			string command =
 				"SELECT * FROM refattach"
 				+" WHERE referralnum = '"+referralNum+"'";
-			DataConnection dcon=new DataConnection();
- 			DataTable table=dcon.GetTable(command);
+ 			DataTable table=General.GetTable(command);
 			if(table.Rows.Count > 0){
 				return true;
 			}
@@ -130,9 +125,8 @@ namespace OpenDental{
 				+"AND refattach.ReferralNum=referral.ReferralNum "
 				+"AND refattach.IsFrom="+POut.PBool(IsFrom)
 				+" AND referral.ReferralNum="+refNum.ToString();
-			//MessageBox.Show(cmd.CommandText);
-			DataConnection dcon=new DataConnection();
-			DataTable table=dcon.GetTable(command);
+			//MessageBox.Show(command);
+			DataTable table=General.GetTable(command);
 			string[] retStr=new string[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
 				retStr[i]=PIn.PString(table.Rows[i][0].ToString());

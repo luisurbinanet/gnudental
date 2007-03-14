@@ -4,6 +4,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using OpenDental.UI;
+using OpenDentBusiness;
 
 namespace OpenDental {
 	///<summary></summary>
@@ -239,30 +240,30 @@ namespace OpenDental {
 			gridMain.Rows.Clear();
 			ODGridRow row;
 			CovSpan[] spansForCat;
-			for(int i=0;i<CovCats.List.Length;i++){
+			for(int i=0;i<CovCatB.Listt.Length;i++){
 				row=new ODGridRow();
-				row.Tag=CovCats.List[i].Copy();
+				row.Tag=CovCatB.Listt[i].Copy();
 				row.ColorBackG=Color.FromArgb(225,225,225);
 				if(i!=0) {
 					gridMain.Rows[gridMain.Rows.Count-1].ColorLborder=Color.Black;
 				}
-				row.Cells.Add(CovCats.List[i].Description);
+				row.Cells.Add(CovCatB.Listt[i].Description);
 				row.Cells.Add("");
 				row.Cells.Add("");
-				if(CovCats.List[i].IsHidden){
+				if(CovCatB.Listt[i].IsHidden){
 					row.Cells.Add("X");
 				}
 				else {
 					row.Cells.Add("");
 				}
-				if(CovCats.List[i].EbenefitCat==EbenefitCategory.None){
+				if(CovCatB.Listt[i].EbenefitCat==EbenefitCategory.None){
 					row.Cells.Add("");
 				}
 				else{
-					row.Cells.Add(CovCats.List[i].EbenefitCat.ToString());
+					row.Cells.Add(CovCatB.Listt[i].EbenefitCat.ToString());
 				}
 				gridMain.Rows.Add(row);
-				spansForCat=CovSpans.GetForCat(CovCats.List[i].CovCatNum);
+				spansForCat=CovSpans.GetForCat(CovCatB.Listt[i].CovCatNum);
 				for(int j=0;j<spansForCat.Length;j++){
 					row=new ODGridRow();
 					row.Tag=spansForCat[j].Copy();
@@ -344,7 +345,7 @@ namespace OpenDental {
 				return;
 			}
 			int catNum=((CovCat)gridMain.Rows[gridMain.SelectedIndices[0]].Tag).CovCatNum;
-			((CovCat)gridMain.Rows[gridMain.SelectedIndices[0]].Tag).MoveUp();
+			CovCats.MoveUp((CovCat)gridMain.Rows[gridMain.SelectedIndices[0]].Tag);
 			changed=true;
 			FillSpans();
 			for(int i=0;i<gridMain.Rows.Count;i++) {
@@ -364,7 +365,7 @@ namespace OpenDental {
 				return;
 			}
 			int catNum=((CovCat)gridMain.Rows[gridMain.SelectedIndices[0]].Tag).CovCatNum;
-			((CovCat)gridMain.Rows[gridMain.SelectedIndices[0]].Tag).MoveDown();
+			CovCats.MoveDown((CovCat)gridMain.Rows[gridMain.SelectedIndices[0]].Tag);
 			changed=true;
 			FillSpans();
 			for(int i=0;i<gridMain.Rows.Count;i++) {
@@ -376,7 +377,7 @@ namespace OpenDental {
 
 		private void butAddCat_Click(object sender, System.EventArgs e) {
 			CovCat covcat=new CovCat();
-			covcat.CovOrder=CovCats.List.Length;
+			covcat.CovOrder=CovCatB.Listt.Length;
 			covcat.DefaultPercent=-1;
 			FormInsCatEdit FormE=new FormInsCatEdit(covcat);
 			FormE.IsNew=true;

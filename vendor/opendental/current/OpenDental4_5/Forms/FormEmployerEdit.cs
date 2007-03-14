@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -18,6 +19,7 @@ namespace OpenDental{
 		private System.ComponentModel.Container components = null;
 		///<summary></summary>
 		public bool IsNew;
+		public Employer EmployerCur;
 
 		///<summary></summary>
 		public FormEmployerEdit()
@@ -118,16 +120,16 @@ namespace OpenDental{
 		#endregion
 
 		private void FormEmployerEdit_Load(object sender, System.EventArgs e) {
-			textEmp.Text=Employers.Cur.EmpName;
+			textEmp.Text=EmployerCur.EmpName;
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			Employers.Cur.EmpName=textEmp.Text;
+			EmployerCur.EmpName=textEmp.Text;
 			if(IsNew){
-				Employers.InsertCur();
+				Employers.Insert(EmployerCur);
 			}
 			else{
-				Employers.UpdateCur();
+				Employers.Update(EmployerCur);
 			}
 			DialogResult=DialogResult.OK;
 		}
@@ -139,8 +141,8 @@ namespace OpenDental{
 		private void FormEmployerEdit_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
 			if(DialogResult==DialogResult.OK)
 				return;
-			if(IsNew)
-				Employers.DeleteCur();
+			//if(IsNew)
+			//	Employers.Delete(EmployerCur);
 		}
 
 		

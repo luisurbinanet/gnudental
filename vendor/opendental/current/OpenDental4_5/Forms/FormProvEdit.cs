@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -55,13 +56,13 @@ namespace OpenDental{
 		private ProviderIdent[] ListProvIdent;
 		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.TextBox textNationalProvID;
-		private Provider ProvCur;
+		public Provider ProvCur;
 
 		///<summary></summary>
-		public FormProvEdit(Provider provCur){
+		public FormProvEdit(){
 			InitializeComponent();// Required for Windows Form Designer support
 			Lan.F(this);
-			ProvCur=provCur;
+			//ProvCur=provCur;
 		}
 
 		///<summary></summary>
@@ -612,7 +613,7 @@ namespace OpenDental{
 			//	Providers.InsertCur();
 				//one field handled from previous form
 			//}
-			if(Prefs.GetBool("EasyHideDentalSchools")){
+			if(PrefB.GetBool("EasyHideDentalSchools")){
 				labelSchoolClass.Visible=false;
 				comboSchoolClass.Visible=false;
 			}
@@ -721,7 +722,7 @@ namespace OpenDental{
 			{
 				return;
 			}
-			ListProvIdent[tbProvIdent.SelectedRow].Delete();
+			ProviderIdents.Delete(ListProvIdent[tbProvIdent.SelectedRow]);
 			FillProvIdent();
 		}
 
@@ -757,7 +758,12 @@ namespace OpenDental{
 			if(listFeeSched.SelectedIndex!=-1)
 				ProvCur.FeeSched=Defs.Short[(int)DefCat.FeeSchedNames][listFeeSched.SelectedIndex].DefNum;
 			ProvCur.Specialty=(DentalSpecialty)listSpecialty.SelectedIndex;
-			ProvCur.InsertOrUpdate(IsNew);
+			if(IsNew){
+				Providers.Insert(ProvCur);
+			}
+			else{
+				Providers.Update(ProvCur);
+			}
 			DialogResult=DialogResult.OK;
 		}
 
@@ -771,7 +777,7 @@ namespace OpenDental{
 			if(IsNew){
 				//UserPermissions.DeleteAllForProv(Providers.Cur.ProvNum);
 				ProviderIdents.DeleteAllForProv(ProvCur.ProvNum);
-				ProvCur.Delete();
+				Providers.Delete(ProvCur);
 			}
 		}
 

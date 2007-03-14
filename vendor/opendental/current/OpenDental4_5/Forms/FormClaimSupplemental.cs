@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 
@@ -29,6 +30,8 @@ namespace OpenDental{
 		private System.Windows.Forms.ListBox listAccident;
 		private System.Windows.Forms.Label label10;
 		//public string RefNumString;
+		///<summary>Set this externally before opening claim.</summary>
+		public Claim ClaimCur;
 	
 		///<summary></summary>
 		public FormClaimSupplemental(){
@@ -295,22 +298,22 @@ namespace OpenDental{
 		#endregion
 
 		private void FormClaimSupplemental_Load(object sender, System.EventArgs e) {
-			textRefNum.Text=Claims.Cur.RefNumString;
+			textRefNum.Text=ClaimCur.RefNumString;
 			string[] enumPlaceOfService=Enum.GetNames(typeof(PlaceOfService));
 			for(int i=0;i<enumPlaceOfService.Length;i++){;
 				listPlaceService.Items.Add(Lan.g("enumPlaceOfService",enumPlaceOfService[i]));
 			}
-			listPlaceService.SelectedIndex=(int)Claims.Cur.PlaceService;
+			listPlaceService.SelectedIndex=(int)ClaimCur.PlaceService;
 			string[] enumYN=Enum.GetNames(typeof(YN));
 			for(int i=0;i<enumYN.Length;i++){;
 				listEmployRelated.Items.Add(Lan.g("enumYN",enumYN[i]));
 			}
-			listEmployRelated.SelectedIndex=(int)Claims.Cur.EmployRelated;
+			listEmployRelated.SelectedIndex=(int)ClaimCur.EmployRelated;
 			listAccident.Items.Add(Lan.g(this,"No"));
 			listAccident.Items.Add(Lan.g(this,"Auto"));
 			listAccident.Items.Add(Lan.g(this,"Employment"));
 			listAccident.Items.Add(Lan.g(this,"Other"));
-			switch(Claims.Cur.AccidentRelated){
+			switch(ClaimCur.AccidentRelated){
 				case "":
 					listAccident.SelectedIndex=0;
 					break;
@@ -324,13 +327,13 @@ namespace OpenDental{
 					listAccident.SelectedIndex=3;
 					break;
 			}
-			if(Claims.Cur.AccidentDate.Year<1880){
+			if(ClaimCur.AccidentDate.Year<1880){
 				textAccidentDate.Text="";
 			}
 			else{
-				textAccidentDate.Text=Claims.Cur.AccidentDate.ToShortDateString();
+				textAccidentDate.Text=ClaimCur.AccidentDate.ToShortDateString();
 			}
-			textAccidentST.Text=Claims.Cur.AccidentST;
+			textAccidentST.Text=ClaimCur.AccidentST;
 			FillRefs();
 		}
 
@@ -339,7 +342,7 @@ namespace OpenDental{
 			listRef.Items.Clear();
 			for(int i=0;i<Referrals.List.Length;i++){
 				listRef.Items.Add(Referrals.List[i].LName+", "+Referrals.List[i].FName);
-				if(Claims.Cur.ReferringProv==Referrals.List[i].ReferralNum){
+				if(ClaimCur.ReferringProv==Referrals.List[i].ReferralNum){
 					listRef.SelectedIndex=i;
 				}
 			}
@@ -371,29 +374,29 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please fix data entry errors first."));
 				return;
 			}
-			Claims.Cur.RefNumString=textRefNum.Text;
+			ClaimCur.RefNumString=textRefNum.Text;
 			if(listRef.SelectedIndex==-1)
-				Claims.Cur.ReferringProv=0;
+				ClaimCur.ReferringProv=0;
 			else
-				Claims.Cur.ReferringProv=Referrals.List[listRef.SelectedIndex].ReferralNum;
-			Claims.Cur.PlaceService=(PlaceOfService)listPlaceService.SelectedIndex;
-			Claims.Cur.EmployRelated=(YN)listEmployRelated.SelectedIndex;
+				ClaimCur.ReferringProv=Referrals.List[listRef.SelectedIndex].ReferralNum;
+			ClaimCur.PlaceService=(PlaceOfService)listPlaceService.SelectedIndex;
+			ClaimCur.EmployRelated=(YN)listEmployRelated.SelectedIndex;
 			switch(listAccident.SelectedIndex){
 				case 0:
-					Claims.Cur.AccidentRelated="";
+					ClaimCur.AccidentRelated="";
 					break;
 				case 1:
-					Claims.Cur.AccidentRelated="A";
+					ClaimCur.AccidentRelated="A";
 					break;
 				case 2:
-					Claims.Cur.AccidentRelated="E";
+					ClaimCur.AccidentRelated="E";
 					break;
 				case 3:
-					Claims.Cur.AccidentRelated="O";
+					ClaimCur.AccidentRelated="O";
 					break;
 			}
-			Claims.Cur.AccidentDate=PIn.PDate(textAccidentDate.Text);
-			Claims.Cur.AccidentST=textAccidentST.Text;
+			ClaimCur.AccidentDate=PIn.PDate(textAccidentDate.Text);
+			ClaimCur.AccidentST=textAccidentST.Text;
 			DialogResult=DialogResult.OK;
 		}
 

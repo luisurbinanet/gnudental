@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -167,17 +168,18 @@ namespace OpenDental{
 		}
 
 		private void tbContacts_CellDoubleClicked(object sender, CellEventArgs e){
-			Contacts.Cur=Contacts.List[e.Row];
 			FormContactEdit FormCE=new FormContactEdit();
+			FormCE.ContactCur=Contacts.List[e.Row];
 			FormCE.ShowDialog();
 			if(FormCE.DialogResult==DialogResult.OK)
 				FillGrid();
 		}
 
 		private void butAdd_Click(object sender, System.EventArgs e) {
-			Contacts.Cur=new Contact();
-			Contacts.Cur.Category=Defs.Short[(int)DefCat.ContactCategories][listCategory.SelectedIndex].DefNum;
+			Contact ContactCur=new Contact();
+			ContactCur.Category=Defs.Short[(int)DefCat.ContactCategories][listCategory.SelectedIndex].DefNum;
 			FormContactEdit FormCE=new FormContactEdit();
+			FormCE.ContactCur=ContactCur;
 			FormCE.IsNew=true;
 			FormCE.ShowDialog();
 			if(FormCE.DialogResult==DialogResult.OK)

@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
 using OpenDental.ReportingOld2;
+using OpenDentBusiness;
 
 namespace OpenDental
 {
@@ -333,7 +334,7 @@ namespace OpenDental
 			Procedure[] procsAll=Procedures.Refresh(pat.PatNum);
 			Procedure[] procsApt=Procedures.GetProcsOneApt(Appts[pagesPrinted].AptNum,procsAll);
 			for(int i=0;i<procsApt.Length;i++) {
-				str="   "+procsApt[i].GetDescription();
+				str="   "+Procedures.GetDescription(procsApt[i]);
 				g.DrawString(str,font,brush,x,y);
 				y+=15;
 			}
@@ -345,6 +346,9 @@ namespace OpenDental
 			str=Lan.g(this,"Patient Info");
 			g.DrawString(str,fontHeading,brush,x,y);
 			y+=18;
+			str=Lan.g(this,"PatNum:")+" "+pat.PatNum.ToString();
+			g.DrawString(str,font,brush,x,y);
+			y+=15;
 			str=Lan.g(this,"Age:")+" ";
 			if(pat.Age>0){
 				str+=pat.Age.ToString();
@@ -458,6 +462,10 @@ namespace OpenDental
 					+InsPlans.GetInsUsed(claimProcList,date,plan.PlanNum,patPlanList[i].PatPlanNum,-1,plans,benefits).ToString("n");
 				g.DrawString(str,font,brush,x,y);
 				y+=15;
+				str=Lan.g(this,"Ins Pending:")+" "
+					+InsPlans.GetPending(claimProcList,date,plan.PlanNum,patPlanList[i].PatPlanNum,-1,plans,benefits).ToString("n");
+				g.DrawString(str,font,brush,x,y);
+				y+=15;
 			}
 			y+=10;
 			//Account Info---------------------------------------------------------------------------------------------------
@@ -496,7 +504,7 @@ namespace OpenDental
 				if(procsAll[i].ProcStatus!=ProcStat.TP){
 					continue;
 				}
-				str=procsAll[i].GetDescription();
+				str=Procedures.GetDescription(procsAll[i]);
 				g.DrawString(str,font,brush,x,y);
 				y+=15;
 			}

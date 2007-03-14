@@ -1,14 +1,157 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental {
-
-
 	///<summary></summary>
 	public class InsPlans {
+		///<summary>Also fills PlanNum from db.</summary>
+		public static void Insert(InsPlan plan) {
+			if(PrefB.RandomKeys) {
+				plan.PlanNum=MiscData.GetKey("insplan","PlanNum");
+			}
+			string command= "INSERT INTO insplan (";
+			if(PrefB.RandomKeys) {
+				command+="PlanNum,";
+			}
+			command+="Subscriber,"
+				+"DateEffective,DateTerm,GroupName,GroupNum,PlanNote,"
+				+"FeeSched,ReleaseInfo,AssignBen,PlanType,ClaimFormNum,UseAltCode,"
+				+"ClaimsUseUCR,CopayFeeSched,SubscriberID,"
+				+"EmployerNum,CarrierNum,AllowedFeeSched,TrojanID,DivisionNo,BenefitNotes,IsMedical,SubscNote,FilingCode) VALUES(";
+			if(PrefB.RandomKeys) {
+				command+="'"+POut.PInt(plan.PlanNum)+"', ";
+			}
+			command+=
+				 "'"+POut.PInt(plan.Subscriber)+"', "
+				+"'"+POut.PDate(plan.DateEffective)+"', "
+				+"'"+POut.PDate(plan.DateTerm)+"', "
+				+"'"+POut.PString(plan.GroupName)+"', "
+				+"'"+POut.PString(plan.GroupNum)+"', "
+				+"'"+POut.PString(plan.PlanNote)+"', "
+				+"'"+POut.PInt(plan.FeeSched)+"', "
+				+"'"+POut.PBool(plan.ReleaseInfo)+"', "
+				+"'"+POut.PBool(plan.AssignBen)+"', "
+				+"'"+POut.PString(plan.PlanType)+"', "
+				+"'"+POut.PInt(plan.ClaimFormNum)+"', "
+				+"'"+POut.PBool(plan.UseAltCode)+"', "
+				+"'"+POut.PBool(plan.ClaimsUseUCR)+"', "
+				+"'"+POut.PInt(plan.CopayFeeSched)+"', "
+				+"'"+POut.PString(plan.SubscriberID)+"', "
+				+"'"+POut.PInt(plan.EmployerNum)+"', "
+				+"'"+POut.PInt(plan.CarrierNum)+"', "
+				+"'"+POut.PInt(plan.AllowedFeeSched)+"', "
+				+"'"+POut.PString(plan.TrojanID)+"', "
+				+"'"+POut.PString(plan.DivisionNo)+"', "
+				+"'"+POut.PString(plan.BenefitNotes)+"', "
+				+"'"+POut.PBool(plan.IsMedical)+"', "
+				+"'"+POut.PString(plan.SubscNote)+"', "
+				+"'"+POut.PInt   ((int)plan.FilingCode)+"')";
+			if(PrefB.RandomKeys) {
+				General.NonQ(command);
+			}
+			else {
+				plan.PlanNum=General.NonQ(command,true);
+			}
+		}
+
+		/// <summary>Only used from FormInsPlan. Throws ApplicationException if any dependencies. This is quite complex, because it also must update all claimprocs for all patients affected by the deletion.  Also deletes patplans, benefits, and claimprocs.</summary>
+		public static void Delete(InsPlan plan) {
+			//first, check claims
+			string command="SELECT PatNum FROM claim "
+				+"WHERE plannum = '"+plan.PlanNum.ToString()+"' LIMIT 1";
+			DataTable table=General.GetTable(command);
+			if(table.Rows.Count!=0) {
+				throw new ApplicationException(Lan.g("FormInsPlan","Not allowed to delete a plan with existing claims."));
+			}
+			//then, check claimprocs
+			command="SELECT PatNum FROM claimproc "
+				+"WHERE PlanNum = "+POut.PInt(plan.PlanNum)
+				+" AND Status != 6 "//ignore estimates
+				+"LIMIT 1";
+			table=General.GetTable(command);
+			if(table.Rows.Count!=0) {
+				throw new ApplicationException(Lan.g("FormInsPlan","Not allowed to delete a plan attached to procedures."));
+			}
+			//get a list of all patplans with this planNum
+			command="SELECT PatPlanNum FROM patplan "
+				+"WHERE PlanNum = "+plan.PlanNum.ToString();
+			table=General.GetTable(command);
+			for(int i=0;i<table.Rows.Count;i++) {
+				//benefits with this PatPlanNum are also deleted here
+				PatPlans.Delete(PIn.PInt(table.Rows[i][0].ToString()));
+			}
+			command="DELETE FROM benefit WHERE PlanNum="+POut.PInt(plan.PlanNum);
+			General.NonQ(command);
+			command="DELETE FROM claimproc WHERE PlanNum="+POut.PInt(plan.PlanNum);//just estimates
+			General.NonQ(command);
+			command="DELETE FROM insplan "
+				+"WHERE PlanNum = '"+plan.PlanNum.ToString()+"'";
+			General.NonQ(command);
+		}
+
+		///<summary></summary>
+		public static void Update(InsPlan plan) {
+			string command="UPDATE insplan SET "
+				+"Subscriber = '"    +POut.PInt   (plan.Subscriber)+"'"
+				+",DateEffective = '"+POut.PDate  (plan.DateEffective)+"'"
+				+",DateTerm = '"     +POut.PDate  (plan.DateTerm)+"'"
+				+",GroupName = '"    +POut.PString(plan.GroupName)+"'"
+				+",GroupNum = '"     +POut.PString(plan.GroupNum)+"'"
+				+",PlanNote = '"     +POut.PString(plan.PlanNote)+"'"
+				+",FeeSched = '"     +POut.PInt   (plan.FeeSched)+"'"
+				+",ReleaseInfo = '"  +POut.PBool  (plan.ReleaseInfo)+"'"
+				+",AssignBen = '"    +POut.PBool  (plan.AssignBen)+"'"
+				+",PlanType = '"     +POut.PString(plan.PlanType)+"'"
+				+",ClaimFormNum = '" +POut.PInt   (plan.ClaimFormNum)+"'"
+				+",UseAltcode = '"   +POut.PBool  (plan.UseAltCode)+"'"
+				+",ClaimsUseUCR = '" +POut.PBool  (plan.ClaimsUseUCR)+"'"
+				+",CopayFeeSched = '"+POut.PInt   (plan.CopayFeeSched)+"'"
+				+",SubscriberID = '" +POut.PString(plan.SubscriberID)+"'"
+				+",EmployerNum = '"  +POut.PInt   (plan.EmployerNum)+"'"
+				+",CarrierNum = '"   +POut.PInt   (plan.CarrierNum)+"'"
+				+",AllowedFeeSched='"+POut.PInt   (plan.AllowedFeeSched)+"'"
+				+",TrojanID='"       +POut.PString(plan.TrojanID)+"'"
+				+",DivisionNo='"     +POut.PString(plan.DivisionNo)+"'"
+				+",BenefitNotes='"   +POut.PString(plan.BenefitNotes)+"'"
+				+",IsMedical='"      +POut.PBool  (plan.IsMedical)+"'"
+				+",SubscNote='"      +POut.PString(plan.SubscNote)+"'"
+				+",FilingCode='"     +POut.PInt   ((int)plan.FilingCode)+"'"
+				+" WHERE PlanNum = '"+POut.PInt   (plan.PlanNum)+"'";
+			General.NonQ(command);
+		}
+
+		///<summary>Called from FormInsPlan when applying changes to all identical insurance plans. This updates the synchronized fields for all plans like the specified insPlan.  Current InsPlan must be set to the new values that we want.  BenefitNotes and SubscNote are specific to subscriber and are not changed.  PlanNotes are handled separately in a different function after this one is complete.</summary>
+		public static void UpdateForLike(InsPlan like, InsPlan plan) {
+			string command= "UPDATE insplan SET "
+				+"EmployerNum = '"     +POut.PInt   (plan.EmployerNum)+"'"
+				+",GroupName = '"      +POut.PString(plan.GroupName)+"'"
+				+",GroupNum = '"       +POut.PString(plan.GroupNum)+"'"
+				+",DivisionNo = '"     +POut.PString(plan.DivisionNo)+"'"
+				+",CarrierNum = '"     +POut.PInt   (plan.CarrierNum)+"'"
+				+",PlanType = '"       +POut.PString(plan.PlanType)+"'"
+				+",UseAltCode = '"     +POut.PBool  (plan.UseAltCode)+"'"
+				+",IsMedical = '"      +POut.PBool  (plan.IsMedical)+"'"
+				+",ClaimsUseUCR = '"   +POut.PBool  (plan.ClaimsUseUCR)+"'"
+				+",FeeSched = '"       +POut.PInt   (plan.FeeSched)+"'"
+				+",CopayFeeSched = '"  +POut.PInt   (plan.CopayFeeSched)+"'"
+				+",ClaimFormNum = '"   +POut.PInt   (plan.ClaimFormNum)+"'"
+				+",AllowedFeeSched= '" +POut.PInt   (plan.AllowedFeeSched)+"'"
+				+",TrojanID = '"       +POut.PString(plan.TrojanID)+"'"
+				+",FilingCode = '"     +POut.PInt   ((int)plan.FilingCode)+"'"
+				+" WHERE "
+				+"EmployerNum = '"        +POut.PInt   (like.EmployerNum)+"' "
+				+"AND GroupName = '"      +POut.PString(like.GroupName)+"' "
+				+"AND GroupNum = '"       +POut.PString(like.GroupNum)+"' "
+				+"AND DivisionNo = '"     +POut.PString(like.DivisionNo)+"'"
+				+"AND CarrierNum = '"     +POut.PInt   (like.CarrierNum)+"' "
+				+"AND IsMedical = '"      +POut.PBool  (like.IsMedical)+"'";
+			General.NonQ(command);
+		}
 
 		///<summary>It's fastest if you supply a plan list that contains the plan, but it also works just fine if it can't initally locate the plan in the list.  You can supply an array of length 0.  If still not found, returns null.</summary>
 		public static InsPlan GetPlan(int planNum,InsPlan[] planList) {
@@ -82,8 +225,7 @@ namespace OpenDental {
 		}
 
 		private static InsPlan[] RefreshFill(string command) {
-			DataConnection dcon=new DataConnection();
-			DataTable table=dcon.GetTable(command);
+			DataTable table=General.GetTable(command);
 			InsPlan[] PlanList=new InsPlan[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++) {
 				PlanList[i]=new InsPlan();
@@ -111,64 +253,9 @@ namespace OpenDental {
 				PlanList[i].BenefitNotes   = PIn.PString(table.Rows[i][21].ToString());
 				PlanList[i].IsMedical      = PIn.PBool  (table.Rows[i][22].ToString());
 				PlanList[i].SubscNote      = PIn.PString(table.Rows[i][23].ToString());
+				PlanList[i].FilingCode     = (InsFilingCode)PIn.PInt   (table.Rows[i][24].ToString());
 			}
 			return PlanList;
-		}
-
-		///<summary>Gets all plans in the database, organized by carrier name or by employer.  Identical plans are grouped as one row.</summary>
-		public static InsPlan[] RefreshListAll(bool byEmployer,string empName,string carrierName,
-				string groupName,string groupNum) {
-			string command=
-				"SELECT insplan.EmployerNum,insplan.GroupName,insplan.GroupNum,insplan.CarrierNum"
-				+",insplan.PlanType,insplan.UseAltCode"
-				+",insplan.ClaimsUseUCR,insplan.FeeSched,insplan.CopayFeeSched,insplan.ClaimFormNum"
-				+",insplan.AllowedFeeSched,insplan.DivisionNo,insplan.IsMedical,insplan.TrojanID,PlanNote,COUNT(*)"
-				+",employer.EmpName,carrier.CarrierName "//the last two are for ordering
-				+"FROM insplan "
-				+"LEFT JOIN employer ON employer.EmployerNum = insplan.EmployerNum "
-				+"LEFT JOIN carrier ON carrier.CarrierNum = insplan.CarrierNum "
-				+"WHERE carrier.CarrierName LIKE '%"+POut.PString(carrierName)+"%' ";
-			if(empName!=""){
-				command+="AND employer.EmpName LIKE '%"+POut.PString(empName)+"%' ";
-			}
-			if(groupName!="") {
-				command+="AND insplan.GroupName LIKE '%"+POut.PString(groupName)+"%' ";
-			}
-			if(groupNum!="") {
-				command+="AND insplan.GroupNum LIKE '%"+POut.PString(groupNum)+"%' ";
-			}
-			command+="GROUP BY insplan.EmployerNum,insplan.GroupName,insplan.GroupNum,insplan.DivisionNo,"
-				+"insplan.CarrierNum,insplan.IsMedical ";
-			if(byEmployer) {
-				command+="ORDER BY employer.EmpName IS NULL,employer.EmpName,carrier.CarrierName ASC";
-			}
-			else{//not by employer
-				command+="ORDER BY carrier.CarrierName ASC";
-			}
-			Debug.WriteLine(command);
-			DataConnection dcon=new DataConnection();
-			DataTable table=dcon.GetTable(command);
-			InsPlan[] ListAll=new InsPlan[table.Rows.Count];
-			for(int i=0;i<table.Rows.Count;i++) {
-				ListAll[i]=new InsPlan();
-				ListAll[i].EmployerNum    = PIn.PInt   (table.Rows[i][0].ToString());
-				ListAll[i].GroupName      = PIn.PString(table.Rows[i][1].ToString());
-				ListAll[i].GroupNum       = PIn.PString(table.Rows[i][2].ToString());
-				ListAll[i].CarrierNum     = PIn.PInt   (table.Rows[i][3].ToString());
-				ListAll[i].PlanType       = PIn.PString(table.Rows[i][4].ToString());
-				ListAll[i].UseAltCode     = PIn.PBool  (table.Rows[i][5].ToString());
-				ListAll[i].ClaimsUseUCR   = PIn.PBool  (table.Rows[i][6].ToString());
-				ListAll[i].FeeSched       = PIn.PInt   (table.Rows[i][7].ToString());
-				ListAll[i].CopayFeeSched  = PIn.PInt   (table.Rows[i][8].ToString());
-				ListAll[i].ClaimFormNum   = PIn.PInt   (table.Rows[i][9].ToString());
-				ListAll[i].AllowedFeeSched= PIn.PInt   (table.Rows[i][10].ToString());
-				ListAll[i].DivisionNo     = PIn.PString(table.Rows[i][11].ToString());
-				ListAll[i].IsMedical      = PIn.PBool  (table.Rows[i][12].ToString());
-				ListAll[i].TrojanID       = PIn.PString(table.Rows[i][13].ToString());
-				ListAll[i].PlanNote       = PIn.PString(table.Rows[i][14].ToString());
-				ListAll[i].NumberPlans    = PIn.PInt   (table.Rows[i][15].ToString());
-			}
-			return ListAll;
 		}
 
 		///<summary>Gets a description of the specified plan, including carrier name and subscriber. It's fastest if you supply a plan list that contains the plan, but it also works just fine if it can't initally locate the plan in the list.  You can supply an array of length 0 for both family and planlist.</summary>
@@ -217,7 +304,7 @@ namespace OpenDental {
 			return carrier.CarrierName;
 		}
 
-		/// <summary>Only used once in Claims.cs.  Gets insurance benefits remaining for one benefit year.  Returns actual remaining insurance based on ClaimProc data, taking into account inspayed and ins pending. Must supply all claimprocs for the patient.  Date used to determine which benefit year to calc.  Usually today's date.  The insplan.PlanNum is the plan to get value for.  ExcludeClaim is the ClaimNum to exclude, or enter -1 to include all.  This does not yet handle calculations where ortho max is different from regular max.  Just takes the most general annual max, and subtracts all benefits used from all categories.</summary>
+		/// <summary>Only used once in Claims.cs.  Gets insurance benefits remaining for one benefit year.  Returns actual remaining insurance based on ClaimProc data, taking into account inspaid and ins pending. Must supply all claimprocs for the patient.  Date used to determine which benefit year to calc.  Usually today's date.  The insplan.PlanNum is the plan to get value for.  ExcludeClaim is the ClaimNum to exclude, or enter -1 to include all.  This does not yet handle calculations where ortho max is different from regular max.  Just takes the most general annual max, and subtracts all benefits used from all categories.</summary>
 		public static double GetInsRem(ClaimProc[] ClaimProcList,DateTime date,int planNum,int patPlanNum,int excludeClaim,InsPlan[] PlanList,Benefit[] benList) {
 			double insUsed=GetInsUsed(ClaimProcList,date,planNum,patPlanNum,excludeClaim,PlanList,benList);
 			double insPending=GetPending(ClaimProcList,date,planNum,patPlanNum,excludeClaim,PlanList,benList);
@@ -282,7 +369,7 @@ namespace OpenDental {
 			DateTime startDate;//for benefit year
 			DateTime stopDate;
 			//if renew date is earlier this year (assuming typical situation of date being today)
-			if(renewDate.Month <= date.Month && renewDate.Day < date.Day) {
+			if(renewDate.Month <= date.Month && renewDate.Day <= date.Day) {
 				startDate=new DateTime(date.Year,renewDate.Month,renewDate.Day);
 				stopDate=new DateTime(date.Year+1,renewDate.Month,renewDate.Day);
 			}
@@ -391,8 +478,7 @@ namespace OpenDental {
 			string command="SELECT insplan.PlanNum,carrier.CarrierName "
 				+"FROM insplan,carrier "
 				+"WHERE insplan.CarrierNum=carrier.CarrierNum";
-			DataConnection dcon=new DataConnection();
-			DataTable table=dcon.GetTable(command);
+			DataTable table=General.GetTable(command);
 			Hashtable HListAll=new Hashtable(table.Rows.Count);
 			int plannum;
 			string carrierName;
@@ -407,8 +493,7 @@ namespace OpenDental {
 		///<summary>Used when closing the edit plan window to find all patients using this plan and to update all claimProcs for each patient.  This keeps estimates correct.</summary>
 		public static void ComputeEstimatesForPlan(int planNum) {
 			string command="SELECT PatNum FROM patplan WHERE PlanNum="+POut.PInt(planNum);
-			DataConnection dcon=new DataConnection();
-			DataTable table=dcon.GetTable(command);
+			DataTable table=General.GetTable(command);
 			int patNum=0;
 			for(int i=0;i<table.Rows.Count;i++) {
 				patNum=PIn.PInt(table.Rows[i][0].ToString());
@@ -425,15 +510,15 @@ namespace OpenDental {
 		}
 
 		///<summary>Gets all distinct notes for the planNums supplied.  Supply a planNum to exclude it.  Only called when closing FormInsPlan.  Includes blank notes.</summary>
-		public static string[] GetNotesForPlans(int[] planNums,int excludePlanNum){
-			if(planNums.Length==0) {//this should never happen, but just in case...
+		public static string[] GetNotesForPlans(List<int> planNums,int excludePlanNum){
+			if(planNums.Count==0) {//this should never happen, but just in case...
 				return new string[0];
 			}
-			if(planNums.Length==1 && planNums[0]==excludePlanNum){
+			if(planNums.Count==1 && planNums[0]==excludePlanNum){
 				return new string[0];
 			}
 			string s="";
-			for(int i=0;i<planNums.Length;i++) {
+			for(int i=0;i<planNums.Count;i++) {
 				if(planNums[i]==excludePlanNum){
 					continue;
 				}
@@ -443,8 +528,7 @@ namespace OpenDental {
 				s+=" PlanNum="+POut.PInt(planNums[i]);
 			}
 			string command="SELECT DISTINCT PlanNote FROM insplan WHERE"+s;
-			DataConnection dcon=new DataConnection();
-			DataTable table=dcon.GetTable(command);
+			DataTable table=General.GetTable(command);
 			string[] retVal=new string[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++) {
 				retVal[i]=PIn.PString(table.Rows[i][0].ToString());
@@ -453,9 +537,9 @@ namespace OpenDental {
 		}
 
 		///<summary>Called when closing FormInsPlan to set the PlanNote for multiple plans at once.</summary>
-		public static void UpdateNoteForPlans(int[] planNums,string newNote){
+		public static void UpdateNoteForPlans(List<int> planNums,string newNote){
 			string s="";
-			for(int i=0;i<planNums.Length;i++){
+			for(int i=0;i<planNums.Count;i++){
 				if(i>0){
 					s+=" OR";
 				}
@@ -463,22 +547,20 @@ namespace OpenDental {
 			}
 			string command="UPDATE insplan SET PlanNote='"+POut.PString(newNote)+"' "
 				+"WHERE"+s;
-			DataConnection dcon=new DataConnection();
-			dcon.NonQ(command);
+			General.NonQ(command);
 		}
 
-		///<summary>Called from FormInsPlan when user wants to view a benefit note for similar plans.  This function will get one note from the database, not including blank notes.  If no note can be found, then it returns empty string.</summary>
-		public static string GetBenefitNotes(int[] planNums){
+		///<summary>Called from FormInsPlan when user wants to view a benefit note for similar plans.  Should never include the current plan that the user is editing.  This function will get one note from the database, not including blank notes.  If no note can be found, then it returns empty string.</summary>
+		public static string GetBenefitNotes(List<int> planNums){
 			string s="";
-			for(int i=0;i<planNums.Length;i++) {
+			for(int i=0;i<planNums.Count;i++) {
 				if(i>0) {
 					s+=" OR";
 				}
 				s+=" PlanNum="+POut.PInt(planNums[i]);
 			}
 			string command="SELECT BenefitNotes FROM insplan WHERE BenefitNotes != '' AND ("+s+") LIMIT 1";
-			DataConnection dcon=new DataConnection();
-			DataTable table=dcon.GetTable(command);
+			DataTable table=General.GetTable(command);
 			//string[] retVal=new string[];
 			if(table.Rows.Count==0){
 				return "";
@@ -486,9 +568,114 @@ namespace OpenDental {
 			return PIn.PString(table.Rows[0][0].ToString());
 		}
 
+		///<summary>Gets a list of subscriber names from the database that have identical plan info as this one. Used to display in the insplan window.  The returned list never includes the plan that we're viewing.  Use excludePlan for this purpose; it's more consistent, because we have no way of knowing if the current plan will be picked up or not.</summary>
+		public static string[] GetSubscribersForSamePlans(string employerName, string groupName, string groupNum,
+				string divisionNo, string carrierName, bool isMedical, int excludePlan)
+		{
+			string command="SELECT CONCAT(LName,', ',FName) FROM patient,insplan "
+				+"LEFT JOIN employer ON employer.EmployerNum = insplan.EmployerNum "
+				+"LEFT JOIN carrier ON carrier.CarrierNum = insplan.CarrierNum "
+				+"WHERE patient.PatNum=insplan.Subscriber "
+				+"AND employer.EmpName = '"   +POut.PString(employerName)+"' "
+				+"AND insplan.GroupName = '"  +POut.PString(groupName)+"' "
+				+"AND insplan.GroupNum = '"   +POut.PString(groupNum)+"' "
+				+"AND insplan.DivisionNo = '" +POut.PString(divisionNo)+"' "
+				+"AND carrier.CarrierName = '"+POut.PString(carrierName)+"' "
+				+"AND insplan.IsMedical = '"  +POut.PBool(isMedical)+"' "
+				+"AND insplan.PlanNum != "    +POut.PInt(excludePlan);
+			DataTable table=General.GetTable(command);
+			string[] retStr=new string[table.Rows.Count];
+			for(int i=0;i<table.Rows.Count;i++) {
+				retStr[i]=PIn.PString(table.Rows[i][0].ToString());
+			}
+			return retStr;
+		}
 
+		///<summary>Gets a list of PlanNums from the database of plans that have identical info as this one. Used to perform updates to benefits, etc.  Note that you have the option to include the current plan in the list.</summary>
+		public static List<int> GetPlanNumsOfSamePlans(string employerName, string groupName, string groupNum,
+				string divisionNo, string carrierName, bool isMedical, int planNum, bool includePlanNum) {
+			string command="SELECT PlanNum FROM insplan "
+				+"LEFT JOIN employer ON employer.EmployerNum = insplan.EmployerNum "
+				+"LEFT JOIN carrier ON carrier.CarrierNum = insplan.CarrierNum "
+				+"WHERE employer.EmpName = '" +POut.PString(employerName)+"' "
+				+"AND insplan.GroupName = '"  +POut.PString(groupName)+"' "
+				+"AND insplan.GroupNum = '"   +POut.PString(groupNum)+"' "
+				+"AND insplan.DivisionNo = '" +POut.PString(divisionNo)+"' "
+				+"AND carrier.CarrierName = '"+POut.PString(carrierName)+"' "
+				+"AND insplan.IsMedical = '"  +POut.PBool  (isMedical)+"'"
+				+"AND insplan.PlanNum != "+POut.PInt(planNum);
+			DataTable table=General.GetTable(command);
+			List<int> retVal=new List<int>();
+			//if(includePlanNum){
+			//	retVal=new int[table.Rows.Count+1];
+			//}
+			//else{
+			//	retVal=new int[table.Rows.Count];
+			//}
+			for(int i=0;i<table.Rows.Count;i++) {
+				retVal.Add(PIn.PInt(table.Rows[i][0].ToString()));
+			}
+			if(includePlanNum){
+				retVal.Add(planNum);
+			}
+			return retVal;
+		}
 
-
+		///<summary>Used from FormInsPlans to get a big list of many plans, organized by carrier name or by employer.  Identical plans are grouped as one row.</summary>
+		public static InsPlan[] GetBigList(bool byEmployer,string empName,string carrierName,
+				string groupName,string groupNum) {
+			string command=
+				"SELECT insplan.EmployerNum,insplan.GroupName,insplan.GroupNum,insplan.CarrierNum"
+				+",insplan.PlanType,insplan.UseAltCode"
+				+",insplan.ClaimsUseUCR,insplan.FeeSched,insplan.CopayFeeSched,insplan.ClaimFormNum"
+				+",insplan.AllowedFeeSched,insplan.DivisionNo,insplan.IsMedical,insplan.TrojanID,PlanNote,FilingCode,"
+				+"COUNT(*),employer.EmpName,carrier.CarrierName "//the last two are for ordering
+				+"FROM insplan "
+				+"LEFT JOIN employer ON employer.EmployerNum = insplan.EmployerNum "
+				+"LEFT JOIN carrier ON carrier.CarrierNum = insplan.CarrierNum "
+				+"WHERE carrier.CarrierName LIKE '%"+POut.PString(carrierName)+"%' ";
+			if(empName!="") {
+				command+="AND employer.EmpName LIKE '%"+POut.PString(empName)+"%' ";
+			}
+			if(groupName!="") {
+				command+="AND insplan.GroupName LIKE '%"+POut.PString(groupName)+"%' ";
+			}
+			if(groupNum!="") {
+				command+="AND insplan.GroupNum LIKE '%"+POut.PString(groupNum)+"%' ";
+			}
+			command+="GROUP BY insplan.EmployerNum,insplan.GroupName,insplan.GroupNum,insplan.DivisionNo,"
+				+"insplan.CarrierNum,insplan.IsMedical ";
+			if(byEmployer) {
+				command+="ORDER BY employer.EmpName IS NULL,employer.EmpName,carrier.CarrierName ASC";
+			}
+			else {//not by employer
+				command+="ORDER BY carrier.CarrierName ASC";
+			}
+			Debug.WriteLine(command);
+			DataTable table=General.GetTable(command);
+			InsPlan[] ListAll=new InsPlan[table.Rows.Count];
+			for(int i=0;i<table.Rows.Count;i++) {
+				ListAll[i]=new InsPlan();
+				ListAll[i].EmployerNum=PIn.PInt(table.Rows[i][0].ToString());
+				ListAll[i].GroupName=PIn.PString(table.Rows[i][1].ToString());
+				ListAll[i].GroupNum=PIn.PString(table.Rows[i][2].ToString());
+				ListAll[i].CarrierNum=PIn.PInt(table.Rows[i][3].ToString());
+				ListAll[i].PlanType=PIn.PString(table.Rows[i][4].ToString());
+				ListAll[i].UseAltCode=PIn.PBool(table.Rows[i][5].ToString());
+				ListAll[i].ClaimsUseUCR=PIn.PBool(table.Rows[i][6].ToString());
+				ListAll[i].FeeSched=PIn.PInt(table.Rows[i][7].ToString());
+				ListAll[i].CopayFeeSched=PIn.PInt(table.Rows[i][8].ToString());
+				ListAll[i].ClaimFormNum=PIn.PInt(table.Rows[i][9].ToString());
+				ListAll[i].AllowedFeeSched=PIn.PInt(table.Rows[i][10].ToString());
+				ListAll[i].DivisionNo=PIn.PString(table.Rows[i][11].ToString());
+				ListAll[i].IsMedical=PIn.PBool(table.Rows[i][12].ToString());
+				ListAll[i].TrojanID=PIn.PString(table.Rows[i][13].ToString());
+				ListAll[i].PlanNote=PIn.PString(table.Rows[i][14].ToString());
+				ListAll[i].FilingCode=(InsFilingCode)PIn.PInt(table.Rows[i][15].ToString());
+				ListAll[i].NumberPlans=PIn.PInt(table.Rows[i][16].ToString());
+			}
+			return ListAll;
+		}
 
 
 

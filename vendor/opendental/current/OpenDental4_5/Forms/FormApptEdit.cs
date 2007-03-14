@@ -4,6 +4,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Text;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	///<summary></summary>
@@ -694,7 +695,7 @@ namespace OpenDental{
 			this.textNote.Location = new System.Drawing.Point(22, 292);
 			this.textNote.Multiline = true;
 			this.textNote.Name = "textNote";
-			this.textNote.QuickPasteType = OpenDental.QuickPasteType.Appointment;
+			this.textNote.QuickPasteType = QuickPasteType.Appointment;
 			this.textNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textNote.Size = new System.Drawing.Size(272, 73);
 			this.textNote.TabIndex = 77;
@@ -984,10 +985,10 @@ namespace OpenDental{
 			PlanList=InsPlans.Refresh(fam);
 			PatPlanList=PatPlans.Refresh(AptCur.PatNum);
 			//CovPats.Refresh(PlanList,PatPlanList);
-			if(Prefs.GetBool("EasyHideDentalSchools")){
+			if(PrefB.GetBool("EasyHideDentalSchools")){
 				groupDentalSchools.Visible=false;
 			}
-			if(Prefs.GetBool("EasyNoClinics")){
+			if(PrefB.GetBool("EasyNoClinics")){
 				labelClinic.Visible=false;
 				comboClinic.Visible=false;
 			}
@@ -1026,7 +1027,7 @@ namespace OpenDental{
 			for(int i=0;i<AptCur.Pattern.Length;i++){
 				strBTime.Append(AptCur.Pattern.Substring(i,1));
 				i++;
-				if(Prefs.GetInt("AppointmentTimeIncrement")==15){
+				if(PrefB.GetInt("AppointmentTimeIncrement")==15){
 					i++;
 				}
 			}
@@ -1045,7 +1046,7 @@ namespace OpenDental{
 			textAddTime.MinVal=-1200;
 			textAddTime.MaxVal=1200;
 			textAddTime.Text=POut.PInt(AptCur.AddTime*
-				PIn.PInt(((Pref)Prefs.HList["AppointmentTimeIncrement"]).ValueString));
+				PIn.PInt(((Pref)PrefB.HList["AppointmentTimeIncrement"]).ValueString));
 			textNote.Text=AptCur.Note;
 			for(int i=0;i<Defs.Short[(int)DefCat.ApptProcsQuickAdd].Length;i++){
 				listQuickAdd.Items.Add(Defs.Short[(int)DefCat.ApptProcsQuickAdd][i].ItemName);
@@ -1151,7 +1152,7 @@ namespace OpenDental{
 			//arrayProc array as intermediate, then to ApptProc2 array for display
 			if(AptCur.AptStatus==ApptStatus.Planned){
 				for(int i=0;i<ProcList.Length;i++){
-					if(ProcList[i].NextAptNum==AptCur.AptNum){
+					if(ProcList[i].PlannedAptNum==AptCur.AptNum){
 						arrayProc[countLine]=ProcList[i];
 						countLine++;
 					}
@@ -1212,7 +1213,7 @@ namespace OpenDental{
 				tbProc.Cell[4,i]=ApptProc2[i].AbbrDesc;
 				tbProc.Cell[5,i]=ApptProc2[i].Fee;
 				if(AptCur.AptStatus==ApptStatus.Planned){
-					if(arrayProc[ApptProc2[i].Index].NextAptNum==AptCur.AptNum){
+					if(arrayProc[ApptProc2[i].Index].PlannedAptNum==AptCur.AptNum){
 						tbProc.ColorRow(i,Color.Silver);
 						feeTotal+=arrayProc[ApptProc2[i].Index].ProcFee;
 					}
@@ -1244,14 +1245,15 @@ namespace OpenDental{
 			}
 			procsHaveChanged=true;
 			Procedure ProcCur=arrayProc[ApptProc2[e.Row].Index];
-			Procedure ProcOld=ProcCur.Copy();
+			//Procedure ProcOld=ProcCur.Copy();
 			if(AptCur.AptStatus==ApptStatus.Planned){
-				if(ProcCur.NextAptNum==AptCur.AptNum){
-					ProcCur.NextAptNum=0;
+				if(ProcCur.PlannedAptNum==AptCur.AptNum){
+					ProcCur.PlannedAptNum=0;
 				}
 				else{
-					ProcCur.NextAptNum=AptCur.AptNum;
+					ProcCur.PlannedAptNum=AptCur.AptNum;
 				}
+				Procedures.UpdatePlannedAptNum(ProcCur.ProcNum,ProcCur.PlannedAptNum);
 			}
 			else{//not Planned
 				if(ProcCur.AptNum==AptCur.AptNum){
@@ -1260,23 +1262,26 @@ namespace OpenDental{
 				else{
 					ProcCur.AptNum=AptCur.AptNum;
 				}
+				Procedures.UpdateAptNum(ProcCur.ProcNum,ProcCur.AptNum);
 			}
 			//changing the AptNum of a proc does not affect the recall synch, so no synch here.
-			ProcCur.Update(ProcOld);
+			//Procedures.Update(ProcCur,ProcOld);
 			//ProcCur.Update(ProcOld);
+			int scroll=tbProc.ScrollValue;
 			FillProcedures();
+			tbProc.ScrollValue=scroll;
 			CalculateTime();
 			FillTime();
 		}
 
 		private void CalculateTime(){
-			int adjTimeU=PIn.PInt(textAddTime.Text)/Prefs.GetInt("AppointmentTimeIncrement");
+			int adjTimeU=PIn.PInt(textAddTime.Text)/PrefB.GetInt("AppointmentTimeIncrement");
 			strBTime=new StringBuilder("");
 			string procTime="";
 			int attachedProcs=0;
 			for(int i=0;i<ApptProc2.Length;i++){
 				if(AptCur.AptStatus==ApptStatus.Planned){
-					if(arrayProc[ApptProc2[i].Index].NextAptNum!=AptCur.AptNum){
+					if(arrayProc[ApptProc2[i].Index].PlannedAptNum!=AptCur.AptNum){
 						continue;
 					}
 				}
@@ -1290,7 +1295,7 @@ namespace OpenDental{
 			if(attachedProcs==1){
 				for(int i=0;i<ApptProc2.Length;i++){
 					if(AptCur.AptStatus==ApptStatus.Planned){
-						if(arrayProc[ApptProc2[i].Index].NextAptNum!=AptCur.AptNum){
+						if(arrayProc[ApptProc2[i].Index].PlannedAptNum!=AptCur.AptNum){
 							continue;
 						}
 					}
@@ -1306,7 +1311,7 @@ namespace OpenDental{
 			else{//multiple procs or no procs
 				for(int i=0;i<ApptProc2.Length;i++){
 					if(AptCur.AptStatus==ApptStatus.Planned){
-						if(arrayProc[ApptProc2[i].Index].NextAptNum!=AptCur.AptNum){
+						if(arrayProc[ApptProc2[i].Index].PlannedAptNum!=AptCur.AptNum){
 							continue;
 						}
 					}
@@ -1528,10 +1533,10 @@ namespace OpenDental{
 				//Dx
 				ProcCur.ClinicNum=AptCur.ClinicNum;
 				if(AptCur.AptStatus==ApptStatus.Planned)
-          ProcCur.NextAptNum=AptCur.AptNum;
+          ProcCur.PlannedAptNum=AptCur.AptNum;
 				ProcCur.MedicalCode=ProcedureCodes.GetProcCode(ProcCur.ADACode).MedicalCode;
-				ProcCur.Insert();//recall synch not required
-				ProcCur.ComputeEstimates(pat.PatNum,ClaimProcList,false,PlanList,PatPlanList,benefitList);
+				Procedures.Insert(ProcCur);//recall synch not required
+				Procedures.ComputeEstimates(ProcCur,pat.PatNum,ClaimProcList,false,PlanList,PatPlanList,benefitList);
 			}
 			listQuickAdd.SelectedIndex=-1;
 			FillProcedures();
@@ -1560,7 +1565,7 @@ namespace OpenDental{
 			else{
 				Procedures.UnattachProcsInAppt(AptCur.AptNum);
 			}
-			AptCur.Delete();
+			Appointments.Delete(AptCur);
 			SecurityLogs.MakeLogEntry(Permissions.AppointmentEdit,pat.PatNum,
 				"Delete for patient: "
 				+pat.GetNameLF()+", "
@@ -1632,7 +1637,7 @@ namespace OpenDental{
 			for(int i=0;i<strBTime.Length;i++){
 				savePattern.Append(strBTime[i]);
 				savePattern.Append(strBTime[i]);
-				if(Prefs.GetInt("AppointmentTimeIncrement")==15){
+				if(PrefB.GetInt("AppointmentTimeIncrement")==15){
 					savePattern.Append(strBTime[i]);
 				}
 			}
@@ -1650,7 +1655,7 @@ namespace OpenDental{
 				AptCur.Confirmed
 					=Defs.Short[(int)DefCat.ApptConfirmed][comboConfirmed.SelectedIndex].DefNum;
 			AptCur.AddTime=(int)(PIn.PInt(textAddTime.Text)/
-				PIn.PInt(((Pref)Prefs.HList["AppointmentTimeIncrement"]).ValueString));
+				PIn.PInt(((Pref)PrefB.HList["AppointmentTimeIncrement"]).ValueString));
 			AptCur.Note=textNote.Text;
 			if(comboClinic.SelectedIndex==0)//none
 				AptCur.ClinicNum=0;
@@ -1688,7 +1693,7 @@ namespace OpenDental{
 			AptCur.ProcDescript="";
 			if(AptCur.AptStatus==ApptStatus.Planned){
 				for(int i=0;i<ProcList.Length;i++){
-					if(ProcList[i].NextAptNum==AptCur.AptNum){
+					if(ProcList[i].PlannedAptNum==AptCur.AptNum){
 						AptCur.ProcDescript
 							+=ProcedureCodes.GetProcCode(ProcList[i].ADACode).AbbrDesc+", ";
 					}
@@ -1708,7 +1713,7 @@ namespace OpenDental{
 					=AptCur.ProcDescript.Substring(0,AptCur.ProcDescript.Length-2);
 			}
 			try{
-				AptCur.InsertOrUpdate(this.AptOld,false);
+				Appointments.InsertOrUpdate(AptCur,AptOld,false);
 				AptOld=AptCur.Copy();
 			}
 			catch(ApplicationException ex){
@@ -1764,7 +1769,7 @@ namespace OpenDental{
 				else{
 					Procedures.UnattachProcsInAppt(AptCur.AptNum);
 				}
-				AptCur.Delete();
+				Appointments.Delete(AptCur);
 				DialogResult=DialogResult.Cancel;
 				//return;
 			}

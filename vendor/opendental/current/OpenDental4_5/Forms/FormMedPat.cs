@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -30,6 +31,7 @@ namespace OpenDental{
 		private OpenDental.ODtextBox textPatNote;
 		///<summary></summary>
 		public bool IsNew;
+		public MedicationPat MedicationPatCur;
 
 		///<summary></summary>
 		public FormMedPat()
@@ -242,7 +244,7 @@ namespace OpenDental{
 			this.textPatNote.Location = new System.Drawing.Point(253, 320);
 			this.textPatNote.Multiline = true;
 			this.textPatNote.Name = "textPatNote";
-			this.textPatNote.QuickPasteType = OpenDental.QuickPasteType.MedicationPat;
+			this.textPatNote.QuickPasteType = QuickPasteType.MedicationPat;
 			this.textPatNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textPatNote.Size = new System.Drawing.Size(352, 129);
 			this.textPatNote.TabIndex = 11;
@@ -280,15 +282,15 @@ namespace OpenDental{
 		}
 
 		private void FillForm(){
-			textMedName.Text=Medications.GetMedication(MedicationPats.Cur.MedicationNum).MedName;
-			textGenericName.Text=Medications.GetGeneric(MedicationPats.Cur.MedicationNum).MedName;
-			textMedNote.Text=Medications.GetGeneric(MedicationPats.Cur.MedicationNum).Notes;
-			textPatNote.Text=MedicationPats.Cur.PatNote;
+			textMedName.Text=Medications.GetMedication(MedicationPatCur.MedicationNum).MedName;
+			textGenericName.Text=Medications.GetGeneric(MedicationPatCur.MedicationNum).MedName;
+			textMedNote.Text=Medications.GetGeneric(MedicationPatCur.MedicationNum).Notes;
+			textPatNote.Text=MedicationPatCur.PatNote;
 		}
 
 		private void butEdit_Click(object sender, System.EventArgs e) {
-			Medications.Cur=Medications.GetMedication(MedicationPats.Cur.MedicationNum);
 			FormMedicationEdit FormME=new FormMedicationEdit();
+			FormME.MedicationCur=Medications.GetMedication(MedicationPatCur.MedicationNum);
 			FormME.ShowDialog();
 			if(FormME.DialogResult!=DialogResult.OK){
 				return;
@@ -303,17 +305,17 @@ namespace OpenDental{
 			{
 				return;
 			}
-			MedicationPats.DeleteCur();
+			MedicationPats.Delete(MedicationPatCur);
 			DialogResult=DialogResult.OK;
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			MedicationPats.Cur.PatNote=textPatNote.Text;
+			MedicationPatCur.PatNote=textPatNote.Text;
 			if(IsNew){
-				MedicationPats.InsertCur();
+				MedicationPats.Insert(MedicationPatCur);
 			}
 			else{
-				MedicationPats.UpdateCur();
+				MedicationPats.Update(MedicationPatCur);
 			}
 			DialogResult=DialogResult.OK;
 		}

@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 using System.IO;
+using OpenDentBusiness;
 
 namespace OpenDental.Bridges
 {
@@ -148,7 +149,7 @@ namespace OpenDental.Bridges
                         DocCur.ImgType = ImageType.Document;
                         DocCur.Description = "New Patient Form";
                         DocCur.WithPat = cd.PatCur.PatNum;
-                        DocCur.Insert(cd.PatCur);//this assigns a filename and saves to db
+                        Documents.Insert(DocCur,cd.PatCur);//this assigns a filename and saves to db
 
 
                         try
@@ -166,7 +167,7 @@ namespace OpenDental.Bridges
                         catch
                         {
                             MessageBox.Show(Lan.g(this, "Unable to write pdf file to disk."));
-                            DocCur.Delete();
+                            Documents.Delete(DocCur);
                         }
 
 

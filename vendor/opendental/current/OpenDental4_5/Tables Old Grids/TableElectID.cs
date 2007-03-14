@@ -25,9 +25,9 @@ namespace OpenDental
 			Fields[0]=Lan.g("TableElectID","Carrier");
 			Fields[1]=Lan.g("TableElectID","Payer ID");
 			Fields[2]=Lan.g("TableElectID","Comments");
-			ColWidth[0]=220;
+			ColWidth[0]=320;
 			ColWidth[1]=80;
-			ColWidth[2]=560;
+			ColWidth[2]=460;
 			//ColWidth[3]=100;
 			//ColAlign[1]=HorizontalAlignment.Right;
 			DefaultGridColor=Color.LightGray;

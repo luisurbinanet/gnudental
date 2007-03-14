@@ -16,6 +16,7 @@ using System.Drawing.Printing;
 using System.Globalization;
 using System.Windows.Forms;
 using OpenDental.UI;
+using OpenDentBusiness;
 
 namespace OpenDental{
 
@@ -1156,7 +1157,9 @@ namespace OpenDental{
 			ContrApptSheet2.Shadow=null;
 			if(ContrApptSingle3!=null){//too complex?
 				for(int i=0;i<ContrApptSingle3.Length;i++){
-					ContrApptSingle3[i].Dispose();
+					if(ContrApptSingle3[i]!=null){
+						ContrApptSingle3[i].Dispose();
+					}
 					ContrApptSingle3[i]=null;
 				}
 				ContrApptSingle3=null;
@@ -1222,8 +1225,8 @@ namespace OpenDental{
 		///<summary>Also refreshes some other display values. Needs to be called when switching databases.</summary>
 		private void RefreshVisops(){
 			if(Defs.Short!=null){
-				ApptViews.SetCur(comboView.SelectedIndex-1);
-				ApptViewItems.GetForCurView();//refreshes visops,etc
+				//ApptViews.SetCur();
+				ApptViewItems.GetForCurView(comboView.SelectedIndex-1);//refreshes visops,etc
 				ContrApptSheet2.ComputeColWidth(panelSheet.Width-vScrollBar1.Width);
 			}
 		}
@@ -1277,6 +1280,7 @@ namespace OpenDental{
 				{
 				butToday,
 				butTodayWk,
+				butSearch,
 				butClearPin,
 				label2,
 				label3,
@@ -1330,8 +1334,8 @@ namespace OpenDental{
 		/// </summary>
 		private void comboView_SelectedIndexChanged(object sender, System.EventArgs e) {
 			//first two lines might be redundant:
-			ApptViews.SetCur(comboView.SelectedIndex-1);//also works for none (0-1);
-			ApptViewItems.GetForCurView();
+			//ApptViews.SetCur(comboView.SelectedIndex-1);//also works for none (0-1);
+			ApptViewItems.GetForCurView(comboView.SelectedIndex-1);
 			ContrApptSheet2.ComputeColWidth(panelSheet.Width-vScrollBar1.Width);
 			if(PatCur==null){
 				ModuleSelected(0);
@@ -1482,8 +1486,8 @@ namespace OpenDental{
 				ContrApptSingle.SelectedAptNum=-1;//fixes a minor bug.
 			}
 			//else if(ContrApptSingle.se
-			ApptViews.SetCur(comboView.SelectedIndex-1);
-			ApptViewItems.GetForCurView();
+			//ApptViews.SetCur();
+			ApptViewItems.GetForCurView(comboView.SelectedIndex-1);
 			ContrApptSingle.ProvBar=new int[ApptViewItems.VisProvs.Length][];
 			for(int i=0;i<ApptViewItems.VisProvs.Length;i++){//Providers.List.Length;i++){
 				ContrApptSingle.ProvBar[i]=new int[24*ContrApptSheet.RowsPerHr];//[144]; or 24*6
@@ -1513,6 +1517,7 @@ namespace OpenDental{
 			procsMultApts=Procedures.GetProcsMultApts(aptNums);
 			Patient[] multPats=Patients.GetMultPats(patNums);
 			Procedure[] procsOneApt;
+			int indexProv;
 			for(int i=0;i<ListDay.Length;i++){
 				ContrApptSingle3[i]=new ContrApptSingle();
 				ContrApptSingle3[i].Visible=false;
@@ -1529,16 +1534,21 @@ namespace OpenDental{
 				ContrApptSingle3[i].Info.Production=Procedures.GetProductionOneApt(ListDay[i].AptNum,procsMultApts,false);
 				ContrApptSingle3[i].Info.MyPatient=Patients.GetOnePat(multPats,ListDay[i].PatNum);
 				//copy time pattern to provBar[]:
-				if(ApptViewItems.GetIndexProv(ListDay[i].ProvNum)!=-1
-					&& ListDay[i].AptStatus!=ApptStatus.Broken)
-				{
+				indexProv=-1;
+				if(ListDay[i].IsHygiene) {
+					indexProv=ApptViewItems.GetIndexProv(ListDay[i].ProvHyg);
+				}
+				else {
+					indexProv=ApptViewItems.GetIndexProv(ListDay[i].ProvNum);
+				}
+				if(indexProv!=-1 && ListDay[i].AptStatus!=ApptStatus.Broken) {
 					string pattern=ContrApptSingle.GetPatternShowing(ListDay[i].Pattern);
 					int startIndex=ContrApptSingle3[i].ConvertToY()/ContrApptSheet.Lh;//rounds down
 					for(int k=0;k<pattern.Length;k++){
 						if(pattern.Substring(k,1)=="X"){
 							//int timeBarInc=ContrApptSingle3[i].ConvertToY()/ContrApptSheet.Lh+k;
 							try{
-								ContrApptSingle.ProvBar[ApptViewItems.GetIndexProv(ListDay[i].ProvNum)][startIndex+k]++;
+								ContrApptSingle.ProvBar[indexProv][startIndex+k]++;
 							}
 							catch{
 								//appointment must extend past midnight.  Very rare
@@ -1803,7 +1813,7 @@ namespace OpenDental{
 				aptCur.NextAptNum=aptCur.AptNum;
 				aptCur.AptStatus=ApptStatus.Scheduled;
 				try{
-					aptCur.InsertOrUpdate(null,true);//now, aptnum is different.
+					Appointments.InsertOrUpdate(aptCur,null,true);//now, aptnum is different.
 				}
 				catch(ApplicationException ex){
 					MessageBox.Show(ex.Message);
@@ -1815,18 +1825,19 @@ namespace OpenDental{
 					+aptCur.ProcDescript);
 				Procedure[] ProcList=Procedures.Refresh(PatCur.PatNum);
 				bool procAlreadyAttached=false;
-				Procedure ProcCur;
-				Procedure ProcOld;
+				//Procedure ProcCur;
+				//Procedure ProcOld;
 				for(int i=0;i<ProcList.Length;i++){
-					if(ProcList[i].NextAptNum==PatCur.NextAptNum){//if on the planned apt
+					if(ProcList[i].PlannedAptNum==PatCur.NextAptNum){//if on the planned apt
 						if(ProcList[i].AptNum>0){//already attached to another appt
 							procAlreadyAttached=true;
 						}
 						else{//only update procedures not already attached to another apt
-							ProcCur=ProcList[i];
-							ProcOld=ProcCur.Copy();
-							ProcCur.AptNum=aptCur.AptNum;
-							ProcCur.Update(ProcOld);//recall synch not required.
+							//ProcCur=ProcList[i];
+							//ProcOld=ProcCur.Copy();
+							//ProcCur.AptNum=aptCur.AptNum;
+							Procedures.UpdateAptNum(ProcList[i].ProcNum,aptCur.AptNum);
+								//.Update(ProcCur,ProcOld);//recall synch not required.
 						}
 					}
 				}
@@ -1842,7 +1853,7 @@ namespace OpenDental{
 			}//if planned appointment is on pinboard
 			else{//simple drag off pinboard to a new date/time
 				try{
-					aptCur.InsertOrUpdate(aptOld,false);
+					Appointments.InsertOrUpdate(aptCur,aptOld,false);
 					SecurityLogs.MakeLogEntry(Permissions.AppointmentMove,PatCur.PatNum,
 						PatCur.GetNameLF()+", "
 						+aptCur.ProcDescript
@@ -1959,6 +1970,9 @@ namespace OpenDental{
 
 		///<summary>Mouse down event anywhere on the sheet.  Could be a blank space or on an actual appointment.</summary>
 		private void ContrApptSheet2_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
+			if(ApptViewItems.VisOps.Length==0){
+				return;
+			}
 			SheetClickedonOp=Operatories.ListShort[ApptViewItems.VisOps[ContrApptSheet2.DoubleClickToOp(e.X)]].OperatoryNum;
 			SheetClickedonHour=ContrApptSheet2.DoubleClickToHour(e.Y);
 			SheetClickedonMin=ContrApptSheet2.DoubleClickToMin(e.Y);
@@ -2027,7 +2041,7 @@ namespace OpenDental{
 			else{//not on appt. This was disabled so you can double click on empty area to sched
 				/*ContrApptSingle.PinBoardIsSelected=false;
 				Patients.PatIsLoaded=false;
-				ParentForm.Text=((Pref)Prefs.HList["MainWindowTitle"]).ValueString;
+				ParentForm.Text=((Pref)PrefB.HList["MainWindowTitle"]).ValueString;
 				if(ContrApptSingle.SelectedAptNum!=-1){
 					int prev=GetIndex(ContrApptSingle.SelectedAptNum);
 					ContrApptSingle.SelectedAptNum=-1;
@@ -2241,7 +2255,7 @@ namespace OpenDental{
 				AptCur.IsHygiene=curOp.IsHygiene;
 			}
 			try{
-				AptCur.InsertOrUpdate(aptOld,false);
+				Appointments.InsertOrUpdate(AptCur,aptOld,false);
 			}
 			catch(ApplicationException ex){
 				MessageBox.Show(ex.Message);
@@ -2274,7 +2288,9 @@ namespace OpenDental{
 				FormApptEdit FormAE=new FormApptEdit(AptCur);
 				FormAE.ShowDialog();
 				if(FormAE.DialogResult==DialogResult.OK){
-					if(DoesOverlap(AptCur)){
+					//Caution.  AptCur is not properly updated, so:
+					AptCur=Appointments.GetOneApt(AptCur.AptNum);
+					if(AptCur!=null && DoesOverlap(AptCur)) {
 						Appointment aptOld=AptCur.Copy();
 						MsgBox.Show(this,"Appointment is too long and would overlap another appointment.  Automatically shortened to fit.");
 						while(DoesOverlap(AptCur)){
@@ -2284,7 +2300,7 @@ namespace OpenDental{
 							}
 						}
 						try{
-							AptCur.InsertOrUpdate(aptOld,false);
+							Appointments.InsertOrUpdate(AptCur,aptOld,false);
 						}
 						catch(ApplicationException ex){
 							MessageBox.Show(ex.Message);
@@ -2316,7 +2332,7 @@ namespace OpenDental{
 					apt.IsNewPatient=true;
 					apt.Pattern="/X/";
 					if(PatCur.PriProv==0){
-						apt.ProvNum=Prefs.GetInt("PracticeDefaultProv");
+						apt.ProvNum=PrefB.GetInt("PracticeDefaultProv");
 					}
 					else{			
 						apt.ProvNum=PatCur.PriProv;
@@ -2330,7 +2346,7 @@ namespace OpenDental{
 					apt.AptDateTime=new DateTime(d.Year,d.Month,d.Day,ContrAppt.SheetClickedonHour,minutes,0);
 					apt.Op=ContrAppt.SheetClickedonOp;
 					try{
-						apt.InsertOrUpdate(null,true);
+						Appointments.InsertOrUpdate(apt,null,true);
 					}
 					catch(ApplicationException ex){
 						MessageBox.Show(ex.Message);
@@ -2687,7 +2703,7 @@ namespace OpenDental{
 				else{//for normal appt:
 					//this gets rid of new appointments that never made it off the pinboard
 					Procedures.UnattachProcsInAppt(AptCur.AptNum);
-					AptCur.Delete();
+					Appointments.Delete(AptCur);
 				}
 			}
 			PatCur=null;
@@ -2803,7 +2819,7 @@ namespace OpenDental{
 			Appointment aptOld=AptCur.Copy();
 			AptCur.AptStatus=ApptStatus.UnschedList;
 			try{
-				AptCur.InsertOrUpdate(aptOld,false);
+				Appointments.InsertOrUpdate(AptCur,aptOld,false);
 				SecurityLogs.MakeLogEntry(Permissions.AppointmentMove,AptCur.PatNum,
 					PatCur.GetNameLF()+", "
 					+AptCur.ProcDescript+", "
@@ -2825,7 +2841,7 @@ namespace OpenDental{
 			Appointment aptOld=AptCur.Copy();
 			AptCur.AptStatus=ApptStatus.Broken;
 			try{
-				AptCur.InsertOrUpdate(aptOld,false);
+				Appointments.InsertOrUpdate(AptCur,aptOld,false);
 				SecurityLogs.MakeLogEntry(Permissions.AppointmentEdit,AptCur.PatNum,
 					PatCur.GetNameLF()+", "
 					+AptCur.ProcDescript+", "
@@ -2863,7 +2879,7 @@ namespace OpenDental{
 			PatPlanList=PatPlans.Refresh(PatCur.PatNum);
 			Procedures.SetCompleteInAppt(AptCur,PlanList,PatPlanList);//loops through each proc
 			try{
-				AptCur.InsertOrUpdate(aptOld,false);
+				Appointments.InsertOrUpdate(AptCur,aptOld,false);
 				SecurityLogs.MakeLogEntry(Permissions.AppointmentEdit,AptCur.PatNum,
 					PatCur.GetNameLF()+", "
 					+AptCur.ProcDescript+", "
@@ -2890,7 +2906,7 @@ namespace OpenDental{
 				return;
 			}
 			Procedures.UnattachProcsInAppt(AptCur.AptNum);
-			AptCur.Delete();
+			Appointments.Delete(AptCur);
 			SecurityLogs.MakeLogEntry(Permissions.AppointmentEdit,AptCur.PatNum,
 				PatCur.GetNameLF()+", "
 				+AptCur.ProcDescript+", "
@@ -3022,7 +3038,7 @@ namespace OpenDental{
 			AptCur.Confirmed
 				=Defs.Short[(int)DefCat.ApptConfirmed][listConfirmed.IndexFromPoint(e.X,e.Y)].DefNum;
 			try{
-				AptCur.InsertOrUpdate(aptOld,false);
+				Appointments.InsertOrUpdate(AptCur,aptOld,false);
 			}
 			catch(ApplicationException ex){
 				MessageBox.Show(ex.Message);
@@ -3197,16 +3213,16 @@ namespace OpenDental{
 		private void pd2_PrintApptCard(object sender, PrintPageEventArgs ev){
 			Graphics g=ev.Graphics;
 			//Return Address--------------------------------------------------------------------------
-			string str=Prefs.GetString("PracticeTitle")+"\r\n";
+			string str=PrefB.GetString("PracticeTitle")+"\r\n";
 			g.DrawString(str,new Font(FontFamily.GenericSansSerif,9,FontStyle.Bold),Brushes.Black,60,60);
-			str=Prefs.GetString("PracticeAddress")+"\r\n";
-			if(Prefs.GetString("PracticeAddress2")!=""){
-				str+=Prefs.GetString("PracticeAddress2")+"\r\n";
+			str=PrefB.GetString("PracticeAddress")+"\r\n";
+			if(PrefB.GetString("PracticeAddress2")!=""){
+				str+=PrefB.GetString("PracticeAddress2")+"\r\n";
 			}
-			str+=Prefs.GetString("PracticeCity")+"  "
-				+Prefs.GetString("PracticeST")+"  "
-				+Prefs.GetString("PracticeZip")+"\r\n";
-			string phone=Prefs.GetString("PracticePhone");
+			str+=PrefB.GetString("PracticeCity")+"  "
+				+PrefB.GetString("PracticeST")+"  "
+				+PrefB.GetString("PracticeZip")+"\r\n";
+			string phone=PrefB.GetString("PracticePhone");
 			if(CultureInfo.CurrentCulture.Name=="en-US"
 				&& phone.Length==10)
 			{
@@ -3259,7 +3275,7 @@ namespace OpenDental{
 			CommlogCur.Note="Appointment card sent";
 			CommlogCur.PatNum=PatCur.PatNum;
 			//there is no dialog here because it is just a simple entry
-			CommlogCur.Insert();
+			Commlogs.Insert(CommlogCur);
 			ev.HasMorePages = false;
 		}
 

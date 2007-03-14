@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -138,17 +139,18 @@ namespace OpenDental{
 
 		private void butAdd_Click(object sender, System.EventArgs e) {
 			FormEmployeeEdit FormEE=new FormEmployeeEdit();
+			FormEE.EmployeeCur=new Employee();
 			FormEE.IsNew=true;
 			FormEE.ShowDialog();
 			FillList();
 		}
 
 		private void listEmployees_DoubleClick(object sender, System.EventArgs e) {
-			if(listEmployees.SelectedIndex==-1) {
+			if(listEmployees.SelectedIndex==-1){
 				return;
 			}
-			Employees.Cur=(Employee)ALemployees[listEmployees.SelectedIndex];
 			FormEmployeeEdit FormEE=new FormEmployeeEdit();
+			FormEE.EmployeeCur=(Employee)ALemployees[listEmployees.SelectedIndex];
 			FormEE.ShowDialog();
 			FillList();
 		}

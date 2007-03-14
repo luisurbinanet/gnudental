@@ -2,10 +2,9 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
-
-	
 ///<summary></summary>
 	public class Referrals{
 		///<summary>All referrals for all patients</summary>
@@ -18,8 +17,7 @@ namespace OpenDental{
 			string command=
 				"SELECT * from referral "
 				+"ORDER BY lname";
-			DataConnection dcon=new DataConnection();
- 			DataTable table=dcon.GetTable(command);
+ 			DataTable table=General.GetTable(command);
 			List=new Referral[table.Rows.Count];
 			HList=new Hashtable();
 			for(int i=0;i<table.Rows.Count;i++){
@@ -46,6 +44,96 @@ namespace OpenDental{
 				List[i].PatNum     = PIn.PInt   (table.Rows[i][19].ToString());
 				HList.Add(List[i].ReferralNum,List[i]);
 			}
+		}
+
+		///<summary></summary>
+		public static void Update(Referral refer) {
+			string command = "UPDATE referral SET " 
+				+ "LName = '"      +POut.PString(refer.LName)+"'"
+				+ ",FName = '"     +POut.PString(refer.FName)+"'"
+				+ ",MName = '"     +POut.PString(refer.MName)+"'"
+				+ ",SSN = '"       +POut.PString(refer.SSN)+"'"
+				+ ",UsingTIN = '"  +POut.PBool(refer.UsingTIN)+"'"
+				+ ",Specialty = '" +POut.PInt((int)refer.Specialty)+"'"
+				+ ",ST = '"        +POut.PString(refer.ST)+"'"
+				+ ",Telephone = '" +POut.PString(refer.Telephone)+"'"
+				+ ",Address = '"   +POut.PString(refer.Address)+"'"
+				+ ",Address2 = '"  +POut.PString(refer.Address2)+"'"
+				+ ",City = '"      +POut.PString(refer.City)+"'"
+				+ ",Zip = '"       +POut.PString(refer.Zip)+"'"
+				+ ",Note = '"      +POut.PString(refer.Note)+"'"
+				+ ",Phone2 = '"    +POut.PString(refer.Phone2)+"'"
+				+ ",IsHidden = '"  +POut.PBool(refer.IsHidden)+"'"
+				+ ",NotPerson = '" +POut.PBool(refer.NotPerson)+"'"
+				+ ",Title = '"     +POut.PString(refer.Title)+"'"
+				+ ",EMail = '"     +POut.PString(refer.EMail)+"'"
+				+ ",PatNum = '"    +POut.PInt(refer.PatNum)+"'"     
+				+" WHERE ReferralNum = '" +POut.PInt(refer.ReferralNum)+"'";
+			General.NonQ(command);
+		}
+
+		///<summary></summary>
+		public static void Insert(Referral refer) {
+			if(PrefB.RandomKeys) {
+				refer.ReferralNum=MiscData.GetKey("referral","ReferralNum");
+			}
+			string command= "INSERT INTO referral (";
+			if(PrefB.RandomKeys) {
+				command+="ReferralNum,";
+			}
+			command+="LName,FName,MName,SSN,UsingTIN,Specialty,ST,"
+				+"Telephone,Address,Address2,City,Zip,Note,Phone2,IsHidden,NotPerson,Title,Email,PatNum) VALUES(";
+			if(PrefB.RandomKeys) {
+				command+="'"+POut.PInt(refer.ReferralNum)+"', ";
+			}
+			command+=
+				 "'"+POut.PString(refer.LName)+"', "
+				+"'"+POut.PString(refer.FName)+"', "
+				+"'"+POut.PString(refer.MName)+"', "
+				+"'"+POut.PString(refer.SSN)+"', "
+				+"'"+POut.PBool(refer.UsingTIN)+"', "
+				+"'"+POut.PInt((int)refer.Specialty)+"', "
+				+"'"+POut.PString(refer.ST)+"', "
+				+"'"+POut.PString(refer.Telephone)+"', "    
+				+"'"+POut.PString(refer.Address)+"', "
+				+"'"+POut.PString(refer.Address2)+"', "
+				+"'"+POut.PString(refer.City)+"', "
+				+"'"+POut.PString(refer.Zip)+"', "
+				+"'"+POut.PString(refer.Note)+"', "
+				+"'"+POut.PString(refer.Phone2)+"', "
+				+"'"+POut.PBool(refer.IsHidden)+"', "
+				+"'"+POut.PBool(refer.NotPerson)+"', "
+				+"'"+POut.PString(refer.Title)+"', "
+				+"'"+POut.PString(refer.EMail)+"', "
+				+"'"+POut.PInt(refer.PatNum)+"')";
+			if(PrefB.RandomKeys) {
+				General.NonQ(command);
+			}
+			else {
+				refer.ReferralNum=General.NonQ(command,true);
+			}
+		}
+
+		///<summary></summary>
+		public static void Delete(Referral refer) {
+			string command= "DELETE FROM referral "
+				+"WHERE referralnum = '"+refer.ReferralNum+"'";
+			General.NonQ(command);
+		}
+
+		///<summary></summary>
+		public static string GetName(int referralNum) {
+			if(referralNum==0)
+				return "";
+			if(!HList.ContainsKey(referralNum)) {
+				return "";
+			}
+			Referral refer=(Referral)HList[referralNum];
+			string retVal=refer.LName;
+			if(refer.FName!="") {
+				retVal+=", "+refer.FName+" "+refer.MName;
+			}
+			return retVal;
 		}
 	
 		///<summary>Gets Referral info from memory (HList). Does not make a call to the database.</summary>

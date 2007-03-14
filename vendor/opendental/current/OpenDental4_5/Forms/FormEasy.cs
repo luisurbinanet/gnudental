@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -257,55 +258,37 @@ namespace OpenDental{
 		#endregion
 
 		private void FormEasy_Load(object sender, System.EventArgs e) {
-			checkCapitation.Checked=((Pref)Prefs.HList["EasyHideCapitation"]).ValueString=="1";
-			checkMedicaid.Checked=((Pref)Prefs.HList["EasyHideMedicaid"]).ValueString=="1";
-			checkPublicHealth.Checked=((Pref)Prefs.HList["EasyHidePublicHealth"]).ValueString=="1";
-			checkDentalSchools.Checked=Prefs.GetBool("EasyHideDentalSchools");
-			checkHospitals.Checked=Prefs.GetBool("EasyHideHospitals");
-			checkAdvancedIns.Checked=((Pref)Prefs.HList["EasyHideAdvancedIns"]).ValueString=="1";
-			checkInsurance.Checked=Prefs.GetBool("EasyHideInsurance");
-			checkClinical.Checked=((Pref)Prefs.HList["EasyHideClinical"]).ValueString=="1";
-			checkBasicModules.Checked=((Pref)Prefs.HList["EasyBasicModules"]).ValueString=="1";
-			checkNoClinics.Checked=Prefs.GetBool("EasyNoClinics");
-			checkRepeatCharges.Checked=Prefs.GetBool("EasyHideRepeatCharges");
+			checkCapitation.Checked=((Pref)PrefB.HList["EasyHideCapitation"]).ValueString=="1";
+			checkMedicaid.Checked=((Pref)PrefB.HList["EasyHideMedicaid"]).ValueString=="1";
+			checkPublicHealth.Checked=((Pref)PrefB.HList["EasyHidePublicHealth"]).ValueString=="1";
+			checkDentalSchools.Checked=PrefB.GetBool("EasyHideDentalSchools");
+			checkHospitals.Checked=PrefB.GetBool("EasyHideHospitals");
+			checkAdvancedIns.Checked=((Pref)PrefB.HList["EasyHideAdvancedIns"]).ValueString=="1";
+			checkInsurance.Checked=PrefB.GetBool("EasyHideInsurance");
+			checkClinical.Checked=((Pref)PrefB.HList["EasyHideClinical"]).ValueString=="1";
+			checkBasicModules.Checked=((Pref)PrefB.HList["EasyBasicModules"]).ValueString=="1";
+			checkNoClinics.Checked=PrefB.GetBool("EasyNoClinics");
+			checkRepeatCharges.Checked=PrefB.GetBool("EasyHideRepeatCharges");
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			Prefs.Cur.PrefName="EasyHideCapitation";
-			if(checkCapitation.Checked) Prefs.Cur.ValueString="1";
-			else Prefs.Cur.ValueString="0";
-			Prefs.UpdateCur();
-
-			Prefs.Cur.PrefName="EasyHideMedicaid";
-			if(checkMedicaid.Checked) Prefs.Cur.ValueString="1";
-			else Prefs.Cur.ValueString="0";
-			Prefs.UpdateCur();
-
-			Prefs.Cur.PrefName="EasyHidePublicHealth";
-			if(checkPublicHealth.Checked) Prefs.Cur.ValueString="1";
-			else Prefs.Cur.ValueString="0";
-			Prefs.UpdateCur();
+			Prefs.UpdateBool("EasyHideCapitation",checkCapitation.Checked);
+			
+			Prefs.UpdateBool("EasyHideMedicaid",checkMedicaid.Checked);
+			
+			Prefs.UpdateBool("EasyHidePublicHealth",checkPublicHealth.Checked);
 
 			Prefs.UpdateBool("EasyHideDentalSchools",checkDentalSchools.Checked);
 
 			Prefs.UpdateBool("EasyHideHospitals",checkHospitals.Checked);
 
-			Prefs.Cur.PrefName="EasyHideAdvancedIns";
-			if(checkAdvancedIns.Checked) Prefs.Cur.ValueString="1";
-			else Prefs.Cur.ValueString="0";
-			Prefs.UpdateCur();
+			Prefs.UpdateBool("EasyHideAdvancedIns",checkAdvancedIns.Checked);
 
 			Prefs.UpdateBool("EasyHideInsurance",checkInsurance.Checked);
-
-			Prefs.Cur.PrefName="EasyHideClinical";
-			if(checkClinical.Checked) Prefs.Cur.ValueString="1";
-			else Prefs.Cur.ValueString="0";
-			Prefs.UpdateCur();
-
-			Prefs.Cur.PrefName="EasyBasicModules";
-			if(checkBasicModules.Checked) Prefs.Cur.ValueString="1";
-			else Prefs.Cur.ValueString="0";
-			Prefs.UpdateCur();
+			
+			Prefs.UpdateBool("EasyHideClinical",checkClinical.Checked);
+			
+			Prefs.UpdateBool("EasyBasicModules",checkBasicModules.Checked);
 
 			Prefs.UpdateBool("EasyNoClinics",checkNoClinics.Checked);
 

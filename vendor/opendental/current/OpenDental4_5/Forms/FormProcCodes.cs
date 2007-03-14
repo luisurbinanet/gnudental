@@ -9,6 +9,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using OpenDental.UI;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -593,7 +594,7 @@ namespace OpenDental{
 			procCode.ProcTime="/X/";
 			procCode.ProcCat=Defs.Short[(int)DefCat.ProcCodeCats][0].DefNum;
 			procCode.GraphicColor=Color.FromArgb(0);
-			procCode.Insert();
+			ProcedureCodes.Insert(procCode);
 			FormProcCodeEdit FormP=new FormProcCodeEdit(procCode);
 			FormP.IsNew=true;
 			FormP.ShowDialog();
@@ -622,7 +623,7 @@ namespace OpenDental{
 					FeeCur=new Fee();
 					FeeCur.ADACode=ada;
 					FeeCur.FeeSched=Defs.Short[(int)DefCat.FeeSchedNames][listFeeSched.SelectedIndex].DefNum;
-					FeeCur.Insert();
+					Fees.Insert(FeeCur);
 					FormFE.IsNew=true;
 				}
 				FormFE.FeeCur=FeeCur;

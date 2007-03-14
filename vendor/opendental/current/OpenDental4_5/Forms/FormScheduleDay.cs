@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -235,7 +236,7 @@ namespace OpenDental{
       }
       if(SchedListDay.Length > 0){
 				for(int i=0;i<SchedListDay.Length;i++){
-					SchedListDay[i].Delete();
+					Schedules.Delete(SchedListDay[i]);
 				}
       } 
 			Schedule SchedCur=new Schedule();

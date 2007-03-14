@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using OpenDental.ReportingOld2;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -112,9 +113,10 @@ namespace OpenDental{
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormTerminal));
 			this.tabMain = new System.Windows.Forms.TabControl();
 			this.tabPage1 = new System.Windows.Forms.TabPage();
+			this.checkInsNo = new System.Windows.Forms.CheckBox();
+			this.labelIns = new System.Windows.Forms.Label();
 			this.comboPosition = new System.Windows.Forms.ComboBox();
 			this.comboGender = new System.Windows.Forms.ComboBox();
 			this.textReferral = new System.Windows.Forms.TextBox();
@@ -126,6 +128,8 @@ namespace OpenDental{
 			this.label30 = new System.Windows.Forms.Label();
 			this.checkInsYes = new System.Windows.Forms.CheckBox();
 			this.labelAddrNotes = new System.Windows.Forms.Label();
+			this.textAddrNotes = new OpenDental.ODtextBox();
+			this.textBirthdate = new OpenDental.ValidDate();
 			this.textEmail = new System.Windows.Forms.TextBox();
 			this.textWirelessPhone = new System.Windows.Forms.TextBox();
 			this.textWkPhone = new System.Windows.Forms.TextBox();
@@ -161,18 +165,14 @@ namespace OpenDental{
 			this.label3 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
 			this.tabPage2 = new System.Windows.Forms.TabPage();
-			this.label6 = new System.Windows.Forms.Label();
 			this.listDiseases = new System.Windows.Forms.CheckedListBox();
+			this.label6 = new System.Windows.Forms.Label();
+			this.multInput = new OpenDental.UI.ContrMultInput();
 			this.timer1 = new System.Windows.Forms.Timer(this.components);
 			this.textWelcome = new System.Windows.Forms.TextBox();
 			this.labelConnection = new System.Windows.Forms.Label();
-			this.textAddrNotes = new OpenDental.ODtextBox();
-			this.textBirthdate = new OpenDental.ValidDate();
-			this.multInput = new OpenDental.UI.ContrMultInput();
 			this.butSubmit = new OpenDental.UI.Button();
 			this.butClose = new OpenDental.UI.Button();
-			this.labelIns = new System.Windows.Forms.Label();
-			this.checkInsNo = new System.Windows.Forms.CheckBox();
 			this.tabMain.SuspendLayout();
 			this.tabPage1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
@@ -231,6 +231,24 @@ namespace OpenDental{
 			this.tabPage1.TabIndex = 0;
 			this.tabPage1.Text = "Patient Information";
 			this.tabPage1.UseVisualStyleBackColor = true;
+			// 
+			// checkInsNo
+			// 
+			this.checkInsNo.Location = new System.Drawing.Point(180,78);
+			this.checkInsNo.Name = "checkInsNo";
+			this.checkInsNo.Size = new System.Drawing.Size(102,16);
+			this.checkInsNo.TabIndex = 141;
+			this.checkInsNo.Text = "No";
+			this.checkInsNo.UseVisualStyleBackColor = true;
+			this.checkInsNo.Click += new System.EventHandler(this.checkInsNo_Click);
+			// 
+			// labelIns
+			// 
+			this.labelIns.Location = new System.Drawing.Point(177,44);
+			this.labelIns.Name = "labelIns";
+			this.labelIns.Size = new System.Drawing.Size(403,15);
+			this.labelIns.TabIndex = 140;
+			this.labelIns.Text = "Do you have dental insurance?";
 			// 
 			// comboPosition
 			// 
@@ -335,6 +353,24 @@ namespace OpenDental{
 			this.labelAddrNotes.TabIndex = 135;
 			this.labelAddrNotes.Text = "Notes regarding address or telephone";
 			this.labelAddrNotes.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
+			// textAddrNotes
+			// 
+			this.textAddrNotes.AcceptsReturn = true;
+			this.textAddrNotes.Location = new System.Drawing.Point(668,386);
+			this.textAddrNotes.Multiline = true;
+			this.textAddrNotes.Name = "textAddrNotes";
+			this.textAddrNotes.QuickPasteType = OpenDentBusiness.QuickPasteType.PatAddressNote;
+			this.textAddrNotes.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.textAddrNotes.Size = new System.Drawing.Size(268,126);
+			this.textAddrNotes.TabIndex = 15;
+			// 
+			// textBirthdate
+			// 
+			this.textBirthdate.Location = new System.Drawing.Point(180,237);
+			this.textBirthdate.Name = "textBirthdate";
+			this.textBirthdate.Size = new System.Drawing.Size(82,20);
+			this.textBirthdate.TabIndex = 7;
 			// 
 			// textEmail
 			// 
@@ -673,15 +709,6 @@ namespace OpenDental{
 			this.tabPage2.Text = "Medical History";
 			this.tabPage2.UseVisualStyleBackColor = true;
 			// 
-			// label6
-			// 
-			this.label6.AutoSize = true;
-			this.label6.Location = new System.Drawing.Point(6,4);
-			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(317,13);
-			this.label6.TabIndex = 5;
-			this.label6.Text = "Please mark any of the following medical conditions that you have";
-			// 
 			// listDiseases
 			// 
 			this.listDiseases.CheckOnClick = true;
@@ -691,6 +718,22 @@ namespace OpenDental{
 			this.listDiseases.Name = "listDiseases";
 			this.listDiseases.Size = new System.Drawing.Size(975,199);
 			this.listDiseases.TabIndex = 0;
+			// 
+			// label6
+			// 
+			this.label6.AutoSize = true;
+			this.label6.Location = new System.Drawing.Point(6,4);
+			this.label6.Name = "label6";
+			this.label6.Size = new System.Drawing.Size(317,13);
+			this.label6.TabIndex = 5;
+			this.label6.Text = "Please mark any of the following medical conditions that you have";
+			// 
+			// multInput
+			// 
+			this.multInput.Location = new System.Drawing.Point(3,223);
+			this.multInput.Name = "multInput";
+			this.multInput.Size = new System.Drawing.Size(975,440);
+			this.multInput.TabIndex = 4;
 			// 
 			// timer1
 			// 
@@ -723,31 +766,6 @@ namespace OpenDental{
 			this.labelConnection.TabIndex = 4;
 			this.labelConnection.Text = "Connection to server has been lost";
 			// 
-			// textAddrNotes
-			// 
-			this.textAddrNotes.AcceptsReturn = true;
-			this.textAddrNotes.Location = new System.Drawing.Point(668,386);
-			this.textAddrNotes.Multiline = true;
-			this.textAddrNotes.Name = "textAddrNotes";
-			this.textAddrNotes.QuickPasteType = OpenDental.QuickPasteType.PatAddressNote;
-			this.textAddrNotes.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textAddrNotes.Size = new System.Drawing.Size(268,126);
-			this.textAddrNotes.TabIndex = 15;
-			// 
-			// textBirthdate
-			// 
-			this.textBirthdate.Location = new System.Drawing.Point(180,237);
-			this.textBirthdate.Name = "textBirthdate";
-			this.textBirthdate.Size = new System.Drawing.Size(82,20);
-			this.textBirthdate.TabIndex = 7;
-			// 
-			// multInput
-			// 
-			this.multInput.Location = new System.Drawing.Point(3,223);
-			this.multInput.Name = "multInput";
-			this.multInput.Size = new System.Drawing.Size(975,440);
-			this.multInput.TabIndex = 4;
-			// 
 			// butSubmit
 			// 
 			this.butSubmit.AdjustImageLocation = new System.Drawing.Point(0,0);
@@ -776,24 +794,6 @@ namespace OpenDental{
 			this.butClose.Text = "Close";
 			this.butClose.Click += new System.EventHandler(this.butClose_Click);
 			// 
-			// labelIns
-			// 
-			this.labelIns.Location = new System.Drawing.Point(177,44);
-			this.labelIns.Name = "labelIns";
-			this.labelIns.Size = new System.Drawing.Size(403,15);
-			this.labelIns.TabIndex = 140;
-			this.labelIns.Text = "Do you have dental insurance?";
-			// 
-			// checkInsNo
-			// 
-			this.checkInsNo.Location = new System.Drawing.Point(180,78);
-			this.checkInsNo.Name = "checkInsNo";
-			this.checkInsNo.Size = new System.Drawing.Size(102,16);
-			this.checkInsNo.TabIndex = 141;
-			this.checkInsNo.Text = "No";
-			this.checkInsNo.UseVisualStyleBackColor = true;
-			this.checkInsNo.Click += new System.EventHandler(this.checkInsNo_Click);
-			// 
 			// FormTerminal
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
@@ -804,7 +804,6 @@ namespace OpenDental{
 			this.Controls.Add(this.butSubmit);
 			this.Controls.Add(this.butClose);
 			this.Controls.Add(this.textWelcome);
-			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "FormTerminal";
@@ -834,7 +833,7 @@ namespace OpenDental{
 			TerminalActive terminal=new TerminalActive();
 			terminal.ComputerName=Environment.MachineName;
 			terminal.TerminalStatus=TerminalStatusEnum.Standby;
-			terminal.Insert();
+			TerminalActives.Insert(terminal);
 			tabMain.Visible=false;
 			butSubmit.Visible=false;
 			TerminalStatus=TerminalStatusEnum.Standby;
@@ -1193,7 +1192,7 @@ namespace OpenDental{
 				//IsChangingTab=false;
 				TerminalStatus=TerminalStatusEnum.Medical;
 				terminal.TerminalStatus=TerminalStatusEnum.Medical;
-				terminal.Update();
+				TerminalActives.Update(terminal);
 			}
 			else if(TerminalStatus==TerminalStatusEnum.UpdateOnly){
 				textWelcome.Visible=true;
@@ -1203,7 +1202,7 @@ namespace OpenDental{
 				TerminalStatus=TerminalStatusEnum.Standby;
 				terminal.TerminalStatus=TerminalStatusEnum.Standby;
 				terminal.PatNum=0;
-				terminal.Update();
+				TerminalActives.Update(terminal);
 			}
 			else if(TerminalStatus==TerminalStatusEnum.Medical){
 				SaveDiseases();
@@ -1215,7 +1214,7 @@ namespace OpenDental{
 				TerminalStatus=TerminalStatusEnum.Standby;
 				terminal.TerminalStatus=TerminalStatusEnum.Standby;
 				terminal.PatNum=0;
-				terminal.Update();
+				TerminalActives.Update(terminal);
 			}
 		}
 
@@ -1237,7 +1236,6 @@ namespace OpenDental{
 				throw new ApplicationException(Lan.g(this,"Birthdate must be entered."));
 			}
 			if(TerminalStatus!=TerminalStatusEnum.UpdateOnly && textReferral.Text=="") {
-			//if(textReferral.Text=="") {
 				textReferral.BackColor=Color.Yellow;
 				throw new ApplicationException(Lan.g(this,"Referral must be entered (on the right)."));
 			}
@@ -1300,7 +1298,7 @@ namespace OpenDental{
 					PatCur.AddrNote=textAddrNotes.Text+"\r\n"+PatCur.AddrNote;
 				}
 			}
-			PatCur.Update(PatOld);
+			Patients.Update(PatCur,PatOld);
 			if(checkSame.Checked) {
 				Patients.UpdateAddressForFamTerminal(PatCur);
 			}
@@ -1320,7 +1318,7 @@ namespace OpenDental{
 					Referrals.List[i].Zip=PatCur.Zip;
 					Referrals.List[i].Telephone=TelephoneNumbers.FormatNumbersOnly(PatCur.HmPhone);
 					Referrals.List[i].EMail=PatCur.Email;
-					Referrals.List[i].Update();
+					Referrals.Update(Referrals.List[i]);
 					Referrals.Refresh();
 					break;
 				}
@@ -1333,7 +1331,7 @@ namespace OpenDental{
 				disease=new Disease();
 				disease.PatNum=PatCur.PatNum;
 				disease.DiseaseDefNum=DiseaseDefs.List[listDiseases.CheckedIndices[i]].DiseaseDefNum;
-				disease.Insert();
+				Diseases.Insert(disease);
 			}
 		}
 
@@ -1355,7 +1353,7 @@ namespace OpenDental{
 				else if(QuestionDefList[i].QuestType==QuestionType.YesNoUnknown) {
 					quest.Answer=Lan.g("enumYN",multInput.GetCurrentValues(i)[0].ToString());
 				}
-				quest.Insert();
+				Questions.Insert(quest);
 			}
 		}
 
@@ -1365,7 +1363,7 @@ namespace OpenDental{
 			if(input.DialogResult!=DialogResult.OK){
 				return;
 			}
-			if(input.textResult.Text!=Prefs.GetString("TerminalClosePassword")){
+			if(input.textResult.Text!=PrefB.GetString("TerminalClosePassword")){
 				MsgBox.Show(this,"Invalid password.");
 				return;
 			}

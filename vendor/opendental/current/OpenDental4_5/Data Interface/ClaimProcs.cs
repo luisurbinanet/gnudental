@@ -2,27 +2,19 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	
 	///<summary></summary>
 	public class ClaimProcs{
-		//<summary></summary>
-		//public static ClaimProc Cur;
-		//<summary></summary>
-		//public static ClaimProc[] List;//all for Patients.Cur
-		//<summary>ClaimProcs for Claims.Cur.ClaimNum. Fill using GetForClaim()</summary>
-		//public static ClaimProc[] ForClaim;
-		//<summary>ClaimProcs for Procedures.Cur.ProcNum. Fill using GetForProc()</summary>
-		//public static ClaimProc[] ForProc;
 
 		///<summary></summary>
 		public static ClaimProc[] Refresh(int patNum){
 			string command=
 				"SELECT * from claimproc "
 				+"WHERE PatNum = '"+patNum.ToString()+"' ";
-			DataConnection dcon=new DataConnection();
- 			DataTable table=dcon.GetTable(command);
+ 			DataTable table=General.GetTable(command);
 			ClaimProc[] List=new ClaimProc[table.Rows.Count];
 			for(int i=0;i<List.Length;i++){
 				List[i]=new ClaimProc();
@@ -58,6 +50,251 @@ namespace OpenDental{
 			}
 			return List;
 		}
+
+		///<summary></summary>
+		public static void Insert(ClaimProc cp) {
+			if(PrefB.RandomKeys) {
+				cp.ClaimProcNum=MiscData.GetKey("claimproc","ClaimProcNum");
+			}
+			string command= "INSERT INTO claimproc (";
+			if(PrefB.RandomKeys) {
+				command+="ClaimProcNum,";
+			}
+			command+="ProcNum,ClaimNum,PatNum,ProvNum"
+				+",FeeBilled,InsPayEst,DedApplied,Status,InsPayAmt,Remarks,ClaimPaymentNum"
+				+",PlanNum,DateCP,WriteOff,CodeSent,AllowedAmt,Percentage,PercentOverride"
+				+",CopayAmt,OverrideInsEst,NoBillIns,DedBeforePerc,OverAnnualMax"
+				+",PaidOtherIns,BaseEst,CopayOverride,ProcDate,DateEntry) VALUES(";
+			if(PrefB.RandomKeys) {
+				command+="'"+POut.PInt(cp.ClaimProcNum)+"', ";
+			}
+			command+=
+				 "'"+POut.PInt(cp.ProcNum)+"', "
+				+"'"+POut.PInt(cp.ClaimNum)+"', "
+				+"'"+POut.PInt(cp.PatNum)+"', "
+				+"'"+POut.PInt(cp.ProvNum)+"', "
+				+"'"+POut.PDouble(cp.FeeBilled)+"', "
+				+"'"+POut.PDouble(cp.InsPayEst)+"', "
+				+"'"+POut.PDouble(cp.DedApplied)+"', "
+				+"'"+POut.PInt((int)cp.Status)+"', "
+				+"'"+POut.PDouble(cp.InsPayAmt)+"', "
+				+"'"+POut.PString(cp.Remarks)+"', "
+				+"'"+POut.PInt(cp.ClaimPaymentNum)+"', "
+				+"'"+POut.PInt(cp.PlanNum)+"', "
+				+"'"+POut.PDate(cp.DateCP)+"', "
+				+"'"+POut.PDouble(cp.WriteOff)+"', "
+				+"'"+POut.PString(cp.CodeSent)+"', "
+				+"'"+POut.PDouble(cp.AllowedAmt)+"', "
+				+"'"+POut.PInt(cp.Percentage)+"', "
+				+"'"+POut.PInt(cp.PercentOverride)+"', "
+				+"'"+POut.PDouble(cp.CopayAmt)+"', "
+				+"'"+POut.PDouble(cp.OverrideInsEst)+"', "
+				+"'"+POut.PBool(cp.NoBillIns)+"', "
+				+"'"+POut.PBool(cp.DedBeforePerc)+"', "
+				+"'"+POut.PDouble(cp.OverAnnualMax)+"', "
+				+"'"+POut.PDouble(cp.PaidOtherIns)+"', "
+				+"'"+POut.PDouble(cp.BaseEst)+"', "
+				+"'"+POut.PDouble(cp.CopayOverride)+"', "
+				+"'"+POut.PDate(cp.ProcDate)+"', "
+				+"NOW())";
+			//MessageBox.Show(string command);
+			if(PrefB.RandomKeys) {
+				General.NonQ(command);
+			}
+			else {
+				cp.ClaimProcNum=General.NonQ(command,true);
+			}
+		}
+
+		///<summary></summary>
+		public static void Update(ClaimProc cp) {
+			string command= "UPDATE claimproc SET "
+				+"ProcNum = '"        +POut.PInt(cp.ProcNum)+"'"
+				+",ClaimNum = '"      +POut.PInt(cp.ClaimNum)+"' "
+				+",PatNum = '"        +POut.PInt(cp.PatNum)+"'"
+				+",ProvNum = '"       +POut.PInt(cp.ProvNum)+"'"
+				+",FeeBilled = '"     +POut.PDouble(cp.FeeBilled)+"'"
+				+",InsPayEst = '"     +POut.PDouble(cp.InsPayEst)+"'"
+				+",DedApplied = '"    +POut.PDouble(cp.DedApplied)+"'"
+				+",Status = '"        +POut.PInt((int)cp.Status)+"'"
+				+",InsPayAmt = '"     +POut.PDouble(cp.InsPayAmt)+"'"
+				+",Remarks = '"       +POut.PString(cp.Remarks)+"'"
+				+",ClaimPaymentNum= '"+POut.PInt(cp.ClaimPaymentNum)+"'"
+				+",PlanNum= '"        +POut.PInt(cp.PlanNum)+"'"
+				+",DateCP= '"         +POut.PDate(cp.DateCP)+"'"
+				+",WriteOff= '"       +POut.PDouble(cp.WriteOff)+"'"
+				+",CodeSent= '"       +POut.PString(cp.CodeSent)+"'"
+				+",AllowedAmt= '"     +POut.PDouble(cp.AllowedAmt)+"'"
+				+",Percentage= '"     +POut.PInt(cp.Percentage)+"'"
+				+",PercentOverride= '"+POut.PInt(cp.PercentOverride)+"'"
+				+",CopayAmt= '"       +POut.PDouble(cp.CopayAmt)+"'"
+				+",OverrideInsEst= '" +POut.PDouble(cp.OverrideInsEst)+"'"
+				+",NoBillIns= '"      +POut.PBool(cp.NoBillIns)+"'"
+				+",DedBeforePerc= '"  +POut.PBool(cp.DedBeforePerc)+"'"
+				+",OverAnnualMax= '"  +POut.PDouble(cp.OverAnnualMax)+"'"
+				+",PaidOtherIns= '"   +POut.PDouble(cp.PaidOtherIns)+"'"
+				+",BaseEst= '"        +POut.PDouble(cp.BaseEst)+"'"
+				+",CopayOverride= '"  +POut.PDouble(cp.CopayOverride)+"'"
+				+",ProcDate= '"       +POut.PDate(cp.ProcDate)+"'"
+				+",DateEntry= '"      +POut.PDate(cp.DateEntry)+"'"
+				+" WHERE claimprocnum = '"+POut.PInt(cp.ClaimProcNum)+"'";
+			//MessageBox.Show(string command);
+			General.NonQ(command);
+		}
+
+		///<summary></summary>
+		public static void Delete(ClaimProc cp) {
+			string command= "DELETE from claimproc WHERE claimprocNum = '"+POut.PInt(cp.ClaimProcNum)+"'";
+			General.NonQ(command);
+		}
+
+		///<summary>Calculates the Base estimate for a procedure.  This is not done on the fly.  Use Procedure.GetEst to later retrieve the estimate. This function duplicates/replaces all of the upper estimating logic that is within FormClaimProc.  BaseEst=((fee or allowedAmt)-Copay) x (percentage or percentOverride). The result is now stored in a claimProc.  The claimProcs do get updated frequently depending on certain actions the user takes.  The calling class must have already created the claimProc, and this function simply updates the BaseEst field of that claimproc. pst.Tot not used.  For Estimate and CapEstimate, all the estimate fields will be recalculated except the three overrides.</summary>
+		public static void ComputeBaseEst(ClaimProc cp, Procedure proc,PriSecTot pst,InsPlan[] PlanList,PatPlan[] patPlans,Benefit[] benList) {//,bool resetValues){ 
+			if(cp.Status==ClaimProcStatus.CapClaim
+				|| cp.Status==ClaimProcStatus.CapComplete
+				|| cp.Status==ClaimProcStatus.Preauth
+				|| cp.Status==ClaimProcStatus.Supplemental) {
+				return;//never compute estimates for those types listed above.
+			}
+			bool resetAll=false;
+			if(cp.Status==ClaimProcStatus.Estimate || cp.Status==ClaimProcStatus.CapEstimate) {
+				resetAll=true;
+			}
+			//NoBillIns is only calculated when creating the claimproc, even if resetAll is true.
+			//If user then changes a procCode, it does not cause an update of all procedures with that ADACode.
+			if(cp.NoBillIns) {
+				cp.AllowedAmt=-1;
+				cp.CopayAmt=0;
+				cp.CopayOverride=-1;
+				cp.DedApplied=0;
+				cp.Percentage=-1;
+				cp.PercentOverride=-1;
+				cp.WriteOff=0;
+				cp.BaseEst=0;
+				return;
+			}
+			//This function is called every time a ProcFee is changed,
+			//so the BaseEst does reflect the new ProcFee.
+			cp.BaseEst=proc.ProcFee;
+			//if(resetAll){
+			//AllowedAmt=-1;
+			//actually, this is a bad place for altering AllowedAmt.
+			//Best to set it at the same time as the fee.
+			//}
+			if(cp.AllowedAmt==-1) {//If allowedAmt is blank, try to find an allowed amount.
+				cp.AllowedAmt=InsPlans.GetAllowed(proc.ADACode,cp.PlanNum,PlanList);
+				//later add posterior composite functionality. Needs to go here because the substitute fee changes.
+			}
+			if(cp.AllowedAmt!=-1) {
+				cp.BaseEst=cp.AllowedAmt;
+			}
+			//dedApplied is never recalculated here
+			//deductible is initially 0 anyway, so this calculation works.
+			//Once there is a deductible included, this calculation would come out different, which is also ok.
+			if(cp.DedBeforePerc) {
+				cp.BaseEst-=cp.DedApplied;
+			}
+			//copayAmt
+			//copayOverride never recalculated
+			InsPlan plan=null;
+			if(pst==PriSecTot.Pri) {
+				plan=InsPlans.GetPlan(patPlans[0].PlanNum,PlanList);
+			}
+			else if(pst==PriSecTot.Sec) {
+				plan=InsPlans.GetPlan(patPlans[1].PlanNum,PlanList);
+			}
+			if(resetAll) {
+				if(pst==PriSecTot.Pri) {
+					cp.CopayAmt=InsPlans.GetCopay(proc.ADACode,plan);
+				}
+				else if(pst==PriSecTot.Sec) {
+					cp.CopayAmt=InsPlans.GetCopay(proc.ADACode,plan);
+				}
+				else {//pst.Other
+					cp.CopayAmt=-1;
+				}
+				if(cp.Status==ClaimProcStatus.CapEstimate) {
+					//this does automate the Writeoff. If user does not want writeoff automated,
+					//then they will have to complete the procedure first. (very rare)
+					if(cp.CopayAmt==-1) {
+						cp.CopayAmt=0;
+					}
+					if(cp.CopayOverride!=-1) {//override the copay
+						cp.WriteOff=proc.ProcFee-cp.CopayOverride;
+					}
+					else if(cp.CopayAmt!=-1) {//use the calculated copay
+						cp.WriteOff=proc.ProcFee-cp.CopayAmt;
+					}
+					//else{//no copay at all
+					//	WriteOff=proc.ProcFee;
+					//}
+					if(cp.WriteOff<0) {
+						cp.WriteOff=0;
+					}
+					cp.AllowedAmt=-1;
+					cp.DedApplied=0;
+					cp.Percentage=-1;
+					cp.PercentOverride=-1;
+					cp.BaseEst=0;
+					return;
+				}
+			}
+			if(cp.CopayOverride!=-1) {//subtract copay if override
+				cp.BaseEst-=cp.CopayOverride;
+			}
+			else if(cp.CopayAmt!=-1) {//otherwise subtract calculated copay
+				cp.BaseEst-=cp.CopayAmt;
+			}
+			//percentage
+			//percentoverride never recalculated
+			if(pst==PriSecTot.Pri) {
+				cp.Percentage=Benefits.GetPercent(proc.ADACode,plan,patPlans[0],benList);//will never =-1
+			}
+			else if(pst==PriSecTot.Sec) {
+				cp.Percentage=Benefits.GetPercent(proc.ADACode,plan,patPlans[1],benList);
+			}
+			if(cp.PercentOverride==-1) {//no override, so use calculated Percentage
+				cp.BaseEst=cp.BaseEst*(double)cp.Percentage/100;
+			}
+			else {//override, so use PercentOverride
+				cp.BaseEst=cp.BaseEst*(double)cp.PercentOverride/100;
+			}
+		}
+
+		///<summary>Used when creating a claim to create any missing claimProcs. Also used in FormProcEdit if click button to add Estimate.  Inserts it into db. It will still be altered after this to fill in the fields that actually attach it to the claim.</summary>
+		public static void CreateEst(ClaimProc cp, Procedure proc, InsPlan plan) {
+			cp.ProcNum=proc.ProcNum;
+			//claimnum
+			cp.PatNum=proc.PatNum;
+			cp.ProvNum=proc.ProvNum;
+			if(plan.PlanType=="c") {//capitation
+				if(proc.ProcStatus==ProcStat.C) {//complete
+					cp.Status=ClaimProcStatus.CapComplete;//in this case, a copy will be made later.
+				}
+				else {//usually TP status
+					cp.Status=ClaimProcStatus.CapEstimate;
+				}
+			}
+			else {
+				cp.Status=ClaimProcStatus.Estimate;
+			}
+			cp.PlanNum=plan.PlanNum;
+			cp.DateCP=proc.ProcDate;
+			//Writeoff=0
+			cp.AllowedAmt=-1;
+			cp.Percentage=-1;
+			cp.PercentOverride=-1;
+			cp.CopayAmt=-1;
+			cp.OverrideInsEst=-1;
+			cp.NoBillIns=false;
+			cp.OverAnnualMax=-1;
+			cp.PaidOtherIns=-1;
+			cp.BaseEst=0;
+			cp.CopayOverride=-1;
+			cp.ProcDate=proc.ProcDate;
+			Insert(cp);
+		}
+
 
 		///<summary>Converts the supplied list into a list of ClaimProcs for one claim.</summary>
 		public static ClaimProc[] GetForClaim(ClaimProc[] List,int claimNum){
@@ -216,9 +453,9 @@ namespace OpenDental{
 			string command= "UPDATE claimproc SET "
 				+"ClaimPaymentNum = '0' "
 				+"WHERE claimpaymentNum = '"+claimPaymentNum+"'";
-			//MessageBox.Show(cmd.CommandText);
+			//MessageBox.Show(string command);
 			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command);
+ 			General.NonQ(command);
 		}*/
 
 		///<summary>Attaches or detaches claimprocs from the specified claimPayment. Updates all claimprocs on a claim with one query.  It also updates their DateCP's to match the claimpayment date.</summary>
@@ -234,9 +471,8 @@ namespace OpenDental{
 				+"WHERE claimnum = '"+claimNum+"' AND "
 				+"inspayamt != 0 AND ("
 				+"claimpaymentNum = '"+claimPaymentNum+"' OR claimpaymentNum = '0')";
-			//MessageBox.Show(cmd.CommandText);
-			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command);
+			//MessageBox.Show(string command);
+ 			General.NonQ(command);
 		}
 
 		///<summary></summary>
@@ -257,7 +493,7 @@ namespace OpenDental{
 					retVal-=List[i].InsPayAmt;
 				}
 				else if(List[i].Status==ClaimProcStatus.NotReceived){
-					if(!Prefs.GetBool("BalancesDontSubtractIns")){
+					if(!PrefB.GetBool("BalancesDontSubtractIns")){
 						retVal-=List[i].InsPayEst;//this typically happens
 					}
 				}

@@ -6,6 +6,7 @@ using System;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
@@ -15,6 +16,7 @@ using System.Windows.Forms;
 using Microsoft.Win32;
 using OpenDental.Bridges;
 using OpenDental.UI;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -127,8 +129,8 @@ namespace OpenDental{
 		private OpenDental.UI.ODGrid gridBenefits;
 		private TextBox textPlanNum;
 		///<summary>This is the current benefit list that displays on the form.  It does not get saved to the database until this form closes.</summary>
-		private ArrayList benefitList;//each item is a Benefit
-		private ArrayList benefitListOld;
+		private List<Benefit> benefitList;//each item is a Benefit
+		private List<Benefit> benefitListOld;
 		private bool usesAnnivers;
 		private Label label17;
 		private OpenDental.UI.Button butPick;
@@ -144,6 +146,11 @@ namespace OpenDental{
 		private Def[] FeeSchedsCopay;
 		private GroupBox groupPlan;
 		private Def[] FeeSchedsAllowed;
+		private Panel panel2;
+		private Label label13;
+		private ComboBox comboFilingCode;
+		///<summary>This is a field that is accessed only by clicking on the button because there's not room for it otherwise.  This variable should be treated just as if it was a visible textBox.</summary>
+		private string BenefitNotes;
 
 		///<summary>Only called from ContrFamily. Must pass in both the plan and the patPlan.  They are handled separately.</summary>
 		public FormInsPlan(InsPlan planCur,PatPlan patPlanCur){
@@ -295,12 +302,16 @@ namespace OpenDental{
 			this.butDelete = new OpenDental.UI.Button();
 			this.butCancel = new OpenDental.UI.Button();
 			this.groupPlan = new System.Windows.Forms.GroupBox();
+			this.panel2 = new System.Windows.Forms.Panel();
+			this.label13 = new System.Windows.Forms.Label();
+			this.comboFilingCode = new System.Windows.Forms.ComboBox();
 			this.groupSubscriber.SuspendLayout();
 			this.groupCoPay.SuspendLayout();
 			this.groupBox3.SuspendLayout();
 			this.groupRequestBen.SuspendLayout();
 			this.panelPat.SuspendLayout();
 			this.groupPlan.SuspendLayout();
+			this.panel2.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// label5
@@ -504,7 +515,7 @@ namespace OpenDental{
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(21,433);
+			this.label1.Location = new System.Drawing.Point(13,55);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(96,15);
 			this.label1.TabIndex = 91;
@@ -532,7 +543,7 @@ namespace OpenDental{
 			// checkNoSendElect
 			// 
 			this.checkNoSendElect.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkNoSendElect.Location = new System.Drawing.Point(186,114);
+			this.checkNoSendElect.Location = new System.Drawing.Point(186,112);
 			this.checkNoSendElect.Name = "checkNoSendElect";
 			this.checkNoSendElect.Size = new System.Drawing.Size(213,17);
 			this.checkNoSendElect.TabIndex = 8;
@@ -540,7 +551,7 @@ namespace OpenDental{
 			// 
 			// label23
 			// 
-			this.label23.Location = new System.Drawing.Point(20,457);
+			this.label23.Location = new System.Drawing.Point(12,79);
 			this.label23.Name = "label23";
 			this.label23.Size = new System.Drawing.Size(95,14);
 			this.label23.TabIndex = 96;
@@ -550,24 +561,24 @@ namespace OpenDental{
 			// checkAlternateCode
 			// 
 			this.checkAlternateCode.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkAlternateCode.Location = new System.Drawing.Point(118,401);
+			this.checkAlternateCode.Location = new System.Drawing.Point(110,23);
 			this.checkAlternateCode.Name = "checkAlternateCode";
-			this.checkAlternateCode.Size = new System.Drawing.Size(286,17);
+			this.checkAlternateCode.Size = new System.Drawing.Size(275,17);
 			this.checkAlternateCode.TabIndex = 3;
 			this.checkAlternateCode.Text = "Use Alternate Code (for some Medicaid plans)";
 			// 
 			// checkClaimsUseUCR
 			// 
 			this.checkClaimsUseUCR.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkClaimsUseUCR.Location = new System.Drawing.Point(118,416);
+			this.checkClaimsUseUCR.Location = new System.Drawing.Point(110,38);
 			this.checkClaimsUseUCR.Name = "checkClaimsUseUCR";
-			this.checkClaimsUseUCR.Size = new System.Drawing.Size(302,17);
+			this.checkClaimsUseUCR.Size = new System.Drawing.Size(275,17);
 			this.checkClaimsUseUCR.TabIndex = 4;
 			this.checkClaimsUseUCR.Text = "Claims show UCR fee, not billed fee";
 			// 
 			// label14
 			// 
-			this.label14.Location = new System.Drawing.Point(23,381);
+			this.label14.Location = new System.Drawing.Point(15,4);
 			this.label14.Name = "label14";
 			this.label14.Size = new System.Drawing.Size(95,15);
 			this.label14.TabIndex = 104;
@@ -650,7 +661,7 @@ namespace OpenDental{
 			this.textSubscNote.Location = new System.Drawing.Point(57,71);
 			this.textSubscNote.Multiline = true;
 			this.textSubscNote.Name = "textSubscNote";
-			this.textSubscNote.QuickPasteType = OpenDental.QuickPasteType.InsPlan;
+			this.textSubscNote.QuickPasteType = OpenDentBusiness.QuickPasteType.InsPlan;
 			this.textSubscNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textSubscNote.Size = new System.Drawing.Size(485,98);
 			this.textSubscNote.TabIndex = 5;
@@ -688,7 +699,7 @@ namespace OpenDental{
 			// comboPlanType
 			// 
 			this.comboPlanType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboPlanType.Location = new System.Drawing.Point(118,380);
+			this.comboPlanType.Location = new System.Drawing.Point(110,3);
 			this.comboPlanType.Name = "comboPlanType";
 			this.comboPlanType.Size = new System.Drawing.Size(212,21);
 			this.comboPlanType.TabIndex = 2;
@@ -722,7 +733,7 @@ namespace OpenDental{
 			// comboClaimForm
 			// 
 			this.comboClaimForm.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboClaimForm.Location = new System.Drawing.Point(118,454);
+			this.comboClaimForm.Location = new System.Drawing.Point(110,76);
 			this.comboClaimForm.MaxDropDownItems = 30;
 			this.comboClaimForm.Name = "comboClaimForm";
 			this.comboClaimForm.Size = new System.Drawing.Size(212,21);
@@ -731,7 +742,7 @@ namespace OpenDental{
 			// comboFeeSched
 			// 
 			this.comboFeeSched.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboFeeSched.Location = new System.Drawing.Point(118,432);
+			this.comboFeeSched.Location = new System.Drawing.Point(110,54);
 			this.comboFeeSched.MaxDropDownItems = 30;
 			this.comboFeeSched.Name = "comboFeeSched";
 			this.comboFeeSched.Size = new System.Drawing.Size(212,21);
@@ -745,39 +756,39 @@ namespace OpenDental{
 			this.groupCoPay.Controls.Add(this.label3);
 			this.groupCoPay.Controls.Add(this.comboCopay);
 			this.groupCoPay.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupCoPay.Location = new System.Drawing.Point(8,476);
+			this.groupCoPay.Location = new System.Drawing.Point(3,99);
 			this.groupCoPay.Name = "groupCoPay";
-			this.groupCoPay.Size = new System.Drawing.Size(409,85);
+			this.groupCoPay.Size = new System.Drawing.Size(388,98);
 			this.groupCoPay.TabIndex = 7;
 			this.groupCoPay.TabStop = false;
 			this.groupCoPay.Text = "Other Fee Schedules";
 			// 
 			// label12
 			// 
-			this.label12.Location = new System.Drawing.Point(16,63);
+			this.label12.Location = new System.Drawing.Point(1,67);
 			this.label12.Name = "label12";
-			this.label12.Size = new System.Drawing.Size(168,16);
+			this.label12.Size = new System.Drawing.Size(105,27);
 			this.label12.TabIndex = 111;
 			this.label12.Text = "Carrier Allowed Amounts";
-			this.label12.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.label12.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// comboAllowedFeeSched
 			// 
 			this.comboAllowedFeeSched.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboAllowedFeeSched.Location = new System.Drawing.Point(186,60);
+			this.comboAllowedFeeSched.Location = new System.Drawing.Point(107,67);
 			this.comboAllowedFeeSched.MaxDropDownItems = 30;
 			this.comboAllowedFeeSched.Name = "comboAllowedFeeSched";
-			this.comboAllowedFeeSched.Size = new System.Drawing.Size(215,21);
+			this.comboAllowedFeeSched.Size = new System.Drawing.Size(212,21);
 			this.comboAllowedFeeSched.TabIndex = 1;
 			// 
 			// label11
 			// 
-			this.label11.Location = new System.Drawing.Point(16,41);
+			this.label11.Location = new System.Drawing.Point(1,36);
 			this.label11.Name = "label11";
-			this.label11.Size = new System.Drawing.Size(168,16);
+			this.label11.Size = new System.Drawing.Size(105,26);
 			this.label11.TabIndex = 109;
 			this.label11.Text = "Patient Co-pay Amounts";
-			this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.label11.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// label3
 			// 
@@ -790,10 +801,10 @@ namespace OpenDental{
 			// comboCopay
 			// 
 			this.comboCopay.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboCopay.Location = new System.Drawing.Point(186,38);
+			this.comboCopay.Location = new System.Drawing.Point(107,37);
 			this.comboCopay.MaxDropDownItems = 30;
 			this.comboCopay.Name = "comboCopay";
-			this.comboCopay.Size = new System.Drawing.Size(215,21);
+			this.comboCopay.Size = new System.Drawing.Size(212,21);
 			this.comboCopay.TabIndex = 0;
 			// 
 			// groupBox3
@@ -814,9 +825,9 @@ namespace OpenDental{
 			this.groupBox3.Controls.Add(this.textPhone);
 			this.groupBox3.Controls.Add(this.butSearch);
 			this.groupBox3.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.groupBox3.Location = new System.Drawing.Point(8,243);
+			this.groupBox3.Location = new System.Drawing.Point(8,241);
 			this.groupBox3.Name = "groupBox3";
-			this.groupBox3.Size = new System.Drawing.Size(409,135);
+			this.groupBox3.Size = new System.Drawing.Size(409,133);
 			this.groupBox3.TabIndex = 1;
 			this.groupBox3.TabStop = false;
 			this.groupBox3.Text = "Carrier Info";
@@ -840,7 +851,7 @@ namespace OpenDental{
 			this.butSearch.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butSearch.Location = new System.Drawing.Point(95,111);
 			this.butSearch.Name = "butSearch";
-			this.butSearch.Size = new System.Drawing.Size(84,23);
+			this.butSearch.Size = new System.Drawing.Size(84,20);
 			this.butSearch.TabIndex = 124;
 			this.butSearch.Text = "Search IDs";
 			this.butSearch.Click += new System.EventHandler(this.butSearch_Click);
@@ -1001,7 +1012,7 @@ namespace OpenDental{
 			// label32
 			// 
 			this.label32.Font = new System.Drawing.Font("Microsoft Sans Serif",10F,System.Drawing.FontStyle.Bold,System.Drawing.GraphicsUnit.Point,((byte)(0)));
-			this.label32.Location = new System.Drawing.Point(5,95);
+			this.label32.Location = new System.Drawing.Point(5,94);
 			this.label32.Name = "label32";
 			this.label32.Size = new System.Drawing.Size(304,19);
 			this.label32.TabIndex = 134;
@@ -1172,7 +1183,7 @@ namespace OpenDental{
 			this.textPlanNote.Location = new System.Drawing.Point(14,581);
 			this.textPlanNote.Multiline = true;
 			this.textPlanNote.Name = "textPlanNote";
-			this.textPlanNote.QuickPasteType = OpenDental.QuickPasteType.InsPlan;
+			this.textPlanNote.QuickPasteType = OpenDentBusiness.QuickPasteType.InsPlan;
 			this.textPlanNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textPlanNote.Size = new System.Drawing.Size(395,85);
 			this.textPlanNote.TabIndex = 8;
@@ -1199,9 +1210,9 @@ namespace OpenDental{
 			this.butPick.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butPick.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butPick.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butPick.Location = new System.Drawing.Point(327,94);
+			this.butPick.Location = new System.Drawing.Point(327,93);
 			this.butPick.Name = "butPick";
-			this.butPick.Size = new System.Drawing.Size(90,24);
+			this.butPick.Size = new System.Drawing.Size(90,23);
 			this.butPick.TabIndex = 153;
 			this.butPick.Text = "Pick From List";
 			this.butPick.Click += new System.EventHandler(this.butPick_Click);
@@ -1281,17 +1292,57 @@ namespace OpenDental{
 			this.groupPlan.Controls.Add(this.labelDivisionDash);
 			this.groupPlan.Controls.Add(this.textEmployer);
 			this.groupPlan.Controls.Add(this.label17);
-			this.groupPlan.Location = new System.Drawing.Point(8,112);
+			this.groupPlan.Location = new System.Drawing.Point(8,111);
 			this.groupPlan.Name = "groupPlan";
-			this.groupPlan.Size = new System.Drawing.Size(409,130);
+			this.groupPlan.Size = new System.Drawing.Size(409,128);
 			this.groupPlan.TabIndex = 0;
 			this.groupPlan.TabStop = false;
 			this.groupPlan.Text = "Plan";
+			// 
+			// panel2
+			// 
+			this.panel2.AutoScroll = true;
+			this.panel2.AutoScrollMargin = new System.Drawing.Size(0,10);
+			this.panel2.BackColor = System.Drawing.SystemColors.Control;
+			this.panel2.Controls.Add(this.comboFilingCode);
+			this.panel2.Controls.Add(this.label13);
+			this.panel2.Controls.Add(this.comboFeeSched);
+			this.panel2.Controls.Add(this.comboPlanType);
+			this.panel2.Controls.Add(this.label14);
+			this.panel2.Controls.Add(this.comboClaimForm);
+			this.panel2.Controls.Add(this.checkAlternateCode);
+			this.panel2.Controls.Add(this.checkClaimsUseUCR);
+			this.panel2.Controls.Add(this.label23);
+			this.panel2.Controls.Add(this.label1);
+			this.panel2.Controls.Add(this.groupCoPay);
+			this.panel2.Location = new System.Drawing.Point(8,380);
+			this.panel2.Name = "panel2";
+			this.panel2.Size = new System.Drawing.Size(409,174);
+			this.panel2.TabIndex = 157;
+			// 
+			// label13
+			// 
+			this.label13.Location = new System.Drawing.Point(8,203);
+			this.label13.Name = "label13";
+			this.label13.Size = new System.Drawing.Size(100,18);
+			this.label13.TabIndex = 158;
+			this.label13.Text = "Filing Code";
+			this.label13.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
+			// comboFilingCode
+			// 
+			this.comboFilingCode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboFilingCode.Location = new System.Drawing.Point(110,201);
+			this.comboFilingCode.MaxDropDownItems = 30;
+			this.comboFilingCode.Name = "comboFilingCode";
+			this.comboFilingCode.Size = new System.Drawing.Size(212,21);
+			this.comboFilingCode.TabIndex = 159;
 			// 
 			// FormInsPlan
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
 			this.ClientSize = new System.Drawing.Size(982,700);
+			this.Controls.Add(this.panel2);
 			this.Controls.Add(this.butPick);
 			this.Controls.Add(this.groupPlan);
 			this.Controls.Add(this.butEditBenefits);
@@ -1300,12 +1351,8 @@ namespace OpenDental{
 			this.Controls.Add(this.panel1);
 			this.Controls.Add(this.checkApplyAll);
 			this.Controls.Add(this.butOK);
-			this.Controls.Add(this.comboPlanType);
 			this.Controls.Add(this.textPlanNum);
-			this.Controls.Add(this.comboClaimForm);
-			this.Controls.Add(this.comboFeeSched);
 			this.Controls.Add(this.gridBenefits);
-			this.Controls.Add(this.groupCoPay);
 			this.Controls.Add(this.panelPat);
 			this.Controls.Add(this.butLabel);
 			this.Controls.Add(this.groupBox3);
@@ -1313,12 +1360,7 @@ namespace OpenDental{
 			this.Controls.Add(this.butCancel);
 			this.Controls.Add(this.label32);
 			this.Controls.Add(this.groupRequestBen);
-			this.Controls.Add(this.label1);
-			this.Controls.Add(this.label23);
 			this.Controls.Add(this.groupSubscriber);
-			this.Controls.Add(this.checkClaimsUseUCR);
-			this.Controls.Add(this.label14);
-			this.Controls.Add(this.checkAlternateCode);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "FormInsPlan";
@@ -1338,20 +1380,21 @@ namespace OpenDental{
 			this.panelPat.PerformLayout();
 			this.groupPlan.ResumeLayout(false);
 			this.groupPlan.PerformLayout();
+			this.panel2.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
 		}
 		#endregion
 
-		private void FormInsPlan_Load(object sender, System.EventArgs e) {
+		private void FormInsPlan_Load(object sender,System.EventArgs e) {
 			Cursor=Cursors.WaitCursor;
 			PlanCurOld=PlanCur.Copy();
 			int patPlanNum=0;
 			if(PatPlanCur!=null) {
 				patPlanNum=PatPlanCur.PatPlanNum;
 			}
-			if(IsForAll){
+			if(IsForAll) {
 				butPick.Visible=false;//This prevents an infinite loop
 				groupRequestBen.Visible=false;//might try to make this functional later, but not now.
 				groupSubscriber.Visible=false;
@@ -1363,69 +1406,66 @@ namespace OpenDental{
 				}
 				butDelete.Visible=false;
 			}
-			else{
+			else {
 				benefitList=Benefits.RefreshForPlan(PlanCur.PlanNum,patPlanNum);
 			}
-			benefitListOld=new ArrayList();
-			for(int i=0;i<benefitList.Count;i++){
-				benefitListOld.Add(((Benefit)benefitList[i]).Copy());
-			}
-			#if DEBUG
-				textPlanNum.Text=PlanCur.PlanNum.ToString();
-			#else
+			benefitListOld=new List<Benefit>(benefitList);
+#if DEBUG
+			textPlanNum.Text=PlanCur.PlanNum.ToString();
+#else
 				textPlanNum.Visible=false;
-			#endif
-			if(((Pref)Prefs.HList["EasyHideCapitation"]).ValueString=="1"){
+#endif
+			if(((Pref)PrefB.HList["EasyHideCapitation"]).ValueString=="1") {
 				//groupCoPay.Visible=false;
 				//comboCopay.Visible=false;
 			}
-			if(((Pref)Prefs.HList["EasyHideMedicaid"]).ValueString=="1"){
+			if(((Pref)PrefB.HList["EasyHideMedicaid"]).ValueString=="1") {
 				checkAlternateCode.Visible=false;
 			}
-			if(((Pref)Prefs.HList["EasyHideAdvancedIns"]).ValueString=="1"){
+			if(((Pref)PrefB.HList["EasyHideAdvancedIns"]).ValueString=="1") {
 				//textOrthoMax.Visible=false;
 				//labelOrthoMax.Visible=false;
 				//panelAdvancedIns.Visible=false;
 				//panelSynch.Visible=false;
 			}
-			if(Prefs.GetBool("InsurancePlansShared")){
+			if(PrefB.GetBool("InsurancePlansShared")) {
 				checkApplyAll.Checked=true;
 			}
-			if(IsNewPlan){
+			if(IsNewPlan) {
 				checkApplyAll.Checked=false;
 				checkApplyAll.Visible=false;//because it wouldn't make sense to apply anything to "all"
 			}
-			if(CultureInfo.CurrentCulture.Name.Substring(3)=="CA"){//en-CA or fr-CA
+			if(CultureInfo.CurrentCulture.Name.Substring(3)=="CA") {//en-CA or fr-CA
 				labelCitySTZip.Text="City,Prov,Post";
 				labelElectronicID.Text="EDI Code";
 			}
-			else{
+			else {
 				labelDivisionDash.Visible=false;
 				textDivisionNo.Visible=false;
 			}
-			Programs.GetCur("Trojan");
-			if(Programs.Cur.Enabled){
+			Program ProgramCur=Programs.GetCur("Trojan");
+			if(ProgramCur.Enabled) {
 				textTrojanID.Text=PlanCur.TrojanID;
 			}
-			else{
+			else {
 				labelTrojan.Visible=false;
 				labelTrojanID.Visible=false;
 				butImportTrojan.Visible=false;
 				textTrojanID.Visible=false;
 			}
-			Programs.GetCur("IAP");
-			if(!Programs.Cur.Enabled){
+			ProgramCur=Programs.GetCur("IAP");
+			if(!ProgramCur.Enabled) {
 				labelIAP.Visible=false;
 				butIapFind.Visible=false;
 			}
-			if(!butIapFind.Visible && !butImportTrojan.Visible){
+			if(!butIapFind.Visible && !butImportTrojan.Visible) {
 				butBenefitNotes.Visible=false;
 			}
 			//FillPatData------------------------------
 			if(PatPlanCur==null) {
 				panelPat.Visible=false;
 			}
-			else{
+			else {
 				textOrdinal.Text=PatPlanCur.Ordinal.ToString();
 				checkIsPending.Checked=PatPlanCur.IsPending;
 				comboRelationship.Items.Clear();
@@ -1438,7 +1478,7 @@ namespace OpenDental{
 				textPatID.Text=PatPlanCur.PatID;
 				FillPatientAdjustments();
 			}
-			if(!IsForAll){
+			if(!IsForAll) {
 				textSubscriber.Text=Patients.GetLim(PlanCur.Subscriber).GetNameLF();
 				textSubscriberID.Text=PlanCur.SubscriberID;
 				if(PlanCur.DateEffective.Year < 1880)
@@ -1459,7 +1499,7 @@ namespace OpenDental{
 		}
 
 		///<summary>Uses PlanCur to fill out the information on the form.  Called once on startup and also if user picks a plan from template list.</summary>
-		private void FillFormWithPlanCur(){
+		private void FillFormWithPlanCur() {
 			Cursor=Cursors.WaitCursor;
 			textEmployer.Text=Employers.GetName(PlanCur.EmployerNum);
 			textGroupName.Text=PlanCur.GroupName;
@@ -1472,7 +1512,7 @@ namespace OpenDental{
 			comboPlanType.Items.Add(Lan.g(this,"Medicaid or Flat Co-pay"));
 			if(PlanCur.PlanType=="f")
 				comboPlanType.SelectedIndex=1;
-			if(!Prefs.GetBool("EasyHideCapitation")) {
+			if(!PrefB.GetBool("EasyHideCapitation")) {
 				comboPlanType.Items.Add(Lan.g(this,"Capitation"));
 				if(PlanCur.PlanType=="c")
 					comboPlanType.SelectedIndex=2;
@@ -1514,8 +1554,20 @@ namespace OpenDental{
 			if(comboClaimForm.Items.Count>0 && comboClaimForm.SelectedIndex==-1) {
 				comboClaimForm.SelectedIndex=0;//this will let the user rearrange the default later
 			}
-			FillCarrier();
-			string[] samePlans=PlanCur.GetSubscribersForSamePlans();
+			comboFilingCode.Items.Clear();
+			for(int i=0;i<Enum.GetNames(typeof(InsFilingCode)).Length;i++) {
+				comboFilingCode.Items.Add(Enum.GetNames(typeof(InsFilingCode))[i]);
+				if((int)PlanCur.FilingCode==i) {
+					comboFilingCode.SelectedIndex=i;
+				}
+			}
+			FillCarrier(PlanCur.CarrierNum);
+			int excludePlan=-1;
+			if(!IsForAll) {
+				excludePlan=PlanCur.PlanNum;
+			}
+			string[] samePlans=InsPlans.GetSubscribersForSamePlans(textEmployer.Text,textGroupName.Text,textGroupNum.Text,
+				textDivisionNo.Text,textCarrier.Text,checkIsMedical.Checked,excludePlan);
 			textLinkedNum.Text=samePlans.Length.ToString();
 			comboLinked.Items.Clear();
 			for(int i=0;i<samePlans.Length;i++) {
@@ -1533,19 +1585,18 @@ namespace OpenDental{
 			Cursor=Cursors.Default;
 		}
 
-		private void FillPatientAdjustments(){
+		private void FillPatientAdjustments() {
 			ClaimProc[] ClaimProcList=ClaimProcs.Refresh(PatPlanCur.PatNum);
 			AdjAL=new ArrayList();//move selected claimprocs into ALAdj
-			for(int i=0;i<ClaimProcList.Length;i++){
+			for(int i=0;i<ClaimProcList.Length;i++) {
 				if(ClaimProcList[i].PlanNum==PlanCur.PlanNum
-					&& ClaimProcList[i].Status==ClaimProcStatus.Adjustment)
-				{
+					&& ClaimProcList[i].Status==ClaimProcStatus.Adjustment) {
 					AdjAL.Add(ClaimProcList[i]);
 				}
 			}
 			listAdj.Items.Clear();
 			string s;
-			for(int i=0;i<AdjAL.Count;i++){
+			for(int i=0;i<AdjAL.Count;i++) {
 				s=((ClaimProc)AdjAL[i]).ProcDate.ToShortDateString()+"       Ins Used:  "
 					+((ClaimProc)AdjAL[i]).InsPayAmt.ToString("F")+"       Ded Used:  "
 					+((ClaimProc)AdjAL[i]).DedApplied.ToString("F");
@@ -1553,61 +1604,60 @@ namespace OpenDental{
 			}
 		}
 
-		///<summary>Fills the carrier fields on the form based on PlanCur.CarrierNum.</summary>
-		private void FillCarrier(){
-			CarrierCur=Carriers.GetCarrier(PlanCur.CarrierNum);
-			textCarrier.Text=CarrierCur.CarrierName;
-			textPhone.Text=CarrierCur.Phone;
-			textAddress.Text=CarrierCur.Address;
-			textAddress2.Text=CarrierCur.Address2;
-			textCity.Text=CarrierCur.City;
-			textState.Text=CarrierCur.State;
-			textZip.Text=CarrierCur.Zip;
-			textElectID.Text=CarrierCur.ElectID;
+		///<summary>Fills the carrier fields on the form based on the specified carrierNum.</summary>
+		private void FillCarrier(int carrierNum) {
+			Carrier carrier=Carriers.GetCarrier(carrierNum);
+			textCarrier.Text=carrier.CarrierName;
+			textPhone.Text=carrier.Phone;
+			textAddress.Text=carrier.Address;
+			textAddress2.Text=carrier.Address2;
+			textCity.Text=carrier.City;
+			textState.Text=carrier.State;
+			textZip.Text=carrier.Zip;
+			textElectID.Text=carrier.ElectID;
 			FillPayor();
-			checkNoSendElect.Checked=CarrierCur.NoSendElect;
-			//MessageBox.Show(CarrierCur.CarrierNum.ToString());
+			checkNoSendElect.Checked=carrier.NoSendElect;
 		}
 
 		///<summary>Only called from FillCarrier and textElectID_Validating. Fills comboElectIDdescript as appropriate.</summary>
-		private void FillPayor(){
+		private void FillPayor() {
 			//textElectIDdescript.Text=ElectIDs.GetDescript(textElectID.Text);
 			comboElectIDdescript.Items.Clear();
 			string[] payorNames=ElectIDs.GetDescripts(textElectID.Text);
-			if(payorNames.Length>1){
+			if(payorNames.Length>1) {
 				comboElectIDdescript.Items.Add("multiple payors use this ID");
 			}
-			for(int i=0;i<payorNames.Length;i++){
+			for(int i=0;i<payorNames.Length;i++) {
 				comboElectIDdescript.Items.Add(payorNames[i]);
 			}
-			if(payorNames.Length>0){
+			if(payorNames.Length>0) {
 				comboElectIDdescript.SelectedIndex=0;
 			}
 		}
 
-		private void comboElectIDdescript_SelectedIndexChanged(object sender, System.EventArgs e) {
-			if(comboElectIDdescript.Items.Count>0){
+		private void comboElectIDdescript_SelectedIndexChanged(object sender,System.EventArgs e) {
+			if(comboElectIDdescript.Items.Count>0) {
 				comboElectIDdescript.SelectedIndex=0;//always show the first item in the list
 			}
 		}
 
-		private void comboPlanType_SelectionChangeCommitted(object sender, System.EventArgs e) {
+		private void comboPlanType_SelectionChangeCommitted(object sender,System.EventArgs e) {
 			//MessageBox.Show(InsPlans.Cur.PlanType+","+listPlanType.SelectedIndex.ToString());
 			if(PlanCur.PlanType=="" && (comboPlanType.SelectedIndex==1 || comboPlanType.SelectedIndex==2)) {
-				if(!MsgBox.Show(this,true,"This will clear all percentages. Continue?")){
+				if(!MsgBox.Show(this,true,"This will clear all percentages. Continue?")) {
 					comboPlanType.SelectedIndex=0;
 					return;
 				}
 				//Loop through the list backwards so i will be valid.
-				for(int i=benefitList.Count-1;i>=0;i--){
-					if(((Benefit)benefitList[i]).BenefitType==InsBenefitType.Percentage){
+				for(int i=benefitList.Count-1;i>=0;i--) {
+					if(((Benefit)benefitList[i]).BenefitType==InsBenefitType.Percentage) {
 						benefitList.RemoveAt(i);
 					}
 				}
 				//benefitList=new ArrayList();
 				FillBenefits();
 			}
-			switch(comboPlanType.SelectedIndex){
+			switch(comboPlanType.SelectedIndex) {
 				case 0:
 					PlanCur.PlanType="";
 					break;
@@ -1620,7 +1670,7 @@ namespace OpenDental{
 			}
 		}
 
-		private void butAdjAdd_Click(object sender, System.EventArgs e) {
+		private void butAdjAdd_Click(object sender,System.EventArgs e) {
 			ClaimProc ClaimProcCur=new ClaimProc();
 			ClaimProcCur.PatNum=PatPlanCur.PatNum;
 			ClaimProcCur.ProcDate=DateTime.Today;
@@ -1632,8 +1682,8 @@ namespace OpenDental{
 			FillPatientAdjustments();
 		}
 
-		private void listAdj_DoubleClick(object sender, System.EventArgs e) {
-			if(listAdj.SelectedIndex==-1){
+		private void listAdj_DoubleClick(object sender,System.EventArgs e) {
+			if(listAdj.SelectedIndex==-1) {
 				return;
 			}
 			FormInsAdj FormIA=new FormInsAdj((ClaimProc)AdjAL[listAdj.SelectedIndex]);
@@ -1648,14 +1698,21 @@ namespace OpenDental{
 			FormIP.carrierText=textCarrier.Text;
 			FormIP.IsSelectMode=true;
 			FormIP.ShowDialog();
-			if(FormIP.DialogResult==DialogResult.Cancel){
+			if(FormIP.DialogResult==DialogResult.Cancel) {
 				return;
 			}
-			if(!IsNewPlan && !MsgBox.Show(this,true,"Are you sure you want to use the selected plan?  The change will now be saved permanently.  You should NOT use this if the patient is changing insurance.  Use the Drop button instead."))
-			{
+			if(!IsNewPlan && !MsgBox.Show(this,true,"Are you sure you want to use the selected plan?  You should NOT use this if the patient is changing insurance.  Use the Drop button instead.")) {
 				return;
 			}
-			FillPlanCur();//this catches the non-synch fields
+			//FillPlanCur();//this catches the non-synch fields
+			//Non-synched fields:
+			PlanCur.SubscriberID=textSubscriberID.Text;
+			PlanCur.DateEffective=PIn.PDate(textDateEffect.Text);//can handle misformed dates.
+			PlanCur.DateTerm=PIn.PDate(textDateTerm.Text);
+			PlanCur.ReleaseInfo=checkRelease.Checked;
+			PlanCur.AssignBen=checkAssign.Checked;
+			PlanCur.SubscNote=textSubscNote.Text;
+			//synched fields
 			PlanCur.EmployerNum    =FormIP.SelectedPlan.EmployerNum;
 			PlanCur.GroupName      =FormIP.SelectedPlan.GroupName;
 			PlanCur.GroupNum       =FormIP.SelectedPlan.GroupNum;
@@ -1671,7 +1728,7 @@ namespace OpenDental{
 			PlanCur.AllowedFeeSched=FormIP.SelectedPlan.AllowedFeeSched;
 			PlanCur.TrojanID       =FormIP.SelectedPlan.TrojanID;
 			PlanCur.PlanNote       =FormIP.SelectedPlan.PlanNote;
-			PlanCur.Update();//updates to the db so that the synch info will show correctly
+			//PlanCur.Update();//updates to the db so that the synch info will show correctly
 			FillFormWithPlanCur();
 			//need to clear benefits for this plan now.  That way they won't be available as benefits of an 'identical' plan.
 			Benefits.DeleteForPlan(PlanCur.PlanNum);
@@ -1684,70 +1741,67 @@ namespace OpenDental{
 			FillBenefits();
 			//The new data on the form should be the basis for any 'changes to all'.
 			PlanCurOld=PlanCur.Copy();
-			benefitListOld=new ArrayList();
-			for(int i=0;i<benefitList.Count;i++) {
-				benefitListOld.Add(((Benefit)benefitList[i]).Copy());
-			}
+			benefitListOld=new List<Benefit>(benefitList);
 			//It's as if we've just opened a new form now.
 		}
 
-		private void textEmployer_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e) {
+		private void textEmployer_KeyUp(object sender,System.Windows.Forms.KeyEventArgs e) {
 			//key up is used because that way it will trigger AFTER the textBox has been changed.
-			if(e.KeyCode==Keys.Return){
+			if(e.KeyCode==Keys.Return) {
 				listEmps.Visible=false;
 				textGroupName.Focus();
 				return;
 			}
-			if(textEmployer.Text==""){
+			if(textEmployer.Text=="") {
 				listEmps.Visible=false;
 				return;
 			}
-			if(e.KeyCode==Keys.Down){
-				if(listEmps.Items.Count==0){
+			if(e.KeyCode==Keys.Down) {
+				if(listEmps.Items.Count==0) {
 					return;
 				}
-				if(listEmps.SelectedIndex==-1){
+				if(listEmps.SelectedIndex==-1) {
 					listEmps.SelectedIndex=0;
 					textEmployer.Text=listEmps.SelectedItem.ToString();
 				}
-				else if(listEmps.SelectedIndex==listEmps.Items.Count-1){
+				else if(listEmps.SelectedIndex==listEmps.Items.Count-1) {
 					listEmps.SelectedIndex=-1;
 					textEmployer.Text=empOriginal;
 				}
-				else{
+				else {
 					listEmps.SelectedIndex++;
 					textEmployer.Text=listEmps.SelectedItem.ToString();
 				}
 				textEmployer.SelectionStart=textEmployer.Text.Length;
 				return;
 			}
-			if(e.KeyCode==Keys.Up){
-				if(listEmps.Items.Count==0){
+			if(e.KeyCode==Keys.Up) {
+				if(listEmps.Items.Count==0) {
 					return;
 				}
-				if(listEmps.SelectedIndex==-1){
+				if(listEmps.SelectedIndex==-1) {
 					listEmps.SelectedIndex=listEmps.Items.Count-1;
 					textEmployer.Text=listEmps.SelectedItem.ToString();
 				}
-				else if(listEmps.SelectedIndex==0){
+				else if(listEmps.SelectedIndex==0) {
 					listEmps.SelectedIndex=-1;
 					textEmployer.Text=empOriginal;
 				}
-				else{
+				else {
 					listEmps.SelectedIndex--;
 					textEmployer.Text=listEmps.SelectedItem.ToString();
 				}
 				textEmployer.SelectionStart=textEmployer.Text.Length;
 				return;
 			}
-			if(textEmployer.Text.Length==1){
+			if(textEmployer.Text.Length==1) {
 				textEmployer.Text=textEmployer.Text.ToUpper();
 				textEmployer.SelectionStart=1;
 			}
 			empOriginal=textEmployer.Text;//the original text is preserved when using up and down arrows
 			listEmps.Items.Clear();
 			similarEmps=Employers.GetSimilarNames(textEmployer.Text);
-			for(int i=0;i<similarEmps.Count;i++){
+			for(int i=0;i<similarEmps.Count;i++) {
 				listEmps.Items.Add(((Employer)similarEmps[i]).EmpName);
 			}
 			int h=13*similarEmps.Count+5;
@@ -1757,21 +1811,21 @@ namespace OpenDental{
 			listEmps.Visible=true;
 		}
 
-		private void textEmployer_Leave(object sender, System.EventArgs e) {
-			if(mouseIsInListEmps){
+		private void textEmployer_Leave(object sender,System.EventArgs e) {
+			if(mouseIsInListEmps) {
 				return;
 			}
 			listEmps.Visible=false;
 		}
 
-		private void listEmps_Click(object sender, System.EventArgs e){
+		private void listEmps_Click(object sender,System.EventArgs e) {
 			textEmployer.Text=listEmps.SelectedItem.ToString();
 			textEmployer.Focus();
 			textEmployer.SelectionStart=textEmployer.Text.Length;
 			listEmps.Visible=false;
 		}
 
-		private void listEmps_DoubleClick(object sender, System.EventArgs e){
+		private void listEmps_DoubleClick(object sender,System.EventArgs e) {
 			//no longer used
 			textEmployer.Text=listEmps.SelectedItem.ToString();
 			textEmployer.Focus();
@@ -1779,78 +1833,77 @@ namespace OpenDental{
 			listEmps.Visible=false;
 		}
 
-		private void listEmps_MouseEnter(object sender, System.EventArgs e){
+		private void listEmps_MouseEnter(object sender,System.EventArgs e) {
 			mouseIsInListEmps=true;
 		}
 
-		private void listEmps_MouseLeave(object sender, System.EventArgs e){
+		private void listEmps_MouseLeave(object sender,System.EventArgs e) {
 			mouseIsInListEmps=false;
 		}
 
-		private void textCarrier_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e) {
-			if(e.KeyCode==Keys.Return){
-				if(listCars.SelectedIndex==-1){
+		private void textCarrier_KeyUp(object sender,System.Windows.Forms.KeyEventArgs e) {
+			if(e.KeyCode==Keys.Return) {
+				if(listCars.SelectedIndex==-1) {
 					textPhone.Focus();
 				}
-				else{
-					PlanCur.CarrierNum=((Carrier)similarCars[listCars.SelectedIndex]).CarrierNum;
-					FillCarrier();
+				else {
+					FillCarrier(((Carrier)similarCars[listCars.SelectedIndex]).CarrierNum);
 					textCarrier.Focus();
 					textCarrier.SelectionStart=textCarrier.Text.Length;
 				}
 				listCars.Visible=false;
 				return;
 			}
-			if(textCarrier.Text==""){
+			if(textCarrier.Text=="") {
 				listCars.Visible=false;
 				return;
 			}
-			if(e.KeyCode==Keys.Down){
-				if(listCars.Items.Count==0){
+			if(e.KeyCode==Keys.Down) {
+				if(listCars.Items.Count==0) {
 					return;
 				}
-				if(listCars.SelectedIndex==-1){
+				if(listCars.SelectedIndex==-1) {
 					listCars.SelectedIndex=0;
 					textCarrier.Text=((Carrier)similarCars[listCars.SelectedIndex]).CarrierName;
 				}
-				else if(listCars.SelectedIndex==listCars.Items.Count-1){
+				else if(listCars.SelectedIndex==listCars.Items.Count-1) {
 					listCars.SelectedIndex=-1;
 					textCarrier.Text=carOriginal;
 				}
-				else{
+				else {
 					listCars.SelectedIndex++;
 					textCarrier.Text=((Carrier)similarCars[listCars.SelectedIndex]).CarrierName;
 				}
 				textCarrier.SelectionStart=textCarrier.Text.Length;
 				return;
 			}
-			if(e.KeyCode==Keys.Up){
-				if(listCars.Items.Count==0){
+			if(e.KeyCode==Keys.Up) {
+				if(listCars.Items.Count==0) {
 					return;
 				}
-				if(listCars.SelectedIndex==-1){
+				if(listCars.SelectedIndex==-1) {
 					listCars.SelectedIndex=listCars.Items.Count-1;
 					textCarrier.Text=((Carrier)similarCars[listCars.SelectedIndex]).CarrierName;
 				}
-				else if(listCars.SelectedIndex==0){
+				else if(listCars.SelectedIndex==0) {
 					listCars.SelectedIndex=-1;
 					textCarrier.Text=carOriginal;
 				}
-				else{
+				else {
 					listCars.SelectedIndex--;
 					textCarrier.Text=((Carrier)similarCars[listCars.SelectedIndex]).CarrierName;
 				}
 				textCarrier.SelectionStart=textCarrier.Text.Length;
 				return;
 			}
-			if(textCarrier.Text.Length==1){
+			if(textCarrier.Text.Length==1) {
 				textCarrier.Text=textCarrier.Text.ToUpper();
 				textCarrier.SelectionStart=1;
 			}
 			carOriginal=textCarrier.Text;//the original text is preserved when using up and down arrows
 			listCars.Items.Clear();
 			similarCars=Carriers.GetSimilarNames(textCarrier.Text);
-			for(int i=0;i<similarCars.Count;i++){
+			for(int i=0;i<similarCars.Count;i++) {
 				listCars.Items.Add(((Carrier)similarCars[i]).CarrierName+", "
 					+((Carrier)similarCars[i]).Phone+", "
 					+((Carrier)similarCars[i]).Address+", "
@@ -1866,101 +1919,90 @@ namespace OpenDental{
 			listCars.Visible=true;
 		}
 
-		private void textCarrier_Leave(object sender, System.EventArgs e) {
-			if(mouseIsInListCars){
+		private void textCarrier_Leave(object sender,System.EventArgs e) {
+			if(mouseIsInListCars) {
 				return;
 			}
 			//or if user clicked on a different text box.
-			if(listCars.SelectedIndex!=-1){
-				PlanCur.CarrierNum=((Carrier)similarCars[listCars.SelectedIndex]).CarrierNum;
-				FillCarrier();
+			if(listCars.SelectedIndex!=-1) {
+				FillCarrier(((Carrier)similarCars[listCars.SelectedIndex]).CarrierNum);
 			}
 			listCars.Visible=false;
 		}
 
-		private void listCars_Click(object sender, System.EventArgs e){
-			PlanCur.CarrierNum=((Carrier)similarCars[listCars.SelectedIndex]).CarrierNum;
-			FillCarrier();
+		private void listCars_Click(object sender,System.EventArgs e) {
+			FillCarrier(((Carrier)similarCars[listCars.SelectedIndex]).CarrierNum);
 			textCarrier.Focus();
 			textCarrier.SelectionStart=textCarrier.Text.Length;
 			listCars.Visible=false;
-			//textCarrier.Text=listCars.SelectedItem.ToString();
-			//textCarrier.Focus();
-			//textCarrier.SelectionStart=textCarrier.Text.Length;
 		}
 
-		private void listCars_DoubleClick(object sender, System.EventArgs e){
+		private void listCars_DoubleClick(object sender,System.EventArgs e) {
 			//no longer used
-			PlanCur.CarrierNum=((Carrier)similarCars[listCars.SelectedIndex]).CarrierNum;
-			FillCarrier();
-			textCarrier.Focus();
-			textCarrier.SelectionStart=textCarrier.Text.Length;
-			listCars.Visible=false;
 		}
 
-		private void listCars_MouseEnter(object sender, System.EventArgs e){
+		private void listCars_MouseEnter(object sender,System.EventArgs e) {
 			mouseIsInListCars=true;
 		}
 
-		private void listCars_MouseLeave(object sender, System.EventArgs e){
+		private void listCars_MouseLeave(object sender,System.EventArgs e) {
 			mouseIsInListCars=false;
 		}
 
-		private void textPhone_TextChanged(object sender, System.EventArgs e) {
+		private void textPhone_TextChanged(object sender,System.EventArgs e) {
 			int cursor=textPhone.SelectionStart;
 			int length=textPhone.Text.Length;
 			textPhone.Text=TelephoneNumbers.AutoFormat(textPhone.Text);
 			if(textPhone.Text.Length>length)
 				cursor++;
-			textPhone.SelectionStart=cursor;		
+			textPhone.SelectionStart=cursor;
 		}
 
-		private void textAddress_TextChanged(object sender, System.EventArgs e) {
-			if(textAddress.Text.Length==1){
+		private void textAddress_TextChanged(object sender,System.EventArgs e) {
+			if(textAddress.Text.Length==1) {
 				textAddress.Text=textAddress.Text.ToUpper();
 				textAddress.SelectionStart=1;
 			}
 		}
 
-		private void textAddress2_TextChanged(object sender, System.EventArgs e) {
-			if(textAddress2.Text.Length==1){
+		private void textAddress2_TextChanged(object sender,System.EventArgs e) {
+			if(textAddress2.Text.Length==1) {
 				textAddress2.Text=textAddress2.Text.ToUpper();
 				textAddress2.SelectionStart=1;
 			}
 		}
 
-		private void textCity_TextChanged(object sender, System.EventArgs e) {
-			if(textCity.Text.Length==1){
+		private void textCity_TextChanged(object sender,System.EventArgs e) {
+			if(textCity.Text.Length==1) {
 				textCity.Text=textCity.Text.ToUpper();
 				textCity.SelectionStart=1;
 			}
 		}
 
-		private void textState_TextChanged(object sender, System.EventArgs e) {
+		private void textState_TextChanged(object sender,System.EventArgs e) {
 			if(CultureInfo.CurrentCulture.Name=="en-US" //if USA or Canada, capitalize first 2 letters
-				|| CultureInfo.CurrentCulture.Name.Substring(3)=="CA"){
-				if(textState.Text.Length==1 || textState.Text.Length==2){
+				|| CultureInfo.CurrentCulture.Name.Substring(3)=="CA") {
+				if(textState.Text.Length==1 || textState.Text.Length==2) {
 					textState.Text=textState.Text.ToUpper();
 					textState.SelectionStart=2;
 				}
 			}
-			else{
-				if(textState.Text.Length==1){
+			else {
+				if(textState.Text.Length==1) {
 					textState.Text=textState.Text.ToUpper();
 					textState.SelectionStart=1;
 				}
 			}
 		}
 
-		private void textElectID_Validating(object sender, System.ComponentModel.CancelEventArgs e) {
-			if(textElectID.Text==""){
+		private void textElectID_Validating(object sender,System.ComponentModel.CancelEventArgs e) {
+			if(textElectID.Text=="") {
 				return;
 			}
 			string[] electIDs=ElectIDs.GetDescripts(textElectID.Text);
-			if(electIDs.Length==0){
+			if(electIDs.Length==0) {
 				if(MessageBox.Show(Lan.g(this,"Electronic ID not found. Continue anyway?"),"",
-					MessageBoxButtons.OKCancel)!=DialogResult.OK)
-				{
+					MessageBoxButtons.OKCancel)!=DialogResult.OK) {
 					e.Cancel=true;
 					return;
 				}
@@ -1968,11 +2010,11 @@ namespace OpenDental{
 			FillPayor();
 		}
 
-		private void butSearch_Click(object sender, System.EventArgs e) {
+		private void butSearch_Click(object sender,System.EventArgs e) {
 			FormElectIDs FormE=new FormElectIDs();
 			FormE.IsSelectMode=true;
 			FormE.ShowDialog();
-			if(FormE.DialogResult!=DialogResult.OK){
+			if(FormE.DialogResult!=DialogResult.OK) {
 				return;
 			}
 			textElectID.Text=FormE.selectedID.PayorID;
@@ -1980,56 +2022,55 @@ namespace OpenDental{
 			//textElectIDdescript.Text=FormE.selectedID.CarrierName;
 		}
 
-		private void butImportTrojan_Click(object sender, System.EventArgs e) {
+		private void butImportTrojan_Click(object sender,System.EventArgs e) {
 			if(CovCats.GetForEbenCat(EbenefitCategory.RoutinePreventive)==null
 				|| CovCats.GetForEbenCat(EbenefitCategory.Restorative)==null
 				|| CovCats.GetForEbenCat(EbenefitCategory.Endodontics)==null
 				|| CovCats.GetForEbenCat(EbenefitCategory.Periodontics)==null
-				|| CovCats.GetForEbenCat(EbenefitCategory.Prosthodontics)==null)
-			{
+				|| CovCats.GetForEbenCat(EbenefitCategory.Prosthodontics)==null) {
 				MsgBox.Show(this,"You must first set up your insurance categories with corresponding electronic benefit categories: RoutinePreventive, Restorative, Endodontics, Periodontics, and Prosthodontics");
 				return;
 			}
 			RegistryKey regKey=Registry.LocalMachine.OpenSubKey("Software\\TROJAN BENEFIT SERVICE");
-			if(regKey==null){
+			if(regKey==null) {
 				MessageBox.Show("Trojan not installed properly.");
 				return;
 			}
 			string file=regKey.GetValue("INSTALLDIR").ToString()//C:\ETW
 				+@"\Planout.txt";
-			if(!File.Exists(file)){
+			if(!File.Exists(file)) {
 				MessageBox.Show(file+" not found.  You should export from Trojan first.");
 				return;
 			}
 			usesAnnivers=false;
 			Benefit ben;
 			//clear exising benefits from screen, not db:
-			benefitList=new ArrayList();
-			try{
-				using(StreamReader sr=new StreamReader(file)){
+			benefitList=new List<Benefit>();
+			try {
+				using(StreamReader sr=new StreamReader(file)) {
 					string line;
 					string[] fields;
 					int percent;
 					string[] splitField;//if a field is a sentence with more than one word, we can split it for analysis
-          while((line=sr.ReadLine())!=null){
-						fields=line.Split(new char[] {'\t'});
-						if(fields.Length!=3){
+					while((line=sr.ReadLine())!=null) {
+						fields=line.Split(new char[] { '\t' });
+						if(fields.Length!=3) {
 							continue;
 						}
 						//remove any trailing or leading spaces:
 						fields[0]=fields[0].Trim();
 						fields[1]=fields[1].Trim();
 						fields[2]=fields[2].Trim();
-						if(fields[2]==""){
+						if(fields[2]=="") {
 							continue;
 						}
-						else{//as long as there is data, add it to the notes
-							if(PlanCur.BenefitNotes!=""){
+						else {//as long as there is data, add it to the notes
+							if(PlanCur.BenefitNotes!="") {
 								PlanCur.BenefitNotes+="\r\n";
 							}
 							PlanCur.BenefitNotes+=fields[1]+": "+fields[2];
 						}
-						switch(fields[0]){
+						switch(fields[0]) {
 							//default://for all rows that are not handled below
 							case "TROJANID":
 								textTrojanID.Text=fields[2];
@@ -2047,10 +2088,10 @@ namespace OpenDental{
 								textGroupNum.Text=fields[2];
 								break;
 							case "ECLAIMS":
-								if(fields[2]=="YES"){//accepts eclaims
+								if(fields[2]=="YES") {//accepts eclaims
 									checkNoSendElect.Checked=false;
 								}
-								else{
+								else {
 									checkNoSendElect.Checked=true;
 								}
 								break;
@@ -2076,8 +2117,8 @@ namespace OpenDental{
 								if(!fields[2].StartsWith("$"))
 									break;
 								fields[2]=fields[2].Remove(0,1);
-								fields[2]=fields[2].Split(new char[] {' '})[0];
-								if(CovCats.ListShort.Length>0){
+								fields[2]=fields[2].Split(new char[] { ' ' })[0];
+								if(CovCatB.ListShort.Length>0) {
 									ben=new Benefit();
 									ben.BenefitType=InsBenefitType.Limitations;
 									ben.CovCatNum=CovCats.GetForEbenCat(EbenefitCategory.General).CovCatNum;
@@ -2088,7 +2129,7 @@ namespace OpenDental{
 								}
 								break;
 							case "PLANYR"://eg Calendar year or Anniversary year
-								if(fields[2]!="Calendar year"){
+								if(fields[2]!="Calendar year") {
 									usesAnnivers=true;
 									MessageBox.Show("Warning.  Plan uses Anniversary year rather than Calendar year.  Please verify the Plan Start Date.");
 								}
@@ -2099,24 +2140,24 @@ namespace OpenDental{
 								ben.CovCatNum=CovCats.GetForEbenCat(EbenefitCategory.General).CovCatNum;
 								ben.PlanNum=PlanCur.PlanNum;
 								ben.TimePeriod=BenefitTimePeriod.CalendarYear;
-								if(!fields[2].StartsWith("$")){
+								if(!fields[2].StartsWith("$")) {
 									ben.MonetaryAmt=0;
 								}
-								else{
+								else {
 									fields[2]=fields[2].Remove(0,1);
 									fields[2]=fields[2].Split(new char[] { ' ' })[0];
 									ben.MonetaryAmt=PIn.PDouble(fields[2]);
-								}					
+								}
 								benefitList.Add(ben.Copy());
 								break;
 							case "PREV"://eg 100%
-								splitField=fields[2].Split(new char[] {' '});
-								if(splitField.Length==0 || !splitField[0].EndsWith("%")){
+								splitField=fields[2].Split(new char[] { ' ' });
+								if(splitField.Length==0 || !splitField[0].EndsWith("%")) {
 									break;
 								}
 								splitField[0]=splitField[0].Remove(splitField[0].Length-1,1);//remove %
 								percent=PIn.PInt(splitField[0]);
-								if(percent<0 || percent>100){
+								if(percent<0 || percent>100) {
 									break;
 								}
 								ben=new Benefit();
@@ -2128,13 +2169,13 @@ namespace OpenDental{
 								benefitList.Add(ben.Copy());
 								break;
 							case "BASIC":
-								splitField=fields[2].Split(new char[] {' '});
-								if(splitField.Length==0 || !splitField[0].EndsWith("%")){
+								splitField=fields[2].Split(new char[] { ' ' });
+								if(splitField.Length==0 || !splitField[0].EndsWith("%")) {
 									break;
 								}
 								splitField[0]=splitField[0].Remove(splitField[0].Length-1,1);//remove %
 								percent=PIn.PInt(splitField[0]);
-								if(percent<0 || percent>100){
+								if(percent<0 || percent>100) {
 									break;
 								}
 								ben=new Benefit();
@@ -2160,13 +2201,13 @@ namespace OpenDental{
 								benefitList.Add(ben.Copy());
 								break;
 							case "MAJOR":
-								splitField=fields[2].Split(new char[] {' '});
-								if(splitField.Length==0 || !splitField[0].EndsWith("%")){
+								splitField=fields[2].Split(new char[] { ' ' });
+								if(splitField.Length==0 || !splitField[0].EndsWith("%")) {
 									break;
 								}
 								splitField[0]=splitField[0].Remove(splitField[0].Length-1,1);//remove %
 								percent=PIn.PInt(splitField[0]);
-								if(percent<0 || percent>100){
+								if(percent<0 || percent>100) {
 									break;
 								}
 								ben=new Benefit();
@@ -2179,15 +2220,15 @@ namespace OpenDental{
 								//does prosthodontics include crowns?
 								break;
 						}
-          }
+					}
 				}
 				File.Delete(file);
 				butBenefitNotes.Enabled=true;
-      }
-      catch(Exception ex){
+			}
+			catch(Exception ex) {
 				MessageBox.Show("Error: "+ex.Message);
-      }
-			if(usesAnnivers){
+			}
+			if(usesAnnivers) {
 				for(int i=0;i<benefitList.Count;i++) {
 					if(((Benefit)benefitList[i]).TimePeriod==BenefitTimePeriod.CalendarYear) {
 						((Benefit)benefitList[i]).TimePeriod=BenefitTimePeriod.ServiceYear;
@@ -2197,29 +2238,29 @@ namespace OpenDental{
 			FillBenefits();
 		}
 
-		private void butIapFind_Click(object sender, System.EventArgs e) {
+		private void butIapFind_Click(object sender,System.EventArgs e) {
 			FormIap FormI=new FormIap();
 			FormI.ShowDialog();
-			if(FormI.DialogResult==DialogResult.Cancel){
+			if(FormI.DialogResult==DialogResult.Cancel) {
 				return;
 			}
 			Benefit ben;
 			//clear exising benefits from screen, not db:
-			benefitList=new ArrayList();
+			benefitList=new List<Benefit>();
 			string emp=FormI.selectedEmployer;
 			string field;
 			string[] splitField;//if a field is a sentence with more than one word, we can split it for analysis
 			int percent;
-			try{
+			try {
 				Iap.ReadRecord(emp);
-				for(int i=1;i<122;i++){
+				for(int i=1;i<122;i++) {
 					field=Iap.ReadField(i);
-					switch(i){
+					switch(i) {
 						default:
 							//do nothing
 							break;
 						case Iap.Employer:
-							if(PlanCur.BenefitNotes!=""){
+							if(PlanCur.BenefitNotes!="") {
 								PlanCur.BenefitNotes+="\r\n";
 							}
 							PlanCur.BenefitNotes+="Employer: "+field;
@@ -2257,7 +2298,7 @@ namespace OpenDental{
 						case Iap.EClaims:
 							PlanCur.BenefitNotes+="\r\n"+"EClaims: "+field;//this contains the PayorID at the end, but also a bunch of other drivel.
 							int payorIDloc=field.LastIndexOf("Payor ID#:");
-							if(payorIDloc!=-1 && field.Length>payorIDloc+10){
+							if(payorIDloc!=-1 && field.Length>payorIDloc+10) {
 								textElectID.Text=field.Substring(payorIDloc+10);
 							}
 							break;
@@ -2278,8 +2319,8 @@ namespace OpenDental{
 							break;
 						case Iap.Deductible:
 							PlanCur.BenefitNotes+="\r\n"+"Deductible: "+field;
-							if(field.StartsWith("$")){
-								splitField=field.Split(new char[] {' '});
+							if(field.StartsWith("$")) {
+								splitField=field.Split(new char[] { ' ' });
 								ben=new Benefit();
 								ben.BenefitType=InsBenefitType.Deductible;
 								ben.CovCatNum=CovCats.GetForEbenCat(EbenefitCategory.General).CovCatNum;
@@ -2294,8 +2335,8 @@ namespace OpenDental{
 							break;
 						case Iap.Maximum:
 							PlanCur.BenefitNotes+="\r\n"+"Maximum: "+field;
-							if(field.StartsWith("$")){
-								splitField=field.Split(new char[] {' '});
+							if(field.StartsWith("$")) {
+								splitField=field.Split(new char[] { ' ' });
 								ben=new Benefit();
 								ben.BenefitType=InsBenefitType.Limitations;
 								ben.CovCatNum=CovCats.GetForEbenCat(EbenefitCategory.General).CovCatNum;
@@ -2313,13 +2354,13 @@ namespace OpenDental{
 							break;
 						case Iap.Preventive:
 							PlanCur.BenefitNotes+="\r\n"+"Preventive: "+field;
-							splitField=field.Split(new char[] {' '});
-							if(splitField.Length==0 || !splitField[0].EndsWith("%")){
+							splitField=field.Split(new char[] { ' ' });
+							if(splitField.Length==0 || !splitField[0].EndsWith("%")) {
 								break;
 							}
 							splitField[0]=splitField[0].Remove(splitField[0].Length-1,1);//remove %
 							percent=PIn.PInt(splitField[0]);
-							if(percent<0 || percent>100){
+							if(percent<0 || percent>100) {
 								break;
 							}
 							ben=new Benefit();
@@ -2332,13 +2373,13 @@ namespace OpenDental{
 							break;
 						case Iap.Basic:
 							PlanCur.BenefitNotes+="\r\n"+"Basic: "+field;
-							splitField=field.Split(new char[] {' '});
-							if(splitField.Length==0 || !splitField[0].EndsWith("%")){
+							splitField=field.Split(new char[] { ' ' });
+							if(splitField.Length==0 || !splitField[0].EndsWith("%")) {
 								break;
 							}
 							splitField[0]=splitField[0].Remove(splitField[0].Length-1,1);//remove %
 							percent=PIn.PInt(splitField[0]);
-							if(percent<0 || percent>100){
+							if(percent<0 || percent>100) {
 								break;
 							}
 							ben=new Benefit();
@@ -2372,13 +2413,13 @@ namespace OpenDental{
 							break;
 						case Iap.Major:
 							PlanCur.BenefitNotes+="\r\n"+"Major: "+field;
-							splitField=field.Split(new char[] {' '});
-							if(splitField.Length==0 || !splitField[0].EndsWith("%")){
+							splitField=field.Split(new char[] { ' ' });
+							if(splitField.Length==0 || !splitField[0].EndsWith("%")) {
 								break;
 							}
 							splitField[0]=splitField[0].Remove(splitField[0].Length-1,1);//remove %
 							percent=PIn.PInt(splitField[0]);
-							if(percent<0 || percent>100){
+							if(percent<0 || percent>100) {
 								break;
 							}
 							ben=new Benefit();
@@ -2403,13 +2444,13 @@ namespace OpenDental{
 							break;
 						case Iap.Orthodontics:
 							PlanCur.BenefitNotes+="\r\n"+"Orthodontics: "+field;
-							splitField=field.Split(new char[] {' '});
-							if(splitField.Length==0 || !splitField[0].EndsWith("%")){
+							splitField=field.Split(new char[] { ' ' });
+							if(splitField.Length==0 || !splitField[0].EndsWith("%")) {
 								break;
 							}
 							splitField[0]=splitField[0].Remove(splitField[0].Length-1,1);//remove %
 							percent=PIn.PInt(splitField[0]);
-							if(percent<0 || percent>100){
+							if(percent<0 || percent>100) {
 								break;
 							}
 							ben=new Benefit();
@@ -2425,8 +2466,8 @@ namespace OpenDental{
 							break;
 						case Iap.Maximum2://ortho Max
 							PlanCur.BenefitNotes+="\r\n"+"Maximum2: "+field;
-							if(field.StartsWith("$")){
-								splitField=field.Split(new char[] {' '});							
+							if(field.StartsWith("$")) {
+								splitField=field.Split(new char[] { ' ' });
 								ben=new Benefit();
 								ben.BenefitType=InsBenefitType.Limitations;
 								ben.CovCatNum=CovCats.GetForEbenCat(EbenefitCategory.Orthodontics).CovCatNum;
@@ -2583,8 +2624,8 @@ namespace OpenDental{
 						case Iap.Line4://city state
 							PlanCur.BenefitNotes+="\r\n"+"Line4: "+field;
 							field=field.Replace("  "," ");//get rid of double space before zip
-							splitField=field.Split(new char[] {' '});
-							if(splitField.Length<3){
+							splitField=field.Split(new char[] { ' ' });
+							if(splitField.Length<3) {
 								break;
 							}
 							textCity.Text=splitField[0].Replace(",","");//gets rid of the comma on the end of city
@@ -2608,11 +2649,11 @@ namespace OpenDental{
 				Iap.CloseDatabase();
 				butBenefitNotes.Enabled=true;
 			}
-			catch(ApplicationException ex){
+			catch(ApplicationException ex) {
 				Iap.CloseDatabase();
 				MessageBox.Show(ex.Message);
 			}
-			catch(Exception ex){
+			catch(Exception ex) {
 				Iap.CloseDatabase();
 				MessageBox.Show("Error: "+ex.Message);
 			}
@@ -2620,67 +2661,79 @@ namespace OpenDental{
 		}
 
 		///<summary>This button is always active.</summary>
-		private void butBenefitNotes_Click(object sender, System.EventArgs e) {
-			string benNote=PlanCur.BenefitNotes;
-			if(PlanCur.BenefitNotes==""){
-				//try to find some other similar notes.
-				FillPlanCur();
-				int[] samePlans=PlanCur.GetPlanNumsOfSamePlans();//this might not include the current plan, because it's not saved to db yet.
-				benNote=InsPlans.GetBenefitNotes(samePlans);
-				if(benNote==""){
+		private void butBenefitNotes_Click(object sender,System.EventArgs e) {
+			string otherBenNote="";
+			if(BenefitNotes=="") {
+				//try to find some other similar notes. Never includes the current plan.
+				List<int> samePlans=InsPlans.GetPlanNumsOfSamePlans(textEmployer.Text,textGroupName.Text,textGroupNum.Text,
+					textDivisionNo.Text,textCarrier.Text,checkIsMedical.Checked,PlanCur.PlanNum,false);
+				otherBenNote=InsPlans.GetBenefitNotes(samePlans);
+				if(otherBenNote=="") {
 					MsgBox.Show(this,"No benefit note found.  Benefit notes are created when electronically requesting benefit information.  Store your own benefit notes in the subscriber note instead.");
 					return;
 				}
 				MsgBox.Show(this,"This plan does not have a benefit note, but a note was found for an identical plan.  You will be able to view this note, but not change it.");
 			}
 			FormInsBenefitNotes FormI=new FormInsBenefitNotes();
-			FormI.BenefitNotes=benNote;
+			if(BenefitNotes!="") {
+				FormI.BenefitNotes=BenefitNotes;
+			}
+			else {
+				FormI.BenefitNotes=otherBenNote;
+			}
 			FormI.ShowDialog();
-			if(FormI.DialogResult==DialogResult.Cancel){
+			if(FormI.DialogResult==DialogResult.Cancel) {
 				return;
 			}
-			if(PlanCur.BenefitNotes!=""){
-				PlanCur.BenefitNotes=FormI.BenefitNotes;
+			if(BenefitNotes!="") {
+				BenefitNotes=FormI.BenefitNotes;
 			}
 		}
 
-		private void butDelete_Click(object sender, System.EventArgs e) {
-			if(IsNewPlan){
+		private void butDelete_Click(object sender,System.EventArgs e) {
+			if(IsNewPlan) {
 				DialogResult=DialogResult.Cancel;//will get deleted in closing event
 				return;
 			}
-			if(!MsgBox.Show(this,true,"Delete Plan?")){
+			if(!MsgBox.Show(this,true,"Delete Plan?")) {
 				return;
 			}
-			try{
-				PlanCur.Delete();//checks dependencies first. Also deletes benefits,claimprocs,patplan and recomputes all estimates.
+			try {
+				InsPlans.Delete(PlanCur);//checks dependencies first. Also deletes benefits,claimprocs,patplan and recomputes all estimates.
 			}
-			catch(ApplicationException ex){
+			catch(ApplicationException ex) {
 				MessageBox.Show(ex.Message);
 				return;
 			}
-			DialogResult=DialogResult.OK;			
+			DialogResult=DialogResult.OK;
 		}
 
-		private void butDrop_Click(object sender, System.EventArgs e) {
+		private void butDrop_Click(object sender,System.EventArgs e) {
 			//should we save the plan info first?  Probably not.
 			PatPlans.Delete(PatPlanCur.PatPlanNum);//Estimates recomputed within Delete()
 			//PlanCur.ComputeEstimatesForCur();
 			DialogResult=DialogResult.OK;
 		}
 
-		private void butLabel_Click(object sender, System.EventArgs e) {
-			GetCarrierNum();
+		private void butLabel_Click(object sender,System.EventArgs e) {
 			LabelSingle label=new LabelSingle();
 			PrintDocument pd=new PrintDocument();//only used to pass printerName
-			if(!Printers.SetPrinter(pd,PrintSituation.LabelSingle)){
+			if(!Printers.SetPrinter(pd,PrintSituation.LabelSingle)) {
 				return;
 			}
-			label.PrintIns(CarrierCur,pd.PrinterSettings.PrinterName);
+			Carrier carrier=new Carrier();
+			carrier.CarrierName=textCarrier.Text;
+			carrier.Phone=textPhone.Text;
+			carrier.Address=textAddress.Text;
+			carrier.Address2=textAddress2.Text;
+			carrier.City=textCity.Text;
+			carrier.State=textState.Text;
+			carrier.Zip=textZip.Text;
+			label.PrintIns(carrier,pd.PrinterSettings.PrinterName);
 		}
 
 		///<summary>This only fills the grid on the screen.  It does not get any data from the database.</summary>
-		private void FillBenefits(){
+		private void FillBenefits() {
 			benefitList.Sort();
 			gridBenefits.BeginUpdate();
 			gridBenefits.Columns.Clear();
@@ -2702,7 +2755,7 @@ namespace OpenDental{
 			ODGridRow row;
 			//bool allCalendarYear=true;
 			//bool allServiceYear=true;
-			for(int i=0;i<benefitList.Count;i++){
+			for(int i=0;i<benefitList.Count;i++) {
 				/*if(((Benefit)benefitList[i]).TimePeriod==BenefitTimePeriod.CalendarYear){
 					allServiceYear=false;
 				}
@@ -2710,42 +2763,41 @@ namespace OpenDental{
 					allCalendarYear=false;
 				}*/
 				row=new ODGridRow();
-				if(((Benefit)benefitList[i]).PatPlanNum==0){//attached to plan
+				if(((Benefit)benefitList[i]).PatPlanNum==0) {//attached to plan
 					row.Cells.Add("");
 				}
-				else{
+				else {
 					row.Cells.Add("X");
 				}
-				if(((Benefit)benefitList[i]).BenefitType==InsBenefitType.Percentage){
+				if(((Benefit)benefitList[i]).BenefitType==InsBenefitType.Percentage) {
 					row.Cells.Add("%");
 				}
 				else if(((Benefit)benefitList[i]).BenefitType==InsBenefitType.Limitations
 					&& (((Benefit)benefitList[i]).TimePeriod==BenefitTimePeriod.ServiceYear
 					|| ((Benefit)benefitList[i]).TimePeriod==BenefitTimePeriod.CalendarYear)
-					&& ((Benefit)benefitList[i]).QuantityQualifier==BenefitQuantity.None)
-				{//annual max
+					&& ((Benefit)benefitList[i]).QuantityQualifier==BenefitQuantity.None) {//annual max
 					row.Cells.Add(Lan.g(this,"Annual Max"));
 				}
-				else{
+				else {
 					row.Cells.Add(Lan.g("enumInsBenefitType",((Benefit)benefitList[i]).BenefitType.ToString()));
 				}
-				if(((Benefit)benefitList[i]).ADACode==null || ((Benefit)benefitList[i]).ADACode==""){
+				if(((Benefit)benefitList[i]).ADACode==null || ((Benefit)benefitList[i]).ADACode=="") {
 					row.Cells.Add(CovCats.GetDesc(((Benefit)benefitList[i]).CovCatNum));
 				}
-				else{
+				else {
 					row.Cells.Add(ProcedureCodes.GetProcCode(((Benefit)benefitList[i]).ADACode).AbbrDesc);
 				}
-				if(((Benefit)benefitList[i]).BenefitType==InsBenefitType.Percentage){
+				if(((Benefit)benefitList[i]).BenefitType==InsBenefitType.Percentage) {
 					row.Cells.Add(((Benefit)benefitList[i]).Percent.ToString());
 				}
-				else{
+				else {
 					row.Cells.Add("");
 				}
-				if(((Benefit)benefitList[i]).MonetaryAmt==0){
-					if(((Benefit)benefitList[i]).BenefitType==InsBenefitType.Deductible){
+				if(((Benefit)benefitList[i]).MonetaryAmt==0) {
+					if(((Benefit)benefitList[i]).BenefitType==InsBenefitType.Deductible) {
 						row.Cells.Add(((Benefit)benefitList[i]).MonetaryAmt.ToString("n0"));
 					}
-					else{
+					else {
 						row.Cells.Add("");
 					}
 				}
@@ -2755,14 +2807,14 @@ namespace OpenDental{
 				if(((Benefit)benefitList[i]).TimePeriod==BenefitTimePeriod.None) {
 					row.Cells.Add("");
 				}
-				else{
+				else {
 					row.Cells.Add(Lan.g("enumBenefitTimePeriod",((Benefit)benefitList[i]).TimePeriod.ToString()));
 				}
-				if(((Benefit)benefitList[i]).Quantity>0){
+				if(((Benefit)benefitList[i]).Quantity>0) {
 					row.Cells.Add(((Benefit)benefitList[i]).Quantity.ToString()+" "
 						+Lan.g("enumBenefitQuantity",((Benefit)benefitList[i]).QuantityQualifier.ToString()));
 				}
-				else{
+				else {
 					row.Cells.Add("");
 				}
 				gridBenefits.Rows.Add(row);
@@ -2788,7 +2840,7 @@ namespace OpenDental{
 			FormI.OriginalBenList=benefitList;
 			FormI.Note=textSubscNote.Text;
 			FormI.ShowDialog();
-			if(FormI.DialogResult!=DialogResult.OK){
+			if(FormI.DialogResult!=DialogResult.OK) {
 				return;
 			}
 			FillBenefits();
@@ -2796,71 +2848,82 @@ namespace OpenDental{
 		}
 
 		///<summary>Gets an employerNum based on the name entered. Called from FillCur</summary>
-		private void GetEmployerNum(){
-			if(PlanCur.EmployerNum==0){//no employer was previously entered.
-				if(textEmployer.Text==""){
+		private void GetEmployerNum() {
+			if(PlanCur.EmployerNum==0) {//no employer was previously entered.
+				if(textEmployer.Text=="") {
 					//no change
 				}
-				else{
+				else {
 					PlanCur.EmployerNum=Employers.GetEmployerNum(textEmployer.Text);
 				}
 			}
-			else{//an employer was previously entered
-				if(textEmployer.Text==""){
+			else {//an employer was previously entered
+				if(textEmployer.Text=="") {
 					PlanCur.EmployerNum=0;
 				}
 				//if text has changed
-				else if(Employers.GetName(PlanCur.EmployerNum)!=textEmployer.Text){
+				else if(Employers.GetName(PlanCur.EmployerNum)!=textEmployer.Text) {
 					PlanCur.EmployerNum=Employers.GetEmployerNum(textEmployer.Text);
 				}
 			}
 		}
 
-		///<summary>Gets a carrierNum based on the data entered. Called from FillPlanCur and butLabel_Click</summary>
-		private void GetCarrierNum(){
-			CarrierCur=new Carrier();
-			CarrierCur.CarrierName=textCarrier.Text;
-			CarrierCur.Phone=textPhone.Text;
-			CarrierCur.Address=textAddress.Text;
-			CarrierCur.Address2=textAddress2.Text;
-			CarrierCur.City=textCity.Text;
-			CarrierCur.State=textState.Text;
-			CarrierCur.Zip=textZip.Text;
-			CarrierCur.ElectID=textElectID.Text;
-			CarrierCur.NoSendElect=checkNoSendElect.Checked;
-			Carriers.Cur=CarrierCur;
-			Carriers.GetCurSame();
-			PlanCur.CarrierNum=Carriers.Cur.CarrierNum;
-		}
+		//<summary>Gets a carrierNum based on the data entered. Called from FillPlanCur and butLabel_Click</summary>
+		//private void GetCarrierNum(){
 
-		///<summary>Fills the current insplan with data from the form.  Validates first. Called from butOK click, butPick_Click, and butBenefitNotes_Click. Does not save to database.</summary>
-		private bool FillPlanCur(){
+		//}
+
+		//<summary>Fills the current insplan with data from the form.  Validates first. Only called from butOK click. Does not save to database.</summary>
+		//private bool FillPlanCur(){
+		//}
+
+		//<summary>Only called from butOK_Click</summary>
+		//private bool FillPatPlanCur(){
+		//}
+
+		private void butOK_Click(object sender,System.EventArgs e) {
 			if(textDateEffect.errorProvider1.GetError(textDateEffect)!=""
-				|| textDateTerm.errorProvider1.GetError(textDateTerm)!=""
-				){
+				||textDateTerm.errorProvider1.GetError(textDateTerm)!=""
+				) {
 				MsgBox.Show(this,"Please fix data entry errors first.");
-				return false;
+				return;
 			}
-			if(textSubscriberID.Text=="" && !IsForAll){
-				MessageBox.Show(Lan.g(this,"Subscriber ID not allowed to be blank."));
-				return false;
+			if(textSubscriberID.Text==""&&!IsForAll) {
+				MsgBox.Show(this,"Subscriber ID not allowed to be blank.");
+				return;
 			}
-			if(textCarrier.Text==""){
-				MessageBox.Show(Lan.g(this,"Carrier not allowed to be blank."));
-				return false;
+			if(textCarrier.Text=="") {
+				MsgBox.Show(this,"Carrier not allowed to be blank.");
+				return;
+			}
+			if(PatPlanCur!=null && textOrdinal.errorProvider1.GetError(textOrdinal)!=""){
+				MsgBox.Show(this,"Please fix data entry errors first.");
+				return;
 			}
 			//Subscriber: Can never be changed once a plan is created.
-			PlanCur.SubscriberID =textSubscriberID.Text;
+			PlanCur.SubscriberID=textSubscriberID.Text;
 			PlanCur.DateEffective=PIn.PDate(textDateEffect.Text);
-			PlanCur.DateTerm     =PIn.PDate(textDateTerm.Text);
+			PlanCur.DateTerm=PIn.PDate(textDateTerm.Text);
 			GetEmployerNum();
 			PlanCur.GroupName=textGroupName.Text;
 			PlanCur.GroupNum=textGroupNum.Text;
 			PlanCur.DivisionNo=textDivisionNo.Text;//only visible in Canada
-			GetCarrierNum();
+			//carrier:
+				CarrierCur=new Carrier();
+				CarrierCur.CarrierName=textCarrier.Text;
+				CarrierCur.Phone=textPhone.Text;
+				CarrierCur.Address=textAddress.Text;
+				CarrierCur.Address2=textAddress2.Text;
+				CarrierCur.City=textCity.Text;
+				CarrierCur.State=textState.Text;
+				CarrierCur.Zip=textZip.Text;
+				CarrierCur.ElectID=textElectID.Text;
+				CarrierCur.NoSendElect=checkNoSendElect.Checked;
+				Carriers.GetCurSame(CarrierCur);
+				PlanCur.CarrierNum=CarrierCur.CarrierNum;
 			//plantype already handled.
 			if(comboClaimForm.SelectedIndex!=-1)
-				PlanCur.ClaimFormNum=ClaimForms.ListShort[comboClaimForm.SelectedIndex].ClaimFormNum;	
+				PlanCur.ClaimFormNum=ClaimForms.ListShort[comboClaimForm.SelectedIndex].ClaimFormNum;
 			PlanCur.UseAltCode=checkAlternateCode.Checked;
 			PlanCur.IsMedical=checkIsMedical.Checked;
 			PlanCur.ClaimsUseUCR=checkClaimsUseUCR.Checked;
@@ -2876,54 +2939,35 @@ namespace OpenDental{
 				PlanCur.AllowedFeeSched=0;
 			else
 				PlanCur.AllowedFeeSched=FeeSchedsAllowed[comboAllowedFeeSched.SelectedIndex-1].DefNum;
+			PlanCur.FilingCode=(InsFilingCode)comboFilingCode.SelectedIndex;
 			PlanCur.TrojanID=textTrojanID.Text;
 			PlanCur.PlanNote=textPlanNote.Text;
 			PlanCur.ReleaseInfo=checkRelease.Checked;
 			PlanCur.AssignBen=checkAssign.Checked;
 			PlanCur.SubscNote=textSubscNote.Text;
-			return true;
-		}
-
-		///<summary>Only called from butOK_Click</summary>
-		private bool FillPatPlanCur(){
-			if(textOrdinal.errorProvider1.GetError(textOrdinal)!=""
-				){
-				MsgBox.Show(this,"Please fix data entry errors first.");
-				return false;
-			}
-			
-			if(PIn.PInt(textOrdinal.Text)!=PatPlanCur.Ordinal){//if ordinal changed
-				PatPlans.SetOrdinal(PatPlanCur.PatPlanNum,PIn.PInt(textOrdinal.Text));
-			}
-			PatPlanCur.IsPending=checkIsPending.Checked;
-			PatPlanCur.Relationship=(Relat)comboRelationship.SelectedIndex;
-			PatPlanCur.PatID=textPatID.Text;
-			return true;
-		}
-
-		private void butOK_Click(object sender, System.EventArgs e) {
+			//end of filling planCur.
 			Cursor=Cursors.WaitCursor;
-			if(!FillPlanCur()){
-				Cursor=Cursors.Default;
-				return;
-			}
 			if(PatPlanCur!=null) {
-				if(!FillPatPlanCur()) {
-					Cursor=Cursors.Default;
-					return;
+				if(PIn.PInt(textOrdinal.Text)!=PatPlanCur.Ordinal){//if ordinal changed
+					PatPlans.SetOrdinal(PatPlanCur.PatPlanNum,PIn.PInt(textOrdinal.Text));
 				}
-				PatPlanCur.Update();
+				PatPlanCur.IsPending=checkIsPending.Checked;
+				PatPlanCur.Relationship=(Relat)comboRelationship.SelectedIndex;
+				PatPlanCur.PatID=textPatID.Text;
+				PatPlans.Update(PatPlanCur);
 			}
+			//Update the plan(s)
+			List<int> planNums=InsPlans.GetPlanNumsOfSamePlans(Employers.GetName(PlanCurOld.EmployerNum),PlanCurOld.GroupName,
+				PlanCurOld.GroupNum,PlanCurOld.DivisionNo,Carriers.GetName(PlanCurOld.CarrierNum),PlanCurOld.IsMedical,
+				PlanCurOld.PlanNum,true);//include the current plan.
 			if(!IsForAll){
-				PlanCur.Update();//this has to be done to catch the extra fields which are not sychronized
+				InsPlans.Update(PlanCur);//This is done regardless of checkApplyAll. Catches fields which are not synched.
 			}
-			int[] planNums=PlanCurOld.GetPlanNumsOfSamePlans();
 			if(checkApplyAll.Checked){//also triggered when IsForAll, because box is checked but hidden
-				//must do benefits first, because this method has to do a search for similar plans. So plan can't be updated yet.
-				bool changed=Benefits.UpdateListForIdentical(benefitListOld,benefitList,PlanCurOld);
-				PlanCur.UpdateForLike(PlanCurOld);
+				InsPlans.UpdateForLike(PlanCurOld,PlanCur);
+				bool changed=Benefits.UpdateListForIdentical(benefitListOld,benefitList,planNums);
 				if(changed){
-					for(int i=0;i<planNums.Length;i++){
+					for(int i=0;i<planNums.Count;i++){
 						InsPlans.ComputeEstimatesForPlan(planNums[i]);
 					}
 				}
@@ -2933,13 +2977,13 @@ namespace OpenDental{
 				InsPlans.ComputeEstimatesForPlan(PlanCur.PlanNum);
 			}
 			//Synchronize PlanNote----------------------------------------------------------------------------------------------
-			if(planNums.Length==1 && IsForAll){
+			if(planNums.Count==1 && IsForAll){
 				InsPlans.UpdateNoteForPlans(planNums,PlanCur.PlanNote);
 				Cursor=Cursors.Default;
 				DialogResult=DialogResult.OK;
 				return;
 			}
-			if(planNums.Length<=1){//if no similar plans
+			if(planNums.Count<=1){//if no similar plans
 				//note has already been saved
 				Cursor=Cursors.Default;
 				DialogResult=DialogResult.OK;
@@ -3008,7 +3052,7 @@ namespace OpenDental{
 			if(DialogResult==DialogResult.OK)
 				return;
 			if(IsNewPlan){//this would also be new coverage
-				PlanCur.Delete();//also drops
+				InsPlans.Delete(PlanCur);//also drops
 			}
 			else if(IsNewPatPlan){//but plan is not new
 				PatPlans.Delete(PatPlanCur.PatPlanNum);//no need to check dependencies.  Maintains ordinals and recomputes estimates.

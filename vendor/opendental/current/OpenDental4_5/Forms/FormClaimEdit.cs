@@ -8,6 +8,7 @@ using System.Drawing.Printing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -53,7 +54,7 @@ namespace OpenDental{
 		private OpenDental.ValidNum textOrthoRemainM;
 		private OpenDental.ValidDate textOrthoDate;
 		private System.Windows.Forms.Label label27;
-		private FormClaimSupplemental FormCS=new FormClaimSupplemental();
+		//private FormClaimSupplemental FormCS=new FormClaimSupplemental();
 		private System.Windows.Forms.Label labelPreAuthNum;
 		private System.Windows.Forms.Label labelDateService;
 		private OpenDental.UI.Button butSupp;
@@ -106,11 +107,13 @@ namespace OpenDental{
 		//private User user;
 		private bool notAuthorized;
 		private PatPlan[] PatPlanList;
+		private Claim ClaimCur;
 
 		///<summary></summary>
-		public FormClaimEdit(Patient patCur,Family famCur){
+		public FormClaimEdit(Claim claimCur, Patient patCur,Family famCur){
 			PatCur=patCur;
 			FamCur=famCur;
+			ClaimCur=claimCur;
 			InitializeComponent();// Required for Windows Form Designer support
 			tbPay.CellDoubleClicked += new OpenDental.ContrTable.CellEventHandler(tbPay_CellDoubleClicked);
 			tbProc.CellClicked += new OpenDental.ContrTable.CellEventHandler(tbProc_CellClicked);
@@ -907,7 +910,7 @@ namespace OpenDental{
 			this.textNote.MaxLength = 255;
 			this.textNote.Multiline = true;
 			this.textNote.Name = "textNote";
-			this.textNote.QuickPasteType = OpenDental.QuickPasteType.Claim;
+			this.textNote.QuickPasteType = QuickPasteType.Claim;
 			this.textNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textNote.Size = new System.Drawing.Size(319, 68);
 			this.textNote.TabIndex = 118;
@@ -1044,7 +1047,7 @@ namespace OpenDental{
 			if(IsNew){
 				//butPayWizard.Enabled=false;
 			}
-			else if(Claims.Cur.ClaimStatus=="S" || Claims.Cur.ClaimStatus=="R"){//sent or received
+			else if(ClaimCur.ClaimStatus=="S" || ClaimCur.ClaimStatus=="R"){//sent or received
 				if(!Security.IsAuthorized(Permissions.ClaimsSentEdit)){
 					butOK.Enabled=false;
 					butDelete.Enabled=false;
@@ -1074,7 +1077,7 @@ namespace OpenDental{
 					}
 				}*/	
 			}
-			if(Claims.Cur.ClaimType=="PreAuth"){
+			if(ClaimCur.ClaimType=="PreAuth"){
 				labelPreAuthNum.Visible=false;
 				textPreAuth.Visible=false;
 				textDateService.Visible=false;
@@ -1085,7 +1088,7 @@ namespace OpenDental{
 				butPayTotal.Visible=false;	
 				butSplit.Visible=false;
       }
-			if(Prefs.GetBool("EasyNoClinics")){
+			if(PrefB.GetBool("EasyNoClinics")){
 				labelClinic.Visible=false;
 				comboClinic.Visible=false;
 			}
@@ -1116,19 +1119,19 @@ namespace OpenDental{
 		///<summary></summary>
 		public void FillForm(){
 			this.Text=Lan.g(this,"Edit Claim")+" - "+PatCur.GetNameLF();
-			if(Claims.Cur.DateService.Year<1880)
+			if(ClaimCur.DateService.Year<1880)
 				textDateService.Text="";
 			else
-				textDateService.Text=Claims.Cur.DateService.ToShortDateString();
-			if(Claims.Cur.DateSent.Year<1880)
+				textDateService.Text=ClaimCur.DateService.ToShortDateString();
+			if(ClaimCur.DateSent.Year<1880)
 				textDateSent.Text="";
 			else
-				textDateSent.Text=Claims.Cur.DateSent.ToShortDateString();
-			if(Claims.Cur.DateReceived.Year<1880)
+				textDateSent.Text=ClaimCur.DateSent.ToShortDateString();
+			if(ClaimCur.DateReceived.Year<1880)
 				textDateRec.Text="";
 			else
-				textDateRec.Text=Claims.Cur.DateReceived.ToShortDateString();
-			switch(Claims.Cur.ClaimStatus){
+				textDateRec.Text=ClaimCur.DateReceived.ToShortDateString();
+			switch(ClaimCur.ClaimStatus){
 				case "U"://unsent
 					listClaimStatus.SelectedIndex=0;
 					break;
@@ -1153,10 +1156,10 @@ namespace OpenDental{
 			comboClinic.SelectedIndex=0;
 			for(int i=0;i<Clinics.List.Length;i++){
 				comboClinic.Items.Add(Clinics.List[i].Description);
-				if(Clinics.List[i].ClinicNum==Claims.Cur.ClinicNum)
+				if(Clinics.List[i].ClinicNum==ClaimCur.ClinicNum)
 					comboClinic.SelectedIndex=i+1;
 			}
-			switch(Claims.Cur.ClaimType){
+			switch(ClaimCur.ClaimType){
 				case "P":
 					listClaimType.SelectedIndex=0;
 					break;
@@ -1176,7 +1179,7 @@ namespace OpenDental{
 			comboProvBill.Items.Clear();
 			for(int i=0;i<Providers.List.Length;i++){
 				comboProvBill.Items.Add(Providers.List[i].Abbr);
-				if(Providers.List[i].ProvNum==Claims.Cur.ProvBill)
+				if(Providers.List[i].ProvNum==ClaimCur.ProvBill)
 					comboProvBill.SelectedIndex=i;
 			}
 			if(comboProvBill.Items.Count>0 && comboProvBill.SelectedIndex==-1)
@@ -1184,16 +1187,16 @@ namespace OpenDental{
 			comboProvTreat.Items.Clear();
 			for(int i=0;i<Providers.List.Length;i++){
 				comboProvTreat.Items.Add(Providers.List[i].Abbr);
-				if(Providers.List[i].ProvNum==Claims.Cur.ProvTreat)
+				if(Providers.List[i].ProvNum==ClaimCur.ProvTreat)
 					comboProvTreat.SelectedIndex=i;
 			}
 			if(comboProvTreat.Items.Count>0 && comboProvTreat.SelectedIndex==-1)
 				comboProvTreat.SelectedIndex=0;
-			textPreAuth.Text=Claims.Cur.PreAuthString;
-			textPlan.Text=InsPlans.GetDescript(Claims.Cur.PlanNum,FamCur,PlanList);
-			comboPatRelat.SelectedIndex=(int)Claims.Cur.PatRelat;
-			textPlan2.Text=InsPlans.GetDescript(Claims.Cur.PlanNum2,FamCur,PlanList);
-			comboPatRelat2.SelectedIndex=(int)Claims.Cur.PatRelat2;
+			textPreAuth.Text=ClaimCur.PreAuthString;
+			textPlan.Text=InsPlans.GetDescript(ClaimCur.PlanNum,FamCur,PlanList);
+			comboPatRelat.SelectedIndex=(int)ClaimCur.PatRelat;
+			textPlan2.Text=InsPlans.GetDescript(ClaimCur.PlanNum2,FamCur,PlanList);
+			comboPatRelat2.SelectedIndex=(int)ClaimCur.PatRelat2;
 			if(textPlan2.Text==""){
 				comboPatRelat2.Visible=false;
 				label10.Visible=false;
@@ -1202,7 +1205,7 @@ namespace OpenDental{
 				comboPatRelat2.Visible=true;
 				label10.Visible=true;
 			}
-			switch(Claims.Cur.IsProsthesis){
+			switch(ClaimCur.IsProsthesis){
 				case "N"://no
 					radioProsthN.Checked=true;
 					break;
@@ -1213,25 +1216,25 @@ namespace OpenDental{
 					radioProsthR.Checked=true;
 					break;
 			}
-			if(Claims.Cur.PriorDate.Year < 1860)
+			if(ClaimCur.PriorDate.Year < 1860)
 				textPriorDate.Text="";
 			else
-				textPriorDate.Text=Claims.Cur.PriorDate.ToShortDateString();
-			textReasonUnder.Text=Claims.Cur.ReasonUnderPaid;
-			textNote.Text=Claims.Cur.ClaimNote;
-			checkIsOrtho.Checked=Claims.Cur.IsOrtho;
-			textOrthoRemainM.Text=Claims.Cur.OrthoRemainM.ToString();
-			if(Claims.Cur.OrthoDate.Year < 1860)
+				textPriorDate.Text=ClaimCur.PriorDate.ToShortDateString();
+			textReasonUnder.Text=ClaimCur.ReasonUnderPaid;
+			textNote.Text=ClaimCur.ClaimNote;
+			checkIsOrtho.Checked=ClaimCur.IsOrtho;
+			textOrthoRemainM.Text=ClaimCur.OrthoRemainM.ToString();
+			if(ClaimCur.OrthoDate.Year < 1860)
 				textOrthoDate.Text="";
 			else
-				textOrthoDate.Text=Claims.Cur.OrthoDate.ToShortDateString();
-			textRadiographs.Text=Claims.Cur.Radiographs.ToString();
+				textOrthoDate.Text=ClaimCur.OrthoDate.ToShortDateString();
+			textRadiographs.Text=ClaimCur.Radiographs.ToString();
 			FillGrids();
 		}
 
 		private void listClaimType_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e) {
 			//not allowed to change claim type
-			switch(Claims.Cur.ClaimType){
+			switch(ClaimCur.ClaimType){
 				case "P":
 					listClaimType.SelectedIndex=0;
 					break;
@@ -1255,7 +1258,7 @@ namespace OpenDental{
 				return;
 			}
 			Benefit[] benefitList=Benefits.Refresh(PatPlanList);
-			Claims.CalculateAndUpdate(ClaimProcList,ProcList,PlanList,Claims.Cur,PatPlanList,benefitList);
+			Claims.CalculateAndUpdate(ClaimProcList,ProcList,PlanList,ClaimCur,PatPlanList,benefitList);
 			ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
 			FillGrids();
 		}
@@ -1268,7 +1271,7 @@ namespace OpenDental{
 			double insPayEst=0;
 			double insPayAmt=0;
 			double writeOff=0;
-      ClaimProcsForClaim=ClaimProcs.GetForClaim(ClaimProcList,Claims.Cur.ClaimNum);
+      ClaimProcsForClaim=ClaimProcs.GetForClaim(ClaimProcList,ClaimCur.ClaimNum);
 			tbProc.ResetRows(ClaimProcsForClaim.Length);
 			Procedure ProcCur;
 			for(int i=0;i<ClaimProcsForClaim.Length;i++){
@@ -1280,7 +1283,7 @@ namespace OpenDental{
 				else{
 					ProcCur=Procedures.GetProc(ProcList,ClaimProcsForClaim[i].ProcNum);
 					if(ProcCur.ProcNum==0){
-						ClaimProcsForClaim[i].Delete();//deletes unattached claimprocs which could cause crash.
+						ClaimProcs.Delete(ClaimProcsForClaim[i]);//deletes unattached claimprocs which could cause crash.
 						continue;
 					}
 					//if(!Procedures.HList.Contains(ClaimProcsForClaim[i].ProcNum)){
@@ -1345,23 +1348,23 @@ namespace OpenDental{
 			}
 			tbProc.SetGridColor(Color.LightGray);
 			tbProc.LayoutTables();
-			if(Claims.Cur.ClaimType=="Cap"){
+			if(ClaimCur.ClaimType=="Cap"){
 				//zero out ins info if Cap.  This keeps it from affecting the balance.  It could be slightly improved later if there is enough demand to show the inspayamt in the Account module.
 				insPayEst=0;
 				insPayAmt=0;
 			}
-			Claims.Cur.ClaimFee=claimFee;
-			Claims.Cur.DedApplied=dedApplied;
-			Claims.Cur.InsPayEst=insPayEst;
-			Claims.Cur.InsPayAmt=insPayAmt;
-			Claims.Cur.WriteOff=writeOff;
-			textClaimFee.Text=Claims.Cur.ClaimFee.ToString("F");
-			textDedApplied.Text=Claims.Cur.DedApplied.ToString("F");
-			textInsPayEst.Text=Claims.Cur.InsPayEst.ToString("F");
-			textInsPayAmt.Text=Claims.Cur.InsPayAmt.ToString("F");
+			ClaimCur.ClaimFee=claimFee;
+			ClaimCur.DedApplied=dedApplied;
+			ClaimCur.InsPayEst=insPayEst;
+			ClaimCur.InsPayAmt=insPayAmt;
+			ClaimCur.WriteOff=writeOff;
+			textClaimFee.Text=ClaimCur.ClaimFee.ToString("F");
+			textDedApplied.Text=ClaimCur.DedApplied.ToString("F");
+			textInsPayEst.Text=ClaimCur.InsPayEst.ToString("F");
+			textInsPayAmt.Text=ClaimCur.InsPayAmt.ToString("F");
 			textWriteOff.Text=writeOff.ToString("F");
 			//payments
-      ClaimPaymentList=ClaimPayments.GetForClaim();
+      ClaimPaymentList=ClaimPayments.GetForClaim(ClaimCur.ClaimNum);
 			tbPay.ResetRows(ClaimPaymentList.Length);
 			for(int i=0;i<ClaimPaymentList.Length;i++){
 				tbPay.Cell[0,i]=ClaimPaymentList[i].CheckDate.ToShortDateString();
@@ -1391,12 +1394,13 @@ namespace OpenDental{
 		}
 
 		private void tbPay_CellDoubleClicked(object sender, CellEventArgs e){
-			int tempClaimNum=Claims.Cur.ClaimNum;
+			int tempClaimNum=ClaimCur.ClaimNum;
 			//remember that the claimpayment.List is not entirely accurate
 			FormClaimPayEdit FormCPE=new FormClaimPayEdit(ClaimPaymentList[e.Row]);
+			FormCPE.OriginatingClaim=ClaimCur;
 			FormCPE.ShowDialog();
 			Claims.Refresh(PatCur.PatNum);
-			Claims.Cur=((Claim)Claims.HList[tempClaimNum]);
+			ClaimCur=((Claim)Claims.HList[tempClaimNum]);
 			ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
 			FillGrids();
 		}
@@ -1426,8 +1430,8 @@ namespace OpenDental{
 			if(FormIPS.DialogResult!=DialogResult.OK){
 				return;
 			}
-			Claims.Cur.PlanNum2=FormIPS.SelectedPlan.PlanNum;
-			textPlan2.Text=InsPlans.GetDescript(Claims.Cur.PlanNum2,FamCur,PlanList);
+			ClaimCur.PlanNum2=FormIPS.SelectedPlan.PlanNum;
+			textPlan2.Text=InsPlans.GetDescript(ClaimCur.PlanNum2,FamCur,PlanList);
 			if(textPlan2.Text==""){
 				comboPatRelat2.Visible=false;
 				label10.Visible=false;
@@ -1439,8 +1443,8 @@ namespace OpenDental{
 		}
 
 		private void butOtherNone_Click(object sender, System.EventArgs e) {
-			Claims.Cur.PlanNum2=0;
-			Claims.Cur.PatRelat2=Relat.Self;
+			ClaimCur.PlanNum2=0;
+			ClaimCur.PatRelat2=Relat.Self;
 			textPlan2.Text="";
 			comboPatRelat2.Visible=false;
 			label10.Visible=false;
@@ -1448,11 +1452,11 @@ namespace OpenDental{
 
 		private void butPayTotal_Click(object sender, System.EventArgs e) {
 			//preauths are only allowed "payment" entry by procedure since a total would be meaningless
-			if(Claims.Cur.ClaimType=="PreAuth"){
+			if(ClaimCur.ClaimType=="PreAuth"){
 				MessageBox.Show(Lan.g(this,"PreAuthorizations can only be entered by procedure."));
 				return;
 			}
-			if(Claims.Cur.ClaimType=="Cap"){
+			if(ClaimCur.ClaimType=="Cap"){
 				if(MessageBox.Show(Lan.g(this,"If you enter by total, the insurance payment will affect the patient balance.  It is recommended to enter by procedure instead.  Continue anyway?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK)
 				return;
 			}
@@ -1471,9 +1475,9 @@ namespace OpenDental{
 			}
 			ClaimProc ClaimProcCur=new ClaimProc();
 			//ClaimProcs.Cur.ProcNum 
-			ClaimProcCur.ClaimNum=Claims.Cur.ClaimNum;
-			ClaimProcCur.PatNum=Claims.Cur.PatNum;
-			ClaimProcCur.ProvNum=Claims.Cur.ProvTreat;
+			ClaimProcCur.ClaimNum=ClaimCur.ClaimNum;
+			ClaimProcCur.PatNum=ClaimCur.PatNum;
+			ClaimProcCur.ProvNum=ClaimCur.ProvTreat;
 			//ClaimProcs.Cur.FeeBilled
 			//ClaimProcs.Cur.InsPayEst
 			ClaimProcCur.DedApplied=dedEst;
@@ -1481,16 +1485,16 @@ namespace OpenDental{
 			ClaimProcCur.InsPayAmt=payEst;
 			//remarks
 			//ClaimProcs.Cur.ClaimPaymentNum
-			ClaimProcCur.PlanNum=Claims.Cur.PlanNum;
+			ClaimProcCur.PlanNum=ClaimCur.PlanNum;
 			ClaimProcCur.DateCP=DateTime.Today;
-			ClaimProcCur.ProcDate=Claims.Cur.DateService;
+			ClaimProcCur.ProcDate=ClaimCur.DateService;
 			ClaimProcCur.DateEntry=DateTime.Now;//will get set anyway
-			ClaimProcCur.Insert();
+			ClaimProcs.Insert(ClaimProcCur);
 			FormClaimProc FormCP=new FormClaimProc(ClaimProcCur,null,FamCur,PlanList);
 			FormCP.IsInClaim=true;
 			FormCP.ShowDialog();
 			if(FormCP.DialogResult!=DialogResult.OK){
-				ClaimProcCur.Delete();
+				ClaimProcs.Delete(ClaimProcCur);
 			}
 			else{
 				for(int i=0;i<ClaimProcsForClaim.Length;i++){
@@ -1504,7 +1508,7 @@ namespace OpenDental{
 						ClaimProcsForClaim[i].DedApplied=0;//because ded will show as part of payment now.
 					}
 					ClaimProcsForClaim[i].DateEntry=DateTime.Now;//the date is was switched to rec'd
-					ClaimProcsForClaim[i].Update();
+					ClaimProcs.Update(ClaimProcsForClaim[i]);
 				}
 			}
 			listClaimStatus.SelectedIndex=5;//Received
@@ -1528,7 +1532,7 @@ namespace OpenDental{
 				}
 			}
 			if(tbProc.SelectedIndices.Length==0){
-				//then, autoselect rows if not payed on:
+				//then, autoselect rows if not paid on:
 				for(int i=0;i<ClaimProcsForClaim.Length;i++){
 					if(ClaimProcsForClaim[i].ClaimPaymentNum==0
 						&& ClaimProcsForClaim[i].ProcNum>0){//and is procedure
@@ -1556,10 +1560,10 @@ namespace OpenDental{
 				//copy selected claimprocs to temporary array for editing.
 				//no changes to the database will be made within that form.
 				FormCPT.ClaimProcsToEdit[i]=ClaimProcsForClaim[tbProc.SelectedIndices[i]];
-				if(Claims.Cur.ClaimType=="PreAuth"){
+				if(ClaimCur.ClaimType=="PreAuth"){
 					FormCPT.ClaimProcsToEdit[i].Status=ClaimProcStatus.Preauth;
 				}
-				else if(Claims.Cur.ClaimType=="Cap"){
+				else if(ClaimCur.ClaimType=="Cap"){
 					;//do nothing.  The claimprocstatus will remain Capitation.
 				}
 				else{
@@ -1574,7 +1578,7 @@ namespace OpenDental{
 			}
 			//save changes now
 			for(int i=0;i<FormCPT.ClaimProcsToEdit.Length;i++){
-				FormCPT.ClaimProcsToEdit[i].Update();
+				ClaimProcs.Update(FormCPT.ClaimProcsToEdit[i]);
 			}
 			listClaimStatus.SelectedIndex=5;//Received
 			if(textDateRec.Text==""){
@@ -1609,7 +1613,7 @@ namespace OpenDental{
 				ClaimProcCur.Remarks="";
 				ClaimProcCur.Status=ClaimProcStatus.Supplemental;
 				ClaimProcCur.WriteOff=0;
-				ClaimProcCur.Insert();//this inserts a copy of the original with the changes as above.
+				ClaimProcs.Insert(ClaimProcCur);//this inserts a copy of the original with the changes as above.
 			}
 //fix: need to debug the recalculation feature to take this status into account.
 			ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
@@ -1634,15 +1638,15 @@ namespace OpenDental{
 					return;
 				}
 			}
-			Claim originalClaim=Claims.Cur;//.Copy()
-			Claims.InsertCur();
+			Claim newClaim=ClaimCur.Copy();
+			Claims.Insert(newClaim);
 			//now this claim has been precisely duplicated, except it has a new ClaimNum.  So there are no attached claimprocs.
 			for(int i=0;i<tbProc.SelectedIndices.Length;i++){
-				ClaimProcsForClaim[tbProc.SelectedIndices[i]].ClaimNum=Claims.Cur.ClaimNum;
-				ClaimProcsForClaim[tbProc.SelectedIndices[i]].Update();//moves it to the new claim
+				ClaimProcsForClaim[tbProc.SelectedIndices[i]].ClaimNum=newClaim.ClaimNum;
+				ClaimProcs.Update(ClaimProcsForClaim[tbProc.SelectedIndices[i]]);//moves it to the new claim
 			}
 			//now, set Claims.Cur back to the originalClaim.  The new claim will now show on the account.
-			Claims.Cur=originalClaim;//.Copy()
+			//ClaimCur=originalClaim;//.Copy()
 			ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
 			FillGrids();
 		}
@@ -1665,35 +1669,37 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"There are no valid received payments for this claim."));
 				return;
 			}
-			int tempClaimNum=Claims.Cur.ClaimNum;
+			int tempClaimNum=ClaimCur.ClaimNum;
 			ClaimPayment ClaimPaymentCur=new ClaimPayment();
 			ClaimPaymentCur.CheckDate=DateTime.Today;
 			ClaimPaymentCur.ClinicNum=PatCur.ClinicNum;
-			ClaimPaymentCur.CarrierName=Carriers.GetName(InsPlans.GetPlan(Claims.Cur.PlanNum,PlanList).CarrierNum);
-			ClaimPaymentCur.Insert();
+			ClaimPaymentCur.CarrierName=Carriers.GetName(InsPlans.GetPlan(ClaimCur.PlanNum,PlanList).CarrierNum);
+			ClaimPayments.Insert(ClaimPaymentCur);
 			FormClaimPayEdit FormCPE=new FormClaimPayEdit(ClaimPaymentCur);
+			FormCPE.OriginatingClaim=ClaimCur;
 			FormCPE.IsNew=true;
 			FormCPE.ShowDialog();
 			Claims.Refresh(PatCur.PatNum);
-			Claims.Cur=((Claim)Claims.HList[tempClaimNum]);
+			ClaimCur=((Claim)Claims.HList[tempClaimNum]);
 			ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
 			FillGrids();
 		}
 
 		private void radioProsthN_Click(object sender, System.EventArgs e) {
-			Claims.Cur.IsProsthesis="N";
+			ClaimCur.IsProsthesis="N";
 		}
 
 		private void radioProsthI_Click(object sender, System.EventArgs e) {
-			Claims.Cur.IsProsthesis="I";
+			ClaimCur.IsProsthesis="I";
 		}
 
 		private void radioProsthR_Click(object sender, System.EventArgs e) {
-			Claims.Cur.IsProsthesis="R";
+			ClaimCur.IsProsthesis="R";
 		}
 
 		private void butSupp_Click(object sender, System.EventArgs e) {
 			FormClaimSupplemental FormCS=new FormClaimSupplemental();
+			FormCS.ClaimCur=ClaimCur;
 			FormCS.ShowDialog();
 		}
 
@@ -1713,7 +1719,7 @@ namespace OpenDental{
 				return;
 			}
 			//ask if print secondary?
-			InsPlan planCur=InsPlans.GetPlan(Claims.Cur.PlanNum,PlanList);
+			InsPlan planCur=InsPlans.GetPlan(ClaimCur.PlanNum,PlanList);
 			Carrier carrierCur=Carriers.GetCarrier(planCur.CarrierNum);
 			label.PrintIns(carrierCur,pd.PrinterSettings.PrinterName);
 		}
@@ -1727,14 +1733,14 @@ namespace OpenDental{
 				return;
 			}
 			FormClaimPrint FormCP=new FormClaimPrint();
-			FormCP.ThisPatNum=Claims.Cur.PatNum;
-			FormCP.ThisClaimNum=Claims.Cur.ClaimNum;
+			FormCP.ThisPatNum=ClaimCur.PatNum;
+			FormCP.ThisClaimNum=ClaimCur.ClaimNum;
 			if(!FormCP.PrintImmediate(pd.PrinterSettings.PrinterName,pd.PrinterSettings.Copies)){
 				return;
 			}
-			Claims.Cur.ClaimStatus="S";
-			Claims.Cur.DateSent=DateTime.Today;
-			Claims.UpdateCur();		
+			ClaimCur.ClaimStatus="S";
+			ClaimCur.DateSent=DateTime.Today;
+			Claims.Update(ClaimCur);		
 			DialogResult=DialogResult.OK;
 		}
 
@@ -1743,8 +1749,8 @@ namespace OpenDental{
 				return;
 			UpdateClaim();
 			FormClaimPrint FormCP=new FormClaimPrint();
-			FormCP.ThisPatNum=Claims.Cur.PatNum;
-			FormCP.ThisClaimNum=Claims.Cur.ClaimNum;
+			FormCP.ThisPatNum=ClaimCur.PatNum;
+			FormCP.ThisClaimNum=ClaimCur.ClaimNum;
 			FormCP.PrintImmediately=false;
 			FormCP.ShowDialog();		
 			Claims.Refresh(PatCur.PatNum); 
@@ -1770,11 +1776,11 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"You cannot delete this claim while any insurance checks are attached.  You will have to detach all insurance checks first."));
 				return;
 			}
-			if(Claims.Cur.ClaimStatus=="R"){
+			if(ClaimCur.ClaimStatus=="R"){
 				MessageBox.Show(Lan.g(this,"You cannot delete this claim while status is Received.  You will have to change the status first."));
 				return;
 			}
-      if(Claims.Cur.ClaimType=="PreAuth"){
+      if(ClaimCur.ClaimType=="PreAuth"){
 				if(MessageBox.Show(Lan.g(this,"Delete PreAuthorization?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
 					return;
 				}
@@ -1785,11 +1791,11 @@ namespace OpenDental{
 				}
 			}
 			Procedure proc;
-			if(Claims.Cur.ClaimType=="PreAuth"//all preauth claimprocs are just duplicates
-				|| Claims.Cur.ClaimType=="Cap"){//all cap claimprocs are just duplicates
+			if(ClaimCur.ClaimType=="PreAuth"//all preauth claimprocs are just duplicates
+				|| ClaimCur.ClaimType=="Cap"){//all cap claimprocs are just duplicates
 				for(int i=0;i<ClaimProcsForClaim.Length;i++){
 					//ClaimProcs.Cur=ClaimProcs.ForClaim[i];
-					ClaimProcsForClaim[i].Delete();
+					ClaimProcs.Delete(ClaimProcsForClaim[i]);
 				}
 			}
 			else{//all other claim types use original estimate claimproc.
@@ -1799,24 +1805,24 @@ namespace OpenDental{
 					if(ClaimProcsForClaim[i].Status==ClaimProcStatus.Supplemental//supplementals are duplicate
 						|| ClaimProcsForClaim[i].ProcNum==0)//total payments get deleted
 					{
-						ClaimProcsForClaim[i].Delete();
+						ClaimProcs.Delete(ClaimProcsForClaim[i]);
 						continue;
 					}
 					//so only changed back to estimate if attached to a proc
 					ClaimProcsForClaim[i].Status=ClaimProcStatus.Estimate;
 					ClaimProcsForClaim[i].ClaimNum=0;
 					proc=Procedures.GetProc(ProcList,ClaimProcsForClaim[i].ProcNum);
-					if(Claims.Cur.ClaimType=="P" && PatPlanList.Length>0){
-						ClaimProcsForClaim[i].ComputeBaseEst(proc,PriSecTot.Pri,PlanList,PatPlanList,benList);
+					if(ClaimCur.ClaimType=="P" && PatPlanList.Length>0){
+						ClaimProcs.ComputeBaseEst(ClaimProcsForClaim[i],proc,PriSecTot.Pri,PlanList,PatPlanList,benList);
 					}
-					else if(Claims.Cur.ClaimType=="S" && PatPlanList.Length>1){
-						ClaimProcsForClaim[i].ComputeBaseEst(proc,PriSecTot.Sec,PlanList,PatPlanList,benList);
+					else if(ClaimCur.ClaimType=="S" && PatPlanList.Length>1){
+						ClaimProcs.ComputeBaseEst(ClaimProcsForClaim[i],proc,PriSecTot.Sec,PlanList,PatPlanList,benList);
 					}
 					ClaimProcsForClaim[i].InsPayEst=0;
-					ClaimProcsForClaim[i].Update();
+					ClaimProcs.Update(ClaimProcsForClaim[i]);
 				}
 			}
-      Claims.DeleteCur();
+      Claims.Delete(ClaimCur);
       DialogResult=DialogResult.OK;
 		}
 
@@ -1840,7 +1846,7 @@ namespace OpenDental{
 							//ClaimProcs.Cur=(ClaimProc)ClaimProcs.ForClaim[i];
 							ClaimProcsForClaim[i].Status=ClaimProcStatus.Received;
 							ClaimProcsForClaim[i].DateEntry=DateTime.Now;//date it was set rec'd
-							ClaimProcsForClaim[i].Update();
+							ClaimProcs.Update(ClaimProcsForClaim[i]);
 						}
 					}
 				}
@@ -1866,7 +1872,7 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please fix data entry errors first."));
 				return false;
 			}
-			if(textDateService.Text=="" && Claims.Cur.ClaimType!="PreAuth"){
+			if(textDateService.Text=="" && ClaimCur.ClaimType!="PreAuth"){
 				MsgBox.Show(this,"Please enter a date of service");
 				return false;
 			}
@@ -1879,59 +1885,59 @@ namespace OpenDental{
 				return;
 			}
 			//patnum
-			Claims.Cur.DateService=PIn.PDate(textDateService.Text);
+			ClaimCur.DateService=PIn.PDate(textDateService.Text);
 			if(textDateSent.Text=="")
-				Claims.Cur.DateSent=DateTime.MinValue;
-			else Claims.Cur.DateSent=PIn.PDate(textDateSent.Text);
+				ClaimCur.DateSent=DateTime.MinValue;
+			else ClaimCur.DateSent=PIn.PDate(textDateSent.Text);
 			switch(listClaimStatus.SelectedIndex){
 				case 0:
-					Claims.Cur.ClaimStatus="U";
+					ClaimCur.ClaimStatus="U";
 					break;
 				case 1:
-					Claims.Cur.ClaimStatus="H";
+					ClaimCur.ClaimStatus="H";
 					break;
 				case 2:
-					Claims.Cur.ClaimStatus="W";
+					ClaimCur.ClaimStatus="W";
 					break;
 				case 3:
-					Claims.Cur.ClaimStatus="P";
+					ClaimCur.ClaimStatus="P";
 					break;
 				case 4:
-					Claims.Cur.ClaimStatus="S";
+					ClaimCur.ClaimStatus="S";
 					break;
 				case 5:
-					Claims.Cur.ClaimStatus="R";
+					ClaimCur.ClaimStatus="R";
 					break;
 			}
 			if(textDateRec.Text=="")
-				Claims.Cur.DateReceived=DateTime.MinValue;
-			else Claims.Cur.DateReceived=PIn.PDate(textDateRec.Text);
+				ClaimCur.DateReceived=DateTime.MinValue;
+			else ClaimCur.DateReceived=PIn.PDate(textDateRec.Text);
 			//planNum
 			//patRelats will always be selected
-			Claims.Cur.PatRelat=(Relat)comboPatRelat.SelectedIndex;
-			Claims.Cur.PatRelat2=(Relat)comboPatRelat2.SelectedIndex;
+			ClaimCur.PatRelat=(Relat)comboPatRelat.SelectedIndex;
+			ClaimCur.PatRelat2=(Relat)comboPatRelat2.SelectedIndex;
 			if(comboProvTreat.SelectedIndex!=-1)
-				Claims.Cur.ProvTreat=Providers.List[comboProvTreat.SelectedIndex].ProvNum;
-			Claims.Cur.PreAuthString=textPreAuth.Text;
+				ClaimCur.ProvTreat=Providers.List[comboProvTreat.SelectedIndex].ProvNum;
+			ClaimCur.PreAuthString=textPreAuth.Text;
 			//isprosthesis handled earlier
-			Claims.Cur.PriorDate=PIn.PDate(textPriorDate.Text);
-			Claims.Cur.ReasonUnderPaid=textReasonUnder.Text;
-			Claims.Cur.ClaimNote=textNote.Text;
+			ClaimCur.PriorDate=PIn.PDate(textPriorDate.Text);
+			ClaimCur.ReasonUnderPaid=textReasonUnder.Text;
+			ClaimCur.ClaimNote=textNote.Text;
 			//ispreauth
 			if(comboProvBill.SelectedIndex!=-1)
-				Claims.Cur.ProvBill=Providers.List[comboProvBill.SelectedIndex].ProvNum;
-			Claims.Cur.IsOrtho=checkIsOrtho.Checked;
-			Claims.Cur.OrthoRemainM=PIn.PInt(textOrthoRemainM.Text);
-			Claims.Cur.OrthoDate=PIn.PDate(textOrthoDate.Text);
-			Claims.Cur.Radiographs=PIn.PInt(textRadiographs.Text);
+				ClaimCur.ProvBill=Providers.List[comboProvBill.SelectedIndex].ProvNum;
+			ClaimCur.IsOrtho=checkIsOrtho.Checked;
+			ClaimCur.OrthoRemainM=PIn.PInt(textOrthoRemainM.Text);
+			ClaimCur.OrthoDate=PIn.PDate(textOrthoDate.Text);
+			ClaimCur.Radiographs=PIn.PInt(textRadiographs.Text);
 			if(comboClinic.SelectedIndex==0)//none
-				Claims.Cur.ClinicNum=0;
+				ClaimCur.ClinicNum=0;
 			else
-				Claims.Cur.ClinicNum=Clinics.List[comboClinic.SelectedIndex-1].ClinicNum;
-			Claims.UpdateCur();
-			if(Claims.Cur.ClaimStatus=="S"){
+				ClaimCur.ClinicNum=Clinics.List[comboClinic.SelectedIndex-1].ClinicNum;
+			Claims.Update(ClaimCur);
+			//if(ClaimCur.ClaimStatus=="S"){
 				//SecurityLogs.MakeLogEntry("Claims Sent Edit",Claims.cmd.CommandText,user);
-			}
+			//}
 		}
 
 		//cancel does not cancel in some circumstances because cur gets updated in some areas.
@@ -1945,16 +1951,16 @@ namespace OpenDental{
 			if(IsNew){
 				for(int i=0;i<ClaimProcsForClaim.Length;i++){
 					if(ClaimProcsForClaim[i].Status==ClaimProcStatus.CapClaim){
-						ClaimProcsForClaim[i].Delete();
+						ClaimProcs.Delete(ClaimProcsForClaim[i]);
 					}
 					else if(ClaimProcsForClaim[i].Status==ClaimProcStatus.NotReceived){
 						ClaimProcsForClaim[i].Status=ClaimProcStatus.Estimate;
 						ClaimProcsForClaim[i].ClaimNum=0;
 						ClaimProcsForClaim[i].InsPayEst=0;
-						ClaimProcsForClaim[i].Update();
+						ClaimProcs.Update(ClaimProcsForClaim[i]);
 					}
 				}
-				Claims.DeleteCur();
+				Claims.Delete(ClaimCur);
 			}
 		}
 

@@ -445,7 +445,7 @@ namespace SparksToothChart {
 			return false;
 		}
 
-		///<summary>Sometimes validated by IsValidToothID before coming here, otherwise an invalid toothnum .  This should be run on all displayed tooth numbers. It will handle checking for whether user is using international tooth numbers.  All tooth numbers are passed in american values until the very last moment.  Just before display, the string is converted using this method.</summary>
+		///<summary>This is just a copy of the real function.  Because of that, it works a little bit differently.</summary>
 		public static string ToInternat(string tooth_id) {
 			if(tooth_id=="")
 				return "";

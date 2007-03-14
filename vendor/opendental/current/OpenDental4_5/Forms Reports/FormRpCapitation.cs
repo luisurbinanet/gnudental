@@ -5,6 +5,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using OpenDental.ReportingOld2;
+using OpenDentBusiness;
 
 //using System.IO;
 //using System.Text;
@@ -119,7 +120,7 @@ namespace OpenDental{
 			ReportOld2 report=new ReportOld2();
 			report.IsLandscape=true;
 			report.AddTitle("CAPITATION UTILIZATION");
-			report.AddSubTitle(((Pref)Prefs.HList["PracticeTitle"]).ValueString);
+			report.AddSubTitle(((Pref)PrefB.HList["PracticeTitle"]).ValueString);
 //incomplete: Need more flexible default values, eg based on current date instead of fixed date:
 			DateTime DateTimeFirst=new DateTime(DateTime.Today.Year,DateTime.Today.Month,1);
 			report.AddParameter("carrier",FieldValueType.String,""

@@ -106,6 +106,9 @@ namespace ODR{
 		///<summary></summary>
 		protected override void OnKeyPress(KeyPressEventArgs e) {
 			base.OnKeyPress(e);
+			if(CultureInfo.CurrentCulture.Name=="fr-CA"){
+				return;//because they use - in their regular dates which interferes with this feature.
+			}
 			if(e.KeyChar!='+' && e.KeyChar!='-'){
 				//base.OnKeyPress (e);
 				return;

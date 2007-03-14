@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -351,7 +352,7 @@ namespace OpenDental{
 		}
 
 		private void butDelete_Click(object sender, System.EventArgs e) {
-			ProcCur.Delete();
+			ProcTPs.Delete(ProcCur);
 			DialogResult=DialogResult.OK;
 		}
 
@@ -378,7 +379,7 @@ namespace OpenDental{
 			ProcCur.PriInsAmt=PIn.PDouble(textPriInsAmt.Text);
 			ProcCur.SecInsAmt=PIn.PDouble(textSecInsAmt.Text);
 			ProcCur.PatAmt=PIn.PDouble(textPatAmt.Text);
-			ProcCur.InsertOrUpdate(false);//IsNew not applicable here
+			ProcTPs.InsertOrUpdate(ProcCur,false);//IsNew not applicable here
 			DialogResult=DialogResult.OK;
 		}
 

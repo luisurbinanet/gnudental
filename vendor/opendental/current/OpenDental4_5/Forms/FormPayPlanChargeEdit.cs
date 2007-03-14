@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	///<summary></summary>
@@ -137,7 +138,7 @@ namespace OpenDental{
 			this.textNote.Location = new System.Drawing.Point(108, 76);
 			this.textNote.Multiline = true;
 			this.textNote.Name = "textNote";
-			this.textNote.QuickPasteType = OpenDental.QuickPasteType.Adjustment;
+			this.textNote.QuickPasteType = OpenDentBusiness.QuickPasteType.Adjustment;
 			this.textNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textNote.Size = new System.Drawing.Size(245, 55);
 			this.textNote.TabIndex = 0;
@@ -230,7 +231,7 @@ namespace OpenDental{
 			PayPlanChargeCur.Interest=PIn.PDouble(textInterest.Text);
 			PayPlanChargeCur.Note=textNote.Text;
 			try{
-				PayPlanChargeCur.InsertOrUpdate(IsNew);
+				PayPlanCharges.InsertOrUpdate(PayPlanChargeCur,IsNew);
 			}
 			catch(ApplicationException ex){//even though it doesn't currently throw any exceptions
 				MessageBox.Show(ex.Message);
@@ -244,7 +245,7 @@ namespace OpenDental{
 				DialogResult=DialogResult.Cancel;
 			}
 			else{
-				PayPlanChargeCur.Delete();
+				PayPlanCharges.Delete(PayPlanChargeCur);
 				DialogResult=DialogResult.OK;
 			}
 		}

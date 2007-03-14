@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	///<summary></summary>
@@ -327,13 +328,13 @@ namespace OpenDental{
 				checkPat.Checked=true;
 			}
 			listCategory.Items.Clear();
-			for(int i=0;i<CovCats.ListShort.Length;i++){
-				listCategory.Items.Add(CovCats.ListShort[i].Description);
-				if(CovCats.ListShort[i].CovCatNum==BenCur.CovCatNum){
+			for(int i=0;i<CovCatB.ListShort.Length;i++){
+				listCategory.Items.Add(CovCatB.ListShort[i].Description);
+				if(CovCatB.ListShort[i].CovCatNum==BenCur.CovCatNum){
 					listCategory.SelectedIndex=i;
 				}
 			}
-			if(listCategory.SelectedIndex==-1 && CovCats.ListShort.Length>0){
+			if(listCategory.SelectedIndex==-1 && CovCatB.ListShort.Length>0){
 				listCategory.SelectedIndex=0;
 			}
 			textADACode.Text=BenCur.ADACode;
@@ -460,7 +461,7 @@ namespace OpenDental{
 				BenCur.PatPlanNum=0;
 				BenCur.PlanNum=PlanNum;
 			}
-			BenCur.CovCatNum=CovCats.ListShort[listCategory.SelectedIndex].CovCatNum;
+			BenCur.CovCatNum=CovCatB.ListShort[listCategory.SelectedIndex].CovCatNum;
 			BenCur.ADACode=textADACode.Text;
 			BenCur.BenefitType=(InsBenefitType)listType.SelectedIndex;
 			BenCur.Percent=PIn.PInt(textPercent.Text);

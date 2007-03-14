@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -16,6 +17,7 @@ namespace OpenDental{
 		private OpenDental.UI.Button butAdd;
 		private System.ComponentModel.Container components=null;
 		private bool changed;
+		public ZipCode ZipSelected;
 
 		///<summary></summary>
 		public FormZipSelect(){
@@ -189,8 +191,8 @@ namespace OpenDental{
 
 		private void butAdd_Click(object sender, System.EventArgs e) {
 			FormZipCodeEdit FormZCE=new FormZipCodeEdit();
-			ZipCodes.Cur=new ZipCode();
-			ZipCodes.Cur.ZipCodeDigits=((ZipCode)ZipCodes.ALMatches[0]).ZipCodeDigits;
+			FormZCE.ZipCodeCur=new ZipCode();
+			FormZCE.ZipCodeCur.ZipCodeDigits=((ZipCode)ZipCodes.ALMatches[0]).ZipCodeDigits;
 			FormZCE.IsNew=true;
 			FormZCE.ShowDialog();
 			if(FormZCE.DialogResult!=DialogResult.OK){
@@ -198,7 +200,7 @@ namespace OpenDental{
 			}
 			changed=true;
 			ZipCodes.Refresh();
-			ZipCodes.GetALMatches(ZipCodes.Cur.ZipCodeDigits);
+			ZipCodes.GetALMatches(FormZCE.ZipCodeCur.ZipCodeDigits);
 			FillList();
 		}
 
@@ -207,15 +209,15 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please select an item first."));
 				return;
 			}
-			ZipCodes.Cur=(ZipCode)ZipCodes.ALMatches[listMatches.SelectedIndex];
 			FormZipCodeEdit FormZCE=new FormZipCodeEdit();
+			FormZCE.ZipCodeCur=(ZipCode)ZipCodes.ALMatches[listMatches.SelectedIndex];
 			FormZCE.ShowDialog();
 			if(FormZCE.DialogResult!=DialogResult.OK){
 				return;
 			}
 			changed=true;
 			ZipCodes.Refresh();
-			ZipCodes.GetALMatches(ZipCodes.Cur.ZipCodeDigits);
+			ZipCodes.GetALMatches(FormZCE.ZipCodeCur.ZipCodeDigits);
 			FillList();
 		}
 
@@ -224,11 +226,12 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please select an item first."));
 				return;
 			}
-			ZipCodes.Cur=(ZipCode)ZipCodes.ALMatches[listMatches.SelectedIndex];
-			ZipCodes.DeleteCur();
+			ZipCode ZipCodeCur=(ZipCode)ZipCodes.ALMatches[listMatches.SelectedIndex];
+			ZipCodes.Delete(ZipCodeCur);
 			changed=true;
 			ZipCodes.Refresh();
-			ZipCodes.GetALMatches(ZipCodes.Cur.ZipCodeDigits);
+			//next line might not be right.
+			ZipCodes.GetALMatches(ZipCodeCur.ZipCodeDigits);
 			FillList();
 		}
 
@@ -236,7 +239,7 @@ namespace OpenDental{
 			if(listMatches.SelectedIndex==-1){
 				return;
 			}
-			ZipCodes.Cur=(ZipCode)ZipCodes.ALMatches[listMatches.SelectedIndex];
+			ZipSelected=(ZipCode)ZipCodes.ALMatches[listMatches.SelectedIndex];
 			DialogResult=DialogResult.OK;		
 		}
 
@@ -245,7 +248,7 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please select an item first."));
 				return;
 			}
-			ZipCodes.Cur=(ZipCode)ZipCodes.ALMatches[listMatches.SelectedIndex];
+			ZipSelected=(ZipCode)ZipCodes.ALMatches[listMatches.SelectedIndex];
 			DialogResult=DialogResult.OK;
 		}
 

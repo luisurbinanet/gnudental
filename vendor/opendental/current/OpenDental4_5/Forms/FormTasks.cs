@@ -4,6 +4,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using OpenDental.UI;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -89,8 +90,7 @@ namespace OpenDental{
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormTasks));
-			this.ToolBarMain = new OpenDental.UI.ODToolBar();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormTasks));
 			this.imageListMain = new System.Windows.Forms.ImageList(this.components);
 			this.listMain = new System.Windows.Forms.ListView();
 			this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
@@ -112,47 +112,39 @@ namespace OpenDental{
 			this.tabWeek = new System.Windows.Forms.TabPage();
 			this.tabMonth = new System.Windows.Forms.TabPage();
 			this.cal = new System.Windows.Forms.MonthCalendar();
+			this.ToolBarMain = new OpenDental.UI.ODToolBar();
 			this.tabContr.SuspendLayout();
 			this.SuspendLayout();
 			// 
-			// ToolBarMain
-			// 
-			this.ToolBarMain.Dock = System.Windows.Forms.DockStyle.Top;
-			this.ToolBarMain.ImageList = this.imageListMain;
-			this.ToolBarMain.Location = new System.Drawing.Point(0, 0);
-			this.ToolBarMain.Name = "ToolBarMain";
-			this.ToolBarMain.Size = new System.Drawing.Size(885, 29);
-			this.ToolBarMain.TabIndex = 1;
-			this.ToolBarMain.ButtonClick += new OpenDental.UI.ODToolBarButtonClickEventHandler(this.ToolBarMain_ButtonClick);
-			// 
 			// imageListMain
 			// 
-			this.imageListMain.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
-			this.imageListMain.ImageSize = new System.Drawing.Size(22, 22);
 			this.imageListMain.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListMain.ImageStream")));
 			this.imageListMain.TransparentColor = System.Drawing.Color.Transparent;
+			this.imageListMain.Images.SetKeyName(0,"TaskListAdd.gif");
+			this.imageListMain.Images.SetKeyName(1,"Add.gif");
 			// 
 			// listMain
 			// 
 			this.listMain.Activation = System.Windows.Forms.ItemActivation.TwoClick;
 			this.listMain.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-				| System.Windows.Forms.AnchorStyles.Left) 
-				| System.Windows.Forms.AnchorStyles.Right)));
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.listMain.AutoArrange = false;
 			this.listMain.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-																					   this.columnHeader1});
+            this.columnHeader1});
 			this.listMain.ContextMenu = this.menuEdit;
-			this.listMain.Location = new System.Drawing.Point(0, 266);
+			this.listMain.Location = new System.Drawing.Point(0,266);
 			this.listMain.MultiSelect = false;
 			this.listMain.Name = "listMain";
-			this.listMain.Size = new System.Drawing.Size(885, 405);
+			this.listMain.Size = new System.Drawing.Size(885,405);
 			this.listMain.SmallImageList = this.imageListTree;
 			this.listMain.TabIndex = 2;
+			this.listMain.UseCompatibleStateImageBehavior = false;
 			this.listMain.View = System.Windows.Forms.View.List;
-			this.listMain.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listMain_MouseDown);
-			this.listMain.Click += new System.EventHandler(this.listMain_Click);
 			this.listMain.DoubleClick += new System.EventHandler(this.listMain_DoubleClick);
 			this.listMain.SelectedIndexChanged += new System.EventHandler(this.listMain_SelectedIndexChanged);
+			this.listMain.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listMain_MouseDown);
+			this.listMain.Click += new System.EventHandler(this.listMain_Click);
 			// 
 			// columnHeader1
 			// 
@@ -162,14 +154,14 @@ namespace OpenDental{
 			// menuEdit
 			// 
 			this.menuEdit.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-																					 this.menuItemEdit,
-																					 this.menuItem6,
-																					 this.menuItemCut,
-																					 this.menuItemCopy,
-																					 this.menuItemPaste,
-																					 this.menuItemDelete,
-																					 this.menuItem2,
-																					 this.menuItemGoto});
+            this.menuItemEdit,
+            this.menuItem6,
+            this.menuItemCut,
+            this.menuItemCopy,
+            this.menuItemPaste,
+            this.menuItemDelete,
+            this.menuItem2,
+            this.menuItemGoto});
 			this.menuEdit.Popup += new System.EventHandler(this.menuEdit_Popup);
 			// 
 			// menuItemEdit
@@ -220,100 +212,112 @@ namespace OpenDental{
 			// 
 			// imageListTree
 			// 
-			this.imageListTree.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
-			this.imageListTree.ImageSize = new System.Drawing.Size(16, 16);
 			this.imageListTree.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListTree.ImageStream")));
 			this.imageListTree.TransparentColor = System.Drawing.Color.Transparent;
+			this.imageListTree.Images.SetKeyName(0,"TaskList.gif");
+			this.imageListTree.Images.SetKeyName(1,"checkBoxChecked.gif");
+			this.imageListTree.Images.SetKeyName(2,"checkBoxUnchecked.gif");
 			// 
 			// tree
 			// 
 			this.tree.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-				| System.Windows.Forms.AnchorStyles.Right)));
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.tree.HideSelection = false;
+			this.tree.ImageIndex = 0;
 			this.tree.ImageList = this.imageListTree;
 			this.tree.ItemHeight = 18;
-			this.tree.Location = new System.Drawing.Point(0, 123);
+			this.tree.Location = new System.Drawing.Point(0,123);
 			this.tree.Name = "tree";
 			this.tree.Scrollable = false;
+			this.tree.SelectedImageIndex = 0;
 			this.tree.ShowPlusMinus = false;
-			this.tree.Size = new System.Drawing.Size(885, 98);
+			this.tree.Size = new System.Drawing.Size(885,98);
 			this.tree.TabIndex = 3;
 			this.tree.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tree_MouseDown);
 			// 
 			// tabContr
 			// 
 			this.tabContr.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-				| System.Windows.Forms.AnchorStyles.Right)));
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.tabContr.Controls.Add(this.tabMain);
 			this.tabContr.Controls.Add(this.tabRepeating);
 			this.tabContr.Controls.Add(this.tabDate);
 			this.tabContr.Controls.Add(this.tabWeek);
 			this.tabContr.Controls.Add(this.tabMonth);
-			this.tabContr.Location = new System.Drawing.Point(0, 29);
+			this.tabContr.Location = new System.Drawing.Point(0,29);
 			this.tabContr.Name = "tabContr";
 			this.tabContr.SelectedIndex = 0;
-			this.tabContr.Size = new System.Drawing.Size(885, 23);
+			this.tabContr.Size = new System.Drawing.Size(885,23);
 			this.tabContr.TabIndex = 4;
 			this.tabContr.Click += new System.EventHandler(this.tabContr_Click);
 			// 
 			// tabMain
 			// 
-			this.tabMain.Location = new System.Drawing.Point(4, 22);
+			this.tabMain.Location = new System.Drawing.Point(4,22);
 			this.tabMain.Name = "tabMain";
-			this.tabMain.Size = new System.Drawing.Size(877, 0);
+			this.tabMain.Size = new System.Drawing.Size(877,0);
 			this.tabMain.TabIndex = 0;
 			this.tabMain.Text = "Main";
 			// 
 			// tabRepeating
 			// 
-			this.tabRepeating.Location = new System.Drawing.Point(4, 22);
+			this.tabRepeating.Location = new System.Drawing.Point(4,22);
 			this.tabRepeating.Name = "tabRepeating";
-			this.tabRepeating.Size = new System.Drawing.Size(877, -3);
+			this.tabRepeating.Size = new System.Drawing.Size(877,0);
 			this.tabRepeating.TabIndex = 2;
 			this.tabRepeating.Text = "Repeating";
 			// 
 			// tabDate
 			// 
-			this.tabDate.Location = new System.Drawing.Point(4, 22);
+			this.tabDate.Location = new System.Drawing.Point(4,22);
 			this.tabDate.Name = "tabDate";
-			this.tabDate.Size = new System.Drawing.Size(877, -3);
+			this.tabDate.Size = new System.Drawing.Size(877,0);
 			this.tabDate.TabIndex = 1;
 			this.tabDate.Text = "By Date";
 			// 
 			// tabWeek
 			// 
-			this.tabWeek.Location = new System.Drawing.Point(4, 22);
+			this.tabWeek.Location = new System.Drawing.Point(4,22);
 			this.tabWeek.Name = "tabWeek";
-			this.tabWeek.Size = new System.Drawing.Size(877, -3);
+			this.tabWeek.Size = new System.Drawing.Size(877,0);
 			this.tabWeek.TabIndex = 3;
 			this.tabWeek.Text = "By Week";
 			// 
 			// tabMonth
 			// 
-			this.tabMonth.Location = new System.Drawing.Point(4, 22);
+			this.tabMonth.Location = new System.Drawing.Point(4,22);
 			this.tabMonth.Name = "tabMonth";
-			this.tabMonth.Size = new System.Drawing.Size(877, -3);
+			this.tabMonth.Size = new System.Drawing.Size(877,0);
 			this.tabMonth.TabIndex = 4;
 			this.tabMonth.Text = "By Month";
 			// 
 			// cal
 			// 
-			this.cal.Location = new System.Drawing.Point(2, 53);
+			this.cal.Location = new System.Drawing.Point(2,53);
 			this.cal.MaxSelectionCount = 1;
 			this.cal.Name = "cal";
 			this.cal.TabIndex = 0;
 			this.cal.DateSelected += new System.Windows.Forms.DateRangeEventHandler(this.cal_DateSelected);
 			// 
+			// ToolBarMain
+			// 
+			this.ToolBarMain.Dock = System.Windows.Forms.DockStyle.Top;
+			this.ToolBarMain.ImageList = this.imageListMain;
+			this.ToolBarMain.Location = new System.Drawing.Point(0,0);
+			this.ToolBarMain.Name = "ToolBarMain";
+			this.ToolBarMain.Size = new System.Drawing.Size(885,29);
+			this.ToolBarMain.TabIndex = 1;
+			this.ToolBarMain.ButtonClick += new OpenDental.UI.ODToolBarButtonClickEventHandler(this.ToolBarMain_ButtonClick);
+			// 
 			// FormTasks
 			// 
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(885, 671);
+			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
+			this.ClientSize = new System.Drawing.Size(885,671);
 			this.Controls.Add(this.tabContr);
 			this.Controls.Add(this.tree);
 			this.Controls.Add(this.listMain);
 			this.Controls.Add(this.ToolBarMain);
 			this.Controls.Add(this.cal);
-			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "FormTasks";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -423,7 +427,7 @@ namespace OpenDental{
 						continue;
 					}
 					if(!TasksList[i].TaskStatus){
-						TasksList[i].Delete();
+						Tasks.Delete(TasksList[i]);
 						changeMade=true;
 					}
 				}
@@ -489,7 +493,7 @@ namespace OpenDental{
 					repeatingTasks[i].FromNum=repeatingTasks[i].TaskNum;
 					repeatingTasks[i].IsRepeating=false;
 					repeatingTasks[i].TaskListNum=0;
-					repeatingTasks[i].InsertOrUpdate(true);
+					Tasks.InsertOrUpdate(repeatingTasks[i],true);
 					changeMade=true;
 				}
 				if(changeMade){
@@ -858,14 +862,14 @@ namespace OpenDental{
 					newT.IsRepeating=false;
 				}
 				newT.FromNum=0;//always
-				newT.InsertOrUpdate(true);
+				Tasks.InsertOrUpdate(newT,true);
 			}
 			if(WasCut){
 				if(ClipTaskList!=null){
 					DeleteEntireList(ClipTaskList);
 				}
 				else if(ClipTask!=null){
-					ClipTask.Delete();
+					Tasks.Delete(ClipTask);
 				}
 			}
 			FillMain();
@@ -884,7 +888,7 @@ namespace OpenDental{
 			//get all children:
 			TaskList[] childLists=TaskLists.Refresh(newList.TaskListNum,DateTime.MinValue,TaskDateType.None,newList.IsRepeating);
 			Task[] childTasks=Tasks.Refresh(newList.TaskListNum,DateTime.MinValue,TaskDateType.None,newList.IsRepeating);
-			newList.InsertOrUpdate(true);
+			TaskLists.InsertOrUpdate(newList,true);
 			//now we have a new taskListNum to work with
 			for(int i=0;i<childLists.Length;i++){
 				childLists[i].Parent=newList.TaskListNum;
@@ -916,7 +920,7 @@ namespace OpenDental{
 					childTasks[i].DateTask=DateTime.MinValue;
 					childTasks[i].DateType=TaskDateType.None;
 				}
-				childTasks[i].InsertOrUpdate(true);
+				Tasks.InsertOrUpdate(childTasks[i],true);
 			}
 		}
 
@@ -931,7 +935,7 @@ namespace OpenDental{
 				if(!MsgBox.Show(this,true,"Delete?")){
 					return;
 				}
-				TasksList[clickedI-TaskListsList.Length].Delete();
+				Tasks.Delete(TasksList[clickedI-TaskListsList.Length]);
 			}
 			FillMain();
 		}
@@ -945,10 +949,10 @@ namespace OpenDental{
 				DeleteEntireList(childLists[i]);
 			}
 			for(int i=0;i<childTasks.Length;i++){
-				childTasks[i].Delete();
+				Tasks.Delete(childTasks[i]);
 			}
 			try{
-				list.Delete();
+				TaskLists.Delete(list);
 			}
 			catch(Exception e){
 				MessageBox.Show(e.Message);
@@ -1005,7 +1009,7 @@ namespace OpenDental{
 			Task task=TasksList[clickedI-TaskListsList.Length].Copy();
 			task.TaskStatus= !task.TaskStatus;
 			try{
-				task.InsertOrUpdate(false);
+				Tasks.InsertOrUpdate(task,false);
 			}
 			catch(Exception ex){
 				MessageBox.Show(ex.Message);

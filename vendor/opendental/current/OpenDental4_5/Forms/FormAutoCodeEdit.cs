@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	///<summary></summary>
@@ -21,6 +22,8 @@ namespace OpenDental{
 		private System.Windows.Forms.CheckBox checkLessIntrusive;
 		///<summary></summary>
     public bool IsNew;
+		///<summary>Set this before opening the form.</summary>
+		public AutoCode AutoCodeCur;
 
 		///<summary></summary>
 		public FormAutoCodeEdit(){
@@ -215,14 +218,12 @@ namespace OpenDental{
 		private void FormAutoCodeEdit_Load(object sender, System.EventArgs e) {      
       if(IsNew){
         this.Text=Lan.g(this,"Add Auto Code");
-        AutoCodes.Cur=new AutoCode();
-        AutoCodes.InsertCur();
       }
       else{
         this.Text=Lan.g(this,"Edit Auto Code");
-        textDescript.Text=AutoCodes.Cur.Description;
-        checkHidden.Checked=AutoCodes.Cur.IsHidden;
-				checkLessIntrusive.Checked=AutoCodes.Cur.LessIntrusive;
+        textDescript.Text=AutoCodeCur.Description;
+        checkHidden.Checked=AutoCodeCur.IsHidden;
+				checkLessIntrusive.Checked=AutoCodeCur.LessIntrusive;
       }
 		  FillTable();
 		}
@@ -231,7 +232,7 @@ namespace OpenDental{
       int count=0;
       AutoCodeItems.Refresh();
       AutoCodeConds.Refresh();
-      AutoCodeItems.GetListForCode(AutoCodes.Cur.AutoCodeNum);
+      AutoCodeItems.GetListForCode(AutoCodeCur.AutoCodeNum);
  			tbAutoItem.ResetRows(AutoCodeItems.ListForCode.Length);
 			tbAutoItem.SetGridColor(Color.Gray);
 			tbAutoItem.SetBackGColor(Color.White);      
@@ -253,8 +254,9 @@ namespace OpenDental{
     }
 
     private void tbAutoItem_CellDoubleClicked(object sender, CellEventArgs e){
-      AutoCodeItems.Cur=AutoCodeItems.ListForCode[tbAutoItem.SelectedRow];
+      AutoCodeItem AutoCodeItemCur=AutoCodeItems.ListForCode[tbAutoItem.SelectedRow];
       FormAutoItemEdit FormAIE=new FormAutoItemEdit();
+			FormAIE.AutoCodeItemCur=AutoCodeItemCur;
       FormAIE.ShowDialog();
       FillTable(); 
     }
@@ -262,6 +264,8 @@ namespace OpenDental{
 		private void butAdd_Click(object sender, System.EventArgs e) {
 		  FormAutoItemEdit FormAIE=new FormAutoItemEdit();
       FormAIE.IsNew=true;
+			FormAIE.AutoCodeItemCur=new AutoCodeItem();
+			FormAIE.AutoCodeItemCur.AutoCodeNum=AutoCodeCur.AutoCodeNum;
       FormAIE.ShowDialog();
       FillTable();
 		}
@@ -271,9 +275,9 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please select an item first."));
         return;
 			}
-			AutoCodeItems.Cur=AutoCodeItems.ListForCode[tbAutoItem.SelectedRow];
-      AutoCodeConds.DeleteForItemNum(AutoCodeItems.Cur.AutoCodeItemNum);
-      AutoCodeItems.DeleteCur();
+			AutoCodeItem AutoCodeItemCur=AutoCodeItems.ListForCode[tbAutoItem.SelectedRow];
+      AutoCodeConds.DeleteForItemNum(AutoCodeItemCur.AutoCodeItemNum);
+      AutoCodeItems.Delete(AutoCodeItemCur);
 			FillTable();
 		}  
 
@@ -282,10 +286,10 @@ namespace OpenDental{
         MessageBox.Show(Lan.g(this,"The Description cannot be blank"));
         return;
       }
-      AutoCodes.Cur.Description=textDescript.Text;
-      AutoCodes.Cur.IsHidden=checkHidden.Checked;
-			AutoCodes.Cur.LessIntrusive=checkLessIntrusive.Checked;
-			AutoCodes.UpdateCur();
+      AutoCodeCur.Description=textDescript.Text;
+      AutoCodeCur.IsHidden=checkHidden.Checked;
+			AutoCodeCur.LessIntrusive=checkLessIntrusive.Checked;
+			AutoCodes.Update(AutoCodeCur);
       DialogResult=DialogResult.OK;
 		}
 
@@ -298,11 +302,11 @@ namespace OpenDental{
 				return;
 			if(IsNew){
         for(int i=0;i<AutoCodeItems.ListForCode.Length;i++){
-          AutoCodeItems.Cur=AutoCodeItems.ListForCode[i];
-          AutoCodeConds.DeleteForItemNum(AutoCodeItems.Cur.AutoCodeItemNum);
-          AutoCodeItems.DeleteCur();
+          AutoCodeItem AutoCodeItemCur=AutoCodeItems.ListForCode[i];
+          AutoCodeConds.DeleteForItemNum(AutoCodeItemCur.AutoCodeItemNum);
+          AutoCodeItems.Delete(AutoCodeItemCur);
         }
-        AutoCodes.DeleteCur();
+        AutoCodes.Delete(AutoCodeCur);
       }
 		}
 

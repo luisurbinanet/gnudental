@@ -2,80 +2,69 @@ using System;
 using System.Data;
 using System.Collections;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
+	///<summary></summary>
+	public class PatPlans {
+		///<summary>Gets a list of all patplans for a given patient</summary>
+		public static PatPlan[] Refresh(int patNum) {
+			string command="SELECT * from patplan"
+				+" WHERE PatNum = "+patNum.ToString()
+				+" ORDER BY Ordinal";
+			DataTable table=General.GetTable(command);
+			PatPlan[] List=new PatPlan[table.Rows.Count];
+			for(int i=0;i<table.Rows.Count;i++) {
+				List[i]=new PatPlan();
+				List[i].PatPlanNum  = PIn.PInt(table.Rows[i][0].ToString());
+				List[i].PatNum      = PIn.PInt(table.Rows[i][1].ToString());
+				List[i].PlanNum     = PIn.PInt(table.Rows[i][2].ToString());
+				List[i].Ordinal     = PIn.PInt(table.Rows[i][3].ToString());
+				List[i].IsPending   = PIn.PBool(table.Rows[i][4].ToString());
+				List[i].Relationship= (Relat)PIn.PInt(table.Rows[i][5].ToString());
+				List[i].PatID       = PIn.PString(table.Rows[i][6].ToString());
+			}
+			return List;
+		}
 	
-	/// <summary>Each row represents the linking of one insplan to one patient for current coverage.  Dropping a plan will delete the entry in this table.  Deleting a plan will delete the actual insplan (if no dependencies).</summary>
-	public class PatPlan{
-		/// <summary>Primary key</summary>
-		public int PatPlanNum;
-		/// <summary>FK to  patient.PatNum.  The patient who currently has the insurance.  Not the same as the subscriber.</summary>
-		public int PatNum;
-		///<summary>FK to insplan.PlanNum.  The insurance plan attached to the patient.</summary>
-		public int PlanNum;
-		///<summary>Number like 1, 2, 3, etc.  Represents primary ins, secondary ins, tertiary ins, etc. 0 is not used</summary>
-		public int Ordinal;
-		///<summary>For informational purposes only. For now, we lose the previous feature which let us set isPending without entering a plan.  Now, you have to enter the plan in order to check this box.</summary>
-		public bool IsPending;
-		///<summary>Enum:Relat Remember that this may need to be changed in the Claim also, if already created.</summary>
-		public Relat Relationship;
-		///<summary>An optional patient ID which will override the SSN on eclaims if present.  Subscriber ID is part of the insplan.</summary>
-		public string PatID;
-
 		///<summary></summary>
-		public PatPlan Copy(){
-			PatPlan p=new PatPlan();
-			p.PatPlanNum=PatPlanNum;
-			p.PatNum=PatNum;
-			p.PlanNum=PlanNum;
-			p.Ordinal=Ordinal;
-			p.IsPending=IsPending;
-			p.Relationship=Relationship;
-			p.PatID=PatID;
-			return p;
-		}
-
-		///<summary></summary>
-		public void Update(){
+		public static void Update(PatPlan p){
 			string command="UPDATE patplan SET " 
-				+"PatNum = '"       +POut.PInt   (PatNum)+"'"
-				+",PlanNum = '"     +POut.PInt   (PlanNum)+"'"
+				+"PatNum = '"       +POut.PInt   (p.PatNum)+"'"
+				+",PlanNum = '"     +POut.PInt   (p.PlanNum)+"'"
 				//+",Ordinal = '"     +POut.PInt   (Ordinal)+"'"//ordinal always set using SetOrdinal
-				+",IsPending = '"   +POut.PBool  (IsPending)+"'"
-				+",Relationship = '"+POut.PInt   ((int)Relationship)+"'"
-				+",PatID = '"       +POut.PString(PatID)+"'"
-				+" WHERE PatPlanNum = '" +POut.PInt(PatPlanNum)+"'";
-			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command);
+				+",IsPending = '"   +POut.PBool  (p.IsPending)+"'"
+				+",Relationship = '"+POut.PInt   ((int)p.Relationship)+"'"
+				+",PatID = '"       +POut.PString(p.PatID)+"'"
+				+" WHERE PatPlanNum = '" +POut.PInt(p.PatPlanNum)+"'";
+ 			General.NonQ(command);
 		}
 
 		///<summary></summary>
-		public void Insert(){
-			if(Prefs.RandomKeys){
-				PatPlanNum=MiscData.GetKey("patplan","PatPlanNum");
+		public static void Insert(PatPlan p){
+			if(PrefB.RandomKeys){
+				p.PatPlanNum=MiscData.GetKey("patplan","PatPlanNum");
 			}
 			string command="INSERT INTO patplan (";
-			if(Prefs.RandomKeys){
+			if(PrefB.RandomKeys){
 				command+="PatPlanNum,";
 			}
 			command+="PatNum,PlanNum,Ordinal,IsPending,Relationship,PatID) VALUES(";
-			if(Prefs.RandomKeys){
-				command+="'"+POut.PInt(PatPlanNum)+"', ";
+			if(PrefB.RandomKeys){
+				command+="'"+POut.PInt(p.PatPlanNum)+"', ";
 			}
 			command+=
-				 "'"+POut.PInt   (PatNum)+"', "
-				+"'"+POut.PInt   (PlanNum)+"', "
-				+"'"+POut.PInt   (Ordinal)+"', "
-				+"'"+POut.PBool  (IsPending)+"', "
-				+"'"+POut.PInt   ((int)Relationship)+"', "
-				+"'"+POut.PString(PatID)+"')";
-			DataConnection dcon=new DataConnection();
-			if(Prefs.RandomKeys){
-				dcon.NonQ(command);
+				 "'"+POut.PInt   (p.PatNum)+"', "
+				+"'"+POut.PInt   (p.PlanNum)+"', "
+				+"'"+POut.PInt   (p.Ordinal)+"', "
+				+"'"+POut.PBool  (p.IsPending)+"', "
+				+"'"+POut.PInt   ((int)p.Relationship)+"', "
+				+"'"+POut.PString(p.PatID)+"')";
+			if(PrefB.RandomKeys){
+				General.NonQ(command);
 			}
 			else{
- 				dcon.NonQ(command,true);
-				PatPlanNum=dcon.InsertID;
+ 				p.PatPlanNum=General.NonQ(command,true);
 			}
 		}
 
@@ -84,36 +73,8 @@ namespace OpenDental{
 		public void Delete(){
 			string command="DELETE FROM patplan WHERE PatPlanNum ="+POut.PInt(PatPlanNum);
 			DataConnection dcon=new DataConnection();
-			dcon.NonQ(command);
+			General.NonQ(command);
 		}*/
-
-	}
-
-	/*=========================================================================================
-	=================================== class PatPlans ==========================================*/
-
-	///<summary></summary>
-	public class PatPlans{
-		///<summary>Gets a list of all patplans for a given patient</summary>
-		public static PatPlan[] Refresh(int patNum){
-			string command="SELECT * from patplan"
-				+" WHERE PatNum = "+patNum.ToString()
-				+" ORDER BY Ordinal";
-			DataConnection dcon=new DataConnection();
- 			DataTable table=dcon.GetTable(command);
-			PatPlan[] List=new PatPlan[table.Rows.Count];
-			for(int i=0;i<table.Rows.Count;i++){
-				List[i]=new PatPlan();
-				List[i].PatPlanNum  = PIn.PInt   (table.Rows[i][0].ToString());
-				List[i].PatNum      = PIn.PInt   (table.Rows[i][1].ToString());
-				List[i].PlanNum     = PIn.PInt   (table.Rows[i][2].ToString());
-				List[i].Ordinal     = PIn.PInt   (table.Rows[i][3].ToString());
-				List[i].IsPending   = PIn.PBool  (table.Rows[i][4].ToString());
-				List[i].Relationship= (Relat)PIn.PInt   (table.Rows[i][5].ToString());
-				List[i].PatID       = PIn.PString(table.Rows[i][6].ToString());
-			}
-			return List;
-		}
 
 		///<summary>Supply a PatPlan list.  This function loops through the list and returns the plan num of the specified ordinal.  If ordinal not valid, then it returns 0.  The main purpose of this function is so we don't have to check the length of the list.</summary>
 		public static int GetPlanNum(PatPlan[] list,int ordinal){
@@ -138,8 +99,7 @@ namespace OpenDental{
 		///<summary>Deletes the patplan with the specified patPlanNum.  Rearranges the other patplans for the patient to keep the ordinal sequence contiguous.  Then, recomputes all estimates for this patient because their coverage is now different.  Also sets patient.HasIns to the correct value.</summary>
 		public static void Delete(int patPlanNum){
 			string command="SELECT PatNum FROM patplan WHERE PatPlanNum="+POut.PInt(patPlanNum);
-			DataConnection dcon=new DataConnection();
-			DataTable table=dcon.GetTable(command);
+			DataTable table=General.GetTable(command);
 			if(table.Rows.Count==0){
 				return;
 			}
@@ -150,14 +110,14 @@ namespace OpenDental{
 				if(doDecrement){//patPlan has already been deleted, so decrement the rest.
 					command="UPDATE patplan SET Ordinal="+POut.PInt(patPlans[i].Ordinal-1)
 						+" WHERE PatPlanNum="+POut.PInt(patPlans[i].PatPlanNum);
-					dcon.NonQ(command);
+					General.NonQ(command);
 					continue;
 				}
 				if(patPlans[i].PatPlanNum==patPlanNum){
 					command="DELETE FROM patplan WHERE PatPlanNum="+POut.PInt(patPlanNum);
-					dcon.NonQ(command);
+					General.NonQ(command);
 					command="DELETE FROM benefit WHERE PatPlanNum=" +POut.PInt(patPlanNum);
-					dcon.NonQ(command);
+					General.NonQ(command);
 					doDecrement=true;
 				}
 			}
@@ -175,8 +135,7 @@ namespace OpenDental{
 		///<summary>Sets the ordinal of the specified patPlan.  Rearranges the other patplans for the patient to keep the ordinal sequence contiguous.  Estimates must be recomputed after this.  FormInsPlan currently updates estimates every time it closes.</summary>
 		public static void SetOrdinal(int patPlanNum,int newOrdinal){
 			string command="SELECT PatNum FROM patplan WHERE PatPlanNum="+POut.PInt(patPlanNum);
-			DataConnection dcon=new DataConnection();
-			DataTable table=dcon.GetTable(command);
+			DataTable table=General.GetTable(command);
 			if(table.Rows.Count==0){
 				return;
 			}
@@ -199,12 +158,12 @@ namespace OpenDental{
 				}
 				command="UPDATE patplan SET Ordinal="+POut.PInt(curOrdinal)
 					+" WHERE PatPlanNum="+POut.PInt(patPlans[i].PatPlanNum);
-				dcon.NonQ(command);
+				General.NonQ(command);
 				curOrdinal++;
 			}
 			command="UPDATE patplan SET Ordinal="+POut.PInt(newOrdinal)
 				+" WHERE PatPlanNum="+POut.PInt(patPlanNum);
-			dcon.NonQ(command);
+			General.NonQ(command);
 		}
 
 		///<summary>Loops through the supplied list to find the one patplan needed.</summary>

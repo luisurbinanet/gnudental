@@ -1,27 +1,14 @@
 using System;
 using System.Collections;
+using System.Data;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
-	
-	///<summary>Corresponds to the autocodeitem table in the database.</summary>
-	///<remarks>There are multiple AutoCodeItems for a given AutoCode.  Each Item has one ADA code.</remarks>
-	public struct AutoCodeItem{
-		///<summary>Primary key.</summary>
-		public int AutoCodeItemNum;
-		///<summary>Foreign key to AutoCode.AutoCodeNum</summary>
-		public int AutoCodeNum;
-		///<summary>Foreign key to ProcedureCode.ADACode</summary>
-		public string ADACode;
-	}
-
-	/*=========================================================================================
-	=================================== class AutoCodeItems ===========================================*/
-
 	///<summary></summary>
-	public class AutoCodeItems:DataClass{
-		///<summary></summary>
-		public static AutoCodeItem Cur;
+	public class AutoCodeItems{
+		//<summary></summary>
+		//public static AutoCodeItem Cur;
 		///<summary></summary>
 		public static AutoCodeItem[] List;//all
 		///<summary></summary>
@@ -31,12 +18,12 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void Refresh(){
-			cmd.CommandText =
-				"SELECT * from autocodeitem";
-			FillTable();
+			string command="SELECT * from autocodeitem";
+			DataTable table=General.GetTable(command);
 			HList=new Hashtable();
 			List=new AutoCodeItem[table.Rows.Count];
 			for(int i=0;i<List.Length;i++){
+				List[i]=new AutoCodeItem();
 				List[i].AutoCodeItemNum= PIn.PInt   (table.Rows[i][0].ToString());
 				List[i].AutoCodeNum    = PIn.PInt   (table.Rows[i][1].ToString());
 				List[i].ADACode        = PIn.PString(table.Rows[i][2].ToString());
@@ -47,37 +34,36 @@ namespace OpenDental{
 		}
 
 		///<summary></summary>
-		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO autocodeitem (autocodenum,adacode) "
+		public static void Insert(AutoCodeItem Cur){
+			string command= "INSERT INTO autocodeitem (autocodenum,adacode) "
 				+"VALUES ("
 				+"'"+POut.PInt   (Cur.AutoCodeNum)+"', "
 				+"'"+POut.PString(Cur.ADACode)+"')";
-			//MessageBox.Show(cmd.CommandText);
-			NonQ(true);
-			Cur.AutoCodeItemNum=InsertID;
+			//MessageBox.Show(string command);
+			Cur.AutoCodeItemNum=General.NonQ(command,true);
 		}
 
 		///<summary></summary>
-		public static void UpdateCur(){
-			cmd.CommandText = "UPDATE autocodeitem SET "
+		public static void Update(AutoCodeItem Cur){
+			string command= "UPDATE autocodeitem SET "
 				+"autocodenum='"+POut.PInt   (Cur.AutoCodeNum)+"'"
 				+",adacode ='"  +POut.PString(Cur.ADACode)+"'"
 				+" WHERE autocodeitemnum = '"+POut.PInt(Cur.AutoCodeItemNum)+"'";
-			NonQ(false);
+			General.NonQ(command);
 		}
 
 		///<summary></summary>
-		public static void DeleteCur(){
-			cmd.CommandText = "DELETE from autocodeitem WHERE autocodeitemnum = '"
+		public static void Delete(AutoCodeItem Cur){
+			string command= "DELETE from autocodeitem WHERE autocodeitemnum = '"
 				+POut.PInt(Cur.AutoCodeItemNum)+"'";
-			NonQ(false);
+			General.NonQ(command);
 		}
 
 		///<summary></summary>
 		public static void Delete(int autoCodeNum){
-			cmd.CommandText = "DELETE from autocodeitem WHERE AutoCodeNum = '"
+			string command= "DELETE from autocodeitem WHERE AutoCodeNum = '"
 				+POut.PInt(autoCodeNum)+"'";
-			NonQ(false);
+			General.NonQ(command);
 		}
 
 		///<summary></summary>
@@ -120,16 +106,19 @@ namespace OpenDental{
 		}
 
 		///<summary>Only called when closing the procedure edit window. Usually returns the supplied adaCode, unless a better match is found.</summary>
-		public static string VerifyCode(string ADACode,string toothNum,string surf,bool isAdditional,int patNum,int age){
+		public static string VerifyCode(string ADACode,string toothNum,string surf,bool isAdditional,int patNum,int age,
+			out AutoCode AutoCodeCur)
+		{
 			bool allCondsMet;
+			AutoCodeCur=null;
 			if(!HList.ContainsKey(ADACode)){
 				return ADACode;
 			}
 			if(!AutoCodes.HList.ContainsKey((int)HList[ADACode])){
 				return ADACode;//just in case.
 			}
-			AutoCodes.Cur=(AutoCode)AutoCodes.HList[(int)HList[ADACode]];
-			if(AutoCodes.Cur.LessIntrusive){
+			AutoCodeCur=(AutoCode)AutoCodes.HList[(int)HList[ADACode]];
+			if(AutoCodeCur.LessIntrusive){
 				return ADACode;
 			}
 			bool willBeMissing=Procedures.WillBeMissing(toothNum,patNum);

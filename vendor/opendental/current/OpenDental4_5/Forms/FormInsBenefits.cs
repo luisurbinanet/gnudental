@@ -1,9 +1,11 @@
 using System;
 using System.Drawing;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using OpenDental.UI;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -22,7 +24,7 @@ namespace OpenDental{
 		/// </summary>
 		private System.ComponentModel.Container components = null;
 		///<summary>This needs to be set externally.  It will only be altered when user clicks OK and form closes.</summary>
-		public ArrayList OriginalBenList;
+		public List<Benefit> OriginalBenList;
 		private int PlanNum;
 		private Label label1;
 		private ODtextBox textSubscNote;
@@ -79,7 +81,7 @@ namespace OpenDental{
 		private CheckBox checkCalYearMain;
 		private Panel panelSimple;
 		///<summary>This is the list used to display on this form.</summary>
-		private ArrayList benefitList;
+		private List<Benefit> benefitList;
 		private ValidNumber textStand4;
 		private Label label24;
 		private Label label12;
@@ -87,7 +89,7 @@ namespace OpenDental{
 		private Panel panel2;
 		private Panel panel1;
 		///<summary>This is the list of all benefits to display on this form.  Some will be in the simple view, and the rest will be transferred to benefitList for display in the grid.</summary>
-		private ArrayList benefitListAll;
+		private List<Benefit> benefitListAll;
 		private bool dontAllowSimplified;
 
 		///<summary></summary>
@@ -790,7 +792,7 @@ namespace OpenDental{
 			this.textSubscNote.Location = new System.Drawing.Point(112,560);
 			this.textSubscNote.Multiline = true;
 			this.textSubscNote.Name = "textSubscNote";
-			this.textSubscNote.QuickPasteType = OpenDental.QuickPasteType.InsPlan;
+			this.textSubscNote.QuickPasteType = QuickPasteType.InsPlan;
 			this.textSubscNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textSubscNote.Size = new System.Drawing.Size(485,98);
 			this.textSubscNote.TabIndex = 161;
@@ -907,10 +909,7 @@ namespace OpenDental{
 		#endregion
 
 		private void FormInsBenefits_Load(object sender,EventArgs e) {
-			benefitListAll=new ArrayList();
-			for(int i=0;i<OriginalBenList.Count;i++){
-				benefitListAll.Add(OriginalBenList[i]);
-			}
+			benefitListAll=new List<Benefit>(OriginalBenList);
 			if(CovCats.GetForEbenCat(EbenefitCategory.Accident)==null
 				|| CovCats.GetForEbenCat(EbenefitCategory.Crowns)==null
 				|| CovCats.GetForEbenCat(EbenefitCategory.Diagnostic)==null
@@ -966,10 +965,7 @@ namespace OpenDental{
 		///<summary>This will only be run when the form first opens or if user switches to simple view.  FillGrid should always be run after this.</summary>
 		private void FillSimple(){
 			if(!panelSimple.Visible){
-				benefitList=new ArrayList();
-				for(int i=0;i<benefitListAll.Count;i++) {
-					benefitList.Add(benefitListAll[i]);
-				}
+				benefitList=new List<Benefit>(benefitListAll);
 				return;
 			}
 			textAnnualMax.Text="";
@@ -999,11 +995,11 @@ namespace OpenDental{
 			textProsth.Text="";
 			textMaxProsth.Text="";
 			textAccident.Text="";
-			benefitList=new ArrayList();
+			benefitList=new List<Benefit>();
 			Benefit ben;
 			for(int i=0;i<benefitListAll.Count;i++){
 				#region Loop
-				ben=(Benefit)benefitListAll[i];
+				ben=benefitListAll[i];
 				//annual max
 				if(ben.ADACode==""
 					&& ben.BenefitType==InsBenefitType.Limitations
@@ -1487,8 +1483,8 @@ namespace OpenDental{
 			if(checkCalendarYear.CheckState==CheckState.Unchecked) {
 				ben.TimePeriod=BenefitTimePeriod.ServiceYear;
 			}
-			if(CovCats.ListShort.Length>0){
-				ben.CovCatNum=CovCats.ListShort[0].CovCatNum;
+			if(CovCatB.ListShort.Length>0){
+				ben.CovCatNum=CovCatB.ListShort[0].CovCatNum;
 			}
 			ben.BenefitType=InsBenefitType.Percentage;
 			FormBenefitEdit FormB=new FormBenefitEdit(PatPlanNum,PlanNum);
@@ -1502,7 +1498,7 @@ namespace OpenDental{
 		}
 
 		private void butClear_Click(object sender,EventArgs e) {
-			benefitList=new ArrayList();
+			benefitList=new List<Benefit>();
 			FillGrid();
 		}
 
@@ -1534,10 +1530,7 @@ namespace OpenDental{
 				MsgBox.Show(this,"Please fix data entry errors first.");
 				return false;
 			}
-			benefitListAll=new ArrayList();
-			for(int i=0;i<benefitList.Count;i++){
-				benefitListAll.Add(benefitList[i]);
-			}
+			benefitListAll=new List<Benefit>(benefitList);
 			Benefit ben;
 			//annual max
 			if(textAnnualMax.Text !=""){

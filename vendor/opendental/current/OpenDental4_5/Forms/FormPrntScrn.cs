@@ -14,7 +14,8 @@ using System.IO;
 using System.Net;
 using System.Resources;
 using System.Runtime.InteropServices;
-using System.Text; 
+using System.Text;
+using OpenDentBusiness;
 
 
 namespace OpenDental{
@@ -357,7 +358,7 @@ namespace OpenDental{
 			saveFileDialog2=new SaveFileDialog();
       saveFileDialog2.AddExtension=true;
 			saveFileDialog2.Title=Lan.g(this,"Select Folder to Save Image To");
-      saveFileDialog2.InitialDirectory=((Pref)Prefs.HList["ExportPath"]).ValueString; 
+      saveFileDialog2.InitialDirectory=((Pref)PrefB.HList["ExportPath"]).ValueString; 
 			saveFileDialog2.DefaultExt="jpg";
 			saveFileDialog2.Filter="jpg files(*.jpg)|*.jpg|gif files(*.gif)|*.gif|All files(*.*)|*.*";
       saveFileDialog2.FilterIndex=1;

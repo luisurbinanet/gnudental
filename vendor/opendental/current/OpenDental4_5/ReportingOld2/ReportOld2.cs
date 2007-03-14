@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Drawing.Printing;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental.ReportingOld2
 {
@@ -416,7 +417,8 @@ namespace OpenDental.ReportingOld2
 				//then, submit the query
 			}
 			//MessageBox.Show(outputQuery);
-			reportTable=ODReportData.SubmitQuery(outputQuery);
+			reportTable=General.GetTable(outputQuery);
+				//ODReportData.SubmitQuery(outputQuery);
 			return true;
 		}
 

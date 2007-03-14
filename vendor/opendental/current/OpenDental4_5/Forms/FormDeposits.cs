@@ -4,6 +4,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using OpenDental.UI;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -195,7 +196,7 @@ namespace OpenDental{
 		private void butAdd_Click(object sender, System.EventArgs e) {
 			Deposit deposit=new Deposit();
 			deposit.DateDeposit=DateTime.Today;
-			deposit.BankAccountInfo=Prefs.GetString("PracticeBankNumber");
+			deposit.BankAccountInfo=PrefB.GetString("PracticeBankNumber");
 			FormDepositEdit FormD=new FormDepositEdit(deposit);
 			FormD.IsNew=true;
 			FormD.ShowDialog();

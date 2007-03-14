@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Media;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -75,7 +76,6 @@ namespace OpenDental{
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormSigElementDefEdit));
 			this.label1 = new System.Windows.Forms.Label();
 			this.listType = new System.Windows.Forms.ListBox();
 			this.label2 = new System.Windows.Forms.Label();
@@ -87,17 +87,17 @@ namespace OpenDental{
 			this.label7 = new System.Windows.Forms.Label();
 			this.label8 = new System.Windows.Forms.Label();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
-			this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-			this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+			this.butDeleteSound = new OpenDental.UI.Button();
 			this.butRecord = new OpenDental.UI.Button();
 			this.butExport = new OpenDental.UI.Button();
 			this.butImport = new OpenDental.UI.Button();
 			this.butPlay = new OpenDental.UI.Button();
+			this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+			this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
 			this.butDelete = new OpenDental.UI.Button();
 			this.textLightRow = new OpenDental.ValidNum();
 			this.butOK = new OpenDental.UI.Button();
 			this.butCancel = new OpenDental.UI.Button();
-			this.butDeleteSound = new OpenDental.UI.Button();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -183,7 +183,6 @@ namespace OpenDental{
 			this.label7.Name = "label7";
 			this.label7.Size = new System.Drawing.Size(278,73);
 			this.label7.TabIndex = 12;
-			this.label7.Text = resources.GetString("label7.Text");
 			this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// label8
@@ -193,7 +192,6 @@ namespace OpenDental{
 			this.label8.Name = "label8";
 			this.label8.Size = new System.Drawing.Size(267,100);
 			this.label8.TabIndex = 13;
-			this.label8.Text = resources.GetString("label8.Text");
 			// 
 			// groupBox1
 			// 
@@ -210,9 +208,18 @@ namespace OpenDental{
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Sound";
 			// 
-			// openFileDialog1
+			// butDeleteSound
 			// 
-			this.openFileDialog1.FileName = "openFileDialog1";
+			this.butDeleteSound.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butDeleteSound.Autosize = true;
+			this.butDeleteSound.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butDeleteSound.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butDeleteSound.Location = new System.Drawing.Point(47,49);
+			this.butDeleteSound.Name = "butDeleteSound";
+			this.butDeleteSound.Size = new System.Drawing.Size(55,23);
+			this.butDeleteSound.TabIndex = 19;
+			this.butDeleteSound.Text = "Delete";
+			this.butDeleteSound.Click += new System.EventHandler(this.butDeleteSound_Click);
 			// 
 			// butRecord
 			// 
@@ -266,6 +273,10 @@ namespace OpenDental{
 			this.butPlay.Text = "Play";
 			this.butPlay.Click += new System.EventHandler(this.butPlay_Click);
 			// 
+			// openFileDialog1
+			// 
+			this.openFileDialog1.FileName = "openFileDialog1";
+			// 
 			// butDelete
 			// 
 			this.butDelete.AdjustImageLocation = new System.Drawing.Point(0,0);
@@ -273,7 +284,6 @@ namespace OpenDental{
 			this.butDelete.Autosize = true;
 			this.butDelete.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butDelete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butDelete.Location = new System.Drawing.Point(45,400);
 			this.butDelete.Name = "butDelete";
@@ -319,19 +329,6 @@ namespace OpenDental{
 			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
-			// butDeleteSound
-			// 
-			this.butDeleteSound.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butDeleteSound.Autosize = true;
-			this.butDeleteSound.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butDeleteSound.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butDeleteSound.Location = new System.Drawing.Point(47,49);
-			this.butDeleteSound.Name = "butDeleteSound";
-			this.butDeleteSound.Size = new System.Drawing.Size(55,23);
-			this.butDeleteSound.TabIndex = 19;
-			this.butDeleteSound.Text = "Delete";
-			this.butDeleteSound.Click += new System.EventHandler(this.butDeleteSound_Click);
-			// 
 			// FormSigElementDefEdit
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
@@ -350,7 +347,6 @@ namespace OpenDental{
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.butCancel);
-			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "FormSigElementDefEdit";
@@ -452,7 +448,7 @@ namespace OpenDental{
 				if(!MsgBox.Show(this,true,"Delete?")) {
 					return;
 				}
-				ElementCur.Delete();
+				SigElementDefs.Delete(ElementCur);
 				DialogResult=DialogResult.OK;
 			}
 		}
@@ -472,10 +468,10 @@ namespace OpenDental{
 			ElementCur.LightRow=PIn.PInt(textLightRow.Text);
 			ElementCur.LightColor=butColor.BackColor;
 			if(IsNew){
-				ElementCur.Insert();
+				SigElementDefs.Insert(ElementCur);
 			}
 			else{
-				ElementCur.Update();
+				SigElementDefs.Update(ElementCur);
 			}
 			DialogResult=DialogResult.OK;
 		}

@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -158,9 +159,9 @@ You should run aging when you are done.";
 					proc.ProcDate=possibleDate;
 					proc.ProcFee=chargeList[i].ChargeAmt;
 					proc.ProcStatus=ProcStat.C;
-					proc.ProvNum=Prefs.GetInt("PracticeDefaultProv");
+					proc.ProvNum=PrefB.GetInt("PracticeDefaultProv");
 					proc.MedicalCode=ProcedureCodes.GetProcCode(proc.ADACode).MedicalCode;
-					proc.Insert();//no recall synch needed because dental offices don't use this feature
+					Procedures.Insert(proc);//no recall synch needed because dental offices don't use this feature
 					countAdded++;
 					possibleDate=possibleDate.AddMonths(1);
 				}

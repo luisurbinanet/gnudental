@@ -4,6 +4,7 @@ using System.Data;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -168,7 +169,7 @@ WHERE patient.patnum=rxpat.patnum && provider.provnum=rxpat.provnum
 
 			Queries.CurReport.Title="Prescriptions";
 			Queries.CurReport.SubTitle=new string[2];
-			Queries.CurReport.SubTitle[0]=((Pref)Prefs.HList["PracticeTitle"]).ValueString;
+			Queries.CurReport.SubTitle[0]=((Pref)PrefB.HList["PracticeTitle"]).ValueString;
 			if(radioPatient.Checked==true){
 				Queries.CurReport.SubTitle[1]="By Patient";
 			}

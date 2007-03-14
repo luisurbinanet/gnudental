@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -344,10 +345,10 @@ namespace OpenDental{
 			RefAttachCur.RefDate=PIn.PDate(textRefDate.Text); 
       RefAttachCur.ItemOrder=PIn.PInt(textOrder.Text);
 			if(IsNew){
-				RefAttachCur.Insert();
+				RefAttaches.Insert(RefAttachCur);
 			}
 			else{
-				RefAttachCur.Update();
+				RefAttaches.Update(RefAttachCur);
 			}
 			DialogResult=DialogResult.OK;
 		}

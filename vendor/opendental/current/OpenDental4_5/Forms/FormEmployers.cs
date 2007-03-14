@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -18,8 +19,8 @@ namespace OpenDental{
 		private OpenDental.UI.Button butEdit;
 		private System.Windows.Forms.ToolTip toolTip1;
 		private OpenDental.UI.Button butCombine;
-		///<summary>Set to true if using this dialog to select an employer.</summary>
-		public bool IsSelectMode;
+		//<summary>Set to true if using this dialog to select an employer.</summary>
+		//public bool IsSelectMode;
 
 		///<summary></summary>
 		public FormEmployers()
@@ -200,21 +201,22 @@ namespace OpenDental{
 			listEmp.Items.Clear();
 			for(int i=0;i<Employers.List.Length;i++){
 				listEmp.Items.Add(Employers.List[i].EmpName);
-				if(IsSelectMode && Employers.List[i].EmployerNum==Employers.Cur.EmployerNum){
-					listEmp.SetSelected(i,true);
-				}
+				//if(IsSelectMode && Employers.List[i].EmployerNum==Employers.Cur.EmployerNum){
+				//	listEmp.SetSelected(i,true);
+				//}
 			}
 		}
 
 		private void listEmp_DoubleClick(object sender, System.EventArgs e) {
 			if(listEmp.SelectedIndices.Count==0)
 				return;
-			Employers.Cur=Employers.List[listEmp.SelectedIndices[0]];
-			if(IsSelectMode){
-				DialogResult=DialogResult.OK;
-				return;
-			}
+			//EmployerCur=
+			//if(IsSelectMode){
+			//	DialogResult=DialogResult.OK;
+			//	return;
+			//}
 			FormEmployerEdit FormEE=new FormEmployerEdit();
+			FormEE.EmployerCur=Employers.List[listEmp.SelectedIndices[0]];
 			FormEE.ShowDialog();
 			if(FormEE.DialogResult!=DialogResult.OK)
 				return;
@@ -222,8 +224,8 @@ namespace OpenDental{
 		}
 
 		private void butAdd_Click(object sender, System.EventArgs e) {
-			Employers.Cur=new Employer();
 			FormEmployerEdit FormEE=new FormEmployerEdit();
+			FormEE.EmployerCur=new Employer();
 			FormEE.IsNew=true;
 			FormEE.ShowDialog();
 			FillGrid();
@@ -234,9 +236,9 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please select one item first."));
 				return;
 			}
-			Employers.Cur=Employers.List[listEmp.SelectedIndices[0]];
+			//Employers.Cur=;
 			//make sure no dependent patients:
-			string dependentNames=Employers.DependentPatients();
+			string dependentNames=Employers.DependentPatients(Employers.List[listEmp.SelectedIndices[0]]);
 			if(dependentNames!=""){
 				MessageBox.Show(Lan.g(this,"Not allowed to delete this employer because it it attached to "
 					+"the following patients.  You should combine employers instead.")
@@ -244,7 +246,7 @@ namespace OpenDental{
 					return;
 			}
 			//make sure no dependent insplans:
-			dependentNames=Employers.DependentInsPlans();
+			dependentNames=Employers.DependentInsPlans(Employers.List[listEmp.SelectedIndices[0]]);
 			if(dependentNames!=""){
 				MessageBox.Show(Lan.g(this,"Not allowed to delete this employer because it is attached to "
 					+"the following insurance plans.  You should combine employers instead.")
@@ -254,7 +256,7 @@ namespace OpenDental{
 			if(MessageBox.Show(Lan.g(this,"Delete Employer?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
 				return;
 			}
-			Employers.DeleteCur();
+			Employers.Delete(Employers.List[listEmp.SelectedIndices[0]]);
 			FillGrid();
 		}
 
@@ -263,8 +265,8 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please select one item first."));
 				return;
 			}
-			Employers.Cur=Employers.List[listEmp.SelectedIndices[0]];
 			FormEmployerEdit FormEE=new FormEmployerEdit();
+			FormEE.EmployerCur=Employers.List[listEmp.SelectedIndices[0]];
 			FormEE.ShowDialog();
 			if(FormEE.DialogResult!=DialogResult.OK)
 				return;
@@ -289,7 +291,7 @@ namespace OpenDental{
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			if(IsSelectMode){
+			/*if(IsSelectMode){
 				if(listEmp.SelectedIndices.Count!=1){
 					Employers.Cur=new Employer();
 					//MessageBox.Show(Lan.g(this,"Please select one item first."));
@@ -301,7 +303,7 @@ namespace OpenDental{
 			else{
 				//update the other computers:
 				//DataValid.SetInvalid();//not needed due to intelligent refreshing
-			}
+			}*/
 			DialogResult=DialogResult.OK;
 		}
 

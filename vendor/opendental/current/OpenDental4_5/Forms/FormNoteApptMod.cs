@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -105,7 +106,7 @@ namespace OpenDental{
 		private void butOK_Click(object sender, System.EventArgs e) {
 			Patient PatOld=PatCur.Copy();
 			PatCur.ApptModNote=textApptModNote.Text;
-			PatCur.Update(PatOld);
+			Patients.Update(PatCur,PatOld);
 			DialogResult=DialogResult.OK;
 		}
 

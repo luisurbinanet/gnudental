@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -179,12 +180,12 @@ Use Default Coverage will usually be unchecked even if 'Use Default Fee' is chec
 				return;
 			}
 			if(textFee.Text==""){
-				FeeCur.Delete();
+				Fees.Delete(FeeCur);
 			}
 			else{
 				FeeCur.Amount=PIn.PDouble(textFee.Text);
 				//Fee object always created and inserted externally first
-				FeeCur.Update();
+				Fees.Update(FeeCur);
 			}
 			//FeeCur.UseDefaultCov=checkDefCov.Checked;
 			//FeeCur.UseDefaultFee=checkDefFee.Checked;			
@@ -200,7 +201,7 @@ Use Default Coverage will usually be unchecked even if 'Use Default Fee' is chec
 				return;
 			}
 			if(IsNew){
-				FeeCur.Delete();
+				Fees.Delete(FeeCur);
 			}
 		}
 

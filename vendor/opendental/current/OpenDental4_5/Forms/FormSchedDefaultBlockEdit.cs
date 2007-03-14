@@ -4,6 +4,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Globalization;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -265,7 +266,7 @@ namespace OpenDental{
 				DialogResult=DialogResult.Cancel;
 			}
 			else{
-				SchedDefaultCur.Delete();
+				SchedDefaults.Delete(SchedDefaultCur);
 				DialogResult=DialogResult.OK;
 			}
 		}
@@ -291,7 +292,7 @@ namespace OpenDental{
 				}
 			}
 			try{
-				SchedDefaultCur.InsertOrUpdate(IsNew);
+				SchedDefaults.InsertOrUpdate(SchedDefaultCur,IsNew);
 			}
 			catch(Exception ex){
 				MessageBox.Show(ex.Message);

@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -207,7 +208,7 @@ namespace OpenDental{
 				DialogResult=DialogResult.Cancel;
 				return;
 			}
-			PayPeriodCur.Delete();
+			PayPeriods.Delete(PayPeriodCur);
 			DialogResult=DialogResult.OK;
 		}
 
@@ -227,10 +228,10 @@ namespace OpenDental{
 			PayPeriodCur.DateStop=PIn.PDate(textDateStop.Text);
 			PayPeriodCur.DatePaycheck=PIn.PDate(textDatePaycheck.Text);
 			if(IsNew){
-				PayPeriodCur.Insert();
+				PayPeriods.Insert(PayPeriodCur);
 			}
 			else{
-				PayPeriodCur.Update();
+				PayPeriods.Update(PayPeriodCur);
 			}
 			DialogResult=DialogResult.OK;
 		}

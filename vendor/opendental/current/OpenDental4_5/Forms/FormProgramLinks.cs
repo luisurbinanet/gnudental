@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -117,9 +118,9 @@ namespace OpenDental{
 		}
 
 		private void butAdd_Click(object sender, System.EventArgs e) {
-			Programs.Cur=new Program();
 			FormProgramLinkEdit FormPE=new FormProgramLinkEdit();
 			FormPE.IsNew=true;
+			FormPE.ProgramCur=new Program();
 			FormPE.ShowDialog();
 			changed=true;//because we don't really know what they did, so assume changed.
 			FillList();
@@ -128,8 +129,8 @@ namespace OpenDental{
 		private void listProgram_DoubleClick(object sender, System.EventArgs e) {
 			if(listProgram.SelectedIndex==-1)
 				return;
-			Programs.Cur=Programs.List[listProgram.SelectedIndex];
 			FormProgramLinkEdit FormPE=new FormProgramLinkEdit();
+			FormPE.ProgramCur=Programs.List[listProgram.SelectedIndex];
 			FormPE.ShowDialog();
 			changed=true;
 			FillList();

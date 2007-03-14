@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -6,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using NDde;
+using OpenDentBusiness;
 
 namespace OpenDental.Bridges{
 	/// <summary></summary>
@@ -27,8 +29,8 @@ namespace OpenDental.Bridges{
 		}
 
 		///<summary>Launches the program using the patient.Cur data.</summary>
-		public static void SendData(Patient pat){
-			ProgramProperties.GetForProgram();
+		public static void SendData(Program ProgramCur, Patient pat){
+			ArrayList ForProgram=ProgramProperties.GetForProgram(ProgramCur.ProgramNum);;
 			if(pat==null){
 				MessageBox.Show("Please select a patient first");
 				return;
@@ -49,8 +51,8 @@ namespace OpenDental.Bridges{
 			//command="Xray,PatientNo,FirstName,LastName,Birth Date,Sex,Address,City,State,Code"(zip)
 			string command="Xray,";
 			//PatientNo can be any string format up to 9 char
-			ProgramProperties.GetCur("Enter 0 to use PatientNum, or 1 to use ChartNum");
-			if(ProgramProperties.Cur.PropertyValue=="0"){
+			ProgramProperty PPCur=ProgramProperties.GetCur(ForProgram, "Enter 0 to use PatientNum, or 1 to use ChartNum");;
+			if(PPCur.PropertyValue=="0"){
 				command+=pat.PatNum.ToString()+",";
 			}
 			else{

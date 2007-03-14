@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -681,12 +682,14 @@ namespace OpenDental{
 		#endregion
 
 		private void FormScannerSetup_Load(object sender, System.EventArgs e) {
-			Prefs.Cur=(Pref)Prefs.HList["ScannerCompression"];
-			try{
-				trackQ.Value=Convert.ToInt32(Prefs.Cur.ValueString);
-			}
-			catch{}
-			textCropDelta.Text=((Pref)Prefs.HList["CropDelta"]).ValueString;
+			//Prefs.Cur=(Pref)PrefB.HList["ScannerCompression"];
+			//try{
+				//trackQ.Value=Convert.ToInt32(Prefs.Cur.ValueString);
+			//}
+			//catch{}
+			trackQ.Value=PrefB.GetInt("ScannerCompression");
+			//textCropDelta.Text=
+				//((Pref)PrefB.HList["CropDelta"]).ValueString;
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
@@ -696,20 +699,14 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please fix data entry errors first."));
 				return;
 			}
-			Prefs.Cur=(Pref)Prefs.HList["ScannerCompression"];
-			Prefs.Cur.ValueString=trackQ.Value.ToString();
-			Prefs.UpdateCur();
-			Prefs.Cur=(Pref)Prefs.HList["ScannerCompressionRadiographs"];
-			Prefs.Cur.ValueString=trackRadiographs.Value.ToString();
-			Prefs.UpdateCur();
-			Prefs.Cur=(Pref)Prefs.HList["ScannerCompressionPhotos"];
-			Prefs.Cur.ValueString=trackPhotos.Value.ToString();
-			Prefs.UpdateCur();
-			Prefs.Cur=(Pref)Prefs.HList["CropDelta"];
+			Prefs.UpdateInt("ScannerCompression",trackQ.Value);
+			Prefs.UpdateInt("ScannerCompressionRadiographs",trackRadiographs.Value);
+			Prefs.UpdateInt("ScannerCompressionPhotos",trackPhotos.Value);
+			
+			/*Prefs.Cur=(Pref)PrefB.HList["CropDelta"];
 			Prefs.Cur.ValueString=textCropDelta.Text;
-			Prefs.UpdateCur();
+			Prefs.UpdateCur();*/
 			DataValid.SetInvalid(InvalidTypes.Prefs);
-			//Defs.IsSelected=false;
 			DialogResult=DialogResult.OK;
 		}
 

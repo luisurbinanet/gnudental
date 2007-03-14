@@ -4,6 +4,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using OpenDental.UI;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -27,11 +28,13 @@ namespace OpenDental{
 		private CheckBox checkPremed;
 		private OpenDental.UI.Button butQuestions;
 		private Disease[] DiseaseList;
+		private PatientNote PatientNoteCur;
 
 		///<summary></summary>
-		public FormMedical(Patient patCur){
+		public FormMedical(PatientNote patientNoteCur,Patient patCur){
 			InitializeComponent();// Required for Windows Form Designer support
 			PatCur=patCur;
+			PatientNoteCur=patientNoteCur;
 			Lan.F(this);
 		}
 
@@ -111,7 +114,7 @@ namespace OpenDental{
 			this.textMedUrgNote.Location = new System.Drawing.Point(156,447);
 			this.textMedUrgNote.Multiline = true;
 			this.textMedUrgNote.Name = "textMedUrgNote";
-			this.textMedUrgNote.QuickPasteType = OpenDental.QuickPasteType.MedicalUrgent;
+			this.textMedUrgNote.QuickPasteType = QuickPasteType.MedicalUrgent;
 			this.textMedUrgNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textMedUrgNote.Size = new System.Drawing.Size(252,33);
 			this.textMedUrgNote.TabIndex = 53;
@@ -122,7 +125,7 @@ namespace OpenDental{
 			this.textService.Location = new System.Drawing.Point(156,558);
 			this.textService.Multiline = true;
 			this.textService.Name = "textService";
-			this.textService.QuickPasteType = OpenDental.QuickPasteType.ServiceNotes;
+			this.textService.QuickPasteType = QuickPasteType.ServiceNotes;
 			this.textService.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textService.Size = new System.Drawing.Size(252,83);
 			this.textService.TabIndex = 52;
@@ -133,7 +136,7 @@ namespace OpenDental{
 			this.textMedical.Location = new System.Drawing.Point(156,482);
 			this.textMedical.Multiline = true;
 			this.textMedical.Name = "textMedical";
-			this.textMedical.QuickPasteType = OpenDental.QuickPasteType.MedicalSummary;
+			this.textMedical.QuickPasteType = QuickPasteType.MedicalSummary;
 			this.textMedical.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textMedical.Size = new System.Drawing.Size(252,74);
 			this.textMedical.TabIndex = 51;
@@ -195,7 +198,7 @@ namespace OpenDental{
 			this.textMedicalComp.Location = new System.Drawing.Point(422,232);
 			this.textMedicalComp.Multiline = true;
 			this.textMedicalComp.Name = "textMedicalComp";
-			this.textMedicalComp.QuickPasteType = OpenDental.QuickPasteType.MedicalHistory;
+			this.textMedicalComp.QuickPasteType = QuickPasteType.MedicalHistory;
 			this.textMedicalComp.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textMedicalComp.Size = new System.Drawing.Size(530,409);
 			this.textMedicalComp.TabIndex = 54;
@@ -302,9 +305,9 @@ namespace OpenDental{
 		private void FormMedical_Load(object sender, System.EventArgs e){
 			checkPremed.Checked=PatCur.Premed;
 			textMedUrgNote.Text=PatCur.MedUrgNote;
-			textMedical.Text=PatientNotes.Cur.Medical;
-			textMedicalComp.Text=PatientNotes.Cur.MedicalComp;
-			textService.Text=PatientNotes.Cur.Service;
+			textMedical.Text=PatientNoteCur.Medical;
+			textMedicalComp.Text=PatientNoteCur.MedicalComp;
+			textService.Text=PatientNoteCur.Service;
 			FillMeds();
 			FillDiseases();
 			if(Questions.PatHasQuest(PatCur.PatNum)){
@@ -342,8 +345,8 @@ namespace OpenDental{
 		}
 
 		private void gridMeds_CellDoubleClick(object sender,ODGridClickEventArgs e) {
-			MedicationPats.Cur=MedicationPats.List[e.Row];
 			FormMedPat FormMP=new FormMedPat();
+			FormMP.MedicationPatCur=MedicationPats.List[e.Row];
 			FormMP.ShowDialog();
 			FillMeds();
 		}
@@ -356,10 +359,11 @@ namespace OpenDental{
 			if(FormM.DialogResult!=DialogResult.OK){
 				return;
 			}
-			MedicationPats.Cur=new MedicationPat();
-			MedicationPats.Cur.PatNum=PatCur.PatNum;
-			MedicationPats.Cur.MedicationNum=FormM.MedicationNum;
+			MedicationPat MedicationPatCur=new MedicationPat();
+			MedicationPatCur.PatNum=PatCur.PatNum;
+			MedicationPatCur.MedicationNum=FormM.MedicationNum;
 			FormMedPat FormMP=new FormMedPat();
+			FormMP.MedicationPatCur=MedicationPatCur;
 			FormMP.IsNew=true;
 			FormMP.ShowDialog();
 			if(FormMP.DialogResult!=DialogResult.OK){
@@ -417,11 +421,11 @@ namespace OpenDental{
 			Patient PatOld=PatCur.Copy();
 			PatCur.Premed=checkPremed.Checked;
 			PatCur.MedUrgNote=textMedUrgNote.Text;
-			PatCur.Update(PatOld);
-			PatientNotes.Cur.Medical=textMedical.Text;
-			PatientNotes.Cur.Service=textService.Text;
-			PatientNotes.Cur.MedicalComp=textMedicalComp.Text;
-			PatientNotes.UpdateCur(PatCur.Guarantor);
+			Patients.Update(PatCur,PatOld);
+			PatientNoteCur.Medical=textMedical.Text;
+			PatientNoteCur.Service=textService.Text;
+			PatientNoteCur.MedicalComp=textMedicalComp.Text;
+			PatientNotes.Update(PatientNoteCur, PatCur.Guarantor);
 			DialogResult=DialogResult.OK;
 		}
 

@@ -4,6 +4,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using OpenDental.UI;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -157,7 +158,7 @@ namespace OpenDental{
 			Reconcile rec=new Reconcile();
 			rec.DateReconcile=DateTime.Today;
 			rec.AccountNum=AccountNum;
-			rec.Insert();
+			Reconciles.Insert(rec);
 			FormReconcileEdit FormR=new FormReconcileEdit(rec);
 			FormR.IsNew=true;
 			FormR.ShowDialog();

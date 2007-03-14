@@ -1,101 +1,112 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
+using System.Security;
+using System.Security.Cryptography;
+using System.Text;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
-
-	///<summary>Users are a completely separate entity from Providers and Employees.  A usernumber can never be changed, ensuring a permanent way to record database entries and leave an audit trail.  A provider or employee can have multiple user entries for different situations.  You can also have users who are neither providers or employees.</summary>
-	public class User{
-		///<summary>Primary key.</summary>
-		public int UserNum;
-		///<summary>.</summary>
-		public string UserName;
-		///<summary>The password hash, not the actual password.  If no password has been entered, then this will be blank.</summary>
-		public string Password;
-		///<summary>FK to usergroup.UserGroupNum.  Every user belongs to exactly one user group.  Th usergroup determines the permissions.</summary>
-		public int UserGroupNum;
-		///<summary>FK to employee.EmployeeNum.  Used for timecards to block access by other users.</summary>
-		public int EmployeeNum;
+	///<summary></summary>
+	public class Users {
+		///<summary>A list of all users.</summary>
+		public static List<User> Listt;
 
 		///<summary></summary>
-		public User Copy(){
-			User u=new User();
-			u.UserNum=UserNum;
-			u.UserName=UserName;
-			u.Password=Password;
-			u.UserGroupNum=UserGroupNum;
-			u.EmployeeNum=EmployeeNum;
-			return u;
+		public static void Refresh() {
+			try {
+				if(RemotingClient.OpenDentBusinessIsLocal) {
+					UserB.Refresh();
+				}
+				else {
+					DtoUserRefresh dto=new DtoUserRefresh();
+					DataSet ds=RemotingClient.ProcessQuery(dto);
+					UserB.RawData=ds.Tables[0];
+				}
+			}
+			catch(Exception e) {
+				MessageBox.Show(e.Message);
+				return;
+			}
+			Listt=new List<User>();//[UserB.RawData.Rows.Count];
+			User user;
+			for(int i=0;i<UserB.RawData.Rows.Count;i++) {
+				user=new User();
+				user.UserNum       = PIn.PInt   (UserB.RawData.Rows[i][0].ToString());
+				user.UserName      = PIn.PString(UserB.RawData.Rows[i][1].ToString());
+				user.Password      = PIn.PString(UserB.RawData.Rows[i][2].ToString());
+				user.UserGroupNum  = PIn.PInt   (UserB.RawData.Rows[i][3].ToString());
+				user.EmployeeNum   = PIn.PInt   (UserB.RawData.Rows[i][4].ToString());
+				Listt.Add(user);
+			}
 		}
 
+
 		///<summary></summary>
-		private void Update(){
+		private static void Update(User user){
 			string command= "UPDATE user SET " 
-				+"UserName = '"      +POut.PString(UserName)+"'"
-				+",Password = '"     +POut.PString(Password)+"'"
-				+",UserGroupNum = '" +POut.PInt   (UserGroupNum)+"'"
-				+",EmployeeNum = '"  +POut.PInt   (EmployeeNum)+"'"
-				+" WHERE UserNum = '"+POut.PInt   (UserNum)+"'";
-			//MessageBox.Show(cmd.CommandText);
-			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command);
+				+"UserName = '"      +POut.PString(user.UserName)+"'"
+				+",Password = '"     +POut.PString(user.Password)+"'"
+				+",UserGroupNum = '" +POut.PInt   (user.UserGroupNum)+"'"
+				+",EmployeeNum = '"  +POut.PInt   (user.EmployeeNum)+"'"
+				+" WHERE UserNum = '"+POut.PInt   (user.UserNum)+"'";
+ 			General.NonQ(command);
 		}
 
 		///<summary></summary>
-		private void Insert(){
+		private static void Insert(User user){
 			string command= "INSERT INTO user (UserName,Password,UserGroupNum,EmployeeNum) VALUES("
-				+"'"+POut.PString(UserName)+"', "
-				+"'"+POut.PString(Password)+"', "
-				+"'"+POut.PInt   (UserGroupNum)+"', "
-				+"'"+POut.PInt   (EmployeeNum)+"')";
-			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command,true);
-			UserNum=dcon.InsertID;
+				+"'"+POut.PString(user.UserName)+"', "
+				+"'"+POut.PString(user.Password)+"', "
+				+"'"+POut.PInt   (user.UserGroupNum)+"', "
+				+"'"+POut.PInt   (user.EmployeeNum)+"')";
+ 			user.UserNum=General.NonQ(command,true);
 		}
 
 		///<summary></summary>
-		public void InsertOrUpdate(bool isNew){
+		public static void InsertOrUpdate(bool isNew,User user){
 			//make sure username is not already taken
 			string command;
 			if(isNew){
-				command="SELECT COUNT(*) FROM user WHERE UserName='"+POut.PString(UserName)+"'";
+				command="SELECT COUNT(*) FROM user WHERE UserName='"+POut.PString(user.UserName)+"'";
 			}
 			else{
-				command="SELECT COUNT(*) FROM user WHERE UserName='"+POut.PString(UserName)+"' "
-					+"AND UserNum !="+POut.PInt(UserNum);//it's ok if the name matches the current username
+				command="SELECT COUNT(*) FROM user WHERE UserName='"+POut.PString(user.UserName)+"' "
+					+"AND UserNum !="+POut.PInt(user.UserNum);//it's ok if the name matches the current username
 			}
-			DataConnection dcon=new DataConnection();
-			DataTable table=dcon.GetTable(command);
+			DataTable table=General.GetTable(command);
 			if(table.Rows[0][0].ToString()!="0"){
-				throw new Exception(Lan.g(this,"UserName already in use."));
+				throw new Exception(Lan.g("Users","UserName already in use."));
 			}
 			//make sure that there would still be at least one user with security admin permissions
 			if(!isNew){
 				command="SELECT COUNT(*) FROM grouppermission "
 					+"WHERE PermType='"+POut.PInt((int)Permissions.SecurityAdmin)+"' "
-					+"AND UserGroupNum="+POut.PInt(UserGroupNum);
-				if(dcon.GetCount(command)=="0"){//if this user would not have admin
+					+"AND UserGroupNum="+POut.PInt(user.UserGroupNum);
+				if(General.GetCount(command)=="0"){//if this user would not have admin
 					//make sure someone else has admin
 					command="SELECT COUNT(*) FROM user,grouppermission "
 						+"WHERE grouppermission.PermType='"+POut.PInt((int)Permissions.SecurityAdmin)+"'"
 						+" AND user.UserGroupNum=grouppermission.UserGroupNum"
-						+" AND user.UserNum != "+POut.PInt(UserNum);
-					if(dcon.GetCount(command)=="0"){//there are no other users with this permission
-						throw new Exception(Lan.g(this,"At least one user must have Security Admin permission."));
+						+" AND user.UserNum != "+POut.PInt(user.UserNum);
+					if(General.GetCount(command)=="0"){//there are no other users with this permission
+						throw new Exception(Lan.g("Users","At least one user must have Security Admin permission."));
 					}
 				}
 			}
 			if(isNew){
-				Insert();
+				Insert(user);
 			}
 			else{
-				Update();
+				Update(user);
 			}
 		}
 
+		/*  Too dangerous.
 		///<summary></summary>
-		public void Delete(){
+		public static void Delete(User user){
 			//check to make sure this is not the last user with security admin permissions
 			string command="SELECT COUNT(*) FROM user,grouppermission "
 				+"WHERE grouppermission.PermType='"+POut.PInt((int)Permissions.SecurityAdmin)+"'"
@@ -113,35 +124,19 @@ namespace OpenDental{
 				throw new Exception(Lan.g(this,"User cannot be deleted because they have already been recorded in the security log."));
 			}
 			command="DELETE from user WHERE UserNum = "+POut.PInt(UserNum);
- 			dcon.NonQ(command);
-		}
+ 			General.NonQ(command);
+		}*/
 
-
-
-	}
-
-	/*=========================================================================================
-	=================================== class Users==========================================*/
-	///<summary></summary>
-	public class Users{
-		///<summary>A list of all users.</summary>
-		public static User[] List;   
-
+		/*
 		///<summary></summary>
-		public static void Refresh(){
-			string command="SELECT * from user ORDER BY UserName";
-			DataConnection dcon=new DataConnection();
- 			DataTable table=dcon.GetTable(command);
-			List=new User[table.Rows.Count];
-			for(int i=0;i<List.Length;i++){
-				List[i]=new User();
-				List[i].UserNum       = PIn.PInt   (table.Rows[i][0].ToString());
-				List[i].UserName      = PIn.PString(table.Rows[i][1].ToString());
-				List[i].Password      = PIn.PString(table.Rows[i][2].ToString());	
-				List[i].UserGroupNum  = PIn.PInt   (table.Rows[i][3].ToString());
-				List[i].EmployeeNum   = PIn.PInt   (table.Rows[i][4].ToString());
+		public static User GetUser(int userNum) {
+			for(int i=0;i<Listt.Count;i++) {
+				if(Listt[i].UserNum==userNum) {
+					return Listt[i].Copy();
+				}
 			}
-		}
+			return null;
+		}*/
 
 		/*
 		///<summary>Displays user/password dialog.  Returns a valid authenticated user or null.  Pass in the English string to display.  It will get converted to other languages just before display.</summary>
@@ -155,26 +150,17 @@ namespace OpenDental{
 		}*/
 
 		///<summary>Used in FormSecurity.FillTreeUsers</summary>
-		public static User[] GetForGroup(int userGroupNum){
-			ArrayList al=new ArrayList();
-			for(int i=0;i<List.Length;i++){
-				if(List[i].UserGroupNum==userGroupNum){
-					al.Add(List[i]);
+		public static List<User> GetForGroup(int userGroupNum){
+			//ArrayList al=new ArrayList();
+			List<User> retVal=new List<User>();
+			for(int i=0;i<Listt.Count;i++){
+				if(Listt[i].UserGroupNum==userGroupNum){
+					retVal.Add(Listt[i]);
 				}
 			}
-			User[] retVal=new User[al.Count];
-			al.CopyTo(retVal);
+			//User[] retVal=new User[al.Count];
+			//al.CopyTo(retVal);
 			return retVal;
-		}
-
-		///<summary></summary>
-		public static User GetUser(int userNum){
-			for(int i=0;i<List.Length;i++){
-				if(List[i].UserNum==userNum){
-					return List[i].Copy();
-				}
-			}
-			return null;
 		}
 
 		///<summary>This always returns one admin user.  There must be one and there is rarely more than one.  Only used on startup to determine if security is being used.</summary>
@@ -184,14 +170,34 @@ namespace OpenDental{
 				if(GroupPermissions.List[i].PermType!=Permissions.SecurityAdmin) {
 					continue;
 				}
-				for(int j=0;j<Users.List.Length;j++) {
-					if(Users.List[j].UserGroupNum==GroupPermissions.List[i].UserGroupNum) {
-						return Users.List[j];
+				for(int j=0;j<Users.Listt.Count;j++) {
+					if(Users.Listt[j].UserGroupNum==GroupPermissions.List[i].UserGroupNum) {
+						return Users.Listt[j];
 					}
 				}
 			}
 			return null;//will never happen
 		}
+
+		/*
+		///<summary></summary>
+		public static string EncryptPassword(string inputPass) {
+			if(inputPass==""){
+				return "";
+			}
+			HashAlgorithm hash=HashAlgorithm.Create("MD5");
+			byte[] unicodeBytes=Encoding.Unicode.GetBytes(inputPass);
+			byte[] hashbytes=hash.ComputeHash(unicodeBytes);
+			return Convert.ToBase64String(hashbytes);
+		}
+
+		///<summary></summary>
+		public static bool CheckPassword(string inputPass,string hashedPass) {
+			string hashedInput=EncryptPassword(inputPass);
+			//MessageBox.Show(
+			//Debug.WriteLine(hashedInput+","+hashedPass);
+			return hashedInput==hashedPass;
+		}*/
 
 		
 

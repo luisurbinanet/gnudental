@@ -4,7 +4,7 @@ using System.Drawing.Printing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
-//using OpenDental.Reporting;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -115,7 +115,7 @@ namespace OpenDental{
 			this.textBodyText.Location = new System.Drawing.Point(99, 32);
 			this.textBodyText.Multiline = true;
 			this.textBodyText.Name = "textBodyText";
-			this.textBodyText.QuickPasteType = OpenDental.QuickPasteType.Email;
+			this.textBodyText.QuickPasteType = QuickPasteType.Email;
 			this.textBodyText.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textBodyText.Size = new System.Drawing.Size(741, 426);
 			this.textBodyText.TabIndex = 4;
@@ -156,10 +156,10 @@ namespace OpenDental{
 			ETcur.Subject=textSubject.Text;
 			ETcur.BodyText=textBodyText.Text;
 			if(IsNew){
-				ETcur.Insert();
+				EmailTemplates.Insert(ETcur);
 			}
 			else{
-				ETcur.Update();
+				EmailTemplates.Update(ETcur);
 			}
 			DialogResult=DialogResult.OK;
 		}

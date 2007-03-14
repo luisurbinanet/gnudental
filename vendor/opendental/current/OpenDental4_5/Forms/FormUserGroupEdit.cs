@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -156,7 +157,7 @@ namespace OpenDental{
 				return;
 			}
 			try{
-				CurGroup.Delete();
+				UserGroups.Delete(CurGroup);
 				DialogResult=DialogResult.OK;
 			}
 			catch(Exception ex){
@@ -171,7 +172,7 @@ namespace OpenDental{
 			}
 			CurGroup.Description=textDescription.Text;
 			try{
-				CurGroup.InsertOrUpdate(IsNew);
+				UserGroups.InsertOrUpdate(CurGroup,IsNew);
 			}
 			catch(Exception ex){
 				MessageBox.Show(ex.Message);

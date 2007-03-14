@@ -9,7 +9,8 @@ using System.ServiceProcess;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-using MySql.Data.MySqlClient;
+//using MySql.Data.MySqlClient;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -376,11 +377,11 @@ namespace OpenDental{
 
 		private void FormBackup_Load(object sender, System.EventArgs e) {
 			//already include the \
-			textBackupFromPath.Text=Prefs.GetString("BackupFromPath");
-			textBackupToPath.Text=Prefs.GetString("BackupToPath");
-			textBackupRestoreFromPath.Text=Prefs.GetString("BackupRestoreFromPath");
-			textBackupRestoreToPath.Text=Prefs.GetString("BackupRestoreToPath");
-			textBackupRestoreAtoZToPath.Text=Prefs.GetString("BackupRestoreAtoZToPath");
+			textBackupFromPath.Text=PrefB.GetString("BackupFromPath");
+			textBackupToPath.Text=PrefB.GetString("BackupToPath");
+			textBackupRestoreFromPath.Text=PrefB.GetString("BackupRestoreFromPath");
+			textBackupRestoreToPath.Text=PrefB.GetString("BackupRestoreToPath");
+			textBackupRestoreAtoZToPath.Text=PrefB.GetString("BackupRestoreAtoZToPath");
 		}
 
 		private void butBrowseFrom_Click(object sender, System.EventArgs e) {
@@ -466,11 +467,11 @@ namespace OpenDental{
 				return;
 			}
 			//test saving defaults
-			if(textBackupFromPath.Text!=Prefs.GetString("BackupFromPath")
-				|| textBackupToPath.Text!=Prefs.GetString("BackupToPath")
-				|| textBackupRestoreFromPath.Text!=Prefs.GetString("BackupRestoreFromPath")
-				|| textBackupRestoreToPath.Text!=Prefs.GetString("BackupRestoreToPath")
-				|| textBackupRestoreAtoZToPath.Text!=Prefs.GetString("BackupRestoreAtoZToPath"))
+			if(textBackupFromPath.Text!=PrefB.GetString("BackupFromPath")
+				|| textBackupToPath.Text!=PrefB.GetString("BackupToPath")
+				|| textBackupRestoreFromPath.Text!=PrefB.GetString("BackupRestoreFromPath")
+				|| textBackupRestoreToPath.Text!=PrefB.GetString("BackupRestoreToPath")
+				|| textBackupRestoreAtoZToPath.Text!=PrefB.GetString("BackupRestoreAtoZToPath"))
 			{
 				if(MsgBox.Show(this,true,"Set as default?")){
 					Prefs.UpdateString("BackupFromPath",textBackupFromPath.Text);
@@ -481,7 +482,7 @@ namespace OpenDental{
 					DataValid.SetInvalid(InvalidTypes.Prefs);
 				}
 			}
-			string dbName=FormChooseDatabase.Database;
+			string dbName=MiscData.GetCurrentDatabase();
 			if(!Directory.Exists(textBackupFromPath.Text+dbName)){// C:\mysql\data\opendental
 				MsgBox.Show(this,"Backup FROM path is invalid.");
 				return;
@@ -513,16 +514,16 @@ namespace OpenDental{
 			Invoke(new PassProgressDelegate(PassProgressToDialog),new object [] { curVal,
 				Lan.g(this,"Preparing to copy database"),//this happens very fast and probably won't be noticed.
 				100 });//max of 100 keeps dlg from closing
-			string dbName=FormChooseDatabase.Database;
+			string dbName=MiscData.GetCurrentDatabase();
 			double dbSize=GetFileSizes(textBackupFromPath.Text+dbName)/1024;
 			//lower level objects are used here to prevent closing the connection.
-			MySqlConnection con=new MySqlConnection(FormChooseDatabase.GetConnectionString());
-			MySqlCommand cmd=new MySqlCommand();
-			cmd.Connection=con;
-			cmd.CommandText="FLUSH TABLES WITH READ LOCK";//locks all tables for all databases 
-			con.Open();
+			//MySqlConnection con=new MySqlConnection(FormChooseDatabase.GetConnectionString());
+			//MySqlCommand cmd=new MySqlCommand();
+			//cmd.Connection=con;
+			//cmd.CommandText="FLUSH TABLES WITH READ LOCK";//locks all tables for all databases 
+			//con.Open();
 			try{
-				cmd.ExecuteNonQuery();
+				//cmd.ExecuteNonQuery();
 				if(Directory.Exists(textBackupToPath.Text+dbName)){// D:\opendental
 					Directory.Delete(textBackupToPath.Text+dbName,true);
 				}
@@ -542,18 +543,18 @@ namespace OpenDental{
 							dbSize});
 					}
 				}
-				cmd.CommandText="UNLOCK TABLES";//might not be needed if con is actually closed.
-				cmd.ExecuteNonQuery();
+				//cmd.CommandText="UNLOCK TABLES";//might not be needed if con is actually closed.
+				//cmd.ExecuteNonQuery();
 			}
 			catch{//for instance, if abort.
-				con.Close();
-				con.Dispose();
+				//con.Close();
+				//con.Dispose();
 				return;
 			}
-			con.Close();
-			con.Dispose();
+			//con.Close();
+			//con.Dispose();
 			//A to Z folder------------------------------------------------------------------------------------
-			string atozFull=Prefs.GetString("DocPath");
+			string atozFull=PrefB.GetString("DocPath");
 			//remove the trailing \
 			atozFull=atozFull.Substring(0,atozFull.Length-1);// C:\OpenDentalData
 			string atozDir=atozFull.Substring(atozFull.LastIndexOf(Path.DirectorySeparatorChar)+1);//OpenDentalData
@@ -727,7 +728,7 @@ namespace OpenDental{
 				return;
 			}
 			//pointless to save defaults
-			string dbName=FormChooseDatabase.Database;
+			string dbName=MiscData.GetCurrentDatabase();
 			if(!Directory.Exists(textBackupRestoreFromPath.Text+dbName)){// D:\opendental
 				MsgBox.Show(this,"Restore FROM path is invalid.");
 				return;
@@ -826,8 +827,7 @@ namespace OpenDental{
 				sw.Write(tableData.ToString());
 			}
 			string command="LOAD DATA INFILE '"+tempFile.Replace("\\","/")+"' INTO TABLE "+tableName;
-			DataConnection dcon=new DataConnection();
-			dcon.NonQ(command);
+			General.NonQ(command);
 		}
 
 		private void butSave_Click(object sender, System.EventArgs e) {
@@ -852,11 +852,11 @@ namespace OpenDental{
 				MsgBox.Show(this,"Paths must end with \\.");
 				return;
 			}
-			if(textBackupFromPath.Text!=Prefs.GetString("BackupFromPath")
-				|| textBackupToPath.Text!=Prefs.GetString("BackupToPath")
-				|| textBackupRestoreFromPath.Text!=Prefs.GetString("BackupRestoreFromPath")
-				|| textBackupRestoreToPath.Text!=Prefs.GetString("BackupRestoreToPath")
-				|| textBackupRestoreAtoZToPath.Text!=Prefs.GetString("BackupRestoreAtoZToPath"))
+			if(textBackupFromPath.Text!=PrefB.GetString("BackupFromPath")
+				|| textBackupToPath.Text!=PrefB.GetString("BackupToPath")
+				|| textBackupRestoreFromPath.Text!=PrefB.GetString("BackupRestoreFromPath")
+				|| textBackupRestoreToPath.Text!=PrefB.GetString("BackupRestoreToPath")
+				|| textBackupRestoreAtoZToPath.Text!=PrefB.GetString("BackupRestoreAtoZToPath"))
 			{
 				Prefs.UpdateString("BackupFromPath",textBackupFromPath.Text);
 				Prefs.UpdateString("BackupToPath",textBackupToPath.Text);

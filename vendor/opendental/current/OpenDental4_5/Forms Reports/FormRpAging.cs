@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	///<summary></summary>
@@ -264,9 +265,9 @@ namespace OpenDental{
 		#endregion
 
 		private void FormAging_Load(object sender, System.EventArgs e) {
-			textDate.Text=(PIn.PDate(Prefs.GetString("DateLastAging"))).ToShortDateString();
-			if(PIn.PDate(Prefs.GetString("DateLastAging")) < DateTime.Today){
-				if(MsgBox.Show(this,true,"Update aging first?")){
+			textDate.Text=(PIn.PDate(PrefB.GetString("DateLastAging"))).ToShortDateString();
+			if(PIn.PDate(PrefB.GetString("DateLastAging")) < DateTime.Today){
+				if(MessageBox.Show(Lan.g(this,"Update aging first?"),"",MessageBoxButtons.YesNo)==DialogResult.Yes){
 					FormAging FormA=new FormAging();
 					FormA.ShowDialog();
 					if(FormA.DialogResult==DialogResult.OK){
@@ -359,7 +360,7 @@ namespace OpenDental{
 			FormQuery2.SubmitReportQuery();		
 			Queries.CurReport.Title="AGING REPORT";
 			Queries.CurReport.SubTitle=new string[4];
-			Queries.CurReport.SubTitle[0]=((Pref)Prefs.HList["PracticeTitle"]).ValueString;
+			Queries.CurReport.SubTitle[0]=((Pref)PrefB.HList["PracticeTitle"]).ValueString;
 			Queries.CurReport.SubTitle[1]="As of "+textDate.Text;
 			if(radioAny.Checked){
 				Queries.CurReport.SubTitle[2]="Any Balance";

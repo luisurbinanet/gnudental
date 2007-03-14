@@ -5,6 +5,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -93,6 +94,7 @@ namespace OpenDental{
 		//private int pagesPrinted;
 		private ArrayList MissingTeeth;
 		private Patient PatCur;
+		private PerioExam PerioExamCur;
 
 		///<summary></summary>
 		public FormPerio(Patient patCur)
@@ -1037,12 +1039,12 @@ namespace OpenDental{
 			butColorPus.BackColor=Defs.Short[(int)DefCat.MiscColors][2].ItemColor;
 			butColorPlaque.BackColor=Defs.Short[(int)DefCat.MiscColors][4].ItemColor;
 			butColorCalculus.BackColor=Defs.Short[(int)DefCat.MiscColors][5].ItemColor;
-			textRedProb.Text=((Pref)Prefs.HList["PerioRedProb"]).ValueString;
-			textRedMGJ.Text =((Pref)Prefs.HList["PerioRedMGJ"] ).ValueString;
-			textRedGing.Text=((Pref)Prefs.HList["PerioRedGing"]).ValueString;
-			textRedCAL.Text =((Pref)Prefs.HList["PerioRedCAL"] ).ValueString;
-			textRedFurc.Text=((Pref)Prefs.HList["PerioRedFurc"]).ValueString;
-			textRedMob.Text =((Pref)Prefs.HList["PerioRedMob"] ).ValueString;
+			textRedProb.Text=((Pref)PrefB.HList["PerioRedProb"]).ValueString;
+			textRedMGJ.Text =((Pref)PrefB.HList["PerioRedMGJ"] ).ValueString;
+			textRedGing.Text=((Pref)PrefB.HList["PerioRedGing"]).ValueString;
+			textRedCAL.Text =((Pref)PrefB.HList["PerioRedCAL"] ).ValueString;
+			textRedFurc.Text=((Pref)PrefB.HList["PerioRedFurc"]).ValueString;
+			textRedMob.Text =((Pref)PrefB.HList["PerioRedMob"] ).ValueString;
 			//Procedure[] procList=Procedures.Refresh(PatCur.PatNum);
 			ToothInitial[] initialList=ToothInitials.Refresh(PatCur.PatNum);
 			MissingTeeth=ToothInitials.GetMissingOrHiddenTeeth(initialList);
@@ -1055,6 +1057,7 @@ namespace OpenDental{
 		private void RefreshListExams(){
 			//most recent date at the bottom
 			PerioExams.Refresh(PatCur.PatNum);
+			PerioMeasures.Refresh(PatCur.PatNum);
 			listExams.Items.Clear();
 			for(int i=0;i<PerioExams.List.Length;i++){
 				listExams.Items.Add(PerioExams.List[i].ExamDate.ToShortDateString()+"   "
@@ -1065,7 +1068,7 @@ namespace OpenDental{
 		///<summary>Usually set the selected index first</summary>
 		private void FillGrid(){
 			if(listExams.SelectedIndex!=-1){
-				PerioExams.Cur=PerioExams.List[listExams.SelectedIndex];
+				PerioExamCur=PerioExams.List[listExams.SelectedIndex];
 			}
 			gridP.SelectedExam=listExams.SelectedIndex;
 			gridP.LoadData();
@@ -1079,9 +1082,10 @@ namespace OpenDental{
 			if(listExams.SelectedIndex==gridP.SelectedExam)
 				return;
 			//Only continues if clicked on other than current exam
-			gridP.SaveCurExam();
+			gridP.SaveCurExam(PerioExamCur.PerioExamNum);
 			//no need to RefreshListExams because it has not changed
 			PerioExams.Refresh(PatCur.PatNum);//refresh instead
+			PerioMeasures.Refresh(PatCur.PatNum);
 			FillGrid();
 		}
 
@@ -1091,9 +1095,11 @@ namespace OpenDental{
 			if(listExams.SelectedIndex==-1)
 				return;
 			//a PerioExam.Cur will always have been set through mousedown(or similar),then FillGrid
-			gridP.SaveCurExam();
+			gridP.SaveCurExam(PerioExamCur.PerioExamNum);
 			PerioExams.Refresh(PatCur.PatNum);//list will not change
+			PerioMeasures.Refresh(PatCur.PatNum);
 			FormPerioEdit FormPE=new FormPerioEdit();
+			FormPE.PerioExamCur=PerioExamCur;
 			FormPE.ShowDialog();
 			int curIndex=listExams.SelectedIndex;
 			RefreshListExams();
@@ -1103,13 +1109,13 @@ namespace OpenDental{
 
 		private void butAdd_Click(object sender, System.EventArgs e) {
 			if(listExams.SelectedIndex!=-1){
-				gridP.SaveCurExam();
+				gridP.SaveCurExam(PerioExamCur.PerioExamNum);
 			}
-			PerioExams.Cur=new PerioExam();
-			PerioExams.Cur.PatNum=PatCur.PatNum;
-			PerioExams.Cur.ExamDate=DateTime.Today;
-			PerioExams.Cur.ProvNum=PatCur.PriProv;
-			PerioExams.InsertCur();
+			PerioExamCur=new PerioExam();
+			PerioExamCur.PatNum=PatCur.PatNum;
+			PerioExamCur.ExamDate=DateTime.Today;
+			PerioExamCur.ProvNum=PatCur.PriProv;
+			PerioExams.Insert(PerioExamCur);
 			ArrayList skippedTeeth=new ArrayList();//int 1-32
 			if(PerioExams.List.Length==0){
 				for(int i=0;i<MissingTeeth.Count;i++){
@@ -1125,7 +1131,7 @@ namespace OpenDental{
 				skippedTeeth=PerioMeasures.GetSkipped
 					(PerioExams.List[PerioExams.List.Length-1].PerioExamNum);
 			}
-			PerioMeasures.SetSkipped(skippedTeeth);
+			PerioMeasures.SetSkipped(PerioExamCur.PerioExamNum,skippedTeeth);
 			RefreshListExams();
 			listExams.SelectedIndex=PerioExams.List.Length-1;
 			FillGrid();
@@ -1140,7 +1146,7 @@ namespace OpenDental{
 				return;
 			}
 			int curselected=listExams.SelectedIndex;
-			PerioExams.DeleteCur();
+			PerioExams.Delete(PerioExamCur);
 			RefreshListExams();
 			if(curselected < listExams.Items.Count)
 				listExams.SelectedIndex=curselected;
@@ -1273,9 +1279,9 @@ namespace OpenDental{
 				return;
 			}
 			butColorBleed.BackColor=colorDialog1.Color;
-			Defs.Cur=Defs.Short[(int)DefCat.MiscColors][1];
-			Defs.Cur.ItemColor=colorDialog1.Color;
-			Defs.UpdateCur();
+			Def DefCur=Defs.Short[(int)DefCat.MiscColors][1].Copy();
+			DefCur.ItemColor=colorDialog1.Color;
+			Defs.Update(DefCur);
 			Defs.Refresh();
 			localDefsChanged=true;
 			gridP.SetColors();
@@ -1289,9 +1295,9 @@ namespace OpenDental{
 				return;
 			}
 			butColorPus.BackColor=colorDialog1.Color;
-			Defs.Cur=Defs.Short[(int)DefCat.MiscColors][2];
-			Defs.Cur.ItemColor=colorDialog1.Color;
-			Defs.UpdateCur();
+			Def DefCur=Defs.Short[(int)DefCat.MiscColors][2].Copy();
+			DefCur.ItemColor=colorDialog1.Color;
+			Defs.Update(DefCur);
 			Defs.Refresh();
 			localDefsChanged=true;
 			gridP.SetColors();
@@ -1305,9 +1311,9 @@ namespace OpenDental{
 				return;
 			}
 			butColorPlaque.BackColor=colorDialog1.Color;
-			Defs.Cur=Defs.Short[(int)DefCat.MiscColors][4];
-			Defs.Cur.ItemColor=colorDialog1.Color;
-			Defs.UpdateCur();
+			Def DefCur=Defs.Short[(int)DefCat.MiscColors][4].Copy();
+			DefCur.ItemColor=colorDialog1.Color;
+			Defs.Update(DefCur);
 			Defs.Refresh();
 			localDefsChanged=true;
 			gridP.SetColors();
@@ -1321,9 +1327,9 @@ namespace OpenDental{
 				return;
 			}
 			butColorCalculus.BackColor=colorDialog1.Color;
-			Defs.Cur=Defs.Short[(int)DefCat.MiscColors][5];
-			Defs.Cur.ItemColor=colorDialog1.Color;
-			Defs.UpdateCur();
+			Def DefCur=Defs.Short[(int)DefCat.MiscColors][5].Copy();
+			DefCur.ItemColor=colorDialog1.Color;
+			Defs.Update(DefCur);
 			Defs.Refresh();
 			localDefsChanged=true;
 			gridP.SetColors();
@@ -1332,32 +1338,33 @@ namespace OpenDental{
 		}
 
 		private void butSkip_Click(object sender, System.EventArgs e) {
-			gridP.ToggleSkip();
+			gridP.ToggleSkip(PerioExamCur.PerioExamNum);
 		}
 
 		private void updownRed_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e) {
 			//this is necessary because Microsoft's updown control is too buggy to be useful
 			Cursor=Cursors.WaitCursor;
+			Pref pref=null;
 			if(sender==updownProb){
 				//textRedProb.Cursor=Cursors.WaitCursor;
-				Prefs.Cur=(Pref)Prefs.HList["PerioRedProb"];//erioRedNumber
+				pref=(Pref)PrefB.HList["PerioRedProb"];//erioRedNumber
 			}
 			else if(sender==updownMGJ){
-				Prefs.Cur=(Pref)Prefs.HList["PerioRedMGJ"];
+				pref=(Pref)PrefB.HList["PerioRedMGJ"];
 			}
 			else if(sender==updownGing){
-				Prefs.Cur=(Pref)Prefs.HList["PerioRedGing"];
+				pref=(Pref)PrefB.HList["PerioRedGing"];
 			}
 			else if(sender==updownCAL){
-				Prefs.Cur=(Pref)Prefs.HList["PerioRedCAL"];
+				pref=(Pref)PrefB.HList["PerioRedCAL"];
 			}
 			else if(sender==updownFurc){
-				Prefs.Cur=(Pref)Prefs.HList["PerioRedFurc"];
+				pref=(Pref)PrefB.HList["PerioRedFurc"];
 			}
 			else if(sender==updownMob){
-				Prefs.Cur=(Pref)Prefs.HList["PerioRedMob"];
+				pref=(Pref)PrefB.HList["PerioRedMob"];
 			}
-			int currentValue=PIn.PInt(Prefs.Cur.ValueString);
+			int currentValue=PIn.PInt(pref.ValueString);
 			if(e.Y<8){//up
 				currentValue++;
 			}
@@ -1368,8 +1375,8 @@ namespace OpenDental{
 				}
 				currentValue--;
 			}
-			Prefs.Cur.ValueString=currentValue.ToString();
-			Prefs.UpdateCur();
+			pref.ValueString=currentValue.ToString();
+			Prefs.Update(pref);
 			localDefsChanged=true;
 			Prefs.Refresh();
 			if(sender==updownProb){
@@ -1528,7 +1535,7 @@ namespace OpenDental{
 				DataValid.SetInvalid(InvalidTypes.Defs | InvalidTypes.Prefs);
 			}
 			if(listExams.SelectedIndex!=-1){
-				gridP.SaveCurExam();
+				gridP.SaveCurExam(PerioExamCur.PerioExamNum);
 			}
 		}
 

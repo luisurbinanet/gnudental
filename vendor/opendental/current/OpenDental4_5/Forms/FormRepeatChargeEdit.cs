@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -305,7 +306,7 @@ namespace OpenDental{
 		}
 
 		private void butDelete_Click(object sender, System.EventArgs e) {
-			RepeatCur.Delete();
+			RepeatCharges.Delete(RepeatCur);
 			DialogResult=DialogResult.OK;
 		}
 
@@ -332,10 +333,10 @@ namespace OpenDental{
 			RepeatCur.DateStop=PIn.PDate(textDateStop.Text);
 			RepeatCur.Note=textNote.Text;
 			if(IsNew){
-				RepeatCur.Insert();
+				RepeatCharges.Insert(RepeatCur);
 			}
 			else{
-				RepeatCur.Update();
+				RepeatCharges.Update(RepeatCur);
 			}
 			DialogResult=DialogResult.OK;
 		}

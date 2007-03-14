@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	///<summary></summary>
@@ -136,6 +137,8 @@ namespace OpenDental{
 		private void butAdd_Click(object sender, System.EventArgs e) {
 		  FormAutoCodeEdit FormACE=new FormAutoCodeEdit();
       FormACE.IsNew=true;
+			FormACE.AutoCodeCur=new AutoCode();
+			AutoCodes.Insert(FormACE.AutoCodeCur);
       FormACE.ShowDialog();
 			if(FormACE.DialogResult!=DialogResult.OK){
 				return;
@@ -148,8 +151,9 @@ namespace OpenDental{
 			if(listAutoCodes.SelectedIndex==-1){
 				return;
 			}
-		  AutoCodes.Cur=AutoCodes.List[listAutoCodes.SelectedIndex];
+		  AutoCode AutoCodeCur=AutoCodes.List[listAutoCodes.SelectedIndex];
 		  FormAutoCodeEdit FormACE=new FormAutoCodeEdit();
+			FormACE.AutoCodeCur=AutoCodeCur;
       FormACE.ShowDialog();
 			if(FormACE.DialogResult!=DialogResult.OK){
 				return;
@@ -167,8 +171,8 @@ namespace OpenDental{
         MessageBox.Show(Lan.g(this,"You must first select a row"));
 				return;
       }
-      AutoCodes.Cur=AutoCodes.List[listAutoCodes.SelectedIndex];
-      AutoCodes.DeleteCur();
+      AutoCode AutoCodeCur=AutoCodes.List[listAutoCodes.SelectedIndex];
+      AutoCodes.Delete(AutoCodeCur);
 			changed=true;
       FillList(); 		
 		}

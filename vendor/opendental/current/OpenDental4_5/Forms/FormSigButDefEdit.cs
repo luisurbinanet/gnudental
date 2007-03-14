@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Media;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -77,7 +78,6 @@ namespace OpenDental{
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormSigButDefEdit));
 			this.label2 = new System.Windows.Forms.Label();
 			this.textButtonText = new System.Windows.Forms.TextBox();
 			this.label3 = new System.Windows.Forms.Label();
@@ -148,7 +148,6 @@ namespace OpenDental{
 			this.butDelete.Autosize = true;
 			this.butDelete.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butDelete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butDelete.Location = new System.Drawing.Point(45,292);
 			this.butDelete.Name = "butDelete";
@@ -309,7 +308,6 @@ namespace OpenDental{
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.butCancel);
-			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "FormSigButDefEdit";
@@ -336,9 +334,9 @@ namespace OpenDental{
 			sigElementDefUser=SigElementDefs.GetSubList(SignalElementType.User);
 			sigElementDefExtras=SigElementDefs.GetSubList(SignalElementType.Extra);
 			sigElementDefMessages=SigElementDefs.GetSubList(SignalElementType.Message);
-			SigButDefElement elementUser=ButtonCur.GetElement(SignalElementType.User);
-			SigButDefElement elementExtra=ButtonCur.GetElement(SignalElementType.Extra);
-			SigButDefElement elementMessage=ButtonCur.GetElement(SignalElementType.Message);
+			SigButDefElement elementUser=SigButDefs.GetElement(ButtonCur,SignalElementType.User);
+			SigButDefElement elementExtra=SigButDefs.GetElement(ButtonCur,SignalElementType.Extra);
+			SigButDefElement elementMessage=SigButDefs.GetElement(ButtonCur,SignalElementType.Message);
 			comboTo.Items.Clear();
 			comboTo.Items.Add(Lan.g(this,"none"));
 			comboTo.SelectedIndex=0;
@@ -376,7 +374,7 @@ namespace OpenDental{
 				if(!MsgBox.Show(this,true,"Delete?")) {
 					return;
 				}
-				ButtonCur.Delete();//also deletes elements
+				SigButDefs.Delete(ButtonCur);//also deletes elements
 				DialogResult=DialogResult.OK;
 			}
 		}
@@ -397,31 +395,31 @@ namespace OpenDental{
 			ButtonCur.ButtonText=textButtonText.Text;
 			ButtonCur.SynchIcon=PIn.PInt(textSynchIcon.Text);
 			if(IsNew){
-				ButtonCur.Insert();
+				SigButDefs.Insert(ButtonCur);
 			}
 			else{
-				ButtonCur.Update();
+				SigButDefs.Update(ButtonCur);
 			}
 			//delete all the existing elements
-			ButtonCur.DeleteElements();
+			SigButDefs.DeleteElements(ButtonCur);
 			SigButDefElement element;
 			if(comboTo.SelectedIndex!=0){
 				element=new SigButDefElement();
 				element.SigButDefNum=ButtonCur.SigButDefNum;
 				element.SigElementDefNum=sigElementDefUser[comboTo.SelectedIndex-1].SigElementDefNum;
-				element.Insert();
+				SigButDefElements.Insert(element);
 			}
 			if(comboExtras.SelectedIndex!=0) {
 				element=new SigButDefElement();
 				element.SigButDefNum=ButtonCur.SigButDefNum;
 				element.SigElementDefNum=sigElementDefExtras[comboExtras.SelectedIndex-1].SigElementDefNum;
-				element.Insert();
+				SigButDefElements.Insert(element);
 			}
 			if(comboMessage.SelectedIndex!=0) {
 				element=new SigButDefElement();
 				element.SigButDefNum=ButtonCur.SigButDefNum;
 				element.SigElementDefNum=sigElementDefMessages[comboMessage.SelectedIndex-1].SigElementDefNum;
-				element.Insert();
+				SigButDefElements.Insert(element);
 			}
 			DialogResult=DialogResult.OK;
 		}

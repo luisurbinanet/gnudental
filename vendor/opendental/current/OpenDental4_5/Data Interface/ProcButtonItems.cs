@@ -1,83 +1,57 @@
 using System;
 using System.Collections;
 using System.Data;
+using OpenDentBusiness;
 
 namespace OpenDental{
-	
-	///<summary>Attached to procbuttons.  These tell the program what to do when a user clicks on a button.  There are two types: adacodes or autocodes.</summary>
-	public class ProcButtonItem{
-		///<summary>Primary key.</summary>
-		public int ProcButtonItemNum;
-		///<summary>FK to procbutton.ProcButtonNum.</summary>
-		public int ProcButtonNum;
-		///<summary>FK to procedurecode.ADACode.  0 if this is an autocode.</summary>
-		public string ADACode;
-		///<summary>FK to autocode.AutoCodeNum.  0 if this is a procedure code.</summary>
-		public int AutoCodeNum;
-
-		///<summary></summary>
-		public ProcButtonItem Copy() {
-			ProcButtonItem p=new ProcButtonItem();
-			p.ProcButtonItemNum=ProcButtonItemNum;
-			p.ProcButtonNum=ProcButtonNum;
-			p.ADACode=ADACode;
-			p.AutoCodeNum=AutoCodeNum;
-			return p;
-		}
-
-		///<summary>Must have already checked ADACode for nonduplicate.</summary>
-		public void Insert() {
-			string command="INSERT INTO procbuttonitem (procbuttonnum,adacode,autocodenum) VALUES("
-				+"'"+POut.PInt   (ProcButtonNum)+"', "
-				+"'"+POut.PString(ADACode)+"', "
-				+"'"+POut.PInt   (AutoCodeNum)+"')";
-			DataConnection dcon=new DataConnection();
-			dcon.NonQ(command);
-		}
-
-		///<summary></summary>
-		public void Update() {
-			string command="UPDATE procbuttonitem SET " 
-				+ "procbuttonnum='"+POut.PInt   (ProcButtonNum)+"'"
-				+ ",adacode='"     +POut.PString(ADACode)+"'"
-				+ ",autocodenum='" +POut.PInt   (AutoCodeNum)+"'"
-				+" WHERE procbuttonitemnum = '"+POut.PInt(ProcButtonItemNum)+"'";
-			DataConnection dcon=new DataConnection();
-			dcon.NonQ(command);
-		}
-
-		///<summary></summary>
-		public void Delete() {
-			string command="DELETE from procbuttonitem WHERE procbuttonitemnum = '"+POut.PInt(ProcButtonItemNum)+"'";
-			DataConnection dcon=new DataConnection();
-			dcon.NonQ(command);
-		}
-
-
-	}
-
-	/*=========================================================================================
-		=================================== class ProcButtonItems===========================================*/
-
 	///<summary></summary>
-	public class ProcButtonItems{
+	public class ProcButtonItems {
 		///<summary></summary>
 		public static ProcButtonItem[] List;
 
 		///<summary>Fills List in preparation for later usage.</summary>
-		public static void Refresh(){
+		public static void Refresh() {
 			string command="SELECT * FROM procbuttonitem";
-			DataConnection dcon=new DataConnection();
-			DataTable table=dcon.GetTable(command);
+			DataTable table=General.GetTable(command);
 			List=new ProcButtonItem[table.Rows.Count];
-			for(int i=0;i<table.Rows.Count;i++){
+			for(int i=0;i<table.Rows.Count;i++) {
 				List[i]=new ProcButtonItem();
-				List[i].ProcButtonItemNum=PIn.PInt   (table.Rows[i][0].ToString());
-				List[i].ProcButtonNum    =PIn.PInt   (table.Rows[i][1].ToString());
+				List[i].ProcButtonItemNum=PIn.PInt(table.Rows[i][0].ToString());
+				List[i].ProcButtonNum    =PIn.PInt(table.Rows[i][1].ToString());
 				List[i].ADACode          =PIn.PString(table.Rows[i][2].ToString());
-				List[i].AutoCodeNum      =PIn.PInt   (table.Rows[i][3].ToString());
+				List[i].AutoCodeNum      =PIn.PInt(table.Rows[i][3].ToString());
 			}
+		}	
+
+		///<summary>Must have already checked ADACode for nonduplicate.</summary>
+		public static void Insert(ProcButtonItem item) {
+			string command="INSERT INTO procbuttonitem (procbuttonnum,adacode,autocodenum) VALUES("
+				+"'"+POut.PInt   (item.ProcButtonNum)+"', "
+				+"'"+POut.PString(item.ADACode)+"', "
+				+"'"+POut.PInt   (item.AutoCodeNum)+"')";
+			General.NonQ(command);
 		}
+
+		///<summary></summary>
+		public static void Update(ProcButtonItem item) {
+			string command="UPDATE procbuttonitem SET " 
+				+ "procbuttonnum='"+POut.PInt   (item.ProcButtonNum)+"'"
+				+ ",adacode='"     +POut.PString(item.ADACode)+"'"
+				+ ",autocodenum='" +POut.PInt   (item.AutoCodeNum)+"'"
+				+" WHERE procbuttonitemnum = '"+POut.PInt(item.ProcButtonItemNum)+"'";
+			General.NonQ(command);
+		}
+
+		///<summary></summary>
+		public static void Delete(ProcButtonItem item) {
+			string command="DELETE from procbuttonitem WHERE procbuttonitemnum = '"+POut.PInt(item.ProcButtonItemNum)+"'";
+			General.NonQ(command);
+		}
+
+
+
+
+	
 
 		///<summary></summary>
 		public static string[] GetADAListForButton(int procButtonNum){
@@ -112,8 +86,7 @@ namespace OpenDental{
 		///<summary></summary>
 		public static void DeleteAllForButton(int procButtonNum){
 			string command= "DELETE from procbuttonitem WHERE procbuttonnum = '"+POut.PInt(procButtonNum)+"'";
-			DataConnection dcon=new DataConnection();
-			dcon.NonQ(command);
+			General.NonQ(command);
 		}
 
 	}

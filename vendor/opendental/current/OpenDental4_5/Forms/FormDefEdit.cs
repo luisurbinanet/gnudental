@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -34,11 +35,13 @@ namespace OpenDental{
 		private System.Windows.Forms.CheckBox checkHidden;
 		///<summary></summary>
 		public static string ValueText;
+		private Def DefCur;
 		
 		///<summary></summary>
-		public FormDefEdit(){
+		public FormDefEdit(Def defCur){
 			InitializeComponent();// Required for Windows Form Designer support
 			Lan.F(this);
+			DefCur=defCur.Copy();
 		}
 
 		///<summary></summary>
@@ -198,13 +201,12 @@ namespace OpenDental{
 			}
 			if(!CanEditName){
 				textName.ReadOnly=true;
-				if(!Defs.Cur.IsHidden){
+				if(!DefCur.IsHidden){
 					checkHidden.Enabled=false;//prevent hiding these types of defs
 				}
 			}
 			labelValue.Text=ValueText;
-			if(Defs.Cur.Category==DefCat.AdjTypes
-				&& !IsNew){
+			if(DefCur.Category==DefCat.AdjTypes && !IsNew){
 				labelValue.Text="Not allowed to change sign after an adjustment is created.";
 				textValue.Visible=false;
 			}
@@ -216,10 +218,10 @@ namespace OpenDental{
 				labelColor.Visible=false;
 				butColor.Visible=false;
 			}
-			textName.Text=Defs.Cur.ItemName;
-			textValue.Text=Defs.Cur.ItemValue;
-			butColor.BackColor=Defs.Cur.ItemColor;
-			checkHidden.Checked=Defs.Cur.IsHidden;
+			textName.Text=DefCur.ItemName;
+			textValue.Text=DefCur.ItemValue;
+			butColor.BackColor=DefCur.ItemColor;
+			checkHidden.Checked=DefCur.IsHidden;
 			//MessageBox.Show(Preferences.Cur.ItemColor.ToString());
 		}
 
@@ -235,7 +237,7 @@ namespace OpenDental{
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			switch((DefCat)Defs.Cur.Category){
+			switch((DefCat)DefCur.Category){
 				case DefCat.AdjTypes:
 					if(textValue.Text!="+" && textValue.Text!="-"){
 						MessageBox.Show(Lan.g(this,"Valid values are + or -."));
@@ -311,15 +313,15 @@ namespace OpenDental{
 					else textValue.Text="";
 					break;
 			}//end switch
-			Defs.Cur.ItemName=textName.Text;
-			if(EnableValue) Defs.Cur.ItemValue=textValue.Text;
-			if(EnableColor) Defs.Cur.ItemColor=butColor.BackColor;
-			Defs.Cur.IsHidden=checkHidden.Checked;
+			DefCur.ItemName=textName.Text;
+			if(EnableValue) DefCur.ItemValue=textValue.Text;
+			if(EnableColor) DefCur.ItemColor=butColor.BackColor;
+			DefCur.IsHidden=checkHidden.Checked;
 			if(IsNew){
-				Defs.InsertCur();
+				Defs.Insert(DefCur);
 			}
 			else{
-				Defs.UpdateCur();
+				Defs.Update(DefCur);
 			}
 			DialogResult=DialogResult.OK;
 			Close();

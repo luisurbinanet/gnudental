@@ -4,6 +4,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using OpenDental.UI;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -152,8 +153,8 @@ namespace OpenDental{
 			button.Style=ODToolBarButtonStyle.Label;
 			ToolBarMain.Buttons.Add(button);
 			ToolBarMain.Buttons.Add(new ODToolBarButton("",2,"Go Forward One Page","Fwd"));
-			ToolBarMain.Buttons.Add(new ODToolBarButton(ODToolBarButtonStyle.Separator));
-			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Close"),-1,"Close This Window","Close"));*/
+			ToolBarMain.Buttons.Add(new ODToolBarButton(ODToolBarButtonStyle.Separator));*/
+			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Close"),-1,"Close This Window","Close"));
 		}
 
 		private void menuItemSetup_Click(object sender,EventArgs e) {
@@ -169,13 +170,14 @@ namespace OpenDental{
 				case "Edit":
 					Edit_Click();
 					break;
+				case "Close":
+					Close();
+					break;
 			}
 			/*	case "Fwd":
 					OnFwd_Click();
 					break;
-				case "Close":
-					OnClose_Click();
-					break;
+				
 			}*/
 		}
 

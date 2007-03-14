@@ -9,7 +9,7 @@ using System.Drawing;
 using System.Drawing.Printing;
 using System.Reflection;
 using System.Windows.Forms;
-//using OpenDental.Reporting;
+using OpenDentBusiness;
 
 namespace OpenDental.UI{
 	///<summary></summary>

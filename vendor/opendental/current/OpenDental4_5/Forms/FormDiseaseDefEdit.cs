@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary></summary>
@@ -172,7 +173,7 @@ namespace OpenDental{
 				return;
 			}
 			try{
-				DiseaseDefCur.Delete();
+				DiseaseDefs.Delete(DiseaseDefCur);
 				DialogResult=DialogResult.OK;
 			}
 			catch(ApplicationException ex){
@@ -184,10 +185,10 @@ namespace OpenDental{
 			DiseaseDefCur.DiseaseName=textName.Text;
 			DiseaseDefCur.IsHidden=checkIsHidden.Checked;
 			if(IsNew){
-				DiseaseDefCur.Insert();
+				DiseaseDefs.Insert(DiseaseDefCur);
 			}
 			else{
-				DiseaseDefCur.Update();
+				DiseaseDefs.Update(DiseaseDefCur);
 			}
 			DialogResult=DialogResult.OK;
 		}

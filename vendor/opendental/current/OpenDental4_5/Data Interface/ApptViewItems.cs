@@ -1,66 +1,34 @@
 using System;
 using System.Collections;
+using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
-	
-	///<summary>Each item is attached to a row in the apptview table.  Each item specifies ONE of: OpNum, ProvNum, or Element.  The other two will be 0 or "".</summary>
-	public struct ApptViewItem{
-		///<summary>Primary key.</summary>
-		public int ApptViewItemNum;//
-		///<summary>FK to apptview.</summary>
-		public int ApptViewNum;
-		///<summary>FK to operatory.OperatoryNum.</summary>
-		public int OpNum;
-		///<summary>FK to provider.ProvNum.</summary>
-		public int ProvNum;
-		///<summary>Must be one of the hard coded strings picked from the available list.</summary>
-		public string ElementDesc;
-		///<summary>If this is a row Element, then this is the 0-based order.</summary>
-		public int ElementOrder;
-		///<summary>If this is an element, then this is the color.</summary>
-		public Color ElementColor;
-
-		///<summary>this constructor is just used in GetForCurView when no view selected.</summary>
-		public ApptViewItem(string elementDesc,int elementOrder,Color elementColor){
-			ApptViewItemNum=0;
-			ApptViewNum=0;
-			OpNum=0;
-			ProvNum=0;
-			ElementDesc=elementDesc;
-			ElementOrder=elementOrder;
-			ElementColor=elementColor;
-		}
-	}	
-
-	/*=========================================================================================
-	=================================== class ApptViewItems ===========================================*/
 	///<summary>Handles database commands related to the apptviewitem table in the database.</summary>
-	public class ApptViewItems:DataClass{
-		///<summary>Current.  A single row of data.</summary>
-		public static ApptViewItem Cur;
+	public class ApptViewItems{
+		//<summary>Current.  A single row of data.</summary>
+		//public static ApptViewItem Cur;
 		///<summary>A list of all ApptViewItems.</summary>
 		public static ApptViewItem[] List;
 		///<summary>A list of the ApptViewItems for the current view.</summary>
 		public static ApptViewItem[] ForCurView;
 		//these two are subsets of provs and ops. You can't include hidden prov or op in this list.
-		///<summary>Visible providers in appt module.  List of indices to providers.List(short).</summary>
-		///<remarks>Also see VisOps.  This is a subset of the available provs.  You can't include a hidden prov in this list.</remarks>
+		///<summary>Visible providers in appt module.  List of indices to providers.List(short).  Also see VisOps.  This is a subset of the available provs.  You can't include a hidden prov in this list.</summary>
 		public static int[] VisProvs;
-		///<summary>Visible ops in appt module.  List of indices to Operatories.ListShort[ops].</summary>
-		///<remarks>Also see VisProvs.  This is a subset of the available ops.  You can't include a hidden op in this list.</remarks>
+		///<summary>Visible ops in appt module.  List of indices to Operatories.ListShort[ops].  Also see VisProvs.  This is a subset of the available ops.  You can't include a hidden op in this list.</summary>
 		public static int[] VisOps;
 		///<summary>Subset of ForCurView. Just items for rowElements. If no view is selected, then the elements are filled with default info.</summary>
 		public static ApptViewItem[] ApptRows;
 
 		///<summary></summary>
 		public static void Refresh(){
-			cmd.CommandText =
-				"SELECT * from apptviewitem ORDER BY ElementOrder";
-			FillTable();
+			string command="SELECT * from apptviewitem ORDER BY ElementOrder";
+			DataTable table=General.GetTable(command);
 			List=new ApptViewItem[table.Rows.Count];
 			for(int i=0;i<List.Length;i++){
+				List[i]=new ApptViewItem();
 				List[i].ApptViewItemNum = PIn.PInt   (table.Rows[i][0].ToString());
 				List[i].ApptViewNum     = PIn.PInt   (table.Rows[i][1].ToString());
 				List[i].OpNum           = PIn.PInt   (table.Rows[i][2].ToString());
@@ -72,8 +40,8 @@ namespace OpenDental{
 		}
 
 		///<summary></summary>
-		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO apptviewitem (ApptViewNum,OpNum,ProvNum,ElementDesc,"
+		public static void Insert(ApptViewItem Cur){
+			string command= "INSERT INTO apptviewitem (ApptViewNum,OpNum,ProvNum,ElementDesc,"
 				+"ElementOrder,ElementColor) "
 				+"VALUES ("
 				+"'"+POut.PInt   (Cur.ApptViewNum)+"', "
@@ -82,14 +50,14 @@ namespace OpenDental{
 				+"'"+POut.PString(Cur.ElementDesc)+"', "
 				+"'"+POut.PInt   (Cur.ElementOrder)+"', "
 				+"'"+POut.PInt   (Cur.ElementColor.ToArgb())+"')";
-			//MessageBox.Show(cmd.CommandText);
-			NonQ(false);
+			//MessageBox.Show(string command);
+			General.NonQ(command);
 			//Cur.ApptViewNum=InsertID;
 		}
 
 		///<summary></summary>
-		public static void UpdateCur(){
-			cmd.CommandText = "UPDATE apptviewitem SET "
+		public static void Update(ApptViewItem Cur){
+			string command= "UPDATE apptviewitem SET "
 				+"ApptViewNum='"    +POut.PInt   (Cur.ApptViewNum)+"'"
 				+",OpNum = '"       +POut.PInt   (Cur.OpNum)+"'"
 				+",ProvNum = '"     +POut.PInt   (Cur.ProvNum)+"'"
@@ -97,30 +65,39 @@ namespace OpenDental{
 				+",ElementOrder = '"+POut.PInt   (Cur.ElementOrder)+"'"
 				+",ElementColor = '"+POut.PInt   (Cur.ElementColor.ToArgb())+"'"
 				+" WHERE ApptViewItemNum = '"+POut.PInt(Cur.ApptViewItemNum)+"'";
-			NonQ(false);
+			General.NonQ(command);
 		}
 
 		///<summary></summary>
-		public static void DeleteCur(){
-			cmd.CommandText="DELETE from apptviewitem WHERE ApptViewItemNum = '"
+		public static void Delete(ApptViewItem Cur){
+			string command="DELETE from apptviewitem WHERE ApptViewItemNum = '"
 				+POut.PInt(Cur.ApptViewItemNum)+"'";
-			NonQ(false);
+			General.NonQ(command);
 		}
 
 		///<summary>Deletes all apptviewitems for the current apptView.</summary>
-		public static void DeleteAllForView(){
-			cmd.CommandText="DELETE from apptviewitem WHERE ApptViewNum = '"
-				+POut.PInt(ApptViews.Cur.ApptViewNum)+"'";
-			NonQ(false);
+		public static void DeleteAllForView(ApptView view){
+			string c="DELETE from apptviewitem WHERE ApptViewNum = '"
+				+POut.PInt(view.ApptViewNum)+"'";
+			General.NonQ(c);
 		}
 
-		///<summary>Gets (list)ForCurView, VisOps, VisProvs, and ApptRows.  Also sets TwoRows. Works even if no apptview is selected.</summary>
-		public static void GetForCurView(){
+		public static void GetForCurView(int indexInList){
+			if(indexInList==-1){
+				GetForCurView(new ApptView());
+			}
+			else{
+				GetForCurView(ApptViews.List[indexInList]);
+			}
+		}
+
+		///<summary>Gets (list)ForCurView, VisOps, VisProvs, and ApptRows.  Also sets TwoRows. Works even if supply -1 to indicate no apptview is selected.</summary>
+		public static void GetForCurView(ApptView ApptViewCur){
 			ArrayList tempAL=new ArrayList();
 			ArrayList ALprov=new ArrayList();
 			ArrayList ALops=new ArrayList();
 			ArrayList ALelements=new ArrayList();
-			if(ApptViews.Cur.ApptViewNum==0){
+			if(ApptViewCur.ApptViewNum==0){
 				//MessageBox.Show("apptcategorynum:"+ApptCategories.Cur.ApptCategoryNum.ToString());
 				//make visible ops exactly the same as the short ops list (all except hidden)
 				for(int i=0;i<Operatories.ListShort.Length;i++){
@@ -140,7 +117,7 @@ namespace OpenDental{
 			else{
 				int index;
 				for(int i=0;i<List.Length;i++){
-					if(List[i].ApptViewNum==ApptViews.Cur.ApptViewNum){
+					if(List[i].ApptViewNum==ApptViewCur.ApptViewNum){
 						tempAL.Add(List[i]);
 						if(List[i].OpNum>0){//op
 							index=Operatories.GetOrder(List[i].OpNum);
@@ -159,7 +136,7 @@ namespace OpenDental{
 						}
 					}
 				}
-				ContrApptSheet.RowsPerIncr=ApptViews.Cur.RowsPerIncr;
+				ContrApptSheet.RowsPerIncr=ApptViewCur.RowsPerIncr;
 			}
 			ForCurView=new ApptViewItem[tempAL.Count];
 			for(int i=0;i<tempAL.Count;i++){

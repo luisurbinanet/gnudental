@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -6,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using NDde;
+using OpenDentBusiness;
 
 namespace OpenDental.Bridges{
 	/// <summary></summary>
@@ -17,26 +19,26 @@ namespace OpenDental.Bridges{
 		}
 
 		///<summary>Launches the program if necessary.  Then passes patient.Cur data using DDE.</summary>
-		public static void SendData(Patient pat){
-			ProgramProperties.GetForProgram();
+		public static void SendData(Program ProgramCur, Patient pat){
+			ArrayList ForProgram=ProgramProperties.GetForProgram(ProgramCur.ProgramNum);;
 			if(pat==null){
 				MessageBox.Show("Please select a patient first");
 				return;
 			}
 			//The path is available in the registry, but we'll just make the user enter it.
-			if(!File.Exists(Programs.Cur.Path)){
-				MessageBox.Show("Could not find "+Programs.Cur.Path);
+			if(!File.Exists(ProgramCur.Path)){
+				MessageBox.Show("Could not find "+ProgramCur.Path);
 				return;
 			}
 			//Make sure the program is running
 			if(Process.GetProcessesByName("DentalEye").Length==0){
-				Process.Start(Programs.Cur.Path);
+				Process.Start(ProgramCur.Path);
 				Thread.Sleep(TimeSpan.FromSeconds(4));
 			}
 			//command="[Add][PatNum][Fname][Lname][Address|Address2|City, ST Zip][phone1][phone2][mobile phone][email][sex(M/F)][birthdate (YYYY-MM-DD)]"
-			ProgramProperties.GetCur("Enter 0 to use PatientNum, or 1 to use ChartNum");
+			ProgramProperty PPCur=ProgramProperties.GetCur(ForProgram, "Enter 0 to use PatientNum, or 1 to use ChartNum");;
 			string patID;
-			if(ProgramProperties.Cur.PropertyValue=="0"){
+			if(PPCur.PropertyValue=="0"){
 				patID=pat.PatNum.ToString();
 			}
 			else{

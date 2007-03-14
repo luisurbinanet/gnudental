@@ -1,5 +1,6 @@
 using System;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	///<summary></summary>
@@ -106,9 +107,7 @@ namespace OpenDental{
 			string command="UPDATE user,grouppermissions SET user.Password='' "
 				+"WHERE grouppermissions.UserGroupNum=user.UserGroupNum "
 				+"AND grouppermissions.PermType=24";
-			//MessageBox.Show(cmd.CommandText);
-			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command);
+ 			General.NonQ(command);
 		}
 
 	}

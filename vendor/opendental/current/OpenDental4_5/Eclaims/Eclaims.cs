@@ -3,6 +3,7 @@ using System.Collections;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental.Eclaims
 {
@@ -36,7 +37,7 @@ namespace OpenDental.Eclaims
 					continue;
 				}
 				//get next batch number for this clearinghouse
-				batchNum=Clearinghouses.List[i].GetNextBatchNumber();
+				batchNum=Clearinghouses.GetNextBatchNumber(Clearinghouses.List[i]);
 				//---------------------------------------------------------------------------------------
 				//Create the claim file(s) for this clearinghouse
 				if(Clearinghouses.List[i].Eformat==ElectronicClaimFormat.X12){

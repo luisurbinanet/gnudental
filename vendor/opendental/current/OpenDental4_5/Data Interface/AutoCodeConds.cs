@@ -1,26 +1,12 @@
 using System;
 using System.Collections;
+using System.Data;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
-	
-	///<summary>AutoCode condition.  Always attached to an AutoCodeItem, which is then, in turn, attached to an autocode.</summary>
-	///<remarks>There is usually only one or two conditions for a given AutoCodeItem.</remarks>
-	public struct AutoCodeCond{//
-		///<summary>Primary key.</summary>
-		public int AutoCodeCondNum;
-		///<summary>FK to autocodeitem.AutoCodeItemNum.</summary>
-		public int AutoCodeItemNum;
-		///<summary>Enum:AutoCondition </summary>
-		public AutoCondition Cond;
-	}
-
-	/*=========================================================================================
-	=================================== class AutoCodeConds ===========================================*/
   ///<summary></summary>
-	public class AutoCodeConds:DataClass{
-		///<summary></summary>
-		public static AutoCodeCond Cur;
+	public class AutoCodeConds{
 		///<summary></summary>
 		public static AutoCodeCond[] List;
 		///<summary></summary>
@@ -30,12 +16,12 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void Refresh(){
-			cmd.CommandText =
-				"SELECT * from autocodecond ORDER BY cond";
-			FillTable();
+			string command="SELECT * from autocodecond ORDER BY cond";
+			DataTable table=General.GetTable(command);
 			//HList=new Hashtable();
 			List=new AutoCodeCond[table.Rows.Count];
 			for(int i=0;i<List.Length;i++){
+				List[i]=new AutoCodeCond();
 				List[i].AutoCodeCondNum= PIn.PInt        (table.Rows[i][0].ToString());
 				List[i].AutoCodeItemNum= PIn.PInt        (table.Rows[i][1].ToString());
 				List[i].Cond=(AutoCondition)PIn.PInt(table.Rows[i][2].ToString());	
@@ -44,37 +30,36 @@ namespace OpenDental{
 		}
 
 		///<summary></summary>
-		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO autocodecond (AutoCodeItemNum,Cond) "
+		public static void Insert(AutoCodeCond Cur){
+			string command= "INSERT INTO autocodecond (AutoCodeItemNum,Cond) "
 				+"VALUES ("
 				+"'"+POut.PInt(Cur.AutoCodeItemNum)+"', "
 				+"'"+POut.PInt((int)Cur.Cond)+"')";
-			//MessageBox.Show(cmd.CommandText);
-			NonQ(true);
-			Cur.AutoCodeCondNum=InsertID;
+			//MessageBox.Show(string command);
+			Cur.AutoCodeCondNum=General.NonQ(command,true);
 		}
 
 		///<summary></summary>
-		public static void UpdateCur(){
-			cmd.CommandText = "UPDATE autocodecond SET "
+		public static void Update(AutoCodeCond Cur){
+			string command = "UPDATE autocodecond SET "
 				+"autocodeitemnum='"+POut.PInt(Cur.AutoCodeItemNum)+"'"
 				+",cond ='"     +POut.PInt((int)Cur.Cond)+"'"
 				+" WHERE autocodecondnum = '"+POut.PInt(Cur.AutoCodeCondNum)+"'";
-			NonQ(false);
+			General.NonQ(command);
 		}
 
 		///<summary></summary>
-		public static void DeleteCur(){
-			cmd.CommandText = "DELETE from autocodecond WHERE autocodecondnum = '"
+		public static void Delete(AutoCodeCond Cur){
+			string command= "DELETE from autocodecond WHERE autocodecondnum = '"
 				+POut.PInt(Cur.AutoCodeCondNum)+"'";
-			NonQ(false);
+			General.NonQ(command);
 		}
 
 		///<summary></summary>
 		public static void DeleteForItemNum(int itemNum){
-			cmd.CommandText = "DELETE from autocodecond WHERE autocodeitemnum = '"
+			string command= "DELETE from autocodecond WHERE autocodeitemnum = '"
 				+POut.PInt(itemNum)+"'";//AutoCodeItems.Cur.AutoCodeItemNum)
-			NonQ(false); 
+			General.NonQ(command);
 		}
 
 		///<summary></summary>

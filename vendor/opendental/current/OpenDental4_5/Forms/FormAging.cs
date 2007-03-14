@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	///<summary></summary>
@@ -150,7 +151,7 @@ The results can be viewed in various reports.  Be aware that if you later open a
 
 		private void FormAging_Load(object sender, System.EventArgs e) {
 			textDateCalc.Text=DateTime.Today.ToShortDateString();
-			DateTime dateLastAging=PIn.PDate(Prefs.GetString("DateLastAging"));
+			DateTime dateLastAging=PIn.PDate(PrefB.GetString("DateLastAging"));
 			if(dateLastAging.Year<1880){
 				textDateLast.Text="";
 			}

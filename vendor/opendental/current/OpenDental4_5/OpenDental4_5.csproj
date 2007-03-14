@@ -1,609 +1,244 @@
 ﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectType>Local</ProjectType>
-    <ProductVersion>8.0.50727</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{9B9879E3-0726-4042-BCB3-ADCB604B9B42}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ApplicationIcon>Misc\App.ico</ApplicationIcon>
-    <AssemblyKeyContainerName>
-    </AssemblyKeyContainerName>
-    <AssemblyName>OpenDental</AssemblyName>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
-    <DefaultClientScript>JScript</DefaultClientScript>
-    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
-    <DefaultTargetSchema>IE50</DefaultTargetSchema>
-    <DelaySign>false</DelaySign>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{8136317D-C936-49B6-9E31-D90F02D2F207}</ProjectGuid>
     <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>OpenDental</RootNamespace>
-    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-    <StartupObject>
-    </StartupObject>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <UpgradeBackupLocation>
-    </UpgradeBackupLocation>
+    <AssemblyName>OpenDental</AssemblyName>
+    <TargetZone>LocalIntranet</TargetZone>
+    <GenerateManifests>false</GenerateManifests>
+    <ApplicationIcon>Misc\App.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>bin\Debug\</OutputPath>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-    <BaseAddress>285212672</BaseAddress>
-    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
-    <ConfigurationOverrideFile>
-    </ConfigurationOverrideFile>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DocumentationFile>
-    </DocumentationFile>
     <DebugSymbols>true</DebugSymbols>
-    <FileAlignment>4096</FileAlignment>
-    <NoStdLib>false</NoStdLib>
-    <NoWarn>
-    </NoWarn>
-    <Optimize>false</Optimize>
-    <RegisterForComInterop>false</RegisterForComInterop>
-    <RemoveIntegerChecks>false</RemoveIntegerChecks>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <WarningLevel>4</WarningLevel>
     <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>bin\Release\</OutputPath>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-    <BaseAddress>285212672</BaseAddress>
-    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
-    <ConfigurationOverrideFile>
-    </ConfigurationOverrideFile>
-    <DefineConstants>TRACE</DefineConstants>
-    <DocumentationFile>bin\Release\OpenDental.XML</DocumentationFile>
-    <DebugSymbols>false</DebugSymbols>
-    <FileAlignment>4096</FileAlignment>
-    <NoStdLib>false</NoStdLib>
-    <NoWarn>
-    </NoWarn>
+    <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <RegisterForComInterop>false</RegisterForComInterop>
-    <RemoveIntegerChecks>false</RemoveIntegerChecks>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <WarningLevel>4</WarningLevel>
-    <DebugType>none</DebugType>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Indy.Sockets">
-      <Name>Indy.Sockets</Name>
-      <HintPath>Required dlls\Indy.Sockets.dll</HintPath>
+    <Reference Include="Interop.Microsoft.Office.Core, Version=2.2.0.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Required dlls\Interop.Microsoft.Office.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Interop.Word">
-      <Name>Interop.Word</Name>
-      <HintPath>Required dlls\Interop.Word.dll</HintPath>
+    <Reference Include="Interop.Word, Version=8.2.0.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Required dlls\Interop.Word.dll</HintPath>
     </Reference>
-    <Reference Include="MySql.Data">
-      <Name>MySql.Data</Name>
-      <HintPath>Required dlls\MySql.Data.dll</HintPath>
+    <Reference Include="NDde, Version=1.3.171.0, Culture=neutral, PublicKeyToken=6949dadb6e675e5a">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Required dlls\NDde.dll</HintPath>
     </Reference>
-    <Reference Include="NDde">
-      <Name>NDde</Name>
-      <HintPath>Required dlls\NDde.dll</HintPath>
+    <Reference Include="RS232, Version=1.18.0.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Required dlls\RS232.dll</HintPath>
     </Reference>
-    <Reference Include="RdlEngine">
-      <Name>RdlEngine</Name>
-      <HintPath>RdlEngine\bin\Debug\RdlEngine.dll</HintPath>
+    <Reference Include="SigPlusNET, Version=1.0.2057.23757, Culture=neutral, PublicKeyToken=6aef07010bb0624f">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Required dlls\SigPlusNET.dll</HintPath>
     </Reference>
-    <Reference Include="RdlViewer">
-      <Name>RdlViewer</Name>
-      <HintPath>RdlViewer\bin\Debug\RdlViewer.dll</HintPath>
-    </Reference>
-    <Reference Include="RS232">
-      <Name>RS232</Name>
-      <HintPath>Required dlls\RS232.dll</HintPath>
-    </Reference>
-    <Reference Include="System">
-      <Name>System</Name>
-    </Reference>
-    <Reference Include="System.Data">
-      <Name>System.Data</Name>
-    </Reference>
-    <Reference Include="System.Design">
-      <Name>System.Design</Name>
-    </Reference>
-    <Reference Include="System.Drawing">
-      <Name>System.Drawing</Name>
-    </Reference>
-    <Reference Include="System.Drawing.Design">
-      <Name>System.Drawing.Design</Name>
-    </Reference>
-    <Reference Include="System.ServiceProcess">
-      <Name>System.ServiceProcess</Name>
-    </Reference>
-    <Reference Include="System.Windows.Forms">
-      <Name>System.Windows.Forms</Name>
-    </Reference>
-    <Reference Include="System.Xml">
-      <Name>System.XML</Name>
-    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
     <Reference Include="Tao.OpenGl, Version=0.0.0.0, Culture=neutral, PublicKeyToken=1ca010269a4501ef">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Required dlls\Tao.OpenGl.dll</HintPath>
+      <HintPath>..\Required dlls\Tao.OpenGl.dll</HintPath>
     </Reference>
     <Reference Include="Tao.Platform.Windows, Version=1.0.0.3, Culture=neutral, PublicKeyToken=701104b2da67a104">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Required dlls\Tao.Platform.Windows.dll</HintPath>
+      <HintPath>..\Required dlls\Tao.Platform.Windows.dll</HintPath>
     </Reference>
-    <Reference Include="VBbridges, Version=4.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="VBbridges, Version=4.4.11.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Required dlls\VBbridges.dll</HintPath>
+      <HintPath>..\Required dlls\VBbridges.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Bridges\Apteryx.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Bridges\PerioPal.cs" />
-    <Compile Include="Bridges\MediaDent.cs" />
-    <Compile Include="Bridges\FloridaProbe.cs" />
-    <Compile Include="Bridges\DrCeph.cs" />
+    <Compile Include="Bridges\Apteryx.cs" />
+    <Compile Include="Bridges\DBSWin.cs" />
     <Compile Include="Bridges\DentalEye.cs" />
-    <Compile Include="Bridges\NewPatientForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Bridges\NewPatientForm.Designer.cs">
-      <DependentUpon>NewPatientForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Bridges\Trojan.cs" />
-    <Compile Include="Bridges\TrophyEnhanced.cs" />
-    <Compile Include="Bridges\VixWinOld.cs" />
-    <Compile Include="Bridges\DBSWin.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Bridges\DentForms.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Bridges\DentX.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Bridges\Dexis.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Bridges\DentForms.cs" />
+    <Compile Include="Bridges\DentX.cs" />
+    <Compile Include="Bridges\Dexis.cs" />
+    <Compile Include="Bridges\DrCeph.cs" />
+    <Compile Include="Bridges\FloridaProbe.cs" />
     <Compile Include="Bridges\FormHouseCalls.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Bridges\FormIap.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Bridges\Iap.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Bridges\ImageFX.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Bridges\Lightyear.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Bridges\Planmeca.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Bridges\Schick.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Bridges\Sirona.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Bridges\TigerView.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Bridges\Trophy.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Bridges\VixWin.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\Adjustments.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\Appointments.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\Clinics.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\Benefits.cs" />
-    <Compile Include="Business Layer\AppointmentRules.cs" />
-    <Compile Include="Business Layer\Accounts.cs" />
-    <Compile Include="Business Layer\AccountingAutoPays.cs" />
-    <Compile Include="Business Layer\SigButDefElements.cs" />
-    <Compile Include="Business Layer\SigButDefs.cs" />
-    <Compile Include="Business Layer\SigElements.cs" />
-    <Compile Include="Business Layer\SigElementDefs.cs" />
-    <Compile Include="Business Layer\RxAlerts.cs" />
-    <Compile Include="Business Layer\Questions.cs" />
-    <Compile Include="Business Layer\QuestionDefs.cs" />
-    <Compile Include="Business Layer\TerminalActives.cs" />
-    <Compile Include="Business Layer\Diseases.cs" />
-    <Compile Include="Business Layer\DiseaseDefs.cs" />
-    <Compile Include="Business Layer\PatFieldDefs.cs" />
-    <Compile Include="Business Layer\PatFields.cs" />
-    <Compile Include="Business Layer\ToothInitials.cs" />
-    <Compile Include="Business Layer\FeeScheds.cs" />
-    <Compile Include="Business Layer\Reconciles.cs" />
-    <Compile Include="Business Layer\Transactions.cs" />
-    <Compile Include="Business Layer\JournalEntries.cs" />
-    <Compile Include="Business Layer\TimeAdjust.cs" />
-    <Compile Include="Business Layer\PayPeriods.cs" />
-    <Compile Include="Business Layer\DataConnection.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\Deposits.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\Documents.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\Dunning.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\GroupPermissions.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\Instructors.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\LanguageForeign.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\MiscData.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\Operatories.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\PatPlans.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\PayPlanCharges.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\PayPlans.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\PermissionsOld.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\Printers.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\Procedure.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\ProcedureCodes.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\Procedures.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\ProcTPs.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\Providers.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\RepeatCharges.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\Reports.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\SchedDefaults.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\Schedules.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\SchoolClasses.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\SchoolCourses.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\Security.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\SecurityLogs.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\Signals.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\TaskLists.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\Tasks.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\TreatPlans.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\UserGroups.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\UserPermissionsOld.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\Users.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\ClaimFormItems.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\ClaimForms.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\ClaimPayments.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\ClaimProc.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\ClaimProcs.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\Clearinghouses.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\Computers.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\Family.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\Fees.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\InsPlan.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\InsPlans.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\LetterMergeFields.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\LetterMerges.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\Patient.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\Patients.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\Payments.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\PaySplits.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\Recall.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\Recalls.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\Referral.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\Referrals.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\ApptViewItems.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\ApptViews.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\AutoCodeConds.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\AutoCodeItems.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\AutoCodes.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\Batch.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\Carriers.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\Claims.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\ClockEvents.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\Commlogs.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\Contacts.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\Conversions.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\Counties.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\CovCats.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\CovPats.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\CovSpans.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\DataClass.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\Defs.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\DocAttaches.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\ElectIDs.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\EmailMessages.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\EmailTemplates.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\Employees.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\Employers.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\Graphic.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\Language.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\Ledgers.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\Letters.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\MedicationPats.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\Medications.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\ODReportData.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\PatientNotes.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\PerioExams.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\PerioMeasures.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\PIn.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\POut.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\Prefs.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\ProcButtonItems.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\ProcButtons.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\ProgramProperties.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\Programs.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\ProviderIdents.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\Queries.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\QuickPasteCats.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\QuickPasteNotes.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\RefAttaches.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\RxDefs.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Business Layer\RxPats.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\Schools.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\ScreenGroups.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\Screens.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\ToolButItems.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\UserQueries.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataClassesOld\ZipCodes.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Eclaims\AOS.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Eclaims\BCBSGA.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Eclaims\Eclaims.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Bridges\Iap.cs" />
+    <Compile Include="Bridges\ImageFX.cs" />
+    <Compile Include="Bridges\Lightyear.cs" />
+    <Compile Include="Bridges\MediaDent.cs" />
+    <Compile Include="Bridges\NewPatientForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Bridges\NewPatientForm.Designer.cs">
+      <DependentUpon>NewPatientForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Bridges\PerioPal.cs" />
+    <Compile Include="Bridges\Planmeca.cs" />
+    <Compile Include="Bridges\Schick.cs" />
+    <Compile Include="Bridges\Sirona.cs" />
+    <Compile Include="Bridges\TigerView.cs" />
+    <Compile Include="Bridges\Trojan.cs" />
+    <Compile Include="Bridges\Trophy.cs" />
+    <Compile Include="Bridges\TrophyEnhanced.cs" />
+    <Compile Include="Bridges\VixWin.cs" />
+    <Compile Include="Bridges\VixWinOld.cs" />
+    <Compile Include="Data Interface\AccountingAutoPays.cs" />
+    <Compile Include="Data Interface\Accounts.cs" />
+    <Compile Include="Data Interface\Adjustments.cs" />
+    <Compile Include="Data Interface\AppointmentRules.cs" />
+    <Compile Include="Data Interface\Appointments.cs" />
+    <Compile Include="Data Interface\ApptViewItems.cs" />
+    <Compile Include="Data Interface\ApptViews.cs" />
+    <Compile Include="Data Interface\AutoCodeConds.cs" />
+    <Compile Include="Data Interface\AutoCodeItems.cs" />
+    <Compile Include="Data Interface\AutoCodes.cs" />
+    <Compile Include="Data Interface\Benefits.cs" />
+    <Compile Include="Data Interface\Carriers.cs" />
+    <Compile Include="Data Interface\ClaimFormItems.cs" />
+    <Compile Include="Data Interface\ClaimForms.cs" />
+    <Compile Include="Data Interface\ClaimPayments.cs" />
+    <Compile Include="Data Interface\ClaimProcs.cs" />
+    <Compile Include="Data Interface\Claims.cs" />
+    <Compile Include="Data Interface\Clearinghouses.cs" />
+    <Compile Include="Data Interface\Clinics.cs" />
+    <Compile Include="Data Interface\ClockEvents.cs" />
+    <Compile Include="Data Interface\Commlogs.cs" />
+    <Compile Include="Data Interface\Computers.cs" />
+    <Compile Include="Data Interface\Contacts.cs" />
+    <Compile Include="Data Interface\Counties.cs" />
+    <Compile Include="Data Interface\CovCats.cs" />
+    <Compile Include="Data Interface\CovSpans.cs" />
+    <Compile Include="Data Interface\Defs.cs" />
+    <Compile Include="Data Interface\Deposits.cs" />
+    <Compile Include="Data Interface\DiseaseDefs.cs" />
+    <Compile Include="Data Interface\Diseases.cs" />
+    <Compile Include="Data Interface\DocAttaches.cs" />
+    <Compile Include="Data Interface\Documents.cs" />
+    <Compile Include="Data Interface\Dunnings.cs" />
+    <Compile Include="Data Interface\ElectIDs.cs" />
+    <Compile Include="Data Interface\EmailMessages.cs" />
+    <Compile Include="Data Interface\EmailTemplates.cs" />
+    <Compile Include="Data Interface\Employees.cs" />
+    <Compile Include="Data Interface\Employers.cs" />
+    <Compile Include="Data Interface\Family.cs" />
+    <Compile Include="Data Interface\Fees.cs" />
+    <Compile Include="Data Interface\General.cs" />
+    <Compile Include="Data Interface\GroupPermissions.cs" />
+    <Compile Include="Data Interface\InsPlans.cs" />
+    <Compile Include="Data Interface\Instructors.cs" />
+    <Compile Include="Data Interface\JournalEntries.cs" />
+    <Compile Include="Data Interface\Lan.cs" />
+    <Compile Include="Data Interface\LanguageForeigns.cs" />
+    <Compile Include="Data Interface\Ledgers.cs" />
+    <Compile Include="Data Interface\LetterMergeFields.cs" />
+    <Compile Include="Data Interface\LetterMerges.cs" />
+    <Compile Include="Data Interface\Letters.cs" />
+    <Compile Include="Data Interface\MedicationPats.cs" />
+    <Compile Include="Data Interface\Medications.cs" />
+    <Compile Include="Data Interface\MiscData.cs" />
+    <Compile Include="Data Interface\Operatories.cs" />
+    <Compile Include="Data Interface\PatFieldDefs.cs" />
+    <Compile Include="Data Interface\PatFields.cs" />
+    <Compile Include="Data Interface\PatientNotes.cs" />
+    <Compile Include="Data Interface\Patients.cs" />
+    <Compile Include="Data Interface\PatPlans.cs" />
+    <Compile Include="Data Interface\Payments.cs" />
+    <Compile Include="Data Interface\PayPeriods.cs" />
+    <Compile Include="Data Interface\PayPlanCharges.cs" />
+    <Compile Include="Data Interface\PayPlans.cs" />
+    <Compile Include="Data Interface\PaySplits.cs" />
+    <Compile Include="Data Interface\PerioExams.cs" />
+    <Compile Include="Data Interface\PerioMeasures.cs" />
+    <Compile Include="Data Interface\Prefs.cs" />
+    <Compile Include="Data Interface\Printers.cs" />
+    <Compile Include="Data Interface\ProcButtonItems.cs" />
+    <Compile Include="Data Interface\ProcButtons.cs" />
+    <Compile Include="Data Interface\ProcedureCodes.cs" />
+    <Compile Include="Data Interface\Procedures.cs" />
+    <Compile Include="Data Interface\ProcTPs.cs" />
+    <Compile Include="Data Interface\ProgramProperties.cs" />
+    <Compile Include="Data Interface\Programs.cs" />
+    <Compile Include="Data Interface\ProviderIdents.cs" />
+    <Compile Include="Data Interface\Providers.cs" />
+    <Compile Include="Data Interface\QuestionDefs.cs" />
+    <Compile Include="Data Interface\Questions.cs" />
+    <Compile Include="Data Interface\QuickPasteCats.cs" />
+    <Compile Include="Data Interface\QuickPasteNotes.cs" />
+    <Compile Include="Data Interface\Recalls.cs" />
+    <Compile Include="Data Interface\Reconciles.cs" />
+    <Compile Include="Data Interface\RefAttaches.cs" />
+    <Compile Include="Data Interface\Referrals.cs" />
+    <Compile Include="Data Interface\RemotingClient.cs" />
+    <Compile Include="Data Interface\RepeatCharges.cs" />
+    <Compile Include="Data Interface\RxAlerts.cs" />
+    <Compile Include="Data Interface\RxDefs.cs" />
+    <Compile Include="Data Interface\RxPats.cs" />
+    <Compile Include="Data Interface\SchedDefaults.cs" />
+    <Compile Include="Data Interface\Schedules.cs" />
+    <Compile Include="Data Interface\SchoolClasses.cs" />
+    <Compile Include="Data Interface\SchoolCourses.cs" />
+    <Compile Include="Data Interface\Schools.cs" />
+    <Compile Include="Data Interface\ScreenGroups.cs" />
+    <Compile Include="Data Interface\Screens.cs" />
+    <Compile Include="Data Interface\Security.cs" />
+    <Compile Include="Data Interface\SecurityLogs.cs" />
+    <Compile Include="Data Interface\SigButDefElements.cs" />
+    <Compile Include="Data Interface\SigButDefs.cs" />
+    <Compile Include="Data Interface\SigElementDefs.cs" />
+    <Compile Include="Data Interface\SigElements.cs" />
+    <Compile Include="Data Interface\Signals.cs" />
+    <Compile Include="Data Interface\TaskLists.cs" />
+    <Compile Include="Data Interface\Tasks.cs" />
+    <Compile Include="Data Interface\TerminalActives.cs" />
+    <Compile Include="Data Interface\TimeAdjusts.cs" />
+    <Compile Include="Data Interface\ToolButItems.cs" />
+    <Compile Include="Data Interface\ToothInitials.cs" />
+    <Compile Include="Data Interface\Transactions.cs" />
+    <Compile Include="Data Interface\TreatPlans.cs" />
+    <Compile Include="Data Interface\UserGroups.cs" />
+    <Compile Include="Data Interface\UserQueries.cs" />
+    <Compile Include="Data Interface\Users.cs" />
+    <Compile Include="Data Interface\ZipCodes.cs" />
+    <Compile Include="Eclaims\AOS.cs" />
+    <Compile Include="Eclaims\BCBSGA.cs" />
+    <Compile Include="Eclaims\Eclaims.cs" />
     <Compile Include="Eclaims\FormTerminal.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Eclaims\Inmediata.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Eclaims\RECS.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Eclaims\Renaissance.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Eclaims\Rs232.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Eclaims\WebClaim.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Eclaims\WebMD.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Eclaims\X12.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Eclaims\X12object.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Eclaims\X277U.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Eclaims\X997.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms Reports\FormRpRouting.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Eclaims\Inmediata.cs" />
+    <Compile Include="Eclaims\RECS.cs" />
+    <Compile Include="Eclaims\Renaissance.cs" />
+    <Compile Include="Eclaims\Rs232.cs" />
+    <Compile Include="Eclaims\WebClaim.cs" />
+    <Compile Include="Eclaims\WebMD.cs" />
+    <Compile Include="Eclaims\X12.cs" />
+    <Compile Include="Eclaims\X12object.cs" />
+    <Compile Include="Eclaims\X277U.cs" />
+    <Compile Include="Eclaims\X997.cs" />
     <Compile Include="Forms Reports\FormQuery.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -685,88 +320,26 @@
     <Compile Include="Forms Reports\FormRpReferrals.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms Reports\FormRpRouting.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms Reports\FormRpStatement.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms Reports\FormRpWriteoffSheet.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms Reports\Queries.cs" />
     <Compile Include="Forms\BasicTemplate.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\FormRxSetupPrinting.cs">
+    <Compile Include="Forms\FormAbout.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\FormSigButDefEdit.cs">
+    <Compile Include="Forms\FormAccountEdit.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\FormMessagingButSetup.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormSigElementDefEdit.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormMessagingSetup.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormInsPlansMerge.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormQuestionnaire.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormQuestionDefEdit.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormQuestionDefs.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\InputBox.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormTerminalManager.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormTerminal.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormDiseaseEdit.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormDiseaseDefEdit.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormDiseaseDefs.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormPatFieldEdit.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormPatFields.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormPatFieldDefEdit.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormPatFieldDefs.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormToothChartBig.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormProcCodes.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormPlansForFamily.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormInsBenefits.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\MsgBoxCopyPaste.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormReconcileEdit.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormReconciles.cs">
+    <Compile Include="Forms\FormAccounting.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\FormAccountingAutoPayEdit.cs">
@@ -776,48 +349,6 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\FormAccountPick.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormJournalEntryEdit.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormTransactionEdit.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormJournal.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormAccountEdit.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormAccounting.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormTimeAdjustEdit.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormBillingUndo.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormApptRules.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormApptRuleEdit.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormPayPeriodEdit.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormPayPeriods.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormNotePick.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormBenefitEdit.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormAbout.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\FormAdjust.cs">
@@ -830,6 +361,12 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\FormApptLists.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormApptRuleEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormApptRules.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\FormApptsOther.cs">
@@ -862,10 +399,16 @@
     <Compile Include="Forms\FormBackup.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\FormBenefitEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\FormBilling.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\FormBillingOptions.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormBillingUndo.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\FormCarrierCombine.cs">
@@ -875,9 +418,6 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\FormCarriers.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormDatabaseMaintenance.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\FormChooseDatabase.cs">
@@ -955,6 +495,9 @@
     <Compile Include="Forms\FormCountyEdit.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\FormDatabaseMaintenance.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\FormDefEdit.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -967,7 +510,19 @@
     <Compile Include="Forms\FormDeposits.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\FormDiseaseDefEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormDiseaseDefs.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormDiseaseEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\FormDocInfo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormDocSign.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\FormDunningEdit.cs">
@@ -1027,6 +582,9 @@
     <Compile Include="Forms\FormInsBenefitNotes.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\FormInsBenefits.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\FormInsCatEdit.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -1042,6 +600,9 @@
     <Compile Include="Forms\FormInsPlanSelect.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\FormInsPlansMerge.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\FormInsSelectSubscr.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -1052,6 +613,12 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\FormInstructors.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormJournal.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormJournalEntryEdit.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\FormLetterEdit.cs">
@@ -1087,10 +654,19 @@
     <Compile Include="Forms\FormMessageText.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\FormMessagingButSetup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormMessagingSetup.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\FormMisc.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\FormNoteApptMod.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormNotePick.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\FormOperatories.cs">
@@ -1100,6 +676,15 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\FormPasswordReset.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormPatFieldDefEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormPatFieldDefs.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormPatFieldEdit.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\FormPath.cs">
@@ -1114,6 +699,12 @@
     <Compile Include="Forms\FormPayment.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\FormPayPeriodEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormPayPeriods.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\FormPayPlan.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -1126,13 +717,13 @@
     <Compile Include="Forms\FormPaySplitEdit.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\FormPercentEdit.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Forms\FormPerio.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\FormPerioEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormPlansForFamily.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\FormPractice.cs">
@@ -1154,6 +745,9 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\FormProcCodeNew.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormProcCodes.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\FormProcEdit.cs">
@@ -1192,6 +786,15 @@
     <Compile Include="Forms\FormQueryFormulate.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\FormQuestionDefEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormQuestionDefs.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormQuestionnaire.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\FormQuickPaste.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -1211,6 +814,12 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\FormRecallSetup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormReconcileEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormReconciles.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\FormRefAttachEdit.cs">
@@ -1238,6 +847,9 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\FormRxSetup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormRxSetupPrinting.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\FormScannerSetup.cs">
@@ -1288,6 +900,12 @@
     <Compile Include="Forms\FormSecurity.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\FormSigButDefEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormSigElementDefEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\FormStatementOptions.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -1309,10 +927,25 @@
     <Compile Include="Forms\FormTelephone.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\FormTerminal.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormTerminalManager.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormTimeAdjustEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\FormTimeCard.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\FormToothChartBig.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\FormTrackNext.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormTransactionEdit.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\FormTranslation.cs">
@@ -1351,6 +984,12 @@
     <Compile Include="Forms\FormZipSelect.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\InputBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MsgBoxCopyPaste.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Main Modules\ContrAccount.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -1375,84 +1014,1356 @@
     <Compile Include="Main Modules\FormOpenDental.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Misc\ClassConvertDatabase.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Misc\ClassesShared.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Misc\Enumerations.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Misc\EZTwain.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Misc\LabelSingle.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Misc\ClassConvertDatabase.cs" />
+    <Compile Include="Misc\ClassesShared.cs" />
+    <Compile Include="Misc\DataConnectionOld.cs" />
+    <Compile Include="Misc\EZTwain.cs" />
+    <Compile Include="Misc\LabelSingle.cs" />
     <Compile Include="Misc\ObjectDateComparer.cs" />
-    <Compile Include="Misc\Pop3.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Misc\Smtp.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Misc\Tooth.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Misc\VisiQuick.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Misc\Pop3.cs" />
+    <Compile Include="Misc\Tooth.cs" />
+    <Compile Include="Misc\VisiQuick.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Bridges\FormHouseCalls.resx">
+      <DependentUpon>FormHouseCalls.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Bridges\FormIap.resx">
+      <DependentUpon>FormIap.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Bridges\NewPatientForm.resx">
+      <DependentUpon>NewPatientForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Eclaims\FormTerminal.resx">
+      <DependentUpon>FormTerminal.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms Reports\FormQuery.resx">
+      <DependentUpon>FormQuery.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms Reports\FormRpAdjSheet.resx">
+      <DependentUpon>FormRpAdjSheet.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms Reports\FormRpAging.resx">
+      <DependentUpon>FormRpAging.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms Reports\FormRpAppointments.resx">
+      <DependentUpon>FormRpAppointments.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms Reports\FormRpBirthday.resx">
+      <DependentUpon>FormRpBirthday.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms Reports\FormRpCapitation.resx">
+      <DependentUpon>FormRpCapitation.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms Reports\FormRpClaimNotSent.resx">
+      <DependentUpon>FormRpClaimNotSent.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms Reports\FormRpConfirm.resx">
+      <DependentUpon>FormRpConfirm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms Reports\FormRpCourseGrades.resx">
+      <DependentUpon>FormRpCourseGrades.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms Reports\FormRpDepositSlip.resx">
+      <DependentUpon>FormRpDepositSlip.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms Reports\FormRpFinanceCharge.resx">
+      <DependentUpon>FormRpFinanceCharge.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms Reports\FormRpInsCo.resx">
+      <DependentUpon>FormRpInsCo.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms Reports\FormRpOutInsClaims.resx">
+      <DependentUpon>FormRpOutInsClaims.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms Reports\FormRpPatients.resx">
+      <DependentUpon>FormRpPatients.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms Reports\FormRpPaySheet.resx">
+      <DependentUpon>FormRpPaySheet.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms Reports\FormRpPHRawPop.resx">
+      <DependentUpon>FormRpPHRawPop.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms Reports\FormRpPHRawScreen.resx">
+      <DependentUpon>FormRpPHRawScreen.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms Reports\FormRpPrescriptions.resx">
+      <DependentUpon>FormRpPrescriptions.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms Reports\FormRpPrintPreview.resx">
+      <DependentUpon>FormRpPrintPreview.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms Reports\FormRpProcCodes.resx">
+      <DependentUpon>FormRpProcCodes.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms Reports\FormRpProcNotBilledIns.resx">
+      <DependentUpon>FormRpProcNotBilledIns.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms Reports\FormRpProcNote.resx">
+      <DependentUpon>FormRpProcNote.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms Reports\FormRpProcsCompleted.resx">
+      <DependentUpon>FormRpProcsCompleted.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms Reports\FormRpProcSheet.resx">
+      <DependentUpon>FormRpProcSheet.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms Reports\FormRpProdInc.resx">
+      <DependentUpon>FormRpProdInc.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms Reports\FormRpRecall.resx">
+      <DependentUpon>FormRpRecall.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms Reports\FormRpReferrals.resx">
+      <DependentUpon>FormRpReferrals.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms Reports\FormRpRouting.resx">
+      <DependentUpon>FormRpRouting.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms Reports\FormRpStatement.resx">
+      <DependentUpon>FormRpStatement.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms Reports\FormRpWriteoffSheet.resx">
+      <DependentUpon>FormRpWriteoffSheet.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\BasicTemplate.resx">
+      <DependentUpon>BasicTemplate.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormAbout.resx">
+      <DependentUpon>FormAbout.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormAccountEdit.resx">
+      <DependentUpon>FormAccountEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormAccounting.resx">
+      <DependentUpon>FormAccounting.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormAccountingAutoPayEdit.resx">
+      <DependentUpon>FormAccountingAutoPayEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormAccountingSetup.resx">
+      <DependentUpon>FormAccountingSetup.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormAccountPick.resx">
+      <DependentUpon>FormAccountPick.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormAdjust.resx">
+      <DependentUpon>FormAdjust.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormAging.resx">
+      <DependentUpon>FormAging.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormApptEdit.resx">
+      <DependentUpon>FormApptEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormApptLists.resx">
+      <DependentUpon>FormApptLists.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormApptRuleEdit.resx">
+      <DependentUpon>FormApptRuleEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormApptRules.resx">
+      <DependentUpon>FormApptRules.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormApptsOther.resx">
+      <DependentUpon>FormApptsOther.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormApptViewEdit.resx">
+      <DependentUpon>FormApptViewEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormApptViews.resx">
+      <DependentUpon>FormApptViews.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormAudit.resx">
+      <DependentUpon>FormAudit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormAuditOneType.resx">
+      <DependentUpon>FormAuditOneType.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormAutoCode.resx">
+      <DependentUpon>FormAutoCode.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormAutoCodeEdit.resx">
+      <DependentUpon>FormAutoCodeEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormAutoCodeLessIntrusive.resx">
+      <DependentUpon>FormAutoCodeLessIntrusive.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormAutoItemEdit.resx">
+      <DependentUpon>FormAutoItemEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormBackup.resx">
+      <DependentUpon>FormBackup.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormBenefitEdit.resx">
+      <DependentUpon>FormBenefitEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormBilling.resx">
+      <DependentUpon>FormBilling.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormBillingOptions.resx">
+      <DependentUpon>FormBillingOptions.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormBillingUndo.resx">
+      <DependentUpon>FormBillingUndo.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormCarrierCombine.resx">
+      <DependentUpon>FormCarrierCombine.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormCarrierEdit.resx">
+      <DependentUpon>FormCarrierEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormCarriers.resx">
+      <DependentUpon>FormCarriers.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormChooseDatabase.resx">
+      <DependentUpon>FormChooseDatabase.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormClaimEdit.resx">
+      <DependentUpon>FormClaimEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormClaimFormEdit.resx">
+      <DependentUpon>FormClaimFormEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormClaimFormItemEdit.resx">
+      <DependentUpon>FormClaimFormItemEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormClaimForms.resx">
+      <DependentUpon>FormClaimForms.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormClaimPayEdit.resx">
+      <DependentUpon>FormClaimPayEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormClaimPayTotal.resx">
+      <DependentUpon>FormClaimPayTotal.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormClaimPrint.resx">
+      <DependentUpon>FormClaimPrint.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormClaimProc.resx">
+      <DependentUpon>FormClaimProc.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormClaimReports.resx">
+      <DependentUpon>FormClaimReports.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormClaimsSend.resx">
+      <DependentUpon>FormClaimsSend.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormClaimSupplemental.resx">
+      <DependentUpon>FormClaimSupplemental.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormClearinghouseEdit.resx">
+      <DependentUpon>FormClearinghouseEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormClearinghouses.resx">
+      <DependentUpon>FormClearinghouses.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormClinicEdit.resx">
+      <DependentUpon>FormClinicEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormClinics.resx">
+      <DependentUpon>FormClinics.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormClockEventEdit.resx">
+      <DependentUpon>FormClockEventEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormCommItem.resx">
+      <DependentUpon>FormCommItem.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormComputers.resx">
+      <DependentUpon>FormComputers.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormConfirmList.resx">
+      <DependentUpon>FormConfirmList.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormContactEdit.resx">
+      <DependentUpon>FormContactEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormContacts.resx">
+      <DependentUpon>FormContacts.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormConvertLang39.resx">
+      <DependentUpon>FormConvertLang39.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormCounties.resx">
+      <DependentUpon>FormCounties.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormCountyEdit.resx">
+      <DependentUpon>FormCountyEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormDatabaseMaintenance.resx">
+      <DependentUpon>FormDatabaseMaintenance.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormDefEdit.resx">
+      <DependentUpon>FormDefEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormDefinitions.resx">
+      <DependentUpon>FormDefinitions.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormDepositEdit.resx">
+      <DependentUpon>FormDepositEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormDeposits.resx">
+      <DependentUpon>FormDeposits.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormDiseaseDefEdit.resx">
+      <DependentUpon>FormDiseaseDefEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormDiseaseDefs.resx">
+      <DependentUpon>FormDiseaseDefs.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormDiseaseEdit.resx">
+      <DependentUpon>FormDiseaseEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormDocInfo.resx">
+      <DependentUpon>FormDocInfo.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormDocSign.resx">
+      <DependentUpon>FormDocSign.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormDunningEdit.resx">
+      <DependentUpon>FormDunningEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormEasy.resx">
+      <DependentUpon>FormEasy.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormElectIDs.resx">
+      <DependentUpon>FormElectIDs.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormEmailMessageEdit.resx">
+      <DependentUpon>FormEmailMessageEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormEmailSetup.resx">
+      <DependentUpon>FormEmailSetup.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormEmailTemplateEdit.resx">
+      <DependentUpon>FormEmailTemplateEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormEmployeeEdit.resx">
+      <DependentUpon>FormEmployeeEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormEmployeeSelect.resx">
+      <DependentUpon>FormEmployeeSelect.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormEmployerEdit.resx">
+      <DependentUpon>FormEmployerEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormEmployers.resx">
+      <DependentUpon>FormEmployers.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormFeeEdit.resx">
+      <DependentUpon>FormFeeEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormFeeSchedTools.resx">
+      <DependentUpon>FormFeeSchedTools.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormFinanceCharges.resx">
+      <DependentUpon>FormFinanceCharges.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormGroupPermEdit.resx">
+      <DependentUpon>FormGroupPermEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormImageViewer.resx">
+      <DependentUpon>FormImageViewer.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormImport.resx">
+      <DependentUpon>FormImport.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormImportXML.resx">
+      <DependentUpon>FormImportXML.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormInsAdj.resx">
+      <DependentUpon>FormInsAdj.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormInsBenefitNotes.resx">
+      <DependentUpon>FormInsBenefitNotes.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormInsBenefits.resx">
+      <DependentUpon>FormInsBenefits.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormInsCatEdit.resx">
+      <DependentUpon>FormInsCatEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormInsCatsSetup.resx">
+      <DependentUpon>FormInsCatsSetup.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormInsPlan.resx">
+      <DependentUpon>FormInsPlan.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormInsPlans.resx">
+      <DependentUpon>FormInsPlans.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormInsPlanSelect.resx">
+      <DependentUpon>FormInsPlanSelect.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormInsPlansMerge.resx">
+      <DependentUpon>FormInsPlansMerge.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormInsSelectSubscr.resx">
+      <DependentUpon>FormInsSelectSubscr.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormInsSpanEdit.resx">
+      <DependentUpon>FormInsSpanEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormInstructorEdit.resx">
+      <DependentUpon>FormInstructorEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormInstructors.resx">
+      <DependentUpon>FormInstructors.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormJournal.resx">
+      <DependentUpon>FormJournal.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormJournalEntryEdit.resx">
+      <DependentUpon>FormJournalEntryEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormLetterEdit.resx">
+      <DependentUpon>FormLetterEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormLetterMergeEdit.resx">
+      <DependentUpon>FormLetterMergeEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormLetterMerges.resx">
+      <DependentUpon>FormLetterMerges.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormLetters.resx">
+      <DependentUpon>FormLetters.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormLetterViewList.resx">
+      <DependentUpon>FormLetterViewList.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormLogOn.resx">
+      <DependentUpon>FormLogOn.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormMedical.resx">
+      <DependentUpon>FormMedical.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormMedicationEdit.resx">
+      <DependentUpon>FormMedicationEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormMedications.resx">
+      <DependentUpon>FormMedications.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormMedPat.resx">
+      <DependentUpon>FormMedPat.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormMessageText.resx">
+      <DependentUpon>FormMessageText.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormMessagingButSetup.resx">
+      <DependentUpon>FormMessagingButSetup.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormMessagingSetup.resx">
+      <DependentUpon>FormMessagingSetup.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormMisc.resx">
+      <DependentUpon>FormMisc.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormNoteApptMod.resx">
+      <DependentUpon>FormNoteApptMod.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormNotePick.resx">
+      <DependentUpon>FormNotePick.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormOperatories.resx">
+      <DependentUpon>FormOperatories.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormOperatoryEdit.resx">
+      <DependentUpon>FormOperatoryEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormPasswordReset.resx">
+      <DependentUpon>FormPasswordReset.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormPatFieldDefEdit.resx">
+      <DependentUpon>FormPatFieldDefEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormPatFieldDefs.resx">
+      <DependentUpon>FormPatFieldDefs.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormPatFieldEdit.resx">
+      <DependentUpon>FormPatFieldEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormPath.resx">
+      <DependentUpon>FormPath.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormPatientEdit.resx">
+      <DependentUpon>FormPatientEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormPatientSelect.resx">
+      <DependentUpon>FormPatientSelect.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormPayment.resx">
+      <DependentUpon>FormPayment.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormPayPeriodEdit.resx">
+      <DependentUpon>FormPayPeriodEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormPayPeriods.resx">
+      <DependentUpon>FormPayPeriods.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormPayPlan.resx">
+      <DependentUpon>FormPayPlan.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormPayPlanChargeEdit.resx">
+      <DependentUpon>FormPayPlanChargeEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormPayPlanSelect.resx">
+      <DependentUpon>FormPayPlanSelect.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormPaySplitEdit.resx">
+      <DependentUpon>FormPaySplitEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormPerio.resx">
+      <DependentUpon>FormPerio.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormPerioEdit.resx">
+      <DependentUpon>FormPerioEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormPlansForFamily.resx">
+      <DependentUpon>FormPlansForFamily.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormPractice.resx">
+      <DependentUpon>FormPractice.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormPrinterSetup.resx">
+      <DependentUpon>FormPrinterSetup.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormPrntScrn.resx">
+      <DependentUpon>FormPrntScrn.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormProcButtonEdit.resx">
+      <DependentUpon>FormProcButtonEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormProcButtons.resx">
+      <DependentUpon>FormProcButtons.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormProcCodeEdit.resx">
+      <DependentUpon>FormProcCodeEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormProcCodeNew.resx">
+      <DependentUpon>FormProcCodeNew.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormProcCodes.resx">
+      <DependentUpon>FormProcCodes.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormProcEdit.resx">
+      <DependentUpon>FormProcEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormProcSelect.resx">
+      <DependentUpon>FormProcSelect.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormProcTPEdit.resx">
+      <DependentUpon>FormProcTPEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormProgramLinkEdit.resx">
+      <DependentUpon>FormProgramLinkEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormProgramLinks.resx">
+      <DependentUpon>FormProgramLinks.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormProgramProperty.resx">
+      <DependentUpon>FormProgramProperty.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormProgress.resx">
+      <DependentUpon>FormProgress.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormProvEdit.resx">
+      <DependentUpon>FormProvEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormProviderIdentEdit.resx">
+      <DependentUpon>FormProviderIdentEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormProviderSelect.resx">
+      <DependentUpon>FormProviderSelect.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormQueryEdit.resx">
+      <DependentUpon>FormQueryEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormQueryFormulate.resx">
+      <DependentUpon>FormQueryFormulate.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormQuestionDefEdit.resx">
+      <DependentUpon>FormQuestionDefEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormQuestionDefs.resx">
+      <DependentUpon>FormQuestionDefs.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormQuestionnaire.resx">
+      <DependentUpon>FormQuestionnaire.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormQuickPaste.resx">
+      <DependentUpon>FormQuickPaste.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormQuickPasteCat.resx">
+      <DependentUpon>FormQuickPasteCat.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormQuickPasteNoteEdit.resx">
+      <DependentUpon>FormQuickPasteNoteEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormRecallEdit.resx">
+      <DependentUpon>FormRecallEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormRecallList.resx">
+      <DependentUpon>FormRecallList.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormRecallListEdit.resx">
+      <DependentUpon>FormRecallListEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormRecallSetup.resx">
+      <DependentUpon>FormRecallSetup.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormReconcileEdit.resx">
+      <DependentUpon>FormReconcileEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormReconciles.resx">
+      <DependentUpon>FormReconciles.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormRefAttachEdit.resx">
+      <DependentUpon>FormRefAttachEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormReferralEdit.resx">
+      <DependentUpon>FormReferralEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormReferralSelect.resx">
+      <DependentUpon>FormReferralSelect.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormRepeatChargeEdit.resx">
+      <DependentUpon>FormRepeatChargeEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormRepeatChargesUpdate.resx">
+      <DependentUpon>FormRepeatChargesUpdate.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormRxDefEdit.resx">
+      <DependentUpon>FormRxDefEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormRxEdit.resx">
+      <DependentUpon>FormRxEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormRxSelect.resx">
+      <DependentUpon>FormRxSelect.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormRxSetup.resx">
+      <DependentUpon>FormRxSetup.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormRxSetupPrinting.resx">
+      <DependentUpon>FormRxSetupPrinting.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormScannerSetup.resx">
+      <DependentUpon>FormScannerSetup.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormSchedDefault.resx">
+      <DependentUpon>FormSchedDefault.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormSchedDefaultBlockEdit.resx">
+      <DependentUpon>FormSchedDefaultBlockEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormSchedPractice.resx">
+      <DependentUpon>FormSchedPractice.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormScheduleBlockEdit.resx">
+      <DependentUpon>FormScheduleBlockEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormScheduleDay.resx">
+      <DependentUpon>FormScheduleDay.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormSchoolClassEdit.resx">
+      <DependentUpon>FormSchoolClassEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormSchoolClasses.resx">
+      <DependentUpon>FormSchoolClasses.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormSchoolCourseEdit.resx">
+      <DependentUpon>FormSchoolCourseEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormSchoolCourses.resx">
+      <DependentUpon>FormSchoolCourses.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormSchoolEdit.resx">
+      <DependentUpon>FormSchoolEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormSchools.resx">
+      <DependentUpon>FormSchools.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormScreenEdit.resx">
+      <DependentUpon>FormScreenEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormScreenGroup.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormScreenGroup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormScreenings.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormScreenings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormSecurity.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormSecurity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormSigButDefEdit.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormSigButDefEdit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormSigElementDefEdit.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormSigElementDefEdit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormStatementOptions.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormStatementOptions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormSubscriberSelect.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormSubscriberSelect.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormTaskEdit.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormTaskEdit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormTaskListEdit.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormTaskListEdit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormTaskListSelect.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormTaskListSelect.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormTasks.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormTasks.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormTelephone.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormTelephone.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormTerminal.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormTerminal.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormTerminalManager.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormTerminalManager.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormTimeAdjustEdit.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormTimeAdjustEdit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormTimeCard.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormTimeCard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormToothChartBig.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormToothChartBig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormTrackNext.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormTrackNext.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormTransactionEdit.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormTransactionEdit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormTranslation.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormTranslation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormTranslationCat.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormTranslationCat.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormTranslationEdit.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormTranslationEdit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormTreatPlanEdit.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FormTreatPlanEdit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormUnsched.resx">
+      <DependentUpon>FormUnsched.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormUpdate.resx">
+      <DependentUpon>FormUpdate.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormUserEdit.resx">
+      <DependentUpon>FormUserEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormUserGroupEdit.resx">
+      <DependentUpon>FormUserGroupEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormUserPassword.resx">
+      <DependentUpon>FormUserPassword.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormZipCodeEdit.resx">
+      <DependentUpon>FormZipCodeEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormZipCodes.resx">
+      <DependentUpon>FormZipCodes.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormZipSelect.resx">
+      <DependentUpon>FormZipSelect.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\InputBox.resx">
+      <DependentUpon>InputBox.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MsgBoxCopyPaste.resx">
+      <DependentUpon>MsgBoxCopyPaste.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Main Modules\ContrAccount.resx">
+      <DependentUpon>ContrAccount.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Main Modules\ContrAppt.resx">
+      <DependentUpon>ContrAppt.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Main Modules\ContrChart.resx">
+      <DependentUpon>ContrChart.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Main Modules\ContrDocs.resx">
+      <DependentUpon>ContrDocs.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Main Modules\ContrFamily.resx">
+      <DependentUpon>ContrFamily.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Main Modules\ContrStaff.resx">
+      <DependentUpon>ContrStaff.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Main Modules\ContrTreat.resx">
+      <DependentUpon>ContrTreat.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Main Modules\FormOpenDental.resx">
+      <DependentUpon>FormOpenDental.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportingOld2\FormParameterInput.resx">
+      <DependentUpon>FormParameterInput.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportingOld2\FormReportOld2.resx">
+      <DependentUpon>FormReportOld2.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reporting\FormReport.resx">
+      <DependentUpon>FormReport.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\ContrPanelTable.resx">
+      <DependentUpon>ContrPanelTable.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\ContrTable.resx">
+      <DependentUpon>ContrTable.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TableApptProcs.resx">
+      <DependentUpon>TableApptProcs.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TableApptsOther.resx">
+      <DependentUpon>TableApptsOther.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TableAutoItem.resx">
+      <DependentUpon>TableAutoItem.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TableCarriers.resx">
+      <DependentUpon>TableCarriers.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TableClaimPay.resx">
+      <DependentUpon>TableClaimPay.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TableClaimPaySplits.resx">
+      <DependentUpon>TableClaimPaySplits.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TableClaimProc.resx">
+      <DependentUpon>TableClaimProc.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TableClearinghouses.resx">
+      <DependentUpon>TableClearinghouses.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TableCodeList.resx">
+      <DependentUpon>TableCodeList.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TableCommLog.resx">
+      <DependentUpon>TableCommLog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TableContacts.resx">
+      <DependentUpon>TableContacts.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TableDefs.resx">
+      <DependentUpon>TableDefs.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TableElectID.resx">
+      <DependentUpon>TableElectID.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TableFamily.resx">
+      <DependentUpon>TableFamily.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TableLan.resx">
+      <DependentUpon>TableLan.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TableMedications.resx">
+      <DependentUpon>TableMedications.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TablePatientList.resx">
+      <DependentUpon>TablePatientList.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TablePercent.resx">
+      <DependentUpon>TablePercent.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TablePermissions.resx">
+      <DependentUpon>TablePermissions.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TableProcAdj.resx">
+      <DependentUpon>TableProcAdj.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TableProcIns.resx">
+      <DependentUpon>TableProcIns.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TableProcPay.resx">
+      <DependentUpon>TableProcPay.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TableProcSelect.resx">
+      <DependentUpon>TableProcSelect.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TableProg.resx">
+      <DependentUpon>TableProg.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TableProvIdent.resx">
+      <DependentUpon>TableProvIdent.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TableQueue.resx">
+      <DependentUpon>TableQueue.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TableRecall.resx">
+      <DependentUpon>TableRecall.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TableRefList.resx">
+      <DependentUpon>TableRefList.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TableRefSelect.resx">
+      <DependentUpon>TableRefSelect.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TableTeeth.resx">
+      <DependentUpon>TableTeeth.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TableTimeBar.resx">
+      <DependentUpon>TableTimeBar.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TableTP.resx">
+      <DependentUpon>TableTP.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TableTreat.resx">
+      <DependentUpon>TableTreat.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TableUnsched.resx">
+      <DependentUpon>TableUnsched.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TableUserPermissions.resx">
+      <DependentUpon>TableUserPermissions.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tables Old Grids\TableZips.resx">
+      <DependentUpon>TableZips.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Button.resx">
+      <DependentUpon>Button.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ComboBoxMulti.resx">
+      <DependentUpon>ComboBoxMulti.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ContrMultInput.resx">
+      <DependentUpon>ContrMultInput.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ContrYN.resx">
+      <DependentUpon>ContrYN.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ODGrid.resx">
+      <DependentUpon>ODGrid.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ODGridCell.resx">
+      <DependentUpon>ODGridCell.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ODGridColumn.resx">
+      <DependentUpon>ODGridColumn.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ODGridRow.resx">
+      <DependentUpon>ODGridRow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ODToolBar.resx">
+      <DependentUpon>ODToolBar.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\PictureBox.resx">
+      <DependentUpon>PictureBox.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\PrintPreview.resx">
+      <DependentUpon>PrintPreview.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="User Controls\ContrApptSheet.resx">
+      <DependentUpon>ContrApptSheet.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="User Controls\ContrApptSingle.resx">
+      <DependentUpon>ContrApptSingle.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="User Controls\ContrCalendar.resx">
+      <DependentUpon>ContrCalendar.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="User Controls\ContrPerio.resx">
+      <DependentUpon>ContrPerio.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="User Controls\ContrSchedGrid.resx">
+      <DependentUpon>ContrSchedGrid.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="User Controls\ContrTeeth.resx">
+      <DependentUpon>ContrTeeth.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="User Controls\ODtextBox.resx">
+      <DependentUpon>ODtextBox.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="User Controls\OutlookBar.resx">
+      <DependentUpon>OutlookBar.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="User Controls\ValidDate.resx">
+      <DependentUpon>ValidDate.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="User Controls\ValidDouble.resx">
+      <DependentUpon>ValidDouble.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="User Controls\ValidNum.resx">
+      <DependentUpon>ValidNum.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="User Controls\ValidNumber.resx">
+      <DependentUpon>ValidNumber.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="ReportingOld2\BoxObject.cs">
-      <SubType>Code</SubType>
+    <BaseApplicationManifest Include="Properties\app.manifest" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="ReportingOld2\DrawingObject.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="ReportingOld2\BoxObject.cs" />
+    <Compile Include="ReportingOld2\DrawingObject.cs" />
     <Compile Include="ReportingOld2\FormParameterInput.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="ReportingOld2\FormReportOld2.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ReportingOld2\LineObject.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ReportingOld2\ParameterField.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ReportingOld2\ParameterFieldCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ReportingOld2\ReportObject.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ReportingOld2\ReportObjectCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ReportingOld2\ReportOld2.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ReportingOld2\ReportParameter.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ReportingOld2\ScriptEngine.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ReportingOld2\Section.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ReportingOld2\SectionCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="ReportingOld2\LineObject.cs" />
+    <Compile Include="ReportingOld2\ParameterField.cs" />
+    <Compile Include="ReportingOld2\ParameterFieldCollection.cs" />
+    <Compile Include="ReportingOld2\ReportObject.cs" />
+    <Compile Include="ReportingOld2\ReportObjectCollection.cs" />
+    <Compile Include="ReportingOld2\ReportOld2.cs" />
+    <Compile Include="ReportingOld2\Section.cs" />
+    <Compile Include="ReportingOld2\SectionCollection.cs" />
     <Compile Include="Reporting\FormReport.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -1585,53 +2496,41 @@
     <Compile Include="UI\ContrYN.Designer.cs">
       <DependentUpon>ContrYN.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\GridColumnTypeConverter.cs" />
     <Compile Include="UI\LightSignalGrid.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="UI\LightSignalGrid.Designer.cs">
       <DependentUpon>LightSignalGrid.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\GridColumnTypeConverter.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="UI\MsgBox.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="UI\MsgBox.cs" />
     <Compile Include="UI\ODGrid.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UI\ODGridCell.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="UI\ODGridCellCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="UI\ODGridColumn.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="UI\ODGridColumnCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="UI\ODGridRow.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="UI\ODGridRowCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="UI\ODGridCell.cs" />
+    <Compile Include="UI\ODGridCellCollection.cs" />
+    <Compile Include="UI\ODGridColumn.cs" />
+    <Compile Include="UI\ODGridColumnCollection.cs" />
+    <Compile Include="UI\ODGridRow.cs" />
+    <Compile Include="UI\ODGridRowCollection.cs" />
     <Compile Include="UI\ODToolBar.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="UI\ODToolBarButton.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="UI\ODToolBarButtonCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="UI\ODToolBarButtonCollection.cs" />
     <Compile Include="UI\PictureBox.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="UI\PrintPreview.cs">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\SignatureBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\SignatureBox.Designer.cs">
+      <DependentUpon>SignatureBox.cs</DependentUpon>
     </Compile>
     <Compile Include="User Controls\ContrApptSheet.cs">
       <SubType>UserControl</SubType>
@@ -1648,8 +2547,7 @@
     <Compile Include="User Controls\ContrSchedGrid.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="User Controls\ContrTeeth.cs">
-    </Compile>
+    <Compile Include="User Controls\ContrTeeth.cs" />
     <Compile Include="User Controls\ODtextBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -1668,1050 +2566,35 @@
     <Compile Include="User Controls\ValidNumber.cs">
       <SubType>Component</SubType>
     </Compile>
-    <EmbeddedResource Include="Bridges\FormHouseCalls.resx">
-      <DependentUpon>FormHouseCalls.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Bridges\FormIap.resx">
-      <DependentUpon>FormIap.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Bridges\NewPatientForm.resx">
-      <DependentUpon>NewPatientForm.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Eclaims\FormTerminal.resx">
-      <DependentUpon>FormTerminal.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms Reports\FormRpRouting.resx">
-      <DependentUpon>FormRpRouting.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms Reports\FormQuery.resx">
-      <DependentUpon>FormQuery.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms Reports\FormRpAdjSheet.resx">
-      <DependentUpon>FormRpAdjSheet.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms Reports\FormRpAging.resx">
-      <DependentUpon>FormRpAging.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms Reports\FormRpAppointments.resx">
-      <DependentUpon>FormRpAppointments.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms Reports\FormRpBirthday.resx">
-      <DependentUpon>FormRpBirthday.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms Reports\FormRpCapitation.resx">
-      <DependentUpon>FormRpCapitation.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms Reports\FormRpClaimNotSent.resx">
-      <DependentUpon>FormRpClaimNotSent.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms Reports\FormRpConfirm.resx">
-      <DependentUpon>FormRpConfirm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms Reports\FormRpCourseGrades.resx">
-      <DependentUpon>FormRpCourseGrades.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms Reports\FormRpDepositSlip.resx">
-      <DependentUpon>FormRpDepositSlip.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms Reports\FormRpFinanceCharge.resx">
-      <DependentUpon>FormRpFinanceCharge.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms Reports\FormRpInsCo.resx">
-      <DependentUpon>FormRpInsCo.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms Reports\FormRpOutInsClaims.resx">
-      <DependentUpon>FormRpOutInsClaims.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms Reports\FormRpPatients.resx">
-      <DependentUpon>FormRpPatients.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms Reports\FormRpPaySheet.resx">
-      <DependentUpon>FormRpPaySheet.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms Reports\FormRpPHRawPop.resx">
-      <DependentUpon>FormRpPHRawPop.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms Reports\FormRpPHRawScreen.resx">
-      <DependentUpon>FormRpPHRawScreen.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms Reports\FormRpPrescriptions.resx">
-      <DependentUpon>FormRpPrescriptions.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms Reports\FormRpPrintPreview.resx">
-      <DependentUpon>FormRpPrintPreview.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms Reports\FormRpProcCodes.resx">
-      <DependentUpon>FormRpProcCodes.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms Reports\FormRpProcNotBilledIns.resx">
-      <DependentUpon>FormRpProcNotBilledIns.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms Reports\FormRpProcNote.resx">
-      <DependentUpon>FormRpProcNote.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms Reports\FormRpProcsCompleted.resx">
-      <DependentUpon>FormRpProcsCompleted.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms Reports\FormRpProcSheet.resx">
-      <DependentUpon>FormRpProcSheet.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms Reports\FormRpProdInc.resx">
-      <DependentUpon>FormRpProdInc.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms Reports\FormRpRecall.resx">
-      <DependentUpon>FormRpRecall.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms Reports\FormRpReferrals.resx">
-      <DependentUpon>FormRpReferrals.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms Reports\FormRpStatement.resx">
-      <DependentUpon>FormRpStatement.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\BasicTemplate.resx">
-      <DependentUpon>BasicTemplate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormRxSetupPrinting.resx">
-      <DependentUpon>FormRxSetupPrinting.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormSigButDefEdit.resx">
-      <DependentUpon>FormSigButDefEdit.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormMessagingButSetup.resx">
-      <DependentUpon>FormMessagingButSetup.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormSigElementDefEdit.resx">
-      <DependentUpon>FormSigElementDefEdit.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormMessagingSetup.resx">
-      <DependentUpon>FormMessagingSetup.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormInsPlansMerge.resx">
-      <DependentUpon>FormInsPlansMerge.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormQuestionnaire.resx">
-      <DependentUpon>FormQuestionnaire.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormQuestionDefEdit.resx">
-      <DependentUpon>FormQuestionDefEdit.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormQuestionDefs.resx">
-      <DependentUpon>FormQuestionDefs.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\InputBox.resx">
-      <DependentUpon>InputBox.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormTerminalManager.resx">
-      <DependentUpon>FormTerminalManager.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormTerminal.resx">
-      <DependentUpon>FormTerminal.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormDiseaseEdit.resx">
-      <DependentUpon>FormDiseaseEdit.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormDiseaseDefEdit.resx">
-      <DependentUpon>FormDiseaseDefEdit.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormDiseaseDefs.resx">
-      <DependentUpon>FormDiseaseDefs.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormPatFieldEdit.resx">
-      <DependentUpon>FormPatFieldEdit.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormPatFields.resx">
-      <DependentUpon>FormPatFields.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormPatFieldDefEdit.resx">
-      <DependentUpon>FormPatFieldDefEdit.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormPatFieldDefs.resx">
-      <DependentUpon>FormPatFieldDefs.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormToothChartBig.resx">
-      <DependentUpon>FormToothChartBig.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormProcCodes.resx">
-      <DependentUpon>FormProcCodes.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormPlansForFamily.resx">
-      <DependentUpon>FormPlansForFamily.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormInsBenefits.resx">
-      <DependentUpon>FormInsBenefits.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\MsgBoxCopyPaste.resx">
-      <DependentUpon>MsgBoxCopyPaste.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormReconcileEdit.resx">
-      <DependentUpon>FormReconcileEdit.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormReconciles.resx">
-      <DependentUpon>FormReconciles.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormAccountingAutoPayEdit.resx">
-      <DependentUpon>FormAccountingAutoPayEdit.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormAccountingSetup.resx">
-      <DependentUpon>FormAccountingSetup.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormAccountPick.resx">
-      <DependentUpon>FormAccountPick.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormJournalEntryEdit.resx">
-      <DependentUpon>FormJournalEntryEdit.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormTransactionEdit.resx">
-      <DependentUpon>FormTransactionEdit.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormJournal.resx">
-      <DependentUpon>FormJournal.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormAccountEdit.resx">
-      <DependentUpon>FormAccountEdit.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormAccounting.resx">
-      <DependentUpon>FormAccounting.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormTimeAdjustEdit.resx">
-      <DependentUpon>FormTimeAdjustEdit.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormBillingUndo.resx">
-      <DependentUpon>FormBillingUndo.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormApptRules.resx">
-      <DependentUpon>FormApptRules.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormApptRuleEdit.resx">
-      <DependentUpon>FormApptRuleEdit.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormPayPeriodEdit.resx">
-      <DependentUpon>FormPayPeriodEdit.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormPayPeriods.resx">
-      <DependentUpon>FormPayPeriods.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormNotePick.resx">
-      <DependentUpon>FormNotePick.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormBenefitEdit.resx">
-      <DependentUpon>FormBenefitEdit.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormAbout.resx">
-      <DependentUpon>FormAbout.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormAdjust.resx">
-      <DependentUpon>FormAdjust.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormAging.resx">
-      <DependentUpon>FormAging.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormApptEdit.resx">
-      <DependentUpon>FormApptEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormApptLists.resx">
-      <DependentUpon>FormApptLists.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormApptsOther.resx">
-      <DependentUpon>FormApptsOther.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormApptViewEdit.resx">
-      <DependentUpon>FormApptViewEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormApptViews.resx">
-      <DependentUpon>FormApptViews.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormAudit.resx">
-      <DependentUpon>FormAudit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormAuditOneType.resx">
-      <DependentUpon>FormAuditOneType.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormAutoCode.resx">
-      <DependentUpon>FormAutoCode.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormAutoCodeEdit.resx">
-      <DependentUpon>FormAutoCodeEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormAutoCodeLessIntrusive.resx">
-      <DependentUpon>FormAutoCodeLessIntrusive.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormAutoItemEdit.resx">
-      <DependentUpon>FormAutoItemEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormBackup.resx">
-      <DependentUpon>FormBackup.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormBilling.resx">
-      <DependentUpon>FormBilling.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormBillingOptions.resx">
-      <DependentUpon>FormBillingOptions.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormCarrierCombine.resx">
-      <DependentUpon>FormCarrierCombine.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormCarrierEdit.resx">
-      <DependentUpon>FormCarrierEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormCarriers.resx">
-      <DependentUpon>FormCarriers.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormDatabaseMaintenance.resx">
-      <DependentUpon>FormDatabaseMaintenance.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormChooseDatabase.resx">
-      <DependentUpon>FormChooseDatabase.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormClaimEdit.resx">
-      <DependentUpon>FormClaimEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormClaimFormEdit.resx">
-      <DependentUpon>FormClaimFormEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormClaimFormItemEdit.resx">
-      <DependentUpon>FormClaimFormItemEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormClaimForms.resx">
-      <DependentUpon>FormClaimForms.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormClaimPayEdit.resx">
-      <DependentUpon>FormClaimPayEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormClaimPayTotal.resx">
-      <DependentUpon>FormClaimPayTotal.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormClaimPrint.resx">
-      <DependentUpon>FormClaimPrint.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormClaimProc.resx">
-      <DependentUpon>FormClaimProc.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormClaimReports.resx">
-      <DependentUpon>FormClaimReports.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormClaimsSend.resx">
-      <DependentUpon>FormClaimsSend.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormClaimSupplemental.resx">
-      <DependentUpon>FormClaimSupplemental.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormClearinghouseEdit.resx">
-      <DependentUpon>FormClearinghouseEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormClearinghouses.resx">
-      <DependentUpon>FormClearinghouses.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormClinicEdit.resx">
-      <DependentUpon>FormClinicEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormClinics.resx">
-      <DependentUpon>FormClinics.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormClockEventEdit.resx">
-      <DependentUpon>FormClockEventEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormCommItem.resx">
-      <DependentUpon>FormCommItem.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormComputers.resx">
-      <DependentUpon>FormComputers.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormConfirmList.resx">
-      <DependentUpon>FormConfirmList.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormContactEdit.resx">
-      <DependentUpon>FormContactEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormContacts.resx">
-      <DependentUpon>FormContacts.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormConvertLang39.resx">
-      <DependentUpon>FormConvertLang39.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormCounties.resx">
-      <DependentUpon>FormCounties.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormCountyEdit.resx">
-      <DependentUpon>FormCountyEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormDefEdit.resx">
-      <DependentUpon>FormDefEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormDefinitions.resx">
-      <DependentUpon>FormDefinitions.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormDepositEdit.resx">
-      <DependentUpon>FormDepositEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormDeposits.resx">
-      <DependentUpon>FormDeposits.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormDocInfo.resx">
-      <DependentUpon>FormDocInfo.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormDunningEdit.resx">
-      <DependentUpon>FormDunningEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormEasy.resx">
-      <DependentUpon>FormEasy.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormElectIDs.resx">
-      <DependentUpon>FormElectIDs.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormEmailMessageEdit.resx">
-      <DependentUpon>FormEmailMessageEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormEmailSetup.resx">
-      <DependentUpon>FormEmailSetup.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormEmailTemplateEdit.resx">
-      <DependentUpon>FormEmailTemplateEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormEmployeeEdit.resx">
-      <DependentUpon>FormEmployeeEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormEmployeeSelect.resx">
-      <DependentUpon>FormEmployeeSelect.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormEmployerEdit.resx">
-      <DependentUpon>FormEmployerEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormEmployers.resx">
-      <DependentUpon>FormEmployers.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormFeeEdit.resx">
-      <DependentUpon>FormFeeEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormFeeSchedTools.resx">
-      <DependentUpon>FormFeeSchedTools.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormFinanceCharges.resx">
-      <DependentUpon>FormFinanceCharges.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormGroupPermEdit.resx">
-      <DependentUpon>FormGroupPermEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormImageViewer.resx">
-      <DependentUpon>FormImageViewer.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormImport.resx">
-      <DependentUpon>FormImport.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormImportXML.resx">
-      <DependentUpon>FormImportXML.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormInsAdj.resx">
-      <DependentUpon>FormInsAdj.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormInsBenefitNotes.resx">
-      <DependentUpon>FormInsBenefitNotes.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormInsCatEdit.resx">
-      <DependentUpon>FormInsCatEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormInsCatsSetup.resx">
-      <DependentUpon>FormInsCatsSetup.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormInsPlan.resx">
-      <DependentUpon>FormInsPlan.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormInsPlans.resx">
-      <DependentUpon>FormInsPlans.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormInsPlanSelect.resx">
-      <DependentUpon>FormInsPlanSelect.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormInsSelectSubscr.resx">
-      <DependentUpon>FormInsSelectSubscr.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormInsSpanEdit.resx">
-      <DependentUpon>FormInsSpanEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormInstructorEdit.resx">
-      <DependentUpon>FormInstructorEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormInstructors.resx">
-      <DependentUpon>FormInstructors.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormLetterEdit.resx">
-      <DependentUpon>FormLetterEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormLetterMergeEdit.resx">
-      <DependentUpon>FormLetterMergeEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormLetterMerges.resx">
-      <DependentUpon>FormLetterMerges.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormLetters.resx">
-      <DependentUpon>FormLetters.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormLetterViewList.resx">
-      <DependentUpon>FormLetterViewList.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormLogOn.resx">
-      <DependentUpon>FormLogOn.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormMedical.resx">
-      <DependentUpon>FormMedical.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormMedicationEdit.resx">
-      <DependentUpon>FormMedicationEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormMedications.resx">
-      <DependentUpon>FormMedications.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormMedPat.resx">
-      <DependentUpon>FormMedPat.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormMessageText.resx">
-      <DependentUpon>FormMessageText.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormMisc.resx">
-      <DependentUpon>FormMisc.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormNoteApptMod.resx">
-      <DependentUpon>FormNoteApptMod.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormOperatories.resx">
-      <DependentUpon>FormOperatories.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormOperatoryEdit.resx">
-      <DependentUpon>FormOperatoryEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormPasswordReset.resx">
-      <DependentUpon>FormPasswordReset.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormPath.resx">
-      <DependentUpon>FormPath.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormPatientEdit.resx">
-      <DependentUpon>FormPatientEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormPatientSelect.resx">
-      <DependentUpon>FormPatientSelect.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormPayment.resx">
-      <DependentUpon>FormPayment.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormPayPlan.resx">
-      <DependentUpon>FormPayPlan.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormPayPlanChargeEdit.resx">
-      <DependentUpon>FormPayPlanChargeEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormPayPlanSelect.resx">
-      <DependentUpon>FormPayPlanSelect.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormPaySplitEdit.resx">
-      <DependentUpon>FormPaySplitEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormPercentEdit.resx">
-      <DependentUpon>FormPercentEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormPerio.resx">
-      <DependentUpon>FormPerio.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormPerioEdit.resx">
-      <DependentUpon>FormPerioEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormPractice.resx">
-      <DependentUpon>FormPractice.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormPrinterSetup.resx">
-      <DependentUpon>FormPrinterSetup.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormPrntScrn.resx">
-      <DependentUpon>FormPrntScrn.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormProcButtonEdit.resx">
-      <DependentUpon>FormProcButtonEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormProcButtons.resx">
-      <DependentUpon>FormProcButtons.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormProcCodeEdit.resx">
-      <DependentUpon>FormProcCodeEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormProcCodeNew.resx">
-      <DependentUpon>FormProcCodeNew.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormProcEdit.resx">
-      <DependentUpon>FormProcEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormProcSelect.resx">
-      <DependentUpon>FormProcSelect.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormProcTPEdit.resx">
-      <DependentUpon>FormProcTPEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormProgramLinkEdit.resx">
-      <DependentUpon>FormProgramLinkEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormProgramLinks.resx">
-      <DependentUpon>FormProgramLinks.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormProgramProperty.resx">
-      <DependentUpon>FormProgramProperty.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormProgress.resx">
-      <DependentUpon>FormProgress.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormProvEdit.resx">
-      <DependentUpon>FormProvEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormProviderIdentEdit.resx">
-      <DependentUpon>FormProviderIdentEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormProviderSelect.resx">
-      <DependentUpon>FormProviderSelect.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormQueryEdit.resx">
-      <DependentUpon>FormQueryEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormQueryFormulate.resx">
-      <DependentUpon>FormQueryFormulate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormQuickPaste.resx">
-      <DependentUpon>FormQuickPaste.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormQuickPasteCat.resx">
-      <DependentUpon>FormQuickPasteCat.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormQuickPasteNoteEdit.resx">
-      <DependentUpon>FormQuickPasteNoteEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormRecallEdit.resx">
-      <DependentUpon>FormRecallEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormRecallList.resx">
-      <DependentUpon>FormRecallList.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormRecallListEdit.resx">
-      <DependentUpon>FormRecallListEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormRecallSetup.resx">
-      <DependentUpon>FormRecallSetup.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormRefAttachEdit.resx">
-      <DependentUpon>FormRefAttachEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormReferralEdit.resx">
-      <DependentUpon>FormReferralEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormReferralSelect.resx">
-      <DependentUpon>FormReferralSelect.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormRepeatChargeEdit.resx">
-      <DependentUpon>FormRepeatChargeEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormRepeatChargesUpdate.resx">
-      <DependentUpon>FormRepeatChargesUpdate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormRxDefEdit.resx">
-      <DependentUpon>FormRxDefEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormRxEdit.resx">
-      <DependentUpon>FormRxEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormRxSelect.resx">
-      <DependentUpon>FormRxSelect.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormRxSetup.resx">
-      <DependentUpon>FormRxSetup.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormScannerSetup.resx">
-      <DependentUpon>FormScannerSetup.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormSchedDefault.resx">
-      <DependentUpon>FormSchedDefault.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormSchedDefaultBlockEdit.resx">
-      <DependentUpon>FormSchedDefaultBlockEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormSchedPractice.resx">
-      <DependentUpon>FormSchedPractice.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormScheduleBlockEdit.resx">
-      <DependentUpon>FormScheduleBlockEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormScheduleDay.resx">
-      <DependentUpon>FormScheduleDay.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormSchoolClassEdit.resx">
-      <DependentUpon>FormSchoolClassEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormSchoolClasses.resx">
-      <DependentUpon>FormSchoolClasses.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormSchoolCourseEdit.resx">
-      <DependentUpon>FormSchoolCourseEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormSchoolCourses.resx">
-      <DependentUpon>FormSchoolCourses.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormSchoolEdit.resx">
-      <DependentUpon>FormSchoolEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormSchools.resx">
-      <DependentUpon>FormSchools.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormScreenEdit.resx">
-      <DependentUpon>FormScreenEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormScreenGroup.resx">
-      <DependentUpon>FormScreenGroup.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormScreenings.resx">
-      <DependentUpon>FormScreenings.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormSecurity.resx">
-      <DependentUpon>FormSecurity.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormStatementOptions.resx">
-      <DependentUpon>FormStatementOptions.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormSubscriberSelect.resx">
-      <DependentUpon>FormSubscriberSelect.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormTaskEdit.resx">
-      <DependentUpon>FormTaskEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormTaskListEdit.resx">
-      <DependentUpon>FormTaskListEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormTaskListSelect.resx">
-      <DependentUpon>FormTaskListSelect.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormTasks.resx">
-      <DependentUpon>FormTasks.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormTelephone.resx">
-      <DependentUpon>FormTelephone.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormTimeCard.resx">
-      <DependentUpon>FormTimeCard.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormTrackNext.resx">
-      <DependentUpon>FormTrackNext.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormTranslation.resx">
-      <DependentUpon>FormTranslation.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormTranslationCat.resx">
-      <DependentUpon>FormTranslationCat.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormTranslationEdit.resx">
-      <DependentUpon>FormTranslationEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormTreatPlanEdit.resx">
-      <DependentUpon>FormTreatPlanEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormUnsched.resx">
-      <DependentUpon>FormUnsched.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormUpdate.resx">
-      <DependentUpon>FormUpdate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormUserEdit.resx">
-      <DependentUpon>FormUserEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormUserGroupEdit.resx">
-      <DependentUpon>FormUserGroupEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormUserPassword.resx">
-      <DependentUpon>FormUserPassword.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormZipCodeEdit.resx">
-      <DependentUpon>FormZipCodeEdit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormZipCodes.resx">
-      <DependentUpon>FormZipCodes.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormZipSelect.resx">
-      <DependentUpon>FormZipSelect.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Main Modules\ContrAccount.resx">
-      <DependentUpon>ContrAccount.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Main Modules\ContrAppt.resx">
-      <DependentUpon>ContrAppt.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Main Modules\ContrChart.resx">
-      <DependentUpon>ContrChart.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Main Modules\ContrDocs.resx">
-      <DependentUpon>ContrDocs.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Main Modules\ContrFamily.resx">
-      <DependentUpon>ContrFamily.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Main Modules\ContrStaff.resx">
-      <DependentUpon>ContrStaff.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Main Modules\ContrTreat.resx">
-      <DependentUpon>ContrTreat.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Main Modules\FormOpenDental.resx">
-      <DependentUpon>FormOpenDental.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <SubType>Designer</SubType>
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ReportingOld2\FormParameterInput.resx">
-      <DependentUpon>FormParameterInput.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ReportingOld2\FormReportOld2.resx">
-      <DependentUpon>FormReportOld2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Reporting\FormReport.resx">
-      <DependentUpon>FormReport.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\ContrPanelTable.resx">
-      <DependentUpon>ContrPanelTable.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\ContrTable.resx">
-      <DependentUpon>ContrTable.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TableApptProcs.resx">
-      <DependentUpon>TableApptProcs.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TableApptsOther.resx">
-      <DependentUpon>TableApptsOther.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TableAutoItem.resx">
-      <DependentUpon>TableAutoItem.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TableCarriers.resx">
-      <DependentUpon>TableCarriers.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TableClaimPay.resx">
-      <DependentUpon>TableClaimPay.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TableClaimPaySplits.resx">
-      <DependentUpon>TableClaimPaySplits.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TableClaimProc.resx">
-      <DependentUpon>TableClaimProc.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TableClearinghouses.resx">
-      <DependentUpon>TableClearinghouses.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TableCodeList.resx">
-      <DependentUpon>TableCodeList.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TableCommLog.resx">
-      <DependentUpon>TableCommLog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TableContacts.resx">
-      <DependentUpon>TableContacts.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TableDefs.resx">
-      <DependentUpon>TableDefs.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TableElectID.resx">
-      <DependentUpon>TableElectID.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TableFamily.resx">
-      <DependentUpon>TableFamily.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TableLan.resx">
-      <DependentUpon>TableLan.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TableMedications.resx">
-      <DependentUpon>TableMedications.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TablePatientList.resx">
-      <DependentUpon>TablePatientList.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TablePercent.resx">
-      <DependentUpon>TablePercent.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TablePermissions.resx">
-      <DependentUpon>TablePermissions.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TableProcAdj.resx">
-      <DependentUpon>TableProcAdj.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TableProcIns.resx">
-      <DependentUpon>TableProcIns.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TableProcPay.resx">
-      <DependentUpon>TableProcPay.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TableProcSelect.resx">
-      <DependentUpon>TableProcSelect.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TableProg.resx">
-      <DependentUpon>TableProg.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TableProvIdent.resx">
-      <DependentUpon>TableProvIdent.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TableQueue.resx">
-      <DependentUpon>TableQueue.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TableRecall.resx">
-      <DependentUpon>TableRecall.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TableRefList.resx">
-      <DependentUpon>TableRefList.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TableRefSelect.resx">
-      <DependentUpon>TableRefSelect.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TableTeeth.resx">
-      <DependentUpon>TableTeeth.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TableTimeBar.resx">
-      <DependentUpon>TableTimeBar.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TableTP.resx">
-      <DependentUpon>TableTP.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TableTreat.resx">
-      <DependentUpon>TableTreat.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TableUnsched.resx">
-      <DependentUpon>TableUnsched.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TableUserPermissions.resx">
-      <DependentUpon>TableUserPermissions.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tables Old Grids\TableZips.resx">
-      <DependentUpon>TableZips.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\Button.resx">
-      <DependentUpon>Button.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\ComboBoxMulti.resx">
-      <DependentUpon>ComboBoxMulti.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\ContrMultInput.resx">
-      <DependentUpon>ContrMultInput.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\ContrYN.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>ContrYN.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\ODGrid.resx">
-      <DependentUpon>ODGrid.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\ODGridCell.resx">
-      <DependentUpon>ODGridCell.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\ODGridColumn.resx">
-      <DependentUpon>ODGridColumn.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\ODGridRow.resx">
-      <DependentUpon>ODGridRow.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\ODToolBar.resx">
-      <DependentUpon>ODToolBar.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\PictureBox.resx">
-      <DependentUpon>PictureBox.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\PrintPreview.resx">
-      <DependentUpon>PrintPreview.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="User Controls\ContrApptSheet.resx">
-      <DependentUpon>ContrApptSheet.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="User Controls\ContrApptSingle.resx">
-      <DependentUpon>ContrApptSingle.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="User Controls\ContrCalendar.resx">
-      <DependentUpon>ContrCalendar.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="User Controls\ContrPerio.resx">
-      <DependentUpon>ContrPerio.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="User Controls\ContrSchedGrid.resx">
-      <DependentUpon>ContrSchedGrid.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="User Controls\ContrTeeth.resx">
-      <DependentUpon>ContrTeeth.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="User Controls\ODtextBox.resx">
-      <DependentUpon>ODtextBox.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="User Controls\OutlookBar.resx">
-      <DependentUpon>OutlookBar.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="User Controls\ValidDate.resx">
-      <DependentUpon>ValidDate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="User Controls\ValidDouble.resx">
-      <DependentUpon>ValidDouble.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="User Controls\ValidNum.resx">
-      <DependentUpon>ValidNum.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="User Controls\ValidNumber.resx">
-      <DependentUpon>ValidNumber.cs</DependentUpon>
-    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="Misc\App.ico" />
     <Content Include="Misc\TerminalMgr.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="SparksToothChart\SparksToothChart.csproj">
+    <ProjectReference Include="..\OpenDentBusiness\OpenDentBusiness.csproj">
+      <Project>{3D0FC76E-803C-4DE2-BDB1-47D63A4E2357}</Project>
+      <Name>OpenDentBusiness</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RdlEngine\RdlEngine.csproj">
+      <Project>{C97E91F4-B310-44E2-9B6C-96775395722D}</Project>
+      <Name>RdlEngine</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RdlViewer\RdlViewer.csproj">
+      <Project>{D99145B1-CB6C-41F5-BA86-723325145FB5}</Project>
+      <Name>RdlViewer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SparksToothChart\SparksToothChart.csproj">
       <Project>{033B77F4-2E98-49A7-901F-5F388DEDF83E}</Project>
       <Name>SparksToothChart</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
 </Project>

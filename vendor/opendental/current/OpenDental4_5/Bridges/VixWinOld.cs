@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental.Bridges{
 	/// <summary></summary>
@@ -12,14 +14,12 @@ namespace OpenDental.Bridges{
 			
 		}
 
-		
-
 
 		///<summary>Sends data for Patient.Cur to the QuikLink directory. No further action is required.</summary>
-		public static void SendData(Patient pat){
-			ProgramProperties.GetForProgram();
-			ProgramProperties.GetCur("QuikLink directory.");
-			string quikLinkDir=ProgramProperties.Cur.PropertyValue;
+		public static void SendData(Program ProgramCur, Patient pat){
+			ArrayList ForProgram=ProgramProperties.GetForProgram(ProgramCur.ProgramNum);
+			ProgramProperty PPCur=ProgramProperties.GetCur(ForProgram, "QuikLink directory.");
+			string quikLinkDir=PPCur.PropertyValue;
 			if(pat==null){
 				return;
 			}
@@ -29,8 +29,8 @@ namespace OpenDental.Bridges{
 			}
 			try{
 				string patID;
-				ProgramProperties.GetCur("Enter 0 to use PatientNum, or 1 to use ChartNum");
-				if(ProgramProperties.Cur.PropertyValue=="0"){
+				PPCur=ProgramProperties.GetCur(ForProgram, "Enter 0 to use PatientNum, or 1 to use ChartNum");;
+				if(PPCur.PropertyValue=="0"){
 					patID=pat.PatNum.ToString().PadLeft(6,'0');
 				}
 				else{

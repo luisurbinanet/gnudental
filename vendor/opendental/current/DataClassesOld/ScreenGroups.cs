@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
+using System.Data;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 
@@ -27,7 +29,7 @@ namespace OpenDental{
 	/*=========================================================================================
 		=================================== class ScreenGroups ===========================================*/
   ///<summary></summary>
-	public class ScreenGroups:DataClass{
+	public class ScreenGroups{
 		///<summary></summary>
 		public static ScreenGroup Cur;
 		///<summary></summary>
@@ -35,13 +37,13 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void Refresh(DateTime fromDate,DateTime toDate){
-			cmd.CommandText =
+			string command =
 				"SELECT * from screengroup "
 				+"WHERE SGDate >= '"+POut.PDateT(fromDate)+"' "
 				+"&& SGDate <= '"+POut.PDateT(toDate.AddDays(1))+"' "
 				//added one day since it's calculated based on midnight.
 				+"ORDER BY SGDate,ScreenGroupNum";
-			FillTable();
+			DataTable table=General.GetTable(command);
 			List=new ScreenGroup[table.Rows.Count];
 			for(int i=0;i<List.Length;i++){
 				List[i].ScreenGroupNum =                  PIn.PInt   (table.Rows[i][0].ToString());
@@ -52,44 +54,43 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void InsertCur(){
-			if(Prefs.RandomKeys){
+			if(PrefB.RandomKeys){
 				Cur.ScreenGroupNum=MiscData.GetKey("screengroup","ScreenGroupNum");
 			}
-			cmd.CommandText="INSERT INTO screengroup (";
-			if(Prefs.RandomKeys){
-				cmd.CommandText+="ScreenGroupNum,";
+			string command="INSERT INTO screengroup (";
+			if(PrefB.RandomKeys){
+				command+="ScreenGroupNum,";
 			}
-			cmd.CommandText+="Description,SGDate) VALUES(";
-			if(Prefs.RandomKeys){
-				cmd.CommandText+="'"+POut.PInt(Cur.ScreenGroupNum)+"', ";
+			command+="Description,SGDate) VALUES(";
+			if(PrefB.RandomKeys){
+				command+="'"+POut.PInt(Cur.ScreenGroupNum)+"', ";
 			}
-			cmd.CommandText+=
+			command+=
 				 "'"+POut.PString(Cur.Description)+"', "
 				+"'"+POut.PDate  (Cur.SGDate)+"')";
-			if(Prefs.RandomKeys){
-				NonQ();
+			if(PrefB.RandomKeys){
+				General.NonQ(command);
 			}
 			else{
- 				NonQ(true);
-				Cur.ScreenGroupNum=InsertID;
+ 				Cur.ScreenGroupNum=General.NonQ(command,true);
 			}
 		}
 
 		///<summary></summary>
 		public static void UpdateCur(){
-			cmd.CommandText = "UPDATE screengroup SET "
+			string command = "UPDATE screengroup SET "
 				+"Description ='"  +POut.PString(Cur.Description)+"'"
 				+",SGDate ='"      +POut.PDate  (Cur.SGDate)+"'"
 				+" WHERE ScreenGroupNum = '" +POut.PInt(Cur.ScreenGroupNum)+"'";
-			NonQ();
+			General.NonQ(command);
 		}
 
 		///<summary>This will also delete all screen items, so may need to ask user first.</summary>
 		public static void DeleteCur(){
-			cmd.CommandText="DELETE from screen WHERE ScreenGroupNum ='"+POut.PInt(Cur.ScreenGroupNum)+"'";
-			NonQ();
-			cmd.CommandText="DELETE from screengroup WHERE ScreenGroupNum ='"+POut.PInt(Cur.ScreenGroupNum)+"'";
-			NonQ();
+			string command="DELETE from screen WHERE ScreenGroupNum ='"+POut.PInt(Cur.ScreenGroupNum)+"'";
+			General.NonQ(command);
+			command="DELETE from screengroup WHERE ScreenGroupNum ='"+POut.PInt(Cur.ScreenGroupNum)+"'";
+			General.NonQ(command);
 		}
 
 

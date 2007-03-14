@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -207,7 +208,7 @@ namespace OpenDental{
 					return;
 				}
 				try{
-					InstCur.Delete();
+					Instructors.Delete(InstCur);
 				}
 				catch(Exception ex){
 					MessageBox.Show(ex.Message);
@@ -221,7 +222,7 @@ namespace OpenDental{
 			InstCur.LName=textLName.Text;
 			InstCur.FName=textFName.Text;
 			InstCur.Suffix=textSuffix.Text;
-			InstCur.InsertOrUpdate(IsNew);
+			Instructors.InsertOrUpdate(InstCur,IsNew);
 			DialogResult=DialogResult.OK;
 		}
 

@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental.Eclaims
 {
@@ -53,7 +54,7 @@ namespace OpenDental.Eclaims
 				}
 			}
 			catch(Exception e){
-				MessageBox.Show(e.Message);//+"\r\n"+clearhouse.ClientProgram+" "+arguments);
+				MessageBox.Show(e.Message+"\r\n"+clearhouse.ClientProgram+" "+arguments);
 				X12.Rollback(clearhouse,batchNum);
 				return false;
 			}

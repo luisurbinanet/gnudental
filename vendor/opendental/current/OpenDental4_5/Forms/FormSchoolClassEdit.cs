@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -187,7 +188,7 @@ namespace OpenDental{
 					return;
 				}
 				try{
-					ClassCur.Delete();
+					SchoolClasses.Delete(ClassCur);
 				}
 				catch(Exception ex){
 					MessageBox.Show(ex.Message);
@@ -209,7 +210,7 @@ namespace OpenDental{
 			}
 			ClassCur.GradYear=PIn.PInt(textGradYear.Text);
 			ClassCur.Descript=textDescript.Text;
-			ClassCur.InsertOrUpdate(IsNew);
+			SchoolClasses.InsertOrUpdate(ClassCur,IsNew);
 			DialogResult=DialogResult.OK;
 		}
 

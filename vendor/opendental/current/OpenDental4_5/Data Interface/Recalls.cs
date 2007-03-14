@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	
@@ -20,8 +21,7 @@ namespace OpenDental{
 			string command=
 				"SELECT * from recall "
 				+"WHERE "+wherePats;
-			DataConnection dcon=new DataConnection();
- 			DataTable table=dcon.GetTable(command);
+ 			DataTable table=General.GetTable(command);
 			Recall[] List=new Recall[table.Rows.Count];
 			for(int i=0;i<List.Length;i++){
 				List[i]=new Recall();
@@ -76,8 +76,7 @@ namespace OpenDental{
 			}
 			command+="recall.DateDue";
 				//ordering will be done down below
-			DataConnection dcon=new DataConnection();
- 			DataTable table=dcon.GetTable(command);
+ 			DataTable table=General.GetTable(command);
 			RecallItem[] RecallList = new RecallItem[table.Rows.Count];
 			//DateTime[] orderDate=new DateTime[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
@@ -133,6 +132,72 @@ namespace OpenDental{
 			return RecallList;*/
 		}
 
+		///<summary></summary>
+		public static void Insert(Recall recall) {
+			if(PrefB.RandomKeys) {
+				recall.RecallNum=MiscData.GetKey("recall","RecallNum");
+			}
+			string command= "INSERT INTO recall (";
+			if(PrefB.RandomKeys) {
+				command+="RecallNum,";
+			}
+			command+="PatNum,DateDueCalc,DateDue,DatePrevious,"
+				+"RecallInterval,RecallStatus,Note,IsDisabled"
+				+") VALUES(";
+			if(PrefB.RandomKeys) {
+				command+="'"+POut.PInt(recall.RecallNum)+"', ";
+			}
+			command+=
+				 "'"+POut.PInt(recall.PatNum)+"', "
+				+"'"+POut.PDate(recall.DateDueCalc)+"', "
+				+"'"+POut.PDate(recall.DateDue)+"', "
+				+"'"+POut.PDate(recall.DatePrevious)+"', "
+				+"'"+POut.PInt(recall.RecallInterval.ToInt())+"', "
+				+"'"+POut.PInt(recall.RecallStatus)+"', "
+				+"'"+POut.PString(recall.Note)+"', "
+				+"'"+POut.PBool(recall.IsDisabled)+"')";
+			if(PrefB.RandomKeys) {
+				General.NonQ(command);
+			}
+			else {
+				recall.RecallNum=General.NonQ(command,true);
+			}
+		}
+
+		///<summary></summary>
+		public static void Update(Recall recall) {
+			string command= "UPDATE recall SET "
+				+"PatNum = '"          +POut.PInt(recall.PatNum)+"'"
+				+",DateDueCalc = '"    +POut.PDate(recall.DateDueCalc)+"' "
+				+",DateDue = '"        +POut.PDate(recall.DateDue)+"' "
+				+",DatePrevious = '"   +POut.PDate(recall.DatePrevious)+"' "
+				+",RecallInterval = '" +POut.PInt(recall.RecallInterval.ToInt())+"' "
+				+",RecallStatus= '"    +POut.PInt(recall.RecallStatus)+"' "
+				+",Note = '"           +POut.PString(recall.Note)+"' "
+				+",IsDisabled = '"     +POut.PBool(recall.IsDisabled)+"' "
+				+" WHERE RecallNum = '"+POut.PInt(recall.RecallNum)+"'";
+			General.NonQ(command);
+		}
+
+		///<summary></summary>
+		public static void Delete(Recall recall) {
+			string command= "DELETE from recall WHERE RecallNum = '"+POut.PInt(recall.RecallNum)+"'";
+			General.NonQ(command);
+		}
+
+		///<summary>Will only return true if not disabled, date previous is empty, DateDue is same as DateDueCalc, etc.</summary>
+		public static bool IsAllDefault(Recall recall) {
+			if(recall.IsDisabled
+				|| recall.DatePrevious.Year>1880
+				|| recall.DateDue != recall.DateDueCalc
+				|| recall.RecallInterval!=new Interval(0,0,6,0)
+				|| recall.RecallStatus!=0
+				|| recall.Note!="") {
+				return false;
+			}
+			return true;
+		}
+
 		///<summary>Synchronizes all recall for one patient. If datePrevious has changed, then it completely deletes the old recall information and sets a new dateDueCalc and DatePrevious.  Also updates dateDue to match dateDueCalc if not disabled.  The supplied recall can be null if patient has no existing recall. Deletes or creates any recalls as necessary.</summary>
 		public static void Synch(int patNum,Recall recall){
 			DateTime previousDate=GetPreviousDate(patNum);
@@ -154,9 +219,9 @@ namespace OpenDental{
 						recall.DateDue=DateTime.MinValue;
 					}
 					recall.DateDueCalc=DateTime.MinValue;
-					recall.Update();
-					if(recall.IsAllDefault()){//no useful info
-						recall.Delete();
+					Recalls.Update(recall);
+					if(Recalls.IsAllDefault(recall)){//no useful info
+						Recalls.Delete(recall);
 						recall=null;
 					}
 				}
@@ -169,7 +234,7 @@ namespace OpenDental{
 					recall.RecallInterval=new Interval(0,0,6,0);
 					recall.DateDueCalc=previousDate+recall.RecallInterval;
 					recall.DateDue=recall.DateDueCalc;
-					recall.Insert();
+					Recalls.Insert(recall);
 					return;
 				}
 				else{
@@ -184,7 +249,7 @@ namespace OpenDental{
 						}
 					}
 					recall.DateDueCalc=recall.DatePrevious+recall.RecallInterval;
-					recall.Update();
+					Recalls.Update(recall);
 				}
 			}
 		}
@@ -210,8 +275,7 @@ namespace OpenDental{
 				+"OR procedurelog.ProcStatus = 3 "
 				+"OR procedurelog.ProcStatus = 4) "
 				+"GROUP BY procedurelog.PatNum";
-			DataConnection dcon=new DataConnection();
-			DataTable table=dcon.GetTable(command);
+			DataTable table=General.GetTable(command);
 			if(table.Rows.Count==0){
 				return DateTime.MinValue;
 			}
@@ -224,8 +288,7 @@ namespace OpenDental{
 			string command="SELECT PatNum "
 				+"FROM patient "
 				+"WHERE PatStatus=0";
-			DataConnection dcon=new DataConnection();
-			DataTable table=dcon.GetTable(command);
+			DataTable table=General.GetTable(command);
 			for(int i=0;i<table.Rows.Count;i++){
 				Synch(PIn.PInt(table.Rows[i][0].ToString()));
 			}
@@ -248,13 +311,12 @@ namespace OpenDental{
       }
 			command+=") ";
 			if(groupByFamily){
-				command+="ORDER BY patient.Guarantor";
+				command+="ORDER BY patient.Guarantor,patient.PatNum = patient.Guarantor";//guarantor needs to be last
 			}
 			else{
 				command+="ORDER BY patient.LName,patient.FName";
 			}
-			DataConnection dcon=new DataConnection();
-			DataTable table=dcon.GetTable(command);
+			DataTable table=General.GetTable(command);
 			if(!groupByFamily){
 				return table;
 			}
@@ -297,6 +359,7 @@ namespace OpenDental{
 					|| table.Rows[i][10].ToString()!=table.Rows[i+1][10].ToString())//or if the guarantor on next line is different
 				{
 					row=newTable.NewRow();
+					//so for the query above, the guarantor should be last to show here.
 					row[0]=table.Rows[i][0].ToString();//LName
 					row[4]=table.Rows[i][4].ToString();//Address
 					row[5]=table.Rows[i][5].ToString();//Address2
@@ -317,8 +380,7 @@ namespace OpenDental{
 		public static void UpdateStatus(int recallNum,int newStatus){
 			string command="UPDATE recall SET RecallStatus="+newStatus.ToString()
 				+" WHERE RecallNum="+recallNum.ToString();
-			DataConnection dcon=new DataConnection();
-			dcon.NonQ(command);
+			General.NonQ(command);
 		}
 
 

@@ -10,7 +10,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
 using OpenDental.UI;
-
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary>All this dialog does is set the patnum and it is up to the calling form to do an immediate refresh, or possibly just change the patnum back to what it was.  So the other patient fields must remain intact during all logic in this form, especially if SelectionModeOnly.</summary>
@@ -562,7 +562,7 @@ namespace OpenDental{
 		}
 
 		private void FillSearchOption(){
-			checkUseSearch.Checked=Prefs.GetBool("PatientSelectUsesSearchButton");
+			checkUseSearch.Checked=PrefB.GetBool("PatientSelectUsesSearchButton");
 			if(checkUseSearch.Checked)
 				butSearch.Enabled=true;
 			else
@@ -601,6 +601,8 @@ namespace OpenDental{
 			col=new ODGridColumn("City",80);
 			gridMain.Columns.Add(col);
 			col=new ODGridColumn("State",55);
+			gridMain.Columns.Add(col);
+			col=new ODGridColumn("Pri Prov",85);
 			gridMain.Columns.Add(col);
 			gridMain.EndUpdate();
 		}
@@ -658,12 +660,7 @@ namespace OpenDental{
 		}
 
 		private void checkUseSearch_Click(object sender, System.EventArgs e) {
-			Prefs.Cur.PrefName="PatientSelectUsesSearchButton";
-			if(checkUseSearch.Checked)
-				Prefs.Cur.ValueString="1";
-			else
-				Prefs.Cur.ValueString="0";
-			Prefs.UpdateCur();
+			Prefs.UpdateBool("PatientSelectUsesSearchButton",checkUseSearch.Checked);
 			Prefs.Refresh();
 			//simply not important enough to send an update to the other computers.
 			FillSearchOption();
@@ -709,7 +706,7 @@ namespace OpenDental{
 			ODGridRow row;
 			for(int i=0;i<PtDataTable.Rows.Count;i++){
 				//Order in PtDataTable: PatNum,LName,FName,MiddleI,Preferred,Birthdate,SSN,HmPhone,WkPhone 0-8
-				//,Address,PatStatus,BillingType,ChartNumber,City,State 9-14
+				//,Address,PatStatus,BillingType,ChartNumber,City,State,PriProv 9-15
 				row=new ODGridRow();				
 				row.Cells.Add(PtDataTable.Rows[i][1].ToString());//LastName				
 				row.Cells.Add(PtDataTable.Rows[i][2].ToString());//First Name			
@@ -726,6 +723,7 @@ namespace OpenDental{
 				row.Cells.Add(PtDataTable.Rows[i][11].ToString());//Bill Type
 				row.Cells.Add(PtDataTable.Rows[i][13].ToString());//City
 				row.Cells.Add(PtDataTable.Rows[i][14].ToString());//State
+				row.Cells.Add(PtDataTable.Rows[i][15].ToString());//PriProv
 				gridMain.Rows.Add(row);
 			}
 			gridMain.EndUpdate();
@@ -761,10 +759,10 @@ namespace OpenDental{
 				PatCur.FName=textFName.Text.Substring(0,1).ToUpper()+textFName.Text.Substring(1);
 			}
 			PatCur.PatStatus=PatientStatus.Patient;
-			PatCur.Insert(false);
+			Patients.Insert(PatCur,false);
 			Patient PatOld=PatCur.Copy();
 			PatCur.Guarantor=PatCur.PatNum;
-			PatCur.Update(PatOld);
+			Patients.Update(PatCur,PatOld);
 			Family FamCur=Patients.GetFamily(PatCur.PatNum);
 			FormPatientEdit FormPE=new FormPatientEdit(PatCur,FamCur);
 			FormPE.IsNew=true;

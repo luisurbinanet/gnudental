@@ -3,11 +3,10 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
-	/// <summary>
-	/// Summary description for FormBasicTemplate.
-	/// </summary>
+	/// <summary> </summary>
 	public class FormProgramLinkEdit : System.Windows.Forms.Form{
 		private OpenDental.UI.Button butCancel;
 		private OpenDental.UI.Button butOK;
@@ -33,6 +32,8 @@ namespace OpenDental{
 		private Label label9;// Required designer variable.
 		/// <summary>This Program link is new.</summary>
 		public bool IsNew;
+		public Program ProgramCur;
+		private ArrayList ProgramPropertiesForProgram;
 
 		///<summary></summary>
 		public FormProgramLinkEdit(){
@@ -328,7 +329,7 @@ namespace OpenDental{
 		#endregion
 
 		private void FormProgramLinkEdit_Load(object sender, System.EventArgs e) {
-			if(Programs.Cur.ProgName!=""){
+			if(ProgramCur.ProgName!=""){
 				//user not allowed to delete program links that we include, only their own.
 				butDelete.Enabled=false;
 			}
@@ -340,13 +341,13 @@ namespace OpenDental{
 			//remember the toolbars that were selected.
 			ToolButItems.Refresh();
 			ProgramProperties.Refresh();
-			textProgName.Text=Programs.Cur.ProgName;
-			textProgDesc.Text=Programs.Cur.ProgDesc;
-			checkEnabled.Checked=Programs.Cur.Enabled;
-			textPath.Text=Programs.Cur.Path;
-			textCommandLine.Text=Programs.Cur.CommandLine;
-			textNote.Text=Programs.Cur.Note;
-			ToolButItems.GetForProgram();
+			textProgName.Text=ProgramCur.ProgName;
+			textProgDesc.Text=ProgramCur.ProgDesc;
+			checkEnabled.Checked=ProgramCur.Enabled;
+			textPath.Text=ProgramCur.Path;
+			textCommandLine.Text=ProgramCur.CommandLine;
+			textNote.Text=ProgramCur.Note;
+			ToolButItems.GetForProgram(ProgramCur.ProgramNum);
 			listToolBars.Items.Clear();
 			for(int i=0;i<Enum.GetNames(typeof(ToolBarsAvail)).Length;i++){
 				listToolBars.Items.Add(Enum.GetNames(typeof(ToolBarsAvail))[i]);
@@ -357,33 +358,34 @@ namespace OpenDental{
 			if(ToolButItems.ForProgram.Count>0){//the text on all buttons will be the same for now
 				textButtonText.Text=((ToolButItem)ToolButItems.ForProgram[0]).ButtonText;
 			}
-			ProgramProperties.GetForProgram();
+			ProgramPropertiesForProgram=ProgramProperties.GetForProgram(ProgramCur.ProgramNum);
 			listProperties.Items.Clear();
-			for(int i=0;i<ProgramProperties.ForProgram.Count;i++){
-				listProperties.Items.Add(((ProgramProperty)ProgramProperties.ForProgram[i]).PropertyDesc
-					+": "+((ProgramProperty)ProgramProperties.ForProgram[i]).PropertyValue);
+			for(int i=0;i<ProgramPropertiesForProgram.Count;i++){
+				listProperties.Items.Add(((ProgramProperty)ProgramPropertiesForProgram[i]).PropertyDesc
+					+": "+((ProgramProperty)ProgramPropertiesForProgram[i]).PropertyValue);
 			}
 		}
 
 		private void listProperties_DoubleClick(object sender, System.EventArgs e) {
 			if(listProperties.SelectedIndex==-1)
 				return;
-			ProgramProperties.Cur=(ProgramProperty)ProgramProperties.ForProgram[listProperties.SelectedIndex];
+			//ProgramProperty ProgramPropertyCur=
 			FormProgramProperty FormPP=new FormProgramProperty();
+			FormPP.ProgramPropertyCur=(ProgramProperty)ProgramPropertiesForProgram[listProperties.SelectedIndex];
 			FormPP.ShowDialog();
 			if(FormPP.DialogResult!=DialogResult.OK)
 				return;
 			ProgramProperties.Refresh();
-			ProgramProperties.GetForProgram();
+			ProgramPropertiesForProgram=ProgramProperties.GetForProgram(ProgramCur.ProgramNum);
 			listProperties.Items.Clear();
-			for(int i=0;i<ProgramProperties.ForProgram.Count;i++){
-				listProperties.Items.Add(((ProgramProperty)ProgramProperties.ForProgram[i]).PropertyDesc
-					+": "+((ProgramProperty)ProgramProperties.ForProgram[i]).PropertyValue);
+			for(int i=0;i<ProgramPropertiesForProgram.Count;i++){
+				listProperties.Items.Add(((ProgramProperty)ProgramPropertiesForProgram[i]).PropertyDesc
+					+": "+((ProgramProperty)ProgramPropertiesForProgram[i]).PropertyValue);
 			}
 		}
 
 		private void butDelete_Click(object sender, System.EventArgs e) {
-			if(Programs.Cur.ProgName!=""){//prevent users from deleting program links that we included.
+			if(ProgramCur.ProgName!=""){//prevent users from deleting program links that we included.
 				MsgBox.Show(this,"Not allowed to delete a program link with an internal name.");
 				return;
 			}
@@ -392,32 +394,33 @@ namespace OpenDental{
 				return;
 			}
 			if(!IsNew){
-				Programs.DeleteCur();
+				Programs.Delete(ProgramCur);
 			}
 			DialogResult=DialogResult.OK;
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			Programs.Cur.ProgName=textProgName.Text;
-			Programs.Cur.ProgDesc=textProgDesc.Text;
-			Programs.Cur.Enabled=checkEnabled.Checked;
-			Programs.Cur.Path=textPath.Text;
-			Programs.Cur.CommandLine=textCommandLine.Text;
-			Programs.Cur.Note=textNote.Text;
+			ProgramCur.ProgName=textProgName.Text;
+			ProgramCur.ProgDesc=textProgDesc.Text;
+			ProgramCur.Enabled=checkEnabled.Checked;
+			ProgramCur.Path=textPath.Text;
+			ProgramCur.CommandLine=textCommandLine.Text;
+			ProgramCur.Note=textNote.Text;
 			if(IsNew){
-				Programs.InsertCur();
+				Programs.Insert(ProgramCur);
 			}
 			else{
-				Programs.UpdateCur();
+				Programs.Update(ProgramCur);
 			}
-			ToolButItems.DeleteAllForProgram();
+			ToolButItems.DeleteAllForProgram(ProgramCur.ProgramNum);
 			//then add one toolButItem for each highlighted row in listbox
+			ToolButItem ToolButItemCur;
 			for(int i=0;i<listToolBars.SelectedIndices.Count;i++){
-				ToolButItems.Cur=new ToolButItem();
-				ToolButItems.Cur.ProgramNum=Programs.Cur.ProgramNum;
-				ToolButItems.Cur.ButtonText=textButtonText.Text;
-				ToolButItems.Cur.ToolBar=(ToolBarsAvail)listToolBars.SelectedIndices[i];
-				ToolButItems.InsertCur();
+				ToolButItemCur=new ToolButItem();
+				ToolButItemCur.ProgramNum=ProgramCur.ProgramNum;
+				ToolButItemCur.ButtonText=textButtonText.Text;
+				ToolButItemCur.ToolBar=(ToolBarsAvail)listToolBars.SelectedIndices[i];
+				ToolButItems.Insert(ToolButItemCur);
 			}
 			DialogResult=DialogResult.OK;
 		}
@@ -430,7 +433,7 @@ namespace OpenDental{
 			if(DialogResult==DialogResult.OK)
 				return;
 			if(IsNew){
-				Programs.DeleteCur();
+				Programs.Delete(ProgramCur);
 			}
 		}
 

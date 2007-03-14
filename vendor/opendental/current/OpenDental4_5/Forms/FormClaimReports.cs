@@ -6,6 +6,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using OpenDental.Eclaims;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>

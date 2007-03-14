@@ -2,115 +2,14 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
-
-	///<summary>A deposit slip.  Contains multiple insurance and patient checks.</summary>
-	public class Deposit{
-		///<summary>Primary key.</summary>
-		public int DepositNum;
-		///<summary>The date of the deposit.</summary>
-		public DateTime DateDeposit;
-		///<summary>User editable.  Usually includes name on the account and account number.  Possibly the bank name as well.</summary>
-		public string BankAccountInfo;
-		///<summary>Total amount of the deposit. User not allowed to directly edit.</summary>
-		public double Amount;
-		
-		///<summary></summary>
-		public Deposit Copy(){
-			Deposit d=new Deposit();
-			d.DepositNum=DepositNum;
-			d.DateDeposit=DateDeposit;
-			d.BankAccountInfo=BankAccountInfo;
-			d.Amount=Amount;
-			return d;
-		}
-
-		///<summary></summary>
-		public void Update(){
-			string command= "UPDATE deposit SET "
-				+"DateDeposit = '"     +POut.PDate  (DateDeposit)+"'"
-				+",BankAccountInfo = '"+POut.PString(BankAccountInfo)+"'"
-				+",Amount = '"         +POut.PDouble(Amount)+"'"
-				+" WHERE DepositNum ='"+POut.PInt   (DepositNum)+"'";
-			//MessageBox.Show(cmd.CommandText);
-			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command);
-		}
-
-		///<summary></summary>
-		public void Insert(){
-			if(Prefs.RandomKeys){
-				DepositNum=MiscData.GetKey("deposit","DepositNum");
-			}
-			string command= "INSERT INTO deposit (";
-			if(Prefs.RandomKeys){
-				command+="DepositNum,";
-			}
-			command+="DateDeposit,BankAccountInfo,Amount) VALUES(";
-			if(Prefs.RandomKeys){
-				command+="'"+POut.PInt(DepositNum)+"', ";
-			}
-			command+=
-				 "'"+POut.PDate  (DateDeposit)+"', "
-				+"'"+POut.PString(BankAccountInfo)+"', "
-				+"'"+POut.PDouble(Amount)+"')";
-			DataConnection dcon=new DataConnection();
- 			if(Prefs.RandomKeys){
-				dcon.NonQ(command);
-			}
-			else{
- 				dcon.NonQ(command,true);
-				DepositNum=dcon.InsertID;
-			}
-		}
-
-		/*//<summary></summary>
-		public void InsertOrUpdate(bool isNew){
-			if(isNew){
-				Insert();
-			}
-			else{
-				Update();
-			}
-		}*/
-
-		///<summary>Also handles detaching all payments and claimpayments.  Throws exception if deposit is attached as a source document to a transaction.  The program should have detached the deposit from the transaction ahead of time, so I would never expect the program to throw this exception unless there was a bug.</summary>
-		public void Delete(){
-			//check dependencies
-			string command="";
-			DataConnection dcon=new DataConnection();
-			if(DepositNum !=0){
-				command="SELECT COUNT(*) FROM transaction WHERE DepositNum ="+POut.PInt(DepositNum);
-				if(PIn.PInt(dcon.GetCount(command))>0) {
-					throw new ApplicationException(Lan.g("Deposits","Cannot delete deposit because it is attached to a transaction."));
-				}
-			}
-			/*/check claimpayment 
-			command="SELECT COUNT(*) FROM claimpayment WHERE DepositNum ="+POut.PInt(DepositNum);
-			if(PIn.PInt(dcon.GetCount(command))>0){
-				throw new InvalidProgramException(Lan.g("Deposits","Cannot delete deposit because it has payments attached"));
-			}*/
-			//ready to delete
-			command="UPDATE payment SET DepositNum=0 WHERE DepositNum="+POut.PInt(DepositNum);
-			dcon.NonQ(command);
-			command="UPDATE claimpayment SET DepositNum=0 WHERE DepositNum="+POut.PInt(DepositNum);
-			dcon.NonQ(command);
-			command= "DELETE FROM deposit WHERE DepositNum="+POut.PInt(DepositNum);
- 			dcon.NonQ(command);
-		}
-
-
-	}
-
-	/*=========================================================================================
-		=================================== class Deposits ==========================================*/
-
 	///<summary></summary>
-	public class Deposits{
-			
+	public class Deposits {
+
 		///<summary>Gets all Deposits, ordered by date.  </summary>
-		public static Deposit[] Refresh(){
+		public static Deposit[] Refresh() {
 			string command="SELECT * FROM deposit "
 				+"ORDER BY DateDeposit";
 			return RefreshAndFill(command);
@@ -131,9 +30,8 @@ namespace OpenDental{
 			return RefreshAndFill(command)[0];
 		}
 
-		private static Deposit[] RefreshAndFill(string command){
-			DataConnection dcon=new DataConnection();
-			DataTable table=dcon.GetTable(command);
+		private static Deposit[] RefreshAndFill(string command) {
+			DataTable table=General.GetTable(command);
 			Deposit[] List=new Deposit[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++) {
 				List[i]=new Deposit();
@@ -144,6 +42,70 @@ namespace OpenDental{
 			}
 			return List;
 		}
+
+		///<summary></summary>
+		public static void Update(Deposit dep){
+			string command= "UPDATE deposit SET "
+				+"DateDeposit = '"     +POut.PDate  (dep.DateDeposit)+"'"
+				+",BankAccountInfo = '"+POut.PString(dep.BankAccountInfo)+"'"
+				+",Amount = '"         +POut.PDouble(dep.Amount)+"'"
+				+" WHERE DepositNum ='"+POut.PInt   (dep.DepositNum)+"'";
+			//MessageBox.Show(string command);
+ 			General.NonQ(command);
+		}
+
+		///<summary></summary>
+		public static void Insert(Deposit dep){
+			if(PrefB.RandomKeys){
+				dep.DepositNum=MiscData.GetKey("deposit","DepositNum");
+			}
+			string command= "INSERT INTO deposit (";
+			if(PrefB.RandomKeys){
+				command+="DepositNum,";
+			}
+			command+="DateDeposit,BankAccountInfo,Amount) VALUES(";
+			if(PrefB.RandomKeys){
+				command+="'"+POut.PInt(dep.DepositNum)+"', ";
+			}
+			command+=
+				 "'"+POut.PDate  (dep.DateDeposit)+"', "
+				+"'"+POut.PString(dep.BankAccountInfo)+"', "
+				+"'"+POut.PDouble(dep.Amount)+"')";
+ 			if(PrefB.RandomKeys){
+				General.NonQ(command);
+			}
+			else{
+ 				dep.DepositNum=General.NonQ(command,true);
+			}
+		}
+
+		///<summary>Also handles detaching all payments and claimpayments.  Throws exception if deposit is attached as a source document to a transaction.  The program should have detached the deposit from the transaction ahead of time, so I would never expect the program to throw this exception unless there was a bug.</summary>
+		public static void Delete(Deposit dep){
+			//check dependencies
+			string command="";
+			if(dep.DepositNum !=0){
+				command="SELECT COUNT(*) FROM transaction WHERE DepositNum ="+POut.PInt(dep.DepositNum);
+				if(PIn.PInt(General.GetCount(command))>0) {
+					throw new ApplicationException(Lan.g("Deposits","Cannot delete deposit because it is attached to a transaction."));
+				}
+			}
+			/*/check claimpayment 
+			command="SELECT COUNT(*) FROM claimpayment WHERE DepositNum ="+POut.PInt(DepositNum);
+			if(PIn.PInt(General.GetCount(command))>0){
+				throw new InvalidProgramException(Lan.g("Deposits","Cannot delete deposit because it has payments attached"));
+			}*/
+			//ready to delete
+			command="UPDATE payment SET DepositNum=0 WHERE DepositNum="+POut.PInt(dep.DepositNum);
+			General.NonQ(command);
+			command="UPDATE claimpayment SET DepositNum=0 WHERE DepositNum="+POut.PInt(dep.DepositNum);
+			General.NonQ(command);
+			command= "DELETE FROM deposit WHERE DepositNum="+POut.PInt(dep.DepositNum);
+ 			General.NonQ(command);
+		}
+
+
+
+	
 
 
 

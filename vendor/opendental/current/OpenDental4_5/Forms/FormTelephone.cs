@@ -4,6 +4,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Globalization;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary></summary>
@@ -53,41 +54,47 @@ namespace OpenDental{
 			// 
 			// butClose
 			// 
+			this.butClose.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butClose.Autosize = true;
+			this.butClose.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butClose.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
 			this.butClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.butClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butClose.Location = new System.Drawing.Point(509, 266);
+			this.butClose.Location = new System.Drawing.Point(509,266);
 			this.butClose.Name = "butClose";
-			this.butClose.Size = new System.Drawing.Size(75, 26);
+			this.butClose.Size = new System.Drawing.Size(75,26);
 			this.butClose.TabIndex = 0;
 			this.butClose.Text = "&Close";
 			this.butClose.Click += new System.EventHandler(this.butClose_Click);
 			// 
 			// butReformat
 			// 
-			this.butReformat.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butReformat.Location = new System.Drawing.Point(17, 31);
+			this.butReformat.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butReformat.Autosize = true;
+			this.butReformat.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butReformat.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butReformat.Location = new System.Drawing.Point(17,31);
 			this.butReformat.Name = "butReformat";
-			this.butReformat.Size = new System.Drawing.Size(108, 26);
+			this.butReformat.Size = new System.Drawing.Size(108,26);
 			this.butReformat.TabIndex = 1;
 			this.butReformat.Text = "&Reformat";
 			this.butReformat.Click += new System.EventHandler(this.butReformat_Click);
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(137, 33);
+			this.label1.Location = new System.Drawing.Point(137,33);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(478, 57);
+			this.label1.Size = new System.Drawing.Size(478,57);
 			this.label1.TabIndex = 2;
 			this.label1.Text = "Reformat all phone numbers in the database to (###)###-####.  Only certain matche" +
-				"s will be reformatted.  No numbers will be lost, and no trailing comments will b" +
-				"e affected.";
+    "s will be reformatted.  No numbers will be lost, and no trailing comments will b" +
+    "e affected.";
 			// 
 			// FormTelephone
 			// 
 			this.AcceptButton = this.butClose;
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
 			this.CancelButton = this.butClose;
-			this.ClientSize = new System.Drawing.Size(642, 313);
+			this.ClientSize = new System.Drawing.Size(642,313);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.butReformat);
 			this.Controls.Add(this.butClose);

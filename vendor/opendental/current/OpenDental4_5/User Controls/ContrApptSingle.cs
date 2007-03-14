@@ -10,6 +10,7 @@ using System.Drawing;
 using System.Drawing.Text;
 using System.Text;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 
@@ -85,7 +86,7 @@ namespace OpenDental{
 			//if(ContrApptSheet.TwoRowsPerIncrement){
 			//	Height=Height*2;
 			//}
-			if(Prefs.GetInt("AppointmentTimeIncrement")==10){
+			if(PrefB.GetInt("AppointmentTimeIncrement")==10){
 				Height=Height/2;
 			}
 			else{//15 minute increments
@@ -108,9 +109,9 @@ namespace OpenDental{
 		///<summary>Called from SetLocation to establish Y position of control.  Also called from ContrAppt.RefreshDay when determining provBar markings. Does not round to the nearest row.</summary>
 		public int ConvertToY(){
 			int retVal=(int)(((double)Info.MyApt.AptDateTime.Hour*(double)60
-				/(double)Prefs.GetInt("AppointmentTimeIncrement")
+				/(double)PrefB.GetInt("AppointmentTimeIncrement")
 				+(double)Info.MyApt.AptDateTime.Minute
-				/(double)Prefs.GetInt("AppointmentTimeIncrement")
+				/(double)PrefB.GetInt("AppointmentTimeIncrement")
 				)*(double)ContrApptSheet.Lh*ContrApptSheet.RowsPerIncr);
 			//if(ContrApptSheet.TwoRowsPerIncrement){
 			//	retVal=retVal*2;
@@ -130,7 +131,7 @@ namespace OpenDental{
 				//	strBTime.Append(dbPattern.Substring(i,1));
 				//}
 				i++;//skip
-				if(Prefs.GetInt("AppointmentTimeIncrement")==15){
+				if(PrefB.GetInt("AppointmentTimeIncrement")==15){
 					i++;//skip another
 				}
 			}

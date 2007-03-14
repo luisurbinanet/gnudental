@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	///<summary></summary>
@@ -462,7 +463,7 @@ namespace OpenDental{
 			}
 			AptCur.Pattern="/X/";
 			if(PatCur.PriProv==0){
-				AptCur.ProvNum=PIn.PInt(((Pref)Prefs.HList["PracticeDefaultProv"]).ValueString);
+				AptCur.ProvNum=PIn.PInt(((Pref)PrefB.HList["PracticeDefaultProv"]).ValueString);
 			}
 			else{			
 				AptCur.ProvNum=PatCur.PriProv;
@@ -482,7 +483,7 @@ namespace OpenDental{
 				//new appt will be placed on pinboard instead of specific time
 			}
 			try{
-				AptCur.InsertOrUpdate(null,true);
+				Appointments.InsertOrUpdate(AptCur,null,true);
 			}
 			catch(ApplicationException ex){
 				MessageBox.Show(ex.Message);
@@ -586,7 +587,7 @@ namespace OpenDental{
 			}
 			else{//normal apt
 				procsForSingle=Procedures.GetProcsForSingle(AptCur.AptNum,false);
-				ContrAppt.CurInfo.Production=Procedures.GetProductionOneApt(AptCur.AptNum,procsForSingle,false);
+				ContrAppt.CurInfo.Production=Procedures.GetProductionOneApt(AptCur.AptNum,procsForSingle,true);
 			}
 			ContrAppt.CurInfo.Procs=procsForSingle;
 			ContrAppt.CurInfo.MyPatient=PatCur.Copy();

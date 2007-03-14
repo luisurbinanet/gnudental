@@ -1,8 +1,10 @@
 using System;
+using System.Collections;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental.Bridges{
 	/// <summary></summary>
@@ -14,14 +16,14 @@ namespace OpenDental.Bridges{
 		}
 
 		///<summary>Sends data for Patient.Cur to an import file which DBSWin will automatically recognize.</summary>
-		public static void SendData(Patient pat){
+		public static void SendData(Program ProgramCur, Patient pat){
 			if(pat==null){
 				MsgBox.Show("DBSWin","Please select a patient first.");
 				return;
 			}
-			ProgramProperties.GetForProgram();
-			ProgramProperties.GetCur("Text file path");
-			string infoFile=ProgramProperties.Cur.PropertyValue;
+			ArrayList ForProgram=ProgramProperties.GetForProgram(ProgramCur.ProgramNum);
+			ProgramProperty PPCur=ProgramProperties.GetCur(ForProgram, "Text file path");
+			string infoFile=PPCur.PropertyValue;
 			try{
 				using(StreamWriter sw=new StreamWriter(infoFile,false)){
 					//PATLASTNAME;PATFIRSTNAME;PATBIRTHDAY;PATCARDNUMBER;PATTOWN;PATSTREET;PATPHONENUMBER;PATTITLE;PATSEX;PATPOSTALCODE;
@@ -29,8 +31,8 @@ namespace OpenDental.Bridges{
 					sw.Write(Tidy(pat.LName)+";");
 					sw.Write(Tidy(pat.FName)+";");
 					sw.Write(pat.Birthdate.ToString("d.M.yyyy")+";");
-					ProgramProperties.GetCur("Enter 0 to use PatientNum, or 1 to use ChartNum");
-					if(ProgramProperties.Cur.PropertyValue=="0"){
+					PPCur=ProgramProperties.GetCur(ForProgram, "Enter 0 to use PatientNum, or 1 to use ChartNum");;
+					if(PPCur.PropertyValue=="0"){
 						sw.Write(pat.PatNum.ToString()+";");
 					}
 					else{

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental.UI{
 	///<summary></summary>
@@ -1114,6 +1115,9 @@ namespace OpenDental.UI{
 			//because mouse might have moved faster than computer could keep up, we have to loop through all rows between
 			if(MouseDownRow<curRow){//dragging down
 				for(int i=MouseDownRow;i<=curRow;i++){
+					if(i==-1){
+						continue;
+					}
 					if(!selectedIndices.Contains(i)){
 						selectedIndices.Add(i);
 					}

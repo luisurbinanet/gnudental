@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Collections;
 using System.Diagnostics;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental
 {
@@ -101,6 +102,13 @@ namespace OpenDental
 				contextMenu.MenuItems[3].Enabled=true;
 				contextMenu.MenuItems[4].Enabled=true;
 			}
+		}
+
+		protected override void OnMouseDown(MouseEventArgs e) {
+			if(!this.Focused) {
+				this.Focus();
+			}
+			base.OnMouseDown(e);
 		}
 
 		private void menuItem_Click(object sender,System.EventArgs e) {

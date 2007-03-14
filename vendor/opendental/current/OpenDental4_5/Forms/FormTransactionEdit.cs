@@ -4,6 +4,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using OpenDental.UI;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -91,7 +92,6 @@ namespace OpenDental{
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormTransactionEdit));
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
 			this.textDateTimeEntry = new System.Windows.Forms.TextBox();
@@ -104,22 +104,22 @@ namespace OpenDental{
 			this.label4 = new System.Windows.Forms.Label();
 			this.label6 = new System.Windows.Forms.Label();
 			this.panelSimple = new System.Windows.Forms.Panel();
+			this.butChange = new OpenDental.UI.Button();
 			this.textAccount = new System.Windows.Forms.TextBox();
 			this.textMemo = new System.Windows.Forms.TextBox();
 			this.textCheckNumber = new System.Windows.Forms.TextBox();
 			this.label7 = new System.Windows.Forms.Label();
+			this.textAmount = new OpenDental.ValidDouble();
 			this.panelCompound = new System.Windows.Forms.Panel();
+			this.butAdd = new OpenDental.UI.Button();
+			this.gridMain = new OpenDental.UI.ODGrid();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.label9 = new System.Windows.Forms.Label();
 			this.label8 = new System.Windows.Forms.Label();
 			this.textSourcePay = new System.Windows.Forms.TextBox();
-			this.textSourceDeposit = new System.Windows.Forms.TextBox();
 			this.butAttachPay = new OpenDental.UI.Button();
+			this.textSourceDeposit = new System.Windows.Forms.TextBox();
 			this.butAttachDep = new OpenDental.UI.Button();
-			this.butChange = new OpenDental.UI.Button();
-			this.textAmount = new OpenDental.ValidDouble();
-			this.butAdd = new OpenDental.UI.Button();
-			this.gridMain = new OpenDental.UI.ODGrid();
 			this.butDelete = new OpenDental.UI.Button();
 			this.textDate = new OpenDental.ValidDate();
 			this.butOK = new OpenDental.UI.Button();
@@ -242,6 +242,19 @@ namespace OpenDental{
 			this.panelSimple.Size = new System.Drawing.Size(494,186);
 			this.panelSimple.TabIndex = 16;
 			// 
+			// butChange
+			// 
+			this.butChange.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butChange.Autosize = true;
+			this.butChange.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butChange.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butChange.Location = new System.Drawing.Point(347,31);
+			this.butChange.Name = "butChange";
+			this.butChange.Size = new System.Drawing.Size(75,26);
+			this.butChange.TabIndex = 28;
+			this.butChange.Text = "Change";
+			this.butChange.Click += new System.EventHandler(this.butChange_Click);
+			// 
 			// textAccount
 			// 
 			this.textAccount.Location = new System.Drawing.Point(111,34);
@@ -274,6 +287,13 @@ namespace OpenDental{
 			this.label7.Text = "Check Number";
 			this.label7.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
+			// textAmount
+			// 
+			this.textAmount.Location = new System.Drawing.Point(111,8);
+			this.textAmount.Name = "textAmount";
+			this.textAmount.Size = new System.Drawing.Size(89,20);
+			this.textAmount.TabIndex = 18;
+			// 
 			// panelCompound
 			// 
 			this.panelCompound.Controls.Add(this.butAdd);
@@ -286,6 +306,32 @@ namespace OpenDental{
 			this.panelCompound.Name = "panelCompound";
 			this.panelCompound.Size = new System.Drawing.Size(504,262);
 			this.panelCompound.TabIndex = 17;
+			// 
+			// butAdd
+			// 
+			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butAdd.Autosize = true;
+			this.butAdd.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAdd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butAdd.Location = new System.Drawing.Point(3,216);
+			this.butAdd.Name = "butAdd";
+			this.butAdd.Size = new System.Drawing.Size(75,26);
+			this.butAdd.TabIndex = 13;
+			this.butAdd.Text = "Add";
+			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
+			// 
+			// gridMain
+			// 
+			this.gridMain.HScrollVisible = false;
+			this.gridMain.Location = new System.Drawing.Point(3,10);
+			this.gridMain.Name = "gridMain";
+			this.gridMain.ScrollValue = 0;
+			this.gridMain.Size = new System.Drawing.Size(490,199);
+			this.gridMain.TabIndex = 2;
+			this.gridMain.Title = "Splits";
+			this.gridMain.TranslationName = "TableTransSplits";
+			this.gridMain.CellDoubleClick += new OpenDental.UI.ODGridClickEventHandler(this.gridMain_CellDoubleClick);
 			// 
 			// groupBox1
 			// 
@@ -331,14 +377,6 @@ namespace OpenDental{
 			this.textSourcePay.Size = new System.Drawing.Size(231,20);
 			this.textSourcePay.TabIndex = 10;
 			// 
-			// textSourceDeposit
-			// 
-			this.textSourceDeposit.Location = new System.Drawing.Point(95,20);
-			this.textSourceDeposit.Name = "textSourceDeposit";
-			this.textSourceDeposit.ReadOnly = true;
-			this.textSourceDeposit.Size = new System.Drawing.Size(231,20);
-			this.textSourceDeposit.TabIndex = 8;
-			// 
 			// butAttachPay
 			// 
 			this.butAttachPay.AdjustImageLocation = new System.Drawing.Point(0,0);
@@ -351,6 +389,14 @@ namespace OpenDental{
 			this.butAttachPay.TabIndex = 9;
 			this.butAttachPay.Text = "Attach";
 			this.butAttachPay.Click += new System.EventHandler(this.butAttachPay_Click);
+			// 
+			// textSourceDeposit
+			// 
+			this.textSourceDeposit.Location = new System.Drawing.Point(95,20);
+			this.textSourceDeposit.Name = "textSourceDeposit";
+			this.textSourceDeposit.ReadOnly = true;
+			this.textSourceDeposit.Size = new System.Drawing.Size(231,20);
+			this.textSourceDeposit.TabIndex = 8;
 			// 
 			// butAttachDep
 			// 
@@ -365,53 +411,6 @@ namespace OpenDental{
 			this.butAttachDep.Text = "Attach";
 			this.butAttachDep.Click += new System.EventHandler(this.butAttachDep_Click);
 			// 
-			// butChange
-			// 
-			this.butChange.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butChange.Autosize = true;
-			this.butChange.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butChange.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butChange.Location = new System.Drawing.Point(347,31);
-			this.butChange.Name = "butChange";
-			this.butChange.Size = new System.Drawing.Size(75,26);
-			this.butChange.TabIndex = 28;
-			this.butChange.Text = "Change";
-			this.butChange.Click += new System.EventHandler(this.butChange_Click);
-			// 
-			// textAmount
-			// 
-			this.textAmount.Location = new System.Drawing.Point(111,8);
-			this.textAmount.Name = "textAmount";
-			this.textAmount.Size = new System.Drawing.Size(89,20);
-			this.textAmount.TabIndex = 18;
-			// 
-			// butAdd
-			// 
-			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0,0);
-			this.butAdd.Autosize = true;
-			this.butAdd.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			this.butAdd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butAdd.Image = ((System.Drawing.Image)(resources.GetObject("butAdd.Image")));
-			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAdd.Location = new System.Drawing.Point(3,216);
-			this.butAdd.Name = "butAdd";
-			this.butAdd.Size = new System.Drawing.Size(75,26);
-			this.butAdd.TabIndex = 13;
-			this.butAdd.Text = "Add";
-			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
-			// 
-			// gridMain
-			// 
-			this.gridMain.HScrollVisible = false;
-			this.gridMain.Location = new System.Drawing.Point(3,10);
-			this.gridMain.Name = "gridMain";
-			this.gridMain.ScrollValue = 0;
-			this.gridMain.Size = new System.Drawing.Size(490,199);
-			this.gridMain.TabIndex = 2;
-			this.gridMain.Title = "Splits";
-			this.gridMain.TranslationName = "TableTransSplits";
-			this.gridMain.CellDoubleClick += new OpenDental.UI.ODGridClickEventHandler(this.gridMain_CellDoubleClick);
-			// 
 			// butDelete
 			// 
 			this.butDelete.AdjustImageLocation = new System.Drawing.Point(0,0);
@@ -419,7 +418,6 @@ namespace OpenDental{
 			this.butDelete.Autosize = true;
 			this.butDelete.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butDelete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.butDelete.Location = new System.Drawing.Point(31,396);
 			this.butDelete.Name = "butDelete";
@@ -478,7 +476,6 @@ namespace OpenDental{
 			this.Controls.Add(this.textDate);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.butCancel);
-			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "FormTransactionEdit";
@@ -853,7 +850,7 @@ namespace OpenDental{
 				return;
 			}
 			try{
-				TransCur.Delete();
+				Transactions.Delete(TransCur);
 			}
 			catch(ApplicationException ex){
 				MessageBox.Show(ex.Message);
@@ -1041,7 +1038,7 @@ namespace OpenDental{
 			//catch{
 
 			//}
-			TransCur.Update();//this catches DepostitNum, the only user-editable field.
+			Transactions.Update(TransCur);//this catches DepostitNum, the only user-editable field.
 			double tot=0;
 			for(int i=0;i<JournalList.Count;i++){
 				tot+=((JournalEntry)JournalList[i]).DebitAmt;

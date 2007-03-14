@@ -4,11 +4,11 @@ using System.Drawing;
 using System.Drawing.Printing;
 using System.Collections;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental
 {
@@ -30,7 +30,7 @@ namespace OpenDental
 		private Label label1;
 		//private Queries Queries2;
 		//private string logData;
-		DataConnection dcon;
+		//DataConnection dcon;
 		DataTable table;
 		private CheckBox checkShow;
 		private CheckBox checkPrompt;
@@ -236,7 +236,7 @@ namespace OpenDental
 			}
 			textLog.Text+=strB.ToString()+"\r\n";
 			Application.DoEvents();
-			dcon=new DataConnection();
+			//dcon=new DataConnection();
 			if(!VerifyTables()) {
 				Cursor=Cursors.Default;
 				return;
@@ -308,6 +308,17 @@ namespace OpenDental
 			Application.DoEvents();
 			TimeCardEntriesInFuture();
 			Application.DoEvents();
+			SignalEntriesInFuture();
+			Application.DoEvents();
+			ProceduresDeletedButAttachedToClaim();
+			Application.DoEvents();
+			WriteOffsNegativeAndSum();
+			Application.DoEvents();
+
+
+
+
+
 
 
 
@@ -319,7 +330,7 @@ namespace OpenDental
 
 		private bool VerifyTables() {
 			command="SHOW TABLES";
-			table=dcon.GetTable(command);
+			table=General.GetTable(command);
 			string[] tableNames=new string[table.Rows.Count];
 			int lastRow;
 			bool allOK=true;
@@ -330,7 +341,7 @@ namespace OpenDental
 			}
 			for(int i=0;i<tableNames.Length;i++) {
 				command="CHECK TABLE "+tableNames[i];
-				table=dcon.GetTable(command);
+				table=General.GetTable(command);
 				lastRow=table.Rows.Count-1;
 				if(table.Rows[lastRow][3].ToString()!="OK") {
 					//corruptTables.Add(tableNames[i]);
@@ -348,16 +359,13 @@ namespace OpenDental
 							continue;
 						case DialogResult.Yes:
 							command="REPAIR TABLE "+tableNames[i];
-							DataTable tableResults=dcon.GetTable(command);
+							DataTable tableResults=General.GetTable(command);
 							//we always log the results of a repair table, regardless of whether user wants to show all.
 							textLog.Text+=Lan.g(this,"Repair log:")+"\r\n";
-							//int t=tableResults.Rows.Count-1;
 							for(int t=0;t<tableResults.Rows.Count;t++) {
 								for(int j=0;j<tableResults.Columns.Count;j++) {
-									//Debug.Write(tableResults.Rows[t][j].ToString()+",");
 									textLog.Text+=tableResults.Rows[t][j].ToString()+",";
 								}
-								//Debug.WriteLine("");
 								textLog.Text+="\r\n";
 							}
 							break;
@@ -378,7 +386,7 @@ namespace OpenDental
 
 		private void VerifyProv(){
 			command="SELECT valuestring FROM preference WHERE prefname = 'PracticeDefaultProv'";
-			table=dcon.GetTable(command);
+			table=General.GetTable(command);
 			if(table.Rows[0][0].ToString()!="") {
 				if(checkShow.Checked) {
 					textLog.Text+=Lan.g(this,"Default practice provider verified.")+"\r\n";
@@ -393,15 +401,15 @@ namespace OpenDental
 				}
 			}
 			command="SELECT provnum FROM provider WHERE IsHidden=0 ORDER BY itemorder LIMIT 1";
-			table=dcon.GetTable(command);
+			table=General.GetTable(command);
 			command="UPDATE preference SET valuestring = '"+table.Rows[0][0].ToString()+"' WHERE prefname = 'PracticeDefaultProv'";
-			dcon.NonQ(command);
+			General.NonQ(command);
 			textLog.Text+="  "+Lan.g(this,"Fixed.")+"\r\n";
 		}
 
 		private void VerifyBillingType() {
 			command="SELECT valuestring FROM preference WHERE prefname = 'PracticeDefaultBillType'";
-			table=dcon.GetTable(command);
+			table=General.GetTable(command);
 			if(table.Rows[0][0].ToString()!="") {
 				if(checkShow.Checked) {
 					textLog.Text+=Lan.g(this,"Default practice billing type verified.")+"\r\n";
@@ -416,9 +424,9 @@ namespace OpenDental
 				}
 			}
 			command="SELECT defnum FROM definition WHERE category = 4 AND ishidden = 0 ORDER BY itemorder LIMIT 1";
-			table=dcon.GetTable(command);
+			table=General.GetTable(command);
 			command="UPDATE preference SET valuestring='"+table.Rows[0][0].ToString()+"' WHERE prefname='PracticeDefaultBillType'";
-			dcon.NonQ(command);
+			General.NonQ(command);
 			textLog.Text+="  "+Lan.g(this,"Fixed.")+"\r\n";
 		}
 
@@ -429,7 +437,7 @@ namespace OpenDental
 			int numberFixed=0;
 			DialogResult result;
 			command="SELECT procnum,toothnum,patnum FROM procedurelog";
-			table=dcon.GetTable(command);
+			table=General.GetTable(command);
 			for(int i=0;i<table.Rows.Count;i++){
 				toothNum=table.Rows[i][1].ToString();
 				if(toothNum=="")
@@ -457,7 +465,7 @@ namespace OpenDental
 						case DialogResult.Yes:
 							command="UPDATE procedurelog SET ToothNum = '"+toothNum.ToUpper()
 								+"' WHERE ProcNum = "+table.Rows[i][0].ToString();
-							dcon.NonQ(command);
+							General.NonQ(command);
 							if(checkShow.Checked){
 								textLog.Text+=Lim.GetNameLF()+" "+toothNum+" - "+toothNum.ToUpper()+"\r\n";
 							}
@@ -479,7 +487,7 @@ namespace OpenDental
 					case DialogResult.Yes:
 						command="UPDATE procedurelog SET ToothNum = '1"
 								+"' WHERE ProcNum = "+table.Rows[i][0].ToString();
-						dcon.NonQ(command);
+						General.NonQ(command);
 						if(checkShow.Checked) {
 							textLog.Text+=Lim.GetNameLF()+" "+toothNum+" - 1\r\n";
 						}
@@ -518,15 +526,14 @@ namespace OpenDental
 				,"UPDATE insplan SET DateTerm='0001-01-01' WHERE DateTerm='0000-00-00'"
 				,"UPDATE patient SET Birthdate='0001-01-01' WHERE Birthdate='0000-00-00'"
 				,"UPDATE patient SET DateFirstVisit='0001-01-01' WHERE DateFirstVisit='0000-00-00'"
-				,"UPDATE procedurelog SET ProcDate='0001-01-01' WHERE ProcDate='0000-00-00'"
+				,"UPDATE procedurelog SET ProcDate='0001-01-01 00:00:00' WHERE ProcDate LIKE '0000-00-00%'"
 				,"UPDATE procedurelog SET DateOriginalProsth='0001-01-01' WHERE DateOriginalProsth='0000-00-00'"
-				,"UPDATE procedurelog SET DateLocked='0001-01-01' WHERE DateLocked='0000-00-00'"
 				,"UPDATE recall SET DateDueCalc='0001-01-01' WHERE DateDueCalc='0000-00-00'"
 				,"UPDATE recall SET DateDue='0001-01-01' WHERE DateDue='0000-00-00'"
 				,"UPDATE recall SET DatePrevious='0001-01-01' WHERE DatePrevious='0000-00-00'"
 				,"UPDATE schedule SET SchedDate='0001-01-01' WHERE SchedDate='0000-00-00'"
 			};
-			int rowsChanged=dcon.NonQ(commands);
+			int rowsChanged=General.NonQ(commands);
 			if(rowsChanged !=0 || checkShow.Checked){
 				textLog.Text+=Lan.g(this,"Dates fixed. Rows changed:")+" "+rowsChanged.ToString()+"\r\n";
 			}
@@ -537,7 +544,7 @@ namespace OpenDental
 				FROM procedurelog
 				LEFT JOIN procedurecode ON procedurelog.ADACode=procedurecode.ADACode
 				WHERE procedurecode.ADACode IS NULL";
-			table=dcon.GetTable(command);
+			table=General.GetTable(command);
 			if(table.Rows.Count==0) {
 				if(checkShow.Checked) {
 					textLog.Text+=Lan.g(this,"No procedure codes need to be added.")+"\r\n";
@@ -566,7 +573,7 @@ namespace OpenDental
 				procCode.ProcTime="/X/";
 				procCode.ProcCat=Defs.Short[(int)DefCat.ProcCodeCats][0].DefNum;
 				procCode.TreatArea=TreatmentArea.Mouth;
-				procCode.Insert();
+				ProcedureCodes.Insert(procCode);
 				textLog.Text+=Lan.g(this,"Procedure code added: ")+myADA+"\r\n";
 			}
 			textLog.Text+=Lan.g(this,"Total procedure codes added: ")+table.Rows.Count.ToString()+"\r\n";
@@ -579,18 +586,18 @@ namespace OpenDental
 				LEFT JOIN insplan on patplan.PlanNum=insplan.PlanNum
 				WHERE insplan.PlanNum IS NULL";
 			
-			DataTable table=dcon.GetTable(command);
+			DataTable table=General.GetTable(command);
 			for(int i=0;i<table.Rows.Count;i++){
 				command="UPDATE patplan set PriPlanNum=0 "
 					+"WHERE PatNum="+table.Rows[i][0].ToString();
-				dcon.NonQ(command);
+				General.NonQ(command);
 			}*/
 
 		private bool ClaimProcsWithInvalidPlanNums(){
 			command=@"SELECT ClaimProcNum,PatNum FROM claimproc
 				LEFT JOIN insplan ON claimproc.PlanNum=insplan.PlanNum
 				WHERE insplan.PlanNum IS NULL";
-			table=dcon.GetTable(command);
+			table=General.GetTable(command);
 			if(table.Rows.Count==0) {
 				if(checkShow.Checked) {
 					textLog.Text+=Lan.g(this,"No ClaimProcs found with invalid PlanNum.")+"\r\n";
@@ -614,7 +621,7 @@ namespace OpenDental
 						continue;
 					case DialogResult.Yes:
 						command="DELETE FROM claimproc WHERE ClaimProcNum="+table.Rows[i][0].ToString();
-						dcon.NonQ(command);
+						General.NonQ(command);
 						if(checkShow.Checked) {
 							textLog.Text+=Lan.g(this,"Claimproc with invalid PlanNum deleted for ")+Lim.GetNameLF()+"\r\n";
 						}
@@ -632,7 +639,7 @@ namespace OpenDental
 			command=@"SELECT ClaimNum,PatNum FROM claim
 				LEFT JOIN insplan ON claim.PlanNum=insplan.PlanNum
 				WHERE insplan.PlanNum IS NULL";
-			table=dcon.GetTable(command);
+			table=General.GetTable(command);
 			if(table.Rows.Count==0) {
 				if(checkShow.Checked) {
 					textLog.Text+=Lan.g(this,"No Claims found with invalid PlanNum.")+"\r\n";
@@ -657,7 +664,7 @@ namespace OpenDental
 					case DialogResult.Yes:
 						command="DELETE FROM claim "
 							+"WHERE ClaimNum="+table.Rows[i][0].ToString();
-						dcon.NonQ(command);
+						General.NonQ(command);
 						if(checkShow.Checked) {
 							textLog.Text+=Lan.g(this,"Claim with invalid PlanNum deleted for ")+Lim.GetNameLF()+"\r\n";
 						}
@@ -675,7 +682,7 @@ namespace OpenDental
 			int numberFixed=0;
 			for(int i=0;i<SchedDefaults.List.Length;i++) {
 				if(SchedDefaults.List[i].StopTime.TimeOfDay-SchedDefaults.List[i].StartTime.TimeOfDay<new TimeSpan(0,5,0)) {
-					SchedDefaults.List[i].Delete();
+					SchedDefaults.Delete(SchedDefaults.List[i]);
 					numberFixed++;
 				}
 			}
@@ -693,7 +700,7 @@ namespace OpenDental
 					continue;//closed and holiday statuses do not use starttime and stoptime
 				}
 				if(schedList[i].StopTime.TimeOfDay-schedList[i].StartTime.TimeOfDay<new TimeSpan(0,5,0)) {
-					schedList[i].Delete();
+					Schedules.Delete(schedList[i]);
 					numberFixed++;
 				}
 			}
@@ -705,11 +712,11 @@ namespace OpenDental
 
 		private void StartDateDepositSlip(){
 			//If the program locks up when trying to create a deposit slip, it's because someone removed the start date from the deposit edit window. Run this query to get back in.
-			DateTime date=Prefs.GetDate("DateDepositsStarted");
+			DateTime date=PrefB.GetDate("DateDepositsStarted");
 			if(date<DateTime.Now.AddMonths(-1)){
 				command="UPDATE preference SET ValueString='"+POut.PDate(DateTime.Today.AddDays(-21))
 					+"' WHERE PrefName='DateDepositsStarted'";
-				dcon.NonQ(command);
+				General.NonQ(command);
 				DataValid.SetInvalid(InvalidTypes.Prefs);
 				textLog.Text+=Lan.g(this,"Deposit start date reset.")+"\r\n";
 			}
@@ -721,7 +728,7 @@ namespace OpenDental
 		private void InsPlansNoCarrier(){
 			//Gets a list of insurance plans that do not have a carrier attached. The list should be blank. If not, then you need to go to the plan listed and add a carrier. Missing carriers will cause the send claims function to give an error.
 			command="SELECT Subscriber FROM insplan WHERE CarrierNum=0";
-			table=dcon.GetTable(command);
+			table=General.GetTable(command);
 			if(table.Rows.Count==0){
 				if(checkShow.Checked){
 					textLog.Text+=Lan.g(this,"Insurance plans checked for missing CarrierNums.")+"\r\n";
@@ -739,7 +746,7 @@ namespace OpenDental
 			//This fixes a slight database inconsistency that might cause an error when trying to open the send claims window. 
 			command="UPDATE claim SET PlanNum2=0 WHERE PlanNum2 !=0 AND NOT EXISTS( SELECT * FROM insplan "
 				+"WHERE claim.PlanNum2=insplan.PlanNum)";
-			int numberFixed=dcon.NonQ(command);
+			int numberFixed=General.NonQ(command);
 			if(numberFixed>0 || checkShow.Checked) {
 				textLog.Text+=Lan.g(this,"Claims with invalid PlanNum2 fixed: ")+numberFixed.ToString()+"\r\n";
 			}
@@ -752,7 +759,7 @@ namespace OpenDental
 				AND provider.IsHidden=1
 				AND claimproc.InsPayAmt>0
 				GROUP BY provider.ProvNum";
-			table=dcon.GetTable(command);
+			table=General.GetTable(command);
 			if(table.Rows.Count==0) {
 				if(checkShow.Checked) {
 					textLog.Text+=Lan.g(this,"Hidden providers checked for claim payments.")+"\r\n";
@@ -772,37 +779,52 @@ namespace OpenDental
 		private void ClaimPaymentWithNoSplits(){
 			command="DELETE FROM claimpayment WHERE NOT EXISTS("
 				+"SELECT * FROM claimproc WHERE claimpayment.ClaimPaymentNum=claimproc.ClaimPaymentNum)";
-			int numberFixed=dcon.NonQ(command);
+			int numberFixed=General.NonQ(command);
 			if(numberFixed>0 || checkShow.Checked) {
 				textLog.Text+=Lan.g(this,"Claim payments with no splits removed: ")+numberFixed.ToString()+"\r\n";
 			}
 		}
 
 		private void DeletedPatsWithBalance(){
-			command="SELECT PatNum FROM patient	WHERE PatStatus=4 "
+			command="SELECT PatNum,BalTotal FROM patient	WHERE PatStatus=4 "
 				+"AND (Bal_0_30 !=0	OR Bal_31_60 !=0 OR Bal_61_90 !=0	OR BalOver90 !=0 OR InsEst !=0 OR BalTotal !=0)";
-			table=dcon.GetTable(command);
+				//+"AND BalTotal !=0";//use this when doing adjustments
+			table=General.GetTable(command);
 			if(table.Rows.Count==0 && checkShow.Checked) {
 				textLog.Text+=Lan.g(this,"No balances found for deleted patients.")+"\r\n";
 				return;
 			}
 			Patient pat;
 			Patient old;
+			//Adjustment adj;
 			for(int i=0;i<table.Rows.Count;i++) {
+				//This code will create adjustments to zero out balances.
+				/*adj=new Adjustment();
+				adj.AdjAmt=-PIn.PDouble(table.Rows[i]["BalTotal"].ToString());
+				adj.PatNum=PIn.PInt(table.Rows[i]["PatNum"].ToString());
+				adj.AdjDate=DateTime.Today;
+				adj.AdjNote="Clearing out balance to delete patient.";
+				adj.AdjType=Defs.Short[(int)DefCat.AdjTypes][0].DefNum;
+				adj.DateEntry=DateTime.Now;
+				adj.ProcDate=DateTime.Today;
+				adj.ProvNum=3;
+				Adjustments.InsertOrUpdate(adj,true);
+				textLog.Text+="Adjustment added: "+adj.AdjAmt.ToString("c")+"\r\n";*/
 				pat=Patients.GetPat(PIn.PInt(table.Rows[i][0].ToString()));
 				old=pat.Copy();
 				pat.LName=pat.LName+Lan.g(this,"DELETED");
 				pat.PatStatus=PatientStatus.Archived;
-				pat.Update(old);
+				Patients.Update(pat,old);
 				textLog.Text+=Lan.g(this,"Warning!  Patient:")+" "+old.GetNameFL()+" "
 					+Lan.g(this,"was previously marked as deleted, but was found to have a balance. Patient has been changed to Archive status.  The account will need to be cleared, and the patient deleted again.")+"\r\n";
+				Application.DoEvents();
 			}
 		}
 
 		private void ProceduresAttachedToWrongAppts(){
 			command="UPDATE appointment,procedurelog SET procedurelog.AptNum=0 "
 				+"WHERE procedurelog.AptNum=appointment.AptNum AND procedurelog.PatNum != appointment.PatNum";
-			int numberFixed=dcon.NonQ(command);
+			int numberFixed=General.NonQ(command);
 			if(numberFixed>0 || checkShow.Checked) {
 				textLog.Text+=Lan.g(this,"Procedures detached from appointments: ")+numberFixed.ToString()+"\r\n";
 			}
@@ -810,36 +832,44 @@ namespace OpenDental
 
 		private void ClaimProcEstNoBillIns(){
 			command="UPDATE claimproc SET InsPayEst=0 WHERE NoBillIns=1 AND InsPayEst !=0";
-			int numberFixed=dcon.NonQ(command);
+			int numberFixed=General.NonQ(command);
 			if(numberFixed>0 || checkShow.Checked) {
 				textLog.Text+=Lan.g(this,"Claimproc estimates set to zero because marked NoBillIns: ")+numberFixed.ToString()+"\r\n";
 			}
 		}
 
-		private void DuplicateRecalls(){
-			command="SELECT COUNT(*) AS repetitions,PatNum FROM recall GROUP BY PatNum HAVING repetitions >1";
-			table=dcon.GetTable(command);
+		private void DuplicateRecalls() {
+			//command="SELECT COUNT(*) AS repetitions,PatNum FROM recall GROUP BY PatNum HAVING repetitions >1";
+			command="SELECT COUNT(*),PatNum FROM recall GROUP BY PatNum HAVING COUNT(*) >1";
+			table=General.GetTable(command);
 			int numberFound=table.Rows.Count;
-			string pats="";
-			for(int i=0;i<table.Rows.Count;i++){
-				if(i==10){
-					break;//don't show more than 10 patNums.
+			//we're going to do one patient at a time.
+			DataTable tableRecalls;
+			for(int i=0;i<table.Rows.Count;i++) {
+				command="SELECT RecallNum FROM recall WHERE PatNum="+table.Rows[i][1].ToString();
+				tableRecalls=General.GetTable(command);
+				command="DELETE FROM recall WHERE ";
+				for(int r=0;r<tableRecalls.Rows.Count-1;r++) {//we ignore the last row
+					if(r>0) {
+						command+="OR ";
+					}
+					command+="RecallNum="+tableRecalls.Rows[r][0].ToString()+" ";
 				}
-				if(i>0){
-					pats+=", ";
-				}
-				pats+=table.Rows[i][1].ToString();
+				General.NonQ(command);
+				//pats+=table.Rows[i][1].ToString();
+			}
+			if(numberFound>0) {
+				Recalls.SynchAllPatients();
 			}
 			if(numberFound>0 || checkShow.Checked) {
-				textLog.Text+=Lan.g(this,"Warning! Duplicate recall entries found for individual patients.  Number found: ")
-					+numberFound.ToString()+"  Some PatNums: "+pats+"\r\n";
+				textLog.Text+=Lan.g(this,"Duplicate recall entries fixed: ")+numberFound.ToString()+"\r\n";
 			}
 		}
 
 		private void ClaimProcsWithInvalidClaimNum(){
 			command="DELETE FROM claimproc WHERE claimproc.ClaimNum!=0 "
 				+"AND NOT EXISTS(SELECT * FROM claim WHERE claim.ClaimNum=claimproc.ClaimNum)";
-			int numberFixed=dcon.NonQ(command);
+			int numberFixed=General.NonQ(command);
 			if(numberFixed>0 || checkShow.Checked) {
 				textLog.Text+=Lan.g(this,"Claimprocs deleted due to invalid ClaimNum: ")+numberFixed.ToString()+"\r\n";
 			}
@@ -847,7 +877,7 @@ namespace OpenDental
 
 		private void PaySplitsWithInvalidPayNum(){
 			command="DELETE FROM paysplit WHERE NOT EXISTS(SELECT * FROM payment WHERE paysplit.PayNum=payment.PayNum)";
-			int numberFixed=dcon.NonQ(command);
+			int numberFixed=General.NonQ(command);
 			if(numberFixed>0 || checkShow.Checked) {
 				textLog.Text+=Lan.g(this,"Paysplits deleted due to invalid PayNum: ")+numberFixed.ToString()+"\r\n";
 			}
@@ -857,7 +887,7 @@ namespace OpenDental
 			//These seem to pop up quite regularly due to the program forgetting to delete them
 			command="DELETE FROM claimproc WHERE ProcNum>0 AND NOT EXISTS(SELECT * FROM procedurelog "
 				+"WHERE claimproc.ProcNum=procedurelog.ProcNum)";
-			int numberFixed=dcon.NonQ(command);
+			int numberFixed=General.NonQ(command);
 			if(numberFixed>0 || checkShow.Checked) {
 				textLog.Text+=Lan.g(this,"Estimates deleted for procedures that no longer exist: ")+numberFixed.ToString()+"\r\n";
 			}
@@ -866,39 +896,44 @@ namespace OpenDental
 		private void PatPlanOrdinalsTwoToOne(){
 			command="SELECT PatPlanNum FROM patplan AS patplan1 WHERE Ordinal=2 AND NOT EXISTS("
 				+"SELECT * FROM patplan AS patplan2 WHERE patplan1.PatNum=patplan2.PatNum AND patplan2.Ordinal=1)";
-			table=dcon.GetTable(command);
+			table=General.GetTable(command);
 			for(int i=0;i<table.Rows.Count;i++){
 				command="UPDATE patplan SET Ordinal=1 WHERE PatPlanNum="+table.Rows[i][0].ToString();
-				dcon.NonQ(command);
+				General.NonQ(command);
 			}
 			int numberFixed=table.Rows.Count;
 			if(numberFixed>0 || checkShow.Checked) {
 				textLog.Text+=Lan.g(this,"PatPlan ordinals changed from 2 to 1 if no primary ins: ")+numberFixed.ToString()+"\r\n";
 			}
 		}
-		
-		private void MedicationPatsOrphaned(){
+
+		private void MedicationPatsOrphaned() {
 			command="DELETE FROM medicationpat WHERE NOT EXISTS(SELECT * FROM medication "
 				+"WHERE medication.MedicationNum=medicationpat.MedicationNum)";
-			int numberFixed=dcon.NonQ(command);
+			int numberFixed=General.NonQ(command);
 			if(numberFixed>0 || checkShow.Checked) {
 				textLog.Text+=Lan.g(this,"Medications deleted because no defition exists for them: ")+numberFixed.ToString()+"\r\n";
 			}
 		}
 
-		private void PayPlanGuarantorZero(){
-			command="UPDATE payplan SET Guarantor=PatNum WHERE PlanNum>0";// and Guarantor>0";
-			int numberFixed=dcon.NonQ(command);
+		private void PayPlanGuarantorZero() {
+			command="UPDATE payplan SET Guarantor=PatNum WHERE PlanNum>0 AND Guarantor != PatNum";
+			int numberFixed=General.NonQ(command);
 			if(numberFixed>0 || checkShow.Checked) {
 				textLog.Text+=Lan.g(this,"PayPlan Guarantors set to PatNum if used for insurance tracking: ")+numberFixed.ToString()+"\r\n";
 			}
 		}
 
 		private void PayPlanChargeGuarantorMatch() {
-			command="UPDATE payplancharge,payplan SET payplancharge.Guarantor=payplan.Guarantor, "
-				+"payplancharge.PatNum=payplan.PatNum "
-				+"WHERE payplan.PayPlanNum=payplancharge.PayPlanNum";
-			int numberFixed=dcon.NonQ(command);
+			int numberFixed=0;
+			command="UPDATE payplancharge,payplan SET payplancharge.Guarantor=payplan.Guarantor "
+				+"WHERE payplan.PayPlanNum=payplancharge.PayPlanNum "
+				+"AND payplancharge.Guarantor != payplan.Guarantor";
+			numberFixed+=General.NonQ(command);
+			command="UPDATE payplancharge,payplan SET payplancharge.PatNum=payplan.PatNum "
+				+"WHERE payplan.PayPlanNum=payplancharge.PayPlanNum "
+				+"AND payplancharge.PatNum != payplan.PatNum";
+			numberFixed+=General.NonQ(command);
 			if(numberFixed>0 || checkShow.Checked) {
 				textLog.Text+=Lan.g(this,"PayPlanCharge guarantors and pats set to match payplan guarantors and pats: ")+numberFixed.ToString()+"\r\n";
 			}
@@ -906,11 +941,11 @@ namespace OpenDental
 
 		private void ImagesWithNoCategory() {
 			command="SELECT DocNum FROM document WHERE DocCategory=0";
-			table=dcon.GetTable(command);
+			table=General.GetTable(command);
 			for(int i=0;i<table.Rows.Count;i++) {
 				command="UPDATE document SET DocCategory="+POut.PInt(Defs.Short[(int)DefCat.ImageCats][0].DefNum)
 					+" WHERE DocNum="+table.Rows[i][0].ToString();
-				dcon.NonQ(command);
+				General.NonQ(command);
 			}
 			int numberFixed=table.Rows.Count;
 			if(numberFixed>0||checkShow.Checked) {
@@ -921,25 +956,72 @@ namespace OpenDental
 		private void ClaimProcsWithInvalidClaimPaymentNum() {
 			command=@"UPDATE claimproc SET ClaimPaymentNum=0 WHERE claimpaymentnum !=0 AND NOT EXISTS(
 				SELECT * FROM claimpayment WHERE claimpayment.ClaimPaymentNum=claimproc.ClaimPaymentNum)";
-			int numberFixed=dcon.NonQ(command);
-			if(numberFixed>0||checkShow.Checked) {
+			int numberFixed=General.NonQ(command);
+			if(numberFixed>0 || checkShow.Checked) {
 				textLog.Text+=Lan.g(this,"ClaimProcs with with invalid ClaimPaymentNumber fixed: ")+numberFixed.ToString()+"\r\n";
 			}
 		}
 
 		private void TimeCardEntriesInFuture() {
 			command=@"UPDATE clockevent SET TimeDisplayed=TimeEntered WHERE TimeDisplayed > NOW()";
-			int numberFixed=dcon.NonQ(command);
+			int numberFixed=General.NonQ(command);
 			if(numberFixed>0 || checkShow.Checked) {
 				textLog.Text+=Lan.g(this,"Timecard entries fixed: ")+numberFixed.ToString()+"\r\n";
 			}
 		}
 
+		private void SignalEntriesInFuture() {
+			command=@"DELETE FROM signal WHERE SigDateTime > NOW() OR AckTime > NOW()";
+			int numberFixed=General.NonQ(command);
+			if(numberFixed>0 || checkShow.Checked) {
+				textLog.Text+=Lan.g(this,"Signal entries deleted: ")+numberFixed.ToString()+"\r\n";
+			}
+		}
 
+		private void ProceduresDeletedButAttachedToClaim(){
+			command=@"UPDATE procedurelog,claimproc
+				SET procedurelog.ProcStatus=2
+				WHERE procedurelog.ProcNum=claimproc.ProcNum
+				AND procedurelog.ProcStatus=6
+				AND claimproc.ClaimNum!=0";
+			int numberFixed=General.NonQ(command);
+			if(numberFixed>0 || checkShow.Checked) {
+				textLog.Text+=Lan.g(this,"Procedures undeleted because found attached to claims: ")+numberFixed.ToString()+"\r\n";
+			}
+		}
 
-
+		private void WriteOffsNegativeAndSum(){
+			command=@"UPDATE claimproc SET WriteOff = -WriteOff WHERE WriteOff < 0";
+			int numberFixed=General.NonQ(command);
+			if(numberFixed>0 || checkShow.Checked) {
+				textLog.Text+=Lan.g(this,"Negative writeoffs fixed: ")+numberFixed.ToString()+"\r\n";
+			}
+			//Sums for each claim---------------------------------------------------------------------
+			command=@"SELECT claim.ClaimNum,SUM(claimproc.WriteOff) sumwo,claim.WriteOff
+				FROM claim,claimproc
+				WHERE claim.ClaimNum=claimproc.ClaimNum
+				GROUP BY claim.ClaimNum
+				HAVING sumwo-claim.WriteOff > .01
+				OR sumwo-claim.WriteOff < -.01";
+			table=General.GetTable(command);
+			for(int i=0;i<table.Rows.Count;i++) {
+				command="UPDATE claim SET WriteOff='"+POut.PDouble(PIn.PDouble(table.Rows[i]["sumwo"].ToString()))+"' "
+					+"WHERE ClaimNum="+table.Rows[i]["ClaimNum"].ToString();
+				General.NonQ(command);
+			}
+			numberFixed=table.Rows.Count;
+			if(numberFixed>0 || checkShow.Checked) {
+				textLog.Text+=Lan.g(this,"Claim writeoff sums fixed: ")+numberFixed.ToString()+"\r\n";
+			}
+		}
 
 		
+
+
+
+
+
+
 
 
 

@@ -2,26 +2,170 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Diagnostics;
+using System.Runtime.Serialization;
+
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
-
 	///<summary></summary>
 	public class Procedures{
-		
-		///<summary>Gets all procedures for a single patient.</summary>
-		public static Procedure[] Refresh(int patNum){
-			string command=
-				"SELECT * from procedurelog "
-				+"WHERE PatNum = '"+patNum.ToString()+"' "
-				+"ORDER BY ProcDate,ADACode";
-			return RefreshAndFill(command);
+		//private static bool OpenDentalBusinessIsLocal=false;
+
+		///<summary></summary>
+		public static void Insert(Procedure proc){
+			try{
+				if(RemotingClient.OpenDentBusinessIsLocal) {
+					ProcedureB.Insert(proc);
+				}
+				else {
+					DtoProcedureInsert dto=new DtoProcedureInsert();
+					dto.Proc=proc;
+					RemotingClient.ProcessCommand(dto);
+				}
+			}
+			catch(Exception e){
+				MessageBox.Show(e.Message);
+			}
 		}
 
-		///<summary>Gets one procedure directly from the db.</summary>
+		///<summary>Updates all fields in the supplied procedure.</summary>
+		public static void Update(Procedure proc,Procedure procOld){
+			try{
+				if(RemotingClient.OpenDentBusinessIsLocal) {
+					ProcedureB.Update(proc,procOld);
+				}
+				else {
+					DtoProcedureUpdate dto=new DtoProcedureUpdate();
+					dto.Proc=proc;
+					dto.OldProc=procOld;
+					RemotingClient.ProcessCommand(dto);
+				}
+			}
+			catch(Exception e) {
+				MessageBox.Show(e.Message);
+			}
+		}
+
+		///<summary>Also deletes any claimProcs. Must test to make sure claimProcs are not part of a payment first.  Returns false if unsuccessful.</summary>
+		public static bool Delete(int procNum) {
+			try{
+				if(RemotingClient.OpenDentBusinessIsLocal) {
+					ProcedureB.Delete(procNum);
+				}
+				else {
+					DtoProcedureDelete dto=new DtoProcedureDelete();
+					dto.ProcNum=procNum;
+					RemotingClient.ProcessCommand(dto);
+				}
+			}
+			catch(Exception e) {
+				MessageBox.Show(e.Message);
+				return false;
+			}
+			return true;
+		}
+
+
+		public static void UpdateAptNum(int procNum,int newAptNum){
+			try{
+				if(RemotingClient.OpenDentBusinessIsLocal) {
+					ProcedureB.UpdateAptNum(procNum,newAptNum);
+				}
+				else {
+					DtoProcedureUpdateAptNum dto=new DtoProcedureUpdateAptNum();
+					dto.ProcNum=procNum;
+					dto.NewAptNum=newAptNum;
+					RemotingClient.ProcessCommand(dto);
+				}
+			}
+			catch(Exception e) {
+				MessageBox.Show(e.Message);
+			}
+		}
+
+		public static void UpdatePlannedAptNum(int procNum,int newPlannedAptNum){
+			try{
+				if(RemotingClient.OpenDentBusinessIsLocal) {
+					ProcedureB.UpdatePlannedAptNum(procNum,newPlannedAptNum);
+				}
+				else {
+					DtoProcedureUpdatePlannedAptNum dto=new DtoProcedureUpdatePlannedAptNum();
+					dto.ProcNum=procNum;
+					dto.NewPlannedAptNum=newPlannedAptNum;
+					RemotingClient.ProcessCommand(dto);
+				}
+			}
+			catch(Exception e) {
+				MessageBox.Show(e.Message);
+			}
+		}
+
+		public static void UpdatePriority(int procNum,int newPriority){
+			try{
+				if(RemotingClient.OpenDentBusinessIsLocal) {
+					ProcedureB.UpdatePriority(procNum,newPriority);
+				}
+				else {
+					DtoProcedureUpdatePriority dto=new DtoProcedureUpdatePriority();
+					dto.ProcNum=procNum;
+					dto.NewPriority=newPriority;
+					RemotingClient.ProcessCommand(dto);
+				}
+			}
+			catch(Exception e) {
+				MessageBox.Show(e.Message);
+			}
+		}
+
+		public static void UpdateFee(int procNum,double newFee){
+			try{
+				if(RemotingClient.OpenDentBusinessIsLocal) {
+					ProcedureB.UpdateFee(procNum,newFee);
+				}
+				else {
+					DtoProcedureUpdateFee dto=new DtoProcedureUpdateFee();
+					dto.ProcNum=procNum;
+					dto.NewFee=newFee;
+					RemotingClient.ProcessCommand(dto);
+				}
+			}
+			catch(Exception e) {
+				MessageBox.Show(e.Message);
+			}
+		}
+
+		///<summary>Gets all procedures for a single patient, including the most recent note for each procedure.  Does not include deleted procedures.</summary>
+		public static Procedure[] Refresh(int patNum){
+			return Refresh(patNum,false);
+		}
+		
+		///<summary>Gets all procedures for a single patient, including the most recent note.  If "includeDeletedAndNotes", then the note contains a readable concat of all note history.  Also, deleted procs will be included.</summary>
+		public static Procedure[] Refresh(int patNum,bool includeDeletedAndNotes){
+			DataSet ds=null;
+			try {
+				if(RemotingClient.OpenDentBusinessIsLocal) {
+					ds=ProcedureB.Refresh(patNum,includeDeletedAndNotes);
+				}
+				else {
+					DtoProcedureRefresh dto=new DtoProcedureRefresh();
+					dto.PatNum=patNum;
+					dto.IncludeDeletedAndNotes=includeDeletedAndNotes;
+					ds=RemotingClient.ProcessQuery(dto);
+				}
+			}
+			catch(Exception e) {
+				MessageBox.Show(e.Message);
+				return new Procedure[0];
+			}
+			Procedure[] procList=ConvertToList(ds.Tables[0]);
+			return procList;
+		}
+
+		///<summary>Gets one procedure directly from the db.  Does not currently include the note.</summary>
 		public static Procedure GetOneProc(int procNum){
 			string command=
-				"SELECT * from procedurelog "
+				"SELECT * FROM procedurelog "
 				+"WHERE ProcNum="+procNum.ToString();
 			Procedure[] List=RefreshAndFill(command);
 			if(List.Length==0){
@@ -32,8 +176,26 @@ namespace OpenDental{
 		}
 
 		private static Procedure[] RefreshAndFill(string command){
- 			DataConnection dcon=new DataConnection();
- 			DataTable table=dcon.GetTable(command);
+			DataSet ds=null;
+			try {
+				if(RemotingClient.OpenDentBusinessIsLocal) {
+					ds=GeneralB.GetTable(command);
+				}
+				else {
+					DtoGeneralGetTable dto=new DtoGeneralGetTable();
+					dto.Command=command;
+					ds=RemotingClient.ProcessQuery(dto);
+				}
+			}
+			catch(Exception e) {
+				MessageBox.Show(e.Message);
+				return new Procedure[0];
+			}
+ 			DataTable table=ds.Tables[0];
+			return ConvertToList(table);
+		}
+
+		private static Procedure[] ConvertToList(DataTable table){
 			Procedure[] List=new Procedure[table.Rows.Count];
 			for(int i=0;i<List.Length;i++){
 				List[i]=new Procedure();
@@ -43,41 +205,41 @@ namespace OpenDental{
 				List[i].ADACode					= PIn.PString(table.Rows[i][3].ToString());
 				List[i].ProcDate				= PIn.PDate  (table.Rows[i][4].ToString());
 				List[i].ProcFee					= PIn.PDouble(table.Rows[i][5].ToString());
-				//List[i].OverridePri			= PIn.PDouble(table.Rows[i][6].ToString());
-				//List[i].OverrideSec			= PIn.PDouble(table.Rows[i][7].ToString());
-				List[i].Surf						= PIn.PString(table.Rows[i][8].ToString());
-				List[i].ToothNum				= PIn.PString(table.Rows[i][9].ToString());
-				List[i].ToothRange			= PIn.PString(table.Rows[i][10].ToString());
-				//List[i].NoBillIns				= PIn.PBool  (table.Rows[i][11].ToString());
-				List[i].Priority				= PIn.PInt   (table.Rows[i][12].ToString());
-				List[i].ProcStatus			= (ProcStat)PIn.PInt   (table.Rows[i][13].ToString());
-				List[i].ProcNote				= PIn.PString(table.Rows[i][14].ToString());
-				List[i].ProvNum					= PIn.PInt   (table.Rows[i][15].ToString());
-				List[i].Dx							= PIn.PInt   (table.Rows[i][16].ToString());
-				List[i].NextAptNum			= PIn.PInt   (table.Rows[i][17].ToString());
-				//List[i].IsCovIns				= PIn.PBool  (table.Rows[i][18].ToString());
-				//List[i].CapCoPay  			= PIn.PDouble(table.Rows[i][19].ToString());
-				List[i].PlaceService		= (PlaceOfService)PIn.PInt(table.Rows[i][20].ToString());
-				List[i].HideGraphical		= PIn.PBool  (table.Rows[i][21].ToString());
-				List[i].Prosthesis		  = PIn.PString(table.Rows[i][22].ToString());
-				List[i].DateOriginalProsth= PIn.PDate(table.Rows[i][23].ToString());
-				List[i].ClaimNote		    = PIn.PString(table.Rows[i][24].ToString());
-				List[i].DateLocked	    = PIn.PDate  (table.Rows[i][25].ToString());
-				List[i].DateEntryC      = PIn.PDate  (table.Rows[i][26].ToString());
-				List[i].ClinicNum       = PIn.PInt   (table.Rows[i][27].ToString());
-				List[i].MedicalCode     = PIn.PString(table.Rows[i][28].ToString());
-				List[i].DiagnosticCode  = PIn.PString(table.Rows[i][29].ToString());
-				List[i].IsPrincDiag     = PIn.PBool  (table.Rows[i][30].ToString());
-				List[i].LabFee          = PIn.PDouble(table.Rows[i][31].ToString());
+				List[i].Surf						= PIn.PString(table.Rows[i][6].ToString());
+				List[i].ToothNum				= PIn.PString(table.Rows[i][7].ToString());
+				List[i].ToothRange			= PIn.PString(table.Rows[i][8].ToString());
+				List[i].Priority				= PIn.PInt   (table.Rows[i][9].ToString());
+				List[i].ProcStatus			= (ProcStat)PIn.PInt   (table.Rows[i][10].ToString());
+				List[i].ProvNum					= PIn.PInt   (table.Rows[i][11].ToString());
+				List[i].Dx							= PIn.PInt   (table.Rows[i][12].ToString());
+				List[i].PlannedAptNum		= PIn.PInt   (table.Rows[i][13].ToString());
+				List[i].PlaceService		= (PlaceOfService)PIn.PInt(table.Rows[i][14].ToString());
+				List[i].Prosthesis		  = PIn.PString(table.Rows[i][15].ToString());
+				List[i].DateOriginalProsth= PIn.PDate(table.Rows[i][16].ToString());
+				List[i].ClaimNote		    = PIn.PString(table.Rows[i][17].ToString());
+				List[i].DateEntryC      = PIn.PDate  (table.Rows[i][18].ToString());
+				List[i].ClinicNum       = PIn.PInt   (table.Rows[i][19].ToString());
+				List[i].MedicalCode     = PIn.PString(table.Rows[i][20].ToString());
+				List[i].DiagnosticCode  = PIn.PString(table.Rows[i][21].ToString());
+				List[i].IsPrincDiag     = PIn.PBool  (table.Rows[i][22].ToString());
+				List[i].LabFee          = PIn.PDouble(table.Rows[i][23].ToString());
+				//List[i].NoteList=new List<string>();
+				//only used sometimes:
+				if(table.Columns.Count>24){
+					List[i].UserNum       = PIn.PInt   (table.Rows[i][24].ToString());
+					List[i].Note          = PIn.PString(table.Rows[i][25].ToString());
+					List[i].SigIsTopaz    = PIn.PBool  (table.Rows[i][26].ToString());
+					List[i].Signature     = PIn.PString(table.Rows[i][27].ToString());
+				}
 			}
 			return List;
 		}
 
 		///<summary>Returns a ProcDesc(AptNum,ProcLines,Production) struct for a single appointment directly from the database</summary>
-		public static Procedure[] GetProcsForSingle(int aptNum, bool isNext){
+		public static Procedure[] GetProcsForSingle(int aptNum, bool isPlanned){
 			string command;
-			if(isNext){
-				command = "SELECT * from procedurelog WHERE NextAptNum = '"+POut.PInt(aptNum)+"'";
+			if(isPlanned){
+				command = "SELECT * from procedurelog WHERE PlannedAptNum = '"+POut.PInt(aptNum)+"'";
 			}
 			else{
 				command = "SELECT * from procedurelog WHERE AptNum = '"+POut.PInt(aptNum)+"'";
@@ -120,7 +282,7 @@ namespace OpenDental{
 		}
 
 		///<summary>Gets a list (procsMultApts is a struct of type ProcDesc(aptNum, string[], and production) of all the procedures attached to the specified appointments.  Then, use GetProcsOneApt to pull procedures for one appointment from this list or GetProductionOneApt.  This process requires only one call to the database.  "myAptNums" is the list of appointments to get procedures for.  isForNext gets procedures for a list of next appointments rather than regular appointments.</summary>
-		public static Procedure[] GetProcsMultApts(int[] myAptNums,bool isForNext){
+		public static Procedure[] GetProcsMultApts(int[] myAptNums,bool isForPlanned){
 			if(myAptNums.Length==0){
 				return new Procedure[0];
 			}
@@ -129,8 +291,8 @@ namespace OpenDental{
 				if(i>0){
 					strAptNums+=" OR";
 				}
-				if(isForNext){
-					strAptNums+=" NextAptNum='"+POut.PInt(myAptNums[i])+"'";
+				if(isForPlanned){
+					strAptNums+=" PlannedAptNum='"+POut.PInt(myAptNums[i])+"'";
 				}
 				else{
 					strAptNums+=" AptNum='"+POut.PInt(myAptNums[i])+"'";
@@ -162,10 +324,10 @@ namespace OpenDental{
 		public static double GetProductionOneApt(int myAptNum,Procedure[] procsMultApts,bool isPlanned){
 			double retVal=0;
 			for(int i=0;i<procsMultApts.Length;i++){
-				if(isPlanned && procsMultApts[i].NextAptNum==myAptNum){
+				if(isPlanned && procsMultApts[i].PlannedAptNum==myAptNum) {
 					retVal+=procsMultApts[i].ProcFee;
 				}
-				if(!isPlanned && procsMultApts[i].AptNum==myAptNum){
+				if(!isPlanned && procsMultApts[i].AptNum==myAptNum) {
 					retVal+=procsMultApts[i].ProcFee;
 				}
 			}
@@ -188,17 +350,39 @@ namespace OpenDental{
 			string command="UPDATE procedurelog SET "
 				+"AptNum = '0' "
 				+"WHERE AptNum = '"+myAptNum+"'";
-			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command);
+			try {
+				if(RemotingClient.OpenDentBusinessIsLocal) {
+					GeneralB.NonQ(command);
+				}
+				else {
+					DtoGeneralNonQ dto=new DtoGeneralNonQ();
+					dto.Command=command;
+					RemotingClient.ProcessCommand(dto);
+				}
+			}
+			catch(Exception e) {
+				MessageBox.Show(e.Message);
+			}
 		}
 
 		///<summary></summary>
 		public static void UnattachProcsInPlannedAppt(int myAptNum){
 			string command="UPDATE procedurelog SET "
-				+"NextAptNum = '0' "
-				+"WHERE NextAptNum = '"+myAptNum+"'";
-			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command);
+				+"PlannedAptNum = '0' "
+				+"WHERE PlannedAptNum = '"+myAptNum+"'";
+			try {
+				if(RemotingClient.OpenDentBusinessIsLocal) {
+					GeneralB.NonQ(command);
+				}
+				else {
+					DtoGeneralNonQ dto=new DtoGeneralNonQ();
+					dto.Command=command;
+					RemotingClient.ProcessCommand(dto);
+				}
+			}
+			catch(Exception e) {
+				MessageBox.Show(e.Message);
+			}
 		}
 
 		///<summary>Loops through each proc. Does not add notes to a procedure that already has notes. Used twice, security checked in both places before calling this.</summary>
@@ -206,6 +390,9 @@ namespace OpenDental{
 			Procedure[] ProcList=Procedures.Refresh(apt.PatNum);
 			ClaimProc[] ClaimProcList=ClaimProcs.Refresh(apt.PatNum);
 			Benefit[] benefitList=Benefits.Refresh(patPlans);
+			//this query could be improved slightly to only get notes of interest.
+			string command="SELECT * FROM procnote WHERE PatNum="+POut.PInt(apt.PatNum)+" ORDER BY EntryDateTime";
+			DataTable rawNotes=General.GetTable(command);
 			//CovPats.Refresh(PlanList,patPlans);
 			//bool doResetRecallStatus=false;
 			ProcedureCode procCode;
@@ -214,10 +401,21 @@ namespace OpenDental{
 				if(ProcList[i].AptNum!=apt.AptNum){
 					continue;
 				}
+				//attach the note, if it exists.
+				for(int n=rawNotes.Rows.Count-1;n>=0;n--) {//loop through each note, backwards.
+					if(ProcList[i].ProcNum.ToString() != rawNotes.Rows[n]["ProcNum"].ToString()) {
+						continue;
+					}
+					ProcList[i].UserNum   =PIn.PInt(rawNotes.Rows[n]["UserNum"].ToString());
+					ProcList[i].Note      =PIn.PString(rawNotes.Rows[n]["Note"].ToString());
+					ProcList[i].SigIsTopaz=PIn.PBool(rawNotes.Rows[n]["SigIsTopaz"].ToString());
+					ProcList[i].Signature =PIn.PString(rawNotes.Rows[n]["Signature"].ToString());
+					break;//out of note loop.
+				}
 				oldProc=ProcList[i].Copy();
 				procCode=ProcedureCodes.GetProcCode(ProcList[i].ADACode);
 				if(procCode.PaintType==ToothPaintingType.Extraction){//if an extraction, then mark previous procs hidden
-					ProcList[i].SetHideGraphical();//might not matter anymore
+					//SetHideGraphical(ProcList[i]);//might not matter anymore
 					ToothInitials.SetValue(apt.PatNum,ProcList[i].ToothNum,ToothInitialType.Missing);
 				}
 				ProcList[i].ProcStatus=ProcStat.C;
@@ -225,10 +423,10 @@ namespace OpenDental{
 				if(oldProc.ProcStatus!=ProcStat.C){
 					ProcList[i].DateEntryC=DateTime.Now;//this triggers it to set to server time NOW().
 				}
-				ProcList[i].PlaceService=(PlaceOfService)Prefs.GetInt("DefaultProcedurePlaceService");
+				ProcList[i].PlaceService=(PlaceOfService)PrefB.GetInt("DefaultProcedurePlaceService");
 				//if procedure was already complete, then don't add more notes.
 				if(oldProc.ProcStatus!=ProcStat.C){
-					ProcList[i].ProcNote+=procCode.DefaultNote;
+					ProcList[i].Note+=procCode.DefaultNote;
 				}
 				ProcList[i].ClinicNum=apt.ClinicNum;
 				ProcList[i].PlaceService=Clinics.GetPlaceService(apt.ClinicNum);
@@ -243,8 +441,8 @@ namespace OpenDental{
 				else{//same provider for every procedure
 					ProcList[i].ProvNum=apt.ProvNum;
 				}
-				ProcList[i].Update(oldProc);
-				ProcList[i].ComputeEstimates(apt.PatNum,ClaimProcList,false,PlanList,patPlans,benefitList);
+				Update(ProcList[i],oldProc);
+				ComputeEstimates(ProcList[i],apt.PatNum,ClaimProcList,false,PlanList,patPlans,benefitList);
 			}
 			//if(doResetRecallStatus){
 			//	Recalls.Reset(apt.PatNum);//this also synchs recall
@@ -290,9 +488,7 @@ namespace OpenDental{
 			string command="SELECT Count(*) from procedurelog WHERE "
 				+"PatNum = '"+POut.PInt(pat.PatNum)+"' "
 				+"&& ProcStatus = '2'";
-			//MessageBox.Show(cmd.CommandText);
-			DataConnection dcon=new DataConnection();
- 			DataTable table=dcon.GetTable(command);
+ 			DataTable table=General.GetTable(command);
 			if(PIn.PInt(table.Rows[0][0].ToString())>0){
 				return;//there are already completed procs (for all situations)
 			}
@@ -310,15 +506,40 @@ namespace OpenDental{
 					+POut.PInt(pat.PatNum)+"'";
 			}
 			//MessageBox.Show(cmd.CommandText);
-			dcon.NonQ(command);
-			
+			//dcon.NonQ(command);
+			try {
+				if(RemotingClient.OpenDentBusinessIsLocal) {
+					GeneralB.NonQ(command);
+				}
+				else {
+					DtoGeneralNonQ dto=new DtoGeneralNonQ();
+					dto.Command=command;
+					RemotingClient.ProcessCommand(dto);
+				}
+			}
+			catch(Exception e) {
+				MessageBox.Show(e.Message);
+			}
 		}
 
 		///<summary>Used in FormClaimProc to get the ADAcode for a procedure. Do not use this if accessing FormClaimProc from the ProcEdit window, because proc might not be updated to db yet.</summary>
 		public static string GetADA(int procNum){
 			string command="SELECT ADACode FROM procedurelog WHERE ProcNum='"+procNum.ToString()+"'";
-			DataConnection dcon=new DataConnection();
-			DataTable table=dcon.GetTable(command);
+			DataSet ds=null;
+			try {
+				if(RemotingClient.OpenDentBusinessIsLocal) {
+					ds=GeneralB.GetTable(command);
+				}
+				else {
+					DtoGeneralGetTable dto=new DtoGeneralGetTable();
+					dto.Command=command;
+					ds=RemotingClient.ProcessQuery(dto);
+				}
+			}
+			catch(Exception e) {
+				MessageBox.Show(e.Message);
+			}
+			DataTable table=ds.Tables[0];
 			if(table.Rows.Count==0){
 				return "";
 			}
@@ -328,8 +549,21 @@ namespace OpenDental{
 		///<summary>Used in FormClaimProc to get the fee for a procedure directly from the db.  Do not use this if accessing FormClaimProc from the ProcEdit window, because proc might not be updated to db yet.</summary>
 		public static double GetProcFee(int procNum){
 			string command="SELECT ProcFee FROM procedurelog WHERE ProcNum='"+procNum.ToString()+"'";
-			DataConnection dcon=new DataConnection();
-			DataTable table=dcon.GetTable(command);
+			DataSet ds=null;
+			try {
+				if(RemotingClient.OpenDentBusinessIsLocal) {
+					ds=GeneralB.GetTable(command);
+				}
+				else {
+					DtoGeneralGetTable dto=new DtoGeneralGetTable();
+					dto.Command=command;
+					ds=RemotingClient.ProcessQuery(dto);
+				}
+			}
+			catch(Exception e) {
+				MessageBox.Show(e.Message);
+			}
+			DataTable table=ds.Tables[0];
 			if(table.Rows.Count==0){
 				return 0;
 			}
@@ -340,7 +574,7 @@ namespace OpenDental{
 		public static void ComputeEstimatesForAll(int patNum,ClaimProc[] claimProcs,Procedure[] procs,InsPlan[] PlanList,PatPlan[] patPlans,Benefit[] benefitList)
 		{
 			for(int i=0;i<procs.Length;i++){
-				procs[i].ComputeEstimates(patNum,claimProcs,false,PlanList,patPlans,benefitList);
+				ComputeEstimates(procs[i],patNum,claimProcs,false,PlanList,patPlans,benefitList);
 			}
 		}
 
@@ -349,9 +583,22 @@ namespace OpenDental{
 			string command="SELECT COUNT(*) FROM procedurelog "
 				+"WHERE PatNum="+patNum.ToString()
 				+" AND ProcStatus=2";
-			DataConnection dcon=new DataConnection();
-			DataTable table=dcon.GetTable(command);
-			if(PIn.PInt(table.Rows[0][0].ToString())==0){
+			DataSet ds=null;
+			try {
+				if(RemotingClient.OpenDentBusinessIsLocal) {
+					ds=GeneralB.GetTable(command);
+				}
+				else {
+					DtoGeneralGetTable dto=new DtoGeneralGetTable();
+					dto.Command=command;
+					ds=RemotingClient.ProcessQuery(dto);
+				}
+			}
+			catch(Exception e) {
+				MessageBox.Show(e.Message);
+			}
+			DataTable table=ds.Tables[0];
+			if(table.Rows[0][0].ToString()=="0"){
 				return false;
 			}
 			else return true;
@@ -364,8 +611,22 @@ namespace OpenDental{
 				+"WHERE ToothNum='"+toothNum+"' "
 				+"AND PatNum="+POut.PInt(patNum)
 				+" AND InitialType=0";//missing
-			DataConnection dcon=new DataConnection();
-			if(dcon.GetCount(command)!="0"){
+			DataSet ds=null;
+			try {
+				if(RemotingClient.OpenDentBusinessIsLocal) {
+					ds=GeneralB.GetTable(command);
+				}
+				else {
+					DtoGeneralGetTable dto=new DtoGeneralGetTable();
+					dto.Command=command;
+					ds=RemotingClient.ProcessQuery(dto);
+				}
+			}
+			catch(Exception e) {
+				MessageBox.Show(e.Message);
+			}
+			DataTable table=ds.Tables[0];
+			if(table.Rows[0][0].ToString()!="0"){
 				return true;
 			}
 			//then, check for a planned extraction
@@ -374,7 +635,21 @@ namespace OpenDental{
 				+"AND procedurelog.ToothNum='"+toothNum+"' "
 				+"AND procedurelog.PatNum="+patNum.ToString()
 				+" AND procedurecode.PaintType=1";//extraction
-			if(dcon.GetCount(command)!="0") {
+			try {
+				if(RemotingClient.OpenDentBusinessIsLocal) {
+					ds=GeneralB.GetTable(command);
+				}
+				else {
+					DtoGeneralGetTable dto=new DtoGeneralGetTable();
+					dto.Command=command;
+					ds=RemotingClient.ProcessQuery(dto);
+				}
+			}
+			catch(Exception e) {
+				MessageBox.Show(e.Message);
+			}
+			table=ds.Tables[0];
+			if(table.Rows[0][0].ToString()!="0"){
 				return true;
 			}
 			return false;
@@ -394,6 +669,370 @@ namespace OpenDental{
 			AL.CopyTo(retVal);
 			return retVal;
 		}
+
+
+
+
+		//--------------------Taken from Procedure class--------------------------------------------------
+
+
+
+
+		
+		///<summary>Base estimate or override is retrieved from supplied claimprocs. Does not take into consideration annual max or deductible.  If limitToTotal set to true, then it does limit total of pri+sec to not be more than total fee.  The claimProc array typically includes all claimProcs for the patient, but must at least include all claimprocs for this proc.</summary>
+		public static double GetEst(Procedure proc,ClaimProc[] claimProcs,PriSecTot pst,PatPlan[] patPlans,bool limitToTotal) {
+			double priBaseEst=0;
+			double secBaseEst=0;
+			double priOverride=-1;
+			double secOverride=-1;
+			for(int i=0;i<claimProcs.Length;i++) {
+				//adjustments automatically ignored since no ProcNum
+				if(claimProcs[i].Status==ClaimProcStatus.CapClaim
+					|| claimProcs[i].Status==ClaimProcStatus.Preauth
+					|| claimProcs[i].Status==ClaimProcStatus.Supplemental) {
+					continue;
+				}
+				if(claimProcs[i].ProcNum==proc.ProcNum) {
+					if(PatPlans.GetPlanNum(patPlans,1)==claimProcs[i].PlanNum) {
+						//if this is a Cap, then this will still work. Est comes out 0.
+						priBaseEst=claimProcs[i].BaseEst;
+						priOverride=claimProcs[i].OverrideInsEst;
+					}
+					else if(PatPlans.GetPlanNum(patPlans,2)==claimProcs[i].PlanNum) {
+						secBaseEst=claimProcs[i].BaseEst;
+						secOverride=claimProcs[i].OverrideInsEst;
+					}
+				}
+			}
+			if(priOverride!=-1) {
+				priBaseEst=priOverride;
+			}
+			if(secOverride!=-1) {
+				secBaseEst=secOverride;
+			}
+			if(limitToTotal && proc.ProcFee-priBaseEst-secBaseEst < 0) {
+				secBaseEst=proc.ProcFee-priBaseEst;
+			}
+			switch(pst) {
+				case PriSecTot.Pri:
+					return priBaseEst;
+				case PriSecTot.Sec:
+					return secBaseEst;
+				case PriSecTot.Tot:
+					return priBaseEst+secBaseEst;
+			}
+			return 0;
+		}
+
+		///<summary>Gets total writeoff for this procedure based on supplied claimprocs. Includes all claimproc types.  Only used in main TP module. The claimProc array typically includes all claimProcs for the patient, but must at least include all claimprocs for this proc.</summary>
+		public static double GetWriteOff(Procedure proc,ClaimProc[] claimProcs) {
+			double retVal=0;
+			for(int i=0;i<claimProcs.Length;i++) {
+				if(claimProcs[i].ProcNum==proc.ProcNum) {
+					retVal+=claimProcs[i].WriteOff;
+				}
+			}
+			return retVal;
+		}
+
+		///<summary>WriteOff'Complete'. Only used in main Account module. Gets writeoff for this procedure based on supplied claimprocs. Only includes claimprocs with status of CapComplete,CapClaim,NotReceived,Received,or Supplemental. BUT only includes Writeoffs not attached to claims, because those will display on the claim line.  In practice, this means only writeoffs with CapComplete status get returned because they are to be subtracted from the patient portion on the proc line. The claimProc array typically includes all claimProcs for the patient, but must at least include all claimprocs for this proc.</summary>
+		public static double GetWriteOffC(Procedure proc,ClaimProc[] claimProcs) {
+			double retVal=0;
+			for(int i=0;i<claimProcs.Length;i++) {
+				if(claimProcs[i].ProcNum!=proc.ProcNum) {
+					continue;
+				}
+				if(claimProcs[i].ClaimNum>0) {
+					continue;
+				}
+				if(
+					//adj skipped
+					claimProcs[i].Status==ClaimProcStatus.CapClaim
+					|| claimProcs[i].Status==ClaimProcStatus.CapComplete
+					//capEstimate would never happen because procedure is C.
+					//estimate means not attached to claim, so don't count
+					|| claimProcs[i].Status==ClaimProcStatus.NotReceived
+					//preAuth -no
+					|| claimProcs[i].Status==ClaimProcStatus.Received
+					|| claimProcs[i].Status==ClaimProcStatus.Supplemental
+					) {
+					retVal+=claimProcs[i].WriteOff;
+				}
+			}
+			return retVal;
+		}
+
+		///<summary>Used whenever a procedure changes or a plan changes.  All estimates for a given procedure must be updated. This frequently includes adding claimprocs, but can also just edit the appropriate existing claimprocs. Skips status=Adjustment,CapClaim,Preauth,Supplemental.  Also fixes date,status,and provnum if appropriate.  The claimProc array can be all claimProcs for the patient, but must at least include all claimprocs for this proc.  Only set IsInitialEntry true from Chart module; this is for cap procs.</summary>
+		public static void ComputeEstimates(Procedure proc,int patNum,ClaimProc[] claimProcs,bool IsInitialEntry,InsPlan[] PlanList,PatPlan[] patPlans,Benefit[] benefitList) {
+			bool doCreate=true;
+			if(proc.ProcDate<DateTime.Today && proc.ProcStatus==ProcStat.C) {
+				//don't automatically create an estimate for completed procedures
+				//especially if they are older than today
+				//this may need to be relaxed a little for offices that enter treatment a few days after it's done.
+				doCreate=false;
+			}
+			//first test to see if each estimate matches an existing patPlan (current coverage),
+			//delete any other estimates
+			for(int i=0;i<claimProcs.Length;i++) {
+				if(claimProcs[i].ProcNum!=proc.ProcNum) {
+					continue;
+				}
+				if(claimProcs[i].PlanNum==0) {
+					continue;
+				}
+				if(claimProcs[i].Status==ClaimProcStatus.CapClaim
+					|| claimProcs[i].Status==ClaimProcStatus.Preauth
+					|| claimProcs[i].Status==ClaimProcStatus.Supplemental) {
+					continue;
+					//ignored: adjustment
+					//included: capComplete,CapEstimate,Estimate,NotReceived,Received
+				}
+				if(claimProcs[i].Status!=ClaimProcStatus.Estimate && claimProcs[i].Status!=ClaimProcStatus.CapEstimate) {
+					continue;
+				}
+				bool planIsCurrent=false;
+				for(int p=0;p<patPlans.Length;p++) {
+					if(patPlans[p].PlanNum==claimProcs[i].PlanNum) {
+						planIsCurrent=true;
+						break;
+					}
+				}
+				//If claimProc estimate is for a plan that is not current, delete it
+				if(!planIsCurrent) {
+					ClaimProcs.Delete(claimProcs[i]);
+				}
+			}
+			InsPlan PlanCur;
+			bool estExists;
+			bool cpAdded=false;
+			//loop through all patPlans (current coverage), and add any missing estimates
+			for(int p=0;p<patPlans.Length;p++) {//typically, loop will only have length of 1 or 2
+				if(!doCreate) {
+					break;
+				}
+				//test to see if estimate exists
+				estExists=false;
+				for(int i=0;i<claimProcs.Length;i++) {
+					if(claimProcs[i].ProcNum!=proc.ProcNum) {
+						continue;
+					}
+					if(claimProcs[i].PlanNum==0) {
+						continue;
+					}
+					if(claimProcs[i].Status==ClaimProcStatus.CapClaim
+						|| claimProcs[i].Status==ClaimProcStatus.Preauth
+						|| claimProcs[i].Status==ClaimProcStatus.Supplemental) {
+						continue;
+						//ignored: adjustment
+						//included: capComplete,CapEstimate,Estimate,NotReceived,Received
+					}
+					if(patPlans[p].PlanNum!=claimProcs[i].PlanNum) {
+						continue;
+					}
+					estExists=true;
+					break;
+				}
+				if(estExists) {
+					continue;
+				}
+				//estimate is missing, so add it.
+				ClaimProc cp=new ClaimProc();
+				cp.ProcNum=proc.ProcNum;
+				cp.PatNum=patNum;
+				cp.ProvNum=proc.ProvNum;
+				PlanCur=InsPlans.GetPlan(patPlans[p].PlanNum,PlanList);
+				if(PlanCur==null) {
+					continue;//??
+				}
+				if(PlanCur.PlanType=="c") {
+					if(proc.ProcStatus==ProcStat.C) {
+						cp.Status=ClaimProcStatus.CapComplete;
+					}
+					else {
+						cp.Status=ClaimProcStatus.CapEstimate;//this may be changed below
+					}
+				}
+				else {
+					cp.Status=ClaimProcStatus.Estimate;
+				}
+				cp.PlanNum=PlanCur.PlanNum;
+				cp.DateCP=proc.ProcDate;
+				cp.AllowedAmt=-1;
+				cp.PercentOverride=-1;
+				cp.OverrideInsEst=-1;
+				cp.NoBillIns=ProcedureCodes.GetProcCode(proc.ADACode).NoBillIns;
+				cp.OverAnnualMax=-1;
+				cp.PaidOtherIns=-1;
+				cp.CopayOverride=-1;
+				cp.ProcDate=proc.ProcDate;
+				//ComputeBaseEst will fill AllowedAmt,Percentage,CopayAmt,BaseEst
+				ClaimProcs.Insert(cp);
+				cpAdded=true;
+			}
+			//if any were added, refresh the list
+			if(cpAdded) {
+				claimProcs=ClaimProcs.Refresh(patNum);
+			}
+			for(int i=0;i<claimProcs.Length;i++) {
+				if(claimProcs[i].ProcNum!=proc.ProcNum) {
+					continue;
+				}
+				claimProcs[i].DateCP=proc.ProcDate;//dates MUST match, but I can't remember why. Claims?
+				claimProcs[i].ProcDate=proc.ProcDate;
+				//capitation estimates are always forced to follow the status of the procedure
+				PlanCur=InsPlans.GetPlan(claimProcs[i].PlanNum,PlanList);
+				if(PlanCur!=null
+					&& PlanCur.PlanType=="c"
+					&& (claimProcs[i].Status==ClaimProcStatus.CapComplete
+					|| claimProcs[i].Status==ClaimProcStatus.CapEstimate)) {
+					if(IsInitialEntry) {
+						//this will be switched to CapComplete further down if applicable.
+						//This makes ComputeBaseEst work properly on new cap procs w status Complete
+						claimProcs[i].Status=ClaimProcStatus.CapEstimate;
+					}
+					else if(proc.ProcStatus==ProcStat.C) {
+						claimProcs[i].Status=ClaimProcStatus.CapComplete;
+					}
+					else {
+						claimProcs[i].Status=ClaimProcStatus.CapEstimate;
+					}
+				}
+				//ignored: adjustment
+				//ComputeBaseEst automatically skips: capComplete,Preauth,capClaim,Supplemental
+				//does recalc est on: CapEstimate,Estimate,NotReceived,Received
+				if(claimProcs[i].PlanNum>0 && PatPlans.GetPlanNum(patPlans,1)==claimProcs[i].PlanNum) {
+					ClaimProcs.ComputeBaseEst(claimProcs[i],proc,PriSecTot.Pri,PlanList,patPlans,benefitList);
+				}
+				if(claimProcs[i].PlanNum>0 && PatPlans.GetPlanNum(patPlans,2)==claimProcs[i].PlanNum) {
+					ClaimProcs.ComputeBaseEst(claimProcs[i],proc,PriSecTot.Sec,PlanList,patPlans,benefitList);
+				}
+				if(IsInitialEntry
+					&& claimProcs[i].Status==ClaimProcStatus.CapEstimate
+					&& proc.ProcStatus==ProcStat.C) {
+					claimProcs[i].Status=ClaimProcStatus.CapComplete;
+				}
+				//prov only updated if still an estimate
+				if(claimProcs[i].Status==ClaimProcStatus.Estimate
+					|| claimProcs[i].Status==ClaimProcStatus.CapEstimate) {
+					claimProcs[i].ProvNum=proc.ProvNum;
+				}
+				ClaimProcs.Update(claimProcs[i]);
+			}
+		}
+
+		///<summary>Used in deciding how to display procedures in Account. The claimProcList can be all claimProcs for the patient or only those attached to this proc. Will be true if any claimProcs at all are attached to this procedure.</summary>
+		public static bool IsCoveredIns(Procedure proc,ClaimProc[] List) {
+			for(int i=0;i<List.Length;i++) {
+				if(List[i].ProcNum==proc.ProcNum) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		///<summary>Used in deciding how to display procedures in Account. The claimProcList can be all claimProcs for the patient or only those attached to this proc. Will be true if any claimProcs attached to this procedure are set NoBillIns.</summary>
+		public static bool NoBillIns(Procedure proc,ClaimProc[] List) {
+			for(int i=0;i<List.Length;i++) {
+				if(List[i].ProcNum==proc.ProcNum
+					&& List[i].NoBillIns) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		///<summary>Used in ContrAccount.CreateClaim when validating selected procedures. Returns true if there is any claimproc for this procedure and plan which is marked NoBillIns.  The claimProcList can be all claimProcs for the patient or only those attached to this proc. Will be true if any claimProcs attached to this procedure are set NoBillIns.</summary>
+		public static bool NoBillIns(Procedure proc,ClaimProc[] List,int planNum) {
+			for(int i=0;i<List.Length;i++) {
+				if(List[i].ProcNum==proc.ProcNum
+					&& List[i].PlanNum==planNum
+					&& List[i].NoBillIns) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		///<summary>Used in deciding how to display procedures in Account. The claimProcList can be all claimProcs for the patient or only those attached to this proc. Will be true if any claimProcs attached to this procedure are status estimate, which means they haven't been attached to a claim because their status would have been changed to NotReceived.  And if the patient doesn't have ins, then the estimates would have been deleted.</summary>
+		public static bool IsUnsent(Procedure proc,ClaimProc[] List) {
+			//unsent if no claimprocs with claimNums
+			for(int i=0;i<List.Length;i++) {
+				if(List[i].ProcNum==proc.ProcNum
+					&& List[i].Status==ClaimProcStatus.Estimate
+					//&& List[i].ClaimNum>0
+					//&& List[i].Status!=ClaimProcStatus.Preauth
+					) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		///<summary>Only called from FormProcEdit to signal when to disable much of the editing in that form. If the procedure is 'AttachedToClaim' then user should not change it very much.  The claimProcList can be all claimProcs for the patient or only those attached to this proc.</summary>
+		public static bool IsAttachedToClaim(Procedure proc,ClaimProc[] List) {
+			for(int i=0;i<List.Length;i++) {
+				if(List[i].ProcNum==proc.ProcNum
+					&& List[i].ClaimNum>0
+					&& (List[i].Status==ClaimProcStatus.CapClaim
+					|| List[i].Status==ClaimProcStatus.NotReceived
+					|| List[i].Status==ClaimProcStatus.Preauth
+					|| List[i].Status==ClaimProcStatus.Received
+					|| List[i].Status==ClaimProcStatus.Supplemental
+					)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		///<summary>Used in ContrAccount.CreateClaim to validate that procedure is not already attached to a claim for this specific insPlan.  The claimProcList can be all claimProcs for the patient or only those attached to this proc.</summary>
+		public static bool IsAlreadyAttachedToClaim(Procedure proc,ClaimProc[] List,int planNum) {
+			for(int i=0;i<List.Length;i++) {
+				if(List[i].ProcNum==proc.ProcNum
+					&& List[i].PlanNum==planNum
+					&& List[i].ClaimNum>0
+					&& List[i].Status!=ClaimProcStatus.Preauth) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		///<summary>Only used in ContrAccount.OnInsClick to automate selection of procedures.  Returns true if this procedure should be selected.  This happens if there is at least one claimproc attached for this plan that is an estimate, and it is not set to NoBillIns.  The list can be all ClaimProcs for patient, or just those for this procedure. The plan is the primary plan.</summary>
+		public static bool NeedsSent(Procedure proc,ClaimProc[] List,int planNum) {
+			for(int i=0;i<List.Length;i++) {
+				if(List[i].ProcNum==proc.ProcNum
+					&& !List[i].NoBillIns
+					&& List[i].PlanNum==planNum
+					&& List[i].Status==ClaimProcStatus.Estimate) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		///<summary>Only used in ContrAccount.CreateClaim to decide whether a given procedure has an estimate that can be used to attach to a claim for the specified plan.  Returns a valid claimProc if this procedure has an estimate attached that is not set to NoBillIns.  The list can be all ClaimProcs for patient, or just those for this procedure. Returns null if there are no claimprocs that would work.</summary>
+		public static ClaimProc GetClaimProcEstimate(Procedure proc,ClaimProc[] List,InsPlan plan) {
+			//bool matchOfWrongType=false;
+			for(int i=0;i<List.Length;i++) {
+				if(List[i].ProcNum==proc.ProcNum
+					&& !List[i].NoBillIns
+					&& List[i].PlanNum==plan.PlanNum) {
+					if(plan.PlanType=="c") {
+						if(List[i].Status==ClaimProcStatus.CapComplete)
+							return List[i];
+					}
+					else {//any type except capitation
+						if(List[i].Status==ClaimProcStatus.Estimate)
+							return List[i];
+					}
+				}
+			}
+			return null;
+		}
+
+		
+
 
 		
 

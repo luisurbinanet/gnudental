@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Drawing.Printing;
 using System.Windows.Forms;
 using OpenDental.UI;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -21,6 +22,15 @@ namespace OpenDental{
 		private bool headingPrinted;
 		private int pagesPrinted;
 		private int headingPrintH;
+		private Label label1;
+		private ValidDate textDateFrom;
+		private ValidDate textDateTo;
+		private Label label2;
+		private OpenDental.UI.Button butRefresh;
+		private MonthCalendar calendarFrom;
+		private OpenDental.UI.Button butDropFrom;
+		private OpenDental.UI.Button butDropTo;
+		private MonthCalendar calendarTo;
 		private bool isPrinting;
 
 		///<summary></summary>
@@ -61,6 +71,15 @@ namespace OpenDental{
 			this.imageListMain = new System.Windows.Forms.ImageList(this.components);
 			this.gridMain = new OpenDental.UI.ODGrid();
 			this.ToolBarMain = new OpenDental.UI.ODToolBar();
+			this.label1 = new System.Windows.Forms.Label();
+			this.textDateFrom = new OpenDental.ValidDate();
+			this.textDateTo = new OpenDental.ValidDate();
+			this.label2 = new System.Windows.Forms.Label();
+			this.butRefresh = new OpenDental.UI.Button();
+			this.calendarFrom = new System.Windows.Forms.MonthCalendar();
+			this.butDropFrom = new OpenDental.UI.Button();
+			this.butDropTo = new OpenDental.UI.Button();
+			this.calendarTo = new System.Windows.Forms.MonthCalendar();
 			this.SuspendLayout();
 			// 
 			// imageListMain
@@ -72,12 +91,14 @@ namespace OpenDental{
 			// 
 			// gridMain
 			// 
-			this.gridMain.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.gridMain.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.gridMain.HScrollVisible = false;
-			this.gridMain.Location = new System.Drawing.Point(0,29);
+			this.gridMain.Location = new System.Drawing.Point(0,56);
 			this.gridMain.Name = "gridMain";
 			this.gridMain.ScrollValue = 0;
-			this.gridMain.Size = new System.Drawing.Size(844,642);
+			this.gridMain.Size = new System.Drawing.Size(844,615);
 			this.gridMain.TabIndex = 1;
 			this.gridMain.Title = null;
 			this.gridMain.TranslationName = "TableJournal";
@@ -93,10 +114,111 @@ namespace OpenDental{
 			this.ToolBarMain.TabIndex = 0;
 			this.ToolBarMain.ButtonClick += new OpenDental.UI.ODToolBarButtonClickEventHandler(this.ToolBarMain_ButtonClick);
 			// 
+			// label1
+			// 
+			this.label1.Location = new System.Drawing.Point(2,31);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(75,18);
+			this.label1.TabIndex = 2;
+			this.label1.Text = "From";
+			this.label1.TextAlign = System.Drawing.ContentAlignment.BottomRight;
+			// 
+			// textDateFrom
+			// 
+			this.textDateFrom.Location = new System.Drawing.Point(78,32);
+			this.textDateFrom.Name = "textDateFrom";
+			this.textDateFrom.Size = new System.Drawing.Size(81,20);
+			this.textDateFrom.TabIndex = 3;
+			// 
+			// textDateTo
+			// 
+			this.textDateTo.Location = new System.Drawing.Point(268,32);
+			this.textDateTo.Name = "textDateTo";
+			this.textDateTo.Size = new System.Drawing.Size(81,20);
+			this.textDateTo.TabIndex = 5;
+			// 
+			// label2
+			// 
+			this.label2.Location = new System.Drawing.Point(195,31);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(72,18);
+			this.label2.TabIndex = 4;
+			this.label2.Text = "To";
+			this.label2.TextAlign = System.Drawing.ContentAlignment.BottomRight;
+			// 
+			// butRefresh
+			// 
+			this.butRefresh.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butRefresh.Autosize = true;
+			this.butRefresh.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butRefresh.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butRefresh.Location = new System.Drawing.Point(398,30);
+			this.butRefresh.Name = "butRefresh";
+			this.butRefresh.Size = new System.Drawing.Size(75,23);
+			this.butRefresh.TabIndex = 6;
+			this.butRefresh.Text = "Refresh";
+			this.butRefresh.UseVisualStyleBackColor = true;
+			this.butRefresh.Click += new System.EventHandler(this.butRefresh_Click);
+			// 
+			// calendarFrom
+			// 
+			this.calendarFrom.Location = new System.Drawing.Point(5,56);
+			this.calendarFrom.MaxSelectionCount = 1;
+			this.calendarFrom.Name = "calendarFrom";
+			this.calendarFrom.TabIndex = 7;
+			this.calendarFrom.Visible = false;
+			this.calendarFrom.DateSelected += new System.Windows.Forms.DateRangeEventHandler(this.calendarFrom_DateSelected);
+			// 
+			// butDropFrom
+			// 
+			this.butDropFrom.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butDropFrom.Autosize = true;
+			this.butDropFrom.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butDropFrom.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butDropFrom.Location = new System.Drawing.Point(161,30);
+			this.butDropFrom.Name = "butDropFrom";
+			this.butDropFrom.Size = new System.Drawing.Size(22,23);
+			this.butDropFrom.TabIndex = 8;
+			this.butDropFrom.Text = "V";
+			this.butDropFrom.UseVisualStyleBackColor = true;
+			this.butDropFrom.Click += new System.EventHandler(this.butDropFrom_Click);
+			// 
+			// butDropTo
+			// 
+			this.butDropTo.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butDropTo.Autosize = true;
+			this.butDropTo.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butDropTo.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butDropTo.Location = new System.Drawing.Point(351,30);
+			this.butDropTo.Name = "butDropTo";
+			this.butDropTo.Size = new System.Drawing.Size(22,23);
+			this.butDropTo.TabIndex = 9;
+			this.butDropTo.Text = "V";
+			this.butDropTo.UseVisualStyleBackColor = true;
+			this.butDropTo.Click += new System.EventHandler(this.butDropTo_Click);
+			// 
+			// calendarTo
+			// 
+			this.calendarTo.Location = new System.Drawing.Point(195,56);
+			this.calendarTo.MaxSelectionCount = 1;
+			this.calendarTo.Name = "calendarTo";
+			this.calendarTo.TabIndex = 10;
+			this.calendarTo.Visible = false;
+			this.calendarTo.DateSelected += new System.Windows.Forms.DateRangeEventHandler(this.calendarTo_DateSelected);
+			// 
 			// FormJournal
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
 			this.ClientSize = new System.Drawing.Size(844,671);
+			this.Controls.Add(this.calendarTo);
+			this.Controls.Add(this.butDropTo);
+			this.Controls.Add(this.butDropFrom);
+			this.Controls.Add(this.calendarFrom);
+			this.Controls.Add(this.butRefresh);
+			this.Controls.Add(this.textDateTo);
+			this.Controls.Add(this.label2);
+			this.Controls.Add(this.textDateFrom);
+			this.Controls.Add(this.label1);
 			this.Controls.Add(this.gridMain);
 			this.Controls.Add(this.ToolBarMain);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -108,6 +230,7 @@ namespace OpenDental{
 			this.Text = "Transaction History";
 			this.Load += new System.EventHandler(this.FormJournal_Load);
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 		#endregion
@@ -153,6 +276,19 @@ namespace OpenDental{
 		}
 
 		private void FillGrid(){
+			if(  textDateFrom.errorProvider1.GetError(textDateFrom)!=""
+				|| textDateTo.errorProvider1.GetError(textDateTo)!=""
+				){
+				return;
+			}
+			DateTime dateFrom=PIn.PDate(textDateFrom.Text);
+			DateTime dateTo;
+			if(textDateTo.Text==""){
+				dateTo=DateTime.MaxValue;
+			}
+			else{
+				dateTo=PIn.PDate(textDateTo.Text);
+			}
 			JournalList=JournalEntries.GetForAccount(AccountCur.AccountNum);
 			gridMain.BeginUpdate();
 			gridMain.Title=AccountCur.Description+" ("+Lan.g("enumAccountType",AccountCur.AcctType.ToString())+")";
@@ -202,6 +338,28 @@ namespace OpenDental{
 			ODGridRow row;
 			double bal=0;
 			for(int i=0;i<JournalList.Length;i++){
+				if(JournalList[i].DateDisplayed > dateTo) {
+					break;
+				}
+				if(JournalList[i].DebitAmt!=0) {
+					if(Accounts.DebitIsPos(AccountCur.AcctType)) {//this one is used for checking account
+						bal+=JournalList[i].DebitAmt;
+					}
+					else {
+						bal-=JournalList[i].DebitAmt;
+					}
+				}
+				if(JournalList[i].CreditAmt!=0) {
+					if(Accounts.DebitIsPos(AccountCur.AcctType)) {//this one is used for checking account
+						bal-=JournalList[i].CreditAmt;
+					}
+					else {
+						bal+=JournalList[i].CreditAmt;
+					}
+				}
+				if(JournalList[i].DateDisplayed < dateFrom){
+					continue;
+				}
 				row=new ODGridRow();
 				row.Cells.Add(JournalList[i].CheckNumber);
 				row.Cells.Add(JournalList[i].DateDisplayed.ToShortDateString());
@@ -212,24 +370,12 @@ namespace OpenDental{
 				}
 				else{
 					row.Cells.Add(JournalList[i].DebitAmt.ToString("n"));
-					if(Accounts.DebitIsPos(AccountCur.AcctType)){//this one is used for checking account
-						bal+=JournalList[i].DebitAmt;
-					}
-					else{
-						bal-=JournalList[i].DebitAmt;
-					}
 				}
 				if(JournalList[i].CreditAmt==0) {
 					row.Cells.Add("");
 				}
 				else {
 					row.Cells.Add(JournalList[i].CreditAmt.ToString("n"));
-					if(Accounts.DebitIsPos(AccountCur.AcctType)) {//this one is used for checking account
-						bal-=JournalList[i].CreditAmt;
-					}
-					else {
-						bal+=JournalList[i].CreditAmt;
-					}
 				}
 				row.Cells.Add(bal.ToString("n"));
 				if(JournalList[i].ReconcileNum==0){
@@ -247,13 +393,13 @@ namespace OpenDental{
 		private void Add_Click(){
 			Transaction trans=new Transaction();
 			trans.UserNum=Security.CurUser.UserNum;
-			trans.Insert();//we now have a TransactionNum, and datetimeEntry has been set
+			Transactions.Insert(trans);//we now have a TransactionNum, and datetimeEntry has been set
 			FormTransactionEdit FormT=new FormTransactionEdit(trans.TransactionNum,AccountCur.AccountNum);
 			FormT.IsNew=true;
 			FormT.ShowDialog();
 			if(FormT.DialogResult==DialogResult.Cancel){
 				//no need to try-catch, since no journal entries were saved.
-				trans.Delete();
+				Transactions.Delete(trans);
 			}
 			FillGrid();
 		}
@@ -344,6 +490,65 @@ namespace OpenDental{
 			FillGrid();
 		}
 
+		private void butDropFrom_Click(object sender,EventArgs e) {
+			ToggleCalendars();
+		}
+
+		private void butDropTo_Click(object sender,EventArgs e) {
+			ToggleCalendars();
+		}
+
+		private void ToggleCalendars(){
+			if(calendarFrom.Visible){
+				//hide the calendars
+				calendarFrom.Visible=false;
+				calendarTo.Visible=false;
+			}
+			else{
+				//set the date on the calendars to match what's showing in the boxes
+				if(textDateFrom.errorProvider1.GetError(textDateFrom)==""
+					&& textDateTo.errorProvider1.GetError(textDateTo)=="")
+				{//if no date errors
+					if(textDateFrom.Text==""){
+						calendarFrom.SetDate(DateTime.Today);
+					}
+					else{
+						calendarFrom.SetDate(PIn.PDate(textDateFrom.Text));
+					}
+					if(textDateTo.Text=="") {
+						calendarTo.SetDate(DateTime.Today);
+					}
+					else {
+						calendarTo.SetDate(PIn.PDate(textDateTo.Text));
+					}
+				}
+				//show the calendars
+				calendarFrom.Visible=true;
+				calendarTo.Visible=true;
+			}
+		}
+
+		private void calendarFrom_DateSelected(object sender,DateRangeEventArgs e) {
+			textDateFrom.Text=calendarFrom.SelectionStart.ToShortDateString();
+		}
+
+		private void calendarTo_DateSelected(object sender,DateRangeEventArgs e) {
+			textDateTo.Text=calendarTo.SelectionStart.ToShortDateString();
+		}
+
+		private void butRefresh_Click(object sender,EventArgs e) {
+			if(textDateFrom.errorProvider1.GetError(textDateFrom)!=""
+				|| textDateTo.errorProvider1.GetError(textDateTo)!=""
+				)
+			{
+				MsgBox.Show(this,"Please fix data entry errors first.");
+				return;
+			}
+			calendarFrom.Visible=false;
+			calendarTo.Visible=false;
+			FillGrid();
+		}
+
 		private void butOK_Click(object sender, System.EventArgs e) {
 			DialogResult=DialogResult.OK;
 		}
@@ -351,6 +556,12 @@ namespace OpenDental{
 		private void butCancel_Click(object sender, System.EventArgs e) {
 			DialogResult=DialogResult.Cancel;
 		}
+
+		
+
+		
+
+		
 
 		
 

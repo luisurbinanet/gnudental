@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -179,8 +180,8 @@ namespace OpenDental{
 			if(listCounties.SelectedIndex==-1){
 				return;
 			}
-			Counties.Cur=Counties.List[listCounties.SelectedIndex];
 			FormCountyEdit FormSE=new FormCountyEdit();
+			FormSE.CountyCur=Counties.List[listCounties.SelectedIndex];
 			FormSE.ShowDialog();
 			if(FormSE.DialogResult!=DialogResult.OK){
 				return;
@@ -191,7 +192,7 @@ namespace OpenDental{
 		private void butAdd_Click(object sender, System.EventArgs e) {
 			FormCountyEdit FormSE=new FormCountyEdit();
 			FormSE.IsNew=true;
-			Counties.Cur=new County();
+			FormSE.CountyCur=new County();
 			FormSE.ShowDialog();
 			if(FormSE.DialogResult!=DialogResult.OK){
 				return;
@@ -204,13 +205,13 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please select an item first."));
 				return;
 			}
-			Counties.Cur=Counties.List[listCounties.SelectedIndex];
-			string usedBy=Counties.UsedBy(Counties.Cur.CountyName);
+			County CountyCur=Counties.List[listCounties.SelectedIndex];
+			string usedBy=Counties.UsedBy(CountyCur.CountyName);
 			if(usedBy != ""){
 				MessageBox.Show(Lan.g(this,"Cannot delete County because it is already in use by the following patients: \r")+usedBy);
 				return;
 			}
-			Counties.DeleteCur();
+			Counties.Delete(CountyCur);
 			FillList();
 		}
 

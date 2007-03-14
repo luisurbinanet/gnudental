@@ -5,9 +5,11 @@ See header in FormOpenDental.cs for complete text.  Redistributions must retain 
 using System;
 using System.Drawing;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using OpenDental.UI;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -298,7 +300,7 @@ namespace OpenDental{
 
 		private void FillGrid(){
 			Cursor=Cursors.WaitCursor;
-			ListAll=InsPlans.RefreshListAll(radioOrderEmp.Checked,textEmployer.Text,textCarrier.Text,
+			ListAll=InsPlans.GetBigList(radioOrderEmp.Checked,textEmployer.Text,textCarrier.Text,
 				textGroupName.Text,textGroupNum.Text);
 			if(IsSelectMode){
 				butBlank.Visible=true;
@@ -421,22 +423,25 @@ namespace OpenDental{
 			}
 			//Do the merge.
 			InsPlan mergedPlan=FormI.MergedPlan.Copy();
-			ArrayList benList=Benefits.RefreshForAll(mergedPlan);
+			List<Benefit> benList=Benefits.RefreshForAll(mergedPlan);
 			Cursor=Cursors.WaitCursor;
-			int[] planNums;
+			List<int> planNums;
 			for(int i=0;i<listSelected.Length;i++){//loop through each selected plan group
 				//skip the merged plan, because it's already correct
 				if(mergedPlan.CompareTo(listSelected[i])==0){
 					continue;
 				}
-				planNums=listSelected[i].GetPlanNumsOfSamePlans();
-				//First the plan info and benefits
-				//must do benefits first, because this method has to do a search for similar plans. So plan can't be updated yet.
-				Benefits.UpdateListForIdentical(new ArrayList(),benList,listSelected[i]);//there will always be changes
-				mergedPlan.UpdateForLike(listSelected[i]);
-				for(int j=0;j<planNums.Length;j++) {
+				planNums=new List<int>(InsPlans.GetPlanNumsOfSamePlans(Employers.GetName(listSelected[i].EmployerNum),
+					listSelected[i].GroupName,listSelected[i].GroupNum,listSelected[i].DivisionNo,
+					Carriers.GetName(listSelected[i].CarrierNum),
+					listSelected[i].IsMedical,listSelected[i].PlanNum,false));//remember that planNum=0
+				//First plan info
+				InsPlans.UpdateForLike(listSelected[i],mergedPlan);
+				for(int j=0;j<planNums.Count;j++) {
 					InsPlans.ComputeEstimatesForPlan(planNums[j]);
 				}
+				//then benefits
+				Benefits.UpdateListForIdentical(new List<Benefit>(),benList,planNums);//there will always be changes
 				//Then PlanNote.  This is much simpler than the usual synch, because user has seen all versions of note.
 				InsPlans.UpdateNoteForPlans(planNums,mergedPlan.PlanNote);
 			}

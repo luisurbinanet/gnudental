@@ -3,35 +3,10 @@ using System.Collections;
 using System.Data;
 using System.Drawing.Printing;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
-	
-	///<summary>One printer selection for one situation for one computer.</summary>
-	public class Printer{
-		///<summary>Primary key.</summary>
-		public int PrinterNum;
-		///<summary>FK to computer.ComputerNum.  This will be changed some day to refer to the computername, because it would make more sense as a key than a cryptic number.</summary>
-		public int ComputerNum;
-		///<summary>Enum:PrintSituation One of about 10 different situations where printing takes place.  If no printer object exists for a situation, then a default is used and a prompt is displayed.</summary>
-		public PrintSituation PrintSit;
-		///<summary>The name of the printer as set from the specified computer.</summary>
-		public string PrinterName;
-		///<summary>If true, then user will be prompted for printer.  Otherwise, print directly with little user interaction.</summary>
-		public bool DisplayPrompt;
 
-		/*//<summary>Returns a copy of the clearinghouse.</summary>
-    public ClaimForm Copy(){
-			ClaimForm cf=new ClaimForm();
-			cf.ClaimFormNum=ClaimFormNum;
-			cf.Description=Description;
-			return cf;
-		}*/
-
-		
-	}
-
-/*=========================================================================================
-		=================================== class Printers=======================================*/
 
 	///<summary>Handles all the business logic for printers.  Used heavily by the UI.  Every single function that makes changes to the database must be completely autonomous and do ALL validation itself.</summary>
 	public class Printers{
@@ -57,8 +32,7 @@ namespace OpenDental{
 		}
 
 		private static Printer[] RefreshAndFill(string command){
-			DataConnection dcon=new DataConnection();
- 			DataTable table=dcon.GetTable(command);
+ 			DataTable table=General.GetTable(command);
 			Printer[] pList=new Printer[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
 				pList[i]=new Printer();
@@ -73,16 +47,16 @@ namespace OpenDental{
 
 		///<summary></summary>
 		private static void Insert(Printer cur){
-			if(Prefs.RandomKeys){
+			if(PrefB.RandomKeys){
 				cur.PrinterNum=MiscData.GetKey("printer","PrinterNum");
 			}
 			string command= "INSERT INTO printer (";
-			if(Prefs.RandomKeys){
+			if(PrefB.RandomKeys){
 				command+="PrinterNum,";
 			}
 			command+="ComputerNum,PrintSit,PrinterName,"
 				+"DisplayPrompt) VALUES(";
-			if(Prefs.RandomKeys){
+			if(PrefB.RandomKeys){
 				command+="'"+POut.PInt(cur.PrinterNum)+"', ";
 			}
 			command+=
@@ -90,14 +64,12 @@ namespace OpenDental{
 				+"'"+POut.PInt   ((int)cur.PrintSit)+"', "
 				+"'"+POut.PString(cur.PrinterName)+"', "
 				+"'"+POut.PBool  (cur.DisplayPrompt)+"')";
-			//MessageBox.Show(cmd.CommandText);
-			DataConnection dcon=new DataConnection();
- 			if(Prefs.RandomKeys){
-				dcon.NonQ(command);
+			//MessageBox.Show(string command);
+ 			if(PrefB.RandomKeys){
+				General.NonQ(command);
 			}
 			else{
- 				dcon.NonQ(command,true);
-				cur.PrinterNum=dcon.InsertID;
+ 				cur.PrinterNum=General.NonQ(command,true);
 			}
 		}
 
@@ -109,16 +81,14 @@ namespace OpenDental{
 				+",PrinterName = '"  +POut.PString(cur.PrinterName)+"' "
 				+",DisplayPrompt = '"+POut.PBool  (cur.DisplayPrompt)+"' "
 				+"WHERE PrinterNum = '"+POut.PInt(cur.PrinterNum)+"'";
-			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command);
+ 			General.NonQ(command);
 		}
 
 		///<summary></summary>
 		private static void Delete(Printer cur){
 			string command="DELETE FROM printer "
 				+"WHERE PrinterNum = "+POut.PInt(cur.PrinterNum);
-			DataConnection dcon=new DataConnection();
-			dcon.NonQ(command);
+			General.NonQ(command);
 		}
 
 		///<summary>Called from many places in the program.  Every single time we print, this function is used to figure out which printer to use.  It also handles displaying the dialog if necessary.  Tests to see if the selected printer is valid, and if not, then it gives user the option to print to an available printer.</summary>
@@ -198,8 +168,7 @@ namespace OpenDental{
 			//Computer compCur=Computers.GetCur();
 			string command="SELECT ComputerNum FROM computer "
 				+"WHERE CompName = '"+POut.PString(computerName)+"'";
-			DataConnection dcon=new DataConnection();
- 			DataTable table=dcon.GetTable(command);
+ 			DataTable table=General.GetTable(command);
 			if(table.Rows.Count==0){
 				return;//computer not yet entered in db.
 			}
@@ -229,8 +198,7 @@ namespace OpenDental{
 		public static void ClearAll(){
 			//first, delete all entries
 			string command="DELETE FROM printer";
-			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command);
+ 			General.NonQ(command);
 			//then, add one printer for each computer. Default and show prompt
 			Computers.Refresh();
 			Printer cur;

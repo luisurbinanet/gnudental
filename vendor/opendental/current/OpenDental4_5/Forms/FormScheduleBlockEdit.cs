@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -317,7 +318,7 @@ namespace OpenDental{
         DialogResult=DialogResult.Cancel; 
       }
       else{ 
-        SchedCur.Delete();	
+        Schedules.Delete(SchedCur);	
       }
       DialogResult=DialogResult.Cancel;
 		}
@@ -344,7 +345,7 @@ namespace OpenDental{
 				}
 			}
 			try{
-				SchedCur.InsertOrUpdate(IsNew);
+				Schedules.InsertOrUpdate(SchedCur,IsNew);
 			}
 			catch(Exception ex){
 				MessageBox.Show(ex.Message);

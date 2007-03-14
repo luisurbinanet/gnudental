@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -567,7 +568,7 @@ namespace OpenDental{
 			this.textNotes.Location = new System.Drawing.Point(109, 510);
 			this.textNotes.Multiline = true;
 			this.textNotes.Name = "textNotes";
-			this.textNotes.QuickPasteType = OpenDental.QuickPasteType.Referral;
+			this.textNotes.QuickPasteType = OpenDentBusiness.QuickPasteType.Referral;
 			this.textNotes.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textNotes.Size = new System.Drawing.Size(412, 123);
 			this.textNotes.TabIndex = 73;
@@ -875,10 +876,10 @@ namespace OpenDental{
 						break;
 					}
 				}
-				RefCur.Insert();
+				Referrals.Insert(RefCur);
 			}
 			else{
-				RefCur.Update();
+				Referrals.Update(RefCur);
 			}
 			//
 			Referrals.Refresh();

@@ -5,6 +5,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using OpenDental.ReportingOld2;
+using OpenDentBusiness;
 
 //using System.IO;
 //using System.Text;
@@ -124,26 +125,21 @@ namespace OpenDental{
 		private void ExecuteReport(){
 			ReportOld2 report=new ReportOld2();
 			report.AddTitle("INCOMPLETE PROCEDURE NOTES");
-			report.AddSubTitle(((Pref)Prefs.HList["PracticeTitle"]).ValueString);
-//incomplete: Need more flexible default values, eg based on current date instead of fixed date:
-			report.AddParameter("date1",FieldValueType.Date,DateTime.Today
-				,"From Date"
-				,"procedurelog.ProcDate >= '?'");
-			report.AddParameter("date2",FieldValueType.Date
-				,DateTime.Today
-				,"To Date"
-				,"procedurelog.ProcDate <= '?'");
-			report.Query=@"SELECT procedurelog.ProcDate
-				,CONCAT(patient.LName,', ',patient.FName) 
-				,procedurelog.ADACode,procedurecode.Descript
-				,procedurelog.ToothNum,procedurelog.Surf
-				FROM procedurelog,patient,procedurecode
+			report.AddSubTitle(((Pref)PrefB.HList["PracticeTitle"]).ValueString);
+			report.Query=@"SELECT procedurelog.ProcDate,
+				CONCAT(patient.LName,', ',patient.FName),
+				procedurelog.ADACode,procedurecode.Descript,
+				procedurelog.ToothNum,procedurelog.Surf
+				FROM procedurelog,patient,procedurecode,procnote n1
 				WHERE procedurelog.PatNum = patient.PatNum
 				AND procedurelog.ADACode = procedurecode.ADACode
 				AND procedurelog.ProcStatus = 2
-				AND ?date1
-				AND ?date2 "
-				+"AND procedurelog.ProcNote LIKE '%\"\"%'";//looks for ""
+				AND procedurelog.ProcNum=n1.ProcNum "
+				+"AND n1.Note LIKE '%\"\"%' "//looks for ""
+				+@"AND n1.EntryDateTime=(SELECT MAX(n2.EntryDateTime)
+				FROM procnote n2
+				WHERE n1.ProcNum = n2.ProcNum)
+				ORDER BY procedurelog.ProcDate";
 			report.AddColumn("Date",80,FieldValueType.Date);
 			report.AddColumn("Patient",120,FieldValueType.String);
 			report.AddColumn("Code",50,FieldValueType.String);
@@ -151,14 +147,11 @@ namespace OpenDental{
 			report.AddColumn("Tth",30,FieldValueType.String);
 			report.AddColumn("Surf",40,FieldValueType.String);
 			report.AddPageNum();
-      if(!report.SubmitQuery()){
+			if(!report.SubmitQuery()) {
 				DialogResult=DialogResult.Cancel;
 				return;
 			}
-//incomplete: Add functionality for using parameter values in textObjects, probably using inline XML:
-			report.AddSubTitle(((DateTime)report.ParameterFields["date1"].CurrentValues[0]).ToShortDateString()+" - "+((DateTime)report.ParameterFields["date2"].CurrentValues[0]).ToShortDateString());
 			FormReportOld2 FormR=new FormReportOld2(report);
-			//FormR.MyReport=report;
 			FormR.ShowDialog();
 			DialogResult=DialogResult.OK;
 		}

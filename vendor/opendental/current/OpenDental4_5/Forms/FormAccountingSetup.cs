@@ -4,6 +4,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using OpenDental.UI;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -326,7 +327,7 @@ namespace OpenDental{
 		#endregion
 
 		private void FormAccountingSetup_Load(object sender,EventArgs e) {
-			string depStr=Prefs.GetString("AccountingDepositAccounts");
+			string depStr=PrefB.GetString("AccountingDepositAccounts");
 			string[] depStrArray=depStr.Split(new char[] {','});
 			depAL=new ArrayList();
 			for(int i=0;i<depStrArray.Length;i++){
@@ -336,12 +337,12 @@ namespace OpenDental{
 				depAL.Add(PIn.PInt(depStrArray[i]));
 			}
 			FillDepList();
-			PickedDepAccountNum=Prefs.GetInt("AccountingIncomeAccount");
+			PickedDepAccountNum=PrefB.GetInt("AccountingIncomeAccount");
 			textAccountInc.Text=Accounts.GetDescript(PickedDepAccountNum);
 			//pay----------------------------------------------------------
 			payAL=AccountingAutoPays.AList;//Count might be 0
 			FillPayGrid();
-			PickedPayAccountNum=Prefs.GetInt("AccountingCashIncomeAccount");
+			PickedPayAccountNum=PrefB.GetInt("AccountingCashIncomeAccount");
 			textAccountCashInc.Text=Accounts.GetDescript(PickedPayAccountNum);
 		}
 
@@ -364,7 +365,7 @@ namespace OpenDental{
 			for(int i=0;i<payAL.Count;i++){
 				row=new ODGridRow();
 				row.Cells.Add(Defs.GetName(DefCat.PaymentTypes,((AccountingAutoPay)payAL[i]).PayType));
-				row.Cells.Add(((AccountingAutoPay)payAL[i]).GetPickListDesc());
+				row.Cells.Add(AccountingAutoPays.GetPickListDesc((AccountingAutoPay)payAL[i]));
 				gridMain.Rows.Add(row);
 			}
 			gridMain.EndUpdate();

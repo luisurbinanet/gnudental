@@ -112,15 +112,19 @@
     </Compile>
     <EmbeddedResource Include="DataSourcePassword.resx">
       <DependentUpon>DataSourcePassword.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="DialogMessages.resx">
       <DependentUpon>DialogMessages.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="PageDrawing.resx">
       <DependentUpon>PageDrawing.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="RdlViewer.resx">
       <DependentUpon>RdlViewer.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

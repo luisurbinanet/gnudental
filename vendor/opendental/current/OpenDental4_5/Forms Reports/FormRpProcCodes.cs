@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -171,7 +172,7 @@ namespace OpenDental{
 			  FormQuery2.SubmitReportQuery();			      
 				Queries.CurReport.Title="Procedure Codes";
 				Queries.CurReport.SubTitle=new string[2];
-				Queries.CurReport.SubTitle[0]=((Pref)Prefs.HList["PracticeTitle"]).ValueString;
+				Queries.CurReport.SubTitle[0]=((Pref)PrefB.HList["PracticeTitle"]).ValueString;
 				Queries.CurReport.SubTitle[1]=Defs.GetName(DefCat.FeeSchedNames,feeSched);
 				Queries.CurReport.ColPos=new int[5];
 				Queries.CurReport.ColCaption=new string[4];
@@ -233,7 +234,7 @@ namespace OpenDental{
 				
 				Queries.CurReport.Title="Procedure Codes";
 				Queries.CurReport.SubTitle=new string[5];
-				Queries.CurReport.SubTitle[0]=((Pref)Prefs.HList["PracticeTitle"]).ValueString;
+				Queries.CurReport.SubTitle[0]=((Pref)PrefB.HList["PracticeTitle"]).ValueString;
 				Queries.CurReport.SubTitle[1]=Defs.GetName(DefCat.FeeSchedNames,feeSched);
 				Queries.CurReport.ColPos[0]=20;
 				Queries.CurReport.ColPos[1]=120;

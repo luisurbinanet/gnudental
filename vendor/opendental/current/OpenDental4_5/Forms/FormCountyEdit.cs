@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -21,6 +22,7 @@ namespace OpenDental{
 		private System.Windows.Forms.TextBox textCountyCode;
 		///<summary></summary>
 		public bool IsNew;
+		public County CountyCur;
 
 		///<summary></summary>
 		public FormCountyEdit()
@@ -151,8 +153,8 @@ namespace OpenDental{
 		#endregion
 
 		private void FormCountyEdit_Load(object sender, System.EventArgs e) {
-			textCountyName.Text=Counties.Cur.CountyName;
-			textCountyCode.Text=Counties.Cur.CountyCode;
+			textCountyName.Text=CountyCur.CountyName;
+			textCountyCode.Text=CountyCur.CountyCode;
 		}
 
 		private void textCountyName_TextChanged(object sender, System.EventArgs e) {
@@ -163,23 +165,23 @@ namespace OpenDental{
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			Counties.Cur.CountyName=textCountyName.Text;
-			Counties.Cur.CountyCode=textCountyCode.Text;
+			CountyCur.CountyName=textCountyName.Text;
+			CountyCur.CountyCode=textCountyCode.Text;
 			if(IsNew){
-				if(Counties.DoesExist(Counties.Cur.CountyName)){
+				if(Counties.DoesExist(CountyCur.CountyName)){
 					MessageBox.Show(Lan.g(this,"County name already exists. Duplicate not allowed."));
 					return;
 				}
-				Counties.InsertCur();
+				Counties.Insert(CountyCur);
 			}
 			else{//existing County
-				if(Counties.Cur.CountyName!=Counties.Cur.OldCountyName){//County name was changed
-					if(Counties.DoesExist(Counties.Cur.CountyName)){//changed to a name that already exists.
+				if(CountyCur.CountyName!=CountyCur.OldCountyName){//County name was changed
+					if(Counties.DoesExist(CountyCur.CountyName)){//changed to a name that already exists.
 						MessageBox.Show(Lan.g(this,"County name already exists. Duplicate not allowed."));
 						return;
 					}
 				}
-				Counties.UpdateCur();
+				Counties.Update(CountyCur);
 			}
 			DialogResult=DialogResult.OK;
 		}

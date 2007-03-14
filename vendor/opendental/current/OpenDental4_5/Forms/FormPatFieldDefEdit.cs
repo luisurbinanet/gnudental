@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -151,7 +152,7 @@ namespace OpenDental{
 				return;
 			}
 			try{
-				FieldDef.Delete();
+				PatFieldDefs.Delete(FieldDef);
 				DialogResult=DialogResult.OK;
 			}
 			catch(ApplicationException ex){
@@ -162,10 +163,10 @@ namespace OpenDental{
 		private void butOK_Click(object sender, System.EventArgs e) {
 			FieldDef.FieldName=textName.Text;
 			if(IsNew){
-				FieldDef.Insert();
+				PatFieldDefs.Insert(FieldDef);
 			}
 			else{
-				FieldDef.Update(OldFieldName);
+				PatFieldDefs.Update(FieldDef,OldFieldName);
 			}
 			DialogResult=DialogResult.OK;
 		}

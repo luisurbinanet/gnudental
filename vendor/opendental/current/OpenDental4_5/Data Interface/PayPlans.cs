@@ -2,149 +2,96 @@ using System;
 using System.Data;
 using System.Collections;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
-	
-	/// <summary>Each row represents one signed agreement to make payments. </summary>
-	public class PayPlan{
-		/// <summary>Primary key</summary>
-		public int PayPlanNum;
-		/// <summary>FK to patient.PatNum.  The patient who had the treatment done.</summary>
-		public int PatNum;
-		/// <summary>FK to patient.PatNum.  The person responsible for the payments.  Does not need to be in the same family as the patient.  Will be 0 if planNum has a value.</summary>
-		public int Guarantor;
-		/// <summary>Date that the payment plan will display in the account.</summary>
-		public DateTime PayPlanDate;
-		/// <summary>Annual percentage rate.  eg 18.  This does not take into consideration any late payments, but only the percentage used to calculate the amortization schedule.</summary>
-		public double APR;
-		///<summary>Generally used to archive the terms when the amortization schedule is created.</summary>
-		public string Note;
-		///<summary>Will be 0 if standard payment plan.  But if this is being used to track expected insurance payments, then this will be the foreign key to insplan.PlanNum and Guarantor will be 0.</summary>
-		public int PlanNum;
-
-		/*deleted columns from previous versions:
-			TotalAmount
-			PeriodPayment
-			Term
-			AccumulatedDue
-			DateFirstPay
-			DownPayment
-			TotalCost
-			LastPayment
-		*/
-
-		///<summary></summary>
-		public PayPlan Copy(){
-			PayPlan p=new PayPlan();
-			p.PayPlanNum=PayPlanNum;
-			p.PatNum=PatNum;
-			p.Guarantor=Guarantor;
-			p.PayPlanDate=PayPlanDate;
-			p.APR=APR;
-			p.Note=Note;
-			p.PlanNum=PlanNum;
-			return p;
+	///<summary></summary>
+	public class PayPlans {
+		///<summary>Gets a list of all payplans for a given patient, whether they are the guarantor or the patient.  This is also used in UpdateAll to store all payment plans in entire database.</summary>
+		public static PayPlan[] Refresh(int guarantor,int patNum) {
+			string command="SELECT * from payplan"
+				+" WHERE PatNum = "+patNum.ToString()
+				+" OR Guarantor = "+guarantor.ToString()+" ORDER BY payplandate";
+			DataTable table=General.GetTable(command);
+			PayPlan[] List=new PayPlan[table.Rows.Count];
+			for(int i=0;i<table.Rows.Count;i++) {
+				List[i]=new PayPlan();
+				List[i].PayPlanNum    = PIn.PInt(table.Rows[i][0].ToString());
+				List[i].PatNum        = PIn.PInt(table.Rows[i][1].ToString());
+				List[i].Guarantor     = PIn.PInt(table.Rows[i][2].ToString());
+				List[i].PayPlanDate   = PIn.PDate(table.Rows[i][3].ToString());
+				List[i].APR           = PIn.PDouble(table.Rows[i][4].ToString());
+				List[i].Note          = PIn.PString(table.Rows[i][5].ToString());
+				List[i].PlanNum       = PIn.PInt(table.Rows[i][6].ToString());
+			}
+			return List;
 		}
 
 		///<summary></summary>
-		public void InsertOrUpdate(bool isNew){
+		public static void InsertOrUpdate(PayPlan plan, bool isNew){
 			//if(){
 			//	throw new Exception(Lan.g(this,""));
 			//}
 			if(isNew){
-				Insert();
+				Insert(plan);
 			}
 			else{
-				Update();
+				Update(plan);
 			}
 		}
 
 		///<summary></summary>
-		private void Update(){
+		private static void Update(PayPlan plan){
 			string command="UPDATE payplan SET " 
-				+"PatNum = '"         +POut.PInt   (PatNum)+"'"
-				+",Guarantor = '"     +POut.PInt   (Guarantor)+"'"
-				+",PayPlanDate = '"   +POut.PDate  (PayPlanDate)+"'"
-				+",APR = '"           +POut.PDouble(APR)+"'"
-				+",Note = '"          +POut.PString(Note)+"'"
-				+",PlanNum = '"       +POut.PInt   (PlanNum)+"'"
-				+" WHERE PayPlanNum = '" +POut.PInt(PayPlanNum)+"'";
-			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command);
+				+"PatNum = '"         +POut.PInt   (plan.PatNum)+"'"
+				+",Guarantor = '"     +POut.PInt   (plan.Guarantor)+"'"
+				+",PayPlanDate = '"   +POut.PDate  (plan.PayPlanDate)+"'"
+				+",APR = '"           +POut.PDouble(plan.APR)+"'"
+				+",Note = '"          +POut.PString(plan.Note)+"'"
+				+",PlanNum = '"       +POut.PInt   (plan.PlanNum)+"'"
+				+" WHERE PayPlanNum = '" +POut.PInt(plan.PayPlanNum)+"'";
+ 			General.NonQ(command);
 		}
 
 		///<summary></summary>
-		private void Insert(){
-			if(Prefs.RandomKeys){
-				PayPlanNum=MiscData.GetKey("payplan","PayPlanNum");
+		private static void Insert(PayPlan plan){
+			if(PrefB.RandomKeys){
+				plan.PayPlanNum=MiscData.GetKey("payplan","PayPlanNum");
 			}
 			string command="INSERT INTO payplan (";
-			if(Prefs.RandomKeys){
+			if(PrefB.RandomKeys){
 				command+="PayPlanNum,";
 			}
 			command+="PatNum,Guarantor,PayPlanDate,APR,Note,PlanNum) VALUES(";
-			if(Prefs.RandomKeys){
-				command+="'"+POut.PInt(PayPlanNum)+"', ";
+			if(PrefB.RandomKeys){
+				command+="'"+POut.PInt(plan.PayPlanNum)+"', ";
 			}
 			command+=
-				 "'"+POut.PInt   (PatNum)+"', "
-				+"'"+POut.PInt   (Guarantor)+"', "
-				+"'"+POut.PDate  (PayPlanDate)+"', "
-				+"'"+POut.PDouble(APR)+"', "
-				+"'"+POut.PString(Note)+"', "
-				+"'"+POut.PInt   (PlanNum)+"')";
-			DataConnection dcon=new DataConnection();
-			if(Prefs.RandomKeys){
-				dcon.NonQ(command);
+				 "'"+POut.PInt   (plan.PatNum)+"', "
+				+"'"+POut.PInt   (plan.Guarantor)+"', "
+				+"'"+POut.PDate  (plan.PayPlanDate)+"', "
+				+"'"+POut.PDouble(plan.APR)+"', "
+				+"'"+POut.PString(plan.Note)+"', "
+				+"'"+POut.PInt   (plan.PlanNum)+"')";
+			if(PrefB.RandomKeys){
+				General.NonQ(command);
 			}
 			else{
- 				dcon.NonQ(command,true);
-				PayPlanNum=dcon.InsertID;
+ 				plan.PayPlanNum=General.NonQ(command,true);
 			}
 		}
 
 		///<summary>Called from FormPayPlan.  Also deletes all attached payplancharges.  Throws exception if there are any paysplits attached.</summary>
-		public void Delete(){
-			string command="SELECT COUNT(*) FROM paysplit WHERE PayPlanNum="+PayPlanNum.ToString();
-			DataConnection dcon=new DataConnection();
-			if(dcon.GetCount(command)!="0"){
+		public static void Delete(PayPlan plan){
+			string command="SELECT COUNT(*) FROM paysplit WHERE PayPlanNum="+plan.PayPlanNum.ToString();
+			if(General.GetCount(command)!="0"){
 				throw new ApplicationException
-					(Lan.g(this,"You cannot delete a payment plan with payments attached.  Unattach the payments first."));
+					(Lan.g("PayPlans","You cannot delete a payment plan with payments attached.  Unattach the payments first."));
 			}
-			command="DELETE FROM payplancharge WHERE PayPlanNum="+PayPlanNum.ToString();
-			dcon.NonQ(command);
-			command="DELETE FROM payplan WHERE PayPlanNum ="+PayPlanNum.ToString();
-			dcon.NonQ(command);
-		}
-
-		
-
-	}
-
-	/*=========================================================================================
-	=================================== class PayPlans ==========================================*/
-
-	///<summary></summary>
-	public class PayPlans{
-		///<summary>Gets a list of all payplans for a given patient, whether they are the guarantor or the patient.  This is also used in UpdateAll to store all payment plans in entire database.</summary>
-		public static PayPlan[] Refresh(int guarantor,int patNum){
-			string command="SELECT * from payplan"
-				+" WHERE PatNum = "+patNum.ToString()
-				+" OR Guarantor = "+guarantor.ToString()+" ORDER BY payplandate";
-			DataConnection dcon=new DataConnection();
- 			DataTable table=dcon.GetTable(command);
-			PayPlan[] List=new PayPlan[table.Rows.Count];
-			for(int i=0;i<table.Rows.Count;i++){
-				List[i]=new PayPlan();
-				List[i].PayPlanNum    = PIn.PInt   (table.Rows[i][0].ToString());
-				List[i].PatNum        = PIn.PInt   (table.Rows[i][1].ToString());
-				List[i].Guarantor     = PIn.PInt   (table.Rows[i][2].ToString());
-				List[i].PayPlanDate   = PIn.PDate  (table.Rows[i][3].ToString());
-				List[i].APR           = PIn.PDouble(table.Rows[i][4].ToString());
-				List[i].Note          = PIn.PString(table.Rows[i][5].ToString());
-				List[i].PlanNum       = PIn.PInt   (table.Rows[i][6].ToString());
-			}
-			return List;
+			command="DELETE FROM payplancharge WHERE PayPlanNum="+plan.PayPlanNum.ToString();
+			General.NonQ(command);
+			command="DELETE FROM payplan WHERE PayPlanNum ="+plan.PayPlanNum.ToString();
+			General.NonQ(command);
 		}
 
 		/// <summary>Gets info directly from database. Used from PayPlan and Account windows to get the amount paid so far on one payment plan.</summary>
@@ -152,8 +99,7 @@ namespace OpenDental{
 			string command="SELECT SUM(paysplit.SplitAmt) FROM paysplit "
 				+"WHERE paysplit.PayPlanNum = '"+payPlanNum.ToString()+"' "
 				+"GROUP BY paysplit.PayPlanNum";
-			DataConnection dcon=new DataConnection();
-			DataTable table=dcon.GetTable(command);
+			DataTable table=General.GetTable(command);
 			if(table.Rows.Count==0){
 				return 0;
 			}

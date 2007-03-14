@@ -3,11 +3,10 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
-	/// <summary>
-	/// Summary description for FormBasicTemplate.
-	/// </summary>
+	/// <summary></summary>
 	public class FormDiseaseEdit : System.Windows.Forms.Form{
 		private OpenDental.UI.Button butCancel;
 		private OpenDental.UI.Button butOK;
@@ -214,7 +213,7 @@ namespace OpenDental{
 				DialogResult=DialogResult.Cancel;
 				return;
 			}
-			DiseaseCur.Delete();
+			Diseases.Delete(DiseaseCur);
 			DialogResult=DialogResult.OK;
 		}
 
@@ -230,10 +229,10 @@ namespace OpenDental{
 			DiseaseCur.DiseaseDefNum=DiseaseDefs.List[listMain.SelectedIndex].DiseaseDefNum;
 			DiseaseCur.PatNote=textNote.Text;
 			if(IsNew){
-				DiseaseCur.Insert();
+				Diseases.Insert(DiseaseCur);
 			}
 			else{
-				DiseaseCur.Update();
+				Diseases.Update(DiseaseCur);
 			}
 			DialogResult=DialogResult.OK;
 		}

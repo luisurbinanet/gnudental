@@ -273,141 +273,187 @@
     </Compile>
     <EmbeddedResource Include="BodyCtl.resx">
       <DependentUpon>BodyCtl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ChartAxisCtl.resx">
       <DependentUpon>ChartAxisCtl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ChartCtl.resx">
       <DependentUpon>ChartCtl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ChartLegendCtl.resx">
       <DependentUpon>ChartLegendCtl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="DataSetRowsCtl.resx">
       <DependentUpon>DataSetRowsCtl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="DataSetsCtl.resx">
       <DependentUpon>DataSetsCtl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="DesignCtl.resx">
       <DependentUpon>DesignCtl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="DesignXmlDraw.resx">
       <DependentUpon>DesignXmlDraw.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="DialogAbout.resx">
       <DependentUpon>DialogAbout.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="DialogDatabase.resx">
       <DependentUpon>DialogDatabase.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="DialogDataSourceRef.resx">
       <DependentUpon>DialogDataSourceRef.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="DialogDataSources.resx">
       <DependentUpon>DialogDataSources.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="DialogEmbeddedImages.resx">
       <DependentUpon>DialogEmbeddedImages.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="DialogListOfStrings.resx">
       <DependentUpon>DialogListOfStrings.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="DialogNew.resx">
       <DependentUpon>DialogNew.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="DialogNewChart.resx">
       <DependentUpon>DialogNewChart.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="DialogNewMatrix.resx">
       <DependentUpon>DialogNewMatrix.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="DialogNewTable.resx">
       <DependentUpon>DialogNewTable.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="DialogValidValues.resx">
       <DependentUpon>DialogValidValues.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="DrillParametersDialog.resx">
       <DependentUpon>DrillParametersDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="FiltersCtl.resx">
       <DependentUpon>FiltersCtl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="FindTab.resx">
       <DependentUpon>FindTab.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="GroupingCtl.resx">
       <DependentUpon>GroupingCtl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ImageCtl.resx">
       <DependentUpon>ImageCtl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="InteractivityCtl.resx">
       <DependentUpon>InteractivityCtl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ListCtl.resx">
       <DependentUpon>ListCtl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="MatrixCtl.resx">
       <DependentUpon>MatrixCtl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="MDIChild.resx">
       <DependentUpon>MDIChild.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="PositionCtl.resx">
       <DependentUpon>PositionCtl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="PropertyDialog.resx">
       <DependentUpon>PropertyDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="QueryParametersCtl.resx">
       <DependentUpon>QueryParametersCtl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="RdlDesigner.resx">
       <DependentUpon>RdlDesigner.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="RdlEditPreview.resx">
       <DependentUpon>RdlEditPreview.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ReportCtl.resx">
       <DependentUpon>ReportCtl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ReportParameterCtl.resx">
       <DependentUpon>ReportParameterCtl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ReportXmlCtl.resx">
       <DependentUpon>ReportXmlCtl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="SimpleButton.resx">
       <DependentUpon>SimpleButton.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="SimpleToggle.resx">
       <DependentUpon>SimpleToggle.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="SingleCtlDialog.resx">
       <DependentUpon>SingleCtlDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="SortingCtl.resx">
       <DependentUpon>SortingCtl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="SQLCtl.resx">
       <DependentUpon>SQLCtl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="StyleBorderCtl.resx">
       <DependentUpon>StyleBorderCtl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="StyleCtl.resx">
       <DependentUpon>StyleCtl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="StyleTextCtl.resx">
       <DependentUpon>StyleTextCtl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="SubreportCtl.resx">
       <DependentUpon>SubreportCtl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="TableCtl.resx">
       <DependentUpon>TableCtl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

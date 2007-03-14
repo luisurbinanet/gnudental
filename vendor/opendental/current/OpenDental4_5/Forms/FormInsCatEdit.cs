@@ -4,6 +4,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using OpenDental.UI;
+using OpenDentBusiness;
 
 namespace OpenDental {
 	///<summary></summary>
@@ -233,10 +234,10 @@ namespace OpenDental {
 			CovCatCur.IsHidden=checkHidden.Checked;
 			CovCatCur.EbenefitCat=(EbenefitCategory)comboCat.SelectedIndex;
 			if(IsNew){
-				CovCatCur.Insert();
+				CovCats.Insert(CovCatCur);
 			}
 			else{
-				CovCatCur.Update();
+				CovCats.Update(CovCatCur);
 			}
 			DialogResult=DialogResult.OK;
 		}

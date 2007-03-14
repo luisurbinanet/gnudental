@@ -5,6 +5,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Text;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -452,7 +453,7 @@ namespace OpenDental{
 			this.textNote.Location = new System.Drawing.Point(4, 69);
 			this.textNote.Multiline = true;
 			this.textNote.Name = "textNote";
-			this.textNote.QuickPasteType = OpenDental.QuickPasteType.Recall;
+			this.textNote.QuickPasteType = OpenDentBusiness.QuickPasteType.Recall;
 			this.textNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textNote.Size = new System.Drawing.Size(165, 102);
 			this.textNote.TabIndex = 62;
@@ -629,7 +630,7 @@ namespace OpenDental{
 			}
 			RecallCur.RecallStatus=newStatus;
 			RecallCur.Note=textNote.Text;
-			RecallCur.Update();
+			Recalls.Update(RecallCur);
 		}
 
 		private void butPin_Click(object sender, System.EventArgs e) {

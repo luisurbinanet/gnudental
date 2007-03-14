@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -55,8 +56,7 @@ namespace OpenDental{
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("00/00/0000");
-			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormScreenings));
+			System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("00/00/0000");
 			this.listMain = new System.Windows.Forms.ListView();
 			this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
 			this.columnHeader4 = new System.Windows.Forms.ColumnHeader();
@@ -71,17 +71,18 @@ namespace OpenDental{
 			// listMain
 			// 
 			this.listMain.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-																																							 this.columnHeader1,
-																																							 this.columnHeader4});
+            this.columnHeader1,
+            this.columnHeader4});
 			this.listMain.FullRowSelect = true;
 			this.listMain.GridLines = true;
 			this.listMain.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
 			this.listMain.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-																																						 listViewItem1});
-			this.listMain.Location = new System.Drawing.Point(-1, 7);
+            listViewItem2});
+			this.listMain.Location = new System.Drawing.Point(-1,7);
 			this.listMain.Name = "listMain";
-			this.listMain.Size = new System.Drawing.Size(231, 237);
+			this.listMain.Size = new System.Drawing.Size(231,237);
 			this.listMain.TabIndex = 73;
+			this.listMain.UseCompatibleStateImageBehavior = false;
 			this.listMain.View = System.Windows.Forms.View.Details;
 			this.listMain.DoubleClick += new System.EventHandler(this.listMain_DoubleClick);
 			// 
@@ -97,65 +98,72 @@ namespace OpenDental{
 			// 
 			// textDateFrom
 			// 
-			this.textDateFrom.Location = new System.Drawing.Point(0, 251);
+			this.textDateFrom.Location = new System.Drawing.Point(0,251);
 			this.textDateFrom.Name = "textDateFrom";
-			this.textDateFrom.Size = new System.Drawing.Size(69, 20);
+			this.textDateFrom.Size = new System.Drawing.Size(69,20);
 			this.textDateFrom.TabIndex = 74;
-			this.textDateFrom.Text = "";
 			this.textDateFrom.Validating += new System.ComponentModel.CancelEventHandler(this.textDateFrom_Validating);
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(63, 255);
+			this.label2.Location = new System.Drawing.Point(63,255);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(25, 13);
+			this.label2.Size = new System.Drawing.Size(25,13);
 			this.label2.TabIndex = 77;
 			this.label2.Text = "To";
 			this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// textDateTo
 			// 
-			this.textDateTo.Location = new System.Drawing.Point(90, 251);
+			this.textDateTo.Location = new System.Drawing.Point(90,251);
 			this.textDateTo.Name = "textDateTo";
-			this.textDateTo.Size = new System.Drawing.Size(75, 20);
+			this.textDateTo.Size = new System.Drawing.Size(75,20);
 			this.textDateTo.TabIndex = 76;
-			this.textDateTo.Text = "";
 			this.textDateTo.Validating += new System.ComponentModel.CancelEventHandler(this.textDateTo_Validating);
 			// 
 			// butRefresh
 			// 
-			this.butRefresh.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butRefresh.Location = new System.Drawing.Point(175, 252);
+			this.butRefresh.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butRefresh.Autosize = true;
+			this.butRefresh.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butRefresh.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butRefresh.Location = new System.Drawing.Point(175,252);
 			this.butRefresh.Name = "butRefresh";
-			this.butRefresh.Size = new System.Drawing.Size(55, 21);
+			this.butRefresh.Size = new System.Drawing.Size(55,21);
 			this.butRefresh.TabIndex = 78;
 			this.butRefresh.Text = "Refresh";
 			this.butRefresh.Click += new System.EventHandler(this.butRefresh_Click);
 			// 
 			// butAdd
 			// 
-			this.butAdd.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butAdd.Location = new System.Drawing.Point(5, 274);
+			this.butAdd.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butAdd.Autosize = true;
+			this.butAdd.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butAdd.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butAdd.Location = new System.Drawing.Point(5,274);
 			this.butAdd.Name = "butAdd";
-			this.butAdd.Size = new System.Drawing.Size(55, 21);
+			this.butAdd.Size = new System.Drawing.Size(55,21);
 			this.butAdd.TabIndex = 79;
 			this.butAdd.Text = "Add";
 			this.butAdd.Click += new System.EventHandler(this.butAdd_Click);
 			// 
 			// butDelete
 			// 
-			this.butDelete.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.butDelete.Location = new System.Drawing.Point(87, 275);
+			this.butDelete.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butDelete.Autosize = true;
+			this.butDelete.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butDelete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butDelete.Location = new System.Drawing.Point(87,275);
 			this.butDelete.Name = "butDelete";
-			this.butDelete.Size = new System.Drawing.Size(55, 21);
+			this.butDelete.Size = new System.Drawing.Size(55,21);
 			this.butDelete.TabIndex = 80;
 			this.butDelete.Text = "Delete";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
 			// 
 			// FormScreenings
 			// 
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(234, 296);
+			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
+			this.ClientSize = new System.Drawing.Size(234,296);
 			this.Controls.Add(this.butDelete);
 			this.Controls.Add(this.butAdd);
 			this.Controls.Add(this.textDateFrom);
@@ -164,7 +172,6 @@ namespace OpenDental{
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.listMain);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
-			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "FormScreenings";
@@ -173,6 +180,7 @@ namespace OpenDental{
 			this.Text = "Screening Groups";
 			this.Load += new System.EventHandler(this.FormScreenings_Load);
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 		#endregion
@@ -200,7 +208,7 @@ namespace OpenDental{
 
 		private void listMain_DoubleClick(object sender, System.EventArgs e) {
 			FormScreenGroup FormSG=new FormScreenGroup();
-			ScreenGroups.Cur=ScreenGroups.List[listMain.SelectedIndices[0]];
+			FormSG.ScreenGroupCur=ScreenGroups.List[listMain.SelectedIndices[0]];
 			FormSG.ShowDialog();
 			//if(FormSG.DialogResult!=DialogResult.OK){
 			//	return;
@@ -241,12 +249,12 @@ namespace OpenDental{
 			FormSG.IsNew=true;
 			//ScreenGroups.Cur=new ScreenGroup();
 			if(ScreenGroups.List.Length==0){
-				ScreenGroups.Cur=new ScreenGroup();
+				FormSG.ScreenGroupCur=new ScreenGroup();
 			}
 			else{
-				ScreenGroups.Cur=ScreenGroups.List[ScreenGroups.List.Length-1];//'remembers' the last entry
+				FormSG.ScreenGroupCur=ScreenGroups.List[ScreenGroups.List.Length-1];//'remembers' the last entry
 			}
-			ScreenGroups.Cur.SGDate=DateTime.Today;//except date will be today
+			FormSG.ScreenGroupCur.SGDate=DateTime.Today;//except date will be today
 			FormSG.ShowDialog();
 			//if(FormSG.DialogResult!=DialogResult.OK){
 			//	return;
@@ -259,13 +267,13 @@ namespace OpenDental{
 				MessageBox.Show("Please select one item first.");
 				return;
 			}
-			ScreenGroups.Cur=ScreenGroups.List[listMain.SelectedIndices[0]];
-			Screens.Refresh(ScreenGroups.Cur.ScreenGroupNum);
+			ScreenGroup ScreenGroupCur=ScreenGroups.List[listMain.SelectedIndices[0]];
+			Screens.Refresh(ScreenGroupCur.ScreenGroupNum);
 			if(Screens.List.Length>0){
 				MessageBox.Show("Not allowed to delete a screening group with items in it.");
 				return;
 			}
-			ScreenGroups.DeleteCur();
+			ScreenGroups.Delete(ScreenGroupCur);
 			FillGrid();
 		}
 

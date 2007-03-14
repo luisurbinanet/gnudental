@@ -77,7 +77,7 @@ namespace DocumentationBuilder {
 			this.label4.Name = "label4";
 			this.label4.Size = new System.Drawing.Size(558,41);
 			this.label4.TabIndex = 4;
-			this.label4.Text = "Step 3: Build.  The output file is DocumentationBuilder/OpenDentalDocumentation.x" +
+			this.label4.Text = "Step 4: Build.  The output file is DocumentationBuilder/OpenDentalDocumentation.x" +
     "ml, which will be automatically launched when done.  Approximate time to complet" +
     "e is 20 seconds.";
 			// 

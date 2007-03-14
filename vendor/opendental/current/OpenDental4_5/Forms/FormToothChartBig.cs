@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using Tao.Platform.Windows;
 using SparksToothChart;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -15,9 +16,9 @@ namespace OpenDental{
 		/// Required designer variable.
 		/// </summary>
 		private System.ComponentModel.Container components = null;
-		private GraphicalToothChart toothChart;
 		private bool ShowBySelectedTeeth;
 		private ToothInitial[] ToothInitialList;
+		private GraphicalToothChart toothChart;
 		private ArrayList ProcAL;
 
 		///<summary></summary>
@@ -31,6 +32,8 @@ namespace OpenDental{
 			ShowBySelectedTeeth=showBySelectedTeeth;
 			ToothInitialList=toothInitialList;
 			ProcAL=procAL;
+			toothChart.TaoRenderEnabled=true;
+			toothChart.TaoInitializeContexts();
 		}
 
 		/// <summary>
@@ -55,33 +58,26 @@ namespace OpenDental{
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormToothChartingBig));
 			this.toothChart = new SparksToothChart.GraphicalToothChart();
 			this.SuspendLayout();
 			// 
 			// toothChart
 			// 
-			this.toothChart.AccumBits = ((byte)(0));
-			this.toothChart.AutoCheckErrors = false;
-			this.toothChart.AutoFinish = false;
-			this.toothChart.AutoMakeCurrent = true;
-			this.toothChart.AutoSwapBuffers = true;
-			this.toothChart.BackColor = System.Drawing.Color.Black;
-			this.toothChart.ColorBits = ((byte)(32));
-			this.toothChart.DepthBits = ((byte)(16));
+			this.toothChart.ColorBackground = System.Drawing.Color.FromArgb(((int)(((byte)(95)))),((int)(((byte)(95)))),((int)(((byte)(130)))));
 			this.toothChart.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.toothChart.Location = new System.Drawing.Point(0,0);
 			this.toothChart.Name = "toothChart";
 			this.toothChart.Size = new System.Drawing.Size(719,564);
-			this.toothChart.StencilBits = ((byte)(0));
-			this.toothChart.TabIndex = 1;
+			this.toothChart.TabIndex = 0;
+			this.toothChart.TaoRenderEnabled = false;			
+			this.toothChart.Text = "graphicalToothChart1";
+			this.toothChart.UseInternational = false;
 			// 
 			// FormToothChartingBig
 			// 
 			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
 			this.ClientSize = new System.Drawing.Size(719,564);
 			this.Controls.Add(this.toothChart);
-			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "FormToothChartingBig";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
@@ -106,7 +102,7 @@ namespace OpenDental{
 		private void FillToothChart() {//ArrayList procedures){
 			Cursor=Cursors.WaitCursor;
 			toothChart.SuspendLayout();
-			toothChart.UseInternational=Prefs.GetBool("UseInternationalToothNumbers");
+			toothChart.UseInternational=PrefB.GetBool("UseInternationalToothNumbers");
 			toothChart.ColorBackground=Defs.Long[(int)DefCat.ChartGraphicColors][10].ItemColor;
 			toothChart.ColorText=Defs.Long[(int)DefCat.ChartGraphicColors][11].ItemColor;
 			toothChart.ColorTextHighlight=Defs.Long[(int)DefCat.ChartGraphicColors][12].ItemColor;
@@ -175,10 +171,10 @@ namespace OpenDental{
 				if(proc.ProcStatus!=procStat) {
 					continue;
 				}
-				if(proc.HideGraphical) {
+				//if(proc.HideGraphical) {
 					//We don't care about HideGraphical anymore.  It will be enhanced later to a 3-state.
 					//continue;
-				}
+				//}
 				if(ProcedureCodes.GetProcCode(proc.ADACode).PaintType==ToothPaintingType.Extraction && (
 					proc.ProcStatus==ProcStat.C
 					|| proc.ProcStatus==ProcStat.EC

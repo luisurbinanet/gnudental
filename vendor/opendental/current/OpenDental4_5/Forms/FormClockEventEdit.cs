@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -271,7 +272,7 @@ namespace OpenDental{
 			if(!MsgBox.Show(this,true,"Delete this clock event?")){
 				return;
 			}
-			ClockEventCur.Delete();
+			ClockEvents.Delete(ClockEventCur);
 			DialogResult=DialogResult.OK;
 		}
 
@@ -280,7 +281,7 @@ namespace OpenDental{
 			ClockEventCur.ClockIn=radioClockIn.Checked;
 			ClockEventCur.ClockStatus=(TimeClockStatus)listStatus.SelectedIndex;
 			ClockEventCur.Note=textNote.Text;
-			ClockEventCur.Update();
+			ClockEvents.Update(ClockEventCur);
 			DialogResult=DialogResult.OK;
 		}
 

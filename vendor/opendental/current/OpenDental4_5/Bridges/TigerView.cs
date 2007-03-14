@@ -1,9 +1,11 @@
 using System;
+using System.Collections;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental.Bridges{
 	/// <summary></summary>
@@ -24,10 +26,10 @@ namespace OpenDental.Bridges{
 
 
 		///<summary>Sends data for Patient.Cur to the Tiger1.ini file and launches the program.</summary>
-		public static void SendData(Patient pat){
-			ProgramProperties.GetForProgram();
-			ProgramProperties.GetCur("Tiger1.ini path");
-			iniFile=ProgramProperties.Cur.PropertyValue;
+		public static void SendData(Program ProgramCur, Patient pat){
+			ArrayList ForProgram=ProgramProperties.GetForProgram(ProgramCur.ProgramNum);
+			ProgramProperty PPCur=ProgramProperties.GetCur(ForProgram, "Tiger1.ini path");
+			iniFile=PPCur.PropertyValue;
 			if(pat!=null){
 				if(!File.Exists(iniFile)){
 					MessageBox.Show("Could not find "+iniFile);
@@ -36,8 +38,8 @@ namespace OpenDental.Bridges{
 				WriteValue("LastName",pat.LName);
 				WriteValue("FirstName",pat.FName);
 				//Patient Id can be any string format.
-				ProgramProperties.GetCur("Enter 0 to use PatientNum, or 1 to use ChartNum");
-				if(ProgramProperties.Cur.PropertyValue=="0"){
+				PPCur=ProgramProperties.GetCur(ForProgram, "Enter 0 to use PatientNum, or 1 to use ChartNum");
+				if(PPCur.PropertyValue=="0"){
 					WriteValue("PatientID",pat.PatNum.ToString());
 				}
 				else{
@@ -60,18 +62,18 @@ namespace OpenDental.Bridges{
 				WriteValue("PhHome",pat.HmPhone);
 				WriteValue("PhWork",pat.WkPhone);
 				try{
-					Process.Start(Programs.Cur.Path,Programs.Cur.CommandLine);
+					Process.Start(ProgramCur.Path,ProgramCur.CommandLine);
 				}
 				catch{
-					MessageBox.Show(Programs.Cur.Path+" is not available.");
+					MessageBox.Show(ProgramCur.Path+" is not available.");
 				}
 			}//if patient is loaded
 			else{
 				try{
-					Process.Start(Programs.Cur.Path);//should start TigerView without bringing up a pt.
+					Process.Start(ProgramCur.Path);//should start TigerView without bringing up a pt.
 				}
 				catch{
-					MessageBox.Show(Programs.Cur.Path+" is not available.");
+					MessageBox.Show(ProgramCur.Path+" is not available.");
 				}
 			}
 		}

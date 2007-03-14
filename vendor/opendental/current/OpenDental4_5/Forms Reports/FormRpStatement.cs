@@ -1,13 +1,15 @@
 using System;
+using System.Collections;
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Design;
 using System.Drawing.Imaging;
-using System.Drawing.Text;
 using System.Drawing.Printing;
-using System.Collections;
-using System.ComponentModel;
+using System.Drawing.Text;
+using System.Globalization;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -302,7 +304,13 @@ namespace OpenDental{
 				return;
 			}
 			pd.PrintPage+=new PrintPageEventHandler(this.pd2_PrintPage);
-			pd.DefaultPageSettings.Margins=new Margins(10,40,40,60);//?
+			//pd.DefaultPageSettings.Margins=new Margins(10,40,40,60);
+			pd.DefaultPageSettings.Margins=new Margins(40,40,40,60);
+			if(CultureInfo.CurrentCulture.Name.EndsWith("CH")) {//CH is for switzerland. eg de-CH
+				//leave a big margin on the bottom for the routing slip
+				pd.DefaultPageSettings.Margins=new Margins(40,40,40,440);//4.4" from bottom
+			}
+			//pd.OriginAtMargins=true;
 			if(pd.DefaultPageSettings.PaperSize.Height==0) {
 				pd.DefaultPageSettings.PaperSize=new PaperSize("default",850,1100);
 			}
@@ -323,7 +331,7 @@ namespace OpenDental{
 				}
 				commlog.PatNum=patNums[i][0];//uaually the guarantor
 				//there is no dialog here because it is just a simple entry
-				commlog.Insert();
+				Commlogs.Insert(commlog);
 			}
 			famsPrinted=0;
 			linesPrinted=0;
@@ -424,7 +432,7 @@ namespace OpenDental{
 
 		private void pd2_PrintPage(object sender, PrintPageEventArgs ev){//raised for each page to be printed
 			Graphics g=ev.Graphics;
-		  float yPos=30;
+		  float yPos=0;
 			float xPos=0;
 			float width=0;
 			float height=0;
@@ -437,6 +445,7 @@ namespace OpenDental{
 			#region Page 1 header
 			if(pagesPrinted==0){
 				//HEADING------------------------------------------------------------------------------
+				yPos=30;
  				text=Lan.g(this,"STATEMENT");
 				font=new Font("Arial",14,FontStyle.Bold);
 				g.DrawString(text,font,brush,425-g.MeasureString(text,font).Width/2,yPos);
@@ -446,7 +455,7 @@ namespace OpenDental{
 				g.DrawString(text,font,brush,425-g.MeasureString(text,font).Width/2,yPos);
 				yPos+=18;
 				text=Lan.g(this,"Account Number")+" ";
-				if(Prefs.GetBool("StatementAccountsUseChartNumber")){
+				if(PrefB.GetBool("StatementAccountsUseChartNumber")){
 					text+=PatGuar.ChartNumber;
 				}
 				else{
@@ -454,11 +463,11 @@ namespace OpenDental{
 				}
 				g.DrawString(text,font,brush,425-g.MeasureString(text,font).Width/2,yPos);
 				//Practice Address----------------------------------------------------------------------
-				if(Prefs.GetBool("StatementShowReturnAddress")){
+				if(PrefB.GetBool("StatementShowReturnAddress")){
 					font=new Font("Arial",10);
 					yPos=50;
 					xPos=30;
-					if(!Prefs.GetBool("EasyNoClinics") && Clinics.List.Length>0 //if using clinics
+					if(!PrefB.GetBool("EasyNoClinics") && Clinics.List.Length>0 //if using clinics
 						&& Clinics.GetClinic(PatGuar.ClinicNum)!=null)//and this patient assigned to a clinic
 					{
 						Clinic clinic=Clinics.GetClinic(PatGuar.ClinicNum);
@@ -470,7 +479,12 @@ namespace OpenDental{
 							g.DrawString(clinic.Address2,font,brush,xPos,yPos);
 							yPos+=18;
 						}
-						g.DrawString(clinic.City+", "+clinic.State+" "+clinic.Zip,font,brush,xPos,yPos);
+						if(CultureInfo.CurrentCulture.Name.EndsWith("CH")) {//CH is for switzerland. eg de-CH
+							g.DrawString(clinic.Zip+" "+clinic.City,font,brush,xPos,yPos);
+						}
+						else{
+							g.DrawString(clinic.City+", "+clinic.State+" "+clinic.Zip,font,brush,xPos,yPos);
+						}
 						yPos+=18;
 						text=clinic.Phone;
 						if(text.Length==10)
@@ -478,18 +492,23 @@ namespace OpenDental{
 						g.DrawString(text,font,brush,xPos,yPos);
 					}
 					else{
-						g.DrawString(Prefs.GetString("PracticeTitle"),font,brush,xPos,yPos);
+						g.DrawString(PrefB.GetString("PracticeTitle"),font,brush,xPos,yPos);
 						yPos+=18;
-						g.DrawString(Prefs.GetString("PracticeAddress"),font,brush,xPos,yPos);	    
+						g.DrawString(PrefB.GetString("PracticeAddress"),font,brush,xPos,yPos);	    
 						yPos+=18;
-						if(Prefs.GetString("PracticeAddress2")!=""){
-							g.DrawString(Prefs.GetString("PracticeAddress2"),font,brush,xPos,yPos);	    
+						if(PrefB.GetString("PracticeAddress2")!=""){
+							g.DrawString(PrefB.GetString("PracticeAddress2"),font,brush,xPos,yPos);	    
 							yPos+=18;
 						}
-						g.DrawString(Prefs.GetString("PracticeCity")+", "+Prefs.GetString("PracticeST")+" "
-							+Prefs.GetString("PracticeZip"),font,brush,xPos,yPos);
+						if(CultureInfo.CurrentCulture.Name.EndsWith("CH")) {//CH is for switzerland. eg de-CH
+							g.DrawString(PrefB.GetString("PracticeZip")+" "+PrefB.GetString("PracticeCity"),font,brush,xPos,yPos);
+						}
+						else{
+							g.DrawString(PrefB.GetString("PracticeCity")+", "+PrefB.GetString("PracticeST")+" "
+								+PrefB.GetString("PracticeZip"),font,brush,xPos,yPos);
+						}
 						yPos+=18;
-						text=Prefs.GetString("PracticePhone");
+						text=PrefB.GetString("PracticePhone");
 						if(text.Length==10)
 							text="("+text.Substring(0,3)+")"+text.Substring(3,3)+"-"+text.Substring(6);
 						g.DrawString(text,font,brush,xPos,yPos);
@@ -526,7 +545,7 @@ namespace OpenDental{
 					xPos=450;
 					yPos+=height+3;
 					font=new Font("Arial",9);
-					if(Prefs.GetBool("BalancesDontSubtractIns")){
+					if(PrefB.GetBool("BalancesDontSubtractIns")){
 						text=PatGuar.BalTotal.ToString("F");
 					}
 					else{//this is more typical
@@ -534,11 +553,11 @@ namespace OpenDental{
 					}
 					g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
 					xPos+=width;
-					if(Prefs.GetInt("StatementsCalcDueDate")==-1){
+					if(PrefB.GetInt("StatementsCalcDueDate")==-1){
 						text=Lan.g(this,"Upon Receipt");
 					}
 					else{
-						text=DateTime.Today.AddDays(Prefs.GetInt("StatementsCalcDueDate")).ToShortDateString();
+						text=DateTime.Today.AddDays(PrefB.GetInt("StatementsCalcDueDate")).ToShortDateString();
 					}
 					g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
 				}
@@ -559,7 +578,8 @@ namespace OpenDental{
 				brush=Brushes.Black;
 				yPos=225 + 1;//+10
 				xPos=62.5F+12.5F;
-				g.DrawString(PatGuar.GetNameFL(),font,brush,xPos,yPos);
+				//We do not show the preferred name on statements, just the actual name.
+				g.DrawString(PatGuar.FName+" "+PatGuar.LName,font,brush,xPos,yPos);
 				yPos+=19;
 				g.DrawString(PatGuar.Address,font,brush,xPos,yPos);	    
 				yPos+=19;
@@ -567,10 +587,15 @@ namespace OpenDental{
 					g.DrawString(PatGuar.Address2,font,brush,xPos,yPos);	    
 					yPos+=19;  
 				}
-   			g.DrawString(PatGuar.City+", "+PatGuar.State+" "+PatGuar.Zip,font,brush,xPos,yPos);
+				if(CultureInfo.CurrentCulture.Name.EndsWith("CH")) {//CH is for switzerland. eg de-CH
+   				g.DrawString(PatGuar.Zip+" "+PatGuar.City,font,brush,xPos,yPos);
+				}
+				else{
+					g.DrawString(PatGuar.City+", "+PatGuar.State+" "+PatGuar.Zip,font,brush,xPos,yPos);
+				}
 				//Credit Card Info-----------------------------------------------------------------------
 				if(!HidePayment){
-					if(Prefs.GetBool("StatementShowCreditCard")){
+					if(PrefB.GetBool("StatementShowCreditCard")){
 						xPos=450;
 						yPos=175;
 						font=new Font("Arial",7,FontStyle.Bold);
@@ -660,7 +685,7 @@ namespace OpenDental{
 					text=Lan.g(this,"Total");
 					g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
 					xPos+=width;
-					if(!Prefs.GetBool("BalancesDontSubtractIns")){//this typically happens
+					if(!PrefB.GetBool("BalancesDontSubtractIns")){//this typically happens
 						text=Lan.g(this,"- InsEst");
 						g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
 					}
@@ -685,7 +710,7 @@ namespace OpenDental{
 					text=PatGuar.BalTotal.ToString("F");
 					g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
 					xPos+=width;
-					if(Prefs.GetBool("BalancesDontSubtractIns")){
+					if(PrefB.GetBool("BalancesDontSubtractIns")){
 						xPos+=width;
 						text=PatGuar.BalTotal.ToString("F");
 						g.DrawString(text,font,brush,xPos+width/2-g.MeasureString(text,font).Width/2,yPos);
@@ -702,7 +727,7 @@ namespace OpenDental{
 				//yPos=770;//change this value to test multiple pages
 			}//if(pagesPrinted==0){
 			else {
-				yPos=18;
+				yPos=35;
 			}
 			#endregion
 			#region Body Tables
@@ -735,7 +760,8 @@ namespace OpenDental{
 			colPos[10]=725;  colAlign[10]=HorizontalAlignment.Right;//balance
 			colPos[11]=780;//+1  //col 11 is for formatting codes
 			isFirstLineOnPage=true;
-			while(yPos<ev.MarginBounds.Top+ev.MarginBounds.Height
+			while(yPos<ev.MarginBounds.Bottom
+				//ev.MarginBounds.Top+ev.MarginBounds.Height
 				&& linesPrinted<StatementA[famsPrinted].GetLength(1))
 			{
 				if(StatementA[famsPrinted][11,linesPrinted]=="PatName"){
@@ -842,6 +868,114 @@ namespace OpenDental{
 				}
 			}
 			#endregion
+			#region SwissBanking
+			if(CultureInfo.CurrentCulture.Name.EndsWith("CH")//CH is for switzerland. eg de-CH
+				&& pagesPrinted==0)//only on the first page
+			{
+				float yred=744;//768;//660 for testing
+				//Red line (just temp)
+				//g.DrawLine(Pens.Red,0,yred,826,yred);
+				Font swfont=new Font(FontFamily.GenericSansSerif,10);
+				//Bank Address---------------------------------------------------------
+				g.DrawString(PrefB.GetString("BankAddress"),swfont,Brushes.Black,30,yred+30);
+				g.DrawString(PrefB.GetString("BankAddress"),swfont,Brushes.Black,246,yred+30);
+				//Office Name and Address----------------------------------------------
+				text=PrefB.GetString("PracticeTitle")+"\r\n"
+					+PrefB.GetString("PracticeAddress")+"\r\n";
+				if(PrefB.GetString("PracticeAddress2")!=""){
+					text+=PrefB.GetString("PracticeAddress2")+"\r\n";
+				}
+				text+=PrefB.GetString("PracticeZip")+" "+PrefB.GetString("PracticeCity");
+				g.DrawString(text,swfont,Brushes.Black,30,yred+89);
+				g.DrawString(text,swfont,Brushes.Black,246,yred+89);
+				//Bank account number--------------------------------------------------
+				string origBankNum=PrefB.GetString("PracticeBankNumber");//must be exactly 9 digits. 2+6+1.
+					//the 6 digit portion might have 2 leading 0's which would not go into the dashed bank num.
+				string dashedBankNum="?";
+					//examples: 01-200027-2
+					//          01-4587-1  (from 010045871)
+				if(origBankNum.Length==9){
+					dashedBankNum=origBankNum.Substring(0,2)+"-"
+						+origBankNum.Substring(2,6).TrimStart(new char[] {'0'})+"-"
+						+origBankNum.Substring(8,1);
+				}
+				swfont=new Font(FontFamily.GenericSansSerif,9,FontStyle.Bold);
+				g.DrawString(dashedBankNum,swfont,Brushes.Black,95,yred+169);
+				g.DrawString(dashedBankNum,swfont,Brushes.Black,340,yred+169);
+				//Amount------------------------------------------------------------
+				double amountdue=PatGuar.BalTotal-PatGuar.InsEst;
+				text=amountdue.ToString("F2");
+				text=text.Substring(0,text.Length-3);
+				StringFormat format=new StringFormat();
+				format.LineAlignment=StringAlignment.Near;
+				format.Alignment=StringAlignment.Far;
+				swfont=new Font(FontFamily.GenericSansSerif,10);
+				g.DrawString(text,swfont,Brushes.Black,new Rectangle(50,(int)yred+205,100,25),format);
+				g.DrawString(text,swfont,Brushes.Black,new Rectangle(290,(int)yred+205,100,25),format);
+				text=amountdue.ToString("F2");//eg 92.00
+				text=text.Substring(text.Length-2,2);//eg 00
+				g.DrawString(text,swfont,Brushes.Black,185,yred+205);
+				g.DrawString(text,swfont,Brushes.Black,425,yred+205);
+				//Patient Address-----------------------------------------------------
+				string patAddress=PatGuar.FName+" "+PatGuar.LName+"\r\n"
+					+PatGuar.Address+"\r\n";
+				if(PatGuar.Address2!=""){
+					patAddress+=PatGuar.Address2+"\r\n";
+				}
+				patAddress+=PatGuar.Zip+" "+PatGuar.City;
+				g.DrawString(patAddress,swfont,Brushes.Black,495,yred+218);//middle left
+				g.DrawString(patAddress,swfont,Brushes.Black,30,yred+263);//Lower left
+				//Compute Reference#------------------------------------------------------
+				//Reference# has exactly 27 digits
+				//First 6 numbers are what we are calling the BankRouting number.
+				//Next 20 numbers represent the invoice #.
+				//27th number is the checksum
+				string referenceNum=PrefB.GetString("BankRouting");//6 digits
+				if(referenceNum.Length!=6){
+					referenceNum="000000";
+				}
+				referenceNum+=PatGuar.PatNum.ToString().PadLeft(12,'0')
+					//"000000000000"//12 0's
+					+DateTime.Today.ToString("yyyyMMdd");//+8=20
+				//for testing:
+				//referenceNum+="09090271100000067534";
+					//"00000000000000037112";
+				referenceNum+=Modulo10(referenceNum).ToString();
+				//at this point, the referenceNum will always be exactly 27 digits long.
+				string spacedRefNum=referenceNum.Substring(0,2)+" "+referenceNum.Substring(2,5)+" "+referenceNum.Substring(7,5)
+					+" "+referenceNum.Substring(12,5)+" "+referenceNum.Substring(17,5)+" "+referenceNum.Substring(22,5);
+				//text=spacedRefNum.Substring(0,15)+"\r\n"+spacedRefNum.Substring(16)+"\r\n";
+				//reference# at lower left above address.  Small
+				swfont=new Font(FontFamily.GenericSansSerif,7);
+				g.DrawString(spacedRefNum,swfont,Brushes.Black,30,yred+243);
+				//Reference# at upper right---------------------------------------------------------------
+				swfont=new Font(FontFamily.GenericSansSerif,10);
+				g.DrawString(spacedRefNum,swfont,Brushes.Black,490,yred+140);
+				//Big long number at the lower right--------------------------------------------------
+				/*The very long number on the bottom has this format:
+				>13 numbers > 27 numbers + 9 numbers >
+				>Example: 0100000254306>904483000000000000000371126+ 010045871>
+				>
+				>The first group of 13 numbers would begin with either 01 or only have 
+				>042 without any other following numbers.  01 would be used if there is 
+				>a specific amount, and 042 would be used if there is not a specific 
+				>amount billed. So in the example, the billed amount is 254.30.  It has 
+				>01 followed by leading zeros to fill in the balance of the digits 
+				>required.  The last digit is a checksum done by the program.  If the 
+				>amount would be 1,254.30 then the example should read 0100001254306.
+				>
+				>There is a > separator, then the reference number made up previously.
+				>
+				>Then a + separator, followed by the bank account number.  Previously, 
+				>the number printed without the zeros, but in this case it has the zeros 
+				>and not the dashes.*/
+				swfont=new Font("OCR-B 10 BT",12);
+				text="01"+amountdue.ToString("F2").Replace(".","").PadLeft(10,'0');
+				text+=Modulo10(text).ToString()+">"
+					+referenceNum+"+ "+origBankNum+">";
+				g.DrawString(text,swfont,Brushes.Black,255,yred+345);
+			}
+			#endregion SwissBanking
 			if(linesPrinted<StatementA[famsPrinted].GetLength(1)){//if this family is not done printing
 				ev.HasMorePages=true;
 				pagesPrinted++;
@@ -864,6 +998,24 @@ namespace OpenDental{
 				}
 			}
 		}
+
+		///<summary>data may only contain numbers between 0 und 9</summary>
+		private int Modulo10(string strNumber){
+			//try{
+				int[] intTable={0,9,4,6,8,2,7,1,3,5};
+				int intTransfer=0;
+				for(int intIndex=0;intIndex<strNumber.Length;intIndex++){
+					int digit=Convert.ToInt32(strNumber.Substring(intIndex,1));
+					int modulus=(intTransfer+digit) % 10;
+					intTransfer=intTable[modulus];
+				}
+				return (10-intTransfer) % 10;
+			//}
+			//catch{
+			//	return 0;
+			//}
+    }
+
 
 		private void butZoomIn_Click(object sender, System.EventArgs e) {
 			butFullPage.Visible=true;

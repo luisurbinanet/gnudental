@@ -1,8 +1,10 @@
 using System;
+using System.Collections;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental.Bridges {
 	/// <summary></summary>
@@ -14,15 +16,15 @@ namespace OpenDental.Bridges {
 		}
 
 		///<summary>Sends data for Patient.Cur by command line interface.</summary>
-		public static void SendData(Patient pat) {
-			ProgramProperties.GetForProgram();
+		public static void SendData(Program ProgramCur, Patient pat) {
+			ArrayList ForProgram=ProgramProperties.GetForProgram(ProgramCur.ProgramNum);;
 			if(pat==null) {
 				return;
 			}
 			//Example: c:\vixwin\vixwin -I 123ABC -N Bill^Smith
 			string info="-I ";
-			ProgramProperties.GetCur("Enter 0 to use PatientNum, or 1 to use ChartNum");
-			if(ProgramProperties.Cur.PropertyValue=="0") {
+			ProgramProperty PPCur=ProgramProperties.GetCur(ForProgram, "Enter 0 to use PatientNum, or 1 to use ChartNum");;
+			if(PPCur.PropertyValue=="0") {
 				info+=pat.PatNum.ToString();
 			}
 			else {
@@ -31,10 +33,10 @@ namespace OpenDental.Bridges {
 			info+=" -N "+pat.FName.Replace(" ","")+"^"+pat.LName.Replace(" ","");//no spaces allowed
 			//MessageBox.Show(info);
 			try {
-				Process.Start(Programs.Cur.Path,info);
+				Process.Start(ProgramCur.Path,info);
 			}
 			catch {
-				MessageBox.Show(Programs.Cur.Path+" is not available.");
+				MessageBox.Show(ProgramCur.Path+" is not available.");
 			}
 		}
 

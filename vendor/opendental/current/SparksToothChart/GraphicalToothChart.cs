@@ -15,6 +15,7 @@ redistributed.
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
@@ -25,10 +26,11 @@ using System.Text;
 using System.Windows.Forms;
 using Tao.OpenGl;
 using Tao.Platform.Windows;
+//using Tao.FreeGlut;
 
 namespace SparksToothChart {
-	public partial class GraphicalToothChart:Tao.Platform.Windows.SimpleOpenGlControl {
-		///<summary>A strongly typed collection of ToothGraphics.  This all 32 perm and all 20 primary teeth, whether they will be drawn or not.  If a tooth is missing, it gets marked as visible false.  If it's set to primary, then the permanent tooth gets repositioned under the primary, and a primary gets set to visible true.  If a tooth is impacted, it gets repositioned.  Supernumerary graphics are not yet supported, but they might be handled by adding to this list.  "implant" is also stored as another tooth in this collection.  It is just used to store the graphics for any implant.</summary>
+	public partial class GraphicalToothChart:Tao.Platform.Windows.Controls.OpenGLWinFormsControl{//.SimpleOpenGlControl {
+		///<summary>A strongly typed collection of ToothGraphics.  This includes all 32 perm and all 20 primary teeth, whether they will be drawn or not.  If a tooth is missing, it gets marked as visible false.  If it's set to primary, then the permanent tooth gets repositioned under the primary, and a primary gets set to visible true.  If a tooth is impacted, it gets repositioned.  Supernumerary graphics are not yet supported, but they might be handled by adding to this list.  "implant" is also stored as another tooth in this collection.  It is just used to store the graphics for any implant.</summary>
 		private ToothGraphicCollection ListToothGraphics;
 		float[] specular_color_normal;//white
 		float[] specular_color_cementum;//gray
@@ -52,9 +54,19 @@ namespace SparksToothChart {
 		///<summary>The previous hotTooth.  If this is different than hotTooth, then mouse has just now moved to a new tooth.  Can be 0 to represent no previous.</summary>
 		private int hotToothOld;
 		private bool useInternational;
+		private int fontOffset;
+		private string[][] numbers;
+		private string[][] letters;
+		///<summary>This gets set to true during certain operations where we do not need to redraw all the teeth.  Specifically, during tooth selection where only the color of the tooth number text needs to change.  In this case, the rest of the scene will not be rendered again.</summary>
+		private bool suspendRendering;
 
 		public GraphicalToothChart() {
 			InitializeComponent();
+			this.TaoSetupContext += new System.EventHandler(ToothChart_TaoSetupContext);
+			this.TaoRenderScene += new System.EventHandler(ToothChart_TaoRenderScene);
+			//js. I thought the next two lines were supposed to be done in the parent form.
+			TaoInitializeContexts();
+			TaoRenderEnabled=true;
 			WidthProjection=130;
 			ListToothGraphics=new ToothGraphicCollection();
 			ALSelectedTeeth=new ArrayList();
@@ -63,17 +75,20 @@ namespace SparksToothChart {
 			ColorText=Color.Green;
 			ColorTextHighlight=Color.Purple;
 			ColorBackHighlight=Color.Orange;
+			Tao.OpenGl.Gl.glDisable(Tao.OpenGl.Gl.GL_TEXTURE);//Disable texturing, since we don't use it.
+																												//This should prevent a glCopyPixels() problem in
+																												//Gdi.SwapBuffersFast() on ATI graphics cards.
 			ResetTeeth();
 		}
 
-		protected override void OnLoad(EventArgs e) {
-			base.OnLoad(e);
-			//Initialize();
-		}
+		//protected override void OnLoad(EventArgs e) {
+		//	base.OnLoad(e);
+		//	//Initialize();
+		//}
 
 		protected override void OnResize(EventArgs e) {
 			base.OnResize(e);
-			Initialize();
+			//Initialize();
 		}
 
 		/*protected override void OnVisibleChanged(EventArgs e) {
@@ -86,12 +101,15 @@ namespace SparksToothChart {
 			}
 		}*/
 
-		private void Initialize(){
-			InitializeContexts();//initializes the device context for the control.
+		
+
+		private void ToothChart_TaoSetupContext(object sender, System.EventArgs e){//event from base class when context needs to be setup.
+			MakeRasterFont();
+			//TaoInitializeContexts();//initializes the device context for the control.
 			//Color backColor=ClearColor;
 			//Color.FromArgb(95,95,130);
 			//set clearing color. Only needs to be set once.
-			Gl.glClearColor((float)ColorBackground.R/255f,(float)ColorBackground.G/255f,(float)ColorBackground.B/255f,0f);
+			/*Gl.glClearColor((float)ColorBackground.R/255f,(float)ColorBackground.G/255f,(float)ColorBackground.B/255f,0f);
 			Gl.glClearAccum(0f,0f,0f,0f);
 			//Lighting
 			float ambI=.2f;
@@ -118,10 +136,15 @@ namespace SparksToothChart {
 			//Gl.glMaterialfv(Gl.GL_FRONT_AND_BACK,Gl.GL_AMBIENT,enamel_ambient);
 			//Gl.glMaterialfv(Gl.GL_FRONT_AND_BACK,Gl.GL_DIFFUSE,enamel_diffuse);
 			Gl.glEnable(Gl.GL_LIGHTING);
-			Gl.glEnable(Gl.GL_LIGHT0);
+			Gl.glEnable(Gl.GL_LIGHT0);*/
 			//Gl.glEnable(Gl.GL_DEPTH_TEST);
-			this.Invalidate();
+			//this.Invalidate();
 		}
+		
+
+		//private void Initialize(){
+			//all moved to TaoSetupContext
+		//}
 
 		#region Properties
 
@@ -380,10 +403,47 @@ namespace SparksToothChart {
 
 		#region Painting
 		protected override void OnPaint(PaintEventArgs e) {
-			//
-			if(this.DesignMode) {
-				//
+			base.OnPaint(e);
+			//if(!this.DesignMode) {
+			//	DrawTextAndLines(e.Graphics);
+			//}
+		}
+
+		private void ToothChart_TaoRenderScene(object sender, System.EventArgs e){
+			if(suspendRendering){
+				return;
 			}
+			//Debug.WriteLine(DateTime.Now.ToString());
+			//This first part was originally in setup context
+			Gl.glClearColor((float)ColorBackground.R/255f,(float)ColorBackground.G/255f,(float)ColorBackground.B/255f,0f);
+			Gl.glClearAccum(0f,0f,0f,0f);
+			//Lighting
+			float ambI=.2f;
+			float difI=.6f;
+			float specI=1f;
+			float[] light_ambient = new float[] { ambI,ambI,ambI,1f };//RGB,A=1 for no transparency. Default 0001
+			float[] light_diffuse = new float[] { difI,difI,difI,1f };//RGBA. Default 1111. 'typical' 
+			float[] light_specular = new float[] { specI,specI,specI,1f };//RGBA. Default 1111
+			float[] light_position = new float[] { -0.5f,0.1f,1f,0f };//xyz(direction, not position), w=0 for infinite
+			Gl.glLightfv(Gl.GL_LIGHT0,Gl.GL_AMBIENT,light_ambient);
+			Gl.glLightfv(Gl.GL_LIGHT0,Gl.GL_DIFFUSE,light_diffuse);
+			Gl.glLightfv(Gl.GL_LIGHT0,Gl.GL_SPECULAR,light_specular);
+			Gl.glLightfv(Gl.GL_LIGHT0,Gl.GL_POSITION,light_position);
+			//float[] light_position = new float[] { 1.0f, 1.0f, 1.0f, 0.0f };
+			//glClearColor (0.0, 0.0, 0.0, 0.0);
+			//Materials
+			Gl.glShadeModel(Gl.GL_SMOOTH);
+			//OK to just set these three once.
+			specular_color_normal = new float[] { 1.0f,1.0f,1.0f,1.0f };//1111 for white. RGBA
+			specular_color_cementum = new float[] { 0.1f,0.1f,0.1f,1.0f };//gray
+			shininess = new float[] { 90f };//0 to 128. Size of specular reflection. 128 smallest
+			//float[] enamel_ambient=new float[] {.2f,.2f,.2f,1f};//RGBA
+			//float[] enamel_diffuse=new float[] {.8f,.8f,.8f,1f};//RGBA
+			//Gl.glMaterialfv(Gl.GL_FRONT_AND_BACK,Gl.GL_AMBIENT,enamel_ambient);
+			//Gl.glMaterialfv(Gl.GL_FRONT_AND_BACK,Gl.GL_DIFFUSE,enamel_diffuse);
+			Gl.glEnable(Gl.GL_LIGHTING);
+			Gl.glEnable(Gl.GL_LIGHT0);
+			//Render Scene starts here----------------------------------------------------------------------------------
 			Gl.glClear(Gl.GL_COLOR_BUFFER_BIT | Gl.GL_DEPTH_BUFFER_BIT);//Clears the color buffer and depth buffer.
 			//viewing transformation.  gluLookAt is too complex, so not used
 			//default was Z=1, looking towards the origin
@@ -436,9 +496,7 @@ namespace SparksToothChart {
 				Gl.glAccum(Gl.GL_ACCUM,1f/(float)accumSize);
 			}
 			Gl.glAccum(Gl.GL_RETURN,1f);*/
-			Gl.glFlush();
-			base.OnPaint(e);
-			DrawTextAndLines(e.Graphics);
+			//Gl.glFlush();//handled for me in base class
 			
 		}
 
@@ -466,6 +524,13 @@ namespace SparksToothChart {
 				DrawFacialView(ListToothGraphics[t],2);
 				DrawOcclusalView(ListToothGraphics[t],2);
 			}*/
+			
+			//if(!this.DesignMode) {
+			//	Graphics g=this.CreateGraphics();
+			//	DrawTextAndLines(g);
+			//	g.Dispose();
+			//}
+			DrawTextAndLines();
 		}
 
 		private void DrawFacialView(ToothGraphic toothGraphic) {
@@ -709,65 +774,311 @@ namespace SparksToothChart {
 			}
 		}
 
-		private void DrawTextAndLines(Graphics g) {
-			//this does not use OpenGL
-			g.DrawLine(new Pen(ColorText),0,this.Height/2,this.Width,this.Height/2);
-			//set position to center of control
-			int xPos;
-			int yPos;
-			string displayNum;
-			SolidBrush brushText=new SolidBrush(ColorText);
-			SolidBrush brushTextHighlight=new SolidBrush(ColorTextHighlight);
-			SolidBrush brushBackHighlight=new SolidBrush(ColorBackHighlight);
-			for(int t=0;t<ListToothGraphics.Count;t++) {//loop through each tooth
-				if(ListToothGraphics[t].ToothID=="implant"){
-					continue;
-				}
-				if(!ToothGraphic.IsPrimary(ListToothGraphics[t].ToothID) //If this is a perm tooth
-					&& ToothGraphic.IsValidToothID(ToothGraphic.PermToPri(ListToothGraphics[t].ToothID))//and the pri tooth is valid
-					&& ListToothGraphics[t].ShowPrimary)//and it's set to show primary
-				{//then don't draw number
-					continue;
-				}
-				if(ToothGraphic.IsPrimary(ListToothGraphics[t].ToothID)//if this is a primary tooth
+		private void DrawTextAndLines() {
+			Gl.glPushMatrix();
+			Gl.glDisable(Gl.GL_LIGHTING);
+			Gl.glDisable(Gl.GL_BLEND);
+			Gl.glDisable(Gl.GL_DEPTH_TEST);
+			Gl.glColor3f(
+				(float)Color.White.R/255f,
+				(float)Color.White.G/255f,
+				(float)Color.White.B/255f);
+			//Gl.glBlendFunc(Gl.GL_SRC_ALPHA,Gl.GL_ONE_MINUS_SRC_ALPHA);
+			Gl.glLineWidth((float)Width/400f);//about 1
+			Gl.glBegin(Gl.GL_LINE_STRIP);
+				Gl.glVertex3f(-(float)WidthProjection/2f,0,0);
+				Gl.glVertex3f((float)WidthProjection/2f,0,0);
+			Gl.glEnd();
+			//numbers-----------------------------------------------------
+			//float xPos;//in mm
+			//float yPos;
+			//string displayNum;
+			//for(int t=0;t<ListToothGraphics.Count;t++) {//loop through each tooth
+			//	if(ListToothGraphics[t].ToothID=="implant"){
+			//		continue;
+			//	}
+				//if(!ToothGraphic.IsPrimary(ListToothGraphics[t].ToothID) //If this is a perm tooth
+				//	&& ToothGraphic.IsValidToothID(ToothGraphic.PermToPri(ListToothGraphics[t].ToothID))//and the pri tooth is valid
+				//	&& ListToothGraphics[t].ShowPrimary)//and it's set to show primary
+				//{//then don't draw number
+				//	continue;
+				//}
+				//if(ToothGraphic.IsPrimary(ListToothGraphics[t].ToothID)//if this is a primary tooth
 					//and it's set to show perm
-					&& !ListToothGraphics[ToothGraphic.PriToPerm(ListToothGraphics[t].ToothID)].ShowPrimary)
-				{//then don't draw letter
-					continue;
-				}
-				if(ListToothGraphics[t].HideNumber){//if number is hidden, then don't draw it.
-					continue;
-				}
-				xPos=ClientRectangle.Width/2;
-				yPos=ClientRectangle.Height/2;
-				if(ToothGraphic.IsMaxillary(ListToothGraphics[t].ToothID)) {
-					yPos-=14;
-				}
-				else {
-					yPos+=3;
-				}
-				xPos+=(int)(GetTransX(ListToothGraphics[t].ToothID)*(float)Width/WidthProjection);
-				displayNum=ListToothGraphics[t].ToothID;
-				if(useInternational) {
-					displayNum=ToothGraphic.ToInternat(displayNum);
-				}
-				xPos-=(int)(g.MeasureString(displayNum,Font).Width/2);
-				//only use the ShiftM portion of the user translation
-				if(ToothGraphic.IsRight(ListToothGraphics[t].ToothID)) {
-					xPos+=(int)(ListToothGraphics[t].ShiftM*(float)Width/WidthProjection);
-				}
-				else {
-					xPos-=(int)(ListToothGraphics[t].ShiftM*(float)Width/WidthProjection);
-				}
-				if(ALSelectedTeeth.Contains(ToothGraphic.IdToInt(ListToothGraphics[t].ToothID))) {
-					g.FillRectangle(brushBackHighlight,xPos,yPos,(int)g.MeasureString(displayNum,Font).Width+1,
-						(int)g.MeasureString(displayNum,Font).Height);
-					g.DrawString(displayNum,Font,brushTextHighlight,xPos,yPos);
+				//	&& !ListToothGraphics[ToothGraphic.PriToPerm(ListToothGraphics[t].ToothID)].ShowPrimary)
+				//{//then don't draw letter
+				//	continue;
+				//}
+				//if(ListToothGraphics[t].HideNumber){//if number is hidden, then don't draw it.
+				//	continue;
+				//}
+				/*if(ALSelectedTeeth.Contains(ToothGraphic.IdToInt(ListToothGraphics[t].ToothID))) {
+					Gl.glColor3f(
+						(float)ColorBackHighlight.R/255f,
+						(float)ColorBackHighlight.G/255f,
+						(float)ColorBackHighlight.B/255f);
+					Gl.glBegin(Gl.GL_QUADS);
+						Gl.glVertex3f(xPos-2f*toMm,yPos-2f*toMm,14);//LL
+						Gl.glVertex3f(xPos-2f*toMm,yPos+10f*toMm,14);//UL
+						Gl.glVertex3f(xPos+strWidth+1f*toMm,yPos+10f*toMm,14);//UR
+						Gl.glVertex3f(xPos+strWidth+1f*toMm,yPos-2f*toMm,14);//LR
+					Gl.glEnd();
+					//g.FillRectangle(brushBackHighlight,xPos,yPos,(int)g.MeasureString(displayNum,Font).Width+1,
+					//	(int)g.MeasureString(displayNum,Font).Height);
+					Gl.glColor3f(
+						(float)ColorTextHighlight.R/255f,
+						(float)ColorTextHighlight.G/255f,
+						(float)ColorTextHighlight.B/255f);
+					Gl.glRasterPos3f(xPos,yPos,15f);
+					PrintString(displayNum);
+					//g.DrawString(displayNum,Font,brushTextHighlight,xPos,yPos);
 				}
 				else {
-					g.DrawString(displayNum,Font,brushText,xPos,yPos);
+					Gl.glColor3f(
+						(float)ColorText.R/255f,
+						(float)ColorText.G/255f,
+						(float)ColorText.B/255f);
+					Gl.glRasterPos3f(xPos,yPos,15f);
+					PrintString(displayNum);
+				}*/
+			for(int i=1;i<=32;i++){
+				if(ALSelectedTeeth.Contains(i)) {
+					DrawNumber(i,true);
+				}
+				else {
+					DrawNumber(i,false);
+				}
+				
+			}
+			Gl.glPopMatrix();
+		}
+
+		///<summary>Gets the rectangle surrounding a tooth number.  Used to draw the box and to invalidate the area.</summary>
+		private RectangleF GetNumberRecMm(string tooth_id){
+			float xPos=0;
+			float yPos=0;
+			if(ToothGraphic.IsMaxillary(tooth_id)) {
+				yPos+=1.3f;
+			}
+			else {
+				yPos-=3.8f;
+			}
+			xPos+=GetTransX(tooth_id);
+			string displayNum=tooth_id;
+			if(useInternational) {
+				displayNum=ToothGraphic.ToInternat(displayNum);
+			}
+			float strWidth=MeasureStringMm(displayNum);
+			xPos-=strWidth/2f;
+			//only use the ShiftM portion of the user translation
+			if(ToothGraphic.IsRight(tooth_id)) {
+				xPos+=ListToothGraphics[tooth_id].ShiftM;
+			}
+			else {
+				xPos-=ListToothGraphics[tooth_id].ShiftM;
+			}
+			float toMm=(float)WidthProjection/(float)Width;//mm/pix
+			RectangleF recMm=new RectangleF(xPos-2f*toMm,yPos-2f*toMm,strWidth+3f*toMm,12f*toMm);//this rec has origin at LL
+			return recMm;
+		}
+
+		///<summary>First, use GetNumberRecMm to get the rectangle surrounding a tooth num.  The, use this to convert it to control coords.</summary>
+		private Rectangle ConvertRecToPix(RectangleF recMm){
+			float toMm=(float)WidthProjection/(float)Width;//mm/pix
+			Rectangle recPix=new Rectangle((int)(Width/2+recMm.X/toMm),(int)(Height/2-recMm.Y/toMm-recMm.Height/toMm),
+				(int)(recMm.Width/toMm),(int)(recMm.Height/toMm));
+			return recPix;
+		}
+
+		///<summary>Draws the number and the rectangle behind it.  Draws in the appropriate color</summary>
+		private void DrawNumber(int intTooth,bool isSelected) {
+			Gl.glDisable(Gl.GL_LIGHTING);
+			Gl.glDisable(Gl.GL_BLEND);
+			Gl.glDisable(Gl.GL_DEPTH_TEST);
+			string tooth_id=intTooth.ToString();
+			if(ToothGraphic.IsValidToothID(ToothGraphic.PermToPri(intTooth.ToString()))//pri is valid
+				&& ListToothGraphics[ToothGraphic.PermToPri(intTooth.ToString())].Visible)//and pri visible
+			{
+				tooth_id=ToothGraphic.PermToPri(intTooth.ToString());
+			}
+			string displayNum=tooth_id;
+			if(useInternational) {
+				displayNum=ToothGraphic.ToInternat(displayNum);
+			}
+			/*float strWidth=MeasureStringMm(displayNum);
+			xPos-=strWidth/2f;
+			//only use the ShiftM portion of the user translation
+			if(ToothGraphic.IsRight(tooth_id)) {
+				xPos+=ListToothGraphics[tooth_id].ShiftM;
+			}
+			else {
+				xPos-=ListToothGraphics[tooth_id].ShiftM;
+			}*/
+			float toMm=(float)WidthProjection/(float)Width;//mm/pix
+			//RectangleF recMm=new RectangleF(xPos-2f*toMm,yPos-2f*toMm,strWidth+3f*toMm,12f*toMm);//this rec has origin at LL
+			RectangleF recMm=GetNumberRecMm(tooth_id);
+			Rectangle recPix=ConvertRecToPix(recMm);
+			if(isSelected){
+				Gl.glColor3f(
+					(float)ColorBackHighlight.R/255f,
+					(float)ColorBackHighlight.G/255f,
+					(float)ColorBackHighlight.B/255f);
+				Gl.glBegin(Gl.GL_QUADS);
+					Gl.glVertex3f(recMm.X,recMm.Y,14);//LL
+					Gl.glVertex3f(recMm.X,recMm.Y+recMm.Height,14);//UL
+					Gl.glVertex3f(recMm.X+recMm.Width,recMm.Y+recMm.Height,14);//UR
+					Gl.glVertex3f(recMm.X+recMm.Width,recMm.Y,14);//LR
+				Gl.glEnd();
+				Gl.glColor3f(
+					(float)ColorTextHighlight.R/255f,
+					(float)ColorTextHighlight.G/255f,
+					(float)ColorTextHighlight.B/255f);
+				Gl.glRasterPos3f(recMm.X+2f*toMm,recMm.Y+2f*toMm,15f);
+				if(!ListToothGraphics[tooth_id].HideNumber){//Only draw if number is not hidden.
+					PrintString(displayNum);
+				}
+			} 
+			else{
+				Gl.glColor3f(
+					(float)ColorBackground.R/255f,
+					(float)ColorBackground.G/255f,
+					(float)ColorBackground.B/255f);
+				Gl.glBegin(Gl.GL_QUADS);
+					Gl.glVertex3f(recMm.X,recMm.Y,14);//LL
+					Gl.glVertex3f(recMm.X,recMm.Y+recMm.Height,14);//UL
+					Gl.glVertex3f(recMm.X+recMm.Width,recMm.Y+recMm.Height,14);//UR
+					Gl.glVertex3f(recMm.X+recMm.Width,recMm.Y,14);//LR
+				Gl.glEnd();
+				Gl.glColor3f(
+					(float)ColorText.R/255f,
+					(float)ColorText.G/255f,
+					(float)ColorText.B/255f);
+				Gl.glRasterPos3f(recMm.X+2f*toMm,recMm.Y+2f*toMm,15f);
+				if(!ListToothGraphics[tooth_id].HideNumber){//Only draw if number is not hidden.
+					PrintString(displayNum);
 				}
 			}
+			Gl.glFlush();
+			//Graphics g=this.CreateGraphics();
+			//g.DrawRectangle(Pens.Red,recPix);
+			//g.Dispose();
+			//Invalidate(recPix);
+		}
+
+		///<summary>Return value is in tooth coordinates, not pixels.</summary>
+		private float MeasureStringPix(string text){
+			float retVal=0;
+			for(int i=0;i<text.Length;i++){
+				if(text[i]>='A' && text[i]<='T'){
+					retVal+=letters[(byte)text[i]-(byte)'A'][0].Length+1;
+				}
+				else if(text[i]>='0' && text[i]<='9') {
+					retVal+=numbers[(byte)text[i]-(byte)'0'][0].Length+1;
+				}
+			}
+			return retVal;
+		}
+
+		private float MeasureStringMm(string text){
+			return MeasureStringPix(text)/(float)Width*(float)WidthProjection;
+		} 
+
+		private void MakeRasterFont() {
+			letters = new string[20][];
+			letters[0]=new string[] {"0001000","0001000","0010100","0010100","0100010","0100010","0111110","1000001","1000001"};//A
+			letters[1]=new string[] { "11110","10001","10001","10001","11110","10001","10001","10001","11110" };//B
+			letters[2]=new string[] { "011110","100001","100000","100000","100000","100000","100000","100001","011110" };//C
+			letters[3]=new string[] { "111100","100010","100001","100001","100001","100001","100001","100010","111100" };//D
+			letters[4]=new string[] { "11111","10000","10000","10000","11110","10000","10000","10000","11111" };//E
+			letters[5]=new string[] { "11111","10000","10000","10000","11110","10000","10000","10000","10000" };//F
+			letters[6]=new string[] { "011110","100001","100000","100000","100111","100001","100001","100011","011101" };//G
+			letters[7]=new string[] { "100001","100001","100001","100001","111111","100001","100001","100001","100001" };//H
+			letters[8]=new string[] { "111","010","010","010","010","010","010","010","111" };//I
+			letters[9]=new string[] { "00001","00001","00001","00001","00001","00001","10001","10001","01110" };//J
+			letters[10]=new string[] { "100001","100010","100100","101000","110000","101000","100100","100010","100001" };//K
+			letters[11]=new string[] { "10000","10000","10000","10000","10000","10000","10000","10000","11111" };//L
+			letters[12]=new string[] { "1000001","1000001","1100011","1100011","1010101","1010101","1001001","1001001","1000001" };//M
+			letters[13]=new string[] { "100001","110001","110001","101001","101001","100101","100011","100011","100001" };//N
+			letters[14]=new string[] { "011110","100001","100001","100001","100001","100001","100001","100001","011110" };//O
+			letters[15]=new string[] { "111110","100001","100001","100001","111110","100000","100000","100000","100000" };//P
+			letters[16]=new string[] { "011110","100001","100001","100001","100001","100001","100101","100010","011101" };//Q
+			letters[17]=new string[] { "111110","100001","100001","100001","111110","100100","100010","100010","100001" };//R
+			letters[18]=new string[] { "011110","100001","100000","100000","011110","000001","000001","100001","011110" };//S
+			letters[19]=new string[] { "1111111","0001000","0001000","0001000","0001000","0001000","0001000","0001000","0001000" };//T
+			//letters[20]=new string[] { "","","","","","","","","" };//
+			int i,j;
+			byte[] letter;
+			Gl.glPixelStorei(Gl.GL_UNPACK_ALIGNMENT,1);
+			fontOffset = Gl.glGenLists(128);
+			int letterW;
+			int letterH;
+			string row;
+			for(i=0,j='A';i<letters.Length;i++,j++) {
+				letterW=letters[i][0].Length;
+				letterH=letters[i].Length;
+				letter = new byte[letterH];
+				for(int h=0;h<letterH;h++) {//actually draws the letter from the bottom up.
+					letter[h]=0;
+					row=letters[i][letterH-h-1];
+					for(int w=0;w<letterW;w++){
+						if(row.Substring(w,1)=="1"){
+							letter[h]=(byte)(letter[h] | (byte)Math.Pow(2,7-w));
+						}
+					}
+				}
+				Gl.glNewList(fontOffset + j,Gl.GL_COMPILE);
+				Gl.glBitmap(letterW,letterH,0,0,letterW+1,0,letter);
+				Gl.glEndList();
+			}
+			numbers = new string[10][];
+			numbers[0]=new string[] { "01110","10001","10001","10001","10001","10001","10001","10001","01110" };//0
+			numbers[1]=new string[] { "0010","1110","0010","0010","0010","0010","0010","0010","0010" };//1
+			numbers[2]=new string[] { "01110","10001","00001","00001","00010","00100","01000","10000","11111" };//2
+			numbers[3]=new string[] { "01110","10001","00001","00001","00110","00001","00001","10001","01110" };//3
+			numbers[4]=new string[] { "00010","00110","00110","01010","01010","10010","11111","00010","00010" };//4
+			numbers[5]=new string[] { "11111","10000","10000","11110","10001","00001","00001","10001","01110" };//5
+			numbers[6]=new string[] { "01110","10001","10000","10000","11110","10001","10001","10001","01110" };//6
+			numbers[7]=new string[] { "11111","00001","00010","00010","00100","00100","01000","01000","01000" };//7
+			numbers[8]=new string[] { "01110","10001","10001","10001","01110","10001","10001","10001","01110" };//8
+			numbers[9]=new string[] { "01110","10001","10001","10001","01111","00001","00001","10001","01110" };//9
+			for(i=0,j='0';i<numbers.Length;i++,j++) {
+				letterW=numbers[i][0].Length;
+				letterH=numbers[i].Length;
+				letter = new byte[letterH];
+				for(int h=0;h<letterH;h++) {//actually draws the letter from the bottom up.
+					letter[h]=0;
+					row=numbers[i][letterH-h-1];
+					for(int w=0;w<letterW;w++){
+						if(row.Substring(w,1)=="1"){
+							letter[h]=(byte)(letter[h] | (byte)Math.Pow(2,7-w));
+						}
+					}
+				}
+				Gl.glNewList(fontOffset + j,Gl.GL_COMPILE);
+				Gl.glBitmap(letterW,letterH,0,0,letterW+1,0,letter);
+				Gl.glEndList();
+			}
+		}
+
+		private void PrintString(string text) {
+			//Gl.glPushAttrib(Gl.GL_ALL_ATTRIB_BITS); 
+			//Gl.glPushAttrib(Gl.GL_LIST_BIT);
+			//Gl.glPushAttrib(Gl.GL_CURRENT_BIT);//includes the rastor position and the color
+			//Gl.glPushMatrix();
+			Gl.glListBase(fontOffset);
+			byte[] textbytes = new byte[text.Length];
+			for(int i=0;i<text.Length;i++){
+				textbytes[i]=(byte)text[i];
+			}
+			try{
+				Gl.glCallLists(text.Length,Gl.GL_UNSIGNED_BYTE,textbytes);
+			}
+			catch{
+				//do nothing.
+			}
+			//Gl.glPopMatrix();
+			//Gl.glPopAttrib();
+			//Gl.glPopAttrib();
 		}
 
 		///<summary>Performs the rotations and translations entered by user for this tooth.  Usually, all numbers are just 0, resulting in no movement here.</summary>
@@ -992,6 +1303,7 @@ namespace SparksToothChart {
 			else {
 				SetSelected(toothClicked,true);
 			}
+			//Invalidate();
 		}
 
 		protected override void OnMouseUp(MouseEventArgs e) {
@@ -1018,14 +1330,20 @@ namespace SparksToothChart {
 
 		///<summary>Used by mousedown and mouse move to set teeth selected or unselected.  Also used externally to set teeth selected.  Draws the changes also.</summary>
 		public void SetSelected(int intTooth,bool setValue) {
+			suspendRendering=true;
 			if(setValue) {
 				ALSelectedTeeth.Add(intTooth);
-				DrawSelected(intTooth,true);
+				DrawNumber(intTooth,true);
 			}
 			else {
 				ALSelectedTeeth.Remove(intTooth);
-				DrawSelected(intTooth,false);
+				DrawNumber(intTooth,false);
 			}
+			RectangleF recMm=GetNumberRecMm(intTooth.ToString());
+			Rectangle rec=ConvertRecToPix(recMm);
+			Invalidate(rec);//but it invalidates the whole thing anyway.  Oh, well.
+			Application.DoEvents();
+			suspendRendering=false;
 			if(ALSelectedTeeth.Count==0) {
 				selectedTeeth=new string[0];
 			}
@@ -1044,39 +1362,7 @@ namespace SparksToothChart {
 			}
 		}
 
-		///<summary>Draws or removes the white rectangle and toothnumber bar for the specified tooth.</summary>
-		private void DrawSelected(int intTooth,bool isSelected) {
-			Graphics g=CreateGraphics();
-			if(!isSelected) {//if deselecting a tooth, we need to draw the blue rectangle
-				string tooth_id=intTooth.ToString();
-				if(ToothGraphic.IsValidToothID(ToothGraphic.PermToPri(intTooth.ToString()))//pri is valid
-					&& ListToothGraphics[ToothGraphic.PermToPri(intTooth.ToString())].Visible)//and pri visible
-				{
-					tooth_id=ToothGraphic.PermToPri(intTooth.ToString());
-				}
-				int xPos=Width/2;
-				int yPos=ClientRectangle.Height/2;
-				if(ToothGraphic.IsMaxillary(tooth_id)) {
-					yPos-=14;
-				}
-				else {
-					yPos+=3;
-				}
-				xPos+=(int)(GetTransX(intTooth.ToString())*(float)Width/WidthProjection);
-				xPos-=(int)(g.MeasureString(tooth_id,Font).Width/2);
-				//only use the ShiftM portion of the user translation
-				if(ToothGraphic.IsRight(tooth_id)) {
-					xPos+=(int)(ListToothGraphics[tooth_id].ShiftM*(float)Width/WidthProjection);
-				}
-				else {
-					xPos-=(int)(ListToothGraphics[tooth_id].ShiftM*(float)Width/WidthProjection);
-				}
-				g.FillRectangle(new SolidBrush(colorBackground),xPos,yPos,(int)g.MeasureString(tooth_id,Font).Width+2,
-					(int)g.MeasureString(tooth_id,Font).Height);
-			}
-			this.DrawTextAndLines(g);//this handles the text and any needed white rectangles
-			g.Dispose();
-		}
+		
 
 		#endregion Mouse And Selections
 

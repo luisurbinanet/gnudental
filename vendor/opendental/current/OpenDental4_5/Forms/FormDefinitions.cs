@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -27,6 +28,9 @@ namespace OpenDental{
 		///<summary>Gives the DefCat for each item in the list.</summary>
 		private DefCat[] lookupCat;
 		//private User user;
+		private bool DefsIsSelected;
+		private Def[] DefsList;
+		private int DefsSelected;
 
 		///<summary></summary>
 		public FormDefinitions(DefCat selectedCat){
@@ -304,7 +308,7 @@ namespace OpenDental{
 
 		private void FillCats(){
 			//a category is ALWAYS selected; never -1.
-			Defs.IsSelected=false;
+			DefsIsSelected=false;
 			FormDefEdit.EnableColor=false;
 			FormDefEdit.EnableValue=false;
 			FormDefEdit.CanEditName=true;//false;
@@ -465,22 +469,22 @@ namespace OpenDental{
 		private void FillDefs(){
 			//Defs.IsSelected=false;
 			int scroll=tbDefs.ScrollValue;
-			Defs.GetCatList(SelectedCat);
-			tbDefs.ResetRows(Defs.List.Length);
+			DefsList=Defs.GetCatList(SelectedCat);
+			tbDefs.ResetRows(DefsList.Length);
 			tbDefs.SetBackGColor(Color.White);
-			for(int i=0;i<Defs.List.Length;i++){
-				tbDefs.Cell[0,i]=Defs.List[i].ItemName;
-				tbDefs.Cell[1,i]=Defs.List[i].ItemValue;
+			for(int i=0;i<DefsList.Length;i++){
+				tbDefs.Cell[0,i]=DefsList[i].ItemName;
+				tbDefs.Cell[1,i]=DefsList[i].ItemValue;
 				if(FormDefEdit.EnableColor){
-					tbDefs.BackGColor[2,i]=Defs.List[i].ItemColor;
+					tbDefs.BackGColor[2,i]=DefsList[i].ItemColor;
 				}
-				if(Defs.List[i].IsHidden)
+				if(DefsList[i].IsHidden)
 					tbDefs.Cell[3,i]="X";
 				//else tbDefs.Cell[3,i]="";
 			}
-			if(Defs.IsSelected){
-				tbDefs.BackGColor[0,Defs.Selected]=Color.LightGray;
-				tbDefs.BackGColor[1,Defs.Selected]=Color.LightGray;
+			if(DefsIsSelected){
+				tbDefs.BackGColor[0,DefsSelected]=Color.LightGray;
+				tbDefs.BackGColor[1,DefsSelected]=Color.LightGray;
 			}
 			tbDefs.Fields[1]=FormDefEdit.ValueText;
 			if(FormDefEdit.EnableColor){
@@ -505,26 +509,26 @@ namespace OpenDental{
 
 		private void tbDefs_CellClicked(object sender, CellEventArgs e){
 			//Can't move this logic into the Table control because we never want to paint on col 3
-			if(Defs.IsSelected){
-				if(Defs.Selected==e.Row){
+			if(DefsIsSelected){
+				if(DefsSelected==e.Row){
 					tbDefs.BackGColor[0,e.Row]=Color.White;
 					tbDefs.BackGColor[1,e.Row]=Color.White;
-					Defs.IsSelected=false;
+					DefsIsSelected=false;
 				}
 				else{
-					tbDefs.BackGColor[0,Defs.Selected]=Color.White;
-					tbDefs.BackGColor[1,Defs.Selected]=Color.White;
+					tbDefs.BackGColor[0,DefsSelected]=Color.White;
+					tbDefs.BackGColor[1,DefsSelected]=Color.White;
 					tbDefs.BackGColor[0,e.Row]=Color.LightGray;
 					tbDefs.BackGColor[1,e.Row]=Color.LightGray;
-					Defs.Selected=e.Row;
-					Defs.IsSelected=true;
+					DefsSelected=e.Row;
+					DefsIsSelected=true;
 				}
 			}
 			else{
 				tbDefs.BackGColor[0,e.Row]=Color.LightGray;
 				tbDefs.BackGColor[1,e.Row]=Color.LightGray;
-				Defs.Selected=e.Row;
-				Defs.IsSelected=true;
+				DefsSelected=e.Row;
+				DefsIsSelected=true;
 			}
 			tbDefs.Refresh();
 		}
@@ -533,10 +537,10 @@ namespace OpenDental{
 			tbDefs.BackGColor[0,e.Row]=SystemColors.Highlight;
 			tbDefs.BackGColor[1,e.Row]=SystemColors.Highlight;
 			tbDefs.Refresh();
-			Defs.IsSelected=true;
-			Defs.Selected=e.Row;
-			FormDefEdit FormDefEdit2 = new FormDefEdit();
-			Defs.Cur = Defs.List[e.Row];
+			DefsIsSelected=true;
+			DefsSelected=e.Row;
+			FormDefEdit FormDefEdit2 = new FormDefEdit(DefsList[e.Row]);
+			//Defs.Cur = Defs.List[e.Row];
 			FormDefEdit2.IsNew=false;
 			FormDefEdit2.ShowDialog();
 			//Preferences2.GetCatList(listCategory.SelectedIndex);
@@ -549,39 +553,39 @@ namespace OpenDental{
 			//	MessageBox.Show(Lan.g(this,"Please select item first."));
 			//	return;
 			//}
-			FormDefEdit FormDE=new FormDefEdit();
-			Defs.Cur=new Def();
-			Defs.Cur.ItemOrder=Defs.List.Length;
-			Defs.Cur.Category=(DefCat)SelectedCat;
+			Def DefCur=new Def();
+			DefCur.ItemOrder=DefsList.Length;
+			DefCur.Category=(DefCat)SelectedCat;
+			FormDefEdit FormDE=new FormDefEdit(DefCur);
 			FormDE.IsNew=true;
 			FormDE.ShowDialog();
 			if(FormDE.DialogResult!=DialogResult.OK){
 				return;
 			}
-			Defs.Selected=Defs.List.Length;//this is one more than allowed, but it's ok
-			Defs.IsSelected=true;
+			DefsSelected=DefsList.Length;//this is one more than allowed, but it's ok
+			DefsIsSelected=true;
 			changed=true;
 			FillDefs();
 		}
 
 		private void butHide_Click(object sender, System.EventArgs e) {
-			if(!Defs.IsSelected){
+			if(!DefsIsSelected){
 				MessageBox.Show(Lan.g(this,"Please select item first,"));
 				return;
 			}
-			Defs.HideDef();
+			Defs.HideDef(DefsList[DefsSelected]);
 			changed=true;
 			FillDefs();
 		}
 
 		private void butUp_Click(object sender, System.EventArgs e) {
-			Defs.MoveUp();
+			DefsSelected=Defs.MoveUp(DefsIsSelected,DefsSelected,DefsList);
 			changed=true;
 			FillDefs();
 		}
 
 		private void butDown_Click(object sender, System.EventArgs e) {
-			Defs.MoveDown();
+			DefsSelected=Defs.MoveDown(DefsIsSelected,DefsSelected,DefsList);
 			changed=true;
 			FillDefs();
 		}
@@ -594,7 +598,7 @@ namespace OpenDental{
 			if(changed){
 				DataValid.SetInvalid(InvalidTypes.Defs | InvalidTypes.Fees);
 			}
-			Defs.IsSelected=false;
+			DefsIsSelected=false;
 			//if(user!=null){
 				//SecurityLogs.MakeLogEntry("Definitions","Altered Definitions",user);
 			//}

@@ -4,6 +4,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.IO;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	///<summary></summary>
@@ -20,6 +21,7 @@ namespace OpenDental{
 		private System.Windows.Forms.CheckBox checkIsHidden;
 		///<summary></summary>
 		public bool IsNew;
+		public Employee EmployeeCur;
 
 		///<summary></summary>
 		public FormEmployeeEdit(){
@@ -173,23 +175,23 @@ namespace OpenDental{
 		#endregion
 
 		private void FormEmployeeEdit_Load(object sender, System.EventArgs e) {
-			if(IsNew){
-				Employees.Cur=new Employee();
-				Employees.Cur.IsHidden=false;
-				Employees.InsertCur();
-			}
-			textLName.Text=Employees.Cur.LName;
-			textFName.Text=Employees.Cur.FName;
-			textMI.Text=Employees.Cur.MiddleI;
-			checkIsHidden.Checked=Employees.Cur.IsHidden;
+			textLName.Text=EmployeeCur.LName;
+			textFName.Text=EmployeeCur.FName;
+			textMI.Text=EmployeeCur.MiddleI;
+			checkIsHidden.Checked=EmployeeCur.IsHidden;
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			Employees.Cur.LName=textLName.Text;
-			Employees.Cur.FName=textFName.Text;
-			Employees.Cur.MiddleI=textMI.Text;
-			Employees.Cur.IsHidden=checkIsHidden.Checked;
-			Employees.UpdateCur();
+			EmployeeCur.LName=textLName.Text;
+			EmployeeCur.FName=textFName.Text;
+			EmployeeCur.MiddleI=textMI.Text;
+			EmployeeCur.IsHidden=checkIsHidden.Checked;
+			if(IsNew){
+				Employees.Insert(EmployeeCur);
+			}
+			else{
+				Employees.Update(EmployeeCur);
+			}
 			DialogResult=DialogResult.OK;
 		}
 
@@ -200,10 +202,10 @@ namespace OpenDental{
 		private void FormEmployeeEdit_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
 			if(DialogResult==DialogResult.OK)
 				return;
-			if(IsNew){
-				//UserPermissions.DeleteAllForEmp(Employees.Cur.EmployeeNum);
-				Employees.DeleteCur();
-			}
+			//if(IsNew){
+				//UserPermissions.DeleteAllForEmp(EmployeeCur.EmployeeNum);
+			//	Employees.Delete(EmployeeCur);
+			//}
 		}
 
 		

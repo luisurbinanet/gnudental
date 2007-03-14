@@ -3,113 +3,75 @@ using System.Data;
 using System.Diagnostics;
 using System.Collections;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental {
-
-	/// <summary>Each row is one disease that one patient has.  A disease is a medical condition or allergy.  Diseases are defined in the DiseaseDef table.</summary>
-	public class Disease:IComparable{
-		///<summary>Primary key.</summary>
-		public int DiseaseNum;
-		///<summary>FK to patient.PatNum</summary>
-		public int PatNum;
-		///<summary>FK to diseasedef.DiseaseDefNum.  The disease description is in that table.</summary>
-		public int DiseaseDefNum;
-		///<summary>Any note about this disease that is specific to this patient.</summary>
-		public string PatNote;
-
-		///<summary>IComparable.CompareTo implementation.  This is used to order disease lists.</summary>
-		public int CompareTo(object obj) {
-			if(!(obj is Disease)) {
-				throw new ArgumentException("object is not a Disease");
-			}
-			Disease disease=(Disease)obj;
-			return DiseaseDefs.GetOrder(DiseaseDefNum).CompareTo(DiseaseDefs.GetOrder(disease.DiseaseDefNum));
-		}
-
-		///<summary></summary>
-		public Disease Copy() {
-			Disease d=new Disease();
-			d.DiseaseNum=DiseaseNum;
-			d.PatNum=PatNum;
-			d.DiseaseDefNum=DiseaseDefNum;
-			d.PatNote=PatNote;
-			return d;
-		}
-
-		///<summary></summary>
-		public void Update() {
-			string command="UPDATE disease SET " 
-				+"PatNum = '"        +POut.PInt   (PatNum)+"'"
-				+",DiseaseDefNum = '"+POut.PInt   (DiseaseDefNum)+"'"
-				+",PatNote = '"      +POut.PString(PatNote)+"'"
-				+" WHERE DiseaseNum  ='"+POut.PInt   (DiseaseNum)+"'";
-			DataConnection dcon=new DataConnection();
-			dcon.NonQ(command);
-		}
-
-		///<summary></summary>
-		public void Insert() {
-			if(Prefs.RandomKeys) {
-				DiseaseNum=MiscData.GetKey("disease","DiseaseNum");
-			}
-			string command="INSERT INTO disease (";
-			if(Prefs.RandomKeys) {
-				command+="DiseaseNum,";
-			}
-			command+="PatNum,DiseaseDefNum,PatNote) VALUES(";
-			if(Prefs.RandomKeys) {
-				command+="'"+POut.PInt(DiseaseNum)+"', ";
-			}
-			command+=
-				 "'"+POut.PInt   (PatNum)+"', "
-				+"'"+POut.PInt   (DiseaseDefNum)+"', "
-				+"'"+POut.PString(PatNote)+"')";
-			DataConnection dcon=new DataConnection();
-			if(Prefs.RandomKeys) {
-				dcon.NonQ(command);
-			}
-			else {
-				dcon.NonQ(command,true);
-				DiseaseNum=dcon.InsertID;
-			}
-		}
-
-		///<summary></summary>
-		public void Delete() {
-			string command="DELETE FROM disease WHERE DiseaseNum ="+POut.PInt(DiseaseNum);
-			DataConnection dcon=new DataConnection();
-			dcon.NonQ(command);
-		}
-
-	}
-
-	/*================================================================================================================
-	==================================================== class Diseases =============================================*/
-
 	///<summary></summary>
 	public class Diseases {
 		///<summary>Gets a list of all Diseases for a given patient.  Includes hidden. Sorted by diseasedef.ItemOrder.</summary>
 		public static Disease[] Refresh(int patNum) {
-			string command="SELECT * FROM disease WHERE PatNum="+POut.PInt(patNum);
-			DataConnection dcon=new DataConnection();
-			DataTable table=dcon.GetTable(command);
+			string command="SELECT disease.* FROM disease,diseasedef "
+				+"WHERE disease.DiseaseDefNum=diseasedef.DiseaseDefNum "
+				+"AND PatNum="+POut.PInt(patNum)
+				+" ORDER BY diseasedef.ItemOrder";
+			DataTable table=General.GetTable(command);
 			Disease[] List=new Disease[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++) {
 				List[i]=new Disease();
-				List[i].DiseaseNum   = PIn.PInt   (table.Rows[i][0].ToString());
-				List[i].PatNum       = PIn.PInt   (table.Rows[i][1].ToString());
-				List[i].DiseaseDefNum= PIn.PInt   (table.Rows[i][2].ToString());
+				List[i].DiseaseNum   = PIn.PInt(table.Rows[i][0].ToString());
+				List[i].PatNum       = PIn.PInt(table.Rows[i][1].ToString());
+				List[i].DiseaseDefNum= PIn.PInt(table.Rows[i][2].ToString());
 				List[i].PatNote      = PIn.PString(table.Rows[i][3].ToString());
 			}
-			Array.Sort(List);
+			//Array.Sort(List);
 			return List;
+		}
+
+		///<summary></summary>
+		public static void Update(Disease disease) {
+			string command="UPDATE disease SET " 
+				+"PatNum = '"        +POut.PInt   (disease.PatNum)+"'"
+				+",DiseaseDefNum = '"+POut.PInt   (disease.DiseaseDefNum)+"'"
+				+",PatNote = '"      +POut.PString(disease.PatNote)+"'"
+				+" WHERE DiseaseNum  ='"+POut.PInt   (disease.DiseaseNum)+"'";
+			General.NonQ(command);
+		}
+
+		///<summary></summary>
+		public static void Insert(Disease disease) {
+			if(PrefB.RandomKeys) {
+				disease.DiseaseNum=MiscData.GetKey("disease","DiseaseNum");
+			}
+			string command="INSERT INTO disease (";
+			if(PrefB.RandomKeys) {
+				command+="DiseaseNum,";
+			}
+			command+="PatNum,DiseaseDefNum,PatNote) VALUES(";
+			if(PrefB.RandomKeys) {
+				command+="'"+POut.PInt(disease.DiseaseNum)+"', ";
+			}
+			command+=
+				 "'"+POut.PInt   (disease.PatNum)+"', "
+				+"'"+POut.PInt   (disease.DiseaseDefNum)+"', "
+				+"'"+POut.PString(disease.PatNote)+"')";
+			if(PrefB.RandomKeys) {
+				General.NonQ(command);
+			}
+			else {
+				disease.DiseaseNum=General.NonQ(command,true);
+			}
+		}
+
+		///<summary></summary>
+		public static void Delete(Disease disease) {
+			string command="DELETE FROM disease WHERE DiseaseNum ="+POut.PInt(disease.DiseaseNum);
+			General.NonQ(command);
 		}
 
 		///<summary>Deletes all diseases for one patient.</summary>
 		public static void DeleteAllForPt(int patNum){
 			string command="DELETE FROM disease WHERE PatNum ="+POut.PInt(patNum);
-			DataConnection dcon=new DataConnection();
-			dcon.NonQ(command);
+			General.NonQ(command);
 		}
 		
 		

@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
+using System.Data;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 
@@ -21,7 +23,7 @@ namespace OpenDental{
 	/*=========================================================================================
 		=================================== class ZipCodes ===========================================*/
   ///<summary></summary>
-	public class ZipCodes:DataClass{
+	public class ZipCodes{
 		///<summary></summary>
 		public static ZipCode Cur;
 		///<summary></summary>
@@ -34,9 +36,9 @@ namespace OpenDental{
 
 		///<summary>Refresh done on startup and then whenever a change is made.</summary>
 		public static void Refresh(){
-			cmd.CommandText =
+			string command =
 				"SELECT * from zipcode ORDER BY zipcodedigits";
-			FillTable();
+			DataTable table=General.GetTable(command);
 			//HList=new Hashtable();
 			ALFrequent=new ArrayList();
 			List=new ZipCode[table.Rows.Count];
@@ -55,46 +57,45 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public static void InsertCur(){
-			if(Prefs.RandomKeys){
+			if(PrefB.RandomKeys){
 				Cur.ZipCodeNum=MiscData.GetKey("zipcode","ZipCodeNum");
 			}
-			cmd.CommandText="INSERT INTO zipcode (";
-			if(Prefs.RandomKeys){
-				cmd.CommandText+="ZipCodeNum,";
+			string command="INSERT INTO zipcode (";
+			if(PrefB.RandomKeys){
+				command+="ZipCodeNum,";
 			}
-			cmd.CommandText+="zipcodedigits,city,state,isfrequent) VALUES(";
-			if(Prefs.RandomKeys){
-				cmd.CommandText+="'"+POut.PInt(Cur.ZipCodeNum)+"', ";
+			command+="zipcodedigits,city,state,isfrequent) VALUES(";
+			if(PrefB.RandomKeys){
+				command+="'"+POut.PInt(Cur.ZipCodeNum)+"', ";
 			}
-			cmd.CommandText+=
+			command+=
 				 "'"+POut.PString(Cur.ZipCodeDigits)+"', "
 				+"'"+POut.PString(Cur.City)+"', "
 				+"'"+POut.PString(Cur.State)+"', "
 				+"'"+POut.PBool  (Cur.IsFrequent)+"')";
-			if(Prefs.RandomKeys){
-				NonQ();
+			if(PrefB.RandomKeys){
+				General.NonQ(command);
 			}
 			else{
- 				NonQ(true);
-				Cur.ZipCodeNum=InsertID;
+ 				Cur.ZipCodeNum=General.NonQ(command,true);
 			}
 		}
 
 		///<summary></summary>
 		public static void UpdateCur(){
-			cmd.CommandText = "UPDATE zipcode SET "
+			string command = "UPDATE zipcode SET "
 				+"zipcodedigits ='"+POut.PString(Cur.ZipCodeDigits)+"'"
 				+",city ='"        +POut.PString(Cur.City)+"'"
 				+",state ='"       +POut.PString(Cur.State)+"'"
 				+",isfrequent ='"  +POut.PBool  (Cur.IsFrequent)+"'"
 				+" WHERE zipcodenum = '"+POut.PInt(Cur.ZipCodeNum)+"'";
-			NonQ(false);
+			General.NonQ(command);
 		}
 
 		///<summary></summary>
 		public static void DeleteCur(){
-			cmd.CommandText = "DELETE from zipcode WHERE zipcodenum = '"+POut.PInt(Cur.ZipCodeNum)+"'";
-			NonQ(false);
+			string command = "DELETE from zipcode WHERE zipcodenum = '"+POut.PInt(Cur.ZipCodeNum)+"'";
+			General.NonQ(command);
 		}
 
 		///<summary></summary>

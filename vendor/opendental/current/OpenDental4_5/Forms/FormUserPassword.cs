@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -138,7 +139,7 @@ namespace OpenDental{
 				hashedResult="";
 			}
 			else{
-				hashedResult=Passwords.EncryptPassword(textPassword.Text);
+				hashedResult=UserB.EncryptPassword(textPassword.Text);
 			}
 			//MessageBox.Show(hashedResult);
 			DialogResult=DialogResult.OK;

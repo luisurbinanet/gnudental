@@ -3,6 +3,7 @@ using System.Collections;
 using System.Data;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	
@@ -21,15 +22,15 @@ namespace OpenDental{
 
 		///<summary></summary>
 		public void Insert(){
-			if(Prefs.RandomKeys){
+			if(PrefB.RandomKeys){
 				QuickPasteNoteNum=MiscData.GetKey("quickpastenote","QuickPasteNoteNum");
 			}
 			string command= "INSERT INTO quickpastenote (";
-			if(Prefs.RandomKeys){
+			if(PrefB.RandomKeys){
 				command+="QuickPasteNoteNum,";
 			}
 			command+="QuickPasteCatNum,ItemOrder,Note,Abbreviation) VALUES(";
-			if(Prefs.RandomKeys){
+			if(PrefB.RandomKeys){
 				command+="'"+POut.PInt(QuickPasteNoteNum)+"', ";
 			}
 			command+=
@@ -37,14 +38,11 @@ namespace OpenDental{
 				+"'"+POut.PInt   (ItemOrder)+"', "
 				+"'"+POut.PString(Note)+"', "
 				+"'"+POut.PString(Abbreviation)+"')";
-			//MessageBox.Show(cmd.CommandText);
-			DataConnection dcon=new DataConnection();
- 			if(Prefs.RandomKeys){
-				dcon.NonQ(command);
+ 			if(PrefB.RandomKeys){
+				General.NonQ(command);
 			}
 			else{
- 				dcon.NonQ(command,true);
-				QuickPasteNoteNum=dcon.InsertID;
+ 				QuickPasteNoteNum=General.NonQ(command,true);
 			}
 		}
 
@@ -56,8 +54,7 @@ namespace OpenDental{
 				+",Note = '"          +POut.PString(Note)+"'"
 				+",Abbreviation = '"  +POut.PString(Abbreviation)+"'"
 				+" WHERE QuickPasteNoteNum = '"+POut.PInt (QuickPasteNoteNum)+"'";
-			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command);
+ 			General.NonQ(command);
 		}
 
 		
@@ -65,8 +62,7 @@ namespace OpenDental{
 		public void Delete(){
 			string command="DELETE from quickpastenote WHERE QuickPasteNoteNum = '"
 				+POut.PInt(QuickPasteNoteNum)+"'";
-			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command);
+ 			General.NonQ(command);
 		}
 
 		///<summary>When saving an abbrev, this makes sure that the abbreviation is not already in use.</summary>
@@ -74,8 +70,7 @@ namespace OpenDental{
 			string command="SELECT * FROM quickpastenote WHERE "
 				+"Abbreviation='"+POut.PString(Abbreviation)+"' "
 				+"AND QuickPasteNoteNum != '"+POut.PInt (QuickPasteNoteNum)+"'";
-			DataConnection dcon=new DataConnection();
- 			DataTable table=dcon.GetTable(command);
+ 			DataTable table=General.GetTable(command);
 			if(table.Rows.Count==0){
 				return false;
 			}
@@ -100,8 +95,7 @@ namespace OpenDental{
 			string command=
 				"SELECT * from quickpastenote "
 				+"ORDER BY ItemOrder";
-			DataConnection dcon=new DataConnection();
- 			DataTable table=dcon.GetTable(command);
+ 			DataTable table=General.GetTable(command);
 			List=new QuickPasteNote[table.Rows.Count];
 			for(int i=0;i<List.Length;i++){
 				List[i]=new QuickPasteNote();

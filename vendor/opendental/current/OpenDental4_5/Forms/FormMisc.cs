@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -443,47 +444,47 @@ namespace OpenDental{
 		#endregion
 
 		private void FormMisc_Load(object sender, System.EventArgs e) {
-			textTreatNote.Text=Prefs.GetString("TreatmentPlanNote");
-			checkTreatPlanShowGraphics.Checked=Prefs.GetBool("TreatPlanShowGraphics");
-			checkTreatPlanShowCompleted.Checked=Prefs.GetBool("TreatPlanShowCompleted");
-			checkTreatPlanShowIns.Checked=Prefs.GetBool("TreatPlanShowIns");
-			checkStatementShowReturnAddress.Checked=Prefs.GetBool("StatementShowReturnAddress");
-			checkShowCC.Checked=Prefs.GetBool("StatementShowCreditCard");
-			if(Prefs.GetBool("StatementAccountsUseChartNumber")){
+			textTreatNote.Text=PrefB.GetString("TreatmentPlanNote");
+			checkTreatPlanShowGraphics.Checked=PrefB.GetBool("TreatPlanShowGraphics");
+			checkTreatPlanShowCompleted.Checked=PrefB.GetBool("TreatPlanShowCompleted");
+			checkTreatPlanShowIns.Checked=PrefB.GetBool("TreatPlanShowIns");
+			checkStatementShowReturnAddress.Checked=PrefB.GetBool("StatementShowReturnAddress");
+			checkShowCC.Checked=PrefB.GetBool("StatementShowCreditCard");
+			if(PrefB.GetBool("StatementAccountsUseChartNumber")){
 				radioUseChartNumber.Checked=true;
 			}
 			else{
 				radioUsePatNum.Checked=true;
 			}
-			if(Prefs.GetInt("StatementsCalcDueDate")!=-1){
-				textStatementsCalcDueDate.Text=Prefs.GetInt("StatementsCalcDueDate").ToString();
+			if(PrefB.GetInt("StatementsCalcDueDate")!=-1){
+				textStatementsCalcDueDate.Text=PrefB.GetInt("StatementsCalcDueDate").ToString();
 			}
-			checkBalancesDontSubtractIns.Checked=Prefs.GetBool("BalancesDontSubtractIns");
-			if(Prefs.GetInt("ProcessSigsIntervalInSecs")==0){
+			checkBalancesDontSubtractIns.Checked=PrefB.GetBool("BalancesDontSubtractIns");
+			if(PrefB.GetInt("ProcessSigsIntervalInSecs")==0){
 				textSigInterval.Text="";
 			}
 			else{
-				textSigInterval.Text=Prefs.GetInt("ProcessSigsIntervalInSecs").ToString();
+				textSigInterval.Text=PrefB.GetInt("ProcessSigsIntervalInSecs").ToString();
 			}
-			checkRandomPrimaryKeys.Checked=Prefs.GetBool("RandomPrimaryKeys");
+			checkRandomPrimaryKeys.Checked=PrefB.GetBool("RandomPrimaryKeys");
 			if(checkRandomPrimaryKeys.Checked){
 				//not allowed to uncheck it
 				checkRandomPrimaryKeys.Enabled=false;
 			}
-			textMainWindowTitle.Text=Prefs.GetString("MainWindowTitle");
-			if(Prefs.GetInt("ShowIDinTitleBar")==0){
+			textMainWindowTitle.Text=PrefB.GetString("MainWindowTitle");
+			if(PrefB.GetInt("ShowIDinTitleBar")==0){
 				radioShowIDnone.Checked=true;
 			}
-			else if(Prefs.GetInt("ShowIDinTitleBar")==1){
+			else if(PrefB.GetInt("ShowIDinTitleBar")==1){
 				radioShowIDpatNum.Checked=true;
 			}
-			else if(Prefs.GetInt("ShowIDinTitleBar")==2) {
+			else if(PrefB.GetInt("ShowIDinTitleBar")==2) {
 				radioShowIDchartNum.Checked=true;
 			}
-			checkEclaimsSeparateTreatProv.Checked=Prefs.GetBool("EclaimsSeparateTreatProv");
-			checkMedicalEclaimsEnabled.Checked=Prefs.GetBool("MedicalEclaimsEnabled");
-			checkITooth.Checked=Prefs.GetBool("UseInternationalToothNumbers");
-			checkInsurancePlansShared.Checked=Prefs.GetBool("InsurancePlansShared");
+			checkEclaimsSeparateTreatProv.Checked=PrefB.GetBool("EclaimsSeparateTreatProv");
+			checkMedicalEclaimsEnabled.Checked=PrefB.GetBool("MedicalEclaimsEnabled");
+			checkITooth.Checked=PrefB.GetBool("UseInternationalToothNumbers");
+			checkInsurancePlansShared.Checked=PrefB.GetBool("InsurancePlansShared");
 		}
 
 		private void checkRandomPrimaryKeys_Click(object sender, System.EventArgs e) {

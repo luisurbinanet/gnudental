@@ -12,6 +12,7 @@ using System.Drawing.Text;
 using System.Data;
 using System.Globalization;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -557,19 +558,22 @@ namespace OpenDental{
 
 		///<summary>Called from ContrAppt.comboView_SelectedIndexChanged and ContrAppt.RefreshVisops. So, whenever appt Module layout and when comboView is changed.</summary>
 		public void ComputeColWidth(int totalWidth){
-			if(ApptViewItems.VisOps==null || ApptViewItems.VisProvs==null){
+			if(ApptViewItems.VisOps==null || ApptViewItems.VisProvs==null)
+			{
 				return;
 			}
 			try{
 				if(RowsPerIncr==0)
 					RowsPerIncr=1;
 				ColCount=ApptViewItems.VisOps.Length;
-					//Defs.Short[(int)DefCat.Operatories].Length;
 				ProvCount=ApptViewItems.VisProvs.Length;
-					//Providers.List.Length;
-				//ColWidth=Convert.ToInt32((totalWidth-TimeWidth*2-ProvWidth*ProvCount)/ColCount);
-				ColWidth=(totalWidth-TimeWidth*2-ProvWidth*ProvCount)/ColCount;
-				MinPerIncr=Prefs.GetInt("AppointmentTimeIncrement");
+				if(ColCount==0) {
+					ColWidth=0;
+				}
+				else {
+					ColWidth=(totalWidth-TimeWidth*2-ProvWidth*ProvCount)/ColCount;
+				}
+				MinPerIncr=PrefB.GetInt("AppointmentTimeIncrement");
 				MinPerRow=(float)MinPerIncr/(float)RowsPerIncr;
 				RowsPerHr=60/MinPerIncr*RowsPerIncr;
 				//if(TwoRowsPerIncrement){

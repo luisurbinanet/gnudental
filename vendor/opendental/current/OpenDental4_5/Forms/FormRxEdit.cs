@@ -8,6 +8,7 @@ using System.Drawing.Printing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -269,7 +270,7 @@ namespace OpenDental{
 			this.textNotes.Location = new System.Drawing.Point(110, 231);
 			this.textNotes.Multiline = true;
 			this.textNotes.Name = "textNotes";
-			this.textNotes.QuickPasteType = OpenDental.QuickPasteType.Rx;
+			this.textNotes.QuickPasteType = QuickPasteType.Rx;
 			this.textNotes.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textNotes.Size = new System.Drawing.Size(373, 111);
 			this.textNotes.TabIndex = 31;
@@ -345,11 +346,11 @@ namespace OpenDental{
 			RxPatCur.Refills=textRefills.Text;
 			RxPatCur.Notes=textNotes.Text;
 			if(IsNew){
-				RxPatCur.Insert();
+				RxPats.Insert(RxPatCur);
 				//SecurityLogs.MakeLogEntry("Prescription Create",RxPats.cmd.CommandText,user);
 			}
 			else{
-				RxPatCur.Update();
+				RxPats.Update(RxPatCur);
 				//SecurityLogs.MakeLogEntry("Prescription Edit",RxPats.cmd.CommandText,user);
 			}
 			return true;
@@ -361,7 +362,7 @@ namespace OpenDental{
 			pd2.PrintPage += new PrintPageEventHandler(this.pd2_PrintPage);
 			pd2.DefaultPageSettings.Margins=new Margins(0,0,0,0);
 			pd2.OriginAtMargins=true;
-			if(!Prefs.GetBool("RxOrientVert")){
+			if(!PrefB.GetBool("RxOrientVert")){
 				pd2.DefaultPageSettings.Landscape=true;
 			}
 			#if DEBUG
@@ -387,15 +388,15 @@ namespace OpenDental{
 			penDashBorder.DashStyle=DashStyle.Dot;
 			int x;
 			int y;
-			int xAdj=(int)(Prefs.GetDouble("RxAdjustRight")*100);
-			int yAdj=(int)(Prefs.GetDouble("RxAdjustDown")*100);
+			int xAdj=(int)(PrefB.GetDouble("RxAdjustRight")*100);
+			int yAdj=(int)(PrefB.GetDouble("RxAdjustDown")*100);
 			string text;
 			Font font=new Font(FontFamily.GenericSansSerif,8);
 			Font fontRX=new Font(FontFamily.GenericSerif,24);
 			Font fontBold=new Font(FontFamily.GenericSansSerif,8,FontStyle.Bold);
 			int fontH=(int)font.GetHeight(g)+3;
 			Provider prov=Providers.GetProv(RxPatCur.ProvNum);
-			if(Prefs.GetBool("RxOrientVert")){
+			if(PrefB.GetBool("RxOrientVert")){
 				g.DrawLine(penDashBorder,0+xAdj,0+yAdj,425+xAdj,0+yAdj);
 				g.DrawLine(penDashBorder,0+xAdj,0+yAdj,0+xAdj,550+yAdj); 
 				g.DrawLine(penDashBorder,425+xAdj,0+yAdj,425+xAdj,550+yAdj);
@@ -414,18 +415,18 @@ namespace OpenDental{
 			text=prov.FName+" "+prov.MI+" "+prov.LName+", "+prov.Suffix;
 			g.DrawString(text,fontBold,brush,x,y);
 			y+=fontH;
-			text=Prefs.GetString("PracticeAddress");
+			text=PrefB.GetString("PracticeAddress");
 			g.DrawString(text,font,brush,x,y);
 			y+=fontH;
-			text=Prefs.GetString("PracticeAddress2");
+			text=PrefB.GetString("PracticeAddress2");
 			if(text!=""){
 				g.DrawString(text,font,brush,x,y);
 				y+=fontH; 
 			}
-			text=Prefs.GetString("PracticeCity")+", "+Prefs.GetString("PracticeST")+" "+Prefs.GetString("PracticeZip");
+			text=PrefB.GetString("PracticeCity")+", "+PrefB.GetString("PracticeST")+" "+PrefB.GetString("PracticeZip");
 			g.DrawString(text,font,brush,x,y);
 			y=100+yAdj;
-			if(Prefs.GetBool("RxOrientVert")){
+			if(PrefB.GetBool("RxOrientVert")){
 				g.DrawLine(Pens.Black,25+xAdj,y,400+xAdj,y);
 			}
 			else{
@@ -434,7 +435,7 @@ namespace OpenDental{
 			//Right Side
 			x=280+xAdj;
 			y=38+yAdj;
-			text=Prefs.GetString("PracticePhone");
+			text=PrefB.GetString("PracticePhone");
 			if(text.Length==10) {
 				text="("+text.Substring(0,3)+")"+text.Substring(3,3)+"-"+text.Substring(6);
 			}
@@ -485,9 +486,9 @@ namespace OpenDental{
 			y+=(int)(fontH*2.5);
 			g.DrawString(Lan.g(this,"Refills:")+"  "+RxPatCur.Refills,font,brush,x,y);
 			//Generic Subst----------------------------------------------------------------------------------------------
-			if(Prefs.GetInt("RxGeneric")==2){//two signature lines
+			if(PrefB.GetInt("RxGeneric")==2){//two signature lines
 				text=Lan.g(this,"Generic Substitution Permitted");
-				if(Prefs.GetBool("RxOrientVert")) {
+				if(PrefB.GetBool("RxOrientVert")) {
 					y=380+yAdj;
 					g.DrawLine(Pens.Black,90+xAdj,y,325+xAdj,y);
 					x=207+xAdj-(int)(g.MeasureString(text,font).Width/2);
@@ -510,7 +511,7 @@ namespace OpenDental{
 				x-=17;
 				y+=25;
 				g.DrawRectangle(Pens.Black,x,y,12,12);
-				if(Prefs.GetInt("RxGeneric")==0){//generic checked
+				if(PrefB.GetInt("RxGeneric")==0){//generic checked
 					g.DrawLine(Pens.Black,x,y,x+12,y+12);
 					g.DrawLine(Pens.Black,x+12,y,x,y+12);	
 				}
@@ -519,13 +520,13 @@ namespace OpenDental{
 				g.DrawString(text,font,brush,x,y);
 			}
 			//Signature Line--------------------------------------------------------------------------------------------
-			if(Prefs.GetInt("RxGeneric")==2){//two signature lines
+			if(PrefB.GetInt("RxGeneric")==2){//two signature lines
 				text=Lan.g(this,"Dispense as Written");
 			}
 			else{
 				text=Lan.g(this,"Signature of Prescriber");
 			}
-			if(Prefs.GetBool("RxOrientVert")) {
+			if(PrefB.GetBool("RxOrientVert")) {
 				y=460+yAdj;
 				g.DrawLine(Pens.Black,90+xAdj,y,325+xAdj,y);
 				x=207+xAdj-(int)(g.MeasureString(text,font).Width/2);
@@ -549,7 +550,7 @@ namespace OpenDental{
 				!=DialogResult.OK){
 				return;
 			}
-			RxPatCur.Delete();
+			RxPats.Delete(RxPatCur);
 			DialogResult=DialogResult.OK;	
 		}
 

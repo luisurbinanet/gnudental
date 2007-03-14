@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -289,7 +290,7 @@ namespace OpenDental{
 			FormQuery2.SubmitReportQuery();			
 			Queries.CurReport.Title="Daily Procedures";
 			Queries.CurReport.SubTitle=new string[2];
-			Queries.CurReport.SubTitle[0]=((Pref)Prefs.HList["PracticeTitle"]).ValueString;
+			Queries.CurReport.SubTitle[0]=((Pref)PrefB.HList["PracticeTitle"]).ValueString;
 			Queries.CurReport.SubTitle[1]=date1.SelectionStart.ToString("d")
 				+" - "+date2.SelectionStart.ToString("d");	
 			// col[5] from 590 to 640, 680, 770, spk 7/20/04
@@ -338,7 +339,7 @@ namespace OpenDental{
 			FormQuery2.SubmitReportQuery();			
 			Queries.CurReport.Title="Procedures By Procedure Code";
 			Queries.CurReport.SubTitle=new string[2];
-			Queries.CurReport.SubTitle[0]=((Pref)Prefs.HList["PracticeTitle"]).ValueString;
+			Queries.CurReport.SubTitle[0]=((Pref)PrefB.HList["PracticeTitle"]).ValueString;
 			Queries.CurReport.SubTitle[1]=date1.SelectionStart.ToString("d")
 				+" - "+date2.SelectionStart.ToString("d");	
 			Queries.CurReport.ColPos=new int[7];

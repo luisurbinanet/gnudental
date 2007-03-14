@@ -8,6 +8,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using OpenDental.UI;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -358,7 +359,7 @@ namespace OpenDental{
 			this.textNote.MaxLength = 255;
 			this.textNote.Multiline = true;
 			this.textNote.Name = "textNote";
-			this.textNote.QuickPasteType = OpenDental.QuickPasteType.Payment;
+			this.textNote.QuickPasteType = OpenDentBusiness.QuickPasteType.Payment;
 			this.textNote.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textNote.Size = new System.Drawing.Size(290,80);
 			this.textNote.TabIndex = 31;
@@ -517,7 +518,7 @@ namespace OpenDental{
 					gridMain.Enabled=false;
 				}
 			}
-			if(Prefs.GetBool("EasyNoClinics")){
+			if(PrefB.GetBool("EasyNoClinics")){
 				comboClinic.Visible=false;
 				labelClinic.Visible=false;
 			}
@@ -578,7 +579,7 @@ namespace OpenDental{
 						comboDepositAccount.Visible=false;
 					}
 					else{
-						DepositAccounts=autoPay.GetPickListAccounts();
+						DepositAccounts=AccountingAutoPays.GetPickListAccounts(autoPay);
 						for(int i=0;i<DepositAccounts.Length;i++) {
 							comboDepositAccount.Items.Add(Accounts.GetDescript(DepositAccounts[i]));
 						}
@@ -694,7 +695,7 @@ namespace OpenDental{
 			PaySplitCur.PayNum=PaymentCur.PayNum;
 			PaySplitCur.DatePay=PIn.PDate(textDate.Text);//this may be updated upon closing
 			PaySplitCur.ProcDate=PIn.PDate(textDate.Text);//this may be updated upon closing
-			PaySplitCur.ProvNum=PatCur.GetProvNum();
+			PaySplitCur.ProvNum=Patients.GetProvNum(PatCur);
 			PaySplitCur.PatNum=PatCur.PatNum;
 			FormPaySplitEdit FormPS=new FormPaySplitEdit(FamCur);
 			FormPS.PaySplitCur=PaySplitCur;
@@ -737,7 +738,7 @@ namespace OpenDental{
 			PaySplitCur.PayNum=PaymentCur.PayNum;
 			PaySplitCur.ProcDate=PaymentCur.PayDate;//this may be updated upon closing
 			PaySplitCur.DatePay=PaymentCur.PayDate;//this may be updated upon closing
-			PaySplitCur.ProvNum=PatCur.GetProvNum();
+			PaySplitCur.ProvNum=Patients.GetProvNum(PatCur);
 			PaySplitCur.SplitAmt=PIn.PDouble(textAmount.Text);
 			SplitList.Add(PaySplitCur);
 		}
@@ -758,7 +759,7 @@ namespace OpenDental{
 			else {
 				labelDepositAccount.Visible=true;
 				comboDepositAccount.Visible=true;
-				DepositAccounts=autoPay.GetPickListAccounts();
+				DepositAccounts=AccountingAutoPays.GetPickListAccounts(autoPay);
 				comboDepositAccount.Items.Clear();
 				for(int i=0;i<DepositAccounts.Length;i++) {
 					comboDepositAccount.Items.Add(Accounts.GetDescript(DepositAccounts[i]));
@@ -809,7 +810,7 @@ namespace OpenDental{
 					return;
 				}
 				try {
-					trans.Delete();
+					Transactions.Delete(trans);
 				}
 				catch(ApplicationException ex) {
 					MessageBox.Show(ex.Message);
@@ -817,7 +818,7 @@ namespace OpenDental{
 				}
 			}
 			try{
-				PaymentCur.Delete();
+				Payments.Delete(PaymentCur);
 			}
 			catch(ApplicationException ex){//error if attached to deposit slip
 				MessageBox.Show(ex.Message);
@@ -849,7 +850,7 @@ namespace OpenDental{
 			//(category can only be changed by clicking the edit button.)
 			if(!IsNew){
 				try{
-					PaymentCur.AlterLinkedEntries(PIn.PDouble(textAmount.Text));
+					Payments.AlterLinkedEntries(PaymentCur,PIn.PDouble(textAmount.Text));
 				}
 				catch(ApplicationException ex){
 					MessageBox.Show(ex.Message);//not able to alter, so must not allow user to continue.
@@ -870,7 +871,7 @@ namespace OpenDental{
 				PaymentCur.ClinicNum=Clinics.List[comboClinic.SelectedIndex-1].ClinicNum;
 			}
 			if(SplitList.Count==0) {
-				SplitList=PaymentCur.Allocate();//PayAmt needs to be set first
+				SplitList=Payments.Allocate(PaymentCur);//PayAmt needs to be set first
 			}
 			else if(SplitList.Count==1//if one split
 				&& PIn.PDouble(textAmount.Text) != ((PaySplit)SplitList[0]).SplitAmt)//and amount doesn't match payment
@@ -897,7 +898,7 @@ namespace OpenDental{
 				PaymentCur.IsSplit=false;
 			}
 			try{
-				PaymentCur.Update();
+				Payments.Update(PaymentCur);
 			}
 			catch(ApplicationException ex){//this catches bad dates.
 				MessageBox.Show(ex.Message);
@@ -913,7 +914,7 @@ namespace OpenDental{
 				Transaction trans=new Transaction();
 				trans.PayNum=PaymentCur.PayNum;
 				trans.UserNum=Security.CurUser.UserNum;
-				trans.Insert();
+				Transactions.Insert(trans);
 				//first the deposit entry
 				JournalEntry je=new JournalEntry();
 				je.AccountNum=DepositAccounts[comboDepositAccount.SelectedIndex];
@@ -922,19 +923,19 @@ namespace OpenDental{
 				
 				je.DebitAmt=PaymentCur.PayAmt;
 				je.Memo=Lan.g(this,"Payment -")+" "+FamCur.GetNameInFamFL(PaymentCur.PatNum);
-				je.Splits=Accounts.GetDescript(Prefs.GetInt("AccountingCashIncomeAccount"));
+				je.Splits=Accounts.GetDescript(PrefB.GetInt("AccountingCashIncomeAccount"));
 				je.TransactionNum=trans.TransactionNum;
-				je.Insert();
+				JournalEntries.Insert(je);
 				//then, the income entry
 				je=new JournalEntry();
-				je.AccountNum=Prefs.GetInt("AccountingCashIncomeAccount");
+				je.AccountNum=PrefB.GetInt("AccountingCashIncomeAccount");
 				//je.CheckNumber=;
 				je.DateDisplayed=PaymentCur.PayDate;//it would be nice to add security here.
 				je.CreditAmt=PaymentCur.PayAmt;
 				je.Memo=Lan.g(this,"Payment -")+" "+FamCur.GetNameInFamFL(PaymentCur.PatNum);
 				je.Splits=Accounts.GetDescript(DepositAccounts[comboDepositAccount.SelectedIndex]);
 				je.TransactionNum=trans.TransactionNum;
-				je.Insert();
+				JournalEntries.Insert(je);
 			}
 			if(IsNew){
 				SecurityLogs.MakeLogEntry(Permissions.PaymentCreate,PaymentCur.PatNum,
@@ -957,7 +958,7 @@ namespace OpenDental{
 			if(DialogResult==DialogResult.OK)
 				return;
 			if(IsNew){ 
-				PaymentCur.Delete();
+				Payments.Delete(PaymentCur);
 			}
 			//else if(PaymentCur.PayAmt!=tot){
 			//	MessageBox.Show(Lan.g(this,"Splits have been altered.  Payment must match splits."));

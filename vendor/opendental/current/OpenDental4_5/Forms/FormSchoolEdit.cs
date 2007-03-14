@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -21,6 +22,7 @@ namespace OpenDental{
 		private System.ComponentModel.Container components = null;
 		///<summary></summary>
 		public bool IsNew;
+		public School SchoolCur;
 
 		///<summary></summary>
 		public FormSchoolEdit()
@@ -151,8 +153,8 @@ namespace OpenDental{
 		#endregion
 
 		private void FormSchoolEdit_Load(object sender, System.EventArgs e) {
-			textSchoolName.Text=Schools.Cur.SchoolName;
-			textSchoolCode.Text=Schools.Cur.SchoolCode;
+			textSchoolName.Text=SchoolCur.SchoolName;
+			textSchoolCode.Text=SchoolCur.SchoolCode;
 		}
 
 		private void textSchoolName_TextChanged(object sender, System.EventArgs e) {
@@ -163,23 +165,23 @@ namespace OpenDental{
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			Schools.Cur.SchoolName=textSchoolName.Text;
-			Schools.Cur.SchoolCode=textSchoolCode.Text;
+			SchoolCur.SchoolName=textSchoolName.Text;
+			SchoolCur.SchoolCode=textSchoolCode.Text;
 			if(IsNew){
-				if(Schools.DoesExist(Schools.Cur.SchoolName)){
+				if(Schools.DoesExist(SchoolCur.SchoolName)){
 					MessageBox.Show(Lan.g(this,"School name already exists. Duplicate not allowed."));
 					return;
 				}
-				Schools.InsertCur();
+				Schools.Insert(SchoolCur);
 			}
 			else{//existing school
-				if(Schools.Cur.SchoolName!=Schools.Cur.OldSchoolName){//school name was changed
-					if(Schools.DoesExist(Schools.Cur.SchoolName)){//changed to a name that already exists.
+				if(SchoolCur.SchoolName!=SchoolCur.OldSchoolName){//school name was changed
+					if(Schools.DoesExist(SchoolCur.SchoolName)){//changed to a name that already exists.
 						MessageBox.Show(Lan.g(this,"School name already exists. Duplicate not allowed."));
 						return;
 					}
 				}
-				Schools.UpdateCur();
+				Schools.Update(SchoolCur);
 			}
 			DialogResult=DialogResult.OK;
 		}

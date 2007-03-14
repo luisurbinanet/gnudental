@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -188,10 +189,10 @@ namespace OpenDental{
 			ClaimProcCur.InsPayAmt=PIn.PDouble(textInsUsed.Text);
 			ClaimProcCur.DedApplied=PIn.PDouble(textDedUsed.Text);
 			if(IsNew){
-				ClaimProcCur.Insert();
+				ClaimProcs.Insert(ClaimProcCur);
 			}
 			else{
-				ClaimProcCur.Update();
+				ClaimProcs.Update(ClaimProcCur);
 			}
 			DialogResult=DialogResult.OK;
 		}

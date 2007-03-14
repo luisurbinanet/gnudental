@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -208,7 +209,7 @@ namespace OpenDental{
 		#endregion
 
 		private void FormDepositSlip_Load(object sender, System.EventArgs e) {
-			if(Prefs.GetBool("EasyNoClinics")){
+			if(PrefB.GetBool("EasyNoClinics")){
 				comboClinic.Visible=false;
 				labelClinic.Visible=false;
 			}
@@ -321,7 +322,7 @@ ORDER BY PayDate, plfname
 				cmd+=
 					") AND PayDate >= '"+POut.PDate(monthCal1.SelectionStart)+"' "
 					+"AND PayDate <= '"+POut.PDate(monthCal2.SelectionStart)+"' ";
-				if(!Prefs.GetBool("EasyNoClinics")){
+				if(!PrefB.GetBool("EasyNoClinics")){
 					if(comboClinic.SelectedIndex==0){
 						cmd+="AND payment.ClinicNum=0 ";
 					}
@@ -345,7 +346,7 @@ ORDER BY PayDate, plfname
 					+"AND (claimproc.status = '1' OR claimproc.status = '4') "
 					+"AND CheckDate >= '"+POut.PDate(monthCal1.SelectionStart)+"' "
 					+"AND CheckDate <= '"+POut.PDate(monthCal2.SelectionStart)+"' ";//added plfname,spk 4/30/04
-				if(!Prefs.GetBool("EasyNoClinics")){
+				if(!PrefB.GetBool("EasyNoClinics")){
 					if(comboClinic.SelectedIndex==0){
 						cmd+="AND claimpayment.ClinicNum=0 ";
 					}
@@ -364,7 +365,7 @@ ORDER BY PayDate, plfname
 			FormQuery2.SubmitReportQuery();
 			Queries.CurReport.Title="Deposit Slip";
 			Queries.CurReport.SubTitle=new string[3];
-			if(!Prefs.GetBool("EasyNoClinics")){
+			if(!PrefB.GetBool("EasyNoClinics")){
 				Queries.CurReport.SubTitle=new string[4];
 				if(comboClinic.SelectedIndex==0){
 					Queries.CurReport.SubTitle[3]=Lan.g(this,"Clinic")+": none";
@@ -374,7 +375,7 @@ ORDER BY PayDate, plfname
 						+Clinics.List[comboClinic.SelectedIndex-1].Description;
 				}
 			}
-			Queries.CurReport.SubTitle[0]=((Pref)Prefs.HList["PracticeTitle"]).ValueString;
+			Queries.CurReport.SubTitle[0]=((Pref)PrefB.HList["PracticeTitle"]).ValueString;
 			Queries.CurReport.SubTitle[1]=monthCal1.SelectionStart.ToShortDateString()+" - "
 				+monthCal2.SelectionStart.ToShortDateString();
 			if(listPayType.SelectedIndices.Count>0)  {
@@ -415,10 +416,10 @@ ORDER BY PayDate, plfname
 			Queries.CurReport.ColCaption[7]="Amount";
 			//Queries.CurReport.ColAlign[4]=HorizontalAlignment.Right;
 			Queries.CurReport.ColAlign[7]=HorizontalAlignment.Right;
-			if(Prefs.GetBool("EasyNoClinics") || comboClinic.SelectedIndex==0){
+			if(PrefB.GetBool("EasyNoClinics") || comboClinic.SelectedIndex==0){
 				Queries.CurReport.Summary=new string[3];
-				Queries.CurReport.Summary[0]="For Deposit to Account of "+((Pref)Prefs.HList["PracticeTitle"]).ValueString;
-				Queries.CurReport.Summary[2]="Account number: "+((Pref)Prefs.HList["PracticeBankNumber"]).ValueString;
+				Queries.CurReport.Summary[0]="For Deposit to Account of "+((Pref)PrefB.HList["PracticeTitle"]).ValueString;
+				Queries.CurReport.Summary[2]="Account number: "+((Pref)PrefB.HList["PracticeBankNumber"]).ValueString;
 			}
 			else{
 				Queries.CurReport.Summary=new string[3];

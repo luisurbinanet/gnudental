@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -556,7 +557,7 @@ namespace OpenDental{
 		}
 
 		private void butDelete_Click(object sender, System.EventArgs e) {
-			CFIcur.Delete();
+			ClaimFormItems.Delete(CFIcur);
 			DialogResult=DialogResult.OK;
 		}
 
@@ -574,9 +575,9 @@ namespace OpenDental{
 				CFIcur.FieldName=FieldNames[listFieldName.SelectedIndex];
 			}
 			if(IsNew)
-				CFIcur.Insert();
+				ClaimFormItems.Insert(CFIcur);
 			else
-				CFIcur.Update();
+				ClaimFormItems.Update(CFIcur);
 			DialogResult=DialogResult.OK;
 		}
 

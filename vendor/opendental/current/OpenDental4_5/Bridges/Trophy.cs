@@ -1,10 +1,12 @@
 using System;
+using System.Collections;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 //using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental.Bridges{
 	/// <summary></summary>
@@ -16,14 +18,14 @@ namespace OpenDental.Bridges{
 		}
 
 		///<summary>Launches the program using a combination of command line characters and the patient.Cur data.</summary>
-		public static void SendData(Patient pat){
-			ProgramProperties.GetForProgram();
+		public static void SendData(Program ProgramCur, Patient pat){
+			ArrayList ForProgram=ProgramProperties.GetForProgram(ProgramCur.ProgramNum);;
 			if(pat!=null){
-				ProgramProperties.GetCur("Storage Path");
-				string comline="-P"+ProgramProperties.Cur.PropertyValue+@"\";
+				ProgramProperty PPCur=ProgramProperties.GetCur(ForProgram, "Storage Path");
+				string comline="-P"+PPCur.PropertyValue+@"\";
 				//Patient id can be any string format
-				ProgramProperties.GetCur("Enter 0 to use PatientNum, or 1 to use ChartNum");
-				if(ProgramProperties.Cur.PropertyValue=="0"){
+				PPCur=ProgramProperties.GetCur(ForProgram, "Enter 0 to use PatientNum, or 1 to use ChartNum");;
+				if(PPCur.PropertyValue=="0"){
 					comline+=pat.PatNum.ToString();
 				}
 				else{
@@ -33,18 +35,18 @@ namespace OpenDental.Bridges{
 				comline=comline.Replace("\"","");//gets rid of any quotes
 				comline=comline.Replace("'","");//gets rid of any single quotes
 				try{
-					Process.Start(Programs.Cur.Path,comline);
+					Process.Start(ProgramCur.Path,comline);
 				}
 				catch{
-					MessageBox.Show(Programs.Cur.Path+" is not available.");
+					MessageBox.Show(ProgramCur.Path+" is not available.");
 				}
 			}//if patient is loaded
 			else{
 				try{
-					Process.Start(Programs.Cur.Path);//should start Trophy without bringing up a pt.
+					Process.Start(ProgramCur.Path);//should start Trophy without bringing up a pt.
 				}
 				catch{
-					MessageBox.Show(Programs.Cur.Path+" is not available.");
+					MessageBox.Show(ProgramCur.Path+" is not available.");
 				}
 			}
 		}

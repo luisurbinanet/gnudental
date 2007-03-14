@@ -6,6 +6,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Serialization;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -226,7 +227,7 @@ namespace OpenDental{
 			//listEClaim.Items.Clear();
 			//for(int i=0;i<ClaimForms.ListShort.Length;i++){
 			//	listEClaim.Items.Add(ClaimForms.ListShort[i].Description);
-			//	if(PIn.PInt(((Pref)Prefs.HList["GenericEClaimsForm"]).ValueString)
+			//	if(PIn.PInt(((Pref)PrefB.HList["GenericEClaimsForm"]).ValueString)
 			//		==ClaimForms.ListShort[i].ClaimFormNum){
 			//		listEClaim.SelectedIndex=i;
 			//	}
@@ -246,7 +247,7 @@ namespace OpenDental{
 
 		private void butAdd_Click(object sender, System.EventArgs e) {
 			ClaimForm ClaimFormCur=new ClaimForm();
-			ClaimFormCur.Insert();
+			ClaimForms.Insert(ClaimFormCur);
 			FormClaimFormEdit FormCFE=new FormClaimFormEdit();
 			FormCFE.ClaimFormCur=ClaimFormCur;
 			FormCFE.IsNew=true;
@@ -269,7 +270,7 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Not allowed to delete a premade claimform, but you can hide it instead."));
 				return;
 			}
-			if(!ClaimForms.ListLong[listClaimForms.SelectedIndex].Delete()){
+			if(!ClaimForms.Delete(ClaimForms.ListLong[listClaimForms.SelectedIndex])){
 				MessageBox.Show(Lan.g(this,"Claim form is already in use."));
 				return;
 			}
@@ -286,13 +287,13 @@ namespace OpenDental{
 			ClaimForm ClaimFormCur=ClaimForms.ListLong[listClaimForms.SelectedIndex].Copy();
 			int oldClaimFormNum=ClaimFormCur.ClaimFormNum;
 			ClaimFormCur.UniqueID="";//designates it as a user added claimform
-			ClaimFormCur.Insert();//this duplicates the original claimform, but no items.
+			ClaimForms.Insert(ClaimFormCur);//this duplicates the original claimform, but no items.
 			int newClaimFormNum=ClaimFormCur.ClaimFormNum;
 			//ClaimFormItems.GetListForForm(ClaimForms.ListLong[listClaimForms.SelectedIndex].ClaimFormNum);
 			for(int i=0;i<ClaimFormCur.Items.Length;i++){
 				//ClaimFormItems.Cur=ClaimFormItems.ListForForm[i];
 				ClaimFormCur.Items[i].ClaimFormNum=newClaimFormNum;
-				ClaimFormCur.Items[i].Insert();
+				ClaimFormItems.Insert(ClaimFormCur.Items[i]);
 			}
 			ClaimFormItems.Refresh();
 			changed=true;
@@ -307,7 +308,7 @@ namespace OpenDental{
 			ClaimForm ClaimFormCur=ClaimForms.ListLong[listClaimForms.SelectedIndex];
 			saveDlg=new SaveFileDialog();
 			string filename="ClaimForm"+ClaimFormCur.Description+".xml";
-			saveDlg.InitialDirectory=Prefs.GetString("ExportPath");
+			saveDlg.InitialDirectory=PrefB.GetString("ExportPath");
 			saveDlg.FileName=filename;
 			if(saveDlg.ShowDialog()!=DialogResult.OK){
 				return;
@@ -322,7 +323,7 @@ namespace OpenDental{
 
 		private void butImport_Click(object sender, System.EventArgs e) {
 			openDlg=new OpenFileDialog();
-			openDlg.InitialDirectory=Prefs.GetString("ExportPath");
+			openDlg.InitialDirectory=PrefB.GetString("ExportPath");
 			if(openDlg.ShowDialog()!=DialogResult.OK){
 				return;
 			}
@@ -349,10 +350,10 @@ namespace OpenDental{
 				}
 			}
 			if(isNew){
-				tempClaimForm.Insert();//now we have a primary key.
+				ClaimForms.Insert(tempClaimForm);//now we have a primary key.
 				for(int j=0;j<tempClaimForm.Items.Length;j++){
 					tempClaimForm.Items[j].ClaimFormNum=tempClaimForm.ClaimFormNum;
-					tempClaimForm.Items[j].Insert();
+					ClaimFormItems.Insert(tempClaimForm.Items[j]);
 				}
 			}
 			else{
@@ -360,7 +361,7 @@ namespace OpenDental{
 					MessageBoxButtons.OKCancel)!=DialogResult.OK){
 					return;
 				}
-				tempClaimForm.UpdateByUniqueID();
+				ClaimForms.UpdateByUniqueID(tempClaimForm);
 			}
 			MessageBox.Show("Imported");
 			ClaimFormItems.Refresh();

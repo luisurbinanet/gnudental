@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	///<summary></summary>
@@ -323,7 +324,7 @@ namespace OpenDental{
 			RxAlert alert=new RxAlert();
 			alert.DiseaseDefNum=FormD.SelectedDiseaseDefNum;
 			alert.RxDefNum=RxDefCur.RxDefNum;
-			alert.Insert();
+			RxAlerts.Insert(alert);
 			FillAlerts();
 		}
 
@@ -332,7 +333,7 @@ namespace OpenDental{
 				MsgBox.Show(this,"Please select an items first.");
 				return;
 			}
-			RxAlertList[listAlerts.SelectedIndex].Delete();
+			RxAlerts.Delete(RxAlertList[listAlerts.SelectedIndex]);
 			FillAlerts();
 		}
 
@@ -340,7 +341,7 @@ namespace OpenDental{
 			if(!MsgBox.Show(this,true,"Delete this prescription template?")){
 				return;
 			}
-			RxDefCur.Delete();
+			RxDefs.Delete(RxDefCur);
 			DialogResult=DialogResult.OK;
 		}
 
@@ -350,7 +351,7 @@ namespace OpenDental{
 			RxDefCur.Disp=textDisp.Text;
 			RxDefCur.Refills=textRefills.Text;
 			RxDefCur.Notes=textNotes.Text;
-			RxDefCur.Update();
+			RxDefs.Update(RxDefCur);
 			DialogResult=DialogResult.OK;
 		}
 
@@ -363,7 +364,7 @@ namespace OpenDental{
 				return;//close as normal
 			}
 			if(IsNew){
-				RxDefCur.Delete();
+				RxDefs.Delete(RxDefCur);
 			}
 		}
 

@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Windows.Forms;
 using System.Data;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -608,22 +609,22 @@ namespace OpenDental{
 			FormQuery2.SubmitReportQuery();			
 			Queries.CurReport.Title="Daily Production and Income";
 			Queries.CurReport.SubTitle=new string[2];
-			Queries.CurReport.SubTitle[0]=((Pref)Prefs.HList["PracticeTitle"]).ValueString;
+			Queries.CurReport.SubTitle[0]=((Pref)PrefB.HList["PracticeTitle"]).ValueString;
 			Queries.CurReport.SubTitle[1]=dateFrom.ToString("d")
 				+" - "+dateTo.ToString("d");	
 			Queries.CurReport.ColPos=new int[11];
 			Queries.CurReport.ColCaption=new string[10];
-			Queries.CurReport.ColAlign=new HorizontalAlignment[10];
+			Queries.CurReport.ColAlign=new HorizontalAlignment[10];			
 			Queries.CurReport.ColPos[0]=10;
 			Queries.CurReport.ColPos[1]=90;
 			Queries.CurReport.ColPos[2]=220;
-			Queries.CurReport.ColPos[3]=390;
-			Queries.CurReport.ColPos[4]=444;
-			Queries.CurReport.ColPos[5]=500;
-			Queries.CurReport.ColPos[6]=570;
-			Queries.CurReport.ColPos[7]=620;
-			Queries.CurReport.ColPos[8]=690;
-			Queries.CurReport.ColPos[9]=760;  // added spk 5/19/05	
+			Queries.CurReport.ColPos[3]=385;   
+			Queries.CurReport.ColPos[4]=440;
+			Queries.CurReport.ColPos[5]=505;
+			Queries.CurReport.ColPos[6]=575;
+			Queries.CurReport.ColPos[7]=640;
+			Queries.CurReport.ColPos[8]=705;
+			Queries.CurReport.ColPos[9]=770;  // added spk 5/19/05	
 			Queries.CurReport.ColPos[10]=1050;// way off the righthand side
 			Queries.CurReport.ColCaption[0]="Date";
 			Queries.CurReport.ColCaption[1]="Patient Name";			
@@ -970,7 +971,7 @@ ORDER BY adjdate DESC
 			FormQuery2.ResetGrid();//necessary won't work without
 			Queries.CurReport.Title="Production and Income";
 			Queries.CurReport.SubTitle=new string[3];
-			Queries.CurReport.SubTitle[0]=((Pref)Prefs.HList["PracticeTitle"]).ValueString;
+			Queries.CurReport.SubTitle[0]=((Pref)PrefB.HList["PracticeTitle"]).ValueString;
 			Queries.CurReport.SubTitle[1]=textDateFrom.Text+" - "
 				+textDateTo.Text;
 			bool allProv=true;
@@ -1253,7 +1254,7 @@ ORDER BY adjdate DESC
 			FormQuery2.ResetGrid();//necessary won't work without
 			Queries.CurReport.Title="Annual Production and Income";
 			Queries.CurReport.SubTitle=new string[3];
-			Queries.CurReport.SubTitle[0]=((Pref)Prefs.HList["PracticeTitle"]).ValueString;
+			Queries.CurReport.SubTitle[0]=((Pref)PrefB.HList["PracticeTitle"]).ValueString;
 			Queries.CurReport.SubTitle[1]=textDateFrom.Text+" - "
 				+textDateTo.Text;
 			bool allProv=true;

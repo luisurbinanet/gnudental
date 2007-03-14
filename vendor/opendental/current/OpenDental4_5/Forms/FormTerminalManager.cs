@@ -4,6 +4,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using OpenDental.UI;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -62,7 +63,6 @@ namespace OpenDental{
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormTerminalManager));
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
 			this.textPassword = new System.Windows.Forms.TextBox();
@@ -227,7 +227,6 @@ namespace OpenDental{
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.gridMain);
-			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "FormTerminalManager";
@@ -242,7 +241,7 @@ namespace OpenDental{
 		#endregion
 
 		private void FormTerminalManager_Load(object sender,EventArgs e) {
-			textPassword.Text=Prefs.GetString("TerminalClosePassword");
+			textPassword.Text=PrefB.GetString("TerminalClosePassword");
 			FillGrid();
 		}
 
@@ -318,7 +317,7 @@ namespace OpenDental{
 			}
 			terminal.PatNum=patNum;
 			terminal.TerminalStatus=TerminalStatusEnum.PatientInfo;
-			terminal.Update();
+			TerminalActives.Update(terminal);
 			FillGrid();
 		}
 
@@ -345,7 +344,7 @@ namespace OpenDental{
 			//int patNum=
 			terminal.PatNum=FormOpenDental.CurPatNum;
 			terminal.TerminalStatus=TerminalStatusEnum.UpdateOnly;
-			terminal.Update();
+			TerminalActives.Update(terminal);
 			FillGrid();
 		}
 
@@ -364,7 +363,7 @@ namespace OpenDental{
 			}
 			terminal.PatNum=0;
 			terminal.TerminalStatus=TerminalStatusEnum.Standby;
-			terminal.Update();
+			TerminalActives.Update(terminal);
 			FillGrid();
 		}
 
@@ -382,7 +381,7 @@ namespace OpenDental{
 				return;
 			}
 			terminal.TerminalStatus=TerminalStatusEnum.PatientInfo;
-			terminal.Update();
+			TerminalActives.Update(terminal);
 			FillGrid();
 		}
 
@@ -411,7 +410,7 @@ namespace OpenDental{
 				return;
 			}
 			terminal.TerminalStatus=TerminalStatusEnum.Medical;
-			terminal.Update();
+			TerminalActives.Update(terminal);
 			FillGrid();
 		}
 
@@ -452,7 +451,7 @@ namespace OpenDental{
 				return;
 			}
 			terminal.TerminalStatus=TerminalStatusEnum.UpdateOnly;
-			terminal.Update();
+			TerminalActives.Update(terminal);
 			FillGrid();
 		}
 

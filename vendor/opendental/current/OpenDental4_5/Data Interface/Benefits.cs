@@ -2,171 +2,11 @@ using System;
 using System.Data;
 using System.Diagnostics;
 using System.Collections;
+using System.Collections.Generic;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental {
-
-	/// <summary>Corresponds to the benefit table in the database which replaces the old covpat table.  A benefit is usually a percentage, deductible, limitation, max, or similar. Each row represents a single benefit.  A benefit can have a value in EITHER PlanNum OR PatPlanNum.  If it is for a PlanNum, the most common, then the benefit is attached to an insurance plan.  If it is for a PatPlanNum, then it overrides the plan benefit, usually a percentage, for a single patient.  Benefits we can't handle yet include posterior composites, COB duplication, amounts used, in/out of plan network, authorization required, missing tooth exclusion, and any date related limitations like waiting periods.  We also cannot yet handle family level benefits.  All benefits are at the individual patient level.<br/>
-	/// Here are examples of typical usage which parallel X12 usage.<br/>
-	/// Example fields shown in this order:<br/>
-	/// CovCat, ADACode(- indicates blank), BenefitType, Percent, MonetaryAmt, TimePeriod, QuantityQualifier, Quantity<br/>
-	/// Annual Max $1000: General,-,Limitations,0,1000,CalendarYear,None,0<br/>
-	/// Restorative 80%: Restorative,-,Percentage,80,0,CalendarYear,None,0<br/>
-	/// $50 deductible: General,-,Deductible,0,50,CalendarYear,None,0<br/>
-	/// Deductible waived on preventive: Preventive,-,Deductible,0,0,CalendarYear,None,0<br/>
-	/// 1 pano every 5 years: General(ignored),D0330,Limitations,0,0,Years,Years,5<br/>
-	/// 2 exams per year: Preventive(or Diagnostic),-,Limitations,0,0,BenefitYear,NumberOfServices,2<br/>
-	/// Fluoride limit 18yo: General(ignored), D1204, Limitations, 0, 0, CalendarYear(or None), AgeLimit, 18 (might require a second identical entry for D1205)<br/>
-	/// 4BW every 6 months: General(ignored), D0274, Limitations, 0, 0, None, Months, 6.
-	/// The text above might be difficult to read.  We are trying to improve the white spacing.</summary>
-	public class Benefit:IComparable {
-		///<summary>Primary key.</summary>
-		public int BenefitNum;
-		///<summary>FK to insplan.PlanNum.  Most benefits should be attached using PlanNum.  The exception would be if each patient has a different percentage.  If PlanNum is used, then PatPlanNum should be 0.</summary>
-		public int PlanNum;
-		///<summary>FK to patplan.PatPlanNum.  It is rare to attach benefits this way.  Usually only used to override percentages for patients.   In this case, PlanNum should be 0.</summary>
-		public int PatPlanNum;
-		///<summary>FK to covcat.CovCatNum.  Corresponds to X12 EB03- Service Type code.  Can never be blank.  There will be very specific categories covered by X12. Users should set their InsCovCats to the defaults we will provide.</summary>
-		public int CovCatNum;
-		///<summary>FK to procedurecode.ADACode.  Typical uses include fluoride, sealants, etc.  If a specific code is used here, then the CovCat is completely ignored.</summary>
-		public string ADACode;
-		///<summary>Enum:InsBenefitType Corresponds to X12 EB01. Examples: 1=Percentage, 2=Deductible, 3=CoPayment, 4=Exclusions, 5=Limitations. There's not really any difference between limitations and exclusions as far as the logic is concerned.</summary>
-		public InsBenefitType BenefitType;
-		///<summary>Only used if BenefitType=Percentage.  Valid values are 0 to 100.</summary>
-		public int Percent;
-		///<summary>Used for CoPayment, Limitations, and as deductible in PercentDeduct.</summary>
-		public double MonetaryAmt;
-		///<summary>Enum:BenefitTimePeriod Corresponds to X12 EB06, Time Period Qualifier.  Examples: 0=None,1=ServiceYear,2=CalendarYear,3=Lifetime,4=Years. Might add Visit and Remaining.</summary>
-		public BenefitTimePeriod TimePeriod;
-		///<summary>Enum:BenefitQuantity Corresponds to X12 EB09. Not used very much. Examples: 0=None,1=NumberOfServices,2=AgeLimit,3=Visits,4=Years,5=Months</summary>
-		public BenefitQuantity QuantityQualifier;
-		///<summary>Corresponds to X12 EB10. Qualify the quantity</summary>
-		public int Quantity;
-
-		///<summary>IComparable.CompareTo implementation.  This is used to order benefit lists as well as to group benefits if the type is essentially equal.  It doesn't compare values such as percentages or amounts.  It only compares types.</summary>
-		public int CompareTo(object obj) {
-			if(!(obj is Benefit)) {
-				throw new ArgumentException("object is not a Benefit");
-			}
-			Benefit ben=(Benefit)obj;
-			//first by type
-			if(BenefitType!=ben.BenefitType) {//if types are different
-				return BenefitType.CompareTo(ben.BenefitType);
-			}
-			//types are the same, so check covCat. This is a loose comparison, ignored if either is 0.
-			if(CovCatNum!=0 && ben.CovCatNum!=0//if both covcats have values
-				&& CovCatNum!=ben.CovCatNum) {//and they are different
-				//return CovCats.GetOrderShort(CovCatNum).CompareTo(CovCats.GetOrderShort(ben.CovCatNum));
-				//this line was changed because we really do need to know if they have different covcats.
-				return CovCats.GetOrderLong(CovCatNum).CompareTo(CovCats.GetOrderLong(ben.CovCatNum));
-			}
-			//ADACode
-			if(ADACode!=ben.ADACode) {
-				return ADACode.CompareTo(ben.ADACode);
-			}
-			//TimePeriod-ServiceYear and CalendarYear are treated as the same.
-			//if either are not serviceYear or CalendarYear
-			if((TimePeriod!=BenefitTimePeriod.CalendarYear && TimePeriod!=BenefitTimePeriod.ServiceYear)
-				|| (ben.TimePeriod!=BenefitTimePeriod.CalendarYear && ben.TimePeriod!=BenefitTimePeriod.ServiceYear)) {
-				return TimePeriod.CompareTo(ben.TimePeriod);
-			}
-			//QuantityQualifier
-			if(QuantityQualifier!=ben.QuantityQualifier) {//if different
-				return QuantityQualifier.CompareTo(ben.QuantityQualifier);
-			}
-			//always different if plan vs. pat override
-			if(PatPlanNum==0 && ben.PatPlanNum!=0) {
-				return -1;
-			}
-			if(PlanNum==0 && ben.PlanNum!=0) {
-				return 1;
-			}
-			//Last resort.  Can't find any significant differencesin the type, so:
-			return 0;//then values are the same.
-		}
-
-		///<summary></summary>
-		public Benefit Copy() {
-			Benefit b=new Benefit();
-			b.BenefitNum=BenefitNum;
-			b.PlanNum=PlanNum;
-			b.PatPlanNum=PatPlanNum;
-			b.CovCatNum=CovCatNum;
-			b.ADACode=ADACode;
-			b.BenefitType=BenefitType;
-			b.Percent=Percent;
-			b.MonetaryAmt=MonetaryAmt;
-			b.TimePeriod=TimePeriod;
-			b.QuantityQualifier=QuantityQualifier;
-			b.Quantity=Quantity;
-			return b;
-		}
-
-		///<summary></summary>
-		public void Update() {
-			string command="UPDATE benefit SET " 
-				+"PlanNum = '"          +POut.PInt   (PlanNum)+"'"
-				+",PatPlanNum = '"      +POut.PInt   (PatPlanNum)+"'"
-				+",CovCatNum = '"       +POut.PInt   (CovCatNum)+"'"
-				+",ADACode = '"         +POut.PString(ADACode)+"'"
-				+",BenefitType = '"     +POut.PInt   ((int)BenefitType)+"'"
-				+",Percent = '"         +POut.PInt   (Percent)+"'"
-				+",MonetaryAmt = '"     +POut.PDouble(MonetaryAmt)+"'"
-				+",TimePeriod = '"      +POut.PInt   ((int)TimePeriod)+"'"
-				+",QuantityQualifier ='"+POut.PInt   ((int)QuantityQualifier)+"'"
-				+",Quantity = '"        +POut.PInt   (Quantity)+"'"
-				+" WHERE BenefitNum  ='"+POut.PInt   (BenefitNum)+"'";
-			DataConnection dcon=new DataConnection();
-			dcon.NonQ(command);
-		}
-
-		///<summary></summary>
-		public void Insert() {
-			if(Prefs.RandomKeys) {
-				BenefitNum=MiscData.GetKey("benefit","BenefitNum");
-			}
-			string command="INSERT INTO benefit (";
-			if(Prefs.RandomKeys) {
-				command+="BenefitNum,";
-			}
-			command+="PlanNum,PatPlanNum,CovCatNum,ADACode,BenefitType,Percent,MonetaryAmt,TimePeriod,"
-				+"QuantityQualifier,Quantity) VALUES(";
-			if(Prefs.RandomKeys) {
-				command+="'"+POut.PInt(BenefitNum)+"', ";
-			}
-			command+=
-				 "'"+POut.PInt(PlanNum)+"', "
-				+"'"+POut.PInt(PatPlanNum)+"', "
-				+"'"+POut.PInt(CovCatNum)+"', "
-				+"'"+POut.PString(ADACode)+"', "
-				+"'"+POut.PInt((int)BenefitType)+"', "
-				+"'"+POut.PInt(Percent)+"', "
-				+"'"+POut.PDouble(MonetaryAmt)+"', "
-				+"'"+POut.PInt((int)TimePeriod)+"', "
-				+"'"+POut.PInt((int)QuantityQualifier)+"', "
-				+"'"+POut.PInt(Quantity)+"')";
-			DataConnection dcon=new DataConnection();
-			if(Prefs.RandomKeys) {
-				dcon.NonQ(command);
-			}
-			else {
-				dcon.NonQ(command,true);
-				BenefitNum=dcon.InsertID;
-			}
-		}
-
-		///<summary></summary>
-		public void Delete() {
-			string command="DELETE FROM benefit WHERE BenefitNum ="+POut.PInt(BenefitNum);
-			DataConnection dcon=new DataConnection();
-			dcon.NonQ(command);
-		}
-
-	}
-
-	/*================================================================================================================
-	==================================================== class Benefits =============================================*/
-
 	///<summary></summary>
 	public class Benefits {
 		///<summary>Gets a list of all benefits for a given list of patplans for one patient.</summary>
@@ -186,8 +26,7 @@ namespace OpenDental {
 			string command="SELECT * FROM benefit"
 				+" WHERE"+s;
 			//Debug.WriteLine(command);
-			DataConnection dcon=new DataConnection();
-			DataTable table=dcon.GetTable(command);
+			DataTable table=General.GetTable(command);
 			Benefit[] List=new Benefit[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++) {
 				List[i]=new Benefit();
@@ -206,99 +45,158 @@ namespace OpenDental {
 			Array.Sort(List);
 			return List;
 		}
-		
+
 		///<summary>Used in the Plan edit window to get a list of benefits for specified plan and patPlan.  patPlanNum can be 0.</summary>
-		public static ArrayList RefreshForPlan(int planNum,int patPlanNum) {
+		public static List<Benefit> RefreshForPlan(int planNum,int patPlanNum) {
 			string command="SELECT *"//,IFNULL(covcat.CovCatNum,0) AS covorder "
 				+" FROM benefit"
 				//+" LEFT JOIN covcat ON covcat.CovCatNum=benefit.CovCatNum"
 				+" WHERE PlanNum = "+POut.PInt(planNum);
-			if(patPlanNum!=0){
+			if(patPlanNum!=0) {
 				command+=" OR PatPlanNum = "+POut.PInt(patPlanNum);
 			}
-			DataConnection dcon=new DataConnection();
-			DataTable table=dcon.GetTable(command);
-			ArrayList retVal=new ArrayList();
+			DataTable table=General.GetTable(command);
+			List<Benefit> retVal=new List<Benefit>();
 			Benefit ben;
 			for(int i=0;i<table.Rows.Count;i++) {
 				ben=new Benefit();
-				ben.BenefitNum       = PIn.PInt   (table.Rows[i][0].ToString());
-				ben.PlanNum          = PIn.PInt   (table.Rows[i][1].ToString());
-				ben.PatPlanNum       = PIn.PInt   (table.Rows[i][2].ToString());
-				ben.CovCatNum        = PIn.PInt   (table.Rows[i][3].ToString());
+				ben.BenefitNum       = PIn.PInt(table.Rows[i][0].ToString());
+				ben.PlanNum          = PIn.PInt(table.Rows[i][1].ToString());
+				ben.PatPlanNum       = PIn.PInt(table.Rows[i][2].ToString());
+				ben.CovCatNum        = PIn.PInt(table.Rows[i][3].ToString());
 				ben.ADACode          = PIn.PString(table.Rows[i][4].ToString());
 				ben.BenefitType      = (InsBenefitType)PIn.PInt(table.Rows[i][5].ToString());
-				ben.Percent          = PIn.PInt   (table.Rows[i][6].ToString());
+				ben.Percent          = PIn.PInt(table.Rows[i][6].ToString());
 				ben.MonetaryAmt      = PIn.PDouble(table.Rows[i][7].ToString());
 				ben.TimePeriod       = (BenefitTimePeriod)PIn.PInt(table.Rows[i][8].ToString());
 				ben.QuantityQualifier= (BenefitQuantity)PIn.PInt(table.Rows[i][9].ToString());
-				ben.Quantity         = PIn.PInt   (table.Rows[i][10].ToString());
+				ben.Quantity         = PIn.PInt(table.Rows[i][10].ToString());
 				retVal.Add(ben);
 			}
 			return retVal;
 		}
 
-		
-		///<summary>Used in the Plan edit window to get a typical list of benefits for all identical plans.  The suppllied plan will have no planNum.  patPlanNum can be 0.</summary>
-		public static ArrayList RefreshForAll(InsPlan like){
+
+		///<summary>Used in the Plan edit window to get a typical list of benefits for all identical plans.  If the supplied plan has a planNum, then that planNum will be excluded from result list.  patPlanNum can be 0.</summary>
+		public static List<Benefit> RefreshForAll(InsPlan like) {
+			if(like.CarrierNum==0) {
+				return new List<Benefit>();
+			}
 			//Get planNums for all identical plans
 			string command="SELECT PlanNum FROM insplan "
-				+"WHERE EmployerNum = '"  +POut.PInt   (like.EmployerNum)+"' "
-				+"AND GroupName = '"      +POut.PString(like.GroupName)+"' "
-				+"AND GroupNum = '"       +POut.PString(like.GroupNum)+"' "
-				+"AND DivisionNo = '"     +POut.PString(like.DivisionNo)+"'"
-				+"AND CarrierNum = '"     +POut.PInt   (like.CarrierNum)+"' "
-				+"AND IsMedical = '"      +POut.PBool  (like.IsMedical)+"' ";
-			DataConnection dcon=new DataConnection();
-			DataTable table=dcon.GetTable(command);
+				+"WHERE PlanNum != "   +POut.PInt(like.PlanNum)+" "
+				+"AND EmployerNum = '" +POut.PInt(like.EmployerNum)+"' "
+				+"AND GroupName = '"   +POut.PString(like.GroupName)+"' "
+				+"AND GroupNum = '"    +POut.PString(like.GroupNum)+"' "
+				+"AND DivisionNo = '"  +POut.PString(like.DivisionNo)+"'"
+				+"AND CarrierNum = '"  +POut.PInt(like.CarrierNum)+"' "
+				+"AND IsMedical = '"   +POut.PBool(like.IsMedical)+"' ";
+			DataTable table=General.GetTable(command);
 			string planNums="";
-			for(int i=0;i<table.Rows.Count;i++){
-				if(i>0){
+			for(int i=0;i<table.Rows.Count;i++) {
+				if(i>0) {
 					planNums+=" OR";
 				}
 				planNums+=" PlanNum="+table.Rows[i][0].ToString();
 			}
 			//Get all benefits for all those plans
 			command="SELECT * FROM benefit WHERE"+planNums;
-			table=dcon.GetTable(command);
-			Benefit[] List=new Benefit[table.Rows.Count];
-			for(int i=0;i<table.Rows.Count;i++){
-				List[i]=new Benefit();
-				List[i].BenefitNum       = PIn.PInt   (table.Rows[i][0].ToString());
-				List[i].PlanNum          = PIn.PInt   (table.Rows[i][1].ToString());
-				List[i].PatPlanNum       = PIn.PInt   (table.Rows[i][2].ToString());
-				List[i].CovCatNum        = PIn.PInt   (table.Rows[i][3].ToString());
-				List[i].ADACode          = PIn.PString(table.Rows[i][4].ToString());
-				List[i].BenefitType      = (InsBenefitType)PIn.PInt(table.Rows[i][5].ToString());
-				List[i].Percent          = PIn.PInt   (table.Rows[i][6].ToString());
-				List[i].MonetaryAmt      = PIn.PDouble(table.Rows[i][7].ToString());
-				List[i].TimePeriod       = (BenefitTimePeriod)PIn.PInt(table.Rows[i][8].ToString());
-				List[i].QuantityQualifier= (BenefitQuantity)PIn.PInt(table.Rows[i][9].ToString());
-				List[i].Quantity         = PIn.PInt   (table.Rows[i][10].ToString());
+			table=General.GetTable(command);
+			Benefit[] benList=new Benefit[table.Rows.Count];
+			for(int i=0;i<table.Rows.Count;i++) {
+				benList[i]=new Benefit();
+				benList[i].BenefitNum       = PIn.PInt(table.Rows[i][0].ToString());
+				benList[i].PlanNum          = PIn.PInt(table.Rows[i][1].ToString());
+				benList[i].PatPlanNum       = PIn.PInt(table.Rows[i][2].ToString());
+				benList[i].CovCatNum        = PIn.PInt(table.Rows[i][3].ToString());
+				benList[i].ADACode          = PIn.PString(table.Rows[i][4].ToString());
+				benList[i].BenefitType      = (InsBenefitType)PIn.PInt(table.Rows[i][5].ToString());
+				benList[i].Percent          = PIn.PInt(table.Rows[i][6].ToString());
+				benList[i].MonetaryAmt      = PIn.PDouble(table.Rows[i][7].ToString());
+				benList[i].TimePeriod       = (BenefitTimePeriod)PIn.PInt(table.Rows[i][8].ToString());
+				benList[i].QuantityQualifier= (BenefitQuantity)PIn.PInt(table.Rows[i][9].ToString());
+				benList[i].Quantity         = PIn.PInt(table.Rows[i][10].ToString());
 			}
-			ArrayList retVal=new ArrayList();
+			List<Benefit> retVal=new List<Benefit>();
 			//Loop through all benefits
 			bool matchFound;
-			for(int i=0;i<List.Length;i++){
+			for(int i=0;i<benList.Length;i++) {
 				//For each benefit, loop through retVal and compare.
 				matchFound=false;
-				for(int j=0;j<retVal.Count;j++){
-					if(List[i].CompareTo(retVal[j])==0){//if the type is equal
+				for(int j=0;j<retVal.Count;j++) {
+					if(benList[i].CompareTo(retVal[j])==0) {//if the type is equal
 						matchFound=true;
 						break;
 					}
 				}
-				if(matchFound){
+				if(matchFound) {
 					continue;
 				}
 				//If no match found, then add it to the return list
-				retVal.Add(List[i].Copy());
+				retVal.Add(benList[i]);
 			}
 			for(int i=0;i<retVal.Count;i++) {
-				((Benefit)retVal[i]).PlanNum=like.PlanNum;//change all the planNums to match the current plan
+				retVal[i].PlanNum=like.PlanNum;//change all the planNums to match the current plan
 				//all set to 0 if the plan IsForIdentical.
 			}
 			return retVal;
+		}
+	
+
+		///<summary></summary>
+		public static void Update(Benefit ben) {
+			string command="UPDATE benefit SET " 
+				+"PlanNum = '"          +POut.PInt   (ben.PlanNum)+"'"
+				+",PatPlanNum = '"      +POut.PInt   (ben.PatPlanNum)+"'"
+				+",CovCatNum = '"       +POut.PInt   (ben.CovCatNum)+"'"
+				+",ADACode = '"         +POut.PString(ben.ADACode)+"'"
+				+",BenefitType = '"     +POut.PInt   ((int)ben.BenefitType)+"'"
+				+",Percent = '"         +POut.PInt   (ben.Percent)+"'"
+				+",MonetaryAmt = '"     +POut.PDouble(ben.MonetaryAmt)+"'"
+				+",TimePeriod = '"      +POut.PInt   ((int)ben.TimePeriod)+"'"
+				+",QuantityQualifier ='"+POut.PInt   ((int)ben.QuantityQualifier)+"'"
+				+",Quantity = '"        +POut.PInt   (ben.Quantity)+"'"
+				+" WHERE BenefitNum  ='"+POut.PInt   (ben.BenefitNum)+"'";
+			General.NonQ(command);
+		}
+
+		///<summary></summary>
+		public static void Insert(Benefit ben) {
+			if(PrefB.RandomKeys) {
+				ben.BenefitNum=MiscData.GetKey("benefit","BenefitNum");
+			}
+			string command="INSERT INTO benefit (";
+			if(PrefB.RandomKeys) {
+				command+="BenefitNum,";
+			}
+			command+="PlanNum,PatPlanNum,CovCatNum,ADACode,BenefitType,Percent,MonetaryAmt,TimePeriod,"
+				+"QuantityQualifier,Quantity) VALUES(";
+			if(PrefB.RandomKeys) {
+				command+="'"+POut.PInt(ben.BenefitNum)+"', ";
+			}
+			command+=
+				 "'"+POut.PInt(ben.PlanNum)+"', "
+				+"'"+POut.PInt(ben.PatPlanNum)+"', "
+				+"'"+POut.PInt(ben.CovCatNum)+"', "
+				+"'"+POut.PString(ben.ADACode)+"', "
+				+"'"+POut.PInt((int)ben.BenefitType)+"', "
+				+"'"+POut.PInt(ben.Percent)+"', "
+				+"'"+POut.PDouble(ben.MonetaryAmt)+"', "
+				+"'"+POut.PInt((int)ben.TimePeriod)+"', "
+				+"'"+POut.PInt((int)ben.QuantityQualifier)+"', "
+				+"'"+POut.PInt(ben.Quantity)+"')";
+			if(PrefB.RandomKeys) {
+				General.NonQ(command);
+			}
+			else {
+				ben.BenefitNum=General.NonQ(command,true);
+			}
+		}
+
+		///<summary></summary>
+		public static void Delete(Benefit ben) {
+			string command="DELETE FROM benefit WHERE BenefitNum ="+POut.PInt(ben.BenefitNum);
+			General.NonQ(command);
 		}
 		
 		///<summary>Gets an annual max from the supplied list of benefits.  Ignores benefits that do not match either the planNum or the patPlanNum.  Because it starts at the top of the benefit list, it will get the most general limitation first.  Returns -1 if none found.</summary>
@@ -442,37 +340,37 @@ namespace OpenDental {
 		}
 
 		///<summary>Used in FormInsPlan to sych database with changes user made to the benefit list for a plan.  Must supply an old list for comparison.  Only the differences are saved.</summary>
-		public static void UpdateList(ArrayList oldBenefitList,ArrayList newBenefitList){
+		public static void UpdateList(List<Benefit> oldBenefitList,List<Benefit> newBenefitList){
 			Benefit newBenefit;
 			for(int i=0;i<oldBenefitList.Count;i++){//loop through the old list
 				newBenefit=null;
 				for(int j=0;j<newBenefitList.Count;j++){
-					if(newBenefitList[j]==null || ((Benefit)newBenefitList[j]).BenefitNum==0){
+					if(newBenefitList[j]==null || newBenefitList[j].BenefitNum==0){
 						continue;
 					}
-					if(((Benefit)oldBenefitList[i]).BenefitNum==((Benefit)newBenefitList[j]).BenefitNum){
-						newBenefit=(Benefit)newBenefitList[j];
+					if(oldBenefitList[i].BenefitNum==newBenefitList[j].BenefitNum){
+						newBenefit=newBenefitList[j];
 						break;
 					}
 				}
 				if(newBenefit==null){
 					//benefit with matching benefitNum was not found, so it must have been deleted
-					((Benefit)oldBenefitList[i]).Delete();
+					Delete(oldBenefitList[i]);
 					continue;
 				}
 				//benefit was found with matching benefitNum, so check for changes
-				if(  newBenefit.PlanNum != ((Benefit)oldBenefitList[i]).PlanNum
-					|| newBenefit.PatPlanNum != ((Benefit)oldBenefitList[i]).PatPlanNum
-					|| newBenefit.CovCatNum != ((Benefit)oldBenefitList[i]).CovCatNum
-					|| newBenefit.ADACode != ((Benefit)oldBenefitList[i]).ADACode
-					|| newBenefit.BenefitType != ((Benefit)oldBenefitList[i]).BenefitType
-					|| newBenefit.Percent != ((Benefit)oldBenefitList[i]).Percent
-					|| newBenefit.MonetaryAmt != ((Benefit)oldBenefitList[i]).MonetaryAmt
-					|| newBenefit.TimePeriod != ((Benefit)oldBenefitList[i]).TimePeriod
-					|| newBenefit.QuantityQualifier != ((Benefit)oldBenefitList[i]).QuantityQualifier
-					|| newBenefit.Quantity != ((Benefit)oldBenefitList[i]).Quantity)
+				if(  newBenefit.PlanNum != oldBenefitList[i].PlanNum
+					|| newBenefit.PatPlanNum != oldBenefitList[i].PatPlanNum
+					|| newBenefit.CovCatNum != oldBenefitList[i].CovCatNum
+					|| newBenefit.ADACode != oldBenefitList[i].ADACode
+					|| newBenefit.BenefitType != oldBenefitList[i].BenefitType
+					|| newBenefit.Percent != oldBenefitList[i].Percent
+					|| newBenefit.MonetaryAmt != oldBenefitList[i].MonetaryAmt
+					|| newBenefit.TimePeriod != oldBenefitList[i].TimePeriod
+					|| newBenefit.QuantityQualifier != oldBenefitList[i].QuantityQualifier
+					|| newBenefit.Quantity != oldBenefitList[i].Quantity)
 				{
-					newBenefit.Update();
+					Benefits.Update(newBenefit);
 				}
 			}
 			for(int i=0;i<newBenefitList.Count;i++){//loop through the new list
@@ -483,17 +381,17 @@ namespace OpenDental {
 					continue;
 				}
 				//benefit with benefitNum=0, so it's new
-				((Benefit)newBenefitList[i]).Insert();
+				Benefits.Insert((Benefit)newBenefitList[i]);
 			}
 		}
 
 		///<summary>Used in FormInsPlan when applying changes to all identical plans.  Also used when merging plans. It first compares the old benefit list with the new one.  If there are no changes, it does nothing.  But if there are any changes, then we no longer care what the old benefit list was.  We will just delete it for all similar plans and recreate it.  Returns true if a change was made, false if no change made.</summary>
-		public static bool UpdateListForIdentical(ArrayList oldBenefitList,ArrayList newBenefitList,InsPlan plan) {
+		public static bool UpdateListForIdentical(List<Benefit> oldBenefitList,List<Benefit> newBenefitList,List<int> planNums) {
 			Benefit newBenefit;
 			bool changed=false;
 			for(int i=0;i<newBenefitList.Count;i++) {//loop through the new list
 				//look for new benefits
-				if(((Benefit)newBenefitList[i]).BenefitNum==0) {
+				if(newBenefitList[i].BenefitNum==0) {
 					changed=true;
 					break;
 				}
@@ -502,11 +400,11 @@ namespace OpenDental {
 				for(int i=0;i<oldBenefitList.Count;i++) {//loop through the old list
 					newBenefit=null;
 					for(int j=0;j<newBenefitList.Count;j++) {
-						if(newBenefitList[j]==null || ((Benefit)newBenefitList[j]).BenefitNum==0) {
+						if(newBenefitList[j]==null || newBenefitList[j].BenefitNum==0) {
 							continue;
 						}
-						if(((Benefit)oldBenefitList[i]).BenefitNum==((Benefit)newBenefitList[j]).BenefitNum) {
-							newBenefit=(Benefit)newBenefitList[j];
+						if(oldBenefitList[i].BenefitNum==newBenefitList[j].BenefitNum) {
+							newBenefit=newBenefitList[j];
 							break;
 						}
 					}
@@ -516,16 +414,16 @@ namespace OpenDental {
 						break;
 					}
 					//benefit was found with matching benefitNum, so check for changes
-					if(newBenefit.PlanNum             != ((Benefit)oldBenefitList[i]).PlanNum
-						|| newBenefit.PatPlanNum        != ((Benefit)oldBenefitList[i]).PatPlanNum
-						|| newBenefit.CovCatNum         != ((Benefit)oldBenefitList[i]).CovCatNum
-						|| newBenefit.ADACode           != ((Benefit)oldBenefitList[i]).ADACode
-						|| newBenefit.BenefitType       != ((Benefit)oldBenefitList[i]).BenefitType
-						|| newBenefit.Percent           != ((Benefit)oldBenefitList[i]).Percent
-						|| newBenefit.MonetaryAmt       != ((Benefit)oldBenefitList[i]).MonetaryAmt
-						|| newBenefit.TimePeriod        != ((Benefit)oldBenefitList[i]).TimePeriod
-						|| newBenefit.QuantityQualifier != ((Benefit)oldBenefitList[i]).QuantityQualifier
-						|| newBenefit.Quantity          != ((Benefit)oldBenefitList[i]).Quantity) 
+					if(newBenefit.PlanNum             != oldBenefitList[i].PlanNum
+						|| newBenefit.PatPlanNum        != oldBenefitList[i].PatPlanNum
+						|| newBenefit.CovCatNum         != oldBenefitList[i].CovCatNum
+						|| newBenefit.ADACode           != oldBenefitList[i].ADACode
+						|| newBenefit.BenefitType       != oldBenefitList[i].BenefitType
+						|| newBenefit.Percent           != oldBenefitList[i].Percent
+						|| newBenefit.MonetaryAmt       != oldBenefitList[i].MonetaryAmt
+						|| newBenefit.TimePeriod        != oldBenefitList[i].TimePeriod
+						|| newBenefit.QuantityQualifier != oldBenefitList[i].QuantityQualifier
+						|| newBenefit.Quantity          != oldBenefitList[i].Quantity) 
 					{
 						changed=true;
 						break;
@@ -535,13 +433,14 @@ namespace OpenDental {
 			if(!changed){
 				return false;
 			}
-			int[] planNums=plan.GetPlanNumsOfSamePlans();
+			//List<int> planNums=new List<int>();
+			//planNums.AddRange(InsPlans.GetPlanNumsOfSamePlans(Employers.GetName(plan.EmployerNum),plan.GroupName,plan.GroupNum,
+			//	plan.DivisionNo,Carriers.GetName(plan.CarrierNum),plan.IsMedical,plan.PlanNum,true));
 			string command="";
-			DataConnection dcon=new DataConnection();
-			for(int i=0;i<planNums.Length;i++){//loop through each plan
+			for(int i=0;i<planNums.Count;i++){//loop through each plan
 				//delete all benefits for all identical plans
 				command="DELETE FROM benefit WHERE PlanNum="+POut.PInt(planNums[i]);
-				dcon.NonQ(command);
+				General.NonQ(command);
 				for(int j=0;j<newBenefitList.Count;j++){//loop through the new list
 					if(newBenefitList[j]==null) {
 						continue;
@@ -551,7 +450,7 @@ namespace OpenDental {
 					}
 					newBenefit=((Benefit)newBenefitList[j]).Copy();
 					newBenefit.PlanNum=planNums[i];
-					newBenefit.Insert();
+					Insert(newBenefit);
 				}
 			}
 			return true;
@@ -621,40 +520,11 @@ namespace OpenDental {
 		///<summary>Deletes all benefits for a plan from the database.  Only used in FormInsPlan when picking a plan from the list.  Need to clear out benefits so that they won't be picked up when choosing benefits for all.</summary>
 		public static void DeleteForPlan(int planNum){
 			string command="DELETE FROM benefit WHERE PlanNum="+POut.PInt(planNum);
-			DataConnection dcon=new DataConnection();
-			dcon.NonQ(command);
+			General.NonQ(command);
 		}
 
 	}
 
-	/*================================================================================================================
-	=========================================== class BenefitArraySorter =============================================*/
-	///<summary></summary>
-	public class BenefitArraySorter:IComparer {
-		///<summary></summary>
-		int IComparer.Compare(Object x,Object y) {
-			Benefit[] array1=(Benefit[])x;
-			Benefit ben1=null;
-			for(int i=0;i<array1.Length;i++){
-				if(array1[i]==null){
-					continue;
-				}
-				ben1=array1[i].Copy();
-				break;
-			}
-			Benefit[] array2=(Benefit[])y;
-			Benefit ben2=null;
-			for(int i=0;i<array2.Length;i++) {
-				if(array2[i]==null) {
-					continue;
-				}
-				ben2=array2[i].Copy();
-				break;
-			}
-			return(ben1.CompareTo(ben2));
-		}
-
-	}
 
 		
 

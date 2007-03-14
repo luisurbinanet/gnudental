@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -615,7 +616,7 @@ namespace OpenDental{
 			this.textAge.Location = new System.Drawing.Point(276,232);
 			this.textAge.Name = "textAge";
 			this.textAge.ReadOnly = true;
-			this.textAge.Size = new System.Drawing.Size(40,20);
+			this.textAge.Size = new System.Drawing.Size(68,20);
 			this.textAge.TabIndex = 0;
 			// 
 			// textSalutation
@@ -946,7 +947,7 @@ namespace OpenDental{
 			this.textAddrNotes.Location = new System.Drawing.Point(14,40);
 			this.textAddrNotes.Multiline = true;
 			this.textAddrNotes.Name = "textAddrNotes";
-			this.textAddrNotes.QuickPasteType = OpenDental.QuickPasteType.PatAddressNote;
+			this.textAddrNotes.QuickPasteType = OpenDentBusiness.QuickPasteType.PatAddressNote;
 			this.textAddrNotes.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textAddrNotes.Size = new System.Drawing.Size(237,59);
 			this.textAddrNotes.TabIndex = 0;
@@ -1454,7 +1455,7 @@ namespace OpenDental{
 				textBirthdate.Text="";
 			else
 				textBirthdate.Text=PatCur.Birthdate.ToShortDateString();
-			textAge.Text=Shared.AgeToString(PatCur.Age);
+			textAge.Text=Shared.DateToAgeString(PatCur.Birthdate);
 			if(CultureInfo.CurrentCulture.Name=="en-US"//if USA
 				&& PatCur.SSN!=null//the null catches new patients
 				&& PatCur.SSN.Length==9)//and length exactly 9 (no data gets lost in formatting)
@@ -1538,15 +1539,15 @@ namespace OpenDental{
 			}
 			textSchool.Text=PatCur.SchoolName;
 			textAddrNotes.Text=PatCur.AddrNote;
-			if(Prefs.GetBool("EasyHidePublicHealth")){
+			if(PrefB.GetBool("EasyHidePublicHealth")){
 				groupPH.Visible=false;
 			}
-			if(Prefs.GetBool("EasyHideMedicaid")){
+			if(PrefB.GetBool("EasyHideMedicaid")){
 				label31.Visible=false;
 				label37.Visible=false;
 				textMedicaidID.Visible=false;
 			}
-			if(Prefs.GetBool("EasyNoClinics")){
+			if(PrefB.GetBool("EasyNoClinics")){
 				comboClinic.Visible=false;
 				labelClinic.Visible=false;
 			}
@@ -1574,7 +1575,7 @@ namespace OpenDental{
 				labelTrophyFolder.Visible=false;
 				textTrophyFolder.Visible=false;
 			}
-			if(Prefs.GetBool("EasyHideHospitals")){
+			if(PrefB.GetBool("EasyHideHospitals")){
 				textWard.Visible=false;
 				labelWard.Visible=false;
 			}
@@ -1704,7 +1705,7 @@ namespace OpenDental{
 			if(birthdate>DateTime.Today){
 				birthdate=birthdate.AddYears(-100);
 			}
-			textAge.Text=Shared.AgeToString(Shared.DateToAge(birthdate));
+			textAge.Text=Shared.DateToAgeString(birthdate);// .AgeToString(Shared.DateToAge(birthdate));
 		}
 
 		private void textZip_TextChanged(object sender, System.EventArgs e) {
@@ -1743,9 +1744,10 @@ namespace OpenDental{
 			ZipCodes.GetALMatches(textZip.Text);
 			if(ZipCodes.ALMatches.Count==0){
 				//No match found. Must enter info for new zipcode
-				ZipCodes.Cur=new ZipCode();
-				ZipCodes.Cur.ZipCodeDigits=textZip.Text;
+				ZipCode ZipCodeCur=new ZipCode();
+				ZipCodeCur.ZipCodeDigits=textZip.Text;
 				FormZipCodeEdit FormZE=new FormZipCodeEdit();
+				FormZE.ZipCodeCur=ZipCodeCur;
 				FormZE.IsNew=true;
 				FormZE.ShowDialog();
 				if(FormZE.DialogResult!=DialogResult.OK){
@@ -1753,9 +1755,9 @@ namespace OpenDental{
 				}
 				DataValid.SetInvalid(InvalidTypes.ZipCodes);//FormZipCodeEdit does not contain internal refresh
 				FillComboZip();
-				textCity.Text=ZipCodes.Cur.City;
-				textState.Text=ZipCodes.Cur.State;
-				textZip.Text=ZipCodes.Cur.ZipCodeDigits;
+				textCity.Text=ZipCodeCur.City;
+				textState.Text=ZipCodeCur.State;
+				textZip.Text=ZipCodeCur.ZipCodeDigits;
 			}
 			else if(ZipCodes.ALMatches.Count==1){
 				//only one match found.  Use it.
@@ -1771,9 +1773,9 @@ namespace OpenDental{
 					return;
 				}
 				DataValid.SetInvalid(InvalidTypes.ZipCodes);
-				textCity.Text=ZipCodes.Cur.City;
-				textState.Text=ZipCodes.Cur.State;
-				textZip.Text=ZipCodes.Cur.ZipCodeDigits;
+				textCity.Text=FormZS.ZipSelected.City;
+				textState.Text=FormZS.ZipSelected.State;
+				textZip.Text=FormZS.ZipSelected.ZipCodeDigits;
 			}
 		}
 
@@ -1784,9 +1786,9 @@ namespace OpenDental{
 			}
 			ZipCodes.GetALMatches(textZip.Text);
 			if(ZipCodes.ALMatches.Count==0){
-				ZipCodes.Cur=new ZipCode();
-				ZipCodes.Cur.ZipCodeDigits=textZip.Text;
 				FormZipCodeEdit FormZE=new FormZipCodeEdit();
+				FormZE.ZipCodeCur=new ZipCode();
+				FormZE.ZipCodeCur.ZipCodeDigits=textZip.Text;
 				FormZE.IsNew=true;
 				FormZE.ShowDialog();
 				FillComboZip();
@@ -1794,6 +1796,9 @@ namespace OpenDental{
 					return;
 				}
 				DataValid.SetInvalid(InvalidTypes.ZipCodes);
+				textCity.Text=FormZE.ZipCodeCur.City;
+				textState.Text=FormZE.ZipCodeCur.State;
+				textZip.Text=FormZE.ZipCodeCur.ZipCodeDigits;
 			}
 			else{
 				FormZipSelect FormZS=new FormZipSelect();
@@ -1804,10 +1809,10 @@ namespace OpenDental{
 				}
 				//Not needed:
 				//DataValid.SetInvalid(InvalidTypes.ZipCodes);
+				textCity.Text=FormZS.ZipSelected.City;
+				textState.Text=FormZS.ZipSelected.State;
+				textZip.Text=FormZS.ZipSelected.ZipCodeDigits;
 			}
-			textCity.Text=ZipCodes.Cur.City;
-			textState.Text=ZipCodes.Cur.State;
-			textZip.Text=ZipCodes.Cur.ZipCodeDigits;
 		}
 
 		private void textWirelessPhone_TextChanged(object sender, System.EventArgs e) {
@@ -2097,7 +2102,7 @@ namespace OpenDental{
 			if(!MsgBox.Show(this,true,"Delete Referral?")){
 				return;   
 			}
-			RefList[tbRefList.SelectedRow].Delete();
+			RefAttaches.Delete(RefList[tbRefList.SelectedRow]);
 			FillTable();		
 		}
 
@@ -2377,7 +2382,7 @@ namespace OpenDental{
 			if(PatCur.Guarantor==0){
 				PatCur.Guarantor=PatCur.PatNum;
 			}
-			PatCur.Update(PatOld);
+			Patients.Update(PatCur,PatOld);
 			if(checkSame.Checked){
 				//might want to include a mechanism for comparing fields to be overwritten
 				Patients.UpdateAddressForFam(PatCur);
@@ -2401,7 +2406,7 @@ namespace OpenDental{
 					Referrals.List[i].Zip=PatCur.Zip;
 					Referrals.List[i].Telephone=TelephoneNumbers.FormatNumbersOnly(PatCur.HmPhone);
 					Referrals.List[i].EMail=PatCur.Email;
-					Referrals.List[i].Update();
+					Referrals.Update(Referrals.List[i]);
 					Referrals.Refresh();
 					break;
 				}
@@ -2416,7 +2421,7 @@ namespace OpenDental{
 				for(int i=0;i<recalls.Length;i++){
 					recalls[i].IsDisabled=true;
 					recalls[i].DateDue=DateTime.MinValue;
-					recalls[i].Update();
+					Recalls.Update(recalls[i]);
 				}
 			}
 			DialogResult=DialogResult.OK;
@@ -2432,9 +2437,9 @@ namespace OpenDental{
 			}
 			if(IsNew){
 				for(int i=0;i<RefList.Length;i++){
-					RefList[i].Delete();
+					RefAttaches.Delete(RefList[i]);
 				}
-				PatCur.Delete();
+				Patients.Delete(PatCur);
 			}
 		}
 

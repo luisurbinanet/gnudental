@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -34,6 +35,7 @@ namespace OpenDental{
 		private string[] PatNames;
 		///<summary></summary>
 		private string[] Brands;
+		public Medication MedicationCur;
 
 		///<summary></summary>
 		public FormMedicationEdit()
@@ -166,7 +168,7 @@ namespace OpenDental{
 			this.textNotes.Location = new System.Drawing.Point(148, 67);
 			this.textNotes.Multiline = true;
 			this.textNotes.Name = "textNotes";
-			this.textNotes.QuickPasteType = OpenDental.QuickPasteType.MedicationEdit;
+			this.textNotes.QuickPasteType = QuickPasteType.MedicationEdit;
 			this.textNotes.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textNotes.Size = new System.Drawing.Size(459, 194);
 			this.textNotes.TabIndex = 9;
@@ -283,15 +285,15 @@ namespace OpenDental{
 		}
 
 		private void FillForm(){
-			textMedName.Text=Medications.Cur.MedName;
+			textMedName.Text=MedicationCur.MedName;
 			if(!IsNew){
 				textMedName.ReadOnly=true;
 			}
-			if(Medications.Cur.MedicationNum==Medications.Cur.GenericNum){
-				textGenericName.Text=Medications.Cur.MedName;
-				textNotes.Text=Medications.Cur.Notes;
+			if(MedicationCur.MedicationNum==MedicationCur.GenericNum){
+				textGenericName.Text=MedicationCur.MedName;
+				textNotes.Text=MedicationCur.Notes;
 				textNotes.ReadOnly=false;
-				Brands=Medications.GetBrands(Medications.Cur.MedicationNum);
+				Brands=Medications.GetBrands(MedicationCur.MedicationNum);
 				comboBrands.Items.Clear();
 				comboBrands.Items.AddRange(Brands);
 				if(Brands.Length>0){
@@ -299,14 +301,14 @@ namespace OpenDental{
 				}
 			}
 			else{
-				textGenericName.Text=Medications.GetMedication(Medications.Cur.GenericNum).MedName;
-				textNotes.Text=Medications.GetMedication(Medications.Cur.GenericNum).Notes;
+				textGenericName.Text=Medications.GetMedication(MedicationCur.GenericNum).MedName;
+				textNotes.Text=Medications.GetMedication(MedicationCur.GenericNum).Notes;
 				textNotes.ReadOnly=true;
 				Brands=new string[0];
 				comboBrands.Visible=false;
 				labelBrands.Visible=false;
 			}
-			PatNames=Medications.GetPats(Medications.Cur.MedicationNum);
+			PatNames=Medications.GetPats(MedicationCur.MedicationNum);
 			comboPatients.Items.Clear();
 			comboPatients.Items.AddRange(PatNames);
 			if(PatNames.Length>0){
@@ -316,7 +318,7 @@ namespace OpenDental{
 
 		private void textMedName_TextChanged(object sender, System.EventArgs e) {
 			//this causes immediate display update with each keypress
-			if(Medications.Cur.MedicationNum==Medications.Cur.GenericNum){
+			if(MedicationCur.MedicationNum==MedicationCur.GenericNum){
 				textGenericName.Text=textMedName.Text;
 			}
 		}
@@ -336,20 +338,20 @@ namespace OpenDental{
 					return;
 				}
 			}
-			Medications.DeleteCur();
+			Medications.Delete(MedicationCur);
 			DialogResult=DialogResult.OK;
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
 			//generic num already handled
-			Medications.Cur.MedName=textMedName.Text;
-			if(Medications.Cur.MedicationNum==Medications.Cur.GenericNum){
-				Medications.Cur.Notes=textNotes.Text;
+			MedicationCur.MedName=textMedName.Text;
+			if(MedicationCur.MedicationNum==MedicationCur.GenericNum){
+				MedicationCur.Notes=textNotes.Text;
 			}
 			else{
-				Medications.Cur.Notes="";
+				MedicationCur.Notes="";
 			}
-			Medications.UpdateCur();
+			Medications.Update(MedicationCur);
 			DialogResult=DialogResult.OK;
 		}
 
@@ -361,7 +363,7 @@ namespace OpenDental{
 			if(DialogResult==DialogResult.OK)
 				return;
 			if(IsNew){
-				Medications.DeleteCur();
+				Medications.Delete(MedicationCur);
 			}
 		}
 

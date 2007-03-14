@@ -1,54 +1,26 @@
 using System;
 using System.Collections;
+using System.Data;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
-
-	///<summary>Every InsPlan has a Carrier.  The carrier stores the name and address.</summary>
-	public struct Carrier{
-		///<summary>Primary key.</summary>
-		public int CarrierNum;
-		///<summary>Name of the carrier.</summary>
-		public string CarrierName;
-		///<summary>.</summary>
-		public string Address;
-		///<summary>Second line of address.</summary>
-		public string Address2;
-		///<summary>.</summary>
-		public string City;
-		///<summary>2 char in the US.</summary>
-		public string State;
-		///<summary>Postal code.</summary>
-		public string Zip;
-		///<summary>Includes any punctuation.</summary>
-		public string Phone;
-		///<summary>E-claims electronic payer id.  5 char.</summary>
-		public string ElectID;
-		///<summary>Do not send electronically.  It's just a default; you can still send electronically.</summary>
-		public bool NoSendElect;
-	}
-	
-	/*=========================================================================================
-		=================================== class Carriers ===========================================*/
 	///<summary></summary>
-	public class Carriers:DataClass{
+	public class Carriers{
 		///<summary></summary>
 		public static Carrier[] List;
 		///<summary>A hashtable of all carriers.</summary>
 		public static Hashtable HList;
-		///<summary></summary>
-		public static Carrier Cur;
 
 		///<summary>Carriers are not refreshed as local data, but are refreshed as needed. A full refresh is frequently triggered if a carrierNum cannot be found in the HList.  Important retrieval is done directly from the db.</summary>
 		public static void Refresh(){
 			HList=new Hashtable();
-			cmd.CommandText = 
-				"SELECT * from carrier ORDER BY CarrierName";
-			FillTable();
-			//Employer temp=new Employer();
+			string command="SELECT * from carrier ORDER BY CarrierName";
+			DataTable table=General.GetTable(command);
 			List=new Carrier[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
+				List[i]=new Carrier();
 				List[i].CarrierNum  =PIn.PInt   (table.Rows[i][0].ToString());
 				List[i].CarrierName =PIn.PString(table.Rows[i][1].ToString());
 				List[i].Address     =PIn.PString(table.Rows[i][2].ToString());
@@ -64,8 +36,8 @@ namespace OpenDental{
 		}
 
 		///<summary></summary>
-		public static void UpdateCur(){
-			cmd.CommandText="UPDATE carrier SET "
+		public static void Update(Carrier Cur){
+			string command="UPDATE carrier SET "
 				+ "CarrierName= '" +POut.PString(Cur.CarrierName)+"' "
 				+ ",Address= '"    +POut.PString(Cur.Address)+"' "
 				+ ",Address2= '"   +POut.PString(Cur.Address2)+"' "
@@ -76,25 +48,25 @@ namespace OpenDental{
 				+ ",ElectID= '"    +POut.PString(Cur.ElectID)+"' "
 				+ ",NoSendElect= '"+POut.PBool  (Cur.NoSendElect)+"' "
 				+"WHERE CarrierNum = '"+POut.PInt(Cur.CarrierNum)+"'";
-			//MessageBox.Show(cmd.CommandText);
-			NonQ();
+			//MessageBox.Show(string command);
+			General.NonQ(command);
 		}
 
 		///<summary></summary>
-		public static void InsertCur(){
-			if(Prefs.RandomKeys){
+		public static void Insert(Carrier Cur){
+			if(PrefB.RandomKeys){
 				Cur.CarrierNum=MiscData.GetKey("carrier","CarrierNum");
 			}
-			cmd.CommandText="INSERT INTO carrier (";
-			if(Prefs.RandomKeys){
-				cmd.CommandText+="CarrierNum,";
+			string command="INSERT INTO carrier (";
+			if(PrefB.RandomKeys){
+				command+="CarrierNum,";
 			}
-			cmd.CommandText+="CarrierName,Address,Address2,City,State,Zip,Phone"
+			command+="CarrierName,Address,Address2,City,State,Zip,Phone"
 				+",ElectID,NoSendElect) VALUES(";
-			if(Prefs.RandomKeys){
-				cmd.CommandText+="'"+POut.PInt(Cur.CarrierNum)+"', ";
+			if(PrefB.RandomKeys){
+				command+="'"+POut.PInt(Cur.CarrierNum)+"', ";
 			}
-			cmd.CommandText+=
+			command+=
 				 "'"+POut.PString(Cur.CarrierName)+"', "
 				+"'"+POut.PString(Cur.Address)+"', "
 				+"'"+POut.PString(Cur.Address2)+"', "
@@ -104,30 +76,28 @@ namespace OpenDental{
 				+"'"+POut.PString(Cur.Phone)+"', "
 				+"'"+POut.PString(Cur.ElectID)+"', "
 				+"'"+POut.PBool  (Cur.NoSendElect)+"')";
-			if(Prefs.RandomKeys){
-				NonQ();
+			if(PrefB.RandomKeys){
+				General.NonQ(command);
 			}
 			else{
- 				NonQ(true);
-				Cur.CarrierNum=InsertID;
+ 				Cur.CarrierNum=General.NonQ(command,true);
 			}
 			//id used in the conversion process for 2.8
 		}
 
 		///<summary>There MUST not be any dependencies before calling this or there will be invalid foreign keys.  This is only called from FormCarrierEdit after proper validation.</summary>
-		public static void DeleteCur(){
-			cmd.CommandText="DELETE from carrier WHERE CarrierNum = '"+Cur.CarrierNum.ToString()+"'";
-			NonQ();
+		public static void Delete(Carrier Cur){
+			string command="DELETE from carrier WHERE CarrierNum = '"+Cur.CarrierNum.ToString()+"'";
+			General.NonQ(command);
 		}
 
 		///<summary>Returns a list of insplans that are dependent on the Cur carrier. Used to display in carrier edit and before deleting a carrier to make sure carrier is not in use.</summary>
-		public static string[] DependentPlans(){
-			cmd.CommandText="SELECT CONCAT(LName,', ',FName) FROM patient,insplan" 
+		public static string[] DependentPlans(Carrier Cur){
+			string command="SELECT CONCAT(LName,', ',FName) FROM patient,insplan" 
 				+" WHERE patient.PatNum=insplan.Subscriber"
 				+" && insplan.CarrierNum = '"+POut.PInt(Cur.CarrierNum)+"'"
 				+" ORDER BY LName,FName";
-			//MessageBox.Show(cmd.CommandText);
-			FillTable();
+			DataTable table=General.GetTable(command);
 			string[] retStr=new string[table.Rows.Count];
 			for(int i=0;i<table.Rows.Count;i++){
 				retStr[i]=PIn.PString(table.Rows[i][0].ToString());
@@ -149,10 +119,11 @@ namespace OpenDental{
 			return "";
 		}
 
+		/*
 		///<summary>Getting phased out.  Sets Cur to the carrier based on the carrierNum.  This also refreshes the list if necessary, so it will work even if the list has not been refreshed recently..</summary>
 		public static void GetCur(int carrierNum){
 			Cur=GetCarrier(carrierNum);
-		}
+		}*/
 
 		///<summary>Replacing GetCur. Gets the specified carrier. This also refreshes the list if necessary, so it will work even if the list has not been refreshed recently.</summary>
 		public static Carrier GetCarrier(int carrierNum){
@@ -176,12 +147,12 @@ namespace OpenDental{
 		}
 
 		///<summary>Gets a carrierNum from the database based on the other data in Cur.  Sets Cur.CarrierNum accordingly. If there is no matching carrier, then a new carrier is created.  The end result is that Cur will now always have a valid carrierNum to use.</summary>
-		public static void GetCurSame(){
+		public static void GetCurSame(Carrier Cur){
 			if(Cur.CarrierName==""){
 				Cur=new Carrier();
 				return;
 			}
-			cmd.CommandText="SELECT CarrierNum FROM carrier WHERE " 
+			string command="SELECT CarrierNum FROM carrier WHERE " 
 				+"CarrierName = '"   +POut.PString(Cur.CarrierName)+"' "
 				+"&& Address = '"    +POut.PString(Cur.Address)+"' "
 				+"&& Address2 = '"   +POut.PString(Cur.Address2)+"' "
@@ -191,12 +162,12 @@ namespace OpenDental{
 				+"&& Phone = '"      +POut.PString(Cur.Phone)+"' "
 				+"&& ElectID = '"    +POut.PString(Cur.ElectID)+"' "
 				+"&& NoSendElect = '"+POut.PBool  (Cur.NoSendElect)+"'";
-			FillTable();
+			DataTable table=General.GetTable(command);
 			if(table.Rows.Count>0){
 				Cur.CarrierNum=PIn.PInt(table.Rows[0][0].ToString());
 				return;
 			}
-			InsertCur();
+			Insert(Cur);
 			//MessageBox.Show(Cur.EmployerNum.ToString());
 			return;
 		}
@@ -221,13 +192,13 @@ namespace OpenDental{
 			for(int i=0;i<carrierNums.Length;i++){
 				if(i==usingIndex)
 					continue;
-				cmd.CommandText="UPDATE insplan SET CarrierNum = '"+newNum
+				string command="UPDATE insplan SET CarrierNum = '"+newNum
 					+"' WHERE CarrierNum = '"+carrierNums[i].ToString()+"'";
-				//MessageBox.Show(cmd.CommandText);
-				NonQ();
-				cmd.CommandText="DELETE FROM carrier"
+				//MessageBox.Show(string command);
+				General.NonQ(command);
+				command="DELETE FROM carrier"
 					+" WHERE CarrierNum = '"+carrierNums[i].ToString()+"'";
-				NonQ();
+				General.NonQ(command);
 			}
 		}
 

@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -109,8 +110,8 @@ namespace OpenDental{
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			Debug.WriteLine(Passwords.EncryptPassword(textMasterPass.Text));
-			if(!Passwords.CheckPassword(textMasterPass.Text,masterHash)){
+			Debug.WriteLine(UserB.EncryptPassword(textMasterPass.Text));
+			if(!UserB.CheckPassword(textMasterPass.Text,masterHash)){
 				MessageBox.Show(Lan.g(this,"Master password incorrect."));
 				return;
 			}

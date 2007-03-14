@@ -2,10 +2,9 @@ using System;
 using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
-using System.Security;
-using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -165,9 +164,9 @@ namespace OpenDental{
 		#endregion
 
 		private void FormLogOn_Load(object sender, System.EventArgs e) {
-			for(int i=0;i<Users.List.Length;i++){
-				listUser.Items.Add(Users.List[i].UserName);
-				if(Security.CurUser!=null && Users.List[i].UserNum==Security.CurUser.UserNum){
+			for(int i=0;i<Users.Listt.Count;i++){
+				listUser.Items.Add(Users.Listt[i].UserName);
+				if(Security.CurUser!=null && Users.Listt[i].UserNum==Security.CurUser.UserNum){
 					listUser.SelectedIndex=i;
 				}
 			}
@@ -186,13 +185,13 @@ namespace OpenDental{
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			if(Users.List[listUser.SelectedIndex].Password!=""){
-				if(!Passwords.CheckPassword(textPassword.Text,Users.List[listUser.SelectedIndex].Password)){
+			if(Users.Listt[listUser.SelectedIndex].Password!=""){
+				if(!UserB.CheckPassword(textPassword.Text,Users.Listt[listUser.SelectedIndex].Password)){
 					MsgBox.Show(this,"Incorrect password");
 					return;
 				}
 			}
-			Security.CurUser=Users.List[listUser.SelectedIndex].Copy();
+			Security.CurUser=Users.Listt[listUser.SelectedIndex].Copy();
 			//SecurityLogs.MakeLogEntry(Permissions.StartupSingleUser,"");
 			DialogResult=DialogResult.OK;
 		}
@@ -209,25 +208,11 @@ namespace OpenDental{
 
 	}
 
-	///<summary></summary>
-	public class Passwords{
+	//<summary></summary>
+	//public class Passwords{
 
-		///<summary></summary>
-		public static string EncryptPassword(string inputPass){
-			HashAlgorithm hash=HashAlgorithm.Create("MD5");
-      byte[] unicodeBytes=Encoding.Unicode.GetBytes(inputPass);
-			byte[] hashbytes=hash.ComputeHash(unicodeBytes);
-			return Convert.ToBase64String(hashbytes);
-		}
 		
-		///<summary></summary>
-		public static bool CheckPassword(string inputPass,string hashedPass){
-			string hashedInput=EncryptPassword(inputPass);
-			//MessageBox.Show(
-			//Debug.WriteLine(hashedInput+","+hashedPass);
-			return hashedInput==hashedPass;
-		}
-	}
+	//}
 
 
 }

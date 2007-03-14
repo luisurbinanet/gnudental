@@ -1,8 +1,10 @@
 using System;
 using System.Drawing;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -110,9 +112,9 @@ namespace OpenDental{
 			// 
 			this.imageListPerm.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageListPerm.ImageStream")));
 			this.imageListPerm.TransparentColor = System.Drawing.Color.Transparent;
-			this.imageListPerm.Images.SetKeyName(0,"");
-			this.imageListPerm.Images.SetKeyName(1,"");
-			this.imageListPerm.Images.SetKeyName(2,"");
+			this.imageListPerm.Images.SetKeyName(0,"grayBox.gif");
+			this.imageListPerm.Images.SetKeyName(1,"checkBoxUnchecked.gif");
+			this.imageListPerm.Images.SetKeyName(2,"checkBoxChecked.gif");
 			// 
 			// labelPerm
 			// 
@@ -203,7 +205,6 @@ namespace OpenDental{
 			this.Controls.Add(this.labelPerm);
 			this.Controls.Add(this.treeUsers);
 			this.Controls.Add(this.label2);
-			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "FormSecurity";
@@ -220,7 +221,7 @@ namespace OpenDental{
 			FillTreePermissionsInitial();
 			FillTreeUsers();
 			FillTreePerm();
-			checkTimecardSecurityEnabled.Checked=Prefs.GetBool("TimecardSecurityEnabled");
+			checkTimecardSecurityEnabled.Checked=PrefB.GetBool("TimecardSecurityEnabled");
 		}
 
 		private void FillTreePermissionsInitial(){
@@ -324,14 +325,14 @@ namespace OpenDental{
 			UserGroups.Refresh();
 			Users.Refresh();
 			treeUsers.Nodes.Clear();
-			User[] usersForGroup;
+			List<User> usersForGroup;
 			TreeNode groupNode;
 			TreeNode userNode;
 			for(int i=0;i<UserGroups.List.Length;i++){
 				groupNode=new TreeNode(UserGroups.List[i].Description);
 				groupNode.Tag=UserGroups.List[i].UserGroupNum;
 				usersForGroup=Users.GetForGroup(UserGroups.List[i].UserGroupNum);
-				for(int j=0;j<usersForGroup.Length;j++){
+				for(int j=0;j<usersForGroup.Count;j++){
 					userNode=new TreeNode(usersForGroup[j].UserName);
 					userNode.Tag=usersForGroup[j].UserNum;
 					groupNode.Nodes.Add(userNode);
@@ -380,7 +381,7 @@ namespace OpenDental{
 				SelectedGroupNum=(int)clickedNode.Tag;
 			}
 			else{//user
-				SelectedGroupNum=Users.GetUser((int)clickedNode.Tag).UserGroupNum;
+				SelectedGroupNum=UserB.GetUser((int)clickedNode.Tag).UserGroupNum;
 			}
 			FillTreePerm();
 		}
@@ -407,7 +408,7 @@ namespace OpenDental{
 				}
 			}
 			else{//user
-				User user=Users.GetUser((int)treeUsers.SelectedNode.Tag);
+				User user=UserB.GetUser((int)treeUsers.SelectedNode.Tag);
 				FormUserEdit FormU=new FormUserEdit(user);
 				FormU.ShowDialog();
 				if(FormU.DialogResult==DialogResult.Cancel){
@@ -498,7 +499,7 @@ namespace OpenDental{
 				}
 				else{
 					try{
-						perm.InsertOrUpdate(true);
+						GroupPermissions.InsertOrUpdate(perm,true);
 					}
 					catch(Exception ex){
 						MessageBox.Show(ex.Message);
@@ -560,7 +561,7 @@ namespace OpenDental{
 					perm.PermType=(Permissions)i;
 					perm.UserGroupNum=SelectedGroupNum;
 					try{
-						perm.InsertOrUpdate(true);
+						GroupPermissions.InsertOrUpdate(perm,true);
 					}
 					catch(Exception ex){
 						MessageBox.Show(ex.Message);

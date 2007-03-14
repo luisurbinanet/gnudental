@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -30,6 +31,7 @@ namespace OpenDental{
 		private System.Windows.Forms.Label label6;
 		///<summary></summary>
 		public bool IsNew;
+		public Contact ContactCur;
 
 		///<summary></summary>
 		public FormContactEdit()
@@ -265,15 +267,15 @@ namespace OpenDental{
 		private void FormContactEdit_Load(object sender, System.EventArgs e) {
 			for(int i=0;i<Defs.Short[(int)DefCat.ContactCategories].Length;i++){
 				listCategory.Items.Add(Defs.Short[(int)DefCat.ContactCategories][i].ItemName);
-				if(Contacts.Cur.Category==Defs.Short[(int)DefCat.ContactCategories][i].DefNum){
+				if(ContactCur.Category==Defs.Short[(int)DefCat.ContactCategories][i].DefNum){
 					listCategory.SelectedIndex=i;
 				}
 			}
-			textLName.Text=Contacts.Cur.LName;
-			textFName.Text=Contacts.Cur.FName;
-			textWkPhone.Text=Contacts.Cur.WkPhone;
-			textFax.Text=Contacts.Cur.Fax;
-			textNotes.Text=Contacts.Cur.Notes;
+			textLName.Text=ContactCur.LName;
+			textFName.Text=ContactCur.FName;
+			textWkPhone.Text=ContactCur.WkPhone;
+			textFax.Text=ContactCur.Fax;
+			textNotes.Text=ContactCur.Notes;
 		}
 
 		private void butDelete_Click(object sender, System.EventArgs e) {
@@ -284,7 +286,7 @@ namespace OpenDental{
 				DialogResult=DialogResult.Cancel;
 			}
 			else{
-				Contacts.DeleteCur();
+				Contacts.Delete(ContactCur);
 				DialogResult=DialogResult.OK;
 			}
 		}
@@ -327,17 +329,17 @@ namespace OpenDental{
 				return;
 			}
 			//a category will always be selected because of the manner in which Contact is accessed
-			Contacts.Cur.Category=Defs.Short[(int)DefCat.ContactCategories][listCategory.SelectedIndex].DefNum;
-			Contacts.Cur.LName=textLName.Text;
-			Contacts.Cur.FName=textFName.Text;
-			Contacts.Cur.WkPhone=textWkPhone.Text;
-			Contacts.Cur.Fax=textFax.Text;
-			Contacts.Cur.Notes=textNotes.Text;
+			ContactCur.Category=Defs.Short[(int)DefCat.ContactCategories][listCategory.SelectedIndex].DefNum;
+			ContactCur.LName=textLName.Text;
+			ContactCur.FName=textFName.Text;
+			ContactCur.WkPhone=textWkPhone.Text;
+			ContactCur.Fax=textFax.Text;
+			ContactCur.Notes=textNotes.Text;
 			if(IsNew){
-				Contacts.InsertCur();
+				Contacts.Insert(ContactCur);
 			}
 			else{
-				Contacts.UpdateCur();
+				Contacts.Update(ContactCur);
 			}
 			DialogResult=DialogResult.OK;
 		}

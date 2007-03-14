@@ -1,9 +1,11 @@
 using System;
+using System.Collections;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental.Bridges{
 	/// <summary></summary>
@@ -15,21 +17,21 @@ namespace OpenDental.Bridges{
 		}
 
 		///<summary>Launches the program using command line.</summary>
-		public static void SendData(Patient pat){
+		public static void SendData(Program ProgramCur, Patient pat){
 			//Usage: mediadent.exe /P<Patient Name> /D<Practitioner> /L<Language> /F<Image folder> /B<Birthdate>
 			//Example: mediadent.exe /PJan Met De Pet /DOtté Gunter /L1 /Fc:\Mediadent\patients\1011 /B27071973
-			ProgramProperties.GetForProgram();
+			ArrayList ForProgram=ProgramProperties.GetForProgram(ProgramCur.ProgramNum);
 			if(pat==null){
 				return;
 			}
 			string info="/P"+Cleanup(pat.FName+" "+pat.LName);
-			Provider prov=Providers.GetProv(pat.GetProvNum());
+			Provider prov=Providers.GetProv(Patients.GetProvNum(pat));
 			info+=" /D"+prov.FName+" "+prov.LName
 				+" /L1 /F";
-			ProgramProperties.GetCur("Image Folder");
-			info+=ProgramProperties.Cur.PropertyValue;
-			ProgramProperties.GetCur("Enter 0 to use PatientNum, or 1 to use ChartNum");
-			if(ProgramProperties.Cur.PropertyValue=="0"){
+			ProgramProperty PPCur=ProgramProperties.GetCur(ForProgram, "Image Folder");
+			info+=PPCur.PropertyValue;
+			PPCur=ProgramProperties.GetCur(ForProgram, "Enter 0 to use PatientNum, or 1 to use ChartNum");;
+			if(PPCur.PropertyValue=="0"){
 				info+=pat.PatNum.ToString();
 			}
 			else{
@@ -44,10 +46,10 @@ namespace OpenDental.Bridges{
 				processes[0].WaitForExit(3000);//wait a max of 3 seconds
 			}
 			try{
-				Process.Start(Programs.Cur.Path,info);
+				Process.Start(ProgramCur.Path,info);
 			}
 			catch{
-				MessageBox.Show(Programs.Cur.Path+" "+info+" is not available.");
+				MessageBox.Show(ProgramCur.Path+" "+info+" is not available.");
 			}
 		}
 

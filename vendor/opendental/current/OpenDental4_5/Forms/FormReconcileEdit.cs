@@ -4,6 +4,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using OpenDental.UI;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -398,7 +399,7 @@ namespace OpenDental{
 
 		private void butDelete_Click(object sender,EventArgs e) {
 			try{
-				ReconcileCur.Delete();
+				Reconciles.Delete(ReconcileCur);
 				DialogResult=DialogResult.OK;
 			}
 			catch(ApplicationException ex){
@@ -418,7 +419,7 @@ namespace OpenDental{
 			ReconcileCur.StartingBal=PIn.PDouble(textStart.Text);
 			ReconcileCur.EndingBal=PIn.PDouble(textEnd.Text);
 			ReconcileCur.IsLocked=checkLocked.Checked;
-			ReconcileCur.Update();
+			Reconciles.Update(ReconcileCur);
 			SaveList();
 			DialogResult=DialogResult.OK;
 		}
@@ -436,7 +437,7 @@ namespace OpenDental{
 					JournalList[i].ReconcileNum=0;
 				}
 				SaveList();//detaches all journal entries.
-				ReconcileCur.Delete();
+				Reconciles.Delete(ReconcileCur);
 			}
 		}
 

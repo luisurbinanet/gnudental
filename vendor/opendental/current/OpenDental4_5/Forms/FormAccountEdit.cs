@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -255,7 +256,7 @@ namespace OpenDental{
 				return;
 			}
 			try{
-				AccountCur.Delete();
+				Accounts.Delete(AccountCur);
 			}
 			catch(ApplicationException ex){
 				MessageBox.Show(ex.Message);
@@ -275,10 +276,10 @@ namespace OpenDental{
 			AccountCur.Inactive=checkInactive.Checked;
 			AccountCur.AccountColor=butColor.BackColor;
 			if(IsNew){
-				AccountCur.Insert();
+				Accounts.Insert(AccountCur);
 			}
 			else{
-				AccountCur.Update();
+				Accounts.Update(AccountCur);
 			}
 			DialogResult=DialogResult.OK;
 		}

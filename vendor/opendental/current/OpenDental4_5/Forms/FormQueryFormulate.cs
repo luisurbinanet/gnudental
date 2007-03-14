@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 ///<summary></summary>
@@ -19,6 +20,7 @@ namespace OpenDental{
 		private OpenDental.UI.Button butAdd;
 		private OpenDental.UI.Button butDelete;
 		private System.Windows.Forms.Label label3;
+		public UserQuery UserQueryCur;
 
 		///<summary></summary>
 		public FormQueryFormulate(){
@@ -227,14 +229,15 @@ namespace OpenDental{
 			if(list2.IndexFromPoint(e.X,e.Y)<0){//>list2.Items.Count){
 				return;
 			}
-			UserQueries.Cur=UserQueries.List[list2.IndexFromPoint(e.X,e.Y)];
-			textQuery.Text=UserQueries.Cur.QueryText;
-			textTitle.Text=UserQueries.Cur.Description;
-			textFileName.Text=UserQueries.Cur.FileName;
+			UserQueryCur=UserQueries.List[list2.IndexFromPoint(e.X,e.Y)];
+			textQuery.Text=UserQueryCur.QueryText;
+			textTitle.Text=UserQueryCur.Description;
+			textFileName.Text=UserQueryCur.FileName;
 		}
 
 		private void list2_DoubleClick(object sender, System.EventArgs e) {
 			FormQueryEdit FormQE=new FormQueryEdit();
+			FormQE.UserQueryCur=UserQueryCur;
 			FormQE.IsNew=false;
 			FormQE.ShowDialog();
 			FillList();
@@ -248,7 +251,7 @@ namespace OpenDental{
 			if(MessageBox.Show(Lan.g(this,"Delete Item?"),"",MessageBoxButtons.OKCancel)!=DialogResult.OK){
 				return;
 			}
-			UserQueries.DeleteCur();
+			UserQueries.Delete(UserQueryCur);
 			list2.SelectedIndex=-1;
 			FillList();
 			textTitle.Text="";
@@ -262,14 +265,14 @@ namespace OpenDental{
 				return;
 			}
 			Queries.CurReport=new ReportOld();
-			Queries.CurReport.Query=UserQueries.Cur.QueryText;
+			Queries.CurReport.Query=UserQueryCur.QueryText;
 			DialogResult=DialogResult.OK;
 		}
 
 		private void butAdd_Click(object sender, System.EventArgs e) {
 			FormQueryEdit FormQE=new FormQueryEdit();
 			FormQE.IsNew=true;
-			UserQueries.Cur=new UserQuery();
+			FormQE.UserQueryCur=new UserQuery();
 			FormQE.ShowDialog();
 			if(FormQE.DialogResult==DialogResult.OK){
 				FillList();

@@ -2,159 +2,13 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
-	
-	///<summary>Always attached to a payment.  Always affects exactly one patient account and one provider.</summary>
-	public class PaySplit{
-		///<summary>Primary key.</summary>
-		public int SplitNum;
-		///<summary>Amount of split.</summary>
-		public double SplitAmt;
-		///<summary>FK to patient.PatNum.</summary>
-		public int PatNum;
-		///<summary>Procedure date.  This is the date that shows on the account.  Frequently the same as the date of the payment, but not necessarily.  Not when the payment was made.  This is what the aging will be based on in a future version.</summary>
-		public DateTime ProcDate;
-		///<summary>FK to payment.PayNum.  Every paysplit must be linked to a payment.</summary>
-		public int PayNum;
-		///<summary>No longer used.</summary>
-		public bool IsDiscount;
-		///<summary>No longer used</summary>
-		public int DiscountType;
-		///<summary>FK to provider.ProvNum.</summary>
-		public int ProvNum;
-		///<summary>FK to payplan.PayPlanNum.  0 if not attached to a payplan.</summary>
-		public int PayPlanNum;
-		///<summary>Date always in perfect synch with Payment date.</summary>
-		public DateTime DatePay;
-		/// <summary></summary>
-		public int ProcNum;
-		///<summary>Date this paysplit was created.  User not allowed to edit.</summary>
-		public DateTime DateEntry;
-
-		///<summary>Returns a copy of this PaySplit.</summary>
-		public PaySplit Copy(){
-			PaySplit p=new PaySplit();
-			p.SplitNum=SplitNum;
-			p.SplitAmt=SplitAmt;
-			p.PatNum=PatNum;
-			p.ProcDate=ProcDate;
-			p.PayNum=PayNum;
-			p.ProvNum=ProvNum;
-			p.PayPlanNum=PayPlanNum;
-			p.DatePay=DatePay;
-			p.ProcNum=ProcNum;
-			p.DateEntry=DateEntry;
-			return p;
-		}
-
-		///<summary></summary>
-		public void Update(){
-			string command="UPDATE paysplit SET " 
-				+ "SplitAmt = '"     +POut.PDouble(SplitAmt)+"'"
-				+ ",PatNum = '"      +POut.PInt   (PatNum)+"'"
-				+ ",ProcDate = '"    +POut.PDate  (ProcDate)+"'"
-				+ ",PayNum = '"      +POut.PInt   (PayNum)+"'"
-				+ ",ProvNum = '"     +POut.PInt   (ProvNum)+"'"
-				+ ",PayPlanNum = '"  +POut.PInt   (PayPlanNum)+"'"
-				+ ",DatePay = '"     +POut.PDate  (DatePay)+"'"
-				+ ",ProcNum = '"     +POut.PInt   (ProcNum)+"'"
-				//+ ",DateEntry = '"   +POut.PDate  (DateEntry)+"'"//not allowed to change
-				+" WHERE splitNum = '" +POut.PInt (SplitNum)+"'";
-			//MessageBox.Show(cmd.CommandText);
-			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command);
-		}
-
-		///<summary>Inserts a </summary>
-		public void Insert(){
-			if(Prefs.RandomKeys){
-				SplitNum=MiscData.GetKey("paysplit","SplitNum");
-			}
-			string command= "INSERT INTO paysplit (";
-			if(Prefs.RandomKeys){
-				command+="SplitNum,";
-			}
-			command+="SplitAmt,PatNum,ProcDate, "
-				+"PayNum,ProvNum,PayPlanNum,DatePay,ProcNum,DateEntry) VALUES(";
-			if(Prefs.RandomKeys){
-				command+="'"+POut.PInt(SplitNum)+"', ";
-			}
-			command+=
-				 "'"+POut.PDouble(SplitAmt)+"', "
-				+"'"+POut.PInt   (PatNum)+"', "
-				+"'"+POut.PDate  (ProcDate)+"', "
-				+"'"+POut.PInt   (PayNum)+"', "
-				+"'"+POut.PInt   (ProvNum)+"', "
-				+"'"+POut.PInt   (PayPlanNum)+"', "
-				+"'"+POut.PDate  (DatePay)+"', "
-				+"'"+POut.PInt   (ProcNum)+"', "
-				+"NOW())";//DateEntry: date of server
-			DataConnection dcon=new DataConnection();
- 			if(Prefs.RandomKeys){
-				dcon.NonQ(command);
-			}
-			else{
- 				dcon.NonQ(command,true);
-				SplitNum=dcon.InsertID;
-			}
-			SplitNum=dcon.InsertID;
-			//SetSplit();
-		}
-
-		/*
-		///<summary>Called from Insert and from Delete because both of these actions can change the number of splits in a payment.</summary>
-		private void SetSplit(){
-			string command="SELECT COUNT(*) FROM paysplit WHERE PayNum="+POut.PInt(PayNum);
-			DataConnection dcon=new DataConnection();
-			DataTable table=dcon.GetTable(command);
-			if(table.Rows[0][0].ToString()=="1"){//only 1 paysplit
-				command="UPDATE payment SET IsSplit=0 WHERE PayNum="+POut.PInt(PayNum);//set false
-			}
-			else{
-				command="UPDATE payment SET IsSplit=1 WHERE PayNum="+POut.PInt(PayNum);//set true
-			}
-			dcon.NonQ(command);
-		}*/
-
-		/*
-		///<summary>First forces the DatePay of this split to match that of the payment.  Then does the insert or update.  If insert, then it sets the payment.IsSplit accordingly.</summary>
-		public void InsertOrUpdate(bool isNew){
-			//if(){
-			//	throw new Exception(Lan.g(this,""));
-			//}
-			//get the date of the payment and force this split to match
-			string command="SELECT PayDate FROM payment WHERE PayNum="+POut.PInt(PayNum);
-			DataConnection dcon=new DataConnection();
-			DataTable table=dcon.GetTable(command);
-			DatePay=PIn.PDate(table.Rows[0][0].ToString());
-			if(isNew){
-				Insert();
-			}
-			else{
-				Update();
-			}
-		}*/
-
-		///<summary>Deletes the paysplit.</summary>
-		public void Delete(){
-			string command= "DELETE from paysplit WHERE splitNum = "+POut.PInt(SplitNum);
-			DataConnection dcon=new DataConnection();
- 			dcon.NonQ(command);
-		}
-
-
-
-	}
-
-	/*=========================================================================================
-	=================================== class PaySplits ==========================================*/
-
 	///<summary></summary>
-	public class PaySplits{
-
+	public class PaySplits {
 		///<summary>Returns all paySplits for the given patNum, organized by procDate.  WARNING! Also includes related paysplits that aren't actually attached to patient.  Includes any split where payment is for this patient.</summary>
-		public static PaySplit[] Refresh(int patNum){
+		public static PaySplit[] Refresh(int patNum) {
 			string command=
 				"SELECT paysplit.* FROM paysplit,payment "
 				+"WHERE paysplit.PayNum=payment.PayNum "
@@ -164,39 +18,29 @@ namespace OpenDental{
 			return RefreshAndFill(command);
 		}
 
-		private static PaySplit[] RefreshAndFill(string command){
-			DataConnection dcon=new DataConnection();
- 			DataTable table=dcon.GetTable(command);
+		private static PaySplit[] RefreshAndFill(string command) {
+			DataTable table=General.GetTable(command);
 			PaySplit[] List=new PaySplit[table.Rows.Count];
-			for(int i=0;i<table.Rows.Count;i++){
+			for(int i=0;i<table.Rows.Count;i++) {
 				List[i]=new PaySplit();
-				List[i].SplitNum    = PIn.PInt   (table.Rows[i][0].ToString());
+				List[i].SplitNum    = PIn.PInt(table.Rows[i][0].ToString());
 				List[i].SplitAmt    = PIn.PDouble(table.Rows[i][1].ToString());
-				List[i].PatNum      = PIn.PInt   (table.Rows[i][2].ToString());
-				List[i].ProcDate    = PIn.PDate  (table.Rows[i][3].ToString());
-				List[i].PayNum      = PIn.PInt   (table.Rows[i][4].ToString());
+				List[i].PatNum      = PIn.PInt(table.Rows[i][2].ToString());
+				List[i].ProcDate    = PIn.PDate(table.Rows[i][3].ToString());
+				List[i].PayNum      = PIn.PInt(table.Rows[i][4].ToString());
 				//List[i].IsDiscount  = PIn.PBool  (table.Rows[i][5].ToString());
 				//List[i].DiscountType= PIn.PInt   (table.Rows[i][6].ToString());
-				List[i].ProvNum     = PIn.PInt   (table.Rows[i][7].ToString());
-				List[i].PayPlanNum  = PIn.PInt   (table.Rows[i][8].ToString());
-				List[i].DatePay     = PIn.PDate  (table.Rows[i][9].ToString());
-				List[i].ProcNum     = PIn.PInt   (table.Rows[i][10].ToString());
-				List[i].DateEntry   = PIn.PDate  (table.Rows[i][11].ToString());
+				List[i].ProvNum     = PIn.PInt(table.Rows[i][7].ToString());
+				List[i].PayPlanNum  = PIn.PInt(table.Rows[i][8].ToString());
+				List[i].DatePay     = PIn.PDate(table.Rows[i][9].ToString());
+				List[i].ProcNum     = PIn.PInt(table.Rows[i][10].ToString());
+				List[i].DateEntry   = PIn.PDate(table.Rows[i][11].ToString());
 			}
 			return List;
 		}
 
-		/*
-		///<summary>Returns all PaySplits for the given paymentNum.</summary>
-		public static PaySplit[] RefreshPaymentList(int payNum){
-			string command=
-				"SELECT * from paysplit"
-				+" WHERE paynum = '"+payNum+"'";
-			
-		}*/
-
 		///<summary>Used from payment window to get all paysplits for the payment.</summary>
-		public static ArrayList GetForPayment(int payNum){
+		public static ArrayList GetForPayment(int payNum) {
 			string command=
 				"SELECT * FROM paysplit "
 				+"WHERE PayNum="+POut.PInt(payNum);
@@ -206,6 +50,60 @@ namespace OpenDental{
 				retVal.Add(List[i]);
 			}
 			return retVal;
+		}
+
+		///<summary></summary>
+		public static void Update(PaySplit split){
+			string command="UPDATE paysplit SET " 
+				+ "SplitAmt = '"     +POut.PDouble(split.SplitAmt)+"'"
+				+ ",PatNum = '"      +POut.PInt   (split.PatNum)+"'"
+				+ ",ProcDate = '"    +POut.PDate  (split.ProcDate)+"'"
+				+ ",PayNum = '"      +POut.PInt   (split.PayNum)+"'"
+				+ ",ProvNum = '"     +POut.PInt   (split.ProvNum)+"'"
+				+ ",PayPlanNum = '"  +POut.PInt   (split.PayPlanNum)+"'"
+				+ ",DatePay = '"     +POut.PDate  (split.DatePay)+"'"
+				+ ",ProcNum = '"     +POut.PInt   (split.ProcNum)+"'"
+				//+ ",DateEntry = '"   +POut.PDate  (DateEntry)+"'"//not allowed to change
+				+" WHERE splitNum = '" +POut.PInt (split.SplitNum)+"'";
+ 			General.NonQ(command);
+		}
+
+		///<summary></summary>
+		public static void Insert(PaySplit split){
+			if(PrefB.RandomKeys){
+				split.SplitNum=MiscData.GetKey("paysplit","SplitNum");
+			}
+			string command= "INSERT INTO paysplit (";
+			if(PrefB.RandomKeys){
+				command+="SplitNum,";
+			}
+			command+="SplitAmt,PatNum,ProcDate, "
+				+"PayNum,ProvNum,PayPlanNum,DatePay,ProcNum,DateEntry) VALUES(";
+			if(PrefB.RandomKeys){
+				command+="'"+POut.PInt(split.SplitNum)+"', ";
+			}
+			command+=
+				 "'"+POut.PDouble(split.SplitAmt)+"', "
+				+"'"+POut.PInt   (split.PatNum)+"', "
+				+"'"+POut.PDate  (split.ProcDate)+"', "
+				+"'"+POut.PInt   (split.PayNum)+"', "
+				+"'"+POut.PInt   (split.ProvNum)+"', "
+				+"'"+POut.PInt   (split.PayPlanNum)+"', "
+				+"'"+POut.PDate  (split.DatePay)+"', "
+				+"'"+POut.PInt   (split.ProcNum)+"', "
+				+"NOW())";//DateEntry: date of server
+ 			if(PrefB.RandomKeys){
+				General.NonQ(command);
+			}
+			else{
+ 				split.SplitNum=General.NonQ(command,true);
+			}
+		}
+
+		///<summary>Deletes the paysplit.</summary>
+		public static void Delete(PaySplit split){
+			string command= "DELETE from paysplit WHERE splitNum = "+POut.PInt(split.SplitNum);
+ 			General.NonQ(command);
 		}
 
 		///<summary>Returns all paySplits for the given procNum. Must supply a list of all paysplits for the patient.</summary>
@@ -342,7 +240,7 @@ namespace OpenDental{
 				}
 				if(newPaySplit==null) {
 					//PaySplit with matching SplitNum was not found, so it must have been deleted
-					((PaySplit)oldSplitList[i]).Delete();
+					PaySplits.Delete(((PaySplit)oldSplitList[i]));
 					continue;
 				}
 				//PaySplit was found with matching SplitNum, so check for changes
@@ -355,7 +253,7 @@ namespace OpenDental{
 					|| newPaySplit.ProcNum != ((PaySplit)oldSplitList[i]).ProcNum
 					|| newPaySplit.ProvNum != ((PaySplit)oldSplitList[i]).ProvNum
 					|| newPaySplit.SplitAmt != ((PaySplit)oldSplitList[i]).SplitAmt) {
-					newPaySplit.Update();
+					PaySplits.Update(newPaySplit);
 				}
 			}
 			for(int i=0;i<newSplitList.Count;i++) {//loop through the new list
@@ -366,7 +264,7 @@ namespace OpenDental{
 					continue;
 				}
 				//entry with SplitNum=0, so it's new
-				((PaySplit)newSplitList[i]).Insert();
+				PaySplits.Insert(((PaySplit)newSplitList[i]));
 			}
 		}
 

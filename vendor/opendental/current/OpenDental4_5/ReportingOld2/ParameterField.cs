@@ -3,6 +3,7 @@ using System.Collections;
 using System.Data;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental.ReportingOld2
 {

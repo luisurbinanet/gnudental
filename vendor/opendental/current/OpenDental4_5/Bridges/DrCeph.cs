@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using VBbridges;
+using OpenDentBusiness;
 
 namespace OpenDental.Bridges{
 	/// <summary></summary>
@@ -16,26 +17,26 @@ namespace OpenDental.Bridges{
 		}
 
 		///<summary>Uses a VB dll to launch.</summary>
-		public static void SendData(Patient pat){
+		public static void SendData(Program ProgramCur, Patient pat){
 			if(pat==null){
 				MessageBox.Show("Please select a patient first.");
 				return;
 			}
 			//Make sure the program is running
 			if(Process.GetProcessesByName("DrCeph").Length==0) {
-				try {
-					Process.Start(Programs.Cur.Path);
+				try{
+					Process.Start(ProgramCur.Path);
 				}
-				catch {
+				catch{
 					MsgBox.Show("DrCeph","Program path not set properly.");
 					return;
 				}
 				Thread.Sleep(TimeSpan.FromSeconds(4));
 			}
-			ProgramProperties.GetForProgram();
-			ProgramProperties.GetCur("Enter 0 to use PatientNum, or 1 to use ChartNum");
+			ArrayList ForProgram=ProgramProperties.GetForProgram(ProgramCur.ProgramNum);;
+			ProgramProperty PPCur=ProgramProperties.GetCur(ForProgram, "Enter 0 to use PatientNum, or 1 to use ChartNum");;
 			string patID="";
-			if(ProgramProperties.Cur.PropertyValue=="0"){
+			if(PPCur.PropertyValue=="0"){
 				patID=pat.PatNum.ToString();
 			}
 			else{
@@ -43,7 +44,7 @@ namespace OpenDental.Bridges{
 			}
 			try{
 				RefAttach[] referalList=RefAttaches.Refresh(pat.PatNum);
-				Provider prov=Providers.GetProv(pat.GetProvNum());
+				Provider prov=Providers.GetProv(Patients.GetProvNum(pat));
 				string provName=prov.FName+" "+prov.MI+" "+prov.LName+" "+prov.Suffix;
 				Family fam=Patients.GetFamily(pat.PatNum);
 				Patient guar=fam.List[0];
@@ -59,7 +60,7 @@ namespace OpenDental.Bridges{
 				}
 				else{
 					relat="Unknown";
-				}				
+				}
 				VBbridges.DrCephNew.Launch(patID,pat.FName,pat.MiddleI,pat.LName,pat.Address,pat.Address2,pat.City,
 					pat.State,pat.Zip,pat.HmPhone,pat.SSN,pat.Gender.ToString(),pat.Race.ToString(),"",pat.Birthdate.ToString(),
 					DateTime.Today.ToShortDateString(),RefAttaches.GetReferringDr(referalList),provName,

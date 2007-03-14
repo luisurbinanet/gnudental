@@ -8,6 +8,7 @@ using System.Drawing.Printing;
 using System.Globalization;
 using System.IO;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	///<summary></summary>
@@ -44,6 +45,7 @@ namespace OpenDental{
 		///<summary>This is set externally for Renaissance and generic e-claims.  If it was not set ahead of time, it will set in FillDisplayStrings according to the insPlan.</summary>
 		public ClaimForm ClaimFormCur;
 		private InsPlan[] PlanList;
+		private Claim ClaimCur;
 
 		///<summary></summary>
 		public FormClaimPrint(){
@@ -192,8 +194,14 @@ namespace OpenDental{
 			}
 			pd2=new PrintDocument();
 			pagesPrinted=0;
+			pd2.OriginAtMargins=true;
+			pd2.DefaultPageSettings.Margins=new Margins(0,0,0,0);
+			if(pd2.DefaultPageSettings.PaperSize.Height<400) {//some printers report page size of 0.
+				pd2.DefaultPageSettings.PaperSize=new PaperSize("default",850,1100);
+			}
 			pd2.PrintPage+=new PrintPageEventHandler(this.pd2_PrintPage);
 			Preview2.Document=pd2;//display document
+			Preview2.InvalidatePreview();
 		}
 
 		///<summary>Only called from external forms without ever loading this form.  Prints without showing any print preview.  Returns true if printed successfully.  You have to supply a printer name because this can be called multiple times when printing batch claims.</summary>
@@ -277,7 +285,7 @@ namespace OpenDental{
 					if(HideBackground){
 						continue;
 					}
-					string fileName=((Pref)Prefs.HList["DocPath"]).ValueString+@"\"
+					string fileName=((Pref)PrefB.HList["DocPath"]).ValueString+@"\"
 						+ClaimFormCur.Items[i].ImageFileName;
 					if(!File.Exists(fileName)){
 						MessageBox.Show("File not found.");
@@ -366,9 +374,9 @@ namespace OpenDental{
 			Family FamCur=Patients.GetFamily(ThisPatNum);
 			Patient PatCur=FamCur.GetPatient(ThisPatNum);
 			Claims.Refresh(PatCur.PatNum);
-			Claims.Cur=(Claim)Claims.HList[ThisClaimNum];
+			ClaimCur=((Claim)Claims.HList[ThisClaimNum]).Copy();
 			PlanList=InsPlans.Refresh(FamCur);
-			InsPlan otherPlan=InsPlans.GetPlan(Claims.Cur.PlanNum2,PlanList);
+			InsPlan otherPlan=InsPlans.GetPlan(ClaimCur.PlanNum2,PlanList);
 			if(otherPlan==null){
 				otherPlan=new InsPlan();//easier than leaving it null
 			}
@@ -379,8 +387,8 @@ namespace OpenDental{
 			//Employers.GetEmployer(otherPlan.EmployerNum);
 			//Employer otherEmployer=Employers.Cur;//not actually used
 			//then get the main plan
-			InsPlan planCur=InsPlans.GetPlan(Claims.Cur.PlanNum,PlanList);
-			Clinic clinic=Clinics.GetClinic(Claims.Cur.ClinicNum);
+			InsPlan planCur=InsPlans.GetPlan(ClaimCur.PlanNum,PlanList);
+			Clinic clinic=Clinics.GetClinic(ClaimCur.ClinicNum);
 			Carrier carrier=Carriers.GetCarrier(planCur.CarrierNum);
 			//Employers.GetEmployer(InsPlans.Cur.EmployerNum);
 			Patient subsc;
@@ -406,7 +414,7 @@ namespace OpenDental{
 			ProcList=Procedures.Refresh(PatCur.PatNum);
 			ToothInitial[] initialList=ToothInitials.Refresh(PatCur.PatNum);
       ClaimProc[] ClaimProcList=ClaimProcs.Refresh(PatCur.PatNum);
-      ClaimProcsForClaim=ClaimProcs.GetForClaim(ClaimProcList,Claims.Cur.ClaimNum); 
+      ClaimProcsForClaim=ClaimProcs.GetForClaim(ClaimProcList,ClaimCur.ClaimNum); 
 			claimprocs=new ArrayList();
 			bool includeThis;
 			for(int i=0;i<ClaimProcsForClaim.Length;i++){//fill the arraylist
@@ -436,7 +444,7 @@ namespace OpenDental{
 					}
 				}
 			}
-			Provider treatDent=Providers.ListLong[Providers.GetIndexLong(Claims.Cur.ProvTreat)];
+			Provider treatDent=Providers.ListLong[Providers.GetIndexLong(ClaimCur.ProvTreat)];
 			if(ClaimFormCur==null){
 				ClaimFormCur=ClaimForms.GetClaimForm(planCur.ClaimFormNum);
 			}
@@ -463,11 +471,11 @@ namespace OpenDental{
 						displayStrings[i]=ClaimFormCur.Items[i].FormatString;
 						break;
 					case "IsPreAuth":
-						if(Claims.Cur.ClaimType=="PreAuth")
+						if(ClaimCur.ClaimType=="PreAuth")
 							displayStrings[i]="X";
 						break;
 					case "IsStandardClaim":
-						if(Claims.Cur.ClaimType!="PreAuth")
+						if(ClaimCur.ClaimType!="PreAuth")
 							displayStrings[i]="X";
 						break;
 					case "IsMedicaidClaim"://this should later be replaced with an insplan field.
@@ -475,7 +483,7 @@ namespace OpenDental{
 							displayStrings[i]="X";
 						break;
 					case "PreAuthString":
-						displayStrings[i]=Claims.Cur.PreAuthString;
+						displayStrings[i]=ClaimCur.PreAuthString;
 						break;
 					case "PriInsCarrierName":
 						displayStrings[i]=carrier.CarrierName;
@@ -541,25 +549,25 @@ namespace OpenDental{
 							displayStrings[i]=otherPlan.GroupNum;
 						break;
 					case "OtherInsRelatIsSelf":
-						if(otherPlan.PlanNum!=0 && Claims.Cur.PatRelat2==Relat.Self)
+						if(otherPlan.PlanNum!=0 && ClaimCur.PatRelat2==Relat.Self)
 							displayStrings[i]="X";
 						break;
 					case "OtherInsRelatIsSpouse":
-						if(otherPlan.PlanNum!=0 && Claims.Cur.PatRelat2==Relat.Spouse)
+						if(otherPlan.PlanNum!=0 && ClaimCur.PatRelat2==Relat.Spouse)
 							displayStrings[i]="X";
 						break;
 					case "OtherInsRelatIsChild":
-						if(otherPlan.PlanNum!=0 && Claims.Cur.PatRelat2==Relat.Child)
+						if(otherPlan.PlanNum!=0 && ClaimCur.PatRelat2==Relat.Child)
 							displayStrings[i]="X";
 						break;
 					case "OtherInsRelatIsOther":
 						if(otherPlan.PlanNum!=0 && (
-							Claims.Cur.PatRelat2==Relat.Dependent
-							|| Claims.Cur.PatRelat2==Relat.Employee
-							|| Claims.Cur.PatRelat2==Relat.HandicapDep
-							|| Claims.Cur.PatRelat2==Relat.InjuredPlaintiff
-							|| Claims.Cur.PatRelat2==Relat.LifePartner
-							|| Claims.Cur.PatRelat2==Relat.SignifOther
+							ClaimCur.PatRelat2==Relat.Dependent
+							|| ClaimCur.PatRelat2==Relat.Employee
+							|| ClaimCur.PatRelat2==Relat.HandicapDep
+							|| ClaimCur.PatRelat2==Relat.InjuredPlaintiff
+							|| ClaimCur.PatRelat2==Relat.LifePartner
+							|| ClaimCur.PatRelat2==Relat.SignifOther
 							))
 							displayStrings[i]="X";
 						break;
@@ -649,28 +657,28 @@ namespace OpenDental{
 						displayStrings[i]=Employers.GetEmployer(planCur.EmployerNum).EmpName;;
 						break;
 					case "RelatIsSelf":
-						if(Claims.Cur.PatRelat==Relat.Self)
+						if(ClaimCur.PatRelat==Relat.Self)
 							displayStrings[i]="X";
 						break;
 					case "RelatIsSpouse":
-						if(Claims.Cur.PatRelat==Relat.Spouse)
+						if(ClaimCur.PatRelat==Relat.Spouse)
 							displayStrings[i]="X";
 						break;
 					case "RelatIsChild":
-						if(Claims.Cur.PatRelat==Relat.Child)
+						if(ClaimCur.PatRelat==Relat.Child)
 							displayStrings[i]="X";
 						break;
 					case "RelatIsOther":
-						if(Claims.Cur.PatRelat==Relat.Dependent
-							|| Claims.Cur.PatRelat==Relat.Employee
-							|| Claims.Cur.PatRelat==Relat.HandicapDep
-							|| Claims.Cur.PatRelat==Relat.InjuredPlaintiff
-							|| Claims.Cur.PatRelat==Relat.LifePartner
-							|| Claims.Cur.PatRelat==Relat.SignifOther)
+						if(ClaimCur.PatRelat==Relat.Dependent
+							|| ClaimCur.PatRelat==Relat.Employee
+							|| ClaimCur.PatRelat==Relat.HandicapDep
+							|| ClaimCur.PatRelat==Relat.InjuredPlaintiff
+							|| ClaimCur.PatRelat==Relat.LifePartner
+							|| ClaimCur.PatRelat==Relat.SignifOther)
 							displayStrings[i]="X";
 						break;
 					case "Relationship":
-						displayStrings[i]=Claims.Cur.PatRelat.ToString();
+						displayStrings[i]=ClaimCur.PatRelat.ToString();
 						break;
 					case "IsFTStudent":
 						if(PatCur.StudentStatus=="F")
@@ -894,18 +902,18 @@ namespace OpenDental{
 							displayStrings[i]="X";
 						break;
 					case "Remarks":
-						displayStrings[i]=Claims.Cur.ClaimNote;
+						displayStrings[i]=ClaimCur.ClaimNote;
 						break;
 					case "PatientRelease":
 						if(planCur.ReleaseInfo)
 							displayStrings[i]="Signature on File"; 
 						break;
 					case "PatientReleaseDate":
-						if(planCur.ReleaseInfo && Claims.Cur.DateSent.Year > 1860){
+						if(planCur.ReleaseInfo && ClaimCur.DateSent.Year > 1860){
 							if(ClaimFormCur.Items[i].FormatString=="")
-								displayStrings[i]=Claims.Cur.DateSent.ToShortDateString();
+								displayStrings[i]=ClaimCur.DateSent.ToShortDateString();
 							else
-								displayStrings[i]=Claims.Cur.DateSent.ToString
+								displayStrings[i]=ClaimCur.DateSent.ToString
 									(ClaimFormCur.Items[i].FormatString);
 						} 
 						break;
@@ -914,225 +922,225 @@ namespace OpenDental{
 							displayStrings[i]="Signature on File"; 
 						break;
 					case "PatientAssignmentDate":
-						if(planCur.AssignBen && Claims.Cur.DateSent.Year > 1860){
+						if(planCur.AssignBen && ClaimCur.DateSent.Year > 1860){
 							if(ClaimFormCur.Items[i].FormatString=="")
-								displayStrings[i]=Claims.Cur.DateSent.ToShortDateString();
+								displayStrings[i]=ClaimCur.DateSent.ToShortDateString();
 							else
-								displayStrings[i]=Claims.Cur.DateSent.ToString
+								displayStrings[i]=ClaimCur.DateSent.ToString
 									(ClaimFormCur.Items[i].FormatString);
 						}
 						break;
 					case "PlaceIsOffice":
-						if(Claims.Cur.PlaceService==PlaceOfService.Office)
+						if(ClaimCur.PlaceService==PlaceOfService.Office)
 							displayStrings[i]="X";
 						break;
 					case "PlaceIsHospADA2002":
-						if(Claims.Cur.PlaceService==PlaceOfService.InpatHospital
-							|| Claims.Cur.PlaceService==PlaceOfService.OutpatHospital)
+						if(ClaimCur.PlaceService==PlaceOfService.InpatHospital
+							|| ClaimCur.PlaceService==PlaceOfService.OutpatHospital)
 							displayStrings[i]="X";
 						break;
 					case "PlaceIsExtCareFacilityADA2002":
-						if(Claims.Cur.PlaceService==PlaceOfService.AdultLivCareFac
-							|| Claims.Cur.PlaceService==PlaceOfService.SkilledNursFac)
+						if(ClaimCur.PlaceService==PlaceOfService.AdultLivCareFac
+							|| ClaimCur.PlaceService==PlaceOfService.SkilledNursFac)
 							displayStrings[i]="X";
 						break;
 					case "PlaceIsOtherADA2002":
-						if(Claims.Cur.PlaceService==PlaceOfService.PatientsHome
-							|| Claims.Cur.PlaceService==PlaceOfService.OtherLocation)
+						if(ClaimCur.PlaceService==PlaceOfService.PatientsHome
+							|| ClaimCur.PlaceService==PlaceOfService.OtherLocation)
 							displayStrings[i]="X";
 						break;
 					case "PlaceIsInpatHosp":
-						if(Claims.Cur.PlaceService==PlaceOfService.InpatHospital)
+						if(ClaimCur.PlaceService==PlaceOfService.InpatHospital)
 							displayStrings[i]="X";
 						break;
 					case "PlaceIsOutpatHosp":
-						if(Claims.Cur.PlaceService==PlaceOfService.OutpatHospital)
+						if(ClaimCur.PlaceService==PlaceOfService.OutpatHospital)
 							displayStrings[i]="X";
 						break;
 					case "PlaceIsAdultLivCareFac":
-						if(Claims.Cur.PlaceService==PlaceOfService.AdultLivCareFac)
+						if(ClaimCur.PlaceService==PlaceOfService.AdultLivCareFac)
 							displayStrings[i]="X";
 						break;
 					case "PlaceIsSkilledNursFac":
-						if(Claims.Cur.PlaceService==PlaceOfService.SkilledNursFac)
+						if(ClaimCur.PlaceService==PlaceOfService.SkilledNursFac)
 							displayStrings[i]="X";
 						break;
 					case "PlaceIsPatientsHome":
-						if(Claims.Cur.PlaceService==PlaceOfService.PatientsHome)
+						if(ClaimCur.PlaceService==PlaceOfService.PatientsHome)
 							displayStrings[i]="X";
 						break;
 					case "PlaceIsOtherLocation":
-						if(Claims.Cur.PlaceService==PlaceOfService.OtherLocation)
+						if(ClaimCur.PlaceService==PlaceOfService.OtherLocation)
 							displayStrings[i]="X";
 						break;
 					case "PlaceNumericCode":
-						displayStrings[i]=GetPlaceOfServiceNum(Claims.Cur.PlaceService);
+						displayStrings[i]=GetPlaceOfServiceNum(ClaimCur.PlaceService);
 						break;
 					case "IsRadiographsAttached":
-						if(Claims.Cur.Radiographs>0)
+						if(ClaimCur.Radiographs>0)
 							displayStrings[i]="X";
 						break;
 					case "RadiographsNumAttached":
-						displayStrings[i]=Claims.Cur.Radiographs.ToString();
+						displayStrings[i]=ClaimCur.Radiographs.ToString();
 						break;
 					case "RadiographsNotAttached":
-						if(Claims.Cur.Radiographs==0)
+						if(ClaimCur.Radiographs==0)
 							displayStrings[i]="X";
 						break;
 					//"ImagesEnclosed":
 					//"ModelsEnclosed":
 					case "IsNotOrtho":
-						if(!Claims.Cur.IsOrtho)
+						if(!ClaimCur.IsOrtho)
 							displayStrings[i]="X";
 						break;
 					case "IsOrtho":
-						if(Claims.Cur.IsOrtho)
+						if(ClaimCur.IsOrtho)
 							displayStrings[i]="X";
 						break;
 					case "DateOrthoPlaced":
-						if(Claims.Cur.OrthoDate.Year > 1880){
+						if(ClaimCur.OrthoDate.Year > 1880){
 							if(ClaimFormCur.Items[i].FormatString=="")
-								displayStrings[i]=Claims.Cur.OrthoDate.ToShortDateString();
+								displayStrings[i]=ClaimCur.OrthoDate.ToShortDateString();
 							else
-								displayStrings[i]=Claims.Cur.OrthoDate.ToString
+								displayStrings[i]=ClaimCur.OrthoDate.ToString
 									(ClaimFormCur.Items[i].FormatString);
 						}
 						break;
 					case "MonthsOrthoRemaining":
-						if(Claims.Cur.OrthoRemainM > 0)
-							displayStrings[i]=Claims.Cur.OrthoRemainM.ToString();
+						if(ClaimCur.OrthoRemainM > 0)
+							displayStrings[i]=ClaimCur.OrthoRemainM.ToString();
 						break;
 					case "IsNotProsth":
-						if(Claims.Cur.IsProsthesis=="N")
+						if(ClaimCur.IsProsthesis=="N")
 							displayStrings[i]="X";
 						break;
 					case "IsInitialProsth":
-						if(Claims.Cur.IsProsthesis=="I")
+						if(ClaimCur.IsProsthesis=="I")
 							displayStrings[i]="X";
 						break;
 					case "IsNotReplacementProsth":
-						if(Claims.Cur.IsProsthesis!="R")//=='I'nitial or 'N'o
+						if(ClaimCur.IsProsthesis!="R")//=='I'nitial or 'N'o
 							displayStrings[i]="X";
 						break;
 					case "IsReplacementProsth":
-						if(Claims.Cur.IsProsthesis=="R")
+						if(ClaimCur.IsProsthesis=="R")
 							displayStrings[i]="X";
 						break;
 					case "DatePriorProsthPlaced":
-						if(Claims.Cur.PriorDate.Year > 1860){
+						if(ClaimCur.PriorDate.Year > 1860){
 							if(ClaimFormCur.Items[i].FormatString=="")
-								displayStrings[i]=Claims.Cur.PriorDate.ToShortDateString();
+								displayStrings[i]=ClaimCur.PriorDate.ToShortDateString();
 							else
-								displayStrings[i]=Claims.Cur.PriorDate.ToString
+								displayStrings[i]=ClaimCur.PriorDate.ToString
 									(ClaimFormCur.Items[i].FormatString);
 						}
 						break;
 					case "IsOccupational":
-						if(Claims.Cur.AccidentRelated=="E")
+						if(ClaimCur.AccidentRelated=="E")
 							displayStrings[i]="X";
 						break;
 					case "IsNotOccupational":
-						if(Claims.Cur.AccidentRelated!="E")
+						if(ClaimCur.AccidentRelated!="E")
 							displayStrings[i]="X";
 						break;
 					case "IsAutoAccident":
-						if(Claims.Cur.AccidentRelated=="A")
+						if(ClaimCur.AccidentRelated=="A")
 							displayStrings[i]="X";
 						break;
 					case "IsNotAutoAccident":
-						if(Claims.Cur.AccidentRelated!="A")
+						if(ClaimCur.AccidentRelated!="A")
 							displayStrings[i]="X";
 						break;
 					case "IsOtherAccident":
-						if(Claims.Cur.AccidentRelated=="O")
+						if(ClaimCur.AccidentRelated=="O")
 							displayStrings[i]="X";
 						break;
 					case "IsNotOtherAccident":
-						if(Claims.Cur.AccidentRelated!="O")
+						if(ClaimCur.AccidentRelated!="O")
 							displayStrings[i]="X";
 						break;
 					case "IsNotAccident":
-						if(Claims.Cur.AccidentRelated!="O" && Claims.Cur.AccidentRelated!="A")
+						if(ClaimCur.AccidentRelated!="O" && ClaimCur.AccidentRelated!="A")
 							displayStrings[i]="X";
 						break;
 					case "IsAccident":
-						if(Claims.Cur.AccidentRelated!="")
+						if(ClaimCur.AccidentRelated!="")
 							displayStrings[i]="X";
 						break;
 					case "AccidentDate":
-						if(Claims.Cur.AccidentDate.Year > 1860){
+						if(ClaimCur.AccidentDate.Year > 1860){
 							if(ClaimFormCur.Items[i].FormatString=="")
-								displayStrings[i]=Claims.Cur.AccidentDate.ToShortDateString();
+								displayStrings[i]=ClaimCur.AccidentDate.ToShortDateString();
 							else
-								displayStrings[i]=Claims.Cur.AccidentDate.ToString
+								displayStrings[i]=ClaimCur.AccidentDate.ToString
 									(ClaimFormCur.Items[i].FormatString);
 						}
 						break;
 					case "AccidentST":
-						displayStrings[i]=Claims.Cur.AccidentST;
+						displayStrings[i]=ClaimCur.AccidentST;
 						break;
 					case "BillingDentist":
-						Provider P=Providers.ListLong[Providers.GetIndexLong(Claims.Cur.ProvBill)];
+						Provider P=Providers.ListLong[Providers.GetIndexLong(ClaimCur.ProvBill)];
 						displayStrings[i]=P.FName+" "+P.MI+" "+P.LName+" "+P.Suffix;
 						break;
 					case "BillingDentistAddress":
 						if(clinic==null)
-							displayStrings[i]=((Pref)Prefs.HList["PracticeAddress"]).ValueString;
+							displayStrings[i]=((Pref)PrefB.HList["PracticeAddress"]).ValueString;
 						else
 							displayStrings[i]=clinic.Address;
 						break;
 					case "BillingDentistAddress2":
 						if(clinic==null)
-							displayStrings[i]=((Pref)Prefs.HList["PracticeAddress2"]).ValueString;
+							displayStrings[i]=((Pref)PrefB.HList["PracticeAddress2"]).ValueString;
 						else
 							displayStrings[i]=clinic.Address2;
 						break;
 					case "BillingDentistCity":
 						if(clinic==null)
-							displayStrings[i]=((Pref)Prefs.HList["PracticeCity"]).ValueString;
+							displayStrings[i]=((Pref)PrefB.HList["PracticeCity"]).ValueString;
 						else
 							displayStrings[i]=clinic.City;
 						break;
 					case "BillingDentistST":
 						if(clinic==null)
-							displayStrings[i]=((Pref)Prefs.HList["PracticeST"]).ValueString;
+							displayStrings[i]=((Pref)PrefB.HList["PracticeST"]).ValueString;
 						else
 							displayStrings[i]=clinic.State;
 						break;
 					case "BillingDentistZip":
 						if(clinic==null)
-							displayStrings[i]=((Pref)Prefs.HList["PracticeZip"]).ValueString;
+							displayStrings[i]=((Pref)PrefB.HList["PracticeZip"]).ValueString;
 						else
 							displayStrings[i]=clinic.Zip;
 						break;
 					case "BillingDentistMedicaidID":
-						displayStrings[i]=Providers.ListLong[Providers.GetIndexLong(Claims.Cur.ProvBill)].MedicaidID;
+						displayStrings[i]=Providers.ListLong[Providers.GetIndexLong(ClaimCur.ProvBill)].MedicaidID;
 						break;
 					case "BillingDentistProviderID":
 						ProviderIdent[] provIdents=ProviderIdents.GetForPayor
-							(Providers.ListLong[Providers.GetIndexLong(Claims.Cur.ProvBill)].ProvNum,carrier.ElectID);
+							(Providers.ListLong[Providers.GetIndexLong(ClaimCur.ProvBill)].ProvNum,carrier.ElectID);
 						if(provIdents.Length>0){
 							displayStrings[i]=provIdents[0].IDNumber;//just use the first one we find
 						}
 						break;
 					case "BillingDentistLicenseNum":
-						displayStrings[i]=Providers.ListLong[Providers.GetIndexLong(Claims.Cur.ProvBill)].StateLicense;
+						displayStrings[i]=Providers.ListLong[Providers.GetIndexLong(ClaimCur.ProvBill)].StateLicense;
 						break;
 					case "BillingDentistSSNorTIN":
-						displayStrings[i]=Providers.ListLong[Providers.GetIndexLong(Claims.Cur.ProvBill)].SSN;
+						displayStrings[i]=Providers.ListLong[Providers.GetIndexLong(ClaimCur.ProvBill)].SSN;
 						break;
 					case "BillingDentistNumIsSSN":
-						if(!Providers.ListLong[Providers.GetIndexLong(Claims.Cur.ProvBill)].UsingTIN)
+						if(!Providers.ListLong[Providers.GetIndexLong(ClaimCur.ProvBill)].UsingTIN)
 							displayStrings[i]="X";
 						break;
 					case "BillingDentistNumIsTIN":
-						if(Providers.ListLong[Providers.GetIndexLong(Claims.Cur.ProvBill)].UsingTIN)
+						if(Providers.ListLong[Providers.GetIndexLong(ClaimCur.ProvBill)].UsingTIN)
 							displayStrings[i]="X";
 						break;
 					case "BillingDentistPh123":
 						if(clinic==null){
-							if(((Pref)Prefs.HList["PracticePhone"]).ValueString.Length==10){
-								displayStrings[i]=((Pref)Prefs.HList["PracticePhone"]).ValueString.Substring(0,3);
+							if(((Pref)PrefB.HList["PracticePhone"]).ValueString.Length==10){
+								displayStrings[i]=((Pref)PrefB.HList["PracticePhone"]).ValueString.Substring(0,3);
 							}
 						}
 						else{
@@ -1143,8 +1151,8 @@ namespace OpenDental{
 						break;
 					case "BillingDentistPh456":
 						if(clinic==null){
-							if(((Pref)Prefs.HList["PracticePhone"]).ValueString.Length==10){
-								displayStrings[i]=((Pref)Prefs.HList["PracticePhone"]).ValueString.Substring(3,3);
+							if(((Pref)PrefB.HList["PracticePhone"]).ValueString.Length==10){
+								displayStrings[i]=((Pref)PrefB.HList["PracticePhone"]).ValueString.Substring(3,3);
 							}
 						}
 						else{
@@ -1155,8 +1163,8 @@ namespace OpenDental{
 						break;
 					case "BillingDentistPh78910":
 						if(clinic==null){
-							if(((Pref)Prefs.HList["PracticePhone"]).ValueString.Length==10){
-								displayStrings[i]=((Pref)Prefs.HList["PracticePhone"]).ValueString.Substring(6);
+							if(((Pref)PrefB.HList["PracticePhone"]).ValueString.Length==10){
+								displayStrings[i]=((Pref)PrefB.HList["PracticePhone"]).ValueString.Substring(6);
 							}
 						}
 						else{
@@ -1167,10 +1175,10 @@ namespace OpenDental{
 						break;
 					case "BillingDentistPhoneFormatted":
 						if(clinic==null){
-							if(((Pref)Prefs.HList["PracticePhone"]).ValueString.Length==10){
-								displayStrings[i]="("+((Pref)Prefs.HList["PracticePhone"]).ValueString.Substring(0,3)
-									+")"+((Pref)Prefs.HList["PracticePhone"]).ValueString.Substring(3,3)
-									+"-"+((Pref)Prefs.HList["PracticePhone"]).ValueString.Substring(6);
+							if(((Pref)PrefB.HList["PracticePhone"]).ValueString.Length==10){
+								displayStrings[i]="("+((Pref)PrefB.HList["PracticePhone"]).ValueString.Substring(0,3)
+									+")"+((Pref)PrefB.HList["PracticePhone"]).ValueString.Substring(3,3)
+									+"-"+((Pref)PrefB.HList["PracticePhone"]).ValueString.Substring(6);
 							}
 						}
 						else{
@@ -1183,7 +1191,7 @@ namespace OpenDental{
 						break;
 					case "BillingDentistPhoneRaw":
 						if(clinic==null)
-							displayStrings[i]=((Pref)Prefs.HList["PracticePhone"]).ValueString;
+							displayStrings[i]=((Pref)PrefB.HList["PracticePhone"]).ValueString;
 						else
 							displayStrings[i]=clinic.Phone;
 						break;
@@ -1194,11 +1202,11 @@ namespace OpenDental{
 						}
 						break;
 					case "TreatingDentistSigDate":
-						if(treatDent.SigOnFile && Claims.Cur.DateSent.Year > 1860){
+						if(treatDent.SigOnFile && ClaimCur.DateSent.Year > 1860){
 							if(ClaimFormCur.Items[i].FormatString=="")
-								displayStrings[i]=Claims.Cur.DateSent.ToShortDateString();
+								displayStrings[i]=ClaimCur.DateSent.ToShortDateString();
 							else
-								displayStrings[i]=Claims.Cur.DateSent.ToString
+								displayStrings[i]=ClaimCur.DateSent.ToString
 									(ClaimFormCur.Items[i].FormatString);
 						}
 						break;
@@ -1213,32 +1221,32 @@ namespace OpenDental{
 						break;
 					case "TreatingDentistAddress":
 						if(clinic==null)
-							displayStrings[i]=((Pref)Prefs.HList["PracticeAddress"]).ValueString;
+							displayStrings[i]=((Pref)PrefB.HList["PracticeAddress"]).ValueString;
 						else
 							displayStrings[i]=clinic.Address;
 						break;
 					case "TreatingDentistCity":
 						if(clinic==null)
-							displayStrings[i]=((Pref)Prefs.HList["PracticeCity"]).ValueString;
+							displayStrings[i]=((Pref)PrefB.HList["PracticeCity"]).ValueString;
 						else
 							displayStrings[i]=clinic.City;
 						break;
 					case "TreatingDentistST":
 						if(clinic==null)
-							displayStrings[i]=((Pref)Prefs.HList["PracticeST"]).ValueString;
+							displayStrings[i]=((Pref)PrefB.HList["PracticeST"]).ValueString;
 						else
 							displayStrings[i]=clinic.State;
 						break;
 					case "TreatingDentistZip":
 						if(clinic==null)
-							displayStrings[i]=((Pref)Prefs.HList["PracticeZip"]).ValueString;
+							displayStrings[i]=((Pref)PrefB.HList["PracticeZip"]).ValueString;
 						else
 							displayStrings[i]=clinic.Zip;
 						break;
 					case "TreatingDentistPh123":
 						if(clinic==null){
-							if(((Pref)Prefs.HList["PracticePhone"]).ValueString.Length==10){
-								displayStrings[i]=((Pref)Prefs.HList["PracticePhone"]).ValueString.Substring(0,3);
+							if(((Pref)PrefB.HList["PracticePhone"]).ValueString.Length==10){
+								displayStrings[i]=((Pref)PrefB.HList["PracticePhone"]).ValueString.Substring(0,3);
 							}
 						}
 						else{
@@ -1249,8 +1257,8 @@ namespace OpenDental{
 						break;
 					case "TreatingDentistPh456":
 						if(clinic==null){
-							if(((Pref)Prefs.HList["PracticePhone"]).ValueString.Length==10){
-								displayStrings[i]=((Pref)Prefs.HList["PracticePhone"]).ValueString.Substring(3,3);
+							if(((Pref)PrefB.HList["PracticePhone"]).ValueString.Length==10){
+								displayStrings[i]=((Pref)PrefB.HList["PracticePhone"]).ValueString.Substring(3,3);
 							}
 						}
 						else{
@@ -1261,8 +1269,8 @@ namespace OpenDental{
 						break;
 					case "TreatingDentistPh78910":
 						if(clinic==null){
-							if(((Pref)Prefs.HList["PracticePhone"]).ValueString.Length==10){
-								displayStrings[i]=((Pref)Prefs.HList["PracticePhone"]).ValueString.Substring(6);
+							if(((Pref)PrefB.HList["PracticePhone"]).ValueString.Length==10){
+								displayStrings[i]=((Pref)PrefB.HList["PracticePhone"]).ValueString.Substring(6);
 							}
 						}
 						else{
@@ -1273,7 +1281,7 @@ namespace OpenDental{
 						break;
 					case "TreatingProviderSpecialty":
 						displayStrings[i]=Eclaims.X12.GetTaxonomy
-							(Providers.ListLong[Providers.GetIndexLong(Claims.Cur.ProvTreat)].Specialty);
+							(Providers.ListLong[Providers.GetIndexLong(ClaimCur.ProvTreat)].Specialty);
 						break;
 				}//switch
 				if(CultureInfo.CurrentCulture.Name=="nl-BE"//Dutch Belgium
@@ -1844,7 +1852,7 @@ namespace OpenDental{
 					return procCode.Descript;
 				}
 			if(field=="Date"){
-				if(Claims.Cur.ClaimType=="PreAuth")//no date on preauth procedures
+				if(ClaimCur.ClaimType=="PreAuth")//no date on preauth procedures
 					return "";
 				if(stringFormat=="")
 					return ((ClaimProc)claimprocs[procIndex]).ProcDate.ToShortDateString();
@@ -1858,7 +1866,7 @@ namespace OpenDental{
 					Providers.ListLong[Providers.GetIndexLong(((ClaimProc)claimprocs[procIndex]).ProvNum)].MedicaidID;
 			}
 			if(field=="PlaceNumericCode"){
-				return GetPlaceOfServiceNum(Claims.Cur.PlaceService);
+				return GetPlaceOfServiceNum(ClaimCur.PlaceService);
 			}
 			
 				//(Procedure)Procedures.HList[ClaimProcsForClaim[procIndex].ProcNum];

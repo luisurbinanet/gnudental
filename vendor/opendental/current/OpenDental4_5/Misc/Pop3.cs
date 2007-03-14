@@ -1,4 +1,3 @@
-//we use Indy now.
 /*using System;
 using System.Collections;
 using System.Net.Sockets;

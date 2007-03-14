@@ -7,9 +7,9 @@ using System.Drawing.Printing;
 using System.Windows.Forms;
 using System.Xml;
 using fyiReporting.RDL;
-using MySql.Data.MySqlClient;
+//using MySql.Data.MySqlClient;
 using OpenDental.UI;
-
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -166,7 +166,7 @@ namespace OpenDental{
 		private void FormRDLreport_Load(object sender, System.EventArgs e) {
 			LayoutToolBar();
 			viewer.SourceFile=SourceFilePath;
-				//Prefs.GetString("DocPath")+"Reports\\test.rdl";
+				//PrefB.GetString("DocPath")+"Reports\\test.rdl";
 		}
 
 		private void FormReport_Layout(object sender, System.Windows.Forms.LayoutEventArgs e) {
@@ -271,17 +271,17 @@ namespace OpenDental{
 			saveFileDialog2.AddExtension=true;
 			//saveFileDialog2.Title=Lan.g(this,"Select Folder to Save File To");
 			saveFileDialog2.FileName=MyReport.ReportName+".txt";
-			if(!Directory.Exists(Prefs.GetString("ExportPath"))){
+			if(!Directory.Exists(PrefB.GetString("ExportPath"))){
 				try{
-					Directory.CreateDirectory(Prefs.GetString("ExportPath"));
-					saveFileDialog2.InitialDirectory=Prefs.GetString("ExportPath");
+					Directory.CreateDirectory(PrefB.GetString("ExportPath"));
+					saveFileDialog2.InitialDirectory=PrefB.GetString("ExportPath");
 				}
 				catch{
 					//initialDirectory will be blank
 				}
 			}
 			else{
-				saveFileDialog2.InitialDirectory=Prefs.GetString("ExportPath");
+				saveFileDialog2.InitialDirectory=PrefB.GetString("ExportPath");
 			}
 			//saveFileDialog2.DefaultExt="txt";
 			saveFileDialog2.Filter="Text files(*.txt)|*.txt|Excel Files(*.xls)|*.xls|All files(*.*)|*.*";

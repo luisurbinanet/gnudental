@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -216,7 +217,7 @@ namespace OpenDental{
 				DialogResult=DialogResult.Cancel;
 				return;
 			}
-			ApptRuleCur.Delete();
+			AppointmentRules.Delete(ApptRuleCur);
 			DialogResult=DialogResult.OK;
 		}
 
@@ -236,10 +237,10 @@ namespace OpenDental{
 			ApptRuleCur.ADACodeEnd=textADACodeEnd.Text;
 			ApptRuleCur.IsEnabled=checkIsEnabled.Checked;
 			if(IsNew){
-				ApptRuleCur.Insert();
+				AppointmentRules.Insert(ApptRuleCur);
 			}
 			else{
-				ApptRuleCur.Update();
+				AppointmentRules.Update(ApptRuleCur);
 			}
 			DialogResult=DialogResult.OK;
 		}

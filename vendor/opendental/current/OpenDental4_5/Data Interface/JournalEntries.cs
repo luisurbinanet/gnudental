@@ -2,128 +2,20 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
-
-	///<summary>Used in accounting to represent a single credit or debit entry.  There will always be at least 2 journal enties attached to every transaction.  All transactions balance to 0.</summary>
-	public class JournalEntry{
-		///<summary>Primary key.</summary>
-		public int JournalEntryNum;
-		///<summary>FK to transaction.TransactionNum</summary>
-		public int TransactionNum;
-		///<summary>FK to account.AccountNum</summary>
-		public int AccountNum;
-		///<summary>Always the same for all journal entries within one transaction.</summary>
-		public DateTime DateDisplayed;
-		///<summary>Negative numbers never allowed.</summary>
-		public double DebitAmt;
-		///<summary>Negative numbers never allowed.</summary>
-		public double CreditAmt;
-		///<summary>.</summary>
-		public string Memo;
-		///<summary>A human-readable description of the splits.  Used only for display purposes.</summary>
-		public string Splits;
-		///<summary>Any user-defined string.  Usually a check number, but can also be D for deposit, Adj, etc.</summary>
-		public string CheckNumber;
-		///<summary>FK to reconcile.ReconcileNum. 0 if not attached to a reconcile. Not allowed to alter amounts if attached.</summary>
-		public int ReconcileNum;
-
-		///<summary></summary>
-		public JournalEntry Copy() {
-			JournalEntry j=new JournalEntry();
-			j.JournalEntryNum=JournalEntryNum;
-			j.TransactionNum=TransactionNum;
-			j.AccountNum=AccountNum;
-			j.DateDisplayed=DateDisplayed;
-			j.DebitAmt=DebitAmt;
-			j.CreditAmt=CreditAmt;
-			j.Memo=Memo;
-			j.Splits=Splits;
-			j.CheckNumber=CheckNumber;
-			j.ReconcileNum=ReconcileNum;
-			return j;
-		}
-
-		///<summary></summary>
-		public void Insert() {
-			if(DebitAmt<0 || CreditAmt<0){
-				throw new ApplicationException(Lan.g(this,"Error. Credit and debit must both be positive."));
-			}
-			if(Prefs.RandomKeys) {
-				JournalEntryNum=MiscData.GetKey("journalentry","JournalEntryNum");
-			}
-			string command="INSERT INTO journalentry (";
-			if(Prefs.RandomKeys) {
-				command+="JournalEntryNum,";
-			}
-			command+="TransactionNum,AccountNum,DateDisplayed,DebitAmt,CreditAmt,Memo,Splits,CheckNumber,"
-				+"ReconcileNum) VALUES(";
-			if(Prefs.RandomKeys) {
-				command+="'"+POut.PInt(JournalEntryNum)+"', ";
-			}
-			command+=
-				 "'"+POut.PInt   (TransactionNum)+"', "
-				+"'"+POut.PInt   (AccountNum)+"', "
-				+"'"+POut.PDate  (DateDisplayed)+"', "
-				+"'"+POut.PDouble(DebitAmt)+"', "
-				+"'"+POut.PDouble(CreditAmt)+"', "
-				+"'"+POut.PString(Memo)+"', "
-				+"'"+POut.PString(Splits)+"', "
-				+"'"+POut.PString(CheckNumber)+"', "
-				+"'"+POut.PInt   (ReconcileNum)+"')";
-			DataConnection dcon=new DataConnection();
-			if(Prefs.RandomKeys) {
-				dcon.NonQ(command);
-			}
-			else {
-				dcon.NonQ(command,true);
-				JournalEntryNum=dcon.InsertID;
-			}
-		}
-
-		///<summary></summary>
-		public void Update() {
-			if(DebitAmt<0 || CreditAmt<0) {
-				throw new ApplicationException(Lan.g(this,"Error. Credit and debit must both be positive."));
-			}
-			string command= "UPDATE journalentry SET "
-				+"TransactionNum = '"+POut.PInt   (TransactionNum)+"' "
-				+",AccountNum = '"   +POut.PInt   (AccountNum)+"' "
-				+",DateDisplayed = '"+POut.PDate  (DateDisplayed)+"' "
-				+",DebitAmt = '"     +POut.PDouble(DebitAmt)+"' "
-				+",CreditAmt = '"    +POut.PDouble(CreditAmt)+"' "
-				+",Memo = '"         +POut.PString(Memo)+"' "
-				+",Splits = '"       +POut.PString(Splits)+"' "
-				+",CheckNumber = '"  +POut.PString(CheckNumber)+"' "
-				+",ReconcileNum = '" +POut.PInt   (ReconcileNum)+"' "
-				+"WHERE JournalEntryNum = '"+POut.PInt(JournalEntryNum)+"'";
-			DataConnection dcon=new DataConnection();
-			dcon.NonQ(command);
-		}
-
-		///<summary></summary>
-		public void Delete() {
-			string command= "DELETE FROM journalentry WHERE JournalEntryNum = "+POut.PInt(JournalEntryNum);
-			DataConnection dcon=new DataConnection();
-			dcon.NonQ(command);
-		}
-
-	}
-
-	/*=========================================================================================
-		=================================== class JournalEntries ==========================================*/
-
 	///<summary></summary>
-	public class JournalEntries{
+	public class JournalEntries {
 
 		///<summary>Used when displaying the splits for a transaction.</summary>
-		public static ArrayList GetForTrans(int transactionNum){
+		public static ArrayList GetForTrans(int transactionNum) {
 			string command=
 				"SELECT * FROM journalentry "
 				+"WHERE TransactionNum="+POut.PInt(transactionNum);
 			JournalEntry[] List=RefreshAndFill(command);
 			ArrayList retVal=new ArrayList();
-			for(int i=0;i<List.Length;i++){
+			for(int i=0;i<List.Length;i++) {
 				retVal.Add(List[i]);
 			}
 			return retVal;
@@ -144,34 +36,93 @@ namespace OpenDental{
 				"SELECT * FROM journalentry "
 				+"WHERE AccountNum="+POut.PInt(accountNum)
 				+" AND (ReconcileNum="+POut.PInt(reconcileNum);
-			if(includeUncleared){
+			if(includeUncleared) {
 				command+=" OR ReconcileNum=0)";
 			}
-			else{
+			else {
 				command+=")";
 			}
 			command+=" ORDER BY DateDisplayed";
 			return RefreshAndFill(command);
 		}
 
-		private static JournalEntry[] RefreshAndFill(string command){
-			DataConnection dcon=new DataConnection();
-			DataTable table=dcon.GetTable(command);
+		private static JournalEntry[] RefreshAndFill(string command) {
+			DataTable table=General.GetTable(command);
 			JournalEntry[] List=new JournalEntry[table.Rows.Count];
-			for(int i=0;i<List.Length;i++){
+			for(int i=0;i<List.Length;i++) {
 				List[i]=new JournalEntry();
-				List[i].JournalEntryNum= PIn.PInt   (table.Rows[i][0].ToString());
-				List[i].TransactionNum = PIn.PInt   (table.Rows[i][1].ToString());
-				List[i].AccountNum     = PIn.PInt   (table.Rows[i][2].ToString());
-				List[i].DateDisplayed  = PIn.PDate  (table.Rows[i][3].ToString());
+				List[i].JournalEntryNum= PIn.PInt(table.Rows[i][0].ToString());
+				List[i].TransactionNum = PIn.PInt(table.Rows[i][1].ToString());
+				List[i].AccountNum     = PIn.PInt(table.Rows[i][2].ToString());
+				List[i].DateDisplayed  = PIn.PDate(table.Rows[i][3].ToString());
 				List[i].DebitAmt       = PIn.PDouble(table.Rows[i][4].ToString());
 				List[i].CreditAmt      = PIn.PDouble(table.Rows[i][5].ToString());
 				List[i].Memo           = PIn.PString(table.Rows[i][6].ToString());
 				List[i].Splits         = PIn.PString(table.Rows[i][7].ToString());
 				List[i].CheckNumber    = PIn.PString(table.Rows[i][8].ToString());
-				List[i].ReconcileNum   = PIn.PInt   (table.Rows[i][9].ToString());
+				List[i].ReconcileNum   = PIn.PInt(table.Rows[i][9].ToString());
 			}
 			return List;
+		}
+
+		///<summary></summary>
+		public static void Insert(JournalEntry je) {
+			if(je.DebitAmt<0 || je.CreditAmt<0){
+				throw new ApplicationException(Lan.g("JournalEntries","Error. Credit and debit must both be positive."));
+			}
+			if(PrefB.RandomKeys) {
+				je.JournalEntryNum=MiscData.GetKey("journalentry","JournalEntryNum");
+			}
+			string command="INSERT INTO journalentry (";
+			if(PrefB.RandomKeys) {
+				command+="JournalEntryNum,";
+			}
+			command+="TransactionNum,AccountNum,DateDisplayed,DebitAmt,CreditAmt,Memo,Splits,CheckNumber,"
+				+"ReconcileNum) VALUES(";
+			if(PrefB.RandomKeys) {
+				command+="'"+POut.PInt(je.JournalEntryNum)+"', ";
+			}
+			command+=
+				 "'"+POut.PInt   (je.TransactionNum)+"', "
+				+"'"+POut.PInt   (je.AccountNum)+"', "
+				+"'"+POut.PDate  (je.DateDisplayed)+"', "
+				+"'"+POut.PDouble(je.DebitAmt)+"', "
+				+"'"+POut.PDouble(je.CreditAmt)+"', "
+				+"'"+POut.PString(je.Memo)+"', "
+				+"'"+POut.PString(je.Splits)+"', "
+				+"'"+POut.PString(je.CheckNumber)+"', "
+				+"'"+POut.PInt   (je.ReconcileNum)+"')";
+			if(PrefB.RandomKeys) {
+				General.NonQ(command);
+			}
+			else {
+				je.JournalEntryNum=General.NonQ(command,true);
+			}
+		}
+
+		///<summary></summary>
+		public static void Update(JournalEntry je) {
+			if(je.DebitAmt<0 || je.CreditAmt<0) {
+				throw new ApplicationException(Lan.g("JournalEntries","Error. Credit and debit must both be positive."));
+			}
+			string command= "UPDATE journalentry SET "
+				+"TransactionNum = '"+POut.PInt   (je.TransactionNum)+"' "
+				+",AccountNum = '"   +POut.PInt   (je.AccountNum)+"' "
+				+",DateDisplayed = '"+POut.PDate  (je.DateDisplayed)+"' "
+				+",DebitAmt = '"     +POut.PDouble(je.DebitAmt)+"' "
+				+",CreditAmt = '"    +POut.PDouble(je.CreditAmt)+"' "
+				+",Memo = '"         +POut.PString(je.Memo)+"' "
+				+",Splits = '"       +POut.PString(je.Splits)+"' "
+				+",CheckNumber = '"  +POut.PString(je.CheckNumber)+"' "
+				+",ReconcileNum = '" +POut.PInt   (je.ReconcileNum)+"' "
+				+"WHERE JournalEntryNum = '"+POut.PInt(je.JournalEntryNum)+"'";
+			General.NonQ(command);
+		}
+
+		///<summary></summary>
+		public static void Delete(JournalEntry je) {
+			string command= "DELETE FROM journalentry WHERE JournalEntryNum = "+POut.PInt(je.JournalEntryNum);
+			General.NonQ(command);
 		}
 
 		///<summary>Used in FormTransactionEdit to synch database with changes user made to the journalEntry list for a transaction.  Must supply an old list for comparison.  Only the differences are saved.  Surround with try/catch, because it will thrown an exception if any entries are negative.</summary>
@@ -195,7 +146,7 @@ namespace OpenDental{
 				}
 				if(newJournalEntry==null) {
 					//journalentry with matching journalEntryNum was not found, so it must have been deleted
-					((JournalEntry)oldJournalList[i]).Delete();
+					Delete((JournalEntry)oldJournalList[i]);
 					continue;
 				}
 				//journalentry was found with matching journalEntryNum, so check for changes
@@ -207,7 +158,7 @@ namespace OpenDental{
 					|| newJournalEntry.Splits != ((JournalEntry)oldJournalList[i]).Splits
 					|| newJournalEntry.CheckNumber!= ((JournalEntry)oldJournalList[i]).CheckNumber) 
 				{
-					newJournalEntry.Update();
+					Update(newJournalEntry);
 				}
 			}
 			for(int i=0;i<newJournalList.Count;i++) {//loop through the new list
@@ -218,7 +169,7 @@ namespace OpenDental{
 					continue;
 				}
 				//entry with journalEntryNum=0, so it's new
-				((JournalEntry)newJournalList[i]).Insert();
+				Insert((JournalEntry)newJournalList[i]);
 			}
 		}
 
@@ -234,7 +185,6 @@ namespace OpenDental{
 
 		///<summary>Called once from FormReconcileEdit when closing.  Saves the reconcileNum for every item in the list.</summary>
 		public static void SaveList(JournalEntry[] journalList,int reconcileNum) {
-			DataConnection dcon=new DataConnection();
 			string command="UPDATE journalentry SET ReconcileNum=0 WHERE";
 			string str="";
 			for(int i=0;i<journalList.Length;i++){
@@ -247,7 +197,7 @@ namespace OpenDental{
 			}
 			if(str!=""){
 				command+=str;
-				dcon.NonQ(command);
+				General.NonQ(command);
 			}
 			command="UPDATE journalentry SET ReconcileNum="+POut.PInt(reconcileNum)+" WHERE";
 			str="";
@@ -261,7 +211,7 @@ namespace OpenDental{
 			}
 			if(str!=""){
 				command+=str;
-				dcon.NonQ(command);
+				General.NonQ(command);
 			}
 		}
 
@@ -269,7 +219,7 @@ namespace OpenDental{
 		public static void DeleteForTrans(int transactionNum){
 			string command="DELETE FROM journalentry WHERE TransactionNum="+POut.PInt(transactionNum);
 			DataConnection dcon=new DataConnection();
-			dcon.NonQ(command);
+			General.NonQ(command);
 		}*/
 
 

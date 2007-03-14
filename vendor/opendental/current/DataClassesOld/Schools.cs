@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Data;
 using System.Windows.Forms;
 
 namespace OpenDental{
@@ -17,7 +18,7 @@ namespace OpenDental{
 	/*=========================================================================================
 		=================================== class Schools ===========================================*/
   ///<summary></summary>
-	public class Schools:DataClass{
+	public class Schools{
 		///<summary></summary>
 		public static School Cur;
 		///<summary>This list is only refreshed as needed rather than being part of the local data.</summary>
@@ -27,11 +28,11 @@ namespace OpenDental{
 
 		///<summary>Refreshes List as needed directly from the database.  List only includes items that will show in dropdown list.</summary>
 		public static void Refresh(string name){
-			cmd.CommandText =
+			string command =
 				"SELECT * from school "
 				+"WHERE SchoolName LIKE '"+name+"%' "
 				+"ORDER BY SchoolName";
-			FillTable();
+			DataTable table=General.GetTable(command);
 			List=new School[table.Rows.Count];
 			for(int i=0;i<List.Length;i++){
 				List[i].SchoolName =PIn.PString(table.Rows[i][0].ToString());
@@ -47,10 +48,10 @@ namespace OpenDental{
 
 		///<summary>Gets an array of strings containing all the schools in alphabetical order.  Used for the screening interface which must be simpler than the usual interface.</summary>
 		public static void GetListNames(){
-			cmd.CommandText =
+			string command =
 				"SELECT SchoolName from school "
 				+"ORDER BY SchoolName";
-			FillTable();
+			DataTable table=General.GetTable(command);
 			ListNames=new string[table.Rows.Count];
 			for(int i=0;i<ListNames.Length;i++){
 				ListNames[i]=PIn.PString(table.Rows[i][0].ToString());
@@ -59,40 +60,40 @@ namespace OpenDental{
 
 		///<summary>Need to make sure schoolname not already in db.</summary>
 		public static void InsertCur(){
-			cmd.CommandText = "INSERT INTO school (SchoolName,SchoolCode) "
+			string command = "INSERT INTO school (SchoolName,SchoolCode) "
 				+"VALUES ("
 				+"'"+POut.PString(Cur.SchoolName)+"', "
 				+"'"+POut.PString(Cur.SchoolCode)+"')";
-			//MessageBox.Show(cmd.CommandText);
-			NonQ();
+			//MessageBox.Show(command);
+			General.NonQ(command);
 		}
 
 		///<summary>Updates the schoolname and code in the school table, and also updates all patients that were using the oldschool name.</summary>
 		public static void UpdateCur(){
-			cmd.CommandText = "UPDATE school SET "
+			string command = "UPDATE school SET "
 				+"SchoolName ='"  +POut.PString(Cur.SchoolName)+"'"
 				+",SchoolCode ='" +POut.PString(Cur.SchoolCode)+"'"
 				+" WHERE SchoolName = '"+POut.PString(Cur.OldSchoolName)+"'";
-			NonQ();
+			General.NonQ(command);
 			//then, update all patients using that school
-			cmd.CommandText = "UPDATE patient SET "
+			command = "UPDATE patient SET "
 				+"GradeSchool ='"  +POut.PString(Cur.SchoolName)+"'"
 				+" WHERE GradeSchool = '"+POut.PString(Cur.OldSchoolName)+"'";
-			NonQ();
+			General.NonQ(command);
 		}
 
 		///<summary>Must run UsedBy before running this.</summary>
 		public static void DeleteCur(){
-			cmd.CommandText = "DELETE from school WHERE SchoolName = '"+POut.PString(Cur.SchoolName)+"'";
-			NonQ();
+			string command = "DELETE from school WHERE SchoolName = '"+POut.PString(Cur.SchoolName)+"'";
+			General.NonQ(command);
 		}
 
 		///<summary>Use before DeleteCur to determine if this school name is in use. Returns a formatted string that can be used to quickly display the names of all patients using the schoolname.</summary>
 		public static string UsedBy(string schoolName){
-			cmd.CommandText =
+			string command =
 				"SELECT LName,FName from patient "
 				+"WHERE GradeSchool = '"+POut.PString(schoolName)+"' ";
-			FillTable();
+			DataTable table=General.GetTable(command);
 			if(table.Rows.Count==0)
 				return "";
 			string retVal="";
@@ -108,10 +109,10 @@ namespace OpenDental{
 
 		///<summary>Use before InsertCur to determine if this school name already exists. Also used when closing patient edit window to validate that the schoolname exists.</summary>
 		public static bool DoesExist(string schoolName){
-			cmd.CommandText =
+			string command =
 				"SELECT * from school "
 				+"WHERE SchoolName = '"+POut.PString(schoolName)+"' ";
-			FillTable();
+			DataTable table=General.GetTable(command);
 			if(table.Rows.Count==0)
 				return false;
 			else

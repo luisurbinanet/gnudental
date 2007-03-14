@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -62,7 +63,6 @@ namespace OpenDental{
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(FormTaskListEdit));
 			this.butCancel = new OpenDental.UI.Button();
 			this.butOK = new OpenDental.UI.Button();
 			this.label1 = new System.Windows.Forms.Label();
@@ -79,121 +79,119 @@ namespace OpenDental{
 			// 
 			// butCancel
 			// 
-			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butCancel.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.butCancel.Autosize = true;
 			this.butCancel.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butCancel.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butCancel.Location = new System.Drawing.Point(395, 191);
+			this.butCancel.Location = new System.Drawing.Point(395,191);
 			this.butCancel.Name = "butCancel";
-			this.butCancel.Size = new System.Drawing.Size(75, 26);
+			this.butCancel.Size = new System.Drawing.Size(75,26);
 			this.butCancel.TabIndex = 5;
 			this.butCancel.Text = "&Cancel";
 			this.butCancel.Click += new System.EventHandler(this.butCancel_Click);
 			// 
 			// butOK
 			// 
-			this.butOK.AdjustImageLocation = new System.Drawing.Point(0, 0);
+			this.butOK.AdjustImageLocation = new System.Drawing.Point(0,0);
 			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.butOK.Autosize = true;
 			this.butOK.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
 			this.butOK.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			this.butOK.Location = new System.Drawing.Point(395, 150);
+			this.butOK.Location = new System.Drawing.Point(395,150);
 			this.butOK.Name = "butOK";
-			this.butOK.Size = new System.Drawing.Size(75, 26);
+			this.butOK.Size = new System.Drawing.Size(75,26);
 			this.butOK.TabIndex = 4;
 			this.butOK.Text = "&OK";
 			this.butOK.Click += new System.EventHandler(this.butOK_Click);
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(8, 18);
+			this.label1.Location = new System.Drawing.Point(8,18);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(116, 19);
+			this.label1.Size = new System.Drawing.Size(116,19);
 			this.label1.TabIndex = 2;
 			this.label1.Text = "Description";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// textDescript
 			// 
-			this.textDescript.Location = new System.Drawing.Point(127, 18);
+			this.textDescript.Location = new System.Drawing.Point(127,18);
 			this.textDescript.Name = "textDescript";
-			this.textDescript.Size = new System.Drawing.Size(293, 20);
+			this.textDescript.Size = new System.Drawing.Size(293,20);
 			this.textDescript.TabIndex = 0;
-			this.textDescript.Text = "";
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(8, 50);
+			this.label2.Location = new System.Drawing.Point(8,50);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(116, 19);
+			this.label2.Size = new System.Drawing.Size(116,19);
 			this.label2.TabIndex = 4;
 			this.label2.Text = "Date";
 			this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(218, 47);
+			this.label3.Location = new System.Drawing.Point(218,47);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(185, 32);
+			this.label3.Size = new System.Drawing.Size(185,32);
 			this.label3.TabIndex = 6;
 			this.label3.Text = "Leave blank unless you want this list to show on a dated list";
 			// 
 			// label4
 			// 
-			this.label4.Location = new System.Drawing.Point(8, 82);
+			this.label4.Location = new System.Drawing.Point(8,82);
 			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(116, 19);
+			this.label4.Size = new System.Drawing.Size(116,19);
 			this.label4.TabIndex = 7;
 			this.label4.Text = "Date Type";
 			this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// listDateType
 			// 
-			this.listDateType.Location = new System.Drawing.Point(127, 83);
+			this.listDateType.Location = new System.Drawing.Point(127,83);
 			this.listDateType.Name = "listDateType";
-			this.listDateType.Size = new System.Drawing.Size(120, 56);
+			this.listDateType.Size = new System.Drawing.Size(120,56);
 			this.listDateType.TabIndex = 2;
 			// 
 			// checkFromNum
 			// 
 			this.checkFromNum.CheckAlign = System.Drawing.ContentAlignment.TopRight;
 			this.checkFromNum.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.checkFromNum.Location = new System.Drawing.Point(8, 149);
+			this.checkFromNum.Location = new System.Drawing.Point(8,149);
 			this.checkFromNum.Name = "checkFromNum";
-			this.checkFromNum.Size = new System.Drawing.Size(133, 21);
+			this.checkFromNum.Size = new System.Drawing.Size(133,21);
 			this.checkFromNum.TabIndex = 3;
 			this.checkFromNum.Text = "Is From Repeating";
 			this.checkFromNum.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// textDateTL
 			// 
-			this.textDateTL.Location = new System.Drawing.Point(127, 50);
+			this.textDateTL.Location = new System.Drawing.Point(127,50);
 			this.textDateTL.Name = "textDateTL";
-			this.textDateTL.Size = new System.Drawing.Size(87, 20);
+			this.textDateTL.Size = new System.Drawing.Size(87,20);
 			this.textDateTL.TabIndex = 1;
-			this.textDateTL.Text = "";
 			// 
 			// listObjectType
 			// 
-			this.listObjectType.Location = new System.Drawing.Point(127, 173);
+			this.listObjectType.Location = new System.Drawing.Point(127,173);
 			this.listObjectType.Name = "listObjectType";
-			this.listObjectType.Size = new System.Drawing.Size(120, 43);
+			this.listObjectType.Size = new System.Drawing.Size(120,43);
 			this.listObjectType.TabIndex = 15;
 			// 
 			// label6
 			// 
-			this.label6.Location = new System.Drawing.Point(8, 172);
+			this.label6.Location = new System.Drawing.Point(8,172);
 			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(116, 19);
+			this.label6.Size = new System.Drawing.Size(116,19);
 			this.label6.TabIndex = 16;
 			this.label6.Text = "Object Type";
 			this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// FormTaskListEdit
 			// 
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-			this.ClientSize = new System.Drawing.Size(503, 242);
+			this.AutoScaleBaseSize = new System.Drawing.Size(5,13);
+			this.ClientSize = new System.Drawing.Size(503,242);
 			this.Controls.Add(this.listObjectType);
 			this.Controls.Add(this.label6);
 			this.Controls.Add(this.textDateTL);
@@ -206,7 +204,6 @@ namespace OpenDental{
 			this.Controls.Add(this.label3);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label1);
-			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "FormTaskListEdit";
@@ -215,6 +212,7 @@ namespace OpenDental{
 			this.Text = "Task List";
 			this.Load += new System.EventHandler(this.FormTaskListEdit_Load);
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 		#endregion
@@ -266,7 +264,7 @@ namespace OpenDental{
 			}
 			Cur.ObjectType=(TaskObjectType)listObjectType.SelectedIndex;
 			try{
-				Cur.InsertOrUpdate(IsNew);
+				TaskLists.InsertOrUpdate(Cur,IsNew);
 			}
 			catch(Exception ex){
 				MessageBox.Show(ex.Message);

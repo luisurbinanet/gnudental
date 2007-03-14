@@ -4,7 +4,7 @@ using System.Drawing.Printing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
-//using OpenDental.Reporting;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -21,6 +21,7 @@ namespace OpenDental{
 		private OpenDental.ODtextBox textBody;
 		///<summary></summary>
 		public bool IsNew;
+		public Letter LetterCur;
 
 		///<summary></summary>
 		public FormLetterEdit()
@@ -124,7 +125,7 @@ namespace OpenDental{
 			this.textBody.Location = new System.Drawing.Point(132, 56);
 			this.textBody.Multiline = true;
 			this.textBody.Name = "textBody";
-			this.textBody.QuickPasteType = OpenDental.QuickPasteType.Letter;
+			this.textBody.QuickPasteType = QuickPasteType.Letter;
 			this.textBody.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textBody.Size = new System.Drawing.Size(680, 383);
 			this.textBody.TabIndex = 8;
@@ -155,18 +156,18 @@ namespace OpenDental{
 		#endregion
 
 		private void FormLetterEdit_Load(object sender, System.EventArgs e) {
-			textDescription.Text=Letters.Cur.Description;
-			textBody.Text=Letters.Cur.BodyText;
+			textDescription.Text=LetterCur.Description;
+			textBody.Text=LetterCur.BodyText;
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {
-			Letters.Cur.Description=textDescription.Text;
-			Letters.Cur.BodyText=textBody.Text;
+			LetterCur.Description=textDescription.Text;
+			LetterCur.BodyText=textBody.Text;
 			if(IsNew){
-				Letters.InsertCur();
+				Letters.Insert(LetterCur);
 			}
 			else{
-				Letters.UpdateCur();
+				Letters.Update(LetterCur);
 			}
 			DialogResult=DialogResult.OK;
 		}

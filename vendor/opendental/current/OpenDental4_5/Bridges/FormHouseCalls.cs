@@ -5,11 +5,10 @@ using System.Collections;
 using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
-	/// <summary>
-	/// Summary description for FormBasicTemplate.
-	/// </summary>
+	/// <summary></summary>
 	public class FormHouseCalls : System.Windows.Forms.Form{
 		private OpenDental.UI.Button butCancel;
 		private OpenDental.UI.Button butOK;
@@ -25,6 +24,7 @@ namespace OpenDental{
 		/// Required designer variable.
 		/// </summary>
 		private System.ComponentModel.Container components = null;
+		public Program ProgramCur;
 
 		///<summary></summary>
 		public FormHouseCalls()
@@ -244,11 +244,11 @@ namespace OpenDental{
 			else
 				ToDate=PIn.PDate(textDateTo.Text);
 			//Create the file and first row--------------------------------------------------------
-			ProgramProperties.GetForProgram();
-			ProgramProperties.GetCur("Export Path");
-			string fileName=ProgramProperties.Cur.PropertyValue+"Appt.txt";
-			if(!Directory.Exists(ProgramProperties.Cur.PropertyValue)){
-				Directory.CreateDirectory(ProgramProperties.Cur.PropertyValue);
+			ArrayList ForProgram=ProgramProperties.GetForProgram(ProgramCur.ProgramNum);
+			ProgramProperty PPCur=ProgramProperties.GetCur(ForProgram, "Export Path");
+			string fileName=PPCur.PropertyValue+"Appt.txt";
+			if(!Directory.Exists(PPCur.PropertyValue)){
+				Directory.CreateDirectory(PPCur.PropertyValue);
 			}
 			StreamWriter sr=File.CreateText(fileName);
 			sr.WriteLine("\"LastName\",\"FirstName\",\"PatientNumber\",\"HomePhone\",\"WorkNumber\","
@@ -286,11 +286,10 @@ namespace OpenDental{
 				+"AND (appointment.AptStatus=1 OR appointment.AptStatus=4) "//sched or ASAP
 				+"AND appointment.AptDateTime > '"+POut.PDate(FromDate)//> midnight
 				+"' AND appointment.AptDateTime < '"+POut.PDate(ToDate.AddDays(1))+"'";//< midnight
-			DataConnection dcon=new DataConnection();
- 			DataTable table=dcon.GetTable(command);
+ 			DataTable table=General.GetTable(command);
 			bool usePatNum=false;
-			ProgramProperties.GetCur("Enter 0 to use PatientNum, or 1 to use ChartNum");
-			if(ProgramProperties.Cur.PropertyValue=="0"){
+			PPCur=ProgramProperties.GetCur(ForProgram, "Enter 0 to use PatientNum, or 1 to use ChartNum");;
+			if(PPCur.PropertyValue=="0"){
 				usePatNum=true;
 			}
 			DateTime aptDT;

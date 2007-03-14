@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental
 {
@@ -1252,9 +1253,9 @@ namespace OpenDental
 			//}
 			textInsPlan.Text=InsPlans.GetDescript(ClaimProcCur.PlanNum,FamCur,PlanList);
 			checkNoBillIns.Checked=ClaimProcCur.NoBillIns;
-			textDateCP.ReadOnly=true;//DateCP is never editable because it doesn't even matter
-				//unless it's tied to a payment.
-				//But in that case, it's always the same as the payment date.
+			if(ClaimProcCur.ClaimPaymentNum>0) {//attached to ins check
+				textDateCP.ReadOnly=true;//DateCP always the same as the payment date.
+			}//otherwise, we do need to allow editing so that Writeoff dates can be changed.
 			if(ClaimProcCur.ProcNum==0){//total payment for a claim
 				IsProc=false;
 				textDescription.Text="Total Payment";
@@ -1542,7 +1543,7 @@ namespace OpenDental
 				FeeCur=new Fee();
 				FeeCur.ADACode=ProcADACode;
 				FeeCur.FeeSched=plan.AllowedFeeSched;
-				FeeCur.Insert();
+				Fees.Insert(FeeCur);
 				FormFE.IsNew=true;
 			}
 			FormFE.FeeCur=FeeCur;
@@ -1976,7 +1977,7 @@ namespace OpenDental
 				,MessageBoxButtons.OKCancel)!=DialogResult.OK){
 				return;
 			}
-			ClaimProcCur.Delete();
+			ClaimProcs.Delete(ClaimProcCur);
 			DialogResult=DialogResult.OK;
 		}
 
@@ -1992,6 +1993,7 @@ namespace OpenDental
 				|| textInsPayAmt.errorProvider1.GetError(textInsPayAmt)!=""
 				|| textWriteOff.errorProvider1.GetError(textWriteOff)!=""
 				|| textProcDate.errorProvider1.GetError(textProcDate)!=""
+				|| textDateCP.errorProvider1.GetError(textDateCP)!=""
 				){
 				return false;
 			}
@@ -2010,6 +2012,9 @@ namespace OpenDental
 				ClaimProcCur.ProvNum=Providers.List[listProv.SelectedIndex].ProvNum;
 			}
 			ClaimProcCur.ProcDate=PIn.PDate(textProcDate.Text);
+			if(!textDateCP.ReadOnly) {
+				ClaimProcCur.DateCP=PIn.PDate(textDateCP.Text);
+			}
 			ClaimProcCur.CodeSent=textCodeSent.Text;
 			ClaimProcCur.FeeBilled=PIn.PDouble(textFeeBilled.Text);
 			ClaimProcCur.Remarks=textRemarks.Text;
@@ -2062,14 +2067,14 @@ namespace OpenDental
 			}
 			ClaimProcCur.InsPayEst=PIn.PDouble(textInsPayEst.Text);
 			ClaimProcCur.InsPayAmt=PIn.PDouble(textInsPayAmt.Text);
-			ClaimProcCur.WriteOff=PIn.PDouble(textWriteOff.Text);
+			ClaimProcCur.WriteOff=Math.Abs(PIn.PDouble(textWriteOff.Text));
 			//if status was changed to received, then set DateEntry
 			if(ClaimProcOld.Status!=ClaimProcStatus.Received && ClaimProcOld.Status!=ClaimProcStatus.Supplemental){
 				if(ClaimProcCur.Status==ClaimProcStatus.Received || ClaimProcOld.Status==ClaimProcStatus.Supplemental){
 					ClaimProcCur.DateEntry=DateTime.Now;
 				}
 			}
-			ClaimProcCur.Update();
+			ClaimProcs.Update(ClaimProcCur);
 			//there is no functionality here for insert cur, because all claimprocs are
 			//created before editing.
 			DialogResult=DialogResult.OK;

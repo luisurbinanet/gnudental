@@ -8,6 +8,7 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -1827,7 +1828,7 @@ namespace OpenDental{
 			grid.Height=ClientSize.Height-grid.Top-2;
 			tabContr.Width=ClientSize.Width-3;
 			FillTableNames();
-			if(!Regex.IsMatch(FormChooseDatabase.Database,@"^[a-z0-9]+$")){
+			if(!Regex.IsMatch(MiscData.GetCurrentDatabase(),@"^[a-z0-9]+$")){
 				MsgBox.Show(this,"Name of database is invalid for use with this tool.  Must be all lowercase, numbers optional, but with no other characters.  Use the format lnamefname of the dentist.");
 				DialogResult=DialogResult.Cancel;
 				return;
@@ -1838,8 +1839,7 @@ namespace OpenDental{
 				return;
 			}
 			string command="SELECT COUNT(*) FROM patient";
-			DataConnection dcon=new DataConnection();
-			if(dcon.GetCount(command)!="0"){
+			if(General.GetCount(command)!="0"){
 				if(!MsgBox.Show(this,true,"Warning! This database already has at least one patient.  It is typically recommended to start with a blank database.  Continue anyway?"))
 				{
 					DialogResult=DialogResult.Cancel;
@@ -1932,8 +1932,7 @@ namespace OpenDental{
 			}
 			//make sure table doesn't already exist
 			string command="SHOW TABLES";
-			DataConnection dcon=new DataConnection();
-			DataTable tempT=dcon.GetTable(command);
+			DataTable tempT=General.GetTable(command);
 			for(int i=0;i<tempT.Rows.Count;i++){
 				if(tempT.Rows[i][0].ToString()==newTable){
 					MsgBox.Show(this,"Table already exists.");
@@ -1976,9 +1975,9 @@ namespace OpenDental{
 				}
 			}
 			command+=")";
-			dcon.NonQ(command);
+			General.NonQ(command);
 			//we might not be on the server, so make a copy of the file in the A-Z folder before loading
-			string newPath=Prefs.GetString("DocPath")//includes trailing \
+			string newPath=PrefB.GetString("DocPath")//includes trailing \
 				+Path.GetFileName(textFileName.Text);
 			File.Copy(textFileName.Text,newPath);
 			command="LOAD DATA INFILE '"+POut.PString(newPath)+"' INTO TABLE "+newTable
@@ -1986,7 +1985,7 @@ namespace OpenDental{
 				+"OPTIONALLY ENCLOSED BY '"+POut.PString("\"")
 				+@"' ESCAPED BY '\\' LINES TERMINATED BY '\r\n'";
 			//MessageBox.Show("Preparing to run: "+command);
-			dcon.NonQ(command);
+			General.NonQ(command);
 			File.Delete(newPath);
 			FillTableNames();
 			comboTableName.SelectedItem=newTable;
@@ -1996,8 +1995,7 @@ namespace OpenDental{
 
 		private void FillTableNames(){
 			string command="SHOW TABLES";
-			DataConnection dcon=new DataConnection();
-			DataTable tempT=dcon.GetTable(command);
+			DataTable tempT=General.GetTable(command);
 			comboTableName.Items.Clear();
 			for(int i=0;i<tempT.Rows.Count;i++){
 				if(tempT.Rows[i][0].ToString().Length>4 && tempT.Rows[i][0].ToString().Substring(0,4)=="temp"){
@@ -2009,8 +2007,7 @@ namespace OpenDental{
 		private void FillGrid(){
 			//missing feature: check for no table selected
 			string command="SELECT * FROM "+POut.PString(comboTableName.SelectedItem.ToString());
-			DataConnection dcon=new DataConnection();
- 			table=dcon.GetTable(command);
+ 			table=General.GetTable(command);
 			comboColEdit.Items.Clear();
 			comboColMove.Items.Clear();
 			comboColMoveAfter.Items.Clear();
@@ -2046,8 +2043,7 @@ namespace OpenDental{
 		private void GetPK(){
 			//missing feature: check for no table selected
 			string command="SHOW INDEX FROM "+POut.PString(comboTableName.SelectedItem.ToString());
-			DataConnection dcon=new DataConnection();
-			DataTable tempT=dcon.GetTable(command);
+			DataTable tempT=General.GetTable(command);
 			if(tempT.Rows.Count==0){
 				comboColPK.SelectedIndex=-1;
 				pkCol="";
@@ -2073,31 +2069,30 @@ namespace OpenDental{
 			}
 			Cursor=Cursors.WaitCursor;
 			string command="SHOW INDEX FROM "+POut.PString(comboTableName.SelectedItem.ToString());
-			DataConnection dcon=new DataConnection();
-			DataTable tempT=dcon.GetTable(command);
+			DataTable tempT=General.GetTable(command);
 			if(tempT.Rows.Count!=0){//if a primary key exists
 				command="ALTER TABLE "+comboTableName.SelectedItem.ToString()+" DROP PRIMARY KEY";
-				dcon.NonQ(command);
+				General.NonQ(command);
 			}
 			pkCol=comboColPK.SelectedItem.ToString();
 			//first, test to see if it's a blank column
 			command="SELECT COUNT(*) FROM "+comboTableName.SelectedItem.ToString()+" WHERE "+pkCol+"!=''";
-			tempT=dcon.GetTable(command);
+			tempT=General.GetTable(command);
 			if(tempT.Rows[0][0].ToString()=="0"){//all blank
 				command="ALTER TABLE "+comboTableName.SelectedItem.ToString()+" CHANGE "+pkCol+" "+pkCol
 					+" int unsigned NOT NULL auto_increment, "
 					+" ADD PRIMARY KEY ("+pkCol+")";
-				dcon.NonQ(command);
+				General.NonQ(command);
 				command="ALTER TABLE "+comboTableName.SelectedItem.ToString()+" DROP PRIMARY KEY,"
-				//dcon.NonQ(command);
+				//General.NonQ(command);
 				//command="ALTER TABLE "+comboTableName.SelectedItem.ToString()
 					+" CHANGE "+pkCol+" "+pkCol+" text NOT NULL,"
 					+" ADD PRIMARY KEY ("+pkCol+"(10))";
-				dcon.NonQ(command);
+				General.NonQ(command);
 			}
 			else{//primary keys already exist.  An error will show if duplicates
 				command="ALTER TABLE "+comboTableName.SelectedItem.ToString()+" ADD PRIMARY KEY ("+pkCol+"(10))";
-				dcon.NonQ(command);
+				General.NonQ(command);
 			}
 			FillGrid();
 			GetPK();
@@ -2106,15 +2101,14 @@ namespace OpenDental{
 
 		private void butClearPK_Click(object sender, System.EventArgs e) {
 			string command="SHOW INDEX FROM "+POut.PString(comboTableName.SelectedItem.ToString());
-			DataConnection dcon=new DataConnection();
-			DataTable tempT=dcon.GetTable(command);
+			DataTable tempT=General.GetTable(command);
 			if(tempT.Rows.Count==0){
 				MsgBox.Show(this,"No primary key to clear.");
 				GetPK();
 			}
 			else{//if a primary key exists
 				command="ALTER TABLE "+POut.PString(comboTableName.SelectedItem.ToString())+" DROP PRIMARY KEY";
-				dcon.NonQ(command);
+				General.NonQ(command);
 				GetPK();
 				MessageBox.Show("done");
 			}
@@ -2145,8 +2139,7 @@ namespace OpenDental{
 				return;
 			}
 			string command="DROP TABLE "+comboTableName.SelectedItem;
-			DataConnection dcon=new DataConnection();
-			dcon.NonQ(command);
+			General.NonQ(command);
 			FillTableNames();
 			if(comboTableName.Items.Count>0){
 				comboTableName.SelectedIndex=0;
@@ -2180,14 +2173,13 @@ namespace OpenDental{
 			int count=0;
 			string newVal;
 			string command;
-			DataConnection dcon=new DataConnection();
 			for(int i=0;i<table.Rows.Count;i++){
 				newVal=table.Rows[i][colName].ToString().Replace(textSubstOld.Text,textSubstNew.Text);
 				if(newVal!=table.Rows[i][colName].ToString()){
 					count++;
 					command="UPDATE "+comboTableName.SelectedItem.ToString()+" SET "+colName+"='"+POut.PString(newVal)+"' "
 						+"WHERE "+pkCol+"='"+POut.PString(table.Rows[i][pkCol].ToString())+"'";
-					dcon.NonQ(command);
+					General.NonQ(command);
 				}
 			}
 			//textSubstOld.Text="";
@@ -2207,8 +2199,7 @@ namespace OpenDental{
 			Cursor=Cursors.WaitCursor;
 			string colName=comboColEdit.SelectedItem.ToString();
 			string command="UPDATE "+comboTableName.SelectedItem.ToString()+" SET "+colName+"=''";
-			DataConnection dcon=new DataConnection();
-			dcon.NonQ(command);
+			General.NonQ(command);
 			comboColEdit.SelectedIndex=-1;
 			FillGrid();
 			Cursor=Cursors.Default;
@@ -2228,7 +2219,6 @@ namespace OpenDental{
 			string oldVal;
 			StringBuilder strBuild;
 			string command;
-			DataConnection dcon=new DataConnection();
 			for(int i=0;i<table.Rows.Count;i++){
 				oldVal=table.Rows[i][colName].ToString();
 				if(oldVal==""){
@@ -2247,7 +2237,7 @@ namespace OpenDental{
 				command="UPDATE "+POut.PString(comboTableName.SelectedItem.ToString())
 					+" SET "+colName+"='"+POut.PString(strBuild.ToString())+"' "
 					+"WHERE "+pkCol+"='"+table.Rows[i][pkCol].ToString()+"'";
-				dcon.NonQ(command);
+				General.NonQ(command);
 			}
 			comboColEdit.SelectedIndex=-1;
 			FillGrid();
@@ -2265,7 +2255,6 @@ namespace OpenDental{
 			string oldVal;
 			StringBuilder strBuild;
 			string command;
-			DataConnection dcon=new DataConnection();
 			for(int j=0;j<table.Columns.Count;j++){
 				colName=table.Columns[j].ColumnName;
 				if(radioPatients.Checked){
@@ -2298,7 +2287,7 @@ namespace OpenDental{
 					command="UPDATE "+POut.PString(comboTableName.SelectedItem.ToString())
 						+" SET "+colName+"='"+POut.PString(strBuild.ToString())+"' "
 						+"WHERE "+pkCol+"='"+table.Rows[i][pkCol].ToString()+"'";
-					dcon.NonQ(command);
+					General.NonQ(command);
 				}//for rows
 			}//for columns
 			FillGrid();
@@ -2340,7 +2329,6 @@ namespace OpenDental{
 			string oldVal;
 			string newVal;
 			string command;
-			DataConnection dcon=new DataConnection();
 			for(int i=0;i<table.Rows.Count;i++){
 				oldVal=table.Rows[i][colName].ToString();
 				//if(oldVal==""){
@@ -2350,7 +2338,7 @@ namespace OpenDental{
 				command="UPDATE "+POut.PString(comboTableName.SelectedItem.ToString())
 					+" SET "+colName+"='"+POut.PString(newVal)+"' "
 					+"WHERE "+pkCol+"='"+table.Rows[i][pkCol].ToString()+"'";
-				dcon.NonQ(command);
+				General.NonQ(command);
 			}
 			comboColEdit.SelectedIndex=-1;
 			FillGrid();
@@ -2376,8 +2364,7 @@ namespace OpenDental{
 			string colFrom=comboColCopyFrom.SelectedItem.ToString();
 			string command="UPDATE "+POut.PString(comboTableName.SelectedItem.ToString())
 				+" SET "+colName+"="+colFrom;
-			DataConnection dcon=new DataConnection();
-			dcon.NonQ(command);
+			General.NonQ(command);
 			comboColEdit.SelectedIndex=-1;
 			comboColCopyFrom.SelectedIndex=-1;
 			FillGrid();
@@ -2407,7 +2394,6 @@ namespace OpenDental{
 			string colTo=comboColDateTo.SelectedItem.ToString();
 			DateTime newDate;
 			string command;
-			DataConnection dcon=new DataConnection();
 			for(int i=0;i<table.Rows.Count;i++){
 				if(table.Rows[i][colFrom].ToString()==""){
 					newDate=DateTime.MinValue;
@@ -2424,7 +2410,7 @@ namespace OpenDental{
 				command="UPDATE "+POut.PString(comboTableName.SelectedItem.ToString())+" SET "+colTo+"='"
 					+POut.PDate(newDate)+"' "
 					+"WHERE "+POut.PString(pkCol)+"='"+table.Rows[i][pkCol].ToString()+"'";
-				dcon.NonQ(command);
+				General.NonQ(command);
 			}
 			//comboColDateFrom.Text="";
 			//comboColDateTo.Text="";
@@ -2453,7 +2439,6 @@ namespace OpenDental{
 			DateTime date;
 			string command;
 			string[] formats=textDateOldFormats.Text.Split(new char[] {','});
-			DataConnection dcon=new DataConnection();
 			for(int i=0;i<table.Rows.Count;i++){
 				if(table.Rows[i][colSource].ToString()==""){
 					continue;
@@ -2467,7 +2452,7 @@ namespace OpenDental{
 				newVal=date.ToString(textDateNewFormat.Text);
 				command="UPDATE "+POut.PString(comboTableName.SelectedItem.ToString())+" SET "+colDest+"='"+POut.PString(newVal)+"' "
 					+"WHERE "+POut.PString(pkCol)+"='"+table.Rows[i][pkCol].ToString()+"'";
-				dcon.NonQ(command);
+				General.NonQ(command);
 			}
 			//comboColDateSource.Text="";
 			//comboColDateDest.Text="";
@@ -2534,8 +2519,7 @@ namespace OpenDental{
 			}
 			//Make sure none of the patnums already exists
 			string command="SELECT PatNum FROM patient";
-			DataConnection dcon=new DataConnection();
-			DataTable tempT=dcon.GetTable(command);
+			DataTable tempT=General.GetTable(command);
 			for(int j=0;j<table.Rows.Count;j++){
 				for(int i=0;i<tempT.Rows.Count;i++){
 					if(tempT.Rows[i][0].ToString()==table.Rows[j]["PatNum"].ToString()){
@@ -2567,10 +2551,10 @@ namespace OpenDental{
 				+comboTableName.SelectedItem.ToString()+" AS t2 "//t2 is the target
 				+"SET t2.Guarantor=t1.PatNum "
 				+"WHERE t1.ChartNumber=t2.tempGuarantor";
-			dcon.NonQ(command);
+			General.NonQ(command);
 			command="UPDATE "+comboTableName.SelectedItem.ToString()
 				+" SET Guarantor=PatNum WHERE Guarantor=''";
-			dcon.NonQ(command);
+			General.NonQ(command);
 			FillGrid();
 			Cursor=Cursors.Default;
 		}
@@ -2631,8 +2615,7 @@ namespace OpenDental{
 			}
 			//Make sure none of the patnums already exists
 			string command="SELECT PatNum FROM patient";
-			DataConnection dcon=new DataConnection();
-			DataTable tempT=dcon.GetTable(command);
+			DataTable tempT=General.GetTable(command);
 			for(int j=0;j<table.Rows.Count;j++){
 				for(int i=0;i<tempT.Rows.Count;i++){
 					if(tempT.Rows[i][0].ToString()==table.Rows[j]["PatNum"].ToString()){
@@ -2666,7 +2649,7 @@ namespace OpenDental{
 				command="UPDATE "+comboTableName.SelectedItem.ToString()
 					+" SET Guarantor='"+hashAccounts[table.Rows[r]["tempAccountNum"].ToString()]
 					+"' WHERE PatNum='"+table.Rows[r]["PatNum"].ToString()+"'";
-				dcon.NonQ(command);
+				General.NonQ(command);
 			}
 			FillGrid();
 			Cursor=Cursors.Default;
@@ -2687,15 +2670,14 @@ namespace OpenDental{
 			string sep=textSepChar.Text;
 			string newVal;
 			string command;
-			DataConnection dcon=new DataConnection();
 			for(int i=0;i<table.Rows.Count;i++){
 				newVal=table.Rows[i][col1].ToString()+sep+table.Rows[i][col2].ToString();
 				command="UPDATE "+POut.PString(comboTableName.SelectedItem.ToString())+" SET "+col1+"='"+POut.PString(newVal)+"' "
 					+"WHERE "+POut.PString(pkCol)+"='"+table.Rows[i][pkCol].ToString()+"'";
-				dcon.NonQ(command);
+				General.NonQ(command);
 			}
       command="ALTER TABLE "+POut.PString(comboTableName.SelectedItem.ToString())+" DROP "+col2;
-			dcon.NonQ(command);
+			General.NonQ(command);
 			FillGrid();
 			Cursor=Cursors.Default;
 			MessageBox.Show("done");
@@ -2726,8 +2708,7 @@ namespace OpenDental{
 			string colName=comboColRename.SelectedItem.ToString();
 			string command="ALTER TABLE "+POut.PString(comboTableName.SelectedItem.ToString())+" CHANGE "+colName
 				+" "+newName+" text NOT NULL";
-			DataConnection dcon=new DataConnection();
-			dcon.NonQ(command);
+			General.NonQ(command);
 			FillGrid();
 			GetPK();//in case the primary key column was renamed
 			Cursor=Cursors.Default;
@@ -2760,8 +2741,7 @@ namespace OpenDental{
 			else{
 				command+="AFTER "+colAfter;
 			}
-			DataConnection dcon=new DataConnection();
-			dcon.NonQ(command);
+			General.NonQ(command);
 			FillGrid();
 			Cursor=Cursors.Default;
 		}
@@ -2787,8 +2767,7 @@ namespace OpenDental{
 			Cursor=Cursors.WaitCursor;
 			string col=comboColDelete.SelectedItem.ToString();
 			string command="ALTER TABLE "+comboTableName.SelectedItem.ToString()+" DROP "+col;
-			DataConnection dcon=new DataConnection();
-			dcon.NonQ(command);
+			General.NonQ(command);
 			FillGrid();
 			Cursor=Cursors.Default;
 			//MessageBox.Show("done");
@@ -2810,11 +2789,10 @@ namespace OpenDental{
 			Cursor=Cursors.WaitCursor;
 			string col;
 			string command;
-			DataConnection dcon=new DataConnection();
 			for(int i=0;i<numCols;i++){
 				col=table.Columns[table.Columns.Count-1-i].ColumnName;
 				command="ALTER TABLE "+comboTableName.SelectedItem.ToString()+" DROP "+col;
-				dcon.NonQ(command);
+				General.NonQ(command);
 			}
 			FillGrid();
 			Cursor=Cursors.Default;
@@ -2840,8 +2818,7 @@ namespace OpenDental{
 			}
 			Cursor=Cursors.WaitCursor;
 			string command="ALTER TABLE "+comboTableName.SelectedItem.ToString()+" ADD "+newName+" text NOT NULL";
-			DataConnection dcon=new DataConnection();
-			dcon.NonQ(command);
+			General.NonQ(command);
 			FillGrid();
 			comboColAdd.Text="";
 			Cursor=Cursors.Default;
@@ -2873,8 +2850,7 @@ namespace OpenDental{
 				}
 				command+=" "+pkCol+"='"+POut.PString(selectedRowPKs[i])+"'";
 			}
-			DataConnection dcon=new DataConnection();
-			dcon.NonQ(command);
+			General.NonQ(command);
 			FillGrid();
 		}
 
@@ -2885,8 +2861,7 @@ namespace OpenDental{
 			}
 			Cursor=Cursors.WaitCursor;
 			string command=textQuery.Text;
-			DataConnection dcon=new DataConnection();
-			dcon.NonQ(command);
+			General.NonQ(command);
 			FillGrid();
 			Cursor=Cursors.Default;
 			MessageBox.Show("done");
@@ -2916,16 +2891,17 @@ namespace OpenDental{
 				MessageBox.Show(ex.Message);
 				return;
 			}
-			//int defaultProvNum=Prefs.GetInt("PracticeDefaultProv");
+			//int defaultProvNum=PrefB.GetInt("PracticeDefaultProv");
 			int provNum;
-			int billType=Prefs.GetInt("PracticeDefaultBillType");
+			int billType=PrefB.GetInt("PracticeDefaultBillType");
 			Patient pat;
 			Adjustment adj;
 			int adjType=189;
 			Patient patOld=new Patient();
+			Carrier CarrierCur;
 			for(int i=0;i<table.Rows.Count;i++){
 				pat=new Patient();
-				Carriers.Cur=new Carrier();
+				CarrierCur=new Carrier();
 				for(int j=0;j<table.Columns.Count;j++){
 					if(radioPatients.Checked){
 						switch(table.Columns[j].ColumnName){
@@ -3014,26 +2990,26 @@ namespace OpenDental{
 					else if(radioCarriers.Checked){
 						switch(table.Columns[j].ColumnName){
 							case "Address":
-								Carriers.Cur.Address=PIn.PString(table.Rows[i][j].ToString());
+								CarrierCur.Address=PIn.PString(table.Rows[i][j].ToString());
 								break;
 							case "Address2":
-								Carriers.Cur.Address2=PIn.PString(table.Rows[i][j].ToString());
+								CarrierCur.Address2=PIn.PString(table.Rows[i][j].ToString());
 								break;
 							case "CarrierName":
-								Carriers.Cur.CarrierName=PIn.PString(table.Rows[i][j].ToString());
+								CarrierCur.CarrierName=PIn.PString(table.Rows[i][j].ToString());
 								break;
 							//case CarrierNum
 							case "City":
-								Carriers.Cur.City=PIn.PString(table.Rows[i][j].ToString());
+								CarrierCur.City=PIn.PString(table.Rows[i][j].ToString());
 								break;
 							case "State":
-								Carriers.Cur.State=PIn.PString(table.Rows[i][j].ToString());
+								CarrierCur.State=PIn.PString(table.Rows[i][j].ToString());
 								break;
 							case "Zip":
-								Carriers.Cur.Zip=PIn.PString(table.Rows[i][j].ToString());
+								CarrierCur.Zip=PIn.PString(table.Rows[i][j].ToString());
 								break;
 							case "Phone":
-								Carriers.Cur.Phone=PIn.PString(table.Rows[i][j].ToString());
+								CarrierCur.Phone=PIn.PString(table.Rows[i][j].ToString());
 								break;
 						}
 					}
@@ -3047,12 +3023,12 @@ namespace OpenDental{
 					}
 					if(table.Columns["PriProv"]==null){//no prov column
 						if(radioInsert.Checked){//must supply a prov anyway
-							pat.PriProv=Prefs.GetInt("PracticeDefaultProv");
+							pat.PriProv=PrefB.GetInt("PracticeDefaultProv");
 						}
 					}
 					else{//prov column
 						if(table.Rows[i][table.Columns["PriProv"].Ordinal].ToString()==""){
-							pat.PriProv=Prefs.GetInt("PracticeDefaultProv");
+							pat.PriProv=PrefB.GetInt("PracticeDefaultProv");
 						}
 						else{
 							provNum=0;
@@ -3070,7 +3046,7 @@ namespace OpenDental{
 								ProvCur.ProvColor=Color.White;
 								ProvCur.SigOnFile=true;
 								ProvCur.OutlineColor=Color.Gray;
-								ProvCur.InsertOrUpdate(true);
+								Providers.Insert(ProvCur);
 								Providers.Refresh();//this is because SetInvalid might be too slow
 								DataValid.SetInvalid(InvalidTypes.Providers);//also refreshes local
 								provNum=ProvCur.ProvNum;
@@ -3080,19 +3056,19 @@ namespace OpenDental{
 					}
 					if(radioInsert.Checked){
 						if(checkDontUsePK.Checked){
-							pat.Insert(false);
+							Patients.Insert(pat,false);
 						}
 						else{
-							pat.Insert(true);
+							Patients.Insert(pat,true);
 						}
 					}
 					else{
-						pat.Update(patOld);
+						Patients.Update(pat,patOld);
 					}
 				}
 				else if(radioCarriers.Checked){
 					if(radioInsert.Checked){
-						Carriers.InsertCur();
+						Carriers.Insert(CarrierCur);
 					}
 					else{
 						//pat.Update(patOld);
@@ -3107,7 +3083,7 @@ namespace OpenDental{
 					//adj.AdjDate=DateTime.Today;//automatically handled
 					adj.ProcDate=DateTime.Today;
 					adj.ProvNum=pat.PriProv;
-					adj.InsertOrUpdate(true);
+					Adjustments.InsertOrUpdate(adj,true);
 				}
 			}//rows
 			Cursor=Cursors.Default;
@@ -3383,8 +3359,7 @@ namespace OpenDental{
 			if(radioPatients.Checked){
 				//make sure no PatNum already exists
 				string command="SELECT PatNum FROM patient";
-				DataConnection dcon=new DataConnection();
-				DataTable tempT=dcon.GetTable(command);
+				DataTable tempT=General.GetTable(command);
 				bool exists;
 				if(radioInsert.Checked){//Insert: no duplicates allowed
 					for(int j=0;j<table.Rows.Count;j++){

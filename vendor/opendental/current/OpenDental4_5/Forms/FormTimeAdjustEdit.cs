@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -24,6 +25,7 @@ namespace OpenDental{
 		private ValidDouble textHours;
 		private TextBox textNote;
 		private CheckBox checkOvertime;
+		private OpenDental.UI.Button butDelete;
 		private TimeAdjust TimeAdjustCur;
 
 		///<summary></summary>
@@ -58,8 +60,7 @@ namespace OpenDental{
 		/// </summary>
 		private void InitializeComponent()
 		{
-			OpenDental.UI.Button butDelete;
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormTimeAdjustEdit));
+			this.butDelete = new OpenDental.UI.Button();
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
 			this.textTimeEntry = new System.Windows.Forms.TextBox();
@@ -69,8 +70,22 @@ namespace OpenDental{
 			this.butOK = new OpenDental.UI.Button();
 			this.butCancel = new OpenDental.UI.Button();
 			this.checkOvertime = new System.Windows.Forms.CheckBox();
-			butDelete = new OpenDental.UI.Button();
 			this.SuspendLayout();
+			// 
+			// butDelete
+			// 
+			this.butDelete.AdjustImageLocation = new System.Drawing.Point(0,0);
+			this.butDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.butDelete.Autosize = true;
+			this.butDelete.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
+			this.butDelete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
+			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butDelete.Location = new System.Drawing.Point(37,269);
+			this.butDelete.Name = "butDelete";
+			this.butDelete.Size = new System.Drawing.Size(75,26);
+			this.butDelete.TabIndex = 16;
+			this.butDelete.Text = "&Delete";
+			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
 			// 
 			// label1
 			// 
@@ -121,22 +136,6 @@ namespace OpenDental{
 			this.textHours.Size = new System.Drawing.Size(66,20);
 			this.textHours.TabIndex = 19;
 			// 
-			// butDelete
-			// 
-			butDelete.AdjustImageLocation = new System.Drawing.Point(0,0);
-			butDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			butDelete.Autosize = true;
-			butDelete.BtnShape = OpenDental.UI.enumType.BtnShape.Rectangle;
-			butDelete.BtnStyle = OpenDental.UI.enumType.XPStyle.Silver;
-			butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
-			butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			butDelete.Location = new System.Drawing.Point(37,269);
-			butDelete.Name = "butDelete";
-			butDelete.Size = new System.Drawing.Size(75,26);
-			butDelete.TabIndex = 16;
-			butDelete.Text = "&Delete";
-			butDelete.Click += new System.EventHandler(this.butDelete_Click);
-			// 
 			// butOK
 			// 
 			this.butOK.AdjustImageLocation = new System.Drawing.Point(0,0);
@@ -184,12 +183,11 @@ namespace OpenDental{
 			this.Controls.Add(this.textHours);
 			this.Controls.Add(this.label4);
 			this.Controls.Add(this.textTimeEntry);
-			this.Controls.Add(butDelete);
+			this.Controls.Add(this.butDelete);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.butCancel);
-			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "FormTimeAdjustEdit";
@@ -220,7 +218,7 @@ namespace OpenDental{
 				DialogResult=DialogResult.Cancel;
 				return;
 			}
-			TimeAdjustCur.Delete();
+			TimeAdjusts.Delete(TimeAdjustCur);
 			DialogResult=DialogResult.OK;
 		}
 
@@ -247,10 +245,10 @@ namespace OpenDental{
 			}
 			TimeAdjustCur.Note=textNote.Text;
 			if(IsNew){
-				TimeAdjustCur.Insert();
+				TimeAdjusts.Insert(TimeAdjustCur);
 			}
 			else{
-				TimeAdjustCur.Update();
+				TimeAdjusts.Update(TimeAdjustCur);
 			}
 			DialogResult=DialogResult.OK;
 		}

@@ -1,11 +1,13 @@
 using System;
+using System.Collections;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental.Bridges{
-	/// <summary></summary>
+	/// <summary>Also used by the XDR bridge.</summary>
 	public class Dexis{
 
 		/// <summary></summary>
@@ -14,10 +16,10 @@ namespace OpenDental.Bridges{
 		}
 
 		///<summary>Sends data for Patient.Cur to the InfoFile and launches the program.</summary>
-		public static void SendData(Patient pat){
-			ProgramProperties.GetForProgram();
-			ProgramProperties.GetCur("InfoFile path");
-			string infoFile=ProgramProperties.Cur.PropertyValue;
+		public static void SendData(Program ProgramCur, Patient pat){
+			ArrayList ForProgram=ProgramProperties.GetForProgram(ProgramCur.ProgramNum);
+			ProgramProperty PPCur=ProgramProperties.GetCur(ForProgram, "InfoFile path");
+			string infoFile=PPCur.PropertyValue;
 			if(pat!=null){
 				try{
 					using(StreamWriter sw=new StreamWriter(infoFile,false)){
@@ -26,8 +28,8 @@ namespace OpenDental.Bridges{
 							+"  ("+pat.PatNum.ToString()+")");
 						//patientID can be any string format, max 8 char.
 						//There is no validation to ensure that length is 8 char or less.
-						ProgramProperties.GetCur("Enter 0 to use PatientNum, or 1 to use ChartNum");
-						if(ProgramProperties.Cur.PropertyValue=="0"){
+						PPCur=ProgramProperties.GetCur(ForProgram, "Enter 0 to use PatientNum, or 1 to use ChartNum");
+						if(PPCur.PropertyValue=="0"){
 							sw.WriteLine("PN="+pat.PatNum.ToString());
 						}
 						else{
@@ -42,18 +44,18 @@ namespace OpenDental.Bridges{
 						else
 							sw.WriteLine("SX=M");
 					}
-					Process.Start(Programs.Cur.Path,"@"+infoFile);
+					Process.Start(ProgramCur.Path,"@"+infoFile);
 				}
 				catch{
-					MessageBox.Show(Programs.Cur.Path+" is not available.");
+					MessageBox.Show(ProgramCur.Path+" is not available.");
 				}
 			}//if patient is loaded
 			else{
 				try{
-					Process.Start(Programs.Cur.Path);//should start Dexis without bringing up a pt.
+					Process.Start(ProgramCur.Path);//should start Dexis without bringing up a pt.
 				}
 				catch{
-					MessageBox.Show(Programs.Cur.Path+" is not available.");
+					MessageBox.Show(ProgramCur.Path+" is not available.");
 				}
 			}
 		}

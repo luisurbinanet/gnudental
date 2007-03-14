@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
 using OpenDental.ReportingOld2;
+using OpenDentBusiness;
 
 namespace OpenDental
 {
@@ -300,7 +301,7 @@ namespace OpenDental
 			report.IsLandscape=true;
 			report.ReportName="Appointments";
 			report.AddTitle("Appointments");
-			report.AddSubTitle(((Pref)Prefs.HList["PracticeTitle"]).ValueString);
+			report.AddSubTitle(((Pref)PrefB.HList["PracticeTitle"]).ValueString);
 			report.AddSubTitle(dateFrom.ToShortDateString()+" - "+dateTo.ToShortDateString());
 			//setup query
 			report.Query=@"SELECT appointment.AptDateTime, 

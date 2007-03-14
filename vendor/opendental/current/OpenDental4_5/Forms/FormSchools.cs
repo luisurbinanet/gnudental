@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenDentBusiness;
 
 namespace OpenDental{
 	/// <summary>
@@ -184,8 +185,8 @@ namespace OpenDental{
 			if(listSchools.SelectedIndex==-1){
 				return;
 			}
-			Schools.Cur=Schools.List[listSchools.SelectedIndex];
 			FormSchoolEdit FormSE=new FormSchoolEdit();
+			FormSE.SchoolCur=Schools.List[listSchools.SelectedIndex];
 			FormSE.ShowDialog();
 			if(FormSE.DialogResult!=DialogResult.OK){
 				return;
@@ -195,8 +196,8 @@ namespace OpenDental{
 
 		private void butAdd_Click(object sender, System.EventArgs e) {
 			FormSchoolEdit FormSE=new FormSchoolEdit();
+			FormSE.SchoolCur=new School();
 			FormSE.IsNew=true;
-			Schools.Cur=new School();
 			FormSE.ShowDialog();
 			if(FormSE.DialogResult!=DialogResult.OK){
 				return;
@@ -209,13 +210,13 @@ namespace OpenDental{
 				MessageBox.Show(Lan.g(this,"Please select an item first."));
 				return;
 			}
-			Schools.Cur=Schools.List[listSchools.SelectedIndex];
-			string usedBy=Schools.UsedBy(Schools.Cur.SchoolName);
+			School SchoolCur=Schools.List[listSchools.SelectedIndex];
+			string usedBy=Schools.UsedBy(SchoolCur.SchoolName);
 			if(usedBy != ""){
 				MessageBox.Show(Lan.g(this,"Cannot delete site because it is already in use by the following patients: \r")+usedBy);
 				return;
 			}
-			Schools.DeleteCur();
+			Schools.Delete(SchoolCur);
 			FillList();
 		}
 
