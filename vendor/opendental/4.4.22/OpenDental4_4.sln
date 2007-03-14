@@ -1,0 +1,61 @@
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenDental4_4", "OpenDental4_4.csproj", "{9B9879E3-0726-4042-BCB3-ADCB604B9B42}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ODR", "ODR\ODR.csproj", "{84688345-BB6A-4F2F-8672-A82B52FD433B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RdlEngine", "RdlEngine\RdlEngine.csproj", "{C97E91F4-B310-44E2-9B6C-96775395722D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RdlViewer", "RdlViewer\RdlViewer.csproj", "{D99145B1-CB6C-41F5-BA86-723325145FB5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportDesigner", "RdlDesign\ReportDesigner.csproj", "{3E1D2C49-44A2-46A0-B107-9E8A87AE78A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SparksToothChart", "SparksToothChart\SparksToothChart.csproj", "{033B77F4-2E98-49A7-901F-5F388DEDF83E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseIntegrityCheck", "DatabaseIntegrityCheck\DatabaseIntegrityCheck.csproj", "{3FB82BFD-6E2A-4CDD-987E-0AC199771BC8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentationBuilder", "DocumentationBuilder\DocumentationBuilder.csproj", "{460E581F-836B-4414-B8E2-4DFC259585C9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9B9879E3-0726-4042-BCB3-ADCB604B9B42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B9879E3-0726-4042-BCB3-ADCB604B9B42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B9879E3-0726-4042-BCB3-ADCB604B9B42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B9879E3-0726-4042-BCB3-ADCB604B9B42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84688345-BB6A-4F2F-8672-A82B52FD433B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84688345-BB6A-4F2F-8672-A82B52FD433B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84688345-BB6A-4F2F-8672-A82B52FD433B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84688345-BB6A-4F2F-8672-A82B52FD433B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C97E91F4-B310-44E2-9B6C-96775395722D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C97E91F4-B310-44E2-9B6C-96775395722D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C97E91F4-B310-44E2-9B6C-96775395722D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C97E91F4-B310-44E2-9B6C-96775395722D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D99145B1-CB6C-41F5-BA86-723325145FB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D99145B1-CB6C-41F5-BA86-723325145FB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D99145B1-CB6C-41F5-BA86-723325145FB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D99145B1-CB6C-41F5-BA86-723325145FB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E1D2C49-44A2-46A0-B107-9E8A87AE78A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E1D2C49-44A2-46A0-B107-9E8A87AE78A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E1D2C49-44A2-46A0-B107-9E8A87AE78A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E1D2C49-44A2-46A0-B107-9E8A87AE78A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{033B77F4-2E98-49A7-901F-5F388DEDF83E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{033B77F4-2E98-49A7-901F-5F388DEDF83E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{033B77F4-2E98-49A7-901F-5F388DEDF83E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{033B77F4-2E98-49A7-901F-5F388DEDF83E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FB82BFD-6E2A-4CDD-987E-0AC199771BC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FB82BFD-6E2A-4CDD-987E-0AC199771BC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FB82BFD-6E2A-4CDD-987E-0AC199771BC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FB82BFD-6E2A-4CDD-987E-0AC199771BC8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{460E581F-836B-4414-B8E2-4DFC259585C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{460E581F-836B-4414-B8E2-4DFC259585C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{460E581F-836B-4414-B8E2-4DFC259585C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{460E581F-836B-4414-B8E2-4DFC259585C9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
