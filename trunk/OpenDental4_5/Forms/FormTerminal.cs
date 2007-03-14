@@ -1,3 +1,23 @@
+// GNUdental - A Linux port of Open Dental
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+// Copyright (c) Dr. Sparks
+// 
+// Modified by Frederik Carlier to build on Linux.
+// Copyricht (c) 2007 Frederik Carlier
 using System;
 using System.Drawing;
 using System.Collections;
@@ -189,7 +209,11 @@ namespace OpenDental{
 			this.tabMain.SelectedIndex = 0;
 			this.tabMain.Size = new System.Drawing.Size(992,713);
 			this.tabMain.TabIndex = 2;
+#if !MONO
 			this.tabMain.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tabMain_Selecting);
+#else
+#warning Working around missing feature in Mono: TabControl.Selecting event is not supported.
+#endif
 			// 
 			// tabPage1
 			// 
