@@ -1,4 +1,4 @@
-#Showing GNUdental in action
+# Showing GNUdental in action
 
 This screenshot shows the Choose Database Window:
 [http://www.gnudental.org/GNUdentalRunsInLinux.png]
