@@ -1,0 +1,7 @@
+#Showing GNUdental in action
+
+This screenshot shows the Choose Database Window:
+[http://www.gnudental.org/GNUdentalRunsInLinux.png]
+
+This screenshot shows the main window:
+[http://www.gnudental.org/GNUdentalMainWindow.png]
